@@ -30,6 +30,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -132,11 +133,11 @@ public class NodeDeliveryController extends BaseDeliveryController
 		try
 		{
 			operatingMode = new Integer(CmsPropertyHandler.getOperatingMode());
-			//getLogger().info("Operating mode is:" + operatingMode);
+			//logger.info("Operating mode is:" + operatingMode);
 		}
 		catch(Exception e)
 		{
-			getLogger().warn("We could not get the operating mode from the propertyFile:" + e.getMessage(), e);
+			logger.warn("We could not get the operating mode from the propertyFile:" + e.getMessage(), e);
 		}
 		return operatingMode;
 	}
@@ -165,15 +166,15 @@ public class NodeDeliveryController extends BaseDeliveryController
 		SiteNodeVersion siteNodeVersion = null;
 		
 		SiteNode siteNode = (SiteNode)this.getObjectWithId(SiteNodeImpl.class, siteNodeId, db);
-		getLogger().info("Loaded siteNode " + siteNode.getName());
+		logger.info("Loaded siteNode " + siteNode.getName());
 		Collection siteNodeVersions = siteNode.getSiteNodeVersions();
-		getLogger().info("Loaded versions " + siteNodeVersions.size());
+		logger.info("Loaded versions " + siteNodeVersions.size());
 		
 		Iterator versionIterator = siteNodeVersions.iterator();
 		while(versionIterator.hasNext())
 		{
 			SiteNodeVersion siteNodeVersionCandidate = (SiteNodeVersion)versionIterator.next();	
-			getLogger().info("SiteNodeVersionCandidate " + siteNodeVersionCandidate.getId());
+			logger.info("SiteNodeVersionCandidate " + siteNodeVersionCandidate.getId());
 			if(siteNodeVersionCandidate.getIsActive().booleanValue() && siteNodeVersionCandidate.getStateId().intValue() >= getOperatingMode().intValue())
 			{
 				if(siteNodeVersionCandidate.getOwningSiteNode().getSiteNodeId().intValue() == siteNodeId.intValue())
@@ -195,24 +196,24 @@ public class NodeDeliveryController extends BaseDeliveryController
 	
 	public ServiceDefinitionVO getInheritedServiceDefinition(List qualifyerList, Integer siteNodeId, AvailableServiceBindingVO availableServiceBindingVO, Database db, boolean inheritParentBindings) throws SystemException, Exception
 	{
-		//getLogger().warn("1");
-		getLogger().info("Trying to find binding " + availableServiceBindingVO.getName() + " on siteNodeId:" + siteNodeId);
+		//logger.warn("1");
+		logger.info("Trying to find binding " + availableServiceBindingVO.getName() + " on siteNodeId:" + siteNodeId);
 		ServiceDefinitionVO serviceDefinitionVO = null;
 
-		//getLogger().warn("2");
+		//logger.warn("2");
 
 		//SiteNode siteNode = (SiteNode)this.getObjectWithId(SiteNodeImpl.class, siteNodeId, db);
 		SiteNode siteNode = (SiteNode)this.getObjectWithId(SmallSiteNodeImpl.class, siteNodeId, db);
-		getLogger().info("Loaded siteNode " + siteNode.getName());
+		logger.info("Loaded siteNode " + siteNode.getName());
 
-		//getLogger().warn("3");
+		//logger.warn("3");
 
 		//serviceDefinitionVO = getServiceDefinitionVO(siteNode, availableServiceBindingVO, db);
 		serviceDefinitionVO = getServiceDefinitionVO(qualifyerList, siteNode, availableServiceBindingVO, db);
 
-		//getLogger().warn("4");
+		//logger.warn("4");
 
-		getLogger().info("Loaded serviceDefinitionVO " + serviceDefinitionVO);
+		logger.info("Loaded serviceDefinitionVO " + serviceDefinitionVO);
 		
 		if(serviceDefinitionVO == null)
 		{
@@ -220,7 +221,7 @@ public class NodeDeliveryController extends BaseDeliveryController
 			//AvailableServiceBinding availableServiceBinding = getAvailableServiceBindingRecursive(siteNodeVersion.getOwningSiteNode(), availableServiceBindingName, inheritParentBindings);
 			if(availableServiceBindingVO != null && availableServiceBindingVO.getIsInheritable().booleanValue() && inheritParentBindings)
         	{
-            	getLogger().info("No binding found - lets try the parent.");
+            	logger.info("No binding found - lets try the parent.");
             	SiteNode parent = siteNode.getParentSiteNode();
             	if(parent != null)
             	    serviceDefinitionVO = getInheritedServiceDefinition(qualifyerList, parent.getSiteNodeId(), availableServiceBindingVO, db, inheritParentBindings);
@@ -229,7 +230,7 @@ public class NodeDeliveryController extends BaseDeliveryController
 		
 		//try{ throw new Exception("APA"); } catch(Exception e){e.printStackTrace();}
 		
-		getLogger().info("Loaded serviceDefinitionVO end...");
+		logger.info("Loaded serviceDefinitionVO end...");
 		
 		return serviceDefinitionVO;
 	}
@@ -240,12 +241,12 @@ public class NodeDeliveryController extends BaseDeliveryController
 	    //ServiceBinding serviceBinding = null;
 		
 	    String key = "" + siteNode.getSiteNodeId() + "_" + availableServiceBindingVO.getId();
-		getLogger().info("key:" + key);
+		logger.info("key:" + key);
 		Object object = CacheController.getCachedObject("serviceDefinitionCache", key);
 		Object object2 = CacheController.getCachedObject("qualifyerListCache", key);
 		if(object != null && object2 != null)
 		{
-			getLogger().info("There was an cached ServiceDefinitionVO:" + object);
+			logger.info("There was an cached ServiceDefinitionVO:" + object);
 			if(object instanceof ServiceDefinitionVO)
 			    serviceDefinitionVO = (ServiceDefinitionVO)object;
 			if(object2 instanceof List)
@@ -302,7 +303,7 @@ public class NodeDeliveryController extends BaseDeliveryController
 			    object = new NullObject();
 			*/
 			
-			//getLogger().warn("3.1");
+			//logger.warn("3.1");
 
 		    OQLQuery oql = db.getOQLQuery( "SELECT sb FROM org.infoglue.cms.entities.structure.impl.simple.ServiceBindingImpl sb WHERE sb.siteNodeVersion.owningSiteNode = $1 AND sb.availableServiceBinding = $2 AND sb.siteNodeVersion.isActive = $3 AND sb.siteNodeVersion.stateId >= $4 order by sb.siteNodeVersion.siteNodeVersionId DESC");
 			oql.bind(siteNode);
@@ -312,12 +313,12 @@ public class NodeDeliveryController extends BaseDeliveryController
 			
 	    	QueryResults results = oql.execute(Database.ReadOnly);
 
-	    	//getLogger().warn("3.2");
+	    	//logger.warn("3.2");
 
 			if (results.hasMore()) 
 	        {
 			    ServiceBinding serviceBinding = (ServiceBinding)results.next();
-			    //getLogger().warn("3.3");
+			    //logger.warn("3.3");
 
 			    //serviceBindingVO = serviceBinding.getValueObject();
 		        serviceDefinitionVO = serviceBinding.getServiceDefinition().getValueObject();
@@ -358,7 +359,7 @@ public class NodeDeliveryController extends BaseDeliveryController
 		while(serviceBindingIterator.hasNext())
 		{
 			ServiceBinding serviceBindingCandidate = (ServiceBinding)serviceBindingIterator.next();
-			//getLogger().warn("siteNodeVersion " + siteNodeVersion.getId());
+			//logger.warn("siteNodeVersion " + siteNodeVersion.getId());
 			if(serviceBindingCandidate.getAvailableServiceBinding().getAvailableServiceBindingId().intValue() == availableServiceBindingVO.getId().intValue())
 			//if(serviceBindingCandidate.getValueObject().getAvailableServiceBindingId().intValue() == availableServiceBindingVO.getId().intValue())
 			{
@@ -425,11 +426,10 @@ public class NodeDeliveryController extends BaseDeliveryController
 	public SiteNodeVersionVO getLatestActiveSiteNodeVersionVO(Database db, Integer siteNodeId) throws SystemException, Exception
 	{
 		String key = "" + siteNodeId;
-		getLogger().info("key:" + key);
+		logger.info("key:" + key);
 		SiteNodeVersionVO siteNodeVersionVO = (SiteNodeVersionVO)CacheController.getCachedObject("latestSiteNodeVersionCache", key);
 		if(siteNodeVersionVO != null)
 		{
-			Logger logger = getLogger();
 			if(logger.isInfoEnabled())
 				logger.info("There was an cached siteNodeVersionVO:" + siteNodeVersionVO);
 		}
@@ -452,11 +452,10 @@ public class NodeDeliveryController extends BaseDeliveryController
 	public SiteNodeVersionVO getLatestActiveSiteNodeVersionVOForPageCache(Database db, Integer siteNodeId) throws SystemException, Exception
 	{
 		String key = "" + siteNodeId;
-		getLogger().info("key:" + key);
+		logger.info("key:" + key);
 		SiteNodeVersionVO siteNodeVersionVO = (SiteNodeVersionVO)CacheController.getCachedObject("pageCacheLatestSiteNodeVersions", key);
 		if(siteNodeVersionVO != null)
 		{
-			Logger logger = getLogger();
 			if(logger.isInfoEnabled())
 				logger.info("There was an cached siteNodeVersionVO:" + siteNodeVersionVO);
 		}
@@ -481,17 +480,17 @@ public class NodeDeliveryController extends BaseDeliveryController
 	{
 	    SiteNodeVersion siteNodeVersion = null;
 		
-		getLogger().info("Loading siteNode " + siteNodeId);
+		logger.info("Loading siteNode " + siteNodeId);
 		SiteNode siteNode = (SiteNode)this.getObjectWithId(SiteNodeImpl.class, siteNodeId, db);
-		getLogger().info("siteNode " + siteNode.getName());
+		logger.info("siteNode " + siteNode.getName());
 		Collection siteNodeVersions = siteNode.getSiteNodeVersions();
-		getLogger().info("siteNodeVersions " + siteNodeVersions);
+		logger.info("siteNodeVersions " + siteNodeVersions);
 		
 		Iterator versionIterator = siteNodeVersions.iterator();
 		while(versionIterator.hasNext())
 		{
 			SiteNodeVersion siteNodeVersionCandidate = (SiteNodeVersion)versionIterator.next();	
-			getLogger().info("SiteNodeVersionCandidate " + siteNodeVersionCandidate.getId());
+			logger.info("SiteNodeVersionCandidate " + siteNodeVersionCandidate.getId());
 			if(siteNodeVersionCandidate.getIsActive().booleanValue() && siteNodeVersionCandidate.getStateId().intValue() >= getOperatingMode().intValue())
 			{
 				if(siteNodeVersionCandidate.getOwningSiteNode().getSiteNodeId().intValue() == siteNodeId.intValue())
@@ -523,11 +522,11 @@ public class NodeDeliveryController extends BaseDeliveryController
 		Integer siteNodeVersionId = (Integer)CacheController.getCachedObject("latestSiteNodeVersionCache", versionKey);
 		if(siteNodeVersionId != null)
 		{
-		    getLogger().info("There was a cached sitenode version id:" + siteNodeVersionId);
+		    logger.info("There was a cached sitenode version id:" + siteNodeVersionId);
 		    //System.out.println("There was a cached content version id:" + contentVersionId);
 		    siteNodeVersion = (SiteNodeVersion)getObjectWithId(SiteNodeVersionImpl.class, siteNodeVersionId, db);
 		    //System.out.println("Loaded the version from cache instead of querying it:" + contentVersionId);
-		    //getLogger().info("contentVersion read");
+		    //logger.info("contentVersion read");
 		}
 		else
 		{
@@ -562,22 +561,22 @@ public class NodeDeliveryController extends BaseDeliveryController
 	public SiteNodeVO getParentSiteNode(Database db, Integer siteNodeId) throws SystemException
 	{
 		String key = "" + siteNodeId;
-		getLogger().info("key getParentSiteNode:" + key);
+		logger.info("key getParentSiteNode:" + key);
 		Object object = CacheController.getCachedObject("parentSiteNodeCache", key);
 		SiteNodeVO parentSiteNodeVO = null;
-		getLogger().info("object:" + object);
+		logger.info("object:" + object);
 		if(object instanceof NullObject)
 		{
-			getLogger().info("There was an cached parentSiteNodeVO but it was null:" + object);
+			logger.info("There was an cached parentSiteNodeVO but it was null:" + object);
 		}
 		else if(object != null)
 		{
-			getLogger().info("There was an cached parentSiteNodeVO:" + parentSiteNodeVO);
+			logger.info("There was an cached parentSiteNodeVO:" + parentSiteNodeVO);
 			parentSiteNodeVO = (SiteNodeVO)object;
 		}
 		else
 		{
-			getLogger().info("There was no cached parentSiteNodeVO:" + parentSiteNodeVO);
+			logger.info("There was no cached parentSiteNodeVO:" + parentSiteNodeVO);
 			
 			SiteNode siteNode = (SiteNode)getObjectWithId(SmallSiteNodeImpl.class, siteNodeId, db);
             SiteNode parentSiteNode = siteNode.getParentSiteNode();
@@ -585,11 +584,11 @@ public class NodeDeliveryController extends BaseDeliveryController
             {
                 parentSiteNodeVO = parentSiteNode.getValueObject();
             	CacheController.cacheObject("parentSiteNodeCache", key, parentSiteNodeVO);
-    			getLogger().info("Caching parentSiteNodeVO:" + parentSiteNodeVO);
+    			logger.info("Caching parentSiteNodeVO:" + parentSiteNodeVO);
             }
             else
             {
-                getLogger().info("Caching parentSiteNodeVO: NullObject");
+                logger.info("Caching parentSiteNodeVO: NullObject");
                 CacheController.cacheObject("parentSiteNodeCache", key, new NullObject());
             }
             
@@ -606,22 +605,22 @@ public class NodeDeliveryController extends BaseDeliveryController
 	public SiteNodeVO getParentSiteNodeForPageCache(Database db, Integer siteNodeId) throws SystemException
 	{
 		String key = "" + siteNodeId;
-		getLogger().info("key getParentSiteNode:" + key);
+		logger.info("key getParentSiteNode:" + key);
 		Object object = CacheController.getCachedObject("pageCacheParentSiteNodeCache", key);
 		SiteNodeVO parentSiteNodeVO = null;
-		getLogger().info("object:" + object);
+		logger.info("object:" + object);
 		if(object instanceof NullObject)
 		{
-			getLogger().info("There was an cached parentSiteNodeVO but it was null:" + object);
+			logger.info("There was an cached parentSiteNodeVO but it was null:" + object);
 		}
 		else if(object != null)
 		{
-			getLogger().info("There was an cached parentSiteNodeVO:" + parentSiteNodeVO);
+			logger.info("There was an cached parentSiteNodeVO:" + parentSiteNodeVO);
 			parentSiteNodeVO = (SiteNodeVO)object;
 		}
 		else
 		{
-			getLogger().info("There was no cached parentSiteNodeVO:" + parentSiteNodeVO);
+			logger.info("There was no cached parentSiteNodeVO:" + parentSiteNodeVO);
 			
 			SiteNode siteNode = (SiteNode)getObjectWithId(SmallSiteNodeImpl.class, siteNodeId, db);
             SiteNode parentSiteNode = siteNode.getParentSiteNode();
@@ -629,11 +628,11 @@ public class NodeDeliveryController extends BaseDeliveryController
             {
                 parentSiteNodeVO = parentSiteNode.getValueObject();
             	CacheController.cacheObject("pageCacheParentSiteNodeCache", key, parentSiteNodeVO);
-    			getLogger().info("Caching parentSiteNodeVO:" + parentSiteNodeVO);
+    			logger.info("Caching parentSiteNodeVO:" + parentSiteNodeVO);
             }
             else
             {
-                getLogger().info("Caching parentSiteNodeVO: NullObject");
+                logger.info("Caching parentSiteNodeVO: NullObject");
                 CacheController.cacheObject("pageCacheParentSiteNodeCache", key, new NullObject());
             }
             
@@ -673,7 +672,7 @@ public class NodeDeliveryController extends BaseDeliveryController
 		}
 		catch(Exception e)
 		{
-			getLogger().warn("An error occurred trying to get if the siteNodeVersion has disabled pageCache:" + e.getMessage(), e);
+			logger.warn("An error occurred trying to get if the siteNodeVersion has disabled pageCache:" + e.getMessage(), e);
 		}
 				
 		return isPageCacheDisabled;
@@ -684,6 +683,15 @@ public class NodeDeliveryController extends BaseDeliveryController
 	 */
 	
 	public String getPageCacheKey(Database db, HttpSession session, HttpServletRequest request, Integer siteNodeId, Integer languageId, Integer contentId, String userAgent, String queryString, String extra)
+	{
+		return getPageCacheKey(db, session, request, siteNodeId, languageId, contentId, userAgent, queryString, extra, true);
+	}
+	
+	/**
+	 * This method returns the pageCacheKey for the page.
+	 */
+	
+	public String getPageCacheKey(Database db, HttpSession session, HttpServletRequest request, Integer siteNodeId, Integer languageId, Integer contentId, String userAgent, String queryString, String extra, boolean includeOriginalRequestURL)
 	{
 	    String pageKey = CacheController.getPageCacheKey(session, request, siteNodeId, languageId, contentId, userAgent, queryString, extra);
 	    try
@@ -759,7 +767,7 @@ public class NodeDeliveryController extends BaseDeliveryController
 		}
 		catch(Exception e)
 		{
-			getLogger().warn("An error occurred trying to get if the siteNodeVersion had a different pageCacheKey:" + e.getMessage(), e);
+			logger.warn("An error occurred trying to get if the siteNodeVersion had a different pageCacheKey:" + e.getMessage(), e);
 		}
 
 		return pageKey;
@@ -771,7 +779,7 @@ public class NodeDeliveryController extends BaseDeliveryController
 	
 	public boolean getIsEditOnSightDisabled(Database db, Integer siteNodeId)
 	{
-		getLogger().info("getIsEditOnSightDisabled:" + siteNodeId);
+		logger.info("getIsEditOnSightDisabled:" + siteNodeId);
 		
 		boolean isEditOnSightDisabled = false;
 		
@@ -795,10 +803,10 @@ public class NodeDeliveryController extends BaseDeliveryController
 		}
 		catch(Exception e)
 		{
-			getLogger().warn("An error occurred trying to get if the siteNodeVersion has disabled pageCache:" + e.getMessage(), e);
+			logger.warn("An error occurred trying to get if the siteNodeVersion has disabled pageCache:" + e.getMessage(), e);
 		}
 			
-		getLogger().info("getIsEditOnSightDisabled:" + isEditOnSightDisabled);
+		logger.info("getIsEditOnSightDisabled:" + isEditOnSightDisabled);
 		
 		return isEditOnSightDisabled;
 	}
@@ -832,7 +840,7 @@ public class NodeDeliveryController extends BaseDeliveryController
 		}
 		catch(Exception e)
 		{
-			getLogger().warn("An error occurred trying to get if the siteNodeVersion has disabled pageCache:" + e.getMessage(), e);
+			logger.warn("An error occurred trying to get if the siteNodeVersion has disabled pageCache:" + e.getMessage(), e);
 		}
 				
 		return isPageProtected;
@@ -850,10 +858,10 @@ public class NodeDeliveryController extends BaseDeliveryController
 		try
 		{
 			SiteNodeVersionVO siteNodeVersionVO = getLatestActiveSiteNodeVersionVO(db, siteNodeId);
-			getLogger().info("siteNodeId:" + siteNodeId);
+			logger.info("siteNodeId:" + siteNodeId);
 			if(siteNodeVersionVO != null && siteNodeVersionVO.getIsProtected() != null)
 			{	
-				getLogger().info("siteNodeVersionVO:" + siteNodeVersionVO.getId() + ":" + siteNodeVersionVO.getIsProtected());
+				logger.info("siteNodeVersionVO:" + siteNodeVersionVO.getId() + ":" + siteNodeVersionVO.getIsProtected());
 				if(siteNodeVersionVO.getIsProtected().intValue() == NO.intValue())
 					protectedSiteNodeVersionId = null;
 				else if(siteNodeVersionVO.getIsProtected().intValue() == YES.intValue())
@@ -869,7 +877,7 @@ public class NodeDeliveryController extends BaseDeliveryController
 		}
 		catch(Exception e)
 		{
-			getLogger().warn("An error occurred trying to get if the siteNodeVersion has disabled pageCache:" + e.getMessage(), e);
+			logger.warn("An error occurred trying to get if the siteNodeVersion has disabled pageCache:" + e.getMessage(), e);
 		}
 				
 		return protectedSiteNodeVersionId;
@@ -887,10 +895,10 @@ public class NodeDeliveryController extends BaseDeliveryController
 		try
 		{
 			SiteNodeVersionVO siteNodeVersionVO = this.getLatestActiveSiteNodeVersionVOForPageCache(db, siteNodeId);
-			getLogger().info("siteNodeId:" + siteNodeId);
+			logger.info("siteNodeId:" + siteNodeId);
 			if(siteNodeVersionVO != null && siteNodeVersionVO.getIsProtected() != null)
 			{	
-				getLogger().info("siteNodeVersionVO:" + siteNodeVersionVO.getId() + ":" + siteNodeVersionVO.getIsProtected());
+				logger.info("siteNodeVersionVO:" + siteNodeVersionVO.getId() + ":" + siteNodeVersionVO.getIsProtected());
 				if(siteNodeVersionVO.getIsProtected().intValue() == NO.intValue())
 					protectedSiteNodeVersionId = null;
 				else if(siteNodeVersionVO.getIsProtected().intValue() == YES.intValue())
@@ -906,7 +914,7 @@ public class NodeDeliveryController extends BaseDeliveryController
 		}
 		catch(Exception e)
 		{
-			getLogger().warn("An error occurred trying to get if the siteNodeVersion has disabled pageCache:" + e.getMessage(), e);
+			logger.warn("An error occurred trying to get if the siteNodeVersion has disabled pageCache:" + e.getMessage(), e);
 		}
 				
 		return protectedSiteNodeVersionId;
@@ -924,10 +932,10 @@ public class NodeDeliveryController extends BaseDeliveryController
 		try
 		{
 			SiteNodeVersionVO siteNodeVersionVO = this.getLatestActiveSiteNodeVersionVOForPageCache(db, siteNodeId);
-			getLogger().info("siteNodeId:" + siteNodeId);
+			logger.info("siteNodeId:" + siteNodeId);
 			if(siteNodeVersionVO != null && siteNodeVersionVO.getDisableLanguages() != null)
 			{	
-				getLogger().info("siteNodeVersionVO:" + siteNodeVersionVO.getId() + ":" + siteNodeVersionVO.getDisableLanguages());
+				logger.info("siteNodeVersionVO:" + siteNodeVersionVO.getId() + ":" + siteNodeVersionVO.getDisableLanguages());
 				if(siteNodeVersionVO.getDisableLanguages().intValue() == NO.intValue())
 				    disabledLanguagesSiteNodeVersionId = null;
 				else if(siteNodeVersionVO.getDisableLanguages().intValue() == YES.intValue())
@@ -943,7 +951,7 @@ public class NodeDeliveryController extends BaseDeliveryController
 		}
 		catch(Exception e)
 		{
-			getLogger().warn("An error occurred trying to get if the siteNodeVersion has disabled languages:" + e.getMessage(), e);
+			logger.warn("An error occurred trying to get if the siteNodeVersion has disabled languages:" + e.getMessage(), e);
 		}
 				
 		return disabledLanguagesSiteNodeVersionId;
@@ -976,8 +984,8 @@ public class NodeDeliveryController extends BaseDeliveryController
 	
 	public ContentVO getBoundContent(Database db, InfoGluePrincipal infoGluePrincipal, Integer siteNodeId, Integer languageId, boolean useLanguageFallback, String availableServiceBindingName, DeliveryContext deliveryContext) throws SystemException, Exception
 	{
-		getLogger().info("siteNodeId:" + siteNodeId);
-		getLogger().info("availableServiceBindingName:" + availableServiceBindingName);
+		logger.info("siteNodeId:" + siteNodeId);
+		logger.info("availableServiceBindingName:" + availableServiceBindingName);
 		List contents = getBoundContents(db, infoGluePrincipal, siteNodeId, languageId, useLanguageFallback, availableServiceBindingName, USE_INHERITANCE, true, deliveryContext);
 		return (contents != null && contents.size() > 0) ? (ContentVO)contents.get(0) : null;
 	}
@@ -1003,7 +1011,7 @@ public class NodeDeliveryController extends BaseDeliveryController
 	    }
 	    catch(Exception e)
 	    {
-	        getLogger().error("An error occurred so we should not complete the transaction:" + e, e);
+	        logger.error("An error occurred so we should not complete the transaction:" + e, e);
 			rollbackTransaction(db);
 	        throw new SystemException(e.getMessage());
 	    }
@@ -1020,17 +1028,17 @@ public class NodeDeliveryController extends BaseDeliveryController
 	{
 		String boundContentsKey = "" + infoGluePrincipal.getName() + "_" + siteNodeId + "_" + languageId + "_" + useLanguageFallback + "_" + includeFolders + "_" + availableServiceBindingName + "_" + USE_INHERITANCE;
 		//String boundContentsKey = "" + siteNodeId + "_" + availableServiceBindingName + "_" + USE_INHERITANCE;
-		getLogger().info("boundContentsKey:" + boundContentsKey);
+		logger.info("boundContentsKey:" + boundContentsKey);
 		List boundContentVOList = (List)CacheController.getCachedObject("boundContentCache", boundContentsKey);
 		if(boundContentVOList != null)
 		{
-			getLogger().info("There was an cached content boundContentVOList:" + boundContentVOList.size());
+			logger.info("There was an cached content boundContentVOList:" + boundContentVOList.size());
 		}
 		else
 		{
 		    boundContentVOList = new ArrayList();
 			
-			getLogger().info("Coming in with:" + siteNodeId + " and " + availableServiceBindingName);
+			logger.info("Coming in with:" + siteNodeId + " and " + availableServiceBindingName);
 
 			Integer metaInfoContentId = null;
 			if(availableServiceBindingName.equalsIgnoreCase("Meta information"))
@@ -1062,20 +1070,20 @@ public class NodeDeliveryController extends BaseDeliveryController
 					
 					List contents = service.selectMatchingEntities(arguments, db);
 					
-					getLogger().info("Found bound contents:" + contents.size());	        		
+					logger.info("Found bound contents:" + contents.size());	        		
 					if(contents != null)
 					{
 						Iterator i = contents.iterator();
 						while(i.hasNext())
 						{
 							ContentVO candidate = (ContentVO)i.next();
-							getLogger().info("candidate:" + candidate.getName());
+							logger.info("candidate:" + candidate.getName());
 							//Checking to see that now is between the contents publish and expire-date. 
 							//if(ContentDeliveryController.getContentDeliveryController().isValidContent(candidate.getId(), languageId, useLanguageFallback, infoGluePrincipal))
 							//	boundContentVOList.add(candidate);        		
 							Content candidateContent = (Content)getObjectWithId(ContentImpl.class, candidate.getId(), db); 
 							
-							getLogger().info("candidateContent:" + candidateContent.getName());
+							logger.info("candidateContent:" + candidateContent.getName());
 							if(ContentDeliveryController.getContentDeliveryController().isValidContent(infoGluePrincipal, candidateContent, languageId, useLanguageFallback, includeFolders, db, deliveryContext))
 							{
 								deliveryContext.addUsedContent("content_" + candidate.getId());
@@ -1107,10 +1115,10 @@ public class NodeDeliveryController extends BaseDeliveryController
 		
 		deliveryContext.addUsedContent("selectiveCacheUpdateNonApplicable");
 		
-    	getLogger().info("Coming in with:" + siteNodeId + " and " + availableServiceBindingName + " and " + searchRecursive + " and " + maximumNumberOfLevels + " and " + sortAttribute + " and " + sortOrder);
+    	logger.info("Coming in with:" + siteNodeId + " and " + availableServiceBindingName + " and " + searchRecursive + " and " + maximumNumberOfLevels + " and " + sortAttribute + " and " + sortOrder);
         
         ContentVO contentVO = getBoundContent(db, infoGluePrincipal, siteNodeId, languageId, useLanguageFallback, availableServiceBindingName, includeFolders, deliveryContext);
-        getLogger().info("contentVO:" + contentVO);
+        logger.info("contentVO:" + contentVO);
         
         if(contentVO != null)
         {
@@ -1166,11 +1174,11 @@ public class NodeDeliveryController extends BaseDeliveryController
 	public List getBoundSiteNodes(Database db, Integer siteNodeId, String availableServiceBindingName) throws SystemException, Exception
 	{
 		String boundSiteNodesKey = "" + siteNodeId + "_" + availableServiceBindingName + "_" + USE_INHERITANCE;
-		getLogger().info("boundSiteNodesKey:" + boundSiteNodesKey);
+		logger.info("boundSiteNodesKey:" + boundSiteNodesKey);
 		List boundSiteNodeVOList = (List)CacheController.getCachedObject("boundSiteNodeCache", boundSiteNodesKey);
 		if(boundSiteNodeVOList != null)
 		{
-			getLogger().info("There was an cached content boundSiteNodeVOList:" + boundSiteNodeVOList.size());
+			logger.info("There was an cached content boundSiteNodeVOList:" + boundSiteNodeVOList.size());
 		}
 		else
 		{
@@ -1193,7 +1201,7 @@ public class NodeDeliveryController extends BaseDeliveryController
     		
 				List siteNodes = service.selectMatchingEntities(arguments, db);
     		
-				getLogger().info("Found bound siteNodes:" + siteNodes.size());
+				logger.info("Found bound siteNodes:" + siteNodes.size());
 				if(siteNodes != null)
 				{
 					Iterator i = siteNodes.iterator();
@@ -1240,6 +1248,70 @@ public class NodeDeliveryController extends BaseDeliveryController
         return urlComposer.composePageUrlAfterLanguageChange(db, infoGluePrincipal, siteNodeId, languageId, contentId, deliveryContext);
     } 
 	
+	public String getPageAsDigitalAssetUrl(Database database, InfoGluePrincipal principal, Integer siteNodeId, Integer languageId, Integer contentId, DeliveryContext context) throws SystemException
+	{
+		String pageAsDigitalAssetUrl = null;
+		
+		boolean fullUrl = context.getUseFullUrl();
+		context.setUseFullUrl(true);
+						
+		try
+		{			
+			String pageCacheKey = getPageCacheKey(database, context.getHttpServletRequest().getSession(), context.getHttpServletRequest(), siteNodeId, languageId, contentId, context.getHttpServletRequest().getHeader("User-Agent"), "", "", false);
+			System.out.println("pageCacheKey:" + pageCacheKey);
+			String fileName = pageCacheKey;
+			
+			String pageContent = null;
+			
+			int i = 0;
+			String filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i);
+			while(filePath != null)
+			{
+				try
+				{
+					if(pageContent == null)
+					{
+						String pageUrl = getPageUrl(database, principal, siteNodeId, languageId, contentId, context);
+						System.out.println("pageUrl:" + pageUrl);
+
+						Map headers = new HashMap();
+						headers.put("User-Agent", context.getHttpServletRequest().getHeader("User-Agent") + ";Java");
+						headers.put("Accept-Language", context.getHttpServletRequest().getHeader("Accept-Language"));
+						
+						pageContent = DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpUrlToFile(pageUrl, headers, pageCacheKey, filePath);
+					}
+					else
+					{
+						DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpAttributeToFile(pageContent, pageCacheKey, filePath);
+					}	
+				}
+				catch(Exception e)
+				{
+					logger.warn("An file could not be written:" + e.getMessage(), e);
+				}
+			    
+			    i++;
+				filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i);
+			}
+
+			SiteNode siteNode = NodeDeliveryController.getNodeDeliveryController(siteNodeId, languageId, contentId).getSiteNode(database, siteNodeId);
+			String dnsName = CmsPropertyHandler.getWebServerAddress();
+			if(siteNode != null && siteNode.getRepository().getDnsName() != null && !siteNode.getRepository().getDnsName().equals(""))
+				dnsName = siteNode.getRepository().getDnsName();
+
+			pageAsDigitalAssetUrl = urlComposer.composeDigitalAssetUrl(dnsName, fileName, context); 
+		}
+		catch(Exception e)
+		{
+			logger.warn("An error occurred when we fetched the url which we wanted to persist as an digital asset: " + e.getMessage(), e);
+			throw new SystemException("An error occurred when we fetched the url which we wanted to persist as an digital asset: " + e.getMessage(), e);
+		}
+		
+		context.setUseFullUrl(fullUrl);
+
+		return pageAsDigitalAssetUrl;
+	}
+
 	/**
 	 * This method constructs a string representing the path to the page with respect to where in the
 	 * structure the page is. It also takes the page title into consideration. It is done by recursively going
@@ -1308,15 +1380,15 @@ public class NodeDeliveryController extends BaseDeliveryController
     public Integer getSiteNodeId(Database db, InfoGluePrincipal infogluePrincipal, Integer repositoryId, String path, String attributeName, Integer parentSiteNodeId, Integer languageId, DeliveryContext deliveryContext) throws SystemException, Exception
     {
         /*
-        getLogger().info("repositoryId:" + repositoryId);
-        getLogger().info("navigationTitle:" + navigationTitle);
-        getLogger().info("parentSiteNodeId:" + parentSiteNodeId);
-        getLogger().info("languageId:" + languageId);
+        logger.info("repositoryId:" + repositoryId);
+        logger.info("navigationTitle:" + navigationTitle);
+        logger.info("parentSiteNodeId:" + parentSiteNodeId);
+        logger.info("languageId:" + languageId);
         */
     	if (repositoryId == null || repositoryId.intValue() == -1) 
         {
             repositoryId = RepositoryDeliveryController.getRepositoryDeliveryController().getMasterRepository(db).getRepositoryId();
-            getLogger().info("RepositoryId not specifed - Resolved master repository to "+repositoryId);
+            logger.info("RepositoryId not specifed - Resolved master repository to "+repositoryId);
         }
         
         if (repositoryId == null)
@@ -1358,12 +1430,12 @@ public class NodeDeliveryController extends BaseDeliveryController
 	        ContentVO content = ContentDeliveryController.getContentDeliveryController().getContentVO(db, siteNodeVO.getMetaInfoContentId(), deliveryContext);
 	        if(content != null) 
 	        {
-	            //getLogger().info("Content "+content.getContentId());
+	            //logger.info("Content "+content.getContentId());
 	            String pathCandidate = null;
 	            for (int i=0;i<languages.size();i++) 
 	            {
 	                LanguageVO language = (LanguageVO) languages.get(i);
-	                //getLogger().info("Language : "+language.getLanguageCode());
+	                //logger.info("Language : "+language.getLanguageCode());
 	                
 	                if(attributeName.equals("SiteNode.name"))
 	                    pathCandidate = siteNodeVO.getName();
@@ -1375,7 +1447,7 @@ public class NodeDeliveryController extends BaseDeliveryController
 	                        pathCandidate = ContentDeliveryController.getContentDeliveryController().getContentAttribute(db, content.getContentId(), language.getLanguageId(), NAV_TITLE_ATTRIBUTE_NAME, siteNodeVO.getSiteNodeId(), true, deliveryContext, infogluePrincipal, false);
 	                }
 	                
-	                getLogger().info(attributeName + " ["+pathCandidate.trim()+"]==[" + path + "]");
+	                logger.info(attributeName + " ["+pathCandidate.trim()+"]==[" + path + "]");
 	                if (pathCandidate != null && pathCandidate.toLowerCase().trim().equals(path.toLowerCase())) 
 	                {
 	                    return siteNodeVO.getSiteNodeId();
@@ -1407,7 +1479,7 @@ public class NodeDeliveryController extends BaseDeliveryController
 	        sb.append("and s.repository.repositoryId = $").append((bindings.size()+1)).append(" ");
 	        bindings.add(repositoryId);
 	
-	        getLogger().info("OQL ["+sb.toString()+"]");
+	        logger.info("OQL ["+sb.toString()+"]");
 	        OQLQuery oql = db.getOQLQuery( sb.toString() );
 	        for (int i=0;i<bindings.size();i++) 
 	        {
@@ -1428,12 +1500,12 @@ public class NodeDeliveryController extends BaseDeliveryController
 	            ContentVO content = getBoundContent(db, infogluePrincipal, siteNode.getSiteNodeId(), languageId, true, META_INFO_BINDING_NAME, deliveryContext);
 	            if(content != null) 
 	            {
-	                //getLogger().info("Content "+content.getContentId());
+	                //logger.info("Content "+content.getContentId());
 	                String pathCandidate = null;
 	                for (int i=0;i<languages.size();i++) 
 	                {
 	                    LanguageVO language = (LanguageVO) languages.get(i);
-	                    //getLogger().info("Language : "+language.getLanguageCode());
+	                    //logger.info("Language : "+language.getLanguageCode());
 	                    
 	                    if(attributeName.equals("SiteNode.name"))
 	                        pathCandidate = siteNode.getName();
@@ -1445,7 +1517,7 @@ public class NodeDeliveryController extends BaseDeliveryController
 		                        pathCandidate = ContentDeliveryController.getContentDeliveryController().getContentAttribute(db, content.getContentId(), language.getLanguageId(), NAV_TITLE_ATTRIBUTE_NAME, siteNode.getSiteNodeId(), true, deliveryContext, infogluePrincipal, false);
 	                    }
 	                    
-	                    getLogger().info(attributeName + " ["+pathCandidate.trim()+"]==[" + path + "]");
+	                    logger.info(attributeName + " ["+pathCandidate.trim()+"]==[" + path + "]");
 	                    if (pathCandidate != null && pathCandidate.toLowerCase().trim().equals(path.toLowerCase())) 
 	                    {
 	                        return siteNode.getSiteNodeId();
@@ -1508,13 +1580,13 @@ public class NodeDeliveryController extends BaseDeliveryController
         int idx = path.length;
         while (idx >= 0) 
         {
-        	//getLogger().info("Looking for cache nodeName at index "+idx);
+        	//logger.info("Looking for cache nodeName at index "+idx);
             siteNodeId = uriCache.getCachedSiteNodeId(repositoryId, path, idx);
             if (siteNodeId != null)
                 break;
             idx = idx - 1;
         }
-        //getLogger().info("Idx = "+idx);
+        //logger.info("Idx = "+idx);
         for (int i = idx;i < path.length; i++) 
         {
             if (i < 0) 
@@ -1647,21 +1719,21 @@ public class NodeDeliveryController extends BaseDeliveryController
 	    SiteNodeVO siteNodeVO = null;
 
         String key = "" + repositoryId;
-		getLogger().info("key in getRootSiteNode:" + key);
+		logger.info("key in getRootSiteNode:" + key);
 		siteNodeVO = (SiteNodeVO)CacheController.getCachedObject("rootSiteNodeCache", key);
 		if(siteNodeVO != null)
 		{
-		    getLogger().info("There was an cached master root siteNode:" + siteNodeVO.getName());
+		    logger.info("There was an cached master root siteNode:" + siteNodeVO.getName());
 		}
 		else
 		{
 			if(repositoryId == null)
 			{
 				repositoryId = RepositoryDeliveryController.getRepositoryDeliveryController().getMasterRepository(db).getRepositoryId();
-				getLogger().info("Fetched name of master repository as none were given:" + repositoryId);
+				logger.info("Fetched name of master repository as none were given:" + repositoryId);
 			}
 			
-	        getLogger().info("Fetching the root siteNode for the repository " + repositoryId);
+	        logger.info("Fetching the root siteNode for the repository " + repositoryId);
 			OQLQuery oql = db.getOQLQuery( "SELECT c FROM org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl c WHERE is_undefined(c.parentSiteNode) AND c.repository = $1");
 			oql.bind(repositoryId);
 			
@@ -1670,13 +1742,13 @@ public class NodeDeliveryController extends BaseDeliveryController
 	    	if (results.hasMore()) 
 	        {
 	        	siteNodeVO = ((SiteNode)results.next()).getValueObject();
-				getLogger().info("The root node was found:" + siteNodeVO.getName());
+				logger.info("The root node was found:" + siteNodeVO.getName());
 	        }
 
 	    	results.close();
 			oql.close();
 
-			getLogger().info("siteNodeVO:" + siteNodeVO);
+			logger.info("siteNodeVO:" + siteNodeVO);
 
 			CacheController.cacheObject("rootSiteNodeCache", key, siteNodeVO);
 		}
@@ -1700,11 +1772,11 @@ public class NodeDeliveryController extends BaseDeliveryController
 		}
 
         String key = "" + siteNodeId;
-		getLogger().info("key in getChildSiteNodes:" + key);
+		logger.info("key in getChildSiteNodes:" + key);
 		List siteNodeVOList = (List)CacheController.getCachedObject("childSiteNodesCache", key);
 		if(siteNodeVOList != null)
 		{
-		    getLogger().info("There was a cached list of child sitenodes:" + siteNodeVOList.size());
+		    logger.info("There was a cached list of child sitenodes:" + siteNodeVOList.size());
 		}
 		else
 		{
@@ -1866,7 +1938,7 @@ public class NodeDeliveryController extends BaseDeliveryController
 		}
 		catch(Exception e)
 		{
-			getLogger().warn("The sorting of qualifyers failed:" + e.getMessage(), e);
+			logger.warn("The sorting of qualifyers failed:" + e.getMessage(), e);
 		}
 			
 		return sortedQualifyers;

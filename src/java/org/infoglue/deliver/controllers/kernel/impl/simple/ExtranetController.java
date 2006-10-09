@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.controllers.kernel.impl.simple.GroupPropertiesController;
 import org.infoglue.cms.controllers.kernel.impl.simple.RolePropertiesController;
@@ -59,6 +60,8 @@ import org.infoglue.deliver.applications.databeans.DeliveryContext;
 
 public class ExtranetController extends BaseDeliveryController
 {
+    private final static Logger logger = Logger.getLogger(ExtranetController.class.getName());
+
 	/**
 	 * Private constructor to enforce factory-use
 	 */
@@ -110,13 +113,13 @@ public class ExtranetController extends BaseDeliveryController
 			authenticationModule.setTransactionObject(db);
 			
 			String authenticatedUserName = authenticationModule.authenticateUser(request);
-			getLogger().info("authenticatedUserName:" + authenticatedUserName);
+			logger.info("authenticatedUserName:" + authenticatedUserName);
 			principal = UserControllerProxy.getController(db).getUser(authenticatedUserName);
-			getLogger().info("principal:" + principal);
+			logger.info("principal:" + principal);
 		}
 		catch(Exception e)
 		{
-			getLogger().error("An error occurred so we should not complete the transaction:" + e, e);
+			logger.error("An error occurred so we should not complete the transaction:" + e, e);
 			throw new SystemException("The login process failed: " + e.getMessage(), e);
 		}
 		
@@ -136,13 +139,13 @@ public class ExtranetController extends BaseDeliveryController
 		try
 		{			
 			String authenticatedUserName = AuthenticationModule.getAuthenticationModule(null, null).authenticateUser(request);
-			getLogger().info("authenticatedUserName:" + authenticatedUserName);
+			logger.info("authenticatedUserName:" + authenticatedUserName);
 			principal = UserControllerProxy.getController().getUser(authenticatedUserName);
-			getLogger().info("principal:" + principal);
+			logger.info("principal:" + principal);
 		}
 		catch(Exception e)
 		{
-			getLogger().error("An error occurred so we should not complete the transaction:" + e, e);
+			logger.error("An error occurred so we should not complete the transaction:" + e, e);
 			throw new SystemException("The login process failed: " + e.getMessage(), e);
 		}
 		
@@ -166,14 +169,14 @@ public class ExtranetController extends BaseDeliveryController
 			{
 				ExtranetAccessVO extranetAccessVO = (ExtranetAccessVO)extranetAccessVOListIterator.next();
 				List roles = ((InfoGluePrincipal)principal).getRoles();
-				getLogger().info("ExtranetAccessVO:" + extranetAccessVO.getRoleId());
-				getLogger().info("name:" + extranetAccessVO.getName());
-				getLogger().info("value:" + extranetAccessVO.getValue());
+				logger.info("ExtranetAccessVO:" + extranetAccessVO.getRoleId());
+				logger.info("name:" + extranetAccessVO.getName());
+				logger.info("value:" + extranetAccessVO.getValue());
 				Iterator rolesIterator = roles.iterator();
 				while(rolesIterator.hasNext())
 				{
 					RoleVO roleVO = (RoleVO)rolesIterator.next();
-					getLogger().info("roleVO:" + roleVO.getRoleId());
+					logger.info("roleVO:" + roleVO.getRoleId());
 					if(roleVO.getRoleId().intValue() == extranetAccessVO.getRoleId().intValue() && extranetAccessVO.getHasReadAccess().booleanValue())
 					{
 						isPrincipalAuthorized = true;
@@ -192,7 +195,7 @@ public class ExtranetController extends BaseDeliveryController
 			}
 		}
 		
-		getLogger().info("isPrincipalAuthorized:" + isPrincipalAuthorized);
+		logger.info("isPrincipalAuthorized:" + isPrincipalAuthorized);
 		
 		return isPrincipalAuthorized;
 	}
@@ -216,14 +219,14 @@ public class ExtranetController extends BaseDeliveryController
 			{
 				ExtranetAccessVO extranetAccessVO = (ExtranetAccessVO)extranetAccessVOListIterator.next();
 				List roles = ((InfoGluePrincipal)principal).getRoles();
-				getLogger().info("ExtranetAccessVO:" + extranetAccessVO.getRoleId());
-				getLogger().info("name:" + extranetAccessVO.getName());
-				getLogger().info("value:" + extranetAccessVO.getValue());
+				logger.info("ExtranetAccessVO:" + extranetAccessVO.getRoleId());
+				logger.info("name:" + extranetAccessVO.getName());
+				logger.info("value:" + extranetAccessVO.getValue());
 				Iterator rolesIterator = roles.iterator();
 				while(rolesIterator.hasNext())
 				{
 					RoleVO roleVO = (RoleVO)rolesIterator.next();
-					getLogger().info("roleVO:" + roleVO.getRoleId());
+					logger.info("roleVO:" + roleVO.getRoleId());
 					if(roleVO.getRoleId().intValue() == extranetAccessVO.getRoleId().intValue() && extranetAccessVO.getHasWriteAccess().booleanValue())
 					{
 						isPrincipalAuthorized = true;
@@ -242,7 +245,7 @@ public class ExtranetController extends BaseDeliveryController
 			}
 		}
 		
-		getLogger().info("isPrincipalAuthorized:" + isPrincipalAuthorized);
+		logger.info("isPrincipalAuthorized:" + isPrincipalAuthorized);
 		
 		return isPrincipalAuthorized;
 	}
@@ -277,7 +280,7 @@ public class ExtranetController extends BaseDeliveryController
 				if(node != null)
 				{
 					value = node.getStringValue();
-					getLogger().info("Getting value: " + value);
+					logger.info("Getting value: " + value);
 					if(value != null && escapeSpecialCharacters)
 						value = new VisualFormatter().escapeHTML(value);
 					break;
@@ -309,7 +312,7 @@ public class ExtranetController extends BaseDeliveryController
 						if(node != null)
 						{
 							value = node.getStringValue();
-							getLogger().info("Getting value: " + value);
+							logger.info("Getting value: " + value);
 							if(value != null && escapeSpecialCharacters)
 								value = new VisualFormatter().escapeHTML(value);
 							break;
@@ -351,7 +354,7 @@ public class ExtranetController extends BaseDeliveryController
 						if(node != null)
 						{
 							value = node.getStringValue();
-							getLogger().info("Getting value: " + value);
+							logger.info("Getting value: " + value);
 							if(value != null && escapeSpecialCharacters)
 								value = new VisualFormatter().escapeHTML(value);
 							break;
@@ -388,30 +391,30 @@ public class ExtranetController extends BaseDeliveryController
 			return null;
 
 		Collection userPropertiesList = UserPropertiesController.getController().getUserPropertiesList(infoGluePrincipal.getName(), languageId, db, true);
-		getLogger().info("userProperties:" + userPropertiesList.size());
+		logger.info("userProperties:" + userPropertiesList.size());
 		Iterator userPropertiesListIterator = userPropertiesList.iterator();
 		while(userPropertiesListIterator.hasNext())
 		{
 			UserProperties userProperties = (UserProperties)userPropertiesListIterator.next();
-			//getLogger().info("userProperties:" + userProperties.getValue());
-			//getLogger().info("propertyName:" + propertyName);
-			getLogger().info("userProperties:" + userProperties.getValue());
-			getLogger().info("assetKey:" + assetKey);
+			//logger.info("userProperties:" + userProperties.getValue());
+			//logger.info("propertyName:" + propertyName);
+			logger.info("userProperties:" + userProperties.getValue());
+			logger.info("assetKey:" + assetKey);
 
 			if(userProperties != null && userProperties.getLanguage().getLanguageId().equals(languageId))
 			{
 			    Collection assets = userProperties.getDigitalAssets();
-			    getLogger().info("assets:" + assets.size());
+			    logger.info("assets:" + assets.size());
 			    Iterator assetsIterator = assets.iterator();
 			    while(assetsIterator.hasNext())
 			    {
 			        DigitalAsset digitalAsset = (DigitalAsset)assetsIterator.next();
-			        getLogger().info("digitalAsset:" + digitalAsset.getAssetKey());
+			        logger.info("digitalAsset:" + digitalAsset.getAssetKey());
 			        if(digitalAsset.getAssetKey().equalsIgnoreCase(assetKey))
 			        {
 			            SiteNode siteNode = SiteNodeController.getController().getSiteNodeWithId(siteNodeId, db);
 			            assetUrl = DigitalAssetDeliveryController.getDigitalAssetDeliveryController().getAssetUrl(digitalAsset, siteNode.getRepository(), deliveryContext);
-			            getLogger().info("assetUrl:" + assetUrl);
+			            logger.info("assetUrl:" + assetUrl);
 			            break;
 			        }
 			    }

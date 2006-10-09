@@ -29,6 +29,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
+import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
 import org.exolab.castor.jdo.OQLQuery;
 import org.exolab.castor.jdo.QueryResults;
@@ -53,6 +54,7 @@ import org.infoglue.deliver.util.CacheController;
 
 public class LanguageDeliveryController extends BaseDeliveryController
 {
+    private final static Logger logger = Logger.getLogger(LanguageDeliveryController.class.getName());
 
 	/**
 	 * Private constructor to enforce factory-use
@@ -82,11 +84,11 @@ public class LanguageDeliveryController extends BaseDeliveryController
 			return null;
 			
 		String key = "" + languageId;
-		getLogger().info("key:" + key);
+		logger.info("key:" + key);
 		LanguageVO languageVO = (LanguageVO)CacheController.getCachedObject("languageCache", key);
 		if(languageVO != null)
 		{
-			getLogger().info("There was an cached languageVO:" + languageVO);
+			logger.info("There was an cached languageVO:" + languageVO);
 		}
 		else
 		{
@@ -113,11 +115,11 @@ public class LanguageDeliveryController extends BaseDeliveryController
 	public List getAvailableLanguagesForRepository(Database db, Integer repositoryId) throws SystemException, Exception
     {
 		String key = "" + repositoryId + "_allLanguages";
-		getLogger().info("key:" + key);
+		logger.info("key:" + key);
 		List list = (List)CacheController.getCachedObject("languageCache", key);
 		if(list != null)
 		{
-			getLogger().info("There was an cached list:" + list);
+			logger.info("There was an cached list:" + list);
 		}
 		else
 		{
@@ -148,11 +150,11 @@ public class LanguageDeliveryController extends BaseDeliveryController
 	
 	public List getAvailableLanguages(Database db, Integer siteNodeId) throws SystemException, Exception
 	{ 
-		getLogger().info("getAvailableLanguages for " + siteNodeId + " start.");
+		logger.info("getAvailableLanguages for " + siteNodeId + " start.");
 
 		List languageVOList = new ArrayList();
 
-        getLogger().info("siteNodeId:" + siteNodeId);
+        logger.info("siteNodeId:" + siteNodeId);
 
         SiteNode siteNode = (SiteNode)getObjectWithId(SiteNodeImpl.class, siteNodeId, db);
 			
@@ -161,10 +163,10 @@ public class LanguageDeliveryController extends BaseDeliveryController
 			Repository repository = siteNode.getRepository();
      		if(repository != null)
 			{
-     		    getLogger().info("repository:" + repository.getName());
+     		    logger.info("repository:" + repository.getName());
 
      		    Collection repositoryLanguages = repository.getRepositoryLanguages();
-     		    getLogger().info("repositoryLanguages:" + repositoryLanguages.size());
+     		    logger.info("repositoryLanguages:" + repositoryLanguages.size());
      			Iterator repositoryLanguagesIterator = repositoryLanguages.iterator();
      			while(repositoryLanguagesIterator.hasNext())
      			{
@@ -172,14 +174,14 @@ public class LanguageDeliveryController extends BaseDeliveryController
      				Language language = repositoryLanguage.getLanguage();
      				if(language != null)
      				{
-     					getLogger().info("Adding " + language.getName() + " to the list of available languages");
+     					logger.info("Adding " + language.getName() + " to the list of available languages");
          				languageVOList.add(language.getValueObject());
      				}
      			}
 			}
 		}
 
-		getLogger().info("getAvailableLanguages for " + siteNodeId + " end.");
+		logger.info("getAvailableLanguages for " + siteNodeId + " end.");
 
         return languageVOList;	
 	}
@@ -219,11 +221,11 @@ public class LanguageDeliveryController extends BaseDeliveryController
 	public LanguageVO getMasterLanguageForRepository(Database db, Integer repositoryId) throws SystemException, Exception
 	{ 
 		String languageKey = "" + repositoryId;
-		getLogger().info("languageKey in getMasterLanguageForRepository:" + languageKey);
+		logger.info("languageKey in getMasterLanguageForRepository:" + languageKey);
 		LanguageVO languageVO = (LanguageVO)CacheController.getCachedObject("masterLanguageCache", languageKey);
 		if(languageVO != null)
 		{
-			getLogger().info("There was an cached master language:" + languageVO.getName());
+			logger.info("There was an cached master language:" + languageVO.getName());
 		}
 		else
 		{
@@ -257,11 +259,11 @@ public class LanguageDeliveryController extends BaseDeliveryController
 		LanguageVO languageVO = null;
 
 		String languageKey = "" + repositoryId;
-		getLogger().info("languageKey in getMasterLanguageForRepository:" + languageKey);
+		logger.info("languageKey in getMasterLanguageForRepository:" + languageKey);
 		languageVO = (LanguageVO)CacheController.getCachedObject("masterLanguageCache", languageKey);
 		if(languageVO != null)
 		{
-			getLogger().info("There was an cached master language:" + languageVO.getName());
+			logger.info("There was an cached master language:" + languageVO.getName());
 		}
 		else
 		{
@@ -294,11 +296,11 @@ public class LanguageDeliveryController extends BaseDeliveryController
 	public LanguageVO getMasterLanguageForSiteNode(Database db, Integer siteNodeId) throws SystemException, Exception
 	{ 
 	    String languageKey = "siteNodeId_" + siteNodeId;
-		getLogger().info("languageKey in getMasterLanguageForSiteNode:" + languageKey);
+		logger.info("languageKey in getMasterLanguageForSiteNode:" + languageKey);
 		LanguageVO languageVO = (LanguageVO)CacheController.getCachedObject("masterLanguageCache", languageKey);
 		if(languageVO != null)
 		{
-		    getLogger().info("There was an cached master language:" + languageVO.getName());
+		    logger.info("There was an cached master language:" + languageVO.getName());
 		}
 		else
 		{
@@ -333,11 +335,11 @@ public class LanguageDeliveryController extends BaseDeliveryController
 	public Locale getLocaleWithId(Database db, Integer languageId)
 	{
 		String key = "" + languageId;
-		getLogger().info("key:" + key);
+		logger.info("key:" + key);
 		Locale locale = (Locale)CacheController.getCachedObject("localeCache", key);
 		if(locale != null)
 		{
-			getLogger().info("There was an cached locale:" + locale);
+			logger.info("There was an cached locale:" + locale);
 		}
 		else
 		{
@@ -352,7 +354,7 @@ public class LanguageDeliveryController extends BaseDeliveryController
 				} 
 				catch (Exception e) 
 				{
-					getLogger().error("An error occurred in getLocaleWithId: getting locale with languageid:" + languageId + "," + e, e);
+					logger.error("An error occurred in getLocaleWithId: getting locale with languageid:" + languageId + "," + e, e);
 				}	
 			}
 			
@@ -369,11 +371,11 @@ public class LanguageDeliveryController extends BaseDeliveryController
 	public Locale getLocaleWithCode(String languageCode)
 	{
 		String key = "" + languageCode;
-		getLogger().info("key:" + key);
+		logger.info("key:" + key);
 		Locale locale = (Locale)CacheController.getCachedObject("localeCache", key);
 		if(locale != null)
 		{
-			getLogger().info("There was an cached locale:" + locale);
+			logger.info("There was an cached locale:" + locale);
 		}
 		else
 		{
@@ -387,7 +389,7 @@ public class LanguageDeliveryController extends BaseDeliveryController
 				} 
 				catch (Exception e) 
 				{
-					getLogger().error("An error occurred in getLocaleWithCode: getting locale with languageCode:" + languageCode + "," + e, e);
+					logger.error("An error occurred in getLocaleWithCode: getting locale with languageCode:" + languageCode + "," + e, e);
 				}	
 			}
 			
@@ -405,11 +407,11 @@ public class LanguageDeliveryController extends BaseDeliveryController
 	public LanguageVO getLanguageWithCode(Database db, String languageCode) throws SystemException, Exception
 	{ 
 		String key = "" + languageCode;
-		getLogger().info("key:" + key);
+		logger.info("key:" + key);
 		LanguageVO languageVO = (LanguageVO)CacheController.getCachedObject("languageCache", key);
 		if(languageVO != null)
 		{
-			getLogger().info("There was an cached languageVO:" + languageVO);
+			logger.info("There was an cached languageVO:" + languageVO);
 		}
 		else
 		{
@@ -445,7 +447,7 @@ public class LanguageDeliveryController extends BaseDeliveryController
 		if (languageCodes == null) return null;
 		int index = Integer.MAX_VALUE;
 		int currentIndex = 0;
-		getLogger().info("Coming in with languageCodes:" + languageCodes);
+		logger.info("Coming in with languageCodes:" + languageCodes);
 		
         Language language = null;
 
@@ -459,12 +461,12 @@ public class LanguageDeliveryController extends BaseDeliveryController
 			{
 				RepositoryLanguage repositoryLanguage = (RepositoryLanguage)languageIterator.next();
 				Language currentLanguage = repositoryLanguage.getLanguage();
-				getLogger().info("CurrentLanguageCode:" + currentLanguage.getLanguageCode());
+				logger.info("CurrentLanguageCode:" + currentLanguage.getLanguageCode());
 				currentIndex = languageCodes.toLowerCase().indexOf(currentLanguage.getLanguageCode().toLowerCase());
 				if( currentIndex > -1 && currentIndex < index)
 				{
 					index = currentIndex;
-					getLogger().info("Found the language in the list of supported languages for this site: " + currentLanguage.getName() + " - priority:" + index);
+					logger.info("Found the language in the list of supported languages for this site: " + currentLanguage.getName() + " - priority:" + index);
 					language = currentLanguage;
 					if (index==0) break; // Continue and try to find a better candidate unless index is 0 (first prio)
 				}
@@ -490,7 +492,7 @@ public class LanguageDeliveryController extends BaseDeliveryController
 		
 	    int index = Integer.MAX_VALUE;
 		int currentIndex = 0;
-		getLogger().info("Coming in with languageCodes:" + languageCodes);
+		logger.info("Coming in with languageCodes:" + languageCodes);
 		
         Language language = null;
 
@@ -505,7 +507,7 @@ public class LanguageDeliveryController extends BaseDeliveryController
 			{
 				RepositoryLanguage repositoryLanguage = (RepositoryLanguage)languageIterator.next();
 				Language currentLanguage = repositoryLanguage.getLanguage();
-				getLogger().info("CurrentLanguageCode:" + currentLanguage.getLanguageCode());
+				logger.info("CurrentLanguageCode:" + currentLanguage.getLanguageCode());
 				
 				NodeDeliveryController ndc = NodeDeliveryController.getNodeDeliveryController(siteNodeId, currentLanguage.getId(), new Integer(-1));
 				
@@ -513,7 +515,7 @@ public class LanguageDeliveryController extends BaseDeliveryController
 				if(getIsValidLanguage(db, ndc, siteNode, currentLanguage.getId()) && currentIndex > -1 && currentIndex < index)
 				{
 					index = currentIndex;
-					getLogger().info("Found the language in the list of supported languages for this site: " + currentLanguage.getName() + " - priority:" + index);
+					logger.info("Found the language in the list of supported languages for this site: " + currentLanguage.getName() + " - priority:" + index);
 
 					DeliveryContext deliveryContext = DeliveryContext.getDeliveryContext();
 			    	ContentVO contentVO = ndc.getBoundContent(db, principal, siteNodeId, currentLanguage.getId(), false, BasicTemplateController.META_INFO_BINDING_NAME, deliveryContext);		
@@ -523,7 +525,7 @@ public class LanguageDeliveryController extends BaseDeliveryController
 				    	if(contentVersionVO != null)
 				    	{
 							language = currentLanguage;
-							getLogger().info("Language now: " + language.getName());
+							logger.info("Language now: " + language.getName());
 				    	}
 				    }
 					
@@ -535,7 +537,7 @@ public class LanguageDeliveryController extends BaseDeliveryController
 		if(language != null)
 			CacheController.cacheObject("siteNodeLanguageCache", key, language.getValueObject());
 
-		getLogger().info("Returning language: " + language);
+		logger.info("Returning language: " + language);
 		
 		return (language == null) ? null : language.getValueObject();	
 	}
@@ -557,7 +559,7 @@ public class LanguageDeliveryController extends BaseDeliveryController
 		
 		NodeDeliveryController ndc = NodeDeliveryController.getNodeDeliveryController(siteNodeId, languageId, new Integer(-1));
 
-		getLogger().info("Coming in with languageId:" + languageId);
+		logger.info("Coming in with languageId:" + languageId);
 		
         Language language = null;
 
@@ -576,10 +578,10 @@ public class LanguageDeliveryController extends BaseDeliveryController
 			{
 				RepositoryLanguage repositoryLanguage = (RepositoryLanguage)languageIterator.next();
 				Language currentLanguage = repositoryLanguage.getLanguage();
-				getLogger().info("CurrentLanguage:" + currentLanguage.getId());
+				logger.info("CurrentLanguage:" + currentLanguage.getId());
 				if(currentLanguage.getId().intValue() == languageId.intValue())
 				{
-				    getLogger().info("Found the language in the list of supported languages for this site: " + currentLanguage.getName());
+				    logger.info("Found the language in the list of supported languages for this site: " + currentLanguage.getName());
 					if(getIsValidLanguage(db, ndc, siteNode, currentLanguage.getId()))
 					{
 					    language = currentLanguage;
@@ -606,7 +608,7 @@ public class LanguageDeliveryController extends BaseDeliveryController
 		if(language != null)
 			CacheController.cacheObject("siteNodeLanguageCache", key, language.getValueObject());
 
-		getLogger().info("Returning language: " + language);
+		logger.info("Returning language: " + language);
 
 		return (language == null) ? null : language.getValueObject();	
 	}
@@ -622,7 +624,7 @@ public class LanguageDeliveryController extends BaseDeliveryController
 		if(languageVOList != null)
 			return languageVOList;
 		
-		getLogger().info("Coming in with siteNodeId:" + siteNodeId);
+		logger.info("Coming in with siteNodeId:" + siteNodeId);
 		
         languageVOList = new ArrayList();
 
@@ -637,13 +639,13 @@ public class LanguageDeliveryController extends BaseDeliveryController
 			{
 				RepositoryLanguage repositoryLanguage = (RepositoryLanguage)languageIterator.next();
 				Language currentLanguage = repositoryLanguage.getLanguage();
-				getLogger().info("CurrentLanguageCode:" + currentLanguage.getLanguageCode());
+				logger.info("CurrentLanguageCode:" + currentLanguage.getLanguageCode());
 				
 				NodeDeliveryController ndc = NodeDeliveryController.getNodeDeliveryController(siteNodeId, currentLanguage.getId(), new Integer(-1));
 				
 				if(getIsValidLanguage(db, ndc, siteNode, currentLanguage.getId()))
 				{
-					getLogger().info("Found the language in the list of supported languages for this site: " + currentLanguage.getName());
+					logger.info("Found the language in the list of supported languages for this site: " + currentLanguage.getName());
 					languageVOList.add(currentLanguage.getValueObject());
 				}
 			}
@@ -652,7 +654,7 @@ public class LanguageDeliveryController extends BaseDeliveryController
 		if(languageVOList != null)
 			CacheController.cacheObject("siteNodeLanguageCache", key, languageVOList);
 
-		getLogger().info("Returning languageVOList: " + languageVOList.size());
+		logger.info("Returning languageVOList: " + languageVOList.size());
 		
 		return languageVOList;	
 	}
@@ -664,33 +666,33 @@ public class LanguageDeliveryController extends BaseDeliveryController
 	    
 	    SiteNodeVersion siteNodeVersion = ndc.getActiveSiteNodeVersion(siteNode.getId(), db);
 	    Integer disabledLanguagesSiteNodeVersionId = ndc.getDisabledLanguagesSiteNodeVersionId(db, siteNode.getId());
-	    getLogger().info("disabledLanguagesSiteNodeVersionId:" + disabledLanguagesSiteNodeVersionId);
+	    logger.info("disabledLanguagesSiteNodeVersionId:" + disabledLanguagesSiteNodeVersionId);
 	    
 	    if(disabledLanguagesSiteNodeVersionId != null)
 	    {
 	        SiteNodeVersion disabledLanguagesSiteNodeVersion = SiteNodeVersionController.getController().getSiteNodeVersionWithId(disabledLanguagesSiteNodeVersionId, db);
 	        
 	        String disabledLanguagesString = CmsPropertyHandler.getPropertySetValue("siteNode_" + disabledLanguagesSiteNodeVersion.getValueObject().getSiteNodeId() + "_disabledLanguages");
-		    getLogger().info("disabledLanguagesString:" + disabledLanguagesString);
+		    logger.info("disabledLanguagesString:" + disabledLanguagesString);
 		    
 		    if(disabledLanguagesString != null && !disabledLanguagesString.equalsIgnoreCase(""))
 		    {
 		        String[] disabledLanguagesStringArray = disabledLanguagesString.split(",");
 		        for(int i=0; i<disabledLanguagesStringArray.length; i++)
 		        {
-		            getLogger().info("languageId.intValue():" + languageId.intValue());
-		            getLogger().info("disabledLanguagesStringArray:" + disabledLanguagesStringArray);
+		            logger.info("languageId.intValue():" + languageId.intValue());
+		            logger.info("disabledLanguagesStringArray:" + disabledLanguagesStringArray);
 				    if(languageId.intValue() == new Integer(disabledLanguagesStringArray[i]).intValue())
 		            {
 		                isValidLanguage = false;
-			            getLogger().info("isValidLanguage:" + isValidLanguage);
+			            logger.info("isValidLanguage:" + isValidLanguage);
 		                break;
 		            }
 		        }
 		    }
 		    
 		}
-	    getLogger().info("languageId:" + languageId + " was valid:" + isValidLanguage);
+	    logger.info("languageId:" + languageId + " was valid:" + isValidLanguage);
 		
 		return isValidLanguage;
 	}

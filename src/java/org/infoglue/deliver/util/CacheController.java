@@ -116,6 +116,9 @@ public class CacheController extends Thread
 { 
     public final static Logger logger = Logger.getLogger(CacheController.class.getName());
 
+	public static final String SETTINGSPROPERTIESCACHENAME = "serverNodePropertiesCache";
+	public static final String SETTINGSPROPERTIESDOCUMENTCACHENAME = "serverNodePropertiesDocumentCache";
+
     public static List notifications = Collections.synchronizedList(new ArrayList());
     
     private static Map eventListeners = new HashMap();

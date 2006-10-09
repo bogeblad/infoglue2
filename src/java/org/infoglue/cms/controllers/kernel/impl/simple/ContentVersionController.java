@@ -32,6 +32,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.apache.xerces.parsers.DOMParser;
 import org.exolab.castor.jdo.Database;
 import org.exolab.castor.jdo.OQLQuery;
@@ -70,6 +71,8 @@ import org.xml.sax.InputSource;
 
 public class ContentVersionController extends BaseController 
 {
+    private final static Logger logger = Logger.getLogger(ContentVersionController.class.getName());
+
 	private static final ContentCategoryController contentCategoryController = ContentCategoryController.getController();
 	private final RegistryController registryController = RegistryController.getController();
 
@@ -178,7 +181,7 @@ public class ContentVersionController extends BaseController
         }
         catch(Exception e)
         {
-            getLogger().error("An error occurred so we should not completes the transaction:" + e, e);
+            logger.error("An error occurred so we should not completes the transaction:" + e, e);
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
@@ -204,7 +207,7 @@ public class ContentVersionController extends BaseController
 	        while(relatedEntitiesIterator.hasNext())
 	        {
 	            RegistryVO registryVO = (RegistryVO)relatedEntitiesIterator.next();
-	            getLogger().info("registryVO:" + registryVO.getEntityName() + ":" + registryVO.getEntityId());
+	            logger.info("registryVO:" + registryVO.getEntityName() + ":" + registryVO.getEntityId());
 	            if(registryVO.getEntityName().equals(Content.class.getName()) && !checkedContents.contains(new Integer(registryVO.getEntityId())))
 	            {
 	                List relatedContentVersions = getLatestContentVersionWithParent(new Integer(registryVO.getEntityId()), stateId, db, mustBeFirst);
@@ -249,7 +252,7 @@ public class ContentVersionController extends BaseController
 			while (results.hasMore()) 
             {
             	ContentVersion contentVersion = (ContentVersion)results.next();
-            	getLogger().info("found one:" + contentVersion.getValueObject());
+            	logger.info("found one:" + contentVersion.getValueObject());
             	contentVersionVO = contentVersion.getValueObject();
             	resultList.add(contentVersionVO);
             }
@@ -259,7 +262,7 @@ public class ContentVersionController extends BaseController
         }
         catch(Exception e)
         {
-            getLogger().error("An error occurred so we should not completes the transaction:" + e, e);
+            logger.error("An error occurred so we should not completes the transaction:" + e, e);
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
@@ -316,7 +319,7 @@ public class ContentVersionController extends BaseController
 		}
 		catch(Exception e)
 		{
-			getLogger().error("An error occurred so we should not completes the transaction:" + e, e);
+			logger.error("An error occurred so we should not completes the transaction:" + e, e);
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}
@@ -349,12 +352,12 @@ public class ContentVersionController extends BaseController
 		while (results.hasMore()) 
 		{
 			ContentVersion contentVersion = (ContentVersion)results.next();
-			getLogger().info("contentVersion:" + contentVersion.getValueObject().getContentName());
+			logger.info("contentVersion:" + contentVersion.getValueObject().getContentName());
 			if(contentVersion.getIsActive().booleanValue())
 			{
 			    if ( (contentVersion.getStateId().compareTo(stateId)==0) && (!langCheck.contains(contentVersion.getLanguage().getLanguageId())))
 				{
-				    getLogger().info("Added contentVersion:" + contentVersion.getValueObject().getContentName() + ":" + contentVersion.getId() + ":" + contentVersion.getIsActive() + ":" + contentVersion.getStateId());
+				    logger.info("Added contentVersion:" + contentVersion.getValueObject().getContentName() + ":" + contentVersion.getId() + ":" + contentVersion.getIsActive() + ":" + contentVersion.getStateId());
 					resultList.add(contentVersion);
 					langCheck.add(contentVersion.getLanguage().getLanguageId());
 				}
@@ -367,7 +370,7 @@ public class ContentVersionController extends BaseController
 		results.close();
 		oql.close();
 
-		getLogger().info("getLatestContentVersionWithParent done...");
+		logger.info("getLatestContentVersionWithParent done...");
 		
 		return resultList;
 	}
@@ -407,16 +410,16 @@ public class ContentVersionController extends BaseController
 			}
 		}
 
-		getLogger().info("Found languageVersions:" + languageVersions.size());
-		getLogger().info("Found lastLanguageVersions:" + lastLanguageVersions.size());
+		logger.info("Found languageVersions:" + languageVersions.size());
+		logger.info("Found lastLanguageVersions:" + lastLanguageVersions.size());
 		Iterator i = languageVersions.values().iterator();
 		while(i.hasNext())
 		{
 		    ContentVersion contentVersion = (ContentVersion)i.next();
 		    ContentVersion lastVersionInThatLanguage = (ContentVersion)lastLanguageVersions.get(contentVersion.getLanguage().getId());
 
-		    getLogger().info("contentVersion:" + contentVersion.getId());
-		    getLogger().info("lastVersionInThatLanguage:" + lastVersionInThatLanguage.getId());
+		    logger.info("contentVersion:" + contentVersion.getId());
+		    logger.info("lastVersionInThatLanguage:" + lastVersionInThatLanguage.getId());
 
 		    if(contentVersion == lastVersionInThatLanguage)
 			    resultList.add(contentVersion);
@@ -450,7 +453,7 @@ public class ContentVersionController extends BaseController
             while(i.hasNext())
             {
             	ContentVersion currentContentVersion = (ContentVersion)i.next();
-            	getLogger().info("found one candidate:" + currentContentVersion.getValueObject());
+            	logger.info("found one candidate:" + currentContentVersion.getValueObject());
 				if(contentVersion == null || (currentContentVersion.getId().intValue() > contentVersion.getId().intValue()))
 				{
 					if(currentContentVersion.getIsActive().booleanValue() &&  currentContentVersion.getLanguage().getId().intValue() == languageId.intValue())
@@ -466,7 +469,7 @@ public class ContentVersionController extends BaseController
         }
         catch(Exception e)
         {
-            getLogger().error("An error occurred so we should not completes the transaction:" + e, e);
+            logger.error("An error occurred so we should not completes the transaction:" + e, e);
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
@@ -499,21 +502,21 @@ public class ContentVersionController extends BaseController
 		ContentVersion contentVersion = null;
     	
 		Content content = ContentController.getContentController().getContentWithId(contentId, db);
-    	getLogger().info("contentId:" + contentId);
-    	getLogger().info("languageId:" + languageId);
-    	getLogger().info("content:" + content.getName());
+    	logger.info("contentId:" + contentId);
+    	logger.info("languageId:" + languageId);
+    	logger.info("content:" + content.getName());
 		Collection contentVersions = content.getContentVersions();
-		getLogger().info("contentVersions:" + contentVersions.size());
+		logger.info("contentVersions:" + contentVersions.size());
         
 		Iterator i = contentVersions.iterator();
         while(i.hasNext())
 		{
 			ContentVersion currentContentVersion = (ContentVersion)i.next();
-			getLogger().info("found one candidate:" + currentContentVersion.getValueObject());
+			logger.info("found one candidate:" + currentContentVersion.getValueObject());
 			if(contentVersion == null || (currentContentVersion.getId().intValue() > contentVersion.getId().intValue()))
 			{
-				getLogger().info("currentContentVersion:" + currentContentVersion.getIsActive());
-				getLogger().info("currentContentVersion:" + currentContentVersion.getLanguage().getId());
+				logger.info("currentContentVersion:" + currentContentVersion.getIsActive());
+				logger.info("currentContentVersion:" + currentContentVersion.getLanguage().getId());
 				if(currentContentVersion.getIsActive().booleanValue() &&  currentContentVersion.getLanguage().getId().intValue() == languageId.intValue())
 					contentVersion = currentContentVersion;
 			}
@@ -542,7 +545,7 @@ public class ContentVersionController extends BaseController
 			if (results.hasMore()) 
             {
             	ContentVersion contentVersion = (ContentVersion)results.next();
-            	getLogger().info("found one:" + contentVersion.getValueObject());
+            	logger.info("found one:" + contentVersion.getValueObject());
             	contentVersionVO = contentVersion.getValueObject();
             }
             
@@ -553,7 +556,7 @@ public class ContentVersionController extends BaseController
         }
         catch(Exception e)
         {
-            getLogger().error("An error occurred so we should not completes the transaction:" + e, e);
+            logger.error("An error occurred so we should not completes the transaction:" + e, e);
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
@@ -578,7 +581,7 @@ public class ContentVersionController extends BaseController
         }
         catch(Exception e)
         {
-            getLogger().error("An error occurred so we should not completes the transaction:" + e, e);
+            logger.error("An error occurred so we should not completes the transaction:" + e, e);
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
@@ -626,7 +629,7 @@ public class ContentVersionController extends BaseController
 		}
         catch(Exception e)
         {
-        	getLogger().error("An error occurred so we should not completes the transaction:" + e, e);
+        	logger.error("An error occurred so we should not completes the transaction:" + e, e);
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
@@ -655,7 +658,7 @@ public class ContentVersionController extends BaseController
     {
 		ContentVersion contentVersion = new ContentVersionImpl();
 		contentVersion.setLanguage((LanguageImpl)language);
-		getLogger().info("Content:" + content.getContentId() + ":" + db.isPersistent(content));
+		logger.info("Content:" + content.getContentId() + ":" + db.isPersistent(content));
 		contentVersion.setOwningContent((ContentImpl)content);
 		
 		contentVersion.setValueObject(contentVersionVO);
@@ -685,7 +688,7 @@ public class ContentVersionController extends BaseController
 		}
         catch(Exception e)
         {
-        	getLogger().error("An error occurred so we should not completes the transaction:" + e, e);
+        	logger.error("An error occurred so we should not completes the transaction:" + e, e);
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
@@ -766,7 +769,7 @@ public class ContentVersionController extends BaseController
 				db.remove(digitalAsset);
 			}
 			
-        	getLogger().info("Deleting contentVersion:" + contentVersion.getContentVersionId());
+        	logger.info("Deleting contentVersion:" + contentVersion.getContentVersionId());
         	contentVersionIterator.remove();
         	delete(contentVersion, db, forceDelete);
         }
@@ -802,7 +805,7 @@ public class ContentVersionController extends BaseController
 		}
         catch(Exception e)
         {
-        	getLogger().error("An error occurred so we should not completes the transaction:" + e, e);
+        	logger.error("An error occurred so we should not completes the transaction:" + e, e);
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
@@ -832,7 +835,7 @@ public class ContentVersionController extends BaseController
             
 	        if(contentVersionVO.getId() == null)
 	    	{
-	    		getLogger().info("Creating the entity because there was no version at all for: " + contentId + " " + languageId);
+	    		logger.info("Creating the entity because there was no version at all for: " + contentId + " " + languageId);
 	    		contentVersion = create(contentId, languageId, contentVersionVO, null, db);
 	    	}
 	    	else
@@ -849,13 +852,13 @@ public class ContentVersionController extends BaseController
         }
         catch(ConstraintException ce)
         {
-        	getLogger().error("Validation error:" + ce, ce);
+        	logger.error("Validation error:" + ce, ce);
             rollbackTransaction(db);
             throw ce;
         }
         catch(Exception e)
         {
-        	getLogger().error("An error occurred so we should not completes the transaction:" + e, e);
+        	logger.error("An error occurred so we should not completes the transaction:" + e, e);
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
@@ -892,7 +895,7 @@ public class ContentVersionController extends BaseController
         }
         catch(Exception e)
         {
-        	getLogger().error("An error occurred so we should not completes the transaction:" + e, e);
+        	logger.error("An error occurred so we should not completes the transaction:" + e, e);
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
@@ -928,7 +931,7 @@ public class ContentVersionController extends BaseController
         }
         catch(Exception e)
         {
-        	getLogger().error("An error occurred so we should not completes the transaction:" + e, e);
+        	logger.error("An error occurred so we should not completes the transaction:" + e, e);
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
@@ -965,7 +968,7 @@ public class ContentVersionController extends BaseController
         }
         catch(Exception e)
         {
-        	getLogger().error("An error occurred so we should not completes the transaction:" + e, e);
+        	logger.error("An error occurred so we should not completes the transaction:" + e, e);
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
@@ -985,7 +988,7 @@ public class ContentVersionController extends BaseController
     	oql.bind(true);
     	
     	QueryResults results = oql.execute();
-		this.getLogger().info("Fetching entity in read/write mode");
+		this.logger.info("Fetching entity in read/write mode");
 
 		if (results.hasMore()) 
         {
@@ -1022,7 +1025,7 @@ public class ContentVersionController extends BaseController
 			if (results.hasMore()) 
             {
             	ContentVersion contentVersion = (ContentVersion)results.next();
-            	getLogger().info("found one:" + contentVersion.getValueObject());
+            	logger.info("found one:" + contentVersion.getValueObject());
             	contentVersionVO = contentVersion.getValueObject();
             }
             
@@ -1033,7 +1036,7 @@ public class ContentVersionController extends BaseController
         }
         catch(Exception e)
         {
-            getLogger().error("An error occurred so we should not completes the transaction:" + e, e);
+            logger.error("An error occurred so we should not completes the transaction:" + e, e);
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
@@ -1061,7 +1064,7 @@ public class ContentVersionController extends BaseController
 		if (results.hasMore()) 
         {
         	ContentVersion contentVersion = (ContentVersion)results.next();
-        	getLogger().info("found one:" + contentVersion.getValueObject());
+        	logger.info("found one:" + contentVersion.getValueObject());
         	contentVersionVO = contentVersion.getValueObject();
         }
     	
@@ -1090,7 +1093,7 @@ public class ContentVersionController extends BaseController
         }
         catch(Exception e)
         {
-            getLogger().error("An error occurred so we should not completes the transaction:" + e, e);
+            logger.error("An error occurred so we should not completes the transaction:" + e, e);
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
@@ -1122,12 +1125,12 @@ public class ContentVersionController extends BaseController
 		while(digitalAssetsIterator.hasNext())
 		{
 		    DigitalAsset digitalAsset = (DigitalAsset)digitalAssetsIterator.next();
-		    getLogger().info("Copying digitalAssets " + digitalAsset.getAssetKey());
+		    logger.info("Copying digitalAssets " + digitalAsset.getAssetKey());
 		    DigitalAssetVO digitalAssetVO = digitalAsset.getValueObject();
 		    
 		    DigitalAssetController.create(digitalAssetVO, DigitalAssetController.getController().getAssetInputStream(digitalAsset), newContentVersion, db);
 		    //DigitalAssetController.create(digitalAssetVO, digitalAsset.getAssetBlob(), newContentVersion, db);
-		    getLogger().info("digitalAssets:" + digitalAssets.size());
+		    logger.info("digitalAssets:" + digitalAssets.size());
 		}
 		//newContentVersion.setDigitalAssets(digitalAssets);
 	}	
@@ -1146,8 +1149,8 @@ public class ContentVersionController extends BaseController
 		{
 			try
 			{
-				getLogger().info("attributeName:" + attributeName);
-				getLogger().info("VersionValue:"  + contentVersionVO.getVersionValue());
+				logger.info("attributeName:" + attributeName);
+				logger.info("VersionValue:"  + contentVersionVO.getVersionValue());
 				value = getAttributeValue(contentVersionVO, attributeName, escapeHTML);
 			}
 			catch (Exception e)
@@ -1155,7 +1158,7 @@ public class ContentVersionController extends BaseController
 				e.printStackTrace();
 			}
 		}
-		//getLogger().info("value:" + value);
+		//logger.info("value:" + value);
 		return value;
 	}
 
@@ -1199,9 +1202,9 @@ public class ContentVersionController extends BaseController
 		{
 			try
 			{
-				getLogger().info("attributeName:"  + attributeName);
-				getLogger().info("versionValue:"   + contentVersionVO.getVersionValue());
-				getLogger().info("attributeValue:" + attributeValue);
+				logger.info("attributeName:"  + attributeName);
+				logger.info("versionValue:"   + contentVersionVO.getVersionValue());
+				logger.info("attributeValue:" + attributeValue);
 				InputSource inputSource = new InputSource(new StringReader(contentVersionVO.getVersionValue()));
 				
 				DOMParser parser = new DOMParser();
@@ -1244,7 +1247,7 @@ public class ContentVersionController extends BaseController
 				
 				StringBuffer sb = new StringBuffer();
 				org.infoglue.cms.util.XMLHelper.serializeDom(document.getDocumentElement(), sb);
-				getLogger().info("sb:" + sb);
+				logger.info("sb:" + sb);
 				contentVersionVO.setVersionValue(sb.toString());
 				contentVersionVO.setVersionModifier(infogluePrincipal.getName());
 				update(contentVersionVO.getContentId(), contentVersionVO.getLanguageId(), contentVersionVO);
@@ -1286,7 +1289,7 @@ public class ContentVersionController extends BaseController
         }
         catch(Exception e)
         {
-            getLogger().error("An error occurred so we should not completes the transaction:" + e, e);
+            logger.error("An error occurred so we should not completes the transaction:" + e, e);
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
@@ -1305,13 +1308,13 @@ public class ContentVersionController extends BaseController
 	        contentVersionVOList.add(contentVersion.getValueObject());
 	        
 	        List relatedEntities = RegistryController.getController().getMatchingRegistryVOListForReferencingEntity(ContentVersion.class.getName(), contentVersion.getId().toString(), db);
-	        getLogger().info("relatedEntities:" + relatedEntities);
+	        logger.info("relatedEntities:" + relatedEntities);
 	        Iterator relatedEntitiesIterator = relatedEntities.iterator();
 	        
 	        while(relatedEntitiesIterator.hasNext())
 	        {
 	            RegistryVO registryVO = (RegistryVO)relatedEntitiesIterator.next();
-	            getLogger().info("registryVO:" + registryVO.getEntityName() + ":" + registryVO.getEntityId());
+	            logger.info("registryVO:" + registryVO.getEntityName() + ":" + registryVO.getEntityId());
 	            if(registryVO.getEntityName().equals(SiteNode.class.getName()) && !checkedSiteNodes.contains(new Integer(registryVO.getEntityId())))
 	            {
 	                try
@@ -1325,7 +1328,7 @@ public class ContentVersionController extends BaseController
 	                }
 	                catch(Exception e)
 	                {
-	                    getLogger().warn("The related siteNode with id:" + registryVO.getEntityId() + " could not be loaded.", e);
+	                    logger.warn("The related siteNode with id:" + registryVO.getEntityId() + " could not be loaded.", e);
 	                }
 	                
 	    		    checkedSiteNodes.add(new Integer(registryVO.getEntityId()));
@@ -1338,7 +1341,7 @@ public class ContentVersionController extends BaseController
 		                if(includeMetaInfo || (!includeMetaInfo && (relatedContent.getContentTypeDefinition() == null || !relatedContent.getContentTypeDefinition().getName().equalsIgnoreCase("Meta info"))))
 		                {
 			                List relatedContentVersions = ContentVersionController.getContentVersionController().getLatestActiveContentVersionIfInState(relatedContent, stateId, db);
-			                getLogger().info("relatedContentVersions:" + relatedContentVersions.size());
+			                logger.info("relatedContentVersions:" + relatedContentVersions.size());
 			                
 			                Iterator relatedContentVersionsIterator = relatedContentVersions.iterator();
 			                while(relatedContentVersionsIterator.hasNext())
@@ -1347,7 +1350,7 @@ public class ContentVersionController extends BaseController
 				                if(relatedContentVersion != null && content.getRepository().getId().intValue() == relatedContentVersion.getOwningContent().getRepository().getId().intValue())
 				                {
 				        	        contentVersionVOList.add(relatedContentVersion.getValueObject());
-				                    getLogger().info("Added:" + relatedContentVersion.getId());
+				                    logger.info("Added:" + relatedContentVersion.getId());
 					            }
 			
 			                }
@@ -1355,7 +1358,7 @@ public class ContentVersionController extends BaseController
 	                }
 	                catch(Exception e)
 	                {
-	                    getLogger().warn("The related content with id:" + registryVO.getEntityId() + " could not be loaded.", e);
+	                    logger.warn("The related content with id:" + registryVO.getEntityId() + " could not be loaded.", e);
 	                }
 	                
 	    		    checkedContents.add(new Integer(registryVO.getEntityId()));

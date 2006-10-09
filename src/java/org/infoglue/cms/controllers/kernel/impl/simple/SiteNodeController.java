@@ -274,13 +274,13 @@ public class SiteNodeController extends BaseController
 		}
 		catch(ConstraintException ce)
 		{
-			getLogger().warn("An error occurred so we should not complete the transaction:" + ce, ce);
+			logger.warn("An error occurred so we should not complete the transaction:" + ce, ce);
 			//rollbackTransaction(db);
 			throw ce;
 		}
 		catch(Exception e)
 		{
-			getLogger().error("An error occurred so we should not complete the transaction:" + e, e);
+			logger.error("An error occurred so we should not complete the transaction:" + e, e);
 			//rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}
@@ -292,11 +292,11 @@ public class SiteNodeController extends BaseController
     {
 	    SiteNode siteNode = null;
 
-        getLogger().info("******************************************");
-        getLogger().info("parentSiteNode:" + parentSiteNodeId);
-        getLogger().info("siteNodeTypeDefinition:" + siteNodeTypeDefinitionId);
-        getLogger().info("repository:" + repositoryId);
-        getLogger().info("******************************************");
+        logger.info("******************************************");
+        logger.info("parentSiteNode:" + parentSiteNodeId);
+        logger.info("siteNodeTypeDefinition:" + siteNodeTypeDefinitionId);
+        logger.info("repository:" + repositoryId);
+        logger.info("******************************************");
         
         //Fetch related entities here if they should be referenced        
         
@@ -356,11 +356,11 @@ public class SiteNodeController extends BaseController
 
 		try
 		{
-			getLogger().info("******************************************");
-			getLogger().info("parentSiteNode:" + parentSiteNodeId);
-			getLogger().info("siteNodeTypeDefinition:" + siteNodeTypeDefinitionId);
-			getLogger().info("repository:" + repositoryId);
-			getLogger().info("******************************************");
+			logger.info("******************************************");
+			logger.info("parentSiteNode:" + parentSiteNodeId);
+			logger.info("siteNodeTypeDefinition:" + siteNodeTypeDefinitionId);
+			logger.info("repository:" + repositoryId);
+			logger.info("******************************************");
             
         	//Fetch related entities here if they should be referenced        
 			
@@ -472,13 +472,13 @@ public class SiteNodeController extends BaseController
 		}
 		catch(ConstraintException ce)
 		{
-			getLogger().warn("An error occurred so we should not complete the transaction:" + ce, ce);
+			logger.warn("An error occurred so we should not complete the transaction:" + ce, ce);
 			rollbackTransaction(db);
 			throw ce;
 		}
 		catch(Exception e)
 		{
-			getLogger().error("An error occurred so we should not complete the transaction:" + e, e);
+			logger.error("An error occurred so we should not complete the transaction:" + e, e);
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}
@@ -584,7 +584,7 @@ public class SiteNodeController extends BaseController
         }
         catch(Exception e)
         {
-            getLogger().error("An error occurred so we should not complete the transaction:" + e, e);
+            logger.error("An error occurred so we should not complete the transaction:" + e, e);
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
@@ -604,7 +604,7 @@ public class SiteNodeController extends BaseController
 		oql.bind(repositoryId);
 		
 		QueryResults results = oql.execute();
-		this.getLogger().info("Fetching entity in read/write mode" + repositoryId);
+		this.logger.info("Fetching entity in read/write mode" + repositoryId);
 
 		if (results.hasMore()) 
 		{

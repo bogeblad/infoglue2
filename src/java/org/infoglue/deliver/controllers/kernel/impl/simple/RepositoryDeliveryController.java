@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 
+import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
 import org.exolab.castor.jdo.OQLQuery;
 import org.exolab.castor.jdo.QueryResults;
@@ -44,6 +45,7 @@ import com.opensymphony.module.propertyset.PropertySetManager;
 
 public class RepositoryDeliveryController extends BaseDeliveryController
 {
+    private final static Logger logger = Logger.getLogger(RepositoryDeliveryController.class.getName());
 
 	/**
 	 * Private constructor to enforce factory-use
@@ -121,24 +123,24 @@ public class RepositoryDeliveryController extends BaseDeliveryController
         while (repositoriesIterator.hasNext()) 
         {
             RepositoryVO repositoryVO = (RepositoryVO) repositoriesIterator.next();
-            getLogger().info("repository:" + repositoryVO.getDnsName());
+            logger.info("repository:" + repositoryVO.getDnsName());
             String[] dnsNames = splitStrings(repositoryVO.getDnsName());
-            getLogger().info("dnsNames:" + dnsNames);
+            logger.info("dnsNames:" + dnsNames);
             for (int i=0;i<dnsNames.length;i++) 
             {
-            	getLogger().info("dnsNames[i]:" + dnsNames[i]);
+            	logger.info("dnsNames[i]:" + dnsNames[i]);
                 String dnsName = dnsNames[i];
             	int protocolIndex = dnsName.indexOf("://");
                 if(protocolIndex > -1)
                     dnsName = dnsName.substring(protocolIndex + 3);
                 
-                getLogger().info("Matching only server name - removed protocol if there:" + dnsName);
+                logger.info("Matching only server name - removed protocol if there:" + dnsName);
                 
             	if((dnsName.indexOf(":") == -1 && dnsName.indexOf(serverName) == 0) || dnsName.indexOf(serverName + ":" + portNumber) == 0)
                 {
             	    if(repositoryName != null && repositoryName.length() > 0)
             	    {
-            	        getLogger().info("Has to check repositoryName also:" + repositoryName);
+            	        logger.info("Has to check repositoryName also:" + repositoryName);
                         if(repositoryVO.getName().equalsIgnoreCase(repositoryName))
             	            repositories.add(repositoryVO);
             	    }
@@ -163,24 +165,24 @@ public class RepositoryDeliveryController extends BaseDeliveryController
         while (results.hasMore()) 
         {
             Repository repository = (Repository) results.next();
-            getLogger().info("repository:" + repository.getDnsName());
+            logger.info("repository:" + repository.getDnsName());
             String[] dnsNames = splitStrings(repository.getDnsName());
-            getLogger().info("dnsNames:" + dnsNames);
+            logger.info("dnsNames:" + dnsNames);
             for (int i=0;i<dnsNames.length;i++) 
             {
-            	getLogger().info("dnsNames[i]:" + dnsNames[i]);
+            	logger.info("dnsNames[i]:" + dnsNames[i]);
                 String dnsName = dnsNames[i];
             	int protocolIndex = dnsName.indexOf("://");
                 if(protocolIndex > -1)
                     dnsName = dnsName.substring(protocolIndex + 3);
                 
-                getLogger().info("Matching only server name - removed protocol if there:" + dnsName);
+                logger.info("Matching only server name - removed protocol if there:" + dnsName);
                 
             	if((dnsName.indexOf(":") == -1 && dnsName.indexOf(serverName) == 0) || dnsName.indexOf(serverName + ":" + portNumber) == 0)
                 {
             	    if(repositoryName != null && repositoryName.length() > 0)
             	    {
-            	        getLogger().info("Has to check repositoryName also:" + repositoryName);
+            	        logger.info("Has to check repositoryName also:" + repositoryName);
                         if(repository.getValueObject().getName().equalsIgnoreCase(repositoryName))
             	            repositories.add(repository.getValueObject());
             	    }
@@ -241,17 +243,17 @@ public class RepositoryDeliveryController extends BaseDeliveryController
 	public String getPropertyValue(Integer repositoryId, String propertyName) 
 	{
 		String key = "parentRepository_" + repositoryId + "_" + propertyName;
-	    getLogger().info("key:" + key);
+	    logger.info("key:" + key);
 	    Object object = CacheController.getCachedObject("parentRepository", key);
 		
 	    if(object instanceof NullObject)
 		{
-			getLogger().info("There was an cached property but it was null:" + object);
+			logger.info("There was an cached property but it was null:" + object);
 			return null;
 		}
 		else if(object != null)
 		{
-			getLogger().info("There was an cached property:" + object);
+			logger.info("There was an cached property:" + object);
 			return (String)object;
 		}
 		
@@ -262,7 +264,7 @@ public class RepositoryDeliveryController extends BaseDeliveryController
 	    PropertySet ps = PropertySetManager.getInstance("jdbc", args);
 	    
 	    propertyValue = ps.getString("repository_" + repositoryId + "_" + propertyName);
-	    getLogger().info("propertyValue:" + propertyValue);
+	    logger.info("propertyValue:" + propertyValue);
 	    if(propertyValue != null)
 	        CacheController.cacheObject("parentRepository", key, propertyValue);
 	    else

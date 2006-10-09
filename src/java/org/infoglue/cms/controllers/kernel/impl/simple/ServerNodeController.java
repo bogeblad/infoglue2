@@ -33,6 +33,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
 import org.exolab.castor.jdo.OQLQuery;
 import org.exolab.castor.jdo.QueryResults;
@@ -55,6 +56,8 @@ import com.opensymphony.module.propertyset.PropertySetManager;
 
 public class ServerNodeController extends BaseController
 { 
+    private final static Logger logger = Logger.getLogger(ServerNodeController.class.getName());
+
     private String useUpdateSecurity = CmsPropertyHandler.getUseUpdateSecurity();
     
 	/**
@@ -130,7 +133,7 @@ public class ServerNodeController extends BaseController
 		} 
 		catch (Exception e) 
 		{
-			getLogger().info("An error occurred so we should not complete the transaction:" + e);
+			logger.info("An error occurred so we should not complete the transaction:" + e);
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}
@@ -158,7 +161,7 @@ public class ServerNodeController extends BaseController
 			oql.bind(name);
 			
 			QueryResults results = oql.execute();
-			this.getLogger().info("Fetching entity in read/write mode" + name);
+			this.logger.info("Fetching entity in read/write mode" + name);
 
 			if (results.hasMore()) 
 			{
@@ -185,11 +188,11 @@ public class ServerNodeController extends BaseController
     {   
 		/*
         String key = "serverNodeVOList";
-		getLogger().info("key:" + key);
+		logger.info("key:" + key);
 		List cachedServerNodeVOList = (List)CacheController.getCachedObject("serverNodeCache", key);
 		if(cachedServerNodeVOList != null)
 		{
-			getLogger().info("There was an cached authorization:" + cachedServerNodeVOList.size());
+			logger.info("There was an cached authorization:" + cachedServerNodeVOList.size());
 			return cachedServerNodeVOList;
 		}
 		*/

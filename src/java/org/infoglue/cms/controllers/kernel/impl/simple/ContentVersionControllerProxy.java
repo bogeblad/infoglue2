@@ -28,6 +28,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.exception.Bug;
@@ -42,6 +43,8 @@ import org.infoglue.cms.security.InfoGluePrincipal;
 
 public class ContentVersionControllerProxy extends ContentVersionController 
 {
+    private final static Logger logger = Logger.getLogger(ContentVersionControllerProxy.class.getName());
+
 	protected static final Integer NO 			= new Integer(0);
 	protected static final Integer YES 			= new Integer(1);
 	protected static final Integer INHERITED 	= new Integer(2);
@@ -66,7 +69,7 @@ public class ContentVersionControllerProxy extends ContentVersionController
 		while(interceptorsIterator.hasNext())
 		{
 			InterceptorVO interceptorVO = (InterceptorVO)interceptorsIterator.next();
-			getLogger().info("Adding interceptorVO:" + interceptorVO.getName());
+			logger.info("Adding interceptorVO:" + interceptorVO.getName());
 			try
 			{
 				InfoGlueInterceptor infoGlueInterceptor = (InfoGlueInterceptor)Class.forName(interceptorVO.getClassName()).newInstance();
@@ -74,7 +77,7 @@ public class ContentVersionControllerProxy extends ContentVersionController
 			}
 			catch(ClassNotFoundException e)
 			{
-				getLogger().warn("The interceptor " + interceptorVO.getClassName() + "was not found: " + e.getMessage(), e);
+				logger.warn("The interceptor " + interceptorVO.getClassName() + "was not found: " + e.getMessage(), e);
 			}
 		}
 
@@ -133,9 +136,9 @@ public class ContentVersionControllerProxy extends ContentVersionController
 
 	public ContentVersionVO acUpdate(InfoGluePrincipal infogluePrincipal, Integer contentId, Integer languageId, ContentVersionVO contentVersionVO) throws ConstraintException, SystemException, Bug, Exception
 	{
-		getLogger().info("contentId:" + contentId);
-		getLogger().info("languageId:" + languageId);
-		getLogger().info("contentVersionId:" + contentVersionVO.getId());
+		logger.info("contentId:" + contentId);
+		logger.info("languageId:" + languageId);
+		logger.info("contentVersionId:" + contentVersionVO.getId());
 		
 		if(contentVersionVO.getId() != null)
 		{
@@ -178,7 +181,7 @@ public class ContentVersionControllerProxy extends ContentVersionController
 	{
 		boolean isContentProtected = false;
 		
-		getLogger().info("getIsContentProtected contentId:" + contentId);
+		logger.info("getIsContentProtected contentId:" + contentId);
 		try
 		{
 			ContentVO contentVO = ContentController.getContentController().getContentVOWithId(contentId);
@@ -202,10 +205,10 @@ public class ContentVersionControllerProxy extends ContentVersionController
 		}
 		catch(Exception e)
 		{
-			getLogger().warn("An error occurred trying to get if the content was protected:" + e.getMessage(), e);
+			logger.warn("An error occurred trying to get if the content was protected:" + e.getMessage(), e);
 		}
 		
-		getLogger().info("isContentProtected:" + isContentProtected);
+		logger.info("isContentProtected:" + isContentProtected);
 		
 		return isContentProtected;
 	}

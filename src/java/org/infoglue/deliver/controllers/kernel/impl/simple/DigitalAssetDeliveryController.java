@@ -40,6 +40,7 @@ import java.nio.channels.FileLock;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -54,6 +55,7 @@ import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.graphics.ThumbnailGenerator;
 import org.infoglue.deliver.applications.databeans.DeliveryContext;
 import org.infoglue.deliver.controllers.kernel.URLComposer;
+import org.infoglue.deliver.util.HttpHelper;
 
 
 public class DigitalAssetDeliveryController extends BaseDeliveryController
@@ -200,6 +202,34 @@ public class DigitalAssetDeliveryController extends BaseDeliveryController
         pw.println(attributeValue);    
         pw.close();
 	}
+	
+   	/**
+   	 * This method checks if the given file exists on disk. If it does it's ignored because
+   	 * that means that the file is allready cached on the server. If not we dump
+   	 * the given url on it.
+   	 */
+   	
+	public String dumpUrlToFile(String url, Map headers, String fileName, String filePath) throws Exception
+	{
+		String pageContent = null;
+		 
+		File outputFile = new File(filePath + File.separator + fileName);
+		if(!outputFile.exists() && outputFile.length() > 0)
+		{
+			HttpHelper helper = new HttpHelper();
+			pageContent = helper.getUrlContent(url, headers);
+			System.out.println("pageContent:" + pageContent);
+			if(pageContent == null || pageContent.equals(""))
+				return null;
+
+			PrintWriter pw = new PrintWriter(new FileWriter(outputFile));
+	        pw.println(pageContent);    
+	        pw.close();
+		}
+		
+		return pageContent;
+	}
+
 
  	/**
    	 * This method checks if the given file exists on disk. If it does it's ignored because
@@ -290,7 +320,7 @@ public class DigitalAssetDeliveryController extends BaseDeliveryController
             fileDescriptor = null;
         }
 
-        getLogger().warn("Time for dumping file " + fileName + ":" + (System.currentTimeMillis() - timer));
+        logger.warn("Time for dumping file " + fileName + ":" + (System.currentTimeMillis() - timer));
 
         return outputFile;
     }
@@ -300,10 +330,10 @@ public class DigitalAssetDeliveryController extends BaseDeliveryController
 	{
 		long timer = System.currentTimeMillis();
 		File outputFile = new File(filePath + File.separator + fileName);
-		//getLogger().warn("outputFile:" + filePath + File.separator + fileName + ":" + outputFile.length());
+		//logger.warn("outputFile:" + filePath + File.separator + fileName + ":" + outputFile.length());
 		if(outputFile.exists())
 		{
-			//getLogger().warn("The file allready exists so we don't need to dump it again..");
+			//logger.warn("The file allready exists so we don't need to dump it again..");
 			return outputFile;
 		}
 
@@ -335,7 +365,7 @@ public class DigitalAssetDeliveryController extends BaseDeliveryController
 			        }
 			        
 			        if(i == 0)
-			        	getLogger().warn("Wrote " + i + " chars...");
+			        	logger.warn("Wrote " + i + " chars...");
 			        
 					bos.flush();
 				    fos.close();
@@ -345,10 +375,10 @@ public class DigitalAssetDeliveryController extends BaseDeliveryController
 				}
 			}
 			
-			//getLogger().warn("Time for dumping file " + fileName + ":" + (System.currentTimeMillis() - timer));
+			//logger.warn("Time for dumping file " + fileName + ":" + (System.currentTimeMillis() - timer));
 
 			if(outputFile.length() == 0)
-				getLogger().warn("written file:" + outputFile.length());
+				logger.warn("written file:" + outputFile.length());
 				
 			//FileDescriptor fd = fos.getFD();
 			//fd.sync();
@@ -376,7 +406,7 @@ public class DigitalAssetDeliveryController extends BaseDeliveryController
 		//System.out.println("outputFile:" + filePath + File.separator + fileName + ":" + outputFile.length());
 		if(outputFile.exists() && outputFile.length() > 0)
 		{
-			//getLogger().info("The file allready exists so we don't need to dump it again..");
+			//logger.info("The file allready exists so we don't need to dump it again..");
 			return outputFile;
 		}
 		
@@ -400,7 +430,7 @@ public class DigitalAssetDeliveryController extends BaseDeliveryController
 	        bis.close();
 			fis.close();
 			bos.close();
-			//getLogger().warn("Time for dumping file " + fileName + ":" + (System.currentTimeMillis() - timer));
+			//logger.warn("Time for dumping file " + fileName + ":" + (System.currentTimeMillis() - timer));
 	
 			//FileDescriptor fd = fis.getFD();
 			//fd.sync();
@@ -422,20 +452,20 @@ public class DigitalAssetDeliveryController extends BaseDeliveryController
 	public File dumpDigitalAssetThumbnail(String fileName, String thumbnailFile, String filePath, int width, int height) throws Exception
 	{
 		long timer = System.currentTimeMillis();
-		getLogger().info("fileName:" + fileName);
-		getLogger().info("thumbnailFile:" + thumbnailFile);
+		logger.info("fileName:" + fileName);
+		logger.info("thumbnailFile:" + thumbnailFile);
 		
 		File outputFile = new File(filePath + File.separator + thumbnailFile);
 		if(outputFile.exists())
 		{
-			getLogger().info("The file allready exists so we don't need to dump it again..");
+			logger.info("The file allready exists so we don't need to dump it again..");
 			return outputFile;
 		}
 		
 		ThumbnailGenerator tg = new ThumbnailGenerator();
 		tg.transform(filePath + File.separator + fileName, filePath + File.separator + thumbnailFile, width, height, 100);
 		
-		getLogger().info("Time for dumping file " + fileName + ":" + (System.currentTimeMillis() - timer));
+		logger.info("Time for dumping file " + fileName + ":" + (System.currentTimeMillis() - timer));
 		
 		return outputFile;
 	}
@@ -502,7 +532,7 @@ public class DigitalAssetDeliveryController extends BaseDeliveryController
 		}
 		catch(Exception e)
 		{
-			getLogger().error("Could not delete the assets for the contentVersion " + contentVersionId + ":" + e.getMessage(), e);
+			logger.error("Could not delete the assets for the contentVersion " + contentVersionId + ":" + e.getMessage(), e);
 		}
 	}
 
@@ -525,7 +555,7 @@ public class DigitalAssetDeliveryController extends BaseDeliveryController
 				for(int j=0; j<files.length; j++)
 				{
 					File file = files[j];
-					getLogger().info("Deleting file " + file.getPath());
+					logger.info("Deleting file " + file.getPath());
 					file.delete();
 				}
 				i++;
@@ -537,14 +567,14 @@ public class DigitalAssetDeliveryController extends BaseDeliveryController
 			//for(int i=0; i<files.length; i++)
 			//{
 			//	File file = files[i];
-			//	getLogger().info("Deleting file " + file.getPath());
+			//	logger.info("Deleting file " + file.getPath());
 			//	file.delete();
 			//}
 	
 		}
 		catch(Exception e)
 		{
-			getLogger().error("Could not delete the assets for the digitalAsset " + digitalAssetId + ":" + e.getMessage(), e);
+			logger.error("Could not delete the assets for the digitalAsset " + digitalAssetId + ":" + e.getMessage(), e);
 		}
 	}
 	
@@ -554,7 +584,7 @@ public class DigitalAssetDeliveryController extends BaseDeliveryController
 	
 	private void unzipFile(File assetFile, File targetFolder) throws Exception
 	{
-		getLogger().info("Unzipping file " + assetFile.getPath() + " to " + targetFolder);
+		logger.info("Unzipping file " + assetFile.getPath() + " to " + targetFolder);
 		Enumeration entries;
     	ZipFile zipFile = new ZipFile(assetFile);
       	entries = zipFile.entries();
@@ -581,7 +611,7 @@ public class DigitalAssetDeliveryController extends BaseDeliveryController
 
 	private Vector getZipFileEntries(File assetFile, File targetFolder) throws Exception
 	{
-		getLogger().info("Getting entries from " + assetFile.getPath());
+		logger.info("Getting entries from " + assetFile.getPath());
 		Enumeration entries;
 		Vector entryCopies = new Vector();
 		ZipFile zipFile = new ZipFile(assetFile);
