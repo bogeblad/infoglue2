@@ -27,6 +27,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.entities.management.InterceptionPoint;
@@ -46,7 +47,8 @@ import org.infoglue.cms.util.ConstraintExceptionBuffer;
 
 public class InterceptorController extends BaseController
 {
-	
+    private final static Logger logger = Logger.getLogger(InterceptorController.class.getName());
+
 	/**
 	 * Factory method
 	 */
@@ -87,7 +89,7 @@ public class InterceptorController extends BaseController
 		} 
 		catch (Exception e) 
 		{
-			getLogger().info("An error occurred so we should not complete the transaction:" + e);
+			logger.info("An error occurred so we should not complete the transaction:" + e);
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}
@@ -129,7 +131,7 @@ public class InterceptorController extends BaseController
 		} 
 		catch (Exception e) 
 		{
-			getLogger().info("An error occurred so we should not complete the transaction:" + e);
+			logger.info("An error occurred so we should not complete the transaction:" + e);
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}
@@ -173,7 +175,7 @@ public class InterceptorController extends BaseController
 			ConstraintExceptionBuffer ceb = interceptorVO.validate();
 			ceb.throwIfNotEmpty();
 			
-			getLogger().info("InterceptorId:" + interceptorVO.getInterceptorId());
+			logger.info("InterceptorId:" + interceptorVO.getInterceptorId());
 			Interceptor interceptor = this.getInterceptorWithId(interceptorVO.getInterceptorId(), db);
 
 			interceptor.setValueObject(interceptorVO);
@@ -204,7 +206,7 @@ public class InterceptorController extends BaseController
 		catch (Exception e) 
 		{
 			e.printStackTrace();
-			getLogger().info("An error occurred so we should not complete the transaction:" + e);
+			logger.info("An error occurred so we should not complete the transaction:" + e);
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}

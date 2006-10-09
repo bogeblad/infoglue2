@@ -29,6 +29,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
+import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
 import org.exolab.castor.jdo.OQLQuery;
 import org.exolab.castor.jdo.QueryResults;
@@ -53,6 +54,8 @@ import org.infoglue.deliver.util.CacheController;
 
 public class LanguageController extends BaseController
 {
+    private final static Logger logger = Logger.getLogger(LanguageController.class.getName());
+
 	/**
 	 * Factory method
 	 */
@@ -79,11 +82,11 @@ public class LanguageController extends BaseController
 	public LanguageVO getLanguageVOWithId(Integer languageId) throws SystemException, Exception
 	{
 		String key = "" + languageId;
-		getLogger().info("key:" + key);
+		logger.info("key:" + key);
 		LanguageVO languageVO = (LanguageVO)CacheController.getCachedObject("languageCache", key);
 		if(languageVO != null)
 		{
-			getLogger().info("There was an cached languageVO:" + languageVO);
+			logger.info("There was an cached languageVO:" + languageVO);
 		}
 		else
 		{
@@ -122,7 +125,7 @@ public class LanguageController extends BaseController
 			} 
 			catch (Exception e) 
 			{
-				getLogger().error("An error occurred in getLocaleWithId: getting locale with languageid:" + languageId + "," + e, e);
+				logger.error("An error occurred in getLocaleWithId: getting locale with languageid:" + languageId + "," + e, e);
 			}	
 		}
 		
@@ -156,7 +159,7 @@ public class LanguageController extends BaseController
 		} 
 		catch (Exception e) 
 		{
-			getLogger().info("An error occurred so we should not complete the transaction:" + e);
+			logger.info("An error occurred so we should not complete the transaction:" + e);
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}
@@ -184,7 +187,7 @@ public class LanguageController extends BaseController
 			oql.bind(name);
 			
 			QueryResults results = oql.execute();
-			this.getLogger().info("Fetching entity in read/write mode" + name);
+			this.logger.info("Fetching entity in read/write mode" + name);
 
 			if (results.hasMore()) 
 			{
@@ -249,7 +252,7 @@ public class LanguageController extends BaseController
 		} 
 		catch (Exception e) 
 		{
-			getLogger().info("An error occurred so we should not complete the transaction:" + e);
+			logger.info("An error occurred so we should not complete the transaction:" + e);
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}
@@ -277,7 +280,7 @@ public class LanguageController extends BaseController
 			oql.bind(code);
 			
 			QueryResults results = oql.execute();
-			this.getLogger().info("Fetching entity in read/write mode" + code);
+			this.logger.info("Fetching entity in read/write mode" + code);
 
 			if (results.hasMore()) 
 			{
@@ -332,7 +335,7 @@ public class LanguageController extends BaseController
 		}
 		catch(Exception e)
 		{
-			getLogger().error("An error occurred so we should not complete the transaction:" + e, e);
+			logger.error("An error occurred so we should not complete the transaction:" + e, e);
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}
@@ -377,7 +380,7 @@ public class LanguageController extends BaseController
         }
         catch(Exception e)
         {
-            getLogger().error("An error occurred so we should not complete the transaction:" + e, e);
+            logger.error("An error occurred so we should not complete the transaction:" + e, e);
 			rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
@@ -406,7 +409,7 @@ public class LanguageController extends BaseController
 		}
 		catch(Exception e)
 		{
-			getLogger().error("An error occurred so we should not complete the transaction:" + e, e);
+			logger.error("An error occurred so we should not complete the transaction:" + e, e);
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}
@@ -450,13 +453,13 @@ public class LanguageController extends BaseController
         }
         catch(ConstraintException ce)
         {
-            getLogger().warn("An error occurred so we should not complete the transaction:" + ce, ce);
+            logger.warn("An error occurred so we should not complete the transaction:" + ce, ce);
             rollbackTransaction(db);
             throw ce;
         }
         catch(Exception e)
         {
-            getLogger().error("An error occurred so we should not complete the transaction:" + e, e);
+            logger.error("An error occurred so we should not complete the transaction:" + e, e);
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
@@ -518,11 +521,11 @@ public class LanguageController extends BaseController
 		LanguageVO languageVO = null;
 
 		String languageKey = "" + repositoryId;
-		getLogger().info("languageKey:" + languageKey);
+		logger.info("languageKey:" + languageKey);
 		languageVO = (LanguageVO)CacheController.getCachedObject("masterLanguageCache", languageKey);
 		if(languageVO != null)
 		{
-			getLogger().info("There was an cached master language:" + languageVO.getName());
+			logger.info("There was an cached master language:" + languageVO.getName());
 		}
 		else
 		{
@@ -550,7 +553,7 @@ public class LanguageController extends BaseController
 			}
 			catch(Exception e)
 			{
-				getLogger().error("An error occurred so we should not complete the transaction:" + e, e);
+				logger.error("An error occurred so we should not complete the transaction:" + e, e);
 				rollbackTransaction(db);
 				throw new SystemException(e.getMessage());
 			}
@@ -570,11 +573,11 @@ public class LanguageController extends BaseController
 		LanguageVO languageVO = null;
 
 		String languageKey = "" + repositoryId;
-		getLogger().info("languageKey:" + languageKey);
+		logger.info("languageKey:" + languageKey);
 		languageVO = (LanguageVO)CacheController.getCachedObject("masterLanguageCache", languageKey);
 		if(languageVO != null)
 		{
-			getLogger().info("There was an cached master language:" + languageVO.getName());
+			logger.info("There was an cached master language:" + languageVO.getName());
 		}
 		else
 		{
@@ -653,13 +656,13 @@ public class LanguageController extends BaseController
         }
         catch(ConstraintException ce)
         {
-            getLogger().warn("An error occurred so we should not complete the transaction:" + ce, ce);
+            logger.warn("An error occurred so we should not complete the transaction:" + ce, ce);
             rollbackTransaction(db);
             throw ce;
         }
         catch(Exception e)
         {
-            getLogger().error("An error occurred so we should not complete the transaction:" + e, e);
+            logger.error("An error occurred so we should not complete the transaction:" + e, e);
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }

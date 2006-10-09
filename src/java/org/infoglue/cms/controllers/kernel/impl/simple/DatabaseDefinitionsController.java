@@ -202,7 +202,6 @@ public class DatabaseDefinitionsController
 		sb.append("</jdo-conf>");
 		
 		String xml = sb.toString();
-		System.out.println("xml:" + xml);
 		
 		String databaseDefinitions = CmsPropertyHandler.getContextRootPath() + File.separator + "WEB-INF" + File.separator + "classes" + File.separator + "currentDatabase.xml";
 		

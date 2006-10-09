@@ -30,6 +30,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
 import org.exolab.castor.jdo.OQLQuery;
 import org.exolab.castor.jdo.QueryResults;
@@ -46,8 +47,8 @@ import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
-import org.infoglue.deliver.util.CacheController;
 import org.infoglue.deliver.util.NullObject;
+import org.infoglue.deliver.util.CacheController;
 
 /**
  * This class is a helper class for the use case handle InterceptionPoint
@@ -57,6 +58,8 @@ import org.infoglue.deliver.util.NullObject;
 
 public class InterceptionPointController extends BaseController
 {
+    private final static Logger logger = Logger.getLogger(InterceptionPointController.class.getName());
+
 	public final static Map systemInterceptionPoints = new HashMap();
     
 	static
@@ -144,7 +147,7 @@ public class InterceptionPointController extends BaseController
 		} 
 		catch (Exception e) 
 		{
-			getLogger().info("An error occurred so we should not complete the transaction:" + e);
+			logger.info("An error occurred so we should not complete the transaction:" + e);
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}
@@ -165,11 +168,11 @@ public class InterceptionPointController extends BaseController
 	public List getInterceptorsVOList(Integer interceptionPointId, Database db)  throws SystemException, Bug
 	{
 		String key = "" + interceptionPointId;
-		getLogger().info("key:" + key);
+		logger.info("key:" + key);
 		List cachedInterceptorVOList = (List)CacheController.getCachedObject("interceptorsCache", key);
 		if(cachedInterceptorVOList != null)
 		{
-			getLogger().info("There was an cached InterceptorVOList:" + cachedInterceptorVOList.size());
+			logger.info("There was an cached InterceptorVOList:" + cachedInterceptorVOList.size());
 			return cachedInterceptorVOList;
 		}
 		
@@ -205,7 +208,7 @@ public class InterceptionPointController extends BaseController
 		} 
 		catch (Exception e) 
 		{
-			getLogger().info("An error occurred so we should not complete the transaction:" + e);
+			logger.info("An error occurred so we should not complete the transaction:" + e);
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}
@@ -216,7 +219,7 @@ public class InterceptionPointController extends BaseController
 	public InterceptionPointVO getInterceptionPointVOWithName(String interceptorPointName, Database db)  throws SystemException, Bug
 	{
 	    String key = "" + interceptorPointName;
-		getLogger().info("key:" + key);
+		logger.info("key:" + key);
 		
 		InterceptionPointVO interceptionPointVO = null;
 		
@@ -238,7 +241,7 @@ public class InterceptionPointController extends BaseController
 		if(interceptionPointVO != null)
 		{
 		    System.out.println("interceptionPointVO:" + interceptionPointVO.getName());
-			getLogger().info("There was an cached interceptionPointVO:" + interceptionPointVO);
+			logger.info("There was an cached interceptionPointVO:" + interceptionPointVO);
 		}
 		else
 		{
@@ -287,7 +290,7 @@ public class InterceptionPointController extends BaseController
 			oql.bind(interceptorPointName);
 			
 			QueryResults results = oql.execute();
-			this.getLogger().info("Fetching entity in read/write mode:" + interceptorPointName);
+			this.logger.info("Fetching entity in read/write mode:" + interceptorPointName);
 			if(results.hasMore()) 
 			{
 				interceptorPoint = (InterceptionPoint)results.next();
@@ -321,7 +324,7 @@ public class InterceptionPointController extends BaseController
 		} 
 		catch (Exception e) 
 		{
-			getLogger().info("An error occurred so we should not complete the transaction:" + e);
+			logger.info("An error occurred so we should not complete the transaction:" + e);
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}
@@ -340,7 +343,7 @@ public class InterceptionPointController extends BaseController
 			oql.bind(category);
 			
 			QueryResults results = oql.execute();
-			this.getLogger().info("Fetching entity in read/write mode:" + category);
+			this.logger.info("Fetching entity in read/write mode:" + category);
 
 			while(results.hasMore()) 
 			{
@@ -384,7 +387,7 @@ public class InterceptionPointController extends BaseController
 		} 
 		catch (Exception e) 
 		{
-			getLogger().info("An error occurred so we should not complete the transaction:" + e);
+			logger.info("An error occurred so we should not complete the transaction:" + e);
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}
@@ -454,13 +457,13 @@ public class InterceptionPointController extends BaseController
 				}
 			}
 			
-	    	getLogger().info("Interceptors:" + interceptionPoint.getInterceptors().size());
+	    	logger.info("Interceptors:" + interceptionPoint.getInterceptors().size());
 			
 			commitTransaction(db);
 		} 
 		catch (Exception e) 
 		{
-			getLogger().info("An error occurred so we should not complete the transaction:" + e);
+			logger.info("An error occurred so we should not complete the transaction:" + e);
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}
@@ -517,7 +520,7 @@ public class InterceptionPointController extends BaseController
 		}
 		catch(Exception e)
 		{
-			getLogger().error("An error occurred so we should not complete the transaction:" + e, e);
+			logger.error("An error occurred so we should not complete the transaction:" + e, e);
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}
