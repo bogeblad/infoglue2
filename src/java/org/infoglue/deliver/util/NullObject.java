@@ -28,8 +28,9 @@ package org.infoglue.deliver.util;
  */
 
 public class NullObject
-{
-    public NullObject()
-    {
-    }
+{    
+	public String toString()
+	{
+		return "NullObject";
+	}
 }
