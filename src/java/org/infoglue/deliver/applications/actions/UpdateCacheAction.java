@@ -29,6 +29,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.log4j.Logger;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.ServerNodeController;
 import org.infoglue.cms.util.CmsPropertyHandler;
@@ -48,6 +49,8 @@ import org.infoglue.deliver.util.ThreadMonitor;
 
 public class UpdateCacheAction extends InfoGlueAbstractAction 
 {
+    private final static Logger logger = Logger.getLogger(UpdateCacheAction.class.getName());
+
 	/*
 	private String className = null;
 	private String objectId = null;
@@ -109,7 +112,7 @@ public class UpdateCacheAction extends InfoGlueAbstractAction
     	if(!CmsPropertyHandler.getOperatingMode().equals("3"))
     		tk = new ThreadMonitor(2000, this.getRequest(), "Update cache took to long", false);
 
-    	getLogger().info("Update Cache starts..");
+    	logger.info("Update Cache starts..");
         String operatingMode = CmsPropertyHandler.getOperatingMode();
 		
         if(operatingMode != null && operatingMode.equalsIgnoreCase("3"))
@@ -130,8 +133,8 @@ public class UpdateCacheAction extends InfoGlueAbstractAction
 		{  
 			//Iterate through all registered listeners and call them... dont place logic here... have specialized handlers.			
 
-			//getLogger().info("className:" + className);
-			//getLogger().info("objectId:" + objectId);
+			//logger.info("className:" + className);
+			//logger.info("objectId:" + objectId);
 			List newNotificationList = new ArrayList();
 			
 		    int i = 0;
@@ -142,8 +145,8 @@ public class UpdateCacheAction extends InfoGlueAbstractAction
 		    String objectName 	= this.getRequest().getParameter(i + ".objectName");
 		    while(className != null && !className.equals(""))
 		    {
-		    	getLogger().info("className:" + className);
-			    getLogger().info("objectId:" + objectId);
+		    	logger.info("className:" + className);
+			    logger.info("objectId:" + objectId);
 			    
 		    	CacheEvictionBean cacheEvictionBean = new CacheEvictionBean(className, typeId, objectId, objectName);
 		    	newNotificationList.add(cacheEvictionBean);
@@ -153,7 +156,7 @@ public class UpdateCacheAction extends InfoGlueAbstractAction
 				    CacheController.notifications.add(cacheEvictionBean);
 		        }
 		        */
-			    getLogger().info("Added a cacheEvictionBean " + cacheEvictionBean.getClassName() + ":" + cacheEvictionBean.getTypeId() + ":" + cacheEvictionBean.getObjectName() + ":" + cacheEvictionBean.getObjectId());
+			    logger.info("Added a cacheEvictionBean " + cacheEvictionBean.getClassName() + ":" + cacheEvictionBean.getTypeId() + ":" + cacheEvictionBean.getObjectName() + ":" + cacheEvictionBean.getObjectId());
 			    
 			    i++;
 			    className 	= this.getRequest().getParameter(i + ".className");
@@ -175,7 +178,7 @@ public class UpdateCacheAction extends InfoGlueAbstractAction
 		        {
 			    	CacheController.notifications.add(cacheEvictionBean);
 		        }
-			    getLogger().warn("Added an oldSchool cacheEvictionBean " + cacheEvictionBean.getClassName() + ":" + cacheEvictionBean.getTypeId() + ":" + cacheEvictionBean.getObjectName() + ":" + cacheEvictionBean.getObjectId());
+			    logger.warn("Added an oldSchool cacheEvictionBean " + cacheEvictionBean.getClassName() + ":" + cacheEvictionBean.getTypeId() + ":" + cacheEvictionBean.getObjectName() + ":" + cacheEvictionBean.getObjectId());
 		        */
 			    
 		    }
@@ -202,21 +205,21 @@ public class UpdateCacheAction extends InfoGlueAbstractAction
 		        }
 			//}
 		    
-			getLogger().info("UpdateCache finished...");
+			logger.info("UpdateCache finished...");
 		}
 		catch(Exception e)
 		{
 		    e.printStackTrace();
-			getLogger().error(e.getMessage(), e);
+			logger.error(e.getMessage(), e);
 		}
 		catch(Throwable t)
 		{
 		    t.printStackTrace();
-		    getLogger().error(t.getMessage());
+		    logger.error(t.getMessage());
 		}
                 
 		//this.getHttpSession().invalidate();
-    	getLogger().info("Update Cache stops..");
+    	logger.info("Update Cache stops..");
 
     	if(tk != null)
     		tk.done();

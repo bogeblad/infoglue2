@@ -23,6 +23,7 @@
 
 package org.infoglue.cms.applications.structuretool.actions;
 
+import org.apache.log4j.Logger;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.ServiceBindingController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeVersionController;
@@ -37,6 +38,7 @@ import org.infoglue.cms.util.ConstraintExceptionBuffer;
 
 public class CreateServiceBindingAction extends InfoGlueAbstractAction
 {
+    private final static Logger logger = Logger.getLogger(CreateServiceBindingAction.class.getName());
 
     private Integer siteNodeVersionId;
     private Integer repositoryId;
@@ -149,7 +151,7 @@ public class CreateServiceBindingAction extends InfoGlueAbstractAction
      
     public String doExecute() throws Exception
     {
-    	getLogger().info("-------------------------->" + this.serviceBindingVO.getServiceBindingId());
+    	logger.info("-------------------------->" + this.serviceBindingVO.getServiceBindingId());
     	if(this.serviceBindingVO.getServiceBindingId() == null)
     	{
     		ServiceBindingController.create(this.serviceBindingVO, qualifyerXML, this.availableServiceBindingId, this.siteNodeVersionId, this.serviceDefinitionId);	

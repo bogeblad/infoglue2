@@ -28,6 +28,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
@@ -59,6 +60,8 @@ import com.opensymphony.module.propertyset.PropertySetManager;
 
 public class ViewAndCreateContentForServiceBindingAction extends InfoGlueAbstractAction
 {
+    private final static Logger logger = Logger.getLogger(ViewAndCreateContentForServiceBindingAction.class.getName());
+
     private Integer siteNodeVersionId;
     private Integer repositoryId;
     //private Integer availableServiceBindingId;
@@ -289,7 +292,7 @@ public class ViewAndCreateContentForServiceBindingAction extends InfoGlueAbstrac
         }
         catch(Exception e)
         {
-            getLogger().error("An error occurred so we should not completes the transaction:" + e, e);
+            logger.error("An error occurred so we should not completes the transaction:" + e, e);
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }

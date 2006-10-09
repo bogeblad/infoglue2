@@ -63,12 +63,12 @@ import org.infoglue.cms.services.BaseService;
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
 import org.infoglue.deliver.applications.databeans.DeliveryContext;
-import org.infoglue.deliver.applications.databeans.NullObject;
 import org.infoglue.deliver.applications.filters.URIMapperCache;
 import org.infoglue.deliver.applications.filters.ViewPageFilter;
 import org.infoglue.deliver.controllers.kernel.URLComposer;
 import org.infoglue.deliver.util.CacheController;
 import org.infoglue.deliver.util.HttpHelper;
+import org.infoglue.deliver.util.NullObject;
 
 
 public class NodeDeliveryController extends BaseDeliveryController

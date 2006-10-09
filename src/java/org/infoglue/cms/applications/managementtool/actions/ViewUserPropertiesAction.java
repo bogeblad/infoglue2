@@ -27,6 +27,7 @@ import java.net.URLEncoder;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.UserControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.UserPropertiesController;
@@ -38,6 +39,8 @@ import org.infoglue.cms.util.CmsPropertyHandler;
 
 public class ViewUserPropertiesAction extends ViewEntityPropertiesAction
 {
+    private final static Logger logger = Logger.getLogger(ViewUserPropertiesAction.class.getName());
+
 	private static final long serialVersionUID = 1L;
 
     public ViewUserPropertiesAction()
@@ -66,7 +69,7 @@ public class ViewUserPropertiesAction extends ViewEntityPropertiesAction
 	{
 	    super.initialize();
 				
-		getLogger().info("userName:" + userName);
+		logger.info("userName:" + userName);
 		
 		List contentTypeDefinitionVOList = UserPropertiesController.getController().getContentTypeDefinitionVOList(userName);
 		if(contentTypeDefinitionVOList != null && contentTypeDefinitionVOList.size() > 0)
@@ -84,12 +87,12 @@ public class ViewUserPropertiesAction extends ViewEntityPropertiesAction
 			this.setContentTypeDefinitionId(this.getContentTypeDefinitionVO().getContentTypeDefinitionId());
 		}
 		
-		getLogger().info("this.userPropertiesVO:" + this.userPropertiesVO);
+		logger.info("this.userPropertiesVO:" + this.userPropertiesVO);
 		
 		this.setAttributes(ContentTypeDefinitionController.getController().getContentTypeAttributes(this.getContentTypeDefinitionVO().getSchemaValue()));	
 	
-		getLogger().info("attributes:" + this.getContentTypeAttributes().size());		
-		getLogger().info("availableLanguages:" + this.getAvailableLanguages().size());		
+		logger.info("attributes:" + this.getContentTypeAttributes().size());		
+		logger.info("availableLanguages:" + this.getAvailableLanguages().size());		
 		
 	} 
 
@@ -118,7 +121,7 @@ public class ViewUserPropertiesAction extends ViewEntityPropertiesAction
 		}
 		catch(Exception e)
 		{
-			getLogger().warn("We could not fetch the list of digitalAssets: " + e.getMessage(), e);
+			logger.warn("We could not fetch the list of digitalAssets: " + e.getMessage(), e);
 		}
 		
 		return digitalAssets;
@@ -142,7 +145,7 @@ public class ViewUserPropertiesAction extends ViewEntityPropertiesAction
 		}
 		catch(Exception e)
 		{
-			getLogger().warn("We could not fetch the list of defined category keys: " + e.getMessage(), e);
+			logger.warn("We could not fetch the list of defined category keys: " + e.getMessage(), e);
 		}
 
 		return Collections.EMPTY_LIST;

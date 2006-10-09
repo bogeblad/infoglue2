@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.infoglue.cms.applications.common.actions.InfoGluePropertiesAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
@@ -46,6 +47,8 @@ import com.opensymphony.module.propertyset.PropertySetManager;
 
 public class ViewContentPropertiesAction extends InfoGluePropertiesAbstractAction
 { 
+    private final static Logger logger = Logger.getLogger(ViewContentPropertiesAction.class.getName());
+
 	private static final long serialVersionUID = 1L;
 	
 	private ContentVO contentVO 				= new ContentVO();
@@ -77,9 +80,9 @@ public class ViewContentPropertiesAction extends InfoGluePropertiesAbstractActio
         }
 	    this.defaultContentTypeName		= ps.getString("content_" + this.getContentId() + "_defaultContentTypeName");
 	    this.initialLanguageId			= ps.getString("content_" + this.getContentId() + "_initialLanguageId");
-	    getLogger().info("allowedContentTypeNames:" + allowedContentTypeNames);
-	    getLogger().info("defaultContentTypeName:" + defaultContentTypeName);
-	    getLogger().info("initialLanguageId:" + initialLanguageId);
+	    logger.info("allowedContentTypeNames:" + allowedContentTypeNames);
+	    logger.info("defaultContentTypeName:" + defaultContentTypeName);
+	    logger.info("initialLanguageId:" + initialLanguageId);
     } 
 
     /**
@@ -103,7 +106,7 @@ public class ViewContentPropertiesAction extends InfoGluePropertiesAbstractActio
         String[] allowedContentTypeNameArray = getRequest().getParameterValues("allowedContentTypeName");
         if(allowedContentTypeNameArray != null)
         {
-	        getLogger().info("allowedContentTypeNameArray:" + allowedContentTypeNameArray);
+	        logger.info("allowedContentTypeNameArray:" + allowedContentTypeNameArray);
             allowedContentTypeNames = "";
 	        for(int i=0; i<allowedContentTypeNameArray.length; i++)
 	        {

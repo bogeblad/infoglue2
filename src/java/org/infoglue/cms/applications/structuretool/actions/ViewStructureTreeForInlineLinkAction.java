@@ -25,6 +25,7 @@ package org.infoglue.cms.applications.structuretool.actions;
 
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
 import org.infoglue.cms.controllers.kernel.impl.simple.RepositoryController;
@@ -39,6 +40,8 @@ import org.infoglue.cms.util.ConstraintExceptionBuffer;
 
 public class ViewStructureTreeForInlineLinkAction extends InfoGlueAbstractAction
 {
+    private final static Logger logger = Logger.getLogger(ViewStructureTreeForInlineLinkAction.class.getName());
+
 	private static final long serialVersionUID = 1L;
 
     private Integer repositoryId;
@@ -144,7 +147,7 @@ public class ViewStructureTreeForInlineLinkAction extends InfoGlueAbstractAction
 	    }
 	    catch(Exception e)
 	    {
-	        getLogger().warn("Expansion not possible:" + e.getMessage(), e);
+	        logger.warn("Expansion not possible:" + e.getMessage(), e);
 	    }
 	    
 	    return expansion;
@@ -168,7 +171,7 @@ public class ViewStructureTreeForInlineLinkAction extends InfoGlueAbstractAction
 	    }
 	    catch(Exception e)
 	    {
-	        getLogger().warn("Expansion not possible:" + e.getMessage(), e);
+	        logger.warn("Expansion not possible:" + e.getMessage(), e);
 	    }
 	    
 	    return expansion;

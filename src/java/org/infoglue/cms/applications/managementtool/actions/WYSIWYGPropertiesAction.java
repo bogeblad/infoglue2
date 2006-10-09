@@ -29,6 +29,7 @@ import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.io.FileHelper;
 import org.infoglue.cms.util.CmsPropertyHandler;
@@ -45,6 +46,8 @@ import com.opensymphony.module.propertyset.PropertySetManager;
 
 public class WYSIWYGPropertiesAction extends InfoGlueAbstractAction
 {
+    private final static Logger logger = Logger.getLogger(WYSIWYGPropertiesAction.class.getName());
+
 	private static final long serialVersionUID = 1L;
 
 	private Integer repositoryId = null;
@@ -71,27 +74,27 @@ public class WYSIWYGPropertiesAction extends InfoGlueAbstractAction
 	    try
 	    {
 		    this.WYSIWYGProperties = getPrincipalPropertyValue("WYSIWYGConfig", false);
-		    getLogger().info("WYSIWYGProperties:" + WYSIWYGProperties);
+		    logger.info("WYSIWYGProperties:" + WYSIWYGProperties);
 		    if(this.WYSIWYGProperties == null || this.WYSIWYGProperties.equalsIgnoreCase("") && this.repositoryId != null)
 		    {
-		        getLogger().info("Getting WYSIWYGProperties for repository...");
+		        logger.info("Getting WYSIWYGProperties for repository...");
 				Map args = new HashMap();
 			    args.put("globalKey", "infoglue");
 			    PropertySet ps = PropertySetManager.getInstance("jdbc", args);
 			    
 			    byte[] WYSIWYGConfigBytes = ps.getData("repository_" + this.repositoryId + "_WYSIWYGConfig");
-			    getLogger().info("WYSIWYGConfigBytes:" + WYSIWYGConfigBytes);
+			    logger.info("WYSIWYGConfigBytes:" + WYSIWYGConfigBytes);
 			    if(WYSIWYGConfigBytes != null)
 			    {
 			    	this.WYSIWYGProperties = new String(WYSIWYGConfigBytes, "UTF-8");
 			    }
 		    }
 		     
-		    getLogger().info("this.WYSIWYGProperties:" + this.WYSIWYGProperties);
+		    logger.info("this.WYSIWYGProperties:" + this.WYSIWYGProperties);
 	    }
 	    catch(Exception e)
 	    {
-	        getLogger().error("Could not fetch WYSIWYG Configuration: " + e.getMessage(), e);
+	        logger.error("Could not fetch WYSIWYG Configuration: " + e.getMessage(), e);
 	    }
 	    finally
 	    {
@@ -129,10 +132,10 @@ public class WYSIWYGPropertiesAction extends InfoGlueAbstractAction
 	    try
 	    {
 	        this.StylesXML = getPrincipalPropertyValue("StylesXML", false);
-		    getLogger().info("this.StylesXML:" + this.StylesXML);
+		    logger.info("this.StylesXML:" + this.StylesXML);
 		    if(this.StylesXML == null || this.StylesXML.equalsIgnoreCase("") && this.repositoryId != null)
 		    {
-		        getLogger().info("Getting StylesXML for repository...");
+		        logger.info("Getting StylesXML for repository...");
 				Map args = new HashMap();
 			    args.put("globalKey", "infoglue");
 			    PropertySet ps = PropertySetManager.getInstance("jdbc", args);
@@ -146,7 +149,7 @@ public class WYSIWYGPropertiesAction extends InfoGlueAbstractAction
 	    }
 	    catch(Exception e)
 	    {
-	        getLogger().error("Could not fetch Styles XML: " + e.getMessage(), e);
+	        logger.error("Could not fetch Styles XML: " + e.getMessage(), e);
 	    }
 	    finally
 	    {

@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import org.apache.log4j.Logger;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.infoglue.cms.applications.common.VisualFormatter;
@@ -70,6 +71,8 @@ import com.opensymphony.module.propertyset.PropertySetManager;
 
 public class ViewContentVersionAction extends InfoGlueAbstractAction
 {
+    private final static Logger logger = Logger.getLogger(ViewContentVersionAction.class.getName());
+
 	private static final long serialVersionUID = 1L;
 	
 	private static CategoryController categoryController = CategoryController.getController();
@@ -164,13 +167,13 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 
 	public List getContentRelationQualifyers(String qualifyerXML)
 	{
-		getLogger().info("Content qualifyerXML:" + qualifyerXML);
+		logger.info("Content qualifyerXML:" + qualifyerXML);
 	    return parseQualifyersFromXML(qualifyerXML, "contentId");
 	}
 
 	public List getSiteNodeRelationQualifyers(String qualifyerXML)
 	{
-		getLogger().info("Content qualifyerXML:" + qualifyerXML);
+		logger.info("Content qualifyerXML:" + qualifyerXML);
 	    return parseQualifyersFromXML(qualifyerXML, "siteNodeId");
 	}
 
@@ -247,13 +250,13 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 			this.contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentId, languageId);
 			if(this.contentVersionVO == null && fallBackToMasterLanguage)
 			{
-			    //getLogger().info("repositoryId:" + repositoryId);
+			    //logger.info("repositoryId:" + repositoryId);
 			    Integer usedRepositoryId = this.repositoryId;
 			    if(this.repositoryId == null && this.contentVO != null)
 			        usedRepositoryId = this.contentVO.getRepositoryId();
 			    
 			    LanguageVO masterLanguageVO = LanguageController.getController().getMasterLanguage(usedRepositoryId);
-			    //getLogger().info("MasterLanguage: " + masterLanguageVO);
+			    //logger.info("MasterLanguage: " + masterLanguageVO);
 			    this.contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentId, masterLanguageVO.getId());
 			}
 			
@@ -404,7 +407,7 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 		}
 		catch(Exception e)
 		{
-			getLogger().error("An error occurred when we tried to get any events for this version:" + e.getMessage(), e);
+			logger.error("An error occurred when we tried to get any events for this version:" + e.getMessage(), e);
 		}
 		
 		return eventVO;
@@ -542,7 +545,7 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 		}
 		catch(Exception e)
 		{
-			getLogger().warn("We could not fetch the list of digitalAssets: " + e.getMessage(), e);
+			logger.warn("We could not fetch the list of digitalAssets: " + e.getMessage(), e);
 		}
 		
 		return digitalAssets;
@@ -571,7 +574,7 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 		}
 		catch(Exception e)
 		{
-			getLogger().warn("We could not fetch the list of digitalAssets: " + e.getMessage(), e);
+			logger.warn("We could not fetch the list of digitalAssets: " + e.getMessage(), e);
 		}
 		
 		return digitalAssets;
@@ -592,7 +595,7 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 		}
 		catch(Exception e)
 		{
-			getLogger().warn("We could not get the url of the digitalAsset: " + e.getMessage(), e);
+			logger.warn("We could not get the url of the digitalAsset: " + e.getMessage(), e);
 			imageHref = e.getMessage();
 		}
 		
@@ -614,7 +617,7 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 		}
 		catch(Exception e)
 		{
-			getLogger().warn("We could not get the url of the thumbnail: " + e.getMessage(), e);
+			logger.warn("We could not get the url of the thumbnail: " + e.getMessage(), e);
 			imageHref = e.getMessage();
 		}
 		
@@ -636,7 +639,7 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 		}
 		catch(Exception e)
 		{
-			getLogger().warn("We could not get the url of the digitalAsset: " + e.getMessage(), e);
+			logger.warn("We could not get the url of the digitalAsset: " + e.getMessage(), e);
 			imageHref = e.getMessage();
 		}
 		
@@ -658,7 +661,7 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 		}
 		catch(Exception e)
 		{
-			getLogger().warn("We could not get the url of the thumbnail: " + e.getMessage(), e);
+			logger.warn("We could not get the url of the thumbnail: " + e.getMessage(), e);
 			imageHref = e.getMessage();
 		}
 		
@@ -682,8 +685,8 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 		{
 			try
 	        {
-		        getLogger().info("key:" + key);
-				getLogger().info("VersionValue:" + this.contentVersionVO.getVersionValue());
+		        logger.info("key:" + key);
+				logger.info("VersionValue:" + this.contentVersionVO.getVersionValue());
 		
 				String xml = this.contentVersionVO.getVersionValue();
 				
@@ -714,9 +717,9 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 						if(n.getFirstChild() != null && n.getFirstChild().getNodeValue() != null)
 						{
 							value = n.getFirstChild().getNodeValue();
-							getLogger().info("Getting value: " + value);
+							logger.info("Getting value: " + value);
 
-							//getLogger().info("VersionValue:" + value);
+							//logger.info("VersionValue:" + value);
 							if(value != null)
 								value = new VisualFormatter().escapeHTML(value);
 							
@@ -732,7 +735,7 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 	        }
 		}
 		
-		getLogger().info("value:" + value);	
+		logger.info("value:" + value);	
 		
 		return value;
 	}
@@ -749,8 +752,8 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 		{
 			try
 			{
-				getLogger().info("key:" + key);
-				getLogger().info("VersionValue:" + this.contentVersionVO.getVersionValue());
+				logger.info("key:" + key);
+				logger.info("VersionValue:" + this.contentVersionVO.getVersionValue());
 				
 				String xml = this.contentVersionVO.getVersionValue();
 				
@@ -780,7 +783,7 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 						if(n.getFirstChild() != null && n.getFirstChild().getNodeValue() != null)
 						{
 							value = n.getFirstChild().getNodeValue();
-							getLogger().info("Getting value: " + value);
+							logger.info("Getting value: " + value);
 							break;
 						}
 					}
@@ -792,7 +795,7 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 				e.printStackTrace();
 			}
 		}
-		//getLogger().info("value:" + value);	
+		//logger.info("value:" + value);	
 		return value;
 	}
 	
@@ -837,7 +840,7 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 	    
 	    if(this.WYSIWYGProperties != null)
 	    {
-		    getLogger().info("this.WYSIWYGProperties:" + this.WYSIWYGProperties.size());
+		    logger.info("this.WYSIWYGProperties:" + this.WYSIWYGProperties.size());
 		    
 		    //Clear sections of the configuration if overridden
 		    if(principalWYSIWYGProperties.containsKey("toolbar_line0_position0"))
@@ -884,7 +887,7 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 	
 	public List getCSSRules(String url)
 	{
-		getLogger().info("url:" + url);
+		logger.info("url:" + url);
 	    CSSHelper cssHelper = CSSHelper.getHelper(); 
 	    cssHelper.setCSSUrl(url);
 	    
@@ -982,7 +985,7 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 		}
 		catch(Exception e)
 		{
-			getLogger().warn("We could not fetch the list of defined category keys: " + e.getMessage(), e);
+			logger.warn("We could not fetch the list of defined category keys: " + e.getMessage(), e);
 		}
 
 		return Collections.EMPTY_LIST;
@@ -1005,7 +1008,7 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 		}
 		catch(Exception e)
 		{
-			getLogger().warn("We could not fetch the list of categories: " + e.getMessage(), e);
+			logger.warn("We could not fetch the list of categories: " + e.getMessage(), e);
 		}
 
 		return Collections.EMPTY_LIST;
@@ -1025,7 +1028,7 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 		}
 		catch(Exception e)
 		{
-			getLogger().warn("We could not fetch the list of defined category keys: " + e.getMessage(), e);
+			logger.warn("We could not fetch the list of defined category keys: " + e.getMessage(), e);
 		}
 
 		return Collections.EMPTY_LIST;

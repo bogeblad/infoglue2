@@ -129,10 +129,10 @@ public class ImportRepositoryAction extends InfoGlueAbstractAction
             int index = 0;
             while(line != null && index < 50)
             {
-            	getLogger().info("line:" + line + '\n');
+            	logger.info("line:" + line + '\n');
             	if(line.indexOf("contentTypeDefinitionId") > -1)
             	{
-            		getLogger().info("This was a new export...");
+            		logger.info("This was a new export...");
             		version = 2;
             		break;
             	}
@@ -147,12 +147,12 @@ public class ImportRepositoryAction extends InfoGlueAbstractAction
             Mapping map = new Mapping();
 			if(version == 1)
 			{
-	            getLogger().info("MappingFile:" + CastorDatabaseService.class.getResource("/xml_mapping_site.xml").toString());
+	            logger.info("MappingFile:" + CastorDatabaseService.class.getResource("/xml_mapping_site.xml").toString());
 				map.loadMapping(CastorDatabaseService.class.getResource("/xml_mapping_site.xml").toString());
 			}
 			else if(version == 2)
 			{
-			    getLogger().info("MappingFile:" + CastorDatabaseService.class.getResource("/xml_mapping_site_2.5.xml").toString());
+			    logger.info("MappingFile:" + CastorDatabaseService.class.getResource("/xml_mapping_site_2.5.xml").toString());
 				map.loadMapping(CastorDatabaseService.class.getResource("/xml_mapping_site_2.5.xml").toString());	
 			}
 
@@ -169,15 +169,15 @@ public class ImportRepositoryAction extends InfoGlueAbstractAction
 			unmarshaller.setWhitespacePreserve(true);
 			InfoGlueExportImpl infoGlueExportImplRead = (InfoGlueExportImpl)unmarshaller.unmarshal(reader);
 			Collection contentTypeDefinitions = infoGlueExportImplRead.getContentTypeDefinitions();
-			getLogger().info("Found " + contentTypeDefinitions.size() + " content type definitions");
+			logger.info("Found " + contentTypeDefinitions.size() + " content type definitions");
 			
 			SiteNode readSiteNode = infoGlueExportImplRead.getRootSiteNode();
-			getLogger().info(readSiteNode.getName());
+			logger.info(readSiteNode.getName());
 			Content readContent = infoGlueExportImplRead.getRootContent();
-			getLogger().info(readContent.getName());
+			logger.info(readContent.getName());
 
 			Repository repositoryRead = readSiteNode.getRepository();
-			getLogger().info(repositoryRead.getName());
+			logger.info(repositoryRead.getName());
 			readContent.setRepository((RepositoryImpl)repositoryRead);
 
 			db.create(repositoryRead);
@@ -201,8 +201,8 @@ public class ImportRepositoryAction extends InfoGlueAbstractAction
 
 				db.create(repositoryLanguage);
 				
-				getLogger().info("language:" + language);
-				getLogger().info("language.getRepositoryLanguages():" + language.getRepositoryLanguages());
+				logger.info("language:" + language);
+				logger.info("language.getRepositoryLanguages():" + language.getRepositoryLanguages());
 				language.getRepositoryLanguages().add(repositoryLanguage);
 			}
 			
@@ -248,7 +248,7 @@ public class ImportRepositoryAction extends InfoGlueAbstractAction
 						db.rollback();
 					}
 					catch(Exception e2) { e2.printStackTrace(); }
-	                getLogger().error("An error occurred when updating content version for content: " + e.getMessage(), e);					
+	                logger.error("An error occurred when updating content version for content: " + e.getMessage(), e);					
 				}
 				finally
 				{
@@ -273,11 +273,11 @@ public class ImportRepositoryAction extends InfoGlueAbstractAction
             } 
 			catch (Exception e1)
             {
-                getLogger().error("An error occurred when importing a repository: " + e.getMessage(), e);
+                logger.error("An error occurred when importing a repository: " + e.getMessage(), e);
     			throw new SystemException("An error occurred when importing a repository: " + e.getMessage(), e);
             }
 			
-			getLogger().error("An error occurred when importing a repository: " + e.getMessage(), e);
+			logger.error("An error occurred when importing a repository: " + e.getMessage(), e);
 			throw new SystemException("An error occurred when importing a repository: " + e.getMessage(), e);
 		}
 		
@@ -294,19 +294,19 @@ public class ImportRepositoryAction extends InfoGlueAbstractAction
 	 */
 	private void createStructure(SiteNode siteNode, Map contentIdMap, Map siteNodeIdMap, List allSiteNodes, Database db) throws Exception
 	{
-		getLogger().info("siteNode:" + siteNode.getName());
+		logger.info("siteNode:" + siteNode.getName());
 
 		Integer originalSiteNodeId = siteNode.getSiteNodeId();
 
-		getLogger().info("originalSiteNodeId:" + originalSiteNodeId);
+		logger.info("originalSiteNodeId:" + originalSiteNodeId);
 
 		SiteNodeTypeDefinition originalSiteNodeTypeDefinition = siteNode.getSiteNodeTypeDefinition();
 		SiteNodeTypeDefinition siteNodeTypeDefinition = null;
 		if(originalSiteNodeTypeDefinition != null)
 		{
-			getLogger().info("originalSiteNodeTypeDefinition:" + originalSiteNodeTypeDefinition);
+			logger.info("originalSiteNodeTypeDefinition:" + originalSiteNodeTypeDefinition);
 			siteNodeTypeDefinition = SiteNodeTypeDefinitionController.getController().getSiteNodeTypeDefinitionWithName(siteNode.getSiteNodeTypeDefinition().getName(), db, false);
-			getLogger().info("siteNodeTypeDefinition:" + siteNodeTypeDefinition);
+			logger.info("siteNodeTypeDefinition:" + siteNodeTypeDefinition);
 			if(siteNodeTypeDefinition == null)
 			{
 			    db.create(originalSiteNodeTypeDefinition);
@@ -330,7 +330,7 @@ public class ImportRepositoryAction extends InfoGlueAbstractAction
 		allSiteNodes.add(siteNode);
 		    
 		Integer newSiteNodeId = siteNode.getSiteNodeId();
-		getLogger().info(originalSiteNodeId + ":" + newSiteNodeId);
+		logger.info(originalSiteNodeId + ":" + newSiteNodeId);
 		siteNodeIdMap.put(originalSiteNodeId.toString(), newSiteNodeId.toString());
 		
 		Collection childSiteNodes = siteNode.getChildSiteNodes();
@@ -350,7 +350,7 @@ public class ImportRepositoryAction extends InfoGlueAbstractAction
 		
 		if(onlyLatestVersions.equalsIgnoreCase("true"))
 		{
-		    getLogger().info("org siteNodeVersions:" + siteNodeVersions.size());
+		    logger.info("org siteNodeVersions:" + siteNodeVersions.size());
 			List selectedSiteNodeVersions = new ArrayList();
 			Iterator realSiteNodeVersionsIterator = siteNodeVersions.iterator();
 			while(realSiteNodeVersionsIterator.hasNext())
@@ -363,7 +363,7 @@ public class ImportRepositoryAction extends InfoGlueAbstractAction
 					SiteNodeVersion currentSiteNodeVersion = (SiteNodeVersion)selectedSiteNodeVersionsIterator.next();
 					if(siteNodeVersion.getIsActive().booleanValue() && siteNodeVersion.getSiteNodeVersionId().intValue() > currentSiteNodeVersion.getSiteNodeVersionId().intValue())
 					{
-						getLogger().info("A later version was found... removing this one..");
+						logger.info("A later version was found... removing this one..");
 						selectedSiteNodeVersionsIterator.remove();
 						addVersion = true;
 					}						
@@ -391,7 +391,7 @@ public class ImportRepositoryAction extends InfoGlueAbstractAction
 			while(serviceBindingsIterator.hasNext())
 			{
 				ServiceBinding serviceBinding = (ServiceBinding)serviceBindingsIterator.next();
-				getLogger().info("serviceBinding:" + serviceBinding.getName());
+				logger.info("serviceBinding:" + serviceBinding.getName());
 				
 				ServiceDefinition originalServiceDefinition = serviceBinding.getServiceDefinition();
 				String serviceDefinitionName = originalServiceDefinition.getName();
@@ -407,15 +407,15 @@ public class ImportRepositoryAction extends InfoGlueAbstractAction
 
 				AvailableServiceBinding originalAvailableServiceBinding = serviceBinding.getAvailableServiceBinding();
 				String availableServiceBindingName = originalAvailableServiceBinding.getName();
-				getLogger().info("availableServiceBindingName:" + availableServiceBindingName);
+				logger.info("availableServiceBindingName:" + availableServiceBindingName);
 				AvailableServiceBinding availableServiceBinding = AvailableServiceBindingController.getController().getAvailableServiceBindingWithName(availableServiceBindingName, db, false);
 				if(availableServiceBinding == null)
 				{
-				    getLogger().info("There was no availableServiceBinding registered under:" + availableServiceBindingName);
-				    getLogger().info("originalAvailableServiceBinding:" + originalAvailableServiceBinding.getName() + ":" + originalAvailableServiceBinding.getIsInheritable());
+				    logger.info("There was no availableServiceBinding registered under:" + availableServiceBindingName);
+				    logger.info("originalAvailableServiceBinding:" + originalAvailableServiceBinding.getName() + ":" + originalAvailableServiceBinding.getIsInheritable());
 				    db.create(originalAvailableServiceBinding);
 				    availableServiceBinding = originalAvailableServiceBinding;
-				    getLogger().info("Notifying:" + siteNodeTypeDefinition.getName() + " about the new availableServiceBinding " + availableServiceBinding.getName());
+				    logger.info("Notifying:" + siteNodeTypeDefinition.getName() + " about the new availableServiceBinding " + availableServiceBinding.getName());
 				    if(siteNodeTypeDefinition != null)
 				    {
 					    siteNodeTypeDefinition.getAvailableServiceBindings().add((AvailableServiceBindingImpl)availableServiceBinding);
@@ -526,7 +526,7 @@ public class ImportRepositoryAction extends InfoGlueAbstractAction
 			}
 	    }
 	    
-	    getLogger().info("Creating content:" + content.getName());
+	    logger.info("Creating content:" + content.getName());
 		db.create(content);
 		
 		allContents.add(content);
@@ -538,7 +538,7 @@ public class ImportRepositoryAction extends InfoGlueAbstractAction
 	    
 		if(onlyLatestVersions.equalsIgnoreCase("true"))
 		{
-			getLogger().info("org contentVersions:" + contentVersions.size());
+			logger.info("org contentVersions:" + contentVersions.size());
 			List selectedContentVersions = new ArrayList();
 			Iterator realContentVersionsIterator = contentVersions.iterator();
 			while(realContentVersionsIterator.hasNext())
@@ -550,15 +550,15 @@ public class ImportRepositoryAction extends InfoGlueAbstractAction
 				while(selectedContentVersionsIterator.hasNext())
 				{
 					ContentVersion currentContentVersion = (ContentVersion)selectedContentVersionsIterator.next();
-					getLogger().info("" + currentContentVersion.getLanguage().getLanguageCode() + "=" + contentVersion.getLanguage().getLanguageCode());
+					logger.info("" + currentContentVersion.getLanguage().getLanguageCode() + "=" + contentVersion.getLanguage().getLanguageCode());
 					if(currentContentVersion.getLanguage().getLanguageCode().equals(contentVersion.getLanguage().getLanguageCode()))
 					{
 						noLanguageVersionFound = false;
 						
-						getLogger().info("" + contentVersion.getIsActive() + "=" + contentVersion.getLanguage().getLanguageCode());
+						logger.info("" + contentVersion.getIsActive() + "=" + contentVersion.getLanguage().getLanguageCode());
 						if(contentVersion.getIsActive().booleanValue() && contentVersion.getContentVersionId().intValue() > currentContentVersion.getContentVersionId().intValue())
 						{
-							getLogger().info("A later version was found... removing this one..");
+							logger.info("A later version was found... removing this one..");
 							selectedContentVersionsIterator.remove();
 							addLanguageVersion = true;
 						}						
@@ -572,14 +572,14 @@ public class ImportRepositoryAction extends InfoGlueAbstractAction
 			contentVersions = selectedContentVersions;
 		}
 		
-		getLogger().info("new contentVersions:" + contentVersions.size());
+		logger.info("new contentVersions:" + contentVersions.size());
 		//Collection contentVersions = content.getContentVersions();
 		Iterator contentVersionsIterator = contentVersions.iterator();
 		while(contentVersionsIterator.hasNext())
 		{
 			ContentVersion contentVersion = (ContentVersion)contentVersionsIterator.next();
 			Language language = LanguageController.getController().getLanguageWithCode(contentVersion.getLanguage().getLanguageCode(), db);
-			getLogger().info("Creating contentVersion for language:" + contentVersion.getLanguage().getLanguageCode() + " on content " + content.getName());
+			logger.info("Creating contentVersion for language:" + contentVersion.getLanguage().getLanguageCode() + " on content " + content.getName());
 
 			contentVersion.setOwningContent((ContentImpl)content);
 			contentVersion.setLanguage((LanguageImpl)language);
@@ -632,18 +632,18 @@ public class ImportRepositoryAction extends InfoGlueAbstractAction
 	/*
 	private void updateContentVersions(List allContents, Map contentIdMap, Map siteNodeIdMap)
 	{
-	    getLogger().info("allContents:" + allContents.size());
+	    logger.info("allContents:" + allContents.size());
 	    Iterator allContentsIterator = allContents.iterator();
 	    while(allContentsIterator.hasNext())
 	    {
 	        Content content = (Content)allContentsIterator.next();
 	        
-	        getLogger().info("content:" + content.getName());
+	        logger.info("content:" + content.getName());
 	        Collection contentVersions = content.getContentVersions();
 	        
 			if(onlyLatestVersions.equalsIgnoreCase("true"))
 			{
-				getLogger().info("org contentVersions:" + contentVersions.size());
+				logger.info("org contentVersions:" + contentVersions.size());
 				List selectedContentVersions = new ArrayList();
 				Iterator realContentVersionsIterator = contentVersions.iterator();
 				while(realContentVersionsIterator.hasNext())
@@ -655,15 +655,15 @@ public class ImportRepositoryAction extends InfoGlueAbstractAction
 					while(selectedContentVersionsIterator.hasNext())
 					{
 						ContentVersion currentContentVersion = (ContentVersion)selectedContentVersionsIterator.next();
-						getLogger().info("" + currentContentVersion.getLanguage().getLanguageCode() + "=" + contentVersion.getLanguage().getLanguageCode());
+						logger.info("" + currentContentVersion.getLanguage().getLanguageCode() + "=" + contentVersion.getLanguage().getLanguageCode());
 						if(currentContentVersion.getLanguage().getLanguageCode().equals(contentVersion.getLanguage().getLanguageCode()))
 						{
 							noLanguageVersionFound = false;
 							
-							getLogger().info("" + contentVersion.getIsActive() + "=" + contentVersion.getLanguage().getLanguageCode());
+							logger.info("" + contentVersion.getIsActive() + "=" + contentVersion.getLanguage().getLanguageCode());
 							if(contentVersion.getIsActive().booleanValue() && contentVersion.getContentVersionId().intValue() > currentContentVersion.getContentVersionId().intValue())
 							{
-								getLogger().info("A later version was found... removing this one..");
+								logger.info("A later version was found... removing this one..");
 								selectedContentVersionsIterator.remove();
 								addLanguageVersion = true;
 							}						
@@ -703,7 +703,7 @@ public class ImportRepositoryAction extends InfoGlueAbstractAction
                 contentVersionValue = contentVersionValue.replaceAll("entity=\"SiteNode\" entityId=\"", "entity=\"SiteNode\" entityId=\"old_");
                 contentVersionValue = contentVersionValue.replaceAll("entity='SiteNode'><id>", "entity='SiteNode'><id>old_");
 	            
-	            //getLogger().info("contentVersionValue before:" + contentVersionValue);
+	            //logger.info("contentVersionValue before:" + contentVersionValue);
                 
 	            Iterator contentIdMapIterator = contentIdMap.keySet().iterator();
 	            while (contentIdMapIterator.hasNext()) 
@@ -711,7 +711,7 @@ public class ImportRepositoryAction extends InfoGlueAbstractAction
 	                String oldContentId = (String)contentIdMapIterator.next();
 	                String newContentId = (String)contentIdMap.get(oldContentId);
 	                
-	                //getLogger().info("Replacing all:" + oldContentId + " with " + newContentId);
+	                //logger.info("Replacing all:" + oldContentId + " with " + newContentId);
 	                
 	                contentVersionValue = contentVersionValue.replaceAll("contentId=\"old_" + oldContentId + "\"", "contentId=\"" + newContentId + "\"");
 	                contentVersionValue = contentVersionValue.replaceAll("\\?contentId=old_" + oldContentId + "&", "\\?contentId=" + newContentId + "&");
@@ -728,7 +728,7 @@ public class ImportRepositoryAction extends InfoGlueAbstractAction
 	                String oldSiteNodeId = (String)siteNodeIdMapIterator.next();
 	                String newSiteNodeId = (String)siteNodeIdMap.get(oldSiteNodeId);
 	                
-	                //getLogger().info("Replacing all:" + oldSiteNodeId + " with " + newSiteNodeId);
+	                //logger.info("Replacing all:" + oldSiteNodeId + " with " + newSiteNodeId);
 	                
 	                contentVersionValue = contentVersionValue.replaceAll("siteNodeId=\"old_" + oldSiteNodeId + "\"", "siteNodeId=\"" + newSiteNodeId + "\"");
 	                contentVersionValue = contentVersionValue.replaceAll("getPageUrl\\(old_" + oldSiteNodeId + ",", "getPageUrl\\(" + newSiteNodeId + ",");
@@ -736,12 +736,12 @@ public class ImportRepositoryAction extends InfoGlueAbstractAction
 	                contentVersionValue = contentVersionValue.replaceAll("entity='SiteNode'><id>old_" + oldSiteNodeId + "</id>", "entity='SiteNode'><id>" + newSiteNodeId + "</id>");
 	            }
 	            
-	            //getLogger().info("contentVersionValue after:" + contentVersionValue);
+	            //logger.info("contentVersionValue after:" + contentVersionValue);
 	            
 	            //Now replace all occurrances of old as they should never be there.
                 contentVersionValue = contentVersionValue.replaceAll("old_", "");
 
-	            getLogger().info("new contentVersionValue:" + contentVersionValue);
+	            logger.info("new contentVersionValue:" + contentVersionValue);
 	            contentVersion.setVersionValue(contentVersionValue);
 	        }
 	    }
@@ -753,13 +753,13 @@ public class ImportRepositoryAction extends InfoGlueAbstractAction
 	 */
 	private void updateContentVersions(Content content, Map contentIdMap, Map siteNodeIdMap) throws Exception
 	{
-	    getLogger().info("content:" + content.getName());
+	    logger.info("content:" + content.getName());
 
 	    Collection contentVersions = content.getContentVersions();
 	        
 		if(onlyLatestVersions.equalsIgnoreCase("true"))
 		{
-			getLogger().info("org contentVersions:" + contentVersions.size());
+			logger.info("org contentVersions:" + contentVersions.size());
 			List selectedContentVersions = new ArrayList();
 			Iterator realContentVersionsIterator = contentVersions.iterator();
 			while(realContentVersionsIterator.hasNext())
@@ -771,15 +771,15 @@ public class ImportRepositoryAction extends InfoGlueAbstractAction
 				while(selectedContentVersionsIterator.hasNext())
 				{
 					ContentVersion currentContentVersion = (ContentVersion)selectedContentVersionsIterator.next();
-					getLogger().info("" + currentContentVersion.getLanguage().getLanguageCode() + "=" + contentVersion.getLanguage().getLanguageCode());
+					logger.info("" + currentContentVersion.getLanguage().getLanguageCode() + "=" + contentVersion.getLanguage().getLanguageCode());
 					if(currentContentVersion.getLanguage().getLanguageCode().equals(contentVersion.getLanguage().getLanguageCode()))
 					{
 						noLanguageVersionFound = false;
 						
-						getLogger().info("" + contentVersion.getIsActive() + "=" + contentVersion.getLanguage().getLanguageCode());
+						logger.info("" + contentVersion.getIsActive() + "=" + contentVersion.getLanguage().getLanguageCode());
 						if(contentVersion.getIsActive().booleanValue() && contentVersion.getContentVersionId().intValue() > currentContentVersion.getContentVersionId().intValue())
 						{
-							getLogger().info("A later version was found... removing this one..");
+							logger.info("A later version was found... removing this one..");
 							selectedContentVersionsIterator.remove();
 							addLanguageVersion = true;
 						}						
@@ -814,7 +814,7 @@ public class ImportRepositoryAction extends InfoGlueAbstractAction
             contentVersionValue = this.prepareAllRelations(contentVersionValue);
             	            
             
-            //getLogger().info("contentVersionValue before:" + contentVersionValue);
+            //logger.info("contentVersionValue before:" + contentVersionValue);
             
             Iterator contentIdMapIterator = contentIdMap.keySet().iterator();
             while (contentIdMapIterator.hasNext()) 
@@ -822,7 +822,7 @@ public class ImportRepositoryAction extends InfoGlueAbstractAction
                 String oldContentId = (String)contentIdMapIterator.next();
                 String newContentId = (String)contentIdMap.get(oldContentId);
                 
-                //getLogger().info("Replacing all:" + oldContentId + " with " + newContentId);
+                //logger.info("Replacing all:" + oldContentId + " with " + newContentId);
                 
                 contentVersionValue = contentVersionValue.replaceAll("contentId=\"oldContentId_" + oldContentId + "\"", "contentId=\"" + newContentId + "\"");
                 contentVersionValue = contentVersionValue.replaceAll("\\?contentId=oldContentId_" + oldContentId + "&", "\\?contentId=" + newContentId + "&");
@@ -840,7 +840,7 @@ public class ImportRepositoryAction extends InfoGlueAbstractAction
                 String oldSiteNodeId = (String)siteNodeIdMapIterator.next();
                 String newSiteNodeId = (String)siteNodeIdMap.get(oldSiteNodeId);
                 
-                //getLogger().info("Replacing all:" + oldSiteNodeId + " with " + newSiteNodeId);
+                //logger.info("Replacing all:" + oldSiteNodeId + " with " + newSiteNodeId);
                 
                 contentVersionValue = contentVersionValue.replaceAll("siteNodeId=\"oldSiteNodeId_" + oldSiteNodeId + "\"", "siteNodeId=\"" + newSiteNodeId + "\"");
                 contentVersionValue = contentVersionValue.replaceAll("getPageUrl\\(oldSiteNodeId_" + oldSiteNodeId + ",", "getPageUrl\\(" + newSiteNodeId + ",");
@@ -849,13 +849,13 @@ public class ImportRepositoryAction extends InfoGlueAbstractAction
                 contentVersionValue = contentVersionValue.replaceAll("<id>oldSiteNodeId_" + oldSiteNodeId + "</id>", "<id>" + newSiteNodeId + "</id>");
             }
             
-            //getLogger().info("contentVersionValue after:" + contentVersionValue);
+            //logger.info("contentVersionValue after:" + contentVersionValue);
             
             //Now replace all occurrances of old as they should never be there.
             contentVersionValue = contentVersionValue.replaceAll("oldContentId_", "");
             contentVersionValue = contentVersionValue.replaceAll("oldSiteNodeId_", "");
 
-            getLogger().info("new contentVersionValue:" + contentVersionValue);
+            logger.info("new contentVersionValue:" + contentVersionValue);
             contentVersion.setVersionValue(contentVersionValue);
         }
 	}
@@ -926,13 +926,13 @@ public class ImportRepositoryAction extends InfoGlueAbstractAction
 	/*
 		private void updateContentVersions(List allContents, Map contentIdMap, Map siteNodeIdMap)
 	{
-	    getLogger().info("allContents:" + allContents.size());
+	    logger.info("allContents:" + allContents.size());
 	    Iterator allContentsIterator = allContents.iterator();
 	    while(allContentsIterator.hasNext())
 	    {
 	        Content content = (Content)allContentsIterator.next();
 	        
-	        getLogger().info("content:" + content);
+	        logger.info("content:" + content);
 	        
 	        Iterator contentVersionIterator = content.getContentVersions().iterator();
 	        while(contentVersionIterator.hasNext())
@@ -952,7 +952,7 @@ public class ImportRepositoryAction extends InfoGlueAbstractAction
                 contentVersionValue = contentVersionValue.replaceAll("entity=\"SiteNode\" entityId=\"" + oldSiteNodeId + "\"", "entity=\"SiteNode\" entityId=\"" + newSiteNodeId + "\"");
                 contentVersionValue = contentVersionValue.replaceAll("entity='SiteNode'><id>" + oldSiteNodeId + "</id>", "entity='SiteNode'><id>" + newSiteNodeId + "</id>");
 	            
-	            getLogger().info("contentVersionValue before:" + contentVersionValue);
+	            logger.info("contentVersionValue before:" + contentVersionValue);
                 
 	            Iterator contentIdMapIterator = contentIdMap.keySet().iterator();
 	            while (contentIdMapIterator.hasNext()) 
@@ -960,7 +960,7 @@ public class ImportRepositoryAction extends InfoGlueAbstractAction
 	                String oldContentId = (String)contentIdMapIterator.next();
 	                String newContentId = (String)contentIdMap.get(oldContentId);
 	                
-	                getLogger().info("Replacing all:" + oldContentId + " with " + newContentId);
+	                logger.info("Replacing all:" + oldContentId + " with " + newContentId);
 	                
 	                contentVersionValue = contentVersionValue.replaceAll("contentId=\"" + oldContentId + "\"", "contentId=\"" + newContentId + "\"");
 	                contentVersionValue = contentVersionValue.replaceAll("contentId=" + oldContentId + "&", "contentId=" + newContentId + "&");
@@ -977,7 +977,7 @@ public class ImportRepositoryAction extends InfoGlueAbstractAction
 	                String oldSiteNodeId = (String)siteNodeIdMapIterator.next();
 	                String newSiteNodeId = (String)siteNodeIdMap.get(oldSiteNodeId);
 	                
-	                getLogger().info("Replacing all:" + oldSiteNodeId + " with " + newSiteNodeId);
+	                logger.info("Replacing all:" + oldSiteNodeId + " with " + newSiteNodeId);
 	                
 	                contentVersionValue = contentVersionValue.replaceAll("siteNodeId=\"" + oldSiteNodeId + "\"", "siteNodeId=\"" + newSiteNodeId + "\"");
 	                contentVersionValue = contentVersionValue.replaceAll("getPageUrl\\(" + oldSiteNodeId + ",", "getPageUrl\\(" + newSiteNodeId + ",");
@@ -985,9 +985,9 @@ public class ImportRepositoryAction extends InfoGlueAbstractAction
 	                contentVersionValue = contentVersionValue.replaceAll("entity='SiteNode'><id>" + oldSiteNodeId + "</id>", "entity='SiteNode'><id>" + newSiteNodeId + "</id>");
 	            }
 	            
-	            getLogger().info("contentVersionValue after:" + contentVersionValue);
+	            logger.info("contentVersionValue after:" + contentVersionValue);
 
-	            getLogger().info("new contentVersionValue:" + contentVersionValue);
+	            logger.info("new contentVersionValue:" + contentVersionValue);
 	            contentVersion.setVersionValue(contentVersionValue);
 	        }
 	    }

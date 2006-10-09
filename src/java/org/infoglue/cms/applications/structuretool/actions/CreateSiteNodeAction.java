@@ -27,6 +27,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
@@ -54,6 +55,7 @@ import org.infoglue.cms.util.sorters.ReflectionComparator;
 
 public class CreateSiteNodeAction extends InfoGlueAbstractAction
 {
+    private final static Logger logger = Logger.getLogger(CreateSiteNodeAction.class.getName());
 
     private Integer siteNodeId;
     private String name;
@@ -135,13 +137,13 @@ public class CreateSiteNodeAction extends InfoGlueAbstractAction
     	
     public void setPublishDateTime(String publishDateTime)
     {
-       	getLogger().info("publishDateTime:" + publishDateTime);
+       	logger.info("publishDateTime:" + publishDateTime);
    		this.siteNodeVO.setPublishDateTime(new VisualFormatter().parseDate(publishDateTime, "yyyy-MM-dd HH:mm"));
     }
 
     public void setExpireDateTime(String expireDateTime)
     {
-       	getLogger().info("expireDateTime:" + expireDateTime);
+       	logger.info("expireDateTime:" + expireDateTime);
        	this.siteNodeVO.setExpireDateTime(new VisualFormatter().parseDate(expireDateTime, "yyyy-MM-dd HH:mm"));
 	}
  
@@ -202,7 +204,7 @@ public class CreateSiteNodeAction extends InfoGlueAbstractAction
 		}
 		catch(Exception e)
 		{
-			getLogger().warn("We could not get the url of the digitalAsset: " + e.getMessage(), e);
+			logger.warn("We could not get the url of the digitalAsset: " + e.getMessage(), e);
 			imageHref = e.getMessage();
 		}
 		
@@ -223,10 +225,10 @@ public class CreateSiteNodeAction extends InfoGlueAbstractAction
         ceb = this.siteNodeVO.validate();
     	ceb.throwIfNotEmpty();
     	
-    	getLogger().info("name:" + this.siteNodeVO.getName());
-    	getLogger().info("publishDateTime:" + this.siteNodeVO.getPublishDateTime());
-    	getLogger().info("expireDateTime:" + this.siteNodeVO.getExpireDateTime());
-    	getLogger().info("isBranch:" + this.siteNodeVO.getIsBranch());
+    	logger.info("name:" + this.siteNodeVO.getName());
+    	logger.info("publishDateTime:" + this.siteNodeVO.getPublishDateTime());
+    	logger.info("expireDateTime:" + this.siteNodeVO.getExpireDateTime());
+    	logger.info("isBranch:" + this.siteNodeVO.getIsBranch());
     	
     	Database db = CastorDatabaseService.getDatabase();
         ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
@@ -244,7 +246,7 @@ public class CreateSiteNodeAction extends InfoGlueAbstractAction
         }
         catch(Exception e)
         {
-            getLogger().error("An error occurred so we should not completes the transaction:" + e, e);
+            logger.error("An error occurred so we should not completes the transaction:" + e, e);
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }

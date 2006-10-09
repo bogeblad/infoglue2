@@ -30,7 +30,9 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.log4j.Logger;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
+import org.infoglue.cms.applications.structuretool.actions.ViewStructureTreeForInlineLinkAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
@@ -50,6 +52,8 @@ import org.infoglue.deliver.controllers.kernel.impl.simple.ExtranetController;
 
 public class InfoGlueDefaultInputHandlerAction extends InfoGlueAbstractAction 
 {
+    private final static Logger logger = Logger.getLogger(InfoGlueDefaultInputHandlerAction.class.getName());
+
 	private Integer siteNodeId = null;
 	private Integer languageId = null;
 	private Integer contentId = null;
@@ -100,7 +104,7 @@ public class InfoGlueDefaultInputHandlerAction extends InfoGlueAbstractAction
 			
 			String inputHandlerClassName = ContentDeliveryController.getContentDeliveryController().getContentAttribute(dbWrapper.getDatabase(), formContentId, languageId, "InputHandlerClassName", siteNodeId, true, DeliveryContext.getDeliveryContext(), (InfoGluePrincipal)principal, false);
 
-    		getLogger().info("Trying to invoke " + inputHandlerClassName);
+    		logger.info("Trying to invoke " + inputHandlerClassName);
 	    	Object object =	Class.forName(inputHandlerClassName).newInstance();
     		InfoGlueInputHandler infoGlueInputHandler = (InfoGlueInputHandler)object;
     		HashMap parameters = requestToHashtable(this.getRequest()); 
@@ -110,7 +114,7 @@ public class InfoGlueDefaultInputHandlerAction extends InfoGlueAbstractAction
 		}
 		catch(Exception e)
 		{
-			getLogger().error("An error occurred so we should not complete the transaction:" + e, e);
+			logger.error("An error occurred so we should not complete the transaction:" + e, e);
 			rollbackTransaction(dbWrapper.getDatabase());
 			throw new SystemException(e.getMessage());
 		}

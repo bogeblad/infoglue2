@@ -27,7 +27,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
+import org.infoglue.cms.applications.mydesktoptool.actions.ViewMyDesktopToolStartPageAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentStateController;
 import org.infoglue.cms.controllers.kernel.impl.simple.PublicationController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeStateController;
@@ -45,6 +47,8 @@ import org.infoglue.cms.entities.structure.SiteNodeVersionVO;
 
 public class ChangeMultiSiteNodeVersionStatePublishAction extends InfoGlueAbstractAction
 {
+    private final static Logger logger = Logger.getLogger(ChangeMultiSiteNodeVersionStatePublishAction.class.getName());
+
 	private Integer siteNodeId;
 	private List siteNodeVersionId = new ArrayList();
 	private List contentVersionId = new ArrayList();
@@ -70,7 +74,7 @@ public class ChangeMultiSiteNodeVersionStatePublishAction extends InfoGlueAbstra
 		while(it.hasNext())
 		{
 			Integer siteNodeVersionId = (Integer)it.next();
-			getLogger().info("Publishing:" + siteNodeVersionId);
+			logger.info("Publishing:" + siteNodeVersionId);
 			SiteNodeVersion siteNodeVersion = SiteNodeStateController.getController().changeState(siteNodeVersionId, SiteNodeVersionVO.PUBLISH_STATE, getVersionComment(), this.overrideVersionModifyer, this.getInfoGluePrincipal(), null, events);
 		}
 
@@ -80,7 +84,7 @@ public class ChangeMultiSiteNodeVersionStatePublishAction extends InfoGlueAbstra
 		while(contentVersionIdsIterator.hasNext())
 		{
 			Integer contentVersionId = (Integer)contentVersionIdsIterator.next();
-			getLogger().info("Publishing:" + contentVersionId);
+			logger.info("Publishing:" + contentVersionId);
 			ContentVersion contentVersion = ContentStateController.changeState(contentVersionId, ContentVersionVO.PUBLISH_STATE, getVersionComment(), this.overrideVersionModifyer, this.getInfoGluePrincipal(), null, events);
 		}
 

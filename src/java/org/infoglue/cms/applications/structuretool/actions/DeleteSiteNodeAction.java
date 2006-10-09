@@ -26,6 +26,7 @@ package org.infoglue.cms.applications.structuretool.actions;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.RegistryController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeController;
@@ -41,6 +42,8 @@ import org.infoglue.cms.entities.structure.SiteNodeVO;
 
 public class DeleteSiteNodeAction extends InfoGlueAbstractAction
 {
+    private final static Logger logger = Logger.getLogger(DeleteSiteNodeAction.class.getName());
+
 	private SiteNodeVO siteNodeVO;
 	private Integer siteNodeId;
 	private Integer parentSiteNodeId;
@@ -79,7 +82,7 @@ public class DeleteSiteNodeAction extends InfoGlueAbstractAction
 			}
 			catch(Exception e)
 			{
-				getLogger().info("The siteNode must have been a root-siteNode because we could not find a parent.");
+				logger.info("The siteNode must have been a root-siteNode because we could not find a parent.");
 			}
 
 			SiteNodeControllerProxy.getSiteNodeControllerProxy().acDelete(this.getInfoGluePrincipal(), this.siteNodeVO);

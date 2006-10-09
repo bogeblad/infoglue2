@@ -31,6 +31,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.AccessRightController;
@@ -61,6 +62,7 @@ import org.infoglue.cms.security.InfoGlueGroup;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.security.InfoGlueRole;
 import org.infoglue.cms.util.CmsPropertyHandler;
+import org.infoglue.deliver.applications.actions.ViewPageAction;
 import org.infoglue.deliver.util.CacheController;
 import org.infoglue.deliver.util.HttpHelper;
 
@@ -75,6 +77,8 @@ import webwork.action.Action;
 
 public class InstallationValidatorAction extends InfoGlueAbstractAction
 {
+    public final static Logger logger = Logger.getLogger(InstallationValidatorAction.class.getName());
+
     private Boolean validateDB = new Boolean(true);
     private Boolean validateFileSystem = new Boolean(true);
     private Boolean validateSystemSettings = new Boolean(true);
@@ -120,7 +124,7 @@ public class InstallationValidatorAction extends InfoGlueAbstractAction
         }
         catch(Exception e)
         {
-            getLogger().error("An error occurred so we should not complete the transaction:" + e, e);
+            logger.error("An error occurred so we should not complete the transaction:" + e, e);
             db.rollback();
             throw new SystemException(e.getMessage());
         }
@@ -138,7 +142,7 @@ public class InstallationValidatorAction extends InfoGlueAbstractAction
         }
         catch(Exception e)
         {
-            getLogger().error("An error occurred so we should not complete the transaction:" + e, e);
+            logger.error("An error occurred so we should not complete the transaction:" + e, e);
             throw new SystemException(e.getMessage());
         }
 
@@ -414,7 +418,7 @@ public class InstallationValidatorAction extends InfoGlueAbstractAction
         }
         catch(Exception e)
         {
-            getLogger().error("An error occurred so we should not complete the transaction:" + e, e);
+            logger.error("An error occurred so we should not complete the transaction:" + e, e);
             db.rollback();
             throw new SystemException(e.getMessage());
         }
@@ -481,7 +485,7 @@ public class InstallationValidatorAction extends InfoGlueAbstractAction
         }
         catch(Exception e)
         {
-            getLogger().error("An error occurred so we should not complete the transaction:" + e, e);
+            logger.error("An error occurred so we should not complete the transaction:" + e, e);
             db.rollback();
             throw new SystemException(e.getMessage());
         }
@@ -547,7 +551,7 @@ public class InstallationValidatorAction extends InfoGlueAbstractAction
         }
         catch(Exception e)
         {
-            getLogger().error("An error occurred so we should not complete the transaction:" + e, e);
+            logger.error("An error occurred so we should not complete the transaction:" + e, e);
             db.rollback();
             throw new SystemException(e.getMessage());
         }
@@ -613,7 +617,7 @@ public class InstallationValidatorAction extends InfoGlueAbstractAction
         }
         catch(Exception e)
         {
-            getLogger().error("An error occurred so we should not complete the transaction:" + e, e);
+            logger.error("An error occurred so we should not complete the transaction:" + e, e);
             db.rollback();
             throw new SystemException(e.getMessage());
         }

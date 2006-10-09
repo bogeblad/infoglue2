@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.AvailableServiceBindingController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ServiceDefinitionController;
@@ -41,6 +42,8 @@ import org.infoglue.cms.util.ConstraintExceptionBuffer;
 
 public class ViewListTemplateAction extends InfoGlueAbstractAction
 {
+    private final static Logger logger = Logger.getLogger(ViewListTemplateAction.class.getName());
+
 	private static final long serialVersionUID = 1L;
 
     private Integer siteNodeVersionId;
@@ -167,7 +170,7 @@ public class ViewListTemplateAction extends InfoGlueAbstractAction
     	{
     		ServiceDefinitionVO serviceDefinitionVO = ServiceDefinitionController.getController().getServiceDefinitionVOWithId(serviceDefinitionId);
 			String serviceDefinitionClassName = serviceDefinitionVO.getClassName();
-			getLogger().info("serviceDefinitionClassName:" + serviceDefinitionClassName);
+			logger.info("serviceDefinitionClassName:" + serviceDefinitionClassName);
 			
 			BaseService service = (BaseService)Class.forName(serviceDefinitionClassName).newInstance();
     		response = service.selectMatchingEntities(arguments);
@@ -190,19 +193,19 @@ public class ViewListTemplateAction extends InfoGlueAbstractAction
     	List serviceDefinitions = AvailableServiceBindingController.getController().getServiceDefinitionVOList(this.availableServiceBindingId);
     	if(serviceDefinitions == null || serviceDefinitions.size() == 0)
     	{
-	    	getLogger().info("Returning error");
+	    	logger.info("Returning error");
     		//throw new SystemException();
 	        return "error";
 	    }
     	else if(serviceDefinitions.size() == 1)
     	{
-	    	getLogger().info("Returning success");
+	    	logger.info("Returning success");
 	        this.singleServiceDefinitionVO = (ServiceDefinitionVO)serviceDefinitions.get(0);	    
 	        return "success"; 
     	} 
     	else
     	{
-	    	getLogger().info("Returning chooseService");
+	    	logger.info("Returning chooseService");
     		return "chooseService";
     	}
     }

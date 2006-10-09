@@ -25,6 +25,7 @@ package org.infoglue.cms.applications.structuretool.actions;
 
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.usecases.structuretool.ViewSiteNodeUCC;
 import org.infoglue.cms.controllers.usecases.structuretool.ViewSiteNodeUCCFactory;
@@ -34,6 +35,8 @@ import org.infoglue.cms.entities.structure.SiteNodeVersionVO;
 
 public class ViewSiteNodeVersionAction extends InfoGlueAbstractAction
 {
+    private final static Logger logger = Logger.getLogger(ViewSiteNodeVersionAction.class.getName());
+
 	private static final long serialVersionUID = 1L;
 
 	private Integer unrefreshedSiteNodeId = new Integer(0);
@@ -53,7 +56,7 @@ public class ViewSiteNodeVersionAction extends InfoGlueAbstractAction
     
     public ViewSiteNodeVersionAction(SiteNodeVO siteNodeVO, SiteNodeVersionVO siteNodeVersionVO)
     {
-		getLogger().info("Construction ViewSiteNodeAction");
+		logger.info("Construction ViewSiteNodeAction");
         this.siteNodeVO = siteNodeVO;
         this.siteNodeVersionVO = siteNodeVersionVO;
     }
@@ -65,8 +68,8 @@ public class ViewSiteNodeVersionAction extends InfoGlueAbstractAction
         //this.siteNodeTypeDefinitionVO = viewSiteNodeUCC.getSiteNodeTypeDefinition(siteNodeId);
         //this.siteNodeVersionVO = viewSiteNodeUCC.getLatestSiteNodeVersion(siteNodeId, languageId);
      	
-     	getLogger().info("siteNodeVersionVO:" + siteNodeVersionVO);
-        getLogger().info("siteNodeVO:" + siteNodeVO);
+     	logger.info("siteNodeVersionVO:" + siteNodeVersionVO);
+        logger.info("siteNodeVO:" + siteNodeVO);
         //this.availableLanguages = viewSiteNodeUCC.getRepositoryLanguages(siteNodeId);
     } 
 
@@ -86,7 +89,7 @@ public class ViewSiteNodeVersionAction extends InfoGlueAbstractAction
 
     public String doChangeState() throws Exception
     {
-    	getLogger().info("Gonna change state with comment:" + this.siteNodeVersionVO.getVersionComment());
+    	logger.info("Gonna change state with comment:" + this.siteNodeVersionVO.getVersionComment());
     	//SiteNodeVersionController.updateStateId(this.siteNodeVersionVO.getSiteNodeVersionId(), getStateId(), this.siteNodeVersionVO.getVersionComment(), getRequest().getRemoteUser(), this.getSiteNodeId(), this.getLanguageId());
     	this.initialize(getSiteNodeId(), this.languageId);
         return "success";
@@ -94,7 +97,7 @@ public class ViewSiteNodeVersionAction extends InfoGlueAbstractAction
     
     public String doCommentVersion() throws Exception
     {
-    	getLogger().info("Gonna show the comment-view");
+    	logger.info("Gonna show the comment-view");
         return "commentVersion";
     }
     

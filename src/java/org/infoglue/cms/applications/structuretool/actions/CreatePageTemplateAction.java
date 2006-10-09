@@ -29,6 +29,7 @@ import java.io.InputStream;
 import java.util.Enumeration;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.applications.contenttool.actions.ViewContentTreeActionInterface;
@@ -60,6 +61,8 @@ import webwork.multipart.MultiPartRequestWrapper;
 
 public class CreatePageTemplateAction extends InfoGlueAbstractAction implements ViewContentTreeActionInterface
 {
+    private final static Logger logger = Logger.getLogger(CreatePageTemplateAction.class.getName());
+
 	//Used by the tree only
 	private List repositories;
 	private Integer contentId;
@@ -85,11 +88,11 @@ public class CreatePageTemplateAction extends InfoGlueAbstractAction implements 
 
     public String doExecute() throws Exception
     {
-        getLogger().info("contentId:" + contentId);
-        getLogger().info("parentContentId:" + parentContentId);
-        getLogger().info("repositoryId:" + repositoryId);
-        getLogger().info("siteNodeId:" + siteNodeId);
-        getLogger().info("name:" + name);
+        logger.info("contentId:" + contentId);
+        logger.info("parentContentId:" + parentContentId);
+        logger.info("repositoryId:" + repositoryId);
+        logger.info("siteNodeId:" + siteNodeId);
+        logger.info("name:" + name);
         
         ContentTypeDefinitionVO contentTypeDefinitionVO = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithName("PageTemplate");
         if(contentTypeDefinitionVO == null)
@@ -110,12 +113,12 @@ public class CreatePageTemplateAction extends InfoGlueAbstractAction implements 
 		Integer originalMetaInfoMasterLanguageId = LanguageController.getController().getMasterLanguage(metaInfoContentVO.getRepositoryId()).getId();
 		Integer destinationMasterLanguageId = LanguageController.getController().getMasterLanguage(this.repositoryId).getId();
 		ContentVersionVO originalContentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(this.contentId, originalMetaInfoMasterLanguageId);
-		getLogger().info("originalMetaInfoMasterLanguageId:" + originalMetaInfoMasterLanguageId);
-		getLogger().info("contentId:" + contentId);
-		getLogger().info("originalContentVersionVO:" + originalContentVersionVO);
+		logger.info("originalMetaInfoMasterLanguageId:" + originalMetaInfoMasterLanguageId);
+		logger.info("contentId:" + contentId);
+		logger.info("originalContentVersionVO:" + originalContentVersionVO);
 		
 	    componentStructure = ContentVersionController.getContentVersionController().getAttributeValue(originalContentVersionVO.getId(), "ComponentStructure", false);
-	    getLogger().info("componentStructure:" + componentStructure);
+	    logger.info("componentStructure:" + componentStructure);
 		
 		//Create initial content version also... in masterlanguage
 		String versionValue = "<?xml version='1.0' encoding='UTF-8'?><article xmlns=\"x-schema:ArticleSchema.xml\"><attributes><Name><![CDATA[" + this.name + "]]></Name><ComponentStructure><![CDATA[" + componentStructure + "]]></ComponentStructure></attributes></article>";
@@ -133,7 +136,7 @@ public class CreatePageTemplateAction extends InfoGlueAbstractAction implements 
     	try 
     	{
     		MultiPartRequestWrapper mpr = ActionContext.getContext().getMultiPartRequest();
-    		getLogger().info("mpr:" + mpr);
+    		logger.info("mpr:" + mpr);
     		if(mpr != null)
     		{ 
 	    		Enumeration names = mpr.getFileNames();
@@ -143,9 +146,9 @@ public class CreatePageTemplateAction extends InfoGlueAbstractAction implements 
 					String contentType    = mpr.getContentType(name);
 					String fileSystemName = mpr.getFilesystemName(name);
 					
-					getLogger().info("name:" + name);
-					getLogger().info("contentType:" + contentType);
-					getLogger().info("fileSystemName:" + fileSystemName);
+					logger.info("name:" + name);
+					logger.info("contentType:" + contentType);
+					logger.info("fileSystemName:" + fileSystemName);
 	            	
 	            	file = mpr.getFile(name);
 					String fileName = fileSystemName;
@@ -168,12 +171,12 @@ public class CreatePageTemplateAction extends InfoGlueAbstractAction implements 
     		}
     		else
     		{
-    		    getLogger().error("File upload failed for some reason.");
+    		    logger.error("File upload failed for some reason.");
     		}
       	} 
       	catch (Exception e) 
       	{
-      		getLogger().error("An error occurred when we tried to upload a new asset:" + e.getMessage(), e);
+      		logger.error("An error occurred when we tried to upload a new asset:" + e.getMessage(), e);
       	}
 		finally
 		{

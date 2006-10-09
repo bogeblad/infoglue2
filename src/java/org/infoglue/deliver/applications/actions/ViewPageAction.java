@@ -174,9 +174,9 @@ public class ViewPageAction extends InfoGlueAbstractAction
 
     	long elapsedTime 	= 0;
     	
-    	getLogger().info("************************************************");
-    	getLogger().info("* ViewPageAction was called....                *");
-    	getLogger().info("************************************************");
+    	logger.info("************************************************");
+    	logger.info("* ViewPageAction was called....                *");
+    	logger.info("************************************************");
     	
     	if(!CmsPropertyHandler.getOperatingMode().equals("3"))
     		tk = new ThreadMonitor(new Long(CmsPropertyHandler.getDeliverRequestTimeout()).longValue(), request, "Page view took to long!", true);
@@ -195,22 +195,22 @@ public class ViewPageAction extends InfoGlueAbstractAction
 	    	this.nodeDeliveryController			= NodeDeliveryController.getNodeDeliveryController(this.siteNodeId, this.languageId, this.contentId);
 			this.integrationDeliveryController	= IntegrationDeliveryController.getIntegrationDeliveryController(this.siteNodeId, this.languageId, this.contentId);
 			
-			getLogger().info("before pageKey...");
+			logger.info("before pageKey...");
 	    	String pageKey = this.nodeDeliveryController.getPageCacheKey(dbWrapper.getDatabase(), this.getHttpSession(), getRequest(), this.siteNodeId, this.languageId, this.contentId, browserBean.getUseragent(), this.getRequest().getQueryString(), "");
 	    	//String pageKey = CacheController.getPageCacheKey(this.siteNodeId, this.languageId, this.contentId, browserBean.getUseragent(), this.getRequest().getQueryString(), "");
 
-	    	getLogger().info("pageKey:" + pageKey);
+	    	logger.info("pageKey:" + pageKey);
 	    	String pagePath	= null;
 	    	
 	    	boolean isUserRedirected = false;
 			Integer protectedSiteNodeVersionId = this.nodeDeliveryController.getProtectedSiteNodeVersionIdForPageCache(dbWrapper.getDatabase(), siteNodeId);
-			getLogger().info("protectedSiteNodeVersionId:" + protectedSiteNodeVersionId);
+			logger.info("protectedSiteNodeVersionId:" + protectedSiteNodeVersionId);
 			if(protectedSiteNodeVersionId != null)
 				isUserRedirected = handleExtranetLogic(dbWrapper.getDatabase(), protectedSiteNodeVersionId);
 		
 			this.templateController = getTemplateController(dbWrapper, getSiteNodeId(), getLanguageId(), getContentId(), getRequest(), (InfoGluePrincipal)this.principal, false);
 			
-			getLogger().info("handled extranet users");
+			logger.info("handled extranet users");
 	
 			// ----
 			// -- portlet
@@ -222,7 +222,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			
 	        if (portalActive && !isRecacheCall) 
 	        {
-	            getLogger().info("---> Checking for portlet action");
+	            logger.info("---> Checking for portlet action");
 	            PortalService service = new PortalService();
 	            //TODO: catch PortalException?
 	            boolean actionExecuted = service.service(getRequest(), getResponse());
@@ -230,18 +230,18 @@ public class ViewPageAction extends InfoGlueAbstractAction
 	            // -- if an action was executed return NONE as a redirect is issued
 	            if (actionExecuted) 
 	            {
-	                getLogger().info("---> PortletAction was executed, returning NONE as a redirect has been issued");
-	                getLogger().info("No statistics have been run for this request");
+	                logger.info("---> PortletAction was executed, returning NONE as a redirect has been issued");
+	                logger.info("No statistics have been run for this request");
 	                isUserRedirected = true;
 	                return NONE;
 	            }
 	        }
 	
-	        getLogger().info("handled portal action");
+	        logger.info("handled portal action");
 	        
 			if(!isUserRedirected)
 			{	
-				getLogger().info("this.templateController.getPrincipal():" + this.templateController.getPrincipal());
+				logger.info("this.templateController.getPrincipal():" + this.templateController.getPrincipal());
 				DeliveryContext deliveryContext = DeliveryContext.getDeliveryContext(/*(InfoGluePrincipal)this.principal*/);
 				deliveryContext.setRepositoryName(this.repositoryName);
 				deliveryContext.setSiteNodeId(this.siteNodeId);
@@ -272,11 +272,11 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			}
 			
 	        StatisticsService.getStatisticsService().registerRequest(getRequest(), getResponse(), pagePath, elapsedTime);
-			getLogger().info("Registered request in statistics service");
+			logger.info("Registered request in statistics service");
 		}
 		catch(Exception e)
 		{
-			getLogger().error("An error occurred so we should not complete the transaction:" + e, e);
+			logger.error("An error occurred so we should not complete the transaction:" + e, e);
 			rollbackTransaction(dbWrapper.getDatabase());
 
 			getResponse().setContentType("text/html; charset=UTF-8");
@@ -286,11 +286,11 @@ public class ViewPageAction extends InfoGlueAbstractAction
 		}
 		finally
 		{
-			getLogger().info("Before closing transaction");
+			logger.info("Before closing transaction");
 
 			closeTransaction(dbWrapper.getDatabase());
 		  
-			getLogger().info("After closing transaction");
+			logger.info("After closing transaction");
 
 			//if(isRecacheCall)
 	        //{
@@ -302,13 +302,13 @@ public class ViewPageAction extends InfoGlueAbstractAction
 
 			if(elapsedTime > 10000)
 			{
-			    getLogger().warn("The page delivery took " + elapsedTime + "ms for request " + this.getRequest().getRequestURL() + "?" + this.getRequest().getQueryString());
-			    getLogger().warn("The memory consumption was " + (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) + "(" + Runtime.getRuntime().totalMemory() + "/" + Runtime.getRuntime().maxMemory() + ") bytes");
+			    logger.warn("The page delivery took " + elapsedTime + "ms for request " + this.getRequest().getRequestURL() + "?" + this.getRequest().getQueryString());
+			    logger.warn("The memory consumption was " + (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) + "(" + Runtime.getRuntime().totalMemory() + "/" + Runtime.getRuntime().maxMemory() + ") bytes");
 			}
 			else
 			{
-			    getLogger().info("The page delivery took " + elapsedTime + "ms");			
-			    getLogger().info("The memory consumption was " + (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) + "(" + Runtime.getRuntime().totalMemory() + "/" + Runtime.getRuntime().maxMemory() + ") bytes");
+			    logger.info("The page delivery took " + elapsedTime + "ms");			
+			    logger.info("The memory consumption was " + (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) + "(" + Runtime.getRuntime().totalMemory() + "/" + Runtime.getRuntime().maxMemory() + ") bytes");
 			}
 
 	    	if(tk != null)
@@ -341,9 +341,9 @@ public class ViewPageAction extends InfoGlueAbstractAction
    		long start			= new Date().getTime();
 		long elapsedTime 	= 0;
     	
-		getLogger().info("************************************************");
-		getLogger().info("* ViewPageAction was called....                *");
-		getLogger().info("************************************************");
+		logger.info("************************************************");
+		logger.info("* ViewPageAction was called....                *");
+		logger.info("************************************************");
 		
     	if(!CmsPropertyHandler.getOperatingMode().equals("3"))
     		tk = new ThreadMonitor(new Long(CmsPropertyHandler.getDeliverRequestTimeout()).longValue(), request, "Page view took to long!", true);
@@ -364,18 +364,18 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			//String pageKey = CacheController.getPageCacheKey(this.siteNodeId, this.languageId, this.contentId, browserBean.getUseragent(), this.getRequest().getQueryString(), "_" + this.showSimple + "_pagecomponentDecorated");
 	    	String pageKey = this.nodeDeliveryController.getPageCacheKey(dbWrapper.getDatabase(), this.getHttpSession(), this.getRequest(), this.siteNodeId, this.languageId, this.contentId, browserBean.getUseragent(), this.getRequest().getQueryString(), "_" + this.showSimple + "_pagecomponentDecorated");
 
-			getLogger().info("A pageKey:" + pageKey);
+			logger.info("A pageKey:" + pageKey);
 			String pagePath	= null;
 	    	
 			boolean isUserRedirected = false;
 			Integer protectedSiteNodeVersionId = this.nodeDeliveryController.getProtectedSiteNodeVersionId(dbWrapper.getDatabase(), siteNodeId);
-			getLogger().info("protectedSiteNodeVersionId:" + protectedSiteNodeVersionId);
+			logger.info("protectedSiteNodeVersionId:" + protectedSiteNodeVersionId);
 			if(protectedSiteNodeVersionId != null)
 				isUserRedirected = handleExtranetLogic(dbWrapper.getDatabase(), protectedSiteNodeVersionId);
 			
 			this.templateController = getTemplateController(dbWrapper, getSiteNodeId(), getLanguageId(), getContentId(), getRequest(), (InfoGluePrincipal)this.principal, true);
 
-			getLogger().info("handled extranet users");
+			logger.info("handled extranet users");
 
 			// ----
 			// -- portlet
@@ -387,7 +387,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			
 	        if (portalActive && !isRecacheCall) 
 	        {
-	            getLogger().info("---> Checking for portlet action");
+	            logger.info("---> Checking for portlet action");
 	            PortalService service = new PortalService();
 	            //TODO: catch PortalException?
 	            boolean actionExecuted = service.service(getRequest(), getResponse());
@@ -395,18 +395,18 @@ public class ViewPageAction extends InfoGlueAbstractAction
 	            // -- if an action was executed return NONE as a redirect is issued
 	            if (actionExecuted) 
 	            {
-	                getLogger().info("---> PortletAction was executed, returning NONE as a redirect has been issued");
-	                getLogger().info("No statistics have been run for this request");
+	                logger.info("---> PortletAction was executed, returning NONE as a redirect has been issued");
+	                logger.info("No statistics have been run for this request");
 	                isUserRedirected = true;
 	                return NONE;
 	            }
 	        }
 	
-	        getLogger().info("handled portal action");
+	        logger.info("handled portal action");
 
 			if(!isUserRedirected)
 			{	
-				getLogger().info("this.templateController.getPrincipal():" + this.templateController.getPrincipal());
+				logger.info("this.templateController.getPrincipal():" + this.templateController.getPrincipal());
 		
 				DeliveryContext deliveryContext = DeliveryContext.getDeliveryContext(/*this.templateController.getPrincipal()*/);
 				deliveryContext.setRepositoryName(this.repositoryName);
@@ -451,7 +451,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 		}
 		catch(Exception e)
 		{
-			getLogger().error("An error occurred so we should not complete the transaction:" + e, e);
+			logger.error("An error occurred so we should not complete the transaction:" + e, e);
 			rollbackTransaction(dbWrapper.getDatabase());
 			throw new SystemException(e.getMessage());
 		}
@@ -465,13 +465,13 @@ public class ViewPageAction extends InfoGlueAbstractAction
 
 			if(elapsedTime > 20000)
 			{
-			    getLogger().warn("The page delivery took " + elapsedTime + "ms for request " + this.getRequest().getRequestURL() + "?" + this.getRequest().getQueryString());
-			    getLogger().warn("The memory consumption was " + (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) + "(" + Runtime.getRuntime().totalMemory() + "/" + Runtime.getRuntime().maxMemory() + ") bytes");
+			    logger.warn("The page delivery took " + elapsedTime + "ms for request " + this.getRequest().getRequestURL() + "?" + this.getRequest().getQueryString());
+			    logger.warn("The memory consumption was " + (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) + "(" + Runtime.getRuntime().totalMemory() + "/" + Runtime.getRuntime().maxMemory() + ") bytes");
 			}
 			else
 			{
-			    getLogger().info("The page delivery took " + elapsedTime + "ms");			
-			    getLogger().info("The memory consumption was " + (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) + "(" + Runtime.getRuntime().totalMemory() + "/" + Runtime.getRuntime().maxMemory() + ") bytes");
+			    logger.info("The page delivery took " + elapsedTime + "ms");			
+			    logger.info("The memory consumption was " + (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) + "(" + Runtime.getRuntime().totalMemory() + "/" + Runtime.getRuntime().maxMemory() + ") bytes");
 			}
 
 			if(tk != null)
@@ -689,13 +689,13 @@ public class ViewPageAction extends InfoGlueAbstractAction
 		try
 		{
 		    String referer = this.getRequest().getHeader("Referer");
-			getLogger().info("referer:" + referer);
+			logger.info("referer:" + referer);
 			
 			if(referer == null || referer.indexOf("ViewStructureToolToolBar.action") != -1)
 				referer = "/"; 
 			
 			Principal principal = (Principal)this.getHttpSession().getAttribute("infogluePrincipal");
-			getLogger().info("principal:" + principal);
+			logger.info("principal:" + principal);
 
 			//First we check if the user is logged in to the container context
 			if(principal == null)
@@ -779,7 +779,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 							if(!isAuthorized)
 							{	
 								this.getHttpSession().removeAttribute("infogluePrincipal");
-								getLogger().info("SiteNode is protected and anonymous user was allowed - sending him to login page.");
+								logger.info("SiteNode is protected and anonymous user was allowed - sending him to login page.");
 								String redirectUrl = getRedirectUrl(getRequest(), getResponse());
 								//String url = this.getURLBase() + "/ExtranetLogin!loginForm.action?returnAddress=" + URLEncoder.encode(this.getRequest().getRequestURL().toString() + "?" + this.getRequest().getQueryString() + "&referer=" + URLEncoder.encode(referer, "UTF-8") + "&date=" + System.currentTimeMillis(), "UTF-8");
 								getResponse().sendRedirect(redirectUrl);
@@ -805,7 +805,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 
 						if(principal.getName().equals(CmsPropertyHandler.getAnonymousUser()))
 						{
-							getLogger().info("SiteNode is protected and user was anonymous - sending him to login page.");
+							logger.info("SiteNode is protected and user was anonymous - sending him to login page.");
 							//String url = "ExtranetLogin!loginForm.action?returnAddress=" + URLEncoder.encode(this.getRequest().getRequestURL().toString() + "?" + this.getRequest().getQueryString() + "&referer=" + URLEncoder.encode(referer, "UTF-8") + "&date=" + System.currentTimeMillis(), "UTF-8");
 							String url = getRedirectUrl(getRequest(), getResponse());
 							
@@ -814,7 +814,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 						}
 						else
 						{
-							getLogger().info("SiteNode is protected and user has no access - sending him to no access page.");
+							logger.info("SiteNode is protected and user has no access - sending him to no access page.");
 						    String url = "ExtranetLogin!noAccess.action?referer=" + URLEncoder.encode(this.referer, "UTF-8") + "&date=" + System.currentTimeMillis();
 							getResponse().sendRedirect(url);
 							isRedirected = true;
@@ -832,7 +832,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			}
 			else
 			{
-				getLogger().info("protectedSiteNodeVersionId:" + protectedSiteNodeVersionId);
+				logger.info("protectedSiteNodeVersionId:" + protectedSiteNodeVersionId);
 
 				Principal alternativePrincipal = loginWithCookies();
 			    if(alternativePrincipal == null)
@@ -840,7 +840,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 
 			    if(protectedSiteNodeVersionId != null && alternativePrincipal != null && AccessRightController.getController().getIsPrincipalAuthorized((InfoGluePrincipal)alternativePrincipal, "SiteNodeVersion.Read", protectedSiteNodeVersionId.toString()))
 			    {
-			        getLogger().info("The user " + alternativePrincipal.getName() + " was approved.");
+			        logger.info("The user " + alternativePrincipal.getName() + " was approved.");
 			    }
 				else if(protectedSiteNodeVersionId != null && !AccessRightController.getController().getIsPrincipalAuthorized((InfoGluePrincipal)principal, "SiteNodeVersion.Read", protectedSiteNodeVersionId.toString()) &&  !AccessRightController.getController().getIsPrincipalAuthorized((InfoGluePrincipal)this.getAnonymousPrincipal(), "SiteNodeVersion.Read", protectedSiteNodeVersionId.toString()))
 				{	
@@ -852,7 +852,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 
 					if(principal.getName().equals(CmsPropertyHandler.getAnonymousUser()))
 					{
-						getLogger().info("SiteNode is protected and user was anonymous - sending him to login page.");
+						logger.info("SiteNode is protected and user was anonymous - sending him to login page.");
 						//String url = "ExtranetLogin!loginForm.action?returnAddress=" + URLEncoder.encode(this.getRequest().getRequestURL().toString() + "?" + this.getRequest().getQueryString() + "&referer=" + URLEncoder.encode(referer, "UTF-8") + "&date=" + System.currentTimeMillis(), "UTF-8");
 						String url = getRedirectUrl(getRequest(), getResponse());
 						
@@ -861,7 +861,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 					}
 					else
 					{
-						getLogger().info("SiteNode is protected and user has no access - sending him to no access page.");
+						logger.info("SiteNode is protected and user has no access - sending him to no access page.");
 						String url = "ExtranetLogin!noAccess.action?referer=" + URLEncoder.encode(this.referer, "UTF-8") + "&date=" + System.currentTimeMillis();
 
 						getResponse().sendRedirect(url);
@@ -1005,11 +1005,11 @@ public class ViewPageAction extends InfoGlueAbstractAction
 	private SiteNodeTypeDefinitionVO getSiteNodeTypeDefinition(Integer siteNodeId, Database db) throws SystemException
 	{
 	    String key = "" + siteNodeId;
-		getLogger().info("key:" + key);
+		logger.info("key:" + key);
 		SiteNodeTypeDefinitionVO siteNodeTypeDefinitionVO = (SiteNodeTypeDefinitionVO)CacheController.getCachedObject("pageCacheSiteNodeTypeDefinition", key);
 		if(siteNodeTypeDefinitionVO != null)
 		{
-			getLogger().info("There was an cached siteNodeTypeDefinitionVO:" + siteNodeTypeDefinitionVO);
+			logger.info("There was an cached siteNodeTypeDefinitionVO:" + siteNodeTypeDefinitionVO);
 		}
 		else
 		{

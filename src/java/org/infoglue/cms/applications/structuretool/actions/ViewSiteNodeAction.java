@@ -31,6 +31,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
@@ -77,6 +78,8 @@ import com.opensymphony.module.propertyset.PropertySetManager;
 
 public class ViewSiteNodeAction extends InfoGlueAbstractAction
 {
+    private final static Logger logger = Logger.getLogger(ViewSiteNodeAction.class.getName());
+
 	private static final long serialVersionUID = 1L;
 
 	private Integer unrefreshedSiteNodeId 	= new Integer(0);
@@ -104,7 +107,7 @@ public class ViewSiteNodeAction extends InfoGlueAbstractAction
     
     public ViewSiteNodeAction(SiteNodeVO siteNodeVO, SiteNodeVersionVO siteNodeVersionVO)
     {
-		getLogger().info("Construction ViewSiteNodeAction");
+		logger.info("Construction ViewSiteNodeAction");
         this.siteNodeVO = siteNodeVO;
         this.siteNodeVersionVO = siteNodeVersionVO;
     }
@@ -112,7 +115,7 @@ public class ViewSiteNodeAction extends InfoGlueAbstractAction
 	protected void initialize(Integer siteNodeId) throws Exception
 	{
 		this.siteNodeVersionVO = SiteNodeVersionControllerProxy.getSiteNodeVersionControllerProxy().getACLatestActiveSiteNodeVersionVO(this.getInfoGluePrincipal(), siteNodeId);
-		getLogger().info("siteNodeVersionVO:" + siteNodeVersionVO.getId() + ":" + siteNodeVersionVO.getIsActive());
+		logger.info("siteNodeVersionVO:" + siteNodeVersionVO.getId() + ":" + siteNodeVersionVO.getIsActive());
 		this.siteNodeVO = SiteNodeController.getSiteNodeVOWithId(siteNodeId);
 		this.repositoryId = this.siteNodeVO.getRepositoryId();
 		//SiteNodeControllerProxy.getController().getACSiteNodeVOWithId(this.getInfoGluePrincipal(), siteNodeId);
@@ -128,7 +131,7 @@ public class ViewSiteNodeAction extends InfoGlueAbstractAction
 	protected void initialize(Integer siteNodeId, Database db) throws Exception
 	{
 		this.siteNodeVersionVO = SiteNodeVersionControllerProxy.getSiteNodeVersionControllerProxy().getACLatestActiveSiteNodeVersionVO(this.getInfoGluePrincipal(), siteNodeId, db);
-		getLogger().info("siteNodeVersionVO:" + siteNodeVersionVO.getId() + ":" + siteNodeVersionVO.getIsActive());
+		logger.info("siteNodeVersionVO:" + siteNodeVersionVO.getId() + ":" + siteNodeVersionVO.getIsActive());
 		this.siteNodeVO = SiteNodeController.getSiteNodeVOWithId(siteNodeId, db);
 		
 	    if(this.siteNodeVO.getMetaInfoContentId() == null || this.siteNodeVO.getMetaInfoContentId().intValue() == -1)
@@ -181,8 +184,8 @@ public class ViewSiteNodeAction extends InfoGlueAbstractAction
 		{
 		    this.referenceBeanList = RegistryController.getController().getReferencingObjectsForSiteNode(siteNodeId);
 		    this.referencingBeanList = RegistryController.getController().getReferencedObjects(SiteNodeVersion.class.getName(), siteNodeVersionVO.getSiteNodeVersionId().toString());
-		    getLogger().info("referenceBeanList:" + referenceBeanList.size());
-		    getLogger().info("referencingBeanList:" + referencingBeanList.size());
+		    logger.info("referenceBeanList:" + referenceBeanList.size());
+		    logger.info("referencingBeanList:" + referencingBeanList.size());
 		}
 		catch(Exception e)
 		{
@@ -196,7 +199,7 @@ public class ViewSiteNodeAction extends InfoGlueAbstractAction
 	    PropertySet ps = PropertySetManager.getInstance("jdbc", args);
 
 	    String disabledLanguagesString = ps.getString("siteNode_" + siteNodeId + "_disabledLanguages");
-	    getLogger().info("disabledLanguagesString:" + disabledLanguagesString);
+	    logger.info("disabledLanguagesString:" + disabledLanguagesString);
 	    if(disabledLanguagesString != null && !disabledLanguagesString.equalsIgnoreCase(""))
 	    {
 	        String[] disabledLanguagesStringArray = disabledLanguagesString.split(",");
@@ -205,12 +208,12 @@ public class ViewSiteNodeAction extends InfoGlueAbstractAction
 	            try
 	            {
 		            LanguageVO languageVO = LanguageController.getController().getLanguageVOWithId(new Integer(disabledLanguagesStringArray[i]));
-		            getLogger().info("Adding languageVO to disabledLanguages:" + languageVO.getName());
+		            logger.info("Adding languageVO to disabledLanguages:" + languageVO.getName());
 		    	    this.disabledLanguages.add(languageVO);
 	            }
 	            catch(Exception e)
 	            {
-	                getLogger().warn("An error occurred when we tried to get disabled language:" + e.getMessage(), e);
+	                logger.warn("An error occurred when we tried to get disabled language:" + e.getMessage(), e);
 	            }
 	        }
 	    }
@@ -222,8 +225,8 @@ public class ViewSiteNodeAction extends InfoGlueAbstractAction
 		{
 		    this.referenceBeanList = RegistryController.getController().getReferencingObjectsForSiteNode(siteNodeId, db);
 		    this.referencingBeanList = RegistryController.getController().getReferencedObjects(SiteNodeVersion.class.getName(), siteNodeVersionVO.getSiteNodeVersionId().toString(), db);
-		    getLogger().info("referenceBeanList:" + referenceBeanList.size());
-		    getLogger().info("referencingBeanList:" + referencingBeanList.size());
+		    logger.info("referenceBeanList:" + referenceBeanList.size());
+		    logger.info("referencingBeanList:" + referencingBeanList.size());
 		}
 		catch(Exception e)
 		{
@@ -237,7 +240,7 @@ public class ViewSiteNodeAction extends InfoGlueAbstractAction
 	    PropertySet ps = PropertySetManager.getInstance("jdbc", args);
 
 	    String disabledLanguagesString = ps.getString("siteNode_" + siteNodeId + "_disabledLanguages");
-	    getLogger().info("disabledLanguagesString:" + disabledLanguagesString);
+	    logger.info("disabledLanguagesString:" + disabledLanguagesString);
 	    if(disabledLanguagesString != null && !disabledLanguagesString.equalsIgnoreCase(""))
 	    {
 	        String[] disabledLanguagesStringArray = disabledLanguagesString.split(",");
@@ -246,12 +249,12 @@ public class ViewSiteNodeAction extends InfoGlueAbstractAction
 	            try
 	            {
 		            LanguageVO languageVO = LanguageController.getController().getLanguageVOWithId(new Integer(disabledLanguagesStringArray[i]), db);
-		            getLogger().info("Adding languageVO to disabledLanguages:" + languageVO.getName());
+		            logger.info("Adding languageVO to disabledLanguages:" + languageVO.getName());
 		    	    this.disabledLanguages.add(languageVO);
 	            }
 	            catch(Exception e)
 	            {
-	                getLogger().warn("An error occurred when we tried to get disabled language:" + e.getMessage(), e);
+	                logger.warn("An error occurred when we tried to get disabled language:" + e.getMessage(), e);
 	            }
 	        }
 	    }
@@ -364,13 +367,13 @@ public class ViewSiteNodeAction extends InfoGlueAbstractAction
 	    }
 		catch(ConstraintException ce)
 		{
-			getLogger().info("An error occurred so we should not complete the transaction:" + ce, ce);
+			logger.info("An error occurred so we should not complete the transaction:" + ce, ce);
 			rollbackTransaction(db);
 			throw ce;
 		}
 		catch(Exception e)
 		{
-			getLogger().error("An error occurred so we should not complete the transaction:" + e, e);
+			logger.error("An error occurred so we should not complete the transaction:" + e, e);
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}
@@ -380,7 +383,7 @@ public class ViewSiteNodeAction extends InfoGlueAbstractAction
     
     public String doChangeState() throws Exception
     {
-    	getLogger().info("Gonna change state with comment:" + this.siteNodeVersionVO.getVersionComment());
+    	logger.info("Gonna change state with comment:" + this.siteNodeVersionVO.getVersionComment());
 
     	Database db = CastorDatabaseService.getDatabase();
 		
@@ -395,7 +398,7 @@ public class ViewSiteNodeAction extends InfoGlueAbstractAction
 	    }
 		catch(Exception e)
 		{
-			getLogger().error("An error occurred so we should not complete the transaction:" + e, e);
+			logger.error("An error occurred so we should not complete the transaction:" + e, e);
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}
@@ -405,7 +408,7 @@ public class ViewSiteNodeAction extends InfoGlueAbstractAction
         
     public String doCommentVersion() throws Exception
     { 
-    	getLogger().info("Gonna show the comment-view");
+    	logger.info("Gonna show the comment-view");
         return "commentVersion";
     }
         	
@@ -761,7 +764,7 @@ public class ViewSiteNodeAction extends InfoGlueAbstractAction
 		}
 		catch(Exception e)
 		{
-			getLogger().error("An error occurred when we tried to get any events for this version:" + e.getMessage(), e);
+			logger.error("An error occurred when we tried to get any events for this version:" + e.getMessage(), e);
 		}
 
 		return eventVO;
@@ -778,7 +781,7 @@ public class ViewSiteNodeAction extends InfoGlueAbstractAction
 		}
 		catch(Exception e)
 		{
-			getLogger().error("An error occurred when we tried to get any events for this siteNode:" + e.getMessage(), e);
+			logger.error("An error occurred when we tried to get any events for this siteNode:" + e.getMessage(), e);
 		}
 		
 		return eventVO;

@@ -170,7 +170,7 @@ public class AuthorizationSwitchManagementAction extends InfoGlueAbstractAction
         }
         catch(Exception e)
         {
-            getLogger().error("An error occurred so we should not complete the transaction:" + e, e);
+            logger.error("An error occurred so we should not complete the transaction:" + e, e);
             db.rollback();
             throw new SystemException(e.getMessage());
         }
@@ -198,21 +198,21 @@ public class AuthorizationSwitchManagementAction extends InfoGlueAbstractAction
 	        }
 	        catch(Exception e)
 	        {
-	            getLogger().error("An error occurred so we should not complete the transaction:" + e, e);
+	            logger.error("An error occurred so we should not complete the transaction:" + e, e);
 	        }
 	        
 	        db.commit();
         }
         catch(Exception e)
         {
-            getLogger().error("An error occurred so we should not complete the transaction:" + e, e);
+            logger.error("An error occurred so we should not complete the transaction:" + e, e);
             try
 	        {
             	db.rollback();
 	        }
 	        catch(Exception e2)
 	        {
-	            getLogger().error("An error occurred so we should not complete the transaction:" + e2.getMessage());
+	            logger.error("An error occurred so we should not complete the transaction:" + e2.getMessage());
 	        }
             throw new SystemException(e.getMessage());
         }
@@ -224,7 +224,7 @@ public class AuthorizationSwitchManagementAction extends InfoGlueAbstractAction
 	        }
 	        catch(Exception e2)
 	        {
-	            getLogger().error("An error occurred so we should not complete the transaction:" + e2.getMessage());
+	            logger.error("An error occurred so we should not complete the transaction:" + e2.getMessage());
 	        }
         }
         
@@ -255,7 +255,7 @@ public class AuthorizationSwitchManagementAction extends InfoGlueAbstractAction
         }
         catch(Exception e)
         {
-            getLogger().error("An error occurred so we should not complete the transaction:" + e, e);
+            logger.error("An error occurred so we should not complete the transaction:" + e, e);
             db.rollback();
             throw new SystemException(e.getMessage());
         }
@@ -317,7 +317,7 @@ public class AuthorizationSwitchManagementAction extends InfoGlueAbstractAction
         }
         catch(Exception e)
         {
-            getLogger().error("An error occurred so we should not complete the transaction:" + e, e);
+            logger.error("An error occurred so we should not complete the transaction:" + e, e);
             db.rollback();
             throw new SystemException(e.getMessage());
         }
@@ -384,7 +384,7 @@ public class AuthorizationSwitchManagementAction extends InfoGlueAbstractAction
         }
         catch(Exception e)
         {
-            getLogger().error("An error occurred so we should not complete the transaction:" + e, e);
+            logger.error("An error occurred so we should not complete the transaction:" + e, e);
             db.rollback();
             throw new SystemException(e.getMessage());
         }
@@ -451,7 +451,7 @@ public class AuthorizationSwitchManagementAction extends InfoGlueAbstractAction
         }
         catch(Exception e)
         {
-            getLogger().error("An error occurred so we should not complete the transaction:" + e, e);
+            logger.error("An error occurred so we should not complete the transaction:" + e, e);
             db.rollback();
             throw new SystemException(e.getMessage());
         }
@@ -513,7 +513,7 @@ public class AuthorizationSwitchManagementAction extends InfoGlueAbstractAction
         }
         catch(Exception e)
         {
-            getLogger().error("An error occurred so we should not complete the transaction:" + e, e);
+            logger.error("An error occurred so we should not complete the transaction:" + e, e);
             db.rollback();
             throw new SystemException(e.getMessage());
         }
@@ -574,7 +574,7 @@ public class AuthorizationSwitchManagementAction extends InfoGlueAbstractAction
         }
         catch(Exception e)
         {
-            getLogger().error("An error occurred so we should not complete the transaction:" + e, e);
+            logger.error("An error occurred so we should not complete the transaction:" + e, e);
             db.rollback();
             throw new SystemException(e.getMessage());
         }
@@ -631,7 +631,7 @@ public class AuthorizationSwitchManagementAction extends InfoGlueAbstractAction
         }
         catch(Exception e)
         {
-            getLogger().error("An error occurred so we should not complete the transaction:" + e, e);
+            logger.error("An error occurred so we should not complete the transaction:" + e, e);
             db.rollback();
             throw new SystemException(e.getMessage());
         }

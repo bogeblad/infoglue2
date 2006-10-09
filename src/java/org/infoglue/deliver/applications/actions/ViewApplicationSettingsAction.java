@@ -33,6 +33,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
@@ -53,6 +54,8 @@ import org.infoglue.deliver.controllers.kernel.impl.simple.TemplateController;
 
 public class ViewApplicationSettingsAction extends ViewPageAction //WebworkAbstractAction 
 {
+    private final static Logger logger = Logger.getLogger(ViewApplicationSettingsAction.class.getName());
+
 	//Used to get a list of all available mthods 
 	private List templateMethods = new ArrayList();
 
@@ -236,7 +239,7 @@ public class ViewApplicationSettingsAction extends ViewPageAction //WebworkAbstr
 		}
 		catch(Exception e)
 		{
-			getLogger().error("An error occurred so we should not complete the transaction:" + e, e);
+			logger.error("An error occurred so we should not complete the transaction:" + e, e);
 			rollbackTransaction(dbWrapper.getDatabase());
 			throw new SystemException(e.getMessage());
 		}

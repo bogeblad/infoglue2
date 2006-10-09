@@ -26,6 +26,7 @@ package org.infoglue.cms.applications.structuretool.actions;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.AccessRightController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeVersionController;
@@ -45,6 +46,8 @@ import org.infoglue.cms.util.AccessConstraintExceptionBuffer;
 
 public class ViewListSiteNodeVersionAction extends InfoGlueAbstractAction 
 {
+    private final static Logger logger = Logger.getLogger(ViewListSiteNodeVersionAction.class.getName());
+
 	private static final long serialVersionUID = 1L;
 
 	private List siteNodeVersionVOList = new ArrayList();
@@ -57,8 +60,8 @@ public class ViewListSiteNodeVersionAction extends InfoGlueAbstractAction
 
 	protected String doExecute() throws Exception 
 	{
-		getLogger().info("siteNodeId:" + this.siteNodeId);
-		getLogger().info("siteNodeVersionId:" + this.siteNodeVersionId);
+		logger.info("siteNodeId:" + this.siteNodeId);
+		logger.info("siteNodeVersionId:" + this.siteNodeVersionId);
 		if(this.siteNodeVersionId == null)
 		{
 		    SiteNodeVersionVO siteNodeVersionVO = SiteNodeVersionControllerProxy.getSiteNodeVersionControllerProxy().getACLatestActiveSiteNodeVersionVO(this.getInfoGluePrincipal(), siteNodeId);

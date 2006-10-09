@@ -29,6 +29,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
@@ -59,6 +62,8 @@ import com.opensymphony.module.propertyset.PropertySetManager;
 
 public class ViewContentAction extends InfoGlueAbstractAction
 {
+    private final static Logger logger = Logger.getLogger(ViewContentAction.class.getName());
+
 	private static final long serialVersionUID = 1L;
 	
 	private Integer unrefreshedContentId 	= new Integer(0);
@@ -242,7 +247,7 @@ public class ViewContentAction extends InfoGlueAbstractAction
 		}
 		catch(Exception e)
 		{
-			getLogger().error("An error occurred when we tried to get the latest version for the content:" + e.getMessage(), e);
+			logger.error("An error occurred when we tried to get the latest version for the content:" + e.getMessage(), e);
 		}
 		
 		return contentVersionVO;
@@ -262,7 +267,7 @@ public class ViewContentAction extends InfoGlueAbstractAction
 		}
 		catch(Exception e)
 		{
-			getLogger().error("An error occurred when we tried to get any events for this version:" + e.getMessage(), e);
+			logger.error("An error occurred when we tried to get any events for this version:" + e.getMessage(), e);
 		}
 		
 		return eventVO;
@@ -279,7 +284,7 @@ public class ViewContentAction extends InfoGlueAbstractAction
 		}
 		catch(Exception e)
 		{
-			getLogger().error("An error occurred when we tried to get any events for this version:" + e.getMessage(), e);
+			logger.error("An error occurred when we tried to get any events for this version:" + e.getMessage(), e);
 		}
 		
 		return eventVO;
@@ -293,7 +298,7 @@ public class ViewContentAction extends InfoGlueAbstractAction
 		} 
 		catch (Exception e) 
 		{
-			getLogger().error("Unable to get master language for repository", e);	
+			logger.error("Unable to get master language for repository", e);	
 		}
 		return null;
 	}

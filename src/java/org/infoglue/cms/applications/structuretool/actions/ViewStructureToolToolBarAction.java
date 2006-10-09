@@ -27,6 +27,7 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.infoglue.cms.applications.common.ImageButton;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
@@ -50,6 +51,8 @@ import org.infoglue.cms.util.CmsPropertyHandler;
 
 public class ViewStructureToolToolBarAction extends InfoGlueAbstractAction
 {
+    private final static Logger logger = Logger.getLogger(ViewStructureToolToolBarAction.class.getName());
+
 	private static final long serialVersionUID = 1L;
 
 	private String title = "";
@@ -233,8 +236,8 @@ public class ViewStructureToolToolBarAction extends InfoGlueAbstractAction
 
 	public List getButtons()
 	{
-		getLogger().info("Title:" + this.title);
-		getLogger().info("toolbarKey:" + this.toolbarKey);
+		logger.info("Title:" + this.title);
+		logger.info("toolbarKey:" + this.toolbarKey);
 		try
 		{		
 		    if(this.toolbarKey.equalsIgnoreCase("tool.structuretool.siteNodeDetailsHeader") || this.toolbarKey.equalsIgnoreCase("tool.structuretool.siteNodeComponentsHeader"))
@@ -252,7 +255,7 @@ public class ViewStructureToolToolBarAction extends InfoGlueAbstractAction
 		catch(Exception e)
 		{
 		    e.printStackTrace();
-			getLogger().warn("Exception when generating buttons:" + e.getMessage(), e);
+			logger.warn("Exception when generating buttons:" + e.getMessage(), e);
 		}
 							
 		return null;				
@@ -281,7 +284,7 @@ public class ViewStructureToolToolBarAction extends InfoGlueAbstractAction
 		}
 		catch(Exception e)
 		{
-			getLogger().warn("Exception when generating buttons:" + e.getMessage(), e);
+			logger.warn("Exception when generating buttons:" + e.getMessage(), e);
 		}
 				
 		return hasPublishedVersion;
@@ -436,7 +439,7 @@ public class ViewStructureToolToolBarAction extends InfoGlueAbstractAction
 					isMetaInfoInWorkingState = true;
 			}	
 			
-			getLogger().info("isMetaInfoInWorkingState:" + isMetaInfoInWorkingState);
+			logger.info("isMetaInfoInWorkingState:" + isMetaInfoInWorkingState);
 			if(isMetaInfoInWorkingState)
 			    return new ImageButton(CmsPropertyHandler.getComponentRendererUrl() + "ViewPage!renderDecoratedPage.action?siteNodeId=" + this.siteNodeId + "&languageId=" + masterLanguageVO.getId() + "&contentId=-1" + "&cmsUserName=" + URLEncoder.encode(this.getInfoGluePrincipal().getName(), "UTF-8"), getLocalizedString(getSession().getLocale(), "images.structuretool.buttons.siteNodeComponents"), "Site Node Components");
 			    //return new ImageButton("ViewSiteNodePageComponents.action?siteNodeId=" + this.siteNodeId, getLocalizedString(getSession().getLocale(), "images.structuretool.buttons.siteNodeComponents"), "Site Node Components");
@@ -479,7 +482,7 @@ public class ViewStructureToolToolBarAction extends InfoGlueAbstractAction
 					isMetaInfoInWorkingState = true;
 			}
 
-			getLogger().info("isMetaInfoInWorkingState:" + isMetaInfoInWorkingState);
+			logger.info("isMetaInfoInWorkingState:" + isMetaInfoInWorkingState);
 			if(isMetaInfoInWorkingState)
 			    return new ImageButton(CmsPropertyHandler.getComponentRendererUrl() + "ViewPage!renderDecoratedPage.action?siteNodeId=" + this.siteNodeId + "&languageId=" + masterLanguageVO.getId() + "&contentId=-1&showSimple=true" + "&cmsUserName=" + URLEncoder.encode(this.getInfoGluePrincipal().getName(), "UTF-8"), getLocalizedString(getSession().getLocale(), "images.structuretool.buttons.siteNodeStructure"), "Site Node Structure");
 			    //return new ImageButton("ViewSiteNodePageComponents.action?siteNodeId=" + this.siteNodeId, getLocalizedString(getSession().getLocale(), "images.structuretool.buttons.siteNodeComponents"), "Site Node Components");

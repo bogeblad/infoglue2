@@ -1,5 +1,4 @@
 /* ===============================================================================
-* <!-- WORK IN PROGRESS -->
 * Part of the InfoGlue Content Management Platform (www.infoglue.org)
 *
 * ===============================================================================
@@ -21,13 +20,6 @@
 * ===============================================================================
 */
 
-/*
- * Created on 2004-jun-16
- * 
- * Embryo of RenderStudio, a common playground for templatefragment testing
- * 
- *
- */
 package org.infoglue.cms.applications.contenttool.actions;
 
 import java.awt.Font;
@@ -37,6 +29,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
 import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
@@ -62,6 +55,8 @@ import org.infoglue.deliver.util.BrowserBean;
  */
 public class TextToImageEditorAction extends InfoGlueAbstractAction
 {
+    private final static Logger logger = Logger.getLogger(TextToImageEditorAction.class.getName());
+
 	private static final long serialVersionUID = 1L;
 
     private Integer languageId = null;
@@ -209,7 +204,7 @@ public class TextToImageEditorAction extends InfoGlueAbstractAction
 		}
 		catch(Exception e)
 		{
-			getLogger().error("An error occurred so we should not complete the transaction:" + e, e);
+			logger.error("An error occurred so we should not complete the transaction:" + e, e);
 			rollbackTransaction(dbWrapper.getDatabase());
 			throw new SystemException(e.getMessage());
 		}

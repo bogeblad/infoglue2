@@ -30,7 +30,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
+import org.infoglue.cms.applications.managementtool.actions.WYSIWYGPropertiesAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.ShortcutController;
 import org.infoglue.cms.controllers.kernel.impl.simple.WorkflowController;
 import org.infoglue.cms.entities.mydesktop.WorkflowActionVO;
@@ -51,9 +53,8 @@ import com.opensymphony.workflow.WorkflowException;
  */
 public class ViewMyDesktopToolStartPageAction extends InfoGlueAbstractAction
 {
-	/**
-	 * 
-	 */
+    private final static Logger logger = Logger.getLogger(ViewMyDesktopToolStartPageAction.class.getName());
+
 	private static final long serialVersionUID = 6543209932597662088L;
 
 	protected static final String INVALID_ACTION = "invalidAction";
@@ -180,10 +181,10 @@ public class ViewMyDesktopToolStartPageAction extends InfoGlueAbstractAction
 	 */
 	public String doInvoke() throws SystemException
 	{
-		getLogger().info("****************************************");
-		getLogger().info("workflowId:" + getWorkflowId());
-		getLogger().info("actionId:" + actionId);
-		getLogger().info("****************************************");
+		logger.info("****************************************");
+		logger.info("workflowId:" + getWorkflowId());
+		logger.info("actionId:" + actionId);
+		logger.info("****************************************");
 
 		try
 		{
@@ -224,7 +225,7 @@ public class ViewMyDesktopToolStartPageAction extends InfoGlueAbstractAction
 	    if(this.finalReturnAddress != null && !this.finalReturnAddress.equals(""))
 			return redirect(finalReturnAddress);
 			
-		getLogger().info("No action view, coming back to mydesktop...");
+		logger.info("No action view, coming back to mydesktop...");
 		return doExecute();
 	}
 
@@ -311,7 +312,7 @@ public class ViewMyDesktopToolStartPageAction extends InfoGlueAbstractAction
 	{
 		try
 		{
-			getLogger().info("Url in doInvoke:" + url);
+			logger.info("Url in doInvoke:" + url);
 			getResponse().sendRedirect(url);
 			return NONE;
 		}
