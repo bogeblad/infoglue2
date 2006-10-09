@@ -23,6 +23,7 @@
 
 package org.infoglue.cms.applications.managementtool.actions;
 
+import org.apache.log4j.Logger;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.UpdateController;
 import org.infoglue.cms.util.CmsPropertyHandler;
@@ -35,12 +36,13 @@ import org.infoglue.cms.util.CmsPropertyHandler;
  */
 public class RefreshUpdatesAction extends InfoGlueAbstractAction 
 {
+    private final static Logger logger = Logger.getLogger(RefreshUpdatesAction.class.getName());
 
 	UpdateController uc;
 	
 
 	protected String doExecute() throws Exception {
-		getLogger().info("Executing doExecute on RefreshUpdates..");
+		logger.info("Executing doExecute on RefreshUpdates..");
 		String path = getRequest().getRealPath("/") + "up2date/";
 		String url = CmsPropertyHandler.getUp2dateUrl();	
 	

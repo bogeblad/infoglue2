@@ -98,7 +98,7 @@ public class ViewContentVersionDifferenceAction extends InfoGlueAbstractAction
 				e.printStackTrace();
 			}
 		}
-		//getLogger().info("value:" + value);	
+		//logger.info("value:" + value);	
 		return value;
 	}
 

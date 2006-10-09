@@ -23,6 +23,7 @@
 
 package org.infoglue.cms.applications.managementtool.actions;
 
+import org.apache.log4j.Logger;
 import org.infoglue.cms.controllers.kernel.impl.simple.InterceptorController;
 import org.infoglue.cms.entities.management.InterceptorVO;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
@@ -36,6 +37,8 @@ import org.infoglue.cms.util.ConstraintExceptionBuffer;
 
 public class UpdateInterceptorAction extends ViewInterceptorAction
 {
+    private final static Logger logger = Logger.getLogger(UpdateInterceptorAction.class.getName());
+
 	private static final long serialVersionUID = 1L;
 	
 	private InterceptorVO interceptorVO = new InterceptorVO();
@@ -50,7 +53,7 @@ public class UpdateInterceptorAction extends ViewInterceptorAction
     	ceb.throwIfNotEmpty();		
     	
     	String[] values = getRequest().getParameterValues("interceptionPointId");
-    	getLogger().info("values:" + values);
+    	logger.info("values:" + values);
 		
 		InterceptorController.getController().update(this.interceptorVO, values);
     	

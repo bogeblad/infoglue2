@@ -26,6 +26,7 @@ package org.infoglue.cms.applications.managementtool.actions;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 
+import org.apache.log4j.Logger;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.UpdateController;
 import org.infoglue.cms.util.CmsPropertyHandler;
@@ -36,7 +37,9 @@ import org.infoglue.cms.util.CmsPropertyHandler;
  *
  * 
  */
-public class InstallUpdateAction extends InfoGlueAbstractAction {
+public class InstallUpdateAction extends InfoGlueAbstractAction 
+{
+    private final static Logger logger = Logger.getLogger(InstallUpdateAction.class.getName());
 
 	UpdateController uc;
 	private String updatePackageId;
@@ -50,7 +53,7 @@ public class InstallUpdateAction extends InfoGlueAbstractAction {
 	    getResponse().setContentType("text/html");
 		// getResponse().setBufferSize(10);
 		// PrintWriter out = getResponse().getWriter();		
-		getLogger().info("Executing doExecute on RefreshUpdates..");
+		logger.info("Executing doExecute on RefreshUpdates..");
 		String path = getRequest().getRealPath("/") + "up2date/";
 		
 		System.out.println("UP2DATE: PATH: " + path);

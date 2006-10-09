@@ -28,6 +28,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
 
+import org.apache.log4j.Logger;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.AvailableServiceBindingController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
@@ -44,6 +45,8 @@ import org.infoglue.cms.util.ConstraintExceptionBuffer;
 
 public class ViewMultiSelectContentTreeForServiceBindingAction extends InfoGlueAbstractAction
 {
+    private final static Logger logger = Logger.getLogger(ViewMultiSelectContentTreeForServiceBindingAction.class.getName());
+
 	private static final long serialVersionUID = 1L;
 	
     private Integer siteNodeVersionId;
@@ -346,7 +349,7 @@ public class ViewMultiSelectContentTreeForServiceBindingAction extends InfoGlueA
 
     public String doMoveQualifyer() throws Exception
     {	
-    	getLogger().info("------------------------------------->");
+    	logger.info("------------------------------------->");
 		this.qualifyers = parseQualifyers(qualifyerString);
 		this.qualifyers = moveQualifyer(this.direction, this.oldSortOrder, this.qualifyers);  	
 
@@ -358,7 +361,7 @@ public class ViewMultiSelectContentTreeForServiceBindingAction extends InfoGlueA
 
     public String doDeleteQualifyer() throws Exception
     {	
-    	getLogger().info("------------------------------------->");
+    	logger.info("------------------------------------->");
 		this.qualifyers = parseQualifyers(qualifyerString);
 		this.qualifyers = deleteQualifyer(this.oldSortOrder, this.qualifyers);  	
 		
@@ -399,7 +402,7 @@ public class ViewMultiSelectContentTreeForServiceBindingAction extends InfoGlueA
 
     private List moveQualifyer(Integer direction, Integer oldSortOrder, List qualifyers)
     {
-    	getLogger().info("-------------------------------------> About to move the qualifyer in direction " + direction + " and old sortOrder was " + oldSortOrder);
+    	logger.info("-------------------------------------> About to move the qualifyer in direction " + direction + " and old sortOrder was " + oldSortOrder);
     	ArrayList newQualifyers = new ArrayList();
     	
     	Iterator iterator = qualifyers.iterator();
@@ -407,18 +410,18 @@ public class ViewMultiSelectContentTreeForServiceBindingAction extends InfoGlueA
     	while(iterator.hasNext())
     	{
     		QualifyerVO qualifyer = (QualifyerVO)iterator.next();
-    		getLogger().info("Found qualifyer " + qualifyer.getValue() + ":" + qualifyer.getSortOrder());
+    		logger.info("Found qualifyer " + qualifyer.getValue() + ":" + qualifyer.getSortOrder());
 			if(qualifyer.getSortOrder().equals(oldSortOrder) && direction.intValue() == 0) //down
 			{
-				getLogger().info("About to move it down...");
+				logger.info("About to move it down...");
 				if(iterator.hasNext())
 				{
 					QualifyerVO nextQualifyer = (QualifyerVO)iterator.next();
-		    		getLogger().info("nextQualifyer " + nextQualifyer.getValue() + ":" + nextQualifyer.getSortOrder());
+		    		logger.info("nextQualifyer " + nextQualifyer.getValue() + ":" + nextQualifyer.getSortOrder());
 					nextQualifyer.setSortOrder(qualifyer.getSortOrder());	
-					getLogger().info("Set the nextQualifyer sortOrder to " + qualifyer.getSortOrder());
+					logger.info("Set the nextQualifyer sortOrder to " + qualifyer.getSortOrder());
 					qualifyer.setSortOrder(new Integer(qualifyer.getSortOrder().intValue() + 1));
-					getLogger().info("Set the qualifyer sortOrder to " + qualifyer.getSortOrder());
+					logger.info("Set the qualifyer sortOrder to " + qualifyer.getSortOrder());
 					newQualifyers.add(nextQualifyer);
 					newQualifyers.add(qualifyer);
 				}
@@ -428,15 +431,15 @@ public class ViewMultiSelectContentTreeForServiceBindingAction extends InfoGlueA
 			}
 			else if(qualifyer.getSortOrder().equals(oldSortOrder) && direction.intValue() == 1) //up
 			{
-				getLogger().info("About to move it up...");
+				logger.info("About to move it up...");
 				if(i > 0)
 				{
 					QualifyerVO previousQualifyer = (QualifyerVO)newQualifyers.get(i-1);
-		    		getLogger().info("Previous qualifyer " + previousQualifyer.getValue() + ":" + previousQualifyer.getSortOrder());
+		    		logger.info("Previous qualifyer " + previousQualifyer.getValue() + ":" + previousQualifyer.getSortOrder());
 					previousQualifyer.setSortOrder(qualifyer.getSortOrder());	
-					getLogger().info("Set the previous qualifyer sortOrder to " + qualifyer.getSortOrder());
+					logger.info("Set the previous qualifyer sortOrder to " + qualifyer.getSortOrder());
 					qualifyer.setSortOrder(new Integer(qualifyer.getSortOrder().intValue() - 1));
-					getLogger().info("Set the qualifyer sortOrder to " + qualifyer.getSortOrder());
+					logger.info("Set the qualifyer sortOrder to " + qualifyer.getSortOrder());
 					newQualifyers.remove(qualifyer);
 					newQualifyers.add(i-1, qualifyer);
 				}
@@ -461,12 +464,12 @@ public class ViewMultiSelectContentTreeForServiceBindingAction extends InfoGlueA
     	while(iterator.hasNext())
     	{
     		QualifyerVO qualifyer = (QualifyerVO)iterator.next();
-    		getLogger().info("-------------------------------->Found qualifyer " + qualifyer.getValue() + ":" + qualifyer.getSortOrder());
+    		logger.info("-------------------------------->Found qualifyer " + qualifyer.getValue() + ":" + qualifyer.getSortOrder());
 			if(!qualifyer.getSortOrder().equals(oldSortOrder))
 			{
-				getLogger().info("qualifyer:" + qualifyer.getSortOrder());
-				getLogger().info("qualifyer:" + qualifyer.getValue());
-				getLogger().info("Adding this qualifyer again as it did not match the delete-one:" + oldSortOrder);
+				logger.info("qualifyer:" + qualifyer.getSortOrder());
+				logger.info("qualifyer:" + qualifyer.getValue());
+				logger.info("Adding this qualifyer again as it did not match the delete-one:" + oldSortOrder);
 				qualifyer.setSortOrder(new Integer(i));
 				newQualifyers.add(qualifyer);				
 				i++;

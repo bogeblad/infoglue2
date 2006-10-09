@@ -26,6 +26,7 @@ package org.infoglue.cms.applications.contenttool.actions;
 import java.net.URLEncoder;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.infoglue.cms.applications.common.actions.TreeViewAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.RepositoryController;
@@ -40,6 +41,8 @@ import com.frovi.ss.Tree.INodeSupplier;
 
 public class ViewContentToolMenuHtmlAction extends TreeViewAbstractAction
 {
+    private final static Logger logger = Logger.getLogger(ViewContentToolMenuHtmlAction.class.getName());
+
 	private static final long serialVersionUID = 1L;
 	
 	private Integer repositoryId;
@@ -141,7 +144,7 @@ public class ViewContentToolMenuHtmlAction extends TreeViewAbstractAction
 	        }
 	        catch(Exception e)
 	        {
-	            getLogger().error("Could not fetch the master repository for the principal:" + e.getMessage(), e);
+	            logger.error("Could not fetch the master repository for the principal:" + e.getMessage(), e);
 	        }
 	    }
 	        

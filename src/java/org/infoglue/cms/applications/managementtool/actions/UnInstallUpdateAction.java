@@ -25,6 +25,7 @@ package org.infoglue.cms.applications.managementtool.actions;
 
 import java.io.PrintWriter;
 
+import org.apache.log4j.Logger;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.UpdateController;
 import org.infoglue.cms.util.CmsPropertyHandler;
@@ -37,6 +38,7 @@ import org.infoglue.cms.util.CmsPropertyHandler;
  */
 public class UnInstallUpdateAction extends InfoGlueAbstractAction 
 {
+    private final static Logger logger = Logger.getLogger(UnInstallUpdateAction.class.getName());
 
 	UpdateController uc;
 	private String updatePackageId;
@@ -55,7 +57,7 @@ public class UnInstallUpdateAction extends InfoGlueAbstractAction
 		out.write("<html><head><link rel=\"stylesheet\" type=\"text/css\" href=\"css/cms.css\" /></head><body class=\"managementtooledit\"><font color=\"#888888\">");
 		out.flush();
 		
-		getLogger().info("Executing doExecute on RefreshUpdates..");
+		logger.info("Executing doExecute on RefreshUpdates..");
 		String path = getRequest().getRealPath("/") + "up2date/";
 		String url = CmsPropertyHandler.getUp2dateUrl();	
 	

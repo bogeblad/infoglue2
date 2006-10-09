@@ -23,6 +23,7 @@
 
 package org.infoglue.cms.applications.managementtool.actions;
 
+import org.apache.log4j.Logger;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.ServiceDefinitionController;
 import org.infoglue.cms.entities.management.ServiceDefinitionVO;
@@ -30,6 +31,8 @@ import org.infoglue.cms.entities.management.ServiceDefinitionVO;
 
 public class ViewServiceDefinitionAction extends InfoGlueAbstractAction
 {
+    private final static Logger logger = Logger.getLogger(ViewServiceDefinitionAction.class.getName());
+
 	private static final long serialVersionUID = 1L;
 
     private ServiceDefinitionVO serviceDefinitionVO;
@@ -51,9 +54,9 @@ public class ViewServiceDefinitionAction extends InfoGlueAbstractAction
 
     public String doExecute() throws Exception
     {
-        getLogger().info("Executing doExecute on ViewServiceDefinitionAction..");
+        logger.info("Executing doExecute on ViewServiceDefinitionAction..");
         this.initialize(getServiceDefinitionId());
-        getLogger().info("Finished executing doExecute on ViewServiceDefinitionAction..");
+        logger.info("Finished executing doExecute on ViewServiceDefinitionAction..");
         return "success";
     }
         

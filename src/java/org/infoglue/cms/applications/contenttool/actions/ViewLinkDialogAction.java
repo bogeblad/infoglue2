@@ -25,6 +25,7 @@ package org.infoglue.cms.applications.contenttool.actions;
 
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.RepositoryController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeController;
@@ -36,6 +37,8 @@ import org.infoglue.cms.entities.structure.SiteNodeVO;
 
 public class ViewLinkDialogAction extends InfoGlueAbstractAction
 {
+    private final static Logger logger = Logger.getLogger(ViewLinkDialogAction.class.getName());
+
     /**
 	 * 
 	 */
@@ -104,7 +107,7 @@ public class ViewLinkDialogAction extends InfoGlueAbstractAction
 	    }
 	    catch(Exception e)
 	    {
-	        getLogger().warn("Expansion not possible:" + e.getMessage(), e);
+	        logger.warn("Expansion not possible:" + e.getMessage(), e);
 	    }
 	    
 	    return expansion;

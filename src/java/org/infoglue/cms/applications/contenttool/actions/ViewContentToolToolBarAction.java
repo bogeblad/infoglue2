@@ -27,6 +27,7 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.infoglue.cms.applications.common.ImageButton;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
@@ -48,6 +49,8 @@ import org.infoglue.cms.util.CmsPropertyHandler;
 
 public class ViewContentToolToolBarAction extends InfoGlueAbstractAction
 {
+    private final static Logger logger = Logger.getLogger(ViewContentToolToolBarAction.class.getName());
+
 	private static final long serialVersionUID = 1L;
 	
 	private String title = "";
@@ -177,8 +180,8 @@ public class ViewContentToolToolBarAction extends InfoGlueAbstractAction
 
 	public List getButtons()
 	{
-		getLogger().info("Title:" + this.title);
-		getLogger().info("toolbarKey:" + this.toolbarKey);
+		logger.info("Title:" + this.title);
+		logger.info("toolbarKey:" + this.toolbarKey);
 		
 		if(this.toolbarKey.equalsIgnoreCase("content details"))
 		{
@@ -313,7 +316,7 @@ public class ViewContentToolToolBarAction extends InfoGlueAbstractAction
 		}
 		catch(Exception e)
 		{
-			getLogger().warn("Exception when generating buttons:" + e.getMessage(), e);
+			logger.warn("Exception when generating buttons:" + e.getMessage(), e);
 		}
 		
 		return buttons;
@@ -352,7 +355,7 @@ public class ViewContentToolToolBarAction extends InfoGlueAbstractAction
 		}
 		catch(Exception e)
 		{
-			getLogger().warn("Exception when generating buttons:" + e.getMessage(), e);
+			logger.warn("Exception when generating buttons:" + e.getMessage(), e);
 		}
 
 		return buttons;				
@@ -441,7 +444,7 @@ public class ViewContentToolToolBarAction extends InfoGlueAbstractAction
 		}
 		catch(Exception e)
 		{
-			getLogger().warn("Exception when generating buttons:" + e.getMessage(), e);
+			logger.warn("Exception when generating buttons:" + e.getMessage(), e);
 		}
 
 		return buttons;				
@@ -459,7 +462,7 @@ public class ViewContentToolToolBarAction extends InfoGlueAbstractAction
 		}
 		catch(Exception e)
 		{
-			getLogger().warn("Exception when generating buttons:" + e.getMessage(), e);
+			logger.warn("Exception when generating buttons:" + e.getMessage(), e);
 		}
 
 		return buttons;				

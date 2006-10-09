@@ -25,6 +25,7 @@ package org.infoglue.cms.applications.managementtool.actions;
 
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.RepositoryController;
 
@@ -36,6 +37,8 @@ import org.infoglue.cms.controllers.kernel.impl.simple.RepositoryController;
 
 public class ViewManagementToolStartPageAction extends InfoGlueAbstractAction
 {
+    private final static Logger logger = Logger.getLogger(ViewManagementToolStartPageAction.class.getName());
+
 	private static final long serialVersionUID = 1L;
 
     private List repositories;
@@ -43,7 +46,7 @@ public class ViewManagementToolStartPageAction extends InfoGlueAbstractAction
     public String doExecute() throws Exception
     {
     	this.repositories = RepositoryController.getController().getRepositoryVOList();
-    	getLogger().info("ClassPath:" + System.getProperty("java.class.path","."));
+    	logger.info("ClassPath:" + System.getProperty("java.class.path","."));
     	
         return "success";
     }

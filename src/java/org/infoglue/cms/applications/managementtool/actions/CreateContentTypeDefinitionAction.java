@@ -23,7 +23,9 @@
 
 package org.infoglue.cms.applications.managementtool.actions;
 
+import org.apache.log4j.Logger;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
+import org.infoglue.cms.applications.contenttool.wizards.actions.CreateContentWizardInputAssetsAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
 import org.infoglue.cms.io.FileHelper;
@@ -32,6 +34,8 @@ import org.infoglue.cms.util.ConstraintExceptionBuffer;
 
 public class CreateContentTypeDefinitionAction extends InfoGlueAbstractAction
 {
+    private final static Logger logger = Logger.getLogger(CreateContentTypeDefinitionAction.class.getName());
+
 	private static final long serialVersionUID = 1L;
 	
 	private ContentTypeDefinitionVO contentTypeDefinitionVO;
@@ -56,7 +60,7 @@ public class CreateContentTypeDefinitionAction extends InfoGlueAbstractAction
 		}
 		catch(Exception e)
 		{
-			getLogger().error("The system could not find the default content type definition:" + e.getMessage(), e);
+			logger.error("The system could not find the default content type definition:" + e.getMessage(), e);
 		}
 		
 		this.contentTypeDefinitionVO.setSchemaValue(schemaValue);

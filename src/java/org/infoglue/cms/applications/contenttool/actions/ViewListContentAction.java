@@ -25,6 +25,7 @@ package org.infoglue.cms.applications.contenttool.actions;
 
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 
 /**
@@ -35,6 +36,8 @@ import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 
 public class ViewListContentAction extends InfoGlueAbstractAction 
 {
+    private final static Logger logger = Logger.getLogger(ViewListContentAction.class.getName());
+
 	private static final long serialVersionUID = 1L;
 	
 	private List contentVOList;
@@ -43,10 +46,10 @@ public class ViewListContentAction extends InfoGlueAbstractAction
 	protected String doExecute() throws Exception 
 	{
 	
-	    getLogger().info("Executing doExecute on ViewListContentAction..");
+	    logger.info("Executing doExecute on ViewListContentAction..");
 		//ViewListContentUCC viewListContentUCC = ViewListContentUCCFactory.newViewListContentUCC();
 		//this.contentVOList = viewListContentUCC.viewListContent();
-	    getLogger().info("Finished executing doExecute on ViewListContentAction..");
+	    logger.info("Finished executing doExecute on ViewListContentAction..");
         return "success";
 	}
 	

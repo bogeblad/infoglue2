@@ -25,6 +25,7 @@ package org.infoglue.cms.applications.contenttool.actions;
 
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
@@ -50,6 +51,8 @@ import org.infoglue.cms.entities.management.UserPropertiesVO;
 
 public class ViewDigitalAssetAction extends InfoGlueAbstractAction
 {
+    private final static Logger logger = Logger.getLogger(ViewDigitalAssetAction.class.getName());
+
 	private static final long serialVersionUID = 1L;
 	
 	private List availableLanguages  = null;
@@ -74,7 +77,7 @@ public class ViewDigitalAssetAction extends InfoGlueAbstractAction
     
     public ViewDigitalAssetAction(ContentVersionVO contentVersionVO) 
     {
-		getLogger().info("Construction ViewDigitalAssetAction");
+		logger.info("Construction ViewDigitalAssetAction");
         this.contentVersionVO = contentVersionVO;
     }
     

@@ -25,6 +25,7 @@ package org.infoglue.cms.applications.managementtool.actions;
 
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
 
@@ -36,6 +37,8 @@ import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionCont
 
 public class ViewListContentTypeDefinitionAction extends InfoGlueAbstractAction 
 {
+    private final static Logger logger = Logger.getLogger(ViewListContentTypeDefinitionAction.class.getName());
+
 	private static final long serialVersionUID = 1L;
 
 	private List contentTypeDefinitions;
@@ -44,7 +47,7 @@ public class ViewListContentTypeDefinitionAction extends InfoGlueAbstractAction
 	protected String doExecute() throws Exception 
 	{
 		this.contentTypeDefinitions = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOList();
-    	getLogger().info("contentTypeDefinitions:" + contentTypeDefinitions.size());
+    	logger.info("contentTypeDefinitions:" + contentTypeDefinitions.size());
     	return "success";
 	}
 	

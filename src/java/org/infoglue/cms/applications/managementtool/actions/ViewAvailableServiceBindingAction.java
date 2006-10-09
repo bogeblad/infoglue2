@@ -25,6 +25,7 @@ package org.infoglue.cms.applications.managementtool.actions;
 
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.AvailableServiceBindingController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ServiceDefinitionController;
@@ -32,6 +33,8 @@ import org.infoglue.cms.entities.management.AvailableServiceBindingVO;
 
 public class ViewAvailableServiceBindingAction extends InfoGlueAbstractAction
 {
+    private final static Logger logger = Logger.getLogger(ViewAvailableServiceBindingAction.class.getName());
+
 	private static final long serialVersionUID = 1L;
 
     private AvailableServiceBindingVO availableServiceBindingVO;
@@ -62,7 +65,7 @@ public class ViewAvailableServiceBindingAction extends InfoGlueAbstractAction
     
     public String doExecute() throws Exception
     {
-        getLogger().info("Executing doExecute on ViewAvailableServiceBindingAction..");
+        logger.info("Executing doExecute on ViewAvailableServiceBindingAction..");
 		initialize(getAvailableServiceBindingId());
 		/*
         ViewAvailableServiceBindingUCC viewAvailableServiceBindingUCC = ViewAvailableServiceBindingUCCFactory.newViewAvailableServiceBindingUCC();
@@ -71,7 +74,7 @@ public class ViewAvailableServiceBindingAction extends InfoGlueAbstractAction
         availableServiceDefinitionVOList = viewAvailableServiceBindingUCC.getAvailableServiceDefinitions(getAvailableServiceBindingId());
         serviceDefinitionVOList = viewAvailableServiceBindingUCC.getAllServiceDefinitions();
 		*/
-        getLogger().info("Finished executing doExecute on ViewAvailableServiceBindingAction..");
+        logger.info("Finished executing doExecute on ViewAvailableServiceBindingAction..");
         return "success";
     }
         

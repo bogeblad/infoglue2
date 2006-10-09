@@ -29,6 +29,7 @@ import java.io.OutputStreamWriter;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
 import org.exolab.castor.mapping.Mapping;
 import org.exolab.castor.xml.Marshaller;
@@ -56,6 +57,8 @@ import org.infoglue.cms.util.CmsPropertyHandler;
 
 public class ExportRepositoryAction extends InfoGlueAbstractAction
 {
+    private final static Logger logger = Logger.getLogger(ExportRepositoryAction.class.getName());
+
 	private Integer repositoryId = null;
 	
 	private String fileUrl 	= "";
@@ -87,12 +90,12 @@ public class ExportRepositoryAction extends InfoGlueAbstractAction
 
 			if(exportFormat.equalsIgnoreCase("2"))
 			{
-				getLogger().info("MappingFile:" + CastorDatabaseService.class.getResource("/xml_mapping_site_2.5.xml").toString());
+				logger.info("MappingFile:" + CastorDatabaseService.class.getResource("/xml_mapping_site_2.5.xml").toString());
 				map.loadMapping(CastorDatabaseService.class.getResource("/xml_mapping_site_2.5.xml").toString());
 			}
 			else
 			{
-				getLogger().info("MappingFile:" + CastorDatabaseService.class.getResource("/xml_mapping_site.xml").toString());
+				logger.info("MappingFile:" + CastorDatabaseService.class.getResource("/xml_mapping_site.xml").toString());
 				map.loadMapping(CastorDatabaseService.class.getResource("/xml_mapping_site.xml").toString());
 			}
 			
@@ -140,7 +143,7 @@ public class ExportRepositoryAction extends InfoGlueAbstractAction
 		} 
 		catch (Exception e) 
 		{
-			getLogger().error("An error was found exporting a repository: " + e.getMessage(), e);
+			logger.error("An error was found exporting a repository: " + e.getMessage(), e);
 			db.rollback();
 		}
 		

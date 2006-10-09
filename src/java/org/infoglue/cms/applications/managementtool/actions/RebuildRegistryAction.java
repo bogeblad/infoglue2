@@ -26,6 +26,7 @@ package org.infoglue.cms.applications.managementtool.actions;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
@@ -47,6 +48,8 @@ import org.infoglue.cms.entities.structure.SiteNodeVersion;
 
 public class RebuildRegistryAction extends InfoGlueAbstractAction
 {
+    private final static Logger logger = Logger.getLogger(RebuildRegistryAction.class.getName());
+
 	private Integer repositoryId = null;
 	
 	private String fileUrl 	= "";
@@ -85,7 +88,7 @@ public class RebuildRegistryAction extends InfoGlueAbstractAction
 			while(siteNodesIterator.hasNext())
 			{
 			    SiteNode siteNode = (SiteNode)siteNodesIterator.next();
-			    getLogger().info("Going to index all versions of " + siteNode.getName());
+			    logger.info("Going to index all versions of " + siteNode.getName());
 			    
 			    Iterator siteNodeVersionsIterator = siteNode.getSiteNodeVersions().iterator();
 				while(siteNodeVersionsIterator.hasNext())
@@ -103,7 +106,7 @@ public class RebuildRegistryAction extends InfoGlueAbstractAction
 			while(iterator.hasNext())
 			{
 			    Content content = (Content)iterator.next();
-			    getLogger().info("Going to index all version of " + content.getName());
+			    logger.info("Going to index all version of " + content.getName());
 			    
 			    Iterator versionsIterator = content.getContentVersions().iterator();
 				while(versionsIterator.hasNext())
@@ -117,7 +120,7 @@ public class RebuildRegistryAction extends InfoGlueAbstractAction
 		} 
 		catch (Exception e) 
 		{
-			getLogger().error("An error was found rebuilding the registry: " + e.getMessage(), e);
+			logger.error("An error was found rebuilding the registry: " + e.getMessage(), e);
 			db.rollback();
 		}
 		finally

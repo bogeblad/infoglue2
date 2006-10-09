@@ -27,6 +27,7 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.apache.xerces.parsers.DOMParser;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
@@ -47,6 +48,8 @@ import org.xml.sax.InputSource;
 
 public class ViewFormEditorAction extends InfoGlueAbstractAction //extends ViewContentTypeDefinitionAction
 { 
+    private final static Logger logger = Logger.getLogger(ViewFormEditorAction.class.getName());
+
 	private static final long serialVersionUID = 1L;
 	
 	private Integer contentVersionId;
@@ -75,7 +78,7 @@ public class ViewFormEditorAction extends InfoGlueAbstractAction //extends ViewC
 	protected void initialize() throws Exception
 	{
 		this.formDefinition = ContentVersionController.getContentVersionController().getAttributeValue(getContentVersionId(), getContentVersionAttributeName(), false);
-		getLogger().info("this.formDefinition:" + this.formDefinition);
+		logger.info("this.formDefinition:" + this.formDefinition);
 		
 		boolean isFormDefinitionValid = true;
 		try
@@ -93,7 +96,7 @@ public class ViewFormEditorAction extends InfoGlueAbstractAction //extends ViewC
 		
 		if(this.formDefinition == null || this.formDefinition.equals("") || isFormDefinitionValid == false)
 		{
-			getLogger().info("Trying to get the default definition...");
+			logger.info("Trying to get the default definition...");
 			String schemaValue = "";
 			try
 			{
@@ -103,7 +106,7 @@ public class ViewFormEditorAction extends InfoGlueAbstractAction //extends ViewC
 			}
 			catch(Exception e)
 			{
-				getLogger().error("The system could not find the default content type definition:" + e.getMessage(), e);
+				logger.error("The system could not find the default content type definition:" + e.getMessage(), e);
 			}
 		}
 		

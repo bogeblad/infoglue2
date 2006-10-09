@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Vector;
 
 import org.apache.catalina.util.URL;
+import org.apache.log4j.Logger;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.UpdateController;
 import org.infoglue.cms.util.CmsPropertyHandler;
@@ -39,6 +40,8 @@ import org.infoglue.cms.util.CmsPropertyHandler;
  *
  */
 public class ViewListUp2DateAction extends InfoGlueAbstractAction {
+
+    private final static Logger logger = Logger.getLogger(ViewListUp2DateAction.class.getName());
 
 	private static final long serialVersionUID = 1L;
 
@@ -61,8 +64,8 @@ public class ViewListUp2DateAction extends InfoGlueAbstractAction {
 		
 		uc = new UpdateController(url, path);
 		
-	    getLogger().info("Executing doExecute on ViewListUp2Date..");
-	    getLogger().info("Finished executing doExecute on ViewListUp2Date..");
+	    logger.info("Executing doExecute on ViewListUp2Date..");
+	    logger.info("Finished executing doExecute on ViewListUp2Date..");
         return "success";
 	}
 	

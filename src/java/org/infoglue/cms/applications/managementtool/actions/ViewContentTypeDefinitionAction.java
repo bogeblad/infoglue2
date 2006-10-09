@@ -31,6 +31,7 @@ import java.util.List;
 
 import javax.xml.transform.TransformerException;
 
+import org.apache.log4j.Logger;
 import org.apache.xerces.parsers.DOMParser;
 import org.apache.xpath.XPathAPI;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
@@ -59,6 +60,8 @@ import org.xml.sax.SAXException;
 
 public class ViewContentTypeDefinitionAction extends InfoGlueAbstractAction
 {
+    private final static Logger logger = Logger.getLogger(ViewContentTypeDefinitionAction.class.getName());
+
 	private static final long serialVersionUID = 1L;
 
 	public static final String USE_EDITOR = "useEditor";
@@ -106,7 +109,7 @@ public class ViewContentTypeDefinitionAction extends InfoGlueAbstractAction
     protected void initialize(Integer contentTypeDefinitionId) throws Exception
     {
         this.contentTypeDefinitionVO = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithId(contentTypeDefinitionId);
-    	//getLogger().info("Initializing:" + this.contentTypeDefinitionVO.getSchemaValue());
+    	//logger.info("Initializing:" + this.contentTypeDefinitionVO.getSchemaValue());
 
 		this.contentTypeDefinitionVO = ContentTypeDefinitionController.getController().validateAndUpdateContentType(this.contentTypeDefinitionVO);
         this.contentTypeDefinitionVO = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithId(contentTypeDefinitionId);
@@ -785,7 +788,7 @@ public class ViewContentTypeDefinitionAction extends InfoGlueAbstractAction
 		}
 		catch(Exception e)
 		{
-			getLogger().warn("Error adding asset key: ", e);
+			logger.warn("Error adding asset key: ", e);
 		}
 
 		this.initialize(getContentTypeDefinitionId());
@@ -816,7 +819,7 @@ public class ViewContentTypeDefinitionAction extends InfoGlueAbstractAction
 		}
 		catch(Exception e)
 		{
-			getLogger().warn("Error adding categories key: ", e);
+			logger.warn("Error adding categories key: ", e);
 		}
 
 		this.initialize(getContentTypeDefinitionId());
@@ -836,7 +839,7 @@ public class ViewContentTypeDefinitionAction extends InfoGlueAbstractAction
 		}
 		catch(Exception e)
 		{
-			getLogger().warn("Error updating asset key: ", e);
+			logger.warn("Error updating asset key: ", e);
 		}
 
 		initialize(getContentTypeDefinitionId());
@@ -868,7 +871,7 @@ public class ViewContentTypeDefinitionAction extends InfoGlueAbstractAction
 		}
 		catch(Exception e)
 		{
-			getLogger().warn("Error updating category key: ", e);
+			logger.warn("Error updating category key: ", e);
 		}
 
 		initialize(getContentTypeDefinitionId());
@@ -905,7 +908,7 @@ public class ViewContentTypeDefinitionAction extends InfoGlueAbstractAction
 		}
 		catch(Exception e)
 		{
-			getLogger().warn("Error updating key: " + keyType, e);
+			logger.warn("Error updating key: " + keyType, e);
 		}
 
 		this.initialize(getContentTypeDefinitionId());
