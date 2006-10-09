@@ -3790,6 +3790,29 @@ public class BasicTemplateController implements TemplateController
 	}
 
 	/**
+	 * This method calls an page and stores it as an digitalAsset - that way one can avoid having to 
+	 * serve javascript-files and css-files through InfoGlue. Not suitable for use if you have very dynamic
+	 * css:es or scripts which includes logic depending on user info etc.. mostly usable if you have a static css
+	 * or controls it on the pageCache parameters.
+	 */
+	 
+	public String getPageAsDigitalAssetUrl(Integer siteNodeId, Integer languageId, Integer contentId) 
+	{
+		String pageDigitalAssetUrl = "";
+		
+		try
+		{
+			pageDigitalAssetUrl = this.nodeDeliveryController.getPageAsDigitalAssetUrl(getDatabase(), this.getPrincipal(), siteNodeId, languageId, contentId, this.deliveryContext);
+		}
+		catch(Exception e)
+		{
+			logger.error("An error occurred trying to get current page digitalAsset url:" + e.getMessage(), e);
+		}
+				
+		return pageDigitalAssetUrl;
+	}
+
+	/**
 	 * This method constructs a string representing the path to the page with respect to where in the
 	 * structure the page is. It also takes the page title into consideration.
 	 */
