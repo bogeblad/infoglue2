@@ -28,6 +28,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -282,4 +283,28 @@ public class DOMBuilder
 		return s;
 	}
 	
+	public String getFormattedDocument(Document doc, String encoding)
+	{
+	    return getFormattedDocument(doc, true, false, encoding);
+	}
+	
+	public String getFormattedDocument(Document doc, boolean compact, boolean supressDecl, String encoding)
+	{
+	    OutputFormat format = compact ? OutputFormat.createCompactFormat() : OutputFormat.createPrettyPrint();
+        format.setSuppressDeclaration(supressDecl);
+		format.setEncoding(encoding);
+		format.setExpandEmptyElements(false);
+		StringWriter stringWriter = new StringWriter();
+		XMLWriter writer = new XMLWriter(stringWriter, format);
+		try
+        {
+            writer.write(doc);
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+		return stringWriter.toString();
+	}
+
 }
