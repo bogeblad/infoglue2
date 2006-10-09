@@ -84,7 +84,7 @@ public class CombinedJNDIBasicAuthorizationModule implements AuthorizationModule
 			logger.info("authorizationModule:" + authorizationModule);
 			authorizationModule.setExtraProperties(this.extraProperties);
 			authorizationModule.setTransactionObject(this.getTransactionObject());
-			logger.info("InfoGlueAuthenticationFilter.extraProperties:" + this.extraProperties);
+			//logger.info("InfoGlueAuthenticationFilter.extraProperties:" + this.extraProperties);
     	}
     	catch(Exception e)
     	{
@@ -104,7 +104,7 @@ public class CombinedJNDIBasicAuthorizationModule implements AuthorizationModule
 			logger.info("authorizationModule:" + authorizationModule);
 			authorizationModule.setExtraProperties(this.extraProperties);
 			authorizationModule.setTransactionObject(this.getTransactionObject());
-			logger.info("InfoGlueAuthenticationFilter.extraProperties:" + this.extraProperties);
+			//logger.info("InfoGlueAuthenticationFilter.extraProperties:" + this.extraProperties);
     	}
     	catch(Exception e)
     	{

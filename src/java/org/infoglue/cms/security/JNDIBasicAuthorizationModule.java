@@ -631,6 +631,7 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule, Serial
 		String rolesAttributeFilter = this.extraProperties.getProperty("rolesAttributesFilter");
 		String roleNameAttribute 	= this.extraProperties.getProperty("roleNameAttribute");
 		String roleFilter			= this.extraProperties.getProperty("roleFilter", "InfoGlue");
+		String removeRoleBaseDN		= this.extraProperties.getProperty("removeRoleBaseDN", "true");
 		
 		try 
 		{
@@ -690,7 +691,7 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule, Serial
 					logger.info("roleName:" + fullRoleName);
 					
 					logger.info("indexOf:" + fullRoleName.indexOf(roleBase));
-					if(roleBase != null && fullRoleName.indexOf(roleBase) > -1)
+					if(roleBase != null && fullRoleName.indexOf(roleBase) > -1 && removeRoleBaseDN.equals("true"))
 					{
 					    roleName = roleName.substring(0, roleName.indexOf(roleBase));
 					    roleName = roleName.substring(0, roleName.lastIndexOf(","));
@@ -792,6 +793,7 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule, Serial
 		String groupsAttributeFilter = this.extraProperties.getProperty("groupsAttributesFilter");
 		String groupNameAttribute 	= this.extraProperties.getProperty("groupNameAttribute");
 		String groupFilter			= this.extraProperties.getProperty("groupFilter", "InfoGlue");
+		String removeGroupBaseDN	= this.extraProperties.getProperty("removeGroupBaseDN", "true");
 
 		logger.info("groupBase:" + groupBase);
 		logger.info("userBase:" + userBase);
@@ -852,7 +854,7 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule, Serial
 					logger.info("groupName:" + groupName);
 					logger.info("groupBase:" + groupBase);
 					logger.info("indexOf:" + groupName.indexOf(groupBase));
-					if(groupBase != null && fullGroupName.indexOf(groupBase) > -1)
+					if(groupBase != null && fullGroupName.indexOf(groupBase) > -1 && removeGroupBaseDN.equals("true"))
 					{
 					    groupName = groupName.substring(0, groupName.indexOf(groupBase));
 					    groupName = groupName.substring(0, groupName.lastIndexOf(","));
@@ -945,6 +947,7 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule, Serial
 			
 			logger.info("searchFilter:" + searchFilter);
 			logger.info("roleSearchScope:" + roleSearchScope);
+			logger.info("rolesAttributeFilter:" + rolesAttributeFilter);
 			
 			String rolesAttribute = "distinguishedName";
 			if(rolesAttributeFilter != null && rolesAttributeFilter.length() > 0)
@@ -965,7 +968,7 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule, Serial
 			ctls.setReturningAttributes(attrID);
 	
 			NamingEnumeration answer = ctx.search(baseDN, searchFilter, ctls); 
-
+			
 			if(!answer.hasMore())
 				throw new Exception("The was no groups found in the JNDI Data Source.");
 		
@@ -1011,7 +1014,9 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule, Serial
 	
 	public List getUsers() throws Exception
 	{
-	    logger.info("getUsers start...");
+		logger.info("*******************");
+	    logger.info("* getUsers start  *");
+	    logger.info("*******************");
 	    
 		String userCacheTimeout = this.extraProperties.getProperty("userCacheTimeout", "1800");
 
@@ -1023,6 +1028,7 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule, Serial
 		users = new ArrayList();
 		
 		String roleBase 				= this.extraProperties.getProperty("roleBase");
+		String groupBase 				= this.extraProperties.getProperty("groupBase");
 		String userBase					= this.extraProperties.getProperty("userBase");
 		String userListSearch			= this.extraProperties.getProperty("userListSearch");
 		String userAttributesFilter		= this.extraProperties.getProperty("userAttributesFilter");
@@ -1034,6 +1040,8 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule, Serial
 		String roleFilter				= this.extraProperties.getProperty("roleFilter", "InfoGlue");
 		String roleNameAttribute 		= this.extraProperties.getProperty("roleNameAttribute");
 		String userSearchScope 			= this.extraProperties.getProperty("userSearchScope");
+		String removeGroupBaseDN		= this.extraProperties.getProperty("removeGroupBaseDN", "true");
+		String removeRoleBaseDN			= this.extraProperties.getProperty("removeRoleBaseDN", "true");
 
 		try 
 		{
@@ -1115,27 +1123,27 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule, Serial
 						NamingEnumeration allEnum = memberOfAttribute.getAll();
 						while(allEnum.hasMore())
 						{
-							String groupName = (String)allEnum.next();
-							logger.info("groupName:" + groupName);
+							String roleName = (String)allEnum.next();
+							logger.info("groupName:" + roleName);
 							logger.info("roleBase:" + roleBase);
-							if(roleBase != null && groupName.indexOf(roleBase) > -1)
+							if(roleBase != null && roleName.indexOf(roleBase) > -1 && removeRoleBaseDN.equals("true"))
 							{
-							    groupName = groupName.substring(0, groupName.indexOf(roleBase));
-							    groupName = groupName.substring(0, groupName.lastIndexOf(","));
+								roleName = roleName.substring(0, roleName.indexOf(roleBase));
+								roleName = roleName.substring(0, roleName.lastIndexOf(","));
 							}
 							
-							logger.info("groupName:" + groupName);
-							if(roleFilter.equalsIgnoreCase("*") || groupName.indexOf(roleFilter) > -1)
+							logger.info("roleName:" + roleName);
+							if(roleFilter.equalsIgnoreCase("*") || roleName.indexOf(roleFilter) > -1)
 							{
 							    logger.info("roleNameAttribute:" + roleNameAttribute);
-								logger.info("groupName:" + groupName);
-								logger.info("indexOf:" + groupName.indexOf(roleNameAttribute));
-								if(roleNameAttribute != null && groupName.indexOf(roleNameAttribute) > -1)
+								logger.info("groupName:" + roleName);
+								logger.info("indexOf:" + roleName.indexOf(roleNameAttribute));
+								if(roleNameAttribute != null && roleName.indexOf(roleNameAttribute) > -1)
 								{
-								    groupName = groupName.substring(groupName.indexOf(roleNameAttribute) + roleNameAttribute.length() + 1);
+									roleName = roleName.substring(roleName.indexOf(roleNameAttribute) + roleNameAttribute.length() + 1);
 								}
 								
-							    InfoGlueRole infoGlueRole = new InfoGlueRole(groupName, "Not available from JNDI-source", this);
+							    InfoGlueRole infoGlueRole = new InfoGlueRole(roleName, "Not available from JNDI-source", this);
 							    roles.add(infoGlueRole);
 							}
 						}
@@ -1152,10 +1160,10 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule, Serial
 						{
 							String groupName = (String)allGroupsEnum.next();
 							logger.info("groupName:" + groupName);
-							logger.info("roleBase:" + roleBase);
-							if(roleBase != null && groupName.indexOf(roleBase) > -1)
+							logger.info("groupBase:" + groupBase);
+							if(groupBase != null && groupName.indexOf(groupBase) > -1 && removeGroupBaseDN.equals("true"))
 							{
-							    groupName = groupName.substring(0, groupName.indexOf(roleBase));
+							    groupName = groupName.substring(0, groupName.indexOf(groupBase));
 							    groupName = groupName.substring(0, groupName.lastIndexOf(","));
 							}
 							
@@ -1242,6 +1250,7 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule, Serial
 		String usersAttributeFilter = this.extraProperties.getProperty("usersAttributesFilter");
 		String userNameAttribute	= this.extraProperties.getProperty("userNameAttributeFilter");
 		String userBase 			= this.extraProperties.getProperty("userBase").toLowerCase().trim();
+		String removeUserBaseDN 	= this.extraProperties.getProperty("removeUserBaseDN", "true");
 		
 		try 
 		{
@@ -1302,7 +1311,7 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule, Serial
 							logger.info("userName:" + userName);
 							logger.info("userBase:" + userBase);
 							
-							if(roleBase != null && userName.indexOf(userBase) > -1)
+							if(roleBase != null && userName.indexOf(userBase) > -1 && removeUserBaseDN.equals("true"))
 							{
 							    userName = userName.substring(0, userName.indexOf(userBase));
 							    userName = userName.substring(0, userName.lastIndexOf(","));
@@ -1493,12 +1502,14 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule, Serial
 		List users = new ArrayList();
 
 		String groupBase 			= this.extraProperties.getProperty("groupBase");
-		String groupsFilter 			= this.extraProperties.getProperty("groupsFilter");
-		String groupsAttributeFilter = this.extraProperties.getProperty("groupsAttributesFilter");
+		String groupsFilter 		= this.extraProperties.getProperty("groupsFilter");
+		String groupsAttributeFilter= this.extraProperties.getProperty("groupsAttributesFilter");
 		String groupNameAttribute	= this.extraProperties.getProperty("groupNameAttribute");
 		String usersAttributeFilter = this.extraProperties.getProperty("usersAttributesFilter");
 		String userNameAttribute	= this.extraProperties.getProperty("userNameAttributeFilter");
 		String userBase 			= this.extraProperties.getProperty("userBase");
+		String removeUserBaseDN 	= this.extraProperties.getProperty("removeUserBaseDN", "true");
+		
 		
 		try 
 		{
@@ -1552,7 +1563,7 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule, Serial
 							logger.info("userName:" + userName);
 							logger.info("userBase:" + userBase);
 							
-							if(groupBase != null && userName.indexOf(userBase) > -1)
+							if(groupBase != null && userName.indexOf(userBase) > -1 && removeUserBaseDN.equals("true"))
 							{
 							    userName = userName.substring(0, userName.indexOf(userBase));
 							    userName = userName.substring(0, userName.lastIndexOf(","));
