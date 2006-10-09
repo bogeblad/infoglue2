@@ -35,6 +35,8 @@ import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.Map;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -263,6 +265,7 @@ public class HttpHelper
 	    URL url = new URL(urlAddress);
 	    URLConnection connection = url.openConnection();
 	    connection.setUseCaches(false);
+
 	    InputStream inStream = null;
 	    inStream = connection.getInputStream();
 	    InputStreamReader inStreamReader = new InputStreamReader(inStream);
@@ -278,7 +281,35 @@ public class HttpHelper
 	    return readData;   
 	}
 	
-	
+	public String getUrlContent(String urlAddress, Map requestParameters) throws Exception
+	{
+	    URL url = new URL(urlAddress);
+	    URLConnection connection = url.openConnection();
+	    connection.setUseCaches(false);
+	    
+	    Iterator mapIterator = requestParameters.keySet().iterator();
+	    while(mapIterator.hasNext())
+	    {
+	    	String key = (String)mapIterator.next();
+	    	String value = (String)requestParameters.get(key);
+	    	connection.setRequestProperty(key, value);
+	    }
+	    
+	    InputStream inStream = null;
+	    inStream = connection.getInputStream();
+	    InputStreamReader inStreamReader = new InputStreamReader(inStream);
+	    BufferedReader buffer = new BufferedReader(inStreamReader);            
+	    StringBuffer strbuf = new StringBuffer();   
+	    String line; 
+	    while((line = buffer.readLine()) != null) 
+	    {
+	        strbuf.append(line); 
+	    }                                              
+	    String readData = strbuf.toString();   
+	    buffer.close();
+	    return readData;   
+	}
+
 	public String getUrlContent(String urlAddress, String encoding) throws Exception
 	{
 		URL url = new URL(urlAddress);
