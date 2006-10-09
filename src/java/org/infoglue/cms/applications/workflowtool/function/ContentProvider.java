@@ -22,6 +22,7 @@
 */
 package org.infoglue.cms.applications.workflowtool.function;
 
+import org.apache.log4j.Logger;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
 import org.infoglue.cms.entities.content.ContentVO;
@@ -35,6 +36,8 @@ import com.opensymphony.workflow.WorkflowException;
  */
 public class ContentProvider extends InfoglueFunction 
 {
+    private final static Logger logger = Logger.getLogger(ContentProvider.class.getName());
+
 	/**
 	 * 
 	 */
@@ -129,7 +132,7 @@ public class ContentProvider extends InfoglueFunction
 		} 
 		catch(Exception e) 
 		{
-			getLogger().warn("Non-existing contentId found; removing from the resultset.");
+			logger.warn("Non-existing contentId found; removing from the resultset.");
 			removeFromPropertySet(CONTENT_ID_PROPERTYSET_KEY);
 		}
 	}

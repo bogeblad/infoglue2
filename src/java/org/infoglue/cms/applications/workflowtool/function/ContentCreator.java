@@ -25,6 +25,7 @@ package org.infoglue.cms.applications.workflowtool.function;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.infoglue.cms.applications.workflowtool.util.ContentFactory;
 import org.infoglue.cms.applications.workflowtool.util.ContentValues;
 import org.infoglue.cms.applications.workflowtool.util.ContentVersionValues;
@@ -40,6 +41,8 @@ import com.opensymphony.workflow.WorkflowException;
  */
 public class ContentCreator extends ContentFunction 
 {
+    private final static Logger logger = Logger.getLogger(ContentCreator.class.getName());
+
 	/**
 	 * 
 	 */
@@ -113,7 +116,7 @@ public class ContentCreator extends ContentFunction
 		} 
 		catch(ConstraintException e) 
 		{
-			getLogger().debug(e.toString());
+			logger.debug(e.toString());
 		} 
 		catch(Exception e) 
 		{

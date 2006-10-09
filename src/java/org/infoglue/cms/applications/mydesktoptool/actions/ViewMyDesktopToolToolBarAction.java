@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 
 /**
@@ -37,6 +38,8 @@ import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 
 public class ViewMyDesktopToolToolBarAction extends InfoGlueAbstractAction
 {
+    private final static Logger logger = Logger.getLogger(ViewMyDesktopToolToolBarAction.class.getName());
+
 	private static final long serialVersionUID = 1L;
 
 	private String title = "";
@@ -183,7 +186,7 @@ public class ViewMyDesktopToolToolBarAction extends InfoGlueAbstractAction
 
 	public List getButtons()
 	{
-		getLogger().info("Title:" + this.title);
+		logger.info("Title:" + this.title);
 		
 		if(this.toolbarKey.equalsIgnoreCase("publications"))
 			return getPublicationsButtons();

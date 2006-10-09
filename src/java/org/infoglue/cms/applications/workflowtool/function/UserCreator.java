@@ -24,6 +24,7 @@ package org.infoglue.cms.applications.workflowtool.function;
 
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.infoglue.cms.controllers.kernel.impl.simple.UserControllerProxy;
 import org.infoglue.cms.entities.management.SystemUserVO;
 import org.infoglue.cms.security.InfoGlueGroup;
@@ -33,6 +34,8 @@ import com.opensymphony.workflow.WorkflowException;
 
 public class UserCreator extends InfoglueFunction 
 {
+    private final static Logger logger = Logger.getLogger(UserCreator.class.getName());
+
 	/**
 	 * 
 	 */
@@ -101,7 +104,7 @@ public class UserCreator extends InfoglueFunction
 		{
 			final InfoGlueRole role = (InfoGlueRole) roles.get(i);
 			names[i] = role.getName();
-			getLogger().debug("Adding role [" + role.getName() + "]");
+			logger.debug("Adding role [" + role.getName() + "]");
 		}
 		return names;
 	}
@@ -116,7 +119,7 @@ public class UserCreator extends InfoglueFunction
 		{
 			final InfoGlueGroup group = (InfoGlueGroup) groups.get(i);
 			names[i] = group.getName();
-			getLogger().debug("Adding group [" + group.getName() + "]");
+			logger.debug("Adding group [" + group.getName() + "]");
 		}
 		return names;
 	}

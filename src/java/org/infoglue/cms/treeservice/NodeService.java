@@ -49,7 +49,7 @@ public class NodeService //extends JServiceBuilder
         }
         catch(Exception e)
         {
-            getLogger().info("Error trying to initialize db");
+            logger.info("Error trying to initialize db");
         }
 	}
 	
@@ -61,7 +61,7 @@ public class NodeService //extends JServiceBuilder
 		try
         {  
             String action = envelope.getAction();
-            getLogger().info("ACTION:" + action);
+            logger.info("ACTION:" + action);
             
             if(action.equals("selectRootNode"))
             {
@@ -83,7 +83,7 @@ public class NodeService //extends JServiceBuilder
                 responseEnvelope = deleteNode(envelope);
             }
             
-            getLogger().info("Executing in NodeService...");
+            logger.info("Executing in NodeService...");
         }
         catch (Exception e)
         {
@@ -106,15 +106,15 @@ public class NodeService //extends JServiceBuilder
             Node node = null;
             
             String oqlString = "SELECT n FROM Node n WHERE is_undefined(parent)";
-            getLogger().info("oqlString:" + oqlString);
+            logger.info("oqlString:" + oqlString);
             OQLQuery oql = db.getOQLQuery(oqlString);
-            getLogger().info("oql prepared");
+            logger.info("oql prepared");
             QueryResults results = oql.execute();
-            getLogger().info("results fetched");
+            logger.info("results fetched");
             if(results.hasMore())
                 node = (Node)results.next();
 
-            getLogger().info("Fetched a node:" + node);
+            logger.info("Fetched a node:" + node);
             responseEnvelope.setData(node);
             
             db.commit();
@@ -139,7 +139,7 @@ public class NodeService //extends JServiceBuilder
             db.begin();
             
             Node updatedNode = (Node)envelope.getData();
-            getLogger().info("Node to update:" + updatedNode);
+            logger.info("Node to update:" + updatedNode);
             
             //Kan man ändra så att den sparas direkt kanske?
             Node node = (Node)db.load(Node.class, updatedNode.getId());
@@ -147,7 +147,7 @@ public class NodeService //extends JServiceBuilder
             node.setName(updatedNode.getName());
             node.setParent(updatedNode.getParent());
 
-            getLogger().info("Executing in NodeService...");
+            logger.info("Executing in NodeService...");
             responseEnvelope.setData(node);
 
             db.commit();
@@ -172,7 +172,7 @@ public class NodeService //extends JServiceBuilder
             db.begin();
             
             Node newNode = (Node)envelope.getData();
-            getLogger().info("Node to create:" + newNode);
+            logger.info("Node to create:" + newNode);
             
             //Kan man ändra så att den sparas direkt kanske?
             Node node = new Node();
@@ -183,7 +183,7 @@ public class NodeService //extends JServiceBuilder
             node.setChildren(newNode.getChildren());
             db.create(node);
 
-            getLogger().info("Executing in NodeService...");
+            logger.info("Executing in NodeService...");
             responseEnvelope.setData(node);
 
             db.commit();
@@ -208,13 +208,13 @@ public class NodeService //extends JServiceBuilder
             
             Node deleteNode = (Node)envelope.getData();
             Node parent = deleteNode.getParent();
-            getLogger().info("Node to delete:" + deleteNode);
+            logger.info("Node to delete:" + deleteNode);
             
             //Kan man ändra så att den sparas direkt kanske?
             Node node = (Node)db.load(Node.class, deleteNode.getId());
             db.remove(node);
 
-            getLogger().info("Executing in NodeService...");
+            logger.info("Executing in NodeService...");
             responseEnvelope.setData(parent);
 
             db.commit();

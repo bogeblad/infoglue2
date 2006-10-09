@@ -27,6 +27,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+import org.infoglue.cms.applications.cmstool.actions.ViewCMSAbstractToolAction;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentStateController;
 import org.infoglue.cms.controllers.kernel.impl.simple.PublicationController;
@@ -40,6 +42,8 @@ import org.infoglue.cms.entities.structure.SiteNodeVersionVO;
 
 public class ChangeMultiContentStatePublishAction extends InfoGlueAbstractAction
 {
+    private final static Logger logger = Logger.getLogger(ChangeMultiContentStatePublishAction.class.getName());
+
 	private static final long serialVersionUID = -6759369582248131484L;
 
 	private Integer contentId;
@@ -68,7 +72,7 @@ public class ChangeMultiContentStatePublishAction extends InfoGlueAbstractAction
 		while(it.hasNext())
 		{
 			Integer siteNodeVersionId = (Integer)it.next();
-			getLogger().info("Publishing:" + siteNodeVersionId);
+			logger.info("Publishing:" + siteNodeVersionId);
 			SiteNodeVersion siteNodeVersion = SiteNodeStateController.getController().changeState(siteNodeVersionId, SiteNodeVersionVO.PUBLISH_STATE, getVersionComment(), overrideVersionModifyer, this.getInfoGluePrincipal(), null, events);
 		}
 
@@ -78,7 +82,7 @@ public class ChangeMultiContentStatePublishAction extends InfoGlueAbstractAction
 		while(contentVersionIdsIterator.hasNext())
 		{
 			Integer contentVersionId = (Integer)contentVersionIdsIterator.next();
-			getLogger().info("Publishing:" + contentVersionId);
+			logger.info("Publishing:" + contentVersionId);
 			ContentVersion contentVersion = ContentStateController.changeState(contentVersionId, ContentVersionVO.PUBLISH_STATE, getVersionComment(), this.overrideVersionModifyer, this.getInfoGluePrincipal(), null, events);
 		}
 		

@@ -154,7 +154,7 @@ public class InfoGlueBasicAuthorizationModule extends BaseController implements 
 				} 
 				catch (Exception e) 
 				{
-					getLogger().info("An error occurred trying to get SystemUser for " + userName + ":" + e);
+					logger.info("An error occurred trying to get SystemUser for " + userName + ":" + e);
 					rollbackTransaction(db);
 					throw new SystemException(e.getMessage());
 				}
@@ -523,7 +523,7 @@ public class InfoGlueBasicAuthorizationModule extends BaseController implements 
 
     public List getRoleUsers(String roleName) throws Exception
     {
-        getLogger().info("roleName:" + roleName);
+        logger.info("roleName:" + roleName);
 		List users = new ArrayList();
 		
 		if(transactionObject == null)
@@ -554,7 +554,7 @@ public class InfoGlueBasicAuthorizationModule extends BaseController implements 
 
     public List getGroupUsers(String groupName) throws Exception
     {
-        getLogger().info("groupName:" + groupName);
+        logger.info("groupName:" + groupName);
 		List users = new ArrayList();
 		
 		if(transactionObject == null)

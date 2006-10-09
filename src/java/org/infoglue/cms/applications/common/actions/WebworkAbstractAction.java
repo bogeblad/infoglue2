@@ -228,7 +228,7 @@ public abstract class WebworkAbstractAction implements Action, ServletRequestAwa
 			final String localizedErrorMessage = getLocalizedErrorMessage(locale, errorCode);
 			getErrors().addError(fieldName, localizedErrorMessage);
 		}
-		getLogger().debug(getErrors().toString());
+		logger.debug(getErrors().toString());
 	}
 
 	/**
@@ -421,13 +421,5 @@ public abstract class WebworkAbstractAction implements Action, ServletRequestAwa
         return new Session(getHttpSession());
     }
   
-    /**
-	 * Returns a Logger
-     */
-
-    protected Logger getLogger() 
-    {
-        return Logger.getLogger(getClass().getName());
-    }
 
 }

@@ -34,13 +34,4 @@ import org.apache.log4j.Logger;
 public abstract class AbstractAction extends InfoGlueAbstractAction 
 {
 
-    /**
-     *
-     */
-    protected Logger getLogger() 
-    {
-        return Logger.getLogger(getClass().getName());
-        //return Logger.getLogger(getClass().getName() + "_" + getHttpSession().getId());
-    }
-
 }

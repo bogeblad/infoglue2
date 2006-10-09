@@ -22,9 +22,14 @@
 */
 package org.infoglue.cms.applications.workflowtool.function.defaultvalue;
 
+import org.apache.log4j.Logger;
+
 import com.opensymphony.workflow.WorkflowException;
 
-public class StringPopulator extends Populator {
+public class StringPopulator extends Populator 
+{
+    private final static Logger logger = Logger.getLogger(StringPopulator.class.getName());
+
 	/**
 	 * 
 	 */
@@ -54,7 +59,7 @@ public class StringPopulator extends Populator {
 	protected void populate(final String name, final String value) throws WorkflowException 
 	{
 		final String translatedValue = translate(value);
-		getLogger().debug("name=["+name+"], value=["+value+"], translatedValue=["+translatedValue+"]");
+		logger.debug("name=["+name+"], value=["+value+"], translatedValue=["+translatedValue+"]");
 		doPopulate(name, translatedValue);
 	}
 }

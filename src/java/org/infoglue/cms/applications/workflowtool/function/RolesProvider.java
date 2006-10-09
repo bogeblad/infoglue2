@@ -29,12 +29,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 
+import org.apache.log4j.Logger;
 import org.infoglue.cms.controllers.kernel.impl.simple.RoleControllerProxy;
 
 import com.opensymphony.workflow.WorkflowException;
 
 public class RolesProvider extends InfoglueFunction 
 {
+    private final static Logger logger = Logger.getLogger(RolesProvider.class.getName());
+
 	/**
 	 * 
 	 */
@@ -128,7 +131,7 @@ public class RolesProvider extends InfoglueFunction
 	 */
 	private void populateRolesFromAttribute() throws WorkflowException
 	{
-		getLogger().debug("Populating from attribute.");
+		logger.debug("Populating from attribute.");
 		for(final StringTokenizer st = new StringTokenizer(getArgument(ROLES_ARGUMENT), ","); st.hasMoreTokens(); )
 		{
 			populateRole(st.nextToken());
@@ -140,7 +143,7 @@ public class RolesProvider extends InfoglueFunction
 	 */
 	private void populateRolesFromPrincipal() throws WorkflowException
 	{
-		getLogger().debug("Populating from principal.");
+		logger.debug("Populating from principal.");
 		for(final Iterator i = getPrincipal().getRoles().iterator(); i.hasNext(); )
 		{
 			roles.add(i.next());
@@ -152,7 +155,7 @@ public class RolesProvider extends InfoglueFunction
 	 */
 	private void populateRolesFromRequest() throws WorkflowException
 	{
-		getLogger().debug("Populating from request.");
+		logger.debug("Populating from request.");
 		for(final Iterator i = getParameters().keySet().iterator(); i.hasNext(); ) 
 		{
 			final String key = i.next().toString();

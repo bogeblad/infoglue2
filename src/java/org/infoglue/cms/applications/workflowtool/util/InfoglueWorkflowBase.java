@@ -373,17 +373,7 @@ public abstract class InfoglueWorkflowBase
 	{
 		return propertySet;
 	}
-	
-	/**
-	 * Returns the class logger.
-	 * 
-	 * @return the class logger.
-	 */
-	protected final Logger getLogger() 
-	{ 
-		return logger; 
-	}
-	
+		
 	/**
 	 * Returns the database associated with the current execution.
 	 * 

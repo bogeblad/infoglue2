@@ -26,6 +26,7 @@ package org.infoglue.cms.applications.contenttool.actions;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentControllerProxy;
@@ -40,6 +41,8 @@ import org.infoglue.cms.entities.content.ContentVO;
 
 public class DeleteContentAction extends InfoGlueAbstractAction
 {
+    private final static Logger logger = Logger.getLogger(DeleteContentAction.class.getName());
+
 	private static final long serialVersionUID = 1L;
 	
 	private ContentVO contentVO;
@@ -77,7 +80,7 @@ public class DeleteContentAction extends InfoGlueAbstractAction
 			}
 			catch(Exception e)
 			{
-				getLogger().info("The content must have been a root-content because we could not find a parent.");
+				logger.info("The content must have been a root-content because we could not find a parent.");
 			}
 
 	    	ContentControllerProxy.getController().acDelete(this.getInfoGluePrincipal(), this.contentVO);	    
@@ -101,7 +104,7 @@ public class DeleteContentAction extends InfoGlueAbstractAction
 			}
 			catch(Exception e)
 			{
-			    getLogger().info("The content must have been a root-content because we could not find a parent.");
+			    logger.info("The content must have been a root-content because we could not find a parent.");
 			}
 
 	    	ContentControllerProxy.getController().acDelete(this.getInfoGluePrincipal(), this.contentVO);	    

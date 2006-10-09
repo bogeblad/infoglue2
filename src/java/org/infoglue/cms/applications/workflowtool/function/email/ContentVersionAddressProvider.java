@@ -22,7 +22,9 @@
  */
 package org.infoglue.cms.applications.workflowtool.function.email;
 
+import org.apache.log4j.Logger;
 import org.infoglue.cms.applications.workflowtool.function.ContentFunction;
+import org.infoglue.cms.applications.workflowtool.function.defaultvalue.StringPopulator;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
 import org.infoglue.cms.entities.content.ContentVersionVO;
 
@@ -33,6 +35,8 @@ import com.opensymphony.workflow.WorkflowException;
  */
 public class ContentVersionAddressProvider extends AddressProvider 
 {
+    private final static Logger logger = Logger.getLogger(ContentVersionAddressProvider.class.getName());
+
 	/**
 	 * The name of the attribute argument.
 	 */
@@ -62,7 +66,7 @@ public class ContentVersionAddressProvider extends AddressProvider
 	 */
 	protected void populate() throws WorkflowException
 	{
-		getLogger().debug("Creating email from the [" + attributeName + "] attribute.");
+		logger.debug("Creating email from the [" + attributeName + "] attribute.");
 		addRecipient(getAttribute());
 	}
 	

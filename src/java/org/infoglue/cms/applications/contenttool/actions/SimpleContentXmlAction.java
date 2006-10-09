@@ -33,6 +33,7 @@ import java.net.URLEncoder;
 import java.util.Collection;
 import java.util.Iterator;
 
+import org.apache.log4j.Logger;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
@@ -58,6 +59,8 @@ import com.frovi.ss.Tree.INodeSupplier;
 
 public class SimpleContentXmlAction extends SimpleXmlServiceAction
 {
+    private final static Logger logger = Logger.getLogger(SimpleContentXmlAction.class.getName());
+
 	private static final long serialVersionUID = 1L;
 	
     private static String TYPE_FOLDER = "ContentFolder";
@@ -109,7 +112,7 @@ public class SimpleContentXmlAction extends SimpleXmlServiceAction
 		}
 		catch(Exception e)
 		{
-			getLogger().error("An error occurred when we tried to get the latest version for the content:" + e.getMessage(), e);
+			logger.error("An error occurred when we tried to get the latest version for the content:" + e.getMessage(), e);
 		}
 		
 		return contentVersionVO;

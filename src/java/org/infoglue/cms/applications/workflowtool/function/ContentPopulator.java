@@ -25,6 +25,7 @@ package org.infoglue.cms.applications.workflowtool.function;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.infoglue.cms.applications.workflowtool.util.ContentValues;
 import org.infoglue.cms.applications.workflowtool.util.ContentVersionValues;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
@@ -38,6 +39,8 @@ import com.opensymphony.workflow.WorkflowException;
  */
 public class ContentPopulator extends InfoglueFunction 
 {
+    private final static Logger logger = Logger.getLogger(ContentPopulator.class.getName());
+
 	/**
 	 * 
 	 */
@@ -120,11 +123,11 @@ public class ContentPopulator extends InfoglueFunction
 		if(parameterExists(name)) 
 		{
 			setPropertySetDataString(name, getRequestParameter(name));
-			getLogger().debug(name + " is found in the request; propertyset updated.");
+			logger.debug(name + " is found in the request; propertyset updated.");
 		} 
 		else
 		{
-			getLogger().debug(name + " is not found in the request; propertyset not updated.");
+			logger.debug(name + " is not found in the request; propertyset not updated.");
 		}
 		return propertySetContains(name) ? getPropertySetDataString(name) : "";
 	}

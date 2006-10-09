@@ -29,6 +29,7 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.Enumeration;
 
+import org.apache.log4j.Logger;
 import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.applications.databeans.AssetKeyDefinition;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
@@ -50,6 +51,8 @@ import webwork.multipart.MultiPartRequestWrapper;
 
 public class UpdateDigitalAssetAction extends ViewDigitalAssetAction 
 {
+    private final static Logger logger = Logger.getLogger(UpdateDigitalAssetAction.class.getName());
+
 	private static final long serialVersionUID = 1L;
 	
 	private Integer contentVersionId = null;
@@ -128,7 +131,7 @@ public class UpdateDigitalAssetAction extends ViewDigitalAssetAction
 						is = new FileInputStream(file);    	
 						
 						String fileUploadMaximumSize = getPrincipalPropertyValue("fileUploadMaximumSize", false, true);
-						getLogger().info("fileUploadMaximumSize:" + fileUploadMaximumSize);
+						logger.info("fileUploadMaximumSize:" + fileUploadMaximumSize);
 						
 						if(!fileUploadMaximumSize.equalsIgnoreCase("-1") && new Integer(fileUploadMaximumSize).intValue() < new Long(file.length()).intValue())
 						{
@@ -218,7 +221,7 @@ public class UpdateDigitalAssetAction extends ViewDigitalAssetAction
     		}
     		else
     		{
-    		    getLogger().error("File upload failed for some reason.");
+    		    logger.error("File upload failed for some reason.");
     		}
     		
     		updatedDigitalAssetVO = DigitalAssetController.update(digitalAssetVO, is);
@@ -227,7 +230,7 @@ public class UpdateDigitalAssetAction extends ViewDigitalAssetAction
       	} 
       	catch (Exception e) 
       	{
-      	  getLogger().error("An error occurred when we tried to upload a new asset:" + e.getMessage(), e);
+      	  logger.error("An error occurred when we tried to upload a new asset:" + e.getMessage(), e);
       	}
 		finally
 		{
@@ -256,7 +259,7 @@ public class UpdateDigitalAssetAction extends ViewDigitalAssetAction
 		}
 		catch(Exception e)
 		{
-		    getLogger().warn("We could not get the url of the digitalAsset: " + e.getMessage(), e);
+		    logger.warn("We could not get the url of the digitalAsset: " + e.getMessage(), e);
 		}
 		
 		return imageHref;
@@ -271,7 +274,7 @@ public class UpdateDigitalAssetAction extends ViewDigitalAssetAction
 		}
 		catch(Exception e)
 		{
-		    getLogger().warn("We could not get the url of the thumbnail: " + e.getMessage(), e);
+		    logger.warn("We could not get the url of the thumbnail: " + e.getMessage(), e);
 		}
 		
 		return imageHref;

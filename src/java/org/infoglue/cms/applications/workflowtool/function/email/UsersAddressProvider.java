@@ -25,6 +25,7 @@ package org.infoglue.cms.applications.workflowtool.function.email;
 import java.util.Collection;
 import java.util.Iterator;
 
+import org.apache.log4j.Logger;
 import org.infoglue.cms.security.InfoGluePrincipal;
 
 import com.opensymphony.workflow.WorkflowException;
@@ -32,7 +33,10 @@ import com.opensymphony.workflow.WorkflowException;
 /**
  * This function is used when an email should be sent to a number of <code>SystemUser</code>:s.
  */
-public abstract class UsersAddressProvider extends AddressProvider {
+public abstract class UsersAddressProvider extends AddressProvider 
+{
+    private final static Logger logger = Logger.getLogger(UsersAddressProvider.class.getName());
+
 	/**
 	 * Default constructor. 
 	 */
@@ -57,7 +61,7 @@ public abstract class UsersAddressProvider extends AddressProvider {
 		for(final Iterator principals = getPrincipals().iterator(); principals.hasNext(); )
 		{
 			final InfoGluePrincipal principal = (InfoGluePrincipal) principals.next();
-			getLogger().debug("Creating email for user [" + principal.getName() + "].");
+			logger.debug("Creating email for user [" + principal.getName() + "].");
 			addRecipient(principal.getEmail());
 		}
 	}

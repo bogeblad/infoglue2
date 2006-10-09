@@ -29,12 +29,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 
+import org.apache.log4j.Logger;
 import org.infoglue.cms.controllers.kernel.impl.simple.GroupControllerProxy;
 
 import com.opensymphony.workflow.WorkflowException;
 
 public class GroupsProvider extends InfoglueFunction 
 {
+    private final static Logger logger = Logger.getLogger(GroupsProvider.class.getName());
+
 	/**
 	 * 
 	 */
@@ -128,7 +131,7 @@ public class GroupsProvider extends InfoglueFunction
 	 */
 	private void populateGroupFromAttribute() throws WorkflowException
 	{
-		getLogger().debug("Populating from attribute.");
+		logger.debug("Populating from attribute.");
 		for(final StringTokenizer st = new StringTokenizer(getArgument(GROUPS_ARGUMENT), ","); st.hasMoreTokens(); )
 		{
 			populateGroup(st.nextToken());
@@ -140,7 +143,7 @@ public class GroupsProvider extends InfoglueFunction
 	 */
 	private void populateGroupFromPrincipal() throws WorkflowException
 	{
-		getLogger().debug("Populating from principal.");
+		logger.debug("Populating from principal.");
 		for(final Iterator i = getPrincipal().getGroups().iterator(); i.hasNext(); )
 		{
 			groups.add(i.next());
@@ -152,7 +155,7 @@ public class GroupsProvider extends InfoglueFunction
 	 */
 	private void populateGroupFromRequest() throws WorkflowException
 	{
-		getLogger().debug("Populating from request.");
+		logger.debug("Populating from request.");
 		for(final Iterator i = getParameters().keySet().iterator(); i.hasNext(); ) 
 		{
 			final String key = i.next().toString();

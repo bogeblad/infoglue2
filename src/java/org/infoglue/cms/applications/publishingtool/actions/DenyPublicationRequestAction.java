@@ -28,7 +28,9 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.log4j.Logger;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
+import org.infoglue.cms.applications.mydesktoptool.actions.ViewMyDesktopToolToolBarAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.EventController;
 import org.infoglue.cms.controllers.kernel.impl.simple.PublicationController;
 import org.infoglue.cms.entities.workflow.EventVO;
@@ -43,6 +45,8 @@ import org.infoglue.cms.exception.SystemException;
 
 public class DenyPublicationRequestAction extends InfoGlueAbstractAction 
 {
+    private final static Logger logger = Logger.getLogger(DenyPublicationRequestAction.class.getName());
+
 	private Integer eventId;
 	private Integer repositoryId;
 	private List events;
@@ -97,7 +101,7 @@ public class DenyPublicationRequestAction extends InfoGlueAbstractAction
 	
 		for(int i=0; i < eventArguments.length; i++)
 		{
-			getLogger().info("EventId:" + eventArguments[i]);
+			logger.info("EventId:" + eventArguments[i]);
 			EventVO eventVO = EventController.getEventVOWithId(new Integer(eventArguments[i]));
 			events.add(eventVO);
 		}		

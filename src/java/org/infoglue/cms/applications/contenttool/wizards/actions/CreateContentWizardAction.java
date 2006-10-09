@@ -85,9 +85,6 @@ public class CreateContentWizardAction extends InfoGlueAbstractAction implements
 
 	protected void initialize(Integer contentVersionId, Integer contentId, Integer languageId) throws Exception
 	{
-		System.out.println("contentVersionId:" + contentVersionId);
-		System.out.println("contentId:" + contentId);
-		System.out.println("languageId:" + languageId);
 		this.contentVO = ContentControllerProxy.getController().getACContentVOWithId(this.getInfoGluePrincipal(), contentId);
 		//this.contentVO = ContentController.getContentVOWithId(contentId);
 		this.contentTypeDefinitionVO = ContentController.getContentController().getContentTypeDefinition(contentId);

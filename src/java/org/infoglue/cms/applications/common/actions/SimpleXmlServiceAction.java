@@ -44,6 +44,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import org.apache.log4j.Logger;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
@@ -74,9 +75,11 @@ import com.frovi.ss.Tree.INodeSupplier;
 
 public abstract class SimpleXmlServiceAction extends InfoGlueAbstractAction
 {
+    private final static Logger logger = Logger.getLogger(SimpleXmlServiceAction.class.getName());
+
     private static final String protectedPropertyFragments = "password,administrator,authorizer,authenticator,masterserver,slaveserver,log";
     
-    protected static final String SERVICEREVISION = "$Revision: 1.17 $"; 
+    protected static final String SERVICEREVISION = "$Revision: 1.18 $"; 
 	protected static String ENCODING = "UTF-8";
     protected static String TYPE_FOLDER = "Folder";
     protected static String TYPE_ITEM = "Item";
@@ -272,7 +275,7 @@ public abstract class SimpleXmlServiceAction extends InfoGlueAbstractAction
 		
 		XMLNotificationWriter streamWriter = new XMLNotificationWriter(new OutputStreamWriter(out), ENCODING, boundary, thread, true, false);
 		
-		getLogger().info("Notification stream listen started from:"  + remoteId);
+		logger.info("Notification stream listen started from:"  + remoteId);
         ChangeNotificationController.getInstance().registerListener(streamWriter);
         
 		while(open)
@@ -288,7 +291,7 @@ public abstract class SimpleXmlServiceAction extends InfoGlueAbstractAction
             }
 		}
         ChangeNotificationController.getInstance().unregisterListener(streamWriter);
-        getLogger().info("Notification stream listen ended from:"  + remoteId);
+        logger.info("Notification stream listen ended from:"  + remoteId);
         return null;
     }
 
@@ -321,11 +324,11 @@ public abstract class SimpleXmlServiceAction extends InfoGlueAbstractAction
 				if(createAction && src.length() >0) src += urlArgSeparator + "createAction=true";
 				if(action.length()>0 && src.length() >0) src += urlArgSeparator + "action=" + action;
 				String allowedContentTypeIdsUrlEncodedString = getAllowedContentTypeIdsAsUrlEncodedString();
-				getLogger().info("allowedContentTypeIdsUrlEncodedString1:" + allowedContentTypeIdsUrlEncodedString);
+				logger.info("allowedContentTypeIdsUrlEncodedString1:" + allowedContentTypeIdsUrlEncodedString);
 				if(allowedContentTypeIdsUrlEncodedString.length()>0 && src.length() >0) 
 				    src += urlArgSeparator + allowedContentTypeIdsUrlEncodedString;
     	        
-				getLogger().info("src:" + src);
+				logger.info("src:" + src);
     			
 				String text=r.getName();
     	        Element element = root.addElement("tree");
@@ -352,11 +355,11 @@ public abstract class SimpleXmlServiceAction extends InfoGlueAbstractAction
 			if(createAction && src.length() >0) src += urlArgSeparator + "createAction=true";
 			if(action.length()>0 && src.length() >0) src += urlArgSeparator + "action=" + action;
 			String allowedContentTypeIdsUrlEncodedString = getAllowedContentTypeIdsAsUrlEncodedString();
-			getLogger().info("allowedContentTypeIdsUrlEncodedString2:" + allowedContentTypeIdsUrlEncodedString);
+			logger.info("allowedContentTypeIdsUrlEncodedString2:" + allowedContentTypeIdsUrlEncodedString);
 			if(allowedContentTypeIdsUrlEncodedString.length()>0 && src.length() >0) 
 			    src += urlArgSeparator + allowedContentTypeIdsUrlEncodedString;
 	        
-			getLogger().info("src2:" + src);
+			logger.info("src2:" + src);
 
 	        Element elm = root.addElement("tree");
 	        elm

@@ -34,9 +34,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.Velocity;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
+import org.infoglue.cms.applications.structuretool.actions.ViewStructureTreeForInlineLinkAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
@@ -47,6 +49,8 @@ import org.infoglue.cms.entities.management.LanguageVO;
 
 public class ViewExecuteTaskAction extends InfoGlueAbstractAction
 {
+    private final static Logger logger = Logger.getLogger(ViewExecuteTaskAction.class.getName());
+
 	private static final long serialVersionUID = 1L;
 
 	private Integer taskContentId = null;
@@ -70,7 +74,7 @@ public class ViewExecuteTaskAction extends InfoGlueAbstractAction
 	{
 		ContentVO contentVO = ContentController.getContentController().getContentVOWithId(this.getTaskContentId());
 		
-		getLogger().info("Language:" + LanguageController.getController().getMasterLanguage((Integer)getHttpSession().getAttribute("repositoryId")).getId());
+		logger.info("Language:" + LanguageController.getController().getMasterLanguage((Integer)getHttpSession().getAttribute("repositoryId")).getId());
 		
 		ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getLatestContentVersionVO(contentVO.getId(), LanguageController.getController().getMasterLanguage((Integer)getHttpSession().getAttribute("repositoryId")).getId());
 
@@ -78,11 +82,11 @@ public class ViewExecuteTaskAction extends InfoGlueAbstractAction
 		if(contentVersionVO == null)
 			contentVersionVO = ContentVersionController.getContentVersionController().getLatestContentVersionVO(contentVO.getId(), ((LanguageVO)LanguageController.getController().getLanguageVOList().get(0)).getId());
 		
-		//getLogger().info("contentVersionVO:" + contentVersionVO);
+		//logger.info("contentVersionVO:" + contentVersionVO);
 		
 		String userInputHTML = ContentVersionController.getContentVersionController().getAttributeValue(contentVersionVO.getId(), "UserInputHTML", false);
 	
-		//getLogger().info("Found userInputHTML:" + userInputHTML);
+		//logger.info("Found userInputHTML:" + userInputHTML);
 			 
 		ScriptController scriptController = getScriptController();
 		scriptController.setRequest(this.getRequest());

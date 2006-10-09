@@ -33,7 +33,7 @@ public class RequestDispatcher
     
     /*public void dispatchRequest(String action, Hashtable input)
     {
-        getLogger().info("action:" + action);
+        logger.info("action:" + action);
         if(action.equalsIgnoreCase("getRootNode"))
     }*/
     

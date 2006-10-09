@@ -24,13 +24,17 @@ package org.infoglue.cms.applications.workflowtool.function.defaultvalue;
 
 import java.util.Calendar;
 
+import org.apache.log4j.Logger;
 import org.infoglue.cms.applications.workflowtool.function.ContentPopulator;
+import org.infoglue.cms.applications.workflowtool.function.UserCreator;
 import org.infoglue.cms.applications.workflowtool.util.ContentValues;
 
 import com.opensymphony.workflow.WorkflowException;
 
 public class ExpireDatePopulator extends DatePopulator
 {
+    private final static Logger logger = Logger.getLogger(ExpireDatePopulator.class.getName());
+
 	/**
 	 * 
 	 */
@@ -107,20 +111,20 @@ public class ExpireDatePopulator extends DatePopulator
 				if(temporary > 0)
 				{
 					yearsAhead = temporary;
-					getLogger().debug("Using [" + temporary + "] as years ahead value.");
+					logger.debug("Using [" + temporary + "] as years ahead value.");
 				}
 				else
-					getLogger().warn("Illegal years ahead argument [" + temporary + "].");
+					logger.warn("Illegal years ahead argument [" + temporary + "].");
 						
 			}
 			catch(Exception e)
 			{
-				getLogger().warn("Illegal years ahead argument [" + e.getMessage() + "].");
+				logger.warn("Illegal years ahead argument [" + e.getMessage() + "].");
 			}
 		}
 		else
 		{
-			getLogger().debug("Using default years ahead value.");
+			logger.debug("Using default years ahead value.");
 		}
 	}
 }

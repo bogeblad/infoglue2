@@ -38,6 +38,7 @@ import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 
+import org.apache.log4j.Logger;
 import org.infoglue.cms.applications.workflowtool.function.InfoglueFunction;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.util.mail.ByteDataSource;
@@ -52,6 +53,8 @@ import com.opensymphony.workflow.WorkflowException;
  */
 public class EmailFunction extends InfoglueFunction 
 {
+    private final static Logger logger = Logger.getLogger(EmailFunction.class.getName());
+
 	/**
 	 * 
 	 */
@@ -181,7 +184,7 @@ public class EmailFunction extends InfoglueFunction
 			{
 				throwException(e);
 			}
-			getLogger().warn("[silent mode]", e);
+			logger.warn("[silent mode]", e);
 		}
 		processIllegalAddresses();
 	}
@@ -241,7 +244,7 @@ public class EmailFunction extends InfoglueFunction
 	 */
 	private void createSimpleMessage() throws WorkflowException
 	{
-		getLogger().debug("Creating simple message.");
+		logger.debug("Creating simple message.");
 		initializeMessage();
 		initializeSimpleBody();
 	}
@@ -251,7 +254,7 @@ public class EmailFunction extends InfoglueFunction
 	 */
 	private void createMultipartMessage() throws WorkflowException
 	{
-		getLogger().debug("Creating message.");
+		logger.debug("Creating message.");
 		initializeMessage();
 		initializeMultipart();
 		createMainBodyPart();
@@ -263,7 +266,7 @@ public class EmailFunction extends InfoglueFunction
 	 */
 	private void initializeMessage() throws WorkflowException
 	{
-		getLogger().debug("Initializing message.");
+		logger.debug("Initializing message.");
 		message = service.createMessage();
 		initializeTo();
 		initializeFrom();
@@ -275,7 +278,7 @@ public class EmailFunction extends InfoglueFunction
 	 */
 	private void initializeSimpleBody() throws WorkflowException
 	{
-		getLogger().debug("Initializing simple body.");
+		logger.debug("Initializing simple body.");
 		try
 		{
 	    	message.setDataHandler(getDataHandler(translate(getArgument(BODY_ARGUMENT)), translate(getArgument(BODY_TYPE_ARGUMENT))));
@@ -291,7 +294,7 @@ public class EmailFunction extends InfoglueFunction
 	 */
 	private void initializeMultipart() throws WorkflowException
 	{
-		getLogger().debug("Initializing multipart.");
+		logger.debug("Initializing multipart.");
 		try 
 		{
 			multipart = new MimeMultipart();
@@ -308,17 +311,17 @@ public class EmailFunction extends InfoglueFunction
 	 */
 	private void initializeTo() throws WorkflowException
 	{
-		getLogger().debug("Initializing to.");
+		logger.debug("Initializing to.");
 		try 
 		{
 			if(argumentExists(TO_ARGUMENT))
 			{
-				getLogger().debug("Adding 'to' from argument [" + getArgument(TO_ARGUMENT) + "].");
+				logger.debug("Adding 'to' from argument [" + getArgument(TO_ARGUMENT) + "].");
 		    	message.addRecipients(Message.RecipientType.TO, createAddresses(getArgument(TO_ARGUMENT)));
 			}
 			if(parameterExists(TO_PARAMETER))
 			{
-				getLogger().debug("Adding 'to' from parameters");
+				logger.debug("Adding 'to' from parameters");
 		    	message.addRecipients(Message.RecipientType.TO, addressesToArray((List) getParameter(TO_PARAMETER)));
 			}
 		}
@@ -333,17 +336,17 @@ public class EmailFunction extends InfoglueFunction
 	 */
 	private void initializeFrom() throws WorkflowException
 	{
-		getLogger().debug("Initializing from.");
+		logger.debug("Initializing from.");
 		try 
 		{
 			if(argumentExists(FROM_ARGUMENT))
 			{
-				getLogger().debug("Adding 'from' from argument [" + getArgument(FROM_ARGUMENT) + "].");
+				logger.debug("Adding 'from' from argument [" + getArgument(FROM_ARGUMENT) + "].");
 				message.addFrom(createAddresses(getArgument(FROM_ARGUMENT)));
 			}
 			if(parameterExists(FROM_PARAMETER))
 			{
-				getLogger().debug("Adding 'from' from parameter.");
+				logger.debug("Adding 'from' from parameter.");
 		    	message.addFrom(addressesToArray((List) getParameter(FROM_PARAMETER)));
 			}
 		}
@@ -358,7 +361,7 @@ public class EmailFunction extends InfoglueFunction
 	 */
 	private void initializeSubject() throws WorkflowException
 	{
-		getLogger().debug("Initializing subject.");
+		logger.debug("Initializing subject.");
 		try 
 		{
 			message.setSubject(translate(getArgument(SUBJECT_ARGUMENT)), UTF8_ENCODING);
@@ -374,7 +377,7 @@ public class EmailFunction extends InfoglueFunction
 	 */
 	private void createMainBodyPart() throws WorkflowException
 	{
-		getLogger().debug("Initializing main body part.");
+		logger.debug("Initializing main body part.");
 		try 
 		{
 			final BodyPart part = new MimeBodyPart();
@@ -392,7 +395,7 @@ public class EmailFunction extends InfoglueFunction
 	 */
 	private void createAttachments() throws WorkflowException
 	{
-		getLogger().debug("Found " + attachments.size() + " attachments.");
+		logger.debug("Found " + attachments.size() + " attachments.");
 		for(final Iterator i = attachments.iterator(); i.hasNext(); )
 		{
 			createAttachment((Attachment) i.next());
@@ -468,7 +471,7 @@ public class EmailFunction extends InfoglueFunction
 	 */
 	private void initializeMailService() throws WorkflowException
 	{
-		getLogger().debug("Initializing mail service.");
+		logger.debug("Initializing mail service.");
 		try 
 		{
 			service = MailServiceFactory.getService();
@@ -484,7 +487,7 @@ public class EmailFunction extends InfoglueFunction
 	 */
 	private void sendMessage() throws WorkflowException
 	{
-		getLogger().debug("Sending message.");
+		logger.debug("Sending message.");
 		if(illegalAddresses.isEmpty())
 		{
 			try 

@@ -260,7 +260,7 @@ public class CASBasicAuthenticationModule extends AuthenticationModule//, Author
 				/*
 				public void checkServerTrusted(X509Certificate[] certs, String authType)
 				{
-					getLogger().info("Checking if server is trusted...");				
+					logger.info("Checking if server is trusted...");				
 				}
 				*/
 				

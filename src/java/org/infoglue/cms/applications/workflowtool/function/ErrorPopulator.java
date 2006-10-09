@@ -22,6 +22,7 @@
 */
 package org.infoglue.cms.applications.workflowtool.function;
 
+import org.apache.log4j.Logger;
 import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
 import org.infoglue.cms.util.StringManager;
@@ -34,6 +35,8 @@ import com.opensymphony.workflow.WorkflowException;
  */
 public abstract class ErrorPopulator extends InfoglueFunction 
 {
+    private final static Logger logger = Logger.getLogger(ErrorPopulator.class.getName());
+
 	/**
 	 * 
 	 */
@@ -120,7 +123,7 @@ public abstract class ErrorPopulator extends InfoglueFunction
 		final String before = fieldName.substring(0, index).toLowerCase();
 		final String after  = fieldName.substring(index + 1);
 		final String key    = ERROR_PROPERTYSET_PREFIX + before + "_" + after;
-		getLogger().debug("error field name converted from [" + fieldName  + "] to [" + before + "_" + after + "].");
+		logger.debug("error field name converted from [" + fieldName  + "] to [" + before + "_" + after + "].");
 		
 		return key;
 	}

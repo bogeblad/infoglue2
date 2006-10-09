@@ -24,7 +24,9 @@
 
 package org.infoglue.cms.applications.cmstool.actions;
 
+import org.apache.log4j.Logger;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
+import org.infoglue.cms.applications.common.actions.SimpleXmlServiceAction;
 import org.infoglue.cms.entities.content.impl.simple.ContentImpl;
 import org.infoglue.cms.entities.content.impl.simple.SmallContentImpl;
 import org.infoglue.cms.entities.management.impl.simple.ContentTypeDefinitionImpl;
@@ -44,6 +46,8 @@ import org.infoglue.deliver.util.CacheController;
 
 public class UpdateCacheAction extends InfoGlueAbstractAction 
 {
+    private final static Logger logger = Logger.getLogger(UpdateCacheAction.class.getName());
+
 	private static final long serialVersionUID = -1669612689042389758L;
 	
 	private String className = null;
@@ -87,7 +91,7 @@ public class UpdateCacheAction extends InfoGlueAbstractAction
 		{  
 			CacheController.clearCaches(className, objectId, null);
 			
-			getLogger().info("Updating className with id:" + className + ":" + objectId);
+			logger.info("Updating className with id:" + className + ":" + objectId);
 			
 			if(className != null)
 			{
@@ -100,7 +104,7 @@ public class UpdateCacheAction extends InfoGlueAbstractAction
 				/*
 				if(Class.forName(className).getName().equals(ContentVersionImpl.class.getName()))
 				{
-					getLogger().info("We should delete all images with contentVersionId " + objectId);
+					logger.info("We should delete all images with contentVersionId " + objectId);
 					DigitalAssetDeliveryController.getDigitalAssetDeliveryController().deleteContentVersionAssets(new Integer(objectId));
 				}		
 				*/
@@ -143,7 +147,7 @@ public class UpdateCacheAction extends InfoGlueAbstractAction
 		}
 		catch(Exception e)
 		{
-		    getLogger().error(e.getMessage(), e);
+		    logger.error(e.getMessage(), e);
 		}
                 
         return "success";

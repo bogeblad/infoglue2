@@ -25,6 +25,7 @@ package org.infoglue.cms.applications.cmstool.actions;
 
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.RepositoryController;
 import org.infoglue.cms.entities.management.RepositoryVO;
@@ -37,6 +38,8 @@ import org.infoglue.cms.entities.management.RepositoryVO;
 
 public abstract class ViewCMSAbstractToolAction extends InfoGlueAbstractAction
 {
+    private final static Logger logger = Logger.getLogger(ViewCMSAbstractToolAction.class.getName());
+
     private Integer repositoryId = null;
     
     public void setRepositoryId(Integer repositoryId)
@@ -55,7 +58,7 @@ public abstract class ViewCMSAbstractToolAction extends InfoGlueAbstractAction
     	{
 	    	if(this.repositoryId == null)
 	    	{	
-	    		getLogger().info("The repositoryId was null in ViewContentToolAction so we fetch it from the session");
+	    		logger.info("The repositoryId was null in ViewContentToolAction so we fetch it from the session");
 	    		this.repositoryId = (Integer)getHttpSession().getAttribute("repositoryId");
 	    		
 	    		if(this.repositoryId == null)
@@ -66,20 +69,20 @@ public abstract class ViewCMSAbstractToolAction extends InfoGlueAbstractAction
 						RepositoryVO repositoryVO = (RepositoryVO)authorizedRepositoryVOList.get(0);
 						this.repositoryId = repositoryVO.getId();
 			    		getHttpSession().setAttribute("repositoryId", this.repositoryId);		
-			    		getLogger().info("We set the defaultRepositoryId in the users session to " + this.repositoryId);
+			    		logger.info("We set the defaultRepositoryId in the users session to " + this.repositoryId);
 					}
 		    		else
 		    		{
 		    		    this.repositoryId = new Integer(-1);
 			    		//getHttpSession().setAttribute("repositoryId", this.repositoryId);		
-		    		    getLogger().info("We set the defaultRepositoryId in the users session to " + this.repositoryId);
+		    		    logger.info("We set the defaultRepositoryId in the users session to " + this.repositoryId);
 		    		}
 		    	}
 	    	}
     	}
     	catch(Exception e)
     	{
-    	    getLogger().error("The master repository could not be fetched due to an error:" + e.getMessage(), e);
+    	    logger.error("The master repository could not be fetched due to an error:" + e.getMessage(), e);
     	}
     	    		
     	return this.repositoryId;

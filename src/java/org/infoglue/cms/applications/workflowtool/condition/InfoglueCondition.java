@@ -24,6 +24,8 @@ package org.infoglue.cms.applications.workflowtool.condition;
 
 import java.util.Map;
 
+import org.apache.log4j.Logger;
+import org.infoglue.cms.applications.tasktool.actions.ViewExecuteTaskAction;
 import org.infoglue.cms.applications.workflowtool.util.InfoglueWorkflowBase;
 
 import com.opensymphony.module.propertyset.PropertySet;
@@ -35,6 +37,8 @@ import com.opensymphony.workflow.WorkflowException;
  */
 public abstract class InfoglueCondition extends InfoglueWorkflowBase implements Condition 
 {
+    private final static Logger logger = Logger.getLogger(InfoglueCondition.class.getName());
+
 	/**
 	 * Default constructor.
 	 */
@@ -58,10 +62,10 @@ public abstract class InfoglueCondition extends InfoglueWorkflowBase implements 
 		try 
 		{
 			storeContext(transientVars, args, ps);
-			getLogger().debug(getClass().getName() + ".passesCondition()--------- START");
+			logger.debug(getClass().getName() + ".passesCondition()--------- START");
 			initialize();
 			result = passesCondition();
-			getLogger().debug(getClass().getName() + ".passesCondition()--------- STOP (" + result + ")");
+			logger.debug(getClass().getName() + ".passesCondition()--------- STOP (" + result + ")");
 		}
 		catch(Exception e)
 		{

@@ -144,10 +144,10 @@ public class InfoGlueAuthenticationFilter implements Filter
 		session.setMaxInactiveInterval(new Integer(sessionTimeout).intValue());
 
 		// if our attribute's already present, don't do anything
-		//getLogger().info("User:" + session.getAttribute(INFOGLUE_FILTER_USER));
+		//logger.info("User:" + session.getAttribute(INFOGLUE_FILTER_USER));
 		if (session != null && session.getAttribute(INFOGLUE_FILTER_USER) != null) 
 		{
-		    //getLogger().info("Found user in session:" + session.getAttribute(INFOGLUE_FILTER_USER));
+		    //logger.info("Found user in session:" + session.getAttribute(INFOGLUE_FILTER_USER));
 		    //if(successLoginBaseUrl != null && !URL.startsWith(successLoginBaseUrl))
 		    //{
 		    //    checkSuccessRedirect(request, response, URL);

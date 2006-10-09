@@ -27,6 +27,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.log4j.Logger;
 import org.infoglue.cms.applications.common.Session;
 import org.infoglue.cms.applications.workflowtool.util.InfoglueWorkflowBase;
 import org.infoglue.cms.security.InfoGluePrincipal;
@@ -40,6 +41,8 @@ import com.opensymphony.workflow.WorkflowException;
  */
 public abstract class InfoglueFunction extends InfoglueWorkflowBase implements FunctionProvider 
 {
+    private final static Logger logger = Logger.getLogger(InfoglueFunction.class.getName());
+
 	/**
 	 * The key used by the <code>request</code> in the <code>parameters</code>.
 	 */
@@ -86,10 +89,10 @@ public abstract class InfoglueFunction extends InfoglueWorkflowBase implements F
 		try 
 		{
 			storeContext(transientVars, args, ps);
-			getLogger().debug(getClass().getName() + ".execute()--------- START");
+			logger.debug(getClass().getName() + ".execute()--------- START");
 			initialize();
 			execute();
-			getLogger().debug(getClass().getName() + ".execute()--------- STOP");
+			logger.debug(getClass().getName() + ".execute()--------- STOP");
 		}
 		catch(Exception e)
 		{
@@ -205,7 +208,7 @@ public abstract class InfoglueFunction extends InfoglueWorkflowBase implements F
 	 */
 	protected final void setFunctionStatus(final String status) 
 	{
-		getLogger().debug("setFunctionStatus(" + status + ")");
+		logger.debug("setFunctionStatus(" + status + ")");
 		getPropertySet().setString(FUNCTION_STATUS_PROPERTYSET_KEY, status);
 	}
 }

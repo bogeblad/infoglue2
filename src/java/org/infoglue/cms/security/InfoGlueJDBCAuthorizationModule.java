@@ -259,7 +259,7 @@ public class InfoGlueJDBCAuthorizationModule extends BaseController implements A
 			catch (Exception e) 
 			{
 				e.printStackTrace();
-				getLogger().info("An error occurred trying to get jdbc user for " + userName + ":" + e);
+				logger.info("An error occurred trying to get jdbc user for " + userName + ":" + e);
 				throw new SystemException(e.getMessage());
 			}
 			finally
@@ -335,7 +335,7 @@ public class InfoGlueJDBCAuthorizationModule extends BaseController implements A
 		} 
 		catch (Exception e) 
 		{
-			getLogger().info("An error occurred trying to get jdbc user for " + roleName + ":" + e);
+			logger.info("An error occurred trying to get jdbc user for " + roleName + ":" + e);
 			throw new SystemException(e.getMessage());
 		}
 		finally
@@ -484,7 +484,7 @@ public class InfoGlueJDBCAuthorizationModule extends BaseController implements A
 		} 
 		catch (Exception e) 
 		{
-			getLogger().info("An error occurred trying to get all roles:" + e);
+			logger.info("An error occurred trying to get all roles:" + e);
 			throw new SystemException(e.getMessage());
 		}
 		finally
@@ -634,7 +634,7 @@ public class InfoGlueJDBCAuthorizationModule extends BaseController implements A
 		} 
 		catch (Exception e) 
 		{
-			getLogger().info("An error occurred trying to get all roles:" + e);
+			logger.info("An error occurred trying to get all roles:" + e);
 			throw new SystemException(e.getMessage());
 		}
 		finally
@@ -680,7 +680,7 @@ public class InfoGlueJDBCAuthorizationModule extends BaseController implements A
 
     public List getRoleUsers(String roleName) throws Exception
     {
-        getLogger().info("roleName:" + roleName);
+        logger.info("roleName:" + roleName);
 		List users = new ArrayList();
 				
 		return users;
@@ -688,7 +688,7 @@ public class InfoGlueJDBCAuthorizationModule extends BaseController implements A
 
     public List getGroupUsers(String groupName) throws Exception
     {
-        getLogger().info("groupName:" + groupName);
+        logger.info("groupName:" + groupName);
 		List users = new ArrayList();
 		
 		return users;

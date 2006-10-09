@@ -56,7 +56,9 @@ import webwork.action.ActionContext;
 
 public abstract class InfoGlueAbstractAction extends WebworkAbstractAction
 {
-    protected String colorScheme = null; 
+    private final static Logger logger = Logger.getLogger(InfoGlueAbstractAction.class.getName());
+
+    protected String colorScheme = null;
     
 	/**
 	 * This method lets the velocity template get hold of all actions inheriting.
@@ -69,15 +71,6 @@ public abstract class InfoGlueAbstractAction extends WebworkAbstractAction
 		return this;
 	}
 	
-    /**
-     * Gets a logger for the action class.
-     */
-
-	protected Logger getLogger() 
-	{
-	    return Logger.getLogger(this.getClass().getName());
-	}
-
 	/**
 	 * This method returns the logout url.
 	 * @author Mattias Bogeblad
@@ -175,9 +168,9 @@ public abstract class InfoGlueAbstractAction extends WebworkAbstractAction
 	
 	public String getPrincipalPropertyValue(String propertyName, boolean escapeSpecialCharacters, boolean findLargestValue)
 	{
-		getLogger().info("propertyName: " + propertyName);
-		getLogger().info("escapeSpecialCharacters: " + escapeSpecialCharacters);
-		getLogger().info("findLargestValue: " + findLargestValue);
+		logger.info("propertyName: " + propertyName);
+		logger.info("escapeSpecialCharacters: " + escapeSpecialCharacters);
+		logger.info("findLargestValue: " + findLargestValue);
 	    
 		String value = "";
 		
@@ -189,7 +182,7 @@ public abstract class InfoGlueAbstractAction extends WebworkAbstractAction
 		}
 		catch(Exception e)
 		{
-		    getLogger().warn("An error occurred trying to get property " + propertyName + " from infoGluePrincipal:" + e.getMessage(), e);
+		    logger.warn("An error occurred trying to get property " + propertyName + " from infoGluePrincipal:" + e.getMessage(), e);
 		}
 		
 		return value;
@@ -213,7 +206,7 @@ public abstract class InfoGlueAbstractAction extends WebworkAbstractAction
 		}
 		catch(Exception e)
 		{
-		    getLogger().warn("An error occurred trying to get property " + propertyName + " from infoGluePrincipal:" + e.getMessage(), e);
+		    logger.warn("An error occurred trying to get property " + propertyName + " from infoGluePrincipal:" + e.getMessage(), e);
 		}
 		
 		return value;
@@ -240,7 +233,7 @@ public abstract class InfoGlueAbstractAction extends WebworkAbstractAction
 		}
 		catch(Exception e) 
 		{
-		    getLogger().warn("There was no anonymous user found in the system. There must be - add the user anonymous/anonymous and try again.", e);
+		    logger.warn("There was no anonymous user found in the system. There must be - add the user anonymous/anonymous and try again.", e);
 		    throw new SystemException("There was no anonymous user found in the system. There must be - add the user anonymous/anonymous and try again.", e);
 		}
 
@@ -256,7 +249,7 @@ public abstract class InfoGlueAbstractAction extends WebworkAbstractAction
 	 */
 	public boolean hasAccessTo(String interceptionPointName)
 	{
-		getLogger().info("Checking if " + getUserName() + " has access to " + interceptionPointName);
+		logger.info("Checking if " + getUserName() + " has access to " + interceptionPointName);
 
 		try
 		{
@@ -264,7 +257,7 @@ public abstract class InfoGlueAbstractAction extends WebworkAbstractAction
 		}
 		catch (SystemException e)
 		{
-		    getLogger().warn("Error checking access rights", e);
+		    logger.warn("Error checking access rights", e);
 			return false;
 		}
 	}
@@ -278,7 +271,7 @@ public abstract class InfoGlueAbstractAction extends WebworkAbstractAction
 	 */
 	public boolean hasAccessTo(String interceptionPointName, String extraParameter)
 	{
-		getLogger().info("Checking if " + getUserName() + " has access to " + interceptionPointName + " with extraParameter " + extraParameter);
+		logger.info("Checking if " + getUserName() + " has access to " + interceptionPointName + " with extraParameter " + extraParameter);
 
 		try
 		{
@@ -286,7 +279,7 @@ public abstract class InfoGlueAbstractAction extends WebworkAbstractAction
 		}
 		catch (SystemException e)
 		{
-		    getLogger().warn("Error checking access rights", e);
+		    logger.warn("Error checking access rights", e);
 			return false;
 		}
 	}
@@ -442,7 +435,7 @@ public abstract class InfoGlueAbstractAction extends WebworkAbstractAction
 		}
 		catch(Exception e)
 		{
-			getLogger().warn("An error occurred when we tried to rollback an transaction. Reason:" + e.getMessage());
+			logger.warn("An error occurred when we tried to rollback an transaction. Reason:" + e.getMessage());
 		}
 		finally
 		{
@@ -462,7 +455,7 @@ public abstract class InfoGlueAbstractAction extends WebworkAbstractAction
 		}
 		catch(Exception e)
 		{
-			getLogger().warn("An error occurred when we close database. Reason:" + e.getMessage());
+			logger.warn("An error occurred when we close database. Reason:" + e.getMessage());
 			throw new SystemException("An error occurred when we tried to close a database. Reason:" + e.getMessage(), e);    
 		}
 	}

@@ -38,6 +38,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
@@ -68,6 +69,8 @@ import com.frovi.ss.Tree.INodeSupplier;
 
 public class ContentTreeXMLAction extends InfoGlueAbstractAction
 {
+    private final static Logger logger = Logger.getLogger(ContentTreeXMLAction.class.getName());
+
 	private static final long serialVersionUID = 3321168219082615063L;
 
 	private static String TYPE_FOLDER = "ContentFolder";
@@ -167,7 +170,7 @@ public class ContentTreeXMLAction extends InfoGlueAbstractAction
 		}
 		catch(Exception e)
 		{
-			getLogger().error("An error occurred when we tried to get the latest version for the content:" + e.getMessage(), e);
+			logger.error("An error occurred when we tried to get the latest version for the content:" + e.getMessage(), e);
 		}
 		
 		return contentVersionVO;

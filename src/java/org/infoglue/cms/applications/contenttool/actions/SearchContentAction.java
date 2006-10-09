@@ -25,6 +25,7 @@ package org.infoglue.cms.applications.contenttool.actions;
 
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
@@ -48,6 +49,8 @@ import webwork.action.Action;
 
 public class SearchContentAction extends InfoGlueAbstractAction 
 {
+    private final static Logger logger = Logger.getLogger(SearchContentAction.class.getName());
+
 	private static final long serialVersionUID = 1L;
 	
 	private List contentVersionVOList;
@@ -148,7 +151,7 @@ public class SearchContentAction extends InfoGlueAbstractAction
 		}
 		catch(Exception e)
 		{
-			getLogger().error("An error occurred when we tried to get the content for this version:" + e.getMessage(), e);
+			logger.error("An error occurred when we tried to get the content for this version:" + e.getMessage(), e);
 		}
 		
 		return contentVO;
@@ -167,7 +170,7 @@ public class SearchContentAction extends InfoGlueAbstractAction
 		}
 		catch(Exception e)
 		{
-		    getLogger().error("An error occurred when we tried to get the language for this version:" + e.getMessage(), e);
+		    logger.error("An error occurred when we tried to get the language for this version:" + e.getMessage(), e);
 		}
 		
 		return languageVO;

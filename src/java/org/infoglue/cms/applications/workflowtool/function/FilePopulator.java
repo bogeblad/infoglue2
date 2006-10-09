@@ -24,6 +24,7 @@ package org.infoglue.cms.applications.workflowtool.function;
 
 import java.io.File;
 
+import org.apache.log4j.Logger;
 import org.infoglue.cms.io.FileHelper;
 import org.infoglue.cms.util.CmsPropertyHandler;
 
@@ -55,6 +56,8 @@ import com.opensymphony.workflow.WorkflowException;
  */
 public class FilePopulator extends InfoglueFunction 
 {
+    private final static Logger logger = Logger.getLogger(FilePopulator.class.getName());
+
 	/**
 	 * The name of the path argument.
 	 */
@@ -96,7 +99,7 @@ public class FilePopulator extends InfoglueFunction
 			final String unparsed = FileHelper.getFileAsString(new File(fullPath));
 			final String parsed   = translate(unparsed);
 			
-			getLogger().debug("path=[" + fullPath + "],unparsed=[" + unparsed + "],parsed=[" + parsed + "]");
+			logger.debug("path=[" + fullPath + "],unparsed=[" + unparsed + "],parsed=[" + parsed + "]");
 			setPropertySetDataString(key, parsed);
 		}
 		catch(Exception e)

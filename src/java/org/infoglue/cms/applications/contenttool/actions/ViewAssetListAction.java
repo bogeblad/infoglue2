@@ -32,6 +32,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
@@ -52,6 +53,8 @@ import org.infoglue.deliver.util.MathHelper;
 
 public class ViewAssetListAction extends InfoGlueAbstractAction
 {
+    private final static Logger logger = Logger.getLogger(ViewAssetListAction.class.getName());
+
 	/**
 	 * Action class for the DigitalAsset Browser. 
      * TODO: Improve performance by adding more specialized
@@ -258,7 +261,7 @@ public class ViewAssetListAction extends InfoGlueAbstractAction
 		}
 		catch(Exception e)
 		{
-			getLogger().warn("We could not fetch the list of digitalAssets: " + e.getMessage(), e);
+			logger.warn("We could not fetch the list of digitalAssets: " + e.getMessage(), e);
 		}
 		
 		return digitalAssets;
@@ -279,7 +282,7 @@ public class ViewAssetListAction extends InfoGlueAbstractAction
 		}
 		catch(Exception e)
 		{
-			getLogger().warn("We could not get the url of the digitalAsset: " + e.getMessage(), e);
+			logger.warn("We could not get the url of the digitalAsset: " + e.getMessage(), e);
 			imageHref = e.getMessage();
 		}
 		
@@ -301,7 +304,7 @@ public class ViewAssetListAction extends InfoGlueAbstractAction
 		}
 		catch(Exception e)
 		{
-			getLogger().warn("We could not get the url of the thumbnail: " + e.getMessage(), e);
+			logger.warn("We could not get the url of the thumbnail: " + e.getMessage(), e);
 			imageHref = e.getMessage();
 		}
 		
@@ -323,7 +326,7 @@ public class ViewAssetListAction extends InfoGlueAbstractAction
 		}
 		catch(Exception e)
 		{
-			getLogger().warn("We could not get the url of the digitalAsset: " + e.getMessage(), e);
+			logger.warn("We could not get the url of the digitalAsset: " + e.getMessage(), e);
 			imageHref = e.getMessage();
 		}
 		
@@ -345,7 +348,7 @@ public class ViewAssetListAction extends InfoGlueAbstractAction
 		}
 		catch(Exception e)
 		{
-			getLogger().warn("We could not get the url of the thumbnail: " + e.getMessage(), e);
+			logger.warn("We could not get the url of the thumbnail: " + e.getMessage(), e);
 			imageHref = e.getMessage();
 		}
 		

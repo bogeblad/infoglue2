@@ -25,6 +25,7 @@ package org.infoglue.cms.applications.contenttool.actions;
 
 import java.io.StringReader;
 
+import org.apache.log4j.Logger;
 import org.apache.xerces.parsers.DOMParser;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
 import org.infoglue.cms.entities.content.ContentVersionVO;
@@ -43,6 +44,8 @@ import org.xml.sax.InputSource;
 
 public class UpdateContentVersionAttributeAction extends ViewContentVersionAction 
 {
+    private final static Logger logger = Logger.getLogger(UpdateContentVersionAttributeAction.class.getName());
+
 	private static final long serialVersionUID = 1L;
 	
 	private ContentVersionVO contentVersionVO;
@@ -95,7 +98,7 @@ public class UpdateContentVersionAttributeAction extends ViewContentVersionActio
 		{
 			try
 	        {
-		        getLogger().info("VersionValue:" + this.contentVersionVO.getVersionValue());
+		        logger.info("VersionValue:" + this.contentVersionVO.getVersionValue());
 		        InputSource inputSource = new InputSource(new StringReader(this.contentVersionVO.getVersionValue()));
 				
 				DOMParser parser = new DOMParser();
@@ -111,7 +114,7 @@ public class UpdateContentVersionAttributeAction extends ViewContentVersionActio
 					n = nl.item(i);
 					if(n.getNodeName().equalsIgnoreCase(attributeName))
 					{
-					    getLogger().info("Setting attributeValue: " + attributeValue);
+					    logger.info("Setting attributeValue: " + attributeValue);
 						Node valueNode = n.getFirstChild();
 						n.getFirstChild().setNodeValue(attributeValue);
 						break;

@@ -22,6 +22,7 @@
  */
 package org.infoglue.cms.applications.workflowtool.function;
 
+import org.apache.log4j.Logger;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
 import org.infoglue.cms.controllers.kernel.impl.simple.RepositoryController;
 import org.infoglue.cms.entities.management.Repository;
@@ -33,6 +34,8 @@ import com.opensymphony.workflow.WorkflowException;
  */
 public class PathContentProvider extends ContentProvider 
 {
+    private final static Logger logger = Logger.getLogger(PathContentProvider.class.getName());
+
 	/**
 	 * 
 	 */
@@ -104,7 +107,7 @@ public class PathContentProvider extends ContentProvider
 	{
 		try
 		{
-			getLogger().debug("Using repository=["+ repositoryName + "] path=["+ path + "]");
+			logger.debug("Using repository=["+ repositoryName + "] path=["+ path + "]");
 			final Repository repository = RepositoryController.getController().getRepositoryWithName(repositoryName, getDatabase());
 			if(repository == null)
 			{

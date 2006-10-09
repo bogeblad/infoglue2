@@ -28,6 +28,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
+import org.apache.log4j.Logger;
+import org.infoglue.cms.applications.workflowtool.condition.InfoglueCondition;
 import org.infoglue.cms.applications.workflowtool.function.email.Attachment;
 import org.infoglue.cms.controllers.kernel.impl.simple.DigitalAssetController;
 import org.infoglue.cms.entities.content.DigitalAssetVO;
@@ -40,6 +42,8 @@ import com.opensymphony.workflow.WorkflowException;
  */
 public class Attach extends ContentFunction
 {
+    private final static Logger logger = Logger.getLogger(Attach.class.getName());
+
 	/**
 	 * 
 	 */
@@ -70,7 +74,7 @@ public class Attach extends ContentFunction
 				for(final Iterator i = attachments.iterator(); i.hasNext(); )
 				{
 					final Attachment attachment = (Attachment) i.next();
-					getLogger().debug("Adding attachment : " + attachment);
+					logger.debug("Adding attachment : " + attachment);
 					DigitalAssetController.create(createDigitalAssetVO(attachment), getInputStream(attachment), getContentVersion(), getDatabase());
 				}
 			} 

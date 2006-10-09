@@ -25,6 +25,7 @@ package org.infoglue.cms.applications.common.actions;
 
 import java.util.Locale;
 
+import org.apache.log4j.Logger;
 import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.util.StringManager;
 import org.infoglue.cms.util.StringManagerFactory;
@@ -37,7 +38,10 @@ import webwork.action.CommandDriven;
  *
  * @author <a href="mailto:meat_for_the_butcher@yahoo.com">Patrik Nyborg</a>
  */
-public abstract class AbstractFormAction extends AbstractAction implements CommandDriven {
+public abstract class AbstractFormAction extends AbstractAction implements CommandDriven 
+{
+    private final static Logger logger = Logger.getLogger(AbstractFormAction.class.getName());
+
   // --- [Constants] -----------------------------------------------------------
   // --- [Attributes] ----------------------------------------------------------
 
@@ -92,7 +96,7 @@ public abstract class AbstractFormAction extends AbstractAction implements Comma
 
       getErrors().addError(fieldName, localizedErrorMessage);
     }
-    getLogger().debug(getErrors().toString());
+    logger.debug(getErrors().toString());
   }
 
   /**

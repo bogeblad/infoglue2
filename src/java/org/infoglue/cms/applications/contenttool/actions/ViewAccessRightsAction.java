@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.AccessRightController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentControllerProxy;
@@ -50,6 +51,8 @@ import org.infoglue.cms.util.AccessConstraintExceptionBuffer;
 
 public class ViewAccessRightsAction extends InfoGlueAbstractAction
 {
+    private final static Logger logger = Logger.getLogger(ViewAccessRightsAction.class.getName());
+
 	private static final long serialVersionUID = 1L;
 	
 	private Integer interceptionPointId = null;
@@ -122,7 +125,7 @@ public class ViewAccessRightsAction extends InfoGlueAbstractAction
 	    }
 	    catch(Exception e)
 	    {
-	        getLogger().warn(e);
+	        logger.warn(e);
 	        throw new SystemException(e);
 	    }
 	}

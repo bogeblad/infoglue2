@@ -30,6 +30,7 @@ import java.io.InputStream;
 import java.util.Enumeration;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.applications.databeans.AssetKeyDefinition;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
@@ -56,6 +57,8 @@ import webwork.multipart.MultiPartRequestWrapper;
 
 public class CreateDigitalAssetAction extends ViewDigitalAssetAction
 {
+    private final static Logger logger = Logger.getLogger(CreateDigitalAssetAction.class.getName());
+
 	private static final long serialVersionUID = 1L;
 	
 	private String entity;
@@ -161,10 +164,10 @@ public class CreateDigitalAssetAction extends ViewDigitalAssetAction
 						String contentType    = mpr.getContentType(name);
 						String fileSystemName = mpr.getFilesystemName(name);
 						
-		            	getLogger().info("digitalAssetKey:" + digitalAssetKey);
-		            	getLogger().info("name:" + name);
-		            	getLogger().info("contentType:" + contentType);
-		            	getLogger().info("fileSystemName:" + fileSystemName);
+		            	logger.info("digitalAssetKey:" + digitalAssetKey);
+		            	logger.info("name:" + name);
+		            	logger.info("contentType:" + contentType);
+		            	logger.info("fileSystemName:" + fileSystemName);
 		            	
 		            	file = mpr.getFile(name);
 		            	//String fileName = this.contentVersionId + "_" + System.currentTimeMillis() + "_" + fileSystemName;
@@ -177,10 +180,10 @@ public class CreateDigitalAssetAction extends ViewDigitalAssetAction
 		            	String filePath = CmsPropertyHandler.getDigitalAssetPath();
 		            	fileSystemName = filePath + File.separator + tempFileName;
 		            	
-						//getLogger().info("New fileSystemName:" + fileSystemName);
+						//logger.info("New fileSystemName:" + fileSystemName);
 		            	//renamedFile = new File(fileSystemName);
 						//boolean isRenamed = file.renameTo(renamedFile);
-						//getLogger().info("isRenamed:" + isRenamed);
+						//logger.info("isRenamed:" + isRenamed);
 						
 		            	DigitalAssetVO newAsset = new DigitalAssetVO();
 						newAsset.setAssetContentType(contentType);
@@ -192,7 +195,7 @@ public class CreateDigitalAssetAction extends ViewDigitalAssetAction
 						is = new FileInputStream(file);
 						
 						String fileUploadMaximumSize = getPrincipalPropertyValue("fileUploadMaximumSize", false, true);
-						getLogger().info("fileUploadMaximumSize in create:" + fileUploadMaximumSize);
+						logger.info("fileUploadMaximumSize in create:" + fileUploadMaximumSize);
 						if(!fileUploadMaximumSize.equalsIgnoreCase("-1") && new Integer(fileUploadMaximumSize).intValue() < new Long(file.length()).intValue())
 						{
 						    file.delete();
@@ -288,12 +291,12 @@ public class CreateDigitalAssetAction extends ViewDigitalAssetAction
 	    		}
 	    		else
 	    		{
-	    		    getLogger().error("File upload failed for some reason.");
+	    		    logger.error("File upload failed for some reason.");
 	    		}
 	      	} 
 	      	catch (Throwable e) 
 	      	{
-	      	    getLogger().error("An error occurred when we tried to upload a new asset:" + e.getMessage(), e);
+	      	    logger.error("An error occurred when we tried to upload a new asset:" + e.getMessage(), e);
 	      	}
 			finally
 			{
@@ -304,13 +307,13 @@ public class CreateDigitalAssetAction extends ViewDigitalAssetAction
 				}
 				catch(Throwable e)
 				{ 
-				    getLogger().error("An error occurred when we tried to close the fileinput stream and delete the file:" + e.getMessage(), e);
+				    logger.error("An error occurred when we tried to close the fileinput stream and delete the file:" + e.getMessage(), e);
 				}
 			}
         }
         catch(Throwable e)
         { 
-      	    getLogger().error("An error occurred when we tried to upload a new asset:" + e.getMessage(), e);
+      	    logger.error("An error occurred when we tried to upload a new asset:" + e.getMessage(), e);
         }
         
         return "success";
@@ -330,7 +333,7 @@ public class CreateDigitalAssetAction extends ViewDigitalAssetAction
 		}
 		catch(Exception e)
 		{
-			getLogger().warn("We could not get the url of the digitalAsset: " + e.getMessage(), e);
+			logger.warn("We could not get the url of the digitalAsset: " + e.getMessage(), e);
 		}
 		
 		return imageHref;
@@ -345,7 +348,7 @@ public class CreateDigitalAssetAction extends ViewDigitalAssetAction
 		}
 		catch(Exception e)
 		{
-		    getLogger().warn("We could not get the url of the thumbnail: " + e.getMessage(), e);
+		    logger.warn("We could not get the url of the thumbnail: " + e.getMessage(), e);
 		}
 		
 		return imageHref;

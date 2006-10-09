@@ -29,7 +29,9 @@ import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.infoglue.cms.applications.common.VisualFormatter;
+import org.infoglue.cms.applications.contenttool.actions.ViewMultiSelectContentTreeForServiceBindingAction;
 import org.infoglue.cms.applications.databeans.AssetKeyDefinition;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
@@ -44,6 +46,8 @@ import webwork.multipart.MultiPartRequestWrapper;
 
 public class CreateContentWizardInputAssetsAction extends CreateContentWizardAbstractAction
 {
+    private final static Logger logger = Logger.getLogger(CreateContentWizardInputAssetsAction.class.getName());
+
 	private String mandatoryAssetKey						= null;
 	private String digitalAssetKey   						= "";
 	private Integer uploadedFilesCounter 					= new Integer(0);
@@ -132,12 +136,12 @@ public class CreateContentWizardInputAssetsAction extends CreateContentWizardAbs
 			}
 			else
 			{
-				getLogger().error("File upload failed for some reason.");
+				logger.error("File upload failed for some reason.");
 			}
 		} 
 		catch (Exception e) 
 		{
-		    getLogger().error("An error occurred when we tried to upload a new asset:" + e.getMessage(), e);
+		    logger.error("An error occurred when we tried to upload a new asset:" + e.getMessage(), e);
 		}
 		finally
 		{
