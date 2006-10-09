@@ -28,6 +28,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.entities.management.Group;
@@ -49,6 +50,7 @@ import org.infoglue.deliver.util.CacheController;
  */
 public class GroupController extends BaseController
 {
+    private final static Logger logger = Logger.getLogger(GroupController.class.getName());
 
 	/**
 	 * Factory method
@@ -107,11 +109,11 @@ public class GroupController extends BaseController
     public List getGroupVOList(Database db) throws SystemException, Bug
     {
 		String cacheKey = "allGroupVO";
-		getLogger().info("cacheKey in getGroupVOList:" + cacheKey);
+		logger.info("cacheKey in getGroupVOList:" + cacheKey);
 		List groupVOList = (List)CacheController.getCachedObject("groupVOListCache", cacheKey);
 		if(groupVOList != null)
 		{
-			getLogger().info("There was an cached list of GroupVO:" + groupVOList.size());
+			logger.info("There was an cached list of GroupVO:" + groupVOList.size());
 		}
 		else
 		{
@@ -234,13 +236,13 @@ public class GroupController extends BaseController
         }
         catch(ConstraintException ce)
         {
-            getLogger().warn("An error occurred so we should not complete the transaction:" + ce, ce);
+            logger.warn("An error occurred so we should not complete the transaction:" + ce, ce);
             rollbackTransaction(db);
             throw ce;
         }
         catch(Exception e)
         {
-            getLogger().error("An error occurred so we should not complete the transaction:" + e, e);
+            logger.error("An error occurred so we should not complete the transaction:" + e, e);
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }

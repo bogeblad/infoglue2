@@ -52,15 +52,6 @@ public abstract class BaseDeliveryController
 {
     private final static Logger logger = Logger.getLogger(BaseDeliveryController.class.getName());
 
-    /**
-     * Gets a logger for the action class.
-     */
-
-	protected Logger getLogger() 
-	{
-	    return Logger.getLogger(this.getClass().getName());
-	}
-
 	/**
 	 * This method fetches one object / entity within a transaction.
 	 **/

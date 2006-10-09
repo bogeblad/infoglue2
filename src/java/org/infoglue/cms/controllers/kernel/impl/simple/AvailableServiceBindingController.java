@@ -26,6 +26,7 @@ package org.infoglue.cms.controllers.kernel.impl.simple;
 import java.util.Collection;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
 import org.exolab.castor.jdo.OQLQuery;
 import org.exolab.castor.jdo.QueryResults;
@@ -49,6 +50,8 @@ import org.infoglue.deliver.util.CacheController;
 
 public class AvailableServiceBindingController extends BaseController
 {
+    private final static Logger logger = Logger.getLogger(AvailableServiceBindingController.class.getName());
+
 	/*
 	 * Factory method
 	 */
@@ -140,11 +143,11 @@ public class AvailableServiceBindingController extends BaseController
 	public AvailableServiceBindingVO getAvailableServiceBindingVOWithName(String name) throws SystemException, Bug
 	{
 	    String key = "" + name;
-		getLogger().info("key:" + key);
+		logger.info("key:" + key);
 		AvailableServiceBindingVO availableServiceBindingVO = (AvailableServiceBindingVO)CacheController.getCachedObject("availableServiceBindingCache", key);
 		if(availableServiceBindingVO != null)
 		{
-		    getLogger().info("There was an cached availableServiceBindingVO:" + availableServiceBindingVO);
+		    logger.info("There was an cached availableServiceBindingVO:" + availableServiceBindingVO);
 		}
 		else
 		{
@@ -186,11 +189,11 @@ public class AvailableServiceBindingController extends BaseController
 	public AvailableServiceBindingVO getAvailableServiceBindingVOWithName(String name, Database db) throws SystemException, Bug
 	{
 	    String key = "" + name;
-		getLogger().info("key:" + key);
+		logger.info("key:" + key);
 		AvailableServiceBindingVO availableServiceBindingVO = (AvailableServiceBindingVO)CacheController.getCachedObject("availableServiceBindingCache", key);
 		if(availableServiceBindingVO != null)
 		{
-		    getLogger().info("There was an cached availableServiceBindingVO:" + availableServiceBindingVO);
+		    logger.info("There was an cached availableServiceBindingVO:" + availableServiceBindingVO);
 		}
 		else
 		{
@@ -231,7 +234,7 @@ public class AvailableServiceBindingController extends BaseController
 			    results = oql.execute(Database.ReadOnly);
 			else
 			{
-				this.getLogger().info("Fetching entity in read/write mode:" + name);
+				this.logger.info("Fetching entity in read/write mode:" + name);
 				results = oql.execute();
 			}
 			
@@ -280,13 +283,13 @@ public class AvailableServiceBindingController extends BaseController
 		}
 		catch(ConstraintException ce)
 		{
-			getLogger().warn("An error occurred so we should not complete the transaction:" + ce, ce);
+			logger.warn("An error occurred so we should not complete the transaction:" + ce, ce);
 			rollbackTransaction(db);
 			throw ce;
 		}
 		catch(Exception e)
 		{
-			getLogger().error("An error occurred so we should not complete the transaction:" + e, e);
+			logger.error("An error occurred so we should not complete the transaction:" + e, e);
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}
@@ -316,13 +319,13 @@ public class AvailableServiceBindingController extends BaseController
         }
         catch(ConstraintException ce)
         {
-            getLogger().warn("An error occurred so we should not complete the transaction:" + ce, ce);
+            logger.warn("An error occurred so we should not complete the transaction:" + ce, ce);
             rollbackTransaction(db);
             throw ce;
         }
         catch(Exception e)
         {
-            getLogger().error("An error occurred so we should not complete the transaction:" + e, e);
+            logger.error("An error occurred so we should not complete the transaction:" + e, e);
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
@@ -367,13 +370,13 @@ public class AvailableServiceBindingController extends BaseController
         }
         catch(ConstraintException ce)
         {
-            getLogger().warn("An error occurred so we should not complete the transaction:" + ce, ce);
+            logger.warn("An error occurred so we should not complete the transaction:" + ce, ce);
             rollbackTransaction(db);
             throw ce;
         }
         catch(Exception e)
         {
-            getLogger().error("An error occurred so we should not complete the transaction:" + e, e);
+            logger.error("An error occurred so we should not complete the transaction:" + e, e);
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }

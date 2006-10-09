@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.entities.management.SystemUserVO;
@@ -48,6 +49,8 @@ import org.infoglue.deliver.util.CacheController;
 
 public class UserControllerProxy extends BaseController 
 {
+    private final static Logger logger = Logger.getLogger(UserControllerProxy.class.getName());
+
 	private AuthorizationModule authorizationModule = null;
 	private Database transactionObject = null;
 	
@@ -76,17 +79,17 @@ public class UserControllerProxy extends BaseController
 	    //{
 			try
 	    	{
-			    getLogger().info("InfoGlueAuthenticationFilter.authorizerClass:" + InfoGlueAuthenticationFilter.authorizerClass);
+			    logger.info("InfoGlueAuthenticationFilter.authorizerClass:" + InfoGlueAuthenticationFilter.authorizerClass);
 				authorizationModule = (AuthorizationModule)Class.forName(InfoGlueAuthenticationFilter.authorizerClass).newInstance();
-				getLogger().info("authorizationModule:" + authorizationModule);
+				logger.info("authorizationModule:" + authorizationModule);
 				authorizationModule.setExtraProperties(InfoGlueAuthenticationFilter.extraProperties);
 				authorizationModule.setTransactionObject(this.transactionObject);
-				getLogger().info("InfoGlueAuthenticationFilter.extraProperties:" + InfoGlueAuthenticationFilter.extraProperties);
+				logger.info("InfoGlueAuthenticationFilter.extraProperties:" + InfoGlueAuthenticationFilter.extraProperties);
 	    	}
 	    	catch(Exception e)
 	    	{
 	    		//e.printStackTrace();
-	    		getLogger().error("There was an error initializing the authorizerClass:" + e.getMessage(), e);
+	    		logger.error("There was an error initializing the authorizerClass:" + e.getMessage(), e);
 	    		throw new SystemException("There was an error initializing the authorizerClass:" + e.getMessage(), e);
 	    	}
 	    //}

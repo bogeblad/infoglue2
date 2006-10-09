@@ -47,6 +47,8 @@ import org.infoglue.cms.util.CmsPropertyHandler;
  */
 public class ExtendedSearchController extends BaseController 
 {
+    private final static Logger logger = Logger.getLogger(ExtendedSearchController.class.getName());
+
     /**
 	 * The singleton controller.
 	 */
@@ -159,13 +161,13 @@ public class ExtendedSearchController extends BaseController
 		try 
 		{
 			final SqlBuilder sqlBuilder = new SqlBuilder(criterias);
-		    getLogger().debug("sql:" + sqlBuilder.getSQL());
+		    logger.debug("sql:" + sqlBuilder.getSQL());
 			
 			final OQLQuery oql = db.getOQLQuery(sqlBuilder.getSQL());
 			for(Iterator i=sqlBuilder.getBindings().iterator(); i.hasNext(); )
 			{
 			    Object o = i.next();
-			    getLogger().debug("o:" + o.toString());
+			    logger.debug("o:" + o.toString());
 				oql.bind(o);
 			}
 			

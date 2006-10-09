@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
 import org.exolab.castor.jdo.OQLQuery;
 import org.exolab.castor.jdo.QueryResults;
@@ -43,6 +44,8 @@ import org.infoglue.cms.util.ConstraintExceptionBuffer;
 
 public class SiteNodeTypeDefinitionController extends BaseController
 {
+    private final static Logger logger = Logger.getLogger(SiteNodeTypeDefinitionController.class.getName());
+
 	/**
 	 * Factory method
 	 */
@@ -114,7 +117,7 @@ public class SiteNodeTypeDefinitionController extends BaseController
 			    results = oql.execute(Database.ReadOnly);
 		    else
 		    {
-		        this.getLogger().info("Fetching entity in read/write mode" + name);
+		        this.logger.info("Fetching entity in read/write mode" + name);
 			    results = oql.execute();
 		    }
 			
@@ -172,13 +175,13 @@ public class SiteNodeTypeDefinitionController extends BaseController
         }
         catch(ConstraintException ce)
         {
-            getLogger().warn("An error occurred so we should not complete the transaction:" + ce, ce);
+            logger.warn("An error occurred so we should not complete the transaction:" + ce, ce);
             rollbackTransaction(db);
             throw ce;
         }
         catch(Exception e)
         {
-            getLogger().error("An error occurred so we should not complete the transaction:" + e, e);
+            logger.error("An error occurred so we should not complete the transaction:" + e, e);
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
@@ -210,7 +213,7 @@ public class SiteNodeTypeDefinitionController extends BaseController
 			
             siteNodeTypeDefinition = SiteNodeTypeDefinitionController.getController().getSiteNodeTypeDefinitionWithId(siteNodeTypeDefinitionVO.getSiteNodeTypeDefinitionId(), db);
             siteNodeTypeDefinition.setValueObject(siteNodeTypeDefinitionVO);
-			getLogger().info("availableServiceBindingList:" + availableServiceBindingList);
+			logger.info("availableServiceBindingList:" + availableServiceBindingList);
 			siteNodeTypeDefinition.setAvailableServiceBindings(availableServiceBindingList);
 			
             //If any of the validations or setMethods reported an error, we throw them up now before create.
@@ -220,13 +223,13 @@ public class SiteNodeTypeDefinitionController extends BaseController
         }
         catch(ConstraintException ce)
         {
-            getLogger().warn("An error occurred so we should not complete the transaction:" + ce, ce);
+            logger.warn("An error occurred so we should not complete the transaction:" + ce, ce);
             rollbackTransaction(db);
             throw ce;
         }
         catch(Exception e)
         {
-            getLogger().error("An error occurred so we should not complete the transaction:" + e, e);
+            logger.error("An error occurred so we should not complete the transaction:" + e, e);
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
@@ -275,13 +278,13 @@ public class SiteNodeTypeDefinitionController extends BaseController
         }
         catch(ConstraintException ce)
         {
-            getLogger().warn("An error occurred so we should not complete the transaction:" + ce, ce);
+            logger.warn("An error occurred so we should not complete the transaction:" + ce, ce);
             rollbackTransaction(db);
             throw ce;
         }
         catch(Exception e)
         {
-            getLogger().error("An error occurred so we should not complete the transaction:" + e, e);
+            logger.error("An error occurred so we should not complete the transaction:" + e, e);
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }

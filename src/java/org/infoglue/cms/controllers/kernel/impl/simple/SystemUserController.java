@@ -28,6 +28,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
 import org.exolab.castor.jdo.OQLQuery;
 import org.exolab.castor.jdo.QueryResults;
@@ -55,6 +56,8 @@ import org.infoglue.cms.util.mail.MailServiceFactory;
  */
 public class SystemUserController extends BaseController
 {
+    private final static Logger logger = Logger.getLogger(SystemUserController.class.getName());
+
 	/**
 	 * Factory method
 	 */
@@ -91,7 +94,7 @@ public class SystemUserController extends BaseController
 		} 
 		catch (Exception e) 
 		{
-			getLogger().info("An error occurred so we should not complete the transaction:" + e);
+			logger.info("An error occurred so we should not complete the transaction:" + e);
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}
@@ -119,7 +122,7 @@ public class SystemUserController extends BaseController
 			if (results.hasMore()) 
             {
             	systemUser = (SystemUser)results.next();
-            	getLogger().info("found one:" + systemUser.getFirstName());
+            	logger.info("found one:" + systemUser.getFirstName());
             }
         }
         catch(Exception e)
@@ -145,12 +148,12 @@ public class SystemUserController extends BaseController
         	oql.bind(userName);
         	
         	QueryResults results = oql.execute();
-    		this.getLogger().info("Fetching entity in read/write mode" + userName);
+    		this.logger.info("Fetching entity in read/write mode" + userName);
 
 			if (results.hasMore()) 
             {
             	systemUser = (SystemUser)results.next();
-            	getLogger().info("found one:" + systemUser.getFirstName());
+            	logger.info("found one:" + systemUser.getFirstName());
             }
         }
         catch(Exception e)
@@ -179,7 +182,7 @@ public class SystemUserController extends BaseController
 		} 
 		catch (Exception e) 
 		{
-			getLogger().info("An error occurred so we should not complete the transaction:" + e);
+			logger.info("An error occurred so we should not complete the transaction:" + e);
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}
@@ -202,7 +205,7 @@ public class SystemUserController extends BaseController
 		{
 			SystemUser systemUser = (SystemUser)results.next();
 			systemUserVO = systemUser.getValueObject();
-			getLogger().info("found one:" + systemUserVO.getFirstName());
+			logger.info("found one:" + systemUserVO.getFirstName());
 		}
 
 		results.close();
@@ -220,12 +223,12 @@ public class SystemUserController extends BaseController
 		oql.bind(password);
     	
 		QueryResults results = oql.execute();
-		this.getLogger().info("Fetching entity in read/write mode" + userName);
+		this.logger.info("Fetching entity in read/write mode" + userName);
 
 		if (results.hasMore()) 
 		{
 			systemUser = (SystemUser)results.next();
-			getLogger().info("found one:" + systemUser.getFirstName());
+			logger.info("found one:" + systemUser.getFirstName());
 		}
 
 		results.close();
@@ -261,7 +264,7 @@ public class SystemUserController extends BaseController
 		} 
 		catch (Exception e) 
 		{
-			getLogger().info("An error occurred so we should not complete the transaction:" + e);
+			logger.info("An error occurred so we should not complete the transaction:" + e);
 			rollbackTransaction(db);
 			throw new SystemException("An error occurred so we should not complete the transaction:" + e, e);
 		}
@@ -385,13 +388,13 @@ public class SystemUserController extends BaseController
 		}
 		catch(ConstraintException ce)
 		{
-			getLogger().warn("An error occurred so we should not completes the transaction:" + ce, ce);
+			logger.warn("An error occurred so we should not completes the transaction:" + ce, ce);
 			rollbackTransaction(db);
 			throw ce;
 		}
 		catch(Exception e)
 		{
-			getLogger().error("An error occurred so we should not completes the transaction:" + e, e);
+			logger.error("An error occurred so we should not completes the transaction:" + e, e);
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}
@@ -450,13 +453,13 @@ public class SystemUserController extends BaseController
         }
         catch(ConstraintException ce)
         {
-            getLogger().warn("An error occurred so we should not completes the transaction:" + ce, ce);
+            logger.warn("An error occurred so we should not completes the transaction:" + ce, ce);
             rollbackTransaction(db);
             throw ce;
         }
         catch(Exception e)
         {
-            getLogger().error("An error occurred so we should not completes the transaction:" + e, e);
+            logger.error("An error occurred so we should not completes the transaction:" + e, e);
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
@@ -512,7 +515,7 @@ public class SystemUserController extends BaseController
         }
         catch(Exception e)
         {
-            getLogger().error("An error occurred so we should not completes the transaction:" + e, e);
+            logger.error("An error occurred so we should not completes the transaction:" + e, e);
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
@@ -547,7 +550,7 @@ public class SystemUserController extends BaseController
 		}
 		catch(Exception e)
 		{
-			getLogger().error("The notification was not sent. Reason:" + e.getMessage(), e);
+			logger.error("The notification was not sent. Reason:" + e.getMessage(), e);
 		}
     }        
 
@@ -574,7 +577,7 @@ public class SystemUserController extends BaseController
         }
         catch(Exception e)
         {
-            getLogger().error("An error occurred so we should not completes the transaction:" + e, e);
+            logger.error("An error occurred so we should not completes the transaction:" + e, e);
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }

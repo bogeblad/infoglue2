@@ -23,6 +23,7 @@
 
 package org.infoglue.cms.controllers.usecases.structuretool.impl.simple;
 
+import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.controllers.kernel.impl.simple.BaseUCCController;
 import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
@@ -35,7 +36,8 @@ import org.infoglue.cms.util.ConstraintExceptionBuffer;
 
 public class DeleteSiteNodeVersionUCCImpl extends BaseUCCController implements DeleteSiteNodeVersionUCC
 {
-        
+    private final static Logger logger = Logger.getLogger(DeleteSiteNodeVersionUCCImpl.class.getName());
+
     public void deleteSiteNodeVersion(Integer siteNodeVersionId) throws ConstraintException, SystemException
     {
         Database db = CastorDatabaseService.getDatabase();
@@ -52,7 +54,7 @@ public class DeleteSiteNodeVersionUCCImpl extends BaseUCCController implements D
         }
         catch(Exception e)
         {
-            getLogger().error("An error occurred so we should not complete the transaction:" + e, e);
+            logger.error("An error occurred so we should not complete the transaction:" + e, e);
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }

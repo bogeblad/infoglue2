@@ -29,6 +29,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.apache.xerces.parsers.DOMParser;
 import org.dom4j.Element;
 import org.exolab.castor.jdo.Database;
@@ -67,7 +68,8 @@ import org.xml.sax.InputSource;
 
 public class GroupPropertiesController extends BaseController
 {
-	
+    private final static Logger logger = Logger.getLogger(GroupPropertiesController.class.getName());
+
 	/**
 	 * Factory method
 	 */
@@ -113,7 +115,7 @@ public class GroupPropertiesController extends BaseController
 		}
 		catch(Exception e)
 		{
-			getLogger().error("An error occurred so we should not completes the transaction:" + e, e);
+			logger.error("An error occurred so we should not completes the transaction:" + e, e);
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}
@@ -151,7 +153,7 @@ public class GroupPropertiesController extends BaseController
     	
 		if(groupPropertiesVO.getId() == null)
 		{
-			getLogger().info("Creating the entity because there was no version at all for: " + contentTypeDefinitionId + " " + languageId);
+			logger.info("Creating the entity because there was no version at all for: " + contentTypeDefinitionId + " " + languageId);
 			realGroupPropertiesVO = create(languageId, contentTypeDefinitionId, groupPropertiesVO);
 		}
 
@@ -180,13 +182,13 @@ public class GroupPropertiesController extends BaseController
 		}
 		catch(ConstraintException ce)
 		{
-			getLogger().warn("An error occurred so we should not complete the transaction:" + ce, ce);
+			logger.warn("An error occurred so we should not complete the transaction:" + ce, ce);
 			rollbackTransaction(db);
 			throw ce;
 		}
 		catch(Exception e)
 		{
-			getLogger().error("An error occurred so we should not complete the transaction:" + e, e);
+			logger.error("An error occurred so we should not complete the transaction:" + e, e);
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}
@@ -217,7 +219,7 @@ public class GroupPropertiesController extends BaseController
 		}
 		catch(Exception e)
 		{
-			getLogger().error("An error occurred so we should not complete the transaction:" + e, e);
+			logger.error("An error occurred so we should not complete the transaction:" + e, e);
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}
@@ -236,11 +238,11 @@ public class GroupPropertiesController extends BaseController
 	    List groupPropertiesVOList = new ArrayList();
 	    
 		String cacheKey = "" + groupName + "_" + languageId;
-		getLogger().info("cacheKey:" + cacheKey);
+		logger.info("cacheKey:" + cacheKey);
 		groupPropertiesVOList = (List)CacheController.getCachedObject("groupPropertiesCache", cacheKey);
 		if(groupPropertiesVOList != null)
 		{
-			getLogger().info("There was an cached groupPropertiesVOList:" + groupPropertiesVOList.size());
+			logger.info("There was an cached groupPropertiesVOList:" + groupPropertiesVOList.size());
 		}
 		else
 		{
@@ -276,7 +278,7 @@ public class GroupPropertiesController extends BaseController
 		}
 		else
 		{
-			this.getLogger().info("Fetching groupPropertiesList in read/write mode");
+			this.logger.info("Fetching groupPropertiesList in read/write mode");
 		    results = oql.execute();
 		}   
 
@@ -324,7 +326,7 @@ public class GroupPropertiesController extends BaseController
         }
         catch(Exception e)
         {
-            getLogger().info("An error occurred when we tried to fetch the list of digitalAssets belonging to this groupProperties:" + e);
+            logger.info("An error occurred when we tried to fetch the list of digitalAssets belonging to this groupProperties:" + e);
             e.printStackTrace();
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
@@ -374,13 +376,13 @@ public class GroupPropertiesController extends BaseController
 		}
 		catch(ConstraintException ce)
 		{
-			getLogger().warn("An error occurred so we should not complete the transaction:" + ce, ce);
+			logger.warn("An error occurred so we should not complete the transaction:" + ce, ce);
 			rollbackTransaction(db);
 			throw ce;
 		}
 		catch(Exception e)
 		{
-			getLogger().error("An error occurred so we should not complete the transaction:" + e, e);
+			logger.error("An error occurred so we should not complete the transaction:" + e, e);
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}
@@ -400,7 +402,7 @@ public class GroupPropertiesController extends BaseController
 		oql.bind(groupName);
 
 		QueryResults results = oql.execute();
-		this.getLogger().info("Fetching groupContentTypeDefinitionList in read/write mode");
+		this.logger.info("Fetching groupContentTypeDefinitionList in read/write mode");
 
 		while (results.hasMore()) 
 		{
@@ -453,13 +455,13 @@ public class GroupPropertiesController extends BaseController
 		}
 		catch(ConstraintException ce)
 		{
-			getLogger().warn("An error occurred so we should not complete the transaction:" + ce, ce);
+			logger.warn("An error occurred so we should not complete the transaction:" + ce, ce);
 			rollbackTransaction(db);
 			throw ce;
 		}
 		catch(Exception e)
 		{
-			getLogger().error("An error occurred so we should not complete the transaction:" + e, e);
+			logger.error("An error occurred so we should not complete the transaction:" + e, e);
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}
@@ -479,9 +481,9 @@ public class GroupPropertiesController extends BaseController
 		{
 			try
 			{
-				getLogger().info("attributeName:"  + attributeName);
-				getLogger().info("versionValue:"   + groupPropertiesVO.getValue());
-				getLogger().info("attributeValue:" + attributeValue);
+				logger.info("attributeName:"  + attributeName);
+				logger.info("versionValue:"   + groupPropertiesVO.getValue());
+				logger.info("attributeValue:" + attributeValue);
 				InputSource inputSource = new InputSource(new StringReader(groupPropertiesVO.getValue()));
 				
 				DOMParser parser = new DOMParser();
@@ -524,7 +526,7 @@ public class GroupPropertiesController extends BaseController
 				
 				StringBuffer sb = new StringBuffer();
 				org.infoglue.cms.util.XMLHelper.serializeDom(document.getDocumentElement(), sb);
-				getLogger().info("sb:" + sb);
+				logger.info("sb:" + sb);
 				groupPropertiesVO.setValue(sb.toString());
 				update(groupPropertiesVO.getLanguageId(), groupPropertiesVO.getContentTypeDefinitionId(), groupPropertiesVO);
 			}
@@ -556,7 +558,7 @@ public class GroupPropertiesController extends BaseController
 		}
 		catch(Exception e)
 		{
-			getLogger().error("An error occurred so we should not complete the transaction:" + e, e);
+			logger.error("An error occurred so we should not complete the transaction:" + e, e);
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}
@@ -678,7 +680,7 @@ public class GroupPropertiesController extends BaseController
 		}
 		catch(Exception e)
 		{
-			getLogger().error("An error occurred so we should not complete the transaction:" + e, e);
+			logger.error("An error occurred so we should not complete the transaction:" + e, e);
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}
@@ -766,7 +768,7 @@ public class GroupPropertiesController extends BaseController
 		}
 		catch(Exception e)
 		{
-			getLogger().error("An error occurred so we should not complete the transaction:" + e, e);
+			logger.error("An error occurred so we should not complete the transaction:" + e, e);
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}
@@ -1018,7 +1020,7 @@ public class GroupPropertiesController extends BaseController
 		}
 		catch(Exception e)
 		{
-			getLogger().warn("We could not fetch the list of defined category keys: " + e.getMessage(), e);
+			logger.warn("We could not fetch the list of defined category keys: " + e.getMessage(), e);
 		}
 
 		return relatedCategories;
@@ -1037,11 +1039,11 @@ public class GroupPropertiesController extends BaseController
 	    
 	    
 		String cacheKey = "" + groupName + "_" + languageId + "_" + attribute;
-		getLogger().info("cacheKey:" + cacheKey);
+		logger.info("cacheKey:" + cacheKey);
 		relatedCategoriesVOList = (List)CacheController.getCachedObject("relatedCategoriesCache", cacheKey);
 		if(relatedCategoriesVOList != null)
 		{
-			getLogger().info("There was an cached groupPropertiesVOList:" + relatedCategoriesVOList.size());
+			logger.info("There was an cached groupPropertiesVOList:" + relatedCategoriesVOList.size());
 		}
 		else
 		{
@@ -1091,7 +1093,7 @@ public class GroupPropertiesController extends BaseController
 		}
 		catch(Exception e)
 		{
-			getLogger().warn("We could not fetch the list of defined category keys: " + e.getMessage(), e);
+			logger.warn("We could not fetch the list of defined category keys: " + e.getMessage(), e);
 		}
 
 		return relatedCategories;

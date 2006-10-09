@@ -23,6 +23,7 @@
 
 package org.infoglue.cms.controllers.usecases.structuretool.impl.simple;
 
+import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.controllers.kernel.impl.simple.BaseUCCController;
 import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
@@ -44,7 +45,8 @@ import org.infoglue.cms.util.DateHelper;
 
 public class UpdateSiteNodeUCCImpl extends BaseUCCController implements UpdateSiteNodeUCC
 {
-        
+    private final static Logger logger = Logger.getLogger(UpdateSiteNodeUCCImpl.class.getName());
+
     public SiteNodeVO updateSiteNode(InfoGluePrincipal infoGluePrincipal, SiteNodeVO siteNodeVO, SiteNodeVersionVO updatedSiteNodeVersionVO) throws ConstraintException, SystemException
     {
         Database db = CastorDatabaseService.getDatabase();
@@ -79,13 +81,13 @@ public class UpdateSiteNodeUCCImpl extends BaseUCCController implements UpdateSi
         }
         catch(ConstraintException ce)
         {
-            getLogger().warn("An error occurred so we should not complete the transaction:" + ce, ce);
+            logger.warn("An error occurred so we should not complete the transaction:" + ce, ce);
             rollbackTransaction(db);
             throw ce;
         }
         catch(Exception e)
         {
-            getLogger().error("An error occurred so we should not complete the transaction:" + e, e);
+            logger.error("An error occurred so we should not complete the transaction:" + e, e);
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
@@ -133,13 +135,13 @@ public class UpdateSiteNodeUCCImpl extends BaseUCCController implements UpdateSi
         }
         catch(ConstraintException ce)
         {
-            getLogger().warn("An error occurred so we should not complete the transaction:" + ce, ce);
+            logger.warn("An error occurred so we should not complete the transaction:" + ce, ce);
             rollbackTransaction(db);
             throw ce;
         }
         catch(Exception e)
         {
-            getLogger().error("An error occurred so we should not complete the transaction:" + e, e);
+            logger.error("An error occurred so we should not complete the transaction:" + e, e);
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }

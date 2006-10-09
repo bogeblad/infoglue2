@@ -23,17 +23,20 @@
 
 package org.infoglue.deliver.controllers.kernel.impl.simple;
 
+import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
 import org.exolab.castor.jdo.OQLQuery;
 import org.exolab.castor.jdo.QueryResults;
 import org.infoglue.cms.entities.management.AvailableServiceBinding;
 import org.infoglue.cms.entities.management.AvailableServiceBindingVO;
 import org.infoglue.cms.exception.SystemException;
+import org.infoglue.deliver.applications.actions.UpdateCacheAction;
 import org.infoglue.deliver.util.CacheController;
 
 
 public class AvailableServiceBindingDeliveryController extends BaseDeliveryController
 {
+    private final static Logger logger = Logger.getLogger(AvailableServiceBindingDeliveryController.class.getName());
 
 	/**
 	 * Private constructor to enforce factory-use
@@ -60,15 +63,15 @@ public class AvailableServiceBindingDeliveryController extends BaseDeliveryContr
 	public AvailableServiceBindingVO getAvailableServiceBindingVO(String availableServiceBindingName, Database db) throws SystemException, Exception
 	{ 
 	    String key = "" + availableServiceBindingName;
-		getLogger().info("key:" + key);
+		logger.info("key:" + key);
 		AvailableServiceBindingVO availableServiceBindingVO = (AvailableServiceBindingVO)CacheController.getCachedObject("availableServiceBindingCache", key);
 		if(availableServiceBindingVO != null)
 		{
-		    getLogger().info("There was an cached availableServiceBindingVO:" + availableServiceBindingVO);
+		    logger.info("There was an cached availableServiceBindingVO:" + availableServiceBindingVO);
 		}
 		else
 		{
-			getLogger().info("Going to look for availableServiceBindingName " + availableServiceBindingName);
+			logger.info("Going to look for availableServiceBindingName " + availableServiceBindingName);
 			
 			//OQLQuery oql = db.getOQLQuery( "SELECT asb FROM org.infoglue.cms.entities.management.impl.simple.AvailableServiceBindingImpl asb WHERE asb.name = $1");
     		OQLQuery oql = db.getOQLQuery( "SELECT asb FROM org.infoglue.cms.entities.management.impl.simple.SmallAvailableServiceBindingImpl asb WHERE asb.name = $1");
@@ -80,11 +83,11 @@ public class AvailableServiceBindingDeliveryController extends BaseDeliveryContr
         	{
         		AvailableServiceBinding availableServiceBinding = (AvailableServiceBinding)results.next();
 				availableServiceBindingVO = availableServiceBinding.getValueObject();
-				getLogger().info("Found availableServiceBinding:" + availableServiceBindingVO.getName());
+				logger.info("Found availableServiceBinding:" + availableServiceBindingVO.getName());
         	}
             else
             {
-                getLogger().info("Found no AvailableServiceBindingVO with name " + availableServiceBindingName);
+                logger.info("Found no AvailableServiceBindingVO with name " + availableServiceBindingName);
             }
 			
 			results.close();
@@ -113,7 +116,7 @@ public class AvailableServiceBindingDeliveryController extends BaseDeliveryContr
 		if (results.hasMore()) 
     	{
     		availableServiceBinding = (AvailableServiceBinding)results.next();
-			getLogger().info("Found availableServiceBinding:" + availableServiceBinding.getName());
+			logger.info("Found availableServiceBinding:" + availableServiceBinding.getName());
     	}
          
 		results.close();

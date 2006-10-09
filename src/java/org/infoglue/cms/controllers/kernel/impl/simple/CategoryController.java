@@ -20,7 +20,7 @@
  *
  * ===============================================================================
  *
- * $Id: CategoryController.java,v 1.14 2006/03/06 18:08:48 mattias Exp $
+ * $Id: CategoryController.java,v 1.15 2006/10/09 21:41:09 mattias Exp $
  */
 package org.infoglue.cms.controllers.kernel.impl.simple;
 
@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.entities.management.Category;
@@ -48,6 +49,8 @@ import org.infoglue.cms.security.InfoGluePrincipal;
  */
 public class CategoryController extends BaseController
 {
+    private final static Logger logger = Logger.getLogger(CategoryController.class.getName());
+
 	private static final CategoryController instance = new CategoryController();
 	private static final ContentCategoryController contentCategoryStore = ContentCategoryController.getController();
 
@@ -174,7 +177,7 @@ public class CategoryController extends BaseController
         while(categoryVOListIterator.hasNext())
         {
             CategoryVO currentCategoryVO = (CategoryVO)categoryVOListIterator.next();
-	        getLogger().info("currentCategoryVO:" + currentCategoryVO.getName() + "=" + name);
+	        logger.info("currentCategoryVO:" + currentCategoryVO.getName() + "=" + name);
             if(currentCategoryVO.getName().equalsIgnoreCase(name))
             {
                 categoryVO = currentCategoryVO;
@@ -437,7 +440,7 @@ public class CategoryController extends BaseController
     
 	public boolean getIsAccessApproved(Integer categoryId, InfoGluePrincipal infoGluePrincipal) throws SystemException
 	{
-		getLogger().info("getIsAccessApproved for " + categoryId + " AND " + infoGluePrincipal);
+		logger.info("getIsAccessApproved for " + categoryId + " AND " + infoGluePrincipal);
 		boolean hasAccess = false;
     	
 		Database db = CastorDatabaseService.getDatabase();
@@ -452,7 +455,7 @@ public class CategoryController extends BaseController
 		}
 		catch(Exception e)
 		{
-			getLogger().error("An error occurred so we should not complete the transaction:" + e, e);
+			logger.error("An error occurred so we should not complete the transaction:" + e, e);
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}

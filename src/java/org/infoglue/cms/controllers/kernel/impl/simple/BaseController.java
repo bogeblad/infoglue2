@@ -76,12 +76,12 @@ public abstract class BaseController
     /**
      * Gets a logger for the action class.
      */
-
-	protected Logger getLogger() 
+/*
+	protected Logger logger 
 	{
 	    return Logger.getLogger(this.getClass().getName());
 	}
-
+*/
     /**
      * This method is called by the controllers to let interceptors listen to events.
      * 
@@ -106,7 +106,7 @@ public abstract class BaseController
 		while(interceptorsIterator.hasNext())
 		{
 			InterceptorVO interceptorVO = (InterceptorVO)interceptorsIterator.next();
-			getLogger().info("Adding interceptorVO:" + interceptorVO.getName());
+			logger.info("Adding interceptorVO:" + interceptorVO.getName());
 			try
 			{
 				InfoGlueInterceptor infoGlueInterceptor = (InfoGlueInterceptor)Class.forName(interceptorVO.getClassName()).newInstance();
@@ -114,7 +114,7 @@ public abstract class BaseController
 			}
 			catch(ClassNotFoundException e)
 			{
-				getLogger().warn("The interceptor " + interceptorVO.getClassName() + "was not found: " + e.getMessage(), e);
+				logger.warn("The interceptor " + interceptorVO.getClassName() + "was not found: " + e.getMessage(), e);
 			}
 		}
 
@@ -145,7 +145,7 @@ public abstract class BaseController
 		while(interceptorsIterator.hasNext())
 		{
 			InterceptorVO interceptorVO = (InterceptorVO)interceptorsIterator.next();
-			getLogger().info("Adding interceptorVO:" + interceptorVO.getName());
+			logger.info("Adding interceptorVO:" + interceptorVO.getName());
 			try
 			{
 				InfoGlueInterceptor infoGlueInterceptor = (InfoGlueInterceptor)Class.forName(interceptorVO.getClassName()).newInstance();
@@ -153,7 +153,7 @@ public abstract class BaseController
 			}
 			catch(ClassNotFoundException e)
 			{
-				getLogger().warn("The interceptor " + interceptorVO.getClassName() + "was not found: " + e.getMessage(), e);
+				logger.warn("The interceptor " + interceptorVO.getClassName() + "was not found: " + e.getMessage(), e);
 			}
 		}
 

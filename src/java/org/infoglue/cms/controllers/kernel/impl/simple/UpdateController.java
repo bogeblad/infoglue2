@@ -137,8 +137,7 @@ import org.xml.sax.InputSource;
  */
 public class UpdateController extends BaseController
 {
-	
-    private final static Logger logger = Logger.getLogger(UpdateController.class.getName());
+	private final static Logger logger = Logger.getLogger(UpdateController.class.getName());
 
 	/**
 	 * 
@@ -176,11 +175,11 @@ public class UpdateController extends BaseController
 	
 	public Vector getAvailableUpdates()
 	{
-		getLogger().info("Get Available updates");
+		logger.info("Get Available updates");
 
 		if (UpdateListHandler.getAvailableUpdates() == null)
 		{
-			getLogger().info("Getting from updateserver");
+			logger.info("Getting from updateserver");
 			Vector ret = new Vector();		
 	
 			 try 
@@ -232,7 +231,7 @@ public class UpdateController extends BaseController
 	
 	public Vector getInstalledUpdates()
 	{
-		getLogger().info("GetInstalled Updates");
+		logger.info("GetInstalled Updates");
 
 		Unmarshaller unmar = null;
 		UpdateCollection coll = new UpdateCollection();
@@ -244,7 +243,7 @@ public class UpdateController extends BaseController
 		} 
 		catch (MarshalException e2) 
 		{
-			getLogger().info("Marshal exception");
+			logger.info("Marshal exception");
 		} 
 		catch (ValidationException e2) 
 		{
@@ -252,14 +251,14 @@ public class UpdateController extends BaseController
 		} 
 		catch (FileNotFoundException e2) 
 		{
-			getLogger().info("No packages found");
+			logger.info("No packages found");
 		}
 		catch (MappingException e1) 
 		{
 			e1.printStackTrace();
 		}
 
-		getLogger().info("Leaving GetInstalled Updates");
+		logger.info("Leaving GetInstalled Updates");
 		return coll.getUpdatePackageList();
 	}
 
@@ -283,7 +282,7 @@ public class UpdateController extends BaseController
 			} catch (ValidationException e2) {
 				e2.printStackTrace();
 			} catch (FileNotFoundException e2) {
-				getLogger().info("No previous installations");
+				logger.info("No previous installations");
 			}
 			coll.getUpdatePackageList().add(upd);
 			
@@ -330,7 +329,7 @@ public class UpdateController extends BaseController
 		} catch (ValidationException e2) {
 			e2.printStackTrace();
 		} catch (FileNotFoundException e2) {
-			getLogger().info("No previous installations");
+			logger.info("No previous installations");
 		}
 
 			// Find the update with id updatePackageId
@@ -377,7 +376,7 @@ public class UpdateController extends BaseController
 			  UpdatePackage u = (UpdatePackage) iterator.next();
 			  if(updatePackageId.compareTo(u.getPackageId())==0)
 			  {
-			  	getLogger().info("Found package to install: " + u.getPackageId());
+			  	logger.info("Found package to install: " + u.getPackageId());
 			  	runUpdatePackage(u, writer);
 			  	break;
 			  }
@@ -394,7 +393,7 @@ public class UpdateController extends BaseController
 			  UpdatePackage u = (UpdatePackage) iterator.next();
 			  if(updatePackageId.compareTo(u.getPackageId())==0)
 			  {
-			  	getLogger().info("Found package to uninstall: " + u.getPackageId());
+			  	logger.info("Found package to uninstall: " + u.getPackageId());
 				unInstallPackage(u, out);
 				break;
 			  }

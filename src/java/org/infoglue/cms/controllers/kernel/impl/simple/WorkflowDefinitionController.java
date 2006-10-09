@@ -65,11 +65,11 @@ public class WorkflowDefinitionController extends BaseController
     {
 		/*
         String key = "contentTypeDefinitionVOList";
-		getLogger().info("key:" + key);
+		logger.info("key:" + key);
 		List cachedContentTypeDefinitionVOList = (List)CacheController.getCachedObject("contentTypeDefinitionCache", key);
 		if(cachedContentTypeDefinitionVOList != null)
 		{
-			getLogger().info("There was an cached contentTypeDefinitionVOList:" + cachedContentTypeDefinitionVOList.size());
+			logger.info("There was an cached contentTypeDefinitionVOList:" + cachedContentTypeDefinitionVOList.size());
 			return cachedContentTypeDefinitionVOList;
 		}
 		*/

@@ -25,6 +25,7 @@ package org.infoglue.cms.controllers.kernel.impl.simple;
 
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
 import org.exolab.castor.jdo.OQLQuery;
 import org.exolab.castor.jdo.QueryResults;
@@ -39,6 +40,8 @@ import org.infoglue.cms.util.ConstraintExceptionBuffer;
 
 public class ServiceDefinitionController extends BaseController
 {
+    private final static Logger logger = Logger.getLogger(ServiceDefinitionController.class.getName());
+
 	/*
 	 * Factory method
 	 */
@@ -148,13 +151,13 @@ public class ServiceDefinitionController extends BaseController
         }
         catch(ConstraintException ce)
         {
-            getLogger().warn("An error occurred so we should not complete the transaction:" + ce, ce);
+            logger.warn("An error occurred so we should not complete the transaction:" + ce, ce);
             rollbackTransaction(db);
             throw ce;
         }
         catch(Exception e)
         {
-            getLogger().error("An error occurred so we should not complete the transaction:" + e, e);
+            logger.error("An error occurred so we should not complete the transaction:" + e, e);
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
@@ -222,7 +225,7 @@ public class ServiceDefinitionController extends BaseController
 			    results = oql.execute(Database.ReadOnly);
 			else
 			{
-			    this.getLogger().info("Fetching entity in read/write mode" + name);
+			    this.logger.info("Fetching entity in read/write mode" + name);
 				results = oql.execute();
 			}
 			

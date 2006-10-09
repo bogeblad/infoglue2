@@ -97,7 +97,7 @@ public class CmsJDOCallback implements CallbackInterceptor
 		//System.out.println("storing...:" + object + ":" + modified);
         // ( (Persistent) object ).jdoStore( modified );
    		
-   		//getLogger().info("Should we store -------------->" + object + ":" + modified);
+   		//logger.info("Should we store -------------->" + object + ":" + modified);
     	if (TransactionHistoryImpl.class.getName().indexOf(object.getClass().getName()) == -1 && RegistryImpl.class.getName().indexOf(object.getClass().getName()) == -1 && modified)
 	    {
 	        //System.out.println("Actually stored it:" + object + ":" + modified);
@@ -408,7 +408,7 @@ public class CmsJDOCallback implements CallbackInterceptor
 			}
 			else if(object.getClass().getName().equals(DigitalAssetImpl.class.getName()))
 			{
-				//getLogger().info("We should delete all images with digitalAssetId " + getObjectIdentity(object));
+				//logger.info("We should delete all images with digitalAssetId " + getObjectIdentity(object));
 				DigitalAssetController.deleteCachedDigitalAssets((Integer)getObjectIdentity(object));
 			}
 			else if(object.getClass().getName().equals(SiteNodeImpl.class.getName()))
@@ -477,7 +477,7 @@ public class CmsJDOCallback implements CallbackInterceptor
 	    if(DigitalAssetImpl.class.getName().equals(object.getClass().getName()) && committed)
 	    {
 	        System.out.println("releasing...:" + object + ":" + committed);
-	    	getLogger().info("Actually releasing it:" + object + ":" + committed);
+	    	logger.info("Actually releasing it:" + object + ":" + committed);
     		String userName = "SYSTEM";
 	    	NotificationMessage notificationMessage = new NotificationMessage("CmsJDOCallback", object.getClass().getName(), userName, NotificationMessage.TRANS_UPDATE, getObjectIdentity(object), object.toString());
 	    	ChangeNotificationController.getInstance().addNotificationMessage(notificationMessage);
@@ -496,7 +496,7 @@ public class CmsJDOCallback implements CallbackInterceptor
 		//if (CmsSystem.getTransactionHistoryEntityClassName().indexOf(className) == -1)
 		//	CmsSystem.transactionLogEntry("CMSJDOCallback:" + object.getClass().getName(), CmsSystem.TRANS_UPDATE, getEntityId(object), object.toString());   
 
-//		getLogger().info("updated..........................." + object);
+//		logger.info("updated..........................." + object);
 /*
      	if (TransactionHistoryImpl.class.getName().indexOf(object.getClass().getName()) == -1)
 	    {

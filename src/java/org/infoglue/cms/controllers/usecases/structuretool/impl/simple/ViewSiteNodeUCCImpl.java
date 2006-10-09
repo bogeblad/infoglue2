@@ -23,6 +23,7 @@
 
 package org.infoglue.cms.controllers.usecases.structuretool.impl.simple;
 
+import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.controllers.kernel.impl.simple.BaseUCCController;
 import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
@@ -36,7 +37,8 @@ import org.infoglue.cms.util.ConstraintExceptionBuffer;
 
 public class ViewSiteNodeUCCImpl extends BaseUCCController implements ViewSiteNodeUCC
 {
-        
+    private final static Logger logger = Logger.getLogger(ViewSiteNodeUCCImpl.class.getName());
+
     public SiteNodeVO viewSiteNode(Integer siteNodeId) throws ConstraintException, SystemException
     {
         Database db = CastorDatabaseService.getDatabase();
@@ -57,13 +59,13 @@ public class ViewSiteNodeUCCImpl extends BaseUCCController implements ViewSiteNo
         }
         catch(ConstraintException ce)
         {
-            getLogger().warn("An error occurred so we should not complete the transaction:" + ce, ce);
+            logger.warn("An error occurred so we should not complete the transaction:" + ce, ce);
             rollbackTransaction(db);
             throw ce;
         }
         catch(Exception e)
         {
-            getLogger().error("An error occurred so we should not complete the transaction:" + e, e);
+            logger.error("An error occurred so we should not complete the transaction:" + e, e);
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }

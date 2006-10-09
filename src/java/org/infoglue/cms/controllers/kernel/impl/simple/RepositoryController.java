@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
 import org.exolab.castor.jdo.OQLQuery;
 import org.exolab.castor.jdo.QueryResults;
@@ -47,7 +48,8 @@ import org.infoglue.deliver.util.CacheController;
 
 public class RepositoryController extends BaseController
 {
-	
+    private final static Logger logger = Logger.getLogger(RepositoryController.class.getName());
+
 	/**
 	 * Factory method
 	 */
@@ -101,13 +103,13 @@ public class RepositoryController extends BaseController
 		}
 		catch(ConstraintException ce)
 		{
-			getLogger().warn("An error occurred so we should not completes the transaction:" + ce, ce);
+			logger.warn("An error occurred so we should not completes the transaction:" + ce, ce);
 			rollbackTransaction(db);
 			throw ce;
 		}
 		catch(Exception e)
 		{
-			getLogger().error("An error occurred so we should not completes the transaction:" + e, e);
+			logger.error("An error occurred so we should not completes the transaction:" + e, e);
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}
@@ -157,13 +159,13 @@ public class RepositoryController extends BaseController
         }
         catch(ConstraintException ce)
         {
-            getLogger().warn("An error occurred so we should not completes the transaction:" + ce, ce);
+            logger.warn("An error occurred so we should not completes the transaction:" + ce, ce);
             rollbackTransaction(db);
             throw ce;
         }
         catch(Exception e)
         {
-            getLogger().error("An error occurred so we should not completes the transaction:" + e, e);
+            logger.error("An error occurred so we should not completes the transaction:" + e, e);
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
@@ -210,7 +212,7 @@ public class RepositoryController extends BaseController
 		} 
 		catch (Exception e) 
 		{
-			getLogger().info("An error occurred so we should not complete the transaction:" + e);
+			logger.info("An error occurred so we should not complete the transaction:" + e);
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}
@@ -238,7 +240,7 @@ public class RepositoryController extends BaseController
 			oql.bind(name);
 			
 			QueryResults results = oql.execute();
-			this.getLogger().info("Fetching entity in read/write mode" + name);
+			this.logger.info("Fetching entity in read/write mode" + name);
 
 			if (results.hasMore()) 
 			{
@@ -264,11 +266,11 @@ public class RepositoryController extends BaseController
     public List getRepositoryVOList() throws ConstraintException, SystemException, Bug
     {   
 		String key = "repositoryVOList";
-		getLogger().info("key:" + key);
+		logger.info("key:" + key);
 		List cachedRepositoryVOList = (List)CacheController.getCachedObject("repositoryCache", key);
 		if(cachedRepositoryVOList != null)
 		{
-			getLogger().info("There was an cached authorization:" + cachedRepositoryVOList.size());
+			logger.info("There was an cached authorization:" + cachedRepositoryVOList.size());
 			return cachedRepositoryVOList;
 		}
 				
@@ -321,7 +323,7 @@ public class RepositoryController extends BaseController
 		
 			OQLQuery oql = db.getOQLQuery("SELECT r FROM org.infoglue.cms.entities.management.impl.simple.RepositoryImpl r ORDER BY r.repositoryId");
         	QueryResults results = oql.execute();
-			this.getLogger().info("Fetching entity in read/write mode");
+			this.logger.info("Fetching entity in read/write mode");
 
 			if (results.hasMore()) 
             {
@@ -365,7 +367,7 @@ public class RepositoryController extends BaseController
     
 	public boolean getIsAccessApproved(Integer repositoryId, InfoGluePrincipal infoGluePrincipal, boolean isBindingDialog) throws SystemException
 	{
-		getLogger().info("getIsAccessApproved for " + repositoryId + " AND " + infoGluePrincipal + " AND " + isBindingDialog);
+		logger.info("getIsAccessApproved for " + repositoryId + " AND " + infoGluePrincipal + " AND " + isBindingDialog);
 		boolean hasAccess = false;
     	
 		Database db = CastorDatabaseService.getDatabase();
@@ -383,7 +385,7 @@ public class RepositoryController extends BaseController
 		}
 		catch(Exception e)
 		{
-			getLogger().error("An error occurred so we should not complete the transaction:" + e, e);
+			logger.error("An error occurred so we should not complete the transaction:" + e, e);
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}

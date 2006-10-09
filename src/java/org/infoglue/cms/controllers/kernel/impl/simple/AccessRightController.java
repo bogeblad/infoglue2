@@ -32,6 +32,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
 import org.exolab.castor.jdo.OQLQuery;
 import org.exolab.castor.jdo.QueryResults;
@@ -67,7 +68,8 @@ import org.infoglue.deliver.util.CacheController;
 
 public class AccessRightController extends BaseController
 {
-	
+    private final static Logger logger = Logger.getLogger(AccessRightController.class.getName());
+
 	/**
 	 * Factory method
 	 */
@@ -126,14 +128,14 @@ public class AccessRightController extends BaseController
 			if(accessRight != null)
 			    accessRightGroupVOList = toVOList(accessRight.getGroups());
 			
-	        getLogger().info("accessRightGroupVOList:" + accessRightGroupVOList.size());
+	        logger.info("accessRightGroupVOList:" + accessRightGroupVOList.size());
 			
 			commitTransaction(db);
 		} 
 		catch (Exception e) 
 		{
 		    e.printStackTrace();
-			getLogger().info("An error occurred so we should not complete the transaction:" + e);
+			logger.info("An error occurred so we should not complete the transaction:" + e);
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}
@@ -153,14 +155,14 @@ public class AccessRightController extends BaseController
 			
 			accessRightVOList = getAccessRightVOList(db, interceptionPointId, parameters, roleName);
 
-			getLogger().info("accessRightVOList:" + accessRightVOList.size());
+			logger.info("accessRightVOList:" + accessRightVOList.size());
 			
 			commitTransaction(db);
 		} 
 		catch (Exception e) 
 		{
 		    e.printStackTrace();
-			getLogger().info("An error occurred so we should not complete the transaction:" + e);
+			logger.info("An error occurred so we should not complete the transaction:" + e);
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}
@@ -179,7 +181,7 @@ public class AccessRightController extends BaseController
 		else
 			accessRightVOList = toVOList(getAccessRightList(interceptionPointId, roleName, db));
 
-		getLogger().info("accessRightVOList:" + accessRightVOList.size());
+		logger.info("accessRightVOList:" + accessRightVOList.size());
 		
 		return accessRightVOList;	
 	}
@@ -196,14 +198,14 @@ public class AccessRightController extends BaseController
 			
 			accessRightVOList = getAccessRightVOListOnly(db, interceptionPointId, parameters);
 
-			getLogger().info("accessRightVOList:" + accessRightVOList.size());
+			logger.info("accessRightVOList:" + accessRightVOList.size());
 			
 			commitTransaction(db);
 		} 
 		catch (Exception e) 
 		{
 		    e.printStackTrace();
-			getLogger().info("An error occurred so we should not complete the transaction:" + e);
+			logger.info("An error occurred so we should not complete the transaction:" + e);
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}
@@ -221,7 +223,7 @@ public class AccessRightController extends BaseController
 		else
 			accessRightVOList = toVOList(getAccessRightList(interceptionPointId, db));
 
-		getLogger().info("accessRightVOList:" + accessRightVOList.size());
+		logger.info("accessRightVOList:" + accessRightVOList.size());
 		
 		return accessRightVOList;	
 	}
@@ -257,7 +259,7 @@ public class AccessRightController extends BaseController
 			}
 			
 			QueryResults results = oql.execute();
-			this.getLogger().info("Fetching entity in read/write mode" + interceptionPointId);
+			this.logger.info("Fetching entity in read/write mode" + interceptionPointId);
 
 			while (results.hasMore()) 
 			{
@@ -299,7 +301,7 @@ public class AccessRightController extends BaseController
 			}
 			
 			QueryResults results = oql.execute();
-			this.getLogger().info("Fetching entity in read/write mode");
+			this.logger.info("Fetching entity in read/write mode");
 
 			while (results.hasMore()) 
 			{
@@ -367,9 +369,9 @@ public class AccessRightController extends BaseController
 		
 		try
 		{
-		    //getLogger().info("getAccessRightListForEntity(Integer interceptionPointId, String parameters, Database db)");
-		    //getLogger().info("interceptionPointId:" + interceptionPointId);
-		    //getLogger().info("parameters:" + parameters);
+		    //logger.info("getAccessRightListForEntity(Integer interceptionPointId, String parameters, Database db)");
+		    //logger.info("interceptionPointId:" + interceptionPointId);
+		    //logger.info("parameters:" + parameters);
 			
 			OQLQuery oql = null;
 			
@@ -387,12 +389,12 @@ public class AccessRightController extends BaseController
 			}
 						
 			QueryResults results = oql.execute();
-			this.getLogger().info("Fetching entity in read/write mode");
+			this.logger.info("Fetching entity in read/write mode");
 
 			while (results.hasMore()) 
 			{
 				AccessRight accessRight = (AccessRight)results.next();
-				//getLogger().info("accessRight:" + accessRight.getAccessRightId());
+				//logger.info("accessRight:" + accessRight.getAccessRightId());
 				accessRightList.add(accessRight);
 			}
 			
@@ -414,19 +416,19 @@ public class AccessRightController extends BaseController
 		
 		try
 		{
-			getLogger().info("getAccessRightList(Integer interceptionPointId, Database db)");
-			getLogger().info("interceptionPointId: " + interceptionPointId);
+			logger.info("getAccessRightList(Integer interceptionPointId, Database db)");
+			logger.info("interceptionPointId: " + interceptionPointId);
 			
 			OQLQuery oql = db.getOQLQuery("SELECT f FROM org.infoglue.cms.entities.management.impl.simple.AccessRightImpl f WHERE f.interceptionPoint = $1");
 			oql.bind(interceptionPointId);
 			
 			QueryResults results = oql.execute();
-			this.getLogger().info("Fetching entity in read/write mode");
+			this.logger.info("Fetching entity in read/write mode");
 
 			while (results.hasMore()) 
 			{
 				AccessRight accessRight = (AccessRight)results.next();
-				getLogger().info("accessRight:" + accessRight.getAccessRightId());
+				logger.info("accessRight:" + accessRight.getAccessRightId());
 				accessRightList.add(accessRight);
 			}
 			
@@ -447,19 +449,19 @@ public class AccessRightController extends BaseController
 		
 		try
 		{
-			getLogger().info("getAccessRightList(String roleName, Database db)");
-			getLogger().info("roleName: " + roleName);
+			logger.info("getAccessRightList(String roleName, Database db)");
+			logger.info("roleName: " + roleName);
 			
 			OQLQuery oql = db.getOQLQuery("SELECT f FROM org.infoglue.cms.entities.management.impl.simple.AccessRightImpl f WHERE f.roles.roleName = $1");
 			oql.bind(roleName);
 			
 			QueryResults results = oql.execute();
-			this.getLogger().info("Fetching entity in read/write mode");
+			this.logger.info("Fetching entity in read/write mode");
 
 			while (results.hasMore()) 
 			{
 				AccessRight accessRight = (AccessRight)results.next();
-				getLogger().info("accessRight:" + accessRight.getAccessRightId());
+				logger.info("accessRight:" + accessRight.getAccessRightId());
 				accessRightList.add(accessRight);
 			}
 
@@ -481,21 +483,21 @@ public class AccessRightController extends BaseController
 		
 		try
 		{
-		    getLogger().info("getAccessRightList(Integer interceptionPointId, String roleName, Database db)");
-			getLogger().info("interceptionPointId: " + interceptionPointId);
-			getLogger().info("roleName: " + roleName);
+		    logger.info("getAccessRightList(Integer interceptionPointId, String roleName, Database db)");
+			logger.info("interceptionPointId: " + interceptionPointId);
+			logger.info("roleName: " + roleName);
 			
 			OQLQuery oql = db.getOQLQuery("SELECT f FROM org.infoglue.cms.entities.management.impl.simple.AccessRightImpl f WHERE f.interceptionPoint = $1 AND f.roles.roleName = $2");
 			oql.bind(interceptionPointId);
 			oql.bind(roleName);
 			
 			QueryResults results = oql.execute();
-			this.getLogger().info("Fetching entity in read/write mode");
+			this.logger.info("Fetching entity in read/write mode");
 
 			while (results.hasMore()) 
 			{
 				AccessRight accessRight = (AccessRight)results.next();
-				getLogger().info("accessRight:" + accessRight.getAccessRightId());
+				logger.info("accessRight:" + accessRight.getAccessRightId());
 				accessRightList.add(accessRight);
 			}
 
@@ -543,7 +545,7 @@ public class AccessRightController extends BaseController
 	{
 		Database db = CastorDatabaseService.getDatabase();
 		
-		getLogger().info("parameters:" + parameters);
+		logger.info("parameters:" + parameters);
 		
 		try 
 		{
@@ -592,7 +594,7 @@ public class AccessRightController extends BaseController
 				    if(accessRight == null)
 				    {
 					    InterceptionPoint interceptionPoint = InterceptionPointController.getController().getInterceptionPointWithId(new Integer(interceptionPointIdString), db);
-					    //getLogger().info("Creating access for:" + interceptionPoint.getName() + "_" + parameters);
+					    //logger.info("Creating access for:" + interceptionPoint.getName() + "_" + parameters);
 						accessRight = create(accessRightVO, interceptionPoint, db);
 				    }
 					
@@ -603,7 +605,7 @@ public class AccessRightController extends BaseController
 					
 				    groupIndex++;
 				    groupName = request.getParameter(interceptionPointIdString + "_" + groupIndex + "_groupName");
-				    //getLogger().info("groupName:" + groupName);
+				    //logger.info("groupName:" + groupName);
 				}
 
 				interceptionPointIndex++;
@@ -614,7 +616,7 @@ public class AccessRightController extends BaseController
 		catch (Exception e) 
 		{
 		    e.printStackTrace();
-			getLogger().info("An error occurred so we should not complete the transaction:" + e);
+			logger.info("An error occurred so we should not complete the transaction:" + e);
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}
@@ -625,7 +627,7 @@ public class AccessRightController extends BaseController
 	{
 		Database db = CastorDatabaseService.getDatabase();
 		
-		getLogger().info("parameters:" + parameters);
+		logger.info("parameters:" + parameters);
 		
 		try 
 		{
@@ -658,7 +660,7 @@ public class AccessRightController extends BaseController
 		catch (Exception e) 
 		{
 		    e.printStackTrace();
-			getLogger().info("An error occurred so we should not complete the transaction:" + e);
+			logger.info("An error occurred so we should not complete the transaction:" + e);
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}
@@ -678,7 +680,7 @@ public class AccessRightController extends BaseController
 	{
 		Database db = CastorDatabaseService.getDatabase();
 		
-		getLogger().info("parameters:" + parameters);
+		logger.info("parameters:" + parameters);
 		
 		try 
 		{
@@ -731,8 +733,6 @@ public class AccessRightController extends BaseController
 				        accessRight = (AccessRight)accessRights.get(0);
 				    }
 				    
-					System.out.println("FFFFFF");
-
 					if(userName != null && accessRight != null)
 					{
 					    AccessRightUserVO accessRightUserVO = new AccessRightUserVO();
@@ -750,7 +750,7 @@ public class AccessRightController extends BaseController
 		} 
 		catch (Exception e) 
 		{
-			getLogger().info("An error occurred so we should not complete the transaction:" + e);
+			logger.info("An error occurred so we should not complete the transaction:" + e);
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}
@@ -770,7 +770,7 @@ public class AccessRightController extends BaseController
 	{
 		Database db = CastorDatabaseService.getDatabase();
 		
-		getLogger().info("parameters:" + parameters);
+		logger.info("parameters:" + parameters);
 		
 		try 
 		{
@@ -794,7 +794,7 @@ public class AccessRightController extends BaseController
 		catch (Exception e) 
 		{
 		    e.printStackTrace();
-			getLogger().info("An error occurred so we should not complete the transaction:" + e);
+			logger.info("An error occurred so we should not complete the transaction:" + e);
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}
@@ -862,7 +862,7 @@ public class AccessRightController extends BaseController
 	{
 		Database db = CastorDatabaseService.getDatabase();
 		
-		getLogger().info("parameters:" + parameters);
+		logger.info("parameters:" + parameters);
 		
 		try 
 		{
@@ -872,13 +872,13 @@ public class AccessRightController extends BaseController
 			String roleName = request.getParameter(roleIndex + "_roleName");
 			while(roleName != null)
 			{
-				getLogger().info("roleName:" + roleName);
+				logger.info("roleName:" + roleName);
 				
 				int interceptionPointIndex = 0;
 				String interceptionPointIdString = request.getParameter(roleName + "_" + interceptionPointIndex + "_InterceptionPointId");
 				while(interceptionPointIdString != null)
 				{
-					getLogger().info("interceptionPointIdString:" + interceptionPointIdString);
+					logger.info("interceptionPointIdString:" + interceptionPointIdString);
 					
 					delete(new Integer(interceptionPointIdString), parameters, roleName, db);
 
@@ -891,7 +891,7 @@ public class AccessRightController extends BaseController
 						accessRightVO.setParameters(parameters);
 
 						InterceptionPoint interceptionPoint = InterceptionPointController.getController().getInterceptionPointWithId(new Integer(interceptionPointIdString), db);
-						getLogger().info("Creating access for roleName:" + roleName + ":" + parameters + "_" + interceptionPoint.getName());
+						logger.info("Creating access for roleName:" + roleName + ":" + parameters + "_" + interceptionPoint.getName());
 						
 						create(accessRightVO, interceptionPoint, db);
 					}
@@ -907,7 +907,7 @@ public class AccessRightController extends BaseController
 		} 
 		catch (Exception e) 
 		{
-			getLogger().info("An error occurred so we should not complete the transaction:" + e);
+			logger.info("An error occurred so we should not complete the transaction:" + e);
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}
@@ -926,7 +926,7 @@ public class AccessRightController extends BaseController
 	{
 		Database db = CastorDatabaseService.getDatabase();
 		
-		getLogger().info("roleName:" + roleName);
+		logger.info("roleName:" + roleName);
 		
 		try 
 		{
@@ -944,7 +944,7 @@ public class AccessRightController extends BaseController
 		} 
 		catch (Exception e) 
 		{
-			getLogger().info("An error occurred so we should not complete the transaction:" + e);
+			logger.info("An error occurred so we should not complete the transaction:" + e);
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}
@@ -1030,7 +1030,7 @@ public class AccessRightController extends BaseController
 		} 
 		catch (Exception e) 
 		{
-			getLogger().info("An error occurred so we should not complete the transaction:" + e);
+			logger.info("An error occurred so we should not complete the transaction:" + e);
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}
@@ -1053,7 +1053,7 @@ public class AccessRightController extends BaseController
 	    //TODO
 		
 	    String key = "" + infoGluePrincipal.getName() + "_" + interceptionPointName + "_" + extraParameters;
-		getLogger().info("key:" + key);
+		logger.info("key:" + key);
 		Boolean cachedIsPrincipalAuthorized = (Boolean)CacheController.getCachedObject("authorizationCache", key);
 		if(cachedIsPrincipalAuthorized != null)
 		{
@@ -1067,8 +1067,8 @@ public class AccessRightController extends BaseController
 		   
 		Collection roles = infoGluePrincipal.getRoles();
 		Collection groups = infoGluePrincipal.getGroups();
-		getLogger().info("roles:" + roles.size());
-		getLogger().info("groups:" + groups.size());
+		logger.info("roles:" + roles.size());
+		logger.info("groups:" + groups.size());
 
 		InterceptionPointVO interceptionPointVO = InterceptionPointController.getController().getInterceptionPointVOWithName(interceptionPointName, db);
 		if(interceptionPointVO == null)
@@ -1101,7 +1101,7 @@ public class AccessRightController extends BaseController
 				outer:while(rolesIterator.hasNext())
 				{
 					InfoGlueRole role = (InfoGlueRole)rolesIterator.next();
-					getLogger().info("role:" + role.getName());
+					logger.info("role:" + role.getName());
 					
 					Iterator approvedRolesIterator = approvedRoles.iterator();
 					while(approvedRolesIterator.hasNext())
@@ -1119,7 +1119,7 @@ public class AccessRightController extends BaseController
 				outer:while(approvedGroupsIterator.hasNext())
 				{
 				    AccessRightGroup accessRightGroup = (AccessRightGroup)approvedGroupsIterator.next();
-				    getLogger().info("accessRightGroup:" + accessRightGroup.getGroupName());
+				    logger.info("accessRightGroup:" + accessRightGroup.getGroupName());
 	
 				    limitOnGroups = true;
 	
@@ -1155,11 +1155,11 @@ public class AccessRightController extends BaseController
 			return true;
 			
 		String key = "" + infoGluePrincipal.getName() + "_" + interceptionPointName;
-		getLogger().info("key:" + key);
+		logger.info("key:" + key);
 		Boolean cachedIsPrincipalAuthorized = (Boolean)CacheController.getCachedObject("authorizationCache", key);
 		if(cachedIsPrincipalAuthorized != null)
 		{
-			getLogger().info("There was an cached authorization:" + cachedIsPrincipalAuthorized);
+			logger.info("There was an cached authorization:" + cachedIsPrincipalAuthorized);
 			return cachedIsPrincipalAuthorized.booleanValue();
 		}
 		
@@ -1179,7 +1179,7 @@ public class AccessRightController extends BaseController
 		} 
 		catch (Exception e) 
 		{
-			getLogger().info("An error occurred so we should not complete the transaction:" + e);
+			logger.info("An error occurred so we should not complete the transaction:" + e);
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}
@@ -1230,7 +1230,7 @@ public class AccessRightController extends BaseController
 				outer:while(rolesIterator.hasNext())
 				{
 					InfoGlueRole role = (InfoGlueRole)rolesIterator.next();
-					getLogger().info("role:" + role.getName());
+					logger.info("role:" + role.getName());
 					
 					Iterator approvedRolesIterator = approvedRoles.iterator();
 					while(approvedRolesIterator.hasNext())
@@ -1248,7 +1248,7 @@ public class AccessRightController extends BaseController
 				outer:while(approvedGroupsIterator.hasNext())
 				{
 				    AccessRightGroup accessRightGroup = (AccessRightGroup)approvedGroupsIterator.next();
-				    getLogger().info("accessRightGroup:" + accessRightGroup.getGroupName());
+				    logger.info("accessRightGroup:" + accessRightGroup.getGroupName());
 	
 				    limitOnGroups = true;
 	
@@ -1269,7 +1269,7 @@ public class AccessRightController extends BaseController
 	    if((principalHasRole && principalHasGroup) || (principalHasRole && !limitOnGroups))
 		    isPrincipalAuthorized = true;
 		
-	    getLogger().info("isPrincipalAuthorized:" + isPrincipalAuthorized);
+	    logger.info("isPrincipalAuthorized:" + isPrincipalAuthorized);
 	    
 		return isPrincipalAuthorized;
 	}
@@ -1293,7 +1293,7 @@ public class AccessRightController extends BaseController
 		} 
 		catch (Exception e) 
 		{
-			getLogger().warn("An error occurred so we should not complete the transaction:" + e, e);
+			logger.warn("An error occurred so we should not complete the transaction:" + e, e);
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}
@@ -1335,7 +1335,7 @@ public class AccessRightController extends BaseController
 			    }
 			    catch(Exception e)
 			    {
-			        getLogger().info("An user did not exist although given access rights:" + e.getMessage());
+			        logger.info("An user did not exist although given access rights:" + e.getMessage());
 			    }
 			}
 		}

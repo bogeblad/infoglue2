@@ -26,6 +26,7 @@ package org.infoglue.cms.controllers.usecases.structuretool.impl.simple;
 import java.util.Collection;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
 import org.exolab.castor.jdo.OQLQuery;
 import org.exolab.castor.jdo.QueryResults;
@@ -44,6 +45,8 @@ import org.infoglue.cms.util.ConstraintExceptionBuffer;
 
 public class ViewSiteNodeTreeUCCImpl extends BaseUCCController implements ViewSiteNodeTreeUCC
 {
+    private final static Logger logger = Logger.getLogger(ViewSiteNodeTreeUCCImpl.class.getName());
+
 	/**
 	 * This method fetches the root siteNode for a particular repository.
 	 * If there is no such siteNode we create one as all repositories need one to work.
@@ -60,7 +63,7 @@ public class ViewSiteNodeTreeUCCImpl extends BaseUCCController implements ViewSi
 
         try
         {
-            getLogger().info("Fetching the root siteNode for the repository " + repositoryId);
+            logger.info("Fetching the root siteNode for the repository " + repositoryId);
 			OQLQuery oql = db.getOQLQuery( "SELECT c FROM org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl c WHERE is_undefined(c.parentSiteNode) AND c.repository.repositoryId = $1");
 			oql.bind(repositoryId);
 			
@@ -73,7 +76,7 @@ public class ViewSiteNodeTreeUCCImpl extends BaseUCCController implements ViewSi
             else
             {
 				//None found - we create it and give it the name of the repository.
-				getLogger().info("Found no rootSiteNode so we create a new....");
+				logger.info("Found no rootSiteNode so we create a new....");
 				SiteNodeVO rootSiteNodeVO = new SiteNodeVO();
 				Repository repository = RepositoryController.getController().getRepositoryWithId(repositoryId, db);
 				rootSiteNodeVO.setName(repository.getName());
@@ -99,13 +102,13 @@ public class ViewSiteNodeTreeUCCImpl extends BaseUCCController implements ViewSi
         }
         catch(ConstraintException ce)
         {
-            getLogger().warn("An error occurred so we should not complete the transaction:" + ce, ce);
+            logger.warn("An error occurred so we should not complete the transaction:" + ce, ce);
             rollbackTransaction(db);
             throw ce;
         }
         catch(Exception e)
         {
-            getLogger().error("An error occurred so we should not complete the transaction:" + e, e);
+            logger.error("An error occurred so we should not complete the transaction:" + e, e);
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
@@ -135,13 +138,13 @@ public class ViewSiteNodeTreeUCCImpl extends BaseUCCController implements ViewSi
         }
         catch(ConstraintException ce)
         {
-            getLogger().warn("An error occurred so we should not complete the transaction:" + ce, ce);
+            logger.warn("An error occurred so we should not complete the transaction:" + ce, ce);
             rollbackTransaction(db);
             throw ce;
         }
         catch(Exception e)
         {
-            getLogger().error("An error occurred so we should not complete the transaction:" + e, e);
+            logger.error("An error occurred so we should not complete the transaction:" + e, e);
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
@@ -173,13 +176,13 @@ public class ViewSiteNodeTreeUCCImpl extends BaseUCCController implements ViewSi
         }
         catch(ConstraintException ce)
         {
-            getLogger().warn("An error occurred so we should not complete the transaction:" + ce, ce);
+            logger.warn("An error occurred so we should not complete the transaction:" + ce, ce);
             rollbackTransaction(db);
             throw ce;
         }
         catch(Exception e)
         {
-            getLogger().error("An error occurred so we should not complete the transaction:" + e, e);
+            logger.error("An error occurred so we should not complete the transaction:" + e, e);
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }

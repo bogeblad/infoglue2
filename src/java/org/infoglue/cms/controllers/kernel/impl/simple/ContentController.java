@@ -357,6 +357,7 @@ public class ContentController extends BaseController
             Map args = new HashMap();
             args.put("globalKey", "infoglue");
             PropertySet ps = PropertySetManager.getInstance("jdbc", args);
+
             ps.remove( "content_" + content.getContentId() + "_allowedContentTypeNames");
             ps.remove( "content_" + content.getContentId() + "_defaultContentTypeName");
             ps.remove( "content_" + content.getContentId() + "_initialLanguageId");
@@ -1106,7 +1107,7 @@ public class ContentController extends BaseController
 		oql.bind(repositoryId);
 			
 		QueryResults results = oql.execute();		
-		this.getLogger().info("Fetching entity in read/write mode" + repositoryId);
+		this.logger.info("Fetching entity in read/write mode" + repositoryId);
 
 		if (results.hasMore()) 
 		{
@@ -1480,7 +1481,7 @@ public class ContentController extends BaseController
 				throw new SystemException("There exists no content with the path [" + path + "].");
 			else 
 			{
-			    getLogger().info("   CREATE " + name);
+			    logger.info("   CREATE " + name);
 				ContentVO contentVO = new ContentVO();
 				contentVO.setIsBranch(Boolean.TRUE);
 				contentVO.setCreatorName(creator.getName());

@@ -124,7 +124,7 @@ public class SiteNodeVersionController extends BaseController
 		}
 		catch(Exception e)
 		{
-			getLogger().error("An error occurred so we should not completes the transaction:" + e, e);
+			logger.error("An error occurred so we should not completes the transaction:" + e, e);
 			throw new SystemException(e.getMessage());
 		}
     }        
@@ -249,7 +249,7 @@ public class SiteNodeVersionController extends BaseController
         }
         catch(Exception e)
         {
-            getLogger().error("An error occurred so we should not completes the transaction:" + e, e);
+            logger.error("An error occurred so we should not completes the transaction:" + e, e);
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
@@ -286,7 +286,7 @@ public class SiteNodeVersionController extends BaseController
 	    if(siteNodeVersion != null)
 	    	siteNodeVersionVO = siteNodeVersion.getValueObject();
 	    else
-	    	getLogger().warn("The siteNode " + siteNodeId + " did not have a latest active siteNodeVersion - very strange.");
+	    	logger.warn("The siteNode " + siteNodeId + " did not have a latest active siteNodeVersion - very strange.");
 	    
 		return siteNodeVersionVO;
     }
@@ -310,7 +310,7 @@ public class SiteNodeVersionController extends BaseController
 			if (results.hasMore()) 
             {
             	SiteNodeVersion siteNodeVersion = (SiteNodeVersion)results.next();
-            	getLogger().info("found one:" + siteNodeVersion.getValueObject());
+            	logger.info("found one:" + siteNodeVersion.getValueObject());
             	siteNodeVersionVO = siteNodeVersion.getValueObject();
             }
             
@@ -321,7 +321,7 @@ public class SiteNodeVersionController extends BaseController
         }
         catch(Exception e)
         {
-            getLogger().error("An error occurred so we should not completes the transaction:" + e, e);
+            logger.error("An error occurred so we should not completes the transaction:" + e, e);
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
@@ -342,7 +342,7 @@ public class SiteNodeVersionController extends BaseController
 		if (results.hasMore()) 
         {
         	SiteNodeVersion siteNodeVersion = (SiteNodeVersion)results.next();
-        	getLogger().info("found one:" + siteNodeVersion.getValueObject());
+        	logger.info("found one:" + siteNodeVersion.getValueObject());
         	siteNodeVersionVO = siteNodeVersion.getValueObject();
         }
     	
@@ -372,7 +372,7 @@ public class SiteNodeVersionController extends BaseController
 			    results = oql.execute(Database.ReadOnly);
 			else
 			{
-				this.getLogger().info("Fetching entity in read/write mode");
+				this.logger.info("Fetching entity in read/write mode");
 				results = oql.execute();
 			}
 			
@@ -386,7 +386,7 @@ public class SiteNodeVersionController extends BaseController
 		}
 		catch(Exception e)
 		{
-			getLogger().error("An error occurred so we should not completes the transaction:" + e, e);
+			logger.error("An error occurred so we should not completes the transaction:" + e, e);
 			throw new SystemException(e.getMessage());
 		}
     	
@@ -815,7 +815,7 @@ public class SiteNodeVersionController extends BaseController
         }
         catch(Exception e)
         {
-            getLogger().error("An error occurred so we should not completes the transaction:" + e, e);
+            logger.error("An error occurred so we should not completes the transaction:" + e, e);
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
@@ -862,7 +862,7 @@ public class SiteNodeVersionController extends BaseController
         }
         catch(Exception e)
         {
-            getLogger().error("An error occurred so we should not completes the transaction:" + e, e);
+            logger.error("An error occurred so we should not completes the transaction:" + e, e);
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
@@ -1011,7 +1011,7 @@ public class SiteNodeVersionController extends BaseController
         }
         catch(Exception e)
         {
-            getLogger().error("An error occurred so we should not completes the transaction:" + e, e);
+            logger.error("An error occurred so we should not completes the transaction:" + e, e);
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
@@ -1124,7 +1124,7 @@ public class SiteNodeVersionController extends BaseController
         }
         catch(Exception e)
         {
-            getLogger().error("An error occurred so we should not completes the transaction:" + e, e);
+            logger.error("An error occurred so we should not completes the transaction:" + e, e);
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }

@@ -29,6 +29,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.content.ContentVersion;
@@ -47,6 +48,7 @@ import org.infoglue.deliver.util.CacheController;
 
 public class ComponentController extends BaseController
 {
+    private final static Logger logger = Logger.getLogger(ComponentController.class.getName());
 
     /**
 	 * Factory method
@@ -111,7 +113,7 @@ public class ComponentController extends BaseController
 	    List components = (List)CacheController.getCachedObject("componentContentsCache", componentsKey);
 		if(components != null)
 		{
-			getLogger().info("There was cached components:" + components.size());
+			logger.info("There was cached components:" + components.size());
 		}
 		else
 		{

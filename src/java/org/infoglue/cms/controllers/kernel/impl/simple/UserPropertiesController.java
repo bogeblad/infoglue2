@@ -29,6 +29,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.apache.xerces.parsers.DOMParser;
 import org.exolab.castor.jdo.Database;
 import org.exolab.castor.jdo.OQLQuery;
@@ -61,7 +62,8 @@ import org.xml.sax.InputSource;
 
 public class UserPropertiesController extends BaseController
 {
-	
+    private final static Logger logger = Logger.getLogger(UserPropertiesController.class.getName());
+
 	/**
 	 * Factory method
 	 */
@@ -106,7 +108,7 @@ public class UserPropertiesController extends BaseController
 		}
 		catch(Exception e)
 		{
-			getLogger().error("An error occurred so we should not completes the transaction:" + e, e);
+			logger.error("An error occurred so we should not completes the transaction:" + e, e);
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}
@@ -154,7 +156,7 @@ public class UserPropertiesController extends BaseController
 			}
 			else
 			{
-				getLogger().info("Creating the entity because there was no version at all for: " + contentTypeDefinitionId + " " + languageId);
+				logger.info("Creating the entity because there was no version at all for: " + contentTypeDefinitionId + " " + languageId);
 				realUserPropertiesVO = create(languageId, contentTypeDefinitionId, userPropertiesVO);
 			}
 		}
@@ -184,13 +186,13 @@ public class UserPropertiesController extends BaseController
 		}
 		catch(ConstraintException ce)
 		{
-			getLogger().warn("An error occurred so we should not complete the transaction:" + ce, ce);
+			logger.warn("An error occurred so we should not complete the transaction:" + ce, ce);
 			rollbackTransaction(db);
 			throw ce;
 		}
 		catch(Exception e)
 		{
-			getLogger().error("An error occurred so we should not complete the transaction:" + e, e);
+			logger.error("An error occurred so we should not complete the transaction:" + e, e);
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}
@@ -242,13 +244,13 @@ public class UserPropertiesController extends BaseController
 		}
 		catch(ConstraintException ce)
 		{
-			getLogger().warn("An error occurred so we should not complete the transaction:" + ce, ce);
+			logger.warn("An error occurred so we should not complete the transaction:" + ce, ce);
 			rollbackTransaction(db);
 			throw ce;
 		}
 		catch(Exception e)
 		{
-			getLogger().error("An error occurred so we should not complete the transaction:" + e, e);
+			logger.error("An error occurred so we should not complete the transaction:" + e, e);
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}
@@ -276,7 +278,7 @@ public class UserPropertiesController extends BaseController
 		}
 		else
 		{
-		    getLogger().info("Fetching entity in read/write mode:" + userName);
+		    logger.info("Fetching entity in read/write mode:" + userName);
 		    results = oql.execute();
 		}
 		
@@ -322,13 +324,13 @@ public class UserPropertiesController extends BaseController
 		}
 		catch(ConstraintException ce)
 		{
-			getLogger().warn("An error occurred so we should not complete the transaction:" + ce, ce);
+			logger.warn("An error occurred so we should not complete the transaction:" + ce, ce);
 			rollbackTransaction(db);
 			throw ce;
 		}
 		catch(Exception e)
 		{
-			getLogger().error("An error occurred so we should not complete the transaction:" + e, e);
+			logger.error("An error occurred so we should not complete the transaction:" + e, e);
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}
@@ -348,7 +350,7 @@ public class UserPropertiesController extends BaseController
 		oql.bind(userName);
 
 		QueryResults results = oql.execute();
-		getLogger().info("Fetching entity in read/write mode:" + userName);
+		logger.info("Fetching entity in read/write mode:" + userName);
 
 		while (results.hasMore()) 
 		{
@@ -401,13 +403,13 @@ public class UserPropertiesController extends BaseController
 		}
 		catch(ConstraintException ce)
 		{
-			getLogger().warn("An error occurred so we should not complete the transaction:" + ce, ce);
+			logger.warn("An error occurred so we should not complete the transaction:" + ce, ce);
 			rollbackTransaction(db);
 			throw ce;
 		}
 		catch(Exception e)
 		{
-			getLogger().error("An error occurred so we should not complete the transaction:" + e, e);
+			logger.error("An error occurred so we should not complete the transaction:" + e, e);
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}
@@ -426,9 +428,9 @@ public class UserPropertiesController extends BaseController
 		{
 			try
 			{
-				getLogger().info("attributeName:"  + attributeName);
-				getLogger().info("versionValue:"   + userPropertiesVO.getValue());
-				getLogger().info("attributeValue:" + attributeValue);
+				logger.info("attributeName:"  + attributeName);
+				logger.info("versionValue:"   + userPropertiesVO.getValue());
+				logger.info("attributeValue:" + attributeValue);
 				InputSource inputSource = new InputSource(new StringReader(userPropertiesVO.getValue()));
 				
 				DOMParser parser = new DOMParser();
@@ -471,7 +473,7 @@ public class UserPropertiesController extends BaseController
 				
 				StringBuffer sb = new StringBuffer();
 				org.infoglue.cms.util.XMLHelper.serializeDom(document.getDocumentElement(), sb);
-				getLogger().info("sb:" + sb);
+				logger.info("sb:" + sb);
 				userPropertiesVO.setValue(sb.toString());
 				update(userPropertiesVO.getLanguageId(), userPropertiesVO.getContentTypeDefinitionId(), userPropertiesVO);
 			}
@@ -497,8 +499,8 @@ public class UserPropertiesController extends BaseController
 		{	
 			try
 			{
-				getLogger().info("attributeName:" + attributeName);
-				getLogger().info("VersionValue:"  + userPropertiesVO.getValue());
+				logger.info("attributeName:" + attributeName);
+				logger.info("VersionValue:"  + userPropertiesVO.getValue());
 				InputSource inputSource = new InputSource(new StringReader(userPropertiesVO.getValue()));
 				
 				DOMParser parser = new DOMParser();
@@ -517,7 +519,7 @@ public class UserPropertiesController extends BaseController
 						if(n.getFirstChild() != null && n.getFirstChild().getNodeValue() != null)
 						{
 							value = n.getFirstChild().getNodeValue();
-							getLogger().info("Getting value: " + value);
+							logger.info("Getting value: " + value);
 							if(value != null && escapeHTML)
 								value = new VisualFormatter().escapeHTML(value);
 							break;
@@ -530,7 +532,7 @@ public class UserPropertiesController extends BaseController
 				e.printStackTrace();
 			}
 		}
-		//getLogger().info("value:" + value);	
+		//logger.info("value:" + value);	
 		return value;
 	}
 	
@@ -560,7 +562,7 @@ public class UserPropertiesController extends BaseController
         }
         catch(Exception e)
         {
-            getLogger().info("An error occurred when we tried to fetch the list of digitalAssets belonging to this userProperties:" + e);
+            logger.info("An error occurred when we tried to fetch the list of digitalAssets belonging to this userProperties:" + e);
             e.printStackTrace();
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());

@@ -67,7 +67,7 @@ public class SiteNodeControllerProxy extends SiteNodeController
 		while(interceptorsIterator.hasNext())
 		{
 			InterceptorVO interceptorVO = (InterceptorVO)interceptorsIterator.next();
-			getLogger().info("Adding interceptorVO:" + interceptorVO.getName());
+			logger.info("Adding interceptorVO:" + interceptorVO.getName());
 			try
 			{
 				InfoGlueInterceptor infoGlueInterceptor = (InfoGlueInterceptor)Class.forName(interceptorVO.getClassName()).newInstance();
@@ -75,7 +75,7 @@ public class SiteNodeControllerProxy extends SiteNodeController
 			}
 			catch(ClassNotFoundException e)
 			{
-				getLogger().warn("The interceptor " + interceptorVO.getClassName() + "was not found: " + e.getMessage(), e);
+				logger.warn("The interceptor " + interceptorVO.getClassName() + "was not found: " + e.getMessage(), e);
 			}
 		}
 
@@ -91,7 +91,7 @@ public class SiteNodeControllerProxy extends SiteNodeController
 		while(interceptorsIterator.hasNext())
 		{
 			InterceptorVO interceptorVO = (InterceptorVO)interceptorsIterator.next();
-			getLogger().info("Adding interceptorVO:" + interceptorVO.getName());
+			logger.info("Adding interceptorVO:" + interceptorVO.getName());
 			try
 			{
 				InfoGlueInterceptor infoGlueInterceptor = (InfoGlueInterceptor)Class.forName(interceptorVO.getClassName()).newInstance();
@@ -99,7 +99,7 @@ public class SiteNodeControllerProxy extends SiteNodeController
 			}
 			catch(ClassNotFoundException e)
 			{
-				getLogger().warn("The interceptor " + interceptorVO.getClassName() + "was not found: " + e.getMessage(), e);
+				logger.warn("The interceptor " + interceptorVO.getClassName() + "was not found: " + e.getMessage(), e);
 			}
 		}
 

@@ -32,6 +32,7 @@ import java.util.Map;
 
 import javax.xml.transform.TransformerException;
 
+import org.apache.log4j.Logger;
 import org.apache.xerces.parsers.DOMParser;
 import org.apache.xpath.XPathAPI;
 import org.exolab.castor.jdo.Database;
@@ -51,8 +52,8 @@ import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
-import org.infoglue.deliver.util.CacheController;
 import org.infoglue.deliver.util.NullObject;
+import org.infoglue.deliver.util.CacheController;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
@@ -70,6 +71,8 @@ import org.xml.sax.InputSource;
  */
 public class ContentTypeDefinitionController extends BaseController
 {
+    private final static Logger logger = Logger.getLogger(ContentTypeDefinitionController.class.getName());
+
 	public static final String ASSET_KEYS = "assetKeys";
 	public static final String CATEGORY_KEYS = "categoryKeys";
 
@@ -108,11 +111,11 @@ public class ContentTypeDefinitionController extends BaseController
     public List getContentTypeDefinitionVOList() throws SystemException, Bug
     {
 		String key = "contentTypeDefinitionVOList";
-		getLogger().info("key:" + key);
+		logger.info("key:" + key);
 		List cachedContentTypeDefinitionVOList = (List)CacheController.getCachedObject("contentTypeDefinitionCache", key);
 		if(cachedContentTypeDefinitionVOList != null)
 		{
-			getLogger().info("There was an cached contentTypeDefinitionVOList:" + cachedContentTypeDefinitionVOList.size());
+			logger.info("There was an cached contentTypeDefinitionVOList:" + cachedContentTypeDefinitionVOList.size());
 			return cachedContentTypeDefinitionVOList;
 		}
 
@@ -160,7 +163,7 @@ public class ContentTypeDefinitionController extends BaseController
     
 	public boolean getIsAccessApproved(Integer contentTypeDefinitionId, InfoGluePrincipal infoGluePrincipal) throws SystemException
 	{
-		getLogger().info("getIsAccessApproved for " + contentTypeDefinitionId + " AND " + infoGluePrincipal);
+		logger.info("getIsAccessApproved for " + contentTypeDefinitionId + " AND " + infoGluePrincipal);
 		boolean hasAccess = false;
     	
 		Database db = CastorDatabaseService.getDatabase();
@@ -175,7 +178,7 @@ public class ContentTypeDefinitionController extends BaseController
 		}
 		catch(Exception e)
 		{
-			getLogger().error("An error occurred so we should not complete the transaction:" + e, e);
+			logger.error("An error occurred so we should not complete the transaction:" + e, e);
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}
@@ -210,7 +213,7 @@ public class ContentTypeDefinitionController extends BaseController
 		}
 		catch (Exception e)
 		{
-			getLogger().info("An error occurred so we should not complete the transaction:" + e);
+			logger.info("An error occurred so we should not complete the transaction:" + e);
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}
@@ -237,7 +240,7 @@ public class ContentTypeDefinitionController extends BaseController
 			OQLQuery oql = db.getOQLQuery("SELECT f FROM org.infoglue.cms.entities.management.impl.simple.ContentTypeDefinitionImpl f WHERE f.name = $1");
 			oql.bind(name);
 
-	    	this.getLogger().info("Fetching entity in read/write mode" + name);
+	    	this.logger.info("Fetching entity in read/write mode" + name);
 			
 	    	QueryResults results = oql.execute();
 			if (results.hasMore())
@@ -270,15 +273,15 @@ public class ContentTypeDefinitionController extends BaseController
 	public ContentTypeDefinitionVO getContentTypeDefinitionVOWithName(String name, Database db) throws SystemException, Bug
 	{
 		String key = "" + name;
-		getLogger().info("key:" + key);
+		logger.info("key:" + key);
 		ContentTypeDefinitionVO contentTypeDefinitionVO = (ContentTypeDefinitionVO)CacheController.getCachedObject("contentTypeDefinitionCache", key);
 		if(contentTypeDefinitionVO != null)
 		{
-			getLogger().info("There was an cached contentTypeDefinitionVO:" + contentTypeDefinitionVO);
+			logger.info("There was an cached contentTypeDefinitionVO:" + contentTypeDefinitionVO);
 		}
 		else
 		{
-			getLogger().info("Refetching contentTypeDefinitionVO:" + contentTypeDefinitionVO);
+			logger.info("Refetching contentTypeDefinitionVO:" + contentTypeDefinitionVO);
 
 			try
 			{
@@ -322,7 +325,7 @@ public class ContentTypeDefinitionController extends BaseController
 		}
 		catch (Exception e)
 		{
-			getLogger().info("An error occurred so we should not complete the transaction:" + e);
+			logger.info("An error occurred so we should not complete the transaction:" + e);
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}
@@ -425,7 +428,7 @@ public class ContentTypeDefinitionController extends BaseController
 		{
 		    Node ichild = nodes.item(i);
 		    
-		    getLogger().info("ichild:" + ichild.getNodeName() + ":" + ichild.getNodeValue());
+		    logger.info("ichild:" + ichild.getNodeName() + ":" + ichild.getNodeValue());
 			
 			try
 			{
@@ -457,7 +460,7 @@ public class ContentTypeDefinitionController extends BaseController
 				assetKeyDefinition.setImageWidth(imageWidthValue);
 				assetKeyDefinition.setImageHeight(imageHeightValue);
 				
-				getLogger().info("Adding assetKeyDefinition " + assetKeyDefinition.getAssetKey());
+				logger.info("Adding assetKeyDefinition " + assetKeyDefinition.getAssetKey());
 				keys.add(assetKeyDefinition);
 			}
 			catch(Exception e)
@@ -466,7 +469,7 @@ public class ContentTypeDefinitionController extends BaseController
 			}
 		}
 		
-		getLogger().info("keys:" + keys.size());
+		logger.info("keys:" + keys.size());
 		
 		return keys;
 	}
@@ -526,7 +529,7 @@ public class ContentTypeDefinitionController extends BaseController
         }
         catch(Exception e)
         {
-        	getLogger().warn("An error occurred when trying to fetch the asset keys:" + e.getMessage(), e);
+        	logger.warn("An error occurred when trying to fetch the asset keys:" + e.getMessage(), e);
         }
 
 		return EMPTY_NODELIST;
@@ -571,7 +574,7 @@ public class ContentTypeDefinitionController extends BaseController
 			else
 				attributes = (List)attributesCandidate;
 				
-			//getLogger().info("Returning cached attributes for key " + key + "-" + attributes);
+			//logger.info("Returning cached attributes for key " + key + "-" + attributes);
 		}
 		else
 		{
@@ -686,7 +689,7 @@ public class ContentTypeDefinitionController extends BaseController
 			}
 			catch(Exception e)
 			{
-				getLogger().error("An error occurred when we tried to get the attributes of the content type: " + e.getMessage(), e);
+				logger.error("An error occurred when we tried to get the attributes of the content type: " + e.getMessage(), e);
 			}
 		}
 

@@ -32,6 +32,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.entities.mydesktop.WorkflowActionVO;
@@ -52,6 +53,8 @@ import com.opensymphony.workflow.WorkflowException;
  */
 public class WorkflowController extends BaseController
 {
+    private final static Logger logger = Logger.getLogger(UserPropertiesController.class.getName());
+
 	private static final WorkflowController controller = new WorkflowController();
 
 	/**
@@ -133,7 +136,7 @@ public class WorkflowController extends BaseController
 	    	return true;
 	    }
 	    	
-		getLogger().info("getIsAccessApproved for " + workflowName + " AND " + infoGluePrincipal);
+		logger.info("getIsAccessApproved for " + workflowName + " AND " + infoGluePrincipal);
 		boolean hasAccess = false;
     	
 		Database db = CastorDatabaseService.getDatabase();
@@ -146,7 +149,7 @@ public class WorkflowController extends BaseController
 		}
 		catch(Exception e)
 		{
-			getLogger().error("An error occurred so we should not complete the transaction:" + e, e);
+			logger.error("An error occurred so we should not complete the transaction:" + e, e);
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}
@@ -211,8 +214,8 @@ public class WorkflowController extends BaseController
 	 */
 	public Map getProperties(InfoGluePrincipal userPrincipal, long workflowId)
 	{
-		getLogger().info("userPrincipal:" + userPrincipal);
-		getLogger().info("workflowId:" + workflowId);
+		logger.info("userPrincipal:" + userPrincipal);
+		logger.info("workflowId:" + workflowId);
 
 		PropertySet propertySet = getPropertySet(userPrincipal, workflowId);
 		Map parameters = new HashMap();

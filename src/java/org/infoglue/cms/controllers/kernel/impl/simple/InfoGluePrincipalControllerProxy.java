@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import org.apache.log4j.Logger;
 import org.dom4j.Document;
 import org.dom4j.Node;
 import org.exolab.castor.jdo.Database;
@@ -61,6 +62,7 @@ import org.infoglue.deliver.util.NullObject;
 
 public class InfoGluePrincipalControllerProxy extends BaseController 
 {
+    private final static Logger logger = Logger.getLogger(InfoGluePrincipalControllerProxy.class.getName());
 
 	public static InfoGluePrincipalControllerProxy getController()
 	{
@@ -115,7 +117,7 @@ public class InfoGluePrincipalControllerProxy extends BaseController
         }
         catch(Exception e)
         {
-        	getLogger().error("An error occurred so we should not completes the transaction:" + e, e);
+        	logger.error("An error occurred so we should not completes the transaction:" + e, e);
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }		
@@ -133,17 +135,17 @@ public class InfoGluePrincipalControllerProxy extends BaseController
 	public String getPrincipalPropertyValue(Database db, InfoGluePrincipal infoGluePrincipal, String propertyName, Integer languageId, Integer siteNodeId, boolean useLanguageFallback, boolean escapeSpecialCharacters, boolean findLargestValue) throws Exception
 	{
 		String key = "" + infoGluePrincipal.getName() + "_" + propertyName + "_" + languageId + "_" + siteNodeId + "_" + useLanguageFallback + "_" + escapeSpecialCharacters + "_" + findLargestValue;
-		getLogger().info("key:" + key);
+		logger.info("key:" + key);
 		Object object = (String)CacheController.getCachedObject("principalPropertyValueCache", key);
 
 	    if(object instanceof NullObject)
 		{
-			getLogger().info("There was an cached property but it was null:" + object);
+			logger.info("There was an cached property but it was null:" + object);
 			return null;
 		}
 		else if(object != null)
 		{
-			getLogger().info("There was an cached principalPropertyValue:" + object);
+			logger.info("There was an cached principalPropertyValue:" + object);
 			return (String)object;
 		}
 
@@ -168,7 +170,7 @@ public class InfoGluePrincipalControllerProxy extends BaseController
 				if(node != null)
 				{
 					value = node.getStringValue();
-					getLogger().info("Getting value: " + value);
+					logger.info("Getting value: " + value);
 					if(value != null && escapeSpecialCharacters)
 						value = new VisualFormatter().escapeHTML(value);
 					break;
@@ -202,7 +204,7 @@ public class InfoGluePrincipalControllerProxy extends BaseController
 						if(node != null)
 						{
 							value = node.getStringValue();
-							getLogger().info("Getting value: " + value);
+							logger.info("Getting value: " + value);
 							if(value != null && escapeSpecialCharacters)
 								value = new VisualFormatter().escapeHTML(value);
 							
@@ -252,7 +254,7 @@ public class InfoGluePrincipalControllerProxy extends BaseController
 						if(node != null)
 						{
 							value = node.getStringValue();
-							getLogger().info("Getting value: " + value);
+							logger.info("Getting value: " + value);
 							if(value != null && escapeSpecialCharacters)
 								value = new VisualFormatter().escapeHTML(value);
 							
