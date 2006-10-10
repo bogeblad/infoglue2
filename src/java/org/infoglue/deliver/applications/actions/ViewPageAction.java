@@ -205,8 +205,17 @@ public class ViewPageAction extends InfoGlueAbstractAction
 	    	boolean isUserRedirected = false;
 			Integer protectedSiteNodeVersionId = this.nodeDeliveryController.getProtectedSiteNodeVersionIdForPageCache(dbWrapper.getDatabase(), siteNodeId);
 			logger.info("protectedSiteNodeVersionId:" + protectedSiteNodeVersionId);
-			if(protectedSiteNodeVersionId != null)
-				isUserRedirected = handleExtranetLogic(dbWrapper.getDatabase(), protectedSiteNodeVersionId);
+			String protectWorking = CmsPropertyHandler.getProtectDeliverWorking();
+			String protectPreview = CmsPropertyHandler.getProtectDeliverPreview();
+			boolean protectDeliver = false;
+
+			if(protectWorking.equals("true") && !CmsPropertyHandler.getOperatingMode().equals("0"))
+				protectDeliver = true;
+			else if(protectPreview.equals("true") && !CmsPropertyHandler.getOperatingMode().equals("2"))
+				protectDeliver = true;
+				
+			if(protectedSiteNodeVersionId != null || protectDeliver)
+				isUserRedirected = handleExtranetLogic(dbWrapper.getDatabase(), protectedSiteNodeVersionId, protectDeliver);
 		
 			this.templateController = getTemplateController(dbWrapper, getSiteNodeId(), getLanguageId(), getContentId(), getRequest(), (InfoGluePrincipal)this.principal, false);
 			
@@ -231,7 +240,6 @@ public class ViewPageAction extends InfoGlueAbstractAction
 	            if (actionExecuted) 
 	            {
 	                logger.info("---> PortletAction was executed, returning NONE as a redirect has been issued");
-	                logger.info("No statistics have been run for this request");
 	                isUserRedirected = true;
 	                return NONE;
 	            }
@@ -328,6 +336,9 @@ public class ViewPageAction extends InfoGlueAbstractAction
          
 	public String doRenderDecoratedPage() throws Exception
 	{
+		if(CmsPropertyHandler.getOperatingMode().equals("3"))
+			return doExecute();
+				
         while(!CmsPropertyHandler.getOperatingMode().equals("3") && RequestAnalyser.getRequestAnalyser().getBlockRequests())
         {
         	//System.out.println("Queing up requests as cache eviction are taking place..");
@@ -370,8 +381,18 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			boolean isUserRedirected = false;
 			Integer protectedSiteNodeVersionId = this.nodeDeliveryController.getProtectedSiteNodeVersionId(dbWrapper.getDatabase(), siteNodeId);
 			logger.info("protectedSiteNodeVersionId:" + protectedSiteNodeVersionId);
-			if(protectedSiteNodeVersionId != null)
-				isUserRedirected = handleExtranetLogic(dbWrapper.getDatabase(), protectedSiteNodeVersionId);
+
+			String protectWorking = CmsPropertyHandler.getProtectDeliverWorking();
+			String protectPreview = CmsPropertyHandler.getProtectDeliverPreview();
+			boolean protectDeliver = false;
+
+			if(protectWorking.equals("true") && !CmsPropertyHandler.getOperatingMode().equals("0"))
+				protectDeliver = true;
+			else if(protectPreview.equals("true") && !CmsPropertyHandler.getOperatingMode().equals("2"))
+				protectDeliver = true;
+				
+			if(protectedSiteNodeVersionId != null || protectDeliver)
+				isUserRedirected = handleExtranetLogic(dbWrapper.getDatabase(), protectedSiteNodeVersionId, protectDeliver);
 			
 			this.templateController = getTemplateController(dbWrapper, getSiteNodeId(), getLanguageId(), getContentId(), getRequest(), (InfoGluePrincipal)this.principal, true);
 
@@ -396,7 +417,6 @@ public class ViewPageAction extends InfoGlueAbstractAction
 	            if (actionExecuted) 
 	            {
 	                logger.info("---> PortletAction was executed, returning NONE as a redirect has been issued");
-	                logger.info("No statistics have been run for this request");
 	                isUserRedirected = true;
 	                return NONE;
 	            }
@@ -682,9 +702,9 @@ public class ViewPageAction extends InfoGlueAbstractAction
 	 * validates the users credentials against the extranet database,
 	 */
 	
-	public boolean handleExtranetLogic(Database db, Integer protectedSiteNodeVersionId) throws SystemException, Exception
+	public boolean handleExtranetLogic(Database db, Integer protectedSiteNodeVersionId, boolean protectDeliver) throws SystemException, Exception
 	{
-	   boolean isRedirected = false;
+		boolean isRedirected = false;
 		
 		try
 		{
@@ -722,8 +742,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			    }
 			}
 		
-			
-			if(principal == null)
+			if(principal == null && !protectDeliver)
 			{
 				Principal anonymousPrincipal = getAnonymousPrincipal();
 				boolean isAuthorized = AccessRightController.getController().getIsPrincipalAuthorized(db, (InfoGluePrincipal)anonymousPrincipal, "SiteNodeVersion.Read", protectedSiteNodeVersionId.toString());
@@ -775,7 +794,10 @@ public class ViewPageAction extends InfoGlueAbstractAction
 						    this.getHttpSession().setAttribute("infogluePrincipal", principal);
 							this.getHttpSession().setAttribute("infoglueRemoteUser", principal.getName());
 							
-							boolean isAuthorized = AccessRightController.getController().getIsPrincipalAuthorized(db, (InfoGluePrincipal)principal, "SiteNodeVersion.Read", protectedSiteNodeVersionId.toString());
+							boolean isAuthorized = false;
+							if(!protectDeliver)
+								isAuthorized = AccessRightController.getController().getIsPrincipalAuthorized(db, (InfoGluePrincipal)principal, "SiteNodeVersion.Read", protectedSiteNodeVersionId.toString());
+							
 							if(!isAuthorized)
 							{	
 								this.getHttpSession().removeAttribute("infogluePrincipal");
@@ -794,7 +816,12 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			    }
 				else
 				{
-					boolean isAuthorized = AccessRightController.getController().getIsPrincipalAuthorized(db, (InfoGluePrincipal)principal, "SiteNodeVersion.Read", protectedSiteNodeVersionId.toString());
+					boolean isAuthorized = false;
+					if(protectDeliver && protectedSiteNodeVersionId == null && !principal.getName().equals(CmsPropertyHandler.getAnonymousUser()))
+						isAuthorized = true;
+					else if(!protectDeliver)
+						isAuthorized = AccessRightController.getController().getIsPrincipalAuthorized(db, (InfoGluePrincipal)principal, "SiteNodeVersion.Read", protectedSiteNodeVersionId.toString());
+					
 					if(!isAuthorized)
 					{	
 						if(this.referer == null)
@@ -917,13 +944,16 @@ public class ViewPageAction extends InfoGlueAbstractAction
 	        String userName = null;
 		    String password = null;
 		    Cookie[] cookies = this.getRequest().getCookies();
-		    for(int i=0; i<cookies.length; i++)
+		    if(cookies != null)
 		    {
-		        Cookie cookie = cookies[i];
-		        if(cookie.getName().equals("igextranetuserid"))
-		            userName = cookie.getValue();
-		        else if(cookie.getName().equals("igextranetpassword"))
-		            password = cookie.getValue();
+			    for(int i=0; i<cookies.length; i++)
+			    {
+			        Cookie cookie = cookies[i];
+			        if(cookie.getName().equals("igextranetuserid"))
+			            userName = cookie.getValue();
+			        else if(cookie.getName().equals("igextranetpassword"))
+			            password = cookie.getValue();
+			    }
 		    }
 		    
 		    if(userName != null && password != null)

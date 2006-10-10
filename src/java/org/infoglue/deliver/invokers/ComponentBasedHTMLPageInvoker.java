@@ -737,8 +737,9 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 			Document document = null;
 			if(componentsCandidate == null)
 			{
-				System.out.println("Parsing dom document..." + key);
+				//System.out.println("Parsing dom document..." + key);
 				document = new DOMBuilder().getDocument(componentXML);
+				//TODO - could be enabled perhaps....
 				//CacheController.cacheObjectInAdvancedCache("componentPropertyCache", key, document, new String[]{}, false);
 			}
 			else

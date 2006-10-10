@@ -1595,24 +1595,24 @@ public class NodeDeliveryController extends BaseDeliveryController
     		repositoryPath = repositoryVO.getDnsName().substring(pathStartIndex + 5);
     	}
 
-    	logger.warn("repositoryPath:" + repositoryPath);    	
-    	logger.warn("path:" + path.length);    	
+    	logger.info("repositoryPath:" + repositoryPath);    	
+    	logger.info("path:" + path.length);    	
     	
     	if(repositoryPath != null && path.length > 0)
     	{
     		String[] repositoryPaths = repositoryPath.split("/");
     		String[] newPath = path;
     		
-    		logger.warn("repositoryPaths:" + repositoryPaths.length); 
-    		logger.warn("newPath:" + newPath.length); 
+    		logger.info("repositoryPaths:" + repositoryPaths.length); 
+    		logger.info("newPath:" + newPath.length); 
     		
     		for(int repPathIndex = 0; repPathIndex < repositoryPaths.length; repPathIndex++)
     		{
     			String repPath = repositoryPaths[repPathIndex];
-    	    	logger.warn("repPath:" + repPath);
+    	    	logger.info("repPath:" + repPath);
     	    	if(path.length > repPathIndex)
     	    	{
-    		    	logger.warn("path:" + path[repPathIndex]);
+    		    	logger.info("path:" + path[repPathIndex]);
     		    	if(path[repPathIndex].equals(repPath))
     		    	{
     		    		String[] tempNewPath = new String[newPath.length - 1];
@@ -1625,7 +1625,7 @@ public class NodeDeliveryController extends BaseDeliveryController
     		}
     		path = newPath;
     	}
-	   	logger.warn("new path:" + path.length);
+	   	logger.info("new path:" + path.length);
 
         //logger.info("Idx = "+idx);
         for (int i = idx;i < path.length; i++) 
@@ -1677,24 +1677,24 @@ public class NodeDeliveryController extends BaseDeliveryController
 	    		repositoryPath = repositoryVO.getDnsName().substring(pathStartIndex + 5);
 	    	}
 
-	    	logger.warn("repositoryPath:" + repositoryPath);    	
-	    	logger.warn("path:" + path.length);    	
+	    	logger.info("repositoryPath:" + repositoryPath);    	
+	    	logger.info("path:" + path.length);    	
 	    	
 	    	if(repositoryPath != null && path.length > 0)
 	    	{
 	    		String[] repositoryPaths = repositoryPath.split("/");
 	    		String[] newPath = path;
 	    		
-	    		logger.warn("repositoryPaths:" + repositoryPaths.length); 
-	    		logger.warn("newPath:" + newPath.length); 
+	    		logger.info("repositoryPaths:" + repositoryPaths.length); 
+	    		logger.info("newPath:" + newPath.length); 
 	    		
 	    		for(int repPathIndex = 0; repPathIndex < repositoryPaths.length; repPathIndex++)
 	    		{
 	    			String repPath = repositoryPaths[repPathIndex];
-	    	    	logger.warn("repPath:" + repPath);
+	    	    	logger.info("repPath:" + repPath);
 	    	    	if(path.length > repPathIndex)
 	    	    	{
-	    		    	logger.warn("path:" + path[repPathIndex]);
+	    		    	logger.info("path:" + path[repPathIndex]);
 	    		    	if(path[repPathIndex].equals(repPath))
 	    		    	{
 	    		    		String[] tempNewPath = new String[newPath.length - 1];
@@ -1707,7 +1707,7 @@ public class NodeDeliveryController extends BaseDeliveryController
 	    		}
 	    		path = newPath;
 	    	}
-		   	logger.warn("new path:" + path.length);
+		   	logger.info("new path:" + path.length);
 
 	        logger.info("numberOfPaths = "+numberOfPaths);
 	        for (int i = numberOfPaths;i < path.length; i++) 

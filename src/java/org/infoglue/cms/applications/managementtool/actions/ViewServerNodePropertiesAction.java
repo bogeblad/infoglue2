@@ -127,6 +127,7 @@ public class ViewServerNodePropertiesAction extends InfoGluePropertiesAbstractAc
 	    populate(ps, "allowedAdminIP");
 	    populate(ps, "pageKey");
 	    populate(ps, "cmsBaseUrl");
+	    populate(ps, "cmsFullBaseUrl");
 	    populate(ps, "componentEditorUrl");
 	    populate(ps, "componentRendererUrl");
 	    populate(ps, "componentRendererAction");
@@ -239,7 +240,9 @@ public class ViewServerNodePropertiesAction extends InfoGluePropertiesAbstractAc
 	    populate(ps, "dbScriptPath");
 	    populate(ps, "digitalAssetUploadPath");
 	    populate(ps, "inputCharacterEncoding");
-
+		populate(ps, "protectDeliverWorking");
+	    populate(ps, "protectDeliverPreview");
+	    
 		try 
 		{
 			CacheController.clearServerNodeProperty();

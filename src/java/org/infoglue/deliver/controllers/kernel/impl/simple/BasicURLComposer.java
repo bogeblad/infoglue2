@@ -185,7 +185,7 @@ public class BasicURLComposer extends URLComposer
     	    	{
     	    		repositoryPath = dnsName.substring(pathStartIndex + 5);
     	    	}
-    	    	logger.warn("repositoryPath in constructing new url:" + repositoryPath);    	
+    	    	logger.info("repositoryPath in constructing new url:" + repositoryPath);    	
 
     		    if(dnsName != null)
     		    {
@@ -226,7 +226,7 @@ public class BasicURLComposer extends URLComposer
     	    	{
     	    		repositoryPath = dnsName.substring(pathStartIndex + 5);
     	    	}
-    	    	logger.warn("repositoryPath in constructing new url:" + repositoryPath);    	
+    	    	logger.info("repositoryPath in constructing new url:" + repositoryPath);    	
     	    	
     		    if(repositoryPath != null)
     		    	context = context + "/" + repositoryPath;
