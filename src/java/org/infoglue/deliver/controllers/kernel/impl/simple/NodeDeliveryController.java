@@ -46,6 +46,7 @@ import org.infoglue.cms.entities.content.impl.simple.ContentImpl;
 import org.infoglue.cms.entities.management.AvailableServiceBinding;
 import org.infoglue.cms.entities.management.AvailableServiceBindingVO;
 import org.infoglue.cms.entities.management.LanguageVO;
+import org.infoglue.cms.entities.management.RepositoryVO;
 import org.infoglue.cms.entities.management.ServiceDefinitionVO;
 import org.infoglue.cms.entities.management.SiteNodeTypeDefinition;
 import org.infoglue.cms.entities.structure.Qualifyer;
@@ -1572,7 +1573,7 @@ public class NodeDeliveryController extends BaseDeliveryController
     }
 
 
-    public static Integer getSiteNodeIdFromPath(Database db, InfoGluePrincipal infogluePrincipal, Integer repositoryId, String[] path, String attributeName, Integer languageId, DeliveryContext deliveryContext) throws SystemException, Exception
+    public static Integer getSiteNodeIdFromPath(Database db, InfoGluePrincipal infogluePrincipal, RepositoryVO repositoryVO, String[] path, String attributeName, Integer languageId, DeliveryContext deliveryContext) throws SystemException, Exception
     {
         Integer siteNodeId = null;
         URIMapperCache uriCache = URIMapperCache.getInstance();
@@ -1581,31 +1582,71 @@ public class NodeDeliveryController extends BaseDeliveryController
         while (idx >= 0) 
         {
         	//logger.info("Looking for cache nodeName at index "+idx);
-            siteNodeId = uriCache.getCachedSiteNodeId(repositoryId, path, idx);
+            siteNodeId = uriCache.getCachedSiteNodeId(repositoryVO.getId(), path, idx);
             if (siteNodeId != null)
                 break;
             idx = idx - 1;
         }
+        
+        String repositoryPath = null;
+    	int pathStartIndex = repositoryVO.getDnsName().indexOf("path=");
+    	if(pathStartIndex != -1)
+    	{
+    		repositoryPath = repositoryVO.getDnsName().substring(pathStartIndex + 5);
+    	}
+
+    	logger.warn("repositoryPath:" + repositoryPath);    	
+    	logger.warn("path:" + path.length);    	
+    	
+    	if(repositoryPath != null && path.length > 0)
+    	{
+    		String[] repositoryPaths = repositoryPath.split("/");
+    		String[] newPath = path;
+    		
+    		logger.warn("repositoryPaths:" + repositoryPaths.length); 
+    		logger.warn("newPath:" + newPath.length); 
+    		
+    		for(int repPathIndex = 0; repPathIndex < repositoryPaths.length; repPathIndex++)
+    		{
+    			String repPath = repositoryPaths[repPathIndex];
+    	    	logger.warn("repPath:" + repPath);
+    	    	if(path.length > repPathIndex)
+    	    	{
+    		    	logger.warn("path:" + path[repPathIndex]);
+    		    	if(path[repPathIndex].equals(repPath))
+    		    	{
+    		    		String[] tempNewPath = new String[newPath.length - 1];
+    		    		for(int i=1; i<newPath.length; i++)
+    		    			tempNewPath[i-1] = newPath[i];
+    		    		
+    		    		newPath = tempNewPath;
+    		    	}    	    		
+    	    	}
+    		}
+    		path = newPath;
+    	}
+	   	logger.warn("new path:" + path.length);
+
         //logger.info("Idx = "+idx);
         for (int i = idx;i < path.length; i++) 
         {
             if (i < 0) 
             {
-                siteNodeId = NodeDeliveryController.getNodeDeliveryController(null, null, null).getSiteNodeId(db, infogluePrincipal, repositoryId, null, attributeName, null, languageId, deliveryContext);
+                siteNodeId = NodeDeliveryController.getNodeDeliveryController(null, null, null).getSiteNodeId(db, infogluePrincipal, repositoryVO.getId(), null, attributeName, null, languageId, deliveryContext);
             } 
             else 
             {
-                siteNodeId = NodeDeliveryController.getNodeDeliveryController(null, null, null).getSiteNodeId(db, infogluePrincipal, repositoryId, path[i], attributeName, siteNodeId, languageId, deliveryContext);
+                siteNodeId = NodeDeliveryController.getNodeDeliveryController(null, null, null).getSiteNodeId(db, infogluePrincipal, repositoryVO.getId(), path[i], attributeName, siteNodeId, languageId, deliveryContext);
             }
             
             if (siteNodeId != null)
-                uriCache.addCachedSiteNodeId(repositoryId, path, i+1, siteNodeId);
+                uriCache.addCachedSiteNodeId(repositoryVO.getId(), path, i+1, siteNodeId);
         }
 
         return siteNodeId;
     }
     
-    public static Integer getSiteNodeIdFromPath(InfoGluePrincipal infogluePrincipal, Integer repositoryId, String[] path, String attributeName, Integer languageId, DeliveryContext deliveryContext) throws SystemException, Exception
+    public static Integer getSiteNodeIdFromPath(InfoGluePrincipal infogluePrincipal, RepositoryVO repositoryVO, String[] path, String attributeName, Integer languageId, DeliveryContext deliveryContext) throws SystemException, Exception
     {
         Integer siteNodeId = null;
 
@@ -1621,29 +1662,69 @@ public class NodeDeliveryController extends BaseDeliveryController
 	        while (numberOfPaths >= 0) 
 	        {
 	        	//logger.info("Looking for cached nodeName at index "+idx);
-	            siteNodeId = uriCache.getCachedSiteNodeId(repositoryId, path, numberOfPaths);
+	            siteNodeId = uriCache.getCachedSiteNodeId(repositoryVO.getId(), path, numberOfPaths);
 
 	            if (siteNodeId != null)
 	                break;
 
 	            numberOfPaths = numberOfPaths - 1;
 	        }
+	        
+	        String repositoryPath = null;
+	    	int pathStartIndex = repositoryVO.getDnsName().indexOf("path=");
+	    	if(pathStartIndex != -1)
+	    	{
+	    		repositoryPath = repositoryVO.getDnsName().substring(pathStartIndex + 5);
+	    	}
+
+	    	logger.warn("repositoryPath:" + repositoryPath);    	
+	    	logger.warn("path:" + path.length);    	
+	    	
+	    	if(repositoryPath != null && path.length > 0)
+	    	{
+	    		String[] repositoryPaths = repositoryPath.split("/");
+	    		String[] newPath = path;
+	    		
+	    		logger.warn("repositoryPaths:" + repositoryPaths.length); 
+	    		logger.warn("newPath:" + newPath.length); 
+	    		
+	    		for(int repPathIndex = 0; repPathIndex < repositoryPaths.length; repPathIndex++)
+	    		{
+	    			String repPath = repositoryPaths[repPathIndex];
+	    	    	logger.warn("repPath:" + repPath);
+	    	    	if(path.length > repPathIndex)
+	    	    	{
+	    		    	logger.warn("path:" + path[repPathIndex]);
+	    		    	if(path[repPathIndex].equals(repPath))
+	    		    	{
+	    		    		String[] tempNewPath = new String[newPath.length - 1];
+	    		    		for(int i=1; i<newPath.length; i++)
+	    		    			tempNewPath[i-1] = newPath[i];
+	    		    		
+	    		    		newPath = tempNewPath;
+	    		    	}    	    		
+	    	    	}
+	    		}
+	    		path = newPath;
+	    	}
+		   	logger.warn("new path:" + path.length);
+
 	        logger.info("numberOfPaths = "+numberOfPaths);
 	        for (int i = numberOfPaths;i < path.length; i++) 
 	        {
 	            if (i < 0) 
 	            {
 	    	        logger.info("Getting root node");
-	                siteNodeId = NodeDeliveryController.getNodeDeliveryController(null, null, null).getSiteNodeId(db, infogluePrincipal, repositoryId, null, attributeName, null, languageId, deliveryContext);
+	                siteNodeId = NodeDeliveryController.getNodeDeliveryController(null, null, null).getSiteNodeId(db, infogluePrincipal, repositoryVO.getId(), null, attributeName, null, languageId, deliveryContext);
 	            } 
 	            else 
 	            {
 	    	        logger.info("Getting normal");
-	                siteNodeId = NodeDeliveryController.getNodeDeliveryController(null, null, null).getSiteNodeId(db, infogluePrincipal, repositoryId, path[i], attributeName, siteNodeId, languageId, deliveryContext);
+	                siteNodeId = NodeDeliveryController.getNodeDeliveryController(null, null, null).getSiteNodeId(db, infogluePrincipal, repositoryVO.getId(), path[i], attributeName, siteNodeId, languageId, deliveryContext);
 	            }
 	            
 	            if (siteNodeId != null)
-	                uriCache.addCachedSiteNodeId(repositoryId, path, i+1, siteNodeId);
+	                uriCache.addCachedSiteNodeId(repositoryVO.getId(), path, i+1, siteNodeId);
 	        }
 	     
 	        commitTransaction(db);

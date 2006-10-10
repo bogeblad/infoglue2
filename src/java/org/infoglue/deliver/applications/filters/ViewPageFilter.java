@@ -202,7 +202,7 @@ public class ViewPageFilter implements Filter
 		                {
 		                    RepositoryVO repositoryVO = (RepositoryVO)repositorVOListIterator.next();
 		                    logger.info("Getting node from:" + repositoryVO.getName());
-		                    siteNodeId = NodeDeliveryController.getSiteNodeIdFromPath(infoGluePrincipal, repositoryVO.getId(), nodeNames, attributeName, languageId, DeliveryContext.getDeliveryContext());
+		                    siteNodeId = NodeDeliveryController.getSiteNodeIdFromPath(db, infoGluePrincipal, repositoryVO, nodeNames, attributeName, languageId, DeliveryContext.getDeliveryContext());
 		                    if(siteNodeId != null)
 		                        break;
 		                }

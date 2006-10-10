@@ -52,7 +52,6 @@ public class BasicURLComposer extends URLComposer
     {
     }
 
-
     public String composeDigitalAssetUrl(String dnsName, String filename, DeliveryContext deliveryContext)
     {
         String disableEmptyUrls = CmsPropertyHandler.getDisableEmptyUrls();
@@ -87,8 +86,8 @@ public class BasicURLComposer extends URLComposer
 	        if (!digitalAssetPath.startsWith("/"))
 	        	digitalAssetPath = "/" + digitalAssetPath;
 	        
-	        //getLogger().info("servletContext:" + servletContext);
-	        //getLogger().info("digitalAssetPath:" + digitalAssetPath);
+	        //logger.info("servletContext:" + servletContext);
+	        //logger.info("digitalAssetPath:" + digitalAssetPath);
 	
 	        if(digitalAssetPath.indexOf(servletContext) == -1)
 	        	sb.append(servletContext);
@@ -97,7 +96,7 @@ public class BasicURLComposer extends URLComposer
 	     
 	        sb.append("/").append(filename);
 	        
-	        //getLogger().info("sb:" + sb);
+	        //logger.info("sb:" + sb);
 	        
 	        assetUrl = sb.toString();
         }
@@ -179,7 +178,15 @@ public class BasicURLComposer extends URLComposer
     		        keyword = "preview=";
     		    if(operatingMode.equalsIgnoreCase("3"))
     		        keyword = "live=";
-    		    
+
+    		    String repositoryPath = null;
+    	    	int pathStartIndex = dnsName.indexOf("path=");
+    	    	if(pathStartIndex != -1)
+    	    	{
+    	    		repositoryPath = dnsName.substring(pathStartIndex + 5);
+    	    	}
+    	    	logger.warn("repositoryPath in constructing new url:" + repositoryPath);    	
+
     		    if(dnsName != null)
     		    {
 	    		    int startIndex = dnsName.indexOf(keyword);
@@ -204,8 +211,25 @@ public class BasicURLComposer extends URLComposer
 	    		    }
     		    }
     		    
-    		    context = dnsName + context;
+    		    if(repositoryPath != null)
+    		    	context = dnsName + context + "/" + repositoryPath;
+    		    else
+        		    context = dnsName + "/" + context;
+    		}
+    		else
+    		{
+    		    String dnsName = siteNode.getRepository().getDnsName();
 
+    		    String repositoryPath = null;
+    	    	int pathStartIndex = dnsName.indexOf("path=");
+    	    	if(pathStartIndex != -1)
+    	    	{
+    	    		repositoryPath = dnsName.substring(pathStartIndex + 5);
+    	    	}
+    	    	logger.warn("repositoryPath in constructing new url:" + repositoryPath);    	
+    	    	
+    		    if(repositoryPath != null)
+    		    	context = context + "/" + repositoryPath;
     		}
 
             StringBuffer sb = new StringBuffer(256);
