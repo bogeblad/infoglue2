@@ -29,8 +29,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.Logger;
 import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
@@ -39,6 +37,7 @@ import org.infoglue.cms.controllers.kernel.impl.simple.ContentControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.EventController;
+import org.infoglue.cms.controllers.kernel.impl.simple.InfoGlueSettingsController;
 import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
 import org.infoglue.cms.controllers.kernel.impl.simple.RegistryController;
 import org.infoglue.cms.controllers.kernel.impl.simple.RepositoryLanguageController;
@@ -100,10 +99,7 @@ public class ViewContentAction extends InfoGlueAbstractAction
         
         if(this.getIsBranch().booleanValue())
 		{
-			Map args = new HashMap();
-		    args.put("globalKey", "infoglue");
-		    PropertySet ps = PropertySetManager.getInstance("jdbc", args);
-		    this.defaultFolderContentTypeName = ps.getString("repository_" + this.getRepositoryId() + "_defaultFolderContentTypeName");
+       		this.defaultFolderContentTypeName = InfoGlueSettingsController.getInfoGlueSettingsController().getProperty("repository_" + this.getRepositoryId() + "_defaultFolderContentTypeName", "applicationProperties", null, false, false, false, false, null);
 		}
         
 		this.referenceBeanList = RegistryController.getController().getReferencingObjectsForContent(contentId);
@@ -372,16 +368,13 @@ public class ViewContentAction extends InfoGlueAbstractAction
 
 	public LanguageVO getInitialLanguageVO() throws Exception
 	{
-		Map args = new HashMap();
-	    args.put("globalKey", "infoglue");
-	    PropertySet ps = PropertySetManager.getInstance("jdbc", args);
-	    
-	    String initialLanguageId = ps.getString("content_" + this.getContentId() + "_initialLanguageId");
-	    ContentVO parentContentVO = ContentController.getContentController().getParentContent(this.getContentId()); 
+		String initialLanguageId = InfoGlueSettingsController.getInfoGlueSettingsController().getProperty("content_" + this.getContentId() + "_initialLanguageId", "applicationProperties", null, false, false, false, false, null);
+		ContentVO parentContentVO = ContentController.getContentController().getParentContent(this.getContentId()); 
 	    while((initialLanguageId == null || initialLanguageId.equalsIgnoreCase("-1")) && parentContentVO != null)
 	    {
-	        initialLanguageId = ps.getString("content_" + parentContentVO.getId() + "_initialLanguageId");
-		    parentContentVO = ContentController.getContentController().getParentContent(parentContentVO.getId()); 
+	    	//initialLanguageId = ps.getString("content_" + parentContentVO.getId() + "_initialLanguageId");
+		    initialLanguageId = InfoGlueSettingsController.getInfoGlueSettingsController().getProperty("content_" + parentContentVO.getId() + "_initialLanguageId", "applicationProperties", null, false, false, false, false, null);
+	        parentContentVO = ContentController.getContentController().getParentContent(parentContentVO.getId()); 
 	    }
 	    
 	    if(initialLanguageId != null && !initialLanguageId.equals("") && !initialLanguageId.equals("-1"))
