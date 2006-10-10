@@ -61,6 +61,9 @@
 		<td>#subTitle("entity.ServerNode.property.cmsConnection.label")</td>
 	</tr>	
 	<tr>
+		<td>#editPropertyField("ServerNode.property.cmsFullBaseUrl" "cmsFullBaseUrl" "$this.getPropertyValue('cmsFullBaseUrl')" "51" "$!serverNodeId")</td>
+	</tr>
+	<tr>
 		<td>#editPropertyField("ServerNode.property.cmsBaseUrl" "cmsBaseUrl" "$this.getPropertyValue('cmsBaseUrl')" "51" "$!serverNodeId")</td>
 	</tr>
 	<tr>
@@ -224,6 +227,12 @@
 	</tr>
 	<tr>
 		<td>#yesNoDropDownWithInherit("ServerNode.property.protectCategories" "protectCategories" "$this.getPropertyValue('protectCategories')")</td>
+	</tr>
+	<tr>
+		<td>#yesNoDropDownWithInherit("ServerNode.property.protectDeliverWorking" "protectDeliverWorking" "$this.getPropertyValue('protectDeliverWorking')")</td>
+	</tr>
+	<tr>
+		<td>#yesNoDropDownWithInherit("ServerNode.property.protectDeliverPreview" "protectDeliverPreview" "$this.getPropertyValue('protectDeliverPreview')")</td>
 	</tr>
 	
 	<tr>
