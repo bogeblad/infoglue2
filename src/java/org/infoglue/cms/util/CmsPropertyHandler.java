@@ -774,6 +774,11 @@ public class CmsPropertyHandler
 	    return getServerNodeProperty("pageKey", true);
 	}
 	
+	public static String getCmsFullBaseUrl()
+	{
+	    return getServerNodeProperty("cmsFullBaseUrl", true);
+	}
+
 	public static String getCmsBaseUrl()
 	{
 	    return getServerNodeProperty("cmsBaseUrl", true);
@@ -962,6 +967,16 @@ public class CmsPropertyHandler
 	public static String getHelpUrl()
 	{
 	    return getServerNodeProperty("helpUrl", true);
+	}
+
+	public static String getProtectDeliverWorking()
+	{
+	    return getServerNodeProperty("protectDeliverWorking", true, "false");
+	}
+
+	public static String getProtectDeliverPreview()
+	{
+	    return getServerNodeProperty("protectDeliverPreview", true, "false");
 	}
 
 	public static String getPreferredLanguageCode(String userName)
