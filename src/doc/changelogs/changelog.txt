@@ -54,7 +54,20 @@ Abbreviated Changelog from 2.3.5 Final
 - Added better caching in some areas (content types, component properties) which improves dynamic pages a lot and decreases the xml/xpath cost.
 - Fixed bug with opener reload in mozilla when in edit on sight mode. We used <body onload="javascript:.." before and that seems to be working bad - changed to window.onload in javascript.
 - Added dbcp-pool on InfoGlueJDBCPropertySet until we completely remove it. Decreases the load on the database server quite a bit.
- 
+- Started working on transferring property sets - now optional beta
+- Started working on a cleaning function which cleans out broken references to components etc.
+- Added cms full base url so we can handle any references between the deliver app and the cms.
+- Changed so we don't have multiple NullObjects.
+- Changed log4j-references to local variable instead of getLogger() - a bit faster.
+- Added toString()-method on BrowserBean so one can debug browser easily in templates
+- Worked on beta feature which allows one to save a page as a digitalAsset (suitable for css and javascript nodes for example to avoid overhead).
+- Added improved access right check so now one has to have repository access to the repository holding the content to be able to edit it.
+- Improved the ViewApplicationState.action page so users are listed last - not in the middle
+- Fixed bug in logonUrl-handling
+- Fixed so repositories can be placed below other repositories dns-names like http://www.mycomp.com/sitex
+- Fixed so deliver working and preview can be protected and that the decorated view never can be shown in live mode.
+
+
 -------------------------------------------------------------------------------------
 - InfoGlue 2.3.5 Final
 -------------------------------------------------------------------------------------
