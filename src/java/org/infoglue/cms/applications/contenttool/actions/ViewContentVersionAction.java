@@ -59,8 +59,11 @@ import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.entities.structure.QualifyerVO;
 import org.infoglue.cms.entities.structure.SiteNodeVO;
 import org.infoglue.cms.entities.workflow.EventVO;
+import org.infoglue.cms.exception.AccessConstraintException;
 import org.infoglue.cms.exception.Bug;
+import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
+import org.infoglue.cms.util.AccessConstraintExceptionBuffer;
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.css.CSSHelper;
 import org.infoglue.cms.util.dom.DOMBuilder;
@@ -113,23 +116,6 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 
 	private boolean concurrentModification = false;
 	private long oldModifiedDateTime = -1;
-
-	/*
-	public String getQualifyerPath(String entity, String entityId)
-	{	
-		try
-		{	
-			if(entity.equalsIgnoreCase("Content"))
-				return ContentController.getContentController().getContentVOWithId(new Integer(entityId)).getName();
-			else if(entity.equalsIgnoreCase("SiteNode"))
-				return SiteNodeController.getController().getSiteNodeVOWithId(new Integer(entityId)).getName();
-		}
-		catch(Exception e)
-		{
-			e.printStackTrace();
-		}
-		return "";
-	}*/
 	
 	public String getQualifyerPath(String entity, String entityId)
 	{	
@@ -232,13 +218,20 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 
     protected void initialize(Integer contentVersionId, Integer contentId, Integer languageId) throws Exception
     {
-        initialize(contentVersionId, contentId, languageId, false);
+        initialize(contentVersionId, contentId, languageId, false, true);
     }
     
-    protected void initialize(Integer contentVersionId, Integer contentId, Integer languageId, boolean fallBackToMasterLanguage) throws Exception
+    protected void initialize(Integer contentVersionId, Integer contentId, Integer languageId, boolean fallBackToMasterLanguage, boolean checkPermission) throws ConstraintException, Exception
     {
         this.contentVO = ContentControllerProxy.getController().getACContentVOWithId(this.getInfoGluePrincipal(), contentId);
 		    
+        if(checkPermission && !hasAccessTo("Repository.Read", "" + this.contentVO.getRepositoryId()))
+        {
+    		AccessConstraintExceptionBuffer ceb = new AccessConstraintExceptionBuffer();
+    		ceb.add(new AccessConstraintException("Content.contentId", "1000"));
+    		ceb.throwIfNotEmpty();
+        }
+
         //this.contentVO = ContentController.getContentVOWithId(contentId);
         this.contentTypeDefinitionVO = ContentController.getContentController().getContentTypeDefinition(contentId);
         this.availableLanguages = ContentController.getContentController().getRepositoryLanguages(contentId);
@@ -350,7 +343,7 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 	{
 		if(getContentId() != null && getContentId().intValue() != -1)
 		{
-		    this.initialize(getContentVersionId(), getContentId(), this.languageId, true);
+		    this.initialize(getContentVersionId(), getContentId(), this.languageId, true, false);
 		}
 
 		this.repositories = RepositoryController.getController().getAuthorizedRepositoryVOList(this.getInfoGluePrincipal(), true);
@@ -362,7 +355,7 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 	{
 		if(getContentId() != null && getContentId().intValue() != -1)
 		{
-		    this.initialize(getContentVersionId(), getContentId(), this.languageId, true);
+		    this.initialize(getContentVersionId(), getContentId(), this.languageId, true, false);
 		}
 
 		this.repositories = RepositoryController.getController().getAuthorizedRepositoryVOList(this.getInfoGluePrincipal(), true);

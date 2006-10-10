@@ -48,9 +48,11 @@ import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
 import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.entities.workflow.EventVO;
+import org.infoglue.cms.exception.AccessConstraintException;
 import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
+import org.infoglue.cms.util.AccessConstraintExceptionBuffer;
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.sorters.ReflectionComparator;
 
@@ -97,6 +99,13 @@ public class ViewContentAction extends InfoGlueAbstractAction
         if(this.repositoryId == null)
             this.repositoryId = this.contentVO.getRepositoryId();
         
+        if(!hasAccessTo("Repository.Read", "" + this.contentVO.getRepositoryId()))
+        {
+    		AccessConstraintExceptionBuffer ceb = new AccessConstraintExceptionBuffer();
+    		ceb.add(new AccessConstraintException("Content.contentId", "1000"));
+    		ceb.throwIfNotEmpty();
+        }
+
         if(this.getIsBranch().booleanValue())
 		{
        		this.defaultFolderContentTypeName = InfoGlueSettingsController.getInfoGlueSettingsController().getProperty("repository_" + this.getRepositoryId() + "_defaultFolderContentTypeName", "applicationProperties", null, false, false, false, false, null);
@@ -110,6 +119,14 @@ public class ViewContentAction extends InfoGlueAbstractAction
         try
         {
 	        ContentVO contentVO = ContentControllerProxy.getController().getACContentVOWithId(this.getInfoGluePrincipal(), getContentId());
+	        
+	        if(!hasAccessTo("Repository.Read", "" + this.contentVO.getRepositoryId()))
+	        {
+	    		AccessConstraintExceptionBuffer ceb = new AccessConstraintExceptionBuffer();
+	    		ceb.add(new AccessConstraintException("Content.contentId", "1000"));
+	    		ceb.throwIfNotEmpty();
+	        }
+
 	        if((this.stay == null || !this.stay.equalsIgnoreCase("true")) && contentVO.getIsBranch().booleanValue() == false && contentVO.getContentTypeDefinitionId() != null && getShowContentVersionFirst().equalsIgnoreCase("true"))
 	        {
 	            if(this.repositoryId == null)
