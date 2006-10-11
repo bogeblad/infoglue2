@@ -1643,7 +1643,6 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		}
 		catch(Exception e)
 		{
-			e.printStackTrace();
 			logger.warn("The component with id " + componentId + " had a incorrect xml defining it's properties:" + e.getMessage(), e);
 		}
 							
@@ -1758,7 +1757,6 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		}
 		catch(Exception e)
 		{
-			e.printStackTrace();
 			logger.warn("The component with id " + componentId + " had a incorrect xml defining it's properties:" + e.getMessage(), e);
 		}
 							
@@ -1805,7 +1803,6 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		}
 		catch(Exception e)
 		{
-			e.printStackTrace();
 			logger.warn("The component with id " + componentId + " had a incorrect xml defining it's properties:" + e.getMessage(), e);
 		}
 							

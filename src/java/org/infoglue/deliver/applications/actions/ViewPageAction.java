@@ -899,12 +899,12 @@ public class ViewPageAction extends InfoGlueAbstractAction
 		}
 		catch(SystemException se)
 		{
-			se.printStackTrace();
+			logger.warn("An error occurred:" + se.getMessage(), se);
 			throw se;
 		}
 		catch(Exception e)
 		{
-			e.printStackTrace();
+			logger.error("An error occurred:" + e.getMessage(), e);
 		}
 		
 		return isRedirected;

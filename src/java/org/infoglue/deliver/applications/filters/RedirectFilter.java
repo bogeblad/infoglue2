@@ -93,14 +93,14 @@ public class RedirectFilter implements Filter
     	        }
     	        catch (SystemException se) 
     	        {
-    	            se.printStackTrace();
-    	            httpRequest.setAttribute("responseCode", "500");
+    	        	logger.warn("Error in redirect filter: " + se.getMessage(), se);
+    	        	httpRequest.setAttribute("responseCode", "500");
     	            httpRequest.setAttribute("error", se);
     	            httpRequest.getRequestDispatcher("/ErrorPage.action").forward(httpRequest, httpResponse);
     	        }
     	        catch (Exception e) 
     	        {
-    	            e.printStackTrace();
+    	        	logger.warn("Error in redirect filter: " + e.getMessage(), e);
     	            httpRequest.setAttribute("responseCode", "404");
     	            httpRequest.setAttribute("error", e);
     	            httpRequest.getRequestDispatcher("/ErrorPage.action").forward(httpRequest, httpResponse);

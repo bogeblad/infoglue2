@@ -209,12 +209,10 @@ public class UpdateCacheAction extends InfoGlueAbstractAction
 		}
 		catch(Exception e)
 		{
-		    e.printStackTrace();
 			logger.error(e.getMessage(), e);
 		}
 		catch(Throwable t)
 		{
-		    t.printStackTrace();
 		    logger.error(t.getMessage());
 		}
                 

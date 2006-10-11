@@ -99,7 +99,7 @@ public class ViewContentAction extends InfoGlueAbstractAction
         if(this.repositoryId == null)
             this.repositoryId = this.contentVO.getRepositoryId();
         
-        if(!hasAccessTo("Repository.Read", "" + this.contentVO.getRepositoryId()))
+        if(this.contentVO.getRepositoryId() != null && !hasAccessTo("Repository.Read", "" + this.contentVO.getRepositoryId()))
         {
     		AccessConstraintExceptionBuffer ceb = new AccessConstraintExceptionBuffer();
     		ceb.add(new AccessConstraintException("Content.contentId", "1000"));
@@ -120,8 +120,9 @@ public class ViewContentAction extends InfoGlueAbstractAction
         {
 	        ContentVO contentVO = ContentControllerProxy.getController().getACContentVOWithId(this.getInfoGluePrincipal(), getContentId());
 	        
-	        if(!hasAccessTo("Repository.Read", "" + this.contentVO.getRepositoryId()))
+	        if(contentVO.getRepositoryId() != null && !hasAccessTo("Repository.Read", "" + contentVO.getRepositoryId()))
 	        {
+	        	System.out.println("You had no access to Repository.Read and " + this.contentVO.getRepositoryId());
 	    		AccessConstraintExceptionBuffer ceb = new AccessConstraintExceptionBuffer();
 	    		ceb.add(new AccessConstraintException("Content.contentId", "1000"));
 	    		ceb.throwIfNotEmpty();
