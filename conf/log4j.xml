@@ -1,10 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
 
-<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/" debug="false">
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/" debug="true">
 
 	<appender name="CONSOLE" class="org.apache.log4j.ConsoleAppender">
 		<param name="Target" value="System.out"/>
+		<param name="Threshold" value="WARNING"/>
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%d{dd MMM yyyy HH:mm:ss.SSS} [%-5p] [%t] [%c] - %m%n"/>
+		</layout>
+	</appender>
+
+	<appender name="INFOGLUE-FILE" class="org.apache.log4j.RollingFileAppender">
+		<param name="File" value="logs/infoglue.log"/>
+		<param name="FileAppend" value="true"/>
+ 		<param name="Append" value="true"/>
+ 		<param name="MaxFileSize" value="50MB"/>
+		<param name="MaxBackupIndex" value="0"/>
 		<param name="Threshold" value="WARNING"/>
 		<layout class="org.apache.log4j.PatternLayout">
 			<param name="ConversionPattern" value="%d{dd MMM yyyy HH:mm:ss.SSS} [%-5p] [%t] [%c] - %m%n"/>
@@ -56,6 +68,16 @@
 	<!-- Use categories to control logging  -->
 	<!-- down to the package or class level	-->
 	<!-- ==================================	-->
+
+	<category name="org.infoglue.deliver.invokers.ComponentBasedHTMLPageInvoker" additivity="false">
+		<priority value="WARN"/>
+		<appender-ref ref="INFOGLUE-FILE"/>
+	</category>
+
+	<category name="org.infoglue.deliver.applications.filters.ViewPageFilter" additivity="false">
+		<priority value="WARN"/>
+		<appender-ref ref="INFOGLUE-FILE"/>
+	</category>
 
 	<category name="org.infoglue.cms">
 		<priority value="WARN"/>
