@@ -12,7 +12,7 @@
 	</appender>
 
 	<appender name="INFOGLUE-FILE" class="org.apache.log4j.RollingFileAppender">
-		<param name="File" value="logs/infoglue.log"/>
+		<param name="File" value="infoglue.log"/>
 		<param name="Append" value="true"/>
  		<param name="MaxFileSize" value="50MB"/>
 		<param name="MaxBackupIndex" value="0"/>
