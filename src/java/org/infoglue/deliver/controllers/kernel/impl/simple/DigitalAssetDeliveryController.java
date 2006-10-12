@@ -361,22 +361,20 @@ public class DigitalAssetDeliveryController extends BaseDeliveryController
 
 		try 
 		{
-			//System.out.println("outputFile:" + filePath + File.separator + fileName);
-			outputFile.createNewFile();
-
-			//Thread.sleep(5000);
-			
-			InputStream inputStream = digitalAsset.getAssetBlob();
-			synchronized(inputStream)
+			synchronized(digitalAsset)
 			{
-				//System.out.println("inputStream: " + inputStream + ":" + inputStream.available());
-				if(inputStream.available() > 0)
+				if(digitalAsset.getIsAssetBlobRead())
 				{
+					logger.info("The asset was allready accessed so we cannot get it again");
+					return outputFile;
+				}
+				else
+				{
+					InputStream inputStream = digitalAsset.getAssetBlob();
+
 					FileOutputStream fos = new FileOutputStream(outputFile);
 					BufferedOutputStream bos = new BufferedOutputStream(fos);
 					BufferedInputStream bis = new BufferedInputStream(inputStream);
-					
-					//BufferedInputStream bis = new BufferedInputStream(digitalAsset.getAssetBlob());
 					
 					int character;
 					int i=0;
@@ -387,20 +385,25 @@ public class DigitalAssetDeliveryController extends BaseDeliveryController
 			        }
 			        
 			        if(i == 0)
-			        	logger.warn("Wrote " + i + " chars...");
+			        	logger.info("Wrote " + i + " chars to " + fileName);
 			        
 					bos.flush();
 				    fos.close();
 					bos.close();
 						
 			        bis.close();
+					
+					logger.info("Time for dumping file " + fileName + ":" + (System.currentTimeMillis() - timer));
+
+					if(outputFile.length() == 0)
+						logger.warn("written file:" + outputFile.length());					
 				}
 			}
 			
-			//logger.warn("Time for dumping file " + fileName + ":" + (System.currentTimeMillis() - timer));
+			System.out.println("outputFile:" + filePath + File.separator + fileName);
+			outputFile.createNewFile();
 
-			if(outputFile.length() == 0)
-				logger.warn("written file:" + outputFile.length());
+			
 				
 			//FileDescriptor fd = fos.getFD();
 			//fd.sync();

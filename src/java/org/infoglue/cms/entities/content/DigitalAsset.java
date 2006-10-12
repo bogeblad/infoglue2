@@ -81,4 +81,5 @@ public interface DigitalAsset extends IBaseEntity
 
 	public byte[] getAssetBytes();
 
+	public boolean getIsAssetBlobRead();
 }

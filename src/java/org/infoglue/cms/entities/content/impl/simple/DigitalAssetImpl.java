@@ -41,6 +41,7 @@ public class DigitalAssetImpl implements DigitalAsset
 	private java.util.Collection roleProperties;
 	private java.util.Collection groupProperties;
 	private java.io.InputStream assetBlob;
+	private boolean assetBlobRead = false;
 	    
     /**
 	 * @see org.infoglue.cms.entities.kernel.BaseEntity#getVO()
@@ -197,6 +198,9 @@ public class DigitalAssetImpl implements DigitalAsset
         {
             inputStream = assetBlob;
         }
+        
+        assetBlobRead = true;
+        
         return inputStream;
     }
     
@@ -235,5 +239,10 @@ public class DigitalAssetImpl implements DigitalAsset
 		}
 				
 		return this.assetBytes;
+	}
+
+	public boolean getIsAssetBlobRead() 
+	{
+		return assetBlobRead;
 	}
 }        
