@@ -1249,20 +1249,23 @@ public class NodeDeliveryController extends BaseDeliveryController
         return urlComposer.composePageUrlAfterLanguageChange(db, infoGluePrincipal, siteNodeId, languageId, contentId, deliveryContext);
     } 
 	
-	public String getPageAsDigitalAssetUrl(Database database, InfoGluePrincipal principal, Integer siteNodeId, Integer languageId, Integer contentId, DeliveryContext context) throws SystemException
+	public String getPageAsDigitalAssetUrl(Database database, InfoGluePrincipal principal, Integer siteNodeId, Integer languageId, Integer contentId, DeliveryContext context, String fileSuffix) throws SystemException
 	{
 		String pageAsDigitalAssetUrl = null;
 		
 		boolean fullUrl = context.getUseFullUrl();
 		context.setUseFullUrl(true);
-						
+		
+		boolean disableNiceUri = context.getDisableNiceUri();
+		context.setDisableNiceUri(true);
+		
 		try
 		{			
-			String pageCacheKey = getPageCacheKey(database, context.getHttpServletRequest().getSession(), context.getHttpServletRequest(), siteNodeId, languageId, contentId, context.getHttpServletRequest().getHeader("User-Agent"), "", "", false);
-			System.out.println("pageCacheKey:" + pageCacheKey);
-			String fileName = pageCacheKey;
+			//String pageCacheKey = getPageCacheKey(database, context.getHttpServletRequest().getSession(), context.getHttpServletRequest(), siteNodeId, languageId, contentId, context.getHttpServletRequest().getHeader("User-Agent"), "", "", false);
+			//System.out.println("pageCacheKey:" + pageCacheKey);
 			
 			String pageContent = null;
+			String fileName = null;
 			
 			int i = 0;
 			String filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i);
@@ -1273,18 +1276,52 @@ public class NodeDeliveryController extends BaseDeliveryController
 					if(pageContent == null)
 					{
 						String pageUrl = getPageUrl(database, principal, siteNodeId, languageId, contentId, context);
-						System.out.println("pageUrl:" + pageUrl);
-
+						logger.info("pageUrl:" + pageUrl);
+						pageUrl = pageUrl.replaceAll("&amp;", "&");
+						if(pageUrl.indexOf("&") > -1)
+						{
+							pageUrl = pageUrl + "&includeUsedEntities=true";
+						}
+						else
+						{
+							pageUrl = pageUrl + "?includeUsedEntities=true";
+						}
+						logger.info("pageUrl:" + pageUrl);
+						
 						Map headers = new HashMap();
 						headers.put("User-Agent", context.getHttpServletRequest().getHeader("User-Agent") + ";Java");
 						headers.put("Accept-Language", context.getHttpServletRequest().getHeader("Accept-Language"));
 						
-						pageContent = DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpUrlToFile(pageUrl, headers, pageCacheKey, filePath);
+						HttpHelper helper = new HttpHelper();
+						pageContent = helper.getUrlContent(pageUrl, headers);
+						logger.info("pageContent:" + pageContent);
+
+						int usedEntitiesIndex = pageContent.indexOf("<usedEntities>");
+						if(usedEntitiesIndex > -1)
+						{
+							int usedEntitiesEndIndex = pageContent.indexOf("</usedEntities>");
+							String usedEntities = pageContent.substring(usedEntitiesIndex + 14, usedEntitiesEndIndex);
+							String[] usedEntitiesArray = usedEntities.split(",");
+							for(int j=0; j < usedEntitiesArray.length; j++)
+							{
+								String entity = usedEntitiesArray[j];
+								logger.info("entity:" + entity);
+
+								if(entity.indexOf("content_") > -1)
+									context.addUsedContent(entity.substring(8));
+								else if(entity.indexOf("contentVersion_") > -1)
+									context.addUsedContentVersion(entity.substring(15));
+								else if(entity.indexOf("siteNode_") > -1)
+									context.addUsedSiteNode(entity.substring(9));
+								else if(entity.indexOf("siteNodeVersion_") > -1)
+									context.addUsedSiteNodeVersion(entity.substring(16));	
+							}
+						}
+						fileName = "" + pageContent.hashCode() + (fileSuffix == null ? "" : "." + fileSuffix);
+						logger.info("fileName:" + fileName);
 					}
-					else
-					{
-						DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpAttributeToFile(pageContent, pageCacheKey, filePath);
-					}	
+
+					DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpAttributeToFile(pageContent, fileName, filePath);
 				}
 				catch(Exception e)
 				{
@@ -1308,6 +1345,7 @@ public class NodeDeliveryController extends BaseDeliveryController
 			throw new SystemException("An error occurred when we fetched the url which we wanted to persist as an digital asset: " + e.getMessage(), e);
 		}
 		
+		context.setDisableNiceUri(disableNiceUri);
 		context.setUseFullUrl(fullUrl);
 
 		return pageAsDigitalAssetUrl;

@@ -209,12 +209,33 @@ public class DigitalAssetDeliveryController extends BaseDeliveryController
    	 * the given url on it.
    	 */
    	
-	public String dumpUrlToFile(String url, Map headers, String fileName, String filePath) throws Exception
+	public File dumpUrlToFile(String fileName, String filePath, String pageContent) throws Exception
+	{
+		File outputFile = new File(filePath + File.separator + fileName);
+		logger.info("outputFile:" + outputFile.getAbsolutePath());
+		if(!outputFile.exists() || outputFile.length() == 0)
+		{
+			PrintWriter pw = new PrintWriter(new FileWriter(outputFile));
+	        pw.println(pageContent);    
+	        pw.close();
+		}
+		
+		return outputFile;
+	}
+
+   	/**
+   	 * This method checks if the given file exists on disk. If it does it's ignored because
+   	 * that means that the file is allready cached on the server. If not we dump
+   	 * the given url on it.
+   	 */
+   	/*
+	public String getUrlToFile(String url, Map headers, String fileName, String filePath) throws Exception
 	{
 		String pageContent = null;
-		 
+		
 		File outputFile = new File(filePath + File.separator + fileName);
-		if(!outputFile.exists() && outputFile.length() > 0)
+		System.out.println("outputFile:" + outputFile.getAbsolutePath());
+		if(!outputFile.exists() || outputFile.length() == 0)
 		{
 			HttpHelper helper = new HttpHelper();
 			pageContent = helper.getUrlContent(url, headers);
@@ -229,7 +250,8 @@ public class DigitalAssetDeliveryController extends BaseDeliveryController
 		
 		return pageContent;
 	}
-
+	*/
+	
 
  	/**
    	 * This method checks if the given file exists on disk. If it does it's ignored because

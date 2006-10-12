@@ -229,6 +229,17 @@ public abstract class PageInvoker
 			this.getDeliveryContext().setPagePath(this.templateController.getCurrentPagePath());
 		}
 
+		if(this.getRequest().getParameter("includeUsedEntities") != null && this.getRequest().getParameter("includeUsedEntities").equals("true") && !CmsPropertyHandler.getOperatingMode().equals("3"))
+		{
+			StringBuffer sb = new StringBuffer("<usedEntities>");
+			String[] usedEntities = this.getDeliveryContext().getAllUsedEntities();
+			for(int i=0; i<usedEntities.length; i++)
+				sb.append(usedEntities[i]).append(",");
+			sb.append("</usedEntities>");
+			
+			this.pageString = this.pageString + sb.toString();
+		}
+		
 		String contentType = this.getTemplateController().getPageContentType();
 		//logger.info("ContentType in deliveryContext:" + this.deliveryContext.getContentType());
 		if(this.deliveryContext.getContentType() != null && !contentType.equalsIgnoreCase(this.deliveryContext.getContentType()))

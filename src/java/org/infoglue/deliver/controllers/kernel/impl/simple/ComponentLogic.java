@@ -950,6 +950,62 @@ public class ComponentLogic
 		return pageUrl;
 	}
 
+	/**
+	 * This method calls an page and stores it as an digitalAsset - that way one can avoid having to 
+	 * serve javascript-files and css-files through InfoGlue. Not suitable for use if you have very dynamic
+	 * css:es or scripts which includes logic depending on user info etc.. mostly usable if you have a static css
+	 * or controls it on the pageCache parameters.
+	 */
+	 
+	public String getPageAsDigitalAssetUrl(String propertyName) throws Exception
+	{
+	    return getPageAsDigitalAssetUrl(propertyName, this.useInheritance, "");
+	}
+
+	public String getPageAsDigitalAssetUrl(String propertyName, boolean useInheritance, String fileSuffix)
+	{
+		String pageUrl = "";
+
+		Map property = getInheritedComponentProperty(this.infoGlueComponent, propertyName, useInheritance);
+		if(property != null)
+		{	
+			List bindings = (List)property.get("bindings");
+			if(bindings.size() > 0)
+			{
+				Integer siteNodeId = new Integer((String)bindings.get(0));
+				pageUrl = this.getPageAsDigitalAssetUrl(siteNodeId, templateController.getLanguageId(), templateController.getContentId(), fileSuffix);
+			}
+		}
+		
+		return pageUrl;		
+	}
+
+	public String getPageAsDigitalAssetUrl(String propertyName, Integer languageId, Integer contentId, boolean useInheritance, String fileSuffix)
+	{
+		String pageUrl = "";
+
+		Map property = getInheritedComponentProperty(this.infoGlueComponent, propertyName, useInheritance);
+		if(property != null)
+		{	
+			List bindings = (List)property.get("bindings");
+			if(bindings.size() > 0)
+			{
+				Integer siteNodeId = new Integer((String)bindings.get(0));
+				pageUrl = this.getPageAsDigitalAssetUrl(siteNodeId, languageId, contentId, fileSuffix);
+			}
+		}
+		
+		return pageUrl;		
+	}
+
+	public String getPageAsDigitalAssetUrl(Integer siteNodeId, Integer languageId, Integer contentId, String fileSuffix)
+	{
+		String pageUrl = this.templateController.getPageAsDigitalAssetUrl(siteNodeId, languageId, contentId, fileSuffix);
+		
+		return pageUrl;
+	}
+
+
 	public String getPageNavTitle(String propertyName)
 	{
 		String pageUrl = "";

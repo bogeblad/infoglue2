@@ -754,6 +754,15 @@ public interface TemplateController
      */
     public abstract String getPageBaseUrl(String structureBindningName);
 
+	/**
+	 * This method calls an page and stores it as an digitalAsset - that way one can avoid having to 
+	 * serve javascript-files and css-files through InfoGlue. Not suitable for use if you have very dynamic
+	 * css:es or scripts which includes logic depending on user info etc.. mostly usable if you have a static css
+	 * or controls it on the pageCache parameters.
+	 */
+
+	public String getPageAsDigitalAssetUrl(Integer siteNodeId, Integer languageId, Integer contentId, String fileSuffix);
+
     /**
      * Getter for the siteNodeId on a specific bound page
      */

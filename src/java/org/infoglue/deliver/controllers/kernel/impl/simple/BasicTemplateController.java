@@ -3796,13 +3796,13 @@ public class BasicTemplateController implements TemplateController
 	 * or controls it on the pageCache parameters.
 	 */
 	 
-	public String getPageAsDigitalAssetUrl(Integer siteNodeId, Integer languageId, Integer contentId) 
+	public String getPageAsDigitalAssetUrl(Integer siteNodeId, Integer languageId, Integer contentId, String fileSuffix) 
 	{
 		String pageDigitalAssetUrl = "";
 		
 		try
 		{
-			pageDigitalAssetUrl = this.nodeDeliveryController.getPageAsDigitalAssetUrl(getDatabase(), this.getPrincipal(), siteNodeId, languageId, contentId, this.deliveryContext);
+			pageDigitalAssetUrl = this.nodeDeliveryController.getPageAsDigitalAssetUrl(getDatabase(), this.getPrincipal(), siteNodeId, languageId, contentId, this.deliveryContext, fileSuffix);
 		}
 		catch(Exception e)
 		{
