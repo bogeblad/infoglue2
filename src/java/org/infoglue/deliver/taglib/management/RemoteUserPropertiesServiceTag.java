@@ -82,7 +82,11 @@ public class RemoteUserPropertiesServiceTag extends TemplateControllerTag
 		   ws.setOperationName(operationName);
 		   ws.setReturnType(Boolean.class);
 		   	       
-		   ws.addArgument("languageId", this.getController().getLanguageId());
+		   if(this.languageId == null)
+			   ws.addArgument("languageId", this.getController().getLanguageId());
+		   else
+			   ws.addArgument("languageId", this.languageId);
+				   
 		   ws.addArgument("contentTypeDefinitionId", this.contentTypeDefinitionId);
 		   ws.addArgument("userPropertiesAttributesMap", userPropertiesAttributesMap);
 		   
