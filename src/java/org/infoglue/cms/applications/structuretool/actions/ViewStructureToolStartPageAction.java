@@ -25,6 +25,7 @@ package org.infoglue.cms.applications.structuretool.actions;
 
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeController;
+import org.infoglue.cms.entities.structure.SiteNodeVO;
 
 
 /**
@@ -54,7 +55,11 @@ public class ViewStructureToolStartPageAction extends InfoGlueAbstractAction
     	try
     	{
     		if(this.repositoryId != null && this.repositoryId.intValue() > -1)
-	    		return SiteNodeController.getController().getRootSiteNodeVO(this.repositoryId).getSiteNodeId();
+    		{
+    			SiteNodeVO siteNodeVO = SiteNodeController.getController().getRootSiteNodeVO(this.repositoryId);
+	    		if(siteNodeVO != null)
+	    			return siteNodeVO.getSiteNodeId();
+    		}
     	}
     	catch(Exception e)
     	{
