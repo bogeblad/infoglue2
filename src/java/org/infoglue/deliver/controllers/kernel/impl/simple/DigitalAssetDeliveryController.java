@@ -56,6 +56,7 @@ import org.infoglue.cms.util.graphics.ThumbnailGenerator;
 import org.infoglue.deliver.applications.databeans.DeliveryContext;
 import org.infoglue.deliver.controllers.kernel.URLComposer;
 import org.infoglue.deliver.util.HttpHelper;
+import org.infoglue.deliver.util.Timer;
 
 
 public class DigitalAssetDeliveryController extends BaseDeliveryController
@@ -350,7 +351,8 @@ public class DigitalAssetDeliveryController extends BaseDeliveryController
 	
 	public File dumpDigitalAsset(DigitalAsset digitalAsset, String fileName, String filePath) throws Exception
 	{
-		long timer = System.currentTimeMillis();
+		Timer timer = new Timer();
+		File tmpOutputFile = new File(filePath + File.separator + Thread.currentThread().getId() + "_tmp_" + fileName);
 		File outputFile = new File(filePath + File.separator + fileName);
 		//logger.warn("outputFile:" + filePath + File.separator + fileName + ":" + outputFile.length());
 		if(outputFile.exists())
@@ -361,52 +363,55 @@ public class DigitalAssetDeliveryController extends BaseDeliveryController
 
 		try 
 		{
-			synchronized(digitalAsset)
+			//System.out.println("tmpOutputFile:" + tmpOutputFile.getAbsolutePath());
+			//System.out.println("outputFile:" + outputFile.getAbsolutePath());
+			
+			//System.out.println("Dumping asset " + Thread.currentThread().getId() + ":" + fileName);
+			//Thread.sleep(2000);
+			InputStream inputStream = digitalAsset.getAssetBlob();
+			logger.info("inputStream:" + inputStream + ":" + inputStream.getClass().getName() + ":" + digitalAsset);
+			synchronized(inputStream)
 			{
-				if(digitalAsset.getIsAssetBlobRead())
-				{
-					logger.info("The asset was allready accessed so we cannot get it again");
-					return outputFile;
-				}
-				else
-				{
-					InputStream inputStream = digitalAsset.getAssetBlob();
-
-					FileOutputStream fos = new FileOutputStream(outputFile);
-					BufferedOutputStream bos = new BufferedOutputStream(fos);
-					BufferedInputStream bis = new BufferedInputStream(inputStream);
+				logger.info("reading inputStream and writing to disk....");
+				
+				FileOutputStream fos = new FileOutputStream(tmpOutputFile);
+				BufferedOutputStream bos = new BufferedOutputStream(fos);
+				BufferedInputStream bis = new BufferedInputStream(inputStream);
+				
+				int character;
+				int i=0;
+		        while ((character = bis.read()) != -1)
+		        {
+					bos.write(character);
+					i++;
+		        }
+		        
+		        if(i == 0)
+		        	logger.info("Wrote " + i + " chars to " + fileName);
+		        
+				bos.flush();
+			    fos.close();
+				bos.close();
 					
-					int character;
-					int i=0;
-			        while ((character = bis.read()) != -1)
-			        {
-						bos.write(character);
-						i++;
-			        }
-			        
-			        if(i == 0)
-			        	logger.info("Wrote " + i + " chars to " + fileName);
-			        
-					bos.flush();
-				    fos.close();
-					bos.close();
-						
-			        bis.close();
-					
-					logger.info("Time for dumping file " + fileName + ":" + (System.currentTimeMillis() - timer));
+		        bis.close();
 
-					if(outputFile.length() == 0)
-						logger.warn("written file:" + outputFile.length());					
-				}
+		        logger.info("done reading inputStream and writing to disk....");
 			}
 			
-			System.out.println("outputFile:" + filePath + File.separator + fileName);
-			outputFile.createNewFile();
+			logger.info("Time for dumping file " + fileName + ":" + timer.getElapsedTime());
 
-			
-				
-			//FileDescriptor fd = fos.getFD();
-			//fd.sync();
+			if(tmpOutputFile.length() == 0 || outputFile.exists())
+			{
+				logger.info("written file:" + tmpOutputFile.length() + " - removing temp and not renaming it...");	
+				tmpOutputFile.delete();
+				logger.info("Time for deleting file " + timer.getElapsedTime());
+			}
+			else
+			{
+				logger.info("written file:" + tmpOutputFile.length() + " - renaming it to " + outputFile.getAbsolutePath());	
+				tmpOutputFile.renameTo(outputFile);
+				logger.info("Time for renaming file " + timer.getElapsedTime());
+			}	
 		}
 		catch (IOException e) 
 		{
