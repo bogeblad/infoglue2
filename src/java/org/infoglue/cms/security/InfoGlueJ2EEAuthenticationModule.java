@@ -113,11 +113,11 @@ public class InfoGlueJ2EEAuthenticationModule extends AuthenticationModule
 			String redirectUrl = "";			    
 			    
 			if(requestURI.indexOf("?") > 0)
-				redirectUrl = request.getContextPath() + "/" + loginUrl + "&referringUrl=" + URLEncoder.encode(requestURI + requestQueryString, "UTF-8");
+				redirectUrl = request.getContextPath() + (loginUrl.indexOf("/") == 0 ? "" : "/") + loginUrl + "&referringUrl=" + URLEncoder.encode(requestURI + requestQueryString, "UTF-8");
 			else
-				redirectUrl = request.getContextPath() + "/" + loginUrl + "?referringUrl=" + URLEncoder.encode(requestURI + requestQueryString, "UTF-8");
+				redirectUrl = request.getContextPath() + (loginUrl.indexOf("/") == 0 ? "" : "/") + loginUrl + "?referringUrl=" + URLEncoder.encode(requestURI + requestQueryString, "UTF-8");
 	
-			logger.info("Directing user to [" + request.getContextPath() + "/" + loginUrl + "]");
+			logger.info("Directing user to [" + request.getContextPath() + (loginUrl.indexOf("/") == 0 ? "" : "/") + loginUrl + "]");
 
 			logger.info("redirectUrl:" + redirectUrl);
 			response.sendRedirect(redirectUrl);
@@ -218,9 +218,9 @@ public class InfoGlueJ2EEAuthenticationModule extends AuthenticationModule
 		}
 		
 		logger.info("returnAddress:" + returnAddress);
-		logger.info("Directing user to [" + request.getContextPath() + (loginUrl.indexOf("/") == 0 ? "/" : "") + loginUrl + "]");
+		logger.info("Directing user to [" + request.getContextPath() + (loginUrl.indexOf("/") == 0 ? "" : "/") + loginUrl + "]");
 		
-		return request.getContextPath() + (loginUrl.indexOf("/") == 0 ? "/" : "") + loginUrl + "?returnAddress=" + URLEncoder.encode(returnAddress, "UTF-8");
+		return request.getContextPath() + (loginUrl.indexOf("/") == 0 ? "" : "/") + loginUrl + "?returnAddress=" + URLEncoder.encode(returnAddress, "UTF-8");
 	}
 	
 	/**
