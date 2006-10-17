@@ -27,6 +27,7 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -1289,8 +1290,17 @@ public class NodeDeliveryController extends BaseDeliveryController
 						logger.info("pageUrl:" + pageUrl);
 						
 						Map headers = new HashMap();
+
+						Enumeration headersEnumeration = context.getHttpServletRequest().getHeaderNames();
+						while(headersEnumeration.hasMoreElements())
+						{
+							String headerName  = (String)headersEnumeration.nextElement();
+							String headerValue = (String)context.getHttpServletRequest().getHeader(headerName);
+							logger.info(headerName + "=" + headerValue);
+							headers.put(headerName, headerValue);
+						}
+						
 						headers.put("User-Agent", context.getHttpServletRequest().getHeader("User-Agent") + ";Java");
-						headers.put("Accept-Language", context.getHttpServletRequest().getHeader("Accept-Language"));
 						
 						HttpHelper helper = new HttpHelper();
 						pageContent = helper.getUrlContent(pageUrl, headers);
