@@ -219,7 +219,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 		
 			this.templateController = getTemplateController(dbWrapper, getSiteNodeId(), getLanguageId(), getContentId(), getRequest(), (InfoGluePrincipal)this.principal, false);
 			
-			logger.info("handled extranet users");
+			logger.info("handled extranet users: " + isUserRedirected);
 	
 			// ----
 			// -- portlet
@@ -245,7 +245,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 	            }
 	        }
 	
-	        logger.info("handled portal action");
+	        logger.info("handled portal action: " + isUserRedirected);
 	        
 			if(!isUserRedirected)
 			{	
@@ -782,16 +782,16 @@ public class ViewPageAction extends InfoGlueAbstractAction
 				
 			    if(principal == null)
 			        principal = loginWithRequestArguments();
-
+			    
 			    if(principal == null)
 			    {	
-				    try
+			    	try
 					{
 						principal = getAnonymousPrincipal();
 						
 						if(principal != null)
 						{
-						    this.getHttpSession().setAttribute("infogluePrincipal", principal);
+							this.getHttpSession().setAttribute("infogluePrincipal", principal);
 							this.getHttpSession().setAttribute("infoglueRemoteUser", principal.getName());
 							
 							boolean isAuthorized = false;
@@ -801,7 +801,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 							if(!isAuthorized)
 							{	
 								this.getHttpSession().removeAttribute("infogluePrincipal");
-								logger.info("SiteNode is protected and anonymous user was allowed - sending him to login page.");
+								logger.info("SiteNode is protected and anonymous user was not allowed - sending him to login page.");
 								String redirectUrl = getRedirectUrl(getRequest(), getResponse());
 								//String url = this.getURLBase() + "/ExtranetLogin!loginForm.action?returnAddress=" + URLEncoder.encode(this.getRequest().getRequestURL().toString() + "?" + this.getRequest().getQueryString() + "&referer=" + URLEncoder.encode(referer, "UTF-8") + "&date=" + System.currentTimeMillis(), "UTF-8");
 								getResponse().sendRedirect(redirectUrl);
@@ -859,6 +859,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			}
 			else
 			{
+				logger.info("principal:" + principal);
 				logger.info("protectedSiteNodeVersionId:" + protectedSiteNodeVersionId);
 
 				Principal alternativePrincipal = loginWithCookies();
@@ -894,6 +895,16 @@ public class ViewPageAction extends InfoGlueAbstractAction
 						getResponse().sendRedirect(url);
 						isRedirected = true;
 					}
+				}
+				else if(protectedSiteNodeVersionId == null && protectDeliver)
+				{
+					logger.info("Setting user to anonymous... as this is a protected deliver but not a extranet...");
+					Principal anonymousPrincipal = getAnonymousPrincipal();
+					
+					//this.getHttpSession().setAttribute("infogluePrincipal", anonymousPrincipal);
+					//this.getHttpSession().setAttribute("infoglueRemoteUser", anonymousPrincipal.getName());
+	
+					this.principal = anonymousPrincipal;
 				}
 			}
 		}
