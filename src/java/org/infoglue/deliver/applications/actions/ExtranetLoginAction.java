@@ -90,37 +90,27 @@ public final class ExtranetLoginAction extends InfoGlueAbstractAction
 		HttpServletRequest hreq  = this.getRequest();
 		HttpServletResponse hres = this.getResponse();
 		
-		//Principal principal = (Principal)this.getHttpSession().getAttribute("infoglueExtranetPrincipal");
-		//if(principal == null) 
-		//{
-			//getLogger().info("Authenticating username '" + userName + "'");
-			Principal principal = null;
-			try
-			{
-			    Map arguments = HttpUtilities.requestToHashtable(hreq);
-			    
-				principal = ExtranetController.getController().getAuthenticatedPrincipal(arguments);
-			}
-			catch(Exception e)
-			{
-				
-			}
+		Principal principal = null;
+		try
+		{
+		    Map arguments = HttpUtilities.requestToHashtable(hreq);
+		    
+			principal = ExtranetController.getController().getAuthenticatedPrincipal(arguments);
+		}
+		catch(Exception e)
+		{
 			
-			if(principal != null) 
-			{
-				isAuthenticated = true;
-			}
-		//}
-		//else
-		//{	
-			//getLogger().info("Already authenticated '" + principal.getName() + "'");
-		//	isAuthenticated = true;
-		//}
+		}
 		
-		//getLogger().info("isAuthenticated:" + isAuthenticated);		
+		if(principal != null) 
+		{
+			isAuthenticated = true;
+		}
+
+		//System.out.println("isAuthenticated:" + isAuthenticated);		
 		if(isAuthenticated)
 		{
-			//getLogger().info("Yes - we try to send the user back to:" + this.returnAddress);		
+			//System.out.println("Yes - we try to send the user back to:" + this.returnAddress);		
 			this.getHttpSession().setAttribute("infogluePrincipal", principal);
 			this.getHttpSession().setAttribute("infoglueRemoteUser", principal.getName());
 
