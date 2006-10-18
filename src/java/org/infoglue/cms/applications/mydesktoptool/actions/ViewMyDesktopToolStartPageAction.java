@@ -301,6 +301,7 @@ public class ViewMyDesktopToolStartPageAction extends InfoGlueAbstractAction
 		try
 		{
 			String cmsFullBaseUrl = CmsPropertyHandler.getCmsFullBaseUrl();
+			logger.info("cmsFullBaseUrl:" + cmsFullBaseUrl);
 			if(cmsFullBaseUrl != null && !cmsFullBaseUrl.equals(""))
 				return URLEncoder.encode(cmsFullBaseUrl + "/ViewMyDesktopToolStartPage!invoke.action", "UTF-8");
 			else
