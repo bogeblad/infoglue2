@@ -69,6 +69,7 @@ Abbreviated Changelog from 2.3.5 Final
 - Removed a few e.printStacktrace() in favour for more log4j-statements and also modified the log4j.xml to not show messeges about mapping of url failing or components missing in the standard log but in a infoglue log instead. All severe errors should still come out in the normal catalina log.
 - Fixed so one can have steps in workflows on other servers and also jump between protocols like http and https.
 - Made fix so remoteUserProperties-tag actually cares about the language-id sent in.
+- Fixed so application handles https-situations better
 
 -------------------------------------------------------------------------------------
 - InfoGlue 2.3.5 Final
