@@ -1180,12 +1180,20 @@ public class ComponentLogic
 	        logger.info("componentPropertiesXML:" + componentPropertiesXML);
 	        
 		    String key = "" + siteNodeId + "_" + languageId + "_" + propertyName;
-			Map property = (Map)CacheController.getCachedObjectFromAdvancedCache("componentPropertyCache", key);
-			
-			if(property != null)
+			//Map property = (Map)CacheController.getCachedObjectFromAdvancedCache("componentPropertyCache", key);
+			Object propertyCandidate = CacheController.getCachedObjectFromAdvancedCache("componentPropertyCache", key);
+			//System.out.println("propertyCandidate for key " + key + "=" + propertyCandidate);
+			Map property = null;
+				
+			if(propertyCandidate != null)
 			{
-				logger.info("There was an cached property:" + key + ":" + property);
-			    ////System.out.println("Returning cached property...");
+				if(propertyCandidate instanceof NullObject)
+					property = null;				
+				else
+					property = (Map)propertyCandidate;
+					
+				//logger.info("There was an cached content attribute:" + attribute);
+			    //System.out.println("Returning cached property for key " + key);
 			}
 			else
 			{
@@ -1404,7 +1412,7 @@ public class ComponentLogic
 		String inheritedPageComponentsXML = getPageComponentsString(templateController, siteNodeId, languageId, contentId, contentVersionIdList);
 		//logger.info("inheritedPageComponentsXML:" + inheritedPageComponentsXML);
 
-	    String key = "" + siteNodeId + "_" + languageId + "_" + propertyName;
+	    String key = "inherited_" + siteNodeId + "_" + languageId + "_" + componentId + "_" + propertyName;
 		Object propertyCandidate = CacheController.getCachedObjectFromAdvancedCache("componentPropertyCache", key);
 		//System.out.println("propertyCandidate for key " + key + "=" + propertyCandidate);
 		Map property = null;
