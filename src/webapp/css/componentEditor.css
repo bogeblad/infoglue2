@@ -479,6 +479,11 @@ input.propertytextfield {
 	width            : 200px;
 	height			 : 150px;
 }
+select.propertyselect {
+	font-family:verdana, sans-serif;
+	font-size:10px;
+	font-weight:normal;
+}
 
 .inheritedOverlay
 {

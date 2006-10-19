@@ -854,7 +854,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 				
 				if(hasAccessToProperty)
 				{
-					sb.append("			<td class=\"igpropertyvalue\" align=\"left\"><input type=\"hidden\" name=\"" + propertyIndex + "_propertyName\" value=\"" + componentProperty.getName() + "\"><select class=\"propertytextfield\" name=\"" + componentProperty.getName() + "\">");
+					sb.append("			<td class=\"igpropertyvalue\" align=\"left\"><input type=\"hidden\" name=\"" + propertyIndex + "_propertyName\" value=\"" + componentProperty.getName() + "\"><select class=\"propertyselect\" name=\"" + componentProperty.getName() + "\">");
 					
 					Iterator optionsIterator = componentProperty.getOptions().iterator();
 					while(optionsIterator.hasNext())
