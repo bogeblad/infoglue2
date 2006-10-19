@@ -70,6 +70,7 @@ Abbreviated Changelog from 2.3.5 Final
 - Fixed so one can have steps in workflows on other servers and also jump between protocols like http and https.
 - Made fix so remoteUserProperties-tag actually cares about the language-id sent in.
 - Fixed so application handles https-situations better
+- Decreased castor-cache to 5000 on the content version entity to limit the memory footprint a bit.
 
 -------------------------------------------------------------------------------------
 - InfoGlue 2.3.5 Final

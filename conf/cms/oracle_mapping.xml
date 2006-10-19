@@ -850,7 +850,7 @@
 <!--  Mapping for ContentVersion  -->
   <class name="org.infoglue.cms.entities.content.impl.simple.ContentVersionImpl" identity="contentVersionId" key-generator="SEQUENCE">
     <description>ContentVersion</description>
-    <cache-type type="unlimited" capacity="10000"/>
+    <cache-type type="unlimited" capacity="5000"/>
     <map-to table="cmContVer"/>
     <field name="contentVersionId" type="java.lang.Integer">
       <sql name="ContVerId" type="integer" dirty="check" />
