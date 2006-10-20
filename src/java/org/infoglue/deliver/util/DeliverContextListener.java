@@ -24,6 +24,7 @@
 package org.infoglue.deliver.util;
 
 import java.io.File;
+import java.util.Enumeration;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
@@ -56,25 +57,26 @@ public final class DeliverContextListener implements ServletContextListener
 	 
     public void contextInitialized(ServletContextEvent event) 
     {
-		System.out.println("contextInitialized for deliver...");
 		try
-		{
-		    servletContext = event.getServletContext();
-		    
+		{		    
+		    /*
 			String isHeadless = System.getProperty("java.awt.headless");
 			System.out.println("java.awt.headless=" + isHeadless);
 			if(isHeadless == null || !isHeadless.equalsIgnoreCase("true"))
 			{
 				System.setProperty("java.awt.headless", "true");
 			}
-
+			*/
+		    
 			String contextRootPath = event.getServletContext().getRealPath("/");
 			if(!contextRootPath.endsWith("/") && !contextRootPath.endsWith("\\")) 
 				contextRootPath = contextRootPath + "/";
-							
+			
+			System.out.println("\n**************************************");
+			System.out.println("Initializing deliver context for directory:" + contextRootPath);
+					
 			CmsPropertyHandler.setApplicationName("deliver");
 			
-			//CmsPropertyHandler.setProperty("contextRootPath", contextRootPath); 
 			CmsPropertyHandler.setContextRootPath(contextRootPath); 
 			CmsPropertyHandler.setOperatingMode(CmsPropertyHandler.getProperty("operatingMode"));
 			
@@ -126,6 +128,8 @@ public final class DeliverContextListener implements ServletContextListener
 				cacheController.start();
 			
 			InfoGlueAuthenticationFilter.initializeProperties();
+			
+			System.out.println("**************************************\n");
 		}
 		catch(Exception e)
 		{

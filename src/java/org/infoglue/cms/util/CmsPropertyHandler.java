@@ -112,7 +112,6 @@ public class CmsPropertyHandler
 	    	Timer timer = new Timer();
 	    	timer.setActive(false);
 	    	
-			System.out.println("**************************************");
 			System.out.println("Initializing properties from file.....");
 			
 			cachedProperties = new Properties();
@@ -168,8 +167,6 @@ public class CmsPropertyHandler
 		    initializeLocalServerNodeId();
 		    
 		    timer.printElapsedTime("Initializing properties from local server jdbc");
-
-			System.out.println("**************************************");
 		}	
 		catch(Exception e)
 		{

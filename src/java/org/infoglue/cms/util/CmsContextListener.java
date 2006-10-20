@@ -25,6 +25,7 @@ package org.infoglue.cms.util;
 
 import java.io.File;
 
+import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
@@ -49,25 +50,28 @@ public final class CmsContextListener implements ServletContextListener
 	 
     public void contextInitialized(ServletContextEvent event) 
     {
-		System.out.println("contextInitialized for cms");
 		try
 		{
+			/*
 			String isHeadless = System.getProperty("java.awt.headless");
 			System.out.println("java.awt.headless=" + isHeadless);
 			if(isHeadless == null || !isHeadless.equalsIgnoreCase("true"))
 			{
 				System.setProperty("java.awt.headless", "true");
 			}
+			*/
 
 			String contextRootPath = event.getServletContext().getRealPath("/");
 			if(!contextRootPath.endsWith("/") && !contextRootPath.endsWith("\\")) 
 				contextRootPath = contextRootPath + "/";
 			
+			System.out.println("\n**************************************");
+			System.out.println("Initializing cms context for directory:" + contextRootPath);
+
 			CmsPropertyHandler.setApplicationName("cms");
 			// String up2datePath = event.getServletContext().getRealPath("/") + "ut2date" + File.separator;
 			// CmsPropertyHandler.setProperty("up2datePath", up2datePath);
 			
-			System.out.println("contextRootPath:" + contextRootPath);
 			CmsPropertyHandler.setProperty("contextRootPath", contextRootPath); 
 			CmsPropertyHandler.setContextRootPath(contextRootPath); 
 			
@@ -110,6 +114,7 @@ public final class CmsContextListener implements ServletContextListener
 			if(cacheController.getExpireCacheAutomatically())
 				cacheController.start();
 
+			System.out.println("**************************************\n");
 		}
 		catch(Exception e)
 		{
