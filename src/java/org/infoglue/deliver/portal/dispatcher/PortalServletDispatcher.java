@@ -121,7 +121,7 @@ public class PortalServletDispatcher extends DeliveryServletDispatcher {
         }
 
         // RSS Portlet test-hack-fix
-        System.setProperty("javax.xml.transform.TransformerFactory", "org.apache.xalan.transformer.TransformerImpl");
+        //System.setProperty("javax.xml.transform.TransformerFactory", "org.apache.xalan.transformer.TransformerImpl");
 
         log.info("Ready to serve you.");
     }
