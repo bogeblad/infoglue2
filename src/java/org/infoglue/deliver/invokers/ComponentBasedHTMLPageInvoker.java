@@ -1080,7 +1080,7 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 				}
 				catch(Exception e)
 				{
-					logger.warn("There was deleted referenced component or some other problem when rendering siteNode: " + templateController.getSiteNodeId() + " in language " + templateController.getLanguageId() + ":" + e.getMessage(), e);
+					logger.warn("There was deleted referenced component or some other problem when rendering siteNode: " + templateController.getCurrentPagePath() + "(" + templateController.getSiteNodeId() + ") in language " + templateController.getLanguageId() + ":" + e.getMessage(), e);
 				}
 			}			
 		}		

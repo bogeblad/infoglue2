@@ -73,6 +73,7 @@ Abbreviated Changelog from 2.3.5 Final
 - Decreased castor-cache to 5000 on the content version entity to limit the memory footprint a bit.
 - Removed hard set of javax.xmk.transform.TransformFactory in PortletDispatcher - was messing with other applications ect and was marked as just a test.
 - Made startup output a bit nicer and more informative
+- Added more debug info to broken component references so one can see exact which page has the broken reference.
 
 -------------------------------------------------------------------------------------
 - InfoGlue 2.3.5 Final
