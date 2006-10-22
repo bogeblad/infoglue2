@@ -26,11 +26,20 @@ import javax.servlet.jsp.JspException;
 
 import org.infoglue.deliver.taglib.component.ComponentLogicTag;
 
+/**
+ * 
+ * @author mattias
+ *
+ */
 public class PageAsDigitalAssetUrlTag extends ComponentLogicTag
 {
 	/**
-	 * 
+	 * This method calls an page and stores it as an digitalAsset - that way one can avoid having to 
+	 * serve javascript-files and css-files through InfoGlue. Not suitable for use if you have very dynamic
+	 * css:es or scripts which includes logic depending on user info etc.. mostly usable if you have a static css
+	 * or controls it on the pageCache parameters.
 	 */
+
 	private static final long serialVersionUID = 4050485595074016051L;
 	
 	private String propertyName;
