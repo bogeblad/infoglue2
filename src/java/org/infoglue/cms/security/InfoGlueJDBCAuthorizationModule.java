@@ -65,11 +65,11 @@ public class InfoGlueJDBCAuthorizationModule extends BaseController implements A
 	private Properties extraProperties = null;
 	private Database transactionObject 	= null;
 
-    protected String connectionName = null; //"cds";
-    protected String connectionPassword = null; //"cds";
-    protected String connectionURL = null; //"jdbc:jtds:sqlserver://localhost:1433;DatabaseName=cds;SelectMethod=Cursor";
+    protected String connectionName = null;
+    protected String connectionPassword = null;
+    protected String connectionURL = null;
     protected Driver driver = null;
-    protected String driverName = null; // "net.sourceforge.jtds.jdbc.Driver";
+    protected String driverName = null;
 
 	/**
 	 * Gets is the implementing class can update as well as read 
@@ -207,7 +207,7 @@ public class InfoGlueJDBCAuthorizationModule extends BaseController implements A
 				
 				String sql = this.extraProperties.getProperty("jdbc.userRolesSQL");
 				if(sql == null || sql.equals(""))
-					sql = "SELECT * from CDS_USER, CDS_ROLE_USER, CDS_ROLE where CDS_ROLE_USER.CDS_USER = CDS_USER.ID AND CDS_ROLE_USER.CDS_ROLE = CDS_ROLE.ID AND CDS_USER.USER_NAME = ?";
+					sql = "SELECT * from USER, ROLE_USER, ROLE where ROLE_USER.USER = USER.ID AND ROLE_USER.ROLE = ROLE.ID AND USER.USER_NAME = ?";
 				
 				conn = getConnection();
 				
@@ -316,7 +316,7 @@ public class InfoGlueJDBCAuthorizationModule extends BaseController implements A
 
 			String sql = this.extraProperties.getProperty("jdbc.roleSQL");
 			if(sql == null || sql.equals(""))
-				sql = "SELECT * from CDS_ROLE where CDS_ROLE.ROLE_NAME = ?";
+				sql = "SELECT * from ROLE where ROLE.ROLE_NAME = ?";
 
 			conn = getConnection();
 			
@@ -464,7 +464,7 @@ public class InfoGlueJDBCAuthorizationModule extends BaseController implements A
 
 			String sql = this.extraProperties.getProperty("jdbc.rolesSQL");
 			if(sql == null || sql.equals(""))
-				sql = "SELECT * from CDS_ROLE ORDER BY ROLE_NAME";
+				sql = "SELECT * from ROLE ORDER BY ROLE_NAME";
 
 			conn = getConnection();
 			
@@ -566,7 +566,7 @@ public class InfoGlueJDBCAuthorizationModule extends BaseController implements A
 
 			String sql = this.extraProperties.getProperty("jdbc.usersRolesSQL");
 			if(sql == null || sql.equals(""))
-				sql = "SELECT * from CDS_USER, CDS_ROLE_USER, CDS_ROLE where CDS_ROLE_USER.CDS_USER = CDS_USER.ID AND CDS_ROLE_USER.CDS_ROLE = CDS_ROLE.ID ORDER BY CDS_USER.USER_NAME";
+				sql = "SELECT * from USER, ROLE_USER, ROLE where ROLE_USER.USER = USER.ID AND ROLE_USER.ROLE = ROLE.ID ORDER BY USER.USER_NAME";
 
 			conn = getConnection();
 			
