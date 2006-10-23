@@ -70,9 +70,9 @@ public class ComponentPropertyValueTag extends ComponentLogicTag
         this.siteNodeId = evaluateInteger("componentPropertyValue", "siteNodeId", siteNodeId);
     }
 
-    public void setPropertyName(String name) throws JspException
+    public void setPropertyName(String propertyName) throws JspException
 	{
-		this.propertyName = evaluateString("componentPropertyValue", "propertyName", name);
+		this.propertyName = evaluateString("componentPropertyValue", "propertyName", propertyName);
 	}
 	
 	public void setUseInheritance(boolean useInheritance)

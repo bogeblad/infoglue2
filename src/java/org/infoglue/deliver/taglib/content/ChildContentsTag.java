@@ -56,7 +56,7 @@ public class ChildContentsTag extends ComponentLogicTag
 	    return EVAL_PAGE;
     }
 
-	public void setPropertyName(String name) throws JspException
+	public void setPropertyName(String propertyName) throws JspException
 	{
         this.propertyName = evaluateString("childContents", "propertyName", propertyName);
 	}
