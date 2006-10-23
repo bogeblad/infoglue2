@@ -95,7 +95,6 @@ public final class DeliverContextListener implements ServletContextListener
 				CmsPropertyHandler.setProperty("logPath", logPath);
 			}
 
-			logger.warn("AAAAAAAA");
 			Enumeration enumeration = Logger.getLogger("org.infoglue.deliver.invokers.ComponentBasedHTMLPageInvoker").getAllAppenders();
 	        while(enumeration.hasMoreElements())
 	        {
