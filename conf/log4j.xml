@@ -12,10 +12,10 @@
 	</appender>
 
 	<appender name="INFOGLUE-FILE" class="org.apache.log4j.RollingFileAppender">
-		<param name="File" value="infoglue.log"/>
+		<param name="File" value="logs/infoglue.log"/>
 		<param name="Append" value="true"/>
- 		<param name="MaxFileSize" value="50MB"/>
-		<param name="MaxBackupIndex" value="0"/>
+ 		<param name="MaxFileSize" value="10MB"/>
+		<param name="MaxBackupIndex" value="5"/>
 		<param name="Threshold" value="WARNING"/>
 		<layout class="org.apache.log4j.PatternLayout">
 			<param name="ConversionPattern" value="%d{dd MMM yyyy HH:mm:ss.SSS} [%-5p] [%t] [%c] - %m%n"/>

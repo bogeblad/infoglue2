@@ -24,12 +24,17 @@
 package org.infoglue.cms.util;
 
 import java.io.File;
+import java.util.Enumeration;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
+import org.apache.log4j.Logger;
+import org.apache.log4j.RollingFileAppender;
+import org.infoglue.deliver.invokers.ComponentBasedHTMLPageInvoker;
 import org.infoglue.deliver.util.CacheController;
+import org.infoglue.deliver.util.DeliverContextListener;
 
 
 
@@ -40,6 +45,8 @@ import org.infoglue.deliver.util.CacheController;
 
 public final class CmsContextListener implements ServletContextListener 
 {
+    private final static Logger logger = Logger.getLogger(CmsContextListener.class.getName());
+
 	private static CacheController cacheController = new CacheController();
 	
 	/**
@@ -78,10 +85,23 @@ public final class CmsContextListener implements ServletContextListener
 			String logPath = CmsPropertyHandler.getLogPath();
 			if(logPath == null || logPath.equals(""))
 			{
-				logPath = contextRootPath + "logs" + File.separator + "infogluecms.log";
+				logPath = contextRootPath + "logs" + File.separator + "infoglueCMS.log";
 				CmsPropertyHandler.setProperty("logPath", logPath);
 			}			
 			
+			Enumeration enumeration = Logger.getLogger("org.infoglue.deliver.invokers.ComponentBasedHTMLPageInvoker").getAllAppenders();
+	        while(enumeration.hasMoreElements())
+	        {
+	        	RollingFileAppender appender = (RollingFileAppender)enumeration.nextElement();
+	            if(appender.getName().equalsIgnoreCase("INFOGLUE-FILE"))
+	            {
+	            	appender.setFile(logPath);
+	    			appender.activateOptions();
+	            	Logger.getLogger("org.infoglue.deliver.invokers.ComponentBasedHTMLPageInvoker").addAppender(appender);
+	            	break;
+	            }
+	        }
+
 			String URIEncoding = CmsPropertyHandler.getURIEncoding();
 			if(URIEncoding == null || URIEncoding.equals(""))
 			{

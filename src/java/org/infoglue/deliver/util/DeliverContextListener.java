@@ -30,8 +30,14 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
+import org.apache.log4j.Appender;
+import org.apache.log4j.Category;
+import org.apache.log4j.Logger;
+import org.apache.log4j.RollingFileAppender;
 import org.infoglue.cms.security.InfoGlueAuthenticationFilter;
 import org.infoglue.cms.util.CmsPropertyHandler;
+import org.infoglue.deliver.invokers.ComponentBasedHTMLPageInvoker;
+import org.infoglue.deliver.invokers.DecoratedComponentBasedHTMLPageInvoker;
 
 /**
  * This class functions as the entry-point for all initialization of the Cms-tool.
@@ -40,6 +46,8 @@ import org.infoglue.cms.util.CmsPropertyHandler;
 
 public final class DeliverContextListener implements ServletContextListener 
 {
+    private final static Logger logger = Logger.getLogger(DeliverContextListener.class.getName());
+
 	private static CacheController cacheController = new CacheController();
 	
 	private static ServletContext servletContext = null;
@@ -80,13 +88,26 @@ public final class DeliverContextListener implements ServletContextListener
 			CmsPropertyHandler.setContextRootPath(contextRootPath); 
 			CmsPropertyHandler.setOperatingMode(CmsPropertyHandler.getProperty("operatingMode"));
 			
-			
 			String logPath = CmsPropertyHandler.getLogPath();
 			if(logPath == null || logPath.equals(""))
 			{
-				logPath = contextRootPath + "logs" + File.separator + "infogluedeliver.log";
+				logPath = contextRootPath + "logs" + File.separator + "infoglueDeliver.log";
 				CmsPropertyHandler.setProperty("logPath", logPath);
 			}
+
+			logger.warn("AAAAAAAA");
+			Enumeration enumeration = Logger.getLogger("org.infoglue.deliver.invokers.ComponentBasedHTMLPageInvoker").getAllAppenders();
+	        while(enumeration.hasMoreElements())
+	        {
+	        	RollingFileAppender appender = (RollingFileAppender)enumeration.nextElement();
+	            if(appender.getName().equalsIgnoreCase("INFOGLUE-FILE"))
+	            {
+	    			appender.setFile(logPath);
+	    			appender.activateOptions();
+	            	Logger.getLogger(ComponentBasedHTMLPageInvoker.class).addAppender(appender);
+	            	break;
+	            }
+	        }
 
 			String statisticsLogPath = CmsPropertyHandler.getStatisticsLogPath();
 			if(statisticsLogPath == null || statisticsLogPath.equals(""))
