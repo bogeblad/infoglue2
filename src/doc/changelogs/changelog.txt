@@ -76,6 +76,7 @@ Abbreviated Changelog from 2.3.5 Final
 - Added more debug info to broken component references so one can see exact which page has the broken reference.
 - Added check for sitenodes with no siteNodeVersions - only found on siteNodes with no metaInfoContentId however. After an upgrade from 1.3.2 to 2.4 for example we suggest one run validation at least 2 times to optimize the database.
 - Made more setPropertyName methods in taglibs evaluate expressions
+- Fixed a workaround to problem with empty slots allowing users with no access to save page template to still do it. Now they get an error when trying.
 
 -------------------------------------------------------------------------------------
 - InfoGlue 2.3.5 Final
