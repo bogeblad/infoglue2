@@ -59,10 +59,10 @@ public class RelatedPagesTag extends ComponentLogicTag {
 	    return EVAL_PAGE;
     }
 
-	public void setPropertyName(String name) 
-	{
-		this.propertyName = name;
-	}
+    public void setPropertyName(String propertyName) throws JspException
+    {
+        this.propertyName = evaluateString("relatedPages", "propertyName", propertyName);
+    }
 	
 	public void setUseInheritence(boolean useInheritance)
 	{

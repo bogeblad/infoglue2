@@ -81,9 +81,9 @@ public class AssetThumbnailUrlTag extends ComponentLogicTag
         this.height = height;
     }
     
-    public void setPropertyName(String propertyName)
+    public void setPropertyName(String propertyName) throws JspException
     {
-        this.propertyName = propertyName;
+        this.propertyName = evaluateString("assetThumbnailUrl", "propertyName", propertyName);
     }
     
     public void setUseInheritance(boolean useInheritance)

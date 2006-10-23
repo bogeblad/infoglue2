@@ -89,9 +89,9 @@ public class AssetUrlTag extends ComponentLogicTag
         this.assetKey = assetKey;
     }
 
-    public void setPropertyName(String propertyName)
+    public void setPropertyName(String propertyName) throws JspException
     {
-        this.propertyName = propertyName;
+        this.propertyName = evaluateString("assetUrl", "propertyName", propertyName);
     }
     
     public void setUseInheritance(boolean useInheritance)

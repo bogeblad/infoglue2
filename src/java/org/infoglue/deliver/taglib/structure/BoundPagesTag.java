@@ -27,7 +27,8 @@ import javax.servlet.jsp.JspException;
 
 import org.infoglue.deliver.taglib.component.ComponentLogicTag;
 
-public class BoundPagesTag extends ComponentLogicTag {
+public class BoundPagesTag extends ComponentLogicTag 
+{
 	private static final long serialVersionUID = 4050206323348354355L;
 
 	private String propertyName;
@@ -45,10 +46,10 @@ public class BoundPagesTag extends ComponentLogicTag {
         return EVAL_PAGE;
     }
 
-	public void setPropertyName(String name) 
-	{
-		this.propertyName = name;
-	}
+    public void setPropertyName(String propertyName) throws JspException
+    {
+        this.propertyName = evaluateString("boundPages", "propertyName", propertyName);
+    }
 	
 	public void setUseInheritence(boolean useInheritance)
 	{

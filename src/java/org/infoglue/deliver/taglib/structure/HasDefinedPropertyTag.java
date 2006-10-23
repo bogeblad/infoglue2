@@ -57,11 +57,11 @@ public class HasDefinedPropertyTag extends ComponentLogicTag
         this.languageId = evaluateInteger("HasDefinedPropertyTag", "languageId", languageId);
     }
 
-    public void setPropertyName(String propertyName)
+    public void setPropertyName(String propertyName) throws JspException
     {
-        this.propertyName = propertyName;
+        this.propertyName = evaluateString("hasDefinedProperty", "propertyName", propertyName);
     }
-    
+
     public void setUseInheritance(boolean useInheritance)
     {
         this.useInheritance = useInheritance;

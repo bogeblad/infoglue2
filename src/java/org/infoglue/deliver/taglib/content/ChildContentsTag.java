@@ -27,7 +27,8 @@ import javax.servlet.jsp.JspException;
 
 import org.infoglue.deliver.taglib.component.ComponentLogicTag;
 
-public class ChildContentsTag extends ComponentLogicTag {
+public class ChildContentsTag extends ComponentLogicTag 
+{
 	private static final long serialVersionUID = 4050206323348354355L;
 
 	private Integer contentId;
@@ -55,14 +56,14 @@ public class ChildContentsTag extends ComponentLogicTag {
 	    return EVAL_PAGE;
     }
 
-	public void setPropertyName(String name) 
+	public void setPropertyName(String name) throws JspException
 	{
-		this.propertyName = name;
+        this.propertyName = evaluateString("childContents", "propertyName", propertyName);
 	}
 	
-    public void setContentId(Integer contentId)
+    public void setContentId(String contentId) throws JspException
     {
-        this.contentId = contentId;
+        this.contentId = evaluateInteger("childContents", "contentId", contentId);
     }
     
     public void setIncludeFolders(boolean includeFolders)

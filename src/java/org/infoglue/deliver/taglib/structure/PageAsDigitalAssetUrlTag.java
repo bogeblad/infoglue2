@@ -89,9 +89,9 @@ public class PageAsDigitalAssetUrlTag extends ComponentLogicTag
         this.contentId = evaluateInteger("pageAsDigitalAssetUrl", "contentId", contentId);
     }
     
-    public void setPropertyName(String propertyName)
+    public void setPropertyName(String propertyName) throws JspException
     {
-        this.propertyName = propertyName;
+        this.propertyName = evaluateString("pageAsDigitalAssetUrl", "propertyName", propertyName);
     }
     
     public void setUseInheritance(boolean useInheritance)

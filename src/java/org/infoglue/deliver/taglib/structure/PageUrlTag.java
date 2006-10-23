@@ -79,9 +79,9 @@ public class PageUrlTag extends ComponentLogicTag
         this.contentId = evaluateInteger("pageUrl", "contentId", contentId);
     }
     
-    public void setPropertyName(String propertyName)
+    public void setPropertyName(String propertyName) throws JspException
     {
-        this.propertyName = propertyName;
+        this.propertyName = evaluateString("pageUrl", "propertyName", propertyName);
     }
     
     public void setUseInheritance(boolean useInheritance)

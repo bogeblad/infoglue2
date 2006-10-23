@@ -54,10 +54,10 @@ public class ChildPagesTag extends ComponentLogicTag {
 	    return EVAL_PAGE;
     }
 
-	public void setPropertyName(String name) 
-	{
-		this.propertyName = name;
-	}
+    public void setPropertyName(String propertyName) throws JspException
+    {
+        this.propertyName = evaluateString("childPages", "propertyName", propertyName);
+    }
 	
     public void setSiteNodeId(String siteNodeId) throws JspException
     {
