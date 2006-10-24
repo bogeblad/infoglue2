@@ -102,6 +102,9 @@ public class DeliveryContext implements UsageListener
 	//The variable sets if the response string should be trimmed to avoid problems with xml-responses etc.
 	private boolean trimResponse = false;
 
+	//The variable sets if the full page should be rendered once more after all components have been rendered.
+	private boolean evaluateFullPage = true;
+
 	public static DeliveryContext getDeliveryContext()
 	{
 		return new DeliveryContext();
@@ -368,5 +371,15 @@ public class DeliveryContext implements UsageListener
     public void setTrimResponse(boolean trimResponse) 
 	{
 		this.trimResponse = trimResponse;
+	}
+
+	public boolean getEvaluateFullPage() 
+	{
+		return evaluateFullPage;
+	}
+
+	public void setEvaluateFullPage(boolean evaluateFullPage) 
+	{
+		this.evaluateFullPage = evaluateFullPage;
 	}
 }

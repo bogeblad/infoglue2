@@ -65,4 +65,9 @@ public class DeliveryContextTag extends TemplateControllerTag
 	{
 	    getController().getDeliveryContext().setTrimResponse(trimResponse);
 	}
+
+	public void setEvaluateFullPage(boolean evaluateFullPage) throws JspException
+	{
+	    getController().getDeliveryContext().setEvaluateFullPage(evaluateFullPage);
+	}
 }

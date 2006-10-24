@@ -118,8 +118,10 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 		PrintWriter cachedStream = new PrintWriter(cacheString);
 		new VelocityTemplateProcessor().renderTemplate(context, cachedStream, pageContent);
 		
-		String pageString = cacheString.toString();
-			
+		String pageString = pageContent;
+		if(this.getDeliveryContext().getEvaluateFullPage())
+			pageString = cacheString.toString();
+		
 		pageString = this.getTemplateController().decoratePage(pageString);
 		
 		this.setPageString(pageString);
