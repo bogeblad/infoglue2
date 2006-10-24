@@ -73,6 +73,11 @@
 		<appender-ref ref="INFOGLUE-FILE"/>
 	</category>
 
+	<category name="org.infoglue.deliver.controllers.kernel.impl.simple.BasicTemplateController" additivity="false">
+		<priority value="WARN"/>
+		<appender-ref ref="INFOGLUE-FILE"/>
+	</category>
+
 	<category name="org.infoglue.deliver.applications.filters.ViewPageFilter" additivity="false">
 		<priority value="WARN"/>
 		<appender-ref ref="INFOGLUE-FILE"/>
