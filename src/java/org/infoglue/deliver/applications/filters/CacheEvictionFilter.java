@@ -78,20 +78,8 @@ public class CacheEvictionFilter implements Filter
 
             if(logger.isInfoEnabled())
             	logger.info("userAgent:" + userAgent);
-            /*
-            System.out.println("Address " + httpRequest.getRemoteAddr());
             
-            Enumeration enumeration = httpRequest.getHeaderNames();
-            while(enumeration.hasMoreElements())
-            {
-            	String headerName = (String)enumeration.nextElement();
-            	System.out.println(headerName + "=" + httpRequest.getHeader(headerName));
-            }
-            
-            System.out.println("userAgent:" + userAgent);
-            */
-            
-            if (!uriMatcher.matches(requestURI) && userAgent != null && userAgent.indexOf("java") == -1) 
+            if (!uriMatcher.matches(requestURI) && userAgent != null && userAgent.indexOf("java") == -1 && userAgent.indexOf("axis") == -1) 
             {
                 CacheController.evictWaitingCache();
             }
