@@ -900,7 +900,7 @@ public class SiteNodeVersionController extends BaseController
                 }
                 catch(Exception e)
                 {
-                    logger.warn("A siteNode referenced by ID:" + registryVO.getEntityId() + " was not found - must be a invalid reference from " + siteNode.getName() + ".", e);
+                    logger.warn("A siteNode referenced by ID:" + registryVO.getEntityId() + " was not found - must be a invalid reference from " + siteNode.getName() + "[" + siteNode.getId() + "].", e);
                 }
 
     		    checkedSiteNodes.add(new Integer(registryVO.getEntityId()));
@@ -927,7 +927,7 @@ public class SiteNodeVersionController extends BaseController
                 }
                 catch(Exception e)
                 {
-                    logger.warn("A content referenced by ID:" + registryVO.getEntityId() + " was not found - must be a invalid reference from " + siteNode.getName() + ".", e);
+                    logger.warn("A content referenced by ID:" + registryVO.getEntityId() + " was not found - must be a invalid reference from " + siteNode.getName() + "[" + siteNode.getId() + "].", e);
                 }
                 
     		    checkedContents.add(new Integer(registryVO.getEntityId()));

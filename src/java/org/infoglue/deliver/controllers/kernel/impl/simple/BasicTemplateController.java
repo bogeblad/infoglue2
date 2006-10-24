@@ -3929,7 +3929,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			logger.error("An error occurred trying to get the page navigationtitle:" + e.getMessage(), e);
+			logger.error("An error occurred trying to get the page navigationtitle on " + this.getCurrentPagePath() + ": " + e.getMessage(), e);
 		}
 				
 		return navTitle;
@@ -3960,7 +3960,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			logger.error("An error occurred trying to get the page navigationtitle:" + e.getMessage(), e);
+			logger.error("An error occurred trying to get the page navigationtitle on " + this.getCurrentPagePath() + ": " + e.getMessage(), e);
 		}
 				
 		return navTitle;
@@ -3995,7 +3995,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			logger.error("An error occurred trying to get the page navigationtitle:" + e.getMessage(), e);
+			logger.error("An error occurred trying to get the page navigationtitle on " + this.getCurrentPagePath() + ": " + e.getMessage(), e);
 		}
 				
 		return navTitle;
