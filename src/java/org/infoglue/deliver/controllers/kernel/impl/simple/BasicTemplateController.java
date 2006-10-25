@@ -3574,7 +3574,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			logger.error("An error occurred trying to get contentId for contentBindningName " + contentBindningName + ":" + e.getMessage(), e);
+			logger.warn("An error occurred trying to get contentId for contentBindningName " + contentBindningName + ":" + e.getMessage(), e);
 		}
 				
 		return contentId;
@@ -3960,7 +3960,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			logger.error("An error occurred trying to get the page navigationtitle on " + this.getCurrentPagePath() + ": " + e.getMessage(), e);
+			logger.warn("An error occurred trying to get the page navigationtitle on " + this.getCurrentPagePath() + ": " + e.getMessage(), e);
 		}
 				
 		return navTitle;

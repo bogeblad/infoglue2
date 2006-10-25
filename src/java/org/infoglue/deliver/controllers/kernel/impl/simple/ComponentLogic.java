@@ -398,14 +398,18 @@ public class ComponentLogic
 			while(bindingsIterator.hasNext())
 			{
 				Integer siteNodeId = new Integer((String)bindingsIterator.next());
-				WebPage webPage = new WebPage();						
-				webPage.setSiteNodeId(siteNodeId);
-				webPage.setLanguageId(templateController.getLanguageId());
-				webPage.setContentId(null);
-				webPage.setNavigationTitle(getPageNavTitle(siteNodeId));
-				webPage.setMetaInfoContentId(templateController.getContentId(siteNodeId, DeliveryContext.META_INFO_BINDING_NAME));
-				webPage.setUrl(getPageUrl(siteNodeId));
-				pages.add(webPage);
+				SiteNodeVO siteNode = templateController.getSiteNode(siteNodeId);
+				if(siteNode != null)
+				{
+					WebPage webPage = new WebPage();						
+					webPage.setSiteNodeId(siteNodeId);
+					webPage.setLanguageId(templateController.getLanguageId());
+					webPage.setContentId(null);
+					webPage.setNavigationTitle(getPageNavTitle(siteNodeId));
+					webPage.setMetaInfoContentId(siteNode.getMetaInfoContentId());
+					webPage.setUrl(getPageUrl(siteNodeId));
+					pages.add(webPage);
+				}
 			}
 		}
 
@@ -688,12 +692,16 @@ public class ComponentLogic
 			{
 			    webPage = new WebPage();
 				Integer siteNodeId = new Integer((String)bindingsIterator.next());
-				webPage.setSiteNodeId(siteNodeId);
-				webPage.setLanguageId(templateController.getLanguageId());
-				webPage.setContentId(null);
-				webPage.setNavigationTitle(getPageNavTitle(siteNodeId));
-				webPage.setMetaInfoContentId(templateController.getContentId(siteNodeId, DeliveryContext.META_INFO_BINDING_NAME));
-				webPage.setUrl(getPageUrl(siteNodeId));
+				SiteNodeVO siteNode = templateController.getSiteNode(siteNodeId);
+				if(siteNode != null)
+				{
+					webPage.setSiteNodeId(siteNodeId);
+					webPage.setLanguageId(templateController.getLanguageId());
+					webPage.setContentId(null);
+					webPage.setNavigationTitle(getPageNavTitle(siteNodeId));
+					webPage.setMetaInfoContentId(siteNode.getMetaInfoContentId());
+					webPage.setUrl(getPageUrl(siteNodeId));
+				}
 			}
 		}
 
@@ -723,14 +731,18 @@ public class ComponentLogic
 			while(bindingsIterator.hasNext())
 			{
 				Integer siteNodeId = new Integer((String)bindingsIterator.next());
-				WebPage webPage = new WebPage();						
-				webPage.setSiteNodeId(siteNodeId);
-				webPage.setLanguageId(templateController.getLanguageId());
-				webPage.setContentId(null);
-				webPage.setNavigationTitle(getPageNavTitle(siteNodeId));
-				webPage.setMetaInfoContentId(templateController.getContentId(siteNodeId, DeliveryContext.META_INFO_BINDING_NAME));
-				webPage.setUrl(getPageUrl(siteNodeId));
-				pages.add(webPage);
+				SiteNodeVO siteNode = templateController.getSiteNode(siteNodeId);
+				if(siteNode != null)
+				{
+					WebPage webPage = new WebPage();						
+					webPage.setSiteNodeId(siteNodeId);
+					webPage.setLanguageId(templateController.getLanguageId());
+					webPage.setContentId(null);
+					webPage.setNavigationTitle(getPageNavTitle(siteNodeId));
+					webPage.setMetaInfoContentId(siteNode.getMetaInfoContentId());
+					webPage.setUrl(getPageUrl(siteNodeId));
+					pages.add(webPage);
+				}
 			}
 		}
 

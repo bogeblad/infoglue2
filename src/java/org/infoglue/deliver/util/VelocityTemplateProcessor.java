@@ -109,14 +109,14 @@ public class VelocityTemplateProcessor
 		}
 		catch(Exception e)
 		{
-		    logger.warn("templateAsString:" + templateAsString);
+		    logger.warn("templateAsString: \n" + templateAsString.substring(0, 500) + "... (template truncated).");
 		    
 		    if(CmsPropertyHandler.getOperatingMode().equalsIgnoreCase("0") && (CmsPropertyHandler.getDisableTemplateDebug() == null || !CmsPropertyHandler.getDisableTemplateDebug().equalsIgnoreCase("true")))
 		        pw.println("Error:" + e.getMessage());
 		    else
 		    {
-			    logger.warn("Error:" + e.getMessage(), e);
-		        throw e;
+			    logger.warn("Warning:" + e.getMessage(), e);
+			    throw e;
 		    }
 		}
 	}
