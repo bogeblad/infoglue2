@@ -109,7 +109,7 @@ public class VelocityTemplateProcessor
 		}
 		catch(Exception e)
 		{
-		    logger.warn("templateAsString: \n" + templateAsString.substring(0, 500) + "... (template truncated).");
+		    logger.warn("templateAsString: \n" + (templateAsString.length() > 500 ? templateAsString.substring(0, 500) + "... (template truncated)." : templateAsString));
 		    
 		    if(CmsPropertyHandler.getOperatingMode().equalsIgnoreCase("0") && (CmsPropertyHandler.getDisableTemplateDebug() == null || !CmsPropertyHandler.getDisableTemplateDebug().equalsIgnoreCase("true")))
 		        pw.println("Error:" + e.getMessage());
