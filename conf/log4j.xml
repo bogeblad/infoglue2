@@ -64,11 +64,7 @@
 	<!-- Use categories to control logging  -->
 	<!-- down to the package or class level	-->
 	<!-- ==================================	-->
-<!--
-	<category name="org.infoglue">
-		<priority value="ERROR"/>
-	</category>
--->
+
 	<category name="org.infoglue.cms">
 		<priority value="WARN"/>
 		<appender-ref ref="INFOGLUE-FILE"/>		
