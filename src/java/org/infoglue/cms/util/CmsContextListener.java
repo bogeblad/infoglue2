@@ -89,7 +89,7 @@ public final class CmsContextListener implements ServletContextListener
 				CmsPropertyHandler.setProperty("logPath", logPath);
 			}			
 			
-			Enumeration enumeration = Logger.getLogger("org.infoglue.deliver.invokers.ComponentBasedHTMLPageInvoker").getAllAppenders();
+			Enumeration enumeration = Logger.getLogger("org.infoglue.cms").getAllAppenders();
 	        while(enumeration.hasMoreElements())
 	        {
 	        	RollingFileAppender appender = (RollingFileAppender)enumeration.nextElement();

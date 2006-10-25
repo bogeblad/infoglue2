@@ -5,14 +5,14 @@
 
 	<appender name="CONSOLE" class="org.apache.log4j.ConsoleAppender">
 		<param name="Target" value="System.out"/>
-		<param name="Threshold" value="WARNING"/>
+		<param name="Threshold" value="ERROR"/>
 		<layout class="org.apache.log4j.PatternLayout">
 			<param name="ConversionPattern" value="%d{dd MMM yyyy HH:mm:ss.SSS} [%-5p] [%t] [%c] - %m%n"/>
 		</layout>
 	</appender>
 
 	<appender name="INFOGLUE-FILE" class="org.apache.log4j.RollingFileAppender">
-		<!--<param name="File" value=""/>-->
+		<!--<param name="File" value="${catalina.home}/logs/infoglue.log"/>-->
 		<param name="Append" value="true"/>
  		<param name="MaxFileSize" value="10MB"/>
 		<param name="MaxBackupIndex" value="5"/>
@@ -20,19 +20,16 @@
 		<layout class="org.apache.log4j.PatternLayout">
 			<param name="ConversionPattern" value="%d{dd MMM yyyy HH:mm:ss.SSS} [%-5p] [%t] [%c] - %m%n"/>
 		</layout>
-	</appender>
-
-	<!-- File appender with rollover
-	<appender name="FILE" class="org.apache.log4j.RollingFileAppender">
-		<param name="File" value="infoglue.log"/>
-		<param name="MaxFileSize" value="1MB"/>
-		<param name="MaxBackupIndex" value="2"/>
-		<param name="Threshold" value="WARNING"/>
-		<layout class="org.apache.log4j.PatternLayout">
-			<param name="ConversionPattern" value="%d{dd MMM yyyy HH:mm:ss.SSS} [%-5p] [%t] [%c] - %m%n"/>
-		</layout>
-	</appender>
-	-->
+		<filter class="org.apache.log4j.varia.LevelRangeFilter">
+      		<param name="LevelMin" value="WARN" />
+      		<param name="LevelMax" value="WARN" />
+    	</filter>
+		<!--
+		<filter class="org.apache.log4j.varia.LevelMatchFilter">
+        	<param name="LevelToMatch" value="WARN"/>
+      	</filter>
+      	-->
+   	</appender>
  
 	<!-- Appender Chainsaw GUI Log viewer
 	<appender name="CHAINSAW" class="org.apache.log4j.net.SocketAppender">
@@ -67,28 +64,19 @@
 	<!-- Use categories to control logging  -->
 	<!-- down to the package or class level	-->
 	<!-- ==================================	-->
-
-	<category name="org.infoglue.deliver.invokers.ComponentBasedHTMLPageInvoker" additivity="false">
-		<priority value="WARN"/>
-		<appender-ref ref="INFOGLUE-FILE"/>
+<!--
+	<category name="org.infoglue">
+		<priority value="ERROR"/>
 	</category>
-
-	<category name="org.infoglue.deliver.controllers.kernel.impl.simple.BasicTemplateController" additivity="false">
-		<priority value="WARN"/>
-		<appender-ref ref="INFOGLUE-FILE"/>
-	</category>
-
-	<category name="org.infoglue.deliver.applications.filters.ViewPageFilter" additivity="false">
-		<priority value="WARN"/>
-		<appender-ref ref="INFOGLUE-FILE"/>
-	</category>
-
+-->
 	<category name="org.infoglue.cms">
 		<priority value="WARN"/>
+		<appender-ref ref="INFOGLUE-FILE"/>		
 	</category>
 
 	<category name="org.infoglue.deliver">
 		<priority value="WARN"/>
+		<appender-ref ref="INFOGLUE-FILE"/>		
 	</category>
 
 	<category name="org.exolab.castor">
