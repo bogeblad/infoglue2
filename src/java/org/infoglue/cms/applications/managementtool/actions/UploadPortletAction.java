@@ -48,6 +48,7 @@ import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.PortletAssetController;
 import org.infoglue.cms.entities.content.DigitalAsset;
 import org.infoglue.cms.entities.content.DigitalAssetVO;
+import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.NotificationMessage;
 import org.infoglue.cms.util.RemoteCacheUpdater;
@@ -90,16 +91,19 @@ public class UploadPortletAction extends InfoGlueAbstractAction
 			if (names.hasMoreElements())
 			{
 				String name = (String) names.nextElement();
+				log.debug("name:" + name);
 				File uploadedFile = mpr.getFile(name);
 				if (uploadedFile == null || uploadedFile.length() == 0)
 				{
-					log.info("No file found in multipart request");
+					log.error("No file found in multipart request");
 					return "input";
 				}
+
 				String contentType = mpr.getContentType(name);
 				String fileName = mpr.getFilesystemName(name);
 				String filePath = CmsPropertyHandler.getDigitalAssetPath();
-
+				log.debug("fileName:" + fileName);
+				
 				// Pluto prepare portlet-war
 				String appName = fileName;
 				int dot = appName.lastIndexOf(".");
@@ -108,9 +112,12 @@ public class UploadPortletAction extends InfoGlueAbstractAction
 					appName = appName.substring(0, dot);
 				}
 
+				log.info("appName:" + appName);
+				
 				// Create file where Deployer will write updated
 				// (pluto-prepared) .war
 				File file = new File(uploadedFile.getParentFile(), "tmp" + System.currentTimeMillis());
+				log.info("file:" + file.getAbsolutePath());
 				PortletApplicationDefinition pad = Deploy.prepareArchive(uploadedFile, file, appName);
 
 				// Extract portlet application information to be added to
@@ -194,8 +201,12 @@ public class UploadPortletAction extends InfoGlueAbstractAction
 				// Refresh deliver-engines
 				updateDeliverEngines(digitalAsset.getId());
 			}
-
-		} catch (Throwable e)
+			else
+			{
+				throw new SystemException("No file was uploaded...");
+			}
+		} 
+        catch (Throwable e)
 		{
 			log.error("ERROR", e);
 			return "error";

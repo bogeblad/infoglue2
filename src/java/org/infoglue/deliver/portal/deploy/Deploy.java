@@ -193,25 +193,29 @@ public class Deploy {
      * @return the portlet application definition (portlet.xml)
      * @throws IOException
      */
-    public static PortletApplicationDefinition prepareArchive(File file, File tmp, String appName)
-            throws IOException {
+    public static PortletApplicationDefinition prepareArchive(File file, File tmp, String appName) throws IOException 
+    {
         PortletApplicationDefinitionImpl portletApp = null;
-        try {
-            
-             Mapping pdmXml = new Mapping();
-             try {
-                 URL url = Deploy.class.getResource("/" + PORTLET_MAPPING);
-                 pdmXml.loadMapping(url);
-             } catch (Exception e) {
-                 throw new IOException("Failed to load mapping file " + PORTLET_MAPPING);
-             }
+        try 
+        {
+        	Mapping pdmXml = new Mapping();
+            try 
+            {
+            	URL url = Deploy.class.getResource("/" + PORTLET_MAPPING);
+                pdmXml.loadMapping(url);
+            } 
+            catch (Exception e) 
+            {
+                throw new IOException("Failed to load mapping file " + PORTLET_MAPPING);
+            }
              
-             // Open the jar file.
+            // Open the jar file.
             JarFile jar = new JarFile(file);
 
             // Extract and parse portlet.xml
             ZipEntry portletEntry = jar.getEntry(PORTLET_XML);
-            if (portletEntry == null) {
+            if (portletEntry == null) 
+            {
                 throw new IOException("Unable to find portlet.xml");
             }
             
@@ -236,13 +240,13 @@ public class Deploy {
             
             ZipEntry webEntry = jar.getEntry(WEB_XML);
             InputStream wis = null;
-            if (webEntry != null) {
+            if (webEntry != null) 
+            {
                 wis = jar.getInputStream(webEntry);
                 /*  webDocument = XmlParser.parseWebXml(wis);
                 wis.close();
                 */
             }
-            
             
             Unmarshaller unmarshaller = new Unmarshaller(pdmXml);
             unmarshaller.setWhitespacePreserve(true);
@@ -416,11 +420,13 @@ public class Deploy {
             JarOutputStream tempJar = new JarOutputStream(fos);
             byte[] buffer = new byte[1024];
             int bytesRead;
-            for (Enumeration entries = jar.entries(); entries.hasMoreElements();) {
+            for (Enumeration entries = jar.entries(); entries.hasMoreElements();) 
+            {
                 JarEntry entry = (JarEntry) entries.nextElement();
+                //System.out.println("entry:" + entry.getName());
                 JarEntry newEntry = new JarEntry(entry.getName());
                 tempJar.putNextEntry(newEntry);
-
+                
                 if (entry.getName().equals(WEB_XML)) {
                     // Swap web.xml
                     /*
@@ -444,14 +450,21 @@ public class Deploy {
                     org.apache.pluto.driver.deploy.Deploy d = new org.apache.pluto.driver.deploy.Deploy(webAppDescriptorService, portletAppDescriptorService);
                     d.updateDescriptors();
                     FileInputStream fis = new FileInputStream(tmpf);
-                    while ((bytesRead = fis.read(buffer)) != -1) {
+                    while ((bytesRead = fis.read(buffer)) != -1) 
+                    {
                         tempJar.write(buffer, 0, bytesRead);
                     }
                     tmpf.delete();
-                } else {
+                } 
+                else 
+                {
                     InputStream entryStream = jar.getInputStream(entry);
-                    while ((bytesRead = entryStream.read(buffer)) != -1) {
-                        tempJar.write(buffer, 0, bytesRead);
+                    if(entryStream != null)
+                    {
+	                    while ((bytesRead = entryStream.read(buffer)) != -1) 
+	                    {
+	                        tempJar.write(buffer, 0, bytesRead);
+	                    }
                     }
                 }
             }
