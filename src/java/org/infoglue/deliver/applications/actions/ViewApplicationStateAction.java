@@ -31,9 +31,11 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.log4j.Appender;
 import org.apache.log4j.Category;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.apache.log4j.RollingFileAppender;
 import org.apache.pluto.PortletContainerServices;
 import org.apache.pluto.portalImpl.services.ServiceManager;
 import org.apache.pluto.portalImpl.services.portletentityregistry.PortletEntityRegistry;
@@ -42,6 +44,7 @@ import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
 import org.infoglue.cms.controllers.kernel.impl.simple.ServerNodeController;
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.CmsSessionContextListener;
+import org.infoglue.deliver.invokers.ComponentBasedHTMLPageInvoker;
 import org.infoglue.deliver.portal.ServletConfigContainer;
 import org.infoglue.deliver.portal.services.PortletEntityRegistryServiceDBImpl;
 import org.infoglue.deliver.util.CacheController;
@@ -158,8 +161,19 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
     	
     	Category category = getCategory(this.className);
     	if(category != null)
+    	{
     		category.setLevel(newLevel);
-        
+    		
+			Enumeration enumeration = Logger.getLogger("org.infoglue.console-debug-dummy").getAllAppenders();
+	        while(enumeration.hasMoreElements())
+	        {
+	        	Appender appender = (Appender)enumeration.nextElement();
+	           	category.addAppender(appender);
+	            break;
+	        }
+
+    	}
+    	
         return "cleared";
     }
 

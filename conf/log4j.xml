@@ -11,6 +11,14 @@
 		</layout>
 	</appender>
 
+	<appender name="CONSOLE-DEBUG" class="org.apache.log4j.ConsoleAppender">
+		<param name="Target" value="System.out"/>
+		<param name="Threshold" value="DEBUG"/>
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%d{dd MMM yyyy HH:mm:ss.SSS} [%-5p] [%t] [%c] - %m%n"/>
+		</layout>
+	</appender>
+
 	<appender name="INFOGLUE-FILE" class="org.apache.log4j.RollingFileAppender">
 		<!--<param name="File" value="${catalina.home}/logs/infoglue.log"/>-->
 		<param name="Append" value="true"/>
@@ -24,11 +32,21 @@
       		<param name="LevelMin" value="WARN" />
       		<param name="LevelMax" value="WARN" />
     	</filter>
-		<!--
-		<filter class="org.apache.log4j.varia.LevelMatchFilter">
-        	<param name="LevelToMatch" value="WARN"/>
-      	</filter>
-      	-->
+   	</appender>
+
+	<appender name="INFOGLUE-FILE-DEBUG" class="org.apache.log4j.RollingFileAppender">
+		<param name="File" value="${catalina.home}/logs/infoglue-debug.log"/>
+		<param name="Append" value="true"/>
+ 		<param name="MaxFileSize" value="10MB"/>
+		<param name="MaxBackupIndex" value="5"/>
+		<param name="Threshold" value="DEBUG"/>
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%d{dd MMM yyyy HH:mm:ss.SSS} [%-5p] [%t] [%c] - %m%n"/>
+		</layout>
+		<filter class="org.apache.log4j.varia.LevelRangeFilter">
+      		<param name="LevelMin" value="DEBUG" />
+      		<param name="LevelMax" value="INFO" />
+    	</filter>
    	</appender>
  
 	<!-- Appender Chainsaw GUI Log viewer
@@ -91,6 +109,27 @@
 		<priority value="WARN"/>
 	</category>
 
+	<category name="org.infoglue.console-debug-dummy">
+		<priority value="ERROR"/>
+		<appender-ref ref="CONSOLE-DEBUG"/>
+	</category>
+	
+	<category name="org.infoglue.file-debug-dummy">
+		<priority value="ERROR"/>
+		<appender-ref ref="INFOGLUE-FILE-DEBUG"/>
+	</category>
+
+	<!--
+	<category name="org.infoglue.deliver.portal">
+		<priority value="DEBUG"/>
+		<appender-ref ref="INFOGLUE-FILE-DEBUG"/>	
+	</category>
+	<category name="org.apache.pluto">
+		<priority value="DEBUG"/>
+		<appender-ref ref="CONSOLE-DEBUG"/>
+	</category>
+	-->
+	
 	<category name="net.sf.hibernate">
 		<priority value="WARN"/>
 	</category>

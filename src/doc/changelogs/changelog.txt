@@ -79,6 +79,8 @@ Abbreviated Changelog from 2.3.5 Final
 - Fixed a workaround to problem with empty slots allowing users with no access to save page template to still do it. Now they get an error when trying.
 - Made so warnings such as broken references to components etc are handled by a rolling file appender and stored in each webapps logs directory.
 - Made it possible to statein the deliveryContext-object that a page should not be evaluated a final time by velocity after all components has been evaluated. Improves performance but can lead to different behaviour in your sites.
+- Worked more on a logging system which is dynamic and still divides the files in severity. 
+- Added indexes to digitalAsset table which improves performance on portlet-handling a lot if your database is big.
 
 -------------------------------------------------------------------------------------
 - InfoGlue 2.3.5 Final
