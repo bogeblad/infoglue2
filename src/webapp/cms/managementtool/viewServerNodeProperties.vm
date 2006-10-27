@@ -149,6 +149,9 @@
 		<td>#editPropertyField("ServerNode.property.inputCharacterEncoding" "inputCharacterEncoding" "$this.getPropertyValue('inputCharacterEncoding')" "51" "$!serverNodeId")</td>
 	</tr>	
 	<tr>
+		<td>#editPropertyField("ServerNode.property.inputCharacterEncodingDeliver" "deliver_inputCharacterEncoding" "$this.getPropertyValue('deliver', 'inputCharacterEncoding')" "51" "$!serverNodeId")</td>
+	</tr>
+	<tr>
 		<td>#editPropertyField("ServerNode.property.URIEncoding" "URIEncoding" "$this.getPropertyValue('URIEncoding')" "51" "$!serverNodeId")</td>
 	</tr>
 	<tr>

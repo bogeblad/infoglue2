@@ -240,6 +240,7 @@ public class ViewServerNodePropertiesAction extends InfoGluePropertiesAbstractAc
 	    populate(ps, "dbScriptPath");
 	    populate(ps, "digitalAssetUploadPath");
 	    populate(ps, "inputCharacterEncoding");
+	    populate(ps, "deliver_inputCharacterEncoding");
 		populate(ps, "protectDeliverWorking");
 	    populate(ps, "protectDeliverPreview");
 	    
