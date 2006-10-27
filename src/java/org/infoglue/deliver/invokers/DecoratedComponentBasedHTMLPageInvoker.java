@@ -1827,8 +1827,11 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 				
 		Integer siteNodeId = new Integer(this.getRequest().getParameter("siteNodeId"));
 		Integer languageId = null;
+
 		if(this.getRequest().getParameter("languageId") != null && this.getRequest().getParameter("languageId").length() > 0)
-		    languageId = new Integer(this.getRequest().getParameter("languageId"));
+			languageId = new Integer(this.getRequest().getParameter("languageId"));
+			if(!languageId.equals(this.getTemplateController().getDeliveryContext().getLanguageId()))
+			    languageId = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForSiteNode(getDatabase(), siteNodeId).getId();				
 		else
 		    languageId = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForSiteNode(getDatabase(), siteNodeId).getId();
 		        
@@ -1851,10 +1854,10 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 			
 			String id 			= property.getAttribute("type");
 			String path 		= property.getAttribute("path");
-
+			
 			if(property.hasAttribute("path_" + locale.getLanguage()))
 				path = property.getAttribute("path_" + locale.getLanguage());
-				
+
 			value 				= path;
 		}
 
