@@ -79,7 +79,7 @@ public abstract class SimpleXmlServiceAction extends InfoGlueAbstractAction
 
     private static final String protectedPropertyFragments = "password,administrator,authorizer,authenticator,masterserver,slaveserver,log";
     
-    protected static final String SERVICEREVISION = "$Revision: 1.18 $"; 
+    protected static final String SERVICEREVISION = "$Revision: 1.19 $"; 
 	protected static String ENCODING = "UTF-8";
     protected static String TYPE_FOLDER = "Folder";
     protected static String TYPE_ITEM = "Item";
@@ -177,9 +177,11 @@ public abstract class SimpleXmlServiceAction extends InfoGlueAbstractAction
         for(Iterator i = props.keySet().iterator(); i.hasNext();)
         {
             String key = (String) i.next();
+        	String elmKey = key;
+            if(key.matches("^\\d.*")) elmKey = "_" + key;
             String value = (String) props.get(key);
             if(!isProtectedProperty(key))
-                root.addElement(key).setText(value);
+                root.addElement(elmKey).setText(value);
         }
         
         root.addElement("serviceRevision").setText(SERVICEREVISION);
