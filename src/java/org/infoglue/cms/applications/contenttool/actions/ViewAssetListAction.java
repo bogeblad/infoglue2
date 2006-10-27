@@ -62,8 +62,8 @@ public class ViewAssetListAction extends InfoGlueAbstractAction
 	 */
 	private static final long serialVersionUID = 1707633990701035545L;
 
-    private String displayPart = "";
 	public ContentTypeDefinitionVO contentTypeDefinitionVO;
+	private Integer maxResultCount = new Integer(20); // TODO: Configuration
 	public List availableLanguages = null;
 	
 	private Integer languageId;
@@ -537,13 +537,4 @@ public class ViewAssetListAction extends InfoGlueAbstractAction
 		this.filter = filter;
 	}
 
-    public String getDisplayPart()
-    {
-        return displayPart;
-    }
-
-    public void setDisplayPart(String displayPart)
-    {
-        this.displayPart = displayPart;
-    }
 }
