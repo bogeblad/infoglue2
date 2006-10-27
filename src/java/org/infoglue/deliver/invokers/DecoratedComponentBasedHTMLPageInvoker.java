@@ -1830,8 +1830,8 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 
 		if(this.getRequest().getParameter("languageId") != null && this.getRequest().getParameter("languageId").length() > 0)
 			languageId = new Integer(this.getRequest().getParameter("languageId"));
-			if(!languageId.equals(this.getTemplateController().getDeliveryContext().getLanguageId()))
-			    languageId = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForSiteNode(getDatabase(), siteNodeId).getId();				
+			//if(!languageId.equals(this.getTemplateController().getDeliveryContext().getLanguageId()))
+			//	languageId = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForSiteNode(getDatabase(), siteNodeId).getId();				
 		else
 		    languageId = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForSiteNode(getDatabase(), siteNodeId).getId();
 		        
