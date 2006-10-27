@@ -81,6 +81,8 @@ Abbreviated Changelog from 2.3.5 Final
 - Made it possible to statein the deliveryContext-object that a page should not be evaluated a final time by velocity after all components has been evaluated. Improves performance but can lead to different behaviour in your sites.
 - Worked more on a logging system which is dynamic and still divides the files in severity. 
 - Added indexes to digitalAsset table which improves performance on portlet-handling a lot if your database is big.
+- Made the system sense when properties are not available in a language one has chosen in the structure-tool editor. Before they were blank or undefined if you choose a language not supported on that page 
+- Added so inputCharacterEncoding can be different for cms and deliver i application settings. No more need to mess around in web.xml for that.
 
 -------------------------------------------------------------------------------------
 - InfoGlue 2.3.5 Final
