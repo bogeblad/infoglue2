@@ -124,7 +124,12 @@ public class InfoGlueAuthenticationFilter implements Filter
 		
 		String URI = httpServletRequest.getRequestURI();
 		String URL = httpServletRequest.getRequestURL().toString();
-
+		if(logger.isInfoEnabled())
+		{
+			logger.info("URI: + " + URI);
+			logger.info("URL: + " + URL);
+		}
+		
 		if(URI.indexOf(loginUrl) > -1 || URL.indexOf(loginUrl) > -1 || URI.indexOf(invalidLoginUrl) > -1 || URL.indexOf(invalidLoginUrl) > -1 || URI.indexOf(logoutUrl) > -1 || URL.indexOf(logoutUrl) > -1 || URI.indexOf("UpdateCache") > -1 || URI.indexOf("protectedRedirect.jsp") > -1)
 		{
 			fc.doFilter(request, response); 
