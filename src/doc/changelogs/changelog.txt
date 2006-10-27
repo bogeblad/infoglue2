@@ -83,6 +83,7 @@ Abbreviated Changelog from 2.3.5 Final
 - Added indexes to digitalAsset table which improves performance on portlet-handling a lot if your database is big.
 - Made the system sense when properties are not available in a language one has chosen in the structure-tool editor. Before they were blank or undefined if you choose a language not supported on that page 
 - Added so inputCharacterEncoding can be different for cms and deliver i application settings. No more need to mess around in web.xml for that.
+- Made ContentSort tag accept a custom comparator - very neat - now you can have InfoGlue use your own custom class for sorting. If the comparator implements TemplateControllerAwareComparator it can also use the templateController-object for lookups in InfoGlue. 
 
 -------------------------------------------------------------------------------------
 - InfoGlue 2.3.5 Final

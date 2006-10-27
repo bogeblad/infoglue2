@@ -37,17 +37,10 @@ public class ContentSortTag extends TemplateControllerTag {
 	 */
 	private static final long serialVersionUID = 3257003254859576632L;
 
-	/**
-	 *
-	 */
 	private ContentSort sorter;
-	
-	/**
-	 *
-	 */
 	private Collection input = new ArrayList();
-	
-	
+	private String comparatorClass;
+
 	/**
 	 *
 	 */
@@ -94,7 +87,15 @@ public class ContentSortTag extends TemplateControllerTag {
 	 */
 	public int doEndTag() throws JspException
     {
-		produceResult(sorter.getContentResult());
+		if(comparatorClass!=null && !comparatorClass.equals("")) 
+		{
+			produceResult(sorter.getContentResult(comparatorClass));
+		}
+		else
+		{
+			produceResult(sorter.getContentResult());	
+		}
+
         return EVAL_PAGE;
     }
 	
@@ -105,4 +106,14 @@ public class ContentSortTag extends TemplateControllerTag {
 	{
 		this.input = evaluateCollection("contentSort", "input", input);
 	}
+	
+	/**
+	 * @param comparatorClass the comparatorClass to set
+	 */
+	
+	public void setComparatorClass(String comparatorClass) 
+	{
+		this.comparatorClass = comparatorClass;
+	}
+
 }
