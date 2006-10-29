@@ -505,6 +505,13 @@ public interface TemplateController
      */
     public abstract String getInlineAssetUrl(String assetKey);
 
+    /**
+     * This method deliveres a String with the URL to the digital asset asked for. In this special case the image
+     * is fetched from the article being generated. This means that this method only is of interest if you have attached
+     * assets to either a template or to an content and are useing parsedContentAttribute.
+     */
+    public abstract String getInlineAssetUrl(Integer contentId, String assetKey);
+
     /*
      *  Provide the same interface for getting asset filesize as for getting url. 
      *  This should be refactored soon, to supply a assetVO instead.   
