@@ -78,7 +78,7 @@ public class ServiceDefinitionController extends BaseController
         try
         { 
         	ServiceDefinition serviceDefinition = getServiceDefinitionWithId(vo.getServiceDefinitionId(), db);
-    		if(serviceDefinition.getServiceBindings() != null && serviceDefinition.getServiceBindings().size() > 0)
+    		if(serviceDefinition.getName().equalsIgnoreCase("Core content service") || serviceDefinition.getName().equalsIgnoreCase("Core structure service"))
     		{
     			throw new ConstraintException("ServiceDefinition.deleteAction", "3200");
     		}	
