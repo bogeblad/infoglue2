@@ -198,23 +198,13 @@ public class NodeDeliveryController extends BaseDeliveryController
 	
 	public ServiceDefinitionVO getInheritedServiceDefinition(List qualifyerList, Integer siteNodeId, AvailableServiceBindingVO availableServiceBindingVO, Database db, boolean inheritParentBindings) throws SystemException, Exception
 	{
-		//logger.warn("1");
 		logger.info("Trying to find binding " + availableServiceBindingVO.getName() + " on siteNodeId:" + siteNodeId);
 		ServiceDefinitionVO serviceDefinitionVO = null;
 
-		//logger.warn("2");
-
-		//SiteNode siteNode = (SiteNode)this.getObjectWithId(SiteNodeImpl.class, siteNodeId, db);
 		SiteNode siteNode = (SiteNode)this.getObjectWithId(SmallSiteNodeImpl.class, siteNodeId, db);
 		logger.info("Loaded siteNode " + siteNode.getName());
 
-		//logger.warn("3");
-
-		//serviceDefinitionVO = getServiceDefinitionVO(siteNode, availableServiceBindingVO, db);
 		serviceDefinitionVO = getServiceDefinitionVO(qualifyerList, siteNode, availableServiceBindingVO, db);
-
-		//logger.warn("4");
-
 		logger.info("Loaded serviceDefinitionVO " + serviceDefinitionVO);
 		
 		if(serviceDefinitionVO == null)
@@ -256,57 +246,6 @@ public class NodeDeliveryController extends BaseDeliveryController
 		}
 		else
 		{
-			/*
-			Collection siteNodeVersions = siteNode.getSiteNodeVersions();
-			SiteNodeVersion siteNodeVersion = null;
-			
-			Iterator versionIterator = siteNodeVersions.iterator();
-			while(versionIterator.hasNext())
-			{
-				SiteNodeVersion siteNodeVersionCandidate = (SiteNodeVersion)versionIterator.next();	
-				if(siteNodeVersionCandidate.getIsActive().booleanValue() && siteNodeVersionCandidate.getStateId().intValue() >= getOperatingMode().intValue())
-				{
-					if(siteNodeVersionCandidate.getOwningSiteNode().getSiteNodeId().intValue() == siteNode.getId().intValue())
-					{
-						if(siteNodeVersion == null || siteNodeVersion.getSiteNodeVersionId().intValue() < siteNodeVersionCandidate.getId().intValue())
-						{
-							siteNodeVersion = siteNodeVersionCandidate;
-						}
-					}
-				}
-			}
-			
-			ServiceBinding serviceBinding = null;
-			
-			if(siteNodeVersion != null)
-			{
-			    Timer timer2 = new Timer();
-
-				Collection serviceBindings = siteNodeVersion.getServiceBindings();
-				Iterator serviceBindingIterator = serviceBindings.iterator();
-				while(serviceBindingIterator.hasNext())
-				{
-					ServiceBinding serviceBindingCandidate = (ServiceBinding)serviceBindingIterator.next();
-					if(serviceBindingCandidate.getAvailableServiceBinding().getAvailableServiceBindingId().intValue() == availableServiceBindingVO.getId().intValue())
-					//if(serviceBindingCandidate.getValueObject().getAvailableServiceBindingId().intValue() == availableServiceBindingVO.getId().intValue())
-					{
-						serviceBinding = serviceBindingCandidate;
-						break;
-					}
-				}
-			}
-			
-			if (serviceBinding != null) 
-	        {
-		        serviceBindingVO = serviceBinding.getValueObject();
-		        object = serviceBindingVO;
-	        }
-			else
-			    object = new NullObject();
-			*/
-			
-			//logger.warn("3.1");
-
 		    OQLQuery oql = db.getOQLQuery( "SELECT sb FROM org.infoglue.cms.entities.structure.impl.simple.ServiceBindingImpl sb WHERE sb.siteNodeVersion.owningSiteNode = $1 AND sb.availableServiceBinding = $2 AND sb.siteNodeVersion.isActive = $3 AND sb.siteNodeVersion.stateId >= $4 order by sb.siteNodeVersion.siteNodeVersionId DESC");
 			oql.bind(siteNode);
 			oql.bind(availableServiceBindingVO.getId());
@@ -315,36 +254,37 @@ public class NodeDeliveryController extends BaseDeliveryController
 			
 	    	QueryResults results = oql.execute(Database.ReadOnly);
 
-	    	//logger.warn("3.2");
-
 			if (results.hasMore()) 
 	        {
-			    ServiceBinding serviceBinding = (ServiceBinding)results.next();
-			    //logger.warn("3.3");
-
-			    //serviceBindingVO = serviceBinding.getValueObject();
-		        serviceDefinitionVO = serviceBinding.getServiceDefinition().getValueObject();
-		        Collection qualifyers = serviceBinding.getBindingQualifyers();
-				
-				qualifyers = sortQualifyers(qualifyers);
-				
-				Iterator iterator = qualifyers.iterator();
-				while(iterator.hasNext())
+				ServiceBinding serviceBinding = (ServiceBinding)results.next();
+				SiteNodeVersionVO latestSiteNodeVersionVO = getLatestActiveSiteNodeVersionVO(db, siteNode.getId());
+				logger.info("serviceBinding sitenodeVersion:" + serviceBinding.getSiteNodeVersion().getId() + ":" + latestSiteNodeVersionVO.getId());
+				if(serviceBinding.getSiteNodeVersion().getId().equals(latestSiteNodeVersionVO.getId()))
 				{
-					Qualifyer qualifyer = (Qualifyer)iterator.next();
-					HashMap argument = new HashMap();
-					argument.put(qualifyer.getName(), qualifyer.getValue());
-					qualifyerList.add(argument);
+			        serviceDefinitionVO = serviceBinding.getServiceDefinition().getValueObject();
+			        Collection qualifyers = serviceBinding.getBindingQualifyers();
+					
+					qualifyers = sortQualifyers(qualifyers);
+					
+					Iterator iterator = qualifyers.iterator();
+					while(iterator.hasNext())
+					{
+						Qualifyer qualifyer = (Qualifyer)iterator.next();
+						HashMap argument = new HashMap();
+						argument.put(qualifyer.getName(), qualifyer.getValue());
+						qualifyerList.add(argument);
+					}
+			        
+			        object = serviceDefinitionVO;
+			        object2 = qualifyerList;
 				}
-		        
-		        object = serviceDefinitionVO;
-		        object2 = qualifyerList;
 	        }
 			else
 			{
 			    object = new NullObject();
 		    	object2 = new NullObject();
 			}
+			
 			
 			results.close();
 			oql.close();
@@ -1210,6 +1150,7 @@ public class NodeDeliveryController extends BaseDeliveryController
 					while(i.hasNext())
 					{
 						SiteNodeVO candidate = (SiteNodeVO)i.next();
+						logger.info("candidate:" + candidate.getId());
 						//Checking to see that now is between the contents publish and expire-date. 
 						if(isValidSiteNode(db, candidate.getId()))
 							boundSiteNodeVOList.add(candidate);
