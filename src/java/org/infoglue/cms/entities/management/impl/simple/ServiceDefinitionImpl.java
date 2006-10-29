@@ -34,7 +34,7 @@ public class ServiceDefinitionImpl implements ServiceDefinition
 {
     private ServiceDefinitionVO valueObject = new ServiceDefinitionVO();
     private Collection availableServiceBindnings = null;
-    private Collection serviceBindings = null;
+    //private Collection serviceBindings = null;
      
 	public Integer getId()
 	{
@@ -125,6 +125,7 @@ public class ServiceDefinitionImpl implements ServiceDefinition
     	this.availableServiceBindnings = availableServiceBindings;
     }
     
+    /*
     public java.util.Collection getServiceBindings()
     {
         return this.serviceBindings;
@@ -134,4 +135,5 @@ public class ServiceDefinitionImpl implements ServiceDefinition
     {
         this.serviceBindings = serviceBindings;
     }
+    */
 }        

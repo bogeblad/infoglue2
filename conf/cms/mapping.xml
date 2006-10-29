@@ -605,9 +605,11 @@
         <field name="availableServiceBindings" type="org.infoglue.cms.entities.management.impl.simple.AvailableServiceBindingImpl" lazy="true" collection="collection">
       <sql many-key="serviceDefinitionId" many-table="cmServiceDefinitionAvailableServiceBinding"/>
     </field>
+	<!--
         <field name="serviceBindings" type="org.infoglue.cms.entities.structure.impl.simple.ServiceBindingImpl" lazy="true" collection="collection">
       <sql many-key="availableServiceBindingId"/>
     </field>
+    -->
     </class>
 
 

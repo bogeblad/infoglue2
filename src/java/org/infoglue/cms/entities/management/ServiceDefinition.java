@@ -53,9 +53,9 @@ public interface ServiceDefinition extends IBaseEntity
     public java.util.Collection getAvailableServiceBindings();
     
     public void setAvailableServiceBindings(java.util.Collection availableServiceBindings);
-        
+/*        
     public java.util.Collection getServiceBindings();
     
     public void setServiceBindings(java.util.Collection serviceBindings);
-
+*/
 }

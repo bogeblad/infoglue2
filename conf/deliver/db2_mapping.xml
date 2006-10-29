@@ -442,9 +442,11 @@
         <field name="availableServiceBindings" type="org.infoglue.cms.entities.management.impl.simple.AvailableServiceBindingImpl" lazy="true" collection="collection">
       <sql many-key="ServDefId" many-table="cmServDefAvailServBind"/>
     </field>
+    <!--
         <field name="serviceBindings" type="org.infoglue.cms.entities.structure.impl.simple.ServiceBindingImpl" lazy="true" collection="collection">
       <sql many-key="AvailServBindId"/>
-    </field>    
+    </field>
+    -->    
     </class>
 
 
