@@ -3847,7 +3847,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			logger.error("An error occurred trying to get parent siteNode:" + e.getMessage(), e);
+			logger.warn("An error occurred trying to get parent siteNode:" + e.getMessage(), e);
 		}
 				
 		return siteNodeVO;
@@ -4465,8 +4465,8 @@ public class BasicTemplateController implements TemplateController
 	public List getBoundPages(Integer siteNodeId, String structureBindningName, boolean escapeHTML, boolean hideUnauthorizedPages)
 	{
 		//Checking for a read binding in this request...
-		if(cachedBindings.containsKey(siteNodeId + "_" + structureBindningName))
-			return (List)cachedBindings.get(siteNodeId + "_" + structureBindningName);
+		if(cachedBindings.containsKey(siteNodeId + "_" + structureBindningName + "_" + hideUnauthorizedPages))
+			return (List)cachedBindings.get(siteNodeId + "_" + structureBindningName + "_" + hideUnauthorizedPages);
 
 		List boundPages = new ArrayList();
 		try
@@ -4480,7 +4480,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		
 		//Caching bindings
-		cachedBindings.put(siteNodeId + "_" + structureBindningName, boundPages);
+		cachedBindings.put(siteNodeId + "_" + structureBindningName + "_" + hideUnauthorizedPages, boundPages);
 		
 		return boundPages;
 	}
