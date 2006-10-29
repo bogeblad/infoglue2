@@ -20,7 +20,7 @@
  *
  * ===============================================================================
  *
- * $Id: RegistryController.java,v 1.31 2006/10/09 21:50:37 mattias Exp $
+ * $Id: RegistryController.java,v 1.32 2006/10/29 08:38:32 mattias Exp $
  */
 
 package org.infoglue.cms.controllers.kernel.impl.simple;
@@ -184,9 +184,9 @@ public class RegistryController extends BaseController
 			    
 			    getComponents(siteNodeVersion, versionValue, db);
 			    getComponentBindings(siteNodeVersion, versionValue, db);
+			    getPageBindings(siteNodeVersion, db);
 		    }
 	        
-		    getPageBindings(siteNodeVersion, db);
 		    getInlineSiteNodes(oldContentVersion, versionValue, db);
 		    getInlineContents(oldContentVersion, versionValue, db);
 		    getRelationSiteNodes(oldContentVersion, versionValue, db);
@@ -230,9 +230,9 @@ public class RegistryController extends BaseController
 		        
 			    getComponents(siteNodeVersion, versionValue, db);
 			    getComponentBindings(siteNodeVersion, versionValue, db);
+			    getPageBindings(siteNodeVersion, db);
 		    }
 	        
-		    getPageBindings(siteNodeVersion, db);
 		    getInlineSiteNodes(oldContentVersion, versionValue, db);
 		    getInlineContents(oldContentVersion, versionValue, db);
 		    getRelationSiteNodes(oldContentVersion, versionValue, db);
@@ -241,7 +241,8 @@ public class RegistryController extends BaseController
 	    else
 	    {
 	        clearRegistryVOList(ContentVersion.class.getName(), oldContentVersion.getContentVersionId().toString(), db);
-		    getPageBindings(siteNodeVersion, db);
+	        if(siteNodeVersion != null)
+	        	getPageBindings(siteNodeVersion, db);
 		    getInlineSiteNodes(oldContentVersion, versionValue, db);
 		    getInlineContents(oldContentVersion, versionValue, db);
 		    getRelationSiteNodes(oldContentVersion, versionValue, db);
