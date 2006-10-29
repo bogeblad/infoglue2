@@ -63,7 +63,7 @@ public class InfoGlueJDBCAuthorizationModule extends BaseController implements A
     private final static Logger logger = Logger.getLogger(InfoGlueJDBCAuthorizationModule.class.getName());
 
 	private Properties extraProperties = null;
-	private Database transactionObject 	= null;
+	private transient Database transactionObject 	= null;
 
     protected String connectionName = null;
     protected String connectionPassword = null;

@@ -58,7 +58,7 @@ public class InfoGlueBasicAuthorizationModule extends BaseController implements 
     private final static Logger logger = Logger.getLogger(InfoGlueBasicAuthorizationModule.class.getName());
 
 	private Properties extraProperties = null;
-	private Database transactionObject 	= null;
+	private transient Database transactionObject = null;
 	
 	/**
 	 * Gets is the implementing class can update as well as read 

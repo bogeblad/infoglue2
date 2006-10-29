@@ -65,7 +65,7 @@ public class InfoGlueJ2EEAuthenticationModule extends AuthenticationModule
 	private String casLogoutUrl			= null;
 	private String casAuthorizedProxy 	= null;
 	private Properties extraProperties 	= null;
-	private Database transactionObject 	= null;
+	private transient Database transactionObject 	= null;
 	
 	/**
 	 * This method handles all of the logic for checking how to handle a login.
