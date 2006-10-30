@@ -640,6 +640,43 @@ public class DigitalAssetController extends BaseController
     }
 
 	/**
+	 * This method should return a String containing the URL for this digital asset.
+	 */
+
+	public static String getDigitalAssetFilePath(Integer digitalAssetId) throws SystemException, Bug
+    {
+    	Database db = CastorDatabaseService.getDatabase();
+
+    	String assetPath = null;
+
+        beginTransaction(db);
+
+        try
+        {
+			DigitalAsset digitalAsset = getDigitalAssetWithId(digitalAssetId, db);
+						
+			if(digitalAsset != null)
+			{
+				logger.info("Found a digital asset:" + digitalAsset.getAssetFileName());
+				String fileName = digitalAsset.getDigitalAssetId() + "_" + digitalAsset.getAssetFileName();
+				String filePath = CmsPropertyHandler.getDigitalAssetPath();
+				dumpDigitalAsset(digitalAsset, fileName, filePath);
+				assetPath = filePath + File.separator + fileName;
+			}			       	
+
+            commitTransaction(db);
+        }
+        catch(Exception e)
+        {
+            logger.info("An error occurred when we tried to cache and show the digital asset:" + e);
+            rollbackTransaction(db);
+            throw new SystemException(e.getMessage());
+        }
+    	
+		return assetPath;
+    }
+
+	/**
 	 * This is a method that stores the asset on disk if not there allready and returns the asset as an InputStream
 	 * from that location. To avoid trouble with in memory blobs.
 	 */

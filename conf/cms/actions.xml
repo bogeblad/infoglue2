@@ -1,4 +1,4 @@
-<!-- $Id: actions.xml,v 1.30 2006/09/24 21:49:37 ss Exp $ -->
+<!-- $Id: actions.xml,v 1.31 2006/10/30 21:17:33 mattias Exp $ -->
 <actions>
 
 	<!-- MySettings -->
@@ -1417,6 +1417,13 @@
 		<view name="successGroup">ViewGroup.action</view>
 		<view name="success">/cms/managementtool/viewListInvalidAuthorization.vm</view>
 		<view name="error">/cms/managementtool/error.vm</view>
+	</action>
+
+	<!-- InfoGlue Image Editor -->
+	<action name="org.infoglue.cms.applications.contenttool.actions.ImageEditorAction" alias="ImageEditor">
+		<view name="input">/cms/contenttool/viewImageEditor.vm</view>
+		<view name="success">/cms/contenttool/viewImageEditor.vm</view>
+		<view name="error">/cms/contenttool/error.vm</view>
 	</action>
 
 </actions>

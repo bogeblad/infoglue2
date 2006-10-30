@@ -938,7 +938,8 @@
 							<a href="javascript:openPopup('$digitalAssetUrl', 'Preview', 'width=600,height=500,resizable=yes');"><img class="scaledbordered" src="$this.getDigitalAssetThumbnailUrl($digitalAsset.digitalAssetId)">
 							<br/>$digitalAsset.assetKey</a><br/>
 							#if($readonly == "")
-								<a href="javascript:openPopup('ViewDigitalAsset!update.action?contentVersionId=$contentVersionId&contentId=$contentId&languageId=$languageId&digitalAssetId=$digitalAsset.digitalAssetId','DigitalAsset','width=400,height=200,resizable=no');">$ui.getString("tool.contenttool.editAttachment")</a> / 
+								<!--<a href="javascript:openPopup('ImageEditor.action?contentVersionId=$contentVersionId&contentId=$contentId&languageId=$languageId&digitalAssetId=$digitalAsset.digitalAssetId','DigitalAsset','width=400,height=200,resizable=no');">$ui.getString("tool.contenttool.editAttachment")</a> /--> 
+								<a href="javascript:openPopup('ViewDigitalAsset!update.action?contentVersionId=$contentVersionId&contentId=$contentId&languageId=$languageId&digitalAssetId=$digitalAsset.digitalAssetId','DigitalAsset','width=400,height=200,resizable=no');">$ui.getString("tool.contenttool.updateAttachment")</a> / 
 								<a href="ViewContentVersion!deleteDigitalAsset.action?contentVersionId=$contentVersionId&contentId=$contentId&languageId=$languageId&digitalAssetId=$digitalAsset.digitalAssetId">$ui.getString("tool.contenttool.deleteAttachment")</a>
 							#end
 						</td>

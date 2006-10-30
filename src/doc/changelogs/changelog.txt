@@ -87,6 +87,7 @@ Abbreviated Changelog from 2.3.5 Final
 - Fixed a bug which made old page binding be valid if newer versions of a sitenode does not have that binding. Now it should work fine again. This bug only concerned people building sites the old way without components.
 - Added better nullchecks for sites that for some reason have pages which has no versions. Only happens when old sites are being upgraded. New sites (build with 2.0 and above) does not have such pages. 
 - Removed reference between ServiceDefinition and it's ServiceBindings as no queries go that way and it affects performance to much. Should make no difference to anyone.
+- Added experimental version of simple image editor - not linked at the moment
  
 -------------------------------------------------------------------------------------
 - InfoGlue 2.3.5 Final
