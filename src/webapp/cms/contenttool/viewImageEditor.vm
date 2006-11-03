@@ -114,6 +114,21 @@
 			var list = document.getElementById("dd");
 			list.style.visibility = "hidden";
 		}
+
+		function activateResizeTool()
+		{
+			document.location.href = "ImageEditor!resize.action?digitalAssetId=$digitalAssetId&contentVersionId=$contentVersionId&width=100&height=70";			
+		} 		
+		
+		function activateCropTool()
+		{
+			document.location.href = "ImageEditor!crop.action?digitalAssetId=$digitalAssetId&contentVersionId=$contentVersionId&xpos1=" + sx + "&ypos1=" + sy + "&xpos2=" + ex + "&ypos2=" + ey;
+		} 		
+
+		function saveImage()
+		{
+			document.location.href = "ImageEditor!save.action?digitalAssetId=$digitalAssetId&contentVersionId=$contentVersionId";
+		} 		
 		
 		-->
 	</script>
@@ -139,10 +154,13 @@
 			<a href="javascript:activateMarkTool();"><img src="images/markIcon.gif" width="20" height="20" border="0" alt="Mark section of image"/></a>
 		</p>
 		<p>
-			<a href="ImageEditor!resize.action?digitalAssetId=$digitalAssetId&width=100&height=70"><img src="images/resizeIcon.gif" width="20" height="20" border="0" alt="Resize image"/></a>
+			<a href="javascript:activateResizeTool();"><img src="images/resizeIcon.gif" width="20" height="20" border="0" alt="Resize image"/></a>
 		</p>
 		<p>
-			<a href="ImageEditor!crop.action?digitalAssetId=$digitalAssetId&xpos1=20&ypos1=20&xpos2=70&ypos2=70"><img src="images/cropIcon.gif" width="20" height="20" border="0" alt="Crop image"/></a>
+			<a href="javascript:activateCropTool();"><img src="images/cropIcon.gif" width="20" height="20" border="0" alt="Crop image"/></a>
+		</p>
+		<p>
+			<a href="javascript:saveImage();"><img src="images/saveIcon.gif" width="20" height="20" border="0" alt="Save image"/></a>
 		</p>
 	</div>
 	
@@ -150,7 +168,7 @@
 		<div id="pxn8_canvas">
 		<div id="pxn8_image_container" >
 		  
-		  <img id="pxn8_image" border="0" src="http://pxn8.com:80/images/samples/waterfall.jpg"/>
+		  <img id="pxn8_image" border="0" src="$modifiedFileUrl"/>
 		  
 		</div>  
 		
@@ -186,7 +204,7 @@
 
 <script type="text/javascript">
 <!--
-	PXN8.initialize('$digitalAssetUrl');
+	PXN8.initialize('$modifiedFileUrl');
 -->
 </script>
 </body>

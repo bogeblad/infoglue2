@@ -41,16 +41,27 @@ import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.applications.databeans.AssetKeyDefinition;
 import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.DigitalAssetController;
+import org.infoglue.cms.controllers.kernel.impl.simple.GroupPropertiesController;
 import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
+import org.infoglue.cms.controllers.kernel.impl.simple.RolePropertiesController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeTypeDefinitionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeVersionController;
+import org.infoglue.cms.controllers.kernel.impl.simple.UserPropertiesController;
 import org.infoglue.cms.entities.content.DigitalAssetVO;
 import org.infoglue.cms.entities.management.AvailableServiceBindingVO;
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
+import org.infoglue.cms.entities.management.GroupProperties;
+import org.infoglue.cms.entities.management.GroupPropertiesVO;
+import org.infoglue.cms.entities.management.RoleProperties;
+import org.infoglue.cms.entities.management.RolePropertiesVO;
 import org.infoglue.cms.entities.management.SiteNodeTypeDefinitionVO;
+import org.infoglue.cms.entities.management.UserProperties;
+import org.infoglue.cms.entities.management.UserPropertiesVO;
 import org.infoglue.cms.entities.structure.SiteNodeVO;
 import org.infoglue.cms.entities.structure.SiteNodeVersionVO;
 import org.infoglue.cms.exception.SystemException;
@@ -82,9 +93,10 @@ public class ImageEditorAction extends InfoGlueAbstractAction
 
 	private DigitalAssetVO digitalAssetVO = null;
 	private String modifiedFileUrl = "";
-	
+	private int xpos1, ypos1, xpos2, ypos2 = 0;
 	private Integer contentVersionId = null;
 	private Integer digitalAssetId   = null;
+
 	private String digitalAssetKey   = null;
 	private boolean isUpdated       = false;
 	private String reasonKey;
@@ -102,6 +114,15 @@ public class ImageEditorAction extends InfoGlueAbstractAction
 	
     	this.digitalAssetVO = DigitalAssetController.getDigitalAssetVOWithId(this.digitalAssetId);
 
+        String filePath = DigitalAssetController.getDigitalAssetFilePath(this.digitalAssetVO.getDigitalAssetId());
+        System.out.println("filePath:" + filePath);
+    	BufferedImage original = javax.imageio.ImageIO.read(new File(filePath));
+
+    	File outputFile = new File(CmsPropertyHandler.getDigitalAssetPath() + File.separator + "temp_" + this.getInfoGluePrincipal().getName() + "_" + digitalAssetVO.getDigitalAssetId() + ".png");
+		javax.imageio.ImageIO.write(original, "PNG", outputFile);
+		this.modifiedFileUrl = CmsPropertyHandler.getWebServerAddress() + "/" + CmsPropertyHandler.getDigitalAssetBaseUrl() + "/temp_" + this.getInfoGluePrincipal().getName() + "_" + digitalAssetVO.getDigitalAssetId() + ".png";
+		System.out.println("modifiedFileUrl:" + modifiedFileUrl);
+
         return "success";
     }    
 
@@ -111,9 +132,10 @@ public class ImageEditorAction extends InfoGlueAbstractAction
 
     	this.digitalAssetVO = DigitalAssetController.getDigitalAssetVOWithId(this.digitalAssetId);
 
-        String filePath = DigitalAssetController.getDigitalAssetFilePath(this.digitalAssetVO.getDigitalAssetId());
-        System.out.println("filePath:" + filePath);
-    	BufferedImage original = javax.imageio.ImageIO.read(new File(filePath));
+    	File file = new File(CmsPropertyHandler.getDigitalAssetPath() + File.separator + "temp_" + this.getInfoGluePrincipal().getName() + "_" + digitalAssetVO.getDigitalAssetId() + ".png");
+        //String filePath = DigitalAssetController.getDigitalAssetFilePath(this.digitalAssetVO.getDigitalAssetId());
+    	//System.out.println("filePath:" + filePath);
+    	BufferedImage original = javax.imageio.ImageIO.read(file);
 
     	//BufferedImage original = loadImageResource(getDigitalAssetUrl()); 
 		
@@ -126,14 +148,60 @@ public class ImageEditorAction extends InfoGlueAbstractAction
     	//resizeToFit()
     	//BufferedImage image = imaging.resize(original, 200, 800, true);
 
-    	File outputFile = new File(CmsPropertyHandler.getDigitalAssetPath() + File.separator + "temp.png");
+    	File outputFile = file;
 		javax.imageio.ImageIO.write(image, "PNG", outputFile);
-		this.modifiedFileUrl = CmsPropertyHandler.getWebServerAddress() + "/" + CmsPropertyHandler.getDigitalAssetBaseUrl() + "/temp.png";
+		this.modifiedFileUrl = CmsPropertyHandler.getWebServerAddress() + "/" + CmsPropertyHandler.getDigitalAssetBaseUrl() + "/temp_" + this.getInfoGluePrincipal().getName() + "_" + digitalAssetVO.getDigitalAssetId() + ".png";
 		System.out.println("modifiedFileUrl:" + modifiedFileUrl);
 		
         return "success";
     }    
-    
+
+    public String doCrop() throws Exception
+    {
+    	ceb.throwIfNotEmpty();
+
+    	this.digitalAssetVO = DigitalAssetController.getDigitalAssetVOWithId(this.digitalAssetId);
+
+    	File file = new File(CmsPropertyHandler.getDigitalAssetPath() + File.separator + "temp_" + this.getInfoGluePrincipal().getName() + "_" + digitalAssetVO.getDigitalAssetId() + ".png");
+    	BufferedImage original = javax.imageio.ImageIO.read(file);
+
+    	BufferedImage image = imaging.crop(original, xpos1, ypos1, xpos2 - xpos1, ypos2 - ypos1);
+
+    	File outputFile = file;
+		javax.imageio.ImageIO.write(image, "PNG", outputFile);
+		this.modifiedFileUrl = CmsPropertyHandler.getWebServerAddress() + "/" + CmsPropertyHandler.getDigitalAssetBaseUrl() + "/temp_" + this.getInfoGluePrincipal().getName() + "_" + digitalAssetVO.getDigitalAssetId() + ".png";
+		System.out.println("modifiedFileUrl:" + modifiedFileUrl);
+		
+        return "success";
+    }    
+
+    public String doSave() throws Exception
+    {
+    	ceb.throwIfNotEmpty();
+
+    	this.digitalAssetVO = DigitalAssetController.getDigitalAssetVOWithId(this.digitalAssetId);
+
+    	File file = new File(CmsPropertyHandler.getDigitalAssetPath() + File.separator + "temp_" + this.getInfoGluePrincipal().getName() + "_" + digitalAssetVO.getDigitalAssetId() + ".png");
+   		System.out.println("saving file:" + file.getAbsolutePath());
+   		
+    	DigitalAssetVO newAsset = new DigitalAssetVO();
+		newAsset.setAssetContentType(digitalAssetVO.getAssetContentType());
+		newAsset.setAssetKey(digitalAssetVO.getAssetKey() + "_new");
+		newAsset.setAssetFileName(digitalAssetVO.getAssetFileName());
+		newAsset.setAssetFilePath(digitalAssetVO.getAssetFilePath());
+		newAsset.setAssetFileSize(new Integer(new Long(file.length()).intValue()));
+		InputStream is = new FileInputStream(file);
+		
+		if(this.contentVersionId != null)
+		    digitalAssetVO = DigitalAssetController.create(newAsset, is, this.contentVersionId);
+ 		//else
+		//    digitalAssetVO = DigitalAssetController.create(newAsset, is, this.entity, this.entityId);
+
+		file.delete();
+		
+        return "success";
+    }    
+
     public void setDigitalAssetKey(String digitalAssetKey)
 	{
 		this.digitalAssetKey = digitalAssetKey;
@@ -202,6 +270,46 @@ public class ImageEditorAction extends InfoGlueAbstractAction
 	public String getModifiedFileUrl() 
 	{
 		return modifiedFileUrl;
+	}
+
+	public int getXpos1() 
+	{
+		return xpos1;
+	}
+
+	public void setXpos1(int xpos1) 
+	{
+		this.xpos1 = xpos1;
+	}
+
+	public int getXpos2() 
+	{
+		return xpos2;
+	}
+
+	public void setXpos2(int xpos2) 
+	{
+		this.xpos2 = xpos2;
+	}
+
+	public int getYpos1() 
+	{
+		return ypos1;
+	}
+
+	public void setYpos1(int ypos1) 
+	{
+		this.ypos1 = ypos1;
+	}
+
+	public int getYpos2() 
+	{
+		return ypos2;
+	}
+
+	public void setYpos2(int ypos2) 
+	{
+		this.ypos2 = ypos2;
 	}
     
 }
