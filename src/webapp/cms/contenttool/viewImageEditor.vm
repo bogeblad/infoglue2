@@ -134,55 +134,44 @@
 	</div>
 </div>
 
+	<div style="position: absolute; left: 10px; width: 50px;">
+		<p>
+			<a href="javascript:activateMarkTool();"><img src="images/markIcon.gif" width="20" height="20" border="0" alt="Mark section of image"/></a>
+		</p>
+		<p>
+			<a href="ImageEditor!resize.action?digitalAssetId=$digitalAssetId&width=100&height=70"><img src="images/resizeIcon.gif" width="20" height="20" border="0" alt="Resize image"/></a>
+		</p>
+		<p>
+			<a href="ImageEditor!crop.action?digitalAssetId=$digitalAssetId&xpos1=20&ypos1=20&xpos2=70&ypos2=70"><img src="images/cropIcon.gif" width="20" height="20" border="0" alt="Crop image"/></a>
+		</p>
+	</div>
+	
+	<div style="position: absolute; left: 60px; width: 800px;">
+		<div id="pxn8_canvas">
+		<div id="pxn8_image_container" >
+		  
+		  <img id="pxn8_image" border="0" src="http://pxn8.com:80/images/samples/waterfall.jpg"/>
+		  
+		</div>  
+		
+		<!-- selectBox -->
+		<div id="pxn8_select_rect" name="pxn8_select_rect" style=""></div>
+		
+		<!-- these areas surround the selection area -->
+		<div id="pxn8_left_rect"   style=""></div>
+		<div id="pxn8_top_rect"    style="border-bottom: 1px dashed white;"></div>
+		<div id="pxn8_bottom_rect" style="border-top: 1px dashed white;"></div>
+		<div id="pxn8_right_rect"  style=""></div>
+		
+		</div><!-- end of canvas -->
+		
+	</div>
 
-<div style="float: left;">
-<div id="pxn8_canvas">
-<div id="pxn8_image_container" >
-  
-  <img id="pxn8_image" border="0" src="http://pxn8.com:80/images/samples/waterfall.jpg"/>
-  
-</div>  
 
-<!-- selectBox -->
-<div id="pxn8_select_rect" name="pxn8_select_rect" style=""></div>
-
-<!-- these areas surround the selection area -->
-<div id="pxn8_left_rect"   style=""></div>
-<div id="pxn8_top_rect"    style="border-bottom: 1px dashed white;"></div>
-<div id="pxn8_bottom_rect" style="border-top: 1px dashed white;"></div>
-<div id="pxn8_right_rect"  style=""></div>
-
-</div><!-- end of canvas -->
-
-</div>
-
-<form enctype="multipart/form-data" name="editForm" method="POST" action="ImageEditor.action">
-<input type="hidden" name="contentTypeDefinitionId" value="$contentTypeDefinitionVO.id">
-<input type="hidden" name="entity" value="$!entity">
-<input type="hidden" name="entityId" value="$!entityId">
-<input type="hidden" name="contentVersionId" value="$!contentVersionId">
-<input type="hidden" name="uploadedFilesCounter" value="$!uploadedFilesCounter">
-<input type="hidden" name="closeOnLoad" value="false">
-<table width="350" border="1">
-	<tr>
-		<td class="biglabel" width="100" valign="top">
-			<p>
-				<a href="javascript:activateMarkTool();"><img src="images/markIcon.gif" width="20" height="20" border="0" alt="Mark section of image"/></a>
-			</p>
-			<p>
-				<a href="ImageEditor!resize.action?digitalAssetId=$digitalAssetId&width=100&height=70"><img src="images/resizeIcon.gif" width="20" height="20" border="0" alt="Resize image"/></a>
-			</p>
-			<p>
-				<a href="ImageEditor!crop.action?digitalAssetId=$digitalAssetId&xpos1=20&ypos1=20&xpos2=70&ypos2=70"><img src="images/cropIcon.gif" width="20" height="20" border="0" alt="Crop image"/></a>
-			</p>
-		</td>
-		<td width="600" style="border: 1px solid black; background-color: white;" align="center" valign="middle">
+<!--
 			<img src="$digitalAssetUrl"/> 
 			<br/>
 			<img src="$modifiedFileUrl"/> 
-		</td>
-	</tr>		
-<!--
 	<tr>
 		<td colspan="2">
 			<a href="javascript:submitForm();"><img src="$ui.getString("images.contenttool.buttons.save")" width="50" height="25" border="0"></a>
