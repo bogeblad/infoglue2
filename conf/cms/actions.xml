@@ -1,4 +1,4 @@
-<!-- $Id: actions.xml,v 1.31 2006/10/30 21:17:33 mattias Exp $ -->
+<!-- $Id: actions.xml,v 1.32 2006/11/05 22:22:00 mattias Exp $ -->
 <actions>
 
 	<!-- MySettings -->
@@ -1423,6 +1423,9 @@
 	<action name="org.infoglue.cms.applications.contenttool.actions.ImageEditorAction" alias="ImageEditor">
 		<view name="input">/cms/contenttool/viewImageEditor.vm</view>
 		<view name="success">/cms/contenttool/viewImageEditor.vm</view>
+		<view name="successResize">ExtendedRedirect.action?url=ImageEditor.action#workingFileName#digitalAssetId#contentVersionId</view>
+		<view name="successCrop">ExtendedRedirect.action?url=ImageEditor.action#workingFileName#digitalAssetId#contentVersionId</view>
+		<view name="successSaveAndExit">ImageEditor.action</view>
 		<view name="error">/cms/contenttool/error.vm</view>
 	</action>
 

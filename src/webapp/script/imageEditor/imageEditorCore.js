@@ -13,7 +13,6 @@
  * GLOBAL VARIABLES
  * ----------------
  */
-alert("Loading imageEditorCore...");
 
 var moz = ((document.all)? false : true); 
 var ie = ((document.all)? true : false);
@@ -353,7 +352,7 @@ var PXN8 = {
      *
      */
     initialize: function(image_src){
-        _pxn8_initialize(image_src);
+    	_pxn8_initialize(image_src);
     },
 
     
@@ -558,7 +557,6 @@ function getCursorPosition(e) {
 }
 function beginDrag (elementToDrag, event, moveHandler, upHandler)
 {
-    
     var elementBounds = eb(elementToDrag);
 
     var cursorPos = getCursorPosition(event);
@@ -1153,7 +1151,9 @@ function _pxn8_initialize(image_src)
         rect.style.zIndex = "1";
 
     }
+    	
     PXN8.image.location = image_src;
+    //alert("PXN8.image.location:" + PXN8.image.location);
 
     PXN8.opNumber = 0;
     PXN8.maxOpNumber = 0;
@@ -1184,11 +1184,13 @@ function _pxn8_initialize(image_src)
      * bare-bones html ).
      *
      */
-    var onImageLoad = function(pxn8image){
-
+    var onImageLoad = function(pxn8image)
+    {
+		//alert("pxn8image: " + pxn8image);
         PXN8.image.width =  pxn8image.width;
         PXN8.image.height = pxn8image.height;
-
+		//alert("width: " + PXN8.image.width);
+		//alert("height: " + PXN8.image.height);
         addImageToHistory(pxn8image.src);
 
         displaySizeInfo();
@@ -1395,9 +1397,10 @@ function postImageLoad()
         }
     };
     
-    var onloadFunc = function(){
+    var onloadFunc = function()
+    {
         
-	     PXN8.log.append("image " + theImage.src + " has loaded");	     
+	    PXN8.log.append("image " + theImage.src + " has loaded");	     
 
         PXN8.image.width = theImage.width;
         PXN8.image.height = theImage.height;
@@ -1466,6 +1469,7 @@ function createSelectionRect()
     };
     return selectRect;
 }
+
 
 function addImageToHistory(imageLocation)
 {
@@ -1741,49 +1745,64 @@ var handles = {
             position: function(handle,sel){
                 handle.style.left = Math.round((sel.x + (sel.w/2)) * PXN8.magnification()) + "px";
                 handle.style.top = Math.round((sel.y * PXN8.magnification())) + "px";
+            	document.getElementById("x").value = handle.style.left;
+            	document.getElementById("y").value = handle.style.top;
             }
     },
     "s":  { moveHandler: resizer(sTest),
             position: function(handle,sel){
                 handle.style.left = Math.round((sel.x + (sel.w/2)) * PXN8.magnification()) + "px";
                 handle.style.top = Math.round((sel.y + (sel.h - PXN8.style.resizeHandles.size)) * PXN8.magnification()) + "px";
-
+            	document.getElementById("x").value = handle.style.left;
+            	document.getElementById("y").value = handle.style.top;
             }
     },
     "e":  { moveHandler: resizer(eTest),
             position: function(handle,sel){
                 handle.style.left = Math.round((sel.x + (sel.w - PXN8.style.resizeHandles.size)) * PXN8.magnification()) + "px";
                 handle.style.top = Math.round((sel.y + (sel.h/2)) * PXN8.magnification()) + "px";
+            	document.getElementById("x").value = handle.style.left;
+            	document.getElementById("y").value = handle.style.top;
             }
     },
     "w":  { moveHandler: resizer(wTest),
             position: function(handle,sel){
                 handle.style.left = Math.round(sel.x * PXN8.magnification()) + "px";
                 handle.style.top = Math.round((sel.y + (sel.h/2)) * PXN8.magnification()) + "px";
+            	document.getElementById("x").value = handle.style.left;
+            	document.getElementById("y").value = handle.style.top;
             }
     },
     "nw": { moveHandler: resizer(nwTest),
             position: function(handle,sel){
                 handle.style.left = Math.round(sel.x * PXN8.magnification()) + "px";
                 handle.style.top = Math.round((sel.y * PXN8.magnification())) + "px";
+            	document.getElementById("x").value = handle.style.left;
+            	document.getElementById("y").value = handle.style.top;
             }
     },
     "sw": { moveHandler: resizer(swTest),
             position: function(handle,sel){
                 handle.style.left = Math.round(sel.x * PXN8.magnification()) + "px";
                 handle.style.top = Math.round((sel.y + (sel.h - PXN8.style.resizeHandles.size)) * PXN8.magnification()) + "px";
+            	document.getElementById("x").value = handle.style.left;
+            	document.getElementById("y").value = handle.style.top;
             }
     },
     "ne": { moveHandler: resizer(neTest),
             position: function(handle,sel){
                 handle.style.left = Math.round((sel.x + (sel.w - PXN8.style.resizeHandles.size)) * PXN8.magnification()) + "px";
                 handle.style.top = Math.round((sel.y * PXN8.magnification())) + "px";
+            	document.getElementById("x").value = handle.style.left;
+            	document.getElementById("y").value = handle.style.top;
             }
     },
     "se": { moveHandler: resizer(seTest),
             position: function(handle,sel){
                 handle.style.left = Math.round((sel.x + (sel.w - PXN8.style.resizeHandles.size)) * PXN8.magnification()) + "px";
                 handle.style.top = Math.round((sel.y + (sel.h - PXN8.style.resizeHandles.size)) * PXN8.magnification()) + "px";
+            	document.getElementById("x").value = handle.style.left;
+            	document.getElementById("y").value = handle.style.top;
             }
     }
 };

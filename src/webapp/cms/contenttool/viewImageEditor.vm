@@ -18,6 +18,9 @@
 	<script language="JavaScript">
 		<!--
 		
+		var workingFileName = "$workingFileName";
+		
+		
 		/**
 		 * This method submits the form and shows a uploading-dialog.
 		 */
@@ -77,6 +80,7 @@
 	
 		function refreshCaller()
 		{
+			//alert("refreshing caller...");
 			if(window.opener && window.opener.parent && window.opener.parent.frames['main'])
 				window.opener.parent.frames['main'].location.reload();
 			else
@@ -115,19 +119,46 @@
 			list.style.visibility = "hidden";
 		}
 
-		function activateResizeTool()
+		function resizeImage()
 		{
-			document.location.href = "ImageEditor!resize.action?digitalAssetId=$digitalAssetId&contentVersionId=$contentVersionId&width=100&height=70";			
+			var width = document.getElementById("width").value;
+			var height = document.getElementById("height").value;
+			var keepRatio = document.getElementById("keepRatio").checked;
+			var bestFit = document.getElementById("bestFit").checked;
+			
+			if(width == "")
+				width = "-1";
+				
+			if(height == "")
+				height = "-1";
+											
+			document.location.href = "ImageEditor!resize.action?workingFileName=" + workingFileName + "&digitalAssetId=$digitalAssetId&contentVersionId=$contentVersionId&width=" + width + "&height=" + height + "&keepRatio=" + keepRatio + "&bestFit=" + bestFit;
 		} 		
 		
 		function activateCropTool()
 		{
-			document.location.href = "ImageEditor!crop.action?digitalAssetId=$digitalAssetId&contentVersionId=$contentVersionId&xpos1=" + sx + "&ypos1=" + sy + "&xpos2=" + ex + "&ypos2=" + ey;
+			var url = "ImageEditor!crop.action?workingFileName=" + workingFileName + "&digitalAssetId=$digitalAssetId&contentVersionId=$contentVersionId&xpos1=" + sx + "&ypos1=" + sy + "&xpos2=" + ex + "&ypos2=" + ey;
+			//alert("url:" + url);
+			document.location.href = url;
+		} 		
+
+		function openSaveImageDialog()
+		{
+			document.getElementById("saveDialog").style.display = "block";
+		} 		
+
+		function openResizeImageDialog()
+		{
+			document.getElementById("resizeDialog").style.display = "block";
 		} 		
 
 		function saveImage()
 		{
-			document.location.href = "ImageEditor!save.action?digitalAssetId=$digitalAssetId&contentVersionId=$contentVersionId";
+			var digitalAssetKey = document.getElementById("tt").value;
+			if(digitalAssetKey != "")
+				document.location.href = "ImageEditor!save.action?workingFileName=" + workingFileName + "&digitalAssetId=$digitalAssetId&contentVersionId=$contentVersionId&digitalAssetKey=" + digitalAssetKey;
+			else
+				alert("Must state an asset key");
 		} 		
 		
 		-->
@@ -137,10 +168,9 @@
 	<META HTTP-EQUIV="expires" CONTENT="-1" />	
 </head>
 
-<body class="contenttooledit" #if($closeOnLoad == "true")onload="refreshCaller();"#end>
+<body class="contenttooledit" #if($closeOnLoad == "true")onload="refreshCaller();"#else onload="PXN8.initialize('$modifiedFileUrl');" #end>
 
 <div class="fullymarginalized">
-
 <div id="savingLayer" class="infobackground">
 	<div class="infoheader">Saving changes</div>
 	<div class="infobody">
@@ -149,63 +179,129 @@
 	</div>
 </div>
 
-	<div style="position: absolute; left: 10px; width: 50px;">
-		<p>
-			<a href="javascript:activateMarkTool();"><img src="images/markIcon.gif" width="20" height="20" border="0" alt="Mark section of image"/></a>
-		</p>
-		<p>
-			<a href="javascript:activateResizeTool();"><img src="images/resizeIcon.gif" width="20" height="20" border="0" alt="Resize image"/></a>
-		</p>
-		<p>
-			<a href="javascript:activateCropTool();"><img src="images/cropIcon.gif" width="20" height="20" border="0" alt="Crop image"/></a>
-		</p>
-		<p>
-			<a href="javascript:saveImage();"><img src="images/saveIcon.gif" width="20" height="20" border="0" alt="Save image"/></a>
-		</p>
-	</div>
-	
-	<div style="position: absolute; left: 60px; width: 800px;">
-		<div id="pxn8_canvas">
-		<div id="pxn8_image_container" >
-		  
-		  <img id="pxn8_image" border="0" src="$modifiedFileUrl"/>
-		  
-		</div>  
-		
-		<!-- selectBox -->
-		<div id="pxn8_select_rect" name="pxn8_select_rect" style=""></div>
-		
-		<!-- these areas surround the selection area -->
-		<div id="pxn8_left_rect"   style=""></div>
-		<div id="pxn8_top_rect"    style="border-bottom: 1px dashed white;"></div>
-		<div id="pxn8_bottom_rect" style="border-top: 1px dashed white;"></div>
-		<div id="pxn8_right_rect"  style=""></div>
-		
-		</div><!-- end of canvas -->
-		
-	</div>
-
-
-<!--
-			<img src="$digitalAssetUrl"/> 
-			<br/>
-			<img src="$modifiedFileUrl"/> 
-	<tr>
-		<td colspan="2">
-			<a href="javascript:submitForm();"><img src="$ui.getString("images.contenttool.buttons.save")" width="50" height="25" border="0"></a>
-			<a href="javascript:submitAndCloseForm();"><img src="$ui.getString("images.contenttool.buttons.saveAndExit")" width="80" height="25" border="0"></a>
-			<a href="javascript:refreshCaller();"><img border="0" src="$ui.getString("images.contenttool.buttons.close")" width="50" height="25"></a>
-		</td>
-	</tr>
--->
-	</form>	
+<div id="saveDialog" style="display: none; position: absolute; top: 200px; left: 200px; z-index: 10; background-color: #EEF7DC; border: 1px solid #666666;">
+<table width="350" border="0">
+<tr>
+	<td class="dialogHandle">
+		State asset key		
+	</td>
+</tr>	
+<tr>
+	<td>
+		$ui.getString("tool.contenttool.fileUpload.fileUploadUpdateKeyLabel")
+		<br/>
+		  <div id="comboBox">
+		  <table border="0" cellspacing="0" style="border-collapse: collapse" bordercolor="#808080" id="cboBoxTable">
+		    <tr>
+		      <td width="10" style="border: 1px solid black;">
+		  	  <input type="text" name="digitalAssetKey" id="tt" size="20" onfocus="ddHide();" style="border: 1px solid #FFFFFF" value="$!digitalAssetKey"></td>
+		      <td onClick="ddClick();" style="border: 1px solid black;">
+		      <img border="0" src="images/combodown.gif" width="15" height="20"></td>
+		    </tr>
+		  </table>
+		  <select size="5" name="dd" id="dd" style="border:0px solid #FFFFFF; width: 163px; height: 100; visibility: hidden; z-index: 100; position: absolute;" onClick="ddListClick();">
+				#foreach($assetKeyDefinition in $definedAssetKeys)
+					<option value="$assetKeyDefinition.assetKey">$assetKeyDefinition.assetKey</option>
+				#end
+		  </select>  
+		  </div>
+	</td>
+</tr>		
+<tr>
+	<td colspan="2">
+		<a href="javascript:saveImage();"><img src="$ui.getString("images.contenttool.buttons.save")" width="50" height="25" border="0"></a>
+		<img border="0" src="$ui.getString("images.contenttool.buttons.close")" width="50" height="25" onclick="document.getElementById('saveDialog').style.display = 'none';">
+	</td>
+</tr>
 </table>
 </div>
 
-<script type="text/javascript">
+<div id="resizeDialog" style="display: none; position: absolute; top: 200px; left: 200px; z-index: 10; background-color: #EEF7DC; border: 1px solid #666666;">
+<table width="350" border="0">
+<tr>
+	<td class="dialogHandle">
+		State resize options		
+	</td>
+</tr>	
+<tr>
+	<td>
+		$ui.getString("tool.contenttool.fileUpload.fileUploadUpdateKeyLabel")
+		<br/>
+		Preserve aspect ratio: <br/>
+		<input type="checkbox" id="keepRatio" checked="true"/><br/>
+		Best fit: <br/>
+		<input type="checkbox" id="bestFit" checked="true"/><br/>
+		<input type="textfield" id="width" class=""/><br/>
+		<input type="textfield" id="height" class=""/><br/>
+	</td>
+</tr>		
+<tr>
+	<td colspan="2">
+		<a href="javascript:resizeImage();"><img src="$ui.getString("images.contenttool.buttons.save")" width="50" height="25" border="0"></a>
+		<img border="0" src="$ui.getString("images.contenttool.buttons.close")" width="50" height="25" onclick="document.getElementById('saveDialog').style.display = 'none';">
+	</td>
+</tr>
+</table>
+</div>
+
 <!--
-	PXN8.initialize('$modifiedFileUrl');
+<input type="textfield" id="x">
+<input type="textfield" id="y">
 -->
-</script>
+
+<div style="position: absolute; left: 20px; top: 40px; width: 50px;">
+	<!--
+	<p>
+		<a href="javascript:activateMarkTool();"><img src="images/markIcon.gif" width="20" height="20" border="0" alt="Mark section of image"/></a>
+	</p>
+	-->
+	<p>
+		<a href="javascript:openResizeImageDialog();"><img src="images/resizeIcon.gif" width="20" height="20" border="0" alt="Resize image"/></a>
+	</p>
+	<p>
+		<a href="javascript:activateCropTool();"><img src="images/cropIcon.gif" width="20" height="20" border="0" alt="Crop image"/></a>
+	</p>
+	<p>
+		<a href="javascript:openSaveImageDialog();"><img src="images/saveIcon.gif" width="20" height="20" border="0" alt="Save image"/></a>
+	</p>
+</div>
+
+<div style="padding-left: 40px;">
+<table class="infotable">
+  <tr>
+    <td valign="top" class="infolabel">Selection:</td>
+    <td id="pxn8_selection_size"> ----,---- </td>
+    <td valign="top" class="infolabel">Size:</td>
+    <td id="pxn8_image_size"> ----,---- </td>
+    <td valign="top" class="infolabel">Zoom:</td>
+
+    <td id="pxn8_zoom"> 100% </td>
+    <td valign="top" class="infolabel">Position:</td>
+    <td id="pxn8_mouse_pos"> ----,---- </td>
+  </tr>
+</table>
+</div>
+
+<div style="position: absolute; left: 60px; width: 700px;">
+	<div id="pxn8_canvas">
+	<div id="pxn8_image_container" >
+	  
+	  <img id="pxn8_image" border="0" src="$modifiedFileUrl" style="border: 1px solid black;"/>
+	  
+	</div>  
+	
+	<!-- selectBox -->
+	<div id="pxn8_select_rect" name="pxn8_select_rect" style=""></div>
+	
+	<!-- these areas surround the selection area -->
+	<div id="pxn8_left_rect"   style=""></div>
+	<div id="pxn8_top_rect"    style="border-bottom: 1px dashed white;"></div>
+	<div id="pxn8_bottom_rect" style="border-top: 1px dashed white;"></div>
+	<div id="pxn8_right_rect"  style=""></div>
+	
+	</div><!-- end of canvas -->
+	
+</div>
+
 </body>
 </html>

@@ -1,5 +1,3 @@
-alert("Loading imageEditor...");
-
 //minimized!
 function findPosX(obj){
 var curleft=0;
@@ -415,7 +413,9 @@ this.zoomedBy=this.zooms[i];
 break;}
 }
 },
-initialize: function(image_src){
+
+initialize: function(image_src)
+{
 _pxn8_initialize(image_src);},
 tools: {
 },
@@ -825,7 +825,9 @@ var floatValue=computedCanvasStyle[floatProperty];
 if (!floatValue || floatValue=="none"){
 canvas.style[floatProperty]="left";}
 return canvas;}
-function _pxn8_initialize(image_src) {
+
+function _pxn8_initialize(image_src) 
+{
 createSelectionRect();
 var canvas=initializeCanvas();
 var rects=["pxn8_top_rect","pxn8_bottom_rect","pxn8_left_rect","pxn8_right_rect"];

@@ -595,3 +595,14 @@ a:active {
 	font-size:10px;
 	overflow: auto;
 	}
+
+.dialogHandle {
+	margin:2px;
+	padding:2px;
+	width:440px;
+	color:white;
+	font-family: Tahoma, Arial, Helvetica, sans-serif;
+	font-size: 10pt;
+	background-image: url('../images/handleBackground.gif');
+	}
+	

@@ -28,6 +28,7 @@ import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FilenameFilter;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
@@ -52,6 +53,7 @@ import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeTypeDefinitionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeVersionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.UserPropertiesController;
+import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.entities.content.DigitalAssetVO;
 import org.infoglue.cms.entities.management.AvailableServiceBindingVO;
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
@@ -94,35 +96,52 @@ public class ImageEditorAction extends InfoGlueAbstractAction
 	private DigitalAssetVO digitalAssetVO = null;
 	private String modifiedFileUrl = "";
 	private int xpos1, ypos1, xpos2, ypos2 = 0;
+	private int width, height;
+	private String keepRatio = "false";
+	private String bestFit = "true";
+	
 	private Integer contentVersionId = null;
 	private Integer digitalAssetId   = null;
-
+	private String closeOnLoad;
+	private ContentVersionVO contentVersionVO;
+	private ContentTypeDefinitionVO contentTypeDefinitionVO;
+	private String workingFileName;
+	
 	private String digitalAssetKey   = null;
 	private boolean isUpdated       = false;
 	private String reasonKey;
-	private ContentTypeDefinitionVO contentTypeDefinitionVO;
 	//private DigitalAssetVO updatedDigitalAssetVO = null;
-	private String closeOnLoad;
 	private Integer contentTypeDefinitionId;
 	
 	private ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
 	private Imaging imaging = ImagingFactory.createImagingInstance(ImagingFactory.AWT_LOADER, ImagingFactory.JAVA2D_TRANSFORMER);
         	
+	/**
+	 * 
+	 */
+	
     public String doExecute() throws Exception
     {
     	ceb.throwIfNotEmpty();
 	
     	this.digitalAssetVO = DigitalAssetController.getDigitalAssetVOWithId(this.digitalAssetId);
+    	this.contentVersionVO = ContentVersionController.getContentVersionController().getContentVersionVOWithId(this.contentVersionId);
+        this.contentTypeDefinitionVO = ContentController.getContentController().getContentTypeDefinition(contentVersionVO.getContentId());
 
-        String filePath = DigitalAssetController.getDigitalAssetFilePath(this.digitalAssetVO.getDigitalAssetId());
-        System.out.println("filePath:" + filePath);
-    	BufferedImage original = javax.imageio.ImageIO.read(new File(filePath));
-
-    	File outputFile = new File(CmsPropertyHandler.getDigitalAssetPath() + File.separator + "temp_" + this.getInfoGluePrincipal().getName() + "_" + digitalAssetVO.getDigitalAssetId() + ".png");
-		javax.imageio.ImageIO.write(original, "PNG", outputFile);
-		this.modifiedFileUrl = CmsPropertyHandler.getWebServerAddress() + "/" + CmsPropertyHandler.getDigitalAssetBaseUrl() + "/temp_" + this.getInfoGluePrincipal().getName() + "_" + digitalAssetVO.getDigitalAssetId() + ".png";
-		System.out.println("modifiedFileUrl:" + modifiedFileUrl);
-
+        if(this.workingFileName == null)
+        {
+	        String filePath = DigitalAssetController.getDigitalAssetFilePath(this.digitalAssetVO.getDigitalAssetId());
+	        //System.out.println("filePath:" + filePath);
+	    	BufferedImage original = javax.imageio.ImageIO.read(new File(filePath));
+	
+	    	workingFileName = "imageEditorWK_" + System.currentTimeMillis() + "_" + this.getInfoGluePrincipal().getName() + "_" + digitalAssetVO.getDigitalAssetId() + ".png";
+	    	File outputFile = new File(getImageEditorPath() + File.separator + workingFileName);
+			javax.imageio.ImageIO.write(original, "PNG", outputFile);
+		}
+        
+    	this.modifiedFileUrl = getImageEditorBaseUrl() + workingFileName;
+    	//System.out.println("modifiedFileUrl:" + modifiedFileUrl);
+    
         return "success";
     }    
 
@@ -131,29 +150,68 @@ public class ImageEditorAction extends InfoGlueAbstractAction
     	ceb.throwIfNotEmpty();
 
     	this.digitalAssetVO = DigitalAssetController.getDigitalAssetVOWithId(this.digitalAssetId);
+    	this.contentVersionVO = ContentVersionController.getContentVersionController().getContentVersionVOWithId(this.contentVersionId);
+        this.contentTypeDefinitionVO = ContentController.getContentController().getContentTypeDefinition(contentVersionVO.getContentId());
 
-    	File file = new File(CmsPropertyHandler.getDigitalAssetPath() + File.separator + "temp_" + this.getInfoGluePrincipal().getName() + "_" + digitalAssetVO.getDigitalAssetId() + ".png");
-        //String filePath = DigitalAssetController.getDigitalAssetFilePath(this.digitalAssetVO.getDigitalAssetId());
-    	//System.out.println("filePath:" + filePath);
+    	File file = new File(getImageEditorPath() + File.separator + workingFileName);
     	BufferedImage original = javax.imageio.ImageIO.read(file);
-
-    	//BufferedImage original = loadImageResource(getDigitalAssetUrl()); 
 		
     	//scaleXY()
     	//BufferedImage image = imaging.scale(original, 1.2f, 0.6f);
     	
     	//scaleEqually() {
-    	BufferedImage image = imaging.scale(original, 0.5f);
+    	//BufferedImage image = imaging.scale(original, 0.5f);
 
-    	//resizeToFit()
-    	//BufferedImage image = imaging.resize(original, 200, 800, true);
+    	int originalWidth = original.getWidth();
+    	int originalHeight = original.getHeight();
+    	float aspect = (float)originalWidth / (float)originalHeight;
+    	BufferedImage image = null;
+    	/*
+    	System.out.println("originalWidth: " + originalWidth);
+    	System.out.println("originalHeight: " + originalHeight);
+    	System.out.println("height: " + height);
+    	System.out.println("width: " + width);
+    	System.out.println("keepRatio: " + keepRatio);
+    	System.out.println("bestFit: " + bestFit);
+    	*/
+    	
+    	if(keepRatio.equalsIgnoreCase("true"))
+    	{
+        	if(height == -1 && width != -1)
+        	{
+        		aspect = (float)width / (float)originalWidth;
+        		//System.out.println("aspect1:" + aspect);
+        	}
+        	else if(width == -1 && height != -1)
+        	{
+        		aspect = (float)height / (float)originalHeight;
+        		//System.out.println("aspect2:" + aspect);
+        	}
+        	else
+        	{
+        		aspect = (float)width / (float)originalWidth;
+        		//System.out.println("aspect3:" + aspect + " from " + width + "/" + originalWidth + "(" + ((float)width / (float)originalWidth) + ")");
+        	}
+        	
+        	//System.out.println("aspect:" + aspect);
+        	
+        	image = imaging.scale(original, aspect);        	
+    	}
+    	else
+    	{
+	    	image = imaging.resize(original, width, height, false);
+    	}
+    	
+    	workingFileName = "imageEditorWK_" + System.currentTimeMillis() + "_" + this.getInfoGluePrincipal().getName() + "_" + digitalAssetVO.getDigitalAssetId() + ".png";    	
+    	File outputFile = new File(getImageEditorPath() + File.separator + workingFileName);
+    	outputFile.mkdirs();
+    	javax.imageio.ImageIO.write(image, "PNG", outputFile);
 
-    	File outputFile = file;
-		javax.imageio.ImageIO.write(image, "PNG", outputFile);
-		this.modifiedFileUrl = CmsPropertyHandler.getWebServerAddress() + "/" + CmsPropertyHandler.getDigitalAssetBaseUrl() + "/temp_" + this.getInfoGluePrincipal().getName() + "_" + digitalAssetVO.getDigitalAssetId() + ".png";
-		System.out.println("modifiedFileUrl:" + modifiedFileUrl);
+    	//System.out.println("outputFile:" + outputFile.length());
+		this.modifiedFileUrl = getImageEditorBaseUrl() + workingFileName;
+		//System.out.println("modifiedFileUrl:" + modifiedFileUrl);
 		
-        return "success";
+        return "successResize";
     }    
 
     public String doCrop() throws Exception
@@ -161,18 +219,23 @@ public class ImageEditorAction extends InfoGlueAbstractAction
     	ceb.throwIfNotEmpty();
 
     	this.digitalAssetVO = DigitalAssetController.getDigitalAssetVOWithId(this.digitalAssetId);
+    	this.contentVersionVO = ContentVersionController.getContentVersionController().getContentVersionVOWithId(this.contentVersionId);
+        this.contentTypeDefinitionVO = ContentController.getContentController().getContentTypeDefinition(contentVersionVO.getContentId());
 
-    	File file = new File(CmsPropertyHandler.getDigitalAssetPath() + File.separator + "temp_" + this.getInfoGluePrincipal().getName() + "_" + digitalAssetVO.getDigitalAssetId() + ".png");
+    	File file = new File(getImageEditorPath() + File.separator + workingFileName);
     	BufferedImage original = javax.imageio.ImageIO.read(file);
 
     	BufferedImage image = imaging.crop(original, xpos1, ypos1, xpos2 - xpos1, ypos2 - ypos1);
 
-    	File outputFile = file;
-		javax.imageio.ImageIO.write(image, "PNG", outputFile);
-		this.modifiedFileUrl = CmsPropertyHandler.getWebServerAddress() + "/" + CmsPropertyHandler.getDigitalAssetBaseUrl() + "/temp_" + this.getInfoGluePrincipal().getName() + "_" + digitalAssetVO.getDigitalAssetId() + ".png";
-		System.out.println("modifiedFileUrl:" + modifiedFileUrl);
+    	workingFileName = "imageEditorWK_" + System.currentTimeMillis() + "_" + this.getInfoGluePrincipal().getName() + "_" + digitalAssetVO.getDigitalAssetId() + ".png";    	
+    	File outputFile = new File(getImageEditorPath() + File.separator + workingFileName);
+    	javax.imageio.ImageIO.write(image, "PNG", outputFile);
+
+    	//System.out.println("outputFile:" + outputFile.length());
+		this.modifiedFileUrl = getImageEditorBaseUrl() + workingFileName;
+		//System.out.println("modifiedFileUrl:" + modifiedFileUrl);
 		
-        return "success";
+        return "successCrop";
     }    
 
     public String doSave() throws Exception
@@ -180,53 +243,176 @@ public class ImageEditorAction extends InfoGlueAbstractAction
     	ceb.throwIfNotEmpty();
 
     	this.digitalAssetVO = DigitalAssetController.getDigitalAssetVOWithId(this.digitalAssetId);
+    	this.contentVersionVO = ContentVersionController.getContentVersionController().getContentVersionVOWithId(this.contentVersionId);
+        this.contentTypeDefinitionVO = ContentController.getContentController().getContentTypeDefinition(contentVersionVO.getContentId());
 
-    	File file = new File(CmsPropertyHandler.getDigitalAssetPath() + File.separator + "temp_" + this.getInfoGluePrincipal().getName() + "_" + digitalAssetVO.getDigitalAssetId() + ".png");
-   		System.out.println("saving file:" + file.getAbsolutePath());
+    	File file = new File(getImageEditorPath() + File.separator + workingFileName);
+    	//System.out.println("saving file:" + file.getAbsolutePath());
+
+   		String contentType = digitalAssetVO.getAssetContentType();
    		
     	DigitalAssetVO newAsset = new DigitalAssetVO();
-		newAsset.setAssetContentType(digitalAssetVO.getAssetContentType());
-		newAsset.setAssetKey(digitalAssetVO.getAssetKey() + "_new");
+		newAsset.setAssetContentType(contentType);
+		newAsset.setAssetKey(this.digitalAssetKey);
 		newAsset.setAssetFileName(digitalAssetVO.getAssetFileName());
 		newAsset.setAssetFilePath(digitalAssetVO.getAssetFilePath());
 		newAsset.setAssetFileSize(new Integer(new Long(file.length()).intValue()));
 		InputStream is = new FileInputStream(file);
+		
+		if(this.contentTypeDefinitionId != null && digitalAssetKey != null)
+		{
+			AssetKeyDefinition assetKeyDefinition = ContentTypeDefinitionController.getController().getDefinedAssetKey(contentTypeDefinitionVO.getSchemaValue(), digitalAssetKey);
+			
+			if(assetKeyDefinition != null)
+			{
+				if(assetKeyDefinition.getMaximumSize().intValue() < new Long(file.length()).intValue())
+				{   
+				    file.delete();
+				    this.reasonKey = "tool.contenttool.fileUpload.fileUploadFailedOnSizeText";
+                	return "uploadFailed";
+				}
+				if(assetKeyDefinition.getAllowedContentTypes().startsWith("image"))
+				{
+				    if(!contentType.startsWith("image"))
+				    {
+					    file.delete();
+					    this.reasonKey = "tool.contenttool.fileUpload.fileUploadFailedOnTypeNotImageText";
+	                	return "uploadFailed";						        
+				    }
+
+				    Image image = javax.imageio.ImageIO.read(file);
+				    int width = image.getWidth(null);
+				    int height = image.getHeight(null);
+				    
+				    String allowedWidth = assetKeyDefinition.getImageWidth();
+				    String allowedHeight = assetKeyDefinition.getImageHeight();
+				    
+				    if(!allowedWidth.equals("*"))
+				    {
+				        Integer allowedWidthNumber = new Integer(allowedWidth.substring(1));
+				        if(allowedWidth.startsWith("<") && width >= allowedWidthNumber.intValue())
+				        {
+					        file.delete();
+						    this.reasonKey = "tool.contenttool.fileUpload.fileUploadFailedOnImageToWideText";
+		                	return "uploadFailed";			
+				        }
+				        if(allowedWidth.startsWith(">") && width <= allowedWidthNumber.intValue())
+				        {
+					        file.delete();
+						    this.reasonKey = "tool.contenttool.fileUpload.fileUploadFailedOnImageNotWideEnoughText";
+		                	return "uploadFailed";			
+				        }
+				        if(!allowedWidth.startsWith(">") && !allowedWidth.startsWith("<") && width != new Integer(allowedWidth).intValue())
+				        {
+				            file.delete();
+						    this.reasonKey = "tool.contenttool.fileUpload.fileUploadFailedOnImageWrongWidthText";
+		                	return "uploadFailed";	
+				        }
+				    }
+				    
+				    if(!allowedHeight.equals("*"))
+				    {
+				        Integer allowedHeightNumber = new Integer(allowedHeight.substring(1));
+				        if(allowedHeight.startsWith("<") && height >= allowedHeightNumber.intValue())
+				        {
+					        file.delete();
+						    this.reasonKey = "tool.contenttool.fileUpload.fileUploadFailedOnImageToHighText";
+		                	return "uploadFailed";			
+				        }
+				        if(allowedHeight.startsWith(">") && height <= allowedHeightNumber.intValue())
+				        {
+					        file.delete();
+						    this.reasonKey = "tool.contenttool.fileUpload.fileUploadFailedOnImageNotHighEnoughText";
+		                	return "uploadFailed";			
+				        }
+				        if(!allowedHeight.startsWith(">") && !allowedHeight.startsWith("<") && height != new Integer(allowedHeight).intValue())
+				        {
+				            file.delete();
+						    this.reasonKey = "tool.contenttool.fileUpload.fileUploadFailedOnImageWrongHeightText";
+		                	return "uploadFailed";	
+				        }
+				    }
+				}
+			}
+		}
 		
 		if(this.contentVersionId != null)
 		    digitalAssetVO = DigitalAssetController.create(newAsset, is, this.contentVersionId);
  		//else
 		//    digitalAssetVO = DigitalAssetController.create(newAsset, is, this.entity, this.entityId);
 
-		file.delete();
+    	workingFileName = "imageEditorWK_" + System.currentTimeMillis() + "_" + this.getInfoGluePrincipal().getName() + "_" + digitalAssetVO.getDigitalAssetId() + ".png";
+		boolean deleted = file.delete();
+		//System.out.println("file:" + file.getAbsolutePath() + ":" + deleted);
+
+		cleanOldWorkingFiles(true);
 		
-        return "success";
+		closeOnLoad = "true";
+		
+        return "successSaveAndExit";
     }    
+
+    /**
+     * This method preserves space by only allowing 5 historic images and also cleaning up after a save totally.
+     * All files older than 1 day are also removed.
+     */
+    private void cleanOldWorkingFiles(boolean cleanAll) throws Exception
+    {
+    	File workingAssetsDir = new File(getImageEditorPath());
+
+    	final String matchString = "_" + this.getInfoGluePrincipal().getName() + "_" + this.digitalAssetId;
+    	FilenameFilter filter = new FilenameFilter() 
+    	{
+    		public boolean accept(File dir, String name) 
+            {
+    			//System.out.println("name: " + name + ":" + name.indexOf(matchString));
+    			//System.out.println("matchString: " + matchString);
+    			return name.indexOf(matchString) > -1;
+            }
+        };
+        
+    	File[] files = workingAssetsDir.listFiles(filter);
+    	for(int i=0; i < files.length; i++)
+    	{
+    		File file = files[i];
+    		//System.out.println("file:" + file.getName());
+    		boolean deleted = file.delete();
+    	}
+
+    	File[] allFiles = workingAssetsDir.listFiles();
+    	for(int i=0; i < allFiles.length; i++)
+    	{
+    		File file = allFiles[i];
+    		long modified = file.lastModified();
+    		long difference = System.currentTimeMillis() - modified;
+    		if(difference > (1000 * 60 * 60 * 12))
+    			file.delete();
+    	}
+    }
+    
+    private String getImageEditorPath()
+    {
+    	String path = CmsPropertyHandler.getDigitalAssetPath() + File.separator + "imageEditor";
+    	File dir = new File(path);
+    	dir.mkdirs();
+    	return path;
+    }
+
+    private String getImageEditorBaseUrl()
+    {
+    	return CmsPropertyHandler.getWebServerAddress() + "/" + CmsPropertyHandler.getDigitalAssetBaseUrl() + "/imageEditor/";
+    }
 
     public void setDigitalAssetKey(String digitalAssetKey)
 	{
 		this.digitalAssetKey = digitalAssetKey;
 	}
-		
-	/**
-	 * This method fetches the blob from the database and saves it on the disk.
-	 * Then it returnes a url for it
-	 */
-	
-	public String getDigitalAssetUrl() throws Exception
-	{
-		String imageHref = null;
-		try
-		{
-       		imageHref = DigitalAssetController.getDigitalAssetUrl(this.digitalAssetVO.getDigitalAssetId());
-		}
-		catch(Exception e)
-		{
-		    logger.warn("We could not get the url of the digitalAsset: " + e.getMessage(), e);
-		}
-		
-		return imageHref;
-	}
 	    
+	public List getDefinedAssetKeys()
+	{
+		return ContentTypeDefinitionController.getController().getDefinedAssetKeys(this.contentTypeDefinitionVO.getSchemaValue());
+	}
+
 	public Integer getDigitalAssetId()
 	{
 		return digitalAssetId;
@@ -310,6 +496,45 @@ public class ImageEditorAction extends InfoGlueAbstractAction
 	public void setYpos2(int ypos2) 
 	{
 		this.ypos2 = ypos2;
+	}
+
+	public String getWorkingFileName() 
+	{
+		return workingFileName;
+	}
+
+	public void setWorkingFileName(String workingFileName) 
+	{
+		this.workingFileName = workingFileName;
+	}
+
+	public int getHeight() 
+	{
+		return height;
+	}
+
+	public void setHeight(int height) 
+	{
+		this.height = height;
+	}
+
+	public int getWidth() 
+	{
+		return width;
+	}
+
+	public void setWidth(int width) 
+	{
+		this.width = width;
+	}
+
+	public void setKeepRatio(String keepRatio) 
+	{
+		this.keepRatio = keepRatio;
+	}
+
+	public void setBestFit(String bestFit) {
+		this.bestFit = bestFit;
 	}
     
 }
