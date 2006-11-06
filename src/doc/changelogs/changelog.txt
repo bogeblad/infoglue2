@@ -88,6 +88,8 @@ Abbreviated Changelog from 2.3.5 Final
 - Added better nullchecks for sites that for some reason have pages which has no versions. Only happens when old sites are being upgraded. New sites (build with 2.0 and above) does not have such pages. 
 - Removed reference between ServiceDefinition and it's ServiceBindings as no queries go that way and it affects performance to much. Should make no difference to anyone.
 - Added alfa version of simple image editor - can be disabled in application settings.
+- Updated installer and infoglue login screens with a new logo
+- Changed colors a bit in my desktop to a less intense color.
  
 -------------------------------------------------------------------------------------
 - InfoGlue 2.3.5 Final
