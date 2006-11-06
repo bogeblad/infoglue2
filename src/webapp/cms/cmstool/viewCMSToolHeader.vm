@@ -134,7 +134,7 @@
 		<td><img src="images/trans.gif" width="1" height="22"/></td>	
 		#if($toolId == 4)
 			#set($activeToolPos = $toolcount)
-			#set($activeColor = "#DFDA5E")	
+			#set($activeColor = "#dcd787")	
 		#end
 		#set($toolcount = $toolcount + 1)
 	#end

@@ -56,12 +56,12 @@ body.publishingtooledit {
 }
 body.mydesktoptool {
   	color            : #FFFFFF;
-	background-color : #DFDA5E;
+	background-color : #dcd787;
 }
 
 body.mydesktoptooledit {
   	color            : #FFFFFF;
-	background-color : #F8F8A1;
+	background-color : #ededb2;
 }
 
 
@@ -119,7 +119,7 @@ tr.darkapricot {
 	height 			 : 12pt;
 }
 tr.darkyellow {
-	background-color : #DFDA5E;
+	background-color : #dcd787;
 	height 			 : 14pt;
 }
 tr.lightbrown {
@@ -139,7 +139,7 @@ tr.lightapricot {
 	height 			 : 12pt;
 }
 tr.lightyellow {
-	background-color : #F8F8A1;
+	background-color : #ededb2;
 	height 			 : 14pt;
 }
 tr.white {
