@@ -223,6 +223,9 @@
 		<td>#subTitle("entity.ServerNode.property.protectionSettings.label")</td>
 	</tr>
 	<tr>
+		<td>#yesNoDropDownWithInherit("ServerNode.property.disableImageEditor" "disableImageEditor" "$this.getPropertyValue('disableImageEditor')")</td>
+	</tr>
+	<tr>
 		<td>#yesNoDropDownWithInherit("ServerNode.property.protectContentTypes" "protectContentTypes" "$this.getPropertyValue('protectContentTypes')")</td>
 	</tr>
 	<tr>

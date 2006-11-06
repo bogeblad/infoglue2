@@ -661,6 +661,11 @@ public class CmsPropertyHandler
 		return getServerNodeProperty("wysiwygEditor", true, "FCKEditor");
 	}
 
+	public static String getDisableImageEditor()
+	{
+		return getServerNodeProperty("disableImageEditor", true, "false");
+	}
+
 	public static String getProtectContentTypes()
 	{
 		return getServerNodeProperty("protectContentTypes", true, "false");

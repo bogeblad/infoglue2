@@ -196,6 +196,8 @@ public class ViewServerNodePropertiesAction extends InfoGluePropertiesAbstractAc
 	    populate(ps, "deliver_casLogoutUrl");
 	    populateData(ps, "shortcuts");
 
+	    populate(ps, "disableImageEditor");
+
 	    populate(ps, "protectContentTypes");
 	    populate(ps, "protectWorkflows");
 	    populate(ps, "protectCategories");
