@@ -57,6 +57,7 @@ import org.infoglue.deliver.controllers.kernel.impl.simple.IntegrationDeliveryCo
 import org.infoglue.deliver.controllers.kernel.impl.simple.NodeDeliveryController;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -716,7 +717,33 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 		if(anl.getLength() > 0)
 		{
 			Element component = (Element)anl.item(0);
-			component.setAttribute("path_" + locale.getLanguage(), path);
+			component.setAttribute("path", path);
+			//component.setAttribute("path_" + locale.getLanguage(), path);
+			NamedNodeMap attributes = component.getAttributes();
+			logger.debug("NumberOfAttributes:" + attributes.getLength() + ":" + attributes);
+			
+			StringBuffer sb = new StringBuffer();
+			XMLHelper.serializeDom(component, sb);
+			logger.debug("SB:" + sb.toString());
+			
+			List removableAttributes = new ArrayList();
+			for(int i=0; i<attributes.getLength(); i++)
+			{
+				Node node = attributes.item(i);
+				logger.debug("Node:" + node.getNodeName());
+				if(node.getNodeName().startsWith("path_"))
+				{
+					removableAttributes.add("" + node.getNodeName());
+				}
+			}
+			
+			Iterator removableAttributesIterator = removableAttributes.iterator();
+			while(removableAttributesIterator.hasNext())
+			{
+				String attributeName = (String)removableAttributesIterator.next();
+				logger.debug("Removing node:" + attributeName);
+				component.removeAttribute(attributeName);
+			}
 			
 			NodeList children = component.getChildNodes();
 			for(int i=0; i < children.getLength(); i++)
@@ -805,6 +832,7 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 		if(anl.getLength() > 0)
 		{
 			Element component = (Element)anl.item(0);
+			component.setAttribute("path", path);
 			component.setAttribute("path_" + locale.getLanguage(), path);
 			
 			addBindingElement(component, qualifyerXML);
@@ -1007,8 +1035,6 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 	    return NONE; 
 	}
 		    
-			    
-			    
 	/**
 	 * This method creates a parameter for the given input type.
 	 * This is to support form steering information later.
@@ -1018,12 +1044,22 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 	{
 		Element element = parent.getOwnerDocument().createElement("property");
 		element.setAttribute("name", name);
-		element.setAttribute("path_" + locale.getLanguage(), path);
+		
+		if(type.equalsIgnoreCase("siteNodeBinding") || type.equalsIgnoreCase("contentBinding"))
+		{
+			element.setAttribute("path", path);
+			element.setAttribute("path_" + locale.getLanguage(), path);
+		}
+		else
+		{
+			element.setAttribute("path_" + locale.getLanguage(), path);
+		}
+		
 		element.setAttribute("type", type);
 		parent.appendChild(element);
 		return element;
 	}
-	
+
 	/**
 	 * This method creates a parameter for the given input type.
 	 * This is to support form steering information later.

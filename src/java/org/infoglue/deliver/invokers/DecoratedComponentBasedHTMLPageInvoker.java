@@ -645,8 +645,9 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		sb.append("			");
 		sb.append("			<select class=\"mediumdrop\" name=\"languageId\" onChange=\"javascript:changeLanguage(" + siteNodeId + ", this, " + contentId + ");\">");
 		
-		List languages = LanguageDeliveryController.getLanguageDeliveryController().getAvailableLanguages(getDatabase(), siteNodeId);
-
+		//List languages = LanguageDeliveryController.getLanguageDeliveryController().getAvailableLanguages(getDatabase(), siteNodeId);
+		List languages = LanguageDeliveryController.getLanguageDeliveryController().getLanguagesForSiteNode(getDatabase(), siteNodeId, templateController.getPrincipal());
+			
 		Iterator languageIterator = languages.iterator();
 		int index = 0;
 		int languageIndex = index;
@@ -1829,9 +1830,13 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		Integer languageId = null;
 
 		if(this.getRequest().getParameter("languageId") != null && this.getRequest().getParameter("languageId").length() > 0)
+		{
 			languageId = new Integer(this.getRequest().getParameter("languageId"));
-			//if(!languageId.equals(this.getTemplateController().getDeliveryContext().getLanguageId()))
-			//	languageId = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForSiteNode(getDatabase(), siteNodeId).getId();				
+			if(!languageId.equals(this.getTemplateController().getDeliveryContext().getLanguageId()))
+			{
+				languageId = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForSiteNode(getDatabase(), siteNodeId).getId();				
+			}
+		}
 		else
 		    languageId = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForSiteNode(getDatabase(), siteNodeId).getId();
 		        
