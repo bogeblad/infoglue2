@@ -96,7 +96,9 @@ public class SetCharacterEncodingFilter implements Filter
 	            if(startIndex > -1)
 	            {
 	                int endIndex = referer.indexOf("&", startIndex + 12);
-		            String languageId = referer.substring(startIndex + 12, endIndex);
+	                String languageId = referer.substring(startIndex + 12);
+	                if(endIndex != -1)
+	                	languageId = referer.substring(startIndex + 12, endIndex);
 		            //System.out.println("languageId:" + languageId);
 		            LanguageVO languageVO = LanguageController.getController().getLanguageVOWithId(new Integer(languageId));
 		            request.setCharacterEncoding(languageVO.getCharset());
