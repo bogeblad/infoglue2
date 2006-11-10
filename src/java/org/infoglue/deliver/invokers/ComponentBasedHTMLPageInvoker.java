@@ -347,7 +347,7 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 			    
 			  	List subComponents = getComponents(db, templateController, component, templateController.getSiteNodeId(), slotId);
 			  	slot.setComponents(subComponents);
-
+			  	
 			  	component.getSlotList().add(slot);
 
 			  	offset = slotStopIndex; // + 10;
@@ -932,8 +932,8 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 			key = "" + componentXML.hashCode() + "_" +  templateController.getLanguageId() + "_" + slotName + "_" + parentComponent.getId() + "_" + parentComponent.getName() + "_" + parentComponent.getIsInherited();
 			
 		Object componentsCandidate = CacheController.getCachedObjectFromAdvancedCache("componentPropertyCache", key);
-		//System.out.println("propertyCandidate for key " + key + "=" + propertyCandidate);
 		List components = new ArrayList();
+		String[] groups = null;
 			
 		if(componentsCandidate != null)
 		{
@@ -1063,6 +1063,8 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 							
 							Element componentsElement = (Element)componentElement.selectSingleNode("components");
 							
+							groups = new String[]{"content_" + contentVO.getId()};
+							
 							List subComponents = getPageComponents(db, componentXML, componentsElement, slotId, templateController, component);
 							//logger.info("subComponents:" + subComponents);
 							slot.setComponents(subComponents);
@@ -1087,10 +1089,13 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 			}			
 		}		
 		
+		if(groups == null)
+			groups = new String[]{};
+		
 		if(components != null)
-		    CacheController.cacheObjectInAdvancedCache("componentPropertyCache", key, components, new String[]{}, false);
+		    CacheController.cacheObjectInAdvancedCache("componentPropertyCache", key, components, groups, true);
 		else
-			CacheController.cacheObjectInAdvancedCache("componentPropertyCache", key, new NullObject(), new String[]{}, false);
+			CacheController.cacheObjectInAdvancedCache("componentPropertyCache", key, new NullObject(), groups, true);
 		
 		return components;
 	}
