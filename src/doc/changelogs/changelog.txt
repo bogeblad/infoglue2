@@ -90,7 +90,8 @@ Abbreviated Changelog from 2.3.5 Final
 - Added alfa version of simple image editor - can be disabled in application settings.
 - Updated installer and infoglue login screens with a new logo
 - Changed colors a bit in my desktop to a less intense color.
- 
+- Fixed so sublist tag now behaves as intended. You state a startIndex and how many elements you want.
+
 -------------------------------------------------------------------------------------
 - InfoGlue 2.3.5 Final
 -------------------------------------------------------------------------------------
