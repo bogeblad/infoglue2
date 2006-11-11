@@ -1,4 +1,4 @@
-<!-- $Id: actions.xml,v 1.32 2006/11/05 22:22:00 mattias Exp $ -->
+<!-- $Id: actions.xml,v 1.33 2006/11/11 15:04:43 mattias Exp $ -->
 <actions>
 
 	<!-- MySettings -->
@@ -31,6 +31,11 @@
 		<view name="error">/cms/managementtool/error.vm</view>
 	</action>
 
+	<!-- Error Action -->
+	<action name="org.infoglue.deliver.applications.actions.ErrorPageAction" alias="ErrorPage">
+		<view name="success">/deliver/error.vm</view>
+		<view name="error">/deliver/error.vm</view>
+	</action>
 
 	<!-- Redirect -->
 	<action name="org.infoglue.cms.applications.common.actions.ExtendedRedirect" alias="ExtendedRedirect">

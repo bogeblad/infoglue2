@@ -91,6 +91,7 @@ Abbreviated Changelog from 2.3.5 Final
 - Updated installer and infoglue login screens with a new logo
 - Changed colors a bit in my desktop to a less intense color.
 - Fixed so sublist tag now behaves as intended. You state a startIndex and how many elements you want.
+- Made errors (404 etc) in cms be directed to error page and not to the tool main action.
 
 -------------------------------------------------------------------------------------
 - InfoGlue 2.3.5 Final
