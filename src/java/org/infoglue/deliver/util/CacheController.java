@@ -225,7 +225,20 @@ public class CacheController extends Thread
 			synchronized(cacheAdministrator)
 			{
 				if(useGroups)
+				{
+				    /*
+					if(cacheName.equalsIgnoreCase("pageComponentsCache"))
+					{
+			    		System.out.println("Caching objects in " + cacheName + "-->[" + key.toString() + "]");
+			    		for(int i=0; i<groups.length; i++)
+			    			System.out.println("group:" + groups[i]);
+			    		if(groups.length == 0)
+			    			System.out.println("NOOOOOOO group....");
+					}
+                    */
+
 				    cacheAdministrator.putInCache(key.toString(), value, groups);
+				}
 				else
 				    cacheAdministrator.putInCache(key.toString(), value);
 			}
@@ -253,6 +266,8 @@ public class CacheController extends Thread
 					} 
 				    catch (NeedsRefreshException nre) 
 				    {
+				    	//if(cacheName.equalsIgnoreCase("pageComponentsCache"))
+				    	//	System.out.println("Cancel update for [" + key.toString() + "]");
 				    	cacheAdministrator.cancelUpdate(key.toString());
 					}
 		        }
@@ -496,7 +511,7 @@ public class CacheController extends Thread
 					if(cacheName.equalsIgnoreCase("pageComponentsCache") && (entity.indexOf("ContentVersion") > -1 || entity.indexOf("AccessRight") > 0 || entity.indexOf("SystemUser") > 0 || entity.indexOf("Role") > 0  || entity.indexOf("Group") > 0))
 					{	
 						clear = true;
-						selectiveCacheUpdate = true;
+						//selectiveCacheUpdate = true;
 					}
 					if(cacheName.equalsIgnoreCase("includeCache"))
 					{	

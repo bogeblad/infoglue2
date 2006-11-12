@@ -959,7 +959,11 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 				try
 				{
 				    ContentVO contentVO = ContentDeliveryController.getContentDeliveryController().getContentVO(contentId, db);
-				
+
+				    //System.out.println("slotName:" + slotName + " should get connected with content_" + contentVO.getId());
+				    
+				    groups = new String[]{"content_" + contentVO.getId()};
+				    
 					InfoGlueComponent component = new InfoGlueComponent();
 					component.setId(id);
 					component.setContentId(contentId);
@@ -1063,7 +1067,7 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 							
 							Element componentsElement = (Element)componentElement.selectSingleNode("components");
 							
-							groups = new String[]{"content_" + contentVO.getId()};
+							//groups = new String[]{"content_" + contentVO.getId()};
 							
 							List subComponents = getPageComponents(db, componentXML, componentsElement, slotId, templateController, component);
 							//logger.info("subComponents:" + subComponents);
@@ -1093,9 +1097,9 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 			groups = new String[]{"selectiveCacheUpdateNonApplicable"};
 		
 		if(components != null)
-			CacheController.cacheObjectInAdvancedCache("pageComponentsCache", key, components, groups, true);
+			CacheController.cacheObjectInAdvancedCache("pageComponentsCache", key, components, groups, false);
 		else
-			CacheController.cacheObjectInAdvancedCache("pageComponentsCache", key, new NullObject(), groups, true);
+			CacheController.cacheObjectInAdvancedCache("pageComponentsCache", key, new NullObject(), groups, false);
 		
 		return components;
 	}
