@@ -95,6 +95,7 @@ import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGlueAuthenticationFilter;
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.NotificationMessage;
+import org.infoglue.deliver.applications.actions.InfoGlueComponent;
 import org.infoglue.deliver.applications.databeans.CacheEvictionBean;
 import org.infoglue.deliver.applications.databeans.DatabaseWrapper;
 import org.infoglue.deliver.controllers.kernel.impl.simple.DigitalAssetDeliveryController;
@@ -1281,6 +1282,74 @@ public class CacheController extends Thread
     	return originalRequestURL + "_" + pageKey + extra;
     }
     
+    /**
+     * Composer of the componentCacheKey.
+     * 
+     * @param siteNodeId
+     * @param languageId
+     * @param contentId
+     * @param userAgent
+     * @param queryString
+     * @return
+     */
+    
+    public static String getComponentCacheKey(String keyPattern, String pageKey, HttpSession session, HttpServletRequest request, Integer siteNodeId, Integer languageId, Integer contentId, String userAgent, String queryString, InfoGlueComponent component, String extra)
+    {    		
+    	String originalRequestURL = request.getParameter("originalRequestURL");
+    	if(originalRequestURL == null || originalRequestURL.length() == 0)
+    		originalRequestURL = request.getRequestURL().toString();
+
+    	String componentKey = null;
+    	if(keyPattern != null && keyPattern.length() > 0)
+    	{    
+    		componentKey = keyPattern;
+    		componentKey = componentKey.replaceAll("\\$siteNodeId", "" + siteNodeId);
+    		componentKey = componentKey.replaceAll("\\$languageId", "" + languageId);
+    		componentKey = componentKey.replaceAll("\\$contentId", "" + contentId);
+    		componentKey = componentKey.replaceAll("\\$useragent", "" + userAgent);
+    		componentKey = componentKey.replaceAll("\\$queryString", "" + queryString);
+    	    
+    		componentKey = componentKey.replaceAll("\\$pageKey", "" + pageKey);
+    		componentKey = componentKey.replaceAll("\\$component.id", "" + component.getId());
+    		componentKey = componentKey.replaceAll("\\$component.slotName", "" + component.getSlotName());
+    		componentKey = componentKey.replaceAll("\\$component.contentId", "" + component.getContentId());
+    		componentKey = componentKey.replaceAll("\\$component.isInherited", "" + component.getIsInherited());
+
+    	    int sessionAttributeStartIndex = componentKey.indexOf("$session.");
+    	    while(sessionAttributeStartIndex > -1)
+    	    {
+        	    int sessionAttributeEndIndex = componentKey.indexOf("_", sessionAttributeStartIndex);
+        	    String sessionAttribute = null;
+        	    if(sessionAttributeEndIndex > -1)
+        	        sessionAttribute = componentKey.substring(sessionAttributeStartIndex + 9, sessionAttributeEndIndex);
+        	    else
+        	        sessionAttribute = componentKey.substring(sessionAttributeStartIndex + 9);
+
+        	    componentKey = componentKey.replaceAll("\\$session." + sessionAttribute, "" + session.getAttribute(sessionAttribute));    	    
+    	    
+        	    sessionAttributeStartIndex = componentKey.indexOf("$session.");
+    	    }
+    	    
+    	    int cookieAttributeStartIndex = componentKey.indexOf("$cookie.");
+    	    while(cookieAttributeStartIndex > -1)
+    	    {
+        	    int cookieAttributeEndIndex = componentKey.indexOf("_", cookieAttributeStartIndex);
+        	    String cookieAttribute = null;
+        	    if(cookieAttributeEndIndex > -1)
+        	        cookieAttribute = componentKey.substring(cookieAttributeStartIndex + 8, cookieAttributeEndIndex);
+        	    else
+        	        cookieAttribute = componentKey.substring(cookieAttributeStartIndex + 8);
+
+        	    HttpHelper httpHelper = new HttpHelper();
+        	    componentKey = componentKey.replaceAll("\\$cookie." + cookieAttribute, "" + httpHelper.getCookie(request, cookieAttribute));    	    
+    	    
+        	    cookieAttributeStartIndex = componentKey.indexOf("$cookie.");
+    	    }
+    	    
+    	}
+    	
+    	return componentKey;
+    }
     
 	/**
 	 * Rollbacks a transaction on the named database

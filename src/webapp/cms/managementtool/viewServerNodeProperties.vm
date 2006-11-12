@@ -56,6 +56,9 @@
 	<tr>
 		<td>#editPropertyField("ServerNode.property.pageKey" "pageKey" "$this.getPropertyValue('pageKey')" "51" "$!serverNodeId")</td>
 	</tr>
+	<tr>
+		<td>#editPropertyField("ServerNode.property.componentKey" "componentKey" "$this.getPropertyValue('componentKey')" "51" "$!serverNodeId")</td>
+	</tr>
 	
 	<tr>
 		<td>#subTitle("entity.ServerNode.property.cmsConnection.label")</td>

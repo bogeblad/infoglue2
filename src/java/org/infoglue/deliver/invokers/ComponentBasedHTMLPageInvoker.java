@@ -513,9 +513,30 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 	    boolean renderComponent = false;
 	    boolean cacheComponent = false;
 
-		String cacheResult 		= templateController.getComponentLogic().getPropertyValue("CacheResult", true, false);
-		String updateInterval 	= templateController.getComponentLogic().getPropertyValue("UpdateInterval", true, false);
-		String componentCacheKey = templateController.getComponentLogic().getComponentDeliveryContext().getPageKey() + "_" + component.getId() + "_" + component.getSlotName() + "_" + component.getContentId() + "_" + component.getIsInherited();
+		String cacheResult 		 = templateController.getComponentLogic().getPropertyValue("CacheResult", true, false);
+		String updateInterval 	 = templateController.getComponentLogic().getPropertyValue("UpdateInterval", true, false);
+		String componentCacheKey = templateController.getComponentLogic().getPropertyValue("CacheKey", true, false);
+		if(componentCacheKey == null || componentCacheKey.equals(""))
+			componentCacheKey = CmsPropertyHandler.getComponentKey();
+		
+		if(componentCacheKey != null && !componentCacheKey.equals(""))
+		{
+			componentCacheKey = CacheController.getComponentCacheKey(componentCacheKey, 
+					templateController.getComponentLogic().getComponentDeliveryContext().getPageKey(), 
+					templateController.getHttpServletRequest().getSession(), 
+					templateController.getHttpServletRequest(), 
+					siteNodeId, 
+					languageId, 
+					contentId, 
+					templateController.getBrowserBean().getUseragent(), 
+					templateController.getHttpServletRequest().getQueryString(), 
+					component,
+					"");
+		}
+		else
+		{
+			componentCacheKey = templateController.getComponentLogic().getComponentDeliveryContext().getPageKey() + "_" + component.getId() + "_" + component.getSlotName() + "_" + component.getContentId() + "_" + component.getIsInherited();
+		}
 		
 		if(cacheResult == null || !cacheResult.equalsIgnoreCase("true"))
 		{

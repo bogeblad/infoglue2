@@ -126,6 +126,7 @@ public class ViewServerNodePropertiesAction extends InfoGluePropertiesAbstractAc
 	    populate(ps, "useUpdateSecurity");
 	    populate(ps, "allowedAdminIP");
 	    populate(ps, "pageKey");
+	    populate(ps, "componentKey");
 	    populate(ps, "cmsBaseUrl");
 	    populate(ps, "cmsFullBaseUrl");
 	    populate(ps, "componentEditorUrl");

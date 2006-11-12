@@ -775,7 +775,12 @@ public class CmsPropertyHandler
 	{
 	    return getServerNodeProperty("pageKey", true);
 	}
-	
+
+	public static String getComponentKey()
+	{
+	    return getServerNodeProperty("componentKey", true);
+	}
+
 	public static String getCmsFullBaseUrl()
 	{
 	    return getServerNodeProperty("cmsFullBaseUrl", true);

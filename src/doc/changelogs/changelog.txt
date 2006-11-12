@@ -94,6 +94,7 @@ Abbreviated Changelog from 2.3.5 Final
 - Made errors (404 etc) in cms be directed to error page and not to the tool main action.
 - Added error check in ViewSystemUser action - thrown if encoding settings are wrong and one uses userNames with non-ascii-chars.
 - Upgraded oscache to 2.3.2 and fixed a small cache issue with component tree not being visualized right when adding slots
+- Added so one can define the component cache key either in a component property called CacheKey or in a applikation property componentKey.
 
 -------------------------------------------------------------------------------------
 - InfoGlue 2.3.5 Final
