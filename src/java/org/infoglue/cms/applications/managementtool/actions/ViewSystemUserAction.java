@@ -33,6 +33,7 @@ import org.infoglue.cms.controllers.kernel.impl.simple.RoleControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.UserControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.UserPropertiesController;
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
+import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
 
 public class ViewSystemUserAction extends InfoGlueAbstractAction
@@ -53,8 +54,12 @@ public class ViewSystemUserAction extends InfoGlueAbstractAction
     {
 		//this.supportsUpdate					= UserControllerProxy.getController().getSupportUpdate();
 		this.infoGluePrincipal				= UserControllerProxy.getController().getUser(userName);
-		this.supportsUpdate					= this.infoGluePrincipal.getAutorizationModule().getSupportUpdate();
 		
+		if(infoGluePrincipal == null)
+			throw new SystemException("No user found called '" + userName + "'. This could be an encoding issue if you gave your user a login name with non ascii chars in it. Look in the administrative manual on how to solve it.");
+
+		this.supportsUpdate					= this.infoGluePrincipal.getAutorizationModule().getSupportUpdate();
+					
 		this.assignedRoleVOList 			= infoGluePrincipal.getRoles();
 		if(this.supportsUpdate) //Only fetch if the user can edit.
 			this.roles 						= this.infoGluePrincipal.getAutorizationModule().getRoles();
