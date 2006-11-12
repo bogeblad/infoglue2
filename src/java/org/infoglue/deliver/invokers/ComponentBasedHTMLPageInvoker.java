@@ -930,8 +930,8 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 		String key = "" + componentXML.hashCode() + "_" +  templateController.getLanguageId() + "_" + slotName;
 		if(parentComponent != null)
 			key = "" + componentXML.hashCode() + "_" +  templateController.getLanguageId() + "_" + slotName + "_" + parentComponent.getId() + "_" + parentComponent.getName() + "_" + parentComponent.getIsInherited();
-			
-		Object componentsCandidate = CacheController.getCachedObjectFromAdvancedCache("componentPropertyCache", key);
+		
+		Object componentsCandidate = CacheController.getCachedObjectFromAdvancedCache("pageComponentsCache", key);
 		List components = new ArrayList();
 		String[] groups = null;
 			
@@ -1090,12 +1090,12 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 		}		
 		
 		if(groups == null)
-			groups = new String[]{};
+			groups = new String[]{"selectiveCacheUpdateNonApplicable"};
 		
 		if(components != null)
-		    CacheController.cacheObjectInAdvancedCache("componentPropertyCache", key, components, groups, true);
+			CacheController.cacheObjectInAdvancedCache("pageComponentsCache", key, components, groups, true);
 		else
-			CacheController.cacheObjectInAdvancedCache("componentPropertyCache", key, new NullObject(), groups, true);
+			CacheController.cacheObjectInAdvancedCache("pageComponentsCache", key, new NullObject(), groups, true);
 		
 		return components;
 	}
