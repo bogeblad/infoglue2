@@ -52,49 +52,11 @@ import com.opensymphony.util.Data;
 
 
 /**
- * This is an implementation of a property set manager for JDBC. It relies on
- * one table, called "os_propertyset" that has four columns: "type" (integer),
- * "keyValue" (string), "globalKey" (string), and "value" (string). This is not
- * likely to be enough for people who store BLOBS as properties. Of course,
- * those people need to get a life.
- * <p>
+ * This is an implementation of a property set manager for JDBC. 
  *
- * For Postgres(?):<br>
- * CREATE TABLE OS_PROPERTYENTRY (GLOBAL_KEY varchar(255), ITEM_KEY varchar(255), ITEM_TYPE smallint, STRING_VALUE varchar(255), DATE_VALUE timestamp, DATA_VALUE oid, FLOAT_VALUE float8, NUMBER_VALUE numeric, primary key (GLOBAL_KEY, ITEM_KEY));
- * <p>
- *
- * For Oracle (Thanks to Michael G. Slack!):<br>
- * CREATE TABLE OS_PROPERTYENTRY (GLOBAL_KEY varchar(255), ITEM_KEY varchar(255), ITEM_TYPE smallint, STRING_VALUE varchar(255), DATE_VALUE date, DATA_VALUE long raw, FLOAT_VALUE float, NUMBER_VALUE numeric, primary key (GLOBAL_KEY, ITEM_KEY));
- * <p>
- *
- * Other databases may require small tweaks to the table creation scripts!
- *
- * <p>
- *
- * <b>Required Args</b>
- * <ul>
- *  <li><b>globalKey</b> - the globalKey to use with this PropertySet</li>
- * </ul>
- * <p>
- *
- * <b>Required Configuration</b>
- * <ul>
- *  <li><b>datasource</b> - JNDI path for the DataSource</li>
- *  <li><b>table.name</b> - the table name</li>
- *  <li><b>col.globalKey</b> - column name for the globalKey</li>
- *  <li><b>col.itemKey</b> - column name for the itemKey</li>
- *  <li><b>col.itemType</b> - column name for the itemType</li>
- *  <li><b>col.string</b> - column name for the string value</li>
- *  <li><b>col.date</b> - column name for the date value</li>
- *  <li><b>col.data</b> - column name for the data value</li>
- *  <li><b>col.float</b> - column name for the float value</li>
- *  <li><b>col.number</b> - column name for the number value</li>
- * </ul>
- *
- * @version $Revision: 1.5 $
- * @author <a href="mailto:epesh@hotmail.com">Joseph B. Ottinger</a>
- * @author <a href="mailto:plightbo@hotmail.com">Pat Lightbody</a>
+ * @author Mattias Bogeblad
  */
+
 public class InfoGlueJDBCPropertySet extends JDBCPropertySet 
 {
     private final static Logger logger = Logger.getLogger(InfoGlueJDBCPropertySet.class.getName());
@@ -119,6 +81,12 @@ public class InfoGlueJDBCPropertySet extends JDBCPropertySet
     private String password;
     private String driverClassName;
     private String url;
+
+    private String dbcpWhenExhaustedAction = null;
+	private String dbcpMaxActive = null;
+	private String dbcpMaxWait = null;
+	private String dbcpMaxIdle = null;
+	private String dbcpValidationQuery = null;
 
     // args
     String globalKey;
@@ -230,9 +198,32 @@ public class InfoGlueJDBCPropertySet extends JDBCPropertySet
         this.password = (String) config.get("password");
         this.driverClassName = (String) config.get("driverClassName");
         this.url = (String) config.get("url");
+
+        this.dbcpWhenExhaustedAction = (String) config.get("dbcp.whenExhaustedAction");
+        this.dbcpMaxActive = (String) config.get("dbcp.maxActive");
+        this.dbcpMaxWait = (String) config.get("dbcp.maxWait");
+        this.dbcpMaxIdle = (String) config.get("dbcp.maxIdle");
+        this.dbcpValidationQuery = (String) config.get("dbcp.validationQuery");
+                
+        if(this.dbcpWhenExhaustedAction != null && (this.dbcpWhenExhaustedAction.length() == 0 || this.dbcpWhenExhaustedAction.indexOf("@") > -1))
+        	this.dbcpWhenExhaustedAction = null;
+
+        if(this.dbcpMaxActive != null && (this.dbcpMaxActive.length() == 0 || this.dbcpMaxActive.indexOf("@") > -1))
+        	this.dbcpMaxActive = null;
+
+        if(this.dbcpMaxWait != null && (this.dbcpMaxWait.length() == 0 || this.dbcpMaxWait.indexOf("@") > -1))
+        	this.dbcpMaxWait = null;
+
+        if(this.dbcpMaxIdle != null && (this.dbcpMaxIdle.length() == 0 || this.dbcpMaxIdle.indexOf("@") > -1))
+        	this.dbcpMaxIdle = null;
+
+        if(this.dbcpValidationQuery != null && (this.dbcpValidationQuery.length() == 0 || this.dbcpValidationQuery.indexOf("@") > -1))
+        	this.dbcpValidationQuery = null;
+
     }
     
-    public void remove(String key) throws PropertyException {
+    public void remove(String key) throws PropertyException 
+    {
         Connection conn = null;
 
         try {
@@ -464,8 +455,21 @@ public class InfoGlueJDBCPropertySet extends JDBCPropertySet
 	        }
 
 	        conn = DriverManager.getConnection("jdbc:apache:commons:dbcp:infoGlueJDBCPropertySet");
-	        logger.info("Fetched connection from pool...");
-            printDriverStats();
+	        /*
+	        try
+	        {
+	        	throw new Exception("APA");
+	        }
+	        catch(Exception e)
+	        {
+	        	logger.error("Fetched connection from pool...", e);
+	        }
+	        */
+	        if(logger.isDebugEnabled())
+	        {
+	        	logger.debug("Fetched connection from pool...");
+	        	printDriverStats();
+	        }
 	        
             //System.out.println("Creating connection.");
             //conn = DriverManager.getConnection(url, this.userName, this.password);
@@ -494,8 +498,20 @@ public class InfoGlueJDBCPropertySet extends JDBCPropertySet
     	
     	logger.info("Setting up driver.");
         Class.forName(this.driverClassName).newInstance();
+        
+        logger.info("dbcpWhenExhaustedAction:" + dbcpWhenExhaustedAction);
+        logger.info("dbcpMaxActive:" + dbcpMaxActive);
+        logger.info("dbcpMaxWait:" + dbcpMaxWait);
+        logger.info("dbcpMaxIdle:" + dbcpMaxIdle);
+        logger.info("dbcpValidationQuery:" + dbcpValidationQuery);
+        
+        int dbcpMaxActiveInt = 200;
+        if(dbcpMaxActive != null && !dbcpMaxActive.equals(""))
+        	dbcpMaxActiveInt = Integer.parseInt(dbcpMaxActive);
 
-        connectionPool = new GenericObjectPool(null);
+        logger.info("dbcpMaxActiveInt:" + dbcpMaxActiveInt);
+
+        connectionPool = new GenericObjectPool(null, dbcpMaxActiveInt);
         connectionFactory = new DriverManagerConnectionFactory(connectURI, userName, password);
         poolableConnectionFactory = new PoolableConnectionFactory(connectionFactory,connectionPool,null,validationQuery,false,true);
 
@@ -510,8 +526,11 @@ public class InfoGlueJDBCPropertySet extends JDBCPropertySet
         PoolingDriver driver = (PoolingDriver) DriverManager.getDriver("jdbc:apache:commons:dbcp:");
         ObjectPool connectionPool = driver.getConnectionPool("infoGlueJDBCPropertySet");
         
-        logger.info("NumActive: " + connectionPool.getNumActive());
-        logger.info("NumIdle: " + connectionPool.getNumIdle());
+        if(logger.isInfoEnabled())
+        {
+	        logger.info("NumActive: " + connectionPool.getNumActive());
+	        logger.info("NumIdle: " + connectionPool.getNumIdle());
+        }
     }
 
     public void shutdownDriver() throws Exception 
