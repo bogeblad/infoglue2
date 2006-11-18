@@ -230,6 +230,7 @@ public class ViewServerNodePropertiesAction extends InfoGluePropertiesAbstractAc
 	    
 	    populate(ps, "extranetCookieTimeout");
 	    populate(ps, "webServicesBaseUrl");
+	    populate(ps, "livePublicationThreadClass");
 	    populate(ps, "publicationThreadDelay");
 	    populate(ps, "pathsToRecacheOnPublishing");
 	    populate(ps, "disableTemplateDebug");

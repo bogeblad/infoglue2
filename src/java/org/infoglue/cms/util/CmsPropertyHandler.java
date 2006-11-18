@@ -41,6 +41,7 @@ import org.apache.log4j.Logger;
 import org.infoglue.cms.controllers.kernel.impl.simple.ServerNodeController;
 import org.infoglue.cms.entities.management.ServerNodeVO;
 import org.infoglue.deliver.util.CacheController;
+import org.infoglue.deliver.util.NullObject;
 import org.infoglue.deliver.util.Timer;
 
 import com.opensymphony.module.propertyset.PropertySet;
@@ -270,19 +271,29 @@ public class CmsPropertyHandler
 	
 	public static String getServerNodeProperty(String prefix, String key, boolean inherit, String defaultValue)
 	{
-	    String value = null;
+		String value = null;
+	    Object valueObject = null;
 	    
         String cacheKey = "" + prefix + "_" + key + "_" + inherit;
         String cacheName = "serverNodePropertiesCache";
-		logger.info("cacheKey:" + cacheKey);
-		value = (String)CacheController.getCachedObject(cacheName, cacheKey);
-		if(value != null)
+        
+		if(logger.isInfoEnabled())
+			logger.info("cacheKey:" + cacheKey);
+		
+		valueObject = CacheController.getCachedObject(cacheName, cacheKey);
+		if(valueObject != null)
 		{
-			return value.trim();
+			if(valueObject instanceof NullObject)
+				return null;
+			else	
+				return ((String)valueObject).trim();
 		}
 	    
 		Timer timer = new Timer();
-		logger.info("Getting jdbc-property:" + cacheKey);
+		
+		if(logger.isInfoEnabled())
+			logger.info("Getting jdbc-property:" + cacheKey);
+		
 		if(propertySet != null)
 		{
 			if(localSettingsServerNodeId != null)
@@ -346,9 +357,13 @@ public class CmsPropertyHandler
 	    if(value != null)
 	    	value = value.trim();
 	    
-	    CacheController.cacheObject(cacheName, cacheKey, value);
-	    
-	    logger.info("Getting property " + cacheKey + " took:" + timer.getElapsedTime());
+	    if(value != null)
+	    	CacheController.cacheObject(cacheName, cacheKey, value);
+	    else
+	    	CacheController.cacheObject(cacheName, cacheKey, new NullObject());
+	    	
+	    if(logger.isInfoEnabled())
+			logger.info("Getting property " + cacheKey + " took:" + timer.getElapsedTime());
 	    
 	    return value;
 	}
@@ -368,8 +383,11 @@ public class CmsPropertyHandler
 	    
         String cacheKey = "" + prefix + "_" + key + "_" + inherit;
         String cacheName = "serverNodePropertiesCache";
-		logger.info("cacheKey:" + cacheKey);
-		value = (String)CacheController.getCachedObject(cacheName, cacheKey);
+        
+        if(logger.isInfoEnabled())
+    		logger.info("cacheKey:" + cacheKey);
+		
+        value = (String)CacheController.getCachedObject(cacheName, cacheKey);
 		if(value != null)
 		{
 			return value;
@@ -377,8 +395,10 @@ public class CmsPropertyHandler
 	    
 		Timer timer = new Timer();
 
-		logger.info("Getting jdbc-property:" + cacheKey);
-	    if(localSettingsServerNodeId != null)
+		if(logger.isInfoEnabled())
+			logger.info("Getting jdbc-property:" + cacheKey);
+	    
+		if(localSettingsServerNodeId != null)
 	    {
 	    	if(prefix != null)
 	    	{
@@ -426,7 +446,8 @@ public class CmsPropertyHandler
 	    
 	    CacheController.cacheObject(cacheName, cacheKey, value);
 	    
-	    logger.info("Getting property " + cacheKey + " took:" + timer.getElapsedTime());
+	    if(logger.isInfoEnabled())
+			logger.info("Getting property " + cacheKey + " took:" + timer.getElapsedTime());
 	    
 	    return value;
 	}
@@ -559,6 +580,11 @@ public class CmsPropertyHandler
 	public static String getWebServicesBaseUrl()
 	{
 	    return getServerNodeProperty("webServicesBaseUrl", true);
+	}
+	
+	public static String getLivePublicationThreadClass() 
+	{
+		return getServerNodeProperty("livePublicationThreadClass", true, "org.infoglue.deliver.util.PublicationThread");
 	}
 
 	public static String getPublicationThreadDelay()

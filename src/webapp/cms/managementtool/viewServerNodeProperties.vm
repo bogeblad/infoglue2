@@ -319,6 +319,9 @@
 		<td>#editPropertyField("ServerNode.property.webServicesBaseUrl" "webServicesBaseUrl" "$this.getPropertyValue('webServicesBaseUrl')" "51" "$!serverNodeId")</td>
 	</tr>
 	<tr>
+		<td>#editPropertyField("ServerNode.property.livePublicationThreadClass" "livePublicationThreadClass" "$this.getPropertyValue('livePublicationThreadClass')" "51" "$!serverNodeId")</td>
+	</tr>
+	<tr>
 		<td>#editPropertyField("ServerNode.property.publicationThreadDelay" "publicationThreadDelay" "$this.getPropertyValue('publicationThreadDelay')" "51" "$!serverNodeId")</td>
 	</tr>
 	<tr>
