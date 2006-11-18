@@ -24,8 +24,10 @@
 package org.infoglue.deliver.applications.databeans;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -86,10 +88,10 @@ public class DeliveryContext implements UsageListener
 	//This section has control over what contents and sitenodes are used where so the pagecache can be selectively updated.
 	private List usageListeners = new ArrayList();
 	
-	private List usedContents = new ArrayList();
-	private List usedContentVersions = new ArrayList();
-	private List usedSiteNodes = new ArrayList();
-	private List usedSiteNodeVersions = new ArrayList();
+	private Set usedContents = new HashSet();
+	private Set usedContentVersions = new HashSet();
+	private Set usedSiteNodes = new HashSet();
+	private Set usedSiteNodeVersions = new HashSet();
 	
 	//private InfoGluePrincipal infoGluePrincipal = null;
 	
