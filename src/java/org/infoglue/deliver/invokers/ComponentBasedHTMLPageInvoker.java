@@ -638,9 +638,10 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 
 		        if(cacheComponent)
 		        {
-		            if(this.getTemplateController().getOperatingMode().intValue() == 3)
-		                CacheController.cacheObjectInAdvancedCache("componentCache", componentCacheKey, decoratedComponent, templateController.getComponentLogic().getComponentDeliveryContext().getAllUsedEntities(), false);
-		            else
+		        	
+		            if(this.getTemplateController().getOperatingMode().intValue() == 3 && !CmsPropertyHandler.getLivePublicationThreadClass().equalsIgnoreCase("org.infoglue.deliver.util.SelectiveLivePublicationThread"))
+		        	    CacheController.cacheObjectInAdvancedCache("componentCache", componentCacheKey, decoratedComponent, templateController.getComponentLogic().getComponentDeliveryContext().getAllUsedEntities(), false);
+		        	else
 		                CacheController.cacheObjectInAdvancedCache("componentCache", componentCacheKey, decoratedComponent, templateController.getComponentLogic().getComponentDeliveryContext().getAllUsedEntities(), true);
 		        }	    
 

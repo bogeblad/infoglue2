@@ -186,16 +186,16 @@ public abstract class PageInvoker
 						long startCompression = System.currentTimeMillis();
 						byte[] compressedData = compressionHelper.compress(this.pageString);		
 					    logger.info("Compressing page for pageCache took " + (System.currentTimeMillis() - startCompression) + " with a compressionFactor of " + (this.pageString.length() / compressedData.length));
-						if(this.getTemplateController().getOperatingMode().intValue() == 3)
+						if(this.getTemplateController().getOperatingMode().intValue() == 3 && !CmsPropertyHandler.getLivePublicationThreadClass().equalsIgnoreCase("org.infoglue.deliver.util.SelectiveLivePublicationThread"))
 						    CacheController.cacheObjectInAdvancedCache("pageCache", this.getDeliveryContext().getPageKey(), compressedData, this.getDeliveryContext().getAllUsedEntities(), false);
 						else
 						    CacheController.cacheObjectInAdvancedCache("pageCache", this.getDeliveryContext().getPageKey(), compressedData, this.getDeliveryContext().getAllUsedEntities(), true);
 					}
 				    else
 				    {
-				        if(this.getTemplateController().getOperatingMode().intValue() == 3)
-				            CacheController.cacheObjectInAdvancedCache("pageCache", this.getDeliveryContext().getPageKey(), pageString, this.getDeliveryContext().getAllUsedEntities(), false);
-				        else
+				        if(this.getTemplateController().getOperatingMode().intValue() == 3 && !CmsPropertyHandler.getLivePublicationThreadClass().equalsIgnoreCase("org.infoglue.deliver.util.SelectiveLivePublicationThread"))
+				    	    CacheController.cacheObjectInAdvancedCache("pageCache", this.getDeliveryContext().getPageKey(), pageString, this.getDeliveryContext().getAllUsedEntities(), false);
+				    	else
 				            CacheController.cacheObjectInAdvancedCache("pageCache", this.getDeliveryContext().getPageKey(), pageString, this.getDeliveryContext().getAllUsedEntities(), true);    
 				    }
 				}
@@ -229,7 +229,7 @@ public abstract class PageInvoker
 			this.getDeliveryContext().setPagePath(this.templateController.getCurrentPagePath());
 		}
 
-		if(this.getRequest().getParameter("includeUsedEntities") != null && this.getRequest().getParameter("includeUsedEntities").equals("true") && !CmsPropertyHandler.getOperatingMode().equals("3"))
+		if(this.getRequest().getParameter("includeUsedEntities") != null && this.getRequest().getParameter("includeUsedEntities").equals("true") && (!CmsPropertyHandler.getOperatingMode().equals("3") || CmsPropertyHandler.getLivePublicationThreadClass().equalsIgnoreCase("org.infoglue.deliver.util.SelectiveLivePublicationThread")))
 		{
 			StringBuffer sb = new StringBuffer("<usedEntities>");
 			String[] usedEntities = this.getDeliveryContext().getAllUsedEntities();

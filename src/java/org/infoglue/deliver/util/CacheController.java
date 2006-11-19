@@ -43,6 +43,9 @@ import org.exolab.castor.jdo.CacheManager;
 import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
+import org.infoglue.cms.controllers.kernel.impl.simple.PublicationController;
+import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeVersionController;
+import org.infoglue.cms.entities.content.ContentVersion;
 import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.entities.content.impl.simple.ContentCategoryImpl;
 import org.infoglue.cms.entities.content.impl.simple.ContentImpl;
@@ -76,8 +79,10 @@ import org.infoglue.cms.entities.management.impl.simple.SmallAvailableServiceBin
 import org.infoglue.cms.entities.management.impl.simple.SystemUserImpl;
 import org.infoglue.cms.entities.management.impl.simple.UserContentTypeDefinitionImpl;
 import org.infoglue.cms.entities.management.impl.simple.UserPropertiesImpl;
+import org.infoglue.cms.entities.publishing.PublicationDetailVO;
 import org.infoglue.cms.entities.publishing.impl.simple.PublicationDetailImpl;
 import org.infoglue.cms.entities.publishing.impl.simple.PublicationImpl;
+import org.infoglue.cms.entities.structure.SiteNodeVersion;
 import org.infoglue.cms.entities.structure.impl.simple.QualifyerImpl;
 import org.infoglue.cms.entities.structure.impl.simple.ServiceBindingImpl;
 import org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl;
@@ -227,17 +232,18 @@ public class CacheController extends Thread
 			{
 				if(useGroups)
 				{
-				    /*
-					if(cacheName.equalsIgnoreCase("pageComponentsCache"))
+					if(logger.isDebugEnabled())
 					{
-			    		System.out.println("Caching objects in " + cacheName + "-->[" + key.toString() + "]");
-			    		for(int i=0; i<groups.length; i++)
-			    			System.out.println("group:" + groups[i]);
-			    		if(groups.length == 0)
-			    			System.out.println("NOOOOOOO group....");
+						if(cacheName.equalsIgnoreCase("pageCache"))
+						{
+							logger.debug("Caching objects in " + cacheName + "-->[" + key.toString() + "]");
+				    		for(int i=0; i<groups.length; i++)
+				    			logger.debug("group:" + groups[i]);
+				    		if(groups.length == 0)
+				    			logger.debug("No group....");
+						}
 					}
-                    */
-
+					
 				    cacheAdministrator.putInCache(key.toString(), value, groups);
 				}
 				else
@@ -629,6 +635,8 @@ public class CacheController extends Thread
 						    if(useSelectivePageCacheUpdateString != null && useSelectivePageCacheUpdateString.equalsIgnoreCase("true"))
 						        useSelectivePageCacheUpdate = true;
 						        
+						    String operatingMode = CmsPropertyHandler.getOperatingMode();
+						    
 						    GeneralCacheAdministrator cacheInstance = (GeneralCacheAdministrator)e.getValue();
 						    synchronized(cacheInstance)
 						    {
@@ -687,6 +695,37 @@ public class CacheController extends Thread
 							    	cacheInstance.flushGroup("selectiveCacheUpdateNonApplicable");
 							    	logger.info("clearing " + e.getKey() + " with group " + "content_" + entityId);
 							    	//System.out.println("clearing " + e.getKey() + " with group " + "content_" + entityId);
+								}
+							    else if(selectiveCacheUpdate && entity.indexOf("Publication") > 0 && useSelectivePageCacheUpdate && (operatingMode != null && operatingMode.equalsIgnoreCase("3")) && CmsPropertyHandler.getLivePublicationThreadClass().equalsIgnoreCase("org.infoglue.deliver.util.SelectiveLivePublicationThread"))
+							    {
+							    	logger.info("Now we will ease out the publication...");
+									/*
+							    	List publicationDetailVOList = PublicationController.getController().getPublicationDetailVOList(new Integer(entityId));
+									Iterator publicationDetailVOListIterator = publicationDetailVOList.iterator();
+									while(publicationDetailVOListIterator.hasNext())
+									{
+										PublicationDetailVO publicationDetailVO = (PublicationDetailVO)publicationDetailVOListIterator.next();
+										System.out.println("publicationDetailVO.getEntityClass():" + publicationDetailVO.getEntityClass());
+										System.out.println("publicationDetailVO.getEntityId():" + publicationDetailVO.getEntityId());
+										if(Class.forName(publicationDetailVO.getEntityClass()).getName().equals(ContentVersion.class.getName()))
+										{
+											logger.error("We clear all caches having references to contentVersion: " + publicationDetailVO.getEntityId());
+											Integer contentId = ContentVersionController.getContentVersionController().getContentIdForContentVersion(publicationDetailVO.getEntityId());
+
+									    	cacheInstance.flushGroup("content_" + contentId);
+									    	cacheInstance.flushGroup("contentVersion_" + publicationDetailVO.getEntityId().toString());
+									    	cacheInstance.flushGroup("selectiveCacheUpdateNonApplicable");
+									    	logger.info("clearing " + e.getKey() + " with group " + "content_" + contentId);
+									    	System.out.println("clearing " + e.getKey() + " with group " + "content_" + contentId);
+										}
+										else if(Class.forName(publicationDetailVO.getEntityClass()).getName().equals(SiteNodeVersion.class.getName()))
+										{
+											Integer siteNodeId = SiteNodeVersionController.getController().getSiteNodeVersionVOWithId(publicationDetailVO.getEntityId()).getSiteNodeId();
+										    CacheController.clearCaches(publicationDetailVO.getEntityClass(), publicationDetailVO.getEntityId().toString(), null);
+										}
+										
+									}
+									*/
 								}
 							    else
 							    {
@@ -1082,10 +1121,17 @@ public class CacheController extends Thread
 
     	WorkingPublicationThread wpt = new WorkingPublicationThread();
 
+    	SelectiveLivePublicationThread pt = null;
+    	if(operatingMode != null && operatingMode.equalsIgnoreCase("3")) //If published-mode we update entire cache to be sure..
+		{
+        	if(CmsPropertyHandler.getLivePublicationThreadClass().equalsIgnoreCase("org.infoglue.deliver.util.SelectiveLivePublicationThread"))
+    			pt = new SelectiveLivePublicationThread();
+        }
+    	
     	List localNotifications = new ArrayList();
     	
     	boolean startedThread = false;
-    	logger.info("before notifications");
+    	logger.info("before notifications:" + notifications.size());
 	    synchronized(notifications)
         {
 	    	localNotifications.addAll(notifications);
@@ -1100,8 +1146,17 @@ public class CacheController extends Thread
 		    String objectId = cacheEvictionBean.getObjectId();
 		    String objectName = cacheEvictionBean.getObjectName();
 			String typeId = cacheEvictionBean.getTypeId();
+
+			logger.info("className:" + className);
+			logger.info("pt:" + pt);
 			
-		    wpt.getCacheEvictionBeans().add(cacheEvictionBean);
+		    if(pt == null)
+		    	wpt.getCacheEvictionBeans().add(cacheEvictionBean);
+		    else
+		    	pt.getCacheEvictionBeans().add(cacheEvictionBean);
+		    
+		    //wpt.getCacheEvictionBeans().add(cacheEvictionBean);
+		    
 		    
 			try
 		    {
@@ -1122,15 +1177,15 @@ public class CacheController extends Thread
 					}
 			    }
 
-			    if(CmsPropertyHandler.getOperatingMode() != null && !CmsPropertyHandler.getOperatingMode().equalsIgnoreCase("3") && className != null && className.equalsIgnoreCase("PortletRegistry"))
+			    if(operatingMode != null && !operatingMode.equalsIgnoreCase("3") && className != null && className.equalsIgnoreCase("PortletRegistry"))
 			    {
 					logger.info("clearing portletRegistry");
 					clearPortlets();
 					logger.info("cleared portletRegistry");
 			    }
 
-			    
-			    //if(operatingMode != null && operatingMode.equalsIgnoreCase("0")) //If published-mode we update entire cache to be sure..
+			    /*
+			 	//if(operatingMode != null && operatingMode.equalsIgnoreCase("0")) //If published-mode we update entire cache to be sure..
 				if(CmsPropertyHandler.getOperatingMode() != null && CmsPropertyHandler.getOperatingMode().equalsIgnoreCase("3")) //If published-mode we update entire cache to be sure..
 				{
 		            logger.info("Starting publication thread...");
@@ -1140,6 +1195,22 @@ public class CacheController extends Thread
 	            	startedThread = true;
 	            	logger.info("Done starting publication thread...");
 	            }
+	            */
+	            
+			    //if(operatingMode != null && operatingMode.equalsIgnoreCase("0")) //If published-mode we update entire cache to be sure..
+				if(operatingMode != null && operatingMode.equalsIgnoreCase("3")) //If published-mode we update entire cache to be sure..
+				{
+					if(!CmsPropertyHandler.getLivePublicationThreadClass().equalsIgnoreCase("org.infoglue.deliver.util.SelectiveLivePublicationThread"))
+					{	
+			    	    logger.info("Starting publication thread...");
+		            	PublicationThread lpt = new PublicationThread();
+		            	lpt.setPriority(Thread.MIN_PRIORITY);
+		            	lpt.start();
+		            	startedThread = true;
+		            	logger.info("Done starting publication thread...");
+		            }
+	            }
+				
 		    }
 		    catch(Exception e)
 		    {
@@ -1150,8 +1221,8 @@ public class CacheController extends Thread
 
 			i.remove();
 		}
-		
-		if(CmsPropertyHandler.getOperatingMode() != null && !CmsPropertyHandler.getOperatingMode().equalsIgnoreCase("3"))
+
+		if(operatingMode != null && !operatingMode.equalsIgnoreCase("3"))
 		{
 			logger.info("Starting the work method");
 			//wpt.setPriority(Thread.MAX_PRIORITY);
@@ -1161,9 +1232,18 @@ public class CacheController extends Thread
         	logger.info("Done starting working publication thread...");
 		}
 
+		if(operatingMode != null && operatingMode.equalsIgnoreCase("3") && pt != null && pt.getCacheEvictionBeans().size() > 0) //If published-mode we update entire cache to be sure..
+		{
+			logger.info("Starting selective publication thread [" + pt.getClass().getName() + "]");
+	    	pt.setPriority(Thread.MIN_PRIORITY);
+	    	pt.start();
+	    	startedThread = true;
+	    	logger.info("Done starting publication thread...");
+		}
+		
 	    if(!startedThread)
 	    	RequestAnalyser.getRequestAnalyser().setBlockRequests(false);
-
+	    
         logger.info("evictWaitingCache stop");
     }
 
