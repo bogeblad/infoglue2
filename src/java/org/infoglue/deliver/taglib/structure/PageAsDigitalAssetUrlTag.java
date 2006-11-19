@@ -45,6 +45,7 @@ public class PageAsDigitalAssetUrlTag extends ComponentLogicTag
 	private String propertyName;
 	private boolean useInheritance = true;
 	private String fileSuffix = "";
+	private boolean cacheUrl = true;
 	
 	private Integer siteNodeId;
 	private Integer languageId;
@@ -69,9 +70,9 @@ public class PageAsDigitalAssetUrlTag extends ComponentLogicTag
 	        this.languageId = getController().getDeliveryContext().getLanguageId();
 	    
 	    if(this.propertyName != null)
-	        return getComponentLogic().getPageAsDigitalAssetUrl(propertyName, languageId, contentId, useInheritance, fileSuffix);
+	        return getComponentLogic().getPageAsDigitalAssetUrl(propertyName, languageId, contentId, useInheritance, fileSuffix, cacheUrl);
 	    else
-	        return getController().getPageAsDigitalAssetUrl(siteNodeId, languageId, contentId, fileSuffix);
+	        return getController().getPageAsDigitalAssetUrl(siteNodeId, languageId, contentId, fileSuffix, cacheUrl);
 	}
 
 	public void setSiteNodeId(final String siteNodeId) throws JspException
@@ -108,4 +109,10 @@ public class PageAsDigitalAssetUrlTag extends ComponentLogicTag
     {
         this.extraParameters = extraParameters;
     }
+    
+    public void setCacheUrl(boolean cacheUrl)
+    {
+        this.cacheUrl = cacheUrl;
+    }
+
 }

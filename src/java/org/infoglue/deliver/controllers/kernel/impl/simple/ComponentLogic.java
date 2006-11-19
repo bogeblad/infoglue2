@@ -1004,7 +1004,7 @@ public class ComponentLogic
 	 * css:es or scripts which includes logic depending on user info etc.. mostly usable if you have a static css
 	 * or controls it on the pageCache parameters.
 	 */
-	public String getPageAsDigitalAssetUrl(String propertyName, Integer languageId, Integer contentId, boolean useInheritance, String fileSuffix)
+	public String getPageAsDigitalAssetUrl(String propertyName, Integer languageId, Integer contentId, boolean useInheritance, String fileSuffix, boolean cacheUrl)
 	{
 		String pageUrl = "";
 
@@ -1015,7 +1015,7 @@ public class ComponentLogic
 			if(bindings.size() > 0)
 			{
 				Integer siteNodeId = new Integer((String)bindings.get(0));
-				pageUrl = this.getPageAsDigitalAssetUrl(siteNodeId, languageId, contentId, fileSuffix);
+				pageUrl = this.getPageAsDigitalAssetUrl(siteNodeId, languageId, contentId, fileSuffix, cacheUrl);
 			}
 		}
 		
@@ -1030,12 +1030,26 @@ public class ComponentLogic
 	 */
 	public String getPageAsDigitalAssetUrl(Integer siteNodeId, Integer languageId, Integer contentId, String fileSuffix)
 	{
-		String pageUrl = this.templateController.getPageAsDigitalAssetUrl(siteNodeId, languageId, contentId, fileSuffix);
+		String pageUrl = getPageAsDigitalAssetUrl(siteNodeId, languageId, contentId, fileSuffix, true);
 		
 		return pageUrl;
 	}
 
 
+	/**
+	 * This method calls an page and stores it as an digitalAsset - that way one can avoid having to 
+	 * serve javascript-files and css-files through InfoGlue. Not suitable for use if you have very dynamic
+	 * css:es or scripts which includes logic depending on user info etc.. mostly usable if you have a static css
+	 * or controls it on the pageCache parameters.
+	 */
+	public String getPageAsDigitalAssetUrl(Integer siteNodeId, Integer languageId, Integer contentId, String fileSuffix, boolean cacheUrl)
+	{
+		String pageUrl = this.templateController.getPageAsDigitalAssetUrl(siteNodeId, languageId, contentId, fileSuffix, cacheUrl);
+		
+		return pageUrl;
+	}
+
+	
 	public String getPageNavTitle(String propertyName)
 	{
 		String pageUrl = "";
