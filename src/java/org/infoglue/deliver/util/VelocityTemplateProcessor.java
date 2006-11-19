@@ -140,10 +140,32 @@ public class VelocityTemplateProcessor
 
 		String contextRootPath = CmsPropertyHandler.getContextRootPath();
 		String fileName = contextRootPath + "jsp" + File.separator + "Template_" + hashCode + ".jsp";
+		String tempFileName = contextRootPath + "jsp" + File.separator + Thread.currentThread().getId() + "_tmp_Template_" + hashCode + ".jsp";
 		
 		File template = new File(fileName);
+		File tmpTemplate = new File(tempFileName);
+
 		if(!template.exists())
-		    FileHelper.writeToFile(template, templateAsString, false);
+		{
+			logger.info("Going to write template to file: " + template.hashCode());
+			//Thread.sleep(50);
+			FileHelper.writeToFile(tmpTemplate, templateAsString, false);
+		
+			synchronized(template) 
+			{
+				if(tmpTemplate.length() == 0 || template.exists())
+				{
+					logger.info("written file:" + tmpTemplate.length() + " - removing temp and not renaming it...");	
+					tmpTemplate.delete();
+				}
+				else
+				{
+					renameTemplate(tmpTemplate, template);
+					//tmpTemplate.renameTo(template);
+					logger.info("Time for renaming file " + timer.getElapsedTime());
+				}					
+			}
+		}
 		
 		TemplateController templateController = (TemplateController)params.get("templateLogic");
 		DeliveryContext deliveryContext = templateController.getDeliveryContext();
@@ -158,4 +180,17 @@ public class VelocityTemplateProcessor
     	pw.println(result);
 	}
 	
+	private synchronized void renameTemplate(File tempFile, File newFileName)
+	{
+		if(tempFile.length() == 0 || newFileName.exists())
+		{
+			logger.info("written file:" + newFileName.length() + " - removing temp and not renaming it...");	
+			tempFile.delete();
+		}
+		else
+		{
+			logger.info("written file:" + tempFile.length() + " - renaming it to " + newFileName.getAbsolutePath());	
+			tempFile.renameTo(newFileName);
+		}	
+	}
 }
