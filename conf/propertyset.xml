@@ -6,6 +6,14 @@
 		<arg name="password" value="@database.password@"/>
 		<arg name="driverClassName" value="@database.driver.class@"/>
 		<arg name="url" value="@database.url@"/>
+		
+		<!--
+		<arg name="dbcp.whenExhaustedAction" value="2"/>
+		<arg name="dbcp.maxActive" value="@database.maxConnections@"/>
+		<arg name="dbcp.maxWait" value="120000"/>
+		<arg name="dbcp.maxIdle" value="10"/>
+		<arg name="dbcp.validationQuery" value="select 1 from cmSystemUser"/>		
+		-->
 
         <!--<arg name="datasource" value="jdbc/DefaultDS"/>-->
         <arg name="table.name" value="OS_PROPERTYENTRY"/>

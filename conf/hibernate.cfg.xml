@@ -19,13 +19,13 @@
 		- whenExhaustedAction for DBCP connection pool ( 0 = fail, 1 = block, 2 = grow)
 		-->
 		<property name="dbcp.whenExhaustedAction">2</property>
-		<property name="dbcp.maxActive">100</property>
+		<property name="dbcp.maxActive">@database.maxConnections@</property>
 		<property name="dbcp.maxWait">120000</property>
 		<property name="dbcp.maxIdle">10</property>
 
 		<!-- prepared statement cache -->
 		<property name="dbcp.ps.whenExhaustedAction">1</property>
-		<property name="dbcp.ps.maxActive">100</property>
+		<property name="dbcp.ps.maxActive">@database.maxConnections@</property>
 		<property name="dbcp.ps.maxWait">120000</property>
 		<property name="dbcp.ps.maxIdle">100</property>
 
