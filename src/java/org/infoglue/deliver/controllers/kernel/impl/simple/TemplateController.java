@@ -768,7 +768,7 @@ public interface TemplateController
 	 * or controls it on the pageCache parameters.
 	 */
 
-	public String getPageAsDigitalAssetUrl(Integer siteNodeId, Integer languageId, Integer contentId, String fileSuffix);
+	public String getPageAsDigitalAssetUrl(Integer siteNodeId, Integer languageId, Integer contentId, String fileSuffix, boolean cacheUrl);
 
     /**
      * Getter for the siteNodeId on a specific bound page
@@ -847,6 +847,20 @@ public interface TemplateController
      * corresponding to the code sent in.
      */
     public abstract String getCurrentPageUrl();
+
+	/**
+	 * This method returns the exact full url excluding query string from the original request - not modified
+	 * @return
+	 */
+	
+	public String getOriginalURL();
+
+	/**
+	 * This method returns the exact querystring from the original request - not modified
+	 * @return
+	 */
+	
+	public String getOriginalQueryString();
 
 	/**
 	 * This method returns the exact full url from the original request - not modified
