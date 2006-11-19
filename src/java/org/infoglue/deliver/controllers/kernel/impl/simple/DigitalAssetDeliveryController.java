@@ -199,9 +199,26 @@ public class DigitalAssetDeliveryController extends BaseDeliveryController
 	public void dumpAttributeToFile(String attributeValue, String fileName, String filePath) throws Exception
 	{
 		File outputFile = new File(filePath + File.separator + fileName);
-		PrintWriter pw = new PrintWriter(new FileWriter(outputFile));
-        pw.println(attributeValue);    
-        pw.close();
+		File tmpOutputFile = new File(filePath + File.separator + Thread.currentThread().getId() + "_tmp_" + fileName);
+		
+		logger.info("outputFile:" + outputFile.getAbsolutePath());
+		if(!outputFile.exists() || outputFile.length() == 0)
+		{
+			PrintWriter pw = new PrintWriter(new FileWriter(tmpOutputFile));
+	        pw.println(attributeValue);    
+	        pw.close();
+		}
+
+		if(tmpOutputFile.length() == 0 || outputFile.exists())
+		{
+			logger.info("written file:" + tmpOutputFile.length() + " - removing temp and not renaming it...");	
+			tmpOutputFile.delete();
+		}
+		else
+		{
+			logger.info("written file:" + tmpOutputFile.length() + " - renaming it to " + outputFile.getAbsolutePath());	
+			renameFile(tmpOutputFile, outputFile);
+		}	
 	}
 	
    	/**
@@ -210,16 +227,29 @@ public class DigitalAssetDeliveryController extends BaseDeliveryController
    	 * the given url on it.
    	 */
    	
-	public File dumpUrlToFile(String fileName, String filePath, String pageContent) throws Exception
+	public synchronized File dumpUrlToFile(String fileName, String filePath, String pageContent) throws Exception
 	{
 		File outputFile = new File(filePath + File.separator + fileName);
+		File tmpOutputFile = new File(filePath + File.separator + Thread.currentThread().getId() + "_tmp_" + fileName);
+
 		logger.info("outputFile:" + outputFile.getAbsolutePath());
 		if(!outputFile.exists() || outputFile.length() == 0)
 		{
-			PrintWriter pw = new PrintWriter(new FileWriter(outputFile));
+			PrintWriter pw = new PrintWriter(new FileWriter(tmpOutputFile));
 	        pw.println(pageContent);    
 	        pw.close();
 		}
+
+		if(tmpOutputFile.length() == 0 || outputFile.exists())
+		{
+			logger.info("written file:" + tmpOutputFile.length() + " - removing temp and not renaming it...");	
+			tmpOutputFile.delete();
+		}
+		else
+		{
+			logger.info("written file:" + tmpOutputFile.length() + " - renaming it to " + outputFile.getAbsolutePath());	
+			renameFile(tmpOutputFile, outputFile);
+		}	
 		
 		return outputFile;
 	}
@@ -675,6 +705,20 @@ public class DigitalAssetDeliveryController extends BaseDeliveryController
     	in.close();
     	out.close();
   	}
+
+	private synchronized void renameFile(File tempFile, File newFileName)
+	{
+		if(tempFile.length() == 0 || newFileName.exists())
+		{
+			tempFile.delete();
+			logger.info("written file:" + newFileName.length() + " - removing temp and not renaming it...");	
+		}
+		else
+		{
+			tempFile.renameTo(newFileName);
+			logger.info("written file:" + tempFile.length() + " - renaming it to " + newFileName.getAbsolutePath());	
+		}	
+	}
 
 
 }
