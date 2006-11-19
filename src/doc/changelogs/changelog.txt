@@ -95,6 +95,15 @@ Abbreviated Changelog from 2.3.5 Final
 - Added error check in ViewSystemUser action - thrown if encoding settings are wrong and one uses userNames with non-ascii-chars.
 - Upgraded oscache to 2.3.2 and fixed a small cache issue with component tree not being visualized right when adding slots
 - Added so one can define the component cache key either in a component property called CacheKey or in a applikation property componentKey.
+- Added experimental property for selective cache update of live servers in almost the same way working servers are updated.
+- Added better caching of properties which are not found.
+- Improved the new Pooling - before only 10 connections was pooled as a max - which could cause locks in high load sites. Now it's max 200 and configurable through the dbcp.maxActive property
+- Changed usedXXX-lists to HashSets so no duplicates are handled - minimizes the cache updates.
+- Improved how jsp files are written to disk before used to avoid thread issues
+- Added experimental live cache eviction thread. Will make publishing much less heavy and faster as the objective with this class is to throw away only affected items in the cache. Much testing needs to be done though.
+- Added methods to get the original full uri and original full querystring - they are usually modified by InfoGlue filters when they reach the templates.
+- Improved how attributes and url contents are written to disk when used as assets
+- Added possibility to control the pool size of os-propertyset
 
 -------------------------------------------------------------------------------------
 - InfoGlue 2.3.5 Final
