@@ -191,12 +191,12 @@ public class SelectiveLivePublicationThread extends PublicationThread
 
 									logger.info("We clear all small contents as well " + contentId);
 									Class typesExtra = SmallContentImpl.class;
-									Object[] idsExtra = {new Integer(contentId)};
+									Object[] idsExtra = {contentId};
 									CacheController.clearCache(typesExtra, idsExtra);
 					
 									logger.info("We clear all medium contents as well " + contentId);
 									Class typesExtraMedium = MediumContentImpl.class;
-									Object[] idsExtraMedium = {new Integer(contentId)};
+									Object[] idsExtraMedium = {contentId};
 									CacheController.clearCache(typesExtraMedium, idsExtraMedium);
 								}
 								else if(Class.forName(publicationDetailVO.getEntityClass()).getName().equals(SiteNodeVersion.class.getName()))
@@ -206,7 +206,7 @@ public class SelectiveLivePublicationThread extends PublicationThread
 
 								    logger.info("We clear all small siteNodes as well " + siteNodeId);
 								    Class typesExtra = SmallSiteNodeImpl.class;
-									Object[] idsExtra = {new Integer(siteNodeId)};
+									Object[] idsExtra = {siteNodeId};
 									CacheController.clearCache(typesExtra, idsExtra);
 									
 								    logger.info("We also clear the meta info content..");
@@ -214,7 +214,7 @@ public class SelectiveLivePublicationThread extends PublicationThread
 
 									logger.info("We clear all contents as well " + siteNodeVO.getMetaInfoContentId());
 									Class metaInfoContentExtra = ContentImpl.class;
-									Object[] idsMetaInfoContentExtra = {new Integer(siteNodeVO.getMetaInfoContentId())};
+									Object[] idsMetaInfoContentExtra = {siteNodeVO.getMetaInfoContentId()};
 									CacheController.clearCache(metaInfoContentExtra, idsMetaInfoContentExtra);
 									
 									logger.info("We clear all small contents as well " + siteNodeVO.getMetaInfoContentId());
@@ -252,7 +252,7 @@ public class SelectiveLivePublicationThread extends PublicationThread
 										Integer contentVersionId = (Integer)contentVersionIdsIterator.next();
 										logger.info("We clear the meta info contentVersion " + contentVersionId);
 										Class metaInfoContentVersionExtra = ContentVersionImpl.class;
-										Object[] idsMetaInfoContentVersionExtra = {new Integer(contentVersionId)};
+										Object[] idsMetaInfoContentVersionExtra = {contentVersionId};
 										CacheController.clearCache(metaInfoContentVersionExtra, idsMetaInfoContentVersionExtra);
 										CacheController.clearCaches(ContentVersionImpl.class.getName(), contentVersionId.toString(), null);
 									}
