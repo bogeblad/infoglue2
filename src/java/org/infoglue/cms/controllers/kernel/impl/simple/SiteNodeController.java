@@ -197,7 +197,7 @@ public class SiteNodeController extends BaseController
 	
     private static void deleteRecursive(SiteNode siteNode, Iterator parentIterator, Database db) throws ConstraintException, SystemException, Exception
     {
-        List referenceBeanList = RegistryController.getController().getReferencingObjectsForSiteNode(siteNode.getId(), db);
+        List referenceBeanList = RegistryController.getController().getReferencingObjectsForSiteNode(siteNode.getId(), -1, db);
 		if(referenceBeanList != null && referenceBeanList.size() > 0)
 			throw new ConstraintException("SiteNode.stateId", "3405");
 

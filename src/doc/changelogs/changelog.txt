@@ -104,6 +104,7 @@ Abbreviated Changelog from 2.3.5 Final
 - Added methods to get the original full uri and original full querystring - they are usually modified by InfoGlue filters when they reach the templates.
 - Improved how attributes and url contents are written to disk when used as assets
 - Added possibility to control the pool size of os-propertyset
+- Fixed better performance on content covers and site node covers - before central pages and templates could take very long to show.
 
 -------------------------------------------------------------------------------------
 - InfoGlue 2.3.5 Final

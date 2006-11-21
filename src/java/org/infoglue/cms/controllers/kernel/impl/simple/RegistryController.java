@@ -20,7 +20,7 @@
  *
  * ===============================================================================
  *
- * $Id: RegistryController.java,v 1.32 2006/10/29 08:38:32 mattias Exp $
+ * $Id: RegistryController.java,v 1.33 2006/11/21 20:26:17 mattias Exp $
  */
 
 package org.infoglue.cms.controllers.kernel.impl.simple;
@@ -790,8 +790,13 @@ public class RegistryController extends BaseController
         return referenceBeanList;
     }
     */
-    
+
 	public List getReferencingObjectsForContent(Integer contentId) throws SystemException
+    {
+		return getReferencingObjectsForContent(contentId, -1);
+    }
+
+	public List getReferencingObjectsForContent(Integer contentId, int maxRows) throws SystemException
     {
 		
         List referenceBeanList = new ArrayList();
@@ -802,102 +807,7 @@ public class RegistryController extends BaseController
 		{
 			beginTransaction(db);
 			
-			referenceBeanList = getReferencingObjectsForContent(contentId, db);
-			
-			/*
-			Map entries = new HashMap();
-			
-	        List registryEntires = getMatchingRegistryVOList(Content.class.getName(), contentId.toString(), db);
-	        logger.info("registryEntires:" + registryEntires.size());
-	        Iterator registryEntiresIterator = registryEntires.iterator();
-	        while(registryEntiresIterator.hasNext())
-	        {
-	            RegistryVO registryVO = (RegistryVO)registryEntiresIterator.next();
-	            logger.info("registryVO:" + registryVO.getReferencingEntityId() + ":" +  registryVO.getReferencingEntityCompletingId());
-	            boolean add = true;
-	            
-	            String key = "" + registryVO.getReferencingEntityCompletingName() + "_" + registryVO.getReferencingEntityCompletingId();
-	            //String key = "" + registryVO.getReferencingEntityName() + "_" + registryVO.getReferencingEntityId();
-	            ReferenceBean existingReferenceBean = (ReferenceBean)entries.get(key);
-	            if(existingReferenceBean == null)
-	            {
-	                
-	                existingReferenceBean = new ReferenceBean();
-		            logger.info("Adding referenceBean to entries with key:" + key);
-		            entries.put(key, existingReferenceBean);
-		            referenceBeanList.add(existingReferenceBean);
-		        }
-
-	            ReferenceVersionBean referenceVersionBean = new ReferenceVersionBean();
-	            if(registryVO.getReferencingEntityName().indexOf("Content") > -1)
-	            {
-	                try
-	                {
-	                    ContentVersion contentVersion = ContentVersionController.getContentVersionController().getContentVersionWithId(new Integer(registryVO.getReferencingEntityId()), db);
-			    		logger.info("contentVersion:" + contentVersion.getContentVersionId());
-			    		existingReferenceBean.setName(contentVersion.getOwningContent().getName());
-			    		existingReferenceBean.setReferencingCompletingObject(contentVersion.getOwningContent().getValueObject());
-			    		
-			    		referenceVersionBean.setReferencingObject(contentVersion.getValueObject());
-			    		referenceVersionBean.getRegistryVOList().add(registryVO);
-	                }
-	                catch(Exception e)
-	                {
-	                    add = false;
-	                    logger.info("content:" + registryVO.getReferencingEntityId() + " did not exist - skipping..");
-	                }
-	            }
-	            else
-	            {
-	                try
-	                {
-		                SiteNodeVersion siteNodeVersion = SiteNodeVersionController.getController().getSiteNodeVersionWithId(new Integer(registryVO.getReferencingEntityId()), db);
-			    		logger.info("siteNodeVersion:" + siteNodeVersion.getSiteNodeVersionId());
-			    		logger.info("siteNode:" + siteNodeVersion.getOwningSiteNode().getId());
-			    		existingReferenceBean.setName(siteNodeVersion.getOwningSiteNode().getName());
-			    		existingReferenceBean.setReferencingCompletingObject(siteNodeVersion.getOwningSiteNode().getValueObject());
-	
-			    		referenceVersionBean.setReferencingObject(siteNodeVersion.getValueObject());
-			    		referenceVersionBean.getRegistryVOList().add(registryVO);
-	                }
-	                catch(Exception e)
-	                {
-	                    add = false;
-	                    logger.info("siteNode:" + registryVO.getReferencingEntityId() + " did not exist - skipping..");
-	                }
-	            }
-	            
-	            if(add)
-	            {
-	                boolean exists = false;
-	                ReferenceVersionBean existingReferenceVersionBean = null;
-		            Iterator versionsIterator = existingReferenceBean.getVersions().iterator();
-		            while(versionsIterator.hasNext())
-		            {
-		                existingReferenceVersionBean = (ReferenceVersionBean)versionsIterator.next();
-		                if(existingReferenceVersionBean.getReferencingObject().equals(referenceVersionBean.getReferencingObject()))
-		                {
-		                    exists = true;
-		                    break;
-		                }
-		            }
-
-		            if(!exists)
-		                existingReferenceBean.getVersions().add(referenceVersionBean);
-		            else
-		                existingReferenceVersionBean.getRegistryVOList().add(registryVO);
-
-	            }
-	            
-	        }
-	        
-	        Iterator i = referenceBeanList.iterator();
-	        while(i.hasNext())
-	        {
-	            ReferenceBean referenceBean = (ReferenceBean)i.next();
-	            if(referenceBean.getVersions().size() == 0)
-	                i.remove();
-	        }*/
+			referenceBeanList = getReferencingObjectsForContent(contentId, maxRows, db);
 	    
 	        commitTransaction(db);
 		}
@@ -914,14 +824,14 @@ public class RegistryController extends BaseController
         return referenceBeanList;
     }
 
-	public List getReferencingObjectsForContent(Integer contentId, Database db) throws SystemException, Exception
+	public List getReferencingObjectsForContent(Integer contentId, int maxRows, Database db) throws SystemException, Exception
     {
 		
         List referenceBeanList = new ArrayList();
 
         Map entries = new HashMap();
 		
-        List registryEntires = getMatchingRegistryVOList(Content.class.getName(), contentId.toString(), db);
+        List registryEntires = getMatchingRegistryVOList(Content.class.getName(), contentId.toString(), maxRows, db);
         logger.info("registryEntires:" + registryEntires.size());
         Iterator registryEntiresIterator = registryEntires.iterator();
         while(registryEntiresIterator.hasNext())
@@ -1096,6 +1006,11 @@ public class RegistryController extends BaseController
 
     public List getReferencingObjectsForSiteNode(Integer siteNodeId) throws SystemException, Exception
     {
+    	return getReferencingObjectsForSiteNode(siteNodeId, -1);
+    }
+    
+    public List getReferencingObjectsForSiteNode(Integer siteNodeId, int maxRows) throws SystemException, Exception
+    {
         List referenceBeanList = new ArrayList();
         
         Database db = CastorDatabaseService.getDatabase();
@@ -1104,7 +1019,7 @@ public class RegistryController extends BaseController
 		{
 			beginTransaction(db);
 
-		    referenceBeanList = getReferencingObjectsForSiteNode(siteNodeId, db);
+		    referenceBeanList = getReferencingObjectsForSiteNode(siteNodeId, maxRows, db);
 
 		    commitTransaction(db);
 		}
@@ -1119,13 +1034,13 @@ public class RegistryController extends BaseController
     }
 
 		    
-    public List getReferencingObjectsForSiteNode(Integer siteNodeId, Database db) throws SystemException, Exception
+    public List getReferencingObjectsForSiteNode(Integer siteNodeId, int maxRows, Database db) throws SystemException, Exception
     {
         List referenceBeanList = new ArrayList();
         
 		Map entries = new HashMap();
 		
-		List registryEntires = getMatchingRegistryVOList(SiteNode.class.getName(), siteNodeId.toString(), db);
+		List registryEntires = getMatchingRegistryVOList(SiteNode.class.getName(), siteNodeId.toString(), maxRows, db);
         Iterator registryEntiresIterator = registryEntires.iterator();
         while(registryEntiresIterator.hasNext())
         {
@@ -1221,7 +1136,7 @@ public class RegistryController extends BaseController
 	 * Gets matching references
 	 */
 	
-	public List getMatchingRegistryVOList(String entityName, String entityId, Database db) throws SystemException, Exception
+	public List getMatchingRegistryVOList(String entityName, String entityId, int maxRows, Database db) throws SystemException, Exception
 	{
 	    List matchingRegistryVOList = new ArrayList();
 	    
@@ -1231,12 +1146,15 @@ public class RegistryController extends BaseController
 		
 		QueryResults results = oql.execute(Database.ReadOnly);
 		
-		while (results.hasMore()) 
+		int i = 0;
+		while (results.hasMore() && (maxRows == -1 || i < maxRows)) 
         {
             Registry registry = (Registry)results.next();
             RegistryVO registryVO = registry.getValueObject();
-            
+                
             matchingRegistryVOList.add(registryVO);
+
+            i++;
         }            
 		
 		results.close();

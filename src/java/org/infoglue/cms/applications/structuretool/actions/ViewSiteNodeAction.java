@@ -182,7 +182,7 @@ public class ViewSiteNodeAction extends InfoGlueAbstractAction
 	{
 		try
 		{
-		    this.referenceBeanList = RegistryController.getController().getReferencingObjectsForSiteNode(siteNodeId);
+		    this.referenceBeanList = RegistryController.getController().getReferencingObjectsForSiteNode(siteNodeId, 100);
 		    this.referencingBeanList = RegistryController.getController().getReferencedObjects(SiteNodeVersion.class.getName(), siteNodeVersionVO.getSiteNodeVersionId().toString());
 		    logger.info("referenceBeanList:" + referenceBeanList.size());
 		    logger.info("referencingBeanList:" + referencingBeanList.size());
@@ -223,7 +223,7 @@ public class ViewSiteNodeAction extends InfoGlueAbstractAction
 	{
 		try
 		{
-		    this.referenceBeanList = RegistryController.getController().getReferencingObjectsForSiteNode(siteNodeId, db);
+		    this.referenceBeanList = RegistryController.getController().getReferencingObjectsForSiteNode(siteNodeId, 100, db);
 		    this.referencingBeanList = RegistryController.getController().getReferencedObjects(SiteNodeVersion.class.getName(), siteNodeVersionVO.getSiteNodeVersionId().toString(), db);
 		    logger.info("referenceBeanList:" + referenceBeanList.size());
 		    logger.info("referencingBeanList:" + referencingBeanList.size());

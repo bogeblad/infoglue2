@@ -111,7 +111,7 @@ public class ViewContentAction extends InfoGlueAbstractAction
        		this.defaultFolderContentTypeName = InfoGlueSettingsController.getInfoGlueSettingsController().getProperty("repository_" + this.getRepositoryId() + "_defaultFolderContentTypeName", "applicationProperties", null, false, false, false, false, null);
 		}
         
-		this.referenceBeanList = RegistryController.getController().getReferencingObjectsForContent(contentId);
+		this.referenceBeanList = RegistryController.getController().getReferencingObjectsForContent(contentId, 100);
     } 
 
     public String doExecute() throws Exception
