@@ -138,6 +138,8 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule, Serial
 			env.put(Context.SECURITY_CREDENTIALS, connectionPassword);
 		}
 				
+		env.put("com.sun.jndi.ldap.connect.pool", "true");
+
 		DirContext ctx = new InitialDirContext(env); 
 		
 		return ctx;
@@ -180,7 +182,9 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule, Serial
 			env.put(Context.SECURITY_PRINCIPAL, connectionName);
 			env.put(Context.SECURITY_CREDENTIALS, connectionPassword);
 		}
-				
+			
+		env.put("com.sun.jndi.ldap.connect.pool", "true");
+		
 		DirContext ctx = new InitialLdapContext(env, controls); 
 		
 		return ctx;
@@ -445,7 +449,8 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule, Serial
 		Map attributes = null;
 		
 		DirContext ctx = getContext();
-		attributes = getUserAttributes(userName, getContext());
+		
+		attributes = getUserAttributes(userName, ctx);
 		
 		ctx.close();
 		
@@ -1043,9 +1048,10 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule, Serial
 		String removeGroupBaseDN		= this.extraProperties.getProperty("removeGroupBaseDN", "true");
 		String removeRoleBaseDN			= this.extraProperties.getProperty("removeRoleBaseDN", "true");
 
+		DirContext ctx = getContext();
+
 		try 
 		{
-			DirContext ctx = getContext();
 			 
 			String baseDN = userBase;
 			String searchFilter = "(CN=*)";
@@ -1196,13 +1202,17 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule, Serial
 					logger.warn("An error occurred when we tried to read user: " + e.getMessage(), e);
 				}
 			} 
-			ctx.close();
 		}
 		catch (Exception e) 
 		{
 			logger.warn("Could not find Groups: " + e.getMessage(), e);
 		}
-	    logger.info("getUsers end...");
+		finally
+		{
+			ctx.close();
+		}
+		
+		logger.info("getUsers end...");
 
 	    if(users != null)
 	    	CacheController.cacheObjectInAdvancedCache("JNDIAuthorizationCache", key, users, null, false);
