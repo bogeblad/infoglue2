@@ -212,9 +212,19 @@ public class BasicURLComposer extends URLComposer
     		    }
     		    
     		    if(repositoryPath != null)
-    		    	context = dnsName + context + "/" + repositoryPath;
+    		    {
+        		    if(context.startsWith("/"))
+        		    	context = dnsName + context + "/" + repositoryPath;
+        		    else
+        		     	context = dnsName + "/" + context + "/" + repositoryPath;
+    		    }
     		    else
-        		    context = dnsName + "/" + context;
+    		    {
+        		    if(context.startsWith("/"))
+        		    	context = dnsName + context;
+        		    else
+        		    	context = dnsName + "/" + context;
+                }
     		}
     		else
     		{
