@@ -30,6 +30,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.Vector;
 
 import org.apache.log4j.Logger;
@@ -329,7 +330,6 @@ public class ContentDeliveryController extends BaseDeliveryController
 		return contentVersion;
     }
 
-
 	/**
 	 * This is the most common way of getting attributes from a content. 
 	 * It selects the correct contentVersion depending on the language and then gets the attribute in the xml associated.
@@ -337,7 +337,27 @@ public class ContentDeliveryController extends BaseDeliveryController
 
 	public String getContentAttribute(Database db, Integer contentId, Integer languageId, String attributeName, Integer siteNodeId, boolean useLanguageFallback, DeliveryContext deliveryContext, InfoGluePrincipal infogluePrincipal, boolean escapeHTML) throws SystemException, Exception
 	{	    	        
-		return getContentAttribute(db, contentId, languageId, attributeName, siteNodeId, useLanguageFallback, deliveryContext, infogluePrincipal, escapeHTML, null);
+		return getContentAttribute(db, contentId, languageId, attributeName, siteNodeId, useLanguageFallback, deliveryContext, infogluePrincipal, escapeHTML, false, null);
+	}
+
+	/**
+	 * This is the most common way of getting attributes from a content. 
+	 * It selects the correct contentVersion depending on the language and then gets the attribute in the xml associated.
+	 */
+
+	public String getContentAttribute(Database db, Integer contentId, Integer languageId, String attributeName, Integer siteNodeId, boolean useLanguageFallback, DeliveryContext deliveryContext, InfoGluePrincipal infogluePrincipal, boolean escapeHTML, boolean isMetaInfoQuery) throws SystemException, Exception
+	{	    	        
+		return getContentAttribute(db, contentId, languageId, attributeName, siteNodeId, useLanguageFallback, deliveryContext, infogluePrincipal, escapeHTML, isMetaInfoQuery, null);
+	}
+
+	/**
+	 * This is the most common way of getting attributes from a content. 
+	 * It selects the correct contentVersion depending on the language and then gets the attribute in the xml associated.
+	 */
+
+	public String getContentAttribute(Database db, Integer contentId, Integer languageId, String attributeName, Integer siteNodeId, boolean useLanguageFallback, DeliveryContext deliveryContext, InfoGluePrincipal infogluePrincipal, boolean escapeHTML, Set usedContentVersionId) throws SystemException, Exception
+	{	
+		return getContentAttribute(db, contentId, languageId, attributeName, siteNodeId, useLanguageFallback, deliveryContext, infogluePrincipal, escapeHTML, false, usedContentVersionId);
 	}
 	
 	/**
@@ -345,12 +365,15 @@ public class ContentDeliveryController extends BaseDeliveryController
 	 * It selects the correct contentVersion depending on the language and then gets the attribute in the xml associated.
 	 */
 
-	public String getContentAttribute(Database db, Integer contentId, Integer languageId, String attributeName, Integer siteNodeId, boolean useLanguageFallback, DeliveryContext deliveryContext, InfoGluePrincipal infogluePrincipal, boolean escapeHTML, List usedContentVersionId) throws SystemException, Exception
+	public String getContentAttribute(Database db, Integer contentId, Integer languageId, String attributeName, Integer siteNodeId, boolean useLanguageFallback, DeliveryContext deliveryContext, InfoGluePrincipal infogluePrincipal, boolean escapeHTML, boolean isMetaInfoQuery, Set usedContentVersionId) throws SystemException, Exception
 	{	
 		//System.out.println("usedContentVersionId:" + usedContentVersionId);
 
-	    String attributeKey = "" + contentId + "_" + languageId + "_" + attributeName + "_" + siteNodeId + "_" + useLanguageFallback + "_" + escapeHTML;
-	    String versionKey = attributeKey + "_contentVersionId";
+		String attributeKey = "" + contentId + "_" + languageId + "_" + attributeName + "_" + siteNodeId + "_" + useLanguageFallback + "_" + escapeHTML;
+		if(isMetaInfoQuery)
+			attributeKey = "" + contentId + "_" + languageId + "_" + attributeName + "_" + useLanguageFallback + "_" + escapeHTML;
+	    
+		String versionKey = attributeKey + "_contentVersionId";
 		//logger.info("attributeKey:" + attributeKey);
 		
 		//String attribute = (String)CacheController.getCachedObject("contentAttributeCache", attributeKey);
@@ -361,40 +384,41 @@ public class ContentDeliveryController extends BaseDeliveryController
 		
 	    try
 	    {
-
-		if(attribute != null)
-		{
-			//logger.info("There was an cached content attribute:" + attribute);
-			//if(contentId != null && contentId.intValue() == 3135)
-			//	System.out.println("There was an cached content attribute:" + attribute);
-		}
-		else
-		{
-			//if(contentId != null && contentId.intValue() == 3135)
-			//	System.out.println("No cached attribute");
-			
-			ContentVersionVO contentVersionVO = getContentVersionVO(db, siteNodeId, contentId, languageId, useLanguageFallback, deliveryContext, infogluePrincipal);
-		   
-        	if (contentVersionVO != null) 
+			if(attribute != null)
 			{
-			    logger.info("found one:" + contentVersionVO);
-				attribute = getAttributeValue(db, contentVersionVO, attributeName, escapeHTML);	
-				contentVersionId = contentVersionVO.getId();
+				//logger.info("There was an cached content attribute:" + attribute);
+				//if(contentId != null && contentId.intValue() == 3135)
+				//	System.out.println("There was an cached content attribute:" + attribute);
 			}
 			else
-				attribute = "";
-
-			CacheController.cacheObjectInAdvancedCache("contentAttributeCache", attributeKey, attribute, new String[]{"contentVersion_" + contentVersionId, "content_" + contentId}, true);
-			if(contentVersionId != null)
-			    CacheController.cacheObjectInAdvancedCache("contentVersionCache", versionKey, contentVersionId, new String[]{"contentVersion_" + contentVersionId, "content_" + contentId}, true);
-		}
-		
-		//logger.info("Adding contentVersion:" + contentVersionId);
-		deliveryContext.addUsedContentVersion("contentVersion_" + contentVersionId);
-
-		if(usedContentVersionId != null && contentVersionId != null)
-		    usedContentVersionId.add(contentVersionId);
-
+			{
+				//if(contentId != null && contentId.intValue() == 3135)
+				//	System.out.println("No cached attribute");
+				
+				ContentVersionVO contentVersionVO = getContentVersionVO(db, siteNodeId, contentId, languageId, useLanguageFallback, deliveryContext, infogluePrincipal);
+			   
+	        	if (contentVersionVO != null) 
+				{
+				    logger.info("found one:" + contentVersionVO);
+					attribute = getAttributeValue(db, contentVersionVO, attributeName, escapeHTML);	
+					contentVersionId = contentVersionVO.getId();
+				}
+				else
+					attribute = "";
+	
+				CacheController.cacheObjectInAdvancedCache("contentAttributeCache", attributeKey, attribute, new String[]{"contentVersion_" + contentVersionId, "content_" + contentId}, true);
+				if(contentVersionId != null)
+				{
+				    CacheController.cacheObjectInAdvancedCache("contentVersionCache", versionKey, contentVersionId, new String[]{"contentVersion_" + contentVersionId, "content_" + contentId}, true);
+				}
+			}
+			
+			deliveryContext.addUsedContentVersion("contentVersion_" + contentVersionId);
+			if(isMetaInfoQuery)
+				deliveryContext.setPageMetaInfoContentVersionId(contentVersionId);
+			
+			if(usedContentVersionId != null && contentVersionId != null)
+			    usedContentVersionId.add(contentVersionId);
 	    }
 	    catch(Exception e)
 	    {
