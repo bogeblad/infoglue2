@@ -32,6 +32,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -209,6 +210,18 @@ public class CacheController extends Thread
         return null;
     }
 
+	public static void cacheObjectInAdvancedCacheWithGroupsAsSet(String cacheName, Object key, Object value, Set groupsAsList, boolean useGroups)
+	{
+		Object[] o = groupsAsList.toArray();
+		String[] groups = new String[o.length];
+		for (int i=0; i<groups.length;i++)
+		{
+			groups[i] = o[i].toString();
+		}
+		
+		cacheObjectInAdvancedCache(cacheName, key, value, groups, useGroups);
+	}
+
 	public static void cacheObjectInAdvancedCache(String cacheName, Object key, Object value, String[] groups, boolean useGroups)
 	{
 	    synchronized(caches) 
@@ -232,9 +245,9 @@ public class CacheController extends Thread
 			{
 				if(useGroups)
 				{
-					if(logger.isDebugEnabled())
+					if(logger.isDebugEnabled()())
 					{
-						if(cacheName.equalsIgnoreCase("pageCache"))
+						if(cacheName.equalsIgnoreCase("componentPropertyCache") && key.toString().indexOf("Article") > 0)
 						{
 							logger.debug("Caching objects in " + cacheName + "-->[" + key.toString() + "]");
 				    		for(int i=0; i<groups.length; i++)
