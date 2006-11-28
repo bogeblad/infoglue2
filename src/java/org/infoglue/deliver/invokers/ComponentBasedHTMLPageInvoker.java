@@ -149,20 +149,26 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 		String cacheKey		= "pageComponentString_" + siteNodeId + "_" + languageId + "_" + contentId;
 	    
 		String attributeName = "ComponentStructure";
-		String attributeKey = "" + contentVO.getId() + "_" + languageId + "_" + attributeName + "_" + siteNodeId + "_" + true;
-	    
+		//String attributeKey = "" + contentVO.getId() + "_" + languageId + "_" + attributeName + "_" + siteNodeId + "_" + true;
+		String attributeKey = "" + contentVO.getId() + "_" + languageId + "_" + attributeName + "_" + true + "_" + false;
+		
 		String versionKey 	= attributeKey + "_contentVersionId";
 
 	    String cachedPageComponentsString = (String)CacheController.getCachedObject(cacheName, cacheKey);
 	    //Integer contentVersionId = (Integer)CacheController.getCachedObject("contentAttributeCache", versionKey);
-	    Integer contentVersionId = (Integer)CacheController.getCachedObjectFromAdvancedCache("contentAttributeCache", versionKey);
-		
+	    //Integer contentVersionId = (Integer)CacheController.getCachedObjectFromAdvancedCache("contentAttributeCache", versionKey);
+		Integer contentVersionId = (Integer)CacheController.getCachedObjectFromAdvancedCache("contentVersionCache", versionKey);
+	    //System.out.println("Getting with versionKey-------------------------->:" + versionKey);
+
 
 		if(cachedPageComponentsString != null)
 		{
 		    //logger.info("Returning cached...");
 		    //logger.info("First added..." + versionKey + ":" + "contentVersion:" + contentVersionId);
 		    templateController.getDeliveryContext().addUsedContentVersion("contentVersion_" + contentVersionId);
+		    //System.out.println("\nThere was a cached page string and the meta info content version was " + contentVersionId);
+		    templateController.getDeliveryContext().setPageMetaInfoContentVersionId(contentVersionId);
+		    
 		    return cachedPageComponentsString;
 		}
 		
@@ -170,7 +176,7 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
    					
 		//logger.info("contentVO in getPageComponentsString: " + contentVO.getContentId());
 		Integer masterLanguageId = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForSiteNode(db, siteNodeId).getId();
-	    pageComponentsString = templateController.getContentAttribute(contentVO.getContentId(), masterLanguageId, "ComponentStructure", true);
+	    pageComponentsString = templateController.getMetaInfoContentAttribute(contentVO.getContentId(), masterLanguageId, "ComponentStructure", true);
 		
 		if(pageComponentsString == null)
 			throw new SystemException("There was no Meta Information bound to this page which makes it impossible to render.");	
