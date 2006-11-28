@@ -245,7 +245,7 @@ public class CacheController extends Thread
 			{
 				if(useGroups)
 				{
-					if(logger.isDebugEnabled()())
+					if(logger.isDebugEnabled())
 					{
 						if(cacheName.equalsIgnoreCase("componentPropertyCache") && key.toString().indexOf("Article") > 0)
 						{
