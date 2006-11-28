@@ -30,6 +30,7 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.Vector;
 
 import javax.servlet.http.HttpServletRequest;
@@ -336,12 +337,20 @@ public interface TemplateController
             Integer langaugeId, String attributeName, boolean clean);
 
     /**
+     * This method is a method which gets attributes from a meta info.
+     */
+    
+    public abstract String getMetaInfoContentAttribute(Integer contentId,
+            Integer langaugeId, String attributeName, boolean clean);
+	
+
+    /**
      * This method is just a dummy method used to ensure that we can ensure to not get a decorated attribute
      * value if OnSiteEdit is on.
      */
 
 	public String getContentAttributeWithReturningId(Integer contentId, 
-	        Integer languageId, String attributeName, boolean clean, List contentVersionId);
+	        Integer languageId, String attributeName, boolean clean, Set contentVersionId);
 
     /**
      * This method deliveres a String with the content-attribute asked for if it exists in the content

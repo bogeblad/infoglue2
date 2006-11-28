@@ -1281,12 +1281,23 @@ public class BasicTemplateController implements TemplateController
 	}
 
 	/**
+	 * This method is just a dummy method used to ensure that we can ensure to not get a decorated attribute
+	 * value if OnSiteEdit is on.
+	 */
+ 
+	public String getMetaInfoContentAttribute(Integer contentId, Integer languageId, String attributeName, boolean clean) 
+	{				
+	    return getMetaInfoContentAttribute(contentId, languageId, attributeName);
+	}
+
+
+	/**
 	 * This method deliveres a String with the content-attribute asked for in the language asked for.
 	 * As the siteNode can have multiple bindings as well as a content as a parameter this
 	 * parameter requires a bindingName which refers to the AvailableServiceBinding.name-attribute. 
 	 */
 	 
-	public String getContentAttributeWithReturningId(Integer contentId, Integer languageId, String attributeName, boolean clean, List contentVersionId) 
+	public String getContentAttributeWithReturningId(Integer contentId, Integer languageId, String attributeName, boolean clean, Set contentVersionId) 
 	{
 	    return getContentAttribute(contentId, languageId, attributeName, contentVersionId);
 	}
@@ -1423,7 +1434,7 @@ public class BasicTemplateController implements TemplateController
 		String attributeValue = "";
 		
 		this.deliveryContext.addUsedContent("content_" + contentId);
-		
+
 		try
 		{
 		    attributeValue = ContentDeliveryController.getContentDeliveryController().getContentAttribute(getDatabase(), contentId, languageId, attributeName, this.siteNodeId, USE_LANGUAGE_FALLBACK, this.deliveryContext, this.infoGluePrincipal, false);
@@ -1436,14 +1447,38 @@ public class BasicTemplateController implements TemplateController
 		return attributeValue;
 	}
 	
-	
+
 	/**
 	 * This method deliveres a String with the content-attribute asked for in the language asked for.
 	 * As the siteNode can have multiple bindings as well as a content as a parameter this
 	 * parameter requires a bindingName which refers to the AvailableServiceBinding.name-attribute. 
 	 */
 	 
-	public String getContentAttribute(Integer contentId, Integer languageId, String attributeName, List contentVersionId) 
+	public String getMetaInfoContentAttribute(Integer contentId, Integer languageId, String attributeName) 
+	{
+		String attributeValue = "";
+		
+		this.deliveryContext.addUsedContent("content_" + contentId);
+
+		try
+		{
+		    attributeValue = ContentDeliveryController.getContentDeliveryController().getContentAttribute(getDatabase(), contentId, languageId, attributeName, this.siteNodeId, USE_LANGUAGE_FALLBACK, this.deliveryContext, this.infoGluePrincipal, false, true);
+		}
+		catch(Exception e)
+		{
+			logger.error("An error occurred trying to get attributeName=" + attributeName + " on content " + contentId + ":" + e.getMessage(), e);
+		}
+				
+		return attributeValue;
+	}
+
+	/**
+	 * This method deliveres a String with the content-attribute asked for in the language asked for.
+	 * As the siteNode can have multiple bindings as well as a content as a parameter this
+	 * parameter requires a bindingName which refers to the AvailableServiceBinding.name-attribute. 
+	 */
+	 
+	public String getContentAttribute(Integer contentId, Integer languageId, String attributeName, Set contentVersionId) 
 	{
 		String attributeValue = "";
 		
