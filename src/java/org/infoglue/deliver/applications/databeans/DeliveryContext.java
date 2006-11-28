@@ -93,6 +93,8 @@ public class DeliveryContext implements UsageListener
 	private Set usedSiteNodes = new HashSet();
 	private Set usedSiteNodeVersions = new HashSet();
 	
+	private Integer pageMetaInfoContentVersionId = null;
+	
 	//private InfoGluePrincipal infoGluePrincipal = null;
 	
 	//This variable sets if all urls generated should contain the server name etc.
@@ -383,5 +385,16 @@ public class DeliveryContext implements UsageListener
 	public void setEvaluateFullPage(boolean evaluateFullPage) 
 	{
 		this.evaluateFullPage = evaluateFullPage;
+	}
+
+	public Integer getPageMetaInfoContentVersionId() 
+	{
+		return pageMetaInfoContentVersionId;
+	}
+
+	public void setPageMetaInfoContentVersionId(Integer pageMetaInfoContentVersionId) 
+	{
+		if(this.pageMetaInfoContentVersionId == null)
+			this.pageMetaInfoContentVersionId = pageMetaInfoContentVersionId;
 	}
 }
