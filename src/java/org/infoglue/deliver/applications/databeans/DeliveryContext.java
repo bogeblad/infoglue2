@@ -34,6 +34,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.infoglue.cms.applications.common.Session;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
+import org.infoglue.deliver.controllers.kernel.impl.simple.InfoGlueHashSet;
 
 /**
  * @author Mattias Bogeblad
@@ -88,10 +89,10 @@ public class DeliveryContext implements UsageListener
 	//This section has control over what contents and sitenodes are used where so the pagecache can be selectively updated.
 	private List usageListeners = new ArrayList();
 	
-	private Set usedContents = new HashSet();
-	private Set usedContentVersions = new HashSet();
-	private Set usedSiteNodes = new HashSet();
-	private Set usedSiteNodeVersions = new HashSet();
+	private Set usedContents = new InfoGlueHashSet();
+	private Set usedContentVersions = new InfoGlueHashSet();
+	private Set usedSiteNodes = new InfoGlueHashSet();
+	private Set usedSiteNodeVersions = new InfoGlueHashSet();
 	
 	private Integer pageMetaInfoContentVersionId = null;
 	
