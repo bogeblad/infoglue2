@@ -105,6 +105,7 @@ Abbreviated Changelog from 2.3.5 Final
 - Improved how attributes and url contents are written to disk when used as assets
 - Added possibility to control the pool size of os-propertyset
 - Fixed better performance on content covers and site node covers - before central pages and templates could take very long to show.
+- Finally got around to optimize the create site node methods - on old installs this could take quite a few seconds when the sites was getting big. Now it takes a couple of milliseconds.
 
 -------------------------------------------------------------------------------------
 - InfoGlue 2.3.5 Final

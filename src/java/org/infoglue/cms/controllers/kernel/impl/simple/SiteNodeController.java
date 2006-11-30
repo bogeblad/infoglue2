@@ -788,8 +788,8 @@ public class SiteNodeController extends BaseController
         ServiceDefinitionVO singleServiceDefinitionVO 	= null;
         
         Integer metaInfoContentTypeDefinitionId = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithName("Meta info", db).getId();
-        Integer availableServiceBindingId = AvailableServiceBindingController.getController().getAvailableServiceBindingWithName("Meta information", db, false).getId();
-
+        Integer availableServiceBindingId = AvailableServiceBindingController.getController().getAvailableServiceBindingVOWithName("Meta information", db).getId();
+        
         List serviceDefinitions = AvailableServiceBindingController.getController().getServiceDefinitionVOList(db, availableServiceBindingId);
         if(serviceDefinitions == null || serviceDefinitions.size() == 0)
         {
@@ -828,7 +828,7 @@ public class SiteNodeController extends BaseController
         		
         	    componentStructure = ContentVersionController.getContentVersionController().getAttributeValue(contentVersionVO, "ComponentStructure", false);
         	}
-        	
+
         	//Create initial content version also... in masterlanguage
         	String versionValue = "<?xml version='1.0' encoding='UTF-8'?><article xmlns=\"x-schema:ArticleSchema.xml\"><attributes><Title><![CDATA[" + newSiteNode.getName() + "]]></Title><NavigationTitle><![CDATA[" + newSiteNode.getName() + "]]></NavigationTitle><NiceURIName><![CDATA[" + new VisualFormatter().replaceNonAscii(newSiteNode.getName(), '_') + "]]></NiceURIName><Description><![CDATA[" + newSiteNode.getName() + "]]></Description><MetaInfo><![CDATA[" + newSiteNode.getName() + "]]></MetaInfo><ComponentStructure><![CDATA[" + componentStructure + "]]></ComponentStructure></attributes></article>";
         	ContentVersionVO contentVersionVO = new ContentVersionVO();

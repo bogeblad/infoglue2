@@ -224,7 +224,7 @@ public class ContentController extends BaseController
             	contentTypeDefinition = ContentTypeDefinitionController.getController().getContentTypeDefinitionWithId(contentTypeDefinitionId, db);
 
             Repository repository = RepositoryController.getController().getRepositoryWithId(repositoryId, db);
-			
+
             content = new ContentImpl();
             content.setValueObject(contentVO);
             content.setParentContent((ContentImpl)parentContent);
@@ -239,13 +239,12 @@ public class ContentController extends BaseController
 				parentContent.getChildren().add(content);
 				parentContent.setIsBranch(new Boolean(true));
 			}
-			
+
 			//repository.getContents().add(content);			
         }
         catch(Exception e)
         {
         	logger.error("An error occurred so we should not complete the transaction:" + e, e);
-        	e.printStackTrace();
         	//rollbackTransaction(db);
             throw new SystemException(e.getMessage());    
         }
@@ -903,52 +902,6 @@ public class ContentController extends BaseController
 		return contents;    	
 	}
 
-	/**
-	 * The input is a list of hashmaps.
-	 */
-	/*
-	private static List getContentVOListByContentTypeNames(List arguments) throws SystemException, Bug
-	{
-		Database db = CastorDatabaseService.getDatabase();
-		ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
-	
-		List contents = new ArrayList();
-		
-		beginTransaction(db);
-
-		try
-		{
-			Iterator i = arguments.iterator();
-			while(i.hasNext())
-			{
-				HashMap argument = (HashMap)i.next();
-				String contentTypeDefinitionName = (String)argument.get("contentTypeDefinitionName");
-	    		
-				OQLQuery oql = db.getOQLQuery("SELECT ctd FROM org.infoglue.cms.entities.management.impl.simple.ContentTypeDefinitionImpl ctd WHERE ctd.name = $1");
-				oql.bind(contentTypeDefinitionName);
-	        	
-				QueryResults results = oql.execute(Database.ReadOnly);
-				
-				if (results.hasMore()) 
-				{
-					ContentTypeDefinition contentTypeDefinition = (ContentTypeDefinition)results.next();
-					Collection contentList = contentTypeDefinition.getContents();
-					contents = toVOList(contentList);
-				}
-			}
-            
-			commitTransaction(db);
-		}
-		catch(Exception e)
-		{
-			logger.error("An error occurred so we should not complete the transaction:" + e, e);
-			rollbackTransaction(db);
-			throw new SystemException(e.getMessage());
-		}
-		
-		return contents;    	
-	}
-	*/
    	
    	/**
 	 * This method fetches the root content for a particular repository.
@@ -1470,11 +1423,13 @@ public class ContentController extends BaseController
 	 */
 	public ContentVO getContentVOWithPath(Integer repositoryId, String path, boolean forceFolders, InfoGluePrincipal creator, Database db) throws SystemException, Exception 
 	{
-		Content content = getRootContent(repositoryId, db);
+		ContentVO content = getRootContent(repositoryId, db).getValueObject();
 		final String paths[] = path.split("/");
-		for(int i=0; i<paths.length; ++i) {
+		
+		for(int i=0; i<paths.length; ++i) 
+		{
 			final String name = paths[i];
-			final Content childContent = getChildWithName(content, name);
+			final ContentVO childContent = getChildVOWithName(content.getContentId(), name, db);
 			if(childContent != null)
 				content = childContent;
 			else if(childContent == null && !forceFolders)
@@ -1486,16 +1441,44 @@ public class ContentController extends BaseController
 				contentVO.setIsBranch(Boolean.TRUE);
 				contentVO.setCreatorName(creator.getName());
 				contentVO.setName(name);
-				content = create(db, content.getId(), null, repositoryId, contentVO);
+				Content newContent = create(db, content.getId(), null, repositoryId, contentVO);
+				if(newContent != null)
+					content = newContent.getValueObject();
 			}
 		}
-		return content.getValueObject();
+		return content;
 	}
-	
+
 	/**
 	 * 
 	 */
-	private Content getChildWithName(Content content, String name)
+	private ContentVO getChildVOWithName(Integer parentContentId, String name, Database db) throws Exception
+	{
+		ContentVO contentVO = null;
+		
+		OQLQuery oql = db.getOQLQuery("SELECT c FROM org.infoglue.cms.entities.content.impl.simple.MediumContentImpl c WHERE c.parentContentId = $1 AND c.name = $2");
+    	oql.bind(parentContentId);
+    	oql.bind(name);
+    	
+    	QueryResults results = oql.execute(Database.ReadOnly);
+		
+		if(results.hasMore()) 
+        {
+        	MediumContentImpl content = (MediumContentImpl)results.next();
+        	contentVO = content.getValueObject();
+        }
+
+		results.close();
+		oql.close();
+		
+		return contentVO;
+	}
+
+	/**
+	 * 
+	 */
+	/*
+	private Content getChildWithName(Content content, String name, Database db)
 	{
 		for(Iterator i=content.getChildren().iterator(); i.hasNext(); )
 		{
@@ -1505,7 +1488,8 @@ public class ContentController extends BaseController
 		}
 		return null;
 	}
-	
+	*/
+
 	
 	/**
 	 * Recursive methods to get all contentVersions of a given state under the specified parent content.
