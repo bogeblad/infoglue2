@@ -27,10 +27,12 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.dom4j.Document;
@@ -38,7 +40,9 @@ import org.dom4j.Element;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.XMLWriter;
 import org.exolab.castor.jdo.Database;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
 import org.infoglue.cms.entities.content.ContentVO;
+import org.infoglue.cms.entities.content.ContentVersion;
 import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.entities.structure.SiteNodeVO;
 import org.infoglue.cms.exception.SystemException;
@@ -50,6 +54,7 @@ import org.infoglue.deliver.applications.databeans.ComponentRestriction;
 import org.infoglue.deliver.applications.databeans.Slot;
 import org.infoglue.deliver.controllers.kernel.impl.simple.ComponentLogic;
 import org.infoglue.deliver.controllers.kernel.impl.simple.ContentDeliveryController;
+import org.infoglue.deliver.controllers.kernel.impl.simple.InfoGlueHashSet;
 import org.infoglue.deliver.controllers.kernel.impl.simple.IntegrationDeliveryController;
 import org.infoglue.deliver.controllers.kernel.impl.simple.LanguageDeliveryController;
 import org.infoglue.deliver.controllers.kernel.impl.simple.NodeDeliveryController;
@@ -147,17 +152,15 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 
 	    String cacheName 	= "componentEditorCache";
 		String cacheKey		= "pageComponentString_" + siteNodeId + "_" + languageId + "_" + contentId;
-	    
+		String versionKey 	= cacheKey + "_contentVersionId";
+
 		String attributeName = "ComponentStructure";
 		//String attributeKey = "" + contentVO.getId() + "_" + languageId + "_" + attributeName + "_" + siteNodeId + "_" + true;
-		String attributeKey = "" + contentVO.getId() + "_" + languageId + "_" + attributeName + "_" + true + "_" + false;
-		
-		String versionKey 	= attributeKey + "_contentVersionId";
+		//String attributeKey = "" + contentVO.getId() + "_" + languageId + "_" + attributeName + "_" + true + "_" + false;
+		//String versionKey 	= attributeKey + "_contentVersionId";
 
 	    String cachedPageComponentsString = (String)CacheController.getCachedObject(cacheName, cacheKey);
-	    //Integer contentVersionId = (Integer)CacheController.getCachedObject("contentAttributeCache", versionKey);
-	    //Integer contentVersionId = (Integer)CacheController.getCachedObjectFromAdvancedCache("contentAttributeCache", versionKey);
-		Integer contentVersionId = (Integer)CacheController.getCachedObjectFromAdvancedCache("contentVersionCache", versionKey);
+	    Set contentVersionId = (Set)CacheController.getCachedObjectFromAdvancedCache("contentVersionCache", versionKey);
 	    //System.out.println("Getting with versionKey-------------------------->:" + versionKey);
 
 
@@ -165,10 +168,18 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 		{
 		    //logger.info("Returning cached...");
 		    //logger.info("First added..." + versionKey + ":" + "contentVersion:" + contentVersionId);
-		    templateController.getDeliveryContext().addUsedContentVersion("contentVersion_" + contentVersionId);
-		    //System.out.println("\nThere was a cached page string and the meta info content version was " + contentVersionId);
-		    templateController.getDeliveryContext().setPageMetaInfoContentVersionId(contentVersionId);
-		    
+			if(contentVersionId != null)
+			{    
+				Iterator contentVersionIdIterator = contentVersionId.iterator();
+				while(contentVersionIdIterator.hasNext())
+				{
+					Integer currentContentVersionId = (Integer)contentVersionIdIterator.next();
+					templateController.getDeliveryContext().addUsedContentVersion("contentVersion_" + currentContentVersionId);
+			    	//System.out.println("\nThere was a cached page string and the meta info content version was " + contentVersionId);
+			    	templateController.getDeliveryContext().setPageMetaInfoContentVersionId(currentContentVersionId);
+				}
+			}
+			
 		    return cachedPageComponentsString;
 		}
 		
@@ -184,7 +195,18 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 		logger.info("pageComponentsString: " + pageComponentsString);
 	
 		CacheController.cacheObject(cacheName, cacheKey, pageComponentsString);
+	    //System.out.println("Caching usedContentVersionId for cacheKey: " + cacheKey + ":" + templateController.getDeliveryContext().getPageMetaInfoContentVersionId());
 		
+	    Set contentVersionIds = new InfoGlueHashSet();
+	    contentVersionIds.add(templateController.getDeliveryContext().getPageMetaInfoContentVersionId());
+	    
+		Set groups = new InfoGlueHashSet();
+		ContentVersion contentVersion = ContentVersionController.getContentVersionController().getContentVersionWithId(templateController.getDeliveryContext().getPageMetaInfoContentVersionId(), templateController.getDatabase());
+		groups.add("contentVersion_" + contentVersion.getId());
+		groups.add("content_" + contentVersion.getValueObject().getContentId());
+
+	    CacheController.cacheObjectInAdvancedCacheWithGroupsAsSet("contentVersionCache", versionKey, contentVersionIds, groups, true);
+
 		return pageComponentsString;
 	}
 
