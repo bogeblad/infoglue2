@@ -247,9 +247,10 @@ public class CacheController extends Thread
 				{
 					if(logger.isDebugEnabled())
 					{
+					
 						if(cacheName.equalsIgnoreCase("componentPropertyCache") && key.toString().indexOf("Article") > 0)
 						{
-							logger.debug("Caching objects in " + cacheName + "-->[" + key.toString() + "]");
+							logger.debug("Caching objects in " + cacheName + "-->\n[" + key.toString() + "]");
 				    		for(int i=0; i<groups.length; i++)
 				    			logger.debug("group:" + groups[i]);
 				    		if(groups.length == 0)
@@ -260,7 +261,9 @@ public class CacheController extends Thread
 				    cacheAdministrator.putInCache(key.toString(), value, groups);
 				}
 				else
+				{
 				    cacheAdministrator.putInCache(key.toString(), value);
+				}
 			}
 		}
 		
@@ -286,8 +289,6 @@ public class CacheController extends Thread
 					} 
 				    catch (NeedsRefreshException nre) 
 				    {
-				    	//if(cacheName.equalsIgnoreCase("pageComponentsCache"))
-				    	//	System.out.println("Cancel update for [" + key.toString() + "]");
 				    	cacheAdministrator.cancelUpdate(key.toString());
 					}
 		        }
@@ -495,7 +496,7 @@ public class CacheController extends Thread
 					{	
 						clear = true;
 					}
-					if(cacheName.equalsIgnoreCase("contentAttributeCache") && (entity.indexOf("ContentVersion") > -1 || entity.indexOf("AccessRight") > 0 || entity.indexOf("SystemUser") > 0 || entity.indexOf("Role") > 0  || entity.indexOf("Group") > 0))
+					if(cacheName.equalsIgnoreCase("contentAttributeCache") && (entity.indexOf("Content") > -1 || entity.indexOf("AccessRight") > 0 || entity.indexOf("SystemUser") > 0 || entity.indexOf("Role") > 0  || entity.indexOf("Group") > 0))
 					{	
 						clear = true;
 						selectiveCacheUpdate = true;
@@ -521,7 +522,7 @@ public class CacheController extends Thread
 					if(cacheName.equalsIgnoreCase("componentCache") && entity.indexOf("Registry") == -1)
 					{	
 						clear = true;
-						//selectiveCacheUpdate = true;
+						selectiveCacheUpdate = true;
 					}
 					if(cacheName.equalsIgnoreCase("componentPropertyCache") && (entity.indexOf("ContentVersion") > -1 || entity.indexOf("AccessRight") > 0 || entity.indexOf("SystemUser") > 0 || entity.indexOf("Role") > 0  || entity.indexOf("Group") > 0))
 					{	
