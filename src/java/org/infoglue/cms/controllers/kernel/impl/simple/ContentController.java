@@ -33,6 +33,7 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
 import org.exolab.castor.jdo.OQLQuery;
+import org.exolab.castor.jdo.ObjectNotFoundException;
 import org.exolab.castor.jdo.QueryResults;
 import org.infoglue.cms.applications.contenttool.wizards.actions.CreateContentWizardInfoBean;
 import org.infoglue.cms.entities.content.Content;
@@ -299,8 +300,17 @@ public class ContentController extends BaseController
 	    
 	public void delete(ContentVO contentVO, Database db, boolean skipRelationCheck, boolean skipServiceBindings, boolean forceDelete) throws ConstraintException, SystemException, Exception
 	{
-	    Content content = getContentWithId(contentVO.getContentId(), db);
-	    Content parent = content.getParentContent();
+		Content content = null;
+		try
+		{
+			content = getContentWithId(contentVO.getContentId(), db);
+		}
+		catch(SystemException e)
+		{
+			return;
+		}
+		
+		Content parent = content.getParentContent();
 	    if(parent != null)
 		{
 			Iterator childContentIterator = parent.getChildren().iterator();
@@ -364,7 +374,7 @@ public class ContentController extends BaseController
 	    }
 	    else
     	{
-    		throw new ConstraintException("ContentVersion.stateId", "3300");
+    		throw new ConstraintException("ContentVersion.stateId", "3300", content.getName());
     	}			
     }        
 
