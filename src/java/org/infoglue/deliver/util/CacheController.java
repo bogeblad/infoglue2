@@ -101,6 +101,7 @@ import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGlueAuthenticationFilter;
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.NotificationMessage;
+import org.infoglue.cms.util.workflow.InfoGlueJDBCPropertySet;
 import org.infoglue.deliver.applications.actions.InfoGlueComponent;
 import org.infoglue.deliver.applications.databeans.CacheEvictionBean;
 import org.infoglue.deliver.applications.databeans.DatabaseWrapper;
@@ -129,6 +130,7 @@ public class CacheController extends Thread
     public static List notifications = Collections.synchronizedList(new ArrayList());
     
     private static Map eventListeners = new HashMap();
+	//private static Map caches = new HashMap();
 	private static Map caches = Collections.synchronizedMap(new HashMap());
 	private boolean expireCacheAutomatically = false;
 	private int cacheExpireInterval = 1800000;
@@ -167,9 +169,13 @@ public class CacheController extends Thread
 		}
 	}	
 
-	public static void clearServerNodeProperty()
+	public static void clearServerNodeProperty(boolean reCache)
 	{
 		clearCache("serverNodePropertiesCache");
+		if(reCache)
+			InfoGlueJDBCPropertySet.reCache();
+   		else
+   			InfoGlueJDBCPropertySet.clearCaches();
    	}
 
 	public static void cacheObject(String cacheName, Object key, Object value)
@@ -177,7 +183,8 @@ public class CacheController extends Thread
 		synchronized(caches)
 		{
 			if(!caches.containsKey(cacheName))
-			    caches.put(cacheName, Collections.synchronizedMap(new HashMap()));
+				caches.put(cacheName, Collections.synchronizedMap(new HashMap()));
+			    //caches.put(cacheName, new HashMap());
 		}
 			
 		synchronized(caches)
@@ -626,6 +633,12 @@ public class CacheController extends Thread
 					{
 						clear = true;
 					}
+					
+					if(!cacheName.equalsIgnoreCase("serverNodePropertiesCache") && entity.equalsIgnoreCase("ServerNodeProperties"))
+					{
+						clear = true;						
+					}
+					
 					
 					logger.info("clear:" + clear);
 					
@@ -1180,7 +1193,7 @@ public class CacheController extends Thread
 					try 
 					{
 						logger.info("clearing InfoGlueAuthenticationFilter");
-						clearServerNodeProperty();
+						clearServerNodeProperty(true);
 						logger.info("cleared InfoGlueAuthenticationFilter");
 						InfoGlueAuthenticationFilter.initializeProperties();
 						logger.info("initialized InfoGlueAuthenticationFilter");
