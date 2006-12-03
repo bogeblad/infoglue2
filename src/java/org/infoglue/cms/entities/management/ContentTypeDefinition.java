@@ -43,7 +43,7 @@ public interface ContentTypeDefinition extends IBaseEntity
 
     public java.lang.String getSchemaValue();
     
-    public void setSchemaValue(java.lang.String schemaValue) throws ConstraintException;
+    public void setSchemaValue(java.lang.String schemaValue);
 
 	public java.lang.Integer getType();
     
