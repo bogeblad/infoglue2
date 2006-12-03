@@ -33,8 +33,10 @@ package org.infoglue.cms.exception;
  * <p>Note! This is not an internal exception </p>
  *
  * @author <a href="mailto:meat_for_the_butcher@yahoo.com">Patrik Nyborg</a>
+ * @author <a href="mailto:bogeblad@yahoo.com">Mattias Bogeblad</a>
  */
-public class ConstraintException extends Exception {
+public class ConstraintException extends Exception 
+{
   // --- [Constants] -----------------------------------------------------------
   // --- [Attributes] ----------------------------------------------------------
 
@@ -42,6 +44,8 @@ public class ConstraintException extends Exception {
   private String errorCode;
   // The name of the (entity) field causing the exception.
   private String fieldName;
+  //Extra info about the entity causing the exception.
+  private String extraInformation = "";
   // The next ConstraintException in the chain (may be null).
   private ConstraintException chainedException;
 
@@ -66,12 +70,29 @@ public class ConstraintException extends Exception {
 	}
 
   /**
+   * Construct a ConstraintException with the specified field name and error code.
    *
+   * @param fieldName the name of the (entity) field causing the exception.
+   * @param errorCode indicates the error type.
    */
-  public ConstraintException(String fieldName, String errorCode, ConstraintException chainedException) {
-    this(fieldName, errorCode);
-    this.chainedException = chainedException;
-  }
+	public ConstraintException(String fieldName, String errorCode, String extraInformation) 
+  	{
+		super();
+
+	    // defensive, otherwise add null checks in equals()
+	    this.fieldName = (fieldName == null) ? "" : fieldName;      
+	    this.errorCode = (errorCode == null) ? "" : errorCode;      
+	    this.extraInformation   = (extraInformation 	== null) ? "" : extraInformation;
+	}
+
+	/**
+	 *
+	 */
+	public ConstraintException(String fieldName, String errorCode, ConstraintException chainedException) 
+	{
+		this(fieldName, errorCode);
+		this.chainedException = chainedException;
+	}
 
 
 
@@ -105,6 +126,12 @@ public class ConstraintException extends Exception {
     return this.errorCode;
   }
 
+  /**
+  *
+  */
+ public String getExtraInformation() {
+   return this.extraInformation;
+ }
 
 
   // --- [X implementation] ----------------------------------------------------
@@ -114,7 +141,7 @@ public class ConstraintException extends Exception {
    *
    */
   public String getMessage() {
-    return "Constrain violated on field [" + this.fieldName + "], code [" + this.errorCode + "]"; 
+    return "Constrain violated on field [" + this.fieldName + "], code [" + this.errorCode + "], extra [" + this.extraInformation + "]"; 
   }
   
 
