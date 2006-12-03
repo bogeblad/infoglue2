@@ -63,6 +63,16 @@
 	</tr>		
 	<tr>
 		<td>
+			Additional repositories to include:<br>
+			#foreach($repository in $repositories)
+				#if($repository.id != $!repositoryId)
+					<input type="checkbox" name="repositoryId" value="$repository.id"> $repository.name<br/>
+				#end
+			#end		
+		</td>
+	</tr>
+	<tr>
+		<td>
 			<a href="javascript:submitForm();"><img src="$ui.getString("images.contenttool.buttons.save")" width="50" height="25" border="0"></a>
 			<a href="javascript:window.close();"><img border="0" src="$ui.getString("images.contenttool.buttons.close")" width="50" height="25"></a>
 		</td>
