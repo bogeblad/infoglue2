@@ -234,6 +234,7 @@ public class ViewServerNodePropertiesAction extends InfoGluePropertiesAbstractAc
 	    populate(ps, "publicationThreadDelay");
 	    populate(ps, "pathsToRecacheOnPublishing");
 	    populate(ps, "disableTemplateDebug");
+	    populate(ps, "exportFormat");
 	    populate(ps, "dbRelease");
 	    populate(ps, "dbUser");
 	    populate(ps, "dbPassword");
