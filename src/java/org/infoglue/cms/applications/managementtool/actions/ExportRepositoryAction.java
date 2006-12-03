@@ -26,6 +26,7 @@ package org.infoglue.cms.applications.managementtool.actions;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -36,6 +37,7 @@ import org.exolab.castor.xml.Marshaller;
 import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
+import org.infoglue.cms.controllers.kernel.impl.simple.CategoryController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.RepositoryController;
@@ -60,6 +62,7 @@ public class ExportRepositoryAction extends InfoGlueAbstractAction
     private final static Logger logger = Logger.getLogger(ExportRepositoryAction.class.getName());
 
 	private Integer repositoryId = null;
+	private List repositories = new ArrayList();
 	
 	private String fileUrl 	= "";
 	private String fileName = "";
@@ -72,6 +75,8 @@ public class ExportRepositoryAction extends InfoGlueAbstractAction
 
 	public String doInput() throws Exception
 	{
+		repositories = RepositoryController.getController().getRepositoryVOList();
+		
 		return "input";
 	}
 	
@@ -102,15 +107,30 @@ public class ExportRepositoryAction extends InfoGlueAbstractAction
 			// All ODMG database access requires a transaction
 			db.begin();
 
-			Repository repository 	= RepositoryController.getController().getRepositoryWithId(this.repositoryId, db);
-			SiteNode siteNode 		= SiteNodeController.getController().getRootSiteNode(this.repositoryId, db);
-			Content content 		= ContentController.getContentController().getRootContent(this.repositoryId, db);
+			List siteNodes = new ArrayList();
+			List contents = new ArrayList();
+			
+			String names = "";
+			String[] repositories = getRequest().getParameterValues("repositoryId");
+			for(int i=0; i<repositories.length; i++)
+			{
+				Integer repositoryId = new Integer(repositories[i]);
+				Repository repository 	= RepositoryController.getController().getRepositoryWithId(repositoryId, db);
+				SiteNode siteNode 		= SiteNodeController.getController().getRootSiteNode(repositoryId, db);
+				Content content 		= ContentController.getContentController().getRootContent(repositoryId, db);
+				//System.out.println("content type def:" + content.getContentTypeDefinitionId());
+				siteNodes.add(siteNode);
+				contents.add(content);
+				names = names + "_" + repository.getName();
+			}
+			
 			List contentTypeDefinitions = ContentTypeDefinitionController.getController().getContentTypeDefinitionList(db);
+			List categories = CategoryController.getController().findAllActiveCategories();
 			
 			InfoGlueExportImpl infoGlueExportImpl = new InfoGlueExportImpl();
 			
 			VisualFormatter visualFormatter = new VisualFormatter();
-			String fileName = "Export_" + repository.getName() + "_" + visualFormatter.formatDate(new Date(), "yyyy-MM-dd") + ".xml";
+			String fileName = "Export_" + names + "_" + visualFormatter.formatDate(new Date(), "yyyy-MM-dd") + ".xml";
 			String filePath = CmsPropertyHandler.getDigitalAssetPath();
 			String fileSystemName =  filePath + File.separator + fileName;
 						
@@ -125,9 +145,17 @@ public class ExportRepositoryAction extends InfoGlueAbstractAction
             marshaller.setMapping(map);
 			marshaller.setEncoding(encoding);
             
+			infoGlueExportImpl.getRootContent().addAll(contents);
+			infoGlueExportImpl.getRootSiteNode().addAll(siteNodes);
+			
+			//infoGlueExportImpl.getRootContents().add((ContentImpl)content);
+			//infoGlueExportImpl.getRootSiteNodes().add((SiteNodeImpl)siteNode);
+			/*
 			infoGlueExportImpl.setRootContent((ContentImpl)content);
 			infoGlueExportImpl.setRootSiteNode((SiteNodeImpl)siteNode);
+			*/
 			infoGlueExportImpl.setContentTypeDefinitions(contentTypeDefinitions);
+			infoGlueExportImpl.setCategories(categories);
 			
 			marshaller.marshal(infoGlueExportImpl);
 			
@@ -169,6 +197,11 @@ public class ExportRepositoryAction extends InfoGlueAbstractAction
 	public Integer getRepositoryId()
 	{
 		return repositoryId;
+	}
+
+	public List getRepositories() 
+	{
+		return repositories;
 	}
 
 }
