@@ -24,8 +24,10 @@
 package org.infoglue.cms.entities.content;
 
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Hashtable;
 import java.util.Map;
+import java.util.SimpleTimeZone;
 
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.exception.ConstraintException;
@@ -41,8 +43,8 @@ public class ContentVO implements BaseEntityVO
 	
     private java.lang.Integer contentId;
     private java.lang.String name			= "";
-    private java.util.Date publishDateTime  = DateHelper.getSecondPreciseDate();
-    private java.util.Date expireDateTime   = DateHelper.getSecondPreciseDate();
+    private java.util.Date publishDateTime  = new Date();
+    private java.util.Date expireDateTime   = new Date();
     private java.lang.Boolean isBranch		= new Boolean(false);              
 	private java.lang.Integer isProtected	= INHERITED;
 	private java.lang.Integer repositoryId  = null;
@@ -52,13 +54,15 @@ public class ContentVO implements BaseEntityVO
 	private Integer childCount;
   	private String creatorName;
   
+  	private static SimpleTimeZone stmz = new SimpleTimeZone(-8 * 60 * 60 * 1000, "GMT");
+    
   	//Used if an application wants to add more properties to this item... used for performance reasons.
   	private Map extraProperties = new Hashtable();
   	
   	public ContentVO()
   	{
   		//Initilizing the expireDateTime... 
-  		Calendar calendar = Calendar.getInstance();
+  		Calendar calendar = Calendar.getInstance(stmz);
   		calendar.add(Calendar.YEAR, 50);
   		expireDateTime = calendar.getTime();
   	}

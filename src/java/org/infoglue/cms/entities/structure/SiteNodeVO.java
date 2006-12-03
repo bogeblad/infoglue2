@@ -24,8 +24,10 @@
 package org.infoglue.cms.entities.structure;
 
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Hashtable;
 import java.util.Map;
+import java.util.SimpleTimeZone;
 
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.exception.ConstraintException;
@@ -38,8 +40,8 @@ public class SiteNodeVO implements BaseEntityVO
 
     private java.lang.Integer siteNodeId 	= null;
     private java.lang.String name			= "";
-    private java.util.Date publishDateTime 	= DateHelper.getSecondPreciseDate();
-    private java.util.Date expireDateTime  	= DateHelper.getSecondPreciseDate();
+    private java.util.Date publishDateTime 	= new Date();
+    private java.util.Date expireDateTime  	= new Date();
     private java.lang.Boolean isBranch		= new Boolean(false);             
   	private java.lang.Integer repositoryId 	= null;    
   	private java.lang.Integer siteNodeTypeDefinitionId = null;  
@@ -52,12 +54,14 @@ public class SiteNodeVO implements BaseEntityVO
 
   	//Used if an application wants to add more properties to this item... used for performance reasons.
   	private Map extraProperties = new Hashtable();
+  	
+  	private static SimpleTimeZone stmz = new SimpleTimeZone(-8 * 60 * 60 * 1000, "GMT");
+
 
 	public SiteNodeVO()
   	{
   		//Initilizing the expireDateTime... 
-  		Calendar calendar = Calendar.getInstance();
-  		calendar.setTime(DateHelper.getSecondPreciseDate());
+  		Calendar calendar = Calendar.getInstance(stmz);
   		calendar.add(Calendar.YEAR, 50);
   		expireDateTime = calendar.getTime();
   	}
