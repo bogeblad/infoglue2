@@ -170,6 +170,15 @@ public class SiteNodeController extends BaseController
 	    
 	public void delete(SiteNodeVO siteNodeVO, Database db) throws ConstraintException, SystemException, Exception
 	{
+		delete(siteNodeVO, db, false);
+	}
+	
+	/**
+	 * This method deletes a siteNode and also erases all the children and all versions.
+	 */
+	    
+	public void delete(SiteNodeVO siteNodeVO, Database db, boolean forceDelete) throws ConstraintException, SystemException, Exception
+	{
 		SiteNode siteNode = getSiteNodeWithId(siteNodeVO.getSiteNodeId(), db);
 		SiteNode parent = siteNode.getParentSiteNode();
 		if(parent != null)
@@ -179,12 +188,12 @@ public class SiteNodeController extends BaseController
 			{
 			    SiteNode candidate = (SiteNode)childSiteNodeIterator.next();
 			    if(candidate.getId().equals(siteNodeVO.getSiteNodeId()))
-			        deleteRecursive(siteNode, childSiteNodeIterator, db);
+			        deleteRecursive(siteNode, childSiteNodeIterator, db, forceDelete);
 			}
 		}
 		else
 		{
-		    deleteRecursive(siteNode, null, db);
+		    deleteRecursive(siteNode, null, db, forceDelete);
 		}
 	}        
 
@@ -195,10 +204,10 @@ public class SiteNodeController extends BaseController
 	 * We have to begin and commit all the time...
 	 */
 	
-    private static void deleteRecursive(SiteNode siteNode, Iterator parentIterator, Database db) throws ConstraintException, SystemException, Exception
+    private static void deleteRecursive(SiteNode siteNode, Iterator parentIterator, Database db, boolean forceDelete) throws ConstraintException, SystemException, Exception
     {
         List referenceBeanList = RegistryController.getController().getReferencingObjectsForSiteNode(siteNode.getId(), -1, db);
-		if(referenceBeanList != null && referenceBeanList.size() > 0)
+		if(referenceBeanList != null && referenceBeanList.size() > 0 && !forceDelete)
 			throw new ConstraintException("SiteNode.stateId", "3405");
 
         Collection children = siteNode.getChildSiteNodes();
@@ -206,11 +215,11 @@ public class SiteNodeController extends BaseController
 		while(i.hasNext())
 		{
 			SiteNode childSiteNode = (SiteNode)i.next();
-			deleteRecursive(childSiteNode, i, db);
+			deleteRecursive(childSiteNode, i, db, forceDelete);
    		}
 		siteNode.setChildSiteNodes(new ArrayList());
 		
-		if(getIsDeletable(siteNode))
+		if(forceDelete || getIsDeletable(siteNode))
 	    {		 
 			SiteNodeVersionController.deleteVersionsForSiteNode(siteNode, db);
 			

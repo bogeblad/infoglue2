@@ -73,6 +73,15 @@ public class RepositoryController extends BaseController
 	
     public void delete(RepositoryVO repositoryVO, String userName) throws ConstraintException, SystemException
     {
+    	delete(repositoryVO, userName, false);
+    }
+    
+	/**
+	 * This method removes a Repository from the system and also cleans out all depending repositoryLanguages.
+	 */
+	
+    public void delete(RepositoryVO repositoryVO, String userName, boolean forceDelete) throws ConstraintException, SystemException
+    {
 		Database db = CastorDatabaseService.getDatabase();
 		ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
 
@@ -88,11 +97,21 @@ public class RepositoryController extends BaseController
 			
 			ContentVO contentVO = ContentControllerProxy.getController().getRootContentVO(repositoryVO.getRepositoryId(), userName, false);
 			if(contentVO != null)
-			    ContentController.getContentController().delete(contentVO, db);
+			{
+				if(forceDelete)
+					ContentController.getContentController().delete(contentVO, db, true, true, true);
+				else
+					ContentController.getContentController().delete(contentVO, db);
+			}
 			
 			SiteNodeVO siteNodeVO = SiteNodeController.getController().getRootSiteNodeVO(repositoryVO.getRepositoryId());
 			if(siteNodeVO != null)
-				SiteNodeController.getController().delete(siteNodeVO, db);
+			{
+				if(forceDelete)
+					SiteNodeController.getController().delete(siteNodeVO, db, true);
+				else
+					SiteNodeController.getController().delete(siteNodeVO, db);
+			}
 			
 			deleteEntity(RepositoryImpl.class, repositoryVO.getRepositoryId(), db);
 	
