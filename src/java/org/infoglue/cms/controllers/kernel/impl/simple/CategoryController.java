@@ -20,7 +20,7 @@
  *
  * ===============================================================================
  *
- * $Id: CategoryController.java,v 1.15 2006/10/09 21:41:09 mattias Exp $
+ * $Id: CategoryController.java,v 1.16 2006/12/03 19:27:50 mattias Exp $
  */
 package org.infoglue.cms.controllers.kernel.impl.simple;
 
@@ -358,6 +358,29 @@ public class CategoryController extends BaseController
 			child.setChildren(findAllActiveChildren(child.getId()));
 		}
 		return children;
+	}
+
+	/**
+	 * Saves a CategoryVO whether it is new or not.
+	 *
+	 * @param	c The CategoryVO to save
+	 * @return	The saved CategoryVO
+	 * @throws	SystemException If an error happens
+	 */
+	public Category save(CategoryVO c, Database db) throws SystemException
+	{
+		return (c.isUnsaved())
+					? create(c, db)
+					: (Category)updateEntity(CategoryImpl.class, c, db);
+	}
+
+	/**
+	 * Creates a Category from a CategoryVO
+	 */
+	private Category create(CategoryVO c, Database db) throws SystemException
+	{
+		CategoryImpl impl = new CategoryImpl(c);
+		return ((CategoryImpl)createEntity(impl));
 	}
 
 	/**
