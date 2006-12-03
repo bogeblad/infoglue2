@@ -68,6 +68,19 @@ public class ContentCategoryImpl implements ContentCategory
     public Integer getContentVersionId()		{ return valueObject.getContentVersionId(); }
     public void setContentVersionId(Integer i)	{ valueObject.setContentVersionId(i); }
 
+    public Integer getCategoryId()
+	{
+    	if(category == null && valueObject != null)
+			return valueObject.getCategoryId();
+		else
+			return category.getId();
+	}
+
+    public void setCategoryId(Integer categoryId)
+	{
+    	this.valueObject.setCategoryId(categoryId);
+	}
+
     public CategoryImpl getCategory()
 	{
 		return category;
@@ -89,4 +102,9 @@ public class ContentCategoryImpl implements ContentCategory
         this.contentVersion = contentVersion;
         valueObject.setContentVersionId(contentVersion.getContentVersionId());
     }
+    
+    public String toString()
+	{
+		return valueObject.toStringBuffer().toString();
+	}
 }

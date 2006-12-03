@@ -69,6 +69,11 @@ public class PropertiesCategoryImpl implements PropertiesCategory
 	public Integer getEntityId()		{ return valueObject.getEntityId(); }
     public void setEntityId(Integer i)	{ valueObject.setEntityId(i); }
 
+    public Integer getCategoryId()
+	{
+		return category.getId();
+	}
+
     public CategoryImpl getCategory()
 	{
 		return category;

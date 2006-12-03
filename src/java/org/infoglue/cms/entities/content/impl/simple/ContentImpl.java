@@ -138,7 +138,7 @@ public class ContentImpl implements Content
     {
         return this.contentTypeDefinition;
     }
-            
+
     public void setContentTypeDefinition (org.infoglue.cms.entities.management.impl.simple.ContentTypeDefinitionImpl contentTypeDefinition)
     {
         this.contentTypeDefinition = contentTypeDefinition;
@@ -150,8 +150,15 @@ public class ContentImpl implements Content
     {
     	if(this.contentTypeDefinition != null)
     		return this.contentTypeDefinition.getId();
+    	else if(this.getValueObject().getContentTypeDefinitionId() != null)
+    		return this.getValueObject().getContentTypeDefinitionId();
     	else
     		return null;
+    }
+
+    public void setContentTypeDefinitionId(Integer contentTypeDefinitionId)
+    {
+    	this.getValueObject().setContentTypeDefinitionId(contentTypeDefinitionId);
     }
 
     public java.util.Collection getChildren()
@@ -222,7 +229,23 @@ public class ContentImpl implements Content
         this.repository = repository;
         this.valueObject.setRepositoryId(repository.getRepositoryId());
     }
-      
+
+    public Integer getRepositoryId()
+    {
+    	if(this.repository != null)
+    		return this.repository.getId();
+    	else if(this.getValueObject().getRepositoryId() != null)
+    		return this.getValueObject().getRepositoryId();
+    	else
+    		return null;
+    }
+    
+    public void setRepositoryId(Integer repositoryId)
+    {
+    	this.getValueObject().setRepositoryId(repositoryId);
+    }
+
+
     public java.util.Collection getRelatedContents()
     {
         return this.relatedContents;

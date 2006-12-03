@@ -61,6 +61,10 @@ public interface Content extends IBaseEntity
     
     public void setContentTypeDefinition(org.infoglue.cms.entities.management.impl.simple.ContentTypeDefinitionImpl contentTypeDefinition);
     
+    public Integer getContentTypeDefinitionId();
+
+    public void setContentTypeDefinitionId(Integer contentTypeDefinitionId);
+
     public java.util.Collection getChildren();
     
     public void setChildren(java.util.Collection children);
@@ -80,7 +84,11 @@ public interface Content extends IBaseEntity
     public org.infoglue.cms.entities.management.impl.simple.RepositoryImpl getRepository();
     
     public void setRepository(org.infoglue.cms.entities.management.impl.simple.RepositoryImpl repository);
-    
+
+    public void setRepositoryId(Integer repositoryId);
+
+    public Integer getRepositoryId();
+
     public java.util.Collection getRelatedContents();
     
     public void setRelatedContents(java.util.Collection relatedContents);
