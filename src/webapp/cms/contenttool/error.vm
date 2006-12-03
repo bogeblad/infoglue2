@@ -88,7 +88,7 @@
 	<td valign="top" class="borderedCell">
 		<table align="center" border="0" cellspacing="0" cellpadding="0" width="200">
 		<tr>
-			<td colspan="2" style="border-bottom: 1px solid #000000; background-color: #D11C25; text-align: center;"><img src="images/error.jpg" width="210" height="38"></td>
+			<td colspan="2" style="border-bottom: 1px solid #000000; background-color: #d3e3f3; text-align: center;"><img src="images/error.jpg" width="210" height="38"></td>
 		</tr>	
 		<tr>
 			<td colspan="2"><img src="images/trans.gif" width="1" height="20"/></td>
