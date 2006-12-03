@@ -25,6 +25,7 @@ package org.infoglue.cms.entities.management.impl.simple;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import org.infoglue.cms.entities.content.impl.simple.ContentImpl;
 import org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl;
@@ -32,9 +33,12 @@ import org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl;
 public class InfoGlueExportImpl
 {
 	private Integer infoGlueExportId;
-	private ContentImpl rootContent;
-	private SiteNodeImpl rootSiteNode;
+	private List rootContent = new ArrayList();
+	private List rootSiteNode = new ArrayList();
+	//private ContentImpl rootContent;
+	//private SiteNodeImpl rootSiteNode;
 	private Collection contentTypeDefinitions = new ArrayList();
+	private Collection categories = new ArrayList();
 	
 	public Integer getInfoGlueExportId()
 	{
@@ -46,6 +50,7 @@ public class InfoGlueExportImpl
 		this.infoGlueExportId = infoGlueExportId;
 	}
 
+	/*
 	public ContentImpl getRootContent()
 	{
 		return rootContent;
@@ -65,6 +70,17 @@ public class InfoGlueExportImpl
 	{
 		rootSiteNode = impl;
 	}
+	*/
+
+	public List getRootContent() 
+	{
+		return rootContent;
+	}
+
+	public List getRootSiteNode() 
+	{
+		return rootSiteNode;
+	}
 
 	public Collection getContentTypeDefinitions()
 	{
@@ -74,6 +90,16 @@ public class InfoGlueExportImpl
 	public void setContentTypeDefinitions(Collection contentTypeDefinitions)
 	{
 		this.contentTypeDefinitions = contentTypeDefinitions;
+	}
+
+	public Collection getCategories()
+	{
+		return categories;
+	}
+
+	public void setCategories(Collection categories)
+	{
+		this.categories = categories;
 	}
 
 }        
