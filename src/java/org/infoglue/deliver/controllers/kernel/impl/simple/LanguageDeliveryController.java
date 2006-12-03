@@ -50,6 +50,7 @@ import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.deliver.applications.databeans.DeliveryContext;
 import org.infoglue.deliver.util.CacheController;
+import org.infoglue.deliver.util.NullObject;
 
 
 public class LanguageDeliveryController extends BaseDeliveryController
@@ -486,9 +487,14 @@ public class LanguageDeliveryController extends BaseDeliveryController
 	    	return null;
 		
 		String key = "" + siteNodeId + "_" + languageCodes;		
-		LanguageVO languageVO = (LanguageVO)CacheController.getCachedObject("siteNodeLanguageCache", key);
-		if(languageVO != null)
-			return languageVO;
+		Object languageVOCandidate = CacheController.getCachedObject("siteNodeLanguageCache", key);
+		if(languageVOCandidate != null)
+		{
+			if(languageVOCandidate instanceof NullObject)
+				return null;
+			else
+				return (LanguageVO)languageVOCandidate;
+		}
 		
 	    int index = Integer.MAX_VALUE;
 		int currentIndex = 0;
@@ -536,7 +542,10 @@ public class LanguageDeliveryController extends BaseDeliveryController
 
 		if(language != null)
 			CacheController.cacheObject("siteNodeLanguageCache", key, language.getValueObject());
-
+		else
+			CacheController.cacheObject("siteNodeLanguageCache", key, new NullObject());
+			
+		
 		logger.info("Returning language: " + language);
 		
 		return (language == null) ? null : language.getValueObject();	
@@ -553,9 +562,14 @@ public class LanguageDeliveryController extends BaseDeliveryController
 		    return null;
 
 		String key = "" + siteNodeId + "_" + languageId;		
-		LanguageVO languageVO = (LanguageVO)CacheController.getCachedObject("siteNodeLanguageCache", key);
-		if(languageVO != null)
-			return languageVO;
+		Object languageVOCandidate = CacheController.getCachedObject("siteNodeLanguageCache", key);
+		if(languageVOCandidate != null)
+		{
+			if(languageVOCandidate instanceof NullObject)
+				return null;
+			else
+				return (LanguageVO)languageVOCandidate;
+		}
 		
 		NodeDeliveryController ndc = NodeDeliveryController.getNodeDeliveryController(siteNodeId, languageId, new Integer(-1));
 
@@ -587,26 +601,14 @@ public class LanguageDeliveryController extends BaseDeliveryController
 					    language = currentLanguage;
 					    break;
 					}
-				    /*
-				    DeliveryContext deliveryContext = DeliveryContext.getDeliveryContext();
-			    	ContentVO contentVO = ndc.getBoundContent(db, principal, siteNodeId, currentLanguage.getId(), false, BasicTemplateController.META_INFO_BINDING_NAME, deliveryContext);		
-					if(contentVO != null)
-					{
-				    	ContentVersionVO contentVersionVO = ContentDeliveryController.getContentDeliveryController().getContentVersionVO(db, siteNodeId, contentVO.getId(), currentLanguage.getId(), false, deliveryContext, principal);
-				    	if(contentVersionVO != null)
-				    	{
-				    	    System.out.println("Found the language in the list of supported languages for this site: " + currentLanguage.getName());
-							language = currentLanguage;
-							break;
-				    	}
-				    }
-				    */
 				}
 			}
 		}
 		
 		if(language != null)
 			CacheController.cacheObject("siteNodeLanguageCache", key, language.getValueObject());
+		else
+			CacheController.cacheObject("siteNodeLanguageCache", key, new NullObject());
 
 		logger.info("Returning language: " + language);
 
@@ -663,8 +665,9 @@ public class LanguageDeliveryController extends BaseDeliveryController
 	public boolean getIsValidLanguage(Database db, NodeDeliveryController ndc, SiteNode siteNode, Integer languageId) throws Exception
 	{
 	    boolean isValidLanguage = true;
-	    
-	    SiteNodeVersion siteNodeVersion = ndc.getActiveSiteNodeVersion(siteNode.getId(), db);
+	    									
+	    SiteNodeVersion siteNodeVersion = ndc.getLatestActiveSiteNodeVersion(siteNode.getId(), db);
+	    //SiteNodeVersion siteNodeVersion = ndc.getActiveSiteNodeVersion(siteNode.getId(), db);
 	    Integer disabledLanguagesSiteNodeVersionId = ndc.getDisabledLanguagesSiteNodeVersionId(db, siteNode.getId());
 	    logger.info("disabledLanguagesSiteNodeVersionId:" + disabledLanguagesSiteNodeVersionId);
 	    
