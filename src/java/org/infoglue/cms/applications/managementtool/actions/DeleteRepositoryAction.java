@@ -26,6 +26,7 @@ package org.infoglue.cms.applications.managementtool.actions;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.RepositoryController;
 import org.infoglue.cms.entities.management.RepositoryVO;
+import org.infoglue.cms.exception.AccessConstraintException;
 import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
 
@@ -39,6 +40,7 @@ public class DeleteRepositoryAction extends InfoGlueAbstractAction
 {
 	private RepositoryVO repositoryVO;
 	private Integer repositoryId;
+	private String returnAddress = null;
 	
 	public DeleteRepositoryAction()
 	{
@@ -52,11 +54,52 @@ public class DeleteRepositoryAction extends InfoGlueAbstractAction
 	
 	protected String doExecute() throws ConstraintException, Exception 
 	{
-	    this.repositoryVO.setRepositoryId(this.getRepositoryId());
-		RepositoryController.getController().delete(this.repositoryVO, this.getInfoGluePrincipal().getName());
-		return "success";
+		boolean hasAccessToManagementTool = hasAccessTo("ManagementTool.Read");
+		if(!hasAccessToManagementTool)
+			throw new AccessConstraintException("Repository.delete", "1003");
+
+		this.repositoryVO.setRepositoryId(this.getRepositoryId());
+		try
+		{
+			RepositoryController.getController().delete(this.repositoryVO, this.getInfoGluePrincipal().getName());
+			return "success";
+		}
+		catch(ConstraintException ce)
+		{
+			returnAddress = "ViewRepository.action?repositoryId=" + this.repositoryVO.getId();
+			if(ce.getErrorCode().equals("3300") && ce.getFieldName().equals("ContentVersion.stateId"))	
+				throw new ConstraintException("ContentVersion.stateId", "3307", ce.getExtraInformation());
+			else if(ce.getErrorCode().equals("3400") && ce.getFieldName().equals("SiteNodeVersion.stateId"))	
+				throw new ConstraintException("ContentVersion.stateId", "3406", ce.getExtraInformation());
+			else
+				throw ce;
+		}
 	}
-	
+
+	public String doExecuteByForce() throws ConstraintException, Exception 
+	{
+		boolean hasAccessToManagementTool = hasAccessTo("ManagementTool.Read");
+		if(!hasAccessToManagementTool)
+			throw new AccessConstraintException("Repository.delete", "1003");
+			
+	    this.repositoryVO.setRepositoryId(this.getRepositoryId());
+		try
+		{
+			RepositoryController.getController().delete(this.repositoryVO, this.getInfoGluePrincipal().getName(), true);
+			return "success";
+		}
+		catch(ConstraintException ce)
+		{
+			returnAddress = "ViewRepository.action?repositoryId=" + this.repositoryVO.getId();
+			if(ce.getErrorCode().equals("3300") && ce.getFieldName().equals("ContentVersion.stateId"))	
+				throw new ConstraintException("ContentVersion.stateId", "3307", ce.getExtraInformation());
+			else if(ce.getErrorCode().equals("3400") && ce.getFieldName().equals("SiteNodeVersion.stateId"))	
+				throw new ConstraintException("ContentVersion.stateId", "3406", ce.getExtraInformation());
+			else
+				throw ce;
+		}
+	}
+
 	public void setRepositoryId(Integer repositoryId) throws SystemException
 	{
 		this.repositoryVO.setRepositoryId(repositoryId);	
@@ -67,5 +110,9 @@ public class DeleteRepositoryAction extends InfoGlueAbstractAction
         return this.repositoryVO.getRepositoryId();
     }
         
-	
+	public String getReturnAddress() 
+	{
+		return this.returnAddress;
+	}
+
 }
