@@ -201,12 +201,15 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 	    contentVersionIds.add(templateController.getDeliveryContext().getPageMetaInfoContentVersionId());
 	    
 		Set groups = new InfoGlueHashSet();
-		ContentVersion contentVersion = ContentVersionController.getContentVersionController().getContentVersionWithId(templateController.getDeliveryContext().getPageMetaInfoContentVersionId(), templateController.getDatabase());
-		groups.add("contentVersion_" + contentVersion.getId());
-		groups.add("content_" + contentVersion.getValueObject().getContentId());
-
-	    CacheController.cacheObjectInAdvancedCacheWithGroupsAsSet("contentVersionCache", versionKey, contentVersionIds, groups, true);
-
+		if(templateController.getDeliveryContext().getPageMetaInfoContentVersionId() != null)
+		{
+			ContentVersion contentVersion = ContentVersionController.getContentVersionController().getContentVersionWithId(templateController.getDeliveryContext().getPageMetaInfoContentVersionId(), templateController.getDatabase());
+			groups.add("contentVersion_" + contentVersion.getId());
+			groups.add("content_" + contentVersion.getValueObject().getContentId());
+	
+		    CacheController.cacheObjectInAdvancedCacheWithGroupsAsSet("contentVersionCache", versionKey, contentVersionIds, groups, true);
+		}
+		
 		return pageComponentsString;
 	}
 
