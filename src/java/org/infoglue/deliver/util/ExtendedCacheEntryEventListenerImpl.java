@@ -50,12 +50,19 @@ public class ExtendedCacheEntryEventListenerImpl extends CacheEntryEventListener
      *
      * @param event The event triggered when a cache entry has been added
      */
-    public void cacheEntryAdded(CacheEntryEvent event) {
+    public void cacheEntryAdded(CacheEntryEvent event) 
+    {
         super.cacheEntryAdded(event);
-        if(event.getEntry().getContent() instanceof byte[])
-            totalSize = totalSize + ((byte[])event.getEntry().getContent()).length * 8;        
+        Object content = event.getEntry().getContent();
+        if(content != null && content instanceof byte[])
+        {
+        	totalSize = totalSize + ((byte[])content).length * 8;        
+        }
         else
-            totalSize = totalSize + event.getEntry().getContent().toString().length() * 8;
+        {
+        	if(content != null)
+        		totalSize = totalSize + content.toString().length() * 8;
+        }
     }
 
     /**
