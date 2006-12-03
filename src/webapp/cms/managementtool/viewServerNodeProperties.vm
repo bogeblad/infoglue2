@@ -331,6 +331,10 @@
 		<td>#yesNoDropDownWithInherit("ServerNode.property.disableTemplateDebug" "disableTemplateDebug" "$this.getPropertyValue('disableTemplateDebug')")</td>
 	</tr>
 	<tr>
+		<td>#editPropertyField("ServerNode.property.exportFormat" "exportFormat" "$this.getPropertyValue('exportFormat')" "51" "$!serverNodeId")</td>
+		
+	</tr>
+	<tr>
 		<td>#editPropertyField("ServerNode.property.dbRelease" "dbRelease" "$this.getPropertyValue('dbRelease')" "51" "$!serverNodeId")</td>
 	</tr>
 	<tr>
