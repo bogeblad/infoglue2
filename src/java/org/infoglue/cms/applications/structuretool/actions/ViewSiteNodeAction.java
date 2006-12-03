@@ -115,7 +115,7 @@ public class ViewSiteNodeAction extends InfoGlueAbstractAction
 	protected void initialize(Integer siteNodeId) throws Exception
 	{
 		this.siteNodeVersionVO = SiteNodeVersionControllerProxy.getSiteNodeVersionControllerProxy().getACLatestActiveSiteNodeVersionVO(this.getInfoGluePrincipal(), siteNodeId);
-		logger.info("siteNodeVersionVO:" + siteNodeVersionVO.getId() + ":" + siteNodeVersionVO.getIsActive());
+		logger.info("siteNodeVersionVO:" + siteNodeVersionVO);
 		this.siteNodeVO = SiteNodeController.getSiteNodeVOWithId(siteNodeId);
 		this.repositoryId = this.siteNodeVO.getRepositoryId();
 		//SiteNodeControllerProxy.getController().getACSiteNodeVOWithId(this.getInfoGluePrincipal(), siteNodeId);
@@ -131,7 +131,7 @@ public class ViewSiteNodeAction extends InfoGlueAbstractAction
 	protected void initialize(Integer siteNodeId, Database db) throws Exception
 	{
 		this.siteNodeVersionVO = SiteNodeVersionControllerProxy.getSiteNodeVersionControllerProxy().getACLatestActiveSiteNodeVersionVO(this.getInfoGluePrincipal(), siteNodeId, db);
-		logger.info("siteNodeVersionVO:" + siteNodeVersionVO.getId() + ":" + siteNodeVersionVO.getIsActive());
+		logger.info("siteNodeVersionVO:" + siteNodeVersionVO);
 		this.siteNodeVO = SiteNodeController.getSiteNodeVOWithId(siteNodeId, db);
 		
 	    if(this.siteNodeVO.getMetaInfoContentId() == null || this.siteNodeVO.getMetaInfoContentId().intValue() == -1)
@@ -174,7 +174,8 @@ public class ViewSiteNodeAction extends InfoGlueAbstractAction
 		{
 			this.siteNodeTypeDefinitionVO = SiteNodeTypeDefinitionController.getController().getSiteNodeTypeDefinitionVOWithId(siteNodeVO.getSiteNodeTypeDefinitionId(), db);
 			this.availableServiceBindings = SiteNodeTypeDefinitionController.getController().getAvailableServiceBindingVOList(siteNodeVO.getSiteNodeTypeDefinitionId(), db);
-			this.serviceBindings = SiteNodeVersionController.getServiceBindningVOList(siteNodeVersionVO.getSiteNodeVersionId(), db);
+			if(siteNodeVersionVO != null)
+				this.serviceBindings = SiteNodeVersionController.getServiceBindningVOList(siteNodeVersionVO.getSiteNodeVersionId(), db);
 		}
 	} 
 
@@ -304,31 +305,34 @@ public class ViewSiteNodeAction extends InfoGlueAbstractAction
 	    			Integer metaInfoContentId = null;
 	    			ContentVersionVO metaInfoContentVersionVO = null;
 	    			
-	    			List serviceBindings = SiteNodeVersionController.getServiceBindningVOList(this.siteNodeVersionVO.getId(), db);
-	    			Iterator serviceBindingIterator = serviceBindings.iterator();
-	    			while(serviceBindingIterator.hasNext())
+	    			if(this.siteNodeVersionVO != null)
 	    			{
-	    				ServiceBindingVO serviceBindingVO = (ServiceBindingVO)serviceBindingIterator.next();
-	    				if(serviceBindingVO.getAvailableServiceBindingId().intValue() == metaInfoAvailableServiceBindingId.intValue())
-	    				{
-	    					List boundContents = ContentController.getInTransactionBoundContents(db, serviceBindingVO.getServiceBindingId()); 			
-	    					if(boundContents.size() > 0)
-	    	    			{
-	    	    				ContentVO contentVO = (ContentVO)boundContents.get(0);
-	    	    				metaInfoContentId = contentVO.getId();
-	    	    				metaInfoContentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentVO.getId(), languageId, db);
-	    	    				if(metaInfoContentVersionVO != null && metaInfoContentVersionVO.getStateId().equals(ContentVersionVO.WORKING_STATE))
-	    	    					isMetaInfoInWorkingState = true;
-	
-	    	    				break;
-	    	    			}                					
-	    				}
+		    			List serviceBindings = SiteNodeVersionController.getServiceBindningVOList(this.siteNodeVersionVO.getId(), db);
+		    			Iterator serviceBindingIterator = serviceBindings.iterator();
+		    			while(serviceBindingIterator.hasNext())
+		    			{
+		    				ServiceBindingVO serviceBindingVO = (ServiceBindingVO)serviceBindingIterator.next();
+		    				if(serviceBindingVO.getAvailableServiceBindingId().intValue() == metaInfoAvailableServiceBindingId.intValue())
+		    				{
+		    					List boundContents = ContentController.getInTransactionBoundContents(db, serviceBindingVO.getServiceBindingId()); 			
+		    					if(boundContents.size() > 0)
+		    	    			{
+		    	    				ContentVO contentVO = (ContentVO)boundContents.get(0);
+		    	    				metaInfoContentId = contentVO.getId();
+		    	    				metaInfoContentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentVO.getId(), languageId, db);
+		    	    				if(metaInfoContentVersionVO != null && metaInfoContentVersionVO.getStateId().equals(ContentVersionVO.WORKING_STATE))
+		    	    					isMetaInfoInWorkingState = true;
+		
+		    	    				break;
+		    	    			}                					
+		    				}
+		    			}
 	    			}
-	
+	    			
 	    			if(this.siteNodeVO.getMetaInfoContentId() == null || this.siteNodeVO.getMetaInfoContentId().intValue() == -1)
 	    			    SiteNodeController.getController().setMetaInfoContentId(this.siteNodeVO.getId(), metaInfoContentId, db);
 	    			    
-	    			if(this.siteNodeVersionVO.getStateId().equals(SiteNodeVersionVO.WORKING_STATE) && !isMetaInfoInWorkingState)
+	    			if(this.siteNodeVersionVO != null && this.siteNodeVersionVO.getStateId().equals(SiteNodeVersionVO.WORKING_STATE) && !isMetaInfoInWorkingState)
 	    			{
 	    				metaInfoContentVersionVO = ContentStateController.changeState(metaInfoContentVersionVO.getId(), ContentVersionVO.WORKING_STATE, "Automatic", true, this.getInfoGluePrincipal(), null, db, new ArrayList()).getValueObject();
 	    				isMetaInfoInWorkingState = true;

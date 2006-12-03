@@ -104,7 +104,8 @@ public class ViewStructureToolToolBarAction extends InfoGlueAbstractAction
 			else if(siteNodeId != null)
 			{
 				this.siteNodeVersionVO = SiteNodeVersionController.getController().getLatestActiveSiteNodeVersionVO(siteNodeId);
-				this.siteNodeVersionId = this.siteNodeVersionVO.getSiteNodeVersionId();
+				if(this.siteNodeVersionVO != null)
+					this.siteNodeVersionId = this.siteNodeVersionVO.getSiteNodeVersionId();
 				
 				/*
 				AvailableServiceBindingVO availableServiceBindingVO = AvailableServiceBindingController.getController().getAvailableServiceBindingVOWithName("Meta information");
@@ -313,7 +314,7 @@ public class ViewStructureToolToolBarAction extends InfoGlueAbstractAction
 		//SiteNodeVersionVO siteNodeVersionVO = SiteNodeVersionController.getController().getLatestActiveSiteNodeVersionVO(this.siteNodeId);
 		if(this.siteNodeVersionVO != null && this.siteNodeVersionVO.getStateId().equals(SiteNodeVersionVO.WORKING_STATE))
 			buttons.add(new ImageButton(true, "javascript:openPopup('ViewAndCreateContentForServiceBinding.action?siteNodeId=" + this.siteNodeId + "&repositoryId=" + this.repositoryId + "&siteNodeVersionId=" + this.siteNodeVersionVO.getId() + "', 'PageProperties', 'width=400,height=525,resizable=no,status=yes,scrollbars=yes');", getLocalizedString(getSession().getLocale(), "images.structuretool.buttons.editSiteNodeProperties"), "Edit siteNode properties"));
-		else
+		else if(this.siteNodeVersionVO != null)
 			buttons.add(new ImageButton(true, "javascript:openPopupWithOptionalParameter('ViewAndCreateContentForServiceBinding.action?siteNodeId=" + this.siteNodeId + "&repositoryId=" + this.repositoryId + "&siteNodeVersionId=" + this.siteNodeVersionVO.getId() + "', 'PageProperties', 'width=400,height=525,resizable=no,status=yes,scrollbars=yes', '" + getLocalizedString(getSession().getLocale(), "tool.structuretool.changeSiteNodeStateToWorkingQuestion") + "', 'changeStateToWorking=true');", getLocalizedString(getSession().getLocale(), "images.structuretool.buttons.editSiteNodeProperties"), "Edit siteNode properties"));
 
 		buttons.add(getPreviewButtons());
@@ -342,7 +343,7 @@ public class ViewStructureToolToolBarAction extends InfoGlueAbstractAction
 		
 		buttons.add(getExecuteTaskButton());
 
-		if(this.siteNodeVersionVO.getIsProtected().intValue() == SiteNodeVersionVO.YES.intValue())
+		if(this.siteNodeVersionVO != null && this.siteNodeVersionVO.getIsProtected().intValue() == SiteNodeVersionVO.YES.intValue())
 			buttons.add(getAccessRightsButton());	
 			
 		return buttons;
