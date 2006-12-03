@@ -11,12 +11,20 @@
     <field name="infoGlueExportId" type="java.lang.Integer">
       	<bind-xml node="attribute"/>
     </field>
+    <field name="rootContent" type="org.infoglue.cms.entities.content.impl.simple.ContentImpl" collection="collection">
+      	<bind-xml node="element"/>
+    </field>
+    <field name="rootSiteNode" type="org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl" collection="collection">
+      	<bind-xml node="element"/>
+    </field>
+    <!-- 
     <field name="rootContent" type="org.infoglue.cms.entities.content.impl.simple.ContentImpl">
       	<bind-xml node="element"/>
     </field>
     <field name="rootSiteNode" type="org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl">
       	<bind-xml node="element"/>
     </field>
+    -->
   </class>
 
 
@@ -458,13 +466,15 @@
       <sql name="parentContentId"/>
       <bind-xml name="parentContent" node="element"/>
     </field>
-    -->
-    <!--
     <field name="repository" type="org.infoglue.cms.entities.management.impl.simple.RepositoryImpl">
       <sql name="repositoryId"/>
       <bind-xml name="repository" node="element"/>
     </field>
     -->
+    <field name="repositoryId" type="java.lang.Integer">
+      <bind-xml name="repositoryId" node="element"/>
+    </field>
+
     <field name="children" type="org.infoglue.cms.entities.content.impl.simple.ContentImpl" collection="collection">
       <bind-xml name="children" node="element"/>
     </field>
