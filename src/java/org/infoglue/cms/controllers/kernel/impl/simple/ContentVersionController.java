@@ -720,8 +720,10 @@ public class ContentVersionController extends BaseController
  	public void delete(ContentVersion contentVersion, Database db, boolean forceDelete) throws ConstraintException, SystemException, Exception
 	{
 		if (!forceDelete && contentVersion.getStateId().intValue() == ContentVersionVO.PUBLISHED_STATE.intValue() && contentVersion.getIsActive().booleanValue() == true)
-			throw new ConstraintException("ContentVersion.stateId", "3300");
-
+		{
+			throw new ConstraintException("ContentVersion.stateId", "3300", contentVersion.getOwningContent().getName());
+		}
+		
 		contentCategoryController.deleteByContentVersion(contentVersion, db);
 
 		Content content = contentVersion.getOwningContent();
