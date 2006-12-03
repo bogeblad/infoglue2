@@ -42,16 +42,22 @@ import org.exolab.castor.xml.Unmarshaller;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.AvailableServiceBindingController;
 import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
+import org.infoglue.cms.controllers.kernel.impl.simple.CategoryController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ServiceDefinitionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeTypeDefinitionController;
 import org.infoglue.cms.entities.content.Content;
+import org.infoglue.cms.entities.content.ContentCategory;
 import org.infoglue.cms.entities.content.ContentVersion;
 import org.infoglue.cms.entities.content.DigitalAsset;
+import org.infoglue.cms.entities.content.impl.simple.ContentCategoryImpl;
 import org.infoglue.cms.entities.content.impl.simple.ContentImpl;
+import org.infoglue.cms.entities.content.impl.simple.ContentVersionImpl;
 import org.infoglue.cms.entities.management.AvailableServiceBinding;
+import org.infoglue.cms.entities.management.Category;
+import org.infoglue.cms.entities.management.CategoryVO;
 import org.infoglue.cms.entities.management.ContentTypeDefinition;
 import org.infoglue.cms.entities.management.Language;
 import org.infoglue.cms.entities.management.Repository;
@@ -59,6 +65,7 @@ import org.infoglue.cms.entities.management.RepositoryLanguage;
 import org.infoglue.cms.entities.management.ServiceDefinition;
 import org.infoglue.cms.entities.management.SiteNodeTypeDefinition;
 import org.infoglue.cms.entities.management.impl.simple.AvailableServiceBindingImpl;
+import org.infoglue.cms.entities.management.impl.simple.CategoryImpl;
 import org.infoglue.cms.entities.management.impl.simple.ContentTypeDefinitionImpl;
 import org.infoglue.cms.entities.management.impl.simple.InfoGlueExportImpl;
 import org.infoglue.cms.entities.management.impl.simple.LanguageImpl;
@@ -170,52 +177,89 @@ public class ImportRepositoryAction extends InfoGlueAbstractAction
 			InfoGlueExportImpl infoGlueExportImplRead = (InfoGlueExportImpl)unmarshaller.unmarshal(reader);
 			Collection contentTypeDefinitions = infoGlueExportImplRead.getContentTypeDefinitions();
 			logger.info("Found " + contentTypeDefinitions.size() + " content type definitions");
+			Collection categories = infoGlueExportImplRead.getCategories();
+			logger.info("Found " + categories.size() + " categories");
+
+			Map categoryIdMap = new HashMap();
+
+			importCategories(categories, null, categoryIdMap, db);
 			
-			SiteNode readSiteNode = infoGlueExportImplRead.getRootSiteNode();
-			logger.info(readSiteNode.getName());
-			Content readContent = infoGlueExportImplRead.getRootContent();
-			logger.info(readContent.getName());
-
-			Repository repositoryRead = readSiteNode.getRepository();
-			logger.info(repositoryRead.getName());
-			readContent.setRepository((RepositoryImpl)repositoryRead);
-
-			db.create(repositoryRead);
-
-			Collection repositoryLanguages = repositoryRead.getRepositoryLanguages();
-			Iterator repositoryLanguagesIterator = repositoryLanguages.iterator();
-			while(repositoryLanguagesIterator.hasNext())
-			{
-				RepositoryLanguage repositoryLanguage = (RepositoryLanguage)repositoryLanguagesIterator.next();
-				Language originalLanguage = repositoryLanguage.getLanguage();
-				
-				Language language = LanguageController.getController().getLanguageWithCode(originalLanguage.getLanguageCode(), db);
-				if(language == null)
-				{
-				    db.create(originalLanguage);
-				    language = originalLanguage;
-				}
-				
-				repositoryLanguage.setLanguage(language);
-				repositoryLanguage.setRepository(repositoryRead);
-
-				db.create(repositoryLanguage);
-				
-				logger.info("language:" + language);
-				logger.info("language.getRepositoryLanguages():" + language.getRepositoryLanguages());
-				language.getRepositoryLanguages().add(repositoryLanguage);
-			}
+			updateContentTypeDefinitions(contentTypeDefinitions, categoryIdMap);
 			
-			readSiteNode.setRepository((RepositoryImpl)repositoryRead);
+			List readSiteNodes = infoGlueExportImplRead.getRootSiteNode();
+			//SiteNode readSiteNode = infoGlueExportImplRead.getRootSiteNode();
+			//logger.info(readSiteNode.getName());
+			List readContents = infoGlueExportImplRead.getRootContent();
+			//Content readContent = infoGlueExportImplRead.getRootContent();
+			//logger.info(readContent.getName());
 
 			Map contentIdMap = new HashMap();
 			Map siteNodeIdMap = new HashMap();
 			
 			List allContents = new ArrayList();
-			createContents(readContent, contentIdMap, allContents, contentTypeDefinitions, version, db);
 			List allSiteNodes = new ArrayList();
-			createStructure(readSiteNode, contentIdMap, siteNodeIdMap, allSiteNodes, db);
-			
+
+			Iterator readSiteNodesIterator = readSiteNodes.iterator();
+			while(readSiteNodesIterator.hasNext())
+			{
+				SiteNode readSiteNode = (SiteNode)readSiteNodesIterator.next();
+
+				Repository repositoryRead = readSiteNode.getRepository();
+				logger.info(repositoryRead.getName());
+
+				Content readContent = null;
+				if(readContents != null && readContents.size() > 1)
+				{
+					Iterator readContentsIterator = readContents.iterator();
+					while(readContentsIterator.hasNext())
+					{
+						Content readContentCandidate = (Content)readContentsIterator.next();
+						if(readContentCandidate.getRepositoryId().equals(repositoryRead.getId()))
+						{
+							readContent = readContentCandidate;
+							break;
+						}
+					}
+				}
+				else
+				{
+					readContent = (Content)readContents.get(0);
+				}
+				
+				readContent.setRepository((RepositoryImpl)repositoryRead);
+
+				db.create(repositoryRead);
+
+				Collection repositoryLanguages = repositoryRead.getRepositoryLanguages();
+				Iterator repositoryLanguagesIterator = repositoryLanguages.iterator();
+				while(repositoryLanguagesIterator.hasNext())
+				{
+					RepositoryLanguage repositoryLanguage = (RepositoryLanguage)repositoryLanguagesIterator.next();
+					Language originalLanguage = repositoryLanguage.getLanguage();
+					
+					Language language = LanguageController.getController().getLanguageWithCode(originalLanguage.getLanguageCode(), db);
+					if(language == null)
+					{
+					    db.create(originalLanguage);
+					    language = originalLanguage;
+					}
+					
+					repositoryLanguage.setLanguage(language);
+					repositoryLanguage.setRepository(repositoryRead);
+
+					db.create(repositoryLanguage);
+					
+					logger.info("language:" + language);
+					logger.info("language.getRepositoryLanguages():" + language.getRepositoryLanguages());
+					language.getRepositoryLanguages().add(repositoryLanguage);
+				}
+				
+				readSiteNode.setRepository((RepositoryImpl)repositoryRead);
+				
+				createContents(readContent, contentIdMap, allContents, contentTypeDefinitions, categoryIdMap, version, db);
+				createStructure(readSiteNode, contentIdMap, siteNodeIdMap, allSiteNodes, db);
+			}
+						
 			List allContentIds = new ArrayList();
 			Iterator allContentsIterator = allContents.iterator();
 			while(allContentsIterator.hasNext())
@@ -284,6 +328,76 @@ public class ImportRepositoryAction extends InfoGlueAbstractAction
 		return "success";
 	}
 
+	
+	private void updateContentTypeDefinitions(Collection contentTypeDefinitions, Map categoryIdMap) 
+	{
+		Iterator contentTypeDefinitionsIterator = contentTypeDefinitions.iterator();
+		while(contentTypeDefinitionsIterator.hasNext())
+		{
+			ContentTypeDefinition contentTypeDefinition = (ContentTypeDefinition)contentTypeDefinitionsIterator.next();
+			String schema = contentTypeDefinition.getSchemaValue();
+			Iterator categoryIdMapIterator = categoryIdMap.keySet().iterator();
+			while(categoryIdMapIterator.hasNext())
+			{
+				Integer oldId = (Integer)categoryIdMapIterator.next();
+				Integer newId = (Integer)categoryIdMap.get(oldId);
+				schema = schema.replaceAll("<categoryId>" + oldId + "</categoryId>", "<categoryId>new_" + newId + "</categoryId>");
+			}
+			schema = schema.replaceAll("<categoryId>new_", "<categoryId>");
+			contentTypeDefinition.setSchemaValue(schema);
+		}
+	}
+
+	private void importCategories(Collection categories, Category parentCategory, Map categoryIdMap, Database db) throws SystemException
+	{
+		logger.info("We want to create a list of categories if not existing under the parent category " + parentCategory);
+		Iterator categoryIterator = categories.iterator();
+		while(categoryIterator.hasNext())
+		{
+			CategoryVO categoryVO = (CategoryVO)categoryIterator.next();
+			Category newParentCategory = null;
+			
+			List existingCategories = null;
+			if(parentCategory != null)
+				existingCategories = CategoryController.getController().findByParent(parentCategory.getCategoryId(), db);
+			else
+				existingCategories = CategoryController.getController().findRootCategories(db);
+				
+			Iterator existingCategoriesIterator = existingCategories.iterator();
+			while(existingCategoriesIterator.hasNext())
+			{
+				Category existingCategory = (Category)existingCategoriesIterator.next();
+				logger.info("existingCategory:" + existingCategory.getName());
+				if(existingCategory.getName().equals(categoryVO.getName()))
+				{
+					logger.info("Existed... setting " + existingCategory.getName() + " to new parent category.");
+					newParentCategory = existingCategory;
+					break;
+				}
+			}
+
+			if(newParentCategory == null)
+			{
+				logger.info("No existing category - we create it.");
+				Integer oldId = categoryVO.getId();
+				categoryVO.setCategoryId(null);
+				if(parentCategory != null)	
+					categoryVO.setParentId(parentCategory.getCategoryId());
+				else
+					categoryVO.setParentId(null);
+					
+				Category newCategory = CategoryController.getController().save(categoryVO, db);
+				categoryIdMap.put(oldId, newCategory.getCategoryId());
+				newParentCategory = newCategory;
+			}
+			else
+			{
+				categoryIdMap.put(categoryVO.getId(), newParentCategory.getCategoryId());
+			}
+				
+			importCategories(categoryVO.getChildren(), newParentCategory, categoryIdMap, db);
+		}
+	}
 	
 	/**
 	 * This method copies a sitenode and all it relations.
@@ -476,13 +590,14 @@ public class ImportRepositoryAction extends InfoGlueAbstractAction
 	 * @throws Exception
 	 */
 	
-	private List createContents(Content content, Map idMap, List allContents, Collection contentTypeDefinitions, int version, Database db) throws Exception
+	private List createContents(Content content, Map idMap, List allContents, Collection contentTypeDefinitions, Map categoryIdMap, int version, Database db) throws Exception
 	{
 	    Integer originalContentId = content.getContentId();
 		
 	    if(version == 2)
 	    {
 		    Integer contentTypeDefinitionId = ((ContentImpl)content).getContentTypeDefinitionId();
+		    //System.out.println("contentTypeDefinitionId:" + contentTypeDefinitionId);
 		    if(contentTypeDefinitionId != null)
 			{
 		    	ContentTypeDefinition originalContentTypeDefinition = null;
@@ -496,11 +611,15 @@ public class ImportRepositoryAction extends InfoGlueAbstractAction
 		    			break;
 		    		}
 		    	}
-		    	
+
+		    	//System.out.println("originalContentTypeDefinition:" + originalContentTypeDefinition);
+
 		    	if(originalContentTypeDefinition != null)
 		    	{
 			    	ContentTypeDefinition contentTypeDefinition = ContentTypeDefinitionController.getController().getContentTypeDefinitionWithName(originalContentTypeDefinition.getName(), db);
-					if(contentTypeDefinition == null)
+			    	//System.out.println("contentTypeDefinition:" + contentTypeDefinition);
+
+			    	if(contentTypeDefinition == null)
 					{
 					    db.create(originalContentTypeDefinition);
 					    contentTypeDefinition = originalContentTypeDefinition;
@@ -606,7 +725,48 @@ public class ImportRepositoryAction extends InfoGlueAbstractAction
 				contentVersion.setDigitalAssets(initialDigitalAssets);
 			}
 
+			Collection contentCategories = contentVersion.getContentCategories();
+			logger.info("contentCategories:" + contentCategories.size());
+			
 			db.create(contentVersion);
+			
+			if(contentCategories != null)
+			{
+				List initialContentCategories = new ArrayList();
+					
+				Iterator contentCategoriesIterator = contentCategories.iterator();
+				while(contentCategoriesIterator.hasNext())
+				{
+					ContentCategory contentCategory = (ContentCategory)contentCategoriesIterator.next();
+					logger.info("contentCategory:" + contentCategory);
+					contentCategory.setContentVersion((ContentVersionImpl)contentVersion);
+					
+					Integer oldCategoryId = contentCategory.getCategoryId();
+					logger.info("oldCategoryId:" + oldCategoryId);
+					Integer newCategoryId = (Integer)categoryIdMap.get(oldCategoryId);
+					logger.info("newCategoryId:" + newCategoryId);
+					if(newCategoryId == null)
+						newCategoryId = oldCategoryId;
+					
+					if(newCategoryId != null)
+					{
+						Category category = CategoryController.getController().findById(newCategoryId, db);
+						logger.info("Got category:" + category);
+						if(category != null)
+						{
+							contentCategory.setCategory((CategoryImpl)category);
+							logger.info("Creating content category:" + contentCategory);
+							
+							db.create(contentCategory);
+						
+							initialContentCategories.add(contentCategory);
+						}
+					}
+				}
+				
+				contentVersion.setContentCategories(initialContentCategories);
+			}
+
 		}		
 		
 		Collection childContents = content.getChildren();
@@ -618,7 +778,7 @@ public class ImportRepositoryAction extends InfoGlueAbstractAction
 				Content childContent = (Content)childContentsIterator.next();
 				childContent.setRepository(content.getRepository());
 				childContent.setParentContent((ContentImpl)content);
-				createContents(childContent, idMap, allContents, contentTypeDefinitions, version, db);
+				createContents(childContent, idMap, allContents, contentTypeDefinitions, categoryIdMap, version, db);
 			}
 		}
 		
@@ -992,4 +1152,5 @@ public class ImportRepositoryAction extends InfoGlueAbstractAction
 	        }
 	    }
 	}
-	*/}
+	*/
+}
