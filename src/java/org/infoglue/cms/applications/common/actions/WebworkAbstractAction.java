@@ -225,8 +225,9 @@ public abstract class WebworkAbstractAction implements Action, ServletRequestAwa
 		{
 			final String fieldName = ce.getFieldName();
 			final String errorCode = ce.getErrorCode();
+			final String extraInformation = ce.getExtraInformation();
 			final String localizedErrorMessage = getLocalizedErrorMessage(locale, errorCode);
-			getErrors().addError(fieldName, localizedErrorMessage);
+			getErrors().addError(fieldName, localizedErrorMessage + (extraInformation.length() > 0 ? " (" + extraInformation + ")" : ""));
 		}
 		logger.debug(getErrors().toString());
 	}
