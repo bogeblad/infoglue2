@@ -239,6 +239,7 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
             return NONE;
         }
         
+        CacheController.clearServerNodeProperty(true);
         CacheController.clearCastorCaches();
         CacheController.clearCaches(null, null, null);
         

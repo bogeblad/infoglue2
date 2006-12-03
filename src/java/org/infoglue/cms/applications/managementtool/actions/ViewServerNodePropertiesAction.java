@@ -251,7 +251,7 @@ public class ViewServerNodePropertiesAction extends InfoGluePropertiesAbstractAc
 	    
 		try 
 		{
-			CacheController.clearServerNodeProperty();
+			CacheController.clearServerNodeProperty(true);
 			InfoGlueAuthenticationFilter.initializeCMSProperties();
 		} 
 		catch (SystemException e) 
@@ -280,7 +280,7 @@ public class ViewServerNodePropertiesAction extends InfoGluePropertiesAbstractAc
 
 		try 
 		{
-			CacheController.clearServerNodeProperty();
+			CacheController.clearServerNodeProperty(true);
 			InfoGlueAuthenticationFilter.initializeCMSProperties();
 		} 
 		catch (SystemException e) 

@@ -227,7 +227,7 @@ public class ServerNodeController extends BaseController
 	    
 		try 
 		{
-			CacheController.clearServerNodeProperty();
+			CacheController.clearServerNodeProperty(true);
 			InfoGlueAuthenticationFilter.initializeCMSProperties();
 		} 
 		catch (SystemException e) 
