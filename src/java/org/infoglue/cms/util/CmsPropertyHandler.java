@@ -248,7 +248,7 @@ public class CmsPropertyHandler
 		
 		cachedProperties.setProperty(key, value);
 		
-		CacheController.clearCache("serverNodePropertiesCache");
+		CacheController.clearServerNodeProperty(false);
 	}	
 
 	public static String getServerNodeProperty(String key, boolean inherit)
@@ -274,7 +274,10 @@ public class CmsPropertyHandler
 		String value = null;
 	    Object valueObject = null;
 	    
-        String cacheKey = "" + prefix + "_" + key + "_" + inherit;
+	    StringBuffer sb = new StringBuffer();
+	    sb.append(prefix).append("_").append(key).append("_").append(inherit);
+	    
+	    String cacheKey = sb.toString(); //"" + prefix + "_" + key + "_" + inherit;
         String cacheName = "serverNodePropertiesCache";
         
 		if(logger.isInfoEnabled())
@@ -994,7 +997,7 @@ public class CmsPropertyHandler
 
 	public static String getExportFormat()
 	{
-	    return getServerNodeProperty("exportFormat", true, "1");
+	    return getServerNodeProperty("exportFormat", true, "2");
 	}
 
 	public static String getHelpUrl()
