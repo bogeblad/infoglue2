@@ -561,33 +561,35 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 		
 			logger.info("propertyName:" + propertyName);
 			logger.info("propertyValue:" + propertyValue);
-			
-			String componentPropertyXPath = "//component[@id=" + this.componentId + "]/properties/property[@name='" + propertyName + "']";
-			//logger.info("componentPropertyXPath:" + componentPropertyXPath);
-			NodeList anl = org.apache.xpath.XPathAPI.selectNodeList(document.getDocumentElement(), componentPropertyXPath);
-			if(anl.getLength() == 0)
+			if(propertyValue != null && !propertyValue.equals("") && !propertyValue.equalsIgnoreCase("undefined"))
 			{
-				String componentXPath = "//component[@id=" + this.componentId + "]/properties";
-				//logger.info("componentXPath:" + componentXPath);
-				NodeList componentNodeList = org.apache.xpath.XPathAPI.selectNodeList(document.getDocumentElement(), componentXPath);
-				if(componentNodeList.getLength() > 0)
+				String componentPropertyXPath = "//component[@id=" + this.componentId + "]/properties/property[@name='" + propertyName + "']";
+				//logger.info("componentPropertyXPath:" + componentPropertyXPath);
+				NodeList anl = org.apache.xpath.XPathAPI.selectNodeList(document.getDocumentElement(), componentPropertyXPath);
+				if(anl.getLength() == 0)
 				{
-					Element componentProperties = (Element)componentNodeList.item(0);
-					addPropertyElement(componentProperties, propertyName, propertyValue, "textfield", locale);
-					anl = org.apache.xpath.XPathAPI.selectNodeList(document.getDocumentElement(), componentPropertyXPath);
+					String componentXPath = "//component[@id=" + this.componentId + "]/properties";
+					//logger.info("componentXPath:" + componentXPath);
+					NodeList componentNodeList = org.apache.xpath.XPathAPI.selectNodeList(document.getDocumentElement(), componentXPath);
+					if(componentNodeList.getLength() > 0)
+					{
+						Element componentProperties = (Element)componentNodeList.item(0);
+						addPropertyElement(componentProperties, propertyName, propertyValue, "textfield", locale);
+						anl = org.apache.xpath.XPathAPI.selectNodeList(document.getDocumentElement(), componentPropertyXPath);
+					}
 				}
-			}
-			
-			logger.info("anl:" + anl);
-			if(anl.getLength() > 0)
-			{
-				Element component = (Element)anl.item(0);
-				component.setAttribute("path_" + locale.getLanguage(), propertyValue);
-			    logger.info("Setting 'path_" + locale.getLanguage() + ":" + propertyValue);
-			}
-			else
-			{
-			    logger.warn("No property could be updated... must be wrong.");
+				
+				logger.info("anl:" + anl);
+				if(anl.getLength() > 0)
+				{
+					Element component = (Element)anl.item(0);
+					component.setAttribute("path_" + locale.getLanguage(), propertyValue);
+				    logger.info("Setting 'path_" + locale.getLanguage() + ":" + propertyValue);
+				}
+				else
+				{
+				    logger.warn("No property could be updated... must be wrong.");
+				}
 			}
 			
 			propertyIndex++;
@@ -999,6 +1001,8 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 		Integer contentId  	= new Integer(this.getRequest().getParameter("contentId"));
 		String propertyName	= this.getRequest().getParameter("propertyName");
 		
+		Locale locale = LanguageController.getController().getLocaleWithId(languageId);
+
 		//logger.info("siteNodeId:" + siteNodeId);
 		//logger.info("languageId:" + languageId);
 		//logger.info("contentId:" + contentId);
@@ -1016,7 +1020,13 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 		if(anl.getLength() > 0)
 		{
 			Node propertyNode = anl.item(0);
-			propertyNode.getParentNode().removeChild(propertyNode);
+			Element propertyElement = (Element)propertyNode;
+			
+			propertyElement.removeAttribute("path_" + locale.getLanguage());
+			if(propertyElement.getAttributes().getLength() == 0);
+			{
+				propertyNode.getParentNode().removeChild(propertyNode);
+			}
 		}
 
 		String modifiedXML = XMLHelper.serializeDom(document, new StringBuffer()).toString(); 
