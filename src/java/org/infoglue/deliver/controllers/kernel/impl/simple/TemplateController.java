@@ -1127,6 +1127,12 @@ public interface TemplateController
 	 
 	public Collection getContentTypeDefinitionAssetKeys(String schemaValue); 
 
+	/**
+	 * This method deliveres a list of all Categories defined for a contentTypeDefinition.
+	 */
+	 
+	public Collection getContentTypeDefinitionCategories(String schemaValue); 
+
     /**
      * The method returns a list of WebPage-objects that is the bound sitenodes of named binding. 
      * The method is great for navigation-purposes on any site. Improve later so the list is cached

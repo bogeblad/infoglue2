@@ -113,6 +113,7 @@ Abbreviated Changelog from 2.3.5 Final
 - Added more caching - now also on the InfoGlueJDBCPropertySet - eases the load a lot during publications
 - Fixed so empty or "Undefined" text properties are not added.
 - Made deletion of a text property in one language not remove the entire property node so the other language-properties are not removed. 
+- Added tag to get all categories attributes in a ContentTypeDefinition
 
 -------------------------------------------------------------------------------------
 - InfoGlue 2.3.5 Final

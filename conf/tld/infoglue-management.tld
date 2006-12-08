@@ -109,6 +109,23 @@
 	        <rtexprvalue>true</rtexprvalue>
 		</attribute>
 	</tag>
+
+	<tag>
+	    <name>contentTypeDefinitionCategories</name>
+	    <tagclass>org.infoglue.deliver.taglib.management.ContentTypeDefinitionCategoriesTag</tagclass>
+	    <bodycontent>empty</bodycontent>
+	    <info></info>
+	    <attribute>
+		    <name>id</name>
+	    	<required>true</required>
+	        <rtexprvalue>true</rtexprvalue>
+		</attribute>
+	    <attribute>
+		    <name>schemaValue</name>
+	    	<required>true</required>
+	        <rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
 	
 	<tag>
 	    <name>remoteUserPropertiesService</name>

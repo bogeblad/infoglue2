@@ -1809,6 +1809,26 @@ public class BasicTemplateController implements TemplateController
 	}
  
 	/**
+	 * This method deliveres a list all categories defined for a contentTypeDefinition.
+	 */
+	 
+	public Collection getContentTypeDefinitionCategories(String schemaValue) 
+	{
+		Collection categories = new ArrayList();
+		
+		try
+		{
+			categories = ContentTypeDefinitionController.getController().getDefinedCategoryKeys(schemaValue);
+		}
+		catch(Exception e)
+		{
+			logger.error("An error occurred trying to get assetKeys on content with id: " + contentId + ":" + e.getMessage(), e);
+		}
+				
+		return categories;
+	}
+
+	/**
 	 * This method deliveres a String with the URL to the thumbnail for the digital asset asked for.
 	 * This method assumes that the content sent in only has one asset attached.
 	 */
