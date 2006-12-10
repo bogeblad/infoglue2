@@ -4,7 +4,9 @@
 
 Release notes
 ---------------------------------------
-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX TOBE DONE **********.
+The InfoGlue Team are happy to release the best version yet. InfoGlue 2.4 is available for immediate download.
+This release contains so many impovements it's hard to say what to lift up. Stability, performance and security is allways in focus of course so quite
+a few changes and improvements have been made in those areas. Check out the long list of improvements below.
 
 Thanx to all involved!!
 
