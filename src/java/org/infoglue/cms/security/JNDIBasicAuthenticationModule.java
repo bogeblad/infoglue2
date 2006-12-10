@@ -23,7 +23,6 @@
 
 package org.infoglue.cms.security;
 
-import java.io.Serializable;
 import java.net.URLEncoder;
 import java.security.Principal;
 import java.util.HashMap;
@@ -529,4 +528,9 @@ public class JNDIBasicAuthenticationModule extends AuthenticationModule
 		this.casLogoutUrl = casLogoutUrl;
 	}
     
+	public boolean enforceJ2EEContainerPrincipal() 
+	{
+		return false;
+	}
+
 }
