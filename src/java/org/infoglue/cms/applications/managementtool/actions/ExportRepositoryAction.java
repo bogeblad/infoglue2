@@ -130,6 +130,7 @@ public class ExportRepositoryAction extends InfoGlueAbstractAction
 			InfoGlueExportImpl infoGlueExportImpl = new InfoGlueExportImpl();
 			
 			VisualFormatter visualFormatter = new VisualFormatter();
+			names = new VisualFormatter().replaceNonAscii(names, '_');
 			String fileName = "Export_" + names + "_" + visualFormatter.formatDate(new Date(), "yyyy-MM-dd") + ".xml";
 			String filePath = CmsPropertyHandler.getDigitalAssetPath();
 			String fileSystemName =  filePath + File.separator + fileName;
