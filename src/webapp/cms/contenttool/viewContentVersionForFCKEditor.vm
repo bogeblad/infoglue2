@@ -55,6 +55,9 @@
 	<META HTTP-EQUIV="expires" CONTENT="-1" />
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 	
+	<script type="text/javascript">
+		window.onLoad = refreshContentToolBar('tool.contenttool.contentVersionHeader', 'Content version', 'contentId=$contentId&languageId=$languageId#if($contentVersionId > -1)&contentVersionId=$!contentVersionId#end', '$!unrefreshedContentId', '$!changeTypeId', '$!newContentId');
+	</script>
 </head>
 
 #if($stateId == 1 || $stateId == 2 || $stateId == 3)
@@ -77,7 +80,7 @@
 	#end
 #end
 
-<body class="contenttooledit" onload="javascript:refreshContentToolBar('tool.contenttool.contentVersionHeader', 'Content version', 'contentId=$contentId&languageId=$languageId#if($contentVersionId > -1)&contentVersionId=$!contentVersionId#end', '$!unrefreshedContentId', '$!changeTypeId', '$!newContentId');" onkeypress="hotKeys(event);">
+<body class="contenttooledit" onkeypress="hotKeys(event);">
 #set( $lvColor = "green")
 
 <script type="text/javascript">

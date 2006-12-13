@@ -19,7 +19,7 @@ Abbreviated Changelog from 2.4 Final
   This allows administrators to minimize the database space taken by InfoGlue. Up to 90 % of the database are usually digital assets so it can save a lot of backup space and time.
 - Added principal to recursive deletion check for site nodes and contents - there was a flaw in protection before on that point
 - Fixed flaw in InfoGlueJDBCPropertySet which gave errors when trying to save data in completely fresh databases
-
+- Fixed a bug in content version edit - FCKEditor has changed and interfers with body onload so now we do it in the script-part instead.
 
 -------------------------------------------------------------------------------------
 - InfoGlue 2.4 Final
