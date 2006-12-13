@@ -1,10 +1,11 @@
 -------------------------------------------------------------------------------------
-- InfoGlue 2.5 Final
+- InfoGlue 2.4.1 Final
 -------------------------------------------------------------------------------------
 
 Release notes
 ---------------------------------------
-XXXXXXXXXXXXXXXXXXXXXXXXXX
+This is a bug-fix release for 2.4 which seems to have been released a bit premature. Thanx for the feedback all!!
+Everybody must use this rather than 2.4.
 
 Thanx to all involved!!
 
