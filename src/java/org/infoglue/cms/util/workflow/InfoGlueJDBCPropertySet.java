@@ -197,7 +197,8 @@ public class InfoGlueJDBCPropertySet extends JDBCPropertySet
                     break;
 
                 default:
-                    throw new InvalidPropertyTypeException("JDBCPropertySet doesn't support this type yet.");
+                    logger.error("JDBCPropertySet doesn't support this type yet:" + key + ":" + typeId);
+                	//throw new InvalidPropertyTypeException("JDBCPropertySet doesn't support this type yet:" + typeId);
                 }
 
                 if(valueMap == null)
