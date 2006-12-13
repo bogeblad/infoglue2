@@ -1209,7 +1209,7 @@ public class DigitalAssetController extends BaseController
 				
 				digitalAsset.setAssetFilePath("IG_ARCHIVE:" + archiveFileName + ":" + fileName);
 				digitalAsset.setAssetFileSize(new Integer(-1));
-				digitalAsset.setAssetBlob(new ByteArrayInputStream("".getBytes()));
+				digitalAsset.setAssetBlob(new ByteArrayInputStream("archived".getBytes()));
         	}
         	
             // Create a buffer for reading the files
