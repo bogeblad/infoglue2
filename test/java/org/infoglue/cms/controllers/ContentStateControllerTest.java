@@ -20,7 +20,7 @@
  *
  * ===============================================================================
  *
- * $Id: ContentStateControllerTest.java,v 1.4 2006/03/06 16:54:01 mattias Exp $
+ * $Id: ContentStateControllerTest.java,v 1.5 2006/12/13 15:16:32 mattias Exp $
  */
 package org.infoglue.cms.controllers;
 
@@ -100,7 +100,7 @@ public class ContentStateControllerTest extends InfoGlueTestCase
 	protected void tearDown() throws Exception
 	{
 		for (Iterator i = allContent.iterator(); i.hasNext();)
-			contentStore.delete((ContentVO)i.next());
+			contentStore.delete((ContentVO)i.next(), getCmsUserPrincipal());
 		assertRemoved();
 
 		if(testCategory != null)

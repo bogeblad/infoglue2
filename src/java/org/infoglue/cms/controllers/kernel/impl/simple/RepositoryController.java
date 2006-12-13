@@ -71,16 +71,16 @@ public class RepositoryController extends BaseController
 	 * This method removes a Repository from the system and also cleans out all depending repositoryLanguages.
 	 */
 	
-    public void delete(RepositoryVO repositoryVO, String userName) throws ConstraintException, SystemException
+    public void delete(RepositoryVO repositoryVO, String userName, InfoGluePrincipal infoGluePrincipal) throws ConstraintException, SystemException
     {
-    	delete(repositoryVO, userName, false);
+    	delete(repositoryVO, userName, false, infoGluePrincipal);
     }
     
 	/**
 	 * This method removes a Repository from the system and also cleans out all depending repositoryLanguages.
 	 */
 	
-    public void delete(RepositoryVO repositoryVO, String userName, boolean forceDelete) throws ConstraintException, SystemException
+    public void delete(RepositoryVO repositoryVO, String userName, boolean forceDelete, InfoGluePrincipal infoGluePrincipal) throws ConstraintException, SystemException
     {
 		Database db = CastorDatabaseService.getDatabase();
 		ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
@@ -99,18 +99,18 @@ public class RepositoryController extends BaseController
 			if(contentVO != null)
 			{
 				if(forceDelete)
-					ContentController.getContentController().delete(contentVO, db, true, true, true);
+					ContentController.getContentController().delete(contentVO, db, true, true, true, infoGluePrincipal);
 				else
-					ContentController.getContentController().delete(contentVO, db);
+					ContentController.getContentController().delete(contentVO, infoGluePrincipal, db);
 			}
 			
 			SiteNodeVO siteNodeVO = SiteNodeController.getController().getRootSiteNodeVO(repositoryVO.getRepositoryId());
 			if(siteNodeVO != null)
 			{
 				if(forceDelete)
-					SiteNodeController.getController().delete(siteNodeVO, db, true);
+					SiteNodeController.getController().delete(siteNodeVO, db, true, infoGluePrincipal);
 				else
-					SiteNodeController.getController().delete(siteNodeVO, db);
+					SiteNodeController.getController().delete(siteNodeVO, db, infoGluePrincipal);
 			}
 			
 			deleteEntity(RepositoryImpl.class, repositoryVO.getRepositoryId(), db);

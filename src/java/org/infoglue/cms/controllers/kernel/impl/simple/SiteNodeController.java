@@ -140,19 +140,19 @@ public class SiteNodeController extends BaseController
 	 * This method deletes a siteNode and also erases all the children and all versions.
 	 */
 	    
-    public void delete(SiteNodeVO siteNodeVO) throws ConstraintException, SystemException
+    public void delete(SiteNodeVO siteNodeVO, InfoGluePrincipal infogluePrincipal) throws ConstraintException, SystemException
     {
     	Database db = CastorDatabaseService.getDatabase();
         beginTransaction(db);
 		try
         {	
-			delete(siteNodeVO, db);	
+			delete(siteNodeVO, db, infogluePrincipal);	
 			
 	    	commitTransaction(db);
         }
         catch(ConstraintException ce)
         {
-        	logger.error("An error occurred so we should not complete the transaction:" + ce, ce);
+        	logger.warn("An error occurred so we should not complete the transaction:" + ce, ce);
             rollbackTransaction(db);
             throw ce;
         }
@@ -168,16 +168,16 @@ public class SiteNodeController extends BaseController
 	 * This method deletes a siteNode and also erases all the children and all versions.
 	 */
 	    
-	public void delete(SiteNodeVO siteNodeVO, Database db) throws ConstraintException, SystemException, Exception
+	public void delete(SiteNodeVO siteNodeVO, Database db, InfoGluePrincipal infogluePrincipal) throws ConstraintException, SystemException, Exception
 	{
-		delete(siteNodeVO, db, false);
+		delete(siteNodeVO, db, false, infogluePrincipal);
 	}
 	
 	/**
 	 * This method deletes a siteNode and also erases all the children and all versions.
 	 */
 	    
-	public void delete(SiteNodeVO siteNodeVO, Database db, boolean forceDelete) throws ConstraintException, SystemException, Exception
+	public void delete(SiteNodeVO siteNodeVO, Database db, boolean forceDelete, InfoGluePrincipal infogluePrincipal) throws ConstraintException, SystemException, Exception
 	{
 		SiteNode siteNode = getSiteNodeWithId(siteNodeVO.getSiteNodeId(), db);
 		SiteNode parent = siteNode.getParentSiteNode();
@@ -188,12 +188,12 @@ public class SiteNodeController extends BaseController
 			{
 			    SiteNode candidate = (SiteNode)childSiteNodeIterator.next();
 			    if(candidate.getId().equals(siteNodeVO.getSiteNodeId()))
-			        deleteRecursive(siteNode, childSiteNodeIterator, db, forceDelete);
+			        deleteRecursive(siteNode, childSiteNodeIterator, db, forceDelete, infogluePrincipal);
 			}
 		}
 		else
 		{
-		    deleteRecursive(siteNode, null, db, forceDelete);
+		    deleteRecursive(siteNode, null, db, forceDelete, infogluePrincipal);
 		}
 	}        
 
@@ -204,7 +204,7 @@ public class SiteNodeController extends BaseController
 	 * We have to begin and commit all the time...
 	 */
 	
-    private static void deleteRecursive(SiteNode siteNode, Iterator parentIterator, Database db, boolean forceDelete) throws ConstraintException, SystemException, Exception
+    private static void deleteRecursive(SiteNode siteNode, Iterator parentIterator, Database db, boolean forceDelete, InfoGluePrincipal infoGluePrincipal) throws ConstraintException, SystemException, Exception
     {
         List referenceBeanList = RegistryController.getController().getReferencingObjectsForSiteNode(siteNode.getId(), -1, db);
 		if(referenceBeanList != null && referenceBeanList.size() > 0 && !forceDelete)
@@ -215,13 +215,13 @@ public class SiteNodeController extends BaseController
 		while(i.hasNext())
 		{
 			SiteNode childSiteNode = (SiteNode)i.next();
-			deleteRecursive(childSiteNode, i, db, forceDelete);
+			deleteRecursive(childSiteNode, i, db, forceDelete, infoGluePrincipal);
    		}
 		siteNode.setChildSiteNodes(new ArrayList());
 		
-		if(forceDelete || getIsDeletable(siteNode))
+		if(forceDelete || getIsDeletable(siteNode, infoGluePrincipal, db))
 	    {		 
-			SiteNodeVersionController.deleteVersionsForSiteNode(siteNode, db);
+			SiteNodeVersionController.deleteVersionsForSiteNode(siteNode, db, infoGluePrincipal);
 			
 			ServiceBindingController.deleteServiceBindingsReferencingSiteNode(siteNode, db);
 
@@ -241,10 +241,18 @@ public class SiteNodeController extends BaseController
 	 * are restricted in any other way.
 	 */
 	
-	private static boolean getIsDeletable(SiteNode siteNode) throws SystemException
+	private static boolean getIsDeletable(SiteNode siteNode, InfoGluePrincipal infogluePrincipal, Database db) throws SystemException, Exception
 	{
 		boolean isDeletable = true;
-	
+		
+		SiteNodeVersion latestSiteNodeVersion = SiteNodeVersionController.getController().getLatestActiveSiteNodeVersion(db, siteNode.getId());
+		if(latestSiteNodeVersion.getIsProtected().equals(SiteNodeVersionVO.YES))
+		{
+			boolean hasAccess = AccessRightController.getController().getIsPrincipalAuthorized(db, infogluePrincipal, "SiteNodeVersion.DeleteSiteNode", "" + latestSiteNodeVersion.getId());
+			if(!hasAccess)
+				return false;
+		}
+		
         Collection siteNodeVersions = siteNode.getSiteNodeVersions();
     	Iterator versionIterator = siteNodeVersions.iterator();
 		while (versionIterator.hasNext()) 

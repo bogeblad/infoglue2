@@ -40,7 +40,7 @@ public class ContentCleaner extends ContentFunction
 		{
 			if(getContentVO() != null)
 			{
-				ContentController.getContentController().delete(getContentVO(), getDatabase());
+				ContentController.getContentController().delete(getContentVO(), getPrincipal(), getDatabase());
 			}
 		} 
 		catch(Exception e) 

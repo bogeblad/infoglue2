@@ -23,10 +23,15 @@
 
 package org.infoglue.cms.applications.managementtool;
 
+import java.util.ArrayList;
+import java.util.Collections;
+
 import junit.framework.TestCase;
 
 import org.infoglue.cms.controllers.kernel.impl.simple.RepositoryController;
 import org.infoglue.cms.entities.management.RepositoryVO;
+import org.infoglue.cms.security.InfoGluePrincipal;
+import org.infoglue.cms.security.InfoGlueRole;
 import org.infoglue.cms.util.CmsPropertyHandler;
 
 /**
@@ -72,7 +77,7 @@ public class RepositoryTester extends TestCase
 
 	    try
 	    {
-	        RepositoryController.getController().delete(this.newRepositoryVO, "testcaseUser");
+	        RepositoryController.getController().delete(this.newRepositoryVO, "testcaseUser", new InfoGluePrincipal("test-user", "first", "last", "email", Collections.singletonList(new InfoGlueRole("cmsUser", "test description", null)), new ArrayList(), false, null));
 		}
 	    catch(Exception e)
 	    {

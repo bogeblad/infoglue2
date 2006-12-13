@@ -557,7 +557,7 @@ public class RemoteContentServiceImpl extends RemoteInfoGlueService
             ContentVO contentVO = new ContentVO();
             contentVO.setContentId(contentId);
             
-            ContentController.getContentController().delete(contentVO);
+            ContentController.getContentController().delete(contentVO, principal);
                
 	        logger.info("Done with contents..");
 

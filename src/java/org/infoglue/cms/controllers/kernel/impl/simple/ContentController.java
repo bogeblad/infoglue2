@@ -258,20 +258,20 @@ public class ContentController extends BaseController
 	 * This method deletes a content and also erases all the children and all versions.
 	 */
 	    
-    public void delete(ContentVO contentVO) throws ConstraintException, SystemException
+    public void delete(ContentVO contentVO, InfoGluePrincipal infogluePrincipal) throws ConstraintException, SystemException
     {
 	    Database db = CastorDatabaseService.getDatabase();
         beginTransaction(db);
 		try
         {		
-	    	delete(contentVO, db, false, false, false);
+	    	delete(contentVO, db, false, false, false, infogluePrincipal);
 	    	
 	    	commitTransaction(db);
             
         }
         catch(ConstraintException ce)
         {
-        	logger.error("An error occurred so we should not complete the transaction:" + ce, ce);
+        	logger.warn("An error occurred so we should not complete the transaction:" + ce, ce);
             rollbackTransaction(db);
             throw ce;
         }
@@ -289,16 +289,16 @@ public class ContentController extends BaseController
 	 * This method deletes a content and also erases all the children and all versions.
 	 */
 	    
-	public void delete(ContentVO contentVO, Database db) throws ConstraintException, SystemException, Exception
+	public void delete(ContentVO contentVO, InfoGluePrincipal infogluePrincipal, Database db) throws ConstraintException, SystemException, Exception
 	{
-	    delete(contentVO, db, false, false, false);
+	    delete(contentVO, db, false, false, false, infogluePrincipal);
 	}
 	
 	/**
 	 * This method deletes a content and also erases all the children and all versions.
 	 */
 	    
-	public void delete(ContentVO contentVO, Database db, boolean skipRelationCheck, boolean skipServiceBindings, boolean forceDelete) throws ConstraintException, SystemException, Exception
+	public void delete(ContentVO contentVO, Database db, boolean skipRelationCheck, boolean skipServiceBindings, boolean forceDelete, InfoGluePrincipal infogluePrincipal) throws ConstraintException, SystemException, Exception
 	{
 		Content content = null;
 		try
@@ -319,13 +319,13 @@ public class ContentController extends BaseController
 			    Content candidate = (Content)childContentIterator.next();
 			    if(candidate.getId().equals(contentVO.getContentId()))
 			    {
-			        deleteRecursive(content, childContentIterator, db, skipRelationCheck, skipServiceBindings, forceDelete);
+			        deleteRecursive(content, childContentIterator, db, skipRelationCheck, skipServiceBindings, forceDelete, infogluePrincipal);
 			    }
 			}
 		}
 		else
 		{
-		    deleteRecursive(content, null, db, skipRelationCheck, skipServiceBindings, forceDelete);
+		    deleteRecursive(content, null, db, skipRelationCheck, skipServiceBindings, forceDelete, infogluePrincipal);
 		}
 	}        
 
@@ -333,7 +333,7 @@ public class ContentController extends BaseController
 	 * Recursively deletes all contents and their versions. Also updates related entities about the change.
 	 */
 	
-    private static void deleteRecursive(Content content, Iterator parentIterator, Database db, boolean skipRelationCheck, boolean skipServiceBindings, boolean forceDelete) throws ConstraintException, SystemException, Exception
+    private static void deleteRecursive(Content content, Iterator parentIterator, Database db, boolean skipRelationCheck, boolean skipServiceBindings, boolean forceDelete, InfoGluePrincipal infogluePrincipal) throws ConstraintException, SystemException, Exception
     {
         if(!skipRelationCheck)
         {
@@ -347,12 +347,12 @@ public class ContentController extends BaseController
 		while(childrenIterator.hasNext())
 		{
 			Content childContent = (Content)childrenIterator.next();
-			deleteRecursive(childContent, childrenIterator, db, skipRelationCheck, skipServiceBindings, forceDelete);   			
+			deleteRecursive(childContent, childrenIterator, db, skipRelationCheck, skipServiceBindings, forceDelete, infogluePrincipal);   			
    		}
 		content.setChildren(new ArrayList());
 		
-   		if(forceDelete || getIsDeletable(content))
-	    {		 
+   		if(forceDelete || getIsDeletable(content, infogluePrincipal, db))
+	    {
 			ContentVersionController.getContentVersionController().deleteVersionsForContent(content, db, forceDelete);    	
 			
 			if(!skipServiceBindings)
@@ -384,10 +384,17 @@ public class ContentController extends BaseController
 	 * are restricted in any other way.
 	 */
 	
-	private static boolean getIsDeletable(Content content)
+	private static boolean getIsDeletable(Content content, InfoGluePrincipal infogluePrincipal, Database db) throws SystemException
 	{
 		boolean isDeletable = true;
 	
+		if(content.getIsProtected().equals(ContentVO.YES))
+		{
+			boolean hasAccess = AccessRightController.getController().getIsPrincipalAuthorized(db, infogluePrincipal, "Content.Delete", "" + content.getId());
+			if(!hasAccess)
+				return false;
+		}
+		
         Collection contentVersions = content.getContentVersions();
     	Iterator versionIterator = contentVersions.iterator();
 		while (versionIterator.hasNext()) 

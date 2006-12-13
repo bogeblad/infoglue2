@@ -490,7 +490,7 @@ public class SiteNodeVersionController extends BaseController
 	 * This methods deletes all versions for the siteNode sent in
 	 */
 
-	public static void deleteVersionsForSiteNode(SiteNode siteNode, Database db) throws ConstraintException, SystemException, Bug, Exception
+	public static void deleteVersionsForSiteNode(SiteNode siteNode, Database db, InfoGluePrincipal infoGluePrincipal) throws ConstraintException, SystemException, Bug, Exception
     {
        	Collection siteNodeVersions = Collections.synchronizedCollection(siteNode.getSiteNodeVersions());
        	Iterator siteNodeVersionIterator = siteNodeVersions.iterator();
@@ -508,7 +508,7 @@ public class SiteNodeVersionController extends BaseController
 				{
 				    if(!metaInfoContentDeleted)
 				    {
-				        deleteMetaInfoForSiteNodeVersion(db, serviceBinding);
+				        deleteMetaInfoForSiteNodeVersion(db, serviceBinding, infoGluePrincipal);
 				        metaInfoContentDeleted = true;
 				    }
 				    serviceBindingIterator.remove();
@@ -535,13 +535,13 @@ public class SiteNodeVersionController extends BaseController
 	 * @throws ConstraintException
 	 * @throws SystemException
 	 */
-	private static void deleteMetaInfoForSiteNodeVersion(Database db, ServiceBinding serviceBinding) throws ConstraintException, SystemException, Bug, Exception
+	private static void deleteMetaInfoForSiteNodeVersion(Database db, ServiceBinding serviceBinding, InfoGluePrincipal infoGluePrincipal) throws ConstraintException, SystemException, Bug, Exception
 	{
 		List boundContents = ContentController.getBoundContents(db, serviceBinding.getId()); 			
 		if(boundContents.size() > 0)
 		{
 			ContentVO contentVO = (ContentVO)boundContents.get(0);
-			ContentController.getContentController().delete(contentVO, db, true, true, true);
+			ContentController.getContentController().delete(contentVO, db, true, true, true, infoGluePrincipal);
 		}						
 	}
 	

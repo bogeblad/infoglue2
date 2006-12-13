@@ -287,7 +287,7 @@ public class ContentControllerProxy extends ContentController
     	
 		intercept(hashMap, "Content.Delete", infogluePrincipal);
 
-	    delete(contentVO);
+	    delete(contentVO, infogluePrincipal);
 	}   
 	
 	

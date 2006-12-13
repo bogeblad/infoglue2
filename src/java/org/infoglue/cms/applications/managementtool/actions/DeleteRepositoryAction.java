@@ -61,7 +61,7 @@ public class DeleteRepositoryAction extends InfoGlueAbstractAction
 		this.repositoryVO.setRepositoryId(this.getRepositoryId());
 		try
 		{
-			RepositoryController.getController().delete(this.repositoryVO, this.getInfoGluePrincipal().getName());
+			RepositoryController.getController().delete(this.repositoryVO, this.getInfoGluePrincipal().getName(), this.getInfoGluePrincipal());
 			return "success";
 		}
 		catch(ConstraintException ce)
@@ -85,7 +85,7 @@ public class DeleteRepositoryAction extends InfoGlueAbstractAction
 	    this.repositoryVO.setRepositoryId(this.getRepositoryId());
 		try
 		{
-			RepositoryController.getController().delete(this.repositoryVO, this.getInfoGluePrincipal().getName(), true);
+			RepositoryController.getController().delete(this.repositoryVO, this.getInfoGluePrincipal().getName(), true, this.getInfoGluePrincipal());
 			return "success";
 		}
 		catch(ConstraintException ce)

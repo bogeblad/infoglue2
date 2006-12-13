@@ -20,7 +20,7 @@
  *
  * ===============================================================================
  *
- * $Id: ContentDeliveryControllerTest.java,v 1.4 2006/03/06 16:58:49 mattias Exp $
+ * $Id: ContentDeliveryControllerTest.java,v 1.5 2006/12/13 15:16:32 mattias Exp $
  */
 package org.infoglue.deliver.controllers;
 
@@ -108,7 +108,7 @@ public class ContentDeliveryControllerTest extends InfoGlueTestCase
 		testDatabase.close();
 
 		for (Iterator i = allContent.iterator(); i.hasNext();)
-			contentStore.delete((ContentVO)i.next());
+			contentStore.delete((ContentVO)i.next(), getCmsUserPrincipal());
 		assertRemoved();
 
 		for (Iterator i = allCategories.iterator(); i.hasNext();)
