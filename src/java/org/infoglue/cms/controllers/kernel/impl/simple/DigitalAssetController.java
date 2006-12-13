@@ -25,18 +25,30 @@ package org.infoglue.cms.controllers.kernel.impl.simple;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
+import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
+import java.util.zip.ZipInputStream;
+import java.util.zip.ZipOutputStream;
 
 import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
+import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.entities.content.Content;
 import org.infoglue.cms.entities.content.ContentVersion;
 import org.infoglue.cms.entities.content.DigitalAsset;
@@ -734,8 +746,12 @@ public class DigitalAssetController extends BaseController
 			{
 				logger.info("Found a digital asset:" + digitalAsset.getAssetFileName());
 				String contentType = digitalAsset.getAssetContentType();
-				
-				if(contentType.equalsIgnoreCase("image/gif") || contentType.equalsIgnoreCase("image/jpg") || contentType.equalsIgnoreCase("image/pjpeg") || contentType.equalsIgnoreCase("image/jpeg"))
+				String assetFilePath = digitalAsset.getAssetFilePath();
+				if(assetFilePath.indexOf("IG_ARCHIVE:") > -1)
+				{
+					assetUrl = CmsPropertyHandler.getWebServerAddress() + "/" + CmsPropertyHandler.getImagesBaseUrl() + "/archivedAsset.gif";
+				}
+				else if(contentType.equalsIgnoreCase("image/gif") || contentType.equalsIgnoreCase("image/jpg") || contentType.equalsIgnoreCase("image/pjpeg") || contentType.equalsIgnoreCase("image/jpeg"))
 				{
 					String fileName = digitalAsset.getDigitalAssetId() + "_" + digitalAsset.getAssetFileName();
 					logger.info("fileName:" + fileName);
@@ -1152,6 +1168,231 @@ public class DigitalAssetController extends BaseController
 	{
 		return new DigitalAssetVO();
 	}
+
+	/**
+	 * This method archives selected assets and puts them into a zip-file which is returned as a url.
+	 * @param digitalAssetIdStrings
+	 * @return
+	 * @throws SystemException
+	 */
+	
+	public String archiveDigitalAssets(String[] digitalAssetIdStrings, StringBuffer archiveFileSize) throws SystemException 
+	{
+    	Database db = CastorDatabaseService.getDatabase();
+
+    	String assetUrl = null;
+
+        beginTransaction(db);
+
+        try
+        {
+        	String filePath = CmsPropertyHandler.getDigitalAssetPath();
+        	String archiveFileName = "assetArchive" + new VisualFormatter().formatDate(new Date(), "yyyy-MM-dd_HH-mm") + ".zip";
+			File outputFile = new File(filePath + File.separator + archiveFileName);
+
+        	String[] filenames = new String[digitalAssetIdStrings.length];
+        	Map names = new HashMap();
+        	
+        	for(int i = 0; i < digitalAssetIdStrings.length; i++)
+        	{
+        		Integer digitalAssetId = new Integer(digitalAssetIdStrings[i]);
+        		DigitalAsset digitalAsset = getDigitalAssetWithId(digitalAssetId, db);
+        		
+				String fileName = digitalAsset.getDigitalAssetId() + "_" + digitalAsset.getAssetFileName();
+				if(!outputFile.exists() || outputFile.length() == digitalAsset.getAssetFileSize())
+				{
+					dumpDigitalAsset(digitalAsset, fileName, filePath);
+				}
+
+				filenames[i] = 	"" + filePath + File.separator + fileName;	
+				names.put(filenames[i], fileName);
+				
+				digitalAsset.setAssetFilePath("IG_ARCHIVE:" + archiveFileName + ":" + fileName);
+				digitalAsset.setAssetFileSize(new Integer(-1));
+				digitalAsset.setAssetBlob(new ByteArrayInputStream("".getBytes()));
+        	}
+        	
+            // Create a buffer for reading the files
+            byte[] buf = new byte[1024];
+            
+            try 
+            {
+            	//System.out.println("Creating zip...");
+
+            	// Create the ZIP file				
+                ZipOutputStream out = new ZipOutputStream(new FileOutputStream(outputFile));
+            
+                //System.out.println("Creating zip 2...");
+
+                // Compress the files
+                for (int i=0; i<filenames.length; i++) 
+                {
+                    FileInputStream in = new FileInputStream(filenames[i]);
+                    //System.out.println("Creating zip 3...");
+            
+                    // Add ZIP entry to output stream.
+                    String fileName = filenames[i];
+                    String fileShortName = (String)names.get(fileName);
+                    //System.out.println("fileName:" + fileName);
+                    //System.out.println("fileShortName:" + fileShortName);
+                    
+                    out.putNextEntry(new ZipEntry(fileShortName));
+            
+                    // Transfer bytes from the file to the ZIP file
+                    int len;
+                    while ((len = in.read(buf)) > 0) 
+                    {
+                        out.write(buf, 0, len);
+                    }
+            
+                    // Complete the entry
+                    out.closeEntry();
+                    in.close();
+                }
+            
+                // Complete the ZIP file
+                out.close();
+
+                archiveFileSize.append(outputFile.length() / (1000 * 1000));
+        		//System.out.println("archiveFileSize:" + archiveFileSize);
+
+    			assetUrl = CmsPropertyHandler.getWebServerAddress() + "/" + CmsPropertyHandler.getDigitalAssetBaseUrl() + "/" + archiveFileName;
+            } 
+            catch (IOException e) 
+            {
+            	e.printStackTrace();
+            }
+
+            commitTransaction(db);
+        }
+        catch(Exception e)
+        {
+        	e.printStackTrace();
+            logger.info("An error occurred when we tried to cache and show the digital asset thumbnail:" + e);
+            rollbackTransaction(db);
+            throw new SystemException(e.getMessage());
+        }
+        
+		return assetUrl;
+	}
+
+	
+	/**
+	 * This method restores digital assets from a zip into the database again.
+	 * @param archiveFile
+	 * @return
+	 * @throws SystemException
+	 */
+	
+	public synchronized void restoreAssetArchive(File archiveFile) throws SystemException 
+	{
+        try
+        {
+        	String tempAssetsPath = CmsPropertyHandler.getDigitalAssetPath() + File.separator + "temp_" + archiveFile.hashCode();
+        	File tempAssetsFile = new File(tempAssetsPath);
+        	if(tempAssetsFile.exists())
+        		tempAssetsFile.delete();
+        	
+        	tempAssetsFile.mkdir();
+
+        	unzipFile(archiveFile, tempAssetsPath);
+        	
+        	String[] fileNames = tempAssetsFile.list();
+        	
+        	for (int i = 0; i < fileNames.length; i++) 
+            {
+        		Database db = CastorDatabaseService.getDatabase();
+
+                beginTransaction(db);
+                
+                try
+                {
+	        		String zipEntryName = fileNames[i];
+	                //System.out.println("path:" + tempAssetsPath + File.separator + zipEntryName);
+	        		File assetFile = new File(tempAssetsPath + File.separator + zipEntryName);
+	        		//System.out.println("assetFile:" + assetFile.exists());
+	                
+	        		FileInputStream is = new FileInputStream(assetFile);
+	        		String assetId = zipEntryName.substring(0, zipEntryName.indexOf("_"));
+	        		//System.out.println("zipEntryName:" + zipEntryName);
+	        		//System.out.println("assetId:" + assetId);
+	        		//System.out.println("assetLength:" + assetFile.length());
+	                
+	        		DigitalAsset digitalAsset = getDigitalAssetWithId(new Integer(assetId), db);
+	        		//System.out.println("digitalAsset: " + digitalAsset);
+	        		
+	        		digitalAsset.setAssetFilePath(zipEntryName);
+	    			digitalAsset.setAssetFileSize(new Integer((int)assetFile.length()));
+	    			digitalAsset.setAssetBlob(is);
+
+	                commitTransaction(db);
+	                
+	            	is.close();
+                }
+                catch(Exception e)
+                {
+                	rollbackTransaction(db);
+                    logger.error("An error occurred when we tried to cache and show the digital asset thumbnail:" + e);
+                    throw new SystemException(e.getMessage());
+                }
+            }     
+        	
+        	if(tempAssetsFile.exists())
+        		tempAssetsFile.delete();
+        }
+        catch(Exception e)
+        {
+        	e.printStackTrace();
+            logger.error("An error occurred when we tried to cache and show the digital asset thumbnail:" + e);
+            throw new SystemException(e.getMessage());
+        }
+	}
+	
+	/**
+	 * This method unzips the cms war-file.
+	 */
+	
+	protected void unzipFile(File file, String targetFolder) throws Exception
+	{
+    	Enumeration entries;
+    	
+    	ZipFile zipFile = new ZipFile(file);
+    	
+      	entries = zipFile.entries();
+
+      	while(entries.hasMoreElements()) 
+      	{
+        	ZipEntry entry = (ZipEntry)entries.nextElement();
+
+	        if(entry.isDirectory()) 
+	        {
+	          	(new File(targetFolder + File.separator + entry.getName())).mkdir();
+	          	continue;
+	        }
+	
+	        //System.err.println("Extracting file: " + this.cmsTargetFolder + File.separator + entry.getName());
+	        copyInputStream(zipFile.getInputStream(entry), new BufferedOutputStream(new FileOutputStream(targetFolder + File.separator + entry.getName())));
+	    }
+	
+	    zipFile.close();
+	}
+	
+
+	/**
+	 * Just copies the files...
+	 */
+	
+	protected void copyInputStream(InputStream in, OutputStream out) throws IOException
+	{
+	    byte[] buffer = new byte[1024];
+    	int len;
+
+    	while((len = in.read(buffer)) >= 0)
+      		out.write(buffer, 0, len);
+
+    	in.close();
+    	out.close();    	
+  	}
 
 }
 

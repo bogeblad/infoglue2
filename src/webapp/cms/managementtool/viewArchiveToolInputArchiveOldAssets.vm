@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+#beginManagementTool("tool.managementtool.viewSystemTools.header" "tool.managementtool.viewSystemTools.header" "")
+
+<div class="fullymarginalized" style="color: black;">
+
+	<h2>$ui.getString("tool.managementtool.archiveTool.header")</h2>
+	<p>
+		$ui.getString("tool.managementtool.archiveAssets.intro")
+	</p>
+	<p>
+		<form name="inputForm" action="ViewArchiveTool!inputArchiveOldAssets.action" method="POST">
+ 		
+ 		$ui.getString("tool.managementtool.archiveAssets.assetSizeLabel"): 
+ 		<select name="assetFileSizeLimit">
+ 			<option value="50000" #checkSelected("50000" "$assetFileSizeLimit")>50 KB</option>
+ 			<option value="100000" #checkSelected("100000" "$assetFileSizeLimit")>100 KB</option>
+ 			<option value="300000" #checkSelected("300000" "$assetFileSizeLimit")>300 KB</option>
+ 			<option value="500000" #checkSelected("500000" "$assetFileSizeLimit")>500 KB</option>
+ 			<option value="1000000" #checkSelected("1000000" "$assetFileSizeLimit")>1 MB</option>
+ 			<option value="5000000" #checkSelected("5000000" "$assetFileSizeLimit")>5 MB</option>
+ 			<option value="10000000" #checkSelected("10000000" "$assetFileSizeLimit")>10 MB</option>
+ 		</select>
+ 		<br/>
+ 		$ui.getString("tool.managementtool.archiveAssets.numberOfNewerVersionsLabel"): 
+ 		<select name="numberOfVersionsToKeep">
+ 			<option value="1" #checkSelected("1" "$numberOfVersionsToKeep")>1</option>
+ 			<option value="2" #checkSelected("2" "$numberOfVersionsToKeep")>2</option>
+ 			<option value="3" #checkSelected("3" "$numberOfVersionsToKeep")>3</option>
+ 			<option value="4" #checkSelected("4" "$numberOfVersionsToKeep")>4</option>
+ 			<option value="5" #checkSelected("5" "$numberOfVersionsToKeep")>5</option>
+ 			<option value="6" #checkSelected("6" "$numberOfVersionsToKeep")>6</option>
+ 		</select>
+ 		<br/>
+ 		<br/>
+ 		<input type="submit" value="Calculate"/>
+ 		</form>
+	</p>
+	
+	<p>
+ 		<h3>$ui.getString("tool.managementtool.archiveAssets.foundAssetsLabel")</h3>		
+		<form name="inputForm" action="ViewArchiveTool!archiveOldAssets.action" method="POST">
+		 	#foreach($digitalAssetVO in $optimizationBeanList.digitalAssetVOList)
+				<input type="checkbox" name="digitalAssetId" value="$digitalAssetVO.digitalAssetId"/>$digitalAssetVO.assetKey ($digitalAssetVO.assetFileSize bytes)<br>
+			#end
+			<br/>
+			In total $optimizationBeanList.totalAssetSizeInMB MB would be removed ($optimizationBeanList.totalAssets assets - $optimizationBeanList.totalAssetsWithoutVersion was not owned by a content version).
+			<br/>
+			<br/>
+	 		<input type="submit" value="Archive selected files"/>
+		</form>
+	</p>
+	
+	
+#endManagementTool()

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+#beginManagementTool("tool.managementtool.viewSystemTools.header" "tool.managementtool.viewSystemTools.header" "")
+
+<div class="fullymarginalized">
+
+	<h2>$ui.getString("tool.managementtool.systemTools.header")</h2>
+	<p class="systemImageLink archiveImage">
+		<a href="ViewArchiveTool!input.action" class="systemLinkLabel">$ui.getString("tool.managementtool.archiveTool.title")</a>
+	</p>
+	<p class="systemImageLink validationImage">
+		<a href="InstallationValidator!input.action?title=Validation" class="systemLinkLabel">$ui.getString("tool.managementtool.validationTool.title")</a>
+	</p>
+	
+#endManagementTool()

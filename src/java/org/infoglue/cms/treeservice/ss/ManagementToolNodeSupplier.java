@@ -96,13 +96,14 @@ public class ManagementToolNodeSupplier extends BaseNodeSupplier
 			//r.add(new ManagementNodeImpl(cnt++, "Workflows", "ViewListWorkflow.action?title=Workflows"));
 			//r.add(new ManagementNodeImpl(cnt++, "TransactionHistory", "ViewListTransactionHistory.action?title=TransactionHistory"));
 			r.add(new ManagementNodeImpl(cnt++, "Up2Date", "ViewListUp2Date.action?title=InfoGlue Up2Date"));
-			r.add(new ManagementNodeImpl(cnt++, "Validation", "InstallationValidator!input.action?title=Validation"));
+			//r.add(new ManagementNodeImpl(cnt++, "Validation", "InstallationValidator!input.action?title=Validation"));
 			r.add(new ManagementNodeImpl(cnt++, "Workflows", "ViewListWorkflowDefinition.action"));
 			r.add(new ManagementNodeImpl(cnt++, "Portlets", "ViewListPortlet.action"));
 			r.add(new ManagementNodeImpl(cnt++, "Redirects", "ViewListRedirect.action"));
 			r.add(new ManagementNodeImpl(cnt++, "Application settings", "ViewListServerNode.action"));
 			r.add(new ManagementNodeImpl(cnt++, "Message center", "ViewMessageCenter.action"));
 			r.add(new ManagementNodeImpl(cnt++, "Diagnostics and status", "ViewDiagnosticCenter.action"));
+		    r.add(new ManagementNodeImpl(cnt++, "System tools", "ViewSystemTools.action"));
 		}
 		/*else if(parentNode.intValue() > 100 || parentNode.intValue() < 0)
 		{
