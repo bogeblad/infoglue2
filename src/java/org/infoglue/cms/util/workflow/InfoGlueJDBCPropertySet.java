@@ -349,8 +349,10 @@ public class InfoGlueJDBCPropertySet extends JDBCPropertySet
             ps.executeUpdate();
             ps.close();
             
-            valueMap.remove(key);
-            typeMap.remove(key);
+            if(valueMap != null)
+            	valueMap.remove(key);
+            if(typeMap != null)
+            	typeMap.remove(key);
         } 
         catch (SQLException e) 
         {
@@ -610,6 +612,11 @@ public class InfoGlueJDBCPropertySet extends JDBCPropertySet
         default:
             throw new PropertyException("This type isn't supported!");
         }
+        
+        if(valueMap == null)
+        	valueMap = new HashMap();
+        if(typeMap == null)
+        	typeMap = new HashMap();
         
         valueMap.put(key, value);
         typeMap.put(key, new Integer(type));
