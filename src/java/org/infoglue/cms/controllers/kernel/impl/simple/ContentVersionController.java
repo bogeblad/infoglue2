@@ -38,6 +38,7 @@ import org.exolab.castor.jdo.Database;
 import org.exolab.castor.jdo.OQLQuery;
 import org.exolab.castor.jdo.QueryResults;
 import org.infoglue.cms.applications.common.VisualFormatter;
+import org.infoglue.cms.applications.databeans.OptimizationBeanList;
 import org.infoglue.cms.entities.content.Content;
 import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.content.ContentVersion;
@@ -854,7 +855,7 @@ public class ContentVersionController extends BaseController
         }
         catch(ConstraintException ce)
         {
-        	logger.error("Validation error:" + ce, ce);
+        	logger.warn("Validation error:" + ce, ce);
             rollbackTransaction(db);
             throw ce;
         }
@@ -1380,5 +1381,99 @@ public class ContentVersionController extends BaseController
 		
 	}
 
+	/**
+	 * This method are here to return all content versions that have somewhat heavy digitalAssets
+	 * and are x number of versions behind the current active version. This is for archiving purposes.
+	 * 
+	 * @param numberOfVersionsToKeep
+	 * @param assetSizeLimit
+	 * @return
+	 * @throws SystemException 
+	 */
+	
+	public OptimizationBeanList getHeavyContentVersions(int numberOfVersionsToKeep, int assetSizeLimit) throws SystemException 
+	{
+    	Database db = CastorDatabaseService.getDatabase();
+    	
+    	OptimizationBeanList optimizationBeanList = new OptimizationBeanList();
+
+        beginTransaction(db);
+
+        try
+        {
+            OQLQuery oql = db.getOQLQuery( "SELECT da FROM org.infoglue.cms.entities.content.impl.simple.DigitalAssetImpl da WHERE da.assetFileSize >= $1 ORDER BY da.digitalAssetId asc");
+        	oql.bind(assetSizeLimit);
+        	
+        	QueryResults results = oql.execute(Database.ReadOnly);
+			
+			while (results.hasMore()) 
+            {
+				boolean keep = true;
+            	
+				DigitalAsset digitalAsset = (DigitalAsset)results.next();
+            	//System.out.println("found one:" + digitalAsset.getId() + ":" + digitalAsset.getAssetKey() + ":" + digitalAsset.getAssetContentType());
+            	if(digitalAsset.getAssetKey().equals("portletentityregistry.xml"))
+            		keep = false;
+            	
+            	Collection contentVersions = digitalAsset.getContentVersions();
+            	Iterator contentVersionsIterator = contentVersions.iterator();
+            	while(contentVersionsIterator.hasNext())
+            	{
+            		ContentVersion contentVersion = (ContentVersion)contentVersionsIterator.next();
+            		//System.out.println("contentVersion:" + contentVersion.getId() + ":" + contentVersion.getIsActive());
+            		if(!isOldVersion(contentVersion, numberOfVersionsToKeep))
+            			keep = false;
+            	}
+            	
+            	if(keep)
+            	{
+            		//System.out.println("Adding asset:" + digitalAsset.getId() + ":" + digitalAsset.getAssetKey() + ":" + contentVersions.size());
+	            	optimizationBeanList.addDigitalAsset(digitalAsset);
+	            	optimizationBeanList.addEventVersions(toVOList(contentVersions));
+            	}
+            }
+            
+			results.close();
+			oql.close();
+
+			commitTransaction(db);
+        }
+        catch(Exception e)
+        {
+            logger.error("An error occurred so we should not completes the transaction:" + e, e);
+            rollbackTransaction(db);
+            throw new SystemException(e.getMessage());
+        }
+        
+		return optimizationBeanList;
+	}
+
+	private boolean isOldVersion(ContentVersion contentVersion, int minNewerVersions)
+	{
+		Integer contentVersionId = contentVersion.getValueObject().getId();
+		Integer language = contentVersion.getValueObject().getLanguageId();
+		
+		boolean isOldVersion = false;
+		int numberOfNewerVersions = 0;
+		
+		Content content = contentVersion.getOwningContent();
+		Collection contentVersions = content.getContentVersions();
+		Iterator contentVersionsIterator = contentVersions.iterator();
+		while(contentVersionsIterator.hasNext())
+		{
+			ContentVersion currentContentVersion = (ContentVersion)contentVersionsIterator.next();
+			if(currentContentVersion.getValueObject().getLanguageId().intValue() == language.intValue())
+			{
+				if(currentContentVersion.getValueObject().getId().intValue() > contentVersionId.intValue())
+				{
+					numberOfNewerVersions++;
+				}
+			}
+		}
+		//System.out.println("numberOfNewerVersions:" + numberOfNewerVersions);
+		//System.out.println("minNewerVersions:" + minNewerVersions);
+
+		return numberOfNewerVersions >= minNewerVersions;
+	}
 
 }
