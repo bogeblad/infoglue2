@@ -57,7 +57,7 @@ public class OptimizationBeanList extends ArrayList
 	public void addDigitalAsset(DigitalAsset digitalAsset)
 	{
 		totalAssets++;
-		totalAssetSize = totalAssetSize + digitalAsset.getAssetFileSize();
+		totalAssetSize = totalAssetSize + digitalAsset.getAssetFileSize().intValue();
 		digitalAssetVOList.add(digitalAsset.getValueObject());
 	}
 
@@ -81,12 +81,13 @@ public class OptimizationBeanList extends ArrayList
 		return totalAssetSize / (1000 * 1000);
 	}
 
-	public int getTotalAssetsWithoutVersion() {
+	public int getTotalAssetsWithoutVersion() 
+	{
 		return totalAssetsWithoutVersion;
 	}
 
-
-	public List getDigitalAssetVOList() {
+	public List getDigitalAssetVOList() 
+	{
 		return digitalAssetVOList;
 	}
 }

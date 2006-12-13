@@ -1199,7 +1199,7 @@ public class DigitalAssetController extends BaseController
         		DigitalAsset digitalAsset = getDigitalAssetWithId(digitalAssetId, db);
         		
 				String fileName = digitalAsset.getDigitalAssetId() + "_" + digitalAsset.getAssetFileName();
-				if(!outputFile.exists() || outputFile.length() == digitalAsset.getAssetFileSize())
+				if(!outputFile.exists() || outputFile.length() == digitalAsset.getAssetFileSize().intValue())
 				{
 					dumpDigitalAsset(digitalAsset, fileName, filePath);
 				}
