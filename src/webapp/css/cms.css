@@ -605,4 +605,32 @@ a:active {
 	font-size: 10pt;
 	background-image: url('../images/handleBackground.gif');
 	}
-	
+
+h2 {
+	font-size        : 20pt;
+	font-weight		 : 900;
+	color			 : black;
+}
+
+.systemLinkLabel {
+	font-size        : 10pt;
+	font-weight		 : bold;
+	color			 : black;
+}
+
+.systemImageLink {
+	height: 30px;
+	padding-left: 50px;
+	padding-top: 20px;
+	vertical-align: middle;	
+}
+
+.archiveImage {
+	background-image: url('../images/archiveIcon.gif');
+	background-repeat: no-repeat;
+}
+
+.validationImage {
+	background-image: url('../images/validationIcon.gif');
+	background-repeat: no-repeat;		
+}
