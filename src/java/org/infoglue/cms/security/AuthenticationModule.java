@@ -89,7 +89,13 @@ public abstract class AuthenticationModule
 				{
 					successLoginUrl = successLoginUrl.substring(0, index);
 				}
+				int index2 = successLoginUrl.indexOf("?ticket=");
+				if(index2 > -1)
+				{
+					successLoginUrl = successLoginUrl.substring(0, index2);
+				}
 				logger.info("successLoginUrl:" + successLoginUrl);
+
 				authenticationModule.setCasServiceUrl(successLoginUrl);
 				authenticationModule.setSuccessLoginUrl(successLoginUrl);
 			}
@@ -175,4 +181,5 @@ public abstract class AuthenticationModule
 
 	public abstract void setTransactionObject(Object transactionObject);
 
+	//public abstract boolean enforceJ2EEContainerPrincipal();
 }
