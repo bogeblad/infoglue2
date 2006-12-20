@@ -119,7 +119,7 @@ public class InfoGlueAuthenticationFilter implements Filter
 
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain fc) throws ServletException, IOException 
     {		
-		HttpServletRequest httpServletRequest = (HttpServletRequest)request;
+    	HttpServletRequest httpServletRequest = (HttpServletRequest)request;
 		HttpServletResponse httpServletResponse = (HttpServletResponse)response;
 		
 		String URI = httpServletRequest.getRequestURI();
@@ -129,13 +129,13 @@ public class InfoGlueAuthenticationFilter implements Filter
 			logger.info("URI: + " + URI);
 			logger.info("URL: + " + URL);
 		}
-		
+
 		if(URI.indexOf(loginUrl) > -1 || URL.indexOf(loginUrl) > -1 || URI.indexOf(invalidLoginUrl) > -1 || URL.indexOf(invalidLoginUrl) > -1 || URI.indexOf(logoutUrl) > -1 || URL.indexOf(logoutUrl) > -1 || URI.indexOf("UpdateCache") > -1 || URI.indexOf("protectedRedirect.jsp") > -1)
 		{
 			fc.doFilter(request, response); 
 			return;
    	 	}
-						
+
 		// make sure we've got an HTTP request
 		if (!(request instanceof HttpServletRequest) || !(response instanceof HttpServletResponse))
 		  throw new ServletException("InfoGlue Filter protects only HTTP resources");
@@ -313,7 +313,13 @@ public class InfoGlueAuthenticationFilter implements Filter
   	{
   		String authenticatedUserName = null;
   		
-  		AuthenticationModule authenticationModule = AuthenticationModule.getAuthenticationModule(null, null);
+  		String currentUrl = null;
+		if(this.casServiceUrl.equals("$currentUrl"))
+		{
+			currentUrl = request.getRequestURL() + (request.getQueryString() == null ? "" : "?" + request.getQueryString());
+		}
+
+  		AuthenticationModule authenticationModule = AuthenticationModule.getAuthenticationModule(null, currentUrl);
   		
   		/*
   		AuthenticationModule authenticationModule = (AuthenticationModule)Class.forName(authenticatorClass).newInstance();

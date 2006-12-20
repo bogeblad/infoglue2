@@ -292,7 +292,8 @@ public class CASBasicAuthenticationModule extends AuthenticationModule//, Author
 		
 		/* set its parameters */
 		pv.setCasValidateUrl(casValidateUrl);
-		
+				
+		System.out.println("validating: " + casServiceUrl);
 		pv.setService(URLEncoder.encode(casServiceUrl, "UTF-8"));
 
 		pv.setServiceTicket(ticket);
@@ -310,7 +311,8 @@ public class CASBasicAuthenticationModule extends AuthenticationModule//, Author
 		/* if we want to look at the raw response, we can use getResponse() */
 		String xmlResponse = pv.getResponse();
 		logger.info("xmlResponse:" + xmlResponse);
-		
+		System.out.println("xmlResponse:" + xmlResponse);
+
 		/* read the response */
 		if(pv.isAuthenticationSuccesful()) 
 		{
@@ -352,7 +354,14 @@ public class CASBasicAuthenticationModule extends AuthenticationModule//, Author
 	
 	public boolean logoutUser(HttpServletRequest request, HttpServletResponse response) throws Exception 
 	{
-		response.sendRedirect(this.getCasLogoutUrl() + "?service=" + this.getCasServiceUrl());
+		if(this.casServiceUrl.equals("$currentUrl"))
+		{
+		  	String originalFullURL = getCurrentURL(request);
+		  	System.out.println("originalFullURL:" + originalFullURL);
+		  	this.casServiceUrl = originalFullURL;
+		}
+
+		response.sendRedirect(this.getCasLogoutUrl() + "?service=" + this.casServiceUrl);
 		
 		return true;
 	}
@@ -369,14 +378,23 @@ public class CASBasicAuthenticationModule extends AuthenticationModule//, Author
 		  	+ "parameters: edu.yale.its.tp.cas.client.filter.serviceUrl or "
 		  	+ "edu.yale.its.tp.cas.client.filter.serverName");
 
-	  	// use the given string if it's provided
+		if(this.casServiceUrl.equals("$currentUrl"))
+		{
+		  	String originalFullURL = getCurrentURL(request);
+		  	System.out.println("originalFullURL:" + originalFullURL);
+		  	this.casServiceUrl = originalFullURL;
+		}
+
 	  	if (casServiceUrl != null && casServiceUrl.length() > 0)
 			return URLEncoder.encode(casServiceUrl, "UTF-8");
 	  	else
-			// otherwise, return our best guess at the service
 			return Util.getService(request, serverName);
 	} 
-	
+
+	public String getCurrentURL(HttpServletRequest request)
+	{
+		return request.getRequestURL() + (request.getQueryString() == null ? "" : "?" + request.getQueryString());
+	}
 
 	public String getAuthenticatorClass()
 	{
@@ -584,6 +602,11 @@ public class CASBasicAuthenticationModule extends AuthenticationModule//, Author
 	public void setSuccessLoginUrl(String successLoginUrl)
 	{
 		this.successLoginUrl = successLoginUrl;
+	}
+
+	public boolean enforceJ2EEContainerPrincipal() 
+	{
+		return false;
 	}
 
 }
