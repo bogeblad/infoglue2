@@ -239,8 +239,8 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule, Serial
 			}
 			catch(Exception e)
 			{
-			    if(infogluePrincipal != null)
-			    	CacheController.cacheObjectInAdvancedCache("JNDIAuthorizationCache", key, new NullObject(), null, false);
+				e.printStackTrace();
+			    CacheController.cacheObjectInAdvancedCache("JNDIAuthorizationCache", key, new NullObject(), null, false);
 			}
 			finally
 			{
