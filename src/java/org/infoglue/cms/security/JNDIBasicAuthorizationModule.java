@@ -198,7 +198,7 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule, Serial
 	    String key = "user_" + userName;
 	    InfoGluePrincipal infogluePrincipal = null;
 	    Object infogluePrincipalObject = CacheController.getCachedObjectFromAdvancedCache("JNDIAuthorizationCache", key, new Integer(userCacheTimeout).intValue());
-		if(infogluePrincipal != null)
+		if(infogluePrincipalObject != null)
 		{
 			if(infogluePrincipalObject instanceof NullObject)
 			{
