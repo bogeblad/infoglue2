@@ -206,6 +206,16 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule, Serial
 		}
 		else
 		{	
+			String userCacheTimeout = this.extraProperties.getProperty("userCacheTimeout", "1800");
+
+		    String key = "user_" + userName;
+		    infogluePrincipal = (InfoGluePrincipal)CacheController.getCachedObjectFromAdvancedCache("JNDIAuthorizationCache", key, new Integer(userCacheTimeout).intValue());
+			if(infogluePrincipal != null)
+			{
+				System.out.println("Returning cached user:" + userName + ":" + infogluePrincipal);
+				return infogluePrincipal;
+			}
+			
 			DirContext ctx = getContext();
 			
 			Map userAttributes = getUserAttributes(userName, ctx);
@@ -214,6 +224,9 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule, Serial
 			
 			infogluePrincipal = new InfoGluePrincipal(userName, (String)userAttributes.get("firstName"), (String)userAttributes.get("lastName"), (String)userAttributes.get("mail"), roles, groups, isAdministrator, this);
 			
+		    if(infogluePrincipal != null)
+		    	CacheController.cacheObjectInAdvancedCache("JNDIAuthorizationCache", key, infogluePrincipal, null, false);
+
 			ctx.close();
 		}
 		
