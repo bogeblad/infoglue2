@@ -70,6 +70,14 @@
 			<param-name>org.infoglue.cms.security.extraParametersFile</param-name>
 			<param-value>InfoGlueAuthorizationParameters.properties</param-value>
 		</init-param>
+		<init-param>
+            <param-name>FilterURIs</param-name>
+            <param-value>
+                /UpdateCache.action,
+                *.xml
+            </param-value>
+        </init-param>
+		
 	</filter>
 	
 	<!-- Define filter mappings for the defined filters -->
@@ -85,7 +93,7 @@
 	
 	<filter-mapping>
 		<filter-name>InfoGlue Authentication Filter</filter-name>
-		<url-pattern>*.action</url-pattern>
+		<url-pattern>/*</url-pattern>
 	</filter-mapping>
 
 	<listener>

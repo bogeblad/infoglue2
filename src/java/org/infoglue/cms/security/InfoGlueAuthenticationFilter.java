@@ -27,11 +27,15 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.StringTokenizer;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -47,6 +51,7 @@ import org.apache.log4j.Logger;
 import org.infoglue.cms.applications.common.Session;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.util.CmsPropertyHandler;
+import org.infoglue.deliver.applications.filters.URIMatcher;
 import org.infoglue.deliver.util.CacheController;
 
 /**
@@ -76,6 +81,11 @@ public class InfoGlueAuthenticationFilter implements Filter
 	public static String casLogoutUrl			= null;
 	public static String casRenew				= null;
  	
+    private static String FILTER_URIS_PARAMETER = "FilterURIs";
+
+    private FilterConfig filterConfig = null;
+    private URIMatcher uriMatcher = null;
+
 	public void init(FilterConfig config) throws ServletException 
 	{
 		loginUrl 			= config.getInitParameter("org.infoglue.cms.security.loginUrl");
@@ -114,8 +124,13 @@ public class InfoGlueAuthenticationFilter implements Filter
 		{
 			e.printStackTrace();
 		}
+		
+        this.filterConfig = config;
+        String filterURIs = filterConfig.getInitParameter(FILTER_URIS_PARAMETER);
+        uriMatcher = URIMatcher.compilePatterns(splitString(filterURIs, ","), false);
 	}
-
+    
+	
 
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain fc) throws ServletException, IOException 
     {		
@@ -130,7 +145,9 @@ public class InfoGlueAuthenticationFilter implements Filter
 			logger.info("URL: + " + URL);
 		}
 
-		if(URI.indexOf(loginUrl) > -1 || URL.indexOf(loginUrl) > -1 || URI.indexOf(invalidLoginUrl) > -1 || URL.indexOf(invalidLoginUrl) > -1 || URI.indexOf(logoutUrl) > -1 || URL.indexOf(logoutUrl) > -1 || URI.indexOf("UpdateCache") > -1 || URI.indexOf("protectedRedirect.jsp") > -1)
+		String requestURI = URLDecoder.decode(getContextRelativeURI(httpServletRequest), "UTF-8");
+
+		if(URI.indexOf(loginUrl) > -1 || URL.indexOf(loginUrl) > -1 || URI.indexOf(invalidLoginUrl) > -1 || URL.indexOf(invalidLoginUrl) > -1 || URI.indexOf(logoutUrl) > -1 || URL.indexOf(logoutUrl) > -1 || URI.indexOf("UpdateCache") > -1 || URI.indexOf("protectedRedirect.jsp") > -1 || uriMatcher.matches(requestURI))
 		{
 			fc.doFilter(request, response); 
 			return;
@@ -576,6 +593,42 @@ public class InfoGlueAuthenticationFilter implements Filter
 			throw new SystemException("Setting the security parameters failed: " + e.getMessage(), e);
 		}
 	}
+
+    private String getContextRelativeURI(HttpServletRequest request) 
+    {
+        String requestURI = request.getRequestURI();
+        String contextPath = request.getContextPath();
+        if (contextPath != null && requestURI.length() > 0) 
+        {
+            requestURI = requestURI.substring(contextPath.length(), requestURI.length());
+        }
+        
+        if (requestURI.length() == 0)
+            return "/";
+        
+        return requestURI;
+    }
+
+    private String[] splitString(String str, String delimiter) 
+    {
+        List list = new ArrayList();
+        StringTokenizer st = new StringTokenizer(str, delimiter);
+        while (st.hasMoreTokens()) 
+        {
+            // Updated to handle portal-url:s
+            String t = st.nextToken();
+            if (t.startsWith("_")) 
+            {
+                break;
+            } 
+            else 
+            {
+                // Not related to portal - add
+                list.add(t.trim());
+            }
+        }
+        return (String[]) list.toArray(new String[list.size()]);
+    }
 
 }
  
