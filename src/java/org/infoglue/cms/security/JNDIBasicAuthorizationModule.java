@@ -100,6 +100,8 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule, Serial
 	
 	public DirContext getContext() throws Exception
 	{
+		System.out.println("Creating JNDI-context...");
+		
 		String connectionURL 		= this.extraProperties.getProperty("connectionURL");
 		String ldapVersion			= this.extraProperties.getProperty("ldapVersion");
 		String socketFactory		= this.extraProperties.getProperty("socketFactory");
@@ -467,7 +469,7 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule, Serial
 		Map userAttributes = new HashMap();
 		
 		String roleBase 			= this.extraProperties.getProperty("roleBase");
-		String userBase				= this.extraProperties.getProperty("userBase");
+		String userBase				= this.extraProperties.getProperty("userBase");		
 		String userSearch			= this.extraProperties.getProperty("userSearch");
 		String userAttributesFilter	= this.extraProperties.getProperty("userAttributesFilter");
 		
@@ -481,11 +483,13 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule, Serial
 		try 
 		{
 			String baseDN = userBase;
-			
+				
 	        String anonymousUserName = CmsPropertyHandler.getAnonymousUser();
 	        if(userName.equals(anonymousUserName))
 	        {
-	            baseDN = this.extraProperties.getProperty("anonymousUserBase");
+	            String anonymousUserBase = this.extraProperties.getProperty("anonymousUserBase");
+	        	if(anonymousUserBase != null && !anonymousUserBase.equals(""))
+	        		baseDN = anonymousUserBase;
 	        }
 
 			String searchFilter = "(CN=" + userName +")";
