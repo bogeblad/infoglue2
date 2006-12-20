@@ -54,6 +54,7 @@ import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.deliver.util.CacheController;
+import org.infoglue.deliver.util.NullObject;
 
 /**
  * @author Mattias Bogeblad
@@ -192,8 +193,25 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule, Serial
 	
 	public InfoGluePrincipal getAuthorizedInfoGluePrincipal(String userName) throws Exception
 	{
-		InfoGluePrincipal infogluePrincipal = null;
-		
+		String userCacheTimeout = this.extraProperties.getProperty("userCacheTimeout", "1800");
+
+	    String key = "user_" + userName;
+	    InfoGluePrincipal infogluePrincipal = null;
+	    Object infogluePrincipalObject = CacheController.getCachedObjectFromAdvancedCache("JNDIAuthorizationCache", key, new Integer(userCacheTimeout).intValue());
+		if(infogluePrincipal != null)
+		{
+			if(infogluePrincipalObject instanceof NullObject)
+			{
+				return null;
+			}
+			else
+			{
+				infogluePrincipal = (InfoGluePrincipal)infogluePrincipalObject;
+				System.out.println("Returning cached user:" + userName + ":" + infogluePrincipal);
+				return infogluePrincipal;
+			}
+		}
+
 		String administratorUserName = CmsPropertyHandler.getAdministratorUserName();
 		String administratorEmail 	 = CmsPropertyHandler.getAdministratorEmail();
 		//String administratorUserName = CmsPropertyHandler.getProperty("administratorUserName");
@@ -205,17 +223,7 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule, Serial
 			infogluePrincipal = new InfoGluePrincipal(userName, "System", "Administrator", administratorEmail, new ArrayList(), new ArrayList(), isAdministrator, this);
 		}
 		else
-		{	
-			String userCacheTimeout = this.extraProperties.getProperty("userCacheTimeout", "1800");
-
-		    String key = "user_" + userName;
-		    infogluePrincipal = (InfoGluePrincipal)CacheController.getCachedObjectFromAdvancedCache("JNDIAuthorizationCache", key, new Integer(userCacheTimeout).intValue());
-			if(infogluePrincipal != null)
-			{
-				System.out.println("Returning cached user:" + userName + ":" + infogluePrincipal);
-				return infogluePrincipal;
-			}
-			
+		{				
 			DirContext ctx = getContext();
 			
 			try
@@ -225,16 +233,21 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule, Serial
 				List groups = getGroups(userName, ctx);
 				
 				infogluePrincipal = new InfoGluePrincipal(userName, (String)userAttributes.get("firstName"), (String)userAttributes.get("lastName"), (String)userAttributes.get("mail"), roles, groups, isAdministrator, this);
-				
+
 			    if(infogluePrincipal != null)
 			    	CacheController.cacheObjectInAdvancedCache("JNDIAuthorizationCache", key, infogluePrincipal, null, false);
+			}
+			catch(Exception e)
+			{
+			    if(infogluePrincipal != null)
+			    	CacheController.cacheObjectInAdvancedCache("JNDIAuthorizationCache", key, new NullObject(), null, false);
 			}
 			finally
 			{
 				ctx.close();
 			}
 		}
-		
+	    	
 		return infogluePrincipal;
 	}
 
