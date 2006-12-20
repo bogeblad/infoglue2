@@ -218,16 +218,21 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule, Serial
 			
 			DirContext ctx = getContext();
 			
-			Map userAttributes = getUserAttributes(userName, ctx);
-			List roles = getRoles(userName, ctx);
-			List groups = getGroups(userName, ctx);
-			
-			infogluePrincipal = new InfoGluePrincipal(userName, (String)userAttributes.get("firstName"), (String)userAttributes.get("lastName"), (String)userAttributes.get("mail"), roles, groups, isAdministrator, this);
-			
-		    if(infogluePrincipal != null)
-		    	CacheController.cacheObjectInAdvancedCache("JNDIAuthorizationCache", key, infogluePrincipal, null, false);
-
-			ctx.close();
+			try
+			{
+				Map userAttributes = getUserAttributes(userName, ctx);
+				List roles = getRoles(userName, ctx);
+				List groups = getGroups(userName, ctx);
+				
+				infogluePrincipal = new InfoGluePrincipal(userName, (String)userAttributes.get("firstName"), (String)userAttributes.get("lastName"), (String)userAttributes.get("mail"), roles, groups, isAdministrator, this);
+				
+			    if(infogluePrincipal != null)
+			    	CacheController.cacheObjectInAdvancedCache("JNDIAuthorizationCache", key, infogluePrincipal, null, false);
+			}
+			finally
+			{
+				ctx.close();
+			}
 		}
 		
 		return infogluePrincipal;
@@ -243,9 +248,14 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule, Serial
 		
 		DirContext ctx = getContext();
 		
-		role = getAuthorizedInfoGlueRole(roleName, ctx);
-		
-		ctx.close();
+		try
+		{
+			role = getAuthorizedInfoGlueRole(roleName, ctx);
+		}
+		finally
+		{
+			ctx.close();
+		}
 		
 		return role;
 	}
@@ -342,9 +352,14 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule, Serial
 		
 		DirContext ctx = getContext();
 		
-		group = getAuthorizedInfoGlueGroup(groupName, ctx);
-		
-		ctx.close();
+		try
+		{
+			group = getAuthorizedInfoGlueGroup(groupName, ctx);
+		}
+		finally
+		{
+			ctx.close();
+		}
 		
 		return group;
 	}
@@ -459,9 +474,14 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule, Serial
 		
 		DirContext ctx = getContext();
 		
-		attributes = getUserAttributes(userName, ctx);
-		
-		ctx.close();
+		try
+		{
+			attributes = getUserAttributes(userName, ctx);
+		}
+		finally
+		{
+			ctx.close();
+		}
 		
 		return attributes;
 	}
@@ -611,9 +631,14 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule, Serial
 		
 		DirContext ctx = getContext();
 		
-		roles = getRoles(userName, ctx);
-	
-		ctx.close();
+		try
+		{
+			roles = getRoles(userName, ctx);
+		}
+		finally
+		{
+			ctx.close();
+		}
 		
 		return roles;
 	}
@@ -773,10 +798,15 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule, Serial
 		
 		DirContext ctx = getContext();
 		
-		groups = getGroups(userName, ctx);
-		
-		ctx.close();
-		
+		try
+		{
+			groups = getGroups(userName, ctx);
+		}
+		finally
+		{
+			ctx.close();
+		}
+
 		return groups;
 	}
 	
@@ -921,9 +951,14 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule, Serial
     	
 		DirContext ctx = getContext();
 		
-		roles = getRoles(ctx);
-		
-		ctx.close();
+		try
+		{
+			roles = getRoles(ctx);
+		}
+		finally
+		{
+			ctx.close();
+		}
 
 		return roles;
     }
@@ -1253,10 +1288,15 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule, Serial
 		
 		DirContext ctx = getContext();
 		
-		users = getRoleUsers(roleName, ctx);
-		
-		ctx.close();
-		
+		try
+		{
+			users = getRoleUsers(roleName, ctx);
+		}
+		finally
+		{
+			ctx.close();
+		}
+
 		return users;
 	}
 	
@@ -1398,9 +1438,14 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule, Serial
     	
 		DirContext ctx = getContext();
 		
-		groups = getGroups(ctx);
-		
-		ctx.close();
+		try
+		{
+			groups = getGroups(ctx);
+		}
+		finally
+		{
+			ctx.close();
+		}
 
 		return groups;
     }
@@ -1507,10 +1552,15 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule, Serial
 		
 		DirContext ctx = getContext();
 		
-		users = getGroupUsers(groupName, ctx);
-		
-		ctx.close();
-	
+		try
+		{
+			users = getGroupUsers(groupName, ctx);
+		}
+		finally
+		{
+			ctx.close();
+		}
+
 		return users;
     }
 
