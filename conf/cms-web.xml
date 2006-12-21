@@ -74,6 +74,13 @@
             <param-name>FilterURIs</param-name>
             <param-value>
                 /UpdateCache.action,
+                /UpdateCache!test.action,
+				/ViewApplicationState.action,
+                /ErrorPage.action,
+                /scripts/*,
+                /script/*,
+                /css/*,
+                /images/*,
                 *.xml
             </param-value>
         </init-param>
