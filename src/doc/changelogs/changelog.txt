@@ -1,3 +1,11 @@
+
+- Added fix so if the cas-ticket is first argument it will not be forgotten
+- Fixed so one can state to user $currentUrl for cas-serviceURL in the cms-authentication filter as well. Before only one static url could be set.
+- Added debug and fixed an issue where anonymous user could interfer with userBase in JNDI-lookups if not set
+- Fixed so all url:s are protected in infoglueCMS - before only .action was protected. Instead added so one can specify url:s to allow in web.xml.
+- Added user cache to avoid calls to LDAP
+- Added finally-blocks to all jndi-context-uses so we clean up all connections even if errors occur
+
 -------------------------------------------------------------------------------------
 - InfoGlue 2.4.1 Final
 -------------------------------------------------------------------------------------
