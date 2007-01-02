@@ -1245,9 +1245,9 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 				initialGroupName = groupName;
 			}
 			else if(!groupIterator.hasNext())
-				sb.append("  <td id=\"" + groupName + "Tab\" valign=\"top\" class=\"tab\" style=\"border-right: solid thin black\" onclick=\"javascript:changeTab('" + groupName + "');\"><nobr>" + groupName + "</nobr></td>");
+				sb.append("  <td id=\"" + groupName + "Tab\" valign=\"top\" class=\"igtab\" style=\"border-right: solid thin black\" onclick=\"javascript:changeTab('" + groupName + "');\"><nobr>" + groupName + "</nobr></td>");
 			else
-				sb.append("  <td id=\"" + groupName + "Tab\" valign=\"top\" class=\"tab\" onclick=\"javascript:changeTab('" + groupName + "');\"><nobr>" + groupName + "</nobr></td>");
+				sb.append("  <td id=\"" + groupName + "Tab\" valign=\"top\" class=\"igtab\" onclick=\"javascript:changeTab('" + groupName + "');\"><nobr>" + groupName + "</nobr></td>");
 
 			index++;
 		}
