@@ -82,7 +82,8 @@
                 *.gif,
                 *.jpg,
                 *.png,
-				*.ico
+				*.ico,
+				/robots.txt
             </param-value>
         </init-param>
         <!--
