@@ -5,6 +5,8 @@
 - Fixed so all url:s are protected in infoglueCMS - before only .action was protected. Instead added so one can specify url:s to allow in web.xml.
 - Added user cache to avoid calls to LDAP
 - Added finally-blocks to all jndi-context-uses so we clean up all connections even if errors occur
+- Changed name on a css-class to avoid clashes with customer classes. .tab is now .igtab
+- Added possibility to have a robots.txt in deliver
 
 -------------------------------------------------------------------------------------
 - InfoGlue 2.4.1 Final
