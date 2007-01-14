@@ -7,6 +7,8 @@
 - Added finally-blocks to all jndi-context-uses so we clean up all connections even if errors occur
 - Changed name on a css-class to avoid clashes with customer classes. .tab is now .igtab
 - Added possibility to have a robots.txt in deliver
+- Added thumbnail support for PNG-images and made edit-link only appear in front of gif, jpg and png assets in the content tool
+- Made image editor a bit more robust - added some checks on crop and resize tools.
 
 -------------------------------------------------------------------------------------
 - InfoGlue 2.4.1 Final
