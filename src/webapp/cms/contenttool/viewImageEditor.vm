@@ -126,20 +126,34 @@
 			var keepRatio = document.getElementById("keepRatio").checked;
 			var bestFit = document.getElementById("bestFit").checked;
 			
-			if(width == "")
-				width = "-1";
-				
-			if(height == "")
-				height = "-1";
-											
-			document.location.href = "ImageEditor!resize.action?workingFileName=" + workingFileName + "&digitalAssetId=$digitalAssetId&contentVersionId=$contentVersionId&width=" + width + "&height=" + height + "&keepRatio=" + keepRatio + "&bestFit=" + bestFit;
+			if(width == "" && height == "")
+			{
+				alert("You must state width or height or both.");
+			}
+			else
+			{
+				if(width == "")
+					width = "-1";
+					
+				if(height == "")
+					height = "-1";
+												
+				document.location.href = "ImageEditor!resize.action?workingFileName=" + workingFileName + "&digitalAssetId=$digitalAssetId&contentVersionId=$contentVersionId&width=" + width + "&height=" + height + "&keepRatio=" + keepRatio + "&bestFit=" + bestFit;
+			}
 		} 		
 		
 		function activateCropTool()
 		{
-			var url = "ImageEditor!crop.action?workingFileName=" + workingFileName + "&digitalAssetId=$digitalAssetId&contentVersionId=$contentVersionId&xpos1=" + sx + "&ypos1=" + sy + "&xpos2=" + ex + "&ypos2=" + ey;
-			//alert("url:" + url);
-			document.location.href = url;
+			if(sx && sx > 0 && sy && sy > 0 && ex && ex > 0 && ey && ey > 0)
+			{
+				var url = "ImageEditor!crop.action?workingFileName=" + workingFileName + "&digitalAssetId=$digitalAssetId&contentVersionId=$contentVersionId&xpos1=" + sx + "&ypos1=" + sy + "&xpos2=" + ex + "&ypos2=" + ey;
+				//alert("url:" + url);
+				document.location.href = url;
+			}
+			else
+			{
+				alert("You must define an area to crop - just mark on the image and drag an area.");
+			}
 		} 		
 
 		function openSaveImageDialog()
@@ -225,29 +239,20 @@
 </tr>	
 <tr>
 	<td>
-		$ui.getString("tool.contenttool.fileUpload.fileUploadUpdateKeyLabel")
-		<br/>
-		Preserve aspect ratio: <br/>
-		<input type="checkbox" id="keepRatio" checked="true"/><br/>
-		Best fit: <br/>
-		<input type="checkbox" id="bestFit" checked="true"/><br/>
-		<input type="textfield" id="width" class=""/><br/>
-		<input type="textfield" id="height" class=""/><br/>
+			<p><label for="keepRatio">Preserve aspect ratio:</label> <input type="checkbox" id="keepRatio" name="keepRatio" checked="true"/></p>
+			<p><label for="bestFit">Best fit:</label> <input type="checkbox" id="bestFit" name="bestFit" checked="true"/></p>
+			<p><label for="width">Width in pixels:</label> <input type="textfield" id="width" name="width"/></p>
+			<p><label for="height">Height in pixels:</label> <input type="textfield" id="height" name="height"/></p>
 	</td>
 </tr>		
 <tr>
 	<td colspan="2">
 		<a href="javascript:resizeImage();"><img src="$ui.getString("images.contenttool.buttons.save")" width="50" height="25" border="0"></a>
-		<img border="0" src="$ui.getString("images.contenttool.buttons.close")" width="50" height="25" onclick="document.getElementById('saveDialog').style.display = 'none';">
+		<img border="0" src="$ui.getString("images.contenttool.buttons.close")" width="50" height="25" onclick="document.getElementById('resizeDialog').style.display = 'none';">
 	</td>
 </tr>
 </table>
 </div>
-
-<!--
-<input type="textfield" id="x">
-<input type="textfield" id="y">
--->
 
 <div style="position: absolute; left: 20px; top: 40px; width: 50px;">
 	<!--

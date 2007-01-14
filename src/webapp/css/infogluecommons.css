@@ -121,3 +121,27 @@ a.white:hover {
 a.white:active {
 	font-weight: bold;
 	}
+
+label {
+	width: 14em;
+	float: left;
+	text-align: right;
+	margin-right: 0.5em;
+	display: block
+	}
+
+.submit input {
+	margin-left: 4.5em;
+	}
+	
+fieldset {
+	border: 1px solid #781351;
+	width: 20em
+	}
+
+legend {
+	color: #fff;
+	background: #ffa20c;
+	border: 1px solid #781351;
+	padding: 2px 6px
+	}
