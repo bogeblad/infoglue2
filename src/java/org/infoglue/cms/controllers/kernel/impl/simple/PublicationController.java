@@ -115,6 +115,15 @@ public class PublicationController extends BaseController
 	}
 
 	/**
+	 * This method returns a list of those events that are publication events and
+	 * concerns this repository and the submitter is in a group that the publisher also is in.
+	 */
+	public static List getPublicationEvents(Integer repositoryId, InfoGluePrincipal principal, String filter) throws SystemException, Exception
+	{
+		return EventController.getPublicationEventVOListForRepository(repositoryId, principal, filter);
+	}
+
+	/**
 	 * This method returns a list of earlier editions for this site.
 	 */
 	public static List getAllEditions(Integer repositoryId) throws SystemException
@@ -549,7 +558,7 @@ public class PublicationController extends BaseController
 			{
 			    List events = new ArrayList();
 				Integer contentId = oldContentVersion.getOwningContent().getContentId();
-	    		ContentVersion newContentVersion = ContentStateController.changeState(entityId, ContentVersionVO.PUBLISHED_STATE, "Published", overrideVersionModifyer, infoGluePrincipal, contentId, db, events);
+	    		ContentVersion newContentVersion = ContentStateController.changeState(entityId, ContentVersionVO.PUBLISHED_STATE, "Published", overrideVersionModifyer, null, infoGluePrincipal, contentId, db, events);
 	    		contentVersion = ContentVersionController.getContentVersionController().getContentVersionWithId(newContentVersion.getContentVersionId(), db);
 			}
 

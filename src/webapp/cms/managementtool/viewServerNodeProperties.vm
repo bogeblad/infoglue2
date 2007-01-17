@@ -238,6 +238,18 @@
 		<td>#yesNoDropDownWithInherit("ServerNode.property.protectCategories" "protectCategories" "$this.getPropertyValue('protectCategories')")</td>
 	</tr>
 	<tr>
+		<td>#yesNoDropDownWithInherit("ServerNode.property.allowPublicationEventFilter" "allowPublicationEventFilter" "$this.getPropertyValue('allowPublicationEventFilter')")</td>
+	</tr>
+	
+	#set($option1 = ["$ui.getString('tool.common.inherit')", "$ui.getString('tool.common.inherit')"])
+	#set($option2 = ["$ui.getString('entity.ServerNode.property.allPublicationEventFilter.value')", "$ui.getString('entity.ServerNode.property.allPublicationEventFilter.label')"])
+	#set($option3 = ["$ui.getString('entity.ServerNode.property.groupBasedPublicationEventFilter.value')", "$ui.getString('entity.ServerNode.property.groupBasedPublicationEventFilter.label')"])
+	#set($publicationEventFilterOptions = [$option1, $option2, $option3]) 
+	
+	<tr>
+		<td>#selectField("ServerNode.property.defaultPublicationEventFilter" "defaultPublicationEventFilter" $this.getPropertyValue('defaultPublicationEventFilter') $publicationEventFilterOptions)</td>
+	</tr>
+	<tr>
 		<td>#yesNoDropDownWithInherit("ServerNode.property.protectDeliverWorking" "protectDeliverWorking" "$this.getPropertyValue('protectDeliverWorking')")</td>
 	</tr>
 	<tr>

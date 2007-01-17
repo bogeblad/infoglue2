@@ -294,7 +294,7 @@ public class SiteNodeStateController extends BaseController
 				{
 				    logger.info("State on current:" + contentVersion.getStateId());
 				    logger.info("changing state on contentVersion:" + contentVersion.getId());
-				    contentVersion = ContentStateController.changeState(contentVersion.getId(), stateId, versionComment, overrideVersionModifyer, infoGluePrincipal, contentVO.getId(), db, events);
+				    contentVersion = ContentStateController.changeState(contentVersion.getId(), stateId, versionComment, overrideVersionModifyer, null, infoGluePrincipal, contentVO.getId(), db, events);
 				}
 				
 				if(language.getId().equals(masterLanguage.getId()) && contentVersion != null)

@@ -36,6 +36,12 @@ function ruSure(txt, url)
 	}
 }
 
+function filter(select)
+{
+	var filterValue = select.options[select.selectedIndex].value
+	var url = "ViewPublications.action?repositoryId=$repositoryId&filter=" + filterValue;
+	document.location.href = url;
+}
 </script>
 
 #macro(PreparePublication $p)
@@ -69,8 +75,26 @@ function ruSure(txt, url)
 
 
 <!--   *****  VERSIONS FOR PUBLISHING  *******  -->
-
-<strong>Submitted for publishing</strong><br/><br/>
+<div>
+<div style="width: 40%; float: left">
+<strong>Submitted for publishing</strong> 
+</div>
+<div style="float: right; text-align: right;">
+Filter: 
+#if($allowPublicationEventFilter == "true")
+	<select name="filter" onChange="filter(this);">
+		<option value="all" #checkSelected("$filter" "all")>$ui.getString("entity.ServerNode.property.allPublicationEventFilter.label")</option>
+		<option value="groupBased" #checkSelected("$filter" "groupBased")>$ui.getString("entity.ServerNode.property.groupBasedPublicationEventFilter.label")</option>
+		#foreach($group in $infoGluePrincipal.groups)
+			<option value="groupNameBased_$group.name" #checkSelected("$filter" "groupNameBased_$group.name")>$ui.getString("entity.ServerNode.property.groupNameBasedPublicationEventFilter.label") $group.name</option>
+		#end
+	</select>
+#else
+	Not enabled
+#end
+</div>
+</div>
+<br/><br/>
 
 #set($lvBorder = 0)
 #set($lvConstraint = -1)

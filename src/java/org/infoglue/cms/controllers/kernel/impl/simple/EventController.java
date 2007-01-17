@@ -24,6 +24,7 @@
 package org.infoglue.cms.controllers.kernel.impl.simple;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -40,6 +41,7 @@ import org.infoglue.cms.entities.workflow.EventVO;
 import org.infoglue.cms.entities.workflow.impl.simple.EventImpl;
 import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.SystemException;
+import org.infoglue.cms.security.InfoGlueGroup;
 import org.infoglue.cms.security.InfoGluePrincipal;
 
 /**
@@ -219,12 +221,21 @@ public class EventController extends BaseController
 
 		return events;
 	}
-	
+
 	/**
 	 * Returns a list of events with either publish or unpublish-state currently available for the repository stated.
 	 */
 	
 	public static List getPublicationEventVOListForRepository(Integer repositoryId) throws SystemException, Bug
+	{
+		return getPublicationEventVOListForRepository(repositoryId, null, null);
+	}
+	
+	/**
+	 * Returns a list of events with either publish or unpublish-state currently available for the repository stated.
+	 */
+	
+	public static List getPublicationEventVOListForRepository(Integer repositoryId, InfoGluePrincipal principal, String filter) throws SystemException, Bug
 	{
 		List events = new ArrayList();
 		
@@ -261,6 +272,58 @@ public class EventController extends BaseController
 							isValid = false;
 							ContentVersionController.getContentVersionController().delete(contentVersion, db);
 	            		}
+	            		else
+	            		{
+	            			if(principal != null && filter != null && filter.equalsIgnoreCase("groupBased"))
+		        		    {
+	            				String versionModifier = contentVersion.getVersionModifier();
+	            				if(versionModifier != null)
+	            				{
+	            					InfoGluePrincipal versionModifierPrincipal = UserControllerProxy.getController(db).getUser(versionModifier);
+	            					if(versionModifierPrincipal != null)
+	            					{
+	            						boolean hasGroup = false;
+	            						
+	            						List groups = versionModifierPrincipal.getGroups();
+	            						Iterator groupsIterator = groups.iterator();
+	            						while(groupsIterator.hasNext())
+	            						{
+	            							InfoGlueGroup group = (InfoGlueGroup)groupsIterator.next();
+	            							if(principal.getGroups().contains(group))
+	            								hasGroup = true;
+	            						}
+	            						
+	            						if(!hasGroup)
+	            							isValid = false;
+	            					}
+	            				}
+		        		    }
+		            		else if(principal != null && filter != null && filter.indexOf("groupNameBased_") > -1)
+		            		{
+	            				String versionModifier = contentVersion.getVersionModifier();
+	            				if(versionModifier != null)
+	            				{
+	            					InfoGluePrincipal versionModifierPrincipal = UserControllerProxy.getController(db).getUser(versionModifier);
+	            					if(versionModifierPrincipal != null)
+	            					{
+	            						boolean hasGroup = false;
+	            						String groupName = filter.substring(filter.indexOf("_") + 1);
+	            						
+	            						List groups = versionModifierPrincipal.getGroups();
+	            						Iterator groupsIterator = groups.iterator();
+	            						while(groupsIterator.hasNext())
+	            						{
+	            							InfoGlueGroup group = (InfoGlueGroup)groupsIterator.next();
+	            							if(groupName.equalsIgnoreCase(group.getName()))
+	            								hasGroup = true;
+	            						}
+	            						
+	            						if(!hasGroup)
+	            							isValid = false;
+	            					}
+	            				}	            			
+		            		}
+	            		}
 	            	}
 					else if(event.getEntityClass().equalsIgnoreCase(SiteNodeVersion.class.getName()))
 					{
@@ -272,6 +335,58 @@ public class EventController extends BaseController
 						    isValid = false;
 						    SiteNodeVersionController.getController().delete(siteNodeVersion, db);
 						}
+						else
+	            		{
+	            			if(principal != null && filter != null && filter.equalsIgnoreCase("groupBased"))
+		        		    {
+	            				String versionModifier = siteNodeVersion.getVersionModifier();
+	            				if(versionModifier != null)
+	            				{
+	            					InfoGluePrincipal versionModifierPrincipal = UserControllerProxy.getController(db).getUser(versionModifier);
+	            					if(versionModifierPrincipal != null)
+	            					{
+	            						boolean hasGroup = false;
+	            						
+	            						List groups = versionModifierPrincipal.getGroups();
+	            						Iterator groupsIterator = groups.iterator();
+	            						while(groupsIterator.hasNext())
+	            						{
+	            							InfoGlueGroup group = (InfoGlueGroup)groupsIterator.next();
+	            							if(principal.getGroups().contains(group))
+	            								hasGroup = true;
+	            						}
+	            						
+	            						if(!hasGroup)
+	            							isValid = false;
+	            					}
+	            				}
+		        		    }
+		            		else if(principal != null && filter != null && filter.indexOf("groupNameBased_") > -1)
+		            		{
+	            				String versionModifier = siteNodeVersion.getVersionModifier();
+	            				if(versionModifier != null)
+	            				{
+	            					InfoGluePrincipal versionModifierPrincipal = UserControllerProxy.getController(db).getUser(versionModifier);
+	            					if(versionModifierPrincipal != null)
+	            					{
+	            						boolean hasGroup = false;
+	            						String groupName = filter.substring(filter.indexOf("_") + 1);
+	            						
+	            						List groups = versionModifierPrincipal.getGroups();
+	            						Iterator groupsIterator = groups.iterator();
+	            						while(groupsIterator.hasNext())
+	            						{
+	            							InfoGlueGroup group = (InfoGlueGroup)groupsIterator.next();
+	            							if(groupName.equalsIgnoreCase(group.getName()))
+	            								hasGroup = true;
+	            						}
+	            						
+	            						if(!hasGroup)
+	            							isValid = false;
+	            					}
+	            				}	            			
+		            		}
+	            		}
 					}
 				}
 				catch(Exception e)

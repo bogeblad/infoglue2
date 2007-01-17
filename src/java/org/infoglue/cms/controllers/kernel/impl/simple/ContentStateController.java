@@ -23,8 +23,14 @@
 
 package org.infoglue.cms.controllers.kernel.impl.simple;
 
+import java.io.File;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
@@ -37,12 +43,18 @@ import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.entities.management.AccessRight;
 import org.infoglue.cms.entities.management.AccessRightVO;
 import org.infoglue.cms.entities.management.InterceptionPoint;
+import org.infoglue.cms.entities.workflow.Event;
 import org.infoglue.cms.entities.workflow.EventVO;
 import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
+import org.infoglue.cms.io.FileHelper;
+import org.infoglue.cms.security.InfoGlueGroup;
 import org.infoglue.cms.security.InfoGluePrincipal;
+import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
 import org.infoglue.cms.util.DateHelper;
+import org.infoglue.cms.util.mail.MailServiceFactory;
+import org.infoglue.deliver.util.VelocityTemplateProcessor;
 
 public class ContentStateController extends BaseController 
 {
@@ -58,7 +70,7 @@ public class ContentStateController extends BaseController
 	 * Se inline documentation for further explainations.
 	 */
 	
-    public static ContentVersion changeState(Integer oldContentVersionId, Integer stateId, String versionComment, boolean overrideVersionModifyer, InfoGluePrincipal infoGluePrincipal, Integer contentId, List resultingEvents) throws ConstraintException, SystemException
+    public static ContentVersion changeState(Integer oldContentVersionId, Integer stateId, String versionComment, boolean overrideVersionModifyer, String recipientFilter, InfoGluePrincipal infoGluePrincipal, Integer contentId, List resultingEvents) throws ConstraintException, SystemException
     {
     	Database db = CastorDatabaseService.getDatabase();
         ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
@@ -68,7 +80,7 @@ public class ContentStateController extends BaseController
         beginTransaction(db);
 		try
 		{
-			newContentVersion = changeState(oldContentVersionId, stateId, versionComment, overrideVersionModifyer, infoGluePrincipal, contentId, db, resultingEvents);
+			newContentVersion = changeState(oldContentVersionId, stateId, versionComment, overrideVersionModifyer, recipientFilter, infoGluePrincipal, contentId, db, resultingEvents);
         	commitTransaction(db);
         }
         catch(Exception e)
@@ -87,7 +99,7 @@ public class ContentStateController extends BaseController
 	 * Se inline documentation for further explainations.
 	 */
 	
-	public static ContentVersion changeState(Integer oldContentVersionId, Integer stateId, String versionComment, boolean overrideVersionModifyer, InfoGluePrincipal infoGluePrincipal, Integer contentId, Database db, List resultingEvents) throws SystemException
+	public static ContentVersion changeState(Integer oldContentVersionId, Integer stateId, String versionComment, boolean overrideVersionModifyer, String recipientFilter, InfoGluePrincipal infoGluePrincipal, Integer contentId, Database db, List resultingEvents) throws SystemException
 	{
 		ContentVersion newContentVersion = null;
 
@@ -156,8 +168,12 @@ public class ContentStateController extends BaseController
 					eventVO.setName(newContentVersion.getOwningContent().getName());
 					eventVO.setTypeId(EventVO.PUBLISH);
 					eventVO = EventController.create(eventVO, newContentVersion.getOwningContent().getRepository().getId(), infoGluePrincipal, db);
+
 					resultingEvents.add(eventVO);
 				}
+
+				if(!recipientFilter.equalsIgnoreCase(null))
+					mailPublishNotification(resultingEvents, newContentVersion.getOwningContent().getRepository().getId(), infoGluePrincipal, recipientFilter, db);
 			}
 
 			//If the user in the publish-app publishes a publish-version we change state to published.
@@ -228,6 +244,135 @@ public class ContentStateController extends BaseController
 			vo.setContentVersionId(newContentVersion.getId());
 			ContentCategory newContentCategory = contentCategoryController.createWithDatabase(vo, db);
 			//newContentCategory
+		}
+	}
+
+	/**
+	 * This method mails a notification about items available for publish to the recipient of choice.
+	 */
+	
+	private static void mailPublishNotification(List resultingEvents, Integer repositoryId, InfoGluePrincipal principal, String recipientFilter, Database db)
+	{
+	    try
+	    {
+		    String recipients = getRecipients(principal, repositoryId, recipientFilter, db);
+		    if(recipients == null || recipients.length() == 0)
+		    	return;
+		    	
+	        String contentType = CmsPropertyHandler.getMailContentType();
+	        if(contentType == null || contentType.length() == 0)
+	            contentType = "text/html";
+	        
+	        String template;
+	        if(contentType.equalsIgnoreCase("text/plain"))
+	            template = FileHelper.getFileAsString(new File(CmsPropertyHandler.getContextRootPath() + "cms/publishingtool/newPublishItem_plain.vm"));
+		    else
+	            template = FileHelper.getFileAsString(new File(CmsPropertyHandler.getContextRootPath() + "cms/publishingtool/newPublishItem_html.vm"));
+		    
+	        Map parameters = new HashMap();
+		    parameters.put("events", resultingEvents);
+		    parameters.put("principal", principal);
+		    //parameters.put("referenceUrl", referenceUrl);
+			
+			StringWriter tempString = new StringWriter();
+			PrintWriter pw = new PrintWriter(tempString);
+			new VelocityTemplateProcessor().renderTemplate(parameters, pw, template);
+			String email = tempString.toString();
+	    
+			String systemEmailSender = CmsPropertyHandler.getSystemEmailSender();
+			if(systemEmailSender == null || systemEmailSender.equalsIgnoreCase(""))
+				systemEmailSender = "InfoGlueCMS@" + CmsPropertyHandler.getMailSmtpHost();
+
+			logger.info("email:" + email);
+			logger.info("recipients:" + recipients);
+
+			MailServiceFactory.getService().sendEmail(systemEmailSender, systemEmailSender, recipients, "CMS - New items available for publication!!", email, "utf-8");
+		}
+		catch(Exception e)
+		{
+			logger.error("The notification was not sent. Reason:" + e.getMessage(), e);
+		}
+	}
+
+	private static String getRecipients(InfoGluePrincipal principal, Integer repositoryId, String recipientFilter, Database db) throws Exception
+	{
+		if(recipientFilter != null && recipientFilter.equals(""))
+			return null;
+		
+		String recipients = "";
+	    
+		List users = new ArrayList();
+		if(recipientFilter.equalsIgnoreCase("all"))
+    	{
+    		users = UserControllerProxy.getController(db).getAllUsers();
+    	}
+    	else if(recipientFilter.equalsIgnoreCase("groupBased"))
+    	{
+    		Iterator groupsIterator = principal.getGroups().iterator();
+    		
+    		while(groupsIterator.hasNext())
+	    	{
+    			InfoGlueGroup infoGlueGroup = (InfoGlueGroup)groupsIterator.next();
+    			users = GroupControllerProxy.getController(db).getInfoGluePrincipals(infoGlueGroup.getName());
+	    	}
+    	}
+    	else if(recipientFilter.indexOf("groupNameBased_") > -1)
+    	{
+    		String groupName = recipientFilter.substring(recipientFilter.indexOf("_") + 1);
+    		users = GroupControllerProxy.getController(db).getInfoGluePrincipals(groupName);
+    	}
+    	
+    	Iterator usersIterator = users.iterator();
+		while(usersIterator.hasNext())
+		{
+			InfoGluePrincipal infogluePrincipal = (InfoGluePrincipal)usersIterator.next();
+			if(infogluePrincipal.getGroups() == null || infogluePrincipal.getGroups().size() == 0)
+				infogluePrincipal = UserControllerProxy.getController(db).getUser(infogluePrincipal.getName());
+					
+			boolean hasAccessToPublishingTool = hasAccessTo("PublishingTool.Read", infogluePrincipal);
+			
+			if(hasAccessToPublishingTool)
+			{
+				boolean hasAccessToRepository = hasAccessTo("Repository.Read", "" + repositoryId, infogluePrincipal);
+				if(hasAccessToRepository)
+				{
+					if(recipients.indexOf(infogluePrincipal.getEmail()) == -1)
+					{
+						if(recipients.length() > 0)
+			    			recipients += ";";
+
+			    		recipients += infogluePrincipal.getEmail();
+					}
+				}
+			}
+		}
+    	
+		return recipients;
+	}
+
+	public static boolean hasAccessTo(String interceptionPointName, InfoGluePrincipal principal)
+	{
+		try
+		{
+			return AccessRightController.getController().getIsPrincipalAuthorized(principal, interceptionPointName);
+		}
+		catch (SystemException e)
+		{
+		    logger.warn("Error checking access rights", e);
+			return false;
+		}
+	}
+
+	public static boolean hasAccessTo(String interceptionPointName, String extraParameter, InfoGluePrincipal principal)
+	{
+		try
+		{
+		    return AccessRightController.getController().getIsPrincipalAuthorized(principal, interceptionPointName, extraParameter);
+		}
+		catch (SystemException e)
+		{
+		    logger.warn("Error checking access rights", e);
+			return false;
 		}
 	}
 

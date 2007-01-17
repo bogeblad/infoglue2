@@ -334,7 +334,7 @@ public class ViewSiteNodeAction extends InfoGlueAbstractAction
 	    			    
 	    			if(this.siteNodeVersionVO != null && this.siteNodeVersionVO.getStateId().equals(SiteNodeVersionVO.WORKING_STATE) && !isMetaInfoInWorkingState)
 	    			{
-	    				metaInfoContentVersionVO = ContentStateController.changeState(metaInfoContentVersionVO.getId(), ContentVersionVO.WORKING_STATE, "Automatic", true, this.getInfoGluePrincipal(), null, db, new ArrayList()).getValueObject();
+	    				metaInfoContentVersionVO = ContentStateController.changeState(metaInfoContentVersionVO.getId(), ContentVersionVO.WORKING_STATE, "Automatic", true, null, this.getInfoGluePrincipal(), null, db, new ArrayList()).getValueObject();
 	    				isMetaInfoInWorkingState = true;
 	    			}
 	    				    			
