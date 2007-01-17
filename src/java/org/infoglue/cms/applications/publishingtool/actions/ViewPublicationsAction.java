@@ -33,6 +33,7 @@ import org.infoglue.cms.entities.management.RepositoryVO;
 import org.infoglue.cms.entities.publishing.EditionBrowser;
 import org.infoglue.cms.entities.structure.SiteNodeVO;
 import org.infoglue.cms.exception.SystemException;
+import org.infoglue.cms.util.CmsPropertyHandler;
 
 /**
  * This returns a list of all events to be published or denied,
@@ -52,6 +53,7 @@ public class ViewPublicationsAction extends InfoGlueAbstractAction
 	private List publicationEvents;
 	private List publicationDetailVOList;
 	private EditionBrowser editionBrowser;
+	private String filter = null;
 
 	public int getStartIndex()			{ return startIndex; }
 	public void setStartIndex(int i)	{ startIndex = i; }
@@ -65,12 +67,38 @@ public class ViewPublicationsAction extends InfoGlueAbstractAction
 	public EditionBrowser getEditionBrowser()		{ return editionBrowser; }
 	public void setEditionBrowser(EditionBrowser b)	{ editionBrowser = b; }
 
-
+	public String getFilter() 						{ return filter; }
+	public void setFilter(String filter) 			
+	{ 
+		if(CmsPropertyHandler.getAllowPublicationEventFilter().equalsIgnoreCase("true"))
+		{
+			this.filter = filter; 
+			if(this.filter != null)
+			{
+				this.getHttpSession().setAttribute("publishEventFilter", this.filter);
+			}
+		}
+	}
+	
 	public String doExecute() throws Exception
 	{
+		if(filter == null)
+		{
+			if(CmsPropertyHandler.getAllowPublicationEventFilter().equalsIgnoreCase("true"))
+			{
+				String storedFilter = (String)this.getHttpSession().getAttribute("publishEventFilter");
+				if(storedFilter != null)
+					filter = storedFilter;
+			}
+			else
+				filter = CmsPropertyHandler.getDefaultPublicationEventFilter();
+
+		}
+
 		repositoryVO		= RepositoryController.getController().getRepositoryVOWithId(repositoryId);
-		publicationEvents	= PublicationController.getPublicationEvents(repositoryId);
+		publicationEvents	= PublicationController.getPublicationEvents(repositoryId, getInfoGluePrincipal(), filter);
 		editionBrowser		= PublicationController.getEditionPage(repositoryId, startIndex);
+					
 		return SUCCESS;
 	}
 	
@@ -94,7 +122,7 @@ public class ViewPublicationsAction extends InfoGlueAbstractAction
 	{
 		return PublicationController.getOwningSiteNodeVO(id);
 	}
-
+	
 	/**
 	 * Escapes the string
 	 */
@@ -112,4 +140,5 @@ public class ViewPublicationsAction extends InfoGlueAbstractAction
     {
         return publicationDetailVOList;
     }
+    
 }

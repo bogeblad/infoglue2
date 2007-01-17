@@ -1015,6 +1015,16 @@ public class CmsPropertyHandler
 	    return getServerNodeProperty("protectDeliverPreview", true, "false");
 	}
 
+	public static String getAllowPublicationEventFilter()
+	{
+	    return getServerNodeProperty("allowPublicationEventFilter", true, "false");
+	}
+
+	public static String getDefaultPublicationEventFilter()
+	{
+	    return getServerNodeProperty("defaultPublicationEventFilter", true, "all");
+	}
+
 	public static String getPreferredLanguageCode(String userName)
 	{
         return propertySet.getString("principal_" + userName + "_languageCode");

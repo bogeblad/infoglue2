@@ -26,7 +26,9 @@ package org.infoglue.cms.applications.publishingtool.actions;
 import java.util.List;
 
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
+import org.infoglue.cms.controllers.kernel.impl.simple.PublicationController;
 import org.infoglue.cms.controllers.kernel.impl.simple.RepositoryController;
+import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.util.ChangeNotificationController;
 import org.infoglue.cms.util.NotificationMessage;
 import org.infoglue.cms.util.RemoteCacheUpdater;
@@ -74,7 +76,12 @@ public class ViewPublishingToolStartPageAction extends InfoGlueAbstractAction
     {
     	return this.repositories;
     }
-            
+     
+    public List getPublicationEvents(Integer repositoryId, String filter) throws SystemException, Exception
+    {
+    	return PublicationController.getPublicationEvents(repositoryId, getInfoGluePrincipal(), filter);
+	}
+    
     public List getSystemNotificationMessages()
     {
         return RemoteCacheUpdater.getSystemNotificationMessages();
