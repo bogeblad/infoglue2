@@ -342,6 +342,11 @@ public abstract class InfoGlueAbstractAction extends WebworkAbstractAction
     {
         return CmsPropertyHandler.getDisableImageEditor();
     }
+    
+    public String getAllowPublicationEventFilter()
+    {
+    	return CmsPropertyHandler.getAllowPublicationEventFilter();
+    }
 
     public Locale getLocale()
     {
