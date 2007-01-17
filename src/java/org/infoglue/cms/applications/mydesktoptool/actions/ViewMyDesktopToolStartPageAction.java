@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -39,6 +40,7 @@ import org.infoglue.cms.entities.mydesktop.WorkflowActionVO;
 import org.infoglue.cms.entities.mydesktop.WorkflowVO;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.util.CmsPropertyHandler;
+import org.infoglue.cms.util.sorters.ReflectionComparator;
 import org.infoglue.cms.util.workflow.StepFilter;
 
 import webwork.action.ActionContext;
@@ -69,9 +71,10 @@ public class ViewMyDesktopToolStartPageAction extends InfoGlueAbstractAction
 	private WorkflowVO workflow = new WorkflowVO();
 	private int actionId;
 	private String finalReturnAddress = "";
-
+	
 	public List getWorkflowVOList()
 	{
+		Collections.sort(workflowVOList, new ReflectionComparator("workflowId"));
 		return workflowVOList;
 	}
 
@@ -193,6 +196,7 @@ public class ViewMyDesktopToolStartPageAction extends InfoGlueAbstractAction
 		}
 		catch (InvalidActionException e)
 		{
+			logger.error("An error occurred when invoking an action:" + e.getMessage());
 			return INVALID_ACTION;
 		}
 		catch (WorkflowException e)
