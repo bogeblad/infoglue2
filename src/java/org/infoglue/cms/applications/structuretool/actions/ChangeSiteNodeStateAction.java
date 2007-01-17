@@ -37,6 +37,7 @@ public class ChangeSiteNodeStateAction extends InfoGlueAbstractAction
 	private Integer stateId;
 	private String versionComment;
 	private boolean overrideVersionModifyer = false;
+	private String recipientFilter = null;
 	
 	//private SiteNodeVO siteNodeVO = new SiteNodeVO();	
 	//private SiteNodeVersionVO siteNodeVersionVO = new SiteNodeVersionVO();	
@@ -56,7 +57,8 @@ public class ChangeSiteNodeStateAction extends InfoGlueAbstractAction
     	}
 
     	List events = new ArrayList();
-		SiteNodeStateController.getController().changeState(getSiteNodeVersionId(), getStateId(), getVersionComment(), this.overrideVersionModifyer, this.getInfoGluePrincipal(), getSiteNodeId(), events);
+    	System.out.println("recipientFilter1:" + recipientFilter);
+		SiteNodeStateController.getController().changeState(getSiteNodeVersionId(), getStateId(), getVersionComment(), this.overrideVersionModifyer, this.recipientFilter, this.getInfoGluePrincipal(), getSiteNodeId(), events);
 		
        	return "success";
     }
@@ -110,4 +112,14 @@ public class ChangeSiteNodeStateAction extends InfoGlueAbstractAction
     {
         this.overrideVersionModifyer = overrideVersionModifyer;
     }
+
+	public String getRecipientFilter() 
+	{
+		return recipientFilter;
+	}
+
+	public void setRecipientFilter(String recipientFilter) 
+	{
+		this.recipientFilter = recipientFilter;
+	}
 }

@@ -74,7 +74,7 @@ public class ChangeMultiContentStatePublishAction extends InfoGlueAbstractAction
 		{
 			Integer siteNodeVersionId = (Integer)it.next();
 			logger.info("Publishing:" + siteNodeVersionId);
-			SiteNodeVersion siteNodeVersion = SiteNodeStateController.getController().changeState(siteNodeVersionId, SiteNodeVersionVO.PUBLISH_STATE, getVersionComment(), overrideVersionModifyer, this.getInfoGluePrincipal(), null, events);
+			SiteNodeVersion siteNodeVersion = SiteNodeStateController.getController().changeState(siteNodeVersionId, SiteNodeVersionVO.PUBLISH_STATE, getVersionComment(), overrideVersionModifyer, this.recipientFilter, this.getInfoGluePrincipal(), null, events);
 		}
 
 		setContentVersionId( getRequest().getParameterValues("selContentVersions") );

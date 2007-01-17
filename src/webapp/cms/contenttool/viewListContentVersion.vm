@@ -144,6 +144,7 @@
 			<tr>
 				<td colspan="3">#yesNoCheckBox("ContentVersion.overrideVersionModifyer" "xoverrideVersionModifyer" "true" $ui.getString('tool.common.yes'))</td>
 			</tr>	
+			
 			#if($allowPublicationEventFilter == "true")
 				#if($infoGluePrincipal.groups.size() > 1)
 					<tr>

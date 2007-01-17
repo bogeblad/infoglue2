@@ -26,6 +26,7 @@
 #hiddenField("contentId" $contentId)
 #hiddenField("versionComment" $!versionComment)
 #hiddenField("overrideVersionModifyer" $!overrideVersionModifyer)
+#hiddenField("recipientFilter" $!recipientFilter)
 #hiddenField("attemptDirectPublishing" $!attemptDirectPublishing)
 #hiddenField("repositoryId" $!repositoryId)
 

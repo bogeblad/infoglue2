@@ -71,13 +71,22 @@ public class SiteNodeStateController extends BaseController
 	{
 		return new SiteNodeStateController();
 	}
-	
+
+	/**
+	 * This method handles versioning and state-control of siteNodes.
+	 * Se inline documentation for further explainations.
+	 */
+    public SiteNodeVersion changeState(Integer oldSiteNodeVersionId, Integer stateId, String versionComment, boolean overrideVersionModifyer, InfoGluePrincipal infoGluePrincipal, Integer siteNodeId, List resultingEvents) throws ConstraintException, SystemException
+    {
+    	return changeState(oldSiteNodeVersionId, stateId, versionComment, overrideVersionModifyer, null, infoGluePrincipal, siteNodeId, resultingEvents);
+    }
+    
 	/**
 	 * This method handles versioning and state-control of siteNodes.
 	 * Se inline documentation for further explainations.
 	 */
 	
-    public SiteNodeVersion changeState(Integer oldSiteNodeVersionId, Integer stateId, String versionComment, boolean overrideVersionModifyer, InfoGluePrincipal infoGluePrincipal, Integer siteNodeId, List resultingEvents) throws ConstraintException, SystemException
+    public SiteNodeVersion changeState(Integer oldSiteNodeVersionId, Integer stateId, String versionComment, boolean overrideVersionModifyer, String recipientFilter, InfoGluePrincipal infoGluePrincipal, Integer siteNodeId, List resultingEvents) throws ConstraintException, SystemException
     {
         SiteNodeVersion newSiteNodeVersion = null; 
         
@@ -91,7 +100,7 @@ public class SiteNodeStateController extends BaseController
             SiteNodeVersion siteNodeVersion = SiteNodeVersionController.getSiteNodeVersionWithIdAsReadOnly(oldSiteNodeVersionId, db);
 			logger.info("siteNodeVersion:" + siteNodeVersion.getId() + ":" + siteNodeVersion.getStateId());
             
-			newSiteNodeVersion = changeState(oldSiteNodeVersionId, stateId, versionComment, overrideVersionModifyer, infoGluePrincipal, siteNodeId, db, resultingEvents);
+			newSiteNodeVersion = changeState(oldSiteNodeVersionId, stateId, versionComment, overrideVersionModifyer, recipientFilter, infoGluePrincipal, siteNodeId, db, resultingEvents);
         	
         	commitTransaction(db);
         }
@@ -110,8 +119,18 @@ public class SiteNodeStateController extends BaseController
 	 * This method handles versioning and state-control of siteNodes.
 	 * Se inline documentation for further explainations.
 	 */
-	
+
     public SiteNodeVersion changeState(Integer oldSiteNodeVersionId, Integer stateId, String versionComment, boolean overrideVersionModifyer, InfoGluePrincipal infoGluePrincipal, Integer siteNodeId, Database db, List resultingEvents) throws ConstraintException, SystemException
+    {
+    	return changeState(oldSiteNodeVersionId, stateId, versionComment, overrideVersionModifyer, null, infoGluePrincipal, siteNodeId, db, resultingEvents);
+    }
+    
+	/**
+	 * This method handles versioning and state-control of siteNodes.
+	 * Se inline documentation for further explainations.
+	 */
+	
+    public SiteNodeVersion changeState(Integer oldSiteNodeVersionId, Integer stateId, String versionComment, boolean overrideVersionModifyer, String recipientFilter, InfoGluePrincipal infoGluePrincipal, Integer siteNodeId, Database db, List resultingEvents) throws ConstraintException, SystemException
     {
 		SiteNodeVersion newSiteNodeVersion = null;
 		
@@ -190,7 +209,12 @@ public class SiteNodeStateController extends BaseController
 		        eventVO.setName(newSiteNodeVersion.getOwningSiteNode().getName());
 				eventVO.setTypeId(EventVO.PUBLISH);
 				eventVO = EventController.create(eventVO, newSiteNodeVersion.getOwningSiteNode().getRepository().getId(), infoGluePrincipal, db);			
+
 				resultingEvents.add(eventVO);
+
+				System.out.println("recipientFilter:" + recipientFilter);
+				if(recipientFilter != null && !recipientFilter.equals(""))
+					PublicationController.mailPublishNotification(resultingEvents, newSiteNodeVersion.getOwningSiteNode().getRepository().getId(), infoGluePrincipal, recipientFilter, db);
 	    	}
 	
 	    	if(stateId.intValue() == SiteNodeVersionVO.PUBLISHED_STATE.intValue())

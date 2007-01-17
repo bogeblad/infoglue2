@@ -191,9 +191,9 @@ public class ContentStateController extends BaseController
 
 					resultingEvents.add(eventVO);
 				}
-
-				if(!recipientFilter.equalsIgnoreCase(null))
-					mailPublishNotification(resultingEvents, newContentVersion.getOwningContent().getRepository().getId(), infoGluePrincipal, recipientFilter, db);
+				System.out.println("recipientFilter:" + recipientFilter);
+				if(recipientFilter != null && !recipientFilter.equals(""))
+					PublicationController.mailPublishNotification(resultingEvents, newContentVersion.getOwningContent().getRepository().getId(), infoGluePrincipal, recipientFilter, db);
 			}
 
 			//If the user in the publish-app publishes a publish-version we change state to published.
@@ -267,134 +267,6 @@ public class ContentStateController extends BaseController
 		}
 	}
 
-	/**
-	 * This method mails a notification about items available for publish to the recipient of choice.
-	 */
-	
-	private static void mailPublishNotification(List resultingEvents, Integer repositoryId, InfoGluePrincipal principal, String recipientFilter, Database db)
-	{
-	    try
-	    {
-		    String recipients = getRecipients(principal, repositoryId, recipientFilter, db);
-		    if(recipients == null || recipients.length() == 0)
-		    	return;
-		    	
-	        String contentType = CmsPropertyHandler.getMailContentType();
-	        if(contentType == null || contentType.length() == 0)
-	            contentType = "text/html";
-	        
-	        String template;
-	        if(contentType.equalsIgnoreCase("text/plain"))
-	            template = FileHelper.getFileAsString(new File(CmsPropertyHandler.getContextRootPath() + "cms/publishingtool/newPublishItem_plain.vm"));
-		    else
-	            template = FileHelper.getFileAsString(new File(CmsPropertyHandler.getContextRootPath() + "cms/publishingtool/newPublishItem_html.vm"));
-		    
-	        Map parameters = new HashMap();
-		    parameters.put("events", resultingEvents);
-		    parameters.put("principal", principal);
-		    //parameters.put("referenceUrl", referenceUrl);
-			
-			StringWriter tempString = new StringWriter();
-			PrintWriter pw = new PrintWriter(tempString);
-			new VelocityTemplateProcessor().renderTemplate(parameters, pw, template);
-			String email = tempString.toString();
-	    
-			String systemEmailSender = CmsPropertyHandler.getSystemEmailSender();
-			if(systemEmailSender == null || systemEmailSender.equalsIgnoreCase(""))
-				systemEmailSender = "InfoGlueCMS@" + CmsPropertyHandler.getMailSmtpHost();
-
-			logger.info("email:" + email);
-			logger.info("recipients:" + recipients);
-
-			MailServiceFactory.getService().sendEmail(systemEmailSender, systemEmailSender, recipients, "CMS - New items available for publication!!", email, "utf-8");
-		}
-		catch(Exception e)
-		{
-			logger.error("The notification was not sent. Reason:" + e.getMessage(), e);
-		}
-	}
-
-	private static String getRecipients(InfoGluePrincipal principal, Integer repositoryId, String recipientFilter, Database db) throws Exception
-	{
-		if(recipientFilter != null && recipientFilter.equals(""))
-			return null;
-		
-		String recipients = "";
-	    
-		List users = new ArrayList();
-		if(recipientFilter.equalsIgnoreCase("all"))
-    	{
-    		users = UserControllerProxy.getController(db).getAllUsers();
-    	}
-    	else if(recipientFilter.equalsIgnoreCase("groupBased"))
-    	{
-    		Iterator groupsIterator = principal.getGroups().iterator();
-    		
-    		while(groupsIterator.hasNext())
-	    	{
-    			InfoGlueGroup infoGlueGroup = (InfoGlueGroup)groupsIterator.next();
-    			users = GroupControllerProxy.getController(db).getInfoGluePrincipals(infoGlueGroup.getName());
-	    	}
-    	}
-    	else if(recipientFilter.indexOf("groupNameBased_") > -1)
-    	{
-    		String groupName = recipientFilter.substring(recipientFilter.indexOf("_") + 1);
-    		users = GroupControllerProxy.getController(db).getInfoGluePrincipals(groupName);
-    	}
-    	
-    	Iterator usersIterator = users.iterator();
-		while(usersIterator.hasNext())
-		{
-			InfoGluePrincipal infogluePrincipal = (InfoGluePrincipal)usersIterator.next();
-			if(infogluePrincipal.getGroups() == null || infogluePrincipal.getGroups().size() == 0)
-				infogluePrincipal = UserControllerProxy.getController(db).getUser(infogluePrincipal.getName());
-					
-			boolean hasAccessToPublishingTool = hasAccessTo("PublishingTool.Read", infogluePrincipal);
-			
-			if(hasAccessToPublishingTool)
-			{
-				boolean hasAccessToRepository = hasAccessTo("Repository.Read", "" + repositoryId, infogluePrincipal);
-				if(hasAccessToRepository)
-				{
-					if(recipients.indexOf(infogluePrincipal.getEmail()) == -1)
-					{
-						if(recipients.length() > 0)
-			    			recipients += ";";
-
-			    		recipients += infogluePrincipal.getEmail();
-					}
-				}
-			}
-		}
-    	
-		return recipients;
-	}
-
-	public static boolean hasAccessTo(String interceptionPointName, InfoGluePrincipal principal)
-	{
-		try
-		{
-			return AccessRightController.getController().getIsPrincipalAuthorized(principal, interceptionPointName);
-		}
-		catch (SystemException e)
-		{
-		    logger.warn("Error checking access rights", e);
-			return false;
-		}
-	}
-
-	public static boolean hasAccessTo(String interceptionPointName, String extraParameter, InfoGluePrincipal principal)
-	{
-		try
-		{
-		    return AccessRightController.getController().getIsPrincipalAuthorized(principal, interceptionPointName, extraParameter);
-		}
-		catch (SystemException e)
-		{
-		    logger.warn("Error checking access rights", e);
-			return false;
-		}
-	}
 
 	/**
 	 * This method should never be called.
