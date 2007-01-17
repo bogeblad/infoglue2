@@ -57,8 +57,8 @@ public class ChangeSiteNodeStateAction extends InfoGlueAbstractAction
     	}
 
     	List events = new ArrayList();
-    	System.out.println("recipientFilter1:" + recipientFilter);
-		SiteNodeStateController.getController().changeState(getSiteNodeVersionId(), getStateId(), getVersionComment(), this.overrideVersionModifyer, this.recipientFilter, this.getInfoGluePrincipal(), getSiteNodeId(), events);
+
+    	SiteNodeStateController.getController().changeState(getSiteNodeVersionId(), getStateId(), getVersionComment(), this.overrideVersionModifyer, this.recipientFilter, this.getInfoGluePrincipal(), getSiteNodeId(), events);
 		
        	return "success";
     }

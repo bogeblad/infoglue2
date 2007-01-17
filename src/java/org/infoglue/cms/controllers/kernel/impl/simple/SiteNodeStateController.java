@@ -212,7 +212,6 @@ public class SiteNodeStateController extends BaseController
 
 				resultingEvents.add(eventVO);
 
-				System.out.println("recipientFilter:" + recipientFilter);
 				if(recipientFilter != null && !recipientFilter.equals(""))
 					PublicationController.mailPublishNotification(resultingEvents, newSiteNodeVersion.getOwningSiteNode().getRepository().getId(), infoGluePrincipal, recipientFilter, db);
 	    	}

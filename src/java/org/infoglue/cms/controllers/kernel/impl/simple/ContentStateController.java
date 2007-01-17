@@ -191,7 +191,7 @@ public class ContentStateController extends BaseController
 
 					resultingEvents.add(eventVO);
 				}
-				System.out.println("recipientFilter:" + recipientFilter);
+
 				if(recipientFilter != null && !recipientFilter.equals(""))
 					PublicationController.mailPublishNotification(resultingEvents, newContentVersion.getOwningContent().getRepository().getId(), infoGluePrincipal, recipientFilter, db);
 			}
