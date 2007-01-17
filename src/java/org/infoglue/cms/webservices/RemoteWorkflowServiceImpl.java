@@ -13,6 +13,8 @@ import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.workflow.WorkflowFacade;
 import org.infoglue.deliver.util.webservices.DynamicWebserviceSerializer;
 
+import com.opensymphony.workflow.WorkflowException;
+
 /**
  * This service is used for creating workflows from an external application.
  */
@@ -88,7 +90,7 @@ public class RemoteWorkflowServiceImpl extends RemoteInfoGlueService
 	 * @param workflowVO the workflow.
 	 * @return true if the workflow has terminated; false otherwise.
 	 */
-	private boolean hasTerminated(final WorkflowVO workflowVO)
+	private boolean hasTerminated(final WorkflowVO workflowVO) throws WorkflowException
 	{
 		return new WorkflowFacade(principal, workflowVO.getIdAsPrimitive()).isFinished();
 	}
