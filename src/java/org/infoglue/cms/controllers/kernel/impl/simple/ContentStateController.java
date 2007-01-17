@@ -64,8 +64,18 @@ public class ContentStateController extends BaseController
 	
 	public static final int OVERIDE_WORKING = 1;
 	public static final int LEAVE_WORKING   = 2;
-	
+
 	/**
+	 * This method handles versioning and state-control of content.
+	 * Se inline documentation for further explainations.
+	 */
+	
+    public static ContentVersion changeState(Integer oldContentVersionId, Integer stateId, String versionComment, boolean overrideVersionModifyer, InfoGluePrincipal infoGluePrincipal, Integer contentId, List resultingEvents) throws ConstraintException, SystemException
+    {
+    	return changeState(oldContentVersionId, stateId, versionComment, overrideVersionModifyer, null, infoGluePrincipal, contentId, resultingEvents);
+    }
+    
+    /**
 	 * This method handles versioning and state-control of content.
 	 * Se inline documentation for further explainations.
 	 */
@@ -94,6 +104,16 @@ public class ContentStateController extends BaseController
     }        
 
 
+	/**
+	 * This method handles versioning and state-control of content.
+	 * Se inline documentation for further explainations.
+	 */
+	
+	public static ContentVersion changeState(Integer oldContentVersionId, Integer stateId, String versionComment, boolean overrideVersionModifyer, InfoGluePrincipal infoGluePrincipal, Integer contentId, Database db, List resultingEvents) throws SystemException
+	{
+		return changeState(oldContentVersionId, stateId, versionComment, overrideVersionModifyer, null, infoGluePrincipal, contentId, db, resultingEvents);
+	}
+	
 	/**
 	 * This method handles versioning and state-control of content.
 	 * Se inline documentation for further explainations.

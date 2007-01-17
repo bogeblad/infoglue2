@@ -53,6 +53,7 @@ public class ChangeMultiContentStatePublishAction extends InfoGlueAbstractAction
 	private Integer languageId;
 	private String versionComment;
 	private boolean overrideVersionModifyer = false;
+	private String recipientFilter = null;
 	private Integer repositoryId;
 	private String attemptDirectPublishing = "false";
 	private String returnAddress = null;
@@ -83,7 +84,7 @@ public class ChangeMultiContentStatePublishAction extends InfoGlueAbstractAction
 		{
 			Integer contentVersionId = (Integer)contentVersionIdsIterator.next();
 			logger.info("Publishing:" + contentVersionId);
-			ContentVersion contentVersion = ContentStateController.changeState(contentVersionId, ContentVersionVO.PUBLISH_STATE, getVersionComment(), this.overrideVersionModifyer, this.getInfoGluePrincipal(), null, events);
+			ContentVersion contentVersion = ContentStateController.changeState(contentVersionId, ContentVersionVO.PUBLISH_STATE, getVersionComment(), this.overrideVersionModifyer, this.recipientFilter, this.getInfoGluePrincipal(), null, events);
 		}
 		
 		if(attemptDirectPublishing.equalsIgnoreCase("true"))
@@ -210,5 +211,13 @@ public class ChangeMultiContentStatePublishAction extends InfoGlueAbstractAction
 	public void setReturnAddress(String returnAddress) 
 	{
 		this.returnAddress = returnAddress;
+	}
+
+	public String getRecipientFilter() {
+		return recipientFilter;
+	}
+
+	public void setRecipientFilter(String recipientFilter) {
+		this.recipientFilter = recipientFilter;
 	}
 }
