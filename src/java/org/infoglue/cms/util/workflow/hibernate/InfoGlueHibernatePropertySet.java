@@ -3,6 +3,8 @@ package org.infoglue.cms.util.workflow.hibernate;
 import java.io.UnsupportedEncodingException;
 import java.util.Map;
 
+import org.infoglue.deliver.util.Timer;
+
 import com.opensymphony.module.propertyset.PropertyException;
 import com.opensymphony.module.propertyset.PropertySet;
 import com.opensymphony.module.propertyset.hibernate.HibernateConfigurationProvider;
@@ -71,7 +73,7 @@ public class InfoGlueHibernatePropertySet extends HibernatePropertySet
 	 */
     public void init(Map config, Map args) 
     {
-        super.init(config, args);
+    	super.init(config, args);
         this.configProvider = (HibernateConfigurationProvider) args.get(CONFIGURATION_PROVIDER_ARGUMENT);
         this.entityId       = (Long) args.get("entityId");
         this.entityName     = (String) args.get("entityName");

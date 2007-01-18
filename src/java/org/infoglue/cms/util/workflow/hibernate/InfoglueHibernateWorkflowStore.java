@@ -5,13 +5,18 @@ import java.util.Map;
 
 import org.infoglue.cms.applications.workflowtool.util.InfogluePropertySet;
 import org.infoglue.deliver.util.CacheController;
+import org.infoglue.deliver.util.Timer;
 
+//import org.hibernate.SessionFactory;
+import net.sf.hibernate.HibernateException;
 import net.sf.hibernate.SessionFactory;
+import net.sf.hibernate.cfg.Configuration;
 
 import com.opensymphony.module.propertyset.PropertySet;
 import com.opensymphony.module.propertyset.PropertySetManager;
 import com.opensymphony.module.propertyset.cached.CachingPropertySet;
 import com.opensymphony.workflow.StoreException;
+//import com.opensymphony.workflow.spi.hibernate3.HibernateWorkflowStore;
 import com.opensymphony.workflow.spi.hibernate.HibernateWorkflowStore;
 
 
@@ -42,8 +47,9 @@ public class InfoglueHibernateWorkflowStore extends HibernateWorkflowStore {
 	/**
 	 * 
 	 */
-    public void init(Map props) throws StoreException {
-		sessionFactory = (SessionFactory) props.get("sessionFactory");
+    public void init(Map props) throws StoreException 
+    {
+    	sessionFactory = (SessionFactory) props.get("sessionFactory");
 		super.init(props);
     }
 
@@ -57,31 +63,61 @@ public class InfoglueHibernateWorkflowStore extends HibernateWorkflowStore {
     	
     	if(ps == null)
     	{
-	    	HashMap args = new HashMap();
-	        args.put("entityName", "OSWorkflowEntry");
-	        args.put("entityId", new Long(entryId));
-	
-			InfoglueDefaultHibernateConfigurationProvider configurationProvider = new InfoglueDefaultHibernateConfigurationProvider();
-	        configurationProvider.setSessionFactory(sessionFactory);
-	
-	        args.put("configurationProvider", configurationProvider);
-	
-	        
-			ps = new CachingPropertySet();
+    		try
+    		{
+		    	HashMap args = new HashMap();
+		        args.put("entityName", "OSWorkflowEntry");
+		        args.put("entityId", new Long(entryId));
+		
+				InfoglueDefaultHibernateConfigurationProvider configurationProvider = new InfoglueDefaultHibernateConfigurationProvider();
+		        configurationProvider.setSessionFactory(sessionFactory);
+		
+		        args.put("configurationProvider", configurationProvider);
+		        
+				ps = new CachingPropertySet();
+				
+				Map args2 = new HashMap();
+				args2.put("PropertySet", PropertySetManager.getInstance("hibernate", args));
+				args2.put("bulkload", new Boolean(true));
+				
+				ps.init(new HashMap(), args2);
+				CacheController.cacheObject("propertySetCache", key, ps);
+	    		//logger.info("Caching propertySet for entry: " + entryId + ":" + ps);
+				
+		        ps = PropertySetManager.getInstance("hibernate", args);
+    		}
+    		catch(Exception e)
+    		{
+    			e.printStackTrace();
+    			
+    			try
+    			{
+					System.out.println("\n\nRestoring the session factory....");
+	    			//sessionFactory.close();
+					sessionFactory = new Configuration().configure().buildSessionFactory();
+					
+					InfoglueDefaultHibernateConfigurationProvider configurationProvider = new InfoglueDefaultHibernateConfigurationProvider();
+			        configurationProvider.setSessionFactory(sessionFactory);
 			
-			Map args2 = new HashMap();
-			args2.put("PropertySet", PropertySetManager.getInstance("hibernate", args));
-			args2.put("bulkload", new Boolean(true));
-			
-			ps.init(new HashMap(), args2);
-			
-			CacheController.cacheObject("propertySetCache", key, ps);
-    		//logger.info("Caching propertySet for entry: " + entryId + ":" + ps);
-			
-	        ps = PropertySetManager.getInstance("hibernate", args);
-    		
+			        Map args = new HashMap();
+			        args.put("configurationProvider", configurationProvider);
+			        
+					ps = new CachingPropertySet();
+					
+					Map args2 = new HashMap();
+					args2.put("PropertySet", PropertySetManager.getInstance("hibernate", args));
+					args2.put("bulkload", new Boolean(true));
+					
+					ps.init(new HashMap(), args2);
+    			}
+				catch (HibernateException he)
+				{
+					he.printStackTrace();
+				}
+    		}
     	}
     	
         return ps;
     }
+     
 }

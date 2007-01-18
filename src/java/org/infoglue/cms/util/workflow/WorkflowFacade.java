@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+
 import net.sf.hibernate.HibernateException;
 import net.sf.hibernate.SessionFactory;
 import net.sf.hibernate.cfg.Configuration;
@@ -46,7 +47,9 @@ import org.infoglue.deliver.util.CacheController;
 
 import com.opensymphony.module.propertyset.PropertySet;
 import com.opensymphony.workflow.AbstractWorkflow;
+import com.opensymphony.workflow.FactoryException;
 import com.opensymphony.workflow.InvalidActionException;
+import com.opensymphony.workflow.StoreException;
 import com.opensymphony.workflow.WorkflowException;
 import com.opensymphony.workflow.basic.BasicWorkflow;
 import com.opensymphony.workflow.loader.ActionDescriptor;
@@ -65,7 +68,7 @@ import com.opensymphony.workflow.spi.WorkflowEntry;
  * the Workflow interface.  The idea is to encapsulate the interactions with OSWorkflow and eliminate the
  * need to pass a Workflow reference and the workflow ID all over the place when extracting data from OSWorkflow
  * @author <a href="mailto:jedprentice@gmail.com">Jed Prentice</a>
- * @version $Revision: 1.32 $ $Date: 2006/09/22 12:15:30 $
+ * @version $Revision: 1.33 $ $Date: 2007/01/18 14:50:46 $
  */
 public class WorkflowFacade
 {
@@ -94,7 +97,7 @@ public class WorkflowFacade
 		}
 		catch (HibernateException e)
 		{
-			e.printStackTrace();
+			logger.error("An exception occurred when we tried to initialize the hibernateSessionFactory", e);
 			throw new ExceptionInInitializerError(e);
 		}
 	}
@@ -266,36 +269,72 @@ public class WorkflowFacade
 	 */
 	public void doAction(int actionId, Map inputs) throws WorkflowException
 	{
-		final Long id = new Long(workflowId);
-		synchronized(currentWorkflows)
-		{
-			if(!isActive())
-			{
-				throw new InvalidActionException("Workflow " + workflowId + " is no longer active");
-			}
-			if(currentWorkflows.contains(id))
-			{
-				throw new WorkflowException("The selected workflow is executing...");
-			}
-			currentWorkflows.add(id);
-		}
-		
 		try
 		{
-			if(useDatabaseExtension(workflowDescriptor))
-			{
-				doExtendedAction(actionId, inputs);
+			final Long id = new Long(workflowId);
+			
+			if(getEntryState() == WorkflowEntry.CREATED)
+				workflow.changeEntryState(workflowId, WorkflowEntry.ACTIVATED);
+
+			synchronized(currentWorkflows)
+			{	
+				if(!isActive())
+				{
+					if(getEntryState() == WorkflowEntry.UNKNOWN)
+						throw new WorkflowException("The workflow with id " + workflowId + " is in an unknown state - the database could be down or the workflow corrupt");
+					else
+						throw new InvalidActionException("Workflow " + workflowId + " is no longer active");
+				}
+				if(currentWorkflows.contains(id))
+				{
+					throw new WorkflowException("The selected workflow is executing...");
+				}
+				currentWorkflows.add(id);
 			}
-			else
+			
+			try
 			{
-				workflow.doAction(workflowId, actionId, inputs);
+				if(useDatabaseExtension(workflowDescriptor))
+				{
+					doExtendedAction(actionId, inputs);
+				}
+				else
+				{
+					workflow.doAction(workflowId, actionId, inputs);
+				}
+			}
+			finally
+			{
+				synchronized(currentWorkflows)
+				{
+					currentWorkflows.remove(id);
+				}
 			}
 		}
-		finally
+		catch(WorkflowException we)
 		{
-			synchronized(currentWorkflows)
+			logger.error("An error occurred when we tried to invoke an workflow action:" + we.getMessage());
+			restoreSessionFactory(workflow);
+			throw new WorkflowException("An error occurred when we tried to invoke an workflow action:" + we.getMessage());
+		}
+	}
+
+	private void restoreSessionFactory(AbstractWorkflow workflow) throws WorkflowException
+	{
+		if(workflow != null)
+		{
+			try
 			{
-				currentWorkflows.remove(id);
+				System.out.println("Restoring session factory...");
+				//hibernateSessionFactory.close();
+				hibernateSessionFactory = new Configuration().configure().buildSessionFactory();
+				workflow.getConfiguration().getPersistenceArgs().put("sessionFactory", hibernateSessionFactory);
+				workflow.getConfiguration().getWorkflowStore().init(workflow.getConfiguration().getPersistenceArgs());
+			}
+			catch (HibernateException e)
+			{
+				logger.error("An error occurred when we tried to restore the hibernate session factory:" + e.getMessage());
+				throw new ExceptionInInitializerError(e);
 			}
 		}
 	}
@@ -346,9 +385,18 @@ public class WorkflowFacade
 	 * Returns the state of the underlying workflow entry
 	 * @return the state of the underlying workflow entry
 	 */
-	private int getEntryState()
+	private int getEntryState() throws WorkflowException
 	{
-		return workflow.getEntryState(workflowId);
+		try
+		{
+			return workflow.getEntryState(workflowId);
+		}
+		catch(Throwable we)
+		{
+			logger.error("An error occurred when we tried to check for entry state:" + we.getMessage());
+			restoreSessionFactory(workflow);
+			throw new WorkflowException("An error occurred when we tried to check for entry state:" + we.getMessage());
+ 		}
 	}
 
 	/**
@@ -356,7 +404,7 @@ public class WorkflowFacade
 	 * 
 	 * @return true if the underlying workflow's state is WorkflowEntry.ACTIVATED, otherwise returns false.
 	 */
-	public boolean isActive()
+	public boolean isActive() throws WorkflowException
 	{
 		return getEntryState() == WorkflowEntry.ACTIVATED;
 	}
@@ -366,7 +414,7 @@ public class WorkflowFacade
 	 * 
 	 * @return true if the underlying workflow's state is WorkflowEntry.KILLED or WorkflowEntry.COMPLETED, otherwise returns false.
 	 */
-	public boolean isFinished()
+	public boolean isFinished() throws WorkflowException
 	{
 		int state = getEntryState();
 		return state == WorkflowEntry.KILLED || state == WorkflowEntry.COMPLETED;
@@ -428,40 +476,41 @@ public class WorkflowFacade
 	{		
 		String key = "myWorkflows_" + principal.getName();
 		List workflows = (List)CacheController.getCachedObject("myActiveWorkflows", key);
+		
 		if(workflows == null)
 		{
-			if(principal.getIsAdministrator())
-			{
-				workflows = getActiveWorkflows();
-			}
-			
-			Collection owners = OwnerFactory.createAll(principal);
-			Expression[] expressions = new Expression[owners.size()];
-			
-			Iterator ownersIterator = owners.iterator();
-			int i = 0;
-			while(ownersIterator.hasNext())
-			{
-				Owner owner = (Owner)ownersIterator.next();
-				Expression expression = new FieldExpression(FieldExpression.OWNER, FieldExpression.CURRENT_STEPS, FieldExpression.EQUALS, owner.getIdentifier());
-				expressions[i] = expression;
-				i++;
-			}				
-			
-			final Set workflowVOs = new HashSet();
-			workflowVOs.addAll(createWorkflowsForOwner(expressions));
-
-			/*
-			final Set workflowVOs = new HashSet();
-			for(final Iterator owners = OwnerFactory.createAll(principal).iterator(); owners.hasNext(); )
-			{
-				final Owner owner = (Owner) owners.next();
-				workflowVOs.addAll(createWorkflowsForOwner(owner));
-			}
-			*/
-			
-			workflows = new ArrayList(workflowVOs);
-			CacheController.cacheObject("myActiveWorkflows", key, workflows);
+				if(principal.getIsAdministrator())
+				{
+					workflows = getActiveWorkflows();
+				}
+				
+				Collection owners = OwnerFactory.createAll(principal);
+				Expression[] expressions = new Expression[owners.size()];
+				
+				Iterator ownersIterator = owners.iterator();
+				int i = 0;
+				while(ownersIterator.hasNext())
+				{
+					Owner owner = (Owner)ownersIterator.next();
+					Expression expression = new FieldExpression(FieldExpression.OWNER, FieldExpression.CURRENT_STEPS, FieldExpression.EQUALS, owner.getIdentifier());
+					expressions[i] = expression;
+					i++;
+				}				
+				
+				final Set workflowVOs = new HashSet();
+				workflowVOs.addAll(createWorkflowsForOwner(expressions));
+	
+				/*
+				final Set workflowVOs = new HashSet();
+				for(final Iterator owners = OwnerFactory.createAll(principal).iterator(); owners.hasNext(); )
+				{
+					final Owner owner = (Owner) owners.next();
+					workflowVOs.addAll(createWorkflowsForOwner(owner));
+				}
+				*/
+				
+				workflows = new ArrayList(workflowVOs);
+				CacheController.cacheObject("myActiveWorkflows", key, workflows);
 		}
 		
 		return workflows;
@@ -496,15 +545,23 @@ public class WorkflowFacade
 	 */
 	private final Set createWorkflowsForOwner(final Expression[] expressions) throws SystemException
 	{
-		final Set workflowVOs = new HashSet(); 
-		List workflows = findWorkflows(expressions);
-		Iterator workflowsIterator = workflows.iterator();
-		while (workflowsIterator.hasNext())
+		try
 		{
-			setWorkflowIdAndDescriptor(((Long)workflowsIterator.next()).longValue());
-			workflowVOs.add(createWorkflowVO());
+			final Set workflowVOs = new HashSet(); 
+			List workflows = findWorkflows(expressions);
+			Iterator workflowsIterator = workflows.iterator();
+			while (workflowsIterator.hasNext())
+			{
+				setWorkflowIdAndDescriptor(((Long)workflowsIterator.next()).longValue());
+				workflowVOs.add(createWorkflowVO());
+			}
+
+			return workflowVOs;
 		}
-		return workflowVOs;
+		catch (WorkflowException e)
+		{
+			throw new SystemException(e);
+		}
 	}
 
 	/**
@@ -554,7 +611,7 @@ public class WorkflowFacade
 	 * @return The active workflows owned by the specified owner. 
 	 * @throws SystemException
 	 */
-	private List findWorkflows(final Expression[] expressions) throws SystemException
+	private List findWorkflows(final Expression[] expressions) throws WorkflowException
 	{
 		try
 		{
@@ -563,9 +620,11 @@ public class WorkflowFacade
 			//List workflows = workflow.query(new WorkflowExpressionQuery(new FieldExpression(FieldExpression.OWNER, FieldExpression.CURRENT_STEPS, FieldExpression.EQUALS, owner.getIdentifier())));
 			return workflows;
 		}
-		catch (WorkflowException e)
+		catch (WorkflowException we)
 		{
-			throw new SystemException(e);
+			logger.error("An error occurred when we tried to invoke an workflow action:" + we.getMessage());
+			restoreSessionFactory(workflow);
+			throw new WorkflowException("An error occurred when we tried to invoke an workflow action:" + we.getMessage());
 		}
 	}
 
