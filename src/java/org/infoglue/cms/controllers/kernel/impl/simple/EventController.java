@@ -268,8 +268,18 @@ public class EventController extends BaseController
             	{
 	            	if(event.getEntityClass().equalsIgnoreCase(ContentVersion.class.getName()))
 	            	{
-	            		ContentVersion contentVersion = ContentVersionController.getContentVersionController().getContentVersionWithId(event.getEntityId(), db);
-	        		    //logger.warn("contentVersion:" + contentVersion.getId() + ":" + contentVersion.getOwningContent());
+	            		ContentVersion contentVersion = null;
+	            		try
+	            		{
+	            			contentVersion = ContentVersionController.getContentVersionController().getContentVersionWithId(event.getEntityId(), db);
+	            		}
+	            		catch(SystemException e)
+	            		{
+	            			isBroken = true;
+	            			throw e;
+	            		}
+	            		
+	            		//logger.warn("contentVersion:" + contentVersion.getId() + ":" + contentVersion.getOwningContent());
 	            		if(contentVersion == null || contentVersion.getOwningContent() == null)
 	            		{
 							isBroken = true;
@@ -401,7 +411,6 @@ public class EventController extends BaseController
 				}
 				catch(Exception e)
 				{
-					System.out.println("Error:" + e.getMessage());
 					isValid = false;
 					//delete(event, db);
 				}
