@@ -69,7 +69,7 @@ import org.infoglue.deliver.controllers.kernel.impl.simple.RepositoryDeliveryCon
 import org.infoglue.deliver.controllers.kernel.impl.simple.TemplateController;
 import org.infoglue.deliver.invokers.PageInvoker;
 import org.infoglue.deliver.portal.PortalService;
-import org.infoglue.deliver.services.StatisticsService;
+//import org.infoglue.deliver.services.StatisticsService;
 import org.infoglue.deliver.util.BrowserBean;
 import org.infoglue.deliver.util.CacheController;
 import org.infoglue.deliver.util.RequestAnalyser;
@@ -167,20 +167,22 @@ public class ViewPageAction extends InfoGlueAbstractAction
         	Thread.sleep(10);
         }
         
-        HttpServletRequest request = getRequest();
-        
-    	long start = System.currentTimeMillis();
-    	RequestAnalyser.getRequestAnalyser().incNumberOfCurrentRequests();
-
-    	long elapsedTime 	= 0;
-    	
-    	logger.info("************************************************");
+        logger.info("************************************************");
     	logger.info("* ViewPageAction was called....                *");
     	logger.info("************************************************");
     	
+        HttpServletRequest request = getRequest();
+        
     	if(!CmsPropertyHandler.getOperatingMode().equals("3"))
     		tk = new ThreadMonitor(new Long(CmsPropertyHandler.getDeliverRequestTimeout()).longValue(), request, "Page view took to long!", true);
-    	
+    	else
+    		tk = new ThreadMonitor(new Long(CmsPropertyHandler.getDeliverRequestTimeout()).longValue(), request, "Page view seems to take to long!", false);
+    		
+    	RequestAnalyser.getRequestAnalyser().incNumberOfCurrentRequests(tk);
+
+    	long start 			= System.currentTimeMillis();
+    	long elapsedTime 	= 0;
+    	    	
     	DatabaseWrapper dbWrapper = new DatabaseWrapper(CastorDatabaseService.getDatabase());
     	
 		beginTransaction(dbWrapper.getDatabase());
@@ -279,8 +281,8 @@ public class ViewPageAction extends InfoGlueAbstractAction
 				}
 			}
 			
-	        StatisticsService.getStatisticsService().registerRequest(getRequest(), getResponse(), pagePath, elapsedTime);
-			logger.info("Registered request in statistics service");
+	        //StatisticsService.getStatisticsService().registerRequest(getRequest(), getResponse(), pagePath, elapsedTime);
+			//logger.info("Registered request in statistics service");
 		}
 		catch(Exception e)
 		{
@@ -306,8 +308,9 @@ public class ViewPageAction extends InfoGlueAbstractAction
 	        //}
 
 			elapsedTime = System.currentTimeMillis() - start;
-			RequestAnalyser.getRequestAnalyser().decNumberOfCurrentRequests();
+			RequestAnalyser.getRequestAnalyser().decNumberOfCurrentRequests(elapsedTime);
 
+		    //System.out.println("The page delivery took " + elapsedTime + "ms for request " + this.getRequest().getRequestURL() + "?" + this.getRequest().getQueryString());
 			if(elapsedTime > 10000)
 			{
 			    logger.warn("The page delivery took " + elapsedTime + "ms for request " + this.getRequest().getRequestURL() + "?" + this.getRequest().getQueryString());
@@ -345,20 +348,22 @@ public class ViewPageAction extends InfoGlueAbstractAction
         	Thread.sleep(10);
         }
 		
-        HttpServletRequest request = getRequest();
-
-    	RequestAnalyser.getRequestAnalyser().incNumberOfCurrentRequests();
-
-   		long start			= new Date().getTime();
-		long elapsedTime 	= 0;
-    	
 		logger.info("************************************************");
 		logger.info("* ViewPageAction was called....                *");
 		logger.info("************************************************");
-		
+
+        HttpServletRequest request = getRequest();
+
     	if(!CmsPropertyHandler.getOperatingMode().equals("3"))
     		tk = new ThreadMonitor(new Long(CmsPropertyHandler.getDeliverRequestTimeout()).longValue(), request, "Page view took to long!", true);
+    	else
+    		tk = new ThreadMonitor(new Long(CmsPropertyHandler.getDeliverRequestTimeout()).longValue(), request, "Page view is taking a long time!", false);
+    		
+    	RequestAnalyser.getRequestAnalyser().incNumberOfCurrentRequests(tk);
 
+   		long start			= new Date().getTime();
+		long elapsedTime 	= 0;
+    			
 		DatabaseWrapper dbWrapper = new DatabaseWrapper(CastorDatabaseService.getDatabase());
     	//Database db = CastorDatabaseService.getDatabase();
 		
@@ -467,7 +472,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 				}
 			}
 			
-			StatisticsService.getStatisticsService().registerRequest(getRequest(), getResponse(), pagePath, elapsedTime);
+			//StatisticsService.getStatisticsService().registerRequest(getRequest(), getResponse(), pagePath, elapsedTime);
 		}
 		catch(Exception e)
 		{
@@ -481,7 +486,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 
 		    elapsedTime = System.currentTimeMillis() - start;
 
-			RequestAnalyser.getRequestAnalyser().decNumberOfCurrentRequests();
+			RequestAnalyser.getRequestAnalyser().decNumberOfCurrentRequests(elapsedTime);
 
 			if(elapsedTime > 20000)
 			{
@@ -552,7 +557,11 @@ public class ViewPageAction extends InfoGlueAbstractAction
 		this.browserBean.setRequest(getRequest());
 		
 		this.principal = (Principal)this.getHttpSession().getAttribute("infogluePrincipal");
-
+		/*
+		boolean enforceJ2EEPrincipal = AuthenticationModule.getAuthenticationModule(null, null).enforceJ2EEContainerPrincipal();
+		if(!enforceJ2EEPrincipal || this.getRequest().getUserPrincipal() != null)
+			this.principal = (Principal)this.getHttpSession().getAttribute("infogluePrincipal");
+		*/
 		if(this.principal == null)
 		{
 			try
