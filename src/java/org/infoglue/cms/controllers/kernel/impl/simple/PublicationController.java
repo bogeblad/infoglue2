@@ -969,7 +969,7 @@ public class PublicationController extends BaseController
 			logger.info("email:" + email);
 			logger.info("recipients:" + recipients);
 
-			MailServiceFactory.getService().sendEmail(systemEmailSender, systemEmailSender, recipients, "CMS - New items available for publication!!", email, "utf-8");
+			MailServiceFactory.getService().sendEmail(systemEmailSender, systemEmailSender, recipients, "CMS - " + principal.getFirstName() + " " + principal.getLastName() + " submitted " + resultingEvents.size() + " items for publishing", email, "utf-8");
 		}
 		catch(Exception e)
 		{
