@@ -9,6 +9,20 @@
 - Added possibility to have a robots.txt in deliver
 - Added thumbnail support for PNG-images and made edit-link only appear in front of gif, jpg and png assets in the content tool
 - Made image editor a bit more robust - added some checks on crop and resize tools.
+- Added feature which allows the system to send notifications to publishers when  one or more items are submitted for publication. 
+  The notification can either be sent to the publishers which is members of the same group as the submitter or to submitters in a particular group.
+  The feature can be turned on/off through the application settings.
+- Added feature so a publisher can filter the items submitted to publishing tool. One can look at all items, items submitted by members in any of my groups or items submitter by members of a particular group.
+- Added sorting of workflows in my desktop tool so they are allways sorted by creation id
+- Added better exception handling in os-workflow integration. Now the database can go down and OS-Workflow will recover when it's available again.
+- Added more statistics to the ViewApplicationState-page - now one can see:
+	* Total number of requests handled since deliver was started
+	* Average processing time (time until response was delivered)
+	* Slowest request time since start.
+- Added warning mail if workflow engine get's into trouble
+- Added so long requests are reported from liveservers to the admin email address.
+- Added robots.txt file possibility
+- Added so one can see long threads in BlockedThread.jsp
 
 -------------------------------------------------------------------------------------
 - InfoGlue 2.4.1 Final
