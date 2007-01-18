@@ -31,23 +31,19 @@
 #foreach($workflowVO in $currentWorkflowVOList)
 <div id="activeWorkflow${workflowVO.workflowId}DetailsProperties" class="propertiesDiv" style="left:30px; top:100px; visibility:hidden; z-index:10">
 	<div id="activeWorkflow${workflowVO.workflowId}DetailsPropertiesHandle" class="propertiesDivHandle">
-	<table cellpadding="0" cellspacing="0" border="0" align="center" width="100%">
-	<tr>
-		<td align="left" class="smallwhitelabel">${workflowVO.name} - workflow #$workflowVO.id</td>
-		<td align="right"><a href="javascript:hideDiv('activeWorkflow${workflowVO.workflowId}DetailsProperties');" class="white">close</a></td>
-	</tr>
-	</table>
+		<div id="propertiesDivLeftHandle" class="propertiesDivLeftHandle">${workflowVO.name}&nbsp;-&nbsp;#$workflowVO.id</div><div id="propertiesDivRightHandle" class="propertiesDivRightHandle"><a href="javascript:hideDiv('activeWorkflow${workflowVO.workflowId}DetailsProperties');" class="white">close</a></div>
 	</div>
+	
 	<div id="activeWorkflow${workflowVO.workflowId}DetailsPropertiesBody" class="propertiesDivBody">
 		<table border="0" cellpadding="4" cellspacing="0" width="100%">
 		#foreach($workflowStepVO in $workflowVO.steps)
-		<tr style="background-color: #if(!$workflowStepVO.finishDate)white #else gray#end;">
-			<td>$workflowStepVO.name</td>
-			<td>#if($workflowStepVO.owner)$workflowStepVO.owner#else Not specified#end</td>
-			<td>#if($workflowStepVO.caller)$workflowStepVO.caller#else Not specified#end</td>
-			<td>$workflowStepVO.status</td>
-			<td>#if(!$workflowStepVO.startDate)Not started#else$formatter.formatDate($workflowStepVO.startDate, "yyyy-MM-dd")#end</td>
-			<td>#if(!$workflowStepVO.finishDate)Not completed#else$formatter.formatDate($workflowStepVO.finishDate, "yyyy-MM-dd")#end</td>
+		<tr>
+			<td style="#if(!$workflowStepVO.finishDate)color: black; #else color: silver; #end">$workflowStepVO.name</td>
+			<td style="#if(!$workflowStepVO.finishDate)color: black; #else color: silver; #end">#if($workflowStepVO.owner)$workflowStepVO.owner#else Not specified#end</td>
+			<td style="#if(!$workflowStepVO.finishDate)color: black; #else color: silver; #end">#if($workflowStepVO.caller)$workflowStepVO.caller#else Not specified#end</td>
+			<td style="#if(!$workflowStepVO.finishDate)color: black; #else color: silver; #end">$workflowStepVO.status</td>
+			<td style="#if(!$workflowStepVO.finishDate)color: black; #else color: silver; #end">#if(!$workflowStepVO.startDate)Not started#else$formatter.formatDate($workflowStepVO.startDate, "yyyy-MM-dd")#end</td>
+			<td style="#if(!$workflowStepVO.finishDate)color: black; #else color: silver; #end">#if(!$workflowStepVO.finishDate)Not completed#else$formatter.formatDate($workflowStepVO.finishDate, "yyyy-MM-dd")#end</td>
 		</tr>
 		#end
 		</table>
@@ -58,12 +54,7 @@
 #foreach($workflowVO in $availableWorkflows)
 <div id="availableWorkflow${workflowVO.name}DetailsProperties" class="propertiesDiv" style="left:50px; top:100px; visibility:hidden; z-index:10">
 	<div id="availableWorkflow${workflowVO.name}DetailsPropertiesHandle" class="propertiesDivHandle">
-	<table cellpadding="0" cellspacing="0" border="0" align="center" width="100%">
-	<tr>
-		<td align="left" class="smallwhitelabel">${workflowVO.name}</td>
-		<td align="right"><a href="javascript:hideDiv('availableWorkflow${workflowVO.name}DetailsProperties');" class="white">close</a></td>
-	</tr>
-	</table>
+		<div id="propertiesDivLeftHandle" class="propertiesDivLeftHandle">${workflowVO.name}</div><div id="propertiesDivRightHandle" class="propertiesDivRightHandle"><a href="javascript:hideDiv('availableWorkflow${workflowVO.name}DetailsProperties');" class="white">close</a></div>
 	</div>
 	<div id="availableWorkflow${workflowVO.workflowId}DetailsPropertiesBody" class="propertiesDivBody">
 		<table border="0" cellpadding="4" cellspacing="0" width="100%">
@@ -216,7 +207,7 @@
 	</table>
 </div>
 
-<div id="tasks" style="position:absolute; left:380px; top:20px; right: 20px; awidth:700px; height:200px; z-index:2">
+<div id="tasks" style="position:absolute; left:380px; top:20px; right: 20px; height:200px; z-index:2">
 	<table tableborder="0" border="0" bgcolor="#666666" width="100%" cellpadding="1" cellspacing="0">
 	<tr>
 		<td>
