@@ -196,7 +196,7 @@ public class ViewMyDesktopToolStartPageAction extends InfoGlueAbstractAction
 		}
 		catch (InvalidActionException e)
 		{
-			logger.error("An error occurred when invoking an action:" + e.getMessage());
+			logger.error("An error occurred when invoking an action:" + e.getMessage(), e);
 			return INVALID_ACTION;
 		}
 		catch (WorkflowException e)
