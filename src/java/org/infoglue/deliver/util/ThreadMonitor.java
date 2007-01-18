@@ -45,12 +45,14 @@ public class ThreadMonitor implements Runnable
 
 	private Thread targetThread;
 	private long millis;
+	private long started;
 	private Thread watcherThread;
 	private boolean loop;
 	private boolean enabled;
 	private HttpServletRequest request;
 	private String message;
 	private boolean kill = false;
+	private long threadId;
 	
 	/// Constructor.  Give it a thread to watch, and a timeout in milliseconds.
 	// After the timeout has elapsed, the thread gets killed.  If you want
@@ -59,11 +61,13 @@ public class ThreadMonitor implements Runnable
 	{
 		this.targetThread = targetThread;
 		this.millis = millis;
+		this.started = System.currentTimeMillis();
 		watcherThread = new Thread(this);
 		enabled = true;
 		this.request = request;
 		this.message = message;
 		this.kill = kill;
+		this.threadId = Thread.currentThread().getId();
 		
 		if(millis > 0)
 			watcherThread.start();
@@ -145,7 +149,7 @@ public class ThreadMonitor implements Runnable
     	StackTraceElement[] el = targetThread.getStackTrace();
         
         StringBuffer stackString = new StringBuffer("\n\n" + message + ":\n\n");
-        stackString.append("\nThread before killed:\n");
+        stackString.append("\nThread with id [" + threadId + "] at report time:\n");
         stackString.append("\nOriginal url:" + getOriginalFullURL() + "\n");
         if (el != null && el.length != 0)
         {
@@ -190,6 +194,26 @@ public class ThreadMonitor implements Runnable
     		originalQueryString = this.request.getQueryString();
 
     	return originalRequestURL + "?" + originalQueryString;
+	}
+
+	public long getMillis() 
+	{
+		return millis;
+	}
+
+	public long getStarted() 
+	{
+		return this.started;
+	}
+	
+	public long getElapsedTime()
+	{
+		return System.currentTimeMillis() - this.started;
+	}
+
+	public long getThreadId() 
+	{
+		return threadId;
 	}
 
 }

@@ -23,6 +23,12 @@
 
 package org.infoglue.deliver.util;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -36,9 +42,10 @@ public class RequestAnalyser
     private static RequestAnalyser instance = new RequestAnalyser();
     //public Integer numberOfCurrentRequests = new Integer(0);
     
+	private static Map threadMonitors = new HashMap();
 	//private static List currentRequests = new ArrayList();
-    private static HttpServletRequest lastRequest = null;
-    private static HttpServletResponse lastResponse = null;
+    //private static HttpServletRequest lastRequest = null;
+    //private static HttpServletResponse lastResponse = null;
     
 	private static int maxClientsInt = 0;
 	private static boolean blockRequests = false;
@@ -57,10 +64,8 @@ public class RequestAnalyser
                 e.printStackTrace();
             }
         }
-
 	}
 
-	
 	public static RequestAnalyser getRequestAnalyser()
 	{
 	    return instance;
@@ -70,29 +75,61 @@ public class RequestAnalyser
     {
         return Counter.getNumberOfCurrentRequests();
     }
-    
-    public void incNumberOfCurrentRequests()
+
+    public int getTotalNumberOfRequests()
+    {
+        return Counter.getTotalNumberOfRequests();
+    }
+
+    public long getAverageElapsedTime()
+    {
+        return Counter.getAverageElapsedTime();
+    }
+
+    public long getMaxElapsedTime()
+    {
+        return Counter.getMaxElapsedTime();
+    }
+
+    public void incNumberOfCurrentRequests(ThreadMonitor tk)
     {
         Counter.incNumberOfCurrentRequests();
-        /*
-        synchronized(numberOfCurrentRequests)
+        if(tk != null)
         {
-            numberOfCurrentRequests = new Integer(numberOfCurrentRequests.intValue() + 1);
+	        synchronized(threadMonitors)
+	        {
+	        	threadMonitors.put("" + Thread.currentThread().getId(), tk);
+	        }
         }
-        */ 
     }
 
-    public synchronized void decNumberOfCurrentRequests()
+    public synchronized void decNumberOfCurrentRequests(long elapsedTime)
     {
-        Counter.decNumberOfCurrentRequests();
-        /*
-        synchronized(numberOfCurrentRequests)
+        Counter.decNumberOfCurrentRequests(elapsedTime);
+        synchronized(threadMonitors)
         {
-            numberOfCurrentRequests = new Integer(numberOfCurrentRequests.intValue() - 1);
-        } 
-        */
+        	threadMonitors.remove("" + Thread.currentThread().getId());
+        }
     }
 
+    public static List getLongThreadMonitors()
+    {
+    	List longThreads = new ArrayList();
+        synchronized(threadMonitors)
+        {
+	        Iterator i = threadMonitors.values().iterator();
+	        while(i.hasNext())
+	        {
+	        	ThreadMonitor tm = (ThreadMonitor)i.next();
+	        	long passedTime = System.currentTimeMillis() - tm.getStarted();
+	        	if(passedTime > 10000)
+	        		longThreads.add(tm);
+	        }
+        }
+        
+        return longThreads;
+    }
+    
 	/*
     public static int getNumberOfCurrentRequests()
     {
@@ -201,6 +238,7 @@ public class RequestAnalyser
         RequestAnalyser.blockRequests = blockRequests;
     }
 */    
+    /*
     public static HttpServletRequest getLastRequest()
     {
         return lastRequest;
@@ -220,4 +258,5 @@ public class RequestAnalyser
     {
         RequestAnalyser.lastResponse = lastResponse;
     }
+    */
 }

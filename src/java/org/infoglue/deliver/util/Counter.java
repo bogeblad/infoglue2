@@ -31,21 +31,51 @@ package org.infoglue.deliver.util;
 public class Counter
 {
     private static Integer count = new Integer(0);
-
+    private static Integer totalCount = new Integer(0);
+    private static Long totalElapsedTime = new Long(0);
+    private static Long maxElapsedTime = new Long(0);
+    
     private Counter(){}
    
     static int getNumberOfCurrentRequests()
     {
         return count.intValue();
     }
-    
+
+    static int getTotalNumberOfRequests()
+    {
+        return totalCount.intValue();
+    }
+
+    static long getAverageElapsedTime()
+    {
+    	if(totalElapsedTime != null && totalCount != 0)
+    		return totalElapsedTime / totalCount.intValue();
+    	else
+    		return 0;
+    }
+
+    static long getMaxElapsedTime()
+    {
+        return maxElapsedTime;
+    }
+
     synchronized static void incNumberOfCurrentRequests()
     {
         count = new Integer(count.intValue() + 1);
     }
 
-    synchronized static void decNumberOfCurrentRequests()
+    synchronized static void decNumberOfCurrentRequests(long elapsedTime)
     {
         count = new Integer(count.intValue() - 1);
+        totalCount = new Integer(totalCount.intValue() + 1);
+
+        if(elapsedTime != -1)
+        {
+	    	totalElapsedTime = new Long(totalElapsedTime.longValue() + elapsedTime);
+	    	if(elapsedTime > maxElapsedTime.longValue())
+	    		maxElapsedTime = elapsedTime;
+        }
     }
+
 }
