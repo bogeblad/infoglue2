@@ -24,6 +24,8 @@
 - Added robots.txt file possibility
 - Filter out more hibernate errors with log4j which are duplicates.
 - Added so one can see long threads in BlockedThread.jsp
+- Fixed so events up for publishing but which are for deleted content versions or site node versions are marked as broken and deleted 
+
 
 -------------------------------------------------------------------------------------
 - InfoGlue 2.4.1 Final

@@ -238,8 +238,6 @@ public class EventController extends BaseController
 	
 	public static List getPublicationEventVOListForRepository(Integer repositoryId, InfoGluePrincipal principal, String filter) throws SystemException, Bug
 	{
-		Timer timer = new Timer();
-		
 		List events = new ArrayList();
 		
 		Database db = CastorDatabaseService.getDatabase();
@@ -253,7 +251,6 @@ public class EventController extends BaseController
         	
         	//logger.info("Fetching entity in read/write mode" + repositoryId);
         	QueryResults results = oql.execute();
-        	timer.printElapsedTime("1");
         	
 			while (results.hasMore()) 
             {
@@ -284,7 +281,6 @@ public class EventController extends BaseController
 	            		{
 							isBroken = true;
 							isValid = false;
-							timer.printElapsedTime("2");
 							ContentVersionController.getContentVersionController().delete(contentVersion, db);
         	    		}
 	            		else
@@ -312,7 +308,6 @@ public class EventController extends BaseController
 	            							isValid = false;
 	            					}
 	            				}
-								timer.printElapsedTime("3");
 		        		    }
 		            		else if(principal != null && filter != null && filter.indexOf("groupNameBased_") > -1)
 		            		{
@@ -338,19 +333,28 @@ public class EventController extends BaseController
 	            							isValid = false;
 	            					}
 	            				}	            			
-								timer.printElapsedTime("4");
 		            		}
 	            		}
 	            	}
 					else if(event.getEntityClass().equalsIgnoreCase(SiteNodeVersion.class.getName()))
 					{
-						SiteNodeVersion siteNodeVersion = SiteNodeVersionController.getController().getSiteNodeVersionWithId(event.getEntityId(), db);
-	        		    //logger.warn("siteNodeVersion:" + siteNodeVersion.getId() + ":" + siteNodeVersion.getOwningSiteNode());
+						SiteNodeVersion siteNodeVersion = null;
+						
+						try
+	            		{
+							siteNodeVersion = SiteNodeVersionController.getController().getSiteNodeVersionWithId(event.getEntityId(), db);
+	            		}
+	            		catch(SystemException e)
+	            		{
+	            			isBroken = true;
+	            			throw e;
+	            		}
+
+	            		//logger.warn("siteNodeVersion:" + siteNodeVersion.getId() + ":" + siteNodeVersion.getOwningSiteNode());
 						if(siteNodeVersion == null || siteNodeVersion.getOwningSiteNode() == null)
 						{
 						    isBroken = true;
 						    isValid = false;
-							timer.printElapsedTime("5");
 						    SiteNodeVersionController.getController().delete(siteNodeVersion, db);
 						}
 						else
@@ -378,8 +382,7 @@ public class EventController extends BaseController
 	            							isValid = false;
 	            					}
 	            				}
-								timer.printElapsedTime("6");
-		        		    }
+							}
 		            		else if(principal != null && filter != null && filter.indexOf("groupNameBased_") > -1)
 		            		{
 	            				String versionModifier = siteNodeVersion.getVersionModifier();
@@ -404,8 +407,7 @@ public class EventController extends BaseController
 	            							isValid = false;
 	            					}
 	            				}	            		
-								timer.printElapsedTime("7");
-		            		}
+							}
 	            		}
 					}
 				}
@@ -415,9 +417,6 @@ public class EventController extends BaseController
 					//delete(event, db);
 				}
 				
-				if(isBroken == true)
-					System.out.println("Broken:" + event.getValueObject().getId());
-
 				if(isValid && !isBroken)
 	            	events.add(event.getValueObject());
             
