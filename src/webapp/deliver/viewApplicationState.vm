@@ -9,30 +9,30 @@
 	<!--
 		.header 
 		{
-			font-family : Verdana;
-			font-size 	: 16pt;
+			font-family : Arial;
+			font-size 	: 18pt;
 			font-weight : bold;
 		}
 		.label
 		{
-			font-family		 : Verdana;
+			font-family		 : Arial;
 			font-size		 : 10pt;
 			font-weight 	 : bold;
-			background-color : gray;
+			background-color : #CCCCCC;
 		}
 		.text 
 		{
-			font-family	:Verdana;
+			font-family	:Arial;
 			font-size	:10pt;
 		}
 		.texttrue 
 		{
-			font-family	:Verdana;
+			font-family	:Arial;
 			font-size	:10pt;
 		}
 		.textfalse 
 		{
-			font-family	:Verdana;
+			font-family	:Arial;
 			font-size	:10pt;
 			color  		:red;
 		}
@@ -51,12 +51,12 @@
 
 <center>
 
-<table class="fullymarginalized" border="0" cellpadding="2" cellspacing="0">
+<table border="0" cellpadding="2" cellspacing="0">
   <tr>
     <td colspan="4" class="header">InfoGlue Delivery Status ($serverName)</td>
   </tr>
   <tr class="label">
-    <td>Memory</td>
+    <td>Item</td>
     <td colspan="3">Value</td>
   </tr>
   #foreach($state in $states)
