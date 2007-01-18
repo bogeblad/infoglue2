@@ -19,7 +19,7 @@
                 /css/*,
                 /images/*,
                 /img/*,
-                /jsp/*
+                /jsp/*                
             </param-value>
         </init-param>
     </filter> 
@@ -81,7 +81,8 @@
                 /script/*,
                 /css/*,
                 /images/*,
-                *.xml
+                *.xml,
+                /robots.txt
             </param-value>
         </init-param>
 		
