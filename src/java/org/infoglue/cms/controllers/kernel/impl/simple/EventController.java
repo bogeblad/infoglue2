@@ -274,8 +274,8 @@ public class EventController extends BaseController
 	            		{
 							isBroken = true;
 							isValid = false;
-							ContentVersionController.getContentVersionController().delete(contentVersion, db);
 							timer.printElapsedTime("2");
+							ContentVersionController.getContentVersionController().delete(contentVersion, db);
         	    		}
 	            		else
 	            		{
@@ -340,8 +340,8 @@ public class EventController extends BaseController
 						{
 						    isBroken = true;
 						    isValid = false;
-						    SiteNodeVersionController.getController().delete(siteNodeVersion, db);
 							timer.printElapsedTime("5");
+						    SiteNodeVersionController.getController().delete(siteNodeVersion, db);
 						}
 						else
 	            		{
@@ -401,10 +401,14 @@ public class EventController extends BaseController
 				}
 				catch(Exception e)
 				{
+					System.out.println("Error:" + e.getMessage());
 					isValid = false;
 					//delete(event, db);
 				}
-					
+				
+				if(isBroken == true)
+					System.out.println("Broken:" + event.getValueObject().getId());
+
 				if(isValid && !isBroken)
 	            	events.add(event.getValueObject());
             
@@ -423,7 +427,7 @@ public class EventController extends BaseController
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
-		
+		System.out.println("Returning " + events.size() + " items...");
 		return events;	
 	}
 
