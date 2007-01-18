@@ -23,6 +23,7 @@
 
 package org.infoglue.cms.util.workflow;
 
+import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -43,6 +44,9 @@ import org.infoglue.cms.entities.mydesktop.WorkflowStepVO;
 import org.infoglue.cms.entities.mydesktop.WorkflowVO;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
+import org.infoglue.cms.util.CmsPropertyHandler;
+import org.infoglue.cms.util.mail.MailService;
+import org.infoglue.cms.util.mail.MailServiceFactory;
 import org.infoglue.deliver.util.CacheController;
 
 import com.opensymphony.module.propertyset.PropertySet;
@@ -68,7 +72,7 @@ import com.opensymphony.workflow.spi.WorkflowEntry;
  * the Workflow interface.  The idea is to encapsulate the interactions with OSWorkflow and eliminate the
  * need to pass a Workflow reference and the workflow ID all over the place when extracting data from OSWorkflow
  * @author <a href="mailto:jedprentice@gmail.com">Jed Prentice</a>
- * @version $Revision: 1.33 $ $Date: 2007/01/18 14:50:46 $
+ * @version $Revision: 1.34 $ $Date: 2007/01/18 15:47:37 $
  */
 public class WorkflowFacade
 {
@@ -326,6 +330,31 @@ public class WorkflowFacade
 			try
 			{
 				System.out.println("Restoring session factory...");
+
+				String serverName = "Unknown";
+		    	try
+		    	{
+				    InetAddress localhost = InetAddress.getLocalHost();
+				    serverName = localhost.getHostName();
+		    	}
+		    	catch(Exception e) {}
+		    	
+				String subject = "CMS - Restoring session factory on " + serverName;
+				String message = "OS Workflow had problems accessing the database or some other problem occurred. Check why the database went away or the error occurred.";
+				
+		        String warningEmailReceiver = CmsPropertyHandler.getWarningEmailReceiver();
+		        if(warningEmailReceiver != null && !warningEmailReceiver.equals("") && warningEmailReceiver.indexOf("@warningEmailReceiver@") == -1)
+		        {
+					try
+					{
+						MailServiceFactory.getService().sendEmail(warningEmailReceiver, warningEmailReceiver, null, subject, message, "utf-8");
+					} 
+					catch (Exception e)
+					{
+						logger.error("Could not send mail:" + e.getMessage(), e);
+					}
+		        }
+
 				//hibernateSessionFactory.close();
 				hibernateSessionFactory = new Configuration().configure().buildSessionFactory();
 				workflow.getConfiguration().getPersistenceArgs().put("sessionFactory", hibernateSessionFactory);
