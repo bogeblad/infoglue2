@@ -49,15 +49,15 @@ public class Counter
 
     static long getAverageElapsedTime()
     {
-    	if(totalElapsedTime != null && totalCount != 0)
-    		return totalElapsedTime / totalCount.intValue();
+    	if(totalElapsedTime != null && totalCount.intValue() != 0)
+    		return totalElapsedTime.longValue() / totalCount.intValue();
     	else
     		return 0;
     }
 
     static long getMaxElapsedTime()
     {
-        return maxElapsedTime;
+        return maxElapsedTime.longValue();
     }
 
     synchronized static void incNumberOfCurrentRequests()
@@ -74,7 +74,7 @@ public class Counter
         {
 	    	totalElapsedTime = new Long(totalElapsedTime.longValue() + elapsedTime);
 	    	if(elapsedTime > maxElapsedTime.longValue())
-	    		maxElapsedTime = elapsedTime;
+	    		maxElapsedTime = new Long(elapsedTime);
         }
     }
 
