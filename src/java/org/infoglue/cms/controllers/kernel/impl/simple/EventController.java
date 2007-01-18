@@ -43,6 +43,7 @@ import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGlueGroup;
 import org.infoglue.cms.security.InfoGluePrincipal;
+import org.infoglue.deliver.util.Timer;
 
 /**
  * @author Mattias Bogeblad
@@ -237,6 +238,8 @@ public class EventController extends BaseController
 	
 	public static List getPublicationEventVOListForRepository(Integer repositoryId, InfoGluePrincipal principal, String filter) throws SystemException, Bug
 	{
+		Timer timer = new Timer();
+		
 		List events = new ArrayList();
 		
 		Database db = CastorDatabaseService.getDatabase();
@@ -250,7 +253,8 @@ public class EventController extends BaseController
         	
         	//logger.info("Fetching entity in read/write mode" + repositoryId);
         	QueryResults results = oql.execute();
-			
+        	timer.printElapsedTime("1");
+        	
 			while (results.hasMore()) 
             {
             	Event event = (Event)results.next();
@@ -271,7 +275,8 @@ public class EventController extends BaseController
 							isBroken = true;
 							isValid = false;
 							ContentVersionController.getContentVersionController().delete(contentVersion, db);
-	            		}
+							timer.printElapsedTime("2");
+        	    		}
 	            		else
 	            		{
 	            			if(principal != null && filter != null && filter.equalsIgnoreCase("groupBased"))
@@ -297,6 +302,7 @@ public class EventController extends BaseController
 	            							isValid = false;
 	            					}
 	            				}
+								timer.printElapsedTime("3");
 		        		    }
 		            		else if(principal != null && filter != null && filter.indexOf("groupNameBased_") > -1)
 		            		{
@@ -322,6 +328,7 @@ public class EventController extends BaseController
 	            							isValid = false;
 	            					}
 	            				}	            			
+								timer.printElapsedTime("4");
 		            		}
 	            		}
 	            	}
@@ -334,6 +341,7 @@ public class EventController extends BaseController
 						    isBroken = true;
 						    isValid = false;
 						    SiteNodeVersionController.getController().delete(siteNodeVersion, db);
+							timer.printElapsedTime("5");
 						}
 						else
 	            		{
@@ -360,6 +368,7 @@ public class EventController extends BaseController
 	            							isValid = false;
 	            					}
 	            				}
+								timer.printElapsedTime("6");
 		        		    }
 		            		else if(principal != null && filter != null && filter.indexOf("groupNameBased_") > -1)
 		            		{
@@ -384,7 +393,8 @@ public class EventController extends BaseController
 	            						if(!hasGroup)
 	            							isValid = false;
 	            					}
-	            				}	            			
+	            				}	            		
+								timer.printElapsedTime("7");
 		            		}
 	            		}
 					}
