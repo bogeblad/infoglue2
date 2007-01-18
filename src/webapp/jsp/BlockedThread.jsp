@@ -2,6 +2,9 @@
 <%@ page import="java.util.*" %>
 <%@ page import="org.infoglue.cms.controllers.kernel.impl.simple.ServerNodeController" %>
 
+<%@ page import="org.infoglue.deliver.util.ThreadMonitor" %>
+<%@ page import="org.infoglue.deliver.util.RequestAnalyser" %>
+
 <%
     if(!ServerNodeController.getController().getIsIPAllowed(request))
     {
@@ -40,15 +43,63 @@
 		}
 		
 	    ThreadMXBean t = ManagementFactory.getThreadMXBean();
+	    
 	%>
 		<html>
 		<head>
 		  <title>JVM Blocked Thread Monitor</title>
 		</head>
 		<body>
+	
+		
+		<table border="0" width="100%">
+	    <tr><td align="center"><h3>Long Threads</h3></td></tr>
+	    <tr><td align="center"><h4>All threads which has been running for more than 30 seconds</h4></td></tr>
+	<%
+	   	List threadMonitors = RequestAnalyser.getLongThreadMonitors();
+		Iterator threadMonitorsIterator = threadMonitors.iterator();    
+		while(threadMonitorsIterator.hasNext())
+	    {
+			ThreadMonitor tm = (ThreadMonitor)threadMonitorsIterator.next();
+			
+			long threads[] = {tm.getThreadId()};
+		    ThreadInfo[] tinfo = t.getThreadInfo(threads, 20);
+			
+		    String stackString = "";
+	        for (int i=0; i<tinfo.length; i++)
+		    {
+				ThreadInfo e = tinfo[i];
+		
+		        StackTraceElement[] el = e.getStackTrace();
+		        
+		        if (el != null && el.length != 0)
+		        {
+		            for (int n = 0; n < el.length; n++)
+		            {
+		            	StackTraceElement frame = el[n];
+		            	if (frame == null)
+		            		stackString += "&nbsp;&nbsp;&nbsp;&nbsp;null stack frame" + "<br/>";
+		            	else	
+		                	stackString += "&nbsp;&nbsp;&nbsp;&nbsp;null stack frame" + frame.toString() + "<br/>";
+					}                    
+		       	}
+		    }
+			%>
+	        <tr><td align="center">
+	        <%
+	        out.print("<br/>Elapsed time:" + tm.getElapsedTime() + "<br/>" + " " + " Thread id: " + tm.getThreadId() + "<br/> Original url: " + tm.getOriginalFullURL() + ")");
+	        out.print("<br/><a href=\"BlockedThread.jsp?action=kill&threadId=" + tm.getThreadId() + "\">Kill thread</a><br/>");
+	        out.print(stackString);
+			%>
+	        </td></tr>
+	        <%
+	    }
+		%>
+		</table>
+	
+		
 	    <table border="0" width="100%">
 	    <tr><td align="center"><h3>Thread MXBean</h3></td></tr>
-	
 	    <tr><td align="center"><h4>All suspicious Threads</h4></td></tr>
 	<%
 	    long threads[] = t.getAllThreadIds();
