@@ -130,6 +130,22 @@
 	</category>
 	-->
 	
+	<category name="net.sf.hibernate.util.JDBCExceptionReporter">
+		<priority value="FATAL"/>
+	</category>	
+	
+	<category name="net.sf.hibernate.cfg.SettingsFactory">
+		<priority value="FATAL"/>
+	</category>	
+	
+	<category name="com.opensymphony.workflow.spi.hibernate.HibernateWorkflowStore">
+		<priority value="FATAL"/>
+	</category>	
+	
+	<category name="com.opensymphony.workflow.AbstractWorkflow">
+		<priority value="FATAL"/>
+	</category>	
+	
 	<category name="net.sf.hibernate">
 		<priority value="WARN"/>
 	</category>
