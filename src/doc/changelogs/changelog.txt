@@ -22,6 +22,7 @@
 - Added warning mail if workflow engine get's into trouble
 - Added so long requests are reported from liveservers to the admin email address.
 - Added robots.txt file possibility
+- Filter out more hibernate errors with log4j which are duplicates.
 - Added so one can see long threads in BlockedThread.jsp
 
 -------------------------------------------------------------------------------------
