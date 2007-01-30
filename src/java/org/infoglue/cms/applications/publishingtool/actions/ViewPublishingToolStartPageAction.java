@@ -80,9 +80,8 @@ public class ViewPublishingToolStartPageAction extends InfoGlueAbstractAction
      
     public List getPublicationEvents(Integer repositoryId, String filter) throws SystemException, Exception
     {
-    	Timer t = new Timer();
     	List events = PublicationController.getPublicationEvents(repositoryId, getInfoGluePrincipal(), filter);
-    	t.printElapsedTime("Getting publicationEvents took:");
+
     	return events;
     }
     
