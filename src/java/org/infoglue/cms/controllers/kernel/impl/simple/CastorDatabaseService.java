@@ -49,7 +49,6 @@ public class CastorDatabaseService //extends DatabaseService
         try
         {
         	jdo = new JDO();
-            //jdo.setLogWriter(new Logger( System.out ).setPrefix( "INFOGLUE_CMS" ));
             jdo.setDatabaseName("INFOGLUE_CMS"); 
             
             //DatabaseDefinitionsController.getController().getCastorDatabaseDefinitionFile("default");

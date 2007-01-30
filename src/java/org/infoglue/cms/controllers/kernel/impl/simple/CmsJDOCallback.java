@@ -473,11 +473,9 @@ public class CmsJDOCallback implements CallbackInterceptor
         // ( (Persistent) object ).jdoTransient();
         
         /*
-        System.out.println("releasing...:" + object + ":" + committed);
-	    if(DigitalAssetImpl.class.getName().equals(object.getClass().getName()) && committed)
+        if(DigitalAssetImpl.class.getName().equals(object.getClass().getName()) && committed)
 	    {
-	        System.out.println("releasing...:" + object + ":" + committed);
-	    	logger.info("Actually releasing it:" + object + ":" + committed);
+	        logger.info("Actually releasing it:" + object + ":" + committed);
     		String userName = "SYSTEM";
 	    	NotificationMessage notificationMessage = new NotificationMessage("CmsJDOCallback", object.getClass().getName(), userName, NotificationMessage.TRANS_UPDATE, getObjectIdentity(object), object.toString());
 	    	ChangeNotificationController.getInstance().addNotificationMessage(notificationMessage);

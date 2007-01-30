@@ -20,7 +20,7 @@
  *
  * ===============================================================================
  *
- * $Id: RegistryController.java,v 1.33 2006/11/21 20:26:17 mattias Exp $
+ * $Id: RegistryController.java,v 1.34 2007/01/30 12:30:52 mattias Exp $
  */
 
 package org.infoglue.cms.controllers.kernel.impl.simple;
@@ -339,7 +339,6 @@ public class RegistryController extends BaseController
 				            while(contentVersionIterator.hasNext())
 					        {
 				                ContentVersion contentVersion = (ContentVersion)contentVersionIterator.next();
-				                System.out.println("contentVersion:" + contentVersion.getId());
 				                getComponents(siteNodeVersion, contentVersion.getVersionValue(), db);
 				                getComponentBindings(siteNodeVersion, contentVersion.getVersionValue(), db);
 				            }

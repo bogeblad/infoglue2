@@ -44,35 +44,11 @@ public class CreateUser implements CustomWorkflowAction
 	
 	public void invokeAction(String callerUserName, HttpServletRequest request, Map args, PropertySet ps) throws WorkflowException
 	{
-	    Iterator paramsIterator = request.getParameterMap().keySet().iterator();
-	    while(paramsIterator.hasNext())
-	    {
-	        String key = (String)paramsIterator.next();
-	        System.out.println("key:" + key);
-	        Object value = request.getParameterMap().get(key);
-	        System.out.println("value:" + value);
-	    }
-	    
-	    Iterator psIterator = ps.getKeys().iterator();
-	    while(psIterator.hasNext())
-	    {
-	        String key = (String)psIterator.next();
-	        System.out.println("key:" + key);
-	        Object value = ps.getObject(key);
-	        System.out.println("value:" + value);
-	    }
-	    
 	    String firstName = (String)request.getParameter("firstName");
 	    String lastName = (String)request.getParameter("lastName");
 	    String userName = (String)request.getParameter("userName");
 	    String password = (String)request.getParameter("password");
 	    String email = (String)request.getParameter("email");
-	    
-	    System.out.println("firstName:" + firstName);
-        System.out.println("lastName:" + lastName);
-        System.out.println("userName:" + userName);
-        System.out.println("password:" + password);
-        System.out.println("email:" + email);
         
 	    SystemUserVO systemUserVO = new SystemUserVO();
 	    systemUserVO.setFirstName(firstName);
@@ -83,11 +59,6 @@ public class CreateUser implements CustomWorkflowAction
 	    
 	    try
         {
-	        System.out.println("firstName:" + systemUserVO.getFirstName());
-	        System.out.println("lastName:" + systemUserVO.getLastName());
-	        System.out.println("userName:" + systemUserVO.getUserName());
-	        System.out.println("password:" + systemUserVO.getPassword());
-	        System.out.println("email:" + systemUserVO.getEmail());
             UserControllerProxy.getController().createUser(systemUserVO);
         } 
 	    catch (Exception e)

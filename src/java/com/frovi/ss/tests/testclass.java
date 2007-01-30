@@ -52,11 +52,7 @@ public class testclass {
 			 // Display all elements (components) contained within the Vector object
 			 while (iterator.hasNext()) {
 				   UpdatePackage u = (UpdatePackage) iterator.next();
-				   System.out.println(u.getDescription() + " - " + u.getUrl());
-				   
 				   UpdateController.runUpdatePackage(u);
-				   
-				   
 			 }
 
 		

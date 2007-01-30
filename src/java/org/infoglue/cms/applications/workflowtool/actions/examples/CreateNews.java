@@ -64,28 +64,6 @@ public class CreateNews implements CustomWorkflowAction
 	
 	public void invokeAction(String callerUserName, HttpServletRequest request, Map args, PropertySet ps) throws WorkflowException
 	{
-	    System.out.println("Inside CreateNews.invokeAction");
-	    System.out.println("callerUserName:" + callerUserName);
-	    
-	    /*
-	    Iterator paramsIterator = request.getParameterMap().keySet().iterator();
-	    while(paramsIterator.hasNext())
-	    {
-	        String key = (String)paramsIterator.next();
-	        System.out.println("key:" + key);
-	        Object value = request.getParameterMap().get(key);
-	        System.out.println("value:" + value);
-	    }
-	    
-	    Iterator psIterator = ps.getKeys().iterator();
-	    while(psIterator.hasNext())
-	    {
-	        String key = (String)psIterator.next();
-	        System.out.println("key:" + key);
-	        //Object value = ps.getObject(key);
-	        //System.out.println("value:" + value);
-	    }
-	    */
 	    InfoGluePrincipal infoGluePrincipal = (InfoGluePrincipal)request.getSession().getAttribute("org.infoglue.cms.security.user");
 	    if(infoGluePrincipal == null)
 	    {
@@ -117,12 +95,6 @@ public class CreateNews implements CustomWorkflowAction
 	    String leadIn 			= ps.getString("leadIn");
 	    String fullText 		= ps.getString("fullText");
 	    
-	    System.out.println("name:" + name);
-        System.out.println("title:" + title);
-        System.out.println("navigationTitle:" + navigationTitle);
-        System.out.println("leadIn:" + leadIn);
-        System.out.println("fullText:" + fullText);
-        
 	    ContentVO contentVO = new ContentVO();
 	    contentVO.setName(name);
 	    contentVO.setIsBranch(new Boolean(false));
@@ -159,7 +131,6 @@ public class CreateNews implements CustomWorkflowAction
             domBuilder.addCDATAElement(leftColumnElement, fullText);
             
             String versionValue = document.asXML();
-            System.out.println("versionValue:" + versionValue);
             
             ContentVersionVO newContentVersionVO = new ContentVersionVO();
             newContentVersionVO.setVersionComment("Generated");
