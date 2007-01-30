@@ -435,8 +435,8 @@ public class EventController extends BaseController
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
-		System.out.println("Returning " + events.size() + " items...");
-		return events;	
+
+        return events;	
 	}
 
 	/**
