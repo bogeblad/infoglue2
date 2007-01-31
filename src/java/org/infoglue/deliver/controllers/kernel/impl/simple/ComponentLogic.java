@@ -1097,8 +1097,8 @@ public class ComponentLogic
 		Map property = null;
 		
 	    Set contentVersionIdList = new InfoGlueHashSet();
-	    if(templateController.getDeliveryContext().getPageMetaInfoContentVersionId() != null)
-	    	contentVersionIdList.add(templateController.getDeliveryContext().getPageMetaInfoContentVersionId());
+	    if(templateController.getDeliveryContext().getUsedPageMetaInfoContentVersionIdSet().size() > 0)
+	    	contentVersionIdList.addAll(templateController.getDeliveryContext().getUsedPageMetaInfoContentVersionIdSet());
 	    	
 	    try
 		{
@@ -1427,26 +1427,29 @@ public class ComponentLogic
 		{
 			try
 			{
-			    NodeDeliveryController nodeDeliveryController = NodeDeliveryController.getNodeDeliveryController(this.templateController.getSiteNodeId(), this.templateController.getLanguageId(), this.templateController.getContentId());
-						    
-				SiteNodeVO parentSiteNodeVO = nodeDeliveryController.getSiteNode(templateController.getDatabase(), this.templateController.getSiteNodeId()).getValueObject();
-			    while(property == null && parentSiteNodeVO != null)
+				if(property == null)
 				{
-			    	property = getInheritedComponentProperty(this.templateController, parentSiteNodeVO.getId(), this.templateController.getLanguageId(), this.templateController.getContentId(), this.infoGlueComponent.getId(), propertyName, contentVersionIdList);
-			    	
-				    SiteNodeVO newParentSiteNodeVO = nodeDeliveryController.getParentSiteNode(templateController.getDatabase(), parentSiteNodeVO.getId());
-				
-				    if(newParentSiteNodeVO == null)
-					{
-					    Integer parentRepositoryId = this.templateController.getParentRepositoryId(parentSiteNodeVO.getRepositoryId());
-					    logger.info("parentRepositoryId:" + parentRepositoryId);
-					    if(parentRepositoryId != null)
-					    {
-					        newParentSiteNodeVO = this.templateController.getRepositoryRootSiteNode(parentRepositoryId);
-						}
-					}
+				    NodeDeliveryController nodeDeliveryController = NodeDeliveryController.getNodeDeliveryController(this.templateController.getSiteNodeId(), this.templateController.getLanguageId(), this.templateController.getContentId());
+							    
+					SiteNodeVO parentSiteNodeVO = nodeDeliveryController.getSiteNode(templateController.getDatabase(), this.templateController.getSiteNodeId()).getValueObject();
+				    while(property == null && parentSiteNodeVO != null)
+					{				    	
+				    	property = getInheritedComponentProperty(this.templateController, parentSiteNodeVO.getId(), this.templateController.getLanguageId(), this.templateController.getContentId(), this.infoGlueComponent.getId(), propertyName, contentVersionIdList);
+
+					    SiteNodeVO newParentSiteNodeVO = nodeDeliveryController.getParentSiteNode(templateController.getDatabase(), parentSiteNodeVO.getId());
 					
-					parentSiteNodeVO = newParentSiteNodeVO;
+					    if(newParentSiteNodeVO == null)
+						{
+						    Integer parentRepositoryId = this.templateController.getParentRepositoryId(parentSiteNodeVO.getRepositoryId());
+						    logger.info("parentRepositoryId:" + parentRepositoryId);
+						    if(parentRepositoryId != null)
+						    {
+						        newParentSiteNodeVO = this.templateController.getRepositoryRootSiteNode(parentRepositoryId);
+							}
+						}
+						
+						parentSiteNodeVO = newParentSiteNodeVO;
+					}
 				}
 			}
 			catch(Exception e)
@@ -1472,13 +1475,13 @@ public class ComponentLogic
 		//logger.info("property1:" + property);
 		Map property = getInheritedComponentProperty(this.templateController, siteNodeId, this.templateController.getLanguageId(), this.templateController.getContentId(), this.infoGlueComponent.getId(), propertyName, contentVersionIdList);
 		
-		if(useInheritance)
+		if(useInheritance && property == null)
 		{
 			try
 			{
 			    NodeDeliveryController nodeDeliveryController = NodeDeliveryController.getNodeDeliveryController(siteNodeId, this.templateController.getLanguageId(), this.templateController.getContentId());
-			
 				SiteNodeVO parentSiteNodeVO = nodeDeliveryController.getSiteNode(templateController.getDatabase(), siteNodeId).getValueObject();
+
 				while(property == null && parentSiteNodeVO != null)
 				{
 				    property = getInheritedComponentProperty(this.templateController, parentSiteNodeVO.getId(), this.templateController.getLanguageId(), this.templateController.getContentId(), this.infoGlueComponent.getId(), propertyName, contentVersionIdList);
@@ -1558,11 +1561,7 @@ public class ComponentLogic
 			{
 				logger.info("Checking for property " + propertyName + " on siteNodeId " + siteNodeId);
 				logger.info("Have to fetch property from XML...:" + contentVersionIdList.size());
-			}
-			/*
-			if(propertyName.indexOf("Article") > -1)
-				System.out.println("Checking for property " + propertyName + " on siteNodeId " + siteNodeId);
-			*/
+			}			
 			
 			if(inheritedPageComponentsXML != null && inheritedPageComponentsXML.length() > 0)
 			{

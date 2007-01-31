@@ -94,7 +94,7 @@ public class DeliveryContext implements UsageListener
 	private Set usedSiteNodes = new InfoGlueHashSet();
 	private Set usedSiteNodeVersions = new InfoGlueHashSet();
 	
-	private Integer pageMetaInfoContentVersionId = null;
+	private Set usedPageMetaInfoContentVersionIdSet = new HashSet();
 	
 	//private InfoGluePrincipal infoGluePrincipal = null;
 	
@@ -388,14 +388,9 @@ public class DeliveryContext implements UsageListener
 		this.evaluateFullPage = evaluateFullPage;
 	}
 
-	public Integer getPageMetaInfoContentVersionId() 
+	public Set getUsedPageMetaInfoContentVersionIdSet() 
 	{
-		return pageMetaInfoContentVersionId;
+		return usedPageMetaInfoContentVersionIdSet;
 	}
 
-	public void setPageMetaInfoContentVersionId(Integer pageMetaInfoContentVersionId) 
-	{
-		if(this.pageMetaInfoContentVersionId == null)
-			this.pageMetaInfoContentVersionId = pageMetaInfoContentVersionId;
-	}
 }

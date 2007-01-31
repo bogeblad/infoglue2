@@ -176,7 +176,7 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 					Integer currentContentVersionId = (Integer)contentVersionIdIterator.next();
 					templateController.getDeliveryContext().addUsedContentVersion("contentVersion_" + currentContentVersionId);
 			    	//System.out.println("\nThere was a cached page string and the meta info content version was " + contentVersionId);
-			    	templateController.getDeliveryContext().setPageMetaInfoContentVersionId(currentContentVersionId);
+			    	templateController.getDeliveryContext().getUsedPageMetaInfoContentVersionIdSet().add(currentContentVersionId);
 				}
 			}
 			
@@ -198,17 +198,18 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 	    //System.out.println("Caching usedContentVersionId for cacheKey: " + cacheKey + ":" + templateController.getDeliveryContext().getPageMetaInfoContentVersionId());
 		
 	    Set contentVersionIds = new InfoGlueHashSet();
-	    contentVersionIds.add(templateController.getDeliveryContext().getPageMetaInfoContentVersionId());
+	    contentVersionIds.addAll(templateController.getDeliveryContext().getUsedPageMetaInfoContentVersionIdSet());
 	    
 		Set groups = new InfoGlueHashSet();
-		if(templateController.getDeliveryContext().getPageMetaInfoContentVersionId() != null)
+		if(templateController.getDeliveryContext().getUsedPageMetaInfoContentVersionIdSet().size() > 0)
 		{
-			ContentVersion contentVersion = ContentVersionController.getContentVersionController().getContentVersionWithId(templateController.getDeliveryContext().getPageMetaInfoContentVersionId(), templateController.getDatabase());
+			ContentVersion contentVersion = ContentVersionController.getContentVersionController().getContentVersionWithId((Integer)templateController.getDeliveryContext().getUsedPageMetaInfoContentVersionIdSet().toArray()[0], templateController.getDatabase());
 			groups.add("contentVersion_" + contentVersion.getId());
 			groups.add("content_" + contentVersion.getValueObject().getContentId());
-	
-		    CacheController.cacheObjectInAdvancedCacheWithGroupsAsSet("contentVersionCache", versionKey, contentVersionIds, groups, true);
 		}
+		
+		if(groups.size() > 0)
+			CacheController.cacheObjectInAdvancedCacheWithGroupsAsSet("contentVersionCache", versionKey, contentVersionIds, groups, true);
 		
 		return pageComponentsString;
 	}

@@ -415,7 +415,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 			
 			deliveryContext.addUsedContentVersion("contentVersion_" + contentVersionId);
 			if(isMetaInfoQuery)
-				deliveryContext.setPageMetaInfoContentVersionId(contentVersionId);
+				deliveryContext.getUsedPageMetaInfoContentVersionIdSet().add(contentVersionId);
 			
 			if(usedContentVersionId != null && contentVersionId != null)
 			    usedContentVersionId.add(contentVersionId);
