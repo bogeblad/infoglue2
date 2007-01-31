@@ -82,7 +82,8 @@
                 /css/*,
                 /images/*,
                 *.xml,
-                /robots.txt
+                /robots.txt,
+                /services/*
             </param-value>
         </init-param>
 		
