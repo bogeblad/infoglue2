@@ -37,19 +37,34 @@ public class InfoGlueGroup implements Serializable
 	private static final long serialVersionUID = -968607054134915601L;
 
 	private final String name;
+	private final String displayName;
 	private final String description;
 	private final AuthorizationModule autorizationModule;
 	
 	public InfoGlueGroup(String name, String description, AuthorizationModule autorizationModule)
 	{
 		this.name = name;
+		this.displayName = name;
 		this.description = description;
 		this.autorizationModule = autorizationModule;
 	}
 
+	public InfoGlueGroup(String name, String displayName, String description, AuthorizationModule autorizationModule)
+	{
+		this.name = name;
+		this.displayName = displayName;
+		this.description = description;
+		this.autorizationModule = autorizationModule;
+	}
+	
 	public String getName()
 	{
 		return name;
+	}
+
+	public String getDisplayName() 
+	{
+		return displayName;
 	}
 
 	public String getDescription()
@@ -59,7 +74,7 @@ public class InfoGlueGroup implements Serializable
 	
 	public String toString()
 	{
-		return "InfoGlueGroup: " + name;
+		return "InfoGlueGroup: " + name + "(" + displayName + ")";
 	}
 
 	public boolean equals(Object obj)

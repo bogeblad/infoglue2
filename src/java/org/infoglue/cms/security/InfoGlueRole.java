@@ -37,12 +37,22 @@ public class InfoGlueRole implements Serializable
 	private static final long serialVersionUID = 812195937936895191L;
 
 	private final String name;
+	private final String displayName;
 	private final String description;
 	private final AuthorizationModule autorizationModule;
 
 	public InfoGlueRole(String name, String description, AuthorizationModule autorizationModule)
 	{
 		this.name = name;
+		this.displayName = name;
+		this.description = description;
+		this.autorizationModule = autorizationModule;
+	}
+
+	public InfoGlueRole(String name, String displayName, String description, AuthorizationModule autorizationModule)
+	{
+		this.name = name;
+		this.displayName = displayName;
 		this.description = description;
 		this.autorizationModule = autorizationModule;
 	}
@@ -50,6 +60,11 @@ public class InfoGlueRole implements Serializable
 	public String getName()
 	{
 		return name;
+	}
+
+	public String getDisplayName() 
+	{
+		return displayName;
 	}
 
 	public String getDescription()

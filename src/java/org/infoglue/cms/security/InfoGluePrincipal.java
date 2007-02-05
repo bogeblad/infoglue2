@@ -25,7 +25,10 @@ package org.infoglue.cms.security;
 
 import java.io.Serializable;
 import java.security.Principal;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -44,9 +47,10 @@ public class InfoGluePrincipal implements Principal, Serializable
 	private final String email;
 	private final List roles;
 	private final List groups;
+	private final Map metaInformation;
 	private final boolean isAdministrator;
 	private final AuthorizationModule autorizationModule;
-	
+
 	public InfoGluePrincipal(String name, String firstName, String lastName, String email, List roles, List groups, boolean isAdministrator, AuthorizationModule autorizationModule)
 	{
 		this.name = name;
@@ -55,6 +59,20 @@ public class InfoGluePrincipal implements Principal, Serializable
 		this.email = email;
 		this.roles = roles;
 		this.groups = groups;
+		this.metaInformation = new HashMap();
+		this.isAdministrator = isAdministrator;
+		this.autorizationModule = autorizationModule;
+	}
+
+	public InfoGluePrincipal(String name, String firstName, String lastName, String email, List roles, List groups, Map metaInformation, boolean isAdministrator, AuthorizationModule autorizationModule)
+	{
+		this.name = name;
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.email = email;
+		this.roles = roles;
+		this.groups = groups;
+		this.metaInformation = metaInformation;
 		this.isAdministrator = isAdministrator;
 		this.autorizationModule = autorizationModule;
 	}
@@ -81,13 +99,18 @@ public class InfoGluePrincipal implements Principal, Serializable
 
 	public List getRoles()
 	{
-		return roles;
+		return Collections.unmodifiableList(roles);
 	}
 	
     public List getGroups()
     {
-        return groups;
+        return Collections.unmodifiableList(groups);
     }
+    
+	public Map getMetaInformation() 
+	{
+		return Collections.unmodifiableMap(metaInformation);
+	}
 
 	public boolean getIsAdministrator()
 	{
