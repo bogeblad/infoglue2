@@ -85,7 +85,7 @@ public class WebServiceHelper
 		{
 			Service service = new Service();
 			Call call = (Call)service.createCall();
-
+			
 			String endpoint = this.serviceUrl;
 
 			call.setTargetEndpointAddress(endpoint); //Set the target service host and service location,
@@ -171,6 +171,41 @@ public class WebServiceHelper
 		return response;
 	}
 	
+	/**
+	 * This is the method that lets you call the endpoint and get a map of values back.
+	 */
+
+	public String getString(String method, String argument) throws SystemException
+	{
+		String response = "";
+		
+		try
+		{
+		    Service service = new Service();
+			Call call = (Call)service.createCall();
+
+			String endpoint = this.serviceUrl;
+
+			call.setTargetEndpointAddress(endpoint); //Set the target service host and service location,
+			call.setOperationName(new QName("http://soapinterop.org/", method)); //This is the target services method to invoke.
+			call.setEncodingStyle( "http://schemas.xmlsoap.org/soap/encoding/" );
+
+			QName qnameAttachment = new QName("urn:EchoAttachmentsService", "DataHandler");
+
+			call.addParameter("UID", XMLType.XSD_STRING, ParameterMode.IN);
+
+			call.setReturnType(qnameAttachment);
+			Object[] args = {argument};
+			response = (String)call.invoke(args); //Add the attachment.
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+		
+		return response;
+	}
+
 	
 	/**
 	 * This is the method that lets you call the endpoint and get a map of values back.
