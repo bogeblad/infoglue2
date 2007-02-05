@@ -30,6 +30,7 @@
 - Made internal content search and replace work against multiple repositories at once.
 - Added possibility to have meta data on InfoGluePrincipal and displayName on InfoGlueGroup and InfoGlueRole.
 - Added new helper method to webservice helper which allows one to call a one string argument method.
+- Fixed a bug which showed related allready published sitenodes as publishable when submitting to publish.
 
 -------------------------------------------------------------------------------------
 - InfoGlue 2.4.1 Final

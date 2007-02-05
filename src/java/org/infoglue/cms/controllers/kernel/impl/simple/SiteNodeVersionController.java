@@ -876,7 +876,7 @@ public class SiteNodeVersionController extends BaseController
 		//SiteNodeVersion siteNodeVersion = getLatestActiveSiteNodeVersionIfInState(siteNode, stateId, db);
 		SiteNodeVersion siteNodeVersion = getLatestActiveSiteNodeVersion(db, siteNode.getId());
 		if(siteNodeVersion != null && siteNodeVersion.getStateId().intValue() == stateId.intValue())
-		{
+		{			
 		    siteNodeVersionVOList.add(siteNodeVersion.getValueObject());
 		}
 		
@@ -893,7 +893,8 @@ public class SiteNodeVersionController extends BaseController
                     SiteNode relatedSiteNode = SiteNodeController.getController().getSiteNodeWithId(new Integer(registryVO.getEntityId()), db);
 	                //SiteNodeVersion relatedSiteNodeVersion = getLatestActiveSiteNodeVersionIfInState(relatedSiteNode, stateId, db);
 	                SiteNodeVersion relatedSiteNodeVersion = getLatestActiveSiteNodeVersion(db, new Integer(registryVO.getEntityId()));
-	        		if(relatedSiteNodeVersion != null && siteNodeVersion.getStateId().intValue() == stateId.intValue() && siteNode.getRepository().getId().intValue() == relatedSiteNodeVersion.getOwningSiteNode().getRepository().getId().intValue())
+	                
+	                if(relatedSiteNodeVersion != null && relatedSiteNodeVersion.getStateId().intValue() == stateId.intValue() && siteNode.getRepository().getId().intValue() == relatedSiteNodeVersion.getOwningSiteNode().getRepository().getId().intValue())
 	                {
 	                    siteNodeVersionVOList.add(relatedSiteNodeVersion.getValueObject());
 	                }
