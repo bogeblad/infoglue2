@@ -25,7 +25,11 @@
 - Filter out more hibernate errors with log4j which are duplicates.
 - Added so one can see long threads in BlockedThread.jsp
 - Fixed so events up for publishing but which are for deleted content versions or site node versions are marked as broken and deleted 
-
+- Tried to fix bug with inherited properties not being recognised for cache eviction when the meta info on the parent node was updated.
+- Services are now not totally blocked by AuthenticationFilter.
+- Made internal content search and replace work against multiple repositories at once.
+- Added possibility to have meta data on InfoGluePrincipal and displayName on InfoGlueGroup and InfoGlueRole.
+- Added new helper method to webservice helper which allows one to call a one string argument method.
 
 -------------------------------------------------------------------------------------
 - InfoGlue 2.4.1 Final
