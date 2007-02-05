@@ -138,7 +138,7 @@
 				{
 					var resultDiv = document.getElementById("resultsLayer");
 					document.getElementById("advancedEnabled").value = "true";
-					resultDiv.style.top = "350px";
+					resultDiv.style.top = "400px";
 				}
 					
 			}
@@ -212,36 +212,42 @@
 <tr>
 	<td colspan="7">	
 		<p>
-		#editTextField3($ui.getString("tool.contenttool.searchString.label") "tool.contenttool.searchString.label" "searchString" $formatter.escapeHTML($searchString) "30" "normaltextfield") 
-		<a href="javascript:toggleDiv('advancedOptions');">$ui.getString("tool.contenttool.searchAdvanced")</a> | <a href="javascript:showReplaceDialog();">$ui.getString("tool.contenttool.replace")</a>
+			#editTextField3($ui.getString("tool.contenttool.searchString.label") "tool.contenttool.searchString.label" "searchString" $formatter.escapeHTML($searchString) "30" "normaltextfield") 
+			<a href="javascript:toggleDiv('advancedOptions');">$ui.getString("tool.contenttool.searchAdvanced")</a> | <a href="javascript:showReplaceDialog();">$ui.getString("tool.contenttool.replace")</a>
 		</p>
 		<div id="advancedOptions" style="#if($advanced == false)display:none;#end">
-		<p>
-		#selectBox("tool.contenttool.modifierFilter.label" "name" $name $principals "tool.contenttool.filterShowAll.label")
-		</p>
-		<p>
-		#selectBox("tool.contenttool.languageFilter.label" "languageId" $languageId $availableLanguages "tool.contenttool.filterShowAll.label")
-		</p>
-		<p>
-		#selectBox("tool.contenttool.contentTypeFilter.label" "contentTypeDefinitionId" $contentTypeDefinitionId $contentTypeDefinitions "tool.contenttool.filterShowAll.label")
-		</p>
-		<p>
-		$ui.getString("tool.contenttool.caseSensitive.label")<br>
-		<input type="checkbox" name="caseSensitive" value="1" #checkChecked("1" "$caseSensitive")> $ui.getString("tool.common.yes") 
-		</p>
-		<p>
-		$ui.getString("tool.contenttool.stateSearch.label")<br>
-		<select class="dropbox" name="stateId">
-			<option value="">$ui.getString("tool.contenttool.filterShowAll.label")</option>
-			<option value="">---------------</option>
-			<option value="0" #checkSelected("0" "$stateId")>$ui.getString("tool.contenttool.state.working")</option>
-			<!--
-			<option value="1" #checkSelected("1" "$stateId")>$ui.getString("tool.contenttool.state.final")</option>
-			-->				
-			<option value="2" #checkSelected("2" "$stateId")>$ui.getString("tool.contenttool.state.publish")</option>
-			<option value="3" #checkSelected("3" "$stateId")>$ui.getString("tool.contenttool.state.published")</option>
-		</select>
-		</p>
+			<p>
+				#selectBox("tool.contenttool.modifierFilter.label" "name" $name $principals "tool.contenttool.filterShowAll.label")
+			</p>
+			<p>
+				#selectBox("tool.contenttool.languageFilter.label" "languageId" $languageId $availableLanguages "tool.contenttool.filterShowAll.label")
+			</p>
+			<p>
+				#selectBox("tool.contenttool.contentTypeFilter.label" "contentTypeDefinitionId" $contentTypeDefinitionId $contentTypeDefinitions "tool.contenttool.filterShowAll.label")
+			</p>
+			<p>
+				$ui.getString("tool.contenttool.caseSensitive.label")<br>
+				<input type="checkbox" name="caseSensitive" value="1" #checkChecked("1" "$caseSensitive")> $ui.getString("tool.common.yes") 
+			</p>
+			<p>
+				$ui.getString("tool.contenttool.stateSearch.label")<br>
+				<select class="dropbox" name="stateId">
+					<option value="">$ui.getString("tool.contenttool.filterShowAll.label")</option>
+					<option value="">---------------</option>
+					<option value="0" #checkSelected("0" "$stateId")>$ui.getString("tool.contenttool.state.working")</option>
+					<!--
+					<option value="1" #checkSelected("1" "$stateId")>$ui.getString("tool.contenttool.state.final")</option>
+					-->				
+					<option value="2" #checkSelected("2" "$stateId")>$ui.getString("tool.contenttool.state.publish")</option>
+					<option value="3" #checkSelected("3" "$stateId")>$ui.getString("tool.contenttool.state.published")</option>
+				</select>
+			</p>
+			<p>
+				$ui.getString("tool.contenttool.chooseRepositoryLabel")<br>
+				#foreach ($repositoryVO in $repositories)
+				    <input type="checkbox" name="repositoryIdToSearch" value="$repositoryVO.id" #checkCheckedByList($selectedRepositoryIdList "$repositoryVO.id")/>$repositoryVO.name
+			    #end
+			</p>		
 		</div>
 	</td>
 </tr>
@@ -297,7 +303,7 @@
 </form>
 </div>
 
-<div id="resultsLayer" class="fullymarginalized" style="position: absolute; top: #if($advanced == false) 80px; #else 350px; #end">
+<div id="resultsLayer" class="fullymarginalized" style="position: absolute; top: #if($advanced == false) 80px; #else 400px; #end">
 
 <table tableborder=0 border=0 bgcolor=#C7D1B3 width=100% cellpadding="1" cellspacing="0"><tr><td>
 #set($lvConstraint = -1) 

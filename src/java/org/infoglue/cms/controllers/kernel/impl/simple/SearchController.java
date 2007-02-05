@@ -99,8 +99,16 @@ public class SearchController extends BaseController
 		}
 	}
 
-	
    	public static List getContentVersions(Integer repositoryId, String searchString, int maxRows, String name, Integer languageId, Integer contentTypeDefinitionId, Integer caseSensitive, Integer stateId) throws SystemException, Bug
+   	{
+		List matchingContents = getContentVersions(new Integer[]{repositoryId}, searchString, maxRows, name, languageId, contentTypeDefinitionId, caseSensitive, stateId);
+			
+		return matchingContents;
+		
+   	}
+
+	
+   	public static List getContentVersions(Integer[] repositoryId, String searchString, int maxRows, String name, Integer languageId, Integer contentTypeDefinitionId, Integer caseSensitive, Integer stateId) throws SystemException, Bug
    	{
 		List matchingContents = new ArrayList();
 
@@ -116,12 +124,27 @@ public class SearchController extends BaseController
 			oql.bind(repositoryId);
 	        */
 			
+			String repositoryArgument = " AND (";
+			
+			int index = 3;
+			List repArguments = new ArrayList();
+			
+			for(int i=0; i<repositoryId.length; i++)
+			{
+				if(i > 0)
+					repositoryArgument += " OR ";
+				
+				repositoryArgument += "cv.owningContent.repository.repositoryId = $" + index;
+			    repArguments.add(repositoryId[i]);
+				index++;
+			}
+			repositoryArgument += ")";
+				
+			//int index = 4;
 			String extraArguments = "";
 			String inverse = "";
-			
-			int index = 4;
 			List arguments = new ArrayList();
-			
+						
 			if(name != null && !name.equalsIgnoreCase(""))
 			{
 			    extraArguments += " AND cv.versionModifier = $" + index;
@@ -147,12 +170,20 @@ public class SearchController extends BaseController
 				index++;
 			}
 			    
-			String sql = "SELECT cv FROM org.infoglue.cms.entities.content.impl.simple.ContentVersionImpl cv WHERE cv.isActive = $1 AND cv.versionValue LIKE $2 AND cv.owningContent.repository.repositoryId = $3 " + extraArguments + " ORDER BY cv.owningContent asc, cv.language, cv.contentVersionId desc";
+			String sql = "SELECT cv FROM org.infoglue.cms.entities.content.impl.simple.ContentVersionImpl cv WHERE cv.isActive = $1 AND cv.versionValue LIKE $2 " + repositoryArgument + extraArguments + " ORDER BY cv.owningContent asc, cv.language, cv.contentVersionId desc";
 			logger.info("sql:" + sql);
+			//System.out.println("sql:" + sql);
 			OQLQuery oql = db.getOQLQuery(sql);
 			oql.bind(new Boolean(true));
 			oql.bind("%" + searchString + "%");
-			oql.bind(repositoryId);
+			//oql.bind(repositoryId);
+			Iterator repIterator = repArguments.iterator();
+			while(repIterator.hasNext())
+			{
+				Integer repositoryIdAsInteger = (Integer)repIterator.next();
+				oql.bind(repositoryIdAsInteger);
+			    //System.out.println("repositoryIdAsInteger:" + repositoryIdAsInteger);
+			}
 	        
 			Iterator iterator = arguments.iterator();
 			while(iterator.hasNext())
@@ -190,7 +221,7 @@ public class SearchController extends BaseController
 		catch ( Exception e )
 		{
 			rollbackTransaction(db);
-			throw new SystemException("An error occurred when we tried to fetch a list of users in this role. Reason:" + e.getMessage(), e);			
+			throw new SystemException("An error occurred when we tried to search. Reason:" + e.getMessage(), e);			
 		}
 		
 		return matchingContents;

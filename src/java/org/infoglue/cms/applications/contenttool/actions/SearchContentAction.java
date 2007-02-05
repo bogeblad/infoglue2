@@ -23,6 +23,7 @@
 
 package org.infoglue.cms.applications.contenttool.actions;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -30,6 +31,7 @@ import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
+import org.infoglue.cms.controllers.kernel.impl.simple.RepositoryController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SearchController;
 import org.infoglue.cms.controllers.kernel.impl.simple.UserControllerProxy;
 import org.infoglue.cms.entities.content.ContentVO;
@@ -63,6 +65,7 @@ public class SearchContentAction extends InfoGlueAbstractAction
 	private Integer inverseSearch;
 	private Integer stateId;
 	private boolean advancedEnabled = false;
+	private List selectedRepositoryIdList = new ArrayList();
 	
 	private int maxRows = 0;
 	
@@ -70,6 +73,7 @@ public class SearchContentAction extends InfoGlueAbstractAction
 	private List principals 			= null;
 	private List availableLanguages 	= null;
 	private List contentTypeDefinitions = null;
+	private List repositories 			= null;
 	
 	//This is for replace
 	private String replaceString		= null;
@@ -115,11 +119,28 @@ public class SearchContentAction extends InfoGlueAbstractAction
 		{
 		}
 
-		contentVersionVOList = SearchController.getContentVersions(this.repositoryId, this.getSearchString(), maxRows, name, languageId, contentTypeDefinitionId, caseSensitive, stateId);
-	    
+		String[] repositoryIdToSearch = this.getRequest().getParameterValues("repositoryIdToSearch");
+		if(repositoryIdToSearch != null)
+		{
+			Integer[] repositoryIdAsIntegerToSearch = new Integer[repositoryIdToSearch.length];
+			for(int i=0; i < repositoryIdToSearch.length; i++)
+			{
+				repositoryIdAsIntegerToSearch[i] = new Integer(repositoryIdToSearch[i]);
+				selectedRepositoryIdList.add(repositoryIdToSearch[i]);
+			}
+			
+			contentVersionVOList = SearchController.getContentVersions(repositoryIdAsIntegerToSearch, this.getSearchString(), maxRows, name, languageId, contentTypeDefinitionId, caseSensitive, stateId);
+		}
+		else
+		{
+			contentVersionVOList = SearchController.getContentVersions(this.repositoryId, this.getSearchString(), maxRows, name, languageId, contentTypeDefinitionId, caseSensitive, stateId);
+			selectedRepositoryIdList.add("" + this.repositoryId);
+		}
+		
 	    this.principals = UserControllerProxy.getController().getAllUsers();
 	    this.availableLanguages = LanguageController.getController().getLanguageVOList(this.repositoryId);
 	    this.contentTypeDefinitions = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOList();
+		this.repositories = RepositoryController.getController().getAuthorizedRepositoryVOList(this.getInfoGluePrincipal(), false);
 
 		return "success";
 	}
@@ -133,6 +154,8 @@ public class SearchContentAction extends InfoGlueAbstractAction
 	    this.principals = UserControllerProxy.getController().getAllUsers();
 	    this.availableLanguages = LanguageController.getController().getLanguageVOList(this.repositoryId);
 	    this.contentTypeDefinitions = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOList();
+		this.repositories = RepositoryController.getController().getAuthorizedRepositoryVOList(this.getInfoGluePrincipal(), false);
+		selectedRepositoryIdList.add("" + this.repositoryId);
 	    
 	    return Action.INPUT;
 	}
@@ -196,6 +219,11 @@ public class SearchContentAction extends InfoGlueAbstractAction
         return contentTypeDefinitions;
     }
     
+	public List getRepositories() 
+	{
+		return repositories;
+	}
+
     public List getPrincipals()
     {
         return principals;
@@ -291,4 +319,9 @@ public class SearchContentAction extends InfoGlueAbstractAction
     {
         this.advancedEnabled = advancedEnabled;
     }
+
+	public List getSelectedRepositoryIdList() 
+	{
+		return selectedRepositoryIdList;
+	}
 }

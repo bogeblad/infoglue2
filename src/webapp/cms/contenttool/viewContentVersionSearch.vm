@@ -39,6 +39,12 @@
 			<option value="3" #checkSelected("3" $stateId)>$ui.getString("tool.contenttool.state.published")</option>
 		</select>
 		</p>
+		<p>
+			$ui.getString("tool.contenttool.chooseRepositoryLabel")<br>
+			#foreach ($repositoryVO in $repositories)
+		    <input type="checkbox" name="repositoryIdToSearch" value="$repositoryVO.id" #checkChecked("$repositoryVO.id" "$repositoryId")/>$repositoryVO.name
+		    #end
+		</p>
 	</td>
 </tr>
 <tr>
