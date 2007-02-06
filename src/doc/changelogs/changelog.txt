@@ -32,6 +32,9 @@
 - Added new helper method to webservice helper which allows one to call a one string argument method.
 - Fixed a bug which showed related allready published sitenodes as publishable when submitting to publish.
 - Added an extraProperties-field to the repository properties-fields so one can define custom name-value-pairs and extract such information in the site templates.
+- Added validation of authorization module in the validation service.
+- Added a webservice authorization module. The format of the SOAP-response-content is IG-specifik (an xml string) but still - a new kind of flexibility for organisations to build their own middleware to collect the users, roles and groups for InfoGlue.
+
 
 -------------------------------------------------------------------------------------
 - InfoGlue 2.4.1 Final
