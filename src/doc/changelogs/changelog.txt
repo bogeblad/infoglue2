@@ -31,6 +31,7 @@
 - Added possibility to have meta data on InfoGluePrincipal and displayName on InfoGlueGroup and InfoGlueRole.
 - Added new helper method to webservice helper which allows one to call a one string argument method.
 - Fixed a bug which showed related allready published sitenodes as publishable when submitting to publish.
+- Added an extraProperties-field to the repository properties-fields so one can define custom name-value-pairs and extract such information in the site templates.
 
 -------------------------------------------------------------------------------------
 - InfoGlue 2.4.1 Final

@@ -25,6 +25,7 @@ package org.infoglue.deliver.controllers.kernel.impl.simple;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -41,6 +42,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 import java.util.Vector;
 
@@ -113,6 +115,9 @@ import org.infoglue.deliver.util.graphics.ImageRenderer;
 import org.infoglue.deliver.util.rss.RssHelper;
 import org.infoglue.deliver.util.webservices.InfoGlueWebServices;
 import org.infoglue.deliver.util.webservices.WebServiceHelper;
+
+import com.opensymphony.module.propertyset.PropertySet;
+import com.opensymphony.module.propertyset.PropertySetManager;
 
 /**
  * This is the most basic template controller supplying the templates using it with
@@ -3283,6 +3288,19 @@ public class BasicTemplateController implements TemplateController
 		return ContentDeliveryController.getContentDeliveryController().getDigitalAssetId(getDatabase(), contentId, languageId, assetKey, this.siteNodeId, USE_LANGUAGE_FALLBACK, this.deliveryContext, this.infoGluePrincipal);
 	}
 
+	
+	/**
+	 * This method gets a property from the extra properties in the repository currently active
+	 */
+	
+	public String getRepositoryExtraProperty(String propertyName)
+	{
+		String propertyValue = RepositoryDeliveryController.getRepositoryDeliveryController().getExtraPropertyValue(this.getSiteNode().getRepositoryId(), propertyName);
+		
+	    return propertyValue;
+	}
+
+	
 	/**
 	 * This method returns the base url for the digital assets.
 	 */

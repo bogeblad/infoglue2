@@ -10,8 +10,6 @@
 <form name="editForm" method="POST" action="ViewRepositoryProperties!save.action">
 	<tr>
 		<td>
-			<p>#editTextArea("Repository.property.WYSIWYGConfig" "WYSIWYGConfig" $!WYSIWYGConfig "50" "10" "normaltextarea")</p>
-			<p>#editTextArea("Repository.property.WYSIWYGStyles" "WYSIWYGStyles" $!WYSIWYGStyles "50" "10" "normaltextarea")</p>
 			<p>
 				$ui.getString("entity.Repository.property.defaultFolderContentTypeName.label")<br/>
 				<select class="siteNodetypes" name="defaultFolderContentTypeName">
@@ -38,6 +36,9 @@
 				#end
 				</select>				
 			</p>
+			<p>#editTextArea("Repository.property.WYSIWYGConfig" "WYSIWYGConfig" $!WYSIWYGConfig "50" "10" "normaltextarea")</p>
+			<p>#editTextArea("Repository.property.WYSIWYGStyles" "WYSIWYGStyles" $!WYSIWYGStyles "50" "10" "normaltextarea")</p>
+			<p>#editTextArea("Repository.property.extraProperties" "extraProperties" $!extraProperties "50" "5" "normaltextarea")</p>
 		</td>
 	</tr>
 	<tr>

@@ -23,11 +23,13 @@
 
 package org.infoglue.deliver.controllers.kernel.impl.simple;
 
+import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.StringTokenizer;
 
 import org.apache.log4j.Logger;
@@ -270,6 +272,62 @@ public class RepositoryDeliveryController extends BaseDeliveryController
 	    else
 	        CacheController.cacheObject("parentRepository", key, new NullObject());
 	        
+		return propertyValue;
+	}
+
+	/**
+	 * This method fetches a property for a repository.
+	 */
+	
+	public String getExtraPropertyValue(Integer repositoryId, String propertyName)
+	{
+		String key = "repository_" + repositoryId + "_" + propertyName;
+	    logger.info("key:" + key);
+	    Object object = CacheController.getCachedObject("parentRepository", key);
+		
+	    if(object instanceof NullObject)
+		{
+			logger.info("There was an cached property but it was null:" + object);
+			return null;
+		}
+		else if(object != null)
+		{
+			logger.info("There was an cached property:" + object);
+			return (String)object;
+		}
+		
+		String propertyValue = null;
+		
+		try
+	    {
+			Map args = new HashMap();
+		    args.put("globalKey", "infoglue");
+		    PropertySet ps = PropertySetManager.getInstance("jdbc", args);
+		    
+		    byte[] extraPropertiesBytes = ps.getData("repository_" + repositoryId + "_extraProperties");
+		    if(extraPropertiesBytes != null)
+		    {
+		    	String extraProperties = new String(extraPropertiesBytes, "UTF-8");
+			    
+		    	Properties properties = new Properties();
+				ByteArrayInputStream is = new ByteArrayInputStream(extraProperties.getBytes("UTF-8"));
+				properties.load(is);
+			    
+				propertyValue = properties.getProperty(propertyName);
+			}
+	    
+		    logger.info("propertyValue:" + propertyValue);
+		    if(propertyValue != null)
+		        CacheController.cacheObject("parentRepository", key, propertyValue);
+		    else
+		        CacheController.cacheObject("parentRepository", key, new NullObject());
+	    }
+		catch(Exception e)
+	    {
+			e.printStackTrace();
+	        logger.error("Could not fetch extra property: " + e.getMessage(), e);
+	    }
+		
 		return propertyValue;
 	}
 

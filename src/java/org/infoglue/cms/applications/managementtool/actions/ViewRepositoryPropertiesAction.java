@@ -54,6 +54,7 @@ public class ViewRepositoryPropertiesAction extends InfoGluePropertiesAbstractAc
 	
 	private String WYSIWYGConfig 				= null;
 	private String stylesXML					= null;
+	private String extraProperties				= null;
 	private String defaultFolderContentTypeName = null;	
 	private String defaultTemplateRepository 	= null;	
 	private String parentRepository 			= null;	
@@ -80,6 +81,10 @@ public class ViewRepositoryPropertiesAction extends InfoGluePropertiesAbstractAc
 	    byte[] StylesXMLBytes = ps.getData("repository_" + this.getRepositoryId() + "_StylesXML");
 	    if(StylesXMLBytes != null)
 	    	this.stylesXML = new String(StylesXMLBytes, "utf-8");
+
+	    byte[] extraPropertiesBytes = ps.getData("repository_" + this.getRepositoryId() + "_extraProperties");
+	    if(extraPropertiesBytes != null)
+	    	this.extraProperties = new String(extraPropertiesBytes, "utf-8");
 
 	    this.defaultFolderContentTypeName 	= ps.getString("repository_" + this.getRepositoryId() + "_defaultFolderContentTypeName");
 	    this.defaultTemplateRepository	 	= ps.getString("repository_" + this.getRepositoryId() + "_defaultTemplateRepository");
@@ -109,6 +114,7 @@ public class ViewRepositoryPropertiesAction extends InfoGluePropertiesAbstractAc
 	    
 	    ps.setData("repository_" + this.getRepositoryId() + "_WYSIWYGConfig", WYSIWYGConfig.getBytes("utf-8"));
 	    ps.setData("repository_" + this.getRepositoryId() + "_StylesXML", stylesXML.getBytes("utf-8"));
+	    ps.setData("repository_" + this.getRepositoryId() + "_extraProperties", extraProperties.getBytes("utf-8"));
 	    ps.setString("repository_" + this.getRepositoryId() + "_defaultFolderContentTypeName", defaultFolderContentTypeName);
 	    ps.setString("repository_" + this.getRepositoryId() + "_defaultTemplateRepository", defaultTemplateRepository);
 	    ps.setString("repository_" + this.getRepositoryId() + "_parentRepository", parentRepository);
@@ -163,6 +169,16 @@ public class ViewRepositoryPropertiesAction extends InfoGluePropertiesAbstractAc
     public void setWYSIWYGStyles(String stylesXML)
     {
         this.stylesXML = stylesXML;
+    }
+
+	public String getExtraProperties()
+    {
+        return extraProperties;
+    }
+    
+    public void setExtraProperties(String extraProperties)
+    {
+        this.extraProperties = extraProperties;
     }
 
 	public PropertySet getPropertySet() 
