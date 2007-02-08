@@ -13,7 +13,7 @@
         <info>ComponentLogic.getContentAttribute(String, String, boolean, boolean)</info>
         <attribute>
     	    <name>id</name>
-        	<required>true</required>
+        	<required>false</required>
 	        <rtexprvalue>false</rtexprvalue>
     	</attribute>
         <attribute>
@@ -532,7 +532,12 @@
     	</attribute>
         <attribute>
     	    <name>parentContentId</name>
-        	<required>true</required>
+        	<required>false</required>
+	        <rtexprvalue>false</rtexprvalue>
+    	</attribute>
+        <attribute>
+    	    <name>contentPath</name>
+        	<required>false</required>
 	        <rtexprvalue>false</rtexprvalue>
     	</attribute>
         <attribute>

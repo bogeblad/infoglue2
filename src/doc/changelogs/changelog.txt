@@ -34,7 +34,7 @@
 - Added an extraProperties-field to the repository properties-fields so one can define custom name-value-pairs and extract such information in the site templates.
 - Added validation of authorization module in the validation service.
 - Added a webservice authorization module. The format of the SOAP-response-content is IG-specifik (an xml string) but still - a new kind of flexibility for organisations to build their own middleware to collect the users, roles and groups for InfoGlue.
-
+- Added a contentPath-attribute to the contentParameter-tag so one can get a directory structure created and the content put in that directory-structure.
 
 -------------------------------------------------------------------------------------
 - InfoGlue 2.4.1 Final

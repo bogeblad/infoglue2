@@ -135,6 +135,17 @@ public class ContentParameterTag extends AbstractTag
 	}
 
 	/**
+	 * Sets the contentPath attribute. If the parentContentId is set the path is relative to that. Otherwise calculated from  root.
+	 * 
+	 * @param contentPath the path the new content will be placed under.
+	 * @throws JspException if an error occurs while evaluating name parameter.
+	 */
+	public void setContentPath(final String contentPath) throws JspException
+	{
+	    this.contentMap.put("contentPath", evaluateString("parameter", "contentPath", contentPath));
+	}
+
+	/**
 	 * Sets the contentTypeDefinitionId attribute.
 	 * 
 	 * @param contentTypeDefinitionId the contentTypeDefinitionId the content will be based on.

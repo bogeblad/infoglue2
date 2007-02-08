@@ -34,6 +34,8 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 import org.dom4j.Document;
 import org.dom4j.Element;
+import org.exolab.castor.jdo.Database;
+import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentStateController;
@@ -77,4 +79,97 @@ public class RemoteInfoGlueService
 	    }
     }
 
+	/*************************************************** 
+	 * Transaction specifik operations
+	 ***************************************************/
+
+	/**
+	 * Creates a new database and starts a transaction
+	 * @return A reference to a castor database with a new transaction
+	 * @throws SystemException if a database error occurs.
+	 */
+	protected static Database beginTransaction() throws SystemException
+	{
+		Database db = CastorDatabaseService.getDatabase();
+		beginTransaction(db);
+		return db;
+	}
+
+    /**
+     * Begins a transaction on the named database
+     */
+         
+    protected static void beginTransaction(Database db) throws SystemException
+    {
+        try
+        {
+            //logger.info("Opening a new Transaction in cms...");
+            db.begin();
+        }
+        catch(Exception e)
+        {
+			throw new SystemException("An error occurred when we tried to begin an transaction. Reason:" + e.getMessage(), e);    
+        }
+    }
+       
+    /**
+     * Ends a transaction on the named database
+     */
+     
+    protected static void commitTransaction(Database db) throws SystemException
+    {
+        try
+        {
+            //logger.info("Closing a transaction in cms...");
+
+            db.commit();
+		    db.close();
+        }
+        catch(Exception e)
+        {
+			throw new SystemException("An error occurred when we tried to commit an transaction. Reason:" + e.getMessage(), e);    
+        }
+    }
+ 
+ 
+    /**
+     * Rollbacks a transaction on the named database
+     */
+     
+    protected static void rollbackTransaction(Database db) throws SystemException
+    {
+        try
+        {
+            //logger.info("rollbackTransaction a transaction in cms...");
+            
+            if (db != null && db.isActive())
+        	{
+                db.rollback();
+				db.close();
+        	}
+        }
+        catch(Exception e)
+        {
+            logger.warn("An error occurred when we tried to rollback an transaction. Reason:" + e.getMessage());
+        }
+    }
+
+    /**
+     * Rollbacks a transaction on the named database
+     */
+     
+    protected static void closeDatabase(Database db) throws SystemException
+    {
+        try
+        {
+            if (db != null)
+        	{
+				db.close();
+        	}
+        }
+        catch(Exception e)
+        {
+            logger.warn("An error occurred when we tried to rollback an transaction. Reason:" + e.getMessage());
+        }
+    }
 }

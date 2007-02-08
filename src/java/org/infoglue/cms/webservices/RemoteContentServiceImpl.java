@@ -34,6 +34,8 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 import org.dom4j.Document;
 import org.dom4j.Element;
+import org.exolab.castor.jdo.Database;
+import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentStateController;
@@ -42,6 +44,7 @@ import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionControllerP
 import org.infoglue.cms.controllers.kernel.impl.simple.DigitalAssetController;
 import org.infoglue.cms.controllers.kernel.impl.simple.PublicationController;
 import org.infoglue.cms.controllers.kernel.impl.simple.UserControllerProxy;
+import org.infoglue.cms.entities.content.Content;
 import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.entities.content.DigitalAssetVO;
@@ -168,11 +171,49 @@ public class RemoteContentServiceImpl extends RemoteInfoGlueService
 	            Integer contentTypeDefinitionId = (Integer)content.get("contentTypeDefinitionId");
 	            Integer repositoryId 			= (Integer)content.get("repositoryId");
 	            Integer parentContentId 		= (Integer)content.get("parentContentId");
+	            String contentPath 				= (String)content.get("contentPath");
 	            
 	            logger.info("name:" + name);
 	            logger.info("contentTypeDefinitionId:" + contentTypeDefinitionId);
 	            logger.info("repositoryId:" + repositoryId);
 	            logger.info("parentContentId:" + parentContentId);
+	            logger.info("contentPath:" + contentPath);
+	            
+	            if(contentPath != null && !contentPath.equals(""))
+	            {
+		            Database db = CastorDatabaseService.getDatabase();
+		    		beginTransaction(db);
+		    		
+		    		try
+		    		{
+		    			if(parentContentId != null)
+		    			{
+		    				StringBuffer path = new StringBuffer();
+		    				
+		    				Content parentContent = ContentController.getContentController().getContentWithId(parentContentId, db);
+		    				path.insert(0, parentContent.getName() + "/");
+		    				while(parentContent.getParentContent() != null)
+		    				{
+		    					parentContent = parentContent.getParentContent();
+		    					if(parentContent != null && parentContent.getParentContent() != null)
+		    						path.insert(0, parentContent.getName() + "/");
+		    				}
+
+		    				contentPath = path.toString() + contentPath;
+		    			}
+		    			
+			            ContentVO parentContentVO = ContentController.getContentController().getContentVOWithPath(repositoryId, contentPath, true, this.principal, db);
+			            parentContentId = parentContentVO.getId();
+			            
+		    			commitTransaction(db);
+		    		}
+		    		catch(Exception e)
+		    		{
+		    			logger.error("An error occurred so we should not complete the transaction:" + e, e);
+		    			rollbackTransaction(db);
+		    			throw new SystemException(e.getMessage());
+		    		}
+	            }
 	            
 	           	ContentVO contentVO = new ContentVO();
 	            contentVO.setName(name);
