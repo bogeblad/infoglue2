@@ -35,6 +35,8 @@
 - Added validation of authorization module in the validation service.
 - Added a webservice authorization module. The format of the SOAP-response-content is IG-specifik (an xml string) but still - a new kind of flexibility for organisations to build their own middleware to collect the users, roles and groups for InfoGlue.
 - Added a contentPath-attribute to the contentParameter-tag so one can get a directory structure created and the content put in that directory-structure.
+- Added a new GenericCombinedAuthorizationModule which allows one to combine any number of similar or different authorization-modules. For example is one wants to combine two LDAP-directories and then InfoGlue:s own it's easy now.
+- Added warning message when you log in as root user so users understand do use another account for normal use.
 
 -------------------------------------------------------------------------------------
 - InfoGlue 2.4.1 Final
