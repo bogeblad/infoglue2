@@ -39,6 +39,7 @@ import org.infoglue.cms.controllers.kernel.impl.simple.ContentControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.DigitalAssetController;
+import org.infoglue.cms.controllers.kernel.impl.simple.ServerNodeController;
 import org.infoglue.cms.controllers.kernel.impl.simple.UserControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.UserPropertiesController;
 import org.infoglue.cms.entities.content.ContentVO;
@@ -77,6 +78,12 @@ public class RemoteUserPropertiesServiceImpl extends RemoteInfoGlueService
     
     public int updateUserProperties(final String principalName, UserPropertiesVO userPropertiesVO) 
     {
+        if(!ServerNodeController.getController().getIsIPAllowed(getRequest()))
+        {
+            logger.error("A client with IP " + getRequest().getRemoteAddr() + " was denied access to the webservice. Could be a hack attempt or you have just not configured the allowed IP-addresses correct.");
+            return -1;
+        }
+
         int newUserPropertiesId = 0;
         
         logger.info("***********************************************");
@@ -105,6 +112,14 @@ public class RemoteUserPropertiesServiceImpl extends RemoteInfoGlueService
     
     public Boolean updateUserProperties(final String principalName, int languageId, int contentTypeDefinitionId, final Object[] inputsArray) 
     {
+        if(!ServerNodeController.getController().getIsIPAllowed(getRequest()))
+        {
+            logger.error("A client with IP " + getRequest().getRemoteAddr() + " was denied access to the webservice. Could be a hack attempt or you have just not configured the allowed IP-addresses correct.");
+            return new Boolean(false);
+        }
+        
+        Boolean status = new Boolean(true);
+
         int newUserPropertiesId = 0;
         
         logger.info("***********************************************");
@@ -153,12 +168,13 @@ public class RemoteUserPropertiesServiceImpl extends RemoteInfoGlueService
         }
         catch(Throwable e)
         {
+        	status = new Boolean(false);
             logger.error("En error occurred when we tried to create a new userProperty:" + e.getMessage(), e);
         }
         
         updateCaches();
 
-        return new Boolean(true);
+        return status;
     }
 
     
@@ -168,7 +184,13 @@ public class RemoteUserPropertiesServiceImpl extends RemoteInfoGlueService
     
     public Boolean deleteDigitalAsset(final String principalName, final Object[] inputsArray) 
     {
-        List newContentIdList = new ArrayList();
+        if(!ServerNodeController.getController().getIsIPAllowed(getRequest()))
+        {
+            logger.error("A client with IP " + getRequest().getRemoteAddr() + " was denied access to the webservice. Could be a hack attempt or you have just not configured the allowed IP-addresses correct.");
+            return new Boolean(false);
+        }
+        
+        Boolean status = new Boolean(true);
         
         logger.info("****************************************");
         logger.info("Updating content through webservice....");
@@ -203,12 +225,13 @@ public class RemoteUserPropertiesServiceImpl extends RemoteInfoGlueService
         }
         catch(Throwable e)
         {
+	        status = new Boolean(false);	
             logger.error("En error occurred when we tried to delete a digitalAsset:" + e.getMessage(), e);
         }
         
         updateCaches();
 
-        return new Boolean(true);
+        return status;
     }
 
 

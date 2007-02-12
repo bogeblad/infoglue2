@@ -31,7 +31,8 @@ public class DeleteContentTag extends InfoGlueWebServiceTag
     private Map content = new HashMap();
 
 	private Integer contentId;
-
+	private Boolean forceDelete = null;
+	
     /**
      *  
      */
@@ -67,7 +68,9 @@ public class DeleteContentTag extends InfoGlueWebServiceTag
         {
             if(this.contentId != null)
                 content.put("contentId", this.contentId);
-                
+            if(this.forceDelete != null)
+                content.put("forceDelete", this.forceDelete);
+            
             this.invokeOperation("content", content);
         }
         catch (Exception e)
@@ -101,6 +104,11 @@ public class DeleteContentTag extends InfoGlueWebServiceTag
     public void setContentId(String contentId) throws JspException
     {
         this.contentId = evaluateInteger("deleteContent", "contentId", contentId);
+    }
+
+    public void setForceDelete(String forceDelete) throws JspException
+    {
+        this.forceDelete = (Boolean)evaluate("deleteContent", "forceDelete", forceDelete, Boolean.class);
     }
 
     public String getOperationName()

@@ -31,6 +31,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.axis.MessageContext;
+import org.apache.axis.transport.http.HTTPConstants;
 import org.apache.log4j.Logger;
 import org.dom4j.Document;
 import org.dom4j.Element;
@@ -78,6 +82,13 @@ public class RemoteInfoGlueService
 	    	e.printStackTrace();
 	    }
     }
+
+    protected HttpServletRequest getRequest() 
+    {
+    	HttpServletRequest request = (HttpServletRequest)MessageContext.getCurrentContext().getProperty(HTTPConstants.MC_HTTP_SERVLETREQUEST);
+    	System.out.println("request:" + request);
+    	return request;
+	}
 
 	/*************************************************** 
 	 * Transaction specifik operations

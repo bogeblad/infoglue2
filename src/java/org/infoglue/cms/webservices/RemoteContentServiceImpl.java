@@ -26,11 +26,17 @@ package org.infoglue.cms.webservices;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.axis.MessageContext;
+import org.apache.axis.transport.http.HTTPConstants;
 import org.apache.log4j.Logger;
 import org.dom4j.Document;
 import org.dom4j.Element;
@@ -43,6 +49,7 @@ import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.DigitalAssetController;
 import org.infoglue.cms.controllers.kernel.impl.simple.PublicationController;
+import org.infoglue.cms.controllers.kernel.impl.simple.ServerNodeController;
 import org.infoglue.cms.controllers.kernel.impl.simple.UserControllerProxy;
 import org.infoglue.cms.entities.content.Content;
 import org.infoglue.cms.entities.content.ContentVO;
@@ -81,6 +88,12 @@ public class RemoteContentServiceImpl extends RemoteInfoGlueService
     
     public int createContent(final String principalName, ContentVO contentVO, int parentContentId, int contentTypeDefinitionId, int repositoryId) 
     {
+        if(!ServerNodeController.getController().getIsIPAllowed(getRequest()))
+        {
+            logger.error("A client with IP " + getRequest().getRemoteAddr() + " was denied access to the webservice. Could be a hack attempt or you have just not configured the allowed IP-addresses correct.");
+            return -1;
+        }
+        
         int newContentId = 0;
         
         logger.info("***************************************");
@@ -113,6 +126,12 @@ public class RemoteContentServiceImpl extends RemoteInfoGlueService
     
     public int createContentVersion(final String principalName, ContentVersionVO contentVersionVO, int contentId, int languageId) 
     {
+        if(!ServerNodeController.getController().getIsIPAllowed(getRequest()))
+        {
+            logger.error("A client with IP " + getRequest().getRemoteAddr() + " was denied access to the webservice. Could be a hack attempt or you have just not configured the allowed IP-addresses correct.");
+            return -1;
+        }
+
         int newContentVersionId = 0;
         
         logger.info("***************************************");
@@ -142,6 +161,14 @@ public class RemoteContentServiceImpl extends RemoteInfoGlueService
     
     public Boolean createContents(final String principalName, final Object[] inputsArray/*List contents*/) 
     {
+        if(!ServerNodeController.getController().getIsIPAllowed(getRequest()))
+        {
+            logger.error("A client with IP " + getRequest().getRemoteAddr() + " was denied access to the webservice. Could be a hack attempt or you have just not configured the allowed IP-addresses correct.");
+            return new Boolean(false);
+        }
+
+    	Boolean status = new Boolean(true);
+
         List newContentIdList = new ArrayList();
         
         logger.info("****************************************");
@@ -318,12 +345,13 @@ public class RemoteContentServiceImpl extends RemoteInfoGlueService
         }
         catch(Throwable e)
         {
+        	status = new Boolean(false);
             logger.error("En error occurred when we tried to create a new content:" + e.getMessage(), e);
         }
         
         updateCaches();
 
-        return new Boolean(true);
+        return status;
     }
 
     
@@ -333,7 +361,13 @@ public class RemoteContentServiceImpl extends RemoteInfoGlueService
     
     public Boolean updateContent(final String principalName, final Object[] inputsArray) 
     {
-        List newContentIdList = new ArrayList();
+        if(!ServerNodeController.getController().getIsIPAllowed(getRequest()))
+        {
+            logger.error("A client with IP " + getRequest().getRemoteAddr() + " was denied access to the webservice. Could be a hack attempt or you have just not configured the allowed IP-addresses correct.");
+            return new Boolean(false);
+        }
+
+    	Boolean status = new Boolean(true);
         
         logger.info("****************************************");
         logger.info("Updating content through webservice....");
@@ -379,12 +413,13 @@ public class RemoteContentServiceImpl extends RemoteInfoGlueService
         }
         catch(Throwable e)
         {
+        	status = new Boolean(false);
             logger.error("En error occurred when we tried to create a new content:" + e.getMessage(), e);
         }
         
         updateCaches();
 
-        return new Boolean(true);
+        return status;
     }
 
     /**
@@ -393,7 +428,13 @@ public class RemoteContentServiceImpl extends RemoteInfoGlueService
     
     public Boolean updateContentVersion(final String principalName, final Object[] inputsArray) 
     {
-        List newContentIdList = new ArrayList();
+        if(!ServerNodeController.getController().getIsIPAllowed(getRequest()))
+        {
+            logger.error("A client with IP " + getRequest().getRemoteAddr() + " was denied access to the webservice. Could be a hack attempt or you have just not configured the allowed IP-addresses correct.");
+            return new Boolean(false);
+        }
+
+    	Boolean status = new Boolean(true);
         
         logger.info("****************************************");
         logger.info("Updating content versions through webservice....");
@@ -508,12 +549,13 @@ public class RemoteContentServiceImpl extends RemoteInfoGlueService
         }
         catch(Throwable e)
         {
+        	status = new Boolean(false);
             logger.error("En error occurred when we tried to create a new content:" + e.getMessage(), e);
         }
         
         updateCaches();
 
-        return new Boolean(true);
+        return status;
     }
 
     
@@ -524,7 +566,13 @@ public class RemoteContentServiceImpl extends RemoteInfoGlueService
     
     public Boolean deleteDigitalAsset(final String principalName, final Object[] inputsArray) 
     {
-        List newContentIdList = new ArrayList();
+        if(!ServerNodeController.getController().getIsIPAllowed(getRequest()))
+        {
+            logger.error("A client with IP " + getRequest().getRemoteAddr() + " was denied access to the webservice. Could be a hack attempt or you have just not configured the allowed IP-addresses correct.");
+            return new Boolean(false);
+        }
+
+    	Boolean status = new Boolean(true);
         
         logger.info("****************************************");
         logger.info("Updating content through webservice....");
@@ -559,12 +607,14 @@ public class RemoteContentServiceImpl extends RemoteInfoGlueService
         }
         catch(Throwable e)
         {
-            logger.error("En error occurred when we tried to delete a digitalAsset:" + e.getMessage(), e);
+        	status = new Boolean(false);
+        	logger.error("En error occurred when we tried to delete a digitalAsset:" + e.getMessage(), e);
         }
         
         updateCaches();
 
-        return new Boolean(true);
+        
+        return status;
     }
 
     /**
@@ -573,8 +623,14 @@ public class RemoteContentServiceImpl extends RemoteInfoGlueService
     
     public Boolean deleteContent(final String principalName, final Object[] inputsArray) 
     {
-        List newContentIdList = new ArrayList();
-        
+        if(!ServerNodeController.getController().getIsIPAllowed(getRequest()))
+        {
+            logger.error("A client with IP " + getRequest().getRemoteAddr() + " was denied access to the webservice. Could be a hack attempt or you have just not configured the allowed IP-addresses correct.");
+            return new Boolean(false);
+        }
+
+    	Boolean status = new Boolean(true);
+    	
         logger.info("****************************************");
         logger.info("Updating content through webservice....");
         logger.info("****************************************");
@@ -586,40 +642,52 @@ public class RemoteContentServiceImpl extends RemoteInfoGlueService
         try
         {
 			final DynamicWebserviceSerializer serializer = new DynamicWebserviceSerializer();
-            Map digitalAsset = (Map) serializer.deserialize(inputsArray);
-	        logger.info("digitalAsset:" + digitalAsset);
+            Map content = (Map) serializer.deserialize(inputsArray);
+	        logger.info("content:" + content);
 
             initializePrincipal(principalName);
             
-            Integer contentId = (Integer)digitalAsset.get("contentId");
-            
+            Integer contentId = (Integer)content.get("contentId");
+            //Boolean skipRelationCheck = (Boolean)content.get("skipRelationCheck");
+            //Boolean skipServiceBindings = (Boolean)content.get("skipServiceBindings");
+            Boolean forceDelete = (Boolean)content.get("forceDelete");
+            if(forceDelete == null)
+            	forceDelete = new Boolean(false);
+                        
             logger.info("contentId:" + contentId);
             
             ContentVO contentVO = new ContentVO();
             contentVO.setContentId(contentId);
             
-            ContentController.getContentController().delete(contentVO, principal);
+            ContentController.getContentController().delete(contentVO, principal, false, false, forceDelete.booleanValue());
                
 	        logger.info("Done with contents..");
 
         }
         catch(Throwable e)
         {
+        	status = new Boolean(false);
             logger.error("En error occurred when we tried to delete a digitalAsset:" + e.getMessage(), e);
         }
         
         updateCaches();
 
-        return new Boolean(true);
+        return status;
     }
 
-    /**
+	/**
      * Deletes a content.
      */
     
     public Boolean deleteContentVersion(final String principalName, final Object[] inputsArray) 
     {
-        List newContentIdList = new ArrayList();
+        if(!ServerNodeController.getController().getIsIPAllowed(getRequest()))
+        {
+            logger.error("A client with IP " + getRequest().getRemoteAddr() + " was denied access to the webservice. Could be a hack attempt or you have just not configured the allowed IP-addresses correct.");
+            return new Boolean(false);
+        }
+
+    	Boolean status = new Boolean(true);
         
         logger.info("****************************************");
         logger.info("Updating content through webservice....");
@@ -650,12 +718,13 @@ public class RemoteContentServiceImpl extends RemoteInfoGlueService
         }
         catch(Throwable e)
         {
+        	status = new Boolean(false);
             logger.error("En error occurred when we tried to delete a digitalAsset:" + e.getMessage(), e);
         }
         
         updateCaches();
 
-        return new Boolean(true);
+        return status;
     }
 
     
