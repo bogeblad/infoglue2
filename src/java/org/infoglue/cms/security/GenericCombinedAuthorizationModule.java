@@ -109,7 +109,7 @@ public class GenericCombinedAuthorizationModule implements AuthorizationModule, 
 			while(propertiesIterator.hasNext())
 			{
 				String property = (String)propertiesIterator.next();
-				System.out.println("property:" + property);
+				//System.out.println("property:" + property);
 				String value = this.extraProperties.getProperty(property);
 				if(property.startsWith("" + index + "."))
 					property = property.substring(2);
@@ -126,7 +126,7 @@ public class GenericCombinedAuthorizationModule implements AuthorizationModule, 
 			if(logger.isInfoEnabled())
 				logger.info("authorizationModule:" + authorizationModule);
 			
-			localProperties.list(System.out);
+			//localProperties.list(System.out);
 			
 			authorizationModule.setExtraProperties(localProperties);
 			authorizationModule.setTransactionObject(this.getTransactionObject());
@@ -193,9 +193,11 @@ public class GenericCombinedAuthorizationModule implements AuthorizationModule, 
 		
 		int i=0;
 		String authorizerClassName = this.extraProperties.getProperty("" + i + ".authorizerClassName");
-		while(authorizerClassName != null && !authorizerClassName.equals(""))
+		while(authorizerClassName != null && !authorizerClassName.equals("") && infogluePrincipal == null)
 		{
-			System.out.println("Looking for user in " + authorizerClassName);
+			if(logger.isInfoEnabled())
+				System.out.println("getAuthorizedInfoGluePrincipal in " + authorizerClassName);
+			
 			try
 			{
 				infogluePrincipal = getAuthorizationModule(authorizerClassName, i).getAuthorizedInfoGluePrincipal(userName);
@@ -224,7 +226,7 @@ public class GenericCombinedAuthorizationModule implements AuthorizationModule, 
 		String authorizerClassName = this.extraProperties.getProperty("" + i + ".authorizerClassName");
 		while(authorizerClassName != null && !authorizerClassName.equals(""))
 		{
-			System.out.println("Looking for user in " + authorizerClassName);
+			//System.out.println("Looking for user in " + authorizerClassName);
 			try
 			{
 				role = getAuthorizationModule(authorizerClassName, i).getAuthorizedInfoGlueRole(roleName);
@@ -253,7 +255,7 @@ public class GenericCombinedAuthorizationModule implements AuthorizationModule, 
 		String authorizerClassName = this.extraProperties.getProperty("" + i + ".authorizerClassName");
 		while(authorizerClassName != null && !authorizerClassName.equals(""))
 		{
-			System.out.println("Looking for user in " + authorizerClassName);
+			//System.out.println("Looking for user in " + authorizerClassName);
 			try
 			{
 				group = getAuthorizationModule(authorizerClassName, i).getAuthorizedInfoGlueGroup(groupName);
@@ -283,7 +285,7 @@ public class GenericCombinedAuthorizationModule implements AuthorizationModule, 
 		String authorizerClassName = this.extraProperties.getProperty("" + i + ".authorizerClassName");
 		while(authorizerClassName != null && !authorizerClassName.equals(""))
 		{
-			System.out.println("Looking for user in " + authorizerClassName);
+			//System.out.println("Looking for user in " + authorizerClassName);
 			try
 			{
 				roles.addAll(getAuthorizationModule(authorizerClassName, i).authorizeUser(userName));
@@ -313,10 +315,12 @@ public class GenericCombinedAuthorizationModule implements AuthorizationModule, 
 		String authorizerClassName = this.extraProperties.getProperty("" + i + ".authorizerClassName");
 		while(authorizerClassName != null && !authorizerClassName.equals(""))
 		{
-			System.out.println("Looking for user in " + authorizerClassName);
 			try
 			{
-				roles.addAll(getAuthorizationModule(authorizerClassName, i).getRoles());
+				List systemRoles = getAuthorizationModule(authorizerClassName, i).getRoles();
+				if(logger.isInfoEnabled())
+					System.out.println("\nFound:" + systemRoles.size() + " roles in " + i);
+				roles.addAll(systemRoles);
 			}
 			catch(Exception e)
 			{
@@ -344,7 +348,9 @@ public class GenericCombinedAuthorizationModule implements AuthorizationModule, 
 		String authorizerClassName = this.extraProperties.getProperty("" + i + ".authorizerClassName");
 		while(authorizerClassName != null && !authorizerClassName.equals(""))
 		{
-			System.out.println("Looking for user in " + authorizerClassName);
+			if(logger.isInfoEnabled())
+				System.out.println("Looking for user in " + authorizerClassName);
+			
 			try
 			{
 				groups.addAll(getAuthorizationModule(authorizerClassName, i).getGroups());
@@ -375,7 +381,9 @@ public class GenericCombinedAuthorizationModule implements AuthorizationModule, 
 		String authorizerClassName = this.extraProperties.getProperty("" + i + ".authorizerClassName");
 		while(authorizerClassName != null && !authorizerClassName.equals(""))
 		{
-			System.out.println("Looking for user in " + authorizerClassName);
+			if(logger.isInfoEnabled())
+				System.out.println("Looking for users in " + authorizerClassName);
+			
 			try
 			{
 				users.addAll(getAuthorizationModule(authorizerClassName, i).getUsers());
@@ -436,7 +444,9 @@ public class GenericCombinedAuthorizationModule implements AuthorizationModule, 
 		String authorizerClassName = this.extraProperties.getProperty("" + i + ".authorizerClassName");
 		while(authorizerClassName != null && !authorizerClassName.equals(""))
 		{
-			System.out.println("Looking for user in " + authorizerClassName);
+			if(logger.isInfoEnabled())
+				System.out.println("Creating user in " + authorizerClassName);
+			
 			try
 			{
 				getAuthorizationModule(authorizerClassName, i).createInfoGluePrincipal(systemUserVO);
@@ -493,7 +503,9 @@ public class GenericCombinedAuthorizationModule implements AuthorizationModule, 
 		String authorizerClassName = this.extraProperties.getProperty("" + i + ".authorizerClassName");
 		while(authorizerClassName != null && !authorizerClassName.equals(""))
 		{
-			System.out.println("Looking for user in " + authorizerClassName);
+			if(logger.isInfoEnabled())
+				System.out.println("Creating role in " + authorizerClassName);
+			
 			try
 			{
 				getAuthorizationModule(authorizerClassName, i).createInfoGlueRole(roleVO);
@@ -528,7 +540,9 @@ public class GenericCombinedAuthorizationModule implements AuthorizationModule, 
 		String authorizerClassName = this.extraProperties.getProperty("" + i + ".authorizerClassName");
 		while(authorizerClassName != null && !authorizerClassName.equals(""))
 		{
-			System.out.println("Looking for user in " + authorizerClassName);
+			if(logger.isInfoEnabled())
+				System.out.println("Creating Group in " + authorizerClassName);
+			
 			try
 			{
 				getAuthorizationModule(authorizerClassName, i).createInfoGlueGroup(groupVO);

@@ -114,7 +114,11 @@ public class WebServiceAuthorizationModule implements AuthorizationModule, Seria
 	{
 		String userCacheTimeout = this.extraProperties.getProperty("userCacheTimeout", "1800");
 
-	    String key = "user_" + userName;
+		String authorizerIndex = this.extraProperties.getProperty("authorizerIndex");
+	    if(authorizerIndex == null)
+	    	authorizerIndex = "";
+
+	    String key = "user_" + userName + authorizerIndex;
 	    InfoGluePrincipal infogluePrincipal = null;
 	    Object infogluePrincipalObject = CacheController.getCachedObjectFromAdvancedCache("WebServiceAuthorizationCache", key, new Integer(userCacheTimeout).intValue());
 		if(infogluePrincipalObject != null)
@@ -376,7 +380,11 @@ public class WebServiceAuthorizationModule implements AuthorizationModule, Seria
 
 		String roleCacheTimeout = this.extraProperties.getProperty("roleCacheTimeout", "1800");
 
-	    String key = "allRoles";
+		String authorizerIndex = this.extraProperties.getProperty("authorizerIndex");
+	    if(authorizerIndex == null)
+	    	authorizerIndex = "";
+
+	    String key = "allRoles" + authorizerIndex;
 		List roles = (List)CacheController.getCachedObjectFromAdvancedCache("JNDIAuthorizationCache", key, new Integer(roleCacheTimeout).intValue());
 		if(roles != null)
 			return roles;
@@ -432,7 +440,11 @@ public class WebServiceAuthorizationModule implements AuthorizationModule, Seria
 	    
 		String userCacheTimeout = this.extraProperties.getProperty("userCacheTimeout", "1800");
 
-		String key = "allUsers";
+		String authorizerIndex = this.extraProperties.getProperty("authorizerIndex");
+	    if(authorizerIndex == null)
+	    	authorizerIndex = "";
+
+		String key = "allUsers" + authorizerIndex;
 		List users = (List)CacheController.getCachedObjectFromAdvancedCache("JNDIAuthorizationCache", key, new Integer(userCacheTimeout).intValue());
 		if(users != null)
 			return users;
@@ -622,7 +634,11 @@ public class WebServiceAuthorizationModule implements AuthorizationModule, Seria
 
 		String groupCacheTimeout = this.extraProperties.getProperty("groupCacheTimeout", "1800");
 
-		String key = "allGroups";
+		String authorizerIndex = this.extraProperties.getProperty("authorizerIndex");
+	    if(authorizerIndex == null)
+	    	authorizerIndex = "";
+
+		String key = "allGroups" + authorizerIndex;
 		List groups = (List)CacheController.getCachedObjectFromAdvancedCache("JNDIAuthorizationCache", key, new Integer(groupCacheTimeout).intValue());
 		if(groups != null)
 			return groups;

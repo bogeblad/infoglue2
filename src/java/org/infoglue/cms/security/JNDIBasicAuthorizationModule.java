@@ -101,7 +101,7 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule, Serial
 	
 	public DirContext getContext() throws Exception
 	{
-		System.out.println("Creating JNDI-context...");
+		//System.out.println("Creating JNDI-context...");
 		
 		String connectionURL 		= this.extraProperties.getProperty("connectionURL");
 		String ldapVersion			= this.extraProperties.getProperty("ldapVersion");
@@ -110,6 +110,8 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule, Serial
 		String connectionName		= this.extraProperties.getProperty("connectionName");
 		String connectionPassword	= this.extraProperties.getProperty("connectionPassword");
 
+		//System.out.println("connectionURL:" + connectionURL);
+		
 		// Create a Hashtable object.
 		Hashtable env = new Hashtable();
 		
@@ -195,7 +197,11 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule, Serial
 	{
 		String userCacheTimeout = this.extraProperties.getProperty("userCacheTimeout", "1800");
 
-	    String key = "user_" + userName;
+	    String authorizerIndex = this.extraProperties.getProperty("authorizerIndex");
+	    if(authorizerIndex == null)
+	    	authorizerIndex = "";
+
+	    String key = "user_" + userName + authorizerIndex;
 	    InfoGluePrincipal infogluePrincipal = null;
 	    Object infogluePrincipalObject = CacheController.getCachedObjectFromAdvancedCache("JNDIAuthorizationCache", key, new Integer(userCacheTimeout).intValue());
 		if(infogluePrincipalObject != null)
@@ -207,7 +213,7 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule, Serial
 			else
 			{
 				infogluePrincipal = (InfoGluePrincipal)infogluePrincipalObject;
-				System.out.println("Returning cached user:" + userName + ":" + infogluePrincipal);
+				//System.out.println("Returning cached user:" + userName + ":" + infogluePrincipal);
 				return infogluePrincipal;
 			}
 		}
@@ -239,7 +245,7 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule, Serial
 			}
 			catch(Exception e)
 			{
-				e.printStackTrace();
+				//e.printStackTrace();
 			    CacheController.cacheObjectInAdvancedCache("JNDIAuthorizationCache", key, new NullObject(), null, false);
 			}
 			finally
@@ -982,10 +988,14 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule, Serial
 	public List getRoles(DirContext ctx) throws Exception
 	{
 	    logger.info("getRoles start....");
-
+	    
 		String roleCacheTimeout = this.extraProperties.getProperty("roleCacheTimeout", "1800");
 
-	    String key = "allRoles";
+	    String authorizerIndex = this.extraProperties.getProperty("authorizerIndex");
+	    if(authorizerIndex == null)
+	    	authorizerIndex = "";
+
+	    String key = "allRoles" + authorizerIndex;
 		List roles = (List)CacheController.getCachedObjectFromAdvancedCache("JNDIAuthorizationCache", key, new Integer(roleCacheTimeout).intValue());
 		if(roles != null)
 			return roles;
@@ -1084,7 +1094,11 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule, Serial
 	    
 		String userCacheTimeout = this.extraProperties.getProperty("userCacheTimeout", "1800");
 
-		String key = "allUsers";
+	    String authorizerIndex = this.extraProperties.getProperty("authorizerIndex");
+	    if(authorizerIndex == null)
+	    	authorizerIndex = "";
+
+		String key = "allUsers" + authorizerIndex;
 		List users = (List)CacheController.getCachedObjectFromAdvancedCache("JNDIAuthorizationCache", key, new Integer(userCacheTimeout).intValue());
 		if(users != null)
 			return users;
@@ -1472,7 +1486,11 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule, Serial
 
 		String groupCacheTimeout = this.extraProperties.getProperty("groupCacheTimeout", "1800");
 
-		String key = "allGroups";
+	    String authorizerIndex = this.extraProperties.getProperty("authorizerIndex");
+	    if(authorizerIndex == null)
+	    	authorizerIndex = "";
+
+		String key = "allGroups" + authorizerIndex;
 		List groups = (List)CacheController.getCachedObjectFromAdvancedCache("JNDIAuthorizationCache", key, new Integer(groupCacheTimeout).intValue());
 		if(groups != null)
 			return groups;
