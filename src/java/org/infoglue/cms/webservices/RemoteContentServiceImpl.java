@@ -48,14 +48,17 @@ import org.infoglue.cms.controllers.kernel.impl.simple.ContentStateController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.DigitalAssetController;
+import org.infoglue.cms.controllers.kernel.impl.simple.EventController;
 import org.infoglue.cms.controllers.kernel.impl.simple.PublicationController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ServerNodeController;
 import org.infoglue.cms.controllers.kernel.impl.simple.UserControllerProxy;
 import org.infoglue.cms.entities.content.Content;
 import org.infoglue.cms.entities.content.ContentVO;
+import org.infoglue.cms.entities.content.ContentVersion;
 import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.entities.content.DigitalAssetVO;
 import org.infoglue.cms.entities.publishing.PublicationVO;
+import org.infoglue.cms.entities.workflow.EventVO;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.dom.DOMBuilder;
@@ -659,7 +662,37 @@ public class RemoteContentServiceImpl extends RemoteInfoGlueService
             ContentVO contentVO = new ContentVO();
             contentVO.setContentId(contentId);
             
-            ContentController.getContentController().delete(contentVO, principal, false, false, forceDelete.booleanValue());
+            if(forceDelete.booleanValue())
+            {
+            	System.out.println("Forcing delete...");
+	            ContentVO currentContentVO = ContentControllerProxy.getContentController().getContentVOWithId(contentId);
+		        List contentVersionsVOList = ContentVersionController.getContentVersionController().getPublishedActiveContentVersionVOList(contentId);
+		        
+		        List events = new ArrayList();
+				Iterator it = contentVersionsVOList.iterator();
+				while(it.hasNext())
+				{
+					ContentVersionVO contentVersionVO = (ContentVersionVO)it.next();
+					
+					EventVO eventVO = new EventVO();
+					eventVO.setDescription("Unpublished before forced deletion");
+					eventVO.setEntityClass(ContentVersion.class.getName());
+					eventVO.setEntityId(contentVersionVO.getContentVersionId());
+					eventVO.setName(contentVersionVO.getContentName() + "(" + contentVersionVO.getLanguageName() + ")");
+					eventVO.setTypeId(EventVO.UNPUBLISH_LATEST);
+					eventVO = EventController.create(eventVO, currentContentVO.getRepositoryId(), principal);
+					events.add(eventVO);
+				}
+			
+			    PublicationVO publicationVO = new PublicationVO();
+			    publicationVO.setName("Direct publication by " + this.principal.getName());
+			    publicationVO.setDescription("Unpublished all versions before forced deletion");
+			    //publicationVO.setPublisher(this.getInfoGluePrincipal().getName());
+			    publicationVO.setRepositoryId(currentContentVO.getRepositoryId());
+			    publicationVO = PublicationController.getController().createAndPublish(publicationVO, events, true, this.principal);
+            }
+			
+            ContentController.getContentController().delete(contentVO, principal);
                
 	        logger.info("Done with contents..");
 
