@@ -140,48 +140,6 @@ public class GenericCombinedAuthorizationModule implements AuthorizationModule, 
 		return authorizationModule;
 	}
 
-	/*
-	private AuthorizationModule getMainAuthorizationModule() throws SystemException
-	{
-		try
-    	{
-			logger.info("InfoGlueAuthenticationFilter.authorizerClass:" + JNDIBasicAuthorizationModule.class.getName());
-			authorizationModule = (AuthorizationModule)Class.forName(JNDIBasicAuthorizationModule.class.getName()).newInstance();
-			logger.info("authorizationModule:" + authorizationModule);
-			authorizationModule.setExtraProperties(this.extraProperties);
-			authorizationModule.setTransactionObject(this.getTransactionObject());
-			//logger.info("InfoGlueAuthenticationFilter.extraProperties:" + this.extraProperties);
-    	}
-    	catch(Exception e)
-    	{
-    		logger.error("There was an error initializing the authorizerClass:" + e.getMessage(), e);
-    		throw new SystemException("There was an error initializing the authorizerClass:" + e.getMessage(), e);
-    	}
-	   
-		return authorizationModule;
-	}
-
-	private AuthorizationModule getFallbackAuthorizationModule() throws SystemException
-	{
-		try
-    	{
-			logger.info("InfoGlueAuthenticationFilter.authorizerClass:" + InfoGlueBasicAuthorizationModule.class.getName());
-			authorizationModule = (AuthorizationModule)Class.forName(InfoGlueBasicAuthorizationModule.class.getName()).newInstance();
-			logger.info("authorizationModule:" + authorizationModule);
-			authorizationModule.setExtraProperties(this.extraProperties);
-			authorizationModule.setTransactionObject(this.getTransactionObject());
-			//logger.info("InfoGlueAuthenticationFilter.extraProperties:" + this.extraProperties);
-    	}
-    	catch(Exception e)
-    	{
-    		logger.error("There was an error initializing the authorizerClass:" + e.getMessage(), e);
-    		throw new SystemException("There was an error initializing the authorizerClass:" + e.getMessage(), e);
-    	}
-	   
-		return authorizationModule;
-	}
-	*/
-
 	/**
 	 * Gets an authorized InfoGluePrincipal. If the user has logged in with the root-account
 	 * we immediately return - otherwise we populate it.
@@ -224,9 +182,8 @@ public class GenericCombinedAuthorizationModule implements AuthorizationModule, 
 
 		int i=0;
 		String authorizerClassName = this.extraProperties.getProperty("" + i + ".authorizerClassName");
-		while(authorizerClassName != null && !authorizerClassName.equals(""))
+		while(authorizerClassName != null && !authorizerClassName.equals("") && role == null)
 		{
-			//System.out.println("Looking for user in " + authorizerClassName);
 			try
 			{
 				role = getAuthorizationModule(authorizerClassName, i).getAuthorizedInfoGlueRole(roleName);
@@ -253,9 +210,8 @@ public class GenericCombinedAuthorizationModule implements AuthorizationModule, 
 
 		int i=0;
 		String authorizerClassName = this.extraProperties.getProperty("" + i + ".authorizerClassName");
-		while(authorizerClassName != null && !authorizerClassName.equals(""))
+		while(authorizerClassName != null && !authorizerClassName.equals("") && group == null)
 		{
-			//System.out.println("Looking for user in " + authorizerClassName);
 			try
 			{
 				group = getAuthorizationModule(authorizerClassName, i).getAuthorizedInfoGlueGroup(groupName);
@@ -285,7 +241,6 @@ public class GenericCombinedAuthorizationModule implements AuthorizationModule, 
 		String authorizerClassName = this.extraProperties.getProperty("" + i + ".authorizerClassName");
 		while(authorizerClassName != null && !authorizerClassName.equals(""))
 		{
-			//System.out.println("Looking for user in " + authorizerClassName);
 			try
 			{
 				roles.addAll(getAuthorizationModule(authorizerClassName, i).authorizeUser(userName));
