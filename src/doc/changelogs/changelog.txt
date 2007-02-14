@@ -37,6 +37,10 @@
 - Added a contentPath-attribute to the contentParameter-tag so one can get a directory structure created and the content put in that directory-structure.
 - Added a new GenericCombinedAuthorizationModule which allows one to combine any number of similar or different authorization-modules. For example is one wants to combine two LDAP-directories and then InfoGlue:s own it's easy now.
 - Added warning message when you log in as root user so users understand do use another account for normal use.
+- Added better webservice security
+- Added possibility to delete published contents through the webservice
+- Improved the generic combined auth module and how the delegated adaptors should handle caches.
+- Added logic to allow enable languages on specific pages and their subpages. Complements the disable languages feature.
 
 -------------------------------------------------------------------------------------
 - InfoGlue 2.4.1 Final
