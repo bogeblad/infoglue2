@@ -32,7 +32,11 @@ import org.infoglue.cms.controllers.usecases.structuretool.UpdateSiteNodeUCC;
 import org.infoglue.cms.controllers.usecases.structuretool.UpdateSiteNodeUCCFactory;
 import org.infoglue.cms.entities.structure.SiteNodeVO;
 import org.infoglue.cms.entities.structure.SiteNodeVersionVO;
+import org.infoglue.cms.util.ChangeNotificationController;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
+import org.infoglue.cms.util.NotificationMessage;
+import org.infoglue.cms.util.RemoteCacheUpdater;
+import org.infoglue.deliver.util.CacheController;
 
 import com.opensymphony.module.propertyset.PropertySet;
 import com.opensymphony.module.propertyset.PropertySetManager;
@@ -96,7 +100,11 @@ public class UpdateSiteNodeAction extends ViewSiteNodeAction //WebworkAbstractAc
 			
 			UpdateSiteNodeUCC updateSiteNodeUCC = UpdateSiteNodeUCCFactory.newUpdateSiteNodeUCC();
 			updateSiteNodeUCC.updateSiteNode(this.getInfoGluePrincipal(), this.siteNodeVO, this.siteNodeTypeDefinitionId, siteNodeVersionVO);		
-			
+
+	    	Map args = new HashMap();
+		    args.put("globalKey", "infoglue");
+		    PropertySet ps = PropertySetManager.getInstance("jdbc", args);
+
 	    	String[] values = getRequest().getParameterValues("disabledLanguageId");
 	    	String valueString = "";
 	    	if(values != null)
@@ -107,15 +115,27 @@ public class UpdateSiteNodeAction extends ViewSiteNodeAction //WebworkAbstractAc
 		    	        valueString = valueString + ",";
 		    	    valueString = valueString + values[i];  
 		    	}
-
-		    	Map args = new HashMap();
-			    args.put("globalKey", "infoglue");
-			    PropertySet ps = PropertySetManager.getInstance("jdbc", args);
-
-		    	ps.setString("siteNode_" + getSiteNodeId() + "_disabledLanguages", valueString);
 	    	}
+	    	ps.setString("siteNode_" + getSiteNodeId() + "_disabledLanguages", valueString);
 
-		//}
+	    	values = getRequest().getParameterValues("enabledLanguageId");
+	    	valueString = "";
+	    	if(values != null)
+	    	{
+	    		for(int i=0; i<values.length; i++)
+		    	{
+		    	    if(i > 0)
+		    	        valueString = valueString + ",";
+		    	    valueString = valueString + values[i];  
+		    	}
+	    	}
+	    	ps.setString("siteNode_" + getSiteNodeId() + "_enabledLanguages", valueString);
+
+			NotificationMessage notificationMessage = new NotificationMessage("UpdateSiteNodeAction", "ServerNodeProperties", this.getInfoGluePrincipal().getName(), NotificationMessage.SYSTEM, "0", "ServerNodeProperties");
+			ChangeNotificationController.getInstance().addNotificationMessage(notificationMessage);
+			//RemoteCacheUpdater.getSystemNotificationMessages().add(notificationMessage);
+
+	    	//}
 		//catch(Exception e)
 		//{
 		//	e.printStackTrace();

@@ -626,7 +626,7 @@ public class LanguageDeliveryController extends BaseDeliveryController
 		if(languageVOList != null)
 			return languageVOList;
 		
-		logger.info("Coming in with siteNodeId:" + siteNodeId);
+		logger.info("Looking for languages on page with id:" + siteNodeId);
 		
         languageVOList = new ArrayList();
 
@@ -693,7 +693,24 @@ public class LanguageDeliveryController extends BaseDeliveryController
 		            }
 		        }
 		    }
+
+	        String enabledLanguagesString = CmsPropertyHandler.getPropertySetValue("siteNode_" + disabledLanguagesSiteNodeVersion.getValueObject().getSiteNodeId() + "_enabledLanguages");
 		    
+		    if(enabledLanguagesString != null && !enabledLanguagesString.equalsIgnoreCase(""))
+		    {
+		    	isValidLanguage = false;
+		    	
+		        String[] enabledLanguagesStringArray = enabledLanguagesString.split(",");
+		        for(int i=0; i<enabledLanguagesStringArray.length; i++)
+		        {
+		          if(languageId.intValue() == new Integer(enabledLanguagesStringArray[i]).intValue())
+		            {
+		                isValidLanguage = true;
+			            break;
+		            }
+		        }
+		    }
+
 		}
 	    logger.info("languageId:" + languageId + " was valid:" + isValidLanguage);
 		

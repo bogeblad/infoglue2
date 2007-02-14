@@ -91,6 +91,7 @@ public class ViewSiteNodeAction extends InfoGlueAbstractAction
 	private List referenceBeanList 			= new ArrayList();
 	private List availableLanguages			= new ArrayList();
 	private List disabledLanguages 			= new ArrayList();
+	private List enabledLanguages 			= new ArrayList();
 	private List referencingBeanList 		= new ArrayList();
 
 	private SiteNodeVO siteNodeVO;
@@ -218,6 +219,26 @@ public class ViewSiteNodeAction extends InfoGlueAbstractAction
 	            }
 	        }
 	    }
+
+	    String enabledLanguagesString = ps.getString("siteNode_" + siteNodeId + "_enabledLanguages");
+	    logger.info("enabledLanguagesString:" + enabledLanguagesString);
+	    if(enabledLanguagesString != null && !enabledLanguagesString.equalsIgnoreCase(""))
+	    {
+	        String[] enabledLanguagesStringArray = enabledLanguagesString.split(",");
+	        for(int i=0; i<enabledLanguagesStringArray.length; i++)
+	        {
+	            try
+	            {
+		            LanguageVO languageVO = LanguageController.getController().getLanguageVOWithId(new Integer(enabledLanguagesStringArray[i]));
+		            logger.info("Adding languageVO to enabledLanguages:" + languageVO.getName());
+		    	    this.enabledLanguages.add(languageVO);
+	            }
+	            catch(Exception e)
+	            {
+	                logger.warn("An error occurred when we tried to get enabled language:" + e.getMessage(), e);
+	            }
+	        }
+	    }
 	} 
 
 	protected void initializeSiteNodeCover(Integer siteNodeId, Database db) throws Exception
@@ -256,6 +277,26 @@ public class ViewSiteNodeAction extends InfoGlueAbstractAction
 	            catch(Exception e)
 	            {
 	                logger.warn("An error occurred when we tried to get disabled language:" + e.getMessage(), e);
+	            }
+	        }
+	    }
+
+	    String enabledLanguagesString = ps.getString("siteNode_" + siteNodeId + "_enabledLanguages");
+	    logger.info("enabledLanguagesString:" + enabledLanguagesString);
+	    if(enabledLanguagesString != null && !enabledLanguagesString.equalsIgnoreCase(""))
+	    {
+	        String[] enabledLanguagesStringArray = enabledLanguagesString.split(",");
+	        for(int i=0; i<enabledLanguagesStringArray.length; i++)
+	        {
+	            try
+	            {
+		            LanguageVO languageVO = LanguageController.getController().getLanguageVOWithId(new Integer(enabledLanguagesStringArray[i]), db);
+		            logger.info("Adding languageVO to enabledLanguages:" + languageVO.getName());
+		    	    this.enabledLanguages.add(languageVO);
+	            }
+	            catch(Exception e)
+	            {
+	                logger.warn("An error occurred when we tried to get enabled language:" + e.getMessage(), e);
 	            }
 	        }
 	    }
@@ -825,7 +866,12 @@ public class ViewSiteNodeAction extends InfoGlueAbstractAction
     {
         return disabledLanguages;
     }
-    
+
+    public List getEnabledLanguages()
+    {
+        return enabledLanguages;
+    }
+
     public List getReferencingBeanList()
     {
         return referencingBeanList;
