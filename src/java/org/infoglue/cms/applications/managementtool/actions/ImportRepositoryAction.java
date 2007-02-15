@@ -29,6 +29,7 @@ import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -59,6 +60,7 @@ import org.infoglue.cms.entities.management.AvailableServiceBinding;
 import org.infoglue.cms.entities.management.Category;
 import org.infoglue.cms.entities.management.CategoryVO;
 import org.infoglue.cms.entities.management.ContentTypeDefinition;
+import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
 import org.infoglue.cms.entities.management.Language;
 import org.infoglue.cms.entities.management.Repository;
 import org.infoglue.cms.entities.management.RepositoryLanguage;
@@ -120,7 +122,7 @@ public class ImportRepositoryAction extends InfoGlueAbstractAction
 		{
 			//now restore the value and list what we get
 			File file = FileUploadHelper.getUploadedFile(ActionContext.getContext().getMultiPartRequest());
-			//File file = new File("C:/Program/Apache Software Foundation/Tomcat 5.5/webapps/infoglueCMS/digitalAssets/Import_1157890175468Export_TCS-DE_2006-09-07.xml");
+			//File file = new File("C:\\Program Files\\Apache Software Foundation\\Tomcat 5.5\\webapps\\infoglueCMS\\digitalAssets\\Export__genus.gu.se_2_2007-02-15.xml");
 			if(file == null || !file.exists())
 				throw new SystemException("The file upload must have gone bad as no file reached the import utility.");
 			
@@ -181,6 +183,7 @@ public class ImportRepositoryAction extends InfoGlueAbstractAction
 			logger.info("Found " + categories.size() + " categories");
 
 			Map categoryIdMap = new HashMap();
+			Map contentTypeIdMap = new HashMap();
 
 			importCategories(categories, null, categoryIdMap, db);
 			
@@ -256,7 +259,7 @@ public class ImportRepositoryAction extends InfoGlueAbstractAction
 				
 				readSiteNode.setRepository((RepositoryImpl)repositoryRead);
 				
-				createContents(readContent, contentIdMap, allContents, contentTypeDefinitions, categoryIdMap, version, db);
+				createContents(readContent, contentIdMap, contentTypeIdMap, allContents, Collections.unmodifiableCollection(contentTypeDefinitions), categoryIdMap, version, db);
 				createStructure(readSiteNode, contentIdMap, siteNodeIdMap, allSiteNodes, db);
 			}
 						
@@ -590,21 +593,25 @@ public class ImportRepositoryAction extends InfoGlueAbstractAction
 	 * @throws Exception
 	 */
 	
-	private List createContents(Content content, Map idMap, List allContents, Collection contentTypeDefinitions, Map categoryIdMap, int version, Database db) throws Exception
+	private List createContents(Content content, Map idMap, Map contentTypeDefinitionIdMap, List allContents, Collection contentTypeDefinitions, Map categoryIdMap, int version, Database db) throws Exception
 	{
-	    Integer originalContentId = content.getContentId();
+		ContentTypeDefinition contentTypeDefinition = null;
 		
+	    Integer originalContentId = content.getContentId();
 	    if(version == 2)
 	    {
 		    Integer contentTypeDefinitionId = ((ContentImpl)content).getContentTypeDefinitionId();
-		    //System.out.println("contentTypeDefinitionId:" + contentTypeDefinitionId);
-		    if(contentTypeDefinitionId != null)
+		    
+    		if(contentTypeDefinitionId != null)
 			{
+    			if(contentTypeDefinitionIdMap.containsKey(contentTypeDefinitionId))
+    				contentTypeDefinitionId = (Integer)contentTypeDefinitionIdMap.get(contentTypeDefinitionId);
+    				
 		    	ContentTypeDefinition originalContentTypeDefinition = null;
 		    	Iterator contentTypeDefinitionsIterator = contentTypeDefinitions.iterator();
 		    	while(contentTypeDefinitionsIterator.hasNext())
 		    	{
-		    		ContentTypeDefinition contentTypeDefinitionCandidate = (ContentTypeDefinition)contentTypeDefinitionsIterator.next();
+		    		ContentTypeDefinition contentTypeDefinitionCandidate = (ContentTypeDefinition)contentTypeDefinitionsIterator.next();		    		
 		    		if(contentTypeDefinitionCandidate.getId().intValue() == contentTypeDefinitionId.intValue())
 		    		{
 		    			originalContentTypeDefinition = contentTypeDefinitionCandidate;
@@ -616,37 +623,51 @@ public class ImportRepositoryAction extends InfoGlueAbstractAction
 
 		    	if(originalContentTypeDefinition != null)
 		    	{
-			    	ContentTypeDefinition contentTypeDefinition = ContentTypeDefinitionController.getController().getContentTypeDefinitionWithName(originalContentTypeDefinition.getName(), db);
-			    	//System.out.println("contentTypeDefinition:" + contentTypeDefinition);
+			    	contentTypeDefinition = ContentTypeDefinitionController.getController().getContentTypeDefinitionWithName(originalContentTypeDefinition.getName(), db);
 
 			    	if(contentTypeDefinition == null)
 					{
-					    db.create(originalContentTypeDefinition);
-					    contentTypeDefinition = originalContentTypeDefinition;
-					}
+			    		Integer before = originalContentTypeDefinition.getId();
+			    		db.create(originalContentTypeDefinition);
+			    		contentTypeDefinition = originalContentTypeDefinition;
+			    		Integer after = originalContentTypeDefinition.getId();
+			    		contentTypeDefinitionIdMap.put(before, after);
+			    	}
 				
-					content.setContentTypeDefinition((ContentTypeDefinitionImpl)contentTypeDefinition);
+		    		content.setContentTypeDefinition((ContentTypeDefinitionImpl)contentTypeDefinition);
+
 		    	}
+			    else
+			    	System.out.println("The content " + content.getName() + " had a content type not found amongst the listed ones:" + contentTypeDefinitionId);
 			}
+		    else
+		    	System.out.println("The content " + content.getName() + " had no content type at all");
 	    }
 	    else if(version == 1)
 	    {
 			ContentTypeDefinition originalContentTypeDefinition = content.getContentTypeDefinition();
 			if(originalContentTypeDefinition != null)
 			{
-			    ContentTypeDefinition contentTypeDefinition = ContentTypeDefinitionController.getController().getContentTypeDefinitionWithName(originalContentTypeDefinition.getName(), db);
+			    contentTypeDefinition = ContentTypeDefinitionController.getController().getContentTypeDefinitionWithName(originalContentTypeDefinition.getName(), db);
 				if(contentTypeDefinition == null)
 				{
+		    		//contentTypeDefinition = ContentTypeDefinitionController.getController().create(originalContentTypeDefinition.getValueObject(), db);
+		    		//contentTypeDefinitions.add(contentTypeDefinition);
+		    		
 				    db.create(originalContentTypeDefinition);
 				    contentTypeDefinition = originalContentTypeDefinition;
 				}
-				
-				content.setContentTypeDefinition((ContentTypeDefinitionImpl)contentTypeDefinition);
+
+	    		content.setContentTypeDefinition((ContentTypeDefinitionImpl)contentTypeDefinition);
 			}
 	    }
 	    
+	    if(content.getContentTypeDefinition() == null)
+	    	logger.error("No content type definition for content:" + content.getId());
+	    	
 	    logger.info("Creating content:" + content.getName());
-		db.create(content);
+
+	    db.create(content);
 		
 		allContents.add(content);
 		
@@ -778,7 +799,7 @@ public class ImportRepositoryAction extends InfoGlueAbstractAction
 				Content childContent = (Content)childContentsIterator.next();
 				childContent.setRepository(content.getRepository());
 				childContent.setParentContent((ContentImpl)content);
-				createContents(childContent, idMap, allContents, contentTypeDefinitions, categoryIdMap, version, db);
+				createContents(childContent, idMap, contentTypeDefinitionIdMap, allContents, contentTypeDefinitions, categoryIdMap, version, db);
 			}
 		}
 		

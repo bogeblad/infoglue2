@@ -41,6 +41,7 @@
 - Added possibility to delete published contents through the webservice
 - Improved the generic combined auth module and how the delegated adaptors should handle caches.
 - Added logic to allow enable languages on specific pages and their subpages. Complements the disable languages feature.
+- Fixed bug in import repository which made contents loose their content types.
 
 -------------------------------------------------------------------------------------
 - InfoGlue 2.4.1 Final
