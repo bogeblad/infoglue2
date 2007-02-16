@@ -281,10 +281,12 @@ public class HttpHelper
 	    return readData;   
 	}
 	
-	public String getUrlContent(String urlAddress, Map requestParameters) throws Exception
+	public String getUrlContent(String urlAddress, Map requestParameters, int timeout) throws Exception
 	{
 	    URL url = new URL(urlAddress);
 	    URLConnection connection = url.openConnection();
+	    connection.setConnectTimeout(timeout);
+	    connection.setReadTimeout(timeout);
 	    connection.setUseCaches(false);
 	    
 	    Iterator mapIterator = requestParameters.keySet().iterator();
