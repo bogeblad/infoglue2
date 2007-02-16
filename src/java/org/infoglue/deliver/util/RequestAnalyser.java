@@ -28,6 +28,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -128,6 +129,26 @@ public class RequestAnalyser
         }
         
         return longThreads;
+    }
+
+    public synchronized void registerComponentStatistics(String componentName, long elapsedTime)
+    {
+        Counter.registerComponentStatistics(componentName, elapsedTime);
+    }
+    
+    public static Set getAllComponentNames()
+    {
+    	return Counter.getAllComponentNames();
+    }
+
+    public static long getComponentAverageElapsedTime(String componentName)
+    {
+        return Counter.getAverageElapsedTime(componentName);
+    }
+
+    public static void resetComponentStatistics()
+    {
+    	Counter.resetComponentStatistics();
     }
     
 	/*

@@ -26,8 +26,10 @@ package org.infoglue.deliver.applications.actions;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -339,7 +341,23 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
         
         return doExecute();
     }
-    
+
+    public String doResetComponentStatistics() throws Exception
+    {
+        if(!ServerNodeController.getController().getIsIPAllowed(this.getRequest()))
+        {
+            this.getResponse().setContentType("text/plain");
+            this.getResponse().setStatus(HttpServletResponse.SC_FORBIDDEN);
+            this.getResponse().getWriter().println("You have no access to this view - talk to your administrator if you should.");
+            
+            return NONE;
+        }
+        
+        RequestAnalyser.resetComponentStatistics();
+        
+        return "cleared";
+    }
+
     /**
      * This method is the application entry-point. The method does a lot of checks to see if infoglue
      * is installed correctly and if all resources needed are available.
@@ -368,8 +386,19 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
         states.add(getList("Number of sessions", "" + CmsSessionContextListener.getActiveSessions() + "(remains for " + (Integer.parseInt(sessionTimeout) / 60) + " minutes after last request)"));
         states.add(getList("Number of request being handled now", "" + RequestAnalyser.getRequestAnalyser().getNumberOfCurrentRequests()));
         states.add(getList("Total number of requests handled", "" + RequestAnalyser.getRequestAnalyser().getTotalNumberOfRequests()));
-        states.add(getList("Average processing time per request", "" + RequestAnalyser.getRequestAnalyser().getAverageElapsedTime()));
-        states.add(getList("Slowest request", "" + RequestAnalyser.getRequestAnalyser().getMaxElapsedTime()));
+        states.add(getList("Average processing time per request", "" + RequestAnalyser.getRequestAnalyser().getAverageElapsedTime() + " ms."));
+        states.add(getList("Slowest request", "" + RequestAnalyser.getRequestAnalyser().getMaxElapsedTime() + " ms."));
+        
+        states.add(getList("<br/><strong>Individual components</strong>", "&nbsp;"));
+        Set componentNames = RequestAnalyser.getAllComponentNames();
+        Iterator componentNamesIterator = componentNames.iterator();
+        while(componentNamesIterator.hasNext())
+        {
+        	String componentName = (String)componentNamesIterator.next();
+        	long componentAverageElapsedTime = RequestAnalyser.getComponentAverageElapsedTime(componentName);
+        	states.add(getList("" + componentName, "" + componentAverageElapsedTime + " ms."));
+        }
+        
         //states.add(getList("Number of request being handled now", "" + RequestAnalyser.getNumberOfCurrentRequests() + "(average request take " + (RequestAnalyser.getAverageTimeSpentOnOngoingRequests()) + " ms, max now is " + RequestAnalyser.getMaxTimeSpentOnOngoingRequests() + ")"));
         //states.add(getList("The slowest request handled now is", "" + ((RequestAnalyser.getLongestRequests() != null) ? RequestAnalyser.getLongestRequests().getAttribute("progress") : "")));
         

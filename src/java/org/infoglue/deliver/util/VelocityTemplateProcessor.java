@@ -39,6 +39,7 @@ import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.Velocity;
 import org.infoglue.cms.io.FileHelper;
 import org.infoglue.cms.util.CmsPropertyHandler;
+import org.infoglue.deliver.applications.actions.InfoGlueComponent;
 import org.infoglue.deliver.applications.databeans.DeliveryContext;
 import org.infoglue.deliver.controllers.kernel.impl.simple.TemplateController;
 
@@ -58,15 +59,25 @@ public class VelocityTemplateProcessor
 	
 	public void renderTemplate(Map params, PrintWriter pw, String templateAsString) throws Exception 
 	{
-	    renderTemplate(params, pw, templateAsString, false);
+	    renderTemplate(params, pw, templateAsString, false, null);
 	}
-	
+
 	/**
 	 * This method takes arguments and renders a template given as a string to the specified outputstream.
 	 * Improve later - cache for example the engine.
 	 */
 	
 	public void renderTemplate(Map params, PrintWriter pw, String templateAsString, boolean forceVelocity) throws Exception 
+	{
+	    renderTemplate(params, pw, templateAsString, forceVelocity, null);
+	}
+
+	/**
+	 * This method takes arguments and renders a template given as a string to the specified outputstream.
+	 * Improve later - cache for example the engine.
+	 */
+	
+	public void renderTemplate(Map params, PrintWriter pw, String templateAsString, boolean forceVelocity, InfoGlueComponent component) throws Exception 
 	{
 		try
 		{
@@ -105,6 +116,12 @@ public class VelocityTemplateProcessor
 		        }
 		    }
 
+		 	String componentName = "Unknown name or not a component";
+		 	if(component != null)
+		    	componentName = "" + component.getName() + "(" + component.getContentId() + ")";
+		    //System.out.println("componentName:" + componentName);
+		    
+		    RequestAnalyser.getRequestAnalyser().registerComponentStatistics(componentName, timer.getElapsedTime());
 		    timer.printElapsedTime("End renderTemplate");
 		}
 		catch(Exception e)
@@ -112,10 +129,10 @@ public class VelocityTemplateProcessor
 		    logger.warn("templateAsString: \n" + (templateAsString.length() > 500 ? templateAsString.substring(0, 500) + "... (template truncated)." : templateAsString));
 		    
 		    if(CmsPropertyHandler.getOperatingMode().equalsIgnoreCase("0") && (CmsPropertyHandler.getDisableTemplateDebug() == null || !CmsPropertyHandler.getDisableTemplateDebug().equalsIgnoreCase("true")))
-		        pw.println("Error:" + e.getMessage());
+		        pw.println("Error rendering template:" + e.getMessage());
 		    else
 		    {
-			    logger.warn("Warning:" + e.getMessage(), e);
+			    logger.warn("Warning rendering template::" + e.getMessage(), e);
 			    throw e;
 		    }
 		}

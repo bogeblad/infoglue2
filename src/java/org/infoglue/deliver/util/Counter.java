@@ -22,6 +22,10 @@
 */
 package org.infoglue.deliver.util;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+
 /**
  * @author mattias
  *
@@ -34,6 +38,7 @@ public class Counter
     private static Integer totalCount = new Integer(0);
     private static Long totalElapsedTime = new Long(0);
     private static Long maxElapsedTime = new Long(0);
+    private static Map allComponentsStatistics = new HashMap();
     
     private Counter(){}
    
@@ -77,5 +82,62 @@ public class Counter
 	    		maxElapsedTime = new Long(elapsedTime);
         }
     }
+
+    synchronized static Set getAllComponentNames()
+    {
+    	synchronized (allComponentsStatistics) 
+    	{
+    		return allComponentsStatistics.keySet();
+		}
+    }
+
+    synchronized private static Map getComponentStatistics(String componentName)
+    {
+    	Map componentStatistics = (Map)allComponentsStatistics.get(componentName);
+    	if(componentStatistics == null)
+    	{
+    		componentStatistics = new HashMap();
+    		componentStatistics.put("totalElapsedTime", new Long(0));
+    		componentStatistics.put("totalNumberOfInvokations", new Integer(0));
+    		allComponentsStatistics.put(componentName, componentStatistics);
+        }
+    	
+    	return componentStatistics;
+    }
+
+    synchronized static void registerComponentStatistics(String componentName, long elapsedTime)
+    {
+    	Map componentStatistics = getComponentStatistics(componentName);   
+    	synchronized (componentStatistics) 
+    	{
+        	Long oldTotalElapsedTime = (Long)componentStatistics.get("totalElapsedTime");
+        	Long totalElapsedTime = new Long(oldTotalElapsedTime.longValue() + elapsedTime);			
+        	componentStatistics.put("totalElapsedTime", totalElapsedTime);
+
+        	Integer oldTotalNumberOfInvokations = (Integer)componentStatistics.get("totalNumberOfInvokations");
+        	Integer totalNumberOfInvokations = new Integer(oldTotalNumberOfInvokations.intValue() + 1);			
+        	componentStatistics.put("totalNumberOfInvokations", totalNumberOfInvokations);
+    	}    	
+    }
+
+    static long getAverageElapsedTime(String componentName)
+    {
+    	Map componentStatistics = getComponentStatistics(componentName);
+    	synchronized (componentStatistics) 
+    	{
+        	Long totalElapsedTime = (Long)componentStatistics.get("totalElapsedTime");
+        	Integer oldTotalNumberOfInvokations = (Integer)componentStatistics.get("totalNumberOfInvokations");
+ 
+        	return totalElapsedTime.longValue() / oldTotalNumberOfInvokations.intValue();			
+		}
+    }
+
+    static void resetComponentStatistics()
+    {
+    	synchronized (allComponentsStatistics) 
+    	{
+    		allComponentsStatistics.clear();
+    	}
+   	}
 
 }
