@@ -94,7 +94,7 @@ public class DeliveryContext implements UsageListener
 	private Set usedSiteNodes = new InfoGlueHashSet();
 	private Set usedSiteNodeVersions = new InfoGlueHashSet();
 	
-	private Set usedPageMetaInfoContentVersionIdSet = new HashSet();
+	private Set usedPageMetaInfoContentVersionIdSet = new InfoGlueHashSet();
 	
 	//private InfoGluePrincipal infoGluePrincipal = null;
 	
