@@ -103,23 +103,23 @@
     <td>Actions</td>
   </tr>
   #foreach($cacheName in $caches.keySet())
-  <tr>
-    <td class="text" valign="top">$cacheName</td>
-    <td class="text" valign="top">#if($caches.get($cacheName).class.name == "com.opensymphony.oscache.general.GeneralCacheAdministrator") Unkown #else $caches.get($cacheName).size() #end</td>
-    <td class="text" valign="top">
-    	#if($caches.get($cacheName).class.name == "com.opensymphony.oscache.general.GeneralCacheAdministrator") 
-    		#set($cacheEntryEventListener =	$eventListeners.get("${cacheName}_cacheEntryEventListener"))
-    		#set($cacheMapAccessEventListener =	$eventListeners.get("${cacheName}_cacheMapAccessEventListener"))
-    		 
-    		$cacheEntryEventListener.toString()
-	        <br/>
-	        $cacheMapAccessEventListener.toString()
-    	#else 
-    		$caches.get($cacheName).size() 
-    	#end
-    </td>
-    <td class="text" valign="top"><a href="ViewApplicationState!clearCache.action?cacheName=$cacheName">Clear</a></td>
-  </tr>
+      #set($cache = $caches.get($cacheName))
+	  <tr>
+	    <td style="border-bottom: 1px solid #999999;" class="text" valign="top">$cacheName</td>
+	    <td style="border-bottom: 1px solid #999999;"  class="text" valign="top">#if($caches.get($cacheName).class.name == "com.opensymphony.oscache.general.GeneralCacheAdministrator") $cache.getCache().getSize() #else $cache.size() #end</td>
+	    <td style="border-bottom: 1px solid #999999;"  class="text" valign="top">
+	    	#if($cache.class.name == "com.opensymphony.oscache.general.GeneralCacheAdministrator") 
+	    		#set($cacheEntryEventListener =	$eventListeners.get("${cacheName}_cacheEntryEventListener"))
+	    		#set($cacheMapAccessEventListener =	$eventListeners.get("${cacheName}_cacheMapAccessEventListener"))
+	    		<span style="font-size: 8pt; font-style: italic;">$cacheEntryEventListener.toString()
+		        <br/>
+		        $cacheMapAccessEventListener.toString()</span>
+	    	#else 
+	    		No additional statistics
+	    	#end
+	    </td>
+	    <td style="border-bottom: 1px solid #999999;"  class="text" valign="top"><a href="ViewApplicationState!clearCache.action?cacheName=$cacheName">Clear</a></td>
+	  </tr>
   #end
   <tr>
     <td colspan="4" class="text"><a href="ViewApplicationState!clearCaches.action">Clear All</a> | <a href="ViewApplicationState!reCache.action">Recache sitenodes</a></td>
