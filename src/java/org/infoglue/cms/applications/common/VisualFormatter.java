@@ -30,6 +30,7 @@ import java.util.Locale;
 
 import org.apache.log4j.Logger;
 import org.infoglue.cms.util.CmsPropertyHandler;
+import org.infoglue.deliver.util.CacheController;
 
 public class VisualFormatter
 {
@@ -416,7 +417,14 @@ public class VisualFormatter
 		if(s == null)
 			return null;
 		
-		return URLEncoder.encode(s, "UTF-8");
+        String encodedString = (String)CacheController.getCachedObject("serverNodePropertiesCache", s);
+        if(encodedString == null)
+        {
+        	encodedString = URLEncoder.encode(s, "UTF-8");
+        	CacheController.cacheObject("serverNodePropertiesCache", s, encodedString);
+        }
+
+		return encodedString;
 	}
 
 	/**
@@ -430,7 +438,14 @@ public class VisualFormatter
 		
 		String encoding = CmsPropertyHandler.getURIEncoding();
 		
-		return URLEncoder.encode(s, encoding);
+		String encodedString = (String)CacheController.getCachedObject("serverNodePropertiesCache", s);
+        if(encodedString == null)
+        {
+        	encodedString = URLEncoder.encode(s, encoding);
+        	CacheController.cacheObject("serverNodePropertiesCache", s, encodedString);
+        }
+        
+		return encodedString;
 	}
 
 	
@@ -439,7 +454,14 @@ public class VisualFormatter
 		if(s == null)
 			return null;
 		
-		return URLEncoder.encode(s, encoding);
+		String encodedString = (String)CacheController.getCachedObject("serverNodePropertiesCache", s);
+        if(encodedString == null)
+        {
+        	encodedString = URLEncoder.encode(s, encoding);
+        	CacheController.cacheObject("serverNodePropertiesCache", s, encodedString);
+        }
+        
+		return encodedString;
 	}
 
 }
