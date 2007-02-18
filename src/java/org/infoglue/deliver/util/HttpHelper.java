@@ -280,6 +280,11 @@ public class HttpHelper
 	    buffer.close();
 	    return readData;   
 	}
+
+	public String getUrlContent(String urlAddress, Map requestParameters) throws Exception
+	{
+		return getUrlContent(urlAddress, requestParameters, 30000);
+	}
 	
 	public String getUrlContent(String urlAddress, Map requestParameters, int timeout) throws Exception
 	{
