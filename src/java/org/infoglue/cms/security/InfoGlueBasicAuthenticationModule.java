@@ -24,6 +24,7 @@
 package org.infoglue.cms.security;
 
 import java.net.URLEncoder;
+import java.security.MessageDigest;
 import java.security.Principal;
 import java.util.HashMap;
 import java.util.Map;
@@ -78,7 +79,26 @@ public class InfoGlueBasicAuthenticationModule extends AuthenticationModule
 		//otherwise, we need to authenticate somehow
 		String userName = request.getParameter("j_username");
 		String password = request.getParameter("j_password");
-
+		/*
+		System.out.println("password:" + password);
+    	if(password != null)
+    	{
+    		try
+			{
+		    	MessageDigest md = MessageDigest.getInstance("MD5");
+		
+			    md.update(password.getBytes("utf-8"));
+			    String digestedPassword = new String(md.digest());
+			    System.out.println("digestedPassword:" + digestedPassword);
+			    password = digestedPassword;
+			}
+			catch(Exception e)
+			{
+				e.printStackTrace();
+			}
+    	}
+    	*/
+		
 		// no userName?  abort request processing and redirect
 		if (userName == null || userName.equals("")) 
 		{
@@ -425,14 +445,19 @@ public class InfoGlueBasicAuthenticationModule extends AuthenticationModule
     }
 
 
-	public String getCasLogoutUrl() {
+	public String getCasLogoutUrl() 
+	{
 		return casLogoutUrl;
 	}
 
 
-	public void setCasLogoutUrl(String casLogoutUrl) {
+	public void setCasLogoutUrl(String casLogoutUrl) 
+	{
 		this.casLogoutUrl = casLogoutUrl;
 	}
 
-    
+	public boolean enforceJ2EEContainerPrincipal() 
+	{
+		return false;
+	}
 }

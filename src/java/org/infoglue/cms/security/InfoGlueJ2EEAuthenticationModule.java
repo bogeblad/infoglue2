@@ -408,14 +408,20 @@ public class InfoGlueJ2EEAuthenticationModule extends AuthenticationModule
     }
 
 
-	public String getCasLogoutUrl() {
+	public String getCasLogoutUrl() 
+	{
 		return casLogoutUrl;
 	}
 
 
-	public void setCasLogoutUrl(String casLogoutUrl) {
+	public void setCasLogoutUrl(String casLogoutUrl) 
+	{
 		this.casLogoutUrl = casLogoutUrl;
 	}
 
-    
+	public boolean enforceJ2EEContainerPrincipal() 
+	{
+		return true;
+	}
+
 }

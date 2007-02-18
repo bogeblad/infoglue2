@@ -355,8 +355,7 @@ public class CASBasicAuthenticationModule extends AuthenticationModule//, Author
 	public boolean logoutUser(HttpServletRequest request, HttpServletResponse response) throws Exception 
 	{
 	    String referer = request.getHeader("Referer");
-	    System.out.println("referer:" + referer);
-		String service = getService(request);
+	    String service = getService(request);
 		if(referer != null && !referer.equals(""))
 		{
 			if(referer.lastIndexOf("/") > 0)
@@ -373,8 +372,7 @@ public class CASBasicAuthenticationModule extends AuthenticationModule//, Author
 		  	this.casServiceUrl = originalFullURL;
 		}
 		*/
-	  	System.out.println("service:" + service);
-		
+	  	
 		response.sendRedirect(this.getCasLogoutUrl() + "?service=" + service);
 		
 		return true;
@@ -395,6 +393,20 @@ public class CASBasicAuthenticationModule extends AuthenticationModule//, Author
 		if(this.casServiceUrl.equals("$currentUrl"))
 		{
 		  	String originalFullURL = getCurrentURL(request);
+		  	
+		  	String referer = request.getHeader("Referer");
+		    //System.out.println("referer:" + referer);
+			/*
+		    String service = getService(request);
+			if(referer != null && !referer.equals(""))
+			{
+				if(referer.lastIndexOf("/") > 0)
+					referer = referer.substring(0, referer.lastIndexOf("/"));
+				
+				service = referer;
+			}
+			*/
+		  	
 		  	System.out.println("originalFullURL:" + originalFullURL);
 		  	this.casServiceUrl = originalFullURL;
 		}

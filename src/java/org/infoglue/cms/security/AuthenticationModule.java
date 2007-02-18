@@ -181,5 +181,5 @@ public abstract class AuthenticationModule
 
 	public abstract void setTransactionObject(Object transactionObject);
 
-	//public abstract boolean enforceJ2EEContainerPrincipal();
+	public abstract boolean enforceJ2EEContainerPrincipal();
 }
