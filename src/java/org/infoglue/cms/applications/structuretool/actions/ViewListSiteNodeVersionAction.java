@@ -24,7 +24,11 @@
 package org.infoglue.cms.applications.structuretool.actions;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
@@ -34,6 +38,7 @@ import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeVersionController
 import org.infoglue.cms.entities.structure.SiteNodeVersionVO;
 import org.infoglue.cms.exception.AccessConstraintException;
 import org.infoglue.cms.util.AccessConstraintExceptionBuffer;
+import org.infoglue.cms.util.sorters.ReflectionComparator;
 
 /**
  *
@@ -50,8 +55,8 @@ public class ViewListSiteNodeVersionAction extends InfoGlueAbstractAction
 
 	private static final long serialVersionUID = 1L;
 
-	private List siteNodeVersionVOList = new ArrayList();
-	private List contentVersionVOList = new ArrayList();
+	private Set siteNodeVersionVOList = new TreeSet(Collections.reverseOrder(new ReflectionComparator("modifiedDateTime")));
+	private Set contentVersionVOList = new TreeSet(Collections.reverseOrder(new ReflectionComparator("modifiedDateTime")));
 	private Integer siteNodeVersionId;
 	private Integer siteNodeId;
 	private Integer repositoryId;
@@ -86,7 +91,7 @@ public class ViewListSiteNodeVersionAction extends InfoGlueAbstractAction
 	}
 	
 
-	public List getSiteNodeVersions()
+	public Set getSiteNodeVersions()
 	{
 		return this.siteNodeVersionVOList;		
 	}
@@ -122,12 +127,12 @@ public class ViewListSiteNodeVersionAction extends InfoGlueAbstractAction
         this.repositoryId = repositoryId;
     }
     
-    public List getContentVersionVOList()
+    public Set getContentVersionVOList()
     {
         return contentVersionVOList;
     }
     
-    public List getSiteNodeVersionVOList()
+    public Set getSiteNodeVersionVOList()
     {
         return siteNodeVersionVOList;
     }
