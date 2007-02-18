@@ -47,40 +47,56 @@ public class ErrorPageAction extends InfoGlueAbstractAction
     
     public String doExecute() throws Exception
     {
-        String responseCodeAttribute = (String)this.getRequest().getAttribute("responseCode");
-        if(responseCodeAttribute != null)
-            responseCode = Integer.parseInt(responseCodeAttribute);
-        
-        String responseCodeParameter = (String)this.getRequest().getParameter("responseCode");
-        if(responseCodeParameter != null)
-            responseCode = Integer.parseInt(responseCodeParameter);
-
-        Exception e = (Exception)this.getRequest().getAttribute("error");
-        if(e != null)
-        {
-            setError(e, e.getCause());
-        }
-                
-        this.getResponse().setContentType("text/html; charset=UTF-8");
-        this.getResponse().setStatus(responseCode);
-
-        String errorUrl = CmsPropertyHandler.getErrorUrl();
-        if(errorUrl != null && errorUrl.indexOf("@errorUrl@") == -1)
-        {
-            if(errorUrl.indexOf("http") > -1)
-                this.getResponse().sendRedirect(errorUrl);
-            else
-            {
-                RequestDispatcher dispatch = this.getRequest().getRequestDispatcher(errorUrl);
-                this.getRequest().setAttribute("error", e);
-                //dispatch.forward(this.getRequest(), this.getResponse());
-                dispatch.include(this.getRequest(), this.getResponse());
-            }
-            
-            return NONE;
-        }
-        else
-            return SUCCESS;
+    	try
+    	{
+	        String responseCodeAttribute = (String)this.getRequest().getAttribute("responseCode");
+	        if(responseCodeAttribute != null)
+	            responseCode = Integer.parseInt(responseCodeAttribute);
+	        
+	        String responseCodeParameter = (String)this.getRequest().getParameter("responseCode");
+	        if(responseCodeParameter != null)
+	            responseCode = Integer.parseInt(responseCodeParameter);
+	
+	        Exception e = (Exception)this.getRequest().getAttribute("error");
+	        if(e != null)
+	        {
+	            setError(e, e.getCause());
+	        }
+	                
+	        this.getResponse().setContentType("text/html; charset=UTF-8");
+	        this.getResponse().setStatus(responseCode);
+	
+	        String errorUrl = CmsPropertyHandler.getErrorUrl();
+	        if(errorUrl != null && errorUrl.indexOf("@errorUrl@") == -1)
+	        {
+	            if(errorUrl.indexOf("http") > -1)
+	                this.getResponse().sendRedirect(errorUrl);
+	            else
+	            {
+	            	try
+	            	{
+		                RequestDispatcher dispatch = this.getRequest().getRequestDispatcher(errorUrl);
+		                this.getRequest().setAttribute("error", e);
+		                //dispatch.forward(this.getRequest(), this.getResponse());
+		                dispatch.include(this.getRequest(), this.getResponse());
+	            	}
+	            	catch(Exception e2)
+	            	{
+	            		e2.printStackTrace();
+	                    return SUCCESS;            		
+	            	}
+	            }
+	            
+	            return NONE;
+	        }
+	        else
+	            return SUCCESS;
+    	}
+    	catch(Throwable t)
+    	{
+    		t.printStackTrace();
+    		return SUCCESS;
+    	}
     }
 
     /**
