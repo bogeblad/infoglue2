@@ -40,6 +40,7 @@ import org.dom4j.Element;
 import org.dom4j.Node;
 import org.dom4j.io.DOMReader;
 import org.dom4j.io.OutputFormat;
+import org.dom4j.io.SAXReader;
 import org.dom4j.io.XMLWriter;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.io.FileHelper;
@@ -76,9 +77,14 @@ public class DOMBuilder
  		try
  		{
 			InputSource xmlSource = new InputSource(new ByteArrayInputStream(xml.getBytes("UTF-8")));
+ 			SAXReader xmlReader = new SAXReader();
+ 			return xmlReader.read(xmlSource);
+ 			/*
+			InputSource xmlSource = new InputSource(new ByteArrayInputStream(xml.getBytes("UTF-8")));
 			DOMParser parser = new DOMParser();
 			parser.parse(xmlSource);
 			return buildDocment(parser.getDocument());
+ 			*/
  		}
  		catch(Exception e)
  		{
