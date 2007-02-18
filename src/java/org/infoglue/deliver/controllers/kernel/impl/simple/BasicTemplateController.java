@@ -127,6 +127,7 @@ import com.opensymphony.module.propertyset.PropertySetManager;
 
 public class BasicTemplateController implements TemplateController
 {
+	private final static DOMBuilder domBuilder = new DOMBuilder();
     private final static Logger logger = Logger.getLogger(BasicTemplateController.class.getName());
 
 	private URLComposer urlComposer = null; 
@@ -2350,7 +2351,7 @@ public class BasicTemplateController implements TemplateController
 		{
 			if(qualifyerXML != null && !qualifyerXML.equals(""))
 			{
-				Document document = new DOMBuilder().getDocument(qualifyerXML);
+				Document document = domBuilder.getDocument(qualifyerXML);
 								
 				List children = document.getRootElement().elements();
 				Iterator i = children.iterator();
@@ -2388,7 +2389,7 @@ public class BasicTemplateController implements TemplateController
 		{
 			if(qualifyerXML != null && !qualifyerXML.equals(""))
 			{
-				Document document = new DOMBuilder().getDocument(qualifyerXML);
+				Document document = domBuilder.getDocument(qualifyerXML);
 								
 				List children = document.getRootElement().elements();
 				Iterator i = children.iterator();
@@ -5963,8 +5964,17 @@ public class BasicTemplateController implements TemplateController
 				        allowedContentTypeIdParameters = "&" + property.getAllowedContentTypeIdAsUrlEncodedString(getDatabase());
 				        logger.info("allowedContentTypeIdParameters:" + allowedContentTypeIdParameters);
 				    }
-	
-				    String returnAddress = URLEncoder.encode("ViewSiteNodePageComponents!addComponentPropertyBinding.action?siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=-1&entity=Content&entityId=#entityId&componentId=" + componentId + "&propertyName=" + property.getName() + "&path=#path&showSimple=" + getDeliveryContext().getShowSimple() + "", "UTF-8");
+				    
+				    String key = "ViewSiteNodePageComponents!addComponentPropertyBinding.action?siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=-1&entity=Content&entityId=#entityId&componentId=" + componentId + "&propertyName=" + property.getName() + "&path=#path&showSimple=" + getDeliveryContext().getShowSimple();
+				    
+			        String returnAddress = (String)CacheController.getCachedObject("serverNodePropertiesCache", key);
+			        if(returnAddress == null)
+			        {
+			        	returnAddress = URLEncoder.encode(key, "UTF-8");
+			        	CacheController.cacheObject("serverNodePropertiesCache", key, returnAddress);
+			        }
+
+				    //String returnAddress = URLEncoder.encode(key, "UTF-8");
 					
 					if(property.getIsMultipleBinding())
 						createUrl = componentEditorUrl + "CreateContentWizardFinish.action?repositoryId=" + this.getSiteNode().getRepositoryId() + "&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&propertyName=" + property.getName() + allowedContentTypeIdParameters + "&refreshAddress=" + returnAddress + "&showSimple=" + getDeliveryContext().getShowSimple();
