@@ -82,7 +82,7 @@ function filter(select)
 <div style="float: right; text-align: right;">
 Filter: 
 #if($allowPublicationEventFilter == "true")
-	<select name="filter" onChange="filter(this);">
+	<select style="width: 250px;" name="filter" onChange="filter(this);">
 		<option value="all" #checkSelected("$filter" "all")>$ui.getString("entity.ServerNode.property.allPublicationEventFilter.label")</option>
 		<option value="groupBased" #checkSelected("$filter" "groupBased")>$ui.getString("entity.ServerNode.property.groupBasedPublicationEventFilter.label")</option>
 		#foreach($group in $infoGluePrincipal.groups)
