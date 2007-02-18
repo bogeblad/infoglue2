@@ -42,6 +42,17 @@
 - Improved the generic combined auth module and how the delegated adaptors should handle caches.
 - Added logic to allow enable languages on specific pages and their subpages. Complements the disable languages feature.
 - Fixed bug in import repository which made contents loose their content types.
+- Worked on more advanced component statistics
+- Added possibility to add timeout on http requests from within HttpHelper
+- Made all list in the administrative tools sortable on their columns.
+- Made it possible to reset the component statistics
+- Added handling of focus to links to remove dotted line around it in firefox
+- Made content and siteNodes modifyer it's own colum in publish screens so it's sortable
+- Added caching on url-encoding to save object creation
+- Changed the parser helper for dom4j and how it parses a document - not dependent on xerces DOM any more - instead uses a sax-method to keep memory use down.
+- Optimized parts of the deliver engine to use StringBuilder instead of Strings and other performance and memory usage improvements.
+- Added a method in the AuthenticationModule which states if a module enforces J2EE security
+- Fixed a more correct view of the caches in ViewApplicationState
 
 -------------------------------------------------------------------------------------
 - InfoGlue 2.4.1 Final
