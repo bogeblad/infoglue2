@@ -24,6 +24,7 @@
 package org.infoglue.cms.applications.contenttool.actions;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -37,6 +38,7 @@ import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.exception.AccessConstraintException;
 import org.infoglue.cms.util.AccessConstraintExceptionBuffer;
+import org.infoglue.cms.util.sorters.ReflectionComparator;
 
 /**
  *
@@ -78,12 +80,14 @@ public class ViewListContentVersionAction extends InfoGlueAbstractAction
 			contentVersionVOList.clear();
 			contentVersionVOList.addAll(contentVersionVOListSet);
 
+		    Collections.sort(contentVersionVOList, Collections.reverseOrder(new ReflectionComparator("modifiedDateTime")));
+		    		
 			Set siteNodeVersionVOListSet = new HashSet();
 			siteNodeVersionVOListSet.addAll(siteNodeVersionVOList);
 			siteNodeVersionVOList.clear();
 			siteNodeVersionVOList.addAll(siteNodeVersionVOListSet);
 
-			//contentVersionVOList = ContentVersionController.getContentVersionController().getContentVersionVOWithParentRecursiveAndRelated(contentId, ContentVersionVO.WORKING_STATE);		
+		    Collections.sort(siteNodeVersionVOList, Collections.reverseOrder(new ReflectionComparator("modifiedDateTime")));
 		}
 
 	    return "success";
