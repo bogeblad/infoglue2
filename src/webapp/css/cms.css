@@ -426,7 +426,6 @@ div.fullymarginalized {
 	padding-left	 : 15px;
 	padding-right    : 15px;
 	padding-top		 : 15px;
-	/*awidth 			 : 100%;	*/
 }
 
 div.listmarginalized {
@@ -485,6 +484,9 @@ a:active {
 	font-weight	     : bold;
     text-decoration	 : none;
 }
+a:focus {
+	outline: none;
+	}
 
 /* MENU SS */
 
