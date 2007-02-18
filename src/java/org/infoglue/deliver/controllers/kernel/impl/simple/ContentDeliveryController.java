@@ -369,17 +369,38 @@ public class ContentDeliveryController extends BaseDeliveryController
 	{	
 		//System.out.println("usedContentVersionId:" + usedContentVersionId);
 
+		StringBuilder attributeKey = new StringBuilder();
+		
+		if(!isMetaInfoQuery)
+			attributeKey.append("")
+			.append(contentId).append("_")
+			.append(languageId).append("_")
+			.append(attributeName).append("_")
+			.append(siteNodeId).append("_")
+			.append(useLanguageFallback).append("_")
+			.append(escapeHTML);
+
+		else
+			attributeKey.append("")
+			.append(contentId).append("_")
+			.append(languageId).append("_")
+			.append(attributeName).append("_")
+			.append(useLanguageFallback).append("_")
+			.append(escapeHTML);
+
+		/*
 		String attributeKey = "" + contentId + "_" + languageId + "_" + attributeName + "_" + siteNodeId + "_" + useLanguageFallback + "_" + escapeHTML;
 		if(isMetaInfoQuery)
 			attributeKey = "" + contentId + "_" + languageId + "_" + attributeName + "_" + useLanguageFallback + "_" + escapeHTML;
-	    
+	    */
+		
 		String versionKey = attributeKey + "_contentVersionId";
 		//logger.info("attributeKey:" + attributeKey);
 		
 		//String attribute = (String)CacheController.getCachedObject("contentAttributeCache", attributeKey);
 		//Integer contentVersionId = (Integer)CacheController.getCachedObject("contentAttributeCache", versionKey);
 		
-		String attribute = (String)CacheController.getCachedObjectFromAdvancedCache("contentAttributeCache", attributeKey);
+		String attribute = (String)CacheController.getCachedObjectFromAdvancedCache("contentAttributeCache", attributeKey.toString());
 		Integer contentVersionId = (Integer)CacheController.getCachedObjectFromAdvancedCache("contentVersionCache", versionKey);
 		
 	    try
@@ -399,22 +420,33 @@ public class ContentDeliveryController extends BaseDeliveryController
 			   
 	        	if (contentVersionVO != null) 
 				{
-				    logger.info("found one:" + contentVersionVO);
-					attribute = getAttributeValue(db, contentVersionVO, attributeName, escapeHTML);	
+				    attribute = getAttributeValue(db, contentVersionVO, attributeName, escapeHTML);	
 					contentVersionId = contentVersionVO.getId();
 				}
 				else
+				{
 					attribute = "";
-	
-				CacheController.cacheObjectInAdvancedCache("contentAttributeCache", attributeKey, attribute, new String[]{"contentVersion_" + contentVersionId, "content_" + contentId}, true);
+				}
+	        	
+	        	StringBuilder groupKey1 = new StringBuilder("contentVersion_").append(contentVersionId);
+	        	StringBuilder groupKey2 = new StringBuilder("content_").append(contentId);
+	        	
+	        	CacheController.cacheObjectInAdvancedCache("contentAttributeCache", attributeKey, attribute, new String[]{groupKey1.toString(), groupKey2.toString()}, true);
+				if(contentVersionId != null)
+				{
+				    CacheController.cacheObjectInAdvancedCache("contentVersionCache", versionKey, contentVersionId, new String[]{groupKey1.toString(), groupKey2.toString()}, true);
+				}
+	        	/*
+	        	CacheController.cacheObjectInAdvancedCache("contentAttributeCache", attributeKey, attribute, new String[]{"contentVersion_" + contentVersionId, "content_" + contentId}, true);
 				if(contentVersionId != null)
 				{
 				    CacheController.cacheObjectInAdvancedCache("contentVersionCache", versionKey, contentVersionId, new String[]{"contentVersion_" + contentVersionId, "content_" + contentId}, true);
 				}
+				*/
 			}
 			
 			deliveryContext.addUsedContentVersion("contentVersion_" + contentVersionId);
-			if(isMetaInfoQuery)
+			if(isMetaInfoQuery && contentVersionId != null)
 				deliveryContext.getUsedPageMetaInfoContentVersionIdSet().add(contentVersionId);
 			
 			if(usedContentVersionId != null && contentVersionId != null)
