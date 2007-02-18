@@ -26,12 +26,11 @@
 
 a.selected {
 	background: black;
-	font: bold;
+	font-weight: bold;
 	color: white;
 }
 
 .webfx-tree-item a:hover {
-	ccolor: blue;
 	text-decoration: underline;
 }
 

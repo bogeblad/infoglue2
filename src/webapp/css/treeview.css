@@ -38,18 +38,8 @@ a.branch, a.branch:hover, a.branch:active {
 }
 
 .tree-item a:hover {
-	/* ccolor: green; */
 	text-decoration: underline;
 }
-
-/*
-.tree-item a:active {
-	background: black;
-	bgcolor: black;
-	ccolor: highlighttext;
-	ctext-decoration: none;
-}
-*/
 
 .tree-item img {
 	vertical-align: middle;

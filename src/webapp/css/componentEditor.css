@@ -120,7 +120,6 @@ Component palette classes
 	height: 10px;
 	vertical-align: top;
 	border:0px solid blue;
-	awidth:1px;
 }
 .igpalettetd:hover {
 	background-color: #CCCCCC;

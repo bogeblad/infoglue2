@@ -68,7 +68,6 @@ function initSub()
 		float: left; 
 		padding: 10px; 
 		text-align: left; 
-		cursor: hand;
 		cursor: pointer;
 		color: 333333;
 		vertical-align: middle;

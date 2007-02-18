@@ -23,7 +23,7 @@
 			</tr>
 			<tr class="darkbrown" valign="center">
 				<td id='lleft' class="white" width=1><img src="images/trans.gif" width="1" height="1"></td>
-				<td class="listheader" STYLE="cursor:hand;" onMouseDown="downHeader(1);" onMouseUp="upHeader(1);" onMouseOut="upHeader(1);"><div class="minormarginalized">Mark those you items where you want to keep the newer version - those not marked are unpublished and the unpublished versions information overrides later changes</div></td>
+				<td class="listheader"><div class="minormarginalized">Mark those you items where you want to keep the newer version - those not marked are unpublished and the unpublished versions information overrides later changes</div></td>
 				<td id='lright' class="dark" width=1><img src="images/trans.gif" width="1" height="1"></td>
 			</tr>
 			<tr class="dark">
