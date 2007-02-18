@@ -109,7 +109,7 @@
 </head>
 
 <body class="structuretooledit" onload="javascript:refreshStructureToolBar('$titleKey', '$toolbarKey', '$arguments', '$unrefreshedNodeId', '$changeTypeId', '$addedNodeId');">
-
+#set( $lvColor = "apricot")
 #end
 
 ##**************************************************
@@ -226,75 +226,17 @@
 #set($lvChkBoxName = "sel")
 
 <div class="listmarginalized">
-	<script language="JavaScript" type="text/javascript">
-		function downHeader(id)
-		{
-			return; // No functionallity in release 1.0
-			var top=document.getElementById("t" + id);
-			var bot=document.getElementById("b" + id);
-			var lft=document.getElementById("lleft");
-
-			var arrow=document.getElementById("a" + id);
-			if(arrow.src.indexOf("images/listarrowdown.gif") != -1)
-				arrow.src="images/listarrowrdown.gif";
-			else
-				arrow.src="images/listarrowrup.gif";
-
-			top.className = "dark";
-			bot.className = "white";
-
-			if (id == 1)
-			{
-				lft.className = "dark";
-			}
-			else
-			{
-				id--;
-				top=document.getElementById("t" + id);
-				bot=document.getElementById("b" + id);
-				top.className = "dark";
-				bot.className = "white";
-
-			}
-
+	<script language="JavaScript" type="text/javascript" src="script/sorttable.js"></script>
+	<style type="text/css">
+		/* Sortable tables */
+		table.sortable a.sortheader {
+		    font-weight: bold;
+		    display: block;
+		    padding-left: 5px;
 		}
-
-		function upHeader(id)
-		{
-			return; // No functionallity in release 1.0
-			var top=document.getElementById("t" + id);
-			var bot=document.getElementById("b" + id);
-			var lft=document.getElementById("lleft");
-
-			var arrow=document.getElementById("a" + id);
-			if(arrow.src.indexOf("images/listarrowrdown.gif") != -1)
-				arrow.src="images/listarrowup.gif";
-			else
-				arrow.src="images/listarrowdown.gif";
-
-			bot.className = "dark";
-			top.className = "white";
-
-			if (id == 1)
-			{
-				lft.className = "white";
-			}
-			else
-			{
-				id--;
-				top=document.getElementById("t" + id);
-				bot=document.getElementById("b" + id);
-				top.className = "white";
-				bot.className = "dark";
-
-			}
-
-
+		table.sortable span.sortarrow {
 		}
-	</script>
-
-	#set( $span = $headers.size() * 2 )
-	<table cellpadding="0" cellspacing="0" border="0" width="100%">
+	</style>
 
 	## Inget formul�r om inget kan selectas
 	#if($lvConstraint != 0)
@@ -306,38 +248,20 @@
 			<input type="hidden" name="extraParameters" value="$extraParameters"/>
 	#end
 
-		<tr>
-			#foreach( $x in [0..$span] )
-			<td bgcolor="#ffffff" id="t$x" height="1"><img src="images/trans.gif" width="1" height="1" /></td>
-			#end
-		</tr>
-
-		<tr class="dark$lvColor" valign="center">
-
-			<td id='lleft' class="white" width=1><img src="images/trans.gif" width="1" height="1"></td>
-			#set( $hcnt=0 )
-			#foreach( $header in $headers )
-				#set( $hcnt=$hcnt + 1 )
-				<td class="listheader" onmousedown="downHeader($hcnt);" onmouseup="upHeader($hcnt);" onmouseout="upHeader($hcnt);">
-					<!--img id="a$hcnt" align=right valign=middle src='images/listarrowdown.gif'/--><!-- No sorting in release 1.0 -->
-					<div class="minormarginalized">$header</div>
-				</td>
-				#if ($velocityCount != $headers.size())
-					#set( $hcnt=$hcnt + 1 )
-					<td class="dark$lvColor" width=2><img src="images/listsplit.gif" width="2" /></td>
-				#end
-			#end
-
-			<td id='lright' class="dark" width=1><img src="images/trans.gif" width="1" height="1" /></td>
-
-		</tr>
-
-		<tr>
-			#foreach( $x in [0..$span] )
-			<td id="b$x" bgcolor="#999999" height="1"><img src="images/trans.gif" width="1" height="1" /></td>
-			#end
-		</tr>
-
+	#set( $span = $headers.size() * 2 )
+	<table class="sortable" id="sortableTable" cellpadding="0" cellspacing="0" border="0" width="100%">
+	<tr class="dark$lvColor" valign="center">
+	#set( $hcnt=0 )
+	#foreach( $header in $headers )
+		#set( $hcnt=$hcnt + 1 )
+		<td style="border-bottom: 1px solid #999999; border-top: 1px solid #ffffff; border-right: 1px solid #999999; white-space:nowrap" class="listheader">
+			<div class="minormarginalized" style="white-space:nowrap">$header</div>
+		</td>
+		#if ($velocityCount != $headers.size())
+			#set( $hcnt=$hcnt + 1 )
+		#end
+	#end
+	</tr>
 #end
 
 ##**************************************************
@@ -347,8 +271,20 @@
 
 #macro(lvHeadSlimmed $headers $header $yesDestination $noDestination $message)
 
+	<script language="JavaScript" type="text/javascript" src="script/sorttable.js"></script>
+	<style type="text/css">
+		/* Sortable tables */
+		table.sortable a.sortheader {
+		    font-weight: bold;
+		    display: block;
+		    padding-left: 5px;
+		}
+		table.sortable span.sortarrow {
+		}
+	</style>
+
 #if ($lvBorder == 1)
-	<table tableborder=0 border=0 bgcolor=666666 width="100%" cellpadding="1" cellspacing="0"><tr><td>
+	<table class="sortable" id="sortableTable" tableborder=0 border=0 bgcolor=666666 width="100%" cellpadding="1" cellspacing="0"><tr><td>
 #end
 
 #set($lvChkBoxName = "sel")
@@ -356,66 +292,18 @@
 <div class="listmarginalized">
 	#set( $span = $headers.size() * 2 )
 	<table cellpadding="0" cellspacing="0" border="0" width="100%">
-		<tr>
-			#foreach( $x in [0..$span] )
-			<td bgcolor="#ffffff" id="t$x" height="1"><img src="images/trans.gif" width="1" height="1" /></td>
-			#end
-		</tr>
-		<tr class="dark$lvColor" valign="center">
-			<td id='lleft' class="white" width=1><img src="images/trans.gif" width="1" height="1" /></td>
-			#set( $hcnt=0 )
-			#foreach( $header in $headers )
-				#set( $hcnt=$hcnt + 1 )
-				<td class="listheader">
-					<div class="minormarginalized">$header</div>
-				</td>
-				#if ($velocityCount != $headers.size())
-					#set( $hcnt=$hcnt + 1 )
-					<td class="dark$lvColor" width=2><img src="images/listsplit.gif" width="2" /></td>
-				#end
-			#end
-			<td id='lright' class="dark" width=1><img src="images/trans.gif" width="1" height="1" /></td>
-		</tr>
-		<tr>
-			#foreach( $x in [0..$span] )
-			<td id="b$x" bgcolor="#999999" height="1"><img src="images/trans.gif" width="1" height="1" /></td>
-			#end
-		</tr>
-#end
-
-
-##**************************************************
-## COPY This is the header for all list-pages in the    *
-## management tool                                 *
-##**************************************************
-
-#macro(oldlvHead $headers $header $yesDestination $noDestination $message)
-	#set( $span = $headers.size() * 2 - 1 )
-	<table cellpadding="0" cellspacing="0" border="0" width="100%">
-
-	## Inget formul�r om inget kan selectas
-	#if($lvConstraint != 0)
-		<form name="listForm" action="Confirm.action" method="POST">
-			<input type="hidden" name="header" value="$header"/>
-			<input type="hidden" name="yesDestination" value="$yesDestination"/>
-			<input type="hidden" name="noDestination" value="$noDestination"/>
-			<input type="hidden" name="message" value="$message"/>
+	<tr class="dark$lvColor" valign="center">
+	#set( $hcnt=0 )
+	#foreach( $header in $headers )
+		#set( $hcnt=$hcnt + 1 )
+		<td style="border-bottom: 1px solid #999999; border-top: 1px solid #ffffff; border-right: 1px solid #999999;" class="listheader">
+			<div class="minormarginalized" style="white-space:nowrap">$header</div>
+		</td>
+		#if ($velocityCount != $headers.size())
+			#set( $hcnt=$hcnt + 1 )
+		#end
 	#end
-
-		<tr class="dark$lvColor">
-			#foreach( $header in $headers )
-				<td class="smalllabel"><div class="minormarginalized">$header</div></td>
-				#if ($velocityCount != $headers.size())
-					<td class="lightblue"><img src="images/trans.gif" width="1" height="1" /></td>
-				#end
-			#end
-		</tr>
-		<tr class="light$lvColor">
-			<td colspan="$span" height="1"><img src="images/trans.gif" width="1" height="1" /></td>
-		</tr>
-		<tr class="dark$lvColor">
-			<td colspan="$span" height="1"><img src="images/trans.gif" width="1" height="1" /></td>
-		</tr>
+	</tr>
 #end
 
 
@@ -451,8 +339,6 @@
 
 	<tr id="r$cnt" $class  onmouseover='listRowHiLight(this);' onmouseout='listRowUnHiLight(this);'>
 
-		<td></td>
-
 		#foreach( $item in $row )
 			<td valign='middle'>
 				<div class="minormarginalized" style="white-space:nowrap" >
@@ -473,12 +359,9 @@
 				</div>
 			</td>
 			#if ($velocityCount != $row.size())
-				<td></td>
+				##<td></td>
 			#end
 		#end
-
-		<td></td>
-
 	</tr>
 #end
 
@@ -489,10 +372,10 @@
 ##**************************************************
 
 #macro(lvEnd)
+	</table>
 	#if($lvConstraint!=0)
 		</form>
 	#end
-	</table>
 
 	</div>
 
