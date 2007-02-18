@@ -33,7 +33,7 @@
 	#else
 		#set($status = "No items")	
 	#end
-	#set($row = ["<a style='cursor: hand;' onclick='reloadMenu($repositoryVO.getId())'>$repositoryVO.getName() </a>", "$repositoryVO.getDescription()", "$status"])
+	#set($row = ["<a onclick='reloadMenu($repositoryVO.getId())'>$repositoryVO.getName() </a>", "$repositoryVO.getDescription()", "$status"])
 	#set($cnt = $cnt + 1)
 	#lvAddRow($row $cnt "$repositoryVO.getId()")
 #end
