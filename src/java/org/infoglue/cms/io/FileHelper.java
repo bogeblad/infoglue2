@@ -31,10 +31,12 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.io.RandomAccessFile;
 import java.io.Writer;
 
 
@@ -236,4 +238,38 @@ public class FileHelper
 		bos.close();
 		fos.close();
 	}
+	
+	/**
+	 * Reading the x last lines of a file
+	 */
+	public static String tail(File file, int numberOfLines) throws Exception
+	{
+		StringBuffer result = new StringBuffer("");
+		
+		if(file.length() == 0)
+			return "The log file was empty";
+		
+        RandomAccessFile raf = new RandomAccessFile(file, "r");
+    
+        // Read a character
+        char ch = raf.readChar();
+    
+        // Seek to end of file
+        if(file.length() > numberOfLines * 150)
+        	raf.seek(file.length() - (numberOfLines * 150));
+    
+        raf.readLine();
+        
+        // Append to the end
+        String lineData = "";
+        while((lineData = raf.readLine()) != null)
+        {
+        	result.append(lineData).append('\n');
+        }
+        
+        raf.close();
+        
+        return result.toString();
+	}
+
 }
