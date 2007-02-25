@@ -316,7 +316,7 @@
 	#set( $contentVersionId = $contentVersionVO.id ) 
 	
 	#set( $rowUrl = "ViewContentVersion.action?contentId=$contentVersionVO.contentId&languageId=$contentVersionVO.languageId")
-	#set( $row = ["<input type='hidden' name='rowtitle' value='$contentVersionVO.id'/> <a href=$rowUrl>$this.getContentVO($contentVersionVO.contentId).name</a>", "$this.getLanguageVO($contentVersionVO.languageId).name", "$contentVersionVO.stateId", "$contentVersionVO.modifiedDateTime"] )
+	#set( $row = ["<input type='hidden' name='rowtitle' value='$contentVersionVO.id'/> <a href=$rowUrl>$contentVersionVO.contentName</a>", "$this.getLanguageVO($contentVersionVO.languageId).name", "$contentVersionVO.stateId", "$formatter.formatDate($contentVersionVO.modifiedDateTime, 'yyyy-MM-dd HH:ss')"] )
 	#set($cnt = $cnt + 1)
 	
 	#lvAddRow($row $cnt $contentVersionId)
