@@ -144,7 +144,41 @@ public class SearchContentAction extends InfoGlueAbstractAction
 
 		return "success";
 	}
-	
+
+	public String doBindingResult() throws Exception 
+	{
+		System.out.println();
+		
+		int maxRows = 100;
+		try
+		{
+			maxRows = Integer.parseInt(CmsPropertyHandler.getMaxRows());
+		}
+		catch(Exception e)
+		{
+		}
+
+		String[] repositoryIdToSearch = this.getRequest().getParameterValues("repositoryIdToSearch");
+		if(repositoryIdToSearch != null)
+		{
+			Integer[] repositoryIdAsIntegerToSearch = new Integer[repositoryIdToSearch.length];
+			for(int i=0; i < repositoryIdToSearch.length; i++)
+			{
+				repositoryIdAsIntegerToSearch[i] = new Integer(repositoryIdToSearch[i]);
+				selectedRepositoryIdList.add(repositoryIdToSearch[i]);
+			}
+			
+			contentVersionVOList = SearchController.getContentVersions(repositoryIdAsIntegerToSearch, this.getSearchString(), maxRows, name, languageId, contentTypeDefinitionId, caseSensitive, stateId);
+		}
+		else
+		{
+			contentVersionVOList = SearchController.getContentVersions(this.repositoryId, this.getSearchString(), maxRows, name, languageId, contentTypeDefinitionId, caseSensitive, stateId);
+			selectedRepositoryIdList.add("" + this.repositoryId);
+		}
+
+		return "successBindingResult";
+	}
+
 	/**
 	 * This method returns the advanced search interface to the user.
 	 */
@@ -159,7 +193,22 @@ public class SearchContentAction extends InfoGlueAbstractAction
 	    
 	    return Action.INPUT;
 	}
-	
+
+	/**
+	 * This method returns the binding search interface to the user.
+	 */
+
+	public String doInputBinding() throws Exception 
+	{
+	    //this.principals = UserControllerProxy.getController().getAllUsers();
+		//this.availableLanguages = LanguageController.getController().getLanguageVOList(this.repositoryId);
+		//this.contentTypeDefinitions = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOList();
+		this.repositories = RepositoryController.getController().getAuthorizedRepositoryVOList(this.getInfoGluePrincipal(), false);
+		//selectedRepositoryIdList.add("" + this.repositoryId);
+	    
+	    return Action.INPUT + "Binding";
+	}
+
 	
 	public ContentVO getContentVO(Integer contentId)
 	{
@@ -180,6 +229,22 @@ public class SearchContentAction extends InfoGlueAbstractAction
 		return contentVO;
 	}
 
+	public String getContentPath(Integer contentId) throws Exception
+	{
+		StringBuffer sb = new StringBuffer();
+		
+		ContentVO contentVO = ContentController.getContentController().getContentVOWithId(new Integer(contentId));
+		sb.insert(0, contentVO.getName());
+		while(contentVO.getParentContentId() != null)
+		{
+			contentVO = ContentController.getContentController().getContentVOWithId(contentVO.getParentContentId());
+			sb.insert(0, contentVO.getName() + "/");
+		}
+		sb.insert(0, "/");
+		
+		return sb.toString();
+	}
+	
 	public LanguageVO getLanguageVO(Integer languageId)
 	{
 		LanguageVO languageVO = null;
