@@ -19,6 +19,7 @@
                 /UpdateCache.action,
                 /UpdateCache!test.action,
 				/ViewApplicationState.action,
+				/ViewLogging.action,
                 /ErrorPage.action,
                 /digitalAssets/*,
                 /scripts/*,
