@@ -146,6 +146,11 @@
 	    </form>
     </td>
   </tr>
+  <tr>
+    <td colspan="4" class="text" align="left">
+	    <a href="ViewLogging.action">Logfiles viewer</a>
+    </td>
+  </tr>
   <!--
   <tr>
     <td colspan="4" class="text" align="left">

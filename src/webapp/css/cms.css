@@ -636,3 +636,8 @@ h2 {
 	background-image: url('../images/validationIcon.gif');
 	background-repeat: no-repeat;		
 }
+
+.logviewerImage {
+	background-image: url('../images/logviewerIcon.gif');
+	background-repeat: no-repeat;		
+}

@@ -13,5 +13,8 @@
 	<p class="systemImageLink validationImage">
 		<a href="InstallationValidator!input.action?title=Validation" class="systemLinkLabel">$ui.getString("tool.managementtool.validationTool.title")</a>
 	</p>
+	<p class="systemImageLink logviewerImage">
+		<a href="ViewLogging.action?title=Logging" class="systemLinkLabel">$ui.getString("tool.managementtool.loggingTool.title")</a>
+	</p>
 	
 #endManagementTool()
