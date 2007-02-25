@@ -264,9 +264,18 @@ public class RemoteContentServiceImpl extends RemoteInfoGlueService
 	                
 	                Integer languageId = (Integer)contentVersion.get("languageId");
 	                Integer stateId = (Integer)contentVersion.get("stateId");
+	                Boolean allowHTMLContent = (Boolean)contentVersion.get("allowHTMLContent");
+	                Boolean allowExternalLinks = (Boolean)contentVersion.get("allowExternalLinks");
+
+	                if(allowHTMLContent == null)
+	                	allowHTMLContent = new Boolean(false);
+	                if(allowExternalLinks == null)
+	                	allowExternalLinks = new Boolean(false);
 	                
 	    	        logger.info("languageId:" + languageId);
 	    	        logger.info("stateId:" + stateId);
+	    	        logger.info("allowHTMLContent:" + allowHTMLContent);
+	    	        logger.info("allowExternalLinks:" + allowExternalLinks);
 
 	                ContentVersionVO contentVersionVO = new ContentVersionVO();
 	                contentVersionVO.setLanguageId(languageId);
@@ -289,8 +298,10 @@ public class RemoteContentServiceImpl extends RemoteInfoGlueService
 	                    String attributeName  = (String)attributesIterator.next();
 	                    String attributeValue = (String)attributes.get(attributeName);
 		                
+	                    attributeValue = cleanAttributeValue(attributeValue, allowHTMLContent.booleanValue(), allowExternalLinks.booleanValue());
+	                    
 	                    Element attribute = domBuilder.addElement(attributesRoot, attributeName);
-		                domBuilder.addCDATAElement(attribute, attributeValue);
+	                    domBuilder.addCDATAElement(attribute, attributeValue);
 	                }	                
 
 	                contentVersionVO.setVersionValue(document.asXML());
@@ -357,8 +368,7 @@ public class RemoteContentServiceImpl extends RemoteInfoGlueService
         return status;
     }
 
-    
-    /**
+	/**
      * Updates a content.
      */
     
@@ -460,12 +470,22 @@ public class RemoteContentServiceImpl extends RemoteInfoGlueService
             Integer languageId 		 = (Integer)contentVersion.get("languageId");
             Integer stateId			 = (Integer)contentVersion.get("stateId");
             String versionComment 	 = (String)contentVersion.get("versionComment");
-            
+            Boolean allowHTMLContent = (Boolean)contentVersion.get("allowHTMLContent");
+            Boolean allowExternalLinks = (Boolean)contentVersion.get("allowExternalLinks");
+
+            if(allowHTMLContent == null)
+            	allowHTMLContent = new Boolean(false);
+
+            if(allowExternalLinks == null)
+            	allowExternalLinks = new Boolean(false);
+
             logger.info("contentVersionId:" + contentVersionId);
             logger.info("contentId:" + contentId);
             logger.info("languageId:" + languageId);
             logger.info("stateId:" + stateId);
             logger.info("versionComment:" + versionComment);
+            logger.info("allowHTMLContent:" + allowHTMLContent);
+            logger.info("allowExternalLinks:" + allowExternalLinks);
 
             ContentVersionVO contentVersionVO = null;
             if(contentVersionId != null)
@@ -495,6 +515,8 @@ public class RemoteContentServiceImpl extends RemoteInfoGlueService
 	                String attributeName  = (String)attributesIterator.next();
 	                String attributeValue = (String)attributes.get(attributeName);
 	                
+                    attributeValue = cleanAttributeValue(attributeValue, allowHTMLContent.booleanValue(), allowExternalLinks.booleanValue());
+
 	                Element attribute = domBuilder.addElement(attributesRoot, attributeName);
 	                domBuilder.addCDATAElement(attribute, attributeValue);
 	            }	                

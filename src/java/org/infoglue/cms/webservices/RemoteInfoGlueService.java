@@ -90,6 +90,34 @@ public class RemoteInfoGlueService
     	return request;
 	}
 
+    public String cleanAttributeValue(String attributeValue, boolean allowHTML, boolean allowExternalLinks) 
+    {
+    	if(!allowExternalLinks)
+        {
+    		attributeValue = attributeValue.replaceAll("http://", "");
+    		attributeValue = attributeValue.replaceAll("https://", "");
+    		attributeValue = attributeValue.replaceAll("ftp://", "");
+        }
+    	
+        attributeValue = attributeValue.replaceAll("\\$", "");
+        attributeValue = attributeValue.replaceAll("#", "");
+        if(!allowHTML)
+        {
+        	attributeValue = attributeValue.replaceAll("</*[^>]+>", "");
+        }
+        else
+        {
+        	attributeValue = attributeValue.replaceAll("<%/*[^%>]+%>", "");
+        }
+        
+        attributeValue = attributeValue.replaceAll("templateLogic.getPageUrl", "\\$templateLogic.getPageUrl");
+        attributeValue = attributeValue.replaceAll("templateLogic.getInlineAssetUrl", "\\$templateLogic.getInlineAssetUrl");
+
+        System.out.println("attributeValue:" + attributeValue);
+        
+        return attributeValue;
+    }
+
 	/*************************************************** 
 	 * Transaction specifik operations
 	 ***************************************************/
