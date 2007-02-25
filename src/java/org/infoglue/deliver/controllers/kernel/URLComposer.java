@@ -40,15 +40,22 @@ import org.infoglue.deliver.controllers.kernel.impl.simple.BasicURLComposer;
 
 public abstract class URLComposer
 {
-
+	private static String implClassName = null;
+	
     public static URLComposer getURLComposer()
     {
-        String className = CmsPropertyHandler.getURLComposerClass();
-        if (className == null || className.trim().equals(""))
-            return new BasicURLComposer();
-
+    	return new BasicURLComposer();
+    	/*
+    	if(implClassName == null)
+    	{
+	    	String className = CmsPropertyHandler.getURLComposerClass();
+	        if (className == null || className.trim().equals(""))
+	            return new BasicURLComposer();
+    	}
+    	
         // @TODO : implement dynamic loading of URLComposer
         return null;
+        */
     }
 
 
