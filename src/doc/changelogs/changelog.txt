@@ -53,6 +53,14 @@
 - Optimized parts of the deliver engine to use StringBuilder instead of Strings and other performance and memory usage improvements.
 - Added a method in the AuthenticationModule which states if a module enforces J2EE security
 - Fixed a more correct view of the caches in ViewApplicationState
+- Added possibility to control the size of each cache listed in ViewApplicationState - great way to tune memory usage.
+- Added new log viewer inside the management tool and from ViewApplicationState.action which allows you to sort of "tail" the important log files. This way you can debug without having access to server.
+- Made modified date in content search result into standard format and it's own column so it's sortable.
+- Added possibility to control how large the advanced caches can be through the management tool. Very useful for trimming memory consumption.
+- Added possibility to search for a content in the content binding dialog. Very useful if you have a huge content mass and don't really know where the content you want is located.
+- Improved the statistics of the ViewApplicationState to refelect the sizes of the caches better.
+- Added new filtering logic to the content webservices to avoid harmful code or similar external form submits. 
+
 
 -------------------------------------------------------------------------------------
 - InfoGlue 2.4.1 Final
