@@ -59,6 +59,9 @@
 	<tr>
 		<td>#editPropertyField("ServerNode.property.componentKey" "componentKey" "$this.getPropertyValue('componentKey')" "51" "$!serverNodeId")</td>
 	</tr>
+	<tr>
+		<td>#editPropertyTextArea("ServerNode.property.cacheSettings" "cacheSettings" "$this.getDataPropertyValue('cacheSettings')" "50" "10" "normaltextarea" "$!serverNodeId")</td>
+	</tr>
 	
 	<tr>
 		<td>#subTitle("entity.ServerNode.property.cmsConnection.label")</td>

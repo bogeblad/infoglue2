@@ -1119,6 +1119,29 @@ public class CmsPropertyHandler
 	    return urls;
 	}
 	
+	public static Map getCacheSettings()
+	{
+		Map cacheSettings = new HashMap();
+		
+	    String cacheSettingsString = CmsPropertyHandler.getServerNodeDataProperty(null, "cacheSettings", true, null);
+	    if(cacheSettingsString != null && !cacheSettingsString.equals(""))
+		{
+	    	try
+			{
+	    		Properties properties = new Properties();
+				properties.load(new ByteArrayInputStream(cacheSettingsString.getBytes("UTF-8")));
+				cacheSettings = properties;
+			}	
+			catch(Exception e)
+			{
+			    logger.error("Error loading properties from string. Reason:" + e.getMessage());
+				e.printStackTrace();
+			}
+		}
+	    
+	    return cacheSettings;
+	}
+
 	public static String getPropertySetValue(String key)
 	{
 	    String value = null;
