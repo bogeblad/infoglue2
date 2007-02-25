@@ -1,10 +1,16 @@
-<!-- $Id: actions.xml,v 1.5 2006/09/07 20:23:44 mattias Exp $ -->
+<!-- $Id: actions.xml,v 1.6 2007/02/25 22:20:26 mattias Exp $ -->
 <actions>
 
 	<!-- InstallationValidator -->
 	<action name="org.infoglue.cms.applications.managementtool.InstallationValidatorAction" alias="InstallationValidator">
 		<view name="input">/cms/managementtool/viewValidationForm.vm</view>
 		<view name="success">/cms/managementtool/viewValidationResults.vm</view>
+		<view name="error">/cms/managementtool/error.vm</view>
+	</action>
+
+	<!-- Log viewer -->
+	<action name="org.infoglue.cms.applications.managementtool.actions.ViewLoggingAction" alias="ViewLogging">
+		<view name="success">/cms/managementtool/viewLogging.vm</view>
 		<view name="error">/cms/managementtool/error.vm</view>
 	</action>
 
