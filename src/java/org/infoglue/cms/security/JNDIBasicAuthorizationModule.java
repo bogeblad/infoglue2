@@ -258,6 +258,68 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule, Serial
 	}
 
 	/**
+	 * Gets an authorized InfoGluePrincipal 
+	 */
+	
+	public InfoGluePrincipal getAuthorizedInfoGluePrincipal(String userName, DirContext ctx) throws Exception
+	{
+		String userCacheTimeout = this.extraProperties.getProperty("userCacheTimeout", "1800");
+
+	    String authorizerIndex = this.extraProperties.getProperty("authorizerIndex");
+	    if(authorizerIndex == null)
+	    	authorizerIndex = "";
+
+	    String key = "user_" + userName + authorizerIndex;
+	    InfoGluePrincipal infogluePrincipal = null;
+	    Object infogluePrincipalObject = CacheController.getCachedObjectFromAdvancedCache("JNDIAuthorizationCache", key, new Integer(userCacheTimeout).intValue());
+		if(infogluePrincipalObject != null)
+		{
+			if(infogluePrincipalObject instanceof NullObject)
+			{
+				return null;
+			}
+			else
+			{
+				infogluePrincipal = (InfoGluePrincipal)infogluePrincipalObject;
+				//System.out.println("Returning cached user:" + userName + ":" + infogluePrincipal);
+				return infogluePrincipal;
+			}
+		}
+
+		String administratorUserName = CmsPropertyHandler.getAdministratorUserName();
+		String administratorEmail 	 = CmsPropertyHandler.getAdministratorEmail();
+		//String administratorUserName = CmsPropertyHandler.getProperty("administratorUserName");
+		//String administratorEmail 	 = CmsPropertyHandler.getProperty("administratorEmail");
+		
+		final boolean isAdministrator = userName.equalsIgnoreCase(administratorUserName) ? true : false;
+		if(isAdministrator)
+		{
+			infogluePrincipal = new InfoGluePrincipal(userName, "System", "Administrator", administratorEmail, new ArrayList(), new ArrayList(), isAdministrator, this);
+		}
+		else
+		{				
+			try
+			{
+				Map userAttributes = getUserAttributes(userName, ctx);
+				List roles = getRoles(userName, ctx);
+				List groups = getGroups(userName, ctx);
+				
+				infogluePrincipal = new InfoGluePrincipal(userName, (String)userAttributes.get("firstName"), (String)userAttributes.get("lastName"), (String)userAttributes.get("mail"), roles, groups, isAdministrator, this);
+
+			    if(infogluePrincipal != null)
+			    	CacheController.cacheObjectInAdvancedCache("JNDIAuthorizationCache", key, infogluePrincipal, null, false);
+			}
+			catch(Exception e)
+			{
+				//e.printStackTrace();
+			    CacheController.cacheObjectInAdvancedCache("JNDIAuthorizationCache", key, new NullObject(), null, false);
+			}
+		}
+	    	
+		return infogluePrincipal;
+	}
+
+	/**
 	 * Gets an authorized InfoGlueRole.
 	 */
 	
@@ -1417,8 +1479,8 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule, Serial
 							if(userName.indexOf("cn=") > -1)
 								userName = userName.substring(userName.indexOf("cn=") + 3);
 							
-							//InfoGluePrincipal infoGluePrincipal = this.getAuthorizedInfoGluePrincipal(userName, false, ctx):
-							InfoGluePrincipal infoGluePrincipal = new InfoGluePrincipal(userName, "", "", "", new ArrayList(), new ArrayList(), false, this);
+							InfoGluePrincipal infoGluePrincipal = this.getAuthorizedInfoGluePrincipal(userName, ctx);
+							//InfoGluePrincipal infoGluePrincipal = new InfoGluePrincipal(userName, "", "", "", new ArrayList(), new ArrayList(), false, this);
 						    users.add(infoGluePrincipal);
 						}
 					}
