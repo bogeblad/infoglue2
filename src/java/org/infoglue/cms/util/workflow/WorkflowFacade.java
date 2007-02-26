@@ -72,7 +72,7 @@ import com.opensymphony.workflow.spi.WorkflowEntry;
  * the Workflow interface.  The idea is to encapsulate the interactions with OSWorkflow and eliminate the
  * need to pass a Workflow reference and the workflow ID all over the place when extracting data from OSWorkflow
  * @author <a href="mailto:jedprentice@gmail.com">Jed Prentice</a>
- * @version $Revision: 1.34 $ $Date: 2007/01/18 15:47:37 $
+ * @version $Revision: 1.35 $ $Date: 2007/02/26 14:54:00 $
  */
 public class WorkflowFacade
 {
@@ -190,8 +190,19 @@ public class WorkflowFacade
 			workflowName = workflow.getWorkflowName(workflowId);
 			CacheController.cacheObject("workflowNameCache", key, workflowName);
 		}
-			
-		workflowDescriptor = workflow.getWorkflowDescriptor(workflowName);
+
+		String keyDescriptor = "workflowDescriptor_" + workflowId;
+		WorkflowDescriptor workflowDescriptorTemp = (WorkflowDescriptor)CacheController.getCachedObject("workflowNameCache", keyDescriptor);
+		if(workflowDescriptorTemp == null)
+		{
+			workflowDescriptorTemp = workflow.getWorkflowDescriptor(workflowName);
+			workflowDescriptor = workflowDescriptorTemp; 
+			CacheController.cacheObject("workflowNameCache", keyDescriptor, workflowDescriptorTemp);
+		}
+		else
+			workflowDescriptor = workflowDescriptorTemp; 
+		
+		//workflowDescriptor = workflow.getWorkflowDescriptor(workflowName);
 	}
 
 	/**
@@ -483,10 +494,12 @@ public class WorkflowFacade
 	{
 		List workflowVOs = new ArrayList();
 
-		for (Iterator workflows = findActiveWorkflows().iterator(); workflows.hasNext();)
+		List activeWorkflows = findActiveWorkflows();
+		Iterator activeWorkflowsIterator = activeWorkflows.iterator();
+		while (activeWorkflowsIterator.hasNext())
 		{
-			setWorkflowIdAndDescriptor(((Long)workflows.next()).longValue());
-			logger.info("workflowId:" + workflowId);
+			setWorkflowIdAndDescriptor(((Long)activeWorkflowsIterator.next()).longValue());
+			//logger.info("workflowId:" + workflowId);
 			workflowVOs.add(createWorkflowVO());
 		}
 
@@ -602,8 +615,9 @@ public class WorkflowFacade
 	{
 		try
 		{
-			return workflow.query(new WorkflowExpressionQuery(new FieldExpression(FieldExpression.STATE,
-						FieldExpression.ENTRY, FieldExpression.EQUALS, new Integer(WorkflowEntry.ACTIVATED))));
+			List workflows = workflow.query(new WorkflowExpressionQuery(new FieldExpression(FieldExpression.STATE, FieldExpression.ENTRY, FieldExpression.EQUALS, new Integer(WorkflowEntry.ACTIVATED))));
+			return workflows;
+			//return workflow.query(new WorkflowExpressionQuery(new FieldExpression(FieldExpression.STATE, FieldExpression.ENTRY, FieldExpression.EQUALS, new Integer(WorkflowEntry.ACTIVATED))));
 		}
 		catch (WorkflowException e)
 		{
