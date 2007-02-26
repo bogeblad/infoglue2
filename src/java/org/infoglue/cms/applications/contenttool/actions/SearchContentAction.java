@@ -233,7 +233,7 @@ public class SearchContentAction extends InfoGlueAbstractAction
 	{
 		StringBuffer sb = new StringBuffer();
 		
-		ContentVO contentVO = ContentController.getContentController().getContentVOWithId(new Integer(contentId));
+		ContentVO contentVO = ContentController.getContentController().getContentVOWithId(contentId);
 		sb.insert(0, contentVO.getName());
 		while(contentVO.getParentContentId() != null)
 		{
