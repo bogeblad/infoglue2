@@ -87,7 +87,7 @@ public class InfoGlueRole implements Serializable
 			return false;
 		
 		InfoGlueRole another = (InfoGlueRole)obj;
-		return name.equals(another.getName());
+		return name.toLowerCase().equals(another.getName().toLowerCase());
 	}
 
 	public int hasCode()

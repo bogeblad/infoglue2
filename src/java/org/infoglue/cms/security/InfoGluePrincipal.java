@@ -42,6 +42,7 @@ public class InfoGluePrincipal implements Principal, Serializable
 	private static final long serialVersionUID = 7252014421006767620L;
 	
 	private final String name;
+	private final String displayName;
 	private final String firstName;
 	private final String lastName;
 	private final String email;
@@ -53,7 +54,13 @@ public class InfoGluePrincipal implements Principal, Serializable
 
 	public InfoGluePrincipal(String name, String firstName, String lastName, String email, List roles, List groups, boolean isAdministrator, AuthorizationModule autorizationModule)
 	{
+		this(name, name, firstName, lastName, email, roles, groups, isAdministrator, autorizationModule);
+	}
+	
+	public InfoGluePrincipal(String name, String displayName, String firstName, String lastName, String email, List roles, List groups, boolean isAdministrator, AuthorizationModule autorizationModule)
+	{
 		this.name = name;
+		this.displayName = displayName;
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.email = email;
@@ -66,7 +73,13 @@ public class InfoGluePrincipal implements Principal, Serializable
 
 	public InfoGluePrincipal(String name, String firstName, String lastName, String email, List roles, List groups, Map metaInformation, boolean isAdministrator, AuthorizationModule autorizationModule)
 	{
+		this(name, name, firstName, lastName, email, roles, groups, metaInformation, isAdministrator, autorizationModule);
+	}
+	
+	public InfoGluePrincipal(String name, String displayName, String firstName, String lastName, String email, List roles, List groups, Map metaInformation, boolean isAdministrator, AuthorizationModule autorizationModule)
+	{
 		this.name = name;
+		this.displayName = displayName;
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.email = email;

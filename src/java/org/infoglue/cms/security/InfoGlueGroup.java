@@ -87,7 +87,7 @@ public class InfoGlueGroup implements Serializable
 			return false;
 		
 		InfoGlueGroup another = (InfoGlueGroup)obj;
-		return name.equals(another.getName());
+		return name.toLowerCase().equals(another.getName().toLowerCase());
 	}
 
 	public int hasCode()

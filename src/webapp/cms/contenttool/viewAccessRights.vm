@@ -146,7 +146,7 @@
 	#foreach ($role in $roleList)
 		<tr>
 			<td>
-				$role.name
+				$role.displayName
 				<input type="hidden" name="${roleIndex}_roleName" value="$role.name">
 			</td>
 			<td></td>
@@ -409,7 +409,7 @@
 
 		<tr>
 			  	<td><input type="checkbox" id="${interceptionPointVO.id}_${group.name}_hasAccess" name="groupName" value="${group.name}" $selected></td>
-		  	<td>$group.name</td>
+		  	<td>$group.displayName</td>
 		</tr>
 		#end
 		<tr>
