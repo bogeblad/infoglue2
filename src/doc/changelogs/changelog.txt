@@ -60,7 +60,10 @@
 - Added possibility to search for a content in the content binding dialog. Very useful if you have a huge content mass and don't really know where the content you want is located.
 - Improved the statistics of the ViewApplicationState to refelect the sizes of the caches better.
 - Added new filtering logic to the content webservices to avoid harmful code or similar external form submits. 
-
+- Fixed so the getUsers(roleName) returns a list of full principals - not only shallow objects.
+- Dramatically improved performance when listing all active workflows in mydesktop. Also beneficial for other apps using the API:s.
+- Added new JNDI Authorization module which is a rewrite of the old module but is more strict and conforms better to standards and uses full names all over.
+- Implemented displayName on principal, role and group so it's easier to build nicer GUI:s when assigning rights etc. When connecting LDAP-sources the fully qualified names are so long it gets hard to read.
 
 -------------------------------------------------------------------------------------
 - InfoGlue 2.4.1 Final
