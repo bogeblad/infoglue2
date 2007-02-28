@@ -98,7 +98,7 @@ public class SimplifiedJNDIBasicAuthorizationModule implements AuthorizationModu
 	
 	public DirContext getContext() throws Exception
 	{
-		//System.out.println("Creating JNDI-context...");
+		//logger.info("Creating JNDI-context...");
 		
 		String connectionURL 		= this.extraProperties.getProperty("connectionURL");
 		String ldapVersion			= this.extraProperties.getProperty("ldapVersion");
@@ -107,7 +107,7 @@ public class SimplifiedJNDIBasicAuthorizationModule implements AuthorizationModu
 		String connectionName		= this.extraProperties.getProperty("connectionName");
 		String connectionPassword	= this.extraProperties.getProperty("connectionPassword");
 
-		//System.out.println("connectionURL:" + connectionURL);
+		//logger.info("connectionURL:" + connectionURL);
 		
 		// Create a Hashtable object.
 		Hashtable env = new Hashtable();
@@ -198,7 +198,7 @@ public class SimplifiedJNDIBasicAuthorizationModule implements AuthorizationModu
 	    if(authorizerIndex == null)
 	    	authorizerIndex = "";
 
-	    System.out.println("userName:" + userName);
+	    logger.info("userName:" + userName);
 		String userBase					= this.extraProperties.getProperty("userBase");
 		
 	    String key = "user_" + userName + authorizerIndex;
@@ -213,7 +213,7 @@ public class SimplifiedJNDIBasicAuthorizationModule implements AuthorizationModu
 			else
 			{
 				infogluePrincipal = (InfoGluePrincipal)infogluePrincipalObject;
-				//System.out.println("Returning cached user:" + userName + ":" + infogluePrincipal);
+				//logger.info("Returning cached user:" + userName + ":" + infogluePrincipal);
 				return infogluePrincipal;
 			}
 		}
@@ -238,7 +238,7 @@ public class SimplifiedJNDIBasicAuthorizationModule implements AuthorizationModu
 				{
 					userName = getDistinguishedUserName(userName, ctx);
 					//userName = "" + usersAttributeFilter + "=" + userName + ",OU=Testanv\u00e4ndare," + userBase;
-					System.out.println("userName:" + userName);
+					logger.info("userName:" + userName);
 				}
 
 				Map userAttributes = getUserAttributes(userName, ctx);
@@ -285,7 +285,7 @@ public class SimplifiedJNDIBasicAuthorizationModule implements AuthorizationModu
 	        		baseDN = anonymousUserBase;
 	        }
 	        
-	        System.out.println("userName:" + userName);
+	        logger.info("userName:" + userName);
 
 	        this.extraProperties.list(System.out);
 	        
@@ -293,7 +293,7 @@ public class SimplifiedJNDIBasicAuthorizationModule implements AuthorizationModu
 			String samAccountDomainName	= this.extraProperties.getProperty("samAccountDomainName." + index);
 			while(samAccountDomainName != null)
 			{
-		        System.out.println("samAccountDomainName:" + samAccountDomainName);
+		        logger.info("samAccountDomainName:" + samAccountDomainName);
 		        if(samAccountDomainName != null && !samAccountDomainName.equals(""))
 		        {
 		        	int startIndex = userName.indexOf(samAccountDomainName);
@@ -306,7 +306,7 @@ public class SimplifiedJNDIBasicAuthorizationModule implements AuthorizationModu
 				samAccountDomainName = this.extraProperties.getProperty("samAccountDomainName." + index);
 			}
 			
-	        System.out.println("userName:" + userName);
+	        logger.info("userName:" + userName);
 	        
 			String searchFilter = "(CN=" + userName + ")";
 			if(userSearch != null && userSearch.length() > 0)
@@ -314,7 +314,7 @@ public class SimplifiedJNDIBasicAuthorizationModule implements AuthorizationModu
 				searchFilter = userSearch.replaceAll("\\{1\\}", userName);
 			}
 			
-			System.out.println("searchFilter:" + searchFilter);
+			logger.info("searchFilter:" + searchFilter);
 			
 			String attributesFilter = "cn, distinguishedName";
 			if(userAttributesFilter != null && userAttributesFilter.length() > 0)
@@ -343,7 +343,7 @@ public class SimplifiedJNDIBasicAuthorizationModule implements AuthorizationModu
 								
 				Attribute userNameAttribute = attributes.get(userNameAttributeFilter);
 				logger.info("userNameAttribute:" + userNameAttribute.toString());
-				System.out.println("userNameAttribute:" + userNameAttribute.toString());
+				logger.info("userNameAttribute:" + userNameAttribute.toString());
 				
 				if(userNameAttribute != null)
 				{
@@ -351,7 +351,7 @@ public class SimplifiedJNDIBasicAuthorizationModule implements AuthorizationModu
 					while(allEnum.hasMore())
 					{
 						String value = (String)allEnum.next();
-						System.out.println("value:" + value);
+						logger.info("value:" + value);
 						distinguishedUserName = value;
 					}
 				}
@@ -391,7 +391,7 @@ public class SimplifiedJNDIBasicAuthorizationModule implements AuthorizationModu
 			else
 			{
 				infogluePrincipal = (InfoGluePrincipal)infogluePrincipalObject;
-				//System.out.println("Returning cached user:" + userName + ":" + infogluePrincipal);
+				//logger.info("Returning cached user:" + userName + ":" + infogluePrincipal);
 				return infogluePrincipal;
 			}
 		}
@@ -481,7 +481,7 @@ public class SimplifiedJNDIBasicAuthorizationModule implements AuthorizationModu
 			else
 			{
 				infoglueRole = (InfoGlueRole)infoglueRoleObject;
-				//System.out.println("Returning cached user:" + userName + ":" + infogluePrincipal);
+				//logger.info("Returning cached user:" + userName + ":" + infogluePrincipal);
 				return infoglueRole;
 			}
 		}
@@ -501,7 +501,7 @@ public class SimplifiedJNDIBasicAuthorizationModule implements AuthorizationModu
 			Attributes attributes = ctx.getAttributes(roleName);
 			logger.info("attributes:" + attributes.toString());
 			if(attributes == null)
-				System.out.println("Could not find " + roleName);
+				logger.info("Could not find " + roleName);
 				
 			String name = null;
 			Attribute nameAttribute = attributes.get(roleNameAttribute);
@@ -731,7 +731,7 @@ public class SimplifiedJNDIBasicAuthorizationModule implements AuthorizationModu
 	protected Map getUserAttributes(String userName, DirContext ctx) throws NamingException, Exception
 	{
 		logger.info("userName:" + userName);
-		System.out.println("userName:" + userName);
+		logger.info("userName:" + userName);
 		
 		Map userAttributes = new HashMap();
 		
@@ -868,18 +868,18 @@ public class SimplifiedJNDIBasicAuthorizationModule implements AuthorizationModu
 			while(allEnum.hasMore())
 			{
 				Attribute attr = (Attribute)allEnum.next();
-				//System.out.println("roleNameObject:" + attr);
+				//logger.info("roleNameObject:" + attr);
 
 				NamingEnumeration e = attr.getAll();
 				while(e.hasMore()) 
 				{
 					Object roleNameObject = e.next();
-					System.out.println("roleNameObject:" + roleNameObject);
+					logger.info("roleNameObject:" + roleNameObject);
 					//LdapAttribute attribute = (LdapAttribute)roleNameObject;
 					
 					String fullRoleName = roleNameObject.toString().trim();
 					String roleName = fullRoleName;
-					//System.out.println("roleName:" + roleName);
+					//logger.info("roleName:" + roleName);
 					
 					logger.info("roleName:" + fullRoleName);
 					
@@ -889,7 +889,7 @@ public class SimplifiedJNDIBasicAuthorizationModule implements AuthorizationModu
 						if(allRoles.contains(infoGlueRole))
 					    {
 							//InfoGlueRole infoGlueRole = new InfoGlueRole(roleName, "Not available from JNDI-source");
-							System.out.println("Adding role.................:" + fullRoleName);
+							logger.info("Adding role.................:" + fullRoleName);
 							roles.add(infoGlueRole);
 					    }
 					}
@@ -979,18 +979,18 @@ public class SimplifiedJNDIBasicAuthorizationModule implements AuthorizationModu
 			while(allEnum.hasMore())
 			{
 				Attribute attr = (Attribute)allEnum.next();
-				//System.out.println("groupNameObject:" + attr);
+				//logger.info("groupNameObject:" + attr);
 
 				NamingEnumeration e = attr.getAll();
 				while(e.hasMore()) 
 				{
 					Object groupNameObject = e.next();
-					System.out.println("groupNameObject:" + groupNameObject);
+					logger.info("groupNameObject:" + groupNameObject);
 					//LdapAttribute attribute = (LdapAttribute)groupNameObject;
 					
 					String fullGroupName = groupNameObject.toString().trim();
 					String groupName = fullGroupName;
-					//System.out.println("groupName:" + groupName);
+					//logger.info("groupName:" + groupName);
 					
 					logger.info("groupName:" + fullGroupName);
 					
@@ -1000,7 +1000,7 @@ public class SimplifiedJNDIBasicAuthorizationModule implements AuthorizationModu
 					    if(allGroups.contains(infoGlueGroup))
 					    {
 							//InfoGlueGroup infoGlueGroup = new InfoGluegroup(groupName, "Not available from JNDI-source");
-							System.out.println("Adding group.................:" + fullGroupName);
+							logger.info("Adding group.................:" + fullGroupName);
 							groups.add(infoGlueGroup);
 					    }
 					}
@@ -1083,7 +1083,7 @@ public class SimplifiedJNDIBasicAuthorizationModule implements AuthorizationModu
 			if(rolesAttributeFilter != null && rolesAttributeFilter.length() > 0)
 				rolesAttribute = rolesAttributeFilter;
 			
-			System.out.println("rolesAttribute:" + rolesAttribute);
+			logger.info("rolesAttribute:" + rolesAttribute);
 			
 			String[] attrID = rolesAttribute.split(",");
 			logger.info("attrID:" + attrID);
@@ -1131,7 +1131,7 @@ public class SimplifiedJNDIBasicAuthorizationModule implements AuthorizationModu
 					while(allEnumDisplayName.hasMore())
 					{
 						displayName = (String)allEnumDisplayName.next();
-						System.out.println("displayName:" + displayName);
+						logger.info("displayName:" + displayName);
 					}
 				}
 				
@@ -1442,17 +1442,17 @@ public class SimplifiedJNDIBasicAuthorizationModule implements AuthorizationModu
 			}
 
 			String displayName = name;
-			System.out.println("roleDisplayNameAttribute:" + roleDisplayNameAttribute);
+			logger.info("roleDisplayNameAttribute:" + roleDisplayNameAttribute);
 			Attribute displayNameAttribute = attributes.get(roleDisplayNameAttribute);
 			logger.info("attribute:" + displayNameAttribute);
 			if(displayNameAttribute != null)
 			{
-				System.out.println("attribute:" + displayNameAttribute.toString());
+				logger.info("attribute:" + displayNameAttribute.toString());
 				NamingEnumeration displayNameAttributeAllEnum = displayNameAttribute.getAll();
 				while(displayNameAttributeAllEnum.hasMore())
 				{
 					String displayNameCandidate = (String)displayNameAttributeAllEnum.next();
-					System.out.println("displayNameCandidate:" + displayNameCandidate);
+					logger.info("displayNameCandidate:" + displayNameCandidate);
 					logger.info("displayNameCandidate:" + displayNameCandidate);
 					displayName = displayNameCandidate;
 				}
@@ -1484,9 +1484,9 @@ public class SimplifiedJNDIBasicAuthorizationModule implements AuthorizationModu
 				logger.info("userName:" + userName);
 				logger.info("userBase:" + userBase);
 				
-				System.out.println("userName:" + userName);
+				logger.info("userName:" + userName);
 				InfoGluePrincipal infoGluePrincipal = this.getAuthorizedInfoGluePrincipal(userName, false, ctx);
-				System.out.println("infoGluePrincipal:" + infoGluePrincipal);
+				logger.info("infoGluePrincipal:" + infoGluePrincipal);
 				//InfoGluePrincipal infoGluePrincipal = new InfoGluePrincipal(userName, "", "", "", new ArrayList(), new ArrayList(), false, this);
 			    users.add(infoGluePrincipal);				
 			} 
@@ -1548,7 +1548,7 @@ public class SimplifiedJNDIBasicAuthorizationModule implements AuthorizationModu
     public List getGroups(DirContext ctx) throws Exception
     {
 	    logger.info("getGroups start....");
-	    System.out.println("getGroups start....");
+	    logger.info("getGroups start....");
 
 		String groupCacheTimeout = this.extraProperties.getProperty("groupCacheTimeout", "1800");
 
@@ -1703,16 +1703,16 @@ public class SimplifiedJNDIBasicAuthorizationModule implements AuthorizationModu
 			}
 
 			String displayName = name;
-			System.out.println("groupDisplayNameAttribute:" + groupDisplayNameAttribute);
+			logger.info("groupDisplayNameAttribute:" + groupDisplayNameAttribute);
 			Attribute displayNameAttribute = attributes.get(groupDisplayNameAttribute);
-			System.out.println("attribute:" + displayNameAttribute);
+			logger.info("attribute:" + displayNameAttribute);
 			if(displayNameAttribute != null)
 			{
 				NamingEnumeration displayNameAttributeAllEnum = displayNameAttribute.getAll();
 				while(displayNameAttributeAllEnum.hasMore())
 				{
 					String displayNameCandidate = (String)displayNameAttributeAllEnum.next();
-					System.out.println("displayNameCandidate:" + displayNameCandidate);
+					logger.info("displayNameCandidate:" + displayNameCandidate);
 					logger.info("displayNameCandidate:" + displayNameCandidate);
 					displayName = displayNameCandidate;
 				}
@@ -1744,9 +1744,9 @@ public class SimplifiedJNDIBasicAuthorizationModule implements AuthorizationModu
 				logger.info("userName:" + userName);
 				logger.info("userBase:" + userBase);
 				
-				System.out.println("userName:" + userName);
+				logger.info("userName:" + userName);
 				InfoGluePrincipal infoGluePrincipal = this.getAuthorizedInfoGluePrincipal(userName, false, ctx);
-				System.out.println("infoGluePrincipal:" + infoGluePrincipal);
+				logger.info("infoGluePrincipal:" + infoGluePrincipal);
 				//InfoGluePrincipal infoGluePrincipal = new InfoGluePrincipal(userName, "", "", "", new ArrayList(), new ArrayList(), false, this);
 			    users.add(infoGluePrincipal);				
 			} 
