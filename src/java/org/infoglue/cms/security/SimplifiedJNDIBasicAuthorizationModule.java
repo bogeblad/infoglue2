@@ -206,13 +206,7 @@ public class SimplifiedJNDIBasicAuthorizationModule implements AuthorizationModu
 
 	    System.out.println("userName:" + userName);
 		String userBase					= this.extraProperties.getProperty("userBase");
-		String userNameAttributeFilter	= this.extraProperties.getProperty("userNameAttributeFilter", "distinguishedName");
-		String usersAttributeFilter 	= this.extraProperties.getProperty("usersAttributesFilter", "cn");
-
-		if(userName.indexOf(userBase) == -1)
-			userName = "" + usersAttributeFilter + "=" + userName + ",OU=Testanv\u00e4ndare," + userBase;
-	    System.out.println("userName:" + userName);
-			
+		
 	    String key = "user_" + userName + authorizerIndex;
 	    InfoGluePrincipal infogluePrincipal = null;
 	    Object infogluePrincipalObject = CacheController.getCachedObjectFromAdvancedCache("JNDIAuthorizationCache", key, new Integer(userCacheTimeout).intValue());
@@ -246,6 +240,13 @@ public class SimplifiedJNDIBasicAuthorizationModule implements AuthorizationModu
 			
 			try
 			{
+				if(userName.indexOf(userBase) == -1)
+				{
+					userName = getDistinguishedUserName(userName, ctx);
+					//userName = "" + usersAttributeFilter + "=" + userName + ",OU=Testanv\u00e4ndare," + userBase;
+					System.out.println("userName:" + userName);
+				}
+
 				Map userAttributes = getUserAttributes(userName, ctx);
 				List roles = getRoles(userName, ctx);
 				List groups = getGroups(userName, ctx);
@@ -267,6 +268,101 @@ public class SimplifiedJNDIBasicAuthorizationModule implements AuthorizationModu
 		}
 	    	
 		return infogluePrincipal;
+	}
+
+	private String getDistinguishedUserName(String userName, DirContext ctx) throws Exception
+	{
+		String distinguishedUserName = null;
+		
+		String userBase					= this.extraProperties.getProperty("userBase");		
+		String userSearch				= this.extraProperties.getProperty("userSearch");
+		String userAttributesFilter		= this.extraProperties.getProperty("userAttributesFilter", "cn, distinguishedName");
+		String userNameAttributeFilter	= this.extraProperties.getProperty("userNameAttributeFilter", "distinguishedName");
+		String samAccountDomainName		= this.extraProperties.getProperty("samAccountDomainName");
+		
+		try
+		{
+			String baseDN = userBase;
+				
+	        String anonymousUserName = CmsPropertyHandler.getAnonymousUser();
+	        if(userName.equals(anonymousUserName))
+	        {
+	            String anonymousUserBase = this.extraProperties.getProperty("anonymousUserBase");
+	        	if(anonymousUserBase != null && !anonymousUserBase.equals(""))
+	        		baseDN = anonymousUserBase;
+	        }
+	        	
+	        //(|(cn=sss)(mail=astefan.sik@korsnäs.com)(proxyAddresses=smtp:stefan.sik@frovi.com))
+	        
+	        System.out.println("userName:" + userName);
+	        System.out.println("samAccountDomainName:" + samAccountDomainName);
+	        
+	        if(samAccountDomainName != null && !samAccountDomainName.equals(""))
+	        {
+	        	int startIndex = userName.indexOf(samAccountDomainName);
+	        	if(startIndex > -1)
+	        		userName = userName.substring(0, startIndex) + userName.substring(startIndex + samAccountDomainName.length());
+	        	//userName.replaceAll(samAccountDomainName, "");
+	        }
+	        System.out.println("userName:" + userName);
+	        
+			String searchFilter = "(CN=" + userName + ")";
+			if(userSearch != null && userSearch.length() > 0)
+			{
+				searchFilter = userSearch.replaceAll("\\{1\\}", userName);
+			}
+			
+			System.out.println("searchFilter:" + searchFilter);
+			
+			String attributesFilter = "cn, distinguishedName";
+			if(userAttributesFilter != null && userAttributesFilter.length() > 0)
+				attributesFilter = userAttributesFilter;
+			
+			String[] attrID = attributesFilter.split(",");
+			
+			logger.info("baseDN:" + baseDN);
+			logger.info("searchFilter:" + searchFilter);
+			logger.info("attrID" + attrID);
+						
+			SearchControls ctls = new SearchControls(); 
+			ctls.setSearchScope(SearchControls.SUBTREE_SCOPE);
+			ctls.setReturningAttributes(attrID);
+			
+			NamingEnumeration answer = ctx.search(baseDN, searchFilter, ctls); 
+			if(!answer.hasMore())
+				throw new Exception("The user with userName=" + userName + " was not found in the JNDI Data Source.");
+				
+			while (answer.hasMore()) 
+			{
+				SearchResult sr = (SearchResult)answer.next();
+				logger.info("Person:" + sr.toString() + "\n");
+				Attributes attributes = sr.getAttributes();
+				logger.info("attributes:" + attributes + "\n");
+								
+				Attribute userNameAttribute = attributes.get(userNameAttributeFilter);
+				logger.info("userNameAttribute:" + userNameAttribute.toString());
+				System.out.println("userNameAttribute:" + userNameAttribute.toString());
+				
+				if(userNameAttribute != null)
+				{
+					NamingEnumeration allEnum = userNameAttribute.getAll();
+					while(allEnum.hasMore())
+					{
+						String value = (String)allEnum.next();
+						System.out.println("value:" + value);
+						distinguishedUserName = value;
+					}
+				}
+			} 
+		}
+		catch (Exception e) 
+		{
+			logger.warn(e);
+			e.printStackTrace();
+			throw e;
+		}
+		
+		return distinguishedUserName;
 	}
 
 	/**
