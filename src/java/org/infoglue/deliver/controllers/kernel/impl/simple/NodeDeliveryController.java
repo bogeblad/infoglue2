@@ -503,38 +503,32 @@ public class NodeDeliveryController extends BaseDeliveryController
 	public SiteNodeVO getParentSiteNode(Database db, Integer siteNodeId) throws SystemException
 	{
 		String key = "" + siteNodeId;
-		logger.info("key getParentSiteNode:" + key);
+
 		Object object = CacheController.getCachedObject("parentSiteNodeCache", key);
 		SiteNodeVO parentSiteNodeVO = null;
-		logger.info("object:" + object);
+
 		if(object instanceof NullObject)
 		{
-			logger.info("There was an cached parentSiteNodeVO but it was null:" + object);
+			if(logger.isInfoEnabled())
+				logger.info("There was an cached parentSiteNodeVO but it was null:" + object);
 		}
 		else if(object != null)
 		{
-			logger.info("There was an cached parentSiteNodeVO:" + parentSiteNodeVO);
 			parentSiteNodeVO = (SiteNodeVO)object;
 		}
 		else
 		{
-			logger.info("There was no cached parentSiteNodeVO:" + parentSiteNodeVO);
-			
 			SiteNode siteNode = (SiteNode)getObjectWithId(SmallSiteNodeImpl.class, siteNodeId, db);
             SiteNode parentSiteNode = siteNode.getParentSiteNode();
             if(parentSiteNode != null)		
             {
                 parentSiteNodeVO = parentSiteNode.getValueObject();
             	CacheController.cacheObject("parentSiteNodeCache", key, parentSiteNodeVO);
-    			logger.info("Caching parentSiteNodeVO:" + parentSiteNodeVO);
-            }
+    		}
             else
             {
-                logger.info("Caching parentSiteNodeVO: NullObject");
                 CacheController.cacheObject("parentSiteNodeCache", key, new NullObject());
             }
-            
-			
 		}
 		
 		return parentSiteNodeVO;
@@ -557,28 +551,21 @@ public class NodeDeliveryController extends BaseDeliveryController
 		}
 		else if(object != null)
 		{
-			logger.info("There was an cached parentSiteNodeVO:" + parentSiteNodeVO);
 			parentSiteNodeVO = (SiteNodeVO)object;
 		}
 		else
 		{
-			logger.info("There was no cached parentSiteNodeVO:" + parentSiteNodeVO);
-			
 			SiteNode siteNode = (SiteNode)getObjectWithId(SmallSiteNodeImpl.class, siteNodeId, db);
             SiteNode parentSiteNode = siteNode.getParentSiteNode();
             if(parentSiteNode != null)		
             {
                 parentSiteNodeVO = parentSiteNode.getValueObject();
             	CacheController.cacheObject("pageCacheParentSiteNodeCache", key, parentSiteNodeVO);
-    			logger.info("Caching parentSiteNodeVO:" + parentSiteNodeVO);
             }
             else
             {
-                logger.info("Caching parentSiteNodeVO: NullObject");
                 CacheController.cacheObject("pageCacheParentSiteNodeCache", key, new NullObject());
             }
-            
-			
 		}
 		
 		return parentSiteNodeVO;
@@ -968,20 +955,28 @@ public class NodeDeliveryController extends BaseDeliveryController
 	
 	public List getBoundContents(Database db, InfoGluePrincipal infoGluePrincipal, Integer siteNodeId, Integer languageId, boolean useLanguageFallback, String availableServiceBindingName, boolean inheritParentBindings, boolean includeFolders, DeliveryContext deliveryContext) throws SystemException, Exception
 	{
-		String boundContentsKey = "" + infoGluePrincipal.getName() + "_" + siteNodeId + "_" + languageId + "_" + useLanguageFallback + "_" + includeFolders + "_" + availableServiceBindingName + "_" + USE_INHERITANCE;
-		//String boundContentsKey = "" + siteNodeId + "_" + availableServiceBindingName + "_" + USE_INHERITANCE;
-		logger.info("boundContentsKey:" + boundContentsKey);
-		List boundContentVOList = (List)CacheController.getCachedObject("boundContentCache", boundContentsKey);
+		StringBuilder boundContentsKey = new StringBuilder();
+		boundContentsKey.append("")
+		.append("").append(infoGluePrincipal.getName())
+		.append("_").append(siteNodeId)
+		.append("_").append(languageId)
+		.append("_").append(useLanguageFallback)
+		.append("_").append(includeFolders)
+		.append("_").append(availableServiceBindingName)
+		.append("_").append(USE_INHERITANCE);
+		
+		//String boundContentsKey = "" + infoGluePrincipal.getName() + "_" + siteNodeId + "_" + languageId + "_" + useLanguageFallback + "_" + includeFolders + "_" + availableServiceBindingName + "_" + USE_INHERITANCE;
+		
+		List boundContentVOList = (List)CacheController.getCachedObject("boundContentCache", boundContentsKey.toString());
 		if(boundContentVOList != null)
 		{
-			logger.info("There was an cached content boundContentVOList:" + boundContentVOList.size());
+			if(logger.isInfoEnabled())
+				logger.info("There was an cached content boundContentVOList:" + boundContentVOList.size());
 		}
 		else
 		{
 		    boundContentVOList = new ArrayList();
 			
-			logger.info("Coming in with:" + siteNodeId + " and " + availableServiceBindingName);
-
 			Integer metaInfoContentId = null;
 			if(availableServiceBindingName.equalsIgnoreCase("Meta information"))
 			{
@@ -1007,29 +1002,34 @@ public class NodeDeliveryController extends BaseDeliveryController
 	    		 
 					HashMap arguments = new HashMap();
 					arguments.put("method", "selectContentListOnIdList");
-	        		
-					arguments.put("arguments", qualifyerList);
+	        		arguments.put("arguments", qualifyerList);
 					
 					List contents = service.selectMatchingEntities(arguments, db);
 					
-					logger.info("Found bound contents:" + contents.size());	        		
+					if(logger.isInfoEnabled())
+						logger.info("Found bound contents:" + contents.size());	        		
+					
 					if(contents != null)
 					{
 						Iterator i = contents.iterator();
 						while(i.hasNext())
 						{
 							ContentVO candidate = (ContentVO)i.next();
-							logger.info("candidate:" + candidate.getName());
+							
+							if(logger.isInfoEnabled())
+								logger.info("candidate:" + candidate.getName());
+							
 							//Checking to see that now is between the contents publish and expire-date. 
 							//if(ContentDeliveryController.getContentDeliveryController().isValidContent(candidate.getId(), languageId, useLanguageFallback, infoGluePrincipal))
 							//	boundContentVOList.add(candidate);        		
 							Content candidateContent = (Content)getObjectWithId(ContentImpl.class, candidate.getId(), db); 
 							
-							logger.info("candidateContent:" + candidateContent.getName());
+							if(logger.isInfoEnabled())
+								logger.info("candidateContent:" + candidateContent.getName());
+							
 							if(ContentDeliveryController.getContentDeliveryController().isValidContent(infoGluePrincipal, candidateContent, languageId, useLanguageFallback, includeFolders, db, deliveryContext))
 							{
 								deliveryContext.addUsedContent("content_" + candidate.getId());
-	
 							    boundContentVOList.add(candidate);    
 							}
 						}
@@ -1037,7 +1037,8 @@ public class NodeDeliveryController extends BaseDeliveryController
 				}
 			}
 			
-			CacheController.cacheObject("boundContentCache", boundContentsKey, boundContentVOList);
+			//System.out.println("Adding " + boundContentsKey);
+			CacheController.cacheObject("boundContentCache", boundContentsKey.toString(), boundContentVOList);
 		}
 		
 		return boundContentVOList;
@@ -1057,10 +1058,7 @@ public class NodeDeliveryController extends BaseDeliveryController
 		
 		deliveryContext.addUsedContent("selectiveCacheUpdateNonApplicable");
 		
-    	logger.info("Coming in with:" + siteNodeId + " and " + availableServiceBindingName + " and " + searchRecursive + " and " + maximumNumberOfLevels + " and " + sortAttribute + " and " + sortOrder);
-        
         ContentVO contentVO = getBoundContent(db, infoGluePrincipal, siteNodeId, languageId, useLanguageFallback, availableServiceBindingName, includeFolders, deliveryContext);
-        logger.info("contentVO:" + contentVO);
         
         if(contentVO != null)
         {
@@ -1257,7 +1255,7 @@ public class NodeDeliveryController extends BaseDeliveryController
 						headers.put("User-Agent", context.getHttpServletRequest().getHeader("User-Agent") + ";Java");
 						
 						HttpHelper helper = new HttpHelper();
-						pageContent = helper.getUrlContent(pageUrl, headers);
+						pageContent = helper.getUrlContent(pageUrl, headers, 3000);
 						logger.info("pageContent:" + pageContent);
 							
 						int usedEntitiesIndex = pageContent.indexOf("<usedEntities>");
@@ -1547,7 +1545,6 @@ public class NodeDeliveryController extends BaseDeliveryController
 	                }
 	            }
 	        }
-            System.out.println("DDDD END");
         }
         */
         
@@ -1556,12 +1553,12 @@ public class NodeDeliveryController extends BaseDeliveryController
 
     public String getPageNavigationPath(Database db, InfoGluePrincipal infogluePrincipal, Integer siteNodeId, Integer languageId, Integer contentId, DeliveryContext deliveryContext) throws SystemException, Exception
     {
-        String path = "/";
+        StringBuffer path = null; //new StringBuffer("/");
 
         SiteNodeVO parentSiteNode = this.getParentSiteNode(db, siteNodeId);
         if (parentSiteNode != null)
         {
-            path = getPageNavigationPath(db, infogluePrincipal, parentSiteNode.getId(), languageId, null, deliveryContext) + "/";
+            path = new StringBuffer(getPageNavigationPath(db, infogluePrincipal, parentSiteNode.getId(), languageId, null, deliveryContext)).append("/");
         } 
         else 
         {
@@ -1588,9 +1585,17 @@ public class NodeDeliveryController extends BaseDeliveryController
 	            pathPart = this.getPageNavigationTitle(db, infogluePrincipal, siteNodeId, languageId, null, META_INFO_BINDING_NAME, NAV_TITLE_ATTRIBUTE_NAME, true, deliveryContext, false);
         }
         
-        path += URLEncoder.encode(pathPart, niceURIEncoding);
+        String key = "" + pathPart + "_" + niceURIEncoding;
+        String encodedPath = (String)CacheController.getCachedObject("serverNodePropertiesCache", key);
+        if(encodedPath == null)
+        {
+        	encodedPath = URLEncoder.encode(pathPart, niceURIEncoding);
+        	CacheController.cacheObject("serverNodePropertiesCache", key, encodedPath);
+        }
+        
+        path.append(encodedPath);
      
-        return path;
+        return path.toString();
     }
 
 
