@@ -155,7 +155,7 @@ public class ContentVersionControllerProxy extends ContentVersionController
 			intercept(hashMap, "Content.CreateVersion", infogluePrincipal);
 		}
 		
-		return ContentVersionController.getContentVersionController().update(contentId, languageId, contentVersionVO);
+		return ContentVersionController.getContentVersionController().update(contentId, languageId, contentVersionVO, infogluePrincipal);
 	}   
 	
 	/**

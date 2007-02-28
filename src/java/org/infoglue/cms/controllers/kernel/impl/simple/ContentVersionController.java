@@ -53,12 +53,15 @@ import org.infoglue.cms.entities.management.Language;
 import org.infoglue.cms.entities.management.RegistryVO;
 import org.infoglue.cms.entities.management.impl.simple.LanguageImpl;
 import org.infoglue.cms.entities.structure.SiteNode;
+import org.infoglue.cms.entities.structure.SiteNodeVO;
 import org.infoglue.cms.entities.structure.SiteNodeVersion;
+import org.infoglue.cms.entities.structure.SiteNodeVersionVO;
 import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
+import org.infoglue.cms.util.DateHelper;
 import org.w3c.dom.CDATASection;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -821,6 +824,11 @@ public class ContentVersionController extends BaseController
     
     public ContentVersionVO update(Integer contentId, Integer languageId, ContentVersionVO contentVersionVO) throws ConstraintException, SystemException
     {
+    	return update(contentId, languageId, contentVersionVO, null);
+    }        
+	
+    public ContentVersionVO update(Integer contentId, Integer languageId, ContentVersionVO contentVersionVO, InfoGluePrincipal principal) throws ConstraintException, SystemException
+    {
         ContentVersionVO updatedContentVersionVO;
 		
         Database db = CastorDatabaseService.getDatabase();
@@ -846,6 +854,18 @@ public class ContentVersionController extends BaseController
 	    	    contentVersion = ContentVersionController.getContentVersionController().getContentVersionWithId(contentVersionVO.getId(), db);
 	    	    contentVersion.setValueObject(contentVersionVO);
 	    	}
+
+		    if(principal != null && contentTypeDefinition.getName().equalsIgnoreCase("Meta info"))
+		    {
+		    	SiteNode siteNode = SiteNodeController.getController().getSiteNodeWithMetaInfoContentId(db, contentId);
+				if(siteNode.getMetaInfoContentId() != null && siteNode.getMetaInfoContentId().equals(contentId))
+				{
+			    	SiteNodeVersion latestSiteNodeVersion = SiteNodeVersionController.getController().getLatestSiteNodeVersion(db, siteNode.getId(), false);
+			    	latestSiteNodeVersion.setVersionModifier(contentVersionVO.getVersionModifier());
+			    	latestSiteNodeVersion.setModifiedDateTime(DateHelper.getSecondPreciseDate());
+					SiteNodeVersionControllerProxy.getSiteNodeVersionControllerProxy().acUpdate(principal, latestSiteNodeVersion.getValueObject(), db);
+				}
+			}
 
 	    	registryController.updateContentVersion(contentVersion, db);
 
@@ -1253,7 +1273,7 @@ public class ContentVersionController extends BaseController
 				logger.info("sb:" + sb);
 				contentVersionVO.setVersionValue(sb.toString());
 				contentVersionVO.setVersionModifier(infogluePrincipal.getName());
-				update(contentVersionVO.getContentId(), contentVersionVO.getLanguageId(), contentVersionVO);
+				update(contentVersionVO.getContentId(), contentVersionVO.getLanguageId(), contentVersionVO, infogluePrincipal);
 			}
 			catch(Exception e)
 			{
