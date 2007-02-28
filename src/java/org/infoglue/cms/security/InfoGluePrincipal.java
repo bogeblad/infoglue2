@@ -95,6 +95,11 @@ public class InfoGluePrincipal implements Principal, Serializable
 		return name;
 	}
 
+	public String getDisplayName() 
+	{
+		return displayName;
+	}
+
 	public String getFirstName() 
 	{
 		return firstName;
@@ -168,5 +173,6 @@ public class InfoGluePrincipal implements Principal, Serializable
 	{
 		return autorizationModule;
 	}
+
 }
 
