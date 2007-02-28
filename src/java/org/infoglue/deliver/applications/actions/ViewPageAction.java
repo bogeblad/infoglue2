@@ -31,6 +31,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Random;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
@@ -128,6 +129,8 @@ public class ViewPageAction extends InfoGlueAbstractAction
 	public static long commitTime = 0;
 	public static long rollbackTime = 0;
 	public static long closeTime = 0;
+	public static long lastRequestProcessingTime = 0;
+	private static Thread lastThread = null;
 	
 	private ThreadMonitor tk = null;
 	
@@ -151,7 +154,21 @@ public class ViewPageAction extends InfoGlueAbstractAction
 	        //logger.warn("ThreadId:" + Thread.currentThread().getName());
             Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
         }
-        
+                    	    	
+        /*
+       	int i=0;
+		while(RequestAnalyser.getRequestAnalyser().getNumberOfCurrentRequests() > 20 && lastRequestProcessingTime > 1000 && i < 10)
+        {
+            if(i == 10 || i == 20 || i == 30 || i == 40 || i == 50)
+            {
+            	System.out.println("Queing up...:" + RequestAnalyser.getRequestAnalyser().getNumberOfCurrentRequests() + "=" + lastRequestProcessingTime);
+            }
+            //System.out.println("Current Thread...:" + Thread.currentThread().getName() + ":" + Thread.activeCount());
+            Thread.sleep(1000);
+            i = i + 1;
+        }
+        */
+
         /*
         while(RequestAnalyser.getNumberOfCurrentRequests() > 0)
         {
@@ -166,7 +183,14 @@ public class ViewPageAction extends InfoGlueAbstractAction
         	//System.out.println("Queing up requests as cache eviction are taking place..");
         	Thread.sleep(10);
         }
-        
+        /*
+    	if(RequestAnalyser.getRequestAnalyser().getNumberOfActiveRequests() > 50 && lastRequestProcessingTime > 5000)
+    	{
+        	System.out.println("Queing up...:" + RequestAnalyser.getRequestAnalyser().getNumberOfActiveRequests() + "(" + RequestAnalyser.getRequestAnalyser().getNumberOfCurrentRequests() + ") - " + lastRequestProcessingTime);
+            Thread.sleep(300);
+    	}
+    	*/
+
         logger.info("************************************************");
     	logger.info("* ViewPageAction was called....                *");
     	logger.info("************************************************");
@@ -309,6 +333,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 
 			elapsedTime = System.currentTimeMillis() - start;
 			RequestAnalyser.getRequestAnalyser().decNumberOfCurrentRequests(elapsedTime);
+			lastRequestProcessingTime = elapsedTime;
 
 		    //System.out.println("The page delivery took " + elapsedTime + "ms for request " + this.getRequest().getRequestURL() + "?" + this.getRequest().getQueryString());
 			if(elapsedTime > 10000)

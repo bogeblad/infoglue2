@@ -35,16 +35,22 @@ import java.util.Set;
 public class Counter
 {
     private static Integer count = new Integer(0);
+    private static Integer activeCount = new Integer(0);
     private static Integer totalCount = new Integer(0);
     private static Long totalElapsedTime = new Long(0);
     private static Long maxElapsedTime = new Long(0);
     private static Map allComponentsStatistics = new HashMap();
     
     private Counter(){}
-   
+
     static int getNumberOfCurrentRequests()
     {
         return count.intValue();
+    }
+
+    static int getNumberOfActiveRequests()
+    {
+        return activeCount.intValue();
     }
 
     static int getTotalNumberOfRequests()
@@ -65,14 +71,19 @@ public class Counter
         return maxElapsedTime.longValue();
     }
 
-    synchronized static void incNumberOfCurrentRequests()
+    synchronized static void incNumberOfCurrentRequests(boolean active)
     {
         count = new Integer(count.intValue() + 1);
+        if(active)
+        	activeCount = new Integer(activeCount.intValue() + 1);
     }
 
     synchronized static void decNumberOfCurrentRequests(long elapsedTime)
     {
         count = new Integer(count.intValue() - 1);
+        if(elapsedTime > -1)
+        	activeCount = new Integer(activeCount.intValue() - 1);
+
         totalCount = new Integer(totalCount.intValue() + 1);
 
         if(elapsedTime != -1)

@@ -41,16 +41,11 @@ import org.infoglue.cms.util.CmsPropertyHandler;
 public class RequestAnalyser
 {
     private static RequestAnalyser instance = new RequestAnalyser();
-    //public Integer numberOfCurrentRequests = new Integer(0);
     
 	private static Map threadMonitors = new HashMap();
-	//private static List currentRequests = new ArrayList();
-    //private static HttpServletRequest lastRequest = null;
-    //private static HttpServletResponse lastResponse = null;
-    
-	private static int maxClientsInt = 0;
+	//private static int maxClientsInt = 0;
 	private static boolean blockRequests = false;
-	
+	/*
 	static
 	{
 	    final String maxClients = CmsPropertyHandler.getMaxClients();
@@ -66,7 +61,7 @@ public class RequestAnalyser
             }
         }
 	}
-
+	*/
 	public static RequestAnalyser getRequestAnalyser()
 	{
 	    return instance;
@@ -75,6 +70,11 @@ public class RequestAnalyser
     public int getNumberOfCurrentRequests()
     {
         return Counter.getNumberOfCurrentRequests();
+    }
+
+    public int getNumberOfActiveRequests()
+    {
+        return Counter.getNumberOfActiveRequests();
     }
 
     public int getTotalNumberOfRequests()
@@ -94,8 +94,12 @@ public class RequestAnalyser
 
     public void incNumberOfCurrentRequests(ThreadMonitor tk)
     {
-        Counter.incNumberOfCurrentRequests();
-        if(tk != null)
+    	if(tk == null)
+    		Counter.incNumberOfCurrentRequests(false);
+    	else
+    		Counter.incNumberOfCurrentRequests(true);
+    		
+    	if(tk != null)
         {
 	        synchronized(threadMonitors)
 	        {
