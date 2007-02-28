@@ -287,6 +287,8 @@ public class SimplifiedJNDIBasicAuthorizationModule implements AuthorizationModu
 	        
 	        System.out.println("userName:" + userName);
 
+	        this.extraProperties.list(System.out);
+	        
 	        int index = 0;
 			String samAccountDomainName	= this.extraProperties.getProperty("samAccountDomainName." + index);
 			while(samAccountDomainName != null)
