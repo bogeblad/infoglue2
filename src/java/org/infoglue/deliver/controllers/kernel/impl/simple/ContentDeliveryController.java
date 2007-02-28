@@ -401,12 +401,13 @@ public class ContentDeliveryController extends BaseDeliveryController
 		//Integer contentVersionId = (Integer)CacheController.getCachedObject("contentAttributeCache", versionKey);
 		
 		String attribute = (String)CacheController.getCachedObjectFromAdvancedCache("contentAttributeCache", attributeKey.toString());
-		Integer contentVersionId = (Integer)CacheController.getCachedObjectFromAdvancedCache("contentVersionCache", versionKey);
+		Integer contentVersionId = null;
 		
 	    try
 	    {
 			if(attribute != null)
 			{
+				contentVersionId = (Integer)CacheController.getCachedObjectFromAdvancedCache("contentVersionCache", versionKey);
 				//logger.info("There was an cached content attribute:" + attribute);
 				//if(contentId != null && contentId.intValue() == 3135)
 				//	System.out.println("There was an cached content attribute:" + attribute);
