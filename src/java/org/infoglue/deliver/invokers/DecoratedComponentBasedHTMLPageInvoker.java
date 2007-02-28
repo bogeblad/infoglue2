@@ -37,6 +37,7 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.dom4j.Document;
+import org.dom4j.Element;
 import org.infoglue.cms.controllers.kernel.impl.simple.AccessRightController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
 import org.infoglue.cms.controllers.kernel.impl.simple.PageTemplateController;
@@ -68,7 +69,7 @@ import org.infoglue.deliver.controllers.kernel.impl.simple.TemplateController;
 import org.infoglue.deliver.util.CacheController;
 import org.infoglue.deliver.util.Timer;
 import org.infoglue.deliver.util.VelocityTemplateProcessor;
-import org.w3c.dom.NodeList;
+//import org.w3c.dom.NodeList;
 
 /**
 * @author Mattias Bogeblad
@@ -79,6 +80,8 @@ import org.w3c.dom.NodeList;
 
 public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPageInvoker
 {
+	private final static DOMBuilder domBuilder = new DOMBuilder();
+
     private final static Logger logger = Logger.getLogger(DecoratedComponentBasedHTMLPageInvoker.class.getName());
 
 	private String propertiesDivs 	= "";
@@ -107,6 +110,8 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		
 		Timer decoratorTimer = new Timer();
 		decoratorTimer.setActive(false);
+
+		InfoGlueComponent baseComponent = null;
 		
 		if(componentXML == null || componentXML.length() == 0)
 		{
@@ -117,7 +122,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		    Document document = null;
 		    try
 		    {
-		        document = new DOMBuilder().getDocument(componentXML);
+		        document = domBuilder.getDocument(componentXML);
 		    }
 		    catch(Exception e)
 		    {
@@ -128,7 +133,6 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 			
 			List pageComponents = getPageComponents(getDatabase(), componentXML, document.getRootElement(), "base", this.getTemplateController(), null);
 
-			InfoGlueComponent baseComponent = null;
 			if(pageComponents.size() > 0)
 			{
 				baseComponent = (InfoGlueComponent)pageComponents.get(0);
@@ -176,7 +180,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		StringWriter cacheString = new StringWriter();
 		PrintWriter cachedStream = new PrintWriter(cacheString);
 		
-		new VelocityTemplateProcessor().renderTemplate(context, cachedStream, decoratePageTemplate);
+		new VelocityTemplateProcessor().renderTemplate(context, cachedStream, decoratePageTemplate, false, baseComponent);
 
 		this.setPageString(cacheString.toString());
 		
@@ -397,7 +401,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 			context.put("templateLogic", templateController);
 			StringWriter cacheString = new StringWriter();
 			PrintWriter cachedStream = new PrintWriter(cacheString);
-			new VelocityTemplateProcessor().renderTemplate(context, cachedStream, componentString);
+			new VelocityTemplateProcessor().renderTemplate(context, cachedStream, componentString, false, component);
 			componentString = cacheString.toString();
 	
 			int bodyIndex = componentString.indexOf("<body");
@@ -417,10 +421,10 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 				sb.insert(bodyIndex + 5, onContextMenu);
 				componentString = sb.toString();
 
-				org.w3c.dom.Document componentPropertiesDocument = getComponentPropertiesDocument(templateController, siteNodeId, languageId, component.getContentId()); 
+				Document componentPropertiesDocument = getComponentPropertiesDOM4JDocument(templateController, siteNodeId, languageId, component.getContentId()); 
 				this.propertiesDivs += getComponentPropertiesDiv(templateController, repositoryId, siteNodeId, languageId, contentId, component.getId(), component.getContentId(), componentPropertiesDocument);
 
-				org.w3c.dom.Document componentTasksDocument = getComponentTasksDocument(templateController, siteNodeId, languageId, component.getContentId()); 
+				Document componentTasksDocument = getComponentTasksDOM4JDocument(templateController, siteNodeId, languageId, component.getContentId()); 
 				this.tasksDivs += getComponentTasksDiv(repositoryId, siteNodeId, languageId, contentId, component, componentTasksDocument, templateController);
 			}
 	
@@ -499,10 +503,10 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 								else
 								    subComponentString += childComponentsString;
 								    
-								org.w3c.dom.Document componentPropertiesDocument = getComponentPropertiesDocument(templateController, siteNodeId, languageId, component.getContentId()); 
+								Document componentPropertiesDocument = getComponentPropertiesDOM4JDocument(templateController, siteNodeId, languageId, component.getContentId()); 
 								this.propertiesDivs += getComponentPropertiesDiv(templateController, repositoryId, siteNodeId, languageId, contentId, new Integer(siteNodeId.intValue()*100 + subComponent.getId().intValue()), subComponent.getContentId(), componentPropertiesDocument);
 								
-								org.w3c.dom.Document componentTasksDocument = getComponentTasksDocument(templateController, siteNodeId, languageId, subComponent.getContentId()); 
+								Document componentTasksDocument = getComponentTasksDOM4JDocument(templateController, siteNodeId, languageId, subComponent.getContentId()); 
 								this.tasksDivs += getComponentTasksDiv(repositoryId, siteNodeId, languageId, contentId, subComponent, componentTasksDocument, templateController);
 								
 							}
@@ -533,10 +537,10 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 								    subComponentString += childComponentsString;
 								}
 								
-								org.w3c.dom.Document componentPropertiesDocument = getComponentPropertiesDocument(templateController, siteNodeId, languageId, subComponent.getContentId()); 
+								Document componentPropertiesDocument = getComponentPropertiesDOM4JDocument(templateController, siteNodeId, languageId, subComponent.getContentId()); 
 								this.propertiesDivs += getComponentPropertiesDiv(templateController, repositoryId, siteNodeId, languageId, contentId, subComponent.getId(), subComponent.getContentId(), componentPropertiesDocument);
 								
-								org.w3c.dom.Document componentTasksDocument = getComponentTasksDocument(templateController, siteNodeId, languageId, subComponent.getContentId()); 
+								Document componentTasksDocument = getComponentTasksDOM4JDocument(templateController, siteNodeId, languageId, subComponent.getContentId()); 
 								this.tasksDivs += getComponentTasksDiv(repositoryId, siteNodeId, languageId, contentId, subComponent, componentTasksDocument, templateController);
 							}
 						}
@@ -609,7 +613,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 	 * This method creates a div for the components properties.
 	 */
 	
-	private String getComponentPropertiesDiv(TemplateController templateController, Integer repositoryId, Integer siteNodeId, Integer languageId, Integer contentId, Integer componentId, Integer componentContentId, org.w3c.dom.Document document) throws Exception
+	private String getComponentPropertiesDiv(TemplateController templateController, Integer repositoryId, Integer siteNodeId, Integer languageId, Integer contentId, Integer componentId, Integer componentContentId, Document document) throws Exception
 	{	
 	    if(templateController.getRequestParameter("skipPropertiesDiv") != null && templateController.getRequestParameter("skipPropertiesDiv").equalsIgnoreCase("true"))
 	        return "";
@@ -774,7 +778,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 				
 				StringBuffer helpSB = new StringBuffer();
 				helpSB.append("<div style=\"border: 1px solid black; visibility: hidden; z-index: 200000; position: absolute;\" id=\"helpLayer" + componentProperty.getComponentId() + "_" + componentProperty.getName() + "\">");
-				helpSB.append("<table class=\"igtable\" bgcolor=\"white\" width=\"200\"><tr class=\"igtr\"><td class=\"igpropertylabel\">" + (componentProperty.getDescription().equalsIgnoreCase("") ? "No description" : componentProperty.getDescription()) + "</td></tr></table>");
+				helpSB.append("<table class=\"igtable\" bgcolor=\"white\" width=\"200\"><tr class=\"igtr\"><td class=\"igpropertylabel\">" + (componentProperty.getDescription() == null || componentProperty.getDescription().equalsIgnoreCase("") ? "No description" : componentProperty.getDescription()) + "</td></tr></table>");
 				helpSB.append("</div>");
 				
 				sb.append("		<tr class=\"igtr\">");
@@ -810,7 +814,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 			{
 				sb.append("		<tr class=\"igtr\">");
 				sb.append("			<td class=\"igpropertylabel\" valign=\"top\" align=\"left\">" + componentProperty.getName() + "</td>");
-				sb.append("			<td class=\"igtd\" width=\"16\"><img src=\"" + componentEditorUrl + "/images/questionMark.gif\" title=\"" + (componentProperty.getDescription().equalsIgnoreCase("") ? "No description" : componentProperty.getDescription()) + "\"></td>");
+				sb.append("			<td class=\"igtd\" width=\"16\"><img src=\"" + componentEditorUrl + "/images/questionMark.gif\" title=\"" + (componentProperty.getDescription() == null || componentProperty.getDescription().equalsIgnoreCase("") ? "No description" : componentProperty.getDescription()) + "\"></td>");
 				
 				if(hasAccessToProperty)
 					sb.append("			<td class=\"igpropertyvalue\" align=\"left\"><input type=\"hidden\" name=\"" + propertyIndex + "_propertyName\" value=\"" + componentProperty.getName() + "\"><input type=\"text\" class=\"propertytextfield\" name=\"" + componentProperty.getName() + "\" value=\"" + componentProperty.getValue() + "\"></td>");
@@ -832,7 +836,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 			{
 				sb.append("		<tr class=\"igtr\">");
 				sb.append("			<td class=\"igpropertylabel\" valign=\"top\" align=\"left\">" + componentProperty.getName() + "</td>");
-				sb.append("			<td class=\"igtd\" width=\"16\"><img src=\"" + componentEditorUrl + "/images/questionMark.gif\" title=\"" + (componentProperty.getDescription().equalsIgnoreCase("") ? "No description" : componentProperty.getDescription()) + "\"></td>");
+				sb.append("			<td class=\"igtd\" width=\"16\"><img src=\"" + componentEditorUrl + "/images/questionMark.gif\" title=\"" + (componentProperty.getDescription() == null || componentProperty.getDescription().equalsIgnoreCase("") ? "No description" : componentProperty.getDescription()) + "\"></td>");
 				
 				if(hasAccessToProperty)
 					sb.append("			<td class=\"igpropertyvalue\" align=\"left\"><input type=\"hidden\" name=\"" + propertyIndex + "_propertyName\" value=\"" + componentProperty.getName() + "\"><textarea class=\"propertytextarea\" name=\"" + componentProperty.getName() + "\">" + (componentProperty.getValue() == null ? "" : componentProperty.getValue()) + "</textarea></td>");
@@ -854,7 +858,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 			{
 				sb.append("		<tr class=\"igtr\">");
 				sb.append("			<td class=\"igpropertylabel\" valign=\"top\" align=\"left\">" + componentProperty.getName() + "</td>");
-				sb.append("			<td class=\"igtd\" width=\"16\"><img src=\"" + componentEditorUrl + "/images/questionMark.gif\" title=\"" + (componentProperty.getDescription().equalsIgnoreCase("") ? "No description" : componentProperty.getDescription()) + "\"></td>");
+				sb.append("			<td class=\"igtd\" width=\"16\"><img src=\"" + componentEditorUrl + "/images/questionMark.gif\" title=\"" + (componentProperty.getDescription() == null || componentProperty.getDescription().equalsIgnoreCase("") ? "No description" : componentProperty.getDescription()) + "\"></td>");
 				
 				if(hasAccessToProperty)
 				{
@@ -932,7 +936,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 	 * This method creates a div for the components properties.
 	 */
 	
-	private String getComponentTasksDiv(Integer repositoryId, Integer siteNodeId, Integer languageId, Integer contentId, InfoGlueComponent component, org.w3c.dom.Document document, TemplateController templateController) throws Exception
+	private String getComponentTasksDiv(Integer repositoryId, Integer siteNodeId, Integer languageId, Integer contentId, InfoGlueComponent component, Document document, TemplateController templateController) throws Exception
 	{		
 	    InfoGluePrincipal principal = templateController.getPrincipal();
 	    String cmsUserName = (String)templateController.getHttpServletRequest().getSession().getAttribute("cmsUserName");
@@ -1402,7 +1406,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 	/**
 	 * This method fetches the pageComponent structure as a document.
 	 */
-	    
+	 /*   
 	protected org.w3c.dom.Document getComponentPropertiesDocument(TemplateController templateController, Integer siteNodeId, Integer languageId, Integer contentId) throws SystemException, Exception
 	{ 
 		String cacheName 	= "componentEditorCache";
@@ -1420,6 +1424,37 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 			if(xml != null && xml.length() > 0)
 			{
 				componentPropertiesDocument = XMLHelper.readDocumentFromByteArray(xml.getBytes("UTF-8"));
+				
+				CacheController.cacheObject(cacheName, cacheKey, componentPropertiesDocument);
+			}
+		}
+		catch(Exception e)
+		{
+			logger.error(e.getMessage(), e);
+			throw e;
+		}
+		
+		return componentPropertiesDocument;
+	}
+	*/
+	
+	protected Document getComponentPropertiesDOM4JDocument(TemplateController templateController, Integer siteNodeId, Integer languageId, Integer contentId) throws SystemException, Exception
+	{ 
+		String cacheName 	= "componentEditorCache";
+		String cacheKey		= "componentPropertiesDocument_" + siteNodeId + "_" + templateController.getLanguageId() + "_" + contentId;
+		Document cachedComponentPropertiesDocument = (Document)CacheController.getCachedObject(cacheName, cacheKey);
+		if(cachedComponentPropertiesDocument != null)
+			return cachedComponentPropertiesDocument;
+		
+		Document componentPropertiesDocument = null;
+   	
+		try
+		{
+			String xml = this.getComponentPropertiesString(templateController, siteNodeId, languageId, contentId);
+			//logger.info("xml: " + xml);
+			if(xml != null && xml.length() > 0)
+			{
+				componentPropertiesDocument = domBuilder.getDocument(xml);
 				
 				CacheController.cacheObject(cacheName, cacheKey, componentPropertiesDocument);
 			}
@@ -1471,7 +1506,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 	/**
 	 * This method fetches the tasks as a document.
 	 */
-	    
+/*	    
 	protected org.w3c.dom.Document getComponentTasksDocument(TemplateController templateController, Integer siteNodeId, Integer languageId, Integer contentId) throws SystemException, Exception
 	{ 	    
 		String cacheName 	= "componentEditorCache";
@@ -1488,6 +1523,36 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 			if(xml != null && xml.length() > 0)
 			{
 			    componentTasksDocument = XMLHelper.readDocumentFromByteArray(xml.getBytes("UTF-8"));
+				
+				CacheController.cacheObject(cacheName, cacheKey, componentTasksDocument);
+			}
+		}
+		catch(Exception e)
+		{
+			logger.error(e.getMessage(), e);
+			throw e;
+		}
+		
+		return componentTasksDocument;
+	}
+*/
+	
+	protected Document getComponentTasksDOM4JDocument(TemplateController templateController, Integer siteNodeId, Integer languageId, Integer contentId) throws SystemException, Exception
+	{ 	    
+		String cacheName 	= "componentEditorCache";
+		String cacheKey		= "componentTasksDocument_" + siteNodeId + "_" + templateController.getLanguageId() + "_" + contentId;
+		Document cachedComponentTasksDocument = (Document)CacheController.getCachedObject(cacheName, cacheKey);
+		if(cachedComponentTasksDocument != null)
+			return cachedComponentTasksDocument;
+		
+		Document componentTasksDocument = null;
+   	
+		try
+		{
+			String xml = this.getComponentTasksString(templateController, siteNodeId, languageId, contentId);
+			if(xml != null && xml.length() > 0)
+			{
+			    componentTasksDocument = domBuilder.getDocument(xml);
 				
 				CacheController.cacheObject(cacheName, cacheKey, componentTasksDocument);
 			}
@@ -1536,7 +1601,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 	
 	public Collection getComponentProperties(Integer componentId, TemplateController templateController, Integer siteNodeId, Integer languageId, Integer componentContentId) throws Exception
 	{
-		org.w3c.dom.Document componentPropertiesDocument = getComponentPropertiesDocument(templateController, siteNodeId, languageId, componentContentId);
+		Document componentPropertiesDocument = getComponentPropertiesDOM4JDocument(templateController, siteNodeId, languageId, componentContentId);
 		return getComponentProperties(componentId, componentPropertiesDocument, templateController);
 	}
 	
@@ -1544,7 +1609,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 	 * This method returns a bean representing a list of ComponentProperties that the component has.
 	 */
 	 
-	private List getComponentProperties(Integer componentId, org.w3c.dom.Document document) throws Exception
+	private List getComponentProperties(Integer componentId, Document document) throws Exception
 	{
 		//TODO - här kan vi säkert cache:a.
 		
@@ -1557,27 +1622,24 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		{
 			if(document != null)
 			{
-			//if(componentPropertiesXML != null && componentPropertiesXML.length() > 0)
-			//{
-				//org.w3c.dom.Document document = XMLHelper.readDocumentFromByteArray(componentPropertiesXML.getBytes("UTF-8"));
-
 				timer.printElapsedTime("Read document");
 
 				String propertyXPath = "//property";
 				//logger.info("propertyXPath:" + propertyXPath);
-				NodeList anl = org.apache.xpath.XPathAPI.selectNodeList(document.getDocumentElement(), propertyXPath);
+				List anl = document.selectNodes(propertyXPath);
 				timer.printElapsedTime("Set property xpath");
 				//logger.info("*********************************************************anl:" + anl.getLength());
-				for(int i=0; i < anl.getLength(); i++)
+				Iterator anlIterator = anl.iterator();
+				while(anlIterator.hasNext())
 				{
-					org.w3c.dom.Element binding = (org.w3c.dom.Element)anl.item(i);
+					Element binding = (Element)anlIterator.next();
 					
-					String name							 = binding.getAttribute("name");
-					String description					 = binding.getAttribute("description");
-					String type							 = binding.getAttribute("type");
-					String allowedContentTypeNamesString = binding.getAttribute("allowedContentTypeDefinitionNames");
-					String visualizingAction 			 = binding.getAttribute("visualizingAction");
-					String createAction 				 = binding.getAttribute("createAction");
+					String name							 = binding.attributeValue("name");
+					String description					 = binding.attributeValue("description");
+					String type							 = binding.attributeValue("type");
+					String allowedContentTypeNamesString = binding.attributeValue("allowedContentTypeDefinitionNames");
+					String visualizingAction 			 = binding.attributeValue("visualizingAction");
+					String createAction 				 = binding.attributeValue("createAction");
 					//logger.info("name:" + name);
 					//logger.info("type:" + type);
 
@@ -1596,8 +1658,8 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 					
 					if(type.equalsIgnoreCase(ComponentProperty.BINDING))
 					{
-						String entity 	= binding.getAttribute("entity");
-						boolean isMultipleBinding = new Boolean(binding.getAttribute("multiple")).booleanValue();
+						String entity 	= binding.attributeValue("entity");
+						boolean isMultipleBinding = new Boolean(binding.attributeValue("multiple")).booleanValue();
 						
 						property.setEntityClass(entity);
 						String value = getComponentPropertyValue(componentId, name);
@@ -1625,12 +1687,13 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 						String value = getComponentPropertyValue(componentId, name);
 						timer.printElapsedTime("Set property2");
 						
-						NodeList optionList = binding.getElementsByTagName("option");
-						for(int j=0; j < optionList.getLength(); j++)
+						List optionList = binding.elements("option");
+						Iterator optionListIterator = optionList.iterator();
+						while(optionListIterator.hasNext())
 						{
-							org.w3c.dom.Element option = (org.w3c.dom.Element)optionList.item(j);
-							String optionName	= option.getAttribute("name");
-							String optionValue	= option.getAttribute("value");
+							Element option = (Element)optionListIterator.next();
+							String optionName	= option.attributeValue("name");
+							String optionValue	= option.attributeValue("value");
 							ComponentPropertyOption cpo = new ComponentPropertyOption();
 							cpo.setName(optionName);
 							cpo.setValue(optionValue);
@@ -1658,7 +1721,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 	 * This method returns a bean representing a list of ComponentProperties that the component has.
 	 */
 	 
-	private List getComponentProperties(Integer componentId, org.w3c.dom.Document document, TemplateController templateController) throws Exception
+	private List getComponentProperties(Integer componentId, Document document, TemplateController templateController) throws Exception
 	{
 		//TODO - här kan vi säkert cache:a.
 		
@@ -1679,19 +1742,20 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 
 				String propertyXPath = "//property";
 				//logger.info("propertyXPath:" + propertyXPath);
-				NodeList anl = org.apache.xpath.XPathAPI.selectNodeList(document.getDocumentElement(), propertyXPath);
+				List anl = document.selectNodes(propertyXPath);
 				timer.printElapsedTime("Set property xpath");
 				//logger.info("*********************************************************anl:" + anl.getLength());
-				for(int i=0; i < anl.getLength(); i++)
+				Iterator anlIterator = anl.iterator();
+				while(anlIterator.hasNext())
 				{
-					org.w3c.dom.Element binding = (org.w3c.dom.Element)anl.item(i);
+					Element binding = (Element)anlIterator.next();
 					
-					String name							 = binding.getAttribute("name");
-					String description					 = binding.getAttribute("description");
-					String type							 = binding.getAttribute("type");
-					String allowedContentTypeNamesString = binding.getAttribute("allowedContentTypeDefinitionNames");
-					String visualizingAction 			 = binding.getAttribute("visualizingAction");
-					String createAction 				 = binding.getAttribute("createAction");
+					String name							 = binding.attributeValue("name");
+					String description					 = binding.attributeValue("description");
+					String type							 = binding.attributeValue("type");
+					String allowedContentTypeNamesString = binding.attributeValue("allowedContentTypeDefinitionNames");
+					String visualizingAction 			 = binding.attributeValue("visualizingAction");
+					String createAction 				 = binding.attributeValue("createAction");
 					//logger.info("name:" + name);
 					//logger.info("type:" + type);
 
@@ -1710,8 +1774,8 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 					
 					if(type.equalsIgnoreCase(ComponentProperty.BINDING))
 					{
-						String entity 	= binding.getAttribute("entity");
-						boolean isMultipleBinding = new Boolean(binding.getAttribute("multiple")).booleanValue();
+						String entity 	= binding.attributeValue("entity");
+						boolean isMultipleBinding = new Boolean(binding.attributeValue("multiple")).booleanValue();
 						
 						property.setEntityClass(entity);
 						String value = getComponentPropertyValue(componentId, name, templateController);
@@ -1739,12 +1803,13 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 						String value = getComponentPropertyValue(componentId, name, templateController);
 						timer.printElapsedTime("Set property2");
 						
-						NodeList optionList = binding.getElementsByTagName("option");
-						for(int j=0; j < optionList.getLength(); j++)
+						List optionList = binding.elements("option");
+						Iterator optionListIterator = optionList.iterator();
+						while(optionListIterator.hasNext())
 						{
-							org.w3c.dom.Element option = (org.w3c.dom.Element)optionList.item(j);
-							String optionName	= option.getAttribute("name");
-							String optionValue	= option.getAttribute("value");
+							Element option = (Element)optionListIterator.next();
+							String optionName	= option.attributeValue("name");
+							String optionValue	= option.attributeValue("value");
 							ComponentPropertyOption cpo = new ComponentPropertyOption();
 							cpo.setName(optionName);
 							cpo.setValue(optionValue);
@@ -1771,7 +1836,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 	 * This method returns a bean representing a list of ComponentProperties that the component has.
 	 */
 	 
-	private List getComponentTasks(Integer componentId, org.w3c.dom.Document document) throws Exception
+	private List getComponentTasks(Integer componentId, Document document) throws Exception
 	{
 		List componentTasks = new ArrayList();
 		Timer timer = new Timer();
@@ -1785,14 +1850,15 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 
 				String propertyXPath = "//task";
 				//logger.info("propertyXPath:" + propertyXPath);
-				NodeList anl = org.apache.xpath.XPathAPI.selectNodeList(document.getDocumentElement(), propertyXPath);
+				List anl = document.selectNodes(propertyXPath);
 				timer.printElapsedTime("Set property xpath");
-				for(int i=0; i < anl.getLength(); i++)
+				Iterator anlIterator = anl.iterator();
+				while(anlIterator.hasNext())
 				{
-					org.w3c.dom.Element binding = (org.w3c.dom.Element)anl.item(i);
+					Element binding = (Element)anlIterator.next();
 					
-					String name		= binding.getAttribute("name");
-					String view		= binding.getAttribute("view");
+					String name		= binding.attributeValue("name");
+					String view		= binding.attributeValue("view");
 					logger.info("name:" + name);
 					logger.info("view:" + view);
 
@@ -1848,6 +1914,26 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 
 		NodeDeliveryController nodeDeliveryController = NodeDeliveryController.getNodeDeliveryController(siteNodeId, languageId, contentId);
 		
+		Document document = getPageComponentsDOM4JDocument(getDatabase(), this.getTemplateController(), siteNodeId, languageId, contentId);
+		
+		String componentXPath = "//component[@id=" + componentId + "]/properties/property[@name='" + name + "']";
+		//logger.info("componentXPath:" + componentXPath);
+		List anl = document.selectNodes(componentXPath);
+		Iterator anlIterator = anl.iterator();
+		while(anlIterator.hasNext())
+		{
+			Element property = (Element)anlIterator.next();
+			
+			String id 			= property.attributeValue("type");
+			String path 		= property.attributeValue("path");
+			
+			if(property.attribute("path_" + locale.getLanguage()) != null)
+				path = property.attributeValue("path_" + locale.getLanguage());
+
+			value 				= path;
+		}
+
+		/*
 		org.w3c.dom.Document document = getPageComponentsDocument(getDatabase(), this.getTemplateController(), siteNodeId, languageId, contentId);
 		
 		String componentXPath = "//component[@id=" + componentId + "]/properties/property[@name='" + name + "']";
@@ -1865,7 +1951,8 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 
 			value 				= path;
 		}
-
+		*/
+		
 		return value;
 	}
 
@@ -1894,7 +1981,27 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 			contentId  = new Integer(this.getRequest().getParameter("contentId"));
 
 		NodeDeliveryController nodeDeliveryController = NodeDeliveryController.getNodeDeliveryController(templateController.getSiteNodeId(), languageId, contentId);
+
+		Document document = getPageComponentsDOM4JDocument(templateController.getDatabase(), templateController, templateController.getSiteNodeId(), languageId, contentId);
 		
+		String componentXPath = "//component[@id=" + componentId + "]/properties/property[@name='" + name + "']";
+		//logger.info("componentXPath:" + componentXPath);
+		List anl = document.selectNodes(componentXPath);
+		Iterator anlIterator = anl.iterator();
+		while(anlIterator.hasNext())
+		{
+			Element property = (Element)anlIterator.next();
+			
+			String id 			= property.attributeValue("type");
+			String path 		= property.attributeValue("path");
+			
+			if(property.attribute("path_" + locale.getLanguage()) != null)
+				path = property.attributeValue("path_" + locale.getLanguage());
+
+			value 				= path;
+		}
+
+		/*
 		org.w3c.dom.Document document = getPageComponentsDocument(templateController.getDatabase(), templateController, templateController.getSiteNodeId(), languageId, contentId);
 		
 		String componentXPath = "//component[@id=" + componentId + "]/properties/property[@name='" + name + "']";
@@ -1912,6 +2019,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 				
 			value 				= path;
 		}
+		*/
 
 		return value;
 	}
@@ -1938,19 +2046,20 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		String componentXML = getPageComponentsString(getDatabase(), this.getTemplateController(), siteNodeId, languageId, contentId);			
 		////logger.info("componentXML:" + componentXML);
 
-		org.w3c.dom.Document document = XMLHelper.readDocumentFromByteArray(componentXML.getBytes("UTF-8"));
+		Document document = domBuilder.getDocument(componentXML);
 		String componentXPath = "//component[@id=" + componentId + "]/bindings/binding";
 		//logger.info("componentXPath:" + componentXPath);
-		NodeList anl = org.apache.xpath.XPathAPI.selectNodeList(document.getDocumentElement(), componentXPath);
-		for(int i=0; i < anl.getLength(); i++)
+		List anl = document.selectNodes(componentXPath);
+		Iterator anlIterator = anl.iterator();
+		while(anlIterator.hasNext())
 		{
-			org.w3c.dom.Element binding = (org.w3c.dom.Element)anl.item(i);
+			Element binding = (Element)anlIterator.next();
 			//logger.info(XMLHelper.serializeDom(binding, new StringBuffer()));
 			//logger.info("YES - we read the binding properties...");		
 			
-			String id 			= binding.getAttribute("id");
-			String entityClass 	= binding.getAttribute("entity");
-			String entityId 	= binding.getAttribute("entityId");
+			String id 			= binding.attributeValue("id");
+			String entityClass 	= binding.attributeValue("entity");
+			String entityId 	= binding.attributeValue("entityId");
 			//logger.info("id:" + id);
 			//logger.info("entityClass:" + entityClass);
 			//logger.info("entityId:" + entityId);
