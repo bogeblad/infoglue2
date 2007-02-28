@@ -1,3 +1,18 @@
+-------------------------------------------------------------------------------------
+- InfoGlue 2.5 Final
+-------------------------------------------------------------------------------------
+
+Release notes
+---------------------------------------
+The spring release 2007 of InfoGlue contains a huge amount of new features, bugfixes and improvements.
+
+Thanx to all involved!!
+
+The InfoGlue Team
+
+
+Abbreviated Changelog from 2.4.1 Final 
+---------------------------------------
 
 - Added fix so if the cas-ticket is first argument it will not be forgotten
 - Fixed so one can state to user $currentUrl for cas-serviceURL in the cms-authentication filter as well. Before only one static url could be set.
@@ -9,7 +24,7 @@
 - Added possibility to have a robots.txt in deliver
 - Added thumbnail support for PNG-images and made edit-link only appear in front of gif, jpg and png assets in the content tool
 - Made image editor a bit more robust - added some checks on crop and resize tools.
-- Added feature which allows the system to send notifications to publishers when  one or more items are submitted for publication. 
+- Added feature which allows the system to send notifications to publishers when one or more items are submitted for publication. 
   The notification can either be sent to the publishers which is members of the same group as the submitter or to submitters in a particular group.
   The feature can be turned on/off through the application settings.
 - Added feature so a publisher can filter the items submitted to publishing tool. One can look at all items, items submitted by members in any of my groups or items submitter by members of a particular group.
@@ -64,6 +79,9 @@
 - Dramatically improved performance when listing all active workflows in mydesktop. Also beneficial for other apps using the API:s.
 - Added new JNDI Authorization module which is a rewrite of the old module but is more strict and conforms better to standards and uses full names all over.
 - Implemented displayName on principal, role and group so it's easier to build nicer GUI:s when assigning rights etc. When connecting LDAP-sources the fully qualified names are so long it gets hard to read.
+- Made adjustments so if a user changes the meta info of a page it also changes the last modifyer and date of the page.
+- Added 3 different XPath-handlers for property parsing to compare performance - Xalan, Dom4j and XPP3. For now XPP3 is used - can be configured if needed by setting a property in deliver.properties called "propertiesParser" - Can be "xalan", "dom4j" or "xpp3".
+- Tried to improve performance by removing some synchronized blocks in the cache handling. Handles huge number of concurrent visitors better.
 
 -------------------------------------------------------------------------------------
 - InfoGlue 2.4.1 Final
