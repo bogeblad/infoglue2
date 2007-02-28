@@ -80,7 +80,7 @@ public class UpdateContentVersionAttributeAction extends ViewContentVersionActio
 			ceb.throwIfNotEmpty();
 			
 			this.contentVersionVO.setVersionModifier(this.getInfoGluePrincipal().getName());
-    		ContentVersionController.getContentVersionController().update(this.contentId, this.languageId, this.contentVersionVO);
+    		ContentVersionController.getContentVersionController().update(this.contentId, this.languageId, this.contentVersionVO, this.getInfoGluePrincipal());
 		}
 		
 		return "success";
