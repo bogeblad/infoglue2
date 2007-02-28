@@ -1000,7 +1000,54 @@ public class SiteNodeController extends BaseController
 		oql.close();
 
 		return siteNodes;
+    }
+
+
+    public SiteNodeVO getSiteNodeVOWithMetaInfoContentId(Integer contentId) throws ConstraintException, SystemException
+    {
+		SiteNodeVO siteNodeVO = null;
+
+		Database db = CastorDatabaseService.getDatabase();
+        ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
+
+        beginTransaction(db);
+
+        try
+        {
+        	SiteNode siteNode = getSiteNodeWithMetaInfoContentId(db, contentId);
+        	siteNodeVO = siteNode.getValueObject();
+        	
+            commitTransaction(db);
+        }
+        catch(Exception e)
+        {
+            logger.error("An error occurred so we should not complete the transaction:" + e, e);
+            rollbackTransaction(db);
+            throw new SystemException(e.getMessage());
+        }
+        
+        return siteNodeVO;
     }       
+
+    public SiteNode getSiteNodeWithMetaInfoContentId(Database db, Integer contentId) throws ConstraintException, SystemException, Exception
+    {
+		SiteNode siteNode = null;
+
+		OQLQuery oql = db.getOQLQuery("SELECT sn FROM org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl sn WHERE sn.metaInfoContentId = $1");
+    	oql.bind(contentId);
+    	
+    	QueryResults results = oql.execute();
+		
+		if(results.hasMore()) 
+        {
+			siteNode = (SiteNodeImpl)results.next();
+        }
+
+		results.close();
+		oql.close();
+
+		return siteNode;
+    }
 
 }
  
