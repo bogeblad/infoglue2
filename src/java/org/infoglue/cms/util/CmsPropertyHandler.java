@@ -579,7 +579,7 @@ public class CmsPropertyHandler
 	{
 	    return getServerNodeProperty("extranetCookieTimeout", true, "1800");
 	}
-
+	
 	public static String getWebServicesBaseUrl()
 	{
 	    return getServerNodeProperty("webServicesBaseUrl", true);
@@ -1033,6 +1033,11 @@ public class CmsPropertyHandler
 	public static String getPreferredToolId(String userName)
 	{
 	    return propertySet.getString("principal_" + userName + "_defaultToolId");
+	}
+
+	public static String getPropertiesParser()
+	{
+	    return getServerNodeProperty("propertiesParser", false, "xpp3");
 	}
 
 	public static List getInternalDeliveryUrls()
