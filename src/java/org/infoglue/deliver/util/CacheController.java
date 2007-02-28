@@ -32,6 +32,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
@@ -99,6 +100,8 @@ import org.infoglue.deliver.applications.databeans.CacheEvictionBean;
 import org.infoglue.deliver.applications.databeans.DatabaseWrapper;
 import org.infoglue.deliver.portal.ServletConfigContainer;
 
+import com.opensymphony.oscache.base.AbstractCacheAdministrator;
+import com.opensymphony.oscache.base.Cache;
 import com.opensymphony.oscache.base.CacheEntry;
 import com.opensymphony.oscache.base.NeedsRefreshException;
 import com.opensymphony.oscache.base.events.CacheEntryEventListener;
@@ -118,8 +121,8 @@ public class CacheController extends Thread
     public static List notifications = Collections.synchronizedList(new ArrayList());
     
     private static Map eventListeners = new HashMap();
-	//private static Map caches = new HashMap();
-	private static Map caches = Collections.synchronizedMap(new HashMap());
+	private static Map caches = new HashMap();
+	//private static Map caches = Collections.synchronizedMap(new HashMap());
 	private boolean expireCacheAutomatically = false;
 	private int cacheExpireInterval = 1800000;
 	private boolean continueRunning = true;
@@ -171,12 +174,12 @@ public class CacheController extends Thread
 		synchronized(caches)
 		{
 			if(!caches.containsKey(cacheName))
-				caches.put(cacheName, Collections.synchronizedMap(new HashMap()));
-			    //caches.put(cacheName, new HashMap());
+				//caches.put(cacheName, Collections.synchronizedMap(new HashMap()));
+			    caches.put(cacheName, new HashMap());
 		}
 			
-		synchronized(caches)
-		{
+		//synchronized(caches)
+		//{
 			Map cacheInstance = (Map)caches.get(cacheName);
 			if(cacheInstance != null && key != null && value != null)
 		    {
@@ -185,22 +188,22 @@ public class CacheController extends Thread
 				    cacheInstance.put(key, value);
 		        }
 		    }
-		}
+		//}
 	}	
 	
 	public static Object getCachedObject(String cacheName, Object key)
 	{
-		synchronized(caches)
-		{
+		//synchronized(caches)
+		//{
 			Map cacheInstance = (Map)caches.get(cacheName);
 			if(cacheInstance != null)
 		    {
 				synchronized(cacheInstance)
-		        {
+				{
 					return cacheInstance.get(key);
-		        }
+				}
 		    }
-		}
+		//}
 		
         return null;
     }
@@ -216,14 +219,33 @@ public class CacheController extends Thread
 		
 		cacheObjectInAdvancedCache(cacheName, key, value, groups, useGroups);
 	}
-
+	
 	public static void cacheObjectInAdvancedCache(String cacheName, Object key, Object value, String[] groups, boolean useGroups)
 	{
-	    synchronized(caches) 
-		{
+		//synchronized(caches) 
+		//{
 		    if(!caches.containsKey(cacheName))
 		    {
-		        GeneralCacheAdministrator cacheAdministrator = new GeneralCacheAdministrator();
+		    	GeneralCacheAdministrator cacheAdministrator = null;
+		    	Map cacheSettings = (Map)getCachedObject("serverNodePropertiesCache", "cacheSettings");
+		    	if(cacheSettings == null)
+		    	{
+		    		cacheSettings = CmsPropertyHandler.getCacheSettings();
+		    		cacheObject("serverNodePropertiesCache", "cacheSettings", cacheSettings);
+		    	}
+		    	
+		    	String cacheCapacity = (String)cacheSettings.get("CACHE_CAPACITY_" + cacheName);
+		    	if(cacheCapacity != null && !cacheCapacity.equals(""))
+		    	{
+					Properties p = new Properties();
+					p.setProperty(AbstractCacheAdministrator.CACHE_ALGORITHM_KEY, "com.opensymphony.oscache.base.algorithm.LRUCache");
+					p.setProperty(AbstractCacheAdministrator.CACHE_CAPACITY_KEY, cacheCapacity);
+					cacheAdministrator = new GeneralCacheAdministrator(p);
+				}
+				else
+				{
+					cacheAdministrator = new GeneralCacheAdministrator();
+				}
 		        
 		        CacheEntryEventListenerImpl cacheEntryEventListener = new ExtendedCacheEntryEventListenerImpl();
 		        CacheMapAccessEventListenerImpl cacheMapAccessEventListener = new CacheMapAccessEventListenerImpl(); 
@@ -242,7 +264,6 @@ public class CacheController extends Thread
 				{
 					if(logger.isDebugEnabled())
 					{
-					
 						if(cacheName.equalsIgnoreCase("componentPropertyCache") && key.toString().indexOf("Article") > 0)
 						{
 							logger.debug("Caching objects in " + cacheName + "-->\n[" + key.toString() + "]");
@@ -252,7 +273,7 @@ public class CacheController extends Thread
 				    			logger.debug("No group....");
 						}
 					}
-					
+
 				    cacheAdministrator.putInCache(key.toString(), value, groups);
 				}
 				else
@@ -260,42 +281,40 @@ public class CacheController extends Thread
 				    cacheAdministrator.putInCache(key.toString(), value);
 				}
 			}
-		}
+		//}
 		
 		//logger.info("Done cacheObjectInAdvancedCache");
 	}	
 	
-	public static Object getCachedObjectFromAdvancedCache(String cacheName, Object key)
+	public static Object getCachedObjectFromAdvancedCache(String cacheName, String key)
 	{
 	    //logger.info("getCachedObjectFromAdvancedCache start:" + cacheName + ":" + key);
 
 	    Object value = null;
 	    
-	    synchronized(caches) 
-		{
+	    //synchronized(caches) 
+	    //{
 	    	GeneralCacheAdministrator cacheAdministrator = (GeneralCacheAdministrator)caches.get(cacheName);
 		    if(cacheAdministrator != null)
 		    {
-		        synchronized(cacheAdministrator)
-		        {
+		    	synchronized(cacheAdministrator)
+		    	{
 				    try 
 				    {
-				        value = (cacheAdministrator == null) ? null : cacheAdministrator.getFromCache(key.toString(), CacheEntry.INDEFINITE_EXPIRY);
+				        value = (cacheAdministrator == null) ? null : cacheAdministrator.getFromCache(key, CacheEntry.INDEFINITE_EXPIRY);
 					} 
 				    catch (NeedsRefreshException nre) 
 				    {
-				    	cacheAdministrator.cancelUpdate(key.toString());
+				    	cacheAdministrator.cancelUpdate(key);
 					}
-		        }
+			    }
 		    }
-		    
-		    //logger.info("getCachedObjectFromAdvancedCache stop...");
-		}
+		//}
 	    
 		return value;
 	}
 
-	public static Object getCachedObjectFromAdvancedCache(String cacheName, Object key, int updateInterval)
+	public static Object getCachedObjectFromAdvancedCache(String cacheName, String key, int updateInterval)
 	{
 		if(cacheName == null || key == null)
 			return null;
@@ -305,25 +324,24 @@ public class CacheController extends Thread
 	    //return getCachedObject(cacheName, key);
 	    Object value = null;
 	    
-	    synchronized(caches) 
-		{
+	    //synchronized(caches) 
+	    //{
 		    GeneralCacheAdministrator cacheAdministrator = (GeneralCacheAdministrator)caches.get(cacheName);
 		    if(cacheAdministrator != null)
 		    {
-		        synchronized(cacheAdministrator)
-		        {
+		    	synchronized(cacheAdministrator)
+		    	{
 				    try 
 				    {
-				        value = (cacheAdministrator == null) ? null : cacheAdministrator.getFromCache(key.toString(), updateInterval);
+				        value = (cacheAdministrator == null) ? null : cacheAdministrator.getFromCache(key, updateInterval);
 					} 
 				    catch (NeedsRefreshException nre) 
 				    {
-				        cacheAdministrator.cancelUpdate(key.toString());
+				        cacheAdministrator.cancelUpdate(key);
 					}
-		        }
+				}
 		    }
-		    //logger.info("getCachedObjectFromAdvancedCache stop...");
-		}
+		//}
 	    
 		return value;
 	}
