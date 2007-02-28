@@ -25,16 +25,13 @@ package org.infoglue.cms.security;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Hashtable;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
 import javax.naming.Context;
-import javax.naming.InitialContext;
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
 import javax.naming.directory.Attribute;
@@ -45,7 +42,6 @@ import javax.naming.directory.SearchControls;
 import javax.naming.directory.SearchResult;
 import javax.naming.ldap.Control;
 import javax.naming.ldap.InitialLdapContext;
-import javax.naming.ldap.LdapContext;
 
 import org.apache.log4j.Logger;
 import org.infoglue.cms.entities.management.GroupVO;
@@ -56,8 +52,6 @@ import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.deliver.util.CacheController;
 import org.infoglue.deliver.util.NullObject;
-
-import com.sun.jndi.ldap.LdapCtx;
 
 /**
  * @author Mattias Bogeblad
@@ -278,7 +272,6 @@ public class SimplifiedJNDIBasicAuthorizationModule implements AuthorizationModu
 		String userSearch				= this.extraProperties.getProperty("userSearch");
 		String userAttributesFilter		= this.extraProperties.getProperty("userAttributesFilter", "cn, distinguishedName");
 		String userNameAttributeFilter	= this.extraProperties.getProperty("userNameAttributeFilter", "distinguishedName");
-		String samAccountDomainName		= this.extraProperties.getProperty("samAccountDomainName");
 		
 		try
 		{
@@ -291,19 +284,26 @@ public class SimplifiedJNDIBasicAuthorizationModule implements AuthorizationModu
 	        	if(anonymousUserBase != null && !anonymousUserBase.equals(""))
 	        		baseDN = anonymousUserBase;
 	        }
-	        	
-	        //(|(cn=sss)(mail=astefan.sik@korsnäs.com)(proxyAddresses=smtp:stefan.sik@frovi.com))
 	        
 	        System.out.println("userName:" + userName);
-	        System.out.println("samAccountDomainName:" + samAccountDomainName);
-	        
-	        if(samAccountDomainName != null && !samAccountDomainName.equals(""))
-	        {
-	        	int startIndex = userName.indexOf(samAccountDomainName);
-	        	if(startIndex > -1)
-	        		userName = userName.substring(0, startIndex) + userName.substring(startIndex + samAccountDomainName.length());
-	        	//userName.replaceAll(samAccountDomainName, "");
-	        }
+
+	        int index = 0;
+			String samAccountDomainName	= this.extraProperties.getProperty("samAccountDomainName." + index);
+			while(samAccountDomainName != null)
+			{
+		        System.out.println("samAccountDomainName:" + samAccountDomainName);
+		        if(samAccountDomainName != null && !samAccountDomainName.equals(""))
+		        {
+		        	int startIndex = userName.indexOf(samAccountDomainName);
+		        	if(startIndex > -1)
+		        		userName = userName.substring(0, startIndex) + userName.substring(startIndex + samAccountDomainName.length());
+		        	//userName.replaceAll(samAccountDomainName, "");
+		        }
+		        
+		        index++;
+				samAccountDomainName = this.extraProperties.getProperty("samAccountDomainName." + index);
+			}
+			
 	        System.out.println("userName:" + userName);
 	        
 			String searchFilter = "(CN=" + userName + ")";

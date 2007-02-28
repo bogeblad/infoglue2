@@ -605,11 +605,14 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule, Serial
 	        	if(anonymousUserBase != null && !anonymousUserBase.equals(""))
 	        		baseDN = anonymousUserBase;
 	        }
-
-			String searchFilter = "(CN=" + userName +")";
+	        	
+			String searchFilter = "(CN=" + userName + ")";
 			if(userSearch != null && userSearch.length() > 0)
 				searchFilter = userSearch.replaceAll("\\{1\\}", userName);
-			
+
+			if(searchFilter.indexOf(",") > -1)
+				searchFilter = searchFilter.substring(1, searchFilter.indexOf(","));
+
 			String attributesFilter = "name, givenName, sn, mail, memberOf";
 			if(userAttributesFilter != null && userAttributesFilter.length() > 0)
 				attributesFilter = userAttributesFilter;
@@ -1404,7 +1407,7 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule, Serial
 		
 		try 
 		{
-		    logger.info("roleName:" + roleName);
+		    logger.info("Getting users with role:" + roleName);
 
 			String baseDN = roleBase;
 			String searchFilter = "(cn=" + roleName + ")";
@@ -1447,12 +1450,12 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule, Serial
 				while(allEnum.hasMore())
 				{
 					String roleNameCandidate = (String)allEnum.next();
-					logger.info("roleNameCandidate:" + roleNameCandidate);
-					
-					if(roleNameCandidate.equals(roleName))
+					logger.info("roleNameCandidate:" + roleNameCandidate + "=" + roleName);
+					if(roleNameCandidate.equalsIgnoreCase(roleName))
 					{
+						logger.info("usersAttributeFilter:" + usersAttributeFilter);
 					    Attribute usersAttribute = attributes.get(usersAttributeFilter);
-						logger.info("usersAttribute:" + usersAttribute.toString());
+						logger.info("usersAttribute:" + usersAttribute);
 						
 						NamingEnumeration allUsersEnum = usersAttribute.getAll();
 						while(allUsersEnum.hasMore())
