@@ -23,6 +23,7 @@
 
 package org.infoglue.cms.controllers.kernel.impl.simple;
 
+import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -343,7 +344,23 @@ public class SystemUserController extends BaseController
 	 */
     public SystemUserVO create(SystemUserVO systemUserVO) throws ConstraintException, SystemException
     {
-        SystemUser systemUser = new SystemUserImpl();
+    	/*
+    	try
+    	{
+	    	MessageDigest md = MessageDigest.getInstance("MD5");
+	
+		    md.update(systemUserVO.getPassword().getBytes("utf-8"));
+		    String digestedPassword = new String(md.digest());
+		    System.out.println("digestedPassword:" + digestedPassword);
+		    systemUserVO.setPassword(digestedPassword);
+    	}
+    	catch(Exception e)
+    	{
+    		e.printStackTrace();
+    	}
+    	*/
+    	
+    	SystemUser systemUser = new SystemUserImpl();
         systemUser.setValueObject(systemUserVO);
         systemUser = (SystemUser) createEntity(systemUser);
         return systemUser.getValueObject();
@@ -355,7 +372,23 @@ public class SystemUserController extends BaseController
 	 */
     public SystemUser create(SystemUserVO systemUserVO, Database db) throws ConstraintException, SystemException, Exception
     {
-        SystemUser systemUser = new SystemUserImpl();
+    	/*
+    	try
+    	{
+	    	MessageDigest md = MessageDigest.getInstance("MD5");
+	
+		    md.update(systemUserVO.getPassword().getBytes("utf-8"));
+		    String digestedPassword = new String(md.digest());
+		    System.out.println("digestedPassword:" + digestedPassword);
+		    systemUserVO.setPassword(digestedPassword);
+    	}
+    	catch(Exception e)
+    	{
+    		e.printStackTrace();
+    	}
+    	*/
+
+    	SystemUser systemUser = new SystemUserImpl();
         systemUser.setValueObject(systemUserVO);
         systemUser = (SystemUser) createEntity(systemUser, db);
         return systemUser;
