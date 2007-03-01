@@ -686,8 +686,7 @@ public class RemoteContentServiceImpl extends RemoteInfoGlueService
             
             if(forceDelete.booleanValue())
             {
-            	System.out.println("Forcing delete...");
-	            ContentVO currentContentVO = ContentControllerProxy.getContentController().getContentVOWithId(contentId);
+            	ContentVO currentContentVO = ContentControllerProxy.getContentController().getContentVOWithId(contentId);
 		        List contentVersionsVOList = ContentVersionController.getContentVersionController().getPublishedActiveContentVersionVOList(contentId);
 		        
 		        List events = new ArrayList();
