@@ -75,6 +75,23 @@
 	        <rtexprvalue>true</rtexprvalue>
 		</attribute>
 	</tag>
+
+	<tag>
+	    <name>categoryPath</name>
+	    <tagclass>org.infoglue.deliver.taglib.management.CategoryPathTag</tagclass>
+	    <bodycontent>empty</bodycontent>
+	    <info></info>
+	    <attribute>
+		    <name>id</name>
+	    	<required>true</required>
+	        <rtexprvalue>true</rtexprvalue>
+		</attribute>
+	    <attribute>
+		    <name>categoryId</name>
+	    	<required>true</required>
+	        <rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
 	 
 	<tag>
 	    <name>contentTypeDefinitionAttributes</name>

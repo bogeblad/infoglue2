@@ -20,7 +20,7 @@
  *
  * ===============================================================================
  *
- * $Id: CategoryController.java,v 1.16 2006/12/03 19:27:50 mattias Exp $
+ * $Id: CategoryController.java,v 1.17 2007/03/03 23:38:54 mattias Exp $
  */
 package org.infoglue.cms.controllers.kernel.impl.simple;
 
@@ -160,6 +160,33 @@ public class CategoryController extends BaseController
 	    }
 	    
 	    return categoryVO;
+	}
+
+	/**
+	 * Gets a category's full path.
+	 *
+	 * @return	The full path to the category
+	 * @throws	SystemException If an error happens
+	 */
+	public String getCategoryPath(Integer categoryId, Database db) throws SystemException
+	{
+	    StringBuffer path = new StringBuffer();
+        
+	    Category category = findById(categoryId, db);
+	    if(category != null)
+	    {
+	    	path.insert(0, "/" + category.getName());
+	    	while(category.getParentId() != null)
+	    	{
+	    		category = findById(category.getParentId(), db);
+	    	    if(category != null)
+		    	{
+		    		path.insert(0, "/" + category.getName());
+		    	}
+	    	}
+	    }
+	    
+	    return path.toString();
 	}
 
 	/**
