@@ -435,6 +435,48 @@
 	        <rtexprvalue>false</rtexprvalue>
     	</attribute>
 	</tag>	 
+
+	<tag>
+		<name>assignedCategories</name>
+		<tagclass>org.infoglue.deliver.taglib.content.AssignedCategoriesTag</tagclass>
+		<bodycontent>empty</bodycontent>
+        <info>A tag returning the categories assigned to a content on a certain category area</info>
+        <attribute>
+    	    <name>id</name>
+        	<required>true</required>
+	        <rtexprvalue>false</rtexprvalue>
+    	</attribute>
+        <attribute>
+    	    <name>propertyName</name>
+        	<required>false</required>
+	        <rtexprvalue>false</rtexprvalue>
+    	</attribute>
+        <attribute>
+    	    <name>contentId</name>
+        	<required>false</required>
+	        <rtexprvalue>false</rtexprvalue>
+    	</attribute>
+        <attribute>
+    	    <name>languageId</name>
+        	<required>false</required>
+	        <rtexprvalue>false</rtexprvalue>
+    	</attribute>
+        <attribute>
+    	    <name>categoryKey</name>
+        	<required>true</required>
+	        <rtexprvalue>false</rtexprvalue>
+    	</attribute>
+        <attribute>
+    	    <name>useInheritance</name>
+        	<required>false</required>
+	        <rtexprvalue>false</rtexprvalue>
+    	</attribute>
+        <attribute>
+    	    <name>useAttributeLanguageFallback</name>
+        	<required>false</required>
+	        <rtexprvalue>false</rtexprvalue>
+    	</attribute>
+	</tag>	 
 	
 	<tag>
         <name>editOnSight</name>

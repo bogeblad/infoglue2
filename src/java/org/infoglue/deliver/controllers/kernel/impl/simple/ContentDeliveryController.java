@@ -39,8 +39,10 @@ import org.exolab.castor.jdo.OQLQuery;
 import org.exolab.castor.jdo.QueryResults;
 import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.controllers.kernel.impl.simple.AccessRightController;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentCategoryController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeController;
 import org.infoglue.cms.entities.content.Content;
+import org.infoglue.cms.entities.content.ContentCategory;
 import org.infoglue.cms.entities.content.ContentCategoryVO;
 import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.content.ContentVersion;
@@ -510,6 +512,71 @@ public class ContentDeliveryController extends BaseDeliveryController
 		return toVOList(versions);
 	}
 
+	public List getAssignedCategoryVOsForContentVersionId(Database db, Integer contentId, Integer languageId, String categoryKey, Integer siteNodeId, boolean useLanguageFallback, DeliveryContext deliveryContext, InfoGluePrincipal infoGluePrincipal) throws Exception
+	{
+		List assignedCategoryVOList = new ArrayList();
+		
+		ContentVersion contentVersion = getContentVersion(siteNodeId, contentId, languageId, db, useLanguageFallback, deliveryContext, infoGluePrincipal);
+		
+		List assignedContentCategories = ContentCategoryController.getController().findByContentVersionAttribute(categoryKey, contentVersion, db, true);
+		//List assignedContentCategories = findContentCategoriesForContentVersionId(db, contentVersionVO.getId(), categoryKey, deliveryContext);
+		if((assignedCategoryVOList == null || assignedCategoryVOList.size() == 0) && useLanguageFallback)
+		{
+			LanguageVO masterLanguageVO = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForSiteNode(db, siteNodeId);
+			contentVersion = getContentVersion(siteNodeId, contentId, masterLanguageVO.getLanguageId(), db, useLanguageFallback, deliveryContext, infoGluePrincipal);
+			//assignedContentCategories = findContentCategoriesForContentVersionId(db, contentVersionVO.getId(), categoryKey, deliveryContext);
+			assignedContentCategories = ContentCategoryController.getController().findByContentVersionAttribute(categoryKey, contentVersion, db, true);
+		}
+		
+		Iterator assignedContentCategoriesIterator = assignedContentCategories.iterator();
+		while(assignedContentCategoriesIterator.hasNext())
+		{
+			ContentCategory contentCategory = (ContentCategory)assignedContentCategoriesIterator.next();
+			assignedCategoryVOList.add(contentCategory.getCategory().getValueObject());
+		}
+		
+		return assignedCategoryVOList;
+	}
+	
+	
+	/**
+	 * Find all CategoryVOs that are related to the provided content version on a specific category key.
+	 *
+	 * @param contentVersionId The content version id to search on
+	 * @param categoryKey The attribute of the Category relationship
+	 * @param infoGluePrincipal The user making the request
+	 * @param siteNodeId The SiteNode that the request is coming from
+	 * @param languageId The Language of the request
+	 * @param useLanguageFallback True is the search is to use the fallback (default) language for the Repository
+	 * @return A List of ContentVersionVOs matching the Category search, that are considered valid
+	 * @throws SystemException
+	 */
+	public List findContentCategoryVOsForContentVersionId(Database db, Integer contentVersionId, String categoryKey, DeliveryContext deliveryContext) throws SystemException, Exception
+	{
+	    List contentCategories = findContentVersionCategories(db, contentVersionId, categoryKey);
+		
+		return toVOList(contentCategories);
+	}
+
+	/**
+	 * Find all CategoryVOs that are related to the provided content version on a specific category key.
+	 *
+	 * @param contentVersionId The content version id to search on
+	 * @param categoryKey The attribute of the Category relationship
+	 * @param infoGluePrincipal The user making the request
+	 * @param siteNodeId The SiteNode that the request is coming from
+	 * @param languageId The Language of the request
+	 * @param useLanguageFallback True is the search is to use the fallback (default) language for the Repository
+	 * @return A List of ContentVersionVOs matching the Category search, that are considered valid
+	 * @throws SystemException
+	 */
+	public List findContentCategoriesForContentVersionId(Database db, Integer contentVersionId, String categoryKey, DeliveryContext deliveryContext) throws SystemException, Exception
+	{
+	    List contentCategories = findContentVersionCategories(db, contentVersionId, categoryKey);
+		
+		return contentCategories;
+	}
+
 	/**
 	 * Find all ContentCategories for the given Category id and attributeName.
 	 * @param categoryId The Category to find ContentCategories
@@ -527,6 +594,25 @@ public class ContentDeliveryController extends BaseDeliveryController
 		params.add(categoryId);
 		params.add(attributeName);
 		return toVOList(executeQuery(db, oql.toString(), params));
+	}
+
+	/**
+	 * Find all ContentCategories for the given Contentversion id and categoryKey.
+	 * @param contentVersionId The contentVersionId to find ContentCategories on
+	 * @param categoryKey The ContentTYpeDefintion attribute name of a ContentCategory relationship.
+	 * @return A List of ContentCategoryVOs for the supplied content version id.
+	 * @throws SystemException If an error happens
+	 */
+	private List findContentVersionCategories(Database db, Integer contentVersionId, String categoryKey) throws SystemException, Exception
+	{
+		StringBuffer oql = new StringBuffer();
+		oql.append("SELECT c FROM org.infoglue.cms.entities.content.impl.simple.ContentCategoryImpl c ");
+		oql.append("WHERE c.contentVersion.contentVersionId = $1 AND c.attributeName = $2");
+
+		ArrayList params = new ArrayList();
+		params.add(contentVersionId);
+		params.add(categoryKey);
+		return executeQuery(db, oql.toString(), params);
 	}
 
 	/**

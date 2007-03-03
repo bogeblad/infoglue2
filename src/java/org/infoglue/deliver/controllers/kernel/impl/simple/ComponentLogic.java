@@ -425,6 +425,24 @@ public class ComponentLogic
 		return pages;
 	}
 
+	public List getAssignedCategories(String propertyName, String categoryKey, Integer languageId, boolean useInheritance, boolean useLanguageFallback)
+	{
+		List assignedCategories = new ArrayList();
+
+		Map property = getInheritedComponentProperty(this.infoGlueComponent, propertyName, useInheritance);
+		if(property != null)
+		{	
+			List bindings = (List)property.get("bindings");
+			if(bindings.size() > 0)
+			{
+				Integer contentId = new Integer((String)bindings.get(0));
+				assignedCategories = templateController.getAssignedCategories(contentId, categoryKey, languageId, useLanguageFallback);
+			}
+		}
+
+		return assignedCategories;
+	}
+
 	
 	public String getContentAttribute(String propertyName, String attributeName, boolean disableEditOnSight, boolean useInheritance)
 	{

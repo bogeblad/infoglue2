@@ -67,6 +67,7 @@ import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.controllers.kernel.impl.simple.AccessRightController;
 import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
 import org.infoglue.cms.controllers.kernel.impl.simple.CategoryConditions;
+import org.infoglue.cms.controllers.kernel.impl.simple.CategoryController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ExtendedSearchController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ExtendedSearchCriterias;
@@ -1240,6 +1241,47 @@ public class BasicTemplateController implements TemplateController
 		this.integrationDeliveryController = integrationDeliveryController;
 	}
 	
+    /**
+     * This method gets assignedCategories for a content on a specific categoryKey.
+     */
+    public List getAssignedCategories(Integer contentId, String categoryKey, Integer languageId, boolean useLanguageFallback)
+    {
+		List assignedCategories = new ArrayList();
+		
+		this.deliveryContext.addUsedContent("content_" + contentId);
+		
+		try
+		{
+			assignedCategories = ContentDeliveryController.getContentDeliveryController().getAssignedCategoryVOsForContentVersionId(getDatabase(), contentId, languageId, categoryKey, this.siteNodeId, useLanguageFallback, this.deliveryContext, this.infoGluePrincipal);
+		}
+		catch(Exception e)
+		{
+			logger.error("An error occurred trying to get assignedCategories=" + categoryKey + " on content " + contentId + ":" + e.getMessage(), e);
+		}
+				
+		return assignedCategories;
+    }
+
+    /**
+     * This method gets the full path/name of a given categoryId.
+     */
+    
+    public String getCategoryPath(Integer categoryId)
+    {
+    	String categoryPath = null;
+    	
+    	try
+		{
+			categoryPath = CategoryController.getController().getCategoryPath(categoryId, getDatabase());
+		}
+		catch(Exception e)
+		{
+			logger.error("An error occurred trying to get the path for categoryId " + categoryId + ":" + e.getMessage(), e);
+		}
+		
+    	return categoryPath; 
+    }
+
 	/**
 	 * This method is just a dummy method used to ensure that we can ensure to not get a decorated attribute
 	 * value if OnSiteEdit is on.

@@ -299,9 +299,19 @@ public interface TemplateController
             IntegrationDeliveryController integrationDeliveryController);
 
     /**
+     * This method gets assignedCategories for a content on a specific categoryKey.
+     */
+    public abstract List getAssignedCategories(Integer contentId, String categoryKey, Integer languageId, boolean useLanguageFallback);
+
+    /**
+     * This method gets the full path/name of a given categoryId.
+     */
+    public abstract String getCategoryPath(Integer categoryId);
+
+    /**
      * This method is just a dummy method used to ensure that we can ensure to not get a decorated attribute
      * value if OnSiteEdit is on.
-     *      */
+     */
     public abstract String getContentAttribute(String contentBindningName, String attributeName, boolean clean);
 
     /**
