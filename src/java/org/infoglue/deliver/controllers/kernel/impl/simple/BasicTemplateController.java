@@ -34,8 +34,10 @@ import java.net.URLEncoder;
 import java.security.Principal;
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -67,6 +69,7 @@ import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
 import org.infoglue.cms.controllers.kernel.impl.simple.CategoryConditions;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ExtendedSearchController;
+import org.infoglue.cms.controllers.kernel.impl.simple.ExtendedSearchCriterias;
 import org.infoglue.cms.controllers.kernel.impl.simple.GroupControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.GroupPropertiesController;
 import org.infoglue.cms.controllers.kernel.impl.simple.InfoGluePrincipalControllerProxy;
@@ -3674,8 +3677,17 @@ public class BasicTemplateController implements TemplateController
 	/**
 	 * This method searches for all contents matching
 	 */
-	
+
 	public List getMatchingContents(String contentTypeDefinitionNamesString, String categoryConditionString, boolean useLanguageFallback)
+	{
+		return getMatchingContents(contentTypeDefinitionNamesString, categoryConditionString, null, null, null, null, useLanguageFallback);
+	}
+	
+	/**
+	 * This method searches for all contents matching
+	 */
+	
+	public List getMatchingContents(String contentTypeDefinitionNamesString, String categoryConditionString, String freeText, List freeTextAttributeNames, Date fromDate, Date toDate, boolean useLanguageFallback)
 	{
 		try
 		{
@@ -3684,11 +3696,26 @@ public class BasicTemplateController implements TemplateController
 		    for(int i=0; i<contentTypeDefinitionNames.length; i++)
 		    {
 		        ContentTypeDefinitionVO contentTypeDefinitionVO = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithName(contentTypeDefinitionNames[i], getDatabase());
-		        contentTypeDefinitionVOList.add(contentTypeDefinitionVO);
+		        if(contentTypeDefinitionVO != null)
+		        	contentTypeDefinitionVOList.add(contentTypeDefinitionVO);
 		    }
 
+		    final CategoryConditions categoryConditions = CategoryConditions.parse(categoryConditionString);
+		    
+			final ExtendedSearchCriterias criterias = new ExtendedSearchCriterias(this.getOperatingMode().intValue());
+			criterias.setCategoryConditions(categoryConditions);
+			criterias.setLanguage(this.getLanguage(this.getLanguageId()));
+			if(freeText != null && freeTextAttributeNames != null)
+				criterias.setFreetext(freeText, freeTextAttributeNames);
+			criterias.setContentTypeDefinitions(contentTypeDefinitionVOList);
+			criterias.setDates(fromDate, toDate);
+			
+			final Set set = ExtendedSearchController.getController().search(criterias);
+			
+		    /*
 			final CategoryConditions categoryConditions = CategoryConditions.parse(categoryConditionString);
 			final Set set = ExtendedSearchController.getController().search(getOperatingMode(), contentTypeDefinitionVOList, this.getLanguage(this.getLanguageId()), categoryConditions, getDatabase());
+			*/
 			
 			final List result = new ArrayList();
 			for(Iterator i = set.iterator(); i.hasNext(); ) 

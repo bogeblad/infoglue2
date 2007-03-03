@@ -82,6 +82,7 @@ Abbreviated Changelog from 2.4.1 Final
 - Made adjustments so if a user changes the meta info of a page it also changes the last modifyer and date of the page.
 - Added 3 different XPath-handlers for property parsing to compare performance - Xalan, Dom4j and XPP3. For now XPP3 is used - can be configured if needed by setting a property in deliver.properties called "propertiesParser" - Can be "xalan", "dom4j" or "xpp3".
 - Tried to improve performance by removing some synchronized blocks in the cache handling. Handles huge number of concurrent visitors better.
+- Extended the MatchingContentsTag to also allow text search on any number of content attributes and possibility to limit serch to a specific period in time which can be a huge performance boast.
 
 -------------------------------------------------------------------------------------
 - InfoGlue 2.4.1 Final

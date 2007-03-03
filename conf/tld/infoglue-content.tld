@@ -334,6 +334,26 @@
         	<required>false</required>
 	        <rtexprvalue>true</rtexprvalue>
     	</attribute>
+        <attribute>
+    	    <name>freeText</name>
+        	<required>false</required>
+	        <rtexprvalue>true</rtexprvalue>
+    	</attribute>
+        <attribute>
+    	    <name>freeTextAttributeNames</name>
+        	<required>false</required>
+	        <rtexprvalue>true</rtexprvalue>
+    	</attribute>
+        <attribute>
+    	    <name>fromDate</name>
+        	<required>false</required>
+	        <rtexprvalue>true</rtexprvalue>
+    	</attribute>
+        <attribute>
+    	    <name>toDate</name>
+        	<required>false</required>
+	        <rtexprvalue>true</rtexprvalue>
+    	</attribute>
 	</tag>	 
 
 	<tag>

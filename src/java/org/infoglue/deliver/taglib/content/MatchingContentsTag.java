@@ -23,6 +23,10 @@
 
 package org.infoglue.deliver.taglib.content;
 
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+
 import javax.servlet.jsp.JspException;
 
 import org.infoglue.deliver.taglib.TemplateControllerTag;
@@ -35,6 +39,10 @@ public class MatchingContentsTag extends TemplateControllerTag {
 	
 	private String contentTypeDefinitionNames;
 	private String categoryCondition;
+	private String freeText;
+	private String freeTextAttributeNames;
+	private Date fromDate = null;
+	private Date toDate = null;
 	
     public MatchingContentsTag()
     {
@@ -43,7 +51,16 @@ public class MatchingContentsTag extends TemplateControllerTag {
 
 	public int doEndTag() throws JspException
     {
-	    setResultAttribute(getController().getMatchingContents(contentTypeDefinitionNames, categoryCondition, true));
+		List freeTextAttributeNamesList = null;
+		if(freeTextAttributeNames != null && !freeTextAttributeNames.equals(""))
+		{
+			String[] freeTextAttributeNamesArray = freeTextAttributeNames.split(",");
+			if(freeTextAttributeNamesArray.length > 0)
+				freeTextAttributeNamesList = Arrays.asList(freeTextAttributeNamesArray);
+		}
+		
+	    //setResultAttribute(getController().getMatchingContents(contentTypeDefinitionNames, categoryCondition, true));
+	    setResultAttribute(getController().getMatchingContents(contentTypeDefinitionNames, categoryCondition, freeText, freeTextAttributeNamesList, fromDate, toDate, true));
         return EVAL_PAGE;
     }
 
@@ -56,4 +73,26 @@ public class MatchingContentsTag extends TemplateControllerTag {
     {
         this.categoryCondition = evaluateString("matchingContentsTag", "categoryCondition", categoryCondition);
     }
+
+	public void setFreeText(String freeText) throws JspException
+	{
+		this.freeText = evaluateString("matchingContentsTag", "freeText", freeText);
+	}
+
+	public void setFreeTextAttributeNames(String freeTextAttributeNames) throws JspException
+	{
+		this.freeTextAttributeNames = evaluateString("matchingContentsTag", "freeTextAttributeNames", freeTextAttributeNames);
+	}
+
+	public void setFromDate(String fromDate) throws JspException
+	{
+		this.fromDate = (Date)evaluate("matchingContentsTag", "fromDate", fromDate, Date.class);
+	}
+
+	public void setToDate(String toDate) throws JspException
+	{
+		this.toDate = (Date)evaluate("matchingContentsTag", "toDate", toDate, Date.class);
+	}
+
+
 }

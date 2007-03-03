@@ -26,6 +26,7 @@ package org.infoglue.deliver.controllers.kernel.impl.simple;
 import java.awt.Color;
 import java.text.NumberFormat;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Locale;
@@ -1101,6 +1102,12 @@ public interface TemplateController
 	 */
 	
 	public List getMatchingContents(String contentTypeDefinitionNamesString, String categoryConditionString, boolean useLanguageFallback);
+
+	/**
+	 * This method searches for all contents matching all the arguments
+	 */
+	
+	public List getMatchingContents(String contentTypeDefinitionNamesString, String categoryConditionString, String freeText, List freeTextAttributeNames, Date fromDate, Date toDate, boolean useLanguageFallback);
 
 	/**
 	 * This method returns which mode the delivery-engine is running in.
