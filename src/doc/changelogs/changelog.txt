@@ -83,6 +83,8 @@ Abbreviated Changelog from 2.4.1 Final
 - Added 3 different XPath-handlers for property parsing to compare performance - Xalan, Dom4j and XPP3. For now XPP3 is used - can be configured if needed by setting a property in deliver.properties called "propertiesParser" - Can be "xalan", "dom4j" or "xpp3".
 - Tried to improve performance by removing some synchronized blocks in the cache handling. Handles huge number of concurrent visitors better.
 - Extended the MatchingContentsTag to also allow text search on any number of content attributes and possibility to limit serch to a specific period in time which can be a huge performance boast.
+- Added tag which let's you get the full path to a category. Important in followup searches based on assigned categories for example.
+- Added new tag and underlying methods to get all categories assigned to a content version. Very useful as part if you want to search for similar contents for example.
 
 -------------------------------------------------------------------------------------
 - InfoGlue 2.4.1 Final
