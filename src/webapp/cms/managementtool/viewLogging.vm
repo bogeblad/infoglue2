@@ -27,7 +27,8 @@
 			<strong>$ui.getString("tool.managementtool.logFiles.label"):</strong><br/>
 			<select id="logFileName" name="logFileName">
 				#foreach($file in $logFiles)
-				<option value="$file.path" #checkSelected("$file.path" $!logFileName)>$file.name ($file.length())</option>
+				#set($fileSize = $this.getFileSize($file.length()))
+				<option value="$file.path" #checkSelected("$file.path" $!logFileName)>$file.name ($this.getLastModifiedDateString($file.lastModified()) - Size: $fileSize)</option>
 				#end
 			</select>
 			<strong>$ui.getString("tool.managementtool.logLines.label"):</strong>

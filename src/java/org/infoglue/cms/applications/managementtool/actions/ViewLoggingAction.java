@@ -24,14 +24,18 @@
 package org.infoglue.cms.applications.managementtool.actions;
 
 import java.io.File;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.DigitalAssetController;
@@ -40,6 +44,9 @@ import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.io.FileHelper;
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.FileUploadHelper;
+import org.infoglue.cms.util.sorters.FileComparator;
+import org.infoglue.cms.util.sorters.ReflectionComparator;
+import org.infoglue.deliver.util.MathHelper;
 
 import webwork.action.ActionContext;
 
@@ -89,7 +96,7 @@ public class ViewLoggingAction extends InfoGlueAbstractAction
 		{
 			logFiles.add(velocityLogFile);
 		}
-		
+
 		String fileName = "";
 		if(logFileName == null || logFileName.equals(""))
 		{
@@ -122,7 +129,10 @@ public class ViewLoggingAction extends InfoGlueAbstractAction
 				}
 			}			
 		}
-
+		
+		if(logFiles != null && logFiles.size() > 0)
+			Collections.sort(logFiles, Collections.reverseOrder(new FileComparator("lastModified")));
+			
 		File file = new File(fileName);
 		
     	logFragment = FileHelper.tail(file, logLines);
@@ -160,5 +170,18 @@ public class ViewLoggingAction extends InfoGlueAbstractAction
 		this.logFileName = logFileName;
 	}
     
+	public String getLastModifiedDateString(long lastModified)
+	{
+		Date date = new Date(lastModified);
+		String lastModifiedDateString = new VisualFormatter().formatDate(date, "yy-MM-dd HH:ss");
+		
+		return lastModifiedDateString;
+	}
 
+	public String getFileSize(long size)
+	{
+		String fileSize = new MathHelper().fileSize(size);
+		
+		return fileSize;
+	}
 }
