@@ -5,6 +5,7 @@
 Release notes
 ---------------------------------------
 The spring release 2007 of InfoGlue contains a huge amount of new features, bugfixes and improvements.
+As allways we encourage upgrades and this release focuses extra on performance, stability, maintanance and diagnostics so it will hopefully make your life easier.
 
 Thanx to all involved!!
 
@@ -57,7 +58,7 @@ Abbreviated Changelog from 2.4.1 Final
 - Improved the generic combined auth module and how the delegated adaptors should handle caches.
 - Added logic to allow enable languages on specific pages and their subpages. Complements the disable languages feature.
 - Fixed bug in import repository which made contents loose their content types.
-- Worked on more advanced component statistics
+- Worked on more advanced component statistics - now one can get average processing time on each component.
 - Added possibility to add timeout on http requests from within HttpHelper
 - Made all list in the administrative tools sortable on their columns.
 - Made it possible to reset the component statistics
@@ -85,7 +86,10 @@ Abbreviated Changelog from 2.4.1 Final
 - Extended the MatchingContentsTag to also allow text search on any number of content attributes and possibility to limit serch to a specific period in time which can be a huge performance boast.
 - Added <management:categoryPath-tag which let's you get the full path to a category. Important in followup searches based on assigned categories for example.
 - Added new tag (<content:assignedCategories) and underlying methods to get all categories assigned to a content version. Very useful as part if you want to search for similar contents for example.
-
+- Improved "Add component"-dialog performance hugely when dealing with a large number of components.
+- Improved the create interception point dialog so all inactive system interception points (tehre are quite a few) are listed for quick activation.
+- Added possibility to control access to all menu items in the management tool. Nice if you want to be able to have some users do only some administrative tasks like diagnosing logs or creating users but nothing else.  
+ 
 -------------------------------------------------------------------------------------
 - InfoGlue 2.4.1 Final
 -------------------------------------------------------------------------------------
