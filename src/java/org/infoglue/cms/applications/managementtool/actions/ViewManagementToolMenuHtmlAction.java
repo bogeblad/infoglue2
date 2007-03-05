@@ -58,7 +58,7 @@ public class ViewManagementToolMenuHtmlAction extends TreeViewAbstractAction
 	    	this.setName(this.repositoryVO.getName());
     	}
 		
-		return new ManagementToolNodeSupplier(repositoryId);
+		return new ManagementToolNodeSupplier(repositoryId, this.getInfoGluePrincipal());
 	}
 
 

@@ -1144,17 +1144,26 @@ public class AccessRightController extends BaseController
 
 		return isPrincipalAuthorized;
 	}
-	
+
 	/**
 	 * This method checks if a role has access to an entity. It takes name and id of the entity. 
 	 */
 
 	public boolean getIsPrincipalAuthorized(InfoGluePrincipal infoGluePrincipal, String interceptionPointName) throws SystemException
 	{
+		return getIsPrincipalAuthorized(infoGluePrincipal, interceptionPointName, false);
+	}
+	
+	/**
+	 * This method checks if a role has access to an entity. It takes name and id of the entity. 
+	 */
+
+	public boolean getIsPrincipalAuthorized(InfoGluePrincipal infoGluePrincipal, String interceptionPointName, boolean returnSuccessIfInterceptionPointNotDefined) throws SystemException
+	{
 		if(infoGluePrincipal.getIsAdministrator())
 			return true;
 			
-		String key = "" + infoGluePrincipal.getName() + "_" + interceptionPointName;
+		String key = "" + infoGluePrincipal.getName() + "_" + interceptionPointName + "_" + returnSuccessIfInterceptionPointNotDefined;
 		logger.info("key:" + key);
 		Boolean cachedIsPrincipalAuthorized = (Boolean)CacheController.getCachedObject("authorizationCache", key);
 		if(cachedIsPrincipalAuthorized != null)
@@ -1171,7 +1180,7 @@ public class AccessRightController extends BaseController
 		{
 			beginTransaction(db);
 			
-			isPrincipalAuthorized = getIsPrincipalAuthorized(db, infoGluePrincipal, interceptionPointName);
+			isPrincipalAuthorized = getIsPrincipalAuthorized(db, infoGluePrincipal, interceptionPointName, returnSuccessIfInterceptionPointNotDefined);
 			
 			CacheController.cacheObject("authorizationCache", key, new Boolean(isPrincipalAuthorized));
 			
@@ -1186,12 +1195,21 @@ public class AccessRightController extends BaseController
 					
 		return isPrincipalAuthorized;
 	}
-	
+
 	/**
 	 * This method checks if a role has access to an entity. It takes name and id of the entity. 
 	 */
 
 	public boolean getIsPrincipalAuthorized(Database db, InfoGluePrincipal infoGluePrincipal, String interceptionPointName) throws SystemException
+	{		
+		return getIsPrincipalAuthorized(db, infoGluePrincipal, interceptionPointName, false);
+	}
+	
+	/**
+	 * This method checks if a role has access to an entity. It takes name and id of the entity. 
+	 */
+
+	public boolean getIsPrincipalAuthorized(Database db, InfoGluePrincipal infoGluePrincipal, String interceptionPointName, boolean returnSuccessIfInterceptionPointNotDefined) throws SystemException
 	{		
 	    if(infoGluePrincipal.getIsAdministrator())
 			return true;
@@ -1204,6 +1222,9 @@ public class AccessRightController extends BaseController
 		Collection roles = infoGluePrincipal.getRoles();
 		Collection groups = infoGluePrincipal.getGroups();
 		InterceptionPoint interceptionPoint = InterceptionPointController.getController().getInterceptionPointWithName(interceptionPointName, db);
+		if(interceptionPoint == null && returnSuccessIfInterceptionPointNotDefined)
+			return true;
+		
 		List accessRightList = this.getAccessRightList(interceptionPoint.getId(), db);
 
 		Iterator accessRightListIterator = accessRightList.iterator();

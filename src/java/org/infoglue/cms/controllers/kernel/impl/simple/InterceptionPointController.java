@@ -64,7 +64,14 @@ public class InterceptionPointController extends BaseController
     
 	static
 	{
+		systemInterceptionPoints.put("ContentTool.Read", new InterceptionPointVO("ContentTool", "ContentTool.Read", "Gives a user access to the content tool", false));
+		systemInterceptionPoints.put("ManagementTool.Read", new InterceptionPointVO("ManagementTool", "ManagementTool.Read", "Gives a user access to the management tool", false));
+	    systemInterceptionPoints.put("MyDesktopTool.Read", new InterceptionPointVO("MyDesktopTool", "MyDesktopTool.Read", "Gives the user access to the mydesktop tool", false));
+	    systemInterceptionPoints.put("PublishingTool.Read", new InterceptionPointVO("PublishingTool", "PublishingTool.Read", "Gives the user access to the publishing tool", false));
+	    systemInterceptionPoints.put("StructureTool.Read", new InterceptionPointVO("StructureTool", "StructureTool.Read", "Gives a user access to the structure tool", false));
+	    
 	    systemInterceptionPoints.put("Category.Read", new InterceptionPointVO("Category", "Category.Read", "This intercepts any read towards a category", true));
+	    
 	    systemInterceptionPoints.put("Content.Read", new InterceptionPointVO("Content", "Content.Read", "Intercepts the read of a content", true));
 	    systemInterceptionPoints.put("Content.Write", new InterceptionPointVO("Content", "Content.Write", "Intercepts the write of a content", true));
 	    systemInterceptionPoints.put("Content.Create", new InterceptionPointVO("Content", "Content.Create", "Intercepts the creation of a new content or folder", true));
@@ -73,17 +80,16 @@ public class InterceptionPointController extends BaseController
 	    systemInterceptionPoints.put("Content.SubmitToPublish", new InterceptionPointVO("Content", "Content.SubmitToPublish", "Intercepts the submittance to publish of all content versions", true));
 	    systemInterceptionPoints.put("Content.ChangeAccessRights", new InterceptionPointVO("Content", "Content.ChangeAccessRights", "Intercepts the attempt to change access rights", true));
 	    systemInterceptionPoints.put("Content.CreateVersion", new InterceptionPointVO("Content", "Content.CreateVersion", "Intercepts the creation of a new contentversion", true));
-	    systemInterceptionPoints.put("ContentTool.Read", new InterceptionPointVO("ContentTool", "ContentTool.Read", "Gives a user access to the content tool", false));
+	    
 	    systemInterceptionPoints.put("ContentTypeDefinition.Read", new InterceptionPointVO("ContentTypeDefinition", "ContentTypeDefinition.Read", "This point checks access to read/use a content type definition", true));
 	    systemInterceptionPoints.put("ContentVersion.Delete", new InterceptionPointVO("ContentVersion", "ContentVersion.Delete", "Intercepts the deletion of a contentversion", true));
 	    systemInterceptionPoints.put("ContentVersion.Write", new InterceptionPointVO("ContentVersion", "ContentVersion.Write", "Intercepts the editing of a contentversion", true));
 	    systemInterceptionPoints.put("ContentVersion.Read", new InterceptionPointVO("ContentVersion", "ContentVersion.Read", "Intercepts the read of a contentversion", true));
 	    systemInterceptionPoints.put("ContentVersion.Publish", new InterceptionPointVO("ContentVersion", "ContentVersion.Publish", "Intercepts the direct publishing of a content version", true));
-	    systemInterceptionPoints.put("ManagementTool.Read", new InterceptionPointVO("ManagementTool", "ManagementTool.Read", "Gives a user access to the management tool", false));
-	    systemInterceptionPoints.put("MyDesktopTool.Read", new InterceptionPointVO("MyDesktopTool", "MyDesktopTool.Read", "Gives the user access to the mydesktop tool", false));
-	    systemInterceptionPoints.put("PublishingTool.Read", new InterceptionPointVO("PublishingTool", "PublishingTool.Read", "Gives the user access to the publishing tool", false));
+	    
 	    systemInterceptionPoints.put("Repository.Read", new InterceptionPointVO("Repository", "Repository.Read", "Gives a user access to look at a repository", true));
 	    systemInterceptionPoints.put("Repository.ReadForBinding", new InterceptionPointVO("Repository", "Repository.ReadForBinding", "This point intercepts when a user tries to read the repository in a binding dialog", true));
+	    
 	    systemInterceptionPoints.put("SiteNodeVersion.Read", new InterceptionPointVO("SiteNodeVersion", "SiteNodeVersion.Read", "Intercepts the read of a SiteNodeVersion", true));
 	    systemInterceptionPoints.put("SiteNodeVersion.Write", new InterceptionPointVO("SiteNodeVersion", "SiteNodeVersion.Write", "Intercepts the write of a SiteNodeVersion", true));
 	    systemInterceptionPoints.put("SiteNodeVersion.CreateSiteNode", new InterceptionPointVO("SiteNodeVersion", "SiteNodeVersion.CreateSiteNode", "Intercepts the creation of a new sitenode", true));
@@ -92,14 +98,39 @@ public class InterceptionPointController extends BaseController
 	    systemInterceptionPoints.put("SiteNodeVersion.SubmitToPublish", new InterceptionPointVO("SiteNodeVersion", "SiteNodeVersion.SubmitToPublish", "Intercepts the submittance to publish of all content versions", true));
 	    systemInterceptionPoints.put("SiteNodeVersion.ChangeAccessRights", new InterceptionPointVO("SiteNodeVersion", "SiteNodeVersion.ChangeAccessRights", "Intercepts the attempt to change access rights", true));
 	    systemInterceptionPoints.put("SiteNodeVersion.Publish", new InterceptionPointVO("SiteNodeVersion", "SiteNodeVersion.Publish", "Intercepts the direct publishing of a siteNode version", true));
-	    systemInterceptionPoints.put("StructureTool.Read", new InterceptionPointVO("StructureTool", "StructureTool.Read", "Gives a user access to the structure tool", false));
+	    
 	    systemInterceptionPoints.put("StructureTool.SaveTemplate", new InterceptionPointVO("StructureTool", "StructureTool.SaveTemplate", "This interception point limits who get the save-button in the toolbar", false));
 	    systemInterceptionPoints.put("StructureTool.Palette", new InterceptionPointVO("StructureTool", "StructureTool.Palette", "This interception point limits who sees the toolbar", false));
+	    
 	    systemInterceptionPoints.put("ComponentEditor.ChangeSlotAccess", new InterceptionPointVO("ComponentEditor", "ComponentEditor.ChangeSlotAccess", "This interception point limits who can set access rights to a slot", false));
 	    systemInterceptionPoints.put("ComponentEditor.AddComponent", new InterceptionPointVO("ComponentEditor", "ComponentEditor.AddComponent", "This interception point limits who can add a component to a specific slot", true));
 	    systemInterceptionPoints.put("ComponentEditor.DeleteComponent", new InterceptionPointVO("ComponentEditor", "ComponentEditor.DeleteComponent", "This interception point limits who can delete a component in a specific slot", true));
+	    
 	    systemInterceptionPoints.put("ComponentPropertyEditor.EditProperty", new InterceptionPointVO("ComponentPropertyEditor", "ComponentPropertyEditor.EditProperty", "This interception point limits who can edit a specific component property", true));
+	    
 	    systemInterceptionPoints.put("Publication.Write", new InterceptionPointVO("Publication", "Publication.Write", "This interception point intercepts publications", true));
+
+	    systemInterceptionPoints.put("ManagementToolMenu.Repositories", new InterceptionPointVO("ManagementToolMenu", "ManagementToolMenu.Repositories", "Intercepts access to the menu item 'Repositories' in management tool", false));
+	    systemInterceptionPoints.put("ManagementToolMenu.SystemUsers", new InterceptionPointVO("ManagementToolMenu", "ManagementToolMenu.SystemUsers", "Intercepts access to the menu item 'SystemUsers' in management tool", false));
+	    systemInterceptionPoints.put("ManagementToolMenu.Roles", new InterceptionPointVO("ManagementToolMenu", "ManagementToolMenu.Roles", "Intercepts access to the menu item 'Roles' in management tool", false));
+	    systemInterceptionPoints.put("ManagementToolMenu.Groups", new InterceptionPointVO("ManagementToolMenu", "ManagementToolMenu.Groups", "Intercepts access to the menu item 'Groups' in management tool", false));
+	    systemInterceptionPoints.put("ManagementToolMenu.Languages", new InterceptionPointVO("ManagementToolMenu", "ManagementToolMenu.Languages", "Intercepts access to the menu item 'Languages' in management tool", false));
+	    systemInterceptionPoints.put("ManagementToolMenu.InterceptionPoints", new InterceptionPointVO("ManagementToolMenu", "ManagementToolMenu.InterceptionPoints", "Intercepts access to the menu item 'InterceptionPoints' in management tool", false));
+	    systemInterceptionPoints.put("ManagementToolMenu.Interceptors", new InterceptionPointVO("ManagementToolMenu", "ManagementToolMenu.Interceptors", "Intercepts access to the menu item 'Interceptors' in management tool", false));
+	    systemInterceptionPoints.put("ManagementToolMenu.ServiceDefinitions", new InterceptionPointVO("ManagementToolMenu", "ManagementToolMenu.ServiceDefinitions", "Intercepts access to the menu item 'ServiceDefinitions' in management tool", false));
+	    systemInterceptionPoints.put("ManagementToolMenu.AvailableServiceBindings", new InterceptionPointVO("ManagementToolMenu", "ManagementToolMenu.AvailableServiceBindings", "Intercepts access to the menu item 'AvailableServiceBindings' in management tool", false));
+	    systemInterceptionPoints.put("ManagementToolMenu.SiteNodeTypeDefinitions", new InterceptionPointVO("ManagementToolMenu", "ManagementToolMenu.SiteNodeTypeDefinitions", "Intercepts access to the menu item 'SiteNodeTypeDefinitions' in management tool", false));
+	    systemInterceptionPoints.put("ManagementToolMenu.Categories", new InterceptionPointVO("ManagementToolMenu", "ManagementToolMenu.Categories", "Intercepts access to the menu item 'Categories' in management tool", false));
+	    systemInterceptionPoints.put("ManagementToolMenu.ContentTypeDefinitions", new InterceptionPointVO("ManagementToolMenu", "ManagementToolMenu.ContentTypeDefinitions", "Intercepts access to the menu item 'ContentTypeDefinitions' in management tool", false));
+	    systemInterceptionPoints.put("ManagementToolMenu.Up2Date", new InterceptionPointVO("ManagementToolMenu", "ManagementToolMenu.Up2Date", "Intercepts access to the menu item 'Up2Date' in management tool", false));
+	    systemInterceptionPoints.put("ManagementToolMenu.Workflows", new InterceptionPointVO("ManagementToolMenu", "ManagementToolMenu.Workflows", "Intercepts access to the menu item 'Workflows' in management tool", false));
+	    systemInterceptionPoints.put("ManagementToolMenu.Portlets", new InterceptionPointVO("ManagementToolMenu", "ManagementToolMenu.Portlets", "Intercepts access to the menu item 'Portlets' in management tool", false));
+	    systemInterceptionPoints.put("ManagementToolMenu.Redirects", new InterceptionPointVO("ManagementToolMenu", "ManagementToolMenu.Redirects", "Intercepts access to the menu item 'Redirects' in management tool", false));
+	    systemInterceptionPoints.put("ManagementToolMenu.ApplicationSettings", new InterceptionPointVO("ManagementToolMenu", "ManagementToolMenu.ApplicationSettings", "Intercepts access to the menu item 'Application settings' in management tool", false));
+	    systemInterceptionPoints.put("ManagementToolMenu.MessageCenter", new InterceptionPointVO("ManagementToolMenu", "ManagementToolMenu.MessageCenter", "Intercepts access to the menu item 'Message center' in management tool", false));
+	    systemInterceptionPoints.put("ManagementToolMenu.Diagnostics", new InterceptionPointVO("ManagementToolMenu", "ManagementToolMenu.Diagnostics", "Intercepts access to the menu item 'Diagnostics' in management tool", false));
+	    systemInterceptionPoints.put("ManagementToolMenu.SystemTools", new InterceptionPointVO("ManagementToolMenu", "ManagementToolMenu.SystemTools", "Intercepts access to the menu item 'SystemTools' in management tool", false));
+
 	}
     
 	/**
@@ -124,6 +155,38 @@ public class InterceptionPointController extends BaseController
 	public List getInterceptionPointVOList() throws SystemException, Bug
 	{
 		return getAllVOObjects(InterceptionPointImpl.class, "interceptionPointId");
+	}
+
+	/**
+	 * This method returns Interception points which do stuff in the system but which are not yet activated.
+	 * @return List of InterceptionPointVO:s
+	 * @throws SystemException
+	 * @throws Bug
+	 */
+	public Collection getInactiveInterceptionPointVOList() throws SystemException, Bug
+	{
+		List interceptionPointVOList = getInterceptionPointVOList();
+
+		Collection allInterceptionPoints = systemInterceptionPoints.values();
+		Iterator allInterceptionPointsIterator = allInterceptionPoints.iterator();
+		while(allInterceptionPointsIterator.hasNext())
+		{
+			InterceptionPointVO possibleInterceptionPoint = (InterceptionPointVO)allInterceptionPointsIterator.next();
+			
+			boolean exists = false;
+			Iterator interceptionPointVOListIterator = interceptionPointVOList.iterator();
+			while(interceptionPointVOListIterator.hasNext())
+			{
+				InterceptionPointVO existingInterceptionPointVO = (InterceptionPointVO)interceptionPointVOListIterator.next();
+				if(existingInterceptionPointVO.getName().equals(possibleInterceptionPoint.getName()))
+					exists = true;
+			}
+			
+			if(exists)
+				allInterceptionPointsIterator.remove();
+		}
+		
+		return allInterceptionPoints;
 	}
 
 	public List getSortedInterceptionPointVOList() throws SystemException, Bug

@@ -23,6 +23,8 @@
 
 package org.infoglue.cms.applications.managementtool.actions;
 
+import java.util.Collection;
+
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.InterceptionPointController;
 import org.infoglue.cms.entities.management.InterceptionPointVO;
@@ -36,7 +38,9 @@ public class CreateInterceptionPointAction extends InfoGlueAbstractAction
 {
    	private ConstraintExceptionBuffer ceb;
    	private InterceptionPointVO interceptionPointVO;
-  
+   	private String interceptionPointVOName;
+   	
+   	private Collection inactiveInterceptionPointVOList = null;
   
   	public CreateInterceptionPointAction()
 	{
@@ -52,6 +56,11 @@ public class CreateInterceptionPointAction extends InfoGlueAbstractAction
 	      
     public String doExecute() throws Exception
     {
+    	if(interceptionPointVOName != null && !interceptionPointVOName.equals(""))
+    	{
+    		this.interceptionPointVO = (InterceptionPointVO)InterceptionPointController.systemInterceptionPoints.get(interceptionPointVOName);
+    	}
+    	
 		ceb.add(this.interceptionPointVO.validate());
     	ceb.throwIfNotEmpty();				
     	
@@ -62,7 +71,9 @@ public class CreateInterceptionPointAction extends InfoGlueAbstractAction
 
     public String doInput() throws Exception
     {
-        return "input";
+    	this.inactiveInterceptionPointVOList = InterceptionPointController.getController().getInactiveInterceptionPointVOList();
+       
+    	return "input";
     }
 
 	/**
@@ -143,5 +154,20 @@ public class CreateInterceptionPointAction extends InfoGlueAbstractAction
 	public void setUsesExtraDataForAccessControl(Boolean usesExtraDataForAccessControl) 
 	{
 		this.interceptionPointVO.setUsesExtraDataForAccessControl(usesExtraDataForAccessControl);
+	}
+
+	public Collection getInactiveInterceptionPointVOList() 
+	{
+		return inactiveInterceptionPointVOList;
+	}
+
+	public String getInterceptionPointVOName() 
+	{
+		return interceptionPointVOName;
+	}
+
+	public void setInterceptionPointVOName(String interceptionPointVOName) 
+	{
+		this.interceptionPointVOName = interceptionPointVOName;
 	}
 }

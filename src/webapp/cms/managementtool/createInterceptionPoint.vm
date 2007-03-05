@@ -7,6 +7,35 @@
 <div class="fullymarginalized">
 <form method="POST" action="CreateInterceptionPoint.action">
 <table>
+
+	<tr>
+		<td>
+			<table>
+			<tr>
+				<td>$ui.getString("entity.InterceptionPoint.interceptionPointVOName.label")
+					#if($errors.hasErrors($errorKey))
+						#foreach($errorMessage in $errors.getErrors($errorKey))
+					    	<font color="red"> - $errorMessage</font>
+					    #end
+					#end
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<select name="interceptionPointVOName" class="dropbox">
+						#foreach($inactiveInterceptionPointVO in $inactiveInterceptionPointVOList)
+							<option value="$inactiveInterceptionPointVO.name" #if("$inactiveInterceptionPointVO.name" == "$!interceptionPointVOName") selected #end>$inactiveInterceptionPointVO.name - $inactiveInterceptionPointVO.description</option>
+						#end
+					</select>
+				</td>
+			</tr>
+			</table>
+		</td>
+	</tr>	
+	
+	<tr>
+		<td><p class="subtitle">$ui.getString("entity.InterceptionPoint.createNew.label")</p></td>
+	</tr>
 	<tr>
 		<td>#editField("InterceptionPoint.category" "category" $!category "51")</td>
 	</tr>	
