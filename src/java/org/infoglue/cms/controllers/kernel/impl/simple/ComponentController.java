@@ -35,6 +35,7 @@ import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.content.ContentVersion;
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.entities.management.Language;
+import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.util.sorters.ContentComparator;
@@ -122,8 +123,8 @@ public class ComponentController extends BaseController
 			while(componentsIterator.hasNext())
 			{
 			    ContentVO contentVO = (ContentVO)componentsIterator.next();
-	
-			    Language masterLanguage = LanguageController.getController().getMasterLanguage(db, contentVO.getRepositoryId());
+			    
+			    LanguageVO masterLanguage = LanguageController.getController().getMasterLanguage(contentVO.getRepositoryId(), db); //.getMasterLanguage(db, contentVO.getRepositoryId());
 				ContentVersion contentVersion = ContentVersionController.getContentVersionController().getLatestActiveContentVersion(contentVO.getId(), masterLanguage.getId(), db);
 				
 				String groupName = "Unknown";
