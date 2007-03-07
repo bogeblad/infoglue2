@@ -89,6 +89,9 @@ Abbreviated Changelog from 2.4.1 Final
 - Improved "Add component"-dialog performance hugely when dealing with a large number of components.
 - Improved the create interception point dialog so all inactive system interception points (tehre are quite a few) are listed for quick activation.
 - Added possibility to control access to all menu items in the management tool. Nice if you want to be able to have some users do only some administrative tasks like diagnosing logs or creating users but nothing else.  
+- Created a new "Publish this page" button in structure which is not recursive as a complement to the normal recursive "Publish"-button.
+- Added inconsistencies tool which allows you to track down faulty/broken references to deleted contents or pages or components. Also enables you to delete such references.
+- Added feature so you now can specify disallowedComponentNames instead of allowedComponentNames on slots if you want. 
  
 -------------------------------------------------------------------------------------
 - InfoGlue 2.4.1 Final
