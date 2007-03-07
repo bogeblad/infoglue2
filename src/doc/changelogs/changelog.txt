@@ -92,6 +92,7 @@ Abbreviated Changelog from 2.4.1 Final
 - Created a new "Publish this page" button in structure which is not recursive as a complement to the normal recursive "Publish"-button.
 - Added inconsistencies tool which allows you to track down faulty/broken references to deleted contents or pages or components. Also enables you to delete such references.
 - Added feature so you now can specify disallowedComponentNames instead of allowedComponentNames on slots if you want. 
+- Made so the inconsistenciesController gets a chance to remove references to stuff that are getting deleted.
  
 -------------------------------------------------------------------------------------
 - InfoGlue 2.4.1 Final

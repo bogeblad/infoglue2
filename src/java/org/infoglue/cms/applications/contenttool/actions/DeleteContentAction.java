@@ -30,6 +30,7 @@ import org.apache.log4j.Logger;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentControllerProxy;
+import org.infoglue.cms.controllers.kernel.impl.simple.InconsistenciesController;
 import org.infoglue.cms.controllers.kernel.impl.simple.RegistryController;
 import org.infoglue.cms.entities.content.ContentVO;
 
@@ -116,8 +117,11 @@ public class DeleteContentAction extends InfoGlueAbstractAction
 	public String doDeleteReference() throws Exception 
 	{
 	    for(int i=0; i<registryId.length; i++)
-	        RegistryController.getController().delete(new Integer(registryId[i]));
-		
+	    {
+	    	InconsistenciesController.getController().removeReferences(new Integer(registryId[i]), this.getInfoGluePrincipal());
+	    	RegistryController.getController().delete(new Integer(registryId[i]));
+	    }
+	    
 	    return doExecute();
 	}	
 	

@@ -28,6 +28,7 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
+import org.infoglue.cms.controllers.kernel.impl.simple.InconsistenciesController;
 import org.infoglue.cms.controllers.kernel.impl.simple.RegistryController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeControllerProxy;
@@ -94,8 +95,11 @@ public class DeleteSiteNodeAction extends InfoGlueAbstractAction
 	public String doDeleteReference() throws Exception 
 	{
 	    for(int i=0; i<registryId.length; i++)
-	        RegistryController.getController().delete(new Integer(registryId[i]));
-		
+	    {
+	    	InconsistenciesController.getController().removeReferences(new Integer(registryId[i]), this.getInfoGluePrincipal());
+	    	RegistryController.getController().delete(new Integer(registryId[i]));
+	    }
+	    
 	    return doExecute();
 	}	
 

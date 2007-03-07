@@ -248,7 +248,6 @@ public class InconsistenciesController extends BaseController
 	public void removeReferences(Integer registryId, InfoGluePrincipal infoGluePrincipal) throws SystemException, Exception 
 	{
 		RegistryVO registryVO = RegistryController.getController().getRegistryVOWithId(registryId);
-		System.out.println("registryVO:" + registryVO.getId());
 		
 		String entityName = registryVO.getEntityName();
 		String referencingEntityName = registryVO.getReferencingEntityName();
@@ -263,10 +262,8 @@ public class InconsistenciesController extends BaseController
 			if(siteNodeVO != null)
 			{
 				Integer metaInfoContentId = siteNodeVO.getMetaInfoContentId();
-				System.out.println("metaInfoContentId:" + metaInfoContentId);
 				LanguageVO masterLanguageVO = LanguageController.getController().getMasterLanguage(siteNodeVO.getRepositoryId());
 				String pageStructure = ContentController.getContentController().getContentAttribute(metaInfoContentId, masterLanguageVO.getId(), "ComponentStructure");
-				System.out.println("pageStructure:" + pageStructure);
 				
 				if(registryVO.getReferenceType().equals(RegistryVO.PAGE_COMPONENT))
 					pageStructure = deleteComponentFromXML(pageStructure, new Integer(registryVO.getEntityId()));
@@ -315,7 +312,6 @@ public class InconsistenciesController extends BaseController
 		String cleanedVersionValue = versionValue;
 		StringBuffer cleanedVersionValueBuffer = new StringBuffer();
 		
-		System.out.println("versionValue:" + versionValue);
 		int qualifyerEndIndex = 0;
 		int qualifyerStartIndex = cleanedVersionValue.indexOf("<qualifyer entity='Content'>");
 		if(qualifyerStartIndex == -1)
@@ -324,14 +320,11 @@ public class InconsistenciesController extends BaseController
 		while(qualifyerStartIndex > -1)
 		{
 			cleanedVersionValueBuffer.append(versionValue.substring(qualifyerEndIndex, qualifyerStartIndex));
-			System.out.println("cleanedVersionValueBuffer:" + cleanedVersionValueBuffer);
 			qualifyerEndIndex = cleanedVersionValue.indexOf("</qualifyer>", qualifyerStartIndex);
 			if(qualifyerEndIndex != -1)
 			{
 				String qualifyerString = versionValue.substring(qualifyerStartIndex, qualifyerEndIndex);
-				System.out.println("qualifyerString:" + qualifyerString);
 				String cleanedQualifyerString = qualifyerString.replaceAll("<id>" + contentId + "</id>", "");
-				System.out.println("cleanedQualifyerString:" + cleanedQualifyerString);
 				cleanedVersionValueBuffer.append(cleanedQualifyerString);
 			}
 			
@@ -344,7 +337,6 @@ public class InconsistenciesController extends BaseController
 		
 		cleanedVersionValue = cleanedVersionValueBuffer.toString();
 		
-		System.out.println("cleanedVersionValue:" + cleanedVersionValue);
 		return cleanedVersionValue;
 	}
 
@@ -353,7 +345,6 @@ public class InconsistenciesController extends BaseController
 		String cleanedVersionValue = versionValue;
 		StringBuffer cleanedVersionValueBuffer = new StringBuffer();
 		
-		System.out.println("versionValue:" + versionValue);
 		int qualifyerEndIndex = 0;
 		int qualifyerStartIndex = cleanedVersionValue.indexOf("<qualifyer entity='SiteNode'>");
 		if(qualifyerStartIndex == -1)
@@ -362,14 +353,11 @@ public class InconsistenciesController extends BaseController
 		while(qualifyerStartIndex > -1)
 		{
 			cleanedVersionValueBuffer.append(versionValue.substring(qualifyerEndIndex, qualifyerStartIndex));
-			System.out.println("cleanedVersionValueBuffer:" + cleanedVersionValueBuffer);
 			qualifyerEndIndex = cleanedVersionValue.indexOf("</qualifyer>", qualifyerStartIndex);
 			if(qualifyerEndIndex != -1)
 			{
 				String qualifyerString = versionValue.substring(qualifyerStartIndex, qualifyerEndIndex);
-				System.out.println("qualifyerString:" + qualifyerString);
 				String cleanedQualifyerString = qualifyerString.replaceAll("<id>" + siteNodeId + "</id>", "");
-				System.out.println("cleanedQualifyerString:" + cleanedQualifyerString);
 				cleanedVersionValueBuffer.append(cleanedQualifyerString);
 			}
 			
@@ -383,7 +371,6 @@ public class InconsistenciesController extends BaseController
 		//<?xml version='1.0' encoding='UTF-8'?><qualifyer entity='SiteNode'><id>45</id><id>1115</id></qualifyer>
 		cleanedVersionValue = cleanedVersionValueBuffer.toString();
 		
-		System.out.println("cleanedVersionValue:" + cleanedVersionValue);
 		return cleanedVersionValue;
 	}
 
