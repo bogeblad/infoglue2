@@ -229,7 +229,7 @@ public class ViewMultiSelectStructureTreeForServiceBindingAction extends InfoGlu
 	{	
 		try
 		{	
-			return SiteNodeController.getSiteNodeVOWithId(new Integer(entityId)).getName();
+			return SiteNodeController.getController().getSiteNodeVOWithId(new Integer(entityId)).getName();
 		}
 		catch(Exception e)
 		{

@@ -117,7 +117,7 @@ public class ViewSiteNodeAction extends InfoGlueAbstractAction
 	{
 		this.siteNodeVersionVO = SiteNodeVersionControllerProxy.getSiteNodeVersionControllerProxy().getACLatestActiveSiteNodeVersionVO(this.getInfoGluePrincipal(), siteNodeId);
 		logger.info("siteNodeVersionVO:" + siteNodeVersionVO);
-		this.siteNodeVO = SiteNodeController.getSiteNodeVOWithId(siteNodeId);
+		this.siteNodeVO = SiteNodeController.getController().getSiteNodeVOWithId(siteNodeId);
 		this.repositoryId = this.siteNodeVO.getRepositoryId();
 		//SiteNodeControllerProxy.getController().getACSiteNodeVOWithId(this.getInfoGluePrincipal(), siteNodeId);
 		

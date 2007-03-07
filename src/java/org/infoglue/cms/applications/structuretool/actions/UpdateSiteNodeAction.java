@@ -81,7 +81,7 @@ public class UpdateSiteNodeAction extends ViewSiteNodeAction //WebworkAbstractAc
 		//try
 		//{
 			super.initialize(getSiteNodeId());
-			SiteNodeVO oldSiteNodeVO = SiteNodeController.getSiteNodeVOWithId(getSiteNodeId());
+			SiteNodeVO oldSiteNodeVO = SiteNodeController.getController().getSiteNodeVOWithId(getSiteNodeId());
 
 			this.siteNodeVO.setCreatorName(this.getInfoGluePrincipal().getName());
 			this.siteNodeVO.setMetaInfoContentId(oldSiteNodeVO.getMetaInfoContentId());

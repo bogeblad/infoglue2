@@ -127,7 +127,7 @@ public class TextToImageEditorAction extends InfoGlueAbstractAction
     
     protected void initialize(Integer siteNodeId) throws Exception
     {
-		this.siteNodeVO = SiteNodeController.getSiteNodeVOWithId(siteNodeId);
+		this.siteNodeVO = SiteNodeController.getController().getSiteNodeVOWithId(siteNodeId);
         this.siteNodeVersionVO = SiteNodeVersionController.getController().getLatestSiteNodeVersionVO(siteNodeId);
 		
         if(siteNodeVO.getSiteNodeTypeDefinitionId() != null)

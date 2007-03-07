@@ -118,7 +118,7 @@ public class ViewSiteNodeTreeUCCImpl extends BaseUCCController implements ViewSi
     
     public SiteNodeVO getSiteNode(Integer siteNodeId) throws ConstraintException, SystemException
     {
-    	return SiteNodeController.getSiteNodeVOWithId(siteNodeId);
+    	return SiteNodeController.getController().getSiteNodeVOWithId(siteNodeId);
     	/*
     	Database db = CastorDatabaseService.getDatabase();
         ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();

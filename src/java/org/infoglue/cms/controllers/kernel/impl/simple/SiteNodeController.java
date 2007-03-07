@@ -80,7 +80,7 @@ public class SiteNodeController extends BaseController
 	 * This method gets the siteNodeVO with the given id
 	 */
 	 
-    public static SiteNodeVO getSiteNodeVOWithId(Integer siteNodeId) throws SystemException, Bug
+    public SiteNodeVO getSiteNodeVOWithId(Integer siteNodeId) throws SystemException, Bug
     {
 		return (SiteNodeVO) getVOWithId(SiteNodeImpl.class, siteNodeId);
     }
@@ -509,7 +509,7 @@ public class SiteNodeController extends BaseController
 	 * of things that should match. The input is a Hashmap with a method and a List of HashMaps.
 	 */
 	
-    public static List getSiteNodeVOList(HashMap argumentHashMap) throws SystemException, Bug
+    public List getSiteNodeVOList(HashMap argumentHashMap) throws SystemException, Bug
     {
     	List siteNodes = null;
     	

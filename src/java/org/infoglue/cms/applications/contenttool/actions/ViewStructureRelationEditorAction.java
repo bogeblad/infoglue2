@@ -55,7 +55,7 @@ public class ViewStructureRelationEditorAction extends ViewRelationEditorAction
 	{	
 		try
 		{	
-			return SiteNodeController.getSiteNodeVOWithId(new Integer(entityId)).getName();
+			return SiteNodeController.getController().getSiteNodeVOWithId(new Integer(entityId)).getName();
 		}
 		catch(Exception e)
 		{
