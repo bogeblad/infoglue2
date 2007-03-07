@@ -223,6 +223,14 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
     
     protected void initialize(Integer contentVersionId, Integer contentId, Integer languageId, boolean fallBackToMasterLanguage, boolean checkPermission) throws ConstraintException, Exception
     {
+    	if(contentVersionId != null && contentId == null)
+    	{
+    		this.contentVersionVO = ContentVersionControllerProxy.getController().getACContentVersionVOWithId(this.getInfoGluePrincipal(), contentVersionId);    		 	
+    		contentId = contentVersionVO.getContentId();
+    		languageId = contentVersionVO.getLanguageId();
+    		this.languageId = contentVersionVO.getLanguageId();
+    	}   
+    	
         this.contentVO = ContentControllerProxy.getController().getACContentVOWithId(this.getInfoGluePrincipal(), contentId);
 		    
         if(this.contentVO.getRepositoryId() != null && checkPermission && !hasAccessTo("Repository.Read", "" + this.contentVO.getRepositoryId()))
