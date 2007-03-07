@@ -45,7 +45,7 @@ public class CoreStructureService implements BaseService
 	
 	public List selectMatchingEntities(HashMap argumentHashMap) throws Exception
 	{
-		return SiteNodeController.getSiteNodeVOList(argumentHashMap);		
+		return SiteNodeController.getController().getSiteNodeVOList(argumentHashMap);		
 	}
 	
 	/**
