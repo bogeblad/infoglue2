@@ -20,7 +20,7 @@
  *
  * ===============================================================================
  *
- * $Id: RegistryController.java,v 1.34 2007/01/30 12:30:52 mattias Exp $
+ * $Id: RegistryController.java,v 1.35 2007/03/07 17:08:06 mattias Exp $
  */
 
 package org.infoglue.cms.controllers.kernel.impl.simple;
@@ -43,19 +43,24 @@ import org.infoglue.cms.applications.databeans.ReferenceVersionBean;
 import org.infoglue.cms.entities.content.Content;
 import org.infoglue.cms.entities.content.ContentVersion;
 import org.infoglue.cms.entities.content.ContentVersionVO;
+import org.infoglue.cms.entities.content.impl.simple.ContentImpl;
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.entities.management.CategoryVO;
 import org.infoglue.cms.entities.management.Language;
+import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.entities.management.Registry;
 import org.infoglue.cms.entities.management.RegistryVO;
+import org.infoglue.cms.entities.management.impl.simple.LanguageImpl;
 import org.infoglue.cms.entities.management.impl.simple.RegistryImpl;
 import org.infoglue.cms.entities.structure.Qualifyer;
 import org.infoglue.cms.entities.structure.ServiceBinding;
 import org.infoglue.cms.entities.structure.SiteNode;
 import org.infoglue.cms.entities.structure.SiteNodeVersion;
 import org.infoglue.cms.entities.structure.SiteNodeVersionVO;
+import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
+import org.infoglue.deliver.util.CacheController;
 
 
 /**
@@ -80,6 +85,28 @@ public class RegistryController extends BaseController
 	private RegistryController()
 	{
 	}
+	
+    public List getRegistryVOList() throws SystemException, Bug
+    {
+        return getAllVOObjects(RegistryImpl.class, "registryId");
+    }
+
+    public List getRegistryVOList(Database db) throws SystemException, Bug
+    {
+        return getAllVOObjects(RegistryImpl.class, "registryId", db);
+    }
+    
+	/**
+	 * This method return a RegistryVO
+	 */
+	
+	public RegistryVO getRegistryVOWithId(Integer registryId) throws SystemException, Exception
+	{
+		RegistryVO registryVO = (RegistryVO)getVOWithId(RegistryImpl.class, registryId);
+
+		return registryVO;
+	}
+
 	
 	/**
 	 * This method creates a registry entity in the db.
