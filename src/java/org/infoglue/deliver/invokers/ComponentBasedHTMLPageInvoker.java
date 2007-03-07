@@ -395,17 +395,26 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 				}
 
 				String[] allowedComponentNamesArray = null;
-				int allowedComponentNamesIndex = slotString.indexOf("allowedComponentNames");
+				int allowedComponentNamesIndex = slotString.indexOf(" allowedComponentNames");
 				if(allowedComponentNamesIndex > -1)
 				{    
-				    String allowedComponentNames = slotString.substring(allowedComponentNamesIndex + 23, slotString.indexOf("\"", allowedComponentNamesIndex + 23));
+				    String allowedComponentNames = slotString.substring(allowedComponentNamesIndex + 24, slotString.indexOf("\"", allowedComponentNamesIndex + 24));
 				    allowedComponentNamesArray = allowedComponentNames.split(",");
 				}
-				
+
+				String[] disallowedComponentNamesArray = null;
+				int disallowedComponentNamesIndex = slotString.indexOf(" disallowedComponentNames");
+				if(disallowedComponentNamesIndex > -1)
+				{    
+				    String disallowedComponentNames = slotString.substring(disallowedComponentNamesIndex + 27, slotString.indexOf("\"", disallowedComponentNamesIndex + 27));
+				    disallowedComponentNamesArray = disallowedComponentNames.split(",");
+				}
+
 			  	Slot slot = new Slot();
 			  	slot.setId(slotId);
 			    slot.setInherit(inherit);
 			  	slot.setAllowedComponentsArray(allowedComponentNamesArray);
+			  	slot.setDisallowedComponentsArray(disallowedComponentNamesArray);
 			    
 			  	List subComponents = getComponents(db, templateController, component, templateController.getSiteNodeId(), slotId);
 			  	slot.setComponents(subComponents);
@@ -1165,18 +1174,28 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 							}
 	
 							String[] allowedComponentNamesArray = null;
-							int allowedComponentNamesIndex = slotString.indexOf("allowedComponentNames");
+							int allowedComponentNamesIndex = slotString.indexOf(" allowedComponentNames");
 							if(allowedComponentNamesIndex > -1)
 							{    
-							    String allowedComponentNames = slotString.substring(allowedComponentNamesIndex + 23, slotString.indexOf("\"", allowedComponentNamesIndex + 23));
+							    String allowedComponentNames = slotString.substring(allowedComponentNamesIndex + 24, slotString.indexOf("\"", allowedComponentNamesIndex + 24));
 							    //System.out.println("allowedComponentNames:" + allowedComponentNames);
 							    allowedComponentNamesArray = allowedComponentNames.split(",");
 							}
-	
+
+							String[] disallowedComponentNamesArray = null;
+							int disallowedComponentNamesIndex = slotString.indexOf(" disallowedComponentNames");
+							if(disallowedComponentNamesIndex > -1)
+							{    
+							    String disallowedComponentNames = slotString.substring(disallowedComponentNamesIndex + 27, slotString.indexOf("\"", disallowedComponentNamesIndex + 27));
+							    //System.out.println("disallowedComponentNames:" + disallowedComponentNames);
+							    disallowedComponentNamesArray = disallowedComponentNames.split(",");
+							}
+
 							Slot slot = new Slot();
 							slot.setId(slotId);
 							slot.setInherit(inherit);
 							slot.setAllowedComponentsArray(allowedComponentNamesArray);
+							slot.setDisallowedComponentsArray(disallowedComponentNamesArray);
 							
 							Element componentsElement = (Element)componentElement.selectSingleNode("components");
 							

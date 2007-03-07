@@ -98,6 +98,7 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 	private String sortProperty 			 = "name";
 	private String[] allowedContentTypeIds	 = null;
 	private String[] allowedComponentNames 	 = null;
+	private String[] disallowedComponentNames= null;
 	
 	public ViewSiteNodePageComponentsAction()
 	{
@@ -113,7 +114,7 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 			SiteNodeStateController.getController().changeState(siteNodeVersionVO.getId(), SiteNodeVersionVO.WORKING_STATE, "Edit on sight editing", true, this.getInfoGluePrincipal(), this.siteNodeId, events);
 		}
 		
-		Integer currentRepositoryId = SiteNodeController.getSiteNodeVOWithId(this.siteNodeId).getRepositoryId();
+		Integer currentRepositoryId = SiteNodeController.getController().getSiteNodeVOWithId(this.siteNodeId).getRepositoryId();
 		this.masterLanguageVO = LanguageController.getController().getMasterLanguage(currentRepositoryId);		
 		if(filterRepositoryId == null)
 		{
@@ -261,7 +262,7 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 	    
 	    ContentVO contentVO = ContentController.getContentController().getContentVOWithId(contentId);
 		
-		LanguageVO masterLanguageVO = LanguageController.getController().getMasterLanguage(SiteNodeController.getSiteNodeVOWithId(siteNodeId).getRepositoryId());
+		LanguageVO masterLanguageVO = LanguageController.getController().getMasterLanguage(SiteNodeController.getController().getSiteNodeVOWithId(siteNodeId).getRepositoryId());
 		ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentVO.getId(), masterLanguageVO.getId());
 
 		attribute = ContentVersionController.getContentVersionController().getAttributeValue(contentVersionVO, attributeName, false);
@@ -957,7 +958,7 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 					String path = "Undefined";
 					if(entityName.equalsIgnoreCase("SiteNode"))
 					{
-						SiteNodeVO siteNodeVO = SiteNodeController.getSiteNodeVOWithId(new Integer(entityId));
+						SiteNodeVO siteNodeVO = SiteNodeController.getController().getSiteNodeVOWithId(new Integer(entityId));
 						path = siteNodeVO.getName();
 					}
 					else if(entityName.equalsIgnoreCase("Content")) 
@@ -1141,7 +1142,7 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 	    try
 	    {
 	        String direction = "asc";
-	        componentVOList = ComponentController.getController().getComponentVOList(sortProperty, direction, allowedComponentNames);
+	        componentVOList = ComponentController.getController().getComponentVOList(sortProperty, direction, allowedComponentNames, disallowedComponentNames);
 	    }
 	    catch(Exception e)
 	    {
@@ -1169,7 +1170,7 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 			ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentVO.getId(), languageId);
 			if(contentVersionVO == null)
 			{
-				SiteNodeVO siteNodeVO = SiteNodeController.getSiteNodeVOWithId(siteNodeId);
+				SiteNodeVO siteNodeVO = SiteNodeController.getController().getSiteNodeVOWithId(siteNodeId);
 				LanguageVO masterLanguage = LanguageController.getController().getMasterLanguage(siteNodeVO.getRepositoryId());
 				contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentVO.getId(), masterLanguage.getLanguageId());
 			}
@@ -1415,6 +1416,16 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
         this.allowedComponentNames = allowedComponentNames;
     }
 
+    public String[] getDisallowedComponentNames()
+    {
+        return disallowedComponentNames;
+    }
+    
+    public void setDisallowedComponentNames(String[] disallowedComponentNames)
+    {
+        this.disallowedComponentNames = disallowedComponentNames;
+    }
+
     public String getAllowedComponentNamesAsUrlEncodedString() throws Exception
     {
         StringBuffer sb = new StringBuffer();
@@ -1425,6 +1436,21 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
                 sb.append("&");
             
             sb.append("allowedComponentNames=" + URLEncoder.encode(allowedComponentNames[i], "UTF-8"));
+        }
+        
+        return sb.toString();
+    }
+
+    public String getDisallowedComponentNamesAsUrlEncodedString() throws Exception
+    {
+        StringBuffer sb = new StringBuffer();
+        
+        for(int i=0; i<disallowedComponentNames.length; i++)
+        {
+            if(i > 0)
+                sb.append("&");
+            
+            sb.append("disallowedComponentNames=" + URLEncoder.encode(disallowedComponentNames[i], "UTF-8"));
         }
         
         return sb.toString();

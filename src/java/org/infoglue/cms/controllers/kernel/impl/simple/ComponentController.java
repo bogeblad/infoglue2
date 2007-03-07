@@ -68,7 +68,7 @@ public class ComponentController extends BaseController
 	 * @throws Bug
 	 */
 	
-	public List getComponentVOList(String sortAttribute, String direction, String[] allowedComponentNames) throws SystemException, Bug, Exception
+	public List getComponentVOList(String sortAttribute, String direction, String[] allowedComponentNames, String[] disallowedComponentNames) throws SystemException, Bug, Exception
 	{
 		List componentVOList = null;
 		
@@ -77,7 +77,7 @@ public class ComponentController extends BaseController
 		{
 			beginTransaction(db);
 			
-			componentVOList = getComponentVOList(sortAttribute, direction, allowedComponentNames, db);
+			componentVOList = getComponentVOList(sortAttribute, direction, allowedComponentNames, disallowedComponentNames, db);
 			    
 			commitTransaction(db);
 		}
@@ -101,7 +101,7 @@ public class ComponentController extends BaseController
 	
 	private static List cachedComponents = null;
 	
-	public List getComponentVOList(String sortAttribute, String direction, String[] allowedComponentNames, Database db) throws SystemException, Bug, Exception
+	public List getComponentVOList(String sortAttribute, String direction, String[] allowedComponentNames, String[] disallowedComponentNames, Database db) throws SystemException, Bug, Exception
 	{
 	    String allowedComponentNamesString = "";
 	    if(allowedComponentNames != null)
@@ -109,8 +109,15 @@ public class ComponentController extends BaseController
 	        for(int i=0; i<allowedComponentNames.length; i++)
 	            allowedComponentNamesString = allowedComponentNames[i] + ":";
 	    }
-	    
-	    String componentsKey = "components_" + sortAttribute + "_" + direction + "_" + allowedComponentNamesString;
+
+	    String disallowedComponentNamesString = "";
+	    if(disallowedComponentNames != null)
+	    {
+	        for(int i=0; i<disallowedComponentNames.length; i++)
+	        	disallowedComponentNamesString = disallowedComponentNames[i] + ":";
+	    }
+
+	    String componentsKey = "components_" + sortAttribute + "_" + direction + "_" + allowedComponentNamesString + "_" + disallowedComponentNamesString;
 	    List components = (List)CacheController.getCachedObject("componentContentsCache", componentsKey);
 		if(components != null)
 		{
@@ -118,7 +125,7 @@ public class ComponentController extends BaseController
 		}
 		else
 		{
-		    components = getComponents(allowedComponentNames);
+		    components = getComponents(allowedComponentNames, disallowedComponentNames);
 			Iterator componentsIterator = components.iterator();
 			while(componentsIterator.hasNext())
 			{
@@ -151,7 +158,7 @@ public class ComponentController extends BaseController
 	 * This method returns the contents that are of contentTypeDefinition "HTMLTemplate"
 	 */
 	
-	public List getComponents(String[] allowedComponentNames) throws Exception
+	public List getComponents(String[] allowedComponentNames, String[] disallowedComponentNames) throws Exception
 	{
 		HashMap arguments = new HashMap();
 		arguments.put("method", "selectListOnContentTypeName");
@@ -181,7 +188,25 @@ public class ComponentController extends BaseController
 		            resultsIterator.remove();
 		    }
 		}
-		
+
+		if(disallowedComponentNames != null && disallowedComponentNames.length > 0)
+		{
+		    Iterator resultsIterator = results.iterator();
+		    while(resultsIterator.hasNext())
+		    {
+		        ContentVO contentVO = (ContentVO)resultsIterator.next();
+		        boolean isAllowed = true;
+		        for(int i=0; i<disallowedComponentNames.length; i++)
+		        {
+		            if(contentVO.getName().equals(disallowedComponentNames[i]))
+		                isAllowed = false;
+		        }
+		        
+		        if(!isAllowed)
+		            resultsIterator.remove();
+		    }
+		}
+
 		return results;	
 	}
 	

@@ -43,6 +43,7 @@ public class Slot
 	private boolean inherit;
 	private List components = new ArrayList();
 	private String[] allowedComponentsArray = null;
+	private String[] disallowedComponentsArray = null;
 	
 	public List getComponents()
 	{
@@ -119,6 +120,38 @@ public class Slot
 	            String encoding = CmsPropertyHandler.getURIEncoding();
 	            
 	            sb.append("allowedComponentNames=" + URLEncoder.encode(allowedComponentsArray[i], encoding));
+	        }
+        }
+        else
+            return null;
+        
+        return sb.toString();
+    }
+
+    public String[] getDisallowedComponentsArray()
+    {
+        return disallowedComponentsArray;
+    }
+    
+    public void setDisallowedComponentsArray(String[] disallowedComponentsArray)
+    {
+        this.disallowedComponentsArray = disallowedComponentsArray;
+    }
+
+    public String getDisallowedComponentsArrayAsUrlEncodedString() throws Exception
+    {
+        StringBuffer sb = new StringBuffer();
+        
+        if(disallowedComponentsArray != null)
+        {
+	        for(int i=0; i<disallowedComponentsArray.length; i++)
+	        {
+	            if(i > 0)
+	                sb.append("&");
+	            
+	            String encoding = CmsPropertyHandler.getURIEncoding();
+	            
+	            sb.append("disallowedComponentNames=" + URLEncoder.encode(disallowedComponentsArray[i], encoding));
 	        }
         }
         else

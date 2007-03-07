@@ -822,7 +822,7 @@ function listRowOff()
 
 
 
-function assignComponent(siteNodeId, languageId, contentId, parentComponentId, slotId, specifyBaseTemplate, allowedComponentNamesUrlEncodedString) 
+function assignComponent(siteNodeId, languageId, contentId, parentComponentId, slotId, specifyBaseTemplate, allowedComponentNamesUrlEncodedString, disallowedComponentNamesUrlEncodedString) 
 {
 	//alert("AssignComponent:" + allowedComponentNamesUrlEncodedString);
 	//alert("draggedComponentId:" + draggedComponentId);
@@ -835,7 +835,7 @@ function assignComponent(siteNodeId, languageId, contentId, parentComponentId, s
 		//alert("slotId" + slotId);
 		//alert("specifyBaseTemplate" + specifyBaseTemplate);
 		
-		insertUrl = componentEditorUrl + "ViewSiteNodePageComponents!addComponent.action?siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&parentComponentId=" + parentComponentId + "&componentId=" + draggedComponentId + "&slotId=" + slotId + "&specifyBaseTemplate=" + specifyBaseTemplate + "&" + allowedComponentNamesUrlEncodedString;
+		insertUrl = componentEditorUrl + "ViewSiteNodePageComponents!addComponent.action?siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&parentComponentId=" + parentComponentId + "&componentId=" + draggedComponentId + "&slotId=" + slotId + "&specifyBaseTemplate=" + specifyBaseTemplate + "&" + allowedComponentNamesUrlEncodedString + "&" + disallowedComponentNamesUrlEncodedString;
 		//alert("insertUrl:" + insertUrl);
 		document.location.href = insertUrl;
 		draggedComponentId = -1;

@@ -27,7 +27,7 @@
 		function changeRepository(selectBox)
 		{
 			var repositoryId = selectBox.value;
-			var url = "ViewSiteNodePageComponents!listComponents.action?siteNodeId=$siteNodeId&languageId=$languageId&contentId=$contentId&parentComponentId=$!parentComponentId&slotId=$slotId&specifyBaseTemplate=$!specifyBaseTemplate&showSimple=$showSimple&$allowedComponentNamesAsUrlEncodedString&filterRepositoryId=" + repositoryId;
+			var url = "ViewSiteNodePageComponents!listComponents.action?siteNodeId=$siteNodeId&languageId=$languageId&contentId=$contentId&parentComponentId=$!parentComponentId&slotId=$slotId&specifyBaseTemplate=$!specifyBaseTemplate&showSimple=$showSimple&$allowedComponentNamesAsUrlEncodedString&$disallowedComponentNamesAsUrlEncodedString&filterRepositoryId=" + repositoryId;
 			//alert("url:" + url);
 			document.location.href = url;
 		}
@@ -78,11 +78,11 @@
 		<tr style="background-color:#F0E1B4; height:20px;">
 			<td height="1"><strong>Icon</strong></td>
 			<td height="1">
-				<strong><a href="ViewSiteNodePageComponents!listComponents.action?siteNodeId=$siteNodeId&languageId=$languageId&contentId=$contentId&specifyBaseTemplate=$!specifyBaseTemplate&parentComponentId=$parentComponentId&slotId=$slotId&filterRepositoryId=$filterRepositoryId&sortProperty=name&showSimple=$showSimple&$allowedComponentNamesAsUrlEncodedString">Component Name</a></strong>
+				<strong><a href="ViewSiteNodePageComponents!listComponents.action?siteNodeId=$siteNodeId&languageId=$languageId&contentId=$contentId&specifyBaseTemplate=$!specifyBaseTemplate&parentComponentId=$parentComponentId&slotId=$slotId&filterRepositoryId=$filterRepositoryId&sortProperty=name&showSimple=$showSimple&$allowedComponentNamesAsUrlEncodedString&$disallowedComponentNamesAsUrlEncodedString">Component Name</a></strong>
 				#if($sortProperty == "name")<img src="images/downArrow.gif">#end
 			</td>
 			<td height="1">
-				<strong><a href="ViewSiteNodePageComponents!listComponents.action?siteNodeId=$siteNodeId&languageId=$languageId&contentId=$contentId&specifyBaseTemplate=$!specifyBaseTemplate&parentComponentId=$parentComponentId&slotId=$slotId&filterRepositoryId=$filterRepositoryId&sortProperty=repositoryId&showSimple=$showSimple&$allowedComponentNamesAsUrlEncodedString">Repository</a></strong>
+				<strong><a href="ViewSiteNodePageComponents!listComponents.action?siteNodeId=$siteNodeId&languageId=$languageId&contentId=$contentId&specifyBaseTemplate=$!specifyBaseTemplate&parentComponentId=$parentComponentId&slotId=$slotId&filterRepositoryId=$filterRepositoryId&sortProperty=repositoryId&showSimple=$showSimple&$allowedComponentNamesAsUrlEncodedString&$disallowedComponentNamesAsUrlEncodedString">Repository</a></strong>
 				#if($sortProperty == "repositoryId")<img src="images/downArrow.gif">#end
 			</td>
 			#*
@@ -92,7 +92,7 @@
 			</td>
 			*#
 			<td height="1">
-			<strong><a href="ViewSiteNodePageComponents!listComponents.action?siteNodeId=$siteNodeId&languageId=$languageId&contentId=$contentId&specifyBaseTemplate=$!specifyBaseTemplate&parentComponentId=$parentComponentId&slotId=$slotId&filterRepositoryId=$filterRepositoryId&sortProperty=GroupName&showSimple=$showSimple&$allowedComponentNamesAsUrlEncodedString">GroupName</a></strong>
+			<strong><a href="ViewSiteNodePageComponents!listComponents.action?siteNodeId=$siteNodeId&languageId=$languageId&contentId=$contentId&specifyBaseTemplate=$!specifyBaseTemplate&parentComponentId=$parentComponentId&slotId=$slotId&filterRepositoryId=$filterRepositoryId&sortProperty=GroupName&showSimple=$showSimple&$allowedComponentNamesAsUrlEncodedString&$disallowedComponentNamesAsUrlEncodedString">GroupName</a></strong>
 				#if($sortProperty == "GroupName")<img src="images/downArrow.gif">#end
 			</td>
 		</tr>
