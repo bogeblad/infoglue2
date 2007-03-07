@@ -61,7 +61,7 @@ public class ViewListSiteNodeVersionAction extends InfoGlueAbstractAction
 	private Integer siteNodeId;
 	private Integer repositoryId;
 	private String returnAddress;
-
+	private boolean recurseSiteNodes = true;
 
 	protected String doExecute() throws Exception 
 	{
@@ -84,7 +84,7 @@ public class ViewListSiteNodeVersionAction extends InfoGlueAbstractAction
 		
 			ceb.throwIfNotEmpty();
 
-			SiteNodeVersionController.getController().getSiteNodeAndAffectedItemsRecursive(this.siteNodeId, SiteNodeVersionVO.WORKING_STATE, this.siteNodeVersionVOList, this.contentVersionVOList, false);
+			SiteNodeVersionController.getController().getSiteNodeAndAffectedItemsRecursive(this.siteNodeId, SiteNodeVersionVO.WORKING_STATE, this.siteNodeVersionVOList, this.contentVersionVOList, false, recurseSiteNodes);
 		}
 
 	    return "success";
@@ -137,13 +137,23 @@ public class ViewListSiteNodeVersionAction extends InfoGlueAbstractAction
         return siteNodeVersionVOList;
     }
 
-
-	public String getReturnAddress() {
+	public String getReturnAddress() 
+	{
 		return returnAddress;
 	}
 
-
-	public void setReturnAddress(String returnAddress) {
+	public void setReturnAddress(String returnAddress) 
+	{
 		this.returnAddress = returnAddress;
+	}
+
+	public boolean isRecurseSiteNodes() 
+	{
+		return recurseSiteNodes;
+	}
+
+	public void setRecurseSiteNodes(boolean recurseSiteNodes) 
+	{
+		this.recurseSiteNodes = recurseSiteNodes;
 	}
 }

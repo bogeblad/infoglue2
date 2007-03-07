@@ -841,13 +841,21 @@ public class SiteNodeVersionController extends BaseController
 		
 		return resultList;
 	}
-
 	
 	/**
 	 * Recursive methods to get all contentVersions of a given state under the specified parent content.
 	 */ 
 	
     public void getSiteNodeAndAffectedItemsRecursive(Integer siteNodeId, Integer stateId, Set siteNodeVersionVOList, Set contenteVersionVOList, boolean includeMetaInfo) throws ConstraintException, SystemException
+	{
+    	getSiteNodeAndAffectedItemsRecursive(siteNodeId, stateId, siteNodeVersionVOList, contenteVersionVOList, includeMetaInfo, true);
+	}
+	
+	/**
+	 * Recursive methods to get all contentVersions of a given state under the specified parent content.
+	 */ 
+	
+    public void getSiteNodeAndAffectedItemsRecursive(Integer siteNodeId, Integer stateId, Set siteNodeVersionVOList, Set contenteVersionVOList, boolean includeMetaInfo, boolean recurseSiteNodes) throws ConstraintException, SystemException
 	{
         Database db = CastorDatabaseService.getDatabase();
 
@@ -857,7 +865,7 @@ public class SiteNodeVersionController extends BaseController
         {
             SiteNode siteNode = SiteNodeController.getController().getSiteNodeWithId(siteNodeId, db);
 
-            getSiteNodeAndAffectedItemsRecursive(siteNode, stateId, new ArrayList(), new ArrayList(), db, siteNodeVersionVOList, contenteVersionVOList, includeMetaInfo);
+            getSiteNodeAndAffectedItemsRecursive(siteNode, stateId, new ArrayList(), new ArrayList(), db, siteNodeVersionVOList, contenteVersionVOList, includeMetaInfo, recurseSiteNodes);
             
             commitTransaction(db);
         }
@@ -868,8 +876,13 @@ public class SiteNodeVersionController extends BaseController
             throw new SystemException(e.getMessage());
         }
 	}
-	
+
 	private void getSiteNodeAndAffectedItemsRecursive(SiteNode siteNode, Integer stateId, List checkedSiteNodes, List checkedContents, Database db, Set siteNodeVersionVOList, Set contentVersionVOList, boolean includeMetaInfo) throws ConstraintException, SystemException, Exception
+	{
+		getSiteNodeAndAffectedItemsRecursive(siteNode, stateId, checkedSiteNodes, checkedContents, db, siteNodeVersionVOList, contentVersionVOList, includeMetaInfo, true);
+	}
+	
+	private void getSiteNodeAndAffectedItemsRecursive(SiteNode siteNode, Integer stateId, List checkedSiteNodes, List checkedContents, Database db, Set siteNodeVersionVOList, Set contentVersionVOList, boolean includeMetaInfo, boolean recurseSiteNodes) throws ConstraintException, SystemException, Exception
 	{
 	    checkedSiteNodes.add(siteNode.getId());
         
@@ -938,15 +951,17 @@ public class SiteNodeVersionController extends BaseController
 
 		}
 		
-		// Get the children of this siteNode and do the recursion
-		Collection childSiteNodeList = siteNode.getChildSiteNodes();
-		Iterator cit = childSiteNodeList.iterator();
-		while (cit.hasNext())
-		{
-			SiteNode childSiteNode = (SiteNode) cit.next();
-			getSiteNodeAndAffectedItemsRecursive(childSiteNode, stateId, checkedSiteNodes, checkedContents, db, siteNodeVersionVOList, contentVersionVOList, includeMetaInfo);
-		}
-   
+        if(recurseSiteNodes)
+        {
+			// Get the children of this siteNode and do the recursion
+			Collection childSiteNodeList = siteNode.getChildSiteNodes();
+			Iterator cit = childSiteNodeList.iterator();
+			while (cit.hasNext())
+			{
+				SiteNode childSiteNode = (SiteNode) cit.next();
+				getSiteNodeAndAffectedItemsRecursive(childSiteNode, stateId, checkedSiteNodes, checkedContents, db, siteNodeVersionVOList, contentVersionVOList, includeMetaInfo);
+			}
+        }   
 	}
 
 	/**

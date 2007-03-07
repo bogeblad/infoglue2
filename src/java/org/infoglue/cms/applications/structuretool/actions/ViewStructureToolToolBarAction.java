@@ -339,7 +339,16 @@ public class ViewStructureToolToolBarAction extends InfoGlueAbstractAction
 		    buttons.add(pageComponentsButton);	
 		}
 		
-	    buttons.add(getPublishButton());
+		ImageButton publishButton = getPublishCurrentNodeButton();
+	    publishButton.getSubButtons().add(getPublishButton());
+	    buttons.add(publishButton);	
+	    
+		/*
+	    ImageButton publishButton = getPublishButton();
+	    publishButton.getSubButtons().add(getPublishCurrentNodeButton());
+	    buttons.add(publishButton);	
+	    */
+	    //buttons.add(getPublishButton());
 		
 		buttons.add(getExecuteTaskButton());
 
@@ -504,6 +513,11 @@ public class ViewStructureToolToolBarAction extends InfoGlueAbstractAction
 	private ImageButton getPublishButton()
 	{
 		return new ImageButton(this.getCMSBaseUrl() + "/ViewListSiteNodeVersion.action?siteNodeId=" + this.siteNodeId + "&repositoryId=" + this.repositoryId, getLocalizedString(getSession().getLocale(), "images.structuretool.buttons.publishSiteNode"), "tool.structuretool.publishSiteNode.header");	
+	}
+
+	private ImageButton getPublishCurrentNodeButton()
+	{
+		return new ImageButton(this.getCMSBaseUrl() + "/ViewListSiteNodeVersion.action?siteNodeId=" + this.siteNodeId + "&repositoryId=" + this.repositoryId + "&recurseSiteNodes=false", getLocalizedString(getSession().getLocale(), "images.structuretool.buttons.publishCurrentSiteNode"), "tool.structuretool.publishCurrentSiteNode.header");	
 	}
 
 	private ImageButton getAccessRightsButton() throws Exception
