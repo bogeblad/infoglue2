@@ -391,6 +391,7 @@ public class WebServiceAuthorizationModule implements AuthorizationModule, Seria
 		
 		roles = new ArrayList();
 
+		/*
 		String xml = "<?xml version='1.0' encoding='utf-8'?>" + 
 					"	<roles>" + 
 					"		<role>" + 
@@ -399,8 +400,8 @@ public class WebServiceAuthorizationModule implements AuthorizationModule, Seria
 					"			<description></description>" + 
 					"		</role>" + 
 					"	</roles>";
-	
-		//String xml = getWebServiceHelper().getString("getRoles");
+		*/
+		String xml = getWebServiceHelper().getString("getRoles");
 		System.out.println("Roles xml:" + xml);
 
 		Document document = domHelper.getDocument(xml);
@@ -452,114 +453,85 @@ public class WebServiceAuthorizationModule implements AuthorizationModule, Seria
 		users = new ArrayList();
 		
 		String xml = getWebServiceHelper().getString("getUsers");
-		/*
-		String xml = "<?xml version='1.0' encoding='utf-8'?>" + 
-					"	<users>" + 
-					"		<user>" + 
-					"			<userName>bogeblm</userName>" + 
-					"			<firstName>Mattias</firstName>" + 
-					"			<lastName>Bogeblad</lastName>" + 
-					"			<email>mattias.bogeblad@modul1.se</email>" + 
-					"			<roles>" + 
-					"				<role>" + 
-					"					<name>REDAKT</name>" + 
-					"					<displayName>Redaktör</displayName>" + 
-					"					<group>oid=123,cn=orgunits</group>" + 
-					"					<description></description>" + 
-					"				</role>" + 
-					"			</roles>" + 
-					"			<groups>" + 
-					"				<group>" + 
-					"					<name>oid=123,cn=orgunits</name>" + 
-					"					<displayName>IT-Avdelningen</displayName>" + 
-					"					<description></description>" + 
-					"				</group>" + 
-					"				<group>" + 
-					"					<name>cn=um,cn=locations</name>" + 
-					"					<displayName>Umeå</displayName>" + 
-					"					<description></description>" + 
-					"				</group>" + 
-					"			</groups>" + 
-					"		</user>" + 
-					"	</users>";
-		*/	
-			
+
 		System.out.println("Users xml:" + xml);
-
-		Document document = domHelper.getDocument(xml);
-		System.out.println("document:" + document);
-		List userNodes = document.selectNodes("/users/user");
-		Iterator usersIterator = userNodes.iterator();
-		while(usersIterator.hasNext())
+		if(xml != null && xml.equals(""))
 		{
-			Element userElement 		= (Element)usersIterator.next();
-			
-			Element userNameElement 	= (Element)userElement.selectSingleNode("userName");
-			Element firstNameElement 	= (Element)userElement.selectSingleNode("firstName");
-			Element lastNameElement 	= (Element)userElement.selectSingleNode("lastName");
-			Element emailElement 		= (Element)userElement.selectSingleNode("email");
-			String userName 			= userNameElement.getText();
-			String firstName 			= firstNameElement.getText();
-			String lastName 			= lastNameElement.getText();
-			String email 				= emailElement.getText();
-			
-			/*
-			Map metaMap = new HashMap();
-			Element metaElement 		= (Element)document.selectSingleNode("/user/meta");
-			List metaChildNodes 		= metaElement.elements();
-			Iterator metaChildNodesIterator = metaChildNodes.iterator();
-			while(metaChildNodesIterator.hasNext())
+			Document document = domHelper.getDocument(xml);
+			System.out.println("document:" + document);
+			List userNodes = document.selectNodes("/users/user");
+			Iterator usersIterator = userNodes.iterator();
+			while(usersIterator.hasNext())
 			{
-				Element valueElement = (Element)metaChildNodesIterator.next();
-				String name = valueElement.getName();
-				String value = valueElement.getText();
-				metaMap.put(name, value);
-			}
-			*/
-
-			List roles = new ArrayList();
-			List groups = new ArrayList();
-
-			List rolesElementList 				= userElement.selectNodes("roles/role");
-			Iterator rolesElementListIterator 	= rolesElementList.iterator();
-			while(rolesElementListIterator.hasNext())
-			{
-				Element roleElement = (Element)rolesElementListIterator.next();
-	
-				Element nameElement 		= (Element)roleElement.selectSingleNode("name");
-				Element displayNameElement 	= (Element)roleElement.selectSingleNode("displayName");
-				Element descriptionElement 	= (Element)roleElement.selectSingleNode("description");
-				Element groupElement 		= (Element)roleElement.selectSingleNode("group");
-				String name 				= nameElement.getText();
-				String displayName 			= displayNameElement.getText();
-				String description 			= descriptionElement.getText();
-				String group	 			= groupElement.getText();
+				Element userElement 		= (Element)usersIterator.next();
 				
-				InfoGlueRole infoglueRole 	= new InfoGlueRole(name, displayName, description, this);
-				roles.add(infoglueRole);
-			}
-
-			List groupsElementList 				= userElement.selectNodes("groups/group");
-			Iterator groupsElementListIterator 	= groupsElementList.iterator();
-			while(groupsElementListIterator.hasNext())
-			{
-				Element groupElement = (Element)groupsElementListIterator.next();
-	
-				Element nameElement 		= (Element)groupElement.selectSingleNode("name");
-				Element displayNameElement 	= (Element)groupElement.selectSingleNode("displayName");
-				Element descriptionElement 	= (Element)groupElement.selectSingleNode("description");
-				//Element groupElement 		= (Element)groupElement.selectSingleNode("group");
-				String name 				= nameElement.getText();
-				String displayName 			= displayNameElement.getText();
-				String description 			= descriptionElement.getText();
-				//String group	 			= groupElement.getText();
+				Element userNameElement 	= (Element)userElement.selectSingleNode("userName");
+				Element firstNameElement 	= (Element)userElement.selectSingleNode("firstName");
+				Element lastNameElement 	= (Element)userElement.selectSingleNode("lastName");
+				Element emailElement 		= (Element)userElement.selectSingleNode("email");
+				String userName 			= userNameElement.getText();
+				String firstName 			= firstNameElement.getText();
+				String lastName 			= lastNameElement.getText();
+				String email 				= emailElement.getText();
 				
-				InfoGlueGroup infoglueGroup = new InfoGlueGroup(name, displayName, description, this);
-				roles.add(infoglueGroup);
-			}
+				/*
+				Map metaMap = new HashMap();
+				Element metaElement 		= (Element)document.selectSingleNode("/user/meta");
+				List metaChildNodes 		= metaElement.elements();
+				Iterator metaChildNodesIterator = metaChildNodes.iterator();
+				while(metaChildNodesIterator.hasNext())
+				{
+					Element valueElement = (Element)metaChildNodesIterator.next();
+					String name = valueElement.getName();
+					String value = valueElement.getText();
+					metaMap.put(name, value);
+				}
+				*/
 	
-			InfoGluePrincipal infogluePrincipal = new InfoGluePrincipal(userName, firstName, lastName, email, roles, groups, false, this);
-			users.add(infogluePrincipal);
+				List roles = new ArrayList();
+				List groups = new ArrayList();
+	
+				List rolesElementList 				= userElement.selectNodes("roles/role");
+				Iterator rolesElementListIterator 	= rolesElementList.iterator();
+				while(rolesElementListIterator.hasNext())
+				{
+					Element roleElement = (Element)rolesElementListIterator.next();
+		
+					Element nameElement 		= (Element)roleElement.selectSingleNode("name");
+					Element displayNameElement 	= (Element)roleElement.selectSingleNode("displayName");
+					Element descriptionElement 	= (Element)roleElement.selectSingleNode("description");
+					Element groupElement 		= (Element)roleElement.selectSingleNode("group");
+					String name 				= nameElement.getText();
+					String displayName 			= displayNameElement.getText();
+					String description 			= descriptionElement.getText();
+					String group	 			= groupElement.getText();
+					
+					InfoGlueRole infoglueRole 	= new InfoGlueRole(name, displayName, description, this);
+					roles.add(infoglueRole);
+				}
+	
+				List groupsElementList 				= userElement.selectNodes("groups/group");
+				Iterator groupsElementListIterator 	= groupsElementList.iterator();
+				while(groupsElementListIterator.hasNext())
+				{
+					Element groupElement = (Element)groupsElementListIterator.next();
+		
+					Element nameElement 		= (Element)groupElement.selectSingleNode("name");
+					Element displayNameElement 	= (Element)groupElement.selectSingleNode("displayName");
+					Element descriptionElement 	= (Element)groupElement.selectSingleNode("description");
+					//Element groupElement 		= (Element)groupElement.selectSingleNode("group");
+					String name 				= nameElement.getText();
+					String displayName 			= displayNameElement.getText();
+					String description 			= descriptionElement.getText();
+					//String group	 			= groupElement.getText();
+					
+					InfoGlueGroup infoglueGroup = new InfoGlueGroup(name, displayName, description, this);
+					roles.add(infoglueGroup);
+				}
+		
+				InfoGluePrincipal infogluePrincipal = new InfoGluePrincipal(userName, firstName, lastName, email, roles, groups, false, this);
+				users.add(infogluePrincipal);
+			}
 		}
 		
 		logger.info("getUsers end...");
@@ -645,7 +617,8 @@ public class WebServiceAuthorizationModule implements AuthorizationModule, Seria
 		
 		groups = new ArrayList();
 
-		//String xml = getWebServiceHelper().getString("getGroups");
+		String xml = getWebServiceHelper().getString("getGroups");
+		/*
 		String xml = "<?xml version='1.0' encoding='utf-8'?>" + 
 		"	<groups>" + 
 		"		<group>" + 
@@ -654,7 +627,7 @@ public class WebServiceAuthorizationModule implements AuthorizationModule, Seria
 		"			<description></description>" + 
 		"		</group>" + 
 		"	</groups>";
-
+		*/
 		System.out.println("Groups xml:" + xml);
 		
 		Document document = domHelper.getDocument(xml);
