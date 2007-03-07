@@ -16,5 +16,8 @@
 	<p class="systemImageLink logviewerImage">
 		<a href="ViewLogging.action?title=Logging" class="systemLinkLabel">$ui.getString("tool.managementtool.loggingTool.title")</a>
 	</p>
+	<p class="systemImageLink inconsistenciesImage">
+		<a href="ViewInconsistencies!input.action?title=Inconsistencies" class="systemLinkLabel">$ui.getString("tool.managementtool.inconsistenciesTool.title")</a>
+	</p>
 	
 #endManagementTool()

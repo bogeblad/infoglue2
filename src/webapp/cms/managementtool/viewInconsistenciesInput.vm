@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+<head>
+	<title>$ui.getString("tool.managementtool.viewSystemTools.header")</title>
+	<link rel="stylesheet" type="text/css" href="css/cms.css" />
+	<link rel="stylesheet" type="text/css" href="css/infogluecommons.css" />
+	<script language="JavaScript" type="text/javascript" src="script/listview.js"></script>
+
+	<meta http-equiv="Expires" content="Tue, 01 Jan 1980 1:00:00 GMT" />
+	<meta http-equiv="Cache-Control" content="no-cache" />
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+</head>
+
+<body class="managementtooledit"">
+<div class="listmarginalized">
+#set( $lvColor = "blue")
+
+<div class="fullymarginalized" style="color: black;">
+
+<h2>$ui.getString("tool.managementtool.inconsistenciesTool.header")</h2>
+<form name="editForm" method="POST" action="ViewInconsistencies.action">
+<p>$ui.getString("tool.managementtool.inconsistenciesTool.introduction")</p>
+<p><input type="image" src="$ui.getString("images.contenttool.buttons.next")" width="50" height="25"></p>
+</form>
+	
+</div>
+<div id="systemMessages"></div>
+<div id="systemMessagesDialog"></div>
+</body>
+</html>
