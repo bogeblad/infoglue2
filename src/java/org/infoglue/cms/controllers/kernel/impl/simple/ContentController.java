@@ -46,6 +46,7 @@ import org.infoglue.cms.entities.content.impl.simple.SmallContentImpl;
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.entities.management.ContentTypeDefinition;
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
+import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.entities.management.Repository;
 import org.infoglue.cms.entities.management.RepositoryLanguage;
 import org.infoglue.cms.entities.management.RepositoryVO;
@@ -1533,6 +1534,19 @@ public class ContentController extends BaseController
 	
 		return resultList;
 	}
+
+	public String getContentAttribute(Integer contentId, Integer languageId, String attributeName) throws Exception
+	{
+	    String attribute = "Undefined";
+	    
+	    ContentVO contentVO = ContentController.getContentController().getContentVOWithId(contentId);
+		
+		ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentVO.getId(), languageId);
+
+		attribute = ContentVersionController.getContentVersionController().getAttributeValue(contentVersionVO, attributeName, false);
+		
+		return attribute;
+	}	
 
 	/**
 	 * This is a method that gives the user back an newly initialized ValueObject for this entity that the controller
