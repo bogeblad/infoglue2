@@ -24,6 +24,9 @@
 package org.infoglue.deliver.util;
 
 import java.io.*;
+import java.lang.management.ManagementFactory;
+import java.lang.management.ThreadInfo;
+import java.lang.management.ThreadMXBean;
 import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -162,6 +165,43 @@ public class ThreadMonitor implements Runnable
             		stackString.append("    " + frame.toString() + "\n");
 			}                    
        	}
+        
+	    ThreadMXBean t = ManagementFactory.getThreadMXBean();
+
+        List threadMonitors = RequestAnalyser.getLongThreadMonitors();
+        Iterator threadMonitorsIterator = threadMonitors.iterator();    
+		while(threadMonitorsIterator.hasNext())
+	    {
+			ThreadMonitor tm = (ThreadMonitor)threadMonitorsIterator.next();
+			
+			long threads[] = {tm.getThreadId()};
+		    ThreadInfo[] tinfo = t.getThreadInfo(threads, 20);
+			
+		    String stackString2 = "";
+	        for (int i=0; i<tinfo.length; i++)
+		    {
+				ThreadInfo e = tinfo[i];
+		
+		        el = e.getStackTrace();
+		        
+		        if (el != null && el.length != 0)
+		        {
+		            for (int n = 0; n < el.length; n++)
+		            {
+		            	StackTraceElement frame = el[n];
+		            	if (frame == null)
+		            		stackString2 += "    null stack frame" + "\n";
+		            	else	
+		            		stackString2 += "    null stack frame" + frame.toString() + "\n";
+					}                    
+		       	}
+		    }
+	        stackString2 += "Elapsed time:" + tm.getElapsedTime() + "\n" + " " + " Thread id: " + tm.getThreadId() + "\n Original url: " + tm.getOriginalFullURL() + ")";
+	        stackString2 += stackString;
+	        
+			stackString.append("\n\n---------------------------------\nLong thread: \n" + stackString2);
+	    }
+        		 
         logger.warn(stackString);
         
         String warningEmailReceiver = CmsPropertyHandler.getWarningEmailReceiver();
