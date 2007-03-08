@@ -28,6 +28,7 @@ import java.util.List;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.RoleControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.UserControllerProxy;
+import org.infoglue.deliver.util.Timer;
 
 
 /**
@@ -50,6 +51,8 @@ public class ViewListSystemUserAction extends InfoGlueAbstractAction
 	private String filterLastName 		= null; 
 	private String filterEmail 			= null; 
 	private String[] filterRoleNames	= null;
+	private int slotId					= 0;
+	private int numberOfSlots			= 0;
 	
 	protected String doExecute() throws Exception 
 	{
@@ -57,6 +60,13 @@ public class ViewListSystemUserAction extends InfoGlueAbstractAction
 		if(filterFirstName == null && filterLastName == null && filterUserName == null && filterEmail == null && (filterRoleNames == null || filterRoleNames.length == 0 || (filterRoleNames.length == 1 && filterRoleNames[0].equals(""))))
 		{
 			this.infogluePrincipals = UserControllerProxy.getController().getAllUsers();
+			this.numberOfSlots = this.infogluePrincipals.size() / 100;
+			int startIndex = 0 + (slotId * 100);
+			int endIndex = 0 + (slotId * 100) + 100;
+			if(endIndex > this.infogluePrincipals.size())
+				endIndex = this.infogluePrincipals.size();
+			
+			this.infogluePrincipals = this.infogluePrincipals.subList(startIndex, endIndex);
 		}
 		else
 		{
@@ -135,6 +145,26 @@ public class ViewListSystemUserAction extends InfoGlueAbstractAction
 	public String[] getFilterRoleNames()
 	{
 		return filterRoleNames;
+	}
+
+	public int getSlotId() 
+	{
+		return slotId;
+	}
+
+	public void setSlotId(int slotId) 
+	{
+		this.slotId = slotId;
+	}
+
+	public int getNumberOfSlots() 
+	{
+		return numberOfSlots;
+	}
+
+	public void setNumberOfSlots(int numberOfSlots) 
+	{
+		this.numberOfSlots = numberOfSlots;
 	}
 	
 }

@@ -62,7 +62,6 @@
 </form>
 </div>
 
-
 #set($lvConstraint = 1) 
 #lvHead(["Username", "Full Name","Defined Roles"] "tool.managementtool.deleteSystemUsers.header" "DeleteSystemUser.action" "ViewListSystemUser.action?title=SystemUsers" "tool.managementtool.deleteSystemUsers.text")
 
@@ -77,6 +76,23 @@
 #end
 
 #lvEnd()
+
+<div style="color: black; padding-left: 32px;">
+<br/>
+#if($slotId > 0)
+#set($previousSlotId = $slotId - 1)
+<a href="ViewListSystemUser.action?slotId=$previousSlotId">Previous</a>
+#end
+#foreach($additionalSlotId in [0..$numberOfSlots])
+	#if($slotId == $additionalSlotId)<strong>$additionalSlotId</strong>
+	#else<a href="ViewListSystemUser.action?slotId=$additionalSlotId">$additionalSlotId</a>#end
+#end
+#if($slotId < $numberOfSlots)
+#set($nextSlotId = $slotId + 1)
+ <a href="ViewListSystemUser.action?slotId=$nextSlotId">Next</a>
+#end
+<br/>
+</div>
 
 <script type="text/javascript">
 <!--
