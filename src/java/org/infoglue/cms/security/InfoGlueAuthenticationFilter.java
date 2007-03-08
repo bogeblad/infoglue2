@@ -311,16 +311,21 @@ public class InfoGlueAuthenticationFilter implements Filter
   	    if(authConstraint == null || authConstraint.equalsIgnoreCase(""))
   	        return true;
   	    
+  	    String[] authConstraints = authConstraint.split(";");
+  	    
   	    Iterator rolesIterator = user.getRoles().iterator();
-  	    while(rolesIterator.hasNext())
+  	    outer:while(rolesIterator.hasNext())
   	    {
   	        InfoGlueRole role = (InfoGlueRole)rolesIterator.next();
   	        logger.info("role:" + role);
-  	        if(role.getName().equalsIgnoreCase(authConstraint))
+  	        for (int i = 0; i < authConstraints.length; i++) 
   	        {
-  	            isAuthorized = true;
-  	            break;
-  	        }
+  	  	        if(role.getName().equalsIgnoreCase(authConstraints[i]))
+  	  	        {
+  	  	            isAuthorized = true;
+  	  	            break outer;
+  	  	        }				
+			}
   	    }
   	    
   	    return isAuthorized;
