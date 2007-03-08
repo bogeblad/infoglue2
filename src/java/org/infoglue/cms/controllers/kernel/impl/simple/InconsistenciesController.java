@@ -180,7 +180,7 @@ public class InconsistenciesController extends BaseController
 		
 		if(referencingEntityCompletingName.equals(SiteNode.class.getName()))
 		{
-			SiteNodeVO siteNodeVO = SiteNodeController.getController().getSiteNodeVOWithId(new Integer(referencingEntityCompletingId), db);
+			SiteNodeVO siteNodeVO = SiteNodeController.getController().getSiteNodeVOWithId(referencingEntityCompletingId, db);
 			if(siteNodeVO != null)
 			{
 				LanguageVO masterLanguageVO = LanguageController.getController().getMasterLanguage(siteNodeVO.getRepositoryId());
