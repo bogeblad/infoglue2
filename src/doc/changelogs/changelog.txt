@@ -94,6 +94,8 @@ Abbreviated Changelog from 2.4.1 Final
 - Added feature so you now can specify disallowedComponentNames instead of allowedComponentNames on slots if you want. 
 - Made so the inconsistenciesController gets a chance to remove references to stuff that are getting deleted.
 - Added so warning mail, which can be sent when a page takes more than x seconds, contains what other long thread are active in the system. Of huge value from a debug perspective.
+- Added pageing of users in management tool > System users - 100 at a time.
+- Added possibility to specify any number of approved roles as authContraint (access to cms tools). Separate them with ; and you are done.
  
 -------------------------------------------------------------------------------------
 - InfoGlue 2.4.1 Final
