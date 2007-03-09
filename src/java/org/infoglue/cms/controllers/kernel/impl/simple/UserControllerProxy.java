@@ -39,6 +39,7 @@ import org.infoglue.cms.security.InfoGlueAuthenticationFilter;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.sorters.ReflectionComparator;
 import org.infoglue.deliver.util.CacheController;
+import org.infoglue.deliver.util.NullObject;
 
 
 /**
@@ -158,20 +159,23 @@ public class UserControllerProxy extends BaseController
 	
     public InfoGluePrincipal getUser(String userName) throws ConstraintException, SystemException, Exception
     {
-    	//InfoGluePrincipal infoGluePrincipal = null;
-    	
+    	Object infoGluePrincipalCandidate = CacheController.getCachedObjectFromAdvancedCache("principalCache", userName, 300);
     	InfoGluePrincipal infoGluePrincipal = (InfoGluePrincipal)CacheController.getCachedObjectFromAdvancedCache("principalCache", userName, 300);
-		if(infoGluePrincipal == null)
+    	if(infoGluePrincipalCandidate != null)
 		{
-			infoGluePrincipal = getAuthorizationModule().getAuthorizedInfoGluePrincipal(userName);
-		   
-			if(infoGluePrincipal != null)
-				CacheController.cacheObjectInAdvancedCache("principalCache", userName, infoGluePrincipal, new String[]{}, false);
-				//CacheController.cacheObject("principalCache", userName, infoGluePrincipal);
+	    	if(infoGluePrincipalCandidate instanceof NullObject)
+				return null;
+			else
+				return (InfoGluePrincipal)infoGluePrincipalCandidate;
 		}
     	
-		//infoGluePrincipal = getAuthorizationModule().getAuthorizedInfoGluePrincipal(userName);
-    	
+		infoGluePrincipal = getAuthorizationModule().getAuthorizedInfoGluePrincipal(userName);
+	   
+		if(infoGluePrincipal != null)
+			CacheController.cacheObjectInAdvancedCache("principalCache", userName, infoGluePrincipal, new String[]{}, false);
+		else
+			CacheController.cacheObjectInAdvancedCache("principalCache", userName, new NullObject(), new String[]{}, false);
+			
     	return infoGluePrincipal;
     }
     

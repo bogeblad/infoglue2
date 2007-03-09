@@ -38,6 +38,7 @@ import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.controllers.kernel.impl.simple.AccessRightController;
 import org.infoglue.cms.controllers.kernel.impl.simple.InfoGluePrincipalControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
+import org.infoglue.cms.controllers.kernel.impl.simple.UserControllerProxy;
 import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.AuthenticationModule;
@@ -226,6 +227,29 @@ public abstract class InfoGlueAbstractAction extends WebworkAbstractAction
 			    arguments.put("ticket", this.getHttpSession().getAttribute("ticket"));
 
 			    principal = ExtranetController.getController().getAuthenticatedPrincipal(arguments);
+				
+				if(principal != null)
+					CacheController.cacheObject("userCache", "anonymous", principal);
+			}			
+		}
+		catch(Exception e) 
+		{
+		    logger.warn("There was no anonymous user found in the system. There must be - add the user anonymous/anonymous and try again.", e);
+		    throw new SystemException("There was no anonymous user found in the system. There must be - add the user anonymous/anonymous and try again.", e);
+		}
+
+		return principal;
+	}
+	
+	public Principal getInfoGluePrincipal(String userName) throws SystemException
+	{
+		Principal principal = null;
+		try
+		{
+			principal = (Principal)CacheController.getCachedObject("userCache", userName);
+			if(principal == null)
+			{
+				principal = UserControllerProxy.getController().getUser(userName);
 				
 				if(principal != null)
 					CacheController.cacheObject("userCache", "anonymous", principal);
