@@ -140,10 +140,14 @@ Filter:
 	#end
 
 	#set($fnutt = '"')
+	#set($creatorDisplayName = "$!this.getInfoGluePrincipal($publicationEvent.creator).displayName")
+	#if($creatorDisplayName == "")
+		#set($creatorDisplayName = "$publicationEvent.creator")
+	#end
 	#set($modifiedDate = $formatter.formatDate($publicationEvent.creationDateTime, "yyyy-MM-dd HH:mm"))
 	##set( $row = ["$icon $publicationEvent.name ($description)","$modifiedDate", "$denyUrlStart$deny$denyUrlEnd"] )
 	#set($span = "<span onmouseover='return overlib(${fnutt}${formatter.cleanForJavascriptStrings($publicationEvent.description)}${fnutt}, WIDTH, 400, BGCOLOR, ${fnutt}#FFFFFF${fnutt});' onmouseout='return nd();'>($description)</span>")
-	#set( $row = ["$icon $publicationEvent.name $span", "$modifiedDate", "$publicationEvent.creator"] )
+	#set( $row = ["$icon $publicationEvent.name $span", "$modifiedDate", "$creatorDisplayName"] )
 	#set($cnt = $cnt + 1)
 
 	#lvAddRow($row $cnt $cId)

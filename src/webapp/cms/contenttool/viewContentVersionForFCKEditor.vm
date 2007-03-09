@@ -373,7 +373,12 @@
 		<td colspan="3"><img src="images/trans.gif" width="1" height="5"/></td>
 	</tr>
 	<tr>
-		<td colspan="3">$ui.getString("tool.contenttool.versionLastUpdatedByLabel") $contentVersionVO.versionModifier</td>
+		#set($displayName = "$!this.getInfoGluePrincipal($contentVersionVO.versionModifier).displayName")
+		#if($displayName == "")
+			#set($displayName = "$contentVersionVO.versionModifier")
+		#end
+			
+		<td colspan="3">$ui.getString("tool.contenttool.versionLastUpdatedByLabel") $displayName</td>
 	</tr>
 	#end
 	
