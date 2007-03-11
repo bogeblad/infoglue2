@@ -20,13 +20,22 @@
 		<td>#yesNoDropDownWithInherit("ServerNode.property.useSelectivePageCacheUpdate" "useSelectivePageCacheUpdate" "$this.getPropertyValue('useSelectivePageCacheUpdate')")</td>
 	</tr>
 	<tr>
-		<td>#yesNoDropDownWithInherit("ServerNode.property.expireCacheAutomatically" "expireCacheAutomatically" "$!expireCacheAutomatically")</td>
+		<td>#yesNoDropDownWithInherit("ServerNode.property.expireCacheAutomatically" "expireCacheAutomatically" "$this.getPropertyValue('expireCacheAutomatically')")</td>
 	</tr>
 	<tr>
 		<td>#editPropertyField("ServerNode.property.cacheExpireInterval" "cacheExpireInterval" "$this.getPropertyValue('cacheExpireInterval')" "51" "$!serverNodeId")</td>
 	</tr>
 	<tr>
 		<td>#editPropertyField("ServerNode.property.deliverRequestTimeout" "deliverRequestTimeout" "$this.getPropertyValue('deliverRequestTimeout')" "51" "$!serverNodeId")</td>
+	</tr>
+	<tr>
+		<td>#yesNoDropDownWithInherit("ServerNode.property.useHighLoadLimiter" "useHighLoadLimiter" "$this.getPropertyValue('useHighLoadLimiter')")</td>
+	</tr>
+	<tr>
+		<td>#editPropertyField("ServerNode.property.maxActiveRequests" "maxActiveRequests" "$this.getPropertyValue('maxActiveRequests')" "51" "$!serverNodeId")</td>
+	</tr>
+	<tr>
+		<td>#editPropertyField("ServerNode.property.maxRequestTime" "maxRequestTime" "$this.getPropertyValue('maxRequestTime')" "51" "$!serverNodeId")</td>
 	</tr>
 	<tr>
 		<td>#editPropertyField("ServerNode.property.session.timeout" "session.timeout" "$this.getPropertyValue('session.timeout')" "51" "$!serverNodeId")</td>

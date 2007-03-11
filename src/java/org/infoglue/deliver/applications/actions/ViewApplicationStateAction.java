@@ -385,6 +385,7 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
         states.add(getList("Total memory", "" + Runtime.getRuntime().totalMemory() / 1024 / 1024 + " MB"));
         states.add(getList("Number of sessions", "" + CmsSessionContextListener.getActiveSessions() + "(remains for " + (Integer.parseInt(sessionTimeout) / 60) + " minutes after last request)"));
         states.add(getList("Number of request being handled now", "" + RequestAnalyser.getRequestAnalyser().getNumberOfCurrentRequests()));
+        states.add(getList("Number of active request being handled now", "" + RequestAnalyser.getRequestAnalyser().getNumberOfActiveRequests()));
         states.add(getList("Total number of requests handled", "" + RequestAnalyser.getRequestAnalyser().getTotalNumberOfRequests()));
         states.add(getList("Average processing time per request", "" + RequestAnalyser.getRequestAnalyser().getAverageElapsedTime() + " ms."));
         states.add(getList("Slowest request", "" + RequestAnalyser.getRequestAnalyser().getMaxElapsedTime() + " ms."));

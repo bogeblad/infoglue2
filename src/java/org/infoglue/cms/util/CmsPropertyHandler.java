@@ -759,7 +759,22 @@ public class CmsPropertyHandler
 	{
 	    return getServerNodeProperty("deliverRequestTimeout", true, "60000");
 	}
-	
+
+	public static String getUseHighLoadLimiter()
+	{
+	    return getServerNodeProperty("useHighLoadLimiter", true, "false");
+	}
+
+	public static String getMaxActiveRequests()
+	{
+	    return getServerNodeProperty("maxActiveRequests", true, "50");
+	}
+
+	public static String getMaxRequestTime()
+	{
+	    return getServerNodeProperty("maxRequestTime", true, "5000");
+	}
+
 	public static String getSessionTimeout()
 	{
 	    return getServerNodeProperty("session.timeout", true, "1800");

@@ -84,7 +84,9 @@ public class ViewServerNodePropertiesAction extends InfoGluePropertiesAbstractAc
     private void populate(PropertySet ps, String key)
     {
         String value = this.getRequest().getParameter(key);
-	    if(value != null && !value.equals(""))
+	    if(key.equals("useHighLoadLimiter"))
+	    	System.out.println("value:" + value);
+        if(value != null && !value.equals(""))
 	        ps.setString("serverNode_" + this.getServerNodeId() + "_" + key, value);
     }
 
@@ -117,6 +119,9 @@ public class ViewServerNodePropertiesAction extends InfoGluePropertiesAbstractAc
 	    populate(ps, "expireCacheAutomatically");
 	    populate(ps, "cacheExpireInterval");
 	    populate(ps, "deliverRequestTimeout");
+	    populate(ps, "useHighLoadLimiter");
+	    populate(ps, "maxActiveRequests");
+	    populate(ps, "maxRequestTime");
 	    populate(ps, "session.timeout");
 	    populate(ps, "compressPageCache");
 	    populate(ps, "compressPageResponse");

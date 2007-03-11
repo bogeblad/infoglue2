@@ -39,6 +39,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
@@ -134,6 +135,9 @@ public class ViewPageAction extends InfoGlueAbstractAction
 	
 	private ThreadMonitor tk = null;
 	
+	private static Random random = new Random();
+
+	
 	/**
 	 * The constructor for this action - contains nothing right now.
 	 */
@@ -155,46 +159,42 @@ public class ViewPageAction extends InfoGlueAbstractAction
             Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
         }
                     	    	
-        /*
-       	int i=0;
-		while(RequestAnalyser.getRequestAnalyser().getNumberOfCurrentRequests() > 20 && lastRequestProcessingTime > 1000 && i < 10)
-        {
-            if(i == 10 || i == 20 || i == 30 || i == 40 || i == 50)
-            {
-            	System.out.println("Queing up...:" + RequestAnalyser.getRequestAnalyser().getNumberOfCurrentRequests() + "=" + lastRequestProcessingTime);
-            }
-            //System.out.println("Current Thread...:" + Thread.currentThread().getName() + ":" + Thread.activeCount());
-            Thread.sleep(1000);
-            i = i + 1;
-        }
-        */
-
-        /*
-        while(RequestAnalyser.getNumberOfCurrentRequests() > 0)
-        {
-            //System.out.println("Queing up...:" + RequestAnalyser.getNumberOfCurrentRequests());
-            //System.out.println("Current Thread...:" + Thread.currentThread().getName() + ":" + Thread.activeCount());
-            Thread.sleep(10);
-        }
-        */
         //TODO - Can this be removed perhaps
         while(!CmsPropertyHandler.getOperatingMode().equals("3") && RequestAnalyser.getRequestAnalyser().getBlockRequests())
         {
         	//System.out.println("Queing up requests as cache eviction are taking place..");
         	Thread.sleep(10);
         }
-        /*
-    	if(RequestAnalyser.getRequestAnalyser().getNumberOfActiveRequests() > 50 && lastRequestProcessingTime > 5000)
-    	{
-        	System.out.println("Queing up...:" + RequestAnalyser.getRequestAnalyser().getNumberOfActiveRequests() + "(" + RequestAnalyser.getRequestAnalyser().getNumberOfCurrentRequests() + ") - " + lastRequestProcessingTime);
-            Thread.sleep(300);
-    	}
-    	*/
+        
+        try
+        {
+	        Integer maxActiveRequests = new Integer(CmsPropertyHandler.getMaxActiveRequests());
+	        Integer maxRequestTime = new Integer(CmsPropertyHandler.getMaxRequestTime());
+        	//System.out.println("maxActiveRequests:" + maxActiveRequests + "-" + maxRequestTime);
 
-        logger.info("************************************************");
-    	logger.info("* ViewPageAction was called....                *");
-    	logger.info("************************************************");
-    	
+	    	while(CmsPropertyHandler.getUseHighLoadLimiter().equalsIgnoreCase("true") && RequestAnalyser.getRequestAnalyser().getNumberOfActiveRequests() > maxActiveRequests.intValue() && (lastRequestProcessingTime > maxRequestTime.intValue() || maxRequestTime.intValue() < 1))
+	    	{
+	        	if(logger.isInfoEnabled())
+	        		logger.info("Queing up...:" + RequestAnalyser.getRequestAnalyser().getNumberOfActiveRequests() + "(" + RequestAnalyser.getRequestAnalyser().getNumberOfCurrentRequests() + ") - " + lastRequestProcessingTime);
+	        	
+	            int sleepTime = random.nextInt(300);
+	            //System.out.println("Queing up...:" + RequestAnalyser.getRequestAnalyser().getNumberOfActiveRequests() + "(" + RequestAnalyser.getRequestAnalyser().getNumberOfCurrentRequests() + ") - " + lastRequestProcessingTime + " for " + sleepTime + " ms");
+	            
+	        	Thread.sleep(sleepTime);
+	    	}
+        }
+        catch(Exception e)
+        {
+        	logger.error("You have faulty settings in either maxActiveRequests or maxRequestTime - fix this as it affects performance:" + e.getMessage(), e);
+        }
+        
+        if(logger.isInfoEnabled())
+        {
+	        logger.info("************************************************");
+	    	logger.info("* ViewPageAction was called....                *");
+	    	logger.info("************************************************");
+        }
+        
         HttpServletRequest request = getRequest();
         
     	if(!CmsPropertyHandler.getOperatingMode().equals("3"))
@@ -213,24 +213,25 @@ public class ViewPageAction extends InfoGlueAbstractAction
 
    		try
 		{
-			//if(request.getParameter("sleep") != null && request.getParameter("sleep").equals("true"))
-			//	Thread.sleep(60000);
-			
 			validateAndModifyInputParameters(dbWrapper.getDatabase());
 	    	
 	    	this.nodeDeliveryController			= NodeDeliveryController.getNodeDeliveryController(this.siteNodeId, this.languageId, this.contentId);
 			this.integrationDeliveryController	= IntegrationDeliveryController.getIntegrationDeliveryController(this.siteNodeId, this.languageId, this.contentId);
 			
-			logger.info("before pageKey...");
-	    	String pageKey = this.nodeDeliveryController.getPageCacheKey(dbWrapper.getDatabase(), this.getHttpSession(), getRequest(), this.siteNodeId, this.languageId, this.contentId, browserBean.getUseragent(), this.getRequest().getQueryString(), "");
+			String pageKey = this.nodeDeliveryController.getPageCacheKey(dbWrapper.getDatabase(), this.getHttpSession(), getRequest(), this.siteNodeId, this.languageId, this.contentId, browserBean.getUseragent(), this.getRequest().getQueryString(), "");
 	    	//String pageKey = CacheController.getPageCacheKey(this.siteNodeId, this.languageId, this.contentId, browserBean.getUseragent(), this.getRequest().getQueryString(), "");
 
-	    	logger.info("pageKey:" + pageKey);
+	    	if(logger.isInfoEnabled())
+	    		logger.info("pageKey:" + pageKey);
+	    	
 	    	String pagePath	= null;
 	    	
 	    	boolean isUserRedirected = false;
 			Integer protectedSiteNodeVersionId = this.nodeDeliveryController.getProtectedSiteNodeVersionIdForPageCache(dbWrapper.getDatabase(), siteNodeId);
-			logger.info("protectedSiteNodeVersionId:" + protectedSiteNodeVersionId);
+			
+			if(logger.isInfoEnabled())
+				logger.info("protectedSiteNodeVersionId:" + protectedSiteNodeVersionId);
+			
 			String protectWorking = CmsPropertyHandler.getProtectDeliverWorking();
 			String protectPreview = CmsPropertyHandler.getProtectDeliverPreview();
 			boolean protectDeliver = false;
@@ -245,7 +246,8 @@ public class ViewPageAction extends InfoGlueAbstractAction
 		
 			this.templateController = getTemplateController(dbWrapper, getSiteNodeId(), getLanguageId(), getContentId(), getRequest(), (InfoGluePrincipal)this.principal, false);
 			
-			logger.info("handled extranet users: " + isUserRedirected);
+			if(logger.isInfoEnabled())
+				logger.info("handled extranet users: " + isUserRedirected);
 	
 			// ----
 			// -- portlet
@@ -257,25 +259,31 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			
 	        if (portalActive && !isRecacheCall) 
 	        {
-	            logger.info("---> Checking for portlet action");
-	            PortalService service = new PortalService();
+	        	if(logger.isInfoEnabled())
+	        		logger.info("---> Checking for portlet action");
+	            
+	        	PortalService service = new PortalService();
 	            //TODO: catch PortalException?
 	            boolean actionExecuted = service.service(getRequest(), getResponse());
 	            
 	            // -- if an action was executed return NONE as a redirect is issued
 	            if (actionExecuted) 
 	            {
-	                logger.info("---> PortletAction was executed, returning NONE as a redirect has been issued");
+	            	if(logger.isInfoEnabled())
+	            		logger.info("---> PortletAction was executed, returning NONE as a redirect has been issued");
 	                isUserRedirected = true;
 	                return NONE;
 	            }
 	        }
 	
-	        logger.info("handled portal action: " + isUserRedirected);
+	        if(logger.isInfoEnabled())
+	        	logger.info("handled portal action: " + isUserRedirected);
 	        
 			if(!isUserRedirected)
 			{	
-				logger.info("this.templateController.getPrincipal():" + this.templateController.getPrincipal());
+				if(logger.isInfoEnabled())
+					logger.info("this.templateController.getPrincipal():" + this.templateController.getPrincipal());
+				
 				DeliveryContext deliveryContext = DeliveryContext.getDeliveryContext(/*(InfoGluePrincipal)this.principal*/);
 				deliveryContext.setRepositoryName(this.repositoryName);
 				deliveryContext.setSiteNodeId(this.siteNodeId);
@@ -320,11 +328,13 @@ public class ViewPageAction extends InfoGlueAbstractAction
 		}
 		finally
 		{
-			logger.info("Before closing transaction");
+			if(logger.isInfoEnabled())
+				logger.info("Before closing transaction");
 
 			closeTransaction(dbWrapper.getDatabase());
 		  
-			logger.info("After closing transaction");
+			if(logger.isInfoEnabled())
+				logger.info("After closing transaction");
 
 			//if(isRecacheCall)
 	        //{
@@ -343,15 +353,16 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			}
 			else
 			{
-			    logger.info("The page delivery took " + elapsedTime + "ms");			
-			    logger.info("The memory consumption was " + (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) + "(" + Runtime.getRuntime().totalMemory() + "/" + Runtime.getRuntime().maxMemory() + ") bytes");
+				if(logger.isInfoEnabled())
+				{
+					logger.info("The page delivery took " + elapsedTime + "ms");			
+					logger.info("The memory consumption was " + (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) + "(" + Runtime.getRuntime().totalMemory() + "/" + Runtime.getRuntime().maxMemory() + ") bytes");
+				}
 			}
 
 	    	if(tk != null)
 	    		tk.done();
 		}
-		
-		//System.out.println("The page delivery took " + elapsedTime + "ms");
 		
         return NONE;
     }
