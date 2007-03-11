@@ -338,11 +338,6 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			if(logger.isInfoEnabled())
 				logger.info("After closing transaction");
 
-			//if(isRecacheCall)
-	        //{
-		    //    logger.warn("ThreadId:" + Thread.currentThread().getName());
-	        //}
-
 			elapsedTime = System.currentTimeMillis() - start;
 			RequestAnalyser.getRequestAnalyser().decNumberOfCurrentRequests(elapsedTime);
 			lastRequestProcessingTime = elapsedTime;
@@ -553,6 +548,34 @@ public class ViewPageAction extends InfoGlueAbstractAction
 		    elapsedTime = System.currentTimeMillis() - start;
 
 			RequestAnalyser.getRequestAnalyser().decNumberOfCurrentRequests(elapsedTime);
+
+			if(!memoryWarningSent)
+			{
+				float memoryLeft = (Runtime.getRuntime().maxMemory() - Runtime.getRuntime().totalMemory()) / 1024 / 1024;
+				float percentLeft = (memoryLeft / (Runtime.getRuntime().maxMemory() / 1024 / 1024)) * 100;
+				//System.out.println("memoryLeft:" + memoryLeft);
+				//System.out.println("maxMemory:" + (Runtime.getRuntime().maxMemory() / 1024 / 1024));
+				//System.out.println("percentLeft:" + percentLeft);
+				if(percentLeft < 15)
+				{
+					memoryWarningSent = true;
+					String subject = "Memory is getting low on " + CmsPropertyHandler.getServerName();
+					String mailBody = "The java maximum heap size is almost used up - only " + (int)memoryLeft + "MB (" + (int)percentLeft + "%) left. Increase the max heap size if possible or trim the cache sizes if they are very large.";
+			        String warningEmailReceiver = CmsPropertyHandler.getWarningEmailReceiver();
+			        if(warningEmailReceiver != null && !warningEmailReceiver.equals("") && warningEmailReceiver.indexOf("@warningEmailReceiver@") == -1)
+			        {
+						try
+						{
+							logger.warn("Sending warning mail:" + (int)percentLeft + ":" + (int)memoryLeft + ":" + Runtime.getRuntime().maxMemory() / 1024 / 1024);
+							MailServiceFactory.getService().sendEmail(warningEmailReceiver, warningEmailReceiver, null, subject, mailBody, "utf-8");
+						} 
+						catch (Exception e)
+						{
+							logger.error("Could not send mail:" + e.getMessage(), e);
+						}
+			        }
+				}
+			}
 
 			if(elapsedTime > 20000)
 			{
