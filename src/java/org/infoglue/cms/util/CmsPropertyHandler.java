@@ -177,6 +177,23 @@ public class CmsPropertyHandler
 		}
 		
 	}
+	
+	public static String getServerName()
+    {
+    	String serverName = "Unknown";
+
+    	try
+    	{
+		    InetAddress localhost = InetAddress.getLocalHost();
+		    serverName = localhost.getHostName();
+    	}
+    	catch(Exception e)
+    	{
+    		
+    	}
+    	
+	    return serverName;
+    }
 
 	/**
 	 * This method gets the local server node id if available.
