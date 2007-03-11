@@ -96,7 +96,12 @@ Abbreviated Changelog from 2.4.1 Final
 - Added so warning mail, which can be sent when a page takes more than x seconds, contains what other long thread are active in the system. Of huge value from a debug perspective.
 - Added pageing of users in management tool > System users - 100 at a time.
 - Added possibility to specify any number of approved roles as authContraint (access to cms tools). Separate them with ; and you are done.
- 
+- Added new settings to control how InfoGlue handles huge load. The settings allow you to state if the deliver engine shall limit how many threads should excecute at once. 
+  As to many threads at a time results in syncronizing issues and possibly memory issues it is sometimes nice to be able to limit the number to for example 50 concurrent threads. 
+  The new threads coming in would be kept waiting until another thread finishes and the idea is that you should set the limit to a size that suits your servers and the load it has.
+  Dont mess with these settings if you don't experience problems or if you don't know what it's doing.
+  
+   
 -------------------------------------------------------------------------------------
 - InfoGlue 2.4.1 Final
 -------------------------------------------------------------------------------------
