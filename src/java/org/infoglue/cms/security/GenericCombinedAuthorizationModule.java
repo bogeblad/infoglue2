@@ -286,7 +286,7 @@ public class GenericCombinedAuthorizationModule implements AuthorizationModule, 
 			authorizerClassName = this.extraProperties.getProperty("" + i + ".authorizerClassName");
 		}
 
-		Collections.sort(roles, new ReflectionComparator("name"));
+		Collections.sort(roles, new ReflectionComparator("displayName"));
 
 		return roles;
 	}
@@ -319,7 +319,7 @@ public class GenericCombinedAuthorizationModule implements AuthorizationModule, 
 			authorizerClassName = this.extraProperties.getProperty("" + i + ".authorizerClassName");
 		}
 		
-		Collections.sort(groups, new ReflectionComparator("name"));
+		Collections.sort(groups, new ReflectionComparator("displayName"));
 
 		return groups;
     }
@@ -352,7 +352,7 @@ public class GenericCombinedAuthorizationModule implements AuthorizationModule, 
 			authorizerClassName = this.extraProperties.getProperty("" + i + ".authorizerClassName");
 		}
 		
-		Collections.sort(users, new ReflectionComparator("name"));
+		Collections.sort(users, new ReflectionComparator("displayName"));
 
 		return users;
 	}

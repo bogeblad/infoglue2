@@ -235,8 +235,6 @@ public class CombinedJDBCBasicAuthorizationModule implements AuthorizationModule
 		{
 		}
 		
-		Collections.sort(roles, new ReflectionComparator("name"));
-
 		return roles;
 	}
 
@@ -264,8 +262,6 @@ public class CombinedJDBCBasicAuthorizationModule implements AuthorizationModule
 		{
 		}
 		
-		Collections.sort(groups, new ReflectionComparator("name"));
-
 		return groups;
     }
     
@@ -293,8 +289,6 @@ public class CombinedJDBCBasicAuthorizationModule implements AuthorizationModule
 		{
 		}
 		
-		Collections.sort(users, new ReflectionComparator("name"));
-
 		return users;
 	}
 /*
