@@ -71,7 +71,8 @@ public class WebServiceAuthorizationModule implements AuthorizationModule, Seria
 		WebServiceHelper wsh = new WebServiceHelper();
 		
 		String serviceUrl = extraProperties.getProperty("ws.serviceUrl");
-		System.out.println("serviceUrl:" + serviceUrl);
+		if(logger.isDebugEnabled())
+			logger.info("serviceUrl:" + serviceUrl);
 		
 		if(serviceUrl == null || serviceUrl.equals(""))
 			throw new SystemException("The parameter ws.serviceUrl was not found in extra parameters. The url must be defined.");
@@ -132,7 +133,8 @@ public class WebServiceAuthorizationModule implements AuthorizationModule, Seria
 			else
 			{
 				infogluePrincipal = (InfoGluePrincipal)infogluePrincipalObject;
-				System.out.println("Returning cached user:" + userName + ":" + infogluePrincipal);
+				if(logger.isDebugEnabled())
+					logger.info("Returning cached user:" + userName + ":" + infogluePrincipal);
 				return infogluePrincipal;
 			}
 		}
@@ -152,7 +154,8 @@ public class WebServiceAuthorizationModule implements AuthorizationModule, Seria
 			try
 			{
 				String xml = getWebServiceHelper().getString("getAuthorizedInfoGluePrincipal", userName);
-				System.out.println("xml:" + xml);
+				if(logger.isDebugEnabled())
+					logger.info("xml:" + xml);
 				
 				if(xml != null && !xml.equals(""))
 				{
@@ -165,7 +168,6 @@ public class WebServiceAuthorizationModule implements AuthorizationModule, Seria
 						throw new Exception("Error reported by webservice:" + errorMessageElement.getText() + "(" + errorIdElement.getText() + ")");
 					}
 					
-					System.out.println("document:" + document);
 					Element firstNameElement 	= (Element)document.selectSingleNode("/user/firstName");
 					Element lastNameElement 	= (Element)document.selectSingleNode("/user/lastName");
 					Element emailElement 		= (Element)document.selectSingleNode("/user/email");
@@ -190,7 +192,7 @@ public class WebServiceAuthorizationModule implements AuthorizationModule, Seria
 					List groups = new ArrayList();
 	
 					List rolesElementList 				= document.selectNodes("/user/roles/role");
-					System.out.println("rolesElementList:" + rolesElementList.size());
+
 					Iterator rolesElementListIterator 	= rolesElementList.iterator();
 					while(rolesElementListIterator.hasNext())
 					{
@@ -210,14 +212,14 @@ public class WebServiceAuthorizationModule implements AuthorizationModule, Seria
 						if(descriptionElement != null && !descriptionElement.getText().equals(""))
 							description 			= descriptionElement.getText();
 	
-						System.out.println("name:" + name);
+						if(logger.isDebugEnabled())
+							logger.info("name:" + name);
 						
 						InfoGlueRole infoglueRole 	= new InfoGlueRole(name, displayName, description, this);
 						roles.add(infoglueRole);
 					}
 	
 					List groupsElementList 				= document.selectNodes("/user/groups/group");
-					System.out.println("groupsElementList:" + groupsElementList.size());
 					Iterator groupsElementListIterator 	= groupsElementList.iterator();
 					while(groupsElementListIterator.hasNext())
 					{
@@ -237,7 +239,8 @@ public class WebServiceAuthorizationModule implements AuthorizationModule, Seria
 						if(descriptionElement != null && !descriptionElement.getText().equals(""))
 							description 			= descriptionElement.getText();
 						
-						System.out.println("name:" + name);
+						if(logger.isDebugEnabled())
+							logger.info("name:" + name);
 						
 						InfoGlueGroup infoglueGroup = new InfoGlueGroup(name, displayName, description, this);
 						groups.add(infoglueGroup);
@@ -391,11 +394,12 @@ public class WebServiceAuthorizationModule implements AuthorizationModule, Seria
 		roles = new ArrayList();
 
 		String xml = getWebServiceHelper().getString("getRoles");
-		System.out.println("Roles xml:" + xml);
+		if(logger.isDebugEnabled())
+			logger.info("Roles xml:" + xml);
+		
 		if(xml != null && !xml.equals(""))
 		{
 			Document document = domHelper.getDocument(xml);
-			System.out.println("document:" + document);
 			List roleNodes = document.selectNodes("/roles/role");
 			Iterator rolesIterator = roleNodes.iterator();
 			while(rolesIterator.hasNext())
@@ -450,21 +454,15 @@ public class WebServiceAuthorizationModule implements AuthorizationModule, Seria
 		users = new ArrayList();
 		
 		String xml = getWebServiceHelper().getString("getUsers");
-
-		//System.out.println("Users xml:" + xml);
-		//FileHelper.writeToFile(new File("c:\\temp\\users.xml"), xml, false);
 		
 		if(xml != null && !xml.equals(""))
 		{
 			try
 			{
 				Document document = domHelper.getDocument(xml);
-				System.out.println("Users document:" + document);
 				List usersNodes = document.selectNodes("/users");
-				System.out.println("usersNodes:" + usersNodes.size());
-	
+				
 				List userNodes = document.selectNodes("/users/user");
-				System.out.println("userNodes:" + userNodes.size());
 				Iterator usersIterator = userNodes.iterator();
 				while(usersIterator.hasNext())
 				{
@@ -479,7 +477,8 @@ public class WebServiceAuthorizationModule implements AuthorizationModule, Seria
 					Element emailElement 		= (Element)userElement.selectSingleNode("email");
 					String userName 			= userNameElement.getText();
 					
-					System.out.println("userName:" + userName);
+					if(logger.isDebugEnabled())
+						logger.info("userName:" + userName);
 					
 					String firstName 			= firstNameElement.getText();
 					String lastName 			= lastNameElement.getText();
@@ -503,9 +502,7 @@ public class WebServiceAuthorizationModule implements AuthorizationModule, Seria
 					List groups = new ArrayList();
 		
 					List rolesElementList 				= userElement.selectNodes("roles/role");
-					if(userName.equals("malmfors"))
-						System.out.println("rolesElementList:" + rolesElementList.size());
-
+					
 					Iterator rolesElementListIterator 	= rolesElementList.iterator();
 					while(rolesElementListIterator.hasNext())
 					{
@@ -555,9 +552,7 @@ public class WebServiceAuthorizationModule implements AuthorizationModule, Seria
 					}
 							
 					List groupsElementList 				= userElement.selectNodes("groups/group");
-					if(userName.equals("malmfors"))
-						System.out.println("groupsElementList:" + groupsElementList.size());
-
+					
 					Iterator groupsElementListIterator 	= groupsElementList.iterator();
 					while(groupsElementListIterator.hasNext())
 					{
@@ -676,10 +671,11 @@ public class WebServiceAuthorizationModule implements AuthorizationModule, Seria
 
 		String xml = getWebServiceHelper().getString("getGroups");
 
-		System.out.println("Groups xml:" + xml);
+		if(logger.isDebugEnabled())
+			logger.info("Groups xml:" + xml);
 		
 		Document document = domHelper.getDocument(xml);
-		System.out.println("document:" + document);
+
 		List groupNodes = document.selectNodes("/groups/group");
 		Iterator groupsIterator = groupNodes.iterator();
 		while(groupsIterator.hasNext())
