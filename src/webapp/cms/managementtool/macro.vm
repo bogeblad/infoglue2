@@ -391,13 +391,13 @@
 ##**************************************************
 
 #macro(inlineroles $rolelist)
-#foreach($roleVO in $rolelist)#if($velocityCount > 1), #end<a title="$roleVO.name">$roleVO.name</a>#end
+#foreach($roleVO in $rolelist)#if($velocityCount > 1), #end<a title="$roleVO.name">$roleVO.displayName</a>#end
 #end
 
 #macro(inlineusers $userlist)
 	#foreach ( $u in $userlist )
 		<a title="$u.toString()">
-			$u.getUserName()
+			$u.displayName
 		</a>
 	#end
 #end
