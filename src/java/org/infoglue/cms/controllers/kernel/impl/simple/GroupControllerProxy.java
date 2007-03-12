@@ -123,7 +123,8 @@ public class GroupControllerProxy extends BaseController
     	List groups = new ArrayList();
     	
 		groups = getAuthorizationModule().getGroups();
-		Collections.sort(groups, new ReflectionComparator("name"));
+		
+		Collections.sort(groups, new ReflectionComparator("displayName"));
 
     	return groups;
     }

@@ -135,7 +135,7 @@ public class UserControllerProxy extends BaseController
     	
 		users = getAuthorizationModule().getUsers();
 		
-		Collections.sort(users, new ReflectionComparator("name"));
+		Collections.sort(users, new ReflectionComparator("displayName"));
 
     	return users;
     }
@@ -186,8 +186,6 @@ public class UserControllerProxy extends BaseController
 	
 	public InfoGluePrincipal createUser(SystemUserVO systemUserVO) throws ConstraintException, SystemException, Exception
 	{
-		InfoGluePrincipal infoGluePrincipal = null;
-    	
 		getAuthorizationModule().createInfoGluePrincipal(systemUserVO);
     	
 		return getUser(systemUserVO.getUserName());

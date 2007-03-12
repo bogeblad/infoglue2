@@ -123,7 +123,8 @@ public class RoleControllerProxy extends BaseController
     	List roles = new ArrayList();
     	
 		roles = getAuthorizationModule().getRoles();
-		Collections.sort(roles, new ReflectionComparator("name"));
+		
+		Collections.sort(roles, new ReflectionComparator("displayName"));
 		
     	return roles;
     }
@@ -150,7 +151,8 @@ public class RoleControllerProxy extends BaseController
 		List infoGluePrincipals = new ArrayList();
     	
 		infoGluePrincipals = getAuthorizationModule().getUsers(roleName);
-		Collections.sort(infoGluePrincipals, new ReflectionComparator("name"));
+		
+		Collections.sort(infoGluePrincipals, new ReflectionComparator("displayName"));
     	
 		return infoGluePrincipals;
 	}
