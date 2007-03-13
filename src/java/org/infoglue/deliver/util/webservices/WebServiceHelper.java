@@ -77,7 +77,7 @@ public class WebServiceHelper
 	 * This is the method that lets you call the endpoint and get a single string-value back.
 	 */
 
-	public String getString(String method)
+	public String getString(String method) throws SystemException
 	{
 		String response = "";
 		
@@ -100,8 +100,9 @@ public class WebServiceHelper
 		}
 		catch (Exception e)
 		{
-			e.printStackTrace();
+			throw new SystemException("An error occurred talking to the webservice method " + method + ":" + e.getMessage());
 		}
+		
 		return response;
 	}
 		

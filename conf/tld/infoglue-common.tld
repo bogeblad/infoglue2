@@ -249,6 +249,52 @@
 	        <rtexprvalue>false</rtexprvalue>
     	</attribute>
     </tag>
+	<tag>
+        <name>remoteInvokeWorkflowActionService</name>
+        <tagclass>org.infoglue.deliver.taglib.common.RemoteInvokeWorkflowActionServiceTag</tagclass>
+        <bodycontent>empty</bodycontent>
+        <info></info>
+        <attribute>
+    	    <name>id</name>
+        	<required>true</required>
+	        <rtexprvalue>false</rtexprvalue>
+    	</attribute>
+        <attribute>
+    	    <name>targetEndpointAddress</name>
+        	<required>true</required>
+	        <rtexprvalue>false</rtexprvalue>
+    	</attribute>
+        <attribute>
+    	    <name>operationName</name>
+        	<required>true</required>
+	        <rtexprvalue>false</rtexprvalue>
+    	</attribute>
+        <attribute>
+    	    <name>principalName</name>
+        	<required>true</required>
+	        <rtexprvalue>false</rtexprvalue>
+    	</attribute>
+        <attribute>
+    	    <name>languageId</name>
+        	<required>true</required>
+	        <rtexprvalue>false</rtexprvalue>
+    	</attribute>
+        <attribute>
+    	    <name>workflowId</name>
+        	<required>true</required>
+	        <rtexprvalue>false</rtexprvalue>
+    	</attribute>
+        <attribute>
+    	    <name>actionId</name>
+        	<required>true</required>
+	        <rtexprvalue>false</rtexprvalue>
+    	</attribute>
+        <attribute>
+    	    <name>inputs</name>
+        	<required>false</required>
+	        <rtexprvalue>false</rtexprvalue>
+    	</attribute>
+    </tag>
     <tag>
 	    <name>include</name>
 	    <tagclass>org.infoglue.deliver.taglib.common.IncludeTag</tagclass>

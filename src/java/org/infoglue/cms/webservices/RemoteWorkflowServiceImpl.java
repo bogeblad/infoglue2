@@ -85,6 +85,42 @@ public class RemoteWorkflowServiceImpl extends RemoteInfoGlueService
 	}
 
 	/**
+	 * Invokes an action on the specified workflow as the specified principal.
+	 * 
+	 * @param principalName the name of the principal that should execute the workflow. Must have permission to create the workflow.
+	 * @param languageId the language to use when executing the workflow.
+	 * @param workflowName the name of the workflow.
+	 * @param inputsArray the inputs to the workflow.
+	 * @return true if the workflow executed sucessfully; false otherwise.
+	 */
+	public Boolean invokeAction(final String principalName, final Integer languageId, final Long workflowId, final Integer actionId, final Object[] inputsArray, final Object[] ppp)
+	{
+		try 
+		{
+			final DynamicWebserviceSerializer serializer = new DynamicWebserviceSerializer();
+			initializeInputs((Map) serializer.deserialize(inputsArray), languageId);
+			
+			logger.debug("start(" + principalName + "," + workflowId + "," + actionId + "," + languageId + "," + inputs + ")");
+			
+			final WorkflowVO workflowVO = WorkflowController.getController().invokeAction(principal, workflowId, actionId, inputs);
+			if(hasTerminated(workflowVO)) 
+			{
+				logger.debug("The workflow has terminated.");
+				return Boolean.FALSE;
+			}
+		} 
+		catch(Throwable t) 
+		{
+			System.out.println(t);
+			return Boolean.FALSE;
+		}
+		
+        updateCaches();
+
+		return Boolean.TRUE;
+	}
+
+	/**
 	 * Returns true if the workflow has terminated; false otherwise.
 	 * 
 	 * @param workflowVO the workflow.

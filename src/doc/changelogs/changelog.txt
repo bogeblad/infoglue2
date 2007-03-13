@@ -101,6 +101,7 @@ Abbreviated Changelog from 2.4.1 Final
   The new threads coming in would be kept waiting until another thread finishes and the idea is that you should set the limit to a size that suits your servers and the load it has.
   Dont mess with these settings if you don't experience problems or if you don't know what it's doing.
 - Added logic so a warning email will be sent to the warningEmailRecipient when the memory is dropping below 15% of the maximum java heap size. Consider this an early warning system. Only one mail per application life cycle is sent.  
+- Added taglib and logic to invoke workflow actions remotely
    
 -------------------------------------------------------------------------------------
 - InfoGlue 2.4.1 Final
