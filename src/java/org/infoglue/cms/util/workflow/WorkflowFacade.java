@@ -72,7 +72,7 @@ import com.opensymphony.workflow.spi.WorkflowEntry;
  * the Workflow interface.  The idea is to encapsulate the interactions with OSWorkflow and eliminate the
  * need to pass a Workflow reference and the workflow ID all over the place when extracting data from OSWorkflow
  * @author <a href="mailto:jedprentice@gmail.com">Jed Prentice</a>
- * @version $Revision: 1.35 $ $Date: 2007/02/26 14:54:00 $
+ * @version $Revision: 1.36 $ $Date: 2007/03/13 12:07:58 $
  */
 public class WorkflowFacade
 {
@@ -236,6 +236,7 @@ public class WorkflowFacade
 		}
 		catch (Exception e)
 		{
+			logger.error("An error occurred when we tried to get workflow with name:" + name);
 			throw new SystemException(e);
 		}
 	}
