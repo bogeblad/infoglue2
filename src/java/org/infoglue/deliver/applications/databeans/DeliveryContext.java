@@ -24,9 +24,11 @@
 package org.infoglue.deliver.applications.databeans;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
@@ -110,6 +112,8 @@ public class DeliveryContext implements UsageListener
 	//The variable sets if the full page should be rendered once more after all components have been rendered.
 	private boolean evaluateFullPage = true;
 
+	private Map pageAttributes = new HashMap();
+	
 	public static DeliveryContext getDeliveryContext()
 	{
 		return new DeliveryContext();
@@ -391,6 +395,11 @@ public class DeliveryContext implements UsageListener
 	public Set getUsedPageMetaInfoContentVersionIdSet() 
 	{
 		return usedPageMetaInfoContentVersionIdSet;
+	}
+
+	public Map getPageAttributes() 
+	{
+		return pageAttributes;
 	}
 
 }
