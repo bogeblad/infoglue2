@@ -48,7 +48,14 @@ public class InfoGlueHibernatePropertySet extends HibernatePropertySet
      */
     public Object getAsActualType(String key) throws PropertyException 
     {
-    	return (getType(key) == PropertySet.DATA) ? getDataString(key) : super.getAsActualType(key);
+		try 
+		{
+			return (getType(key) == PropertySet.DATA) ? getDataString(key) : super.getAsActualType(key);
+		} 
+		catch(Exception e) 
+		{
+			throw new PropertyException("Unable to get type for [" + key + "].");
+		}
     }
 
 	/**
