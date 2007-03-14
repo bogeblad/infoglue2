@@ -102,7 +102,9 @@ Abbreviated Changelog from 2.4.1 Final
   Dont mess with these settings if you don't experience problems or if you don't know what it's doing.
 - Added logic so a warning email will be sent to the warningEmailRecipient when the memory is dropping below 15% of the maximum java heap size. Consider this an early warning system. Only one mail per application life cycle is sent.  
 - Added taglib and logic to invoke workflow actions remotely
-   
+- Upgraded to Velocity 1.5 - check the changelog for that project. Hopefully the inline macro issues have really been solved as they say.
+
+
 -------------------------------------------------------------------------------------
 - InfoGlue 2.4.1 Final
 -------------------------------------------------------------------------------------
