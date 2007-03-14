@@ -145,6 +145,11 @@ public class BasicURLComposer extends URLComposer
     
     public String composePageUrl(Database db, InfoGluePrincipal infoGluePrincipal, Integer siteNodeId, Integer languageId, Integer contentId, DeliveryContext deliveryContext) throws SystemException
     {
+    	if(siteNodeId == null || siteNodeId.intValue() == -1)
+    	{
+    		logger.warn("composePageUrl was called with siteNodeId:" + siteNodeId + " from the page with key: " + deliveryContext.getPageKey() + " (siteNodeId=" + deliveryContext.getSiteNodeId() + ")");
+    		return "";
+    	}
         /*
         String disableEmptyUrls = CmsPropertyHandler.getDisableEmptyUrls();
         if(filename == null || filename.equals("") && disableEmptyUrls == null || disableEmptyUrls.equalsIgnoreCase("no"))
