@@ -102,7 +102,7 @@ public class RemoteWorkflowServiceImpl extends RemoteInfoGlueService
 			
 			logger.debug("start(" + principalName + "," + workflowId + "," + actionId + "," + languageId + "," + inputs + ")");
 			
-			final WorkflowVO workflowVO = WorkflowController.getController().invokeAction(principal, workflowId, actionId, inputs);
+			final WorkflowVO workflowVO = WorkflowController.getController().invokeAction(principal, workflowId.longValue(), actionId.intValue(), inputs);
 			if(hasTerminated(workflowVO)) 
 			{
 				logger.debug("The workflow has terminated.");
