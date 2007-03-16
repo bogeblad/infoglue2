@@ -78,12 +78,19 @@ public class URLParameterTag extends AbstractTag
 	 */
 	protected void addParameter() throws JspException
 	{
-		final URLTag parent = (URLTag) findAncestorWithClass(this, URLTag.class);
-		if(parent == null)
+		URLTag urlParent = (URLTag) findAncestorWithClass(this, URLTag.class);
+		ImportTag importParent = null;
+		if(urlParent == null)
+			importParent = (ImportTag) findAncestorWithClass(this, ImportTag.class);
+		
+		if(urlParent == null && importParent == null)
 		{
-			throw new JspTagException("URLParameterTag must have a URLTag ancestor.");
+			throw new JspTagException("URLParameterTag must either have a URLTag ancestor or a ImportTag ancestor.");
 		}
-		((URLTag) parent).addParameter(name, value);
+		if(urlParent != null)
+			((URLTag) urlParent).addParameter(name, value);
+		if(importParent != null)
+			((ImportTag) importParent).addParameter(name, value);
 	}
 	
 	/**

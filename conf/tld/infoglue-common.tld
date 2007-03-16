@@ -326,6 +326,32 @@
 	        <rtexprvalue>true</rtexprvalue>
 		</attribute>
 	</tag>
+    <tag>
+	    <name>import</name>
+	    <tagclass>org.infoglue.deliver.taglib.common.ImportTag</tagclass>
+	   	<bodycontent>JSP</bodycontent>
+	    <info></info>
+	    <attribute>
+		    <name>id</name>
+	    	<required>false</required>
+	        <rtexprvalue>false</rtexprvalue>
+		</attribute>
+	    <attribute>
+		    <name>url</name>
+	    	<required>true</required>
+	        <rtexprvalue>true</rtexprvalue>
+		</attribute>
+	    <attribute>
+		    <name>charEncoding</name>
+	    	<required>false</required>
+	        <rtexprvalue>true</rtexprvalue>
+		</attribute>
+	    <attribute>
+		    <name>timeout</name>
+	    	<required>false</required>
+	        <rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
 
     <tag>
 	    <name>cropText</name>
