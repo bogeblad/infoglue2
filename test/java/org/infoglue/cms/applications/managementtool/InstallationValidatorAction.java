@@ -28,6 +28,7 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
@@ -214,7 +215,7 @@ public class InstallationValidatorAction extends InfoGlueAbstractAction
     			try
     			{
 	    		    HttpHelper httpHelper = new HttpHelper();
-	    			String response = httpHelper.getUrlContent(address);
+	    			String response = httpHelper.getUrlContent(address, new HashMap(), null, 3000);
 	    			if(response.indexOf("test ok") == -1)
 	    			    throw new Exception("Got wrong answer");
 	    			
@@ -236,7 +237,7 @@ public class InstallationValidatorAction extends InfoGlueAbstractAction
 				try
 				{
 	    		    HttpHelper httpHelper = new HttpHelper();
-	    			String response = httpHelper.getUrlContent(address);
+	    			String response = httpHelper.getUrlContent(address, new HashMap(), null, 3000);
 	    			if(response.indexOf("test ok") == -1)
 	    			    throw new Exception("Got wrong answer");
 	    			

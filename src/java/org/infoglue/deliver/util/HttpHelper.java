@@ -285,8 +285,13 @@ public class HttpHelper
 	{
 		return getUrlContent(urlAddress, requestParameters, 30000);
 	}
-	
+
 	public String getUrlContent(String urlAddress, Map requestParameters, int timeout) throws Exception
+	{
+		return getUrlContent(urlAddress, requestParameters, null, timeout);
+	}
+	
+	public String getUrlContent(String urlAddress, Map requestParameters, String encoding, int timeout) throws Exception
 	{
 	    URL url = new URL(urlAddress);
 	    URLConnection connection = url.openConnection();
@@ -304,7 +309,12 @@ public class HttpHelper
 	    
 	    InputStream inStream = null;
 	    inStream = connection.getInputStream();
-	    InputStreamReader inStreamReader = new InputStreamReader(inStream);
+	    InputStreamReader inStreamReader = null;
+	    if(encoding == null)
+	    	inStreamReader = new InputStreamReader(inStream);
+	    else
+	    	inStreamReader = new InputStreamReader(inStream, encoding);
+	    	
 	    BufferedReader buffer = new BufferedReader(inStreamReader);            
 	    StringBuffer strbuf = new StringBuffer();   
 	    String line; 

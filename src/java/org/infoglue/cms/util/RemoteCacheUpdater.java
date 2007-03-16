@@ -176,7 +176,7 @@ public class RemoteCacheUpdater implements NotificationListener
 				}
 				catch(Exception e)
 				{
-					logger.warn("Error updating cache at " + address + ":" + e.getMessage(), e);
+					logger.error("Error updating cache at " + address + ":" + e.getMessage(), e);
 				}
 			}
 	    }
@@ -197,7 +197,7 @@ public class RemoteCacheUpdater implements NotificationListener
 				}
 				catch(Exception e)
 				{
-					logger.warn("Error updating cache at " + address + ":" + e.getMessage(), e);
+					logger.error("Error updating cache at " + address + ":" + e.getMessage(), e);
 				}
 			}
 	    }
@@ -234,6 +234,8 @@ public class RemoteCacheUpdater implements NotificationListener
     {        
         URL url = new URL(urlAddress);
         URLConnection urlConn = url.openConnection();
+        urlConn.setConnectTimeout(3000);
+        urlConn.setReadTimeout(3000);
         urlConn.setAllowUserInteraction(false); 
         urlConn.setDoOutput (true); 
         urlConn.setDoInput (true); 
