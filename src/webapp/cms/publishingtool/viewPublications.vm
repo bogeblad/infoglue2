@@ -82,7 +82,7 @@ function filter(select)
 <div style="float: right; text-align: right;">
 Filter: 
 #if($allowPublicationEventFilter == "true")
-	<select style="width: 250px;" name="filter" onChange="filter(this);">
+	<select style="width: 200px;" name="filter" onChange="filter(this);">
 		<option value="all" #checkSelected("$filter" "all")>$ui.getString("entity.ServerNode.property.allPublicationEventFilter.label")</option>
 		<option value="groupBased" #checkSelected("$filter" "groupBased")>$ui.getString("entity.ServerNode.property.groupBasedPublicationEventFilter.label")</option>
 		#foreach($group in $infoGluePrincipal.groups)
@@ -155,7 +155,7 @@ Filter:
 
 
 #if( $cnt==0)
-	<tr><td></td><td>&nbsp;No versions marked for publishing available</td></tr>
+	<tr><td>&nbsp;No versions marked for publishing available</td><td><img src="images/trans.gif" width="200" height="1"/></td><td></td></tr>
 #end
 
 #lvEnd()
