@@ -32,9 +32,11 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
+import org.exolab.castor.jdo.LockNotGrantedException;
 import org.exolab.castor.jdo.OQLQuery;
 import org.exolab.castor.jdo.PersistenceException;
 import org.exolab.castor.jdo.QueryResults;
+import org.exolab.castor.jdo.TransactionAbortedException;
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.entities.kernel.IBaseEntity;
 import org.infoglue.cms.entities.kernel.ValidatableEntityVO;
@@ -1125,9 +1127,20 @@ public abstract class BaseController
             db.commit();
 		    db.close();
         }
+        catch(TransactionAbortedException tae)
+        {
+        	if(tae.getCause() instanceof LockNotGrantedException)
+                throw new SystemException("The resource you tried to modify have just been updated by another user. Please try again later. System message: " + tae.getCause().getMessage());
+        	else
+               	throw new SystemException("An error occurred when we tried to commit an transaction. Reason:" + tae.getMessage(), tae);
+        }
+        catch(LockNotGrantedException lnge)
+        {
+            throw new SystemException("The resource you tried to modify have just been updated by another user. Please try again later. System message: " + lnge.getMessage());
+        }
         catch(Exception e)
         {
-			throw new SystemException("An error occurred when we tried to commit an transaction. Reason:" + e.getMessage(), e);    
+           	throw new SystemException("An error occurred when we tried to commit an transaction. Reason:" + e.getMessage(), e);    
         }
     }
  
