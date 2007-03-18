@@ -73,7 +73,7 @@ public class ImportTag extends TemplateControllerTag
     {
 		try
         {
-			String result = helper.getUrlContent(url, requestParameters, charEncoding, timeout);
+			String result = helper.getUrlContent(url, requestParameters, charEncoding, timeout.intValue());
 		    produceResult(result);
         } 
 		catch (Exception e)
