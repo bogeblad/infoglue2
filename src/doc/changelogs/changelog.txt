@@ -1,5 +1,5 @@
 -------------------------------------------------------------------------------------
-- InfoGlue 2.5 Final
+- InfoGlue 2.4.5 Final
 -------------------------------------------------------------------------------------
 
 Release notes
@@ -106,6 +106,7 @@ Abbreviated Changelog from 2.4.1 Final
 - Made all cache update actions and validators time out after 3 seconds. We have seen strange results when remote services hang.
 - Fixed a new Import-tag which should be able to replace the normal jstl-import tag which cannot handle timeouts etc well.
 - Made better error message handling when lock not granted exceptions due to simultaneous editing occur.
+- Made it possible to control if live also should kill long threads and also allow live to have another timeout for when to kill threads.
 
 -------------------------------------------------------------------------------------
 - InfoGlue 2.4.1 Final
