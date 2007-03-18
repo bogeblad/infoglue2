@@ -202,8 +202,13 @@ public class ViewPageAction extends InfoGlueAbstractAction
     	if(!CmsPropertyHandler.getOperatingMode().equals("3"))
     		tk = new ThreadMonitor(new Long(CmsPropertyHandler.getDeliverRequestTimeout()).longValue(), request, "Page view took to long!", true);
     	else
-    		tk = new ThreadMonitor(new Long(CmsPropertyHandler.getDeliverRequestTimeout()).longValue(), request, "Page view seems to take to long!", false);
-    		
+    	{
+    		if(!CmsPropertyHandler.getKillLiveRequestWhichTimedout())
+    			tk = new ThreadMonitor(new Long(CmsPropertyHandler.getLiveDeliverRequestTimeout()).longValue(), request, "Page view seems to take to long!", false);
+    		else
+    			tk = new ThreadMonitor(new Long(CmsPropertyHandler.getLiveDeliverRequestTimeout()).longValue(), request, "Page view took to long!", true);
+    	}
+    	
     	RequestAnalyser.getRequestAnalyser().incNumberOfCurrentRequests(tk);
 
     	long start 			= System.currentTimeMillis();
@@ -418,7 +423,12 @@ public class ViewPageAction extends InfoGlueAbstractAction
     	if(!CmsPropertyHandler.getOperatingMode().equals("3"))
     		tk = new ThreadMonitor(new Long(CmsPropertyHandler.getDeliverRequestTimeout()).longValue(), request, "Page view took to long!", true);
     	else
-    		tk = new ThreadMonitor(new Long(CmsPropertyHandler.getDeliverRequestTimeout()).longValue(), request, "Page view is taking a long time!", false);
+    	{
+    		if(!CmsPropertyHandler.getKillLiveRequestWhichTimedout())
+    			tk = new ThreadMonitor(new Long(CmsPropertyHandler.getLiveDeliverRequestTimeout()).longValue(), request, "Page view seems to take to long!", false);
+    		else
+    			tk = new ThreadMonitor(new Long(CmsPropertyHandler.getLiveDeliverRequestTimeout()).longValue(), request, "Page view took to long!", true);
+    	}
     		
     	RequestAnalyser.getRequestAnalyser().incNumberOfCurrentRequests(tk);
 

@@ -777,6 +777,27 @@ public class CmsPropertyHandler
 	    return getServerNodeProperty("deliverRequestTimeout", true, "60000");
 	}
 
+	public static String getLiveDeliverRequestTimeout()
+	{
+	    return getServerNodeProperty("liveDeliverRequestTimeout", true, "60000");
+	}
+
+	public static boolean getKillLiveRequestWhichTimedout()
+	{
+		boolean killLiveRequestWhichTimedout = false;
+		try
+		{
+			killLiveRequestWhichTimedout = Boolean.parseBoolean(getServerNodeProperty("killLiveRequestWhichTimedout", true, "false"));
+		}
+		catch(Exception e)
+		{
+			logger.warn("Error parsing killLiveRequestWhichTimedout:" + e.getMessage());
+		}
+		
+		return killLiveRequestWhichTimedout;
+	}
+
+	
 	public static String getUseHighLoadLimiter()
 	{
 	    return getServerNodeProperty("useHighLoadLimiter", true, "false");

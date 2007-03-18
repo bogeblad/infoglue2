@@ -29,6 +29,12 @@
 		<td>#editPropertyField("ServerNode.property.deliverRequestTimeout" "deliverRequestTimeout" "$this.getPropertyValue('deliverRequestTimeout')" "51" "$!serverNodeId")</td>
 	</tr>
 	<tr>
+		<td>#editPropertyField("ServerNode.property.liveDeliverRequestTimeout" "liveDeliverRequestTimeout" "$this.getPropertyValue('liveDeliverRequestTimeout')" "51" "$!serverNodeId")</td>
+	</tr>
+	<tr>
+		<td>#yesNoDropDownWithInherit("ServerNode.property.killLiveRequestWhichTimedout" "killLiveRequestWhichTimedout" "$this.getPropertyValue('killLiveRequestWhichTimedout')")</td>
+	</tr>
+	<tr>
 		<td>#yesNoDropDownWithInherit("ServerNode.property.useHighLoadLimiter" "useHighLoadLimiter" "$this.getPropertyValue('useHighLoadLimiter')")</td>
 	</tr>
 	<tr>
