@@ -14,7 +14,7 @@ The InfoGlue Team
 
 Abbreviated Changelog from 2.4.1 Final 
 ---------------------------------------
-
+- InfoGlue now require Java 1.5
 - Added fix so if the cas-ticket is first argument it will not be forgotten
 - Fixed so one can state to user $currentUrl for cas-serviceURL in the cms-authentication filter as well. Before only one static url could be set.
 - Added debug and fixed an issue where anonymous user could interfer with userBase in JNDI-lookups if not set
