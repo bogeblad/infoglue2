@@ -5,7 +5,9 @@
 Release notes
 ---------------------------------------
 The spring release 2007 of InfoGlue contains a huge amount of new features, bugfixes and improvements.
-As allways we encourage upgrades and this release focuses extra on performance, stability, maintanance and diagnostics so it will hopefully make your life easier.
+As allways we encourage upgrading and this release focuses extra on performance, stability, scalability
+maintanance and diagnostics so it will hopefully make your life easier. Having that said there are of course
+welcomed new features for both users and developers as well.
 
 Thanx to all involved!!
 
