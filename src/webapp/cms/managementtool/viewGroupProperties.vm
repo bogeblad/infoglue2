@@ -139,24 +139,6 @@
 
 <form method="POST" name="editForm" action="${updateAction}.action">
 <table border="0" width="500">
-
-#*
-	#set($event = $this.getEvent($contentVersionId) )					
-	#if($event.id > 0)
-	<tr>
-		<td colspan="3">
-			<span class="warningText">
-				#set($close = "<a href='DeleteEvent.action?eventId=$event.id&url=$currentUrl'>$ui.getString('tool.contenttool.close')</a>")
-				#if($event.typeId == 2)
-					$ui.getString("tool.contenttool.publishRejectedText") $close
-				#elseif($event.typeId == 4)
-					$ui.getString("tool.contenttool.unblishRejectedText") $close
-				#end
-			</span> 
-		</td>
-	</tr>
-	#end
-*#
 	
 	<tr> 
 		<td>

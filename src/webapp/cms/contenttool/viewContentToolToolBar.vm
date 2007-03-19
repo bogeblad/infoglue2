@@ -219,16 +219,6 @@
 <tr>
 	<td bgcolor="#FFFFFF"><img src="images/trans.gif" width="1" height="28"/></td>
 	<td valign="middle" width="100%" height="100%">
-		#*
-		#foreach($button in $buttons)
-			#if($button.isSelfContained)
-				<a href="$button.getActionUrl()"><img src="$button.getImageUrl()" border="0" class="menuButton" onmouseover="this.className='selectedMenuButton';" onmouseout="this.className='menuButton';"/></a><img src="images/splitter.gif"/>						 
-			#else
-				<a href="javascript:openMainArea('$button.getActionUrl()', '$button.getTitle()');"><img src="$button.getImageUrl()" border="0"class="menuButton" onmouseover="this.className='selectedMenuButton';" onmouseout="this.className='menuButton';"/></a>
-				<img src="images/splitter.gif"/>		
-			#end
-		#end
-		*#
 		
 		#set($left = 0)
 		#foreach($button in $buttons)
@@ -239,7 +229,7 @@
 				<a href="$button.getActionUrl()"><img src="$button.getImageUrl()" border="0" class="menuButton" onmouseover="this.className='selectedMenuButton';" onmouseout="this.className='menuButton';"/></a>
 			#else
 				<div class="menuItem" #if($button.subButtons.size() > 0)onmouseover="this.className='selectedMenuItem';" onmouseout="this.className='menuItem';"#end style="left: ${left}px; width: ${width}px;">
-					<a id="$button.getTitle()" $style href="javascript:openMainArea('$button.getActionUrl()', '$button.getTitle()');"><img src="$button.getImageUrl()" border="0" class="menuButton" onmouseover="this.className='selectedMenuButton';" onmouseout="this.className='menuButton';"/></a>
+					<a id="$button.getTitle()" href="javascript:openMainArea('$button.getActionUrl()', '$button.getTitle()');"><img src="$button.getImageUrl()" border="0" class="menuButton" onmouseover="this.className='selectedMenuButton';" onmouseout="this.className='menuButton';"/></a>
 			#end
 			
 		    #foreach($subButton in $button.subButtons)
@@ -247,7 +237,7 @@
 				#if($subButton.isSelfContained)
 					<a href="$subButton.getActionUrl()"><img src="$subButton.getImageUrl()" border="0" class="menuButton" onmouseover="this.className='selectedMenuButton';" onmouseout="this.className='menuButton';"/></a>						 
 				#else
-					<a id="$subButton.getTitle()" $style href="javascript:openMainArea('$subButton.getActionUrl()', '$subButton.getTitle()');"><img src="$subButton.getImageUrl()" border="0" class="menuButton" onmouseover="this.className='selectedMenuButton';" onmouseout="this.className='menuButton';"/></a>
+					<a id="$subButton.getTitle()" href="javascript:openMainArea('$subButton.getActionUrl()', '$subButton.getTitle()');"><img src="$subButton.getImageUrl()" border="0" class="menuButton" onmouseover="this.className='selectedMenuButton';" onmouseout="this.className='menuButton';"/></a>
 				#end
 			#end
 			  				

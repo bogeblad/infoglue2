@@ -221,38 +221,6 @@ Filter:
 	##set( $row = "$row <div id='e$publicationVO.getPublicationId()' style='width: 300px; display:none;'>")
 	##set( $row = "$row <iframe frameborder='0' id='$publicationVO.getPublicationId()IFrame' src='' width='300' height='100' align='baseline' style='width:100%; height=100%; margin: 0px 0px 0px 0px; padding: 0px 0px 0px 0px;'></iframe> ")
 	
-	## PUBLICATION_DETAILS
-	#*
-	#set( $versions = $publicationVO.publicationDetails )
-	#foreach ($publicationEvent in $versions)
-
-		#if($publicationEvent.entityClass.indexOf("ContentVersion") > -1)
-			#if($publicationEvent.typeId == 3)
-				#set($icon = "<img src='images/tree/unpublishContentItem.gif' border=0>")
-			#else
-				#set($icon = "<img src='images/tree/contentItem.gif' border=0>")
-			#end
-		#else
-			#if($publicationEvent.typeId == 3)
-				#set($icon = "<img src='images/tree/unpublishSiteNodeItem.gif' border=0>")
-			#else
-				#set($icon = "<img src='images/tree/siteNodeItem.gif' border=0>")
-			#end
-		#end
-
-		#if($velocityCount != $versions.size() || $versionssn.size() > 0)
-			#set( $tree = "<img src='images/tree/space05.gif'><img src='images/tree/space0.gif'><img src='images/tree/space3.gif'>  $icon")
-			#set($newLine = "<br/><img src='images/tree/space05.gif'><img src='images/tree/space0.gif'><img src='images/tree/space1.gif'> <img src='images/tree/space0.gif'>")
-		#else
-			#set( $tree = "<img src='images/tree/space05.gif'><img src='images/tree/space0.gif'><img src='images/tree/space2.gif'> $icon")
-			#set($newLine = "<br/><img src='images/tree/space05.gif'><img src='images/tree/space0.gif'><img src='images/tree/space0.gif'> <img src='images/tree/space0.gif'>")
-		#end
-
-		#set($modifiedDate = $formatter.formatDate($publicationEvent.creationDateTime, "yyyy-MM-dd HH:mm"))
-		#set( $row = "$row$tree $publicationEvent.name ($publicationEvent.description) $newLine <font color=669999><small>modified: $modifiedDate </small></font> <br>")
-	#end
-	*#
-	
 	##set( $row = "$row </div>")
 
 	#set($modifiedDate = $formatter.formatDate($publicationVO.getPublicationDateTime(), "yyyy-MM-dd HH:mm"))

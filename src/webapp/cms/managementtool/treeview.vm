@@ -38,11 +38,6 @@
 
 ## BEGIN
 
-#* 
-	drawItem - override this macro in your VTL file for
-	own control over node drawing
-*#
-
 #macro(drawItem $n)
 		####
 		## Draw the item icon Container or not? 
@@ -130,11 +125,6 @@
 			#end
 		#end
 
-		#*
-		*	Call user supplied macro for rendering of the node
-		*	
-		*#
-		
 		#drawItem($n) 
 		</div>	
 	#end
@@ -177,10 +167,6 @@
 			#end
 		#end
 
-		#*
-		*	Call user supplied macro for rendering of the node
-		*	
-		*#
 		#drawItem($n) <br>
 				
 	#end
@@ -216,11 +202,6 @@
 			#end
 		#end
 	
-	
-		#*
-		*	Call user supplied macro for rendering of the node
-		*	
-		*#
 		#drawItemSimple($n)
 	
 		<br>			

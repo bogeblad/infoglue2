@@ -53,13 +53,6 @@
 <html>
 <head>
 	<title>$ui.getString($titleKey)</title>
-
-	#*
-	<script type="text/javascript">
-	   _editor_url = "applications/HTMLArea/";
-	   _editor_lang = "en";
-	</script>
-	*#
 	
 	<link rel="stylesheet" type="text/css" href="css/cms.css" />
 	<link rel="stylesheet" type="text/css" href="css/infogluecommons.css" />
@@ -317,17 +310,7 @@
 	##		-1: unlimited number of items can be selected
 	##		0: no items can be selected (no checkboxes visible)
 	##		1: one item can be selected
-	#*
-	#set( $loccnt = 0)
-	#set( $isOdd = $cnt % 2)
-	#if($isOdd==0)
-		#if($class=="class='white'")
-			#set($class = "class='light$lvColor'")
-		#else
-			#set($class = "class='white'")
-		#end
-	#end
-	*#
+
 	#set( $loccnt = 0)
 	#set( $isOdd = $cnt % 2)
 	#if($isOdd==0)

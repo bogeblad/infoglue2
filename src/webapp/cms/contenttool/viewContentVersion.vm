@@ -121,11 +121,6 @@
 		if(personalConfig && personalConfig != "")
 	   	{
 		   	personalConfig = "[" + personalConfig + "]]"; 
-		   	#*
-		   	#set($length = $buttonConfig.length() - 2)
-		   	#set($buttonConfig = "$buttonConfig.substring(0, $length)")
-			buttonConfig = { ${buttonConfig} };
-			*#
 		}
 
 		#if($buttonConfig && $buttonConfig != "")
@@ -937,21 +932,7 @@
 					    #if($currentEditorId == 2 && $activateExtendedEditorOnLoad == "false")
 							changeEditor(0, '${attribute.name}');
 						#end
-						
-					    #*		
-						#if($currentEditorId == 1)
-							changeEditor(${attribute.name}WYSIWYGEditor, 1, "${attribute.name}");
-						#elseif($currentEditorId == 2)
-							changeEditor(${attribute.name}WYSIWYGEditor, 2, "${attribute.name}");
-						#elseif($currentEditorId == 3)
-							changeEditor(${attribute.name}WYSIWYGEditor, 3, "${attribute.name}");
-						#elseif($currentEditorId == 4)
-							changeEditor(${attribute.name}WYSIWYGEditor, 4, "${attribute.name}");
-						#else
-							currentEditorIdHash["${attribute.name}CurrentEditorId"] = 0;
-						#end
-						*#
-						
+												
 					</script>
 					
 				#elseif($attribute.inputType == "select")

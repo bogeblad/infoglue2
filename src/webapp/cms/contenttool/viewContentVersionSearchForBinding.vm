@@ -13,61 +13,8 @@
 		#editTextField3($ui.getString("tool.contenttool.searchString.label") "tool.contenttool.searchString.label" "searchString" $searchString "30" "normaltextfield")
 		<input type="image" src="images/okButton_se.gif" style="width: 31px; height: 19px;" />
 		</p>
-		#*
-		<p>
-		#selectBox("tool.contenttool.modifierFilter.label" "name" $name $principals "tool.contenttool.filterShowAll.label")
-		</p>
-		<p>
-		#selectBox("tool.contenttool.languageFilter.label" "languageId" $languageId $availableLanguages "tool.contenttool.filterShowAll.label")
-		</p>
-		<p>
-		#selectBox("tool.contenttool.contentTypeFilter.label" "contentTypeDefinitionId" $contentTypeDefinitionId $contentTypeDefinitions "tool.contenttool.filterShowAll.label")
-		</p>
-		<p>
-		$ui.getString("tool.contenttool.caseSensitive.label")<br>
-		<input type="checkbox" name="caseSensitive" value="1" #checkChecked("1" "$caseSensitive")> Yes 
-		</p>
-		<p>
-		$ui.getString("tool.contenttool.stateSearch.label")<br>
-		<select class="dropbox" name="stateId">
-			<option value="">$ui.getString("tool.contenttool.filterShowAll.label")</option>
-			<option value="">---------------</option>
-			<option value="0" #checkSelected("0" $stateId)>$ui.getString("tool.contenttool.state.working")</option>
-			<!--
-			<option value="1" #checkSelected("1" $stateId)>$ui.getString("tool.contenttool.state.final")</option>
-			-->				
-			<option value="2" #checkSelected("2" $stateId)>$ui.getString("tool.contenttool.state.publish")</option>
-			<option value="3" #checkSelected("3" $stateId)>$ui.getString("tool.contenttool.state.published")</option>
-		</select>
-		</p>
-		<p>
-			$ui.getString("tool.contenttool.chooseRepositoryLabel")<br>
-			#foreach ($repositoryVO in $repositories)
-		    <input type="checkbox" name="repositoryIdToSearch" value="$repositoryVO.id" #checkChecked("$repositoryVO.id" "$repositoryId")/>$repositoryVO.name
-		    #end
-		</p>
-		<p>
-			$ui.getString("tool.contenttool.chooseRepositoryLabel")<br>
-			#foreach ($repositoryVO in $repositories)
-		    <input type="checkbox" name="repositoryIdToSearch" value="$repositoryVO.id" #checkChecked("$repositoryVO.id" "$repositoryId")/>$repositoryVO.name
-		    #end
-		</p>
-		*#
 	</td>
 </tr>
-#*
-<tr>
-	<td colspan="7"><img src="images/trans.gif" height="10" width="1"></td>
-</tr>
-
-<tr>
-	<input type="hidden" name="repositoryId" value="$!repositoryId">
-	<td colspan="7">
-		<input type="image" src="$ui.getString("images.managementtool.buttons.searchLong")">
-		<a href="javascript:clearForm();"><img src="$ui.getString("images.managementtool.buttons.clearLong")" border="0"></a>
-	</td>
-</tr>
-*#
 </table>
 </form>
 

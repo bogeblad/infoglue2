@@ -411,22 +411,16 @@
 			#if($n.getState() == -1)
 				<a $canDrag id="link${nId}" isContainer="$n.isContainer()" source="tree" 
 				repoId="${repositoryId}" entityId="${nId}"
-				myLabel="${n.getTitle()}" src="null" $acceptdrop href="JavaScript:htmlTreeItemClick('${nId}','${repositoryId}','$formatter.escapeExtendedHTML($n.title)#*$n.title*##*$formatter.escapeExtendedHTML($n.title)*#');">$n.title #* $!formatter.escapeHTML($n.title) *#</a>
+				myLabel="${n.getTitle()}" src="null" $acceptdrop href="JavaScript:htmlTreeItemClick('${nId}','${repositoryId}','$formatter.escapeExtendedHTML($n.title)');">$n.title</a>
 			#else
 				${n.getTitle()}
 			#end
 	#end
 	
-	#*
-		include and parse tree functionality
-		Expect the nodes to be found in $nodes
-		This draws the entire tree
-	*#
-
-	#* Set custom arguments to send to page *#	
+	## Set custom arguments to send to page	
 	#set($myTreeArgs = "&repositoryId=${repositoryId}&showLeafs=${showLeafs}")
 	
-	#* Explorer style rendering, draw your own folder icons in drawItem *#
+	## Explorer style rendering, draw your own folder icons in drawItem
 	#drawTreeXP()
 
 	<!-- HTML Version of the tree: End --->	

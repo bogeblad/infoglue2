@@ -72,47 +72,4 @@ $scriptLogic.logInfo("numberOfLevels:", $numberOfLevels)
 
 #createFolders($parentContentId $numberOfContentsOnEachLevel $numberOfLevels 1)
 
-#*
-#foreach($levelIndex in [1..$numberOfLevels])
-  #set($name = "Mattias test $levelIndex")
-
-  #set($isFolder = true)
-  	
-  $scriptLogic.logInfo("Name:", $name)
-  $scriptLogic.logInfo("ContentTypeDefinitionName:", $contentTypeDefinitionName)
-	
-  #createContent($parentContentId $name $contentTypeDefinitionId $repositoryId $isFolder)
-  $scriptLogic.logInfo("Content created:", $newContent.contentId)
-
-
-  #foreach($contentVersionElement in $contentElement.elements("contentVersion"))
-	  #set($languageId = $contentVersionElement.attribute("languageId").getValue())
-	  $scriptLogic.logInfo("LanguageId:", $languageId)
-	
-	  #set($newContentVersionVO = $scriptLogic.getObjectWithName("org.infoglue.cms.entities.content.ContentVersionVO"))
-	  #set($date = $scriptLogic.getObjectWithName("java.util.Date"))
-	  $newContentVersionVO.setLanguageId($languageId)
-	  $newContentVersionVO.setStateId(0)
-	  $newContentVersionVO.setModifiedDateTime($date)
-	  $newContentVersionVO.setVersionComment("Imported")
-  	  #set($versionValue = $domBuilder.encodeString($contentVersionElement.elements().get(0).asXML(), "UTF-8"))
-	  $newContentVersionVO.setVersionValue("<?xml version='1.0' encoding='UTF-8'?>$versionValue")
-
-	  $scriptLogic.logInfo("Adding version as follows", $newContent.contentId)
-	  $scriptLogic.logInfo("languageId", $languageId)
-	  $scriptLogic.logInfo("languageId", $languageId.class.name)
-	  $scriptLogic.logInfo("remoteUser", $remoteUser)
-	  $scriptLogic.logInfo("newContentVersionVO", $newContentVersionVO)
-	  $scriptLogic.logInfo("database", $scriptLogic.database)
-	
-	  $scriptLogic.logInfo("version", $newContentVersionVO.versionValue)
-	  
-	  #set($newContentVersion = $scriptLogic.getContentVersionController().create($newContent.contentId, $scriptLogic.getInteger($languageId), "$remoteUser", $newContentVersionVO, null, $scriptLogic.database))
-	
-	  $scriptLogic.logInfo("ContentVersion created:", $newContentVersion.contentVersionId)
-  #end
-
-#end
-*#
-
 $scriptLogic.logInfo("Creation finished")

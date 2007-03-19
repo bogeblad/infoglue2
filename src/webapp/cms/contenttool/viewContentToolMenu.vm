@@ -233,20 +233,6 @@
 
 #treeSelector("Content")
 
-#*
-<div style="right:10px; left:10px; position:absolute; bottom:2px; visibility:visible; z-index:0">
-<small>
-	<font color="#666666" face="Verdana">Versions: 
-	#if ($showVersions == "yes")
-		<a style="color: #666666" target="header" href="ViewContentToolHeader.action?repositoryId=$repositoryId&showVersions=no&exp=$exp">Hide versions</a>
-	#else
-		<a style="color: #666666" target="header" href="ViewContentToolHeader.action?repositoryId=$repositoryId&showVersions=yes&exp=$exp">Show versions</a>
-	#end
-	</font>
-</small>
-</div>
-*#
-
 <div style="right:2px; position:absolute; bottom:0px; visibility:visible; z-index:0">
 	<a href="javascript:this.parent.increaseSize();" title="$ui.getString("tool.common.increaseMenuSize.text")"><img src="images/expandRight.gif" width="20" height="20" border="0" alt="$ui.getString("tool.common.increaseMenuSize.text")" /></a>
 </div>

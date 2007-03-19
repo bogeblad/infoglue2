@@ -157,11 +157,6 @@
 #end
 
 
- 
-#* 
-	SS Experimenterar
-*#
-
 #macro(beginManagementTool $title $toolbarKey $arguments)
 <html>
 <head>

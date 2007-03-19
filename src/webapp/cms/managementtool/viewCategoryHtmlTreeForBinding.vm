@@ -77,16 +77,10 @@
 			myLabel="${n.getTitle()}" src="null" $acceptdrop href="JavaScript:htmlTreeItemClick('${nId}','${repositoryId}','$formatter.escapeExtendedHTML($n.title)');">$formatter.escapeHTML($n.title)</a>
 	#end
 
-	#*
-		include and parse tree functionality
-		Expect the nodes to be found in $nodes
-		This draws the entire tree
-	*#
-
-	#* Set custom arguments to send to page *#
+	## Set custom arguments to send to page
 	#set($myTreeArgs = "")
 
-	#* Explorer style rendering, draw your own folder icons in drawItem *#
+	## Explorer style rendering, draw your own folder icons in drawItem
 	#drawTreeXP()
 
 	<!-- HTML Version of the tree: End --->

@@ -85,12 +85,6 @@
 				<strong><a href="ViewSiteNodePageComponents!listComponents.action?siteNodeId=$siteNodeId&languageId=$languageId&contentId=$contentId&specifyBaseTemplate=$!specifyBaseTemplate&parentComponentId=$parentComponentId&slotId=$slotId&filterRepositoryId=$filterRepositoryId&sortProperty=repositoryId&showSimple=$showSimple&$allowedComponentNamesAsUrlEncodedString&$disallowedComponentNamesAsUrlEncodedString">Repository</a></strong>
 				#if($sortProperty == "repositoryId")<img src="images/downArrow.gif">#end
 			</td>
-			#*
-			<td height="1">
-			<strong><a href="ViewSiteNodePageComponents!listComponents.action?siteNodeId=$siteNodeId&languageId=$languageId&contentId=$contentId&specifyBaseTemplate=$!specifyBaseTemplate&parentComponentId=$parentComponentId&slotId=$slotId&filterRepositoryId=$filterRepositoryId&sortProperty=id&showSimple=$showSimple">Id</a></strong>
-				#if($sortProperty == "id")<img src="images/downArrow.gif">#end
-			</td>
-			*#
 			<td height="1">
 			<strong><a href="ViewSiteNodePageComponents!listComponents.action?siteNodeId=$siteNodeId&languageId=$languageId&contentId=$contentId&specifyBaseTemplate=$!specifyBaseTemplate&parentComponentId=$parentComponentId&slotId=$slotId&filterRepositoryId=$filterRepositoryId&sortProperty=GroupName&showSimple=$showSimple&$allowedComponentNamesAsUrlEncodedString&$disallowedComponentNamesAsUrlEncodedString">GroupName</a></strong>
 				#if($sortProperty == "GroupName")<img src="images/downArrow.gif">#end
@@ -126,7 +120,6 @@
 					    	#end
 					    #end
 					</td>
-					#*<td align="middle">$content.id</td>*#
 					<td valign="middle">$content.extraProperties.get("GroupName")</td>
 				</tr>	
 				#set($imageUrl = "")

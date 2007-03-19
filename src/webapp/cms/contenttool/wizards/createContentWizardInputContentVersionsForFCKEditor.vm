@@ -377,15 +377,9 @@
 					    		#if($enableFormEditor == "false" && $enableContentRelationEditor == "false"  && $enableStructureRelationEditor == "false" && $enableTemplateEditor == "true")
 					    			<a href="javascript:changeEditor(0, '${attribute.name}');">$ui.getString("tool.contenttool.editorPlainLabel")</a> 
 								#end
-					    		#*
-					    		#if($enableFormEditor == "false" && $enableContentRelationEditor == "false"  && $enableStructureRelationEditor == "false" && $enableWYSIWYG == "true")
-					    		| <a href="javascript:changeEditor(1, '${attribute.name}');">$ui.getString("tool.contenttool.editorHTMLWYSIWYG")</a> 
-					    		#end
-								*#
 					    		#if($enableFormEditor == "false" && $enableContentRelationEditor == "false"  && $enableStructureRelationEditor == "false" && $enableTemplateEditor == "true")
 					    		| <a href="javascript:changeEditor(2, '${attribute.name}');">$ui.getString("tool.contenttool.editorInfoGlueTemplateEditor")</a>
 								#end
-																
 								#if($enableComponentPropertiesEditor == "true")
 									<a href="javascript:changeEditor(0, '${attribute.name}');">$ui.getString("tool.contenttool.editorPlainLabel")</a> 
 								#end
@@ -840,46 +834,6 @@
 			if (!beenWarned || answer)
 			{
 				isValid = true;
-				
-				#*				
-				#foreach($attribute in $contentTypeAttributes)
-
-					/*
-					 * TODO:
-					 * This loop is redundant.
-					 */
-				
-	   				currentEditorId = currentEditorIdHash["${attribute.name}CurrentEditorId"];
-	   				
-	   				if(currentEditorId)
-	   					document.getElementById("currentEditorId").value = currentEditorId;
-	   				
-	   				//alert("currentEditorId:" + currentEditorId);
-					if(currentEditorId == 1)
-					{
-						//var wysiwygEditor = htmlEditors["${attribute.name}WYSIWYGEditor"];
-						var oEditor = FCKeditorAPI.GetInstance('${attribute.name}') ;
-						//alert("WYSIWYG:" + oEditor.GetXHTML(false));
-						
-						//alert("Attribute:" + document.getElementById("$attribute.name").value);
-						document.getElementById("$attribute.name").value = untransformAttribute(oEditor.GetXHTML(false));
-					}
-					else if(currentEditorId == 2)
-					{
-						document.getElementById("$attribute.name").value = document.${attribute.name}InfoGlueCodeEditor.getText();	
-					}
-					else if(currentEditorId == 0 && "$attribute.name" == "ComponentProperties")
-					{
-						document.getElementById("${attribute.name}Hidden").value = document.getElementById("${attribute.name}").value	
-					}
-					
-	   				#if($attribute.inputType != "digitalAsset")
-						//isCurrentValid = validate${attribute.name}();
-						//if(isCurrentValid == false)
-						//	isValid = false;
-					#end
-				#end
-				*#
 				
 				if(isValid)
 				{
