@@ -111,6 +111,7 @@ Abbreviated Changelog from 2.4.1 Final
 - Made it possible to control if live also should kill long threads and also allow live to have another timeout for when to kill threads.
 - Updated the Apache Axis packages to 1.5.1
 - Upgraded to Rome 0.9 (RSS libraries)
+- Made it possible to state contentId instead of propertyName for tag content:assetThumbnailUrl.
 
 -------------------------------------------------------------------------------------
 - InfoGlue 2.4.1 Final

@@ -43,6 +43,7 @@ public class AssetThumbnailUrlTag extends ComponentLogicTag
 {
 	private static final long serialVersionUID = 3978145452350648625L;
 
+	private Integer contentId;
 	private String propertyName;
     private String assetKey;
     private int width;
@@ -58,10 +59,24 @@ public class AssetThumbnailUrlTag extends ComponentLogicTag
     {
 		try 
 		{
-			if(assetKey != null)
-				write(getComponentLogic().getAssetThumbnailUrl(propertyName, assetKey, width, height, useInheritance));
-			else
-				write(getComponentLogic().getAssetThumbnailUrl(propertyName, width, height, useInheritance));
+            if(contentId != null)
+            {
+	            if(assetKey != null)
+	                produceResult(getController().getAssetThumbnailUrl(contentId, assetKey, width, height));
+	            else
+	                produceResult(getController().getAssetThumbnailUrl(contentId, width, height));    
+            }
+            else if(propertyName != null)
+            {
+				if(assetKey != null)
+					produceResult(getComponentLogic().getAssetThumbnailUrl(propertyName, assetKey, width, height, useInheritance));
+				else
+					produceResult(getComponentLogic().getAssetThumbnailUrl(propertyName, width, height, useInheritance));
+            }
+            else
+            {
+                throw new JspException("You must supply either contentId or propertyName");
+            }
 		} 
 		catch(Exception e)
 		{
@@ -81,6 +96,11 @@ public class AssetThumbnailUrlTag extends ComponentLogicTag
         this.height = height;
     }
     
+    public void setContentId(String contentId) throws JspException
+    {
+        this.contentId = evaluateInteger("assetThumbnailUrl", "contentId", contentId);
+    }
+
     public void setPropertyName(String propertyName) throws JspException
     {
         this.propertyName = evaluateString("assetThumbnailUrl", "propertyName", propertyName);
