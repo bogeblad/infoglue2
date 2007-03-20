@@ -390,7 +390,18 @@ public class InfoGlueCommonAccessRightsInterceptor implements InfoGlueIntercepto
 					ceb.add(new AccessConstraintException("SiteNodeVersion.siteNodeVersionId", "1000"));
 			}
 		}
-		else*/if(interceptionPointVO.getName().equalsIgnoreCase("SiteNodeVersion.Read"))
+		else*/ if(interceptionPointVO.getName().equalsIgnoreCase("SiteNodeVersion.CreateSiteNode"))
+		{
+			Integer parentSiteNodeId = (Integer)extradata.get("siteNodeId");
+			SiteNodeVersionVO siteNodeVersionVO = SiteNodeVersionController.getController().getLatestSiteNodeVersionVO(parentSiteNodeId);
+			if(!siteNodeVersionVO.getVersionModifier().equalsIgnoreCase(infoGluePrincipal.getName()))
+			{
+				Integer protectedSiteNodeVersionId = SiteNodeVersionControllerProxy.getSiteNodeVersionControllerProxy().getProtectedSiteNodeVersionId(siteNodeVersionVO.getId());
+				if(protectedSiteNodeVersionId != null && !AccessRightController.getController().getIsPrincipalAuthorized(infoGluePrincipal, "SiteNodeVersion.CreateSiteNode", siteNodeVersionVO.getSiteNodeVersionId().toString()))
+					ceb.add(new AccessConstraintException("SiteNodeVersion.siteNodeId", "1002"));
+			}
+		}
+		else if(interceptionPointVO.getName().equalsIgnoreCase("SiteNodeVersion.Read"))
 		{
 			Integer siteNodeVersionId = (Integer)extradata.get("siteNodeVersionId");
 			SiteNodeVersion siteNodeVersion = SiteNodeVersionController.getController().getSiteNodeVersionWithId(siteNodeVersionId, db);

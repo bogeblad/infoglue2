@@ -67,6 +67,10 @@ public class SiteNodeController extends BaseController
 {
     private final static Logger logger = Logger.getLogger(SiteNodeController.class.getName());
 
+	protected static final Integer NO 			= new Integer(0);
+	protected static final Integer YES 			= new Integer(1);
+	protected static final Integer INHERITED 	= new Integer(2);
+
 	/**
 	 * Factory method
 	 */
@@ -1048,6 +1052,42 @@ public class SiteNodeController extends BaseController
 
 		return siteNode;
     }
+    
+	/**
+	 * This method returns true if the if the siteNode in question is protected.
+	 */
+    
+	public Integer getProtectedSiteNodeVersionId(Integer siteNodeId)
+	{
+		Integer protectedSiteNodeVersionId = null;
+	
+		try
+		{
+			SiteNodeVersionVO siteNodeVersionVO = SiteNodeVersionController.getController().getLatestSiteNodeVersionVO(siteNodeId);
+
+			if(siteNodeVersionVO.getIsProtected() != null)
+			{	
+				if(siteNodeVersionVO.getIsProtected().intValue() == NO.intValue())
+					protectedSiteNodeVersionId = null;
+				else if(siteNodeVersionVO.getIsProtected().intValue() == YES.intValue())
+					protectedSiteNodeVersionId = siteNodeVersionVO.getId();
+				else if(siteNodeVersionVO.getIsProtected().intValue() == INHERITED.intValue())
+				{
+					SiteNodeVO parentSiteNodeVO = getParentSiteNode(siteNodeId);
+					if(parentSiteNodeVO != null)
+						protectedSiteNodeVersionId = getProtectedSiteNodeVersionId(parentSiteNodeVO.getId()); 
+				}
+			}
+		}
+		catch(Exception e)
+		{
+			logger.warn("An error occurred trying to get which (if any) site node is protected:" + e.getMessage(), e);
+		}
+			
+		return protectedSiteNodeVersionId;
+	}
+	
+
 
 }
  
