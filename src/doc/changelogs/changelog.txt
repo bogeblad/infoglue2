@@ -114,6 +114,8 @@ Abbreviated Changelog from 2.4.1 Final
 - Made it possible to state contentId instead of propertyName for tag content:assetThumbnailUrl.
 - Fixed bug in access control when protecting which users are allowed to create sitenodes under a sitenode. It behaves correct now.
 - Fixed issue with window positioning in IE sometimes
+- Moved buttons in masspublishing/unpublishing screens, so that it conforms more with the other screens
+
 
 -------------------------------------------------------------------------------------
 - InfoGlue 2.4.1 Final
