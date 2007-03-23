@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<applicationState>
+	<title>Delivery engine status ($serverName)</title>
+	<serverName>$serverName</title>
+	<items>
+	#foreach($state in $states)
+		<item name="$formatter.escapeExtendedHTML($state.get(0))">$formatter.escapeExtendedHTML($state.get(1))</item>
+  	#end
+	</items>
+	<sessionCount>$sessionInfoBeanList.size()</sessionCount>
+</applicationState>

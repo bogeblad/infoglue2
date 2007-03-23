@@ -449,6 +449,15 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
         return "success";
     }
         
+	public String doAsXML() throws Exception
+	{
+		doExecute();
+
+		getResponse().setContentType("text/xml; charset=utf-8");
+		
+		return "successAsXML";
+	}
+
 	public boolean getIsApplicationSettingsOk()
 	{
 		return applicationSettingsOk;
