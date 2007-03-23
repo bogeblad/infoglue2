@@ -437,7 +437,6 @@ public class VisualFormatter
 			return null;
 		
 		String encoding = CmsPropertyHandler.getURIEncoding();
-		System.out.println("encoding for " + s + "=" + encoding);
 		
 		String encodedString = (String)CacheController.getCachedObject("serverNodePropertiesCache", s);
         if(encodedString == null)
