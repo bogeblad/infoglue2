@@ -25,8 +25,11 @@ package org.infoglue.cms.controllers.kernel.impl.simple;
 
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.apache.xerces.parsers.DOMParser;
@@ -117,13 +120,7 @@ public class SearchController extends BaseController
 		try
 		{
 			beginTransaction(db);
-			/*
-			OQLQuery oql = db.getOQLQuery("SELECT cv FROM org.infoglue.cms.entities.content.impl.simple.ContentVersionImpl cv WHERE cv.isActive = $1 AND cv.versionValue LIKE $2 AND cv.owningContent.repository.repositoryId = $3 ORDER BY cv.owningContent asc, cv.language, cv.contentVersionId desc");
-			oql.bind(new Boolean(true));
-			oql.bind("%" + searchString + "%");
-			oql.bind(repositoryId);
-	        */
-			
+
 			String repositoryArgument = " AND (";
 			
 			int index = 3;
@@ -225,6 +222,155 @@ public class SearchController extends BaseController
 		}
 		
 		return matchingContents;
+		
+   	}
+   	
+   	/**
+   	 * Gets all content versions last changed by a certain user.
+   	 * 
+   	 * @param userName
+   	 * @return
+   	 * @throws SystemException
+   	 * @throws Bug
+   	 */
+   	
+   	public static Set getContentVersions(Integer contentTypeDefinitionId, String userName, Date publishStartDate, Date publishEndDate, Date unpublishStartDate, Date unpublishEndDate) throws SystemException, Bug
+   	{
+		Set matchingContentVersions = new HashSet();
+
+		ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
+		Database db = CastorDatabaseService.getDatabase();
+		try
+		{
+			beginTransaction(db);
+			
+			int index = 2;
+			/*
+			String repositoryArgument = ""; //" AND (";
+			List repArguments = new ArrayList();
+			
+			for(int i=0; i<repositoryId.length; i++)
+			{
+				if(i > 0)
+					repositoryArgument += " OR ";
+				
+				repositoryArgument += "cv.owningContent.repository.repositoryId = $" + index;
+			    repArguments.add(repositoryId[i]);
+				index++;
+			}
+			//repositoryArgument += ")";
+			*/
+			
+			String extraArguments = "";
+			String inverse = "";
+			List arguments = new ArrayList();
+						
+			if(userName != null && !userName.equalsIgnoreCase(""))
+			{
+			    extraArguments += " cv.versionModifier = $" + index;
+			    //extraArguments += " AND cv.versionModifier = $" + index;
+			    arguments.add(userName);
+				index++;
+			}
+			/*
+			if(languageId != null)
+			{
+			    extraArguments += " AND cv.language = $" + index;
+			    arguments.add(languageId);
+				index++;
+			}
+			*/
+			
+			if(contentTypeDefinitionId != null)
+			{
+			    extraArguments += " AND cv.owningContent.contentTypeDefinition = $" + index;
+			    arguments.add(contentTypeDefinitionId);
+				index++;
+			}
+			
+			/*
+			if(stateId != null)
+			{
+			    extraArguments += " AND cv.stateId = $" + index;
+			    arguments.add(stateId);
+				index++;
+			}
+			*/
+			if(publishStartDate != null)
+			{
+			    extraArguments += " AND cv.owningContent.publishDateTime > $" + index;
+			    arguments.add(publishStartDate);
+				index++;
+			}
+			if(publishEndDate != null)
+			{
+			    extraArguments += " AND cv.owningContent.publishDateTime < $" + index;
+			    arguments.add(publishEndDate);
+				index++;
+			}
+			if(unpublishStartDate != null)
+			{
+			    extraArguments += " AND cv.owningContent.expireDateTime > $" + index;
+			    arguments.add(unpublishStartDate);
+				index++;
+			}
+			if(unpublishEndDate != null)
+			{
+			    extraArguments += " AND cv.owningContent.expireDateTime < $" + index;
+			    arguments.add(unpublishEndDate);
+				index++;
+			}
+			    
+			String sql = "SELECT cv FROM org.infoglue.cms.entities.content.impl.simple.FullContentVersionImpl cv WHERE cv.isActive = $1 AND " /*+ repositoryArgument*/ + extraArguments + " ORDER BY cv.contentId asc, cv.language, cv.contentVersionId desc";
+			if(logger.isInfoEnabled())
+				logger.info("sql:" + sql);
+			System.out.println("sql:" + sql);
+			OQLQuery oql = db.getOQLQuery(sql);
+			oql.bind(new Boolean(true));
+			//oql.bind(repositoryId);
+			/*
+			Iterator repIterator = repArguments.iterator();
+			while(repIterator.hasNext())
+			{
+				Integer repositoryIdAsInteger = (Integer)repIterator.next();
+				oql.bind(repositoryIdAsInteger);
+			    //System.out.println("repositoryIdAsInteger:" + repositoryIdAsInteger);
+			}
+	        */
+			
+			Iterator iterator = arguments.iterator();
+			while(iterator.hasNext())
+			{
+			    oql.bind(iterator.next());
+			}
+			
+			QueryResults results = oql.execute(Database.ReadOnly);
+			
+			while(results.hasMore()) 
+			{
+				ContentVersion contentVersion = (ContentVersion)results.next();
+				if(logger.isInfoEnabled())
+					logger.info("Found a version matching:" + contentVersion.getId() + ":" + contentVersion.getOwningContent().getExpireDateTime());
+				
+				ContentVersion latestContentVersion = ContentVersionController.getContentVersionController().getLatestActiveContentVersion(contentVersion.getValueObject().getContentId(), contentVersion.getValueObject().getLanguageId(), db);
+				if(latestContentVersion.getId().intValue() == contentVersion.getId().intValue())
+				{
+					matchingContentVersions.add(contentVersion.getValueObject());
+				}
+			}
+
+			results.close();
+			oql.close();
+
+			commitTransaction(db);
+		}
+		catch ( Exception e )
+		{
+			rollbackTransaction(db);
+			throw new SystemException("An error occurred when we tried to search. Reason:" + e.getMessage(), e);			
+		}
+		
+		return matchingContentVersions;
 		
    	}
    	

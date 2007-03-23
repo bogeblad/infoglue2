@@ -219,6 +219,48 @@
     </tag>
 
 	<tag>
+        <name>principalContentVersions</name>
+        <tagclass>org.infoglue.deliver.taglib.content.PrincipalContentVersionsTag</tagclass>
+        <bodycontent>empty</bodycontent>
+        <info>TemplateLogic.getPrincipalContentVersions(String userName)</info>
+        <attribute>
+    	    <name>id</name>
+        	<required>true</required>
+	        <rtexprvalue>false</rtexprvalue>
+    	</attribute>
+		<attribute>
+            <name>contentTypeDefinitionName</name>
+            <required>false</required>
+            <rtexprvalue>false</rtexprvalue>
+        </attribute>
+		<attribute>
+            <name>userName</name>
+            <required>false</required>
+            <rtexprvalue>false</rtexprvalue>
+        </attribute>
+		<attribute>
+            <name>publishStartDate</name>
+            <required>false</required>
+            <rtexprvalue>false</rtexprvalue>
+        </attribute>
+		<attribute>
+            <name>publishEndDate</name>
+            <required>false</required>
+            <rtexprvalue>false</rtexprvalue>
+        </attribute>
+		<attribute>
+            <name>expireStartDate</name>
+            <required>false</required>
+            <rtexprvalue>false</rtexprvalue>
+        </attribute>
+		<attribute>
+            <name>expireEndDate</name>
+            <required>false</required>
+            <rtexprvalue>false</rtexprvalue>
+        </attribute>
+    </tag>
+
+	<tag>
         <name>content</name>
         <tagclass>org.infoglue.deliver.taglib.content.ContentTag</tagclass>
         <bodycontent>empty</bodycontent>

@@ -76,6 +76,7 @@ import org.infoglue.cms.controllers.kernel.impl.simple.GroupPropertiesController
 import org.infoglue.cms.controllers.kernel.impl.simple.InfoGluePrincipalControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.RoleControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.RolePropertiesController;
+import org.infoglue.cms.controllers.kernel.impl.simple.SearchController;
 import org.infoglue.cms.controllers.kernel.impl.simple.UserControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.WorkflowController;
 import org.infoglue.cms.entities.content.Content;
@@ -84,6 +85,7 @@ import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.entities.management.ContentTypeAttribute;
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
 import org.infoglue.cms.entities.management.LanguageVO;
+import org.infoglue.cms.entities.management.RepositoryVO;
 import org.infoglue.cms.entities.structure.SiteNode;
 import org.infoglue.cms.entities.structure.SiteNodeVO;
 import org.infoglue.cms.entities.structure.SiteNodeVersionVO;
@@ -3711,6 +3713,39 @@ public class BasicTemplateController implements TemplateController
 		catch(Exception e)
 		{
 			logger.error("An error occurred trying to get Content for categoryId " + categoryId + ":" + e.getMessage(), e);
+		}
+
+		return Collections.EMPTY_LIST;
+	}
+
+	/**
+	 * This method searches for all content versions which was last modified by a given user.
+	 */
+
+	public List getPrincipalContentVersions(String contentTypeDefinitionName, String principalName, Date publishStartDate, Date publishEndDate, Date unpublishStartDate, Date unpublishEndDate)
+	{
+		try
+		{
+	        Integer contentTypeDefinitionId = null;
+			ContentTypeDefinitionVO contentTypeDefinitionVO = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithName(contentTypeDefinitionName, getDatabase());
+	        if(contentTypeDefinitionVO != null)
+	        	contentTypeDefinitionId = contentTypeDefinitionVO.getId();
+
+	        Set contentVersions = SearchController.getContentVersions(contentTypeDefinitionId, principalName, publishStartDate, publishEndDate, unpublishStartDate, unpublishEndDate);
+			
+			List result = new ArrayList();
+			for(Iterator i = contentVersions.iterator(); i.hasNext(); ) 
+			{
+				ContentVersionVO contentVersionVO = (ContentVersionVO)i.next();
+				if(ContentDeliveryController.getContentDeliveryController().isValidContent(this.getDatabase(), contentVersionVO.getContentId(), this.languageId, USE_LANGUAGE_FALLBACK, true, getPrincipal(), this.deliveryContext))
+					result.add(contentVersionVO);
+			}
+			System.out.println("result:" + result.size());
+			return result;
+		}
+		catch(Exception e)
+		{
+			logger.warn("An error occurred trying to get content version which was last changed by:" + principalName + ":" + e.getMessage(), e);
 		}
 
 		return Collections.EMPTY_LIST;

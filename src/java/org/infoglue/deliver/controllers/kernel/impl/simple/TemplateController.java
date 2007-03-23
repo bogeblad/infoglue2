@@ -1108,6 +1108,12 @@ public interface TemplateController
 	public abstract List getContentVersionsByCategory(Integer categoryId, String attributeName);
 
 	/**
+	 * This method searches for all content versions which was last changed by the given user - simple search but faster
+	 */
+
+	public List getPrincipalContentVersions(String contentTypeDefinitionName, String principalName, Date publishStartDate, Date publishEndDate, Date unpublishStartDate, Date unpublishEndDate);
+
+	/**
 	 * This method searches for all contents matching
 	 */
 	

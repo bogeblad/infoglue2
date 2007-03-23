@@ -926,6 +926,56 @@
     </field>
   </class>
 
+<!--  Mapping for FullContentVersion  -->
+  <class name="org.infoglue.cms.entities.content.impl.simple.FullContentVersionImpl" identity="contentVersionId" key-generator="IDENTITY">
+    <description>ContentVersion</description>
+    <cache-type type="unlimited" capacity="100"/>
+    <map-to table="cmContentVersion"/>
+    <field name="contentVersionId" type="java.lang.Integer">
+      <sql name="contentVersionId" type="integer" dirty="check" />
+    </field>
+    <field name="stateId" type="java.lang.Integer">
+      <sql name="stateId" type="integer" dirty="check" />
+    </field>
+    <field name="modifiedDateTime" type="java.util.Date">
+      <sql name="modifiedDateTime" type="timestamp" dirty="check" />
+    </field>
+    <field name="versionComment" type="java.lang.String">
+      <sql name="versionComment" type="varchar" dirty="check" />
+    </field>
+    <field name="isCheckedOut" type="java.lang.Boolean">
+      <sql name="isCheckedOut" type="integer" dirty="check" />
+    </field>
+    <field name="isActive" type="java.lang.Boolean">
+      <sql name="isActive" type="integer" dirty="check" />
+    </field>
+
+	<field name="owningContent" type="org.infoglue.cms.entities.content.impl.simple.ContentImpl" lazy="true">
+      <sql name="contentId"/>
+    </field>
+
+	<field name="contentId" type="java.lang.Integer">
+      <sql name="contentId" type="integer" dirty="ignore"/>
+    </field>
+    <field name="language" type="org.infoglue.cms.entities.management.impl.simple.LanguageImpl">
+      <sql name="languageId"/>
+    </field>
+    <field name="versionModifier" type="java.lang.String">
+      <sql name="versionModifier" type="varchar" dirty="check" />
+    </field>
+    <field name="digitalAssets" type="org.infoglue.cms.entities.content.impl.simple.DigitalAssetImpl" lazy="true" collection="collection">
+      <sql many-key="contentVersionId" many-table="cmContentVersionDigitalAsset"/>
+    </field>
+    
+    <field name="contentCategories" type="org.infoglue.cms.entities.content.impl.simple.ContentCategoryImpl" lazy="false" collection="collection">
+      <sql many-key="contentVersionId" many-table="cmContentCategory"/>
+    </field>
+    
+    <field name="versionValue" type="java.lang.String">
+      <sql name="versionValue" type="varchar" dirty="ignore" />
+    </field>
+  </class>
+
 
 <!--  Mapping for ContentRelation  -->
   <class name="org.infoglue.cms.entities.content.impl.simple.ContentRelationImpl" identity="contentRelationId" key-generator="IDENTITY">
