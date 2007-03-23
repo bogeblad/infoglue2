@@ -87,6 +87,8 @@ public class UpdateCacheAction extends InfoGlueAbstractAction
         {
 	        if(!ServerNodeController.getController().getIsIPAllowed(this.getRequest()))
 	        {
+	        	logger.error("A user from an IP(" + this.getRequest().getRemoteAddr() + ") which is not allowed tried to call doReCache.");
+
 	            this.getResponse().setContentType("text/plain");
 	            this.getResponse().setStatus(HttpServletResponse.SC_FORBIDDEN);
 	            this.getResponse().getWriter().println("You have no access to this view - talk to your administrator if you should.");
@@ -120,6 +122,8 @@ public class UpdateCacheAction extends InfoGlueAbstractAction
 	        long start = System.currentTimeMillis();
 	        if(!ServerNodeController.getController().getIsIPAllowed(this.getRequest()))
 	        {
+	        	logger.error("A user from an IP(" + this.getRequest().getRemoteAddr() + ") which is not allowed tried to call doReCache.");
+
 	            this.getResponse().setContentType("text/plain");
 	            this.getResponse().setStatus(HttpServletResponse.SC_FORBIDDEN);
 	            this.getResponse().getWriter().println("You have no access to this view - talk to your administrator if you should.");

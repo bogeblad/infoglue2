@@ -1253,6 +1253,9 @@ public class ViewPageAction extends InfoGlueAbstractAction
     
     public void setCmsUserName(String userName)
     {
+    	if(logger.isInfoEnabled())
+    		logger.info("userName:" + userName);
+    	
         this.getHttpSession().setAttribute("cmsUserName", userName);
     }
     

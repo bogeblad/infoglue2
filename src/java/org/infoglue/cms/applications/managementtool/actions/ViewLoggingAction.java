@@ -35,6 +35,7 @@ import java.util.Locale;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.log4j.Logger;
 import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
@@ -46,6 +47,7 @@ import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.FileUploadHelper;
 import org.infoglue.cms.util.sorters.FileComparator;
 import org.infoglue.cms.util.sorters.ReflectionComparator;
+import org.infoglue.deliver.applications.actions.ViewApplicationStateAction;
 import org.infoglue.deliver.util.MathHelper;
 
 import webwork.action.ActionContext;
@@ -58,6 +60,8 @@ import webwork.action.ActionContext;
 
 public class ViewLoggingAction extends InfoGlueAbstractAction
 {
+    private final static Logger logger = Logger.getLogger(ViewLoggingAction.class.getName());
+
 	private static final long serialVersionUID = 1L;
 	
 	private String logFragment = "";
@@ -69,7 +73,9 @@ public class ViewLoggingAction extends InfoGlueAbstractAction
     {
         if(!ServerNodeController.getController().getIsIPAllowed(this.getRequest()))
         {
-            this.getResponse().setContentType("text/plain");
+        	logger.error("A user from an IP(" + this.getRequest().getRemoteAddr() + ") which is not allowed tried to call doReCache.");
+
+        	this.getResponse().setContentType("text/plain");
             this.getResponse().setStatus(HttpServletResponse.SC_FORBIDDEN);
             this.getResponse().getWriter().println("You have no access to this view - talk to your administrator if you should.");
             

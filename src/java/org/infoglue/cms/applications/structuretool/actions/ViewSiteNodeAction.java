@@ -99,7 +99,8 @@ public class ViewSiteNodeAction extends InfoGlueAbstractAction
 	
    	private String stay = null;
    	private String dest = "";
-
+   	
+   	private VisualFormatter formatter = new VisualFormatter();
 
     public ViewSiteNodeAction()
     {
@@ -382,7 +383,7 @@ public class ViewSiteNodeAction extends InfoGlueAbstractAction
 	    			//if(isMetaInfoInWorkingState)
 	    			if(true)
 	    		    {
-	    			    String url = getComponentRendererUrl() + getComponentRendererAction() + "?siteNodeId=" + getSiteNodeId() + "&languageId=" + masterLanguageVO.getId() + "&contentId=-1&cmsUserName=" + URLEncoder.encode(this.getInfoGluePrincipal().getName(), "UTF-8");
+	    			    String url = getComponentRendererUrl() + getComponentRendererAction() + "?siteNodeId=" + getSiteNodeId() + "&languageId=" + masterLanguageVO.getId() + "&contentId=-1&cmsUserName=" + formatter.encodeURI(this.getInfoGluePrincipal().getName());
 	    			    url = this.getResponse().encodeURL(url);
 	    				this.getResponse().sendRedirect(url);
 	    				result = NONE;

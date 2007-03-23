@@ -29,6 +29,7 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.infoglue.cms.applications.common.ImageButton;
+import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
@@ -70,6 +71,8 @@ public class ViewStructureToolToolBarAction extends InfoGlueAbstractAction
 	//private Integer serviceBindingId = null;
 	private SiteNodeVersionVO siteNodeVersionVO = null;
 	
+   	private VisualFormatter formatter = new VisualFormatter();
+
 	/**
 	 * This execute method first of all gets the id of the available service-binding 
 	 * the meta-info-content-type has. Then we check if there is a meta-info allready bound.
@@ -383,7 +386,7 @@ public class ViewStructureToolToolBarAction extends InfoGlueAbstractAction
 	        workingUrl = CmsPropertyHandler.getPreviewDeliveryUrl();
 	    }
 	    
-		ImageButton imageButton = new ImageButton(true, "javascript:openPopup('" + workingUrl + "?siteNodeId=" + this.siteNodeId + "&repositoryName=" + URLEncoder.encode(repositoryVO.getName(), "UTF-8") + "&cmsUserName=" + URLEncoder.encode(this.getInfoGluePrincipal().getName(), "UTF-8") + "' , 'SiteNode', 'width=800,height=600,resizable=yes,toolbar=yes,scrollbars=yes,status=yes,location=yes,menubar=yes');", getLocalizedString(getSession().getLocale(), "images.structuretool.buttons.previewSiteNode"), "Preview siteNode");
+		ImageButton imageButton = new ImageButton(true, "javascript:openPopup('" + workingUrl + "?siteNodeId=" + this.siteNodeId + "&repositoryName=" + URLEncoder.encode(repositoryVO.getName(), "UTF-8") + "&cmsUserName=" + formatter.encodeURI(this.getInfoGluePrincipal().getName()) + "' , 'SiteNode', 'width=800,height=600,resizable=yes,toolbar=yes,scrollbars=yes,status=yes,location=yes,menubar=yes');", getLocalizedString(getSession().getLocale(), "images.structuretool.buttons.previewSiteNode"), "Preview siteNode");
 		
 		
 		return imageButton;
@@ -451,7 +454,7 @@ public class ViewStructureToolToolBarAction extends InfoGlueAbstractAction
 			
 			logger.info("isMetaInfoInWorkingState:" + isMetaInfoInWorkingState);
 			if(isMetaInfoInWorkingState)
-			    return new ImageButton(CmsPropertyHandler.getComponentRendererUrl() + "ViewPage!renderDecoratedPage.action?siteNodeId=" + this.siteNodeId + "&languageId=" + masterLanguageVO.getId() + "&contentId=-1" + "&cmsUserName=" + URLEncoder.encode(this.getInfoGluePrincipal().getName(), "UTF-8"), getLocalizedString(getSession().getLocale(), "images.structuretool.buttons.siteNodeComponents"), "Site Node Components");
+			    return new ImageButton(CmsPropertyHandler.getComponentRendererUrl() + "ViewPage!renderDecoratedPage.action?siteNodeId=" + this.siteNodeId + "&languageId=" + masterLanguageVO.getId() + "&contentId=-1" + "&cmsUserName=" + formatter.encodeURI(this.getInfoGluePrincipal().getName()), getLocalizedString(getSession().getLocale(), "images.structuretool.buttons.siteNodeComponents"), "Site Node Components");
 			    //return new ImageButton("ViewSiteNodePageComponents.action?siteNodeId=" + this.siteNodeId, getLocalizedString(getSession().getLocale(), "images.structuretool.buttons.siteNodeComponents"), "Site Node Components");
 			else
 				return new ImageButton(true, "javascript:alert('Cannot edit this page. You must first set the meta info to working. Do this by entering node properties and changing the state to working.');", getLocalizedString(getSession().getLocale(), "images.structuretool.buttons.siteNodeComponents"), "Site Node Components");
@@ -494,7 +497,7 @@ public class ViewStructureToolToolBarAction extends InfoGlueAbstractAction
 
 			logger.info("isMetaInfoInWorkingState:" + isMetaInfoInWorkingState);
 			if(isMetaInfoInWorkingState)
-			    return new ImageButton(CmsPropertyHandler.getComponentRendererUrl() + "ViewPage!renderDecoratedPage.action?siteNodeId=" + this.siteNodeId + "&languageId=" + masterLanguageVO.getId() + "&contentId=-1&showSimple=true" + "&cmsUserName=" + URLEncoder.encode(this.getInfoGluePrincipal().getName(), "UTF-8"), getLocalizedString(getSession().getLocale(), "images.structuretool.buttons.siteNodeStructure"), "Site Node Structure");
+			    return new ImageButton(CmsPropertyHandler.getComponentRendererUrl() + "ViewPage!renderDecoratedPage.action?siteNodeId=" + this.siteNodeId + "&languageId=" + masterLanguageVO.getId() + "&contentId=-1&showSimple=true" + "&cmsUserName=" + formatter.encodeURI(this.getInfoGluePrincipal().getName()), getLocalizedString(getSession().getLocale(), "images.structuretool.buttons.siteNodeStructure"), "Site Node Structure");
 			    //return new ImageButton("ViewSiteNodePageComponents.action?siteNodeId=" + this.siteNodeId, getLocalizedString(getSession().getLocale(), "images.structuretool.buttons.siteNodeComponents"), "Site Node Components");
 			else
 				return new ImageButton(true, "javascript:alert('Cannot edit this page. You must first set the meta info to working. Do this by entering node properties and changing the state to working.');", getLocalizedString(getSession().getLocale(), "images.structuretool.buttons.siteNodeStructure"), "Site Node Structure");

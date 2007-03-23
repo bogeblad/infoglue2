@@ -63,6 +63,8 @@ import org.infoglue.deliver.util.RequestAnalyser;
 
 public class ViewApplicationStateAction extends InfoGlueAbstractAction 
 {
+    private final static Logger logger = Logger.getLogger(ViewApplicationStateAction.class.getName());
+
     private List states 					= new ArrayList();
     
 	private boolean databaseConnectionOk 	= false;
@@ -132,6 +134,8 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
     {
         if(!ServerNodeController.getController().getIsIPAllowed(this.getRequest()))
         {
+        	logger.error("A user from an IP(" + this.getRequest().getRemoteAddr() + ") which is not allowed tried to call doReCache.");
+
             this.getResponse().setContentType("text/plain");
             this.getResponse().setStatus(HttpServletResponse.SC_FORBIDDEN);
             this.getResponse().getWriter().println("You have no access to this view - talk to your administrator if you should.");
@@ -234,6 +238,8 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
     {
         if(!ServerNodeController.getController().getIsIPAllowed(this.getRequest()))
         {
+        	logger.error("A user from an IP(" + this.getRequest().getRemoteAddr() + ") which is not allowed tried to call doReCache.");
+
             this.getResponse().setContentType("text/plain");
             this.getResponse().setStatus(HttpServletResponse.SC_FORBIDDEN);
             this.getResponse().getWriter().println("You have no access to this view - talk to your administrator if you should.");
@@ -305,7 +311,9 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
     {
         if(!ServerNodeController.getController().getIsIPAllowed(this.getRequest()))
         {
-            this.getResponse().setContentType("text/plain");
+        	logger.error("A user from an IP(" + this.getRequest().getRemoteAddr() + ") which is not allowed tried to call doReCache.");
+
+        	this.getResponse().setContentType("text/plain");
             this.getResponse().setStatus(HttpServletResponse.SC_FORBIDDEN);
             this.getResponse().getWriter().println("You have no access to this view - talk to your administrator if you should.");
             
@@ -330,6 +338,8 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
     {
         if(!ServerNodeController.getController().getIsIPAllowed(this.getRequest()))
         {
+        	logger.error("A user from an IP(" + this.getRequest().getRemoteAddr() + ") which is not allowed tried to call doReCache.");
+
             this.getResponse().setContentType("text/plain");
             this.getResponse().setStatus(HttpServletResponse.SC_FORBIDDEN);
             this.getResponse().getWriter().println("You have no access to this view - talk to your administrator if you should.");
@@ -344,6 +354,8 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
 
     public String doResetComponentStatistics() throws Exception
     {
+    	logger.error("A user from an IP(" + this.getRequest().getRemoteAddr() + ") which is not allowed tried to call doReCache.");
+
         if(!ServerNodeController.getController().getIsIPAllowed(this.getRequest()))
         {
             this.getResponse().setContentType("text/plain");
@@ -368,6 +380,8 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
         long start = System.currentTimeMillis();
         if(!ServerNodeController.getController().getIsIPAllowed(this.getRequest()))
         {
+        	logger.error("A user from an IP(" + this.getRequest().getRemoteAddr() + ") which is not allowed tried to call doReCache.");
+
             this.getResponse().setContentType("text/plain");
             this.getResponse().setStatus(HttpServletResponse.SC_FORBIDDEN);
             this.getResponse().getWriter().println("You have no access to this view - talk to your administrator if you should.");
