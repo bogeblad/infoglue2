@@ -261,11 +261,20 @@ public class ContentController extends BaseController
 	    
     public void delete(ContentVO contentVO, InfoGluePrincipal infogluePrincipal) throws ConstraintException, SystemException
     {
+    	delete(contentVO, infogluePrincipal, false);
+    }
+    
+	/**
+	 * This method deletes a content and also erases all the children and all versions.
+	 */
+	    
+    public void delete(ContentVO contentVO, InfoGluePrincipal infogluePrincipal, boolean forceDelete) throws ConstraintException, SystemException
+    {
 	    Database db = CastorDatabaseService.getDatabase();
         beginTransaction(db);
 		try
         {		
-	    	delete(contentVO, db, false, false, false, infogluePrincipal);
+	    	delete(contentVO, db, false, false, forceDelete, infogluePrincipal);
 	    	
 	    	commitTransaction(db);
             
@@ -352,9 +361,10 @@ public class ContentController extends BaseController
    		}
 		content.setChildren(new ArrayList());
 		
-   		if(forceDelete || getIsDeletable(content, infogluePrincipal, db))
+		boolean isDeletable = getIsDeletable(content, infogluePrincipal, db);
+   		if(forceDelete || isDeletable)
 	    {
-			ContentVersionController.getContentVersionController().deleteVersionsForContent(content, db, forceDelete);    	
+			ContentVersionController.getContentVersionController().deleteVersionsForContent(content, db, forceDelete, infogluePrincipal);    	
 			
 			if(!skipServiceBindings)
 			    ServiceBindingController.deleteServiceBindingsReferencingContent(content, db);

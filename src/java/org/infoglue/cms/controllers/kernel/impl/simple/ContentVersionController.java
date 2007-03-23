@@ -52,10 +52,12 @@ import org.infoglue.cms.entities.management.ContentTypeDefinition;
 import org.infoglue.cms.entities.management.Language;
 import org.infoglue.cms.entities.management.RegistryVO;
 import org.infoglue.cms.entities.management.impl.simple.LanguageImpl;
+import org.infoglue.cms.entities.publishing.PublicationVO;
 import org.infoglue.cms.entities.structure.SiteNode;
 import org.infoglue.cms.entities.structure.SiteNodeVO;
 import org.infoglue.cms.entities.structure.SiteNodeVersion;
 import org.infoglue.cms.entities.structure.SiteNodeVersionVO;
+import org.infoglue.cms.entities.workflow.EventVO;
 import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
@@ -746,9 +748,9 @@ public class ContentVersionController extends BaseController
 	 * other versions or contents reference the same asset.
 	 */
 	
-	public void deleteVersionsForContent(Content content, Database db) throws ConstraintException, SystemException, Bug, Exception
+	public void deleteVersionsForContent(Content content, Database db, InfoGluePrincipal principal) throws ConstraintException, SystemException, Bug, Exception
     {
-	    deleteVersionsForContent(content, db, false);
+	    deleteVersionsForContent(content, db, false, principal);
     }
 	
 	/**
@@ -757,15 +759,45 @@ public class ContentVersionController extends BaseController
 	 * other versions or contents reference the same asset.
 	 */
 	
-	public void deleteVersionsForContent(Content content, Database db, boolean forceDelete) throws ConstraintException, SystemException, Bug, Exception
+	public void deleteVersionsForContent(Content content, Database db, boolean forceDelete, InfoGluePrincipal infogluePrincipal) throws ConstraintException, SystemException, Bug, Exception
     {
+    	//TEST
+        if(forceDelete)
+        {
+	        List contentVersionsVOList = ContentVersionController.getContentVersionController().getPublishedActiveContentVersionVOList(content.getContentId(), db);
+	        
+	        List events = new ArrayList();
+			Iterator it = contentVersionsVOList.iterator();
+			while(it.hasNext())
+			{
+				ContentVersionVO contentVersionVO = (ContentVersionVO)it.next();
+				
+				EventVO eventVO = new EventVO();
+				eventVO.setDescription("Unpublished before forced deletion");
+				eventVO.setEntityClass(ContentVersion.class.getName());
+				eventVO.setEntityId(contentVersionVO.getContentVersionId());
+				eventVO.setName(contentVersionVO.getContentName() + "(" + contentVersionVO.getLanguageName() + ")");
+				eventVO.setTypeId(EventVO.UNPUBLISH_LATEST);
+				eventVO = EventController.create(eventVO, content.getRepositoryId(), infogluePrincipal);
+				events.add(eventVO);
+			}
+		
+		    PublicationVO publicationVO = new PublicationVO();
+		    publicationVO.setName("Direct publication by " + infogluePrincipal.getName());
+		    publicationVO.setDescription("Unpublished all versions before forced deletion");
+		    //publicationVO.setPublisher(this.getInfoGluePrincipal().getName());
+		    publicationVO.setRepositoryId(content.getRepositoryId());
+		    publicationVO = PublicationController.getController().createAndPublish(publicationVO, events, true, infogluePrincipal, db);
+        }
+        //TEST
+
         Collection contentVersions = Collections.synchronizedCollection(content.getContentVersions());
        	Iterator contentVersionIterator = contentVersions.iterator();
 			
 		while (contentVersionIterator.hasNext()) 
         {
         	ContentVersion contentVersion = (ContentVersion)contentVersionIterator.next();
-			
+        	        
         	Collection digitalAssetList = contentVersion.getDigitalAssets();
 			Iterator assets = digitalAssetList.iterator();
 			while (assets.hasNext()) 
@@ -922,6 +954,29 @@ public class ContentVersionController extends BaseController
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
+            
+		return contentVersionVOList;
+    }
+
+	public List getPublishedActiveContentVersionVOList(Integer contentId, Database db) throws SystemException, Bug, Exception
+    {
+        List contentVersionVOList = new ArrayList();
+        
+        OQLQuery oql = db.getOQLQuery( "SELECT cv FROM org.infoglue.cms.entities.content.impl.simple.ContentVersionImpl cv WHERE cv.owningContent.contentId = $1 AND cv.stateId = $2 AND cv.isActive = $3 ORDER BY cv.contentVersionId desc");
+    	oql.bind(contentId);
+    	oql.bind(ContentVersionVO.PUBLISHED_STATE);
+    	oql.bind(true);
+    	
+    	QueryResults results = oql.execute(Database.ReadOnly);
+		
+		while (results.hasMore()) 
+        {
+        	ContentVersion contentVersion = (ContentVersion)results.next();
+        	contentVersionVOList.add(contentVersion.getValueObject());
+        }
+		
+		results.close();
+		oql.close();
             
 		return contentVersionVOList;
     }

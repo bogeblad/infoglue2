@@ -713,7 +713,7 @@ public class RemoteContentServiceImpl extends RemoteInfoGlueService
 			    publicationVO = PublicationController.getController().createAndPublish(publicationVO, events, true, this.principal);
             }
 			
-            ContentController.getContentController().delete(contentVO, principal);
+			ContentController.getContentController().delete(contentVO, principal, forceDelete.booleanValue());
                
 	        logger.info("Done with contents..");
 
