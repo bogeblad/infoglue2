@@ -867,7 +867,7 @@ function edit()
 	else
 	{
 		//alert("editUrl in edit:" + editUrl);
-		details = "width=500,height=600,left=" + (document.body.clientWidth / 4) + ",top=" + (document.body.clientHeight / 4) + ",toolbar=no,status=no,scrollbars=yes,location=no,menubar=no,directories=no,resizable=no";
+		details = "width=500,height=600,left=" + (document.body.clientWidth / 4) + ",top=50,toolbar=no,status=no,scrollbars=yes,location=no,menubar=no,directories=no,resizable=no";
 		newWin=window.open(editUrl, "Edit", details);
 		if(newWin)
 			newWin.focus();

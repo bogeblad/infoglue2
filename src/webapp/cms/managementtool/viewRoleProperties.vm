@@ -37,7 +37,7 @@
 	function openFormEditor(url)
 	{
 		allowSave = false;
-		openPopup(url, "FormEditor", "width=700,height=600,left=" + (document.body.clientWidth / 4) + ",top=" + (document.body.clientHeight / 4) + ",toolbar=no,status=yes,scrollbars=yes,location=no,menubar=no,directories=no,resizable=yes");
+		openPopup(url, "FormEditor", "width=700,height=600,left=" + (document.body.clientWidth / 4) + ",top=50,toolbar=no,status=yes,scrollbars=yes,location=no,menubar=no,directories=no,resizable=yes");
 	}
 
 	//*******************************************
@@ -47,7 +47,7 @@
 	function openRelationEditor(url)
 	{
 		allowSave = false;
-		openPopup(url, "RelationEditor", "width=700,height=600,left=" + (document.body.clientWidth / 4) + ",top=" + (document.body.clientHeight / 4) + ",toolbar=no,status=yes,scrollbars=yes,location=no,menubar=no,directories=no,resizable=yes");
+		openPopup(url, "RelationEditor", "width=700,height=600,left=" + (document.body.clientWidth / 4) + ",top=50,toolbar=no,status=yes,scrollbars=yes,location=no,menubar=no,directories=no,resizable=yes");
 	}
 
 	var navigationTitleHash = new Array();

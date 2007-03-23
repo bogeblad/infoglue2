@@ -5934,7 +5934,7 @@ public class BasicTemplateController implements TemplateController
 	    else
 	    {
 		    String editOnSiteUrl = CmsPropertyHandler.getEditOnSiteUrl();
-			String decoratedAttributeValue = "<a href=\"#\" onClick=\"window.open('" + editOnSiteUrl + "?contentId=" + contentId + "&languageId=" + languageId + "&attributeName=" + attributeName + "', 'Edit', 'width=500,height=600,left=' + (document.body.clientWidth / 4) + ',top=' + (document.body.clientHeight / 4) + ',toolbar=no,status=no,scrollbars=yes,location=no,menubar=no,directories=no,resizable=no');\">" + html + "</a>";
+			String decoratedAttributeValue = "<a href=\"#\" onClick=\"window.open('" + editOnSiteUrl + "?contentId=" + contentId + "&languageId=" + languageId + "&attributeName=" + attributeName + "', 'Edit', 'width=500,height=600,left=' + (document.body.clientWidth / 4) + ',top=50,toolbar=no,status=no,scrollbars=yes,location=no,menubar=no,directories=no,resizable=no');\">" + html + "</a>";
 			return decoratedAttributeValue;
 	    }
 	} 
@@ -6067,13 +6067,9 @@ public class BasicTemplateController implements TemplateController
 
 			    String url = assignUrl;
 			    if(!createNew)
-			    	result = "<a href=\"#\" onClick=\"window.open('" + assignUrl + "', 'Edit', 'width=500,height=600,left=' + (document.body.clientWidth / 4) + ',top=' + (document.body.clientHeight / 4) + ',toolbar=no,status=no,scrollbars=yes,location=no,menubar=no,directories=no,resizable=no');\">" + html + "</a>";
+			    	result = "<a href=\"#\" onClick=\"window.open('" + assignUrl + "', 'Edit', 'width=500,height=600,left=' + (document.body.clientWidth / 4) + ',top=50,toolbar=no,status=no,scrollbars=yes,location=no,menubar=no,directories=no,resizable=no');\">" + html + "</a>";
 			    else
 			    	result = "<a href=\"" + createUrl + "\">" + html + "</a>";
-			    
-			    //String decoratedHTML = "<a href=\"#\" onClick=\"window.open('" + url + "', 'Edit', 'width=500,height=600,left=' + (document.body.clientWidth / 4) + ',top=' + (document.body.clientHeight / 4) + ',toolbar=no,status=no,scrollbars=yes,location=no,menubar=no,directories=no,resizable=no');\">" + html + "</a>";
-				//String decoratedHTML = "<a href=\"" + url + "\">" + html + "</a>";
-				//result = decoratedHTML;
 		    }
 		}
 		catch(Exception e)

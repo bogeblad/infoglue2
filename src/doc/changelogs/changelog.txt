@@ -113,6 +113,7 @@ Abbreviated Changelog from 2.4.1 Final
 - Upgraded to Rome 0.9 (RSS libraries)
 - Made it possible to state contentId instead of propertyName for tag content:assetThumbnailUrl.
 - Fixed bug in access control when protecting which users are allowed to create sitenodes under a sitenode. It behaves correct now.
+- Fixed issue with window positioning in IE sometimes
 
 -------------------------------------------------------------------------------------
 - InfoGlue 2.4.1 Final
