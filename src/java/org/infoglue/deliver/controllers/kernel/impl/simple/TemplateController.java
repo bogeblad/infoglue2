@@ -598,6 +598,12 @@ public interface TemplateController
      */
     public abstract List getRelatedPages(Integer contentId, String attributeName);
 
+	/**
+	 * This method gets a List of pages referencing the given content.
+	 */
+
+	public List getReferencingPages(Integer contentId, int maxRows);
+
     /**
      * This method deliveres a String with the URL to the base path of the directory resulting from 
      * an unpacking of a uploaded zip-digitalAsset.

@@ -64,6 +64,7 @@ import org.dom4j.Document;
 import org.dom4j.Element;
 import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.applications.common.VisualFormatter;
+import org.infoglue.cms.applications.databeans.ReferenceBean;
 import org.infoglue.cms.controllers.kernel.impl.simple.AccessRightController;
 import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
 import org.infoglue.cms.controllers.kernel.impl.simple.CategoryConditions;
@@ -74,6 +75,7 @@ import org.infoglue.cms.controllers.kernel.impl.simple.ExtendedSearchCriterias;
 import org.infoglue.cms.controllers.kernel.impl.simple.GroupControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.GroupPropertiesController;
 import org.infoglue.cms.controllers.kernel.impl.simple.InfoGluePrincipalControllerProxy;
+import org.infoglue.cms.controllers.kernel.impl.simple.RegistryController;
 import org.infoglue.cms.controllers.kernel.impl.simple.RoleControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.RolePropertiesController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SearchController;
@@ -85,6 +87,7 @@ import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.entities.management.ContentTypeAttribute;
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
 import org.infoglue.cms.entities.management.LanguageVO;
+import org.infoglue.cms.entities.management.RegistryVO;
 import org.infoglue.cms.entities.management.RepositoryVO;
 import org.infoglue.cms.entities.structure.SiteNode;
 import org.infoglue.cms.entities.structure.SiteNodeVO;
@@ -2596,6 +2599,36 @@ public class BasicTemplateController implements TemplateController
 		return relatedPages;
 	}
 
+
+	/**
+	 * This method gets a List of pages referencing the given content.
+	 */
+
+	public List getReferencingPages(Integer contentId, int maxRows)
+	{
+		List referencingPages = new ArrayList();
+		
+		try
+		{
+			List referencingObjects = RegistryController.getController().getReferencingObjectsForContent(contentId, maxRows, this.getDatabase());
+			Iterator referencingObjectsIterator = referencingObjects.iterator();
+			while(referencingObjectsIterator.hasNext())
+			{
+				ReferenceBean referenceBean = (ReferenceBean)referencingObjectsIterator.next();
+				Object pageCandidate = referenceBean.getReferencingCompletingObject();
+				if(pageCandidate instanceof SiteNodeVO)
+				{
+					referencingPages.add(pageCandidate);
+				}
+			}
+		}
+		catch(Exception e)
+		{
+			logger.error("An error occurred trying to get referencing pages for the contentId " + this.contentId + ":" + e.getMessage(), e);
+		}
+		
+		return referencingPages;
+	}
 
 	/**
 	 * This method deliveres a String with the URL to the base path of the directory resulting from 
