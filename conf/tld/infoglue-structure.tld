@@ -54,6 +54,24 @@
             <rtexprvalue>true</rtexprvalue>
         </attribute>
     </tag>
+    
+	<tag>
+        <name>pageUrlAfterLanguageChange</name>
+        <tagclass>org.infoglue.deliver.taglib.structure.PageUrlAfterLanguageChangeTag</tagclass>
+        <bodycontent>empty</bodycontent>
+        <info>TemplateController.getPageUrlAfterLanguageChange(String languageCode)</info>
+        <attribute>
+    	    <name>id</name>
+        	<required>false</required>
+	        <rtexprvalue>false</rtexprvalue>
+    	</attribute>
+        <attribute>
+    	    <name>languageCode</name>
+        	<required>true</required>
+	        <rtexprvalue>false</rtexprvalue>
+    	</attribute>
+    </tag>
+
 	<tag>
         <name>pageAsDigitalAssetUrl</name>
         <tagclass>org.infoglue.deliver.taglib.structure.PageAsDigitalAssetUrlTag</tagclass>

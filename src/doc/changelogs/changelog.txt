@@ -118,6 +118,7 @@ Abbreviated Changelog from 2.4.1 Final
 - Added new principalContentVersions taglib which lets you look up all contents last modified by a certain user and perhaps is nearing expireDate. Useful in intranets or similar.
 - Added tag to get all siteNodes referencing a certain content. Useful for finding where to show a detailed view
 - Improved performance hugely on getAllUsers on InfoGlueBasicAuthorizationModule.
+- Added tag for getting url that changes the current page language
 
 -------------------------------------------------------------------------------------
 - InfoGlue 2.4.1 Final
