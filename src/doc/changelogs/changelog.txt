@@ -117,6 +117,7 @@ Abbreviated Changelog from 2.4.1 Final
 - Moved buttons in masspublishing/unpublishing screens, so that it conforms more with the other screens
 - Added new principalContentVersions taglib which lets you look up all contents last modified by a certain user and perhaps is nearing expireDate. Useful in intranets or similar.
 - Added tag to get all siteNodes referencing a certain content. Useful for finding where to show a detailed view
+- Improved performance hugely on getAllUsers on InfoGlueBasicAuthorizationModule.
 
 -------------------------------------------------------------------------------------
 - InfoGlue 2.4.1 Final

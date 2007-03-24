@@ -96,8 +96,17 @@ public class InfoGlueBasicAuthorizationModule extends BaseController implements 
 	{
 	    if(userName == null || userName.equals(""))
 	    {
-	        logger.warn("userName was null or empty - fix your templates:" + userName);
-	        return null;
+	    	try
+	    	{
+	    		throw new Exception("userName was null or empty - fix your templates:" + userName);
+	    	}
+	    	catch(Exception e)
+	    	{
+	    		logger.warn(e.getMessage(), e);
+	    	}
+	    	//logger.warn("userName was null or empty - fix your templates:" + userName);
+	        
+	    	return null;
 	    }
 	    
 		InfoGluePrincipal infogluePrincipal = null;
@@ -376,47 +385,62 @@ public class InfoGlueBasicAuthorizationModule extends BaseController implements 
 		
 		if(transactionObject == null)
 		{
-			List systemUserVOList = SystemUserController.getController().getSystemUserVOList();
-			Iterator systemUserVOListIterator = systemUserVOList.iterator();
-			while(systemUserVOListIterator.hasNext())
+			Database db = CastorDatabaseService.getDatabase();
+
+			try 
 			{
-				SystemUserVO systemUserVO = (SystemUserVO)systemUserVOListIterator.next();
-	
-				List roles = new ArrayList();
-				Collection roleVOList = RoleController.getController().getRoleVOList(systemUserVO.getUserName());
-				Iterator roleVOListIterator = roleVOList.iterator();
-				while(roleVOListIterator.hasNext())
+				beginTransaction(db);
+				
+				List systemUsers = SystemUserController.getController().getSystemUserList(db);
+				Iterator systemUserListIterator = systemUsers.iterator();
+				while(systemUserListIterator.hasNext())
 				{
-					RoleVO roleVO = (RoleVO)roleVOListIterator.next();
-					InfoGlueRole infoGlueRole = new InfoGlueRole(roleVO.getRoleName(), roleVO.getDescription(), this);
-					roles.add(infoGlueRole);
+					SystemUser systemUser = (SystemUser)systemUserListIterator.next();
+		
+					List roles = new ArrayList();
+					Collection roleList = systemUser.getRoles();
+					Iterator roleListIterator = roleList.iterator();
+					while(roleListIterator.hasNext())
+					{
+						Role role = (Role)roleListIterator.next();
+						InfoGlueRole infoGlueRole = new InfoGlueRole(role.getRoleName(), role.getDescription(), this);
+						roles.add(infoGlueRole);
+					}
+					
+					List groups = new ArrayList();
+					Collection groupList = systemUser.getGroups();
+					Iterator groupListIterator = groupList.iterator();
+					while(groupListIterator.hasNext())
+					{
+					    Group group = (Group)groupListIterator.next();
+						InfoGlueGroup infoGlueGroup = new InfoGlueGroup(group.getGroupName(), group.getDescription(), this);
+						groups.add(infoGlueGroup);
+					}
+					
+					InfoGluePrincipal infoGluePrincipal = new InfoGluePrincipal(systemUser.getUserName(), systemUser.getFirstName(), systemUser.getLastName(), systemUser.getEmail(), roles, groups, false, this);
+					
+					users.add(infoGluePrincipal);
 				}
 				
-				List groups = new ArrayList();
-				Collection groupVOList = GroupController.getController().getGroupVOList(systemUserVO.getUserName());
-				Iterator groupVOListIterator = groupVOList.iterator();
-				while(groupVOListIterator.hasNext())
-				{
-				    GroupVO groupVO = (GroupVO)groupVOListIterator.next();
-					InfoGlueGroup infoGlueGroup = new InfoGlueGroup(groupVO.getGroupName(), groupVO.getDescription(), this);
-					roles.add(infoGlueGroup);
-				}
-				
-				InfoGluePrincipal infoGluePrincipal = new InfoGluePrincipal(systemUserVO.getUserName(), systemUserVO.getFirstName(), systemUserVO.getLastName(), systemUserVO.getEmail(), roles, groups, false, this);
-				
-				users.add(infoGluePrincipal);
+				commitTransaction(db);
+			} 
+			catch (Exception e) 
+			{
+				logger.error("An error occurred so we should not complete the transaction:" + e);
+				rollbackTransaction(db);
+				throw new SystemException("An error occurred so we should not complete the transaction:" + e, e);
 			}
 		}
 		else
 		{
-			List systemUserVOList = SystemUserController.getController().getSystemUserVOList(transactionObject);
-			Iterator systemUserVOListIterator = systemUserVOList.iterator();
-			while(systemUserVOListIterator.hasNext())
+			List systemUsers = SystemUserController.getController().getSystemUserList(transactionObject);
+			Iterator systemUserListIterator = systemUsers.iterator();
+			while(systemUserListIterator.hasNext())
 			{
-				SystemUserVO systemUserVO = (SystemUserVO)systemUserVOListIterator.next();
-
+				SystemUser systemUser = (SystemUser)systemUserListIterator.next();
+	
 				List roles = new ArrayList();
-				Collection roleList = RoleController.getController().getRoleList(systemUserVO.getUserName(), transactionObject);
+				Collection roleList = systemUser.getRoles();
 				Iterator roleListIterator = roleList.iterator();
 				while(roleListIterator.hasNext())
 				{
@@ -426,16 +450,16 @@ public class InfoGlueBasicAuthorizationModule extends BaseController implements 
 				}
 				
 				List groups = new ArrayList();
-				Collection groupList = GroupController.getController().getGroupList(systemUserVO.getUserName(), transactionObject);
+				Collection groupList = systemUser.getGroups();
 				Iterator groupListIterator = groupList.iterator();
 				while(groupListIterator.hasNext())
 				{
 				    Group group = (Group)groupListIterator.next();
 					InfoGlueGroup infoGlueGroup = new InfoGlueGroup(group.getGroupName(), group.getDescription(), this);
-					roles.add(infoGlueGroup);
+					groups.add(infoGlueGroup);
 				}
 				
-				InfoGluePrincipal infoGluePrincipal = new InfoGluePrincipal(systemUserVO.getUserName(), systemUserVO.getFirstName(), systemUserVO.getLastName(), systemUserVO.getEmail(), roles, groups, false, this);
+				InfoGluePrincipal infoGluePrincipal = new InfoGluePrincipal(systemUser.getUserName(), systemUser.getFirstName(), systemUser.getLastName(), systemUser.getEmail(), roles, groups, false, this);
 				
 				users.add(infoGluePrincipal);
 			}

@@ -248,6 +248,10 @@ public class SystemUserController extends BaseController
         return getAllVOObjects(SystemUserImpl.class, "userName", db);
     }
 
+    public List getSystemUserList(Database db) throws SystemException, Bug
+    {
+        return getAllObjects(SystemUserImpl.class, "userName", db);
+    }
     
 	public List getFilteredSystemUserVOList(String firstName, String lastName, String userName, String email, String[] roleNames) throws SystemException, Bug
 	{
