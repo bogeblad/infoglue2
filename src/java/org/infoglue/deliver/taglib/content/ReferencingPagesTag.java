@@ -32,7 +32,7 @@ public class ReferencingPagesTag extends ComponentLogicTag
 	private static final long serialVersionUID = 4050206323348354355L;
 
 	private Integer contentId;
-	private Integer maxPages = 50;
+	private Integer maxPages = new Integer(50);
 		
 
 	public int doEndTag() throws JspException
