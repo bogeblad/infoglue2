@@ -137,7 +137,7 @@ public final class DeliverContextListener implements ServletContextListener
 
 			String expireCacheAutomaticallyString = CmsPropertyHandler.getExpireCacheAutomatically();
 			if(expireCacheAutomaticallyString != null)
-				cacheController.setExpireCacheAutomatically(Boolean.getBoolean(expireCacheAutomaticallyString));
+				cacheController.setExpireCacheAutomatically(Boolean.parseBoolean(expireCacheAutomaticallyString));
 
 			String intervalString = CmsPropertyHandler.getCacheExpireInterval();
 			if(intervalString != null)

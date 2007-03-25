@@ -504,7 +504,7 @@ public class AdvancedImageRenderer
                     else if ( param.getName().equals( "boolean" ) )
                     {
                         method.invoke( this, new Object[]
-                        { new Boolean(Boolean.getBoolean( value.toString() )) } );
+                        { new Boolean(Boolean.parseBoolean( value.toString() )) } );
                     }
                 }
                 else if ( param.equals( String.class ) )

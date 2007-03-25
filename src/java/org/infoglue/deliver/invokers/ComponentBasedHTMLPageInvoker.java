@@ -391,7 +391,15 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 				if(inheritIndex > -1)
 				{    
 				    String inheritString = slotString.substring(inheritIndex + 9, slotString.indexOf("\"", inheritIndex + 9));
-				    inherit = Boolean.getBoolean(inheritString);
+				    inherit = Boolean.parseBoolean(inheritString);
+				}
+
+				boolean disableAccessControl = false;
+				int disableAccessControlIndex = slotString.indexOf("disableAccessControl");
+				if(disableAccessControlIndex > -1)
+				{    
+				    String disableAccessControlString = slotString.substring(disableAccessControlIndex + "disableAccessControl".length() + 2, slotString.indexOf("\"", disableAccessControlIndex + "disableAccessControl".length() + 2));
+				    disableAccessControl = Boolean.parseBoolean(disableAccessControlString);
 				}
 
 				String[] allowedComponentNamesArray = null;
@@ -413,6 +421,7 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 			  	Slot slot = new Slot();
 			  	slot.setId(slotId);
 			    slot.setInherit(inherit);
+			    slot.setDisableAccessControl(disableAccessControl);
 			  	slot.setAllowedComponentsArray(allowedComponentNamesArray);
 			  	slot.setDisallowedComponentsArray(disallowedComponentNamesArray);
 			    
@@ -688,7 +697,7 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 					if(inheritIndex > -1)
 					{    
 					    String inheritString = slot.substring(inheritIndex + 9, slot.indexOf("\"", inheritIndex + 9));
-					    inherit = Boolean.getBoolean(inheritString);
+					    inherit = Boolean.parseBoolean(inheritString);
 					}
 
 					List subComponents = getInheritedComponents(templateController.getDatabase(), templateController, component, templateController.getSiteNodeId(), id, inherit);
@@ -1169,10 +1178,17 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 							if(inheritIndex > -1)
 							{    
 							    String inheritString = slotString.substring(inheritIndex + 9, slotString.indexOf("\"", inheritIndex + 9));
-							    //logger.warn("inheritString:" + inheritString);
-							    inherit = Boolean.getBoolean(inheritString);
+							    inherit = Boolean.parseBoolean(inheritString);
 							}
 	
+							boolean disableAccessControl = false;
+							int disableAccessControlIndex = slotString.indexOf("disableAccessControl");
+							if(disableAccessControlIndex > -1)
+							{    
+							    String disableAccessControlString = slotString.substring(disableAccessControlIndex + "disableAccessControl".length() + 2, slotString.indexOf("\"", disableAccessControlIndex + "disableAccessControl".length() + 2));
+							    disableAccessControl = Boolean.parseBoolean(disableAccessControlString);
+							}
+
 							String[] allowedComponentNamesArray = null;
 							int allowedComponentNamesIndex = slotString.indexOf(" allowedComponentNames");
 							if(allowedComponentNamesIndex > -1)
@@ -1194,6 +1210,7 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 							Slot slot = new Slot();
 							slot.setId(slotId);
 							slot.setInherit(inherit);
+							slot.setDisableAccessControl(disableAccessControl);
 							slot.setAllowedComponentsArray(allowedComponentNamesArray);
 							slot.setDisallowedComponentsArray(disallowedComponentNamesArray);
 							

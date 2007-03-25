@@ -87,7 +87,7 @@ public class ViewPageFilter implements Filter
 
         String caseSensitiveString = CmsPropertyHandler.getCaseSensitiveRedirects();
         logger.info("caseSensitiveString:" + caseSensitiveString);
-        caseSensitive = Boolean.getBoolean(caseSensitiveString);
+        caseSensitive = Boolean.parseBoolean(caseSensitiveString);
         
         uriMatcher = URIMatcher.compilePatterns(splitString(filterURIs, ","), caseSensitive);
 
