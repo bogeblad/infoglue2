@@ -119,6 +119,8 @@ Abbreviated Changelog from 2.4.1 Final
 - Added tag to get all siteNodes referencing a certain content. Useful for finding where to show a detailed view
 - Improved performance hugely on getAllUsers on InfoGlueBasicAuthorizationModule.
 - Added tag for getting url that changes the current page language
+- Made it possible to in the ig:slot-declaration state if access rights should be disables on that slot. 
+  Helpful for when you wish to secure only some slots. No need to set access rights on all slots this way. Use disableAccessControl="true".
 
 -------------------------------------------------------------------------------------
 - InfoGlue 2.4.1 Final

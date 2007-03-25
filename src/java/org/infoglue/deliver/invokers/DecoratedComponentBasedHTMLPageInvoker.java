@@ -250,7 +250,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		    if(cmsUserName != null)
 			    principal = templateController.getPrincipal(cmsUserName);
 
-			boolean hasAccessToAccessRights = AccessRightController.getController().getIsPrincipalAuthorized(templateController.getDatabase(), principal, "ComponentEditor.ChangeSlotAccess", "");
+		    boolean hasAccessToAccessRights = AccessRightController.getController().getIsPrincipalAuthorized(templateController.getDatabase(), principal, "ComponentEditor.ChangeSlotAccess", "");
 			boolean hasAccessToAddComponent = AccessRightController.getController().getIsPrincipalAuthorized(templateController.getDatabase(), principal, "ComponentEditor.AddComponent", "" + component.getContentId() + "_" + component.getSlotName());
 			boolean hasAccessToDeleteComponent = AccessRightController.getController().getIsPrincipalAuthorized(templateController.getDatabase(), principal, "ComponentEditor.DeleteComponent", "" + component.getContentId() + "_" + component.getSlotName());
 			boolean hasSaveTemplateAccess = AccessRightController.getController().getIsPrincipalAuthorized(templateController.getDatabase(), principal, "StructureTool.SaveTemplate", "");
@@ -469,9 +469,20 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 				if(inheritIndex > -1)
 				{    
 				    String inheritString = slot.substring(inheritIndex + 9, slot.indexOf("\"", inheritIndex + 9));
-				    inherit = Boolean.getBoolean(inheritString);
+				    inherit = Boolean.parseBoolean(inheritString);
 				}
 				slotBean.setInherit(inherit);
+				
+				boolean disableAccessControl = false;
+				int disableAccessControlIndex = slot.indexOf("disableAccessControl");
+				if(disableAccessControlIndex > -1)
+				{    
+				    String disableAccessControlString = slot.substring(disableAccessControlIndex + "disableAccessControl".length() + 2, slot.indexOf("\"", disableAccessControlIndex + "disableAccessControl".length() + 2));
+				    disableAccessControl = Boolean.parseBoolean(disableAccessControlString);
+				}
+
+				slotBean.setDisableAccessControl(disableAccessControl);
+				component.setContainerSlot(slotBean);
 				
 				String subComponentString = "";
 				
@@ -490,6 +501,9 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 
 				String clickToAddHTML = "";
 				boolean hasAccessToAddComponent = AccessRightController.getController().getIsPrincipalAuthorized(templateController.getDatabase(), principal, "ComponentEditor.AddComponent", "" + component.getContentId() + "_" + id);
+				if(slotBean.getDisableAccessControl())
+					hasAccessToAddComponent = true;
+				
 				if(hasAccessToAddComponent)
 				    clickToAddHTML = getLocalizedString(templateController.getLocale(), "deliver.editOnSight.slotInstructionHTML");
 				
@@ -535,11 +549,12 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 								    for(int i=0; i < subComponent.getParentComponent().getSlotList().size(); i++)
 								    {
 								        Slot subSlotBean = (Slot)subComponent.getParentComponent().getSlotList().get(i);
-
+								        
 								        if(subSlotBean.getId() != null && subSlotBean.getId().equals(subComponent.getSlotName()))
 								        {
 								            allowedComponentNamesAsEncodedString = subSlotBean.getAllowedComponentsArrayAsUrlEncodedString();
 								            disallowedComponentNamesAsEncodedString = subSlotBean.getDisallowedComponentsArrayAsUrlEncodedString();
+								            subComponent.setContainerSlot(subSlotBean);
 								        }
 								    }
 
@@ -592,6 +607,10 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 
 				boolean hasAccessToAccessRights = AccessRightController.getController().getIsPrincipalAuthorized(templateController.getDatabase(), principal, "ComponentEditor.ChangeSlotAccess", "");
 				boolean hasAccessToDeleteComponent = AccessRightController.getController().getIsPrincipalAuthorized(templateController.getDatabase(), principal, "ComponentEditor.DeleteComponent", "" + component.getContentId() + "_" + id);
+				if(slotBean.getDisableAccessControl())
+				{
+					hasAccessToDeleteComponent = true;
+				}
 				
 			    StringBuffer sb = new StringBuffer();
 			    sb.append("<script type=\"text/javascript\">");
@@ -959,12 +978,18 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 	    String cmsUserName = (String)templateController.getHttpServletRequest().getSession().getAttribute("cmsUserName");
 	    if(cmsUserName != null)
 		    principal = templateController.getPrincipal(cmsUserName);
-
+	    
 		boolean hasAccessToAccessRights = AccessRightController.getController().getIsPrincipalAuthorized(templateController.getDatabase(), principal, "ComponentEditor.ChangeSlotAccess", "");
 		boolean hasAccessToAddComponent = AccessRightController.getController().getIsPrincipalAuthorized(templateController.getDatabase(), principal, "ComponentEditor.AddComponent", "" + (component.getParentComponent() == null ? component.getContentId() : component.getParentComponent().getContentId()) + "_" + component.getSlotName());
 		boolean hasAccessToDeleteComponent = AccessRightController.getController().getIsPrincipalAuthorized(templateController.getDatabase(), principal, "ComponentEditor.DeleteComponent", "" + (component.getParentComponent() == null ? component.getContentId() : component.getParentComponent().getContentId()) + "_" + component.getSlotName());
 	    boolean hasSaveTemplateAccess = AccessRightController.getController().getIsPrincipalAuthorized(templateController.getDatabase(), principal, "StructureTool.SaveTemplate", "");
-
+	    
+	    if(component.getContainerSlot() != null && component.getContainerSlot().getDisableAccessControl())
+	    {
+	    	hasAccessToAddComponent = true;
+	    	hasAccessToDeleteComponent = true;
+	    }
+	    
 	    if(component.getIsInherited())
 		{
 		    StringBuffer sb = new StringBuffer();
