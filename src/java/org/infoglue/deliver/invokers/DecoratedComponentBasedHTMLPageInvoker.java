@@ -883,7 +883,9 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 					while(optionsIterator.hasNext())
 					{
 					    ComponentPropertyOption option = (ComponentPropertyOption)optionsIterator.next();
-					    boolean isSame = componentProperty.getValue().equals(option.getValue());
+					    boolean isSame = false;
+					    if(componentProperty != null && componentProperty.getValue() != null && option != null && option.getValue() != null)
+					    	isSame = componentProperty.getValue().equals(option.getValue());
 					    sb.append("<option value=\"" + option.getValue() + "\"" + (isSame ? " selected=\"1\"" : "") + ">" + option.getName() + "</option>");
 					}
 					
