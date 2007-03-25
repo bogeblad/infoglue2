@@ -28,12 +28,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.infoglue.deliver.applications.databeans.Slot;
+
 public class InfoGlueComponent
 {	
 	private Integer id							= null;
 	private Integer contentId 					= null;
 	private String name 	 					= null;
 	private String slotName						= null;
+	private Slot containerSlot					= null;
 	private boolean isInherited 				= false;
 	private Map properties     					= new HashMap();
 	private Map tasks     						= new HashMap();
@@ -157,6 +160,16 @@ public class InfoGlueComponent
         this.slotName = slotName;
     }
     
+	public Slot getContainerSlot() 
+	{
+		return containerSlot;
+	}
+
+	public void setContainerSlot(Slot containerSlot) 
+	{
+		this.containerSlot = containerSlot;
+	}
+	
     public List getRestrictions()
     {
         return restrictions;

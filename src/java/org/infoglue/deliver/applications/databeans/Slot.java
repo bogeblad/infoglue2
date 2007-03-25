@@ -41,6 +41,7 @@ public class Slot
 	private String number;
 	private String name;
 	private boolean inherit;
+	private boolean disableAccessControl = false;
 	private List components = new ArrayList();
 	private String[] allowedComponentsArray = null;
 	private String[] disallowedComponentsArray = null;
@@ -93,6 +94,16 @@ public class Slot
     public void setInherit(boolean inherit)
     {
         this.inherit = inherit;
+    }
+
+    public void setDisableAccessControl(boolean disableAccessControl)
+    {
+        this.disableAccessControl = disableAccessControl;
+    }
+
+    public boolean getDisableAccessControl()
+    {
+        return this.disableAccessControl;
     }
 
     public String[] getAllowedComponentsArray()
