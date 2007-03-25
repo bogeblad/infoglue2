@@ -160,7 +160,7 @@ public class UserControllerProxy extends BaseController
     public InfoGluePrincipal getUser(String userName) throws ConstraintException, SystemException, Exception
     {
     	Object infoGluePrincipalCandidate = CacheController.getCachedObjectFromAdvancedCache("principalCache", userName, 300);
-    	InfoGluePrincipal infoGluePrincipal = (InfoGluePrincipal)CacheController.getCachedObjectFromAdvancedCache("principalCache", userName, 300);
+    	//InfoGluePrincipal infoGluePrincipal = (InfoGluePrincipal)CacheController.getCachedObjectFromAdvancedCache("principalCache", userName, 300);
     	if(infoGluePrincipalCandidate != null)
 		{
 	    	if(infoGluePrincipalCandidate instanceof NullObject)
@@ -169,7 +169,7 @@ public class UserControllerProxy extends BaseController
 				return (InfoGluePrincipal)infoGluePrincipalCandidate;
 		}
     	
-		infoGluePrincipal = getAuthorizationModule().getAuthorizedInfoGluePrincipal(userName);
+    	InfoGluePrincipal infoGluePrincipal = getAuthorizationModule().getAuthorizedInfoGluePrincipal(userName);
 	   
 		if(infoGluePrincipal != null)
 			CacheController.cacheObjectInAdvancedCache("principalCache", userName, infoGluePrincipal, new String[]{}, false);
