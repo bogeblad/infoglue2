@@ -579,12 +579,15 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 
 	private String renderComponent(InfoGlueComponent component, TemplateController templateController, Integer repositoryId, Integer siteNodeId, Integer languageId, Integer contentId, Integer metainfoContentId) throws Exception
 	{
-		//logger.warn("\n\n**** Rendering component ****");
-		//logger.warn("id: " + component.getId());
-		//logger.warn("contentId: " + component.getContentId());
-		//logger.warn("name: " + component.getName());
-		//logger.warn("slotName: " + component.getSlotName());
-
+		if(logger.isDebugEnabled())
+		{
+			logger.debug("\n\n**** Rendering component ****");
+			logger.debug("id: " + component.getId());
+			logger.debug("contentId: " + component.getContentId());
+			logger.debug("name: " + component.getName());
+			logger.debug("slotName: " + component.getSlotName());
+		}
+		
 		StringBuffer decoratedComponent = new StringBuffer();
 		
 		String componentEditorUrl = CmsPropertyHandler.getComponentEditorUrl();
@@ -597,6 +600,7 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 		String cacheResult 		 = templateController.getComponentLogic().getPropertyValue("CacheResult", true, false);
 		String updateInterval 	 = templateController.getComponentLogic().getPropertyValue("UpdateInterval", true, false);
 		String componentCacheKey = templateController.getComponentLogic().getPropertyValue("CacheKey", true, false);
+		
 		if(componentCacheKey == null || componentCacheKey.equals(""))
 			componentCacheKey = CmsPropertyHandler.getComponentKey();
 		
@@ -626,8 +630,15 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 			componentCacheKey = componentCacheKeySB.toString();
 			//componentCacheKey = templateController.getComponentLogic().getComponentDeliveryContext().getPageKey() + "_" + component.getId() + "_" + component.getSlotName() + "_" + component.getContentId() + "_" + component.getIsInherited();
 		}
-		
-		if(cacheResult == null || !cacheResult.equalsIgnoreCase("true"))
+
+		if(logger.isDebugEnabled())
+		{
+			logger.debug("cacheResult:" + cacheResult);
+			logger.debug("updateInterval:" + updateInterval);
+			logger.debug("componentCacheKey:" + componentCacheKey);
+		}
+
+	    if(cacheResult == null || !cacheResult.equalsIgnoreCase("true"))
 		{
 		    renderComponent = true;
 		}
@@ -638,26 +649,34 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 		    if(refresh != null && refresh.equalsIgnoreCase("true"))
 		        renderComponent = true;
 		}
-	    
-		//logger.warn("renderComponent:" + renderComponent);
+		
+		if(logger.isDebugEnabled())
+			logger.debug("renderComponent:" + renderComponent);
 	    
 	    if(!renderComponent)
 	    {
-	    	//logger.warn("componentCacheKey:" + componentCacheKey);
+			if(logger.isDebugEnabled())
+				logger.debug("componentCacheKey:" + componentCacheKey);
+
             if(updateInterval != null && !updateInterval.equals("") && !updateInterval.equals("-1"))
             {
-    	        decoratedComponent.append((String)CacheController.getCachedObjectFromAdvancedCache("componentCache", componentCacheKey, new Integer(updateInterval).intValue()));
+            	String cachedString = (String)CacheController.getCachedObjectFromAdvancedCache("componentCache", componentCacheKey, new Integer(updateInterval).intValue());
+            	if(cachedString != null)
+    	        	decoratedComponent.append(cachedString);
             }
 		    else
 		    {
-		        decoratedComponent.append((String)CacheController.getCachedObjectFromAdvancedCache("componentCache", componentCacheKey));
+		    	String cachedString = (String)CacheController.getCachedObjectFromAdvancedCache("componentCache", componentCacheKey);
+            	if(cachedString != null)
+            		decoratedComponent.append(cachedString);
 		    }
-            
-        	if(decoratedComponent == null || decoratedComponent.length() == 0)
+
+            if(decoratedComponent == null || decoratedComponent.length() == 0)
 		        renderComponent = true;
 		}
 	    
-	    //logger.info("Will we render component:" + component.getName() + ":" + renderComponent);
+		if(logger.isDebugEnabled())
+			logger.debug("Will we render component:" + component.getName() + ":" + renderComponent);
 	    
 		if(renderComponent)
 	    {
@@ -666,6 +685,8 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 			try
 			{
 			    String componentString = getComponentString(templateController, component.getContentId(), component); 
+				if(logger.isDebugEnabled())
+					logger.debug("componentString:" + componentString);
 			    
 				Map context = getDefaultContext();
 		    	context.put("templateLogic", templateController);
@@ -675,7 +696,10 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 				new VelocityTemplateProcessor().renderTemplate(context, cachedStream, componentString, false, component);
 				//t.printElapsedTime("Rendering of " + component.getName() + " took ");
 				componentString = cacheString.toString();
-				
+
+				if(logger.isDebugEnabled())
+					logger.debug("componentString:" + componentString);
+
 				int offset = 0;
 				int slotStartIndex = componentString.indexOf("<ig:slot", offset);
 				int slotStopIndex = 0;
@@ -733,11 +757,10 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 
 		        if(cacheComponent)
 		        {
-		        	
 		            if(this.getTemplateController().getOperatingMode().intValue() == 3 && !CmsPropertyHandler.getLivePublicationThreadClass().equalsIgnoreCase("org.infoglue.deliver.util.SelectiveLivePublicationThread"))
-		        	    CacheController.cacheObjectInAdvancedCache("componentCache", componentCacheKey, decoratedComponent, templateController.getComponentLogic().getComponentDeliveryContext().getAllUsedEntities(), false);
+		        	    CacheController.cacheObjectInAdvancedCache("componentCache", componentCacheKey, decoratedComponent.toString(), templateController.getComponentLogic().getComponentDeliveryContext().getAllUsedEntities(), false);
 		        	else
-		                CacheController.cacheObjectInAdvancedCache("componentCache", componentCacheKey, decoratedComponent, templateController.getComponentLogic().getComponentDeliveryContext().getAllUsedEntities(), true);
+		                CacheController.cacheObjectInAdvancedCache("componentCache", componentCacheKey, decoratedComponent.toString(), templateController.getComponentLogic().getComponentDeliveryContext().getAllUsedEntities(), true);
 		        }	    
 
 			}
@@ -749,8 +772,10 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 		}
 		
 		templateController.getDeliveryContext().getUsageListeners().remove(templateController.getComponentLogic().getComponentDeliveryContext());
-		//logger.info("decoratedComponent:" + decoratedComponent);
-		
+
+		if(logger.isDebugEnabled())
+			logger.debug("decoratedComponent:" + decoratedComponent.toString());
+
 		return decoratedComponent.toString();
 	}
 
