@@ -53,7 +53,18 @@
 
 <table border="0" cellpadding="2" cellspacing="0">
   <tr>
-    <td colspan="4" class="header">InfoGlue Delivery Status ($serverName)</td>
+    <td colspan="4" class="header">InfoGlue Status Page ($serverName)</td>
+  </tr>
+  <tr>
+    <td colspan="1" class="label">Version</td>
+    <td colspan="3" class="label">Release date</td>
+  </tr>
+  <tr>
+    <td colspan="1" class="text">2.4.6 Final</td>
+    <td colspan="3" class="text">2007-04-01</td>
+  </tr>
+  <tr>
+    <td colspan="4" class="text">&nbsp;</td>
   </tr>
   <tr class="label">
     <td>Item</td>
@@ -178,7 +189,6 @@
   <tr>
     <td colspan="4" class="text" align="center"><a href="ViewApplicationSettings.action">Click here for delivery settings</a></td>
   </tr>
--->
 
   <tr><td colspan="4">&nbsp;</td></tr>
   
@@ -199,6 +209,7 @@
 	    <td class="text" colspan="3">$sessionInfoBeanList.size</td>
 	  </tr>
   #end
+-->
 </table>
 </center>
 

@@ -1,5 +1,5 @@
 -------------------------------------------------------------------------------------
-- InfoGlue 2.4.5 Final
+- InfoGlue 2.4.6 Final
 -------------------------------------------------------------------------------------
 
 Release notes
@@ -121,6 +121,7 @@ Abbreviated Changelog from 2.4.1 Final
 - Added tag for getting url that changes the current page language
 - Made it possible to in the ig:slot-declaration state if access rights should be disables on that slot. 
   Helpful for when you wish to secure only some slots. No need to set access rights on all slots this way. Use disableAccessControl="true".
+- Tried to fix IE7-layout issues with tree navigation
 
 -------------------------------------------------------------------------------------
 - InfoGlue 2.4.1 Final
