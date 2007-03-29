@@ -111,7 +111,7 @@
 			// alert(treeView().width)
 			treeView().width  = w_newWidth - 10;
 			treeView().height = w_newHeight - 50;
-
+			treeView().style.height = w_newHeight - 50;
         }
 
 		window.onResize = resize;
@@ -125,7 +125,7 @@
 <body class="structuretool" onload="javascript:reloadMain();" onResize="javascript:resize();">
 
 <div style="LEFT:0px; RIGHT:0px; position:absolute; TOP:0px; height:100%; visibility:visible; z-index:0">
-<table class="siteNodetool" cellpadding="0" cellspacing="0" border="0" width="100%" height="100%">
+<table class="structuretool" cellpadding="0" cellspacing="0" border="0" width="100%" height="100%">
 <tr>
 	<td bgcolor="#FFFFFF"><img src="images/trans.gif" width="1" height="1"></td>
 	<td valign="top" width="100%" height="100%"></td>

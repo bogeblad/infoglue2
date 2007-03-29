@@ -137,6 +137,7 @@
 			//window.scroll(0,0);
         	treeView().width  = w_newWidth - 10;
 			treeView().height = w_newHeight - 50;
+			treeView().style.height = w_newHeight - 50;
 		}
 
 		window.onResize = resize;
