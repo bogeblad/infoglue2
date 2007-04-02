@@ -253,7 +253,7 @@
     <field name="roleName" type="java.lang.String">
       <sql name="roleName" type="varchar" dirty="check" />
     </field>
-    <field name="accessRight" type="org.infoglue.cms.entities.management.impl.simple.AccessRightImpl">
+    <field name="accessRight" type="org.infoglue.cms.entities.management.impl.simple.AccessRightImpl" lazy="true">
       <sql name="accessRightId"/>
     </field>
   </class>
@@ -268,7 +268,7 @@
     <field name="groupName" type="java.lang.String">
       <sql name="groupName" type="varchar" dirty="check" />
     </field>
-    <field name="accessRight" type="org.infoglue.cms.entities.management.impl.simple.AccessRightImpl">
+    <field name="accessRight" type="org.infoglue.cms.entities.management.impl.simple.AccessRightImpl" lazy="true">
       <sql name="accessRightId"/>
     </field>
   </class>
@@ -283,7 +283,7 @@
     <field name="userName" type="java.lang.String">
       <sql name="userName" type="varchar" dirty="check" />
     </field>
-    <field name="accessRight" type="org.infoglue.cms.entities.management.impl.simple.AccessRightImpl">
+    <field name="accessRight" type="org.infoglue.cms.entities.management.impl.simple.AccessRightImpl" lazy="true">
       <sql name="accessRightId"/>
     </field>
   </class>
