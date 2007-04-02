@@ -173,75 +173,89 @@ public class InconsistenciesController extends BaseController
 	
 	private void addContentInconsistency(List inconsistencies, RegistryVO registryVO, Database db) throws Exception
 	{
-		String referencingEntityName = registryVO.getReferencingEntityName();
-		String referencingEntityCompletingName = registryVO.getReferencingEntityCompletingName();
-		Integer referencingEntityId = new Integer(registryVO.getReferencingEntityId());
-		Integer referencingEntityCompletingId = new Integer(registryVO.getReferencingEntityCompletingId());
-		
-		if(referencingEntityCompletingName.equals(SiteNode.class.getName()))
+		try
 		{
-			SiteNodeVO siteNodeVO = SiteNodeController.getController().getSiteNodeVOWithId(referencingEntityCompletingId, db);
-			if(siteNodeVO != null)
+			String referencingEntityName = registryVO.getReferencingEntityName();
+			String referencingEntityCompletingName = registryVO.getReferencingEntityCompletingName();
+			Integer referencingEntityId = new Integer(registryVO.getReferencingEntityId());
+			Integer referencingEntityCompletingId = new Integer(registryVO.getReferencingEntityCompletingId());
+			
+			if(referencingEntityCompletingName.equals(SiteNode.class.getName()))
 			{
-				LanguageVO masterLanguageVO = LanguageController.getController().getMasterLanguage(siteNodeVO.getRepositoryId());
-				SiteNodeVersionVO siteNodeVersionVO = SiteNodeVersionController.getController().getLatestActiveSiteNodeVersionVO(db, siteNodeVO.getId());
-				
-				if(siteNodeVersionVO != null && siteNodeVersionVO.getId().intValue() == referencingEntityId.intValue())
-					inconsistencies.add(registryVO);
+				SiteNodeVO siteNodeVO = SiteNodeController.getController().getSiteNodeVOWithId(referencingEntityCompletingId, db);
+				if(siteNodeVO != null)
+				{
+					LanguageVO masterLanguageVO = LanguageController.getController().getMasterLanguage(siteNodeVO.getRepositoryId());
+					SiteNodeVersionVO siteNodeVersionVO = SiteNodeVersionController.getController().getLatestActiveSiteNodeVersionVO(db, siteNodeVO.getId());
+					
+					if(siteNodeVersionVO != null && siteNodeVersionVO.getId().intValue() == referencingEntityId.intValue())
+						inconsistencies.add(registryVO);
+				}
+			}
+			else if(referencingEntityCompletingName.equals(Content.class.getName()))
+			{
+				ContentVO contentVO = ContentController.getContentController().getContentVOWithId(new Integer(registryVO.getReferencingEntityCompletingId()), db);
+				if(contentVO != null)
+				{
+					LanguageVO masterLanguageVO = LanguageController.getController().getMasterLanguage(contentVO.getRepositoryId());
+					ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentVO.getId(), masterLanguageVO.getId(), db);
+					
+					if(contentVersionVO != null && contentVersionVO.getId().intValue() == referencingEntityId.intValue())
+						inconsistencies.add(registryVO);
+				}			
+			}
+			else
+			{
+				System.out.println("The registry contained a not supported referencingEntityCompletingName:" + referencingEntityCompletingName);			
 			}
 		}
-		else if(referencingEntityCompletingName.equals(Content.class.getName()))
+		catch(Exception e)
 		{
-			ContentVO contentVO = ContentController.getContentController().getContentVOWithId(new Integer(registryVO.getReferencingEntityCompletingId()), db);
-			if(contentVO != null)
-			{
-				LanguageVO masterLanguageVO = LanguageController.getController().getMasterLanguage(contentVO.getRepositoryId());
-				ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentVO.getId(), masterLanguageVO.getId(), db);
-				
-				if(contentVersionVO != null && contentVersionVO.getId().intValue() == referencingEntityId.intValue())
-					inconsistencies.add(registryVO);
-			}			
-		}
-		else
-		{
-			System.out.println("The registry contained a not supported referencingEntityCompletingName:" + referencingEntityCompletingName);			
+			System.out.println("There seems to be a problem with finding the inconsistency for registryVO " + registryVO.getRegistryId() + ":" + e.getMessage());
 		}
 	}
 
 	private void addSiteNodeInconsistency(List inconsistencies, RegistryVO registryVO, Database db) throws Exception
 	{
-		String referencingEntityName = registryVO.getReferencingEntityName();
-		String referencingEntityCompletingName = registryVO.getReferencingEntityCompletingName();
-		Integer referencingEntityId = new Integer(registryVO.getReferencingEntityId());
-		Integer referencingEntityCompletingId = new Integer(registryVO.getReferencingEntityCompletingId());
-		
-		if(referencingEntityCompletingName.equals(SiteNode.class.getName()))
+		try
 		{
-			SiteNodeVO siteNodeVO = SiteNodeController.getController().getSiteNodeVOWithId(new Integer(registryVO.getReferencingEntityCompletingId()), db);
-			if(siteNodeVO != null)
+			String referencingEntityName = registryVO.getReferencingEntityName();
+			String referencingEntityCompletingName = registryVO.getReferencingEntityCompletingName();
+			Integer referencingEntityId = new Integer(registryVO.getReferencingEntityId());
+			Integer referencingEntityCompletingId = new Integer(registryVO.getReferencingEntityCompletingId());
+			
+			if(referencingEntityCompletingName.equals(SiteNode.class.getName()))
 			{
-				LanguageVO masterLanguageVO = LanguageController.getController().getMasterLanguage(siteNodeVO.getRepositoryId());
-				SiteNodeVersionVO siteNodeVersionVO = SiteNodeVersionController.getController().getLatestActiveSiteNodeVersionVO(db, siteNodeVO.getId());
-				
-				if(siteNodeVersionVO != null && siteNodeVersionVO.getId().intValue() == referencingEntityId.intValue())
-					inconsistencies.add(registryVO);
+				SiteNodeVO siteNodeVO = SiteNodeController.getController().getSiteNodeVOWithId(new Integer(registryVO.getReferencingEntityCompletingId()), db);
+				if(siteNodeVO != null)
+				{
+					LanguageVO masterLanguageVO = LanguageController.getController().getMasterLanguage(siteNodeVO.getRepositoryId());
+					SiteNodeVersionVO siteNodeVersionVO = SiteNodeVersionController.getController().getLatestActiveSiteNodeVersionVO(db, siteNodeVO.getId());
+					
+					if(siteNodeVersionVO != null && siteNodeVersionVO.getId().intValue() == referencingEntityId.intValue())
+						inconsistencies.add(registryVO);
+				}
+			}
+			else if(referencingEntityCompletingName.equals(Content.class.getName()))
+			{
+				ContentVO contentVO = ContentController.getContentController().getContentVOWithId(new Integer(registryVO.getReferencingEntityCompletingId()), db);
+				if(contentVO != null)
+				{
+					LanguageVO masterLanguageVO = LanguageController.getController().getMasterLanguage(contentVO.getRepositoryId());
+					ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentVO.getId(), masterLanguageVO.getId(), db);
+					
+					if(contentVersionVO != null && contentVersionVO.getId().intValue() == referencingEntityId.intValue())
+						inconsistencies.add(registryVO);
+				}			
+			}
+			else
+			{
+				System.out.println("The registry contained a not supported referencingEntityCompletingName:" + referencingEntityCompletingName);			
 			}
 		}
-		else if(referencingEntityCompletingName.equals(Content.class.getName()))
+		catch(Exception e)
 		{
-			ContentVO contentVO = ContentController.getContentController().getContentVOWithId(new Integer(registryVO.getReferencingEntityCompletingId()), db);
-			if(contentVO != null)
-			{
-				LanguageVO masterLanguageVO = LanguageController.getController().getMasterLanguage(contentVO.getRepositoryId());
-				ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentVO.getId(), masterLanguageVO.getId(), db);
-				
-				if(contentVersionVO != null && contentVersionVO.getId().intValue() == referencingEntityId.intValue())
-					inconsistencies.add(registryVO);
-			}			
-		}
-		else
-		{
-			System.out.println("The registry contained a not supported referencingEntityCompletingName:" + referencingEntityCompletingName);			
+			System.out.println("There seems to be a problem with finding the inconsistency for registryVO " + registryVO.getRegistryId() + ":" + e.getMessage());
 		}
 	}
 
