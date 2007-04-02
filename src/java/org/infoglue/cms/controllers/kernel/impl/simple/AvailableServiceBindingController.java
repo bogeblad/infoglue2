@@ -36,6 +36,7 @@ import org.infoglue.cms.entities.management.AvailableServiceBindingVO;
 import org.infoglue.cms.entities.management.SiteNodeTypeDefinition;
 import org.infoglue.cms.entities.management.impl.simple.AvailableServiceBindingImpl;
 import org.infoglue.cms.entities.management.impl.simple.ServiceDefinitionImpl;
+import org.infoglue.cms.entities.management.impl.simple.SmallAvailableServiceBindingImpl;
 import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
@@ -63,7 +64,7 @@ public class AvailableServiceBindingController extends BaseController
 	
     public AvailableServiceBindingVO getAvailableServiceBindingVOWithId(Integer availableServiceBindingId) throws SystemException, Bug
     {
-		return (AvailableServiceBindingVO)getVOWithId(AvailableServiceBindingImpl.class, availableServiceBindingId);
+		return (AvailableServiceBindingVO)getVOWithId(SmallAvailableServiceBindingImpl.class, availableServiceBindingId);
     }
 
 	
@@ -115,7 +116,7 @@ public class AvailableServiceBindingController extends BaseController
     	deleteEntity(AvailableServiceBindingImpl.class, availableServiceBindingVO.getAvailableServiceBindingId());
     }        
 
-
+    
     public AvailableServiceBinding getAvailableServiceBindingWithId(Integer availableServiceBindingId, Database db) throws SystemException, Bug
     {
 		return (AvailableServiceBinding) getObjectWithId(AvailableServiceBindingImpl.class, availableServiceBindingId, db);
@@ -129,7 +130,7 @@ public class AvailableServiceBindingController extends BaseController
 
     public List getAvailableServiceBindingVOList() throws SystemException, Bug
     {
-        return getAllVOObjects(AvailableServiceBindingImpl.class, "availableServiceBindingId");
+        return getAllVOObjects(SmallAvailableServiceBindingImpl.class, "availableServiceBindingId");
     }
     
  
@@ -159,9 +160,7 @@ public class AvailableServiceBindingController extends BaseController
 	
 			try
 			{
-				AvailableServiceBinding AvailableServiceBinding = getAvailableServiceBindingWithName(name, db, true);
-				if(AvailableServiceBinding != null)
-					availableServiceBindingVO = AvailableServiceBinding.getValueObject();
+				availableServiceBindingVO = getAvailableServiceBindingVOWithName(name, db);
 		
 				CacheController.cacheObject("availableServiceBindingCache", key, availableServiceBindingVO);
 
@@ -186,7 +185,7 @@ public class AvailableServiceBindingController extends BaseController
      * @throws Bug
      */
     
-	public AvailableServiceBindingVO getAvailableServiceBindingVOWithName(String name, Database db) throws SystemException, Bug
+	public AvailableServiceBindingVO getAvailableServiceBindingVOWithName(String name, Database db) throws SystemException, Bug, Exception
 	{
 	    String key = "" + name;
 		logger.info("key:" + key);
@@ -197,11 +196,26 @@ public class AvailableServiceBindingController extends BaseController
 		}
 		else
 		{
-		
+    		OQLQuery oql = db.getOQLQuery( "SELECT asb FROM org.infoglue.cms.entities.management.impl.simple.SmallAvailableServiceBindingImpl asb WHERE asb.name = $1");
+    		oql.bind(name);
+			
+			QueryResults results = oql.execute(Database.ReadOnly);
+			if (results.hasMore()) 
+        	{
+        		AvailableServiceBinding availableServiceBinding = (AvailableServiceBinding)results.next();
+				availableServiceBindingVO = availableServiceBinding.getValueObject();
+				logger.info("Found availableServiceBinding:" + availableServiceBindingVO.getName());
+        	}
+			
+			results.close();
+			oql.close();
+
+			/*
 			AvailableServiceBinding AvailableServiceBinding = getAvailableServiceBindingWithName(name, db, true);
 			if(AvailableServiceBinding != null)
 				availableServiceBindingVO = AvailableServiceBinding.getValueObject();
-	
+			*/
+			
 			CacheController.cacheObject("availableServiceBindingCache", key, availableServiceBindingVO);
 		}
 		
@@ -218,7 +232,7 @@ public class AvailableServiceBindingController extends BaseController
 	 * @throws SystemException
 	 * @throws Bug
 	 */
-
+	
 	public AvailableServiceBinding getAvailableServiceBindingWithName(String name, Database db, boolean readOnly) throws SystemException, Bug
 	{
 		AvailableServiceBinding availableServiceBinding = null;

@@ -140,14 +140,14 @@ public class ViewSiteNodeAction extends InfoGlueAbstractAction
 	    {
 	        boolean hadMetaInfo = false;
 	        
-			AvailableServiceBinding availableServiceBinding = AvailableServiceBindingController.getController().getAvailableServiceBindingWithName("Meta information", db, false);
+			AvailableServiceBindingVO availableServiceBindingVO = AvailableServiceBindingController.getController().getAvailableServiceBindingVOWithName("Meta information", db);
 			
 			Collection serviceBindings = SiteNodeVersionController.getServiceBindningList(this.siteNodeVersionVO.getId(), db);
 			Iterator serviceBindingIterator = serviceBindings.iterator();
 			while(serviceBindingIterator.hasNext())
 			{
 				ServiceBinding serviceBinding = (ServiceBinding)serviceBindingIterator.next();
-				if(serviceBinding.getValueObject().getAvailableServiceBindingId().intValue() == availableServiceBinding.getAvailableServiceBindingId().intValue())
+				if(serviceBinding.getValueObject().getAvailableServiceBindingId().intValue() == availableServiceBindingVO.getAvailableServiceBindingId().intValue())
 				{
 					List boundContents = ContentController.getBoundContents(db, serviceBinding.getServiceBindingId()); 			
 					if(boundContents.size() > 0)

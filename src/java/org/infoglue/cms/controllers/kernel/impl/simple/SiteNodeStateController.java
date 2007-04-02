@@ -42,6 +42,7 @@ import org.infoglue.cms.entities.management.AccessRightUser;
 import org.infoglue.cms.entities.management.AccessRightUserVO;
 import org.infoglue.cms.entities.management.AccessRightVO;
 import org.infoglue.cms.entities.management.AvailableServiceBinding;
+import org.infoglue.cms.entities.management.AvailableServiceBindingVO;
 import org.infoglue.cms.entities.management.InterceptionPoint;
 import org.infoglue.cms.entities.management.Language;
 import org.infoglue.cms.entities.structure.Qualifyer;
@@ -263,9 +264,9 @@ public class SiteNodeStateController extends BaseController
 
         	Integer metaInfoAvailableServiceBindingId = null;
     		Integer serviceBindingId = null;
-    		AvailableServiceBinding availableServiceBinding = AvailableServiceBindingController.getController().getAvailableServiceBindingWithName("Meta information", db, true);
-    		if(availableServiceBinding != null)
-    			metaInfoAvailableServiceBindingId = availableServiceBinding.getAvailableServiceBindingId();
+    		AvailableServiceBindingVO availableServiceBindingVO = AvailableServiceBindingController.getController().getAvailableServiceBindingVOWithName("Meta information", db);
+    		if(availableServiceBindingVO != null)
+    			metaInfoAvailableServiceBindingId = availableServiceBindingVO.getAvailableServiceBindingId();
 
         	logger.info("after loading service binding for meta info");
 

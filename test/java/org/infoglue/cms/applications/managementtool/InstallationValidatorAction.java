@@ -52,6 +52,7 @@ import org.infoglue.cms.entities.management.AccessRightGroupVO;
 import org.infoglue.cms.entities.management.AccessRightRoleVO;
 import org.infoglue.cms.entities.management.AccessRightUserVO;
 import org.infoglue.cms.entities.management.AvailableServiceBinding;
+import org.infoglue.cms.entities.management.AvailableServiceBindingVO;
 import org.infoglue.cms.entities.management.Language;
 import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.entities.management.ValidationItem;
@@ -358,7 +359,7 @@ public class InstallationValidatorAction extends InfoGlueAbstractAction
 	            List siteNodes = SiteNodeController.getController().getSiteNodesWithoutMetaInfoContentId(db);
 	            Iterator siteNodesIterator = siteNodes.iterator();
 	            
-	            AvailableServiceBinding availableServiceBinding = AvailableServiceBindingController.getController().getAvailableServiceBindingWithName("Meta information", db, true);
+	            AvailableServiceBindingVO availableServiceBinding = AvailableServiceBindingController.getController().getAvailableServiceBindingVOWithName("Meta information", db);
     			Integer metaInfoAvailableServiceBindingId = null;
     			if(availableServiceBinding != null)
     			    metaInfoAvailableServiceBindingId = availableServiceBinding.getAvailableServiceBindingId();
