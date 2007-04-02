@@ -100,17 +100,25 @@
 	    function resize() 
 	    {
 	    	//alert("resize");
-	    	var w_newWidth,w_newHeight;
-		    var w_maxWidth=1600, w_maxHeight=1200;
+	    	var w_newWidth;
+	    	var w_newHeight;
+		    var w_maxWidth  = 1600;
+		    var w_maxHeight = 1200;
 
-			if (window.innerWidth || window.innerHeight){ 
+			if (window.innerWidth || window.innerHeight)
+			{ 
 				w_newWidth = window.innerWidth; 
 				w_newHeight = window.innerHeight; 
 			} 
+			
 			//IE Mozilla 
-			if (document.body.clientWidth || document.body.clientHeight){ 
+			if (document.body.clientWidth || document.body.clientHeight)
+			{ 
 				w_newWidth = document.body.clientWidth; 
-				w_newHeight = document.body.clientHeight - 10; 
+				if(document.body.clientHeight == 0)
+					w_newHeight = document.documentElement.clientHeight - 10;
+				else
+					w_newHeight = document.body.clientHeight - 10; 
 			} 
 			
  		    if (w_newWidth>w_maxWidth)
@@ -124,32 +132,40 @@
 			
 			//alert("w_newWidth:" + w_newWidth);
 			//alert("w_newHeight:" + w_newHeight);
+			
 			try 
 			{
 				document.getElementById("loadingDiv").style.visibility = "hidden";
 				treeView().setSize(w_newWidth - 10,w_newHeight - 50);
 				treeView().style.visibility = "visible";
 			}
-			catch(e)
+			catch(err)
 			{
+				//alert("Error:" + err.description);
 			}
 			
 			//window.scroll(0,0);
-        	treeView().width  = w_newWidth - 10;
-			treeView().height = w_newHeight - 50;
-			treeView().style.height = w_newHeight - 50;
+			try 
+			{
+				var tree = treeView();
+	        	treeView().width  = w_newWidth - 10;
+				treeView().height = w_newHeight - 50;
+			}
+			catch(err)
+			{
+				//alert("Error:" + err.description);
+			}
 		}
 
 		window.onResize = resize;
 		window.onLoad   = resize;
-		
 	-->
 	</script>
 	
 	<link rel="stylesheet" type="text/css" href="css/cms.css" /> 
 </head>
 
-<body class="contenttool" onload="javascript:reloadMain();" onresize="javascript:resize();">
+<body class="contenttool" onload="javascript:reloadMain();" onResize="javascript:resize();">
 
 <div id="buffer" style="top: 0; left: 0"></div>
 

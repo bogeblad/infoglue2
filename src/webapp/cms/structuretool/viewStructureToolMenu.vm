@@ -73,17 +73,26 @@
 	   	function resize() 
 	    {
 
-		    var w_newWidth,w_newHeight;
-		    var w_maxWidth=1600, w_maxHeight=1200;
+		    var w_newWidth;
+		    var w_newHeight;
+		    var w_maxWidth  = 1600;
+		    var w_maxHeight = 1200;
 		
-			if (window.innerWidth || window.innerHeight){ 
+			if (window.innerWidth || window.innerHeight)
+			{ 
 				w_newWidth = window.innerWidth; 
 				w_newHeight = window.innerHeight; 
 			} 
+
 			//IE Mozilla 
-			if (document.body.clientWidth || document.body.clientHeight){ 
+			if (document.body.clientWidth || document.body.clientHeight)
+			{ 
 				w_newWidth = document.body.clientWidth; 
-				w_newHeight = document.body.clientHeight - 10; 
+				//w_newHeight = document.body.clientHeight - 10; 
+				if(document.body.clientHeight == 0)
+					w_newHeight = document.documentElement.clientHeight - 10;
+				else
+					w_newHeight = document.body.clientHeight - 10; 
 			}
 			
  		    if (w_newWidth>w_maxWidth)
@@ -108,10 +117,15 @@
 			}
 					
 			//window.scroll(0,0);
-			// alert(treeView().width)
-			treeView().width  = w_newWidth - 10;
-			treeView().height = w_newHeight - 50;
-			treeView().style.height = w_newHeight - 50;
+			try 
+			{
+				treeView().width  = w_newWidth - 10;
+				treeView().height = w_newHeight - 50;
+				treeView().style.height = w_newHeight - 50;
+			}
+			catch(e)
+			{
+			}
         }
 
 		window.onResize = resize;
@@ -135,7 +149,7 @@
 </div>
 
 <!-- This div is the tree before it's loaded.... -->
-<div style="LEFT:2px; RIGHT:2px; position:absolute; TOP:1px; BOTTOM:6px; height:100%; visibility:visible; z-index:0">
+<div style="LEFT:2px; RIGHT:2px; position:absolute; TOP:1px; BOTTOM:6px; height:100%; visibility:visible; z-index:0;">
 <table class="structuretool" cellpadding="0" cellspacing="0" border="0" width="100%" height="100%">
 <tr>
 	<td height="1" colspan="3" bgcolor="#FFFFFF"><img src="images/trans.gif" width="1" height="1"></td>
@@ -168,7 +182,7 @@
 </div>
 
 
-<div id="treeDiv" style="LEFT:-500px; RIGHT:500px; position:absolute; TOP:1px; BOTTOM:6px; height:100%; visibility:visible; z-index:0">
+<div id="treeDiv" style="LEFT:-500px; RIGHT:500px; position:absolute; TOP:1px; BOTTOM:6px; height:100%; visibility:visible; z-index:0; background-color: #F0E1B4;">
 <table class="structuretool" cellpadding="0" cellspacing="0" border="0" width="100%" height="100%">
 <tr>
 	<td height="1" colspan="3" bgcolor="#FFFFFF"><img src="images/trans.gif" width="1" height="1"></td>
@@ -179,7 +193,7 @@
 		
 		<table cellpadding="0" cellspacing="0" border="0">
 		<tr>
-			<td class="menu"><img src="images/trans.gif" height="15"></td>
+			<td class="menu" style="background-color: #F0E1B4;"><img src="images/trans.gif" height="15"></td>
 		</tr>
 		<tr>
 			<td class="menu">    
@@ -190,7 +204,6 @@
 					#end					
 			</td>
 		</tr>	
-		
 		</table>
 	
 	</td>	
