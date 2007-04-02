@@ -982,6 +982,12 @@ public class NodeDeliveryController extends BaseDeliveryController
 			{
 				SiteNode siteNode = getSiteNode(db, siteNodeId);
 				metaInfoContentId = siteNode.getMetaInfoContentId();
+
+				if(logger.isDebugEnabled())
+				{
+					logger.debug("siteNode for id: " + siteNodeId + "=" + siteNode);
+					logger.debug("metaInfoContentId: " + metaInfoContentId);
+				}
 			}
 			
 			if(metaInfoContentId != null && metaInfoContentId.intValue() > -1)
@@ -991,6 +997,8 @@ public class NodeDeliveryController extends BaseDeliveryController
 			}
 			else
 			{
+				logger.warn("Entering the old logic - bad for performance - why is siteNode with id:" + siteNodeId + " not getting it's metaInfoContentId:" + metaInfoContentId);
+
 				AvailableServiceBindingVO availableServiceBindingVO = AvailableServiceBindingDeliveryController.getAvailableServiceBindingDeliveryController().getAvailableServiceBindingVO(availableServiceBindingName, db);
 	        
 			    List qualifyerList = new ArrayList();
