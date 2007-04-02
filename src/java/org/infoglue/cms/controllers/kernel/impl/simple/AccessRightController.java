@@ -781,7 +781,8 @@ public class AccessRightController extends BaseController
 		    while(accessRightsUsersIterator.hasNext())
 		    {
 		        AccessRightUser accessRightUser = (AccessRightUser)accessRightsUsersIterator.next();
-
+		        
+		        accessRightUser.getAccessRight().getUsers().remove(accessRightUser);
 		        //if(accessRightUser.getAccessRight().)
 		        //db.remove(accessRightUser.getAccessRight());
 
