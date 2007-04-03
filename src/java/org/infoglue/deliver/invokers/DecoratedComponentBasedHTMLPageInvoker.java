@@ -823,14 +823,14 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 				if(hasAccessToProperty)
 					sb.append("<a class=\"componentEditorLink\" href=\"javascript:window.open('" + assignUrl + "','Assign','toolbar=no,status=yes,scrollbars=yes,location=no,menubar=no,directories=no,resizable=no,width=300,height=600,left=5,top=5');\">");
 				
-				sb.append("" + (componentProperty.getValue().equalsIgnoreCase("") ? "Undefined" : componentProperty.getValue()));
+				sb.append("" + (componentProperty.getValue() == null || componentProperty.getValue().equalsIgnoreCase("") ? "Undefined" : componentProperty.getValue()));
 				
 				if(hasAccessToProperty)
 					sb.append("</a>");
 				
 				sb.append("</td>");
 				
-				if(componentProperty.getValue().equalsIgnoreCase("Undefined"))
+				if(componentProperty.getValue() != null && componentProperty.getValue().equalsIgnoreCase("Undefined"))
 				{	
 					if(hasAccessToProperty && createUrl != null)
 						sb.append("			<td class=\"igtd\" width=\"16\"><a class=\"componentEditorLink\" href=\"" + createUrl + "\"><img src=\"" + componentEditorUrl + "/images/createContent.gif\" border=\"0\" alt=\"Create new content to show\"></a></td>");
