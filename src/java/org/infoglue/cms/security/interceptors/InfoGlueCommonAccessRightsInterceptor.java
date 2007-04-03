@@ -233,7 +233,7 @@ public class InfoGlueCommonAccessRightsInterceptor implements InfoGlueIntercepto
 			if(!siteNodeVersionVO.getVersionModifier().equalsIgnoreCase(infoGluePrincipal.getName()))
 			{
 				Integer protectedSiteNodeVersionId = SiteNodeVersionControllerProxy.getSiteNodeVersionControllerProxy().getProtectedSiteNodeVersionId(siteNodeVersionVO.getId());
-				if(protectedSiteNodeVersionId != null && !AccessRightController.getController().getIsPrincipalAuthorized(infoGluePrincipal, "SiteNodeVersion.CreateSiteNode", siteNodeVersionVO.getSiteNodeVersionId().toString()))
+				if(protectedSiteNodeVersionId != null && !AccessRightController.getController().getIsPrincipalAuthorized(infoGluePrincipal, "SiteNodeVersion.CreateSiteNode", protectedSiteNodeVersionId.toString()))
 					ceb.add(new AccessConstraintException("SiteNodeVersion.siteNodeId", "1002"));
 			}
 		}
@@ -397,7 +397,7 @@ public class InfoGlueCommonAccessRightsInterceptor implements InfoGlueIntercepto
 			if(!siteNodeVersionVO.getVersionModifier().equalsIgnoreCase(infoGluePrincipal.getName()))
 			{
 				Integer protectedSiteNodeVersionId = SiteNodeVersionControllerProxy.getSiteNodeVersionControllerProxy().getProtectedSiteNodeVersionId(siteNodeVersionVO.getId());
-				if(protectedSiteNodeVersionId != null && !AccessRightController.getController().getIsPrincipalAuthorized(infoGluePrincipal, "SiteNodeVersion.CreateSiteNode", siteNodeVersionVO.getSiteNodeVersionId().toString()))
+				if(protectedSiteNodeVersionId != null && !AccessRightController.getController().getIsPrincipalAuthorized(infoGluePrincipal, "SiteNodeVersion.CreateSiteNode", protectedSiteNodeVersionId.toString()))
 					ceb.add(new AccessConstraintException("SiteNodeVersion.siteNodeId", "1002"));
 			}
 		}
