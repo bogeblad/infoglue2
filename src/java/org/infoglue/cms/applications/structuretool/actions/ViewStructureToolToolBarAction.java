@@ -386,7 +386,7 @@ public class ViewStructureToolToolBarAction extends InfoGlueAbstractAction
 	        workingUrl = CmsPropertyHandler.getPreviewDeliveryUrl();
 	    }
 	    
-		ImageButton imageButton = new ImageButton(true, "javascript:openPopup('" + workingUrl + "?siteNodeId=" + this.siteNodeId + "&repositoryName=" + URLEncoder.encode(repositoryVO.getName(), "UTF-8") + "&cmsUserName=" + formatter.encodeURI(this.getInfoGluePrincipal().getName()) + "' , 'SiteNode', 'width=800,height=600,resizable=yes,toolbar=yes,scrollbars=yes,status=yes,location=yes,menubar=yes');", getLocalizedString(getSession().getLocale(), "images.structuretool.buttons.previewSiteNode"), "Preview siteNode");
+		ImageButton imageButton = new ImageButton(true, "javascript:openPopup('" + workingUrl + "?siteNodeId=" + this.siteNodeId/* + "&repositoryName=" + URLEncoder.encode(repositoryVO.getName(), "UTF-8") + "&cmsUserName=" + formatter.encodeURI(this.getInfoGluePrincipal().getName())*/ + "' , 'SiteNode', 'width=800,height=600,resizable=yes,toolbar=yes,scrollbars=yes,status=yes,location=yes,menubar=yes');", getLocalizedString(getSession().getLocale(), "images.structuretool.buttons.previewSiteNode"), "Preview siteNode");
 		
 		
 		return imageButton;
