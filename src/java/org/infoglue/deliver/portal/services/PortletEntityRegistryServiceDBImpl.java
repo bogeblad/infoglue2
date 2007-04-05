@@ -184,7 +184,7 @@ public class PortletEntityRegistryServiceDBImpl extends PortletEntityRegistrySer
      * @see org.apache.pluto.portalImpl.services.portletentityregistry.PortletEntityRegistryService#load()
      */
     public void load() throws IOException {
-        LOG.warn("Loading PortletEntityRegistry...");
+        LOG.warn("Loading PortletEntityRegistry start...");
         try {
             DigitalAsset da = getPortletRegistry();
             if (da == null) {
@@ -201,6 +201,7 @@ public class PortletEntityRegistryServiceDBImpl extends PortletEntityRegistrySer
         } catch (Throwable e) {
             LOG.error("Failed to load PortletEntityRegistry", e);
         }
+        LOG.warn("Loaded PortletEntityRegistry done...");
     }
 
     /*
