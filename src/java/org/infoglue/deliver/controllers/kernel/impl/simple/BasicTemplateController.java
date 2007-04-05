@@ -3820,7 +3820,7 @@ public class BasicTemplateController implements TemplateController
 			criterias.setContentTypeDefinitions(contentTypeDefinitionVOList);
 			criterias.setDates(fromDate, toDate);
 			
-			final Set set = ExtendedSearchController.getController().search(criterias);
+			final Set set = ExtendedSearchController.getController().search(criterias, getDatabase());
 			
 		    /*
 			final CategoryConditions categoryConditions = CategoryConditions.parse(categoryConditionString);
