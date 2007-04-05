@@ -26,6 +26,7 @@ package org.infoglue.cms.applications.contenttool.actions;
 import java.awt.Image;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Enumeration;
 import java.util.List;
@@ -73,6 +74,7 @@ public class CreateDigitalAssetAction extends ViewDigitalAssetAction
 	private DigitalAssetVO digitalAssetVO = null;
 	private String closeOnLoad;
 	private Integer contentTypeDefinitionId;
+	private String returnAddress = "";
 
     public CreateDigitalAssetAction()
     {
@@ -113,7 +115,7 @@ public class CreateDigitalAssetAction extends ViewDigitalAssetAction
 		return ContentTypeDefinitionController.getController().getDefinedAssetKeys(this.contentTypeDefinitionVO.getSchemaValue());
 	}
 	
-    public String doExecute() //throws Exception
+    public String doExecute() throws IOException //throws Exception
     {
         try
         {
@@ -168,7 +170,7 @@ public class CreateDigitalAssetAction extends ViewDigitalAssetAction
 		            	logger.info("name:" + name);
 		            	logger.info("contentType:" + contentType);
 		            	logger.info("fileSystemName:" + fileSystemName);
-		            	
+
 		            	file = mpr.getFile(name);
 		            	//String fileName = this.contentVersionId + "_" + System.currentTimeMillis() + "_" + fileSystemName;
 						String fileName = fileSystemName;
@@ -316,6 +318,12 @@ public class CreateDigitalAssetAction extends ViewDigitalAssetAction
       	    logger.error("An error occurred when we tried to upload a new asset:" + e.getMessage(), e);
         }
         
+        if(returnAddress != null && !returnAddress.equals(""))
+		{
+			this.getResponse().sendRedirect(returnAddress);	    
+			return NONE;
+		}
+        
         return "success";
     }
 
@@ -398,10 +406,15 @@ public class CreateDigitalAssetAction extends ViewDigitalAssetAction
     public void setContentTypeDefinitionId(Integer contentTypeDefinitionId)
     {
         this.contentTypeDefinitionId = contentTypeDefinitionId;
-    }
+    }    
     
     public ContentTypeDefinitionVO getContentTypeDefinitionVO()
     {
         return contentTypeDefinitionVO;
     }
+    
+    public void setReturnAddress(String returnAddress) 
+	{
+		this.returnAddress = returnAddress;
+	}
 }
