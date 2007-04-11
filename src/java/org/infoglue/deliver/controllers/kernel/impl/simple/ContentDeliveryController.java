@@ -119,6 +119,9 @@ public class ContentDeliveryController extends BaseDeliveryController
 	
 	public ContentVO getContentVO(Integer contentId, Database db) throws SystemException, Exception
 	{
+		if(contentId == null || contentId.intValue() < 1)
+			return null;
+		
 		ContentVO contentVO = null;
 		
 		contentVO = (ContentVO)getVOWithId(SmallContentImpl.class, contentId, db);
@@ -132,6 +135,9 @@ public class ContentDeliveryController extends BaseDeliveryController
 	
 	public ContentVO getContentVO(Database db, Integer contentId, DeliveryContext deliveryContext) throws SystemException, Exception
 	{
+		if(contentId == null || contentId.intValue() < 1)
+			return null;
+
 		deliveryContext.addUsedContent("content_" + contentId);
 
 		ContentVO contentVO = (ContentVO)getVOWithId(SmallContentImpl.class, contentId, db);
