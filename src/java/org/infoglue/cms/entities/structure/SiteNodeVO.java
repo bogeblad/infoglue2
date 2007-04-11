@@ -48,7 +48,7 @@ public class SiteNodeVO implements BaseEntityVO
   	private Integer childCount;
   	
   	private String creatorName;
-	private Integer metaInfoContentId 	= null;
+	private Integer metaInfoContentId 	= new Integer(-1);
 	
 	private Integer parentSiteNodeId 	= null;
 
