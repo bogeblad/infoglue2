@@ -278,12 +278,12 @@ public class InconsistenciesController extends BaseController
 				Integer metaInfoContentId = siteNodeVO.getMetaInfoContentId();
 				LanguageVO masterLanguageVO = LanguageController.getController().getMasterLanguage(siteNodeVO.getRepositoryId());
 				String pageStructure = ContentController.getContentController().getContentAttribute(metaInfoContentId, masterLanguageVO.getId(), "ComponentStructure");
-				
+
 				if(registryVO.getReferenceType().equals(RegistryVO.PAGE_COMPONENT))
 					pageStructure = deleteComponentFromXML(pageStructure, new Integer(registryVO.getEntityId()));
 				if(registryVO.getReferenceType().equals(RegistryVO.PAGE_COMPONENT_BINDING))
-					pageStructure = deleteComponentBindingFromXML(pageStructure, new Integer(registryVO.getEntityId()));
-				
+					pageStructure = deleteComponentBindingFromXML(pageStructure, new Integer(registryVO.getEntityId()), registryVO.getEntityName());
+
 				ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(metaInfoContentId, masterLanguageVO.getId());
 				ContentVersionController.getContentVersionController().updateAttributeValue(contentVersionVO.getContentVersionId(), "ComponentStructure", pageStructure, infoGluePrincipal);
 			}
@@ -426,10 +426,14 @@ public class InconsistenciesController extends BaseController
 		return modifiedXML;
 	}
 
-	private String deleteComponentBindingFromXML(String componentXML, Integer contentId) throws Exception
-	{
+	private String deleteComponentBindingFromXML(String componentXML, Integer entityId, String entityName) throws Exception
+	{	
+		String entityNameTrigger = "Content";
+		if(entityName.equals(SiteNode.class.getName()))
+			entityNameTrigger = "SiteNode";
+		
 		Document document = XMLHelper.readDocumentFromByteArray(componentXML.getBytes("UTF-8"));
-		String componentPropertyXPath = "//component/properties/property/binding[@entityId='" + contentId + "']";
+		String componentPropertyXPath = "//component/properties/property/binding[@entityId='" + entityId + "']";
 		//logger.info("componentPropertyXPath:" + componentPropertyXPath);
 		String modifiedXML = null;
 		
@@ -439,11 +443,20 @@ public class InconsistenciesController extends BaseController
 		{
 			Element component = (Element)anl.item(i);
 			String entity = component.getAttribute("entity");
-			if(entity != null && entity.equalsIgnoreCase("Content"))
+			if(entity != null && entity.equalsIgnoreCase(entityNameTrigger))
 			{
 				Element property = (Element)component.getParentNode();
-				if(property != null && property.getParentNode() != null)
-					property.getParentNode().removeChild(property);
+				if(property.getChildNodes().getLength() > 1)
+				{
+					property.removeChild(component);
+				}
+				else
+				{
+					if(property != null && property.getParentNode() != null)
+					{
+						property.getParentNode().removeChild(property);
+					}
+				}
 			}
 		}
 		

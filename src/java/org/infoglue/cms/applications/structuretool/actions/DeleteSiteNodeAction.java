@@ -96,10 +96,19 @@ public class DeleteSiteNodeAction extends InfoGlueAbstractAction
 	{
 	    for(int i=0; i<registryId.length; i++)
 	    {
-	    	InconsistenciesController.getController().removeReferences(new Integer(registryId[i]), this.getInfoGluePrincipal());
+	    	String registryIdString = registryId[i];
+	    	Integer registryId = new Integer(registryIdString);
 	    	try
 	    	{
-	    		RegistryController.getController().delete(new Integer(registryId[i]));
+	    		InconsistenciesController.getController().removeReferences(registryId, this.getInfoGluePrincipal());
+	    	}
+	    	catch(Exception e)
+	    	{
+	    		logger.debug("Error trying to remove reference - must be removed before...");
+	    	}
+	    	try
+	    	{
+	    		RegistryController.getController().delete(registryId);
 	    	}
 	    	catch(Exception e)
 	    	{
