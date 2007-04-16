@@ -82,6 +82,7 @@
                 /script/*,
                 /css/*,
                 /images/*,
+                /unauthorizedLogin.jsp,
                 *.xml,
                 /robots.txt,
                 /services/*
