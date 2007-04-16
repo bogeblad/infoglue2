@@ -22,9 +22,14 @@
 */
 package org.infoglue.deliver.util;
 
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * @author mattias
@@ -40,6 +45,7 @@ public class Counter
     private static Long totalElapsedTime = new Long(0);
     private static Long maxElapsedTime = new Long(0);
     private static Map allComponentsStatistics = new HashMap();
+    private static LinkedBlockingQueue latestPublications = new LinkedBlockingQueue(5);
     
     private Counter(){}
 
@@ -69,6 +75,32 @@ public class Counter
     static long getMaxElapsedTime()
     {
         return maxElapsedTime.longValue();
+    }
+
+    static List getLatestPublications()
+    {
+    	List latestPublicationsList = new ArrayList();
+    	synchronized (latestPublications)
+		{
+    		System.out.println("latestPublications:" + latestPublications.size());
+    		Iterator latestPublicationsIterator = latestPublications.iterator();
+    		while(latestPublicationsIterator.hasNext())
+    		{
+    			latestPublicationsList.add(latestPublicationsIterator.next());
+    		}
+		}
+        return latestPublicationsList;
+    }
+
+    synchronized static void addPublication(Date publicationDate)
+    {
+    	synchronized (latestPublications)
+		{
+    		if(latestPublications.remainingCapacity() == 0)
+    			latestPublications.poll();
+    		
+    		latestPublications.add(publicationDate);
+		}
     }
 
     synchronized static void incNumberOfCurrentRequests(boolean active)

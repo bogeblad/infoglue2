@@ -34,6 +34,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -121,7 +123,9 @@ public class CacheController extends Thread
     public static List notifications = Collections.synchronizedList(new ArrayList());
     
     private static Map eventListeners = new HashMap();
-	private static Map caches = new HashMap();
+	//private static Map caches = new HashMap();
+	private static ConcurrentMap caches = new ConcurrentHashMap();
+	
 	//private static Map caches = Collections.synchronizedMap(new HashMap());
 	private boolean expireCacheAutomatically = false;
 	private int cacheExpireInterval = 1800000;
@@ -307,7 +311,7 @@ public class CacheController extends Thread
 				    {
 				    	cacheAdministrator.cancelUpdate(key);
 					}
-			    }
+				}
 		    }
 		//}
 	    
@@ -382,12 +386,14 @@ public class CacheController extends Thread
 	public static void clearCaches(String entity, String entityId, String[] cachesToSkip) throws Exception
 	{	
 		long wait = 0;
-		while(RequestAnalyser.getRequestAnalyser().getNumberOfCurrentRequests() > 0)
+		//while(RequestAnalyser.getRequestAnalyser().getNumberOfCurrentRequests() > 0)
+		while(RequestAnalyser.getRequestAnalyser().getNumberOfActiveRequests() > 0)
 	    {
 	        //logger.warn("Number of requests: " + RequestAnalyser.getRequestAnalyser().getNumberOfCurrentRequests() + " was more than 0 - lets wait a bit.");
 	        if(wait == 3000)
 			{
 				logger.warn("The clearCache method waited over " + ((wait * 10) / 1000) + " seconds but there seems to be " + RequestAnalyser.getRequestAnalyser().getNumberOfCurrentRequests() + " requests blocking all the time. Continuing anyway.");
+				System.out.println("The clearCache method waited over");
 				//printThreads();
 				break;
 			}
@@ -826,10 +832,12 @@ public class CacheController extends Thread
 	{
 	    logger.info("Emptying the Castor Caches");
 	    
-	    while(RequestAnalyser.getRequestAnalyser().getNumberOfCurrentRequests() > 0)
+	    //while(RequestAnalyser.getRequestAnalyser().getNumberOfCurrentRequests() > 0)
+	    while(RequestAnalyser.getRequestAnalyser().getNumberOfActiveRequests() > 0)
 	    {
 	        //logger.warn("Number of requests: " + RequestAnalyser.getRequestAnalyser().getNumberOfCurrentRequests() + " was more than 0 - lets wait a bit.");
-	        Thread.sleep(10);
+			System.out.println("The clearCastorCaches method waited");
+	    	Thread.sleep(10);
 	    }
 	    
 		Database db = CastorDatabaseService.getDatabase();
@@ -911,7 +919,8 @@ public class CacheController extends Thread
 	public static synchronized void clearCache(Class type, Object[] ids) throws Exception
 	{
 		long wait = 0;
-		while(RequestAnalyser.getRequestAnalyser().getNumberOfCurrentRequests() > 0)
+		//while(RequestAnalyser.getRequestAnalyser().getNumberOfCurrentRequests() > 0)
+		while(RequestAnalyser.getRequestAnalyser().getNumberOfActiveRequests() > 0)
 	    {
 	        logger.warn("Number of requests: " + RequestAnalyser.getRequestAnalyser().getNumberOfCurrentRequests() + " was more than 0 - lets wait a bit.");
 	        if(wait == 3000)
@@ -958,7 +967,8 @@ public class CacheController extends Thread
 	public static void clearCache(Class type, Object[] ids, Database db) throws Exception
 	{
 		long wait = 0;
-	    while(RequestAnalyser.getRequestAnalyser().getNumberOfCurrentRequests() > 0)
+	    //while(RequestAnalyser.getRequestAnalyser().getNumberOfCurrentRequests() > 0)
+	    while(RequestAnalyser.getRequestAnalyser().getNumberOfActiveRequests() > 0)
 	    {
 	        if(wait == 3000)
 			{
@@ -1182,6 +1192,7 @@ public class CacheController extends Thread
 
 			logger.info("className:" + className);
 			logger.info("pt:" + pt);
+			RequestAnalyser.getRequestAnalyser().addPublication(new Date());
 			
 		    if(pt == null)
 		    	wpt.getCacheEvictionBeans().add(cacheEvictionBean);

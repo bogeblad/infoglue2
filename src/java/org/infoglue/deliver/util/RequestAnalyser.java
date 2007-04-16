@@ -24,6 +24,7 @@
 package org.infoglue.deliver.util;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -90,6 +91,16 @@ public class RequestAnalyser
     public long getMaxElapsedTime()
     {
         return Counter.getMaxElapsedTime();
+    }
+
+    public List getLatestPublications()
+    {
+        return Counter.getLatestPublications();
+    }
+
+    public void addPublication(Date publicationDate)
+    {
+        Counter.addPublication(publicationDate);
     }
 
     public void incNumberOfCurrentRequests(ThreadMonitor tk)
