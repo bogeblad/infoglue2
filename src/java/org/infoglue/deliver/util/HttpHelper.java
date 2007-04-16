@@ -317,11 +317,16 @@ public class HttpHelper
 	    	
 	    BufferedReader buffer = new BufferedReader(inStreamReader);            
 	    StringBuffer strbuf = new StringBuffer();   
+	    int i;
+	    while ((i = buffer.read()) != -1)
+	    	strbuf.append((char)i);
+	    /*
 	    String line; 
 	    while((line = buffer.readLine()) != null) 
 	    {
 	        strbuf.append(line); 
-	    }                                              
+	    } 
+	    */                                             
 	    String readData = strbuf.toString();   
 	    buffer.close();
 	    return readData;   
