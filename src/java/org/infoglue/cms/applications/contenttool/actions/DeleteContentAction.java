@@ -118,8 +118,23 @@ public class DeleteContentAction extends InfoGlueAbstractAction
 	{
 	    for(int i=0; i<registryId.length; i++)
 	    {
-	    	InconsistenciesController.getController().removeReferences(new Integer(registryId[i]), this.getInfoGluePrincipal());
-	    	RegistryController.getController().delete(new Integer(registryId[i]));
+	    	try
+	    	{
+	    		InconsistenciesController.getController().removeReferences(new Integer(registryId[i]), this.getInfoGluePrincipal());
+	    	}
+	    	catch(Exception e)
+	    	{
+	    		logger.error("An error occurred when we tried to delete references: " + e.getMessage());
+	    	}
+	    	
+	    	try
+	    	{
+	    		RegistryController.getController().delete(new Integer(registryId[i]));
+	    	}
+	    	catch(Exception e)
+	    	{
+	    		logger.error("An error occurred when we tried to delete references: " + e.getMessage());
+	    	}
 	    }
 	    
 	    return doExecute();
