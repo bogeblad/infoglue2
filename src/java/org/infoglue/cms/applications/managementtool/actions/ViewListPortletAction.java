@@ -22,6 +22,8 @@
 */
 package org.infoglue.cms.applications.managementtool.actions;
 
+import java.io.ByteArrayInputStream;
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -35,6 +37,7 @@ import org.apache.pluto.portalImpl.services.portletentityregistry.PortletEntityR
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.PortletAssetController;
 import org.infoglue.cms.entities.content.DigitalAsset;
+import org.infoglue.cms.entities.content.DigitalAssetVO;
 import org.infoglue.cms.io.FileHelper;
 
 /**
@@ -70,11 +73,27 @@ public class ViewListPortletAction extends InfoGlueAbstractAction
 	public String doSimple() throws Exception 
 	{
 		DigitalAsset digitalAsset = PortletAssetController.getPortletAssetController().getPortletRegistryAsset();
-		InputStream is = digitalAsset.getAssetBlob();
-		
-		portletRegistry = FileHelper.getStreamAsString(is);
+		if(digitalAsset == null)
+		{
+			DigitalAssetVO newAsset = new DigitalAssetVO();
+			newAsset.setAssetContentType("text/xml");
+			newAsset.setAssetKey("portletentityregistry.xml");
+			newAsset.setAssetFileName("portletentityregistry.xml");
+			newAsset.setAssetFilePath("None");
+			newAsset.setAssetFileSize(new Integer(new Long("4").intValue()));
+			InputStream is = new ByteArrayInputStream("".getBytes());
+			digitalAsset = PortletAssetController.create(newAsset, is);
+			is.close();
+		}
 			
-    	return "successSimple";
+		if(digitalAsset != null)
+		{
+			InputStream is = digitalAsset.getAssetBlob();
+			portletRegistry = FileHelper.getStreamAsString(is);
+	    	return "successSimple";
+		}
+		else
+			return ERROR;
 	}
 
 	
