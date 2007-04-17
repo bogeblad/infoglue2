@@ -77,6 +77,7 @@
                 /UpdateCache.action,
                 /UpdateCache!test.action,
 				/ViewApplicationState.action,
+				/ViewApplicationState!setLogLevel.action,
 				/ErrorPage.action,
                 /scripts/*,
                 /script/*,
