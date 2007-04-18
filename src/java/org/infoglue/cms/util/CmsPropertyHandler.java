@@ -973,6 +973,16 @@ public class CmsPropertyHandler
 	    return getServerNodeProperty("formsEncoding", true, "UTF-8");
 	}
 
+	public static String getUploadFromEncoding()
+	{
+		return getServerNodeProperty("uploadFromEncoding", true, "ISO-8859-1");
+	}
+
+	public static String getUploadToEncoding()
+	{
+		return getServerNodeProperty("uploadToEncoding", true, "UTF-8");
+	}
+
 	public static String getUseShortTableNames()
 	{
 	    return getServerNodeProperty("useShortTableNames", true, "false");

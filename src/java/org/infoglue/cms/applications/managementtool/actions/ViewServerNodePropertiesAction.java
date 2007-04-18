@@ -159,6 +159,8 @@ public class ViewServerNodePropertiesAction extends InfoGluePropertiesAbstractAc
 	    populate(ps, "URIEncoding");
 	    populate(ps, "workflowEncoding");
 	    populate(ps, "formsEncoding");
+	    populate(ps, "uploadFromEncoding");
+	    populate(ps, "uploadToEncoding");
 	    populate(ps, "useShortTableNames");
 	    populate(ps, "logDatabaseMessages");
 	    populate(ps, "statistics.enabled");

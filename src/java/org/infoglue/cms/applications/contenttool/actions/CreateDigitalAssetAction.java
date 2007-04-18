@@ -165,7 +165,17 @@ public class CreateDigitalAssetAction extends ViewDigitalAssetAction
 		            	String name 		  = (String)names.nextElement();
 						String contentType    = mpr.getContentType(name);
 						String fileSystemName = mpr.getFilesystemName(name);
+
+						String fromEncoding = CmsPropertyHandler.getUploadFromEncoding();
+						if(fromEncoding == null)
+							fromEncoding = "iso-8859-1";
 						
+						String toEncoding = CmsPropertyHandler.getUploadToEncoding();
+						if(toEncoding == null)
+							toEncoding = "utf-8";
+						
+		            	digitalAssetKey = new String(digitalAssetKey.getBytes(fromEncoding), toEncoding);
+		            	
 		            	logger.info("digitalAssetKey:" + digitalAssetKey);
 		            	logger.info("name:" + name);
 		            	logger.info("contentType:" + contentType);

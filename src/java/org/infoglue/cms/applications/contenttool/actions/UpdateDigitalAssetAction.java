@@ -95,6 +95,16 @@ public class UpdateDigitalAssetAction extends ViewDigitalAssetAction
                 return "uploadFailed";
             }
             
+			String fromEncoding = CmsPropertyHandler.getUploadFromEncoding();
+			if(fromEncoding == null)
+				fromEncoding = "iso-8859-1";
+			
+			String toEncoding = CmsPropertyHandler.getUploadToEncoding();
+			if(toEncoding == null)
+				toEncoding = "utf-8";
+			
+			this.digitalAssetKey = new String(this.digitalAssetKey.getBytes(fromEncoding), toEncoding);
+
            	DigitalAssetVO digitalAssetVO = DigitalAssetController.getDigitalAssetVOWithId(this.digitalAssetId);
 			digitalAssetVO.setAssetKey(this.digitalAssetKey);
 
