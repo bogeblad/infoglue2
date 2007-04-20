@@ -510,8 +510,15 @@ public class SiteNodeVersionController extends BaseController
 				{
 				    if(!metaInfoContentDeleted)
 				    {
-				        deleteMetaInfoForSiteNodeVersion(db, serviceBinding, infoGluePrincipal);
-				        metaInfoContentDeleted = true;
+				    	try
+				    	{
+				    		deleteMetaInfoForSiteNodeVersion(db, serviceBinding, infoGluePrincipal);
+				    	}
+				    	catch(Exception e)
+				    	{
+				    		logger.error("An error was thrown when we tried to delete the meta info for the version. Could be deleted allready");
+				    	}
+				    	metaInfoContentDeleted = true;
 				    }
 				    serviceBindingIterator.remove();
 				    db.remove(serviceBinding);
@@ -544,7 +551,7 @@ public class SiteNodeVersionController extends BaseController
 		{
 			ContentVO contentVO = (ContentVO)boundContents.get(0);
 			ContentController.getContentController().delete(contentVO, db, true, true, true, infoGluePrincipal);
-		}						
+		}
 	}
 	
 	
