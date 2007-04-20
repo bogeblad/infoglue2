@@ -23,10 +23,12 @@
 
 package org.infoglue.cms.applications.managementtool.actions;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.RepositoryController;
+import org.infoglue.cms.util.sorters.ReflectionComparator;
 
 
 /**
@@ -44,8 +46,10 @@ public class ViewListRepositoryAction extends InfoGlueAbstractAction
 
 	protected String doExecute() throws Exception 
 	{
-		this.repositories = RepositoryController.getController().getRepositoryVOList();
-    	return "success";
+	    this.repositories = RepositoryController.getController().getRepositoryVOList();
+	    Collections.sort(this.repositories, new ReflectionComparator("name"));
+
+	    return "success";
 	}
 	
 
