@@ -504,6 +504,8 @@ public class ImportRepositoryAction extends InfoGlueAbstractAction
 			
 			db.create(siteNodeVersion);
 			
+			HashMap readAvailableServiceBindings = new HashMap();
+			
 			Iterator serviceBindingsIterator = serviceBindings.iterator();
 			while(serviceBindingsIterator.hasNext())
 			{
@@ -525,13 +527,22 @@ public class ImportRepositoryAction extends InfoGlueAbstractAction
 				AvailableServiceBinding originalAvailableServiceBinding = serviceBinding.getAvailableServiceBinding();
 				String availableServiceBindingName = originalAvailableServiceBinding.getName();
 				logger.info("availableServiceBindingName:" + availableServiceBindingName);
-				AvailableServiceBinding availableServiceBinding = AvailableServiceBindingController.getController().getAvailableServiceBindingWithName(availableServiceBindingName, db, false);
+				AvailableServiceBinding availableServiceBinding = (AvailableServiceBinding)readAvailableServiceBindings.get(availableServiceBindingName);
+				if(availableServiceBinding == null)
+				{
+					availableServiceBinding = AvailableServiceBindingController.getController().getAvailableServiceBindingWithName(availableServiceBindingName, db, false);
+					readAvailableServiceBindings.put(availableServiceBindingName, availableServiceBinding);
+					//System.out.println("Read it once:" + availableServiceBindingName);
+				}
+				
 				if(availableServiceBinding == null)
 				{
 				    logger.info("There was no availableServiceBinding registered under:" + availableServiceBindingName);
 				    logger.info("originalAvailableServiceBinding:" + originalAvailableServiceBinding.getName() + ":" + originalAvailableServiceBinding.getIsInheritable());
 				    db.create(originalAvailableServiceBinding);
 				    availableServiceBinding = originalAvailableServiceBinding;
+				    readAvailableServiceBindings.put(availableServiceBindingName, availableServiceBinding);
+				    
 				    logger.info("Notifying:" + siteNodeTypeDefinition.getName() + " about the new availableServiceBinding " + availableServiceBinding.getName());
 				    if(siteNodeTypeDefinition != null)
 				    {
