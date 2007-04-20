@@ -134,7 +134,7 @@ public class ImageEditorAction extends InfoGlueAbstractAction
 	        //System.out.println("filePath:" + filePath);
 	    	BufferedImage original = javax.imageio.ImageIO.read(new File(filePath));
 	
-	    	workingFileName = "imageEditorWK_" + System.currentTimeMillis() + "_" + this.getInfoGluePrincipal().getName() + "_" + digitalAssetVO.getDigitalAssetId() + ".png";
+	    	workingFileName = "imageEditorWK_" + System.currentTimeMillis() + "_" + this.getInfoGluePrincipal().getName().hashCode() + "_" + digitalAssetVO.getDigitalAssetId() + ".png";
 	    	File outputFile = new File(getImageEditorPath() + File.separator + workingFileName);
 			javax.imageio.ImageIO.write(original, "PNG", outputFile);
 		}
@@ -202,7 +202,7 @@ public class ImageEditorAction extends InfoGlueAbstractAction
 	    	image = imaging.resize(original, width, height, false);
     	}
     	
-    	workingFileName = "imageEditorWK_" + System.currentTimeMillis() + "_" + this.getInfoGluePrincipal().getName() + "_" + digitalAssetVO.getDigitalAssetId() + ".png";    	
+    	workingFileName = "imageEditorWK_" + System.currentTimeMillis() + "_" + this.getInfoGluePrincipal().getName().hashCode() + "_" + digitalAssetVO.getDigitalAssetId() + ".png";    	
     	File outputFile = new File(getImageEditorPath() + File.separator + workingFileName);
     	outputFile.mkdirs();
     	javax.imageio.ImageIO.write(image, "PNG", outputFile);
@@ -227,7 +227,7 @@ public class ImageEditorAction extends InfoGlueAbstractAction
 
     	BufferedImage image = imaging.crop(original, xpos1, ypos1, xpos2 - xpos1, ypos2 - ypos1);
 
-    	workingFileName = "imageEditorWK_" + System.currentTimeMillis() + "_" + this.getInfoGluePrincipal().getName() + "_" + digitalAssetVO.getDigitalAssetId() + ".png";    	
+    	workingFileName = "imageEditorWK_" + System.currentTimeMillis() + "_" + this.getInfoGluePrincipal().getName().hashCode() + "_" + digitalAssetVO.getDigitalAssetId() + ".png";    	
     	File outputFile = new File(getImageEditorPath() + File.separator + workingFileName);
     	javax.imageio.ImageIO.write(image, "PNG", outputFile);
 
@@ -251,6 +251,16 @@ public class ImageEditorAction extends InfoGlueAbstractAction
 
    		String contentType = digitalAssetVO.getAssetContentType();
    		
+		String fromEncoding = CmsPropertyHandler.getUploadFromEncoding();
+		if(fromEncoding == null)
+			fromEncoding = "iso-8859-1";
+		
+		String toEncoding = CmsPropertyHandler.getUploadToEncoding();
+		if(toEncoding == null)
+			toEncoding = "utf-8";
+		
+		this.digitalAssetKey = new String(digitalAssetKey.getBytes(fromEncoding), toEncoding);
+
     	DigitalAssetVO newAsset = new DigitalAssetVO();
 		newAsset.setAssetContentType(contentType);
 		newAsset.setAssetKey(this.digitalAssetKey);
@@ -341,7 +351,7 @@ public class ImageEditorAction extends InfoGlueAbstractAction
  		//else
 		//    digitalAssetVO = DigitalAssetController.create(newAsset, is, this.entity, this.entityId);
 
-    	workingFileName = "imageEditorWK_" + System.currentTimeMillis() + "_" + this.getInfoGluePrincipal().getName() + "_" + digitalAssetVO.getDigitalAssetId() + ".png";
+    	workingFileName = "imageEditorWK_" + System.currentTimeMillis() + "_" + this.getInfoGluePrincipal().getName().hashCode() + "_" + digitalAssetVO.getDigitalAssetId() + ".png";
 		boolean deleted = file.delete();
 		//System.out.println("file:" + file.getAbsolutePath() + ":" + deleted);
 
