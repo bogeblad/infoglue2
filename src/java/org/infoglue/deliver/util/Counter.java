@@ -82,7 +82,6 @@ public class Counter
     	List latestPublicationsList = new ArrayList();
     	synchronized (latestPublications)
 		{
-    		System.out.println("latestPublications:" + latestPublications.size());
     		Iterator latestPublicationsIterator = latestPublications.iterator();
     		while(latestPublicationsIterator.hasNext())
     		{
