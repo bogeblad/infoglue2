@@ -24,6 +24,7 @@
 package org.infoglue.cms.controllers.kernel.impl.simple;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -44,6 +45,7 @@ import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
+import org.infoglue.cms.util.sorters.ReflectionComparator;
 import org.infoglue.deliver.util.CacheController;
 
 public class RepositoryController extends BaseController
@@ -321,6 +323,8 @@ public class RepositoryController extends BaseController
 			}
 		}
     	
+		Collections.sort(accessableRepositories, new ReflectionComparator("name"));
+
 		return accessableRepositories;
 	}
 
