@@ -228,8 +228,12 @@
 #set($lvChkBoxName = "selContentVersions")
 #set($cnt = 0)
 #foreach($cv in $contentVersionVOList)
-
-	#set( $row = ["<img src='images/tree/contentRoot.gif'> $cv.getContentName() - $cv.getLanguageName() ($cv.getId())", "$formatter.formatDate($cv.modifiedDateTime, 'yyyy-MM-dd')", "$cv.versionModifier"] )
+	#set($displayName = "$!this.getInfoGluePrincipal($cv.versionModifier).displayName")
+	#if($displayName == "")
+		#set($displayName = "$cv.versionModifier")
+	#end
+	
+	#set( $row = ["<img src='images/tree/contentRoot.gif'> $cv.getContentName() - $cv.getLanguageName() ($cv.getId())", "$formatter.formatDate($cv.modifiedDateTime, 'yyyy-MM-dd')", "$displayName"] )
 	#set($cnt = $cnt + 1)
 	
 	#lvAddRow($row $cnt $cv.getId())
@@ -238,8 +242,12 @@
 
 #set($lvChkBoxName = "selSiteNodeVersions")
 #foreach($snv in $siteNodeVersionVOList)
-
-	#set( $row = ["<img src='images/tree/structureRoot.gif'> $snv.getSiteNodeName() ($snv.getId())", "$formatter.formatDate($snv.modifiedDateTime, 'yyyy-MM-dd')", "$snv.versionModifier"] )
+	#set($displayName = "$!this.getInfoGluePrincipal($snv.versionModifier).displayName")
+	#if($displayName == "")
+		#set($displayName = "$snv.versionModifier")
+	#end
+	
+	#set( $row = ["<img src='images/tree/structureRoot.gif'> $snv.getSiteNodeName() ($snv.getId())", "$formatter.formatDate($snv.modifiedDateTime, 'yyyy-MM-dd')", "$displayName"] )
 	#set($cnt = $cnt + 1)
 	
 	#lvAddRow($row $cnt $snv.getId())
