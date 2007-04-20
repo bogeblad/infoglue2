@@ -166,7 +166,7 @@ public class ExportRepositoryAction extends InfoGlueAbstractAction
 			//fos.flush();
 			//fos.close();
 			
-			db.commit();
+			db.rollback();
 			db.close();
 
 		} 
