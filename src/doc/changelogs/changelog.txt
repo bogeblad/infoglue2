@@ -1,4 +1,36 @@
 -------------------------------------------------------------------------------------
+- InfoGlue 2.4.8 Final
+-------------------------------------------------------------------------------------
+
+Release notes
+---------------------------------------
+The summer release 2007 of InfoGlue contains ....
+
+Thanx to all involved!!
+
+The InfoGlue Team
+
+
+Abbreviated Changelog from 2.4.6 Final 
+---------------------------------------
+- Improved handling of Available service bindings - remove later completely :)
+- Fixed error handling for when inconsistencies are not really there. Old nodes and contents not cleared out from the registry for example.
+- Removed cmsUserName and repositoryName when opening preview window.
+- Added new contentVersion tag for the cms workflows.
+- Made it possible to assign a return address on the createDigitalAsset action so the save button can lead to a different view.
+- Fixed bug in getMatchingContents which did not use the user db connection but started a new one.
+- Added check so it a user sends in null or a id less than 1 it returns null allways. Saves a lot of errors in the logfiles.
+- Fixed bug with overriding references when deleting a sitenode. The old code did not correctly delete the binding and it resulted in an error.
+- Fixed issue with active users were counted wrong.
+- Added method to get when latest publications were made.
+- Changed the httphelper to not skip linebreak chars. 
+- Fixed so one now can use non-ascii chars as digitalAssetKey. Two new encodings in app settings allow one to convert depending on server settings. Default settings usually works.
+- Made the repositories be sorted by name in most views
+- Improved performance and fault tolerance in repository export/import.
+- Fixed issue with the Image-editor when using non-ascii user names.
+- Fixed so displayName is shown in publishing lists and history instead of userName.
+
+-------------------------------------------------------------------------------------
 - InfoGlue 2.4.6 Final
 -------------------------------------------------------------------------------------
 
