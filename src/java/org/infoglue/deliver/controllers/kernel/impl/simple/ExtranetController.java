@@ -140,8 +140,11 @@ public class ExtranetController extends BaseDeliveryController
 		{			
 			String authenticatedUserName = AuthenticationModule.getAuthenticationModule(null, null).authenticateUser(request);
 			logger.info("authenticatedUserName:" + authenticatedUserName);
-			principal = UserControllerProxy.getController().getUser(authenticatedUserName);
-			logger.info("principal:" + principal);
+			if(authenticatedUserName != null)
+			{
+				principal = UserControllerProxy.getController().getUser(authenticatedUserName);
+				logger.info("principal:" + principal);
+			}
 		}
 		catch(Exception e)
 		{
