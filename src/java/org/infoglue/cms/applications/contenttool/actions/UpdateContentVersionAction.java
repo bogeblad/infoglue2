@@ -116,8 +116,17 @@ public class UpdateContentVersionAction extends ViewContentVersionAction
 		super.initialize(this.contentVersionId, this.contentId, this.languageId);
 		ceb.throwIfNotEmpty();
 		
-		this.contentVersionVO.setVersionModifier(this.getInfoGluePrincipal().getName());
-		this.contentVersionVO = ContentVersionControllerProxy.getController().acUpdate(this.getInfoGluePrincipal(), this.contentId, this.languageId, this.contentVersionVO);
+		try
+		{
+			this.contentVersionVO.setVersionModifier(this.getInfoGluePrincipal().getName());
+			this.contentVersionVO = ContentVersionControllerProxy.getController().acUpdate(this.getInfoGluePrincipal(), this.contentId, this.languageId, this.contentVersionVO);
+		}
+		catch(ConstraintException ce)
+		{
+		    super.contentVersionVO = this.contentVersionVO;
+		    ce.setResult("inputStandalone");
+		    throw ce;
+		}
 		
 		return "standalone";
 	}
@@ -131,7 +140,16 @@ public class UpdateContentVersionAction extends ViewContentVersionAction
 
 	public String doSaveAndExitStandalone() throws Exception
 	{
-		doExecute();
+		try
+		{
+			doExecute();
+		}
+		catch(ConstraintException ce)
+		{
+		    super.contentVersionVO = this.contentVersionVO;
+		    ce.setResult("inputStandalone");
+		    throw ce;
+		}
 						 
 		return "saveAndExitStandalone";
 	}

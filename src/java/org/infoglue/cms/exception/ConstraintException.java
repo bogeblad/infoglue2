@@ -46,6 +46,8 @@ public class ConstraintException extends Exception
   private String fieldName;
   //Extra info about the entity causing the exception.
   private String extraInformation = "";
+  //Extra info about the entity causing the exception.
+  private String result = null;
   // The next ConstraintException in the chain (may be null).
   private ConstraintException chainedException;
 
@@ -69,20 +71,32 @@ public class ConstraintException extends Exception
 	    this.errorCode = (errorCode == null) ? "" : errorCode;      
 	}
 
+	/**
+	 * Construct a ConstraintException with the specified field name and error code.
+	 *
+	 * @param fieldName the name of the (entity) field causing the exception.
+	 * @param errorCode indicates the error type.
+	 */
+	public ConstraintException(String fieldName, String errorCode, String extraInformation) 
+	{
+		this(fieldName, errorCode, extraInformation, null);
+	}
+
   /**
    * Construct a ConstraintException with the specified field name and error code.
    *
    * @param fieldName the name of the (entity) field causing the exception.
    * @param errorCode indicates the error type.
    */
-	public ConstraintException(String fieldName, String errorCode, String extraInformation) 
+	public ConstraintException(String fieldName, String errorCode, String extraInformation, String result) 
   	{
 		super();
 
 	    // defensive, otherwise add null checks in equals()
 	    this.fieldName = (fieldName == null) ? "" : fieldName;      
 	    this.errorCode = (errorCode == null) ? "" : errorCode;      
-	    this.extraInformation   = (extraInformation 	== null) ? "" : extraInformation;
+	    this.extraInformation = (extraInformation == null) ? "" : extraInformation;
+	    this.result = (result == null) ? "" : result;
 	}
 
 	/**
@@ -131,6 +145,20 @@ public class ConstraintException extends Exception
   */
  public String getExtraInformation() {
    return this.extraInformation;
+ }
+
+ /**
+ *
+ */
+ public String getResult() {
+   return this.result;
+ }
+
+ /**
+ *
+ */
+ public void setResult(String result) {
+   this.result = result;
  }
 
 

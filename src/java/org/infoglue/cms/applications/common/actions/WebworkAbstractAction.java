@@ -74,8 +74,10 @@ public abstract class WebworkAbstractAction implements Action, ServletRequestAwa
      */
   	public Error getError() 
   	{
-		logger.info("Fetching error from error-template:" + this.error);
-    	return this.error;
+  		if(logger.isInfoEnabled())
+  	  		logger.info("Fetching error from error-template:" + this.error);
+    	
+  		return this.error;
   	}
 
     /**
@@ -83,8 +85,10 @@ public abstract class WebworkAbstractAction implements Action, ServletRequestAwa
      */
   	public Errors getErrors() 
   	{
-    	logger.info("Errors:" + this.errors);
-    	return errors;
+  		if(logger.isInfoEnabled())
+  			logger.info("Errors:" + this.errors);
+
+  		return errors;
   	}
   
     /**
@@ -306,7 +310,10 @@ public abstract class WebworkAbstractAction implements Action, ServletRequestAwa
 				//e.printStackTrace();
 				logger.warn("ConstraintException " + e, e);
 				setErrors(e);
-				result = INPUT;
+				if(e.getResult() != null)
+					result = e.getResult();
+				else
+					result = INPUT;
 			} 
 			catch(Bug e) 
 			{
