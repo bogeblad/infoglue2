@@ -393,7 +393,7 @@
 #macro(printError $fieldNameKey)
 	#if($errors.hasErrors($fieldNameKey))
 		#foreach($errorMessage in $errors.getErrors($fieldNameKey))
-		<font color="red"> - $errorMessage</font>
+		<a name="errorMessage"/><font color="red"><b> - $errorMessage</b></font>
 		#end
 	#end
 	<br/>
@@ -790,7 +790,7 @@ $ui.getString("entity.${fieldNameKey}.label")<br/>
 
 #macro(treeSelector $tooltarget)
 
-<div style="right:10px; left:10px; position:absolute; bottom:14px; visibility:visble; z-index:0">
+<div style="right:10px; left:10px; position:absolute; bottom:14px; visibility:visible; z-index:0;">
 <hr size="1" noshade="noshade">
 <small><font color="#666666" face="Verdana">$ui.getString("tool.common.treestyleLabel"): <a style="color: #666666" target="header" href="View${tooltarget}ToolHeader.action?tree=applet&repositoryId=${repositoryId}">$ui.getString("tool.common.treestyleApplet")</a> | <a style="color: #666666" target="header" href="View${tooltarget}ToolHeader.action?tree=html&repositoryId=${repositoryId}">$ui.getString("tool.common.treestyleHTML")</a></font></small>
 </div>

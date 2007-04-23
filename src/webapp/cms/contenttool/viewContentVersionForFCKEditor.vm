@@ -969,6 +969,9 @@
 		</tr>
 				
 	<script type="text/javascript">
+	
+		document.location.href = "#errorMessage";	
+	
 		function validateAndSubmitContentForm()
 		{
 			if(allowSave == false)
