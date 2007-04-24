@@ -1528,8 +1528,11 @@ public class ContentDeliveryController extends BaseDeliveryController
 	{
 		ContentTypeDefinitionVO contentTypeDefinitionVO = null;
 		
-		Content content = (Content)getObjectWithId(ContentImpl.class, contentId, db); 
-		contentTypeDefinitionVO = content.getContentTypeDefinition().getValueObject();       
+		if(contentId != null && contentId.intValue() > 0)
+		{
+			Content content = (Content)getObjectWithId(ContentImpl.class, contentId, db); 
+			contentTypeDefinitionVO = content.getContentTypeDefinition().getValueObject();       
+		}
 		
 		return contentTypeDefinitionVO;
 	}
