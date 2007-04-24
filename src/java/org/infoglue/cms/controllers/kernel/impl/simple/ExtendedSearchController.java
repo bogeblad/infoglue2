@@ -221,6 +221,26 @@ public class ExtendedSearchController extends BaseController
         return useFull.booleanValue();
     }
 
+    
+	private static Boolean useSQLServerDialect = null;
+    public static boolean useSQLServerDialect()
+    {
+        if(useSQLServerDialect == null)
+        {
+            String databaseEngine = CmsPropertyHandler.getDatabaseEngine();
+            if(databaseEngine == null || (!databaseEngine.equalsIgnoreCase("mssql") && !databaseEngine.equalsIgnoreCase("sql-server")))
+            {
+            	useSQLServerDialect = new Boolean(false);
+            }
+            else
+            {
+            	useSQLServerDialect = new Boolean(true);
+            }
+        }
+        
+        return useSQLServerDialect.booleanValue();
+    }
+
 	/**
 	 * Unused. 
 	 */
@@ -282,7 +302,8 @@ class SqlBuilder
 	// BETWEEN DOESN'T SEEMS TO WORK : use FROM_DATE_CLAUSE + TO_DATE_CLAUSE instead
 	//private static final String BETWEEN_DATE_CLAUSE           = CONTENT_ALIAS + ".publishDateTime between {0} and {1}";
 	
-	private static final String FREETEXT_EXPRESSION_VARIABLE  = "%<{0}><![CDATA[%{1}%]]></{0}>%";
+	private static final String FREETEXT_EXPRESSION_VARIABLE  					 = "%<{0}><![CDATA[%{1}%]]></{0}>%";
+	private static final String FREETEXT_EXPRESSION_VARIABLE_SQL_SERVER_ESCAPED  = "%<{0}><![[]CDATA[[]%{1}%]]></{0}>%";
 
 	private final ExtendedSearchCriterias criterias;
 	
@@ -515,7 +536,7 @@ class SqlBuilder
 			{
 				final String xmlAttribute = (String) i.next();
 				final String freeTextExpression = MessageFormat.format(getFREETEXT_EXPRESSION(), new Object[] { getBindingVariable() }); 
-				final String freeTextVariable   = MessageFormat.format(FREETEXT_EXPRESSION_VARIABLE, new Object[] { xmlAttribute, criterias.getFreetext() }); 
+				final String freeTextVariable   = MessageFormat.format(getFREETEXT_EXPRESSION_VARIABLE(), new Object[] { xmlAttribute, criterias.getFreetext() }); 
 			
 				bindings.add(freeTextVariable);
 				expressions.add(freeTextExpression);
@@ -582,5 +603,9 @@ class SqlBuilder
     public static String getFREETEXT_EXPRESSION()
     {
         return (ExtendedSearchController.useFull()) ? FREETEXT_EXPRESSION : FREETEXT_EXPRESSION_SHORT;
+    }
+    public static String getFREETEXT_EXPRESSION_VARIABLE()
+    {
+        return (ExtendedSearchController.useSQLServerDialect()) ? FREETEXT_EXPRESSION_VARIABLE_SQL_SERVER_ESCAPED : FREETEXT_EXPRESSION_VARIABLE;
     }
 }

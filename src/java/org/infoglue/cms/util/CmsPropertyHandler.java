@@ -988,6 +988,11 @@ public class CmsPropertyHandler
 	    return getServerNodeProperty("useShortTableNames", true, "false");
 	}
 
+	public static String getDatabaseEngine()
+	{
+	    return getServerNodeProperty("databaseEngine", true, null);
+	}
+
 	public static String getLogDatabaseMessages()
 	{
 	    return getServerNodeProperty("logDatabaseMessages", true, "false");
