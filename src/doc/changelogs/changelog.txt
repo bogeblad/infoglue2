@@ -29,6 +29,11 @@ Abbreviated Changelog from 2.4.6 Final
 - Improved performance and fault tolerance in repository export/import.
 - Fixed issue with the Image-editor when using non-ascii user names.
 - Fixed so displayName is shown in publishing lists and history instead of userName.
+- Fixed nullpointer which occurred when an login failed in extranet.
+- Fixed so validation errors gets focus when saving a content version.
+- Fixed bug which made edit-on-sight fall back to normal edit view if a validation error occurred.
+- Added possibility to have different icons in the content-tree for each content types. Rudimentary at the moment - you have to add an image file with the contentTypeDefinitionId in the infoglueCMS\script\xloadtree\images\xp\-folder.
+- Fixed so the text searches with matchingContents etc on SQLServer works. Was a problem with how SQL-server escapes [-tags.
 
 -------------------------------------------------------------------------------------
 - InfoGlue 2.4.6 Final
