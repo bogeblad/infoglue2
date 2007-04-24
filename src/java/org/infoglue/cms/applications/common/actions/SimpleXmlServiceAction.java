@@ -79,7 +79,7 @@ public abstract class SimpleXmlServiceAction extends InfoGlueAbstractAction
 
     private static final String protectedPropertyFragments = "password,administrator,authorizer,authenticator,masterserver,slaveserver,log";
     
-    protected static final String SERVICEREVISION = "$Revision: 1.19 $"; 
+    protected static final String SERVICEREVISION = "$Revision: 1.20 $"; 
 	protected static String ENCODING = "UTF-8";
     protected static String TYPE_FOLDER = "Folder";
     protected static String TYPE_ITEM = "Item";
@@ -361,9 +361,9 @@ public abstract class SimpleXmlServiceAction extends InfoGlueAbstractAction
 			if(allowedContentTypeIdsUrlEncodedString.length()>0 && src.length() >0) 
 			    src += urlArgSeparator + allowedContentTypeIdsUrlEncodedString;
 	        
-			logger.info("src2:" + src);
-
-	        Element elm = root.addElement("tree");
+			//logger.info("src2:" + src);
+			
+			Element elm = root.addElement("tree");
 	        elm
 	        	.addAttribute("id", "" + node.getId())
 	        	.addAttribute("repositoryId", "" + repositoryId)
@@ -373,6 +373,9 @@ public abstract class SimpleXmlServiceAction extends InfoGlueAbstractAction
    	        	.addAttribute("hasChildren", "true")
 	        	.addAttribute("type", type);
 			
+	        if(node.getParameters().containsKey("contentTypeDefinitionId"))
+	        	elm.addAttribute("contentTypeDefinitionId", (String)node.getParameters().get("contentTypeDefinitionId"));
+	        
     	    out(getFormattedDocument(doc));
     		return null;
     	}
@@ -401,7 +404,7 @@ public abstract class SimpleXmlServiceAction extends InfoGlueAbstractAction
 				if(action.length()>0 && src.length() >0) src += urlArgSeparator + "action=" + action;
 				String allowedContentTypeIdsUrlEncodedString = getAllowedContentTypeIdsAsUrlEncodedString();
 				if(allowedContentTypeIdsUrlEncodedString.length()>0 && src.length() >0) src += urlArgSeparator + allowedContentTypeIdsUrlEncodedString;
-    	        
+    	    
 		        Element elm = root.addElement("tree");
 		        elm
 		        	.addAttribute("id", "" + theNode.getId())
@@ -412,6 +415,9 @@ public abstract class SimpleXmlServiceAction extends InfoGlueAbstractAction
 		        	.addAttribute("isHidden", (String)theNode.getParameters().get("isHidden"))
 		        	.addAttribute("type", TYPE_FOLDER)
 		        	.addAttribute("hasChildren", "" + theNode.hasChildren());
+		        
+		        if(theNode.getParameters().containsKey("contentTypeDefinitionId"))
+		        	elm.addAttribute("contentTypeDefinitionId", "" + theNode.getParameters().get("contentTypeDefinitionId"));
 		        
 		        if(createAction) elm.addAttribute("action", makeAction(theNode));
 			}

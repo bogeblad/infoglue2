@@ -175,6 +175,8 @@ public class ContentNodeSupplier extends BaseNodeSupplier
 				node.setId(vo.getId());
 				node.setTitle(vo.getName());
 				
+				node.getParameters().put("contentTypeDefinitionId", vo.getContentTypeDefinitionId());
+				
 				if (vo.getIsBranch().booleanValue())
 				{
 					node.setContainer(true);

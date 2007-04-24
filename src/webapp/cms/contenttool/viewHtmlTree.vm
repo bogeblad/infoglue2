@@ -288,8 +288,21 @@
 	<!-- NEW DYNAMIC VERSION -->
 	<link type="text/css" rel="stylesheet" href="script/xloadtree/xtree.css" />
 	<script type="text/javascript">
+	
+	#foreach($contentTypeDefinitionVO in $contentTypeDefinitions)
+		var imageUrl${contentTypeDefinitionVO.id} = '$this.getCMSBaseUrl()/script/xloadtree/images/xp/${contentTypeDefinitionVO.id}.png';
+		//alert("imageUrl:" + imageUrl${contentTypeDefinitionVO.id});
+		var img$contentTypeDefinitionVO.id = new Image();
+		img${contentTypeDefinitionVO.id}.onload = function (evt) {
+		  	//alert(this.src + " is loaded.");
+			webFXTreeConfig.contentTypeIcons["$contentTypeDefinitionVO.id"] = imageUrl${contentTypeDefinitionVO.id};
+		}
+		img${contentTypeDefinitionVO.id}.src = imageUrl${contentTypeDefinitionVO.id};
+	#end
+	
 	webFXTreeConfig.rootIcon		= "images/tree/contentRoot.gif"; // "script/xloadtree/images/xp/folder.png";
 	webFXTreeConfig.openRootIcon	= "images/tree/contentRoot.gif"; // "script/xloadtree/images/xp/openfolder.png";
+	webFXTreeConfig.skinBasePath 	= "script/xloadtree/images/xp/";
 	webFXTreeConfig.folderIcon		= "script/xloadtree/images/xp/folder.png";
 	webFXTreeConfig.openFolderIcon	= "script/xloadtree/images/xp/openfolder.png";
 	webFXTreeConfig.hiddenFolderIcon		= "script/xloadtree/images/xp/hiddenFolder.png";

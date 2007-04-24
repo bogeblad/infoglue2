@@ -53,7 +53,7 @@
 | Created 2001-09-27 | All changes are in the log above. | Updated 2002-10-10 |
 \----------------------------------------------------------------------------*/
 
-
+webFXTreeConfig.contentTypeIcons = new Array();
 webFXTreeConfig.loadingText = "Loading...";
 webFXTreeConfig.loadErrorTextTemplate = "Error loading \"%1%\"";
 webFXTreeConfig.emptyErrorTextTemplate = "Error \"%1%\" does not contain any tree items";
@@ -197,6 +197,7 @@ function _xmlTreeToJsTree(oNode) {
 	var openIcon = oNode.getAttribute("openIcon");
 	var src = oNode.getAttribute("src");
 	var isHidden = oNode.getAttribute("isHidden");
+	var contentTypeDefinitionId = oNode.getAttribute("contentTypeDefinitionId");
 	//alert("isHidden:" + isHidden);
 	//alert("src:" + src + ":" + hidden);
 	var hasChildren = oNode.getAttribute("hasChildren");
@@ -215,6 +216,17 @@ function _xmlTreeToJsTree(oNode) {
 		else
 			openIcon = webFXTreeConfig.openFolderIcon;
 	}
+	
+	if(contentTypeDefinitionId)
+	{
+		var contentTypeIcon = webFXTreeConfig.contentTypeIcons[contentTypeDefinitionId];
+		if(contentTypeIcon)
+		{
+			icon = contentTypeIcon;
+			openIcon = contentTypeIcon;
+		}
+	}
+	
 	// Addition end
 	
 	// create jsNode
