@@ -243,7 +243,9 @@ public class SimplifiedJNDIBasicAuthorizationModule implements AuthorizationModu
 				boolean isFullName = false;
 				for (int i = 0; i < userBases.length; i++) 
 				{
-					System.out.println("Looking if the userName " + userName + " is a full name:" + userBases[i] + "=" + (userName.indexOf(userBases[i]) > -1));
+					if(logger.isInfoEnabled())
+						logger.info("Looking if the userName " + userName + " is a full name:" + userBases[i] + "=" + (userName.indexOf(userBases[i]) > -1));
+					
 					if(userName.toLowerCase().indexOf(userBases[i].toLowerCase()) > -1)
 					{
 						isFullName = true;
@@ -253,10 +255,12 @@ public class SimplifiedJNDIBasicAuthorizationModule implements AuthorizationModu
 				
 				if(!isFullName)
 				{
-					System.out.println("UserName " + userName + " was not a full name");
+					if(logger.isInfoEnabled())
+						logger.info("UserName " + userName + " was not a full name");
 					userName = getDistinguishedUserName(userName, ctx);
 					//userName = "" + usersAttributeFilter + "=" + userName + ",OU=Testanv\u00e4ndare," + userBase;
-					logger.info("userName:" + userName);
+					if(logger.isInfoEnabled())
+						logger.info("userName:" + userName);
 				}
 
 				Map userAttributes = getUserAttributes(userName, ctx);
@@ -287,7 +291,7 @@ public class SimplifiedJNDIBasicAuthorizationModule implements AuthorizationModu
 		String distinguishedUserName = null;
 		
 		String userBase					= this.extraProperties.getProperty("userBase");				
-		System.out.println("userBase:" + userBase);
+
 		String[] userBases = null;
 		if(userBase != null)
 			userBases = userBase.split(";");
@@ -299,7 +303,9 @@ public class SimplifiedJNDIBasicAuthorizationModule implements AuthorizationModu
    		for(int userBaseIndex=0; userBaseIndex < userBases.length; userBaseIndex++)
 		{
 			String baseDN = userBases[userBaseIndex];
-			System.out.println("Searching for distinguished name in " + baseDN);
+			
+			if(logger.isInfoEnabled())
+				logger.info("Searching for distinguished name in " + baseDN);
 			//String baseDN = userBase;
 
 			try
@@ -312,7 +318,6 @@ public class SimplifiedJNDIBasicAuthorizationModule implements AuthorizationModu
 		        		baseDN = anonymousUserBase;
 		        }
 		        
-		        System.out.println("userName:" + userName);
 		        logger.info("userName:" + userName);
 			        
 		        int index = 0;
@@ -332,8 +337,8 @@ public class SimplifiedJNDIBasicAuthorizationModule implements AuthorizationModu
 					samAccountDomainName = this.extraProperties.getProperty("samAccountDomainName." + index);
 				}
 				
-				System.out.println("userName:" + userName);
-		        logger.info("userName:" + userName);
+				if(logger.isInfoEnabled())
+					logger.info("userName:" + userName);
 		        
 				String searchFilter = "(CN=" + userName + ")";
 				if(userSearch != null && userSearch.length() > 0)
@@ -341,25 +346,29 @@ public class SimplifiedJNDIBasicAuthorizationModule implements AuthorizationModu
 					searchFilter = userSearch.replaceAll("\\{1\\}", userName);
 				}
 				
-				logger.info("searchFilter:" + searchFilter);
-				System.out.println("searchFilter:" + searchFilter);
+				if(logger.isInfoEnabled())
+					logger.info("searchFilter:" + searchFilter);
 				
 				String attributesFilter = "cn, distinguishedName";
 				if(userAttributesFilter != null && userAttributesFilter.length() > 0)
 					attributesFilter = userAttributesFilter;
 				
 				String[] attrID = attributesFilter.split(",");
-				
-				logger.info("baseDN:" + baseDN);
-				logger.info("searchFilter:" + searchFilter);
-				logger.info("attrID" + attrID);
+
+				if(logger.isInfoEnabled())
+				{
+					logger.info("baseDN:" + baseDN);
+					logger.info("searchFilter:" + searchFilter);
+					logger.info("attrID" + attrID);
+				}
 							
 				SearchControls ctls = new SearchControls(); 
 				ctls.setSearchScope(SearchControls.SUBTREE_SCOPE);
 				ctls.setReturningAttributes(attrID);
 				
 				NamingEnumeration answer = ctx.search(baseDN, searchFilter, ctls); 
-				System.out.println("baseDN:" + baseDN + " - " + searchFilter + "\n" + answer.hasMore());
+				if(logger.isInfoEnabled())
+					logger.info("baseDN:" + baseDN + " - " + searchFilter + "\n" + answer.hasMore());
 
 				if(!answer.hasMore())
 					throw new Exception("The user with userName=" + userName + " was not found in the JNDI Data Source.");
@@ -367,15 +376,18 @@ public class SimplifiedJNDIBasicAuthorizationModule implements AuthorizationModu
 				while (answer.hasMore()) 
 				{
 					SearchResult sr = (SearchResult)answer.next();
-					System.out.println("Person:" + sr.toString() + "\n");
-					logger.info("Person:" + sr.toString() + "\n");
+					if(logger.isInfoEnabled())
+						logger.info("Person:" + sr.toString() + "\n");
+					
 					Attributes attributes = sr.getAttributes();
-					logger.info("attributes:" + attributes + "\n");
-					System.out.println("attributes:" + attributes + "\n");
+					
+					if(logger.isInfoEnabled())
+						logger.info("attributes:" + attributes + "\n");
 									
 					Attribute userNameAttribute = attributes.get(userNameAttributeFilter);
-					logger.info("userNameAttribute:" + userNameAttribute.toString());
-					System.out.println("userNameAttribute:" + userNameAttribute.toString());
+					
+					if(logger.isInfoEnabled())
+						logger.info("userNameAttribute:" + userNameAttribute.toString());
 					
 					if(userNameAttribute != null)
 					{
@@ -383,8 +395,10 @@ public class SimplifiedJNDIBasicAuthorizationModule implements AuthorizationModu
 						while(allEnum.hasMore())
 						{
 							String value = (String)allEnum.next();
-							logger.info("value:" + value);
-							System.out.println("value:" + value);
+							
+							if(logger.isInfoEnabled())
+								logger.info("value:" + value);
+							
 							distinguishedUserName = value;
 							if(distinguishedUserName != null)
 								return distinguishedUserName;
@@ -395,7 +409,6 @@ public class SimplifiedJNDIBasicAuthorizationModule implements AuthorizationModu
 			catch (Exception e) 
 			{
 				logger.warn(e);
-				System.out.println("Exception:" + e.getMessage());
 			}
 		}
 
@@ -1096,7 +1109,7 @@ public class SimplifiedJNDIBasicAuthorizationModule implements AuthorizationModu
 		roles = new ArrayList();
 
 		String roleBase 				= this.extraProperties.getProperty("roleBase");
-		System.out.println("roleBase:" + roleBase);
+
 		String[] roleBases = null;
 		if(roleBase != null)
 			roleBases = roleBase.split(";");
@@ -1110,7 +1123,9 @@ public class SimplifiedJNDIBasicAuthorizationModule implements AuthorizationModu
 		for(int roleBaseIndex=0; roleBaseIndex < roleBases.length; roleBaseIndex++)
 		{
 			String baseDN = roleBases[roleBaseIndex];
-			System.out.println("Searching for roles in " + baseDN + " - roles was " + roles.size());
+			
+			if(logger.isInfoEnabled())
+				logger.info("Searching for roles in " + baseDN + " - roles was " + roles.size());
 
 			//String baseDN = roleBase;
 
@@ -1120,20 +1135,25 @@ public class SimplifiedJNDIBasicAuthorizationModule implements AuthorizationModu
 				if(rolesFilter != null && rolesFilter.length() > 0)
 					searchFilter = rolesFilter;
 	
-				System.out.println("baseDN:" + baseDN);
-				
-				logger.info("searchFilter:" + searchFilter);
-				logger.info("roleSearchScope:" + roleSearchScope);
-				logger.info("rolesAttributeFilter:" + rolesAttributeFilter);
+				if(logger.isInfoEnabled())
+				{
+					logger.info("baseDN:" + baseDN);
+					logger.info("searchFilter:" + searchFilter);
+					logger.info("roleSearchScope:" + roleSearchScope);
+					logger.info("rolesAttributeFilter:" + rolesAttributeFilter);
+				}
 				
 				String rolesAttribute = "distinguishedName";
 				if(rolesAttributeFilter != null && rolesAttributeFilter.length() > 0)
 					rolesAttribute = rolesAttributeFilter;
 				
-				logger.info("rolesAttribute:" + rolesAttribute);
+				if(logger.isInfoEnabled())
+					logger.info("rolesAttribute:" + rolesAttribute);
 				
 				String[] attrID = rolesAttribute.split(",");
-				logger.info("attrID:" + attrID);
+				
+				if(logger.isInfoEnabled())
+					logger.info("attrID:" + attrID);
 				
 				SearchControls ctls = new SearchControls(); 
 	
@@ -1151,15 +1171,19 @@ public class SimplifiedJNDIBasicAuthorizationModule implements AuthorizationModu
 				if(!answer.hasMore())
 					throw new Exception("There was no roles found in the JNDI Data Source.");
 			
-				logger.info("-----------------------\n");
 				while (answer.hasMore()) 
 				{
 					SearchResult sr = (SearchResult)answer.next();
-					logger.info("Group:" + sr.toString() + "\n");
+					
+					if(logger.isInfoEnabled())
+						logger.info("Group:" + sr.toString() + "\n");
 					
 					Attributes attributes = sr.getAttributes();
-					logger.info("attributes:" + attributes.toString());
-					logger.info("roleNameAttribute:" + roleNameAttribute);
+					if(logger.isInfoEnabled())
+					{
+						logger.info("attributes:" + attributes.toString());
+						logger.info("roleNameAttribute:" + roleNameAttribute);
+					}
 	
 					Attribute attribute = attributes.get(roleNameAttribute);
 					String roleName = "";
@@ -1190,7 +1214,6 @@ public class SimplifiedJNDIBasicAuthorizationModule implements AuthorizationModu
 			catch (Exception e) 
 			{
 				logger.info("Could not find Roles: " + e.getMessage());
-				System.out.println("Could not find Roles: " + e.getMessage());
 			}
 		}
 		
@@ -1228,7 +1251,7 @@ public class SimplifiedJNDIBasicAuthorizationModule implements AuthorizationModu
 		users = new ArrayList();
 		
 		String userBase					= this.extraProperties.getProperty("userBase");
-		System.out.println("userBase:" + userBase);
+		
 		String[] userBases = null;
 		if(userBase != null)
 			userBases = userBase.split(";");
@@ -1257,7 +1280,9 @@ public class SimplifiedJNDIBasicAuthorizationModule implements AuthorizationModu
 		for(int userBaseIndex=0; userBaseIndex < userBases.length; userBaseIndex++)
 		{
 			String baseDN = userBases[userBaseIndex];
-			System.out.println("Searching for users in " + baseDN + " - users was " + users.size());
+			
+			if(logger.isInfoEnabled())
+				logger.info("Searching for users in " + baseDN + " - users was " + users.size());
 
 			DirContext ctx = getContext();
 
@@ -1355,7 +1380,8 @@ public class SimplifiedJNDIBasicAuthorizationModule implements AuthorizationModu
 
 						if(userFirstName == null || userLastName == null || userDisplayName == null || userMail == null)
 						{
-							System.out.println("User not valid " + userNameAttribute);
+							if(logger.isInfoEnabled())
+								logger.info("User not valid " + userNameAttribute);
 							throw new SystemException("The user " + userNameAttribute + " did not have firstName, lastName or email attribute which InfoGlue requires");
 						}
 						
@@ -1441,7 +1467,6 @@ public class SimplifiedJNDIBasicAuthorizationModule implements AuthorizationModu
 					}
 					catch(Exception e)
 					{
-						System.out.println("An error occurred when we tried to read user: " + e.getMessage());
 						logger.warn("An error occurred when we tried to read user: " + e.getMessage(), e);
 					}
 				}
@@ -1455,7 +1480,8 @@ public class SimplifiedJNDIBasicAuthorizationModule implements AuthorizationModu
 				ctx.close();
 			}
 
-			System.out.println("After searching for users in " + baseDN + " - users was " + users.size());
+			if(logger.isInfoEnabled())
+				logger.info("After searching for users in " + baseDN + " - users was " + users.size());
 		}
 
 		t.printElapsedTime("all users took " + index + ":");
@@ -1654,7 +1680,7 @@ public class SimplifiedJNDIBasicAuthorizationModule implements AuthorizationModu
 		groups = new ArrayList();
 		
 		String groupBase 					= this.extraProperties.getProperty("groupBase");
-		System.out.println("groupBase:" + groupBase);
+		
 		String[] groupBases = null;
 		if(groupBase != null)
 			groupBases = groupBase.split(";");
@@ -1668,7 +1694,9 @@ public class SimplifiedJNDIBasicAuthorizationModule implements AuthorizationModu
 		for(int groupBaseIndex=0; groupBaseIndex < groupBases.length; groupBaseIndex++)
 		{
 			String baseDN = groupBases[groupBaseIndex];
-			System.out.println("Searching for groups in " + baseDN + " - groups was " + groups.size());
+			
+			if(logger.isInfoEnabled())
+				logger.info("Searching for groups in " + baseDN + " - groups was " + groups.size());
 
 			//String baseDN = groupBase;
 
@@ -1678,8 +1706,11 @@ public class SimplifiedJNDIBasicAuthorizationModule implements AuthorizationModu
 				if(groupsFilter != null && groupsFilter.length() > 0)
 					searchFilter = groupsFilter;
 				
-				logger.info("searchFilter:" + searchFilter);
-				logger.info("groupSearchScope:" + groupSearchScope);
+				if(logger.isInfoEnabled())
+				{
+					logger.info("searchFilter:" + searchFilter);
+					logger.info("groupSearchScope:" + groupSearchScope);
+				}
 				
 				String groupsAttribute = "distinguishedName";
 				if(groupsAttributeFilter != null && groupsAttributeFilter.length() > 0)
@@ -1741,7 +1772,6 @@ public class SimplifiedJNDIBasicAuthorizationModule implements AuthorizationModu
 			catch (Exception e) 
 			{
 				logger.info("Could not find Groups: " + e.getMessage());
-				System.out.println("Could not find Groups: " + e.getMessage());
 			}
 		}
 		

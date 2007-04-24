@@ -78,7 +78,6 @@ public class ViewInconsistenciesAction extends InfoGlueAbstractAction
     public String doExecute() throws Exception
     {
     	inconsistencies = InconsistenciesController.getController().getAllInconsistencies();
-        System.out.println("inconsistencies:" + inconsistencies.size());
         
     	return "success";
     }
