@@ -34,6 +34,11 @@ Abbreviated Changelog from 2.4.6 Final
 - Fixed bug which made edit-on-sight fall back to normal edit view if a validation error occurred.
 - Added possibility to have different icons in the content-tree for each content types. Rudimentary at the moment - you have to add an image file with the contentTypeDefinitionId in the infoglueCMS\script\xloadtree\images\xp\-folder.
 - Fixed so the text searches with matchingContents etc on SQLServer works. Was a problem with how SQL-server escapes [-tags.
+- Made a new webservice method which lets you get a contentVersion for a content remotely.
+- Made it possible to have a ContentVersionVO as argument when using the contentAttribute-tag. Makes things easier when dealing with remote versions.
+- Added speed improvements to ReferencingPages-tag.
+- Added an experimental ClearCache-tag which would allow you to clear the caches from deliver based on that you know what you are doing. Not recommended yet.
+- Made evaluation of whole page really not happen if set. Saves a lot of memory and performance on large pages.
 
 -------------------------------------------------------------------------------------
 - InfoGlue 2.4.6 Final
