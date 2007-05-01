@@ -119,6 +119,7 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 			}
 		}
 
+   		/*
 		Map context = getDefaultContext();
 		StringWriter cacheString = new StringWriter();
 		PrintWriter cachedStream = new PrintWriter(cacheString);
@@ -131,7 +132,23 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 		pageString = this.getTemplateController().decoratePage(pageString);
 		
 		this.setPageString(pageString);
+		*/
+   		
+   		String pageString = null;
+   		
+		if(this.getDeliveryContext().getEvaluateFullPage())
+		{
+			Map context = getDefaultContext();
+			StringWriter cacheString = new StringWriter();
+			PrintWriter cachedStream = new PrintWriter(cacheString);
+			new VelocityTemplateProcessor().renderTemplate(context, cachedStream, pageContent, false, baseComponent);
+			
+			pageString = cacheString.toString();
+		}
 
+		pageString = this.getTemplateController().decoratePage(pageContent);
+		
+		this.setPageString(pageString);
 	}
 	
 	
