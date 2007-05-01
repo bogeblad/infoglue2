@@ -86,6 +86,54 @@ public class RemoteContentServiceImpl extends RemoteInfoGlueService
     private static ContentVersionControllerProxy contentVersionControllerProxy = ContentVersionControllerProxy.getController();
     
     /**
+     * Gets a content version from the cms. Very useful for getting the latest working version.
+     */
+    
+    public ContentVersionVO getContentVersion(final String principalName, final Object[] inputsArray) 
+    {
+        if(!ServerNodeController.getController().getIsIPAllowed(getRequest()))
+        {
+            logger.error("A client with IP " + getRequest().getRemoteAddr() + " was denied access to the webservice. Could be a hack attempt or you have just not configured the allowed IP-addresses correct.");
+            return null;
+        }
+        
+        if(logger.isInfoEnabled())
+        {
+	        logger.info("**************************************");
+	        logger.info("* Getting content through webservice *");
+	        logger.info("**************************************");
+        }
+	        
+        ContentVersionVO contentVersionVO = null;
+        
+        try
+        {
+			final DynamicWebserviceSerializer serializer = new DynamicWebserviceSerializer();
+	        Map args = (Map) serializer.deserialize(inputsArray);
+	        logger.info("args:" + args);
+	        
+	        Integer contentId = (Integer)args.get("contentId");
+	        Integer languageId = (Integer)args.get("languageId");
+	
+	        if(logger.isInfoEnabled())
+	        {
+		        logger.info("principalName:" + principalName);
+		        logger.info("contentId:" + contentId);
+		        logger.info("languageId:" + languageId);
+	        }
+	        
+            initializePrincipal(principalName);
+            contentVersionVO = contentVersionControllerProxy.getACLatestActiveContentVersionVO(this.principal, contentId, languageId);
+        }
+        catch(Throwable t)
+        {
+            logger.error("En error occurred when we tried to get the contentVersionVO:" + t.getMessage(), t);
+        }
+        
+        return contentVersionVO;
+    }
+
+    /**
      * Inserts a new Content including versions etc.
      */
     
