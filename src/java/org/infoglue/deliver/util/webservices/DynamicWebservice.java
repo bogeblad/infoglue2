@@ -254,7 +254,7 @@ public class DynamicWebservice
 	 */
 	public void setReturnType(final Class c, QName type) 
 	{
-		logger.debug("returnType=[" + (c==null ? "null" : type) + "]");
+		logger.debug("returnType=[" + (c==null ? "null" : type.getLocalPart()) + "]");
 		this.mappings.put(c, type);
 		returnType = mappingForClass(c); // null is ok
 	}
