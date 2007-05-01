@@ -1341,6 +1341,16 @@ public class BasicTemplateController implements TemplateController
 	 * value if OnSiteEdit is on.
 	 */
  
+	public String getContentAttribute(ContentVersionVO contentVersionValue, String attributeName, boolean clean) 
+	{				
+	    return getContentAttribute(contentVersionValue, attributeName);
+	}
+
+	/**
+	 * This method is just a dummy method used to ensure that we can ensure to not get a decorated attribute
+	 * value if OnSiteEdit is on.
+	 */
+ 
 	public String getMetaInfoContentAttribute(Integer contentId, Integer languageId, String attributeName, boolean clean) 
 	{				
 	    return getMetaInfoContentAttribute(contentId, languageId, attributeName);
@@ -1764,6 +1774,45 @@ public class BasicTemplateController implements TemplateController
 	}
 
 	/**
+	 * This method deliveres a String with the content-attribute asked for after it has been parsed and all special tags have been converted.
+	 * The attribute is fetched from the specified content.
+	 */
+	 
+	public String getParsedContentAttribute(ContentVersionVO contentVersionVO, String attributeName) 
+	{
+		String attributeValue = "";
+		
+		try
+		{
+			if(contentId != null)
+			{
+				String unparsedAttributeValue = ContentDeliveryController.getContentDeliveryController().getContentAttribute(getDatabase(), contentVersionVO, attributeName, false);
+				logger.info("Found unparsedAttributeValue:" + unparsedAttributeValue);
+				
+				templateLogicContext.put("inlineContentId", contentId);
+				
+				Map context = new HashMap();
+				context.put("inheritedTemplateLogic", this);
+				context.put("templateLogic", getTemplateController(this.siteNodeId, languageId, contentId, this.request, this.infoGluePrincipal, this.deliveryContext));
+
+				// Add the templateLogicContext objects to this context. (SS - 040219)
+				context.putAll(templateLogicContext);
+				
+				StringWriter cacheString = new StringWriter();
+				PrintWriter cachedStream = new PrintWriter(cacheString);
+				new VelocityTemplateProcessor().renderTemplate(context, cachedStream, unparsedAttributeValue, true);
+				attributeValue = cacheString.toString();
+			}
+		}
+		catch(Exception e)
+		{
+			logger.error("An error occurred trying to get attributeName=" + attributeName + " on content with id " + contentId + ":" + e.getMessage(), e);
+		}
+				
+		return attributeValue;
+	}
+
+	/**
 	 * This method is just a dummy method used to ensure that we can ensure to not get a decorated attribute
 	 * value if OnSiteEdit is on.
 	 */
@@ -1801,6 +1850,16 @@ public class BasicTemplateController implements TemplateController
 	public String getParsedContentAttribute(Integer contentId, Integer languageId, String attributeName, boolean clean)
 	{
 		return getParsedContentAttribute(contentId, languageId, attributeName);
+	}
+
+	/**
+	 * This method is just a dummy method used to ensure that we can ensure to not get a decorated attribute
+	 * value if OnSiteEdit is on.
+	 */
+
+	public String getParsedContentAttribute(ContentVersionVO contentVersionVO, String attributeName, boolean clean)
+	{
+		return getParsedContentAttribute(contentVersionVO, attributeName);
 	}
 
 	/**
@@ -2606,25 +2665,42 @@ public class BasicTemplateController implements TemplateController
 
 	public List getReferencingPages(Integer contentId, int maxRows)
 	{
-		List referencingPages = new ArrayList();
+		String cacheKey = "content_" + contentId + "_" + maxRows;
 		
-		try
+		if(logger.isInfoEnabled())
+			logger.info("cacheKey:" + cacheKey);
+		
+		List referencingPages = (List)CacheController.getCachedObject("referencingPagesCache", cacheKey);
+		if(referencingPages != null)
 		{
-			List referencingObjects = RegistryController.getController().getReferencingObjectsForContent(contentId, maxRows, this.getDatabase());
-			Iterator referencingObjectsIterator = referencingObjects.iterator();
-			while(referencingObjectsIterator.hasNext())
-			{
-				ReferenceBean referenceBean = (ReferenceBean)referencingObjectsIterator.next();
-				Object pageCandidate = referenceBean.getReferencingCompletingObject();
-				if(pageCandidate instanceof SiteNodeVO)
-				{
-					referencingPages.add(pageCandidate);
-				}
-			}
+			if(logger.isInfoEnabled())
+				logger.info("There was an cached referencingPages:" + referencingPages.size());
 		}
-		catch(Exception e)
+		else
 		{
-			logger.error("An error occurred trying to get referencing pages for the contentId " + this.contentId + ":" + e.getMessage(), e);
+			//List referencingPages = new ArrayList();
+			referencingPages = new ArrayList();
+			try
+			{
+				List referencingObjects = RegistryController.getController().getReferencingObjectsForContent(contentId, maxRows, this.getDatabase());
+				Iterator referencingObjectsIterator = referencingObjects.iterator();
+				while(referencingObjectsIterator.hasNext())
+				{
+					ReferenceBean referenceBean = (ReferenceBean)referencingObjectsIterator.next();
+					Object pageCandidate = referenceBean.getReferencingCompletingObject();
+					if(pageCandidate instanceof SiteNodeVO)
+					{
+						referencingPages.add(pageCandidate);
+					}
+				}
+				
+				if(referencingPages != null)
+					CacheController.cacheObject("referencingPagesCache", cacheKey, referencingPages);
+			}
+			catch(Exception e)
+			{
+				logger.error("An error occurred trying to get referencing pages for the contentId " + this.contentId + ":" + e.getMessage(), e);
+			}
 		}
 		
 		return referencingPages;

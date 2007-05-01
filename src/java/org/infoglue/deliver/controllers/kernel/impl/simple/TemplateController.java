@@ -344,15 +344,20 @@ public interface TemplateController
      * value if OnSiteEdit is on.
      */
     
-    public abstract String getContentAttribute(Integer contentId,
-            Integer langaugeId, String attributeName, boolean clean);
+    public abstract String getContentAttribute(Integer contentId, Integer langaugeId, String attributeName, boolean clean);
+
+    /**
+     * This method is just a dummy method used to ensure that we not get a decorated attribute
+     * value if OnSiteEdit is on.
+     */
+    
+    public abstract String getContentAttribute(ContentVersionVO contentVersionVO, String attributeName, boolean clean);
 
     /**
      * This method is a method which gets attributes from a meta info.
      */
     
-    public abstract String getMetaInfoContentAttribute(Integer contentId,
-            Integer langaugeId, String attributeName, boolean clean);
+    public abstract String getMetaInfoContentAttribute(Integer contentId, Integer langaugeId, String attributeName, boolean clean);
 	
 
     /**
@@ -443,6 +448,12 @@ public interface TemplateController
      */
     public abstract String getParsedContentAttribute(
             Integer contentId, Integer languageId, String attributeName, boolean clean);
+
+    /**
+     * This method is just a dummy method used to ensure that we can ensure to not get a decorated attribute
+     * value if OnSiteEdit is on.
+     */
+    public abstract String getParsedContentAttribute(ContentVersionVO contentVersionVO, String attributeName, boolean clean);
 
     /**
      * This method deliveres a list of strings which represents all assetKeys for a content.

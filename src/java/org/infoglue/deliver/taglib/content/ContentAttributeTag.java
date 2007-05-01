@@ -27,6 +27,7 @@ import java.util.Map;
 
 import javax.servlet.jsp.JspException;
 
+import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.deliver.controllers.kernel.impl.simple.LanguageDeliveryController;
 import org.infoglue.deliver.taglib.component.ComponentLogicTag;
@@ -51,6 +52,7 @@ public class ContentAttributeTag extends ComponentLogicTag
 {
 	private static final long serialVersionUID = 3257850991142318897L;
 	
+	private ContentVersionVO contentVersionVO;
 	private Integer contentId;
 	private String propertyName;
 	private String attributeName;
@@ -82,7 +84,18 @@ public class ContentAttributeTag extends ComponentLogicTag
 	{
 	    String result = null;
 	    
-        if(contentId != null)
+	    if(contentVersionVO != null)
+	    {
+	    	if(!parse)
+            {
+                result = getController().getContentAttribute(contentVersionVO, attributeName, disableEditOnSight);
+            }
+	        else
+	        {
+	            result = getController().getParsedContentAttribute(contentVersionVO, attributeName, disableEditOnSight);
+            }
+	    }
+	    else if(contentId != null)
         {
             if(!parse)
             {
@@ -207,6 +220,11 @@ public class ContentAttributeTag extends ComponentLogicTag
         this.languageId = evaluateInteger("contentAttribute", "languageId", languageId);
     }
 
+	public void setContentVersion(final String contentVersion) throws JspException
+	{
+		this.contentVersionVO = (ContentVersionVO)evaluate("contentAttribute", "contentVersion", contentVersion, ContentVersionVO.class);
+	}
+
     public void setFullBaseUrl(boolean fullBaseUrl)
     {
         this.fullBaseUrl = fullBaseUrl;
@@ -221,4 +239,5 @@ public class ContentAttributeTag extends ComponentLogicTag
     {
         this.useAttributeLanguageFallback = useAttributeLanguageFallback;
     }
+
 }
