@@ -106,13 +106,18 @@ public class ContentVersionControllerProxy extends ContentVersionController
 	{
 		Map hashMap = new HashMap();
 		hashMap.put("contentId", contentId);
-		hashMap.put("languageId", languageId);
+	
+		intercept(hashMap, "Content.Read", infogluePrincipal);
+
+		ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentId, languageId);
+		
+		hashMap = new HashMap();
+		hashMap.put("contentVersionId", contentVersionVO.getId());
 	
 		intercept(hashMap, "ContentVersion.Read", infogluePrincipal);
-			
-		return ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentId, languageId);
-	} 
 
+		return contentVersionVO;
+	} 
 	
 	
 	
