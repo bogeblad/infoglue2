@@ -25,6 +25,7 @@ package org.infoglue.deliver.applications.actions;
 
 import java.net.InetAddress;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
@@ -32,6 +33,7 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.swing.event.EventListenerList;
 
 import org.apache.log4j.Appender;
 import org.apache.log4j.Category;
@@ -41,6 +43,7 @@ import org.apache.log4j.RollingFileAppender;
 import org.apache.pluto.PortletContainerServices;
 import org.apache.pluto.portalImpl.services.ServiceManager;
 import org.apache.pluto.portalImpl.services.portletentityregistry.PortletEntityRegistry;
+import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
 import org.infoglue.cms.controllers.kernel.impl.simple.ServerNodeController;
@@ -51,6 +54,13 @@ import org.infoglue.deliver.portal.ServletConfigContainer;
 import org.infoglue.deliver.portal.services.PortletEntityRegistryServiceDBImpl;
 import org.infoglue.deliver.util.CacheController;
 import org.infoglue.deliver.util.RequestAnalyser;
+
+import com.opensymphony.oscache.base.Cache;
+import com.opensymphony.oscache.base.OSCacheUtility;
+import com.opensymphony.oscache.web.ServletCache;
+import com.opensymphony.oscache.web.ServletCacheAdministrator;
+
+import webwork.action.ActionContext;
 
 /**
  * This is the action that shows the application state and also can be used to set up surveilence.
@@ -77,6 +87,8 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
 	private String className				= "";
 	private String logLevel					= "";
 
+	private static VisualFormatter formatter = new VisualFormatter();
+	
 	/**
 	 * The constructor for this action - contains nothing right now.
 	 */
@@ -254,6 +266,27 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
         return "cleared";
     }
 
+    public String doClearOSCaches() throws Exception
+	{
+        if(!ServerNodeController.getController().getIsIPAllowed(this.getRequest()))
+        {
+        	logger.error("A user from an IP(" + this.getRequest().getRemoteAddr() + ") which is not allowed tried to call doReCache.");
+
+            this.getResponse().setContentType("text/plain");
+            this.getResponse().setStatus(HttpServletResponse.SC_FORBIDDEN);
+            this.getResponse().getWriter().println("You have no access to this view - talk to your administrator if you should.");
+            
+            return NONE;
+        }
+
+		ServletCacheAdministrator servletCacheAdministrator = ServletCacheAdministrator.getInstance(ActionContext.getServletContext());
+		servletCacheAdministrator.flushAll();
+		Cache cache = servletCacheAdministrator.getAppScopeCache(ActionContext.getServletContext());
+		
+		OSCacheUtility.clear(cache);
+		
+		return "cleared";
+	}
     /**
      * This action allows recaching of some parts of the caches manually.
      */
@@ -403,7 +436,16 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
         states.add(getList("Total number of requests handled", "" + RequestAnalyser.getRequestAnalyser().getTotalNumberOfRequests()));
         states.add(getList("Average processing time per request", "" + RequestAnalyser.getRequestAnalyser().getAverageElapsedTime() + " ms."));
         states.add(getList("Slowest request", "" + RequestAnalyser.getRequestAnalyser().getMaxElapsedTime() + " ms."));
-        
+		
+        states.add(getList("<br/><strong>Latest publications</strong>", "&nbsp;"));
+        List publications = RequestAnalyser.getRequestAnalyser().getLatestPublications();
+        Iterator publicationsIterator = publications.iterator();
+        while(publicationsIterator.hasNext())
+        {
+        	Date publicationDate = (Date)publicationsIterator.next();
+        	states.add(getList("Date:", "" + formatter.formatDate(publicationDate, "yyyy-MM-dd HH:mm:ss")));
+        }
+		
         states.add(getList("<br/><strong>Individual components</strong>", "&nbsp;"));
         Set componentNames = RequestAnalyser.getAllComponentNames();
         Iterator componentNamesIterator = componentNames.iterator();
@@ -413,7 +455,7 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
         	long componentAverageElapsedTime = RequestAnalyser.getComponentAverageElapsedTime(componentName);
         	states.add(getList("" + componentName, "" + componentAverageElapsedTime + " ms."));
         }
-        
+
         //states.add(getList("Number of request being handled now", "" + RequestAnalyser.getNumberOfCurrentRequests() + "(average request take " + (RequestAnalyser.getAverageTimeSpentOnOngoingRequests()) + " ms, max now is " + RequestAnalyser.getMaxTimeSpentOnOngoingRequests() + ")"));
         //states.add(getList("The slowest request handled now is", "" + ((RequestAnalyser.getLongestRequests() != null) ? RequestAnalyser.getLongestRequests().getAttribute("progress") : "")));
         
@@ -495,6 +537,14 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
 	public Map getCaches()
 	{
 		return CacheController.getCaches();
+	}
+
+	public ServletCache getOSCache()
+	{
+		ServletCacheAdministrator servletCacheAdministrator = ServletCacheAdministrator.getInstance(ActionContext.getServletContext());
+		ServletCache applicationCache = (ServletCache)servletCacheAdministrator.getAppScopeCache(ActionContext.getServletContext());
+        
+		return applicationCache;
 	}
 
 	public Map getEventListeners()
