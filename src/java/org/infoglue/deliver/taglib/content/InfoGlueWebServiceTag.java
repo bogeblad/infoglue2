@@ -7,6 +7,7 @@ import java.util.Map;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspTagException;
+import javax.xml.namespace.QName;
 
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.CmsPropertyHandler;
@@ -71,6 +72,36 @@ public abstract class InfoGlueWebServiceTag extends TemplateControllerTag
             ws.setTargetEndpointAddress(targetEndpointAddress);
             ws.setOperationName(getOperationName());
             ws.setReturnType(Boolean.class);
+
+            if(argument instanceof Map || argument instanceof HashMap)
+                ws.addArgument(name, (Map)argument);
+            else if(argument instanceof List || argument instanceof ArrayList)
+                ws.addArgument(name, (List)argument);
+            else
+                ws.addArgument(name, argument);
+            
+            ws.callService();
+            setResultAttribute(ws.getResult());
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+            throw new JspTagException(e.getMessage());
+        }
+    }
+
+    protected void invokeOperation(String name, Object argument, Class returnType, String nameSpace) throws JspException
+    {
+        try
+        {
+            if (this.principal == null)
+                this.principal = this.getController().getPrincipal();
+
+            final DynamicWebservice ws = new DynamicWebservice(principal);
+
+            ws.setTargetEndpointAddress(targetEndpointAddress);
+            ws.setOperationName(getOperationName());
+            ws.setReturnType(returnType, new QName(nameSpace, ws.getClassName(returnType)));
 
             if(argument instanceof Map || argument instanceof HashMap)
                 ws.addArgument(name, (Map)argument);

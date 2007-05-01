@@ -248,7 +248,17 @@ public class DynamicWebservice
 		logger.debug("returnType=[" + (c==null ? "null" : getClassName(c)) + "]");
 		returnType = mappingForClass(c); // null is ok
 	}
-	
+
+	/**
+	 * 
+	 */
+	public void setReturnType(final Class c, QName type) 
+	{
+		logger.debug("returnType=[" + (c==null ? "null" : type) + "]");
+		this.mappings.put(c, type);
+		returnType = mappingForClass(c); // null is ok
+	}
+
 	/**
 	 * 
 	 */
@@ -335,7 +345,7 @@ public class DynamicWebservice
 	/**
 	 * 
 	 */
-	private String getClassName(final Class c)
+	public String getClassName(final Class c)
 	{
 		final int firstChar = c.getName().lastIndexOf('.') + 1;
 		return (firstChar > 0) ? c.getName().substring(firstChar) : c.getName();
