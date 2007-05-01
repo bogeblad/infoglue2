@@ -385,9 +385,14 @@ public class CacheController extends Thread
 	
 	public static void clearCaches(String entity, String entityId, String[] cachesToSkip) throws Exception
 	{	
+		clearCaches(entity, entityId, cachesToSkip, false);
+	}
+	
+	public static void clearCaches(String entity, String entityId, String[] cachesToSkip, boolean forceClear) throws Exception
+	{	
 		long wait = 0;
 		//while(RequestAnalyser.getRequestAnalyser().getNumberOfCurrentRequests() > 0)
-		while(RequestAnalyser.getRequestAnalyser().getNumberOfActiveRequests() > 0)
+		while(!forceClear && RequestAnalyser.getRequestAnalyser().getNumberOfActiveRequests() > 0)
 	    {
 	        //logger.warn("Number of requests: " + RequestAnalyser.getRequestAnalyser().getNumberOfCurrentRequests() + " was more than 0 - lets wait a bit.");
 	        if(wait == 3000)
@@ -524,6 +529,10 @@ public class CacheController extends Thread
 					{	
 						clear = true;
 						selectiveCacheUpdate = true;
+					}
+					if(cacheName.equalsIgnoreCase("referencingPagesCache") && (entity.indexOf("ContentVersion") > -1 || entity.indexOf("Qualifyer") > 0))
+					{	
+						clear = true;
 					}
 					if(cacheName.equalsIgnoreCase("boundSiteNodeCache") && (entity.indexOf("ServiceBinding") > 0 || entity.indexOf("Qualifyer") > 0 || entity.indexOf("SiteNodeVersion") > 0 || entity.indexOf("SiteNodeVersion") > 0 || entity.indexOf("SiteNode") > 0 || entity.indexOf("AccessRight") > 0 || entity.indexOf("SystemUser") > 0 || entity.indexOf("Role") > 0  || entity.indexOf("Group") > 0))
 					{
@@ -836,7 +845,7 @@ public class CacheController extends Thread
 	    while(RequestAnalyser.getRequestAnalyser().getNumberOfActiveRequests() > 0)
 	    {
 	        //logger.warn("Number of requests: " + RequestAnalyser.getRequestAnalyser().getNumberOfCurrentRequests() + " was more than 0 - lets wait a bit.");
-			System.out.println("The clearCastorCaches method waited");
+			//System.out.println("The clearCastorCaches method waited");
 	    	Thread.sleep(10);
 	    }
 	    
@@ -918,9 +927,14 @@ public class CacheController extends Thread
 
 	public static synchronized void clearCache(Class type, Object[] ids) throws Exception
 	{
+		clearCache(type, ids, false);
+	}
+	
+	public static synchronized void clearCache(Class type, Object[] ids, boolean forceClear) throws Exception
+	{
 		long wait = 0;
 		//while(RequestAnalyser.getRequestAnalyser().getNumberOfCurrentRequests() > 0)
-		while(RequestAnalyser.getRequestAnalyser().getNumberOfActiveRequests() > 0)
+		while(!forceClear && RequestAnalyser.getRequestAnalyser().getNumberOfActiveRequests() > 0)
 	    {
 	        logger.warn("Number of requests: " + RequestAnalyser.getRequestAnalyser().getNumberOfCurrentRequests() + " was more than 0 - lets wait a bit.");
 	        if(wait == 3000)
@@ -966,9 +980,14 @@ public class CacheController extends Thread
 	
 	public static void clearCache(Class type, Object[] ids, Database db) throws Exception
 	{
+		clearCache(type, ids, false, db);
+	}
+	
+	public static void clearCache(Class type, Object[] ids, boolean forceClear, Database db) throws Exception
+	{
 		long wait = 0;
 	    //while(RequestAnalyser.getRequestAnalyser().getNumberOfCurrentRequests() > 0)
-	    while(RequestAnalyser.getRequestAnalyser().getNumberOfActiveRequests() > 0)
+	    while(!forceClear && RequestAnalyser.getRequestAnalyser().getNumberOfActiveRequests() > 0)
 	    {
 	        if(wait == 3000)
 			{
