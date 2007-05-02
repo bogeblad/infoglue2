@@ -228,7 +228,7 @@ public class ExtendedSearchController extends BaseController
         if(useSQLServerDialect == null)
         {
             String databaseEngine = CmsPropertyHandler.getDatabaseEngine();
-            if(databaseEngine == null || (!databaseEngine.equalsIgnoreCase("mssql") && !databaseEngine.equalsIgnoreCase("sql-server")))
+            if(databaseEngine == null || (!databaseEngine.equalsIgnoreCase("mssql") && !databaseEngine.equalsIgnoreCase("sql-server") && !databaseEngine.equalsIgnoreCase("SQL Server")))
             {
             	useSQLServerDialect = new Boolean(false);
             }
