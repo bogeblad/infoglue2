@@ -134,7 +134,7 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 		this.setPageString(pageString);
 		*/
    		
-   		String pageString = null;
+   		String pageString = pageContent;
    		
 		if(this.getDeliveryContext().getEvaluateFullPage())
 		{
@@ -146,7 +146,7 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 			pageString = cacheString.toString();
 		}
 
-		pageString = this.getTemplateController().decoratePage(pageContent);
+		pageString = this.getTemplateController().decoratePage(pageString);
 		
 		this.setPageString(pageString);
 	}
