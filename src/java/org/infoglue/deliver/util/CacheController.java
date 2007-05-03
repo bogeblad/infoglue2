@@ -163,7 +163,7 @@ public class CacheController extends Thread
 		    }
 		}
 	}	
-
+	
 	public static void clearServerNodeProperty(boolean reCache)
 	{
 		clearCache("serverNodePropertiesCache");
@@ -1234,9 +1234,13 @@ public class CacheController extends Thread
 						InfoGlueAuthenticationFilter.initializeProperties();
 						logger.info("initialized InfoGlueAuthenticationFilter");
 					} 
-					catch (SystemException e1) 
+					catch (Exception e1) 
 					{
 						logger.warn("Could not refresh authentication filter:" + e1.getMessage(), e1);
+					}
+					catch (Throwable t) 
+					{
+						logger.warn("Could not refresh authentication filter:" + t.getMessage(), t);
 					}
 			    }
 
