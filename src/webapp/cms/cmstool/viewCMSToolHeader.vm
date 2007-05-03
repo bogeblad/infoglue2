@@ -194,20 +194,19 @@
 <div style="right:15px; position:absolute; top:4px; visibility: visible; z-index:1; border:0px solid black;">
 <table border="0" cellspacing="0" cellpadding="0" width="200">
 <tr>
-<!--
-	<td align="right">
-		<img src="images/$ui.getString("images.header.mySettingLabel")" border="0">
-	</td>
--->
 	<td align="right" nowrap="1">
+	#if($toolLocales.size() > 1)
 		<img src="images/$ui.getString("images.header.languageLabel")"/><img src="images/trans.gif" width="3" height="5"/>
+	#end
 	</td>
 	<td align="right" width="100">
+	#if($toolLocales.size() > 1)
 		<select name="languageCode" onchange="changeLanguage(this);" class="sitedropbox" style="width: 100px;">
 		#foreach($toolLocale in $toolLocales)
 			<option value="$toolLocale.language" #if($currentLocale.language == $toolLocale.language)selected="1"#end>$toolLocale.displayName</option>
 		#end
 		</select>
+	#end
 	</td>
 </tr>
 </table>
