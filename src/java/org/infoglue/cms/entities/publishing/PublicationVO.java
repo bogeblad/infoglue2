@@ -145,7 +145,7 @@ public class PublicationVO extends ValidatableEntityVO implements BaseEntityVO
 
  		// Set the constraints
  		cr.setValidRange(new Range(2, 50) );
- 		cr.unique=true;	// public variabel will be changed to setter later
+ 		cr.unique=false;  // public variabel will be changed to setter later
  		cr.required=true; // public variabel will be changed to setter later
  		cr.setValue(name);
 
