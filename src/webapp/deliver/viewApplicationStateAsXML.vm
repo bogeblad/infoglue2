@@ -3,7 +3,7 @@
 	<title>Delivery engine status ($serverName)</title>
 	<version>2.4.8 Final</version>
 	<releaseDate>2007-05-01</releaseDate>
-	<serverName>$serverName</title>
+	<serverName>$serverName</serverName>
 	<items>
 	#foreach($state in $states)
 		<item name="$formatter.escapeExtendedHTML($state.get(0))">$formatter.escapeExtendedHTML($state.get(1))</item>
