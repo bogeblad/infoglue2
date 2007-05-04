@@ -56,6 +56,7 @@ public class ThreadMonitor implements Runnable
 	private String message;
 	private boolean kill = false;
 	private long threadId;
+	private static long lastSentTimer = System.currentTimeMillis();
 	
 	/// Constructor.  Give it a thread to watch, and a timeout in milliseconds.
 	// After the timeout has elapsed, the thread gets killed.  If you want
@@ -152,88 +153,101 @@ public class ThreadMonitor implements Runnable
 	
 	private void printThread()
 	{
-    	StackTraceElement[] el = targetThread.getStackTrace();
-        
-        StringBuffer stackString = new StringBuffer("\n\n" + message + ":\n\n");
-        stackString.append("\nNumber of current requests:" + RequestAnalyser.getRequestAnalyser().getNumberOfCurrentRequests() + ":\n");
-        stackString.append("\nNumber of active requests:" + RequestAnalyser.getRequestAnalyser().getNumberOfActiveRequests() + ":\n");
-        stackString.append("\nNumber of long requests:" + RequestAnalyser.getLongThreadMonitors().size() + ":\n");
-        stackString.append("\nAverage time:" + RequestAnalyser.getRequestAnalyser().getAverageElapsedTime() + ":\n");
-        stackString.append("\nLongest time:" + RequestAnalyser.getRequestAnalyser().getMaxElapsedTime() + ":\n");
-        stackString.append("\n--------------------------------------------\n\n");
-        stackString.append("\nThread with id [" + threadId + "] at report time:\n");
-        stackString.append("\nOriginal url:" + getOriginalFullURL() + "\n");
-        if (el != null && el.length != 0)
-        {
-            for (int j = 0; j < el.length; j++)
-            {
-            	StackTraceElement frame = el[j];
-            	if (frame == null)
-            		stackString.append("    null stack frame" + "\n");
-            	else	
-            		stackString.append("    ").append(frame.toString()).append("\n");
-            	
-            	if(j > 20) 
-            		break;
-			}                    
-       	}
-
-		stackString.append("\n\n**********************************\nConcurrent long threads (Only an excerpt of all)\n**********************************");
-
-	    ThreadMXBean t = ManagementFactory.getThreadMXBean();
-
-        List threadMonitors = RequestAnalyser.getLongThreadMonitors();
-        Iterator threadMonitorsIterator = threadMonitors.iterator();
-        int threadCount = 0;
-        while(threadMonitorsIterator.hasNext() && threadCount < 5)
-	    {
-			ThreadMonitor tm = (ThreadMonitor)threadMonitorsIterator.next();
-			
-			if(threadId == tm.getThreadId())
-				continue;
-			
-			long threads[] = {tm.getThreadId()};
-		    ThreadInfo[] tinfo = t.getThreadInfo(threads, 20);
-
-			stackString.append("\n\n---------------------------------\nConcurrent long thread [").append(tm.getThreadId()).append("]:\n");
-			stackString.append("Elapsed time:").append(tm.getElapsedTime()).append("\n Thread id: ").append(tm.getThreadId()).append("\n Original url: ").append(tm.getOriginalFullURL()).append(")");
-
-	        for (int i=0; i<tinfo.length; i++)
-		    {
-				ThreadInfo e = tinfo[i];
+		long now = System.currentTimeMillis();
 		
-		        el = e.getStackTrace();
-		        
-		        if (el != null && el.length != 0)
-		        {
-		            for (int n = 0; n < el.length; n++)
-		            {
-		            	StackTraceElement frame = el[n];
-		            	if (frame == null)
-		            		stackString.append("    null stack frame\n");
-		            	else	
-		            		stackString.append("    null stack frame").append(frame.toString()).append("\n");
-					}                    
-		       	}
+		//Only sends if the last stack was sent more than 3 seconds ago.
+		if((now - lastSentTimer) > 3000)
+		{			
+	    	StackTraceElement[] el = targetThread.getStackTrace();
+	        
+	        StringBuffer stackString = new StringBuffer("\n\n" + message + ":\n\n");
+	        stackString.append("\nNumber of current requests:" + RequestAnalyser.getRequestAnalyser().getNumberOfCurrentRequests() + ":\n");
+	        stackString.append("\nNumber of active requests:" + RequestAnalyser.getRequestAnalyser().getNumberOfActiveRequests() + ":\n");
+	        stackString.append("\nNumber of long requests:" + RequestAnalyser.getLongThreadMonitors().size() + ":\n");
+	        stackString.append("\nAverage time:" + RequestAnalyser.getRequestAnalyser().getAverageElapsedTime() + ":\n");
+	        stackString.append("\nLongest time:" + RequestAnalyser.getRequestAnalyser().getMaxElapsedTime() + ":\n");
+	        stackString.append("\n--------------------------------------------\n\n");
+	        stackString.append("\nThread with id [" + threadId + "] at report time:\n");
+	        stackString.append("\nOriginal url:" + getOriginalFullURL() + "\n");
+	        if (el != null && el.length != 0)
+	        {
+	            for (int j = 0; j < el.length; j++)
+	            {
+	            	StackTraceElement frame = el[j];
+	            	if (frame == null)
+	            		stackString.append("    null stack frame" + "\n");
+	            	else	
+	            		stackString.append("    ").append(frame.toString()).append("\n");
+	            	
+	            	if(j > 20) 
+	            		break;
+				}                    
+	       	}
+	
+			stackString.append("\n\n**********************************\nConcurrent long threads (Only an excerpt of all)\n**********************************");
+	
+		    ThreadMXBean t = ManagementFactory.getThreadMXBean();
+	
+	        List threadMonitors = RequestAnalyser.getLongThreadMonitors();
+	        Iterator threadMonitorsIterator = threadMonitors.iterator();
+	        int threadCount = 0;
+	        while(threadMonitorsIterator.hasNext() && threadCount < 5)
+		    {
+				ThreadMonitor tm = (ThreadMonitor)threadMonitorsIterator.next();
+				
+				if(threadId == tm.getThreadId())
+					continue;
+				
+				long threads[] = {tm.getThreadId()};
+			    ThreadInfo[] tinfo = t.getThreadInfo(threads, 20);
+	
+				stackString.append("\n\n---------------------------------\nConcurrent long thread [").append(tm.getThreadId()).append("]:\n");
+				stackString.append("Elapsed time:").append(tm.getElapsedTime()).append("\n Thread id: ").append(tm.getThreadId()).append("\n Original url: ").append(tm.getOriginalFullURL()).append(")");
+	
+		        for (int i=0; i<tinfo.length; i++)
+			    {
+					ThreadInfo e = tinfo[i];
+			
+			        el = e.getStackTrace();
+			        
+			        if (el != null && el.length != 0)
+			        {
+			            for (int n = 0; n < el.length; n++)
+			            {
+			            	StackTraceElement frame = el[n];
+			            	if (frame == null)
+			            		stackString.append("    null stack frame\n");
+			            	else	
+			            		stackString.append("    null stack frame").append(frame.toString()).append("\n");
+						}                    
+			       	}
+			    }
+		        	    
+				threadCount++;
 		    }
-	        	    
-			threadCount++;
-	    }
-        		 
-        logger.warn(stackString);
+	        		 
+	        logger.warn(stackString);
+	
+	        String warningEmailReceiver = CmsPropertyHandler.getWarningEmailReceiver();
+	        if(warningEmailReceiver != null && !warningEmailReceiver.equals("") && warningEmailReceiver.indexOf("@warningEmailReceiver@") == -1)
+	        {
+				try
+				{
+					MailServiceFactory.getService().sendEmail(warningEmailReceiver, warningEmailReceiver, null, message, stackString.toString().replaceAll("\n", "<br/>"), "utf-8");
+				} 
+				catch (Exception e)
+				{
+					logger.error("Could not send mail:" + e.getMessage(), e);
+				}
+	        }
 
-        String warningEmailReceiver = CmsPropertyHandler.getWarningEmailReceiver();
-        if(warningEmailReceiver != null && !warningEmailReceiver.equals("") && warningEmailReceiver.indexOf("@warningEmailReceiver@") == -1)
-        {
-			try
-			{
-				MailServiceFactory.getService().sendEmail(warningEmailReceiver, warningEmailReceiver, null, message, stackString.toString().replaceAll("\n", "<br/>"), "utf-8");
-			} 
-			catch (Exception e)
-			{
-				logger.error("Could not send mail:" + e.getMessage(), e);
-			}
-        }
+	        lastSentTimer = System.currentTimeMillis();
+		}
+		else
+		{
+			logger.warn("A thread took to long but the system seems to be really clogged so we don't send this one.");
+		}
+		
 	}
 	
 	/**
