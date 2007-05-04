@@ -84,9 +84,7 @@ public class ViewServerNodePropertiesAction extends InfoGluePropertiesAbstractAc
     private void populate(PropertySet ps, String key)
     {
         String value = this.getRequest().getParameter(key);
-	    if(key.equals("useHighLoadLimiter"))
-	    	System.out.println("value:" + value);
-        if(value != null && !value.equals(""))
+	    if(value != null && !value.equals(""))
 	        ps.setString("serverNode_" + this.getServerNodeId() + "_" + key, value);
     }
 
