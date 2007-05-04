@@ -4,6 +4,7 @@
 
 #beginContentTool("tool.contenttool.searchResultHeader" $ui.getString("tool.contenttool.searchResultHeader") "" "0" "0" "0")
 
+	<script type="text/javascript" src="script/overlib.js"></script>
 	<script type="text/javascript" language="JavaScript">
 	<!-- 		
 		
@@ -230,6 +231,8 @@
 </table>
 </form>
 
+<div id="overDiv" style="position:absolute; visibility:hidden; z-index:1000; border: 1px solid #333333; background-color: #CCCCFF;"></div>
+
 <table tableborder=0 border=0 bgcolor="#C7D1B3" width="100%" cellpadding="1" cellspacing="0"><tr><td>
 #set($lvConstraint = 0)
 
@@ -238,11 +241,13 @@
 #set($cnt = 0)
 #foreach ($contentVersionVO in $contentVersionVOList)
 	#set( $contentVersionId = $contentVersionVO.id ) 
-	#set( $contentRepositoryId = $this.getContentVO($contentVersionVO.contentId).repositoryId ) 
+	#set( $contentVO = $this.getContentVO($contentVersionVO.contentId) ) 
+	#set( $contentRepositoryId = $contentVO.repositoryId ) 
 	#set( $path = $this.getContentPath($contentVersionVO.contentId))
 	<script type="text/javascript">var path_${contentVersionVO.contentId} = "$path";</script>	
+	#set( $fnutt = '"')
 	#set( $rowUrl = "javascript:setSelected($contentVersionVO.contentId, $contentRepositoryId, path_${contentVersionVO.contentId});")
-	#set( $row = ["<a href='$rowUrl'>$path</a>"] )
+	#set( $row = ["<a href='$rowUrl'>$contentVO.name</a> <span onmouseover='return overlib(${fnutt}$path${fnutt}, WIDTH, 400, BGCOLOR, ${fnutt}#FFFFFF${fnutt});' onmouseout='return nd();'><img src='images/questionMark.gif'/></span>"] )
 	#set($cnt = $cnt + 1)
 	
 	#lvAddRow($row $cnt $contentVersionId)
