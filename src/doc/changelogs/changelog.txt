@@ -39,6 +39,11 @@ Abbreviated Changelog from 2.4.6 Final
 - Added speed improvements to ReferencingPages-tag.
 - Added an experimental ClearCache-tag which would allow you to clear the caches from deliver based on that you know what you are doing. Not recommended yet.
 - Made evaluation of whole page really not happen if set. Saves a lot of memory and performance on large pages.
+- Made publications nor require unique names
+- Fixed so language drop in tool-header is now shown if only one language is available.
+- Upgraded dbcp to 1.2.2 which says it should solve some connection reset issues not being handled with grace.
+- Fixed so JNDI and webservice caches are not cleared upon publication. No need - they time out themselves.
+- Made the search view when binding contents better visually - now the path to the found content is only displayed when clicking on the questionmark.
 
 -------------------------------------------------------------------------------------
 - InfoGlue 2.4.6 Final
