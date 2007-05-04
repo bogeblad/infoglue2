@@ -155,6 +155,12 @@ public class ThreadMonitor implements Runnable
     	StackTraceElement[] el = targetThread.getStackTrace();
         
         StringBuffer stackString = new StringBuffer("\n\n" + message + ":\n\n");
+        stackString.append("\nNumber of current requests:" + RequestAnalyser.getRequestAnalyser().getNumberOfCurrentRequests() + ":\n");
+        stackString.append("\nNumber of active requests:" + RequestAnalyser.getRequestAnalyser().getNumberOfActiveRequests() + ":\n");
+        stackString.append("\nNumber of long requests:" + RequestAnalyser.getLongThreadMonitors().size() + ":\n");
+        stackString.append("\nAverage time:" + RequestAnalyser.getRequestAnalyser().getAverageElapsedTime() + ":\n");
+        stackString.append("\nLongest time:" + RequestAnalyser.getRequestAnalyser().getMaxElapsedTime() + ":\n");
+        stackString.append("\n--------------------------------------------\n\n");
         stackString.append("\nThread with id [" + threadId + "] at report time:\n");
         stackString.append("\nOriginal url:" + getOriginalFullURL() + "\n");
         if (el != null && el.length != 0)
@@ -165,22 +171,33 @@ public class ThreadMonitor implements Runnable
             	if (frame == null)
             		stackString.append("    null stack frame" + "\n");
             	else	
-            		stackString.append("    " + frame.toString() + "\n");
+            		stackString.append("    ").append(frame.toString()).append("\n");
+            	
+            	if(j > 20) 
+            		break;
 			}                    
        	}
-        
+
+		stackString.append("\n\n**********************************\nConcurrent long threads (Only an excerpt of all)\n**********************************");
+
 	    ThreadMXBean t = ManagementFactory.getThreadMXBean();
 
         List threadMonitors = RequestAnalyser.getLongThreadMonitors();
-        Iterator threadMonitorsIterator = threadMonitors.iterator();    
-		while(threadMonitorsIterator.hasNext())
+        Iterator threadMonitorsIterator = threadMonitors.iterator();
+        int threadCount = 0;
+        while(threadMonitorsIterator.hasNext() && threadCount < 5)
 	    {
 			ThreadMonitor tm = (ThreadMonitor)threadMonitorsIterator.next();
 			
+			if(threadId == tm.getThreadId())
+				continue;
+			
 			long threads[] = {tm.getThreadId()};
 		    ThreadInfo[] tinfo = t.getThreadInfo(threads, 20);
-			
-		    String stackString2 = "";
+
+			stackString.append("\n\n---------------------------------\nConcurrent long thread [").append(tm.getThreadId()).append("]:\n");
+			stackString.append("Elapsed time:").append(tm.getElapsedTime()).append("\n Thread id: ").append(tm.getThreadId()).append("\n Original url: ").append(tm.getOriginalFullURL()).append(")");
+
 	        for (int i=0; i<tinfo.length; i++)
 		    {
 				ThreadInfo e = tinfo[i];
@@ -193,20 +210,18 @@ public class ThreadMonitor implements Runnable
 		            {
 		            	StackTraceElement frame = el[n];
 		            	if (frame == null)
-		            		stackString2 += "    null stack frame" + "\n";
+		            		stackString.append("    null stack frame\n");
 		            	else	
-		            		stackString2 += "    null stack frame" + frame.toString() + "\n";
+		            		stackString.append("    null stack frame").append(frame.toString()).append("\n");
 					}                    
 		       	}
 		    }
-	        stackString2 += "Elapsed time:" + tm.getElapsedTime() + "\n" + " " + " Thread id: " + tm.getThreadId() + "\n Original url: " + tm.getOriginalFullURL() + ")";
-	        stackString2 += stackString;
-	        
-			stackString.append("\n\n---------------------------------\nLong thread: \n" + stackString2);
+	        	    
+			threadCount++;
 	    }
         		 
         logger.warn(stackString);
-        
+
         String warningEmailReceiver = CmsPropertyHandler.getWarningEmailReceiver();
         if(warningEmailReceiver != null && !warningEmailReceiver.equals("") && warningEmailReceiver.indexOf("@warningEmailReceiver@") == -1)
         {
