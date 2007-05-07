@@ -132,6 +132,8 @@ public abstract class InfoGlueAbstractAction extends WebworkAbstractAction
 
 	public List getToolLocales()
 	{
+		return CmsPropertyHandler.getToolLocales();
+		/*
 	    List toolLocales = new ArrayList();
 	    
 	    int index = 0;
@@ -147,6 +149,7 @@ public abstract class InfoGlueAbstractAction extends WebworkAbstractAction
 	    }
 	    
 	    return toolLocales;
+	    */
 	}
 
 	

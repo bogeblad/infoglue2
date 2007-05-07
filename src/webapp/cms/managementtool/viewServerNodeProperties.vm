@@ -310,6 +310,9 @@
 	<tr>
 		<td>#editPropertyTextArea("ServerNode.property.publicDeliveryUrls" "publicDeliveryUrls" "$this.getDataPropertyValue('publicDeliveryUrls')" "50" "5" "normaltextarea" "$!serverNodeId")</td>
 	</tr>
+	<tr>
+		<td>#editPropertyTextArea("ServerNode.property.toolLanguages" "toolLanguages" "$this.getDataPropertyValue('toolLanguages')" "50" "3" "normaltextarea" "$!serverNodeId")</td>
+	</tr>
 	
 	<tr>
 		<td>#editPropertyField("ServerNode.property.edition.pageSize" "edition.pageSize" "$this.getPropertyValue('edition.pageSize')" "51" "$!serverNodeId")</td>
