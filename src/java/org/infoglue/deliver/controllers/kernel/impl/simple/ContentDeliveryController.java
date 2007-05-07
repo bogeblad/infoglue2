@@ -40,6 +40,7 @@ import org.exolab.castor.jdo.QueryResults;
 import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.controllers.kernel.impl.simple.AccessRightController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentCategoryController;
+import org.infoglue.cms.controllers.kernel.impl.simple.DigitalAssetController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeController;
 import org.infoglue.cms.entities.content.Content;
 import org.infoglue.cms.entities.content.ContentCategory;
@@ -48,6 +49,7 @@ import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.content.ContentVersion;
 import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.entities.content.DigitalAsset;
+import org.infoglue.cms.entities.content.DigitalAssetVO;
 import org.infoglue.cms.entities.content.impl.simple.ContentImpl;
 import org.infoglue.cms.entities.content.impl.simple.ContentVersionImpl;
 import org.infoglue.cms.entities.content.impl.simple.MediumContentImpl;
@@ -722,6 +724,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 	 * many duplicates.
 	 *  
 	 */
+	/*
 	private DigitalAsset getLanguageIndependentAsset(Integer contentId, Integer languageId, Integer siteNodeId, Database db, String assetKey, DeliveryContext deliveryContext, InfoGluePrincipal infoGluePrincipal) throws SystemException, Exception
 	{
 		DigitalAsset asset = null;
@@ -741,8 +744,49 @@ public class ContentDeliveryController extends BaseDeliveryController
 				ContentVersion contentVersion = getContentVersion(siteNodeId, contentId, langVO.getLanguageId(), db, false, deliveryContext, infoGluePrincipal);
 				if (contentVersion != null) 
 				{
-					DigitalAsset digitalAsset = 
-						(assetKey == null) ? getLatestDigitalAsset(contentVersion) :getDigitalAssetWithKey(contentVersion, assetKey); 
+					DigitalAsset digitalAsset = (assetKey == null) ? getLatestDigitalAsset(contentVersion) :getDigitalAssetWithKey(contentVersion, assetKey); 
+					
+					if(digitalAsset != null)
+					{
+						asset = digitalAsset;
+						break;
+					}
+				}									
+			}
+		}
+		return asset;			
+	}
+	*/
+
+	/**
+	 * This method is used by the getAssetUrl methods, to locate a digital asset in another
+	 * languageversion. It is called in the case where no asset where found in the supplied language.
+	 * 
+	 * This way an image is only required to exist in one of the language versions, reducing the need for 
+	 * many duplicates.
+	 *  
+	 */
+	private DigitalAssetVO getLanguageIndependentAssetVO(Integer contentId, Integer languageId, Integer siteNodeId, Database db, String assetKey, DeliveryContext deliveryContext, InfoGluePrincipal infoGluePrincipal) throws SystemException, Exception
+	{
+		DigitalAssetVO asset = null;
+		// TODO: This method should only return a asset url depending on settings on the actual content in the future
+		// or possibly a systemwide setting.
+		
+		// TODO: experimental
+		// addition ss - 030422
+		// Search digital asset among language versions.
+		List langs = LanguageDeliveryController.getLanguageDeliveryController().getAvailableLanguages(db, siteNodeId);
+		Iterator lit = langs.iterator();
+		while (lit.hasNext())
+		{
+			LanguageVO langVO = (LanguageVO) lit.next();
+			if (langVO.getLanguageId().compareTo(languageId)!=0)
+			{
+				ContentVersion contentVersion = getContentVersion(siteNodeId, contentId, langVO.getLanguageId(), db, false, deliveryContext, infoGluePrincipal);
+				if (contentVersion != null) 
+				{
+					//DigitalAsset digitalAsset = (assetKey == null) ? getLatestDigitalAssetVO(contentVersion) :getDigitalAssetWithKey(contentVersion, assetKey); 
+					DigitalAssetVO digitalAsset = (assetKey == null) ? DigitalAssetController.getLatestDigitalAssetVO(contentVersion.getId(), db) : DigitalAssetController.getLatestDigitalAssetVO(contentVersion.getId(), assetKey, db);
 					
 					if(digitalAsset != null)
 					{
@@ -760,10 +804,10 @@ public class ContentDeliveryController extends BaseDeliveryController
 		String assetUrl = "";
 		assetUrl = urlComposer.composeDigitalAssetUrl("", "", deliveryContext); 
 		
-		DigitalAsset digitalAsset = getLanguageIndependentAsset(contentId, languageId, siteNodeId, db, assetKey, deliveryContext, infoGluePrincipal);
-		if(digitalAsset != null)
+		DigitalAssetVO digitalAssetVO = getLanguageIndependentAssetVO(contentId, languageId, siteNodeId, db, assetKey, deliveryContext, infoGluePrincipal);
+		if(digitalAssetVO != null)
 		{
-			String fileName = digitalAsset.getDigitalAssetId() + "_" + digitalAsset.getAssetFileName();
+			String fileName = digitalAssetVO.getDigitalAssetId() + "_" + digitalAssetVO.getAssetFileName();
 			
 			int i = 0;
 			File masterFile = null;
@@ -773,7 +817,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 				try
 				{
 					if(masterFile == null)
-				        masterFile = DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpDigitalAsset(digitalAsset, fileName, filePath);
+				        masterFile = DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpDigitalAsset(digitalAssetVO, fileName, filePath, db);
 					else
 					    DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpDigitalAsset(masterFile, fileName, filePath);
 				}
@@ -805,7 +849,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 		String assetUrl = "";
 		assetUrl = urlComposer.composeDigitalAssetUrl("", "", deliveryContext); 
 		
-		DigitalAsset digitalAsset = getLanguageIndependentAsset(contentId, languageId, siteNodeId, db, assetKey, deliveryContext, infoGluePrincipal);
+		DigitalAssetVO digitalAsset = getLanguageIndependentAssetVO(contentId, languageId, siteNodeId, db, assetKey, deliveryContext, infoGluePrincipal);
 		if(digitalAsset != null)
 		{
 			String fileName = digitalAsset.getAssetFileName();
@@ -852,7 +896,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 		ContentVersion contentVersion = getContentVersion(siteNodeId, contentId, languageId, db, useLanguageFallback, deliveryContext, infoGluePrincipal);
 		if (contentVersion != null) 
         {
-        	DigitalAsset digitalAsset = getDigitalAssetWithKey(contentVersion, assetKey);
+        	DigitalAssetVO digitalAsset = DigitalAssetController.getLatestDigitalAssetVO(contentVersion.getContentVersionId(), assetKey, db);
 			
 			if(digitalAsset != null)
 			{
@@ -886,7 +930,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 		ContentVersion contentVersion = getContentVersion(siteNodeId, contentId, languageId, db, useLanguageFallback, deliveryContext, infoGluePrincipal);
 		if (contentVersion != null) 
         {
-        	DigitalAsset digitalAsset = getLatestDigitalAsset(contentVersion);
+        	DigitalAssetVO digitalAsset = DigitalAssetController.getLatestDigitalAssetVO(contentVersion.getId(), db);
 			
 			if(digitalAsset != null)
 			{
@@ -900,7 +944,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 					try
 					{
 					    if(masterFile == null)
-					        masterFile = DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpDigitalAsset(digitalAsset, fileName, filePath);
+					        masterFile = DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpDigitalAsset(digitalAsset, fileName, filePath, db);
 					    else
 					        DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpDigitalAsset(masterFile, fileName, filePath);
 					}
@@ -966,7 +1010,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 		ContentVO contentVO = this.getContentVO(db, contentId, deliveryContext);
 		if (contentVersion != null) 
         {
-        	DigitalAsset digitalAsset = getDigitalAssetWithKey(contentVersion, assetKey);
+        	DigitalAssetVO digitalAsset = DigitalAssetController.getLatestDigitalAssetVO(contentVersion.getId(), assetKey, db);
 			
 			if(digitalAsset != null)
 			{
@@ -981,7 +1025,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 					try
 					{
 					    if(masterFile == null)
-					        masterFile = DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpDigitalAsset(digitalAsset, fileName, filePath);	
+					        masterFile = DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpDigitalAsset(digitalAsset, fileName, filePath, db);	
 						else
 						    DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpDigitalAsset(masterFile, fileName, filePath);
 					}
@@ -1018,7 +1062,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 	    	logger.info("contentVersion:" + contentVersion);
 			if(contentVersion != null)
 			{
-            	DigitalAsset digitalAsset = getDigitalAssetWithKey(contentVersion, assetKey);
+            	DigitalAssetVO digitalAsset = DigitalAssetController.getLatestDigitalAssetVO(contentVersion.getId(), assetKey, db);
 				
 				if(digitalAsset != null)
 				{
@@ -1033,7 +1077,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 						try
 						{
 						    if(masterFile == null)
-						        masterFile = DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpDigitalAsset(digitalAsset, fileName, filePath);
+						        masterFile = DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpDigitalAsset(digitalAsset, fileName, filePath, db);
 							else
 							    DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpDigitalAsset(masterFile, fileName, filePath);
 						}
@@ -1095,7 +1139,8 @@ public class ContentDeliveryController extends BaseDeliveryController
 		ContentVersion contentVersion = getContentVersion(siteNodeId, contentId, languageId, db, useLanguageFallback, deliveryContext, infoGluePrincipal);
 		if (contentVersion != null) 
 		{
-			DigitalAsset digitalAsset = getLatestDigitalAsset(contentVersion);
+			//DigitalAsset digitalAsset = getLatestDigitalAsset(contentVersion);
+        	DigitalAssetVO digitalAsset = DigitalAssetController.getLatestDigitalAssetVO(contentVersion.getId(), db);
 			
 			if(digitalAsset != null)
 			{
@@ -1111,7 +1156,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 					try
 					{
 					    if(masterFile == null)
-					        masterFile = DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpDigitalAsset(digitalAsset, fileName, filePath);
+					        masterFile = DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpDigitalAsset(digitalAsset, fileName, filePath, db);
 						else
 						    DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpDigitalAsset(masterFile, fileName, filePath);
 					    
@@ -1177,8 +1222,9 @@ public class ContentDeliveryController extends BaseDeliveryController
 		ContentVersion contentVersion = getContentVersion(siteNodeId, contentId, languageId, db, useLanguageFallback, deliveryContext, infoGluePrincipal);
 		if (contentVersion != null) 
 		{
-			DigitalAsset digitalAsset = getDigitalAssetWithKey(contentVersion, assetKey);
-			
+			//DigitalAsset digitalAsset = getDigitalAssetWithKey(contentVersion, assetKey);
+        	DigitalAssetVO digitalAsset = DigitalAssetController.getLatestDigitalAssetVO(contentVersion.getId(), assetKey, db);
+
 			if(digitalAsset != null)
 			{
 				String fileName = digitalAsset.getDigitalAssetId() + "_" + digitalAsset.getAssetFileName();
@@ -1193,9 +1239,9 @@ public class ContentDeliveryController extends BaseDeliveryController
 					try
 					{
 					    if(masterFile == null)
-							masterFile = DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpDigitalAsset(digitalAsset, fileName, filePath);
+							masterFile = DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpDigitalAsset(digitalAsset, fileName, filePath, db);
 						else
-							DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpDigitalAsset(digitalAsset, fileName, filePath);
+							DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpDigitalAsset(digitalAsset, fileName, filePath, db);
 					    
 					    if(masterThumbFile == null)
 					        masterThumbFile = DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpDigitalAssetThumbnail(fileName, thumbnailFileName, filePath, width, height);
@@ -1253,11 +1299,11 @@ public class ContentDeliveryController extends BaseDeliveryController
 		ContentVersion contentVersion = getContentVersion(siteNodeId, contentId, languageId, db, useLanguageFallback, deliveryContext, infoGluePrincipal);
 		if (contentVersion != null) 
 		{
-			DigitalAsset digitalAsset =
-				(assetKey == null) ? getLatestDigitalAsset(contentVersion) : getDigitalAssetWithKey(contentVersion, assetKey); 
+			//DigitalAsset digitalAsset =	(assetKey == null) ? getLatestDigitalAsset(contentVersion) : getDigitalAssetWithKey(contentVersion, assetKey); 
+			DigitalAssetVO digitalAsset =	(assetKey == null) ? DigitalAssetController.getLatestDigitalAssetVO(contentVersion.getId(), db) : DigitalAssetController.getLatestDigitalAssetVO(contentVersion.getId(), assetKey, db);
 			
 			if(digitalAsset == null)
-				digitalAsset = getLanguageIndependentAsset(contentId, languageId, siteNodeId, db, assetKey, deliveryContext, infoGluePrincipal);
+				digitalAsset = getLanguageIndependentAssetVO(contentId, languageId, siteNodeId, db, assetKey, deliveryContext, infoGluePrincipal);
 				
 			if(digitalAsset != null)
 			{
@@ -1281,7 +1327,8 @@ public class ContentDeliveryController extends BaseDeliveryController
 		ContentVersion contentVersion = getContentVersion(siteNodeId, contentId, languageId, db, useLanguageFallback, deliveryContext, infoGluePrincipal);
 		if (contentVersion != null) 
         {
-        	DigitalAsset digitalAsset = getDigitalAssetWithKey(contentVersion, assetKey);
+			DigitalAssetVO digitalAsset = DigitalAssetController.getLatestDigitalAssetVO(contentVersion.getContentVersionId(), assetKey, db);
+			//DigitalAsset digitalAsset = getDigitalAssetWithKey(contentVersion, assetKey);
 			
 			if(digitalAsset != null)
 			{
@@ -1296,7 +1343,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 					unzipDirectory.mkdirs();
 					
 					if(masterFile == null)
-					    masterFile = DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpAndUnzipDigitalAsset(digitalAsset, fileName, filePath, unzipDirectory);
+					    masterFile = DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpAndUnzipDigitalAsset(digitalAsset, fileName, filePath, unzipDirectory, db);
 					else
 					    DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpAndUnzipDigitalAsset(masterFile, fileName, filePath, unzipDirectory);
 					    
@@ -1329,7 +1376,8 @@ public class ContentDeliveryController extends BaseDeliveryController
 		ContentVersion contentVersion = getContentVersion(siteNodeId, contentId, languageId, db, useLanguageFallback, deliveryContext, infoGluePrincipal);
 		if (contentVersion != null) 
 		{
-			DigitalAsset digitalAsset = getDigitalAssetWithKey(contentVersion, assetKey);
+			DigitalAssetVO digitalAsset = DigitalAssetController.getLatestDigitalAssetVO(contentVersion.getContentVersionId(), assetKey, db);
+			//DigitalAsset digitalAsset = getDigitalAssetWithKey(contentVersion, assetKey);
 			
 			if(digitalAsset != null)
 			{
@@ -1345,7 +1393,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 					
 					if(masterFile == null)
 					{
-					    entries = DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpAndGetZipEntries(digitalAsset, fileName, filePath, unzipDirectory);
+					    entries = DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpAndGetZipEntries(digitalAsset, fileName, filePath, unzipDirectory, db);
 						masterFile = new File(filePath + File.separator + fileName);
 					}					
 					else
@@ -1372,7 +1420,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 	/**
 	 * Returns the digital asset for a contentversion that has a certain key.
 	 */
-	
+	/*
 	private DigitalAsset getDigitalAssetWithKey(ContentVersion contentVersion, String assetKey)
 	{
 		Collection digitalAssets = contentVersion.getDigitalAssets();
@@ -1390,11 +1438,12 @@ public class ContentDeliveryController extends BaseDeliveryController
 
 		return null;
 	}
-
+	*/
+	
 	/**
 	 * Returns the latest digital asset for a contentversion.
 	 */
-	
+	/*
 	private DigitalAsset getLatestDigitalAsset(ContentVersion contentVersion)
 	{
 		Collection digitalAssets = contentVersion.getDigitalAssets();
@@ -1409,7 +1458,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 		}
 		return digitalAsset;
 	}
-	
+	*/
 	
 
 

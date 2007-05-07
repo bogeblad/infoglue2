@@ -48,12 +48,16 @@ import java.util.zip.ZipOutputStream;
 
 import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
+import org.exolab.castor.jdo.OQLQuery;
+import org.exolab.castor.jdo.QueryResults;
 import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.entities.content.Content;
 import org.infoglue.cms.entities.content.ContentVersion;
 import org.infoglue.cms.entities.content.DigitalAsset;
 import org.infoglue.cms.entities.content.DigitalAssetVO;
 import org.infoglue.cms.entities.content.impl.simple.DigitalAssetImpl;
+import org.infoglue.cms.entities.content.impl.simple.MediumContentImpl;
+import org.infoglue.cms.entities.content.impl.simple.SmallDigitalAssetImpl;
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.entities.management.GroupProperties;
 import org.infoglue.cms.entities.management.LanguageVO;
@@ -66,6 +70,7 @@ import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
 import org.infoglue.cms.util.graphics.ThumbnailGenerator;
 import org.infoglue.deliver.controllers.kernel.impl.simple.LanguageDeliveryController;
+import org.infoglue.deliver.util.Timer;
 
 /**
  * @author Mattias Bogeblad
@@ -97,6 +102,15 @@ public class DigitalAssetController extends BaseController
     public static DigitalAsset getDigitalAssetWithId(Integer digitalAssetId, Database db) throws SystemException, Bug
     {
 		return (DigitalAsset) getObjectWithId(DigitalAssetImpl.class, digitalAssetId, db);
+    }
+
+    /**
+     * returns a shallow digitalasset
+     */
+    
+    public static DigitalAsset getSmallDigitalAssetWithId(Integer digitalAssetId, Database db) throws SystemException, Bug
+    {
+		return (DigitalAsset) getObjectWithId(SmallDigitalAssetImpl.class, digitalAssetId, db);
     }
 
 
@@ -504,13 +518,8 @@ public class DigitalAssetController extends BaseController
 
         try
         {
-			ContentVersion contentVersion = ContentVersionController.getContentVersionController().getReadOnlyContentVersionWithId(contentVersionId, db); 
-			if(contentVersion != null)
-			{
-				Collection digitalAssets = contentVersion.getDigitalAssets();
-				digitalAssetVOList = toVOList(digitalAssets);
-			}
-			            
+        	digitalAssetVOList = getDigitalAssetVOList(contentVersionId, db);
+			
             commitTransaction(db);
         }
         catch(Exception e)
@@ -520,6 +529,34 @@ public class DigitalAssetController extends BaseController
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
+    	
+		return digitalAssetVOList;
+    }
+
+	/**
+	 * This method should return a list of those digital assets the contentVersion has.
+	 */
+	   	
+	public static List getDigitalAssetVOList(Integer contentVersionId, Database db) throws Exception
+    {
+    	List digitalAssetVOList = new ArrayList();
+
+    	OQLQuery oql = db.getOQLQuery("CALL SQL SELECT c.digitalAssetId, c.assetFileName, c.assetKey, c.assetFilePath, c.assetContentType, c.assetFileSize FROM cmDigitalAsset c, cmContentVersionDigitalAsset cvda where cvda.digitalAssetId = c.digitalAssetId AND cvda.contentVersionId = $1 ORDER BY c.digitalAssetId AS org.infoglue.cms.entities.content.impl.simple.SmallDigitalAssetImpl");
+    	if(CmsPropertyHandler.getUseShortTableNames() != null && CmsPropertyHandler.getUseShortTableNames().equalsIgnoreCase("true"))
+    		oql = db.getOQLQuery("CALL SQL SELECT c.DigAssetId, c.assetFileName, c.assetKey, c.assetFilePath, c.assetContentType, c.assetFileSize FROM cmDigitalAsset c, cmContVerDigAsset cvda where cvda.DigAssetId = c.DigAssetId AND cvda.ContVerId = $1 ORDER BY c.DigAssetId AS org.infoglue.cms.entities.content.impl.simple.SmallDigitalAssetImpl");
+
+    	oql.bind(contentVersionId);
+    	
+    	QueryResults results = oql.execute(Database.ReadOnly);
+		
+		while(results.hasMore()) 
+        {
+        	SmallDigitalAssetImpl digitalAsset = (SmallDigitalAssetImpl)results.next();
+        	digitalAssetVOList.add(digitalAsset.getValueObject());
+        }
+		
+		results.close();
+		oql.close();
     	
 		return digitalAssetVOList;
     }
@@ -572,8 +609,7 @@ public class DigitalAssetController extends BaseController
     	logger.info("contentVersion:" + contentVersion);
 		if(contentVersion != null)
 		{
-		    Collection digitalAssets = contentVersion.getDigitalAssets();
-			digitalAssetVOList = toModifiableVOList(digitalAssets);
+		    digitalAssetVOList = getDigitalAssetVOList(contentVersion.getId(), db);
 			
 			logger.info("digitalAssetVOList:" + digitalAssetVOList.size());
 			if(useLanguageFallback && languageId.intValue() != masterLanguageVO.getId().intValue())
@@ -602,8 +638,7 @@ public class DigitalAssetController extends BaseController
 	    	logger.info("contentVersion:" + contentVersion);
 			if(contentVersion != null)
 			{
-			    Collection digitalAssets = contentVersion.getDigitalAssets();
-				digitalAssetVOList = toModifiableVOList(digitalAssets);				
+			    digitalAssetVOList = getDigitalAssetVOList(contentVersion.getId(), db);		
 			}
 		}
 		
@@ -626,15 +661,15 @@ public class DigitalAssetController extends BaseController
 
         try
         {
-			DigitalAsset digitalAsset = getDigitalAssetWithId(digitalAssetId, db);
-						
+        	DigitalAsset digitalAsset = getSmallDigitalAssetWithId(digitalAssetId, db);
+			
 			if(digitalAsset != null)
 			{
 				logger.info("Found a digital asset:" + digitalAsset.getAssetFileName());
 				String fileName = digitalAsset.getDigitalAssetId() + "_" + digitalAsset.getAssetFileName();
 				//String filePath = digitalAsset.getAssetFilePath();
 				String filePath = CmsPropertyHandler.getDigitalAssetPath();
-				dumpDigitalAsset(digitalAsset, fileName, filePath);
+				dumpDigitalAsset(digitalAsset.getValueObject(), fileName, filePath, db);
 				assetUrl = CmsPropertyHandler.getWebServerAddress() + "/" + CmsPropertyHandler.getDigitalAssetBaseUrl() + "/" + fileName;
 			}			       	
 
@@ -665,14 +700,14 @@ public class DigitalAssetController extends BaseController
 
         try
         {
-			DigitalAsset digitalAsset = getDigitalAssetWithId(digitalAssetId, db);
+			DigitalAsset digitalAsset = getSmallDigitalAssetWithId(digitalAssetId, db);
 						
 			if(digitalAsset != null)
 			{
 				logger.info("Found a digital asset:" + digitalAsset.getAssetFileName());
 				String fileName = digitalAsset.getDigitalAssetId() + "_" + digitalAsset.getAssetFileName();
 				String filePath = CmsPropertyHandler.getDigitalAssetPath();
-				dumpDigitalAsset(digitalAsset, fileName, filePath);
+				dumpDigitalAsset(digitalAsset.getValueObject(), fileName, filePath, db);
 				assetPath = filePath + File.separator + fileName;
 			}			       	
 
@@ -709,14 +744,12 @@ public class DigitalAssetController extends BaseController
     {
     	String assetUrl = null;
 
-		DigitalAsset digitalAsset = getDigitalAssetWithId(digitalAssetVO.getId(), db);
-					
-		if(digitalAsset != null)
+		if(digitalAssetVO != null)
 		{
-			logger.info("Found a digital asset:" + digitalAsset.getAssetFileName());
-			String fileName = digitalAsset.getDigitalAssetId() + "_" + digitalAsset.getAssetFileName();
+			logger.info("Found a digital asset:" + digitalAssetVO.getAssetFileName());
+			String fileName = digitalAssetVO.getDigitalAssetId() + "_" + digitalAssetVO.getAssetFileName();
 			String filePath = CmsPropertyHandler.getDigitalAssetPath();
-			dumpDigitalAsset(digitalAsset, fileName, filePath);
+			dumpDigitalAsset(digitalAssetVO, fileName, filePath, db);
 			assetUrl = CmsPropertyHandler.getWebServerAddress() + "/" + CmsPropertyHandler.getDigitalAssetBaseUrl() + "/" + fileName;
 		}			       	
     	
@@ -740,7 +773,7 @@ public class DigitalAssetController extends BaseController
 
         try
         {
-			DigitalAsset digitalAsset = getDigitalAssetWithId(digitalAssetId, db);
+			DigitalAsset digitalAsset = getSmallDigitalAssetWithId(digitalAssetId, db);
 			
 			if(digitalAsset != null)
 			{
@@ -825,16 +858,16 @@ public class DigitalAssetController extends BaseController
 			ContentVersion contentVersion = ContentVersionController.getContentVersionController().getLatestContentVersion(contentId, languageId, db); 
 			if(contentVersion != null)
 			{
-				DigitalAsset digitalAsset = getLatestDigitalAsset(contentVersion);
+				DigitalAssetVO digitalAssetVO = getLatestDigitalAssetVO(contentVersion.getId(), db);
 				
-				if(digitalAsset != null)
+				if(digitalAssetVO != null)
 				{
-					logger.info("Found a digital asset:" + digitalAsset.getAssetFileName());
-					String fileName = digitalAsset.getDigitalAssetId() + "_" + digitalAsset.getAssetFileName();
+					logger.info("Found a digital asset:" + digitalAssetVO.getAssetFileName());
+					String fileName = digitalAssetVO.getDigitalAssetId() + "_" + digitalAssetVO.getAssetFileName();
 					//String filePath = digitalAsset.getAssetFilePath();
 					String filePath = CmsPropertyHandler.getDigitalAssetPath();
 					
-					dumpDigitalAsset(digitalAsset, fileName, filePath);
+					dumpDigitalAsset(digitalAssetVO, fileName, filePath, db);
 					assetUrl = CmsPropertyHandler.getWebServerAddress() + "/" + CmsPropertyHandler.getDigitalAssetBaseUrl() + "/" + fileName;
 				}			       	
 			}
@@ -899,16 +932,16 @@ public class DigitalAssetController extends BaseController
 		logger.info("contentVersion:" + contentVersion);
 		if(contentVersion != null)
 		{
-			DigitalAsset digitalAsset = getLatestDigitalAsset(contentVersion, assetKey);
-			logger.info("digitalAsset:" + digitalAsset);
-			if(digitalAsset != null)
+			DigitalAssetVO digitalAssetVO = getLatestDigitalAssetVO(contentVersion.getContentVersionId(), assetKey, db);
+			logger.info("digitalAssetVO:" + digitalAssetVO);
+			if(digitalAssetVO != null)
 			{
-				logger.info("digitalAsset:" + digitalAsset.getAssetKey());
-				logger.info("Found a digital asset:" + digitalAsset.getAssetFileName());
-				String fileName = digitalAsset.getDigitalAssetId() + "_" + digitalAsset.getAssetFileName();
+				logger.info("digitalAsset:" + digitalAssetVO.getAssetKey());
+				logger.info("Found a digital asset:" + digitalAssetVO.getAssetFileName());
+				String fileName = digitalAssetVO.getDigitalAssetId() + "_" + digitalAssetVO.getAssetFileName();
 				String filePath = CmsPropertyHandler.getDigitalAssetPath();
 				
-				dumpDigitalAsset(digitalAsset, fileName, filePath);
+				dumpDigitalAsset(digitalAssetVO, fileName, filePath, db);
 				assetUrl = CmsPropertyHandler.getWebServerAddress() + "/" + CmsPropertyHandler.getDigitalAssetBaseUrl() + "/" + fileName;
 			}
 			else
@@ -925,16 +958,16 @@ public class DigitalAssetController extends BaseController
 	    	logger.info("contentVersion:" + contentVersion);
 			if(contentVersion != null)
 			{
-			    DigitalAsset digitalAsset = getLatestDigitalAsset(contentVersion, assetKey);
-				logger.info("digitalAsset:" + digitalAsset);
-				if(digitalAsset != null)
+			    DigitalAssetVO digitalAssetVO = getLatestDigitalAssetVO(contentVersion.getId(), assetKey, db);
+				logger.info("digitalAssetVO:" + digitalAssetVO);
+				if(digitalAssetVO != null)
 				{
-					logger.info("digitalAsset:" + digitalAsset.getAssetKey());
-					logger.info("Found a digital asset:" + digitalAsset.getAssetFileName());
-					String fileName = digitalAsset.getDigitalAssetId() + "_" + digitalAsset.getAssetFileName();
+					logger.info("digitalAsset:" + digitalAssetVO.getAssetKey());
+					logger.info("Found a digital asset:" + digitalAssetVO.getAssetFileName());
+					String fileName = digitalAssetVO.getDigitalAssetId() + "_" + digitalAssetVO.getAssetFileName();
 					String filePath = CmsPropertyHandler.getDigitalAssetPath();
 					
-					dumpDigitalAsset(digitalAsset, fileName, filePath);
+					dumpDigitalAsset(digitalAssetVO, fileName, filePath, db);
 					assetUrl = CmsPropertyHandler.getWebServerAddress() + "/" + CmsPropertyHandler.getDigitalAssetBaseUrl() + "/" + fileName;
 				}
 			}
@@ -984,10 +1017,10 @@ public class DigitalAssetController extends BaseController
     	ContentVersion contentVersion = ContentVersionController.getContentVersionController().getLatestActiveContentVersion(contentId, languageId, db);
 		if(contentVersion != null)
 		{
-			DigitalAsset digitalAsset = getLatestDigitalAsset(contentVersion, assetKey);
+			DigitalAssetVO digitalAsset = getLatestDigitalAssetVO(contentVersion.getId(), assetKey, db);
 			if(digitalAsset != null)
 			{
-				digitalAssetVO = digitalAsset.getValueObject();
+				digitalAssetVO = digitalAsset;
 			}
 			else
 			{
@@ -1021,7 +1054,7 @@ public class DigitalAssetController extends BaseController
 			ContentVersion contentVersion = ContentVersionController.getContentVersionController().getLatestContentVersion(contentId, languageId, db); 
 			if(contentVersion != null)
 			{
-				DigitalAsset digitalAsset = getLatestDigitalAsset(contentVersion);
+				DigitalAsset digitalAsset = getSmallDigitalAssetWithId(contentVersion.getId(), db);
 				
 				if(digitalAsset != null)
 				{
@@ -1104,6 +1137,7 @@ public class DigitalAssetController extends BaseController
 		return digitalAsset;
 	}
 
+
 	/**
 	 * Returns the latest digital asset for a contentversion.
 	 */
@@ -1123,23 +1157,84 @@ public class DigitalAssetController extends BaseController
 		return digitalAsset;
 	}
 
+	/**
+	 * Returns the latest digital asset for a contentversion.
+	 */
+	
+	public static DigitalAssetVO getLatestDigitalAssetVO(Integer contentVersionId, Database db) throws Exception
+	{
+		DigitalAssetVO digitalAssetVO = null;
+    	
+		OQLQuery oql = db.getOQLQuery("CALL SQL SELECT c.digitalAssetId, c.assetFileName, c.assetKey, c.assetFilePath, c.assetContentType, c.assetFileSize FROM cmDigitalAsset c, cmContentVersionDigitalAsset cvda where cvda.digitalAssetId = c.digitalAssetId AND cvda.contentVersionId = $1 ORDER BY c.digitalAssetId AS org.infoglue.cms.entities.content.impl.simple.SmallDigitalAssetImpl");
+    	if(CmsPropertyHandler.getUseShortTableNames() != null && CmsPropertyHandler.getUseShortTableNames().equalsIgnoreCase("true"))
+    		oql = db.getOQLQuery("CALL SQL SELECT c.DigAssetId, c.assetFileName, c.assetKey, c.assetFilePath, c.assetContentType, c.assetFileSize FROM cmDigitalAsset c, cmContVerDigAsset cvda where cvda.DigAssetId = c.DigAssetId AND cvda.ContVerId = $1 ORDER BY c.DigAssetId AS org.infoglue.cms.entities.content.impl.simple.SmallDigitalAssetImpl");
 
+    	oql.bind(contentVersionId);
+    	
+    	QueryResults results = oql.execute(Database.ReadOnly);
+		
+		if(results.hasMore()) 
+        {
+        	SmallDigitalAssetImpl digitalAsset = (SmallDigitalAssetImpl)results.next();
+        	digitalAssetVO = digitalAsset.getValueObject();
+        }
+		
+		results.close();
+		oql.close();
+
+		return digitalAssetVO;
+	}
+
+	/**
+	 * Returns the latest digital asset for a contentversion.
+	 */
+	
+	public static DigitalAssetVO getLatestDigitalAssetVO(Integer contentVersionId, String assetKey, Database db) throws Exception
+	{
+		DigitalAssetVO digitalAssetVO = null;
+		
+		OQLQuery oql = db.getOQLQuery("CALL SQL SELECT c.digitalAssetId, c.assetFileName, c.assetKey, c.assetFilePath, c.assetContentType, c.assetFileSize FROM cmDigitalAsset c, cmContentVersionDigitalAsset cvda where cvda.digitalAssetId = c.digitalAssetId AND cvda.contentVersionId = $1 AND c.assetKey = $2 ORDER BY c.digitalAssetId AS org.infoglue.cms.entities.content.impl.simple.SmallDigitalAssetImpl");
+    	if(CmsPropertyHandler.getUseShortTableNames() != null && CmsPropertyHandler.getUseShortTableNames().equalsIgnoreCase("true"))
+    		oql = db.getOQLQuery("CALL SQL SELECT c.DigAssetId, c.assetFileName, c.assetKey, c.assetFilePath, c.assetContentType, c.assetFileSize FROM cmDigitalAsset c, cmContVerDigAsset cvda where cvda.DigAssetId = c.DigAssetId AND cvda.ContVerId = $1 AND c.assetKey = $2 ORDER BY c.DigAssetId AS org.infoglue.cms.entities.content.impl.simple.SmallDigitalAssetImpl");
+
+		oql.bind(contentVersionId);
+    	oql.bind(assetKey);
+    	
+    	QueryResults results = oql.execute(Database.ReadOnly);
+		
+		if(results.hasMore()) 
+        {
+        	SmallDigitalAssetImpl digitalAsset = (SmallDigitalAssetImpl)results.next();
+        	digitalAssetVO = digitalAsset.getValueObject();
+        }
+		
+		results.close();
+		oql.close();
+
+		return digitalAssetVO;
+	}
+	
+	
 	/**
 	 * This method checks if the given file exists on disk. If it does it's ignored because
 	 * that means that the file is allready cached on the server. If not we take out the stream from the 
 	 * digitalAsset-object and dumps it.
 	 */
    	
-	public static void dumpDigitalAsset(DigitalAsset digitalAsset, String fileName, String filePath) throws Exception
+	public static void dumpDigitalAsset(DigitalAssetVO digitalAssetVO, String fileName, String filePath, Database db) throws Exception
 	{
 		long timer = System.currentTimeMillis();
 
 		File outputFile = new File(filePath + File.separator + fileName);
 		if(outputFile.exists())
 		{
-			logger.info("The file allready exists so we don't need to dump it again..");
+			if(logger.isInfoEnabled())
+				logger.info("The file allready exists so we don't need to dump it again..");
+			
 			return;
 		}
+		
+		DigitalAsset digitalAsset = getDigitalAssetWithId(digitalAssetVO.getDigitalAssetId(), db);
 		
 		FileOutputStream fis = new FileOutputStream(outputFile);
 		BufferedOutputStream bos = new BufferedOutputStream(fis);
@@ -1156,7 +1251,48 @@ public class DigitalAssetController extends BaseController
 		bis.close();
 		fis.close();
 		bos.close();
-		logger.info("Time for dumping file " + fileName + ":" + (System.currentTimeMillis() - timer));
+		
+		if(logger.isInfoEnabled())
+			logger.info("Time for dumping file " + fileName + ":" + (System.currentTimeMillis() - timer));
+	}
+	
+	/**
+	 * This method checks if the given file exists on disk. If it does it's ignored because
+	 * that means that the file is allready cached on the server. If not we take out the stream from the 
+	 * digitalAsset-object and dumps it.
+	 */
+   	
+	public static void dumpDigitalAsset(DigitalAsset digitalAsset, String fileName, String filePath) throws Exception
+	{
+		long timer = System.currentTimeMillis();
+
+		File outputFile = new File(filePath + File.separator + fileName);
+		if(outputFile.exists())
+		{
+			if(logger.isInfoEnabled())
+				logger.info("The file allready exists so we don't need to dump it again..");
+		
+			return;
+		}
+				
+		FileOutputStream fis = new FileOutputStream(outputFile);
+		BufferedOutputStream bos = new BufferedOutputStream(fis);
+		
+		BufferedInputStream bis = new BufferedInputStream(digitalAsset.getAssetBlob());
+		
+		int character;
+		while ((character = bis.read()) != -1)
+		{
+			bos.write(character);
+		}
+		bos.flush();
+		
+		bis.close();
+		fis.close();
+		bos.close();
+		
+		if(logger.isInfoEnabled())
+			logger.info("Time for dumping file " + fileName + ":" + (System.currentTimeMillis() - timer));
 	}
 
 	/**
@@ -1196,12 +1332,12 @@ public class DigitalAssetController extends BaseController
         	for(int i = 0; i < digitalAssetIdStrings.length; i++)
         	{
         		Integer digitalAssetId = new Integer(digitalAssetIdStrings[i]);
-        		DigitalAsset digitalAsset = getDigitalAssetWithId(digitalAssetId, db);
+        		DigitalAsset digitalAsset = getSmallDigitalAssetWithId(digitalAssetId, db);
         		
 				String fileName = digitalAsset.getDigitalAssetId() + "_" + digitalAsset.getAssetFileName();
 				if(!outputFile.exists() || outputFile.length() == digitalAsset.getAssetFileSize().intValue())
 				{
-					dumpDigitalAsset(digitalAsset, fileName, filePath);
+					dumpDigitalAsset(digitalAsset.getValueObject(), fileName, filePath, db);
 				}
 
 				filenames[i] = 	"" + filePath + File.separator + fileName;	

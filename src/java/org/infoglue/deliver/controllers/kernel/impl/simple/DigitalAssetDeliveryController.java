@@ -46,6 +46,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 import org.apache.log4j.Logger;
+import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.controllers.kernel.impl.simple.DigitalAssetController;
 import org.infoglue.cms.entities.content.DigitalAsset;
 import org.infoglue.cms.entities.content.DigitalAssetVO;
@@ -102,6 +103,51 @@ public class DigitalAssetDeliveryController extends BaseDeliveryController
 	 * If the asset is cached on disk it returns that path imediately it's ok - otherwise it dumps it fresh.
 	 */
 
+	public String getAssetUrl(DigitalAssetVO digitalAssetVO, Repository repository, DeliveryContext deliveryContext, Database db) throws SystemException, Exception
+	{
+		String assetUrl = "";
+		
+    	if(digitalAssetVO != null)
+		{
+			String fileName = digitalAssetVO.getDigitalAssetId() + "_" + digitalAssetVO.getAssetFileName();
+			//String filePath = CmsPropertyHandler.getDigitalAssetPath();
+			
+			int i = 0;
+			String filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i);
+			//System.out.println("filePath:" + filePath);
+			while(filePath != null)
+			{
+				try
+				{
+					DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpDigitalAsset(digitalAssetVO, fileName, filePath, db);
+				}
+				catch(Exception e)
+				{
+					logger.warn("An file could not be written:" + e.getMessage(), e);
+				}
+
+				i++;
+				filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i);
+				//System.out.println("filePath:" + filePath);
+			}
+
+			//DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpDigitalAsset(digitalAsset, fileName, filePath);
+			
+			String dnsName = CmsPropertyHandler.getWebServerAddress();
+			if(repository != null && repository.getDnsName() != null && !repository.getDnsName().equals(""))
+				dnsName = repository.getDnsName();
+				
+			assetUrl = URLComposer.getURLComposer().composeDigitalAssetUrl(dnsName, fileName, deliveryContext); 
+		}
+
+		return assetUrl;
+	}
+
+	/**
+	 * This is the basic way of getting an asset-url for a digital asset. 
+	 * If the asset is cached on disk it returns that path imediately it's ok - otherwise it dumps it fresh.
+	 */
+
 	public String getAssetUrl(DigitalAsset digitalAsset, Repository repository, DeliveryContext deliveryContext) throws SystemException, Exception
 	{
 		String assetUrl = "";
@@ -142,6 +188,48 @@ public class DigitalAssetDeliveryController extends BaseDeliveryController
 		return assetUrl;
 	}
 
+	
+	/**
+	 * This is the basic way of getting an asset-url for a digital asset. 
+	 * If the asset is cached on disk it returns that path imediately it's ok - otherwise it dumps it fresh.
+	 */
+
+	public String getAssetThumbnailUrl(DigitalAssetVO digitalAsset, Repository repository, int width, int height, DeliveryContext deliveryContext, Database db) throws SystemException, Exception
+	{
+		String assetUrl = "";
+		
+    	if(digitalAsset != null)
+		{
+			String fileName = digitalAsset.getDigitalAssetId() + "_" + digitalAsset.getAssetFileName();
+			String thumbnailFileName = "thumbnail_" + width + "_" + height + "_" + fileName;
+
+			int i = 0;
+			String filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i);
+			while(filePath != null)
+			{
+				try
+				{
+					DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpDigitalAsset(digitalAsset, fileName, filePath, db);
+					DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpDigitalAssetThumbnail(fileName, thumbnailFileName, filePath, width, height);
+				}
+				catch(Exception e)
+				{
+					logger.warn("An file could not be written:" + e.getMessage(), e);
+				}
+				
+				i++;
+				filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i);
+			}
+			
+			String dnsName = CmsPropertyHandler.getWebServerAddress();
+			if(repository != null && repository.getDnsName() != null && !repository.getDnsName().equals(""))
+				dnsName = repository.getDnsName();
+				
+			assetUrl = URLComposer.getURLComposer().composeDigitalAssetUrl(dnsName, thumbnailFileName, deliveryContext); 
+		}
+
+		return assetUrl;
+	}
 
 	/**
 	 * This is the basic way of getting an asset-url for a digital asset. 
@@ -175,10 +263,6 @@ public class DigitalAssetDeliveryController extends BaseDeliveryController
 				filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i);
 			}
 
-			//String filePath = CmsPropertyHandler.getDigitalAssetPath();
-			//DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpDigitalAsset(digitalAsset, fileName, filePath);
-			//DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpDigitalAssetThumbnail(digitalAsset, fileName, thumbnailFileName, filePath, width, height);
-			
 			String dnsName = CmsPropertyHandler.getWebServerAddress();
 			if(repository != null && repository.getDnsName() != null && !repository.getDnsName().equals(""))
 				dnsName = repository.getDnsName();
@@ -188,7 +272,6 @@ public class DigitalAssetDeliveryController extends BaseDeliveryController
 
 		return assetUrl;
 	}
-
 	
    	/**
    	 * This method checks if the given file exists on disk. If it does it's ignored because
@@ -283,103 +366,8 @@ public class DigitalAssetDeliveryController extends BaseDeliveryController
 	}
 	*/
 	
-
- 	/**
-   	 * This method checks if the given file exists on disk. If it does it's ignored because
-   	 * that means that the file is allready cached on the server. If not we take out the stream from the 
-   	 * digitalAsset-object and dumps it.
-   	 */
-/*
-    public File dumpDigitalAsset(DigitalAsset digitalAsset, String fileName, String filePath) throws Exception
-    {
-		long timer = System.currentTimeMillis();
-
-		File outputFile = outputFile = new File(filePath, fileName);
-
-        // Check existing files
-        if (outputFile.exists() && outputFile.createNewFile() == false)
-        {
-            return outputFile;
-        }
-
-        FileOutputStream fileOutputStream = null;
-        BufferedOutputStream bufferedOutputStream = null;
-        BufferedInputStream bufferedInputStream = null;
-        FileDescriptor fileDescriptor = null;
-        FileChannel fileChannel = null;
-        FileLock fileLock = null;
-        try
-        {
-
-            fileOutputStream = new FileOutputStream(outputFile);
-            fileDescriptor = fileOutputStream.getFD();
-            fileChannel = fileOutputStream.getChannel();
-            fileLock = fileChannel.tryLock();
-            if (fileLock == null)
-            {
-                // if lock is taken return existing file
-                return outputFile;
-            }
-
-            bufferedOutputStream = new BufferedOutputStream(fileOutputStream);
-            bufferedInputStream = new BufferedInputStream(digitalAsset.getAssetBlob());
-
-            byte[] buf = new byte[4096];
-            int c = 0;
-            while ((c = bufferedInputStream.read(buf)) != -1)
-            {
-                bufferedOutputStream.write(buf, 0, c);
-            }
-        }
-        catch (Exception exception)
-        {
-            throw exception;
-        }
-        finally
-        {
-            if (bufferedOutputStream != null)
-            {
-                bufferedOutputStream.flush();
-            }
-            if (fileDescriptor != null)
-            {
-                fileDescriptor.sync();
-            }
-            if (fileLock != null)
-            {
-                fileLock.release();
-            }
-            if (fileChannel != null)
-            {
-                fileChannel.close();
-            }
-            if (bufferedInputStream != null)
-            {
-                bufferedInputStream.close();
-            }
-            if (fileOutputStream != null)
-            {
-                fileOutputStream.close();
-            }
-            if (bufferedOutputStream != null)
-            {
-                bufferedOutputStream.close();
-            }
-            fileLock = null;
-            fileChannel = null;
-            bufferedInputStream = null;
-            fileOutputStream = null;
-            bufferedOutputStream = null;
-            fileDescriptor = null;
-        }
-
-        logger.warn("Time for dumping file " + fileName + ":" + (System.currentTimeMillis() - timer));
-
-        return outputFile;
-    }
-*/
 	
-	public File dumpDigitalAsset(DigitalAsset digitalAsset, String fileName, String filePath) throws Exception
+	public File dumpDigitalAsset(DigitalAssetVO digitalAssetVO, String fileName, String filePath, Database db) throws Exception
 	{
 		Timer timer = new Timer();
 		File tmpOutputFile = new File(filePath + File.separator + Thread.currentThread().getId() + "_tmp_" + fileName);
@@ -398,6 +386,8 @@ public class DigitalAssetDeliveryController extends BaseDeliveryController
 			
 			//System.out.println("Dumping asset " + Thread.currentThread().getId() + ":" + fileName);
 			//Thread.sleep(2000);
+			DigitalAsset digitalAsset = DigitalAssetController.getDigitalAssetWithId(digitalAssetVO.getId(), db);
+			
 			InputStream inputStream = digitalAsset.getAssetBlob();
 			logger.info("inputStream:" + inputStream + ":" + inputStream.getClass().getName() + ":" + digitalAsset);
 			synchronized(inputStream)
@@ -451,6 +441,80 @@ public class DigitalAssetDeliveryController extends BaseDeliveryController
         return outputFile;
 	}
 
+	
+	public File dumpDigitalAsset(DigitalAsset digitalAsset, String fileName, String filePath) throws Exception
+	{
+		Timer timer = new Timer();
+		File tmpOutputFile = new File(filePath + File.separator + Thread.currentThread().getId() + "_tmp_" + fileName);
+		File outputFile = new File(filePath + File.separator + fileName);
+		//logger.warn("outputFile:" + filePath + File.separator + fileName + ":" + outputFile.length());
+		if(outputFile.exists())
+		{
+			//logger.warn("The file allready exists so we don't need to dump it again..");
+			return outputFile;
+		}
+
+		try 
+		{
+			//System.out.println("tmpOutputFile:" + tmpOutputFile.getAbsolutePath());
+			//System.out.println("outputFile:" + outputFile.getAbsolutePath());
+			
+			//System.out.println("Dumping asset " + Thread.currentThread().getId() + ":" + fileName);
+			//Thread.sleep(2000);
+			
+			InputStream inputStream = digitalAsset.getAssetBlob();
+			logger.info("inputStream:" + inputStream + ":" + inputStream.getClass().getName() + ":" + digitalAsset);
+			synchronized(inputStream)
+			{
+				logger.info("reading inputStream and writing to disk....");
+				
+				FileOutputStream fos = new FileOutputStream(tmpOutputFile);
+				BufferedOutputStream bos = new BufferedOutputStream(fos);
+				BufferedInputStream bis = new BufferedInputStream(inputStream);
+				
+				int character;
+				int i=0;
+		        while ((character = bis.read()) != -1)
+		        {
+					bos.write(character);
+					i++;
+		        }
+		        
+		        if(i == 0)
+		        	logger.info("Wrote " + i + " chars to " + fileName);
+		        
+				bos.flush();
+			    fos.close();
+				bos.close();
+					
+		        bis.close();
+
+		        logger.info("done reading inputStream and writing to disk....");
+			}
+			
+			logger.info("Time for dumping file " + fileName + ":" + timer.getElapsedTime());
+
+			if(tmpOutputFile.length() == 0 || outputFile.exists())
+			{
+				logger.info("written file:" + tmpOutputFile.length() + " - removing temp and not renaming it...");	
+				tmpOutputFile.delete();
+				logger.info("Time for deleting file " + timer.getElapsedTime());
+			}
+			else
+			{
+				logger.info("written file:" + tmpOutputFile.length() + " - renaming it to " + outputFile.getAbsolutePath());	
+				tmpOutputFile.renameTo(outputFile);
+				logger.info("Time for renaming file " + timer.getElapsedTime());
+			}	
+		}
+		catch (IOException e) 
+		{
+			throw new Exception("Could not write file " + outputFile.getAbsolutePath() + " - error reported:" + e.getMessage(), e);
+	    }
+		
+        return outputFile;
+	}
+	
 
  	/**
    	 * This method checks if the given file exists on disk. If it does it's ignored because
@@ -537,9 +601,9 @@ public class DigitalAssetDeliveryController extends BaseDeliveryController
    	 * digitalAsset-object and dumps it.
    	 */
    	
-	public File dumpAndUnzipDigitalAsset(DigitalAsset digitalAsset, String fileName, String filePath, File unzipDirectory) throws Exception
+	public File dumpAndUnzipDigitalAsset(DigitalAssetVO digitalAsset, String fileName, String filePath, File unzipDirectory, Database db) throws Exception
 	{
-		File zipFile = dumpDigitalAsset(digitalAsset, fileName, filePath);
+		File zipFile = dumpDigitalAsset(digitalAsset, fileName, filePath, db);
 		File outputFile = new File(filePath + File.separator + fileName);
 		unzipFile(outputFile, unzipDirectory);
 		return zipFile;
@@ -559,9 +623,9 @@ public class DigitalAssetDeliveryController extends BaseDeliveryController
 		return zipFile;
 	}
 
-	public Vector dumpAndGetZipEntries(DigitalAsset digitalAsset, String fileName, String filePath, File unzipDirectory) throws Exception
+	public Vector dumpAndGetZipEntries(DigitalAssetVO digitalAsset, String fileName, String filePath, File unzipDirectory, Database db) throws Exception
 	{
-		dumpDigitalAsset(digitalAsset, fileName, filePath);
+		dumpDigitalAsset(digitalAsset, fileName, filePath, db);
 		File outputFile = new File(filePath + File.separator + fileName);
 		return getZipFileEntries(outputFile, unzipDirectory);
 	}
