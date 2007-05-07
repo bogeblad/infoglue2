@@ -1,4 +1,4 @@
-<!-- $Id: actions.xml,v 1.39 2007/04/24 12:55:52 mattias Exp $ -->
+<!-- $Id: actions.xml,v 1.40 2007/05/07 16:23:28 mattias Exp $ -->
 <actions>
 
 	<!-- MySettings -->
@@ -728,6 +728,7 @@
 
 	<action name="org.infoglue.cms.applications.contenttool.actions.UpdateContentAction" alias="UpdateContent">
 		<view name="input">/cms/contenttool/viewContent.vm</view>
+		<view name="successInputContentType">/cms/contenttool/viewChangeContentType.vm</view>
 		<view name="success">ViewContent.action?stay=true</view>
 		<view name="successStandalone">ViewContent!standalone.action</view>
 		<view name="saveAndExit">ViewListContent.action</view>

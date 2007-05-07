@@ -312,7 +312,8 @@ public class ViewContentToolToolBarAction extends InfoGlueAbstractAction
 			buttons.add(getSyncTreeButton());
 			
 			buttons.add(new ImageButton("ViewContentProperties.action?contentId=" + this.contentId, getLocalizedString(getSession().getLocale(), "images.global.buttons.editProperties"), "Edit Properties", new Integer(22), new Integer(80)));
-
+			//if(this.getInfoGluePrincipal().getIsAdministrator())
+				buttons.add(new ImageButton("UpdateContent!inputContentType.action?contentId=" + this.contentId + "&repositoryId=" + this.repositoryId, getLocalizedString(getSession().getLocale(), "images.contenttool.buttons.changeContentType"), "tool.contenttool.changeContentType.header"));	
 		}
 		catch(Exception e)
 		{
@@ -352,6 +353,8 @@ public class ViewContentToolToolBarAction extends InfoGlueAbstractAction
 			
 			buttons.add(getSyncTreeButton());
 			
+			//if(this.getInfoGluePrincipal().getIsAdministrator())
+				buttons.add(new ImageButton("UpdateContent!inputContentType.action?contentId=" + this.contentId + "&repositoryId=" + this.repositoryId, getLocalizedString(getSession().getLocale(), "images.contenttool.buttons.changeContentType"), "tool.contenttool.changeContentType.header"));
 		}
 		catch(Exception e)
 		{

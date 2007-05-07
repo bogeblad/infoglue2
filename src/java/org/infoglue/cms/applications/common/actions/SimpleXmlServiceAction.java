@@ -79,7 +79,7 @@ public abstract class SimpleXmlServiceAction extends InfoGlueAbstractAction
 
     private static final String protectedPropertyFragments = "password,administrator,authorizer,authenticator,masterserver,slaveserver,log";
     
-    protected static final String SERVICEREVISION = "$Revision: 1.20 $"; 
+    protected static final String SERVICEREVISION = "$Revision: 1.21 $"; 
 	protected static String ENCODING = "UTF-8";
     protected static String TYPE_FOLDER = "Folder";
     protected static String TYPE_ITEM = "Item";
@@ -438,6 +438,10 @@ public abstract class SimpleXmlServiceAction extends InfoGlueAbstractAction
 		        	.addAttribute("text", encode(text))
 		        	.addAttribute("type", type)
 				;
+
+		        if(theNode.getParameters().containsKey("contentTypeDefinitionId"))
+		        	elm.addAttribute("contentTypeDefinitionId", "" + theNode.getParameters().get("contentTypeDefinitionId"));
+		        
 		        if(createAction) 
 		        	elm.addAttribute("action", action);
 		        else
