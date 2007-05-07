@@ -34,6 +34,7 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 
@@ -1192,6 +1193,56 @@ public class CmsPropertyHandler
 	    return urls;
 	}
 	
+	public static List getToolLocales()
+	{
+		List toolLocales = new ArrayList();
+		
+	    String toolLanguagesString = CmsPropertyHandler.getServerNodeDataProperty(null, "toolLanguages", true, null);
+	    //System.out.println("toolLanguagesString:" + toolLanguagesString);
+	    if(toolLanguagesString != null && !toolLanguagesString.equals(""))
+		{
+	    	try
+			{
+	    		Properties properties = new Properties();
+				properties.load(new ByteArrayInputStream(toolLanguagesString.getBytes("UTF-8")));
+
+			    int index = 0;
+			    String languageCode = properties.getProperty("" + index);
+			    while(languageCode != null)
+			    {
+			        Locale locale = new java.util.Locale(languageCode);
+			        if(locale != null)
+			            toolLocales.add(locale);
+			        
+			        index++;
+			        languageCode = properties.getProperty("" + index);
+			    }
+
+			}	
+			catch(Exception e)
+			{
+			    logger.error("Error loading properties from string. Reason:" + e.getMessage());
+				e.printStackTrace();
+			}
+		}
+	    else
+	    {
+	    	int index = 0;
+		    String languageCode = CmsPropertyHandler.getProperty(index + ".toolLanguageCode");
+		    while(languageCode != null)
+		    {
+		        Locale locale = new java.util.Locale(languageCode);
+		        if(locale != null)
+		            toolLocales.add(locale);
+		        
+		        index++;
+		        languageCode = CmsPropertyHandler.getProperty(index + ".toolLanguageCode");
+		    }
+	    }
+
+	    return toolLocales;
+	}
+
 	public static Map getCacheSettings()
 	{
 		Map cacheSettings = new HashMap();
