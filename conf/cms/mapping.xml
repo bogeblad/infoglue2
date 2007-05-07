@@ -964,6 +964,45 @@
     </field>
     -->
   </class>
+  	
+<!--  Mapping for SmallDigitalAsset  -->
+  <class name="org.infoglue.cms.entities.content.impl.simple.SmallDigitalAssetImpl" identity="digitalAssetId" key-generator="IDENTITY">
+    <description>SmallDigitalAsset</description>
+    <cache-type type="none"/>
+    <map-to table="cmDigitalAsset"/>
+    <field name="digitalAssetId" type="java.lang.Integer">
+      <sql name="digitalAssetId" type="integer" dirty="check" />
+    </field>
+    <field name="assetFileName" type="java.lang.String">
+      <sql name="assetFileName" type="varchar" dirty="check" />
+    </field>
+    <field name="assetKey" type="java.lang.String">
+      <sql name="assetKey" type="varchar" dirty="check" />
+    </field>
+    <field name="assetFilePath" type="java.lang.String">
+      <sql name="assetFilePath" type="varchar" dirty="check" />
+    </field>
+    <field name="assetContentType" type="java.lang.String">
+      <sql name="assetContentType" type="varchar" dirty="check" />
+    </field>
+    <field name="assetFileSize" type="java.lang.Integer">
+      <sql name="assetFileSize" type="integer" dirty="check" />
+    </field>
+    <!-- 
+    <field name="contentVersions" type="org.infoglue.cms.entities.content.impl.simple.ContentVersionImpl" lazy="true" collection="collection">
+      <sql many-key="digitalAssetId" many-table="cmContentVersionDigitalAsset"/>
+    </field>
+    <field name="userProperties" type="org.infoglue.cms.entities.management.impl.simple.UserPropertiesImpl" lazy="true" collection="collection">
+      <sql many-key="digitalAssetId" many-table="cmUserPropertiesDigitalAsset"/>
+    </field>
+    <field name="roleProperties" type="org.infoglue.cms.entities.management.impl.simple.RolePropertiesImpl" lazy="true" collection="collection">
+      <sql many-key="digitalAssetId" many-table="cmRolePropertiesDigitalAsset"/>
+    </field>
+    <field name="groupProperties" type="org.infoglue.cms.entities.management.impl.simple.GroupPropertiesImpl" lazy="true" collection="collection">
+      <sql many-key="digitalAssetId" many-table="cmGroupPropertiesDigitalAsset"/>
+    </field>
+	-->
+  </class>
 
 <!--  Mapping for DigitalAsset  -->
   <class name="org.infoglue.cms.entities.content.impl.simple.DigitalAssetImpl" identity="digitalAssetId" key-generator="IDENTITY">
