@@ -350,12 +350,13 @@ public class ViewPageAction extends InfoGlueAbstractAction
 		    //System.out.println("The page delivery took " + elapsedTime + "ms for request " + this.getRequest().getRequestURL() + "?" + this.getRequest().getQueryString());
 			if(!memoryWarningSent)
 			{
-				float memoryLeft = (Runtime.getRuntime().maxMemory() - Runtime.getRuntime().totalMemory()) / 1024 / 1024;
-				float percentLeft = (memoryLeft / (Runtime.getRuntime().maxMemory() / 1024 / 1024)) * 100;
+				float memoryLeft = ((float)Runtime.getRuntime().maxMemory() - (float)Runtime.getRuntime().totalMemory()) / 1024f / 1024f;
+				float percentLeft = (memoryLeft / ((float)Runtime.getRuntime().maxMemory() / 1024f / 1024f)) * 100f;
+				float percentLeft2 = ((float)Runtime.getRuntime().freeMemory() / (float)Runtime.getRuntime().totalMemory()) * 100f;
 				//System.out.println("memoryLeft:" + memoryLeft);
 				//System.out.println("maxMemory:" + (Runtime.getRuntime().maxMemory() / 1024 / 1024));
 				//System.out.println("percentLeft:" + percentLeft);
-				if(percentLeft < 15)
+				if(percentLeft < 15 && percentLeft2 < 15)
 				{
 					memoryWarningSent = true;
 					String subject = "Memory is getting low on " + CmsPropertyHandler.getServerName();
@@ -561,12 +562,17 @@ public class ViewPageAction extends InfoGlueAbstractAction
 
 			if(!memoryWarningSent)
 			{
-				float memoryLeft = (Runtime.getRuntime().maxMemory() - Runtime.getRuntime().totalMemory()) / 1024 / 1024;
-				float percentLeft = (memoryLeft / (Runtime.getRuntime().maxMemory() / 1024 / 1024)) * 100;
+				float memoryLeft = ((float)Runtime.getRuntime().maxMemory() - (float)Runtime.getRuntime().totalMemory()) / 1024f / 1024f;
+				float percentLeft = (memoryLeft / ((float)Runtime.getRuntime().maxMemory() / 1024f / 1024f)) * 100f;
+				float percentLeft2 = ((float)Runtime.getRuntime().freeMemory() / (float)Runtime.getRuntime().totalMemory()) * 100f;
+				
 				//System.out.println("memoryLeft:" + memoryLeft);
-				//System.out.println("maxMemory:" + (Runtime.getRuntime().maxMemory() / 1024 / 1024));
+				//System.out.println("maxMemory:" + (Runtime.getRuntime().maxMemory() / 1024f / 1024f));
+				//System.out.println("totalMemory:" + (Runtime.getRuntime().totalMemory() / 1024f / 1024f));
+				//System.out.println("freeMemory:" + (Runtime.getRuntime().freeMemory() / 1024f / 1024f));
 				//System.out.println("percentLeft:" + percentLeft);
-				if(percentLeft < 15)
+				//System.out.println("percentLeft2:" + percentLeft2);
+				if(percentLeft < 15 && percentLeft2 < 15)
 				{
 					memoryWarningSent = true;
 					String subject = "Memory is getting low on " + CmsPropertyHandler.getServerName();
@@ -576,7 +582,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			        {
 						try
 						{
-							logger.warn("Sending warning mail:" + (int)percentLeft + ":" + (int)memoryLeft + ":" + Runtime.getRuntime().maxMemory() / 1024 / 1024);
+							logger.warn("Sending warning mail:" + (int)percentLeft + ":" + (int)memoryLeft + ":" + Runtime.getRuntime().maxMemory() / 1024f / 1024f);
 							MailServiceFactory.getService().sendEmail(warningEmailReceiver, warningEmailReceiver, null, subject, mailBody, "utf-8");
 						} 
 						catch (Exception e)
