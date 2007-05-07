@@ -23,8 +23,10 @@
 
 package org.infoglue.cms.applications.contenttool.actions;
 
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
@@ -56,6 +58,7 @@ public class SearchContentAction extends InfoGlueAbstractAction
 	private static final long serialVersionUID = 1L;
 	
 	private List contentVersionVOList;
+	private Set contentVOSet;
 	private Integer repositoryId;
 	private String searchString;
 	private String name;
@@ -66,6 +69,7 @@ public class SearchContentAction extends InfoGlueAbstractAction
 	private Integer stateId;
 	private boolean advancedEnabled = false;
 	private List selectedRepositoryIdList = new ArrayList();
+	private String[] allowedContentTypeIds = null;
 	
 	private int maxRows = 0;
 	
@@ -129,11 +133,11 @@ public class SearchContentAction extends InfoGlueAbstractAction
 				selectedRepositoryIdList.add(repositoryIdToSearch[i]);
 			}
 			
-			contentVersionVOList = SearchController.getContentVersions(repositoryIdAsIntegerToSearch, this.getSearchString(), maxRows, name, languageId, contentTypeDefinitionId, caseSensitive, stateId);
+			contentVersionVOList = SearchController.getContentVersions(repositoryIdAsIntegerToSearch, this.getSearchString(), maxRows, name, languageId, new Integer[]{contentTypeDefinitionId}, caseSensitive, stateId);
 		}
 		else
 		{
-			contentVersionVOList = SearchController.getContentVersions(this.repositoryId, this.getSearchString(), maxRows, name, languageId, contentTypeDefinitionId, caseSensitive, stateId);
+			contentVersionVOList = SearchController.getContentVersions(this.repositoryId, this.getSearchString(), maxRows, name, languageId, new Integer[]{contentTypeDefinitionId}, caseSensitive, stateId);
 			selectedRepositoryIdList.add("" + this.repositoryId);
 		}
 		
@@ -147,7 +151,13 @@ public class SearchContentAction extends InfoGlueAbstractAction
 
 	public String doBindingResult() throws Exception 
 	{
-		System.out.println();
+		Integer[] allowedContentTypeId = new Integer[0];
+		if(allowedContentTypeIds != null && allowedContentTypeIds.length != 0)
+		{
+			allowedContentTypeId = new Integer[allowedContentTypeIds.length];
+			for(int i=0; i<allowedContentTypeIds.length; i++)
+				allowedContentTypeId[i] = new Integer(allowedContentTypeIds[i]);
+		}
 		
 		int maxRows = 100;
 		try
@@ -168,11 +178,12 @@ public class SearchContentAction extends InfoGlueAbstractAction
 				selectedRepositoryIdList.add(repositoryIdToSearch[i]);
 			}
 			
-			contentVersionVOList = SearchController.getContentVersions(repositoryIdAsIntegerToSearch, this.getSearchString(), maxRows, name, languageId, contentTypeDefinitionId, caseSensitive, stateId);
+			//contentVersionVOList = SearchController.getContentVersions(repositoryIdAsIntegerToSearch, this.getSearchString(), maxRows, name, languageId, contentTypeDefinitionId, caseSensitive, stateId);
+			contentVOSet = SearchController.getContents(repositoryIdAsIntegerToSearch, this.getSearchString(), maxRows, name, languageId, allowedContentTypeId, caseSensitive, stateId);
 		}
 		else
 		{
-			contentVersionVOList = SearchController.getContentVersions(this.repositoryId, this.getSearchString(), maxRows, name, languageId, contentTypeDefinitionId, caseSensitive, stateId);
+			contentVOSet = SearchController.getContents(this.repositoryId, this.getSearchString(), maxRows, name, languageId, allowedContentTypeId, caseSensitive, stateId);
 			selectedRepositoryIdList.add("" + this.repositoryId);
 		}
 
@@ -388,5 +399,35 @@ public class SearchContentAction extends InfoGlueAbstractAction
 	public List getSelectedRepositoryIdList() 
 	{
 		return selectedRepositoryIdList;
+	}
+
+    public void setAllowedContentTypeIds(String[] allowedContentTypeIds)
+    {
+        this.allowedContentTypeIds = allowedContentTypeIds;
+    }
+    
+    public String getAllowedContentTypeIdsAsUrlEncodedString() throws Exception
+    {
+        StringBuffer sb = new StringBuffer();
+        
+        for(int i=0; i<allowedContentTypeIds.length; i++)
+        {
+            if(i > 0)
+                sb.append("&");
+            
+            sb.append("allowedContentTypeIds=" + URLEncoder.encode(allowedContentTypeIds[i], "UTF-8"));
+        }
+
+        return sb.toString();
+    }
+
+	public Set getContentVOSet()
+	{
+		return contentVOSet;
+	}
+
+	public String[] getAllowedContentTypeIds()
+	{
+		return allowedContentTypeIds;
 	}
 }

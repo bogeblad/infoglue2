@@ -219,6 +219,9 @@
 <form method="POST" name="editForm" action="SearchContent!bindingResult.action">
 <input type="hidden" id="advancedEnabled" name="advancedEnabled" value="$advancedEnabled">
 <input type="hidden" name="repositoryId" value="$!repositoryId">
+#foreach($allowedContentTypeDefinitionId in $allowedContentTypeIds)
+<input type="hidden" name="allowedContentTypeIds" value="$allowedContentTypeDefinitionId">
+#end
 <table border="0" cellpadding="0" cellspacing="0">
 <tr>
 	<td colspan="7">	
@@ -236,24 +239,22 @@
 <table tableborder=0 border=0 bgcolor="#C7D1B3" width="100%" cellpadding="1" cellspacing="0"><tr><td>
 #set($lvConstraint = 0)
 
-#lvHead([$ui.getString("tool.contenttool.searchResultContentHeader")] "tool.contenttool.replace.header" "ReplaceContent.action" "SearchContent.action" "tool.contenttool.replaceStringInContentVersions.text")
+#lvHead([$ui.getString("tool.contenttool.searchResultContentHeader"), ""] "tool.contenttool.replace.header" "ReplaceContent.action" "SearchContent.action" "tool.contenttool.replaceStringInContentVersions.text")
 
 #set($cnt = 0)
-#foreach ($contentVersionVO in $contentVersionVOList)
-	#set( $contentVersionId = $contentVersionVO.id ) 
-	#set( $contentVO = $this.getContentVO($contentVersionVO.contentId) ) 
+#foreach ($contentVO in $contentVOSet)
 	#set( $contentRepositoryId = $contentVO.repositoryId ) 
-	#set( $path = $this.getContentPath($contentVersionVO.contentId))
-	<script type="text/javascript">var path_${contentVersionVO.contentId} = "$path";</script>	
+	#set( $path = $this.getContentPath($contentVO.contentId))
+	<script type="text/javascript">var path_${contentVO.contentId} = "$path";</script>	
 	#set( $fnutt = '"')
-	#set( $rowUrl = "javascript:setSelected($contentVersionVO.contentId, $contentRepositoryId, path_${contentVersionVO.contentId});")
-	#set( $row = ["<a href='$rowUrl'>$contentVO.name</a> <span onmouseover='return overlib(${fnutt}$path${fnutt}, WIDTH, 400, BGCOLOR, ${fnutt}#FFFFFF${fnutt});' onmouseout='return nd();'><img src='images/questionMark.gif'/></span>"] )
+	#set( $rowUrl = "javascript:setSelected($contentVO.contentId, $contentRepositoryId, path_${contentVO.contentId});")
+	#set( $row = ["<a href='$rowUrl'>$contentVO.name</a>", "<span onmouseover='return overlib(${fnutt}$path${fnutt}, WIDTH, 400, BGCOLOR, ${fnutt}#FFFFFF${fnutt});' onmouseout='return nd();'><img src='images/questionMarkGrad.gif'/></span>"] )
 	#set($cnt = $cnt + 1)
 	
-	#lvAddRow($row $cnt $contentVersionId)
+	#lvAddRow($row $cnt $contentId)
 #end
 #if($cnt == 0)
-	#lvAddRow([$ui.getString("tool.contenttool.searchResultNoMatchesText")] 1 0)
+	#lvAddRow([$ui.getString("tool.contenttool.searchResultNoMatchesText"), ""] 1 0)
 #end
 
 #lvEnd()

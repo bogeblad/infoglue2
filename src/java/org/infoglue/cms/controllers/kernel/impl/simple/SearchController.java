@@ -36,6 +36,7 @@ import org.apache.xerces.parsers.DOMParser;
 import org.exolab.castor.jdo.Database;
 import org.exolab.castor.jdo.OQLQuery;
 import org.exolab.castor.jdo.QueryResults;
+import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.content.ContentVersion;
 import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
@@ -102,7 +103,27 @@ public class SearchController extends BaseController
 		}
 	}
 
-   	public static List getContentVersions(Integer repositoryId, String searchString, int maxRows, String name, Integer languageId, Integer contentTypeDefinitionId, Integer caseSensitive, Integer stateId) throws SystemException, Bug
+   	public static Set getContents(Integer repositoryId, String searchString, int maxRows, String name, Integer languageId, Integer[] contentTypeDefinitionId, Integer caseSensitive, Integer stateId) throws SystemException, Bug
+   	{
+   		return getContents(new Integer[]{repositoryId}, searchString, maxRows, name, languageId, contentTypeDefinitionId, caseSensitive, stateId);
+   	}
+   	
+   	public static Set getContents(Integer[] repositoryId, String searchString, int maxRows, String name, Integer languageId, Integer[] contentTypeDefinitionId, Integer caseSensitive, Integer stateId) throws SystemException, Bug
+   	{
+   		Set contents = new HashSet();
+   		List contentVersions = getContentVersions(repositoryId, searchString, maxRows, name, languageId, contentTypeDefinitionId, caseSensitive, stateId);
+   		Iterator contentVersionsIterator = contentVersions.iterator();
+   		while(contentVersionsIterator.hasNext())
+   		{
+   			ContentVersionVO contentVersionVO = (ContentVersionVO)contentVersionsIterator.next();
+   			ContentVO contentVO = ContentController.getContentController().getContentVOWithId(contentVersionVO.getContentId());
+   			contents.add(contentVO);
+   		}
+   		
+   		return contents;
+   	}
+
+   	public static List getContentVersions(Integer repositoryId, String searchString, int maxRows, String name, Integer languageId, Integer[] contentTypeDefinitionId, Integer caseSensitive, Integer stateId) throws SystemException, Bug
    	{
 		List matchingContents = getContentVersions(new Integer[]{repositoryId}, searchString, maxRows, name, languageId, contentTypeDefinitionId, caseSensitive, stateId);
 			
@@ -111,7 +132,7 @@ public class SearchController extends BaseController
    	}
 
 	
-   	public static List getContentVersions(Integer[] repositoryId, String searchString, int maxRows, String name, Integer languageId, Integer contentTypeDefinitionId, Integer caseSensitive, Integer stateId) throws SystemException, Bug
+   	public static List getContentVersions(Integer[] repositoryId, String searchString, int maxRows, String name, Integer languageId, Integer[] contentTypeDefinitionId, Integer caseSensitive, Integer stateId) throws SystemException, Bug
    	{
 		List matchingContents = new ArrayList();
 
@@ -154,11 +175,20 @@ public class SearchController extends BaseController
 			    arguments.add(languageId);
 				index++;
 			}
-			if(contentTypeDefinitionId != null)
+			if(contentTypeDefinitionId != null && contentTypeDefinitionId.length > 0 && contentTypeDefinitionId[0] != null)
 			{
-			    extraArguments += " AND cv.owningContent.contentTypeDefinition = $" + index;
-			    arguments.add(contentTypeDefinitionId);
-				index++;
+				extraArguments += " AND(";
+				for(int i=0; i<contentTypeDefinitionId.length; i++)
+				{
+					if(i==0)
+						extraArguments += " cv.owningContent.contentTypeDefinition = $" + index;
+					else
+						extraArguments += " OR cv.owningContent.contentTypeDefinition = $" + index;
+						
+					arguments.add(contentTypeDefinitionId[i]);
+					index++;
+				}
+				extraArguments += ")";
 			}
 			if(stateId != null)
 			{
