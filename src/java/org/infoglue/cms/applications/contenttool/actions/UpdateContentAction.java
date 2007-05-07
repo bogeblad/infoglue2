@@ -23,11 +23,18 @@
 
 package org.infoglue.cms.applications.contenttool.actions;
 
+import java.util.Collections;
+import java.util.List;
+
 import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentControllerProxy;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
+import org.infoglue.cms.controllers.kernel.impl.simple.InfoGlueSettingsController;
 import org.infoglue.cms.entities.content.ContentVO;
+import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
+import org.infoglue.cms.util.sorters.ReflectionComparator;
 
 
 /**
@@ -42,6 +49,7 @@ public class UpdateContentAction extends ViewContentAction //WebworkAbstractActi
 	private ContentVO contentVO = null;
     private Integer repositoryId;
     private Integer contentTypeDefinitionId;
+    private Integer newContentTypeDefinitionId;
 	
     private ConstraintExceptionBuffer ceb;
 	
@@ -55,7 +63,29 @@ public class UpdateContentAction extends ViewContentAction //WebworkAbstractActi
 		this.contentVO = contentVO;
 		this.ceb = new ConstraintExceptionBuffer();	
 	}
-	
+
+	public String doInputContentType() throws Exception
+	{
+		super.initialize(getContentId());
+		
+		return "successInputContentType";
+	}
+
+	public String doChangeContentType() throws Exception
+	{
+		super.initialize(getContentId());
+
+		ContentVO oldContentVO = ContentController.getContentController().getContentVOWithId(getContentId());
+		
+		ceb = oldContentVO.validate();
+		
+		ceb.throwIfNotEmpty();
+
+    	ContentControllerProxy.getController().acUpdate(this.getInfoGluePrincipal(), oldContentVO, this.newContentTypeDefinitionId);
+
+		return "success";
+	}
+
 	public String doExecute() throws Exception
 	{
 		super.initialize(getContentId());
@@ -88,6 +118,30 @@ public class UpdateContentAction extends ViewContentAction //WebworkAbstractActi
 						
 		return "saveAndExit";
 	}
+
+	/**
+	 * This method fetches the list of ContentTypeDefinitions
+	 */
+	
+	public List getContentTypeDefinitions() throws Exception
+	{
+	    List contentTypeVOList = null;
+	    
+	    String protectContentTypes = CmsPropertyHandler.getProtectContentTypes();
+	    if(protectContentTypes != null && protectContentTypes.equalsIgnoreCase("true"))
+	        contentTypeVOList = ContentTypeDefinitionController.getController().getAuthorizedContentTypeDefinitionVOList(this.getInfoGluePrincipal());
+		else
+		    contentTypeVOList = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOList();
+	    
+	    Collections.sort(contentTypeVOList, new ReflectionComparator("name"));
+	    
+	    return contentTypeVOList;
+	}      
+
+    public String getDefaultFolderContentTypeName()
+    {
+        return InfoGlueSettingsController.getInfoGlueSettingsController().getProperty("repository_" + this.getRepositoryId() + "_defaultFolderContentTypeName", "applicationProperties", null, false, false, false, false, null);
+    }
 
 	public void setContentId(Integer contentId)
 	{
@@ -152,6 +206,16 @@ public class UpdateContentAction extends ViewContentAction //WebworkAbstractActi
 	public Integer getRepositoryId()
 	{
 		return this.repositoryId;
+	}
+
+	public Integer getNewContentTypeDefinitionId()
+	{
+		return newContentTypeDefinitionId;
+	}
+
+	public void setNewContentTypeDefinitionId(Integer newContentTypeDefinitionId)
+	{
+		this.newContentTypeDefinitionId = newContentTypeDefinitionId;
 	}
 
 }
