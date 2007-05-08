@@ -1946,9 +1946,16 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		Timer timer = new Timer();
 		timer.setActive(false);
 				
-		Integer siteNodeId = new Integer(this.getRequest().getParameter("siteNodeId"));
+		Integer siteNodeId = null;
 		Integer languageId = null;
-
+		
+		if(this.getRequest().getParameter("siteNodeId") != null && this.getRequest().getParameter("siteNodeId").length() > 0)
+			siteNodeId = new Integer(this.getRequest().getParameter("siteNodeId"));
+		else
+		{
+			siteNodeId = this.getTemplateController().getDeliveryContext().getSiteNodeId();
+		}
+		
 		if(this.getRequest().getParameter("languageId") != null && this.getRequest().getParameter("languageId").length() > 0)
 		{
 			languageId = new Integer(this.getRequest().getParameter("languageId"));
