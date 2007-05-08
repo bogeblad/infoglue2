@@ -521,7 +521,10 @@ public class ViewPageAction extends InfoGlueAbstractAction
 				SiteNode siteNode = nodeDeliveryController.getSiteNode(dbWrapper.getDatabase(), this.siteNodeId);
 				if(siteNode == null)
 				    throw new SystemException("There was no page with this id.");
-				
+
+				if(siteNode.getSiteNodeTypeDefinition() == null)
+				    throw new SystemException("There was no SiteNodeTypeDefinition defined for the site node " + siteNode.getName() + "[" + siteNode.getId() + "].");
+
 				String invokerClassName = siteNode.getSiteNodeTypeDefinition().getInvokerClassName();
 				
 				if(invokerClassName == null && invokerClassName.equals(""))
