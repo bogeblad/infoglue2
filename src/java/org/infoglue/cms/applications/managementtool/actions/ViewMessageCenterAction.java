@@ -56,16 +56,25 @@ public class ViewMessageCenterAction extends InfoGlueAbstractAction
 	
     public String doExecute() throws Exception
     {
-        return "success";
+    	if(getInfoGluePrincipal() == null)
+    		return ERROR;
+
+    	return "success";
     }
 
     public String doStandaloneChat() throws Exception
     {
-        return "successStandaloneChat";
+    	if(getInfoGluePrincipal() == null)
+    		return ERROR;
+
+    	return "successStandaloneChat";
     }
 
     public String doGetMessages() throws Exception
     {
+    	if(getInfoGluePrincipal() == null)
+    		return ERROR;
+    	
     	if(lastId == null || lastId.intValue() == -1)
     		messages = chat.getMessages();
     	else
@@ -76,6 +85,9 @@ public class ViewMessageCenterAction extends InfoGlueAbstractAction
 
     public String doGetSystemMessages() throws Exception
     {
+    	if(getInfoGluePrincipal() == null)
+    		return ERROR;
+    	
     	if(lastId == null || lastId.intValue() == -1)
     	{
     	    Message message = new Message(systemMessagesChat.getMessageId(), "administrator", INDEX_MESSAGE_TYPE, "Undefined");
@@ -90,6 +102,8 @@ public class ViewMessageCenterAction extends InfoGlueAbstractAction
 
     public String doSendMessage() throws Exception
     {
+    	if(getInfoGluePrincipal() == null)
+    		return ERROR;
     	//System.out.println("Adding message:" + message);
     	
     	chat.addMessage(this.getUserName(), CHAT_MESSAGE_TYPE, this.message);
