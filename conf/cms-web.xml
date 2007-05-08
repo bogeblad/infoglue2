@@ -13,14 +13,22 @@
                 /UpdateCache!test.action,
 				/ViewApplicationState.action,
 				/ViewLogging.action,
-                /ErrorPage.action,
+				/ErrorPage.action,
                 /digitalAssets/*,
+                /applications/*,
                 /scripts/*,
                 /script/*,
                 /css/*,
                 /images/*,
                 /img/*,
-                /jsp/*                
+                /jsp/*,
+                *.xml,
+                *.gif,
+                *.jpg,
+                *.png,
+                *.ico,
+                *.css,
+                *.js              
             </param-value>
         </init-param>
     </filter> 
@@ -78,15 +86,23 @@
                 /UpdateCache!test.action,
 				/ViewApplicationState.action,
 				/ViewApplicationState!setLogLevel.action,
+				/ViewMessageCenter!getSystemMessages.action,
 				/ErrorPage.action,
+                /index-cms.html,
                 /scripts/*,
                 /script/*,
                 /css/*,
                 /images/*,
                 /unauthorizedLogin.jsp,
-                *.xml,
                 /robots.txt,
-                /services/*
+                /services/*,
+                *.xml,
+                *.gif,
+                *.jpg,
+                *.png,
+                *.ico,
+                *.css,
+                *.js
             </param-value>
         </init-param>
 		

@@ -27,7 +27,13 @@
                 /css/*,
                 /images/*,
                 /img/*,
-                /jsp/*
+                /jsp/*,
+                *.gif,
+                *.jpg,
+                *.png,
+                *.ico,
+                *.css,
+                *.js
             </param-value>
         </init-param>
     </filter>
@@ -45,10 +51,13 @@
                 /css/*,
                 /images/*,
                 /jsp/*,
+        		/robots.txt,
                 *.gif,
                 *.jpg,
                 *.png,
-				*.ico
+                *.ico,
+                *.css,
+                *.js
             </param-value>
         </init-param>
     </filter>
@@ -80,12 +89,14 @@
                 /css/*,
                 /images/*,
                 /jsp/*,
+        		/robots.txt,
                 *.gif,
                 *.jpg,
                 *.png,
-				*.ico,
-				/robots.txt
-            </param-value>
+                *.ico,
+                *.css,
+                *.js
+		    </param-value>
         </init-param>
         <!--
         <init-param>
@@ -109,7 +120,14 @@
                 /script/*,
                 /css/*,
                 /images/*,
-                /jsp/*
+                /jsp/*,
+           		/robots.txt,
+                *.gif,
+                *.jpg,
+                *.png,
+                *.ico,
+                *.css,
+                *.js
             </param-value>
         </init-param>
     </filter>
