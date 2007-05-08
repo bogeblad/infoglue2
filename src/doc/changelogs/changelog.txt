@@ -44,7 +44,11 @@ Abbreviated Changelog from 2.4.6 Final
 - Upgraded dbcp to 1.2.2 which says it should solve some connection reset issues not being handled with grace.
 - Fixed so JNDI and webservice caches are not cleared upon publication. No need - they time out themselves.
 - Made the search view when binding contents better visually - now the path to the found content is only displayed when clicking on the questionmark.
-
+- Added fields and logic to control which languages are available in the tool header.
+- Improved handling of assets a lot so now the blob in them are only loaded when needed.
+- Added possibility to change content type on any content.
+- Fixed so the cas authentication module does not send so many redirects to the CAS-server. It tries to minimize the redirects to just a few actions.
+ 
 -------------------------------------------------------------------------------------
 - InfoGlue 2.4.6 Final
 -------------------------------------------------------------------------------------
