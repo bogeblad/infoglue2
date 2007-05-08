@@ -70,6 +70,7 @@ import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
 import org.infoglue.cms.util.graphics.ThumbnailGenerator;
 import org.infoglue.deliver.controllers.kernel.impl.simple.LanguageDeliveryController;
+import org.infoglue.deliver.util.CacheController;
 import org.infoglue.deliver.util.Timer;
 
 /**
@@ -110,7 +111,7 @@ public class DigitalAssetController extends BaseController
     
     public static DigitalAsset getSmallDigitalAssetWithId(Integer digitalAssetId, Database db) throws SystemException, Bug
     {
-		return (DigitalAsset) getObjectWithId(SmallDigitalAssetImpl.class, digitalAssetId, db);
+    	return (DigitalAsset) getObjectWithId(SmallDigitalAssetImpl.class, digitalAssetId, db);
     }
 
 
@@ -539,7 +540,21 @@ public class DigitalAssetController extends BaseController
 	   	
 	public static List getDigitalAssetVOList(Integer contentVersionId, Database db) throws Exception
     {
-    	List digitalAssetVOList = new ArrayList();
+		String key = "" + contentVersionId;
+		String cacheName = "digitalAssetCache";
+		List digitalAssetVOList = (List)CacheController.getCachedObject(cacheName, key);
+		if(digitalAssetVOList != null)
+		{
+			if(logger.isInfoEnabled())
+				logger.info("There was an cached digitalAssetVOList:" + digitalAssetVOList);
+			
+			return digitalAssetVOList;
+		}
+
+		digitalAssetVOList = new ArrayList();
+    	
+		if(logger.isInfoEnabled())
+			logger.info("Making a sql call for assets on " + contentVersionId);
 
     	OQLQuery oql = db.getOQLQuery("CALL SQL SELECT c.digitalAssetId, c.assetFileName, c.assetKey, c.assetFilePath, c.assetContentType, c.assetFileSize FROM cmDigitalAsset c, cmContentVersionDigitalAsset cvda where cvda.digitalAssetId = c.digitalAssetId AND cvda.contentVersionId = $1 ORDER BY c.digitalAssetId AS org.infoglue.cms.entities.content.impl.simple.SmallDigitalAssetImpl");
     	if(CmsPropertyHandler.getUseShortTableNames() != null && CmsPropertyHandler.getUseShortTableNames().equalsIgnoreCase("true"))
@@ -558,6 +573,9 @@ public class DigitalAssetController extends BaseController
 		results.close();
 		oql.close();
     	
+		if(digitalAssetVOList != null)
+			CacheController.cacheObject(cacheName, key, digitalAssetVOList);
+		
 		return digitalAssetVOList;
     }
 
@@ -597,8 +615,19 @@ public class DigitalAssetController extends BaseController
 	   	
 	public static List getDigitalAssetVOList(Integer contentId, Integer languageId, boolean useLanguageFallback, Database db) throws SystemException, Bug, Exception
     {
-	    List digitalAssetVOList = new ArrayList();
+		String key = "" + contentId + "_" + languageId + "_" + useLanguageFallback;
+		String cacheName = "digitalAssetCache";
+		List digitalAssetVOList = (List)CacheController.getCachedObject(cacheName, key);
+		if(digitalAssetVOList != null)
+		{
+			if(logger.isInfoEnabled())
+				logger.info("There was an cached digitalAssetVOList:" + digitalAssetVOList);
+			
+			return digitalAssetVOList;
+		}
 
+		digitalAssetVOList = new ArrayList();
+		
     	Content content = ContentController.getContentController().getContentWithId(contentId, db);
     	logger.info("content:" + content.getName());
     	logger.info("repositoryId:" + content.getRepository().getId());
@@ -641,6 +670,9 @@ public class DigitalAssetController extends BaseController
 			    digitalAssetVOList = getDigitalAssetVOList(contentVersion.getId(), db);		
 			}
 		}
+		
+		if(digitalAssetVOList != null)
+			CacheController.cacheObject(cacheName, key, digitalAssetVOList);
 		
 		return digitalAssetVOList;
     }
@@ -1163,8 +1195,20 @@ public class DigitalAssetController extends BaseController
 	
 	public static DigitalAssetVO getLatestDigitalAssetVO(Integer contentVersionId, Database db) throws Exception
 	{
-		DigitalAssetVO digitalAssetVO = null;
-    	
+		String key = "" + contentVersionId;
+		String cacheName = "digitalAssetCache";
+		DigitalAssetVO digitalAssetVO = (DigitalAssetVO)CacheController.getCachedObject(cacheName, key);
+		if(digitalAssetVO != null)
+		{
+			if(logger.isInfoEnabled())
+				logger.info("There was an cached digitalAssetVO:" + digitalAssetVO);
+			
+			return digitalAssetVO;
+		}
+
+		if(logger.isInfoEnabled())
+			logger.info("Making a sql call for assets on " + contentVersionId);
+
 		OQLQuery oql = db.getOQLQuery("CALL SQL SELECT c.digitalAssetId, c.assetFileName, c.assetKey, c.assetFilePath, c.assetContentType, c.assetFileSize FROM cmDigitalAsset c, cmContentVersionDigitalAsset cvda where cvda.digitalAssetId = c.digitalAssetId AND cvda.contentVersionId = $1 ORDER BY c.digitalAssetId AS org.infoglue.cms.entities.content.impl.simple.SmallDigitalAssetImpl");
     	if(CmsPropertyHandler.getUseShortTableNames() != null && CmsPropertyHandler.getUseShortTableNames().equalsIgnoreCase("true"))
     		oql = db.getOQLQuery("CALL SQL SELECT c.DigAssetId, c.assetFileName, c.assetKey, c.assetFilePath, c.assetContentType, c.assetFileSize FROM cmDigAsset c, cmContVerDigAsset cvda where cvda.DigAssetId = c.DigAssetId AND cvda.ContVerId = $1 ORDER BY c.DigAssetId AS org.infoglue.cms.entities.content.impl.simple.SmallDigitalAssetImpl");
@@ -1182,6 +1226,9 @@ public class DigitalAssetController extends BaseController
 		results.close();
 		oql.close();
 
+		if(digitalAssetVO != null)
+			CacheController.cacheObject(cacheName, key, digitalAssetVO);
+			
 		return digitalAssetVO;
 	}
 
@@ -1191,8 +1238,20 @@ public class DigitalAssetController extends BaseController
 	
 	public static DigitalAssetVO getLatestDigitalAssetVO(Integer contentVersionId, String assetKey, Database db) throws Exception
 	{
-		DigitalAssetVO digitalAssetVO = null;
+		String key = "" + contentVersionId + "_" + assetKey;
+		String cacheName = "digitalAssetCache";
+		DigitalAssetVO digitalAssetVO = (DigitalAssetVO)CacheController.getCachedObject(cacheName, key);
+		if(digitalAssetVO != null)
+		{
+			if(logger.isInfoEnabled())
+				logger.info("There was an cached digitalAssetVO:" + digitalAssetVO);
+
+			return digitalAssetVO;
+		}
 		
+		if(logger.isInfoEnabled())
+			logger.info("Making an sql call for asset with key " + assetKey + " on contentVersionId " + contentVersionId);
+
 		OQLQuery oql = db.getOQLQuery("CALL SQL SELECT c.digitalAssetId, c.assetFileName, c.assetKey, c.assetFilePath, c.assetContentType, c.assetFileSize FROM cmDigitalAsset c, cmContentVersionDigitalAsset cvda where cvda.digitalAssetId = c.digitalAssetId AND cvda.contentVersionId = $1 AND c.assetKey = $2 ORDER BY c.digitalAssetId AS org.infoglue.cms.entities.content.impl.simple.SmallDigitalAssetImpl");
     	if(CmsPropertyHandler.getUseShortTableNames() != null && CmsPropertyHandler.getUseShortTableNames().equalsIgnoreCase("true"))
     		oql = db.getOQLQuery("CALL SQL SELECT c.DigAssetId, c.assetFileName, c.assetKey, c.assetFilePath, c.assetContentType, c.assetFileSize FROM cmDigAsset c, cmContVerDigAsset cvda where cvda.DigAssetId = c.DigAssetId AND cvda.ContVerId = $1 AND c.assetKey = $2 ORDER BY c.DigAssetId AS org.infoglue.cms.entities.content.impl.simple.SmallDigitalAssetImpl");
@@ -1211,6 +1270,9 @@ public class DigitalAssetController extends BaseController
 		results.close();
 		oql.close();
 
+		if(digitalAssetVO != null)
+			CacheController.cacheObject(cacheName, key, digitalAssetVO);
+		
 		return digitalAssetVO;
 	}
 	
@@ -1353,24 +1415,17 @@ public class DigitalAssetController extends BaseController
             
             try 
             {
-            	//System.out.println("Creating zip...");
-
             	// Create the ZIP file				
                 ZipOutputStream out = new ZipOutputStream(new FileOutputStream(outputFile));
             
-                //System.out.println("Creating zip 2...");
-
                 // Compress the files
                 for (int i=0; i<filenames.length; i++) 
                 {
                     FileInputStream in = new FileInputStream(filenames[i]);
-                    //System.out.println("Creating zip 3...");
-            
+             
                     // Add ZIP entry to output stream.
                     String fileName = filenames[i];
                     String fileShortName = (String)names.get(fileName);
-                    //System.out.println("fileName:" + fileName);
-                    //System.out.println("fileShortName:" + fileShortName);
                     
                     out.putNextEntry(new ZipEntry(fileShortName));
             
@@ -1390,8 +1445,7 @@ public class DigitalAssetController extends BaseController
                 out.close();
 
                 archiveFileSize.append(outputFile.length() / (1000 * 1000));
-        		//System.out.println("archiveFileSize:" + archiveFileSize);
-
+        		
     			assetUrl = CmsPropertyHandler.getWebServerAddress() + "/" + CmsPropertyHandler.getDigitalAssetBaseUrl() + "/" + archiveFileName;
             } 
             catch (IOException e) 
@@ -1444,18 +1498,12 @@ public class DigitalAssetController extends BaseController
                 try
                 {
 	        		String zipEntryName = fileNames[i];
-	                //System.out.println("path:" + tempAssetsPath + File.separator + zipEntryName);
-	        		File assetFile = new File(tempAssetsPath + File.separator + zipEntryName);
-	        		//System.out.println("assetFile:" + assetFile.exists());
-	                
+	               File assetFile = new File(tempAssetsPath + File.separator + zipEntryName);
+	        		
 	        		FileInputStream is = new FileInputStream(assetFile);
 	        		String assetId = zipEntryName.substring(0, zipEntryName.indexOf("_"));
-	        		//System.out.println("zipEntryName:" + zipEntryName);
-	        		//System.out.println("assetId:" + assetId);
-	        		//System.out.println("assetLength:" + assetFile.length());
-	                
+	        		
 	        		DigitalAsset digitalAsset = getDigitalAssetWithId(new Integer(assetId), db);
-	        		//System.out.println("digitalAsset: " + digitalAsset);
 	        		
 	        		digitalAsset.setAssetFilePath(zipEntryName);
 	    			digitalAsset.setAssetFileSize(new Integer((int)assetFile.length()));

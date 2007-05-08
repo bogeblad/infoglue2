@@ -153,6 +153,7 @@ public class CmsJDOCallback implements CallbackInterceptor
 			}
 			else if(object.getClass().getName().equals(DigitalAssetImpl.class.getName()))
 			{
+				CacheController.clearCache("digitalAssetCache");
 				//System.out.println("We should delete all images with digitalAssetId " + getObjectIdentity(object));
 				DigitalAssetController.deleteCachedDigitalAssets((Integer)getObjectIdentity(object));
 			}
@@ -333,8 +334,10 @@ public class CmsJDOCallback implements CallbackInterceptor
 			{
 			    CacheController.clearCache("languageCache");
 			}
-
-
+			else if(object.getClass().getName().equals(DigitalAssetImpl.class.getName()))
+			{
+				CacheController.clearCache("digitalAssetCache");
+			}
 
 			//System.out.println("created end...:" + object);
     	}
@@ -408,6 +411,7 @@ public class CmsJDOCallback implements CallbackInterceptor
 			}
 			else if(object.getClass().getName().equals(DigitalAssetImpl.class.getName()))
 			{
+				CacheController.clearCache("digitalAssetCache");
 				//logger.info("We should delete all images with digitalAssetId " + getObjectIdentity(object));
 				DigitalAssetController.deleteCachedDigitalAssets((Integer)getObjectIdentity(object));
 			}

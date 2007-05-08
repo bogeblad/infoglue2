@@ -160,6 +160,7 @@ public class WorkingPublicationThread extends Thread
 						}
 						else if(Class.forName(className).getName().equals(DigitalAssetImpl.class.getName()))
 						{
+							CacheController.clearCache("digitalAssetCache");
 						    logger.info("We should delete all images with digitalAssetId " + objectId);
 							DigitalAssetDeliveryController.getDigitalAssetDeliveryController().deleteDigitalAssets(new Integer(objectId));
 						}

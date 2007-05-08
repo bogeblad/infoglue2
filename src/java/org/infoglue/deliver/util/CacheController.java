@@ -54,6 +54,7 @@ import org.infoglue.cms.entities.content.impl.simple.ContentVersionImpl;
 import org.infoglue.cms.entities.content.impl.simple.DigitalAssetImpl;
 import org.infoglue.cms.entities.content.impl.simple.MediumContentImpl;
 import org.infoglue.cms.entities.content.impl.simple.SmallContentImpl;
+import org.infoglue.cms.entities.content.impl.simple.SmallDigitalAssetImpl;
 import org.infoglue.cms.entities.management.impl.simple.AccessRightImpl;
 import org.infoglue.cms.entities.management.impl.simple.AvailableServiceBindingImpl;
 import org.infoglue.cms.entities.management.impl.simple.CategoryImpl;
@@ -586,6 +587,10 @@ public class CacheController extends Thread
 					{
 						clear = true;
 					}
+					if(cacheName.equalsIgnoreCase("digitalAssetCache") && (entity.indexOf("DigitalAsset") > 0 || entity.indexOf("ContentVersion") > 0))
+					{
+						clear = true;
+					}
 					if(cacheName.equalsIgnoreCase("sortedChildContentsCache") && (entity.indexOf("Content") > 0 || entity.indexOf("ContentVersion") > 0 || entity.indexOf("AccessRight") > 0 || entity.indexOf("SystemUser") > 0 || entity.indexOf("Role") > 0  || entity.indexOf("Group") > 0))
 					{
 						clear = true;
@@ -862,6 +867,7 @@ public class CacheController extends Thread
 			clearCache(db, ContentRelationImpl.class);
 			clearCache(db, ContentVersionImpl.class);
 			clearCache(db, DigitalAssetImpl.class);
+			clearCache(db, SmallDigitalAssetImpl.class);
 			clearCache(db, SmallAvailableServiceBindingImpl.class);
 			clearCache(db, AvailableServiceBindingImpl.class);
 			clearCache(db, ContentTypeDefinitionImpl.class);

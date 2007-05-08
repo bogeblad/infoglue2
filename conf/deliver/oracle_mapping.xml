@@ -1002,7 +1002,7 @@
 <!--  Mapping for SmallDigitalAsset  -->
   <class name="org.infoglue.cms.entities.content.impl.simple.SmallDigitalAssetImpl" identity="digitalAssetId" key-generator="SEQUENCE">
     <description>DigitalAsset</description>
-    <cache-type type="none"/>
+    <cache-type type="unlimited" capacity="10000"/>
     <map-to table="cmDigAsset"/>
     <field name="digitalAssetId" type="java.lang.Integer">
       <sql name="DigAssetId" type="integer" dirty="check" />
