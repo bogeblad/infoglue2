@@ -1271,6 +1271,18 @@ public interface TemplateController
      */
     public abstract boolean getHasLocalizedVersion(Integer contentId);
 
+	/**
+	 * This method returns an access right list so one can get which roles, groups and users can access the page.
+	 */
+	
+	public List getAccessRights(String interceptionPointName, String parameters);
+
+	/**
+	 * This method returns an access right list so one can get which roles, groups and users can access the page.
+	 */
+	
+	public List getPageAccessRights(String interceptionPointName, Integer siteNodeId);
+
     /**
      * This method return true if the user logged in has access to the siteNode sent in.
      */

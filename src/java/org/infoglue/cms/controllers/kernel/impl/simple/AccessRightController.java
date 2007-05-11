@@ -114,6 +114,47 @@ public class AccessRightController extends BaseController
 		return this.getAllVOObjects(AccessRightGroupImpl.class, "accessRightGroupId", db);
 	}
 
+	public List getAccessRightVOList(String interceptionPointName, String parameters, Database db) throws SystemException, Bug
+	{
+		String key = "" + interceptionPointName + "_" + parameters;
+		List accessRightVOList = (List)CacheController.getCachedObject("authorizationCache", key);
+		if(accessRightVOList != null)
+		{
+			if(logger.isInfoEnabled())
+				logger.info("There was an cached accessRightVOList:" + accessRightVOList);
+		
+			return accessRightVOList;
+		}
+			
+		accessRightVOList = new ArrayList();
+		
+		InterceptionPointVO interceptionPointVO = InterceptionPointController.getController().getInterceptionPointVOWithName(interceptionPointName);
+		
+		List accessRightList = this.getAccessRightListOnlyReadOnly(interceptionPointVO.getId(), parameters, db);
+		
+		Iterator accessRightListIterator = accessRightList.iterator();
+		while(accessRightListIterator.hasNext())
+		{
+		    AccessRight accessRight = (AccessRight)accessRightListIterator.next();
+		    
+		    Collection approvedRoles = accessRight.getRoles();
+		    Collection approvedGroups = accessRight.getGroups();
+		    Collection approvedUsers = accessRight.getUsers();
+		
+		    AccessRightVO vo = accessRight.getValueObject();
+		    vo.getRoles().addAll(toVOList(approvedRoles));
+		    vo.getRoles().addAll(toVOList(approvedGroups));
+		    vo.getRoles().addAll(toVOList(approvedUsers));
+		    
+		    accessRightVOList.add(vo);
+		}
+		
+		if(accessRightVOList != null)
+			CacheController.cacheObject("authorizationCache", key, accessRightVOList);
+		
+		return accessRightVOList;	
+	}
+
 	public List getAccessRightGroupVOList(Integer accessRightId) throws SystemException, Bug
 	{
 		List accessRightGroupVOList = new ArrayList();

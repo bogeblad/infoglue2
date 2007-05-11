@@ -5455,6 +5455,54 @@ public class BasicTemplateController implements TemplateController
 	}
 
 	/**
+	 * This method returns an access right list so one can get which roles, groups and users can access the page.
+	 */
+	
+	public List getAccessRights(String interceptionPointName, String parameters)
+	{
+		List accessRights = new ArrayList();
+		
+		try
+		{
+			accessRights = AccessRightController.getController().getAccessRightVOList(interceptionPointName, parameters, this.getDatabase());
+		}
+		catch(Exception e)
+		{
+			logger.warn("Problems getting access rights for " + interceptionPointName + "(" + parameters + ")", e);
+		}
+		
+		return accessRights;
+	}
+
+	/**
+	 * This method returns an access right list so one can get which roles, groups and users can access the page.
+	 */
+	
+	public List getPageAccessRights(String interceptionPointName, Integer siteNodeId)
+	{
+		List accessRights = new ArrayList();
+		
+		try
+		{
+		    Integer protectedSiteNodeVersionId = this.nodeDeliveryController.getProtectedSiteNodeVersionId(getDatabase(), siteNodeId);
+			if(protectedSiteNodeVersionId == null)
+			{
+				logger.info("The page was not protected...");
+			}
+			else
+			{
+				accessRights = AccessRightController.getController().getAccessRightVOList(interceptionPointName, protectedSiteNodeVersionId.toString(), this.getDatabase());
+			}
+		}
+		catch(Exception e)
+		{
+			logger.warn("Problems getting access rights for " + interceptionPointName + "(siteNodeId=" + siteNodeId + ")", e);
+		}
+		
+		return accessRights;
+	}
+
+	/**
 	 * This method return true if the user logged in has access to the siteNode sent in.
 	 */
 	
