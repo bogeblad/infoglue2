@@ -23,6 +23,9 @@
 
 package org.infoglue.cms.entities.management;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
 
@@ -33,8 +36,11 @@ public class AccessRightVO implements BaseEntityVO, Cloneable
 	private java.lang.Integer interceptionPointId;
 	private java.lang.String interceptionPointName;
 	private java.lang.String parameters = "";
-	//private java.lang.String roleName;
-  	
+
+	private List roles = new ArrayList();
+	private List groups = new ArrayList();
+	private List users = new ArrayList();
+	
 	public Integer getId() 
 	{
 		return getAccessRightId();
@@ -114,5 +120,20 @@ public class AccessRightVO implements BaseEntityVO, Cloneable
     {
         this.interceptionPointName = interceptionPointName;
     }
+
+	public List getGroups()
+	{
+		return groups;
+	}
+
+	public List getRoles()
+	{
+		return roles;
+	}
+
+	public List getUsers()
+	{
+		return users;
+	}
 }
         
