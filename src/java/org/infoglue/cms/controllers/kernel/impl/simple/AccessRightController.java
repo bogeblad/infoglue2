@@ -1512,6 +1512,10 @@ public class AccessRightController extends BaseController
 			while (results.hasMore()) 
 			{
 				AccessRightUser accessRightUser = (AccessRightUser)results.next();
+
+				//Dummy to get the access right to load correctly - otherwise a but occurrs.
+				Integer accessRightId = accessRightUser.getAccessRight().getAccessRightId();
+
 				accessRightUserList.add(accessRightUser);
 			}
 			
@@ -1547,7 +1551,10 @@ public class AccessRightController extends BaseController
 			while (results.hasMore()) 
 			{
 				AccessRightRole accessRightRole = (AccessRightRole)results.next();
-				if(!readOnly && accessRightRole.getAccessRight() == null)
+				//Dummy to get the access right to load correctly - otherwise a but occurrs.
+				Integer accessRightId = accessRightRole.getAccessRight().getAccessRightId();
+
+				if(accessRightRole.getAccessRight() == null && !readOnly)
 					db.remove(accessRightRole);
 				else
 					accessRightRoleList.add(accessRightRole);
@@ -1581,6 +1588,10 @@ public class AccessRightController extends BaseController
 			while (results.hasMore()) 
 			{
 				AccessRightGroup accessRightGroup = (AccessRightGroup)results.next();
+
+				//Dummy to get the access right to load correctly - otherwise a but occurrs.
+				Integer accessRightId = accessRightGroup.getAccessRight().getAccessRightId();
+
 				accessRightGroupList.add(accessRightGroup);
 			}
 			
