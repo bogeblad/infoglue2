@@ -143,8 +143,8 @@ public class AccessRightController extends BaseController
 		
 		    AccessRightVO vo = accessRight.getValueObject();
 		    vo.getRoles().addAll(toVOList(approvedRoles));
-		    vo.getRoles().addAll(toVOList(approvedGroups));
-		    vo.getRoles().addAll(toVOList(approvedUsers));
+		    vo.getGroups().addAll(toVOList(approvedGroups));
+		    vo.getUsers().addAll(toVOList(approvedUsers));
 		    
 		    accessRightVOList.add(vo);
 		}
