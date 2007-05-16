@@ -353,8 +353,11 @@ public abstract class PageInvoker
 		{
 		    PortalController pController = new PortalController(getRequest(), getResponse());
 		    context.put(PortalController.NAME, pController);
-		    logger.info("PortalController.NAME:" + PortalController.NAME);
-		    logger.info("pController:" + pController);
+		    if(logger.isInfoEnabled())
+		    {
+		    	logger.info("PortalController.NAME:" + PortalController.NAME);
+		    	logger.info("pController:" + pController);
+		    }
 		}
 		
 		return context;
