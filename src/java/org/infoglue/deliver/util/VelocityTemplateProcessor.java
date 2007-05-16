@@ -42,6 +42,7 @@ import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.deliver.applications.actions.InfoGlueComponent;
 import org.infoglue.deliver.applications.databeans.DeliveryContext;
 import org.infoglue.deliver.controllers.kernel.impl.simple.TemplateController;
+import org.infoglue.deliver.portal.PortalController;
 
 /**
  *
@@ -185,9 +186,11 @@ public class VelocityTemplateProcessor
 		}
 		
 		TemplateController templateController = (TemplateController)params.get("templateLogic");
+		PortalController portletController = (PortalController)params.get("portalLogic");
 		DeliveryContext deliveryContext = templateController.getDeliveryContext();
     	RequestDispatcher dispatch = templateController.getHttpServletRequest().getRequestDispatcher("/jsp/Template_" + hashCode + ".jsp");
 		templateController.getHttpServletRequest().setAttribute("org.infoglue.cms.deliver.templateLogic", templateController);
+		templateController.getHttpServletRequest().setAttribute("org.infoglue.cms.deliver.portalLogic", portletController);
     	CharResponseWrapper wrapper = new CharResponseWrapper(deliveryContext.getHttpServletResponse());
 		
     	dispatch.include(templateController.getHttpServletRequest(), wrapper);
