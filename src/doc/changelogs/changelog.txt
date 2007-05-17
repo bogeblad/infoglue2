@@ -48,7 +48,11 @@ Abbreviated Changelog from 2.4.6 Final
 - Improved handling of assets a lot so now the blob in them are only loaded when needed.
 - Added possibility to change content type on any content.
 - Fixed so the cas authentication module does not send so many redirects to the CAS-server. It tries to minimize the redirects to just a few actions.
- 
+- Added two new taglibs for extracting access rights for a page or other object - that is what roles, users and groups are allowed to access it.
+- Fixed issue with logout when running CAS
+- Added a new alternative way of making content category searches (matching contents tag etc). Improves performance for complex expressions hugely. 
+- Added possibility to control which version of the content search controller should be used in management tool with a new setting. The new default is the improved much faster search method.
+
 -------------------------------------------------------------------------------------
 - InfoGlue 2.4.6 Final
 -------------------------------------------------------------------------------------

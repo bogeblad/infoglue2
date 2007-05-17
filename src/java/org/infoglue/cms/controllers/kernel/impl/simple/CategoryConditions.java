@@ -9,6 +9,7 @@ import java.util.StringTokenizer;
 
 import org.infoglue.cms.entities.management.CategoryVO;
 import org.infoglue.cms.exception.SystemException;
+import org.infoglue.cms.util.CmsPropertyHandler;
 
 // TODO: cleanup
 
@@ -75,11 +76,14 @@ abstract class AbstractCategoryCondition implements ICategoryCondition {
 	private static final String CATEGORY_TABLE                = "cmCategory";
 	private static final String CONTENT_CATEGORY_TABLE        = "cmContentCategory";
 
+	//OLD WAY
 	protected static final String ONE_CATEGORY_CLAUSE 		  = SPACE + LEFT + CATEGORY_ALIAS_PREFIX + "{0}.categoryId={1} " + AND + SPACE + CONTENT_CATEGORY_ALIAS_PREFIX + "{0}.attributeName={2}" + RIGHT + SPACE;
 	protected static final String CATEGORY_CLAUSE   		  = "(" + CATEGORY_ALIAS_PREFIX + "{0}.active=1 " + AND + " {1} " + AND + SPACE + CONTENT_CATEGORY_ALIAS_PREFIX + "{0}.categoryId = " + CATEGORY_ALIAS_PREFIX + "{0}.categoryId  " + AND + SPACE + CONTENT_CATEGORY_ALIAS_PREFIX + "{0}.ContentVersionId=" + CONTENT_VERSION_ALIAS + ".ContentVersionId)";
 	protected static final String CATEGORY_CLAUSE_SHORT		  = "(" + CATEGORY_ALIAS_PREFIX + "{0}.active=1 " + AND + " {1} " + AND + SPACE + CONTENT_CATEGORY_ALIAS_PREFIX + "{0}.categoryId = " + CATEGORY_ALIAS_PREFIX + "{0}.categoryId  " + AND + SPACE + CONTENT_CATEGORY_ALIAS_PREFIX + "{0}.ContVerId=" + CONTENT_VERSION_ALIAS + ".ContVerId)";
-	//private static final String CATEGORY_CLAUSE = "(" + CATEGORY_ALIAS_PREFIX + "{0}.active=1 " + AND + SPACE + CATEGORY_ALIAS_PREFIX + "{0}.categoryId={1} " + AND + SPACE + CONTENT_CATEGORY_ALIAS_PREFIX + "{0}.attributeName={2} " + AND + SPACE + CONTENT_CATEGORY_ALIAS_PREFIX + "{0}.categoryId = " + CATEGORY_ALIAS_PREFIX + "{0}.categoryId  " + AND + SPACE + CONTENT_CATEGORY_ALIAS_PREFIX + "{0}.contentVersionId=" + CONTENT_VERSION_ALIAS + ".contentVersionId)";
 
+	//NEW WAY						
+	protected static final String CATEGORY_CLAUSE_GENERAL   	= "(" + CONTENT_VERSION_ALIAS + ".contentVersionId IN (SELECT contentVersionId from " + CONTENT_CATEGORY_TABLE + " WHERE categoryId={0} AND attributeName={1}))";
+	
 	/**
 	 * 
 	 */
@@ -126,8 +130,13 @@ abstract class AbstractCategoryCondition implements ICategoryCondition {
 	 */
 	public Collection getFromClauseTables() {
 		final Collection result = new ArrayList();
-		result.add(CATEGORY_TABLE + SPACE + CATEGORY_ALIAS_PREFIX + uniqueID);
-		result.add(CONTENT_CATEGORY_TABLE + SPACE + CONTENT_CATEGORY_ALIAS_PREFIX + uniqueID);
+		String useImprovedContentCategorySearch = CmsPropertyHandler.getUseImprovedContentCategorySearch();
+		if(useImprovedContentCategorySearch != null && useImprovedContentCategorySearch.equalsIgnoreCase("false"))
+		{
+			result.add(CATEGORY_TABLE + SPACE + CATEGORY_ALIAS_PREFIX + uniqueID);
+			result.add(CONTENT_CATEGORY_TABLE + SPACE + CONTENT_CATEGORY_ALIAS_PREFIX + uniqueID);
+		}
+		
 		return result;
 	}
 
@@ -139,7 +148,17 @@ abstract class AbstractCategoryCondition implements ICategoryCondition {
 		bindings.add(categoryVO.getId());
 		final String nameVariable = getBindingVariable(bindings);
 		bindings.add(attributeName);
-		return MessageFormat.format(ONE_CATEGORY_CLAUSE, new Object[] { getUniqueID(), categoryVariable, nameVariable });
+		
+		String useImprovedContentCategorySearch = CmsPropertyHandler.getUseImprovedContentCategorySearch();
+		if(useImprovedContentCategorySearch != null && useImprovedContentCategorySearch.equalsIgnoreCase("false"))
+		{
+			return MessageFormat.format(ONE_CATEGORY_CLAUSE, new Object[] { getUniqueID(), categoryVariable, nameVariable });
+		}
+		else
+		{
+			System.out.println("apa3:" + MessageFormat.format(CATEGORY_CLAUSE_GENERAL, new Object[] { categoryVariable, nameVariable }));
+			return MessageFormat.format(CATEGORY_CLAUSE_GENERAL, new Object[] { categoryVariable, nameVariable });
+		}
 	}
 	
 	/**
@@ -176,13 +195,34 @@ class CategoryAndCondition extends AbstractCategoryCondition {
 	 * 
 	 */
 	public String getWhereClauseOQL(final List bindings) {
-		final String categoryClause = getOneCategoryClause(attributeName, categoryVO, bindings);
-		return MessageFormat.format(getCATEGORY_CLAUSE(), new Object[] { getUniqueID(), categoryClause });
+
+		String useImprovedContentCategorySearch = CmsPropertyHandler.getUseImprovedContentCategorySearch();
+		if(useImprovedContentCategorySearch != null && useImprovedContentCategorySearch.equalsIgnoreCase("false"))
+		{
+			final String categoryClause = getOneCategoryClause(attributeName, categoryVO, bindings);
+			return MessageFormat.format(getCATEGORY_CLAUSE(), new Object[] { getUniqueID(), categoryClause });
+		}
+		else
+		{
+			final String categoryVariable = getBindingVariable(bindings);
+			bindings.add(categoryVO.getId());
+			final String nameVariable = getBindingVariable(bindings);
+			bindings.add(attributeName);
+		
+			//final String categoryClause = getOneCategoryClause(attributeName, categoryVO, bindings);
+			String apa = MessageFormat.format(getCATEGORY_CLAUSE(), new Object[] { categoryVariable, nameVariable });
+			System.out.println("apa:" + apa);
+			return MessageFormat.format(getCATEGORY_CLAUSE(), new Object[] { categoryVariable, nameVariable });
+		}
 	}
 	
     public static String getCATEGORY_CLAUSE()
     {
-        return (ExtendedSearchController.useFull()) ? CATEGORY_CLAUSE : CATEGORY_CLAUSE_SHORT;
+		String useImprovedContentCategorySearch = CmsPropertyHandler.getUseImprovedContentCategorySearch();
+		if(useImprovedContentCategorySearch != null && useImprovedContentCategorySearch.equalsIgnoreCase("false"))
+        	return (ExtendedSearchController.useFull()) ? CATEGORY_CLAUSE : CATEGORY_CLAUSE_SHORT;
+        else
+	        return CATEGORY_CLAUSE_GENERAL;
     }
 
 }
@@ -230,8 +270,18 @@ class CategoryOrCondition extends AbstractCategoryCondition {
 				categoryClauses.append(SPACE + OR + SPACE);
 			categoryClauses.append(getOneCategoryClause(attributeName, categoryVO, bindings));
 		}
-
-		return MessageFormat.format(CategoryAndCondition.getCATEGORY_CLAUSE(), new Object[] { getUniqueID(), LEFT + categoryClauses.toString() + RIGHT });
+		
+		String useImprovedContentCategorySearch = CmsPropertyHandler.getUseImprovedContentCategorySearch();
+		if(useImprovedContentCategorySearch != null && useImprovedContentCategorySearch.equalsIgnoreCase("false"))
+		{
+			return MessageFormat.format(CategoryAndCondition.getCATEGORY_CLAUSE(), new Object[] { getUniqueID(), LEFT + categoryClauses.toString() + RIGHT });
+		}
+		else
+		{	
+			String apa2 = LEFT + categoryClauses.toString() + RIGHT;
+			System.out.println("apa2:" + apa2);
+			return apa2;
+		}
 	}
 }
 
@@ -336,7 +386,10 @@ public class CategoryConditions implements ICategoryContainerCondition {
 		final List result = new ArrayList();
 		for(Iterator i=children.iterator(); i.hasNext(); ) {
 			ICategoryCondition condition = (ICategoryCondition) i.next();
-			result.addAll(condition.getFromClauseTables());
+		
+			String useImprovedContentCategorySearch = CmsPropertyHandler.getUseImprovedContentCategorySearch();
+			if(useImprovedContentCategorySearch != null && useImprovedContentCategorySearch.equalsIgnoreCase("false"))
+				result.addAll(condition.getFromClauseTables());
 		}
 		return result;
 	}
