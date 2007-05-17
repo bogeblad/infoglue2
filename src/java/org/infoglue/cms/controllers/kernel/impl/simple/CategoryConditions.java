@@ -83,6 +83,7 @@ abstract class AbstractCategoryCondition implements ICategoryCondition {
 
 	//NEW WAY						
 	protected static final String CATEGORY_CLAUSE_GENERAL   	= "(" + CONTENT_VERSION_ALIAS + ".contentVersionId IN (SELECT contentVersionId from " + CONTENT_CATEGORY_TABLE + " WHERE categoryId={0} AND attributeName={1}))";
+	protected static final String CATEGORY_CLAUSE_GENERAL_SHORT = "(" + CONTENT_VERSION_ALIAS + ".contVerId IN (SELECT contentVersionId from " + CONTENT_CATEGORY_TABLE + " WHERE categoryId={0} AND attributeName={1}))";
 	
 	/**
 	 * 
@@ -156,8 +157,8 @@ abstract class AbstractCategoryCondition implements ICategoryCondition {
 		}
 		else
 		{
-			System.out.println("apa3:" + MessageFormat.format(CATEGORY_CLAUSE_GENERAL, new Object[] { categoryVariable, nameVariable }));
-			return MessageFormat.format(CATEGORY_CLAUSE_GENERAL, new Object[] { categoryVariable, nameVariable });
+			String categoryClause = ExtendedSearchController.useFull() ? CATEGORY_CLAUSE_GENERAL : CATEGORY_CLAUSE_GENERAL_SHORT;
+			return MessageFormat.format(categoryClause, new Object[] { categoryVariable, nameVariable });
 		}
 	}
 	
@@ -222,7 +223,7 @@ class CategoryAndCondition extends AbstractCategoryCondition {
 		if(useImprovedContentCategorySearch != null && useImprovedContentCategorySearch.equalsIgnoreCase("false"))
         	return (ExtendedSearchController.useFull()) ? CATEGORY_CLAUSE : CATEGORY_CLAUSE_SHORT;
         else
-	        return CATEGORY_CLAUSE_GENERAL;
+			return ExtendedSearchController.useFull() ? CATEGORY_CLAUSE_GENERAL : CATEGORY_CLAUSE_GENERAL_SHORT;
     }
 
 }
