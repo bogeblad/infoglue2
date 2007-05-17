@@ -194,6 +194,9 @@
 	<tr>
 		<td>#yesNoDropDownWithInherit("ServerNode.property.useShortTableNames" "useShortTableNames" "$this.getPropertyValue('useShortTableNames')")</td>
 	</tr>
+	<tr>
+		<td>#yesNoDropDownWithInherit("ServerNode.property.useImprovedContentCategorySearch" "useImprovedContentCategorySearch" "$this.getPropertyValue('useImprovedContentCategorySearch')")</td>
+	</tr>
 
 	<tr>
 		<td>#subTitle("entity.ServerNode.property.logSettings.label")</td>

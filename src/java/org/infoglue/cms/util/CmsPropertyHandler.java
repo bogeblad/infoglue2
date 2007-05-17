@@ -989,6 +989,11 @@ public class CmsPropertyHandler
 	    return getServerNodeProperty("useShortTableNames", true, "false");
 	}
 
+	public static String getUseImprovedContentCategorySearch()
+	{
+	    return getServerNodeProperty("useImprovedContentCategorySearch", true, "true");
+	}
+
 	public static String getDatabaseEngine()
 	{
 	    return getServerNodeProperty("databaseEngine", true, null);
