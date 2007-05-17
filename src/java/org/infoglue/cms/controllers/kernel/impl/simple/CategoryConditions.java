@@ -83,7 +83,7 @@ abstract class AbstractCategoryCondition implements ICategoryCondition {
 
 	//NEW WAY						
 	protected static final String CATEGORY_CLAUSE_GENERAL   	= "(" + CONTENT_VERSION_ALIAS + ".contentVersionId IN (SELECT contentVersionId from " + CONTENT_CATEGORY_TABLE + " WHERE categoryId={0} AND attributeName={1}))";
-	protected static final String CATEGORY_CLAUSE_GENERAL_SHORT = "(" + CONTENT_VERSION_ALIAS + ".contVerId IN (SELECT contentVersionId from " + CONTENT_CATEGORY_TABLE + " WHERE categoryId={0} AND attributeName={1}))";
+	protected static final String CATEGORY_CLAUSE_GENERAL_SHORT = "(" + CONTENT_VERSION_ALIAS + ".contVerId IN (SELECT contVerId from " + CONTENT_CATEGORY_TABLE + " WHERE categoryId={0} AND attributeName={1}))";
 	
 	/**
 	 * 
