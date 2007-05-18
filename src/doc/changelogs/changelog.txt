@@ -53,6 +53,7 @@ Abbreviated Changelog from 2.4.6 Final
 - Added a new alternative way of making content category searches (matching contents tag etc). Improves performance for complex expressions hugely. 
 - Added possibility to control which version of the content search controller should be used in management tool with a new setting. The new default is the improved much faster search method.
 - Added support for unicode names in asset keys
+- Fixed so the mouse over symbol is hand when choosing repository in publishingtool. 
 
 -------------------------------------------------------------------------------------
 - InfoGlue 2.4.6 Final
