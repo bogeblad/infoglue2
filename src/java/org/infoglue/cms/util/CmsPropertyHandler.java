@@ -984,6 +984,16 @@ public class CmsPropertyHandler
 		return getServerNodeProperty("uploadToEncoding", true, "UTF-8");
 	}
 
+	public static String getAssetKeyFromEncoding()
+	{
+		return getServerNodeProperty("assetKeyFromEncoding", true, "ISO-8859-1");
+	}
+
+	public static String getAssetKeyToEncoding()
+	{
+		return getServerNodeProperty("assetKeyToEncoding", true, "UTF-8");
+	}
+
 	public static String getUseShortTableNames()
 	{
 	    return getServerNodeProperty("useShortTableNames", true, "false");

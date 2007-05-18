@@ -187,6 +187,12 @@
 	<tr>
 		<td>#editPropertyField("ServerNode.property.uploadToEncoding" "uploadToEncoding" "$this.getPropertyValue('uploadToEncoding')" "51" "$!serverNodeId")</td>
 	</tr>
+	<tr>
+		<td>#editPropertyField("ServerNode.property.assetKeyFromEncoding" "assetKeyFromEncoding" "$this.getPropertyValue('assetKeyFromEncoding')" "51" "$!serverNodeId")</td>
+	</tr>
+	<tr>
+		<td>#editPropertyField("ServerNode.property.assetKeyToEncoding" "assetKeyToEncoding" "$this.getPropertyValue('assetKeyToEncoding')" "51" "$!serverNodeId")</td>
+	</tr>
 
 	<tr>
 		<td>#subTitle("entity.ServerNode.property.databaseSettings.label")</td>
