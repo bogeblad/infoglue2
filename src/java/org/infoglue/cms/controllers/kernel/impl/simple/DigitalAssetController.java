@@ -33,6 +33,7 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -955,10 +956,24 @@ public class DigitalAssetController extends BaseController
     	String assetUrl = null;
 
     	Content content = ContentController.getContentController().getContentWithId(contentId, db);
-    	logger.info("content:" + content.getName());
-    	logger.info("repositoryId:" + content.getRepository().getId());
-    	logger.info("languageId:" + languageId);
-    	logger.info("assetKey:" + assetKey);
+    	if(logger.isInfoEnabled())
+    	{
+	    	logger.info("content:" + content.getName());
+	    	logger.info("repositoryId:" + content.getRepository().getId());
+	    	logger.info("languageId:" + languageId);
+	    	logger.info("assetKey:" + assetKey);
+    	}
+    	
+		String fromEncoding = CmsPropertyHandler.getAssetKeyFromEncoding();
+		if(fromEncoding == null)
+			fromEncoding = "iso-8859-1";
+		
+		String toEncoding = CmsPropertyHandler.getAssetKeyToEncoding();
+		if(toEncoding == null)
+			toEncoding = "utf-8";
+		
+		assetKey = new String(assetKey.getBytes(fromEncoding), toEncoding);
+		
     	ContentVersion contentVersion = ContentVersionController.getContentVersionController().getLatestActiveContentVersion(contentId, languageId, db);
     	LanguageVO masterLanguageVO = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForRepository(content.getRepository().getRepositoryId(), db);	
 		logger.info("contentVersion:" + contentVersion);

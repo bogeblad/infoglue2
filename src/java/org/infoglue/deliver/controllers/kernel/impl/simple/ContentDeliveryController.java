@@ -24,6 +24,7 @@
 package org.infoglue.deliver.controllers.kernel.impl.simple;
 
 import java.io.File;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -993,7 +994,8 @@ public class ContentDeliveryController extends BaseDeliveryController
 	    //String assetCacheKey = "" + languageId + "_" + contentId + "_" + siteNodeId + "_" + assetKey + "_" + useLanguageFallback + "_" + deliveryContext.getUseFullUrl();
 	    String assetCacheKey = "" + languageId + "_" + contentId + "_" + siteNodeVO.getRepositoryId() + "_" + assetKey + "_" + useLanguageFallback + "_" + deliveryContext.getUseFullUrl();
 		logger.info("assetCacheKey:" + assetCacheKey);
-	    //System.out.println("assetCacheKey:" + assetCacheKey);
+	    
+	    assetKey = URLDecoder.decode(assetKey, "utf-8");
 	    
 		String cacheName = "assetUrlCache";
 		String cachedAssetUrl = (String)CacheController.getCachedObject(cacheName, assetCacheKey);

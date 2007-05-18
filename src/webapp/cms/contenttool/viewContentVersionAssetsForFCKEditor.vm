@@ -18,19 +18,21 @@
 		var assetKey;
 		var firstAssetKey;
 			
-		function markAsset(object, aContentId, anAssetKey)
+		function markAsset(object, aContentId, anAssetKey, actualAssetKey)
 		{
 			if(selectedAssetElement)
 				selectedAssetElement.style.background = "";
 				
 			contentId = aContentId;	
-			assetKey = anAssetKey;	
+			//assetKey = anAssetKey;	
+			assetKey = actualAssetKey;
 			
 			//alert("object:" + object);
 			//alert("contentId" + contentId);
 			//alert("assetKey" + assetKey);
-			selectedAssetElement = document.getElementById("digitalAsset" + assetKey);
-			//alert("selectedAssetElement" + selectedAssetElement);
+			//alert("Getting element: " + "digitalAsset" + anAssetKey);
+			selectedAssetElement = document.getElementById("digitalAsset" + anAssetKey);
+			//alert("selectedAssetElement found:" + selectedAssetElement);
 			if(selectedAssetElement)
 				selectedAssetElement.style.background = "#C2D0E2";
 		}
@@ -53,6 +55,9 @@
 		
 		function initSub() 
 		{
+			//alert("firstAssetKey: " + firstAssetKey);
+			markAsset(this, '$!contentId', firstAssetKey, firstAssetKey);
+			#*
 			//alert("assetKey: $assetKey");
 			#if($assetKey && $assetKey != "")
 				assetKey = "$assetKey";
@@ -65,6 +70,7 @@
 			#else
 				markAsset(this, '$!contentId', firstAssetKey);
 			#end
+			*#
 		};
 		
 		-->
@@ -99,18 +105,29 @@
 #set($counter = 0)
 #foreach($digitalAsset in $inheritedDigitalAssets)
 <tr>
-	<td id="digitalAsset$digitalAsset.assetKey" valign="bottom" align="center" class="bordered" #if($assetKey == $digitalAsset.assetKey) style="background-color: #C2D0E2;" #end>
-		<input type="hidden" id="digitalAsset$digitalAsset.assetKey" value="$this.getDigitalAssetUrl($digitalAsset.digitalAssetId)">
-		<a href="javascript:markAsset(this, $!contentId, '$digitalAsset.assetKey');"><img class="scaledbordered" src="$this.getDigitalAssetThumbnailUrl($digitalAsset.digitalAssetId)">
+	<td id="digitalAsset$formatter.encodeURI($formatter.encodeURI($digitalAsset.assetKey, 'utf-8'), 'utf-8')" valign="bottom" align="center" class="bordered" #if($assetKey == "$digitalAsset.assetKey") style="background-color: #C2D0E2;" #end>
+		<input type="hidden" id="digitalAsset$formatter.encodeURI($formatter.encodeURI($digitalAsset.assetKey, 'utf-8'), 'utf-8')" value="$this.getDigitalAssetUrl($digitalAsset.digitalAssetId)">
+		<a href="javascript:markAsset(this, $!contentId, '$formatter.encodeURI($formatter.encodeURI($formatter.encodeURI($digitalAsset.assetKey, 'utf-8'), 'utf-8'), 'utf-8')', '$formatter.encodeURI($formatter.encodeURI($digitalAsset.assetKey, 'utf-8'), 'utf-8')');"><img class="scaledbordered" src="$this.getDigitalAssetThumbnailUrl($digitalAsset.digitalAssetId)">
 		<br/>$digitalAsset.assetKey</a><br/>
 	</td>
-	#if($counter == 0)
+	#if($assetKey == $digitalAsset.assetKey)
 		<script type="text/javascript">
 		<!--
 			//markAsset(this, $!contentId, '$digitalAsset.assetKey');
-			firstAssetKey = '$digitalAsset.assetKey';
+			firstAssetKey = '$formatter.encodeURI($formatter.encodeURI($digitalAsset.assetKey, 'utf-8'), 'utf-8')';
+			//alert("firstAssetKey1:" + firstAssetKey)
 		-->
-		</script>
+		</script>	
+	#else
+		#if($counter == 0 && $!assetKey == '')
+			<script type="text/javascript">
+			<!--
+				//markAsset(this, $!contentId, '$digitalAsset.assetKey');
+				firstAssetKey = '$formatter.encodeURI($formatter.encodeURI($digitalAsset.assetKey, 'utf-8'), 'utf-8')';
+				//alert("firstAssetKey2:" + firstAssetKey)
+			-->
+			</script>
+		#end
 	#end
 	#set($counter = $counter + 1)
 </tr>

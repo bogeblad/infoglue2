@@ -367,7 +367,20 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 		}
 
 		this.repositories = RepositoryController.getController().getAuthorizedRepositoryVOList(this.getInfoGluePrincipal(), true);
-
+		
+		if(this.assetKey != null)
+		{
+			String fromEncoding = CmsPropertyHandler.getAssetKeyFromEncoding();
+			if(fromEncoding == null)
+				fromEncoding = "iso-8859-1";
+			
+			String toEncoding = CmsPropertyHandler.getAssetKeyToEncoding();
+			if(toEncoding == null)
+				toEncoding = "utf-8";
+			
+			this.assetKey = new String(assetKey.getBytes(fromEncoding), toEncoding);
+		}
+		
 		return "viewAssetsForFCKEditor";
 	}
 
