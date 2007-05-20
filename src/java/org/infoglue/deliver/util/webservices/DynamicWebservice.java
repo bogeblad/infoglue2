@@ -294,6 +294,17 @@ public class DynamicWebservice
 	/**
 	 * 
 	 */
+	public void addNonSerializedArgument(final String name, final Collection value)
+	{
+		assertNameNotNull(name);
+
+		logger.debug("addArgument=[" + name + "," + value + "] (Collection)");
+		addArgument(name, XMLType.SOAP_ARRAY, value);
+	}
+
+	/**
+	 * 
+	 */
 	private void assertNameNotNull(final String argument) 
 	{
 		if(argument == null)

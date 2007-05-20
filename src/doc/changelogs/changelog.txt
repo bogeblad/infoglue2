@@ -1,5 +1,5 @@
 -------------------------------------------------------------------------------------
-- InfoGlue 2.4.8 Final
+- InfoGlue 2.5 Final
 -------------------------------------------------------------------------------------
 
 Release notes
@@ -54,6 +54,7 @@ Abbreviated Changelog from 2.4.6 Final
 - Added possibility to control which version of the content search controller should be used in management tool with a new setting. The new default is the improved much faster search method.
 - Added support for unicode names in asset keys
 - Fixed so the mouse over symbol is hand when choosing repository in publishingtool. 
+- Added new webservice API:s for creating, updating and deleting users in InfoGlue. 
 
 -------------------------------------------------------------------------------------
 - InfoGlue 2.4.6 Final
