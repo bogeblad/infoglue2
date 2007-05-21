@@ -246,6 +246,38 @@
     </tag>
 
 	<tag>
+        <name>contentVersions</name>
+        <tagclass>org.infoglue.deliver.taglib.content.ContentVersionsTag</tagclass>
+        <bodycontent>empty</bodycontent>
+        <info>TemplateLogic.getContentVersions(Integer, Integer, boolean)</info>
+        <attribute>
+    	    <name>id</name>
+        	<required>true</required>
+	        <rtexprvalue>false</rtexprvalue>
+    	</attribute>
+        <attribute>
+            <name>content</name>
+            <required>false</required>
+            <rtexprvalue>false</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>contentId</name>
+            <required>false</required>
+            <rtexprvalue>false</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>languageId</name>
+            <required>false</required>
+            <rtexprvalue>false</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>includeAllLanguages</name>
+            <required>false</required>
+            <rtexprvalue>false</rtexprvalue>
+        </attribute>
+    </tag>
+
+	<tag>
         <name>principalContentVersions</name>
         <tagclass>org.infoglue.deliver.taglib.content.PrincipalContentVersionsTag</tagclass>
         <bodycontent>empty</bodycontent>

@@ -55,6 +55,8 @@ Abbreviated Changelog from 2.4.6 Final
 - Added support for unicode names in asset keys
 - Fixed so the mouse over symbol is hand when choosing repository in publishingtool. 
 - Added new webservice API:s for creating, updating and deleting users in InfoGlue. 
+- Added new diff-tag which operates on two strings
+- Added new contentVersions-tag which fetches all published versions in a certain language.
 
 -------------------------------------------------------------------------------------
 - InfoGlue 2.4.6 Final

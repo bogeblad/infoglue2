@@ -1115,7 +1115,13 @@ public interface TemplateController
 	 */
 	
 	public ContentVersionVO getContentVersion(Integer contentId, Integer languageId, boolean useLanguageFallback);
+
+	/**
+	 * Getter for all content versions of a content in a certain language or for all versions no matter language if languageId is null.
+	 */
 	
+	public List<ContentVersionVO> getContentVersions(Integer contentId, Integer languageId);
+
     /**
 	 * Finds a list of ContentVersionVOs that are related to the provided category under the given attribute name.
 	 * @param categoryId The id of the Category

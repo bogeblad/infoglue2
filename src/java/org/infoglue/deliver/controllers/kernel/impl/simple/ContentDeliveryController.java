@@ -221,6 +221,32 @@ public class ContentDeliveryController extends BaseDeliveryController
 
 
 	/**
+	 * This method returns that contentVersion which matches the parameters sent in and which 
+	 * also has the correct state for this delivery-instance.
+	 */
+	
+	public List<ContentVersionVO> getContentVersionVOList(Database db, Integer siteNodeId, Integer contentId, Integer languageId, DeliveryContext deliveryContext, InfoGluePrincipal infoGluePrincipal) throws SystemException, Exception
+	{
+		if(contentId == null || contentId.intValue() < 1)
+			return null;
+		
+		List<ContentVersionVO> contentVersionVOList = new ArrayList();
+		
+		boolean useLanguageFallback = false;
+		if(languageId == null)
+			useLanguageFallback = true;
+				
+		MediumContentImpl content = (MediumContentImpl)getObjectWithId(MediumContentImpl.class, contentId, db);
+		boolean isValidContent = isValidContent(infoGluePrincipal, content, languageId, useLanguageFallback, false, db, deliveryContext);
+		if(isValidContent)
+		{
+			contentVersionVOList = getContentVersionVOList(content, languageId, getOperatingMode(), deliveryContext, db);
+		}
+		
+		return contentVersionVOList;
+	}
+
+	/**
 	 * This method gets a contentVersion with a state and a language which is active.
 	 */
 	/*
@@ -341,6 +367,44 @@ public class ContentDeliveryController extends BaseDeliveryController
 		return contentVersion;
     }
 
+	private List<ContentVersionVO> getContentVersionVOList(Content content, Integer languageId, Integer operatingMode, DeliveryContext deliveryContext, Database db) throws Exception
+    {
+	    List<ContentVersionVO> contentVersionVOList = new ArrayList<ContentVersionVO>();
+		
+	    OQLQuery oql = db.getOQLQuery( "SELECT cv FROM org.infoglue.cms.entities.content.impl.simple.ContentVersionImpl cv WHERE cv.contentId = $1 AND cv.language.languageId = $2 AND cv.stateId >= $3 AND cv.isActive = $4 ORDER BY cv.contentVersionId desc");
+    	if(languageId == null)
+    		oql = db.getOQLQuery( "SELECT cv FROM org.infoglue.cms.entities.content.impl.simple.ContentVersionImpl cv WHERE cv.contentId = $1 AND cv.stateId >= $2 AND cv.isActive = $3 ORDER BY cv.contentVersionId desc");
+    
+    	oql.bind(content.getId());
+	    
+	    if(languageId != null)
+	    	oql.bind(languageId);
+    	
+	    oql.bind(operatingMode);
+    	oql.bind(true);
+
+    	QueryResults results = oql.execute(Database.ReadOnly);
+		
+    	ContentVersion contentVersion;
+    	
+		while(results.hasMore()) 
+        {
+        	contentVersion = (ContentVersion)results.next();
+
+        	if(contentVersion != null)
+    		    deliveryContext.addUsedContentVersion("contentVersion_" + contentVersion.getId());
+
+    		contentVersionVOList.add(contentVersion.getValueObject());
+        }
+
+		results.close();
+		oql.close();
+				
+		return contentVersionVOList;
+    }
+
+	
+	
 	/**
 	 * This is the most common way of getting attributes from a content. 
 	 * It selects the correct contentVersion depending on the language and then gets the attribute in the xml associated.

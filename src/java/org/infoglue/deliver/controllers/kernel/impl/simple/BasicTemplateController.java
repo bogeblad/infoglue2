@@ -633,6 +633,27 @@ public class BasicTemplateController implements TemplateController
 	}
 	
 	/**
+	 * Getter for all content versions of a content in a certain language or for all versions no matter language if languageId is null.
+	 */
+	
+	public List<ContentVersionVO> getContentVersions(Integer contentId, Integer languageId)
+	{
+		List<ContentVersionVO> contentVersions = new ArrayList();
+
+		try
+		{
+			contentVersions = ContentDeliveryController.getContentDeliveryController().getContentVersionVOList(getDatabase(), this.siteNodeId, contentId, languageId, this.deliveryContext, this.infoGluePrincipal);
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+			logger.warn("An error occurred trying to get the contentVersion with contentId " + contentId + ":" + e.getMessage(), e);
+		}
+
+		return contentVersions;
+	}
+
+	/**
 	 * Returns the logged in user - that is the one currently looking at the page
 	 */
 	public InfoGluePrincipal getPrincipal()

@@ -686,5 +686,27 @@
 	        <rtexprvalue>true</rtexprvalue>
 		</attribute>
 	</tag>
+
+    <tag>
+	    <name>diff</name>
+	    <tagclass>org.infoglue.deliver.taglib.common.DiffTag</tagclass>
+	    <bodycontent>empty</bodycontent>
+	    <info></info>
+	    <attribute>
+		    <name>id</name>
+	    	<required>false</required>
+	        <rtexprvalue>true</rtexprvalue>
+		</attribute>
+	    <attribute>
+		    <name>originalText</name>
+	    	<required>false</required>
+	        <rtexprvalue>true</rtexprvalue>
+		</attribute>
+	    <attribute>
+		    <name>modifiedText</name>
+	    	<required>false</required>
+	        <rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
     
 </taglib>
