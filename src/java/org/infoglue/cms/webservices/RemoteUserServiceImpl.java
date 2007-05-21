@@ -81,7 +81,7 @@ public class RemoteUserServiceImpl extends RemoteInfoGlueService
      * Registers a new system user.
      */
     
-    public boolean createUser(final String principalName, String firstName, String lastName, String email, String userName, String password, List roleNames, List groupNames) 
+    public Boolean createUser(final String principalName, String firstName, String lastName, String email, String userName, String password, List roleNames, List groupNames) 
     {
         if(!ServerNodeController.getController().getIsIPAllowed(getRequest()))
         {
@@ -136,7 +136,7 @@ public class RemoteUserServiceImpl extends RemoteInfoGlueService
      * Updates a system user.
      */
     
-    public boolean updateUser(final String principalName, SystemUserVO systemUserVO, String[] roleNames, String[] groupNames) 
+    public Boolean updateUser(final String principalName, SystemUserVO systemUserVO, String[] roleNames, String[] groupNames) 
     {
         if(!ServerNodeController.getController().getIsIPAllowed(getRequest()))
         {
@@ -171,7 +171,7 @@ public class RemoteUserServiceImpl extends RemoteInfoGlueService
      * Deletes a system user.
      */
     
-    public boolean deleteUser(final String principalName, SystemUserVO systemUserVO) 
+    public Boolean deleteUser(final String principalName, SystemUserVO systemUserVO) 
     {
         if(!ServerNodeController.getController().getIsIPAllowed(getRequest()))
         {
