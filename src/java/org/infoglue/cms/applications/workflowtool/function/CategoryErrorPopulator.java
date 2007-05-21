@@ -155,9 +155,9 @@ public class CategoryErrorPopulator extends ErrorPopulator
 			return getStringManager().getString(EXACTLY_ONE_MESSAGE_KEY, range.getMin());
 		case RangeCheck.LESS_THAN:
 			return getStringManager().getString(LESS_THAN_MESSAGE_KEY, range.getMax());
-		case RangeCheck.GREATER_THAN:
+		case RangeCheck.AT_LEAST:
 			return getStringManager().getString(GREATER_THAN_MESSAGE_KEY, range.getMin());
-		case RangeCheck.GREATER_THAN_ONE:
+		case RangeCheck.AT_LEAST_ONE:
 			return getStringManager().getString(GREATER_THAN_ONE_MESSAGE_KEY, range.getMin());
 		case RangeCheck.BETWEEN:
 			return getStringManager().getString(BETWEEN_MESSAGE_KEY, range.getMin(), range.getMax());

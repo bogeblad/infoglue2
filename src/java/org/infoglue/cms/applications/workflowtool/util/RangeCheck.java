@@ -50,12 +50,12 @@ public class RangeCheck
 	/**
 	 * Return code if the checked value is outside the range and the range is [x,[.
 	 */
-	public static final int GREATER_THAN = 4;
+	public static final int AT_LEAST = 4;
 
 	/**
 	 * Return code if the checked value is outside the range and the range is [1,[.
 	 */
-	public static final int GREATER_THAN_ONE = 5;
+	public static final int AT_LEAST_ONE = 5;
 	
 	/**
 	 * Return code if the checked value is outside the range and the range is [x,y].
@@ -128,7 +128,7 @@ public class RangeCheck
 		}
 		if(max == null)
 		{
-			return (value < min.intValue()) ? (one ? GREATER_THAN_ONE : GREATER_THAN) : OK;
+			return (value < min.intValue()) ? (one ? AT_LEAST_ONE : AT_LEAST) : OK;
 		}
 		if(min.equals(max) && value != min.intValue())
 		{
