@@ -636,9 +636,9 @@ public class BasicTemplateController implements TemplateController
 	 * Getter for all content versions of a content in a certain language or for all versions no matter language if languageId is null.
 	 */
 	
-	public List<ContentVersionVO> getContentVersions(Integer contentId, Integer languageId)
+	public List getContentVersions(Integer contentId, Integer languageId)
 	{
-		List<ContentVersionVO> contentVersions = new ArrayList();
+		List contentVersions = new ArrayList();
 
 		try
 		{

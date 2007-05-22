@@ -225,12 +225,12 @@ public class ContentDeliveryController extends BaseDeliveryController
 	 * also has the correct state for this delivery-instance.
 	 */
 	
-	public List<ContentVersionVO> getContentVersionVOList(Database db, Integer siteNodeId, Integer contentId, Integer languageId, DeliveryContext deliveryContext, InfoGluePrincipal infoGluePrincipal) throws SystemException, Exception
+	public List getContentVersionVOList(Database db, Integer siteNodeId, Integer contentId, Integer languageId, DeliveryContext deliveryContext, InfoGluePrincipal infoGluePrincipal) throws SystemException, Exception
 	{
 		if(contentId == null || contentId.intValue() < 1)
 			return null;
 		
-		List<ContentVersionVO> contentVersionVOList = new ArrayList();
+		List contentVersionVOList = new ArrayList();
 		
 		boolean useLanguageFallback = false;
 		if(languageId == null)
@@ -367,9 +367,9 @@ public class ContentDeliveryController extends BaseDeliveryController
 		return contentVersion;
     }
 
-	private List<ContentVersionVO> getContentVersionVOList(Content content, Integer languageId, Integer operatingMode, DeliveryContext deliveryContext, Database db) throws Exception
+	private List getContentVersionVOList(Content content, Integer languageId, Integer operatingMode, DeliveryContext deliveryContext, Database db) throws Exception
     {
-	    List<ContentVersionVO> contentVersionVOList = new ArrayList<ContentVersionVO>();
+	    List contentVersionVOList = new ArrayList();
 		
 	    OQLQuery oql = db.getOQLQuery( "SELECT cv FROM org.infoglue.cms.entities.content.impl.simple.ContentVersionImpl cv WHERE cv.contentId = $1 AND cv.language.languageId = $2 AND cv.stateId >= $3 AND cv.isActive = $4 ORDER BY cv.contentVersionId desc");
     	if(languageId == null)
