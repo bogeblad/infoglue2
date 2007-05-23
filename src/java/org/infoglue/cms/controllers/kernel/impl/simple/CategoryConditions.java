@@ -212,7 +212,6 @@ class CategoryAndCondition extends AbstractCategoryCondition {
 		
 			//final String categoryClause = getOneCategoryClause(attributeName, categoryVO, bindings);
 			String apa = MessageFormat.format(getCATEGORY_CLAUSE(), new Object[] { categoryVariable, nameVariable });
-			System.out.println("apa:" + apa);
 			return MessageFormat.format(getCATEGORY_CLAUSE(), new Object[] { categoryVariable, nameVariable });
 		}
 	}
@@ -280,7 +279,6 @@ class CategoryOrCondition extends AbstractCategoryCondition {
 		else
 		{	
 			String apa2 = LEFT + categoryClauses.toString() + RIGHT;
-			System.out.println("apa2:" + apa2);
 			return apa2;
 		}
 	}
