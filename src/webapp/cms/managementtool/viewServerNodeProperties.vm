@@ -293,6 +293,13 @@
 		<td>#editPropertyField("ServerNode.property.maxRows" "maxRows" "$this.getPropertyValue('maxRows')" "51" "$!serverNodeId")</td>
 	</tr>
 	<tr>
+		<td>#editPropertyField("ServerNode.property.defaultNumberOfYearsBeforeExpire" "defaultNumberOfYearsBeforeExpire" "$this.getPropertyValue('defaultNumberOfYearsBeforeExpire')" "51" "$!serverNodeId")</td>
+	</tr>
+	<tr>
+		<td>#yesNoDropDownWithInherit("ServerNode.property.enableDateTimeDirectEditing" "enableDateTimeDirectEditing" "$this.getPropertyValue('enableDateTimeDirectEditing')")</td>
+	</tr>
+
+	<tr>
 		<td>#yesNoDropDownWithInherit("ServerNode.property.showContentVersionFirst" "showContentVersionFirst" "$this.getPropertyValue('showContentVersionFirst')")</td>
 	</tr>
 	<tr>
@@ -380,8 +387,8 @@
 	</tr>
 	<tr>
 		<td>#editPropertyField("ServerNode.property.exportFormat" "exportFormat" "$this.getPropertyValue('exportFormat')" "51" "$!serverNodeId")</td>
-		
 	</tr>
+	
 	<tr>
 		<td>#editPropertyField("ServerNode.property.dbRelease" "dbRelease" "$this.getPropertyValue('dbRelease')" "51" "$!serverNodeId")</td>
 	</tr>
