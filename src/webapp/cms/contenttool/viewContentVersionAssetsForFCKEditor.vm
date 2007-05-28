@@ -115,16 +115,16 @@
 		<!--
 			//markAsset(this, $!contentId, '$digitalAsset.assetKey');
 			firstAssetKey = '$formatter.encodeURI($formatter.encodeURI($digitalAsset.assetKey, 'utf-8'), 'utf-8')';
-			//alert("firstAssetKey1:" + firstAssetKey)
+			//alert("firstAssetKey1:" + firstAssetKey);
 		-->
 		</script>	
 	#else
-		#if($counter == 0 && $!assetKey == '')
+		#if($counter == 0 && (!$assetKey || $!assetKey == ''))
 			<script type="text/javascript">
 			<!--
 				//markAsset(this, $!contentId, '$digitalAsset.assetKey');
 				firstAssetKey = '$formatter.encodeURI($formatter.encodeURI($digitalAsset.assetKey, 'utf-8'), 'utf-8')';
-				//alert("firstAssetKey2:" + firstAssetKey)
+				//alert("firstAssetKey2:" + firstAssetKey);
 			-->
 			</script>
 		#end
