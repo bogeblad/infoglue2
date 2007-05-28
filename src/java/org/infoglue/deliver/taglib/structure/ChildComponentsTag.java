@@ -34,8 +34,6 @@ public class ChildComponentsTag extends ComponentLogicTag
 	private static final long serialVersionUID = 4050206323348354355L;
 
 	private String slotId = null;
-	private boolean useInheritance = true;
-	
 	
     public ChildComponentsTag()
     {
@@ -55,9 +53,5 @@ public class ChildComponentsTag extends ComponentLogicTag
 	{
 	    this.slotId = slotId;
 	}
-	
-	public void setUseInheritance(boolean useInheritance)
-    {
-        this.useInheritance = useInheritance;
-    }
+
 }

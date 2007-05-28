@@ -35,7 +35,7 @@ public class ComponentPropertyValueTag extends ComponentLogicTag
 	private String propertyName;
 	private boolean useLanguageFallback = true;
 	private boolean useInheritance = true;
-	
+	private boolean useRepositoryInheritance = true;
 	
     public ComponentPropertyValueTag()
     {
@@ -48,7 +48,7 @@ public class ComponentPropertyValueTag extends ComponentLogicTag
 	    {
 	        if(siteNodeId == null)
 	        {
-		        String propertyValue = getComponentLogic().getPropertyValue(propertyName, useLanguageFallback, useInheritance);
+		        String propertyValue = getComponentLogic().getPropertyValue(propertyName, useLanguageFallback, useInheritance, useRepositoryInheritance);
 		        setResultAttribute(propertyValue);
 	        }
 	        else
@@ -80,4 +80,9 @@ public class ComponentPropertyValueTag extends ComponentLogicTag
         this.useInheritance = useInheritance;
     }
 	
+    public void setUseRepositoryInheritance(boolean useRepositoryInheritance)
+    {
+        this.useRepositoryInheritance = useRepositoryInheritance;
+    }
+
 }

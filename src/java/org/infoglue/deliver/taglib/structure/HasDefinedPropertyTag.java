@@ -66,4 +66,5 @@ public class HasDefinedPropertyTag extends ComponentLogicTag
     {
         this.useInheritance = useInheritance;
     }
+    
 }

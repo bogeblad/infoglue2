@@ -60,6 +60,7 @@ public class ContentAttributeTag extends ComponentLogicTag
 	private String mapKeyName;
     private boolean disableEditOnSight 	= false;
     private boolean useInheritance		= true;
+	private boolean useRepositoryInheritance = true;
     private boolean useAttributeLanguageFallback = false; 
     private boolean parse				= false;
     private boolean fullBaseUrl			= false;
@@ -110,11 +111,11 @@ public class ContentAttributeTag extends ComponentLogicTag
         {
 	        if(!parse)
             {
-                result = getComponentLogic().getContentAttribute(propertyName, languageId, attributeName, disableEditOnSight, useInheritance);
+                result = getComponentLogic().getContentAttribute(propertyName, languageId, attributeName, disableEditOnSight, useInheritance, useRepositoryInheritance);
             }
 	        else
             {
-	            result = getComponentLogic().getParsedContentAttribute(propertyName, languageId, attributeName, disableEditOnSight, useInheritance);
+	            result = getComponentLogic().getParsedContentAttribute(propertyName, languageId, attributeName, disableEditOnSight, useInheritance, useRepositoryInheritance);
             }
         }
         else
@@ -205,6 +206,11 @@ public class ContentAttributeTag extends ComponentLogicTag
         this.useInheritance = useInheritance;
     }
     
+    public void setUseRepositoryInheritance(boolean useRepositoryInheritance)
+    {
+        this.useRepositoryInheritance = useRepositoryInheritance;
+    }
+
     public void setParse(boolean parse)
     {
         this.parse = parse;

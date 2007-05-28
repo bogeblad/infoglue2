@@ -33,6 +33,7 @@ public class ChildPagesTag extends ComponentLogicTag {
 	private Integer siteNodeId;
 	private String propertyName;
 	private boolean useInheritance = true;
+	private boolean useRepositoryInheritance = true;
 	private boolean escapeHTML = false;
 	private boolean hideUnauthorizedPages = false;
 		
@@ -47,7 +48,7 @@ public class ChildPagesTag extends ComponentLogicTag {
 	    if(this.siteNodeId != null)
 	        setResultAttribute(this.getController().getChildPages(this.siteNodeId, this.escapeHTML, this.hideUnauthorizedPages));
         else if(this.propertyName != null)
-            setResultAttribute(getComponentLogic().getChildPages(propertyName, useInheritance, this.escapeHTML, this.hideUnauthorizedPages));
+            setResultAttribute(getComponentLogic().getChildPages(propertyName, useInheritance, this.escapeHTML, this.hideUnauthorizedPages, useRepositoryInheritance));
         else
             throw new JspException("You must state either propertyName or siteNodeId");
 	    
@@ -67,6 +68,11 @@ public class ChildPagesTag extends ComponentLogicTag {
     public void setUseInheritance(boolean useInheritance)
     {
         this.useInheritance = useInheritance;
+    }
+
+    public void setUseRepositoryInheritance(boolean useRepositoryInheritance)
+    {
+        this.useRepositoryInheritance = useRepositoryInheritance;
     }
 
 	public void setEscapeHTML(boolean escapeHTML) 

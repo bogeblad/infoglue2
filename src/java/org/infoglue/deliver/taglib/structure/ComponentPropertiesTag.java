@@ -36,7 +36,7 @@ public class ComponentPropertiesTag extends ComponentLogicTag
 	private Integer siteNodeId;
 	private String propertyName;
 	private boolean useInheritance = true;
-	
+	private boolean useRepositoryInheritance = true;
 	
     public ComponentPropertiesTag()
     {
@@ -49,7 +49,7 @@ public class ComponentPropertiesTag extends ComponentLogicTag
 	    {
 	        if(siteNodeId == null)
 	        {
-		        List properties = getComponentLogic().getInheritedComponentProperties(propertyName, useInheritance);
+		        List properties = getComponentLogic().getInheritedComponentProperties(propertyName, useInheritance, useRepositoryInheritance);
 		        setResultAttribute(properties);
 	        }
 	        else
@@ -81,4 +81,9 @@ public class ComponentPropertiesTag extends ComponentLogicTag
         this.useInheritance = useInheritance;
     }
 	
+    public void setUseRepositoryInheritance(boolean useRepositoryInheritance)
+    {
+        this.useRepositoryInheritance = useRepositoryInheritance;
+    }
+
 }

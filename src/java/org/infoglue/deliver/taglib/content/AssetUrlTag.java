@@ -47,7 +47,8 @@ public class AssetUrlTag extends ComponentLogicTag
 	private String propertyName;
     private String assetKey;
     private boolean useInheritance = true;
-    
+    private boolean useRepositoryInheritance = true;
+
     public AssetUrlTag()
     {
         super();
@@ -67,9 +68,9 @@ public class AssetUrlTag extends ComponentLogicTag
             else if(propertyName != null)
             {
 	            if(assetKey != null)
-	                produceResult(getComponentLogic().getAssetUrl(propertyName, assetKey, useInheritance));
+	                produceResult(getComponentLogic().getAssetUrl(propertyName, assetKey, useInheritance, useRepositoryInheritance));
 	            else
-	                produceResult(getComponentLogic().getAssetUrl(propertyName, useInheritance));                    
+	                produceResult(getComponentLogic().getAssetUrl(propertyName, useInheritance, useRepositoryInheritance));                    
             }
             else
             {
@@ -99,6 +100,11 @@ public class AssetUrlTag extends ComponentLogicTag
         this.useInheritance = useInheritance;
     }
     
+    public void setUseRepositoryInheritance(boolean useRepositoryInheritance)
+    {
+        this.useRepositoryInheritance = useRepositoryInheritance;
+    }
+
     public void setContentId(String contentId) throws JspException
     {
         this.contentId = evaluateInteger("assetUrl", "contentId", contentId);

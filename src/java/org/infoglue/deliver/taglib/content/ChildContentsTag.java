@@ -34,6 +34,7 @@ public class ChildContentsTag extends ComponentLogicTag
 	private Integer contentId;
 	private String propertyName;
 	private boolean useInheritance 	= true;
+	private boolean useRepositoryInheritance = true;
 	private boolean searchRecursive = false;
 	private String sortAttribute 	= "id";
 	private String sortOrder		= "asc";
@@ -49,7 +50,7 @@ public class ChildContentsTag extends ComponentLogicTag
 	    if(this.contentId != null)
 	        setResultAttribute(this.getController().getChildContents(this.contentId, this.searchRecursive, this.sortAttribute, this.sortOrder, this.includeFolders));
         else if(this.propertyName != null)
-            setResultAttribute(getComponentLogic().getChildContents(this.propertyName, this.useInheritance, this.searchRecursive, this.sortAttribute, this.sortOrder, this.includeFolders));
+            setResultAttribute(getComponentLogic().getChildContents(this.propertyName, this.useInheritance, this.searchRecursive, this.sortAttribute, this.sortOrder, this.includeFolders, useRepositoryInheritance));
         else
             throw new JspException("You must state either propertyName or siteNodeId");
 	    
@@ -90,4 +91,10 @@ public class ChildContentsTag extends ComponentLogicTag
     {
         this.useInheritance = useInheritance;
     }
+    
+    public void setUseRepositoryInheritance(boolean useRepositoryInheritance)
+    {
+        this.useRepositoryInheritance = useRepositoryInheritance;
+    }
+
 }

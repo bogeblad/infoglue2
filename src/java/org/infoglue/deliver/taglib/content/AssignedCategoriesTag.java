@@ -53,6 +53,7 @@ public class AssignedCategoriesTag extends ComponentLogicTag
 	private String categoryKey;
 	private Integer languageId;
     private boolean useInheritance = true;
+	private boolean useRepositoryInheritance = true;
     private boolean useAttributeLanguageFallback = false; 
     
     public AssignedCategoriesTag()
@@ -84,7 +85,7 @@ public class AssignedCategoriesTag extends ComponentLogicTag
         }
         else if(propertyName != null)
         {
-        	result = getComponentLogic().getAssignedCategories(propertyName, categoryKey, languageId, useInheritance, useAttributeLanguageFallback);
+        	result = getComponentLogic().getAssignedCategories(propertyName, categoryKey, languageId, useInheritance, useAttributeLanguageFallback, useRepositoryInheritance);
         }
         else
         {
@@ -118,6 +119,11 @@ public class AssignedCategoriesTag extends ComponentLogicTag
         this.useInheritance = useInheritance;
     }
     
+    public void setUseRepositoryInheritance(boolean useRepositoryInheritance)
+    {
+        this.useRepositoryInheritance = useRepositoryInheritance;
+    }
+
     public void setContentId(final String contentId) throws JspException
     {
         this.contentId = evaluateInteger("contentAttribute", "contentId", contentId);

@@ -27,14 +27,15 @@ import javax.servlet.jsp.JspException;
 
 import org.infoglue.deliver.taglib.component.ComponentLogicTag;
 
-public class RelatedPagesTag extends ComponentLogicTag {
+public class RelatedPagesTag extends ComponentLogicTag 
+{
 	private static final long serialVersionUID = 4050206323348354355L;
 
 	private Integer contentId;
 	private String propertyName;
 	private String attributeName;
 	private boolean useInheritance = true;
-	
+	private boolean useRepositoryInheritance = true;
 		
     public RelatedPagesTag()
     {
@@ -49,7 +50,7 @@ public class RelatedPagesTag extends ComponentLogicTag {
 	    }
 	    else if(propertyName != null)
 	    {
-	        setResultAttribute(getComponentLogic().getRelatedPages(propertyName, attributeName));
+	        setResultAttribute(getComponentLogic().getRelatedPages(propertyName, attributeName, useRepositoryInheritance));
 	    }
 	    else
 	    {
@@ -83,4 +84,10 @@ public class RelatedPagesTag extends ComponentLogicTag {
     {
         this.useInheritance = useInheritance;
     }
+    
+    public void setUseRepositoryInheritance(boolean useRepositoryInheritance)
+    {
+        this.useRepositoryInheritance = useRepositoryInheritance;
+    }
+
 }

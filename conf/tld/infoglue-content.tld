@@ -57,6 +57,11 @@
             <rtexprvalue>false</rtexprvalue>
         </attribute>
         <attribute>
+            <name>useRepositoryInheritance</name>
+            <required>false</required>
+            <rtexprvalue>false</rtexprvalue>
+        </attribute>
+        <attribute>
             <name>parse</name>
             <required>false</required>
             <rtexprvalue>false</rtexprvalue>
@@ -103,6 +108,11 @@
             <required>false</required>
             <rtexprvalue>false</rtexprvalue>
         </attribute>
+        <attribute>
+            <name>useRepositoryInheritance</name>
+            <required>false</required>
+            <rtexprvalue>false</rtexprvalue>
+        </attribute>
     </tag>
 
 	<tag>
@@ -142,6 +152,11 @@
         </attribute>
         <attribute>
             <name>useInheritance</name>
+            <required>false</required>
+            <rtexprvalue>false</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>useRepositoryInheritance</name>
             <required>false</required>
             <rtexprvalue>false</rtexprvalue>
         </attribute>
@@ -349,6 +364,11 @@
         	<required>false</required>
 	        <rtexprvalue>false</rtexprvalue>
     	</attribute>
+        <attribute>
+            <name>useRepositoryInheritance</name>
+            <required>false</required>
+            <rtexprvalue>false</rtexprvalue>
+        </attribute>
     </tag>
 
 	<tag>
@@ -371,6 +391,11 @@
         	<required>false</required>
 	        <rtexprvalue>false</rtexprvalue>
     	</attribute>
+        <attribute>
+            <name>useRepositoryInheritance</name>
+            <required>false</required>
+            <rtexprvalue>false</rtexprvalue>
+        </attribute>
 	</tag>	 
 
 	<tag>
@@ -398,6 +423,11 @@
         	<required>false</required>
 	        <rtexprvalue>false</rtexprvalue>
     	</attribute>
+        <attribute>
+            <name>useRepositoryInheritance</name>
+            <required>false</required>
+            <rtexprvalue>false</rtexprvalue>
+        </attribute>
         <attribute>
     	    <name>searchRecursive</name>
         	<required>false</required>
@@ -582,6 +612,11 @@
         	<required>false</required>
 	        <rtexprvalue>false</rtexprvalue>
     	</attribute>
+        <attribute>
+            <name>useRepositoryInheritance</name>
+            <required>false</required>
+            <rtexprvalue>false</rtexprvalue>
+        </attribute>
 	</tag>	 
 	
 	<tag>

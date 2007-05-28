@@ -33,7 +33,7 @@ public class BoundPageTag extends ComponentLogicTag
 
 	private String propertyName;
 	private boolean useInheritance = true;
-	
+	private boolean useRepositoryInheritance = true;
 	
 	
     public BoundPageTag()
@@ -43,7 +43,7 @@ public class BoundPageTag extends ComponentLogicTag
 
 	public int doEndTag() throws JspException
     {
-        setResultAttribute(getComponentLogic().getBoundPage(propertyName, useInheritance));
+        setResultAttribute(getComponentLogic().getBoundPage(propertyName, useInheritance, useRepositoryInheritance));
 	    
 		return EVAL_PAGE;
     }
@@ -57,4 +57,10 @@ public class BoundPageTag extends ComponentLogicTag
     {
         this.useInheritance = useInheritance;
     }
+	
+    public void setUseRepositoryInheritance(boolean useRepositoryInheritance)
+    {
+        this.useRepositoryInheritance = useRepositoryInheritance;
+    }
+
 }
