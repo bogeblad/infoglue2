@@ -57,6 +57,11 @@ Abbreviated Changelog from 2.4.6 Final
 - Added new webservice API:s for creating, updating and deleting users in InfoGlue. 
 - Added new diff-tag which operates on two strings
 - Added new contentVersions-tag which fetches all published versions in a certain language.
+- Added two new settings concerning dates on pages and contents. 
+	1. First one makes it possible to state if the date fields should be editable in combination with the calendar-popup. 
+	2. Second one states the default number of years you want expireDateTime on pages and contents should be set to. 
+	   Default is 50 years which is perhaps to long for some organisations and now they can set a default value themselves.
+
 
 -------------------------------------------------------------------------------------
 - InfoGlue 2.4.6 Final
