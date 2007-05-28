@@ -32,11 +32,17 @@
 		<td colspan="3">#editTextField("Content.name" "name" $!name "30" "normaltextfield" "")</td>
 	</tr>
 	#if(!$!isBranch)
+	
+	#if($enableDateTimeDirectEditing == "true")
+		#set($readonly = "")
+	#else
+		#set($readonly = "readonly")
+	#end
 	<tr> 
-		<td colspan="3">#editDateField("Content.publishDateTime" "publishDateTime" $!publishDateTime "30" "date" "ViewCalendar.action?date=$!publishDateTimeAsLong&formPath=document.editForm.publishDateTime" "readonly")</td>
+		<td colspan="3">#editDateField("Content.publishDateTime" "publishDateTime" $!publishDateTime "30" "date" "ViewCalendar.action?date=$!publishDateTimeAsLong&formPath=document.editForm.publishDateTime" "$readonly")</td>
 	</tr>
 	<tr> 
-		<td colspan="3">#editDateField("Content.expireDateTime" "expireDateTime" $!expireDateTime "30" "date" "ViewCalendar.action?date=$!expireDateTimeAsLong&formPath=document.editForm.expireDateTime" "readonly")</td>
+		<td colspan="3">#editDateField("Content.expireDateTime" "expireDateTime" $!expireDateTime "30" "date" "ViewCalendar.action?date=$!expireDateTimeAsLong&formPath=document.editForm.expireDateTime" "$readonly")</td>
 	</tr>		
 	<tr>
 		<td colspan="3">

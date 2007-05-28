@@ -215,6 +215,8 @@ public class ViewServerNodePropertiesAction extends InfoGluePropertiesAbstractAc
 	    populate(ps, "protectCategories");
 
 	    populate(ps, "maxRows");
+	    populate(ps, "defaultNumberOfYearsBeforeExpire");
+	    populate(ps, "enableDateTimeDirectEditing");
 	    populate(ps, "showContentVersionFirst");
 	    populate(ps, "tree");
 	    populate(ps, "treemode");

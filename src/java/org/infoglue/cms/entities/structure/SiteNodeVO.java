@@ -31,6 +31,7 @@ import java.util.SimpleTimeZone;
 
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.exception.ConstraintException;
+import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
 import org.infoglue.cms.util.DateHelper;
 import org.infoglue.cms.util.validators.ValidatorFactory;
@@ -62,7 +63,20 @@ public class SiteNodeVO implements BaseEntityVO
   	{
   		//Initilizing the expireDateTime... 
   		Calendar calendar = Calendar.getInstance(stmz);
-  		calendar.add(Calendar.YEAR, 50);
+  		
+  		int years = 50;
+  		try
+  		{
+	  		String numberOfYears = CmsPropertyHandler.getDefaultNumberOfYearsBeforeExpire();
+	  		if(numberOfYears != null && !numberOfYears.equals(""))
+	  			years = new Integer(numberOfYears).intValue();
+  		}
+  		catch (Exception e) 
+  		{
+  			e.printStackTrace();
+  		}
+  		
+  		calendar.add(Calendar.YEAR, years);
   		expireDateTime = calendar.getTime();
   	}
   	

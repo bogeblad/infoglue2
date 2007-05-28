@@ -369,7 +369,12 @@ public abstract class InfoGlueAbstractAction extends WebworkAbstractAction
     {
         return CmsPropertyHandler.getDisableImageEditor();
     }
-    
+
+    public String getEnableDateTimeDirectEditing()
+    {
+        return CmsPropertyHandler.getEnableDateTimeDirectEditing();
+    }
+
     public String getAllowPublicationEventFilter()
     {
     	return CmsPropertyHandler.getAllowPublicationEventFilter();

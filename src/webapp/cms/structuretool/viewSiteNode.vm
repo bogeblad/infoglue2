@@ -102,8 +102,14 @@ function editContent(contentId)
 		<td colspan="4"><img src="images/trans.gif" height="10" width="1"></td>
 	</tr>	
 	
+	#if($enableDateTimeDirectEditing == "true")
+		#set($readonly = "")
+	#else
+		#set($readonly = "readonly")
+	#end
+	
 	<tr>
-		<td>#editDateField("SiteNode.publishDateTime" "publishDateTime" $!publishDateTime "30" "date"  "ViewCalendar.action?date=$!publishDateTimeAsLong&formPath=document.editForm.publishDateTime" "readonly")</td>
+		<td>#editDateField("SiteNode.publishDateTime" "publishDateTime" $!publishDateTime "30" "date"  "ViewCalendar.action?date=$!publishDateTimeAsLong&formPath=document.editForm.publishDateTime" "$readonly")</td>
 		<td><img src="images/trans.gif" width="20" height="1"></td>
 		<td>
 			$ui.getString("entity.SiteNode.isProtected.label")<br>
@@ -114,7 +120,7 @@ function editContent(contentId)
 		<td></td>
 	</tr>		
 	<tr>
-		<td>#editDateField("SiteNode.expireDateTime" "expireDateTime" $!expireDateTime "30" "date"  "ViewCalendar.action?date=$!expireDateTimeAsLong&formPath=document.editForm.expireDateTime" "readonly")</td>
+		<td>#editDateField("SiteNode.expireDateTime" "expireDateTime" $!expireDateTime "30" "date"  "ViewCalendar.action?date=$!expireDateTimeAsLong&formPath=document.editForm.expireDateTime" "$readonly")</td>
 		<td><img src="images/trans.gif" width="20" height="1"></td>
 		<td>
 			$ui.getString("entity.SiteNode.disablePageCache.label")<br>

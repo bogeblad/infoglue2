@@ -732,7 +732,17 @@ public class CmsPropertyHandler
 	{
 		return getServerNodeProperty("maxRows", true, "100");
 	}
-	
+
+	public static String getDefaultNumberOfYearsBeforeExpire()
+	{
+		return getServerNodeProperty("defaultNumberOfYearsBeforeExpire", true, "50");
+	}
+
+	public static String getEnableDateTimeDirectEditing()
+	{
+		return getServerNodeProperty("enableDateTimeDirectEditing", true, "false");
+	}
+
 	public static String getShowContentVersionFirst()
 	{
 		return getServerNodeProperty("showContentVersionFirst", true, "true");
