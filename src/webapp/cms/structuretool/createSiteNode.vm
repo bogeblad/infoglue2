@@ -32,9 +32,9 @@
 </script>		
 
 #if($enableDateTimeDirectEditing == "true")
-	#set($readonly = "")
+	#set($dateReadonly = "")
 #else
-	#set($readonly = "readonly")
+	#set($dateReadonly = "readonly")
 #end
 
 <div class="fullymarginalized">
@@ -44,10 +44,10 @@
 		<td colspan="3">#editTextField("SiteNode.name" "name" $!name "30" "normaltextfield" "")</td>
 	</tr>
 	<tr>
-		<td colspan="4">#editDateField("SiteNode.publishDateTime" "publishDateTime" $!publishDateTime "30" "date"  "ViewCalendar.action?date=$!publishDateTimeAsLong&formPath=document.editForm.publishDateTime" "$readonly")
+		<td colspan="4">#editDateField("SiteNode.publishDateTime" "publishDateTime" $!publishDateTime "30" "date"  "ViewCalendar.action?date=$!publishDateTimeAsLong&formPath=document.editForm.publishDateTime" "$dateReadonly")
 	</tr>		
 	<tr>
-		<td colspan="4">#editDateField("SiteNode.expireDateTime" "expireDateTime" $!expireDateTime "30" "date"  "ViewCalendar.action?date=$!expireDateTimeAsLong&formPath=document.editForm.expireDateTime" "$readonly")</td>
+		<td colspan="4">#editDateField("SiteNode.expireDateTime" "expireDateTime" $!expireDateTime "30" "date"  "ViewCalendar.action?date=$!expireDateTimeAsLong&formPath=document.editForm.expireDateTime" "$dateReadonly")</td>
 	</tr>		
 	##if(!$!isBranch)
 	<tr>
