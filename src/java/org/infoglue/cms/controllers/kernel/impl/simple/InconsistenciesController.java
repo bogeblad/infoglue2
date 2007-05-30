@@ -28,9 +28,12 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
+import org.infoglue.cms.applications.contenttool.actions.DeleteContentAction;
 import org.infoglue.cms.entities.content.Content;
 import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.content.ContentVersion;
@@ -61,7 +64,8 @@ import org.w3c.dom.NodeList;
 
 public class InconsistenciesController extends BaseController
 {
-	
+    private final static Logger logger = Logger.getLogger(InconsistenciesController.class.getName());
+
 	/**
 	 * Factory method to get object
 	 */
@@ -283,7 +287,7 @@ public class InconsistenciesController extends BaseController
 					pageStructure = deleteComponentFromXML(pageStructure, new Integer(registryVO.getEntityId()));
 				if(registryVO.getReferenceType().equals(RegistryVO.PAGE_COMPONENT_BINDING))
 					pageStructure = deleteComponentBindingFromXML(pageStructure, new Integer(registryVO.getEntityId()), registryVO.getEntityName());
-
+			
 				ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(metaInfoContentId, masterLanguageVO.getId());
 				ContentVersionController.getContentVersionController().updateAttributeValue(contentVersionVO.getContentVersionId(), "ComponentStructure", pageStructure, infoGluePrincipal);
 			}
@@ -297,15 +301,15 @@ public class InconsistenciesController extends BaseController
 				{
 					String versionValue = contentVersionVO.getVersionValue();
 					
-					//if(registryVO.getReferenceType().equals(RegistryVO.INLINE_LINK))
-						//TODO - versionValue = deleteInlineLinks(versionValue, new Integer(registryVO.getEntityId()));
-					//if(registryVO.getReferenceType().equals(RegistryVO.INLINE_ASSET))
-						//TODO - versionValue = deleteInlineAssets(versionValue, new Integer(registryVO.getEntityId()));
+					if(registryVO.getReferenceType().equals(RegistryVO.INLINE_LINK))
+						versionValue = deleteInlineLinks(versionValue, new Integer(registryVO.getEntityId()));
+					if(registryVO.getReferenceType().equals(RegistryVO.INLINE_ASSET))
+						versionValue = deleteInlineAssets(versionValue, new Integer(registryVO.getEntityId()));
 					if(registryVO.getReferenceType().equals(RegistryVO.INLINE_SITE_NODE_RELATION))
 						versionValue = deleteInlineSiteNodeRelations(versionValue, new Integer(registryVO.getEntityId()));
 					if(registryVO.getReferenceType().equals(RegistryVO.INLINE_CONTENT_RELATION))
 						versionValue = deleteInlineContentRelations(versionValue, new Integer(registryVO.getEntityId()));
-						
+					
 					contentVersionVO.setVersionModifier(infoGluePrincipal.getName());
 					contentVersionVO.setModifiedDateTime(DateHelper.getSecondPreciseDate());
 					contentVersionVO.setVersionValue(versionValue);
@@ -388,23 +392,161 @@ public class InconsistenciesController extends BaseController
 		return cleanedVersionValue;
 	}
 
-	/*
+	
 	private String deleteInlineAssets(String versionValue, Integer contentId) 
 	{
 		String cleanedVersionValue = versionValue;
 		
+		try
+		{
+			logger.info("versionValue:" + versionValue);
+			
+			Map replaces = new HashMap();
+
+			//<a href="$templateLogic.getInlineAssetUrl(4217, "Rubrikbild")">test</a>
+			int startIndex = versionValue.indexOf("<a ");
+			int endIndex = versionValue.indexOf("</a>", startIndex) + 4;
+			int offset = startIndex;
+						
+			while(startIndex > -1 && endIndex > startIndex)
+			{
+				String linkString = versionValue.substring(startIndex, endIndex);
+				logger.info("linkString:" + linkString);
+				
+				if(linkString.indexOf("getInlineAssetUrl(" + contentId + ",") > -1)
+				{
+					int linkTextStartIndex = linkString.indexOf(">");
+					int linkTextEndIndex = linkString.indexOf("</a>");
+					String linkText = linkString.substring(linkTextStartIndex + 1, linkTextEndIndex);
+					logger.info("linkText:" + linkText);
+					replaces.put(linkString, linkText);
+				}
+				
+				startIndex = versionValue.indexOf("<a ", offset);
+				endIndex = versionValue.indexOf("</a>", startIndex) + 4;
+				offset = endIndex;
+			}
+
+			//<img src="$templateLogic.getInlineAssetUrl(4217, "Rubrikbild")" alt="" />
+			startIndex = versionValue.indexOf("<img ");
+			endIndex = versionValue.indexOf("/>", startIndex) + 2;
+			offset = startIndex;
+						
+			while(startIndex > -1 && endIndex > startIndex)
+			{
+				String linkString = versionValue.substring(startIndex, endIndex);
+				logger.info("linkString:" + linkString);
+				
+				if(linkString.indexOf("getInlineAssetUrl(" + contentId + ",") > -1)
+				{
+					String linkText = "";
+					replaces.put(linkString, linkText);
+				}
+				
+				startIndex = versionValue.indexOf("<img ", offset);
+				endIndex = versionValue.indexOf("/>", startIndex) + 2;
+				offset = endIndex;
+			}
+
+			Iterator replacesIterator = replaces.keySet().iterator();
+			while(replacesIterator.hasNext())
+			{
+				String original = (String)replacesIterator.next();
+				String linkText = (String)replaces.get(original);
+				
+				int offsetFinal = 0;
+				int linkStart = cleanedVersionValue.indexOf(original, offsetFinal);
+				while(linkStart > -1)
+				{
+					StringBuffer result = new StringBuffer();
+					
+					result.append(cleanedVersionValue.substring(offsetFinal, linkStart));
+					result.append(linkText);
+					offsetFinal = cleanedVersionValue.indexOf(original, offsetFinal) + original.length();
+					result.append(cleanedVersionValue.substring(offsetFinal));
+					
+					cleanedVersionValue = result.toString();
+					linkStart = cleanedVersionValue.indexOf(original, offsetFinal);
+				}
+			}
+			
+			logger.info("cleanedVersionValue:" + cleanedVersionValue);
+		}
+		catch (Exception e) 
+		{
+			e.printStackTrace();
+		}
+
 		System.out.println("cleanedVersionValue:" + cleanedVersionValue);
+		
 		return cleanedVersionValue;
 	}
-
-	private String deleteInlineLinks(String versionValue, Integer contentId) 
+	
+	private String deleteInlineLinks(String versionValue, Integer siteNodeId) 
 	{
 		String cleanedVersionValue = versionValue;
 		
-		System.out.println("cleanedVersionValue:" + cleanedVersionValue);
+		try
+		{
+			logger.info("versionValue:" + versionValue);
+			
+			int startIndex = versionValue.indexOf("<a ");
+			int endIndex = versionValue.indexOf("</a>", startIndex) + 4;
+			int offset = startIndex;
+			
+			Map replaces = new HashMap();
+			
+			while(startIndex > -1 && endIndex > startIndex)
+			{
+				String linkString = versionValue.substring(startIndex, endIndex);
+				logger.info("linkString:" + linkString);
+				
+				if(linkString.indexOf("getPageUrl(" + siteNodeId + ",") > -1)
+				{
+					int linkTextStartIndex = linkString.indexOf(">");
+					int linkTextEndIndex = linkString.indexOf("</a>");
+					String linkText = linkString.substring(linkTextStartIndex + 1, linkTextEndIndex);
+					logger.info("linkText:" + linkText);
+					replaces.put(linkString, linkText);
+				}
+				
+				startIndex = versionValue.indexOf("<a ", offset);
+				endIndex = versionValue.indexOf("</a>", startIndex) + 4;
+				offset = endIndex;
+			}
+			
+			Iterator replacesIterator = replaces.keySet().iterator();
+			while(replacesIterator.hasNext())
+			{
+				String original = (String)replacesIterator.next();
+				String linkText = (String)replaces.get(original);
+				
+				int offsetFinal = 0;
+				int linkStart = cleanedVersionValue.indexOf(original, offsetFinal);
+				while(linkStart > -1)
+				{
+					StringBuffer result = new StringBuffer();
+					
+					result.append(cleanedVersionValue.substring(offsetFinal, linkStart));
+					result.append(linkText);
+					offsetFinal = cleanedVersionValue.indexOf(original, offsetFinal) + original.length();
+					result.append(cleanedVersionValue.substring(offsetFinal));
+					
+					cleanedVersionValue = result.toString();
+					linkStart = cleanedVersionValue.indexOf(original, offsetFinal);
+				}
+			}
+			
+			logger.info("cleanedVersionValue:" + cleanedVersionValue);
+		}
+		catch (Exception e) 
+		{
+			e.printStackTrace();
+		}
+		
 		return cleanedVersionValue;
 	}
-	*/
+	
 	
 	private String deleteComponentFromXML(String componentXML, Integer contentId) throws Exception
 	{
