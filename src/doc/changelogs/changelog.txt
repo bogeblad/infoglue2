@@ -61,7 +61,9 @@ Abbreviated Changelog from 2.4.6 Final
 	1. First one makes it possible to state if the date fields should be editable in combination with the calendar-popup. 
 	2. Second one states the default number of years you want expireDateTime on pages and contents should be set to. 
 	   Default is 50 years which is perhaps to long for some organisations and now they can set a default value themselves.
-
+- Added a flag on most tags which allows you to disable repository inheritance when looking up properties.
+- Fixed issues with updating digitalAssets not being propagating correctly through the digitalAsset caches due to the new SmallDigitalAsset concept.
+- Implemented cleanup of content-versions when a user chooses to force removal of inline links and inline images which references a content/page the user wants to delete.
 
 -------------------------------------------------------------------------------------
 - InfoGlue 2.4.6 Final
