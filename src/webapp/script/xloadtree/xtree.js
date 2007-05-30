@@ -259,9 +259,19 @@ var treeCookieName = "treePathCookie";
 
 WebFXCookie.prototype.setCookie = function (key, value) {
 	var length = document.cookie.split(';').length;
-	if(length < 10)
-		document.cookie = key + "=" + escape(value)+"; expires=Monday, 04-Apr-2010 05:00:00 GMT";
-
+	if(length < 10) //We don't wan't the cookie length to be to long - IE-issues.
+	{
+		document.cookie = key + "=" + escape(value)+"; expires=Monday, 04-Apr-2020 05:00:00 GMT";
+	}
+	else
+	{
+		var startIndex = document.cookie.indexOf(key);
+		if(startIndex > -1) //If the key exists we can replace it without affecting the length
+		{
+			document.cookie = key + "=" + escape(value)+"; expires=Monday, 04-Apr-2020 05:00:00 GMT";
+		}
+	}
+		
 	/*
 	var existingCookie = webFXTreeHandler.cookies.getCookie(treeCookieName);
 	if(existingCookie)
@@ -271,7 +281,7 @@ WebFXCookie.prototype.setCookie = function (key, value) {
 			alert("existingCookie:" + existingCookie);
 			var allValues = existingCookie + "#" + key + "=" + escape(value);
 			
-			document.cookie = treeCookieName + "=" + escape(allValues)+"; expires=Monday, 04-Apr-2010 05:00:00 GMT";
+			document.cookie = treeCookieName + "=" + escape(allValues)+"; expires=Monday, 04-Apr-2020 05:00:00 GMT";
 		}
 	}
 	else
@@ -279,7 +289,7 @@ WebFXCookie.prototype.setCookie = function (key, value) {
 		alert("No existingCookie....");
 		var allValues = key + "=" + escape(value);
 		
-		document.cookie = treeCookieName + "=" + escape(allValues)+"; expires=Monday, 04-Apr-2010 05:00:00 GMT";
+		document.cookie = treeCookieName + "=" + escape(allValues)+"; expires=Monday, 04-Apr-2020 05:00:00 GMT";
 	}
 	*/
 }
