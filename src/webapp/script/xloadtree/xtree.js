@@ -258,17 +258,24 @@ function WebFXCookie() {
 var treeCookieName = "treePathCookie";
 
 WebFXCookie.prototype.setCookie = function (key, value) {
+	//alert("document.cookie:" + document.cookie);
 	var length = document.cookie.split(';').length;
 	if(length < 10) //We don't wan't the cookie length to be to long - IE-issues.
 	{
 		document.cookie = key + "=" + escape(value)+"; expires=Monday, 04-Apr-2020 05:00:00 GMT";
+		//alert("A");
 	}
 	else
 	{
 		var startIndex = document.cookie.indexOf(key);
 		if(startIndex > -1) //If the key exists we can replace it without affecting the length
 		{
+			//alert("B");
 			document.cookie = key + "=" + escape(value)+"; expires=Monday, 04-Apr-2020 05:00:00 GMT";
+		}
+		else
+		{
+			//alert("To many cookies and no existing cookie for this one...");
 		}
 	}
 		
