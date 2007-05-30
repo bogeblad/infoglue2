@@ -25,9 +25,6 @@ package org.infoglue.deliver.taglib.structure;
 import javax.servlet.jsp.JspException;
 
 import org.infoglue.deliver.taglib.TemplateControllerTag;
-import org.infoglue.deliver.taglib.component.ComponentLogicTag;
-
-import sun.security.action.GetLongAction;
 
 public class PageUrlAfterLanguageChangeTag extends TemplateControllerTag
 {
