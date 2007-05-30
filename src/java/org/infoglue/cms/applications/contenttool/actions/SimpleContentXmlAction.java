@@ -103,6 +103,7 @@ public class SimpleContentXmlAction extends SimpleXmlServiceAction
 	}
 	
 	
+	
     public ContentVersionVO getLatestContentVersionVO(Integer contentId, Integer languageId)
 	{
 		ContentVersionVO contentVersionVO = null;
@@ -136,11 +137,14 @@ public class SimpleContentXmlAction extends SimpleXmlServiceAction
 	    head.addAttribute("languageName", vo.getLanguageName());
 	    head.addAttribute("isActive", "" + vo.getIsActive());
 
+	    /*
 	    TransactionHistoryController transactionHistoryController = TransactionHistoryController.getController();
         TransactionHistoryVO transactionHistoryVO = transactionHistoryController.getLatestTransactionHistoryVOForEntity(ContentVersionImpl.class, vo.getContentVersionId());
 	    if(transactionHistoryVO!=null)
 	        head.addAttribute("mod", formatDate(transactionHistoryVO.getTransactionDateTime()));
-        // head.addAttribute("mod", formatDate(vo.getModifiedDateTime()));
+	    */
+	    
+        head.addAttribute("mod", "" + vo.getModifiedDateTime().getTime());
         value.addCDATA(URLEncoder.encode(vo.getVersionValue(),"UTF-8"));
         element.add(head);
         element.add(value);
