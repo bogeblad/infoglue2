@@ -64,6 +64,8 @@ Abbreviated Changelog from 2.4.6 Final
 - Added a flag on most tags which allows you to disable repository inheritance when looking up properties.
 - Fixed issues with updating digitalAssets not being propagating correctly through the digitalAsset caches due to the new SmallDigitalAsset concept.
 - Implemented cleanup of content-versions when a user chooses to force removal of inline links and inline images which references a content/page the user wants to delete.
+- Fixed better cookie-handling so the menu tree better remembers the expansion of your sites.
+- Added a refresh icon to the left menu which lets the user refresh the menu and reset all tool-cookies. Often needed after a while to get the three expansion to work as it should.
 
 -------------------------------------------------------------------------------------
 - InfoGlue 2.4.6 Final
