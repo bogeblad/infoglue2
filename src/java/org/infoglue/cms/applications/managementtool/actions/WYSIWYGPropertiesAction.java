@@ -115,7 +115,7 @@ public class WYSIWYGPropertiesAction extends InfoGlueAbstractAction
 	    
 		StringWriter tempString = new StringWriter();
 		PrintWriter pw = new PrintWriter(tempString);
-		new VelocityTemplateProcessor().renderTemplate(parameters, pw, this.WYSIWYGProperties);
+		new VelocityTemplateProcessor().renderTemplate(parameters, pw, this.WYSIWYGProperties, true);
 		this.WYSIWYGProperties = tempString.toString();
 
 	    this.getResponse().setContentType("text/javascript");

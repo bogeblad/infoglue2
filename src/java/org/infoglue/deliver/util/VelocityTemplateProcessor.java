@@ -85,7 +85,7 @@ public class VelocityTemplateProcessor
 		    Timer timer = new Timer();
 		    timer.setActive(false);
 			
-		    if(templateAsString.indexOf("<%") > -1 || templateAsString.indexOf("http://java.sun.com/products/jsp/dtd/jspcore_1_0.dtd") > -1)
+		    if(!forceVelocity && (templateAsString.indexOf("<%") > -1 || templateAsString.indexOf("http://java.sun.com/products/jsp/dtd/jspcore_1_0.dtd") > -1))
 		    {
 		    	dispatchJSP(params, pw, templateAsString);
 		    }
@@ -127,7 +127,7 @@ public class VelocityTemplateProcessor
 		}
 		catch(Exception e)
 		{
-		    logger.warn("templateAsString: \n" + (templateAsString.length() > 500 ? templateAsString.substring(0, 500) + "... (template truncated)." : templateAsString));
+			logger.warn("templateAsString: \n" + (templateAsString.length() > 500 ? templateAsString.substring(0, 500) + "... (template truncated)." : templateAsString));
 		    
 		    if(CmsPropertyHandler.getOperatingMode().equalsIgnoreCase("0") && (CmsPropertyHandler.getDisableTemplateDebug() == null || !CmsPropertyHandler.getDisableTemplateDebug().equalsIgnoreCase("true")))
 		        pw.println("Error rendering template:" + e.getMessage());
