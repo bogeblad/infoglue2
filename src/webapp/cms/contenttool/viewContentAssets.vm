@@ -194,12 +194,13 @@
 		<table cellpadding="0" cellspacing="0" border="0" width="350">
 		<tr class="darkgreen">
 			<td class="smalllabel">Click on the content you wish to fetch the asset from</td>
+			<td class="smalllabel"><img src="images/spyglassIcon.gif" width="16" height="16" onclick="toggleDiv('searchDiv', 'treeDiv');"></td>
 		</tr>
 		<tr>
-			<td bgcolor="#EEF7DC" colspan="4" height="1"><img src="images/trans.gif" width="1" height="1"></td>
+			<td bgcolor="#EEF7DC" colspan="2" height="1"><img src="images/trans.gif" width="1" height="1"></td>
 		</tr>
 		<tr>
-			<td bgcolor="#C7D1B3" colspan="4" height="1"><img src="images/trans.gif" width="1" height="1"></td>
+			<td bgcolor="#C7D1B3" colspan="2" height="1"><img src="images/trans.gif" width="1" height="1"></td>
 		</tr>
 		<tr>
 			<td height="1"><img src="images/trans.gif" width="1" height="5"></td>
@@ -208,7 +209,7 @@
 		HERE IS THE REPOSITORY-LIST FOR LATER 
 		-->
 		<tr>
-			<td>
+			<td colspan="2">
 		  		<select size="1" name="repositoryId" class="sitedropbox" onChange="javascript:changeRepository(this);" class="contenttool">
 				    <option value="">$ui.getString("tool.contenttool.chooseRepositoryLabel")</option>
 				    #foreach ($repositoryVO in $repositories)
@@ -231,17 +232,17 @@
 		</tr>	
 		<!--
 		<tr>
-			<td colspan="3"><img src="images/trans.gif" width="1" height="5"></td>
+			<td colspan="2"><img src="images/trans.gif" width="1" height="5"></td>
 		</tr>
 		<tr>
-			<td colspan="3">
+			<td colspan="2">
 				<a href="javascript:submitBindning();"><img src="$ui.getString("images.structuretool.buttons.save")" border="0"></a>
 				<a href="javascript:window.close();"><img src="$ui.getString("images.structuretool.buttons.cancel")" border="0"></a>
 			</td>
 		</tr>
 		-->
 		<tr>
-			<td>
+			<td colspan="2">
 				<form name="inputForm" action="CreateServiceBinding.action">
 					<input type="hidden" name="entityId" value="">
 					<input type="hidden" name="repositoryId" value="">

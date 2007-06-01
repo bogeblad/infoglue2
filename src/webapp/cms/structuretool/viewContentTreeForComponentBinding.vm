@@ -79,7 +79,6 @@
 				div2.style.display = "none";
 			else
 				div2.style.display = "block";
-
 		}
 				
 	-->

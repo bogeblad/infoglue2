@@ -190,6 +190,46 @@ public class SearchContentAction extends InfoGlueAbstractAction
 		return "successBindingResult";
 	}
 
+	public String doInlineAssetResult() throws Exception 
+	{
+		Integer[] allowedContentTypeId = new Integer[0];
+		if(allowedContentTypeIds != null && allowedContentTypeIds.length != 0)
+		{
+			allowedContentTypeId = new Integer[allowedContentTypeIds.length];
+			for(int i=0; i<allowedContentTypeIds.length; i++)
+				allowedContentTypeId[i] = new Integer(allowedContentTypeIds[i]);
+		}
+		
+		int maxRows = 100;
+		try
+		{
+			maxRows = Integer.parseInt(CmsPropertyHandler.getMaxRows());
+		}
+		catch(Exception e)
+		{
+		}
+
+		String[] repositoryIdToSearch = this.getRequest().getParameterValues("repositoryIdToSearch");
+		if(repositoryIdToSearch != null)
+		{
+			Integer[] repositoryIdAsIntegerToSearch = new Integer[repositoryIdToSearch.length];
+			for(int i=0; i < repositoryIdToSearch.length; i++)
+			{
+				repositoryIdAsIntegerToSearch[i] = new Integer(repositoryIdToSearch[i]);
+				selectedRepositoryIdList.add(repositoryIdToSearch[i]);
+			}
+			
+			contentVOSet = SearchController.getContents(repositoryIdAsIntegerToSearch, this.getSearchString(), maxRows, name, languageId, allowedContentTypeId, caseSensitive, stateId, true);
+		}
+		else 
+		{
+			contentVOSet = SearchController.getContents(this.repositoryId, this.getSearchString(), maxRows, name, languageId, allowedContentTypeId, caseSensitive, stateId, true);
+			selectedRepositoryIdList.add("" + this.repositoryId);
+		}
+
+		return "successInlineAssetResult";
+	}
+
 	/**
 	 * This method returns the advanced search interface to the user.
 	 */
@@ -211,15 +251,21 @@ public class SearchContentAction extends InfoGlueAbstractAction
 
 	public String doInputBinding() throws Exception 
 	{
-	    //this.principals = UserControllerProxy.getController().getAllUsers();
-		//this.availableLanguages = LanguageController.getController().getLanguageVOList(this.repositoryId);
-		//this.contentTypeDefinitions = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOList();
 		this.repositories = RepositoryController.getController().getAuthorizedRepositoryVOList(this.getInfoGluePrincipal(), false);
-		//selectedRepositoryIdList.add("" + this.repositoryId);
 	    
 	    return Action.INPUT + "Binding";
 	}
 
+	/**
+	 * This method returns the binding search interface to the user.
+	 */
+
+	public String doInputInlineAsset() throws Exception 
+	{
+		this.repositories = RepositoryController.getController().getAuthorizedRepositoryVOList(this.getInfoGluePrincipal(), false);
+	    
+	    return Action.INPUT + "InlineAsset";
+	}
 	
 	public ContentVO getContentVO(Integer contentId)
 	{

@@ -100,6 +100,20 @@
 			document.getElementById("contentVersionAssetsFrame").src = "ViewContentVersion!viewAssetsForFCKEditor.action?contentId=" + contentId + "&languageId=$languageId&assetKey=" + assetKey + "&treatAsLink=$treatAsLink";
 		};
 		
+		function toggleDiv(id, id2)
+		{
+			var div = document.getElementById(id);
+			if(div && div.style.display == "block")
+				div.style.display = "none";
+			else
+				div.style.display = "block";
+
+			var div2 = document.getElementById(id2);
+			if(div2 && div2.style.display == "block")
+				div2.style.display = "none";
+			else
+				div2.style.display = "block";
+		}
 		-->
 	</script>
 	
@@ -122,6 +136,7 @@
 		<table cellpadding="0" cellspacing="0" border="0" width="350">
 		<tr class="darkgreen">
 			<td class="smalllabel">Click on the content you wish to fetch the asset from</td>
+			<td class="smalllabel"><img src="images/spyglassIcon.gif" width="16" height="16" onclick="toggleDiv('searchDiv', 'treeDiv');"></td>
 		</tr>
 		<tr>
 			<td bgcolor="#EEF7DC" colspan="4" height="1"><img src="images/trans.gif" width="1" height="1"></td>
@@ -150,12 +165,16 @@
 		</tr>		
 		<tr>
 			<td class="menu">  
+				<div id="searchDiv" style="display:none;">
+					<IFRAME frameborder="0" name="resultFrame" id="resultFrame" src="SearchContent!inputInlineAsset.action?repositoryId=${repositoryId}" width="350" height="400" align="baseline"></IFRAME>
+				</div>
+				<div id="treeDiv" style="display:block;">
 				#if($tree == "applet")
 					#showJavaTree("350" "400" "254" "248" "208" "Content" $repositoryId "false")
 				#else
-					<!--<IFRAME frameborder="0" name="itreeFrame" id="itreeFrame" src="ViewContentHtmlTree.action?repositoryId=$repositoryId&exp=$exp&akey=/$!oldContentId/&select=$!oldContentId" width="350" height="510" align="baseline"></IFRAME>-->
 					<IFRAME frameborder="0" name="itreeFrame" id="itreeFrame" src="" width="350" height="510" align="baseline"></IFRAME>
 				#end
+				</div>
 			</td>
 		</tr>	
 		</table>

@@ -25,6 +25,8 @@ package org.infoglue.cms.controllers.kernel.impl.simple;
 
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -39,6 +41,8 @@ import org.exolab.castor.jdo.QueryResults;
 import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.content.ContentVersion;
 import org.infoglue.cms.entities.content.ContentVersionVO;
+import org.infoglue.cms.entities.content.DigitalAsset;
+import org.infoglue.cms.entities.content.impl.simple.SmallDigitalAssetImpl;
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.SystemException;
@@ -105,9 +109,14 @@ public class SearchController extends BaseController
 
    	public static Set getContents(Integer repositoryId, String searchString, int maxRows, String name, Integer languageId, Integer[] contentTypeDefinitionId, Integer caseSensitive, Integer stateId) throws SystemException, Bug
    	{
-   		return getContents(new Integer[]{repositoryId}, searchString, maxRows, name, languageId, contentTypeDefinitionId, caseSensitive, stateId);
+   		return getContents(new Integer[]{repositoryId}, searchString, maxRows, name, languageId, contentTypeDefinitionId, caseSensitive, stateId, false);
    	}
-   	
+
+   	public static Set getContents(Integer repositoryId, String searchString, int maxRows, String name, Integer languageId, Integer[] contentTypeDefinitionId, Integer caseSensitive, Integer stateId, boolean searchAsset) throws SystemException, Bug
+   	{
+   		return getContents(new Integer[]{repositoryId}, searchString, maxRows, name, languageId, contentTypeDefinitionId, caseSensitive, stateId, searchAsset);
+   	}
+
    	public static Set getContents(Integer[] repositoryId, String searchString, int maxRows, String name, Integer languageId, Integer[] contentTypeDefinitionId, Integer caseSensitive, Integer stateId) throws SystemException, Bug
    	{
    		Set contents = new HashSet();
@@ -123,16 +132,41 @@ public class SearchController extends BaseController
    		return contents;
    	}
 
+   	public static Set getContents(Integer[] repositoryId, String searchString, int maxRows, String name, Integer languageId, Integer[] contentTypeDefinitionId, Integer caseSensitive, Integer stateId, boolean searchAssets) throws SystemException, Bug
+   	{
+   		Set contents = new HashSet();
+   		List contentVersions = getContentVersions(repositoryId, searchString, maxRows, name, languageId, contentTypeDefinitionId, caseSensitive, stateId, searchAssets);
+   		Iterator contentVersionsIterator = contentVersions.iterator();
+   		while(contentVersionsIterator.hasNext())
+   		{
+   			ContentVersionVO contentVersionVO = (ContentVersionVO)contentVersionsIterator.next();
+   			ContentVO contentVO = ContentController.getContentController().getContentVOWithId(contentVersionVO.getContentId());
+   			contents.add(contentVO);
+   		}
+   		
+   		return contents;
+   	}
+
    	public static List getContentVersions(Integer repositoryId, String searchString, int maxRows, String name, Integer languageId, Integer[] contentTypeDefinitionId, Integer caseSensitive, Integer stateId) throws SystemException, Bug
    	{
 		List matchingContents = getContentVersions(new Integer[]{repositoryId}, searchString, maxRows, name, languageId, contentTypeDefinitionId, caseSensitive, stateId);
 			
-		return matchingContents;
-		
+		return matchingContents;		
    	}
 
-	
+   	public static List getContentVersions(Integer repositoryId, String searchString, int maxRows, String name, Integer languageId, Integer[] contentTypeDefinitionId, Integer caseSensitive, Integer stateId, boolean searchAssets) throws SystemException, Bug
+   	{
+		List matchingContents = getContentVersions(new Integer[]{repositoryId}, searchString, maxRows, name, languageId, contentTypeDefinitionId, caseSensitive, stateId, searchAssets);
+			
+		return matchingContents;		
+   	}
+
    	public static List getContentVersions(Integer[] repositoryId, String searchString, int maxRows, String name, Integer languageId, Integer[] contentTypeDefinitionId, Integer caseSensitive, Integer stateId) throws SystemException, Bug
+   	{
+   		return getContentVersions(repositoryId, searchString, maxRows, name, languageId, contentTypeDefinitionId, caseSensitive, stateId, false);
+   	}
+   	
+   	public static List getContentVersions(Integer[] repositoryId, String searchString, int maxRows, String name, Integer languageId, Integer[] contentTypeDefinitionId, Integer caseSensitive, Integer stateId, boolean searchAssets) throws SystemException, Bug
    	{
 		List matchingContents = new ArrayList();
 
@@ -232,10 +266,13 @@ public class SearchController extends BaseController
 				    ContentVersion latestContentVersion = ContentVersionController.getContentVersionController().getLatestActiveContentVersion(contentVersion.getOwningContent().getId(), contentVersion.getLanguage().getId(), db);
 					if(latestContentVersion.getId().intValue() == contentVersion.getId().intValue() && (caseSensitive == null || contentVersion.getVersionValue().indexOf(searchString) > -1))
 					{
-					    matchingContents.add(contentVersion.getValueObject());
-					    previousContentId = contentVersion.getOwningContent().getId();
-					    previousLanguageId = contentVersion.getLanguage().getId();
-					    currentCount++;
+						if(!searchAssets || (contentVersion.getDigitalAssets() != null && contentVersion.getDigitalAssets().size() > 0))
+						{
+						    matchingContents.add(contentVersion.getValueObject());
+						    previousContentId = contentVersion.getOwningContent().getId();
+						    previousLanguageId = contentVersion.getLanguage().getId();
+						    currentCount++;
+						}
 					}
 				}
 			}
@@ -243,6 +280,47 @@ public class SearchController extends BaseController
 			results.close();
 			oql.close();
 
+			if(searchAssets)
+			{
+				String assetSQL = "SELECT da FROM org.infoglue.cms.entities.content.impl.simple.SmallDigitalAssetImpl da WHERE (da.assetKey LIKE $1 OR da.assetFileName LIKE $2) ORDER BY da.digitalAssetId asc";
+				logger.info("assetSQL:" + assetSQL);
+				OQLQuery assetOQL = db.getOQLQuery(assetSQL);
+				assetOQL.bind("%" + searchString + "%");
+				assetOQL.bind("%" + searchString + "%");
+		        
+				QueryResults assetResults = assetOQL.execute(Database.ReadOnly);
+				
+				previousContentId  = new Integer(-1);
+				previousLanguageId = new Integer(-1);  	
+				currentCount = 0;
+				while(assetResults.hasMore() && currentCount < maxRows) 
+				{
+					SmallDigitalAssetImpl smallAsset = (SmallDigitalAssetImpl)assetResults.next();
+					DigitalAsset asset = DigitalAssetController.getDigitalAssetWithId(smallAsset.getId(), db);
+					logger.info("Found a asset matching " + searchString + ":" + asset.getId());
+					Collection versions = asset.getContentVersions();
+					Iterator versionsIterator = versions.iterator();
+					while(versionsIterator.hasNext())
+					{
+						ContentVersion contentVersion = (ContentVersion)versionsIterator.next();
+						if(contentVersion.getOwningContent().getId().intValue() != previousContentId.intValue() || contentVersion.getLanguage().getId().intValue() != previousLanguageId.intValue())
+						{
+						    ContentVersion latestContentVersion = ContentVersionController.getContentVersionController().getLatestActiveContentVersion(contentVersion.getOwningContent().getId(), contentVersion.getLanguage().getId(), db);
+							if(latestContentVersion.getId().intValue() == contentVersion.getId().intValue() && (caseSensitive == null || contentVersion.getVersionValue().indexOf(searchString) > -1))
+							{
+							    matchingContents.add(contentVersion.getValueObject());
+							    previousContentId = contentVersion.getOwningContent().getId();
+							    previousLanguageId = contentVersion.getLanguage().getId();
+							    currentCount++;
+							}
+						}						
+					}
+				}
+
+				assetResults.close();
+				assetOQL.close();
+			}
+			
 			commitTransaction(db);
 		}
 		catch ( Exception e )
