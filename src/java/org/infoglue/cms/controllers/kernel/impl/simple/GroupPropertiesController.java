@@ -326,8 +326,7 @@ public class GroupPropertiesController extends BaseController
         }
         catch(Exception e)
         {
-            logger.info("An error occurred when we tried to fetch the list of digitalAssets belonging to this groupProperties:" + e);
-            e.printStackTrace();
+            logger.error("An error occurred when we tried to fetch the list of digitalAssets belonging to this groupProperties:" + e);
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
@@ -865,7 +864,7 @@ public class GroupPropertiesController extends BaseController
 		}
 		catch(Exception e)
 		{
-			e.printStackTrace();
+			logger.warn("An error getting related contents:" + e.getMessage(), e);
 		}
 		
 		return contents;
@@ -904,7 +903,7 @@ public class GroupPropertiesController extends BaseController
 		}
 		catch(Exception e)
 		{
-			e.printStackTrace();
+			logger.warn("An error getting related contents:" + e.getMessage(), e);
 		}
 		
 		return contents;
@@ -942,7 +941,7 @@ public class GroupPropertiesController extends BaseController
 		}
 		catch(Exception e)
 		{
-			e.printStackTrace();
+			logger.warn("An error getting related site nodes:" + e.getMessage(), e);
 		}
 		
 		return siteNodes;
@@ -980,7 +979,7 @@ public class GroupPropertiesController extends BaseController
 		}
 		catch(Exception e)
 		{
-			e.printStackTrace();
+			logger.warn("An error getting related contents:" + e.getMessage(), e);
 		}
 		
 		return siteNodes;
