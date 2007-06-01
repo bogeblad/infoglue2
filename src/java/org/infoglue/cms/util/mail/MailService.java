@@ -38,12 +38,14 @@ import javax.mail.internet.MimeMessage;
 
 import org.apache.commons.mail.HtmlEmail;
 import org.apache.commons.mail.SimpleEmail;
+import org.apache.log4j.Logger;
 import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.util.CmsPropertyHandler;
 
 public class MailService 
 {
+	private final static Logger logger = Logger.getLogger(MailService.class.getName());
 
     // The mail session.
     private Session session;
@@ -180,6 +182,15 @@ public class MailService
 		    email.setBounceAddress(systemEmailSender);
 		    email.setCharset(encoding);
 		   
+		    if(logger.isInfoEnabled())
+		    {
+		    	logger.info("systemEmailSender:" + systemEmailSender);
+		    	logger.info("to:" + to);
+		    	logger.info("from:" + from);
+		    	logger.info("mailServer:" + mailServer);
+		    	logger.info("bcc:" + bcc);
+		    	logger.info("subject:" + subject);
+		    }
 		    email.addTo(to, to);
 		    email.setFrom(from, from);
 		    if(bcc != null)
@@ -191,26 +202,14 @@ public class MailService
 		    email.setTextMsg("Your email client does not support HTML messages");
 	
 		    email.send();
+
+	    	logger.info("Email sent!");
 		} 
 	    catch (Exception e) 
 	    {
-	        e.printStackTrace();
+	    	logger.error("An error occurred when we tried to send this mail:" + e.getMessage(), e);
 	        throw new SystemException("An error occurred when we tried to send this mail:" + e.getMessage(), e);
 	    }
-	    
-	    /*
-		final Message message = createMessage(from, to, bcc, subject, content, contentType, encoding);
-	 
-		try 
-		{
-			Transport.send(message);
-		} 
-	    catch(MessagingException e) 
-	    {
-	    	e.printStackTrace();
-	      	throw new SystemException("Unable to send message.", e);
-	    }
-	    */
 	}
 
 
@@ -263,7 +262,7 @@ public class MailService
 		} 
 	    catch (Exception e) 
 	    {
-	        e.printStackTrace();
+	    	logger.error("An error occurred when we tried to send this mail:" + e.getMessage(), e);
 	    }
 	    
 	    /*
