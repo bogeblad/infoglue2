@@ -127,7 +127,7 @@ public class ComponentLogic
 	 */
 	public List getBoundFolderContents(String propertyName, boolean searchRecursive, String sortAttribute, String sortOrder, boolean includeFolders) throws Exception
 	{
-		return getBoundFolderContents(propertyName, searchRecursive, sortAttribute, sortOrder, true);
+		return getBoundFolderContents(propertyName, searchRecursive, sortAttribute, sortOrder, includeFolders, true);
 	}
 	
 	public List getBoundFolderContents(String propertyName, boolean searchRecursive, String sortAttribute, String sortOrder, boolean includeFolders, boolean useRepositoryInheritance) throws Exception
