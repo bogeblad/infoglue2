@@ -1054,10 +1054,15 @@ public class ContentDeliveryController extends BaseDeliveryController
 
 	public String getAssetUrl(Database db, Integer contentId, Integer languageId, String assetKey, Integer siteNodeId, boolean useLanguageFallback, DeliveryContext deliveryContext, InfoGluePrincipal infoGluePrincipal) throws SystemException, Exception
 	{
+		if(contentId == null || contentId.intValue() < 1)
+			return "";
+
 	    SiteNodeVO siteNodeVO = SiteNodeController.getController().getSiteNodeVOWithId(siteNodeId, db);
 	    //String assetCacheKey = "" + languageId + "_" + contentId + "_" + siteNodeId + "_" + assetKey + "_" + useLanguageFallback + "_" + deliveryContext.getUseFullUrl();
 	    String assetCacheKey = "" + languageId + "_" + contentId + "_" + siteNodeVO.getRepositoryId() + "_" + assetKey + "_" + useLanguageFallback + "_" + deliveryContext.getUseFullUrl();
-		logger.info("assetCacheKey:" + assetCacheKey);
+	    
+	    if(logger.isInfoEnabled())
+	    	logger.info("assetCacheKey:" + assetCacheKey);
 	    
 	    assetKey = URLDecoder.decode(assetKey, "utf-8");
 	    
@@ -1065,7 +1070,9 @@ public class ContentDeliveryController extends BaseDeliveryController
 		String cachedAssetUrl = (String)CacheController.getCachedObject(cacheName, assetCacheKey);
 		if(cachedAssetUrl != null)
 		{
-		    logger.info("There was an cached cachedAssetUrl:" + cachedAssetUrl);
+			if(logger.isInfoEnabled())
+				logger.info("There was an cached cachedAssetUrl:" + cachedAssetUrl);
+			
 			return cachedAssetUrl;
 		}
 		
@@ -1074,6 +1081,13 @@ public class ContentDeliveryController extends BaseDeliveryController
 		
 		ContentVersion contentVersion = getContentVersion(siteNodeId, contentId, languageId, db, useLanguageFallback, deliveryContext, infoGluePrincipal);
 		ContentVO contentVO = this.getContentVO(db, contentId, deliveryContext);
+		LanguageVO masterLanguageVO = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForRepository(contentVO.getRepositoryId(), db);
+		if(logger.isInfoEnabled())
+		{
+			logger.info("languageId:" + languageId);
+			logger.info("masterLanguageVO:" + masterLanguageVO);
+		}
+		
 		if (contentVersion != null) 
         {
         	DigitalAssetVO digitalAsset = DigitalAssetController.getLatestDigitalAssetVO(contentVersion.getId(), assetKey, db);
@@ -1121,7 +1135,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 				assetUrl = getLanguageIndependentAssetUrl(contentId, languageId, siteNodeId, db, assetKey, deliveryContext, infoGluePrincipal);
 			}
 		}				
-		else if(useLanguageFallback && languageId.intValue() != LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForRepository(contentVO.getRepositoryId(), db).getId().intValue())
+		else if(useLanguageFallback && languageId != null && masterLanguageVO != null && languageId.intValue() != masterLanguageVO.getId().intValue())
 		{
 	    	contentVersion = this.getContentVersion(siteNodeId, contentId, languageId, db, useLanguageFallback, deliveryContext, infoGluePrincipal);
 		    
