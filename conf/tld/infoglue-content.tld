@@ -490,6 +490,26 @@
         	<required>false</required>
 	        <rtexprvalue>true</rtexprvalue>
     	</attribute>
+        <attribute>
+    	    <name>cacheResult</name>
+        	<required>false</required>
+	        <rtexprvalue>true</rtexprvalue>
+    	</attribute>
+        <attribute>
+    	    <name>cacheInterval</name>
+        	<required>false</required>
+	        <rtexprvalue>true</rtexprvalue>
+    	</attribute>
+        <attribute>
+    	    <name>cacheName</name>
+        	<required>false</required>
+	        <rtexprvalue>true</rtexprvalue>
+    	</attribute>
+        <attribute>
+    	    <name>cacheKey</name>
+        	<required>false</required>
+	        <rtexprvalue>true</rtexprvalue>
+    	</attribute>
 	</tag>	 
 
 	<tag>

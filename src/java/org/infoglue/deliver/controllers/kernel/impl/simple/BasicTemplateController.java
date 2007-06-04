@@ -113,6 +113,7 @@ import org.infoglue.deliver.util.CacheController;
 import org.infoglue.deliver.util.HttpHelper;
 import org.infoglue.deliver.util.MathHelper;
 import org.infoglue.deliver.util.ObjectConverter;
+import org.infoglue.deliver.util.Timer;
 import org.infoglue.deliver.util.VelocityTemplateProcessor;
 import org.infoglue.deliver.util.charts.ChartHelper;
 import org.infoglue.deliver.util.forms.FormHelper;
@@ -3889,56 +3890,86 @@ public class BasicTemplateController implements TemplateController
 	{
 		return getMatchingContents(contentTypeDefinitionNamesString, categoryConditionString, null, null, null, null, useLanguageFallback);
 	}
-	
+
+	/**
+	 * This method searches for all contents matching
+	 */
+
+	public List getMatchingContents(String contentTypeDefinitionNamesString, String categoryConditionString, String freeText, List freeTextAttributeNames, Date fromDate, Date toDate, boolean useLanguageFallback)
+	{
+		return getMatchingContents(contentTypeDefinitionNamesString, categoryConditionString, null, null, null, null, useLanguageFallback, false, -1, null, null);
+	}
+
 	/**
 	 * This method searches for all contents matching
 	 */
 	
-	public List getMatchingContents(String contentTypeDefinitionNamesString, String categoryConditionString, String freeText, List freeTextAttributeNames, Date fromDate, Date toDate, boolean useLanguageFallback)
+	public List getMatchingContents(String contentTypeDefinitionNamesString, String categoryConditionString, String freeText, List freeTextAttributeNames, Date fromDate, Date toDate, boolean useLanguageFallback, boolean cacheResult, int cacheInterval, String cacheName, String cacheKey)
 	{
-		try
-		{
-		    List contentTypeDefinitionVOList = new ArrayList();
-		    String[] contentTypeDefinitionNames = contentTypeDefinitionNamesString.split(",");
-		    for(int i=0; i<contentTypeDefinitionNames.length; i++)
-		    {
-		        ContentTypeDefinitionVO contentTypeDefinitionVO = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithName(contentTypeDefinitionNames[i], getDatabase());
-		        if(contentTypeDefinitionVO != null)
-		        	contentTypeDefinitionVOList.add(contentTypeDefinitionVO);
-		    }
+		if((freeText != null && !freeText.equals("")) || (freeTextAttributeNames != null && freeTextAttributeNames.size() > 0) || fromDate != null || toDate != null)
+			cacheResult = false;
+			
+		//TODO - add cache here
+		if(cacheName == null || cacheName.equals(""))
+			cacheName = "matchingContentsCache";
 
-		    final CategoryConditions categoryConditions = CategoryConditions.parse(categoryConditionString);
-		    
-			final ExtendedSearchCriterias criterias = new ExtendedSearchCriterias(this.getOperatingMode().intValue());
-			criterias.setCategoryConditions(categoryConditions);
-			criterias.setLanguage(this.getLanguage(this.getLanguageId()));
-			if(freeText != null && freeTextAttributeNames != null)
-				criterias.setFreetext(freeText, freeTextAttributeNames);
-			criterias.setContentTypeDefinitions(contentTypeDefinitionVOList);
-			criterias.setDates(fromDate, toDate);
+		if(cacheKey == null || cacheKey.equals(""))
+			cacheKey = "matchingContentsCache";
+
+		String key = "sortedMatchingContents" + contentTypeDefinitionNamesString + "_" + categoryConditionString + "_publishDateTime" + "_" + useLanguageFallback;
+		List cachedMatchingContents = (List)CacheController.getCachedObjectFromAdvancedCache(cacheName, key, cacheInterval);
+		if(cachedMatchingContents == null || !cacheResult)
+		{
+			logger.info("Getting matching contents from db for key:" + key);
 			
-			final Set set = ExtendedSearchController.getController().search(criterias, getDatabase());
-			
-		    /*
-			final CategoryConditions categoryConditions = CategoryConditions.parse(categoryConditionString);
-			final Set set = ExtendedSearchController.getController().search(getOperatingMode(), contentTypeDefinitionVOList, this.getLanguage(this.getLanguageId()), categoryConditions, getDatabase());
-			*/
-			
-			final List result = new ArrayList();
-			for(Iterator i = set.iterator(); i.hasNext(); ) 
+			try
 			{
-				final Content content = (Content) i.next();
-				//System.out.println("content: " + content.getName());
-				if(ContentDeliveryController.getContentDeliveryController().isValidContent(this.getDatabase(), content.getId(), this.languageId, USE_LANGUAGE_FALLBACK, true, getPrincipal(), this.deliveryContext))
-					result.add(content.getValueObject());
-			}
-			return result;
-		}
-		catch(Exception e)
-		{
-			logger.warn("An error occurred trying to get Matching Contents for contentTypeDefinitionNamesString: " + contentTypeDefinitionNamesString + ":" + e.getMessage(), e);
-		}
+			    List contentTypeDefinitionVOList = new ArrayList();
+			    String[] contentTypeDefinitionNames = contentTypeDefinitionNamesString.split(",");
+			    for(int i=0; i<contentTypeDefinitionNames.length; i++)
+			    {
+			        ContentTypeDefinitionVO contentTypeDefinitionVO = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithName(contentTypeDefinitionNames[i], getDatabase());
+			        if(contentTypeDefinitionVO != null)
+			        	contentTypeDefinitionVOList.add(contentTypeDefinitionVO);
+			    }
+	
+			    final CategoryConditions categoryConditions = CategoryConditions.parse(categoryConditionString);
+			    
+				final ExtendedSearchCriterias criterias = new ExtendedSearchCriterias(this.getOperatingMode().intValue());
+				criterias.setCategoryConditions(categoryConditions);
+				criterias.setLanguage(this.getLanguage(this.getLanguageId()));
+				if(freeText != null && freeTextAttributeNames != null)
+					criterias.setFreetext(freeText, freeTextAttributeNames);
+				criterias.setContentTypeDefinitions(contentTypeDefinitionVOList);
+				criterias.setDates(fromDate, toDate);
+				
+				final Set set = ExtendedSearchController.getController().search(criterias, getDatabase());
+				
+				final List result = new ArrayList();
+				for(Iterator i = set.iterator(); i.hasNext(); ) 
+				{
+					final Content content = (Content) i.next();
+					//System.out.println("content: " + content.getName());
+					if(ContentDeliveryController.getContentDeliveryController().isValidContent(this.getDatabase(), content.getId(), this.languageId, USE_LANGUAGE_FALLBACK, true, getPrincipal(), this.deliveryContext))
+						result.add(content.getValueObject());
+				}
 
+				if(cacheResult)
+					CacheController.cacheObjectInAdvancedCache(cacheName, key, result, null, false);
+				
+				return result;
+			}
+			catch(Exception e)
+			{
+				logger.warn("An error occurred trying to get Matching Contents for contentTypeDefinitionNamesString: " + contentTypeDefinitionNamesString + ":" + e.getMessage(), e);
+			}
+		}
+		else if(cachedMatchingContents != null)
+		{
+			logger.info("Getting cached contents for key:" + key);
+			return cachedMatchingContents;
+		}
+		
 		return Collections.EMPTY_LIST;
 	}
 
@@ -6060,6 +6091,20 @@ public class BasicTemplateController implements TemplateController
 		return LanguageDeliveryController.getLanguageDeliveryController().getLocaleWithId(getDatabase(), this.languageId);
 	}
 
+	/**
+	 * This method supplies a method to get the locale of the language currently in use.
+	 */
+	
+	public Locale getLocaleAvailableInTool() throws SystemException
+	{
+		Locale locale = LanguageDeliveryController.getLanguageDeliveryController().getLocaleWithId(getDatabase(), this.languageId);
+		
+		List toolLocales = CmsPropertyHandler.getToolLocales();
+		if(toolLocales != null && toolLocales.size() > 0 && !toolLocales.contains(locale))
+			locale = (Locale)toolLocales.get(0);
+
+		return locale;
+	}
 
 	/**
 	 * This method returns the logout url.

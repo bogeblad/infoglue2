@@ -1149,6 +1149,12 @@ public interface TemplateController
 	public List getMatchingContents(String contentTypeDefinitionNamesString, String categoryConditionString, String freeText, List freeTextAttributeNames, Date fromDate, Date toDate, boolean useLanguageFallback);
 
 	/**
+	 * This method searches for all contents matching
+	 */
+	
+	public List getMatchingContents(String contentTypeDefinitionNamesString, String categoryConditionString, String freeText, List freeTextAttributeNames, Date fromDate, Date toDate, boolean useLanguageFallback, boolean cacheResult, int cacheInterval, String cacheName, String cacheKey);
+	
+	/**
 	 * This method returns which mode the delivery-engine is running in.
 	 * The mode is important to be able to show working, preview and published data separate.
 	 */
@@ -1337,6 +1343,12 @@ public interface TemplateController
      * This method supplies a method to get the locale of the language currently in use.
      */
     public abstract Locale getLocale() throws SystemException;
+
+	/**
+	 * This method supplies a method to get the locale of the language currently in use.
+	 */
+	
+	public Locale getLocaleAvailableInTool() throws SystemException;
 
     /**
 	 * This method sets a cookie.

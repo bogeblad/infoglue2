@@ -44,6 +44,11 @@ public class MatchingContentsTag extends TemplateControllerTag {
 	private Date fromDate = null;
 	private Date toDate = null;
 	
+	private boolean cacheResult = true;
+	private int cacheInterval = 1800;
+	private String cacheName = null;
+	private String cacheKey = null;
+	
     public MatchingContentsTag()
     {
         super();
@@ -59,8 +64,7 @@ public class MatchingContentsTag extends TemplateControllerTag {
 				freeTextAttributeNamesList = Arrays.asList(freeTextAttributeNamesArray);
 		}
 		
-	    //setResultAttribute(getController().getMatchingContents(contentTypeDefinitionNames, categoryCondition, true));
-	    setResultAttribute(getController().getMatchingContents(contentTypeDefinitionNames, categoryCondition, freeText, freeTextAttributeNamesList, fromDate, toDate, true));
+	    setResultAttribute(getController().getMatchingContents(contentTypeDefinitionNames, categoryCondition, freeText, freeTextAttributeNamesList, fromDate, toDate, true, cacheResult, cacheInterval, cacheName, cacheKey));
         return EVAL_PAGE;
     }
 
@@ -92,6 +96,26 @@ public class MatchingContentsTag extends TemplateControllerTag {
 	public void setToDate(String toDate) throws JspException
 	{
 		this.toDate = (Date)evaluate("matchingContentsTag", "toDate", toDate, Date.class);
+	}
+
+	public void setCacheInterval(int cacheInterval)
+	{
+		this.cacheInterval = cacheInterval;
+	}
+
+	public void setCacheKey(String cacheKey) throws JspException
+	{
+		this.cacheKey = evaluateString("matchingContentsTag", "cacheKey", cacheKey);
+	}
+
+	public void setCacheName(String cacheName) throws JspException
+	{
+		this.cacheName = evaluateString("matchingContentsTag", "cacheName", cacheName);;
+	}
+
+	public void setCacheResult(boolean cacheResult)
+	{
+		this.cacheResult = cacheResult;
 	}
 
 
