@@ -33,12 +33,14 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.log4j.Logger;
 import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
 import org.infoglue.cms.entities.management.LanguageVO;
 
 
 public class SetCharacterEncodingFilter implements Filter 
 {
+    public final static Logger logger = Logger.getLogger(SetCharacterEncodingFilter.class.getName());
 
 
     /**
@@ -101,6 +103,10 @@ public class SetCharacterEncodingFilter implements Filter
 	                	languageId = referer.substring(startIndex + 12, endIndex);
 		            //System.out.println("languageId:" + languageId);
 		            LanguageVO languageVO = LanguageController.getController().getLanguageVOWithId(new Integer(languageId));
+
+		            if(logger.isInfoEnabled())
+		            	logger.info("encoding decorated:" + languageVO.getCharset());
+
 		            request.setCharacterEncoding(languageVO.getCharset());
 	            }
             }
@@ -112,6 +118,9 @@ public class SetCharacterEncodingFilter implements Filter
         else if (ignore || (request.getCharacterEncoding() == null)) 
         {
             String encoding = selectEncoding(request);
+            if(logger.isInfoEnabled())
+            	logger.info("encoding normal:" + encoding);
+            
             if (encoding != null)
                 request.setCharacterEncoding(encoding);
         }
@@ -141,7 +150,6 @@ public class SetCharacterEncodingFilter implements Filter
             this.ignore = true;
         else
             this.ignore = false;
-
     }
 
 
@@ -160,6 +168,9 @@ public class SetCharacterEncodingFilter implements Filter
     protected String selectEncoding(ServletRequest request) 
     {
     	String inputCharacterEncoding = CmsPropertyHandler.getInputCharacterEncoding(this.encoding);
+    	
+    	if(logger.isInfoEnabled())
+        	logger.info("inputCharacterEncoding:" + inputCharacterEncoding);
     	
     	if(inputCharacterEncoding != null && !inputCharacterEncoding.equals("") && !inputCharacterEncoding.equalsIgnoreCase("@inputCharacterEncoding@"))
     		return inputCharacterEncoding;
