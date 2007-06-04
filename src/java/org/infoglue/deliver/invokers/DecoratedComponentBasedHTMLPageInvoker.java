@@ -258,16 +258,9 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		    String extraHeader 	= FileHelper.getFileAsString(new File(CmsPropertyHandler.getContextRootPath() + "preview/pageComponentEditorHeader.vm"));
 		    String extraBody 	= FileHelper.getFileAsString(new File(CmsPropertyHandler.getContextRootPath() + "preview/pageComponentEditorBody.vm"));
 			
-		    Locale locale = templateController.getLocale();
-		    /*
-		    Timer t = new Timer();
-		    List locales = CmsPropertyHandler.getToolLocales();
-		    if(locales != null && locales.size() > 0 && !locales.contains(locale))
-		    {
-		    	locale = (Locale)locales.get(0);
-		    }
-		    t.printElapsedTime("Getting locale took...");
-		    */
+		    //Locale locale = templateController.getLocale();
+		    Locale locale = templateController.getLocaleAvailableInTool();
+		    
 			String submitToPublishHTML = getLocalizedString(locale, "deliver.editOnSight.submitToPublish");
 		    String addComponentHTML = getLocalizedString(locale, "deliver.editOnSight.addComponentHTML");
 			String deleteComponentHTML = getLocalizedString(locale, "deliver.editOnSight.deleteComponentHTML");
@@ -514,7 +507,11 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 					hasAccessToAddComponent = true;
 				
 				if(hasAccessToAddComponent)
-				    clickToAddHTML = getLocalizedString(templateController.getLocale(), "deliver.editOnSight.slotInstructionHTML");
+				{
+				    //Locale locale = templateController.getLocale();
+				    Locale locale = templateController.getLocaleAvailableInTool();
+				    clickToAddHTML = getLocalizedString(locale, "deliver.editOnSight.slotInstructionHTML");
+				}
 				
 				//logger.info("subComponents for " + id + ":" + subComponents);
 				if(subComponents != null && subComponents.size() > 0)
@@ -665,8 +662,9 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		Timer timer = new Timer();
 		timer.setActive(false);
 
-		Locale locale = templateController.getLocale();
-		
+		//Locale locale = templateController.getLocale();
+	    Locale locale = templateController.getLocaleAvailableInTool();
+
 		timer.printElapsedTime("After locale");
 	    
 		String componentEditorUrl = CmsPropertyHandler.getComponentEditorUrl();
@@ -1043,7 +1041,9 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		    sb.append("<div class=\"igmenuitems\" onMouseover=\"javascript:highlightie5(event);\" onMouseout=\"javascript:lowlightie5(event);\" onClick=\"executeTask('" + view + "');\">" + componentTask.getName() + "</div>");
 		}
 
-		Locale locale = templateController.getLocale();
+		//Locale locale = templateController.getLocale();
+		Locale locale = templateController.getLocaleAvailableInTool();
+		
 		String editHTML = getLocalizedString(locale, "deliver.editOnSight.editHTML");
 		String submitToPublishHTML = getLocalizedString(locale, "deliver.editOnSight.submitToPublish");
 		String addComponentHTML = getLocalizedString(locale, "deliver.editOnSight.addComponentHTML");
