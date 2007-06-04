@@ -13,6 +13,7 @@ The InfoGlue Team
 
 Abbreviated Changelog from 2.4.6 Final 
 ---------------------------------------
+- Upgraded FCKEditor(the WYSIWYG-component in InfoGlue) to 2.4.2.
 - Improved handling of Available service bindings - remove later completely :)
 - Fixed error handling for when inconsistencies are not really there. Old nodes and contents not cleared out from the registry for example.
 - Removed cmsUserName and repositoryName when opening preview window.
@@ -66,6 +67,8 @@ Abbreviated Changelog from 2.4.6 Final
 - Implemented cleanup of content-versions when a user chooses to force removal of inline links and inline images which references a content/page the user wants to delete.
 - Fixed better cookie-handling so the menu tree better remembers the expansion of your sites.
 - Added a refresh icon to the left menu which lets the user refresh the menu and reset all tool-cookies. Often needed after a while to get the three expansion to work as it should.
+- Fixed so the same description tooltip are used for all properties.
+- Added so one can search for contents in the inline asset dialog and only get those contents which has an asset on them and the asset name or key matches the searched keyword.
 
 -------------------------------------------------------------------------------------
 - InfoGlue 2.4.6 Final
