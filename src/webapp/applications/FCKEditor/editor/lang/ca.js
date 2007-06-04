@@ -1,21 +1,24 @@
 ﻿/*
- * FCKeditor - The text editor for internet
- * Copyright (C) 2003-2006 Frederico Caldeira Knabben
- * 
- * Licensed under the terms of the GNU Lesser General Public License:
- * 		http://www.opensource.org/licenses/lgpl-license.php
- * 
- * For further information visit:
- * 		http://www.fckeditor.net/
- * 
- * "Support Open Source software. What about a donation today?"
- * 
- * File Name: ca.js
- * 	Catalan language file.
- * 
- * File Authors:
- * 		Jordi Cerdan (nan@myp.ad)
- * 		Marc Folch (mcus21@gmail.com)
+ * FCKeditor - The text editor for Internet - http://www.fckeditor.net
+ * Copyright (C) 2003-2007 Frederico Caldeira Knabben
+ *
+ * == BEGIN LICENSE ==
+ *
+ * Licensed under the terms of any of the following licenses at your
+ * choice:
+ *
+ *  - GNU General Public License Version 2 or later (the "GPL")
+ *    http://www.gnu.org/licenses/gpl.html
+ *
+ *  - GNU Lesser General Public License Version 2.1 or later (the "LGPL")
+ *    http://www.gnu.org/licenses/lgpl.html
+ *
+ *  - Mozilla Public License Version 1.1 or later (the "MPL")
+ *    http://www.mozilla.org/MPL/MPL-1.1.html
+ *
+ * == END LICENSE ==
+ *
+ * Catalan language file.
  */
 
 var FCKLang =
@@ -131,7 +134,7 @@ SelectionFieldProp	: "Propietats del camp de selecció",
 TextareaProp		: "Propietats de l'àrea de text",
 FormProp			: "Propietats del formulari",
 
-FontFormats			: "Normal;Formatejat;Adreça;Encapçalament 1;Encapçalament 2;Encapçalament 3;Encapçalament 4;Encapçalament 5;Encapçalament 6",
+FontFormats			: "Normal;Formatejat;Adreça;Encapçalament 1;Encapçalament 2;Encapçalament 3;Encapçalament 4;Encapçalament 5;Encapçalament 6",		//REVIEW : Check _getfontformat.html
 
 // Alerts and Messages
 ProcessingXHTML		: "Processant XHTML. Si us plau esperi...",
@@ -226,7 +229,7 @@ DlgLnkURL			: "URL",
 DlgLnkAnchorSel		: "Selecciona una àncora",
 DlgLnkAnchorByName	: "Per nom d'àncora",
 DlgLnkAnchorById	: "Per Id d'element",
-DlgLnkNoAnchors		: "<No hi ha àncores disponibles en aquest document>",
+DlgLnkNoAnchors		: "<No hi ha àncores disponibles en aquest document>",		//REVIEW : Change < and > with ( and )
 DlgLnkEMail			: "Adreça d'E-Mail",
 DlgLnkEMailSubject	: "Assumpte del missatge",
 DlgLnkEMailBody		: "Cos del missatge",
@@ -235,7 +238,7 @@ DlgLnkBtnUpload		: "Envia al servidor",
 
 DlgLnkTarget		: "Destí",
 DlgLnkTargetFrame	: "<marc>",
-DlgLnkTargetPopup	: "<finestra popup>",
+DlgLnkTargetPopup	: "<finestra emergent>",
 DlgLnkTargetBlank	: "Nova finestra (_blank)",
 DlgLnkTargetParent	: "Finestra pare (_parent)",
 DlgLnkTargetSelf	: "Mateixa finestra (_self)",
@@ -259,6 +262,7 @@ DlgLnkPopTop		: "Posició dalt",
 DlnLnkMsgNoUrl		: "Si us plau, escrigui l'enllaç URL",
 DlnLnkMsgNoEMail	: "Si us plau, escrigui l'adreça e-mail",
 DlnLnkMsgNoAnchor	: "Si us plau, escrigui l'àncora",
+DlnLnkMsgInvPopName	: "El nom de la finestra emergent ha de començar amb una lletra i no pot tenir espais",
 
 // Color Dialog
 DlgColorTitle		: "Selecciona el color",
@@ -333,7 +337,6 @@ DlgReplaceReplAllBtn	: "Reemplaça'ls tots",
 DlgReplaceWordChk		: "Cerca paraula completa",
 
 // Paste Operations / Dialog
-PasteErrorPaste	: "La seguretat del vostre navegador no permet executar automàticament les operacions d'enganxat. Si us plau, utilitzeu el teclat (Ctrl+V).",
 PasteErrorCut	: "La seguretat del vostre navegador no permet executar automàticament les operacions de retallar. Si us plau, utilitzeu el teclat (Ctrl+X).",
 PasteErrorCopy	: "La seguretat del vostre navegador no permet executar automàticament les operacions de copiar. Si us plau, utilitzeu el teclat (Ctrl+C).",
 
@@ -341,6 +344,7 @@ PasteAsText		: "Enganxa com a text sense format",
 PasteFromWord	: "Enganxa com a Word",
 
 DlgPasteMsg2	: "Si us plau, enganxeu dins del següent camp utilitzant el teclat (<STRONG>Ctrl+V</STRONG>) i premeu <STRONG>OK</STRONG>.",
+DlgPasteSec		: "Because of your browser security settings, the editor is not able to access your clipboard data directly. You are required to paste it again in this window.",	//MISSING
 DlgPasteIgnoreFont		: "Ignora definicions de font",
 DlgPasteRemoveStyles	: "Elimina definicions d'estil",
 DlgPasteCleanBox		: "Neteja camp",
@@ -375,8 +379,11 @@ DlgSpellManyChanges		: "Comprovació ortogràfica %1 paraules canviades",
 IeSpellDownload			: "Comprovació ortogràfica no instal·lada. Voleu descarregar-ho ara?",
 
 // Button Dialog
-DlgButtonText	: "Text (Valor)",
-DlgButtonType	: "Tipus",
+DlgButtonText		: "Text (Valor)",
+DlgButtonType		: "Tipus",
+DlgButtonTypeBtn	: "Botó",
+DlgButtonTypeSbm	: "Transmet formulari",
+DlgButtonTypeRst	: "Reinicia formulari",
 
 // Checkbox and Radio Button Dialogs
 DlgCheckboxName		: "Nom",
@@ -423,11 +430,12 @@ DlgHiddenName	: "Nom",
 DlgHiddenValue	: "Valor",
 
 // Bulleted List Dialog
-BulletedListProp	: "Propietats de llista marcada",
+BulletedListProp	: "Propietats de la llista de pics",
 NumberedListProp	: "Propietats de llista numerada",
+DlgLstStart			: "Inici",
 DlgLstType			: "Tipus",
 DlgLstTypeCircle	: "Cercle",
-DlgLstTypeDisc		: "Disc",	//MISSING
+DlgLstTypeDisc		: "Disc",
 DlgLstTypeSquare	: "Quadrat",
 DlgLstTypeNumbers	: "Números (1, 2, 3)",
 DlgLstTypeLCase		: "Lletres minúscules (a, b, c)",
@@ -447,7 +455,16 @@ DlgDocLangDirLTR	: "Esquerra a dreta (LTR)",
 DlgDocLangDirRTL	: "Dreta a esquerra (RTL)",
 DlgDocLangCode		: "Codi de llenguatge",
 DlgDocCharSet		: "Codificació de conjunt de caràcters",
-DlgDocCharSetOther	: "Altra codificació de conjunt de caràcters",
+DlgDocCharSetCE		: "Centreeuropeu",
+DlgDocCharSetCT		: "Xinès tradicional (Big5)",
+DlgDocCharSetCR		: "Ciríl·lic",
+DlgDocCharSetGR		: "Grec",
+DlgDocCharSetJP		: "Japonès",
+DlgDocCharSetKR		: "Coreà",
+DlgDocCharSetTR		: "Turc",
+DlgDocCharSetUN		: "Unicode (UTF-8)",
+DlgDocCharSetWE		: "Europeu occidental",
+DlgDocCharSetOther	: "Una altra codificació de caràcters",
 
 DlgDocDocType		: "Capçalera de tipus de document",
 DlgDocDocTypeOther	: "Altra Capçalera de tipus de document",
@@ -476,12 +493,12 @@ DlgTemplatesTitle	: "Contingut plantilles",
 DlgTemplatesSelMsg	: "Si us plau, seleccioneu la plantilla per obrir en l'editor<br>(el contingut actual no serà enregistrat):",
 DlgTemplatesLoading	: "Carregant la llista de plantilles. Si us plau, espereu...",
 DlgTemplatesNoTpl	: "(No hi ha plantilles definides)",
+DlgTemplatesReplace	: "Reemplaça el contingut actual",
 
 // About Dialog
 DlgAboutAboutTab	: "Quant a",
 DlgAboutBrowserInfoTab	: "Informació del navegador",
 DlgAboutLicenseTab	: "Llicència",
 DlgAboutVersion		: "versió",
-DlgAboutLicense		: "Segons els termes de la Llicència GNU Lesser General Public License",
 DlgAboutInfo		: "Per a més informació aneu a"
-}
+};
