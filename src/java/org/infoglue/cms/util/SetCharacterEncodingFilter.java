@@ -141,6 +141,17 @@ public class SetCharacterEncodingFilter implements Filter
 
 		this.filterConfig = filterConfig;
         this.encoding = filterConfig.getInitParameter("encoding");
+        if(this.encoding == null || this.encoding.equals("") || this.encoding.indexOf("@") > -1)
+        {
+            System.out.println("Encoding in web.xml was not set:" + encoding);
+        	if(this.encoding.indexOf("@deliverInputCharacterEncoding@") > -1)
+        		this.encoding = "ISO-8859-1";
+        	else
+        		this.encoding = "UTF-8";
+        	
+            System.out.println("Defaulting to standard.");
+        }
+        		
         String value = filterConfig.getInitParameter("ignore");
         if (value == null)
             this.ignore = true;

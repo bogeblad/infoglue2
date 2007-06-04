@@ -68,9 +68,10 @@
 		<init-param>
 			<param-name>encoding</param-name>
 			<!--<param-value>UTF-8</param-value>-->
-			<param-value>ISO-8859-1</param-value>
+			<!--<param-value>ISO-8859-1</param-value>-->
+			<param-value>@deliverInputCharacterEncoding@</param-value>
 		</init-param>
-	</filter>
+	</filter> 
 
 	<filter>
         <filter-name>ViewPageFilter</filter-name>
