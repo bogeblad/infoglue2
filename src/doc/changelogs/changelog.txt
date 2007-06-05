@@ -72,6 +72,7 @@ Abbreviated Changelog from 2.4.6 Final
 - Made input encoding filter configurable at build-time with properties.
 - Made component editor view (structure tool view) consider available tool languages when choosing localized labels for edit on sight etc.
 - Added cache-possibility to the matchingContents-tag and implements a default caching.
+- Added possibility to add categories to an rss/atom feed with a new common:rssFeedEntryCategory-tag.
 
 -------------------------------------------------------------------------------------
 - InfoGlue 2.4.6 Final

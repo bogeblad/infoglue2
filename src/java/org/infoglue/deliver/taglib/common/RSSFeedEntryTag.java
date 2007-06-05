@@ -22,17 +22,17 @@
 */
 package org.infoglue.deliver.taglib.common;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspTagException;
 
 import org.apache.log4j.Logger;
 import org.infoglue.deliver.taglib.TemplateControllerTag;
-import org.infoglue.deliver.util.rss.RssHelper;
 
+import com.sun.syndication.feed.synd.SyndCategory;
 import com.sun.syndication.feed.synd.SyndContent;
 import com.sun.syndication.feed.synd.SyndContentImpl;
 import com.sun.syndication.feed.synd.SyndEntry;
@@ -55,11 +55,9 @@ public class RSSFeedEntryTag extends TemplateControllerTag
 	private String link 		= null;
 	private Date publishedDate	= null;
 	private String description	= null;
+	private List categories		= new ArrayList();
 	private String descriptionContentType = "text/html";
 	
-    //Lets use the iso date format
-    private static final String DATE_FORMAT = "yyyy-MM-dd";
-
 	/**
 	 * Default constructor.
 	 */
@@ -68,6 +66,16 @@ public class RSSFeedEntryTag extends TemplateControllerTag
 		super();
 	}
 	
+	/**
+	 * Initializes the parameters to make it accessible for the children tags (if any).
+	 * 
+	 * @return indication of whether to evaluate the body or not.
+	 * @throws JspException if an error occurred while processing this tag.
+	 */
+	public int doStartTag() throws JspException 
+	{
+		return EVAL_BODY_INCLUDE;
+	}
 
 	/**
 	 * Process the end tag. Sets a cookie.  
@@ -78,11 +86,7 @@ public class RSSFeedEntryTag extends TemplateControllerTag
 	public int doEndTag() throws JspException
     {
 	    try
-	    {
-		    RssHelper rssHelper = new RssHelper();
-		    
-	        DateFormat dateParser = new SimpleDateFormat(DATE_FORMAT);
-
+	    {		    	
 	        SyndEntry entry = new SyndEntryImpl();
 	        entry.setTitle(title);
 	        entry.setLink(link);
@@ -93,7 +97,9 @@ public class RSSFeedEntryTag extends TemplateControllerTag
 	        syndContent.setValue(description);
 	     
 	        entry.setDescription(syndContent);
-		    
+	        
+	        entry.setCategories(categories);
+
 		    addEntry(entry);
 	    }
 	    catch(Exception e)
@@ -133,7 +139,7 @@ public class RSSFeedEntryTag extends TemplateControllerTag
     
     public void setTitle(String title) throws JspException
     {
-        this.title = evaluateString("RssFeedEntry", "title", title);
+    	this.title = evaluateString("RssFeedEntry", "title", title);
     }
     
     public void setDescriptionContentType(String descriptionContentType) throws JspException
@@ -144,5 +150,10 @@ public class RSSFeedEntryTag extends TemplateControllerTag
     public void setPublishedDate(String publishedDate) throws JspException
     {
         this.publishedDate = (Date)evaluate("RssFeedEntry", "publishedDate", publishedDate, Date.class);
+    }
+    
+    public void addEntryCategory(SyndCategory category)
+    {    	
+    	this.categories.add(category);
     }
 }

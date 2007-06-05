@@ -520,7 +520,7 @@
     <tag>
 	    <name>rssFeedEntry</name>
 	    <tagclass>org.infoglue.deliver.taglib.common.RSSFeedEntryTag</tagclass>
-	    <bodycontent>empty</bodycontent>
+	    <bodycontent>JSP</bodycontent>
 	    <info></info>
 	    <attribute>
 		    <name>title</name>
@@ -547,6 +547,22 @@
 	    	<required>false</required>
 	        <rtexprvalue>true</rtexprvalue>
 		</attribute>
+	</tag>
+	<tag>
+	    <name>rssFeedEntryCategory</name>
+	    <tagclass>org.infoglue.deliver.taglib.common.RSSFeedEntryCategoryTag</tagclass>
+	    <bodycontent>JSP</bodycontent>
+	    <info></info>
+	    <attribute>
+		    <name>taxonomyUri</name>
+	    	<required>false</required>
+	        <rtexprvalue>true</rtexprvalue>
+		</attribute>
+	    <attribute>
+		    <name>name</name>
+	    	<required>true</required>
+	        <rtexprvalue>true</rtexprvalue>
+		</attribute>	    
 	</tag>
     <tag>
         <name>textRender</name>
