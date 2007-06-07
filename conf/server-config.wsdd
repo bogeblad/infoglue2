@@ -37,6 +37,9 @@
  <service name="RemoteUserService" provider="java:RPC">
   <parameter name="allowedMethods" value="*"/>
   <parameter name="className" value="org.infoglue.cms.webservices.RemoteUserServiceImpl"/>
+  <beanMapping languageSpecificType="java:org.infoglue.common.security.beans.InfoGluePrincipalBean" qname="ns1:InfoGluePrincipalBean" xmlns:ns1="beans.security.common.infoglue.org"/>
+  <beanMapping languageSpecificType="java:org.infoglue.common.security.beans.InfoGlueRoleBean" qname="ns1:InfoGlueRoleBean" xmlns:ns1="beans.security.common.infoglue.org"/>
+  <beanMapping languageSpecificType="java:org.infoglue.common.security.beans.InfoGlueGroupBean" qname="ns1:InfoGlueGroupBean" xmlns:ns1="beans.security.common.infoglue.org"/>
  </service>
  <service name="RemoteUserPropertiesService" provider="java:RPC">
   <parameter name="allowedMethods" value="*"/>

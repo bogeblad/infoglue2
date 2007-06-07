@@ -53,9 +53,14 @@ import org.infoglue.cms.entities.management.RoleVO;
 import org.infoglue.cms.entities.management.SystemUserVO;
 import org.infoglue.cms.entities.management.UserPropertiesVO;
 import org.infoglue.cms.exception.SystemException;
+import org.infoglue.cms.security.InfoGlueGroup;
 import org.infoglue.cms.security.InfoGluePrincipal;
+import org.infoglue.cms.security.InfoGlueRole;
 import org.infoglue.cms.util.dom.DOMBuilder;
 import org.infoglue.cms.webservices.elements.RemoteAttachment;
+import org.infoglue.common.security.beans.InfoGlueGroupBean;
+import org.infoglue.common.security.beans.InfoGluePrincipalBean;
+import org.infoglue.common.security.beans.InfoGlueRoleBean;
 import org.infoglue.deliver.util.webservices.DynamicWebserviceSerializer;
 
 
@@ -201,7 +206,371 @@ public class RemoteUserServiceImpl extends RemoteInfoGlueService
 
         return status;    
     }
+
+    /**
+     * Gets all roles available.
+     */
+    
+    public List<InfoGlueRoleBean> getRoles() 
+    {
+        if(!ServerNodeController.getController().getIsIPAllowed(getRequest()))
+        {
+            logger.error("A client with IP " + getRequest().getRemoteAddr() + " was denied access to the webservice. Could be a hack attempt or you have just not configured the allowed IP-addresses correct.");
+            return null;
+        }
+
+        List<InfoGlueRoleBean> roles = new ArrayList<InfoGlueRoleBean>();
         
+        logger.info("***************************************");
+        logger.info("Getting all roles through webservice...");
+        logger.info("***************************************");
+        
+        try
+        {
+            List rolesList = RoleControllerProxy.getController().getAllRoles();
+            
+            Iterator rolesListIterator = rolesList.iterator();
+            while(rolesListIterator.hasNext())
+            {
+            	InfoGlueRole role = (InfoGlueRole)rolesListIterator.next();
+            	InfoGlueRoleBean bean = new InfoGlueRoleBean();
+            	bean.setName(role.getName());
+            	bean.setDisplayName(role.getDisplayName());
+            	bean.setDescription(role.getDescription());
+            	roles.add(bean);	
+            }
+        }
+        catch(Exception e)
+        {
+        	logger.error("En error occurred when we tried to create a new contentVersion:" + e.getMessage(), e);
+        }
+        
+        return roles;    
+    }
+
+    /**
+     * Gets all roles available.
+     */
+    
+    public List<InfoGlueGroupBean> getGroups() 
+    {
+        if(!ServerNodeController.getController().getIsIPAllowed(getRequest()))
+        {
+            logger.error("A client with IP " + getRequest().getRemoteAddr() + " was denied access to the webservice. Could be a hack attempt or you have just not configured the allowed IP-addresses correct.");
+            return null;
+        }
+
+        List<InfoGlueGroupBean> groups = new ArrayList<InfoGlueGroupBean>();
+        
+        logger.info("***************************************");
+        logger.info("Getting all groups through webservice..");
+        logger.info("***************************************");
+        
+        try
+        {
+            List groupsList = GroupControllerProxy.getController().getAllGroups();
+
+            Iterator groupsListIterator = groupsList.iterator();
+            while(groupsListIterator.hasNext())
+            {
+            	InfoGlueGroup group = (InfoGlueGroup)groupsListIterator.next();
+            	InfoGlueGroupBean bean = new InfoGlueGroupBean();
+            	bean.setName(group.getName());
+            	bean.setDisplayName(group.getDisplayName());
+            	bean.setDescription(group.getDescription());
+            	groups.add(bean);	
+            }
+        }
+        catch(Exception e)
+        {
+        	logger.error("En error occurred when we tried to create a new contentVersion:" + e.getMessage(), e);
+        }
+        
+        return groups;    
+    }
+
+
+    /**
+     * Gets a principal.
+     */
+    
+    public InfoGluePrincipalBean getPrincipal(String userName) 
+    {
+        if(!ServerNodeController.getController().getIsIPAllowed(getRequest()))
+        {
+            logger.error("A client with IP " + getRequest().getRemoteAddr() + " was denied access to the webservice. Could be a hack attempt or you have just not configured the allowed IP-addresses correct.");
+            return null;
+        }
+
+        InfoGluePrincipalBean bean = null;
+        
+        logger.info("***************************************");
+        logger.info("Getting all principals through webservice..");
+        logger.info("***************************************");
+        
+        try
+        {
+            InfoGluePrincipal principal = UserControllerProxy.getController().getUser(userName);
+
+        	bean = new InfoGluePrincipalBean();
+        	bean.setName(principal.getName());
+        	bean.setDisplayName(principal.getDisplayName());
+        	bean.setEmail(principal.getEmail());
+        	bean.setFirstName(principal.getFirstName());
+        	bean.setLastName(principal.getLastName());
+        	bean.setAdministrator(false);
+        	bean.setMetaInformation(principal.getMetaInformation());
+        	
+        	List groups = new ArrayList();
+        	Iterator groupsListIterator = principal.getGroups().iterator();
+            while(groupsListIterator.hasNext())
+            {
+            	InfoGlueGroup group = (InfoGlueGroup)groupsListIterator.next();
+            	InfoGlueGroupBean groupBean = new InfoGlueGroupBean();
+            	groupBean.setName(group.getName());
+            	groupBean.setDisplayName(group.getDisplayName());
+            	groupBean.setDescription(group.getDescription());
+            	groups.add(groupBean);	
+            }
+            bean.setGroups(groups);
+
+        	List roles = new ArrayList();
+        	Iterator rolesListIterator = principal.getRoles().iterator();
+            while(rolesListIterator.hasNext())
+            {
+            	InfoGlueRole role = (InfoGlueRole)rolesListIterator.next();
+            	InfoGlueRoleBean roleBean = new InfoGlueRoleBean();
+            	roleBean.setName(role.getName());
+            	roleBean.setDisplayName(role.getDisplayName());
+            	roleBean.setDescription(role.getDescription());
+            	roles.add(roleBean);	
+            }
+            bean.setRoles(roles);
+        }
+        catch(Exception e)
+        {
+        	logger.error("En error occurred when we tried to create a new contentVersion:" + e.getMessage(), e);
+        }
+        
+        return bean;    
+    }
+
+    /**
+     * Gets all roles available.
+     */
+    
+    public List<InfoGluePrincipalBean> getPrincipals() 
+    {
+        if(!ServerNodeController.getController().getIsIPAllowed(getRequest()))
+        {
+            logger.error("A client with IP " + getRequest().getRemoteAddr() + " was denied access to the webservice. Could be a hack attempt or you have just not configured the allowed IP-addresses correct.");
+            return null;
+        }
+
+        List<InfoGluePrincipalBean> users = new ArrayList<InfoGluePrincipalBean>();
+        
+        logger.info("***************************************");
+        logger.info("Getting all principals through webservice..");
+        logger.info("***************************************");
+        
+        try
+        {
+            List principalList = UserControllerProxy.getController().getAllUsers();
+
+            Iterator principalListIterator = principalList.iterator();
+            while(principalListIterator.hasNext())
+            {
+            	InfoGluePrincipal principal = (InfoGluePrincipal)principalListIterator.next();
+            	InfoGluePrincipalBean bean = new InfoGluePrincipalBean();
+            	bean.setName(principal.getName());
+            	bean.setDisplayName(principal.getDisplayName());
+            	bean.setEmail(principal.getEmail());
+            	bean.setFirstName(principal.getFirstName());
+            	bean.setLastName(principal.getLastName());
+            	bean.setAdministrator(false);
+            	bean.setMetaInformation(principal.getMetaInformation());
+            	
+            	List groups = new ArrayList();
+            	Iterator groupsListIterator = principal.getGroups().iterator();
+                while(groupsListIterator.hasNext())
+                {
+                	InfoGlueGroup group = (InfoGlueGroup)groupsListIterator.next();
+                	InfoGlueGroupBean groupBean = new InfoGlueGroupBean();
+                	groupBean.setName(group.getName());
+                	groupBean.setDisplayName(group.getDisplayName());
+                	groupBean.setDescription(group.getDescription());
+                	groups.add(groupBean);	
+                }
+                bean.setGroups(groups);
+
+            	List roles = new ArrayList();
+            	Iterator rolesListIterator = principal.getRoles().iterator();
+                while(rolesListIterator.hasNext())
+                {
+                	InfoGlueRole role = (InfoGlueRole)rolesListIterator.next();
+                	InfoGlueRoleBean roleBean = new InfoGlueRoleBean();
+                	roleBean.setName(role.getName());
+                	roleBean.setDisplayName(role.getDisplayName());
+                	roleBean.setDescription(role.getDescription());
+                	roles.add(roleBean);	
+                }
+                bean.setRoles(roles);
+
+            	users.add(bean);	
+            }
+        }
+        catch(Exception e)
+        {
+        	logger.error("En error occurred when we tried to create a new contentVersion:" + e.getMessage(), e);
+        }
+        
+        return users;    
+    }
+
+    /**
+     * Gets all roles available.
+     */
+    
+    public List<InfoGluePrincipalBean> getPrincipalsWithRole(String roleName) 
+    {
+        if(!ServerNodeController.getController().getIsIPAllowed(getRequest()))
+        {
+            logger.error("A client with IP " + getRequest().getRemoteAddr() + " was denied access to the webservice. Could be a hack attempt or you have just not configured the allowed IP-addresses correct.");
+            return null;
+        }
+
+        List<InfoGluePrincipalBean> users = new ArrayList<InfoGluePrincipalBean>();
+        
+        logger.info("***************************************");
+        logger.info("Getting all principals through webservice..");
+        logger.info("***************************************");
+        
+        try
+        {
+            List principalList = RoleControllerProxy.getController().getInfoGluePrincipals(roleName);
+
+            Iterator principalListIterator = principalList.iterator();
+            while(principalListIterator.hasNext())
+            {
+            	InfoGluePrincipal principal = (InfoGluePrincipal)principalListIterator.next();
+            	InfoGluePrincipalBean bean = new InfoGluePrincipalBean();
+            	bean.setName(principal.getName());
+            	bean.setDisplayName(principal.getDisplayName());
+            	bean.setEmail(principal.getEmail());
+            	bean.setFirstName(principal.getFirstName());
+            	bean.setLastName(principal.getLastName());
+            	bean.setAdministrator(false);
+            	bean.setMetaInformation(principal.getMetaInformation());
+            	
+            	List groups = new ArrayList();
+            	Iterator groupsListIterator = principal.getGroups().iterator();
+                while(groupsListIterator.hasNext())
+                {
+                	InfoGlueGroup group = (InfoGlueGroup)groupsListIterator.next();
+                	InfoGlueGroupBean groupBean = new InfoGlueGroupBean();
+                	groupBean.setName(group.getName());
+                	groupBean.setDisplayName(group.getDisplayName());
+                	groupBean.setDescription(group.getDescription());
+                	groups.add(groupBean);	
+                }
+                bean.setGroups(groups);
+
+            	List roles = new ArrayList();
+            	Iterator rolesListIterator = principal.getRoles().iterator();
+                while(rolesListIterator.hasNext())
+                {
+                	InfoGlueRole role = (InfoGlueRole)rolesListIterator.next();
+                	InfoGlueRoleBean roleBean = new InfoGlueRoleBean();
+                	roleBean.setName(role.getName());
+                	roleBean.setDisplayName(role.getDisplayName());
+                	roleBean.setDescription(role.getDescription());
+                	roles.add(roleBean);	
+                }
+                bean.setRoles(roles);
+
+            	users.add(bean);	
+            }
+        }
+        catch(Exception e)
+        {
+        	logger.error("En error occurred when we tried to create a new contentVersion:" + e.getMessage(), e);
+        }
+        
+        return users;    
+    }
+
+    /**
+     * Gets all roles available.
+     */
+    
+    public List<InfoGluePrincipalBean> getPrincipalsWithGroup(String groupName) 
+    {
+        if(!ServerNodeController.getController().getIsIPAllowed(getRequest()))
+        {
+            logger.error("A client with IP " + getRequest().getRemoteAddr() + " was denied access to the webservice. Could be a hack attempt or you have just not configured the allowed IP-addresses correct.");
+            return null;
+        }
+
+        List<InfoGluePrincipalBean> users = new ArrayList<InfoGluePrincipalBean>();
+        
+        logger.info("***************************************");
+        logger.info("Getting all principals through webservice..");
+        logger.info("***************************************");
+        
+        try
+        {
+            List principalList = GroupControllerProxy.getController().getInfoGluePrincipals(groupName);
+
+            Iterator principalListIterator = principalList.iterator();
+            while(principalListIterator.hasNext())
+            {
+            	InfoGluePrincipal principal = (InfoGluePrincipal)principalListIterator.next();
+            	InfoGluePrincipalBean bean = new InfoGluePrincipalBean();
+            	bean.setName(principal.getName());
+            	bean.setDisplayName(principal.getDisplayName());
+            	bean.setEmail(principal.getEmail());
+            	bean.setFirstName(principal.getFirstName());
+            	bean.setLastName(principal.getLastName());
+            	bean.setAdministrator(false);
+            	bean.setMetaInformation(principal.getMetaInformation());
+            	
+            	List groups = new ArrayList();
+            	Iterator groupsListIterator = principal.getGroups().iterator();
+                while(groupsListIterator.hasNext())
+                {
+                	InfoGlueGroup group = (InfoGlueGroup)groupsListIterator.next();
+                	InfoGlueGroupBean groupBean = new InfoGlueGroupBean();
+                	groupBean.setName(group.getName());
+                	groupBean.setDisplayName(group.getDisplayName());
+                	groupBean.setDescription(group.getDescription());
+                	groups.add(groupBean);	
+                }
+                bean.setGroups(groups);
+
+            	List roles = new ArrayList();
+            	Iterator rolesListIterator = principal.getRoles().iterator();
+                while(rolesListIterator.hasNext())
+                {
+                	InfoGlueRole role = (InfoGlueRole)rolesListIterator.next();
+                	InfoGlueRoleBean roleBean = new InfoGlueRoleBean();
+                	roleBean.setName(role.getName());
+                	roleBean.setDisplayName(role.getDisplayName());
+                	roleBean.setDescription(role.getDescription());
+                	roles.add(roleBean);	
+                }
+                bean.setRoles(roles);
+
+            	users.add(bean);	
+            }
+        }
+        catch(Exception e)
+        {
+        	logger.error("En error occurred when we tried to create a new contentVersion:" + e.getMessage(), e);
+        }
+        
+        return users;    
+    }
+
 	/**
 	 * Checks if the principal exists and if the principal is allowed to create the workflow.
 	 * 
