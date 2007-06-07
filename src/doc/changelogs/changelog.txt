@@ -73,6 +73,7 @@ Abbreviated Changelog from 2.4.6 Final
 - Made component editor view (structure tool view) consider available tool languages when choosing localized labels for edit on sight etc.
 - Added cache-possibility to the matchingContents-tag and implements a default caching.
 - Added possibility to add categories to an rss/atom feed with a new common:rssFeedEntryCategory-tag.
+- Added new webservices for a lot of authorization framework operations. Approved applications can now use the infoglue users/roles/groups through webservices.
 
 -------------------------------------------------------------------------------------
 - InfoGlue 2.4.6 Final
