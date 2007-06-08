@@ -74,6 +74,7 @@ Abbreviated Changelog from 2.4.6 Final
 - Added cache-possibility to the matchingContents-tag and implements a default caching.
 - Added possibility to add categories to an rss/atom feed with a new common:rssFeedEntryCategory-tag.
 - Added new webservices for a lot of authorization framework operations. Approved applications can now use the infoglue users/roles/groups through webservices.
+- Added drag/drop support for the multi-binding-views (content and structure) both from the tree to the selection list and you can also sort the list by dragging the items in it to new positions.
 
 -------------------------------------------------------------------------------------
 - InfoGlue 2.4.6 Final

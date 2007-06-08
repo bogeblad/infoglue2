@@ -6,28 +6,44 @@
 <head>
 	<title>Choose sitenodes</title>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<link rel="stylesheet" type="text/css" href="css/cms.css" /> 
+	<link rel="stylesheet" type="text/css" href="css/infogluecommons.css" /> 
+	<script type="text/javascript" src="script/vector.js"></script>
+	<script type="text/javascript" src="script/qualifyer.js"></script>
+	<script type="text/javascript" src="script/infogluecommons.js"></script>
 	
+	<script language="JavaScript" type="text/javascript" src="script/tool-man/org/tool-man/core.js"></script>
+	<script language="JavaScript" type="text/javascript" src="script/tool-man/org/tool-man/events.js"></script>
+	<script language="JavaScript" type="text/javascript" src="script/tool-man/org/tool-man/css.js"></script>
+	<script language="JavaScript" type="text/javascript" src="script/tool-man/org/tool-man/coordinates.js"></script>
+	<script language="JavaScript" type="text/javascript" src="script/tool-man/org/tool-man/drag.js"></script>
+	<script language="JavaScript" type="text/javascript" src="script/tool-man/org/tool-man/dragsort.js"></script>
+
 	<script language="JavaScript"> 
-		// window.moveTo(300,200); 
 		window.resizeTo(700,600);
 	</script> 
-	
-	<script type="text/javascript" src="script/vector.js"></script>
-		
-	<script type="text/javascript" language="JavaScript">
-		
+
+	<script type="text/javascript">
 	<!-- 
+		var dragsort = ToolMan.dragsort();
+		var junkdrawer = ToolMan.junkdrawer();
+						
 		var exp;
 	
+		/**
+		 * This is just a hook for the tree to notify us about whats expanded.
+		 */
+
 	    function notifyExp(v)
 	    {
-	    	// The html tree notifies this page about the
-	    	// current expansion key, so that we can reload
-	    	// the tree with the same expansion.
 	    	exp=v;
 	    }
 	    
-	    function changeRepository(selectBox)
+		/**
+		 * This method changes to another repository.
+		 */
+		 
+		function changeRepository(selectBox)
 		{
 			var repositoryId = selectBox.value;
 			var url = "${currentAction}?repositoryId=" + repositoryId + "&siteNodeId=$siteNodeId&languageId=$languageId&contentId=$contentId&componentId=$componentId&propertyName=$propertyName&tree=$tree&showSimple=$showSimple";
@@ -55,7 +71,6 @@
 	    
 	    function addQualifyer()
 		{
-		    //alert("Here we add the choosen siteNode to the qualifyer...");
 			entityId = document.inputForm.entityId.value;
 			if(entityId == '' || entityId == '${select}')
 			{
@@ -71,8 +86,7 @@
 				drawList();
 			}
 		}
-		
-		
+				
 		function submitBinding()
 		{
 		    qualifyerXML = "<?xml version='1.0' encoding='UTF-8'?>";
@@ -90,100 +104,11 @@
 			}
 		   	qualifyerXML += "</qualifyer>";
 			
-			//var url = "ViewSiteNodePageComponents!addComponentPropertyBindingWithQualifyer.action?siteNodeId=$siteNodeId&languageId=$languageId&contentId=-1&qualifyerXML=" + escape(qualifyerXML) + "&path=" + escape(path) + "&componentId=$componentId&propertyName=$propertyName&showSimple=$showSimple";
-		    //alert('Calling:' + url);
-			//self.opener.location.href = url;
-		    //window.close();
-		    //document.inputForm.submit();
 		    document.submitForm.target = self.opener.name;
 		    document.submitForm.path.value = path;
 		    document.submitForm.qualifyerXML.value = qualifyerXML;
 		    document.submitForm.submit();
 		    window.close();
-		}
-
-		function qdrop(obj)
-		{
-			var data = window.event.dataTransfer.getData('Text');
-
-			if(data.slice(0,1) == "q")
-			{
-				// From qualifyer list
-				var item = document.getElementById(data);
-				var topos = obj.pos;
-				moveQualifyerToPosition(item.pos, topos);
-			}
-			else
-			{
-				// From the treeview
-				var item = document.frames['itreeFrame'].document.getElementById(data);
-			    data = "link" + item.id.slice(4,item.id.length);
-				item = document.frames['itreeFrame'].document.getElementById(data);
-			    
-				var position=obj.pos;
-				
-				document.inputForm.entityId.value     = item.entityId;
-				document.inputForm.repositoryId.value = item.repoId;
-			 	document.inputForm.path.value         = item.myLabel;
-	
-			 	if (position==-1)
-			 		addQualifyer();
-			 	else
-			 		addQualifyerAtPosition(position);
-			}
-			
-		}
-		function qoverDrag(obj)
-		{
-			var data = window.event.dataTransfer.getData('Text');
-			
-			if(data.slice(0,1) == "q")
-			{
-				// From qualifyer list
-				var item = document.getElementById(data);
-			    window.event.returnValue = false;
-			}
-			else
-			{
-				// From the treeview
-				var item = document.frames['itreeFrame'].document.getElementById(data);
-			    data = "link" + item.id.slice(4,item.id.length);
-				item = document.frames['itreeFrame'].document.getElementById(data);
-			    window.event.returnValue = false;
-			}
-			    
-			
-		}
-		function qenterDrag(obj)
-		{
-		    var dragData = window.event.dataTransfer;
-	    	dragData.dropEffect = 'link';
-			obj.src = "images/dropqualifyer.gif";
-			obj.height="19";
-		    window.event.dataTransfer.getData('Text');
-		}
-		function qexitDrag(obj)
-		{
-			obj.src = "images/trans.gif";
-			if(obj.pos != -1) obj.height="4";
-		}
-
-		// Source qualifyer list
-		function qstartDrag(obj)
-		{
-		    var dragData = window.event.dataTransfer;
-		    dragData.setData('Text', obj.id);
-		    dragData.effectAllowed = 'move';
-		    
-		    // Get the div object
-		    var theDiv = document.getElementById("tr" + obj.pos);
-		    theDiv.style.display="none";
-		}
-		function qendDrag(obj) {
-		    window.event.dataTransfer.clearData();
-		    // Get the div object
-		    var theDiv = document.getElementById("tr" + obj.pos);
-		    theDiv.style.display="";
 		}
 
 		/**
@@ -256,9 +181,11 @@
 		{
 			var link = document.createElement("a");
 			link.setAttribute("href", address);
+		
 			var image = document.createElement("img");
 			image.setAttribute("src", src);
 			image.setAttribute("border", "0");
+	
 			link.appendChild(image);
 			parent.appendChild(link);
 
@@ -270,6 +197,19 @@
 			parent.appendChild(separator);
 		}
 		
+		/**
+	  	 * This function creates a href-tag by manipulating the DOM.
+	  	 */
+	  	 
+		function addDividerImage(parent, width, height)
+		{
+			var separator = document.createElement("img");
+			separator.setAttribute("src", "images/trans.gif");
+			separator.setAttribute("border", "0");
+			separator.setAttribute("width", width);
+			separator.setAttribute("height", height);
+			parent.appendChild(separator);
+		}
 
 		/**
 		 * This method draws the list of bindings.
@@ -277,11 +217,9 @@
 		 
 		function drawList()
 		{
-			//alert("siteNodesVector:" + siteNodesVector.getSize());
-
-			var table = document.getElementById("bindings")
-			var parent = table.parentNode;
-			parent.removeChild(table);
+			var mytable = document.getElementById("bindings")
+			var parent = mytable.parentNode;
+			parent.removeChild(mytable);
 
 			mytable = document.createElement("TABLE");
 			mytable.setAttribute("id", "bindings");
@@ -290,30 +228,64 @@
 			mytable.setAttribute("cellpadding", "0");
 			mytable.setAttribute("cellspacing", "0");
 	        mytablebody = document.createElement("TBODY");
+
+			var myTR = document.createElement("TR");
+			var bindingTD = document.createElement("TD");
+			bindingTD.setAttribute("width", "100%");
+			var actionTD = document.createElement("TD");
+			actionTD.setAttribute("width", "100");
+						
+			myActionList = document.createElement("ul");
+			myActionList.setAttribute("id", "actions");
+
 	        for (var i=0; i<siteNodesVector.getSize(); i++)
 			{
 				var binding = siteNodesVector.getElementAt(i);
-				//alert("Element:" + binding.getPath());
-				var myTR = document.createElement("TR");
-				var actionTD = document.createElement("TD");
-				actionTD.setAttribute("width", "50");
-				addImageLink(actionTD, "javascript:moveBindingDown(" + i + ");", "images/downArrow.gif");
-				addImageLink(actionTD, "javascript:moveBindingUp(" + i + ");", "images/upArrow.gif");
-				addImageLink(actionTD, "javascript:deleteBinding(" + i + ");", "images/delete.gif");
-				var bindingTD = document.createElement("TD");
-				var bindingText = document.createTextNode(binding.getPath());
-				myTR.appendChild(actionTD);
-				bindingTD.appendChild(bindingText);
-				myTR.appendChild(bindingTD);
 
-				mytablebody.appendChild(myTR);
-			
+				var myLI = document.createElement("li");
+				myLI.setAttribute("itemID", i);
+				
+				addImageLink(myLI, "javascript:moveBindingDown(" + i + ");", "images/downArrow.gif");
+				addImageLink(myLI, "javascript:moveBindingUp(" + i + ");", "images/upArrow.gif");
+				addImageLink(myLI, "javascript:deleteBinding(" + i + ");", "images/delete.gif");
+				addDividerImage(myLI, 1, 16);
+								
+				myActionList.appendChild(myLI);
 			}
+			actionTD.appendChild(myActionList);
+			
+			myList = document.createElement("ul");
+			myList.setAttribute("id", "currentBindings");
+			
+	        for (var i=0; i<siteNodesVector.getSize(); i++)
+			{
+				var binding = siteNodesVector.getElementAt(i);
+
+				var myLI = document.createElement("li");
+				myLI.setAttribute("itemID", i);
+	
+				addImageLink(myLI, "#", "script/xloadtree/images/xp/page.png");
+				
+				var bindingText = document.createTextNode(binding.getPath());
+				myLI.appendChild(bindingText);
+				addDividerImage(myLI, 5, 16);
+				
+				myList.appendChild(myLI);
+			}
+			
+			bindingTD.appendChild(myList);
+			 
+	        //alert("childNodes" + parent.childNodes.length);
+
+			myTR.appendChild(bindingTD);
+			myTR.appendChild(actionTD);
+
+			mytablebody.appendChild(myTR);
 			 
 	        mytable.appendChild(mytablebody);
 	        parent.appendChild(mytable);
-	       			
-			//alert("childNodes" + parent.childNodes.length);
+	        
+			dragsort.makeListSortable(document.getElementById("currentBindings"), verticalOnly, changeOrder);
 		}
 
 		/**
@@ -380,6 +352,71 @@
 			}
 		}
 		
+		
+		/**
+		 * This method moves a binding 1 step up in the vector.
+		 */
+		 
+		function dragBindingUp(originalIndex, targetIndex)
+		{
+			var currentIndex = originalIndex;
+			while(currentIndex != targetIndex)
+			{
+				//alert(currentIndex + "!=" + targetIndex);
+				var binding 		= siteNodesVector.getElementAt(currentIndex);
+				var previousBinding = siteNodesVector.getElementAt(currentIndex - 1);
+				
+				path 		= binding.getPath();
+				entityName 	= binding.getEntityName();
+				entityId 	= binding.getEntityId();
+				
+				binding.setPath(previousBinding.getPath());
+				binding.setEntityName(previousBinding.getEntityName());
+				binding.setEntityId(previousBinding.getEntityId());
+			
+				previousBinding.setPath(path);
+				previousBinding.setEntityName(entityName);
+				previousBinding.setEntityId(entityId);
+				
+				currentIndex = currentIndex - 1;				
+			}			
+			
+			drawList();
+		}
+
+		/**
+		 * This method moves a binding 1 step up in the vector.
+		 */
+		 
+		function dragBindingDown(originalIndex, targetIndex)
+		{
+			var currentIndex = originalIndex;
+			while(currentIndex != targetIndex)
+			{
+				//alert(currentIndex + "!=" + targetIndex);
+				var binding 	= siteNodesVector.getElementAt(currentIndex);
+				var nextIndex = currentIndex + 1;
+				//alert("nextIndex:" + nextIndex);
+				var nextBinding = siteNodesVector.getElementAt(currentIndex + 1);
+				
+				path 		= binding.getPath();
+				entityName 	= binding.getEntityName();
+				entityId 	= binding.getEntityId();
+				
+				binding.setPath(nextBinding.getPath());
+				binding.setEntityName(nextBinding.getEntityName());
+				binding.setEntityId(nextBinding.getEntityId());
+			
+				nextBinding.setPath(path);
+				nextBinding.setEntityName(entityName);
+				nextBinding.setEntityId(entityId);
+				
+				currentIndex = currentIndex + 1;				
+			}
+
+			drawList();
+		}		
+
 		/**
 		 * This function initializes the vector of previous bindings.
 		 */
@@ -396,15 +433,152 @@
 			drawList();		
 		}
 		
+		function verticalOnly(item) 
+		{
+			item.toolManDragGroup.verticalOnly()
+		}
+	
+		function changeOrder(item) 
+		{
+			var group = item.toolManDragGroup;
+			var list = group.element.parentNode;
+			var id = list.getAttribute("id");
+			var id2 = parseInt(item.getAttribute("itemID"));
+			
+			if (id == null) 
+				return;
+	
+			group.register('dragend', function() 
+			{
+				var targetId = -1;
+				if(item.previousSibling)
+					targetId = parseInt(item.previousSibling.getAttribute("itemID"));
+				
+				if(targetId > id2)
+					dragBindingDown(id2, targetId);
+				else	
+					dragBindingUp(id2, targetId + 1);
+			})
+		}
+		
 		var siteNodesVector = new Vector(0);
 			
-	-->
+		var IE  = (document.all)? true: false;
+		var Mac = (navigator.cpuClass && navigator.cpuClass.match(/PPC/))? true: false;
+		
+		function checkDrag(event)
+		{
+    	    if(document.inputForm.draggedComponentId.value != "") 
+    	    {	
+    	    	addQualifyer();
+	    	    document.inputForm.draggedComponentId.value = "";     
+	    	    document.getElementById("buffer").style.visibility = "hidden";
+    	    } 
+   		}
+   		
+   		function clearDrag(event)
+		{
+    	    if(document.inputForm.draggedComponentId.value != "") 
+    	    {	
+    	    	document.inputForm.draggedComponentId.value = "";
+	    	    document.getElementById("buffer").style.visibility = "hidden";
+    	    } 
+   		}
+		
+	    //-----------------------------------------------------------------
+	    // onmousemove handler
+	    //-----------------------------------------------------------------
+	    function dragIt(e) 
+	    {
+			var e = e? e: window.event;
+		    
+		    drag = document.getElementById("buffer");
+	        // -- Move drag element by the same amount the cursor has moved.
+	        with (drag) 
+	        {
+	        	style.left = getX(e) + 1 + "px"; //- dx;
+	          	style.top  = getY(e) + 1 + "px"; //- dy;
+	        	//style.left = getX(e) - dx;
+	          	//style.top  = getY(e) - dy;
+	        }
+	
+	        return false;
+	    }
+	    
+	    function getRect(obj) {
+        var rect = new Object();
+        rect.top = rect.left = 0;
+        var parentObj = obj;
+        while (parentObj != null) {
+          rect.top  += parentObj.offsetTop;
+          rect.left += parentObj.offsetLeft;
+          parentObj = parentObj.offsetParent;
+        }
+        rect.bottom = rect.top  + obj.offsetHeight;
+        rect.right  = rect.left + obj.offsetWidth;
+
+		//if()
+        return rect;
+      }
+
+	  //-----------------------------------------------------------------
+      // browser-independent routines for determining event position
+      //-----------------------------------------------------------------
+      function getX(e) {
+      	var x = 0;
+        if (IE) {
+          x = e.clientX;
+          if (!Mac) {
+            x += parent.document.documentElement.scrollLeft;
+            x += parent.document.body.scrollLeft;
+		  }
+        } else {
+          x = e.pageX + parent.window.scrollX;
+        }
+        return x
+      }
+
+      function getY(e) {
+        var y = 0;
+        if (IE) {
+          y = e.clientY;
+          if (!Mac) {
+            y += document.documentElement.scrollTop;
+            y += document.body.scrollTop;
+		  }
+        } else {
+          y = e.pageY + window.scrollY;
+        }
+        return y;
+      }
+
+	-->    
 	</script>
 
-	<link rel="stylesheet" type="text/css" href="css/cms.css" /> 
+	<style>
+		#buffer { 
+			position:	absolute;
+			z-index:	1000003;
+			height:		1em;
+			width:		1em;
+			border: 	0px solid black;
+			color:		#ffffff;
+			visibility:	hidden;
+			top:		0px;
+			left:		0px;
+		}
+	</style>
+
 </head>
 
-<body class="structuretooledit" onload="javascript:init();">
+<body class="structuretooledit" onload="javascript:init();" onMouseUp="clearDrag(event);">
+
+<div id="buffer" style="top: 0; left: 0"><img src="images/tree/xp/item.png"></div>
+
+<div id="savingLayer" class="infobackground">
+	<div class="infoheader">Saving changes</div>
+	<div class="infobody">Processing input - please wait!</div>
+</div>
 
 <table class="structuretooledit" cellpadding="0" cellspacing="0" border="0" width="100%">
 <tr>
@@ -423,9 +597,6 @@
 		<tr>
 			<td height="1"><img src="images/trans.gif" width="1" height="5"></td>
 		</tr>		
-		<!-- 
-		HERE IS THE REPOSITORY-LIST FOR LATER 
-		-->
 		<tr>
 			<td>
 		  		<select size="1" name="repositoryId" class="sitedropbox" onChange="javascript:changeRepository(this);" class="contenttool">
@@ -440,11 +611,11 @@
 			<td height="1"><img src="images/trans.gif" width="1" height="5"></td>
 		</tr>	
 		<tr>
-			<td class="menu">    
+			<td class="menu" style="border: 1px solid #F0E1B4;">    
 				#if($tree == "applet")
 					#showJavaTree("350" "400" "254" "248" "208" "SiteNode" $repositoryId "false")
 				#else
-					<IFRAME frameborder="0" name="itreeFrame" id="itreeFrame" src="ViewStructureToolMenuHtml!bindingView.action?exp=${exp}&repositoryId=${repositoryId}" width="350" height="400" align="baseline"></IFRAME>
+					<IFRAME frameborder="0" name="itreeFrame" id="itreeFrame" src="ViewStructureToolMenuHtml!bindingView.action?exp=${exp}&repositoryId=${repositoryId}" width="350" height="430" align="baseline"></IFRAME>
 				#end
 			</td>
 		</tr>	
@@ -461,6 +632,7 @@
 		<tr>
 			<td>
 				<form name="inputForm" action="CreateServiceBinding.action">
+					<input type="hidden" name="draggedComponentId" value="">
 					<input type="hidden" name="entityId" value="">
 					<input type="hidden" name="repositoryId" value="">
 					<input type="hidden" name="path" value="">
@@ -487,56 +659,18 @@
 		</tr>		
 		
 		<tr>
-			<td>
-			  	<TABLE id="bindings" border="1">
+			<td style="height: 27px;">
+				Drag items from the tree to the area below or mark an item and use the "Add"-button.
+			</td>
+		</tr>
+		<tr>
+			<td style="border: 1px solid #F0E1B4; background-color: white;" onMouseUp="checkDrag(event);">
+				<TABLE id="bindings" border="1">
 			  	
 			  	</table>
 			</td>
 		</tr>
 				
-		<!--
-		#set($isOdd = true)
-		#set($count = 0)
-		#foreach($qualifyer in $qualifyers)
-			#if($isOdd)
-				#set($class = "class='lightapricot'")
-				#set($isOdd = false)
-			#else
-				#set($class = "class='white'")
-				#set($isOdd = true)
-			#end
-
-			#set($value = $qualifyer.value)
-			<tr $class id="tr$qualifyer.sortOrder" style="display:">
-				<td>
-					<img pos="$qualifyer.sortOrder" id="drop$qualifyer.sortOrder" src="images/trans.gif" width="280" height="5" ondrop="qdrop(this)" ondragover="qoverDrag(this)" ondragenter="qenterDrag(this)" ondragleave="qexitDrag(this)"><br>
-					#if($count < $qualifyers.size() - 1)
-						<a href="javascript:moveQualifyer(0,$qualifyer.sortOrder);"><img src="images/downArrow.gif" border="0"></a>
-					#else
-						<img src="images/trans.gif" border="0" width="11" height="10">
-					#end
-					
-					#if($count > 0)
-						<a href="javascript:moveQualifyer(1,$qualifyer.sortOrder);"><img src="images/upArrow.gif" border="0" width="11" height="10"></a>
-					#else
-						<img src="images/trans.gif" border="0" width="11" height="10">
-					#end
-					<a href="javascript:deleteQualifyer($qualifyer.sortOrder);"><img src="images/delete.gif" border="0"></a>
-					
-					<a href="JavaScript:void();" id="q$qualifyer.sortOrder" ondragstart="qstartDrag(this);" ondragend="qendDrag(this);" source="qlist" pos="$qualifyer.sortOrder">
-					$this.getQualifyerPath($value)
-					</a>
-				</td>
-			</tr>	
-			#set($count = $count + 1) 
-		#end 	
-		-->	    
-		<tr>
-			<td>
-			<img pos="-1" id="drop$qualifyer.sortOrder" src="images/trans.gif" width="280" height="19" ondrop="qdrop(this)" ondragover="qoverDrag(this)" ondragenter="qenterDrag(this)" ondragleave="qexitDrag(this)"><br>
-			&nbsp;
-			</td>
-		</tr>
 		</table>
 	</td>
 </tr>
@@ -552,11 +686,6 @@
 	<input type="hidden" name="path" value="">
 	<input type="hidden" name="qualifyerXML" value="">
 </form>
-
-<div style="RIGHT:10px; LEFT:10px; position:absolute; BOTTOM:5px; visibility:visible; z-index:0">
-<hr size=1 noshade>
-<small><font color="#666666">$ui.getString("tool.common.treestyleLabel"): <a style="color: #666666" href="javascript:changeTree('applet');">$ui.getString("tool.common.treestyleApplet")</a> | <a style="color: #666666" href="javascript:changeTree('html');">$ui.getString("tool.common.treestyleHTML")</a> </small></font>
-</div>
 
 </body>
 </html>
