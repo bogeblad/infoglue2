@@ -1,4 +1,3 @@
-##set($treeMode = "dynamic")
 <?xml version="1.0" encoding="UTF-8"?> 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
@@ -179,8 +178,6 @@
 		
 		function markSelected(itemId)
 		{
-			//alert("marking selected:" + itemId);
-		
 			var node = tree.getNodeWithMyId(itemId);
 			if(node)
 				node.select();
@@ -200,15 +197,6 @@
 				var pathArr = path.split(',');
 				
 				expandTreeRec(pathArr, 0);
-				
-				/*
-				setTimeout(function () {
-					var rootNode = tree.getNodeWithMyId(pathArr[0]);
-					rootNode.select();
-					rootNode.blur();
-					rootNode.deSelect();
-					}, 100);
-				*/
 			}		
 			
 			setTimeout("markSelected('${select}')", 500);	
@@ -257,8 +245,6 @@
 				}
 			}
 		}
-		
-		
 		// -->
 	</script>
 	<script type="text/javascript" src="script/menu/poslib.js"></script>
@@ -543,7 +529,7 @@
 
 <script type="text/javascript" language="JavaScript1.2">
 <!-- 
-	
+
 	function createFolder()
 	{
 		var parentContentId = srcElement.entityId;

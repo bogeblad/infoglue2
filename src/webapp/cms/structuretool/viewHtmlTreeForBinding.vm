@@ -2,7 +2,9 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head> 
-	<meta HTTP-EQUIV="Expires" CONTENT="Tue, 01 Jan 1980 1:00:00 GMT">
+	<meta http-equiv="Expires" content="Tue, 01 Jan 1980 1:00:00 GMT" />
+	<meta http-equiv="Cache-Control" content="no-cache" />
+	<meta http-equiv="Pragma" content="no-cache" />
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 	<title>Menus</title>
 
@@ -127,6 +129,7 @@
 	<!-- NEW DYNAMIC VERSION -->
 	<link type="text/css" rel="stylesheet" href="script/xloadtree/xtree.css" />
 	<script type="text/javascript">
+	<!--
 	webFXTreeConfig.rootIcon		= "images/tree/structureRoot.gif"; // "script/xloadtree/images/xp/folder.png";
 	webFXTreeConfig.openRootIcon	= "images/tree/structureRoot.gif"; // "script/xloadtree/images/xp/openfolder.png";
 	webFXTreeConfig.folderIcon		= "script/xloadtree/images/xp/page.png";
@@ -181,6 +184,7 @@
 	}
 	function onTreeItemSelect(elem)
 	{
+		//alert("elem:" + elem);
 		var aid = elem + "-anchor";
 		if (oldSelected != null)
 			oldSelected.className = "";
@@ -194,9 +198,10 @@
 		// alert(srcIdLink.className);
 		
 	}
+	-->
 	</script>	
 	<!-- END -->	
-	#end
+#end
 
 
 #if($treeMode == "classic")

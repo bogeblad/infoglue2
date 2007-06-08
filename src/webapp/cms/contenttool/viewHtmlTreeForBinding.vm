@@ -102,17 +102,9 @@
 			if(path && path != "")
 			{
 				path = path.substring(0, path.length - 1);
-				//selected = "198";
 				var pathArr = path.split(',');
 				
 				expandTreeRec(pathArr, 0);
-				
-				/*			
-				setTimeout(function () {
-					var addedNode = tree.getNodeWithMyId(selected);
-					addedNode.select();
-					}, 3000);
-				*/
 			}		
 			
 			setTimeout("markSelected('${select}')", 500);
