@@ -412,8 +412,6 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		
 			if(component.getParentComponent() == null && bodyIndex > -1)
 			{
-				//String onContextMenu = " onload=\"javascript:setToolbarInitialPosition();\"";
-				//String onContextMenu = " class=\"siteBody\" onload=\"javascript:setToolbarInitialPosition();\"";
 				String onContextMenu = " onload=\"javascript:setToolbarInitialPosition();\"";
 				if(templateController.getDeliveryContext().getShowSimple())
 					onContextMenu = " onload=\"javascript:setToolbarInitialPosition();\"";
@@ -427,10 +425,9 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 				this.propertiesDivs += getComponentPropertiesDiv(templateController, repositoryId, siteNodeId, languageId, contentId, component.getId(), component.getContentId(), componentPropertiesDocument);
 
 				Document componentTasksDocument = getComponentTasksDOM4JDocument(templateController, siteNodeId, languageId, component.getContentId()); 
-				this.tasksDivs += getComponentTasksDiv(repositoryId, siteNodeId, languageId, contentId, component, componentTasksDocument, templateController);
+				this.tasksDivs += getComponentTasksDiv(repositoryId, siteNodeId, languageId, contentId, component, 0, 1, componentTasksDocument, templateController);
 			}
 	
-			////logger.info("Before:" + componentString);
 			int offset = 0;
 			int slotStartIndex = componentString.indexOf("<ig:slot", offset);
 			//logger.info("slotStartIndex:" + slotStartIndex);
@@ -538,7 +535,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 								this.propertiesDivs += getComponentPropertiesDiv(templateController, repositoryId, siteNodeId, languageId, contentId, new Integer(siteNodeId.intValue()*100 + subComponent.getId().intValue()), subComponent.getContentId(), componentPropertiesDocument);
 								
 								Document componentTasksDocument = getComponentTasksDOM4JDocument(templateController, siteNodeId, languageId, subComponent.getContentId()); 
-								this.tasksDivs += getComponentTasksDiv(repositoryId, siteNodeId, languageId, contentId, subComponent, componentTasksDocument, templateController);
+								this.tasksDivs += getComponentTasksDiv(repositoryId, siteNodeId, languageId, contentId, subComponent, index, subComponents.size() - 1, componentTasksDocument, templateController);
 								
 							}
 							else
@@ -575,7 +572,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 								this.propertiesDivs += getComponentPropertiesDiv(templateController, repositoryId, siteNodeId, languageId, contentId, subComponent.getId(), subComponent.getContentId(), componentPropertiesDocument);
 								
 								Document componentTasksDocument = getComponentTasksDOM4JDocument(templateController, siteNodeId, languageId, subComponent.getContentId()); 
-								this.tasksDivs += getComponentTasksDiv(repositoryId, siteNodeId, languageId, contentId, subComponent, componentTasksDocument, templateController);
+								this.tasksDivs += getComponentTasksDiv(repositoryId, siteNodeId, languageId, contentId, subComponent, index, subComponents.size() - 1, componentTasksDocument, templateController);
 							}
 						}
 						index++;
@@ -981,7 +978,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 	 * This method creates a div for the components properties.
 	 */
 	
-	private String getComponentTasksDiv(Integer repositoryId, Integer siteNodeId, Integer languageId, Integer contentId, InfoGlueComponent component, Document document, TemplateController templateController) throws Exception
+	private String getComponentTasksDiv(Integer repositoryId, Integer siteNodeId, Integer languageId, Integer contentId, InfoGlueComponent component, int position, int maxPosition, Document document, TemplateController templateController) throws Exception
 	{		
 	    InfoGluePrincipal principal = templateController.getPrincipal();
 	    String cmsUserName = (String)templateController.getHttpServletRequest().getSession().getAttribute("cmsUserName");
@@ -1048,6 +1045,8 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		String submitToPublishHTML = getLocalizedString(locale, "deliver.editOnSight.submitToPublish");
 		String addComponentHTML = getLocalizedString(locale, "deliver.editOnSight.addComponentHTML");
 		String deleteComponentHTML = getLocalizedString(locale, "deliver.editOnSight.deleteComponentHTML");
+		String moveComponentUpHTML = getLocalizedString(locale, "deliver.editOnSight.moveComponentUpHTML");
+		String moveComponentDownHTML = getLocalizedString(locale, "deliver.editOnSight.moveComponentDownHTML");
 		String propertiesHTML = getLocalizedString(locale, "deliver.editOnSight.propertiesHTML");
 		String pageComponentsHTML = getLocalizedString(locale, "deliver.editOnSight.pageComponentsHTML");
 		String viewSourceHTML = getLocalizedString(locale, "deliver.editOnSight.viewSourceHTML");
@@ -1063,6 +1062,14 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		if(hasSaveTemplateAccess)
 		    sb.append("<div class=\"igmenuitems\" onMouseover=\"javascript:highlightie5(event);\" onMouseout=\"javascript:lowlightie5(event);\" onClick=\"saveComponentStructure('" + componentEditorUrl + "CreatePageTemplate!input.action?contentId=" + templateController.getSiteNode(siteNodeId).getMetaInfoContentId() + "');\">" + savePageTemplateHTML + "</div>");
 
+		String upUrl = componentEditorUrl + "ViewSiteNodePageComponents!moveComponent.action?siteNodeId=" + templateController.getSiteNodeId() + "&languageId=" + templateController.getLanguageId() + "&contentId=" + templateController.getContentId() + "&componentId=" + component.getId() + "&direction=0&showSimple=" + this.getTemplateController().getDeliveryContext().getShowSimple() + "";
+		String downUrl = componentEditorUrl + "ViewSiteNodePageComponents!moveComponent.action?siteNodeId=" + templateController.getSiteNodeId() + "&languageId=" + templateController.getLanguageId() + "&contentId=" + templateController.getContentId() + "&componentId=" + component.getId() + "&direction=1&showSimple=" + this.getTemplateController().getDeliveryContext().getShowSimple() + "";
+				
+		if(position > 0)
+		    sb.append("<div class=\"igmenuitems\" onMouseover=\"javascript:highlightie5(event);\" onMouseout=\"javascript:lowlightie5(event);\" onClick=\"invokeAddress('" + upUrl + "');\">" + moveComponentUpHTML + "</div>");
+		if(maxPosition > position)
+		    sb.append("<div class=\"igmenuitems\" onMouseover=\"javascript:highlightie5(event);\" onMouseout=\"javascript:lowlightie5(event);\" onClick=\"invokeAddress('" + downUrl + "');\">" + moveComponentDownHTML + "</div>");
+		
 		//sb.append("<div class=\"igmenudivider\"><img src=\" + this.getRequest().getContextPath() + "/images/dividerLine.gif\"  width=\"115\" height=\"1\"></div>");
 		sb.append("<hr/>");
 		sb.append("<div class=\"igmenuitems\" onMouseover=\"javascript:highlightie5(event);\" onMouseout=\"javascript:lowlightie5(event);\" onClick=\"javascript:showComponent();\">" + propertiesHTML + "</div>");
