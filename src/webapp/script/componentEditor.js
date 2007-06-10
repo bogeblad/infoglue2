@@ -921,6 +921,11 @@ function deleteComponent()
 	document.location.href = deleteUrl;
 }
 
+function invokeAddress(url) 
+{
+	document.location.href = url;
+}
+
 function showComponent(e) 
 {
 	if (!e) 
