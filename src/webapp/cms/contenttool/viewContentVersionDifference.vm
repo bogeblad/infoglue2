@@ -5,14 +5,29 @@
 <html>
 <head>
 	<title>Content differences</title>
-	<link rel="stylesheet" type="text/css" href="css/frovi_com.css" />
+	<link rel="stylesheet" type="text/css" href="css/cms.css" />
 	<script type="text/javascript" src="script/jsdiff.js"></script>
 	<META HTTP-EQUIV="pragma" CONTENT="no-cache" />
 	<META HTTP-EQUIV="expires" CONTENT="-1" />
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
+	<style>
+	<!--
+		ins 
+		{
+		  background-color: #ccffcc;
+		}
+		
+		del 
+		{
+		  background-color: #ff6666;
+		}
+	-->
+	</style>
+
 </head>
 
-<body>
+<body class="contenttooledit">
 
 <table border="0" width="500">
 
