@@ -24,6 +24,7 @@
 package org.infoglue.cms.util;
 
 import java.io.File;
+import java.util.Date;
 import java.util.Enumeration;
 
 import javax.servlet.ServletContext;
@@ -133,6 +134,8 @@ public final class CmsContextListener implements ServletContextListener
 			//Starting the cache-expire-thread
 			if(cacheController.getExpireCacheAutomatically())
 				cacheController.start();
+
+			CmsPropertyHandler.setStartupTime(new Date()); 
 
 			System.out.println("**************************************\n");
 		}

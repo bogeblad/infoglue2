@@ -24,6 +24,7 @@
 package org.infoglue.deliver.util;
 
 import java.io.File;
+import java.util.Date;
 import java.util.Enumeration;
 
 import javax.servlet.ServletContext;
@@ -148,6 +149,8 @@ public final class DeliverContextListener implements ServletContextListener
 				cacheController.start();
 			
 			InfoGlueAuthenticationFilter.initializeProperties();
+			
+			CmsPropertyHandler.setStartupTime(new Date()); 
 			
 			System.out.println("**************************************\n");
 		}

@@ -174,6 +174,15 @@ public class Counter
 		}
     }
 
+    static int getNumberOfHits(String componentName)
+    {
+    	Map componentStatistics = getComponentStatistics(componentName);
+    	synchronized (componentStatistics) 
+    	{
+        	return ((Integer)componentStatistics.get("totalNumberOfInvokations")).intValue();
+ 		}
+    }
+
     static void resetComponentStatistics()
     {
     	synchronized (allComponentsStatistics) 

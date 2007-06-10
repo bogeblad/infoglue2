@@ -161,6 +161,11 @@ public class RequestAnalyser
         return Counter.getAverageElapsedTime(componentName);
     }
 
+    public static int getComponentNumberOfHits(String componentName)
+    {
+        return Counter.getNumberOfHits(componentName);
+    }
+
     public static void resetComponentStatistics()
     {
     	Counter.resetComponentStatistics();

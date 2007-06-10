@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <applicationState>
 	<title>Delivery engine status ($serverName)</title>
-	<version>2.4.9 Final</version>
-	<releaseDate>2007-05-08</releaseDate>
+	<version>2.5.0 Final</version>
+	<releaseDate>2007-06-10</releaseDate>
 	<serverName>$serverName</serverName>
 	<items>
 	#foreach($state in $states)
-		<item name="$formatter.escapeExtendedHTML($state.get(0))">$formatter.escapeExtendedHTML($state.get(1))</item>
+		<item name="$formatter.escapeExtendedHTML($state.get(0))">$formatter.escapeExtendedHTML("$state.get(1)")</item>
   	#end
 	</items>
 	<sessionCount>$sessionInfoBeanList.size()</sessionCount>

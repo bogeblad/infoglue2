@@ -25,6 +25,7 @@ package org.infoglue.deliver.applications.actions;
 
 import java.net.InetAddress;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.Iterator;
@@ -49,6 +50,7 @@ import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
 import org.infoglue.cms.controllers.kernel.impl.simple.ServerNodeController;
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.CmsSessionContextListener;
+import org.infoglue.cms.util.sorters.AverageInvokingTimeComparator;
 import org.infoglue.deliver.invokers.ComponentBasedHTMLPageInvoker;
 import org.infoglue.deliver.portal.ServletConfigContainer;
 import org.infoglue.deliver.portal.services.PortletEntityRegistryServiceDBImpl;
@@ -358,7 +360,7 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
         return "cleared";        
     }
     
-    private List getList(String key, String value)
+    private List getList(String key, Object value)
     {
         List list = new ArrayList();
         list.add(key);
@@ -426,16 +428,17 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
 		if(sessionTimeout == null)
 		    sessionTimeout = "1800";
 		
-        states.add(getList("Maximum memory", "" + Runtime.getRuntime().maxMemory() / 1024 / 1024 + " MB"));
-        states.add(getList("Used memory", "" + ((Runtime.getRuntime().totalMemory()- Runtime.getRuntime().freeMemory()) / 1024 / 1024) + " MB"));
-        states.add(getList("Free memory", "" + Runtime.getRuntime().freeMemory() / 1024 / 1024 + " MB"));
-        states.add(getList("Total memory", "" + Runtime.getRuntime().totalMemory() / 1024 / 1024 + " MB"));
-        states.add(getList("Number of sessions", "" + CmsSessionContextListener.getActiveSessions() + "(remains for " + (Integer.parseInt(sessionTimeout) / 60) + " minutes after last request)"));
+        states.add(getList("Application started", "" + formatter.formatDate(CmsPropertyHandler.getStartupTime(), "yyyy-MM-dd HH:mm")));
+        states.add(getList("Maximum memory (MB)", "" + Runtime.getRuntime().maxMemory() / 1024 / 1024));
+        states.add(getList("Used memory (MB)", "" + ((Runtime.getRuntime().totalMemory()- Runtime.getRuntime().freeMemory()) / 1024 / 1024)));
+        states.add(getList("Free memory (MB)", "" + Runtime.getRuntime().freeMemory() / 1024 / 1024));
+        states.add(getList("Total memory (MB)", "" + Runtime.getRuntime().totalMemory() / 1024 / 1024));
+        states.add(getList("Number of sessions <br/>(remains for " + (Integer.parseInt(sessionTimeout) / 60) + " minutes after last request)", "" + CmsSessionContextListener.getActiveSessions()));
         states.add(getList("Number of request being handled now", "" + RequestAnalyser.getRequestAnalyser().getNumberOfCurrentRequests()));
         states.add(getList("Number of active request being handled now", "" + RequestAnalyser.getRequestAnalyser().getNumberOfActiveRequests()));
         states.add(getList("Total number of requests handled", "" + RequestAnalyser.getRequestAnalyser().getTotalNumberOfRequests()));
-        states.add(getList("Average processing time per request", "" + RequestAnalyser.getRequestAnalyser().getAverageElapsedTime() + " ms."));
-        states.add(getList("Slowest request", "" + RequestAnalyser.getRequestAnalyser().getMaxElapsedTime() + " ms."));
+        states.add(getList("Average processing time per request (ms)", "" + RequestAnalyser.getRequestAnalyser().getAverageElapsedTime()));
+        states.add(getList("Slowest request (ms)", "" + RequestAnalyser.getRequestAnalyser().getMaxElapsedTime()));
 		
         states.add(getList("<br/><strong>Latest publications</strong>", "&nbsp;"));
         List publications = RequestAnalyser.getRequestAnalyser().getLatestPublications();
@@ -446,15 +449,23 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
         	states.add(getList("Date:", "" + formatter.formatDate(publicationDate, "yyyy-MM-dd HH:mm:ss")));
         }
 		
-        states.add(getList("<br/><strong>Individual components</strong>", "&nbsp;"));
+        states.add(getList("<br/><strong>Individual components (in milliseconds)</strong>", "&nbsp;"));
+        
+        List unsortedComponents = new ArrayList();
         Set componentNames = RequestAnalyser.getAllComponentNames();
         Iterator componentNamesIterator = componentNames.iterator();
         while(componentNamesIterator.hasNext())
         {
         	String componentName = (String)componentNamesIterator.next();
         	long componentAverageElapsedTime = RequestAnalyser.getComponentAverageElapsedTime(componentName);
-        	states.add(getList("" + componentName, "" + componentAverageElapsedTime + " ms."));
+        	int componentNumberOfHits = RequestAnalyser.getComponentNumberOfHits(componentName);
+        	//states.add(getList("" + componentName + " - " + componentNumberOfHits + " hits", "" + componentAverageElapsedTime));
+        	unsortedComponents.add(getList("" + componentName + " - " + componentNumberOfHits + " hits", new Long(componentAverageElapsedTime)));
         }
+
+        Collections.sort(unsortedComponents, new AverageInvokingTimeComparator());
+        
+    	states.addAll(unsortedComponents);
 
         //states.add(getList("Number of request being handled now", "" + RequestAnalyser.getNumberOfCurrentRequests() + "(average request take " + (RequestAnalyser.getAverageTimeSpentOnOngoingRequests()) + " ms, max now is " + RequestAnalyser.getMaxTimeSpentOnOngoingRequests() + ")"));
         //states.add(getList("The slowest request handled now is", "" + ((RequestAnalyser.getLongestRequests() != null) ? RequestAnalyser.getLongestRequests().getAttribute("progress") : "")));

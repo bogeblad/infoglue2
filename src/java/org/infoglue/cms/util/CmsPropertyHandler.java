@@ -30,6 +30,7 @@ import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -77,6 +78,7 @@ public class CmsPropertyHandler
 	private static String contextRootPath 			= null;
 	private static String operatingMode				= null;
 	private static File propertyFile 				= null;
+	private static Date startupTime					= null;
 	
 	public static void setApplicationName(String theApplicationName)
 	{
@@ -97,7 +99,17 @@ public class CmsPropertyHandler
 	{
 		return applicationName;
 	}
-	
+
+	public static void setStartupTime(Date startupTime)
+	{
+		CmsPropertyHandler.startupTime = startupTime;
+	}
+
+	public static Date getStartupTime()
+	{
+		return startupTime;
+	}
+
 	public static void setPropertyFile(File aPropertyFile)
 	{
 		propertyFile = aPropertyFile;
