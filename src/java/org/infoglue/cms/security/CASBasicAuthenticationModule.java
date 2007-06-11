@@ -307,7 +307,7 @@ public class CASBasicAuthenticationModule extends AuthenticationModule//, Author
 		/* set its parameters */
 		pv.setCasValidateUrl(casValidateUrl);
 				
-		System.out.println("validating: " + casServiceUrl);
+		logger.info("validating: " + casServiceUrl);
 		pv.setService(URLEncoder.encode(casServiceUrl, "UTF-8"));
 
 		pv.setServiceTicket(ticket);
@@ -325,8 +325,7 @@ public class CASBasicAuthenticationModule extends AuthenticationModule//, Author
 		/* if we want to look at the raw response, we can use getResponse() */
 		String xmlResponse = pv.getResponse();
 		logger.info("xmlResponse:" + xmlResponse);
-		System.out.println("xmlResponse:" + xmlResponse);
-
+		
 		/* read the response */
 		if(pv.isAuthenticationSuccesful()) 
 		{
