@@ -4,6 +4,50 @@
 
 #beginManagementTool("tool.managementtool.viewSystemTools.header" "tool.managementtool.viewSystemTools.header" "")
 
+<script type="text/javascript">
+<!--
+function checkAll(element)
+{
+	if(element)
+	{
+		var length = element.length;
+	  	if(length == null)
+	  	{
+	  		element.checked = true;
+	  	}
+	  	else
+	  	{	
+		 	var field = element;
+		 	for (i = 0; i < field.length; i++)
+			{
+				field[i].checked = true;
+			}
+		}
+	}
+}
+
+function uncheckAll(element)
+{
+	if(element)
+	{
+		var length = element.length;
+	  	if(length == null)
+	  	{
+	  		element.checked = false;
+	  	}
+	  	else
+	  	{	
+		 	var field = element;
+		 	for (i = 0; i < field.length; i++)
+			{
+				field[i].checked = false;
+			}
+		}
+	}
+}
+-->
+</script>
+
 <div class="fullymarginalized" style="color: black;">
 
 	<h2>$ui.getString("tool.managementtool.archiveTool.header")</h2>
@@ -13,7 +57,7 @@
 	<p>
 		<form name="inputForm" action="ViewArchiveTool!inputArchiveOldAssets.action" method="POST">
  		
- 		$ui.getString("tool.managementtool.archiveAssets.assetSizeLabel"): 
+ 		$ui.getString("tool.managementtool.archiveAssets.assetSizeLabel"):
  		<select name="assetFileSizeLimit">
  			<option value="50000" #checkSelected("50000" "$assetFileSizeLimit")>50 KB</option>
  			<option value="100000" #checkSelected("100000" "$assetFileSizeLimit")>100 KB</option>
@@ -24,7 +68,7 @@
  			<option value="10000000" #checkSelected("10000000" "$assetFileSizeLimit")>10 MB</option>
  		</select>
  		<br/>
- 		$ui.getString("tool.managementtool.archiveAssets.numberOfNewerVersionsLabel"): 
+ 		$ui.getString("tool.managementtool.archiveAssets.numberOfNewerVersionsLabel"):
  		<select name="numberOfVersionsToKeep">
  			<option value="1" #checkSelected("1" "$numberOfVersionsToKeep")>1</option>
  			<option value="2" #checkSelected("2" "$numberOfVersionsToKeep")>2</option>
@@ -34,14 +78,36 @@
  			<option value="6" #checkSelected("6" "$numberOfVersionsToKeep")>6</option>
  		</select>
  		<br/>
+ 		Max assets:
+ 		<select name="assetNumberLimit">
+ 			<option value="1" #checkSelected("10" "$assetNumberLimit")>10</option>
+ 			<option value="2" #checkSelected("50" "$assetNumberLimit")>50</option>
+ 			<option value="3" #checkSelected("100" "$assetNumberLimit")>100</option>
+ 			<option value="4" #checkSelected("250" "$assetNumberLimit")>250</option>
+ 			<option value="5" #checkSelected("500" "$assetNumberLimit")>500</option>
+ 			<option value="6" #checkSelected("1000" "$assetNumberLimit")>1000</option>
+ 			<option value="6" #checkSelected("10000" "$assetNumberLimit")>10000</option>
+ 		</select>
+ 		<br/>
  		<br/>
  		<input type="submit" value="Calculate"/>
  		</form>
 	</p>
-	
+	<hr/>
 	<p>
  		<h3>$ui.getString("tool.managementtool.archiveAssets.foundAssetsLabel")</h3>		
-		<form name="inputForm" action="ViewArchiveTool!archiveOldAssets.action" method="POST">
+		<form name="resultForm" action="ViewArchiveTool!archiveOldAssets.action" method="POST">
+			
+			<a href="javascript:checkAll(document.resultForm.digitalAssetId);">
+			<img src="$ui.getString("images.contenttool.buttons.checkAll60x25")" width="60" height="25" border="0">
+			</a>
+			
+			<a href="javascript:uncheckAll(document.resultForm.digitalAssetId);">
+			<img src="$ui.getString("images.contenttool.buttons.uncheckAll60x25")" width="60" height="25" border="0">
+			</a>
+			
+			<br/>		
+			<br/>		
 		 	#foreach($digitalAssetVO in $optimizationBeanList.digitalAssetVOList)
 				<input type="checkbox" name="digitalAssetId" value="$digitalAssetVO.digitalAssetId"/>$digitalAssetVO.assetKey ($digitalAssetVO.assetFileSize bytes)<br>
 			#end

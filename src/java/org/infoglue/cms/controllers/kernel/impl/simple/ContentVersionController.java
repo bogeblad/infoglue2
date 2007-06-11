@@ -1466,7 +1466,7 @@ public class ContentVersionController extends BaseController
 	 * @throws SystemException 
 	 */
 	
-	public OptimizationBeanList getHeavyContentVersions(int numberOfVersionsToKeep, int assetSizeLimit) throws SystemException 
+	public OptimizationBeanList getHeavyContentVersions(int numberOfVersionsToKeep, int assetSizeLimit, int assetNumberLimit) throws SystemException 
 	{
     	Database db = CastorDatabaseService.getDatabase();
     	
@@ -1481,7 +1481,8 @@ public class ContentVersionController extends BaseController
         	
         	QueryResults results = oql.execute(Database.ReadOnly);
 			
-			while (results.hasMore()) 
+        	int i = 0;
+			while (results.hasMore() && i < assetNumberLimit) 
             {
 				boolean keep = true;
             	
@@ -1505,6 +1506,7 @@ public class ContentVersionController extends BaseController
             		//System.out.println("Adding asset:" + digitalAsset.getId() + ":" + digitalAsset.getAssetKey() + ":" + contentVersions.size());
 	            	optimizationBeanList.addDigitalAsset(digitalAsset);
 	            	optimizationBeanList.addEventVersions(toVOList(contentVersions));
+	            	i++;
             	}
             }
             

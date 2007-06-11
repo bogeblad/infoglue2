@@ -48,6 +48,7 @@ public class ViewArchiveToolAction extends InfoGlueAbstractAction
 	
 	private int numberOfVersionsToKeep = 3;
 	private int assetFileSizeLimit = 500000;
+	private int assetNumberLimit = 500;
 	private List optimizationBeanList = new ArrayList();
 	
 	private String[] digitalAssetId;
@@ -61,7 +62,7 @@ public class ViewArchiveToolAction extends InfoGlueAbstractAction
 
 	public String doInputArchiveOldAssets() throws Exception
     {
-		optimizationBeanList = ContentVersionController.getContentVersionController().getHeavyContentVersions(numberOfVersionsToKeep, assetFileSizeLimit);
+		optimizationBeanList = ContentVersionController.getContentVersionController().getHeavyContentVersions(numberOfVersionsToKeep, assetFileSizeLimit, assetNumberLimit);
         		
         return "inputArchiveOldAssets";
     }
@@ -132,6 +133,11 @@ public class ViewArchiveToolAction extends InfoGlueAbstractAction
 	public void setAssetFileSizeLimit(int assetFileSizeLimit) 
 	{
 		this.assetFileSizeLimit = assetFileSizeLimit;
+	}
+
+	public void setAssetNumberLimit(int assetNumberLimit) 
+	{
+		this.assetNumberLimit = assetNumberLimit;
 	}
 
 }
