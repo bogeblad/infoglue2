@@ -22,7 +22,7 @@ function reloadMenu()
 		<td colspan="2" class="biglabel">
 			<select name="newUserName" id="newUserName"> 	
 			#foreach ($user in $users)
-				<option id="$user.name">$user.name</option>
+				<option id="$user.name">$user.name - $!user.displayName</option>
 			#end
 			</select>
 		</td>
