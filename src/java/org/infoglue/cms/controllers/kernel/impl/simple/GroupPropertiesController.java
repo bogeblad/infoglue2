@@ -271,14 +271,21 @@ public class GroupPropertiesController extends BaseController
 		oql.bind(groupName);
 		oql.bind(languageId);
 
+		if(logger.isInfoEnabled())
+		{
+			logger.info("groupName:" + groupName);
+			logger.info("languageId:" + languageId);
+		}
+
 		QueryResults results;
 		if(readOnly)
 		{
+			logger.info("Fetching groupPropertiesList in readonly mode");
 		    results = oql.execute(Database.ReadOnly);
 		}
 		else
 		{
-			this.logger.info("Fetching groupPropertiesList in read/write mode");
+			logger.info("Fetching groupPropertiesList in read/write mode");
 		    results = oql.execute();
 		}   
 
