@@ -574,18 +574,25 @@ public class GroupPropertiesController extends BaseController
 	{
 		String value = "";
 		
+		logger.info("groupName: " + groupName);
+		logger.info("languageId: " + languageId);
+		logger.info("attributeName: " + attributeName);
 	    List groupPropertiesVO = this.getGroupPropertiesVOList(groupName, languageId, db);
-		Iterator iterator = groupPropertiesVO.iterator();
+		logger.info("groupPropertiesVO: " + groupPropertiesVO);
+	    Iterator iterator = groupPropertiesVO.iterator();
 		GroupPropertiesVO groupPropertyVO = null;
 		while(iterator.hasNext())
 		{
 	        groupPropertyVO = (GroupPropertiesVO)iterator.next();
+			logger.info("groupPropertyVO: " + groupPropertyVO.getId() + ":" + groupPropertyVO.getValue());
 	        break;
 	    }
 
+		logger.info("groupPropertyVO: " + groupPropertyVO);
 		if(groupPropertyVO != null)
 		{	
 			value = this.getAttributeValue(groupPropertyVO.getValue(), attributeName, false);
+			logger.info("value: " + value);
 		}
 		
 		return value;

@@ -40,6 +40,7 @@ import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.sorters.ReflectionComparator;
+import org.infoglue.deliver.util.Timer;
 
 import com.frovi.ss.Tree.BaseNode;
 import com.frovi.ss.Tree.BaseNodeSupplier;
@@ -67,6 +68,8 @@ public class ContentNodeSupplier extends BaseNodeSupplier
 		{
 		    this.infogluePrincipal = infogluePrincipal;
 		    
+			Timer t = new Timer();
+
 			vo = ContentControllerProxy.getController().getRootContentVO(repositoryId, infogluePrincipal.getName());
 			BaseNode rootNode =  new ContentNodeImpl();
 			rootNode.setChildren(true);
@@ -75,6 +78,9 @@ public class ContentNodeSupplier extends BaseNodeSupplier
 			rootNode.setContainer(vo.getIsBranch().booleanValue());	
 			
 			setRootNode(rootNode);
+
+			if(logger.isDebugEnabled())
+				t.printElapsedTime("root node processed");
 		}
 		catch (ConstraintException e)
 		{
@@ -101,6 +107,8 @@ public class ContentNodeSupplier extends BaseNodeSupplier
 		ArrayList ret = new ArrayList();
 		cacheLeafs = new ArrayList();
 		
+		Timer t = new Timer();
+
 		List children = null;
 		try
 		{
@@ -114,6 +122,9 @@ public class ContentNodeSupplier extends BaseNodeSupplier
 		{
 			logger.warn("Error getting Content Children", e);
 		}
+		
+		if(logger.isDebugEnabled())
+			t.printElapsedTime("got children");
 		
 		//Filter list on content type names if set such is stated
 		try
@@ -159,6 +170,9 @@ public class ContentNodeSupplier extends BaseNodeSupplier
 		    logger.warn("Error filtering Content Children", e);
 		}
 		
+		if(logger.isDebugEnabled())
+			t.printElapsedTime("Done filtering children");
+		
 		//Sort the tree nodes if setup to do so
 		String sortProperty = CmsPropertyHandler.getContentTreeSort();
 		if(sortProperty != null)
@@ -192,6 +206,9 @@ public class ContentNodeSupplier extends BaseNodeSupplier
 				}
 			}			
 		}
+
+		if(logger.isDebugEnabled())
+			t.printElapsedTime("Done sorting children");
 		
 		return ret;
 	}
