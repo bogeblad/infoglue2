@@ -179,7 +179,7 @@ public class ContentStateController extends BaseController
 				copyContentCategories(oldContentVersion, newContentVersion, db);
 
 				//Creating the event that will notify the editor...
-				if(!newContentVersion.getOwningContent().getContentTypeDefinition().getName().equalsIgnoreCase("Meta info"))
+				if(newContentVersion.getOwningContent().getContentTypeDefinition() != null && !newContentVersion.getOwningContent().getContentTypeDefinition().getName().equalsIgnoreCase("Meta info"))
 				{
 					EventVO eventVO = new EventVO();
 					eventVO.setDescription(newContentVersion.getVersionComment());
