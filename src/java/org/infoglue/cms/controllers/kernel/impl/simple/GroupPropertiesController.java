@@ -292,8 +292,11 @@ public class GroupPropertiesController extends BaseController
 		while (results.hasMore()) 
 		{
 			GroupProperties groupProperties = (GroupProperties)results.next();
+			logger.info("Found one:" + groupProperties);
 			groupPropertiesList.add(groupProperties);
 		}
+		
+		logger.info("In total:" + groupPropertiesList.size());
 
 		results.close();
 		oql.close();
