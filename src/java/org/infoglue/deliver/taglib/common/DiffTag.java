@@ -25,12 +25,13 @@ package org.infoglue.deliver.taglib.common;
 import javax.servlet.jsp.JspException;
 
 import org.infoglue.deliver.taglib.AbstractTag;
+import org.infoglue.deliver.taglib.component.ComponentLogicTag;
 
 /**
  * This tag display a diff view of two texts  
  */
 
-public class DiffTag extends AbstractTag 
+public class DiffTag extends ComponentLogicTag 
 {
 	/**
 	 * 
@@ -55,7 +56,8 @@ public class DiffTag extends AbstractTag
 	 */
 	public int doEndTag() throws JspException
     {
-		StringBuffer sb = new StringBuffer("<script type=\"text/javascript\" src=\"script/jsdiff.js\"></script>");
+		String contextPath = getController().getHttpServletRequest().getContextPath();
+		StringBuffer sb = new StringBuffer("<script type=\"text/javascript\" src=\"" + contextPath + "/script/jsdiff.js\"></script>");
 
 		sb.append("\n<script type=\"text/javascript\">\n");
 		sb.append("<!--\n");
