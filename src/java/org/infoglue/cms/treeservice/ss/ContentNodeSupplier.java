@@ -189,7 +189,9 @@ public class ContentNodeSupplier extends BaseNodeSupplier
 				node.setId(vo.getId());
 				node.setTitle(vo.getName());
 				
-				node.getParameters().put("contentTypeDefinitionId", vo.getContentTypeDefinitionId());
+				String disableCustomIcons = CmsPropertyHandler.getDisableCustomIcons();
+				if(disableCustomIcons == null || !disableCustomIcons.equals("true"))
+					node.getParameters().put("contentTypeDefinitionId", vo.getContentTypeDefinitionId());
 				
 				if (vo.getIsBranch().booleanValue())
 				{

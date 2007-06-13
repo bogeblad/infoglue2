@@ -645,6 +645,11 @@ public class CmsPropertyHandler
 	    return getServerNodeProperty("treemode", true, "dynamic");
 	}
 
+	public static String getDisableCustomIcons()
+	{
+	    return getServerNodeProperty("disableCustomIcons", true, "false");
+	}
+
 	public static String getPreviewDeliveryUrl()
 	{
 	    return getServerNodeProperty("previewDeliveryUrl", true);

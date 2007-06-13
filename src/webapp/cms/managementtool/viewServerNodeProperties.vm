@@ -306,6 +306,9 @@
 		<td>#editPropertyField("ServerNode.property.tree" "tree" "$this.getPropertyValue('tree')" "51" "$!serverNodeId")</td>
 	</tr>
 	<tr>
+		<td>#yesNoDropDownWithInherit("ServerNode.property.disableCustomIcons" "disableCustomIcons" "$this.getPropertyValue('disableCustomIcons')")</td>
+	</tr>
+	<tr>
 		<td>#editPropertyField("ServerNode.property.showComponentsFirst" "showComponentsFirst" "$this.getPropertyValue('showComponentsFirst')" "51" "$!serverNodeId")</td>
 	</tr>
 	<tr>

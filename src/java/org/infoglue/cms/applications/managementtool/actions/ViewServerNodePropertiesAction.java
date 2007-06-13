@@ -220,6 +220,7 @@ public class ViewServerNodePropertiesAction extends InfoGluePropertiesAbstractAc
 	    populate(ps, "showContentVersionFirst");
 	    populate(ps, "tree");
 	    populate(ps, "treemode");
+	    populate(ps, "disableCustomIcons");
 	    populate(ps, "showComponentsFirst");
 	    populate(ps, "showAllWorkflows");
 	    populate(ps, "editOnSight");
