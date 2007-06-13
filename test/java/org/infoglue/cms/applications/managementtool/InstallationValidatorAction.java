@@ -147,7 +147,8 @@ public class InstallationValidatorAction extends InfoGlueAbstractAction
             logger.error("An error occurred so we should not complete the transaction:" + e, e);
             throw new SystemException(e.getMessage());
         }
-
+        
+        /*
         try
         {
             validateAuthorization();
@@ -157,7 +158,8 @@ public class InstallationValidatorAction extends InfoGlueAbstractAction
             logger.error("An error occurred so we should not complete the transaction:" + e, e);
             throw new SystemException(e.getMessage());
         }
-
+		*/
+        
         return Action.SUCCESS;
     }
     

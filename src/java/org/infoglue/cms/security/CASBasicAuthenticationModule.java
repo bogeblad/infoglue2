@@ -420,7 +420,7 @@ public class CASBasicAuthenticationModule extends AuthenticationModule//, Author
 			}
 			*/
 		  	
-		  	System.out.println("originalFullURL:" + originalFullURL);
+		  	logger.info("originalFullURL:" + originalFullURL);
 		  	this.casServiceUrl = originalFullURL;
 		}
 
