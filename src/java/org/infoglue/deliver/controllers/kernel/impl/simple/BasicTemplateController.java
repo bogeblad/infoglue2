@@ -70,6 +70,7 @@ import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
 import org.infoglue.cms.controllers.kernel.impl.simple.CategoryConditions;
 import org.infoglue.cms.controllers.kernel.impl.simple.CategoryController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ExtendedSearchController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ExtendedSearchCriterias;
 import org.infoglue.cms.controllers.kernel.impl.simple.GroupControllerProxy;
@@ -591,6 +592,26 @@ public class BasicTemplateController implements TemplateController
 		}
 
 		return content;
+	}
+
+	/**
+	 * Getter for the most recent contentVersion based on a contentVersionId
+	 */
+	
+	public ContentVersionVO getContentVersionById(Integer contentVersionId)
+	{
+		ContentVersionVO contentVersionVO = null;
+
+		try
+		{
+		    contentVersionVO = ContentVersionController.getContentVersionController().getContentVersionWithId(contentVersionId, getDatabase()).getValueObject();
+		}
+		catch(Exception e)
+		{
+			logger.warn("An error occurred trying to get the contentVersion with contentVersionId " + contentVersionId + ":" + e.getMessage(), e);
+		}
+
+		return contentVersionVO;
 	}
 
 	/**

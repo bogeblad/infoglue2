@@ -38,6 +38,7 @@ public class ContentVersionTag extends TemplateControllerTag
 
 	private ContentVO content;
     private Integer languageId;
+	private Integer contentVersionId;
 	private boolean useLanguageFallback = true;
     
     public ContentVersionTag()
@@ -65,9 +66,19 @@ public class ContentVersionTag extends TemplateControllerTag
 	    if(this.languageId == null)
 	        this.languageId = getController().getLanguageId();
 	    
-		return getController().getContentVersion(content.getContentId(), languageId, useLanguageFallback);
+	    if(this.contentVersionId != null)
+	    	return getController().getContentVersion(contentVersionId);
+	    else if(this.content != null)
+	    	return getController().getContentVersion(content.getContentId(), languageId, useLanguageFallback);
+	    else
+	    	throw new JspException("Must state either content or contentVersionId");
 	}
 	
+    public void setContentVersionId(String contentVersionId) throws JspException
+    {
+        this.contentVersionId = evaluateInteger("contentVersion", "contentVersionId", contentVersionId);;
+    }
+
     public void setContent(String contentExp) throws JspException
     {
         this.content = (ContentVO)evaluate("contentVersion", "content", contentExp, ContentVO.class);

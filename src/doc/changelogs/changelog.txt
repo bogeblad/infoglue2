@@ -20,7 +20,7 @@ Abbreviated Changelog from 2.4.6 Final
 - Added new contentVersion tag for the cms workflows.
 - Made it possible to assign a return address on the createDigitalAsset action so the save button can lead to a different view.
 - Fixed bug in getMatchingContents which did not use the user db connection but started a new one.
-- Added check so it a user sends in null or a id less than 1 it returns null allways. Saves a lot of errors in the logfiles.
+- Added check so if a user sends in null or a id less than 1 it returns null allways. Saves a lot of errors in the logfiles.
 - Fixed bug with overriding references when deleting a sitenode. The old code did not correctly delete the binding and it resulted in an error.
 - Fixed issue with active users were counted wrong.
 - Added method to get when latest publications were made.
@@ -80,6 +80,7 @@ Abbreviated Changelog from 2.4.6 Final
 - Added app start date in application state and cleaned up so the data do not contain MB or ms in the text itself but rather on the labels.
 - Added possibility to move components up and down in a slot through the edit on sight feature. Previously only reachable through the page structure view.
 - Added possibility to turn off the custom icons in content tool tree as this is a huge performance issue on some browsers on mac.
+- Added possibility to use the contentVersionTag with contentVersionId instead of content and language. Not for normal use really but useful sometimes.
 
 -------------------------------------------------------------------------------------
 - InfoGlue 2.4.6 Final

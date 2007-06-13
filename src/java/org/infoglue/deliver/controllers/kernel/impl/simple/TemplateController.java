@@ -1117,6 +1117,12 @@ public interface TemplateController
 	public ContentVersionVO getContentVersion(Integer contentId, Integer languageId, boolean useLanguageFallback);
 
 	/**
+	 * Getter for the most recent contentVersion based on a contentVersionId
+	 */
+	
+	public ContentVersionVO getContentVersionById(Integer contentVersionId);
+
+	/**
 	 * Getter for all content versions of a content in a certain language or for all versions no matter language if languageId is null.
 	 */
 	
