@@ -67,7 +67,7 @@ public class ContentVersionTag extends TemplateControllerTag
 	        this.languageId = getController().getLanguageId();
 	    
 	    if(this.contentVersionId != null)
-	    	return getController().getContentVersion(contentVersionId);
+	    	return getController().getContentVersionById(contentVersionId);
 	    else if(this.content != null)
 	    	return getController().getContentVersion(content.getContentId(), languageId, useLanguageFallback);
 	    else
