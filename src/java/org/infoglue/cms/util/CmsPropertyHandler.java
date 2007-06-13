@@ -647,7 +647,7 @@ public class CmsPropertyHandler
 
 	public static String getDisableCustomIcons()
 	{
-	    return getServerNodeProperty("disableCustomIcons", true, "false");
+	    return getServerNodeProperty("disableCustomIcons", true, "true");
 	}
 
 	public static String getPreviewDeliveryUrl()
