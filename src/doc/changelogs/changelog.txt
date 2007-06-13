@@ -79,6 +79,7 @@ Abbreviated Changelog from 2.4.6 Final
 - Improved ViewApplicationState-view with sorting of components based on average time and also added how many hits the average was based on. 
 - Added app start date in application state and cleaned up so the data do not contain MB or ms in the text itself but rather on the labels.
 - Added possibility to move components up and down in a slot through the edit on sight feature. Previously only reachable through the page structure view.
+- Added possibility to turn off the custom icons in content tool tree as this is a huge performance issue on some browsers on mac.
 
 -------------------------------------------------------------------------------------
 - InfoGlue 2.4.6 Final
