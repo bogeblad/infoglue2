@@ -4,7 +4,9 @@
 
 Release notes
 ---------------------------------------
-The summer release 2007 of InfoGlue contains ....
+The summer release 2007 of InfoGlue contains the 2.4.2 version of the popular FCKEditor. It also contains a lot of 
+user-interface improvements. Last but not least as usual there are some bugfixes and stability improvements.
+
 
 Thanx to all involved!!
 
