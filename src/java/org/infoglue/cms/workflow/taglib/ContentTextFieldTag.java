@@ -22,6 +22,9 @@
 */
 package org.infoglue.cms.workflow.taglib;
 
+import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
+import org.infoglue.cms.entities.management.LanguageVO;
+
 /**
  * This class implements the &lt;iw:textfield&gt; tag, which presents an &lt;input type="text" ... /&gt; 
  * form element representing a content/content version attribute. 
@@ -35,6 +38,8 @@ public class ContentTextFieldTag extends ElementTag
 	 */
 	private static final long serialVersionUID = 925996908046500785L;
 
+	private boolean languageDependent = true;
+	
 	/**
 	 * Default constructor.
 	 */
@@ -54,6 +59,16 @@ public class ContentTextFieldTag extends ElementTag
 	}
 
 	/**
+	 * Sets the readonly attribute of the input element if the specified argument is true.
+	 * 
+	 * @param isReadonly indicates if the attribute should be set.
+	 */
+    public void setLanguageDependent(final boolean languageDependent) 
+    {
+    	this.languageDependent = languageDependent;
+    }
+
+	/**
 	 * Sets the name attribute of the input element. 
 	 * As an side-effect, the value attribute will also be set, where the value is
 	 * fetched from the propertyset using the specified name.
@@ -62,8 +77,27 @@ public class ContentTextFieldTag extends ElementTag
 	 */
 	public void setName(final String name) 
 	{
+		String languageCode = null;
+		
+		if(languageDependent)
+		{
+			try
+			{
+				String languageIdString = getPropertySet().getString("languageId");
+				LanguageVO languageVO = LanguageController.getController().getLanguageVOWithId(new Integer(languageIdString));
+				languageCode = languageVO.getLanguageCode();
+			}
+			catch (Exception e) 
+			{
+				e.printStackTrace();
+			}
+		}
+		
 		getElement().addAttribute("name", name);
-		getElement().addAttribute("value", getPropertySet().getDataString(name));
+		if(languageCode == null || languageCode.equals(""))
+			getElement().addAttribute("value", getPropertySet().getDataString(name));
+		else
+			getElement().addAttribute("value", getPropertySet().getDataString(languageCode + "_" + name));
 	}
 
 	/**
