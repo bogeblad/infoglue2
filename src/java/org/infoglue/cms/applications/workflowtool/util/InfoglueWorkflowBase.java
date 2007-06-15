@@ -225,7 +225,24 @@ public abstract class InfoglueWorkflowBase
 	{
 		return getParameter(key, true);
 	}
-	
+
+	/**
+	 * Returns the specified parameter if it exists; otherwise an exception is thrown.
+	 * Only use this method if the parameter is absolutely required.
+	 * 
+	 * @param name the name of the parameter.
+	 * @return the specified parameter.
+	 * @throws WorkflowException if the specified parameter doesn't exists.
+	 */
+	protected final String getParameterStringValue(final String key, final boolean required) throws WorkflowException 
+	{
+		Object o = getParameter(key, required);
+		if(o instanceof String[])
+			return ((String[])o)[0];
+		else
+			return (o == null ? null : o.toString());
+	}
+
 	/**
 	 * Returns the specified parameter if it exists; otherwise the default value.
 	 * 
