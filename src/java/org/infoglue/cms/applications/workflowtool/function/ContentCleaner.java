@@ -22,7 +22,13 @@
 */
 package org.infoglue.cms.applications.workflowtool.function;
 
+import java.util.Collection;
+import java.util.Iterator;
+
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
+import org.infoglue.cms.entities.content.Content;
+import org.infoglue.cms.entities.content.ContentVersion;
+import org.infoglue.cms.entities.content.ContentVersionVO;
 
 import com.opensymphony.workflow.WorkflowException;
 
@@ -40,7 +46,19 @@ public class ContentCleaner extends ContentFunction
 		{
 			if(getContentVO() != null)
 			{
-				ContentController.getContentController().delete(getContentVO(), getPrincipal(), getDatabase());
+				Content content = ContentController.getContentController().getContentWithId(getContentVO().getId(), getDatabase());
+				Collection versions = content.getContentVersions();
+				boolean hasPublishedVersion = false;
+				Iterator versionsIterator = versions.iterator();
+				while(versionsIterator.hasNext())
+				{
+					ContentVersion cv = (ContentVersion)versionsIterator.next();
+					if(cv.getStateId().intValue() == ContentVersionVO.PUBLISHED_STATE.intValue())
+						hasPublishedVersion = true;
+				}
+			
+				if(!hasPublishedVersion)
+					ContentController.getContentController().delete(getContentVO(), getPrincipal(), getDatabase());
 			}
 		} 
 		catch(Exception e) 
