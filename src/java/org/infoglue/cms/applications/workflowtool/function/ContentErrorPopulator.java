@@ -73,6 +73,8 @@ public class ContentErrorPopulator extends ErrorPopulator
 	{
 		clean(CONTENT_ERROR_PROPERTYSET_PREFIX);
 		clean(CONTENT_VERSION_ERROR_PROPERTYSET_PREFIX);
+		if(language != null)
+			clean(language.getLanguageCode() + "_" + CONTENT_VERSION_ERROR_PROPERTYSET_PREFIX);
 	}
 	
 	/**
@@ -80,7 +82,7 @@ public class ContentErrorPopulator extends ErrorPopulator
 	 */
 	protected void populate() throws WorkflowException
 	{
-		populate(new ContentFactory(contentTypeDefinitionVO, contentValues, contentVersionValues, getPrincipal(), language).validate());
+		populate(new ContentFactory(contentTypeDefinitionVO, contentValues, contentVersionValues, getPrincipal(), language).validate(), language.getLanguageCode());
 	}
 
 	/**

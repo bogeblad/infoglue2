@@ -63,7 +63,7 @@ public class UserErrorPopulator extends ErrorPopulator
 	protected void populate() throws WorkflowException 
 	{
 		final ConstraintExceptionBuffer ceb = systemUserVO.validate();
-		populate(ceb);
+		populate(ceb, null);
 		if(ceb.isEmpty())
 		{
 			checkUniqueUserName();

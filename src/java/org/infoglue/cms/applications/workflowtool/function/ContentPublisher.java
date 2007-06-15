@@ -23,11 +23,15 @@
 package org.infoglue.cms.applications.workflowtool.function;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentStateController;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
+import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
 import org.infoglue.cms.controllers.kernel.impl.simple.PublicationController;
 import org.infoglue.cms.entities.content.ContentVersionVO;
+import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.entities.publishing.PublicationVO;
 
 import com.opensymphony.workflow.WorkflowException;
@@ -46,7 +50,12 @@ public class ContentPublisher extends ContentFunction
 	 * 
 	 */
 	private static final String STATUS_NOK = "status.publish.nok";
-	
+
+	/**
+	 * 
+	 */
+	private static final String STATUS_MORE_VERSIONS = "status.publish.okwithmoreworkingversions";
+
 	/**
 	 * 
 	 */
@@ -71,7 +80,40 @@ public class ContentPublisher extends ContentFunction
 				final List events = new ArrayList();
 				ContentStateController.changeState(getContentVersionVO().getContentVersionId(), ContentVersionVO.PUBLISH_STATE, "Auto", false, getPrincipal(), getContentVO().getId(), getDatabase(), events);
 				PublicationController.getController().createAndPublish(createPublicationVO(), events, true, getPrincipal(), getDatabase());
-				setFunctionStatus(STATUS_OK);
+				
+				boolean ok = true;
+				
+				List languages = LanguageController.getController().getLanguageVOList(getContentVO().getRepositoryId(), getDatabase());
+				Iterator languageIterator = languages.iterator();
+				while(languageIterator.hasNext())
+				{
+					LanguageVO languageVO = (LanguageVO)languageIterator.next();
+					if(languageVO.getId().intValue() != getContentVersionVO().getLanguageId().intValue())
+					{
+						ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(getContentVO().getId(), languageVO.getId(), getDatabase());
+						if(contentVersionVO != null && contentVersionVO.getStateId().intValue() == ContentVersionVO.WORKING_STATE.intValue())
+						{
+							if(languageVO == null && propertySetContains(LanguageProvider.LANGUAGE_PROPERTYSET_KEY))
+							{
+								removeFromPropertySet(LanguageProvider.LANGUAGE_PROPERTYSET_KEY);
+							}
+							if(languageVO != null) 
+							{
+								setParameter(LanguageProvider.LANGUAGE_PARAMETER, languageVO);
+								setPropertySetString(LanguageProvider.LANGUAGE_PROPERTYSET_KEY, languageVO.getId().toString());
+								System.out.println("Setting propertySet languageId to " + languageVO.getName());
+							}
+							
+							setFunctionStatus(STATUS_MORE_VERSIONS);
+							ok = false;
+							
+							break;
+						}
+					}
+				}
+				
+				if(ok)
+					setFunctionStatus(STATUS_OK);
 			} 
 		} 
 		catch(Exception e) 

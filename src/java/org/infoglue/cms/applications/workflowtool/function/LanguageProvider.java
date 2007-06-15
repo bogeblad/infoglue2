@@ -42,17 +42,22 @@ public class LanguageProvider extends InfoglueFunction
 	/**
 	 * 
 	 */
-	private static final String LANGUAGE_PROPERTYSET_KEY  = "languageId";
+	public static final String LANGUAGE_PROPERTYSET_KEY  = "languageId";
 
 	/**
 	 * 
 	 */
-	private static final String LANGUAGE_CODE_ARGUMENT = "code";
+	public static final String LANGUAGE_CODE_ARGUMENT = "code";
 
 	/**
 	 * 
 	 */
-	private static final String LANGUAGE_ID_IDENTIFIER = "languageId";
+	public static final String ARGUMENT_SCOPE_ARGUMENT = "scope";
+
+	/**
+	 * 
+	 */
+	public static final String LANGUAGE_ID_IDENTIFIER = "languageId";
 
 	
 	
@@ -63,24 +68,50 @@ public class LanguageProvider extends InfoglueFunction
 	{
 		LanguageVO languageVO = null;
 
-		if(propertySetContains(LANGUAGE_PROPERTYSET_KEY))
+		if(argumentExists(ARGUMENT_SCOPE_ARGUMENT) && getArgument(ARGUMENT_SCOPE_ARGUMENT).equalsIgnoreCase("argument"))
 		{
-			languageVO = getLanguageWithID(getPropertySetString(LANGUAGE_PROPERTYSET_KEY));
+			languageVO = getLanguageWithCode(getArgument(LANGUAGE_CODE_ARGUMENT).toString());
 		}
-		if(languageVO == null && parameterExists(LANGUAGE_ID_IDENTIFIER))
+		else if(argumentExists(ARGUMENT_SCOPE_ARGUMENT) && getArgument(ARGUMENT_SCOPE_ARGUMENT).equalsIgnoreCase("parameter"))
 		{
-			languageVO = getLanguageWithID(getParameter(LANGUAGE_ID_IDENTIFIER).toString());
-		}
-		if(languageVO == null && argumentExists(LANGUAGE_CODE_ARGUMENT))
-		{
-			languageVO = getLanguageWithCode(getArgument(LANGUAGE_CODE_ARGUMENT));
+			String languageIdString = getParameterStringValue(LANGUAGE_ID_IDENTIFIER, false);
+			
+			if(argumentExists("parameterName"))
+			{
+				String parameterNameString = getArgument("parameterName");
+				if(parameterNameString != null && !parameterNameString.equals(""))
+				{
+					String altLanguageIdString = getParameterStringValue(parameterNameString, false);
+					if(altLanguageIdString != null && !altLanguageIdString.equals(""))
+						languageIdString = altLanguageIdString;
+				}
+			}
+			
+			if(languageIdString != null)
+				languageVO = getLanguageWithID(languageIdString);
 		}
 
 		if(languageVO == null)
 		{
-			languageVO = getAnyLanguage();
+			if(propertySetContains(LANGUAGE_PROPERTYSET_KEY))
+			{
+				languageVO = getLanguageWithID(getPropertySetString(LANGUAGE_PROPERTYSET_KEY));
+			}
+			if(languageVO == null && parameterExists(LANGUAGE_ID_IDENTIFIER))
+			{
+				languageVO = getLanguageWithID(getParameter(LANGUAGE_ID_IDENTIFIER).toString());
+			}
+			if(languageVO == null && argumentExists(LANGUAGE_CODE_ARGUMENT))
+			{
+				languageVO = getLanguageWithCode(getArgument(LANGUAGE_CODE_ARGUMENT));
+			}
+	
+			if(languageVO == null)
+			{
+				languageVO = getAnyLanguage();
+			}
 		}
-		
+
 		populate(languageVO);
 	}
 	

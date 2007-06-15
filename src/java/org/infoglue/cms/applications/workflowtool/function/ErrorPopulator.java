@@ -82,26 +82,26 @@ public abstract class ErrorPopulator extends InfoglueFunction
 		removeFromPropertySet(errorPrefix, true);
 	}
 
-	protected void populate(final ConstraintExceptionBuffer ceb) throws WorkflowException 
+	protected void populate(final ConstraintExceptionBuffer ceb, String languageCode) throws WorkflowException 
 	{
 		for(ConstraintException e = ceb.toConstraintException(); e != null; e = e.getChainedException())
 		{
-			populateError(e);
+			populateError(e, languageCode);
 		}
 	}
 	
 	/**
 	 * 
 	 */
-	private void populateError(final ConstraintException e) throws WorkflowException
+	private void populateError(final ConstraintException e, String languageCode) throws WorkflowException
 	{
-		setPropertySetString(getErrorKey(e), getStringManager().getString(e.getErrorCode()));
+		setPropertySetString(getErrorKey(e, languageCode), getStringManager().getString(e.getErrorCode()));
 	}
 	
 	/**
 	 * 
 	 */
-	private String getErrorKey(final ConstraintException e) 
+	private String getErrorKey(final ConstraintException e, String languageCode) 
 	{
 		// The field name has the form:
 		//   Content.<name> 
@@ -122,8 +122,11 @@ public abstract class ErrorPopulator extends InfoglueFunction
 		}
 		final String before = fieldName.substring(0, index).toLowerCase();
 		final String after  = fieldName.substring(index + 1);
-		final String key    = ERROR_PROPERTYSET_PREFIX + before + "_" + after;
+		String key    = ERROR_PROPERTYSET_PREFIX + before + "_" + after;
 		logger.debug("error field name converted from [" + fieldName  + "] to [" + before + "_" + after + "].");
+		
+		if(languageCode != null && !languageCode.equals(""))
+			key = languageCode + "_" + key;
 		
 		return key;
 	}

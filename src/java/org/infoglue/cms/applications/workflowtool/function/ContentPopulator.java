@@ -31,6 +31,7 @@ import org.infoglue.cms.applications.workflowtool.util.ContentVersionValues;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
 import org.infoglue.cms.entities.management.ContentTypeAttribute;
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
+import org.infoglue.cms.entities.management.LanguageVO;
 
 import com.opensymphony.workflow.WorkflowException;
 
@@ -54,6 +55,11 @@ public class ContentPopulator extends InfoglueFunction
 	/**
 	 * 
 	 */
+	public static final String CONTENT_VERSION_PROPERTYSET_LANGUAGE_PREFIX = "languageId_";
+
+	/**
+	 * 
+	 */
 	public static final String CONTENT_VALUES_PARAMETER = "contentValues";
 
 	/**
@@ -66,6 +72,10 @@ public class ContentPopulator extends InfoglueFunction
 	 */
 	private ContentTypeDefinitionVO contentTypeDefinitionVO;
 
+	/**
+	 * 
+	 */
+	private LanguageVO languageVO;
 	
 	
 	/**
@@ -84,6 +94,7 @@ public class ContentPopulator extends InfoglueFunction
 	{
 		super.initialize();
 		contentTypeDefinitionVO = (ContentTypeDefinitionVO) getParameter(ContentTypeDefinitionProvider.CONTENT_TYPE_DEFINITION_PARAMETER);
+		languageVO = (LanguageVO) getParameter(LanguageProvider.LANGUAGE_PARAMETER);
 	}
 	
 	/**
@@ -122,14 +133,22 @@ public class ContentPopulator extends InfoglueFunction
 	{
 		if(parameterExists(name)) 
 		{
-			setPropertySetDataString(name, getRequestParameter(name));
+			if(languageVO == null)
+				setPropertySetDataString(name, getRequestParameter(name));
+			else
+				setPropertySetDataString(languageVO.getLanguageCode() + "_" + name, getRequestParameter(name));
+				
 			logger.debug(name + " is found in the request; propertyset updated.");
 		} 
 		else
 		{
 			logger.debug(name + " is not found in the request; propertyset not updated.");
 		}
-		return propertySetContains(name) ? getPropertySetDataString(name) : "";
+		if(languageVO == null)
+			return propertySetContains(name) ? getPropertySetDataString(name) : "";
+		else
+			return propertySetContains(languageVO.getLanguageCode() + "_" + name) ? getPropertySetDataString(languageVO.getLanguageCode() + "_" + name) : "";
+				
 	}
 	/**
 	 * 

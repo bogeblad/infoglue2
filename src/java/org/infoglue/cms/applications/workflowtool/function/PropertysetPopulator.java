@@ -24,6 +24,8 @@ package org.infoglue.cms.applications.workflowtool.function;
 
 import java.util.Iterator;
 
+import org.infoglue.cms.entities.management.LanguageVO;
+
 import com.opensymphony.workflow.WorkflowException;
 
 /**
@@ -40,6 +42,11 @@ public class PropertysetPopulator extends InfoglueFunction
 	 * 
 	 */
 	private String prefix;
+
+	/**
+	 * 
+	 */
+	private LanguageVO languageVO;
 
 	
 	
@@ -84,6 +91,7 @@ public class PropertysetPopulator extends InfoglueFunction
 	{
 		super.initialize();
 		prefix = getArgument(PREFIX_ARGUMENT);
+		languageVO = (LanguageVO) getParameter(LanguageProvider.LANGUAGE_PARAMETER);
 	}
 	
 	/**
