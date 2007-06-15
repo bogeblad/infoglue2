@@ -211,12 +211,19 @@ public class ContentFactory
 		{
 			final Content content = ContentControllerProxy.getContentController().getContentWithId(contentVO.getId(), db);
 			content.setValueObject(contentVO);
-			
 			final ContentVersion contentVersion = ContentVersionController.getContentVersionController().getLatestActiveContentVersion(content.getId(), language.getId(), db);
-			contentVersion.getValueObject().setVersionValue(contentVersionVO.getVersionValue());
+			if(contentVersion != null)
+			{
+				contentVersion.getValueObject().setVersionValue(contentVersionVO.getVersionValue());
+				deleteCategories(contentVersion);
+				createCategories(contentVersion, categories);
+			}
+			else
+			{
+				final ContentVersion newContentVersion = ContentVersionController.getContentVersionController().create(content.getId(), language.getId(), contentVersionVO, null, db);
+				createCategories(newContentVersion, categories);
+			}
 			
-			deleteCategories(contentVersion);
-			createCategories(contentVersion, categories);
 			return content.getValueObject();
 	    } 
 		catch(Exception e) 
