@@ -80,7 +80,7 @@ public abstract class ContentBooleanFieldTag extends ElementTag
     {
     	this.languageDependent = languageDependent;
     }
-
+	
 	/**
 	 * Returns true if the form element should be checked. That will
 	 * be te case if the value of the represented attribute equals the value of the
@@ -117,9 +117,15 @@ public abstract class ContentBooleanFieldTag extends ElementTag
 		getElement().addAttribute("name", name);
 
 		if(languageCode == null || languageCode.equals(""))
+		{
 			checked = getPropertySet().getDataString(name);
+		}
 		else
+		{
 			checked = getPropertySet().getDataString(languageCode + "_" + name);
+			if(checked == null || checked.equals(""))
+				checked = getPropertySet().getDataString(name);
+		}	
 
 		//checked = getPropertySet().getDataString(name);
 	}
@@ -134,4 +140,5 @@ public abstract class ContentBooleanFieldTag extends ElementTag
 		getElement().addAttribute("value", value);
 		this.value = value; 
 	}
+
 }

@@ -53,4 +53,9 @@ public class ContentCheckboxFieldTag extends ContentBooleanFieldTag
 	{
 		return new Element("input").addAttribute("type", "checkbox");
 	}
+	
+	public void setChecked(final String checked) 
+	{
+		getElement().addAttribute("checked", checked);
+	}
 }

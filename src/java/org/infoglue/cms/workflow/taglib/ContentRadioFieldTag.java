@@ -53,4 +53,10 @@ public class ContentRadioFieldTag extends ContentBooleanFieldTag
 	{
 		return new Element("input").addAttribute("type", "radio");
 	}
+	
+	public void setSelected(final String selected) 
+	{
+		getElement().addAttribute("selected", selected);
+	}
+
 }
