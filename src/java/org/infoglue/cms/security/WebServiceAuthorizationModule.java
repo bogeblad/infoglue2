@@ -133,6 +133,7 @@ public class WebServiceAuthorizationModule implements AuthorizationModule, Seria
 			else
 			{
 				infogluePrincipal = (InfoGluePrincipal)infogluePrincipalObject;
+				logger.warn("Returning cached user:" + userName + ":" + infogluePrincipal);
 				if(logger.isDebugEnabled())
 					logger.info("Returning cached user:" + userName + ":" + infogluePrincipal);
 				return infogluePrincipal;
@@ -165,7 +166,7 @@ public class WebServiceAuthorizationModule implements AuthorizationModule, Seria
 					if(errorIdElement != null)
 					{
 						Element errorMessageElement = (Element)document.selectSingleNode("/error/message");
-						throw new Exception("Error reported by webservice:" + errorMessageElement.getText() + "(" + errorIdElement.getText() + ")");
+						throw new Exception("Error reported by webservice: " + errorMessageElement.getText() + "(" + errorIdElement.getText() + ") - for user '" + userName + "'\n\n" + xml);
 					}
 					
 					Element firstNameElement 	= (Element)document.selectSingleNode("/user/firstName");
