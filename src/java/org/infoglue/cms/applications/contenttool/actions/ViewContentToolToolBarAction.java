@@ -292,7 +292,12 @@ public class ViewContentToolToolBarAction extends InfoGlueAbstractAction
 			moveButton.getSubButtons().add(getMoveMultipleButton());
 			buttons.add(moveButton);
 			
-			buttons.add(getDeleteButton());
+			ImageButton deleteButton = getDeleteButton();
+			ImageButton deleteChildrenButton = getDeleteChildrenButton();
+			deleteButton.getSubButtons().add(deleteChildrenButton);
+			
+			buttons.add(deleteButton);
+			
 			buttons.add(getPublishButton());
 			//if(hasAnyPublishedVersion())
 			//{
@@ -520,6 +525,18 @@ public class ViewContentToolToolBarAction extends InfoGlueAbstractAction
 		{
 			String url = "Confirm.action?header=tool.contenttool.deleteContent.header&yesDestination=" + URLEncoder.encode(URLEncoder.encode("DeleteContent.action?contentId=" + this.contentId + "&repositoryId=" + this.repositoryId + "&changeTypeId=4", "UTF-8"), "UTF-8") + "&noDestination=" + URLEncoder.encode(URLEncoder.encode("ViewContent.action?title=Content&contentId=" + this.contentId + "&repositoryId=" + this.repositoryId, "UTF-8"), "UTF-8") + "&message=tool.contenttool.deleteContent.text";
 			return new ImageButton(url, getLocalizedString(getSession().getLocale(), "images.contenttool.buttons.deleteContent"), "tool.contenttool.deleteContent.header");
+		}
+		catch(Exception e){e.printStackTrace();}
+
+		return null;
+	}
+
+	private ImageButton getDeleteChildrenButton()
+	{
+		try
+		{
+			String url = "Confirm.action?header=tool.contenttool.deleteContentChildren.header&yesDestination=" + URLEncoder.encode(URLEncoder.encode("DeleteContentChildren.action?contentId=" + this.contentId + "&repositoryId=" + this.repositoryId + "&changeTypeId=4", "UTF-8"), "UTF-8") + "&noDestination=" + URLEncoder.encode(URLEncoder.encode("ViewContent.action?title=Content&contentId=" + this.contentId + "&repositoryId=" + this.repositoryId, "UTF-8"), "UTF-8") + "&message=tool.contenttool.deleteContentChildren.text";
+			return new ImageButton(url, getLocalizedString(getSession().getLocale(), "images.contenttool.buttons.deleteChildren"), "tool.contenttool.deleteChildren.header");
 		}
 		catch(Exception e){e.printStackTrace();}
 

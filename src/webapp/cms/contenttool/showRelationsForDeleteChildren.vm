@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+ 
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+#beginContentTool("tool.contenttool.deleteContentChildren.header" "tool.contenttool.deleteContentChildren.header" "contentId=$originalContentId&repositoryId=$!repositoryId&isBranch=$isBranch" "null" "null" "null")
+
+<script language="JavaScript">
+<!--
+	
+	
+-->
+</script>
+
+<div class="fullymarginalized">
+<form method="POST" name="editForm" action="DeleteContentChildren.action">
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+	<tr>
+		<td colspan="7" class="label">
+			$ui.getString("tool.contenttool.fixReferencesBeforeDelete.header")
+		</td>
+	</tr>
+	<tr>
+		<td colspan="7"><img src="images/trans.gif" height="10" width="1"></td>
+	</tr>
+	<tr class="darkgreen">
+		<td class="smalllabel" colspan="7" width="100%">$ui.getString("tool.contenttool.siteNodeReferences.header")</td>
+	</tr>
+	<tr>
+		<td bgcolor="#EEF7DC" colspan="7" height="1"><img src="images/trans.gif" width="1" height="1"></td>
+	</tr>
+	<tr>
+		<td bgcolor="#C7D1B3" colspan="7" height="1"><img src="images/trans.gif" width="1" height="1"></td>
+	</tr>
+	#set($hasPageReferences = false)
+	#set($isOdd = true)
+	#foreach ($referenceBean in $referenceBeanList)
+		#if($referenceBean.referencingCompletingObject.class.name.indexOf("SiteNode") > -1)
+			#set($hasPageReferences = true)
+			#if($isOdd)
+				#set($class = "class='lightgreen'")
+				#set($isOdd = false)
+			#else
+				#set($class = "class='white'")
+				#set($isOdd = true)
+			#end
+			<tr $class>
+				<td><img src="images/tree/structureRoot.gif"></td>
+				<td colspan="3" width="100%"><a href="DeleteContentChildren!fixPage.action?siteNodeId=$referenceBean.referencingCompletingObject.siteNodeId&contentId=-1" target="_blank">$referenceBean.name</a> #if($referenceBean.registryVOList.size() > 1)- $referenceBean.registryVOList.size() $ui.getString("tool.structuretool.referencesFound")#end</td>
+				<td nowrap="1"><!--<a href="DeleteContentChildren!deleteReference.action?contentId=$originalContentId#foreach($registryVO in $referenceBean.registryVOList)&registryId=$registryVO.id#end"><img src="images/delete.gif" border="0"></a><img src="images/trans.gif" border="0" width="5" height="5">--></td>
+				<td><a href="DeleteContentChildren!fixPage.action?siteNodeId=$referenceBean.referencingCompletingObject.siteNodeId&contentId=-1" target="_blank"><img src="images/edit.gif" border="0"></a></td>
+				<td nowrap="1"><a href="DeleteContentChildren!deleteReference.action?contentId=$originalContentId#foreach($version in $referenceBean.versions)#foreach($registryVO in $version.registryVOList)&registryId=$registryVO.id#end#end"><img src="images/ok_icon.gif" border="0"></a><img src="images/trans.gif" border="0" width="5" height="5"></td>
+			</tr>																						  		
+		#end
+	#end
+	#if(!$hasPageReferences)
+		<tr $class>
+			<td colspan="7">$ui.getString("tool.contenttool.noPageReferencesFound")</td>		
+		</tr>	
+	#end
+	
+	<tr>
+		<td colspan="7"><img src="images/trans.gif" height="10" width="1"></td>
+	</tr>
+	<tr class="darkgreen">
+		<td class="smalllabel" colspan="7" width="100%">$ui.getString("tool.contenttool.contentVersionReferences.header")</td>
+	</tr>
+	<tr>
+		<td bgcolor="#EEF7DC" colspan="7" height="1"><img src="images/trans.gif" width="1" height="1"></td>
+	</tr>
+	<tr>
+		<td bgcolor="#C7D1B3" colspan="7" height="1"><img src="images/trans.gif" width="1" height="1"></td>
+	</tr>
+	#set($hasContentReferences = false)
+	#set($isOdd = true)
+	#foreach ($referenceBean in $referenceBeanList)
+		#if($referenceBean.referencingCompletingObject.class.name.indexOf("Content") > -1)
+			#set($hasContentReferences = true)
+			#set($lastIndex = $referenceBean.versions.size() - 1)
+			#set($languageId = $referenceBean.versions.get($lastIndex).referencingObject.languageId)
+			#if($isOdd)
+				#set($class = "class='lightgreen'")
+				#set($isOdd = false)
+			#else
+				#set($class = "class='white'")
+				#set($isOdd = true)	
+			#end
+			<tr $class>
+				<td><img src="images/tree/contentRoot.gif"></td>
+				<td colspan="3" width="100%"><a href="ViewContentVersion!standalone.action?contentId=$referenceBean.referencingCompletingObject.contentId&languageId=$languageId" target="_blank">$referenceBean.name</a> #if($referenceBean.registryVOList.size() > 1)- $referenceBean.registryVOList.size() $ui.getString("tool.structuretool.referencesFound")#end</td>
+				<td nowrap="1"><!--<a href="#"><img src="images/delete.gif" border="0"></a><img src="images/trans.gif" border="0" width="5" height="5">--></td>
+				<td nowrap="1"><a href="ViewContentVersion!standalone.action?contentId=$referenceBean.referencingCompletingObject.contentId&languageId=$languageId" target="_blank"><img src="images/edit.gif" border="0"></a><img src="images/trans.gif" border="0" width="5" height="5"></td>
+				<td nowrap="1"><a href="DeleteContentChildren!deleteReference.action?contentId=$originalContentId#foreach($version in $referenceBean.versions)#foreach($registryVO in $version.registryVOList)&registryId=$registryVO.id#end#end"><img src="images/ok_icon.gif" border="0"></a><img src="images/trans.gif" border="0" width="5" height="5"></td>		
+			</tr>																						 		
+		#end
+	#end
+	#if(!$hasContentReferences)
+		<tr $class>
+			<td colspan="7">$ui.getString("tool.structuretool.noContentReferencesFound")</td>		
+		</tr>	
+	#end
+
+</table>
+</div>
+
+#endContentTool()

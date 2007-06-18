@@ -1,4 +1,4 @@
-<!-- $Id: actions.xml,v 1.41 2007/06/01 11:12:08 mattias Exp $ -->
+<!-- $Id: actions.xml,v 1.42 2007/06/18 19:17:12 mattias Exp $ -->
 <actions>
 
 	<!-- MySettings -->
@@ -749,6 +749,15 @@
 		<view name="success">ViewContent.action?stay=true</view>
 		<view name="showRelations">/cms/contenttool/showRelations.vm</view>
 		<view name="successStandalone">/cms/contenttool/operationSucceeded.vm</view>
+		<view name="fixPage">/cms/contenttool/fixPage.vm</view>
+		<view name="fixPageHeader">/cms/contenttool/fixPageHeader.vm</view>
+		<view name="input">/cms/contenttool/showConstraintException.vm</view>
+		<view name="error">/cms/contenttool/error.vm</view>
+		<view name="accessDenied">/cms/contenttool/viewConstraintException.vm</view>
+	</action>
+	<action name="org.infoglue.cms.applications.contenttool.actions.DeleteContentChildrenAction" alias="DeleteContentChildren">
+		<view name="success">ViewContent.action?stay=true</view>
+		<view name="showRelations">/cms/contenttool/showRelationsForDeleteChildren.vm</view>
 		<view name="fixPage">/cms/contenttool/fixPage.vm</view>
 		<view name="fixPageHeader">/cms/contenttool/fixPageHeader.vm</view>
 		<view name="input">/cms/contenttool/showConstraintException.vm</view>
