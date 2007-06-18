@@ -25,6 +25,9 @@ package org.infoglue.cms.workflow.taglib;
 
 import javax.servlet.jsp.JspException;
 
+import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
+import org.infoglue.cms.entities.management.LanguageVO;
+
 
 /**
  * Base class for tags presenting checkbox/radio form elements representing a content/content version attribute. 
@@ -42,6 +45,9 @@ public abstract class ContentBooleanFieldTag extends ElementTag
 	 * The value of the represented content/content version attribute.
 	 */
 	private String checked;
+	
+	private boolean languageDependent = true;
+	private String languageCode = null;
 	
 	/**
 	 * Default constructor.
@@ -66,6 +72,16 @@ public abstract class ContentBooleanFieldTag extends ElementTag
 	}
 	
 	/**
+	 * Sets the readonly attribute of the input element if the specified argument is true.
+	 * 
+	 * @param isReadonly indicates if the attribute should be set.
+	 */
+    public void setLanguageDependent(final boolean languageDependent) 
+    {
+    	this.languageDependent = languageDependent;
+    }
+
+	/**
 	 * Returns true if the form element should be checked. That will
 	 * be te case if the value of the represented attribute equals the value of the
 	 * form element.
@@ -84,8 +100,28 @@ public abstract class ContentBooleanFieldTag extends ElementTag
 	 */
 	public void setName(final String name) 
 	{
+		if(languageDependent)
+		{
+			try
+			{
+				String languageIdString = getPropertySet().getString("languageId");
+				LanguageVO languageVO = LanguageController.getController().getLanguageVOWithId(new Integer(languageIdString));
+				languageCode = languageVO.getLanguageCode();
+			}
+			catch (Exception e) 
+			{
+				e.printStackTrace();
+			}
+		}
+
 		getElement().addAttribute("name", name);
-		checked = getPropertySet().getDataString(name);
+
+		if(languageCode == null || languageCode.equals(""))
+			checked = getPropertySet().getDataString(name);
+		else
+			checked = getPropertySet().getDataString(languageCode + "_" + name);
+
+		//checked = getPropertySet().getDataString(name);
 	}
 
 	/**
