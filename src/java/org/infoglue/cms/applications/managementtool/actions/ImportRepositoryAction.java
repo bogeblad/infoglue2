@@ -201,6 +201,8 @@ public class ImportRepositoryAction extends InfoGlueAbstractAction
 			
 			List allContents = new ArrayList();
 			List allSiteNodes = new ArrayList();
+			
+			Map<String, AvailableServiceBinding> readAvailableServiceBindings = new HashMap<String, AvailableServiceBinding>();
 
 			Iterator readSiteNodesIterator = readSiteNodes.iterator();
 			while(readSiteNodesIterator.hasNext())
@@ -260,7 +262,7 @@ public class ImportRepositoryAction extends InfoGlueAbstractAction
 				readSiteNode.setRepository((RepositoryImpl)repositoryRead);
 				
 				createContents(readContent, contentIdMap, contentTypeIdMap, allContents, Collections.unmodifiableCollection(contentTypeDefinitions), categoryIdMap, version, db);
-				createStructure(readSiteNode, contentIdMap, siteNodeIdMap, allSiteNodes, db);
+				createStructure(readSiteNode, contentIdMap, siteNodeIdMap, readAvailableServiceBindings, allSiteNodes, db);
 			}
 						
 			List allContentIds = new ArrayList();
@@ -409,7 +411,7 @@ public class ImportRepositoryAction extends InfoGlueAbstractAction
 	 * @param db
 	 * @throws Exception
 	 */
-	private void createStructure(SiteNode siteNode, Map contentIdMap, Map siteNodeIdMap, List allSiteNodes, Database db) throws Exception
+	private void createStructure(SiteNode siteNode, Map contentIdMap, Map siteNodeIdMap, Map readAvailableServiceBindings, List allSiteNodes, Database db) throws Exception
 	{
 		logger.info("siteNode:" + siteNode.getName());
 
@@ -459,7 +461,7 @@ public class ImportRepositoryAction extends InfoGlueAbstractAction
 				SiteNode childSiteNode = (SiteNode)childSiteNodesIterator.next();
 				childSiteNode.setRepository(siteNode.getRepository());
 				childSiteNode.setParentSiteNode((SiteNodeImpl)siteNode);
-				createStructure(childSiteNode, contentIdMap, siteNodeIdMap, allSiteNodes, db);
+				createStructure(childSiteNode, contentIdMap, siteNodeIdMap, readAvailableServiceBindings, allSiteNodes, db);
 			}
 		}
 
@@ -503,9 +505,7 @@ public class ImportRepositoryAction extends InfoGlueAbstractAction
 			siteNodeVersion.setOwningSiteNode((SiteNodeImpl)siteNode);
 			
 			db.create(siteNodeVersion);
-			
-			HashMap readAvailableServiceBindings = new HashMap();
-			
+						
 			Iterator serviceBindingsIterator = serviceBindings.iterator();
 			while(serviceBindingsIterator.hasNext())
 			{
@@ -527,12 +527,15 @@ public class ImportRepositoryAction extends InfoGlueAbstractAction
 				AvailableServiceBinding originalAvailableServiceBinding = serviceBinding.getAvailableServiceBinding();
 				String availableServiceBindingName = originalAvailableServiceBinding.getName();
 				logger.info("availableServiceBindingName:" + availableServiceBindingName);
+				logger.info("readAvailableServiceBindings:" + readAvailableServiceBindings.size() + ":" + readAvailableServiceBindings.containsKey(availableServiceBindingName));
 				AvailableServiceBinding availableServiceBinding = (AvailableServiceBinding)readAvailableServiceBindings.get(availableServiceBindingName);
+				logger.info("availableServiceBinding:" + availableServiceBinding);
 				if(availableServiceBinding == null)
 				{
 					availableServiceBinding = AvailableServiceBindingController.getController().getAvailableServiceBindingWithName(availableServiceBindingName, db, false);
+					logger.info("Read availableServiceBinding from database:" + availableServiceBindingName + "=" + availableServiceBinding);
 					readAvailableServiceBindings.put(availableServiceBindingName, availableServiceBinding);
-					//System.out.println("Read it once:" + availableServiceBindingName);
+					logger.info("readAvailableServiceBindings:" + readAvailableServiceBindings.size() + ":" + readAvailableServiceBindings.containsKey(availableServiceBindingName));
 				}
 				
 				if(availableServiceBinding == null)
