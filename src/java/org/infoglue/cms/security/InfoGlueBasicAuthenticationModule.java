@@ -89,7 +89,6 @@ public class InfoGlueBasicAuthenticationModule extends AuthenticationModule
 		
 			    md.update(password.getBytes("utf-8"));
 			    String digestedPassword = new String(md.digest());
-			    System.out.println("digestedPassword:" + digestedPassword);
 			    password = digestedPassword;
 			}
 			catch(Exception e)

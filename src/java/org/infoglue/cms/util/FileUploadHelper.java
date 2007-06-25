@@ -109,16 +109,16 @@ public class FileUploadHelper
 	    try
 	    {
 	        File tempDir = new File("c:/temp/uploads");
-	        System.out.println("tempDir:" + tempDir.exists());
+	        logger.info("tempDir:" + tempDir.exists());
 	        
 	        DiskFileItemFactory factory = new DiskFileItemFactory(1000, tempDir);
 	        ServletFileUpload upload = new ServletFileUpload(factory);
 	        if(ServletFileUpload.isMultipartContent((HttpServletRequest)req))
 	        {
 	            List fileItems = upload.parseRequest((HttpServletRequest)req);
-	            System.out.println("******************************");
-	            System.out.println("fileItems:" + fileItems.size());
-	            System.out.println("******************************");
+	            logger.info("******************************");
+	            logger.info("fileItems:" + fileItems.size());
+	            logger.info("******************************");
 	            req.setAttribute("Test", "Mattias Testar");
 	            
 	            Iterator i = fileItems.iterator();
@@ -126,8 +126,8 @@ public class FileUploadHelper
 		        {
 		            Object o = i.next();
 		            DiskFileItem dfi = (DiskFileItem)o;
-		            System.out.println("dfi:" + dfi.getFieldName());
-		            System.out.println("dfi:" + dfi);
+		            logger.info("dfi:" + dfi.getFieldName());
+		            logger.info("dfi:" + dfi);
 		            
 		            if (!dfi.isFormField()) {
 		                String fieldName = dfi.getFieldName();
@@ -136,11 +136,11 @@ public class FileUploadHelper
 		                boolean isInMemory = dfi.isInMemory();
 		                long sizeInBytes = dfi.getSize();
 		                
-		                System.out.println("fieldName:" + fieldName);
-		                System.out.println("fileName:" + fileName);
-		                System.out.println("contentType:" + contentType);
-		                System.out.println("isInMemory:" + isInMemory);
-		                System.out.println("sizeInBytes:" + sizeInBytes);
+		                logger.info("fieldName:" + fieldName);
+		                logger.info("fileName:" + fileName);
+		                logger.info("contentType:" + contentType);
+		                logger.info("isInMemory:" + isInMemory);
+		                logger.info("sizeInBytes:" + sizeInBytes);
 		                File uploadedFile = new File("c:/temp/uploads/" + fileName);
 		                dfi.write(uploadedFile);
 	

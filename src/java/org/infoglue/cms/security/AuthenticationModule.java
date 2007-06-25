@@ -62,15 +62,6 @@ public abstract class AuthenticationModule
 		    String casServiceUrl 		= InfoGlueAuthenticationFilter.casServiceUrl;
 		    String casValidateUrl 		= InfoGlueAuthenticationFilter.casValidateUrl;
 		    String casLogoutUrl 		= InfoGlueAuthenticationFilter.casLogoutUrl;
-
-		    /*	
-		    System.out.println("**********************************************");
-		    System.out.println("authenticatorClass:" + authenticatorClass);
-		    System.out.println("authorizerClass:" + authorizerClass);
-		    System.out.println("loginUrl:" + loginUrl);
-		    System.out.println("logoutUrl:" + logoutUrl);
-		    System.out.println("**********************************************");
-		    */
 		    
 		    authenticationModule = (AuthenticationModule)Class.forName(authenticatorClass).newInstance();
 			authenticationModule.setAuthenticatorClass(authenticatorClass);

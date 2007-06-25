@@ -355,7 +355,6 @@ public class SystemUserController extends BaseController
 	
 		    md.update(systemUserVO.getPassword().getBytes("utf-8"));
 		    String digestedPassword = new String(md.digest());
-		    System.out.println("digestedPassword:" + digestedPassword);
 		    systemUserVO.setPassword(digestedPassword);
     	}
     	catch(Exception e)
@@ -383,7 +382,6 @@ public class SystemUserController extends BaseController
 	
 		    md.update(systemUserVO.getPassword().getBytes("utf-8"));
 		    String digestedPassword = new String(md.digest());
-		    System.out.println("digestedPassword:" + digestedPassword);
 		    systemUserVO.setPassword(digestedPassword);
     	}
     	catch(Exception e)

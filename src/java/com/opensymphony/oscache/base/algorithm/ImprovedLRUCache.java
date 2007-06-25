@@ -22,7 +22,7 @@ import java.util.*;
  * <code>AbstractConcurrentReadCache</code> already takes care of any
  * synchronization requirements.</p>
  *
- * @version        $Revision: 1.1 $
+ * @version        $Revision: 1.2 $
  * @author <a href="mailto:salaman@teknos.com">Victor Salaman</a>
  * @author <a href="mailto:fbeauregard@pyxis-tech.com">Francois Beauregard</a>
  * @author <a href="mailto:abergevin@pyxis-tech.com">Alain Bergevin</a>
@@ -153,7 +153,6 @@ public class ImprovedLRUCache extends AbstractConcurrentReadCache
         	Iterator it = list.iterator();
         	toRemove = it.next();
         	it.remove();
-        	System.out.println("Trying to really clear it...");
         	this.remove(toRemove);
     	}
 

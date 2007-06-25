@@ -303,7 +303,6 @@ public class InterceptionPointController extends BaseController
 		InterceptionPointVO interceptionPointVO = (InterceptionPointVO)CacheController.getCachedObject("interceptionPointCache", key);
 		if(interceptionPointVO != null)
 		{
-		    System.out.println("interceptionPointVO:" + interceptionPointVO.getName());
 			logger.info("There was an cached interceptionPointVO:" + interceptionPointVO);
 		}
 		else

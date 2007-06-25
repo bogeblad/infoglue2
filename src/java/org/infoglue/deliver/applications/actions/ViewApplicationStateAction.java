@@ -294,7 +294,6 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
      */
     public String doClearPortlets() throws Exception
     {
-        System.out.println("Updating pluto service manager: infoglueAVote");
         try 
         {
         	

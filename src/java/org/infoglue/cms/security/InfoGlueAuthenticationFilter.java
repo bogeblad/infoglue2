@@ -414,14 +414,7 @@ public class InfoGlueAuthenticationFilter implements Filter
 		    casValidateUrl 		= CmsPropertyHandler.getServerNodeProperty("deliver", "casValidateUrl", true, null);
 		    casLogoutUrl 		= CmsPropertyHandler.getServerNodeProperty("deliver", "casLogoutUrl", true, null);
 		    
-		    /*
-		    System.out.println("loginUrl:" + loginUrl);
-		    System.out.println("authenticatorClass:" + authenticatorClass);
-		    System.out.println("authorizerClass:" + authorizerClass);
-		    */
-		    
 		    String extraPropertiesString = CmsPropertyHandler.getServerNodeDataProperty("deliver", "extraSecurityParameters", true, null);
-		    //System.out.println("extraPropertiesString:" + extraPropertiesString);
 		    if(extraPropertiesString != null)
 			{
 			    logger.info("Loading extra properties from propertyset. extraPropertiesString:" + extraPropertiesString);
@@ -529,14 +522,7 @@ public class InfoGlueAuthenticationFilter implements Filter
 		    //if(casLogoutUrl != null)
 		    	InfoGlueAuthenticationFilter.casLogoutUrl = casLogoutUrl;
 
-			/*
-		    System.out.println("loginUrl:" + loginUrl);
-		    System.out.println("authenticatorClass:" + authenticatorClass);
-		    System.out.println("authorizerClass:" + authorizerClass);
-		    */
-		    
 		    String extraPropertiesString = CmsPropertyHandler.getServerNodeDataProperty("deliver", "extraSecurityParameters", true, null);
-		    //System.out.println("extraPropertiesString:" + extraPropertiesString);
 		    if(extraPropertiesString != null)
 			{
 			    logger.info("Loading extra properties from propertyset. extraPropertiesString:" + extraPropertiesString);
