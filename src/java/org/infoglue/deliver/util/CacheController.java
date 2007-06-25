@@ -243,7 +243,14 @@ public class CacheController extends Thread
 		    	if(cacheCapacity != null && !cacheCapacity.equals(""))
 		    	{
 					Properties p = new Properties();
-					p.setProperty(AbstractCacheAdministrator.CACHE_ALGORITHM_KEY, "com.opensymphony.oscache.base.algorithm.LRUCache");
+			    	
+					String cacheAlgorithm = (String)cacheSettings.get("CACHE_ALGORITHM_" + cacheName);
+					if(cacheAlgorithm == null || cacheAlgorithm.equals(""))
+						p.setProperty(AbstractCacheAdministrator.CACHE_ALGORITHM_KEY, "com.opensymphony.oscache.base.algorithm.ImprovedLRUCache");
+					else
+						p.setProperty(AbstractCacheAdministrator.CACHE_ALGORITHM_KEY, cacheAlgorithm);
+					
+					//p.setProperty(AbstractCacheAdministrator.CACHE_ALGORITHM_KEY, "com.opensymphony.oscache.base.algorithm.LRUCache");
 					p.setProperty(AbstractCacheAdministrator.CACHE_CAPACITY_KEY, cacheCapacity);
 					cacheAdministrator = new GeneralCacheAdministrator(p);
 				}
