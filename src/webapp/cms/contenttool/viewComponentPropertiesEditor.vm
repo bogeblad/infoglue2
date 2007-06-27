@@ -13,6 +13,42 @@
 	<script type="text/javascript" src="script/componentPropertyOptionDefinition.js"></script>
 	<script type="text/javascript" src="script/infogluecommons.js"></script>
 	
+	<style>
+		fieldset
+		{
+			border: 1px solid #cccccc;
+			width: 350px;
+		}
+		legend
+		{
+			color: #000000;
+			background: #ebeafd;
+			border: 1px solid #cccccc;
+			padding: 2px 6px
+		}
+		label
+		{
+			width: 100px;
+			float: left;
+			text-align: right;
+			margin-right: 0.5em;
+			display: block;
+		}
+		input, select
+		{
+			background: #ebeafd;
+			border: 1px solid #cccccc;
+			font-family: Verdana, Arial, San serif;
+			font-size: 8pt;
+			width: 200px;
+		}
+		p
+		{
+			line-heigh: 12px;
+			margin: 0px;
+			padding-bottom: 4px;
+		}
+	</style>
 	<script language="JavaScript"> 
 		window.resizeTo(800,600);		
 	</script> 
@@ -41,7 +77,7 @@
 				propertyMultiple= property.getMultiple();
 				propertyDescription= property.getDescription();
 				propertyAllowedContentTypeNames = property.getAllowedContentTypeNames();
-				if(propertyType == "select")
+				if(propertyType == "select" || propertyType == "checkbox")
 				{
 					propertiesXML += "<property name='" + propertyName + "' type='" + propertyType + "' multiple='" + propertyMultiple + "' description='" + propertyDescription + "'>";
 
@@ -161,6 +197,17 @@
 				myTR.appendChild(actionTD);
 				mytablebody.appendChild(myTR);
 			}
+			if(componentPropertyDefinition.getOptions().getSize() == 0)
+			{
+				var componentPropertyOptionDefinition = componentPropertyDefinition.getOptions().getElementAt(i);
+				//alert("Element:" + componentPropertyOptionDefinition.getName());
+				var myTR = document.createElement("TR");
+			
+				addTD(myTR, "No options defined")
+
+				mytablebody.appendChild(myTR);
+			}
+			
 			mytable.appendChild(mytablebody);
 	        parent.appendChild(mytable);
 		}
@@ -182,8 +229,10 @@
 				document.componentPropertyDefinitionForm.componentPropertyDefinition_type.options[1].selected = 1;
 			else if(componentPropertyDefinition.type == "textarea")
 				document.componentPropertyDefinitionForm.componentPropertyDefinition_type.options[2].selected = 1;
-			else
+			else if(componentPropertyDefinition.type == "select")
 				document.componentPropertyDefinitionForm.componentPropertyDefinition_type.options[3].selected = 1;
+			else
+				document.componentPropertyDefinitionForm.componentPropertyDefinition_type.options[4].selected = 1;
 
 			if(componentPropertyDefinition.entity == "Content")
 				document.componentPropertyDefinitionForm.componentPropertyDefinition_entity.options[0].selected = 1;
@@ -612,13 +661,13 @@
 		{
 			selectBox = document.componentPropertyDefinitionForm.componentPropertyDefinition_type;
 			if(selectBox.value == "textfield" || selectBox.value == "textarea")
-			{
+			{							 
 				document.getElementById("optionsParagraph").style.display = "none";
 				document.getElementById("entityParagraph").style.display = "none";
 				document.getElementById("multipleParagraph").style.display = "none";
 				document.getElementById("allowedContentTypeNamesParagraph").style.display = "none";
 			}
-			else if(selectBox.value == "select")
+			else if(selectBox.value == "select" || selectBox.value == "checkbox")
 			{
 				document.getElementById("optionsParagraph").style.display = "block";
 				document.getElementById("entityParagraph").style.display = "none";
@@ -690,52 +739,55 @@
 <div id="componentPropertyDefinitionBody" class="smallPropDivBody">	
 
 <form name="componentPropertyDefinitionForm">
-<p>
-	<b>Name:</b>
-	<input type="textfield" name="componentPropertyDefinition_name" id="componentPropertyDefinition_name" value=""/>
-</p>
-<p>
-	<b>Description:</b>
-	<input type="textfield" name="componentPropertyDefinition_description" id="componentPropertyDefinition_description" value=""/>
-</p>
-<p>
-	<b>Property type:</b>
+<br/>
+<p><label for="name">Name:</label><input type="textfield" name="componentPropertyDefinition_name" id="componentPropertyDefinition_name" value=""/></p>
+<p><label for="name">Description:</label><input type="textfield" name="componentPropertyDefinition_description" id="componentPropertyDefinition_description" value=""/></p>
+<p><label for="name">Property type:</label>
 	<select size="1" name="componentPropertyDefinition_type" id="componentPropertyDefinition_type" class="sitedropbox" onchange="validateTypeChoice();">
 		<option value="binding">binding</option>
 		<option value="textfield">textfield</option>
 		<option value="textarea">textarea</option>
 		<option value="select">select</option>
+		<option value="checkbox">checkbox</option>
 	</select>
 </p>
-<p id="optionsParagraph" style="display: block;">
-	<b>Options:</b>
-  	<table id="optionsParent" border="0">
+
+<div id="optionsParagraph" style="display: block;">
+	<fieldset>
+	<legend>Options</legend>
+	<table id="optionsParent" border="0">
   	<tr>
   		<td>
   			<table id="options" border="0">
+ 			<tr>
+ 				<td>No options at the moment</td>
+ 			</tr>
   			</table>
-		</td>
+		</td>	
 	</tr>
-  	</table>
-  	<a href="javascript:addOption();">Add new option</a>
-</p>
+	</tr>
+  		<td><img src="images/trans.gif" height="5" width="1"/></td>	
+	</tr>
+	</tr>
+  		<td><a href="javascript:addOption();">Add new option</a></td>	
+	</tr>
+  	</table> 	
+  	</fieldset>
+</div>
 
-<p id="entityParagraph" style="display: block;">
-	<b>Entity:</b>
+<p id="entityParagraph" style="display: block;"><label for="name">Entity:</label>
 	<select size="1" name="componentPropertyDefinition_entity" id="componentPropertyDefinition_entity" class="sitedropbox">
 	    <option value="Content">Content</option>
 	    <option value="SiteNode">SiteNode</option>
 	</select>
 </p>
-<p id="multipleParagraph" style="display: block;">
-	<b>Multiple:</b>
+<p id="multipleParagraph" style="display: block;"><label for="name">Multiple:</label>
 	<select size="1" name="componentPropertyDefinition_multiple" id="componentPropertyDefinition_multiple" class="sitedropbox">
 	    <option value="false">No</option>
 	    <option value="true">Yes</option>
 	</select>
 </p>
-<p id="allowedContentTypeNamesParagraph" style="display: block;">
-	<b>Allowed content type(s):</b>
+<p id="allowedContentTypeNamesParagraph" style="display: block;"><label for="name">Allowed content type(s):</label>
 	<select name="componentPropertyDefinition_allowedContentTypeNames" id="componentPropertyDefinition_allowedContentTypeNames" class="sitedropbox" multiple="true" size="5">
 	    <option value="">Select 0..n</option>
 	    #foreach($contentTypeDefinition in $contentTypeDefinitions)
@@ -744,6 +796,7 @@
  	</select>
 </p>
 <p>
+	<br/>
 	<a href="javascript:updateProperties();"><img src="$ui.getString("images.managementtool.buttons.save")" width="50" height="25" border="0"></a>
 	<a href="javascript:hideDiv('componentPropertyDefinition');"><img src="$ui.getString("images.managementtool.buttons.cancel")" width="50" height="25" border="0"></a>
 </p>
@@ -752,7 +805,7 @@
 </div>
 
 
-<div id="componentPropertyOptionDefinition" class="smallPropDiv" style="border-style:solid; border-width:1px; background-color: white; LEFT:150px; position:absolute; TOP:150px; visibility:hidden; z-index:1">
+<div id="componentPropertyOptionDefinition" class="smallPropDiv" style="border-style:solid; border-width:1px; background-color: white; LEFT:140px; position:absolute; TOP:250px; visibility:hidden; z-index:5">
 <div id="componentPropertyOptionDefinitionHandle" class="smallPropDivHandle">
 	Edit component property option
 </div>
