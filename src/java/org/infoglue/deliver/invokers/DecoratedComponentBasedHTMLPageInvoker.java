@@ -825,7 +825,10 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 				sb.append("			<td class=\"igpropertyvalue\" align=\"left\">");
 
 				if(hasAccessToProperty)
-					sb.append("<a class=\"componentEditorLink\" href=\"javascript:window.open('" + assignUrl + "','Assign','toolbar=no,status=yes,scrollbars=yes,location=no,menubar=no,directories=no,resizable=no,width=300,height=600,left=5,top=5');\">");
+				{
+					String warningText = getLocalizedString(locale, "deliver.editOnSight.dirtyWarning");
+					sb.append("<a class=\"componentEditorLink\" href=\"javascript:if(checkDirty('" + warningText + "')){window.open('" + assignUrl + "','Assign','toolbar=no,status=yes,scrollbars=yes,location=no,menubar=no,directories=no,resizable=no,width=300,height=600,left=5,top=5')};\">");
+				}
 				
 				sb.append("" + (componentProperty.getValue() == null || componentProperty.getValue().equalsIgnoreCase("") ? "Undefined" : componentProperty.getValue()));
 				
@@ -852,12 +855,10 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 			{
 				sb.append("		<tr class=\"igtr\">");
 				sb.append("			<td class=\"igpropertylabel\" valign=\"top\" align=\"left\">" + componentProperty.getName() + "</td>");
-				 
-				//sb.append("			<td class=\"igtd\" width=\"16\"><img src=\"" + componentEditorUrl + "/images/questionMarkGrad.gif\" title=\"" + (componentProperty.getDescription() == null || componentProperty.getDescription().equalsIgnoreCase("") ? "No description" : componentProperty.getDescription()) + "\"></td>");
 				sb.append("			<td class=\"igtd\" width=\"16\"><img src=\"" + componentEditorUrl + "/images/questionMarkGrad.gif\" onMouseOver=\"showDiv('helpLayer" + componentProperty.getComponentId() + "_" + componentProperty.getName() + "');\" onMouseOut=\"javascript:hideDiv('helpLayer" + componentProperty.getComponentId() + "_" + componentProperty.getName() + "');\">" + helpSB + "</td>");
 				
 				if(hasAccessToProperty)
-					sb.append("			<td class=\"igpropertyvalue\" align=\"left\"><input type=\"hidden\" name=\"" + propertyIndex + "_propertyName\" value=\"" + componentProperty.getName() + "\"><input type=\"text\" class=\"propertytextfield\" name=\"" + componentProperty.getName() + "\" value=\"" + componentProperty.getValue() + "\"></td>");
+					sb.append("			<td class=\"igpropertyvalue\" align=\"left\"><input type=\"hidden\" name=\"" + propertyIndex + "_propertyName\" value=\"" + componentProperty.getName() + "\"><input type=\"text\" class=\"propertytextfield\" name=\"" + componentProperty.getName() + "\" value=\"" + componentProperty.getValue() + "\" onkeydown=\"setDirty();\"></td>");
 				else
 					sb.append("			<td class=\"igpropertyvalue\" align=\"left\">" + componentProperty.getValue() + "</td>");
 	
@@ -879,7 +880,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 				sb.append("			<td class=\"igtd\" width=\"16\"><img src=\"" + componentEditorUrl + "/images/questionMarkGrad.gif\" onMouseOver=\"showDiv('helpLayer" + componentProperty.getComponentId() + "_" + componentProperty.getName() + "');\" onMouseOut=\"javascript:hideDiv('helpLayer" + componentProperty.getComponentId() + "_" + componentProperty.getName() + "');\">" + helpSB + "</td>");
 				
 				if(hasAccessToProperty)
-					sb.append("			<td class=\"igpropertyvalue\" align=\"left\"><input type=\"hidden\" name=\"" + propertyIndex + "_propertyName\" value=\"" + componentProperty.getName() + "\"><textarea class=\"propertytextarea\" name=\"" + componentProperty.getName() + "\">" + (componentProperty.getValue() == null ? "" : componentProperty.getValue()) + "</textarea></td>");
+					sb.append("			<td class=\"igpropertyvalue\" align=\"left\"><input type=\"hidden\" name=\"" + propertyIndex + "_propertyName\" value=\"" + componentProperty.getName() + "\"><textarea class=\"propertytextarea\" name=\"" + componentProperty.getName() + "\" onkeydown=\"setDirty();\">" + (componentProperty.getValue() == null ? "" : componentProperty.getValue()) + "</textarea></td>");
 				else
 					sb.append("			<td class=\"igpropertyvalue\" align=\"left\">" + componentProperty.getValue() + "</td>");
 	
@@ -902,7 +903,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 				
 				if(hasAccessToProperty)
 				{
-					sb.append("			<td class=\"igpropertyvalue\" align=\"left\"><input type=\"hidden\" name=\"" + propertyIndex + "_propertyName\" value=\"" + componentProperty.getName() + "\"><select class=\"propertyselect\" name=\"" + componentProperty.getName() + "\">");
+					sb.append("			<td class=\"igpropertyvalue\" align=\"left\"><input type=\"hidden\" name=\"" + propertyIndex + "_propertyName\" value=\"" + componentProperty.getName() + "\"><select class=\"propertyselect\" name=\"" + componentProperty.getName() + "\" onchange=\"setDirty();\">");
 					
 					Iterator optionsIterator = componentProperty.getOptions().iterator();
 					while(optionsIterator.hasNext())
@@ -917,7 +918,52 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 				    sb.append("</td>");
 				}
 				else
-					sb.append("			<td class=\"igpropertyvalue\" align=\"left\">" + componentProperty.getValue() + "</td>");
+					sb.append("			<td class=\"igpropertyvalue\" align=\"left\">" + componentProperty.getName() + "</td>");
+	
+				if(hasAccessToProperty)
+					sb.append("			<td class=\"igtd\" width=\"16\"><a class=\"componentEditorLink\" href=\"" + componentEditorUrl + "ViewSiteNodePageComponents!deleteComponentPropertyValue.action?siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&propertyName=" + componentProperty.getName() + "&showSimple=" + this.getTemplateController().getDeliveryContext().getShowSimple() + "\"><img src=\"" + componentEditorUrl + "/images/delete.gif\" border=\"0\"></a></td>");
+				else
+					sb.append("			<td class=\"igtd\" width=\"16\"></td>");
+				
+				sb.append("			<!--<td>&nbsp;</td>-->");
+				sb.append("		</tr>");
+				
+				if(hasAccessToProperty)
+				    propertyIndex++;
+			}
+			else if(componentProperty.getType().equalsIgnoreCase(ComponentProperty.CHECKBOXFIELD))
+			{
+				sb.append("		<tr class=\"igtr\">");
+				sb.append("			<td class=\"igpropertylabel\" valign=\"top\" align=\"left\">" + componentProperty.getName() + "</td>");
+				sb.append("			<td class=\"igtd\" width=\"16\"><img src=\"" + componentEditorUrl + "/images/questionMarkGrad.gif\" onMouseOver=\"showDiv('helpLayer" + componentProperty.getComponentId() + "_" + componentProperty.getName() + "');\" onMouseOut=\"javascript:hideDiv('helpLayer" + componentProperty.getComponentId() + "_" + componentProperty.getName() + "');\">" + helpSB + "</td>");
+				
+				if(hasAccessToProperty)
+				{
+					sb.append("			<td class=\"igpropertyvalue\" align=\"left\"><input type=\"hidden\" name=\"" + propertyIndex + "_propertyName\" value=\"" + componentProperty.getName() + "\">");
+					
+					Iterator optionsIterator = componentProperty.getOptions().iterator();
+					while(optionsIterator.hasNext())
+					{
+					    ComponentPropertyOption option = (ComponentPropertyOption)optionsIterator.next();
+					    boolean isSame = false;
+					    if(componentProperty != null && componentProperty.getValue() != null && option != null && option.getValue() != null)
+					    {
+					    	String[] values = componentProperty.getValue().split(",");
+					    	for(int i=0; i<values.length; i++)
+					    	{
+					    		isSame = values[i].equals(option.getValue());
+					    		if(isSame)
+					    			break;
+					    	}
+					    }
+
+					    sb.append("<input type=\"checkbox\" name=\"" + componentProperty.getName() + "\" value=\"" + option.getValue() + "\"" + (isSame ? " checked=\"1\"" : "") + " onclicked=\"setDirty();\"/>" + option.getName() + " ");
+					}
+					
+				    sb.append("</td>");
+				}
+				else
+					sb.append("			<td class=\"igpropertyvalue\" align=\"left\">" + componentProperty.getName() + "</td>");
 	
 				if(hasAccessToProperty)
 					sb.append("			<td class=\"igtd\" width=\"16\"><a class=\"componentEditorLink\" href=\"" + componentEditorUrl + "ViewSiteNodePageComponents!deleteComponentPropertyValue.action?siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&propertyName=" + componentProperty.getName() + "&showSimple=" + this.getTemplateController().getDeliveryContext().getShowSimple() + "\"><img src=\"" + componentEditorUrl + "/images/delete.gif\" border=\"0\"></a></td>");
@@ -1749,6 +1795,27 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 					{		
 						String value = getComponentPropertyValue(componentId, name);
 						timer.printElapsedTime("Set property2");
+						
+						List optionList = binding.elements("option");
+						Iterator optionListIterator = optionList.iterator();
+						while(optionListIterator.hasNext())
+						{
+							Element option = (Element)optionListIterator.next();
+							String optionName	= option.attributeValue("name");
+							String optionValue	= option.attributeValue("value");
+							ComponentPropertyOption cpo = new ComponentPropertyOption();
+							cpo.setName(optionName);
+							cpo.setValue(optionValue);
+							property.getOptions().add(cpo);
+						}
+						
+						//logger.info("value:" + value);
+						property.setValue(value);
+					}
+					else if(type.equalsIgnoreCase(ComponentProperty.CHECKBOXFIELD))	
+					{		
+						String value = getComponentPropertyValue(componentId, name);
+						timer.printElapsedTime("Set property3");
 						
 						List optionList = binding.elements("option");
 						Iterator optionListIterator = optionList.iterator();

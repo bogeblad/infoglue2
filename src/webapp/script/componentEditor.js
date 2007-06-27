@@ -1688,3 +1688,29 @@ function viewSource()
 	}
 	
 	QueryString_Parse();
+	
+	var dirty = false;
+	function setDirty()
+	{
+		dirty = true;
+	}
+	
+	function checkDirty(warningText)
+	{
+		if(dirty)
+		{
+			var r = confirm(warningText)
+			if(r==true)
+			{
+				return true;
+			}
+			else
+			{
+			    return false;
+			}
+		}
+		else
+		{
+			return true;
+		}
+	}
