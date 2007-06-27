@@ -1313,21 +1313,24 @@ public class DigitalAssetController extends BaseController
 		
 		DigitalAsset digitalAsset = getDigitalAssetWithId(digitalAssetVO.getDigitalAssetId(), db);
 		
-		FileOutputStream fis = new FileOutputStream(outputFile);
-		BufferedOutputStream bos = new BufferedOutputStream(fis);
-		
-		BufferedInputStream bis = new BufferedInputStream(digitalAsset.getAssetBlob());
-		
-		int character;
-		while ((character = bis.read()) != -1)
+		if(digitalAsset.getAssetBlob() != null)
 		{
-			bos.write(character);
+			FileOutputStream fis = new FileOutputStream(outputFile);
+			BufferedOutputStream bos = new BufferedOutputStream(fis);
+			
+			BufferedInputStream bis = new BufferedInputStream(digitalAsset.getAssetBlob());
+	
+			int character;
+			while ((character = bis.read()) != -1)
+			{
+				bos.write(character);
+			}
+			bos.flush();
+			
+			bis.close();
+			fis.close();
+			bos.close();
 		}
-		bos.flush();
-		
-		bis.close();
-		fis.close();
-		bos.close();
 		
 		if(logger.isInfoEnabled())
 			logger.info("Time for dumping file " + fileName + ":" + (System.currentTimeMillis() - timer));
