@@ -505,18 +505,18 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 	{
 		initialize();
 
-		boolean USE_LANGUAGE_FALLBACK        			= true;
-		boolean DO_NOT_USE_LANGUAGE_FALLBACK 			= false;
-		
-		logger.info("************************************************************");
-		logger.info("* doUpdateComponentProperties                              *");
-		logger.info("************************************************************");
-		logger.info("siteNodeId:" + this.siteNodeId);
-		logger.info("languageId:" + this.languageId);
-		logger.info("contentId:" + this.contentId);
-		logger.info("componentId:" + this.componentId);
-		logger.info("slotId:" + this.slotId);
-		logger.info("specifyBaseTemplate:" + this.specifyBaseTemplate);
+		if(logger.isInfoEnabled())
+		{
+			logger.info("************************************************************");
+			logger.info("* doUpdateComponentProperties                              *");
+			logger.info("************************************************************");
+			logger.info("siteNodeId:" + this.siteNodeId);
+			logger.info("languageId:" + this.languageId);
+			logger.info("contentId:" + this.contentId);
+			logger.info("componentId:" + this.componentId);
+			logger.info("slotId:" + this.slotId);
+			logger.info("specifyBaseTemplate:" + this.specifyBaseTemplate);
+		}
 		
 		Iterator parameterNames = this.getRequest().getParameterMap().keySet().iterator();
 		while(parameterNames.hasNext())
@@ -532,9 +532,6 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 		Locale locale = LanguageController.getController().getLocaleWithId(languageId);
 		
 		String entity  		= this.getRequest().getParameter("entity");
-		
-		NodeDeliveryController nodeDeliveryController			    = NodeDeliveryController.getNodeDeliveryController(siteNodeId, languageId, contentId);
-		IntegrationDeliveryController integrationDeliveryController = IntegrationDeliveryController.getIntegrationDeliveryController(siteNodeId, languageId, contentId);
 		
 		String componentXML = getPageComponentsString(siteNodeId, this.masterLanguageVO.getId(), contentId);			
 		//logger.info("componentXML:" + componentXML);
@@ -558,8 +555,23 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 		String propertyName = this.getRequest().getParameter(propertyIndex + "_propertyName");
 		while(propertyName != null && !propertyName.equals(""))
 		{
-			String propertyValue = this.getRequest().getParameter(propertyName);
-		
+			String[] propertyValues = this.getRequest().getParameterValues(propertyName);
+			String propertyValue = "";
+			
+			if(propertyValues.length == 1)
+				propertyValue = propertyValues[0];
+			else
+			{
+				StringBuffer sb = new StringBuffer();
+				for(int i=0; i<propertyValues.length;i++)
+				{
+					if(i > 0)
+						sb.append(",");
+					sb.append(propertyValues[i]);
+				}
+				propertyValue = sb.toString();
+			}
+			
 			logger.info("propertyName:" + propertyName);
 			logger.info("propertyValue:" + propertyValue);
 			if(propertyValue != null && !propertyValue.equals("") && !propertyValue.equalsIgnoreCase("undefined"))
