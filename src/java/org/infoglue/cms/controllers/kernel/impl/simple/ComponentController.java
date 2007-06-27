@@ -135,13 +135,16 @@ public class ComponentController extends BaseController
 				ContentVersion contentVersion = ContentVersionController.getContentVersionController().getLatestActiveContentVersion(contentVO.getId(), masterLanguage.getId(), db);
 				
 				String groupName = "Unknown";
+				String description = "Unknown";
 				
 				if(contentVersion != null)
 				{
 				    groupName = ContentVersionController.getContentVersionController().getAttributeValue(contentVersion.getValueObject(), "GroupName", false);
+				    description = ContentVersionController.getContentVersionController().getAttributeValue(contentVersion.getValueObject(), "Description", false);
 				}
 	
 				contentVO.getExtraProperties().put("GroupName", groupName);
+				contentVO.getExtraProperties().put("Description", description);
 			}
 			
 			CacheController.cacheObject("componentContentsCache", componentsKey, components);
