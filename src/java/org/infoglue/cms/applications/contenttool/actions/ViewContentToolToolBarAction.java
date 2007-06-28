@@ -319,6 +319,11 @@ public class ViewContentToolToolBarAction extends InfoGlueAbstractAction
 			buttons.add(new ImageButton("ViewContentProperties.action?contentId=" + this.contentId, getLocalizedString(getSession().getLocale(), "images.global.buttons.editProperties"), "Edit Properties", new Integer(22), new Integer(80)));
 			//if(this.getInfoGluePrincipal().getIsAdministrator())
 				buttons.add(new ImageButton("UpdateContent!inputContentType.action?contentId=" + this.contentId + "&repositoryId=" + this.repositoryId, getLocalizedString(getSession().getLocale(), "images.contenttool.buttons.changeContentType"), "tool.contenttool.changeContentType.header"));	
+
+			ImageButton exportButton = new ImageButton("ExportContent!input.action?contentId=" + this.contentId + "&repositoryId=" + this.repositoryId, getLocalizedString(getSession().getLocale(), "images.contenttool.buttons.exportContent"), "tool.contenttool.exportContent.header");
+			ImageButton importButton = new ImageButton("ImportContent!input.action?parentContentId=" + this.contentId + "&repositoryId=" + this.repositoryId, getLocalizedString(getSession().getLocale(), "images.contenttool.buttons.importContent"), "tool.contenttool.importContent.header");
+			exportButton.getSubButtons().add(importButton);
+			buttons.add(exportButton);
 		}
 		catch(Exception e)
 		{
@@ -360,6 +365,12 @@ public class ViewContentToolToolBarAction extends InfoGlueAbstractAction
 			
 			//if(this.getInfoGluePrincipal().getIsAdministrator())
 				buttons.add(new ImageButton("UpdateContent!inputContentType.action?contentId=" + this.contentId + "&repositoryId=" + this.repositoryId, getLocalizedString(getSession().getLocale(), "images.contenttool.buttons.changeContentType"), "tool.contenttool.changeContentType.header"));
+		
+			ImageButton exportButton = new ImageButton("ExportContent!input.action?contentId=" + this.contentId + "&repositoryId=" + this.repositoryId, getLocalizedString(getSession().getLocale(), "images.contenttool.buttons.exportContent"), "tool.contenttool.exportContent.header");
+			ImageButton importButton = new ImageButton("ImportContent!input.action?parentContentId=" + this.contentId + "&repositoryId=" + this.repositoryId, getLocalizedString(getSession().getLocale(), "images.contenttool.buttons.importContent"), "tool.contenttool.importContent.header");
+			exportButton.getSubButtons().add(importButton);
+			buttons.add(exportButton);
+		
 		}
 		catch(Exception e)
 		{

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+ 
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+<head>
+	<title>$ui.getString("tool.contenttool.importContent.header")</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	
+	<link rel="stylesheet" type="text/css" href="css/cms.css" /> 
+	<link rel="stylesheet" type="text/css" href="css/infogluecommons.css" /> 
+	
+	<script language="JavaScript" src="script/listview.js"></script>
+	<script type="text/javascript" src="script/infogluecommons.js"></script>
+
+	<script type="text/javascript">
+	<!--
+		parent.frames["menu"].refreshContent($!parentContentId, 2, $!parentContentId);
+	-->
+	</script>
+	<META HTTP-EQUIV="pragma" CONTENT="no-cache" />
+	<META HTTP-EQUIV="expires" CONTENT="-1" />	
+
+</head>
+
+<body class="contenttooledit">
+
+<div class="fullymarginalized">
+
+<table width="300">
+	<tr>
+		<td class="biglabel">
+			$ui.getString("tool.contenttool.importContent.headerFinished")
+		</td>
+	</tr>		
+	<tr>
+		<td>
+			$ui.getString("tool.contenttool.importContent.finishedText")<br/><br/>
+		</td>
+	</tr>
+	<tr>
+		<td>
+			<a href="ViewContent.action?contentId=$!parentContentId&repositoryId=$!repositoryId"><img border="0" src="$ui.getString("images.contenttool.buttons.close")" width="50" height="25"></a>
+		</td>
+	</tr>
+
+	</form>	
+</table>
+</div>
+
+</body>
+</html>

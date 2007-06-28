@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+ 
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+<head>
+	<title>$ui.getString("tool.contenttool.importContent.header")</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	
+	<link rel="stylesheet" type="text/css" href="css/cms.css" /> 
+	<link rel="stylesheet" type="text/css" href="css/infogluecommons.css" /> 
+	
+	<script language="JavaScript" src="script/listview.js"></script>
+	<script type="text/javascript" src="script/infogluecommons.js"></script>
+	
+	<script language="JavaScript">
+	<!--
+		
+		/**
+		 * This method submits the form and shows a wait-dialog.
+		 */
+		 
+		function submitForm()
+		{
+			moveDiv("savingLayer", "20px", "20px");
+			resizeDiv("savingLayer", "350px", "150px");
+			showDiv("savingLayer");
+			document.editForm.submit();
+		}
+
+		
+	-->
+	</script>
+	
+	<META HTTP-EQUIV="pragma" CONTENT="no-cache" />
+	<META HTTP-EQUIV="expires" CONTENT="-1" />	
+</head>
+
+<body class="contenttooledit">
+
+<div id="savingLayer" class="infobackground">
+	<div class="infoheader">Exporting repository</div>
+	<div class="infobody">
+		<br>Exporting repository - please wait!<br><br>
+		<img src="images/progressbar.gif">
+	</div>
+</div>
+
+<div class="fullymarginalized">
+
+<form enctype="multipart/form-data" name="editForm" method="POST" action="ImportContent.action">
+<input type="hidden" name="parentContentId" value="$!parentContentId"/>
+<table width="300" border="0">
+	<tr>
+		<td class="biglabel">
+			$ui.getString("tool.contenttool.importContent.header")
+		</td>
+	</tr>		
+	<tr>
+		<td>
+			$ui.getString("tool.contenttool.importContent.introduction")<br/><br/>
+		</td>
+	</tr>	
+	<tr>
+		<td>
+			$ui.getString("tool.contenttool.importContent.fileUploadFileLabel")<br/>
+			<input size=30 type="FILE" name="file1">
+		</td>
+	</tr>
+	<tr>
+		<td>
+			$ui.getString("tool.contenttool.importContent.onlyLatestVersionsLabel")<br/>
+			<input type="checkbox" name="onlyLatestVersions" value="true" checked="1">
+		</td>
+	</tr>
+	<tr>
+		<td>
+			<a href="javascript:submitForm();"><img src="$ui.getString("images.contenttool.buttons.save")" width="50" height="25" border="0"></a>
+			<a href="ViewContent.action?contentId=$!parentContentId&repositoryId=$!repositoryId"><img border="0" src="$ui.getString("images.contenttool.buttons.close")" width="50" height="25"></a>
+		</td>
+	</tr>
+
+	</form>	
+</table>
+</div>
+
+</body>
+</html>

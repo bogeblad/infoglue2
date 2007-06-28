@@ -1,4 +1,4 @@
-<!-- $Id: actions.xml,v 1.42 2007/06/18 19:17:12 mattias Exp $ -->
+<!-- $Id: actions.xml,v 1.43 2007/06/28 12:34:25 mattias Exp $ -->
 <actions>
 
 	<!-- MySettings -->
@@ -954,6 +954,16 @@
 		<view name="success">ViewContent.action</view>
 		<view name="error">/cms/contenttool/wizards/error.vm</view>
 		<view name="accessDenied">/cms/contenttool/viewConstraintException.vm</view>
+	</action>
+	<action name="org.infoglue.cms.applications.contenttool.actions.ExportContentAction" alias="ExportContent">
+		<view name="input">/cms/contenttool/viewExportContentInput.vm</view>
+		<view name="success">/cms/contenttool/viewExportContentFinished.vm</view>
+		<view name="error">/cms/contenttool/error.vm</view>
+	</action>
+	<action name="org.infoglue.cms.applications.contenttool.actions.ImportContentAction" alias="ImportContent">
+		<view name="input">/cms/contenttool/viewImportContentInput.vm</view>
+		<view name="success">/cms/contenttool/viewImportContentFinished.vm</view>
+		<view name="error">/cms/contenttool/error.vm</view>
 	</action>
 
 	<!-- ContentTypeDefinition -->
