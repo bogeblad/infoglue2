@@ -46,6 +46,7 @@ import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
 import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.entities.management.LanguageVO;
+import org.infoglue.deliver.util.VelocityTemplateProcessor;
 
 public class ViewExecuteTaskAction extends InfoGlueAbstractAction
 {
@@ -97,7 +98,8 @@ public class ViewExecuteTaskAction extends InfoGlueAbstractAction
 
 		StringWriter cacheString = new StringWriter();
 		PrintWriter cachedStream = new PrintWriter(cacheString);
-		renderTemplate(context, cachedStream, userInputHTML);
+		new VelocityTemplateProcessor().renderTemplate(context, cachedStream, userInputHTML);
+		//renderTemplate(context, cachedStream, userInputHTML);
 		String result = cacheString.toString();
 
 		scriptController.commitTransaction();
@@ -139,14 +141,16 @@ public class ViewExecuteTaskAction extends InfoGlueAbstractAction
 
 		StringWriter cacheString = new StringWriter();
 		PrintWriter cachedStream = new PrintWriter(cacheString);
-		renderTemplate(context, cachedStream, code);
+		new VelocityTemplateProcessor().renderTemplate(context, cachedStream, code);
+		//renderTemplate(context, cachedStream, code);
 		String result = cacheString.toString();
 		
 		scriptController.commitTransaction();
 		
 		cacheString = new StringWriter();
 		cachedStream = new PrintWriter(cacheString);
-		renderTemplate(context, cachedStream, userOutputHTML);
+		new VelocityTemplateProcessor().renderTemplate(context, cachedStream, userOutputHTML);
+		//renderTemplate(context, cachedStream, userOutputHTML);
 		result = cacheString.toString();
 
 		getResponse().setContentType("text/html");
@@ -173,7 +177,7 @@ public class ViewExecuteTaskAction extends InfoGlueAbstractAction
 	 * This method takes arguments and renders a template given as a string to the specified outputstream.
 	 * Improve later - cache for example the engine.
 	 */
-	
+	/*
 	public void renderTemplate(Map params, PrintWriter pw, String templateAsString) throws Exception 
 	{
 		Velocity.init();
@@ -189,7 +193,7 @@ public class ViewExecuteTaskAction extends InfoGlueAbstractAction
 		Reader reader = new StringReader(templateAsString);
 		boolean finished = Velocity.evaluate(context, pw, "Generator Error", reader);        
 	}
-	
+	*/
 
 	/**
 	 * This method returns the contents that are of contentTypeDefinition "HTMLTemplate"
@@ -206,9 +210,25 @@ public class ViewExecuteTaskAction extends InfoGlueAbstractAction
 		arguments.put("arguments", argumentList);
 		
 		return ContentControllerProxy.getController().getACContentVOList(this.getInfoGluePrincipal(), arguments);
-		//return ContentController.getContentController().getContentVOList(arguments);
 	}
-	     
+
+	/**
+	 * This method returns the contents that are of contentTypeDefinition "HTMLTemplate"
+	 */
+	public List getCustomTasks() throws Exception
+	{
+		HashMap arguments = new HashMap();
+		arguments.put("method", "selectListOnContentTypeName");
+		
+		List argumentList = new ArrayList();
+		HashMap argument = new HashMap();
+		argument.put("contentTypeDefinitionName", "TaskDefinition");
+		argumentList.add(argument);
+		arguments.put("arguments", argumentList);
+		
+		return ContentControllerProxy.getController().getACContentVOList(this.getInfoGluePrincipal(), arguments);
+	}
+
 	public Integer getTaskContentId()
 	{
 		return taskContentId;
