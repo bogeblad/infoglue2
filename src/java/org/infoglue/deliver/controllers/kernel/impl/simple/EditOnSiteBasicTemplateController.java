@@ -169,25 +169,6 @@ public class EditOnSiteBasicTemplateController extends BasicTemplateController
 	public String getContentAttribute(String contentBindningName, String attributeName) 
 	{
 		return decorateTag(this.getContentId(), this.getLanguageId(), attributeName, super.getContentAttribute(contentBindningName, attributeName));
-		/*	
-	    String attributeValue = "";
-		
-		try
-		{
-			ContentVO contentVO = this.nodeDeliveryController.getBoundContent(this.getDatabase(), this.getPrincipal(), this.getSiteNodeId(), this.languageId, USE_LANGUAGE_FALLBACK, contentBindningName, this.deliveryContext);		
-			if(contentVO != null)
-			{
-				attributeValue = ContentDeliveryController.getContentDeliveryController().getContentAttribute(this.getDatabase(), contentVO.getContentId(), this.languageId, attributeName, this.siteNodeId, USE_LANGUAGE_FALLBACK, this.deliveryContext, this.infoGluePrincipal);
-				attributeValue = decorateTag(contentVO.getContentId(), this.getLanguageId(), attributeName, attributeValue);
-			}
-		}
-		catch(Exception e)
-		{
-			logger.error("An error occurred trying to get attributeName=" + attributeName + " on contentBindning " + contentBindningName + ":" + e.getMessage(), e);
-		}
-				
-		return attributeValue;
-		*/
 	}
 
 
@@ -327,7 +308,7 @@ public class EditOnSiteBasicTemplateController extends BasicTemplateController
 		}
 		catch(Exception e)
 		{
-			logger.error("An error occurred trying to get attributeName=" + attributeName + " on contentBindning " + contentBindningName + ":" + e.getMessage(), e);
+			logger.error("\nError on url: " + this.getOriginalFullURL() + "\nAn error occurred trying to get attributeName=" + attributeName + " on contentBindning " + contentBindningName + "\nReason:" + e.getMessage(), e);
 		}
 				
 		return attributeValue;

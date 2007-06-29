@@ -1426,7 +1426,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			logger.error("An error occurred trying to get attributeName=" + attributeName + " on content " + this.contentId + ":" + e.getMessage(), e);
+			logger.error("\nError on url: " + this.getOriginalFullURL() + "\nAn error occurred trying to get attributeName=" + attributeName + " on content " + this.contentId + "\nReason:" + e.getMessage(), e);
 		}
 				
 		return attributeValue;
@@ -1452,7 +1452,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			logger.error("An error occurred trying to get attributeName=" + attributeName + " on contentBindning " + contentBindningName + ":" + e.getMessage(), e);
+			logger.error("\nError on url: " + this.getOriginalFullURL() + "\nAn error occurred trying to get attributeName=" + attributeName + " on contentBindning " + contentBindningName + "\nReason:" + e.getMessage(), e);
 		}
 				
 		return attributeValue;
@@ -1477,7 +1477,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			logger.error("An error occurred trying to get attributeName=" + attributeName + " on content " + contentId + ":" + e.getMessage(), e);
+			logger.error("\nError on url: " + this.getOriginalFullURL() + "\nAn error occurred trying to get attributeName=" + attributeName + " on content " + contentId + "\nReason:" + e.getMessage(), e);
 		}
 				
 		return attributeValue;
@@ -1524,7 +1524,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			logger.error("An error occurred trying to get attributeName=" + attributeName + " on content " + contentId + ":" + e.getMessage(), e);
+			logger.error("\nError on url: " + this.getOriginalFullURL() + "\nAn error occurred trying to get attributeName=" + attributeName + " on content " + contentId + "\nReason:" + e.getMessage(), e);
 		}
 				
 		return attributeValue;
@@ -1550,7 +1550,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			logger.error("An error occurred trying to get attributeName=" + attributeName + " on content " + contentId + ":" + e.getMessage(), e);
+			logger.error("\nError on url: " + this.getOriginalFullURL() + "\nAn error occurred trying to get attributeName=" + attributeName + " on content " + contentId + "\nReason:" + e.getMessage(), e);
 		}
 				
 		return attributeValue;
@@ -1575,7 +1575,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			logger.error("An error occurred trying to get attributeName=" + attributeName + " on content " + contentId + ":" + e.getMessage(), e);
+			logger.error("\nError on url: " + this.getOriginalFullURL() + "\nAn error occurred trying to get attributeName=" + attributeName + " on content " + contentId + "\nReason:" + e.getMessage(), e);
 		}
 				
 		return attributeValue;
@@ -1599,7 +1599,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			logger.error("An error occurred trying to get attributeName=" + attributeName + " on content " + contentId + ":" + e.getMessage(), e);
+			logger.error("\nError on url: " + this.getOriginalFullURL() + "\nAn error occurred trying to get attributeName=" + attributeName + " on content " + contentId + "\nReason:" + e.getMessage(), e);
 		}
 				
 		return attributeValue;
@@ -1616,7 +1616,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			logger.error("An error occurred trying to get attributeName=" + attributeName + " on content version" + version.getId() + ":" + e.getMessage(), e);
+			logger.error("\nError on url: " + this.getOriginalFullURL() + "\nAn error occurred trying to get attributeName=" + attributeName + " on content version" + version.getId() + "\nReason:" + e.getMessage(), e);
 		}
 	
 		return "";
@@ -1643,7 +1643,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			logger.error("An error occurred trying to get attributeName=" + attributeName + " on content " + contentId + ":" + e.getMessage(), e);
+			logger.error("\nError on url: " + this.getOriginalFullURL() + "\nAn error occurred trying to get attributeName=" + attributeName + " on content " + contentId + "\nReason:" + e.getMessage(), e);
 		}
 				
 		return attributeValue;
@@ -1684,7 +1684,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			logger.error("An error occurred trying to get attributeName=" + attributeName + " on sent in content with id:" + this.contentId + ":" + e.getMessage(), e);
+			logger.error("\nError on url: " + this.getOriginalFullURL() + "\nAn error occurred trying to get attributeName=" + attributeName + " on sent in content with id:" + this.contentId + "\nReason:" + e.getMessage(), e);
 		}
 				
 		return attributeValue;
@@ -1730,7 +1730,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			logger.error("An error occurred trying to get attributeName=" + attributeName + " on contentBindning " + contentBindningName + ":" + e.getMessage(), e);
+			logger.error("\nError on url: " + this.getOriginalFullURL() + "\nAn error occurred trying to get attributeName=" + attributeName + " on contentBindning " + contentBindningName + "\nReason:" + e.getMessage(), e);
 		}
 				
 		return attributeValue;
@@ -1771,7 +1771,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			logger.error("An error occurred trying to get attributeName=" + attributeName + " on content with id " + contentId + ":" + e.getMessage(), e);
+			logger.error("\nError on url: " + this.getOriginalFullURL() + "\nAn error occurred trying to get attributeName=" + attributeName + " on content with id " + contentId + "\nReason:" + e.getMessage(), e);
 		}
 				
 		return attributeValue;
@@ -1810,7 +1810,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			logger.error("An error occurred trying to get attributeName=" + attributeName + " on content with id " + contentId + ":" + e.getMessage(), e);
+			logger.error("\nError on url: " + this.getOriginalFullURL() + "\nAn error occurred trying to get attributeName=" + attributeName + " on content with id " + contentId + "\nReason:" + e.getMessage(), e);
 		}
 				
 		return attributeValue;
@@ -1849,7 +1849,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			logger.error("An error occurred trying to get attributeName=" + attributeName + " on content with id " + contentId + ":" + e.getMessage(), e);
+			logger.error("\nError on url: " + this.getOriginalFullURL() + "\nAn error occurred trying to get attributeName=" + attributeName + " on content with id " + contentId + "\nReason:" + e.getMessage(), e);
 		}
 				
 		return attributeValue;
