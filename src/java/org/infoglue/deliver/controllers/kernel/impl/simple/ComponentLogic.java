@@ -716,6 +716,25 @@ public class ComponentLogic
 		return content;
 	}
 
+	public List<ContentVO> getBoundContents(Integer siteNodeId, String propertyName, boolean useInheritance)
+	{
+		List<ContentVO> contents = new ArrayList();
+
+		Map property = getInheritedComponentProperty(siteNodeId, this.infoGlueComponent, propertyName, useInheritance);
+		if(property != null)
+		{	
+			List bindings = (List)property.get("bindings");
+			while(bindings.size() > 0)
+			{
+				Integer contentId = new Integer((String)bindings.get(0));
+				ContentVO content = this.templateController.getContent(contentId);
+				contents.add(content);
+			}
+		}
+
+		return contents;
+	}
+
 	public Integer getBoundContentId(String propertyName)
 	{
 	    return getBoundContentId(propertyName, true);
@@ -889,7 +908,7 @@ public class ComponentLogic
 	}
 
 	/**
-	 * This method returns a list of pages bound to the component on the given siteNode.
+	 * This method returns a single page bound to the component on the given siteNode.
 	 */
 
 	public SiteNodeVO getBoundSiteNode(Integer targetSiteNodeId, String propertyName, boolean useInheritance)
@@ -910,6 +929,32 @@ public class ComponentLogic
 		}
 
 		return siteNodeVO;
+	}
+
+	/**
+	 * This method returns a single page bound to the component on the given siteNode.
+	 */
+
+	public List<SiteNodeVO> getBoundSiteNodes(Integer targetSiteNodeId, String propertyName, boolean useInheritance)
+	{
+	    List<SiteNodeVO> siteNodeVOList = new ArrayList();
+	    
+	    Map property = getInheritedComponentProperty(targetSiteNodeId, this.infoGlueComponent, propertyName, useInheritance);
+		
+		if(property != null)
+		{	
+			List bindings = (List)property.get("bindings");
+			Iterator bindingsIterator = bindings.iterator();
+			while(bindingsIterator.hasNext())
+			{
+				Integer siteNodeId = new Integer((String)bindingsIterator.next());
+				SiteNodeVO siteNodeVO = templateController.getSiteNode(siteNodeId);
+				if(siteNodeVO != null)
+					siteNodeVOList.add(siteNodeVO);
+			}
+		}
+
+		return siteNodeVOList;
 	}
 
 	/**
