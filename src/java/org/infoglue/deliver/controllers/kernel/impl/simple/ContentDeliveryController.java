@@ -530,7 +530,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 	    }
 	    catch(Exception e)
 	    {
-	        e.printStackTrace();
+	    	//e.printStackTrace();
 	        throw e;
 	    }
 	    
