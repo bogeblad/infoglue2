@@ -1126,6 +1126,11 @@ public class CmsPropertyHandler
 	    return getServerNodeProperty("protectDeliverPreview", true, "false");
 	}
 
+	public static String getForceIdentityCheck()
+	{
+		return getServerNodeProperty("forceIdentityCheck", true, "false");
+	}
+
 	public static String getAllowPublicationEventFilter()
 	{
 	    return getServerNodeProperty("allowPublicationEventFilter", true, "false");

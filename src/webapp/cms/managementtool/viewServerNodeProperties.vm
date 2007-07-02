@@ -288,6 +288,9 @@
 	<tr>
 		<td>#yesNoDropDownWithInherit("ServerNode.property.protectDeliverPreview" "protectDeliverPreview" "$this.getPropertyValue('protectDeliverPreview')")</td>
 	</tr>
+	<tr>
+		<td>#yesNoDropDownWithInherit("ServerNode.property.forceIdentityCheck" "forceIdentityCheck" "$this.getPropertyValue('forceIdentityCheck')")</td>
+	</tr>
 	
 	<tr>
 		<td>#editPropertyField("ServerNode.property.maxRows" "maxRows" "$this.getPropertyValue('maxRows')" "51" "$!serverNodeId")</td>

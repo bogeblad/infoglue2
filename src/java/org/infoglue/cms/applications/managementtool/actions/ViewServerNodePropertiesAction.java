@@ -263,6 +263,7 @@ public class ViewServerNodePropertiesAction extends InfoGluePropertiesAbstractAc
 	    populate(ps, "deliver_inputCharacterEncoding");
 		populate(ps, "protectDeliverWorking");
 	    populate(ps, "protectDeliverPreview");
+	    populate(ps, "forceIdentityCheck");
 
 	    populate(ps, "allowPublicationEventFilter");
 	    populate(ps, "defaultPublicationEventFilter");
