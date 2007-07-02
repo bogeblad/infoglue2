@@ -95,6 +95,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 	private Integer siteNodeId = null;
 	private Integer contentId  = null; 
 	private Integer languageId = null;
+	private Integer repositoryId = null;
 	
 	private boolean showSimple = false;
 	
@@ -225,8 +226,6 @@ public class ViewPageAction extends InfoGlueAbstractAction
 	    	this.nodeDeliveryController			= NodeDeliveryController.getNodeDeliveryController(this.siteNodeId, this.languageId, this.contentId);
 			this.integrationDeliveryController	= IntegrationDeliveryController.getIntegrationDeliveryController(this.siteNodeId, this.languageId, this.contentId);
 				    	
-	    	String pagePath	= null;
-	    	
 	    	boolean isUserRedirected = false;
 			Integer protectedSiteNodeVersionId = this.nodeDeliveryController.getProtectedSiteNodeVersionIdForPageCache(dbWrapper.getDatabase(), siteNodeId);
 			
@@ -244,9 +243,14 @@ public class ViewPageAction extends InfoGlueAbstractAction
 				
 			if(protectedSiteNodeVersionId != null || protectDeliver)
 				isUserRedirected = handleExtranetLogic(dbWrapper.getDatabase(), protectedSiteNodeVersionId, protectDeliver);
-		
+			else
+			{
+				String forceIdentityCheck = RepositoryDeliveryController.getRepositoryDeliveryController().getExtraPropertyValue(this.repositoryId, "forceIdentityCheck");
+				if(CmsPropertyHandler.getForceIdentityCheck().equalsIgnoreCase("true") || (forceIdentityCheck != null && forceIdentityCheck.equalsIgnoreCase("true")))
+					isUserRedirected = handleExtranetLogic(dbWrapper.getDatabase(), true);
+			}
+			
 			String pageKey = this.nodeDeliveryController.getPageCacheKey(dbWrapper.getDatabase(), this.getHttpSession(), getRequest(), this.siteNodeId, this.languageId, this.contentId, browserBean.getUseragent(), this.getRequest().getQueryString(), "");
-	    	//String pageKey = CacheController.getPageCacheKey(this.siteNodeId, this.languageId, this.contentId, browserBean.getUseragent(), this.getRequest().getQueryString(), "");
 
 	    	if(logger.isInfoEnabled())
 	    		logger.info("pageKey:" + pageKey);
@@ -465,9 +469,13 @@ public class ViewPageAction extends InfoGlueAbstractAction
 				
 			if(protectedSiteNodeVersionId != null || protectDeliver)
 				isUserRedirected = handleExtranetLogic(dbWrapper.getDatabase(), protectedSiteNodeVersionId, protectDeliver);
-			
-			//String pageKey  = "" + this.siteNodeId + "_" + this.languageId + "_" + this.contentId + "_" + browserBean.getUseragent() + "_" + getRequest().getQueryString() + "_" + this.showSimple + "_pagecomponentDecorated";
-			//String pageKey = CacheController.getPageCacheKey(this.siteNodeId, this.languageId, this.contentId, browserBean.getUseragent(), this.getRequest().getQueryString(), "_" + this.showSimple + "_pagecomponentDecorated");
+			else
+			{
+				String forceIdentityCheck = RepositoryDeliveryController.getRepositoryDeliveryController().getExtraPropertyValue(this.repositoryId, "forceIdentityCheck");
+				if(CmsPropertyHandler.getForceIdentityCheck().equalsIgnoreCase("true") || (forceIdentityCheck != null && forceIdentityCheck.equalsIgnoreCase("true")))
+					isUserRedirected = handleExtranetLogic(dbWrapper.getDatabase(), true);
+			}
+
 	    	String pageKey = this.nodeDeliveryController.getPageCacheKey(dbWrapper.getDatabase(), this.getHttpSession(), this.getRequest(), this.siteNodeId, this.languageId, this.contentId, browserBean.getUseragent(), this.getRequest().getQueryString(), "_" + this.showSimple + "_pagecomponentDecorated");
 
 	    	if(logger.isInfoEnabled())
@@ -709,13 +717,17 @@ public class ViewPageAction extends InfoGlueAbstractAction
 				throw new SystemException("There was no repository called " + getRepositoryName() + " or no pages were available in that repository");
 			
 			setSiteNodeId(rootSiteNodeVO.getSiteNodeId());
+			repositoryId = rootSiteNodeVO.getRepositoryId();
 		} 
 
 		try
 		{
 			if(getSiteNodeId() != null)
-				SiteNodeController.getSiteNodeVOWithId(getSiteNodeId(), db);
-	    }
+			{
+				SiteNodeVO siteNodeVO = SiteNodeController.getSiteNodeVOWithId(getSiteNodeId(), db);
+				repositoryId = siteNodeVO.getRepositoryId();
+			}
+		}
 	    catch(Exception e)
 	    {
 			throw new SystemException("There was no page with the current specification. SiteNodeId:" + getSiteNodeId());
@@ -1040,6 +1052,143 @@ public class ViewPageAction extends InfoGlueAbstractAction
 		return isRedirected;
 	}
 	
+	
+	/**
+	 * This method validates that the current page is accessible to the requesting user.
+	 * It fetches information from the page metainfo about if the page is protected and if it is 
+	 * validates the users credentials against the extranet database,
+	 */
+	
+	public boolean handleExtranetLogic(Database db, boolean gateway) throws SystemException, Exception
+	{
+		boolean isRedirected = false;
+		
+		try
+		{
+			String skipSSOCheck = this.getRequest().getParameter("skipSSOCheck");
+			String ticket = this.getRequest().getParameter("ticket");
+			if((skipSSOCheck != null && !skipSSOCheck.equals("")) && (ticket == null || ticket.equals("")))
+			{
+				principal = getAnonymousPrincipal();
+				
+				if(principal != null)
+				{
+					this.getHttpSession().setAttribute("infogluePrincipal", principal);
+					this.getHttpSession().setAttribute("infoglueRemoteUser", principal.getName());
+				}
+
+				return isRedirected;
+			}
+			
+		    String referer = this.getRequest().getHeader("Referer");
+			logger.info("referer:" + referer);
+			
+			if(referer == null || referer.indexOf("ViewStructureToolToolBar.action") != -1)
+				referer = "/"; 
+			
+			Principal principal = (Principal)this.getHttpSession().getAttribute("infogluePrincipal");
+			logger.info("principal:" + principal);
+
+			//First we check if the user is logged in to the container context
+			if(principal == null)
+			{
+			    if(this.getRequest().getUserPrincipal() != null && !(this.getRequest().getUserPrincipal() instanceof InfoGluePrincipal))
+			    {
+					Map status = new HashMap();
+					status.put("redirected", new Boolean(false));
+					getRequest().setAttribute("gateway", "" + gateway);
+					principal = AuthenticationModule.getAuthenticationModule(db, this.getOriginalFullURL()).loginUser(getRequest(), getResponse(), status);
+					Boolean redirected = (Boolean)status.get("redirected");
+					if(redirected != null && redirected.booleanValue())
+					{
+					    this.getHttpSession().removeAttribute("infogluePrincipal");
+					    this.principal = null;
+					    return true;
+					}
+					else if(principal != null)
+					{
+					    this.getHttpSession().setAttribute("infogluePrincipal", principal);
+						this.getHttpSession().setAttribute("infoglueRemoteUser", principal.getName());
+	
+					    this.principal = principal;
+					}
+			    }
+			}
+					
+			if(principal == null)
+			{				
+				Map status = new HashMap();
+				status.put("redirected", new Boolean(false));
+				getRequest().setAttribute("gateway", "" + gateway);
+				principal = AuthenticationModule.getAuthenticationModule(db, this.getOriginalFullURL()).loginUser(getRequest(), getResponse(), status);
+				Boolean redirected = (Boolean)status.get("redirected");
+				if(redirected != null && redirected.booleanValue())
+				{
+				    this.getHttpSession().removeAttribute("infogluePrincipal");
+				    this.principal = null;
+				    return true;
+				}
+				else if(principal != null)
+				{
+				    this.getHttpSession().setAttribute("infogluePrincipal", principal);
+					this.getHttpSession().setAttribute("infoglueRemoteUser", principal.getName());
+
+				    this.principal = principal;
+				}
+				
+				if(principal == null)
+					principal = loginWithCookies();
+				
+			    if(principal == null)
+			        principal = loginWithRequestArguments();
+			    
+			    if(principal == null)
+			    {	
+			    	try
+					{
+						principal = getAnonymousPrincipal();
+						
+						if(principal != null)
+						{
+							this.getHttpSession().setAttribute("infogluePrincipal", principal);
+							this.getHttpSession().setAttribute("infoglueRemoteUser", principal.getName());
+						}
+					}
+					catch(Exception e) 
+					{
+					    throw new SystemException("There was no anonymous user found in the system. There must be - add the user anonymous/anonymous and try again.", e);
+					}
+			    }
+				else
+				{
+					this.getHttpSession().setAttribute("infogluePrincipal", principal);
+					this.getHttpSession().setAttribute("infoglueRemoteUser", principal.getName());
+	
+					this.principal = principal;
+				}
+
+			}
+			else
+			{
+				logger.info("principal:" + principal);
+
+				Principal alternativePrincipal = loginWithCookies();
+			    if(alternativePrincipal == null)
+			        alternativePrincipal = loginWithRequestArguments();
+			}
+		}
+		catch(SystemException se)
+		{
+			logger.warn("An error occurred:" + se.getMessage(), se);
+			throw se;
+		}
+		catch(Exception e)
+		{
+			logger.error("An error occurred:" + e.getMessage(), e);
+		}
+		
+		return isRedirected;
+	}
 	
 	/**
 	 * This method (if enabled in deliver.properties) checks for authentication cookies and 

@@ -424,10 +424,26 @@ public class CASBasicAuthenticationModule extends AuthenticationModule//, Author
 		  	this.casServiceUrl = originalFullURL;
 		}
 
-	  	if (casServiceUrl != null && casServiceUrl.length() > 0)
+		String returnUrl = "";
+	  	
+		if (casServiceUrl != null && casServiceUrl.length() > 0)
+		{
+			String gateway 	= (String)request.getAttribute("gateway");
+			if(gateway != null)
+				casServiceUrl = casServiceUrl + "&skipSSOCheck=true";
+			
+			returnUrl = URLEncoder.encode(casServiceUrl, "UTF-8");
+		}
+	  	else
+	  		returnUrl = Util.getService(request, serverName);
+					
+		return returnUrl;
+		/*
+		if (casServiceUrl != null && casServiceUrl.length() > 0)
 			return URLEncoder.encode(casServiceUrl, "UTF-8");
 	  	else
 			return Util.getService(request, serverName);
+		*/
 	} 
 
 	public String getCurrentURL(HttpServletRequest request)
@@ -573,10 +589,10 @@ public class CASBasicAuthenticationModule extends AuthenticationModule//, Author
 	{
 		String authenticatedUserName = null;
 
-		HttpSession session = ((HttpServletRequest)request).getSession();
-
-		String ticket = request.getParameter("ticket");
+		String ticket 	= request.getParameter("ticket");
+		String gateway 	= (String)request.getAttribute("gateway");
 		logger.info("ticket:" + ticket);
+		logger.info("gateway:" + gateway);
 		
 		// no ticket?  abort request processing and redirect
 		if (ticket == null || ticket.equals("")) 
@@ -595,9 +611,9 @@ public class CASBasicAuthenticationModule extends AuthenticationModule//, Author
 			String redirectUrl = "";
 
 			if(requestURI.indexOf("?") > 0)
-				redirectUrl = loginUrl + "&service=" + getService(request) + ((casRenew != null && !casRenew.equals("")) ? "&renew="+ casRenew : "");
+				redirectUrl = loginUrl + "&service=" + getService(request) + ((casRenew != null && !casRenew.equals("")) ? "&renew="+ casRenew : "") + ((gateway != null && !gateway.equals("")) ? "&gateway="+ gateway : "");
 			else
-				redirectUrl = loginUrl + "?service=" + getService(request) + ((casRenew != null && !casRenew.equals("")) ? "&renew="+ casRenew : "");
+				redirectUrl = loginUrl + "?service=" + getService(request) + ((casRenew != null && !casRenew.equals("")) ? "&renew="+ casRenew : "") + ((gateway != null && !gateway.equals("")) ? "&gateway="+ gateway : "");
 	
 			logger.info("redirectUrl 6:" + redirectUrl);
 			
@@ -616,11 +632,12 @@ public class CASBasicAuthenticationModule extends AuthenticationModule//, Author
 			String redirectUrl = "";
 	
 			if(requestURI.indexOf("?") > 0)
-				redirectUrl = loginUrl + "&service=" + getService(request) + ((casRenew != null && !casRenew.equals("")) ? "&renew="+ casRenew : "");
+				redirectUrl = loginUrl + "&service=" + getService(request) + ((casRenew != null && !casRenew.equals("")) ? "&renew="+ casRenew : "" + ((gateway != null && !gateway.equals("")) ? "&gateway="+ gateway : ""));
 			else
-				redirectUrl = loginUrl + "?service=" + getService(request) + ((casRenew != null && !casRenew.equals("")) ? "&renew="+ casRenew : "");
+				redirectUrl = loginUrl + "?service=" + getService(request) + ((casRenew != null && !casRenew.equals("")) ? "&renew="+ casRenew : "" + ((gateway != null && !gateway.equals("")) ? "&gateway="+ gateway : ""));
 		
 			logger.info("redirectUrl 7:" + redirectUrl);
+		
 			response.sendRedirect(redirectUrl);
 	
 			status.put("redirected", new Boolean(true));
