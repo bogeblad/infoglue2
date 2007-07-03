@@ -240,11 +240,14 @@ function refreshContentToolBar(title, toolbarKey, arguments, unrefreshedContentI
 	title		= hexcode(title);
 	//toolbarKey 	= escape(toolbarKey);	
 	toolbarKey 	= hexcode(toolbarKey);	
-	parent.frames["toolbar"].location.href = 'ViewContentToolToolBar.action?title=' + title + '&toolbarKey=' + toolbarKey + '&' + arguments;
+	if(parent.frames["toolbar"] && parent.frames["toolbar"].location)
+		parent.frames["toolbar"].location.href = 'ViewContentToolToolBar.action?title=' + title + '&toolbarKey=' + toolbarKey + '&' + arguments;
+	
 	if(unrefreshedContentId > 0)
 	{
 		//alert("About to call refresh on menu:" + unrefreshedContentId + ":" + changeTypeId + ":" + newContentId);
-		parent.frames["menu"].refreshContent(unrefreshedContentId, changeTypeId, newContentId);
+		if(parent.frames["menu"])
+			parent.frames["menu"].refreshContent(unrefreshedContentId, changeTypeId, newContentId);
 	}
 }
 
