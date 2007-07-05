@@ -652,6 +652,17 @@ ul {
 	padding-left: 2px;
 	list-style-type: none;
 }
+li.chatitem {
+	padding-bottom: 2px;
+	border-bottom: 0px; 
+	padding-top: 2px; 
+	padding-bottom: 2px; 
+	white-space: normal;
+	cursor: text;
+}
+.name { 
+	font-weight: bold; 
+}
 li {
 	border-bottom: 1px solid #666666; 
 	padding-top: 2px; 

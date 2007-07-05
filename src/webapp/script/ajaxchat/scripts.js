@@ -46,6 +46,8 @@ function handlehHttpReceiveChat()
 function insertNewContent(liName,liText) {
 	insertO = document.getElementById("outputList");
 	oLi = document.createElement('li');
+	oLi.setAttribute('className','chatitem'); //for IE's sake
+	oLi.setAttribute('class','chatitem');
 	oSpan = document.createElement('span');
 	oSpan.setAttribute('className','name'); //for IE's sake
 	oSpan.setAttribute('class','name');
