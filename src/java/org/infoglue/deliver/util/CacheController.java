@@ -1199,13 +1199,22 @@ public class CacheController extends Thread
     	logger.info("blocking");
 
     	WorkingPublicationThread wpt = new WorkingPublicationThread();
-
+    	
     	SelectiveLivePublicationThread pt = null;
-    	if(operatingMode != null && operatingMode.equalsIgnoreCase("3")) //If published-mode we update entire cache to be sure..
-		{
-        	if(CmsPropertyHandler.getLivePublicationThreadClass().equalsIgnoreCase("org.infoglue.deliver.util.SelectiveLivePublicationThread"))
-    			pt = new SelectiveLivePublicationThread();
-        }
+    	String livePublicationThreadClass = "";
+    	try
+    	{
+    		livePublicationThreadClass = CmsPropertyHandler.getLivePublicationThreadClass();
+	    	if(operatingMode != null && operatingMode.equalsIgnoreCase("3")) //If published-mode we update entire cache to be sure..
+			{
+	        	if(livePublicationThreadClass.equalsIgnoreCase("org.infoglue.deliver.util.SelectiveLivePublicationThread"))
+	    			pt = new SelectiveLivePublicationThread();
+	        }
+    	}
+    	catch (Exception e) 
+    	{
+			logger.error("Could not get livePublicationThreadClass:" + e.getMessage(), e);
+		}
     	
     	List localNotifications = new ArrayList();
     	
@@ -1284,7 +1293,7 @@ public class CacheController extends Thread
 			    //if(operatingMode != null && operatingMode.equalsIgnoreCase("0")) //If published-mode we update entire cache to be sure..
 				if(operatingMode != null && operatingMode.equalsIgnoreCase("3")) //If published-mode we update entire cache to be sure..
 				{
-					if(!CmsPropertyHandler.getLivePublicationThreadClass().equalsIgnoreCase("org.infoglue.deliver.util.SelectiveLivePublicationThread"))
+					if(!livePublicationThreadClass.equalsIgnoreCase("org.infoglue.deliver.util.SelectiveLivePublicationThread"))
 					{	
 			    	    logger.info("Starting publication thread...");
 		            	PublicationThread lpt = new PublicationThread();
