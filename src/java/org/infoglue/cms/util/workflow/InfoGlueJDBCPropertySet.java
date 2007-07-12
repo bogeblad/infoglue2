@@ -645,16 +645,6 @@ public class InfoGlueJDBCPropertySet extends JDBCPropertySet
 	        }
 
 	        conn = DriverManager.getConnection("jdbc:apache:commons:dbcp:infoGlueJDBCPropertySet");
-	        /*
-	        try
-	        {
-	        	throw new Exception("APA");
-	        }
-	        catch(Exception e)
-	        {
-	        	logger.error("Fetched connection from pool...", e);
-	        }
-	        */
 			
 	        if(logger.isDebugEnabled())
 	        {
