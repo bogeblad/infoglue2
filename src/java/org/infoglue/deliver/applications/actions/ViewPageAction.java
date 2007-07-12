@@ -452,8 +452,6 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			this.nodeDeliveryController			= NodeDeliveryController.getNodeDeliveryController(this.siteNodeId, this.languageId, this.contentId);
 			this.integrationDeliveryController	= IntegrationDeliveryController.getIntegrationDeliveryController(this.siteNodeId, this.languageId, this.contentId);
 
-			String pagePath	= null;
-	    	
 			boolean isUserRedirected = false;
 			Integer protectedSiteNodeVersionId = this.nodeDeliveryController.getProtectedSiteNodeVersionId(dbWrapper.getDatabase(), siteNodeId);
 			logger.info("protectedSiteNodeVersionId:" + protectedSiteNodeVersionId);
@@ -469,12 +467,14 @@ public class ViewPageAction extends InfoGlueAbstractAction
 				
 			if(protectedSiteNodeVersionId != null || protectDeliver)
 				isUserRedirected = handleExtranetLogic(dbWrapper.getDatabase(), protectedSiteNodeVersionId, protectDeliver);
+			/*
 			else
 			{
 				String forceIdentityCheck = RepositoryDeliveryController.getRepositoryDeliveryController().getExtraPropertyValue(this.repositoryId, "forceIdentityCheck");
 				if(CmsPropertyHandler.getForceIdentityCheck().equalsIgnoreCase("true") || (forceIdentityCheck != null && forceIdentityCheck.equalsIgnoreCase("true")))
 					isUserRedirected = handleExtranetLogic(dbWrapper.getDatabase(), true);
 			}
+			*/
 
 	    	String pageKey = this.nodeDeliveryController.getPageCacheKey(dbWrapper.getDatabase(), this.getHttpSession(), this.getRequest(), this.siteNodeId, this.languageId, this.contentId, browserBean.getUseragent(), this.getRequest().getQueryString(), "_" + this.showSimple + "_pagecomponentDecorated");
 
