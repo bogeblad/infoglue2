@@ -220,8 +220,6 @@ public class NodeDeliveryController extends BaseDeliveryController
         	}
 		}
 		
-		//try{ throw new Exception("APA"); } catch(Exception e){e.printStackTrace();}
-		
 		logger.info("Loaded serviceDefinitionVO end...");
 		
 		return serviceDefinitionVO;
@@ -1490,74 +1488,6 @@ public class NodeDeliveryController extends BaseDeliveryController
 	            throw new SystemException("You must run validation service in the management tool against this db - it needs to become up2date with the new model.");
 	        }
         }
-        
-            /*
-	        List bindings = new ArrayList();
-	        StringBuffer sb = new StringBuffer(256);
-	        sb.append("SELECT s FROM ");
-	        sb.append("org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl s ");
-	        sb.append("WHERE ");
-	        if (parentSiteNodeId == null || parentSiteNodeId.intValue() == -1) 
-	        {
-	            sb.append("is_undefined(s.parentSiteNode) ");
-	        } 
-	        else 
-	        {
-	            sb.append("s.parentSiteNode.siteNodeId = $").append((bindings.size()+1)).append(" ");
-	            bindings.add(parentSiteNodeId);
-	        }
-	        
-	        sb.append("and s.repository.repositoryId = $").append((bindings.size()+1)).append(" ");
-	        bindings.add(repositoryId);
-	
-	        logger.info("OQL ["+sb.toString()+"]");
-	        OQLQuery oql = db.getOQLQuery( sb.toString() );
-	        for (int i=0;i<bindings.size();i++) 
-	        {
-	            oql.bind(bindings.get(i));
-	        }
-	        
-	        QueryResults results = oql.execute(Database.ReadOnly);
-	        while (results.hasMore()) 
-	        {
-	            SiteNode siteNode = (SiteNode) results.next();
-	            if (path == null || path.length() == 0) 
-	            {
-	                logger.info("Returning siteNode:" + siteNode.getName());
-	                return siteNode.getSiteNodeId();
-	            }
-	            
-	            logger.info("Continued with siteNode: " + siteNode.getName());
-	            ContentVO content = getBoundContent(db, infogluePrincipal, siteNode.getSiteNodeId(), languageId, true, META_INFO_BINDING_NAME, deliveryContext);
-	            if(content != null) 
-	            {
-	                //logger.info("Content "+content.getContentId());
-	                String pathCandidate = null;
-	                for (int i=0;i<languages.size();i++) 
-	                {
-	                    LanguageVO language = (LanguageVO) languages.get(i);
-	                    //logger.info("Language : "+language.getLanguageCode());
-	                    
-	                    if(attributeName.equals("SiteNode.name"))
-	                        pathCandidate = siteNode.getName();
-	                    else
-	                    {
-		                    pathCandidate = ContentDeliveryController.getContentDeliveryController().getContentAttribute(db, content.getContentId(), language.getLanguageId(), attributeName, siteNode.getSiteNodeId(), true, deliveryContext, infogluePrincipal, false);
-		                    
-		                    if((pathCandidate == null || pathCandidate.equals("")) && !attributeName.equals(NAV_TITLE_ATTRIBUTE_NAME))
-		                        pathCandidate = ContentDeliveryController.getContentDeliveryController().getContentAttribute(db, content.getContentId(), language.getLanguageId(), NAV_TITLE_ATTRIBUTE_NAME, siteNode.getSiteNodeId(), true, deliveryContext, infogluePrincipal, false);
-	                    }
-	                    
-	                    logger.info(attributeName + " ["+pathCandidate.trim()+"]==[" + path + "]");
-	                    if (pathCandidate != null && pathCandidate.toLowerCase().trim().equals(path.toLowerCase())) 
-	                    {
-	                        return siteNode.getSiteNodeId();
-	                    }
-	                }
-	            }
-	        }
-        }
-        */
         
         return null;
     }
