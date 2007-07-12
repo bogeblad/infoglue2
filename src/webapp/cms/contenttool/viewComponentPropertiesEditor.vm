@@ -75,11 +75,12 @@
 				propertyType   	= property.getType();
 				propertyEntity 	= property.getEntity();
 				propertyMultiple= property.getMultiple();
+				propertyAssetBinding= property.getAssetBinding();
 				propertyDescription= property.getDescription();
 				propertyAllowedContentTypeNames = property.getAllowedContentTypeNames();
 				if(propertyType == "select" || propertyType == "checkbox")
 				{
-					propertiesXML += "<property name='" + propertyName + "' type='" + propertyType + "' multiple='" + propertyMultiple + "' description='" + propertyDescription + "'>";
+					propertiesXML += "<property name='" + propertyName + "' type='" + propertyType + "' multiple='" + propertyMultiple + "' assetBinding='" + propertyAssetBinding + "' description='" + propertyDescription + "'>";
 
 					for (var j=0; j<property.getOptions().getSize(); j++)
 					{
@@ -93,7 +94,7 @@
 					propertiesXML += "</property>";					
 				}
 				else
-					propertiesXML += "<property name='" + propertyName + "' type='" + propertyType + "' entity='" + propertyEntity + "' multiple='" + propertyMultiple + "' allowedContentTypeDefinitionNames='" + propertyAllowedContentTypeNames + "' description='" + propertyDescription + "'/>";
+					propertiesXML += "<property name='" + propertyName + "' type='" + propertyType + "' entity='" + propertyEntity + "' multiple='" + propertyMultiple + "' assetBinding='" + propertyAssetBinding + "' allowedContentTypeDefinitionNames='" + propertyAllowedContentTypeNames + "' description='" + propertyDescription + "'/>";
 			}
 		   	
 		   	propertiesXML += "</properties>";
@@ -244,6 +245,11 @@
 			else
 				document.componentPropertyDefinitionForm.componentPropertyDefinition_multiple.options[1].selected = 1;
 
+			if(componentPropertyDefinition.assetBinding == "false")
+				document.componentPropertyDefinitionForm.componentPropertyDefinition_assetBinding.options[0].selected = 1;
+			else
+				document.componentPropertyDefinitionForm.componentPropertyDefinition_assetBinding.options[1].selected = 1;
+
 			document.componentPropertyDefinitionForm.componentPropertyDefinition_description.value = componentPropertyDefinition.description;
 			
 			var allowedContentTypeNamesArray = componentPropertyDefinition.getAllowedContentTypeNames().split(",");
@@ -273,6 +279,7 @@
 			}
 			
 			validateTypeChoice();
+			validateEntityChoice();
 			
 			initOptions(componentPropertyDefinition);
 			
@@ -320,6 +327,7 @@
 			{
 				componentPropertyDefinition.setEntity(document.getElementById("componentPropertyDefinition_entity").value);
 				componentPropertyDefinition.setMultiple(document.getElementById("componentPropertyDefinition_multiple").value);
+				componentPropertyDefinition.setAssetBinding(document.getElementById("componentPropertyDefinition_assetBinding").value);
 				
 				var selObject = document.getElementById("componentPropertyDefinition_allowedContentTypeNames");
 				var length = selObject.options.length;
@@ -341,6 +349,7 @@
 			{
 				componentPropertyDefinition.setEntity("");
 				componentPropertyDefinition.setMultiple("");
+				componentPropertyDefinition.setAssetBinding("");
 				componentPropertyDefinition.setAllowedContentTypeNames("");
 			}
 			
@@ -405,6 +414,7 @@
 				addTD(myTR, componentPropertyDefinition.type)
 				addTD(myTR, componentPropertyDefinition.entity)
 				addTD(myTR, componentPropertyDefinition.multiple)
+				addTD(myTR, componentPropertyDefinition.assetBinding)
 				addTD(myTR, componentPropertyDefinition.allowedContentTypeNames)
 				addTD(myTR, componentPropertyDefinition.description)
 
@@ -495,7 +505,7 @@
 
 		function addProperty()
 		{
-			property = new ComponentPropertyDefinition("NewProperty", "binding", "Content", "false", "", "No description yet");
+			property = new ComponentPropertyDefinition("NewProperty", "binding", "Content", "false", "false", "", "No description yet");
 			propertyVector.addElement(property);
 				
 			drawList();
@@ -524,13 +534,15 @@
 				property.setType(previousProperty.getType());
 				property.setEntity(previousProperty.getEntity());
 				property.setMultiple(previousProperty.getMultiple());
+				property.setAssetBinding(previousProperty.getAssetBinding());
 				property.setAllowedContentTypeNames(previousProperty.getAllowedContentTypeNames());
 				property.setDescription(previousProperty.getDescription());
 				
-				previousProperty.setName(name)
-				previousProperty.setType(type)
-				previousProperty.setEntity(entity)
-				previousProperty.setMultiple(multiple)
+				previousProperty.setName(name);
+				previousProperty.setType(type);
+				previousProperty.setEntity(entity);
+				previousProperty.setMultiple(multiple);
+				previousProperty.setAssetBinding(assetBinding);
 				previousProperty.setAllowedContentTypeNames(allowedContentTypeNames);
 				previousProperty.setDescription(description);
 				
@@ -560,13 +572,15 @@
 				property.setType(previousProperty.getType())
 				property.setEntity(previousProperty.getEntity())
 				property.setMultiple(previousProperty.getMultiple())
+				property.setAssetBinding(previousProperty.getAssetBinding());
 				property.setAllowedContentTypeNames(previousProperty.getAllowedContentTypeNames());
 				property.setDescription(previousProperty.getDescription());
 				
-				previousProperty.setName(name)
-				previousProperty.setType(type)
-				previousProperty.setEntity(entity)
-				previousProperty.setMultiple(multiple)
+				previousProperty.setName(name);
+				previousProperty.setType(type);
+				previousProperty.setEntity(entity);
+				previousProperty.setMultiple(multiple);
+				previousProperty.setAssetBinding(assetBinding);
 				previousProperty.setAllowedContentTypeNames(allowedContentTypeNames);
 				previousProperty.setDescription(description);
 			
@@ -665,6 +679,7 @@
 				document.getElementById("optionsParagraph").style.display = "none";
 				document.getElementById("entityParagraph").style.display = "none";
 				document.getElementById("multipleParagraph").style.display = "none";
+				document.getElementById("assetParagraph").style.display = "none";
 				document.getElementById("allowedContentTypeNamesParagraph").style.display = "none";
 			}
 			else if(selectBox.value == "select" || selectBox.value == "checkbox")
@@ -672,6 +687,7 @@
 				document.getElementById("optionsParagraph").style.display = "block";
 				document.getElementById("entityParagraph").style.display = "none";
 				document.getElementById("multipleParagraph").style.display = "none";
+				document.getElementById("assetParagraph").style.display = "none";
 				document.getElementById("allowedContentTypeNamesParagraph").style.display = "none";
 			}
 			else
@@ -679,7 +695,23 @@
 				document.getElementById("optionsParagraph").style.display = "none";
 				document.getElementById("entityParagraph").style.display = "block";
 				document.getElementById("multipleParagraph").style.display = "block";
+				document.getElementById("assetParagraph").style.display = "block";
 				document.getElementById("allowedContentTypeNamesParagraph").style.display = "block";
+			}
+		}
+
+		function validateEntityChoice()
+		{
+			selectBox = document.componentPropertyDefinitionForm.componentPropertyDefinition_entity;
+			if(selectBox.value == "Content")
+			{							 
+				document.getElementById("allowedContentTypeNamesParagraph").style.display = "block";
+				document.getElementById("assetParagraph").style.display = "block";
+			}
+			else
+			{
+				document.getElementById("allowedContentTypeNamesParagraph").style.display = "none";
+				document.getElementById("assetParagraph").style.display = "none";
 			}
 		}
 		
@@ -693,7 +725,7 @@
 			#foreach($propertyDefinition in $componentPropertyDefinitions)
 				//alert("$propertyDefinition");
 				
-				property = new ComponentPropertyDefinition("$propertyDefinition.name", "$propertyDefinition.type", "$propertyDefinition.entity", "$propertyDefinition.multiple", "$propertyDefinition.allowedContentTypeNames", "$propertyDefinition.description");
+				property = new ComponentPropertyDefinition("$propertyDefinition.name", "$propertyDefinition.type", "$propertyDefinition.entity", "$propertyDefinition.multiple", "$propertyDefinition.assetBinding", "$propertyDefinition.allowedContentTypeNames", "$propertyDefinition.description");
 
 				#foreach($propertyOptionDefinition in $propertyDefinition.options)
 					propertyOption = new ComponentPropertyOptionDefinition("$propertyOptionDefinition.name", "$propertyOptionDefinition.value");
@@ -776,13 +808,19 @@
 </div>
 
 <p id="entityParagraph" style="display: block;"><label for="name">Entity:</label>
-	<select size="1" name="componentPropertyDefinition_entity" id="componentPropertyDefinition_entity" class="sitedropbox">
+	<select size="1" name="componentPropertyDefinition_entity" id="componentPropertyDefinition_entity" class="sitedropbox" onchange="validateEntityChoice();">
 	    <option value="Content">Content</option>
 	    <option value="SiteNode">SiteNode</option>
 	</select>
 </p>
 <p id="multipleParagraph" style="display: block;"><label for="name">Multiple:</label>
 	<select size="1" name="componentPropertyDefinition_multiple" id="componentPropertyDefinition_multiple" class="sitedropbox">
+	    <option value="false">No</option>
+	    <option value="true">Yes</option>
+	</select>
+</p>
+<p id="assetParagraph" style="display: block;"><label for="name">AssetBinding:</label>
+	<select size="1" name="componentPropertyDefinition_assetBinding" id="componentPropertyDefinition_assetBinding" class="sitedropbox">
 	    <option value="false">No</option>
 	    <option value="true">Yes</option>
 	</select>

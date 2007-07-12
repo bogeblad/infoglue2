@@ -44,18 +44,20 @@ public class ComponentPropertyDefinition
     private String type;
     private String entity;
     private Boolean multiple;
+    private Boolean assetBinding;
     private String allowedContentTypeNames;
     private String description;
     
     private List options = new ArrayList();
 
     
-    public ComponentPropertyDefinition(String name, String type, String entity, Boolean multiple, String allowedContentTypeNames, String description)
+    public ComponentPropertyDefinition(String name, String type, String entity, Boolean multiple, Boolean assetBinding, String allowedContentTypeNames, String description)
     {
         this.name 						= name;
         this.type 						= type;
         this.entity 					= entity;
         this.multiple 					= multiple;
+        this.assetBinding 				= assetBinding;
         this.allowedContentTypeNames 	= allowedContentTypeNames;
         this.description				= description;
     }
@@ -69,7 +71,12 @@ public class ComponentPropertyDefinition
     {
         return multiple;
     }
-    
+
+    public Boolean getAssetBinding()
+	{
+		return assetBinding;
+	}
+
     public String getName()
     {
         return name;
@@ -93,4 +100,5 @@ public class ComponentPropertyDefinition
 	public List getOptions() {
 		return options;
 	}
+
 }

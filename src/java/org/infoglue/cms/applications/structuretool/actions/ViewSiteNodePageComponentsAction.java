@@ -79,6 +79,7 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 	private Integer siteNodeId = null;
 	private Integer languageId = null;
 	private Integer contentId = null;
+	private String assetKey = null;
 	private Integer parentComponentId = null;
 	private Integer componentId = null;
 	private String propertyName = null;
@@ -693,7 +694,8 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 		//logger.info("componentId:" + this.componentId);
 		//logger.info("slotId:" + this.slotId);
 		//logger.info("specifyBaseTemplate:" + this.specifyBaseTemplate);
-
+		//logger.info("assetKey:" + assetKey);
+		
 		Integer siteNodeId = new Integer(this.getRequest().getParameter("siteNodeId"));
 		Integer languageId = new Integer(this.getRequest().getParameter("languageId"));
 		
@@ -703,8 +705,6 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 		Integer entityId  = new Integer(this.getRequest().getParameter("entityId"));
 		String propertyName = this.getRequest().getParameter("propertyName");
 			
-		NodeDeliveryController nodeDeliveryController			    = NodeDeliveryController.getNodeDeliveryController(siteNodeId, languageId, contentId);
-		
 		String componentXML = getPageComponentsString(siteNodeId, this.masterLanguageVO.getId(), contentId);			
 
 		Document document = XMLHelper.readDocumentFromByteArray(componentXML.getBytes("UTF-8"));
@@ -767,7 +767,7 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 				component.removeChild(node);
 			}
 			
-			Element newComponent = addBindingElement(component, entity, entityId);
+			Element newComponent = addBindingElement(component, entity, entityId, assetKey);
 			String modifiedXML = XMLHelper.serializeDom(document, new StringBuffer()).toString(); 
 			//logger.info("modifiedXML:" + modifiedXML);
 			
@@ -964,6 +964,7 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 				Element component = (Element)anl.item(i);
 				String entityName = component.getAttribute("entity");
 				String entityId = component.getAttribute("entityId");
+				String assetKey = component.getAttribute("assetKey");
 				
 				try
 				{
@@ -982,6 +983,7 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 					Map binding = new HashMap();
 					binding.put("entityName", entityName);
 					binding.put("entityId", entityId);
+					binding.put("assetKey", assetKey);
 					binding.put("path", path);
 					bindings.add(binding);
 				}
@@ -1107,11 +1109,14 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 	 * This is to support form steering information later.
 	 */
 	
-	private Element addBindingElement(Element parent, String entity, Integer entityId)
+	private Element addBindingElement(Element parent, String entity, Integer entityId, String assetKey)
 	{
 		Element element = parent.getOwnerDocument().createElement("binding");
 		element.setAttribute("entityId", entityId.toString());
 		element.setAttribute("entity", entity);
+		if(assetKey != null && !assetKey.equals(""))
+			element.setAttribute("assetKey", assetKey);
+		
 		parent.appendChild(element);
 		return element;
 	}
@@ -1467,5 +1472,15 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
         
         return sb.toString();
     }
+
+	public String getAssetKey()
+	{
+		return assetKey;
+	}
+
+	public void setAssetKey(String assetKey)
+	{
+		this.assetKey = assetKey;
+	}
 
 }

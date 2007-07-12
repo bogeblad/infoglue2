@@ -50,6 +50,7 @@ import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.XMLHelper;
 import org.infoglue.cms.util.dom.DOMBuilder;
 import org.infoglue.deliver.applications.actions.InfoGlueComponent;
+import org.infoglue.deliver.applications.databeans.ComponentBinding;
 import org.infoglue.deliver.applications.databeans.ComponentRestriction;
 import org.infoglue.deliver.applications.databeans.Slot;
 import org.infoglue.deliver.controllers.kernel.impl.simple.ComponentLogic;
@@ -370,7 +371,20 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 						Element bindingElement = (Element)bindingNodeListIterator.next();
 						String entity = bindingElement.attributeValue("entity");
 						String entityId = bindingElement.attributeValue("entityId");
+						String assetKey = bindingElement.attributeValue("assetKey");
 						//logger.info("Binding found:" + entity + ":" + entityId);
+
+						ComponentBinding componentBinding = new ComponentBinding();
+						//componentBinding.setId(new Integer(id));
+						//componentBinding.setComponentId(componentId);
+						componentBinding.setEntityClass(entity);
+						componentBinding.setEntityId(new Integer(entityId));
+						componentBinding.setAssetKey(assetKey);
+						componentBinding.setBindingPath(path);
+						
+						bindings.add(componentBinding);
+						
+						/*
 						if(entity.equalsIgnoreCase("Content"))
 						{
 							bindings.add(entityId);
@@ -379,6 +393,7 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 						{
 							bindings.add(entityId); 
 						} 
+						*/
 					}
 	
 					property.put("bindings", bindings);
@@ -548,7 +563,20 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 						Element bindingElement = (Element)bindingNodeListIterator.next();
 						String entity = bindingElement.attributeValue("entity");
 						String entityId = bindingElement.attributeValue("entityId");
+						String assetKey = bindingElement.attributeValue("assetKey");
 						////logger.info("Binding found:" + entity + ":" + entityId);
+						
+						ComponentBinding componentBinding = new ComponentBinding();
+						//componentBinding.setId(new Integer(id));
+						//componentBinding.setComponentId(componentId);
+						componentBinding.setEntityClass(entity);
+						componentBinding.setEntityId(new Integer(entityId));
+						componentBinding.setAssetKey(assetKey);
+						componentBinding.setBindingPath(path);
+						
+						bindings.add(componentBinding);
+
+						/*
 						if(entity.equalsIgnoreCase("Content"))
 						{
 							////logger.info("Content added:" + entity + ":" + entityId);
@@ -559,6 +587,7 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 							////logger.info("SiteNode added:" + entity + ":" + entityId);
 							bindings.add(entityId); 
 						} 
+						*/
 					}
 	
 					property.put("bindings", bindings);
@@ -1176,7 +1205,7 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 							property.put("path", path);
 							property.put("type", type);
 							
-							List bindings = new ArrayList();
+							List<ComponentBinding> bindings = new ArrayList<ComponentBinding>();
 							List bindingNodeList = propertyElement.selectNodes("binding");
 							Iterator bindingNodeListIterator = bindingNodeList.iterator();
 							while(bindingNodeListIterator.hasNext())
@@ -1184,6 +1213,18 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 								Element bindingElement = (Element)bindingNodeListIterator.next();
 								String entity = bindingElement.attributeValue("entity");
 								String entityId = bindingElement.attributeValue("entityId");
+								String assetKey = bindingElement.attributeValue("assetKey");
+
+								ComponentBinding componentBinding = new ComponentBinding();
+								//componentBinding.setId(new Integer(id));
+								//componentBinding.setComponentId(componentId);
+								componentBinding.setEntityClass(entity);
+								componentBinding.setEntityId(new Integer(entityId));
+								componentBinding.setAssetKey(assetKey);
+								componentBinding.setBindingPath(path);
+								
+								bindings.add(componentBinding);
+								/*
 								if(entity.equalsIgnoreCase("Content"))
 								{
 									bindings.add(entityId);
@@ -1191,7 +1232,8 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 								else
 								{
 									bindings.add(entityId); 
-								} 
+								}
+								*/ 
 							}
 			
 							property.put("bindings", bindings);
@@ -1343,7 +1385,19 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 					Element bindingElement = (Element)bindingNodeListIterator.next();
 					String entity = bindingElement.attributeValue("entity");
 					String entityId = bindingElement.attributeValue("entityId");
+					String assetKey = bindingElement.attributeValue("assetKey");
 					//logger.info("Binding found:" + entity + ":" + entityId);
+					
+					ComponentBinding componentBinding = new ComponentBinding();
+					//componentBinding.setId(new Integer(id));
+					//componentBinding.setComponentId(componentId);
+					componentBinding.setEntityClass(entity);
+					componentBinding.setEntityId(new Integer(entityId));
+					componentBinding.setAssetKey(assetKey);
+					componentBinding.setBindingPath(path);
+					
+					bindings.add(componentBinding);
+					/*
 					if(entity.equalsIgnoreCase("Content"))
 					{
 						bindings.add(entityId);
@@ -1352,6 +1406,7 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 					{
 						bindings.add(entityId); 
 					} 
+					*/
 				}
 
 				property.put("bindings", bindings);

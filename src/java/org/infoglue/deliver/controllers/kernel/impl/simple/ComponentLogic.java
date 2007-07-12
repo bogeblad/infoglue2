@@ -45,6 +45,7 @@ import org.infoglue.cms.util.dom.DOMBuilder;
 import org.infoglue.deliver.applications.actions.InfoGlueComponent;
 import org.infoglue.deliver.applications.databeans.ComponentDeliveryContext;
 import org.infoglue.deliver.util.NullObject;
+import org.infoglue.deliver.applications.databeans.ComponentBinding;
 import org.infoglue.deliver.applications.databeans.Slot;
 import org.infoglue.deliver.applications.databeans.WebPage;
 import org.infoglue.deliver.util.CacheController;
@@ -138,6 +139,11 @@ public class ComponentLogic
 		//if(property != null)
 		//{
 		Map property = getInheritedComponentProperty(this.infoGlueComponent, propertyName, this.useInheritance, useRepositoryInheritance);
+		
+		Integer contentId = getContentId(property);
+		if(contentId != null)
+			childContents = this.templateController.getChildContents(contentId, searchRecursive, sortAttribute, sortOrder, includeFolders);
+		/*
 		if(property != null)
 		{	
 			List bindings = (List)property.get("bindings");
@@ -147,10 +153,11 @@ public class ComponentLogic
 				childContents = this.templateController.getChildContents(contentId, searchRecursive, sortAttribute, sortOrder, includeFolders);
 			}
 		}
+		*/
 		
 		return childContents;
 	}
-
+	
 	/**
 	 * The method returns a list of ContentVO-objects that are related to the category of named binding on the siteNode sent in.
 	 * The method is great for collection-pages on any site where you want to bind a category.
@@ -169,21 +176,19 @@ public class ComponentLogic
 
 		return Collections.EMPTY_LIST;
 	}
-
-	private Integer getSingleBindingAsInteger(Map componentProperty)
-	{
-		List bindings = (List)componentProperty.get("bindings");
-		return (bindings.size() > 0)
-			   		? new Integer((String)bindings.get(0))
-			   		: new Integer(0);
-	}
-
 	
 	public String getAssetUrl(String propertyName) throws Exception
 	{
 		String assetUrl = "";
 
 		Map property = getInheritedComponentProperty(this.infoGlueComponent, propertyName, this.useInheritance, this.useRepositoryInheritance);
+		Integer contentId = getContentId(property);
+		String assetKey = getAssetKey(property);
+		if(contentId != null && assetKey == null || assetKey.equals(""))
+			assetUrl = templateController.getAssetUrl(contentId);
+		else if(contentId != null )
+			assetUrl = templateController.getAssetUrl(contentId, assetKey);
+		/*
 		if(property != null)
 		{	
 			List bindings = (List)property.get("bindings");
@@ -195,6 +200,7 @@ public class ComponentLogic
 				assetUrl = templateController.getAssetUrl(contentId);
 			}
 		}
+		*/
 		return assetUrl;
 	}
 
@@ -208,6 +214,10 @@ public class ComponentLogic
 		String assetUrl = "";
 
 		Map property = getInheritedComponentProperty(this.infoGlueComponent, propertyName, useInheritance, useRepositoryInheritance);
+		Integer contentId = getContentId(property);
+		if(contentId != null)
+			assetUrl = templateController.getAssetUrl(contentId);
+		/*	
 		if(property != null)
 		{	
 			List bindings = (List)property.get("bindings");
@@ -219,6 +229,7 @@ public class ComponentLogic
 				assetUrl = templateController.getAssetUrl(contentId);
 			}
 		}
+		*/
 		return assetUrl;
 	}
 
@@ -227,6 +238,11 @@ public class ComponentLogic
 		String assetUrl = "";
 		 		
 		Map property = getInheritedComponentProperty(this.infoGlueComponent, propertyName, this.useInheritance, this.useRepositoryInheritance);
+		Integer contentId = getContentId(property);
+		if(contentId != null)
+			assetUrl = templateController.getAssetUrl(contentId, assetKey);
+		
+		/*
 		if(property != null)
 		{	
 			List bindings = (List)property.get("bindings");
@@ -236,6 +252,7 @@ public class ComponentLogic
 				assetUrl = templateController.getAssetUrl(contentId, assetKey);
 			}
 		}
+		*/
 		return assetUrl;
 	}
 
@@ -249,6 +266,11 @@ public class ComponentLogic
 		String assetUrl = "";
 		 		
 		Map property = getInheritedComponentProperty(this.infoGlueComponent, propertyName, useInheritance, useRepositoryInheritance);
+		Integer contentId = getContentId(property);
+		if(contentId != null)
+			assetUrl = templateController.getAssetUrl(contentId, assetKey);
+		
+		/*
 		if(property != null)
 		{	
 			List bindings = (List)property.get("bindings");
@@ -258,6 +280,7 @@ public class ComponentLogic
 				assetUrl = templateController.getAssetUrl(contentId, assetKey);
 			}
 		}
+		*/
 		return assetUrl;
 	}
 
@@ -276,6 +299,10 @@ public class ComponentLogic
 		String assetUrl = "";
 		 		
 		Map property = getInheritedComponentProperty(this.infoGlueComponent, propertyName, useInheritance, useRepositoryInheritance);
+		Integer contentId = getContentId(property);
+		if(contentId != null)
+			assetUrl = templateController.getAssetThumbnailUrl(contentId, width, height);
+		/*		
 		if(property != null)
 		{	
 			List bindings = (List)property.get("bindings");
@@ -285,6 +312,7 @@ public class ComponentLogic
 				assetUrl = templateController.getAssetThumbnailUrl(contentId, width, height);
 			}
 		}
+		*/
 		return assetUrl;
 	}
 
@@ -305,6 +333,11 @@ public class ComponentLogic
 		try
 		{
 			Map property = getInheritedComponentProperty(this.infoGlueComponent, propertyName, useInheritance, useRepositoryInheritance);
+			Integer contentId = getContentId(property);
+			if(contentId != null)
+				assetUrl = templateController.getAssetThumbnailUrl(contentId, assetKey, width, height);
+				
+			/*
 			if(property != null)
 			{	
 				List bindings = (List)property.get("bindings");
@@ -314,6 +347,7 @@ public class ComponentLogic
 					assetUrl = templateController.getAssetThumbnailUrl(contentId, assetKey, width, height);
 				}
 			}
+			*/
 		}
 		catch(Exception e)
 		{
@@ -353,104 +387,6 @@ public class ComponentLogic
 	    return getContentAttribute(propertyName, attributeName, disableEditOnSight, this.useInheritance);
 	}
 
-	/*
-	public String getContentAttribute(String propertyName, String attributeName)
-	{
-		String attributeValue = "";
-
-		Map property = getInheritedComponentProperty(this.infoGlueComponent, propertyName, useInheritance);
-		if(property != null)
-		{
-			List bindings = (List)property.get("bindings");
-			if(bindings.size() > 0)
-			{
-				Integer contentId = new Integer((String)bindings.get(0));
-				attributeValue = templateController.getContentAttribute(contentId, attributeName);
-			}
-		}
-
-		return attributeValue;
-	}
-	*/
-	
-	public Integer getContentId(Map property)
-	{
-	    Integer contentId = null;
-
-	    if(property != null)
-		{	
-			List bindings = (List)property.get("bindings");
-			if(bindings.size() > 0)
-			{
-				contentId = new Integer((String)bindings.get(0));
-			}
-		}
-
-		return contentId;
-	}
-
-	public List getBoundContents(Map property)
-	{
-	    List contents = new ArrayList();
-
-	    if(property != null)
-		{	
-			List bindings = (List)property.get("bindings");
-			Iterator bindingsIterator = bindings.iterator();
-			while(bindingsIterator.hasNext())
-			{
-				Integer contentId = new Integer((String)bindingsIterator.next());
-				contents.add(this.templateController.getContent(contentId));
-			}
-		}
-
-		return contents;
-	}
-
-	public Integer getSiteNodeId(Map property)
-	{
-	    Integer siteNodeId = null;
-
-	    if(property != null)
-		{	
-			List bindings = (List)property.get("bindings");
-			if(bindings.size() > 0)
-			{
-			    siteNodeId = new Integer((String)bindings.get(0));
-			}
-		}
-
-		return siteNodeId;
-	}
-
-	public List getBoundPages(Map property)
-	{
-		List pages = new ArrayList();
-
-		if(property != null)
-		{	
-			List bindings = (List)property.get("bindings");
-			Iterator bindingsIterator = bindings.iterator();
-			while(bindingsIterator.hasNext())
-			{
-				Integer siteNodeId = new Integer((String)bindingsIterator.next());
-				SiteNodeVO siteNode = templateController.getSiteNode(siteNodeId);
-				if(siteNode != null)
-				{
-					WebPage webPage = new WebPage();						
-					webPage.setSiteNodeId(siteNodeId);
-					webPage.setLanguageId(templateController.getLanguageId());
-					webPage.setContentId(null);
-					webPage.setNavigationTitle(getPageNavTitle(siteNodeId));
-					webPage.setMetaInfoContentId(siteNode.getMetaInfoContentId());
-					webPage.setUrl(getPageUrl(siteNodeId));
-					pages.add(webPage);
-				}
-			}
-		}
-
-		return pages;
-	}
 
 	public List getAssignedCategories(String propertyName, String categoryKey, Integer languageId, boolean useInheritance, boolean useLanguageFallback)
 	{
@@ -462,6 +398,10 @@ public class ComponentLogic
 		List assignedCategories = new ArrayList();
 
 		Map property = getInheritedComponentProperty(this.infoGlueComponent, propertyName, useInheritance, useRepositoryInheritance);
+		Integer contentId = getContentId(property);
+		if(contentId != null)
+			assignedCategories = templateController.getAssignedCategories(contentId, categoryKey, languageId, useLanguageFallback);
+		/*
 		if(property != null)
 		{	
 			List bindings = (List)property.get("bindings");
@@ -471,6 +411,7 @@ public class ComponentLogic
 				assignedCategories = templateController.getAssignedCategories(contentId, categoryKey, languageId, useLanguageFallback);
 			}
 		}
+		*/
 
 		return assignedCategories;
 	}
@@ -485,6 +426,15 @@ public class ComponentLogic
 		String attributeValue = "";
 
 		Map property = getInheritedComponentProperty(this.infoGlueComponent, propertyName, useInheritance, useRepositoryInheritance);
+		Integer contentId = getContentId(property);
+		if(contentId != null)
+		{
+			if(disableEditOnSight)
+			    attributeValue = templateController.getContentAttribute(contentId, attributeName, disableEditOnSight);
+			else
+			    attributeValue = templateController.getContentAttribute(contentId, attributeName);
+		}
+		/*
 		if(property != null)
 		{	
 			List bindings = (List)property.get("bindings");
@@ -497,6 +447,7 @@ public class ComponentLogic
 				    attributeValue = templateController.getContentAttribute(contentId, attributeName);
 			}
 		}
+		*/
 
 		return attributeValue;
 	}
@@ -511,6 +462,11 @@ public class ComponentLogic
 		String attributeValue = "";
 
 		Map property = getInheritedComponentProperty(this.infoGlueComponent, propertyName, useInheritance, useRepositoryInheritance);
+		Integer contentId = getContentId(property);
+		if(contentId != null)
+			attributeValue = templateController.getContentAttribute(contentId, languageId, attributeName, disableEditOnSight);
+
+		/*
 		if(property != null)
 		{	
 			List bindings = (List)property.get("bindings");
@@ -520,6 +476,7 @@ public class ComponentLogic
 				attributeValue = templateController.getContentAttribute(contentId, languageId, attributeName, disableEditOnSight);
 			}
 		}
+		*/
 
 		return attributeValue;
 	}
@@ -539,6 +496,11 @@ public class ComponentLogic
 		String attributeValue = "";
 
 		Map property = getInheritedComponentProperty(this.infoGlueComponent, propertyName, useInheritance, useRepositoryInheritance);
+		Integer contentId = getContentId(property);
+		if(contentId != null)
+			attributeValue = templateController.getParsedContentAttribute(contentId, attributeName, disableEditOnSight);
+
+		/*
 		if(property != null)
 		{	
 			List bindings = (List)property.get("bindings");
@@ -548,6 +510,7 @@ public class ComponentLogic
 				attributeValue = templateController.getParsedContentAttribute(contentId, attributeName, disableEditOnSight);
 			}
 		}
+		*/
 
 		return attributeValue;
 	}
@@ -562,6 +525,11 @@ public class ComponentLogic
 		String attributeValue = "";
 
 		Map property = getInheritedComponentProperty(this.infoGlueComponent, propertyName, useInheritance, useRepositoryInheritance);
+		Integer contentId = getContentId(property);
+		if(contentId != null)
+			attributeValue = templateController.getParsedContentAttribute(contentId, languageId, attributeName, disableEditOnSight);
+		
+		/*
 		if(property != null)
 		{	
 			List bindings = (List)property.get("bindings");
@@ -571,7 +539,8 @@ public class ComponentLogic
 				attributeValue = templateController.getParsedContentAttribute(contentId, languageId, attributeName, disableEditOnSight);
 			}
 		}
-
+		*/
+			
 		return attributeValue;
 	}
 
@@ -585,6 +554,14 @@ public class ComponentLogic
 		List formAttributes = new ArrayList();
 
 		Map property = getInheritedComponentProperty(this.infoGlueComponent, propertyName, this.useInheritance, this.useRepositoryInheritance);
+		Integer contentId = getContentId(property);
+		if(contentId != null)
+		{
+			String formDefinition = templateController.getContentAttribute(contentId, attributeName, true);
+			formAttributes = FormDeliveryController.getFormDeliveryController().getContentTypeAttributes(formDefinition);
+		}
+		
+		/*
 		if(property != null)
 		{	
 			List bindings = (List)property.get("bindings");
@@ -595,7 +572,8 @@ public class ComponentLogic
 				formAttributes = FormDeliveryController.getFormDeliveryController().getContentTypeAttributes(formDefinition);
 			}
 		}
-
+		*/
+			
 		return formAttributes;
 	}
 	
@@ -685,6 +663,11 @@ public class ComponentLogic
 		ContentVO content = null;
 
 		Map property = getInheritedComponentProperty(this.infoGlueComponent, propertyName, useInheritance, useRepositoryInheritance);
+		Integer contentId = getContentId(property);
+		if(contentId != null)
+			content = this.templateController.getContent(contentId);
+		
+		/*
 		if(property != null)
 		{	
 			List bindings = (List)property.get("bindings");
@@ -694,7 +677,8 @@ public class ComponentLogic
 				content = this.templateController.getContent(contentId);
 			}
 		}
-
+		*/
+			
 		return content;
 	}
 
@@ -703,6 +687,11 @@ public class ComponentLogic
 		ContentVO content = null;
 
 		Map property = getInheritedComponentProperty(siteNodeId, this.infoGlueComponent, propertyName, useInheritance);
+		Integer contentId = getContentId(property);
+		if(contentId != null)
+			content = this.templateController.getContent(contentId);
+		
+		/*	
 		if(property != null)
 		{	
 			List bindings = (List)property.get("bindings");
@@ -712,15 +701,17 @@ public class ComponentLogic
 				content = this.templateController.getContent(contentId);
 			}
 		}
-
+		*/
 		return content;
 	}
 
 	public List<ContentVO> getBoundContents(Integer siteNodeId, String propertyName, boolean useInheritance)
 	{
-		List<ContentVO> contents = new ArrayList();
+		List<ContentVO> contents = new ArrayList<ContentVO>();
 
 		Map property = getInheritedComponentProperty(siteNodeId, this.infoGlueComponent, propertyName, useInheritance);
+		contents = getBoundContents(property);
+		/*
 		if(property != null)
 		{	
 			List bindings = (List)property.get("bindings");
@@ -731,7 +722,8 @@ public class ComponentLogic
 				contents.add(content);
 			}
 		}
-
+		*/
+		
 		return contents;
 	}
 
@@ -750,6 +742,9 @@ public class ComponentLogic
 		Integer contentId = null;
 
 		Map property = getInheritedComponentProperty(this.infoGlueComponent, propertyName, useInheritance, useRepositoryInheritance);
+		contentId = getContentId(property);
+		
+		/*
 		if(property != null)
 		{	
 			List bindings = (List)property.get("bindings");
@@ -758,6 +753,7 @@ public class ComponentLogic
 				contentId = new Integer((String)bindings.get(0));
 			}
 		}
+		*/
 
 		return contentId;
 	}
@@ -777,6 +773,8 @@ public class ComponentLogic
 		List contents = new ArrayList();
 
 		Map property = getInheritedComponentProperty(this.infoGlueComponent, propertyName, useInheritance, useRepositoryInheritance);
+		contents = getBoundContents(property);
+		/*
 		if(property != null)
 		{	
 			List bindings = (List)property.get("bindings");
@@ -787,176 +785,11 @@ public class ComponentLogic
 				contents.add(this.templateController.getContent(contentId));
 			}
 		}
+		*/
 
 		return contents;
 	}
 	
-	public WebPage getBoundPage(String propertyName)
-	{
-	    return getBoundPage(propertyName, this.useInheritance);
-	}
-	
-	/**
-	 * This method returns a page bound to the component.
-	 */
-	public WebPage getBoundPage(String propertyName, boolean useInheritance)
-	{
-		return getBoundPage(propertyName, useInheritance, this.useRepositoryInheritance);
-	}
-	
-	public WebPage getBoundPage(String propertyName, boolean useInheritance, boolean useRepositoryInheritance)
-	{
-		WebPage webPage = null;
-
-		Map property = getInheritedComponentProperty(this.infoGlueComponent, propertyName, useInheritance, useRepositoryInheritance);
-		
-		if(property != null)
-		{	
-			List bindings = (List)property.get("bindings");
-			Iterator bindingsIterator = bindings.iterator();
-			if(bindingsIterator.hasNext())
-			{
-			    webPage = new WebPage();
-				Integer siteNodeId = new Integer((String)bindingsIterator.next());
-				SiteNodeVO siteNode = templateController.getSiteNode(siteNodeId);
-				if(siteNode != null)
-				{
-					webPage.setSiteNodeId(siteNodeId);
-					webPage.setLanguageId(templateController.getLanguageId());
-					webPage.setContentId(null);
-					webPage.setNavigationTitle(getPageNavTitle(siteNodeId));
-					webPage.setMetaInfoContentId(siteNode.getMetaInfoContentId());
-					webPage.setUrl(getPageUrl(siteNodeId));
-				}
-			}
-		}
-
-		return webPage;
-	}
-
-	
-	public List getBoundPages(String propertyName)
-	{
-	    return getBoundPages(propertyName, this.useInheritance);
-	}
-	
-	/**
-	 * This method returns a list of pages bound to the component.
-	 */
-	public List getBoundPages(String propertyName, boolean useInheritance)
-	{
-		return getBoundPages(propertyName, useInheritance, this.useRepositoryInheritance);
-	}
-	
-	public List getBoundPages(String propertyName, boolean useInheritance, boolean useRepositoryInheritance)
-	{
-		List pages = new ArrayList();
-
-		Map property = getInheritedComponentProperty(this.infoGlueComponent, propertyName, useInheritance, useRepositoryInheritance);
-		
-		if(property != null)
-		{	
-			List bindings = (List)property.get("bindings");
-			Iterator bindingsIterator = bindings.iterator();
-			while(bindingsIterator.hasNext())
-			{
-				Integer siteNodeId = new Integer((String)bindingsIterator.next());
-				SiteNodeVO siteNode = templateController.getSiteNode(siteNodeId);
-				if(siteNode != null)
-				{
-					WebPage webPage = new WebPage();						
-					webPage.setSiteNodeId(siteNodeId);
-					webPage.setLanguageId(templateController.getLanguageId());
-					webPage.setContentId(null);
-					webPage.setNavigationTitle(getPageNavTitle(siteNodeId));
-					webPage.setMetaInfoContentId(siteNode.getMetaInfoContentId());
-					webPage.setUrl(getPageUrl(siteNodeId));
-					pages.add(webPage);
-				}
-			}
-		}
-
-		return pages;
-	}
-
-	/**
-	 * This method returns a list of pages bound to the component.
-	 */
-	public SiteNodeVO getBoundSiteNode(String propertyName, boolean useInheritance)
-	{
-		return getBoundSiteNode(propertyName, useInheritance, this.useRepositoryInheritance);
-	}
-	
-	public SiteNodeVO getBoundSiteNode(String propertyName, boolean useInheritance, boolean useRepositoryInheritance)
-	{
-	    SiteNodeVO siteNodeVO = null;
-	    
-	    Map property = getInheritedComponentProperty(this.infoGlueComponent, propertyName, useInheritance, useRepositoryInheritance);
-		
-		if(property != null)
-		{	
-			List bindings = (List)property.get("bindings");
-			Iterator bindingsIterator = bindings.iterator();
-			if(bindingsIterator.hasNext())
-			{
-				Integer siteNodeId = new Integer((String)bindingsIterator.next());
-				siteNodeVO = templateController.getSiteNode(siteNodeId);
-			}
-		}
-
-		return siteNodeVO;
-	}
-
-	/**
-	 * This method returns a single page bound to the component on the given siteNode.
-	 */
-
-	public SiteNodeVO getBoundSiteNode(Integer targetSiteNodeId, String propertyName, boolean useInheritance)
-	{
-	    SiteNodeVO siteNodeVO = null;
-	    
-	    Map property = getInheritedComponentProperty(targetSiteNodeId, this.infoGlueComponent, propertyName, useInheritance);
-		
-		if(property != null)
-		{	
-			List bindings = (List)property.get("bindings");
-			Iterator bindingsIterator = bindings.iterator();
-			if(bindingsIterator.hasNext())
-			{
-				Integer siteNodeId = new Integer((String)bindingsIterator.next());
-				siteNodeVO = templateController.getSiteNode(siteNodeId);
-			}
-		}
-
-		return siteNodeVO;
-	}
-
-	/**
-	 * This method returns a single page bound to the component on the given siteNode.
-	 */
-
-	public List<SiteNodeVO> getBoundSiteNodes(Integer targetSiteNodeId, String propertyName, boolean useInheritance)
-	{
-	    List<SiteNodeVO> siteNodeVOList = new ArrayList();
-	    
-	    Map property = getInheritedComponentProperty(targetSiteNodeId, this.infoGlueComponent, propertyName, useInheritance);
-		
-		if(property != null)
-		{	
-			List bindings = (List)property.get("bindings");
-			Iterator bindingsIterator = bindings.iterator();
-			while(bindingsIterator.hasNext())
-			{
-				Integer siteNodeId = new Integer((String)bindingsIterator.next());
-				SiteNodeVO siteNodeVO = templateController.getSiteNode(siteNodeId);
-				if(siteNodeVO != null)
-					siteNodeVOList.add(siteNodeVO);
-			}
-		}
-
-		return siteNodeVOList;
-	}
-
 	/**
 	 * This method returns a list of childContents using inheritence as default.
 	 */
@@ -981,6 +814,15 @@ public class ComponentLogic
 	    Map property = getInheritedComponentProperty(this.infoGlueComponent, propertyName, useInheritance, useRepositoryInheritance);
 		if(property != null)
 		{	
+			List<ComponentBinding> bindings = (List<ComponentBinding>)property.get("bindings");
+			Iterator<ComponentBinding> bindingsIterator = bindings.iterator();
+			while(bindingsIterator.hasNext())
+			{
+				Integer contentId = bindingsIterator.next().getEntityId();
+				childContents.addAll(this.templateController.getChildContents(contentId, searchRecursive, sortAttribute, sortOrder, includeFolders));
+			}
+
+			/*
 			List bindings = (List)property.get("bindings");
 			Iterator bindingsIterator = bindings.iterator();
 			while(bindingsIterator.hasNext())
@@ -988,10 +830,193 @@ public class ComponentLogic
 				Integer contentId = new Integer((String)bindingsIterator.next());
 				childContents.addAll(this.templateController.getChildContents(contentId, searchRecursive, sortAttribute, sortOrder, includeFolders));
 			}
+			*/
 		}	
 		return childContents;
 	}
 
+	public WebPage getBoundPage(String propertyName)
+	{
+	    return getBoundPage(propertyName, this.useInheritance);
+	}
+	
+	/**
+	 * This method returns a page bound to the component.
+	 */
+	public WebPage getBoundPage(String propertyName, boolean useInheritance)
+	{
+		return getBoundPage(propertyName, useInheritance, this.useRepositoryInheritance);
+	}
+	
+	public WebPage getBoundPage(String propertyName, boolean useInheritance, boolean useRepositoryInheritance)
+	{
+		WebPage webPage = null;
+
+		Map property = getInheritedComponentProperty(this.infoGlueComponent, propertyName, useInheritance, useRepositoryInheritance);
+		webPage = getBoundPage(property);
+		/*
+		if(property != null)
+		{	
+			List bindings = (List)property.get("bindings");
+			Iterator bindingsIterator = bindings.iterator();
+			if(bindingsIterator.hasNext())
+			{
+			    webPage = new WebPage();
+				Integer siteNodeId = new Integer((String)bindingsIterator.next());
+				SiteNodeVO siteNode = templateController.getSiteNode(siteNodeId);
+				if(siteNode != null)
+				{
+					webPage.setSiteNodeId(siteNodeId);
+					webPage.setLanguageId(templateController.getLanguageId());
+					webPage.setContentId(null);
+					webPage.setNavigationTitle(getPageNavTitle(siteNodeId));
+					webPage.setMetaInfoContentId(siteNode.getMetaInfoContentId());
+					webPage.setUrl(getPageUrl(siteNodeId));
+				}
+			}
+		}
+		*/
+
+		return webPage;
+	}
+
+	
+	public List getBoundPages(String propertyName)
+	{
+	    return getBoundPages(propertyName, this.useInheritance);
+	}
+	
+	/**
+	 * This method returns a list of pages bound to the component.
+	 */
+	public List getBoundPages(String propertyName, boolean useInheritance)
+	{
+		return getBoundPages(propertyName, useInheritance, this.useRepositoryInheritance);
+	}
+	
+	public List getBoundPages(String propertyName, boolean useInheritance, boolean useRepositoryInheritance)
+	{
+		List pages = new ArrayList();
+
+		Map property = getInheritedComponentProperty(this.infoGlueComponent, propertyName, useInheritance, useRepositoryInheritance);
+		pages = getBoundPages(property);
+		
+		/*
+		if(property != null)
+		{	
+			List bindings = (List)property.get("bindings");
+			Iterator bindingsIterator = bindings.iterator();
+			while(bindingsIterator.hasNext())
+			{
+				Integer siteNodeId = new Integer((String)bindingsIterator.next());
+				SiteNodeVO siteNode = templateController.getSiteNode(siteNodeId);
+				if(siteNode != null)
+				{
+					WebPage webPage = new WebPage();						
+					webPage.setSiteNodeId(siteNodeId);
+					webPage.setLanguageId(templateController.getLanguageId());
+					webPage.setContentId(null);
+					webPage.setNavigationTitle(getPageNavTitle(siteNodeId));
+					webPage.setMetaInfoContentId(siteNode.getMetaInfoContentId());
+					webPage.setUrl(getPageUrl(siteNodeId));
+					pages.add(webPage);
+				}
+			}
+		}
+		*/
+
+		return pages;
+	}
+
+	/**
+	 * This method returns a list of pages bound to the component.
+	 */
+	public SiteNodeVO getBoundSiteNode(String propertyName, boolean useInheritance)
+	{
+		return getBoundSiteNode(propertyName, useInheritance, this.useRepositoryInheritance);
+	}
+	
+	public SiteNodeVO getBoundSiteNode(String propertyName, boolean useInheritance, boolean useRepositoryInheritance)
+	{
+	    SiteNodeVO siteNodeVO = null;
+	    
+	    Map property = getInheritedComponentProperty(this.infoGlueComponent, propertyName, useInheritance, useRepositoryInheritance);
+		Integer siteNodeId = getSiteNodeId(property);
+		if(siteNodeId != null)
+			siteNodeVO = templateController.getSiteNode(siteNodeId);
+		/*
+		if(property != null)
+		{	
+			List bindings = (List)property.get("bindings");
+			Iterator bindingsIterator = bindings.iterator();
+			if(bindingsIterator.hasNext())
+			{
+				Integer siteNodeId = new Integer((String)bindingsIterator.next());
+				siteNodeVO = templateController.getSiteNode(siteNodeId);
+			}
+		}
+		*/
+		
+		return siteNodeVO;
+	}
+
+	/**
+	 * This method returns a single page bound to the component on the given siteNode.
+	 */
+
+	public SiteNodeVO getBoundSiteNode(Integer targetSiteNodeId, String propertyName, boolean useInheritance)
+	{
+	    SiteNodeVO siteNodeVO = null;
+	    
+	    Map property = getInheritedComponentProperty(targetSiteNodeId, this.infoGlueComponent, propertyName, useInheritance);
+	    Integer siteNodeId = getSiteNodeId(property);
+		if(siteNodeId != null)
+			siteNodeVO = templateController.getSiteNode(siteNodeId);
+		
+		/*
+		if(property != null)
+		{	
+			List bindings = (List)property.get("bindings");
+			Iterator bindingsIterator = bindings.iterator();
+			if(bindingsIterator.hasNext())
+			{
+				Integer siteNodeId = new Integer((String)bindingsIterator.next());
+				siteNodeVO = templateController.getSiteNode(siteNodeId);
+			}
+		}
+		*/
+			
+		return siteNodeVO;
+	}
+
+	/**
+	 * This method returns a single page bound to the component on the given siteNode.
+	 */
+
+	public List<SiteNodeVO> getBoundSiteNodes(Integer targetSiteNodeId, String propertyName, boolean useInheritance)
+	{
+	    List<SiteNodeVO> siteNodeVOList = new ArrayList();
+	    
+	    Map property = getInheritedComponentProperty(targetSiteNodeId, this.infoGlueComponent, propertyName, useInheritance);
+	    siteNodeVOList = getBoundSiteNodes(property);
+		
+		/*	
+		if(property != null)
+		{	
+			List bindings = (List)property.get("bindings");
+			Iterator bindingsIterator = bindings.iterator();
+			while(bindingsIterator.hasNext())
+			{
+				Integer siteNodeId = new Integer((String)bindingsIterator.next());
+				SiteNodeVO siteNodeVO = templateController.getSiteNode(siteNodeId);
+				if(siteNodeVO != null)
+					siteNodeVOList.add(siteNodeVO);
+			}
+		}
+		*/
+			
+		return siteNodeVOList;
+	}
 	
 	/**
 	 * This method returns a list of childpages using inheritence as default.
@@ -1025,7 +1050,18 @@ public class ComponentLogic
 	    List childPages = new ArrayList();
 	    
 	    Map property = getInheritedComponentProperty(this.infoGlueComponent, propertyName, useInheritance, useRepositoryInheritance);
-		if(property != null)
+	    if(property != null)
+		{	
+			List<ComponentBinding> bindings = (List<ComponentBinding>)property.get("bindings");
+			Iterator<ComponentBinding> bindingsIterator = bindings.iterator();
+			while(bindingsIterator.hasNext())
+			{
+				Integer siteNodeId = bindingsIterator.next().getEntityId();
+				childPages.addAll(getChildPages(siteNodeId));
+			}
+		}
+		/*
+	    if(property != null)
 		{	
 			List bindings = (List)property.get("bindings");
 			Iterator bindingsIterator = bindings.iterator();
@@ -1034,7 +1070,8 @@ public class ComponentLogic
 				Integer siteNodeId = new Integer((String)bindingsIterator.next());
 				childPages.addAll(getChildPages(siteNodeId));
 			}
-		}	
+		}
+		*/	
 		return childPages;
 	}
 
@@ -1072,6 +1109,11 @@ public class ComponentLogic
 		String pageUrl = "";
 
 		Map property = getInheritedComponentProperty(this.infoGlueComponent, propertyName, useInheritance, useRepositoryInheritance);
+		Integer siteNodeId = getSiteNodeId(property);
+		if(siteNodeId != null)
+			pageUrl = this.getPageUrl(siteNodeId, templateController.getLanguageId(), templateController.getContentId());
+		
+		/*
 		if(property != null)
 		{	
 			List bindings = (List)property.get("bindings");
@@ -1081,6 +1123,7 @@ public class ComponentLogic
 				pageUrl = this.getPageUrl(siteNodeId, templateController.getLanguageId(), templateController.getContentId());
 			}
 		}
+		*/
 		
 		return pageUrl;		
 	}
@@ -1109,6 +1152,11 @@ public class ComponentLogic
 		String pageUrl = "";
 
 		Map property = getInheritedComponentProperty(this.infoGlueComponent, propertyName, useInheritance, useRepositoryInheritance);
+		Integer siteNodeId = getSiteNodeId(property);
+		if(siteNodeId != null)
+			pageUrl = this.getPageUrl(siteNodeId, templateController.getLanguageId(), contentId);
+		
+		/*	
 		if(property != null)
 		{	
 			List bindings = (List)property.get("bindings");
@@ -1118,7 +1166,8 @@ public class ComponentLogic
 				pageUrl = this.getPageUrl(siteNodeId, templateController.getLanguageId(), contentId);
 			}
 		}
-
+		*/
+			
 		return pageUrl;
 	}
 
@@ -1132,6 +1181,11 @@ public class ComponentLogic
 		String pageUrl = "";
 
 		Map property = getInheritedComponentProperty(this.infoGlueComponent, propertyName, useInheritance, useRepositoryInheritance);
+		Integer siteNodeId = getSiteNodeId(property);
+		if(siteNodeId != null)
+			pageUrl = this.getPageUrl(siteNodeId, languageId, contentId);
+
+		/*	
 		if(property != null)
 		{	
 			List bindings = (List)property.get("bindings");
@@ -1141,7 +1195,8 @@ public class ComponentLogic
 				pageUrl = this.getPageUrl(siteNodeId, languageId, contentId);
 			}
 		}
-
+		*/
+			
 		return pageUrl;
 	}
 
@@ -1173,6 +1228,11 @@ public class ComponentLogic
 		String pageUrl = "";
 
 		Map property = getInheritedComponentProperty(this.infoGlueComponent, propertyName, useInheritance, useRepositoryInheritance);
+		Integer siteNodeId = getSiteNodeId(property);
+		if(siteNodeId != null)
+			pageUrl = this.getPageAsDigitalAssetUrl(siteNodeId, templateController.getLanguageId(), templateController.getContentId(), fileSuffix);
+
+		/*	
 		if(property != null)
 		{	
 			List bindings = (List)property.get("bindings");
@@ -1182,6 +1242,7 @@ public class ComponentLogic
 				pageUrl = this.getPageAsDigitalAssetUrl(siteNodeId, templateController.getLanguageId(), templateController.getContentId(), fileSuffix);
 			}
 		}
+		*/
 		
 		return pageUrl;		
 	}
@@ -1202,6 +1263,11 @@ public class ComponentLogic
 		String pageUrl = "";
 
 		Map property = getInheritedComponentProperty(this.infoGlueComponent, propertyName, useInheritance, useRepositoryInheritance);
+		Integer siteNodeId = getSiteNodeId(property);
+		if(siteNodeId != null)
+			pageUrl = this.getPageAsDigitalAssetUrl(siteNodeId, languageId, contentId, fileSuffix, cacheUrl);
+
+		/*	
 		if(property != null)
 		{	
 			List bindings = (List)property.get("bindings");
@@ -1211,7 +1277,8 @@ public class ComponentLogic
 				pageUrl = this.getPageAsDigitalAssetUrl(siteNodeId, languageId, contentId, fileSuffix, cacheUrl);
 			}
 		}
-		
+		*/
+			
 		return pageUrl;		
 	}
 
@@ -1252,6 +1319,11 @@ public class ComponentLogic
 		String pageUrl = "";
 
 		Map property = getInheritedComponentProperty(this.infoGlueComponent, propertyName, this.useInheritance, useRepositoryInheritance);
+		Integer siteNodeId = getSiteNodeId(property);
+		if(siteNodeId != null)
+			pageUrl = templateController.getPageNavTitle(siteNodeId);
+
+		/*	
 		if(property != null)
 		{	
 			List bindings = (List)property.get("bindings");
@@ -1261,6 +1333,7 @@ public class ComponentLogic
 				pageUrl = templateController.getPageNavTitle(siteNodeId);
 			}
 		}
+		*/
 		
 		return pageUrl;
 	}
@@ -1280,6 +1353,11 @@ public class ComponentLogic
 	    List relatedPages = new ArrayList();
 	    
 	    Map property = getInheritedComponentProperty(this.infoGlueComponent, propertyName, useInheritance, useRepositoryInheritance);
+		Integer contentId = getContentId(property);
+		if(contentId != null)
+			relatedPages = templateController.getRelatedPages(contentId, attributeName);
+			
+		/*
 		if(property != null)
 		{	
 			List bindings = (List)property.get("bindings");
@@ -1289,7 +1367,8 @@ public class ComponentLogic
 				relatedPages = templateController.getRelatedPages(contentId, attributeName);
 			}
 		}
-		
+		*/
+			
 		return relatedPages;
 	}
 
@@ -1571,17 +1650,28 @@ public class ComponentLogic
 							Element bindingElement = (Element)bindingNodeList.item(j);
 							String entityName = bindingElement.getAttribute("entity");
 							String entityId = bindingElement.getAttribute("entityId");
+							String assetKey = bindingElement.getAttribute("assetKey");
 							//logger.info("Binding found:" + entityName + ":" + entityId);
+							
+							ComponentBinding componentBinding = new ComponentBinding();
+							//componentBinding.setId(new Integer(id));
+							//componentBinding.setComponentId(componentId);
+							componentBinding.setEntityClass(entity);
+							componentBinding.setEntityId(new Integer(entityId));
+							componentBinding.setAssetKey(assetKey);
+							//componentBinding.setBindingPath(path);
+							
+							bindings.add(componentBinding);
+							/*
 							if(entityName.equalsIgnoreCase("Content"))
 							{
-								//logger.info("Content added:" + entityName + ":" + entityId);
 								bindings.add(entityId);
 							}
 							else
 							{
-								//logger.info("SiteNode added:" + entityName + ":" + entityId);
 								bindings.add(entityId); 
-							} 
+							}
+							*/ 
 						}
 	
 						property.put("bindings", bindings);
@@ -1980,7 +2070,19 @@ public class ComponentLogic
 				Element bindingElement = (Element)bindingNodeList.item(j);
 				String entityName = bindingElement.getAttribute("entity");
 				String entityId = bindingElement.getAttribute("entityId");
+				String assetKey = bindingElement.getAttribute("assetKey");
 				//logger.info("Binding found:" + entityName + ":" + entityId);
+				
+				ComponentBinding componentBinding = new ComponentBinding();
+				//componentBinding.setId(new Integer(id));
+				//componentBinding.setComponentId(componentId);
+				componentBinding.setEntityClass(entity);
+				componentBinding.setEntityId(new Integer(entityId));
+				componentBinding.setAssetKey(assetKey);
+				//componentBinding.setBindingPath(path);
+				
+				bindings.add(componentBinding);
+				/*
 				if(entityName.equalsIgnoreCase("Content"))
 				{
 					//logger.info("Content added:" + entityName + ":" + entityId);
@@ -1990,7 +2092,8 @@ public class ComponentLogic
 				{
 					//logger.info("SiteNode added:" + entityName + ":" + entityId);
 					bindings.add(entityId); 
-				} 
+				}
+				*/ 
 			}
 
 			property.put("bindings", bindings);
@@ -2083,7 +2186,19 @@ public class ComponentLogic
 				org.dom4j.Element bindingElement = (org.dom4j.Element)bindingNodeListIterator.next();
 				String entityName = bindingElement.attributeValue("entity");
 				String entityId = bindingElement.attributeValue("entityId");
+				String assetKey = bindingElement.attributeValue("assetKey");
 				//logger.info("Binding found:" + entityName + ":" + entityId);
+				
+				ComponentBinding componentBinding = new ComponentBinding();
+				//componentBinding.setId(new Integer(id));
+				//componentBinding.setComponentId(componentId);
+				componentBinding.setEntityClass(entity);
+				componentBinding.setEntityId(new Integer(entityId));
+				componentBinding.setAssetKey(assetKey);
+				//componentBinding.setBindingPath(path);
+				
+				bindings.add(componentBinding);
+				/*
 				if(entityName.equalsIgnoreCase("Content"))
 				{
 					//logger.info("Content added:" + entityName + ":" + entityId);
@@ -2094,6 +2209,7 @@ public class ComponentLogic
 					//logger.info("SiteNode added:" + entityName + ":" + entityId);
 					bindings.add(entityId); 
 				} 
+				*/
 			}
 
 			property.put("bindings", bindings);
@@ -2196,7 +2312,20 @@ public class ComponentLogic
 				XmlElement bindingElement = (XmlElement)bindingNodeListIterator.next();
 				String entityName = bindingElement.getAttributeValue(infosetItem.getNamespaceName(), "entity");
 				String entityId = bindingElement.getAttributeValue(infosetItem.getNamespaceName(), "entityId");
+				String assetKey = bindingElement.getAttributeValue(infosetItem.getNamespaceName(), "assetKey");
 				//logger.info("Binding found:" + entityName + ":" + entityId);
+
+				ComponentBinding componentBinding = new ComponentBinding();
+				//componentBinding.setId(new Integer(id));
+				//componentBinding.setComponentId(componentId);
+				componentBinding.setEntityClass(entity);
+				componentBinding.setEntityId(new Integer(entityId));
+				componentBinding.setAssetKey(assetKey);
+				//componentBinding.setBindingPath(path);
+				
+				bindings.add(componentBinding);
+				
+				/*
 				if(entityName.equalsIgnoreCase("Content"))
 				{
 					//logger.info("Content added:" + entityName + ":" + entityId);
@@ -2207,6 +2336,7 @@ public class ComponentLogic
 					//logger.info("SiteNode added:" + entityName + ":" + entityId);
 					bindings.add(entityId); 
 				} 
+				*/
 			}
 			
 			property.put("bindings", bindings);
@@ -2346,6 +2476,17 @@ public class ComponentLogic
 						Element bindingElement = (Element)bindingNodeList.item(j);
 						String entityName = bindingElement.getAttribute("entity");
 						String entityId = bindingElement.getAttribute("entityId");
+						String assetKey = bindingElement.getAttribute("assetKey");
+						
+						ComponentBinding componentBinding = new ComponentBinding();
+						//componentBinding.setId(new Integer(id));
+						//componentBinding.setComponentId(componentId);
+						componentBinding.setEntityClass(entity);
+						componentBinding.setEntityId(new Integer(entityId));
+						componentBinding.setAssetKey(assetKey);
+						//componentBinding.setBindingPath(path);
+
+						/*
 						if(entityName.equalsIgnoreCase("Content"))
 						{
 							//logger.info("Content added:" + entityName + ":" + entityId);
@@ -2356,6 +2497,7 @@ public class ComponentLogic
 							//logger.info("SiteNode added:" + entityName + ":" + entityId);
 							bindings.add(entityId); 
 						} 
+						*/
 					}
 	
 					property.put("bindings", bindings);
@@ -2746,4 +2888,249 @@ public class ComponentLogic
 
         return assetUrl;
     }
+    
+    public Integer getContentId(Map property)
+	{
+		Integer boundContentId = null;
+		
+		if(property != null)
+		{	
+			List<ComponentBinding> bindings = (List<ComponentBinding>)property.get("bindings");
+			if(bindings.size() > 0)
+			{
+				ComponentBinding componentBinding = bindings.get(0);
+				boundContentId = componentBinding.getEntityId();
+				//boundContentId = new Integer((String)bindings.get(0));
+			}
+		}
+		
+		return boundContentId;
+	}
+
+    public String getAssetKey(Map property)
+	{
+		String assetKey = null;
+		
+		if(property != null)
+		{	
+			List<ComponentBinding> bindings = (List<ComponentBinding>)property.get("bindings");
+			if(bindings.size() > 0)
+			{
+				ComponentBinding componentBinding = bindings.get(0);
+				assetKey = componentBinding.getAssetKey();
+				//boundContentId = new Integer((String)bindings.get(0));
+			}
+		}
+		
+		return assetKey;
+	}
+
+    /*
+	public Integer getContentId(Map property)
+	{
+	    Integer contentId = null;
+
+	    if(property != null)
+		{	
+			List bindings = (List)property.get("bindings");
+			if(bindings.size() > 0)
+			{
+				contentId = new Integer((String)bindings.get(0));
+			}
+		}
+
+		return contentId;
+	}
+	*/
+	
+	private Integer getSingleBindingAsInteger(Map componentProperty)
+	{
+		List bindings = (List)componentProperty.get("bindings");
+		return (bindings.size() > 0)
+			   		? new Integer((String)bindings.get(0))
+			   		: new Integer(0);
+	}
+
+	public List<ContentVO> getBoundContents(Map property)
+	{
+	    List<ContentVO> contents = new ArrayList<ContentVO>();
+
+	    if(property != null)
+		{	
+	    	List<ComponentBinding> bindings = (List<ComponentBinding>)property.get("bindings");
+			Iterator<ComponentBinding> bindingsIterator = bindings.iterator();
+			while(bindingsIterator.hasNext())
+			{
+				ComponentBinding componentBinding = bindingsIterator.next();
+				Integer contentId = componentBinding.getEntityId();
+				contents.add(this.templateController.getContent(contentId));
+			}
+		}
+
+		return contents;
+	}
+	/*
+	public List getBoundContents(Map property)
+	{
+	    List contents = new ArrayList();
+
+	    if(property != null)
+		{	
+			List bindings = (List)property.get("bindings");
+			Iterator bindingsIterator = bindings.iterator();
+			while(bindingsIterator.hasNext())
+			{
+				Integer contentId = new Integer((String)bindingsIterator.next());
+				contents.add(this.templateController.getContent(contentId));
+			}
+		}
+
+		return contents;
+	}
+	*/
+
+	public Integer getSiteNodeId(Map property)
+	{
+	    Integer siteNodeId = null;
+
+	    if(property != null)
+		{	
+	    	List<ComponentBinding> bindings = (List<ComponentBinding>)property.get("bindings");
+			if(bindings.size() > 0)
+			{
+				ComponentBinding componentBinding = bindings.get(0);
+			    siteNodeId = componentBinding.getEntityId();
+			}
+		}
+
+		return siteNodeId;
+	}
+
+	/*
+	public Integer getSiteNodeId(Map property)
+	{
+	    Integer siteNodeId = null;
+
+	    if(property != null)
+		{	
+			List bindings = (List)property.get("bindings");
+			if(bindings.size() > 0)
+			{
+			    siteNodeId = new Integer((String)bindings.get(0));
+			}
+		}
+
+		return siteNodeId;
+	}
+	*/
+
+	public List<SiteNodeVO> getBoundSiteNodes(Map property)
+	{
+	    List<SiteNodeVO> siteNodeVOList = new ArrayList<SiteNodeVO>();
+
+	    if(property != null)
+		{	
+	    	List<ComponentBinding> bindings = (List<ComponentBinding>)property.get("bindings");
+			Iterator<ComponentBinding> bindingsIterator = bindings.iterator();
+	    	while(bindingsIterator.hasNext())
+			{
+				ComponentBinding componentBinding = bindingsIterator.next();
+			    Integer siteNodeId = componentBinding.getEntityId();
+			    SiteNodeVO siteNodeVO = templateController.getSiteNode(siteNodeId);
+				if(siteNodeVO != null)
+					siteNodeVOList.add(siteNodeVO);
+			}
+		}
+
+		return siteNodeVOList;
+	}
+
+	public List getBoundPages(Map property)
+	{
+		List pages = new ArrayList();
+
+		if(property != null)
+		{	
+	    	List<ComponentBinding> bindings = (List<ComponentBinding>)property.get("bindings");
+			Iterator<ComponentBinding> bindingsIterator = bindings.iterator();
+			while(bindingsIterator.hasNext())
+			{
+				ComponentBinding componentBinding = bindingsIterator.next();
+				Integer siteNodeId = componentBinding.getEntityId();
+				SiteNodeVO siteNode = templateController.getSiteNode(siteNodeId);
+				if(siteNode != null)
+				{
+					WebPage webPage = new WebPage();						
+					webPage.setSiteNodeId(siteNodeId);
+					webPage.setLanguageId(templateController.getLanguageId());
+					webPage.setContentId(null);
+					webPage.setNavigationTitle(getPageNavTitle(siteNodeId));
+					webPage.setMetaInfoContentId(siteNode.getMetaInfoContentId());
+					webPage.setUrl(getPageUrl(siteNodeId));
+					pages.add(webPage);
+				}
+			}
+		}
+
+		return pages;
+	}
+
+	public WebPage getBoundPage(Map property)
+	{
+		WebPage webPage = new WebPage();
+
+		if(property != null)
+		{	
+	    	List<ComponentBinding> bindings = (List<ComponentBinding>)property.get("bindings");
+			Iterator<ComponentBinding> bindingsIterator = bindings.iterator();
+			if(bindingsIterator.hasNext())
+			{
+				ComponentBinding componentBinding = bindingsIterator.next();
+				Integer siteNodeId = componentBinding.getEntityId();
+				SiteNodeVO siteNode = templateController.getSiteNode(siteNodeId);
+				if(siteNode != null)
+				{
+					webPage.setSiteNodeId(siteNodeId);
+					webPage.setLanguageId(templateController.getLanguageId());
+					webPage.setContentId(null);
+					webPage.setNavigationTitle(getPageNavTitle(siteNodeId));
+					webPage.setMetaInfoContentId(siteNode.getMetaInfoContentId());
+					webPage.setUrl(getPageUrl(siteNodeId));
+				}
+			}
+		}
+
+		return webPage;
+	}
+
+	/*
+	public List getBoundPages(Map property)
+	{
+		List pages = new ArrayList();
+
+		if(property != null)
+		{	
+			List bindings = (List)property.get("bindings");
+			Iterator bindingsIterator = bindings.iterator();
+			while(bindingsIterator.hasNext())
+			{
+				Integer siteNodeId = new Integer((String)bindingsIterator.next());
+				SiteNodeVO siteNode = templateController.getSiteNode(siteNodeId);
+				if(siteNode != null)
+				{
+					WebPage webPage = new WebPage();						
+					webPage.setSiteNodeId(siteNodeId);
+					webPage.setLanguageId(templateController.getLanguageId());
+					webPage.setContentId(null);
+					webPage.setNavigationTitle(getPageNavTitle(siteNodeId));
+					webPage.setMetaInfoContentId(siteNode.getMetaInfoContentId());
+					webPage.setUrl(getPageUrl(siteNodeId));
+					pages.add(webPage);
+				}
+			}
+		}
+
+		return pages;
+	}
+	*/
 }

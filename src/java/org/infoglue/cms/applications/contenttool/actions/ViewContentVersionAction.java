@@ -108,6 +108,7 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 	private Integer oldContentId 	= null;
 	private String assetKey 		= null;
 	private boolean treatAsLink    = false;
+	private boolean isAssetBinding = false;
 	
 	private Map WYSIWYGProperties = null;
 	
@@ -116,6 +117,13 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 
 	private boolean concurrentModification = false;
 	private long oldModifiedDateTime = -1;
+	
+	//Used for the asset binding dialog
+	private String propertyName;
+	private Integer componentId;
+	private boolean showSimple = false;
+	private Integer assignedContentId;
+	private String assignedAssetKey;
 	
 	public String getQualifyerPath(String entity, String entityId)
 	{	
@@ -345,7 +353,24 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 
 		return "viewAssetsDialogForFCKEditor";
 	}
+
 	
+	public String doViewAssetsForComponentBinding() throws Exception
+	{
+	    if(this.oldContentId != null)
+		{
+	        this.contentVO = ContentControllerProxy.getController().getACContentVOWithId(this.getInfoGluePrincipal(), getOldContentId());
+		}
+		else
+		{
+		    if(getContentId() != null && getContentId().intValue() != -1)
+		        this.contentVO = ContentControllerProxy.getController().getACContentVOWithId(this.getInfoGluePrincipal(), getContentId());
+		}
+		
+		this.repositories = RepositoryController.getController().getAuthorizedRepositoryVOList(this.getInfoGluePrincipal(), true);
+
+		return "showContentAssetsForComponentBinding";
+	}
 	
 	public String doViewAssets() throws Exception
 	{
@@ -1199,11 +1224,84 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
         this.forceWorkingChange = forceWorkingChange;
     }
 
-	public String getPublishOnLoad() {
+	public String getPublishOnLoad() 
+	{
 		return publishOnLoad;
 	}
 
-	public void setPublishOnLoad(String publishOnLoad) {
+	public void setPublishOnLoad(String publishOnLoad) 
+	{
 		this.publishOnLoad = publishOnLoad;
 	}
+	
+	public boolean getIsAssetBinding()
+	{
+		return isAssetBinding;
+	}
+
+	public void setIsAssetBinding(boolean isAssetBinding)
+	{
+		this.isAssetBinding = isAssetBinding;
+	}
+
+
+	public Integer getComponentId()
+	{
+		return componentId;
+	}
+
+
+	public void setComponentId(Integer componentId)
+	{
+		this.componentId = componentId;
+	}
+
+
+	public String getPropertyName()
+	{
+		return propertyName;
+	}
+
+
+	public void setPropertyName(String propertyName)
+	{
+		this.propertyName = propertyName;
+	}
+
+
+	public boolean getShowSimple()
+	{
+		return showSimple;
+	}
+
+
+	public void setShowSimple(boolean showSimple)
+	{
+		this.showSimple = showSimple;
+	}
+
+
+	public String getAssignedAssetKey()
+	{
+		return assignedAssetKey;
+	}
+
+
+	public void setAssignedAssetKey(String assignedAssetKey)
+	{
+		this.assignedAssetKey = assignedAssetKey;
+	}
+
+
+	public Integer getAssignedContentId()
+	{
+		return assignedContentId;
+	}
+
+
+	public void setAssignedContentId(Integer assignedContentId)
+	{
+		this.assignedContentId = assignedContentId;
+	}
+
 }

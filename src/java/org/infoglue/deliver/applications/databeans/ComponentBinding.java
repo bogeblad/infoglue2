@@ -33,6 +33,7 @@ public class ComponentBinding
 	private Integer componentId;
 	private String entityClass;
 	private Integer entityId;
+	private String assetKey;
 	private String bindingPath;
 
 	public Integer getId()
@@ -83,5 +84,15 @@ public class ComponentBinding
 	public void setBindingPath(String string)
 	{
 		bindingPath = string;
+	}
+
+	public String getAssetKey()
+	{
+		return assetKey;
+	}
+
+	public void setAssetKey(String assetKey)
+	{
+		this.assetKey = assetKey;
 	}
 }

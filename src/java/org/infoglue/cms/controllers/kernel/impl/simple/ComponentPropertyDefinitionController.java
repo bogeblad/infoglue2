@@ -86,10 +86,11 @@ public class ComponentPropertyDefinitionController extends BaseController
 				    String type 					= propertyElement.getAttribute("type");
 				    String entity 					= propertyElement.getAttribute("entity");
 				    String multiple 				= propertyElement.getAttribute("multiple");
+				    String assetBinding 			= propertyElement.getAttribute("assetBinding");
 				    String allowedContentTypeNames 	= propertyElement.getAttribute("allowedContentTypeDefinitionNames");
 				    String description				= propertyElement.getAttribute("description");
 				    				    
-				    ComponentPropertyDefinition cpd = new ComponentPropertyDefinition(name, type, entity, new Boolean(multiple), allowedContentTypeNames, description);
+				    ComponentPropertyDefinition cpd = new ComponentPropertyDefinition(name, type, entity, new Boolean(multiple), new Boolean(assetBinding), allowedContentTypeNames, description);
 
 				    
 					NodeList optionsNodeList = propertyElement.getElementsByTagName("option");

@@ -12,12 +12,13 @@
  * ComponentPropertyDefinition object
  */
 
-function ComponentPropertyDefinition(name, type, entity, multiple, allowedContentTypeNames, description)
+function ComponentPropertyDefinition(name, type, entity, multiple, assetBinding, allowedContentTypeNames, description)
 {
 	this.name 						= name;
 	this.type 						= type;
 	this.entity						= entity;
 	this.multiple					= multiple;
+	this.assetBinding 				= assetBinding;
 	this.allowedContentTypeNames 	= allowedContentTypeNames;
 	this.description				= description;
 	this.options					= new Vector(0);
@@ -26,6 +27,7 @@ function ComponentPropertyDefinition(name, type, entity, multiple, allowedConten
   	this.getType 					= getType;
   	this.getEntity 					= getEntity;
   	this.getMultiple				= getMultiple;
+  	this.getAssetBinding			= getAssetBinding;
   	this.getAllowedContentTypeNames = getAllowedContentTypeNames;
 	this.getDescription				= getDescription;
 	this.getOptions					= getOptions;
@@ -34,6 +36,7 @@ function ComponentPropertyDefinition(name, type, entity, multiple, allowedConten
   	this.setType 					= setType;
   	this.setEntity 					= setEntity;
   	this.setMultiple				= setMultiple;
+  	this.setAssetBinding			= setAssetBinding;
   	this.setAllowedContentTypeNames = setAllowedContentTypeNames;
 	this.setDescription				= setDescription;
 }
@@ -56,6 +59,11 @@ function getEntity()
 function getMultiple()
 {
   	return this.multiple;
+}
+
+function getAssetBinding()
+{
+  	return this.assetBinding;
 }
 
 function getAllowedContentTypeNames()
@@ -91,6 +99,11 @@ function setEntity(entity)
 function setMultiple(multiple)
 {
 	this.multiple = multiple;
+}
+
+function setAssetBinding(assetBinding)
+{
+  	this.assetBinding = assetBinding;
 }
 
 function setAllowedContentTypeNames(allowedContentTypeNames)

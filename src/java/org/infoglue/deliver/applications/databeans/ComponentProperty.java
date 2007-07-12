@@ -25,6 +25,7 @@ package org.infoglue.deliver.applications.databeans;
 
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -55,8 +56,10 @@ public class ComponentProperty
 	private Integer componentId;
 	private String entityClass;
 	private Integer entityId;
+	private String assetKey;
 	private String value;
 	private boolean isMultipleBinding = false;
+	private boolean isAssetBinding = false;
 	private String visualizingAction = null;
 	private String createAction = null;
 
@@ -64,6 +67,7 @@ public class ComponentProperty
 	
 	private List contentBindings = new ArrayList();
 	private List siteNodeBindings = new ArrayList();
+	private List<ComponentBinding> bindings = new ArrayList<ComponentBinding>();
 		
 		
 	public Integer getComponentId()
@@ -126,6 +130,30 @@ public class ComponentProperty
 		entityId = integer;
 	}
 
+	public String getAssetKey()
+	{
+		StringBuffer sb = new StringBuffer();
+		
+		List<ComponentBinding> bindings = this.getBindings();
+		if(bindings.size() > 0)
+		{
+			if(bindings.size() > 1)
+				return "Multiple...";
+			else
+			{
+				ComponentBinding componentBinding = bindings.get(0);
+				sb.append(componentBinding.getAssetKey());
+			}			
+		}
+		
+		return sb.toString();
+	}
+
+	public void setAssetKey(String assetKey)
+	{
+		this.assetKey = assetKey;
+	}
+
 	public void setId(Integer integer)
 	{
 		id = integer;
@@ -177,6 +205,16 @@ public class ComponentProperty
 	public void setIsMultipleBinding(boolean isMultipleBinding)
 	{
 		this.isMultipleBinding = isMultipleBinding;
+	}
+
+	public boolean getIsAssetBinding()
+	{
+		return this.isAssetBinding;
+	}
+
+	public void setIsAssetBinding(boolean isAssetBinding)
+	{
+		this.isAssetBinding = isAssetBinding;
 	}
 
 	public String getVisualizingAction()
@@ -274,6 +312,16 @@ public class ComponentProperty
 			.append(" siteNodeBindings.size=").append(siteNodeBindings.size())
 			.append(" categoryBindings.size=").append("not implemented");
 		return sb.toString();
+	}
+
+	public List<ComponentBinding> getBindings()
+	{
+		return bindings;
+	}
+
+	public void setBindings(List<ComponentBinding> bindings)
+	{
+		this.bindings = bindings;
 	}
 	
 }

@@ -499,7 +499,7 @@
 		
 		#set($activateExtendedEditorOnLoad = "")
 		#set($activateExtendedEditorOnLoad = $!attribute.getContentTypeAttribute("activateExtendedEditorOnLoad").getContentTypeAttributeParameterValue().getLocalizedValue("label", $session.locale))
-		#if($activateExtendedEditorOnLoad == "")
+		#if(!$activateExtendedEditorOnLoad || $activateExtendedEditorOnLoad == "")
 			#set($activateExtendedEditorOnLoad = "false")
 		#end
 		<script type="text/javascript">

@@ -484,7 +484,7 @@
 
 		#set($activateExtendedEditorOnLoad = "")
 		#set($activateExtendedEditorOnLoad = $!attribute.getContentTypeAttribute("activateExtendedEditorOnLoad").getContentTypeAttributeParameterValue().getLocalizedValue("label", $session.locale))
-		#if($activateExtendedEditorOnLoad == "")
+		#if(!$activateExtendedEditorOnLoad || $activateExtendedEditorOnLoad == "")
 			#set($activateExtendedEditorOnLoad = "false")
 		#end
 
@@ -492,7 +492,7 @@
 		<!--
 			attributeNames["$velocityCount"] = "${attribute.name}";
 			attributeTypes["$velocityCount"] = "${attribute.inputType}";
-			attributesStatus["${attribute.name}ActivateExtendedEditorOnLoad"] = $activateExtendedEditorOnLoad;
+			attributesStatus["${attribute.name}ActivateExtendedEditorOnLoad"] = $!activateExtendedEditorOnLoad;
 		-->
 		</script>
 	
@@ -749,6 +749,9 @@
 											Allow multiple items
 											</td>
 											<td valign="middle">
+											Asset binding
+											</td>
+											<td valign="middle">
 											Allowed content types
 											</td>
 											<td valign="middle">
@@ -767,6 +770,9 @@
 											</td>
 											<td valign="middle">
 											$propertyDefinition.multiple
+											</td>
+											<td valign="middle">
+											$propertyDefinition.assetBinding
 											</td>
 											<td valign="middle">
 											$propertyDefinition.allowedContentTypeNames
