@@ -23,9 +23,21 @@
 
 package org.infoglue.cms.applications.contenttool.wizards.actions;
 
+import java.util.Iterator;
+import java.util.List;
+
 import org.infoglue.cms.applications.common.VisualFormatter;
+import org.infoglue.cms.applications.databeans.AssetKeyDefinition;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentControllerProxy;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
+import org.infoglue.cms.controllers.kernel.impl.simple.DigitalAssetController;
+import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
 import org.infoglue.cms.entities.content.ContentVO;
+import org.infoglue.cms.entities.content.ContentVersionVO;
+import org.infoglue.cms.entities.content.DigitalAssetVO;
+import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
+import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
 
@@ -40,7 +52,11 @@ public class CreateContentWizardFinishAction extends CreateContentWizardAbstract
 	private ConstraintExceptionBuffer ceb 		= null;
 	private String returnAddress 				= "CreateContentWizardFinish.action";
 	private String refreshAddress 				= null;
-	private Integer contentId					= null;	
+	private Integer contentId					= null;
+	private Integer contentVersionId 			= null;
+	private String versionDone 					= null;
+	private String mandatoryAssetKey			= null;
+	private String inputMoreAssets	 			= null;
 	
 	public CreateContentWizardFinishAction()
 	{
@@ -50,14 +66,15 @@ public class CreateContentWizardFinishAction extends CreateContentWizardAbstract
 	
 	public String doExecute() throws Exception
 	{
+		System.out.println("FINISH ACTION");
+
 		try
 		{
 			CreateContentWizardInfoBean createContentWizardInfoBean = getCreateContentWizardInfoBean();
-			
 			if(createContentWizardInfoBean.getParentContentId() == null)
 			{
-				return "stateLocation"; 
-			} 
+				return "stateLocation";
+			}
 	
 			createContentWizardInfoBean.getContent().setCreator(this.getInfoGluePrincipal().getName());
 			this.ceb = createContentWizardInfoBean.getContent().getValueObject().validate();
@@ -66,24 +83,63 @@ public class CreateContentWizardFinishAction extends CreateContentWizardAbstract
 			{
 				return "inputContent";
 			}
-	
+
+			Integer repositoryId = createContentWizardInfoBean.getRepositoryId();
+			Integer languageId = LanguageController.getController().getMasterLanguage(repositoryId).getId();
 			if(createContentWizardInfoBean.getContentVersions().size() == 0)
 			{
-		    	String wysiwygEditor = CmsPropertyHandler.getWysiwygEditor();
+				String versionValue = "<?xml version='1.0' encoding='UTF-8'?><article xmlns=\"x-schema:ArticleSchema.xml\"><attributes></attributes></article>";
+	
+				ContentVersionVO initialContentVersionVO = new ContentVersionVO();
+				initialContentVersionVO.setVersionComment("Preversion");
+				initialContentVersionVO.setVersionModifier(this.getInfoGluePrincipal().getName());
+				initialContentVersionVO.setVersionValue(versionValue);
+				
+				createContentWizardInfoBean.getContentVersions().put(languageId, initialContentVersionVO);
+	
+		    	ContentVO contentVO = ContentControllerProxy.getController().acCreate(this.getInfoGluePrincipal(), createContentWizardInfoBean);
+				this.contentId = contentVO.getContentId();
+				createContentWizardInfoBean.setContentVO(contentVO);
+			
+				ContentVersionVO newContentVersion = (ContentVersionVO)createContentWizardInfoBean.getContentVersions().get(languageId);
+				this.contentVersionId = newContentVersion.getId();
+			}
+			
+			ContentTypeDefinitionVO contentTypeDefinitionVO = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithId(createContentWizardInfoBean.getContentTypeDefinitionId());
+			List assetKeys = ContentTypeDefinitionController.getController().getDefinedAssetKeys(contentTypeDefinitionVO.getSchemaValue());
+			
+			boolean missingAsset = false;
+			Iterator assetKeysIterator = assetKeys.iterator();
+			while(assetKeysIterator.hasNext())
+			{
+				AssetKeyDefinition assetKeyDefinition = (AssetKeyDefinition)assetKeysIterator.next();
+				if(assetKeyDefinition.getIsMandatory().booleanValue())
+				{
+					DigitalAssetVO asset = DigitalAssetController.getController().getDigitalAssetVO(createContentWizardInfoBean.getContentVO().getId(), languageId, assetKeyDefinition.getAssetKey(), false);
+					if(asset == null)
+					{
+						mandatoryAssetKey = assetKeyDefinition.getAssetKey();
+						return "inputAssets";
+					}
+				}
+			}
+
+			if(inputMoreAssets != null && inputMoreAssets.equalsIgnoreCase("true"))
+				return "inputAssets";
+			
+			if(versionDone == null || versionDone.equals("false"))
+			{
+				String wysiwygEditor = CmsPropertyHandler.getWysiwygEditor();
 		    	if(wysiwygEditor == null || wysiwygEditor.equalsIgnoreCase("") || wysiwygEditor.equalsIgnoreCase("HTMLArea"))
 		    	    return "inputContentVersions";
 		    	else
 		    	    return "inputContentVersionsForFCKEditor";
-
 			}
 			//ceb.throwIfNotEmpty();
-	    			
-	    	ContentVO contentVO = ContentControllerProxy.getController().acCreate(this.getInfoGluePrincipal(), createContentWizardInfoBean);
-			this.contentId = contentVO.getContentId();
-			
+	    						
 			String returnAddress = createContentWizardInfoBean.getReturnAddress();
-			returnAddress = returnAddress.replaceAll("#entityId", this.contentId.toString());
-			returnAddress = returnAddress.replaceAll("#path", contentVO.getName());
+			returnAddress = returnAddress.replaceAll("#entityId", createContentWizardInfoBean.getContentVO().getId().toString());
+			returnAddress = returnAddress.replaceAll("#path", createContentWizardInfoBean.getContentVO().getName());
 			
 			this.invalidateCreateContentWizardInfoBean();
 			
@@ -96,7 +152,31 @@ public class CreateContentWizardFinishAction extends CreateContentWizardAbstract
 		
 		return NONE;
 	}
-	
+
+	public String doCancel() throws Exception
+	{
+		try
+		{
+			CreateContentWizardInfoBean createContentWizardInfoBean = getCreateContentWizardInfoBean();
+			
+			String cancelAddress = createContentWizardInfoBean.getCancelAddress();
+			if(createContentWizardInfoBean.getContentVO() != null)
+			{
+				ContentControllerProxy.getController().acDelete(this.getInfoGluePrincipal(), createContentWizardInfoBean.getContentVO());
+			}
+			
+			this.invalidateCreateContentWizardInfoBean();
+		
+			this.getResponse().sendRedirect(cancelAddress);
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+		
+		return NONE;
+	}
+
 	public void setParentContentId(Integer parentContentId)
 	{
 		getCreateContentWizardInfoBean().setParentContentId(parentContentId);
@@ -200,6 +280,54 @@ public class CreateContentWizardFinishAction extends CreateContentWizardAbstract
 	public Integer getContentId()
 	{
 		return this.contentId;
+	}
+
+
+	public Integer getContentVersionId()
+	{
+		return contentVersionId;
+	}
+
+
+	public void setContentVersionId(Integer contentVersionId)
+	{
+		this.contentVersionId = contentVersionId;
+	}
+
+
+	public String getVersionDone()
+	{
+		return versionDone;
+	}
+
+
+	public void setVersionDone(String versionDone)
+	{
+		this.versionDone = versionDone;
+	}
+
+
+	public String getInputMoreAssets()
+	{
+		return inputMoreAssets;
+	}
+
+
+	public void setInputMoreAssets(String inputMoreAssets)
+	{
+		this.inputMoreAssets = inputMoreAssets;
+	}
+
+
+	public String getMandatoryAssetKey()
+	{
+		return mandatoryAssetKey;
+	}
+
+
+	public void setMandatoryAssetKey(String mandatoryAssetKey)
+	{
+		this.mandatoryAssetKey = mandatoryAssetKey;
 	}
 
 }

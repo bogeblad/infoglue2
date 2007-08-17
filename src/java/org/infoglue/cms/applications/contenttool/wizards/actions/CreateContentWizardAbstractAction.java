@@ -23,7 +23,9 @@
 
 package org.infoglue.cms.applications.contenttool.wizards.actions;
 
+import org.apache.log4j.Logger;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
+import org.infoglue.cms.controllers.kernel.impl.simple.DigitalAssetController;
 
 
 /**
@@ -32,7 +34,8 @@ import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 
 public abstract class CreateContentWizardAbstractAction extends InfoGlueAbstractAction
 {
-	
+    private final static Logger logger = Logger.getLogger(CreateContentWizardAbstractAction.class.getName());
+
 	/**
 	 * This methods returns a new or the stored InfoBean for the wizard. 
 	 * @return
@@ -57,6 +60,49 @@ public abstract class CreateContentWizardAbstractAction extends InfoGlueAbstract
 	protected void invalidateCreateContentWizardInfoBean()
 	{
 		this.getHttpSession().removeAttribute("CreateContentWizardInfoBean");
+	}
+
+	/**
+	 * This method fetches the blob from the database and saves it on the disk.
+	 * Then it returnes a url for it
+	 */
+	
+	public String getDigitalAssetUrl(Integer digitalAssetId) throws Exception
+	{
+		String imageHref = null;
+		try
+		{
+       		imageHref = DigitalAssetController.getDigitalAssetUrl(digitalAssetId);
+		}
+		catch(Exception e)
+		{
+			logger.warn("We could not get the url of the digitalAsset: " + e.getMessage(), e);
+			imageHref = e.getMessage();
+		}
+		
+		return imageHref;
+	}
+	
+	
+	/**
+	 * This method fetches the blob from the database and saves it on the disk.
+	 * Then it returnes a url for it
+	 */
+	
+	public String getDigitalAssetThumbnailUrl(Integer digitalAssetId) throws Exception
+	{
+		String imageHref = null;
+		try
+		{
+       		imageHref = DigitalAssetController.getDigitalAssetThumbnailUrl(digitalAssetId);
+		}
+		catch(Exception e)
+		{
+			logger.warn("We could not get the url of the thumbnail: " + e.getMessage(), e);
+			imageHref = e.getMessage();
+		}
+		
+		return imageHref;
 	}
 
 }

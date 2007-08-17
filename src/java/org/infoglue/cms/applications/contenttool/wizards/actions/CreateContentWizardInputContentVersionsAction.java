@@ -23,11 +23,15 @@
 
 package org.infoglue.cms.applications.contenttool.wizards.actions;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
 import org.infoglue.cms.applications.databeans.AssetKeyDefinition;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
+import org.infoglue.cms.controllers.kernel.impl.simple.DigitalAssetController;
 import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
 import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
@@ -50,6 +54,7 @@ public class CreateContentWizardInputContentVersionsAction extends CreateContent
 	private Integer currentEditorId 						= null;
 	private Integer languageId 								= null;
 	private ContentVersionVO contentVersionVO 				= new ContentVersionVO();
+	private Collection digitalAssets						= new ArrayList();
 	
 	public CreateContentWizardInputContentVersionsAction()
 	{
@@ -77,6 +82,9 @@ public class CreateContentWizardInputContentVersionsAction extends CreateContent
 		if(this.languageId == null)
 			this.languageId = masterLanguageVO.getLanguageId();
 		
+		if(this.contentVersionVO != null && this.contentVersionVO.getContentVersionId() != null)
+       		digitalAssets = DigitalAssetController.getDigitalAssetVOList(this.contentVersionVO.getId());
+
 		/*
 		boolean missingAsset = false;
 		Iterator assetKeysIterator = assetKeys.iterator();
@@ -110,17 +118,7 @@ public class CreateContentWizardInputContentVersionsAction extends CreateContent
 		
 		this.contentVersionVO.setVersionModifier(this.getInfoGluePrincipal().getName());
 
-		createContentWizardInfoBean.getContentVersions().put(languageId, this.contentVersionVO);
-
-		//getCreateContentWizardInfoBean()
-		//this.contentVO.setCreatorName(this.getInfoGluePrincipal().getName());
-
-		//ceb = this.contentVO.validate();
-	
-		//if(!ceb.isEmpty())
-		//	initialiaze();
-	
-		//ceb.throwIfNotEmpty();
+		ContentVersionController.getContentVersionController().update(this.contentVersionVO.getId(), this.contentVersionVO, this.getInfoGluePrincipal());
 
 		return "success";
 	}
@@ -145,6 +143,11 @@ public class CreateContentWizardInputContentVersionsAction extends CreateContent
 		return this.languageId;
 	}
 
+	public Integer getContentId()
+	{
+		return getCreateContentWizardInfoBean().getContentVO().getId();
+	}
+
 	public void setCurrentEditorId(Integer currentEditorId)
 	{
 		this.currentEditorId = currentEditorId;
@@ -160,5 +163,22 @@ public class CreateContentWizardInputContentVersionsAction extends CreateContent
 	{
 		this.contentVersionVO.setVersionValue(versionValue);
 	}
+
+	public void setContentVersionId(Integer contentVersionId)
+	{
+		this.contentVersionVO.setContentVersionId(contentVersionId);
+	}
+	
+	public Integer getContentVersionId()
+	{
+		return this.contentVersionVO.getContentVersionId();
+	}
+
+
+	public Collection getDigitalAssets()
+	{
+		return digitalAssets;
+	}
+
 
 }

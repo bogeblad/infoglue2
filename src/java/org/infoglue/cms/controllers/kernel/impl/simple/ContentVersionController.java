@@ -921,6 +921,63 @@ public class ContentVersionController extends BaseController
     	return updatedContentVersionVO; //(ContentVersionVO) updateEntity(ContentVersionImpl.class, realContentVersionVO);
     }        
 
+    /**
+     * This method updates the contentversion.
+     */
+    
+    public ContentVersionVO update(Integer contentVersionId, ContentVersionVO contentVersionVO) throws ConstraintException, SystemException
+    {
+    	return update(contentVersionId, contentVersionVO, null);
+    }        
+	
+    public ContentVersionVO update(Integer contentVersionId, ContentVersionVO contentVersionVO, InfoGluePrincipal principal) throws ConstraintException, SystemException
+    {
+        ContentVersionVO updatedContentVersionVO;
+		
+        Database db = CastorDatabaseService.getDatabase();
+
+        beginTransaction(db);
+        
+        try
+        {     
+            ContentVersion contentVersion = getContentVersionWithId(contentVersionId, db);
+	    	contentVersion.setValueObject(contentVersionVO);
+	    	
+	    	ContentTypeDefinition contentTypeDefinition = contentVersion.getOwningContent().getContentTypeDefinition();
+            
+		    if(principal != null && contentTypeDefinition.getName().equalsIgnoreCase("Meta info"))
+		    {
+		    	SiteNode siteNode = SiteNodeController.getController().getSiteNodeWithMetaInfoContentId(db, contentVersion.getValueObject().getContentId());
+				if(siteNode.getMetaInfoContentId() != null && siteNode.getMetaInfoContentId().equals(contentVersion.getValueObject().getContentId()))
+				{
+			    	SiteNodeVersion latestSiteNodeVersion = SiteNodeVersionController.getController().getLatestSiteNodeVersion(db, siteNode.getId(), false);
+			    	latestSiteNodeVersion.setVersionModifier(contentVersionVO.getVersionModifier());
+			    	latestSiteNodeVersion.setModifiedDateTime(DateHelper.getSecondPreciseDate());
+					SiteNodeVersionControllerProxy.getSiteNodeVersionControllerProxy().acUpdate(principal, latestSiteNodeVersion.getValueObject(), db);
+				}
+			}
+
+	    	registryController.updateContentVersion(contentVersion, db);
+
+	    	updatedContentVersionVO = contentVersion.getValueObject();
+	    	
+	    	commitTransaction(db);  
+        }
+        catch(ConstraintException ce)
+        {
+        	logger.warn("Validation error:" + ce, ce);
+            rollbackTransaction(db);
+            throw ce;
+        }
+        catch(Exception e)
+        {
+        	logger.error("An error occurred so we should not completes the transaction:" + e, e);
+            rollbackTransaction(db);
+            throw new SystemException(e.getMessage());
+        }
+        
+    	return updatedContentVersionVO; //(ContentVersionVO) updateEntity(ContentVersionImpl.class, realContentVersionVO);
+    }        
 
 	public List getPublishedActiveContentVersionVOList(Integer contentId) throws SystemException, Bug, Exception
     {

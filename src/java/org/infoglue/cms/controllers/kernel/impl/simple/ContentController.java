@@ -138,7 +138,7 @@ public class ContentController extends BaseController
 				Integer languageId = (Integer)it.next();
 				logger.info("languageId:" + languageId);
 				ContentVersionVO contentVersionVO = (ContentVersionVO)createContentWizardInfoBean.getContentVersions().get(languageId);
-				ContentVersionController.getContentVersionController().create(content.getContentId(), languageId, contentVersionVO, null, db);
+				contentVersionVO = ContentVersionController.getContentVersionController().create(content.getContentId(), languageId, contentVersionVO, null, db).getValueObject();
 			}
 			
 			//Bind if needed?

@@ -24,6 +24,7 @@
 package org.infoglue.cms.applications.contenttool.wizards.actions;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.Enumeration;
 import java.util.Iterator;
@@ -34,7 +35,10 @@ import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.applications.contenttool.actions.ViewMultiSelectContentTreeForServiceBindingAction;
 import org.infoglue.cms.applications.databeans.AssetKeyDefinition;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
+import org.infoglue.cms.controllers.kernel.impl.simple.DigitalAssetController;
 import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
+import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.entities.content.DigitalAssetVO;
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
 import org.infoglue.cms.entities.management.LanguageVO;
@@ -53,6 +57,8 @@ public class CreateContentWizardInputAssetsAction extends CreateContentWizardAbs
 	private Integer uploadedFilesCounter 					= new Integer(0);
 	private ContentTypeDefinitionVO contentTypeDefinitionVO	= null;
 	private Integer languageId 								= null;
+	private Integer contentVersionId 						= null;
+	private String inputMoreAssets							= null;
 	
     public CreateContentWizardInputAssetsAction()
     {
@@ -71,23 +77,46 @@ public class CreateContentWizardInputAssetsAction extends CreateContentWizardAbs
 			this.languageId = masterLanguageVO.getLanguageId();
 		}
 
+		if(this.contentVersionId == null)
+		{
+			ContentVersionVO newContentVersion = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(createContentWizardInfoBean.getContentVO().getId(), languageId);
+			this.contentVersionId = newContentVersion.getId();
+		}
+
 		boolean missingAsset = false;
 		Iterator assetKeysIterator = assetKeys.iterator();
 		while(assetKeysIterator.hasNext())
 		{
 			AssetKeyDefinition assetKeyDefinition = (AssetKeyDefinition)assetKeysIterator.next();
-			if(!createContentWizardInfoBean.getDigitalAssets().containsKey(assetKeyDefinition.getAssetKey() + "_" + this.languageId))
+			if(assetKeyDefinition.getIsMandatory().booleanValue())
 			{
-				mandatoryAssetKey = assetKeyDefinition.getAssetKey();
-				missingAsset = true;
-				break;
+				DigitalAssetVO asset = DigitalAssetController.getController().getDigitalAssetVO(createContentWizardInfoBean.getContentVO().getId(), languageId, assetKeyDefinition.getAssetKey(), false);
+				if(asset == null)
+				{
+					mandatoryAssetKey = assetKeyDefinition.getAssetKey();
+					missingAsset = true;
+					break;
+				}
 			}
 		}
-		
+
 		if(missingAsset)
+		{
+			inputMoreAssets = "false";
 			return "input";
-    	else
-    		return "success";
+		}
+		else
+		{
+			if(inputMoreAssets != null && inputMoreAssets.equalsIgnoreCase("true"))
+			{
+				return "input";				
+			}
+			else
+			{
+	    		return "success";
+			}
+		}
+
     }
 
 	public String doExecute() throws Exception
@@ -117,21 +146,25 @@ public class CreateContentWizardInputAssetsAction extends CreateContentWizardAbs
 					fileSystemName = filePath + File.separator + tempFileName;
 	            	
 					renamedFile = new File(fileSystemName);
-					boolean isRenamed = file.renameTo(renamedFile);
-	            	
-					DigitalAssetVO newAsset = new DigitalAssetVO();
-					newAsset.setAssetContentType(contentType);
-					newAsset.setAssetKey(digitalAssetKey);
-					newAsset.setAssetFileName(fileName);
-					newAsset.setAssetFilePath(filePath);
-					newAsset.setAssetFileSize(new Integer(new Long(renamedFile.length()).intValue()));
-					//is = new FileInputStream(renamedFile);
-					//DigitalAssetController.create(newAsset, is, this.contentVersionId);
-
-					CreateContentWizardInfoBean createContentWizardInfoBean = this.getCreateContentWizardInfoBean();
-					createContentWizardInfoBean.getDigitalAssets().put(digitalAssetKey + "_" + this.languageId, newAsset);
-					
-					this.uploadedFilesCounter = new Integer(this.uploadedFilesCounter.intValue() + 1);
+					if(renamedFile != null && file != null)
+					{
+						boolean isRenamed = file.renameTo(renamedFile);
+		            	
+						DigitalAssetVO newAsset = new DigitalAssetVO();
+						newAsset.setAssetContentType(contentType);
+						newAsset.setAssetKey(digitalAssetKey);
+						newAsset.setAssetFileName(fileName);
+						newAsset.setAssetFilePath(filePath);
+						newAsset.setAssetFileSize(new Integer(new Long(renamedFile.length()).intValue()));
+						//is = new FileInputStream(renamedFile);
+						is = new FileInputStream(renamedFile);
+						//DigitalAssetController.create(newAsset, is, this.contentVersionId);
+						//CreateContentWizardInfoBean createContentWizardInfoBean = this.getCreateContentWizardInfoBean();
+						//createContentWizardInfoBean.getDigitalAssets().put(digitalAssetKey + "_" + this.languageId, newAsset);
+					    DigitalAssetVO digitalAssetVO = DigitalAssetController.create(newAsset, is, this.contentVersionId);
+						
+						this.uploadedFilesCounter = new Integer(this.uploadedFilesCounter.intValue() + 1);
+					}
 				}
 			}
 			else
@@ -200,6 +233,26 @@ public class CreateContentWizardInputAssetsAction extends CreateContentWizardAbs
 	public void setLanguageId(Integer integer)
 	{
 		languageId = integer;
+	}
+
+	public Integer getContentVersionId()
+	{
+		return contentVersionId;
+	}
+
+	public void setContentVersionId(Integer contentVersionId)
+	{
+		this.contentVersionId = contentVersionId;
+	}
+
+	public String getInputMoreAssets()
+	{
+		return inputMoreAssets;
+	}
+
+	public void setInputMoreAssets(String inputMoreAssets)
+	{
+		this.inputMoreAssets = inputMoreAssets;
 	}
 
 }

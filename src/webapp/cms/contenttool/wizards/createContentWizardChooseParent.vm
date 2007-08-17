@@ -45,6 +45,16 @@
 			var url = "CreateContentWizardFinish.action?repositoryId=" + repositoryId + "&siteNodeId=$siteNodeId&languageId=$languageId&contentId=-1&componentId=$componentId&propertyName=$propertyName&$allowedContentTypeIdsAsUrlEncodedString&refreshAddress=$encodedRefreshAddress&showSimple=$showSimple";
 			document.location.href = url;
 		}
+		
+		/**
+		 * This method submits the form and shows a uploading-dialog.
+		 */
+		 
+		function skipAndCancel()
+		{
+			document.inputForm.action = "CreateContentWizardFinish!cancel.action";
+			document.inputForm.submit();
+		}		
 	    
 	-->
 	</script>
@@ -102,7 +112,7 @@
 		<tr>
 			<td>
 				<a href="javascript:document.inputForm.submit();"><img src="$ui.getString("images.contenttool.buttons.next")" border="0"></a>
-				<a href="javascript:window.opener.location.reload();window.close();"><img src="$ui.getString("images.contenttool.buttons.close")" width="50" height="25" border="0"></a>
+				<a href="javascript:skipAndCancel();"><img border="0" src="$ui.getString("images.contenttool.buttons.cancel")" width="50" height="25"></a>
 			</td>
 		</tr>		
 		<tr>

@@ -230,21 +230,26 @@ public class CreateContentWizardChooseParentAction extends CreateContentWizardAb
 		this.propertyName = propertyName;
 	}
 
-	public String getRefreshAddress() 
+	public void setRefreshAddress(String refreshAddress)
 	{
-		return refreshAddress;
+		getCreateContentWizardInfoBean().setReturnAddress(refreshAddress);
+	}
+	
+	public String getRefreshAddress()
+	{
+		return getCreateContentWizardInfoBean().getReturnAddress();
 	}
 
 	public String getEncodedRefreshAddress() throws Exception
 	{
-		return URLEncoder.encode(refreshAddress, "UTF-8");
+		return URLEncoder.encode(getRefreshAddress(), "UTF-8");
 	}
 
-	public void setRefreshAddress(String refreshAddress) 
+	public void setCancelAddress(String cancelAddress)
 	{
-		this.refreshAddress = refreshAddress;
+		getCreateContentWizardInfoBean().setCancelAddress(cancelAddress);
 	}
-
+	
 	public String getShowSimple() 
 	{
 		return showSimple;

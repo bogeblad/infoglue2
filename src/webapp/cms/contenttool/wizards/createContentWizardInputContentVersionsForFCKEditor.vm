@@ -128,6 +128,17 @@
 			document.editForm.stateId.selectedIndex = originalStateIndex - 1;
 		}
 	}
+	
+	/**
+	 * This method submits the form and shows a uploading-dialog.
+	 */
+	 
+	function skipAndCancel()
+	{
+		document.editForm.action = "CreateContentWizardFinish!cancel.action";
+		document.editForm.submit();
+	}		
+	
 			
 	//*******************************************
 	// This is the method that generates the wysiwygs when the page is loaded
@@ -146,7 +157,7 @@
 				oFCKeditor.Width = document.getElementById(plainTextAreaName).style.width;
 				oFCKeditor.Height = document.getElementById(plainTextAreaName).style.height;
 				oFCKeditor.BasePath = "${root}/applications/FCKEditor/";
-				oFCKeditor.Config["CustomConfigurationsPath"] = "${root}/WYSIWYGProperties.action?repositoryId=$repositoryId&contentId=-1&languageId=$languageId";
+				oFCKeditor.Config["CustomConfigurationsPath"] = "${root}/WYSIWYGProperties.action?repositoryId=$repositoryId&contentId=$contentId&languageId=$languageId";
 				oFCKeditor.Config["AutoDetectLanguage"] = false ;
 				oFCKeditor.Config["DefaultLanguage"]    = '$languageCode' ;
 				oFCKeditor.ReplaceTextarea();
@@ -241,7 +252,7 @@
 		    #if($readonly == "")
 			<a href="javascript:validateAndSubmitContentForm();"><img src="$ui.getString("images.contenttool.buttons.next")" width="50" height="25" border="0"></a>
 			#end
-			<a href="ViewContent.action?contentId=$contentId&repositoryId=$!repositoryId"><img border="0" src="$ui.getString("images.contenttool.buttons.cancel")" width="50" height="25"></a></td>
+			<a href="javascript:skipAndCancel();"><img border="0" src="$ui.getString("images.contenttool.buttons.cancel")" width="50" height="25"></a>
 		</td>
 	</tr>
 	
@@ -782,6 +793,7 @@
 				<span id="assetsTable" name="assetsTable">
 				<table border="0" width="100%" cellspacing="0">
 				<tr>
+					SIZE: $digitalAssets.size()
 					#set($counter = 0)
 					#foreach($digitalAsset in $digitalAssets)
 						#set($digitalAssetUrl = "$this.getDigitalAssetUrl($digitalAsset.digitalAssetId)")
@@ -789,10 +801,12 @@
 							<input type="hidden" id="digitalAsset$digitalAsset.assetKey" value="$digitalAssetUrl">
 							<a href="javascript:openPopup('$digitalAssetUrl', 'Preview', 'width=600,height=500,resizable=yes');"><img class="scaledbordered" src="$this.getDigitalAssetThumbnailUrl($digitalAsset.digitalAssetId)">
 							<br/>$digitalAsset.assetKey</a><br/>
+							#*
 							#if($readonly == "")
 								<a href="javascript:openPopup('ViewDigitalAsset!update.action?contentVersionId=$contentVersionId&contentId=$contentId&languageId=$languageId&digitalAssetId=$digitalAsset.digitalAssetId','DigitalAsset','width=400,height=200,resizable=no');">$ui.getString("tool.contenttool.editAttachment")</a> / 
 								<a href="ViewContentVersion!deleteDigitalAsset.action?contentVersionId=$contentVersionId&contentId=$contentId&languageId=$languageId&digitalAssetId=$digitalAsset.digitalAssetId">$ui.getString("tool.contenttool.deleteAttachment")</a>
 							#end
+							*#
 						</td>
 						#set($counter = $counter + 1)
 						#if ($counter == 5)
@@ -1040,7 +1054,7 @@
 		    #if($readonly == "")
 			<a href="javascript:validateAndSubmitContentForm();"><img src="$ui.getString("images.contenttool.buttons.next")" width="50" height="25" border="0"></a>
 			#end
-			<a href="ViewContent.action?contentId=$contentId&repositoryId=$!repositoryId"><img border="0" src="$ui.getString("images.contenttool.buttons.cancel")" width="50" height="25"></a></td>
+			<a href="javascript:skipAndCancel();"><img border="0" src="$ui.getString("images.contenttool.buttons.cancel")" width="50" height="25"></a>
 		</td>
 	</tr>
 </table>

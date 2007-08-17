@@ -6321,13 +6321,21 @@ public class BasicTemplateController implements TemplateController
 			        	returnAddress = URLEncoder.encode(key, "UTF-8");
 			        	CacheController.cacheObject("serverNodePropertiesCache", key, returnAddress);
 			        }
+			        
+			        String cancelKey = this.getOriginalFullURL();
+			        String cancelAddress = (String)CacheController.getCachedObject("serverNodePropertiesCache", cancelKey);
+			        if(cancelAddress == null)
+			        { 
+			        	cancelAddress = URLEncoder.encode(cancelKey, "UTF-8");
+			        	CacheController.cacheObject("serverNodePropertiesCache", cancelKey, cancelAddress);
+			        }
 
 				    //String returnAddress = URLEncoder.encode(key, "UTF-8");
 					
 					if(property.getIsMultipleBinding())
-						createUrl = componentEditorUrl + "CreateContentWizardFinish.action?repositoryId=" + this.getSiteNode().getRepositoryId() + "&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&propertyName=" + property.getName() + allowedContentTypeIdParameters + "&refreshAddress=" + returnAddress + "&showSimple=" + getDeliveryContext().getShowSimple();
+						createUrl = componentEditorUrl + "CreateContentWizardFinish.action?repositoryId=" + this.getSiteNode().getRepositoryId() + "&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&propertyName=" + property.getName() + allowedContentTypeIdParameters + "&refreshAddress=" + returnAddress + "&cancelAddress=" + cancelAddress + "&showSimple=" + getDeliveryContext().getShowSimple();
 					else
-						createUrl = componentEditorUrl + "CreateContentWizardFinish.action?repositoryId=" + this.getSiteNode().getRepositoryId() + "&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&propertyName=" + property.getName() + allowedContentTypeIdParameters + "&refreshAddress=" + returnAddress + "&showSimple=" + getDeliveryContext().getShowSimple();
+						createUrl = componentEditorUrl + "CreateContentWizardFinish.action?repositoryId=" + this.getSiteNode().getRepositoryId() + "&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&propertyName=" + property.getName() + allowedContentTypeIdParameters + "&refreshAddress=" + returnAddress + "&cancelAddress=" + cancelAddress + "&showSimple=" + getDeliveryContext().getShowSimple();
 				}
 				else if(property.getEntityClass().equalsIgnoreCase("SiteNode"))
 				{

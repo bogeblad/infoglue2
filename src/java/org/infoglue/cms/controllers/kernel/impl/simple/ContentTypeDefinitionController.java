@@ -436,6 +436,7 @@ public class ContentTypeDefinitionController extends BaseController
 
 			    Element params = (Element)XPathAPI.selectSingleNode(ichild, "xs:annotation/xs:appinfo/params");
 
+			    String isMandatoryValue = "false";
 			    String descriptionValue = "";
 			    String maximumSizeValue = "1000000";
 			    String allowedContentTypesValue = "*";
@@ -444,6 +445,9 @@ public class ContentTypeDefinitionController extends BaseController
 		    
 			    if(params != null)
 			    {
+			    	isMandatoryValue = getElementValue(params, "isMandatory");
+			    	if(isMandatoryValue == null)
+			    		isMandatoryValue = "false";
 				    descriptionValue = getElementValue(params, "description");
 				    maximumSizeValue = getElementValue(params, "maximumSize");
 				    allowedContentTypesValue = getElementValue(params, "allowedContentTypes");
@@ -454,6 +458,7 @@ public class ContentTypeDefinitionController extends BaseController
 				AssetKeyDefinition assetKeyDefinition = new AssetKeyDefinition(); 
 				
 				assetKeyDefinition.setAssetKey(assetKeyValue.getNodeValue());
+				assetKeyDefinition.setIsMandatory(new Boolean(isMandatoryValue));
 				assetKeyDefinition.setDescription(descriptionValue);
 				assetKeyDefinition.setMaximumSize(new Integer(maximumSizeValue));
 				assetKeyDefinition.setAllowedContentTypes(allowedContentTypesValue);

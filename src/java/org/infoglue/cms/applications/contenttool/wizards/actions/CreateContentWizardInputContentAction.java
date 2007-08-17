@@ -177,7 +177,7 @@ public class CreateContentWizardInputContentAction extends InfoGlueAbstractActio
 	{
 		this.contentTypeDefinitionId = contentTypeDefinitionId;
 	}
-
+	
 	public String getReturnAddress()
 	{
 		return returnAddress;

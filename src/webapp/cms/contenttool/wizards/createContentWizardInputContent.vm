@@ -20,6 +20,20 @@
 	<META HTTP-EQUIV="expires" CONTENT="-1" />
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 
+	<script language="JavaScript">
+	<!--
+		/**
+		 * This method submits the form and shows a uploading-dialog.
+		 */
+		 
+		function skipAndCancel()
+		{
+			document.editForm.action = "CreateContentWizardFinish!cancel.action";
+			document.editForm.submit();
+		}		
+	-->
+	</script>
+			
 </head>
 
 <body class="contenttooledit">
@@ -71,7 +85,7 @@
 		<input type="hidden" name="returnAddress" value="$returnAddress">
 		<td>
 			<input type="image" src="$ui.getString("images.contenttool.buttons.next")" width="50" height="25" border="0">
-			<a href="ViewContent.action?contentId=$!parentContentId"><img border="0" src="$ui.getString("images.contenttool.buttons.cancel")" width="50" height="25"></a>
+			<a href="javascript:skipAndCancel();"><img border="0" src="$ui.getString("images.contenttool.buttons.cancel")" width="50" height="25"></a>
 		</td>
 	</tr>
 

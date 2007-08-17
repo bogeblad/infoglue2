@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.infoglue.cms.entities.content.Content;
+import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.content.impl.simple.ContentImpl;
 
 /**
@@ -42,9 +43,11 @@ public class CreateContentWizardInfoBean
 	private Integer repositoryId			= null;
 	private Integer contentTypeDefinitionId	= null;
 	private Content content 				= new ContentImpl();
+	private ContentVO contentVO 			= null;
 	private Map contentVersions				= new HashMap();
 	private Map digitalAssets				= new HashMap();
 	private String returnAddress			= null;
+	private String cancelAddress			= null;
 	
 	public Content getContent()
 	{
@@ -114,6 +117,26 @@ public class CreateContentWizardInfoBean
 	public void setReturnAddress(String returnAddress)
 	{
 		this.returnAddress = returnAddress;
+	}
+
+	public ContentVO getContentVO()
+	{
+		return contentVO;
+	}
+
+	public void setContentVO(ContentVO contentVO)
+	{
+		this.contentVO = contentVO;
+	}
+
+	public String getCancelAddress()
+	{
+		return cancelAddress;
+	}
+
+	public void setCancelAddress(String cancelAddress)
+	{
+		this.cancelAddress = cancelAddress;
 	}
 
 }
