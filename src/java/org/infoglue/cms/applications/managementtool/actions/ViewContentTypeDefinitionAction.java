@@ -88,6 +88,7 @@ public class ViewContentTypeDefinitionAction extends InfoGlueAbstractAction
 	private String categoryKey;
 	private String newCategoryKey;
 	
+	private Boolean isMandatory = new Boolean(false);
 	private String description = "";
 	private Integer maximumSize;
 	private String allowedContentTypes = "any";
@@ -834,7 +835,7 @@ public class ViewContentTypeDefinitionAction extends InfoGlueAbstractAction
 		try
 		{
 			Document document = createDocumentFromDefinition();
-			updateAssetEnumerationKey(document, ContentTypeDefinitionController.ASSET_KEYS, getAssetKey(), getNewAssetKey(), this.description, this.maximumSize, this.allowedContentTypes, this.imageWidth, this.imageHeight);
+			updateAssetEnumerationKey(document, ContentTypeDefinitionController.ASSET_KEYS, getAssetKey(), getNewAssetKey(), this.isMandatory, this.description, this.maximumSize, this.allowedContentTypes, this.imageWidth, this.imageHeight);
 			saveUpdatedDefinition(document);
 		}
 		catch(Exception e)
@@ -1021,9 +1022,11 @@ public class ViewContentTypeDefinitionAction extends InfoGlueAbstractAction
 	 * Find an <xs:enumeration> element and update the key value.
 	 * @return The Element if child changes are needed, null if the element is not found
 	 */
-	private Element updateAssetEnumerationKey(Document document, String keyType, String oldKey, String newKey, String description, Integer maximumSize, String allowedContentTypes, String imageWidth, String imageHeight) throws TransformerException
+	private Element updateAssetEnumerationKey(Document document, String keyType, String oldKey, String newKey, Boolean isMandatory, String description, Integer maximumSize, String allowedContentTypes, String imageWidth, String imageHeight) throws TransformerException
 	{
-	    if(description == null)
+		if(isMandatory == null)
+			isMandatory = new Boolean(false);
+		if(description == null)
 	        description = "Undefined";
 	    if(maximumSize == null)
 	        maximumSize = new Integer(100);
@@ -1042,11 +1045,19 @@ public class ViewContentTypeDefinitionAction extends InfoGlueAbstractAction
 			Element enumeration = (Element)anl.item(0);
 			enumeration.setAttribute("value", newKey);
 			
+			Element isMandatoryElement = (Element)XPathAPI.selectSingleNode(enumeration, "xs:annotation/xs:appinfo/params/isMandatory");
 			Element descriptionElement = (Element)XPathAPI.selectSingleNode(enumeration, "xs:annotation/xs:appinfo/params/description");
 			Element maximumSizeElement = (Element)XPathAPI.selectSingleNode(enumeration, "xs:annotation/xs:appinfo/params/maximumSize");
 			Element allowedContentTypesElement = (Element)XPathAPI.selectSingleNode(enumeration, "xs:annotation/xs:appinfo/params/allowedContentTypes");
 			Element imageWidthElement = (Element)XPathAPI.selectSingleNode(enumeration, "xs:annotation/xs:appinfo/params/imageWidth");
 			Element imageHeightElement = (Element)XPathAPI.selectSingleNode(enumeration, "xs:annotation/xs:appinfo/params/imageHeight");
+
+			if(isMandatoryElement == null && descriptionElement != null)
+			{
+				isMandatoryElement = createTextElement(document, "isMandatory", isMandatory.toString());
+				
+				descriptionElement.getParentNode().appendChild(isMandatoryElement);
+			}
 
 			if(descriptionElement == null)
 			{
@@ -1063,15 +1074,18 @@ public class ViewContentTypeDefinitionAction extends InfoGlueAbstractAction
 				allowedContentTypesElement = createTextElement(document, "allowedContentTypes", allowedContentTypes);
 			    imageWidthElement = createTextElement(document, "imageWidth", imageWidth);
 			    imageHeightElement = createTextElement(document, "imageHeight", imageHeight);
+				isMandatoryElement = createTextElement(document, "isMandatory", isMandatory.toString());
 				
 				params.appendChild(descriptionElement);
 				params.appendChild(maximumSizeElement);
 				params.appendChild(allowedContentTypesElement);
 				params.appendChild(imageWidthElement);
 				params.appendChild(imageHeightElement);
+				params.appendChild(isMandatoryElement);
 			}
 			else
 			{
+				setTextElement(isMandatoryElement, isMandatory.toString());
 				setTextElement(descriptionElement, description);
 				setTextElement(maximumSizeElement, maximumSize.toString());
 				setTextElement(allowedContentTypesElement, allowedContentTypes);
@@ -1333,4 +1347,14 @@ public class ViewContentTypeDefinitionAction extends InfoGlueAbstractAction
     {
         return activatedName;
     }
+
+	public Boolean getIsMandatory()
+	{
+		return isMandatory;
+	}
+
+	public void setIsMandatory(Boolean isMandatory)
+	{
+		this.isMandatory = isMandatory;
+	}
 }

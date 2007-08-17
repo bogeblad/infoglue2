@@ -32,14 +32,13 @@ package org.infoglue.cms.applications.databeans;
 public class AssetKeyDefinition
 {
     private String assetKey;
+    private Boolean isMandatory;
     private String description;
     private Integer maximumSize;
     private String allowedContentTypes;
     private String imageWidth;
     private String imageHeight;
     
-    
- 
     public String getAssetKey()
     {
         return assetKey;
@@ -88,4 +87,12 @@ public class AssetKeyDefinition
     {
         this.allowedContentTypes = allowedContentTypes;
     }
+	public Boolean getIsMandatory()
+	{
+		return isMandatory;
+	}
+	public void setIsMandatory(Boolean isMandatory)
+	{
+		this.isMandatory = isMandatory;
+	}
 }

@@ -443,6 +443,9 @@
 			<b>Asset Key:</b> <input type="textfield" name="newAssetKey" value="$assetKeyDefinition.assetKey" class="normaltextfield">
 		</p>
 		<p>
+			<b>Mandatory:</b> <input type="checkbox" name="isMandatory" value="true" #checkChecked("true" "$assetKeyDefinition.isMandatory")>
+		</p>
+		<p>
 			<b>Max size(b):</b> <input type="textfield" name="maximumSize" value="$!assetKeyDefinition.maximumSize" class="normaltextfield">
 		</p>
 		<p>
@@ -627,10 +630,16 @@
 			</tr>
 		</table>
 		<table width="700" cellpadding="0" cellspacing="2" border="0" class="bordered">
-		#foreach($assetKeyDefinition in $definedAssetKeys)
 			<tr>
-				<td><nobr><a href="ViewContentTypeDefinition!moveAssetKeyUp.action?contentTypeDefinitionId=$contentTypeDefinitionId&title=$title&assetKey=$assetKeyDefinition.assetKey"><img src="images/moveUp.gif" border="0"></a><a href="ViewContentTypeDefinition!moveAssetKeyDown.action?contentTypeDefinitionId=$contentTypeDefinitionId&title=$title&assetKey=$assetKeyDefinition.assetKey"><img src="images/moveDown.gif" border="0"></a></nobr></td>
-				<td width="90%">$assetKeyDefinition.assetKey</td>
+				<td align="left" width="45%" colspan="2"><nobr><b>Asset Key</b></nobr></td>
+				<td align="left" width="45%"><nobr><b>IsMandatory</b></nobr></td>
+				<td align="right"></td>
+			</tr>
+			#foreach($assetKeyDefinition in $definedAssetKeys)
+			<tr>
+				<td width="5%"><nobr><a href="ViewContentTypeDefinition!moveAssetKeyUp.action?contentTypeDefinitionId=$contentTypeDefinitionId&title=$title&assetKey=$assetKeyDefinition.assetKey"><img src="images/moveUp.gif" border="0"></a><a href="ViewContentTypeDefinition!moveAssetKeyDown.action?contentTypeDefinitionId=$contentTypeDefinitionId&title=$title&assetKey=$assetKeyDefinition.assetKey"><img src="images/moveDown.gif" border="0"></a></nobr></td>
+				<td align="left" width="40%"><nobr>$assetKeyDefinition.assetKey</nobr></td>
+				<td align="left"><nobr>$assetKeyDefinition.isMandatory</nobr></td>
 				<td align="right">
 					<nobr>
 					<a href="javascript:showDiv('${assetKeyDefinition.assetKey}PropertyLayer');"><img src="images/properties.gif" border="0"></a>
@@ -638,7 +647,7 @@
 					</nobr>
 				</td>
 			</tr>
-		#end
+			#end
 		</table>
 	</td>
 </tr>
