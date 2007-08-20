@@ -140,7 +140,7 @@
 <input type="hidden" name="uploadedFilesCounter" value="$!uploadedFilesCounter"/>
 <input type="hidden" name="inputMoreAssets" value="true"/>
 
-<table width="300">
+<table width="500">
 	<tr>
 		<td class="biglabel">
 			#if($uploadedFilesCounter == 0)

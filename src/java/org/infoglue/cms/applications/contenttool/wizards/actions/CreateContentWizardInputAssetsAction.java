@@ -83,6 +83,7 @@ public class CreateContentWizardInputAssetsAction extends CreateContentWizardAbs
 			this.contentVersionId = newContentVersion.getId();
 		}
 
+		boolean hasMandatoryAssets = false;
 		boolean missingAsset = false;
 		Iterator assetKeysIterator = assetKeys.iterator();
 		while(assetKeysIterator.hasNext())
@@ -90,6 +91,7 @@ public class CreateContentWizardInputAssetsAction extends CreateContentWizardAbs
 			AssetKeyDefinition assetKeyDefinition = (AssetKeyDefinition)assetKeysIterator.next();
 			if(assetKeyDefinition.getIsMandatory().booleanValue())
 			{
+				hasMandatoryAssets = true;
 				DigitalAssetVO asset = DigitalAssetController.getController().getDigitalAssetVO(createContentWizardInfoBean.getContentVO().getId(), languageId, assetKeyDefinition.getAssetKey(), false);
 				if(asset == null)
 				{
@@ -99,6 +101,9 @@ public class CreateContentWizardInputAssetsAction extends CreateContentWizardAbs
 				}
 			}
 		}
+
+		if(!hasMandatoryAssets && !inputMoreAssets.equalsIgnoreCase("false"))
+			inputMoreAssets = "true";
 
 		if(missingAsset)
 		{

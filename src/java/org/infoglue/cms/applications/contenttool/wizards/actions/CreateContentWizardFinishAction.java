@@ -66,8 +66,6 @@ public class CreateContentWizardFinishAction extends CreateContentWizardAbstract
 	
 	public String doExecute() throws Exception
 	{
-		System.out.println("FINISH ACTION");
-
 		try
 		{
 			CreateContentWizardInfoBean createContentWizardInfoBean = getCreateContentWizardInfoBean();
@@ -108,13 +106,14 @@ public class CreateContentWizardFinishAction extends CreateContentWizardAbstract
 			ContentTypeDefinitionVO contentTypeDefinitionVO = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithId(createContentWizardInfoBean.getContentTypeDefinitionId());
 			List assetKeys = ContentTypeDefinitionController.getController().getDefinedAssetKeys(contentTypeDefinitionVO.getSchemaValue());
 			
-			boolean missingAsset = false;
+			boolean hasMandatoryAssets = false;
 			Iterator assetKeysIterator = assetKeys.iterator();
 			while(assetKeysIterator.hasNext())
 			{
 				AssetKeyDefinition assetKeyDefinition = (AssetKeyDefinition)assetKeysIterator.next();
 				if(assetKeyDefinition.getIsMandatory().booleanValue())
 				{
+					hasMandatoryAssets = true;
 					DigitalAssetVO asset = DigitalAssetController.getController().getDigitalAssetVO(createContentWizardInfoBean.getContentVO().getId(), languageId, assetKeyDefinition.getAssetKey(), false);
 					if(asset == null)
 					{
@@ -124,8 +123,13 @@ public class CreateContentWizardFinishAction extends CreateContentWizardAbstract
 				}
 			}
 
+			if(inputMoreAssets == null && (versionDone == null || !versionDone.equalsIgnoreCase("true")))
+				inputMoreAssets = "true";
+			
 			if(inputMoreAssets != null && inputMoreAssets.equalsIgnoreCase("true"))
+			{
 				return "inputAssets";
+			}
 			
 			if(versionDone == null || versionDone.equals("false"))
 			{
