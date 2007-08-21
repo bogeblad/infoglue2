@@ -183,6 +183,7 @@ public class DynamicWebservice
 	 */
 	private void configureBasic()
 	{
+		call.setTimeout(30000);
 		call.setTargetEndpointAddress(targetEndpointAddress);
 		call.setOperationName(new QName(DEFAULT_NAMESPACE_URI, operationName));
 		call.setEncodingStyle(Call.ENCODINGSTYLE_URI_PROPERTY);
