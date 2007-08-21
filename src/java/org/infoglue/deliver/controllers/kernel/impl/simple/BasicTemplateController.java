@@ -3767,6 +3767,32 @@ public class BasicTemplateController implements TemplateController
 
 
 	/**
+	 * Gets a corresponding list of siteNodeVO:s from a list of webpages.
+	 */
+	
+	public Collection<SiteNodeVO> getSiteNodesFromWebPages(Collection webPages)
+	{
+	    Collection<SiteNodeVO> siteNodeVOList = new ArrayList<SiteNodeVO>();
+
+		try
+		{
+			Iterator webPagesIterator = webPages.iterator();
+			while(webPagesIterator.hasNext())
+			{
+				WebPage webPage = (WebPage)webPagesIterator.next();
+				SiteNodeVO siteNodeVO = this.getSiteNode(webPage.getSiteNodeId());
+				siteNodeVOList.add(siteNodeVO);				
+			}
+		}
+		catch(Exception e)
+		{
+			logger.warn("An error occurred trying to convert the list of webpages:" + e.getMessage(), e);
+		}
+
+		return siteNodeVOList;
+	}
+
+	/**
 	 * Getter for bound contentId for a binding
 	 */
 	

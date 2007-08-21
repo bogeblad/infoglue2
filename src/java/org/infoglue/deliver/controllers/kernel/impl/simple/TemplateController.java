@@ -822,6 +822,12 @@ public interface TemplateController
 	 */
 	public abstract SiteNodeVO getSiteNode();
 
+	/**
+	 * Gets a corresponding list of siteNodeVO:s from a list of webpages.
+	 */
+	
+	public Collection<SiteNodeVO> getSiteNodesFromWebPages(Collection webPages);
+
     /**
      * Getter for bound contentId for a binding
      */
