@@ -215,8 +215,12 @@ public class ComponentLogic
 
 		Map property = getInheritedComponentProperty(this.infoGlueComponent, propertyName, useInheritance, useRepositoryInheritance);
 		Integer contentId = getContentId(property);
-		if(contentId != null)
+		String assetKey = getAssetKey(property);
+		if(contentId != null && assetKey == null || assetKey.equals(""))
 			assetUrl = templateController.getAssetUrl(contentId);
+		else if(contentId != null)
+			assetUrl = templateController.getAssetUrl(contentId, assetKey);
+		
 		/*	
 		if(property != null)
 		{	
