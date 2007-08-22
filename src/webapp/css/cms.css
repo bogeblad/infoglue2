@@ -481,7 +481,6 @@ a:hover {
     text-decoration	 : underline;
 }
 a:active {
-	font-weight	     : bold;
     text-decoration	 : none;
 }
 a:focus {
