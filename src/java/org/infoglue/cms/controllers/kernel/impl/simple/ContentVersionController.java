@@ -662,20 +662,20 @@ public class ContentVersionController extends BaseController
 	
     public ContentVersion create(Content content, Language language, ContentVersionVO contentVersionVO, Integer oldContentVersionId, Database db) throws ConstraintException, SystemException, Exception
     {
-		ContentVersion contentVersion = new ContentVersionImpl();
-		contentVersion.setLanguage((LanguageImpl)language);
+    	ContentVersion contentVersion = new ContentVersionImpl();
+		contentVersion.setValueObject(contentVersionVO);
+        contentVersion.setLanguage((LanguageImpl)language);
 		logger.info("Content:" + content.getContentId() + ":" + db.isPersistent(content));
 		contentVersion.setOwningContent((ContentImpl)content);
 		
-		contentVersion.setValueObject(contentVersionVO);
-        db.create(contentVersion); 
+		db.create(contentVersion); 
 
         content.getContentVersions().add(contentVersion);
 
         if(oldContentVersionId != null && oldContentVersionId.intValue() != -1)
 		    copyDigitalAssets(getContentVersionWithId(oldContentVersionId, db), contentVersion, db);
 		    //contentVersion.setDigitalAssets(getContentVersionWithId(oldContentVersionId, db).getDigitalAssets());
-				
+
         return contentVersion;
     }     
 
