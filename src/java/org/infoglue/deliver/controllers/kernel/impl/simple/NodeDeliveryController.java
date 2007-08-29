@@ -982,7 +982,8 @@ public class NodeDeliveryController extends BaseDeliveryController
 			if(availableServiceBindingName.equalsIgnoreCase("Meta information"))
 			{
 				SiteNode siteNode = getSiteNode(db, siteNodeId);
-				metaInfoContentId = siteNode.getMetaInfoContentId();
+				if(siteNode != null)
+					metaInfoContentId = siteNode.getMetaInfoContentId();
 
 				if(logger.isDebugEnabled())
 				{
