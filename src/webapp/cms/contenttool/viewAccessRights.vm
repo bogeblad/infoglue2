@@ -46,6 +46,8 @@
 			}
 		}
 		
+		#set($anonymousGroupsSize = $anonymousPrincipal.groups.size())
+		#if($anonymousGroupsSize > 0)
 		//alert("hasGroupLimitation:" + hasGroupLimitation);
 		if(selected && hasGroupLimitation)
 		{
@@ -58,13 +60,16 @@
 				//alert("groupElementId:" + groupElementId);
 				var element = document.getElementById(groupElementId);
 				//alert("element:" + element.checked);
-				if(element.checked)
+				if(element && element.checked)
 				{
 					selected = true;
 				}
 			}
 		} 
-	
+		#end
+		
+		//alert("selected:" + selected);
+		//alert("useAnonymousWarningCheck:" + useAnonymousWarningCheck);
 		if(!selected && useAnonymousWarningCheck)
 		{
 			if(confirm('$ui.getString("tool.contenttool.accessRightsAnonymousWarning")'))
@@ -122,9 +127,9 @@
 					#set($accessRightGroups = $this.getAccessRightGroups($accessRightId))
 					#if($accessRightGroups.size() > 0)
 						<script type="text/javascript">hasGroupLimitation = true;</script>
-						<a href="javascript:showDiv('groups$accessRightId');" title="Limited by groups also - click to view."><img src="images/groups.gif" border="0"/></a>
+						<br/><a href="javascript:showDiv('groups$accessRightId');" title="Limited by groups also - click to view."><img src="images/groups.gif" border="0"/></a>
 					#else
-						<a href="javascript:showDiv('groups$accessRightId');" title="Not limited by groups at the moment"><img src="images/groupsInactive.gif" border="0"/></a>
+						<br/><a href="javascript:showDiv('groups$accessRightId');" title="Not limited by groups at the moment"><img src="images/groupsInactive.gif" border="0"/></a>
 					#end
 				#end
 				</td>
@@ -144,16 +149,24 @@
 	
 	#set($roleIndex = 0)
 	#foreach ($role in $roleList)
+	
+		#set($isOdd = $velocityCount % 2)
+		#if($isOdd==0)
+			#set($class = "class='lightGreen'")
+		#else
+			#set($class = "class='white'")
+		#end
+		
 		<tr>
-			<td>
+			<td $class>
 				$role.displayName
 				<input type="hidden" name="${roleIndex}_roleName" value="$role.name">
 			</td>
-			<td></td>
+			<td $class></td>
 			#set($interceptionPointIndex = 0)
 			#foreach($interceptionPointVO in $interceptionPointVOList)
 				#if(($interceptionPointVO.getUsesExtraDataForAccessControl() && $extraParameters && $extraParameters != "") || (!$interceptionPointVO.getUsesExtraDataForAccessControl() && (!$extraParameters || $extraParameters == "")))
-					<td align="center" nowrap>
+					<td $class align="center" nowrap>
 						#set($checked = "")
 						#if($this.getHasAccessRight($interceptionPointVO.id, $extraParameters, $role.name))
 							#set($checked = "checked")
@@ -178,10 +191,11 @@
 						<input type="checkbox" id="${interceptionPointVO.id}_${role.name}_hasAccess" name="${interceptionPointVO.id}_${role.name}_hasAccess" value="true" $checked>
 						
 					</td>
-					<td></td>
+					<td $class></td>
 					#set($interceptionPointIndex = $interceptionPointIndex + 1)
 				#end
 			#end
+			<td $class></td>
 		</tr>
 		#set($roleIndex = $roleIndex + 1)
 	#end
@@ -337,22 +351,27 @@
 					}
 				}
 				
-				var allUnchecked = true;
-				//alert("field: document.groups${accessRightId}Form.groupName");
-			 	//alert("field: " + field.length);
-				for (i = 0; i < field.length; i++)
-				{
-					//alert("Field:" + field[i].value + field[i].checked);
-					if(field[i].checked)
+				var skipGroupCheck = true;
+				#set($anonymousGroupsSize = $anonymousPrincipal.groups.size())
+				#if($anonymousGroupsSize > 0)
+					skipGroupCheck = false;
+					var allUnchecked = true;
+					//alert("field: document.groups${accessRightId}Form.groupName");
+				 	//alert("field: " + field.length);
+					for (i = 0; i < field.length; i++)
 					{
-						//alert("Field checked:" + field[i].value);
-						allUnchecked = false;
-					}
-				}	
+						//alert("Field:" + field[i].value + field[i].checked);
+						if(field[i] && field[i].checked)
+						{
+							//alert("Field checked:" + field[i].value);
+							allUnchecked = false;
+						}
+					}	
+				#end
 				
 				//alert("allUnchecked:" + allUnchecked);
 				//alert("interceptionPointName:" + interceptionPointName);
-				if(!selected && !allUnchecked && (interceptionPointName == "SiteNodeVersion.Read" || interceptionPointName == "Content.Read"))
+				if(!skipGroupCheck && !selected && !allUnchecked && (interceptionPointName == "SiteNodeVersion.Read" || interceptionPointName == "Content.Read"))
 				{
 					if(confirm('$ui.getString("tool.contenttool.accessRightsAnonymousWarning")'))
 					{
