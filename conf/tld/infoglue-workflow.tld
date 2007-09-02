@@ -314,6 +314,32 @@
     	</attribute>
 	</tag>
 	<tag>
+        <name>languageSelector</name>
+        <tagclass>org.infoglue.cms.workflow.taglib.LanguageSelector</tagclass>
+        <bodycontent>empty</bodycontent>
+        <info></info>
+        <attribute>
+			<name>name</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+    	</attribute>
+    	<attribute>
+			<name>cssClass</name>
+			<required>false</required>
+			<rtexprvalue>false</rtexprvalue>
+    	</attribute>
+        <attribute>
+			<name>defaultLabel</name>
+			<required>false</required>
+			<rtexprvalue>false</rtexprvalue>
+    	</attribute>
+        <attribute>
+			<name>title</name>
+			<required>false</required>
+			<rtexprvalue>false</rtexprvalue>
+    	</attribute>
+	</tag>
+	<tag>
 		<name>error</name>
 		<tagclass>org.infoglue.cms.workflow.taglib.ErrorTag</tagclass>
 		<bodycontent>empty</bodycontent>
