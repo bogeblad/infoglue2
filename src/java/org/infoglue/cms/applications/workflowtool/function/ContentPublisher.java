@@ -101,7 +101,7 @@ public class ContentPublisher extends ContentFunction
 							{
 								setParameter(LanguageProvider.LANGUAGE_PARAMETER, languageVO);
 								setPropertySetString(LanguageProvider.LANGUAGE_PROPERTYSET_KEY, languageVO.getId().toString());
-								System.out.println("Setting propertySet languageId to " + languageVO.getName());
+								//System.out.println("Setting propertySet languageId to " + languageVO.getName());
 							}
 							
 							setFunctionStatus(STATUS_MORE_VERSIONS);
