@@ -2664,6 +2664,9 @@ public class ComponentLogic
 	    
 	protected String getPageComponentsString(TemplateController templateController, Integer siteNodeId, Integer languageId, Integer contentId, Set usedContentVersionId) throws SystemException, Exception
 	{ 
+		if(siteNodeId == null || siteNodeId.intValue() <= 0)
+			return null;
+		
 		String cacheName 	= "componentEditorCache";
 		String cacheKey		= "pageComponentString_" + siteNodeId + "_" + languageId + "_" + contentId;
 		String versionKey 	= cacheKey + "_contentVersionId";
