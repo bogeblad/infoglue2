@@ -297,6 +297,11 @@
 			<required>false</required>
 			<rtexprvalue>false</rtexprvalue>
     	</attribute>
+    	<attribute>
+			<name>style</name>
+			<required>false</required>
+			<rtexprvalue>false</rtexprvalue>
+    	</attribute>
         <attribute>
 			<name>categoryPath</name>
 			<required>true</required>
@@ -325,6 +330,11 @@
     	</attribute>
     	<attribute>
 			<name>cssClass</name>
+			<required>false</required>
+			<rtexprvalue>false</rtexprvalue>
+    	</attribute>
+    	<attribute>
+			<name>style</name>
 			<required>false</required>
 			<rtexprvalue>false</rtexprvalue>
     	</attribute>
