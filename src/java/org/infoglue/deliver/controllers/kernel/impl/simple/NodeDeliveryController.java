@@ -200,7 +200,10 @@ public class NodeDeliveryController extends BaseDeliveryController
 	{
 		logger.info("Trying to find binding " + availableServiceBindingVO.getName() + " on siteNodeId:" + siteNodeId);
 		ServiceDefinitionVO serviceDefinitionVO = null;
-
+		
+		if(siteNodeId == null || siteNodeId.intValue() <= 0)
+			return serviceDefinitionVO;
+			
 		SiteNode siteNode = (SiteNode)this.getObjectWithId(SmallSiteNodeImpl.class, siteNodeId, db);
 		logger.info("Loaded siteNode " + siteNode.getName());
 
