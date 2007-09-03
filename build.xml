@@ -250,15 +250,11 @@
 			The portlet api should be installed in tomcat shared/lib/ in order 
 			to be accessed by all webapps/portlets
 			-->
-			<lib dir="${lib}/build" includes="**/*.jar" 
-									
-excludes="pluto-1.0.1-rc2.jar,pluto-1.0.1-rc4.jar,pluto-1.0.1.jar,portlet-api-1.0.jar"/>
+			<lib dir="${lib}/build" includes="**/*.jar" excludes="pluto-1.0.1-rc2.jar,pluto-1.0.1-rc4.jar,pluto-1.0.1.jar,portlet-api-1.0.jar"/>
 			<lib refid="core.libs"/>
 			<lib refid="jdbc.libs"/>
 			<zipfileset dir="${conf}/cms"
-                        prefix="WEB-INF/classes"
-				        
-includes="webwork.properties,actions.xml,jobs.xml,mapping.xml,oracle_mapping.xml,db2_mapping.xml"/>
+                        prefix="WEB-INF/classes" includes="webwork.properties,actions.xml,jobs.xml,mapping.xml,oracle_mapping.xml,db2_mapping.xml"/>
 			<zipfileset dir="${conf}/data/xml"
                         prefix="WEB-INF/classes"
                         includes="*.xml"/>
@@ -295,9 +291,7 @@ includes="webwork.properties,actions.xml,jobs.xml,mapping.xml,oracle_mapping.xml
 			The portlet api should be installed in tomcat shared/lib/ in order 
 			to be accessed by all webapps/portlets
 			-->
-			<lib dir="${lib}/build" includes="**/*.jar" 
-									
-excludes="pluto-1.0.1-rc2.jar,pluto-1.0.1-rc4.jar,pluto-1.0.1.jar,portlet-api-1.0.jar"/>
+			<lib dir="${lib}/build" includes="**/*.jar" excludes="pluto-1.0.1-rc2.jar,pluto-1.0.1-rc4.jar,pluto-1.0.1.jar,portlet-api-1.0.jar"/>
 			<lib refid="core.libs"/>
 			<lib refid="jdbc.libs"/>
 			<zipfileset dir="${conf}/deliver"
@@ -451,15 +445,6 @@ excludes="pluto-1.0.1-rc2.jar,pluto-1.0.1-rc4.jar,pluto-1.0.1.jar,portlet-api-1.
 				<exclude name="pluto-1.0.1-rc4.jar"/>
 				<exclude name="pluto-1.0.1.jar"/>
 				<exclude name="portlet-api-1.0.jar"/>				
-            	<exclude name="saxon8.jar"/>
-                <exclude name="saxon8-ant.jar"/>
-            	<exclude name="saxon8-dom.jar"/>
-                <exclude name="saxon8-dom4j.jar"/>
-            	<exclude name="saxon8-jdom.jar"/>
-            	<exclude name="saxon8-sql.jar"/>
-            	<exclude name="saxon8-xom.jar"/>
-            	<exclude name="saxon8-xpath.jar"/>
-            	<exclude name="saxon8-xqj.jar"/>
 
 				<!--
 				<exclude name="standard.jar"/>
@@ -473,15 +458,6 @@ excludes="pluto-1.0.1-rc2.jar,pluto-1.0.1-rc4.jar,pluto-1.0.1.jar,portlet-api-1.
 				<exclude name="pluto-1.0.1-rc4.jar"/>
 				<exclude name="pluto-1.0.1.jar"/>
 				<exclude name="portlet-api-1.0.jar"/>
-            	<exclude name="saxon8.jar"/>
-                <exclude name="saxon8-ant.jar"/>
-            	<exclude name="saxon8-dom.jar"/>
-                <exclude name="saxon8-dom4j.jar"/>
-            	<exclude name="saxon8-jdom.jar"/>
-            	<exclude name="saxon8-sql.jar"/>
-            	<exclude name="saxon8-xom.jar"/>
-            	<exclude name="saxon8-xpath.jar"/>
-            	<exclude name="saxon8-xqj.jar"/>
 
 				<!--
 				<exclude name="standard.jar"/>
@@ -502,15 +478,6 @@ excludes="pluto-1.0.1-rc2.jar,pluto-1.0.1-rc4.jar,pluto-1.0.1.jar,portlet-api-1.
 				<exclude name="pluto-1.0.1-rc4.jar"/>
 				<exclude name="pluto-1.0.1.jar"/>
 				<exclude name="portlet-api-1.0.jar"/>
-            	<exclude name="saxon8.jar"/>
-                <exclude name="saxon8-ant.jar"/>
-            	<exclude name="saxon8-dom.jar"/>
-                <exclude name="saxon8-dom4j.jar"/>
-            	<exclude name="saxon8-jdom.jar"/>
-            	<exclude name="saxon8-sql.jar"/>
-            	<exclude name="saxon8-xom.jar"/>
-            	<exclude name="saxon8-xpath.jar"/>
-            	<exclude name="saxon8-xqj.jar"/>
 
 				<!--
 				<exclude name="standard.jar"/>
@@ -524,15 +491,6 @@ excludes="pluto-1.0.1-rc2.jar,pluto-1.0.1-rc4.jar,pluto-1.0.1.jar,portlet-api-1.
 				<exclude name="pluto-1.0.1-rc4.jar"/>
 				<exclude name="pluto-1.0.1.jar"/>
 				<exclude name="portlet-api-1.0.jar"/>
-            	<exclude name="saxon8.jar"/>
-                <exclude name="saxon8-ant.jar"/>
-            	<exclude name="saxon8-dom.jar"/>
-                <exclude name="saxon8-dom4j.jar"/>
-            	<exclude name="saxon8-jdom.jar"/>
-            	<exclude name="saxon8-sql.jar"/>
-            	<exclude name="saxon8-xom.jar"/>
-            	<exclude name="saxon8-xpath.jar"/>
-            	<exclude name="saxon8-xqj.jar"/>
 
 				<!--
 				<exclude name="standard.jar"/>
