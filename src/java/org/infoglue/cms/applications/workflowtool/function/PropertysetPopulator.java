@@ -91,7 +91,14 @@ public class PropertysetPopulator extends InfoglueFunction
 	{
 		super.initialize();
 		prefix = getArgument(PREFIX_ARGUMENT);
-		languageVO = (LanguageVO) getParameter(LanguageProvider.LANGUAGE_PARAMETER);
+		try
+		{
+			languageVO = (LanguageVO) getParameter(LanguageProvider.LANGUAGE_PARAMETER);
+		}
+		catch (Exception e) 
+		{
+			System.out.println("Error getting languageVO:" + e.getMessage());
+		}
 	}
 	
 	/**
