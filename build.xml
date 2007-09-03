@@ -54,7 +54,7 @@
 		<include name="*.jar"/>
 	</fileset>
 
-	<fileset id="jdbc.libs" dir="${lib}/shared">
+	<fileset id="shared.libs" dir="${lib}/shared">
 		<include name="*.jar"/>
 	</fileset>
 
