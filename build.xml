@@ -13,7 +13,7 @@
 	<property name="conf" value="conf"/>
 
 	<property name="webapp" value="${src}/webapp"/>
-
+  
 	<property name="build" value="build"/>
 	<property name="build.classes" value="${build}/classes"/>
 	<property name="build.applets" value="${build}/applets"/>
@@ -54,6 +54,10 @@
 		<include name="*.jar"/>
 	</fileset>
 
+	<fileset id="jdbc.libs" dir="${lib}/shared">
+		<include name="*.jar"/>
+	</fileset>
+
 	<!--
 	* fileset for deliver.properties
 	-->
@@ -87,6 +91,7 @@
 		<fileset refid="build.libs"/>
 		<fileset refid="core.libs"/>
 		<fileset refid="jdbc.libs"/>
+		<fileset refid="shared.libs"/>
 	</path>
 
 	<path id="test.classpath">
@@ -246,12 +251,14 @@
 			to be accessed by all webapps/portlets
 			-->
 			<lib dir="${lib}/build" includes="**/*.jar" 
-									excludes="pluto-1.0.1-rc2.jar,pluto-1.0.1-rc4.jar,pluto-1.0.1.jar,portlet-api-1.0.jar"/>
+									
+excludes="pluto-1.0.1-rc2.jar,pluto-1.0.1-rc4.jar,pluto-1.0.1.jar,portlet-api-1.0.jar"/>
 			<lib refid="core.libs"/>
 			<lib refid="jdbc.libs"/>
 			<zipfileset dir="${conf}/cms"
                         prefix="WEB-INF/classes"
-				        includes="webwork.properties,actions.xml,jobs.xml,mapping.xml,oracle_mapping.xml,db2_mapping.xml"/>
+				        
+includes="webwork.properties,actions.xml,jobs.xml,mapping.xml,oracle_mapping.xml,db2_mapping.xml"/>
 			<zipfileset dir="${conf}/data/xml"
                         prefix="WEB-INF/classes"
                         includes="*.xml"/>
@@ -289,7 +296,8 @@
 			to be accessed by all webapps/portlets
 			-->
 			<lib dir="${lib}/build" includes="**/*.jar" 
-									excludes="pluto-1.0.1-rc2.jar,pluto-1.0.1-rc4.jar,pluto-1.0.1.jar,portlet-api-1.0.jar"/>
+									
+excludes="pluto-1.0.1-rc2.jar,pluto-1.0.1-rc4.jar,pluto-1.0.1.jar,portlet-api-1.0.jar"/>
 			<lib refid="core.libs"/>
 			<lib refid="jdbc.libs"/>
 			<zipfileset dir="${conf}/deliver"
@@ -395,8 +403,19 @@
             <echo message="Copying pluto to ${deploy.dir.shared}lib from ${lib}/build"/>
             <copy todir="${deploy.dir.shared}lib" overwrite="true">
                     <fileset dir="${lib}/build">
+	                    	<include name="activation.jar"/>
+	                    	<include name="mail.jar"/>
                             <include name="pluto-1.0.1.jar"/>
                             <include name="portlet-api-1.0.jar"/>
+	                    	<include name="saxon8.jar"/>
+	                        <include name="saxon8-ant.jar"/>
+	                    	<include name="saxon8-dom.jar"/>
+	                        <include name="saxon8-dom4j.jar"/>
+	                    	<include name="saxon8-jdom.jar"/>
+	                    	<include name="saxon8-sql.jar"/>
+	                    	<include name="saxon8-xom.jar"/>
+	                    	<include name="saxon8-xpath.jar"/>
+	                    	<include name="saxon8-xqj.jar"/>
                     </fileset>
             </copy>
     </target>
@@ -431,7 +450,16 @@
 				<exclude name="pluto-1.0.1-rc2.jar"/>
 				<exclude name="pluto-1.0.1-rc4.jar"/>
 				<exclude name="pluto-1.0.1.jar"/>
-				<exclude name="portlet-api-1.0.jar"/>
+				<exclude name="portlet-api-1.0.jar"/>				
+            	<exclude name="saxon8.jar"/>
+                <exclude name="saxon8-ant.jar"/>
+            	<exclude name="saxon8-dom.jar"/>
+                <exclude name="saxon8-dom4j.jar"/>
+            	<exclude name="saxon8-jdom.jar"/>
+            	<exclude name="saxon8-sql.jar"/>
+            	<exclude name="saxon8-xom.jar"/>
+            	<exclude name="saxon8-xpath.jar"/>
+            	<exclude name="saxon8-xqj.jar"/>
 
 				<!--
 				<exclude name="standard.jar"/>
@@ -445,7 +473,16 @@
 				<exclude name="pluto-1.0.1-rc4.jar"/>
 				<exclude name="pluto-1.0.1.jar"/>
 				<exclude name="portlet-api-1.0.jar"/>
-			
+            	<exclude name="saxon8.jar"/>
+                <exclude name="saxon8-ant.jar"/>
+            	<exclude name="saxon8-dom.jar"/>
+                <exclude name="saxon8-dom4j.jar"/>
+            	<exclude name="saxon8-jdom.jar"/>
+            	<exclude name="saxon8-sql.jar"/>
+            	<exclude name="saxon8-xom.jar"/>
+            	<exclude name="saxon8-xpath.jar"/>
+            	<exclude name="saxon8-xqj.jar"/>
+
 				<!--
 				<exclude name="standard.jar"/>
 				<exclude name="jstl.jar"/>
@@ -465,6 +502,15 @@
 				<exclude name="pluto-1.0.1-rc4.jar"/>
 				<exclude name="pluto-1.0.1.jar"/>
 				<exclude name="portlet-api-1.0.jar"/>
+            	<exclude name="saxon8.jar"/>
+                <exclude name="saxon8-ant.jar"/>
+            	<exclude name="saxon8-dom.jar"/>
+                <exclude name="saxon8-dom4j.jar"/>
+            	<exclude name="saxon8-jdom.jar"/>
+            	<exclude name="saxon8-sql.jar"/>
+            	<exclude name="saxon8-xom.jar"/>
+            	<exclude name="saxon8-xpath.jar"/>
+            	<exclude name="saxon8-xqj.jar"/>
 
 				<!--
 				<exclude name="standard.jar"/>
@@ -478,6 +524,15 @@
 				<exclude name="pluto-1.0.1-rc4.jar"/>
 				<exclude name="pluto-1.0.1.jar"/>
 				<exclude name="portlet-api-1.0.jar"/>
+            	<exclude name="saxon8.jar"/>
+                <exclude name="saxon8-ant.jar"/>
+            	<exclude name="saxon8-dom.jar"/>
+                <exclude name="saxon8-dom4j.jar"/>
+            	<exclude name="saxon8-jdom.jar"/>
+            	<exclude name="saxon8-sql.jar"/>
+            	<exclude name="saxon8-xom.jar"/>
+            	<exclude name="saxon8-xpath.jar"/>
+            	<exclude name="saxon8-xqj.jar"/>
 
 				<!--
 				<exclude name="standard.jar"/>
@@ -679,9 +734,44 @@
 			depends="server-clean-cms,server-clean-working,server-clean-preview,server-clean-live"/>
 
 	<!--
+	* Cleans the CMS deploy dir.
+	-->
+	<target name="server-clean-medium-cms" depends="init" if="deploy.dir.cms">
+		<delete dir="${deploy.dir.cms}/WEB-INF/lib"/>
+	</target>
+
+	<!--
+	* Cleans the working deploy dir.
+	-->
+	<target name="server-clean-medium-working" depends="init" if="deploy.dir.working">
+		<delete dir="${deploy.dir.working}/WEB-INF/lib"/>
+	</target>
+
+	<!--
+	* Cleans the preview deploy dir.
+	-->
+	<target name="server-clean-medium-preview" depends="init" if="deploy.dir.preview">
+		<delete dir="${deploy.dir.preview}/WEB-INF/lib"/>
+	</target>
+
+	<!--
+	* Cleans the live deploy dir.
+	-->
+	<target name="server-clean-medium-live" depends="init" if="deploy.dir.live">
+		<delete dir="${deploy.dir.live}/WEB-INF/lib"/>
+	</target>
+
+	<!--
+	* Cleans all the deploy directories
+	-->
+	<target name="server-clean-medium"
+			
+depends="server-clean-medium-cms,server-clean-medium-working,server-clean-medium-preview,server-clean-medium-live"/>
+
+	<!--
 	* Deploys after a complete rebuild
 	-->
-	<target name="clean-deploy" depends="clean,deploy"/>
+	<target name="clean-deploy" depends="clean,server-clean-medium,deploy"/>
 
 	<!--
 	* Generates API documentation; includes test code as well.
@@ -748,6 +838,36 @@
 		</java>
 	</target>
 	
+    <!-- =================================================================== -->    
+    <!-- Generates the project's API documentation                           -->    
+    <!-- =================================================================== -->    
+    <target
+        name="javadocs" 
+        description="Generates the API documentation for all modules"
+        depends="init"
+    >
+        <javadoc
+            windowtitle="${project.fullname} API - ${project.version}"
+            destdir="${javadocs.destdir}"
+            sourcepath="${src.java}"
+            doctitle="${project.fullname} - ${project.version}"
+            author="true"
+            bottom="Copyright &#169; ${year} InfoGlue.org All Rights Reserved."
+            private="false"
+            packagenames="org.*"
+            use="true"
+            version="true"
+        >
+            <classpath refid="build.classpath"/>
+        </javadoc>
+        <zip destfile="${javadocs.destdir}/infoglueAPI.zip" >
+             <zipfileset dir="${javadocs.destdir}"
+                     excludes="*.zip"
+                     prefix="infoglueAPI"/>
+        </zip>
+                                                                                
+    </target>
+
 	<target name="changelog" depends="init">
 		<cvschangelog
 					dir="src"
@@ -756,3 +876,4 @@
 	                start="5 Jun 2005"/>
 	</target>
 </project>
+
