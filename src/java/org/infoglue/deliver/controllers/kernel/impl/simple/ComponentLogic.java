@@ -2684,7 +2684,7 @@ public class ComponentLogic
 		ContentVO contentVO = NodeDeliveryController.getNodeDeliveryController(siteNodeId, languageId, contentId).getBoundContent(templateController.getDatabase(), templateController.getPrincipal(), siteNodeId, languageId, true, "Meta information", templateController.getDeliveryContext());
 		
 		if(contentVO == null)
-			throw new SystemException("There was no Meta Information bound to this page which makes it impossible to render.");	
+			throw new SystemException("There was no Meta Information bound to this page [" + siteNodeId + "] which makes it impossible to render.");	
 		
 		Integer masterLanguageId = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForSiteNode(templateController.getDatabase(), siteNodeId).getId();
 		//pageComponentsString = templateController.getContentAttributeWithReturningId(contentVO.getContentId(), masterLanguageId, "ComponentStructure", true, contentVersionIds);
@@ -2693,7 +2693,7 @@ public class ComponentLogic
 		//System.out.println("contentVersionIds after:" + usedContentVersionId.size());
 		
 		if(pageComponentsString == null)
-			throw new SystemException("There was no Meta Information bound to this page which makes it impossible to render.");	
+			throw new SystemException("There was no Meta Information bound to this page [" + siteNodeId + "] which makes it impossible to render.");	
 				    
 		logger.info("pageComponentsString: " + pageComponentsString);
 	
