@@ -1217,15 +1217,18 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 		{
 			LanguageVO masterLanguage = LanguageController.getController().getMasterLanguage(ContentController.getContentController().getContentVOWithId(contentId).getRepositoryId());
 			ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentId, masterLanguage.getId());
-			List digitalAssets = DigitalAssetController.getDigitalAssetVOList(contentVersionVO.getId());
-			Iterator i = digitalAssets.iterator();
-			while(i.hasNext())
+			if(contentVersionVO != null)
 			{
-				DigitalAssetVO digitalAssetVO = (DigitalAssetVO)i.next();
-				if(digitalAssetVO.getAssetKey().equals(key))
+				List digitalAssets = DigitalAssetController.getDigitalAssetVOList(contentVersionVO.getId());
+				Iterator i = digitalAssets.iterator();
+				while(i.hasNext())
 				{
-					imageHref = DigitalAssetController.getDigitalAssetUrl(digitalAssetVO.getId()); 
-					break;
+					DigitalAssetVO digitalAssetVO = (DigitalAssetVO)i.next();
+					if(digitalAssetVO.getAssetKey().equals(key))
+					{
+						imageHref = DigitalAssetController.getDigitalAssetUrl(digitalAssetVO.getId()); 
+						break;
+					}
 				}
 			}
 		}
