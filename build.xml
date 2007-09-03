@@ -394,9 +394,9 @@
     * Deploys the pluto classes to tomcat shared
     -->
     <target name="deploy-pluto" description="Moves pluto classes to shared/lib">
-            <echo message="Copying pluto to ${deploy.dir.shared}lib from ${lib}/build"/>
+            <echo message="Copying pluto to ${deploy.dir.shared}lib from ${lib}/shared"/>
             <copy todir="${deploy.dir.shared}lib" overwrite="true">
-                    <fileset dir="${lib}/build">
+                    <fileset dir="${lib}/shared">
 	                    	<include name="activation.jar"/>
 	                    	<include name="mail.jar"/>
                             <include name="pluto-1.0.1.jar"/>
