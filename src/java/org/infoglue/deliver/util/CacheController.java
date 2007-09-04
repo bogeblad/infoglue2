@@ -1119,7 +1119,7 @@ public class CacheController extends Thread
 	    	String siteNodesToRecacheOnPublishing = CmsPropertyHandler.getSiteNodesToRecacheOnPublishing();
 	    	String recachePublishingMethod = CmsPropertyHandler.getRecachePublishingMethod();
 	    	logger.info("siteNodesToRecacheOnPublishing:" + siteNodesToRecacheOnPublishing);
-	    	if(siteNodesToRecacheOnPublishing != null && !siteNodesToRecacheOnPublishing.equals("") && !siteNodesToRecacheOnPublishing.equals("siteNodesToRecacheOnPublishing"))
+	    	if(siteNodesToRecacheOnPublishing != null && !siteNodesToRecacheOnPublishing.equals("") && siteNodesToRecacheOnPublishing.indexOf("siteNodesToRecacheOnPublishing") == -1)
 	    	{
 	    	    String[] siteNodeIdArray = siteNodesToRecacheOnPublishing.split(",");
 	    	    for(int i=0; i<siteNodeIdArray.length; i++)
