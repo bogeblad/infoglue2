@@ -399,6 +399,14 @@ public interface TemplateController
             Integer languageId, String attributeName);
 	 
 
+	/**
+	 * This method deliveres a String with the content-attribute asked for in the language asked for.
+	 * If the attribute is not found in the language requested it fallbacks to the master language.
+	 */
+
+	public String getContentAttributeUsingLanguageFallback(Integer contentId, String attributeName, boolean disableEditOnSight) ;
+	
+
     /**
      * This method deliveres a String with the content-attribute asked for after it has been parsed and all special tags have been converted.
      * As the siteNode can have multiple bindings as well as a content as a parameter this

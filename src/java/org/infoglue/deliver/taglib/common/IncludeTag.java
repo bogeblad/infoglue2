@@ -67,11 +67,11 @@ public class IncludeTag extends TemplateControllerTag
 	                }
 			    }
 
-			    template = this.getController().getContentAttribute(contentId, "Template");
+			    template = this.getController().getContentAttributeUsingLanguageFallback(contentId, "Template", true);
 		    }
 		    else
 		    {
-		        template = this.getController().getContentAttribute(contentId, "Template");
+		        template = this.getController().getContentAttributeUsingLanguageFallback(contentId, "Template", true);
 		    }
 		    
 		    String result = this.getController().renderString(template, false);
