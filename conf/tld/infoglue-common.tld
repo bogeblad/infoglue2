@@ -771,5 +771,42 @@
 	        <rtexprvalue>true</rtexprvalue>
 		</attribute>
 	</tag>
+
+	<tag>
+	    <name>documentConverter</name>
+	    <tagclass>org.infoglue.deliver.taglib.common.DocumentConverterTag</tagclass>
+	    <bodycontent>empty</bodycontent>
+	    <info></info>
+	     <attribute>
+		    <name>id</name>
+	    	<required>true</required>
+	        <rtexprvalue>true</rtexprvalue>
+		</attribute>
+	    <attribute>
+		    <name>docUrl</name>
+	    	<required>false</required>
+	        <rtexprvalue>true</rtexprvalue>
+		</attribute>	
+		 <attribute>
+		    <name>docFilePath</name>
+	    	<required>false</required>
+	        <rtexprvalue>true</rtexprvalue>
+		</attribute>  
+		<attribute>
+		    <name>title</name>
+	    	<required>false</required>
+	        <rtexprvalue>true</rtexprvalue>
+		</attribute>   
+		<attribute>
+		    <name>menuTextLength</name>
+	    	<required>false</required>
+	        <rtexprvalue>true</rtexprvalue>
+		</attribute> 
+		<attribute>
+		    <name>cssList</name>
+	    	<required>false</required>
+	        <rtexprvalue>true</rtexprvalue>
+		</attribute> 
+	</tag>
     
 </taglib>

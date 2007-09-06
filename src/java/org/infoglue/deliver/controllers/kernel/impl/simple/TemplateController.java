@@ -46,6 +46,7 @@ import org.infoglue.cms.entities.structure.SiteNodeVO;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.DesEncryptionHelper;
+import org.infoglue.cms.util.DocumentConverterHelper;
 import org.infoglue.deliver.applications.databeans.DatabaseWrapper;
 import org.infoglue.deliver.applications.databeans.DeliveryContext;
 import org.infoglue.deliver.applications.databeans.WebPage;
@@ -169,6 +170,11 @@ public interface TemplateController
 	 * This method gets the DesEncryptionHelper.
 	 */
 	public DesEncryptionHelper getDesEncryptionHelper();
+	
+	/**
+	 * This method gets the DocumentTransformerHelper.
+	 */
+	public DocumentConverterHelper getDocumentTransformerHelper();
 
 	/**
 	 * This method gets the rss utility.

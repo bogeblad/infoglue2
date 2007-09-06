@@ -25,7 +25,6 @@ package org.infoglue.deliver.controllers.kernel.impl.simple;
 
 import java.awt.Color;
 import java.awt.Font;
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -34,7 +33,6 @@ import java.net.URLEncoder;
 import java.security.Principal;
 import java.text.NumberFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -44,7 +42,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Set;
 import java.util.Vector;
 
@@ -88,8 +85,6 @@ import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.entities.management.ContentTypeAttribute;
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
 import org.infoglue.cms.entities.management.LanguageVO;
-import org.infoglue.cms.entities.management.RegistryVO;
-import org.infoglue.cms.entities.management.RepositoryVO;
 import org.infoglue.cms.entities.structure.SiteNode;
 import org.infoglue.cms.entities.structure.SiteNodeVO;
 import org.infoglue.cms.entities.structure.SiteNodeVersionVO;
@@ -100,6 +95,7 @@ import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.security.InfoGlueRole;
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.DesEncryptionHelper;
+import org.infoglue.cms.util.DocumentConverterHelper;
 import org.infoglue.cms.util.dom.DOMBuilder;
 import org.infoglue.cms.util.sorters.SiteNodeComparator;
 import org.infoglue.deliver.applications.databeans.ComponentProperty;
@@ -114,7 +110,6 @@ import org.infoglue.deliver.util.CacheController;
 import org.infoglue.deliver.util.HttpHelper;
 import org.infoglue.deliver.util.MathHelper;
 import org.infoglue.deliver.util.ObjectConverter;
-import org.infoglue.deliver.util.Timer;
 import org.infoglue.deliver.util.VelocityTemplateProcessor;
 import org.infoglue.deliver.util.charts.ChartHelper;
 import org.infoglue.deliver.util.forms.FormHelper;
@@ -126,9 +121,6 @@ import org.infoglue.deliver.util.graphics.ImageRenderer;
 import org.infoglue.deliver.util.rss.RssHelper;
 import org.infoglue.deliver.util.webservices.InfoGlueWebServices;
 import org.infoglue.deliver.util.webservices.WebServiceHelper;
-
-import com.opensymphony.module.propertyset.PropertySet;
-import com.opensymphony.module.propertyset.PropertySetManager;
 
 /**
  * This is the most basic template controller supplying the templates using it with
@@ -505,6 +497,15 @@ public class BasicTemplateController implements TemplateController
 	public RssHelper getRssHelper()
 	{
 		return new RssHelper();
+	}
+	
+	/**
+	 * This method gets the rss utility.
+	 */
+	
+	public DocumentConverterHelper getDocumentTransformerHelper()
+	{
+		return new DocumentConverterHelper();
 	}
 
 	/**
