@@ -28,6 +28,7 @@ public class ConvertedDocumentBean
 {
 	private String pdfFileUrl;
 	private String htmlFileUrl;
+	private String odtFileUrl;
 	private String tocString;
 	
 	public String getHtmlFileUrl() 
@@ -53,5 +54,10 @@ public class ConvertedDocumentBean
 	public void setTocString(String tocString) 
 	{
 		this.tocString = tocString;
+	}
+	
+	public void setOdtFileUrl(String odtFileUrl)
+	{
+		this.odtFileUrl = odtFileUrl;
 	}
 }

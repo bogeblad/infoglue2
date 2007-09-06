@@ -159,12 +159,14 @@ public class DocumentConverterHelper
 			
 			String htmlFileUrl 	= CmsPropertyHandler.getDigitalAssetBaseUrl() + "/" + fileName + "/" + htmlFile.getName();
 			String pdfFileUrl	= CmsPropertyHandler.getDigitalAssetBaseUrl() + "/" + fileName + "/" + pdfFile.getName();
+			String odtFileUrl	= CmsPropertyHandler.getDigitalAssetBaseUrl() + "/" + fileName + "/" + odtFile.getName();
 			String tocString 	= generateHtmlToc(contentXmlFile, htmlFileUrl, aTitle, menuMaxLength);
 			
 			System.out.println("Done generating TOC");
 			
 			convertedDocument.setHtmlFileUrl(htmlFileUrl);
 			convertedDocument.setPdfFileUrl(pdfFileUrl);
+			convertedDocument.setOdtFileUrl(odtFileUrl);
 			convertedDocument.setTocString(tocString);
 		}
 		catch(Exception e)
