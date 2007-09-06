@@ -39,6 +39,7 @@ public class IncludeTag extends TemplateControllerTag
 	private String relationAttributeName;
 	private String contentName;
 	private String template;
+	private boolean useAttributeLanguageFallback = true;
 	
     public IncludeTag()
     {
@@ -53,7 +54,7 @@ public class IncludeTag extends TemplateControllerTag
 		    {
 			    Integer componentContentId = this.getController().getComponentLogic().getInfoGlueComponent().getContentId();
 	
-			    List relatedContents = this.getController().getRelatedContents(componentContentId, relationAttributeName);
+			    List relatedContents = this.getController().getRelatedContents(componentContentId, relationAttributeName, useAttributeLanguageFallback);
 
 			    Iterator i = relatedContents.iterator();
 			    while(i.hasNext())
@@ -106,5 +107,10 @@ public class IncludeTag extends TemplateControllerTag
     {
         this.contentId = null;
         this.contentName = evaluateString("includeTag", "contentName", contentName);
+    }
+
+    public void setUseAttributeLanguageFallback(boolean useAttributeLanguageFallback) throws JspException
+    {
+        this.useAttributeLanguageFallback = useAttributeLanguageFallback;
     }
 }

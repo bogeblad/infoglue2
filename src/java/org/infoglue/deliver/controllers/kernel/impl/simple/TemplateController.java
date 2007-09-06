@@ -587,6 +587,14 @@ public interface TemplateController
     public abstract List getRelatedContents(Integer contentId,
             String attributeName);
 
+	/**
+	 * This method gets a List of related contents defined in an attribute as an xml-definition.
+	 * This is an ugly method right now. Later we should have xmlDefinitions that are fully qualified so it can be
+	 * used to access other systems than our own.
+	 */
+	
+	public List getRelatedContents(Integer contentId, String attributeName, boolean useAttributeLanguageFallBack);
+
     /**
      * This method gets a List of related siteNodes defined in an attribute as an xml-definition.
      * This is an ugly method right now. Later we should have xmlDefinitions that are fully qualified so it can be

@@ -2469,6 +2469,35 @@ public class BasicTemplateController implements TemplateController
 	}
 
 	/**
+	 * This method gets a List of related contents defined in an attribute as an xml-definition.
+	 * This is an ugly method right now. Later we should have xmlDefinitions that are fully qualified so it can be
+	 * used to access other systems than our own.
+	 */
+	
+	public List getRelatedContents(Integer contentId, String attributeName, boolean useAttributeLanguageFallBack)
+	{
+		List relatedContentVOList = new ArrayList();
+		
+		try
+		{
+			logger.info("contentId " + this.contentId + " with relationName " + attributeName);
+		    String qualifyerXML = null;
+		    if(useAttributeLanguageFallBack)
+		    	qualifyerXML = this.getContentAttributeUsingLanguageFallback(contentId, attributeName, true);
+		    else
+		    	qualifyerXML = this.getContentAttribute(contentId, attributeName, true);
+		    
+			relatedContentVOList = getRelatedContentsFromXML(qualifyerXML);
+		}
+		catch(Exception e)
+		{
+			logger.error("An error occurred trying to get related contents on contentId " + this.contentId + " with relationName " + attributeName + ":" + e.getMessage(), e);
+		}
+		
+		return relatedContentVOList;
+	}
+
+	/**
 	 * This method gets a List of related contents defined in a principal property as an xml-definition.
 	 */
 	
