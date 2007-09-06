@@ -43,6 +43,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
 
+import org.apache.log4j.Logger;
 import org.infoglue.deliver.applications.databeans.ConvertedDocumentBean;
 import org.jdom.Document;
 import org.jdom.Element;
@@ -56,12 +57,14 @@ import com.artofsolving.jodconverter.openoffice.converter.OpenOfficeDocumentConv
 
 public class DocumentConverterHelper 
 {
+	private final static Logger logger = Logger.getLogger(DocumentConverterHelper.class.getName());
+
 	public ConvertedDocumentBean convert(File aDocFile, String aTitle, String aMenuTextLength, List aCssList) 
 	{
 		ConvertedDocumentBean convertedDocument = new ConvertedDocumentBean();
 		int menuMaxLength						= 20;
 		
-		System.out.println("START");
+		logger.info("START");
 		
 		try
 		{			
@@ -109,34 +112,34 @@ public class DocumentConverterHelper
 
 			if (!documentDir.exists())
 			{
-				System.out.println("Connecting to server...");								
+				logger.info("Connecting to server...");								
 				
 				connection.connect();
 				
-				System.out.println("Connection ok");
+				logger.info("Connection ok");
 				
-				System.out.println("Conversion START");
+				logger.info("Conversion START");
 	
 				convertDocument(aDocFile, pdfFile, connection);
 				convertDocument(aDocFile, htmlFile, connection);
 				convertDocument(aDocFile, odtFile, connection);
 				connection.disconnect();
 				
-				System.out.println("Conversion END");			
+				logger.info("Conversion END");			
 				
 				//------------------------------------------------
 				// Extract the content.xml file from the ODT file
 				// so we can parse the XML and generate the TOC
 				//------------------------------------------------
 				
-				System.out.println("Extracting content.xml...");
+				logger.info("Extracting content.xml...");
 				
 				String targetPath = odtFile.getAbsolutePath();
 				targetPath = targetPath.substring(0, targetPath.lastIndexOf("\\") + 1);
 	
 				contentXmlFile = extractContentXml(odtFile, targetPath);
 				
-				System.out.println("Done extracting content.xml");
+				logger.info("Done extracting content.xml");
 				
 				//--------------------------------------------------------
 				// Insert the anchors, remove the TOC, remove CSS styles
@@ -144,25 +147,25 @@ public class DocumentConverterHelper
 				// (Since we've just generated a new nav above)
 				//--------------------------------------------------------
 				
-				System.out.println("Inserting anchors in handbook");
+				logger.info("Updating handbook with extra info");
 				
 				adaptHandbook(htmlFile, aCssList);
 				
-				System.out.println("Done inserting anchors in handbook");
+				logger.info("Done updating handbook with extra info");
 			}
 			
 			//--------------------------
 			// Generate HTML TOC string
 			//--------------------------
 			
-			System.out.println("Generating TOC...");
+			logger.info("Generating TOC...");
 			
 			String htmlFileUrl 	= CmsPropertyHandler.getDigitalAssetBaseUrl() + "/" + fileName + "/" + htmlFile.getName();
 			String pdfFileUrl	= CmsPropertyHandler.getDigitalAssetBaseUrl() + "/" + fileName + "/" + pdfFile.getName();
 			String odtFileUrl	= CmsPropertyHandler.getDigitalAssetBaseUrl() + "/" + fileName + "/" + odtFile.getName();
 			String tocString 	= generateHtmlToc(contentXmlFile, htmlFileUrl, aTitle, menuMaxLength);
 			
-			System.out.println("Done generating TOC");
+			logger.info("Done generating TOC");
 			
 			convertedDocument.setHtmlFileUrl(htmlFileUrl);
 			convertedDocument.setPdfFileUrl(pdfFileUrl);
@@ -171,11 +174,10 @@ public class DocumentConverterHelper
 		}
 		catch(Exception e)
 		{
-			System.out.println("An error occured: " + e.getMessage());
-			e.printStackTrace();
+			logger.error("An error occurred when converting document:" + e.getMessage(), e);
 		}
 		
-		System.out.println("END");
+		logger.info("END");
 		
 		return convertedDocument;
 	}
@@ -353,7 +355,7 @@ public class DocumentConverterHelper
 		sb.append(start);
 		sb.append(linkedCssString.toString());
 		sb.append(end);
-System.out.println("Fixad CSS: " + sb.toString());			
+
 		return sb.toString();
 	}
 	
@@ -478,20 +480,20 @@ System.out.println("Fixad CSS: " + sb.toString());
 	{
 		if (aParentElement == null)
 		{
-			System.out.println("The supplied Element was null");
+			logger.info("The supplied Element was null");
 		}
 		else
 		{
-			System.out.println("Children to " + aParentElement.getNamespacePrefix() + ":" + aParentElement.getName() + ": ");
-			System.out.println("---------------------------------");
+			logger.info("Children to " + aParentElement.getNamespacePrefix() + ":" + aParentElement.getName() + ": ");
+			logger.info("---------------------------------");
 			List children 		= aParentElement.getChildren();		
 			Iterator it 		= children.iterator();		
 			while(it.hasNext())
 			{
 				Element child = (Element)it.next();
-				System.out.println(child.getNamespacePrefix() + ":" + child.getName() + "=" + child.getText());
+				logger.info(child.getNamespacePrefix() + ":" + child.getName() + "=" + child.getText());
 			}
-			System.out.println("---------------------------------");
+			logger.info("---------------------------------");
 		}
 	}
 
@@ -510,11 +512,11 @@ System.out.println("Fixad CSS: " + sb.toString());
 		// Convert the document to the selected format
 		//---------------------------------------------
 		
-		System.out.println("Converting document to " + fileType + "...");
+		logger.info("Converting document to " + fileType + "...");
 		
 		converter.convert(aInputFile, aOutputFile);
 		
-		System.out.println("Conversion complete");
+		logger.info("Conversion complete");
 	}
 	
 	public static File extractContentXml(File aOdtFile, String aTargetDirectory) throws ZipException, IOException
