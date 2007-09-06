@@ -50,31 +50,24 @@ public class IncludeTag extends TemplateControllerTag
     {
 		try
         {
-		    System.out.println("contentId:" + contentId);
 		    if(contentId == null)
 		    {
 			    Integer componentContentId = this.getController().getComponentLogic().getInfoGlueComponent().getContentId();
-			    System.out.println("componentContentId:" + componentContentId);
 			    
 			    List relatedContents = this.getController().getRelatedContents(componentContentId, relationAttributeName, useAttributeLanguageFallback);
-			    System.out.println("relatedContents:" + relatedContents);
 
 			    Iterator i = relatedContents.iterator();
 			    while(i.hasNext())
 			    {
 			        ContentVO contentVO = (ContentVO)i.next();
-			        System.out.println("contentVO:" + contentVO + "=" + contentName);
 			        if(contentVO.getName().equalsIgnoreCase(contentName))
 	                {
-				        System.out.println("YES");
 			            contentId = contentVO.getId();
 			            break;
 	                }
 			    }
-		        System.out.println("contentId:" + contentId);
 
 			    template = this.getController().getContentAttributeUsingLanguageFallback(contentId, "Template", true);
-		        System.out.println("template:" + template);
 		    }
 		    else
 		    {
