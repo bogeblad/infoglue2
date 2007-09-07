@@ -87,7 +87,7 @@
 							#set($imageUrl = "images/undefinedPageTemplate.jpg")
 						#end
 						<td id="digitalAsset$content.id" valign="bottom" align="center" class="bordered">
-							<a href="javascript:markPageTemplate(this, $content.id);"><img src="$imageUrl" border="0"></a>&nbsp;<br>
+							<a href="javascript:markPageTemplate(this, $content.id);"><img src="$imageUrl" border="0" style="width: 100px;"></a>&nbsp;<br>
 							<a href="javascript:markPageTemplate(this, $content.id);">$content.getName()</a>
 						</td>
 						#set($counter = $counter + 1)

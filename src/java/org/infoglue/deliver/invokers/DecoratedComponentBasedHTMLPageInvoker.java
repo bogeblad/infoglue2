@@ -204,7 +204,10 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		 {
 		     List sortedPageTemplates = PageTemplateController.getController().getPageTemplates(this.getTemplateController().getPrincipal());
 			 Iterator sortedPageTemplatesIterator = sortedPageTemplates.iterator();
-			 while(sortedPageTemplatesIterator.hasNext())
+			 int index = 0;
+			 pageTemplateHTML += "<table border=\"0\" width=\"80%\" cellspacing=\"0\"><tr>";
+			 
+		     while(sortedPageTemplatesIterator.hasNext())
 			 {
 			     ContentVO contentVO = (ContentVO)sortedPageTemplatesIterator.next();
 			     ContentVersionVO contentVersionVO = this.getTemplateController().getContentVersion(contentVO.getId(), LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForSiteNode(getDatabase(), siteNodeId).getId(), false);
@@ -214,12 +217,22 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 				     if(imageUrl == null || imageUrl.equals(""))
 				         imageUrl = this.getRequest().getContextPath() + "/images/undefinedPageTemplate.jpg";
 				 
-				     pageTemplateHTML += "<div style=\"border: 1px solid #C2D0E2; float: left; text-align: center; padding: 5px 5px 5px 5px;\"><a href=\"" + componentEditorUrl + "ViewSiteNodePageComponents!addPageTemplate.action?repositoryId=" + contentVO.getRepositoryId() + "&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&pageTemplateContentId=" + contentVO.getId() + "&showSimple=" + this.getTemplateController().getDeliveryContext().getShowSimple() + "\"><img src=\"" + imageUrl + "\" border=\"0\"><br>";
+				     pageTemplateHTML += "<td style=\"font-family:verdana, sans-serif; font-size:10px; border: 1px solid #C2D0E2; padding: 5px 5px 5px 5px;\" valign=\"bottom\" align=\"center\"><a href=\"" + componentEditorUrl + "ViewSiteNodePageComponents!addPageTemplate.action?repositoryId=" + contentVO.getRepositoryId() + "&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&pageTemplateContentId=" + contentVO.getId() + "&showSimple=" + this.getTemplateController().getDeliveryContext().getShowSimple() + "\"><img src=\"" + imageUrl + "\" border=\"0\" style=\"width: 100px;\"><br>";
 				     pageTemplateHTML += contentVO.getName() + "</a>";
-				     pageTemplateHTML += "</div>";	
+				     pageTemplateHTML += "</td>";	
+
+				     index++;
+				     if(index >= 5)
+				     {
+				    	 index = 0;
+				    	 pageTemplateHTML += "</tr><tr>";
+				     }
+				     
 				     foundPageTemplate = true;
 			     }
 			 }
+			 pageTemplateHTML += "</tr></table>";
+
 		 }
 		 catch(Exception e)
 		 {
