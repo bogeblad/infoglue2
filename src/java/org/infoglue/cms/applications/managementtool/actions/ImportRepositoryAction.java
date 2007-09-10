@@ -383,7 +383,7 @@ public class ImportRepositoryAction extends InfoGlueAbstractAction
 
 			if(newParentCategory == null)
 			{
-				logger.info("No existing category - we create it.");
+				logger.info("No existing category - we create it: " + categoryVO);
 				Integer oldId = categoryVO.getId();
 				categoryVO.setCategoryId(null);
 				if(parentCategory != null)	
