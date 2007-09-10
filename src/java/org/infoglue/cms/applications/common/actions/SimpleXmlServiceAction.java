@@ -79,7 +79,7 @@ public abstract class SimpleXmlServiceAction extends InfoGlueAbstractAction
 
     private static final String protectedPropertyFragments = "password,administrator,authorizer,authenticator,masterserver,slaveserver,log";
     
-    protected static final String SERVICEREVISION = "$Revision: 1.21 $"; 
+    protected static final String SERVICEREVISION = "$Revision: 1.22 $"; 
 	protected static String ENCODING = "UTF-8";
     protected static String TYPE_FOLDER = "Folder";
     protected static String TYPE_ITEM = "Item";
@@ -448,7 +448,11 @@ public abstract class SimpleXmlServiceAction extends InfoGlueAbstractAction
 		        {
 			        ContentVersionVO activeVersion = contentVersionController.getLatestActiveContentVersionVO(theNode.getId(), LanguageController.getController().getMasterLanguage(repositoryId).getLanguageId());
 			        if(activeVersion!=null && !useTemplate)
+			        {
 			            elm.addAttribute("activeVersion", "" + activeVersion.getContentVersionId());
+			            elm.addAttribute("activeVersionStateId", "" + activeVersion.getStateId());
+			            elm.addAttribute("activeVersionModifier", "" + activeVersion.getVersionModifier());
+			        }
 		        }
 		        
 		        //TODO - this was a quickfix only
