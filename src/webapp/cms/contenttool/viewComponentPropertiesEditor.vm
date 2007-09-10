@@ -529,12 +529,14 @@
 				multiple 	= property.getMultiple();
 				allowedContentTypeNames = property.getAllowedContentTypeNames();
 				description = property.getDescription();
+				assetBinding = property.getAssetBinding();
 				
 				property.setName(previousProperty.getName());
 				property.setType(previousProperty.getType());
 				property.setEntity(previousProperty.getEntity());
 				property.setMultiple(previousProperty.getMultiple());
-				property.setAssetBinding(previousProperty.getAssetBinding());
+				if(previousProperty.getAssetBinding())
+					property.setAssetBinding(previousProperty.getAssetBinding());
 				property.setAllowedContentTypeNames(previousProperty.getAllowedContentTypeNames());
 				property.setDescription(previousProperty.getDescription());
 				
@@ -542,7 +544,8 @@
 				previousProperty.setType(type);
 				previousProperty.setEntity(entity);
 				previousProperty.setMultiple(multiple);
-				previousProperty.setAssetBinding(assetBinding);
+				if(assetBinding)
+					previousProperty.setAssetBinding(assetBinding);
 				previousProperty.setAllowedContentTypeNames(allowedContentTypeNames);
 				previousProperty.setDescription(description);
 				
@@ -567,12 +570,14 @@
 				multiple 	= property.getMultiple();
 				allowedContentTypeNames = property.getAllowedContentTypeNames();
 				description = property.getDescription();
+				assetBinding = property.getAssetBinding();
 				
 				property.setName(previousProperty.getName())
 				property.setType(previousProperty.getType())
 				property.setEntity(previousProperty.getEntity())
 				property.setMultiple(previousProperty.getMultiple())
-				property.setAssetBinding(previousProperty.getAssetBinding());
+				if(previousProperty.getAssetBinding())
+					property.setAssetBinding(previousProperty.getAssetBinding());
 				property.setAllowedContentTypeNames(previousProperty.getAllowedContentTypeNames());
 				property.setDescription(previousProperty.getDescription());
 				
@@ -580,7 +585,8 @@
 				previousProperty.setType(type);
 				previousProperty.setEntity(entity);
 				previousProperty.setMultiple(multiple);
-				previousProperty.setAssetBinding(assetBinding);
+				if(assetBinding)
+					previousProperty.setAssetBinding(assetBinding);
 				previousProperty.setAllowedContentTypeNames(allowedContentTypeNames);
 				previousProperty.setDescription(description);
 			
