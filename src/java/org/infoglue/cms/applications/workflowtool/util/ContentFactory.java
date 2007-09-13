@@ -194,6 +194,7 @@ public class ContentFactory
 	    catch(Exception e) 
 	    {
 			logger.warn(e);
+			e.printStackTrace();
 	    }
 		return null;
 	}
