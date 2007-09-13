@@ -107,11 +107,13 @@ public class ContentFactory
 		this.principal               = principal;
 		this.language                = language;
 		
+		System.out.println("*********ContentFactory**********");
 		System.out.println("contentTypeDefinitionVO:" + contentTypeDefinitionVO);
 		System.out.println("contentValues:" + contentValues);
 		System.out.println("contentVersionValues:" + contentVersionValues);
 		System.out.println("principal:" + principal);
 		System.out.println("language:" + language);
+		System.out.println("*********END ContentFactory**********");
 	}
 
 	/**
@@ -124,20 +126,24 @@ public class ContentFactory
 	 */
 	public ContentVO create(final ContentVO parentContent, final Map categories, final Database db) throws ConstraintException 
 	{
+		System.out.println("*********ContentFactory.create**********");
 		System.out.println("contentTypeDefinitionVO:" + contentTypeDefinitionVO);
 		System.out.println("contentValues:" + contentValues);
 		System.out.println("contentVersionValues:" + contentVersionValues);
 		System.out.println("principal:" + principal);
 		System.out.println("language:" + language);
-
 		System.out.println("parentContent:" + parentContent);
 		System.out.println("categories:" + categories);
+		
 		try
 		{
 		this.db = db;
 		final ContentVO contentVO = createContentVO();
+		System.out.println("contentVO:" + contentVO);
 		final Document contentVersionDocument = buildContentVersionDocument();
+		System.out.println("contentVersionDocument:" + contentVersionDocument);
 		final ContentVersionVO contentVersionVO = createContentVersionVO(contentVersionDocument.asXML());
+		System.out.println("contentVersionVO:" + contentVersionVO);
 		
 		if(validate(contentVO, contentVersionVO).isEmpty())
 		{
@@ -148,6 +154,8 @@ public class ContentFactory
 		{
 			e.printStackTrace();
 		}
+		System.out.println("*********ContentFactory.create**********");
+		
 		return null;
 	}
 
@@ -207,6 +215,7 @@ public class ContentFactory
 	{
 	    try 
 	    {
+			System.out.println("************createContent**********");
 			System.out.println("parentContent:" + parentContent);
 			System.out.println("contentVO:" + contentVO);
 			System.out.println("contentVersionVO:" + contentVersionVO);
