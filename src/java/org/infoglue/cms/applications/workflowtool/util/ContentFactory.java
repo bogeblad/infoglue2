@@ -353,8 +353,12 @@ public class ContentFactory
 	private void populateContentVO(final ContentVO contentVO) 
 	{
 		contentVO.setName(contentValues.getName());
-		contentVO.setPublishDateTime(contentValues.getPublishDateTime());
-		contentVO.setExpireDateTime(contentValues.getExpireDateTime());
+		if(contentValues.getPublishDateTime() != null)
+			contentVO.setPublishDateTime(contentValues.getPublishDateTime());
+		
+		if(contentValues.getExpireDateTime() != null)
+			contentVO.setExpireDateTime(contentValues.getExpireDateTime());
+		
 		contentVO.setIsBranch(Boolean.FALSE);
 		contentVO.setCreatorName(principal.getName());
 	}
