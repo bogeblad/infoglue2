@@ -106,6 +106,12 @@ public class ContentFactory
 		this.contentVersionValues    = contentVersionValues;
 		this.principal               = principal;
 		this.language                = language;
+		
+		System.out.println("contentTypeDefinitionVO:" + contentTypeDefinitionVO);
+		System.out.println("contentValues:" + contentValues);
+		System.out.println("contentVersionValues:" + contentVersionValues);
+		System.out.println("principal:" + principal);
+		System.out.println("language:" + language);
 	}
 
 	/**
@@ -118,6 +124,16 @@ public class ContentFactory
 	 */
 	public ContentVO create(final ContentVO parentContent, final Map categories, final Database db) throws ConstraintException 
 	{
+		System.out.println("contentTypeDefinitionVO:" + contentTypeDefinitionVO);
+		System.out.println("contentValues:" + contentValues);
+		System.out.println("contentVersionValues:" + contentVersionValues);
+		System.out.println("principal:" + principal);
+		System.out.println("language:" + language);
+
+		System.out.println("parentContent:" + parentContent);
+		System.out.println("categories:" + categories);
+		try
+		{
 		this.db = db;
 		final ContentVO contentVO = createContentVO();
 		final Document contentVersionDocument = buildContentVersionDocument();
@@ -126,6 +142,11 @@ public class ContentFactory
 		if(validate(contentVO, contentVersionVO).isEmpty())
 		{
 			return createContent(parentContent, contentVO, contentVersionVO, categories);
+		}
+		}
+		catch (Exception e) 
+		{
+			e.printStackTrace();
 		}
 		return null;
 	}
@@ -186,6 +207,11 @@ public class ContentFactory
 	{
 	    try 
 	    {
+			System.out.println("parentContent:" + parentContent);
+			System.out.println("contentVO:" + contentVO);
+			System.out.println("contentVersionVO:" + contentVersionVO);
+			System.out.println("categories:" + categories);
+		
 			final Content content = ContentControllerProxy.getContentController().create(db, parentContent.getId(), contentTypeDefinitionVO.getId(), parentContent.getRepositoryId(), contentVO);
 			final ContentVersion newContentVersion = ContentVersionController.getContentVersionController().create(content.getId(), language.getId(), contentVersionVO, null, db);
 			createCategories(newContentVersion, categories);
@@ -196,6 +222,7 @@ public class ContentFactory
 			logger.warn(e);
 			e.printStackTrace();
 	    }
+	    System.out.println("Returning null....");
 		return null;
 	}
 
