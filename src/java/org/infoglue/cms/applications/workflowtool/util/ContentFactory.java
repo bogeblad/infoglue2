@@ -107,13 +107,16 @@ public class ContentFactory
 		this.principal               = principal;
 		this.language                = language;
 		
-		System.out.println("*********ContentFactory**********");
-		System.out.println("contentTypeDefinitionVO:" + contentTypeDefinitionVO);
-		System.out.println("contentValues:" + contentValues);
-		System.out.println("contentVersionValues:" + contentVersionValues);
-		System.out.println("principal:" + principal);
-		System.out.println("language:" + language);
-		System.out.println("*********END ContentFactory**********");
+		if(logger.isDebugEnabled())
+		{
+			logger.info("*********ContentFactory**********");
+			logger.info("contentTypeDefinitionVO:" + contentTypeDefinitionVO);
+			logger.info("contentValues:" + contentValues);
+			logger.info("contentVersionValues:" + contentVersionValues);
+			logger.info("principal:" + principal);
+			logger.info("language:" + language);
+			logger.info("*********END ContentFactory**********");
+		}
 	}
 
 	/**
@@ -126,36 +129,28 @@ public class ContentFactory
 	 */
 	public ContentVO create(final ContentVO parentContent, final Map categories, final Database db) throws ConstraintException 
 	{
-		System.out.println("*********ContentFactory.create**********");
-		System.out.println("contentTypeDefinitionVO:" + contentTypeDefinitionVO);
-		System.out.println("contentValues:" + contentValues);
-		System.out.println("contentVersionValues:" + contentVersionValues);
-		System.out.println("principal:" + principal);
-		System.out.println("language:" + language);
-		System.out.println("parentContent:" + parentContent);
-		System.out.println("categories:" + categories);
-		
-		try
+		if(logger.isDebugEnabled())
 		{
+			logger.info("*********ContentFactory.create**********");
+			logger.info("contentTypeDefinitionVO:" + contentTypeDefinitionVO);
+			logger.info("contentValues:" + contentValues);
+			logger.info("contentVersionValues:" + contentVersionValues);
+			logger.info("principal:" + principal);
+			logger.info("language:" + language);
+			logger.info("parentContent:" + parentContent);
+			logger.info("categories:" + categories);
+		}
+		
 		this.db = db;
 		final ContentVO contentVO = createContentVO();
-		System.out.println("contentVO:" + contentVO);
 		final Document contentVersionDocument = buildContentVersionDocument();
-		System.out.println("contentVersionDocument:" + contentVersionDocument);
 		final ContentVersionVO contentVersionVO = createContentVersionVO(contentVersionDocument.asXML());
-		System.out.println("contentVersionVO:" + contentVersionVO);
 		
 		if(validate(contentVO, contentVersionVO).isEmpty())
 		{
 			return createContent(parentContent, contentVO, contentVersionVO, categories);
 		}
-		}
-		catch (Exception e) 
-		{
-			e.printStackTrace();
-		}
-		System.out.println("*********ContentFactory.create**********");
-		
+
 		return null;
 	}
 
@@ -215,24 +210,32 @@ public class ContentFactory
 	{
 	    try 
 	    {
-			System.out.println("************createContent**********");
-			System.out.println("parentContent:" + parentContent);
-			System.out.println("contentVO:" + contentVO);
-			System.out.println("contentVersionVO:" + contentVersionVO);
-			System.out.println("categories:" + categories);
-		
+	    	if(logger.isDebugEnabled())
+	    	{
+				logger.info("************createContent**********");
+				logger.info("parentContent:" + parentContent);
+				logger.info("contentVO:" + contentVO);
+				logger.info("contentVersionVO:" + contentVersionVO);
+				logger.info("categories:" + categories);
+	    	}
+	    	
 			final Content content = ContentControllerProxy.getContentController().create(db, parentContent.getId(), contentTypeDefinitionVO.getId(), parentContent.getRepositoryId(), contentVO);
 			final ContentVersion newContentVersion = ContentVersionController.getContentVersionController().create(content.getId(), language.getId(), contentVersionVO, null, db);
 			createCategories(newContentVersion, categories);
-			System.out.println("Returning:" + content + ":" + content.getValueObject());
+			
+			if(logger.isDebugEnabled())
+				logger.info("Returning:" + content + ":" + content.getValueObject());
+			
 			return content.getValueObject();
 	    } 
 	    catch(Exception e) 
 	    {
-			logger.warn(e);
-			e.printStackTrace();
-	    }
-	    System.out.println("Returning null....");
+			logger.error(e);
+		}
+	    
+		if(logger.isDebugEnabled())
+		    logger.info("Returning null....");
+		
 		return null;
 	}
 

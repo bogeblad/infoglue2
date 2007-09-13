@@ -508,21 +508,28 @@ public class ContentVersionController extends BaseController
 		ContentVersion contentVersion = null;
     	
 		Content content = ContentController.getContentController().getContentWithId(contentId, db);
-    	logger.info("contentId:" + contentId);
-    	logger.info("languageId:" + languageId);
-    	logger.info("content:" + content.getName());
-		Collection contentVersions = content.getContentVersions();
-		logger.info("contentVersions:" + contentVersions.size());
-        
+    	Collection contentVersions = content.getContentVersions();
+    	if(logger.isInfoEnabled())
+    	{
+	    	logger.info("contentId:" + contentId);
+	    	logger.info("languageId:" + languageId);
+	    	logger.info("content:" + content.getName());
+			logger.info("contentVersions:" + contentVersions.size());
+    	}
+    	
 		Iterator i = contentVersions.iterator();
         while(i.hasNext())
 		{
 			ContentVersion currentContentVersion = (ContentVersion)i.next();
-			logger.info("found one candidate:" + currentContentVersion.getValueObject());
+			if(logger.isInfoEnabled())
+				logger.info("found one candidate:" + currentContentVersion.getValueObject());
 			if(contentVersion == null || (currentContentVersion.getId().intValue() > contentVersion.getId().intValue()))
 			{
-				logger.info("currentContentVersion:" + currentContentVersion.getIsActive());
-				logger.info("currentContentVersion:" + currentContentVersion.getLanguage().getId());
+				if(logger.isInfoEnabled())
+				{
+					logger.info("currentContentVersion:" + currentContentVersion.getIsActive());
+					logger.info("currentContentVersion:" + currentContentVersion.getLanguage().getId());
+				}
 				if(currentContentVersion.getIsActive().booleanValue() &&  currentContentVersion.getLanguage().getId().intValue() == languageId.intValue())
 					contentVersion = currentContentVersion;
 			}
@@ -540,21 +547,29 @@ public class ContentVersionController extends BaseController
 		ContentVersion contentVersion = null;
     	
 		Content content = ContentController.getContentController().getReadOnlyContentWithId(contentId, db);
-    	logger.info("contentId:" + contentId);
-    	logger.info("languageId:" + languageId);
-    	logger.info("content:" + content.getName());
 		Collection contentVersions = content.getContentVersions();
-		logger.info("contentVersions:" + contentVersions.size());
+		if(logger.isInfoEnabled())
+		{
+			logger.info("contentId:" + contentId);
+	    	logger.info("languageId:" + languageId);
+	    	logger.info("content:" + content.getName());
+			logger.info("contentVersions:" + contentVersions.size());
+		}
         
 		Iterator i = contentVersions.iterator();
         while(i.hasNext())
 		{
 			ContentVersion currentContentVersion = (ContentVersion)i.next();
-			logger.info("found one candidate:" + currentContentVersion.getValueObject());
+			if(logger.isInfoEnabled())
+				logger.info("found one candidate:" + currentContentVersion.getValueObject());
+			
 			if(contentVersion == null || (currentContentVersion.getId().intValue() > contentVersion.getId().intValue()))
 			{
-				logger.info("currentContentVersion:" + currentContentVersion.getIsActive());
-				logger.info("currentContentVersion:" + currentContentVersion.getLanguage().getId());
+				if(logger.isInfoEnabled())
+				{
+					logger.info("currentContentVersion:" + currentContentVersion.getIsActive());
+					logger.info("currentContentVersion:" + currentContentVersion.getLanguage().getId());
+				}
 				if(currentContentVersion.getIsActive().booleanValue() &&  currentContentVersion.getLanguage().getId().intValue() == languageId.intValue())
 					contentVersion = currentContentVersion;
 			}
@@ -583,7 +598,8 @@ public class ContentVersionController extends BaseController
 			if (results.hasMore()) 
             {
             	ContentVersion contentVersion = (ContentVersion)results.next();
-            	logger.info("found one:" + contentVersion.getValueObject());
+            	if(logger.isInfoEnabled())
+            		logger.info("found one:" + contentVersion.getValueObject());
             	contentVersionVO = contentVersion.getValueObject();
             }
             
