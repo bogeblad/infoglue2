@@ -491,7 +491,7 @@ public class ContentVersionController extends BaseController
     {
     	ContentVersionVO contentVersionVO = null;
 
-       	ContentVersion contentVersion = getLatestActiveContentVersion(contentId, languageId, db);
+       	ContentVersion contentVersion = getLatestActiveContentVersionReadOnly(contentId, languageId, db);
             
         if(contentVersion != null)
             contentVersionVO = contentVersion.getValueObject();
@@ -530,7 +530,39 @@ public class ContentVersionController extends BaseController
         
 		return contentVersion;
 	}
+
+   	/**
+	 * This method returns the latest active content version.
+	 */
     
+	public ContentVersion getLatestActiveContentVersionReadOnly(Integer contentId, Integer languageId, Database db) throws SystemException, Bug
+	{
+		ContentVersion contentVersion = null;
+    	
+		Content content = ContentController.getContentController().getReadOnlyContentWithId(contentId, db);
+    	logger.info("contentId:" + contentId);
+    	logger.info("languageId:" + languageId);
+    	logger.info("content:" + content.getName());
+		Collection contentVersions = content.getContentVersions();
+		logger.info("contentVersions:" + contentVersions.size());
+        
+		Iterator i = contentVersions.iterator();
+        while(i.hasNext())
+		{
+			ContentVersion currentContentVersion = (ContentVersion)i.next();
+			logger.info("found one candidate:" + currentContentVersion.getValueObject());
+			if(contentVersion == null || (currentContentVersion.getId().intValue() > contentVersion.getId().intValue()))
+			{
+				logger.info("currentContentVersion:" + currentContentVersion.getIsActive());
+				logger.info("currentContentVersion:" + currentContentVersion.getLanguage().getId());
+				if(currentContentVersion.getIsActive().booleanValue() &&  currentContentVersion.getLanguage().getId().intValue() == languageId.intValue())
+					contentVersion = currentContentVersion;
+			}
+		}
+        
+		return contentVersion;
+	}
+
 
 	public ContentVersionVO getLatestContentVersionVO(Integer contentId, Integer languageId) throws SystemException, Bug
     {
