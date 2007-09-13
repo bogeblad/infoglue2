@@ -215,6 +215,7 @@ public class ContentFactory
 			final Content content = ContentControllerProxy.getContentController().create(db, parentContent.getId(), contentTypeDefinitionVO.getId(), parentContent.getRepositoryId(), contentVO);
 			final ContentVersion newContentVersion = ContentVersionController.getContentVersionController().create(content.getId(), language.getId(), contentVersionVO, null, db);
 			createCategories(newContentVersion, categories);
+			System.out.println("Returning:" + content + ":" + content.getValueObject());
 			return content.getValueObject();
 	    } 
 	    catch(Exception e) 
