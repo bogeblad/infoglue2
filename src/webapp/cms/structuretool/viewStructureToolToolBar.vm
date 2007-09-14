@@ -11,8 +11,8 @@
 	<meta http-equiv="Pragma" content="no-cache" />
 	
 	<script type="text/javascript" src="script/listview.js"></script>
-	<script type="text/javascript" src="script/dw_scrollObj.js"></script>
-	<script type="text/javascript" src="script/dw_hoverscroll.js"></script>
+	<script type="text/javascript" src="script/ig_scroll.js"></script>
+	<script type="text/javascript" src="script/ig_hscroll.js"></script>
 	<script type="text/javascript">
 	<!-- 
 		function openMainArea(url)

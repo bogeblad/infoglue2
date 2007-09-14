@@ -1,14 +1,3 @@
-/*************************************************************************
-  This code is from Dynamic Web Coding at www.dyn-web.com
-  Copyright 2001-4 by Sharon Paine 
-  See Terms of Use at www.dyn-web.com/bus/terms.html
-  regarding conditions under which you may use this code.
-  This notice must be retained in the code as is!
-*************************************************************************/
-
-/* dw_hoverscroll.js  version date: June 2004 
-   mouseover scrolling for dw_scrollObj (in dw_scrollObj.js)  */
-
 dw_scrollObj.stopScroll = function(wnId) {
   if ( dw_scrollObjs[wnId] ) dw_scrollObjs[wnId].endScroll();
 }
