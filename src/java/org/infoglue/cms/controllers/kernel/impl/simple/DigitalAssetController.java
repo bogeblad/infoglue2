@@ -110,6 +110,15 @@ public class DigitalAssetController extends BaseController
      * returns a shallow digitalasset
      */
     
+    public static DigitalAssetVO getSmallDigitalAssetVOWithId(Integer digitalAssetId, Database db) throws SystemException, Bug
+    {
+    	return (DigitalAssetVO) getVOWithId(SmallDigitalAssetImpl.class, digitalAssetId, db);
+    }
+
+    /**
+     * returns a shallow digitalasset
+     */
+    
     public static DigitalAsset getSmallDigitalAssetWithId(Integer digitalAssetId, Database db) throws SystemException, Bug
     {
     	return (DigitalAsset) getObjectWithId(SmallDigitalAssetImpl.class, digitalAssetId, db);
