@@ -29,106 +29,73 @@ import javax.servlet.jsp.JspTagException;
 import org.infoglue.deliver.taglib.component.ComponentLogicTag;
 
 /**
- * This is an attempt to make an TagLib for attempts to get a AssetThumbnailUrl:s from a content referenced by a component
+ * This is an attempt to make an TagLib for attempts to get a AssetUrl:s from a content referenced by a component
  * in a JSP.
  * 
  * <%@ taglib uri="infoglue" prefix="infoglue" %>
  * 
- * <infoglue:component.AssetThumbnailUrl propertyName="Logotype" assetKey="logotype" width="100" height="100"/>
+ * <infoglue:component.assets propertyName="Global images"/>
  *
  * @author Mattias Bogeblad
  */
 
-public class AssetThumbnailUrlTag extends ComponentLogicTag
+public class AssetsTag extends ComponentLogicTag
 {
-	private static final long serialVersionUID = 3978145452350648625L;
+	private static final long serialVersionUID = 3546080250652931383L;
 
-	private Integer digitalAssetId;
 	private Integer contentId;
 	private String propertyName;
-    private String assetKey;
-    private int width;
-    private int height;
     private boolean useInheritance = true;
     private boolean useRepositoryInheritance = true;
-    
-    public AssetThumbnailUrlTag()
+
+    public AssetsTag()
     {
         super();
     }
     
     public int doEndTag() throws JspException
     {
-		try 
-		{
-			if(digitalAssetId != null)
-			{
-                produceResult(getController().getAssetThumbnailUrlForAssetWithId(digitalAssetId, width, height));
-			}
-			else if(contentId != null)
+        try
+        {
+			if(contentId != null)
             {
-	            if(assetKey != null)
-	                produceResult(getController().getAssetThumbnailUrl(contentId, assetKey, width, height));
-	            else
-	                produceResult(getController().getAssetThumbnailUrl(contentId, width, height));    
+	            produceResult(getController().getAssets(contentId));    
             }
             else if(propertyName != null)
             {
-				if(assetKey != null)
-					produceResult(getComponentLogic().getAssetThumbnailUrl(propertyName, assetKey, width, height, useInheritance, useRepositoryInheritance));
-				else
-					produceResult(getComponentLogic().getAssetThumbnailUrl(propertyName, width, height, useInheritance, useRepositoryInheritance));
+            	produceResult(getComponentLogic().getAssets(propertyName, useInheritance, useRepositoryInheritance));                    
             }
             else
             {
-                throw new JspException("You must supply either digitalAssetId, contentId or propertyName");
+                throw new JspException("You must supply either contentId or propertyName");
             }
-		} 
-		catch(Exception e)
-		{
-			e.printStackTrace();
-			throw new JspTagException("ComponentLogic.getAssetThumbnailUrl error: " + e.getMessage());
-		}
+        }
+        catch(Exception e)
+        {
+            throw new JspTagException("ComponentLogic.getAssetUrl Error: " + e.getMessage());
+        }
+        
         return EVAL_PAGE;
-    }
-
-    public void setAssetKey(String assetKey)
-    {
-        this.assetKey = assetKey;
-    }
-
-    public void setHeight(int height)
-    {
-        this.height = height;
-    }
-
-    public void setDigitalAssetId(String digitalAssetId) throws JspException
-    {
-        this.digitalAssetId = evaluateInteger("assetThumbnailUrl", "digitalAssetId", digitalAssetId);
     }
 
     public void setContentId(String contentId) throws JspException
     {
-        this.contentId = evaluateInteger("assetThumbnailUrl", "contentId", contentId);
+        this.contentId = evaluateInteger("assets", "contentId", contentId);
     }
 
     public void setPropertyName(String propertyName) throws JspException
     {
-        this.propertyName = evaluateString("assetThumbnailUrl", "propertyName", propertyName);
+        this.propertyName = evaluateString("assets", "propertyName", propertyName);
     }
     
     public void setUseInheritance(boolean useInheritance)
     {
         this.useInheritance = useInheritance;
     }
-
+    
     public void setUseRepositoryInheritance(boolean useRepositoryInheritance)
     {
         this.useRepositoryInheritance = useRepositoryInheritance;
     }
 
-    public void setWidth(int width)
-    {
-        this.width = width;
-    }
 }

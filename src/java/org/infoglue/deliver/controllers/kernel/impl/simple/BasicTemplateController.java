@@ -68,6 +68,7 @@ import org.infoglue.cms.controllers.kernel.impl.simple.CategoryConditions;
 import org.infoglue.cms.controllers.kernel.impl.simple.CategoryController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
+import org.infoglue.cms.controllers.kernel.impl.simple.DigitalAssetController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ExtendedSearchController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ExtendedSearchCriterias;
 import org.infoglue.cms.controllers.kernel.impl.simple.GroupControllerProxy;
@@ -82,6 +83,7 @@ import org.infoglue.cms.controllers.kernel.impl.simple.WorkflowController;
 import org.infoglue.cms.entities.content.Content;
 import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.content.ContentVersionVO;
+import org.infoglue.cms.entities.content.DigitalAssetVO;
 import org.infoglue.cms.entities.management.ContentTypeAttribute;
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
 import org.infoglue.cms.entities.management.LanguageVO;
@@ -1946,7 +1948,47 @@ public class BasicTemplateController implements TemplateController
 				
 		return assetKeys;
 	}
-	
+
+	/**
+	 * This method deliveres a list of strings which represents all assetKeys for a content.
+	 */
+	 
+	public Collection getAssetIds(Integer contentId) 
+	{
+		Collection assetKeys = new ArrayList();
+		
+		try
+		{
+			assetKeys = ContentDeliveryController.getContentDeliveryController().getAssetIds(getDatabase(), contentId, this.languageId, this.siteNodeId, USE_LANGUAGE_FALLBACK, this.deliveryContext, this.infoGluePrincipal);
+		}
+		catch(Exception e)
+		{
+			logger.error("An error occurred trying to get assetKeys on content with id: " + contentId + ":" + e.getMessage(), e);
+		}
+				
+		return assetKeys;
+	}
+
+	/**
+	 * This method deliveres a list of DigitalAssetVO-objects which represents all assets for a content.
+	 */
+	 
+	public Collection getAssets(Integer contentId) 
+	{
+		Collection assets = new ArrayList();
+		
+		try
+		{
+			assets = ContentDeliveryController.getContentDeliveryController().getAssets(getDatabase(), contentId, this.languageId, this.siteNodeId, USE_LANGUAGE_FALLBACK, this.deliveryContext, this.infoGluePrincipal);
+		}
+		catch(Exception e)
+		{
+			logger.error("An error occurred trying to get assetKeys on content with id: " + contentId + ":" + e.getMessage(), e);
+		}
+				
+		return assets;
+	}
+
 	/**
 	 * This method deliveres a list of strings which represents all assetKeys defined for a contentTypeDefinition.
 	 */
@@ -2020,6 +2062,27 @@ public class BasicTemplateController implements TemplateController
 		try
 		{
 			assetThumbnailUrl = ContentDeliveryController.getContentDeliveryController().getAssetThumbnailUrl(getDatabase(), contentId, this.languageId, assetKey, this.siteNodeId, USE_LANGUAGE_FALLBACK, width, height, this.deliveryContext, this.infoGluePrincipal);
+		}
+		catch(Exception e)
+		{
+			logger.error("An error occurred trying to get assetThumbnailUrl on contentId " + contentId + ":" + e.getMessage(), e);
+		}
+				
+		return assetThumbnailUrl;
+	}
+
+	/**
+	 * This method deliveres a String with the URL to the thumbnail for the digital asset asked for.
+	 * This method takes a key for the asset you want to make a thumbnail from.
+	 */
+	 
+	public String getAssetThumbnailUrlForAssetWithId(Integer digitalAssetId, int width, int height) 
+	{
+		String assetThumbnailUrl = "";
+		
+		try
+		{
+			assetThumbnailUrl = ContentDeliveryController.getContentDeliveryController().getAssetThumbnailUrl(getDatabase(), digitalAssetId, this.siteNodeId, width, height, this.deliveryContext, this.infoGluePrincipal);
 		}
 		catch(Exception e)
 		{
@@ -2154,6 +2217,25 @@ public class BasicTemplateController implements TemplateController
 		return assetUrl;
 	}
 
+	/**
+	 * This method deliveres a String with the URL to the digital asset asked for.
+	 */
+	 
+	public String getAssetUrlForAssetWithId(Integer digitalAssetId) 
+	{
+		String assetUrl = "";
+		
+		try
+		{
+			assetUrl = ContentDeliveryController.getContentDeliveryController().getAssetUrl(getDatabase(), digitalAssetId, this.siteNodeId, this.deliveryContext, this.infoGluePrincipal);
+		}
+		catch(Exception e)
+		{
+			logger.error("An error occurred trying to get assetUrl on content with digitalAssetId:" + digitalAssetId + " : " + e.getMessage(), e);
+		}
+				
+		return assetUrl;
+	}
 
 	/**
 	 * This method deliveres a String with the URL to the digital asset asked for.
@@ -2355,7 +2437,32 @@ public class BasicTemplateController implements TemplateController
 		}
 		return AssetFileSize;
 	}
-	
+
+	/**
+	 * Returns assetFileSize for a digital asset identified by id.
+	 * 
+	 * @param digitalAssetId
+	 * @return
+	 */
+
+	public Integer getAssetFileSizeForAssetWithId(Integer digitalAssetId) 
+	{
+		Integer assetFileSize = null;
+		try
+		{
+			DigitalAssetVO digitalAsset = DigitalAssetController.getDigitalAssetVOWithId(digitalAssetId);
+			if(digitalAsset != null)
+			{
+				assetFileSize = digitalAsset.getAssetFileSize();
+			}
+		}
+		catch(Exception e)
+		{
+			logger.error("An error occurred trying to get assetFileSize with digitalAssetId " + digitalAssetId + ":" + e.getMessage(), e);
+		}
+		return assetFileSize;
+	}
+
 	public Integer getAssetFileSize(String contentBindningName, String assetKey) 
 	{
 		Integer AssetFileSize = null;
@@ -2801,7 +2908,28 @@ public class BasicTemplateController implements TemplateController
 		return assetUrl;
 	}
 
-	
+
+	/**
+	 * This method deliveres a String with the URL to the base path of the directory resulting from 
+	 * an unpacking of a uploaded zip-digitalAsset identified by a digitalAssetId.
+	 */
+	 
+	public String getArchiveBaseUrlForAssetWithId(Integer digitalAssetId) 
+	{
+		String assetUrl = "";
+		
+		try
+		{
+			assetUrl = ContentDeliveryController.getContentDeliveryController().getArchiveBaseUrl(getDatabase(), digitalAssetId, this.siteNodeId, this.deliveryContext);
+		}
+		catch(Exception e)
+		{
+			logger.error("An error occurred trying to get assetUrl with digitalAssetId " + digitalAssetId + ":" + e.getMessage(), e);
+		}
+				
+		return assetUrl;
+	}
+
 	/**
 	 * This method deliveres a String with the URL to the base path of the directory resulting from 
 	 * an unpacking of a uploaded zip-digitalAsset.

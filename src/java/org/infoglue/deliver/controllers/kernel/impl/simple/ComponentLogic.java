@@ -25,6 +25,7 @@ package org.infoglue.deliver.controllers.kernel.impl.simple;
 
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -177,6 +178,18 @@ public class ComponentLogic
 		return Collections.EMPTY_LIST;
 	}
 	
+	public Collection getAssets(String propertyName, boolean useInheritance, boolean useRepositoryInheritance) throws Exception
+	{
+		Collection assets = new ArrayList();
+
+		Map property = getInheritedComponentProperty(this.infoGlueComponent, propertyName, useInheritance, useRepositoryInheritance);
+		Integer contentId = getContentId(property);
+		
+		assets = templateController.getAssets(contentId);
+
+		return assets;
+	}
+
 	public String getAssetUrl(String propertyName) throws Exception
 	{
 		String assetUrl = "";
@@ -188,19 +201,7 @@ public class ComponentLogic
 			assetUrl = templateController.getAssetUrl(contentId);
 		else if(contentId != null )
 			assetUrl = templateController.getAssetUrl(contentId, assetKey);
-		/*
-		if(property != null)
-		{	
-			List bindings = (List)property.get("bindings");
-			logger.info("bindings:" + bindings.size());
-			if(bindings.size() > 0)
-			{
-				Integer contentId = new Integer((String)bindings.get(0));
-				logger.info("contentId:" + contentId);
-				assetUrl = templateController.getAssetUrl(contentId);
-			}
-		}
-		*/
+
 		return assetUrl;
 	}
 
@@ -220,20 +221,7 @@ public class ComponentLogic
 			assetUrl = templateController.getAssetUrl(contentId);
 		else if(contentId != null)
 			assetUrl = templateController.getAssetUrl(contentId, assetKey);
-		
-		/*	
-		if(property != null)
-		{	
-			List bindings = (List)property.get("bindings");
-			logger.info("bindings:" + bindings.size());
-			if(bindings.size() > 0)
-			{
-				Integer contentId = new Integer((String)bindings.get(0));
-				logger.info("contentId:" + contentId);
-				assetUrl = templateController.getAssetUrl(contentId);
-			}
-		}
-		*/
+
 		return assetUrl;
 	}
 
@@ -246,17 +234,6 @@ public class ComponentLogic
 		if(contentId != null)
 			assetUrl = templateController.getAssetUrl(contentId, assetKey);
 		
-		/*
-		if(property != null)
-		{	
-			List bindings = (List)property.get("bindings");
-			if(bindings.size() > 0)
-			{
-				Integer contentId = new Integer((String)bindings.get(0));
-				assetUrl = templateController.getAssetUrl(contentId, assetKey);
-			}
-		}
-		*/
 		return assetUrl;
 	}
 
@@ -340,18 +317,6 @@ public class ComponentLogic
 			Integer contentId = getContentId(property);
 			if(contentId != null)
 				assetUrl = templateController.getAssetThumbnailUrl(contentId, assetKey, width, height);
-				
-			/*
-			if(property != null)
-			{	
-				List bindings = (List)property.get("bindings");
-				if(bindings.size() > 0)
-				{
-					Integer contentId = new Integer((String)bindings.get(0));
-					assetUrl = templateController.getAssetThumbnailUrl(contentId, assetKey, width, height);
-				}
-			}
-			*/
 		}
 		catch(Exception e)
 		{

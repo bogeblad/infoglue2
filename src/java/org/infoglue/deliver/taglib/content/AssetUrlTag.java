@@ -43,6 +43,7 @@ public class AssetUrlTag extends ComponentLogicTag
 {
 	private static final long serialVersionUID = 3546080250652931383L;
 
+	private Integer digitalAssetId;
 	private Integer contentId;
 	private String propertyName;
     private String assetKey;
@@ -58,7 +59,11 @@ public class AssetUrlTag extends ComponentLogicTag
     {
         try
         {
-            if(contentId != null)
+			if(digitalAssetId != null)
+			{
+                produceResult(getController().getAssetUrlForAssetWithId(digitalAssetId));
+			}
+			else if(contentId != null)
             {
 	            if(assetKey != null)
 	                produceResult(getController().getAssetUrl(contentId, assetKey));
@@ -83,6 +88,11 @@ public class AssetUrlTag extends ComponentLogicTag
         }
         
         return EVAL_PAGE;
+    }
+
+    public void setDigitalAssetId(String digitalAssetId) throws JspException
+    {
+        this.digitalAssetId = evaluateInteger("assetThumbnailUrl", "digitalAssetId", digitalAssetId);
     }
 
     public void setAssetKey(String assetKey)

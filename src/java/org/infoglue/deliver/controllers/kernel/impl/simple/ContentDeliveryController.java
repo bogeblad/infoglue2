@@ -780,6 +780,51 @@ public class ContentDeliveryController extends BaseDeliveryController
 		return assetKeys;
 	}
 
+	/**
+	 * This method returns all the assetsKeys available in a contentVersion.
+	 */
+
+	public Collection getAssetIds(Database db, Integer contentId, Integer languageId, Integer siteNodeId, boolean useLanguageFallback, DeliveryContext deliveryContext, InfoGluePrincipal infoGluePrincipal) throws SystemException, Exception
+	{
+		Collection assetIds = new ArrayList();
+		
+		ContentVersion contentVersion = getContentVersion(siteNodeId, contentId, languageId, db, useLanguageFallback, deliveryContext, infoGluePrincipal);
+		if (contentVersion != null) 
+        {
+        	Collection assets = contentVersion.getDigitalAssets();
+        	Iterator keysIterator = assets.iterator();
+        	while(keysIterator.hasNext())
+        	{
+        		DigitalAsset asset = (DigitalAsset)keysIterator.next();
+        		assetIds.add(asset.getId()); 		
+        	}
+        }
+		
+		return assetIds;
+	}
+
+	/**
+	 * This method returns all the assets available in a contentVersion.
+	 */
+
+	public Collection getAssets(Database db, Integer contentId, Integer languageId, Integer siteNodeId, boolean useLanguageFallback, DeliveryContext deliveryContext, InfoGluePrincipal infoGluePrincipal) throws SystemException, Exception
+	{
+		Collection digitalAssetVOLIst = new ArrayList();
+		
+		ContentVersion contentVersion = getContentVersion(siteNodeId, contentId, languageId, db, useLanguageFallback, deliveryContext, infoGluePrincipal);
+		if (contentVersion != null) 
+        {
+        	Collection assets = contentVersion.getDigitalAssets();
+        	Iterator keysIterator = assets.iterator();
+        	while(keysIterator.hasNext())
+        	{
+        		DigitalAsset asset = (DigitalAsset)keysIterator.next();
+        		digitalAssetVOLIst.add(asset.getVO()); 		
+        	}
+        }
+		
+		return digitalAssetVOLIst;
+	}
 
 	/**
 	 * This method is used by the getAssetUrl methods, to locate a digital asset in another
@@ -1044,6 +1089,64 @@ public class ContentDeliveryController extends BaseDeliveryController
 		return assetUrl;
 	}
 
+	/**
+	 * This is the basic way of getting an asset-url for a content. 
+	 * It selects the correct contentVersion depending on the language and then gets the digitalAsset associated.
+	 * If the asset is cached on disk it returns that path imediately it's ok - otherwise it dumps it fresh.
+	 */
+
+	public String getAssetUrl(Database db, Integer digitalAssetId, Integer siteNodeId, DeliveryContext deliveryContext, InfoGluePrincipal infoGluePrincipal) throws SystemException, Exception
+	{
+	    String assetCacheKey = "" + digitalAssetId + "_" + siteNodeId ;
+		logger.info("assetCacheKey:" + assetCacheKey);
+		String cacheName = "assetUrlCache";
+		String cachedAssetUrl = (String)CacheController.getCachedObject(cacheName, assetCacheKey);
+		if(cachedAssetUrl != null)
+		{
+			logger.info("There was an cached cachedAssetUrl:" + cachedAssetUrl);
+			return cachedAssetUrl;
+		}
+		
+		String assetUrl = "";
+		
+    	DigitalAssetVO digitalAsset = DigitalAssetController.getSmallDigitalAssetVOWithId(digitalAssetId, db);
+		if(digitalAsset != null)
+		{
+			String fileName = digitalAsset.getDigitalAssetId() + "_" + digitalAsset.getAssetFileName();
+
+			int i = 0;
+			File masterFile = null;
+			String filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i);
+			while(filePath != null)
+			{
+				try
+				{
+				    if(masterFile == null)
+				        masterFile = DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpDigitalAsset(digitalAsset, fileName, filePath, db);
+				    else
+				        DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpDigitalAsset(masterFile, fileName, filePath);
+				}
+				catch(Exception e)
+				{
+					logger.warn("An file could not be written:" + e.getMessage(), e);
+				}
+				
+			    i++;
+				filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i);
+			}
+
+			SiteNode siteNode = NodeDeliveryController.getNodeDeliveryController(null, null, null).getSiteNode(db, siteNodeId);
+			String dnsName = CmsPropertyHandler.getWebServerAddress();
+			if(siteNode != null && siteNode.getRepository().getDnsName() != null && !siteNode.getRepository().getDnsName().equals(""))
+				dnsName = siteNode.getRepository().getDnsName();
+
+			assetUrl = urlComposer.composeDigitalAssetUrl(dnsName, fileName, deliveryContext); 
+		}
+            		
+        CacheController.cacheObject(cacheName, assetCacheKey, assetUrl);
+        
+		return assetUrl;
+	}
 
 
 	/**
@@ -1278,6 +1381,73 @@ public class ContentDeliveryController extends BaseDeliveryController
 	}
 
 
+	/**
+	 * This is the basic way of getting an asset-url for a content. 
+	 * It selects the correct contentVersion depending on the language and then gets the digitalAsset associated.
+	 * If the asset is cached on disk it returns that path imediately it's ok - otherwise it dumps it fresh.
+	 */
+
+	public String getAssetThumbnailUrl(Database db, Integer digitalAssetId, Integer siteNodeId, int width, int height, DeliveryContext deliveryContext, InfoGluePrincipal infoGluePrincipal) throws SystemException, Exception
+	{
+	    String assetCacheKey = "" + digitalAssetId + "_" + siteNodeId + "_" + width + "_" + height;
+		logger.info("assetCacheKey:" + assetCacheKey);
+		String cacheName = "assetThumbnailUrlCache";
+		String cachedAssetUrl = (String)CacheController.getCachedObject(cacheName, assetCacheKey);
+		if(cachedAssetUrl != null)
+		{
+			logger.info("There was an cached cachedAssetUrl:" + cachedAssetUrl);
+			return cachedAssetUrl;
+		}
+		
+		String assetUrl = "";
+		
+    	DigitalAssetVO digitalAsset = DigitalAssetController.getSmallDigitalAssetVOWithId(digitalAssetId, db);
+		
+		if(digitalAsset != null)
+		{
+			String fileName = digitalAsset.getDigitalAssetId() + "_" + digitalAsset.getAssetFileName();
+			String thumbnailFileName = "thumbnail_" + width + "_" + height + "_" + fileName;
+
+			int i = 0;
+			File masterFile = null;
+			File masterThumbFile = null;
+			String filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i);
+			while(filePath != null)
+			{
+				try
+				{
+				    if(masterFile == null)
+				        masterFile = DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpDigitalAsset(digitalAsset, fileName, filePath, db);
+					else
+					    DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpDigitalAsset(masterFile, fileName, filePath);
+				    
+				    if(masterThumbFile == null)
+				        masterThumbFile = DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpDigitalAssetThumbnail(fileName, thumbnailFileName, filePath, width, height);
+				    else
+				        DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpDigitalAssetThumbnail(fileName, thumbnailFileName, filePath, width, height);
+				}
+				catch(Exception e)
+				{
+					logger.warn("An file could not be written:" + e.getMessage(), e);
+				}
+				
+				i++;
+				filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i);
+			}
+			
+			SiteNode siteNode = NodeDeliveryController.getNodeDeliveryController(null, null, null).getSiteNode(db, siteNodeId);
+			String dnsName = CmsPropertyHandler.getWebServerAddress();
+			if(siteNode != null && siteNode.getRepository().getDnsName() != null && !siteNode.getRepository().getDnsName().equals(""))
+				dnsName = siteNode.getRepository().getDnsName();
+
+			assetUrl = urlComposer.composeDigitalAssetUrl(dnsName, thumbnailFileName, deliveryContext); 
+		}
+		
+		CacheController.cacheObject(cacheName, assetCacheKey, assetUrl);
+		
+		return assetUrl;
+	}
+
 
 	/**
 	 * This is the basic way of getting an asset-url for a content. 
@@ -1393,7 +1563,7 @@ public class ContentDeliveryController extends BaseDeliveryController
             
 		return fileSize;
 	}
-	
+
 
 	/**
 	 * This method deliveres a String with the URL to the base path of the directory resulting from 
@@ -1445,6 +1615,48 @@ public class ContentDeliveryController extends BaseDeliveryController
 				archiveBaseUrl = urlComposer.composeDigitalAssetUrl(dnsName, fileName.substring(0, fileName.lastIndexOf(".")), deliveryContext); 
 			}
         }				
+		
+		return archiveBaseUrl;
+	}
+
+	/**
+	 * This method deliveres a String with the URL to the base path of the directory resulting from 
+	 * an unpacking of a uploaded zip-digitalAsset.
+	 */
+
+	public String getArchiveBaseUrl(Database db, Integer digitalAssetId, Integer siteNodeId, DeliveryContext deliveryContext) throws SystemException, Exception
+	{
+		String archiveBaseUrl = null;
+		
+		DigitalAssetVO digitalAsset = DigitalAssetController.getLatestDigitalAssetVO(digitalAssetId, db);
+		if(digitalAsset != null)
+		{
+			String fileName = digitalAsset.getAssetFileName();
+			
+			int i = 0;
+			File masterFile = null;
+			String filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i);
+			while(filePath != null)
+			{
+				File unzipDirectory = new File(filePath + File.separator + fileName.substring(0, fileName.lastIndexOf(".")));
+				unzipDirectory.mkdirs();
+				
+				if(masterFile == null)
+				    masterFile = DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpAndUnzipDigitalAsset(digitalAsset, fileName, filePath, unzipDirectory, db);
+				else
+				    DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpAndUnzipDigitalAsset(masterFile, fileName, filePath, unzipDirectory);
+				    
+				i++;
+				filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i);
+			}
+
+			SiteNode siteNode = NodeDeliveryController.getNodeDeliveryController(null, null, null).getSiteNode(db, siteNodeId);
+			String dnsName = CmsPropertyHandler.getWebServerAddress();
+			if(siteNode != null && siteNode.getRepository().getDnsName() != null && !siteNode.getRepository().getDnsName().equals(""))
+				dnsName = siteNode.getRepository().getDnsName();
+				
+			archiveBaseUrl = urlComposer.composeDigitalAssetUrl(dnsName, fileName.substring(0, fileName.lastIndexOf(".")), deliveryContext); 
+		}
 		
 		return archiveBaseUrl;
 	}

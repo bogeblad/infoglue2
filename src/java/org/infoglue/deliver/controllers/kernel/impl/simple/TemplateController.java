@@ -474,10 +474,30 @@ public interface TemplateController
      */
     public abstract Collection getAssetKeys(String contentBindningName);
 
+	/**
+	 * This method deliveres a list of DigitalAssetVO-objects which represents all assets for a content.
+	 */
+	 
+	public Collection getAssets(Integer contentId);
+	
+	/**
+	 * This method deliveres a list of assetIds which represents all assets for a content.
+	 */
+	 
+	public Collection getAssetIds(Integer contentId);
+
+
     /**
      * This method deliveres a list of strings which represents all assetKeys for a content.
      */
     public abstract Collection getAssetKeys(Integer contentId);
+
+	/**
+	 * This method deliveres a String with the URL to the thumbnail for the digital asset asked for.
+	 * This method takes a key for the asset you want to make a thumbnail from.
+	 */
+	 
+	public String getAssetThumbnailUrlForAssetWithId(Integer digitalAssetId, int width, int height);
 
     /**
      * This method deliveres a String with the URL to the thumbnail for the digital asset asked for.
@@ -517,6 +537,12 @@ public interface TemplateController
     public abstract String getAssetUrl(String contentBindningName);
 
     public abstract String getEncodedUrl(String s, String enc);
+
+	/**
+	 * This method deliveres a String with the URL to the digital asset asked for.
+	 */
+	 
+	public String getAssetUrlForAssetWithId(Integer digitalAssetId);
 
     /**
      * This method deliveres a String with the URL to the digital asset asked for.
