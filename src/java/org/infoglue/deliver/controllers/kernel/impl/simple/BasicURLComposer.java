@@ -94,7 +94,10 @@ public class BasicURLComposer extends URLComposer
 	        
 	        sb.append(digitalAssetPath);
 	     
-	        sb.append("/").append(filename);
+	        if(!sb.toString().endsWith("/"))
+	        	sb.append("/");
+	        
+	        sb.append(filename);
 	        
 	        //logger.info("sb:" + sb);
 	        
@@ -229,7 +232,7 @@ public class BasicURLComposer extends URLComposer
         		    	context = dnsName + context;
         		    else
         		    	context = dnsName + "/" + context;
-                }
+        		}
     		}
     		else
     		{
@@ -259,12 +262,12 @@ public class BasicURLComposer extends URLComposer
 	        }
 
 	        sb.append(context);
-	        
+
 	        try 
 			{
 	            sb.append(NodeDeliveryController.getNodeDeliveryController(siteNodeId, languageId, contentId).getPageNavigationPath(db, infoGluePrincipal, siteNodeId, languageId, contentId, deliveryContext));
-	            
-	            if(sb.toString().endsWith(context))
+
+	            if(sb.toString().endsWith(context) && !sb.toString().endsWith("/"))
 	                sb.append("/");
 	            
 	            boolean addedContent = false;
