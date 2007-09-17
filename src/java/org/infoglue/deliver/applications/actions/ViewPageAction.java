@@ -242,7 +242,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 				protectDeliver = true;
 				
 			if(protectedSiteNodeVersionId != null || protectDeliver)
-				isUserRedirected = handleExtranetLogic(dbWrapper.getDatabase(), protectedSiteNodeVersionId, protectDeliver);
+				isUserRedirected = handleExtranetLogic(dbWrapper.getDatabase(), this.repositoryId, protectedSiteNodeVersionId, protectDeliver);
 			else
 			{
 				String forceIdentityCheck = RepositoryDeliveryController.getRepositoryDeliveryController().getExtraPropertyValue(this.repositoryId, "forceIdentityCheck");
@@ -335,6 +335,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			getResponse().setContentType("text/html; charset=UTF-8");
 			getRequest().setAttribute("responseCode", "500");
 			getRequest().setAttribute("error", e);
+			getRequest().setAttribute("errorUrl", getErrorUrl());
 			getRequest().getRequestDispatcher("/ErrorPage.action").forward(getRequest(), getResponse());
 		}
 		finally
@@ -466,7 +467,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 				protectDeliver = true;
 				
 			if(protectedSiteNodeVersionId != null || protectDeliver)
-				isUserRedirected = handleExtranetLogic(dbWrapper.getDatabase(), protectedSiteNodeVersionId, protectDeliver);
+				isUserRedirected = handleExtranetLogic(dbWrapper.getDatabase(), this.repositoryId, protectedSiteNodeVersionId, protectDeliver);
 			/*
 			else
 			{
@@ -833,7 +834,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 	 * validates the users credentials against the extranet database,
 	 */
 	
-	public boolean handleExtranetLogic(Database db, Integer protectedSiteNodeVersionId, boolean protectDeliver) throws SystemException, Exception
+	public boolean handleExtranetLogic(Database db, Integer repositoryId, Integer protectedSiteNodeVersionId, boolean protectDeliver) throws SystemException, Exception
 	{
 		boolean isRedirected = false;
 		
@@ -933,8 +934,8 @@ public class ViewPageAction extends InfoGlueAbstractAction
 							{	
 								this.getHttpSession().removeAttribute("infogluePrincipal");
 								logger.info("SiteNode is protected and anonymous user was not allowed - sending him to login page.");
-								String redirectUrl = getRedirectUrl(getRequest(), getResponse());
-								//String url = this.getURLBase() + "/ExtranetLogin!loginForm.action?returnAddress=" + URLEncoder.encode(this.getRequest().getRequestURL().toString() + "?" + this.getRequest().getQueryString() + "&referer=" + URLEncoder.encode(referer, "UTF-8") + "&date=" + System.currentTimeMillis(), "UTF-8");
+								String redirectUrl = getRedirectUrl(getRequest(), getResponse());								
+								//System.out.println("redirectUrl:" + redirectUrl);
 								getResponse().sendRedirect(redirectUrl);
 								isRedirected = true;
 							}
@@ -966,7 +967,6 @@ public class ViewPageAction extends InfoGlueAbstractAction
 							logger.info("SiteNode is protected and user was anonymous - sending him to login page.");
 							//String url = "ExtranetLogin!loginForm.action?returnAddress=" + URLEncoder.encode(this.getRequest().getRequestURL().toString() + "?" + this.getRequest().getQueryString() + "&referer=" + URLEncoder.encode(referer, "UTF-8") + "&date=" + System.currentTimeMillis(), "UTF-8");
 							String url = getRedirectUrl(getRequest(), getResponse());
-							
 							getResponse().sendRedirect(url);
 							isRedirected = true;
 						}
@@ -1012,9 +1012,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 					if(principal.getName().equals(CmsPropertyHandler.getAnonymousUser()))
 					{
 						logger.info("SiteNode is protected and user was anonymous - sending him to login page.");
-						//String url = "ExtranetLogin!loginForm.action?returnAddress=" + URLEncoder.encode(this.getRequest().getRequestURL().toString() + "?" + this.getRequest().getQueryString() + "&referer=" + URLEncoder.encode(referer, "UTF-8") + "&date=" + System.currentTimeMillis(), "UTF-8");
 						String url = getRedirectUrl(getRequest(), getResponse());
-						
 						getResponse().sendRedirect(url);
 						isRedirected = true;
 					}
@@ -1344,7 +1342,27 @@ public class ViewPageAction extends InfoGlueAbstractAction
   	{
 		String url = AuthenticationModule.getAuthenticationModule(null, this.getOriginalFullURL()).getLoginDialogUrl(request, response);
 		
+		String repositoryLoginUrl = RepositoryDeliveryController.getRepositoryDeliveryController().getExtraPropertyValue(repositoryId, "loginUrl");
+		if(repositoryLoginUrl != null && !repositoryLoginUrl.equals(""))
+		{
+			String returnAddress = this.getOriginalFullURL();
+			url = repositoryLoginUrl + "?returnAddress=" + URLEncoder.encode(returnAddress, "UTF-8");
+		}
+		
 		return url;
+  	}
+
+  	private String getErrorUrl() throws Exception 
+  	{
+  		String errorUrl = CmsPropertyHandler.getErrorUrl();
+  		
+		String repositoryErrorUrl = RepositoryDeliveryController.getRepositoryDeliveryController().getExtraPropertyValue(repositoryId, "errorUrl");
+		if(repositoryErrorUrl != null && !repositoryErrorUrl.equals(""))
+		{
+			errorUrl = repositoryErrorUrl;
+		}
+		
+		return errorUrl;
   	}
 
 	/**

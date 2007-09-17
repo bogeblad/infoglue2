@@ -36,6 +36,7 @@ import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
 import org.exolab.castor.jdo.OQLQuery;
 import org.exolab.castor.jdo.QueryResults;
+import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
 import org.infoglue.cms.entities.management.Repository;
 import org.infoglue.cms.entities.management.RepositoryVO;
 import org.infoglue.cms.exception.SystemException;
@@ -95,6 +96,39 @@ public class RepositoryDeliveryController extends BaseDeliveryController
 		
         return repositoryVO;	
 	}
+
+	public List getRepositoryVOListFromServerName(String serverName, String portNumber, String repositoryName) throws SystemException, Exception
+    {
+	    List repositories = new ArrayList();
+	    
+	    Database db = CastorDatabaseService.getDatabase();
+	    
+	    try
+	    {
+	    	db.begin();
+	    	
+	    	repositories = getRepositoryVOListFromServerName(db, serverName, portNumber, repositoryName);
+	    	
+	    	db.commit();
+	    }
+	    catch (Exception e) 
+	    {
+	    	try
+	    	{
+	    		db.rollback();
+	    	}
+	    	catch (Exception e2) 
+	    	{
+	    		e.printStackTrace();
+	    	}
+	    }
+	    finally
+	    {
+	    	db.close();
+	    }
+	    
+	    return repositories;
+    }
 	
 	public List getRepositoryVOListFromServerName(Database db, String serverName, String portNumber, String repositoryName) throws SystemException, Exception
     {

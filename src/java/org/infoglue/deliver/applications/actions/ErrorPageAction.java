@@ -24,11 +24,21 @@
 
 package org.infoglue.deliver.applications.actions;
 
+import java.util.List;
+
 import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
+import org.infoglue.cms.controllers.kernel.impl.simple.RedirectController;
+import org.infoglue.cms.entities.management.RepositoryVO;
+import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.util.CmsPropertyHandler;
+import org.infoglue.deliver.controllers.kernel.impl.simple.RepositoryDeliveryController;
+import org.infoglue.deliver.util.CacheController;
 
 
 /**
@@ -40,6 +50,46 @@ import org.infoglue.cms.util.CmsPropertyHandler;
 public class ErrorPageAction extends InfoGlueAbstractAction 
 {
     private int responseCode = HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
+    
+  	private String getErrorUrl(Integer repositoryId) throws Exception 
+  	{
+  		String errorUrl = CmsPropertyHandler.getErrorUrl();
+  		
+  		String isErrorPage = getRequest().getParameter("isErrorPage");
+  		
+  		if(isErrorPage == null || isErrorPage.equals(""))
+  		{
+			String repositoryErrorUrl = RepositoryDeliveryController.getRepositoryDeliveryController().getExtraPropertyValue(repositoryId, "errorUrl");
+			if(repositoryErrorUrl != null && !repositoryErrorUrl.equals(""))
+			{
+				errorUrl = repositoryErrorUrl;
+			}
+			errorUrl = errorUrl + (errorUrl.indexOf("?") > -1 ? "&" : "?") + "isErrorPage=true";
+  		}
+		
+		return errorUrl;
+  	}
+	
+    
+    private List getRepositoryId(HttpServletRequest request) throws ServletException, SystemException, Exception 
+    {
+        String serverName = request.getServerName();
+        String portNumber = new Integer(request.getServerPort()).toString();
+        String repositoryName = request.getParameter("repositoryName");
+        
+        String repCacheKey = "" + serverName + "_" + portNumber + "_" + repositoryName;
+        List repositoryVOList = (List)CacheController.getCachedObject("NavigationCache", repCacheKey);
+        if (repositoryVOList != null) 
+        {
+            return repositoryVOList;
+        }
+        
+        List repositories = RepositoryDeliveryController.getRepositoryDeliveryController().getRepositoryVOListFromServerName(serverName, portNumber, repositoryName);
+        
+        CacheController.cacheObject("NavigationCache", repCacheKey, repositories);
+
+        return repositories;
+    }
     
     /**
      * This is the excecute method - it will send the right error codes and also show the right error message.
@@ -56,7 +106,12 @@ public class ErrorPageAction extends InfoGlueAbstractAction
 	        String responseCodeParameter = (String)this.getRequest().getParameter("responseCode");
 	        if(responseCodeParameter != null)
 	            responseCode = Integer.parseInt(responseCodeParameter);
-	
+
+	        String requestURI = this.getRequest().getServerName() + this.getRequest().getRequestURI();
+	        
+	        String errorUrlAttribute = (String)this.getRequest().getAttribute("errorUrl");
+	        String errorUrlParameter = (String)this.getRequest().getParameter("errorUrl");
+	        
 	        Exception e = (Exception)this.getRequest().getAttribute("error");
 	        if(e != null)
 	        {
@@ -67,6 +122,22 @@ public class ErrorPageAction extends InfoGlueAbstractAction
 	        this.getResponse().setStatus(responseCode);
 	
 	        String errorUrl = CmsPropertyHandler.getErrorUrl();
+	        if(errorUrlAttribute != null && !errorUrlAttribute.equals(""))
+	        {
+	        	errorUrl = errorUrlAttribute;
+	        }
+	        else if(errorUrlParameter != null && !errorUrlParameter.equals(""))
+	        {
+	        	errorUrl = errorUrlParameter;
+	        }
+
+	        List repositoryVOList = getRepositoryId(this.getRequest());
+	        if(repositoryVOList != null && repositoryVOList.size() > 0)
+	        {
+	        	RepositoryVO repositoryVO = (RepositoryVO)repositoryVOList.get(0);
+	        	errorUrl = getErrorUrl(repositoryVO.getId());
+	        }
+
 	        if(errorUrl != null && errorUrl.indexOf("@errorUrl@") == -1)
 	        {
 	            if(errorUrl.indexOf("http") > -1)
@@ -105,7 +176,7 @@ public class ErrorPageAction extends InfoGlueAbstractAction
     
     public String doBusy() throws Exception
     {
-        String responseCodeAttribute = (String)this.getRequest().getAttribute("responseCode");
+    	String responseCodeAttribute = (String)this.getRequest().getAttribute("responseCode");
         if(responseCodeAttribute != null)
             responseCode = Integer.parseInt(responseCodeAttribute);
         
