@@ -1343,11 +1343,11 @@ public class ViewPageAction extends InfoGlueAbstractAction
 		String url = AuthenticationModule.getAuthenticationModule(null, this.getOriginalFullURL()).getLoginDialogUrl(request, response);
 		
 		String repositoryLoginUrl = RepositoryDeliveryController.getRepositoryDeliveryController().getExtraPropertyValue(repositoryId, "loginUrl");
-		System.out.println("repositoryLoginUrl:" + repositoryLoginUrl);
+		//System.out.println("repositoryLoginUrl:" + repositoryLoginUrl);
 		if(repositoryLoginUrl != null && !repositoryLoginUrl.equals(""))
 		{
 			String returnAddress = this.getOriginalFullURL();
-			url = repositoryLoginUrl + "?returnAddress=" + URLEncoder.encode(returnAddress, "UTF-8");
+			url = repositoryLoginUrl + (repositoryLoginUrl.indexOf("?") > -1 ? "&" : "?") + "returnAddress=" + URLEncoder.encode(returnAddress, "UTF-8");
 		}
 		
 		return url;
