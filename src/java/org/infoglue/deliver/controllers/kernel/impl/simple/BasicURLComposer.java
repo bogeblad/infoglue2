@@ -265,11 +265,15 @@ public class BasicURLComposer extends URLComposer
 
 	        try 
 			{
-	            sb.append(NodeDeliveryController.getNodeDeliveryController(siteNodeId, languageId, contentId).getPageNavigationPath(db, infoGluePrincipal, siteNodeId, languageId, contentId, deliveryContext));
+	        	String navigationPath = NodeDeliveryController.getNodeDeliveryController(siteNodeId, languageId, contentId).getPageNavigationPath(db, infoGluePrincipal, siteNodeId, languageId, contentId, deliveryContext);
+	            if(navigationPath != null && navigationPath.startsWith("/") && sb.toString().endsWith("/"))
+	            	sb.append(navigationPath.substring(1));
+	            else
+	            	sb.append(navigationPath);
 
 	            if(sb.toString().endsWith(context) && !sb.toString().endsWith("/"))
 	                sb.append("/");
-	            
+
 	            boolean addedContent = false;
 	            if (contentId != null && contentId.intValue() != -1)
 	            {
