@@ -1343,6 +1343,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 		String url = AuthenticationModule.getAuthenticationModule(null, this.getOriginalFullURL()).getLoginDialogUrl(request, response);
 		
 		String repositoryLoginUrl = RepositoryDeliveryController.getRepositoryDeliveryController().getExtraPropertyValue(repositoryId, "loginUrl");
+		System.out.println("repositoryLoginUrl:" + repositoryLoginUrl);
 		if(repositoryLoginUrl != null && !repositoryLoginUrl.equals(""))
 		{
 			String returnAddress = this.getOriginalFullURL();
