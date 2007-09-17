@@ -503,7 +503,22 @@ public class LanguageController extends BaseController
 
     public List getLanguageVOList(Database db) throws SystemException, Bug
     {
-        return getAllVOObjects(LanguageImpl.class, "languageId", db);
+		String key = "allLanguageVOList";
+		List languageVOList = (List)CacheController.getCachedObject("languageCache", key);
+		if(languageVOList != null)
+		{
+			if(logger.isInfoEnabled())
+				logger.info("There was an cached languageVOList:" + languageVOList.size());
+		}
+		else
+		{
+			languageVOList = getAllVOObjects(LanguageImpl.class, "languageId", db);
+			CacheController.cacheObject("languageCache", key, languageVOList);				
+		}
+		
+		return languageVOList;
+		
+        //return getAllVOObjects(LanguageImpl.class, "languageId", db);
     }
 
     public List getLanguageVOList() throws SystemException, Bug
