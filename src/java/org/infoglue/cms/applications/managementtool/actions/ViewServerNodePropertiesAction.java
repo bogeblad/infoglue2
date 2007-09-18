@@ -233,6 +233,9 @@ public class ViewServerNodePropertiesAction extends InfoGluePropertiesAbstractAc
 	    populate(ps, "content.tree.sort");
 	    populate(ps, "structure.tree.sort");
 	    populate(ps, "structure.tree.isHidden");
+	    populate(ps, "content.tree.hideForbidden");
+	    populate(ps, "structure.tree.hideForbidden");
+	    populate(ps, "enforceRigidContentAccess");
 	    populate(ps, "disableEmptyUrls");
 	    populate(ps, "cacheUpdateAction");
 	    populate(ps, "logPath");

@@ -436,6 +436,34 @@ public class ContentDeliveryController extends BaseDeliveryController
 	}
 	
 	/**
+	 * This method return true if the user logged in has access to the content sent in.
+	 */
+	
+	public boolean getHasUserContentAccess(Database db, InfoGluePrincipal infoGluePrincipal, Integer contentId)
+	{
+		boolean hasUserContentAccess = true;
+		
+		try 
+		{
+		    if(contentId != null)
+		    {
+				Integer protectedContentId = ContentDeliveryController.getContentDeliveryController().getProtectedContentId(db, contentId);
+				logger.info("IsProtected:" + protectedContentId);
+				if(protectedContentId != null && !AccessRightController.getController().getIsPrincipalAuthorized(infoGluePrincipal, "Content.Read", protectedContentId.toString()))
+				{
+				    hasUserContentAccess = false;
+				}
+		    }
+		} 
+		catch(Exception e)
+		{
+			logger.error("An error occurred trying to get determine if content:" + contentId + " has a localized version:" + e.getMessage(), e);
+		}
+		
+		return hasUserContentAccess;
+	}
+
+	/**
 	 * This is the most common way of getting attributes from a content. 
 	 * It selects the correct contentVersion depending on the language and then gets the attribute in the xml associated.
 	 */
@@ -443,7 +471,16 @@ public class ContentDeliveryController extends BaseDeliveryController
 	public String getContentAttribute(Database db, Integer contentId, Integer languageId, String attributeName, Integer siteNodeId, boolean useLanguageFallback, DeliveryContext deliveryContext, InfoGluePrincipal infogluePrincipal, boolean escapeHTML, boolean isMetaInfoQuery, Set usedContentVersionId) throws SystemException, Exception
 	{	
 		//System.out.println("usedContentVersionId:" + usedContentVersionId);
-
+		String enforceRigidContentAccess = CmsPropertyHandler.getEnforceRigidContentAccess();
+		if(enforceRigidContentAccess != null && enforceRigidContentAccess.equalsIgnoreCase("true"))
+		{
+			boolean hasUserContentAccess = getHasUserContentAccess(db, infogluePrincipal, contentId);
+			if(!hasUserContentAccess)
+			{
+				return "";
+			}
+		}
+		
 		StringBuilder attributeKey = new StringBuilder();
 		
 		if(!isMetaInfoQuery)

@@ -1,13 +1,17 @@
 package com.frovi.ss.Tree;
 
+import java.security.Principal;
 import java.util.Collection;
 
 import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.controllers.kernel.impl.simple.AccessRightController;
+import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
+import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeControllerProxy;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.treeservice.ss.ContentNodeSupplier;
+import org.infoglue.deliver.controllers.kernel.impl.simple.ContentDeliveryController;
 
 /**
  * BaseNodeSupplier.java
@@ -77,6 +81,85 @@ public abstract class BaseNodeSupplier implements INodeSupplier
 	}
 
 	
+	/**
+	 * This method return true if the user logged in has access to the content sent in.
+	 */
+	
+	public boolean getHasUserContentAccess(InfoGluePrincipal infoGluePrincipal, Integer contentId)
+	{
+        boolean hasUserContentAccess = true;
+        
+        try
+        {
+	        Database db = CastorDatabaseService.getDatabase();
+			
+	        try
+	        {
+	            beginTransaction(db);
+	
+			    if(contentId != null)
+			    {
+					Integer protectedContentId = ContentDeliveryController.getContentDeliveryController().getProtectedContentId(db, contentId);
+					if(protectedContentId != null && !AccessRightController.getController().getIsPrincipalAuthorized(infoGluePrincipal, "Content.Read", protectedContentId.toString()))
+					{
+					    hasUserContentAccess = false;
+					}
+			    }
+	
+				commitTransaction(db);	
+			}
+			catch(Exception e)
+			{
+				logger.error("An error occurred so we should not complete the transaction:" + e, e);
+				rollbackTransaction(db);
+			}
+        }
+        catch(Exception e)
+		{
+			logger.error("An error occurred so we should not complete the transaction:" + e, e);
+		}
+        
+		return hasUserContentAccess;
+	}
+
+	/**
+	 * This method return true if the user logged in has access to the content sent in.
+	 */
+	
+	public boolean getHasUserPageAccess(InfoGluePrincipal infoGluePrincipal, Integer siteNodeId)
+	{
+        boolean hasUserPageAccess = true;
+        
+        try
+        {
+	        Database db = CastorDatabaseService.getDatabase();
+			
+	        try
+	        {
+	            beginTransaction(db);
+	
+	    		Integer protectedSiteNodeVersionId = SiteNodeControllerProxy.getController().getProtectedSiteNodeVersionId(siteNodeId);
+	    		if(protectedSiteNodeVersionId != null && !AccessRightController.getController().getIsPrincipalAuthorized(infoGluePrincipal, "SiteNodeVersion.Read", protectedSiteNodeVersionId.toString()))
+				{
+		    		hasUserPageAccess = false;
+				}
+	
+				commitTransaction(db);	
+			}
+			catch(Exception e)
+			{
+				logger.error("An error occurred so we should not complete the transaction:" + e, e);
+				rollbackTransaction(db);
+			}
+        }
+        catch(Exception e)
+		{
+			logger.error("An error occurred so we should not complete the transaction:" + e, e);
+		}
+        
+		return hasUserPageAccess;
+	}
+
     /**
      * Begins a transaction on the named database
      */

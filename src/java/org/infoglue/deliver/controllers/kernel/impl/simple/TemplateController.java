@@ -1370,6 +1370,12 @@ public interface TemplateController
      */
     public abstract boolean getHasUserPageWriteAccess(Integer siteNodeId);
 
+	/**
+	 * This method return true if the user logged in has access to the content sent in.
+	 */
+	
+	public boolean getHasUserContentAccess(Integer contentId);
+
     /**
      * This method returns a list of form elements/attributes based on the schema sent in. 
      * These consitutes the entire form and a template can then be used to render it in the appropriate technique.

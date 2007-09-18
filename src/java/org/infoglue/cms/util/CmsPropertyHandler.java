@@ -680,6 +680,21 @@ public class CmsPropertyHandler
 		return getServerNodeProperty("structure.tree.isHidden", true);
 	}
 
+	public static String getUseAccessRightsOnContentTree()
+	{
+		return getServerNodeProperty("content.tree.hideForbidden", true, "false");
+	}
+
+	public static String getUseAccessRightsOnStructureTree()
+	{
+		return getServerNodeProperty("structure.tree.hideForbidden", true, "false");
+	}
+
+	public static String getEnforceRigidContentAccess()
+	{
+		return getServerNodeProperty("enforceRigidContentAccess", true, "false");
+	}
+
 	public static String getDisableEmptyUrls()
 	{
 		return getServerNodeProperty("disableEmptyUrls", true, "yes");

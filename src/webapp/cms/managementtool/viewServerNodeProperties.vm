@@ -291,6 +291,9 @@
 	<tr>
 		<td>#yesNoDropDownWithInherit("ServerNode.property.forceIdentityCheck" "forceIdentityCheck" "$this.getPropertyValue('forceIdentityCheck')")</td>
 	</tr>
+	<tr>
+		<td>#yesNoDropDownWithInherit("ServerNode.property.enforceRigidContentAccess" "enforceRigidContentAccess" "$this.getPropertyValue('enforceRigidContentAccess')")</td>
+	</tr>
 	
 	<tr>
 		<td>#editPropertyField("ServerNode.property.maxRows" "maxRows" "$this.getPropertyValue('maxRows')" "51" "$!serverNodeId")</td>
@@ -347,6 +350,12 @@
 	</tr>
 	<tr>
 		<td>#editPropertyField("ServerNode.property.structure.tree.isHidden" "structure.tree.isHidden" "$this.getPropertyValue('structure.tree.isHidden')" "51" "$!serverNodeId")</td>
+	</tr>
+	<tr>
+		<td>#yesNoDropDownWithInherit("ServerNode.property.content.tree.hideForbidden" "content.tree.hideForbidden" "$this.getPropertyValue('content.tree.hideForbidden')")</td>
+	</tr>
+	<tr>
+		<td>#yesNoDropDownWithInherit("ServerNode.property.structure.tree.hideForbidden" "structure.tree.hideForbidden" "$this.getPropertyValue('structure.tree.hideForbidden')")</td>
 	</tr>
 	<tr>
 		<td>#yesNoDropDownWithInherit("ServerNode.property.disableEmptyUrls" "disableEmptyUrls" "$this.getPropertyValue('disableEmptyUrls')")</td>

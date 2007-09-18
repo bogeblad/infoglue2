@@ -71,10 +71,13 @@ public class SiteNodeNodeSupplier extends BaseNodeSupplier
 
 	private ViewSiteNodeTreeUCC ucc;
 	private ArrayList cacheLeafs;
+	private InfoGluePrincipal infogluePrincipal = null;
 
 	
 	public SiteNodeNodeSupplier(Integer repositoryId, InfoGluePrincipal infoGluePrincipal) throws SystemException
 	{
+	    this.infogluePrincipal = infoGluePrincipal;
+
 		SiteNodeVO vo =null;
 		ucc = ViewSiteNodeTreeUCCFactory.newViewSiteNodeTreeUCC();	
 		try
@@ -259,23 +262,32 @@ public class SiteNodeNodeSupplier extends BaseNodeSupplier
 			{
 				SiteNodeVO vo = (SiteNodeVO) i.next();
 				
-				BaseNode node =  new SiteNodeNodeImpl();
-				node.setId(vo.getId());
-				node.setTitle(vo.getName());
-				node.getParameters().put("isHidden", vo.getExtraProperties().get("isHidden"));
+				boolean hasUserPageAccess = true;
+				String useAccessRightsOnStructureTreeString = CmsPropertyHandler.getUseAccessRightsOnStructureTree();
+				//System.out.println("useAccessRightsOnStructureTreeString:" + useAccessRightsOnStructureTreeString);
+				if(useAccessRightsOnStructureTreeString != null && useAccessRightsOnStructureTreeString.equalsIgnoreCase("true"))
+					hasUserPageAccess = getHasUserPageAccess(this.infogluePrincipal, vo.getId());
+				//System.out.println("hasUserPageAccess:" + hasUserPageAccess + ":" + this.infogluePrincipal.getName());
 				
-				if (vo.getIsBranch().booleanValue())
+				if(hasUserPageAccess)
 				{
-					node.setContainer(true);
-					node.setChildren((vo.getChildCount().intValue() > 0)); // 
-					ret.add(node);
-				}
-				else
-				{
-					node.setContainer(false);
-					cacheLeafs.add(node);				
-				}
-				
+					BaseNode node =  new SiteNodeNodeImpl();
+					node.setId(vo.getId());
+					node.setTitle(vo.getName());
+					node.getParameters().put("isHidden", vo.getExtraProperties().get("isHidden"));
+					
+					if (vo.getIsBranch().booleanValue())
+					{
+						node.setContainer(true);
+						node.setChildren((vo.getChildCount().intValue() > 0)); // 
+						ret.add(node);
+					}
+					else
+					{
+						node.setContainer(false);
+						cacheLeafs.add(node);				
+					}
+				}				
 			}
 			
             commitTransaction(db);

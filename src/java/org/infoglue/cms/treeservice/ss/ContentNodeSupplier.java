@@ -30,6 +30,9 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.exolab.castor.jdo.Database;
+import org.infoglue.cms.controllers.kernel.impl.simple.AccessRightController;
+import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
@@ -40,6 +43,7 @@ import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.sorters.ReflectionComparator;
+import org.infoglue.deliver.controllers.kernel.impl.simple.ContentDeliveryController;
 import org.infoglue.deliver.util.Timer;
 
 import com.frovi.ss.Tree.BaseNode;
@@ -60,7 +64,7 @@ public class ContentNodeSupplier extends BaseNodeSupplier
 	private boolean showLeafs = true;
 	private String[] allowedContentTypeIds = null;
 	private InfoGluePrincipal infogluePrincipal = null;
-	
+		
 	public ContentNodeSupplier(Integer repositoryId, InfoGluePrincipal infogluePrincipal) throws SystemException
 	{
 		ContentVO vo =null;
@@ -183,7 +187,12 @@ public class ContentNodeSupplier extends BaseNodeSupplier
 		{
 			ContentVO vo = (ContentVO) i.next();
 			
-			if(!vo.getName().equals("Meta info folder") || this.infogluePrincipal.getIsAdministrator())
+			boolean hasUserContentAccess = true;
+			String useAccessRightsOnContentTreeString = CmsPropertyHandler.getUseAccessRightsOnContentTree();
+			if(useAccessRightsOnContentTreeString != null && useAccessRightsOnContentTreeString.equalsIgnoreCase("true"))
+				hasUserContentAccess = getHasUserContentAccess(this.infogluePrincipal, vo.getId());
+
+			if((!vo.getName().equals("Meta info folder") || this.infogluePrincipal.getIsAdministrator()) && hasUserContentAccess)
 			{
 				BaseNode node =  new ContentNodeImpl();
 				node.setId(vo.getId());
@@ -214,6 +223,7 @@ public class ContentNodeSupplier extends BaseNodeSupplier
 		
 		return ret;
 	}
+	
 
 	/**
 	 * @see com.frovi.ss.Tree.INodeSupplier#getChildLeafNodes(Integer)
