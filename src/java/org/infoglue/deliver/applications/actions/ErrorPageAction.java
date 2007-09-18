@@ -64,7 +64,9 @@ public class ErrorPageAction extends InfoGlueAbstractAction
 			{
 				errorUrl = repositoryErrorUrl;
 			}
-			errorUrl = errorUrl + (errorUrl.indexOf("?") > -1 ? "&" : "?") + "isErrorPage=true";
+			
+			if(errorUrl != null)
+				errorUrl = errorUrl + (errorUrl.indexOf("?") > -1 ? "&" : "?") + "isErrorPage=true";
   		}
 		
 		return errorUrl;
