@@ -327,7 +327,54 @@ public class LanguageDeliveryController extends BaseDeliveryController
 		
         return languageVO;	
 	}
+
+	/**
+	 * This method returns the master language. 
+	 * todo - add attribute on repositoryLanguage to be able to sort them... and then fetch the first
+	 */
 	
+	public LanguageVO getMasterLanguageForSiteNodeWithValityCheck(Database db, NodeDeliveryController ndc, Integer siteNodeId) throws SystemException, Exception
+	{ 
+	    String languageKey = "validLanguage_siteNodeId_" + siteNodeId;
+		logger.info("languageKey in getMasterLanguageForSiteNode:" + languageKey);
+		LanguageVO languageVO = (LanguageVO)CacheController.getCachedObject("masterLanguageCache", languageKey);
+		if(languageVO != null)
+		{
+		    logger.info("There was an cached master language:" + languageVO.getName());
+			//System.out.println("There was an cached master language:" + languageVO.getName());
+		}
+		else
+		{
+			SiteNode siteNode = (SiteNode)getObjectWithId(SiteNodeImpl.class, siteNodeId, db);
+			Integer repositoryId = siteNode.getRepository().getRepositoryId();
+         	
+			OQLQuery oql = db.getOQLQuery( "SELECT l FROM org.infoglue.cms.entities.management.impl.simple.LanguageImpl l WHERE l.repositoryLanguages.repository.repositoryId = $1 ORDER BY l.repositoryLanguages.sortOrder, l.languageId");
+			oql.bind(repositoryId);
+			
+        	QueryResults results = oql.execute(Database.ReadOnly);
+			
+			while (results.hasMore()) 
+            {
+				Language language = (Language)results.next();
+				LanguageVO languageVOCandidate = language.getValueObject();
+				//System.out.println("languageVOCandidate:" + languageVOCandidate.getDisplayLanguage());
+				if(getIsValidLanguage(db, ndc, siteNode, languageVOCandidate.getId()))
+				{
+					languageVO = languageVOCandidate;		
+					break;
+				}
+            }
+			
+			results.close();
+			oql.close();
+
+			if(languageVO != null)
+				CacheController.cacheObject("masterLanguageCache", languageKey, languageVO);
+		}
+		
+        return languageVO;	
+	}
+
 
 	/**
 	 * This method returns language with the languageCode sent in. 

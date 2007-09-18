@@ -2065,6 +2065,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 	
 	private String getComponentPropertyValue(Integer componentId, String name) throws Exception
 	{
+		//System.out.println("**************************************name:" + name);
 		String value = "Undefined";
 		
 		Timer timer = new Timer();
@@ -2080,24 +2081,30 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 			siteNodeId = this.getTemplateController().getDeliveryContext().getSiteNodeId();
 		}
 		
+		NodeDeliveryController nodeDeliveryController = NodeDeliveryController.getNodeDeliveryController(siteNodeId, languageId, null);
+
 		if(this.getRequest().getParameter("languageId") != null && this.getRequest().getParameter("languageId").length() > 0)
 		{
 			languageId = new Integer(this.getRequest().getParameter("languageId"));
+			//System.out.println("" + languageId + "=" + this.getTemplateController().getDeliveryContext().getLanguageId());
 			if(!languageId.equals(this.getTemplateController().getDeliveryContext().getLanguageId()))
 			{
-				languageId = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForSiteNode(getDatabase(), siteNodeId).getId();				
+				//System.out.println("Getting 2");
+				languageId = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForSiteNodeWithValityCheck(getDatabase(), nodeDeliveryController, siteNodeId).getId();				
 			}
 		}
 		else
-		    languageId = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForSiteNode(getDatabase(), siteNodeId).getId();
-		        
+		{
+			languageId = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForSiteNodeWithValityCheck(getDatabase(), nodeDeliveryController, siteNodeId).getId();
+		}
+		
+		//System.out.println("languageId:" + languageId);
+
 		Locale locale = LanguageDeliveryController.getLanguageDeliveryController().getLocaleWithId(getDatabase(), languageId);
 		
 		Integer contentId  = new Integer(-1);
 		if(this.getRequest().getParameter("contentId") != null && this.getRequest().getParameter("contentId").length() > 0)
 			contentId  = new Integer(this.getRequest().getParameter("contentId"));
-
-		NodeDeliveryController nodeDeliveryController = NodeDeliveryController.getNodeDeliveryController(siteNodeId, languageId, contentId);
 		
 		Document document = getPageComponentsDOM4JDocument(getDatabase(), this.getTemplateController(), siteNodeId, languageId, contentId);
 		
@@ -2112,6 +2119,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 			String id 			= property.attributeValue("type");
 			String path 		= property.attributeValue("path");
 			
+			//System.out.println("Locale:" + locale.getLanguage());
 			if(property.attribute("path_" + locale.getLanguage()) != null)
 				path = property.attributeValue("path_" + locale.getLanguage());
 
