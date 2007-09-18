@@ -559,7 +559,7 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 			String[] propertyValues = this.getRequest().getParameterValues(propertyName);
 			String propertyValue = "";
 			
-			if(propertyValues.length == 1)
+			if(propertyValues != null && propertyValues.length == 1)
 				propertyValue = propertyValues[0];
 			else
 			{
