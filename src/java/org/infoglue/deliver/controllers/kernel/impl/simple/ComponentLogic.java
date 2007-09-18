@@ -3049,7 +3049,7 @@ public class ComponentLogic
 
 	public WebPage getBoundPage(Map property)
 	{
-		WebPage webPage = new WebPage();
+		WebPage webPage = null;
 
 		if(property != null)
 		{	
@@ -3057,6 +3057,7 @@ public class ComponentLogic
 			Iterator<ComponentBinding> bindingsIterator = bindings.iterator();
 			if(bindingsIterator.hasNext())
 			{
+				webPage = new WebPage();
 				ComponentBinding componentBinding = bindingsIterator.next();
 				Integer siteNodeId = componentBinding.getEntityId();
 				SiteNodeVO siteNode = templateController.getSiteNode(siteNodeId);
