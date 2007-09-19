@@ -92,6 +92,17 @@ public class XSLTransformTag extends TemplateControllerTag
 	}
 	
 	/**
+	 * Initializes the parameters to make it accessible for the children tags (if any).
+	 * 
+	 * @return indication of whether to evaluate the body or not.
+	 * @throws JspException if an error occurred while processing this tag.
+	 */
+	public int doStartTag() throws JspException 
+	{
+		return EVAL_BODY_INCLUDE;
+	}
+
+	/**
 	 * Process the end tag. Modifies the string according to settings made.  
 	 * 
 	 * @return indication of whether to continue evaluating the JSP page.
@@ -151,7 +162,7 @@ public class XSLTransformTag extends TemplateControllerTag
             
 			if(logger.isDebugEnabled())	
 				logger.info("outputFormat:" + this.outputFormat);
-			
+
 			if(this.outputFormat.equalsIgnoreCase("string"))
             {
 	            java.io.ByteArrayOutputStream outputXmlResult = new java.io.ByteArrayOutputStream();
@@ -299,7 +310,7 @@ public class XSLTransformTag extends TemplateControllerTag
         this.outputFormat = evaluateString("XSLTransform", "outputFormat", outputFormat);
     }    
 
-    protected final void addParameter(final String name, final String value)
+    protected final void addParameter(final String name, final Object value)
 	{
 		parameters.put(name, value);
 	}
