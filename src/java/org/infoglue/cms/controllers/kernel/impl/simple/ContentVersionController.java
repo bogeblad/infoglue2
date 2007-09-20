@@ -64,6 +64,7 @@ import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
 import org.infoglue.cms.util.DateHelper;
+import org.infoglue.deliver.util.CacheController;
 import org.w3c.dom.CDATASection;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -503,10 +504,24 @@ public class ContentVersionController extends BaseController
 	 * This method returns the latest active content version.
 	 */
     
-	public ContentVersion getLatestActiveContentVersion(Integer contentId, Integer languageId, Database db) throws SystemException, Bug
+	public ContentVersion getLatestActiveContentVersion(Integer contentId, Integer languageId, Database db) throws SystemException, Bug, Exception
 	{
 		ContentVersion contentVersion = null;
     	
+	    OQLQuery oql = db.getOQLQuery( "SELECT cv FROM org.infoglue.cms.entities.content.impl.simple.ContentVersionImpl cv WHERE cv.owningContent.contentId = $1 AND cv.language.languageId = $2 AND cv.isActive = $3 ORDER BY cv.contentVersionId desc");
+		oql.bind(contentId);
+		oql.bind(languageId);
+		oql.bind(true);
+
+		QueryResults results = oql.execute(Database.ReadOnly);
+		
+		if (results.hasMore()) 
+	    {
+	    	contentVersion = (ContentVersion)results.next();
+	    	logger.info("found one:" + contentVersion.getId());
+	    }
+
+		/*
 		Content content = ContentController.getContentController().getContentWithId(contentId, db);
     	Collection contentVersions = content.getContentVersions();
     	if(logger.isInfoEnabled())
@@ -534,10 +549,12 @@ public class ContentVersionController extends BaseController
 					contentVersion = currentContentVersion;
 			}
 		}
-        
+        */
+		
 		return contentVersion;
 	}
 
+	
    	/**
 	 * This method returns the latest active content version.
 	 */
