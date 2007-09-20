@@ -61,7 +61,9 @@ import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.services.BaseService;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
+import org.infoglue.deliver.applications.databeans.DeliveryContext;
 import org.infoglue.deliver.util.CacheController;
+import org.infoglue.deliver.util.Timer;
 
 import com.opensymphony.module.propertyset.PropertySet;
 import com.opensymphony.module.propertyset.PropertySetManager;
@@ -1104,7 +1106,7 @@ public class ContentController extends BaseController
    	/**
    	 * This method returns a list of the children a content has.
    	 */
-   	
+   	/*
    	public List getContentChildrenVOList(Integer parentContentId) throws ConstraintException, SystemException
     {
    		String key = "" + parentContentId;
@@ -1116,6 +1118,8 @@ public class ContentController extends BaseController
 			return cachedChildContentVOList;
 		}
 		
+		Timer t = new Timer();
+   		
 		Database db = CastorDatabaseService.getDatabase();
         ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
 
@@ -1147,11 +1151,79 @@ public class ContentController extends BaseController
             throw new SystemException(e.getMessage());
         }
         
+        t.printElapsedTime("Original method took:");
+        
+        getContentChildrenVOListImproved(parentContentId);
+        
+        t.printElapsedTime("New method took:");
+        
+		CacheController.cacheObject("childContentCache", key, childrenVOList);
+        
+        return childrenVOList;
+    } 
+   	*/
+   	
+   	/**
+   	 * This method returns a list of the children a content has.
+   	 */
+   	
+   	public List getContentChildrenVOList(Integer parentContentId) throws ConstraintException, SystemException
+    {
+   		String key = "" + parentContentId;
+		logger.info("key:" + key);
+		List cachedChildContentVOList = (List)CacheController.getCachedObject("childContentCache", key);
+		if(cachedChildContentVOList != null)
+		{
+			logger.info("There was an cached childContentVOList:" + cachedChildContentVOList.size());
+			return cachedChildContentVOList;
+		}
+		
+		Database db = CastorDatabaseService.getDatabase();
+        ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
+
+        List childrenVOList = new ArrayList();
+
+        beginTransaction(db);
+
+        try
+        {
+    		OQLQuery oql = db.getOQLQuery( "SELECT content FROM org.infoglue.cms.entities.content.impl.simple.SmallishContentImpl content WHERE content.parentContentId = $1 ORDER BY content.contentId");
+    		oql.bind(parentContentId);
+        	
+    		QueryResults results = oql.execute(Database.ReadOnly);
+    		while (results.hasMore()) 
+    		{
+    			Content content = (Content)results.next();
+    			childrenVOList.add(content.getValueObject());
+    		}
+    		
+    		results.close();
+    		oql.close();
+        	
+            //If any of the validations or setMethods reported an error, we throw them up now before create.
+            ceb.throwIfNotEmpty();
+            
+            commitTransaction(db);
+        }
+        catch(ConstraintException ce)
+        {
+            logger.warn("An error occurred so we should not complete the transaction:" + ce, ce);
+            rollbackTransaction(db);
+            throw ce;
+        }
+        catch(Exception e)
+        {
+            logger.error("An error occurred so we should not complete the transaction:" + e, e);
+            rollbackTransaction(db);
+            throw new SystemException(e.getMessage());
+        }
+        
 		CacheController.cacheObject("childContentCache", key, childrenVOList);
         
         return childrenVOList;
     } 
    	
+	
 	/**
 	 * This method returns the contentTypeDefinitionVO which is associated with this content.
 	 */

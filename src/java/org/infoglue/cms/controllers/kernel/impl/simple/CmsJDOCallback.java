@@ -35,6 +35,7 @@ import org.infoglue.cms.entities.content.impl.simple.DigitalAssetImpl;
 import org.infoglue.cms.entities.content.impl.simple.MediumContentImpl;
 import org.infoglue.cms.entities.content.impl.simple.SmallContentImpl;
 import org.infoglue.cms.entities.content.impl.simple.SmallDigitalAssetImpl;
+import org.infoglue.cms.entities.content.impl.simple.SmallishContentImpl;
 import org.infoglue.cms.entities.kernel.IBaseEntity;
 import org.infoglue.cms.entities.management.impl.simple.AccessRightGroupImpl;
 import org.infoglue.cms.entities.management.impl.simple.AccessRightImpl;
@@ -141,6 +142,7 @@ public class CmsJDOCallback implements CallbackInterceptor
 				CacheController.clearCache("childContentCache");
 				CacheController.clearCache("componentContentsCache");
 				clearCache(SmallContentImpl.class);
+				clearCache(SmallishContentImpl.class);
 				clearCache(MediumContentImpl.class);
 			}
 			else if(object.getClass().getName().equals(ContentVersionImpl.class.getName()))
@@ -284,6 +286,7 @@ public class CmsJDOCallback implements CallbackInterceptor
 			{
 				CacheController.clearCache("childContentCache");
 				clearCache(SmallContentImpl.class);
+				clearCache(SmallishContentImpl.class);
 				clearCache(MediumContentImpl.class);
 			}
 			else if(object.getClass().getName().equals(ContentVersionImpl.class.getName()))
@@ -397,6 +400,7 @@ public class CmsJDOCallback implements CallbackInterceptor
 			{
 				CacheController.clearCache("childContentCache");
 				clearCache(SmallContentImpl.class);
+				clearCache(SmallishContentImpl.class);
 				clearCache(MediumContentImpl.class);
 
 				RegistryController.getController().clearRegistryForReferencedEntity(Content.class.getName(), getObjectIdentity(object).toString());

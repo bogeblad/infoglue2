@@ -55,6 +55,7 @@ import org.infoglue.cms.entities.content.impl.simple.DigitalAssetImpl;
 import org.infoglue.cms.entities.content.impl.simple.MediumContentImpl;
 import org.infoglue.cms.entities.content.impl.simple.SmallContentImpl;
 import org.infoglue.cms.entities.content.impl.simple.SmallDigitalAssetImpl;
+import org.infoglue.cms.entities.content.impl.simple.SmallishContentImpl;
 import org.infoglue.cms.entities.management.impl.simple.AccessRightImpl;
 import org.infoglue.cms.entities.management.impl.simple.AvailableServiceBindingImpl;
 import org.infoglue.cms.entities.management.impl.simple.CategoryImpl;
@@ -873,6 +874,7 @@ public class CacheController extends Thread
 		    //db.getCacheManager().expireCache();
 
 		    clearCache(db, SmallContentImpl.class);
+		    clearCache(db, SmallishContentImpl.class);
 			clearCache(db, MediumContentImpl.class);
 			clearCache(db, ContentImpl.class);
 			clearCache(db, ContentRelationImpl.class);
@@ -975,6 +977,7 @@ public class CacheController extends Thread
 		    //db.expireCache(types, ids);
 		    
 		    if(type.getName().equalsIgnoreCase(SmallContentImpl.class.getName()) || 
+		       type.getName().equalsIgnoreCase(SmallishContentImpl.class.getName()) ||
 		       type.getName().equalsIgnoreCase(MediumContentImpl.class.getName()) ||
 		       type.getName().equalsIgnoreCase(ContentImpl.class.getName()) ||
 		       type.getName().equalsIgnoreCase(SmallSiteNodeImpl.class.getName()) || 
@@ -1023,6 +1026,7 @@ public class CacheController extends Thread
 	    //db.expireCache(types, ids);
 	    
 	    if(type.getName().equalsIgnoreCase(SmallContentImpl.class.getName()) || 
+	 	   type.getName().equalsIgnoreCase(SmallishContentImpl.class.getName()) ||
 	       type.getName().equalsIgnoreCase(MediumContentImpl.class.getName()) ||
 	       type.getName().equalsIgnoreCase(ContentImpl.class.getName()) ||
 	       type.getName().equalsIgnoreCase(SmallSiteNodeImpl.class.getName()) || 
@@ -1062,6 +1066,7 @@ public class CacheController extends Thread
 		//db.expireCache(types, null);
 		
 	    if(c.getName().equalsIgnoreCase(SmallContentImpl.class.getName()) || 
+	 	       c.getName().equalsIgnoreCase(SmallishContentImpl.class.getName()) ||
 	       c.getName().equalsIgnoreCase(MediumContentImpl.class.getName()) ||
 	       c.getName().equalsIgnoreCase(ContentImpl.class.getName()) ||
 	       c.getName().equalsIgnoreCase(SmallSiteNodeImpl.class.getName()) || 

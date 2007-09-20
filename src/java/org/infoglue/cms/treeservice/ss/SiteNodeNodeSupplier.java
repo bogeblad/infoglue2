@@ -196,10 +196,10 @@ public class SiteNodeNodeSupplier extends BaseNodeSupplier
 				{
 					try
 					{
-						Content content = ContentController.getContentController().getContentWithId(siteNodeVO.getMetaInfoContentId(), db);
+						ContentVO contentVO = ContentController.getContentController().getContentVOWithId(siteNodeVO.getMetaInfoContentId(), db);
 			
-					    LanguageVO masterLanguage = LanguageController.getController().getMasterLanguage(content.getValueObject().getRepositoryId(), db);
-					    ContentVersion contentVersion = ContentVersionController.getContentVersionController().getLatestActiveContentVersion(content.getId(), masterLanguage.getId(), db);
+					    LanguageVO masterLanguage = LanguageController.getController().getMasterLanguage(contentVO.getRepositoryId(), db);
+					    ContentVersion contentVersion = ContentVersionController.getContentVersionController().getLatestActiveContentVersion(contentVO.getContentId(), masterLanguage.getId(), db);
 						
 						if(sortProperty != null)
 						{

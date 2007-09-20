@@ -28,7 +28,9 @@ import org.apache.log4j.Logger;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.applications.common.actions.SimpleXmlServiceAction;
 import org.infoglue.cms.entities.content.impl.simple.ContentImpl;
+import org.infoglue.cms.entities.content.impl.simple.MediumContentImpl;
 import org.infoglue.cms.entities.content.impl.simple.SmallContentImpl;
+import org.infoglue.cms.entities.content.impl.simple.SmallishContentImpl;
 import org.infoglue.cms.entities.management.impl.simple.ContentTypeDefinitionImpl;
 import org.infoglue.cms.entities.management.impl.simple.InterceptionPointImpl;
 import org.infoglue.cms.entities.management.impl.simple.InterceptorImpl;
@@ -113,6 +115,8 @@ public class UpdateCacheAction extends InfoGlueAbstractAction
 				if(Class.forName(className).getName().equals(ContentImpl.class.getName()))
 				{
 					CacheController.clearCache(SmallContentImpl.class, new Object[]{new Integer(objectId)});
+					CacheController.clearCache(SmallishContentImpl.class, new Object[]{new Integer(objectId)});
+					CacheController.clearCache(MediumContentImpl.class, new Object[]{new Integer(objectId)});
 				}
 				
 				if(Class.forName(className).getClass().getName().equals(RepositoryImpl.class.getName()))

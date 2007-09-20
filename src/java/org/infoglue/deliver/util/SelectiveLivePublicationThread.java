@@ -43,6 +43,7 @@ import org.infoglue.cms.entities.content.impl.simple.DigitalAssetImpl;
 import org.infoglue.cms.entities.content.impl.simple.MediumContentImpl;
 import org.infoglue.cms.entities.content.impl.simple.SmallContentImpl;
 import org.infoglue.cms.entities.content.impl.simple.SmallDigitalAssetImpl;
+import org.infoglue.cms.entities.content.impl.simple.SmallishContentImpl;
 import org.infoglue.cms.entities.management.impl.simple.AvailableServiceBindingImpl;
 import org.infoglue.cms.entities.management.impl.simple.GroupImpl;
 import org.infoglue.cms.entities.management.impl.simple.RoleImpl;
@@ -152,7 +153,12 @@ public class SelectiveLivePublicationThread extends PublicationThread
 							Class typesExtra = SmallContentImpl.class;
 							Object[] idsExtra = {new Integer(objectId)};
 							CacheController.clearCache(typesExtra, idsExtra);
-			
+
+						    logger.info("We clear all small contents as well " + objectId);
+							Class typesExtraSmallish = SmallishContentImpl.class;
+							Object[] idsExtraSmallish = {new Integer(objectId)};
+							CacheController.clearCache(typesExtraSmallish, idsExtraSmallish);
+
 							logger.info("We clear all medium contents as well " + objectId);
 							Class typesExtraMedium = MediumContentImpl.class;
 							Object[] idsExtraMedium = {new Integer(objectId)};
@@ -199,6 +205,11 @@ public class SelectiveLivePublicationThread extends PublicationThread
 									Object[] idsExtra = {contentId};
 									CacheController.clearCache(typesExtra, idsExtra);
 					
+								    logger.info("We clear all small contents as well " + objectId);
+									Class typesExtraSmallish = SmallishContentImpl.class;
+									Object[] idsExtraSmallish = {new Integer(objectId)};
+									CacheController.clearCache(typesExtraSmallish, idsExtraSmallish);
+
 									logger.info("We clear all medium contents as well " + contentId);
 									Class typesExtraMedium = MediumContentImpl.class;
 									Object[] idsExtraMedium = {contentId};
@@ -226,6 +237,10 @@ public class SelectiveLivePublicationThread extends PublicationThread
 									Class metaInfoContentExtraSmall = SmallContentImpl.class;
 									CacheController.clearCache(metaInfoContentExtraSmall, idsMetaInfoContentExtra);
 									
+									logger.info("We clear all smallish contents as well " + siteNodeVO.getMetaInfoContentId());
+									Class metaInfoContentExtraSmallish = SmallishContentImpl.class;
+									CacheController.clearCache(metaInfoContentExtraSmallish, idsMetaInfoContentExtra);
+
 									logger.info("We clear all medium contents as well " + siteNodeVO.getMetaInfoContentId());
 									Class metaInfoContentExtraMedium = MediumContentImpl.class;
 									CacheController.clearCache(metaInfoContentExtraMedium, idsMetaInfoContentExtra);

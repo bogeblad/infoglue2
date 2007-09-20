@@ -771,8 +771,7 @@
 <!--  Mapping for SmallContent  -->
   <class name="org.infoglue.cms.entities.content.impl.simple.SmallContentImpl" identity="contentId" key-generator="SEQUENCE">
     <description>SmallContent</description>
-	<!--<cache-type type="unlimited" capacity="5000"/>-->
-    <cache-type type="none"/>
+	<cache-type type="unlimited" capacity="10000"/>
     <map-to table="cmCont"/>
     <field name="contentId" type="java.lang.Integer">
       <sql name="ContId" type="integer" dirty="check" />
@@ -803,6 +802,46 @@
     </field>
     <field name="parentContentId" type="java.lang.Integer">
       <sql name="parentContId" type="integer"/>
+    </field>
+  </class>
+
+<!--  Mapping for SmallishContent  -->
+  <class name="org.infoglue.cms.entities.content.impl.simple.SmallishContentImpl" identity="contentId" key-generator="SEQUENCE">
+    <description>SmallishContent</description>
+	<cache-type type="unlimited" capacity="10000"/>
+    <map-to table="cmCont"/>
+    <field name="contentId" type="java.lang.Integer">
+      <sql name="ContId" type="integer" dirty="check" />
+    </field>
+    <field name="name" type="java.lang.String">
+      <sql name="name" type="varchar" dirty="check" />
+    </field>
+	<field name="publishDateTime" type="java.util.Date">
+	  <sql name="publishDateTime" type="timestamp" dirty="ignore" />
+	</field>
+	<field name="expireDateTime" type="java.util.Date">
+	  <sql name="expireDateTime" type="timestamp" dirty="ignore" />
+	</field>
+	<field name="isBranch" type="java.lang.Boolean">
+	  <sql name="isBranch" type="integer" dirty="check" />
+	</field>
+	<field name="isProtected" type="java.lang.Integer">
+	  <sql name="isProtected" type="integer" dirty="check" />
+	</field>
+    <field name="creator" type="java.lang.String">
+      <sql name="creator" type="varchar" dirty="check" />
+    </field>
+	<field name="contentTypeDefinitionId" type="java.lang.Integer">
+      <sql name="contentTypeDefId" type="integer"/>
+    </field>
+    <field name="repositoryId" type="java.lang.Integer">
+      <sql name="repositoryId" type="integer"/>
+    </field>
+    <field name="parentContentId" type="java.lang.Integer">
+      <sql name="parentContId" type="integer"/>
+    </field>
+    <field name="children" type="org.infoglue.cms.entities.content.impl.simple.ContentImpl" lazy="true" collection="collection">
+      <sql many-key="parentContId"/>
     </field>
   </class>
 
