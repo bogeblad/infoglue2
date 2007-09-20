@@ -110,6 +110,10 @@ public class ContentController extends BaseController
 		return (Content) getObjectWithIdAsReadOnly(ContentImpl.class, contentId, db);
     }
 
+    public Content getReadOnlyMediumContentWithId(Integer contentId, Database db) throws SystemException, Bug
+    {
+		return (Content) getObjectWithIdAsReadOnly(MediumContentImpl.class, contentId, db);
+    }
     
     
     public List getContentVOList() throws SystemException, Bug
@@ -1239,7 +1243,7 @@ public class ContentController extends BaseController
 
         try
         {
-	        Content content = getContentWithId(contentId, db);
+	        Content content = getReadOnlyMediumContentWithId(contentId, db);
         	if(content != null && content.getContentTypeDefinition() != null)
 	        	contentTypeDefinitionVO = content.getContentTypeDefinition().getValueObject();
     
