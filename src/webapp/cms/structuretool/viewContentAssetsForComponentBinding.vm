@@ -38,7 +38,7 @@
 		{
 			//alert("selectBox:" + selectBox);
 			var repositoryId = selectBox.value;
-			var url = "ViewContentVersion!viewAssetsForComponentBinding.action?repositoryId=" + repositoryId + "&siteNodeId=$siteNodeId&languageId=$languageId&contentId=-1&componentId=$componentId&propertyName=$propertyName&showSimple=$showSimple&assignedContentId=$assignedContentId&assignedAssetKey=$assignedAssetKey";
+			var url = "ViewContentVersion!viewAssetsForComponentBinding.action?repositoryId=" + repositoryId + "&siteNodeId=$siteNodeId&languageId=$languageId&contentId=-1&componentId=$componentId&propertyName=$propertyName&showSimple=$showSimple&assignedContentId=$!assignedContentId&assignedAssetKey=$!assignedAssetKey";
 			document.location.href = url;
 		}
 		
