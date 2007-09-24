@@ -91,7 +91,6 @@ public class UpdateAccessRightsAction extends InfoGlueAbstractAction
 	
 		this.url = getResponse().encodeRedirectURL(this.returnAddress);
 		
-		//System.out.println("url:" + url);
 		if(this.returnAddress.indexOf("http") == 0)
 		{
 			getResponse().sendRedirect(url);
@@ -132,11 +131,16 @@ public class UpdateAccessRightsAction extends InfoGlueAbstractAction
 		
 		String[] groupNames = this.getRequest().getParameterValues("groupName");
 		AccessRightController.getController().updateGroups(this.accessRightId, this.parameters, groupNames);
-		
+
 		this.url = getResponse().encodeRedirectURL(this.returnAddress);
-		//getResponse().sendRedirect(url);
 		
-		return "success";
+		if(this.returnAddress.indexOf("http") == 0)
+		{
+			getResponse().sendRedirect(url);
+			return Action.NONE;
+		}
+		else
+			return "success";
 	}
 
 	public String doAddUser() throws Exception
@@ -172,9 +176,14 @@ public class UpdateAccessRightsAction extends InfoGlueAbstractAction
 		AccessRightController.getController().addUser(interceptionPointCategory, this.parameters, userName, this.getRequest());
 		
 		this.url = getResponse().encodeRedirectURL(this.returnAddress);
-		//getResponse().sendRedirect(url);
 		
-		return "success";
+		if(this.returnAddress.indexOf("http") == 0)
+		{
+			getResponse().sendRedirect(url);
+			return Action.NONE;
+		}
+		else
+			return "success";
 	}
 
 	public String doDeleteUser() throws Exception
@@ -210,9 +219,14 @@ public class UpdateAccessRightsAction extends InfoGlueAbstractAction
 		AccessRightController.getController().deleteUser(interceptionPointCategory, this.parameters, userName, this.getRequest());
 		
 		this.url = getResponse().encodeRedirectURL(this.returnAddress);
-		//getResponse().sendRedirect(url);
 		
-		return "success";
+		if(this.returnAddress.indexOf("http") == 0)
+		{
+			getResponse().sendRedirect(url);
+			return Action.NONE;
+		}
+		else
+			return "success";
 	}
 
 	public String doSaveAndExit() throws Exception
