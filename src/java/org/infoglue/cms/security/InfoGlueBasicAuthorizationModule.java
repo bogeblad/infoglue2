@@ -139,7 +139,9 @@ public class InfoGlueBasicAuthorizationModule extends BaseController implements 
 						while(roleListIterator.hasNext())
 						{
 							Role role = (Role)roleListIterator.next();
-							InfoGlueRole infoGlueRole = new InfoGlueRole(role.getRoleName(), role.getDescription(), this);
+							if(logger.isInfoEnabled())
+								logger.info("Adding role:" + role.getRoleName());
+						    InfoGlueRole infoGlueRole = new InfoGlueRole(role.getRoleName(), role.getDescription(), this);
 							roles.add(infoGlueRole);
 						}
 		
@@ -147,7 +149,9 @@ public class InfoGlueBasicAuthorizationModule extends BaseController implements 
 						while(groupListIterator.hasNext())
 						{
 						    Group group = (Group)groupListIterator.next();
-							InfoGlueGroup infoGlueGroup = new InfoGlueGroup(group.getGroupName(), group.getDescription(), this);
+						    if(logger.isInfoEnabled())
+						    	logger.info("Adding group:" + group.getGroupName());
+						    InfoGlueGroup infoGlueGroup = new InfoGlueGroup(group.getGroupName(), group.getDescription(), this);
 							groups.add(infoGlueGroup);
 						}
 		
@@ -178,6 +182,8 @@ public class InfoGlueBasicAuthorizationModule extends BaseController implements 
 					while(roleListIterator.hasNext())
 					{
 						Role role = (Role)roleListIterator.next();
+						if(logger.isInfoEnabled())
+							logger.info("Adding role:" + role.getRoleName());
 						InfoGlueRole infoGlueRole = new InfoGlueRole(role.getRoleName(), role.getDescription(), this);
 						roles.add(infoGlueRole);
 					}
@@ -186,6 +192,8 @@ public class InfoGlueBasicAuthorizationModule extends BaseController implements 
 					while(groupListIterator.hasNext())
 					{
 					    Group group = (Group)groupListIterator.next();
+					    if(logger.isInfoEnabled())
+					    	logger.info("Adding group:" + group.getGroupName());
 						InfoGlueGroup infoGlueGroup = new InfoGlueGroup(group.getGroupName(), group.getDescription(), this);
 						groups.add(infoGlueGroup);
 					}
@@ -273,6 +281,9 @@ public class InfoGlueBasicAuthorizationModule extends BaseController implements 
 			while(roleVOListIterator.hasNext())
 			{
 				RoleVO roleVO = (RoleVO)roleVOListIterator.next();
+			    if(logger.isInfoEnabled())
+			    	logger.info("Adding role:" + roleVO.getRoleName());
+
 				InfoGlueRole infoGlueRole = new InfoGlueRole(roleVO.getRoleName(), roleVO.getDescription(), this);
 				roles.add(infoGlueRole);
 			}
@@ -282,7 +293,10 @@ public class InfoGlueBasicAuthorizationModule extends BaseController implements 
 			while(groupVOListIterator.hasNext())
 			{
 			    GroupVO groupVO = (GroupVO)groupVOListIterator.next();
-				InfoGlueGroup infoGlueGroup = new InfoGlueGroup(groupVO.getGroupName(), groupVO.getDescription(), this);
+			    if(logger.isInfoEnabled())
+			    	logger.info("Adding group:" + groupVO.getGroupName());
+			    
+			    InfoGlueGroup infoGlueGroup = new InfoGlueGroup(groupVO.getGroupName(), groupVO.getDescription(), this);
 				groups.add(infoGlueGroup);
 			}
 		}
@@ -293,6 +307,9 @@ public class InfoGlueBasicAuthorizationModule extends BaseController implements 
 			while(roleListIterator.hasNext())
 			{
 				Role role = (Role)roleListIterator.next();
+				if(logger.isInfoEnabled())
+			    	logger.info("Adding role:" + role.getRoleName());
+
 				InfoGlueRole infoGlueRole = new InfoGlueRole(role.getRoleName(), role.getDescription(), this);
 				roles.add(infoGlueRole);
 			}
@@ -302,7 +319,10 @@ public class InfoGlueBasicAuthorizationModule extends BaseController implements 
 			while(groupListIterator.hasNext())
 			{
 			    Group group = (Group)groupListIterator.next();
-				InfoGlueGroup infoGlueGroup = new InfoGlueGroup(group.getGroupName(), group.getDescription(), this);
+			    if(logger.isInfoEnabled())
+			    	logger.info("Adding group:" + group.getGroupName());
+			    
+			    InfoGlueGroup infoGlueGroup = new InfoGlueGroup(group.getGroupName(), group.getDescription(), this);
 				groups.add(infoGlueGroup);
 			}
 		}
