@@ -561,7 +561,7 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 			
 			if(propertyValues != null && propertyValues.length == 1)
 				propertyValue = propertyValues[0];
-			else
+			else if(propertyValues != null)
 			{
 				StringBuffer sb = new StringBuffer();
 				for(int i=0; i<propertyValues.length;i++)
