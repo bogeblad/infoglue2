@@ -1095,7 +1095,12 @@ public class AccessRightController extends BaseController
 	    //TODO
 		
 	    String key = "" + infoGluePrincipal.getName() + "_" + interceptionPointName + "_" + extraParameters;
-		logger.info("key:" + key);
+		if(logger.isInfoEnabled())
+		{
+			logger.info("key:" + key);
+			logger.info("infoGluePrincipal:" + infoGluePrincipal.getName());
+		}
+
 		Boolean cachedIsPrincipalAuthorized = (Boolean)CacheController.getCachedObject("authorizationCache", key);
 		if(cachedIsPrincipalAuthorized != null)
 		{
@@ -1143,14 +1148,20 @@ public class AccessRightController extends BaseController
 				outer:while(rolesIterator.hasNext())
 				{
 					InfoGlueRole role = (InfoGlueRole)rolesIterator.next();
-					logger.info("role:" + role.getName());
+					if(logger.isInfoEnabled())
+					    logger.info("role:" + role.getName());
 					
 					Iterator approvedRolesIterator = approvedRoles.iterator();
 					while(approvedRolesIterator.hasNext())
 					{
 					    AccessRightRole accessRightRole = (AccessRightRole)approvedRolesIterator.next();
+					    if(logger.isInfoEnabled())
+					    	logger.info("" + role.getName() + " = " + accessRightRole.getRoleName());
 					    if(accessRightRole.getRoleName().equals(role.getName()))
 					    {
+					        if(logger.isInfoEnabled())
+						    	logger.info("Principal " + infoGluePrincipal.getName() + " has role " + accessRightRole.getRoleName());
+						
 					        principalHasRole = true;
 					        break outer;
 					    }
@@ -1161,7 +1172,8 @@ public class AccessRightController extends BaseController
 				outer:while(approvedGroupsIterator.hasNext())
 				{
 				    AccessRightGroup accessRightGroup = (AccessRightGroup)approvedGroupsIterator.next();
-				    logger.info("accessRightGroup:" + accessRightGroup.getGroupName());
+				    if(logger.isInfoEnabled())
+					    logger.info("accessRightGroup:" + accessRightGroup.getGroupName());
 	
 				    limitOnGroups = true;
 	
@@ -1169,8 +1181,13 @@ public class AccessRightController extends BaseController
 					while(groupsIterator.hasNext())
 					{
 					    InfoGlueGroup group = (InfoGlueGroup)groupsIterator.next();
+					    if(logger.isInfoEnabled())
+					    	logger.info("" + group.getName() + " = " + accessRightGroup.getGroupName());
 					    if(accessRightGroup.getGroupName().equals(group.getName()))
 					    {
+					        if(logger.isInfoEnabled())
+						    	logger.info("Principal " + infoGluePrincipal.getName() + " has group " + accessRightGroup.getGroupName());
+						
 					        principalHasGroup = true;
 					        break outer;
 					    }
@@ -1179,6 +1196,13 @@ public class AccessRightController extends BaseController
 			}
 		}
 
+        if(logger.isInfoEnabled())
+        {
+	    	logger.info("principalHasRole: " + principalHasRole);
+	    	logger.info("principalHasGroup: " + principalHasGroup);
+	    	logger.info("limitOnGroups: " + limitOnGroups);
+        }
+        
 	    if((principalHasRole && principalHasGroup) || (principalHasRole && !limitOnGroups))
 		    isPrincipalAuthorized = true;
 		
