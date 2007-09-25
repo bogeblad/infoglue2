@@ -40,6 +40,7 @@ import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
+import org.infoglue.deliver.util.Timer;
 
 
 public class SiteNodeTypeDefinitionController extends BaseController
@@ -266,10 +267,14 @@ public class SiteNodeTypeDefinitionController extends BaseController
             }
             */
 
+        	Timer t = new Timer();
+        	
         	SiteNodeTypeDefinition siteNodeTypeDefinition = getSiteNodeTypeDefinitionWithIdAsReadOnly(siteNodeTypeDefinitionId, db);
             Collection availableServiceBindingList = siteNodeTypeDefinition.getAvailableServiceBindings();
         	availableServiceBindingVOList = toVOList(availableServiceBindingList);
-
+        	
+        	if(logger.isInfoEnabled())
+        		logger.info("getAvailableServiceBindingVOList took:" + t.getElapsedTime());
         	
             //If any of the validations or setMethods reported an error, we throw them up now before create.
             ceb.throwIfNotEmpty();
@@ -314,9 +319,14 @@ public class SiteNodeTypeDefinitionController extends BaseController
         }
         */
 
+    	Timer t = new Timer();
+
     	SiteNodeTypeDefinition siteNodeTypeDefinition = getSiteNodeTypeDefinitionWithIdAsReadOnly(siteNodeTypeDefinitionId, db);
         Collection availableServiceBindingList = siteNodeTypeDefinition.getAvailableServiceBindings();
     	availableServiceBindingVOList = toVOList(availableServiceBindingList);
+    	
+    	if(logger.isInfoEnabled())
+    		logger.info("getAvailableServiceBindingVOList took:" + t.getElapsedTime());
 
         return availableServiceBindingVOList;
 	}
