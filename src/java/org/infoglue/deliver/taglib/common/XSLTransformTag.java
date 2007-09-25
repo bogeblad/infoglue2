@@ -77,6 +77,7 @@ public class XSLTransformTag extends TemplateControllerTag
 	private String xmlFile;
 	private String xmlString;
 	private Object source;
+	private boolean cacheStyle = true;
 	private String styleFile;
 	private String styleString;
 	private String outputFormat = "string";
@@ -157,7 +158,7 @@ public class XSLTransformTag extends TemplateControllerTag
 		
 		try 
 		{
-            Templates pss = tryCache(this.styleFile, this.styleString);
+            Templates pss = tryCache(this.styleFile, this.styleString, cacheStyle);
             Transformer transformer = pss.newTransformer();
             
 			if(logger.isDebugEnabled())	
@@ -230,6 +231,7 @@ public class XSLTransformTag extends TemplateControllerTag
 		this.styleFile = null;
 		this.styleString = null;
 		this.outputFormat = null;
+		this.cacheStyle = true;
 		parameters.clear();
 		
         return EVAL_PAGE;
@@ -240,7 +242,7 @@ public class XSLTransformTag extends TemplateControllerTag
 	 * Maintain prepared stylesheets in memory for reuse
 	 */
 
-    private synchronized Templates tryCache(String url, String xslString) throws Exception 
+    private synchronized Templates tryCache(String url, String xslString, boolean cacheTemplate) throws Exception 
     {
     	Templates x = null;
     	
@@ -257,7 +259,8 @@ public class XSLTransformTag extends TemplateControllerTag
 	        {
 	            TransformerFactory factory = TransformerFactory.newInstance();
 	            x = factory.newTemplates(new StreamSource(new File(path)));
-	            CacheController.cacheObject("XSLTemplatesCache", path, x);
+	            if(cacheTemplate)
+	            	CacheController.cacheObject("XSLTemplatesCache", path, x);
 	        }
         }
         else if(xslString != null)
@@ -267,7 +270,8 @@ public class XSLTransformTag extends TemplateControllerTag
 	        {
 	            TransformerFactory factory = TransformerFactory.newInstance();
 	            x = factory.newTemplates(new StreamSource(new StringReader(xslString)));
-	            CacheController.cacheObject("XSLTemplatesCache", xslString.hashCode(), x);
+	            if(cacheTemplate)
+		            CacheController.cacheObject("XSLTemplatesCache", xslString.hashCode(), x);
 	        }
         }
         
@@ -303,6 +307,11 @@ public class XSLTransformTag extends TemplateControllerTag
     public void setStyleString(String styleString) throws JspException
     {
         this.styleString = evaluateString("XSLTransform", "styleString", styleString);
+    }    
+
+    public void setCacheStyle(boolean cacheStyle) throws JspException
+    {
+        this.cacheStyle = cacheStyle;
     }    
 
     public void setOutputFormat(String outputFormat) throws JspException
