@@ -1110,7 +1110,7 @@ public class ContentController extends BaseController
    	/**
    	 * This method returns a list of the children a content has.
    	 */
-   	/*
+   	
    	public List getContentChildrenVOList(Integer parentContentId) throws ConstraintException, SystemException
     {
    		String key = "" + parentContentId;
@@ -1122,8 +1122,6 @@ public class ContentController extends BaseController
 			return cachedChildContentVOList;
 		}
 		
-		Timer t = new Timer();
-   		
 		Database db = CastorDatabaseService.getDatabase();
         ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
 
@@ -1155,22 +1153,15 @@ public class ContentController extends BaseController
             throw new SystemException(e.getMessage());
         }
         
-        t.printElapsedTime("Original method took:");
-        
-        getContentChildrenVOListImproved(parentContentId);
-        
-        t.printElapsedTime("New method took:");
-        
 		CacheController.cacheObject("childContentCache", key, childrenVOList);
         
         return childrenVOList;
     } 
-   	*/
    	
    	/**
    	 * This method returns a list of the children a content has.
    	 */
-   	
+   	/*
    	public List getContentChildrenVOList(Integer parentContentId) throws ConstraintException, SystemException
     {
    		String key = "" + parentContentId;
@@ -1226,7 +1217,7 @@ public class ContentController extends BaseController
         
         return childrenVOList;
     } 
-   	
+   	*/
 	
 	/**
 	 * This method returns the contentTypeDefinitionVO which is associated with this content.
