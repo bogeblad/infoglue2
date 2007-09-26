@@ -508,6 +508,7 @@ public class ContentVersionController extends BaseController
 	{
 		ContentVersion contentVersion = null;
     	
+		/*
 	    OQLQuery oql = db.getOQLQuery( "SELECT cv FROM org.infoglue.cms.entities.content.impl.simple.ContentVersionImpl cv WHERE cv.owningContent.contentId = $1 AND cv.language.languageId = $2 AND cv.isActive = $3 ORDER BY cv.contentVersionId desc");
 		oql.bind(contentId);
 		oql.bind(languageId);
@@ -520,8 +521,8 @@ public class ContentVersionController extends BaseController
 	    	contentVersion = (ContentVersion)results.next();
 	    	logger.info("found one:" + contentVersion.getId());
 	    }
-
-		/*
+	    */
+		
 		Content content = ContentController.getContentController().getContentWithId(contentId, db);
     	Collection contentVersions = content.getContentVersions();
     	if(logger.isInfoEnabled())
@@ -549,8 +550,7 @@ public class ContentVersionController extends BaseController
 					contentVersion = currentContentVersion;
 			}
 		}
-        */
-		
+
 		return contentVersion;
 	}
 
