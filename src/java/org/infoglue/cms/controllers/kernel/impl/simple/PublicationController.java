@@ -326,7 +326,10 @@ public class PublicationController extends BaseController
 							Content content = contentVersion.getOwningContent();
 							Language language = contentVersion.getLanguage();
 							//event.setEntityId(ContentVersionController.getPreviousContentVersionVO(content.getId(), language.getId(), contentVersion.getId()).getId());
-							event.setEntityId(ContentVersionController.getContentVersionController().getPreviousActiveContentVersionVO(content.getId(), language.getId(), contentVersion.getId(), db).getId());
+							ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getPreviousActiveContentVersionVO(content.getId(), language.getId(), contentVersion.getId(), db);
+							if(contentVersionVO != null && event != null)
+								event.setEntityId(contentVersionVO.getId());
+							
 							ContentVersionController.getContentVersionController().delete(contentVersion, db);
 						}
 					}
@@ -343,7 +346,8 @@ public class PublicationController extends BaseController
 							SiteNode siteNode = siteNodeVersion.getOwningSiteNode();
 							//event.setEntityId(SiteNodeVersionController.getPreviousSiteNodeVersionVO(siteNode.getId(), siteNodeVersion.getId()).getId());
 							SiteNodeVersion previousSiteNodeVersion = SiteNodeVersionController.getController().getPreviousActiveSiteNodeVersion(siteNode.getId(), siteNodeVersion.getId(), db);
-							event.setEntityId(previousSiteNodeVersion.getId());
+							if(previousSiteNodeVersion != null && event != null)
+								event.setEntityId(previousSiteNodeVersion.getId());
 							SiteNodeVersionController.getController().delete(siteNodeVersion, db);
 							SiteNodeStateController.getController().changeStateOnMetaInfo(db, previousSiteNodeVersion, previousSiteNodeVersion.getStateId(), "Denied publication", true, infoGluePrincipal, new ArrayList());
 							//db.remove(siteNodeVersion);
