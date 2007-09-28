@@ -112,6 +112,9 @@ public class DeliveryContext implements UsageListener
 	//The variable sets if the full page should be rendered once more after all components have been rendered.
 	private boolean evaluateFullPage = true;
 
+	//The variable sets if the rendering should consider publish/expire dates when validating contents. Used in preview actions.
+	private boolean validateOnDates = false;
+
 	private Map pageAttributes = new HashMap();
 	
 	public static DeliveryContext getDeliveryContext()
@@ -390,6 +393,16 @@ public class DeliveryContext implements UsageListener
 	public void setEvaluateFullPage(boolean evaluateFullPage) 
 	{
 		this.evaluateFullPage = evaluateFullPage;
+	}
+
+	public boolean getValidateOnDates()
+	{
+		return validateOnDates;
+	}
+
+	public void setValidateOnDates(boolean validateOnDates)
+	{
+		this.validateOnDates = validateOnDates;
 	}
 
 	public Set getUsedPageMetaInfoContentVersionIdSet() 

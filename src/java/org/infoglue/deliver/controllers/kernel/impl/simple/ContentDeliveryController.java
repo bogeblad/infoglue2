@@ -55,6 +55,7 @@ import org.infoglue.cms.entities.content.impl.simple.ContentImpl;
 import org.infoglue.cms.entities.content.impl.simple.ContentVersionImpl;
 import org.infoglue.cms.entities.content.impl.simple.MediumContentImpl;
 import org.infoglue.cms.entities.content.impl.simple.SmallContentImpl;
+import org.infoglue.cms.entities.content.impl.simple.SmallishContentImpl;
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
 import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.entities.management.Repository;
@@ -2024,6 +2025,18 @@ public class ContentDeliveryController extends BaseDeliveryController
 	 * This method validates that right now is between publishdate and expiredate.
 	 */
 	
+	private boolean isValidOnDates(Date publishDate, Date expireDate, boolean validateOnDates)
+	{
+		if(!validateOnDates)
+			return true;
+		
+		return isValidOnDates(publishDate, expireDate);
+	}		
+
+	/**
+	 * This method validates that right now is between publishdate and expiredate.
+	 */
+	
 	private boolean isValidOnDates(Date publishDate, Date expireDate)
 	{
 		boolean isValid = true;
@@ -2072,28 +2085,39 @@ public class ContentDeliveryController extends BaseDeliveryController
 
 	public boolean isValidContent(InfoGluePrincipal infoGluePrincipal, Content content, Integer languageId, boolean useLanguageFallBack, boolean includeFolders, Database db, DeliveryContext deliveryContext) throws Exception
 	{
-	    boolean isValidContent = false;
+		boolean isValidContent = false;
 		if(infoGluePrincipal == null)
 		    throw new SystemException("There was no anonymous user found in the system. There must be - add the user anonymous/anonymous and try again.");
 		
 		if(content.getContentTypeDefinition() != null && content.getContentTypeDefinition().getName().equalsIgnoreCase("Meta info"))
 			return true;
 
-		logger.info("content:" + content.getName());
+		boolean validateOnDates = true;
+		String operatingMode = CmsPropertyHandler.getOperatingMode();
+		if(operatingMode.equals("0"))
+		{
+			validateOnDates = deliveryContext.getValidateOnDates();
+		}
+		
 		
 		Integer protectedContentId = getProtectedContentId(db, content);
-		logger.info("IsProtected:" + protectedContentId);
-	    
+		
+		if(logger.isInfoEnabled())
+		{
+			logger.info("content:" + content.getName());
+			logger.info("IsProtected:" + protectedContentId);
+		}
+		
 		if(protectedContentId != null && !AccessRightController.getController().getIsPrincipalAuthorized(db, infoGluePrincipal, "Content.Read", protectedContentId.toString()))
 		{
 		    return false;
 		}
 			    
-		if(includeFolders && content.getIsBranch().booleanValue() && isValidOnDates(content.getPublishDateTime(), content.getExpireDateTime()))
+		if(includeFolders && content.getIsBranch().booleanValue() && isValidOnDates(content.getPublishDateTime(), content.getExpireDateTime(), validateOnDates))
 		{
 			isValidContent = true; 
 		}
-		else if(isValidOnDates(content.getPublishDateTime(), content.getExpireDateTime()))
+		else if(isValidOnDates(content.getPublishDateTime(), content.getExpireDateTime(), validateOnDates))
 		{
 		    ContentVersion contentVersion = getContentVersion(content, languageId, getOperatingMode(), deliveryContext, db);
 
@@ -2103,6 +2127,8 @@ public class ContentDeliveryController extends BaseDeliveryController
 			{
 			    if(content instanceof MediumContentImpl)
 			        repositoryId = ((MediumContentImpl)content).getRepositoryId();
+			    if(content instanceof SmallishContentImpl)
+			        repositoryId = ((SmallishContentImpl)content).getRepositoryId();
 			    else if(content instanceof SmallContentImpl)
 			        repositoryId = ((SmallContentImpl)content).getRepositoryId();
 			}

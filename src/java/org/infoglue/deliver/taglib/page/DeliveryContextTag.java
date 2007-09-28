@@ -70,4 +70,9 @@ public class DeliveryContextTag extends TemplateControllerTag
 	{
 	    getController().getDeliveryContext().setEvaluateFullPage(evaluateFullPage);
 	}
+
+	public void setValidateOnDates(boolean validateOnDates) throws JspException
+	{
+	    getController().getDeliveryContext().setValidateOnDates(validateOnDates);
+	}
 }
