@@ -51,7 +51,8 @@ public class AssetThumbnailUrlTag extends ComponentLogicTag
     private int height;
     private boolean useInheritance = true;
     private boolean useRepositoryInheritance = true;
-    
+    private boolean useStructureInheritance = true;
+
     public AssetThumbnailUrlTag()
     {
         super();
@@ -75,9 +76,9 @@ public class AssetThumbnailUrlTag extends ComponentLogicTag
             else if(propertyName != null)
             {
 				if(assetKey != null)
-					produceResult(getComponentLogic().getAssetThumbnailUrl(propertyName, assetKey, width, height, useInheritance, useRepositoryInheritance));
+					produceResult(getComponentLogic().getAssetThumbnailUrl(propertyName, assetKey, width, height, useInheritance, useRepositoryInheritance, useStructureInheritance));
 				else
-					produceResult(getComponentLogic().getAssetThumbnailUrl(propertyName, width, height, useInheritance, useRepositoryInheritance));
+					produceResult(getComponentLogic().getAssetThumbnailUrl(propertyName, width, height, useInheritance, useRepositoryInheritance, useStructureInheritance));
             }
             else
             {
@@ -125,6 +126,11 @@ public class AssetThumbnailUrlTag extends ComponentLogicTag
     public void setUseRepositoryInheritance(boolean useRepositoryInheritance)
     {
         this.useRepositoryInheritance = useRepositoryInheritance;
+    }
+
+    public void setUseStructureInheritance(boolean useStructureInheritance)
+    {
+        this.useStructureInheritance = useStructureInheritance;
     }
 
     public void setWidth(int width)

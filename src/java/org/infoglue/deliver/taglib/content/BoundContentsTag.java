@@ -34,7 +34,8 @@ public class BoundContentsTag extends ComponentLogicTag
 	private String propertyName;
 	private boolean useInheritance = true;
 	private boolean useRepositoryInheritance = true;
-		
+    private boolean useStructureInheritance = true;
+
     public BoundContentsTag()
     {
         super();
@@ -42,7 +43,7 @@ public class BoundContentsTag extends ComponentLogicTag
 
 	public int doEndTag() throws JspException
     {
-		setResultAttribute(getComponentLogic().getBoundContents(propertyName, useInheritance, useRepositoryInheritance));
+		setResultAttribute(getComponentLogic().getBoundContents(propertyName, useInheritance, useRepositoryInheritance, useStructureInheritance));
         return EVAL_PAGE;
     }
 
@@ -59,6 +60,11 @@ public class BoundContentsTag extends ComponentLogicTag
     public void setUseRepositoryInheritance(boolean useRepositoryInheritance)
     {
         this.useRepositoryInheritance = useRepositoryInheritance;
+    }
+    
+    public void setUseStructureInheritance(boolean useStructureInheritance)
+    {
+        this.useStructureInheritance = useStructureInheritance;
     }
 
 }

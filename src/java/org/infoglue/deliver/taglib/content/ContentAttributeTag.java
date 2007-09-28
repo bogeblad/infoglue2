@@ -61,6 +61,7 @@ public class ContentAttributeTag extends ComponentLogicTag
     private boolean disableEditOnSight 	= false;
     private boolean useInheritance		= true;
 	private boolean useRepositoryInheritance = true;
+    private boolean useStructureInheritance = true;
     private boolean useAttributeLanguageFallback = false; 
     private boolean parse				= false;
     private boolean fullBaseUrl			= false;
@@ -111,11 +112,11 @@ public class ContentAttributeTag extends ComponentLogicTag
         {
 	        if(!parse)
             {
-                result = getComponentLogic().getContentAttribute(propertyName, languageId, attributeName, disableEditOnSight, useInheritance, useRepositoryInheritance);
+                result = getComponentLogic().getContentAttribute(propertyName, languageId, attributeName, disableEditOnSight, useInheritance, useRepositoryInheritance, useStructureInheritance);
             }
 	        else
             {
-	            result = getComponentLogic().getParsedContentAttribute(propertyName, languageId, attributeName, disableEditOnSight, useInheritance, useRepositoryInheritance);
+	            result = getComponentLogic().getParsedContentAttribute(propertyName, languageId, attributeName, disableEditOnSight, useInheritance, useRepositoryInheritance, useStructureInheritance);
             }
         }
         else
@@ -209,6 +210,11 @@ public class ContentAttributeTag extends ComponentLogicTag
     public void setUseRepositoryInheritance(boolean useRepositoryInheritance)
     {
         this.useRepositoryInheritance = useRepositoryInheritance;
+    }
+    
+    public void setUseStructureInheritance(boolean useStructureInheritance)
+    {
+        this.useStructureInheritance = useStructureInheritance;
     }
 
     public void setParse(boolean parse)

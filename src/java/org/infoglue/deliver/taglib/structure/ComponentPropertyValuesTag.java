@@ -36,7 +36,8 @@ public class ComponentPropertyValuesTag extends ComponentLogicTag
 	private boolean useLanguageFallback = true;
 	private boolean useInheritance = true;
 	private boolean useRepositoryInheritance = true;
-	
+    private boolean useStructureInheritance = true;
+
     public ComponentPropertyValuesTag()
     {
         super();
@@ -48,7 +49,7 @@ public class ComponentPropertyValuesTag extends ComponentLogicTag
 	    {
 	        if(siteNodeId == null)
 	        {
-		        String propertyValue = getComponentLogic().getPropertyValue(propertyName, useLanguageFallback, useInheritance, useRepositoryInheritance);
+		        String propertyValue = getComponentLogic().getPropertyValue(propertyName, useLanguageFallback, useInheritance, useRepositoryInheritance, useStructureInheritance);
 		        String[] values = new String[]{""};
 		        if(propertyValue != null && !propertyValue.equals(""))
 		        {	
@@ -94,6 +95,11 @@ public class ComponentPropertyValuesTag extends ComponentLogicTag
     public void setUseRepositoryInheritance(boolean useRepositoryInheritance)
     {
         this.useRepositoryInheritance = useRepositoryInheritance;
+    }
+
+    public void setUseStructureInheritance(boolean useStructureInheritance)
+    {
+        this.useStructureInheritance = useStructureInheritance;
     }
 
 }

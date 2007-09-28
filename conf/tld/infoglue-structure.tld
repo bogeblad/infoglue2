@@ -58,6 +58,11 @@
             <required>false</required>
             <rtexprvalue>false</rtexprvalue>
         </attribute>
+        <attribute>
+            <name>useStructureInheritance</name>
+            <required>false</required>
+            <rtexprvalue>false</rtexprvalue>
+        </attribute>
     </tag>
     
 	<tag>
@@ -99,6 +104,11 @@
     	</attribute>
         <attribute>
             <name>useRepositoryInheritance</name>
+            <required>false</required>
+            <rtexprvalue>false</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>useStructureInheritance</name>
             <required>false</required>
             <rtexprvalue>false</rtexprvalue>
         </attribute>
@@ -180,6 +190,11 @@
             <required>false</required>
             <rtexprvalue>false</rtexprvalue>
         </attribute>
+        <attribute>
+            <name>useStructureInheritance</name>
+            <required>false</required>
+            <rtexprvalue>false</rtexprvalue>
+        </attribute>
 	</tag>	 
 	<tag>
 		<name>boundPages</name>
@@ -203,6 +218,11 @@
     	</attribute>
         <attribute>
             <name>useRepositoryInheritance</name>
+            <required>false</required>
+            <rtexprvalue>false</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>useStructureInheritance</name>
             <required>false</required>
             <rtexprvalue>false</rtexprvalue>
         </attribute>
@@ -244,6 +264,11 @@
     	</attribute>
         <attribute>
             <name>useRepositoryInheritance</name>
+            <required>false</required>
+            <rtexprvalue>false</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>useStructureInheritance</name>
             <required>false</required>
             <rtexprvalue>false</rtexprvalue>
         </attribute>
@@ -323,6 +348,11 @@
             <required>false</required>
             <rtexprvalue>false</rtexprvalue>
         </attribute>
+        <attribute>
+            <name>useStructureInheritance</name>
+            <required>false</required>
+            <rtexprvalue>false</rtexprvalue>
+        </attribute>
     </tag>
 
 	<tag>
@@ -352,6 +382,11 @@
     	</attribute>   	
         <attribute>
             <name>useRepositoryInheritance</name>
+            <required>false</required>
+            <rtexprvalue>false</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>useStructureInheritance</name>
             <required>false</required>
             <rtexprvalue>false</rtexprvalue>
         </attribute>
@@ -438,6 +473,11 @@
     	</attribute>
         <attribute>
             <name>useRepositoryInheritance</name>
+            <required>false</required>
+            <rtexprvalue>false</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>useStructureInheritance</name>
             <required>false</required>
             <rtexprvalue>false</rtexprvalue>
         </attribute>
@@ -573,6 +613,11 @@
     	</attribute>   	
         <attribute>
             <name>useRepositoryInheritance</name>
+            <required>false</required>
+            <rtexprvalue>false</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>useStructureInheritance</name>
             <required>false</required>
             <rtexprvalue>false</rtexprvalue>
         </attribute>

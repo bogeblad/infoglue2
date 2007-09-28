@@ -36,6 +36,7 @@ public class PageUrlTag extends ComponentLogicTag
 	private String propertyName;
 	private boolean useInheritance = true;
 	private boolean useRepositoryInheritance = true;
+    private boolean useStructureInheritance = true;
 
 	private Integer siteNodeId;
 	private Integer languageId;
@@ -60,7 +61,7 @@ public class PageUrlTag extends ComponentLogicTag
 	        this.languageId = getController().getLanguageId();
 	    
 	    if(this.propertyName != null)
-	        return getComponentLogic().getPageUrl(propertyName, contentId, languageId, useInheritance, useRepositoryInheritance);
+	        return getComponentLogic().getPageUrl(propertyName, contentId, languageId, useInheritance, useRepositoryInheritance, useStructureInheritance);
 	    else
 	        return getController().getPageUrl(siteNodeId, languageId, contentId);
 	}
@@ -95,6 +96,11 @@ public class PageUrlTag extends ComponentLogicTag
         this.useRepositoryInheritance = useRepositoryInheritance;
     }
     
+    public void setUseStructureInheritance(boolean useStructureInheritance)
+    {
+        this.useStructureInheritance = useStructureInheritance;
+    }
+
     public void setExtraParameters(String extraParameters)
     {
         this.extraParameters = extraParameters;

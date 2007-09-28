@@ -35,7 +35,8 @@ public class ChildContentsTag extends ComponentLogicTag
 	private String propertyName;
 	private boolean useInheritance 	= true;
 	private boolean useRepositoryInheritance = true;
-	private boolean searchRecursive = false;
+    private boolean useStructureInheritance = true;
+    private boolean searchRecursive = false;
 	private String sortAttribute 	= "id";
 	private String sortOrder		= "asc";
     private boolean includeFolders 	= false;
@@ -50,7 +51,7 @@ public class ChildContentsTag extends ComponentLogicTag
 	    if(this.contentId != null)
 	        setResultAttribute(this.getController().getChildContents(this.contentId, this.searchRecursive, this.sortAttribute, this.sortOrder, this.includeFolders));
         else if(this.propertyName != null)
-            setResultAttribute(getComponentLogic().getChildContents(this.propertyName, this.useInheritance, this.searchRecursive, this.sortAttribute, this.sortOrder, this.includeFolders, useRepositoryInheritance));
+            setResultAttribute(getComponentLogic().getChildContents(this.propertyName, this.useInheritance, this.searchRecursive, this.sortAttribute, this.sortOrder, this.includeFolders, useRepositoryInheritance, useStructureInheritance));
         else
             throw new JspException("You must state either propertyName or siteNodeId");
 	    
@@ -95,6 +96,11 @@ public class ChildContentsTag extends ComponentLogicTag
     public void setUseRepositoryInheritance(boolean useRepositoryInheritance)
     {
         this.useRepositoryInheritance = useRepositoryInheritance;
+    }
+
+    public void setUseStructureInheritance(boolean useStructureInheritance)
+    {
+        this.useStructureInheritance = useStructureInheritance;
     }
 
 }

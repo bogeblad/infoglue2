@@ -47,6 +47,7 @@ public class AssetsTag extends ComponentLogicTag
 	private String propertyName;
     private boolean useInheritance = true;
     private boolean useRepositoryInheritance = true;
+    private boolean useStructureInheritance = true;
 
     public AssetsTag()
     {
@@ -63,7 +64,7 @@ public class AssetsTag extends ComponentLogicTag
             }
             else if(propertyName != null)
             {
-            	produceResult(getComponentLogic().getAssets(propertyName, useInheritance, useRepositoryInheritance));                    
+            	produceResult(getComponentLogic().getAssets(propertyName, useInheritance, useRepositoryInheritance, useStructureInheritance));                    
             }
             else
             {
@@ -96,6 +97,11 @@ public class AssetsTag extends ComponentLogicTag
     public void setUseRepositoryInheritance(boolean useRepositoryInheritance)
     {
         this.useRepositoryInheritance = useRepositoryInheritance;
+    }
+
+    public void setUseStructureInheritance(boolean useStructureInheritance)
+    {
+        this.useStructureInheritance = useStructureInheritance;
     }
 
 }

@@ -45,7 +45,8 @@ public class PageAsDigitalAssetUrlTag extends ComponentLogicTag
 	private String propertyName;
 	private boolean useInheritance = true;
 	private boolean useRepositoryInheritance = true;
-	private String fileSuffix = "";
+    private boolean useStructureInheritance = true;
+    private String fileSuffix = "";
 	private boolean cacheUrl = true;
 	
 	private Integer siteNodeId;
@@ -71,7 +72,7 @@ public class PageAsDigitalAssetUrlTag extends ComponentLogicTag
 	        this.languageId = getController().getDeliveryContext().getLanguageId();
 	    
 	    if(this.propertyName != null)
-	        return getComponentLogic().getPageAsDigitalAssetUrl(propertyName, languageId, contentId, useInheritance, fileSuffix, cacheUrl, useRepositoryInheritance);
+	        return getComponentLogic().getPageAsDigitalAssetUrl(propertyName, languageId, contentId, useInheritance, fileSuffix, cacheUrl, useRepositoryInheritance, useStructureInheritance);
 	    else
 	        return getController().getPageAsDigitalAssetUrl(siteNodeId, languageId, contentId, fileSuffix, cacheUrl);
 	}
@@ -104,6 +105,11 @@ public class PageAsDigitalAssetUrlTag extends ComponentLogicTag
     public void setUseRepositoryInheritance(boolean useRepositoryInheritance)
     {
         this.useRepositoryInheritance = useRepositoryInheritance;
+    }
+
+    public void setUseStructureInheritance(boolean useStructureInheritance)
+    {
+        this.useStructureInheritance = useStructureInheritance;
     }
 
     public void setFileSuffix(String fileSuffix) throws JspException

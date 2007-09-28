@@ -49,6 +49,7 @@ public class AssetUrlTag extends ComponentLogicTag
     private String assetKey;
     private boolean useInheritance = true;
     private boolean useRepositoryInheritance = true;
+    private boolean useStructureInheritance = true;
 
     public AssetUrlTag()
     {
@@ -73,9 +74,9 @@ public class AssetUrlTag extends ComponentLogicTag
             else if(propertyName != null)
             {
 	            if(assetKey != null)
-	                produceResult(getComponentLogic().getAssetUrl(propertyName, assetKey, useInheritance, useRepositoryInheritance));
+	                produceResult(getComponentLogic().getAssetUrl(propertyName, assetKey, useInheritance, useRepositoryInheritance, useStructureInheritance));
 	            else
-	                produceResult(getComponentLogic().getAssetUrl(propertyName, useInheritance, useRepositoryInheritance));                    
+	                produceResult(getComponentLogic().getAssetUrl(propertyName, useInheritance, useRepositoryInheritance, useStructureInheritance));                    
             }
             else
             {
@@ -113,6 +114,11 @@ public class AssetUrlTag extends ComponentLogicTag
     public void setUseRepositoryInheritance(boolean useRepositoryInheritance)
     {
         this.useRepositoryInheritance = useRepositoryInheritance;
+    }
+
+    public void setUseStructureInheritance(boolean useStructureInheritance)
+    {
+        this.useStructureInheritance = useStructureInheritance;
     }
 
     public void setContentId(String contentId) throws JspException

@@ -37,7 +37,8 @@ public class SiteNodeTag extends ComponentLogicTag
 	private String propertyName;
 	private boolean useInheritance = true;
 	private boolean useRepositoryInheritance = true;
-    
+    private boolean useStructureInheritance = true;
+
     public SiteNodeTag()
     {
         super();
@@ -58,7 +59,7 @@ public class SiteNodeTag extends ComponentLogicTag
 	        if(this.targetSiteNodeId != null)
 	            return this.getComponentLogic().getBoundSiteNode(targetSiteNodeId, propertyName, useInheritance);
 	        else
-	            return this.getComponentLogic().getBoundSiteNode(propertyName, useInheritance, useRepositoryInheritance);
+	            return this.getComponentLogic().getBoundSiteNode(propertyName, useInheritance, useRepositoryInheritance, useStructureInheritance);
 	    }
 	    else if(this.getController().getSiteNodeId() != null && this.getController().getSiteNodeId().intValue() > -1)
 	        return this.getController().getSiteNode();
@@ -84,6 +85,11 @@ public class SiteNodeTag extends ComponentLogicTag
     public void setUseRepositoryInheritance(boolean useRepositoryInheritance)
     {
         this.useRepositoryInheritance = useRepositoryInheritance;
+    }
+
+    public void setUseStructureInheritance(boolean useStructureInheritance)
+    {
+        this.useStructureInheritance = useStructureInheritance;
     }
 
     public void setTargetSiteNodeId(String targetSiteNodeId) throws JspException
