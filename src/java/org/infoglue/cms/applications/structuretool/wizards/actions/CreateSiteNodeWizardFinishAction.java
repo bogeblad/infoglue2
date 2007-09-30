@@ -121,10 +121,6 @@ public class CreateSiteNodeWizardFinishAction extends CreateSiteNodeWizardAbstra
 			CreateSiteNodeWizardInfoBean createSiteNodeWizardInfoBean = getCreateSiteNodeWizardInfoBean();
 			
 			String cancelAddress = createSiteNodeWizardInfoBean.getCancelAddress();
-			if(createSiteNodeWizardInfoBean.getSiteNodeVO() != null)
-			{
-				SiteNodeControllerProxy.getController().delete(createSiteNodeWizardInfoBean.getSiteNodeVO(), this.getInfoGluePrincipal());
-			}
 			
 			this.invalidateCreateSiteNodeWizardInfoBean();
 		

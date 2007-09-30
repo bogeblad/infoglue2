@@ -848,13 +848,22 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 					}
 					else if(componentProperty.getEntityClass().equalsIgnoreCase("SiteNode"))
 					{
-						createUrl = null;
-						/*
+						//createUrl = null;
+
+					    String returnAddress = URLEncoder.encode("ViewSiteNodePageComponents!addComponentPropertyBinding.action?siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=-1&entity=Content&entityId=#entityId&componentId=" + componentId + "&propertyName=" + componentProperty.getName() + "&path=#path&showSimple=" + this.getTemplateController().getDeliveryContext().getShowSimple() + "", "UTF-8");
+						
+				        String cancelKey = templateController.getOriginalFullURL();
+				        String cancelAddress = (String)CacheController.getCachedObject("serverNodePropertiesCache", cancelKey);
+				        if(cancelAddress == null)
+				        {
+				        	cancelAddress = URLEncoder.encode(cancelKey, "UTF-8");
+				        	CacheController.cacheObject("serverNodePropertiesCache", cancelKey, cancelAddress);
+				        }
+
 						if(componentProperty.getIsMultipleBinding())
-							createUrl = componentEditorUrl + "CreateSiteNodeWizard!input.action?repositoryId=" + repositoryId + "&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&propertyName=" + componentProperty.getName() + "&showSimple=" + this.getTemplateController().getDeliveryContext().getShowSimple();
+							createUrl = componentEditorUrl + "CreateSiteNodeWizardFinish.action?repositoryId=" + repositoryId + "&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&propertyName=" + componentProperty.getName() + "&refreshAddress=" + returnAddress + "&cancelAddress=" + cancelAddress + "&showSimple=" + this.getTemplateController().getDeliveryContext().getShowSimple();
 						else
-							createUrl = componentEditorUrl + "CreateSiteNodeWizard!input.action?repositoryId=" + repositoryId + "&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&propertyName=" + componentProperty.getName() + "&showSimple=" + this.getTemplateController().getDeliveryContext().getShowSimple();
-						*/
+							createUrl = componentEditorUrl + "CreateSiteNodeWizardFinish.action?repositoryId=" + repositoryId + "&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&propertyName=" + componentProperty.getName() + "&refreshAddress=" + returnAddress + "&cancelAddress=" + cancelAddress + "&showSimple=" + this.getTemplateController().getDeliveryContext().getShowSimple();
 					}
 				}
 								
