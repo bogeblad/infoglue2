@@ -1,6 +1,5 @@
 package com.frovi.ss.Tree;
 
-import java.security.Principal;
 import java.util.Collection;
 
 import org.apache.log4j.Logger;
@@ -10,7 +9,6 @@ import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeControllerProxy;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
-import org.infoglue.cms.treeservice.ss.ContentNodeSupplier;
 import org.infoglue.deliver.controllers.kernel.impl.simple.ContentDeliveryController;
 
 /**
