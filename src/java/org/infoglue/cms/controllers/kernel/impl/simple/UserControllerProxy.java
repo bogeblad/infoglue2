@@ -37,6 +37,7 @@ import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.AuthorizationModule;
 import org.infoglue.cms.security.InfoGlueAuthenticationFilter;
 import org.infoglue.cms.security.InfoGluePrincipal;
+import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.sorters.ReflectionComparator;
 import org.infoglue.deliver.util.CacheController;
 import org.infoglue.deliver.util.NullObject;
@@ -206,6 +207,9 @@ public class UserControllerProxy extends BaseController
 	
 	public void updateUserPassword(String userName) throws ConstraintException, SystemException, Exception
 	{
+	    if(userName.equals(CmsPropertyHandler.getAnonymousUser()))
+	        throw new SystemException("You must not change password on this user as it's needed by the system.");
+
 		getAuthorizationModule().updateInfoGluePrincipalPassword(userName);
 	}
 
