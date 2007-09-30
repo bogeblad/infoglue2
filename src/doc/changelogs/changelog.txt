@@ -1,4 +1,65 @@
 -------------------------------------------------------------------------------------
+- InfoGlue 2.6.0 Final
+-------------------------------------------------------------------------------------
+
+Release notes
+---------------------------------------
+The autumn release 2007 of InfoGlue is here. As usual the new version includes a lot of major and minor changes.
+Performance and security are allways improved but finetuning of existing features and bugfixes are also included.
+
+Check out the changelog below for details. 
+
+Thanx to all involved!!
+
+The InfoGlue Team
+
+
+Abbreviated Changelog from 2.5.0 Final 
+---------------------------------------
+- Added a new feature which let's you delete all children for a certain content.
+- Fixed performance problem in import repository feature when you have a huge installation.
+- Updated to OSCache 2.4
+- Fixed a new default LRU-algorithm class for OSCache which actually throws away objects when they don't fit in the LRU-cache anymore. The default class shipped with OSCache only invalidated it - it was never removed and could hence not be garbage collected.
+- Added possibility to have a thumbnail for each component/HTMLTemplate and also add a description which can then be seen when one tries to add a component and look at the component list dialog.
+- Added support for checkboxes in component properties
+- Added warning if non-binding properties was edited but not saved in the component editor view when one clicks to assign a binding property. This is so one does not loose the changes automatically.
+- Added new tag which can return many values for a property. For example if it's the new checkbox-property a user may choose several options. The tag is called <structure:componentPropertyValues>.
+- A new content export / import feature is now available in the content tool.
+- Added new methods in componentLogic to get a list of property bound pages or contents on a target siteNode. Before those methods only returned single entities.
+- Updated task executor so it supports jsp and freemarker
+- Added new property which controls if sites should enforce identity checkup through SSO-plugins even if the pages are not protected. Use with care.
+- Fixed bug with message center messages look & feel.
+- Added possibility to set that a certain content binding requires which asset to use and also interfaces for the choose dialog.
+- Added logic so "EditOnSight" works on the base component - before it worked only on all other sub components.
+- Added possibility to set which asset keys should be mandatory to upload - used currently only by the create content wizard but should later be implemented by the save content version / publish actions.
+- Added better handling of assets to the create content wizard available next to content binding properties in structure tool. Now mandatory assets are required and additional assets can be uploaded and they can then be used when editing the wysiwyg fields like normal.
+- Added new structure:siteNodesFromWebPages-tag which allows easy conversion between a list of WebPage-beans and SiteNodeVO:s which are more suitable for advanced sorting etc.
+- Added parsing/el-expressions of siteNodeId on the tag structure:siteNode.
+- Added timeout handling in webservice handler (30 seconds)
+- Removed bold on a:active - it led to some issues with moving texts upon clicked.
+- Included saxon 8.9 in the distribution and created a new tag for transforming with it. It is much faster and less memory expensive than Xalan. Saxon is a XSLT 2.0, XQuery 1.0, and XPath 2.0 conformant processor.
+- Removed mail and activation from the local classpath - apache tomcat and others allready includes it.
+- Fixed bug in access right view and also fixed so the rows are colored in different colors like all other lists.
+- Added new attribute on Include-tag so one now can state if the relation include should be using attribute language fallback. Defaults to true.
+- Added a new document conversion tag which operates together with JODConverter (Open Office serverside). It can take a worddocument and convert it on the fly to pdf, odf and html. Our tag also manages to create table of contents separately so you can have navigation separate.
+- Fixed so page templates images are scaled down to a conformed format in screens where they are used. Messes up GUI if to large.
+- Added scroll-possibility to both structure and content toolbars so buttons can be reached even though the screen resolution is limited.
+- Moved task button in content toolbar - decreased importance
+- Upgraded to mysql-connector 5.0.7 JDBC driver.
+- Added new assets-tag which returns a list of DigitalAssetsVO objects for a content/property binding. This is also available to velocity/freemarker-templates through the templateController-API.
+- Added possibility to assetUrl-tag and assetThumbnailUrl-tag so you can state the digitalAssetId directly if you know it. Nice in conjunction with the new assets-tag. This is also available to velocity/freemarker-templates through the templateController-API.
+- Fixed bug in URLComposer which led to // at the end of nice-uri:s when constructing url to another repository.
+- Added possibility to have different login page for each repository. Just define a loginUrl in the repostory extra properties.
+- Added possibility to have different error page for each repository. Just define a errorUrl in the repostory extra properties.
+- Fixed bug when disabling and enabling languages which led to "null" in properties edit window.
+- Added settings so you can configure if protected contents / sitenodes are to be shown to persons without access in the tool trees.
+- Added a setting that enables a more rigid content access enforcement. Very important if working with intranets as the default setting is no good as it caches attributes without principal as key for memory and performance reasons.
+- Added an attribute / method in DeliveryContext-object which can control so that non published contents are shown anyway in working mode. You have to set it in the components you want this behaviour.
+- Added an attribute and flags on most methods which are of interest which allows you to state if property-inheritance should be limited to the page. Default is page + structure above as before.
+- Added a create sitenode wizard (just like the create content wizard) so one can create a sitenode while binding a page to a property.
+
+
+-------------------------------------------------------------------------------------
 - InfoGlue 2.5 Final
 -------------------------------------------------------------------------------------
 
