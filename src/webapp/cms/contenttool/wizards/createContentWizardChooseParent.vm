@@ -36,11 +36,9 @@
 			document.inputForm.repositoryId.value = repositoryId;
 			document.inputForm.path.value = path;	
 		}
-	
+		 
 		function changeRepository(selectBox)
 		{
-			//alert("selectBox:" + selectBox);
-			//alert("document.location.href:" + document.location.href);
 			var repositoryId = selectBox.value;
 			var url = "CreateContentWizardFinish.action?repositoryId=" + repositoryId + "&siteNodeId=$siteNodeId&languageId=$languageId&contentId=-1&componentId=$componentId&propertyName=$propertyName&$allowedContentTypeIdsAsUrlEncodedString&refreshAddress=$encodedRefreshAddress&showSimple=$showSimple";
 			document.location.href = url;
