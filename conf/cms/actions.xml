@@ -1,4 +1,4 @@
-<!-- $Id: actions.xml,v 1.45 2007/08/20 13:11:38 mattias Exp $ -->
+<!-- $Id: actions.xml,v 1.46 2007/09/30 14:57:22 mattias Exp $ -->
 <actions>
 
 	<!-- MySettings -->
@@ -911,16 +911,6 @@
 	</action>
 
 	<!-- Content Wizards -->
-	<!--
-	<action name="org.infoglue.cms.applications.contenttool.actions.ChooseContentWizardAction" alias="CreateContentWizard">
-			  <view name="stateLocation">/cms/contenttool/createContentWizardChooseParent.vm</view>
-			  <view name="input">/cms/contenttool/createContentWizardCreateContent.vm</view>
-			<view name="createContentSuccess">/cms/contenttool/createContentWizardCreateContentVersions.vm</view>
-			  <view name="success">ViewContent.action?stay=true</view>
-			  <view name="error">/cms/contenttool/error.vm</view>
-		  <view name="accessDenied">/cms/contenttool/viewConstraintException.vm</view>
-	</action>
-	-->
 	<action name="org.infoglue.cms.applications.contenttool.wizards.actions.CreateContentWizardChooseParentAction" alias="CreateContentWizardChooseParent">
 		<view name="success">/cms/contenttool/wizards/createContentWizardChooseParent.vm</view>
 		<view name="error">/cms/contenttool/wizards/error.vm</view>
@@ -957,6 +947,7 @@
 		<view name="error">/cms/contenttool/wizards/error.vm</view>
 		<view name="accessDenied">/cms/contenttool/viewConstraintException.vm</view>
 	</action>
+
 	<action name="org.infoglue.cms.applications.contenttool.actions.ExportContentAction" alias="ExportContent">
 		<view name="input">/cms/contenttool/viewExportContentInput.vm</view>
 		<view name="success">/cms/contenttool/viewExportContentFinished.vm</view>
@@ -1054,6 +1045,28 @@
 		<view name="error">/cms/structuretool/error.vm</view>
 		<view name="accessDenied">/cms/structuretool/viewConstraintException.vm</view>
 	</action>
+	
+	<!-- Page Wizards -->
+	<action name="org.infoglue.cms.applications.structuretool.wizards.actions.CreateSiteNodeWizardChooseParentAction" alias="CreateSiteNodeWizardChooseParent">
+		<view name="success">/cms/structuretool/wizards/createSiteNodeWizardChooseParent.vm</view>
+		<view name="error">/cms/structuretool/wizards/error.vm</view>
+		<view name="accessDenied">/cms/structuretool/viewConstraintException.vm</view>
+	</action>
+	<action name="org.infoglue.cms.applications.structuretool.wizards.actions.CreateSiteNodeWizardInputSiteNodeAction" alias="CreateSiteNodeWizardInputSiteNode">
+		<view name="input">/cms/structuretool/wizards/createSiteNodeWizardInputSiteNode.vm</view>
+		<view name="success">CreateSiteNodeWizardFinish.action</view>
+		<view name="error">/cms/structuretool/wizards/error.vm</view>
+		<view name="accessDenied">/cms/structuretool/viewConstraintException.vm</view>
+	</action>
+	<action name="org.infoglue.cms.applications.structuretool.wizards.actions.CreateSiteNodeWizardFinishAction" alias="CreateSiteNodeWizardFinish">
+		<view name="stateLocation">CreateSiteNodeWizardChooseParent.action</view>
+		<view name="inputSiteNode">CreateSiteNodeWizardInputSiteNode!input.action</view>
+		<view name="success">ViewSiteNode.action</view>
+		<view name="error">/cms/structuretool/wizards/error.vm</view>
+		<view name="accessDenied">/cms/structuretool/viewConstraintException.vm</view>
+	</action>
+	
+	
 	<action name="org.infoglue.cms.applications.structuretool.actions.CreateSiteNodeAction" alias="CreateSiteNode">
 		<view name="input">/cms/structuretool/createSiteNode.vm</view>
 		<view name="success">ViewSiteNode.action?stay=true</view>
