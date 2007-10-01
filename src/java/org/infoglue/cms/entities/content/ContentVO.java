@@ -72,9 +72,9 @@ public class ContentVO implements BaseEntityVO
 	  		if(numberOfYears != null && !numberOfYears.equals(""))
 	  			years = new Integer(numberOfYears).intValue();
   		}
-  		catch (Exception e) 
+  		catch (Throwable t) 
   		{
-  			e.printStackTrace();
+  			t.printStackTrace();
   		}
   		
   		calendar.add(Calendar.YEAR, years);
