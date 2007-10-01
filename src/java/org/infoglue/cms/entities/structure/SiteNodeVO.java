@@ -72,9 +72,7 @@ public class SiteNodeVO implements BaseEntityVO
 	  			years = new Integer(numberOfYears).intValue();
   		}
   		catch (Throwable t) 
-  		{
-  			t.printStackTrace();
-  		}
+  		{}
   		
   		calendar.add(Calendar.YEAR, years);
   		expireDateTime = calendar.getTime();
