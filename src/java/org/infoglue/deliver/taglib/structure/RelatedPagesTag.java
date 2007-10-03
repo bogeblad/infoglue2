@@ -64,12 +64,7 @@ public class RelatedPagesTag extends ComponentLogicTag
     {
         this.propertyName = evaluateString("relatedPages", "propertyName", propertyName);
     }
-	
-	public void setUseInheritence(boolean useInheritance)
-	{
-		this.useInheritance = useInheritance;
-	}
-	
+		
     public void setAttributeName(String attributeName)
     {
         this.attributeName = attributeName;

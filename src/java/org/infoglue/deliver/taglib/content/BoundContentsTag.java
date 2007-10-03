@@ -52,7 +52,7 @@ public class BoundContentsTag extends ComponentLogicTag
         this.propertyName = evaluateString("boundContents", "propertyName", propertyName);
 	}
 	
-	public void setUseInheritence(boolean useInheritance)
+	public void setUseInheritance(boolean useInheritance)
 	{
 		this.useInheritance = useInheritance;
 	}
