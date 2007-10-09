@@ -114,14 +114,14 @@
 		<table width="50%" border="0">
 		  <tr>
 		    <td>State a name or choose from list:<br>
-		        <input type="text" id="roleSearchField" name="roleSearchField" style="font-size: 10px; width:200px; border: solid 1px #C2D0E2;"/ onkeypress="javascript:markNearestOption('roleSearchField', 'unassignedRoleNameList');" onchange="javascript:markNearestOption('roleSearchField', 'unassignedRoleNameList');">
+		        <input type="text" id="roleSearchField" name="roleSearchField" style="font-size: 10px; width:300px; border: solid 1px #C2D0E2;"/ onkeypress="javascript:markNearestOption('roleSearchField', 'unassignedRoleNameList');" onchange="javascript:markNearestOption('roleSearchField', 'unassignedRoleNameList');">
 		      </td>
 		    <td>&nbsp;</td>
 		    <td valign="bottom">Current Roles</td>
 		  </tr>
 		  <tr>
 		    <td>
-		    	<SELECT $readonly id="unassignedRoleNameList" NAME="unassignedRoleNameList" MULTIPLE SIZE="10" onDblClick="opt1.transferRight()" style="font-size: 10px; width:200px; border: solid 1px #C2D0E2;">
+		    	<SELECT $readonly id="unassignedRoleNameList" NAME="unassignedRoleNameList" MULTIPLE SIZE="10" onDblClick="opt1.transferRight()" style="font-size: 10px; width:300px; border: solid 1px #C2D0E2;">
 		        #if($supportsUpdate)
 		          	#foreach ($roleVO in $allRoles)
 						#set($checked = "")
@@ -132,7 +132,7 @@
 						#end
 						
 						#if($checked == "")
-							<option value="$roleVO.name">$roleVO.name</option>
+							<option value="$roleVO.name" title="$roleVO.name">$roleVO.name</option>
 						#end
 					#end
 				#else
@@ -141,15 +141,15 @@
 		        </select>
 		    </td>
 		    <td align="center">
-		        <INPUT TYPE="button" NAME="roleRight" VALUE="&gt;&gt;" ONCLICK="opt1.transferRight()" style="width:80px; font-family: verdana; font-size: 10px;"><BR><BR>
-				<INPUT TYPE="button" NAME="roleRight" VALUE="All &gt;&gt;" ONCLICK="opt1.transferAllRight()" style="width:80px; font-family: verdana; font-size: 10px;"><BR><BR>
-				<INPUT TYPE="button" NAME="roleLeft" VALUE="&lt;&lt;" ONCLICK="opt1.transferLeft()" style="width:80px; font-family: verdana; font-size: 10px;"><BR><BR>
-				<INPUT TYPE="button" NAME="roleLeft" VALUE="All &lt;&lt;" ONCLICK="opt1.transferAllLeft()" style="width:80px; font-family: verdana; font-size: 10px;">
+		        <INPUT TYPE="button" NAME="roleRight" VALUE="&gt;&gt;" ONCLICK="opt1.transferRight()" style="width:50px; font-family: verdana; font-size: 10px;"><BR><BR>
+				<INPUT TYPE="button" NAME="roleRight" VALUE="All &gt;&gt;" ONCLICK="opt1.transferAllRight()" style="width:50px; font-family: verdana; font-size: 10px;"><BR><BR>
+				<INPUT TYPE="button" NAME="roleLeft" VALUE="&lt;&lt;" ONCLICK="opt1.transferLeft()" style="width:50px; font-family: verdana; font-size: 10px;"><BR><BR>
+				<INPUT TYPE="button" NAME="roleLeft" VALUE="All &lt;&lt;" ONCLICK="opt1.transferAllLeft()" style="width:50px; font-family: verdana; font-size: 10px;">
 		    </td>
 		    <td>
-		      	<SELECT $readonly id="roleName" name="roleName" multiple size="10" onDblClick="opt1.transferLeft()" style="font-size: 10px; width:200px; border: solid 1px #C2D0E2;">
+		      	<SELECT $readonly id="roleName" name="roleName" multiple size="10" onDblClick="opt1.transferLeft()" style="font-size: 10px; width:300px; border: solid 1px #C2D0E2;">
 		        	#foreach ($assignedRoleVO in $assignedRoles)
-						<option value="$assignedRoleVO.name">$assignedRoleVO.name</option>
+						<option value="$assignedRoleVO.name" title="$assignedRoleVO.name">$assignedRoleVO.name</option>
 					#end
 			    </select>
 		    </td>
@@ -169,14 +169,14 @@
 		<table width="50%" border="0">
 		  <tr>
 		    <td>State a name or choose from list:<br>
-		        <input type="text" id="groupSearchField" name="groupSearchField" style="font-size: 10px; width:200px; border: solid 1px #C2D0E2;"/ onkeypress="javascript:markNearestOption('groupSearchField', 'unassignedGroupNameList');" onchange="javascript:markNearestOption('groupSearchField', 'unassignedGroupNameList');">
+		        <input type="text" id="groupSearchField" name="groupSearchField" style="font-size: 10px; width:300px; border: solid 1px #C2D0E2;"/ onkeypress="javascript:markNearestOption('groupSearchField', 'unassignedGroupNameList');" onchange="javascript:markNearestOption('groupSearchField', 'unassignedGroupNameList');">
 		      </td>
 		    <td>&nbsp;</td>
 		    <td valign="bottom">Current Groups</td>
 		  </tr>
 		  <tr>
 		    <td>
-		    	<SELECT $readonly id="unassignedGroupNameList" NAME="unassignedGroupNameList" MULTIPLE SIZE="10" onDblClick="opt2.transferRight()" style="font-size: 10px; width:200px; border: solid 1px #C2D0E2;">
+		    	<SELECT $readonly id="unassignedGroupNameList" NAME="unassignedGroupNameList" MULTIPLE SIZE="10" onDblClick="opt2.transferRight()" style="font-size: 10px; width:300px; border: solid 1px #C2D0E2;">
 		        #if($supportsUpdate)
 		          	#foreach ($groupVO in $allGroups)
 						#set($checked = "")
@@ -187,7 +187,7 @@
 						#end
 						
 						#if($checked == "")
-							<option value="$groupVO.name">$groupVO.name</option>
+							<option value="$groupVO.name" title="$groupVO.name">$groupVO.name</option>
 						#end
 					#end
 				#else
@@ -196,15 +196,15 @@
 		        </select>
 		    </td>
 		    <td align="center">
-		        <INPUT TYPE="button" NAME="groupRight" VALUE="&gt;&gt;" ONCLICK="opt2.transferRight()" style="width:80px; font-family: verdana; font-size: 10px;"><BR><BR>
-				<INPUT TYPE="button" NAME="groupRight" VALUE="All &gt;&gt;" ONCLICK="opt2.transferAllRight()" style="width:80px; font-family: verdana; font-size: 10px;"><BR><BR>
-				<INPUT TYPE="button" NAME="groupLeft" VALUE="&lt;&lt;" ONCLICK="opt2.transferLeft()" style="width:80px; font-family: verdana; font-size: 10px;"><BR><BR>
-				<INPUT TYPE="button" NAME="groupLeft" VALUE="All &lt;&lt;" ONCLICK="opt2.transferAllLeft()" style="width:80px; font-family: verdana; font-size: 10px;">
+		        <INPUT TYPE="button" NAME="groupRight" VALUE="&gt;&gt;" ONCLICK="opt2.transferRight()" style="width:50px; font-family: verdana; font-size: 10px;"><BR><BR>
+				<INPUT TYPE="button" NAME="groupRight" VALUE="All &gt;&gt;" ONCLICK="opt2.transferAllRight()" style="width:50px; font-family: verdana; font-size: 10px;"><BR><BR>
+				<INPUT TYPE="button" NAME="groupLeft" VALUE="&lt;&lt;" ONCLICK="opt2.transferLeft()" style="width:50px; font-family: verdana; font-size: 10px;"><BR><BR>
+				<INPUT TYPE="button" NAME="groupLeft" VALUE="All &lt;&lt;" ONCLICK="opt2.transferAllLeft()" style="width:50px; font-family: verdana; font-size: 10px;">
 		    </td>
 		    <td>
-		      	<SELECT $readonly id="groupName" name="groupName" multiple size="10" onDblClick="opt2.transferLeft()" style="font-size: 10px; width:200px; border: solid 1px #C2D0E2;">
+		      	<SELECT $readonly id="groupName" name="groupName" multiple size="10" onDblClick="opt2.transferLeft()" style="font-size: 10px; width:300px; border: solid 1px #C2D0E2;">
 		        	#foreach ($assignedGroupVO in $assignedGroups)
-						<option value="$assignedGroupVO.name">$assignedGroupVO.name</option>
+						<option value="$assignedGroupVO.name" title="$assignedGroupVO.name">$assignedGroupVO.name</option>
 					#end
 			    </select>
 		    </td>
