@@ -270,12 +270,14 @@ public class ContentFactory
 			final ContentVersion contentVersion = ContentVersionController.getContentVersionController().getLatestActiveContentVersion(content.getId(), language.getId(), db);
 			if(contentVersion != null)
 			{
+				System.out.println("contentVersion not null:" + contentVersion.getId() + " becomes \n" + contentVersionVO.getVersionValue());
 				contentVersion.getValueObject().setVersionValue(contentVersionVO.getVersionValue());
 				deleteCategories(contentVersion);
 				createCategories(contentVersion, categories);
 			}
 			else
 			{
+				System.out.println("contentVersion null:" + contentVersion.getId() + " creating \n" + contentVersionVO.getVersionValue());
 				final ContentVersion newContentVersion = ContentVersionController.getContentVersionController().create(content.getId(), language.getId(), contentVersionVO, null, db);
 				createCategories(newContentVersion, categories);
 			}
@@ -284,6 +286,7 @@ public class ContentFactory
 	    } 
 		catch(Exception e) 
 		{
+			e.printStackTrace();
 			logger.warn(e);
 	    }
 		return null;
@@ -436,9 +439,9 @@ public class ContentFactory
 		for(final Iterator i=typeAttributes.iterator(); i.hasNext(); ) 
 		{
 			final ContentTypeAttribute attribute = (ContentTypeAttribute) i.next();
-			System.out.println("attribute:" + attribute);
 			final Element element = domBuilder.addElement(parentElement, attribute.getName());
 			final String value = contentVersionValues.get(attribute.getName());
+			System.out.println("attribute:" + attribute.getName() + ":" + value);
 			if(value != null)
 			{
 				domBuilder.addCDATAElement(element, value);
