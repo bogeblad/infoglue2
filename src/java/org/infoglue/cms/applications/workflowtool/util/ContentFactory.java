@@ -166,11 +166,26 @@ public class ContentFactory
 		this.db = db;
 		populateContentVO(contentVO);
 		final ContentVersionVO contentVersionVO = createContentVersionVO(buildContentVersionDocument().asXML());
-
-		if(validate(contentVO, contentVersionVO).isEmpty())
+		
+		ConstraintExceptionBuffer ceb = validate(contentVO, contentVersionVO);
+		if(ceb.isEmpty())
 		{
+			System.out.println("OK: Valid content and version - commiting update.");
 			return updateContent(contentVO, contentVersionVO, categories);
 		}
+		else
+		{
+			System.out.println("Error: Not valid content or version - cancelling update.");
+			try
+			{
+				ceb.throwIfNotEmpty();
+			}
+			catch(Exception e)
+			{
+				e.printStackTrace();
+			}
+		}
+		
 		return null;
 	}
 
@@ -421,6 +436,7 @@ public class ContentFactory
 		for(final Iterator i=typeAttributes.iterator(); i.hasNext(); ) 
 		{
 			final ContentTypeAttribute attribute = (ContentTypeAttribute) i.next();
+			System.out.println("attribute:" + attribute);
 			final Element element = domBuilder.addElement(parentElement, attribute.getName());
 			final String value = contentVersionValues.get(attribute.getName());
 			if(value != null)
