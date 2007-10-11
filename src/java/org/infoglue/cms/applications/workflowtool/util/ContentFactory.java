@@ -170,12 +170,13 @@ public class ContentFactory
 		ConstraintExceptionBuffer ceb = validate(contentVO, contentVersionVO);
 		if(ceb.isEmpty())
 		{
-			System.out.println("OK: Valid content and version - commiting update.");
+			//System.out.println("OK: Valid content and version - commiting update.");
 			return updateContent(contentVO, contentVersionVO, categories);
 		}
 		else
 		{
 			System.out.println("Error: Not valid content or version - cancelling update.");
+			/*
 			try
 			{
 				ceb.throwIfNotEmpty();
@@ -184,6 +185,7 @@ public class ContentFactory
 			{
 				e.printStackTrace();
 			}
+			*/
 		}
 		
 		return null;
@@ -270,14 +272,14 @@ public class ContentFactory
 			final ContentVersion contentVersion = ContentVersionController.getContentVersionController().getLatestActiveContentVersion(content.getId(), language.getId(), db);
 			if(contentVersion != null)
 			{
-				System.out.println("contentVersion not null:" + contentVersion.getId() + " becomes \n" + contentVersionVO.getVersionValue());
+				//System.out.println("contentVersion not null:" + contentVersion.getId() + " becomes \n" + contentVersionVO.getVersionValue());
 				contentVersion.getValueObject().setVersionValue(contentVersionVO.getVersionValue());
 				deleteCategories(contentVersion);
 				createCategories(contentVersion, categories);
 			}
 			else
 			{
-				System.out.println("contentVersion null:" + contentVersion.getId() + " creating \n" + contentVersionVO.getVersionValue());
+				//System.out.println("contentVersion null:" + contentVersion.getId() + " creating \n" + contentVersionVO.getVersionValue());
 				final ContentVersion newContentVersion = ContentVersionController.getContentVersionController().create(content.getId(), language.getId(), contentVersionVO, null, db);
 				createCategories(newContentVersion, categories);
 			}
@@ -441,7 +443,7 @@ public class ContentFactory
 			final ContentTypeAttribute attribute = (ContentTypeAttribute) i.next();
 			final Element element = domBuilder.addElement(parentElement, attribute.getName());
 			final String value = contentVersionValues.get(attribute.getName());
-			System.out.println("attribute:" + attribute.getName() + ":" + value);
+			//System.out.println("attribute:" + attribute.getName() + ":" + value);
 			if(value != null)
 			{
 				domBuilder.addCDATAElement(element, value);
