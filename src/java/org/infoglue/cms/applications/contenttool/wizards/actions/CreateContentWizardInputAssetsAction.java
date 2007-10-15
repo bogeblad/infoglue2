@@ -73,8 +73,12 @@ public class CreateContentWizardInputAssetsAction extends CreateContentWizardAbs
 		
 		if(this.languageId == null)
 		{
-			LanguageVO masterLanguageVO = LanguageController.getController().getMasterLanguage(createContentWizardInfoBean.getRepositoryId());
-			this.languageId = masterLanguageVO.getLanguageId();
+			this.languageId = createContentWizardInfoBean.getLanguageId();
+			if(this.languageId == null)
+			{
+				LanguageVO masterLanguageVO = LanguageController.getController().getMasterLanguage(createContentWizardInfoBean.getRepositoryId());
+				this.languageId = masterLanguageVO.getLanguageId();
+			}
 		}
 
 		if(this.contentVersionId == null)

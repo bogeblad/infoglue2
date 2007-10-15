@@ -83,7 +83,10 @@ public class CreateContentWizardFinishAction extends CreateContentWizardAbstract
 			}
 
 			Integer repositoryId = createContentWizardInfoBean.getRepositoryId();
-			Integer languageId = LanguageController.getController().getMasterLanguage(repositoryId).getId();
+			Integer languageId = createContentWizardInfoBean.getLanguageId();
+			if(languageId == null)
+				languageId = LanguageController.getController().getMasterLanguage(repositoryId).getId();
+			
 			if(createContentWizardInfoBean.getContentVersions().size() == 0)
 			{
 				String versionValue = "<?xml version='1.0' encoding='UTF-8'?><article xmlns=\"x-schema:ArticleSchema.xml\"><attributes></attributes></article>";
@@ -199,6 +202,16 @@ public class CreateContentWizardFinishAction extends CreateContentWizardAbstract
 	public Integer getRepositoryId() 
 	{
 		return getCreateContentWizardInfoBean().getRepositoryId();
+	}
+
+	public void setLanguageId(Integer languageId)
+	{
+		getCreateContentWizardInfoBean().setLanguageId(languageId);
+	}
+
+	public Integer getLanguageId() 
+	{
+		return getCreateContentWizardInfoBean().getLanguageId();
 	}
 
 	public void setContentTypeDefinitionId(Integer contentTypeDefinitionId)

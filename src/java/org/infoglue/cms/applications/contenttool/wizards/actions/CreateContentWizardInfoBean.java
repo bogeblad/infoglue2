@@ -42,6 +42,7 @@ public class CreateContentWizardInfoBean
 	private Integer parentContentId 		= null;
 	private Integer repositoryId			= null;
 	private Integer contentTypeDefinitionId	= null;
+	private Integer languageId				= null;
 	private Content content 				= new ContentImpl();
 	private ContentVO contentVO 			= null;
 	private Map contentVersions				= new HashMap();
@@ -64,6 +65,11 @@ public class CreateContentWizardInfoBean
 		return repositoryId;
 	}
 
+	public Integer getLanguageId()
+	{
+		return languageId;
+	}
+
 	public void setContent(Content content)
 	{
 		this.content = content;
@@ -77,6 +83,11 @@ public class CreateContentWizardInfoBean
 	public void setRepositoryId(Integer repositoryId)
 	{
 		this.repositoryId = repositoryId;
+	}
+
+	public void setLanguageId(Integer languageId)
+	{
+		this.languageId = languageId;
 	}
 
 	public Integer getContentTypeDefinitionId()

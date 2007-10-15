@@ -78,9 +78,15 @@ public class CreateContentWizardInputContentVersionsAction extends CreateContent
 		this.contentTypeDefinitionVO = ContentTypeDefinitionController.getController().validateAndUpdateContentType(this.contentTypeDefinitionVO);
 		List assetKeys = ContentTypeDefinitionController.getController().getDefinedAssetKeys(this.contentTypeDefinitionVO.getSchemaValue());
 		
-		LanguageVO masterLanguageVO = LanguageController.getController().getMasterLanguage(createContentWizardInfoBean.getRepositoryId());
 		if(this.languageId == null)
-			this.languageId = masterLanguageVO.getLanguageId();
+		{
+			this.languageId = createContentWizardInfoBean.getLanguageId();
+			if(this.languageId == null)
+			{			
+				LanguageVO masterLanguageVO = LanguageController.getController().getMasterLanguage(createContentWizardInfoBean.getRepositoryId());
+				this.languageId = masterLanguageVO.getLanguageId();
+			}
+		}
 		
 		if(this.contentVersionVO != null && this.contentVersionVO.getContentVersionId() != null)
        		digitalAssets = DigitalAssetController.getDigitalAssetVOList(this.contentVersionVO.getId());
