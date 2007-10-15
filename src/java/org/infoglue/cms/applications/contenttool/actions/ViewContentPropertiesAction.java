@@ -134,6 +134,8 @@ public class ViewContentPropertiesAction extends InfoGluePropertiesAbstractActio
     
     public String doSaveAndExit() throws Exception
     {
+    	doSave();
+    	
         return "saveAndExit";
     }
 

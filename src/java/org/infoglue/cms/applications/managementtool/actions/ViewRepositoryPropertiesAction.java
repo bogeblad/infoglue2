@@ -133,6 +133,8 @@ public class ViewRepositoryPropertiesAction extends InfoGluePropertiesAbstractAc
     
     public String doSaveAndExit() throws Exception
     {
+    	doSave();
+    	
         return "saveAndExit";
     }
 
