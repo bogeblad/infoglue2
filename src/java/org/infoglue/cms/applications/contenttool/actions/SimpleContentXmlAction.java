@@ -126,30 +126,42 @@ public class SimpleContentXmlAction extends SimpleXmlServiceAction
         return getContentVersionElement(vo);
     }
     
+    public Element getContentVersionHeadElement(Integer contentVersionId) throws SystemException, Bug, UnsupportedEncodingException
+    {
+		ContentVersionController contentVersionController = ContentVersionController.getContentVersionController();
+        ContentVersionVO vo = contentVersionController.getContentVersionVOWithId(contentVersionId);
+        return getContentVersionHeadElement(vo);
+    }
+    
     public Element getContentVersionElement(ContentVersionVO vo) throws SystemException, Bug, UnsupportedEncodingException
     {
         Element element = DocumentHelper.createElement("contentVersion");
-        Element head = DocumentHelper.createElement("head");
-        Element value = DocumentHelper.createElement("value");
-
-        head.addAttribute("id", "" + vo.getContentVersionId());
-	    head.addAttribute("languageId", "" + vo.getLanguageId());
-	    head.addAttribute("languageName", vo.getLanguageName());
-	    head.addAttribute("isActive", "" + vo.getIsActive());
-
-	    /*
-	    TransactionHistoryController transactionHistoryController = TransactionHistoryController.getController();
-        TransactionHistoryVO transactionHistoryVO = transactionHistoryController.getLatestTransactionHistoryVOForEntity(ContentVersionImpl.class, vo.getContentVersionId());
-	    if(transactionHistoryVO!=null)
-	        head.addAttribute("mod", formatDate(transactionHistoryVO.getTransactionDateTime()));
-	    */
-	    
-        head.addAttribute("mod", "" + vo.getModifiedDateTime().getTime());
-        value.addCDATA(URLEncoder.encode(vo.getVersionValue(),"UTF-8"));
-        element.add(head);
-        element.add(value);
+        element.add(getContentVersionHeadElement(vo));
+        element.add(getContentVersionValueElement(vo));
         return element;
     }
+
+    public Element getContentVersionHeadElement(ContentVersionVO vo) throws SystemException, Bug, UnsupportedEncodingException
+    {
+        Element head = DocumentHelper.createElement("head");
+        head.addAttribute("id", "" + vo.getContentVersionId());
+	    head.addAttribute("languageId", "" + vo.getLanguageId());
+	    head.addAttribute("contentId", "" + vo.getContentId());
+	    head.addAttribute("languageName", vo.getLanguageName());
+	    head.addAttribute("isActive", "" + vo.getIsActive());
+        head.addAttribute("mod", "" + vo.getModifiedDateTime().getTime());
+        head.addAttribute("activeVersionModifier", "" + vo.getVersionModifier());
+        head.addAttribute("activeVersionStateId", "" + vo.getStateId());
+        
+        return head;
+    }
+    public Element getContentVersionValueElement(ContentVersionVO vo) throws SystemException, Bug, UnsupportedEncodingException
+    {
+        Element value = DocumentHelper.createElement("value");
+        value.addCDATA(URLEncoder.encode(vo.getVersionValue(),"UTF-8"));
+        return value;
+    }
+    
     
     /*
      * Returns document for a single contentVersion (parent)
@@ -158,6 +170,20 @@ public class SimpleContentXmlAction extends SimpleXmlServiceAction
 	{
         Document doc = DocumentHelper.createDocument();
         doc.add(getContentVersionElement(parent));
+	    return out(getFormattedDocument(doc));
+	}
+    
+    /*
+     * Returns head only for a single contentVersion (parent)
+     */
+    public String doContentVersionHead() throws Exception
+	{
+        Document doc = DocumentHelper.createDocument();
+        Element element = DocumentHelper.createElement("contentVersion");
+
+        element.add(getContentVersionHeadElement(parent));
+        element.add(DocumentHelper.createElement("value"));
+        doc.add(element);
 	    return out(getFormattedDocument(doc));
 	}
     
