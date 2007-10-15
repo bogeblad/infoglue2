@@ -23,9 +23,11 @@
 
 package org.infoglue.cms.applications.common.actions;
 
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.ResourceBundle;
 import java.util.StringTokenizer;
 
 import javax.servlet.ServletConfig;
@@ -115,7 +117,25 @@ public class VelocityServlet extends WebWorkVelocityServlet
 		{
 	        session.setLocale(java.util.Locale.ENGLISH);
 		}
-		//</todo>
+        else
+        {
+            try
+            {
+            	ResourceBundle sk = ResourceBundle.getBundle("org.infoglue.cms.applications.PresentationStrings", session.getLocale());
+            	//System.out.println("Locale:" + sk.getLocale() + ":" + session.getLocale());
+            	if(!sk.getLocale().equals(session.getLocale()))
+            	{
+            		//System.out.println("Not equals.. setting to english");
+                	session.setLocale(java.util.Locale.ENGLISH);
+            	}
+            }
+            catch (Throwable e) 
+            {
+				System.out.println("Error:" + e.getMessage() + " - setting locale to english");
+            	session.setLocale(java.util.Locale.ENGLISH);
+            }        	
+        }
+        //</todo>
 
         if(session.getLocale() == null || session.getLocale().getLanguage() == null || session.getLocale().getLanguage().equalsIgnoreCase(""))
 		    context.put("ui", getStringManagerChain(java.util.Locale.ENGLISH));
