@@ -191,6 +191,22 @@ public class ViewMyDesktopToolStartPageAction extends InfoGlueAbstractAction
 
 		try
 		{
+			if(this.finalReturnAddress != null && !this.finalReturnAddress.equals(""))
+			{
+				logger.info("Final return address get's set to " + this.finalReturnAddress);
+				controller.getPropertySet(getInfoGluePrincipal(), getWorkflowId()).setString("finalReturnAddress", this.finalReturnAddress);
+			}
+			else
+			{
+				String finalReturnAddressCandidate = controller.getPropertySet(getInfoGluePrincipal(), getWorkflowId()).getString("finalReturnAddress");
+				logger.info("finalReturnAddressCandidate " + finalReturnAddressCandidate);
+				if(finalReturnAddressCandidate != null && !finalReturnAddressCandidate.equals(""))
+				{
+					this.finalReturnAddress = finalReturnAddressCandidate;
+					logger.info("Setting Final return address get's set to " + this.finalReturnAddress + " from properties..");
+				}
+			}
+
 			workflow = controller.invokeAction(getInfoGluePrincipal(), getWorkflowId(), actionId, WorkflowController.createWorkflowParameters(ActionContext.getRequest()));
 			return redirectToView();
 		}
@@ -351,6 +367,8 @@ public class ViewMyDesktopToolStartPageAction extends InfoGlueAbstractAction
 	public void setFinalReturnAddress(String finalReturnAddress)
 	{
 		if(finalReturnAddress != null && !finalReturnAddress.equals("null"))
+		{
 			this.finalReturnAddress = finalReturnAddress;
+		}
 	}
 }
