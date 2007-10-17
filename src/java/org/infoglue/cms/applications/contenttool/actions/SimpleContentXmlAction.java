@@ -32,6 +32,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.dom4j.Document;
@@ -42,7 +43,9 @@ import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.DigitalAssetController;
+import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
 import org.infoglue.cms.controllers.kernel.impl.simple.TransactionHistoryController;
+import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.entities.content.DigitalAssetVO;
 import org.infoglue.cms.entities.content.impl.simple.ContentVersionImpl;
@@ -54,8 +57,10 @@ import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.treeservice.ss.ContentNodeSupplier;
+import org.infoglue.deliver.util.CompressionHelper;
 
 import com.frovi.ss.Tree.INodeSupplier;
+import com.thoughtworks.xstream.core.util.Base64Encoder;
 
 public class SimpleContentXmlAction extends SimpleXmlServiceAction
 {
@@ -68,6 +73,7 @@ public class SimpleContentXmlAction extends SimpleXmlServiceAction
 	private String digitalAssetKey;
 	private Integer digitalAssetId;
 	private Integer languageId;
+	private boolean enableCompression = false;
 
 	public INodeSupplier getNodeSupplier() throws SystemException
 	{
@@ -119,6 +125,47 @@ public class SimpleContentXmlAction extends SimpleXmlServiceAction
 		return contentVersionVO;
 	}
 
+    public Element getContentElement(Integer contentId) throws Bug, Exception
+    {
+		ContentController contentController = ContentController.getContentController();
+        ContentVO vo = contentController.getContentVOWithId(contentId);
+        return getContentElement(vo);
+    }
+    
+    public Element getContentElement(ContentVO vo) throws Bug, Exception
+    {
+        Element elm = DocumentHelper.createElement("content");
+        
+		ContentVersionController contentVersionController = ContentVersionController.getContentVersionController();
+        ContentVersionVO activeVersion = contentVersionController.getLatestActiveContentVersionVO(vo.getContentId(), LanguageController.getController().getMasterLanguage(vo.getRepositoryId()).getLanguageId());
+        if(activeVersion!=null)
+        {
+        	elm.addAttribute("id", "" + vo.getContentId());
+        	elm.addAttribute("creatorName", "" + vo.getCreatorName());
+        	elm.addAttribute("name", "" + vo.getName());
+        	elm.addAttribute("typedefid", "" + vo.getContentTypeDefinitionId());
+        	elm.addAttribute("expiredatetime", "" + vo.getExpireDateTime().getTime());
+        	elm.addAttribute("publishdatetime", "" + vo.getPublishDateTime().getTime());
+        	elm.addAttribute("isbranch", "" + vo.getIsBranch());
+            elm.addAttribute("activeVersion", "" + activeVersion.getContentVersionId());
+            elm.addAttribute("activeVersionStateId", "" + activeVersion.getStateId());
+            elm.addAttribute("activeVersionModifier", "" + activeVersion.getVersionModifier());
+            Element versionsElement = DocumentHelper.createElement("versions");
+            elm.add(versionsElement);
+            
+            List<ContentVersionVO> versions = contentVersionController.getContentVersionVOWithParent(vo.getContentId());
+            for(ContentVersionVO version: versions)
+            {
+            	Element contentVersionElement = DocumentHelper.createElement("contentVersion");
+            	contentVersionElement.add(getContentVersionHeadElement(version));
+            	versionsElement.add(contentVersionElement);
+            }
+            
+        }
+        
+        return elm;
+    }
+    
     public Element getContentVersionElement(Integer contentVersionId) throws SystemException, Bug, UnsupportedEncodingException
     {
 		ContentVersionController contentVersionController = ContentVersionController.getContentVersionController();
@@ -158,7 +205,18 @@ public class SimpleContentXmlAction extends SimpleXmlServiceAction
     public Element getContentVersionValueElement(ContentVersionVO vo) throws SystemException, Bug, UnsupportedEncodingException
     {
         Element value = DocumentHelper.createElement("value");
-        value.addCDATA(URLEncoder.encode(vo.getVersionValue(),"UTF-8"));
+        if(enableCompression )
+        {
+            Base64Encoder encoder = new Base64Encoder();
+            CompressionHelper zip = new CompressionHelper();
+            byte[] val = zip.compress(vo.getVersionValue());
+            value.addCDATA(encoder.encode(val));
+        }
+        else
+        {
+        	value.addCDATA(URLEncoder.encode(vo.getVersionValue(),"UTF-8"));
+        }
+        
         return value;
     }
     
@@ -170,6 +228,12 @@ public class SimpleContentXmlAction extends SimpleXmlServiceAction
 	{
         Document doc = DocumentHelper.createDocument();
         doc.add(getContentVersionElement(parent));
+	    return out(getFormattedDocument(doc));
+	}
+    public String doContent() throws Exception
+	{
+        Document doc = DocumentHelper.createDocument();
+        doc.add(getContentElement(parent));
 	    return out(getFormattedDocument(doc));
 	}
     
@@ -212,6 +276,14 @@ public class SimpleContentXmlAction extends SimpleXmlServiceAction
 	 */
 	protected BaseEntityVO getRootEntityVO(Integer repositoryId, InfoGluePrincipal principal) throws ConstraintException, SystemException {
 		return ContentControllerProxy.getController().getRootContentVO(repositoryId, principal.getName());
+	}
+
+	public boolean isEnableCompression() {
+		return enableCompression;
+	}
+
+	public void setEnableCompression(boolean enableCompression) {
+		this.enableCompression = enableCompression;
 	}
 	
 }
