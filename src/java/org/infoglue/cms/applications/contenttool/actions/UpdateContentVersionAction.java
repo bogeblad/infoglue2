@@ -23,12 +23,27 @@
 
 package org.infoglue.cms.applications.contenttool.actions;
 
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.log4j.Logger;
+import org.dom4j.Document;
+import org.dom4j.DocumentException;
+import org.dom4j.DocumentHelper;
+import org.dom4j.io.XMLWriter;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentStateController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionControllerProxy;
+import org.infoglue.cms.entities.content.ContentVersion;
 import org.infoglue.cms.entities.content.ContentVersionVO;
+import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.ConstraintException;
+import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
+
+import com.thoughtworks.xstream.XStream;
 
 /**
   * This is the action-class for UpdateContentVersionVersion
@@ -159,6 +174,82 @@ public class UpdateContentVersionAction extends ViewContentVersionAction
 		doExecute();
 						 
 		return "background";
+	}
+	
+	public String doXml() throws IOException, SystemException, Bug, DocumentException
+	{
+		String xmlResult = null;
+		getResponse().setContentType("text/xml; charset=UTF-8");
+    	getResponse().setHeader("Cache-Control","no-cache"); 
+    	getResponse().setHeader("Pragma","no-cache");
+    	getResponse().setDateHeader ("Expires", 0);
+		PrintWriter out = getResponse().getWriter();
+		XMLWriter xmlWriter = new XMLWriter(out);
+		XStream xStream = new XStream();
+		xStream.omitField(contentVersionVO.getClass(),"versionValue");
+		
+		// super.initialize(this.contentVersionId, this.contentId, this.languageId);
+		
+		ContentVersionVO currentContentVersionVO = null;
+		ContentVersionVO activeContentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentId, languageId);
+		
+		/*
+		 * Are we trying to update the active version?
+		 */
+		if(activeContentVersionVO.getContentVersionId().equals(this.contentVersionVO.getContentVersionId()))
+		{
+			if(this.contentVersionVO.getId() != null)
+			{
+				currentContentVersionVO = ContentVersionController.getContentVersionController().getContentVersionVOWithId(this.contentVersionVO.getId());
+			}
+			
+			if(currentContentVersionVO == null || this.oldModifiedDateTime == currentContentVersionVO.getModifiedDateTime().getTime())
+			{
+				this.contentVersionVO.setVersionModifier(this.getInfoGluePrincipal().getName());
+				
+				try
+				{
+					if(activeContentVersionVO.getStateId().equals(ContentVersionVO.WORKING_STATE))
+					{
+					    this.contentVersionVO = ContentVersionControllerProxy.getController().acUpdate(this.getInfoGluePrincipal(), this.contentId, this.languageId, this.contentVersionVO);
+					    this.oldModifiedDateTime = this.contentVersionVO.getModifiedDateTime().getTime();
+					    xmlResult = xStream.toXML(contentVersionVO);
+					}
+					else
+					{
+						xmlResult = "<invalidstate/>";
+					}
+				}
+				catch(ConstraintException ce)
+				{
+				    xmlResult = xStream.toXML(ce);
+				} catch (Exception e) {
+				    xmlResult = xStream.toXML(e);
+				}
+			}
+			else
+			{
+				this.contentVersionVO.setVersionModifier(this.getInfoGluePrincipal().getName());
+				super.contentVersionVO = this.contentVersionVO;
+				concurrentModification = true;
+	            xmlResult = "<concurrentmodification/>";
+			}
+		}
+		else
+		{
+			/*
+			 * Not updating active version
+			 */
+			xmlResult = "<invalidversion/>";
+		}
+		
+		/*
+		 * Output
+		 */
+		xmlWriter.write(DocumentHelper.parseText(xmlResult));
+        xmlWriter.flush();
+		
+		return null;
 	}
 	
 	public void setContentVersionId(Integer contentVersionId)
