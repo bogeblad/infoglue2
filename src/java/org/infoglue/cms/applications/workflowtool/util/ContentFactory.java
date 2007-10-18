@@ -146,9 +146,21 @@ public class ContentFactory
 		final Document contentVersionDocument = buildContentVersionDocument();
 		final ContentVersionVO contentVersionVO = createContentVersionVO(contentVersionDocument.asXML());
 		
-		if(validate(contentVO, contentVersionVO).isEmpty())
+		ConstraintExceptionBuffer ceb = validate(contentVO, contentVersionVO);
+		if(ceb.isEmpty())
 		{
 			return createContent(parentContent, contentVO, contentVersionVO, categories);
+		}
+		else
+		{
+			try
+			{
+				ceb.throwIfNotEmpty();
+			}
+			catch (Exception e) 
+			{
+				logger.error("Probem creating content:" + e.getMessage(), e);
+			}
 		}
 
 		return null;
