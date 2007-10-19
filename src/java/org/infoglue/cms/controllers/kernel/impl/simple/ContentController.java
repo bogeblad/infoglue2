@@ -531,7 +531,6 @@ public class ContentController extends BaseController
 	
     public static ContentVO getParentContent(Integer contentId) throws SystemException, Bug
     {
-    	logger.info("Coming in with:" + contentId);
         Database db = CastorDatabaseService.getDatabase();
 		ContentVO parentContentVO = null;
 		
@@ -540,7 +539,6 @@ public class ContentController extends BaseController
         try
         {
 			Content content = (Content) getObjectWithId(ContentImpl.class, contentId, db);
-			logger.info("CONTENT:" + content.getName());
 			Content parent = content.getParentContent();
 			if(parent != null)
 				parentContentVO = parent.getValueObject();
@@ -556,7 +554,24 @@ public class ContentController extends BaseController
 		return parentContentVO;    	
     }
 
+	/**
+	 * This method returns the value-object of the parent of a specific content. 
+	 */
+	
+    public static ContentVO getParentContent(Integer contentId, Database db) throws SystemException, Bug
+    {
+		ContentVO parentContentVO = null;
+		
+		Content content = (Content) getObjectWithId(ContentImpl.class, contentId, db);
+		logger.info("CONTENT:" + content.getName());
+		Content parent = content.getParentContent();
+		if(parent != null)
+			parentContentVO = parent.getValueObject();
 
+		return parentContentVO;    	
+    }
+
+    
 	public static void addChildContent(ContentVO parentVO, ContentVO childVO)
 		throws ConstraintException, SystemException
 	{
