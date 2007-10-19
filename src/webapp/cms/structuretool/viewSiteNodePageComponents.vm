@@ -12,7 +12,6 @@
 
 	   	function resize() 
 	    {
-			//alert("apa");
 			/*
 		    var w_newWidth,w_newHeight;
 		    var w_maxWidth=1600, w_maxHeight=1200;
