@@ -23,9 +23,13 @@
 
 package org.infoglue.deliver.util;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
@@ -34,6 +38,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
@@ -55,6 +60,26 @@ public class HttpHelper
 {
     private final static Logger logger = Logger.getLogger(HttpHelper.class.getName());
 
+    public void downloadFile(String urlAddress, File file) throws Exception
+    {
+		URL url = new URL(urlAddress);
+		URLConnection conn = url.openConnection();
+		InputStream in = conn.getInputStream();
+
+		BufferedInputStream bis = new BufferedInputStream(in);
+		FileOutputStream fos = new FileOutputStream(file);
+		BufferedOutputStream bout = new BufferedOutputStream(fos, 1024);
+		
+		int count;
+		byte[] buffer = new byte[1024]; // or more ...
+		while ((count = in.read(buffer)) > 0)
+			bout.write(buffer, 0, count);
+		
+		bout.close();
+		in.close();
+		bis.close();
+    }
+    
 	public String postToUrl(String urlAddress, HttpServletRequest request, boolean includeRequest) throws Exception
 	{
 		if(includeRequest)
@@ -286,24 +311,38 @@ public class HttpHelper
 		return getUrlContent(urlAddress, requestParameters, 30000);
 	}
 
-	public String getUrlContent(String urlAddress, Map requestParameters, int timeout) throws Exception
+	public String getUrlContent(String urlAddress, Map requestProperties, int timeout) throws Exception
 	{
-		return getUrlContent(urlAddress, requestParameters, null, timeout);
+		return getUrlContent(urlAddress, requestProperties, null, timeout);
 	}
 	
-	public String getUrlContent(String urlAddress, Map requestParameters, String encoding, int timeout) throws Exception
+	public String getUrlContent(String urlAddress, Map requestProperties, String encoding, int timeout) throws Exception
 	{
-	    URL url = new URL(urlAddress);
+		return getUrlContent(urlAddress, requestProperties, new HashMap(), encoding, timeout);
+	}
+	
+	public String getUrlContent(String urlAddress, Map requestProperties, Map requestParameters, String encoding, int timeout) throws Exception
+	{
+		String argString = "";
+		if(requestParameters != null)
+		{
+			if(urlAddress.indexOf("?") > -1)
+				argString = "&" + toEncodedString(requestParameters, encoding);
+			else
+				argString = "?" + toEncodedString(requestParameters, encoding);
+		}
+		
+	    URL url = new URL(urlAddress + argString);
 	    URLConnection connection = url.openConnection();
 	    connection.setConnectTimeout(timeout);
 	    connection.setReadTimeout(timeout);
 	    connection.setUseCaches(false);
 	    
-	    Iterator mapIterator = requestParameters.keySet().iterator();
+	    Iterator mapIterator = requestProperties.keySet().iterator();
 	    while(mapIterator.hasNext())
 	    {
 	    	String key = (String)mapIterator.next();
-	    	String value = (String)requestParameters.get(key);
+	    	String value = (String)requestProperties.get(key);
 	    	connection.setRequestProperty(key, value);
 	    }
 	    
@@ -510,7 +549,31 @@ public class HttpHelper
 		
 	}
 
-	
+
+	/**
+	 * Encodes a hash table to an URL encoded string.
+	 * 
+	 * @param inHash The hash table you would like to encode
+	 * @return A URL encoded string.
+	 */
+		
+	private String toEncodedString(Map inMap, String encoding) throws Exception
+	{
+	    StringBuffer buffer = new StringBuffer();
+	    Iterator inMapKeyIterator = inMap.keySet().iterator();
+	    while(inMapKeyIterator.hasNext())
+	    {
+	        String name = inMapKeyIterator.next().toString();
+	        String value = inMap.get(name).toString();
+	        buffer.append(URLEncoder.encode(name, encoding) + "=" + URLEncoder.encode(value, encoding));
+	        if(inMapKeyIterator.hasNext())
+	        {
+	            buffer.append("&");
+	        }
+	    }
+	    return buffer.toString();
+	}
+
 	/**
 	 * Encodes a hash table to an URL encoded string.
 	 * 
