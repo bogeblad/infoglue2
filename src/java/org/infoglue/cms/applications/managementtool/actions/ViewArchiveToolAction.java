@@ -47,8 +47,8 @@ public class ViewArchiveToolAction extends InfoGlueAbstractAction
 	private static final long serialVersionUID = 1L;
 	
 	private int numberOfVersionsToKeep = 3;
-	private int assetFileSizeLimit = 500000;
-	private int assetNumberLimit = 500;
+	private int assetFileSizeLimit = 5000000;
+	private int assetNumberLimit = 50;
 	private List optimizationBeanList = new ArrayList();
 	
 	private String[] digitalAssetId;
