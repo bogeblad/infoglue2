@@ -41,6 +41,7 @@ import org.infoglue.cms.entities.content.impl.simple.ContentImpl;
 import org.infoglue.cms.entities.content.impl.simple.ContentVersionImpl;
 import org.infoglue.cms.entities.content.impl.simple.DigitalAssetImpl;
 import org.infoglue.cms.entities.content.impl.simple.MediumContentImpl;
+import org.infoglue.cms.entities.content.impl.simple.MediumDigitalAssetImpl;
 import org.infoglue.cms.entities.content.impl.simple.SmallContentImpl;
 import org.infoglue.cms.entities.content.impl.simple.SmallDigitalAssetImpl;
 import org.infoglue.cms.entities.content.impl.simple.SmallishContentImpl;
@@ -182,6 +183,11 @@ public class SelectiveLivePublicationThread extends PublicationThread
 							Class typesExtra = SmallDigitalAssetImpl.class;
 							Object[] idsExtra = {new Integer(objectId)};
 							CacheController.clearCache(typesExtra, idsExtra);
+							
+							Class typesExtraMedium = MediumDigitalAssetImpl.class;
+							Object[] idsExtraMedium = {new Integer(objectId)};
+							CacheController.clearCache(typesExtraMedium, idsExtraMedium);
+
 						    logger.info("We should delete all images with digitalAssetId " + objectId);
 							DigitalAssetDeliveryController.getDigitalAssetDeliveryController().deleteDigitalAssets(new Integer(objectId));
 						}

@@ -47,6 +47,8 @@ import org.infoglue.cms.entities.content.DigitalAsset;
 import org.infoglue.cms.entities.content.DigitalAssetVO;
 import org.infoglue.cms.entities.content.impl.simple.ContentImpl;
 import org.infoglue.cms.entities.content.impl.simple.ContentVersionImpl;
+import org.infoglue.cms.entities.content.impl.simple.MediumDigitalAssetImpl;
+import org.infoglue.cms.entities.content.impl.simple.SmallDigitalAssetImpl;
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.entities.management.ContentTypeDefinition;
 import org.infoglue.cms.entities.management.Language;
@@ -1598,7 +1600,8 @@ public class ContentVersionController extends BaseController
 
         try
         {
-            OQLQuery oql = db.getOQLQuery( "SELECT da FROM org.infoglue.cms.entities.content.impl.simple.DigitalAssetImpl da WHERE da.assetFileSize >= $1 ORDER BY da.digitalAssetId asc");
+            //OQLQuery oql = db.getOQLQuery( "SELECT da FROM org.infoglue.cms.entities.content.impl.simple.DigitalAssetImpl da WHERE da.assetFileSize >= $1 ORDER BY da.digitalAssetId asc");
+            OQLQuery oql = db.getOQLQuery( "SELECT da FROM org.infoglue.cms.entities.content.impl.simple.MediumDigitalAssetImpl da WHERE da.assetFileSize >= $1 ORDER BY da.digitalAssetId asc");
         	oql.bind(assetSizeLimit);
         	
         	QueryResults results = oql.execute(Database.ReadOnly);
@@ -1608,7 +1611,8 @@ public class ContentVersionController extends BaseController
             {
 				boolean keep = true;
             	
-				DigitalAsset digitalAsset = (DigitalAsset)results.next();
+				//DigitalAsset digitalAsset = (DigitalAsset)results.next();
+            	MediumDigitalAssetImpl digitalAsset = (MediumDigitalAssetImpl)results.next();
             	//System.out.println("found one:" + digitalAsset.getId() + ":" + digitalAsset.getAssetKey() + ":" + digitalAsset.getAssetContentType());
             	if(digitalAsset.getAssetKey().equals("portletentityregistry.xml"))
             		keep = false;

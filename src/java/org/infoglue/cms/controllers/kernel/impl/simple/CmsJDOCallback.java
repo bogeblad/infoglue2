@@ -33,6 +33,7 @@ import org.infoglue.cms.entities.content.impl.simple.ContentImpl;
 import org.infoglue.cms.entities.content.impl.simple.ContentVersionImpl;
 import org.infoglue.cms.entities.content.impl.simple.DigitalAssetImpl;
 import org.infoglue.cms.entities.content.impl.simple.MediumContentImpl;
+import org.infoglue.cms.entities.content.impl.simple.MediumDigitalAssetImpl;
 import org.infoglue.cms.entities.content.impl.simple.SmallContentImpl;
 import org.infoglue.cms.entities.content.impl.simple.SmallDigitalAssetImpl;
 import org.infoglue.cms.entities.content.impl.simple.SmallishContentImpl;
@@ -158,6 +159,7 @@ public class CmsJDOCallback implements CallbackInterceptor
 			{
 				CacheController.clearCache("digitalAssetCache");
 				clearCache(SmallDigitalAssetImpl.class);
+				clearCache(MediumDigitalAssetImpl.class);
 				//System.out.println("We should delete all images with digitalAssetId " + getObjectIdentity(object));
 				DigitalAssetController.deleteCachedDigitalAssets((Integer)getObjectIdentity(object));
 			}
@@ -343,6 +345,7 @@ public class CmsJDOCallback implements CallbackInterceptor
 			{
 				CacheController.clearCache("digitalAssetCache");
 				clearCache(SmallDigitalAssetImpl.class);
+				clearCache(MediumDigitalAssetImpl.class);
 			}
 
 			//System.out.println("created end...:" + object);
@@ -420,6 +423,7 @@ public class CmsJDOCallback implements CallbackInterceptor
 			{
 				CacheController.clearCache("digitalAssetCache");
 				clearCache(SmallDigitalAssetImpl.class);
+				clearCache(MediumDigitalAssetImpl.class);
 				//logger.info("We should delete all images with digitalAssetId " + getObjectIdentity(object));
 				DigitalAssetController.deleteCachedDigitalAssets((Integer)getObjectIdentity(object));
 			}
