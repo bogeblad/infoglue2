@@ -40,6 +40,7 @@ public class ImportTag extends TemplateControllerTag
 
 	private String url;
 	private String charEncoding;
+	private Map requestProperties = new HashMap();
 	private Map requestParameters = new HashMap();
 	private Integer timeout = new Integer(30000);
 	
@@ -99,6 +100,11 @@ public class ImportTag extends TemplateControllerTag
     {
         this.timeout = evaluateInteger("importTag", "timeout", timeout);
     }
+
+    protected final void addProperty(final String name, final String value)
+	{
+		requestProperties.put(name, value);
+	}
 
     protected final void addParameter(final String name, final String value)
 	{

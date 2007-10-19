@@ -49,7 +49,12 @@ public class URLParameterTag extends AbstractTag
 	 * The value of the parameter.
 	 */
 	private String value;
-	
+
+	/**
+	 * The value of the parameter.
+	 */
+	private String scope = "requestParameter";
+
 	/**
 	 * Default constructor. 
 	 */
@@ -93,7 +98,12 @@ public class URLParameterTag extends AbstractTag
 		if(urlParent != null)
 			((URLTag) urlParent).addParameter(name, value);
 		if(importParent != null)
-			((ImportTag) importParent).addParameter(name, value);
+		{
+			if(this.scope.equalsIgnoreCase("requestParameter"))
+				((ImportTag) importParent).addParameter(name, value);
+			else
+				((ImportTag) importParent).addProperty(name, value);
+		}
 		if(transformParent != null)
 			((XSLTransformTag) transformParent).addParameter(name, value);
 	}
@@ -118,5 +128,16 @@ public class URLParameterTag extends AbstractTag
 	public void setValue(final String value) throws JspException
 	{
 		this.value = evaluateString("parameter", "value", value);
+	}
+
+	/**
+	 * Sets the value attribute.
+	 * 
+	 * @param scope the scope to use. In for example common:import you can use requestProperty instead of the normal dafult requestParameter.
+	 * @throws JspException if an error occurs while evaluating value parameter.
+	 */
+	public void setScope(final String scope) throws JspException
+	{
+		this.scope = evaluateString("parameter", "scope", scope);
 	}
 }
