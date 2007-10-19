@@ -227,7 +227,11 @@ public class ViewAndCreateContentForServiceBindingAction extends InfoGlueAbstrac
             
             if(metaInfoContent == null)
             {
-                throw new Exception("The site node must have a meta information bound. Please run the appropriate scripts");
+            	siteNode.setMetaInfoContentId(null);
+    		    this.contentVO = SiteNodeController.getController().createSiteNodeMetaInfoContent(db, siteNode, this.repositoryId, this.getInfoGluePrincipal(), null).getValueObject();
+            	siteNode.setMetaInfoContentId(this.contentVO.getId());
+                logger.error("The site node must have a meta information bound. We tried to recreate it. Old info was lost.");
+            	//throw new Exception("The site node must have a meta information bound. We tried to recreate it. Old info was lost.");
             } 
             else
             {
@@ -286,7 +290,7 @@ public class ViewAndCreateContentForServiceBindingAction extends InfoGlueAbstrac
             }
             */
             
-            this.languageId = getInitialLanguageVO(this.contentVO.getId()).getId();
+            this.languageId = getInitialLanguageVO(this.contentVO.getId(), db).getId();
             
     		commitTransaction(db);
         }
@@ -300,24 +304,25 @@ public class ViewAndCreateContentForServiceBindingAction extends InfoGlueAbstrac
 		return "success";
     }
        
-	public LanguageVO getInitialLanguageVO(Integer contentId) throws Exception
+	public LanguageVO getInitialLanguageVO(Integer contentId, Database db) throws Exception
 	{
 		Map args = new HashMap();
 	    args.put("globalKey", "infoglue");
 	    PropertySet ps = PropertySetManager.getInstance("jdbc", args);
 
 	    String initialLanguageId = ps.getString("content_" + contentId + "_initialLanguageId");
-	    ContentVO parentContentVO = ContentController.getContentController().getParentContent(contentId); 
+	    ContentVO parentContentVO = ContentController.getContentController().getParentContent(contentId, db); 
 	    while((initialLanguageId == null || initialLanguageId.equalsIgnoreCase("-1")) && parentContentVO != null)
 	    {
+	    	System.out.println("Loop...");
 	        initialLanguageId = ps.getString("content_" + parentContentVO.getId() + "_initialLanguageId");
-		    parentContentVO = ContentController.getContentController().getParentContent(parentContentVO.getId()); 
+		    parentContentVO = ContentController.getContentController().getParentContent(parentContentVO.getId(), db); 
 	    }
 	    
 	    if(initialLanguageId != null && !initialLanguageId.equals("") && !initialLanguageId.equals("-1"))
-	        return LanguageController.getController().getLanguageVOWithId(new Integer(initialLanguageId));
+	        return LanguageController.getController().getLanguageVOWithId(new Integer(initialLanguageId), db);
 	    else
-	        return LanguageController.getController().getMasterLanguage(repositoryId);
+	        return LanguageController.getController().getMasterLanguage(repositoryId, db);
 	}
 
 	public List getRepositories()
