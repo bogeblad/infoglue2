@@ -147,6 +147,7 @@ public class ViewServerNodePropertiesAction extends InfoGluePropertiesAbstractAc
 	    populate(ps, "digitalAssetPath");
 	    populate(ps, "urlFormatting");
 	    populate(ps, "enableNiceURI");
+	    populate(ps, "enableDiskAssets");
 	    populate(ps, "niceURIEncoding");
 	    populate(ps, "niceURIAttributeName");
 	    populate(ps, "requestArgumentDelimiter");
@@ -229,6 +230,8 @@ public class ViewServerNodePropertiesAction extends InfoGluePropertiesAbstractAc
 	    populateData(ps, "internalDeliveryUrls");
 	    populateData(ps, "publicDeliveryUrls");
 	    populateData(ps, "toolLanguages");
+	    populateData(ps, "deploymentServers");
+	    
 	    populate(ps, "edition.pageSize");
 	    populate(ps, "content.tree.sort");
 	    populate(ps, "structure.tree.sort");

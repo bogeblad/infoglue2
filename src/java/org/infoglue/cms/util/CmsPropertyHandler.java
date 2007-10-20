@@ -965,7 +965,12 @@ public class CmsPropertyHandler
 	{
 	    return getServerNodeProperty("digitalAssetPath", true);
 	}
-
+	
+	public static String getEnableDiskAssets()
+	{
+	    return getServerNodeProperty("enableDiskAssets", true, "false");
+	}
+	
 	public static String getEnableNiceURI()
 	{
 	    return getServerNodeProperty("enableNiceURI", true, "true");
@@ -1254,7 +1259,39 @@ public class CmsPropertyHandler
 	    
 	    return urls;
 	}
-	
+
+	public static List getDeploymentServers()
+	{
+		List urls = new ArrayList();
+		
+	    String deploymentServersString = CmsPropertyHandler.getServerNodeDataProperty(null, "deploymentServers", true, null);
+	    System.out.println("deploymentServersString:" + deploymentServersString);
+	    if(deploymentServersString != null && !deploymentServersString.equals(""))
+		{
+	    	try
+			{
+	    		Properties properties = new Properties();
+				properties.load(new ByteArrayInputStream(deploymentServersString.getBytes("UTF-8")));
+
+				int i = 0;
+				String serverUrl = null;
+				while((serverUrl = properties.getProperty("" + i)) != null)
+				{ 
+					urls.add(serverUrl);
+					i++;
+				}	
+
+			}	
+			catch(Exception e)
+			{
+			    logger.error("Error loading properties from string. Reason:" + e.getMessage());
+				e.printStackTrace();
+			}
+		}
+	    
+	    return urls;
+	}
+
 	public static List getToolLocales()
 	{
 		List toolLocales = new ArrayList();
