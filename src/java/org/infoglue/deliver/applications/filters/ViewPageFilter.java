@@ -136,6 +136,11 @@ public class ViewPageFilter implements Filter
 
         try
         {
+        	if(requestURI.indexOf(CmsPropertyHandler.getDigitalAssetBaseUrl() + "/protected") > -1)
+        	{
+            	throw new Exception("Not allowed to view protected assets...");
+        	}
+        	
 	        if (enableNiceURI.equalsIgnoreCase("true") && !uriMatcher.matches(requestURI)) 
 	        {
 	            /*
