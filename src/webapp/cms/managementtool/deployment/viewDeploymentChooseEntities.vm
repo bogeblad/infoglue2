@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+#beginManagementTool("tool.managementtool.deployment.header" "tool.managementtool.deployment.header" "")
+
+<script type="text/javascript" src="script/jsdiff.js"></script>
+<style>
+<!--
+	ins 
+	{
+	  background-color: #ccffcc;
+	}
+	
+	del 
+	{
+	  background-color: #ff6666;
+	}
+-->
+</style>
+
+<div class="fullymarginalized">
+<table>
+	<tr>
+		<td><p>$ui.getString("tool.managementtool.deployment.introduction")</p></td>
+	</tr>		
+	<tr>
+		<td>
+			<form name="contentTypesForm" action="ViewDeploymentSynchronizeServers!updateContentTypes.action" method="post">
+				<input type="hidden" name="deploymentServerIndex" value="$deploymentServerIndex"/>
+			
+			<h3>Content types that deviates</h3>
+			#set($indexMissingTypes = 0)
+			#foreach($deviatingContentType in $deviatingContentTypes)
+				#if(!$deviatingContentType.localVersion)
+					<input type="checkbox" name="missingContentTypeName" value="$deviatingContentType.remoteVersion.name"/> Missing local version of $deviatingContentType.remoteVersion.name<br/> 
+				#else
+					#set($value1 = "$formatter.cleanForJavascriptStrings($deviatingContentType.remoteVersion.schemaValue)")
+					#set($value2 = "$formatter.cleanForJavascriptStrings($deviatingContentType.localVersion.schemaValue)")
+
+					#if($value1 != $value2)
+						<input type="checkbox" name="deviatedContentTypeName" value="$deviatingContentType.remoteVersion.name"/> $deviatingContentType.remoteVersion.name<br/> 
+						<ul>
+						#set($deviatingAttributes = $this.getDeviatingAttributes($deviatingContentType.remoteVersion.schemaValue, $deviatingContentType.localVersion.schemaValue))
+						#foreach($deviatingAttribute in $deviatingAttributes)
+							<li>
+								<input type="checkbox" name="${deviatingContentType.remoteVersion.name}_attributeName" value="$deviatingAttribute.name"/> $deviatingAttribute.name
+							</li>
+						#end
+
+						#set($deviatingCategories = $this.getDeviatingCategories($deviatingContentType.remoteVersion.schemaValue, $deviatingContentType.localVersion.schemaValue))
+						#foreach($deviatingCategory in $deviatingCategories)
+							<li>
+								<input type="checkbox" name="${deviatingContentType.remoteVersion.name}_categoryName" value="$deviatingCategory.value"/> $deviatingCategory.value
+							</li>
+						#end
+
+						#set($deviatingAssetKeys = $this.getDeviatingAssetKeys($deviatingContentType.remoteVersion.schemaValue, $deviatingContentType.localVersion.schemaValue))
+						#foreach($deviatingAssetKey in $deviatingAssetKeys)
+							<li>
+								<input type="checkbox" name="${deviatingContentType.remoteVersion.name}_categoryName" value="$deviatingAssetKey.assetKey"/> $deviatingAssetKey.assetKey
+							</li>
+						#end
+						</ul>
+					#else
+						##Exakt compare: $deviatingContentType.remoteVersion.name<br/> 
+					#end
+				#end
+	
+				#set($indexMissingTypes = $indexMissingTypes + 1)
+			#end
+				<br/>
+				<input type="image" src="$ui.getString("images.contenttool.buttons.next")" width="50" height="25">
+			</form>
+		</td>
+	</tr>		
+	<tr>
+		<td>
+			<h3>Categories</h3>
+		</td>
+	</tr>		
+	<tr>
+		<td>
+			<h3>Workflows</h3>
+		</td>
+	</tr>		
+	<tr>
+		<td>
+			Contents
+		</td>
+	</tr>		
+	<tr>
+		<td>
+			Structure
+		</td>
+	</tr>		
+	<tr>
+		<td>
+			<form method="POST" action="ViewDeploymentSynchronizeServers.action">
+				<input type="image" src="$ui.getString("images.contenttool.buttons.next")" width="50" height="25">
+			</form>
+		</td>
+	</tr>
+</table>
+</div>
+</body>
+</html>

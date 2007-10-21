@@ -1260,9 +1260,9 @@ public class CmsPropertyHandler
 	    return urls;
 	}
 
-	public static List getDeploymentServers()
+	public static List<String> getDeploymentServers()
 	{
-		List urls = new ArrayList();
+		List<String> urls = new ArrayList<String>();
 		
 	    String deploymentServersString = CmsPropertyHandler.getServerNodeDataProperty(null, "deploymentServers", true, null);
 	    System.out.println("deploymentServersString:" + deploymentServersString);

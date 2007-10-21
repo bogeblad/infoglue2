@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+#beginManagementTool("tool.managementtool.deployment.header" "tool.managementtool.deployment.header" "")
+
+<div class="fullymarginalized">
+<form method="POST" action="ViewDeploymentChooseServer.action">
+<table>
+	<tr>
+		<td><p>$ui.getString("tool.managementtool.deployment.introduction")</p></td>
+	</tr>		
+	<tr>
+		<td>
+			<select name="deploymentServerIndex" class="dropbox">
+				#set($count = 0)
+				#foreach($deploymentServer in $deploymentServers)
+					<option value="$count">$deploymentServer</option>
+					#set($count = $count + 1)
+				#end
+			</select>
+		</td>
+	</tr>		
+	<tr>
+		<td>
+			<input type="image" src="$ui.getString("images.contenttool.buttons.next")" width="50" height="25">
+		</td>
+	</tr>
+</table>
+</form>
+</div>
+</body>
+</html>
