@@ -147,12 +147,55 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 			pageString = cacheString.toString();
 		}
 
-		pageString = this.getTemplateController().decoratePage(pageString);
+		pageString = decorateHeadAndPageWithVarsFromComponents(pageString);
 		
 		this.setPageString(pageString);
 	}
 	
 	
+	protected String decorateHeadAndPageWithVarsFromComponents(String pageString)
+	{
+		if(pageString.length() < 100000)
+		{
+			pageString = this.getTemplateController().decoratePage(pageString);
+			
+			List htmlHeadItems = this.getTemplateController().getDeliveryContext().getHtmlHeadItems();
+			if(htmlHeadItems != null || htmlHeadItems.size() > 0)
+			{
+				int indexOfHeadEndTag = pageString.indexOf("</head");
+				if(indexOfHeadEndTag == -1)
+					indexOfHeadEndTag = pageString.indexOf("</HEAD");
+	
+				if(indexOfHeadEndTag != -1)
+				{
+					StringBuffer sb = new StringBuffer(pageString);
+					Iterator htmlHeadItemsIterator = htmlHeadItems.iterator();
+					while(htmlHeadItemsIterator.hasNext())
+					{
+						String value = (String)htmlHeadItemsIterator.next();
+						sb.insert(indexOfHeadEndTag, value + "\n");
+					}
+					pageString = sb.toString();
+				}
+			}
+			
+			/*
+			Map pageAttributes = this.getTemplateController().getDeliveryContext().getPageAttributes();
+			System.out.println("pageAttributes:" + pageAttributes);
+			Iterator pageAttributesIterator = pageAttributes.keySet().iterator();
+			while(pageAttributesIterator.hasNext())
+			{
+				String key = (String)pageAttributesIterator.next();
+				String value = (String)pageAttributes.get(key);
+				System.out.println("key:" + key);
+				System.out.println("value:" + value);
+			}
+			*/
+		}
+		
+		return pageString;
+	}
+
 	/**
 	 * This method fetches the pageComponent structure from the metainfo content.
 	 */

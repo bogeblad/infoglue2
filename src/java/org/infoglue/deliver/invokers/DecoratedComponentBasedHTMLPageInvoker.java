@@ -182,7 +182,10 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		
 		new VelocityTemplateProcessor().renderTemplate(context, cachedStream, decoratePageTemplate, false, baseComponent);
 
-		this.setPageString(cacheString.toString());
+		String pageString = cacheString.toString();
+		pageString = decorateHeadAndPageWithVarsFromComponents(pageString);
+
+		this.setPageString(pageString);
 		
 		timer.printElapsedTime("End invokePage");
 	}

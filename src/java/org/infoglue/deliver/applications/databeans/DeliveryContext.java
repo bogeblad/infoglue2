@@ -119,6 +119,7 @@ public class DeliveryContext implements UsageListener
 	private boolean useDownloadAction = false;
 	
 	private Map pageAttributes = new HashMap();
+	private List htmlHeadItems = new ArrayList();
 	
 	public static DeliveryContext getDeliveryContext()
 	{
@@ -426,6 +427,11 @@ public class DeliveryContext implements UsageListener
 	public void setUseDownloadAction(boolean useDownloadAction)
 	{
 		this.useDownloadAction = useDownloadAction;
+	}
+
+	public List getHtmlHeadItems()
+	{
+		return htmlHeadItems;
 	}
 
 }
