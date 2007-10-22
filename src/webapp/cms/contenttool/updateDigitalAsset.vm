@@ -135,6 +135,7 @@
 			#else
 				$ui.getString("tool.contenttool.fileUpload.fileUploadUpdateHeader")
 			#end
+			(Max $formatter.formatFileSize($this.userUploadMaxSize))
 		</td>
 		<td rowspan="2" width="100" style="border: 1px solid black; background-color: white;" align="center" valign="middle">
 			#if($isUpdated)

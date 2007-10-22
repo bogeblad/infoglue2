@@ -21,7 +21,7 @@
 <table width="300">
 	<tr>
 		<td class="biglabel">
-			$ui.getString("tool.contenttool.fileUpload.fileUploadFailedHeader")
+			$ui.getString("tool.contenttool.fileUpload.fileUploadFailedHeader") (Max $formatter.formatFileSize($this.userUploadMaxSize))
 		</td>
 	</tr>		
 	<tr>

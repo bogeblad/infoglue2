@@ -147,6 +147,7 @@
 			#else
 				$ui.getString("tool.contenttool.fileUpload.fileUploadedSoFarLabel"): $uploadedFilesCounter
 			#end
+			(Max $formatter.formatFileSize($this.userUploadMaxSize))
 		</td>
 		<td rowspan="2" width="100" style="border: 1px solid black; background-color: white;" align="center" valign="middle">
 			#if($uploadedFilesCounter != 0)

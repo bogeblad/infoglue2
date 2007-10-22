@@ -48,6 +48,7 @@ import org.infoglue.deliver.controllers.kernel.impl.simple.ExtranetController;
 import org.infoglue.deliver.util.CacheController;
 
 import webwork.action.ActionContext;
+import webwork.config.Configuration;
 
 /**
  * @author Mattias Bogeblad
@@ -333,6 +334,46 @@ public abstract class InfoGlueAbstractAction extends WebworkAbstractAction
 	protected final String getParameter(String parameterName)
 	{
 		return (String) ActionContext.getParameters().get(parameterName);
+	}
+
+	public final Integer getUserUploadMaxSize()
+	{
+		String userUploadMaxSize = getPrincipalPropertyValue("fileUploadMaximumSize", false, true);
+		if (userUploadMaxSize != null && !userUploadMaxSize.equals("") && !userUploadMaxSize.equals("-1"))
+		{
+			try
+			{
+				Integer userUploadMaxSizeInteger = new Integer(userUploadMaxSize);
+				return userUploadMaxSizeInteger;
+			} 
+			catch (Exception e)
+			{
+				return getUploadMaxSize();
+			}
+		} 
+		else
+		{
+			return getUploadMaxSize();
+		}
+	}
+
+	public final Integer getUploadMaxSize()
+	{
+		Integer maxSize = new Integer(Integer.MAX_VALUE);
+		try
+		{
+			String maxSizeStr = Configuration.getString("webwork.multipart.maxSize");
+			if (maxSizeStr != null)
+			{
+				maxSize = new Integer(maxSizeStr);
+			}
+		} 
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+		
+		return maxSize;
 	}
 	
     public String getColorScheme()
