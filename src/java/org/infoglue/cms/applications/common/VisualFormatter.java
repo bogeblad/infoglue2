@@ -464,4 +464,28 @@ public class VisualFormatter
 		return encodedString;
 	}
 
+    public String formatFileSize(Object fileSizeObject)
+    {	
+    	if(fileSizeObject == null)
+            return "";
+        
+    	String fileSizeString = "";
+    	Integer fileSize = null;
+        if(fileSizeObject instanceof String)
+        	fileSize = new Integer((String)fileSizeObject);
+        else if(fileSizeObject instanceof Integer)
+        	fileSize = (Integer)fileSizeObject;
+        
+        if(fileSize.intValue() > 1000000000)
+        	fileSizeString = "" + fileSize / (1000 * 1000 * 1000) + " GB";
+        else if(fileSize.intValue() > 1000000)
+        	fileSizeString = "" + fileSize / (1000 * 1000) + " MB";
+        else if(fileSize.intValue() > 1000)
+        	fileSizeString = "" + fileSize / 1000 + " KB";
+        else
+        	fileSizeString = "" + fileSize + " Bytes";
+        	
+        return fileSizeString;
+    }
+
 }
