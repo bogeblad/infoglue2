@@ -58,6 +58,7 @@ public class SiteNodeVersionVO implements BaseEntityVO
 	private Integer disableLanguages    = INHERITED;
 	private String contentType 			= "text/html";
   	private String pageCacheKey			= "default";
+  	private String pageCacheTimeout		= null;
   	
     private Integer siteNodeId			= null;
 	private String siteNodeName			= "";
@@ -174,6 +175,17 @@ public class SiteNodeVersionVO implements BaseEntityVO
 	        this.pageCacheKey = pageCacheKey;
     }
 
+	public String getPageCacheTimeout()
+    {
+        return pageCacheTimeout;
+    }
+    
+	public void setPageCacheTimeout(String pageCacheTimeout)
+    {
+	    if(pageCacheTimeout != null && !pageCacheTimeout.equalsIgnoreCase(""))
+	        this.pageCacheTimeout = pageCacheTimeout;
+    }
+
 	public Integer getDisableEditOnSight()
 	{
 		return (disableEditOnSight == null) ? INHERITED : disableEditOnSight;
@@ -252,6 +264,7 @@ public class SiteNodeVersionVO implements BaseEntityVO
 	    sb.append("disableLanguages:" + disableLanguages + '\n');
 	    sb.append("contentType:" + contentType + '\n');
 	    sb.append("pageCacheKey:" + pageCacheKey + '\n');
+	    sb.append("pageCacheTimeout:" + pageCacheTimeout + '\n');
 	    sb.append("siteNodeId:" + siteNodeId + '\n');
 	    sb.append("siteNodeName:" + siteNodeName + '\n');
 	    

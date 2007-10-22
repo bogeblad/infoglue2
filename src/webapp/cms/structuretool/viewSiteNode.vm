@@ -153,6 +153,20 @@ function editContent(contentId)
 		<td></td>
 	</tr>		
 	<tr>
+		<td>#editTextField("SiteNode.pageCacheTimeout" "pageCacheTimeout" $!pageCacheTimeout "30" "date" $readonly)</td>
+		<td><img src="images/trans.gif" width="20" height="1"></td>
+		<td>
+			<img src="images/trans.gif" width="20" height="1">
+			#*
+			$ui.getString("entity.SiteNode.disableLanguages.label")<br>
+			<input type="radio" name="disableLanguages" value="0" #if($!disableLanguages == 0) checked="1" #end $readonly> $ui.getString("tool.common.no")
+			<input type="radio" name="disableLanguages" value="1" #if($!disableLanguages == 1) checked="1" #end $readonly> $ui.getString("tool.common.yes")
+			<input type="radio" name="disableLanguages" value="2" #if($!disableLanguages == 2) checked="1" #end $readonly> $ui.getString("tool.common.inherit")
+			*#
+		</td>
+		<td></td>
+	</tr>		
+	<tr>
 		<td colspan="4"><img src="images/trans.gif" height="10" width="1"></td>
 	</tr>
 	

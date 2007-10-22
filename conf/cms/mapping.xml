@@ -332,6 +332,9 @@
     <field name="pageCacheKey" type="java.lang.String">
       <sql name="pageCacheKey" type="varchar" dirty="check" />
     </field>
+    <field name="pageCacheTimeout" type="java.lang.String">
+      <sql name="pageCacheTimeout" type="varchar" dirty="check" />
+    </field>
     <field name="owningSiteNode" type="org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl">
       <sql name="siteNodeId"/>
     </field>

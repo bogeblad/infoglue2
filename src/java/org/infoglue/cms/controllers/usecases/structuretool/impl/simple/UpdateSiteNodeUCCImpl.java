@@ -65,6 +65,7 @@ public class UpdateSiteNodeUCCImpl extends BaseUCCController implements UpdateSi
 			SiteNodeVersionVO latestSiteNodeVersionVO = SiteNodeVersionController.getController().getLatestSiteNodeVersion(db, siteNodeVO.getSiteNodeId(), false).getValueObject();
 			latestSiteNodeVersionVO.setContentType(updatedSiteNodeVersionVO.getContentType());
 			latestSiteNodeVersionVO.setPageCacheKey(updatedSiteNodeVersionVO.getPageCacheKey());
+			latestSiteNodeVersionVO.setPageCacheTimeout(updatedSiteNodeVersionVO.getPageCacheTimeout());
 			latestSiteNodeVersionVO.setDisableEditOnSight(updatedSiteNodeVersionVO.getDisableEditOnSight());
 			latestSiteNodeVersionVO.setDisablePageCache(updatedSiteNodeVersionVO.getDisablePageCache());
 			latestSiteNodeVersionVO.setDisableLanguages(updatedSiteNodeVersionVO.getDisableLanguages());
@@ -119,6 +120,7 @@ public class UpdateSiteNodeUCCImpl extends BaseUCCController implements UpdateSi
 			
 			latestSiteNodeVersionVO.setContentType(updatedSiteNodeVersionVO.getContentType());
 			latestSiteNodeVersionVO.setPageCacheKey(updatedSiteNodeVersionVO.getPageCacheKey());
+			latestSiteNodeVersionVO.setPageCacheTimeout(updatedSiteNodeVersionVO.getPageCacheTimeout());
 			latestSiteNodeVersionVO.setDisableEditOnSight(updatedSiteNodeVersionVO.getDisableEditOnSight());
 			latestSiteNodeVersionVO.setDisableLanguages(updatedSiteNodeVersionVO.getDisableLanguages());
 			latestSiteNodeVersionVO.setDisablePageCache(updatedSiteNodeVersionVO.getDisablePageCache());

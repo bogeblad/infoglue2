@@ -163,15 +163,28 @@ public abstract class PageInvoker
 		if(isPageCacheOn.equalsIgnoreCase("true") && (refresh == null || !refresh.equalsIgnoreCase("true")) && getRequest().getMethod().equals("GET"))
 		{
 			String compressPageCache = CmsPropertyHandler.getCompressPageCache();
+			Integer pageCacheTimeout = this.getTemplateController().getPageCacheTimeout();
 			if(compressPageCache != null && compressPageCache.equalsIgnoreCase("true"))
 			{
-			    byte[] cachedCompressedData = (byte[])CacheController.getCachedObjectFromAdvancedCache("pageCache", this.getDeliveryContext().getPageKey());
+				byte[] cachedCompressedData = null;
+				if(pageCacheTimeout == null)
+				{
+				    cachedCompressedData = (byte[])CacheController.getCachedObjectFromAdvancedCache("pageCache", this.getDeliveryContext().getPageKey());
+				}
+				else
+				{
+				    cachedCompressedData = (byte[])CacheController.getCachedObjectFromAdvancedCache("pageCache", this.getDeliveryContext().getPageKey(), pageCacheTimeout.intValue());
+				}
+				
 			    if(cachedCompressedData != null)
-			        this.pageString = compressionHelper.decompress(cachedCompressedData);
+			        this.pageString = compressionHelper.decompress(cachedCompressedData);					
 			}
 			else
 			{
-			    this.pageString = (String)CacheController.getCachedObjectFromAdvancedCache("pageCache", this.getDeliveryContext().getPageKey());
+				if(pageCacheTimeout == null)
+					this.pageString = (String)CacheController.getCachedObjectFromAdvancedCache("pageCache", this.getDeliveryContext().getPageKey());
+				else
+					this.pageString = (String)CacheController.getCachedObjectFromAdvancedCache("pageCache", this.getDeliveryContext().getPageKey(), pageCacheTimeout.intValue());
 			}
 			
 			if(this.pageString == null)

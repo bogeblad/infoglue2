@@ -201,6 +201,16 @@ public class SiteNodeVersionImpl implements SiteNodeVersion
 		this.valueObject.setPageCacheKey(pageCacheKey);
 	}
 
+	public String getPageCacheTimeout()
+	{
+		return this.valueObject.getPageCacheTimeout();
+	}
+
+	public void setPageCacheTimeout(String pageCacheTimeout)
+	{
+		this.valueObject.setPageCacheTimeout(pageCacheTimeout);
+	}
+
 	public Integer getDisableEditOnSight()
 	{
 		return this.valueObject.getDisableEditOnSight();

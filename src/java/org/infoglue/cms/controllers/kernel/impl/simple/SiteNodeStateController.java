@@ -158,6 +158,7 @@ public class SiteNodeStateController extends BaseController
 				    
 				newSiteNodeVersionVO.setContentType(oldSiteNodeVersion.getContentType());
 				newSiteNodeVersionVO.setPageCacheKey(oldSiteNodeVersion.getPageCacheKey());
+				newSiteNodeVersionVO.setPageCacheTimeout(oldSiteNodeVersion.getPageCacheTimeout());
 				newSiteNodeVersionVO.setDisableEditOnSight(oldSiteNodeVersion.getDisableEditOnSight());
 				newSiteNodeVersionVO.setDisableLanguages(oldSiteNodeVersion.getDisableLanguages());
 				newSiteNodeVersionVO.setDisablePageCache(oldSiteNodeVersion.getDisablePageCache());
@@ -193,6 +194,7 @@ public class SiteNodeStateController extends BaseController
 		    	
 				newSiteNodeVersionVO.setContentType(oldSiteNodeVersion.getContentType());
 				newSiteNodeVersionVO.setPageCacheKey(oldSiteNodeVersion.getPageCacheKey());
+				newSiteNodeVersionVO.setPageCacheTimeout(oldSiteNodeVersion.getPageCacheTimeout());
 				newSiteNodeVersionVO.setDisableEditOnSight(oldSiteNodeVersion.getDisableEditOnSight());
 				newSiteNodeVersionVO.setDisableLanguages(oldSiteNodeVersion.getDisableLanguages());
 				newSiteNodeVersionVO.setDisablePageCache(oldSiteNodeVersion.getDisablePageCache());
