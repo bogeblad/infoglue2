@@ -72,6 +72,7 @@ import org.infoglue.cms.util.ConstraintExceptionBuffer;
 import org.infoglue.cms.util.graphics.ThumbnailGenerator;
 import org.infoglue.deliver.controllers.kernel.impl.simple.LanguageDeliveryController;
 import org.infoglue.deliver.util.CacheController;
+import org.infoglue.deliver.util.HttpHelper;
 import org.infoglue.deliver.util.Timer;
 
 /**
@@ -169,7 +170,8 @@ public class DigitalAssetController extends BaseController
 	
 		digitalAsset = new DigitalAssetImpl();
 		digitalAsset.setValueObject(digitalAssetVO.createCopy());
-		digitalAsset.setAssetBlob(is);
+		if(CmsPropertyHandler.getEnableDiskAssets().equals("false"))
+			digitalAsset.setAssetBlob(is);
 		digitalAsset.setContentVersions(contentVersions);
 
 		db.create(digitalAsset);
@@ -206,7 +208,8 @@ public class DigitalAssetController extends BaseController
 	   		
 				digitalAsset = new DigitalAssetImpl();
 				digitalAsset.setValueObject(digitalAssetVO);
-				digitalAsset.setAssetBlob(is);
+				if(CmsPropertyHandler.getEnableDiskAssets().equals("false"))
+					digitalAsset.setAssetBlob(is);
 				digitalAsset.setContentVersions(contentVersions);
 
 				db.create(digitalAsset);
@@ -222,7 +225,8 @@ public class DigitalAssetController extends BaseController
 	   		
 				digitalAsset = new DigitalAssetImpl();
 				digitalAsset.setValueObject(digitalAssetVO);
-				digitalAsset.setAssetBlob(is);
+				if(CmsPropertyHandler.getEnableDiskAssets().equals("false"))
+					digitalAsset.setAssetBlob(is);
 				digitalAsset.setUserProperties(userPropertiesList);
 				
 				db.create(digitalAsset);
@@ -238,7 +242,8 @@ public class DigitalAssetController extends BaseController
 	   		
 				digitalAsset = new DigitalAssetImpl();
 				digitalAsset.setValueObject(digitalAssetVO);
-				digitalAsset.setAssetBlob(is);
+				if(CmsPropertyHandler.getEnableDiskAssets().equals("false"))
+					digitalAsset.setAssetBlob(is);
 				digitalAsset.setRoleProperties(rolePropertiesList);
 				
 				db.create(digitalAsset);
@@ -254,7 +259,8 @@ public class DigitalAssetController extends BaseController
 	   		
 				digitalAsset = new DigitalAssetImpl();
 				digitalAsset.setValueObject(digitalAssetVO);
-				digitalAsset.setAssetBlob(is);
+				if(CmsPropertyHandler.getEnableDiskAssets().equals("false"))
+					digitalAsset.setAssetBlob(is);
 				digitalAsset.setGroupProperties(groupPropertiesList);
 				
 				db.create(digitalAsset);
@@ -757,6 +763,44 @@ public class DigitalAssetController extends BaseController
         }
         catch(Exception e)
         {
+            logger.error("An error occurred when we tried to cache and show the digital asset:" + e);
+            rollbackTransaction(db);
+            throw new SystemException(e.getMessage());
+        }
+    	
+		return assetPath;
+    }
+
+	/**
+	 * This method should return a String containing the URL for this digital asset.
+	 */
+
+	public static String getDigitalAssetProtectedFilePath(Integer digitalAssetId) throws SystemException, Bug
+    {
+    	Database db = CastorDatabaseService.getDatabase();
+
+    	String assetPath = null;
+
+        beginTransaction(db);
+
+        try
+        {
+			DigitalAsset digitalAsset = getSmallDigitalAssetWithId(digitalAssetId, db);
+						
+			if(digitalAsset != null)
+			{
+				logger.info("Found a digital asset:" + digitalAsset.getAssetFileName());
+				String fileName = digitalAsset.getDigitalAssetId() + "_" + digitalAsset.getAssetFileName();
+				String filePath = CmsPropertyHandler.getDigitalAssetPath() + File.separator + "protected";
+				dumpDigitalAsset(digitalAsset.getValueObject(), fileName, filePath, db);
+				assetPath = filePath + File.separator + fileName;
+				System.out.println("assetPath after dump:" + assetPath);
+			}			       	
+
+            commitTransaction(db);
+        }
+        catch(Exception e)
+        {
             logger.info("An error occurred when we tried to cache and show the digital asset:" + e);
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
@@ -832,6 +876,7 @@ public class DigitalAssetController extends BaseController
 					logger.info("fileName:" + fileName);
 					String filePath = CmsPropertyHandler.getDigitalAssetPath();
 					logger.info("filePath:" + filePath);
+					System.out.println("Making thumb from:" + filePath + File.separator + fileName);
 					String thumbnailFileName = digitalAsset.getDigitalAssetId() + "_thumbnail_" + digitalAsset.getAssetFileName();
 					//String thumbnailFileName = "thumbnail_" + fileName;
 					File thumbnailFile = new File(filePath + File.separator + thumbnailFileName);
@@ -1309,21 +1354,33 @@ public class DigitalAssetController extends BaseController
    	
 	public static void dumpDigitalAsset(DigitalAssetVO digitalAssetVO, String fileName, String filePath, Database db) throws Exception
 	{
+		System.out.println("1:" + filePath + File.separator + fileName);
+		try
+		{
 		long timer = System.currentTimeMillis();
 
 		File outputFile = new File(filePath + File.separator + fileName);
+		File tmpOutputFile = new File(filePath + File.separator + "tmp_" + fileName);
 		if(outputFile.exists())
 		{
 			if(logger.isInfoEnabled())
 				logger.info("The file allready exists so we don't need to dump it again..");
+			logger.error("The file allready exists so we don't need to dump it again..");
 			
 			return;
 		}
+
+		System.out.println("2:" + filePath + File.separator + fileName);
+
+		File outputFileDir = new File(filePath);
+		outputFileDir.mkdirs();
 		
 		DigitalAsset digitalAsset = getDigitalAssetWithId(digitalAssetVO.getDigitalAssetId(), db);
 		
-		if(digitalAsset.getAssetBlob() != null)
+		if((CmsPropertyHandler.getEnableDiskAssets().equals("false") || !tmpOutputFile.exists()) && digitalAsset.getAssetBlob() != null)
 		{
+			logger.error("Dumping from blob.");
+			
 			FileOutputStream fis = new FileOutputStream(outputFile);
 			BufferedOutputStream bos = new BufferedOutputStream(fis);
 			
@@ -1340,10 +1397,49 @@ public class DigitalAssetController extends BaseController
 			fis.close();
 			bos.close();
 		}
+		else
+		{
+			logger.error("Dumping from file.");
+			System.out.println("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
+					"Inne i cms:et tror jag - nu skall ni nog kunna ta assset från disk...");
+			
+			System.out.println("tmpOutputFile:" + tmpOutputFile.getAbsolutePath() + ":" + tmpOutputFile.exists());
+			System.out.println("outputFile:" + outputFile.getAbsolutePath() + ":" + outputFile.exists());
+			new DigitalAssetController().copyInputStream(new FileInputStream(tmpOutputFile), new BufferedOutputStream(new FileOutputStream(outputFile)));
+			/*
+			HttpHelper httpHelper = new HttpHelper();
+			httpHelper.downloadFile("http://localhost:8080/infoglueCMS/DownloadProtectedAsset.action?digitalAssetId=" + digitalAssetVO.getId(), tmpOutputFile);
+			*/
+			System.out.println("\n\nExists" + tmpOutputFile.getAbsolutePath() + "=" + tmpOutputFile.exists() + " OR " + outputFile.exists() + ":" + outputFile.length());
+			if(tmpOutputFile.length() == 0 || outputFile.exists())
+			{
+				logger.error("outputFile:" + outputFile.getAbsolutePath());	
+				logger.error("written file:" + tmpOutputFile.length() + " - removing temp and not renaming it...");	
+				tmpOutputFile.delete();
+			}
+			else
+			{
+				System.out.println("AAAAAAAAAA"); 
+				System.out.println("written file:" + tmpOutputFile.getAbsolutePath() + " - renaming it to " + outputFile.getAbsolutePath());	
+				System.out.println("1111: " + tmpOutputFile.exists() + outputFile.exists());
+				tmpOutputFile.renameTo(outputFile);
+				System.out.println("Renamed to" + outputFile.getAbsolutePath() + "=" + outputFile.exists());
+			}
+			
+		}
 		
 		if(logger.isInfoEnabled())
 			logger.info("Time for dumping file " + fileName + ":" + (System.currentTimeMillis() - timer));
+
+		System.out.println("assetPath in dump:" + filePath + File.separator + fileName);
+
+		System.out.println("Time for dumping file " + fileName + ":" + (System.currentTimeMillis() - timer));
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
+	
 	
 	/**
 	 * This method checks if the given file exists on disk. If it does it's ignored because

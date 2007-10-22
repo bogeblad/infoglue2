@@ -59,6 +59,8 @@ public abstract class URLComposer
     }
 
 
+    public abstract String composeDigitalAssetUrl(String dnsName, Integer siteNodeId, Integer contentId, Integer languageId, String assetKey, DeliveryContext deliveryContext);
+
     public abstract String composeDigitalAssetUrl(String dnsName, String filename, DeliveryContext deliveryContext);
 
     public abstract String composePageUrl(Database db, InfoGluePrincipal infoGluePrincipal, Integer siteNodeId, Integer languageId, Integer contentId, DeliveryContext deliveryContext) throws SystemException;
