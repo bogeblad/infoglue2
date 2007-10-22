@@ -125,6 +125,9 @@
 	<tr>
 		<td>#editPropertyField("ServerNode.property.digitalAssetPath" "digitalAssetPath" "$this.getPropertyValue('digitalAssetPath')" "51" "$!serverNodeId")</td>
 	</tr>
+	<tr>
+		<td>#yesNoDropDownWithInherit("ServerNode.property.enableDiskAssets" "enableDiskAssets" "$this.getPropertyValue('enableDiskAssets')")</td>
+	</tr>
 	
 	<tr>
 		<td>#subTitle("entity.ServerNode.property.urlFormatting.label")</td>
@@ -334,6 +337,9 @@
 	</tr>
 	<tr>
 		<td>#editPropertyTextArea("ServerNode.property.publicDeliveryUrls" "publicDeliveryUrls" "$this.getDataPropertyValue('publicDeliveryUrls')" "50" "5" "normaltextarea" "$!serverNodeId")</td>
+	</tr>
+	<tr>
+		<td>#editPropertyTextArea("ServerNode.property.deploymentServers" "deploymentServers" "$this.getDataPropertyValue('deploymentServers')" "50" "5" "normaltextarea" "$!serverNodeId")</td>
 	</tr>
 	<tr>
 		<td>#editPropertyTextArea("ServerNode.property.toolLanguages" "toolLanguages" "$this.getDataPropertyValue('toolLanguages')" "50" "3" "normaltextarea" "$!serverNodeId")</td>

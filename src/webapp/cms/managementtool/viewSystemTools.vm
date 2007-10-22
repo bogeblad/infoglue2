@@ -19,5 +19,8 @@
 	<p class="systemImageLink inconsistenciesImage">
 		<a href="ViewInconsistencies!input.action?title=Inconsistencies" class="systemLinkLabel">$ui.getString("tool.managementtool.inconsistenciesTool.title")</a>
 	</p>
+	<p class="systemImageLink deploymentImage">
+		<a href="ViewDeploymentChooseServer!input.action?title=Deployment" class="systemLinkLabel">$ui.getString("tool.managementtool.deployment.title")</a>
+	</p>
 	
 #endManagementTool()

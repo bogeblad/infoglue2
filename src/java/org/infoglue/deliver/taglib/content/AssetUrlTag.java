@@ -50,6 +50,7 @@ public class AssetUrlTag extends ComponentLogicTag
     private boolean useInheritance = true;
     private boolean useRepositoryInheritance = true;
     private boolean useStructureInheritance = true;
+    private boolean useDownloadAction = false;
 
     public AssetUrlTag()
     {
@@ -58,6 +59,9 @@ public class AssetUrlTag extends ComponentLogicTag
     
     public int doEndTag() throws JspException
     {
+    	boolean oldUseDownloadAction = this.getController().getDeliveryContext().getUseDownloadAction();
+    	this.getController().getDeliveryContext().setUseDownloadAction(useDownloadAction);
+    	
         try
         {
 			if(digitalAssetId != null)
@@ -88,6 +92,8 @@ public class AssetUrlTag extends ComponentLogicTag
             throw new JspTagException("ComponentLogic.getAssetUrl Error: " + e.getMessage());
         }
         
+        this.getController().getDeliveryContext().setUseDownloadAction(oldUseDownloadAction);
+        
         return EVAL_PAGE;
     }
 
@@ -96,9 +102,9 @@ public class AssetUrlTag extends ComponentLogicTag
         this.digitalAssetId = evaluateInteger("assetThumbnailUrl", "digitalAssetId", digitalAssetId);
     }
 
-    public void setAssetKey(String assetKey)
+    public void setAssetKey(String assetKey) throws JspException
     {
-        this.assetKey = assetKey;
+        this.assetKey = evaluateString("assetUrl", "assetKey", assetKey);
     }
 
     public void setPropertyName(String propertyName) throws JspException
@@ -125,4 +131,9 @@ public class AssetUrlTag extends ComponentLogicTag
     {
         this.contentId = evaluateInteger("assetUrl", "contentId", contentId);
     }
+
+	public void setUseDownloadAction(boolean useDownloadAction)
+	{
+		this.useDownloadAction = useDownloadAction;
+	}
 }

@@ -9,6 +9,7 @@
 		<init-param>
             <param-name>FilterURIs</param-name>
             <param-value>
+                /DownloadProtectedAsset.action,
                 /UpdateCache.action,
                 /UpdateCache!test.action,
 				/ViewApplicationState.action,
@@ -83,6 +84,7 @@
 		<init-param>
             <param-name>FilterURIs</param-name>
             <param-value>
+                /DownloadProtectedAsset.action,
                 /UpdateCache.action,
                 /UpdateCache!test.action,
 				/ViewApplicationState.action,
