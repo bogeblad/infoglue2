@@ -2221,6 +2221,26 @@ public class BasicTemplateController implements TemplateController
 	 * This method deliveres a String with the URL to the digital asset asked for.
 	 */
 	 
+	public String getProtectedAssetUrl(Integer contentId, String assetKey) 
+	{
+		String assetUrl = "";
+		
+		try
+		{
+			assetUrl = ContentDeliveryController.getContentDeliveryController().getAssetUrl(getDatabase(), contentId, this.languageId, assetKey, this.siteNodeId, USE_LANGUAGE_FALLBACK, this.deliveryContext, this.infoGluePrincipal);
+		}
+		catch(Exception e)
+		{
+			logger.error("An error occurred trying to get assetUrl on content with id: " + contentId + " and assetKey:" + assetKey + " : " + e.getMessage(), e);
+		}
+				
+		return assetUrl;
+	}
+
+	/**
+	 * This method deliveres a String with the URL to the digital asset asked for.
+	 */
+	 
 	public String getAssetUrlForAssetWithId(Integer digitalAssetId) 
 	{
 		String assetUrl = "";
@@ -3030,16 +3050,6 @@ public class BasicTemplateController implements TemplateController
 				filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i);
 			}
 			
-			/*
-			String filePath = CmsPropertyHandler.getDigitalAssetPath();
-			File pdfFile = new File(filePath + java.io.File.separator + fileName);
-			if(!pdfFile.exists())
-			{
-				logger.info("Creating a foprenderer");
-				FOPHelper fop = new FOPHelper();
-				fop.generatePDF(template, pdfFile);
-			}
-			*/
 			SiteNode siteNode = this.nodeDeliveryController.getSiteNode(getDatabase(), this.siteNodeId);
 			String dnsName = CmsPropertyHandler.getWebServerAddress();
 			if(siteNode != null && siteNode.getRepository().getDnsName() != null && !siteNode.getRepository().getDnsName().equals(""))
@@ -3090,17 +3100,6 @@ public class BasicTemplateController implements TemplateController
 				i++;
 				filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i);
 			}
-			
-			/*
-			String filePath = CmsPropertyHandler.getDigitalAssetPath();
-			File pdfFile = new File(filePath + java.io.File.separator + fileName);
-			if(!pdfFile.exists())
-			{
-				logger.info("Creating a foprenderer");
-				FOPHelper fop = new FOPHelper();
-				fop.generatePDF(template, pdfFile);
-			}
-			*/
 			
 			SiteNode siteNode = this.nodeDeliveryController.getSiteNode(getDatabase(), this.siteNodeId);
 			String dnsName = CmsPropertyHandler.getWebServerAddress();
@@ -4610,6 +4609,32 @@ public class BasicTemplateController implements TemplateController
 		}
 				
 		return pageContentType;
+	}
+
+	/**
+	 * This method returns the pageCacheTimeout this page has.
+	 */
+	
+	public Integer getPageCacheTimeout()
+	{
+		Integer pageCacheTimeout = null;
+		
+		try
+		{
+			SiteNodeVersionVO latestSiteNodeVersionVO = this.nodeDeliveryController.getLatestActiveSiteNodeVersionVO(getDatabase(), this.siteNodeId);
+			if(latestSiteNodeVersionVO != null && latestSiteNodeVersionVO.getContentType() != null && latestSiteNodeVersionVO.getContentType().length() > 0)
+			{
+				String pageCacheTimeoutString = latestSiteNodeVersionVO.getPageCacheTimeout();
+				if(pageCacheTimeoutString != null && !pageCacheTimeoutString.equals(""))
+					pageCacheTimeout = new Integer(pageCacheTimeoutString);
+			}
+		}
+		catch(Exception e)
+		{
+			logger.warn("An error occurred trying to get the pageCacheTimeout of the page " + siteNodeId + ":" + e.getMessage(), e);
+		}
+				
+		return pageCacheTimeout;
 	}
 
 	/**

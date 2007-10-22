@@ -51,6 +51,90 @@ public class BasicURLComposer extends URLComposer
     public BasicURLComposer()
     {
     }
+    
+    public String composeDigitalAssetUrl(String dnsName, Integer siteNodeId, Integer contentId, Integer languageId, String assetKey, DeliveryContext deliveryContext)
+    {
+        String disableEmptyUrls = CmsPropertyHandler.getDisableEmptyUrls();
+        if(siteNodeId == null || contentId == null || languageId == null || assetKey == null)
+            return "";
+            
+        String assetUrl = "";
+        
+        String enableNiceURI = CmsPropertyHandler.getEnableNiceURI();
+        if(enableNiceURI == null || enableNiceURI.equalsIgnoreCase(""))
+        	enableNiceURI = "false";
+
+        String useDNSNameInUrls = CmsPropertyHandler.getUseDNSNameInURI();
+        if(useDNSNameInUrls == null || useDNSNameInUrls.equalsIgnoreCase(""))
+            useDNSNameInUrls = "false";
+
+        if(enableNiceURI.equalsIgnoreCase("true") || useDNSNameInUrls.equalsIgnoreCase("false"))
+        {
+	        StringBuffer sb = new StringBuffer(256);
+	        
+	        if(deliveryContext.getUseFullUrl())
+	        {
+		        String originalUrl = deliveryContext.getHttpServletRequest().getRequestURL().toString();
+	            int indexOfProtocol = originalUrl.indexOf("://");
+	            int indexFirstSlash = originalUrl.indexOf("/", indexOfProtocol + 3);
+	            String base = originalUrl.substring(0, indexFirstSlash);
+	            sb.append(base);
+	        }
+	        
+	        String servletContext = CmsPropertyHandler.getProperty(FilterConstants.CMS_PROPERTY_SERVLET_CONTEXT);
+	        
+        	sb.append(servletContext);
+	        
+	        if(!sb.toString().endsWith("/"))
+	        	sb.append("/");
+	        
+	        sb.append("DownloadProtectedAsset.action?siteNodeId=" + siteNodeId + "&contentId=" + contentId + "&languageId=" + languageId + "&assetKey=" + assetKey);
+	        
+	        assetUrl = sb.toString();
+        }
+        else
+        {
+        	String operatingMode = CmsPropertyHandler.getOperatingMode();
+		    String keyword = "";
+		    if(operatingMode.equalsIgnoreCase("0"))
+		        keyword = "working=";
+		    else if(operatingMode.equalsIgnoreCase("2"))
+		        keyword = "preview=";
+		    if(operatingMode.equalsIgnoreCase("3"))
+		        keyword = "live=";
+		    
+		    if(dnsName != null)
+		    {
+    		    int startIndex = dnsName.indexOf(keyword);
+    		    if(startIndex != -1)
+    		    {
+    		        int endIndex = dnsName.indexOf(",", startIndex);
+        		    if(endIndex > -1)
+    		            dnsName = dnsName.substring(startIndex, endIndex);
+    		        else
+    		            dnsName = dnsName.substring(startIndex);
+    		        
+    		        dnsName = dnsName.split("=")[1];
+    		    }
+    		    else
+    		    {
+    		        int endIndex = dnsName.indexOf(",");
+    		        if(endIndex > -1)
+    		            dnsName = dnsName.substring(0, endIndex);
+    		        else
+    		            dnsName = dnsName.substring(0);
+    		        
+    		    }
+		    }
+
+            String context = CmsPropertyHandler.getProperty(FilterConstants.CMS_PROPERTY_SERVLET_CONTEXT);
+
+            assetUrl = dnsName + context + "/DownloadProtectedAsset.action?siteNodeId=" + siteNodeId + "&contentId=" + contentId + "&languageId=" + languageId + "&assetKey=" + assetKey;
+        }
+        
+        return assetUrl;
+    }
+
 
     public String composeDigitalAssetUrl(String dnsName, String filename, DeliveryContext deliveryContext)
     {

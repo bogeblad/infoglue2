@@ -986,7 +986,10 @@ public class ContentDeliveryController extends BaseDeliveryController
 				dnsName = siteNode.getRepository().getDnsName();
 				
 			//assetUrl = dnsName + "/" + CmsPropertyHandler.getDigitalAssetBaseUrl() + "/" + fileName;
-			assetUrl = urlComposer.composeDigitalAssetUrl(dnsName, fileName, deliveryContext); 
+			if(deliveryContext.getUseDownloadAction())
+				assetUrl = urlComposer.composeDigitalAssetUrl(dnsName, siteNodeId, contentId, languageId, assetKey, deliveryContext);
+			else
+				assetUrl = urlComposer.composeDigitalAssetUrl(dnsName, fileName, deliveryContext); 
 		}
 		return assetUrl;	
 	}
@@ -1199,8 +1202,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 			return "";
 
 	    SiteNodeVO siteNodeVO = SiteNodeController.getController().getSiteNodeVOWithId(siteNodeId, db);
-	    //String assetCacheKey = "" + languageId + "_" + contentId + "_" + siteNodeId + "_" + assetKey + "_" + useLanguageFallback + "_" + deliveryContext.getUseFullUrl();
-	    String assetCacheKey = "" + languageId + "_" + contentId + "_" + siteNodeVO.getRepositoryId() + "_" + assetKey + "_" + useLanguageFallback + "_" + deliveryContext.getUseFullUrl();
+	    String assetCacheKey = "" + languageId + "_" + contentId + "_" + siteNodeVO.getRepositoryId() + "_" + assetKey + "_" + useLanguageFallback + "_" + deliveryContext.getUseFullUrl() + "_" + deliveryContext.getUseDownloadAction();
 	    
 	    if(logger.isInfoEnabled())
 	    	logger.info("assetCacheKey:" + assetCacheKey);
@@ -1228,7 +1230,17 @@ public class ContentDeliveryController extends BaseDeliveryController
 			logger.info("languageId:" + languageId);
 			logger.info("masterLanguageVO:" + masterLanguageVO);
 		}
-		
+		/*
+		if(deliveryContext.getUseDownloadAction())
+		{
+			SiteNode siteNode = NodeDeliveryController.getNodeDeliveryController(siteNodeId, languageId, contentId).getSiteNode(db, siteNodeId);
+			String dnsName = CmsPropertyHandler.getWebServerAddress();
+			if(siteNode != null && siteNode.getRepository().getDnsName() != null && !siteNode.getRepository().getDnsName().equals(""))
+				dnsName = siteNode.getRepository().getDnsName();
+
+			return urlComposer.composeDigitalAssetUrl(dnsName, siteNodeId, contentId, languageId, assetKey, deliveryContext);
+		}
+		*/
 		if (contentVersion != null) 
         {
         	DigitalAssetVO digitalAsset = DigitalAssetController.getLatestDigitalAssetVO(contentVersion.getId(), assetKey, db);
@@ -1240,7 +1252,6 @@ public class ContentDeliveryController extends BaseDeliveryController
 				int i = 0;
 				File masterFile = null;
 				String filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i);
-				//System.out.println("filePath:" + filePath);
 				while(filePath != null)
 				{
 					try
@@ -1257,19 +1268,17 @@ public class ContentDeliveryController extends BaseDeliveryController
 				    
 				    i++;
 					filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i);
-					//System.out.println("filePath:" + filePath);
 				}
 
-				//String filePath = CmsPropertyHandler.getDigitalAssetPath();
-				//DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpDigitalAsset(digitalAsset, fileName, filePath);
-				
 				SiteNode siteNode = NodeDeliveryController.getNodeDeliveryController(siteNodeId, languageId, contentId).getSiteNode(db, siteNodeId);
 				String dnsName = CmsPropertyHandler.getWebServerAddress();
 				if(siteNode != null && siteNode.getRepository().getDnsName() != null && !siteNode.getRepository().getDnsName().equals(""))
 					dnsName = siteNode.getRepository().getDnsName();
 					
-				//assetUrl = dnsName + "/" + CmsPropertyHandler.getDigitalAssetBaseUrl() + "/" + fileName;
-				assetUrl = urlComposer.composeDigitalAssetUrl(dnsName, fileName, deliveryContext); 
+				if(deliveryContext.getUseDownloadAction())
+					assetUrl = urlComposer.composeDigitalAssetUrl(dnsName, siteNodeId, contentId, languageId, assetKey, deliveryContext);
+				else
+					assetUrl = urlComposer.composeDigitalAssetUrl(dnsName, fileName, deliveryContext); 
 			}
 			else if(useLanguageFallback)
 			{
@@ -1292,7 +1301,6 @@ public class ContentDeliveryController extends BaseDeliveryController
 					int i = 0;
 					File masterFile = null;
 					String filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i);
-					//System.out.println("filePath:" + filePath);
 					while(filePath != null)
 					{
 						try
@@ -1309,19 +1317,17 @@ public class ContentDeliveryController extends BaseDeliveryController
 						
 						i++;
 						filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i);
-						//System.out.println("filePath:" + filePath);
 					}
 
-					//String filePath = CmsPropertyHandler.getDigitalAssetPath();
-					//DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpDigitalAsset(digitalAsset, fileName, filePath);
-					
 					SiteNode siteNode = NodeDeliveryController.getNodeDeliveryController(siteNodeId, languageId, contentId).getSiteNode(db, siteNodeId);
 					String dnsName = CmsPropertyHandler.getWebServerAddress();
 					if(siteNode != null && siteNode.getRepository().getDnsName() != null && !siteNode.getRepository().getDnsName().equals(""))
 						dnsName = siteNode.getRepository().getDnsName();
 						
-					//assetUrl = dnsName + "/" + CmsPropertyHandler.getDigitalAssetBaseUrl() + "/" + fileName;
-					assetUrl = urlComposer.composeDigitalAssetUrl(dnsName, fileName, deliveryContext); 
+					if(deliveryContext.getUseDownloadAction())
+						assetUrl = urlComposer.composeDigitalAssetUrl(dnsName, siteNodeId, contentId, languageId, assetKey, deliveryContext);
+					else
+						assetUrl = urlComposer.composeDigitalAssetUrl(dnsName, fileName, deliveryContext); 
 				}
 				else if(useLanguageFallback)
 				{
