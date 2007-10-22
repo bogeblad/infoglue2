@@ -53,6 +53,7 @@ import org.infoglue.cms.entities.management.UserPropertiesVO;
 import org.infoglue.cms.util.CmsPropertyHandler;
 
 import webwork.action.ActionContext;
+import webwork.config.Configuration;
 import webwork.multipart.MultiPartRequestWrapper;
 
 
@@ -204,7 +205,8 @@ public class CreateDigitalAssetAction extends ViewDigitalAssetAction
 						newAsset.setAssetFilePath(filePath);
 						newAsset.setAssetFileSize(new Integer(new Long(file.length()).intValue()));
 						//is = new FileInputStream(renamedFile);
-						is = new FileInputStream(file);
+						if(CmsPropertyHandler.getEnableDiskAssets().equals("false"))
+							is = new FileInputStream(file);
 						
 						String fileUploadMaximumSize = getPrincipalPropertyValue("fileUploadMaximumSize", false, true);
 						logger.info("fileUploadMaximumSize in create:" + fileUploadMaximumSize);
@@ -295,9 +297,19 @@ public class CreateDigitalAssetAction extends ViewDigitalAssetAction
 						
 						if(this.contentVersionId != null)
 						    digitalAssetVO = DigitalAssetController.create(newAsset, is, this.contentVersionId);
-		         		else
-		         		    digitalAssetVO = DigitalAssetController.create(newAsset, is, this.entity, this.entityId);
-		         		    
+			         	else
+			         	    digitalAssetVO = DigitalAssetController.create(newAsset, is, this.entity, this.entityId);
+
+						if(CmsPropertyHandler.getEnableDiskAssets().equals("true"))
+						{
+							String assetFileName = "" + digitalAssetVO.getAssetFilePath() + File.separator + digitalAssetVO.getId() + "_" + digitalAssetVO.getAssetFileName();
+							//System.out.println("newAsset:" + assetFileName);
+							File assetFile = new File(assetFileName);
+							//System.out.println("Renaming:" + file.getAbsolutePath() + " to " + assetFile.getAbsolutePath());
+							file.renameTo(assetFile);
+							//System.out.println("apaFile:" + assetFile.exists());
+						}
+						
 						this.uploadedFilesCounter = new Integer(this.uploadedFilesCounter.intValue() + 1);
 		         	}
 	    		}
@@ -314,8 +326,11 @@ public class CreateDigitalAssetAction extends ViewDigitalAssetAction
 			{
 				try
 				{
-					is.close();
-					file.delete();
+					if(CmsPropertyHandler.getEnableDiskAssets().equals("false"))
+					{	
+						is.close();
+						file.delete();
+					}
 				}
 				catch(Throwable e)
 				{ 
