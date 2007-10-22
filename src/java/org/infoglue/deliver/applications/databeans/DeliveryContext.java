@@ -115,6 +115,9 @@ public class DeliveryContext implements UsageListener
 	//The variable sets if the rendering should consider publish/expire dates when validating contents. Used in preview actions.
 	private boolean validateOnDates = false;
 
+	//This variable controls if digitalAssetUrl:s generated are directed to the DownloadAsset.action
+	private boolean useDownloadAction = false;
+	
 	private Map pageAttributes = new HashMap();
 	
 	public static DeliveryContext getDeliveryContext()
@@ -413,6 +416,16 @@ public class DeliveryContext implements UsageListener
 	public Map getPageAttributes() 
 	{
 		return pageAttributes;
+	}
+
+	public boolean getUseDownloadAction()
+	{
+		return useDownloadAction;
+	}
+
+	public void setUseDownloadAction(boolean useDownloadAction)
+	{
+		this.useDownloadAction = useDownloadAction;
 	}
 
 }
