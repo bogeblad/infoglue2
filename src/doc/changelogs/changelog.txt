@@ -1,4 +1,33 @@
 -------------------------------------------------------------------------------------
+- InfoGlue 2.7.0 Final
+-------------------------------------------------------------------------------------
+
+Release notes
+---------------------------------------
+sssssss
+
+
+Abbreviated Changelog from 2.6.0 Final 
+---------------------------------------
+- Fixed spelling mistake in 2 tags concerning useInheritance.
+- Fixed user detail view so it shows full group and role names as titles in the list and also increased the width of the select-boxes.
+- Fixed "save and exit" on content properties and repository properties. Before it just wrongly exited.
+- Added extra check when selecting resource bundle in some parts of the admin tools. A report came about problems when having Slovak as default locale.
+- Fixed bug in content creation wizard when you have languages disabled. Now the initial version is allways in the language you used when clicking on the wizard icon.
+- Fixed bug where deletion of property was still allowed even though the user had no access rights to that property editing action.
+- Added feature in workflow engine so one can set a property called 'finalReturnAddress' in the propertyset of a workflow or send it in when creating a workflow and when the workflow ends the user is directed to that address instead of to the mydesktop view.
+- Improved performance in the archive tool.
+- Added scope for common:parameter so one can specify requestParameter or requestProperty.
+- Fixed so nodes can survive after problem with it's meta info content id.
+- Added feature so you can choose to store the assets you have only on disk. Beware - not recommended yet.
+- Added new great deployment tool which lets you sync your development server with a test or production server. Has some limits in this first version but is still extremely useful.
+- Added new asset protection feature - forces download of assets to be access controlled. Very useful for sensitive/purchaseable assets.
+- Added maximum file-size allowed in the file-upload dialog so the user understands whats not allowed.
+- Added new cache possibility - now one can state a refresh-rate for the page caches on individual pages.
+- Added useDownloadAction to assetUrl-tag. Very useful if you want to protect assets from unauthorized use.
+- Added new tag (<page:htmlHeadItem>) for setting html-header tags from components in the page. Very useful as the components then are totally self-contained.
+
+-------------------------------------------------------------------------------------
 - InfoGlue 2.6.0 Final
 -------------------------------------------------------------------------------------
 
