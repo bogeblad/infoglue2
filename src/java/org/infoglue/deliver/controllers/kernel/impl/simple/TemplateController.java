@@ -1018,6 +1018,11 @@ public interface TemplateController
     public abstract boolean getIsPageCacheDisabled();
 
     /**
+     * This method returns a page cache timeout.
+     */
+    public abstract Integer getPageCacheTimeout();
+
+    /**
      * This method returns the contenttype this page should return. This is important when sending assets or css:contents.
      */
     public abstract String getPageContentType();
