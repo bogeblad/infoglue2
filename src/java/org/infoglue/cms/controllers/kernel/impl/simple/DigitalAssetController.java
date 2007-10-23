@@ -794,7 +794,6 @@ public class DigitalAssetController extends BaseController
 				String filePath = CmsPropertyHandler.getDigitalAssetPath() + File.separator + "protected";
 				dumpDigitalAsset(digitalAsset.getValueObject(), fileName, filePath, db);
 				assetPath = filePath + File.separator + fileName;
-				System.out.println("assetPath after dump:" + assetPath);
 			}			       	
 
             commitTransaction(db);
@@ -880,13 +879,18 @@ public class DigitalAssetController extends BaseController
 					String thumbnailFileName = digitalAsset.getDigitalAssetId() + "_thumbnail_" + digitalAsset.getAssetFileName();
 					//String thumbnailFileName = "thumbnail_" + fileName;
 					File thumbnailFile = new File(filePath + File.separator + thumbnailFileName);
-					if(!thumbnailFile.exists())
+					File originalFile = new File(filePath + File.separator + fileName);
+					if(!originalFile.exists())
+						logger.warn("The original file " + filePath + File.separator + fileName + " was not found - missing from system.");
+					
+					if(!thumbnailFile.exists() && originalFile.exists())
 					{
 						logger.info("transforming...");
 						ThumbnailGenerator tg = new ThumbnailGenerator();
 						tg.transform(filePath + File.separator + fileName, filePath + File.separator + thumbnailFileName, 75, 75, 100);
 						logger.info("transform done...");
 					}
+					
 					assetUrl = CmsPropertyHandler.getWebServerAddress() + "/" + CmsPropertyHandler.getDigitalAssetBaseUrl() + "/" + thumbnailFileName;
 					logger.info("assetUrl:" + assetUrl);
 				}
@@ -1368,8 +1372,6 @@ public class DigitalAssetController extends BaseController
 				return;
 			}
 	
-			System.out.println("2:" + filePath + File.separator + fileName);
-	
 			File outputFileDir = new File(filePath);
 			outputFileDir.mkdirs();
 			
@@ -1397,41 +1399,40 @@ public class DigitalAssetController extends BaseController
 			}
 			else
 			{
-				logger.error("Dumping from file.");
-				System.out.println("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
-						"Inne i cms:et tror jag - nu skall ni nog kunna ta assset från disk...");
-				
-				System.out.println("tmpOutputFile:" + tmpOutputFile.getAbsolutePath() + ":" + tmpOutputFile.exists());
-				System.out.println("outputFile:" + outputFile.getAbsolutePath() + ":" + outputFile.exists());
-				new DigitalAssetController().copyInputStream(new FileInputStream(tmpOutputFile), new BufferedOutputStream(new FileOutputStream(outputFile)));
-				/*
-				HttpHelper httpHelper = new HttpHelper();
-				httpHelper.downloadFile("http://localhost:8080/infoglueCMS/DownloadProtectedAsset.action?digitalAssetId=" + digitalAssetVO.getId(), tmpOutputFile);
-				*/
-				System.out.println("\n\nExists" + tmpOutputFile.getAbsolutePath() + "=" + tmpOutputFile.exists() + " OR " + outputFile.exists() + ":" + outputFile.length());
-				if(tmpOutputFile.length() == 0 || outputFile.exists())
+				if(logger.isInfoEnabled())
 				{
-					logger.error("outputFile:" + outputFile.getAbsolutePath());	
-					logger.error("written file:" + tmpOutputFile.length() + " - removing temp and not renaming it...");	
-					tmpOutputFile.delete();
-				}
-				else
-				{
-					System.out.println("AAAAAAAAAA"); 
-					System.out.println("written file:" + tmpOutputFile.getAbsolutePath() + " - renaming it to " + outputFile.getAbsolutePath());	
-					System.out.println("1111: " + tmpOutputFile.exists() + outputFile.exists());
-					tmpOutputFile.renameTo(outputFile);
-					System.out.println("Renamed to" + outputFile.getAbsolutePath() + "=" + outputFile.exists());
+					logger.info("Dumping from file - diskassets is on probably.");
+					logger.info("Inside the cms-app I think - we should take the file from disk");
+					logger.info("tmpOutputFile:" + tmpOutputFile.getAbsolutePath() + ":" + tmpOutputFile.exists());
+					logger.info("outputFile:" + outputFile.getAbsolutePath() + ":" + outputFile.exists());
 				}
 				
+				if(tmpOutputFile.exists())
+				{
+					//new DigitalAssetController().copyInputStream(new FileInputStream(tmpOutputFile), new BufferedOutputStream(new FileOutputStream(outputFile)));
+	
+					logger.info("\n\nExists" + tmpOutputFile.getAbsolutePath() + "=" + tmpOutputFile.exists() + " OR " + outputFile.exists() + ":" + outputFile.length());
+					if(tmpOutputFile.length() == 0 || outputFile.exists())
+					{
+						logger.info("outputFile:" + outputFile.getAbsolutePath());	
+						logger.info("written file:" + tmpOutputFile.length() + " - removing temp and not renaming it...");	
+						tmpOutputFile.delete();
+					}
+					else
+					{
+						logger.info("written file:" + tmpOutputFile.getAbsolutePath() + " - renaming it to " + outputFile.getAbsolutePath());	
+						tmpOutputFile.renameTo(outputFile);
+						logger.info("Renamed to" + outputFile.getAbsolutePath() + "=" + outputFile.exists());
+					}
+				}				
 			}
 			
 			if(logger.isInfoEnabled())
+			{
 				logger.info("Time for dumping file " + fileName + ":" + (System.currentTimeMillis() - timer));
-	
-			System.out.println("assetPath in dump:" + filePath + File.separator + fileName);
-	
-			System.out.println("Time for dumping file " + fileName + ":" + (System.currentTimeMillis() - timer));
+				logger.info("assetPath in dump:" + filePath + File.separator + fileName);
+				logger.info("Time for dumping file " + fileName + ":" + (System.currentTimeMillis() - timer));
+			}
 		}
 		catch (Exception e) 
 		{

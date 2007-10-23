@@ -375,7 +375,9 @@ public class DigitalAssetDeliveryController extends BaseDeliveryController
 		//logger.warn("outputFile:" + filePath + File.separator + fileName + ":" + outputFile.length());
 		if(outputFile.exists())
 		{
-			//logger.warn("The file allready exists so we don't need to dump it again..");
+			if(logger.isInfoEnabled())
+				logger.info("The file allready exists so we don't need to dump it again..");
+		
 			return outputFile;
 		}
 
@@ -388,50 +390,128 @@ public class DigitalAssetDeliveryController extends BaseDeliveryController
 			//Thread.sleep(2000);
 			DigitalAsset digitalAsset = DigitalAssetController.getDigitalAssetWithId(digitalAssetVO.getId(), db);
 			
-			InputStream inputStream = digitalAsset.getAssetBlob();
-			logger.info("inputStream:" + inputStream + ":" + inputStream.getClass().getName() + ":" + digitalAsset);
-			synchronized(inputStream)
+			String cmsBaseUrl = CmsPropertyHandler.getCmsFullBaseUrl();
+			System.out.println("cmsBaseUrl:" + cmsBaseUrl);
+			if(CmsPropertyHandler.getEnableDiskAssets().equals("true"))
 			{
-				logger.info("reading inputStream and writing to disk....");
-				
-				FileOutputStream fos = new FileOutputStream(tmpOutputFile);
-				BufferedOutputStream bos = new BufferedOutputStream(fos);
-				BufferedInputStream bis = new BufferedInputStream(inputStream);
-				
-				int character;
-				int i=0;
-		        while ((character = bis.read()) != -1)
-		        {
-					bos.write(character);
-					i++;
-		        }
-		        
-		        if(i == 0)
-		        	logger.info("Wrote " + i + " chars to " + fileName);
-		        
-				bos.flush();
-			    fos.close();
-				bos.close();
-					
-		        bis.close();
-
-		        logger.info("done reading inputStream and writing to disk....");
+				HttpHelper httpHelper = new HttpHelper();
+				httpHelper.downloadFile("" + cmsBaseUrl + "/DownloadProtectedAsset.action?digitalAssetId=" + digitalAssetVO.getId(), tmpOutputFile);
 			}
 			
-			logger.info("Time for dumping file " + fileName + ":" + timer.getElapsedTime());
-
-			if(tmpOutputFile.length() == 0 || outputFile.exists())
+			if(tmpOutputFile.exists())
 			{
-				logger.info("written file:" + tmpOutputFile.length() + " - removing temp and not renaming it...");	
-				tmpOutputFile.delete();
-				logger.info("Time for deleting file " + timer.getElapsedTime());
+				if(logger.isInfoEnabled())
+				{
+					logger.info("Time for dumping file " + fileName + ":" + timer.getElapsedTime() + ":" + tmpOutputFile.exists() + ":" + tmpOutputFile.lastModified());
+					logger.info("tmpOutputFile:" + tmpOutputFile.length() + ":" + tmpOutputFile.exists());	
+				}
+				
+				if(tmpOutputFile.length() == 0 || outputFile.exists())
+				{
+					if(logger.isInfoEnabled())
+						logger.info("written file:" + tmpOutputFile.length() + " - removing temp and not renaming it...");	
+					
+					tmpOutputFile.delete();
+					
+					if(logger.isInfoEnabled())
+						logger.info("Time for deleting file " + timer.getElapsedTime());
+				}
+				else
+				{
+					System.out.println("written file:" + tmpOutputFile.getAbsolutePath() + " - renaming it to " + outputFile.getAbsolutePath());	
+
+					logger.error("written file:" + tmpOutputFile.length() + " - renaming it to " + outputFile.getAbsolutePath());	
+					tmpOutputFile.renameTo(outputFile);
+					logger.error("Time for renaming file " + timer.getElapsedTime());
+				}	
+
 			}
 			else
 			{
-				logger.info("written file:" + tmpOutputFile.length() + " - renaming it to " + outputFile.getAbsolutePath());	
-				tmpOutputFile.renameTo(outputFile);
-				logger.info("Time for renaming file " + timer.getElapsedTime());
-			}	
+				InputStream inputStream = digitalAsset.getAssetBlob();
+				if(inputStream != null)
+				{
+					logger.info("inputStream:" + inputStream + ":" + inputStream.getClass().getName() + ":" + digitalAsset);
+					synchronized(inputStream)
+					{
+						logger.info("reading inputStream and writing to disk....");
+						
+						FileOutputStream fos = new FileOutputStream(tmpOutputFile);
+						BufferedOutputStream bos = new BufferedOutputStream(fos);
+						BufferedInputStream bis = new BufferedInputStream(inputStream);
+						
+						int character;
+						int i=0;
+				        while ((character = bis.read()) != -1)
+				        {
+							bos.write(character);
+							i++;
+				        }
+				        
+				        if(i == 0)
+				        	logger.info("Wrote " + i + " chars to " + fileName);
+				        
+						bos.flush();
+					    fos.close();
+						bos.close();
+							
+				        bis.close();
+		
+				        logger.info("done reading inputStream and writing to disk....");
+					}
+				}
+				else
+				{
+					logger.warn("There was no asset blob in the database - checking the cms-disk - could be a mistake");
+					
+					HttpHelper httpHelper = new HttpHelper();
+					httpHelper.downloadFile("" + cmsBaseUrl + "/DownloadProtectedAsset.action?digitalAssetId=" + digitalAssetVO.getId(), tmpOutputFile);
+				
+					if(tmpOutputFile.exists())
+					{
+						if(logger.isInfoEnabled())
+						{
+							logger.info("Time for dumping file " + fileName + ":" + timer.getElapsedTime() + ":" + tmpOutputFile.exists() + ":" + tmpOutputFile.lastModified());
+							logger.info("tmpOutputFile:" + tmpOutputFile.length() + ":" + tmpOutputFile.exists());	
+						}
+						
+						if(tmpOutputFile.length() == 0 || outputFile.exists())
+						{
+							if(logger.isInfoEnabled())
+								logger.info("written file:" + tmpOutputFile.length() + " - removing temp and not renaming it...");	
+							
+							tmpOutputFile.delete();
+							
+							if(logger.isInfoEnabled())
+								logger.info("Time for deleting file " + timer.getElapsedTime());
+						}
+						else
+						{
+							System.out.println("written file:" + tmpOutputFile.getAbsolutePath() + " - renaming it to " + outputFile.getAbsolutePath());	
+	
+							logger.error("written file:" + tmpOutputFile.length() + " - renaming it to " + outputFile.getAbsolutePath());	
+							tmpOutputFile.renameTo(outputFile);
+							logger.error("Time for renaming file " + timer.getElapsedTime());
+						}	
+					}
+					
+				}
+	
+				logger.info("Time for dumping file " + fileName + ":" + timer.getElapsedTime());
+	
+				if(tmpOutputFile.length() == 0 || outputFile.exists())
+				{
+					logger.info("written file:" + tmpOutputFile.length() + " - removing temp and not renaming it...");	
+					tmpOutputFile.delete();
+					logger.info("Time for deleting file " + timer.getElapsedTime());
+				}
+				else
+				{
+					logger.info("written file:" + tmpOutputFile.length() + " - renaming it to " + outputFile.getAbsolutePath());	
+					tmpOutputFile.renameTo(outputFile);
+					logger.info("Time for renaming file " + timer.getElapsedTime());
+				}	
+			}
 		}
 		catch (IOException e) 
 		{
