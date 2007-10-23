@@ -314,8 +314,7 @@ public class ViewAndCreateContentForServiceBindingAction extends InfoGlueAbstrac
 	    ContentVO parentContentVO = ContentController.getContentController().getParentContent(contentId, db); 
 	    while((initialLanguageId == null || initialLanguageId.equalsIgnoreCase("-1")) && parentContentVO != null)
 	    {
-	    	System.out.println("Loop...");
-	        initialLanguageId = ps.getString("content_" + parentContentVO.getId() + "_initialLanguageId");
+	    	initialLanguageId = ps.getString("content_" + parentContentVO.getId() + "_initialLanguageId");
 		    parentContentVO = ContentController.getContentController().getParentContent(parentContentVO.getId(), db); 
 	    }
 	    
