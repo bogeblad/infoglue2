@@ -129,6 +129,11 @@ public class VelocityTemplateProcessor
 		{
 			logger.warn("templateAsString: \n" + (templateAsString.length() > 500 ? templateAsString.substring(0, 500) + "... (template truncated)." : templateAsString));
 		    
+			//If error we don't want the error cached - right?
+			TemplateController templateController = (TemplateController)params.get("templateLogic");
+			DeliveryContext deliveryContext = templateController.getDeliveryContext();
+			deliveryContext.setDisablePageCache(true);
+			
 		    if(CmsPropertyHandler.getOperatingMode().equalsIgnoreCase("0") && (CmsPropertyHandler.getDisableTemplateDebug() == null || !CmsPropertyHandler.getDisableTemplateDebug().equalsIgnoreCase("true")))
 		        pw.println("Error rendering template:" + e.getMessage());
 		    else
