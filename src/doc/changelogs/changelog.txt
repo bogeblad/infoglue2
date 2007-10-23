@@ -26,6 +26,11 @@ Abbreviated Changelog from 2.6.0 Final
 - Added new cache possibility - now one can state a refresh-rate for the page caches on individual pages.
 - Added useDownloadAction to assetUrl-tag. Very useful if you want to protect assets from unauthorized use.
 - Added new tag (<page:htmlHeadItem>) for setting html-header tags from components in the page. Very useful as the components then are totally self-contained.
+- Made editOnSight-edit-tag also force working mode.
+- Fixed so if a content versions access rights are blank the contents access rights are used instead. 
+- Fixed so if a component throws an exception it does not get page-cached.
+- Made it possible to edit assets from standalone content version view.
+- Added feature which allows you to disable enforced identity check on particual pages (only useful when using CAS-SSO).
 
 -------------------------------------------------------------------------------------
 - InfoGlue 2.6.0 Final
