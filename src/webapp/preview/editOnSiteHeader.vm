@@ -3,32 +3,38 @@
 <!--
 .skin0 {
 position:absolute;
+z-index:1000004;
 text-align:left;
-width:200px;
+width:350px;
 border:2px solid black;
-background-color:menu;
-font-family:Verdana;
+background-color:#F9F8F7;
+font-family: Tahoma, Arial, Helvetica, sans-serif;
 line-height:20px;
 cursor:default;
 visibility:hidden;
 }
 .skin1 {
 cursor:default;
-font:menutext;
 position:absolute;
 text-align:left;
-font-family: Arial, Helvetica, sans-serif;
+z-index:1000004;
+font-family: Tahoma, Arial, Helvetica, sans-serif;
 font-size: 10pt;
-width:120px;
-background-color:menu;
-border:1px solid buttonface;
+width:160px;
+background-color:#F9F8F7;
+background-image: url('../images/contextBackground.gif');
+background-repeat: repeat-y;
+border:1px solid #666666;
 visibility:hidden;
 border:2px outset buttonhighlight;
 }
 .igmenuitems {
-padding-left:15px;
-padding-right:10px;
+padding-left:31px;
+padding-right:11px;
+padding-top:3px;
+padding-bottom:3px;
 }
+
 -->
 </style>
 
