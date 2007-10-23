@@ -24,4 +24,5 @@
 --
 -- This script contains the database updates required to go from 2.6 to 2.7.
 
-alter table cmSiteNodeVersion add pageCacheTimeout INTEGER NULL;
+alter table cmSiNoVer add pageCacheTimeout INTEGER NULL;
+alter table cmSiNoVer add disableForceIDCheck number default 2 NOT NULL;

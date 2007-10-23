@@ -85,6 +85,10 @@ public interface SiteNodeVersion extends IBaseEntity
 
 	public void setDisablePageCache(Integer disablePageCache);
 
+	public Integer getDisableForceIdentityCheck();
+
+	public void setDisableForceIdentityCheck(Integer disableForceIdentityCheck);
+
 	public Integer getIsProtected();
 
 	public void setIsProtected(Integer isProtected);

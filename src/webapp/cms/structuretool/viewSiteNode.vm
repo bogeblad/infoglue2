@@ -156,13 +156,10 @@ function editContent(contentId)
 		<td>#editTextField("SiteNode.pageCacheTimeout" "pageCacheTimeout" $!pageCacheTimeout "30" "date" $readonly)</td>
 		<td><img src="images/trans.gif" width="20" height="1"></td>
 		<td>
-			<img src="images/trans.gif" width="20" height="1">
-			#*
-			$ui.getString("entity.SiteNode.disableLanguages.label")<br>
-			<input type="radio" name="disableLanguages" value="0" #if($!disableLanguages == 0) checked="1" #end $readonly> $ui.getString("tool.common.no")
-			<input type="radio" name="disableLanguages" value="1" #if($!disableLanguages == 1) checked="1" #end $readonly> $ui.getString("tool.common.yes")
-			<input type="radio" name="disableLanguages" value="2" #if($!disableLanguages == 2) checked="1" #end $readonly> $ui.getString("tool.common.inherit")
-			*#
+			$ui.getString("entity.SiteNode.disableForceIdentityCheck.label")<br>
+			<input type="radio" name="disableForceIdentityCheck" value="0" #if($!disableForceIdentityCheck == 0) checked="1" #end $readonly> $ui.getString("tool.common.no")
+			<input type="radio" name="disableForceIdentityCheck" value="1" #if($!disableForceIdentityCheck == 1) checked="1" #end $readonly> $ui.getString("tool.common.yes")
+			<input type="radio" name="disableForceIdentityCheck" value="2" #if($!disableForceIdentityCheck == 2) checked="1" #end $readonly> $ui.getString("tool.common.inherit")
 		</td>
 		<td></td>
 	</tr>		

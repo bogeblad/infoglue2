@@ -577,6 +577,17 @@ public class ViewSiteNodeAction extends InfoGlueAbstractAction
 	{
 		this.siteNodeVersionVO.setDisableEditOnSight(disableEditOnSight);
 	}
+	
+	public Integer getDisableForceIdentityCheck()
+	{
+		return this.siteNodeVersionVO.getDisableForceIdentityCheck();
+	}
+
+	public void setDisableForceIdentityCheck(Integer disableForceIdentityCheck)
+	{
+		this.siteNodeVersionVO.setDisableForceIdentityCheck(disableForceIdentityCheck);
+	}
+
 
 	public Integer getDisableLanguages()
 	{

@@ -56,6 +56,7 @@ public class SiteNodeVersionVO implements BaseEntityVO
 	private Integer disablePageCache	= INHERITED;
 	private Integer disableEditOnSight	= INHERITED;
 	private Integer disableLanguages    = INHERITED;
+	private Integer disableForceIdentityCheck = INHERITED;
 	private String contentType 			= "text/html";
   	private String pageCacheKey			= "default";
   	private String pageCacheTimeout		= null;
@@ -226,6 +227,16 @@ public class SiteNodeVersionVO implements BaseEntityVO
 		this.isProtected = isProtected;
 	}
 
+	public Integer getDisableForceIdentityCheck()
+	{
+		return disableForceIdentityCheck;
+	}
+
+	public void setDisableForceIdentityCheck(Integer disableForceIdentityCheck)
+	{
+		this.disableForceIdentityCheck = disableForceIdentityCheck;
+	}
+
 	public String getVersionModifier()
 	{
 		return this.versionModifier;
@@ -262,6 +273,7 @@ public class SiteNodeVersionVO implements BaseEntityVO
 	    sb.append("disablePageCache:" + disablePageCache + '\n');
 	    sb.append("disableEditOnSight:" + disableEditOnSight + '\n');
 	    sb.append("disableLanguages:" + disableLanguages + '\n');
+	    sb.append("disableForceIdentityCheck:" + disableForceIdentityCheck + '\n');
 	    sb.append("contentType:" + contentType + '\n');
 	    sb.append("pageCacheKey:" + pageCacheKey + '\n');
 	    sb.append("pageCacheTimeout:" + pageCacheTimeout + '\n');

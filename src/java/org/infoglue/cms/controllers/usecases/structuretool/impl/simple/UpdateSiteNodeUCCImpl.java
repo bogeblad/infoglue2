@@ -70,6 +70,7 @@ public class UpdateSiteNodeUCCImpl extends BaseUCCController implements UpdateSi
 			latestSiteNodeVersionVO.setDisablePageCache(updatedSiteNodeVersionVO.getDisablePageCache());
 			latestSiteNodeVersionVO.setDisableLanguages(updatedSiteNodeVersionVO.getDisableLanguages());
 			latestSiteNodeVersionVO.setIsProtected(updatedSiteNodeVersionVO.getIsProtected());
+			latestSiteNodeVersionVO.setDisableForceIdentityCheck(updatedSiteNodeVersionVO.getDisableForceIdentityCheck());
 			latestSiteNodeVersionVO.setVersionModifier(updatedSiteNodeVersionVO.getVersionModifier());
 			latestSiteNodeVersionVO.setModifiedDateTime(DateHelper.getSecondPreciseDate());
 			
@@ -125,6 +126,7 @@ public class UpdateSiteNodeUCCImpl extends BaseUCCController implements UpdateSi
 			latestSiteNodeVersionVO.setDisableLanguages(updatedSiteNodeVersionVO.getDisableLanguages());
 			latestSiteNodeVersionVO.setDisablePageCache(updatedSiteNodeVersionVO.getDisablePageCache());
 			latestSiteNodeVersionVO.setIsProtected(updatedSiteNodeVersionVO.getIsProtected());
+			latestSiteNodeVersionVO.setDisableForceIdentityCheck(updatedSiteNodeVersionVO.getDisableForceIdentityCheck());
 			latestSiteNodeVersionVO.setVersionModifier(infoGluePrincipal.getName());
 			latestSiteNodeVersionVO.setModifiedDateTime(DateHelper.getSecondPreciseDate());
 

@@ -247,7 +247,11 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			{
 				String forceIdentityCheck = RepositoryDeliveryController.getRepositoryDeliveryController().getExtraPropertyValue(this.repositoryId, "forceIdentityCheck");
 				if(CmsPropertyHandler.getForceIdentityCheck().equalsIgnoreCase("true") || (forceIdentityCheck != null && forceIdentityCheck.equalsIgnoreCase("true")))
-					isUserRedirected = handleExtranetLogic(dbWrapper.getDatabase(), true);
+				{
+					boolean isForcedIdentityCheckDisabled = this.nodeDeliveryController.getIsForcedIdentityCheckDisabled(dbWrapper.getDatabase(), this.siteNodeId);
+					if(!isForcedIdentityCheckDisabled)
+						isUserRedirected = handleExtranetLogic(dbWrapper.getDatabase(), true);
+				}
 			}
 			
 			String pageKey = this.nodeDeliveryController.getPageCacheKey(dbWrapper.getDatabase(), this.getHttpSession(), getRequest(), this.siteNodeId, this.languageId, this.contentId, browserBean.getUseragent(), this.getRequest().getQueryString(), "");

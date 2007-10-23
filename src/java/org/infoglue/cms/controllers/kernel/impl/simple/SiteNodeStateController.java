@@ -163,6 +163,7 @@ public class SiteNodeStateController extends BaseController
 				newSiteNodeVersionVO.setDisableLanguages(oldSiteNodeVersion.getDisableLanguages());
 				newSiteNodeVersionVO.setDisablePageCache(oldSiteNodeVersion.getDisablePageCache());
 				newSiteNodeVersionVO.setIsProtected(oldSiteNodeVersion.getIsProtected());
+				newSiteNodeVersionVO.setDisableForceIdentityCheck(oldSiteNodeVersion.getDisableForceIdentityCheck());
 			    
 				newSiteNodeVersion = SiteNodeVersionController.create(siteNodeId, infoGluePrincipal, newSiteNodeVersionVO, db);
 				copyServiceBindings(oldSiteNodeVersion, newSiteNodeVersion, db);
@@ -199,7 +200,8 @@ public class SiteNodeStateController extends BaseController
 				newSiteNodeVersionVO.setDisableLanguages(oldSiteNodeVersion.getDisableLanguages());
 				newSiteNodeVersionVO.setDisablePageCache(oldSiteNodeVersion.getDisablePageCache());
 				newSiteNodeVersionVO.setIsProtected(oldSiteNodeVersion.getIsProtected());
-			    
+				newSiteNodeVersionVO.setDisableForceIdentityCheck(oldSiteNodeVersion.getDisableForceIdentityCheck());
+
 		    	newSiteNodeVersion = SiteNodeVersionController.create(siteNodeId, infoGluePrincipal, newSiteNodeVersionVO, db);
 				copyServiceBindings(oldSiteNodeVersion, newSiteNodeVersion, db);
 				copyAccessRights(oldSiteNodeVersion, newSiteNodeVersion, db);

@@ -60,6 +60,7 @@ public class UpdateSiteNodeAction extends ViewSiteNodeAction //WebworkAbstractAc
 	private Integer disablePageCache;
 	private Integer disableEditOnSight;
 	private Integer disableLanguages;
+	private Integer disableForceIdentityCheck;
 	private String contentType;
 	private String pageCacheKey;
 	private String pageCacheTimeout;
@@ -98,6 +99,7 @@ public class UpdateSiteNodeAction extends ViewSiteNodeAction //WebworkAbstractAc
 			siteNodeVersionVO.setDisableEditOnSight(this.getDisableEditOnSight());
 			siteNodeVersionVO.setDisableLanguages(this.disableLanguages);
 			siteNodeVersionVO.setDisablePageCache(this.getDisablePageCache());
+			siteNodeVersionVO.setDisableForceIdentityCheck(this.disableForceIdentityCheck);
 			siteNodeVersionVO.setIsProtected(this.getIsProtected());
 			siteNodeVersionVO.setVersionModifier(this.getInfoGluePrincipal().getName());
 			
@@ -232,6 +234,16 @@ public class UpdateSiteNodeAction extends ViewSiteNodeAction //WebworkAbstractAc
 	public void setDisableEditOnSight(Integer disableEditOnSight)
 	{
 		this.disableEditOnSight = disableEditOnSight;
+	}
+
+	public Integer getDisableForceIdentityCheck()
+	{
+		return this.disableForceIdentityCheck;
+	}
+
+	public void setDisableForceIdentityCheck(Integer disableForceIdentityCheck)
+	{
+		this.disableForceIdentityCheck = disableForceIdentityCheck;
 	}
 
 	public Integer getDisableLanguages()

@@ -251,4 +251,14 @@ public class SiteNodeVersionImpl implements SiteNodeVersion
 		this.valueObject.setDisableLanguages(disableLanguages);
 	}
 
+	public Integer getDisableForceIdentityCheck()
+	{
+		return this.valueObject.getDisableForceIdentityCheck();
+	}
+
+	public void setDisableForceIdentityCheck(Integer disableForceIdentityCheck)
+	{
+		this.valueObject.setDisableForceIdentityCheck(disableForceIdentityCheck);
+	}
+
 }        

@@ -891,6 +891,78 @@ public class NodeDeliveryController extends BaseDeliveryController
 	}
 
 	/**
+	 * This method returns the id of the siteNodeVersion that has disabled identity check if any.
+	 */
+	
+	public Integer getDisableForceIdentityCheckSiteNodeVersionId(Database db, Integer siteNodeId)
+	{
+		Integer disableForceIdentityCheckSiteNodeVersionId = null;
+		
+		try
+		{
+			SiteNodeVersionVO siteNodeVersionVO = this.getLatestActiveSiteNodeVersionVOForPageCache(db, siteNodeId);
+			logger.info("siteNodeId:" + siteNodeId);
+			if(siteNodeVersionVO != null && siteNodeVersionVO.getDisableLanguages() != null)
+			{	
+				logger.info("siteNodeVersionVO:" + siteNodeVersionVO.getId() + ":" + siteNodeVersionVO.getDisableForceIdentityCheck());
+				if(siteNodeVersionVO.getDisableForceIdentityCheck().intValue() == NO.intValue())
+					disableForceIdentityCheckSiteNodeVersionId = null;
+				else if(siteNodeVersionVO.getDisableForceIdentityCheck().intValue() == YES.intValue())
+					disableForceIdentityCheckSiteNodeVersionId = siteNodeVersionVO.getId();
+				else if(siteNodeVersionVO.getDisableForceIdentityCheck().intValue() == INHERITED.intValue())
+				{
+					SiteNodeVO parentSiteNode = this.getParentSiteNodeForPageCache(db, siteNodeId);
+					if(parentSiteNode != null)
+						disableForceIdentityCheckSiteNodeVersionId = getDisableForceIdentityCheckSiteNodeVersionId(db, parentSiteNode.getSiteNodeId()); 
+				}
+			}
+
+		}
+		catch(Exception e)
+		{
+			logger.warn("An error occurred trying to get if the siteNodeVersion has disabled identity check:" + e.getMessage(), e);
+		}
+				
+		return disableForceIdentityCheckSiteNodeVersionId;
+	}
+
+	/**
+	 * This method returns the id of the siteNodeVersion that has disabled identity check if any.
+	 */
+	
+	public boolean getIsForcedIdentityCheckDisabled(Database db, Integer siteNodeId)
+	{
+		boolean isForcedIdentityCheckDisabled = false;
+		
+		try
+		{
+			SiteNodeVersionVO siteNodeVersionVO = this.getLatestActiveSiteNodeVersionVOForPageCache(db, siteNodeId);
+			logger.info("siteNodeId:" + siteNodeId);
+			if(siteNodeVersionVO != null && siteNodeVersionVO.getDisableLanguages() != null)
+			{	
+				logger.info("siteNodeVersionVO:" + siteNodeVersionVO.getId() + ":" + siteNodeVersionVO.getDisableForceIdentityCheck());
+				if(siteNodeVersionVO.getDisableForceIdentityCheck().intValue() == NO.intValue())
+					isForcedIdentityCheckDisabled = false;
+				else if(siteNodeVersionVO.getDisableForceIdentityCheck().intValue() == YES.intValue())
+					isForcedIdentityCheckDisabled = true;
+				else if(siteNodeVersionVO.getDisableForceIdentityCheck().intValue() == INHERITED.intValue())
+				{
+					SiteNodeVO parentSiteNode = this.getParentSiteNodeForPageCache(db, siteNodeId);
+					if(parentSiteNode != null)
+						isForcedIdentityCheckDisabled = getIsForcedIdentityCheckDisabled(db, parentSiteNode.getSiteNodeId()); 
+				}
+			}
+
+		}
+		catch(Exception e)
+		{
+			logger.warn("An error occurred trying to get if the siteNodeVersion has disabled identity check:" + e.getMessage(), e);
+		}
+				
+		return isForcedIdentityCheckDisabled;
+	}
+
+	/**
 	 * This method return a single content bound. 
 	 */
 	
