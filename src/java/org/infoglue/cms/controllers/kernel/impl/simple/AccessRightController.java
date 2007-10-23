@@ -899,62 +899,6 @@ public class AccessRightController extends BaseController
         return accessRightUser;
 	}
 	
-	/*
-	 	public void update(String parameters, HttpServletRequest request) throws ConstraintException, SystemException
-	{
-		Database db = CastorDatabaseService.getDatabase();
-		
-		logger.info("parameters:" + parameters);
-		
-		try 
-		{
-			beginTransaction(db);
-
-			int roleIndex = 0;
-			String roleName = request.getParameter(roleIndex + "_roleName");
-			while(roleName != null)
-			{
-				logger.info("roleName:" + roleName);
-				
-				int interceptionPointIndex = 0;
-				String interceptionPointIdString = request.getParameter(roleName + "_" + interceptionPointIndex + "_InterceptionPointId");
-				while(interceptionPointIdString != null)
-				{
-					logger.info("interceptionPointIdString:" + interceptionPointIdString);
-					
-					delete(new Integer(interceptionPointIdString), parameters, roleName, db);
-
-					String hasAccess = request.getParameter(roleName + "_" + interceptionPointIdString + "_hasAccess");
-					
-					if(hasAccess != null)
-					{
-						AccessRightVO accessRightVO = new AccessRightVO();
-						accessRightVO.setRoleName(roleName);
-						accessRightVO.setParameters(parameters);
-
-						InterceptionPoint interceptionPoint = InterceptionPointController.getController().getInterceptionPointWithId(new Integer(interceptionPointIdString), db);
-						logger.info("Creating access for roleName:" + roleName + ":" + parameters + "_" + interceptionPoint.getName());
-						
-						create(accessRightVO, interceptionPoint, db);
-					}
-					
-					interceptionPointIndex++;
-					interceptionPointIdString = request.getParameter(roleName + "_" + interceptionPointIndex + "_InterceptionPointId");
-				}
-								
-				roleIndex++;
-				roleName = request.getParameter(roleIndex + "_roleName");
-			}
-			commitTransaction(db);
-		} 
-		catch (Exception e) 
-		{
-			logger.info("An error occurred so we should not complete the transaction:" + e);
-			rollbackTransaction(db);
-			throw new SystemException(e.getMessage());
-		}
-	}			
-	 */
 	
 	/**
 	 * This method deletes all occurrencies of AccessRight which has the interceptionPointId.
@@ -1046,7 +990,6 @@ public class AccessRightController extends BaseController
 	}        
 
 	
-	
 	/**
 	 * This method checks if a role has access to an entity. It takes name and id of the entity. 
 	 */
@@ -1104,6 +1047,8 @@ public class AccessRightController extends BaseController
 		Boolean cachedIsPrincipalAuthorized = (Boolean)CacheController.getCachedObject("authorizationCache", key);
 		if(cachedIsPrincipalAuthorized != null)
 		{
+			if(logger.isInfoEnabled() && !cachedIsPrincipalAuthorized.booleanValue())
+				logger.info("Principal " + infoGluePrincipal.getName() + " was not allowed to " + interceptionPointName + " on " + extraParameters + " (Cached value)");
 		    return cachedIsPrincipalAuthorized.booleanValue();
 		}
 
@@ -1114,15 +1059,30 @@ public class AccessRightController extends BaseController
 		   
 		Collection roles = infoGluePrincipal.getRoles();
 		Collection groups = infoGluePrincipal.getGroups();
-		logger.info("roles:" + roles.size());
-		logger.info("groups:" + groups.size());
-
+		if(logger.isInfoEnabled())
+		{
+			logger.info("roles:" + roles.size());
+			logger.info("groups:" + groups.size());
+		}
+		
 		InterceptionPointVO interceptionPointVO = InterceptionPointController.getController().getInterceptionPointVOWithName(interceptionPointName, db);
 		if(interceptionPointVO == null)
 			return true;
 				
 		List accessRightList = this.getAccessRightListOnlyReadOnly(interceptionPointVO.getId(), extraParameters, db);
-		
+		//If no access rights are set for the content version we should assume it was not protected on version level.
+		if((interceptionPointName.equalsIgnoreCase("ContentVersion.Read") || 
+		   interceptionPointName.equalsIgnoreCase("ContentVersion.Write") || 
+		   interceptionPointName.equalsIgnoreCase("ContentVersion.Delete") || 
+		   interceptionPointName.equalsIgnoreCase("ContentVersion.Publish")) && 
+		   (accessRightList == null || accessRightList.size() == 0))
+		{
+			if(logger.isInfoEnabled())
+				logger.info("accessRightList:" + accessRightList.size());
+			
+			return true;
+		}
+
 		Iterator accessRightListIterator = accessRightList.iterator();
 		while(accessRightListIterator.hasNext() && !isPrincipalAuthorized)
 		{
@@ -1195,7 +1155,7 @@ public class AccessRightController extends BaseController
 				}
 			}
 		}
-
+		
         if(logger.isInfoEnabled())
         {
 	    	logger.info("principalHasRole: " + principalHasRole);
@@ -1205,6 +1165,11 @@ public class AccessRightController extends BaseController
         
 	    if((principalHasRole && principalHasGroup) || (principalHasRole && !limitOnGroups))
 		    isPrincipalAuthorized = true;
+		
+		if(logger.isInfoEnabled() && !isPrincipalAuthorized)
+		{
+			logger.info("Principal " + infoGluePrincipal.getName() + " was not allowed to " + interceptionPointName + " on " + extraParameters);
+		}
 		
 	    CacheController.cacheObject("authorizationCache", key, new Boolean(isPrincipalAuthorized));
 
@@ -1234,7 +1199,9 @@ public class AccessRightController extends BaseController
 		Boolean cachedIsPrincipalAuthorized = (Boolean)CacheController.getCachedObject("authorizationCache", key);
 		if(cachedIsPrincipalAuthorized != null)
 		{
-			logger.info("There was an cached authorization:" + cachedIsPrincipalAuthorized);
+			if(logger.isInfoEnabled() && !cachedIsPrincipalAuthorized.booleanValue())
+				logger.info("Principal " + infoGluePrincipal.getName() + " was not allowed to " + interceptionPointName);
+
 			return cachedIsPrincipalAuthorized.booleanValue();
 		}
 		
@@ -1356,7 +1323,11 @@ public class AccessRightController extends BaseController
 	    if((principalHasRole && principalHasGroup) || (principalHasRole && !limitOnGroups))
 		    isPrincipalAuthorized = true;
 		
-	    logger.info("isPrincipalAuthorized:" + isPrincipalAuthorized);
+		if(logger.isInfoEnabled() && !isPrincipalAuthorized)
+			logger.info("Principal " + infoGluePrincipal.getName() + " was not allowed to " + interceptionPointName);
+		
+		if(logger.isInfoEnabled())
+			logger.info("isPrincipalAuthorized:" + isPrincipalAuthorized);
 	    
 		return isPrincipalAuthorized;
 	}
