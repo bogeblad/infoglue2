@@ -231,72 +231,64 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
     
     protected void initialize(Integer contentVersionId, Integer contentId, Integer languageId, boolean fallBackToMasterLanguage, boolean checkPermission) throws ConstraintException, Exception
     {
-    	try
+    	if(contentVersionId != null && contentId == null)
     	{
-	    	if(contentVersionId != null && contentId == null)
-	    	{
-	    		this.contentVersionVO = ContentVersionControllerProxy.getController().getACContentVersionVOWithId(this.getInfoGluePrincipal(), contentVersionId);    		 	
-	    		contentId = contentVersionVO.getContentId();
-	    		languageId = contentVersionVO.getLanguageId();
-	    		this.languageId = contentVersionVO.getLanguageId();
-	    	}   
-	    	
-	        this.contentVO = ContentControllerProxy.getController().getACContentVOWithId(this.getInfoGluePrincipal(), contentId);
-			    
-	        if(this.contentVO.getRepositoryId() != null && checkPermission && !hasAccessTo("Repository.Read", "" + this.contentVO.getRepositoryId()))
-	        {
-	    		AccessConstraintExceptionBuffer ceb = new AccessConstraintExceptionBuffer();
-	    		ceb.add(new AccessConstraintException("Content.contentId", "1000"));
-	    		ceb.throwIfNotEmpty();
-	        }
-	
-	        //this.contentVO = ContentController.getContentVOWithId(contentId);
-	        this.contentTypeDefinitionVO = ContentController.getContentController().getContentTypeDefinition(contentId);
-	        this.availableLanguages = ContentController.getContentController().getRepositoryLanguages(contentId);
-	        
-	        if(contentVersionId == null)
-			{	
-				//this.contentVersionVO = ContentVersionControllerProxy.getController().getACLatestActiveContentVersionVO(this.getInfoGluePrincipal(), contentId, languageId);
-				//this.contentVersionVO = ContentVersionController.getLatestActiveContentVersionVO(contentId, languageId);
-				this.contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentId, languageId);
-				if(this.contentVersionVO == null && fallBackToMasterLanguage)
-				{
-				    //logger.info("repositoryId:" + repositoryId);
-				    Integer usedRepositoryId = this.repositoryId;
-				    if(this.repositoryId == null && this.contentVO != null)
-				        usedRepositoryId = this.contentVO.getRepositoryId();
-				    
-				    LanguageVO masterLanguageVO = LanguageController.getController().getMasterLanguage(usedRepositoryId);
-				    //logger.info("MasterLanguage: " + masterLanguageVO);
-				    this.contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentId, masterLanguageVO.getId());
-				}
-				
-				if(this.contentVersionVO != null)
-					contentVersionId = contentVersionVO.getContentVersionId();
-			}
-	
-	        if(contentVersionId != null)	
-				this.contentVersionVO = ContentVersionControllerProxy.getController().getACContentVersionVOWithId(this.getInfoGluePrincipal(), contentVersionId);    		 	
-	    		//this.contentVersionVO = ContentVersionController.getContentVersionVOWithId(contentVersionId);    		 	
-	
-			if(this.forceWorkingChange && contentVersionVO != null && !contentVersionVO.getStateId().equals(ContentVersionVO.WORKING_STATE))
+    		this.contentVersionVO = ContentVersionControllerProxy.getController().getACContentVersionVOWithId(this.getInfoGluePrincipal(), contentVersionId);    		 	
+    		contentId = contentVersionVO.getContentId();
+    		languageId = contentVersionVO.getLanguageId();
+    		this.languageId = contentVersionVO.getLanguageId();
+    	}   
+    	
+        this.contentVO = ContentControllerProxy.getController().getACContentVOWithId(this.getInfoGluePrincipal(), contentId);
+		    
+        if(this.contentVO.getRepositoryId() != null && checkPermission && !hasAccessTo("Repository.Read", "" + this.contentVO.getRepositoryId()))
+        {
+    		AccessConstraintExceptionBuffer ceb = new AccessConstraintExceptionBuffer();
+    		ceb.add(new AccessConstraintException("Content.contentId", "1000"));
+    		ceb.throwIfNotEmpty();
+        }
+
+        //this.contentVO = ContentController.getContentVOWithId(contentId);
+        this.contentTypeDefinitionVO = ContentController.getContentController().getContentTypeDefinition(contentId);
+        this.availableLanguages = ContentController.getContentController().getRepositoryLanguages(contentId);
+        
+        if(contentVersionId == null)
+		{	
+			//this.contentVersionVO = ContentVersionControllerProxy.getController().getACLatestActiveContentVersionVO(this.getInfoGluePrincipal(), contentId, languageId);
+			//this.contentVersionVO = ContentVersionController.getLatestActiveContentVersionVO(contentId, languageId);
+			this.contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentId, languageId);
+			if(this.contentVersionVO == null && fallBackToMasterLanguage)
 			{
-			    ContentVersion contentVersion = ContentStateController.changeState(contentVersionVO.getContentVersionId(), ContentVersionVO.WORKING_STATE, "Edit on sight", false, null, this.getInfoGluePrincipal(), this.getContentId(), new ArrayList());
-			    contentVersionId = contentVersion.getContentVersionId();
-			    contentVersionVO = contentVersion.getValueObject();
+			    //logger.info("repositoryId:" + repositoryId);
+			    Integer usedRepositoryId = this.repositoryId;
+			    if(this.repositoryId == null && this.contentVO != null)
+			        usedRepositoryId = this.contentVO.getRepositoryId();
+			    
+			    LanguageVO masterLanguageVO = LanguageController.getController().getMasterLanguage(usedRepositoryId);
+			    //logger.info("MasterLanguage: " + masterLanguageVO);
+			    this.contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentId, masterLanguageVO.getId());
 			}
-	
-	        if(this.contentTypeDefinitionVO != null)
-	        {
-	            this.contentTypeDefinitionVO = ContentTypeDefinitionController.getController().validateAndUpdateContentType(this.contentTypeDefinitionVO);
-	            this.attributes = ContentTypeDefinitionController.getController().getContentTypeAttributes(this.contentTypeDefinitionVO.getSchemaValue());
-	        }
-    	}
-    	catch (ConstraintException e) 
-    	{
-			logger.warn("Access issue:" + e.getMessage(), e);
-			throw e;
+			
+			if(this.contentVersionVO != null)
+				contentVersionId = contentVersionVO.getContentVersionId();
 		}
+
+        if(contentVersionId != null)	
+			this.contentVersionVO = ContentVersionControllerProxy.getController().getACContentVersionVOWithId(this.getInfoGluePrincipal(), contentVersionId);    		 	
+    		//this.contentVersionVO = ContentVersionController.getContentVersionVOWithId(contentVersionId);    		 	
+
+		if(this.forceWorkingChange && contentVersionVO != null && !contentVersionVO.getStateId().equals(ContentVersionVO.WORKING_STATE))
+		{
+		    ContentVersion contentVersion = ContentStateController.changeState(contentVersionVO.getContentVersionId(), ContentVersionVO.WORKING_STATE, "Edit on sight", false, null, this.getInfoGluePrincipal(), this.getContentId(), new ArrayList());
+		    contentVersionId = contentVersion.getContentVersionId();
+		    contentVersionVO = contentVersion.getValueObject();
+		}
+
+        if(this.contentTypeDefinitionVO != null)
+        {
+            this.contentTypeDefinitionVO = ContentTypeDefinitionController.getController().validateAndUpdateContentType(this.contentTypeDefinitionVO);
+            this.attributes = ContentTypeDefinitionController.getController().getContentTypeAttributes(this.contentTypeDefinitionVO.getSchemaValue());
+        }
     } 
 
     public String doExecute() throws Exception
