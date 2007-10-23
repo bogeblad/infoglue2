@@ -166,6 +166,9 @@ public class ViewDeploymentSynchronizeServersAction extends InfoGlueAbstractActi
 	        		//System.out.println("remoteContentTypeDefinitionVO:" + remoteContentTypeDefinitionVO.getName());
 	        		if(remoteContentTypeDefinitionVO.getName().equals(deviatingContentTypeName))
 	        		{
+	        			ContentTypeDefinitionVO localContentTypeDefinitionVO = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithName(remoteContentTypeDefinitionVO.getName());
+	        			String newSchemaValue = localContentTypeDefinitionVO.getSchemaValue();
+	        			
 	        	    	String[] attributeNameArray = this.getRequest().getParameterValues(deviatingContentTypeName + "_attributeName");
 	        	    	System.out.println("attributeNameArray:" + attributeNameArray);
 	        	    	if(attributeNameArray != null)
@@ -175,19 +178,44 @@ public class ViewDeploymentSynchronizeServersAction extends InfoGlueAbstractActi
 		        	    		String attributeName = attributeNameArray[j];
 			        			System.out.println("  * Updating attributeName:" + attributeName);
 		        			
-			        			List attributes = ContentTypeDefinitionController.getController().getContentTypeAttributes(remoteContentTypeDefinitionVO.getSchemaValue());
-			        			
-			        			ContentTypeDefinitionVO localContentTypeDefinitionVO = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithName(remoteContentTypeDefinitionVO.getName());
-			        			String newSchemaValue = copyAttribute(remoteContentTypeDefinitionVO.getSchemaValue(), localContentTypeDefinitionVO.getSchemaValue(), attributeName);
-			        			localContentTypeDefinitionVO.setSchemaValue(newSchemaValue);
-			        			ContentTypeDefinitionController.getController().update(localContentTypeDefinitionVO);
+			        			newSchemaValue = copyAttribute(remoteContentTypeDefinitionVO.getSchemaValue(), newSchemaValue, attributeName);
 			        		}
 	        	    	}	        			
+
+	        	    	String[] categoryNameArray = this.getRequest().getParameterValues(deviatingContentTypeName + "_categoryName");
+	        	    	System.out.println("categoryNameArray:" + categoryNameArray);
+	        	    	if(categoryNameArray != null)
+	        	    	{
+	        	    		for(int j=0; j<categoryNameArray.length; j++)
+	        	    		{
+		        	    		String categoryName = categoryNameArray[j];
+			        			System.out.println("  * Updating categoryName:" + categoryName);
+		        			
+			        			newSchemaValue = copyCategory(remoteContentTypeDefinitionVO.getSchemaValue(), newSchemaValue, categoryName);
+			        		}
+	        	    	}	
+
+	        	    	String[] assetKeyArray = this.getRequest().getParameterValues(deviatingContentTypeName + "_assetKey");
+	        	    	System.out.println("assetKeyArray:" + assetKeyArray);
+	        	    	if(assetKeyArray != null)
+	        	    	{
+	        	    		for(int j=0; j<assetKeyArray.length; j++)
+	        	    		{
+		        	    		String assetKey = assetKeyArray[j];
+			        			System.out.println("  * Updating assetKey:" + assetKey);
+		        			
+			        			newSchemaValue = copyAssetKey(remoteContentTypeDefinitionVO.getSchemaValue(), newSchemaValue, assetKey);
+			        		}
+	        	    	}
+	        	    	
+	        			localContentTypeDefinitionVO.setSchemaValue(newSchemaValue);
+			        	ContentTypeDefinitionController.getController().update(localContentTypeDefinitionVO);
 	        		}
 	        	}
 	    	}
     	}
     	
+
     	return doInput();
     }
 
@@ -386,7 +414,80 @@ public class ViewDeploymentSynchronizeServersAction extends InfoGlueAbstractActi
 		
 		return newSchemaValue;
 	}
+
+	private String copyCategory(String remoteSchemaValue, String localSchemaValue, String categoryName)
+	{
+		String newSchemaValue = null;
+
+		try
+		{
+			Document remoteDocument = createDocumentFromDefinition(remoteSchemaValue);
+			Document localDocument = createDocumentFromDefinition(localSchemaValue);
+			
+			String attributeXPath = "/xs:schema/xs:simpleType[@name='categoryKeys']/xs:restriction/xs:enumeration[@value='" + categoryName + "']";
+			Node attributeNode = org.apache.xpath.XPathAPI.selectSingleNode(remoteDocument.getDocumentElement(), attributeXPath);
+			System.out.println("attributeNode:" + attributeNode);
+
+			String attributesXPath = "/xs:schema/xs:simpleType[@name='categoryKeys']/xs:restriction";
+			Node attributesNode = org.apache.xpath.XPathAPI.selectSingleNode(localDocument.getDocumentElement(), attributesXPath);
+			System.out.println("attributesNode:" + attributesNode);
+			if(attributesNode == null)
+			{
+				attributesNode = ContentTypeDefinitionController.getController().createNewEnumerationKey(localDocument, ContentTypeDefinitionController.CATEGORY_KEYS);
+			}
+
+			Node node = localDocument.importNode(attributeNode, true);
+			attributesNode.appendChild(node);
+			
+			StringBuffer sb = new StringBuffer();
+			org.infoglue.cms.util.XMLHelper.serializeDom(localDocument.getDocumentElement(), sb);
+			newSchemaValue = sb.toString();
+		}
+		catch (Exception e) 
+		{
+			e.printStackTrace();
+		}
 		
+		return newSchemaValue;
+	}
+
+	private String copyAssetKey(String remoteSchemaValue, String localSchemaValue, String assetKey)
+	{
+		String newSchemaValue = null;
+
+		try
+		{
+			Document remoteDocument = createDocumentFromDefinition(remoteSchemaValue);
+			Document localDocument = createDocumentFromDefinition(localSchemaValue);
+
+			String attributeXPath = "/xs:schema/xs:simpleType[@name='assetKeys']/xs:restriction/xs:enumeration[@value='" + assetKey + "']";
+			Node attributeNode = org.apache.xpath.XPathAPI.selectSingleNode(remoteDocument.getDocumentElement(), attributeXPath);
+			System.out.println("attributeNode:" + attributeNode);
+
+			String attributesXPath = "/xs:schema/xs:simpleType[@name='assetKeys']/xs:restriction";
+			Node attributesNode = org.apache.xpath.XPathAPI.selectSingleNode(localDocument.getDocumentElement(), attributesXPath);
+			System.out.println("attributesNode:" + attributesNode);
+			if(attributesNode == null)
+			{
+				attributesNode = ContentTypeDefinitionController.getController().createNewEnumerationKey(localDocument, ContentTypeDefinitionController.ASSET_KEYS);
+			}
+			
+			//Node node = attributeNode.cloneNode(true);
+			Node node = localDocument.importNode(attributeNode, true);
+			attributesNode.appendChild(node);
+			
+			StringBuffer sb = new StringBuffer();
+			org.infoglue.cms.util.XMLHelper.serializeDom(localDocument.getDocumentElement(), sb);
+			newSchemaValue = sb.toString();
+		}
+		catch (Exception e) 
+		{
+			e.printStackTrace();
+		}
+		
+		return newSchemaValue;
+	}
+
 	
 	/**
 	 * Consolidate the Document creation

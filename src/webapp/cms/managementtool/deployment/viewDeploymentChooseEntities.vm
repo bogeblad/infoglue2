@@ -41,6 +41,7 @@
 					#if($value1 != $value2)
 						<input type="checkbox" name="deviatedContentTypeName" value="$deviatingContentType.remoteVersion.name"/> $deviatingContentType.remoteVersion.name<br/> 
 						<ul>
+						<li><strong>Attributes</strong></li>
 						#set($deviatingAttributes = $this.getDeviatingAttributes($deviatingContentType.remoteVersion.schemaValue, $deviatingContentType.localVersion.schemaValue))
 						#foreach($deviatingAttribute in $deviatingAttributes)
 							<li>
@@ -48,6 +49,7 @@
 							</li>
 						#end
 
+						<li><strong>Categories</strong></li>
 						#set($deviatingCategories = $this.getDeviatingCategories($deviatingContentType.remoteVersion.schemaValue, $deviatingContentType.localVersion.schemaValue))
 						#foreach($deviatingCategory in $deviatingCategories)
 							<li>
@@ -55,10 +57,11 @@
 							</li>
 						#end
 
+						<li><strong>Asset keys</strong></li>
 						#set($deviatingAssetKeys = $this.getDeviatingAssetKeys($deviatingContentType.remoteVersion.schemaValue, $deviatingContentType.localVersion.schemaValue))
 						#foreach($deviatingAssetKey in $deviatingAssetKeys)
 							<li>
-								<input type="checkbox" name="${deviatingContentType.remoteVersion.name}_categoryName" value="$deviatingAssetKey.assetKey"/> $deviatingAssetKey.assetKey
+								<input type="checkbox" name="${deviatingContentType.remoteVersion.name}_assetKey" value="$deviatingAssetKey.assetKey"/> $deviatingAssetKey.assetKey
 							</li>
 						#end
 						</ul>

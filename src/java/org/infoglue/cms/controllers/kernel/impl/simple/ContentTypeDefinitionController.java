@@ -1281,6 +1281,56 @@ public class ContentTypeDefinitionController extends BaseController
 	}
 
 	/**
+	 * Creates an <xs:enumeration> element with the specified key name
+	 * @return The Element if child changes are needed, null if the element coudl not be created
+	 */
+	public Element createNewEnumerationKey(Document document, String keyType) throws TransformerException
+	{
+		Element enumeration = null;
+		String assetKeysXPath = "/xs:schema/xs:simpleType[@name = '" + keyType + "']/xs:restriction";
+		NodeList anl = XPathAPI.selectNodeList(document.getDocumentElement(), assetKeysXPath);
+
+		Element keyRestriction = null;
+
+		if(anl != null && anl.getLength() > 0)
+		{
+			keyRestriction = (Element)anl.item(0);
+		}
+		else
+		{
+			//The key type was not defined so we create it first.
+			String schemaXPath = "/xs:schema";
+			NodeList schemaNL = XPathAPI.selectNodeList(document.getDocumentElement(), schemaXPath);
+			if(schemaNL != null && schemaNL.getLength() > 0)
+			{
+				Element schemaElement = (Element)schemaNL.item(0);
+
+				Element keySimpleType = document.createElement("xs:simpleType");
+				keySimpleType.setAttribute("name", keyType);
+
+				keyRestriction = document.createElement("xs:restriction");
+				keyRestriction.setAttribute("base", "xs:string");
+
+				keySimpleType.appendChild(keyRestriction);
+				schemaElement.appendChild(keySimpleType);
+			}
+		}
+
+		enumeration = document.createElement("xs:enumeration");
+		enumeration.setAttribute("value", getRandomName());
+		keyRestriction.appendChild(enumeration);
+		return enumeration;
+	}
+	
+	/**
+	 * Generates a random name
+	 */
+	private String getRandomName()
+	{
+		return "undefined" + (int)(Math.random() * 100);
+	}
+
+	/**
 	 * This is a method that gives the user back an newly initialized ValueObject for this entity that the controller
 	 * is handling.
 	 */

@@ -784,7 +784,7 @@ public class ViewContentTypeDefinitionAction extends InfoGlueAbstractAction
 		try
 		{
 			Document document = createDocumentFromDefinition();
-			createNewEnumerationKey(document, ContentTypeDefinitionController.ASSET_KEYS);
+			Element enumeration = ContentTypeDefinitionController.getController().createNewEnumerationKey(document, ContentTypeDefinitionController.ASSET_KEYS);
 			saveUpdatedDefinition(document);
 		}
 		catch(Exception e)
@@ -803,7 +803,7 @@ public class ViewContentTypeDefinitionAction extends InfoGlueAbstractAction
 		try
 		{
 			Document document = createDocumentFromDefinition();
-			Element enumeration = createNewEnumerationKey(document, ContentTypeDefinitionController.CATEGORY_KEYS);
+			Element enumeration = ContentTypeDefinitionController.getController().createNewEnumerationKey(document, ContentTypeDefinitionController.CATEGORY_KEYS);
 
 			Element annotation = document.createElement("xs:annotation");
 			Element appinfo = document.createElement("xs:appinfo");
@@ -958,47 +958,7 @@ public class ViewContentTypeDefinitionAction extends InfoGlueAbstractAction
 		ContentTypeDefinitionController.getController().update(contentTypeDefinitionVO);
 	}
 
-	/**
-	 * Creates an <xs:enumeration> element with the specified key name
-	 * @return The Element if child changes are needed, null if the element coudl not be created
-	 */
-	private Element createNewEnumerationKey(Document document, String keyType) throws TransformerException
-	{
-		Element enumeration = null;
-		String assetKeysXPath = "/xs:schema/xs:simpleType[@name = '" + keyType + "']/xs:restriction";
-		NodeList anl = XPathAPI.selectNodeList(document.getDocumentElement(), assetKeysXPath);
 
-		Element keyRestriction = null;
-
-		if(anl != null && anl.getLength() > 0)
-		{
-			keyRestriction = (Element)anl.item(0);
-		}
-		else
-		{
-			//The key type was not defined so we create it first.
-			String schemaXPath = "/xs:schema";
-			NodeList schemaNL = XPathAPI.selectNodeList(document.getDocumentElement(), schemaXPath);
-			if(schemaNL != null && schemaNL.getLength() > 0)
-			{
-				Element schemaElement = (Element)schemaNL.item(0);
-
-				Element keySimpleType = document.createElement("xs:simpleType");
-				keySimpleType.setAttribute("name", keyType);
-
-				keyRestriction = document.createElement("xs:restriction");
-				keyRestriction.setAttribute("base", "xs:string");
-
-				keySimpleType.appendChild(keyRestriction);
-				schemaElement.appendChild(keySimpleType);
-			}
-		}
-
-		enumeration = document.createElement("xs:enumeration");
-		enumeration.setAttribute("value", getRandomName());
-		keyRestriction.appendChild(enumeration);
-		return enumeration;
-	}
 
 	/**
 	 * Find an <xs:enumeration> element and update the key value.
