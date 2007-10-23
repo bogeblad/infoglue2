@@ -68,8 +68,8 @@ public class EditOnSiteBasicTemplateController extends BasicTemplateController
             decoratedAttributeValue.append( contentId ).append( "," ).append( languageId );
             decoratedAttributeValue.append( ",'").append( attributeName ).append( "'); setEditUrl('");
             decoratedAttributeValue.append( editOnSiteUrl ).append( "?contentId=" ).append( contentId );
-            decoratedAttributeValue.append( requestDelim).append("languageId=").append( languageId );
-            decoratedAttributeValue.append( requestDelim).append("attributeName=" ).append( attributeName );
+            decoratedAttributeValue.append( requestDelim ).append( "languageId=").append( languageId );
+            decoratedAttributeValue.append( requestDelim ).append( "attributeName=" ).append( attributeName );
             decoratedAttributeValue.append( requestDelim ).append( "forceWorkingChange=true');\">" );
             decoratedAttributeValue.append( attributeValue + "</span>");
 			return decoratedAttributeValue.toString();

@@ -6421,8 +6421,8 @@ public class BasicTemplateController implements TemplateController
 	        return "";
 	    else
 	    {
-		    String editOnSiteUrl = CmsPropertyHandler.getEditOnSiteUrl();
-			String decoratedAttributeValue = "<a href=\"#\" onClick=\"window.open('" + editOnSiteUrl + "?contentId=" + contentId + "&languageId=" + languageId + "&attributeName=" + attributeName + "', 'Edit', 'width=500,height=600,left=' + (document.body.clientWidth / 4) + ',top=50,toolbar=no,status=no,scrollbars=yes,location=no,menubar=no,directories=no,resizable=no');\">" + html + "</a>";
+	    	String editOnSiteUrl = CmsPropertyHandler.getEditOnSiteUrl();
+			String decoratedAttributeValue = "<a href=\"#\" onClick=\"window.open('" + editOnSiteUrl + "?contentId=" + contentId + "&languageId=" + languageId + "&attributeName=" + attributeName + "&forceWorkingChange=true', 'Edit', 'width=500,height=600,left=' + (document.body.clientWidth / 4) + ',top=50,toolbar=no,status=no,scrollbars=yes,location=no,menubar=no,directories=no,resizable=no');\">" + html + "</a>";
 			return decoratedAttributeValue;
 	    }
 	} 
