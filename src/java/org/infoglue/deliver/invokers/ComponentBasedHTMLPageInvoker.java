@@ -192,6 +192,11 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 			}
 			*/
 		}
+		else
+		{
+			if(logger.isInfoEnabled())
+				logger.info("pageString was to large (" + pageString.length() + ") so the headers was not inserted.");
+		}
 		
 		return pageString;
 	}
