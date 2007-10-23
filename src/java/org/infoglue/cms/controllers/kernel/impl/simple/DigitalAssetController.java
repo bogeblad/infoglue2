@@ -876,7 +876,7 @@ public class DigitalAssetController extends BaseController
 					logger.info("fileName:" + fileName);
 					String filePath = CmsPropertyHandler.getDigitalAssetPath();
 					logger.info("filePath:" + filePath);
-					System.out.println("Making thumb from:" + filePath + File.separator + fileName);
+					logger.info("Making thumb from:" + filePath + File.separator + fileName);
 					String thumbnailFileName = digitalAsset.getDigitalAssetId() + "_thumbnail_" + digitalAsset.getAssetFileName();
 					//String thumbnailFileName = "thumbnail_" + fileName;
 					File thumbnailFile = new File(filePath + File.separator + thumbnailFileName);
@@ -1354,88 +1354,87 @@ public class DigitalAssetController extends BaseController
    	
 	public static void dumpDigitalAsset(DigitalAssetVO digitalAssetVO, String fileName, String filePath, Database db) throws Exception
 	{
-		System.out.println("1:" + filePath + File.separator + fileName);
 		try
 		{
-		long timer = System.currentTimeMillis();
-
-		File outputFile = new File(filePath + File.separator + fileName);
-		File tmpOutputFile = new File(filePath + File.separator + "tmp_" + fileName);
-		if(outputFile.exists())
-		{
-			if(logger.isInfoEnabled())
-				logger.info("The file allready exists so we don't need to dump it again..");
-			logger.error("The file allready exists so we don't need to dump it again..");
-			
-			return;
-		}
-
-		System.out.println("2:" + filePath + File.separator + fileName);
-
-		File outputFileDir = new File(filePath);
-		outputFileDir.mkdirs();
-		
-		DigitalAsset digitalAsset = getDigitalAssetWithId(digitalAssetVO.getDigitalAssetId(), db);
-		
-		if((CmsPropertyHandler.getEnableDiskAssets().equals("false") || !tmpOutputFile.exists()) && digitalAsset.getAssetBlob() != null)
-		{
-			logger.error("Dumping from blob.");
-			
-			FileOutputStream fis = new FileOutputStream(outputFile);
-			BufferedOutputStream bos = new BufferedOutputStream(fis);
-			
-			BufferedInputStream bis = new BufferedInputStream(digitalAsset.getAssetBlob());
+			long timer = System.currentTimeMillis();
 	
-			int character;
-			while ((character = bis.read()) != -1)
+			File outputFile = new File(filePath + File.separator + fileName);
+			File tmpOutputFile = new File(filePath + File.separator + "tmp_" + fileName);
+			if(outputFile.exists())
 			{
-				bos.write(character);
+				if(logger.isInfoEnabled())
+					logger.info("The file allready exists so we don't need to dump it again..");
+				
+				return;
 			}
-			bos.flush();
+	
+			System.out.println("2:" + filePath + File.separator + fileName);
+	
+			File outputFileDir = new File(filePath);
+			outputFileDir.mkdirs();
 			
-			bis.close();
-			fis.close();
-			bos.close();
-		}
-		else
-		{
-			logger.error("Dumping from file.");
-			System.out.println("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
-					"Inne i cms:et tror jag - nu skall ni nog kunna ta assset från disk...");
+			DigitalAsset digitalAsset = getDigitalAssetWithId(digitalAssetVO.getDigitalAssetId(), db);
 			
-			System.out.println("tmpOutputFile:" + tmpOutputFile.getAbsolutePath() + ":" + tmpOutputFile.exists());
-			System.out.println("outputFile:" + outputFile.getAbsolutePath() + ":" + outputFile.exists());
-			new DigitalAssetController().copyInputStream(new FileInputStream(tmpOutputFile), new BufferedOutputStream(new FileOutputStream(outputFile)));
-			/*
-			HttpHelper httpHelper = new HttpHelper();
-			httpHelper.downloadFile("http://localhost:8080/infoglueCMS/DownloadProtectedAsset.action?digitalAssetId=" + digitalAssetVO.getId(), tmpOutputFile);
-			*/
-			System.out.println("\n\nExists" + tmpOutputFile.getAbsolutePath() + "=" + tmpOutputFile.exists() + " OR " + outputFile.exists() + ":" + outputFile.length());
-			if(tmpOutputFile.length() == 0 || outputFile.exists())
+			if((CmsPropertyHandler.getEnableDiskAssets().equals("false") || !tmpOutputFile.exists()) && digitalAsset.getAssetBlob() != null)
 			{
-				logger.error("outputFile:" + outputFile.getAbsolutePath());	
-				logger.error("written file:" + tmpOutputFile.length() + " - removing temp and not renaming it...");	
-				tmpOutputFile.delete();
+				logger.error("Dumping from blob.");
+				
+				FileOutputStream fis = new FileOutputStream(outputFile);
+				BufferedOutputStream bos = new BufferedOutputStream(fis);
+				
+				BufferedInputStream bis = new BufferedInputStream(digitalAsset.getAssetBlob());
+		
+				int character;
+				while ((character = bis.read()) != -1)
+				{
+					bos.write(character);
+				}
+				bos.flush();
+				
+				bis.close();
+				fis.close();
+				bos.close();
 			}
 			else
 			{
-				System.out.println("AAAAAAAAAA"); 
-				System.out.println("written file:" + tmpOutputFile.getAbsolutePath() + " - renaming it to " + outputFile.getAbsolutePath());	
-				System.out.println("1111: " + tmpOutputFile.exists() + outputFile.exists());
-				tmpOutputFile.renameTo(outputFile);
-				System.out.println("Renamed to" + outputFile.getAbsolutePath() + "=" + outputFile.exists());
+				logger.error("Dumping from file.");
+				System.out.println("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
+						"Inne i cms:et tror jag - nu skall ni nog kunna ta assset från disk...");
+				
+				System.out.println("tmpOutputFile:" + tmpOutputFile.getAbsolutePath() + ":" + tmpOutputFile.exists());
+				System.out.println("outputFile:" + outputFile.getAbsolutePath() + ":" + outputFile.exists());
+				new DigitalAssetController().copyInputStream(new FileInputStream(tmpOutputFile), new BufferedOutputStream(new FileOutputStream(outputFile)));
+				/*
+				HttpHelper httpHelper = new HttpHelper();
+				httpHelper.downloadFile("http://localhost:8080/infoglueCMS/DownloadProtectedAsset.action?digitalAssetId=" + digitalAssetVO.getId(), tmpOutputFile);
+				*/
+				System.out.println("\n\nExists" + tmpOutputFile.getAbsolutePath() + "=" + tmpOutputFile.exists() + " OR " + outputFile.exists() + ":" + outputFile.length());
+				if(tmpOutputFile.length() == 0 || outputFile.exists())
+				{
+					logger.error("outputFile:" + outputFile.getAbsolutePath());	
+					logger.error("written file:" + tmpOutputFile.length() + " - removing temp and not renaming it...");	
+					tmpOutputFile.delete();
+				}
+				else
+				{
+					System.out.println("AAAAAAAAAA"); 
+					System.out.println("written file:" + tmpOutputFile.getAbsolutePath() + " - renaming it to " + outputFile.getAbsolutePath());	
+					System.out.println("1111: " + tmpOutputFile.exists() + outputFile.exists());
+					tmpOutputFile.renameTo(outputFile);
+					System.out.println("Renamed to" + outputFile.getAbsolutePath() + "=" + outputFile.exists());
+				}
+				
 			}
 			
+			if(logger.isInfoEnabled())
+				logger.info("Time for dumping file " + fileName + ":" + (System.currentTimeMillis() - timer));
+	
+			System.out.println("assetPath in dump:" + filePath + File.separator + fileName);
+	
+			System.out.println("Time for dumping file " + fileName + ":" + (System.currentTimeMillis() - timer));
 		}
-		
-		if(logger.isInfoEnabled())
-			logger.info("Time for dumping file " + fileName + ":" + (System.currentTimeMillis() - timer));
-
-		System.out.println("assetPath in dump:" + filePath + File.separator + fileName);
-
-		System.out.println("Time for dumping file " + fileName + ":" + (System.currentTimeMillis() - timer));
-		}
-		catch (Exception e) {
+		catch (Exception e) 
+		{
 			e.printStackTrace();
 		}
 	}
