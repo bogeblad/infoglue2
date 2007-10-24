@@ -47,10 +47,14 @@ import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionCont
 import org.infoglue.cms.controllers.kernel.impl.simple.GroupControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.RoleControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.UserControllerProxy;
+import org.infoglue.cms.controllers.kernel.impl.simple.WorkflowDefinitionController;
 import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.entities.management.CategoryAttribute;
+import org.infoglue.cms.entities.management.CategoryVO;
 import org.infoglue.cms.entities.management.ContentTypeAttribute;
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
+import org.infoglue.cms.entities.workflow.WorkflowDefinition;
+import org.infoglue.cms.entities.workflow.WorkflowDefinitionVO;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.CmsPropertyHandler;
@@ -106,7 +110,54 @@ public class ViewDeploymentSynchronizeServersAction extends InfoGlueAbstractActi
     		}
     		deviatingContentTypes.add(bean);
     	}
-        
+
+    	/*
+    	Object[] categoryVOArray = (Object[])invokeOperation(targetEndpointAddress, "getCategories", "category", null, CategoryVO.class, "infoglue");
+    	List remoteCategoryVOList = Arrays.asList(categoryVOArray);
+	    Collections.sort(remoteCategoryVOList, new ReflectionComparator("name"));
+
+    	System.out.println("remoteCategoryVOList:" + remoteCategoryVOList.size());
+    	
+    	Iterator remoteCategoryVOListIterator = remoteCategoryVOList.iterator();
+    	while(remoteCategoryVOListIterator.hasNext())
+    	{
+    		CategoryVO remoteCategoryVO = (CategoryVO)remoteCategoryVOListIterator.next();
+    		System.out.println("remoteCategoryVO:" + remoteCategoryVO.getName());
+    		CategoryVO localCategoryVO = (CategoryVO)CategoryController.getController().getCategoryVOWithName(remoteCategoryVO.getName());
+    		DeploymentCompareBean bean = new DeploymentCompareBean();
+    		bean.setRemoteVersion(remoteCategoryVO);
+    		if(localCategoryVO != null)
+    		{
+    			System.out.println("localCategoryVO:" + localCategoryVO.getName());
+        		bean.setLocalVersion(localCategoryVO);    			
+    		}
+    		deviatingCategories.add(bean);
+    	}
+    	*/
+
+    	Object[] workflowVOArray = (Object[])invokeOperation(targetEndpointAddress, "getWorkflowDefinitions", "workflowDefinition", null, WorkflowDefinitionVO.class, "infoglue");
+    	List remoteWorkflowDefinitionVOList = Arrays.asList(workflowVOArray);
+	    Collections.sort(remoteWorkflowDefinitionVOList, new ReflectionComparator("name"));
+
+    	System.out.println("remoteWorkflowDefinitionVOList:" + remoteWorkflowDefinitionVOList.size());
+    	
+    	Iterator remoteWorkflowDefinitionVOListIterator = remoteWorkflowDefinitionVOList.iterator();
+    	while(remoteWorkflowDefinitionVOListIterator.hasNext())
+    	{
+    		WorkflowDefinitionVO remoteWorkflowDefinitionVO = (WorkflowDefinitionVO)remoteWorkflowDefinitionVOListIterator.next();
+    		System.out.println("remoteWorkflowDefinitionVO:" + remoteWorkflowDefinitionVO.getName());
+    		WorkflowDefinitionVO localWorkflowDefinitionVO = (WorkflowDefinitionVO)WorkflowDefinitionController.getController().getWorkflowDefinitionVOWithName(remoteWorkflowDefinitionVO.getName());
+    		System.out.println("localWorkflowDefinitionVO:" + localWorkflowDefinitionVO);
+    		DeploymentCompareBean bean = new DeploymentCompareBean();
+    		bean.setRemoteVersion(remoteWorkflowDefinitionVO);
+    		if(localWorkflowDefinitionVO != null)
+    		{
+    			System.out.println("localWorkflowDefinitionVO:" + localWorkflowDefinitionVO.getName());
+        		bean.setLocalVersion(localWorkflowDefinitionVO);    			
+    		}
+    		deviatingWorkflows.add(bean);
+    	}
+
     	return "input";
     }
 
@@ -215,6 +266,48 @@ public class ViewDeploymentSynchronizeServersAction extends InfoGlueAbstractActi
 	    	}
     	}
     	
+
+    	return doInput();
+    }
+
+    public String doUpdateWorkflows() throws Exception
+    {
+    	List<String> deploymentServers = CmsPropertyHandler.getDeploymentServers();
+    	String deploymentServerUrl = deploymentServers.get(deploymentServerIndex);
+    	
+    	System.out.println("Fetching sync info from deploymentServerUrl:" + deploymentServerUrl);
+    	
+    	String targetEndpointAddress = deploymentServerUrl + "/services/RemoteDeploymentService";
+    	System.out.println("targetEndpointAddress:" + targetEndpointAddress);
+    	
+    	Object[] workflowDefinitionVOArray = (Object[])invokeOperation(targetEndpointAddress, "getWorkflowDefinitions", "workflowDefinition", null, WorkflowDefinitionVO.class, "infoglue");
+    	List remoteWorkflowDefinitionVOList = Arrays.asList(workflowDefinitionVOArray);
+	    Collections.sort(remoteWorkflowDefinitionVOList, new ReflectionComparator("name"));
+
+    	System.out.println("remoteWorkflowDefinitionVOList:" + remoteWorkflowDefinitionVOList.size());
+
+    	String[] missingWorkflowDefinitionNameArray = this.getRequest().getParameterValues("missingWorkflowDefinitionName");
+    	System.out.println("missingWorkflowDefinitionNameArray:" + missingWorkflowDefinitionNameArray);
+    	
+    	if(missingWorkflowDefinitionNameArray != null)
+    	{
+	    	for(int i=0; i<missingWorkflowDefinitionNameArray.length; i++)
+	    	{
+	    		String missingWorkflowDefinitionName = missingWorkflowDefinitionNameArray[i];
+	    		System.out.println("Updating missingWorkflowDefinitionName:" + missingWorkflowDefinitionName);
+	
+	        	Iterator remoteWorkflowDefinitionVOListIterator = remoteWorkflowDefinitionVOList.iterator();
+	        	while(remoteWorkflowDefinitionVOListIterator.hasNext())
+	        	{
+	        		WorkflowDefinitionVO remoteWorkflowDefinitionVO = (WorkflowDefinitionVO)remoteWorkflowDefinitionVOListIterator.next();
+	        		//System.out.println("remoteContentTypeDefinitionVO:" + remoteContentTypeDefinitionVO.getName());
+	        		if(remoteWorkflowDefinitionVO.getName().equals(missingWorkflowDefinitionName))
+	        		{
+	        			WorkflowDefinitionController.getController().create(remoteWorkflowDefinitionVO);
+	        		}
+	        	}
+	    	}
+    	}
 
     	return doInput();
     }

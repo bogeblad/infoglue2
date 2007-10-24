@@ -77,14 +77,63 @@
 			</form>
 		</td>
 	</tr>		
+	
 	<tr>
 		<td>
-			<h3>Categories</h3>
+			<form name="categoriesForm" action="ViewDeploymentSynchronizeServers!updateCategories.action" method="post">
+				<input type="hidden" name="deploymentServerIndex" value="$deploymentServerIndex"/>
+			
+				<h3>Categories that deviates</h3>
+				#set($indexMissingCategories = 0)
+				#foreach($deviatingCategory in $deviatingCategories)
+					$deviatingCategory.remoteVersion
+					#if(!$deviatingCategory.localVersion)
+						<input type="checkbox" name="missingCategoryName" value="$deviatingCategory.remoteVersion.name"/> Missing local version of $deviatingCategory.remoteVersion.title<br/> 
+					#else
+						#set($value1 = "$formatter.cleanForJavascriptStrings($deviatingCategory.remoteVersion.schemaValue)")
+						#set($value2 = "$formatter.cleanForJavascriptStrings($deviatingCategory.localVersion.schemaValue)")
+	
+						#if($value1 != $value2)
+							<input type="checkbox" name="deviatedCategoryName" value="$deviatingCategory.remoteVersion.name"/> $deviatingCategory.remoteVersion.title<br/> 
+						#else
+							##Exakt compare: $deviatingCategories.remoteVersion.name<br/> 
+						#end
+					#end
+		
+					#set($indexMissingCategories = $indexMissingCategories + 1)
+				#end
+				<br/>
+				<input type="image" src="$ui.getString("images.contenttool.buttons.next")" width="50" height="25">
+			</form>
 		</td>
-	</tr>		
+	</tr>
+		
 	<tr>
 		<td>
-			<h3>Workflows</h3>
+			<form name="workflowsForm" action="ViewDeploymentSynchronizeServers!updateWorkflows.action" method="post">
+				<input type="hidden" name="deploymentServerIndex" value="$deploymentServerIndex"/>
+			
+				<h3>Workflows that deviates</h3>
+				#set($indexMissingWorkflows = 0)
+				#foreach($deviatingWorkflow in $deviatingWorkflows)
+					#if(!$deviatingWorkflow.localVersion)
+						<input type="checkbox" name="missingWorkflowDefinitionName" value="$deviatingWorkflow.remoteVersion.name"/> Missing local version of $deviatingWorkflow.remoteVersion.name<br/> 
+					#else
+						#set($value1 = "$formatter.cleanForJavascriptStrings($deviatingWorkflow.remoteVersion.value)")
+						#set($value2 = "$formatter.cleanForJavascriptStrings($deviatingWorkflow.localVersion.value)")
+	
+						#if($value1 != $value2)
+							<input type="checkbox" name="missingWorkflowDefinitionName" value="$deviatingWorkflow.remoteVersion.name"/> $deviatingWorkflow.remoteVersion.name<br/> 
+						#else
+							##Exakt compare: $deviatingWorkflows.remoteVersion.name<br/> 
+						#end
+					#end
+		
+					#set($indexMissingWorkflows = $indexMissingWorkflows + 1)
+				#end
+				<br/>
+				<input type="image" src="$ui.getString("images.contenttool.buttons.next")" width="50" height="25">
+			</form>
 		</td>
 	</tr>		
 	<tr>
