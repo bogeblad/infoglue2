@@ -26,8 +26,9 @@ package org.infoglue.cms.controllers.kernel.impl.simple;
 import java.util.List;
 
 import org.exolab.castor.jdo.Database;
+import org.exolab.castor.jdo.OQLQuery;
+import org.exolab.castor.jdo.QueryResults;
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
-import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
 import org.infoglue.cms.entities.workflow.WorkflowDefinition;
 import org.infoglue.cms.entities.workflow.WorkflowDefinitionVO;
 import org.infoglue.cms.entities.workflow.impl.simple.WorkflowDefinitionImpl;
@@ -61,22 +62,92 @@ public class WorkflowDefinitionController extends BaseController
 		return (WorkflowDefinition) getObjectWithId(WorkflowDefinitionImpl.class, workflowDefinitionId, db);
     }
 
+	/**
+	 * Returns the Workflow Definition with the given name.
+	 *
+	 * @param name
+	 * @return
+	 * @throws SystemException
+	 * @throws Bug
+	 */
+
+	public WorkflowDefinitionVO getWorkflowDefinitionVOWithName(String name) throws SystemException, Bug
+	{
+		WorkflowDefinitionVO workflowDefinitionVO = null;
+
+		Database db = CastorDatabaseService.getDatabase();
+
+		try
+		{
+			beginTransaction(db);
+
+			WorkflowDefinition workflowDefinition = getWorkflowDefinitionWithName(name, db);
+			if(workflowDefinition != null)
+				workflowDefinitionVO = workflowDefinition.getValueObject();
+
+			commitTransaction(db);
+		}
+		catch (Exception e)
+		{
+			rollbackTransaction(db);
+			throw new SystemException(e.getMessage());
+		}
+
+		return workflowDefinitionVO;
+	}
+
+	/**
+	 * Returns the Workflow Definition with the given name fetched within a given transaction.
+	 *
+	 * @param name
+	 * @param db
+	 * @return
+	 * @throws SystemException
+	 * @throws Bug
+	 */
+
+	public WorkflowDefinition getWorkflowDefinitionWithName(String name, Database db) throws SystemException, Bug
+	{
+		WorkflowDefinition workflowDefinition = null;
+
+		try
+		{
+			OQLQuery oql = db.getOQLQuery("SELECT f FROM org.infoglue.cms.entities.workflow.impl.simple.WorkflowDefinitionImpl f WHERE f.name = $1");
+			oql.bind(name);
+
+	    	QueryResults results = oql.execute();
+			if (results.hasMore())
+			{
+				workflowDefinition = (WorkflowDefinition)results.next();
+			}
+			
+			results.close();
+			oql.close();
+		}
+		catch(Exception e)
+		{
+			throw new SystemException("An error occurred when we tried to fetch a named WorkflowDefinition. Reason:" + e.getMessage(), e);
+		}
+
+		return workflowDefinition;
+	}
+
     public List getWorkflowDefinitionVOList() throws SystemException, Bug
     {
 		/*
-        String key = "contentTypeDefinitionVOList";
+        String key = "workflowDefinitionVOList";
 		logger.info("key:" + key);
-		List cachedContentTypeDefinitionVOList = (List)CacheController.getCachedObject("contentTypeDefinitionCache", key);
-		if(cachedContentTypeDefinitionVOList != null)
+		List cachedWorkflowDefinitionVOList = (List)CacheController.getCachedObject("workflowDefinitionCache", key);
+		if(cachedWorkflowDefinitionVOList != null)
 		{
-			logger.info("There was an cached contentTypeDefinitionVOList:" + cachedContentTypeDefinitionVOList.size());
-			return cachedContentTypeDefinitionVOList;
+			logger.info("There was an cached workflowDefinitionVOList:" + cachedWorkflowDefinitionVOList.size());
+			return cachedWorkflowDefinitionVOList;
 		}
 		*/
         
 		List workflowDefinitionVOList = getAllVOObjects(WorkflowDefinitionImpl.class, "workflowDefinitionId");
 
-		//CacheController.cacheObject("contentTypeDefinitionCache", key, contentTypeDefinitionVOList);
+		//CacheController.cacheObject("workflowDefinitionCache", key, workflowDefinitionVOList);
 
 		return workflowDefinitionVOList;
     }
@@ -107,6 +178,6 @@ public class WorkflowDefinitionController extends BaseController
 
 	public BaseEntityVO getNewVO()
 	{
-		return new ContentTypeDefinitionVO();
+		return new WorkflowDefinitionVO();
 	}
 }
