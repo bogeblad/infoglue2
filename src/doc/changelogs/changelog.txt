@@ -31,7 +31,14 @@ Abbreviated Changelog from 2.6.0 Final
 - Fixed so if a component throws an exception it does not get page-cached.
 - Made it possible to edit assets from standalone content version view.
 - Added feature which allows you to disable enforced identity check on particual pages (only useful when using CAS-SSO).
-
+- Made file upload dialog propose an asset key similar to the filename if you choose the file first.
+- Fixed bug with edit on sight popup not dissapearing in some situations when you click next to it.
+- Added a new feature which lets you change a component into another. For now it can keep the underlying 
+  components if the new component has the same slot names as the sub components was located in. If not the subcomponents are
+  removed totally from the page.
+- Added new Interception point to control access to change component feature.
+- Added so interface scrolls down to categories section in content version when action is made there. 
+ 
 -------------------------------------------------------------------------------------
 - InfoGlue 2.6.0 Final
 -------------------------------------------------------------------------------------
