@@ -6,7 +6,6 @@ position:absolute;
 z-index:1000004;
 text-align:left;
 width:350px;
-border:2px solid black;
 background-color:#F9F8F7;
 font-family: Tahoma, Arial, Helvetica, sans-serif;
 line-height:20px;
@@ -16,17 +15,17 @@ visibility:hidden;
 .skin1 {
 cursor:default;
 position:absolute;
-text-align:left;
 z-index:1000004;
+text-align:left;
 font-family: Tahoma, Arial, Helvetica, sans-serif;
 font-size: 10pt;
 width:160px;
+overflow: hidden;
 background-color:#F9F8F7;
 background-image: url('../images/contextBackground.gif');
 background-repeat: repeat-y;
 border:1px solid #666666;
 visibility:hidden;
-border:2px outset buttonhighlight;
 }
 .igmenuitems {
 padding-left:31px;
@@ -37,7 +36,7 @@ padding-bottom:3px;
 
 -->
 </style>
-
+<!--
 <script type="text/javascript" language="javascript" src="{applicationContext}/script/editOnSight.js"></script>
-
+-->
 </head>
