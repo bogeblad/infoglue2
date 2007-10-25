@@ -27,10 +27,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.infoglue.cms.controllers.kernel.impl.simple.CategoryController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ServerNodeController;
 import org.infoglue.cms.controllers.kernel.impl.simple.UserControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.WorkflowDefinitionController;
+import org.infoglue.cms.entities.management.CategoryVO;
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
 import org.infoglue.cms.entities.workflow.WorkflowDefinitionVO;
 import org.infoglue.cms.exception.SystemException;
@@ -55,7 +57,8 @@ public class RemoteDeploymentServiceImpl extends RemoteInfoGlueService
 
 	private static ContentTypeDefinitionController contentTypeDefinitionController = ContentTypeDefinitionController.getController();
 	private static WorkflowDefinitionController workflowDefinitionController = WorkflowDefinitionController.getController();
-	//private static ContentControllerProxy contentControllerProxy = ContentControllerProxy.getController();
+	private static CategoryController categoryController = CategoryController.getController();
+    //private static ContentControllerProxy contentControllerProxy = ContentControllerProxy.getController();
     //private static ContentVersionControllerProxy contentVersionControllerProxy = ContentVersionControllerProxy.getController();
     
 
@@ -138,7 +141,47 @@ public class RemoteDeploymentServiceImpl extends RemoteInfoGlueService
         
         return workflowDefinitionVOList;
     }
+
+	/**
+     * Gets all categories from the cms.
+     */
     
+    public List<CategoryVO> getAllActiveCategories(final String principalName) 
+    {
+        if(!ServerNodeController.getController().getIsIPAllowed(getRequest()))
+        {
+            logger.error("A client with IP " + getRequest().getRemoteAddr() + " was denied access to the webservice. Could be a hack attempt or you have just not configured the allowed IP-addresses correct.");
+            return null;
+        }
+        
+        if(logger.isInfoEnabled())
+        {
+	        logger.info("******************************************");
+	        logger.info("*   Getting categies through webservice  *");
+	        logger.info("******************************************");
+        }
+	        
+        List<CategoryVO> categoryVOList = new ArrayList<CategoryVO>();
+        
+        try
+        {
+			final DynamicWebserviceSerializer serializer = new DynamicWebserviceSerializer();
+	        
+			if(logger.isInfoEnabled())
+	        {
+		        logger.info("principalName:" + principalName);
+	        }
+	        
+			categoryVOList = categoryController.findAllActiveCategories();
+        }
+        catch(Throwable t)
+        {
+            logger.error("En error occurred when we tried to get the contentVersionVO:" + t.getMessage(), t);
+        }
+        
+        return categoryVOList;
+    }
+
 	/**
 	 * Checks if the principal exists and if the principal is allowed to create the workflow.
 	 * 

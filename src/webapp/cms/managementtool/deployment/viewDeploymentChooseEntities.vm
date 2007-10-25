@@ -85,19 +85,9 @@
 			
 				<h3>Categories that deviates</h3>
 				#set($indexMissingCategories = 0)
-				#foreach($deviatingCategory in $deviatingCategories)
-					$deviatingCategory.remoteVersion
+				#foreach($deviatingCategory in $deviatingCategoryVOList)
 					#if(!$deviatingCategory.localVersion)
-						<input type="checkbox" name="missingCategoryName" value="$deviatingCategory.remoteVersion.name"/> Missing local version of $deviatingCategory.remoteVersion.title<br/> 
-					#else
-						#set($value1 = "$formatter.cleanForJavascriptStrings($deviatingCategory.remoteVersion.schemaValue)")
-						#set($value2 = "$formatter.cleanForJavascriptStrings($deviatingCategory.localVersion.schemaValue)")
-	
-						#if($value1 != $value2)
-							<input type="checkbox" name="deviatedCategoryName" value="$deviatingCategory.remoteVersion.name"/> $deviatingCategory.remoteVersion.title<br/> 
-						#else
-							##Exakt compare: $deviatingCategories.remoteVersion.name<br/> 
-						#end
+						<input type="checkbox" name="missingCategoryName" value="$deviatingCategory.remoteVersion.name"/> Missing local version of $deviatingCategory.remoteVersion.name<br/> 
 					#end
 		
 					#set($indexMissingCategories = $indexMissingCategories + 1)
