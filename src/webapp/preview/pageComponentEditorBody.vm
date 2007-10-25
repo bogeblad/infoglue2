@@ -13,6 +13,7 @@
 <div class="igmenuitems" onMouseover="javascript:highlightie5(event);" onMouseout="javascript:lowlightie5(event);" onClick="edit();">Edit</div>
 <div id="addComponentMenuItem" class="igmenuitems" onMouseover="javascript:highlightie5(event);" onMouseout="javascript:lowlightie5(event);" onClick="insertComponent();">$addComponentHTML</div>
 <div id="deleteComponentMenuItem" class="igmenuitems" onMouseover="javascript:highlightie5(event);" onMouseout="javascript:lowlightie5(event);" onClick="deleteComponent();">$deleteComponentHTML</div>
+<div id="changeComponentMenuItem" class="igmenuitems" onMouseover="javascript:highlightie5(event);" onMouseout="javascript:lowlightie5(event);" onClick="changeComponent();">$changeComponentHTML</div>
 <div class="igmenuitems" onMouseover="javascript:highlightie5(event);" onMouseout="javascript:lowlightie5(event);" onClick="$saveTemplateUrl">$savePageTemplateHTML</div>
 <hr id="componentMenuTopSeparator">
 <div class="igmenuitems" onMouseover="javascript:highlightie5(event);" onMouseout="javascript:lowlightie5(event);" onClick="javascript:showComponent();">Properties</div>
@@ -24,6 +25,7 @@
 
 <div id="componentInTreeMenu" class="skin0">
 <div id="deleteComponentInTreeMenuItem" class="igmenuitems" onMouseover="javascript:highlightie5(event);" onMouseout="javascript:lowlightie5(event);" onClick="deleteComponent();">$deleteComponentHTML</div>
+<div id="changeComponentInTreeMenuItem" class="igmenuitems" onMouseover="javascript:highlightie5(event);" onMouseout="javascript:lowlightie5(event);" onClick="changeComponent();">$changeComponentHTML</div>
 <div class="igmenuitems" onMouseover="javascript:highlightie5(event);" onMouseout="javascript:lowlightie5(event);" onClick="$saveTemplateUrl">$savePageTemplateHTML</div>
 <hr id="componentInTreeMenuTopSeparator"/>
 <div class="igmenuitems" onMouseover="javascript:highlightie5(event);" onMouseout="javascript:lowlightie5(event);" onClick="javascript:showComponent();">Properties</div>
@@ -35,5 +37,6 @@
 <script type="text/javascript">
 $addComponentJavascript
 $deleteComponentJavascript
+$changeComponentJavascript
 $changeAccessJavascript
 </script>

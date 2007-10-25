@@ -1,4 +1,4 @@
-<!-- $Id: actions.xml,v 1.47 2007/10/21 21:40:32 mattias Exp $ -->
+<!-- $Id: actions.xml,v 1.48 2007/10/25 18:12:26 mattias Exp $ -->
 <actions>
 
 	<!-- MySettings -->
@@ -1146,6 +1146,7 @@
 	<action name="org.infoglue.cms.applications.structuretool.actions.ViewSiteNodePageComponentsAction" alias="ViewSiteNodePageComponents">
 		<view name="success">/cms/structuretool/viewSiteNodePageComponents.vm</view>
 		<view name="listComponents">/cms/structuretool/viewListComponents.vm</view>
+		<view name="listComponentsForChange">/cms/structuretool/viewListComponentsForChange.vm</view>
 		<view name="listComponentsForPalette">/cms/structuretool/viewListComponentsForPalette.vm</view>
 		<view name="showContentTree">/cms/structuretool/viewContentTreeForComponentBinding.vm</view>
 		<view name="showContentTreeForMultipleBinding">/cms/structuretool/viewContentTreeForMultipleComponentBinding.vm</view>

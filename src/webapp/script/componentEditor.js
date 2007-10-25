@@ -410,6 +410,7 @@ var slotContentId = "";
 var editUrl   = "";
 var insertUrl = "";
 var deleteUrl = "";
+var changeUrl = "";
 
 function setEditUrl(anEditUrl) 
 {
@@ -427,7 +428,7 @@ function setContentItemParameters(contentId, languageId, attributeName)
 	selectedAttributeName = attributeName;
 }
 
-function showComponentMenu(event, element, compId, anInsertUrl, anDeleteUrl) 
+function showComponentMenu(event, element, compId, anInsertUrl, anDeleteUrl, anChangeUrl) 
 {
 	hidepreviousmenues();
 	
@@ -436,9 +437,11 @@ function showComponentMenu(event, element, compId, anInsertUrl, anDeleteUrl)
 	componentId = compId;
 	insertUrl = anInsertUrl;
 	deleteUrl = anDeleteUrl;
+	changeUrl = anChangeUrl;
 	//alert("componentId" + componentId);
 	//alert("activeMenuId" + activeMenuId);
 	//alert("editUrl" + editUrl);
+	//alert("changeUrl:" + changeUrl);
     
     document.body.onclick = hidemenuie5;
 	getActiveMenuDiv().className = menuskin;
@@ -492,7 +495,7 @@ function showComponentMenu(event, element, compId, anInsertUrl, anDeleteUrl)
 }
 
 
-function showComponentInTreeMenu(event, element, compId, anInsertUrl, anDeleteUrl, slotId, slotContentIdVar) 
+function showComponentInTreeMenu(event, element, compId, anInsertUrl, anDeleteUrl, anChangeUrl, slotId, slotContentIdVar) 
 {
 	activeMenuId = "componentInTreeMenu";
 
@@ -500,6 +503,7 @@ function showComponentInTreeMenu(event, element, compId, anInsertUrl, anDeleteUr
 	slotContentId = slotContentIdVar;
 	//alert("slotId:" + slotId);
 	//alert("compId:" + compId);
+	
 	try
 	{
 		var access = eval("hasAccessToDeleteComponent" + slotName); 
@@ -514,6 +518,17 @@ function showComponentInTreeMenu(event, element, compId, anInsertUrl, anDeleteUr
 	    	document.getElementById("deleteComponentInTreeMenuItem").style.display = "none";
 	    	document.getElementById("componentInTreeMenuTopSeparator").style.display = "none";
 	    }
+
+		var changeAccess = eval("hasAccessToChangeComponent" + slotName); 
+	    //alert("changeAccess:" + changeAccess);
+	    if(changeAccess) 
+	    {
+	    	document.getElementById("changeComponentInTreeMenuItem").style.display = "block";
+	    }
+		else
+		{
+	    	document.getElementById("changeComponentInTreeMenuItem").style.display = "none";
+	    }
 	}
 	catch(e)
 	{
@@ -523,7 +538,9 @@ function showComponentInTreeMenu(event, element, compId, anInsertUrl, anDeleteUr
 	componentId = compId;
 	insertUrl = anInsertUrl;
 	deleteUrl = anDeleteUrl;
+	changeUrl = anChangeUrl;
 	//alert("componentId" + componentId);
+    //alert("changeUrl:" + changeUrl);
     
     document.body.onclick = hidemenuie5;
 	getActiveMenuDiv().className = menuskin;
@@ -574,8 +591,7 @@ function showEmptySlotMenu(slotId, event, compId, anInsertUrl, slotContentIdVar)
 	
 	slotName = slotId;
 	slotContentId = slotContentIdVar;
-	//alert("slotId:" + slotId);
-	//alert("compId:" + compId);
+	
 	try
 	{
 		var access = eval("hasAccessToAddComponent" + slotName); 
@@ -601,6 +617,17 @@ function showEmptySlotMenu(slotId, event, compId, anInsertUrl, slotContentIdVar)
 		{
 	    	document.getElementById("accessRightsMenuItem").style.display = "none";
 	    }
+
+		var hasAccessToChangeComponent = eval("hasAccessToChangeComponent" + slotName); 
+	    //alert("hasAccessToChangeComponent:" + hasAccessToChangeComponent);
+	    if(hasAccessToChangeComponent) 
+	    {
+	    	document.getElementById("changeComponentMenuItem").style.display = "block";
+		}
+		else
+		{
+	    	document.getElementById("changeComponentMenuItem").style.display = "none";
+	    }
 	}
 	catch(e)
 	{
@@ -609,6 +636,9 @@ function showEmptySlotMenu(slotId, event, compId, anInsertUrl, slotContentIdVar)
 	 
 	slotId = compId;
 	insertUrl = anInsertUrl;
+	//alert("slotId:" + slotId);
+	//alert("slotName:" + slotName);
+	//alert("slotContentId:" + slotContentId);
 	//alert("CompId:" + compId);
     //alert(insertUrl);
 	
@@ -911,14 +941,24 @@ function setAccessRights(slotId, slotContentId)
 {
 	//alert("slotId in setAccessRights:" + slotId);
 	//alert("currentUrl:" + document.location.href);
+	//alert("slotId: " + slotId + " - slotContentId:" + slotContentId);
 	document.location.href = componentEditorUrl + "ViewAccessRights.action?interceptionPointCategory=ComponentEditor&extraParameters=" + slotContentId + "_" + slotId + "&colorScheme=StructureTool&returnAddress=" + currentUrl;
 }
 
 function deleteComponent() 
 {
 	//alert("deleteUrl in deleteComponent:" +  + deleteUrl.substring(0, 50) + '\n' + deleteUrl.substring(50));
-	details = "width=500,height=700,left=" + (document.body.clientWidth / 4) + ",top=" + (document.body.clientHeight / 4) + ",toolbar=no,status=no,scrollbars=yes,location=no,menubar=no,directories=no,resizable=yes";
 	document.location.href = deleteUrl;
+}
+
+function changeComponent() 
+{
+	details = "width=600,height=700,left=" + (document.body.clientWidth / 4) + ",top=" + (document.body.clientHeight / 4) + ",toolbar=no,status=no,scrollbars=yes,location=no,menubar=no,directories=no,resizable=no";
+	newWin=window.open(changeUrl, "Change", details);
+	if(newWin)
+		newWin.focus();
+	else
+		alert("Could not open component list - if you have a popup blocker this is most likely the cause.");
 }
 
 function invokeAddress(url) 
@@ -1232,17 +1272,19 @@ function viewSource()
 	}
 		
 		
-	function initializeSlotEventHandler(id, insertUrl, deleteUrl, slotId, slotContentIdVar)
+	function initializeSlotEventHandler(id, insertUrl, deleteUrl, changeUrl, slotId, slotContentIdVar)
 	{
 		//alert("initializeSlotEventHandler:" + id + ":" + slotId);
-		var object = new emptySlotEventHandler(id, id, insertUrl, deleteUrl, slotId, slotContentIdVar);
+		var object = new emptySlotEventHandler(id, id, insertUrl, deleteUrl, changeUrl, slotId, slotContentIdVar);
 	}
 
-	function emptySlotEventHandler(eleId, objName, insertUrl, deleteUrl, slotId, slotContentIdVar)
+	function emptySlotEventHandler(eleId, objName, insertUrl, deleteUrl, changeUrl, slotId, slotContentIdVar)
 	{
 		this.objName = objName;           // objName is a property of myObject4
 		this.insertUrl = insertUrl;
 		this.deleteUrl = deleteUrl;
+		this.changeUrl = changeUrl;
+		//alert("slotId:" + slotId);
 		//alert("eleId:" + eleId);
 		//alert("this.insertUrl:" + this.insertUrl);
 		var ele = xGetElementById(eleId); // ele points to our related Element
@@ -1283,18 +1325,19 @@ function viewSource()
 		}
 	}
 	
-	function initializeComponentEventHandler(id, compId, insertUrl, deleteUrl)
+	function initializeComponentEventHandler(id, compId, insertUrl, deleteUrl, changeUrl)
 	{
 		//alert("initializeComponentEventHandler" + id + " " + deleteUrl);
-		var object = new componentEventHandler(id, id, compId, insertUrl, deleteUrl);
+		var object = new componentEventHandler(id, id, compId, insertUrl, deleteUrl, changeUrl);
 	}
 		
-	function componentEventHandler(eleId, objName, objId, insertUrl, deleteUrl)
+	function componentEventHandler(eleId, objName, objId, insertUrl, deleteUrl, changeUrl)
 	{
 		this.objName = objName;           // objName is a property of myObject4
 		this.objId = objId;
 		this.insertUrl = insertUrl;
 		this.deleteUrl = deleteUrl;
+		this.changeUrl = changeUrl;
 		//alert("eleId:" + eleId);
 		//alert("this.insertUrl:" + this.insertUrl);
 		//alert("this.deleteUrl:" + this.deleteUrl);
@@ -1327,28 +1370,30 @@ function viewSource()
 		this.onContextMenu = function(evt, ele) // onContextMenu is a method of myObject4
 		{
 			//alert('componentEventHandler.oncontextmenu()\nthis.objName = ' + this.objName + '\nele = ' + xName(ele));
-		    showComponentMenu(evt, ele.id, this.objId, insertUrl, deleteUrl);
+		    showComponentMenu(evt, ele.id, this.objId, insertUrl, deleteUrl, changeUrl);
 		    // cancel event bubbling
 		    if (evt && evt.stopPropagation) {evt.stopPropagation();}
 		    else if (window.event) {window.event.cancelBubble = true;}
 		}
 	}
 	
-	function initializeComponentInTreeEventHandler(id, compId, insertUrl, deleteUrl, slotId, slotContentIdVar)
+	function initializeComponentInTreeEventHandler(id, compId, insertUrl, deleteUrl, changeUrl, slotId, slotContentIdVar)
 	{
 		//alert("initializeComponentInTreeEventHandler" + id + " " + deleteUrl + " " + slotId);
-		var object = new componentInTreeEventHandler(id, id, compId, insertUrl, deleteUrl, slotId, slotContentIdVar);
+		var object = new componentInTreeEventHandler(id, id, compId, insertUrl, deleteUrl, changeUrl, slotId, slotContentIdVar);
 	}
 		
-	function componentInTreeEventHandler(eleId, objName, objId, insertUrl, deleteUrl, slotId, slotContentIdVar)
+	function componentInTreeEventHandler(eleId, objName, objId, insertUrl, deleteUrl, changeUrl, slotId, slotContentIdVar)
 	{
 		this.objName = objName;           // objName is a property of myObject4
 		this.objId = objId;
 		this.insertUrl = insertUrl;
 		this.deleteUrl = deleteUrl;
+		this.changeUrl = changeUrl;
 		//alert("eleId:" + eleId);
 		//alert("this.insertUrl:" + this.insertUrl);
 		//alert("this.deleteUrl:" + this.deleteUrl);
+		//alert("this.changeUrl:" + this.changeUrl);
 		var ele = xGetElementById(eleId); // ele points to our related Element
 		//alert("ele:" + ele);
 		ele.thisObj = this;              // Add a property to ele which points
@@ -1377,7 +1422,7 @@ function viewSource()
 		this.onContextMenu = function(evt, ele) // onContextMenu is a method of myObject4
 		{
 			//alert('componentEventHandler.oncontextmenu()\nthis.objName = ' + this.objName + '\nele = ' + xName(ele));
-		    showComponentInTreeMenu(evt, ele.id, this.objId, insertUrl, deleteUrl, slotId, slotContentIdVar);
+		    showComponentInTreeMenu(evt, ele.id, this.objId, insertUrl, deleteUrl, changeUrl, slotId, slotContentIdVar);
 		    // cancel event bubbling
 		    if (evt && evt.stopPropagation) {evt.stopPropagation();}
 		    else if (window.event) {window.event.cancelBubble = true;}

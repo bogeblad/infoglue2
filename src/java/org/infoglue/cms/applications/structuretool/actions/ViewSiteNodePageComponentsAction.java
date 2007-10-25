@@ -82,6 +82,7 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 	private String assetKey = null;
 	private Integer parentComponentId = null;
 	private Integer componentId = null;
+	private Integer newComponentContentId = null;
 	private String propertyName = null;
 	private String path 		= null;
 	private String slotId		= null;
@@ -170,6 +171,20 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 		this.repositories = RepositoryController.getController().getAuthorizedRepositoryVOList(this.getInfoGluePrincipal(), true);
 
 		return "listComponents";
+	}
+
+	/**
+	 * This method shows the user a list of Components(HTML Templates). 
+	 */
+    
+	public String doListComponentsForChange() throws Exception
+	{
+		logger.info("queryString:" + this.getRequest().getQueryString());
+		initialize();
+
+		this.repositories = RepositoryController.getController().getAuthorizedRepositoryVOList(this.getInfoGluePrincipal(), true);
+
+		return "listComponentsForChange";
 	}
 
 	/**
@@ -677,7 +692,83 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 	    return NONE; 
 	}
 	
-	    
+	/**
+	 * This method shows the user a list of Components(HTML Templates). 
+	 */
+    
+	public String doChangeComponent() throws Exception
+	{
+		initialize();
+		//logger.info("************************************************************");
+		//logger.info("* DELETING COMPONENT                                         *");
+		//logger.info("************************************************************");
+		//logger.info("siteNodeId:" + this.siteNodeId);
+		//logger.info("languageId:" + this.languageId);
+		//logger.info("contentId:" + this.contentId);
+		//logger.info("componentId:" + this.componentId);
+		//logger.info("slotId:" + this.slotId);
+		//logger.info("specifyBaseTemplate:" + this.specifyBaseTemplate);
+				
+		logger.info("doChangeComponent:" + this.getRequest().getQueryString());
+		
+		logger.info("masterLanguageId:" + this.masterLanguageVO.getId());
+
+		Integer newComponentId = new Integer(0);
+
+		String componentXML   = getPageComponentsString(siteNodeId, this.masterLanguageVO.getId(), contentId);			
+		logger.info("componentXML:" + componentXML);
+		
+		Document document = XMLHelper.readDocumentFromByteArray(componentXML.getBytes("UTF-8"));
+		String componentXPath = "//component[@id=" + this.componentId + "]";
+		
+		NodeList anl = org.apache.xpath.XPathAPI.selectNodeList(document.getDocumentElement(), componentXPath);
+		if(anl.getLength() > 0 && this.newComponentContentId != null)
+		{
+			Element component = (Element)anl.item(0);
+			
+			ContentVersionVO newComponentContentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(this.newComponentContentId, this.masterLanguageVO.getId());
+			String template = ContentVersionController.getContentVersionController().getAttributeValue(newComponentContentVersionVO, "Template", false);
+			logger.info("template:" + template);
+			
+			String subComponentsXPath = "//component[@id=" + this.componentId + "]//component";
+			NodeList subComponents = org.apache.xpath.XPathAPI.selectNodeList(component, subComponentsXPath);
+			logger.info("subComponents:" + subComponents.getLength());
+			for(int i=0; i<subComponents.getLength(); i++)
+			{
+				Element subComponent = (Element)subComponents.item(i);
+				String slotId = subComponent.getAttribute("name");
+				logger.info("subComponent slotId:" + slotId);	
+				if(template.indexOf("id=\"" + slotId + "\"") == -1)
+				{
+					logger.info("deleting subComponent as it was not part of the new template");
+					Node parentNode = subComponent.getParentNode();
+					parentNode.removeChild(subComponent);
+				}	
+			}
+			
+			component.setAttribute("contentId", "" + this.newComponentContentId);
+			
+			String modifiedXML = XMLHelper.serializeDom(document, new StringBuffer()).toString(); 
+			logger.info("modifiedXML:" + modifiedXML);
+			
+			ContentVO contentVO = NodeDeliveryController.getNodeDeliveryController(siteNodeId, this.masterLanguageVO.getId(), contentId).getBoundContent(this.getInfoGluePrincipal(), siteNodeId, this.masterLanguageVO.getId(), true, "Meta information", DeliveryContext.getDeliveryContext());
+			ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentVO.getId(), this.masterLanguageVO.getId());
+			
+			ContentVersionController.getContentVersionController().updateAttributeValue(contentVersionVO.getContentVersionId(), "ComponentStructure", modifiedXML, this.getInfoGluePrincipal());
+		}
+		
+		logger.info("newComponentId:" + newComponentId);
+		
+		this.url = getComponentRendererUrl() + getComponentRendererAction() + "?siteNodeId=" + this.siteNodeId + "&languageId=" + this.languageId + "&contentId=" + this.contentId + "&activatedComponentId=" + newComponentId + "&showSimple=" + this.showSimple;
+		//this.getResponse().sendRedirect(url);		
+		
+		this.url = this.getResponse().encodeURL(url);
+		this.getResponse().sendRedirect(url);
+		
+	    return NONE; 
+	}
+
+	
 	/**
 	 * This method shows the user a list of Components(HTML Templates). 
 	 */
@@ -1484,6 +1575,11 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 	public void setAssetKey(String assetKey)
 	{
 		this.assetKey = assetKey;
+	}
+
+	public void setNewComponentContentId(Integer newComponentContentId)
+	{
+		this.newComponentContentId = newComponentContentId;
 	}
 
 }
