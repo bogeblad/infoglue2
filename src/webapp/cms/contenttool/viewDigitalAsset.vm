@@ -113,6 +113,26 @@
 			list.style.visibility = "hidden";
 		}
 		
+		function setAssetKey()
+		{
+			var assetKeyElement = document.getElementById("tt");
+			//alert("assetKeyElement:" + assetKeyElement.value);
+			if(assetKeyElement.value == '')
+			{
+				var fileName = document.getElementById("file1").value;
+				//alert("fileName:" + fileName);
+				var indexOfLastDot = fileName.lastIndexOf(".");
+				var indexOfLastSlash = fileName.lastIndexOf("/");
+				if(indexOfLastSlash == -1)
+					indexOfLastSlash = fileName.lastIndexOf("\\");
+				//alert("indexOfLastDot:" + indexOfLastDot);	
+				//alert("indexOfLastSlash:" + indexOfLastSlash);	
+				var assetKey = fileName.substring(indexOfLastSlash + 1, indexOfLastDot);
+				//alert("assetKey:" + assetKey);	
+				assetKeyElement.value = assetKey;
+			}
+		}
+		
 		-->
 	</script>
 	
@@ -188,7 +208,7 @@
 	<tr>
 		<td colspan="2">
 			$ui.getString("tool.contenttool.fileUpload.fileUploadFileLabel")<br/>
-			<input size=30 type="FILE" name="file1" id="file1">
+			<input size=30 type="FILE" name="file1" id="file1" onchange="setAssetKey();">
 		</td>
 	</tr>		
 	<tr>

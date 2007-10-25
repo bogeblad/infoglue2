@@ -100,6 +100,26 @@
 			list.style.visibility = "hidden";
 		}
 		
+		function setAssetKey()
+		{
+			var assetKeyElement = document.getElementById("tt");
+			//alert("assetKeyElement:" + assetKeyElement.value);
+			if(assetKeyElement.value == '')
+			{
+				var fileName = document.getElementById("file1").value;
+				//alert("fileName:" + fileName);
+				var indexOfLastDot = fileName.lastIndexOf(".");
+				var indexOfLastSlash = fileName.lastIndexOf("/");
+				if(indexOfLastSlash == -1)
+					indexOfLastSlash = fileName.lastIndexOf("\\");
+				//alert("indexOfLastDot:" + indexOfLastDot);	
+				//alert("indexOfLastSlash:" + indexOfLastSlash);	
+				var assetKey = fileName.substring(indexOfLastSlash + 1, indexOfLastDot);
+				//alert("assetKey:" + assetKey);	
+				assetKeyElement.value = assetKey;
+			}
+		}
+		
 		-->
 	</script>
 	
