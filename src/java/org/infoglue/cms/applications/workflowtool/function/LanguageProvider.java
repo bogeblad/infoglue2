@@ -66,8 +66,11 @@ public class LanguageProvider extends InfoglueFunction
 	 */
 	protected void execute() throws WorkflowException 
 	{
+		//try
+		//{
+			
 		LanguageVO languageVO = null;
-
+		
 		if(argumentExists(ARGUMENT_SCOPE_ARGUMENT) && getArgument(ARGUMENT_SCOPE_ARGUMENT).equalsIgnoreCase("argument"))
 		{
 			languageVO = getLanguageWithCode(getArgument(LANGUAGE_CODE_ARGUMENT).toString());
@@ -113,6 +116,10 @@ public class LanguageProvider extends InfoglueFunction
 		}
 
 		populate(languageVO);
+		//}
+		//catch (Exception e) {
+		//	e.printStackTrace();
+		//}
 	}
 	
 	/**

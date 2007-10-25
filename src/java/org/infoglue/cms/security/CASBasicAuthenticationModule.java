@@ -165,8 +165,16 @@ public class CASBasicAuthenticationModule extends AuthenticationModule//, Author
 	{
 		String authenticatedUserName = null;
 
-		if(request.containsKey("j_username"))
-		    return (String)request.get("j_username");
+		String j_userName = (String)request.get("j_username");
+		String j_password = (String)request.get("j_password");
+		if(j_userName != null && j_password != null)
+		{
+			String userName = CmsPropertyHandler.getAdministratorUserName();
+			String password = CmsPropertyHandler.getAdministratorPassword();
+			
+			if(j_userName.equals(userName) && j_password.equals(password))
+				return j_userName;
+		}
 		
 		String ticket = (String)request.get("ticket");
 		logger.info("ticket:" + ticket);
@@ -316,8 +324,6 @@ public class CASBasicAuthenticationModule extends AuthenticationModule//, Author
 		 * If we want to be able to acquire proxy tickets (requires callback servlet to be set up  
 		 * in web.xml –- see below)
 		 */
-		//pv.setProxyCallbackUrl("https://gavin.adm.gu.se:9070/uPortal/CasProxyServlet");
-		//pv.setProxyCallbackUrl("http://localhost:8080/infoglueCMSAuthDev/CasProxyServlet");
 
 		/* contact CAS and validate */
 		pv.validate(); 

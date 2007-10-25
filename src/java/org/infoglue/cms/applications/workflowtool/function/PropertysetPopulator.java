@@ -98,6 +98,7 @@ public class PropertysetPopulator extends InfoglueFunction
 		catch (Exception e) 
 		{
 			System.out.println("Error getting languageVO:" + e.getMessage());
+			//languageVO = (LanguageVO) getParameter(LanguageProvider.LANGUAGE_PARAMETER);
 		}
 	}
 	

@@ -30,7 +30,9 @@ import org.apache.log4j.Logger;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ServerNodeController;
 import org.infoglue.cms.controllers.kernel.impl.simple.UserControllerProxy;
+import org.infoglue.cms.controllers.kernel.impl.simple.WorkflowDefinitionController;
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
+import org.infoglue.cms.entities.workflow.WorkflowDefinitionVO;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.deliver.util.webservices.DynamicWebserviceSerializer;
@@ -52,6 +54,7 @@ public class RemoteDeploymentServiceImpl extends RemoteInfoGlueService
 	private InfoGluePrincipal principal;
 
 	private static ContentTypeDefinitionController contentTypeDefinitionController = ContentTypeDefinitionController.getController();
+	private static WorkflowDefinitionController workflowDefinitionController = WorkflowDefinitionController.getController();
 	//private static ContentControllerProxy contentControllerProxy = ContentControllerProxy.getController();
     //private static ContentVersionControllerProxy contentVersionControllerProxy = ContentVersionControllerProxy.getController();
     
@@ -96,6 +99,45 @@ public class RemoteDeploymentServiceImpl extends RemoteInfoGlueService
         return contentTypeDefinitionVOList;
     }
 
+	/**
+     * Gets all workflows from the cms.
+     */
+    
+    public List<WorkflowDefinitionVO> getWorkflowDefinitions(final String principalName) 
+    {
+        if(!ServerNodeController.getController().getIsIPAllowed(getRequest()))
+        {
+            logger.error("A client with IP " + getRequest().getRemoteAddr() + " was denied access to the webservice. Could be a hack attempt or you have just not configured the allowed IP-addresses correct.");
+            return null;
+        }
+        
+        if(logger.isInfoEnabled())
+        {
+	        logger.info("******************************************************");
+	        logger.info("*   Getting workflow definitions through webservice  *");
+	        logger.info("******************************************************");
+        }
+	        
+        List<WorkflowDefinitionVO> workflowDefinitionVOList = new ArrayList<WorkflowDefinitionVO>();
+        
+        try
+        {
+			final DynamicWebserviceSerializer serializer = new DynamicWebserviceSerializer();
+	        
+			if(logger.isInfoEnabled())
+	        {
+		        logger.info("principalName:" + principalName);
+	        }
+	        
+			workflowDefinitionVOList = workflowDefinitionController.getWorkflowDefinitionVOList();
+        }
+        catch(Throwable t)
+        {
+            logger.error("En error occurred when we tried to get the contentVersionVO:" + t.getMessage(), t);
+        }
+        
+        return workflowDefinitionVOList;
+    }
     
 	/**
 	 * Checks if the principal exists and if the principal is allowed to create the workflow.

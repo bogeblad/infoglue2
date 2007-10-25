@@ -72,7 +72,7 @@ import com.opensymphony.workflow.spi.WorkflowEntry;
  * the Workflow interface.  The idea is to encapsulate the interactions with OSWorkflow and eliminate the
  * need to pass a Workflow reference and the workflow ID all over the place when extracting data from OSWorkflow
  * @author <a href="mailto:jedprentice@gmail.com">Jed Prentice</a>
- * @version $Revision: 1.36 $ $Date: 2007/03/13 12:07:58 $
+ * @version $Revision: 1.37 $ $Date: 2007/10/25 08:58:01 $
  */
 public class WorkflowFacade
 {
@@ -254,6 +254,7 @@ public class WorkflowFacade
 	{
 		long result = 0;
 		final DatabaseSession db = new DatabaseSession();
+		System.out.println("Opening");
 		try
 		{
 			final Map copy = new HashMap();
@@ -273,6 +274,7 @@ public class WorkflowFacade
 		finally 
 		{
 			db.releaseDB();
+			System.out.println("Closing");
 		}
 		return result;
 	}
@@ -292,6 +294,9 @@ public class WorkflowFacade
 			if(getEntryState() == WorkflowEntry.CREATED)
 				workflow.changeEntryState(workflowId, WorkflowEntry.ACTIVATED);
 
+			System.out.println("workflowId:" + workflowId);
+			System.out.println("actionId:" + actionId);
+			//System.out.println("inputs:" + inputs);
 			synchronized(currentWorkflows)
 			{	
 				if(!isActive())
@@ -391,6 +396,7 @@ public class WorkflowFacade
 	private void doExtendedAction(final int actionId, final Map inputs) throws WorkflowException
 	{
 		final DatabaseSession db = new DatabaseSession();
+		System.out.println("Opening");
 		try 
 		{
 			final Map copy = new HashMap();
@@ -409,6 +415,8 @@ public class WorkflowFacade
 		} 
 		finally 
 		{
+			System.out.println("Closing");
+
 			db.releaseDB();
 		}
 	}
@@ -723,9 +731,9 @@ public class WorkflowFacade
 		for (Iterator i = steps.iterator(); i.hasNext();)
 		{
 			Step step = null;
+			step = (Step)i.next();
 			try
 			{
-				step = (Step)i.next();
 				stepVOs.add(createStepVO(workflowVO, step));
 			}
 			catch(Exception e)
@@ -867,17 +875,24 @@ public class WorkflowFacade
 		stepVO.setFinishDate(step.getFinishDate());
 		stepVO.setOwner(step.getOwner());
 		stepVO.setCaller(step.getCaller());
-
-		StepDescriptor stepDescriptor = workflowDescriptor.getStep(step.getStepId());
-		if(stepDescriptor != null)
+		
+		try
 		{
-			stepVO.setName(stepDescriptor.getName());
-			for (Iterator i = stepDescriptor.getActions().iterator(); i.hasNext();)
-				stepVO.addAction(createActionVO((ActionDescriptor)i.next()));
+			StepDescriptor stepDescriptor = workflowDescriptor.getStep(step.getStepId());
+			if(stepDescriptor != null)
+			{
+				stepVO.setName(stepDescriptor.getName());
+				for (Iterator i = stepDescriptor.getActions().iterator(); i.hasNext();)
+					stepVO.addAction(createActionVO((ActionDescriptor)i.next()));
+			}
+			else
+			{
+				throw new SystemException("No stepDescriptor found for " + step);
+			}
 		}
-		else
+		catch(Exception e)
 		{
-			throw new SystemException("No stepDescriptor found for " + step);
+			
 		}
 		
 		return stepVO;
