@@ -11,7 +11,7 @@
 	<script type="text/javascript" src="${root}/applications/FCKEditor/fckeditor.js"></script>
 	
 	<script type="text/javascript">
-		
+				
 		#if($syncAuto == "true")
 		syncWithTree();
 		#end
@@ -871,7 +871,7 @@
 		#if($allCategoryKeys.size() > 0)
 		<tr>
 			<tr>
-				<td colspan="3">$ui.getString("tool.contenttool.relatedCategories")</td>
+				<td colspan="3"><a name="categoriesBlock">$ui.getString("tool.contenttool.relatedCategories")</a></td>
 			</tr>
 			<td colspan="3" class="bordered">
 				#foreach($categoryKey in $allCategoryKeys)
@@ -1223,6 +1223,11 @@
 
 <script type="text/javascript">
 	generateWYSIWYGS();
+
+	#if($anchor)
+		location.hash = "$anchor";
+	#end
+	
 </script>
 
 #endContentTool()

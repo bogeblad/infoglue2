@@ -1,4 +1,4 @@
-<!-- $Id: actions.xml,v 1.48 2007/10/25 18:12:26 mattias Exp $ -->
+<!-- $Id: actions.xml,v 1.49 2007/10/25 20:12:50 mattias Exp $ -->
 <actions>
 
 	<!-- MySettings -->
@@ -1323,16 +1323,16 @@
 		<view name="error">/cms/contenttool/error.vm</view>
 
 		<command name="add" alias="ContentCategory!add">
-			<view name="success">ViewContentVersion.action?contentId=${contentId}&amp;languageId=${languageId}</view>
+			<view name="success">ViewContentVersion.action?contentId=${contentId}&amp;languageId=${languageId}&amp;anchor=categoriesBlock</view>
 		</command>
 		<command name="delete" alias="ContentCategory!delete">
-			<view name="success">ViewContentVersion.action?contentId=${contentId}&amp;languageId=${languageId}</view>
+			<view name="success">ViewContentVersion.action?contentId=${contentId}&amp;languageId=${languageId}&amp;anchor=categoriesBlock</view>
 		</command>
 		<command name="addStandalone" alias="ContentCategory!addStandalone">
-			<view name="success">ViewContentVersion!standalone.action?contentId=${contentId}&amp;languageId=${languageId}</view>
+			<view name="success">ViewContentVersion!standalone.action?contentId=${contentId}&amp;languageId=${languageId}&amp;anchor=categoriesBlock</view>
 		</command>
 		<command name="deleteStandalone" alias="ContentCategory!deleteStandalone">
-			<view name="success">ViewContentVersion!standalone.action?contentId=${contentId}&amp;languageId=${languageId}</view>
+			<view name="success">ViewContentVersion!standalone.action?contentId=${contentId}&amp;languageId=${languageId}&amp;anchor=categoriesBlock</view>
 		</command>
 
 	</action>

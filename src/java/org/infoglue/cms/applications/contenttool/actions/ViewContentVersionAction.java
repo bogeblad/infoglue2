@@ -125,6 +125,8 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 	private Integer assignedContentId;
 	private String assignedAssetKey;
 	
+	private String anchor = null;
+	
 	public String getQualifyerPath(String entity, String entityId)
 	{	
 		StringBuffer sb = new StringBuffer("");
@@ -1302,6 +1304,18 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 	public void setAssignedContentId(Integer assignedContentId)
 	{
 		this.assignedContentId = assignedContentId;
+	}
+
+
+	public String getAnchor()
+	{
+		return anchor;
+	}
+
+
+	public void setAnchor(String anchor)
+	{
+		this.anchor = anchor;
 	}
 
 }
