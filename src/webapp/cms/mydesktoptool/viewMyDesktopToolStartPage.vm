@@ -31,7 +31,7 @@
 #foreach($workflowVO in $currentWorkflowVOList)
 <div id="activeWorkflow${workflowVO.workflowId}DetailsProperties" class="propertiesDiv" style="left:30px; top:100px; visibility:hidden; z-index:10">
 	<div id="activeWorkflow${workflowVO.workflowId}DetailsPropertiesHandle" class="propertiesDivHandle">
-		<div id="propertiesDivLeftHandle" class="propertiesDivLeftHandle">${workflowVO.name}&nbsp;-&nbsp;#$workflowVO.id</div><div id="propertiesDivRightHandle" class="propertiesDivRightHandle"><a href="javascript:hideDiv('activeWorkflow${workflowVO.workflowId}DetailsProperties');" class="white">close</a></div>
+		<div id="propertiesDivLeftHandle" class="propertiesDivLeftHandle" style="width: 300px;">${workflowVO.name}&nbsp;-&nbsp;#$workflowVO.id</div><div id="propertiesDivRightHandle" class="propertiesDivRightHandle"><a href="javascript:hideDiv('activeWorkflow${workflowVO.workflowId}DetailsProperties');" class="white">close</a></div>
 	</div>
 	
 	<div id="activeWorkflow${workflowVO.workflowId}DetailsPropertiesBody" class="propertiesDivBody">
