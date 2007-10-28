@@ -37,6 +37,8 @@ import org.infoglue.deliver.invokers.ComponentBasedHTMLPageInvoker;
 import org.infoglue.deliver.util.CacheController;
 import org.infoglue.deliver.util.DeliverContextListener;
 
+import com.opensymphony.oscache.base.OSCacheUtility;
+
 
 
 /**
@@ -134,6 +136,8 @@ public final class CmsContextListener implements ServletContextListener
 			//Starting the cache-expire-thread
 			if(cacheController.getExpireCacheAutomatically())
 				cacheController.start();
+
+			OSCacheUtility.setServletCacheParams(event.getServletContext());
 
 			CmsPropertyHandler.setStartupTime(new Date()); 
 

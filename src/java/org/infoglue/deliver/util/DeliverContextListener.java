@@ -40,6 +40,8 @@ import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.deliver.invokers.ComponentBasedHTMLPageInvoker;
 import org.infoglue.deliver.invokers.DecoratedComponentBasedHTMLPageInvoker;
 
+import com.opensymphony.oscache.base.OSCacheUtility;
+
 /**
  * This class functions as the entry-point for all initialization of the Cms-tool.
  * The class responds to the startup or reload of a whole context.
@@ -147,6 +149,8 @@ public final class DeliverContextListener implements ServletContextListener
 			//Starting the cache-expire-thread
 			if(cacheController.getExpireCacheAutomatically())
 				cacheController.start();
+			
+			OSCacheUtility.setServletCacheParams(event.getServletContext());
 			
 			InfoGlueAuthenticationFilter.initializeProperties();
 			
