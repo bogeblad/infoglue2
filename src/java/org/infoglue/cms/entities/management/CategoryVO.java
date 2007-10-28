@@ -20,7 +20,7 @@
  *
  * ===============================================================================
  *
- * $Id: CategoryVO.java,v 1.3 2006/03/06 17:19:50 mattias Exp $
+ * $Id: CategoryVO.java,v 1.4 2007/10/28 16:55:24 mattias Exp $
  */
 package org.infoglue.cms.entities.management;
 
@@ -45,7 +45,10 @@ public class CategoryVO extends Persistent
 	private boolean active = true;
 	private Integer parentId;
 	private List children = new ArrayList();
-
+	
+	//Can be null if not set by user for extra info
+	private String categoryPath = null;
+	
 	public CategoryVO() {}
 
 	public CategoryVO(String name)
@@ -162,5 +165,15 @@ public class CategoryVO extends Persistent
 				.append(" parentId=").append(parentId)
 				.append(" children.size=").append(children.size());
 		return sb;
+	}
+
+	public String getCategoryPath()
+	{
+		return categoryPath;
+	}
+
+	public void setCategoryPath(String categoryPath)
+	{
+		this.categoryPath = categoryPath;
 	}
 }

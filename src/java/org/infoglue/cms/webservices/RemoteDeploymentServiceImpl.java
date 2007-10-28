@@ -172,7 +172,7 @@ public class RemoteDeploymentServiceImpl extends RemoteInfoGlueService
 		        logger.info("principalName:" + principalName);
 	        }
 	        
-			categoryVOList = categoryController.findAllActiveCategories();
+			categoryVOList = categoryController.findAllActiveCategories(true);
         }
         catch(Throwable t)
         {

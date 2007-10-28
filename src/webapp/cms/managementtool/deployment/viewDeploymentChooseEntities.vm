@@ -87,7 +87,8 @@
 				#set($indexMissingCategories = 0)
 				#foreach($deviatingCategory in $deviatingCategoryVOList)
 					#if(!$deviatingCategory.localVersion)
-						<input type="checkbox" name="missingCategoryName" value="$deviatingCategory.remoteVersion.name"/> Missing local version of $deviatingCategory.remoteVersion.name<br/> 
+						$deviatingCategory.remoteVersion.categoryPath
+						<input type="checkbox" name="${deviatingCategory.remoteVersion.categoryPath}_transfer" value="true"/> Missing local version of $deviatingCategory.remoteVersion.name<br/> 
 					#end
 		
 					#set($indexMissingCategories = $indexMissingCategories + 1)

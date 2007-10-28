@@ -39,9 +39,11 @@ import javax.servlet.jsp.JspTagException;
 import javax.xml.namespace.QName;
 
 import org.apache.xerces.parsers.DOMParser;
+import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.applications.databeans.AssetKeyDefinition;
+import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
 import org.infoglue.cms.controllers.kernel.impl.simple.CategoryController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.GroupControllerProxy;
@@ -49,6 +51,7 @@ import org.infoglue.cms.controllers.kernel.impl.simple.RoleControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.UserControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.WorkflowDefinitionController;
 import org.infoglue.cms.entities.content.ContentVersionVO;
+import org.infoglue.cms.entities.management.Category;
 import org.infoglue.cms.entities.management.CategoryAttribute;
 import org.infoglue.cms.entities.management.CategoryVO;
 import org.infoglue.cms.entities.management.ContentTypeAttribute;
@@ -111,20 +114,21 @@ public class ViewDeploymentSynchronizeServersAction extends InfoGlueAbstractActi
     		deviatingContentTypes.add(bean);
     	}
 
-    	
+    	//Getting deviatingCategories
     	Object[] categoryVOArray = (Object[])invokeOperation(targetEndpointAddress, "getAllActiveCategories", "category", null, CategoryVO.class, "infoglue");
     	List remoteCategoryVOList = Arrays.asList(categoryVOArray);
 	    Collections.sort(remoteCategoryVOList, new ReflectionComparator("name"));
 	    System.out.println("remoteCategoryVOList:" + remoteCategoryVOList.size());
     	
-	    List<CategoryVO> allLocalCategories = CategoryController.getController().findAllActiveCategories();
+	    List<CategoryVO> allLocalCategories = CategoryController.getController().findAllActiveCategories(true);
 	    System.out.println("allLocalCategories:" + allLocalCategories.size());
     	
-	    
 	    compareCategoryLists(remoteCategoryVOList, allLocalCategories);
 
     	System.out.println("deviatingCategoryVOList:" + deviatingCategoryVOList.size());
 	    
+    	
+    	//Getting deviatingWorkflows
     	Object[] workflowVOArray = (Object[])invokeOperation(targetEndpointAddress, "getWorkflowDefinitions", "workflowDefinition", null, WorkflowDefinitionVO.class, "infoglue");
     	List remoteWorkflowDefinitionVOList = Arrays.asList(workflowVOArray);
 	    Collections.sort(remoteWorkflowDefinitionVOList, new ReflectionComparator("name"));
@@ -157,7 +161,7 @@ public class ViewDeploymentSynchronizeServersAction extends InfoGlueAbstractActi
     	while(remoteCategoryVOListIterator.hasNext())
     	{
     		CategoryVO remoteCategoryVO = (CategoryVO)remoteCategoryVOListIterator.next();
-    		System.out.println("remoteCategoryVO:" + remoteCategoryVO.getName());
+    		//System.out.println("remoteCategoryVO:" + remoteCategoryVO.getName());
     		
     		boolean categoryExists = false;
     		CategoryVO localCategoryVO = null;
@@ -165,7 +169,7 @@ public class ViewDeploymentSynchronizeServersAction extends InfoGlueAbstractActi
     		while(allLocalCategoriesIterator.hasNext())
         	{
         		localCategoryVO = (CategoryVO)allLocalCategoriesIterator.next();
-        		System.out.println("remoteCategoryVO:" + remoteCategoryVO.getName());
+        		//System.out.println("remoteCategoryVO:" + remoteCategoryVO.getName());
         		if(localCategoryVO.getName().equals(remoteCategoryVO.getName()))
         		{
         			categoryExists = true;
@@ -175,9 +179,8 @@ public class ViewDeploymentSynchronizeServersAction extends InfoGlueAbstractActi
         	
         	if(!categoryExists)
         	{
-	    		DeploymentCompareBean bean = new DeploymentCompareBean();
+        		DeploymentCompareBean bean = new DeploymentCompareBean();
 	    		bean.setRemoteVersion(remoteCategoryVO);
-	    		
 	    		deviatingCategoryVOList.add(bean);
         	}
         	
@@ -191,7 +194,109 @@ public class ViewDeploymentSynchronizeServersAction extends InfoGlueAbstractActi
         }
     }
     
+    private void compareAndCompleteCategoryLists(List remoteCategoryVOList, List<CategoryVO> allLocalCategories, CategoryVO localParentCategory, Map handledRemoteCategoryPaths) throws SystemException
+	{
+    	Iterator remoteCategoryVOListIterator = remoteCategoryVOList.iterator();
+    	while(remoteCategoryVOListIterator.hasNext())
+    	{
+    		CategoryVO remoteCategoryVO = (CategoryVO)remoteCategoryVOListIterator.next();
+    		//System.out.println("remoteCategoryVO:" + remoteCategoryVO.getName());
+    		
+    		boolean categoryExists = false;
+    		CategoryVO localCategoryVO = null;
+    		Iterator allLocalCategoriesIterator = allLocalCategories.iterator();
+    		while(allLocalCategoriesIterator.hasNext())
+        	{
+        		localCategoryVO = (CategoryVO)allLocalCategoriesIterator.next();
+        		//System.out.println("remoteCategoryVO:" + remoteCategoryVO.getName());
+        		if(localCategoryVO.getName().equals(remoteCategoryVO.getName()))
+        		{
+        			categoryExists = true;
+        			break;
+        		}
+        	}
+        	
+    		boolean skipLocalCategory = false;
+        	if(!categoryExists)
+        	{
+        		Database db = CastorDatabaseService.getDatabase();
+        		
+        		try
+        		{
+        			beginTransaction(db);
+        			
+        			System.out.println("Category:" + remoteCategoryVO.getId() + "-" + remoteCategoryVO.getName() + " (" + remoteCategoryVO.getCategoryPath() + ") did not exist.");
+        			String remoteParentPath = remoteCategoryVO.getCategoryPath();
+        			System.out.println("remoteParentPath:" + remoteParentPath);
 
+            		String isCategorySelected = this.getRequest().getParameter(remoteParentPath + "_transfer");
+            		System.out.println("isCategorySelected:[" + isCategorySelected + "]");
+            		if(isCategorySelected != null && isCategorySelected.equals("true"))
+            		{
+            			System.out.println("Before - remoteCategoryVO:" + remoteCategoryVO);
+            			skipLocalCategory = true;
+            			handleSubCategories(localParentCategory, remoteCategoryVO, handledRemoteCategoryPaths, db);
+            			
+            		}
+            		
+        			commitTransaction(db);
+        		}
+        		catch (Exception e) 
+        		{
+        			e.printStackTrace();
+        			rollbackTransaction(db);
+        		}
+        	}
+        	
+        	if(remoteCategoryVO.getChildren() != null && remoteCategoryVO.getChildren().size() > 0)
+        	{
+        		if(localCategoryVO != null && !skipLocalCategory)
+        		{
+        			compareAndCompleteCategoryLists(remoteCategoryVO.getChildren(), localCategoryVO.getChildren(), localCategoryVO, handledRemoteCategoryPaths);
+        		}
+        		else
+        		{
+        			compareAndCompleteCategoryLists(remoteCategoryVO.getChildren(), new ArrayList(), null, handledRemoteCategoryPaths);
+        		}
+        	}
+        }
+    }
+    
+    public void handleSubCategories(CategoryVO localParentCategory, CategoryVO remoteCategoryVO, Map handledRemoteCategoryPaths, Database db) throws SystemException
+    {
+    	System.out.println("\n");
+		String isCategorySelected = this.getRequest().getParameter(remoteCategoryVO.getCategoryPath() + "_transfer");
+		System.out.println("isCategorySelected:[" + isCategorySelected + "]");
+		if(isCategorySelected != null && isCategorySelected.equals("true"))
+		{
+			if(handledRemoteCategoryPaths.containsKey(remoteCategoryVO.getCategoryPath()))
+			{
+				System.out.println("Category with path " + remoteCategoryVO.getCategoryPath() + " was allready handled.");
+			}
+			else
+			{
+				System.out.println("Creating local version of:" + remoteCategoryVO + " under " + localParentCategory);
+				remoteCategoryVO.setCategoryId(null);
+				if(localParentCategory != null)
+					remoteCategoryVO.setParentId(localParentCategory.getId());
+				
+				Category newLocalCategory = CategoryController.getController().save(remoteCategoryVO, db);
+				handledRemoteCategoryPaths.put(remoteCategoryVO.getCategoryPath(), "true");
+				//if(localParentCategory != null)
+				//	localParentCategory.getChildren().add(newLocalCategory.getValueObject());
+
+		    	List subCategories = remoteCategoryVO.getChildren();
+		    	Iterator subCategoriesIterator = subCategories.iterator();
+		    	while(subCategoriesIterator.hasNext())
+		    	{
+		    		CategoryVO subCategory = (CategoryVO)subCategoriesIterator.next();
+		    		System.out.println("subCategory:[" + subCategory + "]");
+		    		handleSubCategories(newLocalCategory.getValueObject(), subCategory, handledRemoteCategoryPaths, db);
+		    	}
+			}
+		}
+    }
+    
 	public String doUpdateContentTypes() throws Exception
     {
     	List<String> deploymentServers = CmsPropertyHandler.getDeploymentServers();
@@ -298,6 +403,38 @@ public class ViewDeploymentSynchronizeServersAction extends InfoGlueAbstractActi
     	}
     	
 
+    	return doInput();
+    }
+
+    public String doUpdateCategories() throws Exception
+    {
+    	System.out.println("*****************************");
+    	System.out.println("*    UPDATING CATEGORIES    *");
+    	System.out.println("*****************************");
+    	
+    	List<String> deploymentServers = CmsPropertyHandler.getDeploymentServers();
+    	String deploymentServerUrl = deploymentServers.get(deploymentServerIndex);
+    	
+    	System.out.println("Fetching sync info from deploymentServerUrl:" + deploymentServerUrl);
+    	
+    	String targetEndpointAddress = deploymentServerUrl + "/services/RemoteDeploymentService";
+    	System.out.println("targetEndpointAddress:" + targetEndpointAddress);
+    	
+    	Object[] categoryVOArray = (Object[])invokeOperation(targetEndpointAddress, "getAllActiveCategories", "category", null, CategoryVO.class, "infoglue");
+    	List remoteCategoryVOList = Arrays.asList(categoryVOArray);
+	    Collections.sort(remoteCategoryVOList, new ReflectionComparator("name"));
+	    System.out.println("remoteCategoryVOList:" + remoteCategoryVOList.size());
+    	
+	    List<CategoryVO> allLocalCategories = CategoryController.getController().findAllActiveCategories();
+	    System.out.println("allLocalCategories:" + allLocalCategories.size());
+    	
+	    Map handledRemoteCategoryPaths = new HashMap();
+	    
+	    compareAndCompleteCategoryLists(remoteCategoryVOList, allLocalCategories, null, handledRemoteCategoryPaths);
+
+    	System.out.println("deviatingCategoryVOList:" + deviatingCategoryVOList.size());
+    	
+    	//return NONE;
     	return doInput();
     }
 
@@ -667,4 +804,8 @@ public class ViewDeploymentSynchronizeServersAction extends InfoGlueAbstractActi
         return result;
     }
 
+	public String getCategoryPath(Integer categoryId) throws SystemException
+	{
+		return CategoryController.getController().getCategoryPath(categoryId);
+	}
 }

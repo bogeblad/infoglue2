@@ -20,7 +20,7 @@
  *
  * ===============================================================================
  *
- * $Id: CategoryController.java,v 1.17 2007/03/03 23:38:54 mattias Exp $
+ * $Id: CategoryController.java,v 1.18 2007/10/28 16:55:24 mattias Exp $
  */
 package org.infoglue.cms.controllers.kernel.impl.simple;
 
@@ -160,6 +160,34 @@ public class CategoryController extends BaseController
 	    }
 	    
 	    return categoryVO;
+	}
+
+	/**
+	 * Gets a category's full path.
+	 *
+	 * @return	The full path to the category
+	 * @throws	SystemException If an error happens
+	 */
+	public String getCategoryPath(Integer categoryId) throws SystemException
+	{
+	    String path = "";
+        
+	    Database db = CastorDatabaseService.getDatabase();
+		
+		try
+		{
+			beginTransaction(db);
+			
+			path = getCategoryPath(categoryId, db);
+    		
+			commitTransaction(db);
+		}
+		catch (Exception e) 
+		{
+			rollbackTransaction(db);
+		}
+			    
+	    return path;
 	}
 
 	/**
@@ -340,6 +368,30 @@ public class CategoryController extends BaseController
 		return roots;
 	}
 
+	/**
+	 * Find a list of all Categories in the system.
+	 *
+	 * @return	A list of CategoryVOs starting at the root of the category tree
+	 * @throws	SystemException If an error happens
+	 */
+	public List findAllActiveCategories(boolean includePaths) throws SystemException
+	{
+		List params = new ArrayList();
+		params.add(Boolean.TRUE);
+		List roots = executeQuery(findActiveRootCategories, params);
+		for (Iterator iter = roots.iterator(); iter.hasNext();)
+		{
+			CategoryVO root = (CategoryVO) iter.next();
+			if(includePaths)
+			{
+				String categoryPath = this.getCategoryPath(root.getCategoryId());
+				root.setCategoryPath(categoryPath);
+			}
+			
+			root.setChildren(findAllActiveChildren(root.getId(), includePaths));
+		}
+		return roots;
+	}
 	
 	/**
 	 * Finds all authorized categories parent id, recursively until no children are found.
@@ -382,6 +434,27 @@ public class CategoryController extends BaseController
 		for (Iterator iter = children.iterator(); iter.hasNext();)
 		{
 			CategoryVO child = (CategoryVO) iter.next();
+			child.setChildren(findAllActiveChildren(child.getId()));
+		}
+		return children;
+	}
+	
+	/**
+	 * Finds all children for a given parent id, recursively until no children are found.
+	 *
+	 * @return A list of children nodes, with thier children populated
+	 */
+	public List findAllActiveChildren(Integer parentId, boolean includePaths) throws SystemException
+	{
+		List children = findActiveByParent(parentId);
+		for (Iterator iter = children.iterator(); iter.hasNext();)
+		{
+			CategoryVO child = (CategoryVO) iter.next();
+			if(includePaths)
+			{
+				String categoryPath = CategoryController.getController().getCategoryPath(child.getCategoryId());
+				child.setCategoryPath(categoryPath);
+			}
 			child.setChildren(findAllActiveChildren(child.getId()));
 		}
 		return children;
