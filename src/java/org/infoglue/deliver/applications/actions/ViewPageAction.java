@@ -958,6 +958,14 @@ public class ViewPageAction extends InfoGlueAbstractAction
 					else if(!protectDeliver)
 						isAuthorized = AccessRightController.getController().getIsPrincipalAuthorized(db, (InfoGluePrincipal)principal, "SiteNodeVersion.Read", protectedSiteNodeVersionId.toString());
 					
+					if(logger.isInfoEnabled())
+					{
+						logger.info("protectDeliver:" + protectDeliver);
+						logger.info("protectedSiteNodeVersionId:" + protectedSiteNodeVersionId);
+						logger.info("isAuthorized:" + isAuthorized);
+						logger.info("principal:" + principal);
+					}
+					
 					if(!isAuthorized)
 					{	
 						if(this.referer == null)
