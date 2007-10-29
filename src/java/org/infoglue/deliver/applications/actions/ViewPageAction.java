@@ -236,9 +236,9 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			String protectPreview = CmsPropertyHandler.getProtectDeliverPreview();
 			boolean protectDeliver = false;
 
-			if(protectWorking.equals("true") && !CmsPropertyHandler.getOperatingMode().equals("0"))
+			if(protectWorking.equals("true") && CmsPropertyHandler.getOperatingMode().equals("0"))
 				protectDeliver = true;
-			else if(protectPreview.equals("true") && !CmsPropertyHandler.getOperatingMode().equals("2"))
+			else if(protectPreview.equals("true") && CmsPropertyHandler.getOperatingMode().equals("2"))
 				protectDeliver = true;
 				
 			if(protectedSiteNodeVersionId != null || protectDeliver)
@@ -465,9 +465,9 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			String protectPreview = CmsPropertyHandler.getProtectDeliverPreview();
 			boolean protectDeliver = false;
 
-			if(protectWorking.equals("true") && !CmsPropertyHandler.getOperatingMode().equals("0"))
+			if(protectWorking.equals("true") && CmsPropertyHandler.getOperatingMode().equals("0"))
 				protectDeliver = true;
-			else if(protectPreview.equals("true") && !CmsPropertyHandler.getOperatingMode().equals("2"))
+			else if(protectPreview.equals("true") && CmsPropertyHandler.getOperatingMode().equals("2"))
 				protectDeliver = true;
 				
 			if(protectedSiteNodeVersionId != null || protectDeliver)
