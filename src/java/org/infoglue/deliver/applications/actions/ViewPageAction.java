@@ -955,6 +955,8 @@ public class ViewPageAction extends InfoGlueAbstractAction
 					boolean isAuthorized = false;
 					if(protectDeliver && protectedSiteNodeVersionId == null && !principal.getName().equals(CmsPropertyHandler.getAnonymousUser()))
 						isAuthorized = true;
+					else if(protectedSiteNodeVersionId != null)
+						isAuthorized = AccessRightController.getController().getIsPrincipalAuthorized(db, (InfoGluePrincipal)principal, "SiteNodeVersion.Read", protectedSiteNodeVersionId.toString());
 					else if(!protectDeliver)
 						isAuthorized = AccessRightController.getController().getIsPrincipalAuthorized(db, (InfoGluePrincipal)principal, "SiteNodeVersion.Read", protectedSiteNodeVersionId.toString());
 					
