@@ -1007,6 +1007,17 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			    }
 				else if(protectedSiteNodeVersionId != null && !AccessRightController.getController().getIsPrincipalAuthorized((InfoGluePrincipal)principal, "SiteNodeVersion.Read", protectedSiteNodeVersionId.toString()) &&  !AccessRightController.getController().getIsPrincipalAuthorized((InfoGluePrincipal)this.getAnonymousPrincipal(), "SiteNodeVersion.Read", protectedSiteNodeVersionId.toString()))
 				{	
+					if(logger.isInfoEnabled())
+					{
+						logger.info("principal:" + principal);
+						logger.info("protectedSiteNodeVersionId:" + protectedSiteNodeVersionId);
+						logger.info("this.getAnonymousPrincipal():" + this.getAnonymousPrincipal());
+						
+						logger.info("Principal access: " + !AccessRightController.getController().getIsPrincipalAuthorized((InfoGluePrincipal)principal, "SiteNodeVersion.Read", protectedSiteNodeVersionId.toString()));
+						logger.info("Principal access: " + !AccessRightController.getController().getIsPrincipalAuthorized((InfoGluePrincipal)principal, "SiteNodeVersion.Read", protectedSiteNodeVersionId.toString()));
+						logger.info("Anonymous access: " + !AccessRightController.getController().getIsPrincipalAuthorized((InfoGluePrincipal)this.getAnonymousPrincipal(), "SiteNodeVersion.Read", protectedSiteNodeVersionId.toString()));
+					}
+					
 					if(this.referer == null)
 						this.referer = this.getRequest().getHeader("Referer");
 					
@@ -1022,7 +1033,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 					}
 					else
 					{
-						logger.info("SiteNode is protected and user has no access - sending him to no access page.");
+						logger.info("SiteNode is protected and neither " + principal + " or " + this.getAnonymousPrincipal() + " has access - sending him to no access page.");
 						String url = "ExtranetLogin!noAccess.action?referer=" + URLEncoder.encode(this.referer, "UTF-8") + "&date=" + System.currentTimeMillis();
 
 						getResponse().sendRedirect(url);
