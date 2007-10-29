@@ -428,8 +428,12 @@ class SqlBuilder
 	{
 		final List clauses = new ArrayList();
 
+		String mode = CmsPropertyHandler.getOperatingMode();
+		if(criterias.getForcedOperatingMode() != null)
+			mode = "" + criterias.getStateId();
+		
 		clauses.add(CV_ACTIVE_CLAUSE);
-		clauses.add(MessageFormat.format(getCV_LATEST_VERSION_CLAUSE(), new Object[] { criterias.getLanguage().getId().toString(), CmsPropertyHandler.getOperatingMode() }));
+		clauses.add(MessageFormat.format(getCV_LATEST_VERSION_CLAUSE(), new Object[] { criterias.getLanguage().getId().toString(), mode }));
 		clauses.add(getCV_CONTENT_JOIN());
 		clauses.add(MessageFormat.format(CV_STATE_CLAUSE, new Object[] { getBindingVariable() }));
 		bindings.add(criterias.getStateId());

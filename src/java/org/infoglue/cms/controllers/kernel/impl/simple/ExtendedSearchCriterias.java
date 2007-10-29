@@ -62,6 +62,11 @@ public class ExtendedSearchCriterias
 	private Integer stateId;
 	
 	/**
+	 * If set the search only allows exakt matches - forces stateIds to be similar
+	 */
+	private Integer forcedOperatingMode = null;
+	
+	/**
 	 * If present, only fetch content version that has at least one attribute fulfilling:
 	 * (a) the attribute is present in the <code>xmlAttributes</code> list.
 	 * (b) the value of the attribute contains the freetext value.
@@ -116,7 +121,15 @@ public class ExtendedSearchCriterias
 		super();
 		this.stateId = new Integer(stateId);
 	}
-	
+
+	/**
+	 * Sets the forced state criteria. 
+	 */
+	public void setForcedOperatingMode(final Integer forcedOperatingMode)
+	{
+		this.forcedOperatingMode = forcedOperatingMode;
+	}
+
 	/**
 	 * Sets the freetext critera. 
 	 * Note that at least one attribute must be specified to enabled freetext search. 
@@ -262,6 +275,11 @@ public class ExtendedSearchCriterias
 	public Integer getStateId()
 	{
 		return this.stateId;
+	}
+	
+	public Object getForcedOperatingMode()
+	{
+		return this.forcedOperatingMode;
 	}
 	
 	/**
