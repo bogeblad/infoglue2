@@ -185,6 +185,8 @@ public class SiteNodeVersionVO implements BaseEntityVO
     {
 	    if(pageCacheTimeout != null && !pageCacheTimeout.equalsIgnoreCase(""))
 	        this.pageCacheTimeout = pageCacheTimeout;
+	    else
+	        this.pageCacheTimeout = null;	
     }
 
 	public Integer getDisableEditOnSight()

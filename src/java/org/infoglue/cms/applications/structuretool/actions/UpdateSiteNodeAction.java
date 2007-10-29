@@ -95,7 +95,6 @@ public class UpdateSiteNodeAction extends ViewSiteNodeAction //WebworkAbstractAc
 			siteNodeVersionVO.setContentType(this.getContentType());
 			siteNodeVersionVO.setPageCacheKey(this.getPageCacheKey());
 			siteNodeVersionVO.setPageCacheTimeout(this.getPageCacheTimeout());
-			System.out.println("this.getPageCacheTimeout():" + this.getPageCacheTimeout());
 			siteNodeVersionVO.setDisableEditOnSight(this.getDisableEditOnSight());
 			siteNodeVersionVO.setDisableLanguages(this.disableLanguages);
 			siteNodeVersionVO.setDisablePageCache(this.getDisablePageCache());
