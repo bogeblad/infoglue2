@@ -66,7 +66,8 @@ public class ExportRepositoryAction extends InfoGlueAbstractAction
 	
 	private String fileUrl 	= "";
 	private String fileName = "";
-
+	private String exportFileName = null;
+	
 	/**
 	 * This shows the dialog before export.
 	 * @return
@@ -131,7 +132,14 @@ public class ExportRepositoryAction extends InfoGlueAbstractAction
 			
 			VisualFormatter visualFormatter = new VisualFormatter();
 			names = new VisualFormatter().replaceNonAscii(names, '_');
-			String fileName = "Export_" + names + "_" + visualFormatter.formatDate(new Date(), "yyyy-MM-dd") + ".xml";
+
+			if(repositories.length > 2 || names.length() > 40)
+				names = "" + repositories.length + "_repositories";
+			
+			String fileName = "Export_" + names + "_" + visualFormatter.formatDate(new Date(), "yyyy-MM-dd_HHmm") + ".xml";
+			if(exportFileName != null && !exportFileName.equals(""))
+				fileName = exportFileName;
+			
 			String filePath = CmsPropertyHandler.getDigitalAssetPath();
 			String fileSystemName =  filePath + File.separator + fileName;
 						
@@ -203,6 +211,16 @@ public class ExportRepositoryAction extends InfoGlueAbstractAction
 	public List getRepositories() 
 	{
 		return repositories;
+	}
+
+	public String getExportFileName()
+	{
+		return exportFileName;
+	}
+
+	public void setExportFileName(String exportFileName)
+	{
+		this.exportFileName = exportFileName;
 	}
 
 }

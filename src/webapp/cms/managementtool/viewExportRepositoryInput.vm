@@ -63,6 +63,9 @@
 	</tr>		
 	<tr>
 		<td>
+			Export file name (optional)<br>
+			<input type="textfield" name="exportFileName" value=""><br/><br>
+			
 			Additional repositories to include:<br>
 			#foreach($repository in $repositories)
 				#if($repository.id != $!repositoryId)
