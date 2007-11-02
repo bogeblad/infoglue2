@@ -38,7 +38,12 @@ Abbreviated Changelog from 2.6.0 Final
   removed totally from the page.
 - Added new Interception point to control access to change component feature.
 - Added so interface scrolls down to categories section in content version when action is made there. 
- 
+- Fixed so one can control the cache-taglibs size (OSCache framework) the same way you can control the size of all other caches.
+- Improved export repository feature so the export file name can be specified by the user. Before the filenames could be to long if several sites were exported.
+- Added features to select user in access rights dialog. Also new button to select onself through a simple click.
+- Added feature in SimplifiedJNDIBasicAuthorizationModule so a users extra attributes can be read into the principal objects meta map.
+
+
 -------------------------------------------------------------------------------------
 - InfoGlue 2.6.0 Final
 -------------------------------------------------------------------------------------
