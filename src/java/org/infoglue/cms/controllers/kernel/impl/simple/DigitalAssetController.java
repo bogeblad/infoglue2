@@ -1379,7 +1379,7 @@ public class DigitalAssetController extends BaseController
 			
 			if((CmsPropertyHandler.getEnableDiskAssets().equals("false") || !tmpOutputFile.exists()) && digitalAsset.getAssetBlob() != null)
 			{
-				logger.error("Dumping from blob.");
+				logger.info("Dumping from blob.");
 				
 				FileOutputStream fis = new FileOutputStream(outputFile);
 				BufferedOutputStream bos = new BufferedOutputStream(fis);
