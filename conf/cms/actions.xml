@@ -1,4 +1,4 @@
-<!-- $Id: actions.xml,v 1.49 2007/10/25 20:12:50 mattias Exp $ -->
+<!-- $Id: actions.xml,v 1.50 2007/11/02 09:50:19 mattias Exp $ -->
 <actions>
 
 	<!-- MySettings -->
@@ -499,6 +499,7 @@
 	<!-- SystemUser -->
 	<action name="org.infoglue.cms.applications.managementtool.actions.ViewListSystemUserAction" alias="ViewListSystemUser">
 		<view name="success">/cms/managementtool/viewListSystemUser.vm</view>
+		<view name="successPopup">/cms/managementtool/viewListSystemUserForPopup.vm</view>
 		<view name="error">/cms/managementtool/error.vm</view>
 	</action>
 	<action name="org.infoglue.cms.applications.managementtool.actions.ViewSystemUserAction" alias="ViewSystemUser">
