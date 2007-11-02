@@ -14,6 +14,21 @@
 
 <script type="text/javascript">
 <!--
+	function showUsers()
+	{
+		openPopup('ViewListSystemUser!userListForPopup.action', 'Users', 'width=400,height=600,resizable=yes,scrollbars=yes');
+	}
+	
+	function selectUser(userName)
+	{
+		document.getElementById("userName").value = userName;
+	}
+
+	function selectMyself()
+	{
+		document.getElementById("userName").value = "$infoGluePrincipal.name";
+	}
+	
 	function deleteUser(userName)
 	{
 		document.addUserForm.action = "UpdateAccessRights!deleteUser.action";
@@ -33,6 +48,7 @@
 	{
 		var x=0;
 		var selected = false;
+		
 		//alert("roles:" + roles.length);
 		for (x=0; x<roles.length; x++)
 		{
@@ -42,6 +58,7 @@
 			//alert("element:" + element.checked);
 			if(element && element.checked)
 			{
+				//alert("element:" + element.name + ":" + element.checked);
 				selected = true;
 			}
 		}
@@ -272,8 +289,10 @@
 	#end	
 
 	<tr>
-		<td>
-			<input type="textfield" id="userName" name="userName" value="">
+		<td nowrap>
+			<input astyle="border: 1px solid #666; width: 110px;" type="textfield" id="userName" name="userName" value=""/>
+			<a href="javascript:showUsers();"><img src="../images/spyglassIcon.gif" width="16" height="16" border="0"/></a>
+			<a href="javascript:selectMyself();"><img src="../images/user18.gif" width="16" height="16" border="0"/></a>
 		</td>
 		<td></td>
 		#set($interceptionPointIndex = 0)
@@ -446,8 +465,6 @@
 	#end
 	#set($interceptionPointIndex = $interceptionPointIndex + 1)
 #end
-	
-
 	
 </body>
 </html>
