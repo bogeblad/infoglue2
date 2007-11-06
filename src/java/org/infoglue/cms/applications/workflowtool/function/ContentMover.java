@@ -101,7 +101,7 @@ public class ContentMover extends ContentFunction
 				String contentPath ="";
 				Calendar aCal = Calendar.getInstance();
 				int aYear = aCal.get(Calendar.YEAR);
-				int aMonth = aCal.get(Calendar.MONTH);
+				int aMonth = aCal.get(Calendar.MONTH + 1);
 				
 				contentPath = ContentController.getContentController().getContentPath(destinationContentVO.getContentId());
 				contentPath += "/" + aYear +"/" + aMonth;
