@@ -27,6 +27,7 @@ import java.io.*;
 import java.lang.management.ManagementFactory;
 import java.lang.management.ThreadInfo;
 import java.lang.management.ThreadMXBean;
+import java.net.InetAddress;
 import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -160,15 +161,21 @@ public class ThreadMonitor implements Runnable
 		{			
 	    	StackTraceElement[] el = targetThread.getStackTrace();
 	        
-	        StringBuffer stackString = new StringBuffer("\n\n" + message + ":\n\n");
-	        stackString.append("\nNumber of current requests:" + RequestAnalyser.getRequestAnalyser().getNumberOfCurrentRequests() + ":\n");
-	        stackString.append("\nNumber of active requests:" + RequestAnalyser.getRequestAnalyser().getNumberOfActiveRequests() + ":\n");
-	        stackString.append("\nNumber of long requests:" + RequestAnalyser.getLongThreadMonitors().size() + ":\n");
-	        stackString.append("\nAverage time:" + RequestAnalyser.getRequestAnalyser().getAverageElapsedTime() + ":\n");
-	        stackString.append("\nLongest time:" + RequestAnalyser.getRequestAnalyser().getMaxElapsedTime() + ":\n");
-	        stackString.append("\n--------------------------------------------\n\n");
-	        stackString.append("\nThread with id [" + threadId + "] at report time:\n");
-	        stackString.append("\nOriginal url:" + getOriginalFullURL() + "\n");
+	        StringBuffer stackString = new StringBuffer("\n\n" + message + "\n\n");
+	        stackString.append("ServerName: " + getServerName() + "\n");
+	        stackString.append("Maximum memory (MB): " + (Runtime.getRuntime().maxMemory() / 1024 / 1024) + "\n");
+	        stackString.append("Used memory (MB): " + ((Runtime.getRuntime().totalMemory()- Runtime.getRuntime().freeMemory()) / 1024 / 1024) + "\n");
+	        stackString.append("Free memory (MB): " + (Runtime.getRuntime().freeMemory() / 1024 / 1024) + "\n");
+	        stackString.append("Total memory (MB): " + (Runtime.getRuntime().totalMemory() / 1024 / 1024) + "\n");
+	        stackString.append("Number of current requests: " + RequestAnalyser.getRequestAnalyser().getNumberOfCurrentRequests() + "\n");
+	        stackString.append("Number of active requests: " + RequestAnalyser.getRequestAnalyser().getNumberOfActiveRequests() + "\n");
+	        stackString.append("Number of long requests: " + RequestAnalyser.getLongThreadMonitors().size() + "\n");
+	        stackString.append("Average time: " + RequestAnalyser.getRequestAnalyser().getAverageElapsedTime() + "\n");
+	        stackString.append("Longest time: " + RequestAnalyser.getRequestAnalyser().getMaxElapsedTime() + "\n");
+	        stackString.append("Original url: " + getOriginalFullURL() + "\n");
+	        stackString.append("UserInfo: " + getUserInfo() + "\n");
+	        stackString.append("--------------------------------------------\n\n");
+	        stackString.append("Thread with id [" + threadId + "] at report time:\n");
 	        if (el != null && el.length != 0)
 	        {
 	            for (int j = 0; j < el.length; j++)
@@ -267,6 +274,40 @@ public class ThreadMonitor implements Runnable
 
     	return originalRequestURL + "?" + originalQueryString;
 	}
+
+	/**
+	 * This method returns userinfo from the original request
+	 * @return
+	 */
+	
+	public String getUserInfo()
+	{
+		String userAgent = this.request.getHeader("user-agent");
+        if(userAgent != null) 
+        	userAgent = userAgent.toLowerCase();
+        
+        String userIP = this.request.getRemoteAddr();
+        
+    	return userAgent + " (" + userIP + ")";
+	}
+
+	public String getServerName()
+    {
+    	String serverName = "Unknown";
+
+    	try
+    	{
+		    InetAddress localhost = InetAddress.getLocalHost();
+		    serverName = localhost.getHostName();
+    	}
+    	catch(Exception e)
+    	{
+    		
+    	}
+    	
+	    return serverName;
+    }
+
 
 	public long getMillis() 
 	{
