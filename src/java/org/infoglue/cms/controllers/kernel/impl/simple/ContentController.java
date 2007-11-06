@@ -76,12 +76,21 @@ public class ContentController extends BaseController
 {
     private final static Logger logger = Logger.getLogger(ContentController.class.getName());
 
+    //private static ContentController controller = null;
+    
 	/**
 	 * Factory method
 	 */
 	
 	public static ContentController getContentController()
 	{
+		/*
+		if(controller == null)
+			controller = new ContentController();
+		
+		return controller;
+		*/
+		
 		return new ContentController();
 	}
 
@@ -211,7 +220,7 @@ public class ContentController extends BaseController
 	 * As castor is lousy at this in my opinion we also add the new entity to the surrounding entities.
 	 */
 	    
-    public Content create(Database db, Integer parentContentId, Integer contentTypeDefinitionId, Integer repositoryId, ContentVO contentVO) throws ConstraintException, SystemException, Exception
+    public /*synchronized*/ Content create(Database db, Integer parentContentId, Integer contentTypeDefinitionId, Integer repositoryId, ContentVO contentVO) throws ConstraintException, SystemException, Exception
     {
 	    Content content = null;
 		
@@ -233,27 +242,33 @@ public class ContentController extends BaseController
 
             Repository repository = RepositoryController.getController().getRepositoryWithId(repositoryId, db);
 
-            content = new ContentImpl();
-            content.setValueObject(contentVO);
-            content.setParentContent((ContentImpl)parentContent);
-            content.setRepository((RepositoryImpl)repository);
-            content.setContentTypeDefinition((ContentTypeDefinitionImpl)contentTypeDefinition);
-            
-			db.create(content);
-			
-			//Now we add the content to the knowledge of the related entities.
-			if(parentContent != null)
+			/*
+        	synchronized (controller)
 			{
-				parentContent.getChildren().add(content);
-				parentContent.setIsBranch(new Boolean(true));
-			}
+        		System.out.println("Start create");
+        		//db.lock(parentContent);
+			*/
+	            content = new ContentImpl();
+	            content.setValueObject(contentVO);
+	            content.setParentContent((ContentImpl)parentContent);
+	            content.setRepository((RepositoryImpl)repository);
+	            content.setContentTypeDefinition((ContentTypeDefinitionImpl)contentTypeDefinition);
+	            
+				db.create(content);
+				
+				//Now we add the content to the knowledge of the related entities.
+				if(parentContent != null)
+				{
+					parentContent.getChildren().add(content);
+					parentContent.setIsBranch(new Boolean(true));
+				}
+        	//}
 
 			//repository.getContents().add(content);			
         }
         catch(Exception e)
         {
-        	logger.error("An error occurred so we should not complete the transaction:" + e, e);
-        	//rollbackTransaction(db);
+        	//logger.error("An error occurred so we should not complete the transaction:" + e, e);
             throw new SystemException(e.getMessage());    
         }
         
@@ -314,7 +329,7 @@ public class ContentController extends BaseController
 	 * This method deletes a content and also erases all the children and all versions.
 	 */
 	    
-	public void delete(ContentVO contentVO, Database db, boolean skipRelationCheck, boolean skipServiceBindings, boolean forceDelete, InfoGluePrincipal infogluePrincipal) throws ConstraintException, SystemException, Exception
+	public /*synchronized*/ void delete(ContentVO contentVO, Database db, boolean skipRelationCheck, boolean skipServiceBindings, boolean forceDelete, InfoGluePrincipal infogluePrincipal) throws ConstraintException, SystemException, Exception
 	{
 		Content content = null;
 		try
@@ -327,17 +342,28 @@ public class ContentController extends BaseController
 		}
 		
 		Content parent = content.getParentContent();
-	    if(parent != null)
+		//System.out.println("parent:" + parent.hashCode());
+		if(parent != null)
 		{
-			Iterator childContentIterator = parent.getChildren().iterator();
-			while(childContentIterator.hasNext())
+			/*
+			synchronized (controller)
 			{
-			    Content candidate = (Content)childContentIterator.next();
-			    if(candidate.getId().equals(contentVO.getContentId()))
-			    {
-			        deleteRecursive(content, childContentIterator, db, skipRelationCheck, skipServiceBindings, forceDelete, infogluePrincipal);
-			    }
+				System.out.println("In sync:" + parent.hashCode());
+				//db.lock(controller);
+			*/	
+				Iterator childContentIterator = parent.getChildren().iterator();
+				while(childContentIterator.hasNext())
+				{
+				    Content candidate = (Content)childContentIterator.next();
+				    if(candidate.getId().equals(contentVO.getContentId()))
+				    {
+				        deleteRecursive(content, childContentIterator, db, skipRelationCheck, skipServiceBindings, forceDelete, infogluePrincipal);
+				    }
+				}
+			/*
+				System.out.println("Done sync:" + parent.hashCode());
 			}
+			*/
 		}
 		else
 		{
@@ -1649,6 +1675,40 @@ public class ContentController extends BaseController
 	{
 		return new ContentVO();
 	}
+	
+	 
+	/**
+	 * Returns the path to, and including, the supplied content.
+	 * 
+	 * @param contentId the content to 
+	 * 
+	 * @return String the path to, and including, this content "library/library/..."
+	 * 
+	 */
+	public String getContentPath(Integer contentId) throws ConstraintException, SystemException, Bug, Exception
+    {
+		StringBuffer sb = new StringBuffer();
+	
+	    ContentVO contentVO = ContentController.getContentController().getContentVOWithId(contentId);
+	
+	    sb.insert(0, contentVO.getName());
+	
+	    while(contentVO.getParentContentId() != null)
+	
+	    {
+	          contentVO = ContentController.getContentController().getContentVOWithId(contentVO.getParentContentId());
+	
+	          if(contentVO.getParentContentId() != null)
+	          {
+	        	  sb.insert(0, contentVO.getName() + "/");
+	          }
+	    }
+	
+	    //sb.insert(0, "/");
+	
+	   
+	    return sb.toString();
+    }
 
  
 }
