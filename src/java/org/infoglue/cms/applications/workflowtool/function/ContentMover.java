@@ -22,6 +22,8 @@
 */
 package org.infoglue.cms.applications.workflowtool.function;
 
+import java.util.Calendar;
+
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
 import org.infoglue.cms.entities.content.ContentVO;
 
@@ -37,6 +39,11 @@ public class ContentMover extends ContentFunction
 	 * 
 	 */
 	public static final String DESTINATION_PARAMETER = "move_newParentFolder";
+	
+	/**
+	 * 
+	 */
+	public static final String DESTINATION_PATH_ALGORITHM = "pathAlgorithm";
 	
 	/**
 	 * 
@@ -76,11 +83,37 @@ public class ContentMover extends ContentFunction
 	 * Method used for initializing the function; will be called before <code>execute</code> is called.
 	 * <p><strong>Note</strong>! You must call <code>super.initialize()</code> first.</p>
 	 * 
+	 * 2007-11-05
+	 * Content can now be stored i subfolders of year and month under the designated destination folder.
+	 * 
 	 * @throws WorkflowException if an error occurs during the initialization.
 	 */
 	protected void initialize() throws WorkflowException 
 	{
 		super.initialize();
+		
 		this.destinationContentVO = (ContentVO) getParameter(DESTINATION_PARAMETER, (getContentVO() != null));
+		
+		if(argumentExists(DESTINATION_PATH_ALGORITHM) && getArgument(DESTINATION_PATH_ALGORITHM).equalsIgnoreCase("YEAR_MONTH"))
+		{
+			try
+			{
+				String contentPath ="";
+				Calendar aCal = Calendar.getInstance();
+				int aYear = aCal.get(Calendar.YEAR);
+				int aMonth = aCal.get(Calendar.MONTH);
+				
+				contentPath = ContentController.getContentController().getContentPath(destinationContentVO.getContentId());
+				contentPath += "/" + aYear +"/" + aMonth;
+				
+				ContentVO newParentContentVO = ContentController.getContentController().getContentVOWithPath(destinationContentVO.getRepositoryId(), contentPath, true, getPrincipal(), getDatabase());
+				this.destinationContentVO = newParentContentVO;
+			}
+			catch(Exception e) 
+			{
+				throwException(e);
+			}
+		}
 	}
+
 }
