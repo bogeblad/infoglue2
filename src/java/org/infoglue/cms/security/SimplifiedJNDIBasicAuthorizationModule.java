@@ -472,7 +472,8 @@ public class SimplifiedJNDIBasicAuthorizationModule implements AuthorizationModu
 				}
 				
 				infogluePrincipal = new InfoGluePrincipal(userName, (String)userAttributes.get("displayName"), (String)userAttributes.get("firstName"), (String)userAttributes.get("lastName"), (String)userAttributes.get("mail"), roles, groups, isAdministrator, this);
-
+				infogluePrincipal.getMetaInformation().putAll(userAttributes);
+				
 			    if(infogluePrincipal != null)
 			    	CacheController.cacheObjectInAdvancedCache("JNDIAuthorizationCache", key, infogluePrincipal, null, false);
 			}
