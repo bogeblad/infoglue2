@@ -263,7 +263,9 @@ public class SimplifiedJNDIBasicAuthorizationModule implements AuthorizationModu
 						logger.info("userName:" + userName);
 				}
 
+				logger.error("userAttributes:" + userName);
 				Map userAttributes = getUserAttributes(userName, ctx);
+				logger.error("userAttributes:" + userAttributes);
 				List roles = getRoles(userName, ctx);
 				List groups = getGroups(userName, ctx);
 				
@@ -276,7 +278,7 @@ public class SimplifiedJNDIBasicAuthorizationModule implements AuthorizationModu
 			}
 			catch(Exception e)
 			{
-				//e.printStackTrace();
+				e.printStackTrace();
 			    CacheController.cacheObjectInAdvancedCache("JNDIAuthorizationCache", key, new NullObject(), null, false);
 			}
 			finally
