@@ -63,7 +63,15 @@ public class DatabaseSession
 	{ 
 		rollbackOnly = true; 
 	}
-	
+
+	/**
+	 * Sets the rollback only flag to true.
+	 */
+	public boolean getRollbackOnly() 
+	{ 
+		return rollbackOnly; 
+	}
+
 	/**
 	 * Returns the wrapped database. The database will be opened and the transaction will be started
 	 * when this function is first called.
