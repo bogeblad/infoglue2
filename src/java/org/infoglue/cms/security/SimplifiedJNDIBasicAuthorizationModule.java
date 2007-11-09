@@ -795,12 +795,13 @@ public class SimplifiedJNDIBasicAuthorizationModule implements AuthorizationModu
 		
 		Map userAttributes = new HashMap();
 		
+		String userAttributesFilter		= this.extraProperties.getProperty("userAttributesFilter", "cn, distinguishedName");
 		String userDisplayNameFilter		= this.extraProperties.getProperty("displayNameFilter", "displayName");
 		String userNameAttributeFilter		= this.extraProperties.getProperty("userNameAttributeFilter", "distinguishedName");
 		String userFirstNameAttributeFilter	= this.extraProperties.getProperty("userFirstNameAttributeFilter", "givenName");
 		String userLastNameAttributeFilter	= this.extraProperties.getProperty("userLastNameAttributeFilter", "sn");
 		String userMailAttributeFilter		= this.extraProperties.getProperty("userMailAttributeFilter", "mail");
-				
+
 		try 
 		{
 			/*
@@ -833,16 +834,44 @@ public class SimplifiedJNDIBasicAuthorizationModule implements AuthorizationModu
 			Attribute userLastNameAttribute 	= attributes.get(userLastNameAttributeFilter);
 			Attribute userMailAttribute	 		= attributes.get(userMailAttributeFilter);
 			
-			logger.info("userNameAttribute:" + userNameAttribute);
-			logger.info("userDisplayNameAttribute:" + userDisplayNameAttribute);
-			logger.info("userFirstNameAttribute:" + userFirstNameAttribute);
-			logger.info("userLastNameAttribute:" + userLastNameAttribute);
-			logger.info("userMailAttribute:" + userMailAttribute);
+			if(logger.isInfoEnabled())
+			{
+				logger.info("userNameAttribute:" + userNameAttribute);
+				logger.info("userDisplayNameAttribute:" + userDisplayNameAttribute);
+				logger.info("userFirstNameAttribute:" + userFirstNameAttribute);
+				logger.info("userLastNameAttribute:" + userLastNameAttribute);
+				logger.info("userMailAttribute:" + userMailAttribute);
+			}
 			
 			userAttributes.put("displayName", (userDisplayNameAttribute == null ? userName : userDisplayNameAttribute.get().toString()));
 			userAttributes.put("firstName", (userFirstNameAttribute == null ? "Unknown" : userFirstNameAttribute.get().toString()));
 			userAttributes.put("lastName", (userLastNameAttribute == null ? "Unknown" : userLastNameAttribute.get().toString()));
 			userAttributes.put("mail", (userMailAttribute == null ? "Unknown" : userMailAttribute.get().toString()));
+		
+			if(logger.isInfoEnabled())
+				logger.info("userAttributesFilter:" + userAttributesFilter);
+
+			String[] attrID = userAttributesFilter.split(",");
+			for(int i=0; i<attrID.length; i++)
+			{
+				String attributeName = attrID[i];
+				if(logger.isInfoEnabled())
+					logger.info("attributeName:" + attributeName);
+
+				if(!attributeName.equals(userNameAttributeFilter) && 
+				   !attributeName.equals(userNameAttributeFilter) && 
+				   !attributeName.equals(userNameAttributeFilter) && 
+				   !attributeName.equals(userNameAttributeFilter) && 
+				   !attributeName.equals(userNameAttributeFilter))
+				{
+					Attribute value = attributes.get(attributeName);
+					if(logger.isInfoEnabled())
+						logger.info("value:" + value);
+
+					userAttributes.put(attributeName, (value == null ? "Unknown" : value.get().toString()));
+				}
+			}
+
 		}
 		catch (Exception e) 
 		{
