@@ -291,8 +291,8 @@
 	<tr>
 		<td nowrap>
 			<input astyle="border: 1px solid #666; width: 110px;" type="textfield" id="userName" name="userName" value=""/>
-			<a href="javascript:showUsers();"><img src="../images/spyglassIcon.gif" width="16" height="16" border="0"/></a>
-			<a href="javascript:selectMyself();"><img src="../images/user18.gif" width="16" height="16" border="0"/></a>
+			<a href="javascript:showUsers();"><img src="images/spyglassIcon.gif" width="16" height="16" border="0"/></a>
+			<a href="javascript:selectMyself();"><img src="images/user18.gif" width="16" height="16" border="0"/></a>
 		</td>
 		<td></td>
 		#set($interceptionPointIndex = 0)
