@@ -24,36 +24,28 @@ package org.infoglue.deliver.taglib.common;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.StringReader;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.servlet.jsp.JspException;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.Source;
 import javax.xml.transform.Templates;
-import javax.xml.transform.TransformerException;
+import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.sax.SAXResult;
 import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
-import javax.xml.transform.*;
 
 import net.sf.saxon.om.NodeInfo;
 import net.sf.saxon.tinytree.TinyBuilder;
 import net.sf.saxon.tinytree.TinyDocumentImpl;
-import net.sf.saxon.tinytree.TinyTree;
 
 import org.apache.log4j.Logger;
-import org.infoglue.cms.util.workflow.WorkflowFacade;
 import org.infoglue.deliver.taglib.TemplateControllerTag;
 import org.infoglue.deliver.util.CacheController;
 import org.infoglue.deliver.util.Timer;
