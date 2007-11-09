@@ -20,7 +20,18 @@
 				#end
 			</select>
 		</td>
-	</tr>		
+	</tr>
+	
+	<tr>
+		<td>
+			<h3>Items to synchronize</h3>
+			<input type="checkbox" name="synchronizeContentTypeDefinitions" value="true"/> Content types<br>
+			<input type="checkbox" name="synchronizeCategories" value="true"/> Categories<br>
+			<input type="checkbox" name="synchronizeWorkflows" value="true"/> Workflows<br>
+
+		</td>
+	</tr>
+	
 	<tr>
 		<td>
 			<input type="image" src="$ui.getString("images.contenttool.buttons.next")" width="50" height="25">

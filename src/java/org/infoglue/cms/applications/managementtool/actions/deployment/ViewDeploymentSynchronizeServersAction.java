@@ -75,6 +75,10 @@ public class ViewDeploymentSynchronizeServersAction extends InfoGlueAbstractActi
 {
 	private static final long serialVersionUID = 1L;
 	
+	private boolean synchronizeContentTypeDefinitions;
+	private boolean synchronizeCategories;
+	private boolean synchronizeWorkflows;
+	
 	private Integer deploymentServerIndex = null;
 	private List<DeploymentCompareBean> deviatingContentTypes = new ArrayList<DeploymentCompareBean>();
 	private List<DeploymentCompareBean> deviatingCategoryVOList = new ArrayList<DeploymentCompareBean>();
@@ -92,66 +96,74 @@ public class ViewDeploymentSynchronizeServersAction extends InfoGlueAbstractActi
     	String targetEndpointAddress = deploymentServerUrl + "/services/RemoteDeploymentService";
     	System.out.println("targetEndpointAddress:" + targetEndpointAddress);
     	
-    	Object[] contentTypeDefinitionVOArray = (Object[])invokeOperation(targetEndpointAddress, "getContentTypeDefinitions", "contentTypeDefinition", null, ContentTypeDefinitionVO.class, "infoglue");
-    	List remoteContentTypeDefinitionVOList = Arrays.asList(contentTypeDefinitionVOArray);
-	    Collections.sort(remoteContentTypeDefinitionVOList, new ReflectionComparator("name"));
-
-    	System.out.println("remoteContentTypeDefinitionVOList:" + remoteContentTypeDefinitionVOList.size());
-    	
-    	Iterator remoteContentTypeDefinitionVOListIterator = remoteContentTypeDefinitionVOList.iterator();
-    	while(remoteContentTypeDefinitionVOListIterator.hasNext())
+    	if(synchronizeContentTypeDefinitions)
     	{
-    		ContentTypeDefinitionVO remoteContentTypeDefinitionVO = (ContentTypeDefinitionVO)remoteContentTypeDefinitionVOListIterator.next();
-    		//System.out.println("remoteContentTypeDefinitionVO:" + remoteContentTypeDefinitionVO.getName());
-    		ContentTypeDefinitionVO localContentTypeDefinitionVO = (ContentTypeDefinitionVO)ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithName(remoteContentTypeDefinitionVO.getName());
-    		DeploymentCompareBean bean = new DeploymentCompareBean();
-    		bean.setRemoteVersion(remoteContentTypeDefinitionVO);
-    		if(localContentTypeDefinitionVO != null)
-    		{
-    			//System.out.println("localContentTypeDefinitionVO:" + localContentTypeDefinitionVO.getName());
-        		bean.setLocalVersion(localContentTypeDefinitionVO);    			
-    		}
-    		deviatingContentTypes.add(bean);
+	    	Object[] contentTypeDefinitionVOArray = (Object[])invokeOperation(targetEndpointAddress, "getContentTypeDefinitions", "contentTypeDefinition", null, ContentTypeDefinitionVO.class, "infoglue");
+	    	List remoteContentTypeDefinitionVOList = Arrays.asList(contentTypeDefinitionVOArray);
+		    Collections.sort(remoteContentTypeDefinitionVOList, new ReflectionComparator("name"));
+	
+	    	System.out.println("remoteContentTypeDefinitionVOList:" + remoteContentTypeDefinitionVOList.size());
+	    	
+	    	Iterator remoteContentTypeDefinitionVOListIterator = remoteContentTypeDefinitionVOList.iterator();
+	    	while(remoteContentTypeDefinitionVOListIterator.hasNext())
+	    	{
+	    		ContentTypeDefinitionVO remoteContentTypeDefinitionVO = (ContentTypeDefinitionVO)remoteContentTypeDefinitionVOListIterator.next();
+	    		//System.out.println("remoteContentTypeDefinitionVO:" + remoteContentTypeDefinitionVO.getName());
+	    		ContentTypeDefinitionVO localContentTypeDefinitionVO = (ContentTypeDefinitionVO)ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithName(remoteContentTypeDefinitionVO.getName());
+	    		DeploymentCompareBean bean = new DeploymentCompareBean();
+	    		bean.setRemoteVersion(remoteContentTypeDefinitionVO);
+	    		if(localContentTypeDefinitionVO != null)
+	    		{
+	    			//System.out.println("localContentTypeDefinitionVO:" + localContentTypeDefinitionVO.getName());
+	        		bean.setLocalVersion(localContentTypeDefinitionVO);    			
+	    		}
+	    		deviatingContentTypes.add(bean);
+	    	}
     	}
-
-    	//Getting deviatingCategories
-    	Object[] categoryVOArray = (Object[])invokeOperation(targetEndpointAddress, "getAllActiveCategories", "category", null, CategoryVO.class, "infoglue");
-    	List remoteCategoryVOList = Arrays.asList(categoryVOArray);
-	    Collections.sort(remoteCategoryVOList, new ReflectionComparator("name"));
-	    System.out.println("remoteCategoryVOList:" + remoteCategoryVOList.size());
     	
-	    List<CategoryVO> allLocalCategories = CategoryController.getController().findAllActiveCategories(true);
-	    System.out.println("allLocalCategories:" + allLocalCategories.size());
-    	
-	    compareCategoryLists(remoteCategoryVOList, allLocalCategories);
-
-    	System.out.println("deviatingCategoryVOList:" + deviatingCategoryVOList.size());
-	    
-    	
-    	//Getting deviatingWorkflows
-    	Object[] workflowVOArray = (Object[])invokeOperation(targetEndpointAddress, "getWorkflowDefinitions", "workflowDefinition", null, WorkflowDefinitionVO.class, "infoglue");
-    	List remoteWorkflowDefinitionVOList = Arrays.asList(workflowVOArray);
-	    Collections.sort(remoteWorkflowDefinitionVOList, new ReflectionComparator("name"));
-
-    	System.out.println("remoteWorkflowDefinitionVOList:" + remoteWorkflowDefinitionVOList.size());
-    	
-    	Iterator remoteWorkflowDefinitionVOListIterator = remoteWorkflowDefinitionVOList.iterator();
-    	while(remoteWorkflowDefinitionVOListIterator.hasNext())
+    	if(synchronizeCategories)
     	{
-    		WorkflowDefinitionVO remoteWorkflowDefinitionVO = (WorkflowDefinitionVO)remoteWorkflowDefinitionVOListIterator.next();
-    		System.out.println("remoteWorkflowDefinitionVO:" + remoteWorkflowDefinitionVO.getName());
-    		WorkflowDefinitionVO localWorkflowDefinitionVO = (WorkflowDefinitionVO)WorkflowDefinitionController.getController().getWorkflowDefinitionVOWithName(remoteWorkflowDefinitionVO.getName());
-    		System.out.println("localWorkflowDefinitionVO:" + localWorkflowDefinitionVO);
-    		DeploymentCompareBean bean = new DeploymentCompareBean();
-    		bean.setRemoteVersion(remoteWorkflowDefinitionVO);
-    		if(localWorkflowDefinitionVO != null)
-    		{
-    			System.out.println("localWorkflowDefinitionVO:" + localWorkflowDefinitionVO.getName());
-        		bean.setLocalVersion(localWorkflowDefinitionVO);    			
-    		}
-    		deviatingWorkflows.add(bean);
+	    	//Getting deviatingCategories
+	    	Object[] categoryVOArray = (Object[])invokeOperation(targetEndpointAddress, "getAllActiveCategories", "category", null, CategoryVO.class, "infoglue");
+	    	List remoteCategoryVOList = Arrays.asList(categoryVOArray);
+		    Collections.sort(remoteCategoryVOList, new ReflectionComparator("name"));
+		    System.out.println("remoteCategoryVOList:" + remoteCategoryVOList.size());
+	    	
+		    List<CategoryVO> allLocalCategories = CategoryController.getController().findAllActiveCategories(true);
+		    System.out.println("allLocalCategories:" + allLocalCategories.size());
+	    	
+		    compareCategoryLists(remoteCategoryVOList, allLocalCategories);
+	
+	    	System.out.println("deviatingCategoryVOList:" + deviatingCategoryVOList.size());
     	}
-
+    	
+    	if(synchronizeWorkflows)
+    	{
+	    	//Getting deviatingWorkflows
+	    	Object[] workflowVOArray = (Object[])invokeOperation(targetEndpointAddress, "getWorkflowDefinitions", "workflowDefinition", null, WorkflowDefinitionVO.class, "infoglue");
+	    	List remoteWorkflowDefinitionVOList = Arrays.asList(workflowVOArray);
+		    Collections.sort(remoteWorkflowDefinitionVOList, new ReflectionComparator("name"));
+	
+	    	System.out.println("remoteWorkflowDefinitionVOList:" + remoteWorkflowDefinitionVOList.size());
+	    	
+	    	Iterator remoteWorkflowDefinitionVOListIterator = remoteWorkflowDefinitionVOList.iterator();
+	    	while(remoteWorkflowDefinitionVOListIterator.hasNext())
+	    	{
+	    		WorkflowDefinitionVO remoteWorkflowDefinitionVO = (WorkflowDefinitionVO)remoteWorkflowDefinitionVOListIterator.next();
+	    		System.out.println("remoteWorkflowDefinitionVO:" + remoteWorkflowDefinitionVO.getName());
+	    		WorkflowDefinitionVO localWorkflowDefinitionVO = (WorkflowDefinitionVO)WorkflowDefinitionController.getController().getWorkflowDefinitionVOWithName(remoteWorkflowDefinitionVO.getName());
+	    		System.out.println("localWorkflowDefinitionVO:" + localWorkflowDefinitionVO);
+	    		DeploymentCompareBean bean = new DeploymentCompareBean();
+	    		bean.setRemoteVersion(remoteWorkflowDefinitionVO);
+	    		if(localWorkflowDefinitionVO != null)
+	    		{
+	    			System.out.println("localWorkflowDefinitionVO:" + localWorkflowDefinitionVO.getName());
+	        		bean.setLocalVersion(localWorkflowDefinitionVO);    			
+	    		}
+	    		deviatingWorkflows.add(bean);
+	    	}
+    	}
+    	
     	return "input";
     }
 
@@ -808,4 +820,35 @@ public class ViewDeploymentSynchronizeServersAction extends InfoGlueAbstractActi
 	{
 		return CategoryController.getController().getCategoryPath(categoryId);
 	}
+
+	public void setSynchronizeCategories(boolean synchronizeCategories)
+	{
+		this.synchronizeCategories = synchronizeCategories;
+	}
+
+	public void setSynchronizeContentTypeDefinitions(boolean synchronizeContentTypeDefinitions)
+	{
+		this.synchronizeContentTypeDefinitions = synchronizeContentTypeDefinitions;
+	}
+
+	public void setSynchronizeWorkflows(boolean synchronizeWorkflows)
+	{
+		this.synchronizeWorkflows = synchronizeWorkflows;
+	}
+
+	public boolean getSynchronizeCategories()
+	{
+		return this.synchronizeCategories;
+	}
+
+	public boolean getSynchronizeContentTypeDefinitions()
+	{
+		return this.synchronizeContentTypeDefinitions;
+	}
+
+	public boolean getSynchronizeWorkflows()
+	{
+		return this.synchronizeWorkflows;
+	}
+
 }
