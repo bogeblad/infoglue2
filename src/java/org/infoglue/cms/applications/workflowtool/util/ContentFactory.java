@@ -46,6 +46,7 @@ import org.infoglue.cms.entities.management.ContentTypeAttribute;
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
 import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.exception.ConstraintException;
+import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
 import org.infoglue.cms.util.dom.DOMBuilder;
@@ -127,7 +128,7 @@ public class ContentFactory
 	 * @return
 	 * @throws ConstraintException
 	 */
-	public ContentVO create(final ContentVO parentContent, final Map categories, final Database db) throws ConstraintException 
+	public ContentVO create(final ContentVO parentContent, final Map categories, final Database db) throws ConstraintException, SystemException, Exception 
 	{
 		if(logger.isDebugEnabled())
 		{
@@ -235,7 +236,7 @@ public class ContentFactory
 	 * @param categories
 	 * @return
 	 */
-	private ContentVO createContent(final ContentVO parentContent, final ContentVO contentVO, final ContentVersionVO contentVersionVO, final Map categories) 
+	private ContentVO createContent(final ContentVO parentContent, final ContentVO contentVO, final ContentVersionVO contentVersionVO, final Map categories) throws Exception
 	{
 	    try 
 	    {
@@ -259,13 +260,14 @@ public class ContentFactory
 	    } 
 	    catch(Exception e) 
 	    {
-			logger.error(e);
+			//logger.error(e);
+	    	throw e;
 		}
 	    
-		if(logger.isDebugEnabled())
-		    logger.info("Returning null....");
+		//if(logger.isDebugEnabled())
+	    //    logger.info("Returning null....");
 		
-		return null;
+	    //return null;
 	}
 
 	/**

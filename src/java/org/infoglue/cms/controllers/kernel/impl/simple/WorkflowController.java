@@ -32,6 +32,11 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import net.sf.hibernate.HibernateException;
+import net.sf.hibernate.Session;
+import net.sf.hibernate.SessionFactory;
+import net.sf.hibernate.cfg.Configuration;
+
 import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
@@ -49,13 +54,28 @@ import com.opensymphony.workflow.WorkflowException;
 /**
  * This controller acts as the api towards the OSWorkflow Workflow-engine.
  * @author Mattias Bogeblad
- * @author <a href="mailto:jedprentice@gmail.com">Jed Prentice</a>
+ * @author <a href="mailto:mattias.bogeblad@modul1.se">Mattias Bogeblad</a>
  */
 public class WorkflowController extends BaseController
 {
     private final static Logger logger = Logger.getLogger(UserPropertiesController.class.getName());
 
 	private static final WorkflowController controller = new WorkflowController();
+
+	private static SessionFactory hibernateSessionFactory;
+	
+	static
+	{
+		try
+		{
+			hibernateSessionFactory = new Configuration().configure().buildSessionFactory();
+		}
+		catch (HibernateException e)
+		{
+			logger.error("An exception occurred when we tried to initialize the hibernateSessionFactory", e);
+			throw new ExceptionInInitializerError(e);
+		}
+	}
 
 	/**
 	 * Returns the WorkflowController singleton
@@ -89,18 +109,62 @@ public class WorkflowController extends BaseController
 	 */
 	public WorkflowVO initializeWorkflow(InfoGluePrincipal principal, String name, int actionId, Map inputs) throws SystemException
 	{
+		WorkflowVO workflowVO = null;
+		
 		try
 		{
-			if(getIsAccessApproved(name, principal))
+			Session session = null;
+			net.sf.hibernate.Transaction tx = null;
+
+			try
 			{
-				return new WorkflowFacade(principal, name, actionId, inputs).createWorkflowVO();
+				session = hibernateSessionFactory.openSession();
+				tx = session.beginTransaction();
+
+				if(getIsAccessApproved(name, principal))
+				{
+					WorkflowFacade wf = new WorkflowFacade(principal, name, actionId, inputs, session);
+					workflowVO = wf.createWorkflowVO();
+					
+					session.flush();
+
+					tx.commit();
+				}
+				else
+				{
+					throw new Bug("You are not allowed to create " + name + " workflows.");
+				}
 			}
-			throw new Bug("You are not allowed to create " + name + " workflows.");
+			catch (Exception e) 
+			{
+				logger.error("An error occurred when we tries to run initializeWorkflow():" + e.getMessage(), e);
+				try
+				{
+					tx.rollback();
+				}
+				catch (HibernateException he)
+				{
+					logger.error("An error occurred when we tries to rollback transaction:" + he.getMessage(), he);
+				}
+			}
+			finally 
+			{
+				try
+				{
+					session.close();
+			    } 
+				catch (HibernateException e)
+				{
+					logger.error("An error occurred when we tries to close:" + e.getMessage(), e);
+				}
+			}
 		}
 		catch (Exception e)
 		{
 			throw new SystemException(e);
-		}
+		}			
+			
+		return workflowVO;
 	}
 
 	/**
@@ -110,17 +174,57 @@ public class WorkflowController extends BaseController
 	 */
 	public List getAvailableWorkflowVOList(InfoGluePrincipal userPrincipal) throws SystemException
 	{
-		final List allWorkflows = new WorkflowFacade(userPrincipal).getDeclaredWorkflows();
 		final List accessibleWorkflows = new ArrayList();
-		for(final Iterator i = allWorkflows.iterator(); i.hasNext(); )
+
+		Session session = null;
+		net.sf.hibernate.Transaction tx = null;
+
+		try
 		{
-			final WorkflowVO workflowVO = (WorkflowVO) i.next();
-			if(getIsAccessApproved(workflowVO.getName(), userPrincipal))
+			session = hibernateSessionFactory.openSession();
+
+			tx = session.beginTransaction();
+			
+			WorkflowFacade wf = new WorkflowFacade(userPrincipal, session);
+			final List allWorkflows = wf.getDeclaredWorkflows();
+			
+			for(final Iterator i = allWorkflows.iterator(); i.hasNext(); )
 			{
-				accessibleWorkflows.add(workflowVO);
+				final WorkflowVO workflowVO = (WorkflowVO) i.next();
+				if(getIsAccessApproved(workflowVO.getName(), userPrincipal))
+				{
+					accessibleWorkflows.add(workflowVO);
+				}
+			}
+			
+			session.flush();
+			
+			tx.commit();
+		}
+		catch (Exception e) 
+		{
+			logger.error("An error occurred when we tries to execute getAvailableWorkflowVOList():" + e.getMessage(), e);
+			try
+			{
+				tx.rollback();
+			}
+			catch (HibernateException he)
+			{
+				logger.error("An error occurred when we tries to rollback transaction():" + he.getMessage(), he);
 			}
 		}
-		
+		finally 
+		{
+			try
+			{
+				session.close();
+		    } 
+			catch (HibernateException e)
+			{
+				logger.error("An error occurred when we tries to close session:" + e.getMessage(), e);
+			}
+		}
+			
 		return accessibleWorkflows;
 	}
 
@@ -165,9 +269,53 @@ public class WorkflowController extends BaseController
 	 */
 	public List getCurrentWorkflowVOList(InfoGluePrincipal userPrincipal) throws SystemException
 	{
-		return new WorkflowFacade(userPrincipal).getActiveWorkflows();
+		List list = new ArrayList();
+		
+		Session session = null;
+		net.sf.hibernate.Transaction tx = null;
+
+		try
+		{
+			session = hibernateSessionFactory.openSession();
+
+			tx = session.beginTransaction();
+
+			WorkflowFacade wf = new WorkflowFacade(userPrincipal, session);
+			list = wf.getActiveWorkflows();
+			
+			session.flush();
+
+			tx.commit();
+		}
+		catch (Exception e) 
+		{
+			logger.error("An error occurred when we tries to execute getCurrentWorkflowVOList():" + e.getMessage(), e);
+			try
+			{
+				tx.rollback();
+			}
+			catch (HibernateException he)
+			{
+				logger.error("An error occurred when we tries to rollback transaction:" + he.getMessage(), he);
+			}
+		}
+		finally 
+		{
+			try
+			{
+				session.close();
+		    } 
+			catch (HibernateException e)
+			{
+				logger.error("An error occurred when we tries to close session:" + e.getMessage(), e);
+			}
+	        
+		}
+		
+		return list;
 	}
-	
+
+
 	/**
 	 * Returns the workflows owned by the specified principal.
 	 * 
@@ -177,7 +325,51 @@ public class WorkflowController extends BaseController
 	 */
 	public List getMyCurrentWorkflowVOList(InfoGluePrincipal userPrincipal) throws SystemException
 	{
-		return new WorkflowFacade(userPrincipal).getMyActiveWorkflows(userPrincipal);
+		List list = new ArrayList();
+		
+		Session session = null;
+		net.sf.hibernate.Transaction tx = null;
+
+		try
+		{
+			session = hibernateSessionFactory.openSession();
+
+			tx = session.beginTransaction();
+
+			WorkflowFacade wf = new WorkflowFacade(userPrincipal, session);
+			list = wf.getMyActiveWorkflows(userPrincipal);
+			
+			session.flush();
+
+			tx.commit();
+		}
+		catch (Exception e) 
+		{
+			logger.error("An error occurred when we tries to execute getMyCurrentWorkflowVOList():" + e.getMessage(), e);
+			try
+			{
+				tx.rollback();
+			}
+			catch (HibernateException he)
+			{
+				logger.error("An error occurred when we tries to rollback transaction:" + he.getMessage(), he);
+			}
+		}
+		finally 
+		{
+			try
+			{
+				session.close();
+		    } 
+			catch (HibernateException e)
+			{
+				logger.error("An error occurred when we tries to close session:" + e.getMessage(), e);
+			}
+		}
+		
+		return list;
+
+		//return new WorkflowFacade(userPrincipal, true).getMyActiveWorkflows(userPrincipal);
 	}
 	
 
@@ -192,9 +384,87 @@ public class WorkflowController extends BaseController
 	 */
 	public WorkflowVO invokeAction(InfoGluePrincipal principal, long workflowId, int actionId, Map inputs) throws WorkflowException
 	{
-		WorkflowFacade workflow = new WorkflowFacade(principal, workflowId);
-		workflow.doAction(actionId, inputs);
-		return workflow.createWorkflowVO();
+		WorkflowVO workflowVO = null;
+
+		Session session = null;
+		net.sf.hibernate.Transaction tx = null;
+
+		try
+		{
+			session = hibernateSessionFactory.openSession();
+
+			tx = session.beginTransaction();
+
+			WorkflowFacade wf = new WorkflowFacade(principal, workflowId, session);
+			wf.doAction(actionId, inputs);
+
+			session.flush();
+
+			tx.commit();
+		}
+		catch (Exception e) 
+		{
+			logger.error("An error occurred when we tries to execute invokeAction():" + e.getMessage(), e);
+			try
+			{
+				tx.rollback();
+			}
+			catch (HibernateException he)
+			{
+				logger.error("An error occurred when we tries to rollback transaction:" + he.getMessage(), he);
+			}
+		}
+		finally 
+		{
+			try
+			{
+				session.close();
+		    } 
+			catch (HibernateException e)
+			{
+				logger.error("An error occurred when we tries to close session:" + e.getMessage(), e);
+			}
+		}
+			
+		try
+		{
+			session = hibernateSessionFactory.openSession();
+
+			tx = session.beginTransaction();
+
+			WorkflowFacade wf = new WorkflowFacade(principal, workflowId, session);
+
+			workflowVO = wf.createWorkflowVO();
+			
+			session.flush();
+
+			tx.commit();
+		}
+		catch (Exception e) 
+		{
+			logger.error("An error occurred when we tries to execute invokeAction():" + e.getMessage(), e);
+			try
+			{
+				tx.rollback();
+			}
+			catch (HibernateException he)
+			{
+				logger.error("An error occurred when we tries to rollback transaction:" + he.getMessage(), he);
+			}
+		}
+		finally 
+		{
+			try
+			{
+				session.close();
+		    } 
+			catch (HibernateException e)
+			{
+				logger.error("An error occurred when we tries to close session:" + e.getMessage(), e);
+			}
+		}
+
+		return workflowVO;
 	}
 
 	/**
@@ -203,7 +473,23 @@ public class WorkflowController extends BaseController
 	 */
 	public PropertySet getPropertySet(InfoGluePrincipal userPrincipal, long workflowId)
 	{
-		return new WorkflowFacade(userPrincipal, workflowId).getPropertySet();
+		PropertySet propertySet = null;
+		
+		try
+		{
+			WorkflowFacade wf = new WorkflowFacade(userPrincipal, workflowId, false);
+			propertySet = wf.getPropertySet();
+		}
+		catch (Exception e) 
+		{
+			e.printStackTrace();
+		}
+		finally 
+		{
+		}
+
+		return propertySet;
+		//return new WorkflowFacade(userPrincipal, workflowId, false).getPropertySet();
 	}
 
 	/**
@@ -214,9 +500,12 @@ public class WorkflowController extends BaseController
 	 */
 	public Map getProperties(InfoGluePrincipal userPrincipal, long workflowId)
 	{
-		logger.info("userPrincipal:" + userPrincipal);
-		logger.info("workflowId:" + workflowId);
-
+		if(logger.isDebugEnabled())
+		{
+			logger.info("userPrincipal:" + userPrincipal);
+			logger.info("workflowId:" + workflowId);
+		}
+		
 		PropertySet propertySet = getPropertySet(userPrincipal, workflowId);
 		Map parameters = new HashMap();
 		for (Iterator keys = getPropertySet(userPrincipal, workflowId).getKeys().iterator(); keys.hasNext();)
@@ -236,7 +525,49 @@ public class WorkflowController extends BaseController
 	 */
 	public List getHistorySteps(InfoGluePrincipal userPrincipal, long workflowId)
 	{
-		return new WorkflowFacade(userPrincipal, workflowId).getHistorySteps();
+		List historySteps = new ArrayList();
+		
+		Session session = null;
+		net.sf.hibernate.Transaction tx = null;
+
+		try
+		{
+			session = hibernateSessionFactory.openSession();
+			tx = session.beginTransaction();
+
+			WorkflowFacade wf = new WorkflowFacade(userPrincipal, workflowId, session);
+			historySteps = wf.getHistorySteps();
+			
+			session.flush();
+
+			tx.commit();
+		}
+		catch (Exception e) 
+		{
+			logger.error("An error occurred when we tries to run getHistorySteps():" + e.getMessage(), e);
+			try
+			{
+				tx.rollback();
+			}
+			catch (HibernateException he)
+			{
+				logger.error("An error occurred when we tries to rollback transaction:" + he.getMessage(), he);
+			}
+		}
+		finally 
+		{
+			try
+			{
+				session.close();
+		    } 
+			catch (HibernateException e)
+			{
+				logger.error("An error occurred when we tries to close session:" + e.getMessage(), e);
+			}
+		}
+
+		return historySteps;
+		//return new WorkflowFacade(userPrincipal, workflowId, true).getHistorySteps();
 	}
 
 	/**
@@ -247,7 +578,51 @@ public class WorkflowController extends BaseController
 	 */
 	public List getCurrentSteps(InfoGluePrincipal userPrincipal, long workflowId)
 	{
-		return new WorkflowFacade(userPrincipal, workflowId).getCurrentSteps();
+		List currentSteps = new ArrayList();
+		
+		Session session = null;
+		net.sf.hibernate.Transaction tx = null;
+
+		try
+		{
+			session = hibernateSessionFactory.openSession();
+			tx = session.beginTransaction();
+
+			WorkflowFacade wf = new WorkflowFacade(userPrincipal, workflowId, session);
+			currentSteps = wf.getCurrentSteps();
+			
+			session.flush();
+
+			tx.commit();
+		}
+		catch (Exception e) 
+		{
+			logger.error("An error occurred when we tries to run getCurrentSteps():" + e.getMessage(), e);
+			try
+			{
+				tx.rollback();
+			}
+			catch (HibernateException he)
+			{
+				logger.error("An error occurred when we tries to rollback transaction:" + he.getMessage(), he);
+			}
+		}
+		finally 
+		{
+			try
+			{
+				session.close();
+		    } 
+			catch (HibernateException e)
+			{
+				logger.error("An error occurred when we tries to close session:" + e.getMessage(), e);
+			}
+		}
+
+		//WorkflowFacade wf = new WorkflowFacade(userPrincipal, workflowId, true);
+		//List currentSteps = wf.getCurrentSteps();
+		
+		return currentSteps;
 	}
 
 	/**
@@ -259,7 +634,102 @@ public class WorkflowController extends BaseController
 	 */
 	public List getAllSteps(InfoGluePrincipal userPrincipal, long workflowId)
 	{
-		return new WorkflowFacade(userPrincipal, workflowId).getDeclaredSteps();
+		List declaredSteps = new ArrayList();
+		
+		Session session = null;
+		net.sf.hibernate.Transaction tx = null;
+
+		try
+		{
+			session = hibernateSessionFactory.openSession();
+			tx = session.beginTransaction();
+
+			WorkflowFacade wf = new WorkflowFacade(userPrincipal, workflowId, session);
+			declaredSteps = wf.getDeclaredSteps();
+			
+			session.flush();
+
+			tx.commit();
+		}
+		catch (Exception e) 
+		{
+			logger.error("An error occurred when we tries to run getAllSteps():" + e.getMessage(), e);
+			try
+			{
+				tx.rollback();
+			}
+			catch (HibernateException he)
+			{
+				logger.error("An error occurred when we tries to rollback transaction:" + he.getMessage(), he);
+			}
+		}
+		finally 
+		{
+			try
+			{
+				session.close();
+		    } 
+			catch (HibernateException e)
+			{
+				logger.error("An error occurred when we tries to close session:" + e.getMessage(), e);
+			}
+		}
+
+		return declaredSteps;
+		//return new WorkflowFacade(userPrincipal, workflowId, true).getDeclaredSteps();
+	}
+
+	/**
+	 * Returns true if the workflow has terminated; false otherwise.
+	 * 
+	 * @param workflowVO the workflow.
+	 * @return true if the workflow has terminated; false otherwise.
+	 */
+	public boolean hasTerminated(InfoGluePrincipal userPrincipal, long workflowId) throws WorkflowException
+	{
+		boolean isFinished = false;
+		
+		Session session = null;
+		net.sf.hibernate.Transaction tx = null;
+
+		try
+		{
+			session = hibernateSessionFactory.openSession();
+			tx = session.beginTransaction();
+
+			WorkflowFacade wf = new WorkflowFacade(userPrincipal, workflowId, session);
+			isFinished = wf.isFinished();
+			
+			session.flush();
+
+			tx.commit();
+		}
+		catch (Exception e) 
+		{
+			logger.error("An error occurred when we tries to run hasTerminated:" + e.getMessage(), e);
+			try
+			{
+				tx.rollback();
+			}
+			catch (HibernateException he)
+			{
+				logger.error("An error occurred when we tries to rollback transaction:" + he.getMessage(), he);
+			}
+		}
+		finally 
+		{
+			try
+			{
+				session.close();
+		    } 
+			catch (HibernateException e)
+			{
+				logger.error("An error occurred when we tries to close session:" + e.getMessage(), e);
+			}
+		}
+		
+		return isFinished;
+		//return new WorkflowFacade(userPrincipal, workflowId, true).isFinished();
 	}
 
 	/**

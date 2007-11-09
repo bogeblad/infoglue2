@@ -23,6 +23,8 @@
 
 package org.infoglue.cms.util.workflow;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -33,8 +35,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-
 import net.sf.hibernate.HibernateException;
+import net.sf.hibernate.Session;
 import net.sf.hibernate.SessionFactory;
 import net.sf.hibernate.cfg.Configuration;
 
@@ -45,17 +47,15 @@ import org.infoglue.cms.entities.mydesktop.WorkflowVO;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.CmsPropertyHandler;
-import org.infoglue.cms.util.mail.MailService;
 import org.infoglue.cms.util.mail.MailServiceFactory;
 import org.infoglue.deliver.util.CacheController;
 
 import com.opensymphony.module.propertyset.PropertySet;
 import com.opensymphony.workflow.AbstractWorkflow;
-import com.opensymphony.workflow.FactoryException;
 import com.opensymphony.workflow.InvalidActionException;
 import com.opensymphony.workflow.StoreException;
 import com.opensymphony.workflow.WorkflowException;
-import com.opensymphony.workflow.basic.BasicWorkflow;
+import com.opensymphony.workflow.config.DefaultConfiguration;
 import com.opensymphony.workflow.loader.ActionDescriptor;
 import com.opensymphony.workflow.loader.StepDescriptor;
 import com.opensymphony.workflow.loader.WorkflowDescriptor;
@@ -72,7 +72,7 @@ import com.opensymphony.workflow.spi.WorkflowEntry;
  * the Workflow interface.  The idea is to encapsulate the interactions with OSWorkflow and eliminate the
  * need to pass a Workflow reference and the workflow ID all over the place when extracting data from OSWorkflow
  * @author <a href="mailto:jedprentice@gmail.com">Jed Prentice</a>
- * @version $Revision: 1.37 $ $Date: 2007/10/25 08:58:01 $
+ * @version $Revision: 1.38 $ $Date: 2007/11/09 17:55:55 $
  */
 public class WorkflowFacade
 {
@@ -121,20 +121,98 @@ public class WorkflowFacade
 	 * 
 	 * @param owner the owner of the workflow.
 	 */
+
 	public WorkflowFacade(final Owner owner)
 	{
-		workflow = new InfoGlueBasicWorkflow(owner.getIdentifier());
-		//workflow = new BasicWorkflow(owner.getIdentifier());
-		workflow.getConfiguration().getPersistenceArgs().put("sessionFactory", hibernateSessionFactory);
+		this(owner, true);
 	}
+
+	/**
+	 * Constructs a WorkflowFacade with the given owner.
+	 * 
+	 * @param owner the owner of the workflow.
+	 */
+	
+	public WorkflowFacade(final Owner owner, boolean createSession)
+	{
+		workflow = new InfoGlueBasicWorkflow(owner.getIdentifier());
+		workflow.getConfiguration().getPersistenceArgs().put("sessionFactory", hibernateSessionFactory);
+
+		if(createSession)
+		{
+			try
+			{
+				Session session = hibernateSessionFactory.openSession();
+				try
+				{
+					Map args = new HashMap();
+					args.put("sessionFactory", hibernateSessionFactory);
+					args.put("session", session);
+					workflow.getConfiguration().getWorkflowStore().init(args);
+				} 
+				catch (StoreException e)
+				{
+					e.printStackTrace();
+				}
+
+				workflow.getConfiguration().getPersistenceArgs().put("session", session);
+			} 
+			catch (HibernateException e)
+			{
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	/**
+	 * Constructs a WorkflowFacade with the given owner.
+	 * 
+	 * @param owner the owner of the workflow.
+	 */
+	public WorkflowFacade(final Owner owner, Session session)
+	{
+		workflow = new InfoGlueBasicWorkflow(owner.getIdentifier());
+		if(session != null)
+		{
+			com.opensymphony.workflow.config.Configuration config = new /*InfoGlueHibernate*/DefaultConfiguration();
+			config.getPersistenceArgs().put("session", session);
+			config.getPersistenceArgs().put("sessionFactory", hibernateSessionFactory);
+			workflow.setConfiguration(config);
+		}
+		else
+		{
+			workflow.getConfiguration().getPersistenceArgs().put("sessionFactory", hibernateSessionFactory);
+		}
+	}
+
+	/**
+	 * Constructs a WorkflowFacade with the given user principal
+	 * @param userPrincipal an InfoGluePrincipal representing a system user
+	 */
+
+	public WorkflowFacade(InfoGluePrincipal userPrincipal)
+	{
+		this(OwnerFactory.create(userPrincipal));
+	}
+
+	/**
+	 * Constructs a WorkflowFacade with the given user principal
+	 * @param userPrincipal an InfoGluePrincipal representing a system user
+	 */
+	
+	public WorkflowFacade(InfoGluePrincipal userPrincipal, boolean createSession)
+	{
+		this(OwnerFactory.create(userPrincipal), createSession);
+	}
+	
 	
 	/**
 	 * Constructs a WorkflowFacade with the given user principal
 	 * @param userPrincipal an InfoGluePrincipal representing a system user
 	 */
-	public WorkflowFacade(InfoGluePrincipal userPrincipal)
+	public WorkflowFacade(InfoGluePrincipal userPrincipal, Session session)
 	{
-		this(OwnerFactory.create(userPrincipal));
+		this(OwnerFactory.create(userPrincipal), session);
 	}
 
 	/**
@@ -166,6 +244,21 @@ public class WorkflowFacade
 	}
 
 	/**
+	 * Constructs a WorkflowFacade with the given user principal representing an initialized instance of the workflow
+	 * with the given name.  "Initialized" in this context means that the initial action has been executed and we have
+	 * the workflow ID.
+	 * @param userPrincipal an InfoGluePrincipal representing a system user
+	 * @param name the name of the workflow to create
+	 * @param initialAction the ID of the initial action to perform to get the workflow started.
+	 * @param inputs a map of inputs to use to initialize the workflow.
+	 */
+	public WorkflowFacade(InfoGluePrincipal userPrincipal, String name, int initialAction, Map inputs, Session session) throws SystemException
+	{
+		this(userPrincipal, session);
+		initialize(name, initialAction, inputs);
+	}
+
+	/**
 	 * Constructs a WorkflowFacade for a user with the given workflow ID.
 	 * @param userPrincipal an InfoGluePrincipal representing a system user
 	 * @param workflowId the ID representing an instance of the desired workflow
@@ -173,6 +266,30 @@ public class WorkflowFacade
 	public WorkflowFacade(InfoGluePrincipal userPrincipal, long workflowId)
 	{
 		this(userPrincipal);
+		setWorkflowIdAndDescriptor(workflowId);
+	}
+
+	/**
+	 * Constructs a WorkflowFacade for a user with the given workflow ID.
+	 * @param userPrincipal an InfoGluePrincipal representing a system user
+	 * @param workflowId the ID representing an instance of the desired workflow
+	 */
+	
+	public WorkflowFacade(InfoGluePrincipal userPrincipal, long workflowId, boolean createSession)
+	{
+		this(userPrincipal, createSession);
+		setWorkflowIdAndDescriptor(workflowId);
+	}
+	
+
+	/**
+	 * Constructs a WorkflowFacade for a user with the given workflow ID.
+	 * @param userPrincipal an InfoGluePrincipal representing a system user
+	 * @param workflowId the ID representing an instance of the desired workflow
+	 */
+	public WorkflowFacade(InfoGluePrincipal userPrincipal, long workflowId, Session session)
+	{
+		this(userPrincipal, session);
 		setWorkflowIdAndDescriptor(workflowId);
 	}
 
@@ -250,11 +367,11 @@ public class WorkflowFacade
 	 * @param inputs a map of inputs to use to initialize the workflow.
 	 * @throws SystemException if a workflow error occurs.
 	 */
+
 	private long doExtendedInitialize(final String name, final int initialAction, final Map inputs) throws WorkflowException
 	{
 		long result = 0;
 		final DatabaseSession db = new DatabaseSession();
-		System.out.println("Opening");
 		try
 		{
 			final Map copy = new HashMap();
@@ -269,34 +386,40 @@ public class WorkflowFacade
 			{
 				db.setRollbackOnly();
 			}
+	        
 			throw (e instanceof WorkflowException) ? (WorkflowException) e : new WorkflowException(e);
 		} 
 		finally 
 		{
 			db.releaseDB();
-			System.out.println("Closing");
 		}
 		return result;
 	}
-	
+
 	/**
 	 * Performs an action using the given inputs
 	 * @param actionId the ID of the action to perform
 	 * @param inputs a map of inputs to the action
 	 * @throws WorkflowException if a workflow error occurs, or if the underlying workflow is not active
 	 */
-	public void doAction(int actionId, Map inputs) throws WorkflowException
+	public synchronized void doAction(int actionId, Map inputs) throws WorkflowException
 	{
+		if(logger.isInfoEnabled())
+			logger.info("doAction with " + actionId + " on " + this.workflowId);
+
 		try
 		{
 			final Long id = new Long(workflowId);
-			
+
 			if(getEntryState() == WorkflowEntry.CREATED)
 				workflow.changeEntryState(workflowId, WorkflowEntry.ACTIVATED);
 
-			System.out.println("workflowId:" + workflowId);
-			System.out.println("actionId:" + actionId);
-			//System.out.println("inputs:" + inputs);
+			if(logger.isInfoEnabled())
+			{
+				logger.info("workflowId:" + workflowId);
+				logger.info("actionId:" + actionId);
+			}
+			
 			synchronized(currentWorkflows)
 			{	
 				if(!isActive())
@@ -332,15 +455,15 @@ public class WorkflowFacade
 				}
 			}
 		}
-		catch(WorkflowException we)
+		catch(Exception we)
 		{
 			logger.error("An error occurred when we tried to invoke an workflow action:" + we.getMessage());
-			restoreSessionFactory(workflow);
+			//restoreSessionFactory(workflow, we);
 			throw new WorkflowException("An error occurred when we tried to invoke an workflow action:" + we.getMessage());
 		}
 	}
 
-	private void restoreSessionFactory(AbstractWorkflow workflow) throws WorkflowException
+	private void restoreSessionFactory(AbstractWorkflow workflow, Throwable we) throws WorkflowException
 	{
 		if(workflow != null)
 		{
@@ -355,9 +478,14 @@ public class WorkflowFacade
 				    serverName = localhost.getHostName();
 		    	}
 		    	catch(Exception e) {}
-		    	
+
+				StringWriter sw = new StringWriter();
+				we.printStackTrace(new PrintWriter(sw));
+				String stacktrace = sw.toString().replaceAll("(\r\n|\r|\n|\n\r)", "<br/>");
+
 				String subject = "CMS - Restoring session factory on " + serverName;
 				String message = "OS Workflow had problems accessing the database or some other problem occurred. Check why the database went away or the error occurred.";
+				message = message + "\n\n" + we.getMessage() + "\n\n" + stacktrace;
 				
 		        String warningEmailReceiver = CmsPropertyHandler.getWarningEmailReceiver();
 		        if(warningEmailReceiver != null && !warningEmailReceiver.equals("") && warningEmailReceiver.indexOf("@warningEmailReceiver@") == -1)
@@ -396,27 +524,28 @@ public class WorkflowFacade
 	private void doExtendedAction(final int actionId, final Map inputs) throws WorkflowException
 	{
 		final DatabaseSession db = new DatabaseSession();
-		System.out.println("Opening");
+
 		try 
 		{
 			final Map copy = new HashMap();
 			copy.putAll(inputs);
 			copy.put(workflowDescriptor.getMetaAttributes().get(WORKFLOW_DATABASE_EXTENSION_META_ATTRIBUTE), db);
+
 			workflow.doAction(workflowId, actionId, copy);
 		} 
 		catch(Exception e) 
 		{
-			e.printStackTrace();
+			logger.error("An error occurred in doExtendedAction:" + e.getMessage(), e);
+			//e.printStackTrace();
 			if(db != null)
 			{
 				db.setRollbackOnly();
 			}
+
 			throw (e instanceof WorkflowException) ? (WorkflowException) e : new WorkflowException(e);
 		} 
 		finally 
 		{
-			System.out.println("Closing");
-
 			db.releaseDB();
 		}
 	}
@@ -443,7 +572,7 @@ public class WorkflowFacade
 		catch(Throwable we)
 		{
 			logger.error("An error occurred when we tried to check for entry state:" + we.getMessage());
-			restoreSessionFactory(workflow);
+			//restoreSessionFactory(workflow, we);
 			throw new WorkflowException("An error occurred when we tried to check for entry state:" + we.getMessage());
  		}
 	}
@@ -675,7 +804,7 @@ public class WorkflowFacade
 		catch (WorkflowException we)
 		{
 			logger.error("An error occurred when we tried to invoke an workflow action:" + we.getMessage());
-			restoreSessionFactory(workflow);
+			//restoreSessionFactory(workflow, we);
 			throw new WorkflowException("An error occurred when we tried to invoke an workflow action:" + we.getMessage());
 		}
 	}
