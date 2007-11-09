@@ -83,8 +83,12 @@ public class ErrorTag extends ElementTag
 			try
 			{
 				String languageIdString = getPropertySet().getString("languageId");
-				LanguageVO languageVO = LanguageController.getController().getLanguageVOWithId(new Integer(languageIdString));
-				languageCode = languageVO.getLanguageCode();
+				if(languageIdString != null)
+				{
+					LanguageVO languageVO = LanguageController.getController().getLanguageVOWithId(new Integer(languageIdString));
+					if(languageVO != null)
+						languageCode = languageVO.getLanguageCode();
+				}
 			}
 			catch (Exception e) 
 			{
