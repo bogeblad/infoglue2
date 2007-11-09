@@ -155,7 +155,7 @@ public abstract class InfoglueWorkflowBase
 	{
 		if(lastException != e)
 		{
-			logger.error(e.getMessage(), e);
+			logger.info(e.getMessage(), e);
 		}
 		lastException = e;
 		workflowDatabase.setRollbackOnly();
