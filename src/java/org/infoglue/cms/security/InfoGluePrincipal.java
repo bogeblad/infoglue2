@@ -127,7 +127,7 @@ public class InfoGluePrincipal implements Principal, Serializable
     
 	public Map getMetaInformation() 
 	{
-		return Collections.unmodifiableMap(metaInformation);
+		return metaInformation;
 	}
 
 	public boolean getIsAdministrator()

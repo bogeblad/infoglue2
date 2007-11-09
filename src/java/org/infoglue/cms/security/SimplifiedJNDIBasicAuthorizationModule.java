@@ -263,22 +263,24 @@ public class SimplifiedJNDIBasicAuthorizationModule implements AuthorizationModu
 						logger.info("userName:" + userName);
 				}
 
-				logger.error("userAttributes:" + userName);
+				if(logger.isInfoEnabled())
+					logger.info("userAttributes:" + userName);
 				Map userAttributes = getUserAttributes(userName, ctx);
-				logger.error("userAttributes:" + userAttributes);
+
 				List roles = getRoles(userName, ctx);
 				List groups = getGroups(userName, ctx);
 				
 				infogluePrincipal = new InfoGluePrincipal(userName, (String)userAttributes.get("displayName"), (String)userAttributes.get("firstName"), (String)userAttributes.get("lastName"), (String)userAttributes.get("mail"), roles, groups, isAdministrator, this);
 				infogluePrincipal.getMetaInformation().putAll(userAttributes);
-				logger.error("metaInformation 2:" + infogluePrincipal.hasCode() + ":" + infogluePrincipal.getMetaInformation() + ":" + userAttributes);
+				if(logger.isInfoEnabled())
+					logger.info("metaInformation 2:" + infogluePrincipal.hasCode() + ":" + infogluePrincipal.getMetaInformation() + ":" + userAttributes);
 				
 			    if(infogluePrincipal != null)
 			    	CacheController.cacheObjectInAdvancedCache("JNDIAuthorizationCache", key, infogluePrincipal, null, false);
 			}
 			catch(Exception e)
 			{
-				e.printStackTrace();
+				logger.error("Error:" + e.getMessage());
 			    CacheController.cacheObjectInAdvancedCache("JNDIAuthorizationCache", key, new NullObject(), null, false);
 			}
 			finally
@@ -476,7 +478,8 @@ public class SimplifiedJNDIBasicAuthorizationModule implements AuthorizationModu
 				
 				infogluePrincipal = new InfoGluePrincipal(userName, (String)userAttributes.get("displayName"), (String)userAttributes.get("firstName"), (String)userAttributes.get("lastName"), (String)userAttributes.get("mail"), roles, groups, isAdministrator, this);
 				infogluePrincipal.getMetaInformation().putAll(userAttributes);
-				logger.error("metaInformation 1:" + infogluePrincipal.hasCode() + ":" + infogluePrincipal.getMetaInformation() + ":" + userAttributes);
+				if(logger.isInfoEnabled())
+					logger.info("metaInformation 1:" + infogluePrincipal.hasCode() + ":" + infogluePrincipal.getMetaInformation() + ":" + userAttributes);
 				
 			    if(infogluePrincipal != null)
 			    	CacheController.cacheObjectInAdvancedCache("JNDIAuthorizationCache", key, infogluePrincipal, null, false);
