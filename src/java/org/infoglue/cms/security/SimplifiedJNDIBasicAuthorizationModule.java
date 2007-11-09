@@ -269,6 +269,7 @@ public class SimplifiedJNDIBasicAuthorizationModule implements AuthorizationModu
 				
 				infogluePrincipal = new InfoGluePrincipal(userName, (String)userAttributes.get("displayName"), (String)userAttributes.get("firstName"), (String)userAttributes.get("lastName"), (String)userAttributes.get("mail"), roles, groups, isAdministrator, this);
 				infogluePrincipal.getMetaInformation().putAll(userAttributes);
+				logger.error("metaInformation 2:" + infogluePrincipal.hasCode() + ":" + infogluePrincipal.getMetaInformation() + ":" + userAttributes);
 				
 			    if(infogluePrincipal != null)
 			    	CacheController.cacheObjectInAdvancedCache("JNDIAuthorizationCache", key, infogluePrincipal, null, false);
@@ -473,6 +474,7 @@ public class SimplifiedJNDIBasicAuthorizationModule implements AuthorizationModu
 				
 				infogluePrincipal = new InfoGluePrincipal(userName, (String)userAttributes.get("displayName"), (String)userAttributes.get("firstName"), (String)userAttributes.get("lastName"), (String)userAttributes.get("mail"), roles, groups, isAdministrator, this);
 				infogluePrincipal.getMetaInformation().putAll(userAttributes);
+				logger.error("metaInformation 1:" + infogluePrincipal.hasCode() + ":" + infogluePrincipal.getMetaInformation() + ":" + userAttributes);
 				
 			    if(infogluePrincipal != null)
 			    	CacheController.cacheObjectInAdvancedCache("JNDIAuthorizationCache", key, infogluePrincipal, null, false);
