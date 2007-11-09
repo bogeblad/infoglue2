@@ -65,6 +65,7 @@ public class SearchContentAction extends InfoGlueAbstractAction
 	private Integer languageId;
 	private Integer contentTypeDefinitionId;
 	private Integer caseSensitive;
+	private boolean includeAssets = false;
 	private Integer inverseSearch;
 	private Integer stateId;
 	private boolean advancedEnabled = false;
@@ -133,11 +134,11 @@ public class SearchContentAction extends InfoGlueAbstractAction
 				selectedRepositoryIdList.add(repositoryIdToSearch[i]);
 			}
 			
-			contentVersionVOList = SearchController.getContentVersions(repositoryIdAsIntegerToSearch, this.getSearchString(), maxRows, name, languageId, new Integer[]{contentTypeDefinitionId}, caseSensitive, stateId);
+			contentVersionVOList = SearchController.getContentVersions(repositoryIdAsIntegerToSearch, this.getSearchString(), maxRows, name, languageId, new Integer[]{contentTypeDefinitionId}, caseSensitive, stateId, includeAssets);
 		}
 		else
 		{
-			contentVersionVOList = SearchController.getContentVersions(this.repositoryId, this.getSearchString(), maxRows, name, languageId, new Integer[]{contentTypeDefinitionId}, caseSensitive, stateId);
+			contentVersionVOList = SearchController.getContentVersions(this.repositoryId, this.getSearchString(), maxRows, name, languageId, new Integer[]{contentTypeDefinitionId}, caseSensitive, stateId, includeAssets);
 			selectedRepositoryIdList.add("" + this.repositoryId);
 		}
 		
@@ -475,5 +476,15 @@ public class SearchContentAction extends InfoGlueAbstractAction
 	public String[] getAllowedContentTypeIds()
 	{
 		return allowedContentTypeIds;
+	}
+
+	public boolean getIncludeAssets()
+	{
+		return includeAssets;
+	}
+
+	public void setIncludeAssets(boolean includeAssets)
+	{
+		this.includeAssets = includeAssets;
 	}
 }

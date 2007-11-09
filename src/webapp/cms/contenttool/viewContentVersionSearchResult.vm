@@ -138,7 +138,7 @@
 				{
 					var resultDiv = document.getElementById("resultsLayer");
 					document.getElementById("advancedEnabled").value = "true";
-					resultDiv.style.top = "400px";
+					resultDiv.style.top = "490px";
 				}
 					
 			}
@@ -230,6 +230,10 @@
 				<input type="checkbox" name="caseSensitive" value="1" #checkChecked("1" "$caseSensitive")> $ui.getString("tool.common.yes") 
 			</p>
 			<p>
+				$ui.getString("tool.contenttool.includeAssets.label")<br>
+				<input type="checkbox" name="includeAssets" value="true" #checkChecked("true" "$includeAssets")> Yes 
+			</p>
+			<p>
 				$ui.getString("tool.contenttool.stateSearch.label")<br>
 				<select class="dropbox" name="stateId">
 					<option value="">$ui.getString("tool.contenttool.filterShowAll.label")</option>
@@ -244,9 +248,11 @@
 			</p>
 			<p>
 				$ui.getString("tool.contenttool.chooseRepositoryLabel")<br>
-				#foreach ($repositoryVO in $repositories)
-				    <input type="checkbox" name="repositoryIdToSearch" value="$repositoryVO.id" #checkCheckedByList($selectedRepositoryIdList "$repositoryVO.id")/>$repositoryVO.name
-			    #end
+				<select class="dropbox" name="repositoryIdToSearch" multiple="true" size="10">
+					#foreach ($repositoryVO in $repositories)
+						<option value="$repositoryVO.id" #checkSelectedByList($selectedRepositoryIdList "$repositoryVO.id")>$repositoryVO.name</option>
+				    #end
+				</select>
 			</p>		
 		</div>
 	</td>
