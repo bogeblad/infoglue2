@@ -86,7 +86,7 @@ public class ContentCreator extends ContentFunction
 	/**
 	 * The parent content to use when creating new content.
 	 */
-	private ContentVO parentFontentVO;
+	private ContentVO parentContentVO;
 	
 	
 	/**
@@ -101,8 +101,8 @@ public class ContentCreator extends ContentFunction
 			ContentVO newContentVO = null;
 			if(getContentVO() == null)
 			{
-				parentFontentVO = (ContentVO) getParameter(FOLDER_PARAMETER);
-				newContentVO = factory.create(parentFontentVO, categories, getDatabase());
+				parentContentVO = (ContentVO) getParameter(FOLDER_PARAMETER);
+				newContentVO = factory.create(parentContentVO, categories, getDatabase());
 			}
 			else
 			{
