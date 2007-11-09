@@ -10,7 +10,6 @@ import org.infoglue.cms.controllers.kernel.impl.simple.WorkflowController;
 import org.infoglue.cms.entities.mydesktop.WorkflowVO;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
-import org.infoglue.cms.util.workflow.WorkflowFacade;
 import org.infoglue.deliver.util.webservices.DynamicWebserviceSerializer;
 
 import com.opensymphony.workflow.WorkflowException;
@@ -128,7 +127,7 @@ public class RemoteWorkflowServiceImpl extends RemoteInfoGlueService
 	 */
 	private boolean hasTerminated(final WorkflowVO workflowVO) throws WorkflowException
 	{
-		return new WorkflowFacade(principal, workflowVO.getIdAsPrimitive()).isFinished();
+		return WorkflowController.getController().hasTerminated(principal, workflowVO.getIdAsPrimitive());
 	}
 
 	/**
