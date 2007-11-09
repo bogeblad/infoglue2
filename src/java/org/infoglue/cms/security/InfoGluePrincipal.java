@@ -48,7 +48,7 @@ public class InfoGluePrincipal implements Principal, Serializable
 	private final String email;
 	private final List roles;
 	private final List groups;
-	private final Map metaInformation;
+	private Map metaInformation;
 	private final boolean isAdministrator;
 	private final AuthorizationModule autorizationModule;
 
