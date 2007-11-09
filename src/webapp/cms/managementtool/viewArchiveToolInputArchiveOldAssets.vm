@@ -48,6 +48,51 @@ function uncheckAll(element)
 -->
 </script>
 
+<style>
+	fieldset
+	{
+		border: 1px solid #cccccc;
+		width: 450px;
+	}
+	legend
+	{
+		color: #000000;
+		background: #c6d3e7;
+		border: 1px solid #cccccc;
+		padding: 2px 6px
+	}
+	label
+	{
+		width: 300px;
+		float: left;
+		text-align: right;
+		margin-right: 0.5em;
+		display: block;
+	}
+	select
+	{
+		background: white;
+		border: 1px solid #cccccc;
+		font-family: Verdana, Arial, San serif;
+		font-size: 8pt;
+		width: 80px;
+	}
+	.wideButton
+	{
+		background: #d6d3ce;
+		border: 1px solid #848284;
+		font-family: Verdana, Arial, San serif;
+		font-size: 10pt;
+		width: 100px;
+	}
+	p
+	{
+		line-heigh: 12px;
+		margin: 0px;
+		padding-bottom: 4px;
+	}
+</style>
+
 <div class="fullymarginalized" style="color: black;">
 
 	<h2>$ui.getString("tool.managementtool.archiveTool.header")</h2>
@@ -56,8 +101,9 @@ function uncheckAll(element)
 	</p>
 	<p>
 		<form name="inputForm" action="ViewArchiveTool!inputArchiveOldAssets.action" method="POST">
- 		
- 		$ui.getString("tool.managementtool.archiveAssets.assetSizeLabel"):
+ 		<fieldset>
+		<legend>Asset criterias</legend>
+ 		<label for="assetFileSizeLimit">$ui.getString("tool.managementtool.archiveAssets.assetSizeLabel"):</label>
  		<select name="assetFileSizeLimit">
  			<option value="50000" #checkSelected("50000" "$assetFileSizeLimit")>50 KB</option>
  			<option value="100000" #checkSelected("100000" "$assetFileSizeLimit")>100 KB</option>
@@ -67,9 +113,10 @@ function uncheckAll(element)
  			<option value="5000000" #checkSelected("5000000" "$assetFileSizeLimit")>5 MB</option>
  			<option value="10000000" #checkSelected("10000000" "$assetFileSizeLimit")>10 MB</option>
  		</select>
- 		<br/>
- 		$ui.getString("tool.managementtool.archiveAssets.numberOfNewerVersionsLabel"):
+ 		<br/><br/>
+ 		<label for="numberOfVersionsToKeep">$ui.getString("tool.managementtool.archiveAssets.numberOfNewerVersionsLabel"):</label>
  		<select name="numberOfVersionsToKeep">
+ 			<option value="0" #checkSelected("0" "$numberOfVersionsToKeep")>0 (harmful - only for cleanup)</option>
  			<option value="1" #checkSelected("1" "$numberOfVersionsToKeep")>1</option>
  			<option value="2" #checkSelected("2" "$numberOfVersionsToKeep")>2</option>
  			<option value="3" #checkSelected("3" "$numberOfVersionsToKeep")>3</option>
@@ -77,8 +124,8 @@ function uncheckAll(element)
  			<option value="5" #checkSelected("5" "$numberOfVersionsToKeep")>5</option>
  			<option value="6" #checkSelected("6" "$numberOfVersionsToKeep")>6</option>
  		</select>
- 		<br/>
- 		Max assets:
+ 		<br/><br/>
+ 		<label for="assetNumberLimit">Max assets:</label>
  		<select name="assetNumberLimit">
  			<option value="10" #checkSelected("10" "$assetNumberLimit")>10</option>
  			<option value="50" #checkSelected("50" "$assetNumberLimit")>50</option>
@@ -90,10 +137,10 @@ function uncheckAll(element)
  		</select>
  		<br/>
  		<br/>
- 		<input type="submit" value="Calculate"/>
+ 		<input class="wideButton" type="submit" value="Calculate"/>
+		</fieldset>
  		</form>
 	</p>
-	<hr/>
 	<p>
  		<h3>$ui.getString("tool.managementtool.archiveAssets.foundAssetsLabel")</h3>		
 		<form name="resultForm" action="ViewArchiveTool!archiveOldAssets.action" method="POST">
@@ -115,7 +162,7 @@ function uncheckAll(element)
 			In total $optimizationBeanList.totalAssetSizeInMB MB would be removed ($optimizationBeanList.totalAssets assets - $optimizationBeanList.totalAssetsWithoutVersion was not owned by a content version).
 			<br/>
 			<br/>
-	 		<input type="submit" value="Archive selected files"/>
+	 		<input class="wideButton" type="submit" value="Archive selected files"/>
 		</form>
 	</p>
 	

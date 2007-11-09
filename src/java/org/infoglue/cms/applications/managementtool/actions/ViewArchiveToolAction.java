@@ -130,6 +130,11 @@ public class ViewArchiveToolAction extends InfoGlueAbstractAction
 		return assetFileSizeLimit;
 	}
 
+	public int getAssetNumberLimit() 
+	{
+		return assetNumberLimit;
+	}
+
 	public void setAssetFileSizeLimit(int assetFileSizeLimit) 
 	{
 		this.assetFileSizeLimit = assetFileSizeLimit;
