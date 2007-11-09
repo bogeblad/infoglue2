@@ -285,8 +285,8 @@ public abstract class WebworkAbstractAction implements Action, ServletRequestAwa
     	} 
     	catch(Exception ie) 
     	{
-			//ie.printStackTrace();
-    	    logger.error("Exception " + ie, ie);
+			if(ie.getMessage() != null)
+				logger.error("Exception in top action:" + ie.getMessage(), ie);
     	    
 			try 
 			{
