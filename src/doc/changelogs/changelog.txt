@@ -42,7 +42,13 @@ Abbreviated Changelog from 2.6.0 Final
 - Improved export repository feature so the export file name can be specified by the user. Before the filenames could be to long if several sites were exported.
 - Added features to select user in access rights dialog. Also new button to select onself through a simple click.
 - Added feature in SimplifiedJNDIBasicAuthorizationModule so a users extra attributes can be read into the principal objects meta map.
-
+- Improved ContentMover-function (workflow) - Content can now be stored i subfolders of year and month under the designated destination folder.
+- Added more memory and user details in the warning mails InfoGlue sends when pages take to long to reach the user.
+- Added new workflow store which works a lot better with session management inside hibernate. Should fix most issues with workflows being broken.
+- Added asset search as option in content tool search. Also change the look&feel a bit.
+- Added possibility in archive tool to use it on latest working versions as well. Useful sometimes to find and shrink any test-assets before export for example. 
+- Removed possibility to look at asset in popup from content version edit view if archived.
+- Fixed bugs and improved archive tool a lot. The size was not lessened very good  in the previous versions. 
 
 -------------------------------------------------------------------------------------
 - InfoGlue 2.6.0 Final
