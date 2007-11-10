@@ -391,7 +391,7 @@ public class DigitalAssetDeliveryController extends BaseDeliveryController
 			DigitalAsset digitalAsset = DigitalAssetController.getDigitalAssetWithId(digitalAssetVO.getId(), db);
 			
 			String cmsBaseUrl = CmsPropertyHandler.getCmsFullBaseUrl();
-			System.out.println("cmsBaseUrl:" + cmsBaseUrl);
+			//System.out.println("cmsBaseUrl:" + cmsBaseUrl);
 			if(CmsPropertyHandler.getEnableDiskAssets().equals("true"))
 			{
 				HttpHelper httpHelper = new HttpHelper();
@@ -418,11 +418,11 @@ public class DigitalAssetDeliveryController extends BaseDeliveryController
 				}
 				else
 				{
-					System.out.println("written file:" + tmpOutputFile.getAbsolutePath() + " - renaming it to " + outputFile.getAbsolutePath());	
+					logger.info("written file:" + tmpOutputFile.getAbsolutePath() + " - renaming it to " + outputFile.getAbsolutePath());	
 
-					logger.error("written file:" + tmpOutputFile.length() + " - renaming it to " + outputFile.getAbsolutePath());	
+					logger.info("written file:" + tmpOutputFile.length() + " - renaming it to " + outputFile.getAbsolutePath());	
 					tmpOutputFile.renameTo(outputFile);
-					logger.error("Time for renaming file " + timer.getElapsedTime());
+					logger.info("Time for renaming file " + timer.getElapsedTime());
 				}	
 
 			}
@@ -487,11 +487,11 @@ public class DigitalAssetDeliveryController extends BaseDeliveryController
 						}
 						else
 						{
-							System.out.println("written file:" + tmpOutputFile.getAbsolutePath() + " - renaming it to " + outputFile.getAbsolutePath());	
+							logger.info("written file:" + tmpOutputFile.getAbsolutePath() + " - renaming it to " + outputFile.getAbsolutePath());	
 	
-							logger.error("written file:" + tmpOutputFile.length() + " - renaming it to " + outputFile.getAbsolutePath());	
+							logger.info("written file:" + tmpOutputFile.length() + " - renaming it to " + outputFile.getAbsolutePath());	
 							tmpOutputFile.renameTo(outputFile);
-							logger.error("Time for renaming file " + timer.getElapsedTime());
+							logger.info("Time for renaming file " + timer.getElapsedTime());
 						}	
 					}
 					
