@@ -54,6 +54,7 @@ public class ViewArchiveToolAction extends InfoGlueAbstractAction
 	private String[] digitalAssetId;
 	private String archiveUrl;
 	private StringBuffer archiveFileSize = new StringBuffer();
+	private boolean nullAssets = false;
 	
     public String doInput() throws Exception
     {
@@ -74,7 +75,7 @@ public class ViewArchiveToolAction extends InfoGlueAbstractAction
 	
 	public String doArchiveOldAssets() throws Exception
     {
-		archiveUrl = DigitalAssetController.getController().archiveDigitalAssets(digitalAssetId, archiveFileSize);
+		archiveUrl = DigitalAssetController.getController().archiveDigitalAssets(digitalAssetId, archiveFileSize, nullAssets);
 		
         return "successArchive";
     }
@@ -143,6 +144,16 @@ public class ViewArchiveToolAction extends InfoGlueAbstractAction
 	public void setAssetNumberLimit(int assetNumberLimit) 
 	{
 		this.assetNumberLimit = assetNumberLimit;
+	}
+
+	public boolean getNullAssets()
+	{
+		return nullAssets;
+	}
+
+	public void setNullAssets(boolean nullAssets)
+	{
+		this.nullAssets = nullAssets;
 	}
 
 }

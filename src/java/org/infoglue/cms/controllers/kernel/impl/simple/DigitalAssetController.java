@@ -818,7 +818,11 @@ public class DigitalAssetController extends BaseController
 	    String fileName = digitalAsset.getDigitalAssetId() + "_" + digitalAsset.getAssetFileName();
 		String filePath = CmsPropertyHandler.getDigitalAssetPath();
 		dumpDigitalAsset(digitalAsset, fileName, filePath);
-		return new FileInputStream(filePath + File.separator + fileName);
+		File assetFile = new File(filePath + File.separator + fileName);
+		if(assetFile.exists())
+			return new FileInputStream(assetFile);
+		else
+			return new ByteArrayInputStream("archived".getBytes());
 	}
 
 	/**
@@ -1449,6 +1453,11 @@ public class DigitalAssetController extends BaseController
    	
 	public static void dumpDigitalAsset(DigitalAsset digitalAsset, String fileName, String filePath) throws Exception
 	{
+		if(digitalAsset.getAssetFileSize().intValue() == -1)
+		{
+			return;
+		}
+		
 		long timer = System.currentTimeMillis();
 
 		File outputFile = new File(filePath + File.separator + fileName);
@@ -1497,12 +1506,13 @@ public class DigitalAssetController extends BaseController
 	 * @throws SystemException
 	 */
 	
-	public String archiveDigitalAssets(String[] digitalAssetIdStrings, StringBuffer archiveFileSize) throws SystemException 
+	public String archiveDigitalAssets(String[] digitalAssetIdStrings, StringBuffer archiveFileSize, boolean nullBlob) throws SystemException 
 	{
     	Database db = CastorDatabaseService.getDatabase();
 
     	String assetUrl = null;
-
+    	List assetIdList = new ArrayList();
+    	
         beginTransaction(db);
 
         try
@@ -1517,7 +1527,7 @@ public class DigitalAssetController extends BaseController
         	for(int i = 0; i < digitalAssetIdStrings.length; i++)
         	{
         		Integer digitalAssetId = new Integer(digitalAssetIdStrings[i]);
-        		DigitalAsset digitalAsset = getSmallDigitalAssetWithId(digitalAssetId, db);
+        		DigitalAsset digitalAsset = getDigitalAssetWithId(digitalAssetId, db);
         		
 				String fileName = digitalAsset.getDigitalAssetId() + "_" + digitalAsset.getAssetFileName();
 				if(!outputFile.exists() || outputFile.length() == digitalAsset.getAssetFileSize().intValue())
@@ -1530,7 +1540,13 @@ public class DigitalAssetController extends BaseController
 				
 				digitalAsset.setAssetFilePath("IG_ARCHIVE:" + archiveFileName + ":" + fileName);
 				digitalAsset.setAssetFileSize(new Integer(-1));
-				digitalAsset.setAssetBlob(new ByteArrayInputStream("archived".getBytes()));
+				
+		        if(nullBlob)
+		        	digitalAsset.setAssetBlob(null);
+		        else
+		        	digitalAsset.setAssetBlob(new ByteArrayInputStream("archived".getBytes()));
+		        
+				assetIdList.add(digitalAsset.getId());
         	}
         	
             // Create a buffer for reading the files
@@ -1580,15 +1596,13 @@ public class DigitalAssetController extends BaseController
         }
         catch(Exception e)
         {
-        	e.printStackTrace();
-            logger.info("An error occurred when we tried to cache and show the digital asset thumbnail:" + e);
+            logger.error("An error occurred when we tried to archive the digitalAssets:" + e, e);
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
-        
+
 		return assetUrl;
 	}
-
 	
 	/**
 	 * This method restores digital assets from a zip into the database again.

@@ -1619,9 +1619,10 @@ public class ContentVersionController extends BaseController
             	
             	Collection contentVersions = digitalAsset.getContentVersions();
             	Iterator contentVersionsIterator = contentVersions.iterator();
+            	ContentVersion contentVersion = null;
             	while(contentVersionsIterator.hasNext())
             	{
-            		ContentVersion contentVersion = (ContentVersion)contentVersionsIterator.next();
+            		contentVersion = (ContentVersion)contentVersionsIterator.next();
             		//System.out.println("contentVersion:" + contentVersion.getId() + ":" + contentVersion.getIsActive());
             		if(!isOldVersion(contentVersion, numberOfVersionsToKeep))
             			keep = false;
@@ -1629,9 +1630,11 @@ public class ContentVersionController extends BaseController
             	
             	if(keep)
             	{
+            		String contentPath = ContentController.getContentController().getContentPath(contentVersion.getOwningContent().getId(), true, true);
             		//System.out.println("Adding asset:" + digitalAsset.getId() + ":" + digitalAsset.getAssetKey() + ":" + contentVersions.size());
 	            	optimizationBeanList.addDigitalAsset(digitalAsset);
 	            	optimizationBeanList.addEventVersions(toVOList(contentVersions));
+	            	optimizationBeanList.setContentPath(digitalAsset.getId(), contentPath);
 	            	i++;
             	}
             }

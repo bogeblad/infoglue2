@@ -25,15 +25,18 @@ package org.infoglue.cms.applications.databeans;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.infoglue.cms.entities.content.DigitalAsset;
 
 public class OptimizationBeanList extends ArrayList
 {
+	private Map contentPaths = new HashMap();
 	private Set contentVersionVOList = new HashSet();
 	private List digitalAssetVOList = new ArrayList();
 
@@ -89,5 +92,15 @@ public class OptimizationBeanList extends ArrayList
 	public List getDigitalAssetVOList() 
 	{
 		return digitalAssetVOList;
+	}
+
+	public String getContentPath(Integer digitalAssetId)
+	{
+		return (String)contentPaths.get(digitalAssetId);
+	}
+
+	public void setContentPath(Integer digitalAssetId, String contentPath)
+	{
+		this.contentPaths.put(digitalAssetId, contentPath);
 	}
 }

@@ -69,6 +69,10 @@ function uncheckAll(element)
 		margin-right: 0.5em;
 		display: block;
 	}
+	.narrowLabel
+	{
+		width: 100px;
+	}
 	select
 	{
 		background: white;
@@ -146,25 +150,29 @@ function uncheckAll(element)
 		<form name="resultForm" action="ViewArchiveTool!archiveOldAssets.action" method="POST">
 			
 			<a href="javascript:checkAll(document.resultForm.digitalAssetId);">
-			<img src="$ui.getString("images.contenttool.buttons.checkAll60x25")" width="60" height="25" border="0">
+				<img src="$ui.getString("images.contenttool.buttons.checkAll60x25")" width="60" height="25" border="0">
 			</a>
 			
 			<a href="javascript:uncheckAll(document.resultForm.digitalAssetId);">
-			<img src="$ui.getString("images.contenttool.buttons.uncheckAll60x25")" width="60" height="25" border="0">
+				<img src="$ui.getString("images.contenttool.buttons.uncheckAll60x25")" width="60" height="25" border="0">
 			</a>
-			
+
 			<br/>		
 			<br/>		
 		 	#foreach($digitalAssetVO in $optimizationBeanList.digitalAssetVOList)
-				<input type="checkbox" name="digitalAssetId" value="$digitalAssetVO.digitalAssetId"/>$digitalAssetVO.assetKey ($digitalAssetVO.assetFileSize bytes)<br>
+				<input type="checkbox" name="digitalAssetId" value="$digitalAssetVO.digitalAssetId"/>$digitalAssetVO.assetKey ($formatter.formatFileSize($digitalAssetVO.assetFileSize)) - $optimizationBeanList.getContentPath($digitalAssetVO.id)<br>
 			#end
 			<br/>
 			In total $optimizationBeanList.totalAssetSizeInMB MB would be removed ($optimizationBeanList.totalAssets assets - $optimizationBeanList.totalAssetsWithoutVersion was not owned by a content version).
 			<br/>
 			<br/>
+			<input type="checkbox" onclick="javascript:alert('Warning: this option should not be used normally as it nullifies the asset blob and can lead to other errors later. Only of interest to oracle users who want to shrink their schema. For other databases you also have to set the assetBlob-column to allow nulls.');" name="nullAssets" value="true"/> Null assets when archiving?<br>
+			
+			<br>
 	 		<input class="wideButton" type="submit" value="Archive selected files"/>
+			<br>
 		</form>
 	</p>
-	
-	
+	<p>&nbsp;</p>
+		
 #endManagementTool()
