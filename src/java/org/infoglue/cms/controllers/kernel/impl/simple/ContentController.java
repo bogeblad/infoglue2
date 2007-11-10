@@ -1687,28 +1687,44 @@ public class ContentController extends BaseController
 	 */
 	public String getContentPath(Integer contentId) throws ConstraintException, SystemException, Bug, Exception
     {
-		StringBuffer sb = new StringBuffer();
-	
-	    ContentVO contentVO = ContentController.getContentController().getContentVOWithId(contentId);
-	
-	    sb.insert(0, contentVO.getName());
-	
-	    while(contentVO.getParentContentId() != null)
-	
-	    {
-	          contentVO = ContentController.getContentController().getContentVOWithId(contentVO.getParentContentId());
-	
-	          if(contentVO.getParentContentId() != null)
-	          {
-	        	  sb.insert(0, contentVO.getName() + "/");
-	          }
-	    }
-	
-	    //sb.insert(0, "/");
-	
-	   
-	    return sb.toString();
+		return getContentPath(contentId, false, false);
     }
 
- 
+
+	/**
+	 * Returns the path to, and including, the supplied content.
+	 * 
+	 * @param contentId the content to 
+	 * 
+	 * @return String the path to, and including, this content "library/library/..."
+	 * 
+	 */
+	public String getContentPath(Integer contentId, boolean includeRootContent, boolean includeRepositoryName) throws ConstraintException, SystemException, Bug, Exception
+	{
+		StringBuffer sb = new StringBuffer();
+
+		ContentVO contentVO = ContentController.getContentController().getContentVOWithId(contentId);
+
+		sb.insert(0, contentVO.getName());
+
+		while (contentVO.getParentContentId() != null)
+		{
+			contentVO = ContentController.getContentController().getContentVOWithId(contentVO.getParentContentId());
+
+			if (includeRootContent || contentVO.getParentContentId() != null)
+			{
+				sb.insert(0, contentVO.getName() + "/");
+			}
+		}
+
+		if (includeRepositoryName)
+		{
+			RepositoryVO repositoryVO = RepositoryController.getController().getRepositoryVOWithId(contentVO.getRepositoryId());
+			if(repositoryVO != null)
+				sb.insert(0, repositoryVO.getName() + " - /");
+		}
+		
+		return sb.toString();
+	}
+
 }
