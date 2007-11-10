@@ -943,10 +943,11 @@
 						#set($digitalAssetUrl = "$this.getDigitalAssetUrl($digitalAsset.digitalAssetId)")
 						<td valign="bottom" align="center" class="bordered">
 							<input type="hidden" id="digitalAsset$digitalAsset.assetKey" value="$digitalAssetUrl">
-							<a href="javascript:openPopup('$digitalAssetUrl', 'Preview', 'width=600,height=500,resizable=yes');"><img class="scaledbordered" src="$this.getDigitalAssetThumbnailUrl($digitalAsset.digitalAssetId)">
-							<br/>$digitalAsset.assetKey</a><br/>
+							#set($thumbnailUrl = $this.getDigitalAssetThumbnailUrl($digitalAsset.digitalAssetId))
+							#if($digitalAsset.assetFileSize > -1)<a href="javascript:openPopup('$digitalAssetUrl', 'Preview', 'width=600,height=500,resizable=yes');">#end<img class="scaledbordered" src="$thumbnailUrl">
+							<br/>$digitalAsset.assetKey#if($digitalAsset.assetFileSize > -1)</a>#end<br/>
 							#if($readonly == "")
-								#if($disableImageEditor != "true" && ($digitalAssetUrl.indexOf(".gif") > -1 || $digitalAssetUrl.indexOf(".jpg") > -1 || $digitalAssetUrl.indexOf(".png") > -1))
+								#if($digitalAsset.assetFileSize > -1 && $disableImageEditor != "true" && ($digitalAssetUrl.indexOf(".gif") > -1 || $digitalAssetUrl.indexOf(".jpg") > -1 || $digitalAssetUrl.indexOf(".png") > -1))
 								<a href="javascript:openPopup('ImageEditor.action?contentVersionId=$contentVersionId&contentId=$contentId&languageId=$languageId&digitalAssetId=$digitalAsset.digitalAssetId','DigitalAsset','width=800,height=600,resizable=yes');">$ui.getString("tool.contenttool.editAttachment")</a> |
 								#end
 								<a href="javascript:openPopup('ViewDigitalAsset!update.action?contentVersionId=$contentVersionId&contentId=$contentId&languageId=$languageId&digitalAssetId=$digitalAsset.digitalAssetId','DigitalAsset','width=400,height=200,resizable=no');">$ui.getString("tool.contenttool.updateAttachment")</a> | 
