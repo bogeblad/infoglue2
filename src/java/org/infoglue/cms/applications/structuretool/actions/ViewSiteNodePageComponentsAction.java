@@ -556,9 +556,6 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 		ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentVO.getId(), this.masterLanguageVO.getId());
 
 		Document document = XMLHelper.readDocumentFromByteArray(componentXML.getBytes("UTF-8"));
-		//String test = XMLHelper.serializeDom(document, new StringBuffer()).toString(); 
-		//System.out.println("test:" + test);
-		//FileHelper.writeToFile(new File("c:\\temp\\enc102.txt"), test, false);
 		
 		String characterEncoding= this.getRequest().getCharacterEncoding();
 		characterEncoding= this.getResponse().getCharacterEncoding();
@@ -627,9 +624,6 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 		}
 
 		String modifiedXML = XMLHelper.serializeDom(document, new StringBuffer()).toString(); 
-		//logger.info("modifiedXML:" + modifiedXML);
-		//FileHelper.writeToFile(new File("c:\\temp\\xml1.txt"), modifiedXML.getBytes());
-		//FileHelper.writeToFile(new File("c:\\temp\\xml2.txt"), modifiedXML, false);
 			
 		logger.info("contentVersionVO:" + contentVersionVO.getContentVersionId());
 		ContentVersionController.getContentVersionController().updateAttributeValue(contentVersionVO.getContentVersionId(), "ComponentStructure", modifiedXML, this.getInfoGluePrincipal());

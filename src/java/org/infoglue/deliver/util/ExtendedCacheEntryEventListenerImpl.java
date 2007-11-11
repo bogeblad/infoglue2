@@ -100,20 +100,6 @@ public class ExtendedCacheEntryEventListenerImpl extends CacheEntryEventListener
         	{
         		totalSize = totalSize + content.toString().length();
         	}
-
-        	/*
-        	try
-        	{
-        		String fileName = "c:/temp/test_" + content.hashCode();
-        		File file = new File(fileName);
-        		FileHelper.writeToFile(file, content.toString(), false);
-            	System.out.println(file.getName() + " - " + file.length() + "=" + content.toString().length());
-        	}
-        	catch(Exception e)
-        	{
-        		e.printStackTrace();
-        	}
-        	*/
         }
     }
 

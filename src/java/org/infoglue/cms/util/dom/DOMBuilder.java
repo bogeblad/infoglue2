@@ -117,19 +117,6 @@ public class DOMBuilder
 		{
 			String xml = FileHelper.readUTF8FromFile(file);
 			document = getDocument(xml);
-			
-			/*
-			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-			DocumentBuilder builder = factory.newDocumentBuilder(); 
-			org.w3c.dom.Document documentW3C = builder.parse(new InputSource(new StringReader(xml)));
-			String modifiedXML = XMLHelper.serializeDom(documentW3C, new StringBuffer()).toString(); 
-			
-			FileHelper.writeUTF8ToFile(new File("c:/temp/treeXMLDocument.xml"), modifiedXML, false);
-			
-			FileHelper.writeUTF8ToFile(new File("c:/temp/treeXML.xml"), xml, false);
-			*/
-			//SAXReader xmlReader = new SAXReader();
-			//document = xmlReader.read(file); 			
 		}
 		catch(Exception e)
 		{
@@ -223,13 +210,6 @@ public class DOMBuilder
 		XMLWriter writer = new XMLWriter(new FileWriter(fileName), format);
 		writer.write(document);
 		writer.close();	
-		
-		/*
-		FileHelper.writeToFile(new File(fileName + "2"), document.asXML(), false);
-		FileHelper.writeUTF8ToFileSpecial(new File(fileName + "3"), document.asXML(), false);
-		FileHelper.writeUTF8(new File(fileName + "4"), document.asXML(), false);
-		FileHelper.writeUTF8ToFile(new File(fileName + "5"), document.asXML(), false);
-		*/
 	}
 
 	/**

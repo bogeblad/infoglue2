@@ -114,7 +114,6 @@ public class ContentVersionController extends BaseController
     	Integer contentId = (Integer)contentMap.get(contentVersionId);
     	if(contentId == null)
     	{
-    		System.out.println("Not cached the first time:" + contentVersionId);
     		ContentVersionVO ContentVersionVO = (ContentVersionVO) getVOWithId(ContentVersionImpl.class, contentVersionId, db);
     		contentId = ContentVersionVO.getContentId();
     		contentMap.put(contentVersionId, contentId);

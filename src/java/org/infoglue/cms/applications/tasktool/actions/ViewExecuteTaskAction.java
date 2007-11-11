@@ -92,7 +92,7 @@ public class ViewExecuteTaskAction extends InfoGlueAbstractAction
 		ScriptController scriptController = getScriptController();
 		scriptController.setRequest(this.getRequest());
 		scriptController.beginTransaction();
-
+		
 		Map context = new HashMap();
 		context.put("scriptLogic", scriptController);
 
