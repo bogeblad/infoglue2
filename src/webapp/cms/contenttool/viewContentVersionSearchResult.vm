@@ -138,7 +138,7 @@
 				{
 					var resultDiv = document.getElementById("resultsLayer");
 					document.getElementById("advancedEnabled").value = "true";
-					resultDiv.style.top = "490px";
+					resultDiv.style.top = "540px";
 				}
 					
 			}
@@ -309,7 +309,7 @@
 </form>
 </div>
 
-<div id="resultsLayer" class="fullymarginalized" style="position: absolute; top: #if($advanced == false) 80px; #else 400px; #end">
+<div id="resultsLayer" class="fullymarginalized" style="position: absolute; top: #if($advanced == false) 80px; #else 540px; #end">
 
 <table tableborder=0 border=0 bgcolor=#C7D1B3 width=100% cellpadding="1" cellspacing="0"><tr><td>
 #set($lvConstraint = -1) 
