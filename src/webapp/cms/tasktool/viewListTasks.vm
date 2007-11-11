@@ -61,7 +61,7 @@
 			</tr>	
 		#end
 
-
+#*
 		<tr>
 			<td><img src="images/trans.gif" height="10"></td>
 		</tr>
@@ -99,6 +99,7 @@
 				</td>
 			</tr>	
 		#end
+*#
 		
 		<tr>
 			<td colspan="3">&nbsp;</td>
