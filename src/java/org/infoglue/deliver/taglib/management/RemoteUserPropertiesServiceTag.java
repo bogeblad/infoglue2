@@ -10,6 +10,7 @@ import javax.servlet.jsp.JspTagException;
 
 import org.infoglue.cms.entities.management.UserPropertiesVO;
 import org.infoglue.cms.security.InfoGluePrincipal;
+import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.deliver.taglib.TemplateControllerTag;
 import org.infoglue.deliver.util.webservices.DynamicWebservice;
 
@@ -28,7 +29,7 @@ public class RemoteUserPropertiesServiceTag extends TemplateControllerTag
 	/**
 	 * 
 	 */
-	private String targetEndpointAddress;
+	private String targetEndpointAddress = CmsPropertyHandler.getWebServicesBaseUrl() + "RemoteUserPropertiesService";
 	
 	/**
 	 * 

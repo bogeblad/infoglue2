@@ -820,7 +820,7 @@
     	</attribute>
         <attribute>
     	    <name>targetEndpointAddress</name>
-        	<required>true</required>
+        	<required>false</required>
 	        <rtexprvalue>false</rtexprvalue>
     	</attribute>
         <attribute>

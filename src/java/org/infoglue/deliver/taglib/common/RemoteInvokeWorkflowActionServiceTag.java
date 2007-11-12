@@ -8,6 +8,7 @@ import javax.servlet.jsp.JspTagException;
 
 import org.infoglue.cms.controllers.kernel.impl.simple.UserControllerProxy;
 import org.infoglue.cms.security.InfoGluePrincipal;
+import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.deliver.taglib.AbstractTag;
 import org.infoglue.deliver.util.webservices.DynamicWebservice;
 
@@ -45,7 +46,7 @@ public class RemoteInvokeWorkflowActionServiceTag extends AbstractTag
 	/**
 	 * 
 	 */
-	private String targetEndpointAddress;
+	private String targetEndpointAddress = CmsPropertyHandler.getWebServicesBaseUrl() + "RemoteWorkflowService";
 	
 	/**
 	 * 
