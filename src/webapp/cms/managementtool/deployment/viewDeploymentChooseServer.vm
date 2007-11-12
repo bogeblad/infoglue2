@@ -28,7 +28,7 @@
 			<input type="checkbox" name="synchronizeContentTypeDefinitions" value="true"/> Content types<br>
 			<input type="checkbox" name="synchronizeCategories" value="true"/> Categories<br>
 			<input type="checkbox" name="synchronizeWorkflows" value="true"/> Workflows<br>
-
+			<input type="checkbox" name="synchronizeContents" value="true"/> Contents<br>
 		</td>
 	</tr>
 	

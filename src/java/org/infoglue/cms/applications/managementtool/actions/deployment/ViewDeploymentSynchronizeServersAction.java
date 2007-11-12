@@ -45,11 +45,13 @@ import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.applications.databeans.AssetKeyDefinition;
 import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
 import org.infoglue.cms.controllers.kernel.impl.simple.CategoryController;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.GroupControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.RoleControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.UserControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.WorkflowDefinitionController;
+import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.entities.management.Category;
 import org.infoglue.cms.entities.management.CategoryAttribute;
@@ -78,6 +80,7 @@ public class ViewDeploymentSynchronizeServersAction extends InfoGlueAbstractActi
 	private boolean synchronizeContentTypeDefinitions;
 	private boolean synchronizeCategories;
 	private boolean synchronizeWorkflows;
+	private boolean synchronizeContents;
 	
 	private Integer deploymentServerIndex = null;
 	private List<DeploymentCompareBean> deviatingContentTypes = new ArrayList<DeploymentCompareBean>();
@@ -164,6 +167,56 @@ public class ViewDeploymentSynchronizeServersAction extends InfoGlueAbstractActi
 	    	}
     	}
     	
+    	System.out.println("synchronizeContents:" + synchronizeContents);
+    	if(synchronizeContents)
+    	{
+	    	//Getting deviatingContents
+	    	Object[] contentVOArray = (Object[])invokeOperation(targetEndpointAddress, "getContents", "content", null, ContentVO.class, "infoglue");
+	    	List remoteContentVOList = Arrays.asList(contentVOArray);
+		    Collections.sort(remoteContentVOList, new ReflectionComparator("name"));
+	
+	    	System.out.println("remoteContentVOList:" + remoteContentVOList.size());
+	    	
+	    	List components = ContentController.getContentController().getContentVOWithContentTypeDefinition("HTMLTemplate");
+	    	
+	    	Iterator remoteContentVOListIterator = remoteContentVOList.iterator();
+	    	while(remoteContentVOListIterator.hasNext())
+	    	{
+	    		ContentVO remoteContentVO = (ContentVO)remoteContentVOListIterator.next();
+	    		//System.out.println("remoteContentVO:" + remoteContentVO.getName());
+	    		if(remoteContentVO.getName().equals("AAAAAAA"))
+	    			System.out.println("remoteContentVO:" + remoteContentVO.getName());
+	    		
+	    		Iterator componentsIterator = components.iterator();
+	    		ContentVO localContentVO = null;
+	    		while(componentsIterator.hasNext())
+	    		{
+	    			ContentVO candidate = (ContentVO)componentsIterator.next();
+	    			if(candidate.getName().equals(remoteContentVO.getName()))
+	    			{
+	    				localContentVO = candidate;
+	    				if(remoteContentVO.getName().equals("AAAAAAA"))
+	    	    			System.out.println("localContentVO:" + localContentVO.getName());
+	    			}
+	    		}
+	    		//System.out.println("localContentVO:" + localContentVO);
+	    		DeploymentCompareBean bean = new DeploymentCompareBean();
+	    		bean.setRemoteVersion(remoteContentVO);
+	    		if(localContentVO != null)
+	    		{
+	    			//System.out.println("localContentVO:" + localContentVO.getName());
+	        		bean.setLocalVersion(localContentVO);    			
+	    		}
+	    		else
+	    		{
+	    			System.out.println("No localversion for:" + remoteContentVO.getName() + ":" + remoteContentVO.getExtraProperties() + ":" + remoteContentVO.getFullPath());
+	    		}
+        		
+	    		//System.out.println("bean:" + bean.getLocalVersion());
+	    		deviatingContents.add(bean);
+	    	}
+    	}
+
     	return "input";
     }
 
@@ -849,6 +902,16 @@ public class ViewDeploymentSynchronizeServersAction extends InfoGlueAbstractActi
 	public boolean getSynchronizeWorkflows()
 	{
 		return this.synchronizeWorkflows;
+	}
+
+	public void setSynchronizeContents(boolean synchronizeContents)
+	{
+		this.synchronizeContents = synchronizeContents;
+	}
+
+	public boolean getSynchronizeContents()
+	{
+		return this.synchronizeContents;
 	}
 
 }

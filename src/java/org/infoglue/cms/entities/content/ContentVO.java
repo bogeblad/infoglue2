@@ -54,6 +54,7 @@ public class ContentVO implements BaseEntityVO
 	
 	private Integer childCount;
   	private String creatorName;
+  	private String fullPath = null; //Can well be null... used in some views only
   
   	private static SimpleTimeZone stmz = new SimpleTimeZone(-8 * 60 * 60 * 1000, "GMT");
     
@@ -259,5 +260,15 @@ public class ContentVO implements BaseEntityVO
     {
         this.extraProperties = extraProperties;
     }
+
+	public String getFullPath()
+	{
+		return fullPath;
+	}
+
+	public void setFullPath(String fullPath)
+	{
+		this.fullPath = fullPath;
+	}
 }
         

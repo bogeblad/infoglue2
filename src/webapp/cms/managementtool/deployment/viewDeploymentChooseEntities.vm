@@ -137,7 +137,44 @@
 	
 	<tr>
 		<td>
-			Contents
+			<form name="contentsForm" action="ViewDeploymentSynchronizeServers!updateContents.action" method="post">
+				<input type="hidden" name="deploymentServerIndex" value="$deploymentServerIndex"/>
+			
+				<h3>Contents that deviates</h3>
+				#set($indexMissingContents = 0)
+				#foreach($deviatingContent in $deviatingContents)
+					#if(!$deviatingContent.localVersion)
+						<input type="checkbox" name="missingContentId" value="$deviatingContent.remoteVersion.name"/> Missing local version of $deviatingContent.remoteVersion.name ($deviatingContent.remoteVersion.fullPath)<br/> 
+					#else
+						#set($value1 = "$formatter.cleanForJavascriptStrings($deviatingContent.remoteVersion.value)")
+						#set($value2 = "$formatter.cleanForJavascriptStrings($deviatingContent.localVersion.value)")
+	
+						#if($deviatingContent.remoteVersion.name == "2-column component")
+							$value1.length() - $value1.length()		
+							<!--
+							$value1 
+							-->
+							<!--
+							$value2
+							-->
+						#end
+						
+						#if("$value1" == "$value2")
+							Equals
+						#end
+						
+						#if("$value1" != "$value2")
+							<input type="checkbox" name="missingContentId" value="$deviatingContent.remoteVersion.name"/> $deviatingContent.remoteVersion.name<br/>
+						#else
+							##Exakt compare: $deviatingContent.remoteVersion.name<br/> 
+						#end
+					#end
+		
+					#set($indexMissingContents = $indexMissingContents + 1)
+				#end
+				<br/>
+				<input type="image" src="$ui.getString("images.contenttool.buttons.next")" width="50" height="25">
+			</form>
 		</td>
 	</tr>		
 	<tr>
