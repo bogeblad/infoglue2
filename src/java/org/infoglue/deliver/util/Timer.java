@@ -36,12 +36,17 @@ public class Timer
 	private long startTime 		= 0;
 	private long elapsedTime 	= 0;
 	private long lastPrintTime  = 0;
+	private long startTimeNanos = 0;
+	private long elapsedTimeNanos 	= 0;
+	private long lastPrintTimeNanos  = 0;
 	private boolean isActive 	= true;
 	
 	public Timer()
 	{
 		startTime = System.currentTimeMillis();
 		lastPrintTime = startTime;
+		startTimeNanos = System.nanoTime();
+		lastPrintTimeNanos = startTimeNanos;
 	}
 	
 	public long getElapsedTime()
@@ -50,7 +55,14 @@ public class Timer
 		lastPrintTime = System.currentTimeMillis();
 		return elapsedTime;
 	}
-	
+
+	public long getElapsedTimeNanos()
+	{
+		elapsedTimeNanos = System.nanoTime() - lastPrintTimeNanos;
+		lastPrintTimeNanos = System.nanoTime();
+		return elapsedTimeNanos;
+	}
+
 	public void printElapsedTime(String message)
 	{
 		if(this.isActive)
@@ -60,7 +72,27 @@ public class Timer
 			System.out.println(message + " - Elapsed time since last report: " + elapsedTime);
 		}
 	}
-	
+
+	public void printElapsedTimeNano(String message)
+	{
+		if(this.isActive)
+		{
+			elapsedTimeNanos = System.nanoTime() - lastPrintTimeNanos;
+			lastPrintTimeNanos = System.nanoTime();
+			System.out.println(message + " - Elapsed time since last report (ns): " + elapsedTimeNanos);
+		}
+	}
+
+	public void printElapsedTimeMicro(String message)
+	{
+		if(this.isActive)
+		{
+			elapsedTimeNanos = System.nanoTime() - lastPrintTimeNanos;
+			lastPrintTimeNanos = System.nanoTime();
+			System.out.println(message + " - Elapsed time since last report (ns): " + elapsedTimeNanos / 1000);
+		}
+	}
+
 	public boolean getIsActive()
 	{
 		return this.isActive;
