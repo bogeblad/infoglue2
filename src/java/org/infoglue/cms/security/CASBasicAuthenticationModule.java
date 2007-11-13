@@ -174,6 +174,12 @@ public class CASBasicAuthenticationModule extends AuthenticationModule//, Author
 			
 			if(j_userName.equals(userName) && j_password.equals(password))
 				return j_userName;
+			
+			String anonymousUserName = CmsPropertyHandler.getAnonymousUser();
+			String anonymousPassword = CmsPropertyHandler.getAnonymousPassword();
+			
+			if(j_userName.equals(anonymousUserName) && j_password.equals(anonymousPassword))
+				return j_userName;
 		}
 		
 		String ticket = (String)request.get("ticket");
