@@ -192,15 +192,18 @@ public class CASBasicAuthenticationModule extends AuthenticationModule//, Author
 		} 
 		
 		authenticatedUserName = authenticate(ticket);
-		logger.info("authenticatedUserName:" + authenticatedUserName);
-		try
+		if(logger.isInfoEnabled())
 		{
-			throw new Exception("CAS was called from authenticateUser:" + authenticatedUserName);
-		}
-		catch (Exception e) 
-		{
-			if(logger.isInfoEnabled())
-				logger.info("DEBUG:" + e.getMessage());
+			logger.info("authenticatedUserName:" + authenticatedUserName);
+			try
+			{
+				throw new Exception("CAS was called from authenticateUser:" + authenticatedUserName);
+			}
+			catch (Exception e) 
+			{
+				if(logger.isInfoEnabled())
+					logger.info("DEBUG:" + e.getMessage());
+			}
 		}
 		
 		return authenticatedUserName;
