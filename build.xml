@@ -388,6 +388,9 @@
 		<copy file="${conf}/deliver-web.xml" tofile="${deploy.dir.live}/WEB-INF/web.xml" overwrite="true">
 			<filterset refid="project.filters"/>
 		</copy>
+			<copy file="${conf}/robots-live.xml" tofile="${deploy.dir.live}/robots.txt" overwrite="true">
+			<filterset refid="project.filters"/>
+		</copy>
 	</target>
 
 	<!--
