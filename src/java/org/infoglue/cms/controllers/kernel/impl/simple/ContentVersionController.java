@@ -1627,14 +1627,21 @@ public class ContentVersionController extends BaseController
             			keep = false;
             	}
             	
-            	if(keep)
+            	if(contentVersion != null && keep)
             	{
-            		String contentPath = ContentController.getContentController().getContentPath(contentVersion.getOwningContent().getId(), true, true);
-            		//System.out.println("Adding asset:" + digitalAsset.getId() + ":" + digitalAsset.getAssetKey() + ":" + contentVersions.size());
-	            	optimizationBeanList.addDigitalAsset(digitalAsset);
-	            	optimizationBeanList.addEventVersions(toVOList(contentVersions));
-	            	optimizationBeanList.setContentPath(digitalAsset.getId(), contentPath);
-	            	i++;
+            		if(contentVersion.getOwningContent() != null)
+            		{
+	            		String contentPath = ContentController.getContentController().getContentPath(contentVersion.getOwningContent().getId(), true, true);
+	            		//System.out.println("Adding asset:" + digitalAsset.getId() + ":" + digitalAsset.getAssetKey() + ":" + contentVersions.size());
+		            	optimizationBeanList.addDigitalAsset(digitalAsset);
+		            	optimizationBeanList.addEventVersions(toVOList(contentVersions));
+		            	optimizationBeanList.setContentPath(digitalAsset.getId(), contentPath);
+		            	i++;
+            		}
+            		else
+            		{
+            			logger.error("ContentVersion with id:" + contentVersion.getId() + " had no ownningcontent");
+            		}
             	}
             }
             
