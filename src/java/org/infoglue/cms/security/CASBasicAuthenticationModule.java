@@ -202,7 +202,7 @@ public class CASBasicAuthenticationModule extends AuthenticationModule//, Author
 			catch (Exception e) 
 			{
 				if(logger.isInfoEnabled())
-					logger.info("DEBUG:" + e.getMessage());
+					logger.info("DEBUG:" + e.getMessage(), e);
 			}
 		}
 		
@@ -291,7 +291,7 @@ public class CASBasicAuthenticationModule extends AuthenticationModule//, Author
 			catch (Exception e) 
 			{
 				if(logger.isInfoEnabled())
-					logger.info("DEBUG:" + e.getMessage());
+					logger.info("DEBUG:" + e.getMessage(), e);
 			}
 		}
 
