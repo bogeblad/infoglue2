@@ -246,9 +246,13 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			else
 			{
 				String forceIdentityCheck = RepositoryDeliveryController.getRepositoryDeliveryController().getExtraPropertyValue(this.repositoryId, "forceIdentityCheck");
+				if(logger.isInfoEnabled())
+					logger.info("forceIdentityCheck:" + forceIdentityCheck);
 				if(CmsPropertyHandler.getForceIdentityCheck().equalsIgnoreCase("true") || (forceIdentityCheck != null && forceIdentityCheck.equalsIgnoreCase("true")))
 				{
 					boolean isForcedIdentityCheckDisabled = this.nodeDeliveryController.getIsForcedIdentityCheckDisabled(dbWrapper.getDatabase(), this.siteNodeId);
+					if(logger.isInfoEnabled())
+						logger.info("isForcedIdentityCheckDisabled:" + isForcedIdentityCheckDisabled);
 					if(!isForcedIdentityCheckDisabled)
 						isUserRedirected = handleExtranetLogic(dbWrapper.getDatabase(), true);
 				}
@@ -709,7 +713,10 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			    throw new SystemException("There was no anonymous user found in the system. There must be - add the user anonymous/anonymous and try again.", e);
 			}
 		}
-
+		
+		if(logger.isDebugEnabled())
+			logger.debug("principal in validateAndModifyInputParameters:" + this.principal);
+		
 		if(getSiteNodeId() == null)
 		{
 			if(getRepositoryName() == null)
