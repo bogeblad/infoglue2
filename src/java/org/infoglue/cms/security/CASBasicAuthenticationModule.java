@@ -282,6 +282,19 @@ public class CASBasicAuthenticationModule extends AuthenticationModule//, Author
 	{
 		boolean isAuthenticated = false;
 		
+		if(logger.isInfoEnabled())
+		{
+			try
+			{
+				throw new Exception("authenticate called with ticket:" + ticket);
+			}
+			catch (Exception e) 
+			{
+				if(logger.isInfoEnabled())
+					logger.info("DEBUG:" + e.getMessage());
+			}
+		}
+
 	    logger.info("ticket:" + ticket);
 	    TrustManager[] trustAllCerts = new TrustManager[]
 		{
