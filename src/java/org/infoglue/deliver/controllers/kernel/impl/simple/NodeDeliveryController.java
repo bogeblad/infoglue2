@@ -198,12 +198,13 @@ public class NodeDeliveryController extends BaseDeliveryController
 	
 	public ServiceDefinitionVO getInheritedServiceDefinition(List qualifyerList, Integer siteNodeId, AvailableServiceBindingVO availableServiceBindingVO, Database db, boolean inheritParentBindings) throws SystemException, Exception
 	{
-		logger.info("Trying to find binding " + availableServiceBindingVO.getName() + " on siteNodeId:" + siteNodeId);
 		ServiceDefinitionVO serviceDefinitionVO = null;
 		
 		if(siteNodeId == null || siteNodeId.intValue() <= 0)
 			return serviceDefinitionVO;
-			
+
+		logger.info("Trying to find binding " + availableServiceBindingVO + " on siteNodeId:" + siteNodeId);
+
 		SiteNode siteNode = (SiteNode)this.getObjectWithId(SmallSiteNodeImpl.class, siteNodeId, db);
 		logger.info("Loaded siteNode " + siteNode.getName());
 
