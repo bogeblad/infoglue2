@@ -32,12 +32,16 @@ import org.infoglue.cms.controllers.kernel.impl.simple.CategoryController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
+import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ServerNodeController;
 import org.infoglue.cms.controllers.kernel.impl.simple.UserControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.WorkflowDefinitionController;
 import org.infoglue.cms.entities.content.ContentVO;
+import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.entities.management.CategoryVO;
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
+import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.entities.workflow.WorkflowDefinitionVO;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
@@ -216,13 +220,30 @@ public class RemoteDeploymentServiceImpl extends RemoteInfoGlueService
 	        {
 		        logger.info("principalName:" + principalName);
 	        }
-	        
+	        			
 			contentVOList = contentControllerProxy.getContentVOWithContentTypeDefinition("HTMLTemplate");
 			Iterator contentVOListIterator = contentVOList.iterator();
 			while(contentVOListIterator.hasNext())
 			{
 				ContentVO contentVO = (ContentVO)contentVOListIterator.next(); 
+				
+				LanguageVO languageVO = LanguageController.getController().getMasterLanguage(contentVO.getRepositoryId());
+				
 				String fullPath = ContentController.getContentController().getContentPath(contentVO.getId(), true, true);
+				
+				if(contentVO.getName().equalsIgnoreCase("2-column component"))
+				{
+					System.out.println("languageVO:" + languageVO);
+					ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentVO.getId(), languageVO.getId());
+					System.out.println("contentVersionVO:" + contentVersionVO);
+					if(contentVersionVO != null)
+					{
+						contentVO.setVersions(new String[]{contentVersionVO.getVersionValue()});
+						//contentVO.getExtraProperties().put("contentVersionVO", contentVersionVO);
+						//contentVO.getExtraProperties().put("contentVersionValue", contentVersionVO.getVersionValue());
+					}
+				}
+				
 				//contentVO.getExtraProperties().put("fullPath", fullPath);
 				contentVO.setFullPath(fullPath);
 			}

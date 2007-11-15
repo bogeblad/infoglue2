@@ -183,9 +183,9 @@ public class ViewDeploymentSynchronizeServersAction extends InfoGlueAbstractActi
 	    	while(remoteContentVOListIterator.hasNext())
 	    	{
 	    		ContentVO remoteContentVO = (ContentVO)remoteContentVOListIterator.next();
-	    		//System.out.println("remoteContentVO:" + remoteContentVO.getName());
-	    		if(remoteContentVO.getName().equals("AAAAAAA"))
-	    			System.out.println("remoteContentVO:" + remoteContentVO.getName());
+	    		System.out.println("remoteContentVO:" + remoteContentVO.getName());
+	    		if(remoteContentVO.getName().equals("2-column component"))
+	    			System.out.println("remoteContentVO:" + remoteContentVO.getName() + ":" + remoteContentVO.getVersions().length + ":" + remoteContentVO.getExtraProperties().get("contentVersionValue"));
 	    		
 	    		Iterator componentsIterator = components.iterator();
 	    		ContentVO localContentVO = null;
@@ -205,7 +205,7 @@ public class ViewDeploymentSynchronizeServersAction extends InfoGlueAbstractActi
 	    		if(localContentVO != null)
 	    		{
 	    			//System.out.println("localContentVO:" + localContentVO.getName());
-	        		bean.setLocalVersion(localContentVO);    			
+	        		bean.setLocalVersion(localContentVO);
 	    		}
 	    		else
 	    		{
@@ -845,8 +845,9 @@ public class ViewDeploymentSynchronizeServersAction extends InfoGlueAbstractActi
 
             ws.setTargetEndpointAddress(endpointAddress);
             ws.setOperationName(operationName);
+            //ws.setReturnType(ContentVersionVO.class, new QName(nameSpace, ws.getClassName(ContentVersionVO.class)));
             ws.setReturnType(returnType, new QName(nameSpace, ws.getClassName(returnType)));
-
+            
             if(argument != null)
             {
 	            if(argument instanceof Map || argument instanceof HashMap)

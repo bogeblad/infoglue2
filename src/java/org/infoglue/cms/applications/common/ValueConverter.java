@@ -24,7 +24,10 @@
 package org.infoglue.cms.applications.common;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
 import org.infoglue.cms.exception.ConstraintException;
 
@@ -42,7 +45,7 @@ public class ValueConverter
   /**
    *
    */
-  private ValueConverter() {}
+  public ValueConverter() {}
 
 
 
@@ -146,7 +149,10 @@ public class ValueConverter
     }
   }
 
-
+  public List getListFromArray(String[] strings)
+  {
+	  return Arrays.asList(strings);
+  }
 
   // --- [X implementation] ----------------------------------------------------
   // --- [X Overrides] ---------------------------------------------------------

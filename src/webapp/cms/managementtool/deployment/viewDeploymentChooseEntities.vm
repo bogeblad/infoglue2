@@ -5,6 +5,19 @@
 #beginManagementTool("tool.managementtool.deployment.header" "tool.managementtool.deployment.header" "")
 
 <script type="text/javascript" src="script/jsdiff.js"></script>
+<script type="text/javascript">
+<!--
+function showDiff(compId)
+{
+	var element = document.getElementById(compId);
+	if(element.style.display == "none")
+		element.style.display = "block";
+	else
+		element.style.display = "none";
+}
+-->
+</script>
+
 <style>
 <!--
 	ins 
@@ -135,6 +148,7 @@
 	</tr>		
 	#end
 	
+	#if($synchronizeContents)
 	<tr>
 		<td>
 			<form name="contentsForm" action="ViewDeploymentSynchronizeServers!updateContents.action" method="post">
@@ -146,25 +160,36 @@
 					#if(!$deviatingContent.localVersion)
 						<input type="checkbox" name="missingContentId" value="$deviatingContent.remoteVersion.name"/> Missing local version of $deviatingContent.remoteVersion.name ($deviatingContent.remoteVersion.fullPath)<br/> 
 					#else
-						#set($value1 = "$formatter.cleanForJavascriptStrings($deviatingContent.remoteVersion.value)")
-						#set($value2 = "$formatter.cleanForJavascriptStrings($deviatingContent.localVersion.value)")
-	
-						#if($deviatingContent.remoteVersion.name == "2-column component")
-							$value1.length() - $value1.length()		
-							<!--
-							$value1 
-							-->
-							<!--
-							$value2
-							-->
+						#set($remoteVersions = $!converter.getListFromArray($!deviatingContent.remoteVersion.versions))
+						#set($localVersions = $!converter.getListFromArray($!deviatingContent.localVersion.versions))
+						
+						#if($remoteVersions.size() > 0)
+							#set($value1 = "$!formatter.cleanForJavascriptStrings($!remoteVersions.get(0))")
+						#else
+							#set($value1 = "")
 						#end
 						
-						#if("$value1" == "$value2")
-							Equals
+						#if($localVersions.size() > 0)
+							#set($value2 = "$!formatter.cleanForJavascriptStrings($localVersions.get(0))")
+						#else
+							#set($value2 = "")
 						#end
+						
+						#*
+						#if("$value1" == "$value2")
+							$deviatingContent.remoteVersion.name is same as remote<br/>
+						#end
+						*#
 						
 						#if("$value1" != "$value2")
-							<input type="checkbox" name="missingContentId" value="$deviatingContent.remoteVersion.name"/> $deviatingContent.remoteVersion.name<br/>
+							<input type="checkbox" name="missingContentId" value="$deviatingContent.remoteVersion.name"/> $deviatingContent.remoteVersion.name <a href="javascript:showDiff($deviatingContent.remoteVersion.id);">diff</a><br/>
+							<script type="text/javascript">
+							<!--
+							var value1 = '$value1';
+							var value2 = '$value2';
+							document.write("<div id='$deviatingContent.remoteVersion.id' style='display:none; background-color: #FFF; border: 1px solid #333; padding: 5px;'>" + diffString(value2, value1) + "</div>");
+							-->
+							</script>
 						#else
 							##Exakt compare: $deviatingContent.remoteVersion.name<br/> 
 						#end
@@ -176,7 +201,9 @@
 				<input type="image" src="$ui.getString("images.contenttool.buttons.next")" width="50" height="25">
 			</form>
 		</td>
-	</tr>		
+	</tr>
+	#end		
+	
 	<tr>
 		<td>
 			Structure

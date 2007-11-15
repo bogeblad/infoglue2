@@ -39,6 +39,7 @@ import javax.servlet.http.HttpSession;
 import org.apache.velocity.Template;
 import org.apache.velocity.context.Context;
 import org.infoglue.cms.applications.common.Session;
+import org.infoglue.cms.applications.common.ValueConverter;
 import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.exception.ConfigurationError;
 import org.infoglue.cms.util.StringManager;
@@ -143,6 +144,7 @@ public class VelocityServlet extends WebWorkVelocityServlet
 		    context.put("ui", getStringManagerChain(session.getLocale()));
 		
 		context.put("formatter", new VisualFormatter());
+		context.put("converter", new ValueConverter());
 
 		request.setCharacterEncoding("UTF-8");
 		response.setContentType("text/html; charset=UTF-8");

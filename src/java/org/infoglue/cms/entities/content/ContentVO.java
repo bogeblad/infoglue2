@@ -23,9 +23,11 @@
 
 package org.infoglue.cms.entities.content;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Map;
 import java.util.SimpleTimeZone;
 
@@ -55,6 +57,7 @@ public class ContentVO implements BaseEntityVO
 	private Integer childCount;
   	private String creatorName;
   	private String fullPath = null; //Can well be null... used in some views only
+  	private String[] versions = new String[0]; //Can well be null... used in some views only
   
   	private static SimpleTimeZone stmz = new SimpleTimeZone(-8 * 60 * 60 * 1000, "GMT");
     
@@ -269,6 +272,16 @@ public class ContentVO implements BaseEntityVO
 	public void setFullPath(String fullPath)
 	{
 		this.fullPath = fullPath;
+	}
+
+	public void setVersions(String[] versions)
+	{
+		this.versions = versions;
+	}
+
+	public String[] getVersions()
+	{
+		return this.versions;
 	}
 }
         
