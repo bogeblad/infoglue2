@@ -125,12 +125,15 @@ public class DownloadAssetAction extends InfoGlueAbstractAction
 
 	private void getAssetInformation() throws Exception
 	{
-		System.out.println("Getting asset information....");
+		if(logger.isDebugEnabled())
+			logger.debug("Getting asset information....");
 		
 		if(digitalAssetId != null)
 		{
 			this.digitalAssetVO = DigitalAssetController.getDigitalAssetVOWithId(digitalAssetId);
-			System.out.println("this.digitalAssetVO:" + this.digitalAssetVO);
+			if(logger.isDebugEnabled())
+				logger.debug("this.digitalAssetVO:" + this.digitalAssetVO);
+			
 			if(this.digitalAssetVO != null)
 				this.assetFilePath = DigitalAssetController.getDigitalAssetFilePath(this.digitalAssetVO.getId());
 		}
@@ -138,9 +141,13 @@ public class DownloadAssetAction extends InfoGlueAbstractAction
 		{
 			if(CmsPropertyHandler.getApplicationName().equalsIgnoreCase("cms"))
 			{
-				System.out.println("contentId:" + contentId);
-				System.out.println("languageId:" + languageId);
-				System.out.println("assetKey:" + assetKey);
+				if(logger.isDebugEnabled())
+				{
+					logger.info("contentId:" + contentId);
+					logger.info("languageId:" + languageId);
+					logger.info("assetKey:" + assetKey);
+				}
+				
 				this.digitalAssetVO = DigitalAssetController.getDigitalAssetVO(contentId, languageId, assetKey, true);
 				if(this.digitalAssetVO != null)
 					this.assetFilePath = DigitalAssetController.getDigitalAssetProtectedFilePath(this.digitalAssetVO.getId());
@@ -156,7 +163,7 @@ public class DownloadAssetAction extends InfoGlueAbstractAction
 		    		db.begin();
 		    		DeliveryContext deliveryContext = DeliveryContext.getDeliveryContext();
 		        	//assetUrl = cdc.getAssetUrl(db, contentId, languageId, assetKey, siteNodeId, true, deliveryContext, this.getInfoGluePrincipal());
-		        	System.out.println("principal:" + this.getInfoGluePrincipal());
+		    		logger.info("principal:" + this.getInfoGluePrincipal());
 		        	Principal principal = this.getInfoGluePrincipal();
 		        	if(principal == null)
 		        		principal = getAnonymousPrincipal();
