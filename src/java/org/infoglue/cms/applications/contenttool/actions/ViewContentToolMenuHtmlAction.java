@@ -74,6 +74,9 @@ public class ViewContentToolMenuHtmlAction extends TreeViewAbstractAction
 	 */
 	protected INodeSupplier getNodeSupplier() throws Exception, org.infoglue.cms.exception.SystemException
 	{
+		if(getRepositoryId() == null  || getRepositoryId().intValue() < 1)
+			return null;
+				
 		if (this.showVersions == null || this.showVersions.equals("")) 
 		{
 			this.showVersions = (String)getRequest().getSession().getAttribute("htmlTreeShowVersions");

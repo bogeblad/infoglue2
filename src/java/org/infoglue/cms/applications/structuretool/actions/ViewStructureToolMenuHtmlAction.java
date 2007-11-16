@@ -52,15 +52,14 @@ public class ViewStructureToolMenuHtmlAction extends TreeViewAbstractAction
 	 */
 	protected INodeSupplier getNodeSupplier() throws Exception, SystemException
 	{
+		if(getRepositoryId() == null  || getRepositoryId().intValue() < 1)
+			return null;
+
 		String treeMode = CmsPropertyHandler.getTreeMode(); 
 		if(treeMode != null) setTreeMode(treeMode);
 		SiteNodeNodeSupplier sup = new SiteNodeNodeSupplier(getRepositoryId(), this.getInfoGluePrincipal());
 		rootNode = sup.getRootNode();
-		
-	    if(this.repositoryId != null && this.repositoryId.intValue() > -1) 
-	        return sup;
-	    else 
-	        return null;
+	    return sup;
 	}
 
 	/**

@@ -73,16 +73,18 @@ public class ContentNodeSupplier extends BaseNodeSupplier
 		    this.infogluePrincipal = infogluePrincipal;
 		    
 			Timer t = new Timer();
-
-			vo = ContentControllerProxy.getController().getRootContentVO(repositoryId, infogluePrincipal.getName());
-			BaseNode rootNode =  new ContentNodeImpl();
-			rootNode.setChildren(true);
-			rootNode.setId(vo.getId());
-			rootNode.setTitle(vo.getName());
-			rootNode.setContainer(vo.getIsBranch().booleanValue());	
+			if(repositoryId != null && repositoryId.intValue() > 0)
+			{
+				vo = ContentControllerProxy.getController().getRootContentVO(repositoryId, infogluePrincipal.getName());
+				BaseNode rootNode =  new ContentNodeImpl();
+				rootNode.setChildren(true);
+				rootNode.setId(vo.getId());
+				rootNode.setTitle(vo.getName());
+				rootNode.setContainer(vo.getIsBranch().booleanValue());	
+				
+				setRootNode(rootNode);
+			}
 			
-			setRootNode(rootNode);
-
 			if(logger.isDebugEnabled())
 				t.printElapsedTime("root node processed");
 		}

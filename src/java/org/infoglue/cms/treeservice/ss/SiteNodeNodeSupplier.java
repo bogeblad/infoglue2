@@ -82,14 +82,17 @@ public class SiteNodeNodeSupplier extends BaseNodeSupplier
 		ucc = ViewSiteNodeTreeUCCFactory.newViewSiteNodeTreeUCC();	
 		try
 		{
-			vo = ucc.getRootSiteNode(repositoryId, infoGluePrincipal);
-			BaseNode rootNode =  new SiteNodeNodeImpl();
-			rootNode.setChildren(true);
-			rootNode.setId(vo.getId());
-			rootNode.setTitle(vo.getName());
-			rootNode.setContainer(vo.getIsBranch().booleanValue());	
-			
-			setRootNode(rootNode);
+			if(repositoryId != null && repositoryId.intValue() > 0)
+			{
+				vo = ucc.getRootSiteNode(repositoryId, infoGluePrincipal);
+				BaseNode rootNode =  new SiteNodeNodeImpl();
+				rootNode.setChildren(true);
+				rootNode.setId(vo.getId());
+				rootNode.setTitle(vo.getName());
+				rootNode.setContainer(vo.getIsBranch().booleanValue());	
+				
+				setRootNode(rootNode);
+			}
 		}
 		catch (ConstraintException e)
 		{
