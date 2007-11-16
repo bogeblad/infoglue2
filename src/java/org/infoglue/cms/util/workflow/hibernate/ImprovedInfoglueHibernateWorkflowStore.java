@@ -53,7 +53,6 @@ public class ImprovedInfoglueHibernateWorkflowStore extends AbstractHibernateWor
     public ImprovedInfoglueHibernateWorkflowStore() 
     {
         super();
-		//System.out.println("Constructor 1 ImprovedInfoglueHibernateWorkflowStore...");
     }
 
     // Now session management is delegated to user
@@ -130,7 +129,7 @@ public class ImprovedInfoglueHibernateWorkflowStore extends AbstractHibernateWor
 		        args.put("entityName", "OSWorkflowEntry");
 		        args.put("entityId", new Long(entryId));
 		
-				InfoglueDefaultHibernateConfigurationProvider configurationProvider = new InfoglueDefaultHibernateConfigurationProvider();
+		        InfoglueDefaultHibernateConfigurationProvider configurationProvider = new InfoglueDefaultHibernateConfigurationProvider();
 		        configurationProvider.setSessionFactory(getSessionFactory());
 		
 		        args.put("configurationProvider", configurationProvider);
@@ -142,6 +141,7 @@ public class ImprovedInfoglueHibernateWorkflowStore extends AbstractHibernateWor
 				args2.put("bulkload", new Boolean(true));
 				
 				ps.init(new HashMap(), args2);
+				
 				CacheController.cacheObject("propertySetCache", key, ps);
 	    		//logger.info("Caching propertySet for entry: " + entryId + ":" + ps);
 				
@@ -151,9 +151,13 @@ public class ImprovedInfoglueHibernateWorkflowStore extends AbstractHibernateWor
     		{
     			e.printStackTrace();
     			
+    			//Proposal - remove the cache by key
+	        	CacheController.clearCache("propertySetCache", key);
+	        	
+	        	/*
     			try
     			{
-					System.out.println("\n\nRestoring the session factory....");
+					System.out.println("\n\nRestoring the session factory in getPropertySet....");
 	    			//sessionFactory.close();
 					this.setSessionFactory(new Configuration().configure().buildSessionFactory());
 					
@@ -175,6 +179,7 @@ public class ImprovedInfoglueHibernateWorkflowStore extends AbstractHibernateWor
 				{
 					he.printStackTrace();
 				}
+				*/
     		}
     	}
     	

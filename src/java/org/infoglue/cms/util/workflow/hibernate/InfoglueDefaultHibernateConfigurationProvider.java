@@ -9,14 +9,16 @@ import com.opensymphony.module.propertyset.hibernate.HibernatePropertySetDAO;
 /**
  * Quickfix
  */
-public class InfoglueDefaultHibernateConfigurationProvider extends DefaultHibernateConfigurationProvider {
+public class InfoglueDefaultHibernateConfigurationProvider extends DefaultHibernateConfigurationProvider 
+{
     private HibernatePropertySetDAO propertySetDAO;
     private SessionFactory sessionFactory;
 
 	/**
 	 * 
 	 */
-    public HibernatePropertySetDAO getPropertySetDAO() {
+    public HibernatePropertySetDAO getPropertySetDAO() 
+    {
         if (propertySetDAO == null)
             propertySetDAO = new InfoglueHibernatePropertySetDAOImpl(sessionFactory);
         return propertySetDAO;
@@ -25,7 +27,8 @@ public class InfoglueDefaultHibernateConfigurationProvider extends DefaultHibern
 	/**
 	 * 
 	 */
-    public void setSessionFactory(SessionFactory sessionFactory) {
+    public void setSessionFactory(SessionFactory sessionFactory) 
+    {
         this.sessionFactory = sessionFactory;
 		super.setSessionFactory(sessionFactory);
     }

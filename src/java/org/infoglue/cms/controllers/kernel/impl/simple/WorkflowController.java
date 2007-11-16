@@ -24,6 +24,9 @@
 
 package org.infoglue.cms.controllers.kernel.impl.simple;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -46,9 +49,12 @@ import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.CmsPropertyHandler;
+import org.infoglue.cms.util.mail.MailServiceFactory;
 import org.infoglue.cms.util.workflow.WorkflowFacade;
+import org.infoglue.deliver.util.CacheController;
 
 import com.opensymphony.module.propertyset.PropertySet;
+import com.opensymphony.workflow.AbstractWorkflow;
 import com.opensymphony.workflow.WorkflowException;
 
 /**
@@ -123,7 +129,7 @@ public class WorkflowController extends BaseController
 
 				if(getIsAccessApproved(name, principal))
 				{
-					WorkflowFacade wf = new WorkflowFacade(principal, name, actionId, inputs, session);
+					WorkflowFacade wf = new WorkflowFacade(principal, name, actionId, inputs, hibernateSessionFactory, session);
 					workflowVO = wf.createWorkflowVO();
 					
 					session.flush();
@@ -146,6 +152,7 @@ public class WorkflowController extends BaseController
 				{
 					logger.error("An error occurred when we tries to rollback transaction:" + he.getMessage(), he);
 				}
+				restoreSessionFactory(e);
 			}
 			finally 
 			{
@@ -185,7 +192,7 @@ public class WorkflowController extends BaseController
 
 			tx = session.beginTransaction();
 			
-			WorkflowFacade wf = new WorkflowFacade(userPrincipal, session);
+			WorkflowFacade wf = new WorkflowFacade(userPrincipal, hibernateSessionFactory, session);
 			final List allWorkflows = wf.getDeclaredWorkflows();
 			
 			for(final Iterator i = allWorkflows.iterator(); i.hasNext(); )
@@ -212,6 +219,7 @@ public class WorkflowController extends BaseController
 			{
 				logger.error("An error occurred when we tries to rollback transaction():" + he.getMessage(), he);
 			}
+			restoreSessionFactory(e);
 		}
 		finally 
 		{
@@ -280,7 +288,7 @@ public class WorkflowController extends BaseController
 
 			tx = session.beginTransaction();
 
-			WorkflowFacade wf = new WorkflowFacade(userPrincipal, session);
+			WorkflowFacade wf = new WorkflowFacade(userPrincipal, hibernateSessionFactory, session);
 			list = wf.getActiveWorkflows();
 			
 			session.flush();
@@ -298,6 +306,7 @@ public class WorkflowController extends BaseController
 			{
 				logger.error("An error occurred when we tries to rollback transaction:" + he.getMessage(), he);
 			}
+			restoreSessionFactory(e);
 		}
 		finally 
 		{
@@ -336,7 +345,7 @@ public class WorkflowController extends BaseController
 
 			tx = session.beginTransaction();
 
-			WorkflowFacade wf = new WorkflowFacade(userPrincipal, session);
+			WorkflowFacade wf = new WorkflowFacade(userPrincipal, hibernateSessionFactory, session);
 			list = wf.getMyActiveWorkflows(userPrincipal);
 			
 			session.flush();
@@ -354,6 +363,7 @@ public class WorkflowController extends BaseController
 			{
 				logger.error("An error occurred when we tries to rollback transaction:" + he.getMessage(), he);
 			}
+			restoreSessionFactory(e);
 		}
 		finally 
 		{
@@ -395,7 +405,7 @@ public class WorkflowController extends BaseController
 
 			tx = session.beginTransaction();
 
-			WorkflowFacade wf = new WorkflowFacade(principal, workflowId, session);
+			WorkflowFacade wf = new WorkflowFacade(principal, workflowId, hibernateSessionFactory, session);
 			wf.doAction(actionId, inputs);
 
 			session.flush();
@@ -413,6 +423,7 @@ public class WorkflowController extends BaseController
 			{
 				logger.error("An error occurred when we tries to rollback transaction:" + he.getMessage(), he);
 			}
+			restoreSessionFactory(e);
 		}
 		finally 
 		{
@@ -432,7 +443,7 @@ public class WorkflowController extends BaseController
 
 			tx = session.beginTransaction();
 
-			WorkflowFacade wf = new WorkflowFacade(principal, workflowId, session);
+			WorkflowFacade wf = new WorkflowFacade(principal, workflowId, hibernateSessionFactory, session);
 
 			workflowVO = wf.createWorkflowVO();
 			
@@ -451,6 +462,7 @@ public class WorkflowController extends BaseController
 			{
 				logger.error("An error occurred when we tries to rollback transaction:" + he.getMessage(), he);
 			}
+			restoreSessionFactory(e);
 		}
 		finally 
 		{
@@ -467,10 +479,12 @@ public class WorkflowController extends BaseController
 		return workflowVO;
 	}
 
+
 	/**
 	 * Returns the workflow property set for a particular user and workflow
 	 * @return the workflow property set for the workflow with workflowId and the user represented by userPrincipal
 	 */
+	/*
 	public PropertySet getPropertySet(InfoGluePrincipal userPrincipal, long workflowId)
 	{
 		PropertySet propertySet = null;
@@ -491,6 +505,81 @@ public class WorkflowController extends BaseController
 		return propertySet;
 		//return new WorkflowFacade(userPrincipal, workflowId, false).getPropertySet();
 	}
+	*/
+	
+	public PropertySet getPropertySet(InfoGluePrincipal userPrincipal, long workflowId)
+	{
+		PropertySet propertySet = null;
+		
+		Session session = null;
+		net.sf.hibernate.Transaction tx = null;
+
+		try
+		{
+			session = hibernateSessionFactory.openSession();
+			tx = session.beginTransaction();
+
+			WorkflowFacade wf = new WorkflowFacade(userPrincipal, workflowId, hibernateSessionFactory, session);
+			propertySet = wf.getPropertySet();
+		
+			session.flush();
+
+			tx.commit();
+		}
+		catch (Exception e) 
+		{
+			logger.error("An error occurred when we tries to run getHistorySteps():" + e.getMessage(), e);
+			try
+			{
+				tx.rollback();
+			}
+			catch (HibernateException he)
+			{
+				logger.error("An error occurred when we tries to rollback transaction:" + he.getMessage(), he);
+			}
+			restoreSessionFactory(e);
+		}
+		finally 
+		{
+			try
+			{
+				session.close();
+		    } 
+			catch (HibernateException e)
+			{
+				logger.error("An error occurred when we tries to close session:" + e.getMessage(), e);
+			}
+		}
+
+		return propertySet;
+		//return new WorkflowFacade(userPrincipal, workflowId, false).getPropertySet();
+	}
+	
+
+	/**
+	 * Returns the workflow property set for a particular user and workflow
+	 * @return the workflow property set for the workflow with workflowId and the user represented by userPrincipal
+	 */
+	public PropertySet getPropertySet(InfoGluePrincipal userPrincipal, long workflowId, Session session)
+	{
+		PropertySet propertySet = null;
+		
+		try
+		{
+			WorkflowFacade wf = new WorkflowFacade(userPrincipal, workflowId, hibernateSessionFactory, session);
+			propertySet = wf.getPropertySet();
+		}
+		catch (Exception e) 
+		{
+			e.printStackTrace();
+		}
+		finally 
+		{
+		}
+
+		return propertySet;
+		//return new WorkflowFacade(userPrincipal, workflowId, false).getPropertySet();
+	}
 
 	/**
 	 * Returns the contents of the PropertySet for a particular workflow
@@ -498,6 +587,7 @@ public class WorkflowController extends BaseController
 	 * @param workflowId the ID of the desired workflow
 	 * @return a map containing the contents of the workflow property set
 	 */
+	/*
 	public Map getProperties(InfoGluePrincipal userPrincipal, long workflowId)
 	{
 		if(logger.isDebugEnabled())
@@ -516,7 +606,67 @@ public class WorkflowController extends BaseController
 
 		return parameters;
 	}
+	*/
 
+	public Map getProperties(InfoGluePrincipal userPrincipal, long workflowId)
+	{
+		if(logger.isDebugEnabled())
+		{
+			logger.info("userPrincipal:" + userPrincipal);
+			logger.info("workflowId:" + workflowId);
+		}
+	
+		Map parameters = new HashMap();
+		
+		Session session = null;
+		net.sf.hibernate.Transaction tx = null;
+
+		try
+		{
+			session = hibernateSessionFactory.openSession();
+			tx = session.beginTransaction();
+
+
+			PropertySet propertySet = getPropertySet(userPrincipal, workflowId, session);
+			for (Iterator keys = propertySet.getKeys().iterator(); keys.hasNext();)
+			{
+				String key = (String)keys.next();
+				parameters.put(key, propertySet.getString(key));
+			}
+
+			session.flush();
+
+			tx.commit();
+		}
+		catch (Exception e) 
+		{
+			logger.error("An error occurred when we tries to run getHistorySteps():" + e.getMessage(), e);
+			try
+			{
+				tx.rollback();
+			}
+			catch (HibernateException he)
+			{
+				logger.error("An error occurred when we tries to rollback transaction:" + he.getMessage(), he);
+			}
+			restoreSessionFactory(e);
+		}
+		finally 
+		{
+			try
+			{
+				session.close();
+		    } 
+			catch (HibernateException e)
+			{
+				logger.error("An error occurred when we tries to close session:" + e.getMessage(), e);
+			}
+		}
+			
+		return parameters;
+	}
+	
+	
 	/**
 	 * Returns all history steps for a workflow, i.e., all the steps that have already been performed.
 	 * @param userPrincipal a user principal
@@ -535,7 +685,7 @@ public class WorkflowController extends BaseController
 			session = hibernateSessionFactory.openSession();
 			tx = session.beginTransaction();
 
-			WorkflowFacade wf = new WorkflowFacade(userPrincipal, workflowId, session);
+			WorkflowFacade wf = new WorkflowFacade(userPrincipal, workflowId, hibernateSessionFactory, session);
 			historySteps = wf.getHistorySteps();
 			
 			session.flush();
@@ -553,6 +703,7 @@ public class WorkflowController extends BaseController
 			{
 				logger.error("An error occurred when we tries to rollback transaction:" + he.getMessage(), he);
 			}
+			restoreSessionFactory(e);
 		}
 		finally 
 		{
@@ -588,7 +739,7 @@ public class WorkflowController extends BaseController
 			session = hibernateSessionFactory.openSession();
 			tx = session.beginTransaction();
 
-			WorkflowFacade wf = new WorkflowFacade(userPrincipal, workflowId, session);
+			WorkflowFacade wf = new WorkflowFacade(userPrincipal, workflowId, hibernateSessionFactory, session);
 			currentSteps = wf.getCurrentSteps();
 			
 			session.flush();
@@ -606,6 +757,7 @@ public class WorkflowController extends BaseController
 			{
 				logger.error("An error occurred when we tries to rollback transaction:" + he.getMessage(), he);
 			}
+			restoreSessionFactory(e);
 		}
 		finally 
 		{
@@ -644,7 +796,7 @@ public class WorkflowController extends BaseController
 			session = hibernateSessionFactory.openSession();
 			tx = session.beginTransaction();
 
-			WorkflowFacade wf = new WorkflowFacade(userPrincipal, workflowId, session);
+			WorkflowFacade wf = new WorkflowFacade(userPrincipal, workflowId, hibernateSessionFactory, session);
 			declaredSteps = wf.getDeclaredSteps();
 			
 			session.flush();
@@ -662,6 +814,7 @@ public class WorkflowController extends BaseController
 			{
 				logger.error("An error occurred when we tries to rollback transaction:" + he.getMessage(), he);
 			}
+			restoreSessionFactory(e);
 		}
 		finally 
 		{
@@ -697,7 +850,7 @@ public class WorkflowController extends BaseController
 			session = hibernateSessionFactory.openSession();
 			tx = session.beginTransaction();
 
-			WorkflowFacade wf = new WorkflowFacade(userPrincipal, workflowId, session);
+			WorkflowFacade wf = new WorkflowFacade(userPrincipal, workflowId, hibernateSessionFactory, session);
 			isFinished = wf.isFinished();
 			
 			session.flush();
@@ -715,6 +868,7 @@ public class WorkflowController extends BaseController
 			{
 				logger.error("An error occurred when we tries to rollback transaction:" + he.getMessage(), he);
 			}
+			restoreSessionFactory(e);
 		}
 		finally 
 		{
@@ -730,6 +884,65 @@ public class WorkflowController extends BaseController
 		
 		return isFinished;
 		//return new WorkflowFacade(userPrincipal, workflowId, true).isFinished();
+	}
+
+	public static void restoreSessionFactory(Throwable we)
+	{
+		try
+		{
+			System.out.println("Restoring session factory...");
+
+			String serverName = "Unknown";
+	    	try
+	    	{
+			    InetAddress localhost = InetAddress.getLocalHost();
+			    serverName = localhost.getHostName();
+	    	}
+	    	catch(Exception e) {}
+
+	    	String errorMessage = "";
+	    	String stacktrace = "";
+	    	StringWriter sw = new StringWriter();
+			if(we != null)
+			{
+				errorMessage = we.getMessage();
+		    	we.printStackTrace(new PrintWriter(sw));
+				stacktrace = sw.toString().replaceAll("(\r\n|\r|\n|\n\r)", "<br/>");
+			}
+			
+			String subject = "CMS - Restoring session factory on " + serverName;
+			String message = "OS Workflow had problems accessing the database or some other problem occurred. Check why the database went away or the error occurred.";
+			message = message + "\n\n" + errorMessage + "\n\n" + stacktrace;
+			
+	        String warningEmailReceiver = CmsPropertyHandler.getWarningEmailReceiver();
+	        if(warningEmailReceiver != null && !warningEmailReceiver.equals("") && warningEmailReceiver.indexOf("@warningEmailReceiver@") == -1)
+	        {
+				try
+				{
+					MailServiceFactory.getService().sendEmail(warningEmailReceiver, warningEmailReceiver, null, subject, message, "utf-8");
+				} 
+				catch (Exception e)
+				{
+					logger.error("Could not send mail:" + e.getMessage(), e);
+				}
+	        }
+	        try
+	        {
+	        	System.out.println("Closing:" + hibernateSessionFactory);
+	        	hibernateSessionFactory.close();
+	        	CacheController.clearCache("propertySetCache");
+	        }
+	        catch (Exception e) 
+	        {
+				logger.error("An error occurred when we tried to close the hibernate session factory:" + e.getMessage());	        	
+			}
+	        hibernateSessionFactory = new Configuration().configure().buildSessionFactory();
+        	System.out.println("Opened:" + hibernateSessionFactory);
+		}
+		catch (Exception e)
+		{
+			logger.error("An error occurred when we tried to restore the hibernate session factory:" + e.getMessage(), e);
+		}
 	}
 
 	/**

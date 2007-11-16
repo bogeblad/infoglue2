@@ -183,6 +183,11 @@
 	    <a href="ViewLogging.action">Logfiles viewer</a>
     </td>
   </tr>
+  <tr>
+    <td colspan="4" class="text" align="left">
+	    <a href="ViewApplicationState!restoreWorkflows.action">Restore workflows</a>
+    </td>
+  </tr>
   <!--
   <tr>
     <td colspan="4" class="text" align="left">

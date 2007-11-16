@@ -48,6 +48,7 @@ import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
 import org.infoglue.cms.controllers.kernel.impl.simple.ServerNodeController;
+import org.infoglue.cms.controllers.kernel.impl.simple.WorkflowController;
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.CmsSessionContextListener;
 import org.infoglue.cms.util.sorters.AverageInvokingTimeComparator;
@@ -158,6 +159,29 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
         }
         
         CacheController.clearCache(cacheName);
+        
+        //this.getHttpSession().invalidate();
+        
+        return "cleared";
+    }
+
+    /**
+     * This action allows clearing of the given cache manually.
+     */
+    public String doRestoreWorkflows() throws Exception
+    {
+        if(!ServerNodeController.getController().getIsIPAllowed(this.getRequest()))
+        {
+        	logger.error("A user from an IP(" + this.getRequest().getRemoteAddr() + ") which is not allowed tried to call doRestoreWorkflows.");
+
+            this.getResponse().setContentType("text/plain");
+            this.getResponse().setStatus(HttpServletResponse.SC_FORBIDDEN);
+            this.getResponse().getWriter().println("You have no access to this view - talk to your administrator if you should.");
+            
+            return NONE;
+        }
+        
+        WorkflowController.restoreSessionFactory(null);
         
         //this.getHttpSession().invalidate();
         

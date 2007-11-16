@@ -27,6 +27,7 @@ public class InfoglueHibernatePropertySetDAOImpl implements HibernatePropertySet
 	 * 
 	 */
     public InfoglueHibernatePropertySetDAOImpl(SessionFactory sessionFactory) {
+    	
 		this.sessionFactory = sessionFactory;
     }
 
@@ -36,8 +37,9 @@ public class InfoglueHibernatePropertySetDAOImpl implements HibernatePropertySet
 	public void setImpl(PropertySetItem item, boolean isUpdate) {
         Session session = null;
 
-        try {
-            session = this.sessionFactory.openSession();
+        try 
+        {
+        	session = this.sessionFactory.openSession();
 
             if (isUpdate) {
                 session.update(item);

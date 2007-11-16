@@ -49,6 +49,7 @@ import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.mail.MailServiceFactory;
 import org.infoglue.deliver.util.CacheController;
+import org.infoglue.deliver.util.Timer;
 
 import com.opensymphony.module.propertyset.PropertySet;
 import com.opensymphony.workflow.AbstractWorkflow;
@@ -72,7 +73,7 @@ import com.opensymphony.workflow.spi.WorkflowEntry;
  * the Workflow interface.  The idea is to encapsulate the interactions with OSWorkflow and eliminate the
  * need to pass a Workflow reference and the workflow ID all over the place when extracting data from OSWorkflow
  * @author <a href="mailto:jedprentice@gmail.com">Jed Prentice</a>
- * @version $Revision: 1.38 $ $Date: 2007/11/09 17:55:55 $
+ * @version $Revision: 1.39 $ $Date: 2007/11/16 17:04:31 $
  */
 public class WorkflowFacade
 {
@@ -169,14 +170,18 @@ public class WorkflowFacade
 	 * 
 	 * @param owner the owner of the workflow.
 	 */
-	public WorkflowFacade(final Owner owner, Session session)
+	public WorkflowFacade(final Owner owner, SessionFactory sessionFactory, Session session)
 	{
+		if(sessionFactory != null)
+			hibernateSessionFactory = sessionFactory;
+		
 		workflow = new InfoGlueBasicWorkflow(owner.getIdentifier());
 		if(session != null)
 		{
 			com.opensymphony.workflow.config.Configuration config = new /*InfoGlueHibernate*/DefaultConfiguration();
 			config.getPersistenceArgs().put("session", session);
 			config.getPersistenceArgs().put("sessionFactory", hibernateSessionFactory);
+			//System.out.println("hibernateSessionFactory:" + hibernateSessionFactory);
 			workflow.setConfiguration(config);
 		}
 		else
@@ -210,9 +215,9 @@ public class WorkflowFacade
 	 * Constructs a WorkflowFacade with the given user principal
 	 * @param userPrincipal an InfoGluePrincipal representing a system user
 	 */
-	public WorkflowFacade(InfoGluePrincipal userPrincipal, Session session)
+	public WorkflowFacade(InfoGluePrincipal userPrincipal, SessionFactory sessionFactory, Session session)
 	{
-		this(OwnerFactory.create(userPrincipal), session);
+		this(OwnerFactory.create(userPrincipal), sessionFactory, session);
 	}
 
 	/**
@@ -252,9 +257,9 @@ public class WorkflowFacade
 	 * @param initialAction the ID of the initial action to perform to get the workflow started.
 	 * @param inputs a map of inputs to use to initialize the workflow.
 	 */
-	public WorkflowFacade(InfoGluePrincipal userPrincipal, String name, int initialAction, Map inputs, Session session) throws SystemException
+	public WorkflowFacade(InfoGluePrincipal userPrincipal, String name, int initialAction, Map inputs, SessionFactory sessionFactory, Session session) throws SystemException
 	{
-		this(userPrincipal, session);
+		this(userPrincipal, sessionFactory, session);
 		initialize(name, initialAction, inputs);
 	}
 
@@ -287,9 +292,9 @@ public class WorkflowFacade
 	 * @param userPrincipal an InfoGluePrincipal representing a system user
 	 * @param workflowId the ID representing an instance of the desired workflow
 	 */
-	public WorkflowFacade(InfoGluePrincipal userPrincipal, long workflowId, Session session)
+	public WorkflowFacade(InfoGluePrincipal userPrincipal, long workflowId, SessionFactory sessionFactory, Session session)
 	{
-		this(userPrincipal, session);
+		this(userPrincipal, sessionFactory, session);
 		setWorkflowIdAndDescriptor(workflowId);
 	}
 
@@ -462,7 +467,8 @@ public class WorkflowFacade
 			throw new WorkflowException("An error occurred when we tried to invoke an workflow action:" + we.getMessage());
 		}
 	}
-
+	
+	/*
 	private void restoreSessionFactory(AbstractWorkflow workflow, Throwable we) throws WorkflowException
 	{
 		if(workflow != null)
@@ -512,7 +518,7 @@ public class WorkflowFacade
 			}
 		}
 	}
-
+	*/
 	/**
 	 * Performs an action using the given inputs.
 	 * A <code>DatabaseSession</code> object whose lifecycle is handled by this method is inserted into the <code>inputs</code>.
@@ -556,7 +562,17 @@ public class WorkflowFacade
 	 */
 	public PropertySet getPropertySet()
 	{
-		return workflow.getPropertySet(workflowId);
+		//Timer t = new Timer();
+    	String key = "psCache_" + workflowId;
+    	PropertySet ps = (PropertySet)CacheController.getCachedObject("propertySetCache", key);
+    	if(ps == null)
+    	{
+    		ps = workflow.getPropertySet(workflowId);
+    		CacheController.cacheObject("propertySetCache", key, ps);
+    	}
+
+    	//t.printElapsedTime("getPropertySet took");
+		return ps;
 	}
 
 	/**
