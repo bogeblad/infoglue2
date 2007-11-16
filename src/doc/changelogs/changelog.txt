@@ -49,6 +49,12 @@ Abbreviated Changelog from 2.6.0 Final
 - Added possibility in archive tool to use it on latest working versions as well. Useful sometimes to find and shrink any test-assets before export for example. 
 - Removed possibility to look at asset in popup from content version edit view if archived.
 - Fixed bugs and improved archive tool a lot. The size was not lessened very good  in the previous versions. 
+- The attribute targetEndPointAddress on all webservice tags are now optional and defaults to the webservicesBaseUrl + service. 
+- Added count-limit on content version entities - should keep down memory usage.
+- Added general block in robots.xml and introduced a different one for live-instances. 
+- Added so anonymous also gets logged in... by cas module
+- Fixed empty assetKey check (javascript) in createContentWizard.
+- Improved session / transaction management in the underlaying persistence classes shipped with OSWorkflow by adding our own. Now all session management is made by InfoGlue. Improved performance and action-wide rollbacks etc are a few of the benefits.
 
 -------------------------------------------------------------------------------------
 - InfoGlue 2.6.0 Final
