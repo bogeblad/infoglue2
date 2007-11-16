@@ -158,9 +158,13 @@ public class ContentFactory
 			{
 				ceb.throwIfNotEmpty();
 			}
+			catch (ConstraintException e) 
+			{
+				logger.error("Problem creating content:" + e.getMessage());
+			}
 			catch (Exception e) 
 			{
-				logger.error("Probem creating content:" + e.getMessage(), e);
+				logger.error("Problem creating content:" + e.getMessage(), e);
 			}
 		}
 

@@ -684,6 +684,12 @@ public class ContentController extends BaseController
             
             commitTransaction(db);
         }
+        catch(ConstraintException ce)
+        {
+            logger.error("An error occurred so we should not complete the transaction:" + ce.getMessage());
+            rollbackTransaction(db);
+            throw new SystemException(ce.getMessage());
+        }
         catch(Exception e)
         {
             logger.error("An error occurred so we should not complete the transaction:" + e, e);
@@ -985,6 +991,9 @@ public class ContentController extends BaseController
 	        
    	public ContentVO getRootContentVO(Integer repositoryId, String userName) throws ConstraintException, SystemException
    	{
+   		if(repositoryId == null || repositoryId.intValue() < 1)
+   			return null;
+   		
         Database db = CastorDatabaseService.getDatabase();
         ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
 
