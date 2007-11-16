@@ -54,9 +54,12 @@ public class ContentTag extends ComponentLogicTag
     }
 
 	private ContentVO getContent() throws JspException
-	{
+	{			
 	    if(this.contentId != null)
 	    {
+			if(this.contentId.intValue() < 1)
+				return null;
+
 	    	return this.getController().getContent(this.contentId);
 	    }
 	    else if(this.propertyName != null)
