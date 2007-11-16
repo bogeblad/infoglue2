@@ -22,7 +22,9 @@
 		 
 		function submitForm()
 		{
-			if(document.getElementById("tt").value != "")
+			var value = document.getElementById("tt").value;
+			var trimmed = value.replace(/^\s+|\s+$/g, '');
+			if(trimmed != "")
 			{
 				moveDiv("savingLayer", "20px", "20px");
 				resizeDiv("savingLayer", "350px", "150px");
@@ -41,7 +43,9 @@
 		 
 		function submitFormAndContinue(checkUpload, inputMoreAssetsValue)
 		{
-			if(!checkUpload || document.getElementById("tt").value != "")
+			var value = document.getElementById("tt").value;
+			var trimmed = value.replace(/^\s+|\s+$/g, '');
+			if(!checkUpload || trimmed != "")
 			{
 				moveDiv("savingLayer", "20px", "20px");
 				resizeDiv("savingLayer", "350px", "150px");
