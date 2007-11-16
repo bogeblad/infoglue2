@@ -392,7 +392,37 @@ public class CacheController extends Thread
 			}
 		}
 	}
+
+	public static void clearCache(String cacheName, String key)
+	{
+		logger.info("Clearing the cache called " + cacheName + " and key: " + key);
+		synchronized(caches) 
+		{
+			if(caches.containsKey(cacheName))
+			{
+			    Object object = caches.get(cacheName);
+			    if(object instanceof Map)
+				{
+					Map cacheInstance = (Map)object;
+					synchronized(cacheInstance) 
+					{
+						cacheInstance.remove(key);
+					}
+				}
+				else
+				{
+				    GeneralCacheAdministrator cacheInstance = (GeneralCacheAdministrator)object;
+					synchronized(cacheInstance)
+					{
+						cacheInstance.flushEntry(key);
+					}
+				}
 	
+			    logger.info("clearCache stop...");
+			}
+		}
+	}
+
 	public static void clearCaches(String entity, String entityId, String[] cachesToSkip) throws Exception
 	{	
 		clearCaches(entity, entityId, cachesToSkip, false);
