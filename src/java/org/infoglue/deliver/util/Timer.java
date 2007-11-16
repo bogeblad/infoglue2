@@ -89,7 +89,7 @@ public class Timer
 		{
 			elapsedTimeNanos = System.nanoTime() - lastPrintTimeNanos;
 			lastPrintTimeNanos = System.nanoTime();
-			System.out.println(message + " - Elapsed time since last report (ns): " + elapsedTimeNanos / 1000);
+			System.out.println(message + " - Elapsed time since last report (microsecond): " + elapsedTimeNanos / 1000);
 		}
 	}
 
