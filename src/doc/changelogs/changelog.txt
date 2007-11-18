@@ -55,6 +55,8 @@ Abbreviated Changelog from 2.6.0 Final
 - Added so anonymous also gets logged in... by cas module
 - Fixed empty assetKey check (javascript) in createContentWizard.
 - Improved session / transaction management in the underlaying persistence classes shipped with OSWorkflow by adding our own. Now all session management is made by InfoGlue. Improved performance and action-wide rollbacks etc are a few of the benefits.
+- Fixed so interface in all asset uploads always shows the max asset upload size. Also when you state max size on asset keys and switch between them in the dialogs.
+- Improved the content history diff view.
 
 -------------------------------------------------------------------------------------
 - InfoGlue 2.6.0 Final
