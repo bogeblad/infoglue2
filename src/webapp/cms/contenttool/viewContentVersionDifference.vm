@@ -43,11 +43,13 @@
 			<td colspan="3">
 				<script type="text/javascript">
 				<!--
-				#set($value1 = $this.getUnescapedAttributeValue($contentVersionVO1, $attribute.name))
-				#set($value2 = $this.getUnescapedAttributeValue($contentVersionVO2, $attribute.name))
-				var value1 = '$value1';
-				var value2 = '$value2';
-				document.write("" + diffString(value1, value2) + "");
+				#set($value1 = $!formatter.escapeExtendedHTML($!formatter.cleanForJavascriptStrings($this.getUnescapedAttributeValue($contentVersionVO1, $attribute.name), "iglb")))
+				#set($value2 = $!formatter.escapeExtendedHTML($!formatter.cleanForJavascriptStrings($this.getUnescapedAttributeValue($contentVersionVO2, $attribute.name), "iglb")))
+				var value1 = "$value1";
+				var value2 = "$value2";
+				value1 = value1.replace(/iglb/g, "<br/>").replace(/CDATA\[/g, "CDATA[<br/>");
+				value2 = value2.replace(/iglb/g, "<br/>").replace(/CDATA\[/g, "CDATA[<br/>");
+				document.write("<div style='background-color: #FFF; border: 1px solid #333; padding: 5px; width: 100%'>" + diffString(value1, value2) + "</div>");
 				-->
 				</script>
 			</td>
