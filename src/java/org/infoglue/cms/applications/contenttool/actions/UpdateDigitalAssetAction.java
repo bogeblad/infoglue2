@@ -32,6 +32,7 @@ import java.util.Enumeration;
 import org.apache.log4j.Logger;
 import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.applications.databeans.AssetKeyDefinition;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.DigitalAssetController;
 import org.infoglue.cms.entities.content.DigitalAssetVO;
@@ -60,11 +61,13 @@ public class UpdateDigitalAssetAction extends ViewDigitalAssetAction
 	private String digitalAssetKey   = null;
 	private boolean isUpdated       = false;
 	private String reasonKey;
-	private ContentTypeDefinitionVO contentTypeDefinitionVO;
+	private String uploadMaxSize;
 	private DigitalAssetVO digitalAssetVO = null;
 	private DigitalAssetVO updatedDigitalAssetVO = null;
 	private String closeOnLoad;
 	private Integer contentTypeDefinitionId;
+
+	private VisualFormatter formatter = new VisualFormatter();
 	
 	private ConstraintExceptionBuffer ceb;
 	
@@ -92,6 +95,7 @@ public class UpdateDigitalAssetAction extends ViewDigitalAssetAction
             if(mpr == null)
             {
                 this.reasonKey = "tool.contenttool.fileUpload.fileUploadFailedOnSizeText";
+                this.uploadMaxSize = "(Max " + formatter.formatFileSize(getUploadMaxSize()) + " - system wide)";
                 return "uploadFailed";
             }
             
@@ -147,6 +151,7 @@ public class UpdateDigitalAssetAction extends ViewDigitalAssetAction
 						{
 						    file.delete();
 						    this.reasonKey = "tool.contenttool.fileUpload.fileUploadFailedOnSizeText";
+			                this.uploadMaxSize = "(Max " + formatter.formatFileSize(fileUploadMaximumSize) + ")";
 		                	return "uploadFailed";
 						}
 
@@ -160,6 +165,7 @@ public class UpdateDigitalAssetAction extends ViewDigitalAssetAction
 								if(assetKeyDefinition.getMaximumSize().intValue() < new Long(file.length()).intValue())
 								{   
 								    this.reasonKey = "tool.contenttool.fileUpload.fileUploadFailedOnSizeText";
+								    this.uploadMaxSize = "(Max " + formatter.formatFileSize(assetKeyDefinition.getMaximumSize()) + ")";
 				                	return "uploadFailed";
 								}
 								if(assetKeyDefinition.getAllowedContentTypes().startsWith("image"))
@@ -339,9 +345,10 @@ public class UpdateDigitalAssetAction extends ViewDigitalAssetAction
     {
         this.contentTypeDefinitionId = contentTypeDefinitionId;
     }
+
+    public String getUploadErrorMaxSize()
+	{
+		return uploadMaxSize;
+	}
     
-    public ContentTypeDefinitionVO getContentTypeDefinitionVO()
-    {
-        return contentTypeDefinitionVO;
-    }
 }

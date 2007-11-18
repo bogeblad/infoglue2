@@ -67,7 +67,7 @@ public class ViewDigitalAssetAction extends InfoGlueAbstractAction
 	private UserPropertiesVO userPropertiesVO;
 	private UserPropertiesVO rolePropertiesVO;
 	private ContentVersionVO contentVersionVO;
-	private ContentTypeDefinitionVO contentTypeDefinitionVO;
+	protected ContentTypeDefinitionVO contentTypeDefinitionVO;
 	private DigitalAssetVO digitalAssetVO;
 	
     public ViewDigitalAssetAction() 
@@ -165,7 +165,6 @@ public class ViewDigitalAssetAction extends InfoGlueAbstractAction
 	{
 		return ContentTypeDefinitionController.getController().getDefinedAssetKeys(this.contentTypeDefinitionVO.getSchemaValue());
 	}
-	
 
 	public Integer getDigitalAssetId()
 	{

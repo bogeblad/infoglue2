@@ -22,7 +22,9 @@
 		 
 		function submitForm()
 		{
-			if(document.getElementById("tt").value != "")
+			var value = document.getElementById("tt").value;
+			var trimmed = value.replace(/^\s+|\s+$/g, '');
+			if(trimmed != "")
 			{
 				moveDiv("savingLayer", "20px", "20px");
 				resizeDiv("savingLayer", "350px", "150px");
@@ -68,8 +70,7 @@
 	
 			window.close();
 		}
-		
-		
+	
 		function ddClick()
 		{
 			// Show / hide list
@@ -93,11 +94,26 @@
 			tt.value=val;
 			list.style.visibility = "hidden";
 			// alert(val);
+			//alert("New assetKey:" + val + ":" + assetSizeArray["" + val + ""]);
+			document.getElementById("maxSize").innerHTML = "(Max " + assetSizeArray["" + val + ""] + ")";
 		}
 		function ddHide()
 		{
 			var list = document.getElementById("dd");
 			list.style.visibility = "hidden";
+		}
+		
+		function keyChanged()
+		{
+			var tt = document.getElementById("tt");
+			var val = tt.value;
+			var userMaxSize = "$formatter.formatFileSize($this.userUploadMaxSize)";
+			var keySize = "" + assetSizeArray["" + val + ""];
+			//alert("userMaxSize: " + userMaxSize + ":" + keySize);
+			if(keySize != 'undefined')
+				document.getElementById("maxSize").innerHTML = "(Max " + keySize + ")";
+			else
+				document.getElementById("maxSize").innerHTML = "(Max " + userMaxSize + ")";			
 		}
 		
 		function setAssetKey()
@@ -120,6 +136,10 @@
 			}
 		}
 		
+		var assetSizeArray = new Array();
+		#foreach($assetKeyDefinition in $definedAssetKeys)
+			assetSizeArray["$assetKeyDefinition.assetKey"] = "$formatter.formatFileSize($assetKeyDefinition.maximumSize)";
+		#end
 		-->
 	</script>
 	
@@ -155,7 +175,7 @@
 			#else
 				$ui.getString("tool.contenttool.fileUpload.fileUploadUpdateHeader")
 			#end
-			(Max $formatter.formatFileSize($this.userUploadMaxSize))
+			<span id="maxSize">(Max $formatter.formatFileSize($this.userUploadMaxSize))</span>
 		</td>
 		<td rowspan="2" width="100" style="border: 1px solid black; background-color: white;" align="center" valign="middle">
 			#if($isUpdated)
@@ -179,7 +199,7 @@
 			  <table border="0" cellspacing="0" style="border-collapse: collapse" bordercolor="#808080" id="cboBoxTable">
 			    <tr>
 			      <td width="10" style="border: 1px solid black;">
-			  	  <input type="text" name="digitalAssetKey" id="tt" size="20" onfocus="ddHide();" style="border: 1px solid #FFFFFF" value="$digitalAssetKey"></td>
+			  	  <input type="text" name="digitalAssetKey" id="tt" size="20" onfocus="ddHide();" onChange="keyChanged();" style="border: 1px solid #FFFFFF" value="$digitalAssetKey"></td>
 			      <td onClick="ddClick();" style="border: 1px solid black;">
 			      <img border="0" src="images/combodown.gif" width="15" height="20"></td>
 			    </tr>
@@ -190,6 +210,18 @@
 					#end
 			  </select>  
 			  </div>
+			  <script type="text/javascript">
+			  <!--	
+				var maxSize = "$formatter.formatFileSize($this.userUploadMaxSize)";
+			 	#foreach($assetKeyDefinition in $definedAssetKeys)
+			 		//"$digitalAssetKey" == "$assetKeyDefinition.assetKey"
+			 		#if($velocityCount == 1 || "$digitalAssetKey" == "$assetKeyDefinition.assetKey")
+				 		maxSize = "$formatter.formatFileSize($assetKeyDefinition.maximumSize)";
+			 		#end
+			  	#end
+				document.getElementById("maxSize").innerHTML = "(Max " + maxSize + ")";
+			  -->
+			  </script>
 		</td>
 	</tr>		
 	<tr>

@@ -72,11 +72,14 @@ public class CreateDigitalAssetAction extends ViewDigitalAssetAction
 	private ContentVersionVO contentVersionVO;
 	private ContentTypeDefinitionVO contentTypeDefinitionVO;
 	private String reasonKey;
+	private String uploadMaxSize;
 	private DigitalAssetVO digitalAssetVO = null;
 	private String closeOnLoad;
 	private Integer contentTypeDefinitionId;
 	private String returnAddress = "";
 
+	private VisualFormatter formatter = new VisualFormatter();
+	
     public CreateDigitalAssetAction()
     {
     }
@@ -124,6 +127,7 @@ public class CreateDigitalAssetAction extends ViewDigitalAssetAction
             if(mpr == null)
             {
                 this.reasonKey = "tool.contenttool.fileUpload.fileUploadFailedOnSizeText";
+                this.uploadMaxSize = "(Max " + formatter.formatFileSize(getUploadMaxSize()) + " - system wide)";
                 return "uploadFailed";
             }
             
@@ -214,6 +218,7 @@ public class CreateDigitalAssetAction extends ViewDigitalAssetAction
 						{
 						    file.delete();
 						    this.reasonKey = "tool.contenttool.fileUpload.fileUploadFailedOnSizeText";
+			                this.uploadMaxSize = "(Max " + formatter.formatFileSize(fileUploadMaximumSize) + ")";
 		                	return "uploadFailed";
 						}
 						
@@ -228,6 +233,7 @@ public class CreateDigitalAssetAction extends ViewDigitalAssetAction
 								{   
 								    file.delete();
 								    this.reasonKey = "tool.contenttool.fileUpload.fileUploadFailedOnSizeText";
+								    this.uploadMaxSize = "(Max " + formatter.formatFileSize(assetKeyDefinition.getMaximumSize()) + ")";
 				                	return "uploadFailed";
 								}
 								if(assetKeyDefinition.getAllowedContentTypes().startsWith("image"))
@@ -441,5 +447,10 @@ public class CreateDigitalAssetAction extends ViewDigitalAssetAction
     public void setReturnAddress(String returnAddress) 
 	{
 		this.returnAddress = returnAddress;
+	}
+
+	public String getUploadErrorMaxSize()
+	{
+		return uploadMaxSize;
 	}
 }

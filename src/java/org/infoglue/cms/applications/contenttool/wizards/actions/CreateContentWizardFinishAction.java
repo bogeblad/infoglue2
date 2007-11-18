@@ -56,6 +56,7 @@ public class CreateContentWizardFinishAction extends CreateContentWizardAbstract
 	private Integer contentVersionId 			= null;
 	private String versionDone 					= null;
 	private String mandatoryAssetKey			= null;
+	private String mandatoryAssetMaximumSize	= null;
 	private String inputMoreAssets	 			= null;
 	
 	public CreateContentWizardFinishAction()
@@ -121,6 +122,7 @@ public class CreateContentWizardFinishAction extends CreateContentWizardAbstract
 					if(asset == null)
 					{
 						mandatoryAssetKey = assetKeyDefinition.getAssetKey();
+						mandatoryAssetMaximumSize = "" + assetKeyDefinition.getMaximumSize();
 						return "inputAssets";
 					}
 				}
@@ -345,6 +347,11 @@ public class CreateContentWizardFinishAction extends CreateContentWizardAbstract
 	public void setMandatoryAssetKey(String mandatoryAssetKey)
 	{
 		this.mandatoryAssetKey = mandatoryAssetKey;
+	}
+
+	public String getMandatoryAssetMaximumSize()
+	{
+		return mandatoryAssetMaximumSize;
 	}
 
 }

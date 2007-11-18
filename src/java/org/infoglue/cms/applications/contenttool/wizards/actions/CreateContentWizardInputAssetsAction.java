@@ -53,6 +53,7 @@ public class CreateContentWizardInputAssetsAction extends CreateContentWizardAbs
     private final static Logger logger = Logger.getLogger(CreateContentWizardInputAssetsAction.class.getName());
 
 	private String mandatoryAssetKey						= null;
+	private String mandatoryAssetMaximumSize				= null;
 	private String digitalAssetKey   						= "";
 	private Integer uploadedFilesCounter 					= new Integer(0);
 	private ContentTypeDefinitionVO contentTypeDefinitionVO	= null;
@@ -100,6 +101,7 @@ public class CreateContentWizardInputAssetsAction extends CreateContentWizardAbs
 				if(asset == null)
 				{
 					mandatoryAssetKey = assetKeyDefinition.getAssetKey();
+					mandatoryAssetMaximumSize = "" + assetKeyDefinition.getMaximumSize();
 					missingAsset = true;
 					break;
 				}
@@ -138,6 +140,16 @@ public class CreateContentWizardInputAssetsAction extends CreateContentWizardAbs
 			MultiPartRequestWrapper mpr = ActionContext.getContext().getMultiPartRequest();
 			if(mpr != null)
 			{ 
+				String fromEncoding = CmsPropertyHandler.getUploadFromEncoding();
+				if(fromEncoding == null)
+					fromEncoding = "iso-8859-1";
+				
+				String toEncoding = CmsPropertyHandler.getUploadToEncoding();
+				if(toEncoding == null)
+					toEncoding = "utf-8";
+				
+				this.digitalAssetKey = new String(this.digitalAssetKey.getBytes(fromEncoding), toEncoding);
+
 				Enumeration names = mpr.getFileNames();
 				while (names.hasMoreElements()) 
 				{
@@ -232,6 +244,11 @@ public class CreateContentWizardInputAssetsAction extends CreateContentWizardAbs
 	public void setMandatoryAssetKey(String string)
 	{
 		mandatoryAssetKey = string;
+	}
+
+	public String getMandatoryAssetMaximumSize()
+	{
+		return mandatoryAssetMaximumSize;
 	}
 
 	public Integer getLanguageId()
