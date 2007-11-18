@@ -383,6 +383,7 @@ public class VisualFormatter
 		return sb.toString();
 	}
 	
+	
 	public final String replaceNonAscii(String s, char character)
 	{
 		if(s == null)
@@ -476,11 +477,11 @@ public class VisualFormatter
         else if(fileSizeObject instanceof Integer)
         	fileSize = (Integer)fileSizeObject;
         
-        if(fileSize.intValue() > 1000000000)
+        if(fileSize.intValue() >= 1000000000)
         	fileSizeString = "" + fileSize / (1000 * 1000 * 1000) + " GB";
-        else if(fileSize.intValue() > 1000000)
+        else if(fileSize.intValue() >= 1000000)
         	fileSizeString = "" + fileSize / (1000 * 1000) + " MB";
-        else if(fileSize.intValue() > 1000)
+        else if(fileSize.intValue() >= 1000)
         	fileSizeString = "" + fileSize / 1000 + " KB";
         else
         	fileSizeString = "" + fileSize + " Bytes";
