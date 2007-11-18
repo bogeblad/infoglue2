@@ -231,17 +231,12 @@ public class RemoteDeploymentServiceImpl extends RemoteInfoGlueService
 				
 				String fullPath = ContentController.getContentController().getContentPath(contentVO.getId(), true, true);
 				
-				if(contentVO.getName().equalsIgnoreCase("2-column component"))
+				//System.out.println("languageVO:" + languageVO);
+				ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentVO.getId(), languageVO.getId());
+				//System.out.println("contentVersionVO:" + contentVersionVO);
+				if(contentVersionVO != null)
 				{
-					System.out.println("languageVO:" + languageVO);
-					ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentVO.getId(), languageVO.getId());
-					System.out.println("contentVersionVO:" + contentVersionVO);
-					if(contentVersionVO != null)
-					{
-						contentVO.setVersions(new String[]{contentVersionVO.getVersionValue()});
-						//contentVO.getExtraProperties().put("contentVersionVO", contentVersionVO);
-						//contentVO.getExtraProperties().put("contentVersionValue", contentVersionVO.getVersionValue());
-					}
+					contentVO.setVersions(new String[]{contentVersionVO.getVersionValue()});
 				}
 				
 				//contentVO.getExtraProperties().put("fullPath", fullPath);

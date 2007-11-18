@@ -164,13 +164,13 @@ function showDiff(compId)
 						#set($localVersions = $!converter.getListFromArray($!deviatingContent.localVersion.versions))
 						
 						#if($remoteVersions.size() > 0)
-							#set($value1 = "$!formatter.cleanForJavascriptStrings($!remoteVersions.get(0))")
+							#set($value1 = "$!formatter.escapeExtendedHTML($!formatter.cleanForJavascriptStrings($!remoteVersions.get(0), 'iglb'))")
 						#else
 							#set($value1 = "")
 						#end
 						
 						#if($localVersions.size() > 0)
-							#set($value2 = "$!formatter.cleanForJavascriptStrings($localVersions.get(0))")
+							#set($value2 = "$!formatter.escapeExtendedHTML($!formatter.cleanForJavascriptStrings($localVersions.get(0), 'iglb'))")
 						#else
 							#set($value2 = "")
 						#end
@@ -182,14 +182,19 @@ function showDiff(compId)
 						*#
 						
 						#if("$value1" != "$value2")
-							<input type="checkbox" name="missingContentId" value="$deviatingContent.remoteVersion.name"/> $deviatingContent.remoteVersion.name <a href="javascript:showDiff($deviatingContent.remoteVersion.id);">diff</a><br/>
+							<input type="checkbox" name="deviatingContentName" value="$deviatingContent.remoteVersion.name"/> $deviatingContent.remoteVersion.name <a href="javascript:showDiff($deviatingContent.remoteVersion.id);">diff</a><br/>
+							##if($deviatingContent.remoteVersion.name == "3-column component")
 							<script type="text/javascript">
 							<!--
-							var value1 = '$value1';
-							var value2 = '$value2';
+							var value1 = "$value1";
+							var value2 = "$value2";
+							value1 = value1.replace(/iglb/g, "<br/>").replace(/CDATA\[/g, "CDATA[<br/>");
+							value2 = value2.replace(/iglb/g, "<br/>").replace(/CDATA\[/g, "CDATA[<br/>");
+							
 							document.write("<div id='$deviatingContent.remoteVersion.id' style='display:none; background-color: #FFF; border: 1px solid #333; padding: 5px;'>" + diffString(value2, value1) + "</div>");
 							-->
 							</script>
+							##end
 						#else
 							##Exakt compare: $deviatingContent.remoteVersion.name<br/> 
 						#end

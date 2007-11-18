@@ -358,6 +358,34 @@ public class VisualFormatter
 		return sb.toString();
 	}
 
+	public final String cleanForJavascriptStrings(String s, String lineReplaceString)
+	{
+		if(s == null)
+			return null;
+
+	    String lineSep = System.getProperty("line.separator");
+		if(lineSep != null)
+			s = s.replaceAll(lineSep, lineReplaceString);
+		s = s.replaceAll("\n", lineReplaceString);
+		s = s.replaceAll("\r", lineReplaceString);
+		     
+		StringBuffer sb = new StringBuffer();
+		int n = s.length();
+		for (int i = 0; i < n; i++) 
+		{
+		    char c = s.charAt(i);
+			switch (c) 
+			{
+				case '\'': sb.append("\\'"); break;
+				case '"': sb.append("&quot;"); break;
+				
+				default:  sb.append(c); break;
+			}
+		}
+
+		return sb.toString();
+	}
+
 	/**
 	 * This method converts all non-standard characters to html-equivalents.
 	 */
