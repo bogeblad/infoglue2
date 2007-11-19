@@ -20,7 +20,7 @@
  *
  * ===============================================================================
  *
- * $Id: FakeHttpServletResponse.java,v 1.3 2006/03/06 16:54:41 mattias Exp $
+ * $Id: FakeHttpServletResponse.java,v 1.4 2007/11/19 20:40:41 mattias Exp $
  */
 package org.infoglue.cms.util;
 
@@ -75,4 +75,16 @@ public class FakeHttpServletResponse implements HttpServletResponse
 	public void addIntHeader(String s, int i) {}
 	public void setStatus(int i) {}
 	public void setStatus(int i, String s) {}
+
+	public String getContentType()
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public void setCharacterEncoding(String arg0)
+	{
+		// TODO Auto-generated method stub
+		
+	}
 }

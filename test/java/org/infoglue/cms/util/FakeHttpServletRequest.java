@@ -20,7 +20,7 @@
  *
  * ===============================================================================
  *
- * $Id: FakeHttpServletRequest.java,v 1.10 2006/03/06 16:54:41 mattias Exp $
+ * $Id: FakeHttpServletRequest.java,v 1.11 2007/11/19 20:40:41 mattias Exp $
  */
 package org.infoglue.cms.util;
 
@@ -255,4 +255,28 @@ public class FakeHttpServletRequest implements HttpServletRequest
 	public boolean isRequestedSessionIdFromURL()    { return false; }
 	public boolean isRequestedSessionIdFromUrl()    { return false; }	
 	public void setCharacterEncoding(String s) throws UnsupportedEncodingException {}
+
+	public String getLocalAddr()
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public String getLocalName()
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public int getLocalPort()
+	{
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	public int getRemotePort()
+	{
+		// TODO Auto-generated method stub
+		return 0;
+	}
 }
