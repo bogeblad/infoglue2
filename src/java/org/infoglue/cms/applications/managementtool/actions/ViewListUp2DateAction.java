@@ -24,11 +24,11 @@
 package org.infoglue.cms.applications.managementtool.actions;
 
 import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Date;
 import java.util.List;
 import java.util.Vector;
 
-import org.apache.catalina.util.URL;
 import org.apache.log4j.Logger;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.UpdateController;
@@ -53,7 +53,8 @@ public class ViewListUp2DateAction extends InfoGlueAbstractAction {
 		String path = getRequest().getRealPath("/") + "up2date/";
 		String url = CmsPropertyHandler.getUp2dateUrl();	
 
-		try {
+		try 
+		{
 			URL u = new URL(url);
 			setCurrentUpdateServer(u.getHost());
 		}
