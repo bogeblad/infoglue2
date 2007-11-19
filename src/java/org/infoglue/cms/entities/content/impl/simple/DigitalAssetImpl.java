@@ -219,7 +219,7 @@ public class DigitalAssetImpl implements DigitalAsset
 				ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 				
 				BufferedInputStream bis = new BufferedInputStream(getAssetBlob());
-				
+
 				int character;
 				while ((character = bis.read()) != -1)
 				{
@@ -234,7 +234,8 @@ public class DigitalAssetImpl implements DigitalAsset
 			}
 			catch(Exception e)
 			{
-				e.printStackTrace();
+				System.out.println("The asset with id:" + this.getId() + " had no assetBlob or an error occurred when we tried to get it:" + e.getMessage());
+				//e.printStackTrace();
 			}
 		}
 				

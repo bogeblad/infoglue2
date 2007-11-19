@@ -650,7 +650,7 @@
       <sql many-key="digitalAssetId" many-table="cmContentVersionDigitalAsset"/>
     </field>
     -->
-    <field name="assetBytes" type="bytes" >
+    <field name="assetBytes" type="bytes" handler="org.infoglue.cms.util.handlers.DigitalAssetBytesHandler">
       <bind-xml name="assetBytes" node="element"/>
     </field>
 	<!--

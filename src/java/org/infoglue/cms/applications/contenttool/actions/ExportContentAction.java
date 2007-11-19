@@ -51,6 +51,7 @@ import org.infoglue.cms.entities.structure.SiteNode;
 import org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.util.CmsPropertyHandler;
+import org.infoglue.cms.util.handlers.DigitalAssetBytesHandler;
 
 
 /**
@@ -70,6 +71,7 @@ public class ExportContentAction extends InfoGlueAbstractAction
 	
 	private String fileUrl 	= "";
 	private String fileName = "";
+	private int assetMaxSize = -1;
 
 	/**
 	 * This shows the dialog before export.
@@ -99,7 +101,7 @@ public class ExportContentAction extends InfoGlueAbstractAction
 		{
 			Mapping map = new Mapping();
 			String exportFormat = CmsPropertyHandler.getExportFormat();
-
+			
 			logger.info("MappingFile:" + CastorDatabaseService.class.getResource("/xml_mapping_content_2.5.xml").toString());
 			map.loadMapping(CastorDatabaseService.class.getResource("/xml_mapping_content_2.5.xml").toString());
 			
@@ -141,7 +143,8 @@ public class ExportContentAction extends InfoGlueAbstractAction
             Marshaller marshaller = new Marshaller(osw);
             marshaller.setMapping(map);
 			marshaller.setEncoding(encoding);
-            
+			DigitalAssetBytesHandler.setMaxSize(assetMaxSize);
+
 			infoGlueExportImpl.getRootContent().addAll(contents);
 			//infoGlueExportImpl.getRootSiteNode().addAll(siteNodes);
 			
@@ -203,6 +206,16 @@ public class ExportContentAction extends InfoGlueAbstractAction
 	public List getContents() 
 	{
 		return contents;
+	}
+
+	public int getAssetMaxSize()
+	{
+		return assetMaxSize;
+	}
+
+	public void setAssetMaxSize(int assetMaxSize)
+	{
+		this.assetMaxSize = assetMaxSize;
 	}
 
 }

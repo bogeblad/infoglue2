@@ -49,6 +49,7 @@ import org.infoglue.cms.entities.management.impl.simple.InfoGlueExportImpl;
 import org.infoglue.cms.entities.structure.SiteNode;
 import org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl;
 import org.infoglue.cms.util.CmsPropertyHandler;
+import org.infoglue.cms.util.handlers.DigitalAssetBytesHandler;
 
 
 /**
@@ -67,6 +68,7 @@ public class ExportRepositoryAction extends InfoGlueAbstractAction
 	private String fileUrl 	= "";
 	private String fileName = "";
 	private String exportFileName = null;
+	private int assetMaxSize = -1;
 	
 	/**
 	 * This shows the dialog before export.
@@ -153,7 +155,8 @@ public class ExportRepositoryAction extends InfoGlueAbstractAction
             Marshaller marshaller = new Marshaller(osw);
             marshaller.setMapping(map);
 			marshaller.setEncoding(encoding);
-            
+			DigitalAssetBytesHandler.setMaxSize(assetMaxSize);
+
 			infoGlueExportImpl.getRootContent().addAll(contents);
 			infoGlueExportImpl.getRootSiteNode().addAll(siteNodes);
 			
@@ -221,6 +224,16 @@ public class ExportRepositoryAction extends InfoGlueAbstractAction
 	public void setExportFileName(String exportFileName)
 	{
 		this.exportFileName = exportFileName;
+	}
+
+	public int getAssetMaxSize()
+	{
+		return assetMaxSize;
+	}
+
+	public void setAssetMaxSize(int assetMaxSize)
+	{
+		this.assetMaxSize = assetMaxSize;
 	}
 
 }
