@@ -148,17 +148,25 @@ public abstract class PageInvoker
 
 	public void deliverPage() throws Exception
 	{
-		logger.info("PageKey:" + this.getDeliveryContext().getPageKey());
-		logger.info("PageCache:" + this.getDeliveryContext().getDisablePageCache());
+		if(logger.isInfoEnabled())
+		{
+			logger.info("PageKey:" + this.getDeliveryContext().getPageKey());
+			logger.info("PageCache:" + this.getDeliveryContext().getDisablePageCache());
+		}
 		
 		LanguageVO languageVO = LanguageDeliveryController.getLanguageDeliveryController().getLanguageVO(getDatabase(), this.getTemplateController().getLanguageId());
-		logger.info("languageVO:" + languageVO);
+		
+		if(logger.isInfoEnabled())
+			logger.info("languageVO:" + languageVO);
+		
 		if(languageVO == null)
 			throw new SystemException("There was no such active language for the page with languageId:" + this.getTemplateController().getLanguageId());
 		
 		String isPageCacheOn = CmsPropertyHandler.getIsPageCacheOn();
-		logger.info("isPageCacheOn:" + isPageCacheOn);
 		String refresh = this.getRequest().getParameter("refresh");
+		
+		if(logger.isInfoEnabled())
+			logger.info("isPageCacheOn:" + isPageCacheOn);
 		
 		if(isPageCacheOn.equalsIgnoreCase("true") && (refresh == null || !refresh.equalsIgnoreCase("true")) && getRequest().getMethod().equals("GET"))
 		{
@@ -214,7 +222,8 @@ public abstract class PageInvoker
 				}
 				else
 				{
-				    logger.info("Page caching was disabled for the page " + this.getDeliveryContext().getSiteNodeId() + " with pageKey " + this.getDeliveryContext().getPageKey() + " - modifying the logic to enable page caching would boast performance.");
+					if(logger.isInfoEnabled())
+						logger.info("Page caching was disabled for the page " + this.getDeliveryContext().getSiteNodeId() + " with pageKey " + this.getDeliveryContext().getPageKey() + " - modifying the logic to enable page caching would boast performance.");
 				}
 			}
 			else
@@ -223,7 +232,9 @@ public abstract class PageInvoker
 			}
 			
 			//Caching the pagePath
-			logger.info("Caching the pagePath...");
+			if(logger.isInfoEnabled())
+				logger.info("Caching the pagePath...");
+			
 			this.getDeliveryContext().setPagePath((String)CacheController.getCachedObject("pagePathCache", this.getDeliveryContext().getPageKey()));
 			if(this.getDeliveryContext().getPagePath() == null)
 			{
@@ -232,7 +243,9 @@ public abstract class PageInvoker
 				if(!this.getTemplateController().getIsPageCacheDisabled() && !this.getDeliveryContext().getDisablePageCache()) //Caching page path if not disabled
 					CacheController.cacheObject("pagePathCache", this.getDeliveryContext().getPageKey(), this.getDeliveryContext().getPagePath());
 			}
-			logger.info("Done caching the pagePath...");	
+			
+			if(logger.isInfoEnabled())
+				logger.info("Done caching the pagePath...");	
 		}
 		else
 		{
@@ -259,11 +272,18 @@ public abstract class PageInvoker
 		    contentType = this.deliveryContext.getContentType();
 		
 		//logger.info("ContentType:" + contentType);
-		this.getResponse().setContentType(contentType + "; charset=" + languageVO.getCharset());
-		logger.info("contentType:" + contentType + "; charset=" + languageVO.getCharset());
+		if(contentType.indexOf("charset=") > -1)
+			this.getResponse().setContentType(contentType);
+		else
+			this.getResponse().setContentType(contentType + "; charset=" + languageVO.getCharset());
+			
+		if(logger.isInfoEnabled())
+			logger.info("contentType:" + contentType + "; charset=" + languageVO.getCharset());
 		
 		String compressPageResponse = CmsPropertyHandler.getCompressPageResponse();
-		logger.info("compressPageResponse:" + compressPageResponse);
+		if(logger.isInfoEnabled())
+			logger.info("compressPageResponse:" + compressPageResponse);
+	
 		if(compressPageResponse != null && compressPageResponse.equalsIgnoreCase("true"))
 		{
 			OutputStream out = null;
@@ -297,7 +317,8 @@ public abstract class PageInvoker
 			out.close();
 		}	    
 		
-		logger.info("sent all data to client:" + pageString.length());
+		if(logger.isInfoEnabled())
+			logger.info("sent all data to client:" + pageString.length());
 	}
 
 	

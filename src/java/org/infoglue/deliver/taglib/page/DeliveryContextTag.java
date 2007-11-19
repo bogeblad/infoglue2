@@ -75,4 +75,9 @@ public class DeliveryContextTag extends TemplateControllerTag
 	{
 	    getController().getDeliveryContext().setValidateOnDates(validateOnDates);
 	}
+	
+	public void setContentType(String contentType) throws JspException
+	{
+	    getController().getDeliveryContext().setContentType(contentType);
+	}
 }
