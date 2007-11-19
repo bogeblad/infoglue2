@@ -57,6 +57,10 @@ Abbreviated Changelog from 2.6.0 Final
 - Improved session / transaction management in the underlaying persistence classes shipped with OSWorkflow by adding our own. Now all session management is made by InfoGlue. Improved performance and action-wide rollbacks etc are a few of the benefits.
 - Fixed so interface in all asset uploads always shows the max asset upload size. Also when you state max size on asset keys and switch between them in the dialogs.
 - Improved the content history diff view.
+- Added a new Interception point "ContentTool.ExportImport" so you can control who are allowed to export and import contents (not site export/import - that is another feature).
+- Added a feature in export content and export site so one can skip all assets that are of a certain size and above. Very handy to keep down export size.
+- Removed servlet.jar and catalina.jar from distributions. No need for them.
+- Added attribute on deliveryContext and changed a bit in pageInvoker which allows you to control the page content type in your components. Both content type and charset can be set in the attribute as once as usual in http.
 
 -------------------------------------------------------------------------------------
 - InfoGlue 2.6.0 Final
