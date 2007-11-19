@@ -41,6 +41,7 @@ import org.exolab.castor.jdo.TransactionNotInProgressException;
 import org.exolab.castor.mapping.Mapping;
 import org.exolab.castor.xml.Unmarshaller;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
+import org.infoglue.cms.controllers.kernel.impl.simple.AccessRightController;
 import org.infoglue.cms.controllers.kernel.impl.simple.AvailableServiceBindingController;
 import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
 import org.infoglue.cms.controllers.kernel.impl.simple.CategoryController;
@@ -81,6 +82,7 @@ import org.infoglue.cms.entities.structure.SiteNodeVersion;
 import org.infoglue.cms.entities.structure.impl.simple.ServiceBindingImpl;
 import org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl;
 import org.infoglue.cms.entities.structure.impl.simple.SiteNodeVersionImpl;
+import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.FileUploadHelper;
@@ -119,6 +121,9 @@ public class ImportContentAction extends InfoGlueAbstractAction
 	
 	protected String doExecute() throws SystemException 
 	{
+		if(!AccessRightController.getController().getIsPrincipalAuthorized(this.getInfoGluePrincipal(), "ContentTool.ImportExport", true))
+			throw new SystemException("You are not allowed to import contents.");
+		
 		Database db = CastorDatabaseService.getDatabase();
 		
 		try 

@@ -30,6 +30,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.infoglue.cms.applications.common.ImageButton;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
+import org.infoglue.cms.controllers.kernel.impl.simple.AccessRightController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.RepositoryController;
@@ -322,10 +323,13 @@ public class ViewContentToolToolBarAction extends InfoGlueAbstractAction
 			//if(this.getInfoGluePrincipal().getIsAdministrator())
 				buttons.add(new ImageButton("UpdateContent!inputContentType.action?contentId=" + this.contentId + "&repositoryId=" + this.repositoryId, getLocalizedString(getSession().getLocale(), "images.contenttool.buttons.changeContentType"), "tool.contenttool.changeContentType.header"));	
 
-			ImageButton exportButton = new ImageButton("ExportContent!input.action?contentId=" + this.contentId + "&repositoryId=" + this.repositoryId, getLocalizedString(getSession().getLocale(), "images.contenttool.buttons.exportContent"), "tool.contenttool.exportContent.header");
-			ImageButton importButton = new ImageButton("ImportContent!input.action?parentContentId=" + this.contentId + "&repositoryId=" + this.repositoryId, getLocalizedString(getSession().getLocale(), "images.contenttool.buttons.importContent"), "tool.contenttool.importContent.header");
-			exportButton.getSubButtons().add(importButton);
-			buttons.add(exportButton);
+			if(AccessRightController.getController().getIsPrincipalAuthorized(this.getInfoGluePrincipal(), "ContentTool.ImportExport", true))
+			{
+				ImageButton exportButton = new ImageButton("ExportContent!input.action?contentId=" + this.contentId + "&repositoryId=" + this.repositoryId, getLocalizedString(getSession().getLocale(), "images.contenttool.buttons.exportContent"), "tool.contenttool.exportContent.header");
+				ImageButton importButton = new ImageButton("ImportContent!input.action?parentContentId=" + this.contentId + "&repositoryId=" + this.repositoryId, getLocalizedString(getSession().getLocale(), "images.contenttool.buttons.importContent"), "tool.contenttool.importContent.header");
+				exportButton.getSubButtons().add(importButton);
+				buttons.add(exportButton);
+			}
 		}
 		catch(Exception e)
 		{
