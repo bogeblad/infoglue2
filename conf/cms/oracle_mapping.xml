@@ -405,7 +405,7 @@
     </field>
     -->
     <field name="siteNodeId" type="java.lang.Integer">
-      <sql name="siteNodeId" type="integer"/>
+      <sql name="SiNoId" type="integer"/>
     </field>
     <field name="versionModifier" type="java.lang.String">
       <sql name="versionModifier" type="varchar" dirty="check" />
