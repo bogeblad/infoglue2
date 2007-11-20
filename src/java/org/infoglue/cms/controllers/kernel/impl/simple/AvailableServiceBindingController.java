@@ -240,9 +240,9 @@ public class AvailableServiceBindingController extends BaseController
 		try
 		{
 			System.out.println("\n\n\nAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
-			OQLQuery oql = db.getOQLQuery("SELECT a FROM org.infoglue.cms.entities.management.impl.simple.AvailableServiceBindingImpl a WHERE a.name = $1 LIMIT $2");
+			OQLQuery oql = db.getOQLQuery("SELECT asb FROM org.infoglue.cms.entities.management.impl.simple.AvailableServiceBindingImpl as asb WHERE asb.name = $1 order by asb.name LIMIT $2");
 			oql.bind(name);
-			oql.bind(1);
+			oql.bind(5);
 						
 			QueryResults results = null;
 			
@@ -265,6 +265,7 @@ public class AvailableServiceBindingController extends BaseController
 		}
 		catch(Exception e)
 		{
+			e.printStackTrace();
 			throw new SystemException("An error occurred when we tried to fetch a named AvailableServiceBinding. Reason:" + e.getMessage(), e);    
 		}
 
