@@ -594,7 +594,7 @@
     <field name="availableServiceBindingId" type="java.lang.Integer">
       <sql name="AvailServBindIdId" type="integer"/>
     </field>
-    <field name="serviceDefinition" type="java.lang.Integer">
+    <field name="serviceDefinitionId" type="java.lang.Integer">
       <sql name="ServDefId" type="integer"/>
     </field>
   </class>
