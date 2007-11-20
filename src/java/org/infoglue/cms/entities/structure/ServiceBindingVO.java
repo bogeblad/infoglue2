@@ -34,6 +34,8 @@ public class ServiceBindingVO implements BaseEntityVO
     private java.lang.String path 						= "Undefined";
     private java.lang.Integer bindingTypeId				= new Integer(0);
     private java.lang.Integer availableServiceBindingId	= null;  
+    private java.lang.Integer serviceDefinitionId		= null;  
+    private java.lang.Integer siteNodeVersionId			= null;  
   
     public java.lang.Integer getServiceBindingId()
     {
@@ -99,6 +101,26 @@ public class ServiceBindingVO implements BaseEntityVO
 	public ConstraintExceptionBuffer validate() 
 	{ 
 		return null;
+	}
+
+	public java.lang.Integer getServiceDefinitionId()
+	{
+		return serviceDefinitionId;
+	}
+
+	public void setServiceDefinitionId(java.lang.Integer serviceDefinitionId)
+	{
+		this.serviceDefinitionId = serviceDefinitionId;
+	}
+
+	public java.lang.Integer getSiteNodeVersionId()
+	{
+		return siteNodeVersionId;
+	}
+
+	public void setSiteNodeVersionId(java.lang.Integer siteNodeVersionId)
+	{
+		this.siteNodeVersionId = siteNodeVersionId;
 	}     
 }
         

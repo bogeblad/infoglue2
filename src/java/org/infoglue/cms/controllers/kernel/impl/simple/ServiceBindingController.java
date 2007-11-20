@@ -42,6 +42,7 @@ import org.infoglue.cms.entities.structure.SiteNode;
 import org.infoglue.cms.entities.structure.SiteNodeVersion;
 import org.infoglue.cms.entities.structure.impl.simple.ServiceBindingImpl;
 import org.infoglue.cms.entities.structure.impl.simple.SiteNodeVersionImpl;
+import org.infoglue.cms.entities.structure.impl.simple.SmallServiceBindingImpl;
 import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
@@ -67,7 +68,7 @@ public class ServiceBindingController extends BaseController
     
     public static ServiceBindingVO getServiceBindingVOWithId(Integer serviceBindingId) throws SystemException, Bug
     {
-		return (ServiceBindingVO) getVOWithId(ServiceBindingImpl.class, serviceBindingId);
+		return (ServiceBindingVO) getVOWithId(SmallServiceBindingImpl.class, serviceBindingId);
     }
 
 	/*
@@ -76,6 +77,10 @@ public class ServiceBindingController extends BaseController
 		return (ServiceBinding) getObjectWithId(ServiceBindingImpl.class, serviceBindingId);
     }
 	*/
+    public static ServiceBinding getSmallServiceBindingWithId(Integer serviceBindingId, Database db) throws SystemException, Bug
+    {
+		return (ServiceBinding) getObjectWithId(SmallServiceBindingImpl.class, serviceBindingId, db);
+    }
 	
     public static ServiceBinding getServiceBindingWithId(Integer serviceBindingId, Database db) throws SystemException, Bug
     {
@@ -409,7 +414,7 @@ public class ServiceBindingController extends BaseController
 
         try
         {
-        	ServiceBinding serviceBinding = getServiceBindingWithId(serviceBindingId, db);
+        	ServiceBinding serviceBinding = getSmallServiceBindingWithId(serviceBindingId, db);
             Collection qualifyerList = serviceBinding.getBindingQualifyers();
         	qualifyerVOList = toVOList(qualifyerList);
         	

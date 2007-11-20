@@ -599,7 +599,7 @@ public class SiteNodeVersionController extends BaseController
 
         try
         {
-            Collection serviceBindningList = getServiceBindningList(siteNodeVersionId, db);
+            Collection serviceBindningList = getSmallServiceBindningList(siteNodeVersionId, db);
         	serviceBindningVOList = toVOList(serviceBindningList);
         	
             //If any of the validations or setMethods reported an error, we throw them up now before create.
@@ -628,11 +628,11 @@ public class SiteNodeVersionController extends BaseController
 	 * siteNodeTypeDefinition sent in
 	 */
 	
-	public static List getServiceBindningVOList(Integer siteNodeVersionId, Database db) throws ConstraintException, SystemException
+	public static List getServiceBindningVOList(Integer siteNodeVersionId, Database db) throws ConstraintException, SystemException, Exception
 	{
         List serviceBindningVOList = null;
         
-        Collection serviceBindningList = getServiceBindningList(siteNodeVersionId, db);
+        Collection serviceBindningList = getSmallServiceBindningList(siteNodeVersionId, db);
 
         serviceBindningVOList = toVOList(serviceBindningList);
 
@@ -644,16 +644,64 @@ public class SiteNodeVersionController extends BaseController
 	 * siteNodeTypeDefinition sent in
 	 */
 	
-	public static Collection getServiceBindningList(Integer siteNodeVersionId, Database db) throws ConstraintException, SystemException
+	public static Collection getSmallServiceBindningList(Integer siteNodeVersionId, Database db) throws ConstraintException, SystemException, Exception
 	{
     	Timer t = new Timer();
-    	System.out.println("\n\nCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC\n\n");
-    	SiteNodeVersion siteNodeVersion = getSiteNodeVersionWithIdAsReadOnly(siteNodeVersionId, db);
-    	System.out.println("\n\nDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD\n\n");
+    	System.out.println("\n\nCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC1111\n\n");
 
-    	t.printElapsedTimeMicro("First part took");
+    	Collection serviceBindings = new ArrayList();
+    		
+		OQLQuery oql = db.getOQLQuery( "SELECT sb FROM org.infoglue.cms.entities.structure.impl.simple.SmallServiceBindingImpl sb WHERE sb.siteNodeVersionId = $1 ORDER BY sb.serviceBindingId");
+		oql.bind(siteNodeVersionId);
+
+    	QueryResults results = oql.execute(Database.ReadOnly);
+		logger.info("Fetching entity in read/write mode");
+
+		while (results.hasMore()) 
+        {
+			serviceBindings.add((ServiceBinding)results.next());
+        }
+            
+		results.close();
+		oql.close();
+
+    	//SiteNodeVersion siteNodeVersion = getSiteNodeVersionWithIdAsReadOnly(siteNodeVersionId, db);
+    	//Collection serviceBindings = siteNodeVersion.getServiceBindings();
+    	System.out.println("\n\nDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD11111\n\n");
+    	t.printElapsedTimeMicro("Second part took");
         
-    	Collection serviceBindings = siteNodeVersion.getServiceBindings();
+    	return serviceBindings;
+	}
+
+   	/**
+	 * This method returns a list with AvailableServiceBidningVO-objects which are available for the
+	 * siteNodeTypeDefinition sent in
+	 */
+	
+	public static Collection getServiceBindningList(Integer siteNodeVersionId, Database db) throws ConstraintException, SystemException, Exception
+	{
+    	Timer t = new Timer();
+    	System.out.println("\n\nFEEEEEEEEEEEEEEEEEEELLLLLL\n\n");
+
+    	Collection serviceBindings = new ArrayList();
+    		
+		OQLQuery oql = db.getOQLQuery( "SELECT sb FROM org.infoglue.cms.entities.structure.impl.simple.ServiceBindingImpl sb WHERE sb.siteNodeVersion = $1 ORDER BY sb.serviceBindingId");
+		oql.bind(siteNodeVersionId);
+
+    	QueryResults results = oql.execute();
+		logger.info("Fetching entity in read/write mode");
+
+		while (results.hasMore()) 
+        {
+			serviceBindings.add((ServiceBinding)results.next());
+        }
+            
+		results.close();
+		oql.close();
+
+    	//SiteNodeVersion siteNodeVersion = getSiteNodeVersionWithIdAsReadOnly(siteNodeVersionId, db);
+    	//Collection serviceBindings = siteNodeVersion.getServiceBindings();
+    	System.out.println("\n\nFEEEEEEEEEEEEEEEEEEEEE种种种种种\n\n");
     	t.printElapsedTimeMicro("Second part took");
         
     	return serviceBindings;
@@ -742,8 +790,7 @@ public class SiteNodeVersionController extends BaseController
     	oql.bind(SiteNodeVersionVO.PUBLISHED_STATE);
     	oql.bind(true);
     	
-    	QueryResults results = oql.execute();
-		logger.info("Fetching entity in read/write mode");
+    	QueryResults results = oql.execute(Database.ReadOnly);
 
 		if (results.hasMore()) 
         {
@@ -1255,8 +1302,7 @@ public class SiteNodeVersionController extends BaseController
     	oql.bind(SiteNodeVersionVO.PUBLISHED_STATE);
     	oql.bind(true);
     	
-    	QueryResults results = oql.execute();
-		logger.info("Fetching entity in read/write mode");
+    	QueryResults results = oql.execute(Database.ReadOnly);
 
 		while (results.hasMore()) 
         {
