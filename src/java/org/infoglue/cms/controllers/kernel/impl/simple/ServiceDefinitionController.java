@@ -33,7 +33,6 @@ import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.entities.management.ServiceDefinition;
 import org.infoglue.cms.entities.management.ServiceDefinitionVO;
 import org.infoglue.cms.entities.management.impl.simple.ServiceDefinitionImpl;
-import org.infoglue.cms.entities.management.impl.simple.SmallServiceDefinitionImpl;
 import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
@@ -54,14 +53,14 @@ public class ServiceDefinitionController extends BaseController
 
     public ServiceDefinitionVO getServiceDefinitionVOWithId(Integer serviceDefinitionId) throws SystemException, Bug
     {
-		return (ServiceDefinitionVO) getVOWithId(SmallServiceDefinitionImpl.class, serviceDefinitionId);
+		return (ServiceDefinitionVO) getVOWithId(ServiceDefinitionImpl.class, serviceDefinitionId);
     }
 
     public ServiceDefinitionVO getServiceDefinitionVOWithId(Integer serviceDefinitionId, Database db) throws SystemException, Bug
     {
-		return (ServiceDefinitionVO) getVOWithId(SmallServiceDefinitionImpl.class, serviceDefinitionId, db);
+		return (ServiceDefinitionVO) getVOWithId(ServiceDefinitionImpl.class, serviceDefinitionId, db);
     }
-
+	
     public ServiceDefinitionVO create(ServiceDefinitionVO vo) throws ConstraintException, SystemException
     {
         ServiceDefinition ent = new ServiceDefinitionImpl();
@@ -116,7 +115,7 @@ public class ServiceDefinitionController extends BaseController
 
     public List getServiceDefinitionVOList() throws SystemException, Bug
     {
-        return getAllVOObjects(SmallServiceDefinitionImpl.class, "serviceDefinitionId");
+        return getAllVOObjects(ServiceDefinitionImpl.class, "serviceDefinitionId");
     }
 
 	/**

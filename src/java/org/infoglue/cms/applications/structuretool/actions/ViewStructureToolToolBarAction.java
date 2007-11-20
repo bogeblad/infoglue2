@@ -233,7 +233,7 @@ public class ViewStructureToolToolBarAction extends InfoGlueAbstractAction
 				isReadOnly = true;	
 			}
 		}
-		catch(Exception e){}
+		catch(Exception e){e.printStackTrace();}
 				
 		return isReadOnly;
 	}

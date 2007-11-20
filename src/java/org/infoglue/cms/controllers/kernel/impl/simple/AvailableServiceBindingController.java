@@ -86,35 +86,45 @@ public class AvailableServiceBindingController extends BaseController
     	Database db = CastorDatabaseService.getDatabase();
         ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
 		
-        beginTransaction(db);
-
         try
         { 
-        	AvailableServiceBinding availableServiceBinding = getAvailableServiceBindingWithId(availableServiceBindingVO.getAvailableServiceBindingId(), db);
-    		if(availableServiceBinding.getServiceBindings() != null && availableServiceBinding.getServiceBindings().size() > 0)
+            beginTransaction(db);
+
+            //AvailableServiceBinding availableServiceBinding = getAvailableServiceBindingWithId(availableServiceBindingVO.getAvailableServiceBindingId(), db);
+    		Collection serviceBindingList = ServiceBindingController.getController().getServiceBindingList(availableServiceBindingVO.getId(), db);
+    		AvailableServiceBinding availableServiceBinding = AvailableServiceBindingController.getController().getAvailableServiceBindingWithId(availableServiceBindingVO.getId(), db);
+    		Collection siteNodeTypeDefinitionList = availableServiceBinding.getSiteNodeTypeDefinitions();
+            
+    		//if(availableServiceBinding.getServiceBindings() != null && availableServiceBinding.getServiceBindings().size() > 0)
+    		if((serviceBindingList != null && serviceBindingList.size() > 0) || (siteNodeTypeDefinitionList != null && siteNodeTypeDefinitionList.size() > 0))
     		{
     			throw new ConstraintException("AvailableServiceBinding.deleteAction", "3100");
     		}	
+    		
+        	deleteEntity(AvailableServiceBindingImpl.class, availableServiceBindingVO.getAvailableServiceBindingId(), db);
+
+        	commitTransaction(db);
         }
         catch(ConstraintException ce)
         {
+        	rollbackTransaction(db);
         	throw ce;
         }
         catch(SystemException se)
         {
+        	rollbackTransaction(db);
         	throw se;
         }
         catch(Exception e)
         {
+        	rollbackTransaction(db);
         	throw new SystemException("An error occurred in AvailableServiceBindingController.delete(). Reason:" + e.getMessage(), e);
         }
         finally
         {
-        	commitTransaction(db);
-        }
-        
-    	deleteEntity(AvailableServiceBindingImpl.class, availableServiceBindingVO.getAvailableServiceBindingId());
-    }        
+        	closeDatabase(db);
+        }        
+    }   
 
     
     public AvailableServiceBinding getAvailableServiceBindingWithId(Integer availableServiceBindingId, Database db) throws SystemException, Bug
@@ -239,10 +249,10 @@ public class AvailableServiceBindingController extends BaseController
 		
 		try
 		{
-			System.out.println("\n\n\nAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
-			OQLQuery oql = db.getOQLQuery("SELECT asb FROM org.infoglue.cms.entities.management.impl.simple.AvailableServiceBindingImpl as asb WHERE asb.name = $1 order by asb.name LIMIT $2");
+			//OQLQuery oql = db.getOQLQuery("SELECT asb FROM org.infoglue.cms.entities.management.impl.simple.AvailableServiceBindingImpl as asb WHERE asb.name = $1 order by asb.name LIMIT $2");
+			OQLQuery oql = db.getOQLQuery("SELECT asb FROM org.infoglue.cms.entities.management.impl.simple.AvailableServiceBindingImpl as asb WHERE asb.name = $1 order by asb.name");
 			oql.bind(name);
-			oql.bind(5);
+			//oql.bind(1);
 						
 			QueryResults results = null;
 			
@@ -258,7 +268,6 @@ public class AvailableServiceBindingController extends BaseController
 			{
 				availableServiceBinding = (AvailableServiceBinding)results.next();
 			}
-			System.out.println("\n\n\nAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
 			
 			results.close();
 			oql.close();
@@ -269,11 +278,56 @@ public class AvailableServiceBindingController extends BaseController
 			throw new SystemException("An error occurred when we tried to fetch a named AvailableServiceBinding. Reason:" + e.getMessage(), e);    
 		}
 
-		//try{ throw new Exception("Hepp1"); }catch(Exception e){e.printStackTrace();}
-
 		return availableServiceBinding;		
 	}
 	
+	/**
+	 * Returns the AvailableServiceBinding with the given name fetched within a given transaction.
+	 * 
+	 * @param name
+	 * @param database
+	 * @return
+	 * @throws SystemException
+	 * @throws Bug
+	 */
+	
+	public SmallAvailableServiceBindingImpl getSmallAvailableServiceBindingWithName(String name, Database db, boolean readOnly) throws SystemException, Bug
+	{
+		SmallAvailableServiceBindingImpl availableServiceBinding = null;
+		
+		try
+		{
+			//OQLQuery oql = db.getOQLQuery("SELECT asb FROM org.infoglue.cms.entities.management.impl.simple.AvailableServiceBindingImpl as asb WHERE asb.name = $1 order by asb.name LIMIT $2");
+			OQLQuery oql = db.getOQLQuery("SELECT asb FROM org.infoglue.cms.entities.management.impl.simple.SmallAvailableServiceBindingImpl as asb WHERE asb.name = $1 order by asb.name");
+			oql.bind(name);
+			//oql.bind(1);
+						
+			QueryResults results = null;
+			
+			if(readOnly)
+			    results = oql.execute(Database.ReadOnly);
+			else
+			{
+				this.logger.info("Fetching entity in read/write mode:" + name);
+				results = oql.execute();
+			}
+			
+			if(results.hasMore()) 
+			{
+				availableServiceBinding = (SmallAvailableServiceBindingImpl)results.next();
+			}
+			
+			results.close();
+			oql.close();
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+			throw new SystemException("An error occurred when we tried to fetch a named AvailableServiceBinding. Reason:" + e.getMessage(), e);    
+		}
+
+		return availableServiceBinding;		
+	}
 	
 	/**
 	 * This method returns a List of all assigned AvailableServiceBindings available for a certain Repository.

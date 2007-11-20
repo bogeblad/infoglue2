@@ -263,7 +263,7 @@ public class NodeDeliveryController extends BaseDeliveryController
 				logger.info("serviceBinding sitenodeVersion:" + serviceBinding.getSiteNodeVersion().getId() + ":" + latestSiteNodeVersionVO.getId());
 				if(serviceBinding.getSiteNodeVersion().getId().equals(latestSiteNodeVersionVO.getId()))
 				{
-			        serviceDefinitionVO = serviceBinding.getServiceDefinition().getValueObject();
+					serviceDefinitionVO = serviceBinding.getServiceDefinition().getValueObject();
 			        Collection qualifyers = serviceBinding.getBindingQualifyers();
 					
 					qualifyers = sortQualifyers(qualifyers);

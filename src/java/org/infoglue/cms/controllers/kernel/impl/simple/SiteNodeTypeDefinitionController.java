@@ -36,7 +36,8 @@ import org.infoglue.cms.entities.management.AvailableServiceBinding;
 import org.infoglue.cms.entities.management.SiteNodeTypeDefinition;
 import org.infoglue.cms.entities.management.SiteNodeTypeDefinitionVO;
 import org.infoglue.cms.entities.management.impl.simple.SiteNodeTypeDefinitionImpl;
-import org.infoglue.cms.entities.management.impl.simple.SmallSiteNodeTypeDefinitionImpl;
+import org.infoglue.cms.entities.structure.ServiceBinding;
+import org.infoglue.cms.entities.structure.impl.simple.ServiceBindingImpl;
 import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
@@ -59,12 +60,12 @@ public class SiteNodeTypeDefinitionController extends BaseController
 	
     public SiteNodeTypeDefinitionVO getSiteNodeTypeDefinitionVOWithId(Integer siteNodeTypeDefinitionId) throws SystemException, Bug
     {
-		return (SiteNodeTypeDefinitionVO) getVOWithId(SmallSiteNodeTypeDefinitionImpl.class, siteNodeTypeDefinitionId);
+		return (SiteNodeTypeDefinitionVO) getVOWithId(SiteNodeTypeDefinitionImpl.class, siteNodeTypeDefinitionId);
     }
 
     public SiteNodeTypeDefinitionVO getSiteNodeTypeDefinitionVOWithId(Integer siteNodeTypeDefinitionId, Database db) throws SystemException, Bug
     {
-		return (SiteNodeTypeDefinitionVO) getVOWithId(SmallSiteNodeTypeDefinitionImpl.class, siteNodeTypeDefinitionId, db);
+		return (SiteNodeTypeDefinitionVO) getVOWithId(SiteNodeTypeDefinitionImpl.class, siteNodeTypeDefinitionId, db);
     }
 
     public SiteNodeTypeDefinitionVO create(SiteNodeTypeDefinitionVO vo) throws ConstraintException, SystemException
@@ -90,17 +91,12 @@ public class SiteNodeTypeDefinitionController extends BaseController
 		return (SiteNodeTypeDefinition) getObjectWithIdAsReadOnly(SiteNodeTypeDefinitionImpl.class, siteNodeTypeDefinitionId, db);
     }
 
-    public SiteNodeTypeDefinition getSmallSiteNodeTypeDefinitionWithIdAsReadOnly(Integer siteNodeTypeDefinitionId, Database db) throws SystemException, Bug
-    {
-		return (SiteNodeTypeDefinition) getObjectWithIdAsReadOnly(SmallSiteNodeTypeDefinitionImpl.class, siteNodeTypeDefinitionId, db);
-    }
-
     public List getSiteNodeTypeDefinitionVOList() throws SystemException, Bug
     {
         return getAllVOObjects(SiteNodeTypeDefinitionImpl.class, "siteNodeTypeDefinitionId");
     }
 
-	
+
 	/**
 	 * This method gets a SiteNodeTypeDefinition based on it's name.
 	 * @param name
@@ -207,6 +203,9 @@ public class SiteNodeTypeDefinitionController extends BaseController
 
         try
         {
+            siteNodeTypeDefinition = SiteNodeTypeDefinitionController.getController().getSiteNodeTypeDefinitionWithId(siteNodeTypeDefinitionVO.getSiteNodeTypeDefinitionId(), db);
+            siteNodeTypeDefinition.setValueObject(siteNodeTypeDefinitionVO);
+
             //add validation here if needed
             List availableServiceBindingList = new ArrayList();
             if(availableServiceBindingValues != null)
@@ -215,12 +214,11 @@ public class SiteNodeTypeDefinitionController extends BaseController
 	            {
 	            	AvailableServiceBinding availableServiceBinding = AvailableServiceBindingController.getController().getAvailableServiceBindingWithId(new Integer(availableServiceBindingValues[i]), db);
 	            	availableServiceBindingList.add(availableServiceBinding);
+	            	//siteNodeTypeDefinition.getAvailableServiceBindings().add(availableServiceBinding);
 	            }
 			}
 			
-            siteNodeTypeDefinition = SiteNodeTypeDefinitionController.getController().getSiteNodeTypeDefinitionWithId(siteNodeTypeDefinitionVO.getSiteNodeTypeDefinitionId(), db);
-            siteNodeTypeDefinition.setValueObject(siteNodeTypeDefinitionVO);
-			logger.info("availableServiceBindingList:" + availableServiceBindingList);
+			//logger.info("availableServiceBindingList:" + availableServiceBindingList);
 			siteNodeTypeDefinition.setAvailableServiceBindings(availableServiceBindingList);
 			
             //If any of the validations or setMethods reported an error, we throw them up now before create.
@@ -239,6 +237,10 @@ public class SiteNodeTypeDefinitionController extends BaseController
             logger.error("An error occurred so we should not complete the transaction:" + e, e);
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
+        }
+        finally
+        {
+        	closeDatabase(db);
         }
 
         return siteNodeTypeDefinition.getValueObject();
@@ -273,17 +275,10 @@ public class SiteNodeTypeDefinitionController extends BaseController
             }
             */
 
-        	Timer t = new Timer();
-        	
         	SiteNodeTypeDefinition siteNodeTypeDefinition = getSiteNodeTypeDefinitionWithIdAsReadOnly(siteNodeTypeDefinitionId, db);
-            Collection availableServiceBindingList = siteNodeTypeDefinition.getAvailableServiceBindings();
+        	Collection availableServiceBindingList = siteNodeTypeDefinition.getAvailableServiceBindings();
         	availableServiceBindingVOList = toVOList(availableServiceBindingList);
 
-        	t.printElapsedTimeMicro("Old way took...");
-        	
-        	if(logger.isInfoEnabled())
-        		logger.info("getAvailableServiceBindingVOList took:" + t.getElapsedTime());
-        	
             //If any of the validations or setMethods reported an error, we throw them up now before create.
             ceb.throwIfNotEmpty();
             
@@ -327,20 +322,9 @@ public class SiteNodeTypeDefinitionController extends BaseController
         }
         */
 
-    	Timer t = new Timer();
-    	System.out.println("\n\nAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\n\n");
-    	
-    	SiteNodeTypeDefinition siteNodeTypeDefinition = getSmallSiteNodeTypeDefinitionWithIdAsReadOnly(siteNodeTypeDefinitionId, db);
-    	System.out.println("\n\nBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB\n\n");
+    	SiteNodeTypeDefinition siteNodeTypeDefinition = getSiteNodeTypeDefinitionWithIdAsReadOnly(siteNodeTypeDefinitionId, db);
         Collection availableServiceBindingList = siteNodeTypeDefinition.getAvailableServiceBindings();
     	availableServiceBindingVOList = toVOList(availableServiceBindingList);
-
-    	System.out.println("\n\nAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\n\n");
-
-    	t.printElapsedTimeMicro("Old way took");
-    	
-    	if(logger.isInfoEnabled())
-    		logger.info("getAvailableServiceBindingVOList took:" + t.getElapsedTime());
 
         return availableServiceBindingVOList;
 	}

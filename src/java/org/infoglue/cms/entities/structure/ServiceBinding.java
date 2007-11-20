@@ -55,7 +55,7 @@ public interface ServiceBinding extends IBaseEntity
     public org.infoglue.cms.entities.management.impl.simple.ServiceDefinitionImpl getServiceDefinition();
     
     public void setServiceDefinition(org.infoglue.cms.entities.management.impl.simple.ServiceDefinitionImpl serviceDefinition);
-  
+
     public org.infoglue.cms.entities.management.impl.simple.AvailableServiceBindingImpl getAvailableServiceBinding();
     
     public void setAvailableServiceBinding(org.infoglue.cms.entities.management.impl.simple.AvailableServiceBindingImpl availableServiceBinding);

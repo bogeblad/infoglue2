@@ -142,7 +142,7 @@ public class ViewSiteNodeAction extends InfoGlueAbstractAction
 	        
 			AvailableServiceBindingVO availableServiceBindingVO = AvailableServiceBindingController.getController().getAvailableServiceBindingVOWithName("Meta information", db);
 			
-			Collection serviceBindings = SiteNodeVersionController.getServiceBindningList(this.siteNodeVersionVO.getId(), db);
+			Collection serviceBindings = SiteNodeVersionController.getServiceBindningList(this.siteNodeVersionVO.getId(), db, true);
 			Iterator serviceBindingIterator = serviceBindings.iterator();
 			while(serviceBindingIterator.hasNext())
 			{

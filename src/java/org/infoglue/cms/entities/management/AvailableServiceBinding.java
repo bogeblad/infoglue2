@@ -70,9 +70,9 @@ public interface AvailableServiceBinding extends IBaseEntity
     public java.util.Collection getServiceDefinitions();
     
     public void setServiceDefinitions(java.util.Collection serviceDefinitions);
-        
+    /*    
     public java.util.Collection getServiceBindings();
     
     public void setServiceBindings(java.util.Collection serviceBindings);
-
+	*/
 }

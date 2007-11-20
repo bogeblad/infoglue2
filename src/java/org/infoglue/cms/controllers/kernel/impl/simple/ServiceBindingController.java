@@ -23,6 +23,7 @@
 
 package org.infoglue.cms.controllers.kernel.impl.simple;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -42,7 +43,6 @@ import org.infoglue.cms.entities.structure.SiteNode;
 import org.infoglue.cms.entities.structure.SiteNodeVersion;
 import org.infoglue.cms.entities.structure.impl.simple.ServiceBindingImpl;
 import org.infoglue.cms.entities.structure.impl.simple.SiteNodeVersionImpl;
-import org.infoglue.cms.entities.structure.impl.simple.SmallServiceBindingImpl;
 import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
@@ -68,7 +68,7 @@ public class ServiceBindingController extends BaseController
     
     public static ServiceBindingVO getServiceBindingVOWithId(Integer serviceBindingId) throws SystemException, Bug
     {
-		return (ServiceBindingVO) getVOWithId(SmallServiceBindingImpl.class, serviceBindingId);
+		return (ServiceBindingVO) getVOWithId(ServiceBindingImpl.class, serviceBindingId);
     }
 
 	/*
@@ -77,14 +77,15 @@ public class ServiceBindingController extends BaseController
 		return (ServiceBinding) getObjectWithId(ServiceBindingImpl.class, serviceBindingId);
     }
 	*/
-    public static ServiceBinding getSmallServiceBindingWithId(Integer serviceBindingId, Database db) throws SystemException, Bug
-    {
-		return (ServiceBinding) getObjectWithId(SmallServiceBindingImpl.class, serviceBindingId, db);
-    }
 	
     public static ServiceBinding getServiceBindingWithId(Integer serviceBindingId, Database db) throws SystemException, Bug
     {
 		return (ServiceBinding) getObjectWithId(ServiceBindingImpl.class, serviceBindingId, db);
+    }
+
+    public static ServiceBinding getReadOnlyServiceBindingWithId(Integer serviceBindingId, Database db) throws SystemException, Bug
+    {
+		return (ServiceBinding) getObjectWithIdAsReadOnly(ServiceBindingImpl.class, serviceBindingId, db);
     }
 
     public List getServiceBindingVOList() throws SystemException, Bug
@@ -92,6 +93,34 @@ public class ServiceBindingController extends BaseController
         return getAllVOObjects(ServiceBindingImpl.class, "serviceBindingId");
     }
 
+	/**
+	 * This method deletes all service bindings pointing to a content.
+	 */
+
+	public List getServiceBindingList(Integer availableServiceBindingId, Database db) throws ConstraintException, SystemException, Exception
+	{		
+		List serviceBindings = new ArrayList();
+		
+		OQLQuery oql = db.getOQLQuery( "SELECT sb FROM org.infoglue.cms.entities.structure.impl.simple.ServiceBindingImpl sb WHERE sb.availableServiceBinding = $1 ORDER BY sb.serviceBindingId");
+		oql.bind(availableServiceBindingId);
+		
+		QueryResults results = oql.execute();
+		logger.info("Fetching entity in read/write mode");
+
+		while(results.hasMore()) 
+		{
+			ServiceBinding serviceBinding = (ServiceBindingImpl)results.next();
+			
+			serviceBindings.add(serviceBinding);
+		}	
+		
+		results.close();
+		oql.close();
+		
+		return serviceBindings;
+	}       
+
+    
     public static ServiceBindingVO create(ServiceBindingVO serviceBindingVO, String qualifyerXML, Integer availableServiceBindingId, Integer siteNodeVersionId, Integer serviceDefinitionId) throws ConstraintException, SystemException
     {
     	logger.info("Creating a serviceBinding with the following...");
@@ -111,7 +140,7 @@ public class ServiceBindingController extends BaseController
 
         try
         { 
-	        SiteNodeVersion siteNodeVersion = SiteNodeVersionController.getController().getSiteNodeVersionWithId(siteNodeVersionId, db);
+        	SiteNodeVersion siteNodeVersion = SiteNodeVersionController.getController().getSiteNodeVersionWithId(siteNodeVersionId, db);
 	        serviceBinding = new ServiceBindingImpl();
 	        serviceBinding.setValueObject(serviceBindingVO);
 	        serviceBinding.setAvailableServiceBinding((AvailableServiceBindingImpl)AvailableServiceBindingController.getController().getAvailableServiceBindingWithId(availableServiceBindingId, db));
@@ -414,7 +443,7 @@ public class ServiceBindingController extends BaseController
 
         try
         {
-        	ServiceBinding serviceBinding = getSmallServiceBindingWithId(serviceBindingId, db);
+        	ServiceBinding serviceBinding = getReadOnlyServiceBindingWithId(serviceBindingId, db);
             Collection qualifyerList = serviceBinding.getBindingQualifyers();
         	qualifyerVOList = toVOList(qualifyerList);
         	

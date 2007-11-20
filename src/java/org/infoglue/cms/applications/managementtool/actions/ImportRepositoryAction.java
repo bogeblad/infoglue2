@@ -511,8 +511,13 @@ public class ImportRepositoryAction extends InfoGlueAbstractAction
 			{
 				ServiceBinding serviceBinding = (ServiceBinding)serviceBindingsIterator.next();
 				logger.info("serviceBinding:" + serviceBinding.getName());
-				
 				ServiceDefinition originalServiceDefinition = serviceBinding.getServiceDefinition();
+				if(originalServiceDefinition == null)
+				{
+					System.out.println("Skipping serviceBinding:" + serviceBinding.getName() + ":" + "serviceBinding:" + serviceBinding.getId() + " " + serviceBinding.getServiceDefinition());
+					continue;
+				}
+				
 				String serviceDefinitionName = originalServiceDefinition.getName();
 				ServiceDefinition serviceDefinition = ServiceDefinitionController.getController().getServiceDefinitionWithName(serviceDefinitionName, db, false);
 				if(serviceDefinition == null)

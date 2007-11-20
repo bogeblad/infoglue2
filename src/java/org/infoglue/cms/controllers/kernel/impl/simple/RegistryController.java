@@ -20,7 +20,7 @@
  *
  * ===============================================================================
  *
- * $Id: RegistryController.java,v 1.35 2007/03/07 17:08:06 mattias Exp $
+ * $Id: RegistryController.java,v 1.36 2007/11/20 23:59:37 mattias Exp $
  */
 
 package org.infoglue.cms.controllers.kernel.impl.simple;
@@ -1483,7 +1483,7 @@ public class RegistryController extends BaseController
 	/**
 	 * Gets siteNodeVersions which uses the metainfo
 	 */
-	
+	/*
 	public List getSiteNodeVersionsWhichUsesContentVersionAsMetaInfo(ContentVersion contentVersion, Database db) throws SystemException, Exception
 	{
 	    List siteNodeVersions = new ArrayList();
@@ -1508,20 +1508,26 @@ public class RegistryController extends BaseController
 
 		return siteNodeVersions;		
 	}
+	*/
 
 	/**
 	 * Gets siteNodeVersions which uses the metainfo
 	 */
-	
 	public SiteNodeVersion getLatestActiveSiteNodeVersionWhichUsesContentVersionAsMetaInfo(ContentVersion contentVersion, Database db) throws SystemException, Exception
 	{
 	    SiteNodeVersion siteNodeVersion = null;
 	    
+	    OQLQuery oql = db.getOQLQuery("SELECT snv FROM org.infoglue.cms.entities.structure.impl.simple.SiteNodeVersionImpl snv WHERE snv.owningSiteNode.metaInfoContentId = $1 AND snv.isActive = $2 ORDER BY snv.siteNodeVersionId desc");
+	    oql.bind(contentVersion.getValueObject().getContentId());
+		oql.bind(new Boolean(true));
+		
+		/*
 	    OQLQuery oql = db.getOQLQuery("SELECT snv FROM org.infoglue.cms.entities.structure.impl.simple.SiteNodeVersionImpl snv WHERE snv.serviceBindings.availableServiceBinding.name = $1 AND snv.serviceBindings.bindingQualifyers.name = $2 AND snv.serviceBindings.bindingQualifyers.value = $3 AND snv.isActive = $4 ORDER BY snv.siteNodeVersionId desc");
 	    oql.bind("Meta information");
 		oql.bind("contentId");
 		oql.bind(contentVersion.getOwningContent().getId());
 		oql.bind(new Boolean(true));
+		*/
 		
 		QueryResults results = oql.execute();
 		this.logger.info("Fetching entity in read/write mode");
@@ -1536,5 +1542,4 @@ public class RegistryController extends BaseController
 
 		return siteNodeVersion;		
 	}
-
 }

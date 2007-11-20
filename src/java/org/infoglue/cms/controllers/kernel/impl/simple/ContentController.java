@@ -1436,22 +1436,12 @@ public class ContentController extends BaseController
 	{
 		List result = new ArrayList();
 		
-		ServiceBinding serviceBinding = ServiceBindingController.getSmallServiceBindingWithId(serviceBindingId, db);
+		ServiceBinding serviceBinding = ServiceBindingController.getController().getReadOnlyServiceBindingWithId(serviceBindingId, db);
 		//ServiceBinding serviceBinding = ServiceBindingController.getServiceBindingWithId(serviceBindingId, db);
         
 		if(serviceBinding != null)
 		{
-			ServiceDefinitionVO serviceDefinition = null;
-			try
-			{
-				serviceDefinition = ServiceDefinitionController.getController().getServiceDefinitionVOWithId(serviceBinding.getValueObject().getServiceDefinitionId(), db);
-			}
-			catch (Exception e) 
-			{
-				System.out.println("serviceDefinition exception:" + e.getMessage());
-			}
-			
-			//ServiceDefinition serviceDefinition = serviceBinding.getServiceDefinition();
+			ServiceDefinition serviceDefinition = serviceBinding.getServiceDefinition();
 			if(serviceDefinition != null)
 			{
 				String serviceClassName = serviceDefinition.getClassName();

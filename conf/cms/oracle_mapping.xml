@@ -439,27 +439,6 @@
     </field>
     </class>
 
-<!--  Mapping for SmallSiteNodeTypeDefinition  -->
-  <class name="org.infoglue.cms.entities.management.impl.simple.SmallSiteNodeTypeDefinitionImpl" identity="siteNodeTypeDefinitionId" key-generator="SEQUENCE">
-    <description>SmallSiteNodeTypeDefinition</description>
-    <cache-type type="unlimited" capacity="100"/>
-    <map-to table="cmSiNoTypeDef"/>
-      <field name="siteNodeTypeDefinitionId" type="java.lang.Integer">
-      <sql name="SiNoTypeDefId" type="integer" dirty="check" />
-    </field>
-        <field name="invokerClassName" type="java.lang.String">
-      <sql name="invokerClassName" type="varchar" dirty="check" />
-    </field>
-        <field name="name" type="java.lang.String">
-      <sql name="name" type="varchar" dirty="check" />
-    </field>
-        <field name="description" type="java.lang.String">
-      <sql name="description" type="varchar" dirty="check" />
-    </field>
-        <field name="availableServiceBindings" type="org.infoglue.cms.entities.management.impl.simple.SmallAvailableServiceBindingImpl" lazy="true" collection="collection">
-      <sql many-key="SiNoTypeDefId" many-table="cmAvailServBindSiNoTypeDef"/>
-    </field>
-    </class>
 
 <!--  Mapping for SiteNode  -->
   <class name="org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl" identity="siteNodeId" key-generator="SEQUENCE">
@@ -568,36 +547,6 @@
     </field>
   </class>
 
-<!--  Mapping for SmallServiceBinding  -->
-  <class name="org.infoglue.cms.entities.structure.impl.simple.SmallServiceBindingImpl" identity="serviceBindingId" key-generator="SEQUENCE">
-    <description>SmallServiceBinding</description>
-    <cache-type type="unlimited" capacity="10000"/>
-    <map-to table="cmServBind"/>
-    <field name="serviceBindingId" type="java.lang.Integer">
-      <sql name="ServBindId" type="integer" dirty="check" />
-    </field>
-    <field name="name" type="java.lang.String">
-      <sql name="name" type="varchar" dirty="check" />
-    </field>
-    <field name="path" type="java.lang.String">
-      <sql name="path" type="varchar" dirty="check" />
-    </field>
-    <field name="bindingTypeId" type="java.lang.Integer">
-      <sql name="BindTypeId" type="integer" dirty="check" />
-    </field>
-    <field name="bindingQualifyers" type="org.infoglue.cms.entities.structure.impl.simple.SmallQualifyerImpl" lazy="false" collection="collection">
-      <sql many-key="ServBindId"/>
-    </field>
-    <field name="siteNodeVersionId" type="java.lang.Integer">
-      <sql name="SiNoVerId" type="integer"/>
-    </field>
-    <field name="availableServiceBindingId"  type="java.lang.Integer">
-      <sql name="AvailServBindId" type="integer"/>
-    </field>
-    <field name="serviceDefinitionId" type="java.lang.Integer">
-      <sql name="ServDefId" type="integer"/>
-    </field>
-  </class>
 
 <!--  Mapping for Qualifyer  -->
   <class name="org.infoglue.cms.entities.structure.impl.simple.QualifyerImpl"
@@ -622,29 +571,6 @@
     </field>
   </class>
 
-<!--  Mapping for SmallQualifyer  -->
-  <class name="org.infoglue.cms.entities.structure.impl.simple.SmallQualifyerImpl" identity="qualifyerId" key-generator="SEQUENCE">
-    <description>SmallQualifyer</description>
-    <cache-type type="unlimited" capacity="10000"/>
-    <map-to table="cmQualifyer"/>
-    <field name="qualifyerId" type="java.lang.Integer">
-      <sql name="qualifyerId" type="integer" dirty="check" />
-    </field>
-    <field name="name" type="java.lang.String">
-      <sql name="name" type="varchar" dirty="check" />
-    </field>
-    <field name="value" type="java.lang.String">
-      <sql name="value" type="varchar" dirty="check" />
-    </field>
-    <field name="sortOrder" type="java.lang.Integer">
-      <sql name="sortOrder" type="integer" dirty="check" />
-    </field>
-    <!--
-    <field name="serviceBinding" type="org.infoglue.cms.entities.structure.impl.simple.ServiceBindingImpl">
-      <sql name="ServBindId"/>
-    </field>
-    -->
-  </class>
 
 <!--  Mapping for Repository  -->
   <class name="org.infoglue.cms.entities.management.impl.simple.RepositoryImpl" identity="repositoryId" key-generator="SEQUENCE">
@@ -748,33 +674,6 @@
     -->
     </class>
 
-<!--  Mapping for SmallServiceDefinition  -->
-  <class name="org.infoglue.cms.entities.management.impl.simple.SmallServiceDefinitionImpl" identity="serviceDefinitionId" key-generator="SEQUENCE">
-    <description>SmallServiceDefinition</description>
-    <cache-type type="unlimited" capacity="1000"/>
-    <map-to table="cmServDef"/>
-      <field name="serviceDefinitionId" type="java.lang.Integer">
-      <sql name="ServDefId" type="integer" dirty="check" />
-    </field>
-        <field name="className" type="java.lang.String">
-      <sql name="className" type="varchar" dirty="check" />
-    </field>
-        <field name="name" type="java.lang.String">
-      <sql name="name" type="varchar" dirty="check" />
-    </field>
-        <field name="description" type="java.lang.String">
-      <sql name="description" type="varchar" dirty="check" />
-    </field>
-    <!--
-        <field name="availableServiceBindings" type="org.infoglue.cms.entities.management.impl.simple.AvailableServiceBindingImpl" lazy="true" collection="collection">
-      <sql many-key="ServDefId" many-table="cmServDefAvailServBind"/>
-    </field>
-        <field name="serviceBindings" type="org.infoglue.cms.entities.structure.impl.simple.ServiceBindingImpl" lazy="true" collection="collection">
-      <sql many-key="AvailServBindId"/>
-    </field>
-    -->
-    </class>
-
 
 <!--  Mapping for AvailableServiceBinding  -->
   <class name="org.infoglue.cms.entities.management.impl.simple.AvailableServiceBindingImpl" identity="availableServiceBindingId" key-generator="SEQUENCE">
@@ -808,10 +707,12 @@
         <field name="serviceDefinitions" type="org.infoglue.cms.entities.management.impl.simple.ServiceDefinitionImpl" lazy="true" collection="collection">
       <sql many-key="AvailServBindId" many-table="cmServDefAvailServBind"/>
     </field>
+    <!-- 
         <field name="serviceBindings" type="org.infoglue.cms.entities.structure.impl.simple.ServiceBindingImpl" lazy="true" collection="collection">
       <sql many-key="AvailServBindId"/>
     </field>
-    </class>
+ 	-->
+     </class>
 
 <!--  Mapping for SmallAvailableServiceBinding  -->
   <class name="org.infoglue.cms.entities.management.impl.simple.SmallAvailableServiceBindingImpl" identity="availableServiceBindingId" key-generator="SEQUENCE">
