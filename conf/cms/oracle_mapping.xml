@@ -349,6 +349,74 @@
     </field>
   </class>
 
+<!--  Mapping for SmallSiteNodeVersion  -->
+  <class name="org.infoglue.cms.entities.structure.impl.simple.SmallSiteNodeVersionImpl" identity="siteNodeVersionId" key-generator="SEQUENCE">
+    <description>SiteNodeVersion</description>
+    <cache-type type="unlimited"/>
+    <map-to table="cmSiNoVer"/>
+    <field name="siteNodeVersionId" type="java.lang.Integer">
+      <sql name="SiNoVerId" type="integer" dirty="check" />
+    </field>
+    <field name="stateId" type="java.lang.Integer">
+      <sql name="stateId" type="integer" dirty="check" />
+    </field>
+    <field name="versionNumber" type="java.lang.Integer">
+      <sql name="VerNumber" type="integer" dirty="check" />
+    </field>
+    <field name="modifiedDateTime" type="java.util.Date">
+      <sql name="modifiedDateTime" type="timestamp" dirty="ignore" />
+    </field>
+    <field name="versionComment" type="java.lang.String">
+      <sql name="VerComment" type="varchar" dirty="check" />
+    </field>
+    <field name="isCheckedOut" type="java.lang.Boolean">
+      <sql name="isCheckedOut" type="integer" dirty="check" />
+    </field>
+    <field name="isActive" type="java.lang.Boolean">
+      <sql name="isActive" type="integer" dirty="check" />
+    </field>
+    <field name="isProtected" type="java.lang.Integer">
+      <sql name="isProtected" type="integer" dirty="check" />
+    </field>
+    <field name="disablePageCache" type="java.lang.Integer">
+      <sql name="disablePageCache" type="integer" dirty="check" />
+    </field>
+    <field name="disableEditOnSight" type="java.lang.Integer">
+      <sql name="disableEditOnSight" type="integer" dirty="check" />
+    </field>
+    <field name="disableLanguages" type="java.lang.Integer">
+      <sql name="disableLanguages" type="integer" dirty="check" />
+    </field>
+    <field name="contentType" type="java.lang.String">
+      <sql name="contentType" type="varchar" dirty="check" />
+    </field>
+    <field name="pageCacheKey" type="java.lang.String">
+      <sql name="pageCacheKey" type="varchar" dirty="check" />
+    </field>
+    <field name="pageCacheTimeout" type="java.lang.String">
+      <sql name="pageCacheTimeout" type="varchar" dirty="check" />
+    </field>
+    <field name="disableForceIdentityCheck" type="java.lang.Integer">
+      <sql name="disableForceIDCheck" type="integer" dirty="check" />
+    </field>
+    <!-- 
+    <field name="owningSiteNode" type="org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl">
+      <sql name="SiNoId"/>
+    </field>
+    -->
+    <field name="siteNodeId" type="java.lang.Integer">
+      <sql name="siteNodeId" type="integer"/>
+    </field>
+    <field name="versionModifier" type="java.lang.String">
+      <sql name="versionModifier" type="varchar" dirty="check" />
+    </field>
+    <!--
+    <field name="serviceBindings" type="org.infoglue.cms.entities.structure.impl.simple.ServiceBindingImpl" lazy="false" collection="collection">
+      <sql many-key="SiNoVerId"/>
+    </field>
+    -->
+  </class>
+
 <!--  Mapping for SiteNodeTypeDefinition  -->
   <class name="org.infoglue.cms.entities.management.impl.simple.SiteNodeTypeDefinitionImpl" identity="siteNodeTypeDefinitionId" key-generator="SEQUENCE">
     <description>SiteNodeTypeDefinition</description>

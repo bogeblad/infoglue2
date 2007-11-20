@@ -234,7 +234,7 @@ public class SiteNodeVersionController extends BaseController
 
 	public SiteNodeVersionVO getLatestActiveSiteNodeVersionVO(Integer siteNodeId) throws SystemException, Bug
     {
-    	Database db = CastorDatabaseService.getDatabase();
+		Database db = CastorDatabaseService.getDatabase();
         ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
 
     	SiteNodeVersionVO siteNodeVersionVO = null;
@@ -243,10 +243,13 @@ public class SiteNodeVersionController extends BaseController
 
         try
         {
-            SiteNodeVersion siteNodeVersion = getLatestActiveSiteNodeVersion(db, siteNodeId);
+        	siteNodeVersionVO = getLatestActiveSiteNodeVersionVO(db, siteNodeId);
+            /*
+        	SiteNodeVersion siteNodeVersion = getLatestActiveSiteNodeVersion(db, siteNodeId);
             if(siteNodeVersion != null)
                 siteNodeVersionVO = siteNodeVersion.getValueObject();
-            
+            */
+        		
             commitTransaction(db);
         }
         catch(Exception e)
@@ -255,7 +258,7 @@ public class SiteNodeVersionController extends BaseController
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
-    	
+        
 		return siteNodeVersionVO;
     }
 
@@ -284,7 +287,25 @@ public class SiteNodeVersionController extends BaseController
     {
 	    SiteNodeVersionVO siteNodeVersionVO = null;
 	    
+	    SiteNodeVersion siteNodeVersion = null;
+	    
+	    OQLQuery oql = db.getOQLQuery( "SELECT cv FROM org.infoglue.cms.entities.structure.impl.simple.SmallSiteNodeVersionImpl cv WHERE cv.siteNodeId = $1 AND cv.isActive = $2 ORDER BY cv.siteNodeVersionId desc");
+		oql.bind(siteNodeId);
+		oql.bind(new Boolean(true));
+		
+		QueryResults results = oql.execute(Database.ReadOnly);
+		
+		if (results.hasMore()) 
+	    {
+	    	siteNodeVersion = (SiteNodeVersion)results.next();
+        }
+
+		results.close();
+		oql.close();
+
+		/*
 	    SiteNodeVersion siteNodeVersion = getLatestActiveSiteNodeVersion(db, siteNodeId);
+	    */
 	    if(siteNodeVersion != null)
 	    	siteNodeVersionVO = siteNodeVersion.getValueObject();
 	    else
