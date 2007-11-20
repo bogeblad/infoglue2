@@ -240,8 +240,9 @@ public class AvailableServiceBindingController extends BaseController
 		try
 		{
 			System.out.println("\n\n\nAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
-			OQLQuery oql = db.getOQLQuery("SELECT a FROM org.infoglue.cms.entities.management.impl.simple.AvailableServiceBindingImpl a WHERE a.name = $1");
+			OQLQuery oql = db.getOQLQuery("SELECT a FROM org.infoglue.cms.entities.management.impl.simple.AvailableServiceBindingImpl a WHERE a.name = $1 LIMIT $2");
 			oql.bind(name);
+			oql.bind(1);
 						
 			QueryResults results = null;
 			
