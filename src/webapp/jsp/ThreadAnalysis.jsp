@@ -51,7 +51,7 @@
 		
 		<%
         long threads[] = t.getAllThreadIds();
-        ThreadInfo[] tinfo = t.getThreadInfo(threads, 15);
+        ThreadInfo[] tinfo = t.getThreadInfo(threads, 40);
 
         for (int i=0; i<tinfo.length; i++)
         {
