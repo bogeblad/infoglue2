@@ -56,6 +56,7 @@ import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
 import org.infoglue.cms.util.DateHelper;
+import org.infoglue.deliver.util.Timer;
 
 public class SiteNodeVersionController extends BaseController 
 {
@@ -630,9 +631,10 @@ public class SiteNodeVersionController extends BaseController
 	public static List getServiceBindningVOList(Integer siteNodeVersionId, Database db) throws ConstraintException, SystemException
 	{
         List serviceBindningVOList = null;
-
+        
         Collection serviceBindningList = getServiceBindningList(siteNodeVersionId, db);
-    	serviceBindningVOList = toVOList(serviceBindningList);
+
+        serviceBindningVOList = toVOList(serviceBindningList);
 
         return serviceBindningVOList;
 	}
@@ -644,8 +646,17 @@ public class SiteNodeVersionController extends BaseController
 	
 	public static Collection getServiceBindningList(Integer siteNodeVersionId, Database db) throws ConstraintException, SystemException
 	{
-        SiteNodeVersion siteNodeVersion = getSiteNodeVersionWithIdAsReadOnly(siteNodeVersionId, db);
-        return siteNodeVersion.getServiceBindings();
+    	Timer t = new Timer();
+    	System.out.println("\n\nCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC\n\n");
+    	SiteNodeVersion siteNodeVersion = getSiteNodeVersionWithIdAsReadOnly(siteNodeVersionId, db);
+    	System.out.println("\n\nDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD\n\n");
+
+    	t.printElapsedTimeMicro("First part took");
+        
+    	Collection serviceBindings = siteNodeVersion.getServiceBindings();
+    	t.printElapsedTimeMicro("Second part took");
+        
+    	return serviceBindings;
 	}
 
 	
