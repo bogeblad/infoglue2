@@ -79,6 +79,7 @@ import org.infoglue.cms.entities.management.impl.simple.ServerNodeImpl;
 import org.infoglue.cms.entities.management.impl.simple.ServiceDefinitionImpl;
 import org.infoglue.cms.entities.management.impl.simple.SiteNodeTypeDefinitionImpl;
 import org.infoglue.cms.entities.management.impl.simple.SmallAvailableServiceBindingImpl;
+import org.infoglue.cms.entities.management.impl.simple.SmallServiceDefinitionImpl;
 import org.infoglue.cms.entities.management.impl.simple.SmallSiteNodeTypeDefinitionImpl;
 import org.infoglue.cms.entities.management.impl.simple.SystemUserImpl;
 import org.infoglue.cms.entities.management.impl.simple.UserContentTypeDefinitionImpl;
@@ -925,6 +926,7 @@ public class CacheController extends Thread
 			clearCache(db, RepositoryLanguageImpl.class);
 			clearCache(db, RoleImpl.class);
 			clearCache(db, GroupImpl.class);
+			clearCache(db, SmallServiceDefinitionImpl.class);
 			clearCache(db, ServiceDefinitionImpl.class);
 			clearCache(db, SmallSiteNodeTypeDefinitionImpl.class);
 			clearCache(db, SiteNodeTypeDefinitionImpl.class);

@@ -33,6 +33,7 @@ import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.entities.management.ServiceDefinition;
 import org.infoglue.cms.entities.management.ServiceDefinitionVO;
 import org.infoglue.cms.entities.management.impl.simple.ServiceDefinitionImpl;
+import org.infoglue.cms.entities.management.impl.simple.SmallServiceDefinitionImpl;
 import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
@@ -53,7 +54,12 @@ public class ServiceDefinitionController extends BaseController
 
     public ServiceDefinitionVO getServiceDefinitionVOWithId(Integer serviceDefinitionId) throws SystemException, Bug
     {
-		return (ServiceDefinitionVO) getVOWithId(ServiceDefinitionImpl.class, serviceDefinitionId);
+		return (ServiceDefinitionVO) getVOWithId(SmallServiceDefinitionImpl.class, serviceDefinitionId);
+    }
+
+    public ServiceDefinitionVO getServiceDefinitionVOWithId(Integer serviceDefinitionId, Database db) throws SystemException, Bug
+    {
+		return (ServiceDefinitionVO) getVOWithId(SmallServiceDefinitionImpl.class, serviceDefinitionId, db);
     }
 
     public ServiceDefinitionVO create(ServiceDefinitionVO vo) throws ConstraintException, SystemException
@@ -110,7 +116,7 @@ public class ServiceDefinitionController extends BaseController
 
     public List getServiceDefinitionVOList() throws SystemException, Bug
     {
-        return getAllVOObjects(ServiceDefinitionImpl.class, "serviceDefinitionId");
+        return getAllVOObjects(SmallServiceDefinitionImpl.class, "serviceDefinitionId");
     }
 
 	/**

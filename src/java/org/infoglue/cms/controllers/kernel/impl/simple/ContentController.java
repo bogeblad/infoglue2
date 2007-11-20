@@ -51,6 +51,7 @@ import org.infoglue.cms.entities.management.Repository;
 import org.infoglue.cms.entities.management.RepositoryLanguage;
 import org.infoglue.cms.entities.management.RepositoryVO;
 import org.infoglue.cms.entities.management.ServiceDefinition;
+import org.infoglue.cms.entities.management.ServiceDefinitionVO;
 import org.infoglue.cms.entities.management.impl.simple.ContentTypeDefinitionImpl;
 import org.infoglue.cms.entities.management.impl.simple.RepositoryImpl;
 import org.infoglue.cms.entities.structure.Qualifyer;
@@ -1435,11 +1436,22 @@ public class ContentController extends BaseController
 	{
 		List result = new ArrayList();
 		
-		ServiceBinding serviceBinding = ServiceBindingController.getServiceBindingWithId(serviceBindingId, db);
+		ServiceBinding serviceBinding = ServiceBindingController.getSmallServiceBindingWithId(serviceBindingId, db);
+		//ServiceBinding serviceBinding = ServiceBindingController.getServiceBindingWithId(serviceBindingId, db);
         
 		if(serviceBinding != null)
 		{
-			ServiceDefinition serviceDefinition = serviceBinding.getServiceDefinition();
+			ServiceDefinitionVO serviceDefinition = null;
+			try
+			{
+				serviceDefinition = ServiceDefinitionController.getController().getServiceDefinitionVOWithId(serviceBinding.getValueObject().getServiceDefinitionId(), db);
+			}
+			catch (Exception e) 
+			{
+				System.out.println("serviceDefinition exception:" + e.getMessage());
+			}
+			
+			//ServiceDefinition serviceDefinition = serviceBinding.getServiceDefinition();
 			if(serviceDefinition != null)
 			{
 				String serviceClassName = serviceDefinition.getClassName();
