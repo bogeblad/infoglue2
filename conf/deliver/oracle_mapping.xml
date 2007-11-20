@@ -588,11 +588,11 @@
     <field name="bindingQualifyers" type="org.infoglue.cms.entities.structure.impl.simple.SmallQualifyerImpl" lazy="false" collection="collection">
       <sql many-key="ServBindId"/>
     </field>
-    <field name="siteNodeVersion" type="java.lang.Integer">
+    <field name="siteNodeVersionId" type="java.lang.Integer">
       <sql name="SiNoVerId" type="integer"/>
     </field>
-    <field name="availableServiceBinding"  type="java.lang.Integer">
-      <sql name="AvailServBindId" type="integer"/>
+    <field name="availableServiceBindingId" type="java.lang.Integer">
+      <sql name="AvailServBindIdId" type="integer"/>
     </field>
     <field name="serviceDefinition" type="java.lang.Integer">
       <sql name="ServDefId" type="integer"/>
