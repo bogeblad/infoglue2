@@ -276,6 +276,17 @@ public class ViewStructureToolToolBarAction extends InfoGlueAbstractAction
 		
 		try
 		{
+			SiteNodeVersionVO siteNodeVersion = SiteNodeVersionController.getLatestPublishedSiteNodeVersionVO(this.siteNodeId);
+			if(siteNodeVersion != null)
+			{
+				SiteNodeVO siteNodeVO = SiteNodeController.getController().getSiteNodeVOWithId(siteNodeVersion.getSiteNodeId());
+				hasPublishedVersion = true;
+				lastPublishedSiteNodeVersionId = siteNodeVersion.getId();
+				this.repositoryId = siteNodeVO.getRepositoryId();
+				this.name = siteNodeVO.getName();
+				this.siteNodeId = siteNodeVO.getId();
+			}
+			/*
 			SiteNodeVersion siteNodeVersion = SiteNodeVersionController.getLatestPublishedSiteNodeVersion(this.siteNodeId);
 			if(siteNodeVersion != null)
 			{
@@ -285,6 +296,7 @@ public class ViewStructureToolToolBarAction extends InfoGlueAbstractAction
 				this.name = siteNodeVersion.getOwningSiteNode().getName();
 				this.siteNodeId = siteNodeVersion.getOwningSiteNode().getId();
 			}
+			*/
 		}
 		catch(Exception e)
 		{

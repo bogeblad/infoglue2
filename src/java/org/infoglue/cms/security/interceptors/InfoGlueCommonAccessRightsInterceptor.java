@@ -404,8 +404,9 @@ public class InfoGlueCommonAccessRightsInterceptor implements InfoGlueIntercepto
 		else if(interceptionPointVO.getName().equalsIgnoreCase("SiteNodeVersion.Read"))
 		{
 			Integer siteNodeVersionId = (Integer)extradata.get("siteNodeVersionId");
-			SiteNodeVersion siteNodeVersion = SiteNodeVersionController.getController().getSiteNodeVersionWithId(siteNodeVersionId, db);
-			if(!siteNodeVersion.getVersionModifier().equalsIgnoreCase(infoGluePrincipal.getName()))
+			SiteNodeVersionVO siteNodeVersionVO = SiteNodeVersionController.getController().getSiteNodeVersionVOWithId(siteNodeVersionId, db);
+			//SiteNodeVersion siteNodeVersion = SiteNodeVersionController.getController().getSiteNodeVersionWithId(siteNodeVersionId, db);
+			if(!siteNodeVersionVO.getVersionModifier().equalsIgnoreCase(infoGluePrincipal.getName()))
 			{
 				Integer protectedSiteNodeVersionId = SiteNodeVersionControllerProxy.getSiteNodeVersionControllerProxy().getProtectedSiteNodeVersionId(siteNodeVersionId, db);
 				if(protectedSiteNodeVersionId != null && !AccessRightController.getController().getIsPrincipalAuthorized(db, infoGluePrincipal, "SiteNodeVersion.Read", protectedSiteNodeVersionId.toString()))
@@ -415,8 +416,9 @@ public class InfoGlueCommonAccessRightsInterceptor implements InfoGlueIntercepto
 		else if(interceptionPointVO.getName().equalsIgnoreCase("SiteNodeVersion.Write"))
 		{
 			Integer siteNodeVersionId = (Integer)extradata.get("siteNodeVersionId");
-			SiteNodeVersion siteNodeVersion = SiteNodeVersionController.getController().getSiteNodeVersionWithId(siteNodeVersionId, db);
-			if(!siteNodeVersion.getVersionModifier().equalsIgnoreCase(infoGluePrincipal.getName()))
+			SiteNodeVersionVO siteNodeVersionVO = SiteNodeVersionController.getController().getSiteNodeVersionVOWithId(siteNodeVersionId, db);
+			//SiteNodeVersion siteNodeVersion = SiteNodeVersionController.getController().getSiteNodeVersionWithId(siteNodeVersionId, db);
+			if(!siteNodeVersionVO.getVersionModifier().equalsIgnoreCase(infoGluePrincipal.getName()))
 			{
 				Integer protectedSiteNodeVersionId = SiteNodeVersionControllerProxy.getSiteNodeVersionControllerProxy().getProtectedSiteNodeVersionId(siteNodeVersionId, db);
 				if(protectedSiteNodeVersionId != null && !AccessRightController.getController().getIsPrincipalAuthorized(db, infoGluePrincipal, "SiteNodeVersion.Write", protectedSiteNodeVersionId.toString()))

@@ -49,6 +49,7 @@ import org.infoglue.cms.entities.structure.SiteNodeVersion;
 import org.infoglue.cms.entities.structure.SiteNodeVersionVO;
 import org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl;
 import org.infoglue.cms.entities.structure.impl.simple.SiteNodeVersionImpl;
+import org.infoglue.cms.entities.structure.impl.simple.SmallSiteNodeVersionImpl;
 import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
@@ -73,7 +74,12 @@ public class SiteNodeVersionController extends BaseController
 	
     public SiteNodeVersionVO getSiteNodeVersionVOWithId(Integer siteNodeVersionId) throws SystemException, Bug
     {
-		return (SiteNodeVersionVO) getVOWithId(SiteNodeVersionImpl.class, siteNodeVersionId);
+		return (SiteNodeVersionVO) getVOWithId(SmallSiteNodeVersionImpl.class, siteNodeVersionId);
+    }
+
+    public SiteNodeVersionVO getSiteNodeVersionVOWithId(Integer siteNodeVersionId, Database db) throws SystemException, Bug
+    {
+		return (SiteNodeVersionVO) getVOWithId(SmallSiteNodeVersionImpl.class, siteNodeVersionId, db);
     }
    	
 	public SiteNodeVersion getSiteNodeVersionWithId(Integer siteNodeVersionId, Database db) throws SystemException, Bug
@@ -88,7 +94,7 @@ public class SiteNodeVersionController extends BaseController
 
     public List getSiteNodeVersionVOList() throws SystemException, Bug
     {
-        return getAllVOObjects(SiteNodeVersionImpl.class, "siteNodeVersionId");
+        return getAllVOObjects(SmallSiteNodeVersionImpl.class, "siteNodeVersionId");
     }
 
     public static void delete(SiteNodeVersionVO siteNodeVersionVO) throws ConstraintException, SystemException
@@ -325,7 +331,7 @@ public class SiteNodeVersionController extends BaseController
 
         try
         {
-            OQLQuery oql = db.getOQLQuery( "SELECT cv FROM org.infoglue.cms.entities.structure.impl.simple.SiteNodeVersionImpl cv WHERE cv.owningSiteNode.siteNodeId = $1 ORDER BY cv.siteNodeVersionId desc");
+            OQLQuery oql = db.getOQLQuery( "SELECT cv FROM org.infoglue.cms.entities.structure.impl.simple.SmallSiteNodeVersionImpl cv WHERE cv.siteNodeId = $1 ORDER BY cv.siteNodeVersionId desc");
         	oql.bind(siteNodeId);
         	
         	QueryResults results = oql.execute(Database.ReadOnly);
@@ -357,7 +363,7 @@ public class SiteNodeVersionController extends BaseController
     {
     	SiteNodeVersionVO siteNodeVersionVO = null;
 
-        OQLQuery oql = db.getOQLQuery( "SELECT cv FROM org.infoglue.cms.entities.structure.impl.simple.SiteNodeVersionImpl cv WHERE cv.owningSiteNode.siteNodeId = $1 ORDER BY cv.siteNodeVersionId desc");
+        OQLQuery oql = db.getOQLQuery( "SELECT cv FROM org.infoglue.cms.entities.structure.impl.simple.SmallSiteNodeVersionImpl cv WHERE cv.siteNodeId = $1 ORDER BY cv.siteNodeVersionId desc");
     	oql.bind(siteNodeId);
     	
     	QueryResults results = oql.execute(Database.ReadOnly);
@@ -668,7 +674,6 @@ public class SiteNodeVersionController extends BaseController
     }
 
 	
-	
 	public static SiteNodeVersion getLatestPublishedSiteNodeVersion(Integer siteNodeId, Database db) throws SystemException, Bug, Exception
     {
         SiteNodeVersion siteNodeVersion = null;
@@ -691,6 +696,57 @@ public class SiteNodeVersionController extends BaseController
 
 		return siteNodeVersion;
     }
+	
+	
+	public static SiteNodeVersionVO getLatestPublishedSiteNodeVersionVO(Integer siteNodeId) throws SystemException, Bug, Exception
+    {
+        SiteNodeVersionVO siteNodeVersion = null;
+        
+        Database db = CastorDatabaseService.getDatabase();
+        ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
+
+        beginTransaction(db);
+        try
+        {        
+	        siteNodeVersion = getLatestPublishedSiteNodeVersionVO(siteNodeId, db);
+			
+            commitTransaction(db);            
+        }
+        catch(Exception e)
+        {
+        	logger.error("An error occurred so we should not completes the transaction:" + e, e);
+            rollbackTransaction(db);
+            throw new SystemException(e.getMessage());
+        }
+            
+		return siteNodeVersion;
+    }
+
+	public static SiteNodeVersionVO getLatestPublishedSiteNodeVersionVO(Integer siteNodeId, Database db) throws SystemException, Bug, Exception
+    {
+        SiteNodeVersion siteNodeVersion = null;
+        
+        OQLQuery oql = db.getOQLQuery( "SELECT cv FROM org.infoglue.cms.entities.structure.impl.simple.SmallSiteNodeVersionImpl cv WHERE cv.siteNodeId = $1 AND cv.stateId = $2 AND cv.isActive = $3 ORDER BY cv.siteNodeVersionId desc");
+    	oql.bind(siteNodeId);
+    	oql.bind(SiteNodeVersionVO.PUBLISHED_STATE);
+    	oql.bind(true);
+    	
+    	QueryResults results = oql.execute();
+		logger.info("Fetching entity in read/write mode");
+
+		if (results.hasMore()) 
+        {
+        	siteNodeVersion = (SiteNodeVersion)results.next();
+        }
+            
+		results.close();
+		oql.close();
+
+		if(siteNodeVersion != null)
+			return siteNodeVersion.getValueObject();
+		else 
+			return null;
+    }
 
 
 	/**
@@ -708,7 +764,7 @@ public class SiteNodeVersionController extends BaseController
 
         try
         {           
-            OQLQuery oql = db.getOQLQuery( "SELECT cv FROM org.infoglue.cms.entities.structure.impl.simple.SiteNodeVersionImpl cv WHERE cv.owningSiteNode.siteNodeId = $1 AND cv.siteNodeVersionId < $2 ORDER BY cv.siteNodeVersionId desc");
+            OQLQuery oql = db.getOQLQuery( "SELECT cv FROM org.infoglue.cms.entities.structure.impl.simple.SmallSiteNodeVersionImpl cv WHERE cv.siteNodeId = $1 AND cv.siteNodeVersionId < $2 ORDER BY cv.siteNodeVersionId desc");
         	oql.bind(siteNodeId);
         	oql.bind(siteNodeVersionId);
         	
@@ -745,7 +801,7 @@ public class SiteNodeVersionController extends BaseController
     {
     	SiteNodeVersionVO siteNodeVersionVO = null;
 
-    	OQLQuery oql = db.getOQLQuery( "SELECT cv FROM org.infoglue.cms.entities.structure.impl.simple.SiteNodeVersionImpl cv WHERE cv.owningSiteNode.siteNodeId = $1 AND cv.isActive = $2 AND cv.siteNodeVersionId < $3 ORDER BY cv.siteNodeVersionId desc");
+    	OQLQuery oql = db.getOQLQuery( "SELECT cv FROM org.infoglue.cms.entities.structure.impl.simple.SmallSiteNodeVersionImpl cv WHERE cv.siteNodeId = $1 AND cv.isActive = $2 AND cv.siteNodeVersionId < $3 ORDER BY cv.siteNodeVersionId desc");
     	oql.bind(siteNodeId);
     	oql.bind(new Boolean(true));
     	oql.bind(siteNodeVersionId);
@@ -1183,7 +1239,7 @@ public class SiteNodeVersionController extends BaseController
     {
         List siteNodeVersionList = new ArrayList();
         
-        OQLQuery oql = db.getOQLQuery( "SELECT cv FROM org.infoglue.cms.entities.structure.impl.simple.SiteNodeVersionImpl cv WHERE cv.owningSiteNode.siteNodeId = $1  AND cv.stateId = $2 AND cv.isActive = $3 ORDER BY cv.siteNodeVersionId desc");
+        OQLQuery oql = db.getOQLQuery( "SELECT cv FROM org.infoglue.cms.entities.structure.impl.simple.SmallSiteNodeVersionImpl cv WHERE cv.siteNodeId = $1  AND cv.stateId = $2 AND cv.isActive = $3 ORDER BY cv.siteNodeVersionId desc");
     	oql.bind(siteNodeId);
     	oql.bind(SiteNodeVersionVO.PUBLISHED_STATE);
     	oql.bind(true);

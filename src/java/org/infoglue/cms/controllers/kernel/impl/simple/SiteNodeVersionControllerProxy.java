@@ -288,7 +288,7 @@ public class SiteNodeVersionControllerProxy extends SiteNodeVersionController
 		
 		try
 		{
-			SiteNodeVersion siteNodeVersion = getSiteNodeVersionWithId(siteNodeVersionId, db);
+			SiteNodeVersionVO siteNodeVersion = getSiteNodeVersionVOWithId(siteNodeVersionId, db);
 			logger.info("Is Protected: " + siteNodeVersion.getIsProtected());
 			if(siteNodeVersion != null)
 			{	
@@ -300,10 +300,12 @@ public class SiteNodeVersionControllerProxy extends SiteNodeVersionController
 						protectedSiteNodeVersionId = siteNodeVersion.getId();
 					else if(siteNodeVersion.getIsProtected().intValue() == INHERITED.intValue())
 					{
-						SiteNode parentSiteNode = siteNodeVersion.getOwningSiteNode().getParentSiteNode();
+						SiteNode parentSiteNode = SiteNodeController.getParentSiteNode(siteNodeVersion.getSiteNodeId(), db);
+						//SiteNode parentSiteNode = siteNodeVersion.getOwningSiteNode().getParentSiteNode();
 						if(parentSiteNode != null)
 						{
-							siteNodeVersion = getLatestSiteNodeVersion(db, parentSiteNode.getSiteNodeId(), false);
+							siteNodeVersion = getLatestSiteNodeVersionVO(db, parentSiteNode.getSiteNodeId());
+							//siteNodeVersion = getLatestSiteNodeVersion(db, parentSiteNode.getSiteNodeId(), false);
 							protectedSiteNodeVersionId = getProtectedSiteNodeVersionId(siteNodeVersion.getSiteNodeVersionId(), db);
 						}
 					}
