@@ -36,6 +36,7 @@ import org.infoglue.cms.entities.management.AvailableServiceBinding;
 import org.infoglue.cms.entities.management.SiteNodeTypeDefinition;
 import org.infoglue.cms.entities.management.SiteNodeTypeDefinitionVO;
 import org.infoglue.cms.entities.management.impl.simple.SiteNodeTypeDefinitionImpl;
+import org.infoglue.cms.entities.management.impl.simple.SmallSiteNodeTypeDefinitionImpl;
 import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
@@ -58,12 +59,12 @@ public class SiteNodeTypeDefinitionController extends BaseController
 	
     public SiteNodeTypeDefinitionVO getSiteNodeTypeDefinitionVOWithId(Integer siteNodeTypeDefinitionId) throws SystemException, Bug
     {
-		return (SiteNodeTypeDefinitionVO) getVOWithId(SiteNodeTypeDefinitionImpl.class, siteNodeTypeDefinitionId);
+		return (SiteNodeTypeDefinitionVO) getVOWithId(SmallSiteNodeTypeDefinitionImpl.class, siteNodeTypeDefinitionId);
     }
 
     public SiteNodeTypeDefinitionVO getSiteNodeTypeDefinitionVOWithId(Integer siteNodeTypeDefinitionId, Database db) throws SystemException, Bug
     {
-		return (SiteNodeTypeDefinitionVO) getVOWithId(SiteNodeTypeDefinitionImpl.class, siteNodeTypeDefinitionId, db);
+		return (SiteNodeTypeDefinitionVO) getVOWithId(SmallSiteNodeTypeDefinitionImpl.class, siteNodeTypeDefinitionId, db);
     }
 
     public SiteNodeTypeDefinitionVO create(SiteNodeTypeDefinitionVO vo) throws ConstraintException, SystemException
@@ -87,6 +88,11 @@ public class SiteNodeTypeDefinitionController extends BaseController
     public SiteNodeTypeDefinition getSiteNodeTypeDefinitionWithIdAsReadOnly(Integer siteNodeTypeDefinitionId, Database db) throws SystemException, Bug
     {
 		return (SiteNodeTypeDefinition) getObjectWithIdAsReadOnly(SiteNodeTypeDefinitionImpl.class, siteNodeTypeDefinitionId, db);
+    }
+
+    public SiteNodeTypeDefinition getSmallSiteNodeTypeDefinitionWithIdAsReadOnly(Integer siteNodeTypeDefinitionId, Database db) throws SystemException, Bug
+    {
+		return (SiteNodeTypeDefinition) getObjectWithIdAsReadOnly(SmallSiteNodeTypeDefinitionImpl.class, siteNodeTypeDefinitionId, db);
     }
 
     public List getSiteNodeTypeDefinitionVOList() throws SystemException, Bug
@@ -272,6 +278,8 @@ public class SiteNodeTypeDefinitionController extends BaseController
         	SiteNodeTypeDefinition siteNodeTypeDefinition = getSiteNodeTypeDefinitionWithIdAsReadOnly(siteNodeTypeDefinitionId, db);
             Collection availableServiceBindingList = siteNodeTypeDefinition.getAvailableServiceBindings();
         	availableServiceBindingVOList = toVOList(availableServiceBindingList);
+
+        	t.printElapsedTimeMicro("Old way took...");
         	
         	if(logger.isInfoEnabled())
         		logger.info("getAvailableServiceBindingVOList took:" + t.getElapsedTime());
@@ -320,10 +328,16 @@ public class SiteNodeTypeDefinitionController extends BaseController
         */
 
     	Timer t = new Timer();
-
-    	SiteNodeTypeDefinition siteNodeTypeDefinition = getSiteNodeTypeDefinitionWithIdAsReadOnly(siteNodeTypeDefinitionId, db);
+    	System.out.println("\n\nAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\n\n");
+    	
+    	SiteNodeTypeDefinition siteNodeTypeDefinition = getSmallSiteNodeTypeDefinitionWithIdAsReadOnly(siteNodeTypeDefinitionId, db);
+    	System.out.println("\n\nBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB\n\n");
         Collection availableServiceBindingList = siteNodeTypeDefinition.getAvailableServiceBindings();
     	availableServiceBindingVOList = toVOList(availableServiceBindingList);
+
+    	System.out.println("\n\nAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\n\n");
+
+    	t.printElapsedTimeMicro("Old way took");
     	
     	if(logger.isInfoEnabled())
     		logger.info("getAvailableServiceBindingVOList took:" + t.getElapsedTime());

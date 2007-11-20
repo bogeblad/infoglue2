@@ -439,6 +439,28 @@
     </field>
   </class>
 
+<!--  Mapping for SmallSiteNodeTypeDefinition  -->
+  <class name="org.infoglue.cms.entities.management.impl.simple.SmallSiteNodeTypeDefinitionImpl" identity="siteNodeTypeDefinitionId" key-generator="IDENTITY">
+    <description>SiteNodeTypeDefinition</description>
+    <cache-type type="unlimited" capacity="100"/>
+    <map-to table="cmSiteNodeTypeDefinition"/>
+    <field name="siteNodeTypeDefinitionId" type="java.lang.Integer">
+      <sql name="siteNodeTypeDefinitionId" type="integer" dirty="check" />
+    </field>
+    <field name="invokerClassName" type="java.lang.String">
+      <sql name="invokerClassName" type="varchar" dirty="check" />
+    </field>
+    <field name="name" type="java.lang.String">
+      <sql name="name" type="varchar" dirty="check" />
+    </field>
+    <field name="description" type="java.lang.String">
+      <sql name="description" type="varchar" dirty="check" />
+    </field>
+    <field name="availableServiceBindings" type="org.infoglue.cms.entities.management.impl.simple.SmallAvailableServiceBindingImpl" lazy="true" collection="collection">
+      <sql many-key="siteNodeTypeDefinitionId" many-table="cmAvailableServiceBindingSiteNodeTypeDefinition"/>
+    </field>
+  </class>
+
 <!--  Mapping for SiteNode  -->
   <class name="org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl" identity="siteNodeId" key-generator="IDENTITY">
     <description>SiteNode</description>
