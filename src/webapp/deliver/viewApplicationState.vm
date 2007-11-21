@@ -172,6 +172,7 @@
 				<option value="org.infoglue.cms.entities.content.impl.simple.MediumContentImpl">MediumContentImpl</option>
 				<option value="org.infoglue.cms.entities.content.impl.simple.ContentImpl">ContentImpl</option>
 				<option value="org.infoglue.cms.entities.content.impl.simple.ContentRelationImpl">ContentRelationImpl</option>
+				<option value="org.infoglue.cms.entities.content.impl.simple.SmallContentVersionImpl">SmallContentVersionImpl</option>
 				<option value="org.infoglue.cms.entities.content.impl.simple.ContentVersionImpl">ContentVersionImpl</option>
 				<option value="org.infoglue.cms.entities.content.impl.simple.DigitalAssetImpl">DigitalAssetImpl</option>
 				<option value="org.infoglue.cms.entities.content.impl.simple.SmallDigitalAssetImpl">SmallDigitalAssetImpl</option>

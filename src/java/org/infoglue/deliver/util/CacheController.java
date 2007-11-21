@@ -55,6 +55,7 @@ import org.infoglue.cms.entities.content.impl.simple.DigitalAssetImpl;
 import org.infoglue.cms.entities.content.impl.simple.MediumContentImpl;
 import org.infoglue.cms.entities.content.impl.simple.MediumDigitalAssetImpl;
 import org.infoglue.cms.entities.content.impl.simple.SmallContentImpl;
+import org.infoglue.cms.entities.content.impl.simple.SmallContentVersionImpl;
 import org.infoglue.cms.entities.content.impl.simple.SmallDigitalAssetImpl;
 import org.infoglue.cms.entities.content.impl.simple.SmallishContentImpl;
 import org.infoglue.cms.entities.management.impl.simple.AccessRightImpl;
@@ -910,6 +911,7 @@ public class CacheController extends Thread
 			clearCache(db, MediumContentImpl.class);
 			clearCache(db, ContentImpl.class);
 			clearCache(db, ContentRelationImpl.class);
+			clearCache(db, SmallContentVersionImpl.class);
 			clearCache(db, ContentVersionImpl.class);
 			clearCache(db, DigitalAssetImpl.class);
 			clearCache(db, SmallDigitalAssetImpl.class);

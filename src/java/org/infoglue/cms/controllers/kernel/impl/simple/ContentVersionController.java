@@ -48,6 +48,7 @@ import org.infoglue.cms.entities.content.DigitalAssetVO;
 import org.infoglue.cms.entities.content.impl.simple.ContentImpl;
 import org.infoglue.cms.entities.content.impl.simple.ContentVersionImpl;
 import org.infoglue.cms.entities.content.impl.simple.MediumDigitalAssetImpl;
+import org.infoglue.cms.entities.content.impl.simple.SmallContentVersionImpl;
 import org.infoglue.cms.entities.content.impl.simple.SmallDigitalAssetImpl;
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.entities.management.ContentTypeDefinition;
@@ -101,7 +102,8 @@ public class ContentVersionController extends BaseController
     	Integer contentId = (Integer)contentMap.get(contentVersionId);
     	if(contentId == null)
     	{
-    		ContentVersionVO ContentVersionVO = (ContentVersionVO) getVOWithId(ContentVersionImpl.class, contentVersionId);
+    		ContentVersionVO ContentVersionVO = getContentVersionVOWithId(contentVersionId);
+    		//ContentVersionVO ContentVersionVO = (ContentVersionVO) getVOWithId(ContentVersionImpl.class, contentVersionId);
     		contentId = ContentVersionVO.getContentId();
     		contentMap.put(contentVersionId, contentId);
     	}
@@ -114,7 +116,8 @@ public class ContentVersionController extends BaseController
     	Integer contentId = (Integer)contentMap.get(contentVersionId);
     	if(contentId == null)
     	{
-    		ContentVersionVO ContentVersionVO = (ContentVersionVO) getVOWithId(ContentVersionImpl.class, contentVersionId, db);
+    		ContentVersionVO ContentVersionVO = getContentVersionVOWithId(contentVersionId, db);
+    		//ContentVersionVO ContentVersionVO = (ContentVersionVO) getVOWithId(ContentVersionImpl.class, contentVersionId, db);
     		contentId = ContentVersionVO.getContentId();
     		contentMap.put(contentVersionId, contentId);
     	}
@@ -124,7 +127,12 @@ public class ContentVersionController extends BaseController
 
     public ContentVersionVO getContentVersionVOWithId(Integer contentVersionId) throws SystemException, Bug
     {
-		return (ContentVersionVO) getVOWithId(ContentVersionImpl.class, contentVersionId);
+		return (ContentVersionVO) getVOWithId(SmallContentVersionImpl.class, contentVersionId);
+    }
+
+    public ContentVersionVO getContentVersionVOWithId(Integer contentVersionId, Database db) throws SystemException, Bug
+    {
+		return (ContentVersionVO) getVOWithId(SmallContentVersionImpl.class, contentVersionId, db);
     }
 
     public ContentVersion getContentVersionWithId(Integer contentVersionId, Database db) throws SystemException, Bug
@@ -139,7 +147,7 @@ public class ContentVersionController extends BaseController
 
     public List getContentVersionVOList() throws SystemException, Bug
     {
-        return getAllVOObjects(ContentVersionImpl.class, "contentVersionId");
+        return getAllVOObjects(SmallContentVersionImpl.class, "contentVersionId");
     }
 
 	/**
@@ -606,8 +614,9 @@ public class ContentVersionController extends BaseController
 
         try
         {
-           
-            OQLQuery oql = db.getOQLQuery( "SELECT cv FROM org.infoglue.cms.entities.content.impl.simple.ContentVersionImpl cv WHERE cv.owningContent.contentId = $1 AND cv.language.languageId = $2 ORDER BY cv.contentVersionId desc");
+        	contentVersionVO = getLatestContentVersionVO(contentId, languageId, db);
+        	/*
+        	OQLQuery oql = db.getOQLQuery( "SELECT cv FROM org.infoglue.cms.entities.content.impl.simple.SmallContentVersionImpl cv WHERE cv.contentId = $1 AND cv.languageId = $2 ORDER BY cv.contentVersionId desc");
         	oql.bind(contentId);
         	oql.bind(languageId);
         	
@@ -623,7 +632,8 @@ public class ContentVersionController extends BaseController
             
 			results.close();
 			oql.close();
-
+			*/
+        	
 			commitTransaction(db);
         }
         catch(Exception e)
@@ -632,8 +642,29 @@ public class ContentVersionController extends BaseController
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
-    	
         
+		return contentVersionVO;
+    }
+
+	public ContentVersionVO getLatestContentVersionVO(Integer contentId, Integer languageId, Database db) throws SystemException, Bug, Exception
+    {
+        ContentVersionVO contentVersionVO = null;
+        
+        OQLQuery oql = db.getOQLQuery( "SELECT cv FROM org.infoglue.cms.entities.content.impl.simple.SmallContentVersionImpl cv WHERE cv.contentId = $1 AND cv.languageId = $2 ORDER BY cv.contentVersionId desc");
+    	oql.bind(contentId);
+    	oql.bind(languageId);
+    	
+    	QueryResults results = oql.execute(Database.ReadOnly);
+		
+		if (results.hasMore()) 
+        {
+			ContentVersion contentVersion = (ContentVersion)results.next();
+			contentVersionVO = contentVersion.getValueObject();
+        }
+		
+		results.close();
+		oql.close();
+		
 		return contentVersionVO;
     }
 
