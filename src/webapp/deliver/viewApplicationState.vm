@@ -159,6 +159,69 @@
   <tr>
     <td colspan="4" class="text"><a href="ViewApplicationState!clearOSCaches.action">Clear All</a></td>
   </tr>
+  <tr class="label">
+    <td colspan="4">Clear castor caches</td>
+  </tr>
+  <tr>
+    <td colspan="4" class="text" align="left">
+    	<form action="ViewApplicationState!clearCastorCache.action"> 
+	    	ClassName:
+	    	<select name="className">
+				<option value="org.infoglue.cms.entities.content.impl.simple.SmallContentImpl">SmallContentImpl</option>
+		    	<option value="org.infoglue.cms.entities.content.impl.simple.SmallishContentImpl">SmallishContentImpl</option>
+				<option value="org.infoglue.cms.entities.content.impl.simple.MediumContentImpl">MediumContentImpl</option>
+				<option value="org.infoglue.cms.entities.content.impl.simple.ContentImpl">ContentImpl</option>
+				<option value="org.infoglue.cms.entities.content.impl.simple.ContentRelationImpl">ContentRelationImpl</option>
+				<option value="org.infoglue.cms.entities.content.impl.simple.ContentVersionImpl">ContentVersionImpl</option>
+				<option value="org.infoglue.cms.entities.content.impl.simple.DigitalAssetImpl">DigitalAssetImpl</option>
+				<option value="org.infoglue.cms.entities.content.impl.simple.SmallDigitalAssetImpl">SmallDigitalAssetImpl</option>
+				<option value="org.infoglue.cms.entities.content.impl.simple.MediumDigitalAssetImpl">MediumDigitalAssetImpl</option>
+				<option value="org.infoglue.cms.entities.management.impl.simple.SmallAvailableServiceBindingImpl">SmallAvailableServiceBindingImpl</option>
+				<option value="org.infoglue.cms.entities.management.impl.simple.AvailableServiceBindingImpl">AvailableServiceBindingImpl</option>
+				<option value="org.infoglue.cms.entities.management.impl.simple.ContentTypeDefinitionImpl">ContentTypeDefinitionImpl</option>
+				<option value="org.infoglue.cms.entities.management.impl.simple.LanguageImpl">LanguageImpl</option>
+				<option value="org.infoglue.cms.entities.management.impl.simple.RepositoryImpl">RepositoryImpl</option>
+				<option value="org.infoglue.cms.entities.management.impl.simple.RepositoryLanguageImpl">RepositoryLanguageImpl</option>
+				<option value="org.infoglue.cms.entities.management.impl.simple.RoleImpl">RoleImpl</option>
+				<option value="org.infoglue.cms.entities.management.impl.simple.GroupImpl">GroupImpl</option>
+				<option value="org.infoglue.cms.entities.management.impl.simple.ServiceDefinitionImpl">ServiceDefinitionImpl</option>
+				<option value="org.infoglue.cms.entities.management.impl.simple.SiteNodeTypeDefinitionImpl">SiteNodeTypeDefinitionImpl</option>
+				<option value="org.infoglue.cms.entities.management.impl.simple.SystemUserImpl">SystemUserImpl</option>
+				<option value="org.infoglue.cms.entities.structure.impl.simple.QualifyerImpl">QualifyerImpl</option>
+				<option value="org.infoglue.cms.entities.structure.impl.simple.ServiceBindingImpl">ServiceBindingImpl</option>
+				<option value="org.infoglue.cms.entities.structure.impl.simple.SmallSiteNodeImpl">SmallSiteNodeImpl</option>
+				<option value="org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl">SiteNodeImpl</option>
+				<option value="org.infoglue.cms.entities.structure.impl.simple.SiteNodeVersionImpl">SiteNodeVersionImpl</option>
+				<option value="org.infoglue.cms.entities.structure.impl.simple.SmallSiteNodeVersionImpl">SmallSiteNodeVersionImpl</option>
+				<option value="org.infoglue.cms.entities.publishing.impl.simple.PublicationImpl">PublicationImpl</option>
+				<option value="org.infoglue.cms.entities.workflow.impl.simple.ActionImpl">ActionImpl</option>
+				<option value="org.infoglue.cms.entities.workflow.impl.simple.ActionDefinitionImpl">ActionDefinitionImpl</option>
+				<option value="org.infoglue.cms.entities.workflow.impl.simple.ActorImpl">ActorImpl</option>
+				<option value="org.infoglue.cms.entities.workflow.impl.simple.ConsequenceImpl">ConsequenceImpl</option>
+				<option value="org.infoglue.cms.entities.workflow.impl.simple.ConsequenceDefinitionImpl">ConsequenceDefinitionImpl</option>
+				<option value="org.infoglue.cms.entities.workflow.impl.simple.EventImpl">EventImpl</option>
+				<option value="org.infoglue.cms.entities.workflow.impl.simple.WorkflowImpl">WorkflowImpl</option>
+				<option value="org.infoglue.cms.entities.workflow.impl.simple.WorkflowDefinitionImpl">WorkflowDefinitionImpl</option>
+				<option value="org.infoglue.cms.entities.management.impl.simple.CategoryImpl">CategoryImpl</option>
+				<option value="org.infoglue.cms.entities.content.impl.simple.ContentCategoryImpl">ContentCategoryImpl</option>
+				<option value="org.infoglue.cms.entities.management.impl.simple.RegistryImpl">RegistryImpl</option>
+				<option value="org.infoglue.cms.entities.management.impl.simple.RedirectImpl">RedirectImpl</option>
+				<option value="org.infoglue.cms.entities.management.impl.simple.InterceptionPointImpl">InterceptionPointImpl</option>
+				<option value="org.infoglue.cms.entities.management.impl.simple.InterceptorImpl">InterceptorImpl</option>
+				<option value="org.infoglue.cms.entities.management.impl.simple.AccessRightImpl">AccessRightImpl</option>
+				<option value="org.infoglue.cms.entities.management.impl.simple.RolePropertiesImpl">RolePropertiesImpl</option>
+				<option value="org.infoglue.cms.entities.management.impl.simple.UserPropertiesImpl">UserPropertiesImpl</option>
+				<option value="org.infoglue.cms.entities.management.impl.simple.GroupPropertiesImpl">GroupPropertiesImpl</option>
+				<option value="org.infoglue.cms.entities.management.impl.simple.UserContentTypeDefinitionImpl">UserContentTypeDefinitionImpl</option>
+				<option value="org.infoglue.cms.entities.management.impl.simple.RoleContentTypeDefinitionImpl">RoleContentTypeDefinitionImpl</option>
+				<option value="org.infoglue.cms.entities.management.impl.simple.GroupContentTypeDefinitionImpl">GroupContentTypeDefinitionImpl</option>			
+				<option value="org.infoglue.cms.entities.management.impl.simple.PropertiesCategoryImpl">PropertiesCategoryImpl</option>
+				<option value="org.infoglue.cms.entities.management.impl.simple.ServerNodeImpl">ServerNodeImpl</option>	
+	    	</select>
+	    	<input type="submit" value="Submit"/>
+	    </form>
+    </td>
+  </tr>
   
   <tr><td colspan="4">&nbsp;</td></tr>
   

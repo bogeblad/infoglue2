@@ -1031,6 +1031,24 @@ public class CacheController extends Thread
 		}
 	}
 
+	public static synchronized void clearCache(Class c) throws Exception
+	{
+	    Database db = CastorDatabaseService.getDatabase();
+
+		try
+		{
+			clearCache(db, c);
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+		finally
+		{
+			db.close();			
+		}
+	}	
+
 	
 	public static void clearCache(Class type, Object[] ids, Database db) throws Exception
 	{
@@ -1071,30 +1089,9 @@ public class CacheController extends Thread
 	    }
 	}
 
-	/*
-	private static synchronized void clearCache(Class c) throws Exception
-	{
-	    Database db = CastorDatabaseService.getDatabase();
-
-		try
-		{
-		    clearCache(db, c);
-		}
-		catch(Exception e)
-		{
-			e.printStackTrace();
-		}
-		finally
-		{
-			db.close();			
-		}
-	}
-	*/
-
 	private static synchronized void clearCache(Database db, Class c) throws Exception
 	{
 		Class[] types = {c};
-		Class[] ids = {null};
 		CacheManager manager = db.getCacheManager();
 		manager.expireCache(types);
 		//db.expireCache(types, null);
