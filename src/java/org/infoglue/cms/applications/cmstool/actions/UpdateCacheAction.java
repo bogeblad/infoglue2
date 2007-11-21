@@ -28,8 +28,10 @@ import org.apache.log4j.Logger;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.applications.common.actions.SimpleXmlServiceAction;
 import org.infoglue.cms.entities.content.impl.simple.ContentImpl;
+import org.infoglue.cms.entities.content.impl.simple.ContentVersionImpl;
 import org.infoglue.cms.entities.content.impl.simple.MediumContentImpl;
 import org.infoglue.cms.entities.content.impl.simple.SmallContentImpl;
+import org.infoglue.cms.entities.content.impl.simple.SmallContentVersionImpl;
 import org.infoglue.cms.entities.content.impl.simple.SmallishContentImpl;
 import org.infoglue.cms.entities.management.impl.simple.ContentTypeDefinitionImpl;
 import org.infoglue.cms.entities.management.impl.simple.InterceptionPointImpl;
@@ -117,6 +119,12 @@ public class UpdateCacheAction extends InfoGlueAbstractAction
 					CacheController.clearCache(SmallContentImpl.class, new Object[]{new Integer(objectId)});
 					CacheController.clearCache(SmallishContentImpl.class, new Object[]{new Integer(objectId)});
 					CacheController.clearCache(MediumContentImpl.class, new Object[]{new Integer(objectId)});
+				}
+				
+				//If it's an ContentImpl we update SmallContentImpl as well.
+				if(Class.forName(className).getName().equals(ContentVersionImpl.class.getName()))
+				{
+					CacheController.clearCache(SmallContentVersionImpl.class, new Object[]{new Integer(objectId)});
 				}
 				
 				if(Class.forName(className).getClass().getName().equals(RepositoryImpl.class.getName()))
