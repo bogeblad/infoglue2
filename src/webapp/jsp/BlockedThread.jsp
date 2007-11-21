@@ -31,6 +31,7 @@
 		           	{
 		        	   out.print("Killing " + currentThreadId);
 		        	   threadArray[i].stop();
+		        	   RequestAnalyser.getRequestAnalyser().decNumberOfCurrentRequests(30000);
 		        	}
 		        }  
 				response.sendRedirect("BlockedThread.jsp");
