@@ -350,9 +350,16 @@ public class ViewPageAction extends InfoGlueAbstractAction
 		{
 			if(logger.isInfoEnabled())
 				logger.info("Before closing transaction");
-
-			closeTransaction(dbWrapper.getDatabase());
-		  
+			
+			try
+			{
+				closeTransaction(dbWrapper.getDatabase());
+			}
+			catch(Exception e) 
+			{ 
+				e.printStackTrace(); 
+			}
+			
 			if(logger.isInfoEnabled())
 				logger.info("After closing transaction");
 
@@ -576,11 +583,18 @@ public class ViewPageAction extends InfoGlueAbstractAction
 		}
 		finally
 		{
-		    closeTransaction(dbWrapper.getDatabase());
+			try
+			{
+				closeTransaction(dbWrapper.getDatabase());
+			}
+			catch (Exception e) 
+			{
+				e.printStackTrace();
+			}
 
-		    elapsedTime = System.currentTimeMillis() - start;
-
-			RequestAnalyser.getRequestAnalyser().decNumberOfCurrentRequests(elapsedTime);
+			elapsedTime = System.currentTimeMillis() - start;
+		    
+		    RequestAnalyser.getRequestAnalyser().decNumberOfCurrentRequests(elapsedTime);
 
 			if(!memoryWarningSent)
 			{

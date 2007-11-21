@@ -111,11 +111,13 @@ public class Counter
 
     synchronized static void decNumberOfCurrentRequests(long elapsedTime)
     {
-        count = new Integer(count.intValue() - 1);
-        if(elapsedTime > -1)
+    	if(count > 0)
+    		count = new Integer(count.intValue() - 1);
+        
+    	if(elapsedTime > -1 && activeCount > 0)
         	activeCount = new Integer(activeCount.intValue() - 1);
 
-        totalCount = new Integer(totalCount.intValue() + 1);
+    	totalCount = new Integer(totalCount.intValue() + 1);
 
         if(elapsedTime != -1)
         {
