@@ -80,7 +80,7 @@ public class RequestAndMetaInfoCentricCachePopulator
 
         HttpHelper helper = new HttpHelper();
         String recacheUrl = CmsPropertyHandler.getRecacheUrl() + "?siteNodeId=" + siteNodeId + "&refresh=true&isRecacheCall=true";
-        String response = helper.getUrlContent(recacheUrl);
+        String response = helper.getUrlContent(recacheUrl, 30000);
         
         String recacheBaseUrl = CmsPropertyHandler.getRecacheUrl().replaceAll("/ViewPage.action", "");
         String pathsToRecacheOnPublishing = CmsPropertyHandler.getPathsToRecacheOnPublishing();
@@ -90,8 +90,15 @@ public class RequestAndMetaInfoCentricCachePopulator
 	        for(int i = 0; i < pathsToRecacheOnPublishingArray.length; i++)
 	        {
 	            recacheUrl = recacheBaseUrl + pathsToRecacheOnPublishingArray[i] + "?refresh=true&isRecacheCall=true";
-	            //System.out.println("calling recacheUrl:" + recacheUrl);
-	            response = helper.getUrlContent(recacheUrl);
+	            logger.error("calling recacheUrl:" + recacheUrl);
+	            try
+	            {
+	            	response = helper.getUrlContent(recacheUrl, 30000);
+	            }
+	            catch (Exception e) 
+	            {
+	            	logger.error("An error occurred when we called recacheUrl:" + recacheUrl + ". Reason: " + e.getMessage());
+				}
 	        }
         }
         

@@ -284,11 +284,18 @@ public class HttpHelper
 		return readData;   
 	}
 
-	
+
 	public String getUrlContent(String urlAddress) throws Exception
+	{
+	    return getUrlContent(urlAddress, 30000);   
+	}
+
+	public String getUrlContent(String urlAddress, int timeout) throws Exception
 	{
 	    URL url = new URL(urlAddress);
 	    URLConnection connection = url.openConnection();
+	    connection.setConnectTimeout(timeout);
+	    connection.setReadTimeout(timeout);
 	    connection.setUseCaches(false);
 
 	    InputStream inStream = null;

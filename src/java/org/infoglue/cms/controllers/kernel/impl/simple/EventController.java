@@ -31,7 +31,9 @@ import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
 import org.exolab.castor.jdo.OQLQuery;
 import org.exolab.castor.jdo.QueryResults;
+import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.content.ContentVersion;
+import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.entities.management.Repository;
 import org.infoglue.cms.entities.management.impl.simple.RepositoryImpl;
@@ -265,10 +267,15 @@ public class EventController extends BaseController
             	{
 	            	if(event.getEntityClass().equalsIgnoreCase(ContentVersion.class.getName()))
 	            	{
-	            		ContentVersion contentVersion = null;
+	            		//ContentVersion contentVersion = null;
+	            		ContentVersionVO contentVersionVO = null;
+	            		ContentVO contentVO = null;
 	            		try
 	            		{
-	            			contentVersion = ContentVersionController.getContentVersionController().getContentVersionWithId(event.getEntityId(), db);
+	            			contentVersionVO = ContentVersionController.getContentVersionController().getContentVersionVOWithId(event.getEntityId(), db);
+	            			//contentVersion = ContentVersionController.getContentVersionController().getContentVersionWithId(event.getEntityId(), db);
+	            			if(contentVersionVO != null && contentVersionVO.getContentId() != null)
+	            				contentVO = ContentController.getContentController().getContentVOWithId(contentVersionVO.getContentId(), db);
 	            		}
 	            		catch(SystemException e)
 	            		{
@@ -277,17 +284,26 @@ public class EventController extends BaseController
 	            		}
 	            		
 	            		//logger.warn("contentVersion:" + contentVersion.getId() + ":" + contentVersion.getOwningContent());
-	            		if(contentVersion == null || contentVersion.getOwningContent() == null)
-	            		{
+	            		//if(contentVersion == null || contentVersion.getOwningContent() == null)
+	            		if(contentVersionVO == null || contentVO == null)
+	    	            {
 							isBroken = true;
 							isValid = false;
-							ContentVersionController.getContentVersionController().delete(contentVersion, db);
-        	    		}
+							try
+							{
+								ContentVersion contentVersion = ContentVersionController.getContentVersionController().getContentVersionWithId(event.getEntityId(), db);
+								ContentVersionController.getContentVersionController().delete(contentVersion, db);
+							}
+							catch (Exception e) 
+							{
+								logger.error("Error deleting contentVersion which lacked content:" + e.getMessage(), e);
+							}
+						}
 	            		else
 	            		{
 	            			if(principal != null && filter != null && filter.equalsIgnoreCase("groupBased"))
 		        		    {
-	            				String versionModifier = contentVersion.getVersionModifier();
+	            				String versionModifier = contentVersionVO.getVersionModifier();
 	            				if(versionModifier != null)
 	            				{
 	            					InfoGluePrincipal versionModifierPrincipal = UserControllerProxy.getController(db).getUser(versionModifier);
@@ -311,7 +327,7 @@ public class EventController extends BaseController
 		        		    }
 		            		else if(principal != null && filter != null && filter.indexOf("groupNameBased_") > -1)
 		            		{
-	            				String versionModifier = contentVersion.getVersionModifier();
+	            				String versionModifier = contentVersionVO.getVersionModifier();
 	            				if(versionModifier != null)
 	            				{
 	            					InfoGluePrincipal versionModifierPrincipal = UserControllerProxy.getController(db).getUser(versionModifier);
