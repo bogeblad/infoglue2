@@ -189,6 +189,36 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
     }
 
     /**
+     * This action allows clearing of the given cache manually.
+     */
+    public String doDecreaseActiveCount() throws Exception
+    {
+        if(CmsPropertyHandler.getOperatingMode().equalsIgnoreCase("3"))
+        {
+            this.getResponse().setContentType("text/plain");
+            this.getResponse().setStatus(HttpServletResponse.SC_FORBIDDEN);
+            this.getResponse().getWriter().println("You have no access to this view - talk to your administrator if you should.");
+            
+            return NONE;
+        }
+        
+        if(!ServerNodeController.getController().getIsIPAllowed(this.getRequest()))
+        {
+        	logger.error("A user from an IP(" + this.getRequest().getRemoteAddr() + ") which is not allowed tried to call doRestoreWorkflows.");
+
+            this.getResponse().setContentType("text/plain");
+            this.getResponse().setStatus(HttpServletResponse.SC_FORBIDDEN);
+            this.getResponse().getWriter().println("You have no access to this view - talk to your administrator if you should.");
+            
+            return NONE;
+        }
+        
+        RequestAnalyser.getRequestAnalyser().decNumberOfCurrentRequests(1000);
+        
+        return "cleared";
+    }
+
+    /**
      * This action allows setting of the loglevel on any class.
      */
     public String doSetLogLevel() throws Exception
