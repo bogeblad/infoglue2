@@ -248,8 +248,14 @@ public class ViewPageFilter implements Filter
 	            }
 	            finally
 	            {
-	                BaseDeliveryController.closeDatabase(db);
-	                
+	            	try
+	            	{
+	            		BaseDeliveryController.closeDatabase(db);
+	            	}
+	            	catch (Exception e) 
+	            	{
+	            		e.printStackTrace();
+					}
 	                RequestAnalyser.getRequestAnalyser().decNumberOfCurrentRequests(-1);
 	            }
 	            
