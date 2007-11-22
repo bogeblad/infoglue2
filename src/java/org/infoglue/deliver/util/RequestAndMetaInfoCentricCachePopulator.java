@@ -94,6 +94,8 @@ public class RequestAndMetaInfoCentricCachePopulator
 	            try
 	            {
 	            	response = helper.getUrlContent(recacheUrl, 30000);
+	            	
+	            	throw new Exception("Kollar bara varifrån...");
 	            }
 	            catch (Exception e) 
 	            {
