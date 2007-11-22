@@ -726,17 +726,7 @@ public class InfoGlueJDBCPropertySet extends JDBCPropertySet
  
     public static void clearCaches()
     {
-    	/*
-        try
-        {
-        	throw new Exception("Clearing caches...");
-        }
-        catch(Exception e)
-        {
-        	logger.error("clearCaches...", e);
-        }
-    	*/
-        if(valueMap != null)
+    	if(valueMap != null)
         {
 	    	synchronized (valueMap) 
 	    	{

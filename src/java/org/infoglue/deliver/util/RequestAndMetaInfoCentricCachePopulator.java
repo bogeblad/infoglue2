@@ -90,17 +90,7 @@ public class RequestAndMetaInfoCentricCachePopulator
 	        for(int i = 0; i < pathsToRecacheOnPublishingArray.length; i++)
 	        {
 	            recacheUrl = recacheBaseUrl + pathsToRecacheOnPublishingArray[i] + "?refresh=true&isRecacheCall=true";
-	            logger.error("calling recacheUrl:" + recacheUrl);
-	            try
-	            {
-	            	response = helper.getUrlContent(recacheUrl, 30000);
-	            	
-	            	throw new Exception("Kollar bara varifrån...");
-	            }
-	            catch (Exception e) 
-	            {
-	            	logger.error("An error occurred when we called recacheUrl:" + recacheUrl + ". Reason: " + e.getMessage());
-				}
+	            logger.info("calling recacheUrl:" + recacheUrl);
 	        }
         }
         

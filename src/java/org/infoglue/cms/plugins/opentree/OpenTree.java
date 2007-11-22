@@ -64,8 +64,6 @@ public class OpenTree extends JApplet
 
 	public void init()
 	{
-  	    System.out.println("Initializing tree...");
-			
         String serverAddress = null;
         Color bgColor = null;
         
@@ -85,15 +83,10 @@ public class OpenTree extends JApplet
 			System.out.println("applicationPath:" + applicationPath);
 	        serverAddress = codeBase.getProtocol() + "://" + codeBase.getHost() + ":" + codeBase.getPort() + "" + applicationPath + "/" +  entityName + "TreeService"; 
 	        String imageBaseURL = codeBase.getProtocol() + "://" + codeBase.getHost() + ":" + codeBase.getPort() + "" + applicationPath + "/"; 
-	        System.out.println("serverAddress:" + serverAddress);
-			
+	        
 			String folderOpenImage   = imageBaseURL + "images/" + entityName + "folderOpen.gif";
 			String folderClosedImage = imageBaseURL + "images/" + entityName + "folderClosed.gif";
 			String documentImage     = imageBaseURL + "images/" + entityName + "document.gif";
-			
-			System.out.println(folderOpenImage);
-			System.out.println(folderClosedImage);
-			System.out.println(documentImage);
 			
 			customOpenIcon   = new ImageIcon(new URL(folderOpenImage));
 	        customClosedIcon = new ImageIcon(new URL(folderClosedImage));
@@ -163,7 +156,6 @@ public class OpenTree extends JApplet
     
     public void openMainArea(CMSNode node)
     {
-        System.out.println("Trying to activate the main area through javascript...");
         try
         {
             JSObject win = JSObject.getWindow(this);
@@ -176,7 +168,7 @@ public class OpenTree extends JApplet
         }
         catch(Exception e)
         {
-            System.out.println("An error occurred while we tried to call a javascript: " + e);
+            System.err.println("An error occurred while we tried to call a javascript: " + e);
         }
     }    
 
@@ -200,10 +192,9 @@ public class OpenTree extends JApplet
         }
         catch(Exception e)
         {
-            System.out.println("An error occurred while we tried to call a javascript: " + e);
+            System.err.println("An error occurred while we tried to call a javascript: " + e);
 			e.printStackTrace();
         }
-        System.out.println("notifyLoaded done...");
     }    
 
 

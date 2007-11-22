@@ -69,18 +69,7 @@ public class CastorDatabaseService //extends DatabaseService
     {
         try
         {
-            //if(block)
-            //    throw new SystemException("The database was blocked for recache - try again in 1 second..");
-            
-            /*    
-            while(block)
-            {
-                logger.info("Waiting on block on database to release....");   
-                Thread.sleep(5);
-            }
-            */
             logger.info("Getting new databaseobject....");
-            //try {throw new Exception("SHIT....");} catch(Exception e){e.printStackTrace();}
             return getJDO().getDatabase();
         }
         catch(Exception e)

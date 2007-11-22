@@ -169,8 +169,6 @@ public class LanguageProvider extends InfoglueFunction
 		try 
 		{
 			languageVO = LanguageController.getController().getLanguageVOWithId(new Integer(languageId), getDatabase());
-			if(this.getRequestParameter("forceError") != null && this.getRequestParameter("forceError").equals("true"))
-				throw new Exception("null");
 		} 
 		catch (Exception e) 
 		{
@@ -188,8 +186,6 @@ public class LanguageProvider extends InfoglueFunction
 		try 
 		{
 			languageVO = LanguageController.getController().getLanguageVOWithCode(code, getDatabase());
-			if(this.getRequestParameter("forceError") != null && this.getRequestParameter("forceError").equals("true"))
-				throw new Exception("null");
 		} 
 		catch (Exception e) 
 		{

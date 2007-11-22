@@ -100,8 +100,6 @@ public class Communicator
         
         Node node = null;
         int status = Integer.parseInt(responseEnvelope.getStatus());
-
-        System.out.println("status:" + status);
         
         if(status == 0)
         {

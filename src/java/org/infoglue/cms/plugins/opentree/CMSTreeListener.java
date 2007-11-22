@@ -61,7 +61,6 @@ public class CMSTreeListener extends MouseAdapter implements TreeWillExpandListe
 			/*
             else if(e.getClickCount() == 2) 
             {
-                System.out.println("There was a doubleclick - lets find his children if expanded");
                 actOnDoubleClick(selRow, selPath);
             }
             */

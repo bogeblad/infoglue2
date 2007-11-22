@@ -284,14 +284,12 @@ public class RequestAnalyser
 
     public void setBlockRequests(boolean blockRequests)
     {
-    	//try { throw new Exception("Apa"); }catch(Exception e) {e.printStackTrace(); }
     	Blocker.setBlocking(blockRequests);
     }
 
 /*
     public static void setBlockRequests(boolean blockRequests)
     {
-    	//try { throw new Exception("Apa"); }catch(Exception e) {e.printStackTrace(); }
         RequestAnalyser.blockRequests = blockRequests;
     }
 */    

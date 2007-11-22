@@ -231,7 +231,6 @@ public class ViewAndCreateContentForServiceBindingAction extends InfoGlueAbstrac
     		    this.contentVO = SiteNodeController.getController().createSiteNodeMetaInfoContent(db, siteNode, this.repositoryId, this.getInfoGluePrincipal(), null).getValueObject();
             	siteNode.setMetaInfoContentId(this.contentVO.getId());
                 logger.error("The site node must have a meta information bound. We tried to recreate it. Old info was lost.");
-            	//throw new Exception("The site node must have a meta information bound. We tried to recreate it. Old info was lost.");
             } 
             else
             {
