@@ -452,8 +452,8 @@ public class ViewPageAction extends InfoGlueAbstractAction
     	}
     		
     	RequestAnalyser.getRequestAnalyser().incNumberOfCurrentRequests(tk);
-
-   		long start			= new Date().getTime();
+    	
+   		long start			= System.currentTimeMillis();
 		long elapsedTime 	= 0;
     			
 		DatabaseWrapper dbWrapper = new DatabaseWrapper(CastorDatabaseService.getDatabase());
