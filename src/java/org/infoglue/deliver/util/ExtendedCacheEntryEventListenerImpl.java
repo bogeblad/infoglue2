@@ -72,7 +72,7 @@ public class ExtendedCacheEntryEventListenerImpl extends CacheEntryEventListener
         {
         	if(content instanceof ContentVersionVO)
         	{
-        		totalSize = totalSize + ((ContentVersionVO)content).getVersionValue().length();        	
+        		totalSize = totalSize + (((ContentVersionVO)content).getVersionValue().length() * 2) + 38;        	
         	}
         	else if(content instanceof Map || content instanceof Set || content instanceof List)
         	{
@@ -98,7 +98,7 @@ public class ExtendedCacheEntryEventListenerImpl extends CacheEntryEventListener
         	}
         	else
         	{
-        		totalSize = totalSize + content.toString().length();
+        		totalSize = totalSize + (content.toString().length() * 2) + 38;
         	}
         }
     }
