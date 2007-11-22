@@ -591,9 +591,13 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			{
 				e.printStackTrace();
 			}
-
-			elapsedTime = System.currentTimeMillis() - start;
-		    
+			
+			long current = System.currentTimeMillis();
+			elapsedTime = current - start;
+		    if(elapsedTime < 0)
+		    	System.out.println("current:" + current + " - " + start);
+		    	
+		    	
 		    RequestAnalyser.getRequestAnalyser().decNumberOfCurrentRequests(elapsedTime);
 
 			if(!memoryWarningSent)
