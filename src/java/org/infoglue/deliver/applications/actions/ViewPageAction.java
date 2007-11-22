@@ -363,7 +363,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			if(logger.isInfoEnabled())
 				logger.info("After closing transaction");
 
-			elapsedTime = System.currentTimeMillis() - start;
+			elapsedTime = Math.abs(System.currentTimeMillis() - start);
 			RequestAnalyser.getRequestAnalyser().decNumberOfCurrentRequests(elapsedTime);
 			lastRequestProcessingTime = elapsedTime;
 
@@ -592,11 +592,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 				e.printStackTrace();
 			}
 			
-			long current = System.currentTimeMillis();
-			elapsedTime = current - start;
-		    if(elapsedTime < 0)
-		    	System.out.println("current:" + current + " - " + start);
-		    	
+			elapsedTime = Math.abs(System.currentTimeMillis() - start);
 		    	
 		    RequestAnalyser.getRequestAnalyser().decNumberOfCurrentRequests(elapsedTime);
 
