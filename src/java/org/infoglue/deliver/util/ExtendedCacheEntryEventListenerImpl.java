@@ -50,13 +50,13 @@ public class ExtendedCacheEntryEventListenerImpl extends CacheEntryEventListener
         	Object content = event.getMap().getFromCache(event.getKey());
             if(content != null && content instanceof byte[])
             {
-            	oldSize = ((byte[])content).length;        
+            	oldSize = ((byte[])content).length * 2;        
             }
             else if(content != null)
             {
             	if(content instanceof ContentVersionVO)
             	{
-            		oldSize = (((ContentVersionVO)content).getVersionValue().length() * 2) + 38;        	
+            		oldSize = (((ContentVersionVO)content).getVersionValue().length() * 2) + 38 + 400;
             	}
             	else if(content instanceof Map || content instanceof Set || content instanceof List)
             	{
@@ -72,7 +72,7 @@ public class ExtendedCacheEntryEventListenerImpl extends CacheEntryEventListener
             		while(mapIterator.hasNext())
             		{
             			Object o = mapIterator.next();
-                    	size += o.toString().length();
+                    	size += o.toString().length() * 2;
              		}
             		oldSize = size;        	
             	}
@@ -104,13 +104,13 @@ public class ExtendedCacheEntryEventListenerImpl extends CacheEntryEventListener
         Object content = event.getEntry().getContent();
         if(content != null && content instanceof byte[])
         {
-        	totalSize = totalSize + ((byte[])content).length;        
+        	totalSize = totalSize + (((byte[])content).length * 2);        
         }
         else if(content != null)
         {
         	if(content instanceof ContentVersionVO)
         	{
-        		totalSize = totalSize + (((ContentVersionVO)content).getVersionValue().length() * 2) + 38;        	
+        		totalSize = totalSize + (((ContentVersionVO)content).getVersionValue().length() * 2) + 38 + 400; //An average of other things stored in object        	
         	}
         	else if(content instanceof Map || content instanceof Set || content instanceof List)
         	{
@@ -126,7 +126,7 @@ public class ExtendedCacheEntryEventListenerImpl extends CacheEntryEventListener
         		while(mapIterator.hasNext())
         		{
         			Object o = mapIterator.next();
-                	size += o.toString().length();
+                	size += (o.toString().length()  * 2) + 38;
          		}
         		totalSize = totalSize + size;        	
         	}
