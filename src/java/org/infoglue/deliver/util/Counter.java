@@ -116,7 +116,13 @@ public class Counter
         
     	if(elapsedTime > -1 && activeCount > 0)
         	activeCount = new Integer(activeCount.intValue() - 1);
-
+    	else if(elapsedTime > -1)
+    		System.out.println("elapsedTime1:" + elapsedTime + ":" + activeCount + ":" + RequestAnalyser.getThreadMonitors().size());
+    	else if(activeCount > 0)
+    		System.out.println("elapsedTime2:" + elapsedTime + ":" + activeCount + ":" + RequestAnalyser.getThreadMonitors().size());
+    	else
+    		System.out.println("No active count and -1 - strange");
+    		
     	totalCount = new Integer(totalCount.intValue() + 1);
 
         if(elapsedTime != -1)

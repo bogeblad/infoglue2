@@ -146,6 +146,22 @@ public class RequestAnalyser
         return longThreads;
     }
 
+    public static List getThreadMonitors()
+    {
+    	List threads = new ArrayList();
+        synchronized(threadMonitors)
+        {
+	        Iterator i = threadMonitors.values().iterator();
+	        while(i.hasNext())
+	        {
+	        	ThreadMonitor tm = (ThreadMonitor)i.next();
+	        	threads.add(tm);
+	        }
+        }
+        
+        return threads;
+    }
+
     public synchronized void registerComponentStatistics(String componentName, long elapsedTime)
     {
         Counter.registerComponentStatistics(componentName, elapsedTime);
