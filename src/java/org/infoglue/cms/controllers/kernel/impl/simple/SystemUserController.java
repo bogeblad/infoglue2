@@ -281,7 +281,7 @@ public class SystemUserController extends BaseController
 	{
 		List filteredList = new ArrayList();
 		
-		OQLQuery oql = db.getOQLQuery( "SELECT u FROM org.infoglue.cms.entities.management.impl.simple.SystemUserImpl u");
+		OQLQuery oql = db.getOQLQuery( "SELECT u FROM org.infoglue.cms.entities.management.impl.simple.SystemUserImpl u ORDER BY u.userName");
     	
 		QueryResults results = oql.execute(Database.ReadOnly);
 		
