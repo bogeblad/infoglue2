@@ -44,15 +44,53 @@ public class ExtendedCacheEntryEventListenerImpl extends CacheEntryEventListener
 
     private int getOldSize(CacheEntryEvent event)
     {
+    	int oldSize = 0;
         try
         {
-            return event.getMap().getFromCache(event.getKey()).toString().length();
+        	Object content = event.getMap().getFromCache(event.getKey());
+            if(content != null && content instanceof byte[])
+            {
+            	oldSize = ((byte[])content).length;        
+            }
+            else if(content != null)
+            {
+            	if(content instanceof ContentVersionVO)
+            	{
+            		oldSize = (((ContentVersionVO)content).getVersionValue().length() * 2) + 38;        	
+            	}
+            	else if(content instanceof Map || content instanceof Set || content instanceof List)
+            	{
+            		int size = 0;
+            		Iterator mapIterator = null;
+            		if(content instanceof Map)
+            			mapIterator = ((Map)content).keySet().iterator();
+            		else if(content instanceof List)
+            			mapIterator = ((List)content).iterator();
+            		else
+            			mapIterator = ((Set)content).iterator();
+            		
+            		while(mapIterator.hasNext())
+            		{
+            			Object o = mapIterator.next();
+                    	size += o.toString().length();
+             		}
+            		oldSize = size;        	
+            	}
+            	else if(content instanceof NullObject)
+            	{
+            		oldSize = 10;
+            	}
+            	else
+            	{
+            		oldSize = (content.toString().length() * 2) + 38;
+            	}
+            }            
         }
         catch (NeedsRefreshException e)
         {
         	event.getMap().cancelUpdate(event.getKey());
-            return 0;
         }
+        return oldSize;
     }
     
     /**
