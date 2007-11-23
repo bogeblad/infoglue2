@@ -319,7 +319,7 @@ public class InfoGlueSettingsController extends BaseController implements Castor
 	    String newValue = null;
 		
         String cacheKey = "" + key + "_" + name + "_" + variationId + "_" + skipInfoGlueProperty + "_" + fallbackToDefault + "_" + fallbackToKey + "_" + useDerivedValue;
-        Object cacheObject = CacheController.getCachedObject(CacheController.SETTINGSPROPERTIESCACHENAME, cacheKey);
+        Object cacheObject = CacheController.getCachedObjectFromAdvancedCache(CacheController.SETTINGSPROPERTIESCACHENAME, cacheKey);
 	    //System.out.println("cacheObject:" + cacheObject);
 	    if(cacheObject instanceof NullObject)
 		{
@@ -370,11 +370,11 @@ public class InfoGlueSettingsController extends BaseController implements Castor
 		    if(property == null)
 		    {
 		    	//System.out.println("Caching null object for " + key);
-		    	CacheController.cacheObject(CacheController.SETTINGSPROPERTIESCACHENAME, cacheKey, new NullObject());
+		    	CacheController.cacheObjectInAdvancedCache(CacheController.SETTINGSPROPERTIESCACHENAME, cacheKey, new NullObject());
 		    }
 		    else
 		    {
-		    	CacheController.cacheObject(CacheController.SETTINGSPROPERTIESCACHENAME, cacheKey, property);
+		    	CacheController.cacheObjectInAdvancedCache(CacheController.SETTINGSPROPERTIESCACHENAME, cacheKey, property);
 		    }
 	    }
 	    catch(Exception e)

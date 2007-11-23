@@ -6524,19 +6524,19 @@ public class BasicTemplateController implements TemplateController
 				    
 				    String key = "ViewSiteNodePageComponents!addComponentPropertyBinding.action?siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=-1&entity=Content&entityId=#entityId&componentId=" + componentId + "&propertyName=" + property.getName() + "&path=#path&showSimple=" + getDeliveryContext().getShowSimple();
 				    
-			        String returnAddress = (String)CacheController.getCachedObject("serverNodePropertiesCache", key);
+			        String returnAddress = (String)CacheController.getCachedObjectFromAdvancedCache("serverNodePropertiesCache", key);
 			        if(returnAddress == null)
 			        {
 			        	returnAddress = URLEncoder.encode(key, "UTF-8");
-			        	CacheController.cacheObject("serverNodePropertiesCache", key, returnAddress);
+			        	CacheController.cacheObjectInAdvancedCache("serverNodePropertiesCache", key, returnAddress);
 			        }
 			        
 			        String cancelKey = this.getOriginalFullURL();
-			        String cancelAddress = (String)CacheController.getCachedObject("serverNodePropertiesCache", cancelKey);
+			        String cancelAddress = (String)CacheController.getCachedObjectFromAdvancedCache("serverNodePropertiesCache", cancelKey);
 			        if(cancelAddress == null)
 			        { 
 			        	cancelAddress = URLEncoder.encode(cancelKey, "UTF-8");
-			        	CacheController.cacheObject("serverNodePropertiesCache", cancelKey, cancelAddress);
+			        	CacheController.cacheObjectInAdvancedCache("serverNodePropertiesCache", cancelKey, cancelAddress);
 			        }
 
 				    //String returnAddress = URLEncoder.encode(key, "UTF-8");

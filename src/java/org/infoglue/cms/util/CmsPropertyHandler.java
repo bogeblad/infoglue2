@@ -313,7 +313,7 @@ public class CmsPropertyHandler
 		if(logger.isInfoEnabled())
 			logger.info("cacheKey:" + cacheKey);
 		
-		valueObject = CacheController.getCachedObject(cacheName, cacheKey);
+		valueObject = CacheController.getCachedObjectFromAdvancedCache(cacheName, cacheKey);
 		if(valueObject != null)
 		{
 			if(valueObject instanceof NullObject)
@@ -391,9 +391,9 @@ public class CmsPropertyHandler
 	    	value = value.trim();
 	    
 	    if(value != null)
-	    	CacheController.cacheObject(cacheName, cacheKey, value);
+	    	CacheController.cacheObjectInAdvancedCache(cacheName, cacheKey, value, null, false);
 	    else
-	    	CacheController.cacheObject(cacheName, cacheKey, new NullObject());
+	    	CacheController.cacheObjectInAdvancedCache(cacheName, cacheKey, new NullObject(), null, false);
 	    	
 	    if(logger.isInfoEnabled())
 			logger.info("Getting property " + cacheKey + " took:" + timer.getElapsedTime());
@@ -401,6 +401,11 @@ public class CmsPropertyHandler
 	    return value;
 	}
 
+
+	public static String getServerNodeDataProperty(String prefix, String key, boolean inherit, String defaultValue)
+	{
+		return getServerNodeDataProperty(prefix, key, inherit, defaultValue, false);
+	}
 	
 	/**
 	 * This method gets the serverNodeDataProperty.
@@ -410,7 +415,7 @@ public class CmsPropertyHandler
 	 * @return
 	 */
 	
-	public static String getServerNodeDataProperty(String prefix, String key, boolean inherit, String defaultValue)
+	public static String getServerNodeDataProperty(String prefix, String key, boolean inherit, String defaultValue, boolean skipCache)
 	{
 	    String value = null;
 	    
@@ -420,12 +425,15 @@ public class CmsPropertyHandler
         if(logger.isInfoEnabled())
     		logger.info("cacheKey:" + cacheKey);
 		
-        value = (String)CacheController.getCachedObject(cacheName, cacheKey);
-		if(value != null)
-		{
-			return value;
-		}
-	    
+        if(!skipCache)
+        {
+	        value = (String)CacheController.getCachedObjectFromAdvancedCache(cacheName, cacheKey);
+			if(value != null)
+			{
+				return value;
+			}
+        }
+        
 		Timer timer = new Timer();
 
 		if(logger.isInfoEnabled())
@@ -477,7 +485,8 @@ public class CmsPropertyHandler
 	    if(value == null && defaultValue != null)
 	    	value = defaultValue;
 	    
-	    CacheController.cacheObject(cacheName, cacheKey, value);
+	    if(!skipCache)
+	    	CacheController.cacheObjectInAdvancedCache(cacheName, cacheKey, value, null, false);
 	    
 	    if(logger.isInfoEnabled())
 			logger.info("Getting property " + cacheKey + " took:" + timer.getElapsedTime());
@@ -1346,7 +1355,7 @@ public class CmsPropertyHandler
 	{
 		Map cacheSettings = new HashMap();
 		
-	    String cacheSettingsString = CmsPropertyHandler.getServerNodeDataProperty(null, "cacheSettings", true, null);
+	    String cacheSettingsString = CmsPropertyHandler.getServerNodeDataProperty(null, "cacheSettings", true, null, true);
 	    if(cacheSettingsString != null && !cacheSettingsString.equals(""))
 		{
 	    	try

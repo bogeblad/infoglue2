@@ -180,6 +180,9 @@ public class CacheController extends Thread
 
 	public static void cacheObject(String cacheName, Object key, Object value)
 	{
+		if(cacheName == null || key == null || value == null)
+			return;
+
 		synchronized(caches)
 		{
 			if(!caches.containsKey(cacheName))
@@ -202,6 +205,9 @@ public class CacheController extends Thread
 	
 	public static Object getCachedObject(String cacheName, Object key)
 	{
+		if(cacheName == null || key == null)
+			return null;
+		
 		//synchronized(caches)
 		//{
 			Map cacheInstance = (Map)caches.get(cacheName);
@@ -228,22 +234,35 @@ public class CacheController extends Thread
 		
 		cacheObjectInAdvancedCache(cacheName, key, value, groups, useGroups);
 	}
+
+	public static void cacheObjectInAdvancedCache(String cacheName, Object key, Object value)
+	{
+		cacheObjectInAdvancedCache(cacheName, key, value, null, false);
+	}
 	
 	public static void cacheObjectInAdvancedCache(String cacheName, Object key, Object value, String[] groups, boolean useGroups)
 	{
+		if(cacheName == null || key == null || value == null || key.toString().length() == 0)
+			return;
+
 		//synchronized(caches) 
 		//{
 		    if(!caches.containsKey(cacheName))
 		    {
 		    	GeneralCacheAdministrator cacheAdministrator = null;
-		    	Map cacheSettings = (Map)getCachedObject("serverNodePropertiesCache", "cacheSettings");
+		    	Map cacheSettings = (Map)getCachedObject("serverNodePropertiesCacheSettings", "cacheSettings");
 		    	if(cacheSettings == null)
 		    	{
 		    		cacheSettings = CmsPropertyHandler.getCacheSettings();
-		    		cacheObject("serverNodePropertiesCache", "cacheSettings", cacheSettings);
+		    		cacheObject("serverNodePropertiesCacheSettings", "cacheSettings", cacheSettings);
 		    	}
 		    	
 		    	String cacheCapacity = (String)cacheSettings.get("CACHE_CAPACITY_" + cacheName);
+		    	if(cacheName != null && cacheName.equalsIgnoreCase("pageCache"))
+		    		cacheCapacity = "10000";
+				if(cacheName != null && cacheName.equalsIgnoreCase("serverNodePropertiesCache"))
+					cacheCapacity = "2000";
+		    	
 		    	if(cacheCapacity != null && !cacheCapacity.equals(""))
 		    	{
 					Properties p = new Properties();
@@ -304,6 +323,9 @@ public class CacheController extends Thread
 	
 	public static Object getCachedObjectFromAdvancedCache(String cacheName, String key)
 	{
+		if(cacheName == null || key == null || key.length() == 0)
+			return null;
+		
 	    //logger.info("getCachedObjectFromAdvancedCache start:" + cacheName + ":" + key);
 
 	    Object value = null;
