@@ -452,7 +452,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 				componentString = sb.toString();
 
 				Document componentPropertiesDocument = getComponentPropertiesDOM4JDocument(templateController, siteNodeId, languageId, component.getContentId()); 
-				this.propertiesDivs += getComponentPropertiesDiv(templateController, repositoryId, siteNodeId, languageId, contentId, component.getId(), component.getContentId(), componentPropertiesDocument);
+				this.propertiesDivs += getComponentPropertiesDiv(templateController, repositoryId, siteNodeId, languageId, contentId, component.getId(), component.getContentId(), componentPropertiesDocument, component);
 
 				Document componentTasksDocument = getComponentTasksDOM4JDocument(templateController, siteNodeId, languageId, component.getContentId()); 
 				this.tasksDivs += getComponentTasksDiv(repositoryId, siteNodeId, languageId, contentId, component, 0, 1, componentTasksDocument, templateController);
@@ -562,7 +562,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 								    subComponentString += childComponentsString;
 								    
 								Document componentPropertiesDocument = getComponentPropertiesDOM4JDocument(templateController, siteNodeId, languageId, component.getContentId()); 
-								this.propertiesDivs += getComponentPropertiesDiv(templateController, repositoryId, siteNodeId, languageId, contentId, new Integer(siteNodeId.intValue()*100 + subComponent.getId().intValue()), subComponent.getContentId(), componentPropertiesDocument);
+								this.propertiesDivs += getComponentPropertiesDiv(templateController, repositoryId, siteNodeId, languageId, contentId, new Integer(siteNodeId.intValue()*100 + subComponent.getId().intValue()), subComponent.getContentId(), componentPropertiesDocument, subComponent);
 								
 								Document componentTasksDocument = getComponentTasksDOM4JDocument(templateController, siteNodeId, languageId, subComponent.getContentId()); 
 								this.tasksDivs += getComponentTasksDiv(repositoryId, siteNodeId, languageId, contentId, subComponent, index, subComponents.size() - 1, componentTasksDocument, templateController);
@@ -600,7 +600,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 								}
 								
 								Document componentPropertiesDocument = getComponentPropertiesDOM4JDocument(templateController, siteNodeId, languageId, subComponent.getContentId()); 
-								this.propertiesDivs += getComponentPropertiesDiv(templateController, repositoryId, siteNodeId, languageId, contentId, subComponent.getId(), subComponent.getContentId(), componentPropertiesDocument);
+								this.propertiesDivs += getComponentPropertiesDiv(templateController, repositoryId, siteNodeId, languageId, contentId, subComponent.getId(), subComponent.getContentId(), componentPropertiesDocument, subComponent);
 								
 								Document componentTasksDocument = getComponentTasksDOM4JDocument(templateController, siteNodeId, languageId, subComponent.getContentId()); 
 								this.tasksDivs += getComponentTasksDiv(repositoryId, siteNodeId, languageId, contentId, subComponent, index, subComponents.size() - 1, componentTasksDocument, templateController);
@@ -683,7 +683,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 	 * This method creates a div for the components properties.
 	 */
 	
-	private String getComponentPropertiesDiv(TemplateController templateController, Integer repositoryId, Integer siteNodeId, Integer languageId, Integer contentId, Integer componentId, Integer componentContentId, Document document) throws Exception
+	private String getComponentPropertiesDiv(TemplateController templateController, Integer repositoryId, Integer siteNodeId, Integer languageId, Integer contentId, Integer componentId, Integer componentContentId, Document document, InfoGlueComponent component) throws Exception
 	{	
 	    if(templateController.getRequestParameter("skipPropertiesDiv") != null && templateController.getRequestParameter("skipPropertiesDiv").equalsIgnoreCase("true"))
 	        return "";
@@ -704,8 +704,16 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		if(formsEncoding != null && formsEncoding.length() > 0)
 		    acceptCharset = "accept-charset=\"" + formsEncoding + "\"";
 		*/
+		String componentName = component.getName();
+		if(componentName.length() > 20) 
+			componentName = componentName.substring(0, 20) + "...";
+		
+		String slotName = component.getSlotName();
+		if(slotName.length() > 10) 
+			slotName = slotName.substring(0, 10) + "...";
+		
 		sb.append("<div id=\"component" + componentId + "Properties\" class=\"componentProperties\" style=\"right:5px; top:5px; visibility:hidden;\">");
-		sb.append("	<div id=\"component" + componentId + "PropertiesHandle\" class=\"componentPropertiesHandle\"><div id=\"leftPaletteHandle\">Properties</div><div id=\"rightPaletteHandle\"><a href=\"javascript:hideDiv('component" + componentId + "Properties');\" class=\"white\"><img src=\"" + componentEditorUrl + "/images/closeIcon.gif\" border=\"0\"/></a></div></div>");
+		sb.append("	<div id=\"component" + componentId + "PropertiesHandle\" class=\"componentPropertiesHandle\"><div id=\"leftPaletteHandleCompProps\">Properties - " + componentName + " in slot " + slotName + "</div><div id=\"rightPaletteHandle\"><a href=\"javascript:hideDiv('component" + componentId + "Properties');\" class=\"white\"><img src=\"" + componentEditorUrl + "/images/closeIcon.gif\" border=\"0\"/></a></div></div>");
 		sb.append("	<div id=\"component" + componentId + "PropertiesBody\" class=\"componentPropertiesBody\">");
 		
 		//sb.append("	<form " + acceptCharset + " id=\"component" + componentId + "PropertiesForm\" name=\"component" + componentId + "PropertiesForm\" action=\"" + componentEditorUrl + "ViewSiteNodePageComponents!updateComponentProperties.action\" method=\"POST\">");
@@ -765,7 +773,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 			    principal = templateController.getPrincipal(cmsUserName);
 
 			boolean hasAccessToProperty = AccessRightController.getController().getIsPrincipalAuthorized(templateController.getDatabase(), principal, "ComponentPropertyEditor.EditProperty", "" + componentContentId + "_" + componentProperty.getName());
-
+			
 			StringBuffer helpSB = new StringBuffer();
 			helpSB.append("<div class=\"tooltipDiv\" id=\"helpLayer" + componentProperty.getComponentId() + "_" + componentProperty.getName() + "\">");
 			helpSB.append("" + (componentProperty.getDescription() == null || componentProperty.getDescription().equalsIgnoreCase("") ? "No description" : componentProperty.getDescription()) + "");
@@ -851,11 +859,11 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 					    String returnAddress = URLEncoder.encode("ViewSiteNodePageComponents!addComponentPropertyBinding.action?siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=-1&entity=Content&entityId=#entityId&componentId=" + componentId + "&propertyName=" + componentProperty.getName() + "&path=#path&showSimple=" + this.getTemplateController().getDeliveryContext().getShowSimple() + "", "UTF-8");
 						
 				        String cancelKey = templateController.getOriginalFullURL();
-				        String cancelAddress = (String)CacheController.getCachedObject("serverNodePropertiesCache", cancelKey);
+				        String cancelAddress = (String)CacheController.getCachedObjectFromAdvancedCache("serverNodePropertiesCache", cancelKey);
 				        if(cancelAddress == null)
 				        {
 				        	cancelAddress = URLEncoder.encode(cancelKey, "UTF-8");
-				        	CacheController.cacheObject("serverNodePropertiesCache", cancelKey, cancelAddress);
+				        	CacheController.cacheObjectInAdvancedCache("serverNodePropertiesCache", cancelKey, cancelAddress);
 				        }
 
 						if(componentProperty.getIsMultipleBinding())
@@ -870,11 +878,11 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 					    String returnAddress = URLEncoder.encode("ViewSiteNodePageComponents!addComponentPropertyBinding.action?siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=-1&entity=Content&entityId=#entityId&componentId=" + componentId + "&propertyName=" + componentProperty.getName() + "&path=#path&showSimple=" + this.getTemplateController().getDeliveryContext().getShowSimple() + "", "UTF-8");
 						
 				        String cancelKey = templateController.getOriginalFullURL();
-				        String cancelAddress = (String)CacheController.getCachedObject("serverNodePropertiesCache", cancelKey);
+				        String cancelAddress = (String)CacheController.getCachedObjectFromAdvancedCache("serverNodePropertiesCache", cancelKey);
 				        if(cancelAddress == null)
 				        {
 				        	cancelAddress = URLEncoder.encode(cancelKey, "UTF-8");
-				        	CacheController.cacheObject("serverNodePropertiesCache", cancelKey, cancelAddress);
+				        	CacheController.cacheObjectInAdvancedCache("serverNodePropertiesCache", cancelKey, cancelAddress);
 				        }
 
 						if(componentProperty.getIsMultipleBinding())
