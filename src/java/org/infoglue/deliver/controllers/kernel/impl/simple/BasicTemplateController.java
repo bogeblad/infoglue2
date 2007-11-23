@@ -6524,19 +6524,19 @@ public class BasicTemplateController implements TemplateController
 				    
 				    String key = "ViewSiteNodePageComponents!addComponentPropertyBinding.action?siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=-1&entity=Content&entityId=#entityId&componentId=" + componentId + "&propertyName=" + property.getName() + "&path=#path&showSimple=" + getDeliveryContext().getShowSimple();
 				    
-			        String returnAddress = (String)CacheController.getCachedObjectFromAdvancedCache("serverNodePropertiesCache", key);
+			        String returnAddress = (String)CacheController.getCachedObjectFromAdvancedCache("encodedStringsCache", key);
 			        if(returnAddress == null)
 			        {
 			        	returnAddress = URLEncoder.encode(key, "UTF-8");
-			        	CacheController.cacheObjectInAdvancedCache("serverNodePropertiesCache", key, returnAddress);
+			        	CacheController.cacheObjectInAdvancedCache("encodedStringsCache", key, returnAddress);
 			        }
 			        
 			        String cancelKey = this.getOriginalFullURL();
-			        String cancelAddress = (String)CacheController.getCachedObjectFromAdvancedCache("serverNodePropertiesCache", cancelKey);
+			        String cancelAddress = (String)CacheController.getCachedObjectFromAdvancedCache("encodedStringsCache", cancelKey);
 			        if(cancelAddress == null)
 			        { 
 			        	cancelAddress = URLEncoder.encode(cancelKey, "UTF-8");
-			        	CacheController.cacheObjectInAdvancedCache("serverNodePropertiesCache", cancelKey, cancelAddress);
+			        	CacheController.cacheObjectInAdvancedCache("encodedStringsCache", cancelKey, cancelAddress);
 			        }
 
 				    //String returnAddress = URLEncoder.encode(key, "UTF-8");

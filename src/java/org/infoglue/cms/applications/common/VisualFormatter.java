@@ -446,11 +446,11 @@ public class VisualFormatter
 		if(s == null)
 			return null;
 		
-        String encodedString = (String)CacheController.getCachedObjectFromAdvancedCache("serverNodePropertiesCache", s);
+        String encodedString = (String)CacheController.getCachedObjectFromAdvancedCache("encodedStringsCache", s);
         if(encodedString == null)
         {
         	encodedString = URLEncoder.encode(s, "UTF-8");
-        	CacheController.cacheObjectInAdvancedCache("serverNodePropertiesCache", s, encodedString, null, false);
+        	CacheController.cacheObjectInAdvancedCache("encodedStringsCache", s, encodedString, null, false);
         }
 
 		return encodedString;
@@ -467,11 +467,11 @@ public class VisualFormatter
 		
 		String encoding = CmsPropertyHandler.getURIEncoding();
 		
-		String encodedString = (String)CacheController.getCachedObjectFromAdvancedCache("serverNodePropertiesCache", s);
+		String encodedString = (String)CacheController.getCachedObjectFromAdvancedCache("encodedStringsCache", s);
         if(encodedString == null)
         {
         	encodedString = URLEncoder.encode(s, encoding);
-        	CacheController.cacheObjectInAdvancedCache("serverNodePropertiesCache", s, encodedString, null, false);
+        	CacheController.cacheObjectInAdvancedCache("encodedStringsCache", s, encodedString, null, false);
         }
         
 		return encodedString;
@@ -483,11 +483,11 @@ public class VisualFormatter
 		if(s == null)
 			return null;
 		
-		String encodedString = (String)CacheController.getCachedObjectFromAdvancedCache("serverNodePropertiesCache", s);
+		String encodedString = (String)CacheController.getCachedObjectFromAdvancedCache("encodedStringsCache", s);
         if(encodedString == null)
         {
         	encodedString = URLEncoder.encode(s, encoding);
-        	CacheController.cacheObjectInAdvancedCache("serverNodePropertiesCache", s, encodedString, null, false);
+        	CacheController.cacheObjectInAdvancedCache("encodedStringsCache", s, encodedString, null, false);
         }
         
 		return encodedString;

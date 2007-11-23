@@ -172,6 +172,7 @@ public class CacheController extends Thread
 	public static void clearServerNodeProperty(boolean reCache)
 	{
 		clearCache("serverNodePropertiesCache");
+		clearCache("encodedStringsCache");
 		if(reCache)
 			InfoGlueJDBCPropertySet.reCache();
    		else
@@ -733,7 +734,10 @@ public class CacheController extends Thread
 					{
 						clear = true;						
 					}
-					
+					if(!cacheName.equalsIgnoreCase("encodedStringsCache") && entity.equalsIgnoreCase("ServerNodeProperties"))
+					{
+						clear = true;						
+					}
 					
 					logger.info("clear:" + clear);
 					

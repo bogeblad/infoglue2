@@ -1604,11 +1604,11 @@ public class NodeDeliveryController extends BaseDeliveryController
         }
         
         String key = "" + pathPart + "_" + niceURIEncoding;
-        String encodedPath = (String)CacheController.getCachedObjectFromAdvancedCache("serverNodePropertiesCache", key);
+        String encodedPath = (String)CacheController.getCachedObjectFromAdvancedCache("encodedStringsCache", key);
         if(encodedPath == null)
         {
         	encodedPath = URLEncoder.encode(pathPart, niceURIEncoding);
-        	CacheController.cacheObjectInAdvancedCache("serverNodePropertiesCache", key, encodedPath);
+        	CacheController.cacheObjectInAdvancedCache("encodedStringsCache", key, encodedPath);
         }
         
         path.append(encodedPath);

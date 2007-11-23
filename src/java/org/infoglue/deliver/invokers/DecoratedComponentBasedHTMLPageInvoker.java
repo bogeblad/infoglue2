@@ -859,11 +859,11 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 					    String returnAddress = URLEncoder.encode("ViewSiteNodePageComponents!addComponentPropertyBinding.action?siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=-1&entity=Content&entityId=#entityId&componentId=" + componentId + "&propertyName=" + componentProperty.getName() + "&path=#path&showSimple=" + this.getTemplateController().getDeliveryContext().getShowSimple() + "", "UTF-8");
 						
 				        String cancelKey = templateController.getOriginalFullURL();
-				        String cancelAddress = (String)CacheController.getCachedObjectFromAdvancedCache("serverNodePropertiesCache", cancelKey);
+				        String cancelAddress = (String)CacheController.getCachedObjectFromAdvancedCache("encodedStringsCache", cancelKey);
 				        if(cancelAddress == null)
 				        {
 				        	cancelAddress = URLEncoder.encode(cancelKey, "UTF-8");
-				        	CacheController.cacheObjectInAdvancedCache("serverNodePropertiesCache", cancelKey, cancelAddress);
+				        	CacheController.cacheObjectInAdvancedCache("encodedStringsCache", cancelKey, cancelAddress);
 				        }
 
 						if(componentProperty.getIsMultipleBinding())
@@ -878,11 +878,11 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 					    String returnAddress = URLEncoder.encode("ViewSiteNodePageComponents!addComponentPropertyBinding.action?siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=-1&entity=Content&entityId=#entityId&componentId=" + componentId + "&propertyName=" + componentProperty.getName() + "&path=#path&showSimple=" + this.getTemplateController().getDeliveryContext().getShowSimple() + "", "UTF-8");
 						
 				        String cancelKey = templateController.getOriginalFullURL();
-				        String cancelAddress = (String)CacheController.getCachedObjectFromAdvancedCache("serverNodePropertiesCache", cancelKey);
+				        String cancelAddress = (String)CacheController.getCachedObjectFromAdvancedCache("encodedStringsCache", cancelKey);
 				        if(cancelAddress == null)
 				        {
 				        	cancelAddress = URLEncoder.encode(cancelKey, "UTF-8");
-				        	CacheController.cacheObjectInAdvancedCache("serverNodePropertiesCache", cancelKey, cancelAddress);
+				        	CacheController.cacheObjectInAdvancedCache("encodedStringsCache", cancelKey, cancelAddress);
 				        }
 
 						if(componentProperty.getIsMultipleBinding())
