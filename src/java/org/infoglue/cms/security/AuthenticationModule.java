@@ -128,6 +128,8 @@ public abstract class AuthenticationModule
 
 	public abstract void setInvalidLoginUrl(String invalidLoginUrl);
 
+	public abstract String getSSOUserName(HttpServletRequest request) throws Exception;
+
 	public abstract String getLoginUrl();
 
 	public abstract void setLoginUrl(String loginUrl);

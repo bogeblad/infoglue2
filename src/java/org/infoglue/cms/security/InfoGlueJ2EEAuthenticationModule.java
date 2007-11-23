@@ -424,4 +424,13 @@ public class InfoGlueJ2EEAuthenticationModule extends AuthenticationModule
 		return true;
 	}
 
+	/**
+	 * This method handles all of the logic for checking how to handle a login.
+	 */
+	
+	public String getSSOUserName(HttpServletRequest request) throws Exception
+	{
+		return null;
+	}
+
 }

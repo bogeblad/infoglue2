@@ -242,7 +242,15 @@ public class ViewPageAction extends InfoGlueAbstractAction
 				protectDeliver = true;
 				
 			if(protectedSiteNodeVersionId != null || protectDeliver)
+			{
+				if(logger.isInfoEnabled())
+				{
+					logger.info("protectedSiteNodeVersionId:" + protectedSiteNodeVersionId);
+					logger.info("protectDeliver:" + protectDeliver);
+				}
+				
 				isUserRedirected = handleExtranetLogic(dbWrapper.getDatabase(), this.repositoryId, protectedSiteNodeVersionId, protectDeliver);
+			}
 			else
 			{
 				String forceIdentityCheck = RepositoryDeliveryController.getRepositoryDeliveryController().getExtraPropertyValue(this.repositoryId, "forceIdentityCheck");
@@ -254,7 +262,10 @@ public class ViewPageAction extends InfoGlueAbstractAction
 					if(logger.isInfoEnabled())
 						logger.info("isForcedIdentityCheckDisabled:" + isForcedIdentityCheckDisabled);
 					if(!isForcedIdentityCheckDisabled)
+					{
+						System.out.println("BBBBBBBBBBBBBBBBBBB");
 						isUserRedirected = handleExtranetLogic(dbWrapper.getDatabase(), true);
+					}
 				}
 			}
 			
@@ -873,7 +884,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			
 			Principal principal = (Principal)this.getHttpSession().getAttribute("infogluePrincipal");
 			logger.info("principal:" + principal);
-
+		
 			//First we check if the user is logged in to the container context
 			if(principal == null)
 			{
@@ -898,7 +909,6 @@ public class ViewPageAction extends InfoGlueAbstractAction
 					}
 			    }
 			}
-		
 			if(principal == null && !protectDeliver)
 			{
 				Principal anonymousPrincipal = getAnonymousPrincipal();
@@ -1081,10 +1091,31 @@ public class ViewPageAction extends InfoGlueAbstractAction
 
 					if(principal.getName().equals(CmsPropertyHandler.getAnonymousUser()))
 					{
-						logger.info("SiteNode is protected and user was anonymous - sending him to login page.");
-						String url = getRedirectUrl(getRequest(), getResponse());
-						getResponse().sendRedirect(url);
-						isRedirected = true;
+						String ssoUserName = AuthenticationModule.getAuthenticationModule(null, this.getOriginalFullURL()).getSSOUserName(getRequest());
+						//System.out.println("ssoUserName:" + ssoUserName);
+						if(ssoUserName != null)
+						{
+							principal = UserControllerProxy.getController().getUser(ssoUserName);
+
+							//System.out.println("principal:" + principal);
+							if(principal != null)
+							{
+								this.principal = principal;
+							    this.getHttpSession().setAttribute("infogluePrincipal", principal);
+								this.getHttpSession().setAttribute("infoglueRemoteUser", principal.getName());
+							}
+						}
+						else
+						{
+							logger.info("SiteNode is protected and user was anonymous - sending him to login page.");
+							String url = getRedirectUrl(getRequest(), getResponse());
+							logger.info("url:" + url);
+							if(url != null)
+							{
+								getResponse().sendRedirect(url);
+								isRedirected = true;
+							}
+						}
 					}
 					else
 					{

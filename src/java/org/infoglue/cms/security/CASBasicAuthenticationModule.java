@@ -209,6 +209,27 @@ public class CASBasicAuthenticationModule extends AuthenticationModule//, Author
 		return authenticatedUserName;
 	}
 	
+	
+	/**
+	 * This method handles all of the logic for checking how to handle a login.
+	 */
+	
+	public String getSSOUserName(HttpServletRequest request) throws Exception
+	{
+		String authenticatedUserName = null;
+
+		String ticket = request.getParameter("ticket");
+		logger.info("ticket:" + ticket);
+		
+		if(ticket != null)
+		{
+			authenticatedUserName = authenticate(ticket);
+			logger.info("authenticatedUserName:" + authenticatedUserName);
+		}
+		
+		return authenticatedUserName;
+	}
+
 	/**
 	 * This method handles all of the logic for checking how to handle a login.
 	 */
