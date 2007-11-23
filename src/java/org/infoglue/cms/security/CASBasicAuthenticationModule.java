@@ -493,7 +493,6 @@ public class CASBasicAuthenticationModule extends AuthenticationModule//, Author
 					casServiceUrl = casServiceUrl + "?skipSSOCheck=true";
 				else
 					casServiceUrl = casServiceUrl + "&skipSSOCheck=true";	
-				System.out.println("casServiceUrl:" + casServiceUrl);
 			}
 			
 			returnUrl = URLEncoder.encode(casServiceUrl, "UTF-8");

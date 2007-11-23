@@ -263,7 +263,6 @@ public class ViewPageAction extends InfoGlueAbstractAction
 						logger.info("isForcedIdentityCheckDisabled:" + isForcedIdentityCheckDisabled);
 					if(!isForcedIdentityCheckDisabled)
 					{
-						System.out.println("BBBBBBBBBBBBBBBBBBB");
 						isUserRedirected = handleExtranetLogic(dbWrapper.getDatabase(), true);
 					}
 				}
