@@ -61,6 +61,18 @@ Abbreviated Changelog from 2.6.0 Final
 - Added a feature in export content and export site so one can skip all assets that are of a certain size and above. Very handy to keep down export size.
 - Removed servlet.jar and catalina.jar from distributions. No need for them.
 - Added attribute on deliveryContext and changed a bit in pageInvoker which allows you to control the page content type in your components. Both content type and charset can be set in the attribute as once as usual in http.
+- Added a new entity called SmallSiteNodeVersion to enhance performance in the tools in some views in large installations.
+- Worked more on performance in structure tool. Now no more startup delays hopefully in superlarge installations.
+- Patched castor-bug with oracle 10g so oracle limit support is allways true in OQL - we only support oracle 8.1.6 and forward from now on.
+- Reversed some changes and removed a lot of extra entities. Instead removed serviceBindings relation on AvailableServiceBinding. Works better.
+- Added possibility to clear castor caches individually so one can finetune cache later. Mostly for advanced users.
+- Fixed so no duplicates appears when searching for users in management tool.
+- Fixed so InfoGlue handles the lack of exact resolution in the OS on currentTimeMillis. Could result on some OS in a bad state. 
+- Changed how string size are calculated in caches. Before was far to small.
+- Added component name and slot name in property header in decorated page view. 
+- Fixed so serverNodePropertiesCache are stored in oscache with a limit. Before it grew to much. Also Added limitation on pageCache to 10000 pages and on serverNodePropertiesCache to 2000 properties but that can be overridden in cache settings as usual.
+- Made new cache for string encodings.. no need to keep them together with serverNodeProperties as it will slow it down.
+- Fixed bug in SSO-handling.
 
 -------------------------------------------------------------------------------------
 - InfoGlue 2.6.0 Final
