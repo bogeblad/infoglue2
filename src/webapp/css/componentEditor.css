@@ -36,6 +36,13 @@ Component palette classes
 	text-align: left;
 	line-height:10px;
 	}
+#leftPaletteHandleCompProps {
+	width: 350px; 
+	float: left;
+	color:white;
+	text-align: left;
+	line-height:10px;
+	}
 #rightPaletteHandle {
 	color:white;
 	text-align: right;
