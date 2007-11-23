@@ -261,8 +261,6 @@ public class CacheController extends Thread
 		    	String cacheCapacity = (String)cacheSettings.get("CACHE_CAPACITY_" + cacheName);
 		    	if(cacheName != null && cacheName.equalsIgnoreCase("pageCache"))
 		    		cacheCapacity = "10000";
-				if(cacheName != null && cacheName.equalsIgnoreCase("serverNodePropertiesCache"))
-					cacheCapacity = "1000";
 				if(cacheName != null && cacheName.equalsIgnoreCase("encodedStringsCache"))
 					cacheCapacity = "2000";
 		    	

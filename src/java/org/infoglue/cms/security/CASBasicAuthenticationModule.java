@@ -467,7 +467,13 @@ public class CASBasicAuthenticationModule extends AuthenticationModule//, Author
 		{
 			String gateway 	= (String)request.getAttribute("gateway");
 			if(gateway != null)
-				casServiceUrl = casServiceUrl + "&skipSSOCheck=true";
+			{
+				if(casServiceUrl.indexOf("?") == -1)
+					casServiceUrl = casServiceUrl + "?skipSSOCheck=true";
+				else
+					casServiceUrl = casServiceUrl + "&skipSSOCheck=true";	
+				System.out.println("casServiceUrl:" + casServiceUrl);
+			}
 			
 			returnUrl = URLEncoder.encode(casServiceUrl, "UTF-8");
 		}

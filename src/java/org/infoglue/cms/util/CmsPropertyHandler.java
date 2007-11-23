@@ -313,7 +313,7 @@ public class CmsPropertyHandler
 		if(logger.isInfoEnabled())
 			logger.info("cacheKey:" + cacheKey);
 		
-		valueObject = CacheController.getCachedObjectFromAdvancedCache(cacheName, cacheKey);
+		valueObject = CacheController.getCachedObject(cacheName, cacheKey);
 		if(valueObject != null)
 		{
 			if(valueObject instanceof NullObject)
@@ -391,9 +391,9 @@ public class CmsPropertyHandler
 	    	value = value.trim();
 	    
 	    if(value != null)
-	    	CacheController.cacheObjectInAdvancedCache(cacheName, cacheKey, value, null, false);
+	    	CacheController.cacheObject(cacheName, cacheKey, value);
 	    else
-	    	CacheController.cacheObjectInAdvancedCache(cacheName, cacheKey, new NullObject(), null, false);
+	    	CacheController.cacheObject(cacheName, cacheKey, new NullObject());
 	    	
 	    if(logger.isInfoEnabled())
 			logger.info("Getting property " + cacheKey + " took:" + timer.getElapsedTime());
@@ -427,7 +427,7 @@ public class CmsPropertyHandler
 		
         if(!skipCache)
         {
-	        value = (String)CacheController.getCachedObjectFromAdvancedCache(cacheName, cacheKey);
+	        value = (String)CacheController.getCachedObject(cacheName, cacheKey);
 			if(value != null)
 			{
 				return value;
@@ -486,7 +486,7 @@ public class CmsPropertyHandler
 	    	value = defaultValue;
 	    
 	    if(!skipCache)
-	    	CacheController.cacheObjectInAdvancedCache(cacheName, cacheKey, value, null, false);
+	    	CacheController.cacheObject(cacheName, cacheKey, value);
 	    
 	    if(logger.isInfoEnabled())
 			logger.info("Getting property " + cacheKey + " took:" + timer.getElapsedTime());
