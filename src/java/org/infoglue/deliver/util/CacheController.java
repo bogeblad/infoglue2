@@ -262,6 +262,8 @@ public class CacheController extends Thread
 		    	if(cacheName != null && cacheName.equalsIgnoreCase("pageCache"))
 		    		cacheCapacity = "10000";
 				if(cacheName != null && cacheName.equalsIgnoreCase("serverNodePropertiesCache"))
+					cacheCapacity = "1000";
+				if(cacheName != null && cacheName.equalsIgnoreCase("encodedStringsCache"))
 					cacheCapacity = "2000";
 		    	
 		    	if(cacheCapacity != null && !cacheCapacity.equals(""))
