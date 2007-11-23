@@ -467,9 +467,10 @@ public class CacheController extends Thread
 				//printThreads();
 				break;
 			}
+	        /*
 			if(wait == 0)
 				System.out.println("threadMonitors:" + RequestAnalyser.getThreadMonitors().size());
-	        
+	        */
 			Thread.sleep(10);
 			wait++;
 	    }
