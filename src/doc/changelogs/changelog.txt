@@ -73,6 +73,8 @@ Abbreviated Changelog from 2.6.0 Final
 - Fixed so serverNodePropertiesCache are stored in oscache with a limit. Before it grew to much. Also Added limitation on pageCache to 10000 pages and on serverNodePropertiesCache to 2000 properties but that can be overridden in cache settings as usual.
 - Made new cache for string encodings.. no need to keep them together with serverNodeProperties as it will slow it down.
 - Fixed bug in SSO-handling.
+- Added a new tag (<page:httpHeader>) for adding response headers in a controlled and cache-safe way.
+- Added handling of response headers although page cache is on
 
 -------------------------------------------------------------------------------------
 - InfoGlue 2.6.0 Final
