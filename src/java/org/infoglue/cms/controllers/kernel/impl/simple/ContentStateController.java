@@ -81,6 +81,12 @@ public class ContentStateController extends BaseController
 			newContentVersion = changeState(oldContentVersionId, stateId, versionComment, overrideVersionModifyer, recipientFilter, infoGluePrincipal, contentId, db, resultingEvents);
         	commitTransaction(db);
         }
+        catch(ConstraintException ce)
+        {
+            logger.error("An error occurred so we should not complete the transaction:" + ce.getMessage());
+            rollbackTransaction(db);
+            throw ce;
+        }    	    	
         catch(Exception e)
         {
             logger.error("An error occurred so we should not complete the transaction:" + e, e);
@@ -97,7 +103,7 @@ public class ContentStateController extends BaseController
 	 * Se inline documentation for further explainations.
 	 */
 	
-	public static ContentVersion changeState(Integer oldContentVersionId, Integer stateId, String versionComment, boolean overrideVersionModifyer, InfoGluePrincipal infoGluePrincipal, Integer contentId, Database db, List resultingEvents) throws SystemException
+	public static ContentVersion changeState(Integer oldContentVersionId, Integer stateId, String versionComment, boolean overrideVersionModifyer, InfoGluePrincipal infoGluePrincipal, Integer contentId, Database db, List resultingEvents) throws SystemException, ConstraintException
 	{
 		return changeState(oldContentVersionId, stateId, versionComment, overrideVersionModifyer, null, infoGluePrincipal, contentId, db, resultingEvents);
 	}
@@ -107,7 +113,7 @@ public class ContentStateController extends BaseController
 	 * Se inline documentation for further explainations.
 	 */
 	
-	public static ContentVersion changeState(Integer oldContentVersionId, Integer stateId, String versionComment, boolean overrideVersionModifyer, String recipientFilter, InfoGluePrincipal infoGluePrincipal, Integer contentId, Database db, List resultingEvents) throws SystemException
+	public static ContentVersion changeState(Integer oldContentVersionId, Integer stateId, String versionComment, boolean overrideVersionModifyer, String recipientFilter, InfoGluePrincipal infoGluePrincipal, Integer contentId, Database db, List resultingEvents) throws SystemException, ConstraintException
 	{
 		ContentVersion newContentVersion = null;
 
@@ -135,7 +141,7 @@ public class ContentStateController extends BaseController
 			    else
 			        newContentVersionVO.setVersionModifier(oldContentVersion.getVersionModifier());
 				newContentVersionVO.setVersionValue(oldContentVersion.getVersionValue());
-				newContentVersion = ContentVersionController.getContentVersionController().create(contentId, oldContentVersion.getLanguage().getLanguageId(), newContentVersionVO, oldContentVersion.getContentVersionId(), db);
+				newContentVersion = ContentVersionController.getContentVersionController().create(contentId, oldContentVersion.getLanguage().getLanguageId(), newContentVersionVO, oldContentVersion.getContentVersionId(), true, db);
 				
 				//ContentVersionController.getContentVersionController().copyDigitalAssets(oldContentVersion, newContentVersion, db);
 				copyAccessRights(oldContentVersion, newContentVersion, db);
@@ -160,7 +166,7 @@ public class ContentStateController extends BaseController
 			    else
 			        newContentVersionVO.setVersionModifier(oldContentVersion.getVersionModifier());
 				newContentVersionVO.setVersionValue(oldContentVersion.getVersionValue());
-				newContentVersion = ContentVersionController.getContentVersionController().create(contentId, oldContentVersion.getLanguage().getLanguageId(), newContentVersionVO, oldContentVersion.getContentVersionId(), db);
+				newContentVersion = ContentVersionController.getContentVersionController().create(contentId, oldContentVersion.getLanguage().getLanguageId(), newContentVersionVO, oldContentVersion.getContentVersionId(), false, db);
 				
 				//ContentVersionController.getContentVersionController().copyDigitalAssets(oldContentVersion, newContentVersion, db);
 				copyAccessRights(oldContentVersion, newContentVersion, db);
@@ -193,6 +199,11 @@ public class ContentStateController extends BaseController
 				newContentVersion = oldContentVersion;
 			}
 
+		}
+		catch (ConstraintException ce)
+		{
+			logger.error("An error occurred so we should not complete the transaction:" + ce.getMessage());
+			throw ce;
 		}
 		catch (Exception e)
 		{

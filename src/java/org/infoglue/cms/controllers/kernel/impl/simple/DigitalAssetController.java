@@ -82,7 +82,9 @@ import org.infoglue.deliver.util.Timer;
 public class DigitalAssetController extends BaseController 
 {
     private final static Logger logger = Logger.getLogger(DigitalAssetController.class.getName());
-
+    
+    private final static String BROKENFILENAME = "brokenAsset.gif";
+    
     public static DigitalAssetController getController()
     {
         return new DigitalAssetController();
@@ -710,15 +712,20 @@ public class DigitalAssetController extends BaseController
         try
         {
         	DigitalAsset digitalAsset = getSmallDigitalAssetWithId(digitalAssetId, db);
-			
+
 			if(digitalAsset != null)
 			{
 				logger.info("Found a digital asset:" + digitalAsset.getAssetFileName());
 				String fileName = digitalAsset.getDigitalAssetId() + "_" + digitalAsset.getAssetFileName();
 				//String filePath = digitalAsset.getAssetFilePath();
 				String filePath = CmsPropertyHandler.getDigitalAssetPath();
-				dumpDigitalAsset(digitalAsset.getValueObject(), fileName, filePath, db);
-				assetUrl = CmsPropertyHandler.getWebServerAddress() + "/" + CmsPropertyHandler.getDigitalAssetBaseUrl() + "/" + fileName;
+				boolean fileExists = dumpDigitalAsset(digitalAsset.getValueObject(), fileName, filePath, db);
+				
+				File outputFile = new File(filePath + File.separator + fileName);
+				if(!fileExists)
+					assetUrl = CmsPropertyHandler.getWebServerAddress() + "/" + CmsPropertyHandler.getImagesBaseUrl() + "/" + BROKENFILENAME;
+				else
+					assetUrl = CmsPropertyHandler.getWebServerAddress() + "/" + CmsPropertyHandler.getDigitalAssetBaseUrl() + "/" + fileName;
 			}			       	
 
             commitTransaction(db);
@@ -812,7 +819,7 @@ public class DigitalAssetController extends BaseController
 	 * This is a method that stores the asset on disk if not there allready and returns the asset as an InputStream
 	 * from that location. To avoid trouble with in memory blobs.
 	 */
-	
+	/*
 	public InputStream getAssetInputStream(DigitalAsset digitalAsset) throws Exception
 	{
 	    String fileName = digitalAsset.getDigitalAssetId() + "_" + digitalAsset.getAssetFileName();
@@ -823,6 +830,31 @@ public class DigitalAssetController extends BaseController
 			return new FileInputStream(assetFile);
 		else
 			return new ByteArrayInputStream("archived".getBytes());
+	}
+	*/
+
+	/**
+	 * This is a method that stores the asset on disk if not there allready and returns the asset as an InputStream
+	 * from that location. To avoid trouble with in memory blobs.
+	 */
+	
+	public InputStream getAssetInputStream(DigitalAsset digitalAsset, boolean returnNullIfBroken) throws Exception
+	{
+	    String fileName = digitalAsset.getDigitalAssetId() + "_" + digitalAsset.getAssetFileName();
+		String filePath = CmsPropertyHandler.getDigitalAssetPath();
+		boolean ok = dumpDigitalAsset(digitalAsset, fileName, filePath);
+		File assetFile = new File(filePath + File.separator + fileName);
+		if(ok)
+		{
+			return new FileInputStream(assetFile);
+		}
+		else
+		{
+			if(returnNullIfBroken)
+				return null;
+			else
+				return new ByteArrayInputStream("archived".getBytes());
+		}
 	}
 
 	/**
@@ -863,7 +895,6 @@ public class DigitalAssetController extends BaseController
         try
         {
 			DigitalAsset digitalAsset = getSmallDigitalAssetWithId(digitalAssetId, db);
-			
 			if(digitalAsset != null)
 			{
 				logger.info("Found a digital asset:" + digitalAsset.getAssetFileName());
@@ -885,22 +916,34 @@ public class DigitalAssetController extends BaseController
 					File thumbnailFile = new File(filePath + File.separator + thumbnailFileName);
 					File originalFile = new File(filePath + File.separator + fileName);
 					if(!originalFile.exists())
-						logger.warn("The original file " + filePath + File.separator + fileName + " was not found - missing from system.");
-					
-					if(!thumbnailFile.exists() && originalFile.exists())
 					{
-						logger.info("transforming...");
-						ThumbnailGenerator tg = new ThumbnailGenerator();
-						tg.transform(filePath + File.separator + fileName, filePath + File.separator + thumbnailFileName, 75, 75, 100);
-						logger.info("transform done...");
+						logger.warn("The original file " + filePath + File.separator + fileName + " was not found - missing from system.");
+						assetUrl = "images" + File.separator + BROKENFILENAME;
 					}
-					
-					assetUrl = CmsPropertyHandler.getWebServerAddress() + "/" + CmsPropertyHandler.getDigitalAssetBaseUrl() + "/" + thumbnailFileName;
-					logger.info("assetUrl:" + assetUrl);
+					else
+					{
+						if(!thumbnailFile.exists() && originalFile.exists())
+						{
+							logger.info("transforming...");
+							ThumbnailGenerator tg = new ThumbnailGenerator();
+							tg.transform(filePath + File.separator + fileName, filePath + File.separator + thumbnailFileName, 75, 75, 100);
+							logger.info("transform done...");
+						}
+						
+						assetUrl = CmsPropertyHandler.getWebServerAddress() + "/" + CmsPropertyHandler.getDigitalAssetBaseUrl() + "/" + thumbnailFileName;
+						logger.info("assetUrl:" + assetUrl);
+					}
 				}
 				else
 				{
-					if(contentType.equalsIgnoreCase("application/pdf"))
+					String fileName = digitalAsset.getDigitalAssetId() + "_" + digitalAsset.getAssetFileName();
+					String filePath = CmsPropertyHandler.getDigitalAssetPath();
+					File originalFile = new File(filePath + File.separator + fileName);
+					if(!originalFile.exists())
+					{
+						assetUrl = "images" + File.separator + BROKENFILENAME;
+					}
+					else if(contentType.equalsIgnoreCase("application/pdf"))
 					{
 						assetUrl = "images/pdf.gif"; 
 					}
@@ -915,6 +958,14 @@ public class DigitalAssetController extends BaseController
 					else if(contentType.equalsIgnoreCase("application/vnd.ms-powerpoint"))
 					{
 						assetUrl = "images/mspowerpoint.gif"; 
+					}
+					else if(contentType.equalsIgnoreCase("application/zip"))
+					{
+						assetUrl = "images/zipIcon.gif"; 
+					}
+					else if(contentType.equalsIgnoreCase("text/xml"))
+					{
+						assetUrl = "images/xmlIcon.gif"; 
 					}
 					else
 					{
@@ -1164,7 +1215,7 @@ public class DigitalAssetController extends BaseController
 			if(contentVersion != null)
 			{
 				DigitalAsset digitalAsset = getSmallDigitalAssetWithId(contentVersion.getId(), db);
-				
+
 				if(digitalAsset != null)
 				{
 					logger.info("Found a digital asset:" + digitalAsset.getAssetFileName());
@@ -1187,7 +1238,14 @@ public class DigitalAssetController extends BaseController
 					}
 					else
 					{
-						if(contentType.equalsIgnoreCase("application/pdf"))
+						String fileName = digitalAsset.getDigitalAssetId() + "_" + digitalAsset.getAssetFileName();
+						String filePath = CmsPropertyHandler.getDigitalAssetPath();
+						File originalFile = new File(filePath + File.separator + fileName);
+						if(!originalFile.exists())
+						{
+							assetUrl = "images" + File.separator + BROKENFILENAME;
+						}
+						else if(contentType.equalsIgnoreCase("application/pdf"))
 						{
 							assetUrl = "images/pdf.gif"; 
 						}
@@ -1202,6 +1260,14 @@ public class DigitalAssetController extends BaseController
 						else if(contentType.equalsIgnoreCase("application/vnd.ms-powerpoint"))
 						{
 							assetUrl = "images/mspowerpoint.gif"; 
+						}
+						else if(contentType.equalsIgnoreCase("application/zip"))
+						{
+							assetUrl = "images/zipIcon.gif"; 
+						}
+						else if(contentType.equalsIgnoreCase("text/xml"))
+						{
+							assetUrl = "images/xmlIcon.gif"; 
 						}
 						else
 						{
@@ -1360,21 +1426,21 @@ public class DigitalAssetController extends BaseController
 	 * digitalAsset-object and dumps it.
 	 */
    	
-	public static void dumpDigitalAsset(DigitalAssetVO digitalAssetVO, String fileName, String filePath, Database db) throws Exception
+	public static boolean dumpDigitalAsset(DigitalAssetVO digitalAssetVO, String fileName, String filePath, Database db) throws Exception
 	{
+		File outputFile = new File(filePath + File.separator + fileName);
+		File tmpOutputFile = new File(filePath + File.separator + "tmp_" + fileName);
+		if(outputFile.exists())
+		{
+			if(logger.isInfoEnabled())
+				logger.info("The file allready exists so we don't need to dump it again..");
+			
+			return true;
+		}
+
 		try
 		{
 			long timer = System.currentTimeMillis();
-	
-			File outputFile = new File(filePath + File.separator + fileName);
-			File tmpOutputFile = new File(filePath + File.separator + "tmp_" + fileName);
-			if(outputFile.exists())
-			{
-				if(logger.isInfoEnabled())
-					logger.info("The file allready exists so we don't need to dump it again..");
-				
-				return;
-			}
 	
 			File outputFileDir = new File(filePath);
 			outputFileDir.mkdirs();
@@ -1384,7 +1450,7 @@ public class DigitalAssetController extends BaseController
 			if((CmsPropertyHandler.getEnableDiskAssets().equals("false") || !tmpOutputFile.exists()) && digitalAsset.getAssetBlob() != null)
 			{
 				logger.info("Dumping from blob.");
-				
+
 				FileOutputStream fis = new FileOutputStream(outputFile);
 				BufferedOutputStream bos = new BufferedOutputStream(fis);
 				
@@ -1442,6 +1508,8 @@ public class DigitalAssetController extends BaseController
 		{
 			e.printStackTrace();
 		}
+		
+		return outputFile.exists();
 	}
 	
 	
@@ -1451,11 +1519,11 @@ public class DigitalAssetController extends BaseController
 	 * digitalAsset-object and dumps it.
 	 */
    	
-	public static void dumpDigitalAsset(DigitalAsset digitalAsset, String fileName, String filePath) throws Exception
+	public static boolean dumpDigitalAsset(DigitalAsset digitalAsset, String fileName, String filePath) throws Exception
 	{
 		if(digitalAsset.getAssetFileSize().intValue() == -1)
 		{
-			return;
+			return false;
 		}
 		
 		long timer = System.currentTimeMillis();
@@ -1466,27 +1534,36 @@ public class DigitalAssetController extends BaseController
 			if(logger.isInfoEnabled())
 				logger.info("The file allready exists so we don't need to dump it again..");
 		
-			return;
+			return true;
 		}
 				
-		FileOutputStream fis = new FileOutputStream(outputFile);
-		BufferedOutputStream bos = new BufferedOutputStream(fis);
-		
-		BufferedInputStream bis = new BufferedInputStream(digitalAsset.getAssetBlob());
-		
-		int character;
-		while ((character = bis.read()) != -1)
+		if(digitalAsset.getAssetBlob() != null)
 		{
-			bos.write(character);
+			FileOutputStream fis = new FileOutputStream(outputFile);
+			BufferedOutputStream bos = new BufferedOutputStream(fis);
+			
+			BufferedInputStream bis = new BufferedInputStream(digitalAsset.getAssetBlob());
+			
+			int character;
+			while ((character = bis.read()) != -1)
+			{
+				bos.write(character);
+			}
+			bos.flush();
+			
+			bis.close();
+			fis.close();
+			bos.close();
+			
+			if(logger.isInfoEnabled())
+				logger.info("Time for dumping file " + fileName + ":" + (System.currentTimeMillis() - timer));
+
+			return true;
 		}
-		bos.flush();
-		
-		bis.close();
-		fis.close();
-		bos.close();
-		
-		if(logger.isInfoEnabled())
-			logger.info("Time for dumping file " + fileName + ":" + (System.currentTimeMillis() - timer));
+		else
+		{
+			return false;
+		}
 	}
 
 	/**
