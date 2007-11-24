@@ -1075,7 +1075,8 @@ public class NodeDeliveryController extends BaseDeliveryController
 			}
 			else
 			{
-				logger.warn("Entering the old logic - bad for performance - why is siteNode with id:" + siteNodeId + " not getting it's metaInfoContentId:" + metaInfoContentId);
+				if(availableServiceBindingName.equalsIgnoreCase("Meta information"))
+					logger.warn("Entering the old logic - bad for performance - why is siteNode with id:" + siteNodeId + " not getting it's metaInfoContentId:" + metaInfoContentId);
 
 				AvailableServiceBindingVO availableServiceBindingVO = AvailableServiceBindingDeliveryController.getAvailableServiceBindingDeliveryController().getAvailableServiceBindingVO(availableServiceBindingName, db);
 	        
@@ -1123,10 +1124,9 @@ public class NodeDeliveryController extends BaseDeliveryController
 				}
 			}
 			
-			//System.out.println("Adding " + boundContentsKey);
 			CacheController.cacheObject("boundContentCache", boundContentsKey.toString(), boundContentVOList);
 		}
-		
+
 		return boundContentVOList;
 
 	}
