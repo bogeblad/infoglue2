@@ -75,6 +75,8 @@ Abbreviated Changelog from 2.6.0 Final
 - Fixed bug in SSO-handling.
 - Added a new tag (<page:httpHeader>) for adding response headers in a controlled and cache-safe way.
 - Added handling of response headers although page cache is on
+- Added a few new icons for asset content types.
+- Added check so broken assets get's marked and handled better. A constraint is added so no publications can be made with broken assets.
 
 -------------------------------------------------------------------------------------
 - InfoGlue 2.6.0 Final
