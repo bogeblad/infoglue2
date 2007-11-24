@@ -55,7 +55,7 @@ public class PublicationThread extends Thread
 		    CacheController.clearCastorCaches();
 
 			logger.info("\n\n\nclearing all except page cache as we are in publish mode..\n\n\n");											
-			CacheController.clearCaches(null, null, new String[] {"ServerNodeProperties", "serverNodePropertiesCache", "pageCache", "componentCache", "NavigationCache", "pagePathCache", "userCache", "pageCacheParentSiteNodeCache", "pageCacheLatestSiteNodeVersions", "pageCacheSiteNodeTypeDefinition", "JNDIAuthorizationCache", "WebServiceAuthorizationCache"});
+			CacheController.clearCaches(null, null, new String[] {"ServerNodeProperties", "serverNodePropertiesCache", "pageCache", "pageCacheExtra", "componentCache", "NavigationCache", "pagePathCache", "userCache", "pageCacheParentSiteNodeCache", "pageCacheLatestSiteNodeVersions", "pageCacheSiteNodeTypeDefinition", "JNDIAuthorizationCache", "WebServiceAuthorizationCache"});
 		    
 			logger.info("\n\n\nRecaching all caches as this was a publishing-update\n\n\n");
 			CacheController.cacheCentralCastorCaches();
@@ -64,6 +64,7 @@ public class PublicationThread extends Thread
 			CacheController.clearCache("ServerNodeProperties");
 			CacheController.clearCache("serverNodePropertiesCache");
 			CacheController.clearCache("pageCache");
+			CacheController.clearCache("pageCacheExtra");
 		    CacheController.clearCache("componentCache");
 		    CacheController.clearCache("NavigationCache");
 		    CacheController.clearCache("pagePathCache");

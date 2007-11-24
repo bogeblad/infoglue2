@@ -84,13 +84,14 @@ public class ExpireCacheJob implements Job
 		    			CacheController.clearCastorCaches();
 		
 		    			logger.info("clearing all except page cache as we are in publish mode..");
-		    		    CacheController.clearCaches(null, null, new String[] {"pageCache", "NavigationCache", "pagePathCache", "userCache", "pageCacheParentSiteNodeCache", "pageCacheLatestSiteNodeVersions", "pageCacheSiteNodeTypeDefinition"});
+		    		    CacheController.clearCaches(null, null, new String[] {"pageCache", "pageCacheExtra", "NavigationCache", "pagePathCache", "userCache", "pageCacheParentSiteNodeCache", "pageCacheLatestSiteNodeVersions", "pageCacheSiteNodeTypeDefinition"});
 		    			
 		    			logger.info("Recaching all caches as this was a publishing-update");
 		    			CacheController.cacheCentralCastorCaches();
 		    			
 		    			logger.info("Finally clearing page cache as this was a publishing-update");
 		    		    CacheController.clearCache("pageCache");
+		    		    CacheController.clearCache("pageCacheExtra");
 	        	    }
 	        	    else
 	        	    {
@@ -136,13 +137,14 @@ public class ExpireCacheJob implements Job
 		    			CacheController.clearCastorCaches();
 		
 		    			logger.info("clearing all except page cache as we are in publish mode..");
-		    		    CacheController.clearCaches(null, null, new String[] {"pageCache", "NavigationCache", "pagePathCache", "userCache", "pageCacheParentSiteNodeCache", "pageCacheLatestSiteNodeVersions", "pageCacheSiteNodeTypeDefinition"});
+		    		    CacheController.clearCaches(null, null, new String[] {"pageCache", "pageCacheExtra", "NavigationCache", "pagePathCache", "userCache", "pageCacheParentSiteNodeCache", "pageCacheLatestSiteNodeVersions", "pageCacheSiteNodeTypeDefinition"});
 		    			
 		    			logger.info("Recaching all caches as this was a publishing-update");
 		    			CacheController.cacheCentralCastorCaches();
 		    			
 		    			logger.info("Finally clearing page cache as this was a publishing-update");
 		    		    CacheController.clearCache("pageCache");
+		    		    CacheController.clearCache("pageCacheExtra");
 	        	    }
 	        	    else
 	        	    {

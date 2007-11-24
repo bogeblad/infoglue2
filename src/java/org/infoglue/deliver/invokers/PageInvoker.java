@@ -28,6 +28,7 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.zip.GZIPOutputStream;
 import java.util.zip.ZipEntry;
@@ -171,6 +172,7 @@ public abstract class PageInvoker
 		if(isPageCacheOn.equalsIgnoreCase("true") && (refresh == null || !refresh.equalsIgnoreCase("true")) && getRequest().getMethod().equals("GET"))
 		{
 			String compressPageCache = CmsPropertyHandler.getCompressPageCache();
+			Map cachedExtraData = null;
 			Integer pageCacheTimeout = this.getTemplateController().getPageCacheTimeout();
 			if(compressPageCache != null && compressPageCache.equalsIgnoreCase("true"))
 			{
@@ -178,21 +180,33 @@ public abstract class PageInvoker
 				if(pageCacheTimeout == null)
 				{
 				    cachedCompressedData = (byte[])CacheController.getCachedObjectFromAdvancedCache("pageCache", this.getDeliveryContext().getPageKey());
+				    cachedExtraData = (Map)CacheController.getCachedObjectFromAdvancedCache("pageCacheExtra", this.getDeliveryContext().getPageKey());
 				}
 				else
 				{
 				    cachedCompressedData = (byte[])CacheController.getCachedObjectFromAdvancedCache("pageCache", this.getDeliveryContext().getPageKey(), pageCacheTimeout.intValue());
+				    cachedExtraData = (Map)CacheController.getCachedObjectFromAdvancedCache("pageCacheExtra", this.getDeliveryContext().getPageKey(), pageCacheTimeout.intValue());
 				}
 				
 			    if(cachedCompressedData != null)
 			        this.pageString = compressionHelper.decompress(cachedCompressedData);					
+			    if(cachedExtraData != null)
+			    	this.getDeliveryContext().populateExtraData(cachedExtraData);
 			}
 			else
 			{
 				if(pageCacheTimeout == null)
+				{
 					this.pageString = (String)CacheController.getCachedObjectFromAdvancedCache("pageCache", this.getDeliveryContext().getPageKey());
+					cachedExtraData = (Map)CacheController.getCachedObjectFromAdvancedCache("pageCacheExtra", this.getDeliveryContext().getPageKey());
+				}
 				else
+				{
 					this.pageString = (String)CacheController.getCachedObjectFromAdvancedCache("pageCache", this.getDeliveryContext().getPageKey(), pageCacheTimeout.intValue());
+					cachedExtraData = (Map)CacheController.getCachedObjectFromAdvancedCache("pageCacheExtra", this.getDeliveryContext().getPageKey(), pageCacheTimeout.intValue());
+				}
+			    if(cachedExtraData != null)
+			    	this.getDeliveryContext().populateExtraData(cachedExtraData);					
 			}
 			
 			if(this.pageString == null)
@@ -208,17 +222,30 @@ public abstract class PageInvoker
 						byte[] compressedData = compressionHelper.compress(this.pageString);		
 					    logger.info("Compressing page for pageCache took " + (System.currentTimeMillis() - startCompression) + " with a compressionFactor of " + (this.pageString.length() / compressedData.length));
 						if(this.getTemplateController().getOperatingMode().intValue() == 3 && !CmsPropertyHandler.getLivePublicationThreadClass().equalsIgnoreCase("org.infoglue.deliver.util.SelectiveLivePublicationThread"))
-						    CacheController.cacheObjectInAdvancedCache("pageCache", this.getDeliveryContext().getPageKey(), compressedData, this.getDeliveryContext().getAllUsedEntities(), false);
+						{
+							CacheController.cacheObjectInAdvancedCache("pageCache", this.getDeliveryContext().getPageKey(), compressedData, this.getDeliveryContext().getAllUsedEntities(), false);
+							CacheController.cacheObjectInAdvancedCache("pageCacheExtra", this.getDeliveryContext().getPageKey(), this.getDeliveryContext().getExtraData(), this.getDeliveryContext().getAllUsedEntities(), false);
+						}
 						else
+						{
 						    CacheController.cacheObjectInAdvancedCache("pageCache", this.getDeliveryContext().getPageKey(), compressedData, this.getDeliveryContext().getAllUsedEntities(), true);
+						    CacheController.cacheObjectInAdvancedCache("pageCacheExtra", this.getDeliveryContext().getPageKey(), this.getDeliveryContext().getExtraData(), this.getDeliveryContext().getAllUsedEntities(), true);
+						}
 					}
 				    else
 				    {
 				        if(this.getTemplateController().getOperatingMode().intValue() == 3 && !CmsPropertyHandler.getLivePublicationThreadClass().equalsIgnoreCase("org.infoglue.deliver.util.SelectiveLivePublicationThread"))
-				    	    CacheController.cacheObjectInAdvancedCache("pageCache", this.getDeliveryContext().getPageKey(), pageString, this.getDeliveryContext().getAllUsedEntities(), false);
+				        {
+				        	CacheController.cacheObjectInAdvancedCache("pageCache", this.getDeliveryContext().getPageKey(), pageString, this.getDeliveryContext().getAllUsedEntities(), false);
+				        	CacheController.cacheObjectInAdvancedCache("pageCacheExtra", this.getDeliveryContext().getPageKey(), this.getDeliveryContext().getExtraData(), this.getDeliveryContext().getAllUsedEntities(), false);
+				        }
 				    	else
-				            CacheController.cacheObjectInAdvancedCache("pageCache", this.getDeliveryContext().getPageKey(), pageString, this.getDeliveryContext().getAllUsedEntities(), true);    
+				    	{
+				    		CacheController.cacheObjectInAdvancedCache("pageCache", this.getDeliveryContext().getPageKey(), pageString, this.getDeliveryContext().getAllUsedEntities(), true);    
+				    		CacheController.cacheObjectInAdvancedCache("pageCacheExtra", this.getDeliveryContext().getPageKey(), this.getDeliveryContext().getExtraData(), this.getDeliveryContext().getAllUsedEntities(), true);    
+				    	}
 				    }
+				    
 				}
 				else
 				{
@@ -232,9 +259,6 @@ public abstract class PageInvoker
 			}
 			
 			//Caching the pagePath
-			if(logger.isInfoEnabled())
-				logger.info("Caching the pagePath...");
-			
 			this.getDeliveryContext().setPagePath((String)CacheController.getCachedObject("pagePathCache", this.getDeliveryContext().getPageKey()));
 			if(this.getDeliveryContext().getPagePath() == null)
 			{
@@ -276,7 +300,15 @@ public abstract class PageInvoker
 			this.getResponse().setContentType(contentType);
 		else
 			this.getResponse().setContentType(contentType + "; charset=" + languageVO.getCharset());
-			
+
+		Iterator headersIterator = this.getDeliveryContext().getHttpHeaders().keySet().iterator();
+		while(headersIterator.hasNext())
+		{
+			String key = (String)headersIterator.next();
+			String value = (String)this.getDeliveryContext().getHttpHeaders().get(key);
+			this.getResponse().setHeader(key, value);
+		}
+		
 		if(logger.isInfoEnabled())
 			logger.info("contentType:" + contentType + "; charset=" + languageVO.getCharset());
 		

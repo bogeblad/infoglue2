@@ -261,6 +261,8 @@ public class CacheController extends Thread
 		    	String cacheCapacity = (String)cacheSettings.get("CACHE_CAPACITY_" + cacheName);
 		    	if(cacheName != null && cacheName.equalsIgnoreCase("pageCache"))
 		    		cacheCapacity = "10000";
+		    	if(cacheName != null && cacheName.equalsIgnoreCase("pageCacheExtra"))
+		    		cacheCapacity = "20000";
 				if(cacheName != null && cacheName.equalsIgnoreCase("encodedStringsCache"))
 					cacheCapacity = "2000";
 		    	
@@ -611,6 +613,11 @@ public class CacheController extends Thread
 						clear = true;
 					}
 					if(cacheName.equalsIgnoreCase("pageCache") && entity.indexOf("Registry") == -1)
+					{	
+						clear = true;
+						selectiveCacheUpdate = true;
+					}
+					if(cacheName.equalsIgnoreCase("pageCacheExtra") && entity.indexOf("Registry") == -1)
 					{	
 						clear = true;
 						selectiveCacheUpdate = true;
