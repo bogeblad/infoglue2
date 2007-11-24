@@ -120,6 +120,7 @@ public class DeliveryContext implements UsageListener
 	
 	private Map pageAttributes = new HashMap();
 	private List htmlHeadItems = new ArrayList();
+	private Map httpHeaders = new HashMap();
 	
 	public static DeliveryContext getDeliveryContext()
 	{
@@ -432,6 +433,37 @@ public class DeliveryContext implements UsageListener
 	public List getHtmlHeadItems()
 	{
 		return htmlHeadItems;
+	}
+
+	public Map getHttpHeaders()
+	{
+		return httpHeaders;
+	}
+
+	public Object getExtraData()
+	{
+		Map extraData = new HashMap();
+		
+		extraData.put("contentType", this.getContentType());
+		extraData.put("headers", this.getHttpHeaders());
+		extraData.put("pageAttributes", this.getPageAttributes());
+		
+		return extraData;
+	}
+
+	public void populateExtraData(Map extraData)
+	{
+		String contentType = (String)extraData.get("contentType");
+		if(contentType != null)
+			this.setContentType(contentType);
+		
+		Map headers = (Map)extraData.get("headers");
+		if(headers != null)
+			this.getHttpHeaders().putAll(headers);
+		
+		Map pageAttributes = (Map)extraData.get("pageAttributes");
+		if(pageAttributes != null)
+			this.getPageAttributes().putAll(pageAttributes);
 	}
 
 }
