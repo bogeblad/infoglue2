@@ -422,6 +422,20 @@ public class DigitalAssetController extends BaseController
         }
    	}
    	
+   	public static File[] getCachedFiles() throws SystemException, Exception
+   	{
+   		File[] cachedAssets = (File[])CacheController.getCachedObjectFromAdvancedCache("cachedAssetFileList", "allAssets", 300);
+   		if(cachedAssets == null)
+   		{
+   			File assetDirectory = new File(CmsPropertyHandler.getDigitalAssetPath());
+   			cachedAssets = assetDirectory.listFiles(); 
+			//System.out.println("Read and cached files:" + cachedAssets);
+			
+   			CacheController.cacheObjectInAdvancedCache("cachedAssetFileList", "allAssets", cachedAssets);
+   		}   			
+   		
+   		return cachedAssets;
+   	}
 
    	/**
 	 * This method removes all images in the digitalAsset directory which belongs to a certain digital asset.
@@ -431,6 +445,17 @@ public class DigitalAssetController extends BaseController
 	{ 
 		try
 		{
+			File[] cachedFiles = getCachedFiles();
+			for(int i=0; i<cachedFiles.length; i++)
+			{
+				File cachedFile = cachedFiles[i];
+				if(cachedFile.getName().startsWith("" + digitalAssetId))
+				{
+					//File file = files[i];
+					cachedFile.delete();
+				}
+			}
+			/*
 			File assetDirectory = new File(CmsPropertyHandler.getDigitalAssetPath());
 			File[] files = assetDirectory.listFiles(new FilenameFilterImpl(digitalAssetId.toString())); 	
 			for(int i=0; i<files.length; i++)
@@ -438,7 +463,7 @@ public class DigitalAssetController extends BaseController
 				File file = files[i];
 				file.delete();
 			}
-	
+			*/
 		}
 		catch(Exception e)
 		{
