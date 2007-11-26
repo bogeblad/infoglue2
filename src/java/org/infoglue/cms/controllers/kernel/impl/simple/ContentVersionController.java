@@ -126,6 +126,11 @@ public class ContentVersionController extends BaseController
     	return contentId;
     }
 
+    public ContentVersionVO getFullContentVersionVOWithId(Integer contentVersionId) throws SystemException, Bug
+    {
+		return (ContentVersionVO) getVOWithId(ContentVersionImpl.class, contentVersionId);
+    }
+
     public ContentVersionVO getContentVersionVOWithId(Integer contentVersionId) throws SystemException, Bug
     {
 		return (ContentVersionVO) getVOWithId(SmallContentVersionImpl.class, contentVersionId);
@@ -369,12 +374,10 @@ public class ContentVersionController extends BaseController
 		while (results.hasMore()) 
 		{
 			ContentVersion contentVersion = (ContentVersion)results.next();
-			logger.info("contentVersion:" + contentVersion.getValueObject().getContentName());
 			if(contentVersion.getIsActive().booleanValue())
 			{
 			    if ( (contentVersion.getStateId().compareTo(stateId)==0) && (!langCheck.contains(contentVersion.getLanguage().getLanguageId())))
 				{
-				    logger.info("Added contentVersion:" + contentVersion.getValueObject().getContentName() + ":" + contentVersion.getId() + ":" + contentVersion.getIsActive() + ":" + contentVersion.getStateId());
 					resultList.add(contentVersion);
 					langCheck.add(contentVersion.getLanguage().getLanguageId());
 				}
