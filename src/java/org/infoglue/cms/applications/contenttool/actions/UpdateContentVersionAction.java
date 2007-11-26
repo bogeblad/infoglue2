@@ -103,7 +103,8 @@ public class UpdateContentVersionAction extends ViewContentVersionAction
 			try
 			{
 			    this.contentVersionVO = ContentVersionControllerProxy.getController().acUpdate(this.getInfoGluePrincipal(), this.contentId, this.languageId, this.contentVersionVO);
-			    this.oldModifiedDateTime = this.contentVersionVO.getModifiedDateTime().getTime();
+			    this.contentVersionVO = ContentVersionController.getContentVersionController().getContentVersionVOWithId(this.contentVersionVO.getId());
+				this.oldModifiedDateTime = this.contentVersionVO.getModifiedDateTime().getTime();
 			}
 			catch(ConstraintException ce)
 			{
@@ -135,6 +136,7 @@ public class UpdateContentVersionAction extends ViewContentVersionAction
 		{
 			this.contentVersionVO.setVersionModifier(this.getInfoGluePrincipal().getName());
 			this.contentVersionVO = ContentVersionControllerProxy.getController().acUpdate(this.getInfoGluePrincipal(), this.contentId, this.languageId, this.contentVersionVO);
+		    this.contentVersionVO = ContentVersionController.getContentVersionController().getContentVersionVOWithId(this.contentVersionVO.getId());
 		}
 		catch(ConstraintException ce)
 		{
@@ -212,6 +214,7 @@ public class UpdateContentVersionAction extends ViewContentVersionAction
 					if(activeContentVersionVO.getStateId().equals(ContentVersionVO.WORKING_STATE))
 					{
 					    this.contentVersionVO = ContentVersionControllerProxy.getController().acUpdate(this.getInfoGluePrincipal(), this.contentId, this.languageId, this.contentVersionVO);
+					    this.contentVersionVO = ContentVersionController.getContentVersionController().getContentVersionVOWithId(this.contentVersionVO.getId());
 					    this.oldModifiedDateTime = this.contentVersionVO.getModifiedDateTime().getTime();
 					    xmlResult = xStream.toXML(contentVersionVO);
 					}
