@@ -127,7 +127,7 @@ public class UnpublishSiteNodeVersionAction extends InfoGlueAbstractAction
 		{
 			Integer siteNodeVersionId = (Integer)it.next();
 		    //SiteNodeVersion siteNodeVersion = SiteNodeStateController.changeState((Integer) it.next(), SiteNodeVersionVO.PUBLISH_STATE, getVersionComment(), this.getInfoGluePrincipal(), null, events);
-			SiteNodeVersionVO siteNodeVersionVO = SiteNodeVersionController.getController().getSiteNodeVersionVOWithId(siteNodeVersionId);
+			SiteNodeVersionVO siteNodeVersionVO = SiteNodeVersionController.getController().getFullSiteNodeVersionVOWithId(siteNodeVersionId);
 			
 			EventVO eventVO = new EventVO();
 			eventVO.setDescription(this.versionComment);
