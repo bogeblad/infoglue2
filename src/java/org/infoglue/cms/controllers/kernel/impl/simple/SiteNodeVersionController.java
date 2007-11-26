@@ -1264,12 +1264,66 @@ public class SiteNodeVersionController extends BaseController
 		return siteNodeVersionVOList;
     }
 
+	/**
+     * This method gets the meta info for the siteNodeVersion.
+     * @param db
+     * @throws ConstraintException
+     * @throws SystemException
+     * @throws Exception
+     */
+	public List getPublishedActiveFullSiteNodeVersionVOList(Integer siteNodeId) throws SystemException, Bug, Exception
+	{
+        List siteNodeVersionVOList = new ArrayList();
+        
+        Database db = CastorDatabaseService.getDatabase();
+
+	    beginTransaction(db);
+
+        try
+        {
+            List siteNodeVersionList = getPublishedActiveFullSiteNodeVersionVOList(siteNodeId, db);
+            siteNodeVersionVOList = toVOList(siteNodeVersionList);
+            
+            commitTransaction(db);
+        }
+        catch(Exception e)
+        {
+            logger.error("An error occurred so we should not completes the transaction:" + e, e);
+            rollbackTransaction(db);
+            throw new SystemException(e.getMessage());
+        }
+        
+		return siteNodeVersionVOList;
+    }	
 	
 	public List getPublishedActiveSiteNodeVersionVOList(Integer siteNodeId, Database db) throws SystemException, Bug, Exception
     {
         List siteNodeVersionList = new ArrayList();
         
         OQLQuery oql = db.getOQLQuery( "SELECT cv FROM org.infoglue.cms.entities.structure.impl.simple.SmallSiteNodeVersionImpl cv WHERE cv.siteNodeId = $1  AND cv.stateId = $2 AND cv.isActive = $3 ORDER BY cv.siteNodeVersionId desc");
+    	oql.bind(siteNodeId);
+    	oql.bind(SiteNodeVersionVO.PUBLISHED_STATE);
+    	oql.bind(true);
+    	
+    	QueryResults results = oql.execute(Database.ReadOnly);
+
+		while (results.hasMore()) 
+        {
+        	SiteNodeVersion siteNodeVersion = (SiteNodeVersion)results.next();
+        	siteNodeVersionList.add(siteNodeVersion);
+        }
+            
+		results.close();
+		oql.close();
+
+		return siteNodeVersionList;
+    }
+
+	public List getPublishedActiveFullSiteNodeVersionVOList(Integer siteNodeId, Database db) throws SystemException, Bug, Exception
+    {
+        List siteNodeVersionList = new ArrayList();
+        
+        OQLQuery oql = db.getOQLQuery( "SELECT cv FROM org.infoglue.cms.entities.structure.impl.simple.SiteNodeVersionImpl cv WHERE cv.siteNodeId = $1  AND cv.stateId = $2 AND cv.isActive = $3 ORDER BY cv.siteNodeVersionId desc");
     	oql.bind(siteNodeId);
     	oql.bind(SiteNodeVersionVO.PUBLISHED_STATE);
     	oql.bind(true);

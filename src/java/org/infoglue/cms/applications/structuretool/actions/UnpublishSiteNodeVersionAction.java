@@ -180,7 +180,7 @@ public class UnpublishSiteNodeVersionAction extends InfoGlueAbstractAction
         for(int i=0; i < siteNodeIds.length; i++)
 		{
             String siteNodeIdString = siteNodeIds[i];
-	        List siteNodeVersionVOList = SiteNodeVersionController.getController().getPublishedActiveSiteNodeVersionVOList(new Integer(siteNodeIdString));
+	        List siteNodeVersionVOList = SiteNodeVersionController.getController().getPublishedActiveFullSiteNodeVersionVOList(new Integer(siteNodeIdString));
 	        
 			Iterator it = siteNodeVersionVOList.iterator();
 			
