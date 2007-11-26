@@ -1323,7 +1323,7 @@ public class SiteNodeVersionController extends BaseController
     {
         List siteNodeVersionList = new ArrayList();
         
-        OQLQuery oql = db.getOQLQuery( "SELECT cv FROM org.infoglue.cms.entities.structure.impl.simple.SiteNodeVersionImpl cv WHERE cv.siteNodeId = $1  AND cv.stateId = $2 AND cv.isActive = $3 ORDER BY cv.siteNodeVersionId desc");
+        OQLQuery oql = db.getOQLQuery( "SELECT cv FROM org.infoglue.cms.entities.structure.impl.simple.SiteNodeVersionImpl cv WHERE cv.owningSiteNode.siteNodeId = $1  AND cv.stateId = $2 AND cv.isActive = $3 ORDER BY cv.siteNodeVersionId desc");
     	oql.bind(siteNodeId);
     	oql.bind(SiteNodeVersionVO.PUBLISHED_STATE);
     	oql.bind(true);
