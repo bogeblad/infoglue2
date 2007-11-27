@@ -967,7 +967,7 @@
 <!--  Mapping for ContentVersion  -->
   <class name="org.infoglue.cms.entities.content.impl.simple.ContentVersionImpl" identity="contentVersionId" key-generator="SEQUENCE">
     <description>ContentVersion</description>
-    <cache-type type="count-limited" capacity="5000"/>
+    <cache-type type="count-limited" capacity="20000"/>
     <map-to table="cmContVer"/>
     <field name="contentVersionId" type="java.lang.Integer">
       <sql name="ContVerId" type="integer" dirty="check" />
@@ -1018,7 +1018,7 @@
 <!--  Mapping for FullContentVersion  -->
   <class name="org.infoglue.cms.entities.content.impl.simple.FullContentVersionImpl" identity="contentVersionId" key-generator="SEQUENCE">
     <description>FullContentVersion</description>
-    <cache-type type="count-limited" capacity="2000"/>
+    <cache-type type="count-limited" capacity="20000"/>
     <map-to table="cmContVer"/>
     <field name="contentVersionId" type="java.lang.Integer">
       <sql name="ContVerId" type="integer" dirty="check" />
@@ -1068,7 +1068,7 @@
 <!--  Mapping for SmallContentVersion  -->
   <class name="org.infoglue.cms.entities.content.impl.simple.SmallContentVersionImpl" identity="contentVersionId" key-generator="SEQUENCE">
     <description>SmallContentVersion</description>
-    <cache-type type="count-limited" capacity="2000"/>
+    <cache-type type="count-limited" capacity="20000"/>
     <map-to table="cmContVer"/>
     <field name="contentVersionId" type="java.lang.Integer">
       <sql name="ContVerId" type="integer" dirty="check" />
