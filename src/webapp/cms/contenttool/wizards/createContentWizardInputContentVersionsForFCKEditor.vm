@@ -227,7 +227,7 @@
 	var repositoryId 		= "$repositoryId";
 	var contentId 			= "$contentId";
 	var languageId 			= "$languageId";
-	var name 				= "$name";
+	var name 				= "$formatter.cleanForJavascriptStrings($name)";
 	var contentTypeDefinitionName = "$contentTypeDefinitionName";
 	
 	var count = 0;
