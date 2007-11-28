@@ -500,6 +500,8 @@ public class CASBasicAuthenticationModule extends AuthenticationModule//, Author
 	  	else
 	  		returnUrl = Util.getService(request, serverName);
 					
+		System.out.println("returnUrl:" + returnUrl);
+		
 		return returnUrl;
 		/*
 		if (casServiceUrl != null && casServiceUrl.length() > 0)
