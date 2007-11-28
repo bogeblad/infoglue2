@@ -362,7 +362,41 @@ public class ContentControllerProxy extends ContentController
 			
 		return protectedContentId;
 	}	
+
+	/**
+	 * This method returns true if the if the content in question is protected.
+	 */
+
+	public Integer getProtectedContentId(Integer contentId, Database db)
+	{
+		Integer protectedContentId = null;
+		boolean isContentProtected = false;
 	
+		try
+		{
+			ContentVO contentVO = ContentController.getContentController().getContentVOWithId(contentId, db);
+			if(contentVO.getIsProtected() != null)
+			{	
+				if(contentVO.getIsProtected().intValue() == NO.intValue())
+					protectedContentId = null;
+				else if(contentVO.getIsProtected().intValue() == YES.intValue())
+					protectedContentId = contentVO.getId();
+				else if(contentVO.getIsProtected().intValue() == INHERITED.intValue())
+				{
+					ContentVO parentContentVO = ContentController.getParentContent(contentId, db);
+					if(parentContentVO != null)
+						protectedContentId = getProtectedContentId(parentContentVO.getId(), db); 
+				}
+			}
+		}
+		catch(Exception e)
+		{
+			logger.warn("An error occurred trying to get if the siteNodeVersion has disabled pageCache:" + e.getMessage(), e);
+		}
+			
+		return protectedContentId;
+	}	
+
 	/**
 	 * This method returns true if the if the content in question is protected.
 	 */
