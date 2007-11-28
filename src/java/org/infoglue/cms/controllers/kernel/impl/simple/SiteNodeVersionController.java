@@ -54,6 +54,7 @@ import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
+import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
 import org.infoglue.cms.util.DateHelper;
 import org.infoglue.deliver.util.Timer;
@@ -961,16 +962,16 @@ public class SiteNodeVersionController extends BaseController
 	 * Recursive methods to get all contentVersions of a given state under the specified parent content.
 	 */ 
 	
-    public void getSiteNodeAndAffectedItemsRecursive(Integer siteNodeId, Integer stateId, Set siteNodeVersionVOList, Set contenteVersionVOList, boolean includeMetaInfo) throws ConstraintException, SystemException
+    public void getSiteNodeAndAffectedItemsRecursive(Integer siteNodeId, Integer stateId, Set siteNodeVersionVOList, Set contenteVersionVOList, boolean includeMetaInfo, InfoGluePrincipal principal) throws ConstraintException, SystemException
 	{
-    	getSiteNodeAndAffectedItemsRecursive(siteNodeId, stateId, siteNodeVersionVOList, contenteVersionVOList, includeMetaInfo, true);
+    	getSiteNodeAndAffectedItemsRecursive(siteNodeId, stateId, siteNodeVersionVOList, contenteVersionVOList, includeMetaInfo, true, principal);
 	}
 	
 	/**
 	 * Recursive methods to get all contentVersions of a given state under the specified parent content.
 	 */ 
 	
-    public void getSiteNodeAndAffectedItemsRecursive(Integer siteNodeId, Integer stateId, Set siteNodeVersionVOList, Set contenteVersionVOList, boolean includeMetaInfo, boolean recurseSiteNodes) throws ConstraintException, SystemException
+    public void getSiteNodeAndAffectedItemsRecursive(Integer siteNodeId, Integer stateId, Set siteNodeVersionVOList, Set contenteVersionVOList, boolean includeMetaInfo, boolean recurseSiteNodes, InfoGluePrincipal principal) throws ConstraintException, SystemException
 	{
         Database db = CastorDatabaseService.getDatabase();
 
@@ -980,7 +981,7 @@ public class SiteNodeVersionController extends BaseController
         {
             SiteNode siteNode = SiteNodeController.getController().getSiteNodeWithId(siteNodeId, db);
 
-            getSiteNodeAndAffectedItemsRecursive(siteNode, stateId, new ArrayList(), new ArrayList(), db, siteNodeVersionVOList, contenteVersionVOList, includeMetaInfo, recurseSiteNodes);
+            getSiteNodeAndAffectedItemsRecursive(siteNode, stateId, new ArrayList(), new ArrayList(), db, siteNodeVersionVOList, contenteVersionVOList, includeMetaInfo, recurseSiteNodes, principal);
             
             commitTransaction(db);
         }
@@ -992,12 +993,12 @@ public class SiteNodeVersionController extends BaseController
         }
 	}
 
-	private void getSiteNodeAndAffectedItemsRecursive(SiteNode siteNode, Integer stateId, List checkedSiteNodes, List checkedContents, Database db, Set siteNodeVersionVOList, Set contentVersionVOList, boolean includeMetaInfo) throws ConstraintException, SystemException, Exception
+	private void getSiteNodeAndAffectedItemsRecursive(SiteNode siteNode, Integer stateId, List checkedSiteNodes, List checkedContents, Database db, Set siteNodeVersionVOList, Set contentVersionVOList, boolean includeMetaInfo, InfoGluePrincipal principal) throws ConstraintException, SystemException, Exception
 	{
-		getSiteNodeAndAffectedItemsRecursive(siteNode, stateId, checkedSiteNodes, checkedContents, db, siteNodeVersionVOList, contentVersionVOList, includeMetaInfo, true);
+		getSiteNodeAndAffectedItemsRecursive(siteNode, stateId, checkedSiteNodes, checkedContents, db, siteNodeVersionVOList, contentVersionVOList, includeMetaInfo, true, principal);
 	}
 	
-	private void getSiteNodeAndAffectedItemsRecursive(SiteNode siteNode, Integer stateId, List checkedSiteNodes, List checkedContents, Database db, Set siteNodeVersionVOList, Set contentVersionVOList, boolean includeMetaInfo, boolean recurseSiteNodes) throws ConstraintException, SystemException, Exception
+	private void getSiteNodeAndAffectedItemsRecursive(SiteNode siteNode, Integer stateId, List checkedSiteNodes, List checkedContents, Database db, Set siteNodeVersionVOList, Set contentVersionVOList, boolean includeMetaInfo, boolean recurseSiteNodes, InfoGluePrincipal principal) throws ConstraintException, SystemException, Exception
 	{
 	    checkedSiteNodes.add(siteNode.getId());
         
@@ -1019,12 +1020,27 @@ public class SiteNodeVersionController extends BaseController
             {
                 try
                 {
-                    SiteNode relatedSiteNode = SiteNodeController.getController().getSiteNodeWithId(new Integer(registryVO.getEntityId()), db);
-	                //SiteNodeVersion relatedSiteNodeVersion = getLatestActiveSiteNodeVersionIfInState(relatedSiteNode, stateId, db);
+                    SiteNodeVO relatedSiteNodeVO = SiteNodeController.getController().getSiteNodeVOWithId(new Integer(registryVO.getEntityId()), db);
+
+                    //SiteNodeVersion relatedSiteNodeVersion = getLatestActiveSiteNodeVersionIfInState(relatedSiteNode, stateId, db);
 	                SiteNodeVersion relatedSiteNodeVersion = getLatestActiveSiteNodeVersion(db, new Integer(registryVO.getEntityId()));
 	                
-	                if(relatedSiteNodeVersion != null && relatedSiteNodeVersion.getStateId().intValue() == stateId.intValue() && siteNode.getRepository().getId().intValue() == relatedSiteNodeVersion.getOwningSiteNode().getRepository().getId().intValue())
+	                Integer repositoryId = relatedSiteNodeVO.getRepositoryId();
+	                Integer siteNodeRepositoryId = siteNode.getRepository().getId();
+	                boolean allowedSiteNodeVersion = repositoryId.intValue() == siteNodeRepositoryId.intValue();
+	                if(CmsPropertyHandler.getAllowCrossSiteSubmitToPublish().equalsIgnoreCase("true"))
 	                {
+	                	if(AccessRightController.getController().getIsPrincipalAuthorized(db, principal, "Repository.Read", "" + repositoryId))
+	                	{
+	            			Integer protectedSiteNodeVersionId = SiteNodeVersionControllerProxy.getSiteNodeVersionControllerProxy().getProtectedSiteNodeVersionId(relatedSiteNodeVersion.getId(), db);
+	            			if(protectedSiteNodeVersionId == null || AccessRightController.getController().getIsPrincipalAuthorized(principal, "SiteNodeVersion.SubmitToPublish", protectedSiteNodeVersionId.toString()))
+		        				allowedSiteNodeVersion = true;
+	                	}
+	                }
+
+	                //if(relatedSiteNodeVersion != null && relatedSiteNodeVersion.getStateId().intValue() == stateId.intValue() && siteNode.getRepository().getId().intValue() == relatedSiteNodeVersion.getOwningSiteNode().getRepository().getId().intValue())
+	                if(relatedSiteNodeVersion != null && allowedSiteNodeVersion && relatedSiteNodeVersion.getStateId().intValue() == stateId.intValue())
+	    	        {
 	                    siteNodeVersionVOList.add(relatedSiteNodeVersion.getValueObject());
 	                }
                 }
@@ -1042,13 +1058,27 @@ public class SiteNodeVersionController extends BaseController
 	                Content relatedContent = ContentController.getContentController().getContentWithId(new Integer(registryVO.getEntityId()), db);
 	                if(includeMetaInfo || (!includeMetaInfo && (relatedContent.getContentTypeDefinition() == null || !relatedContent.getContentTypeDefinition().getName().equalsIgnoreCase("Meta info"))))
 	                {
-		                List relatedContentVersions = ContentVersionController.getContentVersionController().getLatestActiveContentVersionIfInState(relatedContent, stateId, db);
+		                Integer repositoryId = relatedContent.getRepository().getId();
+		                Integer siteNodeRepositoryId = siteNode.getRepository().getId();
+		                boolean allowedContent = repositoryId.intValue() == siteNodeRepositoryId.intValue();
+		                if(CmsPropertyHandler.getAllowCrossSiteSubmitToPublish().equalsIgnoreCase("true"))
+		                {
+		                	if(AccessRightController.getController().getIsPrincipalAuthorized(db, principal, "Repository.Read", "" + repositoryId))
+		                	{
+			                	Integer protectedContentId = ContentControllerProxy.getController().getProtectedContentId(relatedContent.getId(), db);
+			        			if(protectedContentId == null || AccessRightController.getController().getIsPrincipalAuthorized(db, principal, "Content.SubmitToPublish", protectedContentId.toString()))
+			        				allowedContent = true;
+		                	}
+		                }
 		                
+	                	List relatedContentVersions = ContentVersionController.getContentVersionController().getLatestActiveContentVersionIfInState(relatedContent, stateId, db);
+
 		                Iterator relatedContentVersionsIterator = relatedContentVersions.iterator();
 		                while(relatedContentVersionsIterator.hasNext())
 		                {
 		                    ContentVersion relatedContentVersion = (ContentVersion)relatedContentVersionsIterator.next();
-			                if(relatedContentVersion != null && siteNode.getRepository().getId().intValue() == relatedContentVersion.getOwningContent().getRepository().getId().intValue())
+			                //if(relatedContentVersion != null && siteNode.getRepository().getId().intValue() == relatedContentVersion.getOwningContent().getRepository().getId().intValue())
+				            if(relatedContentVersion != null && allowedContent)
 			                {
 			                    contentVersionVOList.add(relatedContentVersion.getValueObject());
 			                }
@@ -1074,7 +1104,7 @@ public class SiteNodeVersionController extends BaseController
 			while (cit.hasNext())
 			{
 				SiteNode childSiteNode = (SiteNode) cit.next();
-				getSiteNodeAndAffectedItemsRecursive(childSiteNode, stateId, checkedSiteNodes, checkedContents, db, siteNodeVersionVOList, contentVersionVOList, includeMetaInfo);
+				getSiteNodeAndAffectedItemsRecursive(childSiteNode, stateId, checkedSiteNodes, checkedContents, db, siteNodeVersionVOList, contentVersionVOList, includeMetaInfo, principal);
 			}
         }   
 	}
