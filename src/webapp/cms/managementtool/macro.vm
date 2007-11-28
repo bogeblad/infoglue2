@@ -475,6 +475,17 @@
   <textarea class="$className" wrap="virtual" id="$fieldName" name="$fieldName" rows="$rows" cols="$cols">$!fieldValue</textarea><a href="ViewServerNodeProperties!deleteProperty.action?serverNodeId=$!serverNodeId&key=$fieldName"><img src="images/delete.gif" border="0"/></a>
 #end
 
+#macro(editPropertyTextAreaCSS $fieldNameKey $fieldName $fieldValue $cols $rows $className $serverNodeId)
+  #editPropertyTextAreaCSS3($ui.getString("entity.${fieldNameKey}.label") $fieldNameKey $fieldName $fieldValue $cols $rows $className $serverNodeId)
+#end
+
+#macro(editPropertyTextAreaCSS3 $fieldNameLabel $errorKey $fieldName $fieldValue $cols $rows $className $serverNodeId)
+  	<div class="row">
+		<label for="$fieldName">$fieldNameLabel</label>
+	  	<textarea class="$className" wrap="virtual" id="$fieldName" name="$fieldName" rows="$rows" cols="$cols">$!fieldValue</textarea><a href="ViewServerNodeProperties!deleteProperty.action?serverNodeId=$!serverNodeId&key=$fieldName"><img src="images/delete.gif" border="0"/></a>
+	</div>
+#end
+
 ##**************************************************************
 ## Returns true if value is equal							   *
 ##**************************************************************
@@ -598,6 +609,27 @@ $ui.getString("entity.${fieldNameKey}.label")<br/>
 </table>
 #end
 
+#macro(yesNoDropDownWithInheritCSS $fieldNameKey $fieldName $value)
+	<div class="row">
+		<label for="$fieldName">$ui.getString("entity.${fieldNameKey}.label")</label>
+		<select name="$fieldName" class="yesNoDropBox">
+			#if($value == "" || $value == "inherit")
+				<option value="inherit" selected="1">$ui.getString("tool.common.inherit")</option>
+				<option value="true">$ui.getString("tool.common.yes")</option>
+				<option value="false">$ui.getString("tool.common.no")</option>
+			#elseif($value == true || $value == "true")
+				<option value="inherit">$ui.getString("tool.common.inherit")</option>
+				<option value="true" selected="1">$ui.getString("tool.common.yes")</option>
+				<option value="false">$ui.getString("tool.common.no")</option>
+			#else
+				<option value="inherit">$ui.getString("tool.common.inherit")</option>
+				<option value="true">$ui.getString("tool.common.yes")</option>
+				<option value="false" selected="1">$ui.getString("tool.common.no")</option>
+			#end
+		</select>
+	</div>
+#end
+
 #macro(selectField $fieldNameKey $fieldName $value $valuePairArray)
 <table>
 	<tr>
@@ -619,6 +651,17 @@ $ui.getString("entity.${fieldNameKey}.label")<br/>
 		</td>
 	</tr>
 </table>
+#end
+
+#macro(selectFieldCSS $fieldNameKey $fieldName $value $valuePairArray)
+	<div class="row">
+		<label for="$fieldName">$ui.getString("entity.${fieldNameKey}.label")</label>
+		<select name="$fieldName" class="dropbox">
+			#foreach($valuePair in $valuePairArray)
+				<option value="$valuePair.get(0)" #if("$valuePair.get(0)" == "$value") selected #end>$valuePair.get(1)</option>
+			#end
+		</select>
+	</div>
 #end
 
 #macro(selectBox $fieldNameKey $fieldName $value $valueList $defaultChoiceNameKey)
@@ -931,6 +974,17 @@ $ui.getString("entity.${fieldNameKey}.label")<br/>
 
 #end
 
+
+#macro(editPropertyFieldCSS $fieldNameKey $fieldName $fieldValue $length $serverNodeId)
+  #editPropertyFieldCSS3($ui.getString("entity.${fieldNameKey}.label") $fieldNameKey $fieldName $fieldValue $length $serverNodeId)
+#end
+
+#macro(editPropertyFieldCSS3 $fieldNameLabel $errorKey $fieldName $fieldValue $length $serverNodeId)
+	<div class="row">
+		<label for="$fieldName">$fieldNameLabel</label>
+  	  	<input type="text" class="text" id="$fieldName" name="$fieldName" value="$!fieldValue" size="$length"/><a href="ViewServerNodeProperties!deleteProperty.action?serverNodeId=$!serverNodeId&key=$fieldName"><img src="images/delete.gif" border="0"/></a>
+	</div>
+#end
 
 #macro(editReadOnlyField $fieldNameKey $fieldName $fieldValue $length $readonly)
   $ui.getString("entity.${fieldNameKey}.label")
