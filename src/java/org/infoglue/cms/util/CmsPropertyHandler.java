@@ -1185,6 +1185,11 @@ public class CmsPropertyHandler
 	    return getServerNodeProperty("propertiesParser", false, "xpp3");
 	}
 
+	public static String getAllowCrossSiteSubmitToPublish()
+	{
+        return getServerNodeProperty("allowCrossSiteSubmitToPublish", true, "false");
+	}
+
 	public static List getInternalDeliveryUrls()
 	{
 		List urls = new ArrayList();
