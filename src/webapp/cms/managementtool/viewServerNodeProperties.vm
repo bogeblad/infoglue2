@@ -297,6 +297,9 @@
 	<tr>
 		<td>#yesNoDropDownWithInherit("ServerNode.property.enforceRigidContentAccess" "enforceRigidContentAccess" "$this.getPropertyValue('enforceRigidContentAccess')")</td>
 	</tr>
+	<tr>
+		<td>#yesNoDropDownWithInherit("ServerNode.property.allowCrossSiteSubmitToPublish" "allowCrossSiteSubmitToPublish" "$this.getPropertyValue('allowCrossSiteSubmitToPublish')")</td>
+	</tr>
 	
 	<tr>
 		<td>#editPropertyField("ServerNode.property.maxRows" "maxRows" "$this.getPropertyValue('maxRows')" "51" "$!serverNodeId")</td>
