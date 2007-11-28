@@ -680,6 +680,7 @@ public class CASBasicAuthenticationModule extends AuthenticationModule//, Author
 			else
 				redirectUrl = loginUrl + "?service=" + getService(request) + ((casRenew != null && !casRenew.equals("")) ? "&renew="+ casRenew : "") + ((gateway != null && !gateway.equals("")) ? "&gateway="+ gateway : "");
 	
+			System.out.println("redirectUrl:" + redirectUrl);
 			logger.info("redirectUrl 6:" + redirectUrl);
 			
 			response.sendRedirect(redirectUrl);
