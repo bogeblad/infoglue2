@@ -500,8 +500,6 @@ public class CASBasicAuthenticationModule extends AuthenticationModule//, Author
 	  	else
 	  		returnUrl = Util.getService(request, serverName);
 					
-		System.out.println("returnUrl:" + returnUrl);
-		
 		return returnUrl;
 		/*
 		if (casServiceUrl != null && casServiceUrl.length() > 0)
@@ -680,7 +678,6 @@ public class CASBasicAuthenticationModule extends AuthenticationModule//, Author
 			else
 				redirectUrl = loginUrl + "?service=" + getService(request) + ((casRenew != null && !casRenew.equals("")) ? "&renew="+ casRenew : "") + ((gateway != null && !gateway.equals("")) ? "&gateway="+ gateway : "");
 			
-			System.out.println("redirectUrl:" + redirectUrl);
 			logger.info("redirectUrl 6:" + redirectUrl);
 			
 			response.sendRedirect(redirectUrl);
