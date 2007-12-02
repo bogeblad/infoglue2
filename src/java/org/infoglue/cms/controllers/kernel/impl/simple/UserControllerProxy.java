@@ -217,6 +217,15 @@ public class UserControllerProxy extends BaseController
 	 * This method makes a new password and sends it to the user
 	 */
 	
+	public void updateAnonymousUserPassword() throws ConstraintException, SystemException, Exception
+	{
+		getAuthorizationModule().updateInfoGlueAnonymousPrincipalPassword();
+	}
+	
+	/**
+	 * This method makes a new password and sends it to the user
+	 */
+	
 	public void updateUserPassword(String userName, String oldPassword, String newPassword) throws ConstraintException, SystemException, Exception
 	{
 		getAuthorizationModule().updateInfoGluePrincipalPassword(userName, oldPassword, newPassword);

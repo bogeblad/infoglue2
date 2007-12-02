@@ -610,6 +610,50 @@ public class SystemUserController extends BaseController
 		}
     }        
 
+    public void updateAnonymousPassword(String userName) throws ConstraintException, SystemException
+    {
+        Database db = CastorDatabaseService.getDatabase();
+        ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
+
+        beginTransaction(db);
+
+        try
+        {
+            updateAnonymousPassword(userName, db);
+            
+            commitTransaction(db);
+        }
+        catch(Exception e)
+        {
+            logger.error("An error occurred so we should not completes the transaction:" + e, e);
+            rollbackTransaction(db);
+            throw new SystemException(e.getMessage());
+        }
+    }        
+
+    public void updateAnonymousPassword(String userName, Database db) throws ConstraintException, SystemException
+    {
+        SystemUser systemUser = getSystemUserWithName(userName, db);
+        String newPassword = "anonymous";
+        
+        String password = newPassword;
+		if(CmsPropertyHandler.getUsePasswordEncryption())
+		{
+			try
+			{
+				byte[] encryptedPassRaw = DigestUtils.sha(password);
+				String encryptedPass = new String(new Base64().encode(encryptedPassRaw), "ASCII");
+				password = encryptedPass;
+			}
+			catch (Exception e) 
+			{
+				System.out.println("Error generating password:" + e.getMessage());
+			}
+		}
+
+        systemUser.setPassword(password);		
+    }        
+
     public void updatePassword(String userName, String oldPassword, String newPassword) throws ConstraintException, SystemException
     {
         Database db = CastorDatabaseService.getDatabase();

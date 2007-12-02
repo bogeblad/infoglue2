@@ -435,6 +435,17 @@ public class GenericCombinedAuthorizationModule implements AuthorizationModule, 
 	}
 	
 	/**
+	 * This method is used to send out a newpassword to an existing users.  
+	 */
+
+	public void updateInfoGlueAnonymousPrincipalPassword() throws Exception
+	{
+		InfoGluePrincipal principal = getAuthorizedInfoGluePrincipal(CmsPropertyHandler.getAnonymousUser());
+		
+		principal.getAutorizationModule().updateInfoGlueAnonymousPrincipalPassword();
+	}
+	
+	/**
 	 * This method is used to let a user update his password by giving his/her old one first.  
 	 */
 

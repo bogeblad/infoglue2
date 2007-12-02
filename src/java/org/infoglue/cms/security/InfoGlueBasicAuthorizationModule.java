@@ -666,7 +666,23 @@ public class InfoGlueBasicAuthorizationModule extends BaseController implements 
 	        SystemUserController.getController().updatePassword(userName, transactionObject);
 	    }
 	}
-	
+
+	/**
+	 * This method is used to send out a newpassword to an existing users.  
+	 */
+
+	public void updateInfoGlueAnonymousPrincipalPassword() throws Exception
+	{
+	    if(transactionObject == null)
+		{
+	        SystemUserController.getController().updateAnonymousPassword(CmsPropertyHandler.getAnonymousUser());
+		}
+	    else
+	    {
+	        SystemUserController.getController().updateAnonymousPassword(CmsPropertyHandler.getAnonymousUser(), transactionObject);
+	    }
+	}
+
 	/**
 	 * This method is used to let a user update his password by giving his/her old one first.  
 	 */

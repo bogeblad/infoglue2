@@ -155,6 +155,12 @@ public interface AuthorizationModule
 	 * This method is used to send out a newpassword to an existing users.  
 	 */
 
+	public void updateInfoGlueAnonymousPrincipalPassword() throws Exception;
+
+	/**
+	 * This method is used to send out a newpassword to an existing users.  
+	 */
+
 	public void updateInfoGluePrincipalPassword(String userName, String oldPassword, String newPassword) throws Exception;
 
 	/**

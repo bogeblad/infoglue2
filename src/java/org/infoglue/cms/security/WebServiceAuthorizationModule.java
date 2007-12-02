@@ -738,6 +738,11 @@ public class WebServiceAuthorizationModule implements AuthorizationModule, Seria
 		throw new SystemException("The WebService Authorization module does not support updates of users yet...");
 	}
 
+	public void updateInfoGlueAnonymousPrincipalPassword() throws Exception 
+	{
+		throw new SystemException("The WebService Authorization module does not support updates of user password yet....");
+	}
+
 	public void updateInfoGluePrincipalPassword(String userName, String oldPassword, String newPassword) throws Exception
 	{
 		throw new SystemException("The WebService Authorization module does not support updates of user password yet...");

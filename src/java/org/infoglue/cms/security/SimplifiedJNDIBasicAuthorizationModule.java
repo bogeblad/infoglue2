@@ -1939,6 +1939,11 @@ public class SimplifiedJNDIBasicAuthorizationModule implements AuthorizationModu
 		throw new SystemException("The JNDI BASIC Authorization module does not support updates of users yet...");
 	}
 
+	public void updateInfoGlueAnonymousPrincipalPassword() throws Exception 
+	{
+		throw new SystemException("The JNDI BASIC Authorization module does not support updates of user password yet....");
+	}
+
 	public void updateInfoGluePrincipalPassword(String userName, String oldPassword, String newPassword) throws Exception
 	{
 		throw new SystemException("The JNDI BASIC Authorization module does not support updates of user password yet...");
