@@ -90,13 +90,13 @@ public class UpdateSystemUserAction extends ViewSystemUserAction //WebworkAbstra
 	public String doChangePassword() throws Exception
 	{
 	    if(this.systemUserVO.getUserName().equals(CmsPropertyHandler.getAnonymousUser()))
-	        throw new SystemException("You must not change password on this user as it's needed by the system.");
-
-		UserControllerProxy.getController().updateUserPassword(this.systemUserVO.getUserName());
+			UserControllerProxy.getController().updateAnonymousUserPassword();
+	    else
+	    	UserControllerProxy.getController().updateUserPassword(this.systemUserVO.getUserName());
 		
 		return "passwordSentSuccess";
 	}
-	
+
 	private String[] getRoller()
 	{
 		return this.roller;	
