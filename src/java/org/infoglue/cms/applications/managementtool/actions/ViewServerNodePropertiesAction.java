@@ -271,6 +271,7 @@ public class ViewServerNodePropertiesAction extends InfoGluePropertiesAbstractAc
 	    populate(ps, "protectDeliverPreview");
 	    populate(ps, "forceIdentityCheck");
 	    populate(ps, "allowCrossSiteSubmitToPublish");
+	    populate(ps, "usePasswordEncryption");
 	    
 	    populate(ps, "allowPublicationEventFilter");
 	    populate(ps, "defaultPublicationEventFilter");

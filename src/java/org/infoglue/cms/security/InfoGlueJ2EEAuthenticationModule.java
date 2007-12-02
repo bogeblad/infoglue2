@@ -232,13 +232,12 @@ public class InfoGlueJ2EEAuthenticationModule extends AuthenticationModule
 		boolean isAuthenticated = false;
 		
 		String administratorUserName = CmsPropertyHandler.getAdministratorUserName();
-		String administratorPassword = CmsPropertyHandler.getAdministratorPassword();
-		//logger.info("administratorUserName:" + administratorUserName);
-		//logger.info("administratorPassword:" + administratorPassword);
-		//logger.info("userName:" + userName);
-		//logger.info("password:" + password);
-		boolean isAdministrator = (userName.equalsIgnoreCase(administratorUserName) && password.equalsIgnoreCase(administratorPassword)) ? true : false;
-		
+		//String administratorPassword = CmsPropertyHandler.getAdministratorPassword();
+		//boolean isAdministrator = (userName.equalsIgnoreCase(administratorUserName) && password.equalsIgnoreCase(administratorPassword)) ? true : false;
+
+		boolean matchesRootPassword = CmsPropertyHandler.getMatchesAdministratorPassword(password);
+		boolean isAdministrator = (userName.equalsIgnoreCase(administratorUserName) && matchesRootPassword) ? true : false;
+
 		if(this.transactionObject != null)
 		{
 			if(isAdministrator || SystemUserController.getController().getSystemUserVO(this.transactionObject, userName, password) != null)

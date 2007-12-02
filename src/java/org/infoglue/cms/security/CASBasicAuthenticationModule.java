@@ -170,10 +170,15 @@ public class CASBasicAuthenticationModule extends AuthenticationModule//, Author
 		if(j_userName != null && j_password != null)
 		{
 			String userName = CmsPropertyHandler.getAdministratorUserName();
-			String password = CmsPropertyHandler.getAdministratorPassword();
+			//String password = CmsPropertyHandler.getAdministratorPassword();
 			
+			boolean matchesRootPassword = CmsPropertyHandler.getMatchesAdministratorPassword(j_password);
+			if(j_userName.equals(userName) && matchesRootPassword)
+				return j_userName;
+			/*
 			if(j_userName.equals(userName) && j_password.equals(password))
 				return j_userName;
+			*/
 			
 			String anonymousUserName = CmsPropertyHandler.getAnonymousUser();
 			String anonymousPassword = CmsPropertyHandler.getAnonymousPassword();

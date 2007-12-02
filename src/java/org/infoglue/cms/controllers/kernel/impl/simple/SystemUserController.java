@@ -29,6 +29,8 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
 import org.exolab.castor.jdo.OQLQuery;
@@ -348,20 +350,21 @@ public class SystemUserController extends BaseController
 	 */
     public SystemUserVO create(SystemUserVO systemUserVO) throws ConstraintException, SystemException
     {
-    	/*
-    	try
-    	{
-	    	MessageDigest md = MessageDigest.getInstance("MD5");
-	
-		    md.update(systemUserVO.getPassword().getBytes("utf-8"));
-		    String digestedPassword = new String(md.digest());
-		    systemUserVO.setPassword(digestedPassword);
-    	}
-    	catch(Exception e)
-    	{
-    		e.printStackTrace();
-    	}
-    	*/
+		if(CmsPropertyHandler.getUsePasswordEncryption())
+		{
+	    	String password = systemUserVO.getPassword();
+			try
+			{
+				byte[] encryptedPassRaw = DigestUtils.sha(password);
+				String encryptedPass = new String(new Base64().encode(encryptedPassRaw), "ASCII");
+				password = encryptedPass;
+				systemUserVO.setPassword(password);
+			}
+			catch (Exception e) 
+			{
+				System.out.println("Error generating password:" + e.getMessage());
+			}
+		}
     	
     	SystemUser systemUser = new SystemUserImpl();
         systemUser.setValueObject(systemUserVO);
@@ -375,20 +378,22 @@ public class SystemUserController extends BaseController
 	 */
     public SystemUser create(SystemUserVO systemUserVO, Database db) throws ConstraintException, SystemException, Exception
     {
-    	/*
-    	try
-    	{
-	    	MessageDigest md = MessageDigest.getInstance("MD5");
-	
-		    md.update(systemUserVO.getPassword().getBytes("utf-8"));
-		    String digestedPassword = new String(md.digest());
-		    systemUserVO.setPassword(digestedPassword);
-    	}
-    	catch(Exception e)
-    	{
-    		e.printStackTrace();
-    	}
-    	*/
+		if(CmsPropertyHandler.getUsePasswordEncryption())
+		{
+	    	String password = systemUserVO.getPassword();
+			
+			try
+			{
+				byte[] encryptedPassRaw = DigestUtils.sha(password);
+				String encryptedPass = new String(new Base64().encode(encryptedPassRaw), "ASCII");
+				password = encryptedPass;
+				systemUserVO.setPassword(password);
+			}
+			catch (Exception e) 
+			{
+				System.out.println("Error generating password:" + e.getMessage());
+			}
+		}
 
     	SystemUser systemUser = new SystemUserImpl();
         systemUser.setValueObject(systemUserVO);
@@ -562,18 +567,34 @@ public class SystemUserController extends BaseController
         
         String newPassword = PasswordGenerator.generate();
         
-        systemUser.setPassword(newPassword);
+        String password = newPassword;
+		if(CmsPropertyHandler.getUsePasswordEncryption())
+		{
+			try
+			{
+				byte[] encryptedPassRaw = DigestUtils.sha(password);
+				String encryptedPass = new String(new Base64().encode(encryptedPassRaw), "ASCII");
+				password = encryptedPass;
+			}
+			catch (Exception e) 
+			{
+				System.out.println("Error generating password:" + e.getMessage());
+			}
+		}
+
+        systemUser.setPassword(password);
 		
 		StringBuffer sb = new StringBuffer();
-		sb.append("CMS notification: You or an administrator have requested a new password for your account (" + userName + "). \n");
-		sb.append("\n");
-		sb.append("The new password is '" + newPassword + "'.\n");
-		sb.append("\n");
-		sb.append("Please notify the administrator if this does not work. \n");
-		sb.append("\n");
-		sb.append("-----------------------------------------------------------------------\n");
-		sb.append("This email was automatically generated and the sender is the CMS-system. \n");
-		sb.append("Do not reply to this email. \n");
+		sb.append("<div><h2>Password changed</h2></div>");
+		sb.append("<div>CMS notification: You or an administrator have requested a new password for your account (" + userName + "). <br/>");
+		sb.append("<br/>");
+		sb.append("The new password is '" + newPassword + "'.<br/>");
+		sb.append("<br/>");
+		sb.append("Please notify the administrator if this does not work. <br/>");
+		sb.append("<br/>");
+		sb.append("-----------------------------------------------------------------------<br/>");
+		sb.append("This email was automatically generated and the sender is the CMS-system. <br/>");
+		sb.append("Do not reply to this email. </div>");
 		
 		try
 		{

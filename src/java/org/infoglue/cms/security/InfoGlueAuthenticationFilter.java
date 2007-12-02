@@ -192,8 +192,11 @@ public class InfoGlueAuthenticationFilter implements Filter
 			if(userName != null && password != null)
 			{
 				String administratorUserName = CmsPropertyHandler.getAdministratorUserName();
-				String administratorPassword = CmsPropertyHandler.getAdministratorPassword();
-				isAdministrator = (userName.equalsIgnoreCase(administratorUserName) && password.equalsIgnoreCase(administratorPassword)) ? true : false;
+				//String administratorPassword = CmsPropertyHandler.getAdministratorPassword();
+				//isAdministrator = (userName.equalsIgnoreCase(administratorUserName) && password.equalsIgnoreCase(administratorPassword)) ? true : false;
+				
+				boolean matchesRootPassword = CmsPropertyHandler.getMatchesAdministratorPassword(password);
+				isAdministrator = (userName.equalsIgnoreCase(administratorUserName) && matchesRootPassword) ? true : false;
 			}
 			
 			//First we check if the user is logged in to the container context

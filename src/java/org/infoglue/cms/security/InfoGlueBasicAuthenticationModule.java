@@ -36,6 +36,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.controllers.kernel.impl.simple.SystemUserController;
@@ -79,24 +81,6 @@ public class InfoGlueBasicAuthenticationModule extends AuthenticationModule
 		//otherwise, we need to authenticate somehow
 		String userName = request.getParameter("j_username");
 		String password = request.getParameter("j_password");
-		/*
-		System.out.println("password:" + password);
-    	if(password != null)
-    	{
-    		try
-			{
-		    	MessageDigest md = MessageDigest.getInstance("MD5");
-		
-			    md.update(password.getBytes("utf-8"));
-			    String digestedPassword = new String(md.digest());
-			    password = digestedPassword;
-			}
-			catch(Exception e)
-			{
-				e.printStackTrace();
-			}
-    	}
-    	*/
 		
 		// no userName?  abort request processing and redirect
 		if (userName == null || userName.equals("")) 
@@ -237,12 +221,25 @@ public class InfoGlueBasicAuthenticationModule extends AuthenticationModule
 		boolean isAuthenticated = false;
 		
 		String administratorUserName = CmsPropertyHandler.getAdministratorUserName();
-		String administratorPassword = CmsPropertyHandler.getAdministratorPassword();
-		//logger.info("administratorUserName:" + administratorUserName);
-		//logger.info("administratorPassword:" + administratorPassword);
-		//logger.info("userName:" + userName);
-		//logger.info("password:" + password);
-		boolean isAdministrator = (userName.equalsIgnoreCase(administratorUserName) && password.equalsIgnoreCase(administratorPassword)) ? true : false;
+		//String administratorPassword = CmsPropertyHandler.getAdministratorPassword();
+		//boolean isAdministrator = (userName.equalsIgnoreCase(administratorUserName) && password.equalsIgnoreCase(administratorPassword)) ? true : false;
+
+		boolean matchesRootPassword = CmsPropertyHandler.getMatchesAdministratorPassword(password);
+		boolean isAdministrator = (userName.equalsIgnoreCase(administratorUserName) && matchesRootPassword) ? true : false;
+
+		if(CmsPropertyHandler.getUsePasswordEncryption())
+		{
+			try
+			{
+				byte[] encryptedPassRaw = DigestUtils.sha(password);
+				String encryptedPass = new String(new Base64().encode(encryptedPassRaw), "ASCII");
+				password = encryptedPass;
+			}
+			catch (Exception e) 
+			{
+				System.out.println("Error encrypting password before auth:" + e.getMessage());
+			}
+		}
 		
 		if(this.transactionObject != null)
 		{

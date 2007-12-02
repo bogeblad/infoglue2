@@ -39,6 +39,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.log4j.Logger;
 import org.infoglue.cms.controllers.kernel.impl.simple.ServerNodeController;
 import org.infoglue.cms.entities.management.ServerNodeVO;
@@ -561,10 +563,50 @@ public class CmsPropertyHandler
 	{
 	    return getProperty("administratorUserName");
 	}
-
+	/*
 	public static String getAdministratorPassword()
 	{
 	    return getProperty("administratorPassword");
+	}
+	*/
+
+	public static boolean getMatchesAdministratorPassword(String password)
+	{
+		try
+		{
+			if(CmsPropertyHandler.getUsePasswordEncryption())
+			{
+				byte[] encryptedPassRaw = DigestUtils.sha(password);
+				String encryptedPass = new String(new Base64().encode(encryptedPassRaw), "ASCII");
+				password = encryptedPass;
+			}
+			
+			String administratorPassword = getProperty("administratorPassword");
+		    if(administratorPassword != null)
+		    	return administratorPassword.equals(password);
+		    else
+		    	return false;
+		}
+		catch (Exception e) 
+		{
+			logger.error("There was an error when we encrypted the password:" + e.getMessage(), e);
+			return false;
+		}
+	}
+
+	public static boolean getUsePasswordEncryption()
+	{
+		boolean usePasswordEncryption = false;
+		try
+		{
+			usePasswordEncryption = Boolean.parseBoolean(getServerNodeProperty("usePasswordEncryption", true, "false"));
+		}
+		catch(Exception e)
+		{
+			logger.warn("Error parsing usePasswordEncryption:" + e.getMessage());
+		}
+		
+		return usePasswordEncryption;
 	}
 
 	public static String getAdministratorEmail()

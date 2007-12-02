@@ -392,6 +392,7 @@
 	<div class="tab" id="protectionSettings">
 		<fieldset>
 			<legend>$ui.getString("entity.ServerNode.property.protectionSettings.label")</legend>
+			#yesNoDropDownWithInheritCSS("ServerNode.property.usePasswordEncryption" "usePasswordEncryption" "$this.getPropertyValue('usePasswordEncryption')")
 			#yesNoDropDownWithInheritCSS("ServerNode.property.disableImageEditor" "disableImageEditor" "$this.getPropertyValue('disableImageEditor')")
 			#yesNoDropDownWithInheritCSS("ServerNode.property.protectContentTypes" "protectContentTypes" "$this.getPropertyValue('protectContentTypes')")
 			#yesNoDropDownWithInheritCSS("ServerNode.property.protectWorkflows" "protectWorkflows" "$this.getPropertyValue('protectWorkflows')")
@@ -448,14 +449,6 @@
 			#editPropertyFieldCSS("ServerNode.property.pathsToRecacheOnPublishing" "pathsToRecacheOnPublishing" "$this.getPropertyValue('pathsToRecacheOnPublishing')" "51" "$!serverNodeId")
 			#yesNoDropDownWithInheritCSS("ServerNode.property.disableTemplateDebug" "disableTemplateDebug" "$this.getPropertyValue('disableTemplateDebug')")
 			#editPropertyFieldCSS("ServerNode.property.exportFormat" "exportFormat" "$this.getPropertyValue('exportFormat')" "51" "$!serverNodeId")
-			#editPropertyFieldCSS("ServerNode.property.dbRelease" "dbRelease" "$this.getPropertyValue('dbRelease')" "51" "$!serverNodeId")
-			#editPropertyFieldCSS("ServerNode.property.dbUser" "dbUser" "$this.getPropertyValue('dbUser')" "51" "$!serverNodeId")
-			#editPropertyFieldCSS("ServerNode.property.dbPassword" "dbPassword" "$this.getPropertyValue('dbPassword')" "51" "$!serverNodeId")
-			#editPropertyFieldCSS("ServerNode.property.masterServer" "masterServer" "$this.getPropertyValue('masterServer')" "51" "$!serverNodeId")
-			#editPropertyFieldCSS("ServerNode.property.slaveServer" "slaveServer" "$this.getPropertyValue('slaveServer')" "51" "$!serverNodeId")
-			#editPropertyFieldCSS("ServerNode.property.buildName" "buildName" "$this.getPropertyValue('buildName')" "51" "$!serverNodeId")
-			#editPropertyFieldCSS("ServerNode.property.adminToolsPath" "adminToolsPath" "$this.getPropertyValue('adminToolsPath')" "51" "$!serverNodeId")
-			#editPropertyFieldCSS("ServerNode.property.dbScriptPath" "dbScriptPath" "$this.getPropertyValue('dbScriptPath')" "51" "$!serverNodeId")	
 			#editPropertyFieldCSS("ServerNode.property.digitalAssetUploadPath" "digitalAssetUploadPath" "$this.getPropertyValue('digitalAssetUploadPath')" "51" "$!serverNodeId")
 			
 			<div class="buttonRow">
@@ -480,6 +473,14 @@
 			#yesNoDropDownWithInheritCSS("ServerNode.property.statisticsLogOneFilePerDay" "statisticsLogOneFilePerDay" "$this.getPropertyValue('statisticsLogOneFilePerDay')")
 			#editPropertyFieldCSS("ServerNode.property.statisticsLogger" "statisticsLogger" "$this.getPropertyValue('statisticsLogger')" "51" "$!serverNodeId")
 			#yesNoDropDownWithInheritCSS("ServerNode.property.useImprovedContentCategorySearch" "useImprovedContentCategorySearch" "$this.getPropertyValue('useImprovedContentCategorySearch')")
+			#editPropertyFieldCSS("ServerNode.property.dbRelease" "dbRelease" "$this.getPropertyValue('dbRelease')" "51" "$!serverNodeId")
+			#editPropertyFieldCSS("ServerNode.property.dbUser" "dbUser" "$this.getPropertyValue('dbUser')" "51" "$!serverNodeId")
+			#editPropertyFieldCSS("ServerNode.property.dbPassword" "dbPassword" "$this.getPropertyValue('dbPassword')" "51" "$!serverNodeId")
+			#editPropertyFieldCSS("ServerNode.property.masterServer" "masterServer" "$this.getPropertyValue('masterServer')" "51" "$!serverNodeId")
+			#editPropertyFieldCSS("ServerNode.property.slaveServer" "slaveServer" "$this.getPropertyValue('slaveServer')" "51" "$!serverNodeId")
+			#editPropertyFieldCSS("ServerNode.property.buildName" "buildName" "$this.getPropertyValue('buildName')" "51" "$!serverNodeId")
+			#editPropertyFieldCSS("ServerNode.property.adminToolsPath" "adminToolsPath" "$this.getPropertyValue('adminToolsPath')" "51" "$!serverNodeId")
+			#editPropertyFieldCSS("ServerNode.property.dbScriptPath" "dbScriptPath" "$this.getPropertyValue('dbScriptPath')" "51" "$!serverNodeId")	
 
 			<div class="buttonRow">
 				<input type="image" src="$ui.getString("images.managementtool.buttons.save")" width="50" height="25" style="width: 50px;">

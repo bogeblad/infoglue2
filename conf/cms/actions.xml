@@ -1,4 +1,4 @@
-<!-- $Id: actions.xml,v 1.51 2007/11/24 20:52:23 mattias Exp $ -->
+<!-- $Id: actions.xml,v 1.52 2007/12/02 12:14:07 mattias Exp $ -->
 <actions>
 
 	<!-- MySettings -->
@@ -1521,6 +1521,13 @@
 	<action name="org.infoglue.cms.applications.managementtool.actions.deployment.ViewDeploymentSynchronizeServersAction" alias="ViewDeploymentSynchronizeServers">
 		<view name="input">/cms/managementtool/deployment/viewDeploymentChooseEntities.vm</view>
 		<view name="success">/cms/managementtool/deployment/viewDeploymentSynchronizeServersComplete.vm</view>
+		<view name="error">/cms/managementtool/error.vm</view>
+	</action>
+
+	<!-- InfoGlue Password generation service -->
+	<action name="org.infoglue.cms.applications.managementtool.actions.ViewPasswordToolAction" alias="ViewPasswordTool">
+		<view name="input">/cms/managementtool/viewPasswordToolInput.vm</view>
+		<view name="success">/cms/managementtool/viewPasswordToolResult.vm</view>
 		<view name="error">/cms/managementtool/error.vm</view>
 	</action>
 

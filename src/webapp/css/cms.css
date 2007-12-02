@@ -651,6 +651,11 @@ h2 {
 	background-repeat: no-repeat;
 }
 
+.passwordImage {
+	background-image: url('../images/passwordIcon.gif');
+	background-repeat: no-repeat;
+}
+
 ul {
 	margin-left: 2px;
 	padding-left: 2px;
