@@ -644,6 +644,24 @@ public class SystemUserController extends BaseController
         if(newPassword == null)
             throw new ConstraintException("SystemUser.newPassword", "301");
 
+		if(CmsPropertyHandler.getUsePasswordEncryption())
+		{
+			try
+			{
+				byte[] encryptedPassRaw = DigestUtils.sha(newPassword);
+				String encryptedPass = new String(new Base64().encode(encryptedPassRaw), "ASCII");
+				newPassword = encryptedPass;
+
+				byte[] encryptedOldPasswordRaw = DigestUtils.sha(oldPassword);
+				String encryptedOldPass = new String(new Base64().encode(encryptedOldPasswordRaw), "ASCII");
+				oldPassword = encryptedOldPass;
+			}
+			catch (Exception e) 
+			{
+				System.out.println("Error generating password:" + e.getMessage());
+			}
+		}
+
         SystemUser systemUser = getSystemUser(db, userName, oldPassword);
         if(systemUser == null)
             throw new ConstraintException("SystemUser.oldPassword", "310");
