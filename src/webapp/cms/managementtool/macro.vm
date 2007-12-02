@@ -610,9 +610,13 @@ $ui.getString("entity.${fieldNameKey}.label")<br/>
 #end
 
 #macro(yesNoDropDownWithInheritCSS $fieldNameKey $fieldName $value)
+	#yesNoDropDownWithInheritCSSImpl($fieldNameKey $fieldName $value '')
+#end
+
+#macro(yesNoDropDownWithInheritCSSImpl $fieldNameKey $fieldName $value $onChangeJS)
 	<div class="row">
 		<label for="$fieldName">$ui.getString("entity.${fieldNameKey}.label")</label>
-		<select name="$fieldName" class="yesNoDropBox">
+		<select name="$fieldName" class="yesNoDropBox" #if($onChangeJS != '') onchange="$onChangeJS" #end>
 			#if($value == "" || $value == "inherit")
 				<option value="inherit" selected="1">$ui.getString("tool.common.inherit")</option>
 				<option value="true">$ui.getString("tool.common.yes")</option>

@@ -392,7 +392,7 @@
 	<div class="tab" id="protectionSettings">
 		<fieldset>
 			<legend>$ui.getString("entity.ServerNode.property.protectionSettings.label")</legend>
-			#yesNoDropDownWithInheritCSS("ServerNode.property.usePasswordEncryption" "usePasswordEncryption" "$this.getPropertyValue('usePasswordEncryption')")
+			#yesNoDropDownWithInheritCSSImpl("ServerNode.property.usePasswordEncryption" "usePasswordEncryption" "$this.getPropertyValue('usePasswordEncryption')" "alert('Be aware that changing this may require you to reset the users passwords as the are stored with the old setting and automatic conversion is only possible one way.')")
 			#yesNoDropDownWithInheritCSS("ServerNode.property.disableImageEditor" "disableImageEditor" "$this.getPropertyValue('disableImageEditor')")
 			#yesNoDropDownWithInheritCSS("ServerNode.property.protectContentTypes" "protectContentTypes" "$this.getPropertyValue('protectContentTypes')")
 			#yesNoDropDownWithInheritCSS("ServerNode.property.protectWorkflows" "protectWorkflows" "$this.getPropertyValue('protectWorkflows')")
