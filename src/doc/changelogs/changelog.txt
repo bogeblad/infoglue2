@@ -77,6 +77,13 @@ Abbreviated Changelog from 2.6.0 Final
 - Added handling of response headers although page cache is on
 - Added a few new icons for asset content types.
 - Added check so broken assets get's marked and handled better. A constraint is added so no publications can be made with broken assets.
+- Improved asset deletion speed a lot upon asset archiving.
+- Fixed bug in edit view if a content name had quotes in the names.
+- Added parameter called allowCrossSiteSubmitToPublish which if enabled allows items(contents and pages) to be included from from other repositories as well when submitting to publishing in structure tool.
+- Remade the application settings screen so it's now tab-based and easier to find in hopefully.
+- Added possibility to enable password encryption when using infoglue:s built in authentication system. All passwords will be encrypted in the database with the SHA-1 algorithm.
+- Added password-hash-generation tool under system tools. Very useful for generating a root-password hash if you want to use the encryption of passwords.
+- Improved the password-changed mail template a bit.
 
 -------------------------------------------------------------------------------------
 - InfoGlue 2.6.0 Final
