@@ -29,6 +29,7 @@ import java.util.Map;
 
 import org.infoglue.cms.applications.common.actions.InfoGluePropertiesAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.ServerNodeController;
+import org.infoglue.cms.controllers.kernel.impl.simple.UserControllerProxy;
 import org.infoglue.cms.entities.management.ServerNodeVO;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGlueAuthenticationFilter;
@@ -276,6 +277,15 @@ public class ViewServerNodePropertiesAction extends InfoGluePropertiesAbstractAc
 	    populate(ps, "allowPublicationEventFilter");
 	    populate(ps, "defaultPublicationEventFilter");
 
+	    try
+	    {
+	    	UserControllerProxy.getController().updateAnonymousUserPassword();
+	    }
+	    catch (SystemException e) 
+		{
+			e.printStackTrace();
+		}
+	    
 		try 
 		{
 			CacheController.clearServerNodeProperty(true);
