@@ -7,14 +7,29 @@
 <script type="text/javascript" src="script/jsdiff.js"></script>
 <script type="text/javascript">
 <!--
-function showDiff(compId)
-{
-	var element = document.getElementById(compId);
-	if(element.style.display == "none")
-		element.style.display = "block";
-	else
-		element.style.display = "none";
-}
+	function showDiff(compId)
+	{
+		var element = document.getElementById(compId);
+		if(element.style.display == "none")
+			element.style.display = "block";
+		else
+			element.style.display = "none";
+	}
+	
+	var previousTabId = "contentTypeDefinitions";
+	var previousLiTabId = "contentTypeDefinitionsTab";
+	
+	function activateTab(tabId)
+	{
+		document.getElementById(previousTabId).style.display = "none";
+		document.getElementById(tabId).style.display = "block";
+	
+		document.getElementById(previousLiTabId).className = "";
+		document.getElementById(tabId + "Tab").className = "activeTab";
+					
+		previousTabId = tabId;
+		previousLiTabId = tabId + "Tab";
+	}
 -->
 </script>
 
@@ -29,56 +44,172 @@ function showDiff(compId)
 	{
 	  background-color: #ff6666;
 	}
+	
+	input
+	{
+		background: white;
+		border: 1px solid #cccccc;
+		font-family: Verdana, Arial, San serif;
+		font-size: 8pt;
+		awidth: 200px;
+	}
+
+	.entitiesTabs
+	{
+		margin: 0;	
+		padding-left: 10px;
+		aborder: 1px solid #ccc;
+		abackground-color: white;
+		clear: both;
+		overflow: auto;
+	}
+	
+	.entitiesTabs li
+	{
+		margin: 0; 
+		padding: 0;
+		display: inline;	
+		list-style-type: none;
+	}
+
+	.entitiesTabs a:link, .entitiesTabs a:visited {	
+		float: left;
+		background: #f3f3f3;
+		font-size: 10px;	
+		line-height: 14px;	
+		padding: 2px 10px 2px 10px;
+		margin-right: 4px;	
+		border: 1px solid #ccc;	
+		border-bottom: 0px solid white;
+		text-decoration: none;	
+		color: #666;
+	}
+
+	.entitiesTabs a:link.active, .entitiesTabs a:visited.active {
+		border-bottom: 1px solid #fff;
+		background: #fff;	
+		color: #000;
+	}
+	
+	.entitiesTabs a:hover	{
+		background: #fff;
+	}
+	
+	.activeTab {
+		color: #000;
+		font-weight: bold;
+	}
+
+	.activeTab a:link, .activeTab a:link.visited {
+		color: #000;
+		font-weight: bold;
+	}
+
+	.tabs
+	{
+		display: block;
+	}
+	
+	.tab
+	{
+		display: none;
+		padding: 8px;
+		border: 1px solid #ccc;
+	}
+	
 -->
 </style>
 
 <div class="fullymarginalized">
-<table>
-	<tr>
-		<td><p>$ui.getString("tool.managementtool.deployment.introduction")</p></td>
-	</tr>
+<h2>$ui.getString("tool.managementtool.deployment.chooseEntitiesHeader")</h2>
+<p>$ui.getString("tool.managementtool.deployment.chooseEntitiesIntroduction")</p>
 
-	#if($synchronizeContentTypeDefinitions)
-	<tr>
-		<td>
-			<form name="contentTypesForm" action="ViewDeploymentSynchronizeServers!updateContentTypes.action" method="post">
-				<input type="hidden" name="deploymentServerIndex" value="$deploymentServerIndex"/>
-			
+<ul class="entitiesTabs">
+	<li id="contentTypeDefinitionsTab" class="activeTab"><a href="javascript:activateTab('contentTypeDefinitions');">$ui.getString("tool.managementtool.deployment.contentTypeDefinitions.label")</a></li>
+	<li id="categoriesTab" class=""><a href="javascript:activateTab('categories');">$ui.getString("tool.managementtool.deployment.categories.label")</a></li>
+	<li id="workflowsTab" class=""><a href="javascript:activateTab('workflows');">$ui.getString("tool.managementtool.deployment.workflows.label")</a></li>
+	<li id="componentsTab" class=""><a href="javascript:activateTab('components');">$ui.getString("tool.managementtool.deployment.components.label")</a></li>
+</ul>
+<div style="clear: both;"/>
+
+<div class="tabs">
+	<div class="tab" id="contentTypeDefinitions" style="display: block;">
+
+		#if($synchronizeContentTypeDefinitions)
+		<form name="contentTypesForm" action="ViewDeploymentSynchronizeServers!updateContentTypes.action" method="post">
+			<input type="hidden" name="deploymentServerIndex" value="$deploymentServerIndex"/>
+		
 			<h3>Content types that deviates</h3>
 			#set($indexMissingTypes = 0)
 			#foreach($deviatingContentType in $deviatingContentTypes)
 				#if(!$deviatingContentType.localVersion)
-					<input type="checkbox" name="missingContentTypeName" value="$deviatingContentType.remoteVersion.name"/> Missing local version of $deviatingContentType.remoteVersion.name<br/> 
+					<input type="checkbox" name="missingContentTypeName" value="$deviatingContentType.remoteVersion.name"/> Missing local version of $deviatingContentType.remoteVersion.name <a href="javascript:showDiff('$deviatingContentType.remoteVersion.name');">diff</a><br/> 
+	
+					#set($value1 = "$!formatter.escapeExtendedHTML($!formatter.cleanForJavascriptStrings($!deviatingContentType.remoteVersion.versionValue, 'iglb'))")
+					#set($value2 = "$!formatter.escapeExtendedHTML($!formatter.cleanForJavascriptStrings('', 'iglb'))")
+					
+					<script type="text/javascript">
+					<!--
+					var value1 = "$value1";
+					var value2 = "$value2";
+					value1 = value1.replace(/iglb/g, "<br/>").replace(/CDATA\[/g, "CDATA[<br/>");
+					value2 = value2.replace(/iglb/g, "<br/>").replace(/CDATA\[/g, "CDATA[<br/>");
+					
+					document.write("<div id='$deviatingContentType.remoteVersion.name' style='display:none; background-color: #FFF; border: 1px solid #333; padding: 5px;'>" + diffString(value2, value1) + "</div>");
+					-->
+					</script>
+			
 				#else
-					#set($value1 = "$formatter.cleanForJavascriptStrings($deviatingContentType.remoteVersion.schemaValue)")
-					#set($value2 = "$formatter.cleanForJavascriptStrings($deviatingContentType.localVersion.schemaValue)")
-
+					#set($value1 = "$!formatter.escapeExtendedHTML($formatter.cleanForJavascriptStrings($deviatingContentType.remoteVersion.schemaValue, 'iglb'))")
+					#set($value2 = "$!formatter.escapeExtendedHTML($formatter.cleanForJavascriptStrings($deviatingContentType.localVersion.schemaValue, 'iglb'))")
+	
 					#if($value1 != $value2)
-						<input type="checkbox" name="deviatedContentTypeName" value="$deviatingContentType.remoteVersion.name"/> $deviatingContentType.remoteVersion.name<br/> 
+						<input type="checkbox" name="deviatedContentTypeName" value="$deviatingContentType.remoteVersion.name"/> $deviatingContentType.remoteVersion.name <a href="javascript:showDiff('$deviatingContentType.remoteVersion.name');">diff</a><br/> 
+						<script type="text/javascript">
+						<!--
+						var value1 = "$value1";
+						var value2 = "$value2";
+						value1 = value1.replace(/iglb/g, "<br/>").replace(/CDATA\[/g, "CDATA[<br/>");
+						value2 = value2.replace(/iglb/g, "<br/>").replace(/CDATA\[/g, "CDATA[<br/>");
+						
+						document.write("<div id='$deviatingContentType.remoteVersion.name' style='display:none; background-color: #FFF; border: 1px solid #333; padding: 5px;'>" + diffString(value2, value1) + "</div>");
+						-->
+						</script>
+	
 						<ul>
-						<li><strong>Attributes</strong></li>
+						<li class="normalitemhead"><strong>Attributes</strong></li>
 						#set($deviatingAttributes = $this.getDeviatingAttributes($deviatingContentType.remoteVersion.schemaValue, $deviatingContentType.localVersion.schemaValue))
 						#foreach($deviatingAttribute in $deviatingAttributes)
-							<li>
+							<li class="normalitem">
 								<input type="checkbox" name="${deviatingContentType.remoteVersion.name}_attributeName" value="$deviatingAttribute.name"/> $deviatingAttribute.name
 							</li>
 						#end
-
-						<li><strong>Categories</strong></li>
+						#if($deviatingAttributes.size() == 0)
+							<li class="normalitem">No missing attributes</li>
+						#end
+	
+						<li class="normalitemhead"><strong>Categories</strong></li>
 						#set($deviatingCategories = $this.getDeviatingCategories($deviatingContentType.remoteVersion.schemaValue, $deviatingContentType.localVersion.schemaValue))
 						#foreach($deviatingCategory in $deviatingCategories)
-							<li>
+							<li class="normalitem">
 								<input type="checkbox" name="${deviatingContentType.remoteVersion.name}_categoryName" value="$deviatingCategory.value"/> $deviatingCategory.value
 							</li>
 						#end
-
-						<li><strong>Asset keys</strong></li>
+						#if($deviatingCategories.size() == 0)
+							<li class="normalitem">No missing categories</li>
+						#end
+	
+						<li class="normalitemhead"><strong>Asset keys</strong></li>
 						#set($deviatingAssetKeys = $this.getDeviatingAssetKeys($deviatingContentType.remoteVersion.schemaValue, $deviatingContentType.localVersion.schemaValue))
 						#foreach($deviatingAssetKey in $deviatingAssetKeys)
-							<li>
+							<li class="normalitem">
 								<input type="checkbox" name="${deviatingContentType.remoteVersion.name}_assetKey" value="$deviatingAssetKey.assetKey"/> $deviatingAssetKey.assetKey
 							</li>
 						#end
+						#if($deviatingAssetKeys.size() == 0)
+							<li class="normalitem">No missing asset keys</li>
+						#end
+						
 						</ul>
 					#else
 						##Exakt compare: $deviatingContentType.remoteVersion.name<br/> 
@@ -87,20 +218,20 @@ function showDiff(compId)
 	
 				#set($indexMissingTypes = $indexMissingTypes + 1)
 			#end
-				<br/>
-				<input type="image" src="$ui.getString("images.contenttool.buttons.next")" width="50" height="25">
-			</form>
-		</td>
-	</tr>		
-	#end
+			<br/>
+			<input type="image" src="$ui.getString("images.contenttool.buttons.next")" width="50" height="25">
+		</form>
+		#end
+	</div>
+	
+	<div class="tab" id="categories">
 		
-	#if($synchronizeCategories)
-	<tr>
-		<td>
+		#if($synchronizeCategories)
 			<form name="categoriesForm" action="ViewDeploymentSynchronizeServers!updateCategories.action" method="post">
 				<input type="hidden" name="deploymentServerIndex" value="$deploymentServerIndex"/>
 			
 				<h3>Categories that deviates</h3>
+				<ul>
 				#set($indexMissingCategories = 0)
 				#foreach($deviatingCategory in $deviatingCategoryVOList)
 					#if(!$deviatingCategory.localVersion)
@@ -110,51 +241,62 @@ function showDiff(compId)
 		
 					#set($indexMissingCategories = $indexMissingCategories + 1)
 				#end
+				#if($deviatingCategoryVOList.size() == 0)
+					<li class="normalitem">No missing categories</li>
+				#end
+				</ul>
 				<br/>
 				<input type="image" src="$ui.getString("images.contenttool.buttons.next")" width="50" height="25">
 			</form>
-		</td>
-	</tr>
-	#end
+		#end
+
+	</div>
 	
-	#if($synchronizeWorkflows)	
-	<tr>
-		<td>
+
+	<div class="tab" id="workflows">
+	
+		#if($synchronizeWorkflows)	
 			<form name="workflowsForm" action="ViewDeploymentSynchronizeServers!updateWorkflows.action" method="post">
 				<input type="hidden" name="deploymentServerIndex" value="$deploymentServerIndex"/>
 			
 				<h3>Workflows that deviates</h3>
+				<ul>
 				#set($indexMissingWorkflows = 0)
 				#foreach($deviatingWorkflow in $deviatingWorkflows)
 					#if(!$deviatingWorkflow.localVersion)
 						<input type="checkbox" name="missingWorkflowDefinitionName" value="$deviatingWorkflow.remoteVersion.name"/> Missing local version of $deviatingWorkflow.remoteVersion.name<br/> 
+						#set($indexMissingWorkflows = $indexMissingWorkflows + 1)
 					#else
 						#set($value1 = "$formatter.cleanForJavascriptStrings($deviatingWorkflow.remoteVersion.value)")
 						#set($value2 = "$formatter.cleanForJavascriptStrings($deviatingWorkflow.localVersion.value)")
-	
+		
 						#if($value1 != $value2)
 							<input type="checkbox" name="missingWorkflowDefinitionName" value="$deviatingWorkflow.remoteVersion.name"/> $deviatingWorkflow.remoteVersion.name<br/> 
+							#set($indexMissingWorkflows = $indexMissingWorkflows + 1)
 						#else
-							##Exakt compare: $deviatingWorkflows.remoteVersion.name<br/> 
+							##Exakt compare: $deviatingWorkflow.remoteVersion.name<br/> 
 						#end
 					#end
-		
-					#set($indexMissingWorkflows = $indexMissingWorkflows + 1)
 				#end
+				#if($indexMissingWorkflows == 0)
+					<li class="normalitem">No missing workflows</li>
+				#end
+				</ul>
 				<br/>
 				<input type="image" src="$ui.getString("images.contenttool.buttons.next")" width="50" height="25">
 			</form>
-		</td>
-	</tr>		
-	#end
+		#end
+
+	</div>
 	
-	#if($synchronizeContents)
-	<tr>
-		<td>
+
+	<div class="tab" id="components">
+
+		#if($synchronizeComponents)
 			<form name="contentsForm" action="ViewDeploymentSynchronizeServers!updateContents.action" method="post">
 				<input type="hidden" name="deploymentServerIndex" value="$deploymentServerIndex"/>
 			
-				<h3>Contents that deviates</h3>
+				<h3>Compoents that deviates</h3>
 				#set($indexMissingContents = 0)
 				#foreach($deviatingContent in $deviatingContents)
 					#if(!$deviatingContent.localVersion)
@@ -182,8 +324,7 @@ function showDiff(compId)
 						*#
 						
 						#if("$value1" != "$value2")
-							<input type="checkbox" name="deviatingContentName" value="$deviatingContent.remoteVersion.name"/> $deviatingContent.remoteVersion.name <a href="javascript:showDiff($deviatingContent.remoteVersion.id);">diff</a><br/>
-							##if($deviatingContent.remoteVersion.name == "3-column component")
+							<input type="checkbox" name="deviatingContentName" value="$deviatingContent.remoteVersion.name"/> $deviatingContent.remoteVersion.name - <a href="javascript:showDiff($deviatingContent.remoteVersion.id);">diff</a><br/>
 							<script type="text/javascript">
 							<!--
 							var value1 = "$value1";
@@ -194,34 +335,24 @@ function showDiff(compId)
 							document.write("<div id='$deviatingContent.remoteVersion.id' style='display:none; background-color: #FFF; border: 1px solid #333; padding: 5px;'>" + diffString(value2, value1) + "</div>");
 							-->
 							</script>
-							##end
 						#else
 							##Exakt compare: $deviatingContent.remoteVersion.name<br/> 
 						#end
 					#end
-		
+			
 					#set($indexMissingContents = $indexMissingContents + 1)
+				#end
+				#if($deviatingContents.size() == 0)
+					<li class="normalitem">No missing contents</li>
 				#end
 				<br/>
 				<input type="image" src="$ui.getString("images.contenttool.buttons.next")" width="50" height="25">
 			</form>
-		</td>
-	</tr>
-	#end		
-	
-	<tr>
-		<td>
-			Structure
-		</td>
-	</tr>		
-	<tr>
-		<td>
-			<form method="POST" action="ViewDeploymentSynchronizeServers.action">
-				<input type="image" src="$ui.getString("images.contenttool.buttons.next")" width="50" height="25">
-			</form>
-		</td>
-	</tr>
-</table>
+		#end
+		
+	</div>
+</div>
+<p/>	
 </div>
 </body>
 </html>

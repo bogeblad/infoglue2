@@ -669,6 +669,22 @@ li.chatitem {
 	white-space: normal;
 	cursor: text;
 }
+li.normalitemhead {
+	border-bottom: 1px solid #666666; 
+	padding-bottom: 2px;
+	padding-top: 2px; 
+	padding-bottom: 2px; 
+	white-space: normal;
+	cursor: text;
+}
+li.normalitem {
+	padding-bottom: 2px;
+	border-bottom: 0px; 
+	padding-top: 2px; 
+	padding-bottom: 2px; 
+	white-space: normal;
+	cursor: text;
+}
 .name { 
 	font-weight: bold; 
 }

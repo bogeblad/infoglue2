@@ -24,6 +24,7 @@
 package org.infoglue.cms.webservices;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -45,6 +46,7 @@ import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.entities.workflow.WorkflowDefinitionVO;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
+import org.infoglue.cms.util.sorters.ReflectionComparator;
 import org.infoglue.deliver.util.webservices.DynamicWebserviceSerializer;
 
 
@@ -195,7 +197,7 @@ public class RemoteDeploymentServiceImpl extends RemoteInfoGlueService
      * Gets all component contents from the cms.
      */
     
-    public List<ContentVO> getContents(final String principalName) 
+    public List<ContentVO> getComponents(final String principalName) 
     {
         if(!ServerNodeController.getController().getIsIPAllowed(getRequest()))
         {
@@ -206,7 +208,7 @@ public class RemoteDeploymentServiceImpl extends RemoteInfoGlueService
         if(logger.isInfoEnabled())
         {
 	        logger.info("******************************************************");
-	        logger.info("*        Getting contents through webservice         *");
+	        logger.info("*        Getting components through webservice       *");
 	        logger.info("******************************************************");
         }
 	        
@@ -231,15 +233,12 @@ public class RemoteDeploymentServiceImpl extends RemoteInfoGlueService
 				
 				String fullPath = ContentController.getContentController().getContentPath(contentVO.getId(), true, true);
 				
-				//System.out.println("languageVO:" + languageVO);
 				ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentVO.getId(), languageVO.getId());
-				//System.out.println("contentVersionVO:" + contentVersionVO);
 				if(contentVersionVO != null)
 				{
 					contentVO.setVersions(new String[]{contentVersionVO.getVersionValue()});
 				}
 				
-				//contentVO.getExtraProperties().put("fullPath", fullPath);
 				contentVO.setFullPath(fullPath);
 			}
         }
@@ -247,6 +246,8 @@ public class RemoteDeploymentServiceImpl extends RemoteInfoGlueService
         {
             logger.error("En error occurred when we tried to get the contents:" + t.getMessage(), t);
         }
+        
+	    Collections.sort(contentVOList, Collections.reverseOrder(new ReflectionComparator("modifiedDateTime")));
         
         return contentVOList;
     }

@@ -83,7 +83,7 @@ public class ViewDeploymentSynchronizeServersAction extends InfoGlueAbstractActi
 	private boolean synchronizeContentTypeDefinitions;
 	private boolean synchronizeCategories;
 	private boolean synchronizeWorkflows;
-	private boolean synchronizeContents;
+	private boolean synchronizeComponents;
 	
 	private Integer deploymentServerIndex = null;
 	private List<DeploymentCompareBean> deviatingContentTypes = new ArrayList<DeploymentCompareBean>();
@@ -97,10 +97,7 @@ public class ViewDeploymentSynchronizeServersAction extends InfoGlueAbstractActi
     	List<String> deploymentServers = CmsPropertyHandler.getDeploymentServers();
     	String deploymentServerUrl = deploymentServers.get(deploymentServerIndex);
     	
-    	//System.out.println("Fetching sync info from deploymentServerUrl:" + deploymentServerUrl);
-    	
     	String targetEndpointAddress = deploymentServerUrl + "/services/RemoteDeploymentService";
-    	//System.out.println("targetEndpointAddress:" + targetEndpointAddress);
     	
     	if(synchronizeContentTypeDefinitions)
     	{
@@ -170,14 +167,15 @@ public class ViewDeploymentSynchronizeServersAction extends InfoGlueAbstractActi
 	    	}
     	}
     	
-    	//System.out.println("synchronizeContents:" + synchronizeContents);
-    	if(synchronizeContents)
+    	//System.out.println("synchronizeComponents:" + synchronizeComponents);
+    	if(synchronizeComponents)
     	{
-	    	//Getting deviatingContents
-	    	Object[] contentVOArray = (Object[])invokeOperation(targetEndpointAddress, "getContents", "content", null, ContentVO.class, "infoglue");
+	    	//Getting deviatingComponents
+	    	Object[] contentVOArray = (Object[])invokeOperation(targetEndpointAddress, "getComponents", "content", null, ContentVO.class, "infoglue");
 	    	List remoteContentVOList = Arrays.asList(contentVOArray);
-		    Collections.sort(remoteContentVOList, new ReflectionComparator("name"));
-	
+		    //Collections.sort(remoteContentVOList, new ReflectionComparator("name"));
+		    //Collections.sort(remoteContentVOList, Collections.reverseOrder(new ReflectionComparator("modifiedDateTime")));
+
 	    	//System.out.println("remoteContentVOList:" + remoteContentVOList.size());
 	    	
 	    	List components = ContentController.getContentController().getContentVOWithContentTypeDefinition("HTMLTemplate");
@@ -216,10 +214,12 @@ public class ViewDeploymentSynchronizeServersAction extends InfoGlueAbstractActi
 						localContentVO.setVersions(new String[]{contentVersionVO.getVersionValue()});
 					}
 	    		}
+	    		/*
 	    		else
 	    		{
 	    			System.out.println("No localversion for:" + remoteContentVO.getName() + ":" + remoteContentVO.getExtraProperties() + ":" + remoteContentVO.getFullPath());
 	    		}
+	    		*/
         		
 	    		//System.out.println("bean:" + bean.getLocalVersion());
 	    		deviatingContents.add(bean);
@@ -982,14 +982,14 @@ public class ViewDeploymentSynchronizeServersAction extends InfoGlueAbstractActi
 		return this.synchronizeWorkflows;
 	}
 
-	public void setSynchronizeContents(boolean synchronizeContents)
+	public void setSynchronizeComponents(boolean synchronizeComponents)
 	{
-		this.synchronizeContents = synchronizeContents;
+		this.synchronizeComponents = synchronizeComponents;
 	}
 
-	public boolean getSynchronizeContents()
+	public boolean getSynchronizeComponents()
 	{
-		return this.synchronizeContents;
+		return this.synchronizeComponents;
 	}
 
 }

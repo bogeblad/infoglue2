@@ -5,39 +5,30 @@
 #beginManagementTool("tool.managementtool.deployment.header" "tool.managementtool.deployment.header" "")
 
 <div class="fullymarginalized">
+<h2>$ui.getString("tool.managementtool.deployment.header")</h2>
+<p>$ui.getString("tool.managementtool.deployment.introduction")</p>
+
 <form method="POST" action="ViewDeploymentChooseServer.action">
-<table>
-	<tr>
-		<td><p>$ui.getString("tool.managementtool.deployment.introduction")</p></td>
-	</tr>		
-	<tr>
-		<td>
-			<select name="deploymentServerIndex" class="dropbox">
-				#set($count = 0)
-				#foreach($deploymentServer in $deploymentServers)
-					<option value="$count">$deploymentServer</option>
-					#set($count = $count + 1)
-				#end
-			</select>
-		</td>
-	</tr>
-	
-	<tr>
-		<td>
-			<h3>Items to synchronize</h3>
-			<input type="checkbox" name="synchronizeContentTypeDefinitions" value="true"/> Content types<br>
-			<input type="checkbox" name="synchronizeCategories" value="true"/> Categories<br>
-			<input type="checkbox" name="synchronizeWorkflows" value="true"/> Workflows<br>
-			<input type="checkbox" name="synchronizeContents" value="true"/> Contents<br>
-		</td>
-	</tr>
-	
-	<tr>
-		<td>
-			<input type="image" src="$ui.getString("images.contenttool.buttons.next")" width="50" height="25">
-		</td>
-	</tr>
-</table>
+
+<p>
+	<select name="deploymentServerIndex" class="dropbox">
+		#set($count = 0)
+		#foreach($deploymentServer in $deploymentServers)
+			<option value="$count">$deploymentServer</option>
+			#set($count = $count + 1)
+		#end
+	</select>
+</p>
+<h3>Items to synchronize</h3>
+<p>
+	<input type="checkbox" name="synchronizeContentTypeDefinitions" value="true"/> Content types<br>
+	<input type="checkbox" name="synchronizeCategories" value="true"/> Categories<br>
+	<input type="checkbox" name="synchronizeWorkflows" value="true"/> Workflows<br>
+	<input type="checkbox" name="synchronizeComponents" value="true"/> Components (HTMLTemplates)<br>
+</p>
+<p>
+	<input type="image" src="$ui.getString("images.contenttool.buttons.next")" width="50" height="25">
+</p>
 </form>
 </div>
 </body>

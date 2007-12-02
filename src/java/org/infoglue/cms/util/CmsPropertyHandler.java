@@ -1321,7 +1321,6 @@ public class CmsPropertyHandler
 		List<String> urls = new ArrayList<String>();
 		
 	    String deploymentServersString = CmsPropertyHandler.getServerNodeDataProperty(null, "deploymentServers", true, null);
-	    System.out.println("deploymentServersString:" + deploymentServersString);
 	    if(deploymentServersString != null && !deploymentServersString.equals(""))
 		{
 	    	try
