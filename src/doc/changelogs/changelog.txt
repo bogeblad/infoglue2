@@ -84,6 +84,9 @@ Abbreviated Changelog from 2.6.0 Final
 - Added possibility to enable password encryption when using infoglue:s built in authentication system. All passwords will be encrypted in the database with the SHA-1 algorithm.
 - Added password-hash-generation tool under system tools. Very useful for generating a root-password hash if you want to use the encryption of passwords.
 - Improved the password-changed mail template a bit.
+- Added a new method to security framework which is used for resetting anonymous password. 
+- Forced update of anonymous user whenever a server node property is changed. This is to secure that it stays plain or encrypted depending on the protection setting.
+
 
 -------------------------------------------------------------------------------------
 - InfoGlue 2.6.0 Final
