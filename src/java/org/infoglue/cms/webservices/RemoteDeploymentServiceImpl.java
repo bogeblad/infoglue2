@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.infoglue.cms.controllers.kernel.impl.simple.CategoryController;
@@ -110,6 +111,153 @@ public class RemoteDeploymentServiceImpl extends RemoteInfoGlueService
         }
         
         return contentTypeDefinitionVOList;
+    }
+
+	/**
+     * Gets all content type definitions from the cms.
+     */
+    
+    public Boolean updateContentTypeDefinitions(final String principalName, final Object[] input/*final Object[] inputsArray*//*final ContentTypeDefinitionVO contentTypeDefinitionVO */ /*final Object[] inputsArray, final String[] missingContentTypeNameArray, final Map requestParameters*/) 
+    {
+        if(!ServerNodeController.getController().getIsIPAllowed(getRequest()))
+        {
+            logger.error("A client with IP " + getRequest().getRemoteAddr() + " was denied access to the webservice. Could be a hack attempt or you have just not configured the allowed IP-addresses correct.");
+            return new Boolean(false);
+        }
+        
+    	Boolean status = new Boolean(true);
+
+        if(logger.isInfoEnabled())
+        {
+	        logger.info("*******************************************************");
+	        logger.info("* Updating content type definition through webservice *");
+	        logger.info("*******************************************************");
+        }
+	        
+        try
+        {
+        	System.out.println("input:" + input);
+        	
+        	final DynamicWebserviceSerializer serializer = new DynamicWebserviceSerializer();
+        	Map arguments = (Map)serializer.deserialize(input);
+        	
+            System.out.println("arguments:" + arguments);
+            
+            
+        	/*
+        	System.out.println("inputsArray:" + inputsArray.length);
+
+    		final DynamicWebserviceSerializer serializer = new DynamicWebserviceSerializer();
+            List remoteContentTypeDefinitionVOList = (List)serializer.deserialize(inputsArray);
+
+            System.out.println("remoteContentTypeDefinitionVOList:" + remoteContentTypeDefinitionVOList.size());
+			*/
+        	
+        	//System.out.println("contentTypeDefinitionVO:" + contentTypeDefinitionVO);
+        	
+			if(logger.isInfoEnabled())
+	        {
+		        logger.info("principalName:" + principalName);
+	        }
+			//System.out.println("missingContentTypeNameArray:" + missingContentTypeNameArray);
+	    	/*
+			if(missingContentTypeNameArray != null)
+	    	{
+		    	for(int i=0; i<missingContentTypeNameArray.length; i++)
+		    	{
+		    		String missingContentTypeName = missingContentTypeNameArray[i];
+		    		//System.out.println("Updating missingContentTypeName:" + missingContentTypeName);
+		
+		        	Iterator remoteContentTypeDefinitionVOListIterator = remoteContentTypeDefinitionVOList.iterator();
+		        	while(remoteContentTypeDefinitionVOListIterator.hasNext())
+		        	{
+		        		ContentTypeDefinitionVO remoteContentTypeDefinitionVO = (ContentTypeDefinitionVO)remoteContentTypeDefinitionVOListIterator.next();
+		        		//System.out.println("remoteContentTypeDefinitionVO:" + remoteContentTypeDefinitionVO.getName());
+		        		if(remoteContentTypeDefinitionVO.getName().equals(missingContentTypeName))
+		        		{
+		        			ContentTypeDefinitionController.getController().create(remoteContentTypeDefinitionVO);
+		        		}
+		        	}
+		    	}
+	    	}
+	    	*/
+	    	
+	    	//String[] deviatingContentTypeNameArray = (String[])requestParameters.get("deviatedContentTypeName");
+			//System.out.println("deviatingContentTypeNameArray:" + deviatingContentTypeNameArray);
+	    	/*
+	    	if(deviatingContentTypeNameArray != null)
+	    	{
+		    	for(int i=0; i<deviatingContentTypeNameArray.length; i++)
+		    	{
+		    		String deviatingContentTypeName = deviatingContentTypeNameArray[i];
+		    		//System.out.println("Updating deviatingContentTypeName:" + deviatingContentTypeName);
+		
+		        	Iterator remoteContentTypeDefinitionVOListIterator = remoteContentTypeDefinitionVOList.iterator();
+		        	while(remoteContentTypeDefinitionVOListIterator.hasNext())
+		        	{
+		        		ContentTypeDefinitionVO remoteContentTypeDefinitionVO = (ContentTypeDefinitionVO)remoteContentTypeDefinitionVOListIterator.next();
+		        		//System.out.println("remoteContentTypeDefinitionVO:" + remoteContentTypeDefinitionVO.getName());
+		        		if(remoteContentTypeDefinitionVO.getName().equals(deviatingContentTypeName))
+		        		{
+		        			ContentTypeDefinitionVO localContentTypeDefinitionVO = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithName(remoteContentTypeDefinitionVO.getName());
+		        			String newSchemaValue = localContentTypeDefinitionVO.getSchemaValue();
+		        			
+		        	    	String[] attributeNameArray = (String[])requestParameters.get(deviatingContentTypeName + "_attributeName");
+		        	    	//System.out.println("attributeNameArray:" + attributeNameArray);
+		        	    	if(attributeNameArray != null)
+		        	    	{
+		        	    		for(int j=0; j<attributeNameArray.length; j++)
+		        	    		{
+			        	    		String attributeName = attributeNameArray[j];
+			        	    		//System.out.println("  * Updating attributeName:" + attributeName);
+			        			
+				        			newSchemaValue = contentTypeDefinitionController.copyAttribute(remoteContentTypeDefinitionVO.getSchemaValue(), newSchemaValue, attributeName);
+				        		}
+		        	    	}	        			
+
+		        	    	String[] categoryNameArray = (String[])requestParameters.get(deviatingContentTypeName + "_categoryName");
+		        	    	//System.out.println("categoryNameArray:" + categoryNameArray);
+		        	    	if(categoryNameArray != null)
+		        	    	{
+		        	    		for(int j=0; j<categoryNameArray.length; j++)
+		        	    		{
+			        	    		String categoryName = categoryNameArray[j];
+			        	    		//System.out.println("  * Updating categoryName:" + categoryName);
+			        			
+				        			newSchemaValue = contentTypeDefinitionController.copyCategory(remoteContentTypeDefinitionVO.getSchemaValue(), newSchemaValue, categoryName);
+				        		}
+		        	    	}	
+
+		        	    	String[] assetKeyArray = (String[])requestParameters.get(deviatingContentTypeName + "_assetKey");
+		        	    	//System.out.println("assetKeyArray:" + assetKeyArray);
+		        	    	if(assetKeyArray != null)
+		        	    	{
+		        	    		for(int j=0; j<assetKeyArray.length; j++)
+		        	    		{
+			        	    		String assetKey = assetKeyArray[j];
+			        	    		//System.out.println("  * Updating assetKey:" + assetKey);
+			        			
+				        			newSchemaValue = contentTypeDefinitionController.copyAssetKey(remoteContentTypeDefinitionVO.getSchemaValue(), newSchemaValue, assetKey);
+				        		}
+		        	    	}
+		        	    	
+		        			localContentTypeDefinitionVO.setSchemaValue(newSchemaValue);
+				        	ContentTypeDefinitionController.getController().update(localContentTypeDefinitionVO);
+		        		}
+		        	}
+		    	}
+	    	}
+			*/
+        }
+        catch(Throwable t)
+        {
+        	status = new Boolean(false);
+            logger.error("En error occurred when we tried to get the contentVersionVO:" + t.getMessage(), t);
+        }
+        
+        updateCaches();
+
+        return status;
     }
 
 	/**

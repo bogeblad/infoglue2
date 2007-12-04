@@ -38,6 +38,7 @@ import org.apache.axis.encoding.XMLType;
 import org.apache.axis.encoding.ser.BeanDeserializerFactory;
 import org.apache.axis.encoding.ser.BeanSerializerFactory;
 import org.apache.log4j.Logger;
+import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
 import org.infoglue.cms.security.InfoGluePrincipal;
 
 /**
@@ -291,7 +292,34 @@ public class DynamicWebservice
 		logger.debug("addArgument=[" + name + "," + value + "] (Collection)");
 		addArgument(name, XMLType.SOAP_ARRAY, serializer.serializeCollection(value).toArray());
 	}
+
+	/**
+	 * 
+	 */
+	public void addArgument(final String name, final Collection value, final Class objectClass)
+	{
+		assertNameNotNull(name);
+
+		logger.debug("addArgument=[" + name + "," + value + "] (Collection)");
+		this.mappings.put(objectClass, new QName("infoglue", getClassName(objectClass)));
+		mappingForClass(objectClass, "infoglue");
+		addArgument(name, XMLType.SOAP_ARRAY, serializer.serializeCollection(value).toArray());
+	}
+
+	/**
+	 * 
+	 */
+	public void addArgument(final String name, final Map value, final Class objectClass)
+	{
+		assertNameNotNull(name);
+
+		logger.debug("addArgument=[" + name + "," + value + "] (Map)");
+		this.mappings.put(objectClass, new QName("infoglue", getClassName(objectClass)));
+		mappingForClass(objectClass, "infoglue");
+		addArgument(name, XMLType.SOAP_ARRAY, serializer.serializeMap(value).toArray());
+	}
 	
+
 	/**
 	 * 
 	 */
@@ -346,6 +374,26 @@ public class DynamicWebservice
 	/**
 	 * 
 	 */
+	private QName mappingForClass(final Class c, final String namespace)
+	{
+		if(c == null)
+		{
+			return null;
+		}
+		if(standardMappings.containsKey(c))
+		{
+			return (QName) standardMappings.get(c);
+		}
+		if(mappings.containsKey(c))
+		{
+			return (QName) mappings.get(c);
+		}
+		return addMapping(c, namespace);
+	}
+
+	/**
+	 * 
+	 */
 	private QName addMapping(final Class c) {
 		final String className = getClassName(c);
 		final QName type = new QName(DEFAULT_NAMESPACE_URI + className, className);
@@ -353,7 +401,19 @@ public class DynamicWebservice
 		logger.debug("addMapping=[" + c.getName() + "," + type + "]");
 		return type;
 	}
-	
+
+	/**
+	 * 
+	 */
+	private QName addMapping(final Class c, String namespace) {
+		final String className = getClassName(c);
+		final QName type = new QName(namespace + className, className);
+		mappings.put(c, type);
+		logger.debug("addMapping=[" + c.getName() + "," + type + "]");
+		//System.out.println("addMapping=[" + c.getName() + "," + type + "]");
+		return type;
+	}
+
 	/**
 	 * 
 	 */

@@ -23,6 +23,7 @@
 
 package org.infoglue.cms.controllers.kernel.impl.simple;
 
+import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -60,6 +61,7 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
 /**
  * @author ss
@@ -1329,6 +1331,129 @@ public class ContentTypeDefinitionController extends BaseController
 	{
 		return "undefined" + (int)(Math.random() * 100);
 	}
+	
+	
+	//**
+	
+	public String copyAttribute(String remoteSchemaValue, String localSchemaValue, String contentTypeAttributeName)
+	{
+		String newSchemaValue = null;
+
+		try
+		{
+			Document remoteDocument = createDocumentFromDefinition(remoteSchemaValue);
+			Document localDocument = createDocumentFromDefinition(localSchemaValue);
+
+			String attributeXPath = "/xs:schema/xs:complexType/xs:all/xs:element/xs:complexType/xs:all/xs:element[@name='" + contentTypeAttributeName + "']";
+			Node attributeNode = org.apache.xpath.XPathAPI.selectSingleNode(remoteDocument.getDocumentElement(), attributeXPath);
+			//System.out.println("attributeNode:" + attributeNode);
+
+			String attributesXPath = "/xs:schema/xs:complexType/xs:all/xs:element/xs:complexType/xs:all";
+			Node attributesNode = org.apache.xpath.XPathAPI.selectSingleNode(localDocument.getDocumentElement(), attributesXPath);
+
+			//Node node = attributeNode.cloneNode(true);
+			Node node = localDocument.importNode(attributeNode, true);
+			attributesNode.appendChild(node);
+			
+			StringBuffer sb = new StringBuffer();
+			org.infoglue.cms.util.XMLHelper.serializeDom(localDocument.getDocumentElement(), sb);
+			newSchemaValue = sb.toString();
+		}
+		catch (Exception e) 
+		{
+			e.printStackTrace();
+		}
+		
+		return newSchemaValue;
+	}
+
+	public String copyCategory(String remoteSchemaValue, String localSchemaValue, String categoryName)
+	{
+		String newSchemaValue = null;
+
+		try
+		{
+			Document remoteDocument = createDocumentFromDefinition(remoteSchemaValue);
+			Document localDocument = createDocumentFromDefinition(localSchemaValue);
+			
+			String attributeXPath = "/xs:schema/xs:simpleType[@name='categoryKeys']/xs:restriction/xs:enumeration[@value='" + categoryName + "']";
+			Node attributeNode = org.apache.xpath.XPathAPI.selectSingleNode(remoteDocument.getDocumentElement(), attributeXPath);
+			//System.out.println("attributeNode:" + attributeNode);
+
+			String attributesXPath = "/xs:schema/xs:simpleType[@name='categoryKeys']/xs:restriction";
+			Node attributesNode = org.apache.xpath.XPathAPI.selectSingleNode(localDocument.getDocumentElement(), attributesXPath);
+			//System.out.println("attributesNode:" + attributesNode);
+			if(attributesNode == null)
+			{
+				attributesNode = ContentTypeDefinitionController.getController().createNewEnumerationKey(localDocument, ContentTypeDefinitionController.CATEGORY_KEYS);
+			}
+
+			Node node = localDocument.importNode(attributeNode, true);
+			attributesNode.appendChild(node);
+			
+			StringBuffer sb = new StringBuffer();
+			org.infoglue.cms.util.XMLHelper.serializeDom(localDocument.getDocumentElement(), sb);
+			newSchemaValue = sb.toString();
+		}
+		catch (Exception e) 
+		{
+			e.printStackTrace();
+		}
+		
+		return newSchemaValue;
+	}
+
+	public String copyAssetKey(String remoteSchemaValue, String localSchemaValue, String assetKey)
+	{
+		String newSchemaValue = null;
+
+		try
+		{
+			Document remoteDocument = createDocumentFromDefinition(remoteSchemaValue);
+			Document localDocument = createDocumentFromDefinition(localSchemaValue);
+
+			String attributeXPath = "/xs:schema/xs:simpleType[@name='assetKeys']/xs:restriction/xs:enumeration[@value='" + assetKey + "']";
+			Node attributeNode = org.apache.xpath.XPathAPI.selectSingleNode(remoteDocument.getDocumentElement(), attributeXPath);
+			//System.out.println("attributeNode:" + attributeNode);
+
+			String attributesXPath = "/xs:schema/xs:simpleType[@name='assetKeys']/xs:restriction";
+			Node attributesNode = org.apache.xpath.XPathAPI.selectSingleNode(localDocument.getDocumentElement(), attributesXPath);
+			//System.out.println("attributesNode:" + attributesNode);
+			if(attributesNode == null)
+			{
+				attributesNode = ContentTypeDefinitionController.getController().createNewEnumerationKey(localDocument, ContentTypeDefinitionController.ASSET_KEYS);
+			}
+			
+			//Node node = attributeNode.cloneNode(true);
+			Node node = localDocument.importNode(attributeNode, true);
+			attributesNode.appendChild(node);
+			
+			StringBuffer sb = new StringBuffer();
+			org.infoglue.cms.util.XMLHelper.serializeDom(localDocument.getDocumentElement(), sb);
+			newSchemaValue = sb.toString();
+		}
+		catch (Exception e) 
+		{
+			e.printStackTrace();
+		}
+		
+		return newSchemaValue;
+	}
+
+	
+	/**
+	 * Consolidate the Document creation
+	 */
+	private Document createDocumentFromDefinition(String schemaValue) throws SAXException, IOException
+	{
+		InputSource xmlSource = new InputSource(new StringReader(schemaValue));
+		DOMParser parser = new DOMParser();
+		parser.parse(xmlSource);
+		return parser.getDocument();
+	}
+
+	//**
+	
 
 	/**
 	 * This is a method that gives the user back an newly initialized ValueObject for this entity that the controller

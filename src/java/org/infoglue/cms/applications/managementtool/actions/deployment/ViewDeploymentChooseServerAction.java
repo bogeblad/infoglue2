@@ -35,6 +35,7 @@ public class ViewDeploymentChooseServerAction extends InfoGlueAbstractAction
 		
 	private List deploymentServers = new ArrayList();
 	private Integer deploymentServerIndex = null;
+	private String synchronizationMethod = "pull";
 	
     public String doInput() throws Exception
     {
@@ -61,6 +62,16 @@ public class ViewDeploymentChooseServerAction extends InfoGlueAbstractAction
 	public void setDeploymentServerIndex(Integer deploymentServerIndex)
 	{
 		this.deploymentServerIndex = deploymentServerIndex;
+	}
+
+	public String getSynchronizationMethod()
+	{
+		return synchronizationMethod;
+	}
+
+	public void setSynchronizationMethod(String synchronizationMethod)
+	{
+		this.synchronizationMethod = synchronizationMethod;
 	}
         
 }

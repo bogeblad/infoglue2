@@ -131,10 +131,12 @@ public class DynamicWebserviceSerializer
 		{
 			throw new IllegalArgumentException("Null objects are not allowed in collections...");
 		}
+		/*
 		if(!legalTypes.containsKey(o.getClass()))
 		{
 			throw new IllegalArgumentException("Non-standard elements not allowed in collections...");
 		}
+		*/
 	}
 
 	/**
