@@ -1337,7 +1337,7 @@ public class ContentTypeDefinitionController extends BaseController
 	
 	public String copyAttribute(String remoteSchemaValue, String localSchemaValue, String contentTypeAttributeName)
 	{
-		String newSchemaValue = null;
+		String newSchemaValue = localSchemaValue;
 
 		try
 		{
@@ -1346,18 +1346,26 @@ public class ContentTypeDefinitionController extends BaseController
 
 			String attributeXPath = "/xs:schema/xs:complexType/xs:all/xs:element/xs:complexType/xs:all/xs:element[@name='" + contentTypeAttributeName + "']";
 			Node attributeNode = org.apache.xpath.XPathAPI.selectSingleNode(remoteDocument.getDocumentElement(), attributeXPath);
-			//System.out.println("attributeNode:" + attributeNode);
-
+			
 			String attributesXPath = "/xs:schema/xs:complexType/xs:all/xs:element/xs:complexType/xs:all";
 			Node attributesNode = org.apache.xpath.XPathAPI.selectSingleNode(localDocument.getDocumentElement(), attributesXPath);
-
-			//Node node = attributeNode.cloneNode(true);
-			Node node = localDocument.importNode(attributeNode, true);
-			attributesNode.appendChild(node);
-			
-			StringBuffer sb = new StringBuffer();
-			org.infoglue.cms.util.XMLHelper.serializeDom(localDocument.getDocumentElement(), sb);
-			newSchemaValue = sb.toString();
+			System.out.println("attributesNode:" + attributesNode);
+			if(attributesNode != null && localDocument != null && attributeNode != null)
+			{
+				System.out.println("localDocument:" + localDocument);
+				System.out.println("attributeNode:" + attributeNode);
+				Node node = localDocument.importNode(attributeNode, true);
+	
+				attributesNode.appendChild(node);
+				
+				StringBuffer sb = new StringBuffer();
+				org.infoglue.cms.util.XMLHelper.serializeDom(localDocument.getDocumentElement(), sb);
+				newSchemaValue = sb.toString();
+			}
+			else
+			{
+				System.out.println("Problem:" + attributesNode + " - " + localDocument + " - " + attributeNode);
+			}
 		}
 		catch (Exception e) 
 		{
@@ -1369,7 +1377,7 @@ public class ContentTypeDefinitionController extends BaseController
 
 	public String copyCategory(String remoteSchemaValue, String localSchemaValue, String categoryName)
 	{
-		String newSchemaValue = null;
+		String newSchemaValue = localSchemaValue;
 
 		try
 		{
@@ -1388,12 +1396,19 @@ public class ContentTypeDefinitionController extends BaseController
 				attributesNode = ContentTypeDefinitionController.getController().createNewEnumerationKey(localDocument, ContentTypeDefinitionController.CATEGORY_KEYS);
 			}
 
-			Node node = localDocument.importNode(attributeNode, true);
-			attributesNode.appendChild(node);
-			
-			StringBuffer sb = new StringBuffer();
-			org.infoglue.cms.util.XMLHelper.serializeDom(localDocument.getDocumentElement(), sb);
-			newSchemaValue = sb.toString();
+			if(attributesNode != null && localDocument != null && attributeNode != null)
+			{
+				Node node = localDocument.importNode(attributeNode, true);
+				attributesNode.appendChild(node);
+				
+				StringBuffer sb = new StringBuffer();
+				org.infoglue.cms.util.XMLHelper.serializeDom(localDocument.getDocumentElement(), sb);
+				newSchemaValue = sb.toString();
+			}
+			else
+			{
+				System.out.println("Problem:" + attributesNode + " - " + localDocument + " - " + attributeNode);
+			}
 		}
 		catch (Exception e) 
 		{
@@ -1405,7 +1420,7 @@ public class ContentTypeDefinitionController extends BaseController
 
 	public String copyAssetKey(String remoteSchemaValue, String localSchemaValue, String assetKey)
 	{
-		String newSchemaValue = null;
+		String newSchemaValue = localSchemaValue;
 
 		try
 		{
@@ -1424,13 +1439,19 @@ public class ContentTypeDefinitionController extends BaseController
 				attributesNode = ContentTypeDefinitionController.getController().createNewEnumerationKey(localDocument, ContentTypeDefinitionController.ASSET_KEYS);
 			}
 			
-			//Node node = attributeNode.cloneNode(true);
-			Node node = localDocument.importNode(attributeNode, true);
-			attributesNode.appendChild(node);
-			
-			StringBuffer sb = new StringBuffer();
-			org.infoglue.cms.util.XMLHelper.serializeDom(localDocument.getDocumentElement(), sb);
-			newSchemaValue = sb.toString();
+			if(attributesNode != null && localDocument != null && attributeNode != null)
+			{
+				Node node = localDocument.importNode(attributeNode, true);
+				attributesNode.appendChild(node);
+				
+				StringBuffer sb = new StringBuffer();
+				org.infoglue.cms.util.XMLHelper.serializeDom(localDocument.getDocumentElement(), sb);
+				newSchemaValue = sb.toString();
+			}
+			else
+			{
+				System.out.println("Problem:" + attributesNode + " - " + localDocument + " - " + attributeNode);
+			}
 		}
 		catch (Exception e) 
 		{

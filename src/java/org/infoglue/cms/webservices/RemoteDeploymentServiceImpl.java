@@ -25,6 +25,7 @@ package org.infoglue.cms.webservices;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -117,7 +118,7 @@ public class RemoteDeploymentServiceImpl extends RemoteInfoGlueService
      * Gets all content type definitions from the cms.
      */
     
-    public Boolean updateContentTypeDefinitions(final String principalName, final Object[] input/*final Object[] inputsArray*//*final ContentTypeDefinitionVO contentTypeDefinitionVO */ /*final Object[] inputsArray, final String[] missingContentTypeNameArray, final Map requestParameters*/) 
+    public Boolean updateContentTypeDefinitions(final String principalName, final Object[] input) 
     {
         if(!ServerNodeController.getController().getIsIPAllowed(getRequest()))
         {
@@ -142,31 +143,27 @@ public class RemoteDeploymentServiceImpl extends RemoteInfoGlueService
         	Map arguments = (Map)serializer.deserialize(input);
         	
             System.out.println("arguments:" + arguments);
-            
-            
-        	/*
-        	System.out.println("inputsArray:" + inputsArray.length);
-
-    		final DynamicWebserviceSerializer serializer = new DynamicWebserviceSerializer();
-            List remoteContentTypeDefinitionVOList = (List)serializer.deserialize(inputsArray);
-
-            System.out.println("remoteContentTypeDefinitionVOList:" + remoteContentTypeDefinitionVOList.size());
-			*/
-        	
-        	//System.out.println("contentTypeDefinitionVO:" + contentTypeDefinitionVO);
-        	
+                    	
 			if(logger.isInfoEnabled())
 	        {
 		        logger.info("principalName:" + principalName);
 	        }
-			//System.out.println("missingContentTypeNameArray:" + missingContentTypeNameArray);
-	    	/*
+			
+			List remoteContentTypeDefinitionVOList = (List)arguments.get("contentTypeDefinitionVOList");
+			List missingContentTypeNameArray = (List)arguments.get("missingContentTypeNameArray");
+			List deviatingContentTypeNameArray = (List)arguments.get("deviatingContentTypeNameArray");
+			
+			System.out.println("remoteContentTypeDefinitionVOList:" + remoteContentTypeDefinitionVOList);
+			System.out.println("missingContentTypeNameArray:" + missingContentTypeNameArray);
+			System.out.println("deviatingContentTypeNameArray:" + deviatingContentTypeNameArray);
+			
 			if(missingContentTypeNameArray != null)
 	    	{
-		    	for(int i=0; i<missingContentTypeNameArray.length; i++)
+				Iterator missingContentTypeNameArrayIterator = missingContentTypeNameArray.iterator();
+		    	while(missingContentTypeNameArrayIterator.hasNext())
 		    	{
-		    		String missingContentTypeName = missingContentTypeNameArray[i];
-		    		//System.out.println("Updating missingContentTypeName:" + missingContentTypeName);
+		    		String missingContentTypeName = (String)missingContentTypeNameArrayIterator.next();
+		    		System.out.println("Updating missingContentTypeName:" + missingContentTypeName);
 		
 		        	Iterator remoteContentTypeDefinitionVOListIterator = remoteContentTypeDefinitionVOList.iterator();
 		        	while(remoteContentTypeDefinitionVOListIterator.hasNext())
@@ -175,23 +172,23 @@ public class RemoteDeploymentServiceImpl extends RemoteInfoGlueService
 		        		//System.out.println("remoteContentTypeDefinitionVO:" + remoteContentTypeDefinitionVO.getName());
 		        		if(remoteContentTypeDefinitionVO.getName().equals(missingContentTypeName))
 		        		{
+		        			System.out.println("Creating remoteContentTypeDefinitionVO:" + remoteContentTypeDefinitionVO.getName());
 		        			ContentTypeDefinitionController.getController().create(remoteContentTypeDefinitionVO);
 		        		}
 		        	}
 		    	}
 	    	}
-	    	*/
-	    	
-	    	//String[] deviatingContentTypeNameArray = (String[])requestParameters.get("deviatedContentTypeName");
-			//System.out.println("deviatingContentTypeNameArray:" + deviatingContentTypeNameArray);
-	    	/*
+
 	    	if(deviatingContentTypeNameArray != null)
 	    	{
-		    	for(int i=0; i<deviatingContentTypeNameArray.length; i++)
+	    		Iterator deviatingContentTypeNameArrayIterator = deviatingContentTypeNameArray.iterator();
+		    	while(deviatingContentTypeNameArrayIterator.hasNext())
 		    	{
-		    		String deviatingContentTypeName = deviatingContentTypeNameArray[i];
+		    		String deviatingContentTypeName = (String)deviatingContentTypeNameArrayIterator.next();
 		    		//System.out.println("Updating deviatingContentTypeName:" + deviatingContentTypeName);
-		
+		    		Map deviationArguments = (Map)arguments.get("deviationArguments_" + deviatingContentTypeName);
+					System.out.println("deviationArguments:" + deviationArguments);
+
 		        	Iterator remoteContentTypeDefinitionVOListIterator = remoteContentTypeDefinitionVOList.iterator();
 		        	while(remoteContentTypeDefinitionVOListIterator.hasNext())
 		        	{
@@ -202,57 +199,264 @@ public class RemoteDeploymentServiceImpl extends RemoteInfoGlueService
 		        			ContentTypeDefinitionVO localContentTypeDefinitionVO = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithName(remoteContentTypeDefinitionVO.getName());
 		        			String newSchemaValue = localContentTypeDefinitionVO.getSchemaValue();
 		        			
-		        	    	String[] attributeNameArray = (String[])requestParameters.get(deviatingContentTypeName + "_attributeName");
-		        	    	//System.out.println("attributeNameArray:" + attributeNameArray);
-		        	    	if(attributeNameArray != null)
+		        			//Enkelt - vid push tillåter vi bara push av hela innehållstypen
+		        			newSchemaValue = remoteContentTypeDefinitionVO.getSchemaValue();
+		        			/*
+							System.out.println("deviationArguments:" + deviationArguments);
+							List attributes 	= (List)deviationArguments.get("attributes");
+							List categories 	= (List)deviationArguments.get("categories");
+							List assets 		= (List)deviationArguments.get("assets");
+
+		        	    	if(attributes != null)
 		        	    	{
-		        	    		for(int j=0; j<attributeNameArray.length; j++)
+		        	    		Iterator attributesIterator = attributes.iterator();
+		        	    		while(attributesIterator.hasNext())
 		        	    		{
-			        	    		String attributeName = attributeNameArray[j];
-			        	    		//System.out.println("  * Updating attributeName:" + attributeName);
+			        	    		String attributeName = (String)attributesIterator.next();
+			        	    		System.out.println("  * Updating attributeName:" + attributeName);
 			        			
 				        			newSchemaValue = contentTypeDefinitionController.copyAttribute(remoteContentTypeDefinitionVO.getSchemaValue(), newSchemaValue, attributeName);
 				        		}
 		        	    	}	        			
 
-		        	    	String[] categoryNameArray = (String[])requestParameters.get(deviatingContentTypeName + "_categoryName");
-		        	    	//System.out.println("categoryNameArray:" + categoryNameArray);
-		        	    	if(categoryNameArray != null)
+		        	    	if(categories != null)
 		        	    	{
-		        	    		for(int j=0; j<categoryNameArray.length; j++)
+		        	    		Iterator categoryIterator = categories.iterator();
+		        	    		while(categoryIterator.hasNext())
 		        	    		{
-			        	    		String categoryName = categoryNameArray[j];
-			        	    		//System.out.println("  * Updating categoryName:" + categoryName);
+			        	    		String categoryName = (String)categoryIterator.next();
+			        	    		System.out.println("  * Updating categoryName:" + categoryName);
 			        			
 				        			newSchemaValue = contentTypeDefinitionController.copyCategory(remoteContentTypeDefinitionVO.getSchemaValue(), newSchemaValue, categoryName);
 				        		}
 		        	    	}	
 
-		        	    	String[] assetKeyArray = (String[])requestParameters.get(deviatingContentTypeName + "_assetKey");
-		        	    	//System.out.println("assetKeyArray:" + assetKeyArray);
-		        	    	if(assetKeyArray != null)
+		        	    	if(assets != null)
 		        	    	{
-		        	    		for(int j=0; j<assetKeyArray.length; j++)
+		        	    		Iterator assetsIterator = assets.iterator();
+		        	    		while(assetsIterator.hasNext())
 		        	    		{
-			        	    		String assetKey = assetKeyArray[j];
-			        	    		//System.out.println("  * Updating assetKey:" + assetKey);
+			        	    		String assetKey = (String)assetsIterator.next();
+			        	    		System.out.println("  * Updating assetKey:" + assetKey);
 			        			
 				        			newSchemaValue = contentTypeDefinitionController.copyAssetKey(remoteContentTypeDefinitionVO.getSchemaValue(), newSchemaValue, assetKey);
 				        		}
 		        	    	}
-		        	    	
+		        	    	*/
+		        			
 		        			localContentTypeDefinitionVO.setSchemaValue(newSchemaValue);
-				        	ContentTypeDefinitionController.getController().update(localContentTypeDefinitionVO);
+		        			System.out.println("Updating localContentTypeDefinitionVO:" + localContentTypeDefinitionVO.getName());
+				
+		        			ContentTypeDefinitionController.getController().update(localContentTypeDefinitionVO);
 		        		}
 		        	}
 		    	}
 	    	}
-			*/
         }
         catch(Throwable t)
         {
         	status = new Boolean(false);
             logger.error("En error occurred when we tried to get the contentVersionVO:" + t.getMessage(), t);
+        }
+        
+        updateCaches();
+
+        return status;
+    }
+
+	/**
+     * Gets all content type definitions from the cms.
+     */
+    
+    public Boolean updateCategories(final String principalName, final Object[] input) 
+    {
+        if(!ServerNodeController.getController().getIsIPAllowed(getRequest()))
+        {
+            logger.error("A client with IP " + getRequest().getRemoteAddr() + " was denied access to the webservice. Could be a hack attempt or you have just not configured the allowed IP-addresses correct.");
+            return new Boolean(false);
+        }
+        
+    	Boolean status = new Boolean(true);
+
+        if(logger.isInfoEnabled())
+        {
+	        logger.info("*******************************************************");
+	        logger.info("*       Updating categories through webservice        *");
+	        logger.info("*******************************************************");
+        }
+	        
+        try
+        {
+        	System.out.println("input:" + input);
+        	
+        	final DynamicWebserviceSerializer serializer = new DynamicWebserviceSerializer();
+        	Map arguments = (Map)serializer.deserialize(input);
+        	
+            System.out.println("arguments:" + arguments);
+                    	
+			List remoteCategoryVOList = (List)arguments.get("categoryVOList");
+			Map requestMap = (Map)arguments.get("requestMap");
+        	
+            System.out.println("remoteCategoryVOList:" + remoteCategoryVOList);
+                    	
+			if(logger.isInfoEnabled())
+	        {
+		        logger.info("principalName:" + principalName);
+	        }
+						
+		    List<CategoryVO> allLocalCategories = CategoryController.getController().findAllActiveCategories();
+		    //System.out.println("allLocalCategories:" + allLocalCategories.size());
+	    	
+		    Map handledRemoteCategoryPaths = new HashMap();
+		    
+		    categoryController.compareAndCompleteCategoryLists(remoteCategoryVOList, allLocalCategories, null, handledRemoteCategoryPaths, requestMap);
+        }
+        catch(Throwable t)
+        {
+        	status = new Boolean(false);
+            logger.error("En error occurred when we tried to update categories:" + t.getMessage(), t);
+        }
+        
+        updateCaches();
+
+        return status;
+    }
+
+	/**
+     * Gets all content type definitions from the cms.
+     */
+    
+    public Boolean updateWorkflows(final String principalName, final Object[] input) 
+    {
+        if(!ServerNodeController.getController().getIsIPAllowed(getRequest()))
+        {
+            logger.error("A client with IP " + getRequest().getRemoteAddr() + " was denied access to the webservice. Could be a hack attempt or you have just not configured the allowed IP-addresses correct.");
+            return new Boolean(false);
+        }
+        
+    	Boolean status = new Boolean(true);
+
+        if(logger.isInfoEnabled())
+        {
+	        logger.info("*******************************************************");
+	        logger.info("*       Updating categories through webservice        *");
+	        logger.info("*******************************************************");
+        }
+	        
+        try
+        {
+        	System.out.println("input:" + input);
+        	
+        	final DynamicWebserviceSerializer serializer = new DynamicWebserviceSerializer();
+        	Map arguments = (Map)serializer.deserialize(input);
+        	
+            System.out.println("arguments:" + arguments);
+                    	
+			List remoteWorkflowDefinitionVOList = (List)arguments.get("workflowDefinitionVOList");
+			Map requestMap = (Map)arguments.get("requestMap");
+        	
+            System.out.println("remoteWorkflowDefinitionVOList:" + remoteWorkflowDefinitionVOList);
+                    	
+			if(logger.isInfoEnabled())
+	        {
+		        logger.info("principalName:" + principalName);
+	        }
+						
+		    Iterator remoteWorkflowDefinitionVOListIterator = remoteWorkflowDefinitionVOList.iterator();
+		    while(remoteWorkflowDefinitionVOListIterator.hasNext())
+		    {
+		    	WorkflowDefinitionVO remoteWorkflowDefinitionVO = (WorkflowDefinitionVO)remoteWorkflowDefinitionVOListIterator.next();
+		    	
+		    	WorkflowDefinitionVO localWorkflowDefinitionVO = WorkflowDefinitionController.getController().getWorkflowDefinitionVOWithName(remoteWorkflowDefinitionVO.getName());
+		    	if(localWorkflowDefinitionVO == null)
+		    		WorkflowDefinitionController.getController().create(remoteWorkflowDefinitionVO);
+		    	else
+		    		WorkflowDefinitionController.getController().update(remoteWorkflowDefinitionVO);
+		    }
+        }
+        catch(Throwable t)
+        {
+        	status = new Boolean(false);
+            logger.error("En error occurred when we tried to update categories:" + t.getMessage(), t);
+        }
+        
+        updateCaches();
+
+        return status;
+    }
+
+	/**
+     * Gets all content type definitions from the cms.
+     */
+    
+    public Boolean updateComponents(final String principalName, final Object[] input) 
+    {
+        if(!ServerNodeController.getController().getIsIPAllowed(getRequest()))
+        {
+            logger.error("A client with IP " + getRequest().getRemoteAddr() + " was denied access to the webservice. Could be a hack attempt or you have just not configured the allowed IP-addresses correct.");
+            return new Boolean(false);
+        }
+        
+    	Boolean status = new Boolean(true);
+
+        if(logger.isInfoEnabled())
+        {
+	        logger.info("*******************************************************");
+	        logger.info("*       Updating components through webservice        *");
+	        logger.info("*******************************************************");
+        }
+	        
+        try
+        {
+        	System.out.println("input:" + input);
+        	
+        	final DynamicWebserviceSerializer serializer = new DynamicWebserviceSerializer();
+        	Map arguments = (Map)serializer.deserialize(input);
+        	
+            System.out.println("arguments:" + arguments);
+                    	
+			List remoteContentVOList = (List)arguments.get("contentVOList");
+			Map requestMap = (Map)arguments.get("requestMap");
+        	
+            System.out.println("remoteContentVOList:" + remoteContentVOList);
+                    	
+			if(logger.isInfoEnabled())
+	        {
+		        logger.info("principalName:" + principalName);
+	        }
+
+	    	List components = ContentController.getContentController().getContentVOWithContentTypeDefinition("HTMLTemplate");
+	    	
+	    	if(components != null)
+	    	{
+	    		Iterator componentsIterator = components.iterator();
+		    	while(componentsIterator.hasNext())
+		    	{
+		    		ContentVO contentVO = (ContentVO)componentsIterator.next();
+		    		//System.out.println("Updating deviatingContentName:" + deviatingContentName);
+		    		/*
+		    		ContentController.getContentController().getC
+		    		
+		    					LanguageVO languageVO = LanguageController.getController().getMasterLanguage(localContentVO.getRepositoryId());
+		    					ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(localContentVO.getId(), languageVO.getId());
+		    					if(contentVersionVO != null)
+		    					{
+		    						contentVersionVO.setVersionValue(remoteVersionValue);
+		    						//System.out.println("Updating :" + localContentVO.getName() + " with new latest versionValue");
+		    						ContentVersionController.getContentVersionController().update(contentVersionVO.getId(), contentVersionVO);
+		    					}
+		        			}
+		        		}
+		        	}
+		        	*/
+		    	}
+	    	}
+
+        }
+        catch(Throwable t)
+        {
+        	status = new Boolean(false);
+            logger.error("En error occurred when we tried to update categories:" + t.getMessage(), t);
         }
         
         updateCaches();

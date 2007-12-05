@@ -68,6 +68,7 @@ import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.mail.MailServiceFactory;
 import org.infoglue.cms.util.sorters.ReflectionComparator;
+import org.infoglue.deliver.util.HttpUtilities;
 import org.infoglue.deliver.util.webservices.DynamicWebservice;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -94,6 +95,7 @@ public class ViewDeploymentSynchronizeServersAction extends InfoGlueAbstractActi
 	private List<DeploymentCompareBean> deviatingSiteNodes = new ArrayList<DeploymentCompareBean>();
 	
 	private static ContentTypeDefinitionController contentTypeDefinitionController = ContentTypeDefinitionController.getController();
+	private static CategoryController categoryController = CategoryController.getController();
 
     public String doInput() throws Exception
     {
@@ -271,108 +273,6 @@ public class ViewDeploymentSynchronizeServersAction extends InfoGlueAbstractActi
         }
     }
     
-    private void compareAndCompleteCategoryLists(List remoteCategoryVOList, List<CategoryVO> allLocalCategories, CategoryVO localParentCategory, Map handledRemoteCategoryPaths) throws SystemException
-	{
-    	Iterator remoteCategoryVOListIterator = remoteCategoryVOList.iterator();
-    	while(remoteCategoryVOListIterator.hasNext())
-    	{
-    		CategoryVO remoteCategoryVO = (CategoryVO)remoteCategoryVOListIterator.next();
-    		//System.out.println("remoteCategoryVO:" + remoteCategoryVO.getName());
-    		
-    		boolean categoryExists = false;
-    		CategoryVO localCategoryVO = null;
-    		Iterator allLocalCategoriesIterator = allLocalCategories.iterator();
-    		while(allLocalCategoriesIterator.hasNext())
-        	{
-        		localCategoryVO = (CategoryVO)allLocalCategoriesIterator.next();
-        		//System.out.println("remoteCategoryVO:" + remoteCategoryVO.getName());
-        		if(localCategoryVO.getName().equals(remoteCategoryVO.getName()))
-        		{
-        			categoryExists = true;
-        			break;
-        		}
-        	}
-        	
-    		boolean skipLocalCategory = false;
-        	if(!categoryExists)
-        	{
-        		Database db = CastorDatabaseService.getDatabase();
-        		
-        		try
-        		{
-        			beginTransaction(db);
-        			
-        			//System.out.println("Category:" + remoteCategoryVO.getId() + "-" + remoteCategoryVO.getName() + " (" + remoteCategoryVO.getCategoryPath() + ") did not exist.");
-        			String remoteParentPath = remoteCategoryVO.getCategoryPath();
-        			//System.out.println("remoteParentPath:" + remoteParentPath);
-
-            		String isCategorySelected = this.getRequest().getParameter(remoteParentPath + "_transfer");
-            		//System.out.println("isCategorySelected:[" + isCategorySelected + "]");
-            		if(isCategorySelected != null && isCategorySelected.equals("true"))
-            		{
-            			//System.out.println("Before - remoteCategoryVO:" + remoteCategoryVO);
-            			skipLocalCategory = true;
-            			handleSubCategories(localParentCategory, remoteCategoryVO, handledRemoteCategoryPaths, db);
-            			
-            		}
-            		
-        			commitTransaction(db);
-        		}
-        		catch (Exception e) 
-        		{
-        			e.printStackTrace();
-        			rollbackTransaction(db);
-        		}
-        	}
-        	
-        	if(remoteCategoryVO.getChildren() != null && remoteCategoryVO.getChildren().size() > 0)
-        	{
-        		if(localCategoryVO != null && !skipLocalCategory)
-        		{
-        			compareAndCompleteCategoryLists(remoteCategoryVO.getChildren(), localCategoryVO.getChildren(), localCategoryVO, handledRemoteCategoryPaths);
-        		}
-        		else
-        		{
-        			compareAndCompleteCategoryLists(remoteCategoryVO.getChildren(), new ArrayList(), null, handledRemoteCategoryPaths);
-        		}
-        	}
-        }
-    }
-    
-    public void handleSubCategories(CategoryVO localParentCategory, CategoryVO remoteCategoryVO, Map handledRemoteCategoryPaths, Database db) throws SystemException
-    {
-    	//System.out.println("\n");
-		String isCategorySelected = this.getRequest().getParameter(remoteCategoryVO.getCategoryPath() + "_transfer");
-		//System.out.println("isCategorySelected:[" + isCategorySelected + "]");
-		if(isCategorySelected != null && isCategorySelected.equals("true"))
-		{
-			if(handledRemoteCategoryPaths.containsKey(remoteCategoryVO.getCategoryPath()))
-			{
-				//System.out.println("Category with path " + remoteCategoryVO.getCategoryPath() + " was allready handled.");
-			}
-			else
-			{
-				//System.out.println("Creating local version of:" + remoteCategoryVO + " under " + localParentCategory);
-				remoteCategoryVO.setCategoryId(null);
-				if(localParentCategory != null)
-					remoteCategoryVO.setParentId(localParentCategory.getId());
-				
-				Category newLocalCategory = CategoryController.getController().save(remoteCategoryVO, db);
-				handledRemoteCategoryPaths.put(remoteCategoryVO.getCategoryPath(), "true");
-				//if(localParentCategory != null)
-				//	localParentCategory.getChildren().add(newLocalCategory.getValueObject());
-
-		    	List subCategories = remoteCategoryVO.getChildren();
-		    	Iterator subCategoriesIterator = subCategories.iterator();
-		    	while(subCategoriesIterator.hasNext())
-		    	{
-		    		CategoryVO subCategory = (CategoryVO)subCategoriesIterator.next();
-		    		//System.out.println("subCategory:[" + subCategory + "]");
-		    		handleSubCategories(newLocalCategory.getValueObject(), subCategory, handledRemoteCategoryPaths, db);
-		    	}
-			}
-		}
-    }
     
     
     //********************** UPDATE methods ************************
@@ -493,6 +393,8 @@ public class ViewDeploymentSynchronizeServersAction extends InfoGlueAbstractActi
     	}
     	else
     	{
+	    	Map input = new HashMap();
+
     		List contentTypeDefinitionVOList = new ArrayList();
     		String[] missingContentTypeNameArray = this.getRequest().getParameterValues("missingContentTypeName");
 	    	//System.out.println("missingContentTypeNameArray:" + missingContentTypeNameArray);
@@ -521,13 +423,59 @@ public class ViewDeploymentSynchronizeServersAction extends InfoGlueAbstractActi
 		    		ContentTypeDefinitionVO localContentTypeDefinitionVO = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithName(deviatingContentTypeName);
 		    		System.out.println("Updating localContentTypeDefinitionVO as it was different:" + localContentTypeDefinitionVO);
 		    		contentTypeDefinitionVOList.add(localContentTypeDefinitionVO);
+
+		    		Map deviationArguments = new HashMap();
+
+		    		List attributes = new ArrayList();
+        	    	String[] attributeNameArray = this.getRequest().getParameterValues(deviatingContentTypeName + "_attributeName");
+        	    	if(attributeNameArray != null)
+        	    	{
+        	    		for(int j=0; j<attributeNameArray.length; j++)
+        	    		{
+	        	    		String attributeName = attributeNameArray[j];
+	        	    		//System.out.println("  * Updating attributeName:" + attributeName);
+	        	    		attributes.add(attributeName);
+        	    		}
+        	    	}	        			
+        	    	
+		    		List categories = new ArrayList();
+        	    	String[] categoryNameArray = this.getRequest().getParameterValues(deviatingContentTypeName + "_categoryName");
+        	    	//System.out.println("categoryNameArray:" + categoryNameArray);
+        	    	if(categoryNameArray != null)
+        	    	{
+        	    		for(int j=0; j<categoryNameArray.length; j++)
+        	    		{
+	        	    		String categoryName = categoryNameArray[j];
+	        	    		//System.out.println("  * Updating categoryName:" + categoryName);
+	        	    		categories.add(categoryName);
+		        		}
+        	    	}	
+
+		    		List assets = new ArrayList();
+        	    	String[] assetKeyArray = this.getRequest().getParameterValues(deviatingContentTypeName + "_assetKey");
+        	    	//System.out.println("assetKeyArray:" + assetKeyArray);
+        	    	if(assetKeyArray != null)
+        	    	{
+        	    		for(int j=0; j<assetKeyArray.length; j++)
+        	    		{
+	        	    		String assetKey = assetKeyArray[j];
+	        	    		//System.out.println("  * Updating assetKey:" + assetKey);
+	        	    		assets.add(assetKey);
+		        		}
+        	    	}
+
+        	    	deviationArguments.put("attributes", attributes);
+        	    	deviationArguments.put("categories", categories);
+        	    	deviationArguments.put("assets", assets);
+        	    	
+        	    	input.put("deviationArguments_" + deviatingContentTypeName, deviationArguments);
 		    	}
 	    	}
+	    	
 	    	System.out.println("contentTypeDefinitionVOList to send:" + contentTypeDefinitionVOList.size());
 	    	
-	    	Map input = new HashMap();
 	    	input.put("contentTypeDefinitionVOList", contentTypeDefinitionVOList);
-
+	    	
 	    	if(missingContentTypeNameArray != null)
 	    	{
 	    		List missingContentTypeNameList = new ArrayList();
@@ -540,7 +488,7 @@ public class ViewDeploymentSynchronizeServersAction extends InfoGlueAbstractActi
 	    		deviatingContentTypeNameList.addAll(Arrays.asList(deviatingContentTypeNameArray));
 	    		input.put("deviatingContentTypeNameArray", deviatingContentTypeNameList);
 	    	}
-
+	    	
 	    	Boolean success = (Boolean)invokeOperation(targetEndpointAddress, "updateContentTypeDefinitions", "contentTypeDefinition", input, Boolean.class, "java", ContentTypeDefinitionVO.class);	    	
 	    	//Boolean success = (Boolean)invokeOperation(targetEndpointAddress, "updateContentTypeDefinitions", "contentTypeDefinition", contentTypeDefinitionVOList, Boolean.class, "java", ContentTypeDefinitionVO.class);	    	
 	    	//Boolean success = (Boolean)invokeOperation(targetEndpointAddress, "updateContentTypeDefinitions", "contentTypeDefinition", contentTypeDefinitionVOList.get(0), Boolean.class, "java");	    	
@@ -563,22 +511,37 @@ public class ViewDeploymentSynchronizeServersAction extends InfoGlueAbstractActi
     	String targetEndpointAddress = deploymentServerUrl + "/services/RemoteDeploymentService";
     	//System.out.println("targetEndpointAddress:" + targetEndpointAddress);
     	
-    	Object[] categoryVOArray = (Object[])invokeOperation(targetEndpointAddress, "getAllActiveCategories", "category", null, CategoryVO.class, "infoglue");
-    	List remoteCategoryVOList = Arrays.asList(categoryVOArray);
-	    Collections.sort(remoteCategoryVOList, new ReflectionComparator("name"));
-	    //System.out.println("remoteCategoryVOList:" + remoteCategoryVOList.size());
-    	
-	    List<CategoryVO> allLocalCategories = CategoryController.getController().findAllActiveCategories();
-	    //System.out.println("allLocalCategories:" + allLocalCategories.size());
-    	
-	    Map handledRemoteCategoryPaths = new HashMap();
-	    
-	    compareAndCompleteCategoryLists(remoteCategoryVOList, allLocalCategories, null, handledRemoteCategoryPaths);
+    	if(this.synchronizationMethod == null || this.synchronizationMethod.equalsIgnoreCase("pull"))
+    	{
+	    	Object[] categoryVOArray = (Object[])invokeOperation(targetEndpointAddress, "getAllActiveCategories", "category", null, CategoryVO.class, "infoglue");
+	    	List remoteCategoryVOList = Arrays.asList(categoryVOArray);
+		    Collections.sort(remoteCategoryVOList, new ReflectionComparator("name"));
+		    //System.out.println("remoteCategoryVOList:" + remoteCategoryVOList.size());
+	    	
+		    List<CategoryVO> allLocalCategories = CategoryController.getController().findAllActiveCategories();
+		    //System.out.println("allLocalCategories:" + allLocalCategories.size());
+	    	
+		    Map handledRemoteCategoryPaths = new HashMap();
+		    
+		    Map requestMap = HttpUtilities.requestToHashtable(getRequest());
+		    
+		    categoryController.compareAndCompleteCategoryLists(remoteCategoryVOList, allLocalCategories, null, handledRemoteCategoryPaths, requestMap);
+		    //System.out.println("deviatingCategoryVOList:" + deviatingCategoryVOList.size());
+    	}
+    	else
+    	{
+	    	Map input = new HashMap();
 
-	    //System.out.println("deviatingCategoryVOList:" + deviatingCategoryVOList.size());
+	    	Map requestMap = HttpUtilities.requestToHashtable(getRequest());
+	    	
+		    List<CategoryVO> allLocalCategories = CategoryController.getController().findAllActiveCategories();
+	    	input.put("categoryVOList", allLocalCategories);
+	    	input.put("requestMap", requestMap);
+	    	
+	    	Boolean success = (Boolean)invokeOperation(targetEndpointAddress, "updateCategories", "category", input, Boolean.class, "java", CategoryVO.class);	    	    		
+    	}
     	
-    	//return NONE;
-    	return doInput();
+	    return doInput();
     }
 
     public String doUpdateWorkflows() throws Exception
@@ -586,40 +549,52 @@ public class ViewDeploymentSynchronizeServersAction extends InfoGlueAbstractActi
     	List<String> deploymentServers = CmsPropertyHandler.getDeploymentServers();
     	String deploymentServerUrl = deploymentServers.get(deploymentServerIndex);
     	
-    	//System.out.println("Fetching sync info from deploymentServerUrl:" + deploymentServerUrl);
-    	
     	String targetEndpointAddress = deploymentServerUrl + "/services/RemoteDeploymentService";
-    	//System.out.println("targetEndpointAddress:" + targetEndpointAddress);
     	
-    	Object[] workflowDefinitionVOArray = (Object[])invokeOperation(targetEndpointAddress, "getWorkflowDefinitions", "workflowDefinition", null, WorkflowDefinitionVO.class, "infoglue");
-    	List remoteWorkflowDefinitionVOList = Arrays.asList(workflowDefinitionVOArray);
-	    Collections.sort(remoteWorkflowDefinitionVOList, new ReflectionComparator("name"));
-
-	    //System.out.println("remoteWorkflowDefinitionVOList:" + remoteWorkflowDefinitionVOList.size());
-
-    	String[] missingWorkflowDefinitionNameArray = this.getRequest().getParameterValues("missingWorkflowDefinitionName");
-    	//System.out.println("missingWorkflowDefinitionNameArray:" + missingWorkflowDefinitionNameArray);
-    	
-    	if(missingWorkflowDefinitionNameArray != null)
+    	if(this.synchronizationMethod == null || this.synchronizationMethod.equalsIgnoreCase("pull"))
     	{
-	    	for(int i=0; i<missingWorkflowDefinitionNameArray.length; i++)
-	    	{
-	    		String missingWorkflowDefinitionName = missingWorkflowDefinitionNameArray[i];
-	    		//System.out.println("Updating missingWorkflowDefinitionName:" + missingWorkflowDefinitionName);
+	    	Object[] workflowDefinitionVOArray = (Object[])invokeOperation(targetEndpointAddress, "getWorkflowDefinitions", "workflowDefinition", null, WorkflowDefinitionVO.class, "infoglue");
+	    	List remoteWorkflowDefinitionVOList = Arrays.asList(workflowDefinitionVOArray);
+		    Collections.sort(remoteWorkflowDefinitionVOList, new ReflectionComparator("name"));
 	
-	        	Iterator remoteWorkflowDefinitionVOListIterator = remoteWorkflowDefinitionVOList.iterator();
-	        	while(remoteWorkflowDefinitionVOListIterator.hasNext())
-	        	{
-	        		WorkflowDefinitionVO remoteWorkflowDefinitionVO = (WorkflowDefinitionVO)remoteWorkflowDefinitionVOListIterator.next();
-	        		//System.out.println("remoteContentTypeDefinitionVO:" + remoteContentTypeDefinitionVO.getName());
-	        		if(remoteWorkflowDefinitionVO.getName().equals(missingWorkflowDefinitionName))
-	        		{
-	        			WorkflowDefinitionController.getController().create(remoteWorkflowDefinitionVO);
-	        		}
-	        	}
+		    //System.out.println("remoteWorkflowDefinitionVOList:" + remoteWorkflowDefinitionVOList.size());
+	
+	    	String[] missingWorkflowDefinitionNameArray = this.getRequest().getParameterValues("missingWorkflowDefinitionName");
+	    	//System.out.println("missingWorkflowDefinitionNameArray:" + missingWorkflowDefinitionNameArray);
+	    	
+	    	if(missingWorkflowDefinitionNameArray != null)
+	    	{
+		    	for(int i=0; i<missingWorkflowDefinitionNameArray.length; i++)
+		    	{
+		    		String missingWorkflowDefinitionName = missingWorkflowDefinitionNameArray[i];
+		    		//System.out.println("Updating missingWorkflowDefinitionName:" + missingWorkflowDefinitionName);
+		
+		        	Iterator remoteWorkflowDefinitionVOListIterator = remoteWorkflowDefinitionVOList.iterator();
+		        	while(remoteWorkflowDefinitionVOListIterator.hasNext())
+		        	{
+		        		WorkflowDefinitionVO remoteWorkflowDefinitionVO = (WorkflowDefinitionVO)remoteWorkflowDefinitionVOListIterator.next();
+		        		//System.out.println("remoteContentTypeDefinitionVO:" + remoteContentTypeDefinitionVO.getName());
+		        		if(remoteWorkflowDefinitionVO.getName().equals(missingWorkflowDefinitionName))
+		        		{
+		        			WorkflowDefinitionController.getController().create(remoteWorkflowDefinitionVO);
+		        		}
+		        	}
+		    	}
 	    	}
     	}
+    	else
+    	{
+	    	Map input = new HashMap();
 
+	    	Map requestMap = HttpUtilities.requestToHashtable(getRequest());
+	    	
+		    List<WorkflowDefinitionVO> workflowDefinitionVOList = WorkflowDefinitionController.getController().getWorkflowDefinitionVOList();
+	    	input.put("workflowDefinitionVOList", workflowDefinitionVOList);
+	    	input.put("requestMap", requestMap);
+	    	
+	    	Boolean success = (Boolean)invokeOperation(targetEndpointAddress, "updateWorkflows", "workflow", input, Boolean.class, "java", WorkflowDefinitionVO.class);	    	    		
+    	}
+    	
     	return doInput();
     }
 
@@ -628,66 +603,81 @@ public class ViewDeploymentSynchronizeServersAction extends InfoGlueAbstractActi
     	List<String> deploymentServers = CmsPropertyHandler.getDeploymentServers();
     	String deploymentServerUrl = deploymentServers.get(deploymentServerIndex);
     	
-    	//System.out.println("Fetching sync info from deploymentServerUrl:" + deploymentServerUrl);
-    	
     	String targetEndpointAddress = deploymentServerUrl + "/services/RemoteDeploymentService";
     	//System.out.println("targetEndpointAddress:" + targetEndpointAddress);
     	
-    	Object[] contentVOArray = (Object[])invokeOperation(targetEndpointAddress, "getContents", "content", null, ContentVO.class, "infoglue");
-    	List remoteContentVOList = Arrays.asList(contentVOArray);
-	    Collections.sort(remoteContentVOList, new ReflectionComparator("name"));
-
-	    //System.out.println("remoteContentVOList:" + remoteContentVOList.size());
-
-    	String[] deviatingContentNameArray = this.getRequest().getParameterValues("deviatingContentName");
-    	//System.out.println("deviatingContentNameArray:" + deviatingContentNameArray);
-    	
-    	List components = ContentController.getContentController().getContentVOWithContentTypeDefinition("HTMLTemplate");
-    	
-    	if(deviatingContentNameArray != null)
+    	if(this.synchronizationMethod == null || this.synchronizationMethod.equalsIgnoreCase("pull"))
     	{
-	    	for(int i=0; i<deviatingContentNameArray.length; i++)
-	    	{
-	    		String deviatingContentName = deviatingContentNameArray[i];
-	    		//System.out.println("Updating deviatingContentName:" + deviatingContentName);
+    		Object[] contentVOArray = (Object[])invokeOperation(targetEndpointAddress, "getContents", "content", null, ContentVO.class, "infoglue");
+	    	List remoteContentVOList = Arrays.asList(contentVOArray);
+		    Collections.sort(remoteContentVOList, new ReflectionComparator("name"));
 	
-	        	Iterator remoteContentVOListIterator = remoteContentVOList.iterator();
-	        	while(remoteContentVOListIterator.hasNext())
-	        	{
-	        		ContentVO remoteContentVO = (ContentVO)remoteContentVOListIterator.next();
-	        		//System.out.println("remoteContentVO:" + remoteContentVO.getName());
-	        		if(remoteContentVO.getName().equals(deviatingContentName))
-	        		{
-	        			String[] versionValues = remoteContentVO.getVersions();
-	        			if(versionValues != null && versionValues.length > 0)
-	        			{
-		        			String remoteVersionValue = versionValues[0];
-
-	        				Iterator componentsIterator = components.iterator();
-	        	    		ContentVO localContentVO = null;
-	        	    		while(componentsIterator.hasNext())
-	        	    		{
-	        	    			ContentVO candidate = (ContentVO)componentsIterator.next();
-	        	    			if(candidate.getName().equals(remoteContentVO.getName()))
-	        	    			{
-	        	    				localContentVO = candidate;
-	        	    			}
-	        	    		}
-	        	    		
-	    					LanguageVO languageVO = LanguageController.getController().getMasterLanguage(localContentVO.getRepositoryId());
-	    					ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(localContentVO.getId(), languageVO.getId());
-	    					if(contentVersionVO != null)
-	    					{
-	    						contentVersionVO.setVersionValue(remoteVersionValue);
-	    						//System.out.println("Updating :" + localContentVO.getName() + " with new latest versionValue");
-	    						ContentVersionController.getContentVersionController().update(contentVersionVO.getId(), contentVersionVO);
-	    					}
-	        			}
-	        		}
-	        	}
+		    //System.out.println("remoteContentVOList:" + remoteContentVOList.size());
+	
+	    	String[] deviatingContentNameArray = this.getRequest().getParameterValues("deviatingContentName");
+	    	//System.out.println("deviatingContentNameArray:" + deviatingContentNameArray);
+	    	
+	    	List components = ContentController.getContentController().getContentVOWithContentTypeDefinition("HTMLTemplate");
+	    	
+	    	if(deviatingContentNameArray != null)
+	    	{
+		    	for(int i=0; i<deviatingContentNameArray.length; i++)
+		    	{
+		    		String deviatingContentName = deviatingContentNameArray[i];
+		    		//System.out.println("Updating deviatingContentName:" + deviatingContentName);
+		
+		        	Iterator remoteContentVOListIterator = remoteContentVOList.iterator();
+		        	while(remoteContentVOListIterator.hasNext())
+		        	{
+		        		ContentVO remoteContentVO = (ContentVO)remoteContentVOListIterator.next();
+		        		//System.out.println("remoteContentVO:" + remoteContentVO.getName());
+		        		if(remoteContentVO.getName().equals(deviatingContentName))
+		        		{
+		        			String[] versionValues = remoteContentVO.getVersions();
+		        			if(versionValues != null && versionValues.length > 0)
+		        			{
+			        			String remoteVersionValue = versionValues[0];
+	
+		        				Iterator componentsIterator = components.iterator();
+		        	    		ContentVO localContentVO = null;
+		        	    		while(componentsIterator.hasNext())
+		        	    		{
+		        	    			ContentVO candidate = (ContentVO)componentsIterator.next();
+		        	    			if(candidate.getName().equals(remoteContentVO.getName()))
+		        	    			{
+		        	    				localContentVO = candidate;
+		        	    			}
+		        	    		}
+		        	    		
+		    					LanguageVO languageVO = LanguageController.getController().getMasterLanguage(localContentVO.getRepositoryId());
+		    					ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(localContentVO.getId(), languageVO.getId());
+		    					if(contentVersionVO != null)
+		    					{
+		    						contentVersionVO.setVersionValue(remoteVersionValue);
+		    						//System.out.println("Updating :" + localContentVO.getName() + " with new latest versionValue");
+		    						ContentVersionController.getContentVersionController().update(contentVersionVO.getId(), contentVersionVO);
+		    					}
+		        			}
+		        		}
+		        	}
+		    	}
 	    	}
     	}
+    	else
+    	{
+    		/*
+	    	Map input = new HashMap();
 
+	    	Map requestMap = HttpUtilities.requestToHashtable(getRequest());
+	    	
+		    List<WorkflowDefinitionVO> workflowDefinitionVOList = WorkflowDefinitionController.getController().getWorkflowDefinitionVOList();
+	    	input.put("workflowDefinitionVOList", workflowDefinitionVOList);
+	    	input.put("requestMap", requestMap);
+	    	
+	    	Boolean success = (Boolean)invokeOperation(targetEndpointAddress, "updateWorkflows", "workflow", input, Boolean.class, "java", WorkflowDefinitionVO.class);	    	    		
+    		*/
+    	}
+    	
     	return doInput();
     }
 
