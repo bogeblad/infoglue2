@@ -317,13 +317,11 @@ public class RepositoryController extends BaseController
 		Iterator i = allRepositories.iterator();
 		while(i.hasNext())
 		{
-			Timer t = new Timer();
 			RepositoryVO repositoryVO = (RepositoryVO)i.next();
 			if(getIsAccessApproved(repositoryVO.getRepositoryId(), infoGluePrincipal, isBindingDialog))
 			{
 				accessableRepositories.add(repositoryVO);
 			}
-			t.printElapsedTime("Checking out " + repositoryVO.getName() + "[" + repositoryVO.getId() + "] took:");
 		}
     	
 		Collections.sort(accessableRepositories, new ReflectionComparator("name"));
