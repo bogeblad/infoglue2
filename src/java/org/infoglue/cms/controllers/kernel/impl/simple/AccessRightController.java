@@ -59,6 +59,7 @@ import org.infoglue.cms.security.InfoGlueGroup;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.security.InfoGlueRole;
 import org.infoglue.deliver.util.CacheController;
+import org.infoglue.deliver.util.Timer;
 
 /**
  * This class is a helper class for the use case handle Accesss
@@ -384,6 +385,7 @@ public class AccessRightController extends BaseController
 				oql.bind(parameters);
 			}
 			
+			Timer t = new Timer();
 			QueryResults results = oql.execute(Database.ReadOnly);
 			
 			while (results.hasMore()) 
@@ -391,6 +393,8 @@ public class AccessRightController extends BaseController
 				AccessRight accessRight = (AccessRight)results.next();
 				accessRightList.add(accessRight);
 			}
+			
+			t.printElapsedTime("Reading access right took:");
 			
 			results.close();
 			oql.close();

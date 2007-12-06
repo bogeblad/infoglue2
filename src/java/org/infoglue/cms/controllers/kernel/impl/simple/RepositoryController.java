@@ -47,6 +47,7 @@ import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
 import org.infoglue.cms.util.sorters.ReflectionComparator;
 import org.infoglue.deliver.util.CacheController;
+import org.infoglue.deliver.util.Timer;
 
 public class RepositoryController extends BaseController
 {
@@ -316,11 +317,13 @@ public class RepositoryController extends BaseController
 		Iterator i = allRepositories.iterator();
 		while(i.hasNext())
 		{
+			Timer t = new Timer();
 			RepositoryVO repositoryVO = (RepositoryVO)i.next();
 			if(getIsAccessApproved(repositoryVO.getRepositoryId(), infoGluePrincipal, isBindingDialog))
 			{
 				accessableRepositories.add(repositoryVO);
 			}
+			t.printElapsedTime("Checking out " + repositoryVO.getName() + "[" + repositoryVO.getId() + "] took:");
 		}
     	
 		Collections.sort(accessableRepositories, new ReflectionComparator("name"));
