@@ -595,18 +595,18 @@ public class SystemUserController extends BaseController
 		sb.append("-----------------------------------------------------------------------<br/>");
 		sb.append("This email was automatically generated and the sender is the CMS-system. <br/>");
 		sb.append("Do not reply to this email. </div>");
-		
+
+		String systemEmailSender = CmsPropertyHandler.getSystemEmailSender();
+		if(systemEmailSender == null || systemEmailSender.equalsIgnoreCase(""))
+			systemEmailSender = "InfoGlueCMS@" + CmsPropertyHandler.getMailSmtpHost();
+
 		try
 		{
-			String systemEmailSender = CmsPropertyHandler.getSystemEmailSender();
-			if(systemEmailSender == null || systemEmailSender.equalsIgnoreCase(""))
-				systemEmailSender = "InfoGlueCMS@" + CmsPropertyHandler.getMailSmtpHost();
-	
 			MailServiceFactory.getService().send(systemEmailSender, systemUser.getEmail(), null, "InfoGlue Information - Password changed!!", sb.toString());
 		}
 		catch(Exception e)
 		{
-			logger.error("The notification was not sent. Reason:" + e.getMessage(), e);
+			logger.error("The notification was not sent to [" + systemEmailSender + ", " + systemUser.getEmail() + "]. Reason:" + e.getMessage(), e);
 		}
     }        
 
