@@ -123,18 +123,21 @@ public class CmsJDOCallback implements CallbackInterceptor
 				CacheController.clearCache("interceptionPointCache");
 				CacheController.clearCache("interceptorsCache");
 				CacheController.clearCache("authorizationCache");
+				CacheController.clearCache("personalAuthorizationCache");
 			}
 			else if(object.getClass().getName().equals(InterceptorImpl.class.getName()))
 			{
 				CacheController.clearCache("interceptionPointCache");
 				CacheController.clearCache("interceptorsCache");
 				CacheController.clearCache("authorizationCache");
+				CacheController.clearCache("personalAuthorizationCache");
 			}
 			else if(object.getClass().getName().equals(AccessRightImpl.class.getName()) || object.getClass().getName().equals(AccessRightRoleImpl.class.getName()) || object.getClass().getName().equals(AccessRightGroupImpl.class.getName()) || object.getClass().getName().equals(AccessRightUserImpl.class.getName()))
 			{
 				CacheController.clearCache("interceptionPointCache");
 				CacheController.clearCache("interceptorsCache");
 				CacheController.clearCache("authorizationCache");
+				CacheController.clearCache("personalAuthorizationCache");
 			}
 			else if(object.getClass().getName().equals(ContentTypeDefinitionImpl.class.getName()))
 			{
@@ -274,18 +277,21 @@ public class CmsJDOCallback implements CallbackInterceptor
 				CacheController.clearCache("interceptionPointCache");
 				CacheController.clearCache("interceptorsCache");
 				CacheController.clearCache("authorizationCache");
+				CacheController.clearCache("personalAuthorizationCache");
 			}
 			else if(object.getClass().getName().equals(InterceptorImpl.class.getName()))
 			{
 				CacheController.clearCache("interceptionPointCache");
 				CacheController.clearCache("interceptorsCache");
 				CacheController.clearCache("authorizationCache");
+				CacheController.clearCache("personalAuthorizationCache");
 			}
 			else if(object.getClass().getName().equals(AccessRightImpl.class.getName()) || object.getClass().getName().equals(AccessRightRoleImpl.class.getName()) || object.getClass().getName().equals(AccessRightGroupImpl.class.getName()) || object.getClass().getName().equals(AccessRightUserImpl.class.getName()))
 			{
 				CacheController.clearCache("interceptionPointCache");
 				CacheController.clearCache("interceptorsCache");
 				CacheController.clearCache("authorizationCache");
+				CacheController.clearCache("personalAuthorizationCache");
 			}
 			else if(object.getClass().getName().equals(ContentTypeDefinitionImpl.class.getName()))
 			{
@@ -390,18 +396,21 @@ public class CmsJDOCallback implements CallbackInterceptor
 				CacheController.clearCache("interceptionPointCache");
 				CacheController.clearCache("interceptorsCache");
 				CacheController.clearCache("authorizationCache");
+				CacheController.clearCache("personalAuthorizationCache");
 			}
 			else if(object.getClass().getName().equals(InterceptorImpl.class.getName()))
 			{
 				CacheController.clearCache("interceptionPointCache");
 				CacheController.clearCache("interceptorsCache");
 				CacheController.clearCache("authorizationCache");
+				CacheController.clearCache("personalAuthorizationCache");
 			}
 			else if(object.getClass().getName().equals(AccessRightImpl.class.getName()) || object.getClass().getName().equals(AccessRightRoleImpl.class.getName()) || object.getClass().getName().equals(AccessRightGroupImpl.class.getName()) || object.getClass().getName().equals(AccessRightUserImpl.class.getName()))
 			{
 				CacheController.clearCache("interceptionPointCache");
 				CacheController.clearCache("interceptorsCache");
 				CacheController.clearCache("authorizationCache");
+				CacheController.clearCache("personalAuthorizationCache");
 			}
 			else if(object.getClass().getName().equals(ContentTypeDefinitionImpl.class.getName()))
 			{

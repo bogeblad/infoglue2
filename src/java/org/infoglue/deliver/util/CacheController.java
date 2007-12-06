@@ -450,6 +450,40 @@ public class CacheController extends Thread
 		}
 	}
 
+	/**
+	 * This method clears part of a cache.
+	 * @param cacheName
+	 * @param groups
+	 */
+	public static void clearCacheForGroup(String cacheName, String group)
+	{
+		synchronized(caches) 
+		{
+			if(caches.containsKey(cacheName))
+			{
+			    Object object = caches.get(cacheName);
+			    if(object instanceof Map)
+				{
+					Map cacheInstance = (Map)object;
+					synchronized(cacheInstance)
+					{
+						cacheInstance.clear();
+						logger.warn("Clearing full cache:" + cacheName + " - the call wanted partly clear for [" + group + "] but the cache was a Map.");
+					}
+				}
+				else
+				{
+				    GeneralCacheAdministrator cacheInstance = (GeneralCacheAdministrator)object;
+					synchronized(cacheInstance)
+					{
+			    		cacheInstance.flushGroup(group);
+						logger.info("Clearing cache for group:" + cacheName + " - " + group);
+					}
+				}
+			}
+		}
+	}
+    		
 	public static void clearCaches(String entity, String entityId, String[] cachesToSkip) throws Exception
 	{	
 		clearCaches(entity, entityId, cachesToSkip, false);
@@ -642,6 +676,10 @@ public class CacheController extends Thread
 						clear = true;
 					}
 					if(cacheName.equalsIgnoreCase("authorizationCache") && (entity.indexOf("AccessRight") > 0 || entity.indexOf("SystemUser") > 0 || entity.indexOf("Role") > 0  || entity.indexOf("Group") > 0 || entity.indexOf("Intercept") > 0))
+					{
+						clear = true;
+					}
+					if(cacheName.equalsIgnoreCase("personalAuthorizationCache") && (entity.indexOf("AccessRight") > 0 || entity.indexOf("SystemUser") > 0 || entity.indexOf("Role") > 0  || entity.indexOf("Group") > 0 || entity.indexOf("Intercept") > 0))
 					{
 						clear = true;
 					}
