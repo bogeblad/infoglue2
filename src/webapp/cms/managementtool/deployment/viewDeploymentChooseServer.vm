@@ -26,6 +26,13 @@
 	<input type="checkbox" name="synchronizeWorkflows" value="true"/> Workflows<br>
 	<input type="checkbox" name="synchronizeComponents" value="true"/> Components (HTMLTemplates)<br>
 </p>
+<h3>Synchronization method</h3>
+<p>
+	<select name="synchronizationMethod" class="dropbox">
+		<option value="pull">Pull</option>
+		<option value="push">Push</option>
+	</select>
+</p>
 <p>
 	<input type="image" src="$ui.getString("images.contenttool.buttons.next")" width="50" height="25">
 </p>

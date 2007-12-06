@@ -111,21 +111,51 @@ public class ViewDeploymentSynchronizeServersAction extends InfoGlueAbstractActi
 		    Collections.sort(remoteContentTypeDefinitionVOList, new ReflectionComparator("name"));
 	
 	    	//System.out.println("remoteContentTypeDefinitionVOList:" + remoteContentTypeDefinitionVOList.size());
-	    	
-	    	Iterator remoteContentTypeDefinitionVOListIterator = remoteContentTypeDefinitionVOList.iterator();
-	    	while(remoteContentTypeDefinitionVOListIterator.hasNext())
+	    	if(this.synchronizationMethod.equalsIgnoreCase("pull"))
 	    	{
-	    		ContentTypeDefinitionVO remoteContentTypeDefinitionVO = (ContentTypeDefinitionVO)remoteContentTypeDefinitionVOListIterator.next();
-	    		//System.out.println("remoteContentTypeDefinitionVO:" + remoteContentTypeDefinitionVO.getName());
-	    		ContentTypeDefinitionVO localContentTypeDefinitionVO = (ContentTypeDefinitionVO)ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithName(remoteContentTypeDefinitionVO.getName());
-	    		DeploymentCompareBean bean = new DeploymentCompareBean();
-	    		bean.setRemoteVersion(remoteContentTypeDefinitionVO);
-	    		if(localContentTypeDefinitionVO != null)
-	    		{
-	    			//System.out.println("localContentTypeDefinitionVO:" + localContentTypeDefinitionVO.getName());
-	        		bean.setLocalVersion(localContentTypeDefinitionVO);    			
-	    		}
-	    		deviatingContentTypes.add(bean);
+		    	Iterator remoteContentTypeDefinitionVOListIterator = remoteContentTypeDefinitionVOList.iterator();
+		    	while(remoteContentTypeDefinitionVOListIterator.hasNext())
+		    	{
+		    		ContentTypeDefinitionVO remoteContentTypeDefinitionVO = (ContentTypeDefinitionVO)remoteContentTypeDefinitionVOListIterator.next();
+		    		//System.out.println("remoteContentTypeDefinitionVO:" + remoteContentTypeDefinitionVO.getName());
+		    		ContentTypeDefinitionVO localContentTypeDefinitionVO = (ContentTypeDefinitionVO)ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithName(remoteContentTypeDefinitionVO.getName());
+		    		DeploymentCompareBean bean = new DeploymentCompareBean();
+		    		bean.setRemoteVersion(remoteContentTypeDefinitionVO);
+		    		if(localContentTypeDefinitionVO != null)
+		    		{
+		    			//System.out.println("localContentTypeDefinitionVO:" + localContentTypeDefinitionVO.getName());
+		        		bean.setLocalVersion(localContentTypeDefinitionVO);    			
+		    		}
+		    		deviatingContentTypes.add(bean);
+		    	}
+	    	}
+	    	else
+	    	{
+	    		System.out.println("Getting what content types are not the same from a push perspective...");
+	    		List localContentTypeDefinitionVOList = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOList();
+	    		Iterator localContentTypeDefinitionVOListIterator = localContentTypeDefinitionVOList.iterator();
+		    	while(localContentTypeDefinitionVOListIterator.hasNext())
+		    	{
+		    		ContentTypeDefinitionVO localContentTypeDefinitionVO = (ContentTypeDefinitionVO)localContentTypeDefinitionVOListIterator.next();
+		    		Iterator remoteContentTypeDefinitionVOListIterator = remoteContentTypeDefinitionVOList.iterator();
+		    		ContentTypeDefinitionVO remoteContentTypeDefinitionVO = null;
+			    	while(remoteContentTypeDefinitionVOListIterator.hasNext())
+			    	{
+			    		ContentTypeDefinitionVO remoteContentTypeDefinitionVOCandidate = (ContentTypeDefinitionVO)remoteContentTypeDefinitionVOListIterator.next();
+			    		//System.out.println("remoteContentTypeDefinitionVO:" + remoteContentTypeDefinitionVO.getName());
+			    		if(remoteContentTypeDefinitionVOCandidate.getName().equals(localContentTypeDefinitionVO.getName()))
+			    			remoteContentTypeDefinitionVO = remoteContentTypeDefinitionVOCandidate;
+			    	}	
+			    	
+			    	DeploymentCompareBean bean = new DeploymentCompareBean();
+			    	bean.setLocalVersion(localContentTypeDefinitionVO); 
+			    	if(remoteContentTypeDefinitionVO != null)
+		    		{
+		    			//System.out.println("localContentTypeDefinitionVO:" + localContentTypeDefinitionVO.getName());
+			    		bean.setRemoteVersion(remoteContentTypeDefinitionVO);
+			    	}
+		    		deviatingContentTypes.add(bean);
+		    	}
 	    	}
     	}
     	
@@ -140,9 +170,13 @@ public class ViewDeploymentSynchronizeServersAction extends InfoGlueAbstractActi
 		    List<CategoryVO> allLocalCategories = CategoryController.getController().findAllActiveCategories(true);
 		    //System.out.println("allLocalCategories:" + allLocalCategories.size());
 	    	
-		    compareCategoryLists(remoteCategoryVOList, allLocalCategories);
-	
+		    if(this.synchronizationMethod.equalsIgnoreCase("push"))
+		    	compareCategoryLists(remoteCategoryVOList, allLocalCategories);
+		    else
+		    	compareCategoryLists(allLocalCategories, remoteCategoryVOList);
+		    	
 		    //System.out.println("deviatingCategoryVOList:" + deviatingCategoryVOList.size());
+		    
     	}
     	
     	if(synchronizeWorkflows)
@@ -154,23 +188,54 @@ public class ViewDeploymentSynchronizeServersAction extends InfoGlueAbstractActi
 	
 		    //System.out.println("remoteWorkflowDefinitionVOList:" + remoteWorkflowDefinitionVOList.size());
 	    	
-	    	Iterator remoteWorkflowDefinitionVOListIterator = remoteWorkflowDefinitionVOList.iterator();
-	    	while(remoteWorkflowDefinitionVOListIterator.hasNext())
+	    	if(this.synchronizationMethod.equalsIgnoreCase("pull"))
 	    	{
-	    		WorkflowDefinitionVO remoteWorkflowDefinitionVO = (WorkflowDefinitionVO)remoteWorkflowDefinitionVOListIterator.next();
-	    		//System.out.println("remoteWorkflowDefinitionVO:" + remoteWorkflowDefinitionVO.getName());
-	    		WorkflowDefinitionVO localWorkflowDefinitionVO = (WorkflowDefinitionVO)WorkflowDefinitionController.getController().getWorkflowDefinitionVOWithName(remoteWorkflowDefinitionVO.getName());
-	    		//System.out.println("localWorkflowDefinitionVO:" + localWorkflowDefinitionVO);
-	    		DeploymentCompareBean bean = new DeploymentCompareBean();
-	    		bean.setRemoteVersion(remoteWorkflowDefinitionVO);
-	    		if(localWorkflowDefinitionVO != null)
-	    		{
-	    			//System.out.println("localWorkflowDefinitionVO:" + localWorkflowDefinitionVO.getName());
-	        		bean.setLocalVersion(localWorkflowDefinitionVO);    			
-	    		}
-	    		deviatingWorkflows.add(bean);
+		    	Iterator remoteWorkflowDefinitionVOListIterator = remoteWorkflowDefinitionVOList.iterator();
+		    	while(remoteWorkflowDefinitionVOListIterator.hasNext())
+		    	{
+		    		WorkflowDefinitionVO remoteWorkflowDefinitionVO = (WorkflowDefinitionVO)remoteWorkflowDefinitionVOListIterator.next();
+		    		//System.out.println("remoteWorkflowDefinitionVO:" + remoteWorkflowDefinitionVO.getName());
+		    		WorkflowDefinitionVO localWorkflowDefinitionVO = (WorkflowDefinitionVO)WorkflowDefinitionController.getController().getWorkflowDefinitionVOWithName(remoteWorkflowDefinitionVO.getName());
+		    		//System.out.println("localWorkflowDefinitionVO:" + localWorkflowDefinitionVO);
+		    		DeploymentCompareBean bean = new DeploymentCompareBean();
+		    		bean.setRemoteVersion(remoteWorkflowDefinitionVO);
+		    		if(localWorkflowDefinitionVO != null)
+		    		{
+		    			//System.out.println("localWorkflowDefinitionVO:" + localWorkflowDefinitionVO.getName());
+		        		bean.setLocalVersion(localWorkflowDefinitionVO);    			
+		    		}
+		    		deviatingWorkflows.add(bean);
+		    	}
 	    	}
-    	}
+	    	else
+	    	{
+	    		System.out.println("Getting what workflow definitions are not the same from a push perspective...");
+	    		List localWorkflowDefinitionVOList = WorkflowDefinitionController.getController().getWorkflowDefinitionVOList();
+	    		Iterator localWorkflowDefinitionVOListIterator = localWorkflowDefinitionVOList.iterator();
+		    	while(localWorkflowDefinitionVOListIterator.hasNext())
+		    	{
+		    		WorkflowDefinitionVO localWorkflowDefinitionVO = (WorkflowDefinitionVO)localWorkflowDefinitionVOListIterator.next();
+		    		Iterator remoteWorkflowDefinitionVOListIterator = remoteWorkflowDefinitionVOList.iterator();
+		    		WorkflowDefinitionVO remoteWorkflowDefinitionVO = null;
+			    	while(remoteWorkflowDefinitionVOListIterator.hasNext())
+			    	{
+			    		WorkflowDefinitionVO remoteWorkflowDefinitionVOCandidate = (WorkflowDefinitionVO)remoteWorkflowDefinitionVOListIterator.next();
+			    		//System.out.println("remoteWorkflowDefinitionVOCandidate:" + remoteWorkflowDefinitionVOCandidate.getName());
+			    		if(remoteWorkflowDefinitionVOCandidate.getName().equals(localWorkflowDefinitionVO.getName()))
+			    			remoteWorkflowDefinitionVO = remoteWorkflowDefinitionVOCandidate;
+			    	}	
+			    	
+			    	DeploymentCompareBean bean = new DeploymentCompareBean();
+			    	bean.setLocalVersion(localWorkflowDefinitionVO); 
+			    	if(remoteWorkflowDefinitionVO != null)
+		    		{
+		    			//System.out.println("localContentTypeDefinitionVO:" + localContentTypeDefinitionVO.getName());
+			    		bean.setRemoteVersion(remoteWorkflowDefinitionVO);
+			    	}
+			    	deviatingWorkflows.add(bean);
+		    	}
+	    	}
+	    }
     	
     	//System.out.println("synchronizeComponents:" + synchronizeComponents);
     	if(synchronizeComponents)

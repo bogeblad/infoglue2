@@ -51,15 +51,12 @@
 		border: 1px solid #cccccc;
 		font-family: Verdana, Arial, San serif;
 		font-size: 8pt;
-		awidth: 200px;
 	}
 
 	.entitiesTabs
 	{
 		margin: 0;	
 		padding-left: 10px;
-		aborder: 1px solid #ccc;
-		abackground-color: white;
 		clear: both;
 		overflow: auto;
 	}
@@ -138,33 +135,18 @@
 		#if($synchronizeContentTypeDefinitions)
 		<form name="contentTypesForm" action="ViewDeploymentSynchronizeServers!updateContentTypes.action" method="post">
 			<input type="hidden" name="deploymentServerIndex" value="$deploymentServerIndex"/>
+			<input type="hidden" name="synchronizationMethod" value="$synchronizationMethod"/>		
 		
 			<h3>Content types that deviates</h3>
 			#set($indexMissingTypes = 0)
 			#foreach($deviatingContentType in $deviatingContentTypes)
-				#if(!$deviatingContentType.localVersion)
-					<input type="checkbox" name="missingContentTypeName" value="$deviatingContentType.remoteVersion.name"/> Missing local version of $deviatingContentType.remoteVersion.name <a href="javascript:showDiff('$deviatingContentType.remoteVersion.name');">diff</a><br/> 
-	
-					#set($value1 = "$!formatter.escapeExtendedHTML($!formatter.cleanForJavascriptStrings($!deviatingContentType.remoteVersion.versionValue, 'iglb'))")
-					#set($value2 = "$!formatter.escapeExtendedHTML($!formatter.cleanForJavascriptStrings('', 'iglb'))")
+				#if((!$deviatingContentType.localVersion && $synchronizationMethod == 'pull') || (!$deviatingContentType.remoteVersion && $synchronizationMethod == 'push'))
+					#if($synchronizationMethod == 'pull')
+						<input type="checkbox" name="missingContentTypeName" value="$deviatingContentType.remoteVersion.name"/> No local version of $deviatingContentType.remoteVersion.name <a href="javascript:showDiff('$deviatingContentType.remoteVersion.name');">diff</a><br/> 
 					
-					<script type="text/javascript">
-					<!--
-					var value1 = "$value1";
-					var value2 = "$value2";
-					value1 = value1.replace(/iglb/g, "<br/>").replace(/CDATA\[/g, "CDATA[<br/>");
-					value2 = value2.replace(/iglb/g, "<br/>").replace(/CDATA\[/g, "CDATA[<br/>");
-					
-					document.write("<div id='$deviatingContentType.remoteVersion.name' style='display:none; background-color: #FFF; border: 1px solid #333; padding: 5px;'>" + diffString(value2, value1) + "</div>");
-					-->
-					</script>
-			
-				#else
-					#set($value1 = "$!formatter.escapeExtendedHTML($formatter.cleanForJavascriptStrings($deviatingContentType.remoteVersion.schemaValue, 'iglb'))")
-					#set($value2 = "$!formatter.escapeExtendedHTML($formatter.cleanForJavascriptStrings($deviatingContentType.localVersion.schemaValue, 'iglb'))")
-	
-					#if($value1 != $value2)
-						<input type="checkbox" name="deviatedContentTypeName" value="$deviatingContentType.remoteVersion.name"/> $deviatingContentType.remoteVersion.name <a href="javascript:showDiff('$deviatingContentType.remoteVersion.name');">diff</a><br/> 
+						#set($value1 = "$!formatter.escapeExtendedHTML($!formatter.cleanForJavascriptStrings($!deviatingContentType.remoteVersion.schemaValue, 'iglb'))")
+						#set($value2 = "$!formatter.escapeExtendedHTML($!formatter.cleanForJavascriptStrings('', 'iglb'))")
+						
 						<script type="text/javascript">
 						<!--
 						var value1 = "$value1";
@@ -172,42 +154,99 @@
 						value1 = value1.replace(/iglb/g, "<br/>").replace(/CDATA\[/g, "CDATA[<br/>");
 						value2 = value2.replace(/iglb/g, "<br/>").replace(/CDATA\[/g, "CDATA[<br/>");
 						
-						document.write("<div id='$deviatingContentType.remoteVersion.name' style='display:none; background-color: #FFF; border: 1px solid #333; padding: 5px;'>" + diffString(value2, value1) + "</div>");
+						document.write("<div id='$deviatingContentType.remoteVersion.name' style='display:none; background-color: #FFF; border: 1px solid #333; padding: 5px; height: 200px; overflow: auto;'>" + diffString(value2, value1) + "</div>");
+						-->
+						</script>
+					#else
+						<input type="checkbox" name="missingContentTypeName" value="$deviatingContentType.localVersion.name"/> No remote version of $deviatingContentType.localVersion.name <a href="javascript:showDiff('$deviatingContentType.localVersion.name');">diff</a><br/> 
+						
+						#set($value1 = "$!formatter.escapeExtendedHTML($!formatter.cleanForJavascriptStrings($!deviatingContentType.localVersion.schemaValue, 'iglb'))")
+						#set($value2 = "$!formatter.escapeExtendedHTML($!formatter.cleanForJavascriptStrings('', 'iglb'))")
+						
+						<script type="text/javascript">
+						<!--
+						var value1 = "$value1";
+						var value2 = "$value2";
+						value1 = value1.replace(/iglb/g, "<br/>").replace(/CDATA\[/g, "CDATA[<br/>");
+						value2 = value2.replace(/iglb/g, "<br/>").replace(/CDATA\[/g, "CDATA[<br/>");
+						
+						document.write("<div id='$deviatingContentType.localVersion.name' style='display:none; background-color: #FFF; border: 1px solid #333; padding: 5px; height: 200px; overflow: auto;'>" + diffString(value2, value1) + "</div>");
+						-->
+						</script>
+					#end			
+				#else
+					#set($value1 = "$!formatter.escapeExtendedHTML($formatter.cleanForJavascriptStrings($deviatingContentType.remoteVersion.schemaValue, 'iglb'))")
+					#set($value2 = "$!formatter.escapeExtendedHTML($formatter.cleanForJavascriptStrings($deviatingContentType.localVersion.schemaValue, 'iglb'))")
+	
+					#if($value1 != $value2)
+						#if($synchronizationMethod == 'pull')
+							<input type="checkbox" id="deviatedContentTypeName_$deviatingContentType.remoteVersion.name" name="deviatedContentTypeName" value="$deviatingContentType.remoteVersion.name"/> $deviatingContentType.remoteVersion.name <a href="javascript:showDiff('$deviatingContentType.remoteVersion.name');">diff</a><br/> 
+						#else
+							<input type="checkbox" id="deviatedContentTypeName_$deviatingContentType.remoteVersion.name" name="deviatedContentTypeName" value="$deviatingContentType.localVersion.name"/> $deviatingContentType.localVersion.name <a href="javascript:showDiff('$deviatingContentType.localVersion.name');">diff</a><br/> 
+						#end
+						<script type="text/javascript">
+						<!--
+						var value1 = "#if($synchronizationMethod == 'pull')$value1#else$value2#end";
+						var value2 = "#if($synchronizationMethod == 'pull')$value2#else$value1#end";
+						value1 = value1.replace(/iglb/g, "<br/>").replace(/CDATA\[/g, "CDATA[<br/>");
+						value2 = value2.replace(/iglb/g, "<br/>").replace(/CDATA\[/g, "CDATA[<br/>");
+						
+						document.write("<div id='$deviatingContentType.remoteVersion.name' style='display:none; background-color: #FFF; border: 1px solid #333; padding: 5px; height: 200px; overflow: auto;'>" + diffString(value2, value1) + "</div>");
 						-->
 						</script>
 	
-						<ul>
-						<li class="normalitemhead"><strong>Attributes</strong></li>
-						#set($deviatingAttributes = $this.getDeviatingAttributes($deviatingContentType.remoteVersion.schemaValue, $deviatingContentType.localVersion.schemaValue))
+						<ul style="padding-left: 50px;">
+						<li class="normalitemhead"><strong>Missing #if($synchronizationMethod == 'pull')local #else remote#end attributes</strong></li>
+						#if($synchronizationMethod == 'pull')
+							#set($deviatingAttributes = $this.getDeviatingAttributes($deviatingContentType.remoteVersion.schemaValue, $deviatingContentType.localVersion.schemaValue))
+						#else
+							#set($deviatingAttributes = $this.getDeviatingAttributes($deviatingContentType.localVersion.schemaValue, $deviatingContentType.remoteVersion.schemaValue))
+						#end
 						#foreach($deviatingAttribute in $deviatingAttributes)
 							<li class="normalitem">
 								<input type="checkbox" name="${deviatingContentType.remoteVersion.name}_attributeName" value="$deviatingAttribute.name"/> $deviatingAttribute.name
 							</li>
 						#end
 						#if($deviatingAttributes.size() == 0)
-							<li class="normalitem">No missing attributes</li>
+							<li class="normalitem">No missing #if($synchronizationMethod == 'pull')local #else remote#end attributes</li>
 						#end
 	
-						<li class="normalitemhead"><strong>Categories</strong></li>
-						#set($deviatingCategories = $this.getDeviatingCategories($deviatingContentType.remoteVersion.schemaValue, $deviatingContentType.localVersion.schemaValue))
+						<li class="normalitemhead"><strong>Missing #if($synchronizationMethod == 'pull')local #else remote#end categories</strong></li>
+						#if($synchronizationMethod == 'pull')
+							#set($deviatingCategories = $this.getDeviatingCategories($deviatingContentType.remoteVersion.schemaValue, $deviatingContentType.localVersion.schemaValue))
+						#else
+							#set($deviatingCategories = $this.getDeviatingCategories($deviatingContentType.localVersion.schemaValue, $deviatingContentType.remoteVersion.schemaValue))
+						#end
 						#foreach($deviatingCategory in $deviatingCategories)
 							<li class="normalitem">
 								<input type="checkbox" name="${deviatingContentType.remoteVersion.name}_categoryName" value="$deviatingCategory.value"/> $deviatingCategory.value
 							</li>
 						#end
 						#if($deviatingCategories.size() == 0)
-							<li class="normalitem">No missing categories</li>
+							<li class="normalitem">No missing #if($synchronizationMethod == 'pull')local #else remote#end categories</li>
 						#end
 	
-						<li class="normalitemhead"><strong>Asset keys</strong></li>
-						#set($deviatingAssetKeys = $this.getDeviatingAssetKeys($deviatingContentType.remoteVersion.schemaValue, $deviatingContentType.localVersion.schemaValue))
+						<li class="normalitemhead"><strong>Missing #if($synchronizationMethod == 'pull')local #else remote#end asset keys</strong></li>
+						#if($synchronizationMethod == 'pull')
+							#set($deviatingAssetKeys = $this.getDeviatingAssetKeys($deviatingContentType.remoteVersion.schemaValue, $deviatingContentType.localVersion.schemaValue))
+						#else
+							#set($deviatingAssetKeys = $this.getDeviatingAssetKeys($deviatingContentType.localVersion.schemaValue, $deviatingContentType.remoteVersion.schemaValue))
+						#end
 						#foreach($deviatingAssetKey in $deviatingAssetKeys)
 							<li class="normalitem">
 								<input type="checkbox" name="${deviatingContentType.remoteVersion.name}_assetKey" value="$deviatingAssetKey.assetKey"/> $deviatingAssetKey.assetKey
 							</li>
 						#end
 						#if($deviatingAssetKeys.size() == 0)
-							<li class="normalitem">No missing asset keys</li>
+							<li class="normalitem">No missing #if($synchronizationMethod == 'pull')local #else remote#end asset keys</li>
+						#end
+						
+						#if($deviatingAttributes.size() == 0 && $deviatingCategories.size() == 0 && $deviatingAssetKeys.size() == 0)
+							<script type="text/javascript">
+							<!--
+								document.getElementById("deviatedContentTypeName_$deviatingContentType.remoteVersion.name").disabled = true;
+							-->
+							</script>
 						#end
 						
 						</ul>
@@ -229,17 +268,25 @@
 		#if($synchronizeCategories)
 			<form name="categoriesForm" action="ViewDeploymentSynchronizeServers!updateCategories.action" method="post">
 				<input type="hidden" name="deploymentServerIndex" value="$deploymentServerIndex"/>
+				<input type="hidden" name="synchronizationMethod" value="$synchronizationMethod"/>		
 			
 				<h3>Categories that deviates</h3>
 				<ul>
 				#set($indexMissingCategories = 0)
 				#foreach($deviatingCategory in $deviatingCategoryVOList)
-					#if(!$deviatingCategory.localVersion)
-						$deviatingCategory.remoteVersion.categoryPath
-						<input type="checkbox" name="${deviatingCategory.remoteVersion.categoryPath}_transfer" value="true"/> Missing local version of $deviatingCategory.remoteVersion.name<br/> 
+					#if($synchronizationMethod == 'pull')
+						#if(!$deviatingCategory.localVersion)
+							<input type="checkbox" name="${deviatingCategory.remoteVersion.categoryPath}_transfer" value="true"/> Missing local version of $deviatingCategory.remoteVersion.name ($deviatingCategory.remoteVersion.categoryPath)<br/> 
+						#end
+			
+						#set($indexMissingCategories = $indexMissingCategories + 1)
+					#else
+						#if(!$deviatingCategory.remoteVersion)
+							<input type="checkbox" name="${deviatingCategory.localVersion.categoryPath}_transfer" value="true"/> Missing remote version of $deviatingCategory.localVersion.name ($deviatingCategory.localVersion.categoryPath)<br/> 
+						#end
+			
+						#set($indexMissingCategories = $indexMissingCategories + 1)
 					#end
-		
-					#set($indexMissingCategories = $indexMissingCategories + 1)
 				#end
 				#if($deviatingCategoryVOList.size() == 0)
 					<li class="normalitem">No missing categories</li>
@@ -258,24 +305,42 @@
 		#if($synchronizeWorkflows)	
 			<form name="workflowsForm" action="ViewDeploymentSynchronizeServers!updateWorkflows.action" method="post">
 				<input type="hidden" name="deploymentServerIndex" value="$deploymentServerIndex"/>
+				<input type="hidden" name="synchronizationMethod" value="$synchronizationMethod"/>		
 			
 				<h3>Workflows that deviates</h3>
 				<ul>
 				#set($indexMissingWorkflows = 0)
 				#foreach($deviatingWorkflow in $deviatingWorkflows)
-					#if(!$deviatingWorkflow.localVersion)
-						<input type="checkbox" name="missingWorkflowDefinitionName" value="$deviatingWorkflow.remoteVersion.name"/> Missing local version of $deviatingWorkflow.remoteVersion.name<br/> 
-						#set($indexMissingWorkflows = $indexMissingWorkflows + 1)
-					#else
-						#set($value1 = "$formatter.cleanForJavascriptStrings($deviatingWorkflow.remoteVersion.value)")
-						#set($value2 = "$formatter.cleanForJavascriptStrings($deviatingWorkflow.localVersion.value)")
-		
-						#if($value1 != $value2)
-							<input type="checkbox" name="missingWorkflowDefinitionName" value="$deviatingWorkflow.remoteVersion.name"/> $deviatingWorkflow.remoteVersion.name<br/> 
+					#if($synchronizationMethod == 'pull')
+						#if(!$deviatingWorkflow.localVersion)
+							<input type="checkbox" name="missingWorkflowDefinitionName" value="$deviatingWorkflow.remoteVersion.name"/> Missing local version of $deviatingWorkflow.remoteVersion.name<br/> 
 							#set($indexMissingWorkflows = $indexMissingWorkflows + 1)
 						#else
-							##Exakt compare: $deviatingWorkflow.remoteVersion.name<br/> 
+							#set($value1 = "$formatter.cleanForJavascriptStrings($deviatingWorkflow.remoteVersion.value)")
+							#set($value2 = "$formatter.cleanForJavascriptStrings($deviatingWorkflow.localVersion.value)")
+			
+							#if($value1 != $value2)
+								<input type="checkbox" name="missingWorkflowDefinitionName" value="$deviatingWorkflow.remoteVersion.name"/> $deviatingWorkflow.remoteVersion.name is different in local system<br/> 
+								#set($indexMissingWorkflows = $indexMissingWorkflows + 1)
+							#else
+								##Exakt compare: $deviatingWorkflow.remoteVersion.name<br/> 
+							#end
 						#end
+					#else
+						#if(!$deviatingWorkflow.remoteVersion)
+							<input type="checkbox" name="missingWorkflowDefinitionName" value="$deviatingWorkflow.localVersion.name"/> Missing remote version of $deviatingWorkflow.localVersion.name<br/> 
+							#set($indexMissingWorkflows = $indexMissingWorkflows + 1)
+						#else
+							#set($value1 = "$formatter.cleanForJavascriptStrings($deviatingWorkflow.remoteVersion.value)")
+							#set($value2 = "$formatter.cleanForJavascriptStrings($deviatingWorkflow.localVersion.value)")
+			
+							#if($value1 != $value2)
+								<input type="checkbox" name="missingWorkflowDefinitionName" value="$deviatingWorkflow.localVersion.name"/> $deviatingWorkflow.localVersion.name is different in remote system<br/> 
+								#set($indexMissingWorkflows = $indexMissingWorkflows + 1)
+							#else
+								##Exakt compare: $deviatingWorkflow.localVersion.name<br/> 
+							#end
+						#end		
 					#end
 				#end
 				#if($indexMissingWorkflows == 0)
@@ -295,6 +360,7 @@
 		#if($synchronizeComponents)
 			<form name="contentsForm" action="ViewDeploymentSynchronizeServers!updateContents.action" method="post">
 				<input type="hidden" name="deploymentServerIndex" value="$deploymentServerIndex"/>
+				<input type="hidden" name="synchronizationMethod" value="$synchronizationMethod"/>		
 			
 				<h3>Compoents that deviates</h3>
 				#set($indexMissingContents = 0)
@@ -327,12 +393,12 @@
 							<input type="checkbox" name="deviatingContentName" value="$deviatingContent.remoteVersion.name"/> $deviatingContent.remoteVersion.name - <a href="javascript:showDiff($deviatingContent.remoteVersion.id);">diff</a><br/>
 							<script type="text/javascript">
 							<!--
-							var value1 = "$value1";
-							var value2 = "$value2";
+							var value1 = "#if($synchronizationMethod == 'pull')$value1#else$value2#end";
+							var value2 = "#if($synchronizationMethod == 'pull')$value2#else$value1#end";
 							value1 = value1.replace(/iglb/g, "<br/>").replace(/CDATA\[/g, "CDATA[<br/>");
 							value2 = value2.replace(/iglb/g, "<br/>").replace(/CDATA\[/g, "CDATA[<br/>");
 							
-							document.write("<div id='$deviatingContent.remoteVersion.id' style='display:none; background-color: #FFF; border: 1px solid #333; padding: 5px;'>" + diffString(value2, value1) + "</div>");
+							document.write("<div id='$deviatingContent.remoteVersion.id' style='display:none; background-color: #FFF; border: 1px solid #333; padding: 5px; height: 200px; overflow: auto;'>" + diffString(value2, value1) + "</div>");
 							-->
 							</script>
 						#else
