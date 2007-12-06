@@ -210,8 +210,13 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		 {
 	    	 SiteNodeVO siteNodeVO = SiteNodeController.getController().getSiteNodeVOWithId(siteNodeId);
 	    	 LanguageVO masterLanguageVO = LanguageController.getController().getMasterLanguage(siteNodeVO.getRepositoryId());
-
-		     List sortedPageTemplates = PageTemplateController.getController().getPageTemplates(this.getTemplateController().getPrincipal(), masterLanguageVO.getId());
+	    	 
+	    	 InfoGluePrincipal principal = this.getTemplateController().getPrincipal();
+	    	 String cmsUserName = (String)this.getTemplateController().getHttpServletRequest().getSession().getAttribute("cmsUserName");
+	    	 if(cmsUserName != null)
+	    		 principal = this.getTemplateController().getPrincipal(cmsUserName);
+		    
+		     List sortedPageTemplates = PageTemplateController.getController().getPageTemplates(principal, masterLanguageVO.getId());
 			 Iterator sortedPageTemplatesIterator = sortedPageTemplates.iterator();
 			 int index = 0;
 			 pageTemplateHTML += "<table border=\"0\" width=\"80%\" cellspacing=\"0\"><tr>";
