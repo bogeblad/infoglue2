@@ -385,7 +385,6 @@ public class AccessRightController extends BaseController
 				oql.bind(parameters);
 			}
 			
-			Timer t = new Timer();
 			QueryResults results = oql.execute(Database.ReadOnly);
 			
 			while (results.hasMore()) 
@@ -393,8 +392,6 @@ public class AccessRightController extends BaseController
 				AccessRight accessRight = (AccessRight)results.next();
 				accessRightList.add(accessRight);
 			}
-			
-			t.printElapsedTime("Reading access right took:");
 			
 			results.close();
 			oql.close();
@@ -1048,7 +1045,8 @@ public class AccessRightController extends BaseController
 			logger.info("infoGluePrincipal:" + infoGluePrincipal.getName());
 		}
 
-		Boolean cachedIsPrincipalAuthorized = (Boolean)CacheController.getCachedObject("authorizationCache", key);
+		//Boolean cachedIsPrincipalAuthorized = (Boolean)CacheController.getCachedObject("authorizationCache", key);
+		Boolean cachedIsPrincipalAuthorized = (Boolean)CacheController.getCachedObjectFromAdvancedCache("personalAuthorizationCache", key);
 		if(cachedIsPrincipalAuthorized != null)
 		{
 			if(logger.isInfoEnabled() && !cachedIsPrincipalAuthorized.booleanValue())
@@ -1175,7 +1173,8 @@ public class AccessRightController extends BaseController
 			logger.info("Principal " + infoGluePrincipal.getName() + " was not allowed to " + interceptionPointName + " on " + extraParameters);
 		}
 		
-	    CacheController.cacheObject("authorizationCache", key, new Boolean(isPrincipalAuthorized));
+	    //CacheController.cacheObject("authorizationCache", key, new Boolean(isPrincipalAuthorized));
+	    CacheController.cacheObjectInAdvancedCache("personalAuthorizationCache", key, new Boolean(isPrincipalAuthorized), new String[]{infoGluePrincipal.getName()}, true);
 
 		return isPrincipalAuthorized;
 	}
@@ -1200,7 +1199,8 @@ public class AccessRightController extends BaseController
 			
 		String key = "" + infoGluePrincipal.getName() + "_" + interceptionPointName + "_" + returnSuccessIfInterceptionPointNotDefined;
 		logger.info("key:" + key);
-		Boolean cachedIsPrincipalAuthorized = (Boolean)CacheController.getCachedObject("authorizationCache", key);
+		//Boolean cachedIsPrincipalAuthorized = (Boolean)CacheController.getCachedObject("authorizationCache", key);
+		Boolean cachedIsPrincipalAuthorized = (Boolean)CacheController.getCachedObjectFromAdvancedCache("personalAuthorizationCache", key);
 		if(cachedIsPrincipalAuthorized != null)
 		{
 			if(logger.isInfoEnabled() && !cachedIsPrincipalAuthorized.booleanValue())
@@ -1219,7 +1219,8 @@ public class AccessRightController extends BaseController
 			
 			isPrincipalAuthorized = getIsPrincipalAuthorized(db, infoGluePrincipal, interceptionPointName, returnSuccessIfInterceptionPointNotDefined);
 			
-			CacheController.cacheObject("authorizationCache", key, new Boolean(isPrincipalAuthorized));
+			//CacheController.cacheObject("authorizationCache", key, new Boolean(isPrincipalAuthorized));
+		    CacheController.cacheObjectInAdvancedCache("personalAuthorizationCache", key, new Boolean(isPrincipalAuthorized), new String[]{infoGluePrincipal.getName()}, true);
 			
 			commitTransaction(db);
 		} 
