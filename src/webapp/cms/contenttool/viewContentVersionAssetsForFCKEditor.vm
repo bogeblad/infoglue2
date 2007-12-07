@@ -107,7 +107,7 @@
 <tr>
 	<td id="digitalAsset$formatter.encodeURI($formatter.encodeURI($digitalAsset.assetKey, 'utf-8'), 'utf-8')" valign="bottom" align="center" class="bordered" #if($assetKey == "$digitalAsset.assetKey") style="background-color: #C2D0E2;" #end>
 		<input type="hidden" id="digitalAsset$formatter.encodeURI($formatter.encodeURI($digitalAsset.assetKey, 'utf-8'), 'utf-8')" value="$this.getDigitalAssetUrl($digitalAsset.digitalAssetId)">
-		<a href="javascript:markAsset(this, $!contentId, '$formatter.encodeURI($formatter.encodeURI($formatter.encodeURI($digitalAsset.assetKey, 'utf-8'), 'utf-8'), 'utf-8')', '$formatter.encodeURI($formatter.encodeURI($digitalAsset.assetKey, 'utf-8'), 'utf-8')');"><img class="scaledbordered" src="$this.getDigitalAssetThumbnailUrl($digitalAsset.digitalAssetId)">
+		<a ondblclick="onOk();" href="javascript:markAsset(this, $!contentId, '$formatter.encodeURI($formatter.encodeURI($formatter.encodeURI($digitalAsset.assetKey, 'utf-8'), 'utf-8'), 'utf-8')', '$formatter.encodeURI($formatter.encodeURI($digitalAsset.assetKey, 'utf-8'), 'utf-8')');"><img class="scaledbordered" src="$this.getDigitalAssetThumbnailUrl($digitalAsset.digitalAssetId)">
 		<br/>$digitalAsset.assetKey</a><br/>
 	</td>
 	#if($assetKey == $digitalAsset.assetKey)
