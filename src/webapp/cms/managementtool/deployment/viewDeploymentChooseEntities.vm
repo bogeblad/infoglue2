@@ -358,7 +358,7 @@
 	<div class="tab" id="components">
 
 		#if($synchronizeComponents)
-			<form name="contentsForm" action="ViewDeploymentSynchronizeServers!updateContents.action" method="post">
+			<form name="contentsForm" action="ViewDeploymentSynchronizeServers!updateComponents.action" method="post">
 				<input type="hidden" name="deploymentServerIndex" value="$deploymentServerIndex"/>
 				<input type="hidden" name="synchronizationMethod" value="$synchronizationMethod"/>		
 			
@@ -367,7 +367,7 @@
 				#foreach($deviatingContent in $deviatingContents)
 					#if($synchronizationMethod == 'pull')
 						#if(!$deviatingContent.localVersion)
-							<input type="checkbox" name="missingContentId" value="$deviatingContent.remoteVersion.name"/> Missing local version of $deviatingContent.remoteVersion.name ($deviatingContent.remoteVersion.fullPath)<br/> 
+							<input type="checkbox" name="missingContentId" value="$deviatingContent.remoteVersion.id"/> Missing local version of $deviatingContent.remoteVersion.name ($deviatingContent.remoteVersion.fullPath)<br/> 
 						#else
 							#set($remoteVersions = $!converter.getListFromArray($!deviatingContent.remoteVersion.versions))
 							#set($localVersions = $!converter.getListFromArray($!deviatingContent.localVersion.versions))
@@ -385,7 +385,7 @@
 							#end
 							
 							#if("$value1" != "$value2")
-								<input type="checkbox" name="deviatingContentName" value="$deviatingContent.remoteVersion.name"/> $deviatingContent.remoteVersion.name - <a href="javascript:showDiff($deviatingContent.remoteVersion.id);">diff</a><br/>
+								<input type="checkbox" name="deviatingContentId" value="$deviatingContent.remoteVersion.id"/> $deviatingContent.remoteVersion.name - <a href="javascript:showDiff($deviatingContent.remoteVersion.id);">diff</a><br/>
 								<script type="text/javascript">
 								<!--
 								var value1 = "$value1";
@@ -402,7 +402,7 @@
 						#end
 					#else
 						#if(!$deviatingContent.remoteVersion)
-							<input type="checkbox" name="missingContentId" value="$deviatingContent.localVersion.name"/> Missing remote version of $deviatingContent.localVersion.name ($deviatingContent.localVersion.fullPath)<br/> 
+							<input type="checkbox" name="missingContentId" value="$deviatingContent.localVersion.id"/> Missing remote version of $deviatingContent.localVersion.name ($deviatingContent.localVersion.fullPath)<br/> 
 						#else
 							#set($remoteVersions = $!converter.getListFromArray($!deviatingContent.remoteVersion.versions))
 							#set($localVersions = $!converter.getListFromArray($!deviatingContent.localVersion.versions))
@@ -420,7 +420,7 @@
 							#end
 							
 							#if("$value1" != "$value2")
-								<input type="checkbox" name="deviatingContentName" value="$deviatingContent.localVersion.name"/> $deviatingContent.localVersion.name - <a href="javascript:showDiff($deviatingContent.localVersion.id);">diff</a><br/>
+								<input type="checkbox" name="deviatingContentId" value="$deviatingContent.localVersion.id"/> $deviatingContent.localVersion.name - <a href="javascript:showDiff($deviatingContent.localVersion.id);">diff</a><br/>
 								<script type="text/javascript">
 								<!--
 								var value1 = "$value2";

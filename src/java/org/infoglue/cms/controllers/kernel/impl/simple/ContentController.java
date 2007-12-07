@@ -1544,6 +1544,54 @@ public class ContentController extends BaseController
 
 		return contents;    	
 	}
+
+	
+	/**
+	 * Returns the content belonging to the specified repository and with the specified path.
+	 * Note! If a folder contains more than one child with a requested name, then one of the children
+	 *       will be used (non-deterministic).
+	 *
+	 * Example:
+	 *   If we have the following repository (id=100):
+	 *     <root id="1">
+	 *       <news id="2">
+	 *         <imported id="3">
+	 *       <calendar id="4">
+	 *   then:
+	 *     getContentVOWithPath(100, "", true, db)              => returns content "1"
+	 *     getContentVOWithPath(100, "news", true, db)          => returns content "2"
+	 *     getContentVOWithPath(100, "news/imported", true, db) => returns content "3"
+	 *     getContentVOWithPath(100, "news/other", true, db)    => will create a new content with the name "other" with content "2" as parent
+	 *     getContentVOWithPath(100, "news/other", false, db)   => will throw an exception
+	 * 
+	 * @param repositoryId the repository identifier
+	 * @param path the path of the content starting from the root of the repository 
+	 * @param forceFolders if true then non-existing folders will be created; otherwise an exception will be thrown
+	 * @param db the database to use
+	 */
+	public ContentVO getContentVOWithPath(Integer repositoryId, String path, boolean forceFolders, InfoGluePrincipal creator) throws SystemException, Exception 
+	{
+		ContentVO contentVO = null;
+		
+		Database db = CastorDatabaseService.getDatabase();
+
+		beginTransaction(db);
+		
+		try
+		{
+			contentVO = getContentVOWithPath(repositoryId, path, forceFolders, creator, db);
+		    
+			commitTransaction(db);
+		}
+		catch(Exception e)
+		{
+			logger.error("An error occurred so we should not complete the transaction:" + e, e);
+			rollbackTransaction(db);
+			throw new SystemException(e.getMessage());
+		}
+		
+		return contentVO;
+	}
 	
 	/**
 	 * Returns the content belonging to the specified repository and with the specified path.
