@@ -362,50 +362,81 @@
 				<input type="hidden" name="deploymentServerIndex" value="$deploymentServerIndex"/>
 				<input type="hidden" name="synchronizationMethod" value="$synchronizationMethod"/>		
 			
-				<h3>Compoents that deviates</h3>
+				<h3>Components that deviates</h3>
 				#set($indexMissingContents = 0)
 				#foreach($deviatingContent in $deviatingContents)
-					#if(!$deviatingContent.localVersion)
-						<input type="checkbox" name="missingContentId" value="$deviatingContent.remoteVersion.name"/> Missing local version of $deviatingContent.remoteVersion.name ($deviatingContent.remoteVersion.fullPath)<br/> 
-					#else
-						#set($remoteVersions = $!converter.getListFromArray($!deviatingContent.remoteVersion.versions))
-						#set($localVersions = $!converter.getListFromArray($!deviatingContent.localVersion.versions))
-						
-						#if($remoteVersions.size() > 0)
-							#set($value1 = "$!formatter.escapeExtendedHTML($!formatter.cleanForJavascriptStrings($!remoteVersions.get(0), 'iglb'))")
+					#if($synchronizationMethod == 'pull')
+						#if(!$deviatingContent.localVersion)
+							<input type="checkbox" name="missingContentId" value="$deviatingContent.remoteVersion.name"/> Missing local version of $deviatingContent.remoteVersion.name ($deviatingContent.remoteVersion.fullPath)<br/> 
 						#else
-							#set($value1 = "")
-						#end
-						
-						#if($localVersions.size() > 0)
-							#set($value2 = "$!formatter.escapeExtendedHTML($!formatter.cleanForJavascriptStrings($localVersions.get(0), 'iglb'))")
-						#else
-							#set($value2 = "")
-						#end
-						
-						#*
-						#if("$value1" == "$value2")
-							$deviatingContent.remoteVersion.name is same as remote<br/>
-						#end
-						*#
-						
-						#if("$value1" != "$value2")
-							<input type="checkbox" name="deviatingContentName" value="$deviatingContent.remoteVersion.name"/> $deviatingContent.remoteVersion.name - <a href="javascript:showDiff($deviatingContent.remoteVersion.id);">diff</a><br/>
-							<script type="text/javascript">
-							<!--
-							var value1 = "#if($synchronizationMethod == 'pull')$value1#else$value2#end";
-							var value2 = "#if($synchronizationMethod == 'pull')$value2#else$value1#end";
-							value1 = value1.replace(/iglb/g, "<br/>").replace(/CDATA\[/g, "CDATA[<br/>");
-							value2 = value2.replace(/iglb/g, "<br/>").replace(/CDATA\[/g, "CDATA[<br/>");
+							#set($remoteVersions = $!converter.getListFromArray($!deviatingContent.remoteVersion.versions))
+							#set($localVersions = $!converter.getListFromArray($!deviatingContent.localVersion.versions))
 							
-							document.write("<div id='$deviatingContent.remoteVersion.id' style='display:none; background-color: #FFF; border: 1px solid #333; padding: 5px; height: 200px; overflow: auto;'>" + diffString(value2, value1) + "</div>");
-							-->
-							</script>
-						#else
-							##Exakt compare: $deviatingContent.remoteVersion.name<br/> 
+							#if($remoteVersions.size() > 0)
+								#set($value1 = "$!formatter.escapeExtendedHTML($!formatter.cleanForJavascriptStrings($!remoteVersions.get(0), 'iglb'))")
+							#else
+								#set($value1 = "")
+							#end
+							
+							#if($localVersions.size() > 0)
+								#set($value2 = "$!formatter.escapeExtendedHTML($!formatter.cleanForJavascriptStrings($localVersions.get(0), 'iglb'))")
+							#else
+								#set($value2 = "")
+							#end
+							
+							#if("$value1" != "$value2")
+								<input type="checkbox" name="deviatingContentName" value="$deviatingContent.remoteVersion.name"/> $deviatingContent.remoteVersion.name - <a href="javascript:showDiff($deviatingContent.remoteVersion.id);">diff</a><br/>
+								<script type="text/javascript">
+								<!--
+								var value1 = "$value1";
+								var value2 = "$value2";
+								value1 = value1.replace(/iglb/g, "<br/>").replace(/CDATA\[/g, "CDATA[<br/>");
+								value2 = value2.replace(/iglb/g, "<br/>").replace(/CDATA\[/g, "CDATA[<br/>");
+								
+								document.write("<div id='$deviatingContent.remoteVersion.id' style='display:none; background-color: #FFF; border: 1px solid #333; padding: 5px; height: 200px; overflow: auto;'>" + diffString(value2, value1) + "</div>");
+								-->
+								</script>
+							#else
+								##Exakt compare: $deviatingContent.remoteVersion.name<br/> 
+							#end
 						#end
+					#else
+						#if(!$deviatingContent.remoteVersion)
+							<input type="checkbox" name="missingContentId" value="$deviatingContent.localVersion.name"/> Missing remote version of $deviatingContent.localVersion.name ($deviatingContent.localVersion.fullPath)<br/> 
+						#else
+							#set($remoteVersions = $!converter.getListFromArray($!deviatingContent.remoteVersion.versions))
+							#set($localVersions = $!converter.getListFromArray($!deviatingContent.localVersion.versions))
+							
+							#if($remoteVersions.size() > 0)
+								#set($value1 = "$!formatter.escapeExtendedHTML($!formatter.cleanForJavascriptStrings($!remoteVersions.get(0), 'iglb'))")
+							#else
+								#set($value1 = "")
+							#end
+							
+							#if($localVersions.size() > 0)
+								#set($value2 = "$!formatter.escapeExtendedHTML($!formatter.cleanForJavascriptStrings($localVersions.get(0), 'iglb'))")
+							#else
+								#set($value2 = "")
+							#end
+							
+							#if("$value1" != "$value2")
+								<input type="checkbox" name="deviatingContentName" value="$deviatingContent.localVersion.name"/> $deviatingContent.localVersion.name - <a href="javascript:showDiff($deviatingContent.localVersion.id);">diff</a><br/>
+								<script type="text/javascript">
+								<!--
+								var value1 = "$value2";
+								var value2 = "$value1";
+								value1 = value1.replace(/iglb/g, "<br/>").replace(/CDATA\[/g, "CDATA[<br/>");
+								value2 = value2.replace(/iglb/g, "<br/>").replace(/CDATA\[/g, "CDATA[<br/>");
+								
+								document.write("<div id='$deviatingContent.localVersion.id' style='display:none; background-color: #FFF; border: 1px solid #333; padding: 5px; height: 200px; overflow: auto;'>" + diffString(value2, value1) + "</div>");
+								-->
+								</script>
+							#else
+								##Exakt compare: $deviatingContent.localVersion.name<br/> 
+							#end
+						#end	
 					#end
-			
+					
 					#set($indexMissingContents = $indexMissingContents + 1)
 				#end
 				#if($deviatingContents.size() == 0)

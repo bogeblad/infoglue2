@@ -243,56 +243,109 @@ public class ViewDeploymentSynchronizeServersAction extends InfoGlueAbstractActi
 	    	//Getting deviatingComponents
 	    	Object[] contentVOArray = (Object[])invokeOperation(targetEndpointAddress, "getComponents", "content", null, ContentVO.class, "infoglue");
 	    	List remoteContentVOList = Arrays.asList(contentVOArray);
-		    //Collections.sort(remoteContentVOList, new ReflectionComparator("name"));
-		    //Collections.sort(remoteContentVOList, Collections.reverseOrder(new ReflectionComparator("modifiedDateTime")));
-
-	    	//System.out.println("remoteContentVOList:" + remoteContentVOList.size());
-	    	
 	    	List components = ContentController.getContentController().getContentVOWithContentTypeDefinition("HTMLTemplate");
-	    	
-	    	Iterator remoteContentVOListIterator = remoteContentVOList.iterator();
-	    	while(remoteContentVOListIterator.hasNext())
+
+	    	if(this.synchronizationMethod.equalsIgnoreCase("pull"))
 	    	{
-	    		ContentVO remoteContentVO = (ContentVO)remoteContentVOListIterator.next();
-	    		//System.out.println("remoteContentVO:" + remoteContentVO.getName());
-	    		
+		    	Iterator remoteContentVOListIterator = remoteContentVOList.iterator();
+		    	while(remoteContentVOListIterator.hasNext())
+		    	{
+		    		ContentVO remoteContentVO = (ContentVO)remoteContentVOListIterator.next();
+		    		//System.out.println("remoteContentVO:" + remoteContentVO.getName());
+		    		
+		    		Iterator componentsIterator = components.iterator();
+		    		ContentVO localContentVO = null;
+		    		while(componentsIterator.hasNext())
+		    		{
+		    			ContentVO candidate = (ContentVO)componentsIterator.next();
+		    			if(candidate.getName().equals(remoteContentVO.getName()))
+		    			{
+		    				localContentVO = candidate;
+		    			}
+		    		}
+	
+		    		DeploymentCompareBean bean = new DeploymentCompareBean();
+		    		bean.setRemoteVersion(remoteContentVO);
+		    		if(localContentVO != null)
+		    		{
+		        		bean.setLocalVersion(localContentVO);
+						LanguageVO languageVO = LanguageController.getController().getMasterLanguage(localContentVO.getRepositoryId());
+						ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(localContentVO.getId(), languageVO.getId());
+						if(contentVersionVO != null)
+						{
+							localContentVO.setVersions(new String[]{contentVersionVO.getVersionValue()});
+						}
+		    		}
+	
+		    		deviatingContents.add(bean);
+		    	}
+	    	}
+	    	else
+	    	{
 	    		Iterator componentsIterator = components.iterator();
-	    		ContentVO localContentVO = null;
 	    		while(componentsIterator.hasNext())
 	    		{
-	    			ContentVO candidate = (ContentVO)componentsIterator.next();
-	    			if(candidate.getName().equals(remoteContentVO.getName()))
-	    			{
-	    				localContentVO = candidate;
-	    			}
-	    		}
-	    		//System.out.println("localContentVO:" + localContentVO);
-	    		DeploymentCompareBean bean = new DeploymentCompareBean();
-	    		bean.setRemoteVersion(remoteContentVO);
-	    		if(localContentVO != null)
-	    		{
-	    			//System.out.println("localContentVO:" + localContentVO.getName());
-	        		bean.setLocalVersion(localContentVO);
-	    		
-					LanguageVO languageVO = LanguageController.getController().getMasterLanguage(localContentVO.getRepositoryId());
+	    			ContentVO localContentVO = (ContentVO)componentsIterator.next();
 
-					//System.out.println("languageVO:" + languageVO);
+		    		Iterator remoteContentVOListIterator = remoteContentVOList.iterator();
+		    		ContentVO remoteContentVO = null;
+		    		while(remoteContentVOListIterator.hasNext())
+			    	{
+			    		ContentVO remoteContentVOCandidate = (ContentVO)remoteContentVOListIterator.next();
+			    		if(localContentVO.getName().equals(remoteContentVOCandidate.getName()))
+			    			remoteContentVO = remoteContentVOCandidate;
+			    	}
+		    		
+		    		DeploymentCompareBean bean = new DeploymentCompareBean();
+					LanguageVO languageVO = LanguageController.getController().getMasterLanguage(localContentVO.getRepositoryId());
 					ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(localContentVO.getId(), languageVO.getId());
-					//System.out.println("contentVersionVO:" + contentVersionVO);
 					if(contentVersionVO != null)
 					{
 						localContentVO.setVersions(new String[]{contentVersionVO.getVersionValue()});
 					}
+		    		bean.setLocalVersion(localContentVO);
+
+		    		if(remoteContentVO != null)
+		    		{
+		        		bean.setRemoteVersion(remoteContentVO);
+		    		}
+	
+		    		deviatingContents.add(bean);
 	    		}
 	    		/*
-	    		else
-	    		{
-	    			System.out.println("No localversion for:" + remoteContentVO.getName() + ":" + remoteContentVO.getExtraProperties() + ":" + remoteContentVO.getFullPath());
-	    		}
-	    		*/
-        		
-	    		//System.out.println("bean:" + bean.getLocalVersion());
-	    		deviatingContents.add(bean);
+	    		Iterator remoteContentVOListIterator = remoteContentVOList.iterator();
+		    	while(remoteContentVOListIterator.hasNext())
+		    	{
+		    		ContentVO remoteContentVO = (ContentVO)remoteContentVOListIterator.next();
+		    		//System.out.println("remoteContentVO:" + remoteContentVO.getName());
+		    		
+		    		Iterator componentsIterator = components.iterator();
+		    		ContentVO localContentVO = null;
+		    		while(componentsIterator.hasNext())
+		    		{
+		    			ContentVO candidate = (ContentVO)componentsIterator.next();
+		    			if(candidate.getName().equals(remoteContentVO.getName()))
+		    			{
+		    				localContentVO = candidate;
+		    			}
+		    		}
+	
+		    		DeploymentCompareBean bean = new DeploymentCompareBean();
+		    		bean.setRemoteVersion(remoteContentVO);
+		    		if(localContentVO != null)
+		    		{
+		        		bean.setLocalVersion(localContentVO);
+						LanguageVO languageVO = LanguageController.getController().getMasterLanguage(localContentVO.getRepositoryId());
+						ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(localContentVO.getId(), languageVO.getId());
+						if(contentVersionVO != null)
+						{
+							localContentVO.setVersions(new String[]{contentVersionVO.getVersionValue()});
+						}
+		    		}
+	
+		    		deviatingContents.add(bean);
+		    	}
+				*/
 	    	}
     	}
 
