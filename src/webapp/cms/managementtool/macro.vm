@@ -952,6 +952,34 @@ $ui.getString("entity.${fieldNameKey}.label")<br/>
 
 #end
 
+#macro(editPasswordField3 $fieldNameLabel $errorKey $fieldName $fieldValue $length)
+  $fieldNameLabel
+  	#if($rule.required)
+  		&nbsp;<font color="red">* </font>
+  	#end
+
+  #if($errors.hasErrors($errorKey))
+
+	  	 #set( $MIN=$rule.getValidRange().getLowerLimit() )
+	  	 #set( $MAX=$rule.getValidRange().getUpperLimit() )
+
+	    #foreach($errorMessage in $errors.getErrors($errorKey))
+	    <font color="red"> - $errorMessage </font>
+	    #end
+
+  #end
+  <br/>
+  <input type="password" class="text" name="$fieldName" value="$!fieldValue" size="$length"/>
+#end
+
+#macro(editPasswordField $fieldNameKey $fieldName $fieldValue $length)
+
+  #set($rule=$this.getRule("$fieldNameKey"))
+  ## $rule
+  #editPasswordField3($ui.getString("entity.${fieldNameKey}.label") $fieldNameKey $fieldName $fieldValue $length)
+
+#end
+
 #macro(editPropertyField3 $fieldNameLabel $errorKey $fieldName $fieldValue $length $serverNodeId)
   $fieldNameLabel
   	#if($rule.required)
@@ -994,6 +1022,12 @@ $ui.getString("entity.${fieldNameKey}.label")<br/>
   $ui.getString("entity.${fieldNameKey}.label")
   <br/>
   <input type="text" class="text" name="$fieldName" value="$!fieldValue" size="$length" $readonly/>
+#end
+
+#macro(editReadOnlyPasswordField $fieldNameKey $fieldName $fieldValue $length $readonly)
+  $ui.getString("entity.${fieldNameKey}.label")
+  <br/>
+  <input type="password" class="text" name="$fieldName" value="$!fieldValue" size="$length" $readonly/>
 #end
 
 #macro(editTextAreaOld $fieldNameKey $fieldName $fieldValue $rows $cols)
