@@ -443,27 +443,34 @@ public class RemoteDeploymentServiceImpl extends RemoteInfoGlueService
 				String repositoryString = fullPath.substring(0, siteNodeEnd);
 				String restString = fullPath.substring(siteNodeEnd + 4);
 				restString = restString.substring(0, restString.lastIndexOf("/"));
-				restString = restString.substring(restString.indexOf("/") + 1);
+				
+				if(restString.indexOf("/") > -1)
+    				restString = restString.substring(restString.indexOf("/") + 1);
+				else
+					restString = "";
+				
 				System.out.println("repositoryString:" + repositoryString);
 				System.out.println("restString:" + restString);
 				try
 				{
 					RepositoryVO repositoryVO = RepositoryController.getController().getRepositoryVOWithName(repositoryString);
 					System.out.println("repositoryVO:" + repositoryVO);
-					
-					LanguageVO languageVO = LanguageController.getController().getMasterLanguage(repositoryVO.getRepositoryId());
-
-					ContentVO parentContent = ContentController.getContentController().getContentVOWithPath(repositoryVO.getId(), restString, true, principal);
-					System.out.println("parentContent:" + parentContent);
-					ContentVO newContentVO = ContentController.getContentController().create(parentContent.getId(), contentTypeDefinitionVO.getContentTypeDefinitionId(), parentContent.getRepositoryId(), missingRemoteContentVO);
-					System.out.println("Now we want to create the version also on:" + newContentVO.getName());
-					ContentVersionVO contentVersionVO = new ContentVersionVO();
-					contentVersionVO.setVersionComment("deployment");
-					contentVersionVO.setVersionModifier(principal.getName());
-					if(missingRemoteContentVO.getVersions() != null && missingRemoteContentVO.getVersions().length > 0)
+					if(repositoryVO != null)
 					{
-						contentVersionVO.setVersionValue(missingRemoteContentVO.getVersions()[0]);
-						ContentVersionController.getContentVersionController().create(newContentVO.getId(), languageVO.getId(), contentVersionVO, null);
+						LanguageVO languageVO = LanguageController.getController().getMasterLanguage(repositoryVO.getRepositoryId());
+	
+						ContentVO parentContent = ContentController.getContentController().getContentVOWithPath(repositoryVO.getId(), restString, true, principal);
+						System.out.println("parentContent:" + parentContent);
+						ContentVO newContentVO = ContentController.getContentController().create(parentContent.getId(), contentTypeDefinitionVO.getContentTypeDefinitionId(), parentContent.getRepositoryId(), missingRemoteContentVO);
+						System.out.println("Now we want to create the version also on:" + newContentVO.getName());
+						ContentVersionVO contentVersionVO = new ContentVersionVO();
+						contentVersionVO.setVersionComment("deployment");
+						contentVersionVO.setVersionModifier(principal.getName());
+						if(missingRemoteContentVO.getVersions() != null && missingRemoteContentVO.getVersions().length > 0)
+						{
+							contentVersionVO.setVersionValue(missingRemoteContentVO.getVersions()[0]);
+							ContentVersionController.getContentVersionController().create(newContentVO.getId(), languageVO.getId(), contentVersionVO, null);
+						}
 					}
 				}
 				catch (Exception e) 

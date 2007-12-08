@@ -21,15 +21,26 @@
 	
 	function activateTab(tabId)
 	{
-		document.getElementById(previousTabId).style.display = "none";
-		document.getElementById(tabId).style.display = "block";
-	
-		document.getElementById(previousLiTabId).className = "";
-		document.getElementById(tabId + "Tab").className = "activeTab";
+		//alert("previousTabId:" + previousTabId);
+		var previousLiTabElement = document.getElementById(previousTabId);
+		var previousLiTabTabElement = document.getElementById(previousTabId + "Tab");
+		if(previousLiTabElement)
+			previousLiTabElement.style.display = "none";
+		if(previousLiTabTabElement)
+			previousLiTabTabElement.className = "";
+
+		var newLiTabElement = document.getElementById(tabId);
+		var newLiTabTabElement = document.getElementById(tabId + "Tab");
+		if(newLiTabElement)
+			newLiTabElement.style.display = "block";
+		if(newLiTabTabElement)
+			newLiTabTabElement.className = "activeTab";
 					
 		previousTabId = tabId;
 		previousLiTabId = tabId + "Tab";
 	}
+	
+	var activateTabId = "undefined";
 -->
 </script>
 
@@ -122,17 +133,25 @@
 <p>$ui.getString("tool.managementtool.deployment.chooseEntitiesIntroduction")</p>
 
 <ul class="entitiesTabs">
+	#if($synchronizeContentTypeDefinitions)
 	<li id="contentTypeDefinitionsTab" class="activeTab"><a href="javascript:activateTab('contentTypeDefinitions');">$ui.getString("tool.managementtool.deployment.contentTypeDefinitions.label")</a></li>
+	#end
+	#if($synchronizeCategories)
 	<li id="categoriesTab" class=""><a href="javascript:activateTab('categories');">$ui.getString("tool.managementtool.deployment.categories.label")</a></li>
+	#end
+	#if($synchronizeWorkflows)
 	<li id="workflowsTab" class=""><a href="javascript:activateTab('workflows');">$ui.getString("tool.managementtool.deployment.workflows.label")</a></li>
+	#end
+	#if($synchronizeComponents)
 	<li id="componentsTab" class=""><a href="javascript:activateTab('components');">$ui.getString("tool.managementtool.deployment.components.label")</a></li>
+	#end
 </ul>
 <div style="clear: both;"/>
 
 <div class="tabs">
-	<div class="tab" id="contentTypeDefinitions" style="display: block;">
+	#if($synchronizeContentTypeDefinitions)
+		<div class="tab" id="contentTypeDefinitions" style="display: block;">
 
-		#if($synchronizeContentTypeDefinitions)
 		<form name="contentTypesForm" action="ViewDeploymentSynchronizeServers!updateContentTypes.action" method="post">
 			<input type="hidden" name="deploymentServerIndex" value="$deploymentServerIndex"/>
 			<input type="hidden" name="synchronizationMethod" value="$synchronizationMethod"/>		
@@ -260,12 +279,16 @@
 			<br/>
 			<input type="image" src="$ui.getString("images.contenttool.buttons.next")" width="50" height="25">
 		</form>
-		#end
+		<script type="text/javascript">
+			if(activateTabId == "undefined")
+				activateTabId = "contentTypeDefinitions";
+		</script>
 	</div>
+	#end
 	
-	<div class="tab" id="categories">
+	#if($synchronizeCategories)
+		<div class="tab" id="categories">
 		
-		#if($synchronizeCategories)
 			<form name="categoriesForm" action="ViewDeploymentSynchronizeServers!updateCategories.action" method="post">
 				<input type="hidden" name="deploymentServerIndex" value="$deploymentServerIndex"/>
 				<input type="hidden" name="synchronizationMethod" value="$synchronizationMethod"/>		
@@ -295,14 +318,16 @@
 				<br/>
 				<input type="image" src="$ui.getString("images.contenttool.buttons.next")" width="50" height="25">
 			</form>
-		#end
-
-	</div>
+			<script type="text/javascript">
+				if(activateTabId == "undefined")
+					activateTabId = "categories";
+			</script>		
+		</div>
+	#end
 	
 
-	<div class="tab" id="workflows">
-	
-		#if($synchronizeWorkflows)	
+	#if($synchronizeWorkflows)	
+		<div class="tab" id="workflows">
 			<form name="workflowsForm" action="ViewDeploymentSynchronizeServers!updateWorkflows.action" method="post">
 				<input type="hidden" name="deploymentServerIndex" value="$deploymentServerIndex"/>
 				<input type="hidden" name="synchronizationMethod" value="$synchronizationMethod"/>		
@@ -350,14 +375,16 @@
 				<br/>
 				<input type="image" src="$ui.getString("images.contenttool.buttons.next")" width="50" height="25">
 			</form>
-		#end
-
-	</div>
+			<script type="text/javascript">
+				if(activateTabId == "undefined")
+					activateTabId = "workflows";
+			</script>		
+		</div>
+	#end
 	
 
-	<div class="tab" id="components">
-
-		#if($synchronizeComponents)
+	#if($synchronizeComponents)
+		<div class="tab" id="components">
 			<form name="contentsForm" action="ViewDeploymentSynchronizeServers!updateComponents.action" method="post">
 				<input type="hidden" name="deploymentServerIndex" value="$deploymentServerIndex"/>
 				<input type="hidden" name="synchronizationMethod" value="$synchronizationMethod"/>		
@@ -445,11 +472,19 @@
 				<br/>
 				<input type="image" src="$ui.getString("images.contenttool.buttons.next")" width="50" height="25">
 			</form>
-		#end
-		
-	</div>
+			<script type="text/javascript">
+				if(activateTabId == "undefined")
+					activateTabId = "components";
+			</script>		
+		</div>
+	#end
 </div>
 <p/>	
 </div>
+<script type="text/javascript">
+	var previousTabId = activateTabId;
+	var previousLiTabId = activateTabId + "Tab";	
+	activateTab(activateTabId);
+</script>		
 </body>
 </html>

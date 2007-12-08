@@ -50,6 +50,7 @@ import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionCont
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.GroupControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
+import org.infoglue.cms.controllers.kernel.impl.simple.RepositoryController;
 import org.infoglue.cms.controllers.kernel.impl.simple.RoleControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.UserControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.WorkflowDefinitionController;
@@ -61,6 +62,7 @@ import org.infoglue.cms.entities.management.CategoryVO;
 import org.infoglue.cms.entities.management.ContentTypeAttribute;
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
 import org.infoglue.cms.entities.management.LanguageVO;
+import org.infoglue.cms.entities.management.RepositoryVO;
 import org.infoglue.cms.entities.workflow.WorkflowDefinition;
 import org.infoglue.cms.entities.workflow.WorkflowDefinitionVO;
 import org.infoglue.cms.exception.SystemException;
@@ -691,15 +693,103 @@ public class ViewDeploymentSynchronizeServersAction extends InfoGlueAbstractActi
     	
     	String targetEndpointAddress = deploymentServerUrl + "/services/RemoteDeploymentService";
     	//System.out.println("targetEndpointAddress:" + targetEndpointAddress);
-    	
+
+    	ContentTypeDefinitionVO contentTypeDefinitionVO = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithName("HTMLTemplate");
+
     	if(this.synchronizationMethod == null || this.synchronizationMethod.equalsIgnoreCase("pull"))
     	{
     		Object[] contentVOArray = (Object[])invokeOperation(targetEndpointAddress, "getComponents", "content", null, ContentVO.class, "infoglue");
 	    	List remoteContentVOList = Arrays.asList(contentVOArray);
 		    Collections.sort(remoteContentVOList, new ReflectionComparator("name"));
 	
-		    //System.out.println("remoteContentVOList:" + remoteContentVOList.size());
+		    //Missing 
+		    String[] missingRemoteContentIdArray = this.getRequest().getParameterValues("missingContentId");
+	    	System.out.println("missingRemoteContentIdArray:" + missingRemoteContentIdArray);
+	    	
+	    	List missingComponents = new ArrayList();
+	    	if(missingRemoteContentIdArray != null)
+	    	{
+		    	for(int i=0; i<missingRemoteContentIdArray.length; i++)
+		    	{
+		    		String missingRemoteContentId = missingRemoteContentIdArray[i];
+		    		System.out.println("Updating remote component with missingRemoteContentId:" + missingRemoteContentId);
+		    		
+		    		Iterator remoteContentVOListIterator = remoteContentVOList.iterator();
+		    		while(remoteContentVOListIterator.hasNext())
+		    		{
+		    			ContentVO remoteContentVO = (ContentVO)remoteContentVOListIterator.next();
+		    			if(remoteContentVO.getId().equals(new Integer(missingRemoteContentId)))
+		    			{
+		    				System.out.println("Creating local copy of " + remoteContentVO.getName() + " - " + remoteContentVO.getFullPath());
+		    				
+		    				String fullPath = remoteContentVO.getFullPath();
+		    				System.out.println("fullPath:" + fullPath);
+		    				int siteNodeEnd = fullPath.indexOf(" - /");
+		    				String repositoryString = fullPath.substring(0, siteNodeEnd);
+		    				String restString = fullPath.substring(siteNodeEnd + 4);
+		    				System.out.println("restString:" + restString);
+		    				restString = restString.substring(0, restString.lastIndexOf("/"));
+		    				System.out.println("restString:" + restString);
+		    				if(restString.indexOf("/") > -1)
+			    				restString = restString.substring(restString.indexOf("/") + 1);
+		    				else
+		    					restString = "";
+		    				
+		    				System.out.println("restString:" + restString);
+		    				
+		    				System.out.println("repositoryString:" + repositoryString);
+		    				System.out.println("restString:" + restString);
+		    				try
+		    				{
+		    					RepositoryVO repositoryVO = RepositoryController.getController().getRepositoryVOWithName(repositoryString);
+		    					System.out.println("repositoryVO:" + repositoryVO);
+		    					if(repositoryVO != null)
+		    					{
+			    					LanguageVO languageVO = LanguageController.getController().getMasterLanguage(repositoryVO.getRepositoryId());
 	
+			    					ContentVO parentContent = ContentController.getContentController().getContentVOWithPath(repositoryVO.getId(), restString, true, this.getInfoGluePrincipal());
+			    					System.out.println("parentContent:" + parentContent);
+			    					ContentVO newContentVO = ContentController.getContentController().create(parentContent.getId(), contentTypeDefinitionVO.getContentTypeDefinitionId(), parentContent.getRepositoryId(), remoteContentVO);
+			    					System.out.println("Now we want to create the version also on:" + newContentVO.getName());
+			    					ContentVersionVO contentVersionVO = new ContentVersionVO();
+			    					contentVersionVO.setVersionComment("deployment");
+			    					contentVersionVO.setVersionModifier(this.getInfoGluePrincipal().getName());
+			    					if(remoteContentVO.getVersions() != null && remoteContentVO.getVersions().length > 0)
+			    					{
+			    						contentVersionVO.setVersionValue(remoteContentVO.getVersions()[0]);
+			    						ContentVersionController.getContentVersionController().create(newContentVO.getId(), languageVO.getId(), contentVersionVO, null);
+			    					}
+		    					}
+		    				}
+		    				catch (Exception e) 
+		    				{
+		    					e.printStackTrace();
+		    				}
+
+		    				break;
+		    			}
+		    		}
+		    		/*
+		    		ContentVO contentVO = ContentController.getContentController().getContentVOWithId(new Integer(missingLocalContentId).intValue());
+		    		if(contentVO != null)
+		    		{
+						LanguageVO languageVO = LanguageController.getController().getMasterLanguage(contentVO.getRepositoryId());
+						
+						String fullPath = ContentController.getContentController().getContentPath(contentVO.getId(), true, true);
+						
+						ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentVO.getId(), languageVO.getId());
+						if(contentVersionVO != null)
+							contentVO.setVersions(new String[]{contentVersionVO.getVersionValue()});
+						
+						contentVO.setFullPath(fullPath);
+
+						missingComponents.add(contentVO);
+		    		}
+		    		*/
+		    	}
+	    	}
+
+	    	
 	    	String[] deviatingRemoteContentIdArray = this.getRequest().getParameterValues("deviatingContentId");
 	    	//System.out.println("deviatingRemoteContentIdArray:" + deviatingRemoteContentIdArray);
 	    	
