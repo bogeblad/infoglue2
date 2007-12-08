@@ -29,6 +29,7 @@ import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -69,6 +70,8 @@ import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.mail.MailServiceFactory;
+import org.infoglue.cms.util.sorters.ComponentDeploymentComparator;
+import org.infoglue.cms.util.sorters.ContentComparator;
 import org.infoglue.cms.util.sorters.ReflectionComparator;
 import org.infoglue.deliver.util.HttpUtilities;
 import org.infoglue.deliver.util.webservices.DynamicWebservice;
@@ -108,7 +111,7 @@ public class ViewDeploymentSynchronizeServersAction extends InfoGlueAbstractActi
     	
     	if(synchronizeContentTypeDefinitions)
     	{
-	    	Object[] contentTypeDefinitionVOArray = (Object[])invokeOperation(targetEndpointAddress, "getContentTypeDefinitions", "contentTypeDefinition", null, ContentTypeDefinitionVO.class, "infoglue");
+	    	Object[] contentTypeDefinitionVOArray = (Object[])invokeOperation(targetEndpointAddress, "getContentTypeDefinitions", "contentTypeDefinition", null, new Class[]{ContentTypeDefinitionVO.class}, "infoglue");
 	    	List remoteContentTypeDefinitionVOList = Arrays.asList(contentTypeDefinitionVOArray);
 		    Collections.sort(remoteContentTypeDefinitionVOList, new ReflectionComparator("name"));
 	
@@ -164,7 +167,7 @@ public class ViewDeploymentSynchronizeServersAction extends InfoGlueAbstractActi
     	if(synchronizeCategories)
     	{
 	    	//Getting deviatingCategories
-	    	Object[] categoryVOArray = (Object[])invokeOperation(targetEndpointAddress, "getAllActiveCategories", "category", null, CategoryVO.class, "infoglue");
+	    	Object[] categoryVOArray = (Object[])invokeOperation(targetEndpointAddress, "getAllActiveCategories", "category", null, new Class[]{CategoryVO.class}, "infoglue");
 	    	List remoteCategoryVOList = Arrays.asList(categoryVOArray);
 		    Collections.sort(remoteCategoryVOList, new ReflectionComparator("name"));
 		    //System.out.println("remoteCategoryVOList:" + remoteCategoryVOList.size());
@@ -184,7 +187,7 @@ public class ViewDeploymentSynchronizeServersAction extends InfoGlueAbstractActi
     	if(synchronizeWorkflows)
     	{
 	    	//Getting deviatingWorkflows
-	    	Object[] workflowVOArray = (Object[])invokeOperation(targetEndpointAddress, "getWorkflowDefinitions", "workflowDefinition", null, WorkflowDefinitionVO.class, "infoglue");
+	    	Object[] workflowVOArray = (Object[])invokeOperation(targetEndpointAddress, "getWorkflowDefinitions", "workflowDefinition", null, new Class[]{WorkflowDefinitionVO.class}, "infoglue");
 	    	List remoteWorkflowDefinitionVOList = Arrays.asList(workflowVOArray);
 		    Collections.sort(remoteWorkflowDefinitionVOList, new ReflectionComparator("name"));
 	
@@ -243,9 +246,12 @@ public class ViewDeploymentSynchronizeServersAction extends InfoGlueAbstractActi
     	if(synchronizeComponents)
     	{
 	    	//Getting deviatingComponents
-	    	Object[] contentVOArray = (Object[])invokeOperation(targetEndpointAddress, "getComponents", "content", null, ContentVO.class, "infoglue");
+	    	Object[] contentVOArray = (Object[])invokeOperation(targetEndpointAddress, "getComponents", "content", null, new Class[]{ContentVO.class, ContentVersionVO.class}, "infoglue", new Class[]{ContentVO.class, ContentVersionVO.class});
 	    	List remoteContentVOList = Arrays.asList(contentVOArray);
 	    	List components = ContentController.getContentController().getContentVOWithContentTypeDefinition("HTMLTemplate");
+
+			Comparator comparator = new ComponentDeploymentComparator("modifiedDateTime", "desc");
+			Collections.sort(remoteContentVOList, comparator);
 
 	    	if(this.synchronizationMethod.equalsIgnoreCase("pull"))
 	    	{
@@ -254,6 +260,7 @@ public class ViewDeploymentSynchronizeServersAction extends InfoGlueAbstractActi
 		    	{
 		    		ContentVO remoteContentVO = (ContentVO)remoteContentVOListIterator.next();
 		    		//System.out.println("remoteContentVO:" + remoteContentVO.getName());
+		    		//System.out.println("Versions:" + remoteContentVO.getContentVersion());
 		    		
 		    		Iterator componentsIterator = components.iterator();
 		    		ContentVO localContentVO = null;
@@ -276,6 +283,7 @@ public class ViewDeploymentSynchronizeServersAction extends InfoGlueAbstractActi
 						if(contentVersionVO != null)
 						{
 							localContentVO.setVersions(new String[]{contentVersionVO.getVersionValue()});
+							localContentVO.setContentVersion(contentVersionVO);
 						}
 		    		}
 	
@@ -306,6 +314,7 @@ public class ViewDeploymentSynchronizeServersAction extends InfoGlueAbstractActi
 					if(contentVersionVO != null)
 					{
 						localContentVO.setVersions(new String[]{contentVersionVO.getVersionValue()});
+						localContentVO.setContentVersion(contentVersionVO);
 					}
 		    		bean.setLocalVersion(localContentVO);
 
@@ -384,7 +393,7 @@ public class ViewDeploymentSynchronizeServersAction extends InfoGlueAbstractActi
     	
     	if(this.synchronizationMethod == null || this.synchronizationMethod.equalsIgnoreCase("pull"))
     	{
-	    	Object[] contentTypeDefinitionVOArray = (Object[])invokeOperation(targetEndpointAddress, "getContentTypeDefinitions", "contentTypeDefinition", null, ContentTypeDefinitionVO.class, "infoglue");
+	    	Object[] contentTypeDefinitionVOArray = (Object[])invokeOperation(targetEndpointAddress, "getContentTypeDefinitions", "contentTypeDefinition", null, new Class[]{ContentTypeDefinitionVO.class}, "infoglue");
 	    	List remoteContentTypeDefinitionVOList = Arrays.asList(contentTypeDefinitionVOArray);
 		    Collections.sort(remoteContentTypeDefinitionVOList, new ReflectionComparator("name"));
 	
@@ -577,7 +586,7 @@ public class ViewDeploymentSynchronizeServersAction extends InfoGlueAbstractActi
 	    		input.put("deviatingContentTypeNameArray", deviatingContentTypeNameList);
 	    	}
 	    	
-	    	Boolean success = (Boolean)invokeOperation(targetEndpointAddress, "updateContentTypeDefinitions", "contentTypeDefinition", input, Boolean.class, "java", ContentTypeDefinitionVO.class);	    	
+	    	Boolean success = (Boolean)invokeOperation(targetEndpointAddress, "updateContentTypeDefinitions", "contentTypeDefinition", input, new Class[]{Boolean.class}, "java", new Class[]{ContentTypeDefinitionVO.class});	    	
 	    	//Boolean success = (Boolean)invokeOperation(targetEndpointAddress, "updateContentTypeDefinitions", "contentTypeDefinition", contentTypeDefinitionVOList, Boolean.class, "java", ContentTypeDefinitionVO.class);	    	
 	    	//Boolean success = (Boolean)invokeOperation(targetEndpointAddress, "updateContentTypeDefinitions", "contentTypeDefinition", contentTypeDefinitionVOList.get(0), Boolean.class, "java");	    	
     	}
@@ -601,7 +610,7 @@ public class ViewDeploymentSynchronizeServersAction extends InfoGlueAbstractActi
     	
     	if(this.synchronizationMethod == null || this.synchronizationMethod.equalsIgnoreCase("pull"))
     	{
-	    	Object[] categoryVOArray = (Object[])invokeOperation(targetEndpointAddress, "getAllActiveCategories", "category", null, CategoryVO.class, "infoglue");
+	    	Object[] categoryVOArray = (Object[])invokeOperation(targetEndpointAddress, "getAllActiveCategories", "category", null, new Class[]{CategoryVO.class}, "infoglue");
 	    	List remoteCategoryVOList = Arrays.asList(categoryVOArray);
 		    Collections.sort(remoteCategoryVOList, new ReflectionComparator("name"));
 		    //System.out.println("remoteCategoryVOList:" + remoteCategoryVOList.size());
@@ -626,7 +635,7 @@ public class ViewDeploymentSynchronizeServersAction extends InfoGlueAbstractActi
 	    	input.put("categoryVOList", allLocalCategories);
 	    	input.put("requestMap", requestMap);
 	    	
-	    	Boolean success = (Boolean)invokeOperation(targetEndpointAddress, "updateCategories", "category", input, Boolean.class, "java", CategoryVO.class);	    	    		
+	    	Boolean success = (Boolean)invokeOperation(targetEndpointAddress, "updateCategories", "category", input, new Class[]{Boolean.class}, "java", new Class[]{CategoryVO.class});	    	    		
     	}
     	
 	    return doInput();
@@ -641,7 +650,7 @@ public class ViewDeploymentSynchronizeServersAction extends InfoGlueAbstractActi
     	
     	if(this.synchronizationMethod == null || this.synchronizationMethod.equalsIgnoreCase("pull"))
     	{
-	    	Object[] workflowDefinitionVOArray = (Object[])invokeOperation(targetEndpointAddress, "getWorkflowDefinitions", "workflowDefinition", null, WorkflowDefinitionVO.class, "infoglue");
+	    	Object[] workflowDefinitionVOArray = (Object[])invokeOperation(targetEndpointAddress, "getWorkflowDefinitions", "workflowDefinition", null, new Class[]{WorkflowDefinitionVO.class}, "infoglue");
 	    	List remoteWorkflowDefinitionVOList = Arrays.asList(workflowDefinitionVOArray);
 		    Collections.sort(remoteWorkflowDefinitionVOList, new ReflectionComparator("name"));
 	
@@ -680,7 +689,7 @@ public class ViewDeploymentSynchronizeServersAction extends InfoGlueAbstractActi
 	    	input.put("workflowDefinitionVOList", workflowDefinitionVOList);
 	    	input.put("requestMap", requestMap);
 	    	
-	    	Boolean success = (Boolean)invokeOperation(targetEndpointAddress, "updateWorkflows", "workflow", input, Boolean.class, "java", WorkflowDefinitionVO.class);	    	    		
+	    	Boolean success = (Boolean)invokeOperation(targetEndpointAddress, "updateWorkflows", "workflow", input, new Class[]{Boolean.class}, "java", new Class[]{WorkflowDefinitionVO.class});	    	    		
     	}
     	
     	return doInput();
@@ -698,7 +707,7 @@ public class ViewDeploymentSynchronizeServersAction extends InfoGlueAbstractActi
 
     	if(this.synchronizationMethod == null || this.synchronizationMethod.equalsIgnoreCase("pull"))
     	{
-    		Object[] contentVOArray = (Object[])invokeOperation(targetEndpointAddress, "getComponents", "content", null, ContentVO.class, "infoglue");
+    		Object[] contentVOArray = (Object[])invokeOperation(targetEndpointAddress, "getComponents", "content", null, new Class[]{ContentVO.class}, "infoglue");
 	    	List remoteContentVOList = Arrays.asList(contentVOArray);
 		    Collections.sort(remoteContentVOList, new ReflectionComparator("name"));
 	
@@ -905,7 +914,7 @@ public class ViewDeploymentSynchronizeServersAction extends InfoGlueAbstractActi
 	    	input.put("deviatingComponents", deviatingComponents);
 	    	//input.put("requestMap", requestMap);
 	    	
-	    	Boolean success = (Boolean)invokeOperation(targetEndpointAddress, "updateComponents", "content", input, Boolean.class, "java", ContentVO.class);	    	    		
+	    	Boolean success = (Boolean)invokeOperation(targetEndpointAddress, "updateComponents", "content", input, new Class[]{Boolean.class}, "java", new Class[]{ContentVO.class, ContentVersionVO.class});	    	    		
     	}
     	
     	return doInput();
@@ -1083,12 +1092,12 @@ public class ViewDeploymentSynchronizeServersAction extends InfoGlueAbstractActi
 	}
 	
 
-	protected Object invokeOperation(String endpointAddress, String operationName, String name, Object argument, Class returnType, String nameSpace) throws JspException
+	protected Object invokeOperation(String endpointAddress, String operationName, String name, Object argument, Class returnType[], String nameSpace) throws JspException
     {
 		return invokeOperation(endpointAddress, operationName, name, argument, returnType, nameSpace, null);
     }
 	
-	protected Object invokeOperation(String endpointAddress, String operationName, String name, Object argument, Class returnType, String nameSpace, Class extraClassInfo) throws JspException
+	protected Object invokeOperation(String endpointAddress, String operationName, String name, Object argument, Class[] returnType, String nameSpace, Class[] extraClassInfo) throws JspException
     {
 		Object result = null;
 		
@@ -1101,7 +1110,8 @@ public class ViewDeploymentSynchronizeServersAction extends InfoGlueAbstractActi
             ws.setTargetEndpointAddress(endpointAddress);
             ws.setOperationName(operationName);
             //ws.setReturnType(ContentVersionVO.class, new QName(nameSpace, ws.getClassName(ContentVersionVO.class)));
-            ws.setReturnType(returnType, new QName(nameSpace, ws.getClassName(returnType)));
+            for(int i=0; i<returnType.length; i++)
+            	ws.setReturnType(returnType[i], new QName(nameSpace, ws.getClassName(returnType[i])));
             
             if(argument != null)
             {

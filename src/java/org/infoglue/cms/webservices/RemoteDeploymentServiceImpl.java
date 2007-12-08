@@ -647,9 +647,15 @@ public class RemoteDeploymentServiceImpl extends RemoteInfoGlueService
 				ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentVO.getId(), languageVO.getId());
 				if(contentVersionVO != null)
 				{
+					contentVO.setContentVersion(contentVersionVO);
 					contentVO.setVersions(new String[]{contentVersionVO.getVersionValue()});
 				}
+				else
+				{
+					contentVOListIterator.remove();
+				}
 				
+				//System.out.println("Versions on remote:" + contentVO.getContentVersion());
 				contentVO.setFullPath(fullPath);
 			}
         }
@@ -658,9 +664,7 @@ public class RemoteDeploymentServiceImpl extends RemoteInfoGlueService
             logger.error("En error occurred when we tried to get the contents:" + t.getMessage(), t);
         }
         
-	    Collections.sort(contentVOList, Collections.reverseOrder(new ReflectionComparator("modifiedDateTime")));
-        
-        return contentVOList;
+	    return contentVOList;
     }
 
 	/**

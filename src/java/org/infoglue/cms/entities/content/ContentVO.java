@@ -58,6 +58,7 @@ public class ContentVO implements BaseEntityVO
   	private String creatorName;
   	private String fullPath = null; //Can well be null... used in some views only
   	private String[] versions = new String[0]; //Can well be null... used in some views only
+  	private ContentVersionVO contentVersionVO; //= new ArrayList(); //Can well be null... used in some views only and must be manually populated
   
   	private static SimpleTimeZone stmz = new SimpleTimeZone(-8 * 60 * 60 * 1000, "GMT");
     
@@ -282,6 +283,16 @@ public class ContentVO implements BaseEntityVO
 	public String[] getVersions()
 	{
 		return this.versions;
+	}
+
+	public ContentVersionVO getContentVersion()
+	{
+		return contentVersionVO;
+	}
+
+	public void setContentVersion(ContentVersionVO contentVersionVO)
+	{
+		this.contentVersionVO = contentVersionVO;
 	}
 }
         

@@ -389,12 +389,17 @@
 				<input type="hidden" name="deploymentServerIndex" value="$deploymentServerIndex"/>
 				<input type="hidden" name="synchronizationMethod" value="$synchronizationMethod"/>		
 			
-				<h3>Components that deviates</h3>
+				<table cellpadding="0" cellspacing="0" border="0" width="100%">
+				<tr><td colspan="3"><h3>Components that deviates or are missing</h3></td></tr>
 				#set($indexMissingContents = 0)
 				#foreach($deviatingContent in $deviatingContents)
 					#if($synchronizationMethod == 'pull')
 						#if(!$deviatingContent.localVersion)
-							<input type="checkbox" name="missingContentId" value="$deviatingContent.remoteVersion.id"/> Missing local version of $deviatingContent.remoteVersion.name ($deviatingContent.remoteVersion.fullPath)<br/> 
+						  <tr>
+							<td width="80%"><input type="checkbox" name="missingContentId" value="$deviatingContent.remoteVersion.id"/> Missing local version of $deviatingContent.remoteVersion.name ($deviatingContent.remoteVersion.fullPath)</td>
+							<td>$formatter.formatDate($!deviatingContent.remoteVersion.contentVersion.modifiedDateTime, "yyyy-MM-dd"))</td> 
+							<td></td>
+						  </tr>
 						#else
 							#set($remoteVersions = $!converter.getListFromArray($!deviatingContent.remoteVersion.versions))
 							#set($localVersions = $!converter.getListFromArray($!deviatingContent.localVersion.versions))
@@ -412,8 +417,14 @@
 							#end
 							
 							#if("$value1" != "$value2")
-								<input type="checkbox" name="deviatingContentId" value="$deviatingContent.remoteVersion.id"/> $deviatingContent.remoteVersion.name - <a href="javascript:showDiff($deviatingContent.remoteVersion.id);">diff</a><br/>
-								<script type="text/javascript">
+							  <tr>
+								<td width="80%"><input type="checkbox" name="deviatingContentId" value="$deviatingContent.remoteVersion.id"/> $deviatingContent.remoteVersion.name</td>
+								<td>$formatter.formatDate($!deviatingContent.remoteVersion.contentVersion.modifiedDateTime, "yyyy-MM-dd")</td>
+								<td><a href="javascript:showDiff($deviatingContent.remoteVersion.id);">diff</a>
+							  </tr>
+							  <tr>
+							    <td colspan="3">
+							    <script type="text/javascript">
 								<!--
 								var value1 = "$value1";
 								var value2 = "$value2";
@@ -423,13 +434,19 @@
 								document.write("<div id='$deviatingContent.remoteVersion.id' style='display:none; background-color: #FFF; border: 1px solid #333; padding: 5px; height: 200px; overflow: auto;'>" + diffString(value2, value1) + "</div>");
 								-->
 								</script>
+								</td>
+							  </tr>
 							#else
 								##Exakt compare: $deviatingContent.remoteVersion.name<br/> 
 							#end
 						#end
 					#else
 						#if(!$deviatingContent.remoteVersion)
-							<input type="checkbox" name="missingContentId" value="$deviatingContent.localVersion.id"/> Missing remote version of $deviatingContent.localVersion.name ($deviatingContent.localVersion.fullPath)<br/> 
+						  <tr>
+							<td width="80%"><input type="checkbox" name="missingContentId" value="$deviatingContent.localVersion.id"/> Missing remote version of $deviatingContent.localVersion.name ($deviatingContent.localVersion.fullPath)
+							<td>$formatter.formatDate($!deviatingContent.localVersion.contentVersion.modifiedDateTime, "yyyy-MM-dd"))</td>
+							<td>ssss</td> 
+						  </tr>
 						#else
 							#set($remoteVersions = $!converter.getListFromArray($!deviatingContent.remoteVersion.versions))
 							#set($localVersions = $!converter.getListFromArray($!deviatingContent.localVersion.versions))
@@ -447,7 +464,13 @@
 							#end
 							
 							#if("$value1" != "$value2")
-								<input type="checkbox" name="deviatingContentId" value="$deviatingContent.localVersion.id"/> $deviatingContent.localVersion.name - <a href="javascript:showDiff($deviatingContent.localVersion.id);">diff</a><br/>
+						      <tr>
+								<td width="80%"><input type="checkbox" name="deviatingContentId" value="$deviatingContent.localVersion.id"/> $deviatingContent.localVersion.name</td>
+								<td><a href="javascript:showDiff($deviatingContent.localVersion.id);">diff</a></td>
+								<td>ssss</td>
+							  </tr>
+							  <tr>
+							    <td colspan="3">
 								<script type="text/javascript">
 								<!--
 								var value1 = "$value2";
@@ -458,6 +481,8 @@
 								document.write("<div id='$deviatingContent.localVersion.id' style='display:none; background-color: #FFF; border: 1px solid #333; padding: 5px; height: 200px; overflow: auto;'>" + diffString(value2, value1) + "</div>");
 								-->
 								</script>
+								</td>
+							  </tr>
 							#else
 								##Exakt compare: $deviatingContent.localVersion.name<br/> 
 							#end
@@ -469,8 +494,8 @@
 				#if($deviatingContents.size() == 0)
 					<li class="normalitem">No missing contents</li>
 				#end
-				<br/>
-				<input type="image" src="$ui.getString("images.contenttool.buttons.next")" width="50" height="25">
+				<tr><td colspan="3"><input type="image" src="$ui.getString("images.contenttool.buttons.next")" width="50" height="25"></td></tr>
+				</table>
 			</form>
 			<script type="text/javascript">
 				if(activateTabId == "undefined")

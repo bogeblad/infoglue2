@@ -296,26 +296,32 @@ public class DynamicWebservice
 	/**
 	 * 
 	 */
-	public void addArgument(final String name, final Collection value, final Class objectClass)
+	public void addArgument(final String name, final Collection value, final Class[] objectClass)
 	{
 		assertNameNotNull(name);
 
 		logger.debug("addArgument=[" + name + "," + value + "] (Collection)");
-		this.mappings.put(objectClass, new QName("infoglue", getClassName(objectClass)));
-		mappingForClass(objectClass, "infoglue");
+		for(int i=0; i<objectClass.length; i++)
+		{
+			this.mappings.put(objectClass[i], new QName("infoglue", getClassName(objectClass[i])));
+			mappingForClass(objectClass[i], "infoglue");
+		}
 		addArgument(name, XMLType.SOAP_ARRAY, serializer.serializeCollection(value).toArray());
 	}
 
 	/**
 	 * 
 	 */
-	public void addArgument(final String name, final Map value, final Class objectClass)
+	public void addArgument(final String name, final Map value, final Class[] objectClass)
 	{
 		assertNameNotNull(name);
 
 		logger.debug("addArgument=[" + name + "," + value + "] (Map)");
-		this.mappings.put(objectClass, new QName("infoglue", getClassName(objectClass)));
-		mappingForClass(objectClass, "infoglue");
+		for(int i=0; i<objectClass.length; i++)
+		{
+			this.mappings.put(objectClass[i], new QName("infoglue", getClassName(objectClass[i])));
+			mappingForClass(objectClass[i], "infoglue");
+		}
 		addArgument(name, XMLType.SOAP_ARRAY, serializer.serializeMap(value).toArray());
 	}
 	
