@@ -1620,6 +1620,8 @@ public class ContentController extends BaseController
 	{
 		ContentVO content = getRootContent(repositoryId, db).getValueObject();
 		final String paths[] = path.split("/");
+		if(path.equals(""))
+			return content;
 		
 		for(int i=0; i<paths.length; ++i) 
 		{
