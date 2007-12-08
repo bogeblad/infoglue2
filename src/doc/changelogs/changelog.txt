@@ -86,7 +86,10 @@ Abbreviated Changelog from 2.6.0 Final
 - Improved the password-changed mail template a bit.
 - Added a new method to security framework which is used for resetting anonymous password. 
 - Forced update of anonymous user whenever a server node property is changed. This is to secure that it stays plain or encrypted depending on the protection setting.
-
+- Worked on a push-solution to deployment as well so one can choose pull or push.
+- Fixed bug in which templates a user are allowed to see
+- Complemented with personalAuthorizationCache so a logout in the CMS does not clear unneccesairy caches.
+- Improved insert image dialog in FCKEditor so a doubleclick on an image directly chooses it.
 
 -------------------------------------------------------------------------------------
 - InfoGlue 2.6.0 Final
