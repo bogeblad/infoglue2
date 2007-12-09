@@ -175,7 +175,7 @@
 			#foreach($deviatingContentType in $deviatingContentTypes)
 				#if((!$deviatingContentType.localVersion && $synchronizationMethod == 'pull') || (!$deviatingContentType.remoteVersion && $synchronizationMethod == 'push'))
 					#if($synchronizationMethod == 'pull')
-						<input type="checkbox" name="missingContentTypeName" value="$deviatingContentType.remoteVersion.name"/> No local version of $deviatingContentType.remoteVersion.name <a href="javascript:showDiff('$deviatingContentType.remoteVersion.name');">diff</a><br/> 
+						<input type="checkbox" name="missingContentTypeName" value="$deviatingContentType.remoteVersion.name"/> No local version of $deviatingContentType.remoteVersion.name <a href="javascript:showDiff('$deviatingContentType.remoteVersion.name');"><img src="images/diff.gif" alt="Compare" border="0"/></a><br/> 
 					
 						#set($value1 = "$!formatter.escapeExtendedHTML($!formatter.cleanForJavascriptStrings($!deviatingContentType.remoteVersion.schemaValue, 'iglb'))")
 						#set($value2 = "$!formatter.escapeExtendedHTML($!formatter.cleanForJavascriptStrings('', 'iglb'))")
@@ -191,7 +191,7 @@
 						-->
 						</script>
 					#else
-						<input type="checkbox" name="missingContentTypeName" value="$deviatingContentType.localVersion.name"/> No remote version of $deviatingContentType.localVersion.name <a href="javascript:showDiff('$deviatingContentType.localVersion.name');">diff</a><br/> 
+						<input type="checkbox" name="missingContentTypeName" value="$deviatingContentType.localVersion.name"/> No remote version of $deviatingContentType.localVersion.name <a href="javascript:showDiff('$deviatingContentType.localVersion.name');"><img src="images/diff.gif" alt="Compare" border="0"/></a><br/> 
 						
 						#set($value1 = "$!formatter.escapeExtendedHTML($!formatter.cleanForJavascriptStrings($!deviatingContentType.localVersion.schemaValue, 'iglb'))")
 						#set($value2 = "$!formatter.escapeExtendedHTML($!formatter.cleanForJavascriptStrings('', 'iglb'))")
@@ -213,9 +213,9 @@
 	
 					#if($value1 != $value2)
 						#if($synchronizationMethod == 'pull')
-							<input type="checkbox" id="deviatedContentTypeName_$deviatingContentType.remoteVersion.name" name="deviatedContentTypeName" value="$deviatingContentType.remoteVersion.name"/> $deviatingContentType.remoteVersion.name <a href="javascript:showDiff('$deviatingContentType.remoteVersion.name');">diff</a><br/> 
+							<input type="checkbox" id="deviatedContentTypeName_$deviatingContentType.remoteVersion.name" name="deviatedContentTypeName" value="$deviatingContentType.remoteVersion.name"/> $deviatingContentType.remoteVersion.name <a href="javascript:showDiff('$deviatingContentType.remoteVersion.name');"><img src="images/diff.gif" alt="Compare" border="0"/></a><br/> 
 						#else
-							<input type="checkbox" id="deviatedContentTypeName_$deviatingContentType.remoteVersion.name" name="deviatedContentTypeName" value="$deviatingContentType.localVersion.name"/> $deviatingContentType.localVersion.name <a href="javascript:showDiff('$deviatingContentType.localVersion.name');">diff</a><br/> 
+							<input type="checkbox" id="deviatedContentTypeName_$deviatingContentType.remoteVersion.name" name="deviatedContentTypeName" value="$deviatingContentType.localVersion.name"/> $deviatingContentType.localVersion.name <a href="javascript:showDiff('$deviatingContentType.localVersion.name');"><img src="images/diff.gif" alt="Compare" border="0"/></a><br/> 
 						#end
 						<script type="text/javascript">
 						<!--
@@ -371,19 +371,35 @@
 					#if($synchronizationMethod == 'pull')
 						#if(!$deviatingWorkflow.localVersion)
 						  <tr $class>
-							<td width="80%"><input type="checkbox" name="missingWorkflowDefinitionName" value="$deviatingWorkflow.remoteVersion.name"/> Missing local version of $deviatingWorkflow.remoteVersion.name</td>
-							<td>&nbsp;</td>
+							<td><input type="checkbox" name="missingWorkflowDefinitionName" value="$deviatingWorkflow.remoteVersion.name"/> Missing local version of $deviatingWorkflow.remoteVersion.name</td>
+							<td width="24">&nbsp;</td>
 						  </tr>
 						  #set($indexMissingWorkflows = $indexMissingWorkflows + 1)
 						#else
-							#set($value1 = "$formatter.cleanForJavascriptStrings($deviatingWorkflow.remoteVersion.value)")
-							#set($value2 = "$formatter.cleanForJavascriptStrings($deviatingWorkflow.localVersion.value)")
+							#set($value1 = "$!formatter.escapeExtendedHTML($!formatter.cleanForJavascriptStrings($deviatingWorkflow.remoteVersion.value, 'iglb'))")
+							#set($value2 = "$!formatter.escapeExtendedHTML($!formatter.cleanForJavascriptStrings($deviatingWorkflow.localVersion.value, 'iglb'))")
+							##set($value1 = "$formatter.cleanForJavascriptStrings($deviatingWorkflow.remoteVersion.value)")
+							##set($value2 = "$formatter.cleanForJavascriptStrings($deviatingWorkflow.localVersion.value)")
 			
 							#if($value1 != $value2)
 							  <tr $class>
-							    <td width="80%"><input type="checkbox" name="missingWorkflowDefinitionName" value="$deviatingWorkflow.remoteVersion.name"/> $deviatingWorkflow.remoteVersion.name is different in local system</td> 
-								<td>&nbsp;</td>
+							    <td><input type="checkbox" name="missingWorkflowDefinitionName" value="$deviatingWorkflow.remoteVersion.name"/> $deviatingWorkflow.remoteVersion.name is different in local system</td> 
+								<td width="24"><a href="javascript:showDiff($deviatingWorkflow.remoteVersion.id);"><img src="images/diff.gif" alt="Compare" border="0"/></a></td>
 						  	  </tr>
+							  <tr $class>
+							    <td colspan="2">
+							    <script type="text/javascript">
+								<!--
+								var value1 = "$value1";
+								var value2 = "$value2";
+								value1 = value1.replace(/iglb/g, "<br/>").replace(/CDATA\[/g, "CDATA[<br/>");
+								value2 = value2.replace(/iglb/g, "<br/>").replace(/CDATA\[/g, "CDATA[<br/>");
+								
+								document.write("<div id='$deviatingWorkflow.remoteVersion.id' style='display:none; background-color: #FFF; border: 1px solid #333; padding: 5px; height: 200px; overflow: auto;'>" + diffString(value2, value1) + "</div>");
+								-->
+								</script>
+								</td>
+							  </tr>
 						   	  #set($indexMissingWorkflows = $indexMissingWorkflows + 1)
 							#else
 								##Exakt compare: $deviatingWorkflow.remoteVersion.name<br/> 
@@ -392,19 +408,35 @@
 					#else
 						#if(!$deviatingWorkflow.remoteVersion)
 							<tr $class>
-							  <td width="80%"><input type="checkbox" name="missingWorkflowDefinitionName" value="$deviatingWorkflow.localVersion.name"/> Missing remote version of $deviatingWorkflow.localVersion.name</td> 
-							  <td>&nbsp;</td>
+							  <td><input type="checkbox" name="missingWorkflowDefinitionName" value="$deviatingWorkflow.localVersion.name"/> Missing remote version of $deviatingWorkflow.localVersion.name</td> 
+							  <td width="24">&nbsp;</td>
 						  	</tr>
 							#set($indexMissingWorkflows = $indexMissingWorkflows + 1)
 						#else
-							#set($value1 = "$formatter.cleanForJavascriptStrings($deviatingWorkflow.remoteVersion.value)")
-							#set($value2 = "$formatter.cleanForJavascriptStrings($deviatingWorkflow.localVersion.value)")
+							#set($value1 = "$!formatter.escapeExtendedHTML($!formatter.cleanForJavascriptStrings($deviatingWorkflow.remoteVersion.value, 'iglb'))")
+							#set($value2 = "$!formatter.escapeExtendedHTML($!formatter.cleanForJavascriptStrings($deviatingWorkflow.localVersion.value, 'iglb'))")
+							##set($value1 = "$formatter.cleanForJavascriptStrings($deviatingWorkflow.remoteVersion.value)")
+							##set($value2 = "$formatter.cleanForJavascriptStrings($deviatingWorkflow.localVersion.value)")
 			
 							#if($value1 != $value2)
 							  <tr $class>
-							    <td width="80%"><input type="checkbox" name="missingWorkflowDefinitionName" value="$deviatingWorkflow.localVersion.name"/> $deviatingWorkflow.localVersion.name is different in remote system</td> 
-								<td>&nbsp;</td>
+							    <td><input type="checkbox" name="missingWorkflowDefinitionName" value="$deviatingWorkflow.localVersion.name"/> $deviatingWorkflow.localVersion.name is different in remote system</td> 
+								<td width="24"><a href="javascript:showDiff($deviatingWorkflow.localVersion.id);"><img src="images/diff.gif" alt="Compare" border="0"/></a></td>
 						  	  </tr>
+  							  <tr $class>
+							    <td colspan="2">
+							    <script type="text/javascript">
+								<!--
+								var value1 = "$value1";
+								var value2 = "$value2";
+								value1 = value1.replace(/iglb/g, "<br/>").replace(/CDATA\[/g, "CDATA[<br/>");
+								value2 = value2.replace(/iglb/g, "<br/>").replace(/CDATA\[/g, "CDATA[<br/>");
+								
+								document.write("<div id='$deviatingWorkflow.localVersion.id' style='display:none; background-color: #FFF; border: 1px solid #333; padding: 5px; height: 200px; overflow: auto;'>" + diffString(value2, value1) + "</div>");
+								-->
+								</script>
+								</td>
+							  </tr>
 						  	  #set($indexMissingWorkflows = $indexMissingWorkflows + 1)
 							#else
 								##Exakt compare: $deviatingWorkflow.localVersion.name<br/> 
@@ -473,7 +505,7 @@
 							  <tr $class>
 								<td width="80%"><input type="checkbox" name="deviatingContentId" value="$deviatingContent.remoteVersion.id"/> $deviatingContent.remoteVersion.name</td>
 								<td>$formatter.formatDate($!deviatingContent.remoteVersion.contentVersion.modifiedDateTime, "yyyy-MM-dd")</td>
-								<td><a href="javascript:showDiff($deviatingContent.remoteVersion.id);">diff</a>
+								<td><a href="javascript:showDiff($deviatingContent.remoteVersion.id);"><img src="images/diff.gif" alt="Compare" border="0"/></a>
 							  </tr>
 							  <tr $class>
 							    <td colspan="3">
@@ -521,7 +553,7 @@
 							#if("$value1" != "$value2")
 						      <tr $class>
 								<td width="80%"><input type="checkbox" name="deviatingContentId" value="$deviatingContent.localVersion.id"/> $deviatingContent.localVersion.name</td>
-								<td><a href="javascript:showDiff($deviatingContent.localVersion.id);">diff</a></td>
+								<td><a href="javascript:showDiff($deviatingContent.localVersion.id);"><img src="images/diff.gif" alt="Compare" border="0"/></a></td>
 								<td>ssss</td>
 							  </tr>
 							  <tr $class>
