@@ -40,6 +40,11 @@
 		previousLiTabId = tabId + "Tab";
 	}
 	
+	function check(id)
+	{
+		document.getElementById(id).checked = true;
+	}
+	
 	var activateTabId = "undefined";
 -->
 </script>
@@ -123,6 +128,15 @@
 		display: none;
 		padding: 8px;
 		border: 1px solid #ccc;
+	}
+
+	tr.whiteRow
+	{
+		background-color : #FFFFFF;
+	}
+	tr.lightBlueRow
+	{
+		background-color : #E3ECF8;
 	}
 	
 -->
@@ -214,7 +228,7 @@
 						-->
 						</script>
 	
-						<ul style="padding-left: 50px;">
+						<ul style="padding-left: 30px;">
 						<li class="normalitemhead"><strong>Missing #if($synchronizationMethod == 'pull')local #else remote#end attributes</strong></li>
 						#if($synchronizationMethod == 'pull')
 							#set($deviatingAttributes = $this.getDeviatingAttributes($deviatingContentType.remoteVersion.schemaValue, $deviatingContentType.localVersion.schemaValue))
@@ -223,7 +237,7 @@
 						#end
 						#foreach($deviatingAttribute in $deviatingAttributes)
 							<li class="normalitem">
-								<input type="checkbox" name="${deviatingContentType.remoteVersion.name}_attributeName" value="$deviatingAttribute.name"/> $deviatingAttribute.name
+								<input type="checkbox" onclick="check('deviatedContentTypeName_$deviatingContentType.remoteVersion.name');" name="${deviatingContentType.remoteVersion.name}_attributeName" value="$deviatingAttribute.name"/> $deviatingAttribute.name
 							</li>
 						#end
 						#if($deviatingAttributes.size() == 0)
@@ -238,7 +252,7 @@
 						#end
 						#foreach($deviatingCategory in $deviatingCategories)
 							<li class="normalitem">
-								<input type="checkbox" name="${deviatingContentType.remoteVersion.name}_categoryName" value="$deviatingCategory.value"/> $deviatingCategory.value
+								<input type="checkbox" onclick="check('deviatedContentTypeName_$deviatingContentType.remoteVersion.name');" name="${deviatingContentType.remoteVersion.name}_categoryName" value="$deviatingCategory.value"/> $deviatingCategory.value
 							</li>
 						#end
 						#if($deviatingCategories.size() == 0)
@@ -253,7 +267,7 @@
 						#end
 						#foreach($deviatingAssetKey in $deviatingAssetKeys)
 							<li class="normalitem">
-								<input type="checkbox" name="${deviatingContentType.remoteVersion.name}_assetKey" value="$deviatingAssetKey.assetKey"/> $deviatingAssetKey.assetKey
+								<input type="checkbox" onclick="check('deviatedContentTypeName_$deviatingContentType.remoteVersion.name');" name="${deviatingContentType.remoteVersion.name}_assetKey" value="$deviatingAssetKey.assetKey"/> $deviatingAssetKey.assetKey
 							</li>
 						#end
 						#if($deviatingAssetKeys.size() == 0)
@@ -293,30 +307,42 @@
 				<input type="hidden" name="deploymentServerIndex" value="$deploymentServerIndex"/>
 				<input type="hidden" name="synchronizationMethod" value="$synchronizationMethod"/>		
 			
-				<h3>Categories that deviates</h3>
-				<ul>
+				<table cellpadding="0" cellspacing="0" border="0" width="100%">
+				<tr><td colspan="2"><h3>Categories that deviates or are missing</h3></td></tr>
 				#set($indexMissingCategories = 0)
 				#foreach($deviatingCategory in $deviatingCategoryVOList)
+					#set( $isOdd = $indexMissingCategories % 2)
+					#if($isOdd==0)
+						#set($class = "class='whiteRow'")
+					#else
+						#set($class = "class='lightBlueRow'")
+					#end
+					
 					#if($synchronizationMethod == 'pull')
 						#if(!$deviatingCategory.localVersion)
-							<input type="checkbox" name="${deviatingCategory.remoteVersion.categoryPath}_transfer" value="true"/> Missing local version of $deviatingCategory.remoteVersion.name ($deviatingCategory.remoteVersion.categoryPath)<br/> 
+						  <tr $class>
+							<td width="80%"><input type="checkbox" name="${deviatingCategory.remoteVersion.categoryPath}_transfer" value="true"/> Missing local version of $deviatingCategory.remoteVersion.name</td>
+							<td>$deviatingCategory.remoteVersion.categoryPath</td>
+						  </tr> 
 						#end
-			
 						#set($indexMissingCategories = $indexMissingCategories + 1)
 					#else
 						#if(!$deviatingCategory.remoteVersion)
-							<input type="checkbox" name="${deviatingCategory.localVersion.categoryPath}_transfer" value="true"/> Missing remote version of $deviatingCategory.localVersion.name ($deviatingCategory.localVersion.categoryPath)<br/> 
+						  <tr $class>
+							<td width="80%"><input type="checkbox" name="${deviatingCategory.localVersion.categoryPath}_transfer" value="true"/> Missing remote version of $deviatingCategory.localVersion.name</td>
+							<td>$deviatingCategory.localVersion.categoryPath</td>
+						  </tr> 
 						#end
 			
 						#set($indexMissingCategories = $indexMissingCategories + 1)
 					#end
 				#end
 				#if($deviatingCategoryVOList.size() == 0)
-					<li class="normalitem">No missing categories</li>
+					<tr><td colspan="3">No missing categories</td></tr>
 				#end
-				</ul>
-				<br/>
-				<input type="image" src="$ui.getString("images.contenttool.buttons.next")" width="50" height="25">
+				<tr><td colspan="3">&nbsp;</td></tr>
+				<tr><td colspan="3"><input type="image" src="$ui.getString("images.contenttool.buttons.next")" width="50" height="25"></td></tr>
+			  </table>
 			</form>
 			<script type="text/javascript">
 				if(activateTabId == "undefined")
@@ -332,48 +358,66 @@
 				<input type="hidden" name="deploymentServerIndex" value="$deploymentServerIndex"/>
 				<input type="hidden" name="synchronizationMethod" value="$synchronizationMethod"/>		
 			
-				<h3>Workflows that deviates</h3>
-				<ul>
+				<table cellpadding="0" cellspacing="0" border="0" width="100%">
+				<tr><td colspan="2"><h3>Workflows that deviates or are missing</h3></td></tr>
 				#set($indexMissingWorkflows = 0)
-				#foreach($deviatingWorkflow in $deviatingWorkflows)
+				#foreach($deviatingWorkflow in $deviatingWorkflows)				
+					#set( $isOdd = $indexMissingWorkflows % 2)
+					#if($isOdd==0)
+						#set($class = "class='whiteRow'")
+					#else
+						#set($class = "class='lightBlueRow'")
+					#end
 					#if($synchronizationMethod == 'pull')
 						#if(!$deviatingWorkflow.localVersion)
-							<input type="checkbox" name="missingWorkflowDefinitionName" value="$deviatingWorkflow.remoteVersion.name"/> Missing local version of $deviatingWorkflow.remoteVersion.name<br/> 
-							#set($indexMissingWorkflows = $indexMissingWorkflows + 1)
+						  <tr $class>
+							<td width="80%"><input type="checkbox" name="missingWorkflowDefinitionName" value="$deviatingWorkflow.remoteVersion.name"/> Missing local version of $deviatingWorkflow.remoteVersion.name</td>
+							<td>&nbsp;</td>
+						  </tr>
+						  #set($indexMissingWorkflows = $indexMissingWorkflows + 1)
 						#else
 							#set($value1 = "$formatter.cleanForJavascriptStrings($deviatingWorkflow.remoteVersion.value)")
 							#set($value2 = "$formatter.cleanForJavascriptStrings($deviatingWorkflow.localVersion.value)")
 			
 							#if($value1 != $value2)
-								<input type="checkbox" name="missingWorkflowDefinitionName" value="$deviatingWorkflow.remoteVersion.name"/> $deviatingWorkflow.remoteVersion.name is different in local system<br/> 
-								#set($indexMissingWorkflows = $indexMissingWorkflows + 1)
+							  <tr $class>
+							    <td width="80%"><input type="checkbox" name="missingWorkflowDefinitionName" value="$deviatingWorkflow.remoteVersion.name"/> $deviatingWorkflow.remoteVersion.name is different in local system</td> 
+								<td>&nbsp;</td>
+						  	  </tr>
+						   	  #set($indexMissingWorkflows = $indexMissingWorkflows + 1)
 							#else
 								##Exakt compare: $deviatingWorkflow.remoteVersion.name<br/> 
 							#end
 						#end
 					#else
 						#if(!$deviatingWorkflow.remoteVersion)
-							<input type="checkbox" name="missingWorkflowDefinitionName" value="$deviatingWorkflow.localVersion.name"/> Missing remote version of $deviatingWorkflow.localVersion.name<br/> 
+							<tr $class>
+							  <td width="80%"><input type="checkbox" name="missingWorkflowDefinitionName" value="$deviatingWorkflow.localVersion.name"/> Missing remote version of $deviatingWorkflow.localVersion.name</td> 
+							  <td>&nbsp;</td>
+						  	</tr>
 							#set($indexMissingWorkflows = $indexMissingWorkflows + 1)
 						#else
 							#set($value1 = "$formatter.cleanForJavascriptStrings($deviatingWorkflow.remoteVersion.value)")
 							#set($value2 = "$formatter.cleanForJavascriptStrings($deviatingWorkflow.localVersion.value)")
 			
 							#if($value1 != $value2)
-								<input type="checkbox" name="missingWorkflowDefinitionName" value="$deviatingWorkflow.localVersion.name"/> $deviatingWorkflow.localVersion.name is different in remote system<br/> 
-								#set($indexMissingWorkflows = $indexMissingWorkflows + 1)
+							  <tr $class>
+							    <td width="80%"><input type="checkbox" name="missingWorkflowDefinitionName" value="$deviatingWorkflow.localVersion.name"/> $deviatingWorkflow.localVersion.name is different in remote system</td> 
+								<td>&nbsp;</td>
+						  	  </tr>
+						  	  #set($indexMissingWorkflows = $indexMissingWorkflows + 1)
 							#else
 								##Exakt compare: $deviatingWorkflow.localVersion.name<br/> 
 							#end
 						#end		
 					#end
 				#end
-				#if($indexMissingWorkflows == 0)
-					<li class="normalitem">No missing workflows</li>
+				#if($indexMissingWorkflows.size() == 0)
+					<tr><td colspan="3">No missing workflows</td></tr>
 				#end
-				</ul>
-				<br/>
-				<input type="image" src="$ui.getString("images.contenttool.buttons.next")" width="50" height="25">
+				<tr><td colspan="3">&nbsp;</td></tr>
+				<tr><td colspan="3"><input type="image" src="$ui.getString("images.contenttool.buttons.next")" width="50" height="25"></td></tr>
+			  </table>
 			</form>
 			<script type="text/javascript">
 				if(activateTabId == "undefined")
@@ -392,14 +436,23 @@
 				<table cellpadding="0" cellspacing="0" border="0" width="100%">
 				<tr><td colspan="3"><h3>Components that deviates or are missing</h3></td></tr>
 				#set($indexMissingContents = 0)
+				#set( $rowCount = 0)
 				#foreach($deviatingContent in $deviatingContents)
+					#set( $isOdd = $rowCount % 2)
+					#if($isOdd==0)
+						#set($class = "class='whiteRow'")
+					#else
+						#set($class = "class='lightBlueRow'")
+					#end
+					
 					#if($synchronizationMethod == 'pull')
 						#if(!$deviatingContent.localVersion)
-						  <tr>
+						  <tr $class>
 							<td width="80%"><input type="checkbox" name="missingContentId" value="$deviatingContent.remoteVersion.id"/> Missing local version of $deviatingContent.remoteVersion.name ($deviatingContent.remoteVersion.fullPath)</td>
 							<td>$formatter.formatDate($!deviatingContent.remoteVersion.contentVersion.modifiedDateTime, "yyyy-MM-dd"))</td> 
 							<td></td>
 						  </tr>
+		 				  #set( $rowCount = $rowCount + 1)
 						#else
 							#set($remoteVersions = $!converter.getListFromArray($!deviatingContent.remoteVersion.versions))
 							#set($localVersions = $!converter.getListFromArray($!deviatingContent.localVersion.versions))
@@ -417,12 +470,12 @@
 							#end
 							
 							#if("$value1" != "$value2")
-							  <tr>
+							  <tr $class>
 								<td width="80%"><input type="checkbox" name="deviatingContentId" value="$deviatingContent.remoteVersion.id"/> $deviatingContent.remoteVersion.name</td>
 								<td>$formatter.formatDate($!deviatingContent.remoteVersion.contentVersion.modifiedDateTime, "yyyy-MM-dd")</td>
 								<td><a href="javascript:showDiff($deviatingContent.remoteVersion.id);">diff</a>
 							  </tr>
-							  <tr>
+							  <tr $class>
 							    <td colspan="3">
 							    <script type="text/javascript">
 								<!--
@@ -436,17 +489,19 @@
 								</script>
 								</td>
 							  </tr>
+			 				  #set( $rowCount = $rowCount + 1)
 							#else
 								##Exakt compare: $deviatingContent.remoteVersion.name<br/> 
 							#end
 						#end
 					#else
 						#if(!$deviatingContent.remoteVersion)
-						  <tr>
+						  <tr $class>
 							<td width="80%"><input type="checkbox" name="missingContentId" value="$deviatingContent.localVersion.id"/> Missing remote version of $deviatingContent.localVersion.name ($deviatingContent.localVersion.fullPath)
 							<td>$formatter.formatDate($!deviatingContent.localVersion.contentVersion.modifiedDateTime, "yyyy-MM-dd"))</td>
 							<td>ssss</td> 
 						  </tr>
+			 			  #set( $rowCount = $rowCount + 1)
 						#else
 							#set($remoteVersions = $!converter.getListFromArray($!deviatingContent.remoteVersion.versions))
 							#set($localVersions = $!converter.getListFromArray($!deviatingContent.localVersion.versions))
@@ -464,12 +519,12 @@
 							#end
 							
 							#if("$value1" != "$value2")
-						      <tr>
+						      <tr $class>
 								<td width="80%"><input type="checkbox" name="deviatingContentId" value="$deviatingContent.localVersion.id"/> $deviatingContent.localVersion.name</td>
 								<td><a href="javascript:showDiff($deviatingContent.localVersion.id);">diff</a></td>
 								<td>ssss</td>
 							  </tr>
-							  <tr>
+							  <tr $class>
 							    <td colspan="3">
 								<script type="text/javascript">
 								<!--
@@ -483,6 +538,7 @@
 								</script>
 								</td>
 							  </tr>
+			 				  #set( $rowCount = $rowCount + 1)
 							#else
 								##Exakt compare: $deviatingContent.localVersion.name<br/> 
 							#end
@@ -492,8 +548,9 @@
 					#set($indexMissingContents = $indexMissingContents + 1)
 				#end
 				#if($deviatingContents.size() == 0)
-					<li class="normalitem">No missing contents</li>
+					<tr><td colspan="3">No missing contents</td></tr>
 				#end
+				<tr><td colspan="3">&nbsp;</td></tr>
 				<tr><td colspan="3"><input type="image" src="$ui.getString("images.contenttool.buttons.next")" width="50" height="25"></td></tr>
 				</table>
 			</form>
