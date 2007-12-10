@@ -66,8 +66,12 @@ public class InfoGlueOSWorkflowInterceptor implements InfoGlueInterceptor
 	 * @throws ConstraintException
 	 * @throws SystemException
 	 */
-
 	public void intercept(InfoGluePrincipal infoGluePrincipal, InterceptionPointVO interceptionPointVO, Map extradata) throws ConstraintException, SystemException, Exception
+	{
+		intercept(infoGluePrincipal, interceptionPointVO, extradata, true);
+	}
+	
+	public void intercept(InfoGluePrincipal infoGluePrincipal, InterceptionPointVO interceptionPointVO, Map extradata, boolean allowCreatorAccess) throws ConstraintException, SystemException, Exception
 	{
 		logger.info("interceptionPointVO:" + interceptionPointVO.getName());
 		
@@ -257,8 +261,12 @@ public class InfoGlueOSWorkflowInterceptor implements InfoGlueInterceptor
 	 * @throws ConstraintException
 	 * @throws SystemException
 	 */
-
 	public void intercept(InfoGluePrincipal infoGluePrincipal, InterceptionPointVO interceptionPointVO, Map extradata, Database db) throws ConstraintException, SystemException, Exception
+	{
+		intercept(infoGluePrincipal, interceptionPointVO, extradata, true, db);
+	}
+	
+	public void intercept(InfoGluePrincipal infoGluePrincipal, InterceptionPointVO interceptionPointVO, Map extradata, boolean allowCreatorAccess, Database db) throws ConstraintException, SystemException, Exception
 	{
 		logger.info("interceptionPointVO:" + interceptionPointVO.getName());
 		

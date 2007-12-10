@@ -95,8 +95,12 @@ public abstract class BaseController
      * @throws Bug
      * @throws Exception
      */
-
     protected void intercept(Map hashMap, String InterceptionPointName, InfoGluePrincipal infogluePrincipal) throws ConstraintException, SystemException, Bug, Exception
+	{
+    	intercept(hashMap, InterceptionPointName, infogluePrincipal, true);
+	}
+	
+    protected void intercept(Map hashMap, String InterceptionPointName, InfoGluePrincipal infogluePrincipal, boolean allowCreatorAccess) throws ConstraintException, SystemException, Bug, Exception
 	{
 		InterceptionPointVO interceptionPointVO = InterceptionPointController.getController().getInterceptionPointVOWithName(InterceptionPointName);
     	
@@ -112,7 +116,7 @@ public abstract class BaseController
 			try
 			{
 				InfoGlueInterceptor infoGlueInterceptor = (InfoGlueInterceptor)Class.forName(interceptorVO.getClassName()).newInstance();
-				infoGlueInterceptor.intercept(infogluePrincipal, interceptionPointVO, hashMap);
+				infoGlueInterceptor.intercept(infogluePrincipal, interceptionPointVO, hashMap, allowCreatorAccess);
 			}
 			catch(ClassNotFoundException e)
 			{

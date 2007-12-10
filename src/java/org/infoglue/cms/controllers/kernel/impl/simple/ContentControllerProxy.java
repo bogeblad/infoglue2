@@ -161,7 +161,7 @@ public class ContentControllerProxy extends ContentController
 		    	
 		    	try
 		    	{
-		    	    intercept(hashMap, "Content.Read", infoGluePrincipal);
+		    	    intercept(hashMap, "Content.Read", infoGluePrincipal, false);
 		    	}
 		    	catch(Exception e)
 		    	{
@@ -195,7 +195,7 @@ public class ContentControllerProxy extends ContentController
 			{ 		
 				HashMap argument = (HashMap)argumentIterator.next(); 
 				Integer contentId = new Integer((String)argument.get("contentId"));
-				logger.info("Getting the content with Id:" + contentId);
+				//logger.info("Getting the content with Id:" + contentId);
 				try
 				{
 				    contents.add(this.getACContentVOWithId(infoGluePrincipal, contentId));
@@ -222,7 +222,7 @@ public class ContentControllerProxy extends ContentController
 		    	
 		    	try
 		    	{
-		    	    intercept(hashMap, "Content.Read", infoGluePrincipal);
+		    	    intercept(hashMap, "Content.Read", infoGluePrincipal, false);
 		    	}
 		    	catch(Exception e)
 		    	{

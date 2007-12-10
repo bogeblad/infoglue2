@@ -55,6 +55,11 @@ public class InfoGlueCommonAccessRightsInterceptor implements InfoGlueIntercepto
 {
     private final static Logger logger = Logger.getLogger(InfoGlueCommonAccessRightsInterceptor.class.getName());
 
+	public void intercept(InfoGluePrincipal infoGluePrincipal, InterceptionPointVO interceptionPointVO, Map extradata) throws ConstraintException, SystemException, Exception
+	{
+		intercept(infoGluePrincipal, interceptionPointVO, extradata, true);
+	}
+	
 	/**
 	 * This method will be called when a interceptionPoint is reached.
 	 * 
@@ -64,7 +69,7 @@ public class InfoGlueCommonAccessRightsInterceptor implements InfoGlueIntercepto
 	 * @throws SystemException
 	 */
 
-	public void intercept(InfoGluePrincipal infoGluePrincipal, InterceptionPointVO interceptionPointVO, Map extradata) throws ConstraintException, SystemException, Exception
+	public void intercept(InfoGluePrincipal infoGluePrincipal, InterceptionPointVO interceptionPointVO, Map extradata, boolean allowCreatorAccess) throws ConstraintException, SystemException, Exception
 	{
 		logger.info("interceptionPointVO:" + interceptionPointVO.getName());
 		
@@ -74,7 +79,7 @@ public class InfoGlueCommonAccessRightsInterceptor implements InfoGlueIntercepto
 		{
 			Integer contentId = (Integer)extradata.get("contentId");
 			ContentVO contentVO = ContentControllerProxy.getController().getContentVOWithId(contentId);
-			if(!contentVO.getCreatorName().equalsIgnoreCase(infoGluePrincipal.getName()))
+			if(!allowCreatorAccess || !contentVO.getCreatorName().equalsIgnoreCase(infoGluePrincipal.getName()))
 			{
 				Integer protectedContentId = ContentControllerProxy.getController().getProtectedContentId(contentId);
 				if(protectedContentId != null && !AccessRightController.getController().getIsPrincipalAuthorized(infoGluePrincipal, "Content.Read", protectedContentId.toString()))
@@ -85,7 +90,7 @@ public class InfoGlueCommonAccessRightsInterceptor implements InfoGlueIntercepto
 		{
 			Integer contentId = (Integer)extradata.get("contentId");
 			ContentVO contentVO = ContentControllerProxy.getController().getContentVOWithId(contentId);
-			if(!contentVO.getCreatorName().equalsIgnoreCase(infoGluePrincipal.getName()))
+			if(!allowCreatorAccess || !contentVO.getCreatorName().equalsIgnoreCase(infoGluePrincipal.getName()))
 			{
 				Integer protectedContentId = ContentControllerProxy.getController().getProtectedContentId(contentId);
 				if(protectedContentId != null && !AccessRightController.getController().getIsPrincipalAuthorized(infoGluePrincipal, "Content.Write", protectedContentId.toString()))
@@ -96,7 +101,7 @@ public class InfoGlueCommonAccessRightsInterceptor implements InfoGlueIntercepto
 		{
 			Integer contentId = (Integer)extradata.get("contentId");
 			ContentVO contentVO = ContentControllerProxy.getController().getContentVOWithId(contentId);
-			if(!contentVO.getCreatorName().equalsIgnoreCase(infoGluePrincipal.getName()))
+			if(!allowCreatorAccess || !contentVO.getCreatorName().equalsIgnoreCase(infoGluePrincipal.getName()))
 			{
 				Integer protectedContentId = ContentControllerProxy.getController().getProtectedContentId(contentId);
 				if(protectedContentId != null && !AccessRightController.getController().getIsPrincipalAuthorized(infoGluePrincipal, "Content.Create", protectedContentId.toString()))
@@ -107,7 +112,7 @@ public class InfoGlueCommonAccessRightsInterceptor implements InfoGlueIntercepto
 		{
 			Integer contentId = (Integer)extradata.get("contentId");
 			ContentVO contentVO = ContentControllerProxy.getController().getContentVOWithId(contentId);
-			if(!contentVO.getCreatorName().equalsIgnoreCase(infoGluePrincipal.getName()))
+			if(!allowCreatorAccess || !contentVO.getCreatorName().equalsIgnoreCase(infoGluePrincipal.getName()))
 			{
 				Integer protectedContentId = ContentControllerProxy.getController().getProtectedContentId(contentId);
 				if(protectedContentId != null && !AccessRightController.getController().getIsPrincipalAuthorized(infoGluePrincipal, "Content.Delete", protectedContentId.toString()))
@@ -118,7 +123,7 @@ public class InfoGlueCommonAccessRightsInterceptor implements InfoGlueIntercepto
 		{
 			Integer contentId = (Integer)extradata.get("contentId");
 			ContentVO contentVO = ContentControllerProxy.getController().getContentVOWithId(contentId);
-			if(!contentVO.getCreatorName().equalsIgnoreCase(infoGluePrincipal.getName()))
+			if(!allowCreatorAccess || !contentVO.getCreatorName().equalsIgnoreCase(infoGluePrincipal.getName()))
 			{
 				Integer protectedContentId = ContentControllerProxy.getController().getProtectedContentId(contentId);
 				if(protectedContentId != null && !AccessRightController.getController().getIsPrincipalAuthorized(infoGluePrincipal, "Content.Move", protectedContentId.toString()))
@@ -129,7 +134,7 @@ public class InfoGlueCommonAccessRightsInterceptor implements InfoGlueIntercepto
 		{
 			Integer contentId = (Integer)extradata.get("contentId");
 			ContentVO contentVO = ContentControllerProxy.getController().getContentVOWithId(contentId);
-			if(!contentVO.getCreatorName().equalsIgnoreCase(infoGluePrincipal.getName()))
+			if(!allowCreatorAccess || !contentVO.getCreatorName().equalsIgnoreCase(infoGluePrincipal.getName()))
 			{
 				Integer protectedContentId = ContentControllerProxy.getController().getProtectedContentId(contentId);
 				if(ContentVersionControllerProxy.getController().getIsContentProtected(contentId, true) && !AccessRightController.getController().getIsPrincipalAuthorized(infoGluePrincipal, "Content.CreateVersion", protectedContentId.toString()))
@@ -140,7 +145,7 @@ public class InfoGlueCommonAccessRightsInterceptor implements InfoGlueIntercepto
 		{
 			Integer contentId = (Integer)extradata.get("contentId");
 			ContentVO contentVO = ContentControllerProxy.getController().getContentVOWithId(contentId);
-			if(!contentVO.getCreatorName().equalsIgnoreCase(infoGluePrincipal.getName()))
+			if(!allowCreatorAccess || !contentVO.getCreatorName().equalsIgnoreCase(infoGluePrincipal.getName()))
 			{
 				Integer protectedContentId = ContentControllerProxy.getController().getProtectedContentId(contentId);
 				if(protectedContentId != null && !AccessRightController.getController().getIsPrincipalAuthorized(infoGluePrincipal, "Content.SubmitToPublish", protectedContentId.toString()))
@@ -151,7 +156,7 @@ public class InfoGlueCommonAccessRightsInterceptor implements InfoGlueIntercepto
 		{
 			Integer contentId = (Integer)extradata.get("contentId");
 			ContentVO contentVO = ContentControllerProxy.getController().getContentVOWithId(contentId);
-			if(!contentVO.getCreatorName().equalsIgnoreCase(infoGluePrincipal.getName()))
+			if(!allowCreatorAccess || !contentVO.getCreatorName().equalsIgnoreCase(infoGluePrincipal.getName()))
 			{
 				Integer protectedContentId = ContentControllerProxy.getController().getProtectedContentId(contentId);
 				if(protectedContentId != null && !AccessRightController.getController().getIsPrincipalAuthorized(infoGluePrincipal, "Content.ChangeAccessRights", protectedContentId.toString()))
@@ -162,7 +167,7 @@ public class InfoGlueCommonAccessRightsInterceptor implements InfoGlueIntercepto
 		{
 			Integer contentVersionId = (Integer)extradata.get("contentVersionId");
 			ContentVersionVO contentVersionVO = ContentVersionControllerProxy.getController().getContentVersionVOWithId(contentVersionId);
-			if(!contentVersionVO.getVersionModifier().equalsIgnoreCase(infoGluePrincipal.getName()))
+			if(!allowCreatorAccess || !contentVersionVO.getVersionModifier().equalsIgnoreCase(infoGluePrincipal.getName()))
 			{	
 				if(ContentVersionControllerProxy.getController().getIsContentProtected(contentVersionVO.getContentId(), false) && !AccessRightController.getController().getIsPrincipalAuthorized(infoGluePrincipal, "ContentVersion.Read", contentVersionId.toString()))
 				{
@@ -180,7 +185,7 @@ public class InfoGlueCommonAccessRightsInterceptor implements InfoGlueIntercepto
 		{
 			Integer contentVersionId = (Integer)extradata.get("contentVersionId");
 			ContentVersionVO contentVersionVO = ContentVersionControllerProxy.getController().getContentVersionVOWithId(contentVersionId);
-			if(!contentVersionVO.getVersionModifier().equalsIgnoreCase(infoGluePrincipal.getName()))
+			if(!allowCreatorAccess || !contentVersionVO.getVersionModifier().equalsIgnoreCase(infoGluePrincipal.getName()))
 			{	
 				if(ContentVersionControllerProxy.getController().getIsContentProtected(contentVersionVO.getContentId(), false) && !AccessRightController.getController().getIsPrincipalAuthorized(infoGluePrincipal, "ContentVersion.Write", contentVersionId.toString()))
 				{
@@ -198,7 +203,7 @@ public class InfoGlueCommonAccessRightsInterceptor implements InfoGlueIntercepto
 		{
 			Integer contentVersionId = (Integer)extradata.get("contentVersionId");
 			ContentVersionVO contentVersionVO = ContentVersionControllerProxy.getController().getContentVersionVOWithId(contentVersionId);
-			if(!contentVersionVO.getVersionModifier().equalsIgnoreCase(infoGluePrincipal.getName()))
+			if(!allowCreatorAccess || !contentVersionVO.getVersionModifier().equalsIgnoreCase(infoGluePrincipal.getName()))
 			{	
 				if(ContentVersionControllerProxy.getController().getIsContentProtected(contentVersionVO.getContentId(), false) && !AccessRightController.getController().getIsPrincipalAuthorized(infoGluePrincipal, "ContentVersion.Delete", contentVersionId.toString()))
 					ceb.add(new AccessConstraintException("ContentVersion.contentVersionId", "1003"));
@@ -208,7 +213,7 @@ public class InfoGlueCommonAccessRightsInterceptor implements InfoGlueIntercepto
 		{
 			Integer siteNodeVersionId = (Integer)extradata.get("siteNodeVersionId");
 			SiteNodeVersionVO siteNodeVersionVO = SiteNodeVersionController.getController().getSiteNodeVersionVOWithId(siteNodeVersionId);
-			if(!siteNodeVersionVO.getVersionModifier().equalsIgnoreCase(infoGluePrincipal.getName()))
+			if(!allowCreatorAccess || !siteNodeVersionVO.getVersionModifier().equalsIgnoreCase(infoGluePrincipal.getName()))
 			{
 				Integer protectedSiteNodeVersionId = SiteNodeVersionControllerProxy.getSiteNodeVersionControllerProxy().getProtectedSiteNodeVersionId(siteNodeVersionId);
 				if(protectedSiteNodeVersionId != null && !AccessRightController.getController().getIsPrincipalAuthorized(infoGluePrincipal, "SiteNodeVersion.Read", protectedSiteNodeVersionId.toString()))
@@ -219,7 +224,7 @@ public class InfoGlueCommonAccessRightsInterceptor implements InfoGlueIntercepto
 		{
 			Integer siteNodeVersionId = (Integer)extradata.get("siteNodeVersionId");
 			SiteNodeVersionVO siteNodeVersionVO = SiteNodeVersionController.getController().getSiteNodeVersionVOWithId(siteNodeVersionId);
-			if(!siteNodeVersionVO.getVersionModifier().equalsIgnoreCase(infoGluePrincipal.getName()))
+			if(!allowCreatorAccess || !siteNodeVersionVO.getVersionModifier().equalsIgnoreCase(infoGluePrincipal.getName()))
 			{
 				Integer protectedSiteNodeVersionId = SiteNodeVersionControllerProxy.getSiteNodeVersionControllerProxy().getProtectedSiteNodeVersionId(siteNodeVersionId);
 				if(protectedSiteNodeVersionId != null && !AccessRightController.getController().getIsPrincipalAuthorized(infoGluePrincipal, "SiteNodeVersion.Write", protectedSiteNodeVersionId.toString()))
@@ -230,7 +235,7 @@ public class InfoGlueCommonAccessRightsInterceptor implements InfoGlueIntercepto
 		{
 			Integer parentSiteNodeId = (Integer)extradata.get("siteNodeId");
 			SiteNodeVersionVO siteNodeVersionVO = SiteNodeVersionController.getController().getLatestSiteNodeVersionVO(parentSiteNodeId);
-			if(!siteNodeVersionVO.getVersionModifier().equalsIgnoreCase(infoGluePrincipal.getName()))
+			if(!allowCreatorAccess || !siteNodeVersionVO.getVersionModifier().equalsIgnoreCase(infoGluePrincipal.getName()))
 			{
 				Integer protectedSiteNodeVersionId = SiteNodeVersionControllerProxy.getSiteNodeVersionControllerProxy().getProtectedSiteNodeVersionId(siteNodeVersionVO.getId());
 				if(protectedSiteNodeVersionId != null && !AccessRightController.getController().getIsPrincipalAuthorized(infoGluePrincipal, "SiteNodeVersion.CreateSiteNode", protectedSiteNodeVersionId.toString()))
@@ -241,7 +246,7 @@ public class InfoGlueCommonAccessRightsInterceptor implements InfoGlueIntercepto
 		{
 			Integer siteNodeId = (Integer)extradata.get("siteNodeId");
 			SiteNodeVersionVO siteNodeVersionVO = SiteNodeVersionController.getController().getLatestSiteNodeVersionVO(siteNodeId);
-			if(!siteNodeVersionVO.getVersionModifier().equalsIgnoreCase(infoGluePrincipal.getName()))
+			if(!allowCreatorAccess || !siteNodeVersionVO.getVersionModifier().equalsIgnoreCase(infoGluePrincipal.getName()))
 			{
 				Integer protectedSiteNodeVersionId = SiteNodeVersionControllerProxy.getSiteNodeVersionControllerProxy().getProtectedSiteNodeVersionId(siteNodeVersionVO.getId());
 				if(protectedSiteNodeVersionId != null && !AccessRightController.getController().getIsPrincipalAuthorized(infoGluePrincipal, "SiteNodeVersion.DeleteSiteNode", protectedSiteNodeVersionId.toString()))
@@ -252,7 +257,7 @@ public class InfoGlueCommonAccessRightsInterceptor implements InfoGlueIntercepto
 		{
 			Integer siteNodeId = (Integer)extradata.get("siteNodeId");
 			SiteNodeVersionVO siteNodeVersionVO = SiteNodeVersionController.getController().getLatestSiteNodeVersionVO(siteNodeId);
-			if(!siteNodeVersionVO.getVersionModifier().equalsIgnoreCase(infoGluePrincipal.getName()))
+			if(!allowCreatorAccess || !siteNodeVersionVO.getVersionModifier().equalsIgnoreCase(infoGluePrincipal.getName()))
 			{
 				Integer protectedSiteNodeVersionId = SiteNodeVersionControllerProxy.getSiteNodeVersionControllerProxy().getProtectedSiteNodeVersionId(siteNodeVersionVO.getId());
 				if(protectedSiteNodeVersionId != null && !AccessRightController.getController().getIsPrincipalAuthorized(infoGluePrincipal, "SiteNodeVersion.MoveSiteNode", protectedSiteNodeVersionId.toString()))
@@ -263,7 +268,7 @@ public class InfoGlueCommonAccessRightsInterceptor implements InfoGlueIntercepto
 		{
 			Integer siteNodeVersionId = (Integer)extradata.get("siteNodeVersionId");
 			SiteNodeVersionVO siteNodeVersionVO = SiteNodeVersionController.getController().getSiteNodeVersionVOWithId(siteNodeVersionId);
-			if(!siteNodeVersionVO.getVersionModifier().equalsIgnoreCase(infoGluePrincipal.getName()))
+			if(!allowCreatorAccess || !siteNodeVersionVO.getVersionModifier().equalsIgnoreCase(infoGluePrincipal.getName()))
 			{
 				Integer protectedSiteNodeVersionId = SiteNodeVersionControllerProxy.getSiteNodeVersionControllerProxy().getProtectedSiteNodeVersionId(siteNodeVersionId);
 				if(protectedSiteNodeVersionId != null && !AccessRightController.getController().getIsPrincipalAuthorized(infoGluePrincipal, "SiteNodeVersion.SubmitToPublish", protectedSiteNodeVersionId.toString()))
@@ -274,7 +279,7 @@ public class InfoGlueCommonAccessRightsInterceptor implements InfoGlueIntercepto
 		{
 			Integer siteNodeVersionId = (Integer)extradata.get("siteNodeVersionId");
 			SiteNodeVersionVO siteNodeVersionVO = SiteNodeVersionController.getController().getSiteNodeVersionVOWithId(siteNodeVersionId);
-			if(!siteNodeVersionVO.getVersionModifier().equalsIgnoreCase(infoGluePrincipal.getName()))
+			if(!allowCreatorAccess || !siteNodeVersionVO.getVersionModifier().equalsIgnoreCase(infoGluePrincipal.getName()))
 			{
 				Integer protectedSiteNodeVersionId = SiteNodeVersionControllerProxy.getSiteNodeVersionControllerProxy().getProtectedSiteNodeVersionId(siteNodeVersionId);
 				if(protectedSiteNodeVersionId != null && !AccessRightController.getController().getIsPrincipalAuthorized(infoGluePrincipal, "SiteNodeVersion.ChangeAccessRights", protectedSiteNodeVersionId.toString()))
@@ -284,7 +289,7 @@ public class InfoGlueCommonAccessRightsInterceptor implements InfoGlueIntercepto
 		
 		ceb.throwIfNotEmpty();
 	}
-	
+
 	
 	/**
 	 * This method will be called when a interceptionPoint is reached and it handle it within a transaction.
@@ -296,6 +301,20 @@ public class InfoGlueCommonAccessRightsInterceptor implements InfoGlueIntercepto
 	 */
 
 	public void intercept(InfoGluePrincipal infoGluePrincipal, InterceptionPointVO interceptionPointVO, Map extradata, Database db) throws ConstraintException, SystemException, Exception
+	{
+		intercept(infoGluePrincipal, interceptionPointVO, extradata, true, db);
+	}
+	
+	/**
+	 * This method will be called when a interceptionPoint is reached and it handle it within a transaction.
+	 * 
+	 * @param interceptionPoint
+	 * @param extradata
+	 * @throws ConstraintException
+	 * @throws SystemException
+	 */
+
+	public void intercept(InfoGluePrincipal infoGluePrincipal, InterceptionPointVO interceptionPointVO, Map extradata, boolean allowCreatorAccess, Database db) throws ConstraintException, SystemException, Exception
 	{
 		logger.info("interceptionPointVO:" + interceptionPointVO.getName());
 		
@@ -348,7 +367,7 @@ public class InfoGlueCommonAccessRightsInterceptor implements InfoGlueIntercepto
 		{
 			Integer contentVersionId = (Integer)extradata.get("contentVersionId");
 			ContentVersionVO contentVersionVO = ContentVersionControllerProxy.getController().getContentVersionVOWithId(contentVersionId);
-			if(!contentVersionVO.getVersionModifier().equalsIgnoreCase(infoGluePrincipal.getName()))
+			if(!allowCreatorAccess || !contentVersionVO.getVersionModifier().equalsIgnoreCase(infoGluePrincipal.getName()))
 			{	
 				if(ContentVersionControllerProxy.getController().getIsContentProtected(contentVersionVO.getContentId()) && !AccessRightController.getController().getIsPrincipalAuthorized(infoGluePrincipal, "ContentVersion.Read", contentVersionId.toString()))
 					ceb.add(new AccessConstraintException("ContentVersion.contentVersionId", "1000"));
@@ -358,7 +377,7 @@ public class InfoGlueCommonAccessRightsInterceptor implements InfoGlueIntercepto
 		{
 			Integer contentVersionId = (Integer)extradata.get("contentVersionId");
 			ContentVersionVO contentVersionVO = ContentVersionControllerProxy.getController().getContentVersionVOWithId(contentVersionId);
-			if(!contentVersionVO.getVersionModifier().equalsIgnoreCase(infoGluePrincipal.getName()))
+			if(!allowCreatorAccess || !contentVersionVO.getVersionModifier().equalsIgnoreCase(infoGluePrincipal.getName()))
 			{	
 				if(ContentVersionControllerProxy.getController().getIsContentProtected(contentVersionVO.getContentId()) && !AccessRightController.getController().getIsPrincipalAuthorized(infoGluePrincipal, "ContentVersion.Write", contentVersionId.toString()))
 					ceb.add(new AccessConstraintException("ContentVersion.contentVersionId", "1001"));
@@ -368,7 +387,7 @@ public class InfoGlueCommonAccessRightsInterceptor implements InfoGlueIntercepto
 		{
 			Integer contentVersionId = (Integer)extradata.get("contentVersionId");
 			ContentVersionVO contentVersionVO = ContentVersionControllerProxy.getController().getContentVersionVOWithId(contentVersionId);
-			if(!contentVersionVO.getVersionModifier().equalsIgnoreCase(infoGluePrincipal.getName()))
+			if(!allowCreatorAccess || !contentVersionVO.getVersionModifier().equalsIgnoreCase(infoGluePrincipal.getName()))
 			{	
 				if(ContentVersionControllerProxy.getController().getIsContentProtected(contentVersionVO.getContentId()) && !AccessRightController.getController().getIsPrincipalAuthorized(infoGluePrincipal, "ContentVersion.Delete", contentVersionId.toString()))
 					ceb.add(new AccessConstraintException("ContentVersion.contentVersionId", "1003"));
@@ -384,7 +403,7 @@ public class InfoGlueCommonAccessRightsInterceptor implements InfoGlueIntercepto
 		{
 			Integer siteNodeVersionId = (Integer)extradata.get("siteNodeVersionId");
 			SiteNodeVersionVO siteNodeVersionVO = SiteNodeVersionController.getController().getSiteNodeVersionVOWithId(siteNodeVersionId);
-			if(!siteNodeVersionVO.getVersionModifier().equalsIgnoreCase(infoGluePrincipal.getName()))
+			if(!allowCreatorAccess || !siteNodeVersionVO.getVersionModifier().equalsIgnoreCase(infoGluePrincipal.getName()))
 			{
 				if(SiteNodeVersionControllerProxy.getSiteNodeVersionControllerProxy().getIsSiteNodeVersionProtected(siteNodeVersionId) && !AccessRightController.getController().getIsPrincipalAuthorized(infoGluePrincipal, "SiteNodeVersion.Read", siteNodeVersionId.toString()))
 					ceb.add(new AccessConstraintException("SiteNodeVersion.siteNodeVersionId", "1000"));
@@ -394,7 +413,7 @@ public class InfoGlueCommonAccessRightsInterceptor implements InfoGlueIntercepto
 		{
 			Integer parentSiteNodeId = (Integer)extradata.get("siteNodeId");
 			SiteNodeVersionVO siteNodeVersionVO = SiteNodeVersionController.getController().getLatestSiteNodeVersionVO(parentSiteNodeId);
-			if(!siteNodeVersionVO.getVersionModifier().equalsIgnoreCase(infoGluePrincipal.getName()))
+			if(!allowCreatorAccess || !siteNodeVersionVO.getVersionModifier().equalsIgnoreCase(infoGluePrincipal.getName()))
 			{
 				Integer protectedSiteNodeVersionId = SiteNodeVersionControllerProxy.getSiteNodeVersionControllerProxy().getProtectedSiteNodeVersionId(siteNodeVersionVO.getId());
 				if(protectedSiteNodeVersionId != null && !AccessRightController.getController().getIsPrincipalAuthorized(infoGluePrincipal, "SiteNodeVersion.CreateSiteNode", protectedSiteNodeVersionId.toString()))
@@ -406,7 +425,7 @@ public class InfoGlueCommonAccessRightsInterceptor implements InfoGlueIntercepto
 			Integer siteNodeVersionId = (Integer)extradata.get("siteNodeVersionId");
 			SiteNodeVersionVO siteNodeVersionVO = SiteNodeVersionController.getController().getSiteNodeVersionVOWithId(siteNodeVersionId, db);
 			//SiteNodeVersion siteNodeVersion = SiteNodeVersionController.getController().getSiteNodeVersionWithId(siteNodeVersionId, db);
-			if(!siteNodeVersionVO.getVersionModifier().equalsIgnoreCase(infoGluePrincipal.getName()))
+			if(!allowCreatorAccess || !siteNodeVersionVO.getVersionModifier().equalsIgnoreCase(infoGluePrincipal.getName()))
 			{
 				Integer protectedSiteNodeVersionId = SiteNodeVersionControllerProxy.getSiteNodeVersionControllerProxy().getProtectedSiteNodeVersionId(siteNodeVersionId, db);
 				if(protectedSiteNodeVersionId != null && !AccessRightController.getController().getIsPrincipalAuthorized(db, infoGluePrincipal, "SiteNodeVersion.Read", protectedSiteNodeVersionId.toString()))
@@ -418,7 +437,7 @@ public class InfoGlueCommonAccessRightsInterceptor implements InfoGlueIntercepto
 			Integer siteNodeVersionId = (Integer)extradata.get("siteNodeVersionId");
 			SiteNodeVersionVO siteNodeVersionVO = SiteNodeVersionController.getController().getSiteNodeVersionVOWithId(siteNodeVersionId, db);
 			//SiteNodeVersion siteNodeVersion = SiteNodeVersionController.getController().getSiteNodeVersionWithId(siteNodeVersionId, db);
-			if(!siteNodeVersionVO.getVersionModifier().equalsIgnoreCase(infoGluePrincipal.getName()))
+			if(!allowCreatorAccess || !siteNodeVersionVO.getVersionModifier().equalsIgnoreCase(infoGluePrincipal.getName()))
 			{
 				Integer protectedSiteNodeVersionId = SiteNodeVersionControllerProxy.getSiteNodeVersionControllerProxy().getProtectedSiteNodeVersionId(siteNodeVersionId, db);
 				if(protectedSiteNodeVersionId != null && !AccessRightController.getController().getIsPrincipalAuthorized(db, infoGluePrincipal, "SiteNodeVersion.Write", protectedSiteNodeVersionId.toString()))

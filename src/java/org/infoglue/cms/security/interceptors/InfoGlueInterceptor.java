@@ -50,6 +50,8 @@ public interface InfoGlueInterceptor
 	
 	public void intercept(InfoGluePrincipal infoGluePrincipal, InterceptionPointVO interceptionPointVO, Map extradata) throws ConstraintException, SystemException, Exception;
 
+	public void intercept(InfoGluePrincipal infoGluePrincipal, InterceptionPointVO interceptionPointVO, Map extradata, boolean allowCreatorAccess) throws ConstraintException, SystemException, Exception;
+
 	/**
 	 * This method will be called when a interceptionPoint is reached and handle it withing a transaction.
 	 * 
@@ -60,5 +62,7 @@ public interface InfoGlueInterceptor
 	 */
 	
 	public void intercept(InfoGluePrincipal infoGluePrincipal, InterceptionPointVO interceptionPointVO, Map extradata, Database db) throws ConstraintException, SystemException, Exception;
+
+	public void intercept(InfoGluePrincipal infoGluePrincipal, InterceptionPointVO interceptionPointVO, Map extradata, boolean allowCreatorAccess, Database db) throws ConstraintException, SystemException, Exception;
 
 }
