@@ -183,7 +183,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		StringWriter cacheString = new StringWriter();
 		PrintWriter cachedStream = new PrintWriter(cacheString);
 		
-		new VelocityTemplateProcessor().renderTemplate(context, cachedStream, decoratePageTemplate, true, baseComponent);
+		new VelocityTemplateProcessor().renderTemplate(context, cachedStream, decoratePageTemplate, false, baseComponent);
 
 		String pageString = cacheString.toString();
 		pageString = decorateHeadAndPageWithVarsFromComponents(pageString);
