@@ -124,7 +124,12 @@
 					#set($imageUrl = "images/componentIcon.gif")
 				#end
 				<tr $class style="padding-bottom: 2px;">
-					<td align="center" rowspan="2" style="border-bottom: 1px solid #666666;"><a href="javascript:addComponent('$content.id');"><img src="$imageUrl" border="0"></a>&nbsp;</td>
+					#if($imageUrl.indexOf("componentIcon.gif") > -1)
+						#set($width = "16")
+					#else
+						#set($width = "40")
+					#end
+					<td align="center" rowspan="2" style="border-bottom: 1px solid #666666;"><a href="javascript:addComponent('$content.id');"><img src="$imageUrl" border="0" width="$width"></a>&nbsp;</td>
 					<td valign="middle"><a href="javascript:addComponent('$content.id');">$content.getName()</a></td>
 					<td valign="middle">
 						#foreach ($repositoryVO in $allRepositories)
