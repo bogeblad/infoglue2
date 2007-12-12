@@ -6,37 +6,54 @@
 
 <div class="fullymarginalized">
 <h2>$ui.getString("tool.managementtool.deployment.header")</h2>
-<p>$ui.getString("tool.managementtool.deployment.introduction")</p>
+#if($deploymentServers.size() == 0)
+	<p>$ui.getString("tool.managementtool.deployment.noServersText")</p>
+	<p>Example:<br>
+		0=http://localhost:8080/infoglueCMS<br>
+		1=http://localhost:8080/infoglueCMS26<br>
+	</p>
+#else
+	<p>$ui.getString("tool.managementtool.deployment.introduction")</p>
 
-<form method="POST" action="ViewDeploymentChooseServer.action">
+	<form method="POST" action="ViewDeploymentChooseServer.action">
+	
+	<p>
+		<select name="deploymentServerIndex" class="dropbox">
+			#set($count = 0)
+			#foreach($deploymentServer in $deploymentServers)
+				<option value="$count">$deploymentServer</option>
+				#set($count = $count + 1)
+			#end
+		</select>
+	</p>
+	<h3>Items to synchronize</h3>
+	<p>
+		<select name="deploymentServerIndex" class="dropbox">
+			<option value="synchronizeContentTypeDefinitions">Content types</option>
+			<option value="synchronizeCategories">Categories</option>
+			<option value="synchronizeWorkflows">Workflows</option>
+			<option value="synchronizeComponents">Components (HTMLTemplates)</option>
+		</select>
+		#*
+		<input type="checkbox" name="synchronizeContentTypeDefinitions" value="true"/> Content types<br>
+		<input type="checkbox" name="synchronizeCategories" value="true"/> Categories<br>
+		<input type="checkbox" name="synchronizeWorkflows" value="true"/> Workflows<br>
+		<input type="checkbox" name="synchronizeComponents" value="true"/> Components (HTMLTemplates)<br>
+		*#
+	</p>
+	<h3>Synchronization method</h3>
+	<p>
+		<select name="synchronizationMethod" class="dropbox">
+			<option value="pull">Pull</option>
+			<option value="push">Push</option>
+		</select>
+	</p>
+	<p>
+		<input type="image" src="$ui.getString("images.contenttool.buttons.next")" width="50" height="25">
+	</p>
+	</form>
+#end
 
-<p>
-	<select name="deploymentServerIndex" class="dropbox">
-		#set($count = 0)
-		#foreach($deploymentServer in $deploymentServers)
-			<option value="$count">$deploymentServer</option>
-			#set($count = $count + 1)
-		#end
-	</select>
-</p>
-<h3>Items to synchronize</h3>
-<p>
-	<input type="checkbox" name="synchronizeContentTypeDefinitions" value="true"/> Content types<br>
-	<input type="checkbox" name="synchronizeCategories" value="true"/> Categories<br>
-	<input type="checkbox" name="synchronizeWorkflows" value="true"/> Workflows<br>
-	<input type="checkbox" name="synchronizeComponents" value="true"/> Components (HTMLTemplates)<br>
-</p>
-<h3>Synchronization method</h3>
-<p>
-	<select name="synchronizationMethod" class="dropbox">
-		<option value="pull">Pull</option>
-		<option value="push">Push</option>
-	</select>
-</p>
-<p>
-	<input type="image" src="$ui.getString("images.contenttool.buttons.next")" width="50" height="25">
-</p>
-</form>
 </div>
 </body>
 </html>
