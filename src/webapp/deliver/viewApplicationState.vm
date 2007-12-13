@@ -38,8 +38,8 @@
 		}
 		.fullymarginalized 
 		{
-			margin-left	: 50;
-			margin-right: 50;
+			margin-left	: 50px;
+			margin-right: 50px;
 			margin-top	: 10%;
 		}
 	-->
@@ -60,8 +60,8 @@
     <td colspan="3" class="label">Release date</td>
   </tr>
   <tr>
-    <td colspan="1" class="text">2.7.1 Final</td>
-    <td colspan="3" class="text">2007-11-26</td>
+    <td colspan="1" class="text">2.7.5 Final</td>
+    <td colspan="3" class="text">2007-12-10</td>
   </tr>
   <tr>
     <td colspan="4" class="text">&nbsp;</td>
@@ -223,6 +223,26 @@
 	    </form>
     </td>
   </tr>
+  
+  #*
+  <tr><td colspan="4">&nbsp;</td></tr>
+
+  <tr class="label">
+    <td>Application attribute name</td>
+    <td colspan="2">ClassName</td>
+    <td>Actions</td>
+  </tr>
+  #set($applicationAttributesMap = $this.getApplicationMap())
+  #foreach($applicationAttribute in $applicationAttributesMap.keySet())
+  <tr>
+    <td style="border-bottom: 1px solid #999999;" class="text" valign="top">$applicationAttribute</td>
+    <td style="border-bottom: 1px solid #999999;" class="text" valign="top" colspan="2">$applicationAttributesMap.get($applicationAttribute)</td>
+    <td style="border-bottom: 1px solid #999999;" class="text" valign="top">
+    	<a href="ViewApplicationState!clearApplicationCache.action?attributeName=$applicationAttribute">Remove</a>
+    </td>
+  </tr>
+  #end
+  *#
   
   <tr><td colspan="4">&nbsp;</td></tr>
   
