@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -79,6 +80,7 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
     private final static Logger logger = Logger.getLogger(ViewApplicationStateAction.class.getName());
 
     private List states 					= new ArrayList();
+    private Map applicationMap 				= new HashMap();
     
 	private boolean databaseConnectionOk 	= false;
 	private boolean applicationSettingsOk 	= false;
@@ -89,6 +91,8 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
 
 	private String className				= "";
 	private String logLevel					= "";
+
+	private String attributeName			= "";
 
 	private static VisualFormatter formatter = new VisualFormatter();
 	
@@ -182,6 +186,40 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
         }
         
         CacheController.clearCache(Class.forName(className));
+        
+        return "cleared";
+    }
+
+    /**
+     * This action allows clearing of the given cache manually.
+     */
+    public String doClearApplicationCache() throws Exception
+    {
+        if(!ServerNodeController.getController().getIsIPAllowed(this.getRequest()))
+        {
+        	logger.error("A user from an IP(" + this.getRequest().getRemoteAddr() + ") which is not allowed tried to call doClearApplicationCache.");
+
+            this.getResponse().setContentType("text/plain");
+            this.getResponse().setStatus(HttpServletResponse.SC_FORBIDDEN);
+            this.getResponse().getWriter().println("You have no access to this view - talk to your administrator if you should.");
+            
+            return NONE;
+        }
+        
+        if(attributeName != null && attributeName.equals("all"))
+        {
+        	getApplicationAttributes();
+        	Iterator applicationAttributesIterator = this.applicationMap.keySet().iterator();
+        	while(applicationAttributesIterator.hasNext())
+        	{
+        		String attributeName = (String)applicationAttributesIterator.next();
+        		ActionContext.getServletContext().removeAttribute(attributeName);        	
+        	}
+        }
+        else if(attributeName != null)
+        {
+        	ActionContext.getServletContext().removeAttribute(attributeName);
+        }
         
         return "cleared";
     }
@@ -541,6 +579,8 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
         
     	states.addAll(unsortedComponents);
 
+    	getApplicationAttributes();
+    	
         //states.add(getList("Number of request being handled now", "" + RequestAnalyser.getNumberOfCurrentRequests() + "(average request take " + (RequestAnalyser.getAverageTimeSpentOnOngoingRequests()) + " ms, max now is " + RequestAnalyser.getMaxTimeSpentOnOngoingRequests() + ")"));
         //states.add(getList("The slowest request handled now is", "" + ((RequestAnalyser.getLongestRequests() != null) ? RequestAnalyser.getLongestRequests().getAttribute("progress") : "")));
         
@@ -589,6 +629,20 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
 
         return "success";
     }
+
+	private void getApplicationAttributes()
+	{
+		Enumeration attributesEnumeration = ActionContext.getServletContext().getAttributeNames();
+    	while(attributesEnumeration.hasMoreElements())
+    	{
+    		String attributeName = (String)attributesEnumeration.nextElement();
+    		//System.out.println("attributeName:" + attributeName);
+    		if(attributeName.indexOf("org.apache.catalina") == -1 && attributeName.indexOf("__oscache") == -1 && attributeName.indexOf("javax.servlet") == -1)
+    		{
+    			applicationMap.put(attributeName, ActionContext.getServletContext().getAttribute(attributeName).getClass().getName());
+    		}
+    	}
+	}
         
 	public String doAsXML() throws Exception
 	{
@@ -669,11 +723,23 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
 	    return serverName;
     }
 
-	public void setClassName(String className) {
+	public void setClassName(String className) 
+	{
 		this.className = className;
 	}
 
-	public void setLogLevel(String logLevel) {
+	public void setLogLevel(String logLevel) 
+	{
 		this.logLevel = logLevel;
+	}
+
+    public Map getApplicationMap()
+    {
+    	return this.applicationMap;
+    }
+
+	public void setAttributeName(String attributeName)
+	{
+		this.attributeName = attributeName;
 	}
 }

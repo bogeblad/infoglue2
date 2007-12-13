@@ -20,6 +20,13 @@
 			font-weight 	 : bold;
 			background-color : #CCCCCC;
 		}
+		.labelsub
+		{
+			font-family		 : Arial;
+			font-size		 : 8pt;
+			font-weight 	 : bold;
+			background-color : #FFFFFF;
+		}
 		.text 
 		{
 			font-family	:Arial;
@@ -42,9 +49,21 @@
 			margin-right: 50px;
 			margin-top	: 10%;
 		}
+		
 	-->
 	</style>
-
+	<script type="text/javascript">
+	<!--	
+		function toggleDiv(id)
+		{
+			var div = document.getElementById(id);
+			if(div && div.style.display == 'table-row')
+				div.style.display = 'none';
+			else
+				div.style.display = 'table-row';				
+		}
+	-->		
+	</script>
 </head>
 
 <body>
@@ -148,11 +167,11 @@
   #set($osCache = $this.getOSCache())
   <tr>
     <td style="border-bottom: 1px solid #999999;" class="text" valign="top">$osCache</td>
-    <td style="border-bottom: 1px solid #999999;"  class="text" valign="top">$osCache.getSize()</td>
-    <td style="border-bottom: 1px solid #999999;"  class="text" valign="top">
+    <td style="border-bottom: 1px solid #999999;" class="text" valign="top">$osCache.getSize()</td>
+    <td style="border-bottom: 1px solid #999999;" class="text" valign="top">
     	No additional statistics
     </td>
-    <td style="border-bottom: 1px solid #999999;"  class="text" valign="top">
+    <td style="border-bottom: 1px solid #999999;" class="text" valign="top">
     	&nbsp;
     </td>
   </tr>
@@ -224,25 +243,34 @@
     </td>
   </tr>
   
-  #*
   <tr><td colspan="4">&nbsp;</td></tr>
 
   <tr class="label">
-    <td>Application attribute name</td>
-    <td colspan="2">ClassName</td>
-    <td>Actions</td>
+    <td colspan="3">Application attributes</td>
+    <td><a href="javascript:toggleDiv('applicationAttributes');">Show/Hide</a></td>
   </tr>
-  #set($applicationAttributesMap = $this.getApplicationMap())
-  #foreach($applicationAttribute in $applicationAttributesMap.keySet())
-  <tr>
-    <td style="border-bottom: 1px solid #999999;" class="text" valign="top">$applicationAttribute</td>
-    <td style="border-bottom: 1px solid #999999;" class="text" valign="top" colspan="2">$applicationAttributesMap.get($applicationAttribute)</td>
-    <td style="border-bottom: 1px solid #999999;" class="text" valign="top">
-    	<a href="ViewApplicationState!clearApplicationCache.action?attributeName=$applicationAttribute">Remove</a>
-    </td>
-  </tr>
-  #end
-  *#
+  <tr id="applicationAttributes" style="display: none;">
+  	<td colspan="4">
+	  <table border="0" cellpadding="0" cellspacing="0" width="100%">
+	  <tr class="labelsub">
+	    <td>Application attribute name</td>
+	    <td>ClassName</td>
+	    <td>Actions</td>
+	  </tr>
+	  #set($applicationAttributesMap = $this.getApplicationMap())
+	  #foreach($applicationAttribute in $applicationAttributesMap.keySet())
+	    <tr>
+			<td style="border-bottom: 1px solid #999999;" class="text">$applicationAttribute</td>
+			<td style="border-bottom: 1px solid #999999;" class="text">$applicationAttributesMap.get($applicationAttribute)</td>
+			<td style="border-bottom: 1px solid #999999;" class="text"><a href="ViewApplicationState!clearApplicationCache.action?attributeName=$applicationAttribute">Remove</a></td>
+	    </tr>
+	  #end
+	    <tr>
+			<td class="text" colspan="3"><a href="ViewApplicationState!clearApplicationCache.action?attributeName=all">Clear all</td>
+		</tr>
+	  </table>
+	</td>
+  </tr>  
   
   <tr><td colspan="4">&nbsp;</td></tr>
   
