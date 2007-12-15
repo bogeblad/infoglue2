@@ -950,7 +950,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 	private String getLanguageIndependentAssetUrl(Integer contentId, Integer languageId, Integer siteNodeId, Database db, String assetKey, DeliveryContext deliveryContext, InfoGluePrincipal infoGluePrincipal) throws SystemException, Exception
 	{
 		String assetUrl = "";
-		assetUrl = urlComposer.composeDigitalAssetUrl("", "", deliveryContext); 
+		assetUrl = urlComposer.composeDigitalAssetUrl("", null, "", deliveryContext); 
 		
 		DigitalAssetVO digitalAssetVO = getLanguageIndependentAssetVO(contentId, languageId, siteNodeId, db, assetKey, deliveryContext, infoGluePrincipal);
 		if(digitalAssetVO != null)
@@ -959,7 +959,11 @@ public class ContentDeliveryController extends BaseDeliveryController
 			
 			int i = 0;
 			File masterFile = null;
-			String filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i);
+
+			String folderName = "" + (digitalAssetVO.getDigitalAssetId().intValue() / 1000);
+			logger.info("folderName:" + folderName);
+			String filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i) + File.separator + folderName;
+
 			while(filePath != null)
 			{
 				try
@@ -989,7 +993,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 			if(deliveryContext.getUseDownloadAction())
 				assetUrl = urlComposer.composeDigitalAssetUrl(dnsName, siteNodeId, contentId, languageId, assetKey, deliveryContext);
 			else
-				assetUrl = urlComposer.composeDigitalAssetUrl(dnsName, fileName, deliveryContext); 
+				assetUrl = urlComposer.composeDigitalAssetUrl(dnsName, folderName, fileName, deliveryContext); 
 		}
 		return assetUrl;	
 	}
@@ -998,7 +1002,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 	private String getLanguageIndependentAssetThumbnailUrl(Integer contentId, Integer languageId, Integer siteNodeId, Database db, String assetKey, int width, int height, DeliveryContext deliveryContext, InfoGluePrincipal infoGluePrincipal) throws SystemException, Exception
 	{
 		String assetUrl = "";
-		assetUrl = urlComposer.composeDigitalAssetUrl("", "", deliveryContext); 
+		assetUrl = urlComposer.composeDigitalAssetUrl("", null, "", deliveryContext); 
 		
 		DigitalAssetVO digitalAsset = getLanguageIndependentAssetVO(contentId, languageId, siteNodeId, db, assetKey, deliveryContext, infoGluePrincipal);
 		if(digitalAsset != null)
@@ -1008,7 +1012,9 @@ public class ContentDeliveryController extends BaseDeliveryController
 
 			int i = 0;
 			File masterFile = null;
-			String filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i);
+			String folderName = "" + (digitalAsset.getDigitalAssetId().intValue() / 1000);
+			logger.info("folderName:" + folderName);
+			String filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i) + File.separator + folderName;
 			while(filePath != null)
 			{
 			    if(masterFile == null)
@@ -1029,7 +1035,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 				dnsName = siteNode.getRepository().getDnsName();
 				
 			//assetUrl = dnsName + "/" + CmsPropertyHandler.getDigitalAssetBaseUrl() + "/" + thumbnailFileName;
-			assetUrl = urlComposer.composeDigitalAssetUrl(dnsName, thumbnailFileName, deliveryContext); 
+			assetUrl = urlComposer.composeDigitalAssetUrl(dnsName, folderName, thumbnailFileName, deliveryContext); 
 		}
 		return assetUrl;	
 	}
@@ -1089,7 +1095,9 @@ public class ContentDeliveryController extends BaseDeliveryController
 
 				int i = 0;
 				File masterFile = null;
-				String filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i);
+				String folderName = "" + (digitalAsset.getDigitalAssetId().intValue() / 1000);
+				logger.info("folderName:" + folderName);
+				String filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i) + File.separator + folderName;
 				while(filePath != null)
 				{
 					try
@@ -1117,7 +1125,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 					dnsName = siteNode.getRepository().getDnsName();
 
 				//assetUrl = dnsName + "/" + CmsPropertyHandler.getDigitalAssetBaseUrl() + "/" + fileName;
-				assetUrl = urlComposer.composeDigitalAssetUrl(dnsName, fileName, deliveryContext); 
+				assetUrl = urlComposer.composeDigitalAssetUrl(dnsName, folderName, fileName, deliveryContext); 
 			}
 			else
 			{
@@ -1157,7 +1165,9 @@ public class ContentDeliveryController extends BaseDeliveryController
 
 			int i = 0;
 			File masterFile = null;
-			String filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i);
+			String folderName = "" + (digitalAsset.getDigitalAssetId().intValue() / 1000);
+			logger.info("folderName:" + folderName);
+			String filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i) + File.separator + folderName;
 			while(filePath != null)
 			{
 				try
@@ -1181,7 +1191,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 			if(siteNode != null && siteNode.getRepository().getDnsName() != null && !siteNode.getRepository().getDnsName().equals(""))
 				dnsName = siteNode.getRepository().getDnsName();
 
-			assetUrl = urlComposer.composeDigitalAssetUrl(dnsName, fileName, deliveryContext); 
+			assetUrl = urlComposer.composeDigitalAssetUrl(dnsName, folderName, fileName, deliveryContext); 
 		}
             		
         CacheController.cacheObject(cacheName, assetCacheKey, assetUrl);
@@ -1220,7 +1230,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 		}
 		
 		String assetUrl = "";
-		assetUrl = urlComposer.composeDigitalAssetUrl("", "", deliveryContext); 
+		assetUrl = urlComposer.composeDigitalAssetUrl("", null, "", deliveryContext); 
 		
 		ContentVersion contentVersion = getContentVersion(siteNodeId, contentId, languageId, db, useLanguageFallback, deliveryContext, infoGluePrincipal);
 		ContentVO contentVO = this.getContentVO(db, contentId, deliveryContext);
@@ -1251,7 +1261,9 @@ public class ContentDeliveryController extends BaseDeliveryController
 
 				int i = 0;
 				File masterFile = null;
-				String filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i);
+				String folderName = "" + (digitalAsset.getDigitalAssetId().intValue() / 1000);
+				logger.info("folderName:" + folderName);
+				String filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i) + File.separator + folderName;
 				while(filePath != null)
 				{
 					try
@@ -1278,7 +1290,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 				if(deliveryContext.getUseDownloadAction())
 					assetUrl = urlComposer.composeDigitalAssetUrl(dnsName, siteNodeId, contentId, languageId, assetKey, deliveryContext);
 				else
-					assetUrl = urlComposer.composeDigitalAssetUrl(dnsName, fileName, deliveryContext); 
+					assetUrl = urlComposer.composeDigitalAssetUrl(dnsName, folderName, fileName, deliveryContext); 
 			}
 			else if(useLanguageFallback)
 			{
@@ -1300,7 +1312,9 @@ public class ContentDeliveryController extends BaseDeliveryController
 					
 					int i = 0;
 					File masterFile = null;
-					String filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i);
+					String folderName = "" + (digitalAsset.getDigitalAssetId().intValue() / 1000);
+					logger.info("folderName:" + folderName);
+					String filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i) + File.separator + folderName;
 					while(filePath != null)
 					{
 						try
@@ -1327,7 +1341,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 					if(deliveryContext.getUseDownloadAction())
 						assetUrl = urlComposer.composeDigitalAssetUrl(dnsName, siteNodeId, contentId, languageId, assetKey, deliveryContext);
 					else
-						assetUrl = urlComposer.composeDigitalAssetUrl(dnsName, fileName, deliveryContext); 
+						assetUrl = urlComposer.composeDigitalAssetUrl(dnsName, folderName, fileName, deliveryContext); 
 				}
 				else if(useLanguageFallback)
 				{
@@ -1377,7 +1391,9 @@ public class ContentDeliveryController extends BaseDeliveryController
 				int i = 0;
 				File masterFile = null;
 				File masterThumbFile = null;
-				String filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i);
+				String folderName = "" + (digitalAsset.getDigitalAssetId().intValue() / 1000);
+				logger.info("folderName:" + folderName);
+				String filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i) + File.separator + folderName;
 				while(filePath != null)
 				{
 					try
@@ -1411,7 +1427,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 					dnsName = siteNode.getRepository().getDnsName();
 
 				//assetUrl = dnsName + "/" + CmsPropertyHandler.getDigitalAssetBaseUrl() + "/" + thumbnailFileName;
-				assetUrl = urlComposer.composeDigitalAssetUrl(dnsName, thumbnailFileName, deliveryContext); 
+				assetUrl = urlComposer.composeDigitalAssetUrl(dnsName, folderName, thumbnailFileName, deliveryContext); 
 			}
 			else
 			{
@@ -1455,7 +1471,9 @@ public class ContentDeliveryController extends BaseDeliveryController
 			int i = 0;
 			File masterFile = null;
 			File masterThumbFile = null;
-			String filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i);
+			String folderName = "" + (digitalAsset.getDigitalAssetId().intValue() / 1000);
+			logger.info("folderName:" + folderName);
+			String filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i) + File.separator + folderName;
 			while(filePath != null)
 			{
 				try
@@ -1484,7 +1502,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 			if(siteNode != null && siteNode.getRepository().getDnsName() != null && !siteNode.getRepository().getDnsName().equals(""))
 				dnsName = siteNode.getRepository().getDnsName();
 
-			assetUrl = urlComposer.composeDigitalAssetUrl(dnsName, thumbnailFileName, deliveryContext); 
+			assetUrl = urlComposer.composeDigitalAssetUrl(dnsName, folderName, thumbnailFileName, deliveryContext); 
 		}
 		
 		CacheController.cacheObject(cacheName, assetCacheKey, assetUrl);
@@ -1527,7 +1545,9 @@ public class ContentDeliveryController extends BaseDeliveryController
 				int i = 0;
 				File masterFile = null;
 				File masterThumbFile = null;
-				String filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i);
+				String folderName = "" + (digitalAsset.getDigitalAssetId().intValue() / 1000);
+				logger.info("folderName:" + folderName);
+				String filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i) + File.separator + folderName;
 				while(filePath != null)
 				{
 					try
@@ -1561,7 +1581,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 					dnsName = siteNode.getRepository().getDnsName();
 				
 				//assetUrl = dnsName + "/" + CmsPropertyHandler.getDigitalAssetBaseUrl() + "/" + thumbnailFileName;
-				assetUrl = urlComposer.composeDigitalAssetUrl(dnsName, thumbnailFileName, deliveryContext); 
+				assetUrl = urlComposer.composeDigitalAssetUrl(dnsName, folderName, thumbnailFileName, deliveryContext); 
 			}
 			else
 			{
@@ -1631,6 +1651,8 @@ public class ContentDeliveryController extends BaseDeliveryController
 				int i = 0;
 				File masterFile = null;
 				String filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i);
+				String folderName = "" + (digitalAsset.getDigitalAssetId().intValue() / 1000);
+				logger.info("folderName:" + folderName);
 				while(filePath != null)
 				{
 					File unzipDirectory = new File(filePath + File.separator + fileName.substring(0, fileName.lastIndexOf(".")));
@@ -1656,7 +1678,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 					dnsName = siteNode.getRepository().getDnsName();
 					
 				//archiveBaseUrl = dnsName + "/" + CmsPropertyHandler.getDigitalAssetBaseUrl() + "/" + fileName.substring(0, fileName.lastIndexOf("."));
-				archiveBaseUrl = urlComposer.composeDigitalAssetUrl(dnsName, fileName.substring(0, fileName.lastIndexOf(".")), deliveryContext); 
+				archiveBaseUrl = urlComposer.composeDigitalAssetUrl(dnsName, folderName, fileName.substring(0, fileName.lastIndexOf(".")), deliveryContext); 
 			}
         }				
 		
@@ -1680,6 +1702,8 @@ public class ContentDeliveryController extends BaseDeliveryController
 			int i = 0;
 			File masterFile = null;
 			String filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i);
+			String folderName = "" + (digitalAsset.getDigitalAssetId().intValue() / 1000);
+			logger.info("folderName:" + folderName);
 			while(filePath != null)
 			{
 				File unzipDirectory = new File(filePath + File.separator + fileName.substring(0, fileName.lastIndexOf(".")));
@@ -1699,7 +1723,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 			if(siteNode != null && siteNode.getRepository().getDnsName() != null && !siteNode.getRepository().getDnsName().equals(""))
 				dnsName = siteNode.getRepository().getDnsName();
 				
-			archiveBaseUrl = urlComposer.composeDigitalAssetUrl(dnsName, fileName.substring(0, fileName.lastIndexOf(".")), deliveryContext); 
+			archiveBaseUrl = urlComposer.composeDigitalAssetUrl(dnsName, folderName, fileName.substring(0, fileName.lastIndexOf(".")), deliveryContext); 
 		}
 		
 		return archiveBaseUrl;

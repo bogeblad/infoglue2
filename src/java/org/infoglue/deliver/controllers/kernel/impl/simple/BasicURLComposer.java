@@ -135,9 +135,23 @@ public class BasicURLComposer extends URLComposer
         return assetUrl;
     }
 
-
     public String composeDigitalAssetUrl(String dnsName, String filename, DeliveryContext deliveryContext)
     {
+    	String folderName = null;
+    	if(filename != null && filename.indexOf("_") > -1)
+    	{
+    		String assetId = filename.substring(0, filename.indexOf("_"));
+    		System.out.println("assetId:" + assetId);
+			folderName = "" + (new Integer(assetId).intValue() / 1000);
+    	}
+    	
+    	return composeDigitalAssetUrl(dnsName, folderName, filename, deliveryContext);
+    }
+    
+    public String composeDigitalAssetUrl(String dnsName, String folderName, String filename, DeliveryContext deliveryContext)
+    {
+    	logger.info("folderName:" + folderName);
+    	
         String disableEmptyUrls = CmsPropertyHandler.getDisableEmptyUrls();
         if((filename == null || filename.equals("")) && (disableEmptyUrls == null || disableEmptyUrls.equalsIgnoreCase("yes")))
             return "";
@@ -180,7 +194,12 @@ public class BasicURLComposer extends URLComposer
 	     
 	        if(!sb.toString().endsWith("/"))
 	        	sb.append("/");
-	        
+
+	        sb.append(folderName);
+		     
+	        if(!sb.toString().endsWith("/"))
+	        	sb.append("/");
+
 	        sb.append(filename);
 	        
 	        //logger.info("sb:" + sb);
@@ -224,7 +243,10 @@ public class BasicURLComposer extends URLComposer
 
             String context = CmsPropertyHandler.getProperty(FilterConstants.CMS_PROPERTY_SERVLET_CONTEXT);
 
-            assetUrl = dnsName + context + "/" + CmsPropertyHandler.getDigitalAssetBaseUrl() + "/" + filename;
+            if(folderName != null)
+            	assetUrl = dnsName + context + "/" + CmsPropertyHandler.getDigitalAssetBaseUrl() + "/" + folderName + "/" + filename;
+            else
+            	assetUrl = dnsName + context + "/" + CmsPropertyHandler.getDigitalAssetBaseUrl() + "/" + filename;	
         }
         
         return assetUrl;

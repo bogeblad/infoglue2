@@ -113,7 +113,9 @@ public class DigitalAssetDeliveryController extends BaseDeliveryController
 			//String filePath = CmsPropertyHandler.getDigitalAssetPath();
 			
 			int i = 0;
-			String filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i);
+			String folderName = "" + (digitalAssetVO.getDigitalAssetId().intValue() / 1000);
+			logger.info("folderName:" + folderName);
+			String filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i) + File.separator + folderName;
 			//System.out.println("filePath:" + filePath);
 			while(filePath != null)
 			{
@@ -158,7 +160,9 @@ public class DigitalAssetDeliveryController extends BaseDeliveryController
 			//String filePath = CmsPropertyHandler.getDigitalAssetPath();
 			
 			int i = 0;
-			String filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i);
+			String folderName = "" + (digitalAsset.getDigitalAssetId().intValue() / 1000);
+			logger.info("folderName:" + folderName);
+			String filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i) + File.separator + folderName;
 			//System.out.println("filePath:" + filePath);
 			while(filePath != null)
 			{
@@ -204,7 +208,9 @@ public class DigitalAssetDeliveryController extends BaseDeliveryController
 			String thumbnailFileName = "thumbnail_" + width + "_" + height + "_" + fileName;
 
 			int i = 0;
-			String filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i);
+			String folderName = "" + (digitalAsset.getDigitalAssetId().intValue() / 1000);
+			logger.info("folderName:" + folderName);
+			String filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i) + File.separator + folderName;
 			while(filePath != null)
 			{
 				try
@@ -246,7 +252,9 @@ public class DigitalAssetDeliveryController extends BaseDeliveryController
 			String thumbnailFileName = "thumbnail_" + width + "_" + height + "_" + fileName;
 
 			int i = 0;
-			String filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i);
+			String folderName = "" + (digitalAsset.getDigitalAssetId().intValue() / 1000);
+			logger.info("folderName:" + folderName);
+			String filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i) + File.separator + folderName;
 			while(filePath != null)
 			{
 				try
@@ -388,6 +396,9 @@ public class DigitalAssetDeliveryController extends BaseDeliveryController
 			
 			//System.out.println("Dumping asset " + Thread.currentThread().getId() + ":" + fileName);
 			//Thread.sleep(2000);
+			File outputFileDir = new File(filePath);
+			outputFileDir.mkdirs();
+
 			DigitalAsset digitalAsset = DigitalAssetController.getDigitalAssetWithId(digitalAssetVO.getId(), db);
 			
 			String cmsBaseUrl = CmsPropertyHandler.getCmsFullBaseUrl();
