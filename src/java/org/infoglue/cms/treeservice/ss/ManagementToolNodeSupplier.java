@@ -116,7 +116,8 @@ public class ManagementToolNodeSupplier extends BaseNodeSupplier
 				r.add(new ManagementNodeImpl(cnt++, "ContentTypeDefinitions", "ViewListContentTypeDefinition.action?title=ContentTypeDefinitions"));
 			
 			//if(hasAccessTo("ManagementToolMenu.Languages", infogluePrincipal, true))
-				//r.add(new ManagementNodeImpl(cnt++, "TransactionHistory", "ViewListTransactionHistory.action?title=TransactionHistory"));
+			if(hasAccessTo("ManagementToolMenu.TransactionHistory", infogluePrincipal, true))
+				r.add(new ManagementNodeImpl(cnt++, "TransactionHistory", "ViewListTransactionHistory.action?title=TransactionHistory"));
 			
 			if(hasAccessTo("ManagementToolMenu.Up2Date", infogluePrincipal, true))
 				r.add(new ManagementNodeImpl(cnt++, "Up2Date", "ViewListUp2Date.action?title=InfoGlue Up2Date"));

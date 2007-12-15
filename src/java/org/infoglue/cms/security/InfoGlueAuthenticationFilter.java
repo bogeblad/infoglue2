@@ -49,8 +49,10 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
 import org.infoglue.cms.applications.common.Session;
+import org.infoglue.cms.controllers.kernel.impl.simple.TransactionHistoryController;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.util.CmsPropertyHandler;
+import org.infoglue.cms.util.NotificationMessage;
 import org.infoglue.deliver.applications.filters.URIMatcher;
 import org.infoglue.deliver.util.CacheController;
 
@@ -224,7 +226,10 @@ public class InfoGlueAuthenticationFilter implements Filter
 				{	
 					//throw new Exception("This user is not authorized to log in...");
 					httpServletResponse.sendRedirect("unauthorizedLogin.jsp");
-					//fc.doFilter(request, response);
+
+					NotificationMessage notificationMessage = new NotificationMessage("Authorization failed:", "Authorization", authenticatedUserName, NotificationMessage.AUTHORIZATION_FAILED, "name", "" + authenticatedUserName);
+					TransactionHistoryController.getController().create(notificationMessage);
+					
 					return;
 				}
 				
@@ -240,6 +245,9 @@ public class InfoGlueAuthenticationFilter implements Filter
 					setUserProperties(session, user);
 				}
 				
+				NotificationMessage notificationMessage = new NotificationMessage("Login success:", "Authentication", userName, NotificationMessage.AUTHENTICATION_SUCCESS, "name", "" + authenticatedUserName);
+				TransactionHistoryController.getController().create(notificationMessage);
+
 			    if(successLoginBaseUrl != null && !URL.startsWith(successLoginBaseUrl))
 			    {
 			        checkSuccessRedirect(request, response, URL);
@@ -249,6 +257,14 @@ public class InfoGlueAuthenticationFilter implements Filter
 				  	fc.doFilter(request, response);
 				    return;
 			    }
+			}
+			else
+			{
+				if(userName != null)
+				{
+					NotificationMessage notificationMessage = new NotificationMessage("Login failed:", "Authentication", userName, NotificationMessage.AUTHENTICATION_FAILED, "name", "" + userName);
+					TransactionHistoryController.getController().create(notificationMessage);
+				}
 			}
 		}
 		catch(Exception e)
