@@ -132,6 +132,7 @@ public class InterceptionPointController extends BaseController
 	    systemInterceptionPoints.put("ManagementToolMenu.MessageCenter", new InterceptionPointVO("ManagementToolMenu", "ManagementToolMenu.MessageCenter", "Intercepts access to the menu item 'Message center' in management tool", false));
 	    systemInterceptionPoints.put("ManagementToolMenu.Diagnostics", new InterceptionPointVO("ManagementToolMenu", "ManagementToolMenu.Diagnostics", "Intercepts access to the menu item 'Diagnostics' in management tool", false));
 	    systemInterceptionPoints.put("ManagementToolMenu.SystemTools", new InterceptionPointVO("ManagementToolMenu", "ManagementToolMenu.SystemTools", "Intercepts access to the menu item 'SystemTools' in management tool", false));
+	    systemInterceptionPoints.put("ManagementToolMenu.TransactionHistory", new InterceptionPointVO("ManagementToolMenu", "ManagementToolMenu.TransactionHistory", "Intercepts access to the menu item 'TransactionHistory' in management tool", false));
 
 	}
     
