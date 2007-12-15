@@ -90,6 +90,12 @@ Abbreviated Changelog from 2.6.0 Final
 - Fixed bug in which templates a user are allowed to see
 - Complemented with personalAuthorizationCache so a logout in the CMS does not clear unneccesairy caches.
 - Improved insert image dialog in FCKEditor so a doubleclick on an image directly chooses it.
+- Changed so there is now a possibility to say that creation of items are not enough to be granted access. In some views one does not want this and in some we do.
+- New icons for components and slots. Also made thumbsize better.
+- Added application attributes to the ViewApplicationState-view so one can clear such caches when needed.
+- Readded the transaction history view which allows a history of different system/user/access events. Also added some simple filters to the view which is only available if you are root right now.
+- Made default behavior for infoglue divide assets into different subfolders in digitalAssets dir. The algorithm is deviced so that all assets are divided into 1000 assets at max in each dir. Makes file operations much faster in some situations.
+- Added so login actions in cms are recorded into transactionsHistory.
 
 -------------------------------------------------------------------------------------
 - InfoGlue 2.6.0 Final
