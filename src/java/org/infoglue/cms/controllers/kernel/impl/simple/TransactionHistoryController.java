@@ -23,6 +23,9 @@
 
 package org.infoglue.cms.controllers.kernel.impl.simple;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -119,10 +122,108 @@ public class TransactionHistoryController extends BaseController
 		}
     	
 		return transactionHistoryVO;
-	    
-	    
 	}
-	
+
+	public List getLatestTransactionHistoryVOListForEntity(Class entClass, Integer entityId, List transactionType, Date startDateTime, Date endDateTime, int rowLimit) throws SystemException
+	{
+		List resultList = new ArrayList();
+
+		Database db = CastorDatabaseService.getDatabase();
+		ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
+		TransactionHistoryVO transactionHistoryVO = null;
+		beginTransaction(db);
+
+		try
+		{
+		    String baseSQL = "SELECT th FROM org.infoglue.cms.entities.management.impl.simple.TransactionHistoryImpl th";
+		    List bindings = new ArrayList();
+		    int i = 1;
+		    String whereArguments = "";
+		    if(entClass != null)
+		    {
+		    	whereArguments += (whereArguments.equals("") ? "" : " AND ") + " th.transactionObjectName LIKE $" + i + " ";
+		    	bindings.add(entClass.getName() + "%");
+		    	i++;
+		    }
+		    if(entityId != null)
+		    {
+		    	whereArguments += (whereArguments.equals("") ? "" : " AND ") + " th.transactionObjectId = $" + i + " ";
+		    	bindings.add(entityId);
+		    	i++;
+		    }
+		    if(transactionType != null)
+		    {
+		    	//System.out.println("Adding parameter:" + transactionType + " at " + i);
+		    	whereArguments += (whereArguments.equals("") ? "" : " AND ") + " th.transactionTypeId IN LIST (";
+		    	int localIndex = 0;
+		    	Iterator transactionTypeIterator = transactionType.iterator();
+		    	while(transactionTypeIterator.hasNext())
+		    	{
+		    		if(localIndex > 0)
+		    			whereArguments += ",";
+		    		whereArguments += "$" + i;
+			    	bindings.add(transactionTypeIterator.next());
+			    	i++;
+			    	localIndex++;
+		    	}
+		    	whereArguments += ") ";
+		    }
+		    if(startDateTime != null)
+		    {
+		    	//System.out.println("Adding parameter:" + startDateTime + " at " + i);
+		    	whereArguments += (whereArguments.equals("") ? "" : " AND ") + " th.transactionDateTime >= $" + i + " ";
+		    	bindings.add(startDateTime);
+		    	i++;
+		    }
+		    if(endDateTime != null)
+		    {
+		    	//System.out.println("Adding parameter:" + endDateTime + " at " + i);
+		    	whereArguments += (whereArguments.equals("") ? "" : " AND ") + " th.transactionDateTime <= $" + i + " ";
+		    	bindings.add(endDateTime);
+		    	i++;
+		    }
+
+		    String sql = baseSQL + (whereArguments.equals("") ? "" : " WHERE ") + whereArguments + " ORDER BY th.transactionDateTime desc";
+		    //System.out.println("sql:" + sql);
+
+		    OQLQuery oql = db.getOQLQuery(sql);
+			Iterator bindingIterator = bindings.iterator();
+			while(bindingIterator.hasNext())
+			{
+				Object value = bindingIterator.next();
+				oql.bind(value);
+				//System.out.println("value:" + value);
+			}
+		    
+		    //OQLQuery oql = db.getOQLQuery( "SELECT th FROM org.infoglue.cms.entities.management.impl.simple.TransactionHistoryImpl th WHERE th.transactionObjectName LIKE $1 AND th.transactionObjectId = $2 ORDER BY th.transactionDateTime desc");
+		    //oql.bind(entClass.getName() + "%");
+		    //oql.bind(entityId);
+			
+			int currentRow = 0;
+		    QueryResults results = oql.execute(Database.ReadOnly);
+			while(results.hasMore() && currentRow < rowLimit) 
+			{
+				TransactionHistory transactionHistory = (TransactionHistory)results.next();
+				//transactionHistoryVO = transactionHistory.getValueObject();
+				resultList.add(transactionHistory.getValueObject());
+				currentRow++;
+			}
+			
+			results.close();
+			oql.close();
+
+			commitTransaction(db);
+		}
+		catch(Exception e)
+		{
+			logger.error("An error occurred so we should not completes the transaction:" + e, e);
+			rollbackTransaction(db);
+			throw new SystemException(e.getMessage());
+		}
+    	
+		return resultList;
+	}
+
     public TransactionHistoryVO update(TransactionHistoryVO transactionHistoryVO) throws ConstraintException, SystemException
     {
         Database db = CastorDatabaseService.getDatabase();
@@ -187,16 +288,19 @@ public class TransactionHistoryController extends BaseController
             transVO.setTransactionObjectName(notificationMessage.getObjectName());
             
 			transactionHistory.setValueObject(transVO);	
-			logger.info("Created the transaction object and filled it with values...");
-			logger.info("transactionHistory.getId():" + transactionHistory.getId());
-			logger.info("transactionHistory.getName():" + transactionHistory.getName());
-			logger.info("transactionHistory.getSystemUserName():" + transactionHistory.getSystemUserName());
-			logger.info("transactionHistory.getTransactionDateTime():" + transactionHistory.getTransactionDateTime());
-			logger.info("transactionHistory.getTransactionObjectId():" + transactionHistory.getTransactionObjectId());
-			logger.info("transactionHistory.getTransactionObjectName():" + transactionHistory.getTransactionObjectName());
-			logger.info("transactionHistory.getTransactionTypeId():" + transactionHistory.getTransactionTypeId());
-			logger.info("isActive=" + db.isActive());
-
+			if(logger.isInfoEnabled())
+			{
+				logger.info("Created the transaction object and filled it with values...");
+				logger.info("transactionHistory.getId():" + transactionHistory.getId());
+				logger.info("transactionHistory.getName():" + transactionHistory.getName());
+				logger.info("transactionHistory.getSystemUserName():" + transactionHistory.getSystemUserName());
+				logger.info("transactionHistory.getTransactionDateTime():" + transactionHistory.getTransactionDateTime());
+				logger.info("transactionHistory.getTransactionObjectId():" + transactionHistory.getTransactionObjectId());
+				logger.info("transactionHistory.getTransactionObjectName():" + transactionHistory.getTransactionObjectName());
+				logger.info("transactionHistory.getTransactionTypeId():" + transactionHistory.getTransactionTypeId());
+				logger.info("isActive=" + db.isActive());
+			}
+			
 			db.create(transactionHistory);
 			logger.info("Created the transaction object in the database..");
             
