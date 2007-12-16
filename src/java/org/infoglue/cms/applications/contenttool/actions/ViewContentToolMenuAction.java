@@ -38,6 +38,7 @@ public class ViewContentToolMenuAction extends InfoGlueAbstractAction
     private Integer repositoryId;
     private String tree;
     private String showVersions;
+    private String path;
     
     public void setRepositoryId(Integer repositoryId)
     {
@@ -94,6 +95,16 @@ public class ViewContentToolMenuAction extends InfoGlueAbstractAction
 	public void setShowVersions(String showVersions) 
 	{
 		this.showVersions = showVersions;
+	}
+
+	public String getPath()
+	{
+		return path;
+	}
+
+	public void setPath(String path)
+	{
+		this.path = path;
 	}
 	
 }

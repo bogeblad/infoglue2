@@ -33,8 +33,19 @@
 				#set($path = "$path${cVO.getContentId()},")
 			#end
 			#set($path = "$path${this.getContentVO().getContentId()}")
+
+			#*
 			var path = "$path";
 			parent.frames[1].syncWithTree(path);
+			*#
+			
+			#set($contentRepositoryId = "$this.getContentVO().getRepositoryId()")
+			//alert("path: " + $path);
+			//alert("contentRepositoryId: " + $contentRepositoryId);
+			var path = "$path";
+			var contentRepositoryId = "$contentRepositoryId";
+			parent.frames[1].syncWithTree(path, contentRepositoryId);
+			
 		}
 
 		var inlineImageDefaultRepositoryId = null;

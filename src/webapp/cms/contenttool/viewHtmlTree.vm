@@ -136,13 +136,13 @@
 		{
 			//alert("parentNode:" + parentNode);
 			//alert("contentId" + contentId);
-			if(parentNode.loading) 
+			if(parentNode && parentNode.loading)
 			{
 				window.setTimeout(function () {
 					selectWhenLoaded(parentNode, contentId);
 				}, 10);
 			}
-			else
+			else if(parentNode)
 			{
 				parentNode.expand();
 				var addedNode = tree.getNodeWithMyId(contentId);

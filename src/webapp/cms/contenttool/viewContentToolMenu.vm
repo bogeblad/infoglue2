@@ -15,9 +15,14 @@
 		
 		var exp;
 		var treeIsLoaded = false;
+		var currentRepositoryId = "$!repositoryId";
 		
-		function syncWithTree(path)
+		function syncWithTree(path, repositoryId)
 		{
+			//alert("AAA:" + path + " - " + repositoryId + ":" + currentRepositoryId + ":" + parent);
+			if(repositoryId && currentRepositoryId != repositoryId)
+				parent.frames['header'].changeRepository(repositoryId, escape(path));
+			
 			#if($tree == "applet")
 				alert('Not implemented in this tree');
 			#else
@@ -89,7 +94,20 @@
 	    	//alert("Tree was loaded - notifyIsLoaded");
 	    	treeIsLoaded = true;
 	    	document.getElementById('treeDiv').style.left = '2px';
-	    	document.getElementById('treeDiv').style.right = '2px';
+	    	document.getElementById('treeDiv').style.right = '2px';	   
+	    	setTimeout("expandTreeAfterLoaded();", 500); 	
+	    }
+	    
+	    function expandTreeAfterLoaded()
+	    {
+	    	//alert("Loaded: $path")
+	    	#if($path != "")
+				#if($tree == "applet")
+					alert('Not implemented in this tree');
+				#else
+					frames['itreeFrame'].syncWithTree("$path");
+				#end
+	    	#end
 	    }
 	    
 	    function notifyExp(v)

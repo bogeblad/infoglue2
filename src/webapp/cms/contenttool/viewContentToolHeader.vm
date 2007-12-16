@@ -33,6 +33,38 @@
 			top.document.title = "Content - " + selectBox.options[selectBox.selectedIndex].text + " - InfoGlue CMS";	
 			selectBox.selectedIndex = 0;
 		}
+
+		function reloadMenu(selectBox, path)
+		{
+			//alert("top:" + top);
+		    repositoryId = selectBox.value;
+		    document.searchForm.repositoryId.value = repositoryId;
+			
+			var agt=navigator.userAgent.toLowerCase();
+		    if(agt.indexOf("safari")!=-1)
+		    	parent.frames[1].location = "${preferedTree}repositoryId=" + repositoryId + "&path=" + path;
+			else
+			    parent.frames[1].location.href = "${preferedTree}repositoryId=" + repositoryId + "&path=" + path;
+	
+			top.document.title = "Content - " + selectBox.options[selectBox.selectedIndex].text + " - InfoGlue CMS";	
+			selectBox.selectedIndex = 0;
+		}
+		
+		function changeRepository(repositoryId, path)
+		{
+			//alert("repositoryId:" + repositoryId);
+			var listForm = document.selectbox;
+			//alert("listForm:" + listForm + " - " + listForm.repositoryId.options);
+			for(var i=0;i<listForm.repositoryId.options.length;i++)
+			{
+				if(listForm.repositoryId.options[i].value == repositoryId)
+				{
+					//alert("Yes - " + listForm.repositoryId.options[i].text);
+					listForm.repositoryId.options[i].selected = true;
+				}
+			}
+			reloadMenu(listForm.repositoryId, path);
+		}
 		
 		function loadMenu()
 		{
