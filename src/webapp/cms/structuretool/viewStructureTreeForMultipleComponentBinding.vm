@@ -46,7 +46,7 @@
 		function changeRepository(selectBox)
 		{
 			var repositoryId = selectBox.value;
-			var url = "${currentAction}?repositoryId=" + repositoryId + "&siteNodeId=$siteNodeId&languageId=$languageId&contentId=$contentId&componentId=$componentId&propertyName=$propertyName&tree=$tree&showSimple=$showSimple";
+			var url = "${currentAction}?repositoryId=" + repositoryId + "&siteNodeId=$siteNodeId&languageId=$languageId&contentId=$contentId&componentId=$componentId&propertyName=$propertyName&tree=$tree&showSimple=$showSimple&showDecorated=$!showDecorated";
 			document.location.href = url;
 		}
 	    
@@ -57,7 +57,7 @@
 				qualifyerString += "$qualifyer.value,";
 			#end 
 						 		    
-		    var url = "ViewMultiSelectStructureTreeForServiceBinding!changeTree.action?tree=" + tree + "&serviceBindingId=$serviceBindingId&repositoryId=$repositoryId&siteNodeVersionId=$siteNodeVersionId&availableServiceBindingId=$availableServiceBindingId&serviceDefinitionId=$serviceDefinitionId&entityName=SiteNode&showSimple=$showSimple&qualifyerString=" + qualifyerString;
+		    var url = "ViewMultiSelectStructureTreeForServiceBinding!changeTree.action?tree=" + tree + "&serviceBindingId=$serviceBindingId&repositoryId=$repositoryId&siteNodeVersionId=$siteNodeVersionId&availableServiceBindingId=$availableServiceBindingId&serviceDefinitionId=$serviceDefinitionId&entityName=SiteNode&showSimple=$showSimple&showDecorated=$!showDecorated&qualifyerString=" + qualifyerString;
 		    //alert('Calling:' + url);
 		    self.location.href = url;
 		}
@@ -683,6 +683,7 @@
 	<input type="hidden" name="componentId" value="$componentId">
 	<input type="hidden" name="propertyName" value="$propertyName">
 	<input type="hidden" name="showSimple" value="$showSimple">
+	<input type="hidden" name="showDecorated" value="$!showDecorated">
 	<input type="hidden" name="path" value="">
 	<input type="hidden" name="qualifyerXML" value="">
 </form>

@@ -26,7 +26,7 @@
 		function changeRepository(selectBox)
 		{
 			var repositoryId = selectBox.value;
-			var url = "${currentAction}?repositoryId=" + repositoryId + "&siteNodeId=$siteNodeId&languageId=$languageId&contentId=$contentId&componentId=$componentId&propertyName=$propertyName&tree=$!tree&$allowedContentTypeIdsAsUrlEncodedString&showSimple=$showSimple";
+			var url = "${currentAction}?repositoryId=" + repositoryId + "&siteNodeId=$siteNodeId&languageId=$languageId&contentId=$contentId&componentId=$componentId&propertyName=$propertyName&tree=$!tree&$allowedContentTypeIdsAsUrlEncodedString&showSimple=$showSimple&showDecorated=$showDecorated";
 			document.location.href = url;
 		}
 		
@@ -57,7 +57,7 @@
 				qualifyerXML += 	"<contentId>" + entityId + "</contentId>";
 				qualifyerXML += "</qualifyer>";
 	
-				var url = "ViewSiteNodePageComponents!addComponentPropertyBinding.action?siteNodeId=$siteNodeId&languageId=$languageId&contentId=-1&entity=Content&entityId=" + entityId + "&componentId=$componentId&propertyName=$propertyName&showSimple=$showSimple&path=" + escape(path);
+				var url = "ViewSiteNodePageComponents!addComponentPropertyBinding.action?siteNodeId=$siteNodeId&languageId=$languageId&contentId=-1&entity=Content&entityId=" + entityId + "&componentId=$componentId&propertyName=$propertyName&showSimple=$showSimple&showDecorated=$showDecorated&path=" + escape(path);
 				//alert('Calling:' + url);
 			    //alert('qualifyerXML:' + qualifyerXML);
 			    self.opener.location.href = url;

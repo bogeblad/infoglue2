@@ -38,7 +38,7 @@
 		{
 			//alert("selectBox:" + selectBox);
 			var repositoryId = selectBox.value;
-			var url = "ViewContentVersion!viewAssetsForComponentBinding.action?repositoryId=" + repositoryId + "&siteNodeId=$siteNodeId&languageId=$languageId&contentId=-1&componentId=$componentId&propertyName=$propertyName&showSimple=$showSimple&assignedContentId=$!assignedContentId&assignedAssetKey=$!assignedAssetKey";
+			var url = "ViewContentVersion!viewAssetsForComponentBinding.action?repositoryId=" + repositoryId + "&siteNodeId=$siteNodeId&languageId=$languageId&contentId=-1&componentId=$componentId&propertyName=$propertyName&showSimple=$showSimple&showDecorated=$!showDecorated&assignedContentId=$!assignedContentId&assignedAssetKey=$!assignedAssetKey";
 			document.location.href = url;
 		}
 		
@@ -64,7 +64,7 @@
 			    var repositoryId = document.inputForm.repositoryId.value;
 				bindingTypeId = 0; //0 = Content, 1 = SiteNode
 					
-				var url = "ViewSiteNodePageComponents!addComponentPropertyBinding.action?siteNodeId=$siteNodeId&languageId=$languageId&contentId=-1&entity=Content&entityId=" + contentId + "&assetKey=" + assetKey + "&componentId=$componentId&propertyName=$propertyName&showSimple=$showSimple&path=" + escape(path);
+				var url = "ViewSiteNodePageComponents!addComponentPropertyBinding.action?siteNodeId=$siteNodeId&languageId=$languageId&contentId=-1&entity=Content&entityId=" + contentId + "&assetKey=" + assetKey + "&componentId=$componentId&propertyName=$propertyName&showSimple=$showSimple&showDecorated=$!showDecorated&path=" + escape(path);
 			    //alert("url:" + url);
 			    self.opener.location.href = url;
 			    window.close();

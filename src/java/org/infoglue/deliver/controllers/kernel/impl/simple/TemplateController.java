@@ -1466,6 +1466,7 @@ public interface TemplateController
 
 	public String getEditOnSightTag(Integer contentId, Integer languageId, String attributeName, String html, boolean showInPublishedMode);
 
+
 	/**
 	 * This method returns the neccessairy html to assign by klicking on a link.
 	 * @param propertyName
@@ -1473,7 +1474,7 @@ public interface TemplateController
 	 * @param showInPublishedMode
 	 * @return
 	 */
-	public String getAssignPropertyBindingTag(String propertyName, boolean createNew, String html, boolean showInPublishedMode);
+	public String getAssignPropertyBindingTag(String propertyName, boolean createNew, String html, boolean showInPublishedMode, boolean showDecorated);
 
 	
     public boolean getThreatFoldersAsContents();

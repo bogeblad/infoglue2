@@ -42,7 +42,9 @@ public class AssignPropertyBindingTag extends ComponentLogicTag
 	private boolean createNew = false;
 	private String html;
     private boolean showInPublishedMode = false;
-    
+    private String showDecoratedString = null;
+    private boolean showDecorated = true;
+
     public AssignPropertyBindingTag()
     {
         super();
@@ -50,7 +52,13 @@ public class AssignPropertyBindingTag extends ComponentLogicTag
     
     public int doEndTag() throws JspException
     {
-        produceResult(this.getController().getAssignPropertyBindingTag(propertyName, createNew, html, showInPublishedMode));
+    	if(showDecoratedString == null)
+    		showDecoratedString = "" + this.getController().getIsDecorated();
+    	showDecorated = new Boolean(showDecoratedString).booleanValue();
+    	
+        produceResult(this.getController().getAssignPropertyBindingTag(propertyName, createNew, html, showInPublishedMode, showDecorated));
+        
+        showDecoratedString = null;
         
         return EVAL_PAGE;
     }
@@ -74,4 +82,9 @@ public class AssignPropertyBindingTag extends ComponentLogicTag
     {
         this.showInPublishedMode = showInPublishedMode;
     }
+    
+	public void setShowDecorated(boolean showDecorated) throws JspException
+	{
+		this.showDecoratedString = evaluateString("AssignPropertyBindingTag", "showDecoratedString", showDecoratedString);;
+	}
 }

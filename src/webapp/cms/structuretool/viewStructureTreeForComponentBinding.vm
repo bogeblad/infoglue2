@@ -26,7 +26,7 @@
 		function changeRepository(selectBox)
 		{
 			var repositoryId = selectBox.value;
-			var url = "${currentAction}?repositoryId=" + repositoryId + "&siteNodeId=$siteNodeId&languageId=$languageId&contentId=$contentId&componentId=$componentId&propertyName=$propertyName&tree=$tree&showSimple=$showSimple";
+			var url = "${currentAction}?repositoryId=" + repositoryId + "&siteNodeId=$siteNodeId&languageId=$languageId&contentId=$contentId&componentId=$componentId&propertyName=$propertyName&tree=$tree&showSimple=$showSimple&showDecorated=$!showDecorated";
 			document.location.href = url;
 		}
 		
@@ -56,7 +56,7 @@
 				qualifyerXML += 	"<siteNodeId>" + entityId + "</siteNodeId>";
 				qualifyerXML += "</qualifyer>";
 				 		    
-			    var url = "ViewSiteNodePageComponents!addComponentPropertyBinding.action?siteNodeId=$siteNodeId&languageId=$languageId&contentId=-1&entity=SiteNode&entityId=" + entityId + "&componentId=$componentId&propertyName=$propertyName&showSimple=$showSimple&path=" + escape(path);
+			    var url = "ViewSiteNodePageComponents!addComponentPropertyBinding.action?siteNodeId=$siteNodeId&languageId=$languageId&contentId=-1&entity=SiteNode&entityId=" + entityId + "&componentId=$componentId&propertyName=$propertyName&showSimple=$showSimple&showDecorated=$!showDecorated&path=" + escape(path);
 			    //alert('Calling:' + url);
 			    self.opener.location.href = url;
 			    window.close();
