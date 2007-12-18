@@ -1604,9 +1604,11 @@ public class DigitalAssetController extends BaseController
 		
 			return true;
 		}
-				
+		
 		if(digitalAsset.getAssetBlob() != null)
 		{
+			new File(filePath).mkdirs();
+
 			FileOutputStream fis = new FileOutputStream(outputFile);
 			BufferedOutputStream bos = new BufferedOutputStream(fis);
 			
