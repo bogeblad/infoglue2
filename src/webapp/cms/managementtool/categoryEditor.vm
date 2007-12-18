@@ -22,6 +22,8 @@
 			#if($model.saved)
 			> $model.name
 			#end
+			
+			(was used by $references.size() entities)
 		</td>
 	</tr>
 	<tr>

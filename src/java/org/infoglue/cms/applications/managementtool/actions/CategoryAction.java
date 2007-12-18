@@ -1,7 +1,10 @@
 package org.infoglue.cms.applications.managementtool.actions;
 
+import java.util.List;
+
 import org.infoglue.cms.applications.common.actions.ModelAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.CategoryController;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentCategoryController;
 import org.infoglue.cms.entities.kernel.Persistent;
 import org.infoglue.cms.entities.management.CategoryVO;
 import org.infoglue.cms.exception.ConstraintException;
@@ -17,6 +20,7 @@ public class CategoryAction extends ModelAction
 	public static final String MAIN = "main";
 
 	private CategoryController controller = CategoryController.getController();
+	private ContentCategoryController contentCategoryController = ContentCategoryController.getController();
 
 	protected Persistent createModel()	{ return new CategoryVO(); }
 
@@ -25,7 +29,11 @@ public class CategoryAction extends ModelAction
 	public Integer getCategoryId()			{ return getCategory().getCategoryId(); }
 	public void setCategoryId(Integer i)	{ getCategory().setCategoryId(i); }
 
-
+	public List getReferences() throws Exception
+	{
+		return contentCategoryController.findByCategory(getCategoryId());
+	}
+	
 	public String doList() throws SystemException
 	{
 		setModels(controller.findRootCategories());
