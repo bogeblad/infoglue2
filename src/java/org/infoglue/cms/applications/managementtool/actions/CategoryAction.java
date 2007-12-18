@@ -1,5 +1,6 @@
 package org.infoglue.cms.applications.managementtool.actions;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.infoglue.cms.applications.common.actions.ModelAction;
@@ -21,7 +22,8 @@ public class CategoryAction extends ModelAction
 
 	private CategoryController controller = CategoryController.getController();
 	private ContentCategoryController contentCategoryController = ContentCategoryController.getController();
-
+	private boolean forceDelete = false;
+		
 	protected Persistent createModel()	{ return new CategoryVO(); }
 
 	public CategoryVO getCategory()		{ return (CategoryVO)getModel(); }
@@ -69,8 +71,21 @@ public class CategoryAction extends ModelAction
 		return (getCategory().isRoot())? MAIN : SUCCESS;
 	}
 
-	public String doDelete() throws SystemException
+	public String doDelete() throws Exception
 	{
+		List references = new ArrayList();
+		try
+		{
+			references = getReferences();
+		}
+		catch (Exception e) 
+		{
+			System.out.println("Error getting references:" + e.getMessage());
+		}
+		
+		if(references.size() > 0 && !forceDelete)
+			throw new ConstraintException("Category.name", "3608");
+		
 		// So we have the parent and know which page to go to
 		setModel(controller.findById(getCategoryId()));
 		controller.delete(getCategoryId());
@@ -80,5 +95,12 @@ public class CategoryAction extends ModelAction
 
 	// Needed as part of WebworklAbstractAction
 	public String doExecute() throws Exception
-	{ return SUCCESS; }
+	{ 
+		return SUCCESS; 
+	}
+
+	public void setForceDelete(boolean forceDelete)
+	{
+		this.forceDelete = forceDelete;
+	}
 }

@@ -100,6 +100,7 @@ Abbreviated Changelog from 2.6.0 Final
 - Made so reveal in tree works between repositories as well and not as before only if you are in the same one.
 - Fixed content:assignProperty-tag so it senses if the user are in decorated mode or not and returns the user to the correct view after the operation.
 - Added info about use of a category in management tool. Nice to know when you want to delete some.
+- Fixed check so user is warned when deleting a category which is used by a content version. 
 
 -------------------------------------------------------------------------------------
 - InfoGlue 2.6.0 Final
