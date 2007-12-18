@@ -200,9 +200,9 @@ public class SiteNodeNodeSupplier extends BaseNodeSupplier
 					try
 					{
 						ContentVO contentVO = ContentController.getContentController().getContentVOWithId(siteNodeVO.getMetaInfoContentId(), db);
-			
-					    LanguageVO masterLanguage = LanguageController.getController().getMasterLanguage(contentVO.getRepositoryId(), db);
-					    ContentVersion contentVersion = ContentVersionController.getContentVersionController().getLatestActiveContentVersion(contentVO.getContentId(), masterLanguage.getId(), db);
+						
+					    //LanguageVO masterLanguage = LanguageController.getController().getMasterLanguage(contentVO.getRepositoryId(), db);
+						//ContentVersion contentVersion = ContentVersionController.getContentVersionController().getLatestActiveContentVersion(contentVO.getContentId(), masterLanguage.getId(), db);
 						
 						if(sortProperty != null)
 						{
@@ -212,19 +212,25 @@ public class SiteNodeNodeSupplier extends BaseNodeSupplier
 								String sortOrderProperty = sortOrders[i].trim();
 								//System.out.println("sortOrderProperty:" + sortOrderProperty);
 								
-								if(contentVersion != null && sortOrderProperty.startsWith("extra:"))
+								//if(contentVersion != null && sortOrderProperty.startsWith("extra:"))
+								if(sortOrderProperty.startsWith("extra:"))
 								{
-									sortOrderProperty = sortOrderProperty.substring(6);
-								    String propertyValue = ContentVersionController.getContentVersionController().getAttributeValue(contentVersion.getValueObject(), sortOrderProperty, false);
-								    siteNodeVO.getExtraProperties().put(sortOrderProperty, propertyValue);
-		
-									if(isHiddenProperty != null && !isHiddenProperty.equals(""))
+									LanguageVO masterLanguage = LanguageController.getController().getMasterLanguage(contentVO.getRepositoryId(), db);
+									ContentVersion contentVersion = ContentVersionController.getContentVersionController().getLatestActiveContentVersion(contentVO.getContentId(), masterLanguage.getId(), db);
+									if(contentVersion != null)
 									{
-									    String hiddenProperty = ContentVersionController.getContentVersionController().getAttributeValue(contentVersion.getValueObject(), isHiddenProperty, false);
-									    if(hiddenProperty == null || hiddenProperty.equals(""))
-									    	hiddenProperty = "false";
-									    
-									    siteNodeVO.getExtraProperties().put("isHidden", hiddenProperty);
+										sortOrderProperty = sortOrderProperty.substring(6);
+									    String propertyValue = ContentVersionController.getContentVersionController().getAttributeValue(contentVersion.getValueObject(), sortOrderProperty, false);
+									    siteNodeVO.getExtraProperties().put(sortOrderProperty, propertyValue);
+			
+										if(isHiddenProperty != null && !isHiddenProperty.equals(""))
+										{
+										    String hiddenProperty = ContentVersionController.getContentVersionController().getAttributeValue(contentVersion.getValueObject(), isHiddenProperty, false);
+										    if(hiddenProperty == null || hiddenProperty.equals(""))
+										    	hiddenProperty = "false";
+										    
+										    siteNodeVO.getExtraProperties().put("isHidden", hiddenProperty);
+										}
 									}
 								}
 							}
