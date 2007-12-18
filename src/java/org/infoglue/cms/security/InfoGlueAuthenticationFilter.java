@@ -227,7 +227,7 @@ public class InfoGlueAuthenticationFilter implements Filter
 					//throw new Exception("This user is not authorized to log in...");
 					httpServletResponse.sendRedirect("unauthorizedLogin.jsp");
 
-					NotificationMessage notificationMessage = new NotificationMessage("Authorization failed:", "Authorization", authenticatedUserName, NotificationMessage.AUTHORIZATION_FAILED, "name", "" + authenticatedUserName);
+					NotificationMessage notificationMessage = new NotificationMessage("Authorization failed:", "Authorization", authenticatedUserName, NotificationMessage.AUTHORIZATION_FAILED, "" + authenticatedUserName, "name");
 					TransactionHistoryController.getController().create(notificationMessage);
 					
 					return;
@@ -245,7 +245,7 @@ public class InfoGlueAuthenticationFilter implements Filter
 					setUserProperties(session, user);
 				}
 				
-				NotificationMessage notificationMessage = new NotificationMessage("Login success:", "Authentication", userName, NotificationMessage.AUTHENTICATION_SUCCESS, "name", "" + authenticatedUserName);
+				NotificationMessage notificationMessage = new NotificationMessage("Login success:", "Authentication", userName, NotificationMessage.AUTHENTICATION_SUCCESS, "" + authenticatedUserName, "name");
 				TransactionHistoryController.getController().create(notificationMessage);
 
 			    if(successLoginBaseUrl != null && !URL.startsWith(successLoginBaseUrl))
@@ -262,7 +262,7 @@ public class InfoGlueAuthenticationFilter implements Filter
 			{
 				if(userName != null)
 				{
-					NotificationMessage notificationMessage = new NotificationMessage("Login failed:", "Authentication", userName, NotificationMessage.AUTHENTICATION_FAILED, "name", "" + userName);
+					NotificationMessage notificationMessage = new NotificationMessage("Login failed:", "Authentication", userName, NotificationMessage.AUTHENTICATION_FAILED, "" + userName, "name");
 					TransactionHistoryController.getController().create(notificationMessage);
 				}
 			}
