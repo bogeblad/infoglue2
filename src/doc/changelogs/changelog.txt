@@ -93,9 +93,13 @@ Abbreviated Changelog from 2.6.0 Final
 - Changed so there is now a possibility to say that creation of items are not enough to be granted access. In some views one does not want this and in some we do.
 - New icons for components and slots. Also made thumbsize better.
 - Added application attributes to the ViewApplicationState-view so one can clear such caches when needed.
-- Readded the transaction history view which allows a history of different system/user/access events. Also added some simple filters to the view which is only available if you are root right now.
+- Re-added the transaction history view which allows a history of different system/user/access events. Also added some simple filters to the view which is only available if you are root right now.
 - Made default behavior for infoglue divide assets into different subfolders in digitalAssets dir. The algorithm is deviced so that all assets are divided into 1000 assets at max in each dir. Makes file operations much faster in some situations.
 - Added so login actions in cms are recorded into transactionsHistory.
+- Fixed so one can see the repository path in content search result (title on each found content).
+- Made so reveal in tree works between repositories as well and not as before only if you are in the same one.
+- Fixed content:assignProperty-tag so it senses if the user are in decorated mode or not and returns the user to the correct view after the operation.
+- Added info about use of a category in management tool. Nice to know when you want to delete some.
 
 -------------------------------------------------------------------------------------
 - InfoGlue 2.6.0 Final
