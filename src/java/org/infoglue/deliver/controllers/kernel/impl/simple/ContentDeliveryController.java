@@ -471,6 +471,9 @@ public class ContentDeliveryController extends BaseDeliveryController
 
 	public String getContentAttribute(Database db, Integer contentId, Integer languageId, String attributeName, Integer siteNodeId, boolean useLanguageFallback, DeliveryContext deliveryContext, InfoGluePrincipal infogluePrincipal, boolean escapeHTML, boolean isMetaInfoQuery, Set usedContentVersionId) throws SystemException, Exception
 	{	
+		if(contentId == null || contentId.intValue() < 1)
+			return "";
+		
 		//System.out.println("usedContentVersionId:" + usedContentVersionId);
 		String enforceRigidContentAccess = CmsPropertyHandler.getEnforceRigidContentAccess();
 		if(enforceRigidContentAccess != null && enforceRigidContentAccess.equalsIgnoreCase("true"))
