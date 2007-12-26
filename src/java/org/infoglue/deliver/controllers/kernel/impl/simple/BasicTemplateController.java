@@ -3605,7 +3605,7 @@ public class BasicTemplateController implements TemplateController
 				dnsName = siteNode.getRepository().getDnsName();
 				
 			//assetUrl = dnsName + "/" + CmsPropertyHandler.getDigitalAssetBaseUrl() + "/" + fileName;
-			assetUrl = urlComposer.composeDigitalAssetUrl(dnsName, fileName, deliveryContext); 
+			assetUrl = urlComposer.composeDigitalAssetUrl(dnsName, null, fileName, deliveryContext); 
 		}
 		catch(Exception e)
 		{
