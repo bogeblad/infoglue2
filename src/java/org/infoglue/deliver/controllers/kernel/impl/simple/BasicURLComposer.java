@@ -150,7 +150,8 @@ public class BasicURLComposer extends URLComposer
     
     public String composeDigitalAssetUrl(String dnsName, String folderName, String filename, DeliveryContext deliveryContext)
     {
-    	logger.info("folderName:" + folderName);
+    	if(logger.isInfoEnabled())
+    		logger.info("folderName:" + folderName);
     	
         String disableEmptyUrls = CmsPropertyHandler.getDisableEmptyUrls();
         if((filename == null || filename.equals("")) && (disableEmptyUrls == null || disableEmptyUrls.equalsIgnoreCase("yes")))
@@ -194,12 +195,15 @@ public class BasicURLComposer extends URLComposer
 	     
 	        if(!sb.toString().endsWith("/"))
 	        	sb.append("/");
-
-	        sb.append(folderName);
-		     
-	        if(!sb.toString().endsWith("/"))
-	        	sb.append("/");
-
+	        
+	        if(folderName != null)
+	        {
+		        sb.append(folderName);
+			     
+		        if(!sb.toString().endsWith("/"))
+		        	sb.append("/");
+	        }
+	        
 	        sb.append(filename);
 	        
 	        //logger.info("sb:" + sb);
