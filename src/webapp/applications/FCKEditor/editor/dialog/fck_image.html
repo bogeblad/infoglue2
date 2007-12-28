@@ -69,57 +69,53 @@
 								<table cellspacing="0" cellpadding="0" border="0">
 									<script type="text/javascript">
 											
-
-											if(FCKConfig.ImageClasses && FCKConfig.ImageClassesNames)
-											{
-												document.write("<tr>");
-												document.write("	<td colspan=\"2\" nowrap=\"nowrap\"><span fckLang=\"DlgLnkStyle\">Image style</span><br />");
-												document.write("<select id=\"txtAttClasses\">");
-												document.write("	<option value=\"\" fcklang=\"DlgLnkStyleLinkIcon\" selected=\"selected\">None</option>");
+										if(FCKConfig.ImageClasses && FCKConfig.ImageClassesNames)
+										{
+											document.write("<tr>");
+											document.write("	<td colspan=\"2\" nowrap=\"nowrap\"><span fckLang=\"DlgLnkStyle\">Image style</span><br />");
+											document.write("<select id=\"txtAttClasses\">");
+											document.write("	<option value=\"\" fcklang=\"DlgLnkStyleLinkIcon\" selected=\"selected\">None</option>");
 											
-												var imageClasses=FCKConfig.ImageClasses.split(',');
-												var imageClassesNames=FCKConfig.ImageClassesNames.split(',');
-												for (var i=0;i<imageClasses.length;i++)
-												{
-													imageClass = imageClasses[i]; 
-													imageClassName = imageClassesNames[i]; 
-													document.write("	<option value=\"" + imageClass + "\" fcklang=\"DlgLnkStyleLinkIcon\">" + imageClassName + "</option>");
-												}
-												
-												document.write("</select><br/><br/>");
-												document.write("	</td>");
-												document.write("</tr>");
+											var imageClasses=FCKConfig.ImageClasses.split(',');
+											var imageClassesNames=FCKConfig.ImageClassesNames.split(',');
+											for (var i=0;i<imageClasses.length;i++)
+											{
+												imageClass = imageClasses[i]; 
+												imageClassName = imageClassesNames[i]; 
+												document.write("	<option value=\"" + imageClass + "\" fcklang=\"DlgLnkStyleLinkIcon\">" + imageClassName + "</option>");
 											}
 											
-											if(!FCKConfig.AllowImageSizes && FCKConfig.AllowImageSizes != 'false')
-											{
-												document.write("<tr>");
-												document.write("	<td nowrap=\"nowrap\"><span fcklang=\"DlgImgWidth\">Width</span>&nbsp;</td>");
-												document.write("	<td>");
-												document.write("		<input type=\"text\" size=\"3\" id=\"txtWidth\" onkeyup=\"OnSizeChanged('Width',this.value);\" />");
-												document.write("	</td>");
-												document.write("	<td rowspan=\"2\">");
-												document.write("		<div id=\"btnLockSizes\" class=\"BtnLocked\" onmouseover=\"this.className = (bLockRatio ? 'BtnLocked' : 'BtnUnlocked' ) + ' BtnOver';\"");
-												document.write("			onmouseout=\"this.className = (bLockRatio ? 'BtnLocked' : 'BtnUnlocked' );\" title=\"Lock Sizes\"");
-												document.write("			onclick=\"SwitchLock(this);\"></div>");
-												document.write("		<div id=\"btnResetSize\" class=\"BtnReset\" onmouseover=\"this.className='BtnReset BtnOver';\"");
-												document.write("			onmouseout=\"this.className='BtnReset';\" title=\"Reset Size\" onclick=\"ResetSizes();\"></div>");
-												document.write("	</td>");
-												document.write("</tr>");
-												document.write("<tr>");
-												document.write("	<td nowrap=\"nowrap\"><span fcklang=\"DlgImgHeight\">Height</span>&nbsp;</td>");
-												document.write("	<td>");
-												document.write("		<input type=\"text\" size=\"3\" id=\"txtHeight\" onkeyup=\"OnSizeChanged('Height',this.value);\"/></td>");
-												document.write("</tr>");
-											}
-											else
-											{
-												document.write("		<input type=\"hidden\" id=\"txtWidth\" > ");
-												document.write("		<input type=\"hidden\" id=\"txtHeight\" > ");
+											document.write("</select><br/><br/>");
+											document.write("	</td>");												document.write("</tr>");
+										}
 											
-											}
-										</script>
-
+										if(!FCKConfig.AllowImageSizes && FCKConfig.AllowImageSizes != 'false')
+										{
+											document.write("<tr>");
+											document.write("	<td nowrap=\"nowrap\"><span fcklang=\"DlgImgWidth\">Width</span>&nbsp;</td>");
+											document.write("	<td>");
+											document.write("		<input type=\"text\" size=\"3\" id=\"txtWidth\" onkeyup=\"OnSizeChanged('Width',this.value);\" />");
+											document.write("	</td>");
+											document.write("	<td rowspan=\"2\">");
+											document.write("		<div id=\"btnLockSizes\" class=\"BtnLocked\" onmouseover=\"this.className = (bLockRatio ? 'BtnLocked' : 'BtnUnlocked' ) + ' BtnOver';\"");
+											document.write("			onmouseout=\"this.className = (bLockRatio ? 'BtnLocked' : 'BtnUnlocked' );\" title=\"Lock Sizes\"");
+											document.write("			onclick=\"SwitchLock(this);\"></div>");
+											document.write("		<div id=\"btnResetSize\" class=\"BtnReset\" onmouseover=\"this.className='BtnReset BtnOver';\"");
+											document.write("			onmouseout=\"this.className='BtnReset';\" title=\"Reset Size\" onclick=\"ResetSizes();\"></div>");
+											document.write("	</td>");
+											document.write("</tr>");
+											document.write("<tr>");
+											document.write("	<td nowrap=\"nowrap\"><span fcklang=\"DlgImgHeight\">Height</span>&nbsp;</td>");
+											document.write("	<td>");
+											document.write("		<input type=\"text\" size=\"3\" id=\"txtHeight\" onkeyup=\"OnSizeChanged('Height',this.value);\"/></td>");
+											document.write("</tr>");
+										}
+										else
+										{
+											document.write("		<input type=\"hidden\" id=\"txtWidth\" > ");
+											document.write("		<input type=\"hidden\" id=\"txtHeight\" > ");
+										}
+									</script>
 								</table>
 								<br />
 								<table cellspacing="0" cellpadding="0" border="0">

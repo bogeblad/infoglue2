@@ -1,4 +1,4 @@
-﻿/*
+/*
  * FCKeditor - The text editor for Internet - http://www.fckeditor.net
  * Copyright (C) 2003-2007 Frederico Caldeira Knabben
  *
@@ -67,13 +67,13 @@ function UpdateOriginal( resetSize )
 {
 	if ( !eImgPreview )
 		return ;
-	
+
 	if ( GetE('txtUrl').value.length == 0 )
 	{
 		oImageOriginal = null ;
 		return ;
 	}
-		
+
 	oImageOriginal = document.createElement( 'IMG' ) ;	// new Image() ;
 
 	if ( resetSize )
@@ -141,11 +141,12 @@ function LoadSelection()
 
 	if ( oImage.style.width )
 	{
-		var aMatch  = oImage.style.width.match( regexSize ) ;
-		if ( aMatch )
+		var aMatchW  = oImage.style.width.match( regexSize ) ;
+		if ( aMatchW )
 		{
-			iWidth = aMatch[1] ;
+			iWidth = aMatchW[1] ;
 			oImage.style.width = '' ;
+			SetAttribute( oImage, 'width' , iWidth ) ;
 		}
 	}
 
@@ -156,6 +157,7 @@ function LoadSelection()
 		{
 			iHeight = aMatchH[1] ;
 			oImage.style.height = '' ;
+			SetAttribute( oImage, 'height', iHeight ) ;
 		}
 	}
 
@@ -171,7 +173,7 @@ function LoadSelection()
 
 	if ( oEditor.FCKBrowserInfo.IsIE )
 	{
-		GetE('txtAttClasses').value = oImage.getAttribute('className') || '' ;
+		GetE('txtAttClasses').value = oImage.className || '' ;
 		GetE('txtAttStyle').value = oImage.style.cssText ;
 	}
 	else
@@ -218,21 +220,20 @@ function Ok()
 		if ( confirm( 'Do you want to transform the selected image button on a simple image?' ) )
 			oImage = null ;
 	}
-	
+
+	oEditor.FCKUndo.SaveUndoStep() ;
 	if ( !bHasImage )
 	{
 		if ( bImageButton )
 		{
-			oImage = FCK.EditorDocument.createElement( 'INPUT' ) ;
+			oImage = FCK.EditorDocument.createElement( 'input' ) ;
 			oImage.type = 'image' ;
-			oImage = FCK.InsertElementAndGetIt( oImage ) ;
+			oImage = FCK.InsertElement( oImage ) ;
 		}
 		else
-			oImage = FCK.CreateElement( 'IMG' ) ;
+			oImage = FCK.InsertElement( 'img' ) ;
 	}
-	else
-		oEditor.FCKUndo.SaveUndoStep() ;
-	
+
 	UpdateImage( oImage ) ;
 
 	var sLnkUrl = GetE('txtLnkUrl').value.Trim() ;
@@ -251,7 +252,7 @@ function Ok()
 			if ( !bHasImage )
 				oEditor.FCKSelection.SelectNode( oImage ) ;
 
-			oLink = oEditor.FCK.CreateLink( sLnkUrl ) ;
+			oLink = oEditor.FCK.CreateLink( sLnkUrl )[0] ;
 
 			if ( !bHasImage )
 			{
@@ -290,17 +291,16 @@ function UpdateImage( e, skipId )
 	SetAttribute( e, 'dir'		, GetE('cmbAttLangDir').value ) ;
 	SetAttribute( e, 'lang'		, GetE('txtAttLangCode').value ) ;
 	SetAttribute( e, 'title'	, GetE('txtAttTitle').value ) ;
-	//SetAttribute( e, 'class'	, GetE('txtAttClasses').value ) ;
 	SetAttribute( e, 'longDesc'	, GetE('txtLongDesc').value ) ;
 
 	if ( oEditor.FCKBrowserInfo.IsIE )
 	{
-		e.className = GetE('txtAttClasses').value;
+		e.className = GetE('txtAttClasses').value ;
 		e.style.cssText = GetE('txtAttStyle').value ;
 	}
 	else
 	{
-		SetAttribute( e, 'class', GetE('txtAttClasses').value ) ;
+		SetAttribute( e, 'class'	, GetE('txtAttClasses').value ) ;
 		SetAttribute( e, 'style', GetE('txtAttStyle').value ) ;
 	}
 }
@@ -315,7 +315,7 @@ function SetPreviewElements( imageElement, linkElement )
 
 	UpdatePreview() ;
 	UpdateOriginal() ;
-	
+
 	bPreviewInitialized = true ;
 }
 
@@ -359,11 +359,11 @@ function SwitchLock( lockButton )
 // Fired when the width or height input texts change
 function OnSizeChanged( dimension, value )
 {
-	// Verifies if the aspect ration has to be mantained
+	// Verifies if the aspect ration has to be maintained
 	if ( oImageOriginal && bLockRatio )
 	{
 		var e = dimension == 'Width' ? GetE('txtHeight') : GetE('txtWidth') ;
-		
+
 		if ( value.length == 0 || isNaN( value ) )
 		{
 			e.value = '' ;
@@ -438,7 +438,7 @@ function SetUrl( url, width, height, alt )
 		UpdatePreview() ;
 		UpdateOriginal( true ) ;
 	}
-	
+
 	window.parent.SetSelectedTab( 'Info' ) ;
 }
 
@@ -480,19 +480,19 @@ var oUploadDeniedExtRegex	= new RegExp( FCKConfig.ImageUploadDeniedExtensions, '
 function CheckUpload()
 {
 	var sFile = GetE('txtUploadFile').value ;
-	
+
 	if ( sFile.length == 0 )
 	{
 		alert( 'Please select a file to upload' ) ;
 		return false ;
 	}
-	
+
 	if ( ( FCKConfig.ImageUploadAllowedExtensions.length > 0 && !oUploadAllowedExtRegex.test( sFile ) ) ||
 		( FCKConfig.ImageUploadDeniedExtensions.length > 0 && oUploadDeniedExtRegex.test( sFile ) ) )
 	{
 		OnUploadCompleted( 202 ) ;
 		return false ;
 	}
-	
+
 	return true ;
 }
