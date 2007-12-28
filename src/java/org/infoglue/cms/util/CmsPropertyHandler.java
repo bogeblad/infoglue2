@@ -408,7 +408,7 @@ public class CmsPropertyHandler
 	{
 		return getServerNodeDataProperty(prefix, key, inherit, defaultValue, false);
 	}
-	
+
 	/**
 	 * This method gets the serverNodeDataProperty.
 	 * 
@@ -483,7 +483,7 @@ public class CmsPropertyHandler
 				//System.out.println("Global value immediately: " + value);				
 			}
 	    }
-	    
+		
 	    if(value == null && defaultValue != null)
 	    	value = defaultValue;
 	    
@@ -1230,6 +1230,20 @@ public class CmsPropertyHandler
 	public static String getAllowCrossSiteSubmitToPublish()
 	{
         return getServerNodeProperty("allowCrossSiteSubmitToPublish", true, "false");
+	}
+
+	public static String getWYSIWYGToolbarComboPreviewCSS()
+	{
+		String WYSIWYGToolbarComboPreviewCSS = getServerNodeDataProperty(null, "WYSIWYGToolbarComboPreviewCSS", true, "p, div, h1, h2, h3, h4, h5, h6, pre, address { font-family: Verdana, Arial, Sans serif; font-size: 10px; font-style: normal; font-weight: normal; }");
+		if(WYSIWYGToolbarComboPreviewCSS == null || WYSIWYGToolbarComboPreviewCSS.equals(""))
+			WYSIWYGToolbarComboPreviewCSS = "p, div, h1, h2, h3, h4, h5, h6, pre, address { font-family: Verdana, Arial, Sans serif; font-size: 10px; font-style: normal; font-weight: normal; }";
+
+		return WYSIWYGToolbarComboPreviewCSS;
+	}
+
+	public static String getWYSIWYGEditorAreaCSS()
+	{
+		return getServerNodeDataProperty(null, "WYSIWYGEditorAreaCSS", true, "");
 	}
 
 	public static List getInternalDeliveryUrls()

@@ -209,6 +209,8 @@ public class ViewServerNodePropertiesAction extends InfoGluePropertiesAbstractAc
 	    populate(ps, "deliver_casServiceUrl");
 	    populate(ps, "deliver_casLogoutUrl");
 	    populateData(ps, "shortcuts");
+	    populateData(ps, "WYSIWYGToolbarComboPreviewCSS");
+   		populateData(ps, "WYSIWYGEditorAreaCSS");
 
 	    populate(ps, "disableImageEditor");
 

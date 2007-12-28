@@ -168,6 +168,47 @@ public class WYSIWYGPropertiesAction extends InfoGlueAbstractAction
 	    return this.StylesXML;
 	}
 
+	/**
+	 * This method gets the toolbar css.
+	 */
+	
+	public String doWYSIWYGToolbarComboPreviewCSS()
+	{
+		String WYSIWYGToolbarComboPreviewCSS = CmsPropertyHandler.getWYSIWYGToolbarComboPreviewCSS();
+		try
+		{
+			this.getResponse().setContentType("text/css");
+		    this.getResponse().getWriter().println(WYSIWYGToolbarComboPreviewCSS);
+		    this.getResponse().getWriter().flush();
+		}
+		catch (Exception e) 
+		{
+			e.printStackTrace();
+		}
+		
+	    return NONE;
+	}
+
+	/**
+	 * This method gets the toolbar css.
+	 */
+	
+	public String doWYSIWYGEditorAreaCSS()
+	{
+		String WYSIWYGEditorAreaCSS = CmsPropertyHandler.getWYSIWYGEditorAreaCSS();
+		try
+		{
+			this.getResponse().setContentType("text/css");
+		    this.getResponse().getWriter().println(WYSIWYGEditorAreaCSS);
+		    this.getResponse().getWriter().flush();
+		}
+		catch (Exception e) 
+		{
+			e.printStackTrace();
+		}
+		
+	    return NONE;
+	}
 	
     public void setRepositoryId(Integer repositoryId)
     {
