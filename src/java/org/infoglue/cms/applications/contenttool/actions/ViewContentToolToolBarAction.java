@@ -257,6 +257,26 @@ public class ViewContentToolToolBarAction extends InfoGlueAbstractAction
 		return hasPublishedVersion;
 	}
 	
+	/**
+	 * This method checks if there are a version available.
+	 */
+	
+	private boolean hasVersion()
+	{
+		boolean hasVersion = false;
+		
+		try
+		{
+			ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(this.contentId, this.languageId);
+			if(contentVersionVO != null)
+			{
+				hasVersion = true;
+			}
+		}
+		catch(Exception e){}
+				
+		return hasVersion;
+	}
 	
 	/**
 	 * This method checks if the content version is read only (ie publish, published or final).
@@ -461,7 +481,9 @@ public class ViewContentToolToolBarAction extends InfoGlueAbstractAction
 						buttons.add(getPublishButton());
 				}
 				buttons.add(getSyncTreeButton());
-				buttons.add(getChangeLanguageButton());
+				
+				if(hasVersion())
+					buttons.add(getChangeLanguageButton());
 		    }
 		    else
 		    {
