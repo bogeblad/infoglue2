@@ -1765,4 +1765,35 @@ public class ContentVersionController extends BaseController
 		return numberOfNewerVersions >= minNewerVersions;
 	}
 
+	/**
+	 * This method changes the language of a version.
+	 * 
+	 * @param contentVersionId
+	 * @param languageId
+	 * @throws Exception
+	 */
+	
+	public void changeVersionLanguage(Integer contentVersionId, Integer languageId) throws Exception
+	{
+		Database db = CastorDatabaseService.getDatabase();
+        
+		beginTransaction(db);
+        
+		try
+        {        
+			ContentVersion contentVersion = this.getContentVersionWithId(contentVersionId, db);
+	    	Language language = LanguageController.getController().getLanguageWithId(languageId, db);
+			
+			contentVersion.setLanguage((LanguageImpl)language);
+			
+			commitTransaction(db);            
+        }
+        catch(Exception e)
+        {
+        	logger.error("An error occurred so we should not completes the transaction:" + e, e);
+            rollbackTransaction(db);
+            throw new SystemException(e.getMessage());
+        }
+	}
+
 }

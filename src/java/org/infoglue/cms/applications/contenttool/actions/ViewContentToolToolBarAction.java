@@ -461,6 +461,7 @@ public class ViewContentToolToolBarAction extends InfoGlueAbstractAction
 						buttons.add(getPublishButton());
 				}
 				buttons.add(getSyncTreeButton());
+				buttons.add(getChangeLanguageButton());
 		    }
 		    else
 		    {
@@ -585,6 +586,11 @@ public class ViewContentToolToolBarAction extends InfoGlueAbstractAction
 	private ImageButton getSyncTreeButton()
 	{
 		return new ImageButton(true, "javascript:parent.frames['main'].syncWithTree();", getLocalizedString(getSession().getLocale(), "images.contenttool.buttons.revealInTree"), "tool.contenttool.revealInTree.header");	
+	}
+
+	private ImageButton getChangeLanguageButton()
+	{
+		return new ImageButton("ChangeVersionLanguage!input.action?contentId=" + this.contentId + "&repositoryId=" + this.repositoryId + "&contentVersionId=" + this.contentVersionId, getLocalizedString(getSession().getLocale(), "images.contenttool.buttons.changeVersionLanguage"), "tool.contenttool.changeVersionLanguage.header");	
 	}
 
 	private ImageButton getPublishButton()
