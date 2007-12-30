@@ -150,7 +150,7 @@ public class CreateSiteNodeWizardInputSiteNodeAction extends CreateSiteNodeWizar
 	
 	public List getSiteNodeTypeDefinitions() throws Exception
 	{
-		return SiteNodeTypeDefinitionController.getController().getSiteNodeTypeDefinitionVOList();
+		return SiteNodeTypeDefinitionController.getController().getSortedSiteNodeTypeDefinitionVOList();
 	}      
 
 	public java.lang.String getName()

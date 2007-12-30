@@ -25,6 +25,7 @@ package org.infoglue.cms.controllers.kernel.impl.simple;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -42,6 +43,7 @@ import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
+import org.infoglue.cms.util.sorters.ReflectionComparator;
 import org.infoglue.deliver.util.Timer;
 
 
@@ -96,6 +98,14 @@ public class SiteNodeTypeDefinitionController extends BaseController
         return getAllVOObjects(SiteNodeTypeDefinitionImpl.class, "siteNodeTypeDefinitionId");
     }
 
+    public List getSortedSiteNodeTypeDefinitionVOList() throws SystemException, Bug
+    {
+    	List siteNodeTypeDefinitionVOList = getSiteNodeTypeDefinitionVOList();
+    	
+	    Collections.sort(siteNodeTypeDefinitionVOList, new ReflectionComparator("name"));
+
+        return siteNodeTypeDefinitionVOList;
+    }
 
 	/**
 	 * This method gets a SiteNodeTypeDefinition based on it's name.

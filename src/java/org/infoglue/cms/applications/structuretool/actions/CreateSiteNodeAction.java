@@ -224,7 +224,7 @@ public class CreateSiteNodeAction extends InfoGlueAbstractAction
 	
 	public List getSiteNodeTypeDefinitions() throws Exception
 	{
-		return SiteNodeTypeDefinitionController.getController().getSiteNodeTypeDefinitionVOList();
+		return SiteNodeTypeDefinitionController.getController().getSortedSiteNodeTypeDefinitionVOList();
 	}      
       
     public String doExecute() throws Exception
