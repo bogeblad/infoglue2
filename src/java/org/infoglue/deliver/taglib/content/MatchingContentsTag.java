@@ -68,9 +68,9 @@ public class MatchingContentsTag extends TemplateControllerTag {
         return EVAL_PAGE;
     }
 
-    public void setContentTypeDefinitionNames(String contentTypeDefinitionNames)
+    public void setContentTypeDefinitionNames(String contentTypeDefinitionNames) throws JspException
     {
-        this.contentTypeDefinitionNames = contentTypeDefinitionNames;
+        this.contentTypeDefinitionNames = evaluateString("matchingContentsTag", "contentTypeDefinitionNames", contentTypeDefinitionNames);
     }
 
     public void setCategoryCondition(String categoryCondition) throws JspException
