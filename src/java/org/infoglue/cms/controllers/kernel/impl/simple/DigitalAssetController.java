@@ -1685,7 +1685,7 @@ public class DigitalAssetController extends BaseController
 					dumpDigitalAsset(digitalAsset.getValueObject(), fileName, filePath + File.separator + folderName, db);
 				}
 
-				filenames[i] = 	"" + filePath + File.separator + fileName;	
+				filenames[i] = 	"" + filePath + File.separator + folderName + File.separator + fileName;	
 				names.put(filenames[i], fileName);
 				
 				digitalAsset.setAssetFilePath("IG_ARCHIVE:" + archiveFileName + ":" + fileName);
