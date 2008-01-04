@@ -1,4 +1,4 @@
-﻿/*
+/*
  * FCKeditor - The text editor for Internet - http://www.fckeditor.net
  * Copyright (C) 2003-2007 Frederico Caldeira Knabben
  *
@@ -60,7 +60,8 @@ oRegex.UriProtocol = /^(((http|https|ftp|news):\/\/)|mailto:)/gi ;
 
 oRegex.UrlOnChangeProtocol = /^(http|https|ftp|news):\/\/(?=.)/gi ;
 
-oRegex.UrlOnChangeTestOther = /^((javascript:)|[#\/\.])/gi ;
+//oRegex.UrlOnChangeTestOther = /^((javascript:)|[#\/\.])/gi ;
+oRegex.UrlOnChangeTestOther = /^((javascript:)|[#\/\.]|.*templateLogic|DownloadAsset)/gi ;
 
 oRegex.ReserveTarget = /^_(blank|self|top|parent)$/i ;
 
@@ -126,7 +127,10 @@ oParser.CreateEMailUri = function( address, subject, body )
 // oLink: The actual selected link in the editor.
 var oLink = FCK.Selection.MoveToAncestorNode( 'A' ) ;
 if ( oLink )
+{
 	FCK.Selection.SelectNode( oLink ) ;
+	var focusWindow = true;
+}
 
 window.onload = function()
 {
