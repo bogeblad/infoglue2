@@ -104,6 +104,11 @@ Abbreviated Changelog from 2.6.0 Final
 - Fixed so change component works even when you change repository. Was a bug before.
 - Added new possibility to control the look and feel of FCKEditors comboboxes and the editor area. New fields are added under application settings for this purpose.
 - Upgraded to FCKEditor 2.5.1
+- Added feature which allows you to change a content versions language to another language.
+- Made contentTypeDefinitionNames-attribute on matchingContents-tag evaluate el-expressions.
+- Added sorting of siteNodeTypeDefinitions by name in all create site node views.
+- Added new attributes to transformText-tag so you can make more useful operations. Very useful for handling of bad user input etc.
+- Added a new attribute ("repositoryIds") to content:matchingContents-tag so one can state which repositories to search in.
 
 -------------------------------------------------------------------------------------
 - InfoGlue 2.6.0 Final
