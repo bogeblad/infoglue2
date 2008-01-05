@@ -50,7 +50,7 @@ public class TextTransformTag extends TemplateControllerTag
 	 * Should we encode i18n chars
 	 */
 	private boolean htmlEncode = false;
-
+	
 	/**
 	 * Should we replace linebreaks with something?
 	 */
@@ -75,6 +75,36 @@ public class TextTransformTag extends TemplateControllerTag
 	 * What to replace with
 	 */
 	private String replaceWithString = null;
+
+	/**
+	 * What to append before the text
+	 */
+	private String prefix = null;
+
+	/**
+	 * If set - the string must match this to add the prefix
+	 */
+	private String addPrefixIfTextMatches = null;
+
+	/**
+	 * If set - the string must match this to add the prefix
+	 */
+	private String addPrefixIfTextNotMatches = null;
+
+	/**
+	 * What to append after the text
+	 */
+	private String suffix = null;
+
+	/**
+	 * If set - the string must match this to add the suffix
+	 */
+	private String addSuffixIfTextMatches = null;
+
+	/**
+	 * If set - the string must match this to add the suffix
+	 */
+	private String addSuffixIfTextNotMatches = null;
 
 	/**
 	 * Default constructor.
@@ -104,10 +134,60 @@ public class TextTransformTag extends TemplateControllerTag
 	    if(replaceLineBreaks)
 	        modifiedText.replaceAll(lineBreakChar, lineBreakReplacer);	    
 	    
+	    if(this.prefix != null)
+	    {
+	    	if(this.addPrefixIfTextMatches != null)
+	    	{
+	    		Pattern pattern = Pattern.compile(this.addPrefixIfTextMatches);
+		        Matcher matcher = pattern.matcher(modifiedText);
+		        if(matcher.find())
+		        	modifiedText = this.prefix + modifiedText;	    		
+	    	}
+	    	else if(this.addPrefixIfTextNotMatches != null)
+	    	{
+	    		Pattern pattern = Pattern.compile(this.addPrefixIfTextNotMatches);
+		        Matcher matcher = pattern.matcher(modifiedText);
+		        if(!matcher.find())
+		        	modifiedText = this.prefix + modifiedText;	    		
+	    	}
+	    	else
+	    	{
+	    		modifiedText = this.prefix + modifiedText;
+	    	}
+	    }
+	    if(this.suffix != null)
+	    {
+	    	if(this.addSuffixIfTextMatches != null)
+	    	{
+	    		Pattern pattern = Pattern.compile(this.addSuffixIfTextMatches);
+		        Matcher matcher = pattern.matcher(modifiedText);
+		        if(matcher.find())
+		        	modifiedText = modifiedText + this.suffix;	    		
+	    	}
+	    	else if(this.addSuffixIfTextNotMatches != null)
+	    	{
+	    		Pattern pattern = Pattern.compile(this.addSuffixIfTextNotMatches);
+		        Matcher matcher = pattern.matcher(modifiedText);
+		        if(!matcher.find())
+		        	modifiedText =  modifiedText + this.suffix;	    		
+	    	}
+	    	else
+	    	{
+	    		modifiedText = modifiedText + this.suffix;
+	    	}
+	    }
+	    
 	    if(htmlEncode)
 	        modifiedText = this.getController().getVisualFormatter().escapeHTMLforXMLService(modifiedText);	        
 	        
 	    setResultAttribute(modifiedText);
+	    
+	    this.prefix = null;
+	    this.suffix = null;
+	    this.addPrefixIfTextMatches = null;
+	    this.addPrefixIfTextNotMatches = null;
+	    this.addSuffixIfTextMatches = null;
+	    this.addSuffixIfTextNotMatches = null;
 	    
         return EVAL_PAGE;
     }
@@ -147,4 +227,34 @@ public class TextTransformTag extends TemplateControllerTag
     {
         this.replaceWithString = evaluateString("TextTransform", "replaceWithString", replaceWithString);
     }
+
+	public void setPrefix(String prefix) throws JspException
+	{
+		this.prefix = evaluateString("TextTransform", "prefix", prefix);
+	}
+	    
+	public void setAddPrefixIfTextMatches(String addPrefixIfTextMatches) throws JspException
+	{
+		this.addPrefixIfTextMatches = evaluateString("TextTransform", "addPrefixIfTextMatches", addPrefixIfTextMatches);
+	}
+	
+	public void setAddPrefixIfTextNotMatches(String addPrefixIfTextNotMatches) throws JspException
+	{
+		this.addPrefixIfTextNotMatches = evaluateString("TextTransform", "addPrefixIfTextNotMatches", addPrefixIfTextNotMatches);
+	}
+
+	public void setSuffix(String suffix) throws JspException
+	{
+		this.suffix = evaluateString("TextTransform", "suffix", suffix);
+	}
+
+	public void setAddSuffixIfTextMatches(String addSuffixIfTextMatches) throws JspException
+	{
+		this.addSuffixIfTextMatches = evaluateString("TextTransform", "addSuffixIfTextMatches", addSuffixIfTextMatches);
+	}
+
+	public void setAddSuffixIfTextNotMatches(String addSuffixIfTextNotMatches) throws JspException
+	{
+		this.addSuffixIfTextNotMatches = evaluateString("TextTransform", "addSuffixIfTextNotMatches", addSuffixIfTextNotMatches);
+	}
 }
