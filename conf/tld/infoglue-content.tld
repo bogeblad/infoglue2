@@ -553,6 +553,11 @@
 	        <rtexprvalue>false</rtexprvalue>
     	</attribute>
         <attribute>
+    	    <name>repositoryIds</name>
+        	<required>false</required>
+	        <rtexprvalue>false</rtexprvalue>
+    	</attribute>
+        <attribute>
     	    <name>categoryCondition</name>
         	<required>false</required>
 	        <rtexprvalue>true</rtexprvalue>

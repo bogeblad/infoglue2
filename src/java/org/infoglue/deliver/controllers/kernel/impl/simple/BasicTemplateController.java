@@ -4107,8 +4107,17 @@ public class BasicTemplateController implements TemplateController
 	/**
 	 * This method searches for all contents matching
 	 */
-	
+
 	public List getMatchingContents(String contentTypeDefinitionNamesString, String categoryConditionString, String freeText, List freeTextAttributeNames, Date fromDate, Date toDate, boolean useLanguageFallback, boolean cacheResult, int cacheInterval, String cacheName, String cacheKey)
+	{
+		return getMatchingContents(contentTypeDefinitionNamesString, categoryConditionString, null, null, null, null, useLanguageFallback, false, -1, null, null, null);
+	}
+
+	/**
+	 * This method searches for all contents matching
+	 */
+	
+	public List getMatchingContents(String contentTypeDefinitionNamesString, String categoryConditionString, String freeText, List freeTextAttributeNames, Date fromDate, Date toDate, boolean useLanguageFallback, boolean cacheResult, int cacheInterval, String cacheName, String cacheKey, List<Integer> repositoryIdList)
 	{
 		if((freeText != null && !freeText.equals("")) || (freeTextAttributeNames != null && freeTextAttributeNames.size() > 0) || fromDate != null || toDate != null)
 			cacheResult = false;
@@ -4146,6 +4155,8 @@ public class BasicTemplateController implements TemplateController
 					criterias.setFreetext(freeText, freeTextAttributeNames);
 				criterias.setContentTypeDefinitions(contentTypeDefinitionVOList);
 				criterias.setDates(fromDate, toDate);
+				if(repositoryIdList != null && repositoryIdList.size() > 0)
+					criterias.setRepositoryIdList(repositoryIdList);
 				
 				final Set set = ExtendedSearchController.getController().search(criterias, getDatabase());
 				

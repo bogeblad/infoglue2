@@ -39,6 +39,7 @@ import org.infoglue.cms.entities.content.impl.simple.SmallContentImpl;
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
 import org.infoglue.cms.entities.management.LanguageVO;
+import org.infoglue.cms.entities.management.RepositoryVO;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.util.CmsPropertyHandler;
 
@@ -293,7 +294,10 @@ class SqlBuilder
 	
 	private static final String C_CONTENT_TYPE_CLAUSE_SHORT   = CONTENT_ALIAS + ".contentTypeDefId={0}";
 	private static final String C_CONTENT_TYPE_CLAUSE         = CONTENT_ALIAS + ".contentTypeDefinitionId={0}";
-	
+
+	private static final String C_REPOSITORY_CLAUSE_SHORT     = CONTENT_ALIAS + ".repositoryId={0}";
+	private static final String C_REPOSITORY_CLAUSE           = CONTENT_ALIAS + ".repositoryId={0}";
+
 	private static final String FREETEXT_EXPRESSION_SHORT     = CONTENT_VERSION_ALIAS + ".VerValue like {0}";
 	private static final String FREETEXT_EXPRESSION           = CONTENT_VERSION_ALIAS + ".versionValue like {0}";
 
@@ -411,7 +415,11 @@ class SqlBuilder
 	{
 		final List clauses = new ArrayList();
 		clauses.addAll(getContentWhereClauses());
-		clauses.add(getContentVersionWhereClauses());
+		clauses.add(getContentTypeDefinitionWhereClauses());
+		if(criterias.getRepositoryIdList() != null && criterias.getRepositoryIdList().size() > 0)
+		{
+			clauses.add(getContentRepositoryWhereClauses());
+		}
 		if(criterias.hasFreetextCritera())
 		{
 			clauses.add(getFreetextWhereClause());
@@ -444,7 +452,7 @@ class SqlBuilder
 			clauses.add(MessageFormat.format(CV_LANGUAGE_CLAUSE, new Object[] { getBindingVariable() }));
 			bindings.add(criterias.getLanguage().getId());
 		}
-		
+
 		return clauses;
 	}
 
@@ -468,7 +476,7 @@ class SqlBuilder
 	/**
 	 * 
 	 */
-	private String getContentVersionWhereClauses() 
+	private String getContentTypeDefinitionWhereClauses() 
 	{
 		final List expressions = new ArrayList();
 		if(criterias.hasContentTypeDefinitionVOsCriteria())
@@ -482,6 +490,27 @@ class SqlBuilder
 			}
 		}
 		return "(" + joinCollection(expressions, SPACE + OR + SPACE) + ")";
+	}
+
+	/**
+	 * 
+	 */
+	private String getContentRepositoryWhereClauses() 
+	{
+		final List expressions = new ArrayList();
+		if(criterias.getRepositoryIdList() != null && criterias.getRepositoryIdList().size() > 0)
+		{
+			logger.debug(" CRITERA[repository]");
+			for(final Iterator<Integer> i=criterias.getRepositoryIdList().iterator(); i.hasNext(); ) 
+			{
+				final Integer repositoryId = i.next();
+				expressions.add(MessageFormat.format(getC_REPOSITORY_CLAUSE(), new Object[] { getBindingVariable() }));
+				bindings.add(repositoryId);
+			}
+			return "(" + joinCollection(expressions, SPACE + OR + SPACE) + ")";
+		}
+		else
+			return "";
 	}
 
 	/**
@@ -548,7 +577,7 @@ class SqlBuilder
 		}
 		return "(" + joinCollection(expressions, SPACE + OR + SPACE) + ")";
 	}
-	
+		
 	/**
 	 * 
 	 */
@@ -595,6 +624,10 @@ class SqlBuilder
     public static String getC_CONTENT_TYPE_CLAUSE()
     {
         return (ExtendedSearchController.useFull()) ? C_CONTENT_TYPE_CLAUSE : C_CONTENT_TYPE_CLAUSE_SHORT;
+    }
+    public static String getC_REPOSITORY_CLAUSE()
+    {
+        return (ExtendedSearchController.useFull()) ? C_REPOSITORY_CLAUSE : C_REPOSITORY_CLAUSE_SHORT;
     }
     public static String getCV_CONTENT_JOIN()
     {

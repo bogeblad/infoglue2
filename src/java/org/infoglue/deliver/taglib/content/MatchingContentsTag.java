@@ -23,6 +23,7 @@
 
 package org.infoglue.deliver.taglib.content;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -48,6 +49,7 @@ public class MatchingContentsTag extends TemplateControllerTag {
 	private int cacheInterval = 1800;
 	private String cacheName = null;
 	private String cacheKey = null;
+	private String repositoryIds = null;
 	
     public MatchingContentsTag()
     {
@@ -63,9 +65,26 @@ public class MatchingContentsTag extends TemplateControllerTag {
 			if(freeTextAttributeNamesArray.length > 0)
 				freeTextAttributeNamesList = Arrays.asList(freeTextAttributeNamesArray);
 		}
-		
-	    setResultAttribute(getController().getMatchingContents(contentTypeDefinitionNames, categoryCondition, freeText, freeTextAttributeNamesList, fromDate, toDate, true, cacheResult, cacheInterval, cacheName, cacheKey));
-        return EVAL_PAGE;
+
+		List<Integer> repositoryIdList = null;
+		if(repositoryIds != null && !repositoryIds.equals(""))
+		{
+			String[] repositoryIdsArray = repositoryIds.split(",");
+			if(repositoryIdsArray.length > 0)
+			{
+				repositoryIdList = new ArrayList<Integer>();
+				for(int i=0; i<repositoryIdsArray.length; i++)
+				{
+					repositoryIdList.add(new Integer(repositoryIdsArray[i]));
+				}
+			}
+		}
+
+	    setResultAttribute(getController().getMatchingContents(contentTypeDefinitionNames, categoryCondition, freeText, freeTextAttributeNamesList, fromDate, toDate, true, cacheResult, cacheInterval, cacheName, cacheKey, repositoryIdList));
+	    
+	    repositoryIds = null;
+	    
+	    return EVAL_PAGE;
     }
 
     public void setContentTypeDefinitionNames(String contentTypeDefinitionNames) throws JspException
@@ -98,6 +117,11 @@ public class MatchingContentsTag extends TemplateControllerTag {
 		this.toDate = (Date)evaluate("matchingContentsTag", "toDate", toDate, Date.class);
 	}
 
+	public void setRepositoryIds(String repositoryIds) throws JspException
+	{
+		this.repositoryIds = evaluateString("matchingContentsTag", "repositoryIds", repositoryIds);;
+	}
+
 	public void setCacheInterval(int cacheInterval)
 	{
 		this.cacheInterval = cacheInterval;
@@ -117,6 +141,5 @@ public class MatchingContentsTag extends TemplateControllerTag {
 	{
 		this.cacheResult = cacheResult;
 	}
-
 
 }

@@ -103,6 +103,8 @@ public class ExtendedSearchCriterias
 	 */
 	private Timestamp toDate;
 
+	private List<Integer> repositoryIdList;
+	
 	/**
 	 * Constructs a criteria object with the state critera set to <code>ContentVersionVO.WORKING_STATE</code>.
 	 */
@@ -205,6 +207,17 @@ public class ExtendedSearchCriterias
 		this.toDate   = (to == null)   ? null : new Timestamp(to.getTime());
 	}
 	
+	/**
+	 * Sets the repository criteria. 
+	 * 
+	 * @param repositoryIdList limits the search to the repositories listed.
+	 * @param to the to date to use (null is used to indicate an open end).
+	 */
+	public void setRepositoryIdList(final List<Integer> repositoryIdList)
+	{
+		this.repositoryIdList = repositoryIdList;
+	}
+
 	/**
 	 * Returns true if the freetext criteria should be used; false otherwise.
 	 * 
@@ -350,5 +363,10 @@ public class ExtendedSearchCriterias
 	public Timestamp getToDate()
 	{
 		return this.toDate;
+	}
+	
+	public List<Integer> getRepositoryIdList()
+	{
+		return this.repositoryIdList;
 	}
 }
