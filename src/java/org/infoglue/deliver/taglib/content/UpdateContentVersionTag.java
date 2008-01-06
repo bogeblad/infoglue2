@@ -139,6 +139,23 @@ public class UpdateContentVersionTag extends InfoGlueWebServiceTag implements Co
 	    digitalAssets.add(remoteAttachment);
 	}
 
+	/**
+	 * Adds the content category to the contentVersion Value.
+	 * 
+	 * @throws JspException if the ancestor tag isn't a url tag.
+	 */
+	public void addContentCategory(String contentCategory) throws JspException
+	{
+	    List contentCategories = (List)this.contentVersion.get("contentCategories");
+	    if(contentCategories == null)
+	    {
+	    	contentCategories = new ArrayList();
+	        this.contentVersion.put("contentCategories", contentCategories);
+	    }
+
+	    contentCategories.add(contentCategory);
+	}
+
     /**
      *  
      */

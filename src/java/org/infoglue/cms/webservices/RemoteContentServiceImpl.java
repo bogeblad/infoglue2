@@ -42,6 +42,8 @@ import org.dom4j.Document;
 import org.dom4j.Element;
 import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
+import org.infoglue.cms.controllers.kernel.impl.simple.CategoryController;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentCategoryController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentStateController;
@@ -53,10 +55,12 @@ import org.infoglue.cms.controllers.kernel.impl.simple.PublicationController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ServerNodeController;
 import org.infoglue.cms.controllers.kernel.impl.simple.UserControllerProxy;
 import org.infoglue.cms.entities.content.Content;
+import org.infoglue.cms.entities.content.ContentCategoryVO;
 import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.content.ContentVersion;
 import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.entities.content.DigitalAssetVO;
+import org.infoglue.cms.entities.management.CategoryVO;
 import org.infoglue.cms.entities.publishing.PublicationVO;
 import org.infoglue.cms.entities.workflow.EventVO;
 import org.infoglue.cms.exception.SystemException;
@@ -381,6 +385,51 @@ public class RemoteContentServiceImpl extends RemoteInfoGlueService
 			    	    }	 
 	    	        }
 	    	        
+	    	        
+	    	        List contentCategories = (List)contentVersion.get("contentCategories");
+	    	        
+	    	        logger.info("contentCategories:" + contentCategories);
+	    	        if(contentCategories != null)
+	    	        {
+		    	        Iterator contentCategoriesIterator = contentCategories.iterator();
+		    	        while(contentCategoriesIterator.hasNext())
+		    	        {
+		    	        	String contentCategoryString = (String)contentCategoriesIterator.next();
+		    	        	//System.out.println("contentCategoryString:" + contentCategoryString);
+		    	        	String[] split = contentCategoryString.split("=");
+		    	        	String categoryKey = split[0];
+		    	        	String fullCategoryName = split[1];
+		    	        	logger.info("categoryKey:" + categoryKey);
+		    	        	logger.info("fullCategoryName:" + fullCategoryName);
+		    	        	
+		    	        	CategoryVO categoryVO = CategoryController.getController().findByPath(fullCategoryName);
+		    	        	logger.info("categoryVO:" + categoryVO);
+
+			    	        List categoryVOList = new ArrayList();
+			    	        categoryVOList.add(categoryVO);
+			    	        
+			    	        Database db = beginTransaction();
+
+			    			try
+			    			{
+			    				ContentVersion latestContentVersion = ContentVersionController.getContentVersionController().getContentVersionWithId(newContentVersionVO.getId(), db);
+			    				logger.info("Adding categoryKey:" + categoryKey + " to " + newContentVersionVO.getId() + ":" + categoryVO);
+				    	        //ContentCategoryController.getController().create(categoryVOList, newContentVersionVO, categoryKey);
+				    			final List categories = categoryVOListToCategoryList(categoryVOList, db);
+				    			ContentCategoryController.getController().create(categories, latestContentVersion, categoryKey, db);
+				    			
+				    			commitTransaction(db);
+			    			}
+			    			catch (Exception e)
+			    			{
+			    				e.printStackTrace();
+			    				rollbackTransaction(db);
+			    				throw new SystemException(e.getMessage());
+			    			}
+			    		}	 
+	    	        }
+	    	        
+	    	        
 	    	        //Should we also change state on newly created content version?
 	    	        if(stateId != null && !stateId.equals(ContentVersionVO.WORKING_STATE))
 	    	        {
@@ -416,6 +465,23 @@ public class RemoteContentServiceImpl extends RemoteInfoGlueService
         return status;
     }
 
+	/**
+	 * 
+	 * @param db the database to use in the operation.
+	 * @param categoryVOList
+	 * @return
+	 * @throws Exception
+	 */
+	private List categoryVOListToCategoryList(final List categoryVOList, Database db) throws Exception 
+	{
+		final List result = new ArrayList();
+		for(Iterator i=categoryVOList.iterator(); i.hasNext(); ) 
+		{
+			CategoryVO categoryVO = (CategoryVO) i.next();
+			result.add(CategoryController.getController().findById(categoryVO.getCategoryId(), db));
+		}
+		return result;
+	}
 	/**
      * Updates a content.
      */
@@ -599,6 +665,50 @@ public class RemoteContentServiceImpl extends RemoteInfoGlueService
 	    	    }
             }
             
+            List contentCategories = (List)contentVersion.get("contentCategories");
+	        
+	        logger.info("contentCategories:" + contentCategories);
+	        if(contentCategories != null)
+	        {
+    	        Iterator contentCategoriesIterator = contentCategories.iterator();
+    	        while(contentCategoriesIterator.hasNext())
+    	        {
+    	        	String contentCategoryString = (String)contentCategoriesIterator.next();
+    	        	//System.out.println("contentCategoryString:" + contentCategoryString);
+    	        	String[] split = contentCategoryString.split("=");
+    	        	String categoryKey = split[0];
+    	        	String fullCategoryName = split[1];
+    	        	logger.info("categoryKey:" + categoryKey);
+    	        	logger.info("fullCategoryName:" + fullCategoryName);
+    	        	
+    	        	CategoryVO categoryVO = CategoryController.getController().findByPath(fullCategoryName);
+    	        	logger.info("categoryVO:" + categoryVO);
+
+	    	        List categoryVOList = new ArrayList();
+	    	        categoryVOList.add(categoryVO);
+	    	        
+	    	        Database db = beginTransaction();
+
+	    			try
+	    			{
+	    				ContentVersion latestContentVersion = ContentVersionController.getContentVersionController().getContentVersionWithId(contentVersionVO.getId(), db);
+	    				logger.info("Adding categoryKey:" + categoryKey + " to " + contentVersionVO.getId() + ":" + categoryVO);
+		    	        //ContentCategoryController.getController().create(categoryVOList, newContentVersionVO, categoryKey);
+		    			final List categories = categoryVOListToCategoryList(categoryVOList, db);
+		    			ContentCategoryController.getController().create(categories, latestContentVersion, categoryKey, db);
+		    			
+		    			commitTransaction(db);
+	    			}
+	    			catch (Exception e)
+	    			{
+	    				e.printStackTrace();
+	    				rollbackTransaction(db);
+	    				throw new SystemException(e.getMessage());
+	    			}
+	    		}	 
+	        }
+	        
+	        
 	        //Should we also change state on newly created content version?
 	        if(stateId != null && !stateId.equals(ContentVersionVO.WORKING_STATE))
 	        {

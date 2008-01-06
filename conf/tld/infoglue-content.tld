@@ -962,6 +962,23 @@
 	        <rtexprvalue>false</rtexprvalue>
 		</attribute>
 	</tag>
+
+	<tag>
+	    <name>categoryParameter</name>
+	    <tagclass>org.infoglue.deliver.taglib.content.CategoryParameterTag</tagclass>
+	    <bodycontent>empty</bodycontent>
+	    <info></info>
+	    <attribute>
+		    <name>categoryKey</name>
+	    	<required>true</required>
+	        <rtexprvalue>false</rtexprvalue>
+		</attribute>
+	    <attribute>
+		    <name>fullCategoryName</name>
+	    	<required>true</required>
+	        <rtexprvalue>false</rtexprvalue>
+		</attribute>
+	</tag>
 	
 	<tag>
 	    <name>deleteContent</name>

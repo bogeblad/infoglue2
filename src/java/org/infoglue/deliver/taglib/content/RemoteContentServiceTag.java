@@ -84,11 +84,6 @@ public class RemoteContentServiceTag extends TemplateControllerTag
 		   ws.setOperationName(operationName);
 		   ws.setReturnType(Boolean.class);
 		   
-	       //List contents = new ArrayList();
-		   //Map content = new HashMap();
-		   //content.put("name", "Mattias Testar");
-		   //contents.add(content);
-	       
 		   ws.addArgument("contents", contents);
 		   
 		   ws.callService();

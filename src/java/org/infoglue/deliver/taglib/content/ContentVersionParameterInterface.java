@@ -46,4 +46,11 @@ public interface ContentVersionParameterInterface
 	 */
 	public void addDigitalAsset(RemoteAttachment remoteAttachment) throws JspException;
 
+	/**
+	 * Adds the content category to the contentVersion Value.
+	 * 
+	 * @throws JspException if the ancestor tag isn't a url tag.
+	 */
+	public void addContentCategory(String contentCategory) throws JspException;
+
 }

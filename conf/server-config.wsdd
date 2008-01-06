@@ -33,6 +33,8 @@
   <parameter name="className" value="org.infoglue.cms.webservices.RemoteContentServiceImpl"/>
   <beanMapping languageSpecificType="java:org.infoglue.cms.entities.content.ContentVO" qname="ns1:ContentVO" xmlns:ns1="infoglue"/>
   <beanMapping languageSpecificType="java:org.infoglue.cms.entities.content.ContentVersionVO" qname="ns1:ContentVersionVO" xmlns:ns1="infoglue"/>
+  <beanMapping languageSpecificType="java:org.infoglue.cms.entities.management.CategoryVO" qname="ns1:CategoryVO" xmlns:ns1="infoglue"/>
+  <beanMapping languageSpecificType="java:org.infoglue.cms.entities.content.ContentCategoryVO" qname="ns1:ContentCategoryVO" xmlns:ns1="infoglue"/>
  </service>
  <service name="RemoteUserService" provider="java:RPC">
   <parameter name="allowedMethods" value="*"/>
