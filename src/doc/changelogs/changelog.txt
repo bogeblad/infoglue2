@@ -109,6 +109,9 @@ Abbreviated Changelog from 2.6.0 Final
 - Added sorting of siteNodeTypeDefinitions by name in all create site node views.
 - Added new attributes to transformText-tag so you can make more useful operations. Very useful for handling of bad user input etc.
 - Added a new attribute ("repositoryIds") to content:matchingContents-tag so one can state which repositories to search in.
+- Added method to get the configured SMTP-server through the pageContext-object (TemplateController).
+- Added new content:categoryParameter-tag which let's you add categories to a content version when creating / updating it from the sites.
+
 
 -------------------------------------------------------------------------------------
 - InfoGlue 2.6.0 Final
