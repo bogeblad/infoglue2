@@ -23,33 +23,20 @@
 
 package org.infoglue.cms.webservices;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.dom4j.Document;
 import org.dom4j.Element;
-import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
-import org.infoglue.cms.controllers.kernel.impl.simple.ContentControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
-import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionControllerProxy;
-import org.infoglue.cms.controllers.kernel.impl.simple.DigitalAssetController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ServerNodeController;
 import org.infoglue.cms.controllers.kernel.impl.simple.UserControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.UserPropertiesController;
-import org.infoglue.cms.entities.content.ContentVO;
-import org.infoglue.cms.entities.content.ContentVersionVO;
-import org.infoglue.cms.entities.content.DigitalAssetVO;
 import org.infoglue.cms.entities.management.UserPropertiesVO;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.dom.DOMBuilder;
-import org.infoglue.cms.webservices.elements.RemoteAttachment;
 import org.infoglue.deliver.util.webservices.DynamicWebserviceSerializer;
 
 

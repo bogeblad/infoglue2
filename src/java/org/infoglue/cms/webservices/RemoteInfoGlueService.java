@@ -23,41 +23,15 @@
 
 package org.infoglue.cms.webservices;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.axis.MessageContext;
 import org.apache.axis.transport.http.HTTPConstants;
 import org.apache.log4j.Logger;
-import org.dom4j.Document;
-import org.dom4j.Element;
 import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
-import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
-import org.infoglue.cms.controllers.kernel.impl.simple.ContentControllerProxy;
-import org.infoglue.cms.controllers.kernel.impl.simple.ContentStateController;
-import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
-import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionControllerProxy;
-import org.infoglue.cms.controllers.kernel.impl.simple.DigitalAssetController;
-import org.infoglue.cms.controllers.kernel.impl.simple.PublicationController;
-import org.infoglue.cms.controllers.kernel.impl.simple.UserControllerProxy;
-import org.infoglue.cms.entities.content.ContentVO;
-import org.infoglue.cms.entities.content.ContentVersionVO;
-import org.infoglue.cms.entities.content.DigitalAssetVO;
-import org.infoglue.cms.entities.publishing.PublicationVO;
 import org.infoglue.cms.exception.SystemException;
-import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.ChangeNotificationController;
-import org.infoglue.cms.util.dom.DOMBuilder;
-import org.infoglue.cms.webservices.elements.RemoteAttachment;
-import org.infoglue.deliver.util.webservices.DynamicWebserviceSerializer;
 
 
 /**

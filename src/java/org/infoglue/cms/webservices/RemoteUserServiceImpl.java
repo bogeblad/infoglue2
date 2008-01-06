@@ -23,45 +23,23 @@
 
 package org.infoglue.cms.webservices;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.log4j.Logger;
-import org.dom4j.Document;
-import org.dom4j.Element;
-import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
-import org.infoglue.cms.controllers.kernel.impl.simple.ContentControllerProxy;
-import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
-import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionControllerProxy;
-import org.infoglue.cms.controllers.kernel.impl.simple.DigitalAssetController;
 import org.infoglue.cms.controllers.kernel.impl.simple.GroupControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.RoleControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.ServerNodeController;
 import org.infoglue.cms.controllers.kernel.impl.simple.UserControllerProxy;
-import org.infoglue.cms.controllers.kernel.impl.simple.UserPropertiesController;
-import org.infoglue.cms.entities.content.ContentVO;
-import org.infoglue.cms.entities.content.ContentVersionVO;
-import org.infoglue.cms.entities.content.DigitalAssetVO;
-import org.infoglue.cms.entities.management.GroupVO;
-import org.infoglue.cms.entities.management.RoleVO;
 import org.infoglue.cms.entities.management.SystemUserVO;
-import org.infoglue.cms.entities.management.UserPropertiesVO;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGlueGroup;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.security.InfoGlueRole;
-import org.infoglue.cms.util.dom.DOMBuilder;
-import org.infoglue.cms.webservices.elements.RemoteAttachment;
 import org.infoglue.common.security.beans.InfoGlueGroupBean;
 import org.infoglue.common.security.beans.InfoGluePrincipalBean;
 import org.infoglue.common.security.beans.InfoGlueRoleBean;
-import org.infoglue.deliver.util.webservices.DynamicWebserviceSerializer;
 
 
 /**
