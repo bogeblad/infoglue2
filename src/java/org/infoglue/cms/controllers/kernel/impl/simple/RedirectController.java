@@ -75,7 +75,14 @@ public class RedirectController extends BaseController
 
 		return redirectVOList;
     }
-    
+
+    public List getRedirectVOList(Database db) throws SystemException, Bug
+    {
+		List redirectVOList = getAllVOObjects(RedirectImpl.class, "redirectId", db);
+
+		return redirectVOList;
+    }
+
     public RedirectVO create(RedirectVO redirectVO) throws ConstraintException, SystemException
     {
         Redirect redirect = new RedirectImpl();
