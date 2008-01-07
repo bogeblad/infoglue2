@@ -311,7 +311,7 @@ public class TransactionHistoryController extends BaseController
         {
             logger.error("An error occurred so we should not complete the transaction:" + e, e);
 			rollbackTransaction(db);
-			throw new SystemException(e.getMessage());
+			return null;
         }
 
 		logger.info("TransactionHistory object all done..");
