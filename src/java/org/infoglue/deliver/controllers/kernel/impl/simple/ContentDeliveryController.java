@@ -983,6 +983,8 @@ public class ContentDeliveryController extends BaseDeliveryController
 			    
 			    i++;
 				filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i);
+			    if(filePath != null)
+			    	filePath += File.separator + folderName;
 			}
 			//String filePath = CmsPropertyHandler.getDigitalAssetPath();
 			//DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpDigitalAsset(digitalAsset, fileName, filePath);
@@ -1027,6 +1029,8 @@ public class ContentDeliveryController extends BaseDeliveryController
 			    
 			    i++;
 				filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i);
+			    if(filePath != null)
+			    	filePath += File.separator + folderName;
 			}
 
 			//String filePath = CmsPropertyHandler.getDigitalAssetPath();
@@ -1117,6 +1121,8 @@ public class ContentDeliveryController extends BaseDeliveryController
 					
 				    i++;
 					filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i);
+				    if(filePath != null)
+				    	filePath += File.separator + folderName;
 				}
 
 				//String filePath = CmsPropertyHandler.getDigitalAssetPath();
@@ -1187,6 +1193,8 @@ public class ContentDeliveryController extends BaseDeliveryController
 				
 			    i++;
 				filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i);
+			    if(filePath != null)
+			    	filePath += File.separator + folderName;
 			}
 
 			SiteNode siteNode = NodeDeliveryController.getNodeDeliveryController(null, null, null).getSiteNode(db, siteNodeId);
@@ -1282,7 +1290,9 @@ public class ContentDeliveryController extends BaseDeliveryController
 					}
 				    
 				    i++;
-					filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i);
+				    filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i);
+				    if(filePath != null)
+				    	filePath += File.separator + folderName;
 				}
 
 				SiteNode siteNode = NodeDeliveryController.getNodeDeliveryController(siteNodeId, languageId, contentId).getSiteNode(db, siteNodeId);
@@ -1334,6 +1344,8 @@ public class ContentDeliveryController extends BaseDeliveryController
 						
 						i++;
 						filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i);
+					    if(filePath != null)
+			    			filePath += File.separator + folderName;
 					}
 
 					SiteNode siteNode = NodeDeliveryController.getNodeDeliveryController(siteNodeId, languageId, contentId).getSiteNode(db, siteNodeId);
@@ -1418,6 +1430,8 @@ public class ContentDeliveryController extends BaseDeliveryController
 					
 					i++;
 					filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i);
+				    if(filePath != null)
+				    	filePath += File.separator + folderName;
 				}
 
 				//String filePath = CmsPropertyHandler.getDigitalAssetPath();
@@ -1498,6 +1512,8 @@ public class ContentDeliveryController extends BaseDeliveryController
 				
 				i++;
 				filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i);
+			    if(filePath != null)
+			    	filePath += File.separator + folderName;
 			}
 			
 			SiteNode siteNode = NodeDeliveryController.getNodeDeliveryController(null, null, null).getSiteNode(db, siteNodeId);
@@ -1572,6 +1588,8 @@ public class ContentDeliveryController extends BaseDeliveryController
 					
 					i++;
 					filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i);
+				    if(filePath != null)
+				    	filePath += File.separator + folderName;
 				}
 
 				//String filePath = CmsPropertyHandler.getDigitalAssetPath();
@@ -1668,6 +1686,8 @@ public class ContentDeliveryController extends BaseDeliveryController
 					    
 					i++;
 					filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i);
+				    if(filePath != null)
+				    	filePath += File.separator + folderName;
 				}
 
 				//String filePath = CmsPropertyHandler.getDigitalAssetPath();
@@ -1705,8 +1725,6 @@ public class ContentDeliveryController extends BaseDeliveryController
 			int i = 0;
 			File masterFile = null;
 			String filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i);
-			String folderName = "" + (digitalAsset.getDigitalAssetId().intValue() / 1000);
-			logger.info("folderName:" + folderName);
 			while(filePath != null)
 			{
 				File unzipDirectory = new File(filePath + File.separator + fileName.substring(0, fileName.lastIndexOf(".")));
@@ -1726,7 +1744,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 			if(siteNode != null && siteNode.getRepository().getDnsName() != null && !siteNode.getRepository().getDnsName().equals(""))
 				dnsName = siteNode.getRepository().getDnsName();
 				
-			archiveBaseUrl = urlComposer.composeDigitalAssetUrl(dnsName, folderName, fileName.substring(0, fileName.lastIndexOf(".")), deliveryContext); 
+			archiveBaseUrl = urlComposer.composeDigitalAssetUrl(dnsName, null, fileName.substring(0, fileName.lastIndexOf(".")), deliveryContext); 
 		}
 		
 		return archiveBaseUrl;

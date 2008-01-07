@@ -130,6 +130,8 @@ public class DigitalAssetDeliveryController extends BaseDeliveryController
 
 				i++;
 				filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i);
+			    if(filePath != null)
+			    	filePath += File.separator + folderName;
 				//System.out.println("filePath:" + filePath);
 			}
 
@@ -177,6 +179,8 @@ public class DigitalAssetDeliveryController extends BaseDeliveryController
 
 				i++;
 				filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i);
+			    if(filePath != null)
+			    	filePath += File.separator + folderName;
 				//System.out.println("filePath:" + filePath);
 			}
 
@@ -225,6 +229,8 @@ public class DigitalAssetDeliveryController extends BaseDeliveryController
 				
 				i++;
 				filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i);
+			    if(filePath != null)
+			    	filePath += File.separator + folderName;
 			}
 			
 			String dnsName = CmsPropertyHandler.getWebServerAddress();
@@ -269,6 +275,8 @@ public class DigitalAssetDeliveryController extends BaseDeliveryController
 				
 				i++;
 				filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i);
+			    if(filePath != null)
+			    	filePath += File.separator + folderName;
 			}
 
 			String dnsName = CmsPropertyHandler.getWebServerAddress();
@@ -627,6 +635,8 @@ public class DigitalAssetDeliveryController extends BaseDeliveryController
 		
 		try 
 		{
+			new File(filePath).mkdirs();
+			
 			//System.out.println("outputFile:" + filePath + File.separator + fileName);
 			outputFile.createNewFile();
 			
@@ -756,11 +766,12 @@ public class DigitalAssetDeliveryController extends BaseDeliveryController
 	/**
 	 * This method removes all images in the digitalAsset directory which belongs to a certain digital asset.
 	 */
-	
 	public void deleteDigitalAssets(Integer digitalAssetId) throws SystemException, Exception
 	{ 
 		try
 		{
+			String folderName = "" + (digitalAssetId.intValue() / 1000);
+			
 			int i = 0;
 			String filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i);
 			while(filePath != null)
@@ -775,6 +786,24 @@ public class DigitalAssetDeliveryController extends BaseDeliveryController
 				}
 				i++;
 				filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i);
+			}
+
+			i = 0;
+			filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i) + File.separator + folderName;
+			while(filePath != null)
+			{
+				File assetDirectory = new File(filePath);
+				File[] files = assetDirectory.listFiles(new FilenameFilterImpl(digitalAssetId.toString())); 	
+				for(int j=0; j<files.length; j++)
+				{
+					File file = files[j];
+					logger.info("Deleting file " + file.getPath());
+					file.delete();
+				}
+				i++;
+				filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i);
+			    if(filePath != null)
+			    	filePath += File.separator + folderName;
 			}
 
 			//File assetDirectory = new File(CmsPropertyHandler.getDigitalAssetPath());
