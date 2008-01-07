@@ -10,6 +10,26 @@
 		</base-calendar>
 	</calendar>
 
+	<job>
+		<job-detail>
+			<name>Refresh</name>
+			<group>infoglueJobs</group>
+			<job-class>org.infoglue.cms.jobs.RefreshJob</job-class>
+			<volatility>false</volatility>
+			<durability>false</durability>
+			<recover>false</recover>
+		</job-detail>
+			        
+		<trigger>
+			<cron>
+				<name>infoglueTrigger</name>
+				<group>infoglueJobs</group>
+				<job-name>Refresh</job-name>
+				<job-group>infoglueJobs</job-group>
+				<cron-expression>0 0 2,12,22 * * ?</cron-expression>
+			</cron>
+		</trigger>
+	</job>
 	<!--
 	<job>
 		<job-detail>
