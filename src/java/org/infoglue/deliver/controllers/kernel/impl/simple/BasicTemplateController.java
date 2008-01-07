@@ -3360,7 +3360,7 @@ public class BasicTemplateController implements TemplateController
             dnsName = siteNode.getRepository().getDnsName();
         }
 
-        return urlComposer.composeDigitalAssetUrl( dnsName, fileName, deliveryContext );
+        return urlComposer.composeDigitalAssetUrl( dnsName, null, fileName, deliveryContext );
     }
     
     
