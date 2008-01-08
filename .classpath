@@ -103,7 +103,7 @@
 	<classpathentry kind="lib" path="lib/build/slf4j-jdk14-1.4.0.jar"/>
 	<classpathentry kind="lib" path="lib/build/unoil-2.2.0.jar"/>
 	<classpathentry kind="lib" path="lib/build/xstream-1.2.2.jar"/>
-	<classpathentry kind="lib" path="/InfoGlueCalendar/lib/jdom.jar"/>
+	<classpathentry kind="lib" path="lib/core/jdom.jar"/>
 	<classpathentry kind="lib" path="lib/jdbc/mysql-connector-java-5.0.7-bin.jar"/>
 	<classpathentry kind="lib" path="lib/shared/servlet-api.jar"/>
 	<classpathentry kind="lib" path="lib/shared/jsp-api.jar"/>
