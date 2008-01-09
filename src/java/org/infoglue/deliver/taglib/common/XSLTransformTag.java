@@ -148,11 +148,14 @@ public class XSLTransformTag extends TemplateControllerTag
 			xmlSource = new StreamSource(new StringReader(this.xmlString));			
 		}
 		
+		Templates pss = null;
+        Transformer transformer = null;
+        
 		try 
 		{
-            Templates pss = tryCache(this.styleFile, this.styleString, cacheStyle);
-            Transformer transformer = pss.newTransformer();
-            
+            pss = tryCache(this.styleFile, this.styleString, cacheStyle);
+            transformer = pss.newTransformer();
+        
 			if(logger.isDebugEnabled())	
 				logger.info("outputFormat:" + this.outputFormat);
 
@@ -213,19 +216,27 @@ public class XSLTransformTag extends TemplateControllerTag
 		{
             logger.error("Error transforming with SAXON:" + e.getMessage(), e);
         }
+        finally
+        {
+            transformer.clearParameters();
+            transformer.reset();
+            transformer = null;
+            pss = null;
+            xmlSource = null;
         
-		java.lang.System.clearProperty("javax.xml.transform.TransformerFactory");
-		
-		this.xml = null;
-		this.xmlFile = null;
-		this.source = null;
-		this.xmlString = null;
-		this.styleFile = null;
-		this.styleString = null;
-		this.outputFormat = null;
-		this.cacheStyle = true;
-		parameters.clear();
-		
+    		this.xml = null;
+    		this.xmlFile = null;
+    		this.source = null;
+    		this.xmlString = null;
+    		this.styleFile = null;
+    		this.styleString = null;
+    		this.outputFormat = null;
+    		this.cacheStyle = true;
+    		parameters.clear();
+
+    		java.lang.System.clearProperty("javax.xml.transform.TransformerFactory");
+        }
+        		
         return EVAL_PAGE;
     }
 
