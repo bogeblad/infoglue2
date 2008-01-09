@@ -111,6 +111,8 @@ Abbreviated Changelog from 2.6.0 Final
 - Added a new attribute ("repositoryIds") to content:matchingContents-tag so one can state which repositories to search in.
 - Added method to get the configured SMTP-server through the pageContext-object (TemplateController).
 - Added new content:categoryParameter-tag which let's you add categories to a content version when creating / updating it from the sites.
+- Added new job which clears the caches and checks database connections with a certain interval.
+- Fixed so transformer.reset() is called after each run in common:XSLTransformTag.. had problems with xerces documents not being gc:d otherwise.
 
 
 -------------------------------------------------------------------------------------
