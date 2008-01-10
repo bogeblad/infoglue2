@@ -142,7 +142,15 @@ public class BasicURLComposer extends URLComposer
     	{
     		String assetId = filename.substring(0, filename.indexOf("_"));
     		//System.out.println("assetId:" + assetId);
-			folderName = "" + (new Integer(assetId).intValue() / 1000);
+    		try 
+    		{
+				folderName = "" + (new Integer(assetId).intValue() / 1000);
+    		} 
+    		catch (Exception e) 
+    		{
+		    	logger.error("A problem parsing assetId[" + assetId + "]:" + e.getMessage());
+		    	folderName = "0";
+		    }
     	}
     	
     	return composeDigitalAssetUrl(dnsName, folderName, filename, deliveryContext);
