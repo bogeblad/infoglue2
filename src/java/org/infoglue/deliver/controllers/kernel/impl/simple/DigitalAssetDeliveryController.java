@@ -63,6 +63,8 @@ import org.infoglue.deliver.util.Timer;
 public class DigitalAssetDeliveryController extends BaseDeliveryController
 {
     private final static Logger logger = Logger.getLogger(DigitalAssetDeliveryController.class.getName());
+    
+    private final static DigitalAssetDeliveryController digitalAssetController =  new DigitalAssetDeliveryController();
 
 	class FilenameFilterImpl implements FilenameFilter 
 	{
@@ -94,7 +96,7 @@ public class DigitalAssetDeliveryController extends BaseDeliveryController
 	
 	public static DigitalAssetDeliveryController getDigitalAssetDeliveryController()
 	{
-		return new DigitalAssetDeliveryController();
+		return digitalAssetController;
 	}
 	
 	
@@ -121,7 +123,7 @@ public class DigitalAssetDeliveryController extends BaseDeliveryController
 			{
 				try
 				{
-					DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpDigitalAsset(digitalAssetVO, fileName, filePath, db);
+					dumpDigitalAsset(digitalAssetVO, fileName, filePath, db);
 				}
 				catch(Exception e)
 				{
