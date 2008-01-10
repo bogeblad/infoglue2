@@ -32,6 +32,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.log4j.Logger;
 import org.apache.xerces.parsers.DOMParser;
@@ -85,18 +86,21 @@ public class ContentVersionController extends BaseController
     private final static Logger logger = Logger.getLogger(ContentVersionController.class.getName());
 
 	private static final ContentCategoryController contentCategoryController = ContentCategoryController.getController();
-	private final RegistryController registryController = RegistryController.getController();
-
+	private static final ContentVersionController contentVersionController = new ContentVersionController();
+	private static final RegistryController registryController = RegistryController.getController();
+	
+	private static Map<Integer, Integer> contentMap = new ConcurrentHashMap<Integer, Integer>();
+	
 	/**
 	 * Factory method to get object
 	 */
 	
 	public static ContentVersionController getContentVersionController()
 	{
-		return new ContentVersionController();
+		return contentVersionController;
 	}
 	
-	private static Map contentMap = Collections.synchronizedMap(new HashMap());
+	
 
     public Integer getContentIdForContentVersion(Integer contentVersionId) throws SystemException, Bug
     {
