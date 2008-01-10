@@ -2636,26 +2636,26 @@ public class ComponentLogic
      *         went wrong
      * @author Per Jonsson - per.jonsson@it-huset.se
      */
-    public String getRenderedTextUrl( String fontConfigPropertyName, String text, Map renderAttributes )
+    public String getRenderedTextUrl( final String fontConfigPropertyName, final String text, final Map renderAttributes )
     {
         String assetUrl = "";
         try
         {
-            Map property = getInheritedComponentProperty( this.infoGlueComponent, fontConfigPropertyName, true, true, this.useRepositoryInheritance);
+            final Map property = getInheritedComponentProperty( this.infoGlueComponent, fontConfigPropertyName, true, true, this.useRepositoryInheritance);
             if ( property != null )
             {
-                List bindings = (List)property.get( "bindings" );
-                if ( bindings.size() > 0 )
-                {
-                    Integer contentId = new Integer( (String)bindings.get( 0 ) );
+                final List<ComponentBinding> bindings = (List<ComponentBinding>)property.get("bindings");
+    			Iterator<ComponentBinding> bindingsIterator = bindings.iterator();
+    			if(bindingsIterator.hasNext())
+    			{
+    				Integer contentId = bindingsIterator.next().getEntityId();
                     assetUrl = templateController.getRenderedTextUrl( contentId, text, renderAttributes );
-                }
+    			}                
             }
             else
             {
             	assetUrl = templateController.getRenderedTextUrl( text, renderAttributes );
             }
-
         }
         catch ( Exception e )
         {
