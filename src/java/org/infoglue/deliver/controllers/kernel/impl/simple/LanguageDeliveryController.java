@@ -56,6 +56,8 @@ import org.infoglue.deliver.util.NullObject;
 public class LanguageDeliveryController extends BaseDeliveryController
 {
     private final static Logger logger = Logger.getLogger(LanguageDeliveryController.class.getName());
+    
+    private final static LanguageDeliveryController languageDeliveryController = new LanguageDeliveryController();
 
 	/**
 	 * Private constructor to enforce factory-use
@@ -71,7 +73,7 @@ public class LanguageDeliveryController extends BaseDeliveryController
 	
 	public static LanguageDeliveryController getLanguageDeliveryController()
 	{
-		return new LanguageDeliveryController();
+		return languageDeliveryController;
 	}
 	
 	

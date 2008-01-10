@@ -49,6 +49,8 @@ import com.opensymphony.module.propertyset.PropertySetManager;
 public class RepositoryDeliveryController extends BaseDeliveryController
 {
     private final static Logger logger = Logger.getLogger(RepositoryDeliveryController.class.getName());
+    
+    private final static RepositoryDeliveryController repositoryDeliveryController = new RepositoryDeliveryController(); 
 
 	/**
 	 * Private constructor to enforce factory-use
@@ -64,7 +66,7 @@ public class RepositoryDeliveryController extends BaseDeliveryController
 	
 	public static RepositoryDeliveryController getRepositoryDeliveryController()
 	{
-		return new RepositoryDeliveryController();
+		return repositoryDeliveryController;
 	}
 	
 
