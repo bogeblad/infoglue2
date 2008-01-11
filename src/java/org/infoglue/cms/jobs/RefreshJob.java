@@ -58,15 +58,16 @@ public class RefreshJob implements Job
 
     public synchronized void execute(JobExecutionContext context) throws JobExecutionException
     {
-    	logger.error("*********************************************************************");
-    	logger.error("* Starting refresh job which should run with nice intervals         *");
-    	logger.error("* Purpose is to keep connection pool alive and to clear live caches *");
-    	logger.error("*********************************************************************");
+    	logger.info("*********************************************************************");
+    	logger.info("* Starting refresh job which should run with nice intervals         *");
+    	logger.info("* Purpose is to keep connection pool alive and to clear live caches *");
+    	logger.info("*********************************************************************");
 
+    	/*
 		try
 		{
 	    	logger.error("Fetching redirects just to get anything really - really.");
-			Database db1 = CastorDatabaseService.getDatabase();
+	    	Database db1 = CastorDatabaseService.getDatabase();
 			Database db2 = CastorDatabaseService.getDatabase();
 			Database db3 = CastorDatabaseService.getDatabase();
 			Database db4 = CastorDatabaseService.getDatabase();
@@ -86,17 +87,19 @@ public class RefreshJob implements Job
 		{
 		    logger.error("Getting propertySet...");
 			Map args = new HashMap();
-		    args.put("globalKey", "infoglue");
+		    args.put("globalKey", "dummy");
 		    PropertySet propertySet = PropertySetManager.getInstance("jdbc", args);
+		    propertySet.getKeys();
 		}
 		catch(Exception e)
 	    {
 	    	logger.error("Could not get property set: " + e.getMessage());
 	    }
+		*/
 		
 		try
 		{
-		    logger.error("Notifying caches...");
+		    logger.info("Notifying caches...");
 			NotificationMessage notificationMessage = new NotificationMessage("NightlyRefreshJob.execute():", "ServerNodeProperties", "administrator", NotificationMessage.SYSTEM, "0", "ServerNodeProperties");
 		    ChangeNotificationController.getInstance().addNotificationMessage(notificationMessage);
         	ChangeNotificationController.notifyListeners();
@@ -104,10 +107,10 @@ public class RefreshJob implements Job
 		}
 		catch(Exception e)
 	    {
-	    	logger.error("Could not get property set: " + e.getMessage());
+	    	logger.error("Could not update remote servers: " + e.getMessage());
 	    }
 	   
-	   	logger.error("Refresh-job finished");
+	   	logger.info("Refresh-job finished");
     }
 
 	private void getRedirects(Database db) throws Bug, TransactionNotInProgressException, PersistenceException

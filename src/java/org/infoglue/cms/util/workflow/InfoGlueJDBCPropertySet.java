@@ -43,7 +43,6 @@ import org.apache.commons.dbcp.PoolingDriver;
 import org.apache.commons.pool.ObjectPool;
 import org.apache.commons.pool.impl.GenericObjectPool;
 import org.apache.log4j.Logger;
-import org.infoglue.deliver.util.CacheController;
 import org.infoglue.deliver.util.NullObject;
 
 import com.opensymphony.module.propertyset.InvalidPropertyTypeException;
@@ -64,13 +63,11 @@ public class InfoGlueJDBCPropertySet extends JDBCPropertySet
 {
     private final static Logger logger = Logger.getLogger(InfoGlueJDBCPropertySet.class.getName());
 
-    private static ObjectPool connectionPool;
+    private static GenericObjectPool connectionPool;
     private static ConnectionFactory connectionFactory;
     private static PoolableConnectionFactory poolableConnectionFactory;
     private static PoolingDriver driver;
 
-    // config
-    //DataSource ds;
     String colData;
     String colDate;
     String colFloat;
@@ -645,13 +642,36 @@ public class InfoGlueJDBCPropertySet extends JDBCPropertySet
 	        }
 
 	        conn = DriverManager.getConnection("jdbc:apache:commons:dbcp:infoGlueJDBCPropertySet");
-			
+			/*
+	        if(dbcpValidationQuery != null)
+	        {
+	        	Timer t = new Timer();
+	        	System.out.println("Running dbcpValidationQuery:" + dbcpValidationQuery);
+	        	
+	        	try
+	        	{
+		        	PreparedStatement ps = conn.prepareStatement(dbcpValidationQuery);
+		            
+		            ResultSet rs = ps.executeQuery();
+	
+		            rs.close();
+		            ps.close();
+	        	}
+	        	catch (Exception e) 
+	        	{
+	        		logger.error("Problem getting connection from pool[" + conn.hashCode() + "]:" + e.getMessage());
+	        		connectionPool.invalidateObject(conn);
+	        		conn = getConnection();
+				}
+	            t.printElapsedTimeMicro("Test query took");
+	        }
+	        */
+	        
 	        if(logger.isDebugEnabled())
 	        {
 	        	logger.debug("Fetched connection from pool...");
 	        	printDriverStats();
 	        }
-	        
             //conn = DriverManager.getConnection(url, this.userName, this.password);
 		} 
 		catch (Exception ex) 
@@ -697,12 +717,13 @@ public class InfoGlueJDBCPropertySet extends JDBCPropertySet
         logger.info("dbcpMaxActiveInt:" + dbcpMaxActiveInt);
 
         connectionPool = new GenericObjectPool(null, dbcpMaxActiveInt);
+        connectionPool.setTestOnBorrow(true);
         connectionFactory = new DriverManagerConnectionFactory(connectURI, userName, password);
         poolableConnectionFactory = new PoolableConnectionFactory(connectionFactory,connectionPool,null,validationQuery,false,true);
-
+        
         Class.forName("org.apache.commons.dbcp.PoolingDriver");
         driver = (PoolingDriver) DriverManager.getDriver("jdbc:apache:commons:dbcp:");
-
+        
         driver.registerPool("infoGlueJDBCPropertySet",connectionPool);
     }
 

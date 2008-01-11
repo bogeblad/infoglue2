@@ -1,21 +1,4 @@
-<!DOCTYPE databases PUBLIC "-//EXOLAB/Castor JDO Configuration DTD Version 1.0//EN" "http://castor.exolab.org/jdo-conf.dtd">
-<!--
-<jdo-conf>
-	<database name="INFOGLUE_CMS" engine="@database.driver.engine@">
-		<data-source class-name="org.apache.commons.dbcp.BasicDataSource">
-		  <params driver-class-name="@database.driver.class@"
-			  		username="@database.user@"
-			  		password="@database.password@"
-			  		url="@database.url@"
-			  		max-active="@database.maxConnections@"
-			  		connection-properties="useUnicode=@database.use.unicode@;characterEncoding=@database.encoding@"/>
-		</data-source>
-		<mapping href="classes/@database.mapping@"/>
-	</database>
-    <transaction-demarcation mode="local" />
-</jdo-conf>
--->
-
+<!DOCTYPE databases PUBLIC "-//EXOLAB/Castor JDO Configuration DTD Version 1.0//EN" "http://www.castor.org/jdo-conf.dtd">
 <jdo-conf> 
 	<database name="INFOGLUE_CMS" engine="@database.driver.engine@">
 		<data-source class-name="org.apache.commons.dbcp.BasicDataSource">
@@ -23,53 +6,11 @@
 		  	<param name="username" value="@database.user@"/>
 		  	<param name="password" value="@database.password@"/>
 		  	<param name="url" value="@database.url@"/>
+		  	<param name="validation-query" value="SELECT 1"/>
 		  	<param name="max-active" value="@database.maxConnections@"/>
-			<param name="connection-properties" value="useUnicode=@database.use.unicode@;characterEncoding=@database.encoding@"/>
+			<param name="connection-properties" value="useUnicode=@database.use.unicode@;characterEncoding=@database.encoding@;autoReconnect=true"/>
 		</data-source>
 		<mapping href="classes/@database.mapping@"/>
 	</database>
-    <transaction-demarcation mode="local" />
+	<transaction-demarcation mode="local" />
 </jdo-conf>
-
-
-<!--
-<jdo-conf>
-  	<database name="INFOGLUE_CMS" engine="oracle" >
-		<driver url="jdbc:oracle:thin:@217.28.196.181:1521:GU4" class-name="oracle.jdbc.pool.OracleConnectionCacheImpl">
-	          <param name="user" value="cobra" />
-	          <param name="password" value="ijikal" />
-	          <param name="minLimit" value="5" />
-	          <param name="maxLimit" value="30" />
-	          <param name="cacheScheme" value="OracleConnectionCacheImpl.DYNAMIC_SCHEME" />
-	          <param name="statementCacheSize" value="10" />
-		</driver>
-	    <mapping href="classes/oracle_mapping.xml" />
-	</database>
-    <transaction-demarcation mode="local" />
-</jdo-conf>
--->
-
-<!--
-<database name="INFOGLUE_CMS" engine="mysql">
-    <driver class-name="@database.driver.class@" url="@database.url@">
-      <param name="user" value="@database.user@"/>
-      <param name="password" value="@database.password@"/>
-      <param name="autoReconnect" value="true"/>
-      <param name="useUnicode" value="@database.use.unicode@"/>
-      <param name="characterEncoding" value="@database.encoding@"/>
-    </driver>
-    <mapping href="classes/mapping.xml"/>
-</database>
--->
-
-<!--
-<database name="INFOGLUE_CMS" engine="sql-server" >
-    <driver class-name="@database.driver.class@" url="@database.url@">
-     	<param name="DatabaseName" value="INFOGLUE_CMS"/>
-        <param name="user" value="@database.user@"/>
-        <param name="password" value="@database.password@" />
-        <param name="SelectMethod" value="Cursor" />
-    </driver>
-  <mapping href="classes/mapping.xml" />
-</database>
--->
