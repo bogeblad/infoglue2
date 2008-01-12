@@ -127,6 +127,44 @@ public class UpdateContentVersionAction extends ViewContentVersionAction
 		return "success";
 	}
 
+	public String doUpdateVersionValue() throws Exception
+	{
+		super.initialize(this.contentVersionId, this.contentId, this.languageId);
+		ceb.throwIfNotEmpty();
+
+		ContentVersionVO currentContentVersionVO = null;
+		if(this.contentVersionVO.getId() != null)
+		{
+			currentContentVersionVO = ContentVersionController.getContentVersionController().getContentVersionVOWithId(this.contentVersionVO.getId());
+		}
+		
+		if(currentContentVersionVO != null)
+		{
+			logger.info("oldModifiedDateTime:" + oldModifiedDateTime);
+			logger.info("modifiedDateTime2:" + currentContentVersionVO.getModifiedDateTime().getTime());
+		}
+		
+		this.contentVersionVO.setVersionModifier(this.getInfoGluePrincipal().getName());
+		
+		try
+		{
+		    this.contentVersionVO = ContentVersionControllerProxy.getController().acUpdate(this.getInfoGluePrincipal(), this.contentId, this.languageId, this.contentVersionVO);
+		    //this.contentVersionVO = ContentVersionController.getContentVersionController().getContentVersionVOWithId(this.contentVersionVO.getId());
+		    //this.oldModifiedDateTime = this.contentVersionVO.getModifiedDateTime().getTime();
+			oldModifiedDateTime = this.contentVersionVO.getModifiedDateTime().getTime();
+		}
+		catch(ConstraintException ce)
+		{
+		    super.contentVersionVO = this.contentVersionVO;
+		    throw ce;
+		}
+		
+		currentEditorId = new Integer(1);
+		concurrentModification = false;
+		
+		return "success";
+	}
+
 	public String doStandalone() throws Exception
 	{
 		super.initialize(this.contentVersionId, this.contentId, this.languageId);

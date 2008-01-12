@@ -483,7 +483,10 @@ public class ViewContentToolToolBarAction extends InfoGlueAbstractAction
 				buttons.add(getSyncTreeButton());
 				
 				if(hasVersion())
+				{
 					buttons.add(getChangeLanguageButton());
+					buttons.add(getShowXMLButton());
+				}
 		    }
 		    else
 		    {
@@ -613,6 +616,11 @@ public class ViewContentToolToolBarAction extends InfoGlueAbstractAction
 	private ImageButton getChangeLanguageButton()
 	{
 		return new ImageButton("ChangeVersionLanguage!input.action?contentId=" + this.contentId + "&repositoryId=" + this.repositoryId + "&contentVersionId=" + this.contentVersionId, getLocalizedString(getSession().getLocale(), "images.contenttool.buttons.changeVersionLanguage"), "tool.contenttool.changeVersionLanguage.header");	
+	}
+
+	private ImageButton getShowXMLButton()
+	{
+		return new ImageButton("ViewContentVersion!asXML.action?contentId=" + this.contentId + "&repositoryId=" + this.repositoryId + "&contentVersionId=" + this.contentVersionId, getLocalizedString(getSession().getLocale(), "images.contenttool.buttons.showVersionAsXml"), "tool.contenttool.showVersionAsXml.header");	
 	}
 
 	private ImageButton getPublishButton()

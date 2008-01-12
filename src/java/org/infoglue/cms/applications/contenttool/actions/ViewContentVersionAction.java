@@ -417,6 +417,12 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
         return "preview";
     }
 
+    public String doAsXML() throws Exception
+    {
+        this.initialize(getContentVersionId(), getContentId(), this.languageId);
+        return "asXML";
+    }
+
     public String doDeleteDigitalAsset() throws Exception
     {
     	ContentVersionController.getContentVersionController().deleteDigitalAssetRelation(getContentVersionId(), this.digitalAssetId);

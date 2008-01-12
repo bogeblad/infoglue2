@@ -1,4 +1,4 @@
-<!-- $Id: actions.xml,v 1.54 2007/12/29 22:17:36 mattias Exp $ -->
+<!-- $Id: actions.xml,v 1.55 2008/01/12 21:09:31 mattias Exp $ -->
 <actions>
 
 	<!-- MySettings -->
@@ -834,6 +834,7 @@
 		<view name="viewAssets">/cms/contenttool/viewContentVersionAssets.vm</view>
 		<view name="viewAssetsForFCKEditor">/cms/contenttool/viewContentVersionAssetsForFCKEditor.vm</view>
 		<view name="showContentAssetsForComponentBinding">/cms/structuretool/viewContentAssetsForComponentBinding.vm</view>
+		<view name="asXML">/cms/contenttool/viewContentVersionAsXML.vm</view>
 		<view name="error">/cms/contenttool/error.vm</view>
 		<view name="preview">/cms/contenttool/viewContentVersionPreview.vm</view>
 		<view name="accessDenied">/cms/contenttool/viewConstraintException.vm</view>
