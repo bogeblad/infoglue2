@@ -115,7 +115,8 @@ Abbreviated Changelog from 2.6.0 Final
 - Fixed so transformer.reset() is called after each run in common:XSLTransformTag.. had problems with xerces documents not being gc:d otherwise.
 - Made a solution to the connection timeout issues which also manifests if databases are shut down etc. Now an validation query is run each time a connection is fetched from the connection pool. 
 - Added new button in content version so one can switch to an xml-view and thereby get the version xml straight up. Could be useful for debugging or for moving complex versions with a lot of attributes.
-
+- Updated the login forms with new look&feel which better matches the new site design.
+- Added better error message if login fails due to exception.
 
 -------------------------------------------------------------------------------------
 - InfoGlue 2.6.0 Final
