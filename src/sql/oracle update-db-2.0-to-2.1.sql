@@ -80,4 +80,4 @@ CREATE TABLE cmRedirect
 	PRIMARY KEY (id)
 );
 
-alter table cmSiNo add metaInfoContentId number DEFAULT -1;
+alter table cmSiNo add metaInfoContentId number NOT NULL DEFAULT -1;

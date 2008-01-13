@@ -26,3 +26,10 @@
 
 alter table cmSiNoVer add pageCacheTimeout VARCHAR2(20) default NULL;
 alter table cmSiNoVer add disableForceIDCheck number default 2 NOT NULL;
+
+CREATE INDEX "qualifyerNameINDEX" ON cmQualifyer(name);
+CREATE INDEX "qualifyerValueINDEX" ON cmQualifyer(value);
+
+CREATE INDEX "arIntPointIdINDEX" ON cmAccessRight(interceptionPointId);
+CREATE INDEX "arParameterINDEX" ON cmAccessRight(parameters);
+

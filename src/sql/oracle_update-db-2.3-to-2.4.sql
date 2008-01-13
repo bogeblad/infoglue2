@@ -24,7 +24,24 @@
 --
 -- This script contains the database updates required to go from 2.3 to 2.4.
 
-ALTER TABLE cmDigitalAsset ADD INDEX fileNameIndex(assetFileName(255));
-ALTER TABLE cmDigitalAsset ADD INDEX assetContentTypeIndex(assetContentType(100));
+CREATE INDEX "fileNameIndex" ON cmDigAsset(assetFileName);
+CREATE INDEX "assetContentTypeIndex" ON cmDigAsset(assetContentType);
+CREATE INDEX "assetFileSizeIndex" ON cmDigAsset(assetFileSize);
 
-ALTER TABLE cmDigitalAsset ADD INDEX assetFileSizeIndex(assetFileSize);
+CREATE INDEX "entityNameIndex" ON cmRegistry(entityName);
+CREATE INDEX "entityIdIndex" ON cmRegistry(entityId);
+CREATE INDEX "referencingEntityCompletingNameIndex" ON cmRegistry(referencingEntityComplName);
+CREATE INDEX "referencingEntityCompletingIdIndex" ON cmRegistry(referencingEntityComplId);
+CREATE INDEX "referencingEntityNameIndex" ON cmRegistry(referencingEntityName);
+CREATE INDEX "referencingEntityIdIndex" ON cmRegistry(referencingEntityId);
+
+CREATE INDEX "contentVersionStateIndex" ON cmContVer(stateId);
+CREATE INDEX "contentVersionIsActiveIndex" ON cmContVer(isActive);
+CREATE INDEX "contentVersionLangIndex" ON cmContVer(languageId);
+CREATE INDEX "contentPublIndex" ON cmCont(publishDateTime);
+CREATE INDEX "contentExpIndex" ON cmCont(expireDateTime);
+CREATE INDEX "contentREPOSITORYIndex" ON cmCont(REPOSITORYID);
+CREATE INDEX "categoryActiveIndex" ON cmCategory(active);
+CREATE INDEX "parentIdIndex" ON cmCategory(parentId);
+CREATE INDEX "contCONTENTTYPEDEFIDIndex" ON cmCont(CONTENTTYPEDEFID);
+

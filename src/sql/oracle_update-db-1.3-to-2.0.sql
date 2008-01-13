@@ -73,6 +73,9 @@ CREATE TABLE cmContentCategory
 	PRIMARY KEY (contentCategoryId)
 );
 
+create index contentCategoryAttributeName on cmContentCategory (attributeName);
+create index contentCategoryCategoryId on cmContentCategory (categoryId);
+
 create index attributeName_categoryId on cmContentCategory (attributeName, categoryId);
 create index contVerId on cmContentCategory (contVerId);
 
