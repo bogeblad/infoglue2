@@ -508,7 +508,7 @@ public class CmsPropertyHandler
 		}
 		catch(Exception e)
 		{
-			e.printStackTrace();
+			logger.error("Error getting DataPropertyValue for " + fullKey + ":" + e.getMessage(), e);
 		}
 		
 		return result;

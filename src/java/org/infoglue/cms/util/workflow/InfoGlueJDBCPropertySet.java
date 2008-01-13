@@ -215,7 +215,7 @@ public class InfoGlueJDBCPropertySet extends JDBCPropertySet
         } 
         catch (SQLException e) 
         {
-        	e.printStackTrace();
+        	logger.error("Problem getting keys due to an SQL exception:" + e.getCause().getMessage(), e);
             throw new PropertyException(e.getMessage());
         } 
         finally 
