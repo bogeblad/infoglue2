@@ -19,14 +19,14 @@
 			background-color : #FFFFFF;
 			border-style	 : solid;
 			border-width	 : 1px;
-			border-color	 : #000000;
+			border-color	 : #cecbce;
 		}
 
 		.borderedCell {
 			background-color : #FFFFFF;
 			border-style	 : solid;
 			border-width	 : 1px;
-			border-color	 : #000000;
+			border-color	 : #cecbce;
 		}
 		
 		td {
@@ -40,7 +40,7 @@
 			font-size        : 8pt;
 			border-style	 : solid;
 			border-width	 : 1px;	
-			border-color     : #000000;
+			border-color     : #cecbce;
 		}
 		
 		div.fullymarginalized {
@@ -61,19 +61,6 @@
 	
 		function expandAndFocus()
 		{
-			
-			//alert(parent);
-			/*
-			if (parent.frames.length != 0)
-			{
-				url = "ViewCMSTool.action";
-				details = "toolbar=no,status=yes,scrollbars=no,location=no,menubar=no,directories=no,resizable=yes,width=1000,height=740,left=5,top=5";
-				newWin=window.open(url, "CMS", details);
-				newWin.focus();
-				window.close();
-			} 	
-			*/
-			
 			var quirksMode = (top == self);
 			if (!quirksMode)
 				top.location.href = "ViewCMSTool.action";
@@ -93,11 +80,11 @@
 
 <table class="loginbox" align="center" border="1" cellspacing="5" cellpadding="0">
 <tr>
-	<td valign="top" class="borderedCell"><img src="images/login.jpg" width="130" height="235"></td>
+	<td valign="top" class="borderedCell"><img src="images/login.jpg" width="130" height="237"></td>
 	<td valign="top" class="borderedCell">
 		<table align="center" border="0" cellspacing="0" cellpadding="0">
 		<tr>
-			<td colspan="2" style="border-bottom: 1px solid #000000;" background="images/loginHeader.jpg" width="210" height="38"><img src="images/trans.gif" width="210" height="38"></td>
+			<td colspan="2" style="background-image: url('images/loginHeader.jpg'); background-repeat: no-repeat; width: 210px; height: 40px;"><img src="images/trans.gif" width="210" height="40"></td>
 		</tr>	
 		<tr>
 			<td colspan="2"><img src="images/trans.gif" width="1" height="30"></td>
@@ -127,14 +114,16 @@
 		<tr>	
 			<td><img src="images/trans.gif" width="20" height="1"></td>
 			<td>
-		      	<input type="image" src="images/loginButtonBlue_en.gif">
+		      	<input type="image" src="images/loginButtonGrey_en.gif">
 			</td>
 		</tr>
+		<tr>
+			<td colspan="2"><img src="images/trans.gif" width="1" height="10"></td>
+		</tr>	
 		</table>
 	</td>
 </tr>	
 </table>
-
 
 </form>
 </div>
