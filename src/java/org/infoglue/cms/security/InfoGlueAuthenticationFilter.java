@@ -135,57 +135,57 @@ public class InfoGlueAuthenticationFilter implements Filter
 	
 
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain fc) throws ServletException, IOException 
-    {		
+    {	
     	HttpServletRequest httpServletRequest = (HttpServletRequest)request;
 		HttpServletResponse httpServletResponse = (HttpServletResponse)response;
-		
-		String URI = httpServletRequest.getRequestURI();
-		String URL = httpServletRequest.getRequestURL().toString();
-		if(logger.isInfoEnabled())
-		{
-			logger.info("URI: + " + URI);
-			logger.info("URL: + " + URL);
-		}
 
-		String requestURI = URLDecoder.decode(getContextRelativeURI(httpServletRequest), "UTF-8");
-
-		if(URI.indexOf(loginUrl) > -1 || URL.indexOf(loginUrl) > -1 || URI.indexOf(invalidLoginUrl) > -1 || URL.indexOf(invalidLoginUrl) > -1 || URI.indexOf(logoutUrl) > -1 || URI.indexOf("Login!logout.action") > -1 || URL.indexOf(logoutUrl) > -1 || URI.indexOf("UpdateCache") > -1 || URI.indexOf("protectedRedirect.jsp") > -1 || uriMatcher.matches(requestURI))
-		{
-			fc.doFilter(request, response); 
-			return;
-   	 	}
-
-		// make sure we've got an HTTP request
-		if (!(request instanceof HttpServletRequest) || !(response instanceof HttpServletResponse))
-		  throw new ServletException("InfoGlue Filter protects only HTTP resources");
+    	try
+		{			
+			String URI = httpServletRequest.getRequestURI();
+			String URL = httpServletRequest.getRequestURL().toString();
+			if(logger.isInfoEnabled())
+			{
+				logger.info("URI: + " + URI);
+				logger.info("URL: + " + URL);
+			}
 	
-		HttpSession session = ((HttpServletRequest)request).getSession();
+			String requestURI = URLDecoder.decode(getContextRelativeURI(httpServletRequest), "UTF-8");
+	
+			if(URI.indexOf(loginUrl) > -1 || URL.indexOf(loginUrl) > -1 || URI.indexOf(invalidLoginUrl) > -1 || URL.indexOf(invalidLoginUrl) > -1 || URI.indexOf(logoutUrl) > -1 || URI.indexOf("Login!logout.action") > -1 || URL.indexOf(logoutUrl) > -1 || URI.indexOf("UpdateCache") > -1 || URI.indexOf("protectedRedirect.jsp") > -1 || uriMatcher.matches(requestURI))
+			{
+				fc.doFilter(request, response); 
+				return;
+	   	 	}
+	
+			// make sure we've got an HTTP request
+			if (!(request instanceof HttpServletRequest) || !(response instanceof HttpServletResponse))
+			  throw new ServletException("InfoGlue Filter protects only HTTP resources");
 		
-		String sessionTimeout = CmsPropertyHandler.getSessionTimeout();
-		if(sessionTimeout == null)
-		    sessionTimeout = "1800";
-		
-		session.setMaxInactiveInterval(new Integer(sessionTimeout).intValue());
-
-		// if our attribute's already present, don't do anything
-		//logger.info("User:" + session.getAttribute(INFOGLUE_FILTER_USER));
-		if (session != null && session.getAttribute(INFOGLUE_FILTER_USER) != null) 
-		{
-		    //logger.info("Found user in session:" + session.getAttribute(INFOGLUE_FILTER_USER));
-		    //if(successLoginBaseUrl != null && !URL.startsWith(successLoginBaseUrl))
-		    //{
-		    //    checkSuccessRedirect(request, response, URL);
-		    //}
-		    //else
-		    //{
-			  	fc.doFilter(request, response);
-			    return;
-			//}
-		}
-		
-		// otherwise, we need to authenticate somehow
-		try
-		{
+			HttpSession session = ((HttpServletRequest)request).getSession();
+			
+			String sessionTimeout = CmsPropertyHandler.getSessionTimeout();
+			if(sessionTimeout == null)
+			    sessionTimeout = "1800";
+			
+			session.setMaxInactiveInterval(new Integer(sessionTimeout).intValue());
+	
+			// if our attribute's already present, don't do anything
+			//logger.info("User:" + session.getAttribute(INFOGLUE_FILTER_USER));
+			if (session != null && session.getAttribute(INFOGLUE_FILTER_USER) != null) 
+			{
+			    //logger.info("Found user in session:" + session.getAttribute(INFOGLUE_FILTER_USER));
+			    //if(successLoginBaseUrl != null && !URL.startsWith(successLoginBaseUrl))
+			    //{
+			    //    checkSuccessRedirect(request, response, URL);
+			    //}
+			    //else
+			    //{
+				  	fc.doFilter(request, response);
+				    return;
+				//}
+			}
+			
+			// otherwise, we need to authenticate somehow
 			boolean isAdministrator = false;
 
 			String userName = request.getParameter("j_username");
@@ -269,7 +269,10 @@ public class InfoGlueAuthenticationFilter implements Filter
 		}
 		catch(Exception e)
 		{
-			e.printStackTrace();
+			logger.error("Error authenticating user:" + e.getMessage(), e);
+			httpServletRequest.setAttribute("error", new Exception("Error in authentication filter - look at the server error log (usually catalina.out) for reason but the most common one is problem connecting to the database or a faulty connection user or limited access for that account."));
+			httpServletResponse.sendError(500);
+			return;
 		}
   	}
 
