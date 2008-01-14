@@ -57,10 +57,20 @@
 		function toggleDiv(id)
 		{
 			var div = document.getElementById(id);
-			if(div && div.style.display == 'table-row')
-				div.style.display = 'none';
+			if (navigator.appName == "Microsoft Internet Explorer")
+			{
+				if(div && div.style.display == 'block')
+					div.style.display = "none";
+				else
+					div.style.display = "block";			
+			}
 			else
-				div.style.display = 'table-row';				
+			{
+				if(div && div.style.display == 'table-row')
+					div.style.display = 'none';
+				else
+					div.style.display = 'table-row';				
+			}
 		}
 	-->		
 	</script>
