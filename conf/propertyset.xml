@@ -14,7 +14,7 @@
 		<arg name="dbcp.maxIdle" value="10"/>
 		<arg name="dbcp.validationQuery" value="select 1 from cmSystemUser"/>		
 		-->
-		<arg name="dbcp.validationQuery" value="select 1"/>		
+		<arg name="dbcp.validationQuery" value="select 1 from cmSystemUser"/>		
 
         <!--<arg name="datasource" value="jdbc/DefaultDS"/>-->
         <arg name="table.name" value="OS_PROPERTYENTRY"/>

@@ -6,7 +6,7 @@
 		  	<param name="username" value="@database.user@"/>
 		  	<param name="password" value="@database.password@"/>
 		  	<param name="url" value="@database.url@"/>
-		  	<param name="validation-query" value="SELECT 1"/>
+		  	<param name="validation-query" value="SELECT 1 from cmSystemUser"/>
 		  	<param name="max-active" value="@database.maxConnections@"/>
 			<param name="connection-properties" value="useUnicode=@database.use.unicode@;characterEncoding=@database.encoding@;autoReconnect=true"/>
 		</data-source>

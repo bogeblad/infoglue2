@@ -30,7 +30,7 @@
 		<property name="dbcp.ps.maxIdle">100</property>
 
 		<!-- query to validate pooled connections -->
-		<property name="dbcp.validationQuery">select 1</property>
+		<property name="dbcp.validationQuery">select 1 from cmSystemUser</property>
 
 		<!-- OS Workflow mappings -->
 		<mapping resource="com/opensymphony/workflow/spi/hibernate/HibernateCurrentStep.hbm.xml"/>
