@@ -38,6 +38,7 @@ import org.infoglue.cms.entities.management.Language;
 import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.SystemException;
+import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.sorters.ContentComparator;
 import org.infoglue.deliver.util.CacheController;
 
@@ -68,7 +69,7 @@ public class ComponentController extends BaseController
 	 * @throws Bug
 	 */
 	
-	public List getComponentVOList(String sortAttribute, String direction, String[] allowedComponentNames, String[] disallowedComponentNames) throws SystemException, Bug, Exception
+/*	public List getComponentVOList(String sortAttribute, String direction, String[] allowedComponentNames, String[] disallowedComponentNames) throws SystemException, Bug, Exception
 	{
 		List componentVOList = null;
 		
@@ -90,7 +91,30 @@ public class ComponentController extends BaseController
 		
 		return componentVOList;
 	}
-	
+*/	
+	public List getComponentVOList(String sortAttribute, String direction, String[] allowedComponentNames, String[] disallowedComponentNames, InfoGluePrincipal principal) throws SystemException, Bug, Exception
+	{
+		List componentVOList = null;
+		
+		Database db = CastorDatabaseService.getDatabase();
+		try
+		{
+			beginTransaction(db);
+			
+			componentVOList = getComponentVOList(sortAttribute, direction, allowedComponentNames, disallowedComponentNames, db, principal);
+			    
+			commitTransaction(db);
+		}
+		catch ( Exception e )
+		{
+		    e.printStackTrace();
+			rollbackTransaction(db);
+			throw new SystemException("An error occurred when we tried to fetch a list of users in this group. Reason:" + e.getMessage(), e);			
+		}		
+		
+		return componentVOList;
+	}
+
 	/**
 	 * This method returns a sorted list of components within a transaction.
 	 * @param sortAttribute
@@ -99,8 +123,7 @@ public class ComponentController extends BaseController
 	 * @throws Bug
 	 */
 	
-	private static List cachedComponents = null;
-	
+	/*
 	public List getComponentVOList(String sortAttribute, String direction, String[] allowedComponentNames, String[] disallowedComponentNames, Database db) throws SystemException, Bug, Exception
 	{
 	    String allowedComponentNamesString = "";
@@ -155,12 +178,68 @@ public class ComponentController extends BaseController
 		
 		return components;
 	}
+	*/
+
+	public List getComponentVOList(String sortAttribute, String direction, String[] allowedComponentNames, String[] disallowedComponentNames, Database db, InfoGluePrincipal principal) throws SystemException, Bug, Exception
+	{
+	    String allowedComponentNamesString = "";
+	    if(allowedComponentNames != null)
+	    {
+	        for(int i=0; i<allowedComponentNames.length; i++)
+	            allowedComponentNamesString = allowedComponentNames[i] + ":";
+	    }
+
+	    String disallowedComponentNamesString = "";
+	    if(disallowedComponentNames != null)
+	    {
+	        for(int i=0; i<disallowedComponentNames.length; i++)
+	        	disallowedComponentNamesString = disallowedComponentNames[i] + ":";
+	    }
+
+	    String componentsKey = "components_" + sortAttribute + "_" + direction + "_" + allowedComponentNamesString + "_" + disallowedComponentNamesString + "_" + principal.getName();
+	    List components = (List)CacheController.getCachedObject("componentContentsCache", componentsKey);
+		if(components != null)
+		{
+			logger.info("There was cached components:" + components.size());
+		}
+		else
+		{
+		    components = getComponents(allowedComponentNames, disallowedComponentNames, principal);
+			Iterator componentsIterator = components.iterator();
+			while(componentsIterator.hasNext())
+			{
+			    ContentVO contentVO = (ContentVO)componentsIterator.next();
+			    
+			    LanguageVO masterLanguage = LanguageController.getController().getMasterLanguage(contentVO.getRepositoryId(), db); //.getMasterLanguage(db, contentVO.getRepositoryId());
+				ContentVersion contentVersion = ContentVersionController.getContentVersionController().getLatestActiveContentVersion(contentVO.getId(), masterLanguage.getId(), db);
+				
+				String groupName = "Unknown";
+				String description = "Unknown";
+				
+				if(contentVersion != null)
+				{
+				    groupName = ContentVersionController.getContentVersionController().getAttributeValue(contentVersion.getValueObject(), "GroupName", false);
+				    description = ContentVersionController.getContentVersionController().getAttributeValue(contentVersion.getValueObject(), "Description", false);
+				}
 	
+				contentVO.getExtraProperties().put("GroupName", groupName);
+				contentVO.getExtraProperties().put("Description", description);
+			}
+			
+			CacheController.cacheObject("componentContentsCache", componentsKey, components);
+		}
+		
+		ContentComparator comparator = new ContentComparator(sortAttribute, direction, null);
+		Collections.sort(components, comparator);
+		
+		return components;
+	}
+
 	
 	/**
 	 * This method returns the contents that are of contentTypeDefinition "HTMLTemplate"
 	 */
-	
+	/*
 	public List getComponents(String[] allowedComponentNames, String[] disallowedComponentNames) throws Exception
 	{
 		HashMap arguments = new HashMap();
@@ -212,6 +291,64 @@ public class ComponentController extends BaseController
 
 		return results;	
 	}
+	*/
+	
+	/**
+	 * This method returns the contents that are of contentTypeDefinition "HTMLTemplate"
+	 */
+	
+	public List getComponents(String[] allowedComponentNames, String[] disallowedComponentNames, InfoGluePrincipal principal) throws Exception
+	{
+		HashMap arguments = new HashMap();
+		arguments.put("method", "selectListOnContentTypeName");
+		
+		List argumentList = new ArrayList();
+		HashMap argument = new HashMap();
+		argument.put("contentTypeDefinitionName", "HTMLTemplate");
+		argumentList.add(argument);
+		arguments.put("arguments", argumentList);
+		
+		List results = ContentControllerProxy.getController().getACContentVOList(principal, arguments);
+		
+		if(allowedComponentNames != null && allowedComponentNames.length > 0)
+		{
+		    Iterator resultsIterator = results.iterator();
+		    while(resultsIterator.hasNext())
+		    {
+		        ContentVO contentVO = (ContentVO)resultsIterator.next();
+		        boolean isAllowed = false;
+		        for(int i=0; i<allowedComponentNames.length; i++)
+		        {
+		            if(contentVO.getName().equals(allowedComponentNames[i]))
+		                isAllowed = true;
+		        }
+		        
+		        if(!isAllowed)
+		            resultsIterator.remove();
+		    }
+		}
+
+		if(disallowedComponentNames != null && disallowedComponentNames.length > 0)
+		{
+		    Iterator resultsIterator = results.iterator();
+		    while(resultsIterator.hasNext())
+		    {
+		        ContentVO contentVO = (ContentVO)resultsIterator.next();
+		        boolean isAllowed = true;
+		        for(int i=0; i<disallowedComponentNames.length; i++)
+		        {
+		            if(contentVO.getName().equals(disallowedComponentNames[i]))
+		                isAllowed = false;
+		        }
+		        
+		        if(!isAllowed)
+		            resultsIterator.remove();
+		    }
+		}
+
+		return results;	
+	}
+
 	
     /* (non-Javadoc)
      * @see org.infoglue.cms.controllers.kernel.impl.simple.BaseController#getNewVO()

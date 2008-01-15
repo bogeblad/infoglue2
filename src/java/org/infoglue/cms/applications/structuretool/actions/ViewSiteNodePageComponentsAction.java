@@ -1249,7 +1249,7 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 	    try
 	    {
 	        String direction = "asc";
-	        componentVOList = ComponentController.getController().getComponentVOList(sortProperty, direction, allowedComponentNames, disallowedComponentNames);
+	        componentVOList = ComponentController.getController().getComponentVOList(sortProperty, direction, allowedComponentNames, disallowedComponentNames, this.getInfoGluePrincipal());
 	    }
 	    catch(Exception e)
 	    {
