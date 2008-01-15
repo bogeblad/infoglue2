@@ -23,20 +23,20 @@
 			background-color : #FFFFFF;
 			border-style	 : solid;
 			border-width	 : 1px;
-			border-color	 : #000000;
+			border-color	 : #cecbce;
 		}
 
 		.borderedCell {
 			background-color : #FFFFFF;
 			border-style	 : solid;
 			border-width	 : 1px;
-			border-color	 : #000000;
+			border-color	 : #cecbce;
 		}
 		
 		td {
 			font-family      : verdana, arial, sans-serif;
 			font-size        : 8pt;
-			font-color		 : #333333;
+			color		 	 : #333333;
 		}
 		
 		.input {
@@ -44,7 +44,7 @@
 			font-size        : 8pt;
 			border-style	 : solid;
 			border-width	 : 1px;	
-			border-color     : #000000;
+			border-color     : #cecbce;
 		}
 		
 		div.fullymarginalized {
@@ -60,7 +60,7 @@
 
 	</style> 
 	
-	<script type="text/javascript" language="Javascript" >
+	<script type="text/javascript" language="Javascript">
 	<!--
 
 		function toggleStacktrace()
@@ -73,7 +73,6 @@
 		}
 		-->
 	</script>
-
 	
 
 </head>
@@ -84,11 +83,11 @@
 
 <table class="loginbox" align="center" border="1" cellspacing="5" cellpadding="0">
 <tr>
-	<td valign="top" class="borderedCell"><img src="images/login.jpg" width="130" height="235"/></td>
+	<td valign="top" class="borderedCell"><img src="images/login.jpg" width="130" height="237"/></td>
 	<td valign="top" class="borderedCell">
 		<table align="center" border="0" cellspacing="0" cellpadding="0" width="200">
 		<tr>
-			<td colspan="2" style="border-bottom: 1px solid #000000; background-color: #d3e3f3; text-align: center;"><img src="images/error.jpg" width="210" height="38"></td>
+			<td colspan="2" style="background-image: url(images/errorHeaderBackground.gif); background-repeat: repeat-x;" align="center"><img src="images/error.jpg"></td>
 		</tr>	
 		<tr>
 			<td colspan="2"><img src="images/trans.gif" width="1" height="20"/></td>
