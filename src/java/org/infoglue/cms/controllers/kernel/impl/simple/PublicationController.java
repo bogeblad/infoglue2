@@ -214,7 +214,7 @@ public class PublicationController extends BaseController
 	 * deliver the message back to the requester. If it is a deny of publishing we also deletes the
 	 * publish-version as it no longer has any purpose.
 	 */
-	public static void denyPublicationRequest(Integer eventId, String publisherUserName, String comment, String referenceUrl) throws SystemException
+	public static void denyPublicationRequest(Integer eventId, InfoGluePrincipal publisher, String comment, String referenceUrl) throws SystemException
 	{
     	Database db = CastorDatabaseService.getDatabase();
 		beginTransaction(db);
@@ -276,7 +276,7 @@ public class PublicationController extends BaseController
         	}
 
         	InfoGluePrincipal infoGluePrincipal = InfoGluePrincipalControllerProxy.getController().getInfoGluePrincipal(event.getCreator());
-        	mailNotification(event, publisherUserName, infoGluePrincipal.getEmail(), comment, referenceUrl);
+        	mailNotification(event, publisher.getName(), publisher.getEmail(), infoGluePrincipal.getEmail(), comment, referenceUrl);
 
 			commitTransaction(db);
         }
@@ -295,7 +295,7 @@ public class PublicationController extends BaseController
 	 * deliver the message back to the requester. If it is a deny of publishing we also deletes the
 	 * publish-version as it no longer has any purpose.
 	 */
-	public static void denyPublicationRequest(List eventVOList, String publisherUserName, String comment, String referenceUrl) throws SystemException
+	public static void denyPublicationRequest(List eventVOList, InfoGluePrincipal publisher, String comment, String referenceUrl) throws SystemException
 	{
 		Database db = CastorDatabaseService.getDatabase();
 		beginTransaction(db);
@@ -369,7 +369,7 @@ public class PublicationController extends BaseController
 					}
 				}
 
-				mailNotification(event, publisherUserName, infoGluePrincipal.getEmail(), comment, referenceUrl);
+				mailNotification(event, publisher.getName(), publisher.getEmail(), infoGluePrincipal.getEmail(), comment, referenceUrl);
 			}
 
 			commitTransaction(db);
@@ -387,7 +387,7 @@ public class PublicationController extends BaseController
 	/**
 	 * This method mails the rejection to the recipient.
 	 */
-	private static void mailNotification(Event event, String editorName, String recipient, String comment, String referenceUrl)
+	private static void mailNotification(Event event, String editorName, String sender, String recipient, String comment, String referenceUrl)
 	{
 	    String email = "";
 	    
@@ -419,7 +419,9 @@ public class PublicationController extends BaseController
 			String systemEmailSender = CmsPropertyHandler.getSystemEmailSender();
 			if(systemEmailSender == null || systemEmailSender.equalsIgnoreCase(""))
 				systemEmailSender = "InfoGlueCMS@" + CmsPropertyHandler.getMailSmtpHost();
-
+			if(sender != null && !sender.equals("") && sender.indexOf("@") > -1)
+				systemEmailSender = sender;
+			
 			logger.info("email:" + email);
 			MailServiceFactory.getService().send(systemEmailSender, recipient, "CMS - Publishing was denied!!", email, contentType, "UTF-8");
 		}

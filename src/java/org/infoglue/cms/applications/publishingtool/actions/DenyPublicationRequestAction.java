@@ -81,7 +81,7 @@ public class DenyPublicationRequestAction extends InfoGlueAbstractAction
 	{
 		setEvents(getRequest().getParameterValues("sel"));
 		
-		PublicationController.denyPublicationRequest(this.events, this.getInfoGluePrincipal().getName(), this.comment, getApplicationBaseUrl(getRequest()));
+		PublicationController.denyPublicationRequest(this.events, this.getInfoGluePrincipal(), this.comment, getApplicationBaseUrl(getRequest()));
 		return "success";
 	}
 
