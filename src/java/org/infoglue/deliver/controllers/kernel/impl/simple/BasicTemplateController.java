@@ -4129,7 +4129,15 @@ public class BasicTemplateController implements TemplateController
 		if(cacheKey == null || cacheKey.equals(""))
 			cacheKey = "matchingContentsCache";
 
-		String key = "sortedMatchingContents" + contentTypeDefinitionNamesString + "_" + categoryConditionString + "_publishDateTime" + "_" + useLanguageFallback;
+		StringBuffer repositoryIdString = new StringBuffer();
+		if(repositoryIdList != null)
+		{
+			Iterator repositoryIdListIterator = repositoryIdList.iterator();
+			while(repositoryIdListIterator.hasNext())
+				repositoryIdString.append("," + repositoryIdListIterator.next());
+		}
+		
+		String key = "sortedMatchingContents" + contentTypeDefinitionNamesString + "_" + categoryConditionString + "_publishDateTime_languageId_" + this.languageId + "_" + useLanguageFallback + repositoryIdString;
 		List cachedMatchingContents = (List)CacheController.getCachedObjectFromAdvancedCache(cacheName, key, cacheInterval);
 		if(cachedMatchingContents == null || !cacheResult)
 		{
