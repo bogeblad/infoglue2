@@ -697,6 +697,11 @@ public interface TemplateController
     public abstract String getContentAttributeAsPDFUrl(
             String contentBindningName, String attributeName);
 
+    /**
+	 * This method writes a string to a file and returns it as a digitalAssetURL.
+	 */
+	public String getStringAsDigitalAssetUrl(String data, String fileName, String suffix);
+	
 	/**
 	 * This method returns a list of elements/attributes based on the contentType sent in. 
 	 */
@@ -1473,6 +1478,8 @@ public interface TemplateController
 	public String getEditOnSightTag(Integer contentId, Integer languageId, String attributeName, String html, boolean showInPublishedMode);
 
 
+	public String getExportedContentsUrl(List contentIdList, String fileNamePrefix, boolean includeContentTypes, boolean includeCategories) throws Exception;
+	
 	/**
 	 * This method returns the neccessairy html to assign by klicking on a link.
 	 * @param propertyName

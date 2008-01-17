@@ -69,6 +69,7 @@ import org.infoglue.cms.controllers.kernel.impl.simple.CategoryController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.DigitalAssetController;
+import org.infoglue.cms.controllers.kernel.impl.simple.ExportImportController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ExtendedSearchController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ExtendedSearchCriterias;
 import org.infoglue.cms.controllers.kernel.impl.simple.GroupControllerProxy;
@@ -91,6 +92,7 @@ import org.infoglue.cms.entities.structure.SiteNode;
 import org.infoglue.cms.entities.structure.SiteNodeVO;
 import org.infoglue.cms.entities.structure.SiteNodeVersionVO;
 import org.infoglue.cms.exception.SystemException;
+import org.infoglue.cms.io.FileHelper;
 import org.infoglue.cms.security.AuthenticationModule;
 import org.infoglue.cms.security.InfoGlueGroup;
 import org.infoglue.cms.security.InfoGluePrincipal;
@@ -3056,7 +3058,7 @@ public class BasicTemplateController implements TemplateController
 				dnsName = siteNode.getRepository().getDnsName();
 
 			//pdfUrl = dnsName + "/" + CmsPropertyHandler.getDigitalAssetBaseUrl() + "/" + fileName;
-			pdfUrl = urlComposer.composeDigitalAssetUrl(dnsName, fileName, deliveryContext); 
+			pdfUrl = urlComposer.composeDigitalAssetUrl(dnsName, null, fileName, deliveryContext); 
 		}
 		catch(Exception e)
 		{
@@ -3066,6 +3068,46 @@ public class BasicTemplateController implements TemplateController
 		return pdfUrl;
 	}
 	
+	/**
+	 * This method writes a string to a file and returns it as a digitalAssetURL.
+	 */
+	public String getStringAsDigitalAssetUrl(String data, String fileName, String suffix)
+	{
+		String assetUrl = "";
+		
+		try 
+		{
+			String uniqueFileName = "" + fileName + data.hashCode() + "." + suffix;
+			VisualFormatter vf = new VisualFormatter();
+			uniqueFileName = vf.replaceNonAscii(uniqueFileName, '_');
+	
+			int i = 0;
+			String filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i);
+			while(filePath != null)
+			{
+				File file = new File(filePath + java.io.File.separator + uniqueFileName);
+				if(!file.exists())
+				{
+					FileHelper.writeToFile(file, data, false);
+				}
+				i++;
+				filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i);
+			}
+			
+			SiteNode siteNode = this.nodeDeliveryController.getSiteNode(getDatabase(), this.siteNodeId);
+			String dnsName = CmsPropertyHandler.getWebServerAddress();
+			if(siteNode != null && siteNode.getRepository().getDnsName() != null && !siteNode.getRepository().getDnsName().equals(""))
+				dnsName = siteNode.getRepository().getDnsName();
+
+			assetUrl = urlComposer.composeDigitalAssetUrl(dnsName, null, uniqueFileName, deliveryContext); 
+		}
+		catch(Exception e)
+		{
+			logger.error("An error occurred trying to get text as Url:" + e.getMessage(), e);
+		}
+		
+		return assetUrl;
+	}
 	
 	/**
 	 * This method uses the content-attribute to generate a pdf-file.
@@ -3107,7 +3149,7 @@ public class BasicTemplateController implements TemplateController
 				dnsName = siteNode.getRepository().getDnsName();
 
 			//pdfUrl = dnsName + "/" + CmsPropertyHandler.getDigitalAssetBaseUrl() + "/" + fileName;
-			pdfUrl = urlComposer.composeDigitalAssetUrl(dnsName, fileName, deliveryContext); 
+			pdfUrl = urlComposer.composeDigitalAssetUrl(dnsName, null, fileName, deliveryContext); 
 		}
 		catch(Exception e)
 		{
@@ -3445,7 +3487,7 @@ public class BasicTemplateController implements TemplateController
 				dnsName = siteNode.getRepository().getDnsName();
 
 			//assetUrl = dnsName + "/" + CmsPropertyHandler.getDigitalAssetBaseUrl() + "/" + fileName;
-			assetUrl = urlComposer.composeDigitalAssetUrl(dnsName, fileName, deliveryContext); 
+			assetUrl = urlComposer.composeDigitalAssetUrl(dnsName, null, fileName, deliveryContext); 
 		}
 		catch(Exception e)
 		{
@@ -4405,6 +4447,7 @@ public class BasicTemplateController implements TemplateController
 				
 		return pageDigitalAssetUrl;
 	}
+	
 
 	/**
 	 * This method constructs a string representing the path to the page with respect to where in the
@@ -6455,6 +6498,40 @@ public class BasicTemplateController implements TemplateController
 	    }
 	} 
 
+	public String getExportedContentsUrl(List contentIdList, String fileNamePrefix, boolean includeContentTypes, boolean includeCategories) throws Exception
+	{
+		String url = "";
+		
+		try
+		{
+			int i = 0;
+			String fileName = null;
+			String filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i);
+			while(filePath != null)
+			{
+				fileName = ExportImportController.getController().exportContent(contentIdList, filePath, fileNamePrefix, includeContentTypes, includeCategories);
+	
+				i++;
+				filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i);
+			}
+			
+			if(fileName != null)
+			{
+				SiteNode siteNode = this.nodeDeliveryController.getSiteNode(getDatabase(), this.siteNodeId);
+				String dnsName = CmsPropertyHandler.getWebServerAddress();
+				if(siteNode != null && siteNode.getRepository().getDnsName() != null && !siteNode.getRepository().getDnsName().equals(""))
+					dnsName = siteNode.getRepository().getDnsName();
+		
+				url = urlComposer.composeDigitalAssetUrl(dnsName, null, fileName, deliveryContext); 
+			}
+		}
+		catch (Exception e) 
+		{
+			logger.error("Problem with getExportedContentsUrl:" + e.getMessage(), e);
+		}
+		
+		return url;
+	}
 	
 	/**
 	 * This method returns the neccessairy html to assign by klicking on a link.

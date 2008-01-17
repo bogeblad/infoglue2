@@ -120,6 +120,8 @@ Abbreviated Changelog from 2.6.0 Final
 - Better cache-key in category-search-method. Now it looks at repositoryId:s and language also.
 - Fixed so the person denying a publishing request is stated as email-sender in the deny-mail. 
 - Added access control to add component-dialog. Now you only see components you are allowed to read as defined by the normal security settings.
+- Added new tag which allows you to store any string as a file in the digitalAsset dir and get an url to it. Very handy in some situations.
+- Added tag which allows you to export one or many contents and get the url to the export file.
 
 -------------------------------------------------------------------------------------
 - InfoGlue 2.6.0 Final
