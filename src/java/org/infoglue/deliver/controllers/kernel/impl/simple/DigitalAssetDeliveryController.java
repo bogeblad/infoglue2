@@ -795,6 +795,8 @@ public class DigitalAssetDeliveryController extends BaseDeliveryController
 			while(filePath != null)
 			{
 				File assetDirectory = new File(filePath);
+				assetDirectory.mkdirs();
+				
 				File[] files = assetDirectory.listFiles(new FilenameFilterImpl(digitalAssetId.toString())); 	
 				if(files == null)
 				{
