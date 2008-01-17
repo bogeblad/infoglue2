@@ -229,6 +229,75 @@
         </attribute>
     </tag>
     
+   	<tag>
+        <name>assetUrlFromString</name>
+        <tagclass>org.infoglue.deliver.taglib.content.AssetUrlFromStringTag</tagclass>
+        <bodycontent>empty</bodycontent>
+        <info>getAssetUrlFromString(String, String, String)</info>
+        <attribute>
+    	    <name>id</name>
+        	<required>false</required>
+	        <rtexprvalue>false</rtexprvalue>
+    	</attribute>
+        <attribute>
+            <name>digitalAssetId</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>data</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>fileNamePrefix</name>
+            <required>true</required>
+            <rtexprvalue>false</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>fileNameSuffix</name>
+            <required>true</required>
+            <rtexprvalue>false</rtexprvalue>
+        </attribute>
+    </tag>
+
+  	<tag>
+        <name>contentExportUrl</name>
+        <tagclass>org.infoglue.deliver.taglib.content.ContentExportUrlTag</tagclass>
+        <bodycontent>empty</bodycontent>
+        <info>getExportedContentsUrl</info>
+        <attribute>
+    	    <name>id</name>
+        	<required>false</required>
+	        <rtexprvalue>false</rtexprvalue>
+    	</attribute>
+        <attribute>
+            <name>contentIdList</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>contentId</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>fileNamePrefix</name>
+            <required>true</required>
+            <rtexprvalue>false</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>includeContentTypeDefinitions</name>
+            <required>false</required>
+            <rtexprvalue>false</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>includeCategories</name>
+            <required>false</required>
+            <rtexprvalue>false</rtexprvalue>
+        </attribute>
+    </tag>
+    
 	<tag>
 	    <name>contentTypeDefinition</name>
 	    <tagclass>org.infoglue.deliver.taglib.content.ContentTypeDefinitionTag</tagclass>
