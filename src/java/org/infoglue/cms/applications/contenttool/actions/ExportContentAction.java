@@ -160,13 +160,15 @@ public class ExportContentAction extends InfoGlueAbstractAction
 			osw.close();
 			
 			db.rollback();
-			db.close();
-
 		} 
 		catch (Exception e) 
 		{
 			logger.error("An error was found exporting a repository: " + e.getMessage(), e);
 			db.rollback();
+		}
+		finally
+		{
+			db.close();	
 		}
 		
 		return "success";
