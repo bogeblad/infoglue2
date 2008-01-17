@@ -796,12 +796,20 @@ public class DigitalAssetDeliveryController extends BaseDeliveryController
 			{
 				File assetDirectory = new File(filePath);
 				File[] files = assetDirectory.listFiles(new FilenameFilterImpl(digitalAssetId.toString())); 	
-				for(int j=0; j<files.length; j++)
+				if(files == null)
 				{
-					File file = files[j];
-					logger.info("Deleting file " + file.getPath());
-					file.delete();
+					logger.error("There was a problem deleting files in:" + filePath + " - looking for " + digitalAssetId);
 				}
+				else
+				{
+					for(int j=0; j<files.length; j++)
+					{
+						File file = files[j];
+						logger.info("Deleting file " + file.getPath());
+						file.delete();
+					}
+				}
+				
 				i++;
 				filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i);
 			    if(filePath != null)
