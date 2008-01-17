@@ -218,9 +218,18 @@ public class XSLTransformTag extends TemplateControllerTag
         }
         finally
         {
-            transformer.clearParameters();
-            transformer.reset();
-            transformer = null;
+        	try
+        	{
+	            transformer.clearParameters();
+	            transformer.reset();
+	            parameters.clear();
+        	}
+        	catch (Exception e) 
+        	{
+        		logger.error("Problem resetting transformer:" + e.getMessage(), e);
+			}
+	        
+        	transformer = null;
             pss = null;
             xmlSource = null;
         
@@ -232,8 +241,7 @@ public class XSLTransformTag extends TemplateControllerTag
     		this.styleString = null;
     		this.outputFormat = null;
     		this.cacheStyle = true;
-    		parameters.clear();
-
+    		
     		java.lang.System.clearProperty("javax.xml.transform.TransformerFactory");
         }
         		
