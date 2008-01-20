@@ -557,6 +557,11 @@ public interface TemplateController
     public abstract String getAssetUrl(Integer contentId);
 
     /**
+     * This method deliveres a collection of strings with the URL to the digital assets for a certain content.
+     */
+    public abstract List getAssetUrls(Integer contentId);
+
+    /**
      * This method deliveres a String with the URL to the digital asset asked for.
      */
     public abstract String getAssetUrl(Integer contentId, String assetKey);

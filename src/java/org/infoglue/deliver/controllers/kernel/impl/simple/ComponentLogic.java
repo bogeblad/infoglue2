@@ -175,9 +175,10 @@ public class ComponentLogic
 		return getAssets(propertyName, useInheritance, useRepositoryInheritance, true);
 	}
 	
-	public Collection getAssets(String propertyName, boolean useInheritance, boolean useRepositoryInheritance, boolean useStructureInheritance) throws Exception
+	
+	public List getContentAssets(String propertyName, boolean useInheritance, boolean useRepositoryInheritance, boolean useStructureInheritance) throws Exception
 	{
-		Collection assets = new ArrayList();
+		List assets = new ArrayList();
 
 		Map property = getInheritedComponentProperty(this.infoGlueComponent, propertyName, useInheritance, useRepositoryInheritance, useStructureInheritance);
 		Integer contentId = getContentId(property);
@@ -185,6 +186,57 @@ public class ComponentLogic
 		assets = templateController.getAssets(contentId);
 
 		return assets;
+	}
+	
+	public List getAssets(String propertyName, boolean useInheritance, boolean useRepositoryInheritance, boolean useStructureInheritance) throws Exception
+	{
+		List assets = new ArrayList();
+	
+		Map property = getInheritedComponentProperty(this.infoGlueComponent, propertyName, useInheritance, useRepositoryInheritance, useStructureInheritance);
+		
+		if(property != null)
+		{	
+			List<ComponentBinding> bindings = (List<ComponentBinding>)property.get("bindings");
+			Iterator<ComponentBinding> bindingsIterator = bindings.iterator();
+			while(bindingsIterator.hasNext())
+			{
+				ComponentBinding componentBinding = bindingsIterator.next();
+				Integer boundContentId 	= componentBinding.getEntityId();
+				String assetKey 		= componentBinding.getAssetKey();
+				
+				if(assetKey != null && !assetKey.equals(""))
+					assets.add(templateController.getAsset(boundContentId, assetKey));
+				else
+					assets.addAll(templateController.getAssets(boundContentId));
+			}
+		}
+		
+		return assets;
+	}
+	
+	public Collection getAssetUrls(String propertyName, boolean useInheritance, boolean useRepositoryInheritance, boolean useStructureInheritance) throws Exception
+	{
+		List assetUrls = new ArrayList();
+
+		Map property = getInheritedComponentProperty(this.infoGlueComponent, propertyName, useInheritance, useRepositoryInheritance, useStructureInheritance);
+		if(property != null)
+		{	
+			List<ComponentBinding> bindings = (List<ComponentBinding>)property.get("bindings");
+			Iterator<ComponentBinding> bindingsIterator = bindings.iterator();
+			while(bindingsIterator.hasNext())
+			{
+				ComponentBinding componentBinding = bindingsIterator.next();
+				Integer boundContentId 	= componentBinding.getEntityId();
+				String assetKey 		= componentBinding.getAssetKey();
+		
+				if(assetKey != null && !assetKey.equals(""))
+					assetUrls.add(templateController.getAsset(boundContentId, assetKey));
+				else
+					assetUrls.addAll(templateController.getAssetUrls(boundContentId));
+			}
+		}
+		
+		return assetUrls;
 	}
 
 	public String getAssetUrl(String propertyName) throws Exception

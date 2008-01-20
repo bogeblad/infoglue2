@@ -2218,6 +2218,32 @@ public class BasicTemplateController implements TemplateController
 		return assetUrl;
 	}
 
+    /**
+     * This method deliveres a collection of strings with the URL to the digital assets for a certain content.
+     */
+    public List getAssetUrls(Integer contentId)
+    {
+		List assetUrls = new ArrayList();
+		
+		try
+		{
+			List digitalAssetVOList = getAssets(contentId);
+			Iterator digitalAssetVOListIterator = digitalAssetVOList.iterator();
+			while(digitalAssetVOListIterator.hasNext())
+			{
+				DigitalAssetVO digitalAssetVO = (DigitalAssetVO)digitalAssetVOListIterator.next();
+				String assetUrl = getAssetUrlForAssetWithId(digitalAssetVO.getId());
+				assetUrls.add(assetUrl);
+			}
+		}
+		catch(Exception e)
+		{
+			logger.error("An error occurred trying to get assetUrls on content with id: " + contentId + ":" + e.getMessage(), e);
+		}
+				
+		return assetUrls;    	
+    }
+
 
 	/**
 	 * This method deliveres a String with the URL to the digital asset asked for.
