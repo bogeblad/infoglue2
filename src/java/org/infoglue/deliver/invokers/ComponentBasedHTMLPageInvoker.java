@@ -155,7 +155,7 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 	
 	protected String decorateHeadAndPageWithVarsFromComponents(String pageString)
 	{
-		if(pageString.length() < 100000)
+		if(pageString.length() < 500000)
 		{
 			pageString = this.getTemplateController().decoratePage(pageString);
 			
