@@ -4,7 +4,21 @@
 
 Release notes
 ---------------------------------------
-sssssss
+After a huge effort the winter release of InfoGlue is here. We can now proudly announce InfoGlue 2.8.0 for immediate download.
+As the changelog below shows a lot of new features and a lot of bugfixes has been made since 2.6.0. As always we have made a lot of user 
+interface improvements as well as a lot of improvements under the hood. An upgrade to FCKEditor 2.5.1 has also been made so now we are 
+well on the way to being able to fully support more browsers.
+
+The release of InfoGlue 2.8.0 is part of a bigger launch where we release several parts during a period ahead.
+	
+	* A new version of www.infoglue.org which is also released as a example site for free.
+	* The new InfoGlue Eclipse IDE Plugin which allows template/component-editing directly in Eclipse.
+    * InfoGlue Calendar Portlet which is a competent and flexible calendar and event handling system which is well integrated with InfoGlue. (Coming soon)
+    * Updated documentation of InfoGlue (Coming soon)
+    
+Thanx to all involved!!
+
+The InfoGlue Team
 
 
 Abbreviated Changelog from 2.6.0 Final 
@@ -122,6 +136,11 @@ Abbreviated Changelog from 2.6.0 Final
 - Added access control to add component-dialog. Now you only see components you are allowed to read as defined by the normal security settings.
 - Added new tag which allows you to store any string as a file in the digitalAsset dir and get an url to it. Very handy in some situations.
 - Added tag which allows you to export one or many contents and get the url to the export file.
+- Worked on adding possibility to add multiple asset bindings. This is great for document collections or slideshows.
+- Fixed bug in how binding path is reset in asset binding dialog.
+- Added new tag called content:assetUrls which returns multiple asset urls. The assets are either bound with the new multi-asset-binding or it can also take all assets one or many contents.
+
+
 
 -------------------------------------------------------------------------------------
 - InfoGlue 2.6.0 Final
