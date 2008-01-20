@@ -848,9 +848,9 @@ public class ContentDeliveryController extends BaseDeliveryController
 	 * This method returns all the assets available in a contentVersion.
 	 */
 
-	public Collection getAssets(Database db, Integer contentId, Integer languageId, Integer siteNodeId, boolean useLanguageFallback, DeliveryContext deliveryContext, InfoGluePrincipal infoGluePrincipal) throws SystemException, Exception
+	public List getAssets(Database db, Integer contentId, Integer languageId, Integer siteNodeId, boolean useLanguageFallback, DeliveryContext deliveryContext, InfoGluePrincipal infoGluePrincipal) throws SystemException, Exception
 	{
-		Collection digitalAssetVOLIst = new ArrayList();
+		List digitalAssetVOLIst = new ArrayList();
 		
 		ContentVersion contentVersion = getContentVersion(siteNodeId, contentId, languageId, db, useLanguageFallback, deliveryContext, infoGluePrincipal);
 		if (contentVersion != null) 
@@ -865,6 +865,33 @@ public class ContentDeliveryController extends BaseDeliveryController
         }
 		
 		return digitalAssetVOLIst;
+	}
+
+	/**
+	 * This method returns all the assets available in a contentVersion.
+	 */
+
+	public DigitalAssetVO getAsset(Database db, Integer contentId, Integer languageId, String assetKey, Integer siteNodeId, boolean useLanguageFallback, DeliveryContext deliveryContext, InfoGluePrincipal infoGluePrincipal) throws SystemException, Exception
+	{
+		DigitalAssetVO digitalAssetVO = null;
+		
+		ContentVersion contentVersion = getContentVersion(siteNodeId, contentId, languageId, db, useLanguageFallback, deliveryContext, infoGluePrincipal);
+		if (contentVersion != null) 
+        {
+        	Collection assets = contentVersion.getDigitalAssets();
+        	Iterator keysIterator = assets.iterator();
+        	while(keysIterator.hasNext())
+        	{
+        		DigitalAsset asset = (DigitalAsset)keysIterator.next();
+        		if(asset.getAssetKey().equalsIgnoreCase(assetKey))
+        		{
+        			digitalAssetVO = asset.getValueObject();
+        			break;
+        		}
+        	}
+        }
+		
+		return digitalAssetVO;
 	}
 
 	/**

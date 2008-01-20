@@ -54,6 +54,7 @@ import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeController;
 import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.content.ContentVersion;
 import org.infoglue.cms.entities.content.ContentVersionVO;
+import org.infoglue.cms.entities.content.DigitalAssetVO;
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
 import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.entities.structure.QualifyerVO;
@@ -126,6 +127,9 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 	private String assignedAssetKey;
 	
 	private String anchor = null;
+	
+	private boolean showActionButtons = true;
+	private boolean showSelectButtonByEachImage = false;
 	
 	public String getQualifyerPath(String entity, String entityId)
 	{	
@@ -693,6 +697,26 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 		return imageHref;
 	}
 	
+	/**
+	 * This method fetches the blob from the database and saves it on the disk.
+	 * Then it returnes a url for it
+	 */
+	
+	public String getDigitalAssetUrl(Integer contentId, Integer languageId, String assetKey) throws Exception
+	{
+		String imageHref = null;
+		try
+		{
+       		imageHref = DigitalAssetController.getDigitalAssetUrl(contentId, languageId, assetKey, false);
+		}
+		catch(Exception e)
+		{
+			logger.warn("We could not get the url of the digitalAsset: " + e.getMessage(), e);
+			imageHref = e.getMessage();
+		}
+		
+		return imageHref;
+	}
 	
 	/**
 	 * This method fetches the blob from the database and saves it on the disk.
@@ -714,7 +738,28 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 		
 		return imageHref;
 	}
+
+	/**
+	 * This method fetches the blob from the database and saves it on the disk.
+	 * Then it returnes a url for it
+	 */
 	
+	public String getDigitalAssetThumbnailUrl(Integer contentId, Integer languageId, String assetKey) throws Exception
+	{
+		String imageHref = null;
+		try
+		{
+			DigitalAssetVO assetVO = DigitalAssetController.getDigitalAssetVO(contentId, languageId, assetKey, false);
+       		imageHref = DigitalAssetController.getDigitalAssetThumbnailUrl(assetVO.getDigitalAssetId());
+		}
+		catch(Exception e)
+		{
+			logger.warn("We could not get the url of the thumbnail: " + e.getMessage(), e);
+			imageHref = e.getMessage();
+		}
+		
+		return imageHref;
+	}
 
 	
 	/**
@@ -1322,6 +1367,30 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 	public void setAnchor(String anchor)
 	{
 		this.anchor = anchor;
+	}
+
+
+	public boolean getShowActionButtons()
+	{
+		return showActionButtons;
+	}
+
+
+	public void setShowActionButtons(boolean showActionButtons)
+	{
+		this.showActionButtons = showActionButtons;
+	}
+
+
+	public boolean getShowSelectButtonByEachImage()
+	{
+		return showSelectButtonByEachImage;
+	}
+
+
+	public void setShowSelectButtonByEachImage(boolean showSelectButtonByEachImage)
+	{
+		this.showSelectButtonByEachImage = showSelectButtonByEachImage;
 	}
 
 }

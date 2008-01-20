@@ -221,6 +221,17 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 	}
 
 	/**
+	 * This method shows the user a interface to choose multiple contents. 
+	 */
+    
+	public String doShowContentTreeForMultipleAssetBinding() throws Exception
+	{
+		initialize();
+		initializeTreeView("ViewSiteNodePageComponents!showContentTreeForMultipleAssetBinding.action");
+		return "showContentTreeForMultipleAssetBinding";
+	}
+
+	/**
 	 * This method shows the user a list of SiteNodes. 
 	 */
     
@@ -1224,15 +1235,17 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 		for(int i=0; i<nl.getLength(); i++)
 		{
 			Element qualifyerElement = (Element)nl.item(i);
-		//logger.info("qualifyerElement:" + qualifyerElement);
+			//logger.info("qualifyerElement:" + qualifyerElement);
 			String entityName = qualifyerElement.getNodeName();
+			String assetKey = qualifyerElement.getAttribute("assetKey");
 			String entityId = qualifyerElement.getFirstChild().getNodeValue();
-		//logger.info("entityName:" + entityName);
-		//logger.info("entityId:" + entityId);
+			//logger.info("entityName:" + entityName);
+			//logger.info("entityId:" + entityId);
 			
 			Element element = parent.getOwnerDocument().createElement("binding");
 			element.setAttribute("entityId", entityId);
 			element.setAttribute("entity", entityName);
+			element.setAttribute("assetKey", assetKey);
 			parent.appendChild(element);
 		}
 	}
@@ -1331,6 +1344,42 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 		return imageHref;
 	}
 	
+	/**
+	 * This method fetches the blob from the database and saves it on the disk.
+	 * Then it returnes a url for it
+	 */
+	
+	public String getDigitalAssetThumbnailUrl(Integer contentId, String key) throws Exception
+	{
+		String imageHref = null;
+		try
+		{
+			LanguageVO masterLanguage = LanguageController.getController().getMasterLanguage(ContentController.getContentController().getContentVOWithId(contentId).getRepositoryId());
+			ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentId, masterLanguage.getId());
+			if(contentVersionVO != null)
+			{
+				List digitalAssets = DigitalAssetController.getDigitalAssetVOList(contentVersionVO.getId());
+				Iterator i = digitalAssets.iterator();
+				while(i.hasNext())
+				{
+					DigitalAssetVO digitalAssetVO = (DigitalAssetVO)i.next();
+					if(digitalAssetVO.getAssetKey().equals(key))
+					{
+						imageHref = DigitalAssetController.getDigitalAssetThumbnailUrl(digitalAssetVO.getId()); 
+						break;
+					}
+				}
+			}
+		}
+		catch(Exception e)
+		{
+			logger.warn("We could not get the thumbnail url of the digitalAsset: " + e.getMessage(), e);
+			imageHref = e.getMessage();
+		}
+		
+		return imageHref;
+	}
+
 	public Integer getContentId()
 	{
 		return contentId;

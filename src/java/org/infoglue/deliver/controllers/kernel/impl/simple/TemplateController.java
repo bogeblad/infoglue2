@@ -40,6 +40,7 @@ import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.content.ContentVersionVO;
+import org.infoglue.cms.entities.content.DigitalAssetVO;
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
 import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.entities.structure.SiteNodeVO;
@@ -475,11 +476,17 @@ public interface TemplateController
     public abstract Collection getAssetKeys(String contentBindningName);
 
 	/**
-	 * This method deliveres a list of DigitalAssetVO-objects which represents all assets for a content.
+	 * This method deliveres a list of DigitalAssetVO-objects which represents all assets bound to a property.
 	 */
 	 
-	public Collection getAssets(Integer contentId);
-	
+	public List getAssets(Integer contentId);
+
+	/**
+	 * This method deliveres a list of DigitalAssetVO-objects which represents a certain asset for a content.
+	 */
+	 
+	public DigitalAssetVO getAsset(Integer contentId, String assetKey);
+
 	/**
 	 * This method deliveres a list of assetIds which represents all assets for a content.
 	 */

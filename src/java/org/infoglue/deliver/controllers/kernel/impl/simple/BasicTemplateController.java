@@ -1972,12 +1972,32 @@ public class BasicTemplateController implements TemplateController
 	}
 
 	/**
+	 * This method deliveres a list of DigitalAssetVO-objects which represents a certain asset for a content.
+	 */
+	 
+	public DigitalAssetVO getAsset(Integer contentId, String assetKey)
+	{
+		DigitalAssetVO digitalAssetVO = null;
+		
+		try
+		{
+			digitalAssetVO = ContentDeliveryController.getContentDeliveryController().getAsset(getDatabase(), contentId, this.languageId, assetKey, this.siteNodeId, USE_LANGUAGE_FALLBACK, this.deliveryContext, this.infoGluePrincipal);
+		}
+		catch(Exception e)
+		{
+			logger.error("An error occurred trying to get asset on content with id: " + contentId + " and assetKey:" + assetKey + ":" + e.getMessage(), e);
+		}
+				
+		return digitalAssetVO;
+	}
+
+	/**
 	 * This method deliveres a list of DigitalAssetVO-objects which represents all assets for a content.
 	 */
 	 
-	public Collection getAssets(Integer contentId) 
+	public List getAssets(Integer contentId) 
 	{
-		Collection assets = new ArrayList();
+		List assets = new ArrayList();
 		
 		try
 		{
@@ -6586,9 +6606,16 @@ public class BasicTemplateController implements TemplateController
 				    }
 				    
 					if(property.getIsMultipleBinding())
-						assignUrl = componentEditorUrl + "ViewSiteNodePageComponents!showContentTreeForMultipleBinding.action?repositoryId=" + repositoryId + "&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&propertyName=" + property.getName() + allowedContentTypeIdParameters + "&showSimple=" + getDeliveryContext().getShowSimple() + "&showDecorated=" + showDecorated;
+					{
+						if(property.getIsAssetBinding())
+							assignUrl = componentEditorUrl + "ViewSiteNodePageComponents!showContentTreeForMultipleAssetBinding.action?repositoryId=" + repositoryId + "&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&propertyName=" + property.getName() + allowedContentTypeIdParameters + "&showSimple=" + getDeliveryContext().getShowSimple() + "&showDecorated=" + showDecorated;
+						else
+							assignUrl = componentEditorUrl + "ViewSiteNodePageComponents!showContentTreeForMultipleBinding.action?repositoryId=" + repositoryId + "&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&propertyName=" + property.getName() + allowedContentTypeIdParameters + "&showSimple=" + getDeliveryContext().getShowSimple() + "&showDecorated=" + showDecorated;
+					}
 					else
+					{
 						assignUrl = componentEditorUrl + "ViewSiteNodePageComponents!showContentTree.action?repositoryId=" + repositoryId + "&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&propertyName=" + property.getName() + allowedContentTypeIdParameters + "&showSimple=" + getDeliveryContext().getShowSimple() + "&showDecorated=" + showDecorated + "&isAssetBinding=" + property.getIsAssetBinding();
+					}
 				}
 				else if(property.getEntityClass().equalsIgnoreCase("SiteNode"))
 				{

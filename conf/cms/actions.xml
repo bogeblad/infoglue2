@@ -1,4 +1,4 @@
-<!-- $Id: actions.xml,v 1.55 2008/01/12 21:09:31 mattias Exp $ -->
+<!-- $Id: actions.xml,v 1.56 2008/01/20 02:39:29 mattias Exp $ -->
 <actions>
 
 	<!-- MySettings -->
@@ -1159,6 +1159,7 @@
 		<view name="listComponentsForPalette">/cms/structuretool/viewListComponentsForPalette.vm</view>
 		<view name="showContentTree">/cms/structuretool/viewContentTreeForComponentBinding.vm</view>
 		<view name="showContentTreeForMultipleBinding">/cms/structuretool/viewContentTreeForMultipleComponentBinding.vm</view>
+		<view name="showContentTreeForMultipleAssetBinding">/cms/structuretool/viewContentTreeForMultipleAssetComponentBinding.vm</view>
 		<view name="showStructureTree">/cms/structuretool/viewStructureTreeForComponentBinding.vm</view>
 		<view name="showStructureTreeForMultipleBinding">/cms/structuretool/viewStructureTreeForMultipleComponentBinding.vm</view>
 		<view name="showCategoryTree">/cms/structuretool/viewCategoryTreeForComponentBinding.vm</view>
