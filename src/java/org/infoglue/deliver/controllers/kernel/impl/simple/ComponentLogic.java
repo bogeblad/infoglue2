@@ -230,7 +230,7 @@ public class ComponentLogic
 				String assetKey 		= componentBinding.getAssetKey();
 		
 				if(assetKey != null && !assetKey.equals(""))
-					assetUrls.add(templateController.getAsset(boundContentId, assetKey));
+					assetUrls.add(templateController.getAssetUrl(boundContentId, assetKey));
 				else
 					assetUrls.addAll(templateController.getAssetUrls(boundContentId));
 			}
