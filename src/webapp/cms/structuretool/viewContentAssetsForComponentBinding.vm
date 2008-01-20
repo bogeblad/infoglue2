@@ -38,7 +38,7 @@
 		{
 			//alert("selectBox:" + selectBox);
 			var repositoryId = selectBox.value;
-			var url = "ViewContentVersion!viewAssetsForComponentBinding.action?repositoryId=" + repositoryId + "&siteNodeId=$siteNodeId&languageId=$languageId&contentId=-1&componentId=$componentId&propertyName=$propertyName&showSimple=$showSimple&showDecorated=$!showDecorated&assignedContentId=$!assignedContentId&assignedAssetKey=$!assignedAssetKey";
+			var url = "ViewContentVersion!viewAssetsForComponentBinding.action?repositoryId=" + repositoryId + "&siteNodeId=$siteNodeId&languageId=$languageId&contentId=-1&componentId=$componentId&propertyName=$propertyName&showSimple=$showSimple&showDecorated=$!showDecorated&assignedContentId=$!assignedContentId&assignedAssetKey=$!assignedAssetKey&assignedPath=$formatter.encodeURI($!assignedPath)";
 			document.location.href = url;
 		}
 		
@@ -52,6 +52,7 @@
 		
 		function onOk(contentId, assetKey)
 		{
+			
 			//alert("Setting contentId:" + contentId + " and assetKey:" + assetKey);
 			
 			if(contentId == '' || contentId == '${select}' || assetKey == '')
@@ -142,7 +143,7 @@
 <form name="inputForm" action="CreateServiceBinding.action">
 	<input type="hidden" id="entityId" name="entityId" value="">
 	<input type="hidden" name="repositoryId" value="">
-	<input type="hidden" name="path" value="">
+	<input type="hidden" name="path" value="$!formatter.escapeHTML("$!assignedPath")">
 	<input type="hidden" name="qualifyerXML" value="">
 	<input type="hidden" name="assignedContentId" value="$!assignedContentId">
 	<input type="hidden" name="assignedAssetKey" value="$!assignedAssetKey">

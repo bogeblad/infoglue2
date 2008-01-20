@@ -17,15 +17,18 @@
 		var contentId;
 		var assetKey;
 		var firstAssetKey;
+		var assetUrl;
 			
-		function markAsset(object, aContentId, anAssetKey, actualAssetKey)
+		function markAsset(object, aContentId, anAssetKey, actualAssetKey, anAssetUrl)
 		{
 			if(selectedAssetElement)
 				selectedAssetElement.style.background = "";
-				
+			
 			contentId = aContentId;	
 			//assetKey = anAssetKey;	
 			assetKey = actualAssetKey;
+			assetUrl = anAssetUrl;
+			//alert("assetUrl: " + assetUrl);
 			
 			//alert("object:" + object);
 			//alert("contentId" + contentId);
@@ -40,9 +43,9 @@
 		function onOk()
 		{
 			#if(!$treatAsLink)
-				parent.onOk(contentId, assetKey);
+				parent.onOk(contentId, assetKey, assetUrl);
 			#else
-				parent.onOk(contentId, assetKey);
+				parent.onOk(contentId, assetKey, assetUrl);
 			#end
 		}
 
@@ -56,21 +59,7 @@
 		function initSub() 
 		{
 			//alert("firstAssetKey: " + firstAssetKey);
-			markAsset(this, '$!contentId', firstAssetKey, firstAssetKey);
-			#*
-			//alert("assetKey: $assetKey");
-			#if($assetKey && $assetKey != "")
-				assetKey = "$assetKey";
-				contentId = "$!contentId";
-				//alert("assetKey:" + assetKey);
-				//alert("contentId:" + contentId);
-				//if(selectedAssetElement)
-					selectedAssetElement = document.getElementById("digitalAsset" + assetKey);
-				//alert("selectedAssetElement:" + selectedAssetElement);
-			#else
-				markAsset(this, '$!contentId', firstAssetKey);
-			#end
-			*#
+			markAsset(this, '$!contentId', firstAssetKey, firstAssetKey, '');
 		};
 		
 		-->
@@ -99,16 +88,19 @@
 	<META HTTP-EQUIV="expires" CONTENT="-1" />	
 </head>
 
-<body class="contenttooledit" onload="initSub();">
+<body class="contenttooledit" onload="initSub();" style="padding: 0px; margin: 0px;">
 
-<table border="0" width="100%" cellpadding="2" cellspacing="0">
+<table border="0" width="100%" cellpadding="6" cellspacing="0" style="background-color: white; color: black;">
 #set($counter = 0)
 #foreach($digitalAsset in $inheritedDigitalAssets)
 <tr>
-	<td id="digitalAsset$formatter.encodeURI($formatter.encodeURI($digitalAsset.assetKey, 'utf-8'), 'utf-8')" valign="bottom" align="center" class="bordered" #if($assetKey == "$digitalAsset.assetKey") style="background-color: #C2D0E2;" #end>
+	<td id="digitalAsset$formatter.encodeURI($formatter.encodeURI($digitalAsset.assetKey, 'utf-8'), 'utf-8')" valign="bottom" align="center" class="bordered" #if($assetKey == "$digitalAsset.assetKey") style="background-color: #C2D0E2;" #else style="background-color: white;" #end>
 		<input type="hidden" id="digitalAsset$formatter.encodeURI($formatter.encodeURI($digitalAsset.assetKey, 'utf-8'), 'utf-8')" value="$this.getDigitalAssetUrl($digitalAsset.digitalAssetId)">
-		<a ondblclick="onOk();" href="javascript:markAsset(this, $!contentId, '$formatter.encodeURI($formatter.encodeURI($formatter.encodeURI($digitalAsset.assetKey, 'utf-8'), 'utf-8'), 'utf-8')', '$formatter.encodeURI($formatter.encodeURI($digitalAsset.assetKey, 'utf-8'), 'utf-8')');"><img class="scaledbordered" src="$this.getDigitalAssetThumbnailUrl($digitalAsset.digitalAssetId)">
-		<br/>$digitalAsset.assetKey</a><br/>
+		#set($trippleEncodedAssetKey = "$formatter.encodeURI($formatter.encodeURI($formatter.encodeURI($digitalAsset.assetKey, 'utf-8'), 'utf-8'), 'utf-8')")
+		#set($doubleEncodedAssetKey = "$formatter.encodeURI($formatter.encodeURI($formatter.encodeURI($digitalAsset.assetKey, 'utf-8'), 'utf-8'), 'utf-8')")
+		<a ondblclick="onOk();" href="javascript:markAsset(this, $!contentId, '$trippleEncodedAssetKey', '$doubleEncodedAssetKey', '$this.getDigitalAssetThumbnailUrl($digitalAsset.digitalAssetId)');"><img class="scaledbordered" src="$this.getDigitalAssetThumbnailUrl($digitalAsset.digitalAssetId)">
+		<br/>AssetKey: $digitalAsset.assetKey</a><br/>
+		#if($showSelectButtonByEachImage)<a href="javascript:markAsset(this, $!contentId, '$trippleEncodedAssetKey', '$doubleEncodedAssetKey', '$this.getDigitalAssetThumbnailUrl($digitalAsset.digitalAssetId)');onOk();"><b>Add asset to selection</b></a>#end
 	</td>
 	#if($assetKey == $digitalAsset.assetKey)
 		<script type="text/javascript">
@@ -142,14 +134,14 @@
 #end
 
 <tr>
-	<td>
-		<br/>
+	<td style="padding-top: 15px; padding-bottom: 5px;">
 		#if($contentVersionVO.id)
 		<a href="javascript:openPopup('ViewDigitalAsset.action?contentVersionId=$contentVersionVO.id', 'DigitalAsset', 'width=400,height=200,resizable=no');">Upload new image</a>
 		#end
 	</td>
 </tr>
 
+#if($showActionButtons)
 <tr>
 	<td>&nbsp;</td>
 </tr>
@@ -159,6 +151,7 @@
 		<a href="javascript:onCancel();"><img src="$ui.getString("images.structuretool.buttons.cancel")" border="0"></a>
 	</td>
 </tr>
+#end
 </table>
 
 <script type="text/javascript">

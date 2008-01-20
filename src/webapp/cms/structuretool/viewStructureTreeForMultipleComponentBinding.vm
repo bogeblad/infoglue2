@@ -425,7 +425,7 @@
 		{
 			#foreach($binding in $componentBindings)
 				//alert("$binding");
-				binding = new Binding("SiteNode", "$binding.entityId", "$binding.path");
+				binding = new Binding("SiteNode", "$binding.entityId", "$formatter.cleanForJavascriptStrings($binding.path)");
 				siteNodesVector.addElement(binding);
 			#end
 	
