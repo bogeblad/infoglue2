@@ -38,6 +38,7 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 import org.dom4j.Document;
 import org.dom4j.Element;
+import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.controllers.kernel.impl.simple.AccessRightController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
 import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
@@ -84,7 +85,8 @@ import org.infoglue.deliver.util.VelocityTemplateProcessor;
 public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPageInvoker
 {
 	private final static DOMBuilder domBuilder = new DOMBuilder();
-
+	private final static VisualFormatter formatter = new VisualFormatter();
+	
     private final static Logger logger = Logger.getLogger(DecoratedComponentBasedHTMLPageInvoker.class.getName());
 
 	private String propertiesDivs 	= "";
@@ -821,7 +823,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 								while(bindingsIterator.hasNext())
 								{
 									ComponentBinding componentBinding = bindingsIterator.next();
-									assignedParameters = "&assignedContentId=" + componentBinding.getEntityId() + "&assignedAssetKey=" + componentBinding.getAssetKey();
+									assignedParameters = "&assignedContentId=" + componentBinding.getEntityId() + "&assignedAssetKey=" + componentBinding.getAssetKey() + "&assignedPath=" + formatter.encodeURI(componentProperty.getValue());
 								}
 								
 								assignUrl = componentEditorUrl + "ViewContentVersion!viewAssetsForComponentBinding.action?repositoryId=" + repositoryId + "&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&propertyName=" + componentProperty.getName() + allowedContentTypeIdParameters + "&showSimple=" + getTemplateController().getDeliveryContext().getShowSimple() + assignedParameters;
