@@ -139,7 +139,7 @@ Abbreviated Changelog from 2.6.0 Final
 - Worked on adding possibility to add multiple asset bindings. This is great for document collections or slideshows.
 - Fixed bug in how binding path is reset in asset binding dialog.
 - Added new tag called content:assetUrls which returns multiple asset urls. The assets are either bound with the new multi-asset-binding or it can also take all assets one or many contents.
-
+- Fixed so palette is default off after installation
 
 
 -------------------------------------------------------------------------------------
