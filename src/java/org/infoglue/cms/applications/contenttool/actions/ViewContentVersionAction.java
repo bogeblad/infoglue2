@@ -123,6 +123,7 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 	private String propertyName;
 	private Integer componentId;
 	private boolean showSimple = false;
+	private String assignedPath;
 	private Integer assignedContentId;
 	private String assignedAssetKey;
 	
@@ -1345,6 +1346,16 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 		this.assignedAssetKey = assignedAssetKey;
 	}
 
+	public String getAssignedPath()
+	{
+		return assignedPath;
+	}
+
+
+	public void setAssignedPath(String assignedPath)
+	{
+		this.assignedPath = assignedPath;
+	}
 
 	public Integer getAssignedContentId()
 	{
