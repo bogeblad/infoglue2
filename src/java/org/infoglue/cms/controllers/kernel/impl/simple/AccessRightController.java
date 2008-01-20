@@ -1217,7 +1217,7 @@ public class AccessRightController extends BaseController
 		{
 			beginTransaction(db);
 			
-			isPrincipalAuthorized = getIsPrincipalAuthorized(db, infoGluePrincipal, interceptionPointName, returnSuccessIfInterceptionPointNotDefined);
+			isPrincipalAuthorized = getIsPrincipalAuthorized(db, infoGluePrincipal, interceptionPointName, returnSuccessIfInterceptionPointNotDefined, false);
 			
 			//CacheController.cacheObject("authorizationCache", key, new Boolean(isPrincipalAuthorized));
 		    CacheController.cacheObjectInAdvancedCache("personalAuthorizationCache", key, new Boolean(isPrincipalAuthorized), new String[]{infoGluePrincipal.getName()}, true);
@@ -1240,14 +1240,14 @@ public class AccessRightController extends BaseController
 
 	public boolean getIsPrincipalAuthorized(Database db, InfoGluePrincipal infoGluePrincipal, String interceptionPointName) throws SystemException
 	{		
-		return getIsPrincipalAuthorized(db, infoGluePrincipal, interceptionPointName, false);
+		return getIsPrincipalAuthorized(db, infoGluePrincipal, interceptionPointName, false, false);
 	}
 	
 	/**
 	 * This method checks if a role has access to an entity. It takes name and id of the entity. 
 	 */
 
-	public boolean getIsPrincipalAuthorized(Database db, InfoGluePrincipal infoGluePrincipal, String interceptionPointName, boolean returnSuccessIfInterceptionPointNotDefined) throws SystemException
+	public boolean getIsPrincipalAuthorized(Database db, InfoGluePrincipal infoGluePrincipal, String interceptionPointName, boolean returnSuccessIfInterceptionPointNotDefined, boolean returnFailureIfInterceptionPointNotDefined) throws SystemException
 	{		
 	    if(infoGluePrincipal.getIsAdministrator())
 			return true;
@@ -1262,6 +1262,9 @@ public class AccessRightController extends BaseController
 		InterceptionPoint interceptionPoint = InterceptionPointController.getController().getInterceptionPointWithName(interceptionPointName, db);
 		if(interceptionPoint == null && returnSuccessIfInterceptionPointNotDefined)
 			return true;
+		
+		if(interceptionPoint == null && returnFailureIfInterceptionPointNotDefined)
+			return false;
 		
 		List accessRightList = this.getAccessRightList(interceptionPoint.getId(), db);
 
