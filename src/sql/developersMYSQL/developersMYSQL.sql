@@ -118,7 +118,7 @@ CREATE TABLE cmDigitalAsset (
   assetFilePath text NOT NULL,
   assetFileSize int(11) NOT NULL default '0',
   assetContentType text NOT NULL,
-  assetBlob longblob NOT NULL,
+  assetBlob longblob,
   PRIMARY KEY  (digitalAssetId)
 ) TYPE=InnoDB;
 

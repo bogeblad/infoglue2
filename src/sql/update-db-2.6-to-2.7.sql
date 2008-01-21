@@ -29,3 +29,5 @@ alter table cmSiteNodeVersion add disableForceIDCheck tinyint(4) NOT NULL defaul
  
 ALTER TABLE cmQualifyer ADD INDEX qualifyerNameIndex(name(50));
 ALTER TABLE cmQualifyer ADD INDEX qualifyerValueIndex(value(50));
+
+alter table cmDigitalAsset change assetBlob assetBlob longblob;
