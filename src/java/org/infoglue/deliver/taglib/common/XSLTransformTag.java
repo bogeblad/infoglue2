@@ -226,7 +226,7 @@ public class XSLTransformTag extends TemplateControllerTag
         	}
         	catch (NoSuchMethodError e) 
         	{
-        		logger.error("Problem resetting transformer -wrong java version:" + e.getMessage(), e);
+        		logger.error("Problem resetting transformer -wrong java version:" + e.getMessage());
         	}
         	catch (Exception e) 
         	{
