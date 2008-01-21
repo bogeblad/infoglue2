@@ -242,11 +242,10 @@ public class ComponentLogic
 	public String getAssetUrl(String propertyName) throws Exception
 	{
 		String assetUrl = "";
-
 		Map property = getInheritedComponentProperty(this.infoGlueComponent, propertyName, this.useInheritance, this.useRepositoryInheritance, this.useStructureInheritance);
 		Integer contentId = getContentId(property);
 		String assetKey = getAssetKey(property);
-		if(contentId != null && assetKey == null || assetKey.equals(""))
+		if(contentId != null && ( assetKey == null || "".equals(assetKey) ))
 			assetUrl = templateController.getAssetUrl(contentId);
 		else if(contentId != null )
 			assetUrl = templateController.getAssetUrl(contentId, assetKey);
