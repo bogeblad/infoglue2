@@ -79,6 +79,7 @@ public class InfoGlueAuthenticationFilter implements Filter
 	public static String extraParametersFile	= null;
  	public static Properties extraProperties	= null;
 	public static String casValidateUrl			= null;
+	public static String casProxyValidateUrl	= null;
 	public static String casServiceUrl			= null;
 	public static String casLogoutUrl			= null;
 	public static String casRenew				= null;
@@ -100,6 +101,7 @@ public class InfoGlueAuthenticationFilter implements Filter
 		authConstraint 		= config.getInitParameter("org.infoglue.cms.security.authConstraint");
 		extraParametersFile	= config.getInitParameter("org.infoglue.cms.security.extraParametersFile");
 		casValidateUrl		= config.getInitParameter("org.infoglue.cms.security.casValidateUrl");
+		casProxyValidateUrl	= config.getInitParameter("org.infoglue.cms.security.casProxyValidateUrl");
 		casServiceUrl		= config.getInitParameter("org.infoglue.cms.security.casServiceUrl");
 		casLogoutUrl		= config.getInitParameter("org.infoglue.cms.security.casLogoutUrl");
 		//casRenew			= config.getInitParameter("org.infoglue.cms.security.casRenew");
@@ -367,20 +369,6 @@ public class InfoGlueAuthenticationFilter implements Filter
 
   		AuthenticationModule authenticationModule = AuthenticationModule.getAuthenticationModule(null, currentUrl);
   		
-  		/*
-  		AuthenticationModule authenticationModule = (AuthenticationModule)Class.forName(authenticatorClass).newInstance();
-		authenticationModule.setAuthenticatorClass(authenticatorClass);
-		authenticationModule.setAuthorizerClass(authorizerClass);
-		authenticationModule.setInvalidLoginUrl(invalidLoginUrl);
-		//authenticationModule.setSuccessLoginBaseUrl(successLoginBaseUrl);
-		authenticationModule.setLoginUrl(loginUrl);
-		authenticationModule.setServerName(serverName);
-		authenticationModule.setExtraProperties(extraProperties);
-		authenticationModule.setCasRenew(casRenew);
-		authenticationModule.setCasServiceUrl(casServiceUrl);
-		authenticationModule.setCasValidateUrl(casValidateUrl);
-		*/
-  		
 		authenticatedUserName = authenticationModule.authenticateUser(request, response, fc);
 		
 		return authenticatedUserName;
@@ -436,6 +424,7 @@ public class InfoGlueAuthenticationFilter implements Filter
 		    casRenew 			= CmsPropertyHandler.getServerNodeProperty("deliver", "casRenew", true, null);
 		    casServiceUrl 		= CmsPropertyHandler.getServerNodeProperty("deliver", "casServiceUrl", true, null);
 		    casValidateUrl 		= CmsPropertyHandler.getServerNodeProperty("deliver", "casValidateUrl", true, null);
+		    casProxyValidateUrl = CmsPropertyHandler.getServerNodeProperty("deliver", "casProxyValidateUrl", true, null);
 		    casLogoutUrl 		= CmsPropertyHandler.getServerNodeProperty("deliver", "casLogoutUrl", true, null);
 		    
 		    String extraPropertiesString = CmsPropertyHandler.getServerNodeDataProperty("deliver", "extraSecurityParameters", true, null);
@@ -484,6 +473,7 @@ public class InfoGlueAuthenticationFilter implements Filter
 		    logger.info("casRenew:" + casRenew);
 		    logger.info("casServiceUrl:" + casServiceUrl);
 		    logger.info("casValidateUrl:" + casValidateUrl);
+		    logger.info("casProxyValidateUrl:" + casProxyValidateUrl);
 		    logger.info("casLogoutUrl:" + casLogoutUrl);
 		    if(logger.isDebugEnabled())
 		    {
@@ -517,33 +507,22 @@ public class InfoGlueAuthenticationFilter implements Filter
 		    String casRenew 			= CmsPropertyHandler.getServerNodeProperty("casRenew", true, null);
 		    String casServiceUrl 		= CmsPropertyHandler.getServerNodeProperty("casServiceUrl", true, null);
 		    String casValidateUrl 		= CmsPropertyHandler.getServerNodeProperty("casValidateUrl", true, null);
+		    String casProxyValidateUrl 	= CmsPropertyHandler.getServerNodeProperty("casProxyValidateUrl", true, null);
 		    String casLogoutUrl 		= CmsPropertyHandler.getServerNodeProperty("casLogoutUrl", true, null);
 		    String authConstraint		= CmsPropertyHandler.getServerNodeProperty("authConstraint", true, "cmsUser");
 		    
-		    //if(authenticatorClass != null)
 		    	InfoGlueAuthenticationFilter.authenticatorClass = authenticatorClass;
-		    //if(authorizerClass != null)
 		    	InfoGlueAuthenticationFilter.authorizerClass = authorizerClass;
-		    //if(invalidLoginUrl != null)
 		    	InfoGlueAuthenticationFilter.invalidLoginUrl = invalidLoginUrl;
-		    //if(successLoginBaseUrl != null)
 		    	InfoGlueAuthenticationFilter.successLoginBaseUrl = successLoginBaseUrl;
-		    //if(loginUrl != null)
 		    	InfoGlueAuthenticationFilter.loginUrl = loginUrl;
-		    //if(logoutUrl != null)
 		    	InfoGlueAuthenticationFilter.logoutUrl = logoutUrl;
-		    //if(serverName != null)
 		    	InfoGlueAuthenticationFilter.serverName = serverName;
-		    //if(casRenew != null)
 		    	InfoGlueAuthenticationFilter.casRenew = casRenew;
-		    //if(authConstraint != null)
 		    	InfoGlueAuthenticationFilter.authConstraint = authConstraint;
-		    
-		    //if(casServiceUrl != null)
 		    	InfoGlueAuthenticationFilter.casServiceUrl = casServiceUrl;
-		    //if(casValidateUrl != null)
 		    	InfoGlueAuthenticationFilter.casValidateUrl = casValidateUrl;
-		    //if(casLogoutUrl != null)
+		    	InfoGlueAuthenticationFilter.casProxyValidateUrl = casProxyValidateUrl;
 		    	InfoGlueAuthenticationFilter.casLogoutUrl = casLogoutUrl;
 
 		    String extraPropertiesString = CmsPropertyHandler.getServerNodeDataProperty("deliver", "extraSecurityParameters", true, null);
@@ -593,6 +572,7 @@ public class InfoGlueAuthenticationFilter implements Filter
 		    logger.info("casRenew:" + casRenew);
 		    logger.info("casServiceUrl:" + casServiceUrl);
 		    logger.info("casValidateUrl:" + casValidateUrl);
+		    logger.info("casProxyValidateUrl:" + casProxyValidateUrl);
 		    logger.info("casLogoutUrl:" + casLogoutUrl);
 		    if(logger.isDebugEnabled())
 		    {

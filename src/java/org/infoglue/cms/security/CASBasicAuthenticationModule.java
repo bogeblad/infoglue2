@@ -70,6 +70,7 @@ public class CASBasicAuthenticationModule extends AuthenticationModule//, Author
 	private String successLoginUrl		= null;
 	private String serverName			= null;
 	private String casValidateUrl		= null;
+	private String casProxyValidateUrl	= null;
 	private String casServiceUrl		= null;
 	private String casLogoutUrl			= null;
 	private String casAuthorizedProxy 	= null;
@@ -370,8 +371,18 @@ public class CASBasicAuthenticationModule extends AuthenticationModule//, Author
 		ProxyTicketValidator pv = new ProxyTicketValidator();
 		
 		/* set its parameters */
-		pv.setCasValidateUrl(casValidateUrl);
-				
+		//pv.setCasValidateUrl(casValidateUrl);
+		if(ticket != null && ticket.substring(0, 2).equals("PT"))
+		{
+			pv.setCasValidateUrl(URLEncoder.encode(casProxyValidateUrl, "UTF-8"));
+			logger.info("setting casProxyValidateUrl: " + casProxyValidateUrl);
+		}
+		else
+		{
+			pv.setCasValidateUrl(URLEncoder.encode(casServiceUrl, "UTF-8"));
+			logger.info("setting casValidateUrl: " + casValidateUrl);
+		}
+		
 		logger.info("validating: " + casServiceUrl);
 		pv.setService(URLEncoder.encode(casServiceUrl, "UTF-8"));
 
@@ -619,6 +630,16 @@ public class CASBasicAuthenticationModule extends AuthenticationModule//, Author
 		this.casValidateUrl = casValidateUrl;
 	}
 
+	public String getCasProxyValidateUrl()
+	{
+		return casProxyValidateUrl;
+	}
+
+	public void setCasProxyValidateUrl(String casProxyValidateUrl)
+	{
+		this.casProxyValidateUrl = casProxyValidateUrl;
+	}
+
 	public String getCasLogoutUrl()
 	{
 		return casLogoutUrl;
@@ -684,6 +705,7 @@ public class CASBasicAuthenticationModule extends AuthenticationModule//, Author
 				redirectUrl = loginUrl + "?service=" + getService(request) + ((casRenew != null && !casRenew.equals("")) ? "&renew="+ casRenew : "") + ((gateway != null && !gateway.equals("")) ? "&gateway="+ gateway : "");
 			
 			logger.info("redirectUrl 6:" + redirectUrl);
+			System.out.println();
 			
 			response.sendRedirect(redirectUrl);
 			status.put("redirected", new Boolean(true));

@@ -20,7 +20,7 @@
  *
  * ===============================================================================
  *
- * $Id: FakeFilterConfig.java,v 1.4 2006/03/21 22:18:09 mattias Exp $
+ * $Id: FakeFilterConfig.java,v 1.5 2008/01/24 20:18:16 mattias Exp $
  */
 package org.infoglue.cms.util;
 
@@ -51,6 +51,7 @@ public class FakeFilterConfig implements FilterConfig
 		String casRenew 			= CmsPropertyHandler.getServerNodeProperty("deliver", "casRenew", true, null);
 		String casServiceUrl 		= CmsPropertyHandler.getServerNodeProperty("deliver", "casServiceUrl", true, null);
 		String casValidateUrl 		= CmsPropertyHandler.getServerNodeProperty("deliver", "casValidateUrl", true, null);
+		String casProxyValidateUrl 	= CmsPropertyHandler.getServerNodeProperty("deliver", "casProxyValidateUrl", true, null);
 		String casLogoutUrl 		= CmsPropertyHandler.getServerNodeProperty("deliver", "casLogoutUrl", true, null);
 		String authConstraint 		= CmsPropertyHandler.getServerNodeProperty("deliver", "authConstraint", true, null);
 		String extraParametersFile 		= CmsPropertyHandler.getServerNodeProperty("deliver", "extraParametersFile", true, null);
@@ -63,6 +64,7 @@ public class FakeFilterConfig implements FilterConfig
 		initParameters.put("org.infoglue.cms.security.authConstraint", authConstraint);
 		initParameters.put("org.infoglue.cms.security.extraParametersFile",	extraParametersFile);
 		initParameters.put("org.infoglue.cms.security.casValidateUrl", casValidateUrl);
+		initParameters.put("org.infoglue.cms.security.casProxyValidateUrl", casProxyValidateUrl);
 		initParameters.put("org.infoglue.cms.security.casServiceUrl", casServiceUrl);
 	}
 

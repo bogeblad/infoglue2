@@ -63,6 +63,7 @@ public class InfoGlueBasicAuthenticationModule extends AuthenticationModule
 	private String casServiceUrl		= null;
 	private String casRenew				= null;
 	private String casValidateUrl		= null;
+	private String casProxyValidateUrl	= null;
 	private String casLogoutUrl			= null;
 	private String casAuthorizedProxy 	= null;
 	private Properties extraProperties 	= null;
@@ -418,6 +419,16 @@ public class InfoGlueBasicAuthenticationModule extends AuthenticationModule
 	public void setCasValidateUrl(String casValidateUrl)
 	{
 		this.casValidateUrl = casValidateUrl;
+	}
+
+	public String getCasProxyValidateUrl()
+	{
+		return casProxyValidateUrl;
+	}
+
+	public void setCasProxyValidateUrl(String casProxyValidateUrl)
+	{
+		this.casProxyValidateUrl = casProxyValidateUrl;
 	}
 
 	public String getCasAuthorizedProxy()

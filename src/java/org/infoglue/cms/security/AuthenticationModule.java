@@ -61,6 +61,7 @@ public abstract class AuthenticationModule
 		    String casRenew 			= InfoGlueAuthenticationFilter.casRenew;
 		    String casServiceUrl 		= InfoGlueAuthenticationFilter.casServiceUrl;
 		    String casValidateUrl 		= InfoGlueAuthenticationFilter.casValidateUrl;
+		    String casProxyValidateUrl 	= InfoGlueAuthenticationFilter.casProxyValidateUrl;
 		    String casLogoutUrl 		= InfoGlueAuthenticationFilter.casLogoutUrl;
 		    
 		    authenticationModule = (AuthenticationModule)Class.forName(authenticatorClass).newInstance();
@@ -94,6 +95,7 @@ public abstract class AuthenticationModule
 				authenticationModule.setCasServiceUrl(casServiceUrl);
 			
 			authenticationModule.setCasValidateUrl(casValidateUrl);
+			authenticationModule.setCasProxyValidateUrl(casProxyValidateUrl);
 			authenticationModule.setCasLogoutUrl(casLogoutUrl);
 			authenticationModule.setTransactionObject(transactionObject);			
 		}
@@ -161,6 +163,10 @@ public abstract class AuthenticationModule
 	public abstract String getCasValidateUrl();
 
 	public abstract void setCasValidateUrl(String casValidateUrl);
+
+	public abstract String getCasProxyValidateUrl();
+
+	public abstract void setCasProxyValidateUrl(String casProxyValidateUrl);
 
 	public abstract String getCasLogoutUrl();
 

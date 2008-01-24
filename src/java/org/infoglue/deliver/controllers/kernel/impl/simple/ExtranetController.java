@@ -99,6 +99,7 @@ public class ExtranetController extends BaseDeliveryController
 		    String casRenew 			= InfoGlueAuthenticationFilter.casRenew;
 		    String casServiceUrl 		= InfoGlueAuthenticationFilter.casServiceUrl;
 		    String casValidateUrl 		= InfoGlueAuthenticationFilter.casValidateUrl;
+		    String casProxyValidateUrl 	= InfoGlueAuthenticationFilter.casProxyValidateUrl;
 		    
 		    AuthenticationModule authenticationModule = (AuthenticationModule)Class.forName(authenticatorClass).newInstance();
 			authenticationModule.setAuthenticatorClass(authenticatorClass);
@@ -110,6 +111,7 @@ public class ExtranetController extends BaseDeliveryController
 			authenticationModule.setCasRenew(casRenew);
 			authenticationModule.setCasServiceUrl(casServiceUrl);
 			authenticationModule.setCasValidateUrl(casValidateUrl);
+			authenticationModule.setCasProxyValidateUrl(casProxyValidateUrl);
 			authenticationModule.setTransactionObject(db);
 			
 			String authenticatedUserName = authenticationModule.authenticateUser(request);

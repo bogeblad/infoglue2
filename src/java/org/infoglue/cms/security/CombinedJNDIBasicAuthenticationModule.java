@@ -60,6 +60,7 @@ public class CombinedJNDIBasicAuthenticationModule extends JNDIBasicAuthenticati
 		    String casRenew 			= InfoGlueAuthenticationFilter.casRenew;
 		    String casServiceUrl 		= InfoGlueAuthenticationFilter.casServiceUrl;
 		    String casValidateUrl 		= InfoGlueAuthenticationFilter.casValidateUrl;
+		    String casProxyValidateUrl 	= InfoGlueAuthenticationFilter.casProxyValidateUrl;
 		    String casLogoutUrl 		= InfoGlueAuthenticationFilter.casLogoutUrl;
 
 		    authenticationModule = new InfoGlueBasicAuthenticationModule();
@@ -87,6 +88,7 @@ public class CombinedJNDIBasicAuthenticationModule extends JNDIBasicAuthenticati
 				authenticationModule.setCasServiceUrl(casServiceUrl);
 			
 			authenticationModule.setCasValidateUrl(casValidateUrl);
+			authenticationModule.setCasProxyValidateUrl(casProxyValidateUrl);
 			authenticationModule.setCasLogoutUrl(casLogoutUrl);
 			authenticationModule.setTransactionObject(transactionObject);			
 		}
