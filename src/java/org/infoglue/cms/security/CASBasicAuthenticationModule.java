@@ -102,6 +102,7 @@ public class CASBasicAuthenticationModule extends AuthenticationModule//, Author
 			}
   
 			String requestURI = request.getRequestURI();
+			String queryString = "" + request.getQueryString();
 			logger.info("requestURI:" + requestURI);
 
 			String redirectUrl = "";
@@ -113,7 +114,9 @@ public class CASBasicAuthenticationModule extends AuthenticationModule//, Author
 			   requestURI.indexOf("workflows") > -1 ||
 			   requestURI.indexOf("ViewDigitalAsset") > -1 ||
 			   requestURI.indexOf("Editor") > -1 ||
-			   requestURI.indexOf("binding") > -1)
+			   requestURI.indexOf("binding") > -1 || 
+			   queryString.indexOf("directView") > -1
+			   )
 			{
 				if(requestURI.indexOf("?") > 0)
 					redirectUrl = loginUrl + "&service=" + getService(request) + ((casRenew != null && !casRenew.equals("")) ? "&renew="+ casRenew : "");
