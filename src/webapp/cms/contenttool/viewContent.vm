@@ -92,7 +92,7 @@
 	</tr>
 	<tr>
 		<td colspan="7">
-			$ui.getString("tool.contenttool.lastUpdatedByLabel") $contentVO.creatorName
+			$ui.getString("tool.contenttool.lastUpdatedByLabel") $contentVO.creatorName <br/>Content ID: $contentVO.id
 		</td>
 	</tr>
 	<tr>
