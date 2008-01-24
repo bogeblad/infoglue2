@@ -154,8 +154,8 @@
 	</style>
 
 	<script type="text/javascript">
-		var previousTabId = "commonSettings";
-		var previousLiTabId = "commonSettingsTab";
+		var previousTabId = "$activeDivId";
+		var previousLiTabId = "${activeDivId}Tab";
 		
 		function activateTab(tabId)
 		{
@@ -164,20 +164,25 @@
 
 			document.getElementById(previousLiTabId).className = "";
 			document.getElementById(tabId + "Tab").className = "activeTab";
+
+			document.editForm.activeDivId.value = tabId;
 						
 			previousTabId = tabId;
 			previousLiTabId = tabId + "Tab";
 		}
 		
+		//$activeDivId
+		//window.onload = activateTab("$activeDivId");
 	</script>
 	
 <div class="fullymarginalized">
 
 <form name="editForm" method="POST" action="ViewServerNodeProperties!save.action">
 <input type="hidden" name="serverNodeId" value="$!serverNodeId">
+<input type="hidden" name="activeDivId" id="activeDivId" value="$!activeDivId">
 
 	<ul class="settingsTabs">
-		<li id="commonSettingsTab" class="activeTab"><a href="javascript:activateTab('commonSettings');">$ui.getString("entity.ServerNode.property.commonSettings.label")</a></li>
+		<li id="commonSettingsTab" class=""><a href="javascript:activateTab('commonSettings');">$ui.getString("entity.ServerNode.property.commonSettings.label")</a></li>
 		<li id="cacheSettingsTab" class=""><a href="javascript:activateTab('cacheSettings');">$ui.getString("entity.ServerNode.property.cacheSettings.label")</a></li>
 		<li id="cmsConnectionTab" class=""><a href="javascript:activateTab('cmsConnection');">$ui.getString("entity.ServerNode.property.cmsConnection.label")</a></li>
 		##<li id="templateProcessingTab" class=""><a href="javascript:activateTab('templateProcessing');">$ui.getString("entity.ServerNode.property.templateProcessing.label")</a></li>
@@ -198,7 +203,7 @@
 	</ul>
 <div style="clear: both;"/>
 <div class="tabs">
-	<div class="tab" id="commonSettings" style="display: block;">
+	<div class="tab" id="commonSettings">
 		<fieldset>
 			<legend>$ui.getString("entity.ServerNode.property.commonSettings.label")</legend>
 			#editPropertyFieldCSS("ServerNode.property.session.timeout" "session.timeout" "$this.getPropertyValue('session.timeout')" "51" "$!serverNodeId")
@@ -338,6 +343,7 @@
 			##editPropertyFieldCSS("ServerNode.property.extraParametersFile" "extraParametersFile" "$this.getPropertyValue('extraParametersFile')" "51" "$!serverNodeId")
 			#editPropertyTextAreaCSS("ServerNode.property.extraSecurityParameters" "extraSecurityParameters" "$this.getDataPropertyValue('extraSecurityParameters')" "50" "10" "normaltextarea" "$!serverNodeId")
 			#editPropertyFieldCSS("ServerNode.property.casValidateUrl" "casValidateUrl" "$this.getPropertyValue('casValidateUrl')" "51" "$!serverNodeId")
+			#editPropertyFieldCSS("ServerNode.property.casProxyValidateUrl" "casProxyValidateUrl" "$this.getPropertyValue('casProxyValidateUrl')" "51" "$!serverNodeId")
 			#editPropertyFieldCSS("ServerNode.property.casServiceUrl" "casServiceUrl" "$this.getPropertyValue('casServiceUrl')" "51" "$!serverNodeId")
 			#editPropertyFieldCSS("ServerNode.property.casLogoutUrl" "casLogoutUrl" "$this.getPropertyValue('casLogoutUrl')" "51" "$!serverNodeId")
 			<div class="buttonRow">
@@ -363,6 +369,7 @@
 			#editPropertyFieldCSS("ServerNode.property.security.anonymous.password" "deliver_security.anonymous.password" "$this.getPropertyValue('deliver', 'security.anonymous.password')" "51" "$!serverNodeId")
 			#editPropertyTextAreaCSS("ServerNode.property.extraSecurityParameters" "deliver_extraSecurityParameters" "$this.getDataPropertyValue('deliver', 'extraSecurityParameters')" "50" "10" "normaltextarea" "$!serverNodeId")
 			#editPropertyFieldCSS("ServerNode.property.casValidateUrl" "deliver_casValidateUrl" "$this.getPropertyValue('deliver', 'casValidateUrl')" "51" "$!serverNodeId")
+			#editPropertyFieldCSS("ServerNode.property.casProxyValidateUrl" "deliver_casProxyValidateUrl" "$this.getPropertyValue('deliver', 'casProxyValidateUrl')" "51" "$!serverNodeId")
 			#editPropertyFieldCSS("ServerNode.property.casServiceUrl" "deliver_casServiceUrl" "$this.getPropertyValue('deliver', 'casServiceUrl')" "51" "$!serverNodeId")
 			#editPropertyFieldCSS("ServerNode.property.casLogoutUrl" "deliver_casLogoutUrl" "$this.getPropertyValue('deliver', 'casLogoutUrl')" "51" "$!serverNodeId")
 			<div class="buttonRow">
@@ -501,6 +508,6 @@
 
 </form>
 </div>
-
+<script type="text/javascript">activateTab("$activeDivId");</script>
 </body>
 </html>

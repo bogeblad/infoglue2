@@ -56,6 +56,7 @@ public class ViewServerNodePropertiesAction extends InfoGluePropertiesAbstractAc
 	private PropertySet propertySet				= null; 
 	private List serverNodeVOList				= null;
 	private String key 							= null;
+	private String activeDivId					= "commonSettings";
 	
     public ViewServerNodePropertiesAction()
     {
@@ -190,6 +191,7 @@ public class ViewServerNodePropertiesAction extends InfoGluePropertiesAbstractAc
 	    populate(ps, "extraParametersFile");
 	    populateData(ps, "extraSecurityParameters");
 	    populate(ps, "casValidateUrl");
+	    populate(ps, "casProxyValidateUrl");
 	    populate(ps, "casServiceUrl");
 	    populate(ps, "casLogoutUrl");
 	    
@@ -206,6 +208,7 @@ public class ViewServerNodePropertiesAction extends InfoGluePropertiesAbstractAc
 	    populate(ps, "deliver_security.anonymous.username");
 	    populate(ps, "deliver_security.anonymous.password");
 	    populate(ps, "deliver_casValidateUrl");
+	    populate(ps, "deliver_casProxyValidateUrl");
 	    populate(ps, "deliver_casServiceUrl");
 	    populate(ps, "deliver_casLogoutUrl");
 	    populateData(ps, "shortcuts");
@@ -406,5 +409,15 @@ public class ViewServerNodePropertiesAction extends InfoGluePropertiesAbstractAc
 	public void setKey(String key) 
 	{
 		this.key = key;
+	}
+
+	public String getActiveDivId()
+	{
+		return activeDivId;
+	}
+
+	public void setActiveDivId(String activeDivId)
+	{
+		this.activeDivId = activeDivId;
 	}
 }
