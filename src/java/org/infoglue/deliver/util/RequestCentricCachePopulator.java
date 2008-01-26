@@ -80,7 +80,7 @@ public class RequestCentricCachePopulator
         */
         HttpHelper helper = new HttpHelper();
         String recacheUrl = CmsPropertyHandler.getRecacheUrl() + "?siteNodeId=" + siteNodeId + "&refresh=true&isRecacheCall=true";
-        logger.error("recacheUrl:" + recacheUrl);
+        logger.info("recacheUrl:" + recacheUrl);
         String response = helper.getUrlContent(recacheUrl, 30000);
         //System.out.println("response:" + response);
         
