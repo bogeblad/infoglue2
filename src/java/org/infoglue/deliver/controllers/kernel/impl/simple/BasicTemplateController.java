@@ -4465,7 +4465,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			logger.error("An error occurred trying to get current page url:" + e.getMessage(), e);
+			logger.error("An error occurred trying to get page url for siteNodeId[" + siteNodeId + "]:" + e.getMessage() + "\n" + "The page generating the error was:" + this.getOriginalFullURL());
 		}
 				
 		return pageUrl;
