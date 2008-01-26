@@ -170,13 +170,20 @@ public class RemoteCacheUpdater implements NotificationListener
 			    String deliverUrl = (String)urlsIterator.next();
 				String address = deliverUrl + "/" + CmsPropertyHandler.getCacheUpdateAction();
 				logger.info("Updating cache at " + address);
-				try
+				if(address.indexOf("@") > -1)
 				{
-					String response = postToUrl(address, internalMessage);
+					logger.error("Skipping updating cache at " + address + ". You probably have not defined the correct addresses in application settings.");
 				}
-				catch(Exception e)
+				else
 				{
-					logger.error("Error updating cache at " + address + ":" + e.getMessage(), e);
+					try
+					{
+						String response = postToUrl(address, internalMessage);
+					}
+					catch(Exception e)
+					{
+						logger.error("Error updating cache at " + address + ":" + e.getMessage(), e);
+					}
 				}
 			}
 	    }
@@ -191,13 +198,20 @@ public class RemoteCacheUpdater implements NotificationListener
 			    String deliverUrl = (String)urlsIterator.next();
 				String address = deliverUrl + "/" + CmsPropertyHandler.getCacheUpdateAction();
 				logger.info("Updating cache at " + address);
-				try
+				if(address.indexOf("@") > -1)
 				{
-					String response = postToUrl(address, publicMessage);
+					logger.error("Skipping updating cache at " + address + ". You probably have not defined the correct live addresses in application settings.");
 				}
-				catch(Exception e)
+				else
 				{
-					logger.error("Error updating cache at " + address + ":" + e.getMessage(), e);
+					try
+					{
+						String response = postToUrl(address, publicMessage);
+					}
+					catch(Exception e)
+					{
+						logger.error("Error updating cache at " + address + ":" + e.getMessage(), e);
+					}
 				}
 			}
 	    }
