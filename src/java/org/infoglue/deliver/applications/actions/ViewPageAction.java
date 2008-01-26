@@ -53,6 +53,7 @@ import org.infoglue.cms.entities.structure.SiteNode;
 import org.infoglue.cms.entities.structure.SiteNodeVO;
 import org.infoglue.cms.entities.structure.SiteNodeVersionVO;
 import org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl;
+import org.infoglue.cms.exception.PageNotFoundException;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.AuthenticationModule;
 import org.infoglue.cms.security.InfoGluePrincipal;
@@ -345,9 +346,24 @@ public class ViewPageAction extends InfoGlueAbstractAction
 	        //StatisticsService.getStatisticsService().registerRequest(getRequest(), getResponse(), pagePath, elapsedTime);
 			//logger.info("Registered request in statistics service");
 		}
+		catch(PageNotFoundException e)
+		{
+			String extraInformation = "Referer: " + getRequest().getHeader("Referer") + "\n";
+			extraInformation += "UserAgent: " + getRequest().getHeader("User-Agent") + "\n";
+			extraInformation += "User IP: " + getRequest().getRemoteAddr();
+			
+			logger.warn("A user requested a non existing page:" + e.getMessage() + "\n" + extraInformation);
+			rollbackTransaction(dbWrapper.getDatabase());
+
+			getResponse().setContentType("text/html; charset=UTF-8");
+			getRequest().setAttribute("responseCode", "404");
+			getRequest().setAttribute("error", e);
+			getRequest().setAttribute("errorUrl", getErrorUrl());
+			getRequest().getRequestDispatcher("/ErrorPage.action").forward(getRequest(), getResponse());
+		}
 		catch(Exception e)
 		{
-			logger.error("An error occurred so we should not complete the transaction:" + e, e);
+			logger.error("An error occurred so we should not complete the transaction:" + e.getMessage(), e);
 			rollbackTransaction(dbWrapper.getDatabase());
 
 			getResponse().setContentType("text/html; charset=UTF-8");
@@ -702,7 +718,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 	 * masterlanguage for that site if not specifying.
 	 */
 	 
-	private void validateAndModifyInputParameters(Database db) throws SystemException, Exception
+	private void validateAndModifyInputParameters(Database db) throws PageNotFoundException, SystemException, Exception
 	{
 		this.browserBean = new BrowserBean();
 		this.browserBean.setRequest(getRequest());
@@ -766,7 +782,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 		}
 	    catch(Exception e)
 	    {
-			throw new SystemException("There was no page with the current specification. SiteNodeId:" + getSiteNodeId());
+			throw new PageNotFoundException("There is no page with the requested specification. SiteNodeId:" + getSiteNodeId());
 	    }
 		
 		if(getLanguageId() == null)

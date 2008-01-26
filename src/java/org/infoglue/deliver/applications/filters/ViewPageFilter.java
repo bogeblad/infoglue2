@@ -226,8 +226,12 @@ public class ViewPageFilter implements Filter
 		                    return;
 	                    }
 	                    
-	                    logger.warn("Could not map URI " + requestURI + " --> " + siteNodeId);
-	                    throw new ServletException("Could not map URI " + requestURI + " --> " + siteNodeId);
+	        			String extraInformation = "Referer: " + httpRequest.getHeader("Referer") + "\n";
+	        			extraInformation += "UserAgent: " + httpRequest.getHeader("User-Agent") + "\n";
+	        			extraInformation += "User IP: " + httpRequest.getRemoteAddr();
+	        			
+	        			logger.warn("Could not map URI " + requestURI + " against any page on this website." + "\n" + extraInformation);
+	                    throw new ServletException("Could not map URI " + requestURI + " against any page on this website.");	                    	
 	                }
 	                else
 	                    logger.info("Mapped URI " + requestURI + " --> " + siteNodeId + " in " + (end - start) + "ms");
