@@ -1724,6 +1724,13 @@ public class NodeDeliveryController extends BaseDeliveryController
 	    	logger.info("repositoryPath:" + repositoryPath);    	
 	    	logger.info("path:" + path.length);    	
 	    	
+	    	if(repositoryPath != null && path.length <= 0)
+	    	{
+	    		if(logger.isInfoEnabled())
+	    			logger.info("There was a repository path:" + repositoryPath + " but the path.length was " + path.length + " so this repository should be excluded.");
+	    		return null;
+	    	}
+
 	    	if(repositoryPath != null && path.length > 0)
 	    	{
 	    		String[] repositoryPaths = repositoryPath.split("/");
@@ -1751,19 +1758,25 @@ public class NodeDeliveryController extends BaseDeliveryController
 	    		}
 	    		path = newPath;
 	    	}
-		   	logger.info("new path:" + path.length);
-
-	        logger.info("numberOfPaths = "+numberOfPaths);
+	    	
+	    	if(logger.isInfoEnabled())
+	    	{
+			   	logger.info("new path:" + path.length);
+		        logger.info("numberOfPaths = "+numberOfPaths);
+	    	}
+	    
 	        for (int i = numberOfPaths;i < path.length; i++) 
 	        {
 	            if (i < 0) 
 	            {
-	    	        logger.info("Getting root node");
+	  	    		if(logger.isInfoEnabled())
+		    	        logger.info("Getting root node");
 	                siteNodeId = NodeDeliveryController.getNodeDeliveryController(null, null, null).getSiteNodeId(db, infogluePrincipal, repositoryVO.getId(), null, attributeName, null, languageId, deliveryContext);
 	            } 
 	            else 
 	            {
-	    	        logger.info("Getting normal");
+	  	    		if(logger.isInfoEnabled())
+		    	        logger.info("Getting normal");
 	                siteNodeId = NodeDeliveryController.getNodeDeliveryController(null, null, null).getSiteNodeId(db, infogluePrincipal, repositoryVO.getId(), path[i], attributeName, siteNodeId, languageId, deliveryContext);
 	            }
 	            
