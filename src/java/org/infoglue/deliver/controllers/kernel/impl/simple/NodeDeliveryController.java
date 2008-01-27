@@ -1758,16 +1758,21 @@ public class NodeDeliveryController extends BaseDeliveryController
 	    		String[] repositoryPaths = repositoryPath.split("/");
 	    		String[] newPath = path;
 	    		
-	    		System.out.println("repositoryPaths:" + repositoryPaths.length); 
-	    		System.out.println("newPath:" + newPath.length); 
+	    		if(logger.isInfoEnabled())
+	    		{
+	    			logger.info("repositoryPaths:" + repositoryPaths.length); 
+		    		logger.info("newPath:" + newPath.length); 
+	    		}
 	    		
 	    		for(int repPathIndex = 0; repPathIndex < repositoryPaths.length; repPathIndex++)
 	    		{
 	    			String repPath = repositoryPaths[repPathIndex];
-	    			System.out.println("repPath:" + repPath);
+    	    		if(logger.isInfoEnabled())
+    	    			logger.info("repPath:" + repPath);
 	    	    	if(path.length > repPathIndex)
 	    	    	{
-	    	    		System.out.println("path:" + path[repPathIndex]);
+	    	    		if(logger.isInfoEnabled())
+	    	    			logger.info("path:" + path[repPathIndex]);
 	    		    	if(path[repPathIndex].equals(repPath))
 	    		    	{
 	    		    		String[] tempNewPath = new String[newPath.length - 1];
