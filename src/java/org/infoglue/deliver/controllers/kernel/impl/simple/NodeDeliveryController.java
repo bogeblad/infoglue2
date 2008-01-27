@@ -1734,18 +1734,40 @@ public class NodeDeliveryController extends BaseDeliveryController
 	    	if(repositoryPath != null && path.length > 0)
 	    	{
 	    		String[] repositoryPaths = repositoryPath.split("/");
+	    		for(int i=0; i<repositoryPaths.length; i++)
+	    		{
+	    			String repositoryPathPart = repositoryPaths[i];
+	    			String pathPart = path[i];
+	    			if(logger.isInfoEnabled())
+	    			{
+	    				logger.info("repositoryPathPart:" + repositoryPathPart);
+	    				logger.info("pathPart:" + pathPart);
+	    			}
+	    			
+	    			if(!repositoryPathPart.equalsIgnoreCase(pathPart))
+	    			{
+	    				if(logger.isInfoEnabled())
+	    	    			logger.info("Could not match the repository paths so this repository should be excluded.");
+	    				return null;
+	    			}
+	    		}
+	    	}
+	    	
+	    	if(repositoryPath != null && path.length > 0)
+	    	{
+	    		String[] repositoryPaths = repositoryPath.split("/");
 	    		String[] newPath = path;
 	    		
-	    		logger.info("repositoryPaths:" + repositoryPaths.length); 
-	    		logger.info("newPath:" + newPath.length); 
+	    		System.out.println("repositoryPaths:" + repositoryPaths.length); 
+	    		System.out.println("newPath:" + newPath.length); 
 	    		
 	    		for(int repPathIndex = 0; repPathIndex < repositoryPaths.length; repPathIndex++)
 	    		{
 	    			String repPath = repositoryPaths[repPathIndex];
-	    	    	logger.info("repPath:" + repPath);
+	    			System.out.println("repPath:" + repPath);
 	    	    	if(path.length > repPathIndex)
 	    	    	{
-	    		    	logger.info("path:" + path[repPathIndex]);
+	    	    		System.out.println("path:" + path[repPathIndex]);
 	    		    	if(path[repPathIndex].equals(repPath))
 	    		    	{
 	    		    		String[] tempNewPath = new String[newPath.length - 1];
