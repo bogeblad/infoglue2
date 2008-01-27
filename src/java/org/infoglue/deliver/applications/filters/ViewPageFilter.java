@@ -68,6 +68,8 @@ import org.infoglue.deliver.util.RequestAnalyser;
  *
  *
  * @author Lars Borup Jensen (lbj@atira.dk)
+ * @author Mattias Bogeblad (bogeblad@yahoo.com)
+ * 
  */
 
 public class ViewPageFilter implements Filter 
