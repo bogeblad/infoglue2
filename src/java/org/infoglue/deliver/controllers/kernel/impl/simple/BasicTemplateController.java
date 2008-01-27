@@ -2447,7 +2447,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			logger.error("An error occurred trying to get assetUrl on content with id: " + this.contentId + ":" + e.getMessage(), e);
+			logger.error("\nError on url: " + this.getOriginalFullURL() + "\nAn error occurred trying to get InlineAssetUrl for contentId: " + contentId + " with assetKey: " + assetKey + "\nReason:" + e.getMessage());
 		}
 				
 		return assetUrl;
