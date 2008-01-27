@@ -31,6 +31,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.RedirectController;
@@ -38,6 +39,7 @@ import org.infoglue.cms.entities.management.RepositoryVO;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.deliver.controllers.kernel.impl.simple.RepositoryDeliveryController;
+import org.infoglue.deliver.invokers.PageInvoker;
 import org.infoglue.deliver.util.CacheController;
 
 
@@ -49,6 +51,8 @@ import org.infoglue.deliver.util.CacheController;
 
 public class ErrorPageAction extends InfoGlueAbstractAction 
 {
+    private final static Logger logger = Logger.getLogger(ErrorPageAction.class.getName());
+
     private int responseCode = HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
     
   	private String getErrorUrl(Integer repositoryId) throws Exception 
@@ -139,7 +143,13 @@ public class ErrorPageAction extends InfoGlueAbstractAction
 	        	RepositoryVO repositoryVO = (RepositoryVO)repositoryVOList.get(0);
 	        	errorUrl = getErrorUrl(repositoryVO.getId());
 	        }
-
+	        
+	        if(errorUrl != null && errorUrl.indexOf("@errorUrl@") > -1)
+	        {
+	            logger.error("No valid error url was defined:" + errorUrl + ". You should fix this. Defaulting to /error.jsp");
+		       	errorUrl = "/error.jsp";
+	        }
+	        
 	        if(errorUrl != null && errorUrl.indexOf("@errorUrl@") == -1)
 	        {
 	            if(errorUrl.indexOf("http") > -1)
@@ -163,8 +173,11 @@ public class ErrorPageAction extends InfoGlueAbstractAction
 	            return NONE;
 	        }
 	        else
-	            return SUCCESS;
-    	}
+	        {
+	            logger.error("No valid error url was defined:" + errorUrl + ". You should fix this.");
+	        	return SUCCESS;
+	        }
+	    }
     	catch(Throwable t)
     	{
     		t.printStackTrace();
