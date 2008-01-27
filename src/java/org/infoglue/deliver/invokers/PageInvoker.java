@@ -40,6 +40,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.entities.management.LanguageVO;
+import org.infoglue.cms.exception.NoBaseTemplateFoundException;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.deliver.applications.databeans.DatabaseWrapper;
@@ -147,7 +148,7 @@ public abstract class PageInvoker
 	 * Override this if you need to set other headers or do other specialized things.
 	 */
 
-	public void deliverPage() throws Exception
+	public void deliverPage() throws NoBaseTemplateFoundException, Exception
 	{
 		if(logger.isInfoEnabled())
 		{

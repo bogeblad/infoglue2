@@ -53,6 +53,7 @@ import org.infoglue.cms.entities.structure.SiteNode;
 import org.infoglue.cms.entities.structure.SiteNodeVO;
 import org.infoglue.cms.entities.structure.SiteNodeVersionVO;
 import org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl;
+import org.infoglue.cms.exception.NoBaseTemplateFoundException;
 import org.infoglue.cms.exception.PageNotFoundException;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.AuthenticationModule;
@@ -348,7 +349,8 @@ public class ViewPageAction extends InfoGlueAbstractAction
 		}
 		catch(PageNotFoundException e)
 		{
-			String extraInformation = "Referer: " + getRequest().getHeader("Referer") + "\n";
+			String extraInformation = "Original URL: " + getOriginalFullURL() + "\n";
+			extraInformation += "Referer: " + getRequest().getHeader("Referer") + "\n";
 			extraInformation += "UserAgent: " + getRequest().getHeader("User-Agent") + "\n";
 			extraInformation += "User IP: " + getRequest().getRemoteAddr();
 			
@@ -361,9 +363,30 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			getRequest().setAttribute("errorUrl", getErrorUrl());
 			getRequest().getRequestDispatcher("/ErrorPage.action").forward(getRequest(), getResponse());
 		}
+		catch(NoBaseTemplateFoundException e)
+		{
+			String extraInformation = "Original URL: " + getOriginalFullURL() + "\n";
+			extraInformation += "Referer: " + getRequest().getHeader("Referer") + "\n";
+			extraInformation += "UserAgent: " + getRequest().getHeader("User-Agent") + "\n";
+			extraInformation += "User IP: " + getRequest().getRemoteAddr();
+			
+			logger.error("A user requested a page which had no base template (probably of the old HTMLPageInvoker type - should be changed):" + e.getMessage() + "\n" + extraInformation);
+			rollbackTransaction(dbWrapper.getDatabase());
+
+			getResponse().setContentType("text/html; charset=UTF-8");
+			getRequest().setAttribute("responseCode", "500");
+			getRequest().setAttribute("error", e);
+			getRequest().setAttribute("errorUrl", getErrorUrl());
+			getRequest().getRequestDispatcher("/ErrorPage.action").forward(getRequest(), getResponse());
+		}
 		catch(Exception e)
 		{
-			logger.error("An error occurred so we should not complete the transaction:" + e.getMessage(), e);
+			String extraInformation = "Original URL: " + getOriginalFullURL() + "\n";
+			extraInformation += "Referer: " + getRequest().getHeader("Referer") + "\n";
+			extraInformation += "UserAgent: " + getRequest().getHeader("User-Agent") + "\n";
+			extraInformation += "User IP: " + getRequest().getRemoteAddr();
+
+			logger.error("An error occurred so we should not complete the transaction:" + e.getMessage() + "\n" + extraInformation, e);
 			rollbackTransaction(dbWrapper.getDatabase());
 
 			getResponse().setContentType("text/html; charset=UTF-8");
@@ -601,10 +624,48 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			
 			//StatisticsService.getStatisticsService().registerRequest(getRequest(), getResponse(), pagePath, elapsedTime);
 		}
+		catch(PageNotFoundException e)
+		{
+			String extraInformation = "Original URL: " + getOriginalFullURL() + "\n";
+			extraInformation += "Referer: " + getRequest().getHeader("Referer") + "\n";
+			extraInformation += "UserAgent: " + getRequest().getHeader("User-Agent") + "\n";
+			extraInformation += "User IP: " + getRequest().getRemoteAddr();
+			
+			logger.warn("A user requested a non existing page:" + e.getMessage() + "\n" + extraInformation);
+			rollbackTransaction(dbWrapper.getDatabase());
+
+			getResponse().setContentType("text/html; charset=UTF-8");
+			getRequest().setAttribute("responseCode", "404");
+			getRequest().setAttribute("error", e);
+			getRequest().setAttribute("errorUrl", getErrorUrl());
+			getRequest().getRequestDispatcher("/ErrorPage.action").forward(getRequest(), getResponse());
+		}
+		catch(NoBaseTemplateFoundException e)
+		{
+			String extraInformation = "Original URL: " + getOriginalFullURL() + "\n";
+			extraInformation += "Referer: " + getRequest().getHeader("Referer") + "\n";
+			extraInformation += "UserAgent: " + getRequest().getHeader("User-Agent") + "\n";
+			extraInformation += "User IP: " + getRequest().getRemoteAddr();
+			
+			logger.error("A user requested a page which had no base template (probably of the old HTMLPageInvoker type - should be changed):" + e.getMessage() + "\n" + extraInformation);
+			rollbackTransaction(dbWrapper.getDatabase());
+
+			getResponse().setContentType("text/html; charset=UTF-8");
+			getRequest().setAttribute("responseCode", "500");
+			getRequest().setAttribute("error", e);
+			getRequest().setAttribute("errorUrl", getErrorUrl());
+			getRequest().getRequestDispatcher("/ErrorPage.action").forward(getRequest(), getResponse());
+		}
 		catch(Exception e)
 		{
-			logger.error("An error occurred so we should not complete the transaction:" + e, e);
+			String extraInformation = "Original URL: " + getOriginalFullURL() + "\n";
+			extraInformation += "Referer: " + getRequest().getHeader("Referer") + "\n";
+			extraInformation += "UserAgent: " + getRequest().getHeader("User-Agent") + "\n";
+			extraInformation += "User IP: " + getRequest().getRemoteAddr();
+
+			logger.error("An error occurred so we should not complete the transaction:" + e.getMessage() + "\n" + extraInformation, e);
 			rollbackTransaction(dbWrapper.getDatabase());
+			
 			throw new SystemException(e.getMessage());
 		}
 		finally

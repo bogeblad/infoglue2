@@ -29,6 +29,7 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.infoglue.cms.entities.content.ContentVO;
+import org.infoglue.cms.exception.NoBaseTemplateFoundException;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.deliver.controllers.kernel.impl.simple.NodeDeliveryController;
 import org.infoglue.deliver.util.VelocityTemplateProcessor;
@@ -58,7 +59,7 @@ public class HTMLPageInvoker extends PageInvoker
 	 * This is the method that will render the page. It uses the original template style logic. 
 	 */ 
 
-	public void invokePage() throws SystemException, Exception
+	public void invokePage() throws NoBaseTemplateFoundException, SystemException, Exception
 	{
 		try
 		{  			
@@ -77,7 +78,7 @@ public class HTMLPageInvoker extends PageInvoker
 		}
 		catch(Exception e)
 		{
-			logger.error(e.getMessage(), e);
+			//logger.error(e.getMessage(), e);
 			throw e;
 		}
 
@@ -88,32 +89,24 @@ public class HTMLPageInvoker extends PageInvoker
 	 * This method fetches the template-string.
 	 */
   
-	private String getPageTemplateString() throws SystemException, Exception
+	private String getPageTemplateString() throws NoBaseTemplateFoundException, SystemException, Exception
 	{
 		String template = null;
     	
-		try
-		{
-			logger.info("DeliveryContext:" + this.getDeliveryContext().toString());
-			ContentVO contentVO = NodeDeliveryController.getNodeDeliveryController(this.getDeliveryContext().getSiteNodeId(), this.getDeliveryContext().getLanguageId(), this.getDeliveryContext().getContentId()).getBoundContent(this.getTemplateController().getDatabase(), this.getTemplateController().getPrincipal(), this.getDeliveryContext().getSiteNodeId(), this.getDeliveryContext().getLanguageId(), true, "Template", this.getDeliveryContext());		
+		logger.info("DeliveryContext:" + this.getDeliveryContext().toString());
+		ContentVO contentVO = NodeDeliveryController.getNodeDeliveryController(this.getDeliveryContext().getSiteNodeId(), this.getDeliveryContext().getLanguageId(), this.getDeliveryContext().getContentId()).getBoundContent(this.getTemplateController().getDatabase(), this.getTemplateController().getPrincipal(), this.getDeliveryContext().getSiteNodeId(), this.getDeliveryContext().getLanguageId(), true, "Template", this.getDeliveryContext());		
 
-			logger.info("contentVO:" + contentVO);
+		logger.info("contentVO:" + contentVO);
 
-			if(contentVO == null)
-				throw new SystemException("There was no template bound to this page which makes it impossible to render.");	
-			
-			logger.info("contentVO:" + contentVO.getName());
+		if(contentVO == null)
+			throw new NoBaseTemplateFoundException("There was no template bound to this page which makes it impossible to render.");	
+		
+		logger.info("contentVO:" + contentVO.getName());
 
-			template = this.getTemplateController().getContentAttribute(contentVO.getContentId(), this.getTemplateController().getTemplateAttributeName());
-			
-			if(template == null)
-				throw new SystemException("There was no template bound to this page which makes it impossible to render.");	
-		}
-		catch(Exception e)
-		{
-			logger.error(e.getMessage(), e);
-			throw e;
-		}
+		template = this.getTemplateController().getContentAttribute(contentVO.getContentId(), this.getTemplateController().getTemplateAttributeName());
+		
+		if(template == null)
+			throw new SystemException("There was no template bound to this page which makes it impossible to render.");	
 
 		return template;
 	}
