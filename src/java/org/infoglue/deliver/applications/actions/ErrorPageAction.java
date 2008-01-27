@@ -141,10 +141,12 @@ public class ErrorPageAction extends InfoGlueAbstractAction
 	        if(repositoryVOList != null && repositoryVOList.size() > 0)
 	        {
 	        	RepositoryVO repositoryVO = (RepositoryVO)repositoryVOList.get(0);
-	        	errorUrl = getErrorUrl(repositoryVO.getId());
+	        	String localErrorUrl = getErrorUrl(repositoryVO.getId());
+	        	if(localErrorUrl != null)
+	        		errorUrl = localErrorUrl;
 	        }
 	        
-	        if(errorUrl != null && errorUrl.indexOf("@errorUrl@") > -1)
+	        if(errorUrl == null || errorUrl.indexOf("@errorUrl@") > -1)
 	        {
 	            logger.error("No valid error url was defined:" + errorUrl + ". You should fix this. Defaulting to /error.jsp");
 		       	errorUrl = "/error.jsp";
