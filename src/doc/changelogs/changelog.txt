@@ -145,6 +145,8 @@ Abbreviated Changelog from 2.6.0 Final
 - Added The Yahoo! User Interface Library (YUI) to the codebase. Very useful framework for building dynamic interfaces.
 - Fixed bug in handling of repository paths and how nice uri was parsed with respect to that
 - Added jquery 1.21 and jquery 1.22 and some additional plugins. Moredocs  to come later.
+- Added new commons:Mail-tag as a simple replacement for apache taglib mailer where you need direct feedback on success/failure.
+
 
 -------------------------------------------------------------------------------------
 - InfoGlue 2.6.0 Final

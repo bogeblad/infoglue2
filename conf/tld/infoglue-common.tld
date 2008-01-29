@@ -866,4 +866,51 @@
 		</attribute> 
 	</tag>
     
+    <tag>
+	    <name>mail</name>
+	    <tagclass>org.infoglue.deliver.taglib.common.MailTag</tagclass>
+	    <bodycontent>empty</bodycontent>
+	    <info></info>
+	    <attribute>
+			<name>id</name>
+	    	<required>true</required>
+	        <rtexprvalue>true</rtexprvalue>
+		</attribute>
+	    <attribute>
+			<name>from</name>
+	    	<required>true</required>
+	        <rtexprvalue>true</rtexprvalue>
+		</attribute>
+	    <attribute>
+			<name>to</name>
+	    	<required>true</required>
+	        <rtexprvalue>true</rtexprvalue>
+		</attribute>
+	    <attribute>
+			<name>recipients</name>
+	    	<required>true</required>
+	        <rtexprvalue>true</rtexprvalue>
+		</attribute>
+	    <attribute>
+			<name>subject</name>
+	    	<required>true</required>
+	        <rtexprvalue>true</rtexprvalue>
+		</attribute>
+	    <attribute>
+			<name>type</name>
+	    	<required>false</required>
+	        <rtexprvalue>true</rtexprvalue>
+		</attribute>
+	    <attribute>
+			<name>charset</name>
+	    	<required>false</required>
+	        <rtexprvalue>true</rtexprvalue>
+		</attribute>
+	    <attribute>
+			<name>message</name>
+	    	<required>true</required>
+	        <rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+	
 </taglib>

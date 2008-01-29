@@ -142,7 +142,23 @@ public class MailService
 	    else
 	        sendPlain(from, to, bcc, subject, content, encoding);
 	}
-	
+
+	/**
+	 *
+	 * @param from the sender of the email.
+	 * @param to the recipient of the email.
+	 * @param subject the subject of the email.
+	 * @param content the body of the email.
+	 * @throws SystemException if the email couldn't be sent due to some mail server exception.
+	 */
+	public void sendEmail(String contentType, String from, String to, String bcc, String subject, String content, String encoding) throws SystemException 
+	{
+   	    if(contentType.equalsIgnoreCase("text/html"))
+	    	sendHTML(from, to, bcc, subject, content, encoding);
+	    else
+	        sendPlain(from, to, bcc, subject, content, encoding);
+	}
+
 	/**
 	 *
 	 * @param from the sender of the email.
@@ -155,7 +171,15 @@ public class MailService
 	{
 		try 
 		{
-		    HtmlEmail email = new HtmlEmail();
+			/*
+			System.out.println("from:" + from);
+			System.out.println("to:" + to);
+			System.out.println("bcc:" + bcc);
+			System.out.println("subject:" + subject);
+			System.out.println("content:" + content);
+			System.out.println("encoding:" + encoding);
+			*/
+			HtmlEmail email = new HtmlEmail();
 		    String mailServer = CmsPropertyHandler.getMailSmtpHost();
 		    String systemEmailSender = CmsPropertyHandler.getSystemEmailSender();
 		    
@@ -211,7 +235,7 @@ public class MailService
 	        throw new SystemException("An error occurred when we tried to send this mail:" + e.getMessage(), e);
 	    }
 	}
-
+ 
 
 	/**
 	 *
