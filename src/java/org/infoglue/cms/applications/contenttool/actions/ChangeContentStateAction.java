@@ -27,7 +27,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
+import org.infoglue.cms.controllers.kernel.impl.simple.AccessRightController;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentStateController;
+import org.infoglue.cms.exception.AccessConstraintException;
+import org.infoglue.cms.util.AccessConstraintExceptionBuffer;
 
 
 public class ChangeContentStateAction extends InfoGlueAbstractAction
@@ -53,7 +57,23 @@ public class ChangeContentStateAction extends InfoGlueAbstractAction
 	 */
 	   
     public String doExecute() throws Exception
-    {      
+    {
+		AccessConstraintExceptionBuffer ceb = new AccessConstraintExceptionBuffer();
+		
+		Integer protectedContentId = ContentControllerProxy.getController().getProtectedContentId(contentId);
+		if(this.stateId.intValue() == 2)
+		{
+			if(protectedContentId != null && !AccessRightController.getController().getIsPrincipalAuthorized(this.getInfoGluePrincipal(), "Content.SubmitToPublish", protectedContentId.toString()))
+				ceb.add(new AccessConstraintException("Content.contentId", "1005"));
+		}
+		else
+		{
+			if(protectedContentId != null && !AccessRightController.getController().getIsPrincipalAuthorized(this.getInfoGluePrincipal(), "Content.CreateVersion", protectedContentId.toString()))
+				ceb.add(new AccessConstraintException("Content.contentId", "1007"));			
+		}
+		
+		ceb.throwIfNotEmpty();
+
     	//If the comment is not null we carry out the stateChange
     	if(getStateId().intValue() == 2 && getVersionComment() == null)
     	{
