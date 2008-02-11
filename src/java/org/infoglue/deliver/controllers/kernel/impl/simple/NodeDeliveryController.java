@@ -1819,6 +1819,11 @@ public class NodeDeliveryController extends BaseDeliveryController
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
 		}
+		finally
+		{
+			rollbackTransaction(db);
+			closeDatabase(db);
+		}
 		
         return siteNodeId;
     }
