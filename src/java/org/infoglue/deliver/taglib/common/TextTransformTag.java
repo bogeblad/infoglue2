@@ -132,7 +132,7 @@ public class TextTransformTag extends TemplateControllerTag
 	    }
 	    
 	    if(replaceLineBreaks)
-	        modifiedText.replaceAll(lineBreakChar, lineBreakReplacer);	    
+	    	modifiedText = modifiedText.replaceAll(lineBreakChar, lineBreakReplacer);	    
 	    
 	    if(this.prefix != null)
 	    {
