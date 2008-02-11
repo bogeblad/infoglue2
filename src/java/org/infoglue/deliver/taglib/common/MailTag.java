@@ -68,6 +68,11 @@ public class MailTag extends TemplateControllerTag
 		catch (Exception e)
         {
 			logger.error("Problem sending mail:" + e.getMessage());
+			logger.error("	from:" + from);
+			logger.error("	to:" + to);
+			logger.error("	recipients:" + recipients);
+			logger.error("	Subject:" + subject);
+			logger.error("	message:" + message);
 			setResultAttribute(false);
 			pageContext.setAttribute("commonMailTagException", e);
         }
