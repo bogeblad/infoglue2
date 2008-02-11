@@ -91,9 +91,7 @@ public class PageAttributeTag extends ComponentLogicTag
 		    
 		    while(siteNodeVO != null && (result == null || result.equals("")))
 	        {
-	            System.out.println("siteNodeVO:" + siteNodeVO.getId());
-	            
-		    	if(!parse)
+	            if(!parse)
 	            {
 	                result = getController().getContentAttribute(siteNodeVO.getMetaInfoContentId(), languageId, attributeName, disableEditOnSight);
 	            }
