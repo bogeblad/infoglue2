@@ -23,9 +23,13 @@
 
 package org.infoglue.deliver.taglib.common;
 
+import javax.mail.Address;
+import javax.mail.internet.AddressException;
+import javax.mail.internet.InternetAddress;
 import javax.servlet.jsp.JspException;
 
 import org.apache.log4j.Logger;
+import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.util.CmsContextListener;
 import org.infoglue.cms.util.mail.MailServiceFactory;
 import org.infoglue.deliver.taglib.TemplateControllerTag;
@@ -39,6 +43,8 @@ public class MailTag extends TemplateControllerTag
     private final static Logger logger = Logger.getLogger(MailTag.class.getName());
 
 	private static final long serialVersionUID = 4050206323348354355L;
+	
+	private String emailRegexp = "[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?";
 	
 	private String from;
 	private String to;
@@ -54,9 +60,36 @@ public class MailTag extends TemplateControllerTag
     }
 
 	public int doEndTag() throws JspException
-    {
+    {		
 		try
         {
+			boolean fromOk = from.matches(emailRegexp);
+			boolean toOk = from.matches(emailRegexp);
+			
+			StringBuffer sb = new StringBuffer();
+			String[] emailAddresses = recipients.split(";");
+		    for(int i=0; i<emailAddresses.length; i++)
+		    {
+		        String email = emailAddresses[i];
+	        	boolean emailOk = email.matches(emailRegexp);
+    			if(!emailOk && emailAddresses.length == 1)
+	        	{
+	        		throw new AddressException("Invalid recipients address:" + email);
+	        	}
+	        	else if(emailOk)
+	        	{
+	        		if(sb.length() > 0)
+	        			sb.append(";");
+	        		sb.append(email);
+	        	}
+		    }
+			
+			if(!fromOk)
+				throw new AddressException("Invalid from address:" + from);
+
+			if(!toOk)
+				throw new AddressException("Invalid to address:" + to);
+
 			if(type == null)
 				type = "text/html";
 			if(charset == null)
@@ -65,6 +98,17 @@ public class MailTag extends TemplateControllerTag
 			MailServiceFactory.getService().sendEmail(type, from, to, recipients, subject, message, charset);
 			setResultAttribute(true);
         } 
+		catch (AddressException e)
+        {
+			logger.warn("Problem sending mail due to faulty addresses:" + e.getMessage());
+			logger.warn("	from:" + from);
+			logger.warn("	to:" + to);
+			logger.warn("	recipients:" + recipients);
+			logger.warn("	Subject:" + subject);
+			logger.warn("	message:" + message);
+			setResultAttribute(false);
+			pageContext.setAttribute("commonMailTagException", e);
+        }
 		catch (Exception e)
         {
 			logger.error("Problem sending mail:" + e.getMessage());
