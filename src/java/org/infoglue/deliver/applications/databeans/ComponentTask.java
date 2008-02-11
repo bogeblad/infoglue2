@@ -32,7 +32,8 @@ public class ComponentTask
 {
 	private String name;
 	private String view;
-	private Integer componentId;		
+	private Integer componentId;	
+	private boolean openInPopup;
 		
     public Integer getComponentId()
     {
@@ -63,4 +64,14 @@ public class ComponentTask
     {
         this.view = view;
     }
+
+	public boolean getOpenInPopup()
+	{
+		return openInPopup;
+	}
+
+	public void setOpenInPopup(boolean openInPopup)
+	{
+		this.openInPopup = openInPopup;
+	}
 }
