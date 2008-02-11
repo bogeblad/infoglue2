@@ -23,14 +23,10 @@
 
 package org.infoglue.deliver.taglib.common;
 
-import javax.mail.Address;
 import javax.mail.internet.AddressException;
-import javax.mail.internet.InternetAddress;
 import javax.servlet.jsp.JspException;
 
 import org.apache.log4j.Logger;
-import org.infoglue.cms.exception.SystemException;
-import org.infoglue.cms.util.CmsContextListener;
 import org.infoglue.cms.util.mail.MailServiceFactory;
 import org.infoglue.deliver.taglib.TemplateControllerTag;
 
@@ -64,7 +60,12 @@ public class MailTag extends TemplateControllerTag
 		try
         {
 			boolean fromOk = from.matches(emailRegexp);
-			boolean toOk = from.matches(emailRegexp);
+			if(!fromOk)
+				throw new AddressException("Invalid from address:" + from);
+
+			boolean toOk = to.matches(emailRegexp);
+			if(!toOk)
+				throw new AddressException("Invalid to address:" + to);
 			
 			StringBuffer sb = new StringBuffer();
 			String[] emailAddresses = recipients.split(";");
@@ -84,11 +85,6 @@ public class MailTag extends TemplateControllerTag
 	        	}
 		    }
 			
-			if(!fromOk)
-				throw new AddressException("Invalid from address:" + from);
-
-			if(!toOk)
-				throw new AddressException("Invalid to address:" + to);
 
 			if(type == null)
 				type = "text/html";
