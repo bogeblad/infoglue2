@@ -122,7 +122,7 @@ public class MailService
 
 	}
 
-	
+
 	/**
 	 *
 	 * @param from the sender of the email.
@@ -133,14 +133,27 @@ public class MailService
 	 */
 	public void sendEmail(String from, String to, String bcc, String subject, String content, String encoding) throws SystemException 
 	{
+		sendEmail(from, to, null, bcc, subject, content, encoding);
+	}
+	
+	/**
+	 *
+	 * @param from the sender of the email.
+	 * @param to the recipient of the email.
+	 * @param subject the subject of the email.
+	 * @param content the body of the email.
+	 * @throws SystemException if the email couldn't be sent due to some mail server exception.
+	 */
+	public void sendEmail(String from, String to, String cc, String bcc, String subject, String content, String encoding) throws SystemException 
+	{
         String contentType = CmsPropertyHandler.getMailContentType();
         if(contentType == null || contentType.length() == 0)
             contentType = "text/html";
 
 	    if(contentType.equalsIgnoreCase("text/html"))
-	    	sendHTML(from, to, bcc, subject, content, encoding);
+	    	sendHTML(from, to, cc, bcc, subject, content, encoding);
 	    else
-	        sendPlain(from, to, bcc, subject, content, encoding);
+	        sendPlain(from, to, cc, bcc, subject, content, encoding);
 	}
 
 	/**
@@ -151,12 +164,12 @@ public class MailService
 	 * @param content the body of the email.
 	 * @throws SystemException if the email couldn't be sent due to some mail server exception.
 	 */
-	public void sendEmail(String contentType, String from, String to, String bcc, String subject, String content, String encoding) throws SystemException 
+	public void sendEmail(String contentType, String from, String to, String cc, String bcc, String subject, String content, String encoding) throws SystemException 
 	{
    	    if(contentType.equalsIgnoreCase("text/html"))
-	    	sendHTML(from, to, bcc, subject, content, encoding);
+	    	sendHTML(from, to, cc, bcc, subject, content, encoding);
 	    else
-	        sendPlain(from, to, bcc, subject, content, encoding);
+	        sendPlain(from, to, cc, bcc, subject, content, encoding);
 	}
 
 	/**
@@ -167,7 +180,7 @@ public class MailService
 	 * @param content the body of the email.
 	 * @throws SystemException if the email couldn't be sent due to some mail server exception.
 	 */
-	public void sendHTML(String from, String to, String bcc, String subject, String content, String encoding) throws SystemException 
+	public void sendHTML(String from, String to, String cc, String bcc, String subject, String content, String encoding) throws SystemException 
 	{
 		try 
 		{
@@ -212,11 +225,14 @@ public class MailService
 		    	logger.info("to:" + to);
 		    	logger.info("from:" + from);
 		    	logger.info("mailServer:" + mailServer);
+		    	logger.info("cc:" + cc);
 		    	logger.info("bcc:" + bcc);
 		    	logger.info("subject:" + subject);
 		    }
 		    email.addTo(to, to);
 		    email.setFrom(from, from);
+		    if(cc != null)
+		    	email.setCc(createInternetAddressesList(cc));
 		    if(bcc != null)
 		    	email.setBcc(createInternetAddressesList(bcc));
 		    email.setSubject(subject);
@@ -245,7 +261,7 @@ public class MailService
 	 * @param content the body of the email.
 	 * @throws SystemException if the email couldn't be sent due to some mail server exception.
 	 */
-	public void sendPlain(String from, String to, String bcc, String subject, String content, String encoding) throws SystemException 
+	public void sendPlain(String from, String to, String cc, String bcc, String subject, String content, String encoding) throws SystemException 
 	{
 		try 
 		{
@@ -278,7 +294,10 @@ public class MailService
 		   
 		    email.addTo(to, to);
 		    email.setFrom(from, from);
-		    email.setBcc(createInternetAddressesList(bcc));
+		    if(cc != null)
+		    	email.setCc(createInternetAddressesList(cc));
+		    if(bcc != null)
+			    email.setBcc(createInternetAddressesList(bcc));
 		    email.setSubject(subject);
 		    email.setMsg(content);
 	

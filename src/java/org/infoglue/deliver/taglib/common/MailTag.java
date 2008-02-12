@@ -44,6 +44,8 @@ public class MailTag extends TemplateControllerTag
 	
 	private String from;
 	private String to;
+	private String cc;
+	private String bcc;
 	private String recipients;
 	private String subject;
 	private String type;
@@ -67,31 +69,61 @@ public class MailTag extends TemplateControllerTag
 			if(!toOk)
 				throw new AddressException("Invalid to address:" + to);
 			
-			StringBuffer sb = new StringBuffer();
-			String[] emailAddresses = recipients.split(";");
-		    for(int i=0; i<emailAddresses.length; i++)
-		    {
-		        String email = emailAddresses[i];
-	        	boolean emailOk = email.matches(emailRegexp);
-    			if(!emailOk && emailAddresses.length == 1)
-	        	{
-	        		throw new AddressException("Invalid recipients address:" + email);
-	        	}
-	        	else if(emailOk)
-	        	{
-	        		if(sb.length() > 0)
-	        			sb.append(";");
-	        		sb.append(email);
-	        	}
-		    }
+			if(cc != null)
+			{
+				StringBuffer sb = new StringBuffer();
+				String[] emailAddresses = cc.split(";");
+			    for(int i=0; i<emailAddresses.length; i++)
+			    {
+			        String email = emailAddresses[i];
+		        	boolean emailOk = email.matches(emailRegexp);
+	    			if(!emailOk && emailAddresses.length == 1)
+		        	{
+		        		throw new AddressException("Invalid cc address:" + email);
+		        	}
+		        	else if(emailOk)
+		        	{
+		        		if(sb.length() > 0)
+		        			sb.append(";");
+		        		sb.append(email);
+		        	}
+			    }
+			    
+			    cc = sb.toString();
+			}
 			
-
+			if(bcc == null && recipients != null)
+				bcc = recipients;
+				
+			if(bcc != null)
+			{
+				StringBuffer sb = new StringBuffer();
+				String[] emailAddresses = bcc.split(";");
+			    for(int i=0; i<emailAddresses.length; i++)
+			    {
+			        String email = emailAddresses[i];
+		        	boolean emailOk = email.matches(emailRegexp);
+	    			if(!emailOk && emailAddresses.length == 1)
+		        	{
+		        		throw new AddressException("Invalid bcc/recipients address:" + email);
+		        	}
+		        	else if(emailOk)
+		        	{
+		        		if(sb.length() > 0)
+		        			sb.append(";");
+		        		sb.append(email);
+		        	}
+			    }
+			    
+			    bcc = sb.toString();
+			}
+			
 			if(type == null)
 				type = "text/html";
 			if(charset == null)
 				charset = "utf-8";
 						
-			MailServiceFactory.getService().sendEmail(type, from, to, recipients, subject, message, charset);
+			MailServiceFactory.getService().sendEmail(type, from, to, cc, bcc, subject, message, charset);
 			setResultAttribute(true);
         } 
 		catch (AddressException e)
@@ -99,7 +131,8 @@ public class MailTag extends TemplateControllerTag
 			logger.warn("Problem sending mail due to faulty addresses:" + e.getMessage());
 			logger.warn("	from:" + from);
 			logger.warn("	to:" + to);
-			logger.warn("	recipients:" + recipients);
+			logger.warn("	cc:" + cc);
+			logger.warn("	bcc:" + bcc);
 			logger.warn("	Subject:" + subject);
 			logger.warn("	message:" + message);
 			setResultAttribute(false);
@@ -110,7 +143,8 @@ public class MailTag extends TemplateControllerTag
 			logger.error("Problem sending mail:" + e.getMessage());
 			logger.error("	from:" + from);
 			logger.error("	to:" + to);
-			logger.error("	recipients:" + recipients);
+			logger.error("	cc:" + cc);
+			logger.error("	bcc:" + bcc);
 			logger.error("	Subject:" + subject);
 			logger.error("	message:" + message);
 			setResultAttribute(false);
@@ -119,6 +153,9 @@ public class MailTag extends TemplateControllerTag
 		
 		type = null;
 		charset = null;
+		recipients = null;
+		cc = null;
+		bcc = null;
 		
         return EVAL_PAGE;
     }
@@ -132,10 +169,25 @@ public class MailTag extends TemplateControllerTag
 	{
 		this.to = evaluateString("MailTag", "valtoue", to);
 	}
-
+	
+	/**
+	 * @deprecated - use bcc instead
+	 * @param recipients
+	 * @throws JspException
+	 */
 	public void setRecipients(String recipients) throws JspException
 	{
 		this.recipients = evaluateString("MailTag", "recipients", recipients);
+	}
+
+	public void setCc(String cc) throws JspException
+	{
+		this.cc = evaluateString("MailTag", "cc", cc);
+	}
+
+	public void setBcc(String bcc) throws JspException
+	{
+		this.bcc = evaluateString("MailTag", "bcc", bcc);
 	}
 
 	public void setSubject(String subject) throws JspException

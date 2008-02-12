@@ -887,8 +887,18 @@
 	        <rtexprvalue>true</rtexprvalue>
 		</attribute>
 	    <attribute>
+			<name>cc</name>
+	    	<required>false</required>
+	        <rtexprvalue>true</rtexprvalue>
+		</attribute>
+	    <attribute>
+			<name>bcc</name>
+	    	<required>false</required>
+	        <rtexprvalue>true</rtexprvalue>
+		</attribute>
+	    <attribute>
 			<name>recipients</name>
-	    	<required>true</required>
+	    	<required>false</required>
 	        <rtexprvalue>true</rtexprvalue>
 		</attribute>
 	    <attribute>
