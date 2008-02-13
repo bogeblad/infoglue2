@@ -85,7 +85,7 @@ public class MailTag extends TemplateControllerTag
 				String[] emailAddresses = cc.split(";");
 			    for(int i=0; i<emailAddresses.length; i++)
 			    {
-			        String email = emailAddresses[i];
+			        String email = emailAddresses[i].trim().toLowerCase();
 		        	boolean emailOk = email.matches(emailRegexp);
 	    			if(!emailOk && emailAddresses.length == 1)
 		        	{
@@ -95,7 +95,7 @@ public class MailTag extends TemplateControllerTag
 		        	{
 		        		if(sb.length() > 0)
 		        			sb.append(";");
-		        		sb.append(email.trim().toLowerCase());
+		        		sb.append(email);
 		        	}
 			    }
 			    
@@ -111,7 +111,7 @@ public class MailTag extends TemplateControllerTag
 				String[] emailAddresses = bcc.split(";");
 			    for(int i=0; i<emailAddresses.length; i++)
 			    {
-			        String email = emailAddresses[i];
+			        String email = emailAddresses[i].trim().toLowerCase();
 		        	boolean emailOk = email.matches(emailRegexp);
 	    			if(!emailOk && emailAddresses.length == 1)
 		        	{
@@ -121,7 +121,7 @@ public class MailTag extends TemplateControllerTag
 		        	{
 		        		if(sb.length() > 0)
 		        			sb.append(";");
-		        		sb.append(email.trim().toLowerCase());
+		        		sb.append(email);
 		        	}
 			    }
 			    
