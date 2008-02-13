@@ -921,6 +921,11 @@
 	    	<required>true</required>
 	        <rtexprvalue>true</rtexprvalue>
 		</attribute>
+	    <attribute>
+			<name>validationRegexp</name>
+	    	<required>false</required>
+	        <rtexprvalue>true</rtexprvalue>
+		</attribute>
 	</tag>
 	
 </taglib>

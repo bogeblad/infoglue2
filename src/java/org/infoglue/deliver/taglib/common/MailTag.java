@@ -40,7 +40,8 @@ public class MailTag extends TemplateControllerTag
 
 	private static final long serialVersionUID = 4050206323348354355L;
 	
-	private String emailRegexp = "[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?";
+	private String defaultEmailRegexp = "[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?";
+	private String emailRegexp;
 	
 	private String from;
 	private String to;
@@ -51,6 +52,7 @@ public class MailTag extends TemplateControllerTag
 	private String type;
 	private String charset;
 	private String message;
+	private String validationRegexp;
 	
     public MailTag()
     {
@@ -61,6 +63,14 @@ public class MailTag extends TemplateControllerTag
     {		
 		try
         {
+			if(validationRegexp != null)
+				emailRegexp = validationRegexp;
+			else
+				emailRegexp = defaultEmailRegexp;
+					
+			from = from.trim().toLowerCase();
+			to = to.trim().toLowerCase();
+			
 			boolean fromOk = from.matches(emailRegexp);
 			if(!fromOk)
 				throw new AddressException("Invalid from address:" + from);
@@ -85,7 +95,7 @@ public class MailTag extends TemplateControllerTag
 		        	{
 		        		if(sb.length() > 0)
 		        			sb.append(";");
-		        		sb.append(email);
+		        		sb.append(email.trim().toLowerCase());
 		        	}
 			    }
 			    
@@ -111,7 +121,7 @@ public class MailTag extends TemplateControllerTag
 		        	{
 		        		if(sb.length() > 0)
 		        			sb.append(";");
-		        		sb.append(email);
+		        		sb.append(email.trim().toLowerCase());
 		        	}
 			    }
 			    
@@ -156,6 +166,7 @@ public class MailTag extends TemplateControllerTag
 		recipients = null;
 		cc = null;
 		bcc = null;
+		validationRegexp = null;
 		
         return EVAL_PAGE;
     }
@@ -208,5 +219,10 @@ public class MailTag extends TemplateControllerTag
 	public void setMessage(String message) throws JspException
 	{
 		this.message = evaluateString("MailTag", "message", message);
+	}
+	
+	public void setValidationRegexp(String validationRegexp) throws JspException
+	{
+		this.message = evaluateString("MailTag", "validationRegexp", validationRegexp);
 	}
 }
