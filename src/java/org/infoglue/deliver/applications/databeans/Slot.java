@@ -45,6 +45,9 @@ public class Slot
 	private List components = new ArrayList();
 	private String[] allowedComponentsArray = null;
 	private String[] disallowedComponentsArray = null;
+	private String addComponentText;
+	private String addComponentLinkHTML;
+	private int allowedNumberOfComponents = new Integer(-1);
 	
 	public List getComponents()
 	{
@@ -170,5 +173,35 @@ public class Slot
         
         return sb.toString();
     }
+
+	public String getAddComponentText()
+	{
+		return addComponentText;
+	}
+
+	public void setAddComponentText(String addComponentText)
+	{
+		this.addComponentText = addComponentText;
+	}
+
+	public String getAddComponentLinkHTML()
+	{
+		return addComponentLinkHTML;
+	}
+
+	public void setAddComponentLinkHTML(String addComponentLinkHTML)
+	{
+		this.addComponentLinkHTML = addComponentLinkHTML;
+	}
+
+	public int getAllowedNumberOfComponents()
+	{
+		return allowedNumberOfComponents;
+	}
+
+	public void setAllowedNumberOfComponents(int allowedNumberOfComponents)
+	{
+		this.allowedNumberOfComponents = allowedNumberOfComponents;
+	}
 
 }

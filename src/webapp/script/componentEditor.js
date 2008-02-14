@@ -594,7 +594,8 @@ function showEmptySlotMenu(slotId, event, compId, anInsertUrl, slotContentIdVar)
 	
 	try
 	{
-		var access = eval("hasAccessToAddComponent" + slotName); 
+		//var access = eval("hasAccessToAddComponent" + compId + slotName); 
+		var access = eval("hasAccessToAddComponent" + compId); 
 	    //alert("access:" + access);
 	    if(access) 
 	    {
@@ -945,6 +946,16 @@ function executeTask(url, openInPopup)
 function insertComponent() 
 {
 	//alert("insertUrl in insertComponent:" + insertUrl.substring(0, 50) + '\n' + insertUrl.substring(50));
+	details = "width=600,height=700,left=" + (document.body.clientWidth / 4) + ",top=" + (document.body.clientHeight / 4) + ",toolbar=no,status=no,scrollbars=yes,location=no,menubar=no,directories=no,resizable=no";
+	newWin=window.open(insertUrl, "Edit", details);
+	if(newWin)
+		newWin.focus();
+	else
+		alert("Could not open component list - if you have a popup blocker this is most likely the cause.");
+}
+
+function insertComponentByUrl(insertUrl) 
+{
 	details = "width=600,height=700,left=" + (document.body.clientWidth / 4) + ",top=" + (document.body.clientHeight / 4) + ",toolbar=no,status=no,scrollbars=yes,location=no,menubar=no,directories=no,resizable=no";
 	newWin=window.open(insertUrl, "Edit", details);
 	if(newWin)

@@ -498,12 +498,44 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 				    disallowedComponentNamesArray = disallowedComponentNames.split(",");
 				}
 
+				String addComponentText = null;
+				int addComponentTextIndex = slotString.indexOf("addComponentText");
+				if(addComponentTextIndex > -1)
+				{    
+				    addComponentText = slotString.substring(addComponentTextIndex + "addComponentText".length() + 2, slotString.indexOf("\"", addComponentTextIndex + "addComponentText".length() + 2));
+				}
+
+				String addComponentLinkHTML = null;
+				int addComponentLinkHTMLIndex = slotString.indexOf("addComponentLinkHTML");
+				if(addComponentLinkHTMLIndex > -1)
+				{    
+				    addComponentLinkHTML = slotString.substring(addComponentLinkHTMLIndex + "addComponentLinkHTML".length() + 2, slotString.indexOf("\"", addComponentLinkHTMLIndex + "addComponentLinkHTML".length() + 2));
+				}
+
+				int allowedNumberOfComponentsInt = -1;
+				int allowedNumberOfComponentsIndex = slotString.indexOf("allowedNumberOfComponents");
+				if(allowedNumberOfComponentsIndex > -1)
+				{    
+					String allowedNumberOfComponents = slotString.substring(allowedNumberOfComponentsIndex + "allowedNumberOfComponents".length() + 2, slotString.indexOf("\"", allowedNumberOfComponentsIndex + "allowedNumberOfComponents".length() + 2));
+					try
+					{
+						allowedNumberOfComponentsInt = new Integer(allowedNumberOfComponents);
+					}
+					catch (Exception e) 
+					{
+						allowedNumberOfComponentsInt = -1;
+					}
+				}
+
 			  	Slot slot = new Slot();
 			  	slot.setId(slotId);
 			    slot.setInherit(inherit);
 			    slot.setDisableAccessControl(disableAccessControl);
 			  	slot.setAllowedComponentsArray(allowedComponentNamesArray);
 			  	slot.setDisallowedComponentsArray(disallowedComponentNamesArray);
+			    slot.setAddComponentLinkHTML(addComponentLinkHTML);
+			    slot.setAddComponentText(addComponentText);
+			    slot.setAllowedNumberOfComponents(new Integer(allowedNumberOfComponentsInt));
 			    
 			  	List subComponents = getComponents(db, templateController, component, templateController.getSiteNodeId(), slotId);
 			  	slot.setComponents(subComponents);
@@ -1326,7 +1358,6 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 							if(allowedComponentNamesIndex > -1)
 							{    
 							    String allowedComponentNames = slotString.substring(allowedComponentNamesIndex + 24, slotString.indexOf("\"", allowedComponentNamesIndex + 24));
-							    //System.out.println("allowedComponentNames:" + allowedComponentNames);
 							    allowedComponentNamesArray = allowedComponentNames.split(",");
 							}
 
@@ -1335,8 +1366,36 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 							if(disallowedComponentNamesIndex > -1)
 							{    
 							    String disallowedComponentNames = slotString.substring(disallowedComponentNamesIndex + 27, slotString.indexOf("\"", disallowedComponentNamesIndex + 27));
-							    //System.out.println("disallowedComponentNames:" + disallowedComponentNames);
 							    disallowedComponentNamesArray = disallowedComponentNames.split(",");
+							}
+							
+							String addComponentText = null;
+							int addComponentTextIndex = slotString.indexOf("addComponentText");
+							if(addComponentTextIndex > -1)
+							{    
+							    addComponentText = slotString.substring(addComponentTextIndex + "addComponentText".length() + 2, slotString.indexOf("\"", addComponentTextIndex + "addComponentText".length() + 2));
+							}
+
+							String addComponentLinkHTML = null;
+							int addComponentLinkHTMLIndex = slotString.indexOf("addComponentLinkHTML");
+							if(addComponentLinkHTMLIndex > -1)
+							{    
+							    addComponentLinkHTML = slotString.substring(addComponentLinkHTMLIndex + "addComponentLinkHTML".length() + 2, slotString.indexOf("\"", addComponentLinkHTMLIndex + "addComponentLinkHTML".length() + 2));
+							}
+
+							int allowedNumberOfComponentsInt = -1;
+							int allowedNumberOfComponentsIndex = slotString.indexOf("allowedNumberOfComponents");
+							if(allowedNumberOfComponentsIndex > -1)
+							{    
+								String allowedNumberOfComponents = slotString.substring(allowedNumberOfComponentsIndex + "allowedNumberOfComponents".length() + 2, slotString.indexOf("\"", allowedNumberOfComponentsIndex + "allowedNumberOfComponents".length() + 2));
+								try
+								{
+									allowedNumberOfComponentsInt = new Integer(allowedNumberOfComponents);
+								}
+								catch (Exception e) 
+								{
+									allowedNumberOfComponentsInt = -1;
+								}
 							}
 
 							Slot slot = new Slot();
@@ -1345,7 +1404,10 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 							slot.setDisableAccessControl(disableAccessControl);
 							slot.setAllowedComponentsArray(allowedComponentNamesArray);
 							slot.setDisallowedComponentsArray(disallowedComponentNamesArray);
-							
+						    slot.setAddComponentLinkHTML(addComponentLinkHTML);
+						    slot.setAddComponentText(addComponentText);
+						    slot.setAllowedNumberOfComponents(new Integer(allowedNumberOfComponentsInt));
+
 							Element componentsElement = (Element)componentElement.selectSingleNode("components");
 							
 							//groups = new String[]{"content_" + contentVO.getId()};

@@ -1,4 +1,52 @@
 -------------------------------------------------------------------------------------
+- InfoGlue 2.8.2 Final
+-------------------------------------------------------------------------------------
+
+Release notes
+---------------------------------------
+This is a bugfix version which fixes another couple of small bugs and improves some small aspects. 
+    
+Thanx for all reports and proposals for bugfixes.
+The InfoGlue Team
+
+
+Abbreviated Changelog from 2.8.1 Final 
+---------------------------------------
+- Added cc and bcc attributes to common:mail-tag.
+- Improved mailtag so it now always trims and lowercases the addresses and you can apply your own email validation regexp.
+- Fixed bug in CASBasicAuthenticatorModule concerning proxy tickets.
+- Added three new great features to the slot-mechanism in InfoGlue:
+	* addComponentText - this attribute lets you modify the text which tells the user to rightclick to another text
+	* addComponentLinkHTML - this attribute lets replace the normal instruction to rightclick with html of 
+	  your choice - including the possibility to have a normal link/button/icon as the user can leftclick on. Easier yet.
+	* allowedNumberOfComponents - allows you to state that only a limited number of components are allowed in a slot.
+
+
+-------------------------------------------------------------------------------------
+- InfoGlue 2.8.1 Final
+-------------------------------------------------------------------------------------
+
+Release notes
+---------------------------------------
+This is a bugfix version but it also introduces a new tag. The installer is also improved and an important
+bug in how validation query was constructed was fixed. 
+    
+Thanx for all reports and proposals for bugfixes.
+The InfoGlue Team
+
+
+Abbreviated Changelog from 2.8.0 Final 
+---------------------------------------
+- Fixed better check of access rights on changing version state in content version. If the content is protected and you don't have 
+  create version rights or submit to publish the system now protests correctly.
+- Changed so now we ship the full distribution of yahoo ui. The previous version where we only shipped the build-part did not work very good because of internal dependencies inside yui.
+- Added new taglib structure:pageAttribute which is a great tag for accessing page meta info content attributes. It can handle inheritance on attribute level also.
+- Improved component tasks and made it possible to state if to open it in popup or not.
+- Better error logging in mail-tag. Now the contents of the mail is logged so no data is wasted.
+- Fixed bug in tag common:transformText concerning linebreak replacement.
+- Fixed bug in which a database was not properly closed ViewPageFilter
+
+-------------------------------------------------------------------------------------
 - InfoGlue 2.8.0 Final
 -------------------------------------------------------------------------------------
 
