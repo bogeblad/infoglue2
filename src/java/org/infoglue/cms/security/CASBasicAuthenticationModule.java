@@ -377,12 +377,12 @@ public class CASBasicAuthenticationModule extends AuthenticationModule//, Author
 		//pv.setCasValidateUrl(casValidateUrl);
 		if(ticket != null && ticket.substring(0, 2).equals("PT"))
 		{
-			pv.setCasValidateUrl(URLEncoder.encode(casProxyValidateUrl, "UTF-8"));
+			pv.setCasValidateUrl(casProxyValidateUrl);
 			logger.info("setting casProxyValidateUrl: " + casProxyValidateUrl);
 		}
 		else
 		{
-			pv.setCasValidateUrl(URLEncoder.encode(casServiceUrl, "UTF-8"));
+			pv.setCasValidateUrl(casValidateUrl);
 			logger.info("setting casValidateUrl: " + casValidateUrl);
 		}
 		
@@ -393,7 +393,7 @@ public class CASBasicAuthenticationModule extends AuthenticationModule//, Author
 
 		/* 
 		 * If we want to be able to acquire proxy tickets (requires callback servlet to be set up  
-		 * in web.xml –- see below)
+		 * in web.xml - see below)
 		 */
 
 		/* contact CAS and validate */
