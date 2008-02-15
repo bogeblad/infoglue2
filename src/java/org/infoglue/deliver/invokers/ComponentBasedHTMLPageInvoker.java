@@ -43,6 +43,7 @@ import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
 import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.content.ContentVersion;
+import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
 import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.entities.structure.SiteNodeVO;
 import org.infoglue.cms.exception.SystemException;
@@ -82,11 +83,76 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 	 * Makes it possible to have an alternative to the ordinary delivery optimized class.
 	 */
 	
-   public PageInvoker getDecoratedPageInvoker() throws SystemException
+    public PageInvoker getDecoratedPageInvoker() throws SystemException
 	{
 	    return new DecoratedComponentBasedHTMLPageInvoker();
 	}
 
+    protected String appendPagePartTemplates(String componentXML) throws Exception
+    {
+    	String resultComponentXML = componentXML;
+    	
+		List entries = new ArrayList();
+		int isPagePartReferenceIndex = componentXML.indexOf("isPagePartReference");
+		while(isPagePartReferenceIndex > -1)
+		{
+			System.out.println("isPagePartReferenceIndex:" + isPagePartReferenceIndex);
+			int tagStartIndex = componentXML.lastIndexOf("<component ", isPagePartReferenceIndex);
+			int tagEndIndex = componentXML.indexOf(">", isPagePartReferenceIndex);
+			String componentString = componentXML.substring(tagStartIndex, tagEndIndex);
+			System.out.println("componentString:" + componentString);
+			
+			int contentIdIndex = componentString.indexOf(" contentId=");
+			String contentId = componentString.substring(contentIdIndex + 12, componentString.indexOf("\"", contentIdIndex + 12));
+			
+			int idIndex = componentString.indexOf(" id=");
+			String id = componentString.substring(idIndex + 5, componentString.indexOf("\"", idIndex + 5));
+
+			int nameIndex = componentString.indexOf(" name=");
+			String name = componentString.substring(nameIndex + 7, componentString.indexOf("\"", nameIndex + 7));
+			
+			Map entry = new HashMap();
+			entry.put("contentId", contentId);
+			entry.put("id", id);
+			entry.put("name", name);
+			entries.add(entry);
+			
+			isPagePartReferenceIndex = componentXML.indexOf("isPagePartReference", isPagePartReferenceIndex + 20);
+		}
+		
+		Iterator entriesIterator = entries.iterator();
+		while(entriesIterator.hasNext())
+		{
+			Map entry = (Map)entriesIterator.next();
+			
+			String contentIdString = (String)entry.get("contentId");
+			Integer contentId = new Integer(contentIdString);
+			String id = (String)entry.get("id");
+			String name = (String)entry.get("name");
+			ContentTypeDefinitionVO contentTypeDefinitionVO = ContentDeliveryController.getContentDeliveryController().getContentTypeDefinitionVO(getDatabase(), contentId);
+		    if(contentTypeDefinitionVO != null && contentTypeDefinitionVO.getName().equals("PagePartTemplate"))
+		    {
+		    	System.out.println("This was a pagePart reference..");
+		    	String pagePartString = this.getTemplateController().getContentAttribute(contentId, "ComponentStructure", true);
+		    	pagePartString = pagePartString.replaceFirst(" id=\".*?\"", " id=\"" + id + "\"");
+		    	pagePartString = pagePartString.replaceFirst(" name=\".*?\"", " name=\"" + name + "\"");
+		    	pagePartString = pagePartString.replaceFirst(" pagePartTemplateContentId=\".*?\"", " pagePartTemplateContentId=\"" + contentId + "\"");
+		    	System.out.println("Bytte id och namn: " + pagePartString);
+		    	
+		    	pagePartString = pagePartString.substring(pagePartString.indexOf("<component "));
+		    	pagePartString = pagePartString.substring(0, pagePartString.lastIndexOf("</components>"));
+		    	
+		    	System.out.println("componentXML: " + componentXML);
+		    	System.out.println("contentId" + contentId);
+		    	String newComponentXML = componentXML.replaceAll("<component contentId=\"" + contentId + ".*?</component>", "" + pagePartString);
+		    	System.out.println("newComponentXML: " + newComponentXML);
+		    	resultComponentXML = newComponentXML;
+		    }
+		}
+
+    	return resultComponentXML;
+    }
+    
 	/**
 	 * This is the method that will render the page. It uses the new component based structure. 
 	 */ 
@@ -101,6 +167,8 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 		Integer repositoryId = nodeDeliveryController.getSiteNode(getDatabase(), this.getDeliveryContext().getSiteNodeId()).getRepository().getId();
 
 		String componentXML = getPageComponentsString(getDatabase(), this.getTemplateController(), this.getDeliveryContext().getSiteNodeId(), this.getDeliveryContext().getLanguageId(), this.getDeliveryContext().getContentId());
+		componentXML = appendPagePartTemplates(componentXML);
+		
 		InfoGlueComponent baseComponent = null;
 		
    		if(componentXML != null && componentXML.length() != 0)
@@ -362,7 +430,11 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 			Integer id 			= new Integer(child.attributeValue("id"));
 			Integer contentId 	= new Integer(child.attributeValue("contentId"));
 			String name 	  	= child.attributeValue("name");
-	
+			
+			System.out.println("id 2:" + id);
+			System.out.println("contentId 2:" + contentId);
+			System.out.println("name 2:" + name);
+			
 			ContentVO contentVO = ContentDeliveryController.getContentDeliveryController().getContentVO(contentId, db);
 			
 			component = new InfoGlueComponent();
@@ -953,8 +1025,9 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
    
 	protected List getInheritedComponents(Database db, TemplateController templateController, InfoGlueComponent component, Integer siteNodeId, String id, boolean inherit) throws Exception
 	{
-	    //logger.info("slotId");
-	    //logger.info("getInheritedComponents with " + component.getName() + ":" + component.getSlotName() + ":" + component.getId());
+	    System.out.println("slotId:" + id);
+	    System.out.println("component:" + component);
+	    System.out.println("getInheritedComponents with " + component.getName() + ":" + component.getSlotName() + ":" + component.getId());
 		List inheritedComponents = new ArrayList();
 		
 		NodeDeliveryController nodeDeliveryController = NodeDeliveryController.getNodeDeliveryController(templateController.getSiteNodeId(), templateController.getLanguageId(), templateController.getContentId());
@@ -1234,14 +1307,22 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 			{
 				Element componentElement = (Element)componentIterator.next();
 			
-				Integer id 			= new Integer(componentElement.attributeValue("id"));
-				Integer contentId 	= new Integer(componentElement.attributeValue("contentId"));
-				String name 	  	= componentElement.attributeValue("name");
+				Integer id 							= new Integer(componentElement.attributeValue("id"));
+				Integer contentId 					= new Integer(componentElement.attributeValue("contentId"));
+				String name 	  					= componentElement.attributeValue("name");
+				String isInherited 					= componentElement.attributeValue("isInherited");
+				String pagePartTemplateContentId 	= componentElement.attributeValue("pagePartTemplateContentId");
+				
+				System.out.println("id 1: " + id);
+				System.out.println("contentId 1:" + contentId);
+				System.out.println("name 1: " + name);
+				System.out.println("isInherited 1: " + isInherited);
+				System.out.println("pagePartTemplateContentId 1: " + pagePartTemplateContentId);
 				
 				try
 				{
 				    ContentVO contentVO = ContentDeliveryController.getContentDeliveryController().getContentVO(contentId, db);
-
+				    
 				    //System.out.println("slotName:" + slotName + " should get connected with content_" + contentVO.getId());
 				    
 				    groups = new String[]{"content_" + contentVO.getId()};
@@ -1252,6 +1333,23 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 					component.setName(contentVO.getName());
 					component.setSlotName(name);
 					component.setParentComponent(parentComponent);
+					if(isInherited != null && isInherited.equals("true"))
+						component.setIsInherited(true);
+					if(pagePartTemplateContentId != null && !pagePartTemplateContentId.equals("") && !pagePartTemplateContentId.equals("-1"))
+					{
+						Integer pptContentId = new Integer(pagePartTemplateContentId);
+					    ContentVO pptContentIdContentVO = ContentDeliveryController.getContentDeliveryController().getContentVO(pptContentId, db);
+
+						InfoGlueComponent partTemplateReferenceComponent = new InfoGlueComponent();
+						partTemplateReferenceComponent.setId(id);
+						partTemplateReferenceComponent.setContentId(pptContentId);
+						partTemplateReferenceComponent.setName(pptContentIdContentVO.getName());
+						partTemplateReferenceComponent.setSlotName(name);
+						partTemplateReferenceComponent.setParentComponent(parentComponent);
+
+						component.setPagePartTemplateContentId(pptContentId);
+						component.setPagePartTemplateComponent(partTemplateReferenceComponent);
+					}
 			
 					//Use this later
 					//getComponentProperties(componentElement, component, locale, templateController);

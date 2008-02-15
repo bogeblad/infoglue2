@@ -38,6 +38,7 @@ public class InfoGlueComponent
 	private String slotName						= null;
 	private Slot containerSlot					= null;
 	private boolean isInherited 				= false;
+	private Integer pagePartTemplateContentId	= null;
 	private Map properties     					= new HashMap();
 	private Map tasks     						= new HashMap();
 	private List slotList 						= new ArrayList();
@@ -45,6 +46,7 @@ public class InfoGlueComponent
 	private Map slots 							= new HashMap();
 	private Map components 						= new HashMap();
 	private InfoGlueComponent parentComponent 	= null;
+	private InfoGlueComponent pagePartTemplateComponent = null;
 	
 	public InfoGlueComponent()
 	{
@@ -130,6 +132,16 @@ public class InfoGlueComponent
 		this.isInherited = isInherited;
 	}
 
+	public Integer getPagePartTemplateContentId()
+	{
+		return pagePartTemplateContentId;
+	}
+
+	public void setPagePartTemplateContentId(Integer pagePartTemplateContentId)
+	{
+		this.pagePartTemplateContentId = pagePartTemplateContentId;
+	}
+
 	public List getSlotList()
 	{
 		return slotList;
@@ -148,6 +160,16 @@ public class InfoGlueComponent
 	public void setParentComponent(InfoGlueComponent component)
 	{
 		parentComponent = component;
+	}
+
+	public InfoGlueComponent getPagePartTemplateComponent()
+	{
+		return pagePartTemplateComponent;
+	}
+
+	public void setPagePartTemplateComponent(InfoGlueComponent pagePartTemplateComponent)
+	{
+		this.pagePartTemplateComponent = pagePartTemplateComponent;
 	}
 
     public String getSlotName()
@@ -174,4 +196,5 @@ public class InfoGlueComponent
     {
         return restrictions;
     }
+
 }

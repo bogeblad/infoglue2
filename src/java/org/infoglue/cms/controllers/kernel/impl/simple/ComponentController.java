@@ -306,6 +306,9 @@ public class ComponentController extends BaseController
 		HashMap argument = new HashMap();
 		argument.put("contentTypeDefinitionName", "HTMLTemplate");
 		argumentList.add(argument);
+		HashMap argument2 = new HashMap();
+		argument2.put("contentTypeDefinitionName", "PagePartTemplate");
+		argumentList.add(argument2);
 		arguments.put("arguments", argumentList);
 		
 		List results = ContentControllerProxy.getController().getACContentVOList(principal, arguments);

@@ -36,6 +36,7 @@ import org.apache.log4j.Logger;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.ComponentController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.DigitalAssetController;
 import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
@@ -46,6 +47,7 @@ import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeVersionController
 import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.entities.content.DigitalAssetVO;
+import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
 import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.entities.structure.SiteNodeVO;
 import org.infoglue.cms.entities.structure.SiteNodeVersionVO;
@@ -119,6 +121,10 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 		
 		Integer currentRepositoryId = SiteNodeController.getController().getSiteNodeVOWithId(this.siteNodeId).getRepositoryId();
 		this.masterLanguageVO = LanguageController.getController().getMasterLanguage(currentRepositoryId);		
+		System.out.println("currentRepositoryId:" + currentRepositoryId);
+		SiteNodeVO siteNodeVO = SiteNodeController.getController().getSiteNodeVOWithId(this.siteNodeId);
+		System.out.println("" + this.siteNodeId + " = siteNodeVO:" + siteNodeVO.getName() + ":" + siteNodeVO.getSiteNodeId() + ":" + siteNodeVO.getRepositoryId());
+		
 		if(filterRepositoryId == null)
 		{
 			Map args = new HashMap();
@@ -126,6 +132,7 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 		    PropertySet ps = PropertySetManager.getInstance("jdbc", args);
 
 		    String defaultTemplateRepository = ps.getString("repository_" + currentRepositoryId + "_defaultTemplateRepository");
+		    System.out.println("defaultTemplateRepository:" + defaultTemplateRepository);
 		    if(defaultTemplateRepository != null && !defaultTemplateRepository.equals(""))
 		        filterRepositoryId = new Integer(defaultTemplateRepository);
 		    else
@@ -399,7 +406,13 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 				}
 				newComponentId = new Integer(newComponentId.intValue() + 1);
 				
-				Element newComponent = addComponentElement(component, new Integer(newComponentId.intValue()), this.slotId, this.componentId);
+				ContentVO templateContentVO = ContentController.getContentController().getContentVOWithId(this.componentId);
+				ContentTypeDefinitionVO contentTypeDefinitionVO = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithId(templateContentVO.getContentTypeDefinitionId());
+				boolean isPagePartReference = false;
+				if(contentTypeDefinitionVO.getName().equals("PagePartTemplate"))
+					isPagePartReference = true;
+				
+				Element newComponent = addComponentElement(component, new Integer(newComponentId.intValue()), this.slotId, this.componentId, isPagePartReference);
 				String modifiedXML = XMLHelper.serializeDom(document, new StringBuffer()).toString(); 
 
 				ContentVO contentVO = NodeDeliveryController.getNodeDeliveryController(siteNodeId, this.masterLanguageVO.getId(), contentId).getBoundContent(this.getInfoGluePrincipal(), siteNodeId, this.masterLanguageVO.getId(), true, "Meta information", DeliveryContext.getDeliveryContext());
@@ -1191,9 +1204,12 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 	 * This is to support form steering information later.
 	 */
 	
-	private Element addComponentElement(Element parent, Integer id, String name, Integer contentId)
+	private Element addComponentElement(Element parent, Integer id, String name, Integer contentId, boolean isPagePartReference)
 	{
 		Element element = parent.getOwnerDocument().createElement("component");
+		if(isPagePartReference)
+			element.setAttribute("isPagePartReference", "true");
+			
 		element.setAttribute("id", id.toString());
 		element.setAttribute("contentId", contentId.toString());
 		element.setAttribute("name", name);
