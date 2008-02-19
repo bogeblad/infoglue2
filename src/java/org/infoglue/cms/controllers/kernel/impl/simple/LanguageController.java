@@ -133,6 +133,30 @@ public class LanguageController extends BaseController
 	}
 
 	/**
+	 * This method returns language with the languageCode sent in. 
+	 */
+	
+	public Locale getLocaleWithId(Integer languageId, Database db)
+	{
+		Locale locale = Locale.getDefault();
+		
+		if (languageId != null)
+		{
+			try 
+			{
+				LanguageVO languageVO = getLanguageVOWithId(languageId, db);
+				locale = new Locale(languageVO.getLanguageCode());
+			} 
+			catch (Exception e) 
+			{
+				logger.error("An error occurred in getLocaleWithId: getting locale with languageid:" + languageId + "," + e, e);
+			}	
+		}
+		
+		return locale; 
+	}
+
+	/**
 	 * Returns the LanguageVO with the given name.
 	 * 
 	 * @param name
