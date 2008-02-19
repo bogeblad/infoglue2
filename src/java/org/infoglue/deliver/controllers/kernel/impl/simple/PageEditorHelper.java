@@ -109,7 +109,7 @@ public class PageEditorHelper
 			sb.append("		<fieldset style=\"border: 0px;\">");
 		}
 		
-		sb.append("		<p>");
+		sb.append("		<div class=\"propertyRow\">");
 
 		sb.append("		<label for=\"languageId\">Language</label>");
 		sb.append("		<select name=\"languageId\" onChange=\"javascript:changeLanguage(" + siteNodeId + ", this, " + contentId + ");\">");
@@ -135,7 +135,7 @@ public class PageEditorHelper
 		}
 
 		sb.append("		</select>");
-		sb.append("		</p>");
+		sb.append("		</div>");
 		
 		Collection componentProperties = getComponentProperties(componentId, document, siteNodeId, languageId, contentId, locale, db, principal);
 		
@@ -261,7 +261,7 @@ public class PageEditorHelper
 					}
 				}
 								
-				sb.append("		<p>");
+				sb.append("		<div class=\"propertyRow\">");
 				sb.append("			<label for=\"\">" + componentProperty.getName() + "</label>");
 				//sb.append("			<td class=\"igtd\" width=\"16\"><img src=\"" + componentEditorUrl + "/images/questionMarkGrad.gif\" onMouseOver=\"javascript:showDiv('helpLayer" + componentProperty.getComponentId() + "_" + componentProperty.getName() + "');\" onMouseOut=\"javascript:hideDiv('helpLayer" + componentProperty.getComponentId() + "_" + componentProperty.getName() + "');\">" + helpSB + "</td>");
 				
@@ -289,7 +289,7 @@ public class PageEditorHelper
 						sb.append("			<a class=\"componentEditorLink\" href=\"" + componentEditorUrl + "ViewSiteNodePageComponents!deleteComponentPropertyValue.action?siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&propertyName=" + componentProperty.getName() + "&showSimple=" + showSimple + "\"><img src=\"" + componentEditorUrl + "/images/delete.gif\" border=\"0\"/></a>");
 				}
 				
-				sb.append("		</p>");
+				sb.append("		</div>");
 			}
 			else if(componentProperty.getType().equalsIgnoreCase(ComponentProperty.TEXTFIELD))
 			{
@@ -298,7 +298,7 @@ public class PageEditorHelper
 				helpSB.append("" + (componentProperty.getDescription() == null || componentProperty.getDescription().equalsIgnoreCase("") ? "No description" : componentProperty.getDescription()) + "");
 				helpSB.append("</div>");
 
-				sb.append("	<p>");
+				sb.append("	<div class=\"propertyRow\">");
 				sb.append("		<label for=\"" + componentProperty.getName() + "\" onMouseOver=\"showDiv('helpLayer" + componentProperty.getComponentId() + "_" + componentProperty.getName() + "');\" onMouseOut=\"javascript:hideDiv('helpLayer" + componentProperty.getComponentId() + "_" + componentProperty.getName() + "');\">" + componentProperty.getName() + "</label>");
 				
 				if(hasAccessToProperty)
@@ -312,7 +312,7 @@ public class PageEditorHelper
 				if(hasAccessToProperty)
 					sb.append("	<a class=\"componentEditorLink\" href=\"" + componentEditorUrl + "ViewSiteNodePageComponents!deleteComponentPropertyValue.action?siteNodeId=" + siteNodeId + "&amp;languageId=" + languageId + "&amp;contentId=" + contentId + "&amp;componentId=" + componentId + "&amp;propertyName=" + componentProperty.getName() + "&amp;showSimple=" + showSimple + "\"><img src=\"" + componentEditorUrl + "/images/delete.gif\" border=\"0\"/></a>");
 
-				sb.append("	</p>");
+				sb.append("	</div>");
 				sb.append("	" + helpSB + "");
 				
 				if(hasAccessToProperty)
@@ -437,10 +437,10 @@ public class PageEditorHelper
 			}
 		}
 		
-		sb.append("		<p class=\"buttonRow\">");
+		sb.append("		<div class=\"buttonRow\">");
 		sb.append("			<input type=\"image\" style=\"width: 50px; height: 25px;\" src=\"" + componentEditorUrl + "" + getLocalizedString(locale, "images.contenttool.buttons.save") + "\" width=\"50\" height=\"25\" border=\"0\"/>");
 		sb.append("			<a href=\"javascript:clearComponentPropertiesInDiv('" + targetDiv + "');\"><img src=\"" + componentEditorUrl + "" + getLocalizedString(locale, "images.contenttool.buttons.close") + "\" width=\"50\" height=\"25\" border=\"0\"/></a>");
-		sb.append("		</p>");
+		sb.append("		</div>");
 		sb.append("		</fieldset>");
 		sb.append("		<input type=\"hidden\" name=\"repositoryId\" value=\"" + repositoryId + "\"/>");
 		sb.append("		<input type=\"hidden\" name=\"siteNodeId\" value=\"" + siteNodeId + "\"/>");
@@ -1544,9 +1544,13 @@ public class PageEditorHelper
 	    	        String direction = "asc";
 	    	        List componentVOList = ComponentController.getController().getComponentVOList("name", direction, slot.getAllowedComponentsArray(), slot.getDisallowedComponentsArray(), principal);
 	    	        Iterator componentVOListIterator = componentVOList.iterator();
-	    	        
+
+    	        	sb.append("<fieldset>");
+    	        	sb.append("<legend>Drag component to slot</legend>");
+    	        	
     	        	sb.append("<div id=\"availableComponents\">");
     	        	
+    	        	int i = 0;
 	    	        while(componentVOListIterator.hasNext())
 	    	        {
 	    	        	ContentVO componentContentVO = (ContentVO)componentVOListIterator.next();
@@ -1557,10 +1561,12 @@ public class PageEditorHelper
 	    				if(imageUrl == null || imageUrl.length() == 0)
 	    					imageUrl = "images/componentIcon.gif";
 
-	    				sb.append("<div id=\"componentRow\">");
+	    				sb.append("<div id=\"componentRow\" name=\"" +  componentContentVO.getId() + "\" class=\"dragable\">");
 	    	    		
-	    	        	sb.append("	<div id=\"componentIcon\"><img src=\"" + imageUrl + "\" border=\"0\"/></div>");
-
+    					sb.append("	<div id=\"componentIcon\"><img src=\"" + imageUrl + "\" border=\"0\"/></div>");
+	    				
+	    				i++;
+	    				
 	    	        	sb.append("	<div id=\"componentName\">" + componentContentVO.getName() + "</div>");
 
 	    	        	/*
@@ -1587,18 +1593,39 @@ public class PageEditorHelper
 	    	        	sb.append("</div>");
 	    	        }
 	    	        
+		        	sb.append("</fieldset>");
 	    	        break;
 	    		}
 	    	}
-	    	
-
 	        
 	    }
 	    catch(Exception e)
 	    {
 	        e.printStackTrace();
 	    }
-		
+		/*
+	    sb.append("<script type=\"text/javascript\">");
+	    sb.append("<!--");
+   		sb.append("alert('Problem...');");
+   		sb.append("alert(\"Size:\" + $(\".dragable\").size());");
+   		sb.append("$(\".dragable\").draggable({helper: 'clone'});");
+	    */
+	    /*
+   		$(".block").draggable({helper: 'clone'});
+	    	$(".drop").droppable({
+	    		accept: ".block",
+	    		activeClass: 'droppable-active',
+	    		hoverClass: 'droppable-hover',
+	    		drop: function(ev, ui) {
+	    			$(this).append("<br>Dropped!");
+	    		}
+	    	  });
+   		sb.append("});");
+	    */
+	    /*
+   		sb.append("-->");
+   		sb.append("</script>");
+	    */
 		return sb.toString();
 	}
 

@@ -181,7 +181,7 @@ public class ContentDeliveryController extends BaseDeliveryController
     	
         }
 		
-		if(contentVersionVO != null)
+		if(contentVersionVO != null && deliveryContext != null)
 		    deliveryContext.addUsedContentVersion("contentVersion_" + contentVersionVO.getId());
 		
 		return contentVersionVO;
@@ -562,16 +562,18 @@ public class ContentDeliveryController extends BaseDeliveryController
 				*/
 			}
 			
-			deliveryContext.addUsedContentVersion("contentVersion_" + contentVersionId);
-			if(isMetaInfoQuery && contentVersionId != null)
-				deliveryContext.getUsedPageMetaInfoContentVersionIdSet().add(contentVersionId);
-			
+			if(deliveryContext != null)
+			{
+				deliveryContext.addUsedContentVersion("contentVersion_" + contentVersionId);
+				if(isMetaInfoQuery && contentVersionId != null)
+					deliveryContext.getUsedPageMetaInfoContentVersionIdSet().add(contentVersionId);
+			}
+	
 			if(usedContentVersionId != null && contentVersionId != null)
 			    usedContentVersionId.add(contentVersionId);
 	    }
 	    catch(Exception e)
 	    {
-	    	//e.printStackTrace();
 	        throw e;
 	    }
 	    
