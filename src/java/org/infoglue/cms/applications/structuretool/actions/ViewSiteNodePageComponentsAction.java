@@ -121,9 +121,7 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 		
 		Integer currentRepositoryId = SiteNodeController.getController().getSiteNodeVOWithId(this.siteNodeId).getRepositoryId();
 		this.masterLanguageVO = LanguageController.getController().getMasterLanguage(currentRepositoryId);		
-		System.out.println("currentRepositoryId:" + currentRepositoryId);
 		SiteNodeVO siteNodeVO = SiteNodeController.getController().getSiteNodeVOWithId(this.siteNodeId);
-		System.out.println("" + this.siteNodeId + " = siteNodeVO:" + siteNodeVO.getName() + ":" + siteNodeVO.getSiteNodeId() + ":" + siteNodeVO.getRepositoryId());
 		
 		if(filterRepositoryId == null)
 		{
@@ -132,7 +130,6 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 		    PropertySet ps = PropertySetManager.getInstance("jdbc", args);
 
 		    String defaultTemplateRepository = ps.getString("repository_" + currentRepositoryId + "_defaultTemplateRepository");
-		    System.out.println("defaultTemplateRepository:" + defaultTemplateRepository);
 		    if(defaultTemplateRepository != null && !defaultTemplateRepository.equals(""))
 		        filterRepositoryId = new Integer(defaultTemplateRepository);
 		    else
