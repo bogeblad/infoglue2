@@ -1,4 +1,4 @@
-<!-- $Id: actions.xml,v 1.8 2007/10/21 21:40:32 mattias Exp $ -->
+<!-- $Id: actions.xml,v 1.9 2008/02/19 22:54:05 mattias Exp $ -->
 <actions>
 
 	<!-- InstallationValidator -->
@@ -112,6 +112,11 @@
 	<!-- FILE DOWNLOAD -->
 	<action name="org.infoglue.deliver.applications.actions.DownloadAssetAction" alias="DownloadProtectedAsset">
 		<view name="error">/cms/managementtool/error.vm</view>
+	</action>
+
+	<!-- AJAX API -->
+	<action name="org.infoglue.deliver.applications.actions.AjaxComponentDeliveryServiceAction" alias="AjaxComponentDeliveryService">
+		<view name="error">/deliver/error.vm</view>
 	</action>
 
 	<!-- Site Delivery -->
