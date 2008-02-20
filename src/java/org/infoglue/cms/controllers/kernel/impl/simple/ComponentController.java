@@ -182,6 +182,9 @@ public class ComponentController extends BaseController
 
 	public List getComponentVOList(String sortAttribute, String direction, String[] allowedComponentNames, String[] disallowedComponentNames, Database db, InfoGluePrincipal principal) throws SystemException, Bug, Exception
 	{
+		if(principal == null)
+			return null;
+			
 	    String allowedComponentNamesString = "";
 	    if(allowedComponentNames != null)
 	    {
