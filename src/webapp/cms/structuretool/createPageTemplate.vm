@@ -45,7 +45,7 @@
 		{
 			alert("Be aware that the page structure will be stored in the language used as master in the destination repository.\n This may render the page template useless if it does not fit your repository.");
 			var repositoryId = selectBox.value;
-			var url = "ViewContentHtmlTree.action?repositoryId=" + repositoryId + "&contentId=$contentId&tree=$tree";
+			var url = "ViewContentHtmlTree.action?repositoryId=" + repositoryId + "&contentId=$contentId&componentId=$componentId&tree=$tree";
 			frames['itreeFrame'].location.href = url;
 		}
 	    
@@ -193,6 +193,7 @@
 	<input type="hidden" name="repositoryId" value="$repositoryId">
 	<input type="hidden" name="path" value="">
 	<input type="hidden" name="contentId" value="$contentId">
+	<input type="hidden" name="componentId" value="$componentId">
 </form>
 
 <div style="RIGHT:10px; LEFT:10px; position:absolute; BOTTOM:5px; visibility:visible; z-index:0">

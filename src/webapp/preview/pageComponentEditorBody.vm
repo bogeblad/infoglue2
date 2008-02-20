@@ -15,6 +15,7 @@
 <div id="deleteComponentMenuItem" class="igmenuitems" onMouseover="javascript:highlightie5(event);" onMouseout="javascript:lowlightie5(event);" onClick="deleteComponent();">$deleteComponentHTML</div>
 <div id="changeComponentMenuItem" class="igmenuitems" onMouseover="javascript:highlightie5(event);" onMouseout="javascript:lowlightie5(event);" onClick="changeComponent();">$changeComponentHTML</div>
 <div class="igmenuitems" onMouseover="javascript:highlightie5(event);" onMouseout="javascript:lowlightie5(event);" onClick="$saveTemplateUrl">$savePageTemplateHTML</div>
+<div class="igmenuitems" onMouseover="javascript:highlightie5(event);" onMouseout="javascript:lowlightie5(event);" onClick="$savePartTemplateUrl">$savePagePartTemplateHTML</div>
 <hr id="componentMenuTopSeparator">
 <div class="igmenuitems" onMouseover="javascript:highlightie5(event);" onMouseout="javascript:lowlightie5(event);" onClick="javascript:showComponent();">Properties</div>
 <hr id="componentMenuMiddleSeparator"/>
@@ -27,6 +28,7 @@
 <div id="deleteComponentInTreeMenuItem" class="igmenuitems" onMouseover="javascript:highlightie5(event);" onMouseout="javascript:lowlightie5(event);" onClick="deleteComponent();">$deleteComponentHTML</div>
 <div id="changeComponentInTreeMenuItem" class="igmenuitems" onMouseover="javascript:highlightie5(event);" onMouseout="javascript:lowlightie5(event);" onClick="changeComponent();">$changeComponentHTML</div>
 <div class="igmenuitems" onMouseover="javascript:highlightie5(event);" onMouseout="javascript:lowlightie5(event);" onClick="$saveTemplateUrl">$savePageTemplateHTML</div>
+<div class="igmenuitems" onMouseover="javascript:highlightie5(event);" onMouseout="javascript:lowlightie5(event);" onClick="$savePartTemplateUrl">$savePagePartTemplateHTML</div>
 <hr id="componentInTreeMenuTopSeparator"/>
 <div class="igmenuitems" onMouseover="javascript:highlightie5(event);" onMouseout="javascript:lowlightie5(event);" onClick="javascript:showComponent();">Properties</div>
 <hr id="emptySlotMenuMiddleSeparator">
