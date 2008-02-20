@@ -609,6 +609,9 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 			
 			logger.info("propertyName:" + propertyName);
 			logger.info("propertyValue:" + propertyValue);
+			String separator = System.getProperty("line.separator");
+			propertyValue = propertyValue.replaceAll(separator, "igbr");
+
 			if(propertyValue != null && !propertyValue.equals("") && !propertyValue.equalsIgnoreCase("undefined"))
 			{
 				String componentPropertyXPath = "//component[@id=" + this.componentId + "]/properties/property[@name='" + propertyName + "']";
