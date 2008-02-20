@@ -247,7 +247,15 @@ public class InfoGlueAuthenticationFilter implements Filter
 					setUserProperties(session, user);
 				}
 				
-				NotificationMessage notificationMessage = new NotificationMessage("Login success:", "Authentication", userName, NotificationMessage.AUTHENTICATION_SUCCESS, "" + authenticatedUserName, "name");
+				String logUserName = userName;
+				if(logUserName == null || logUserName.equals("") && user != null)
+					logUserName = user.getName();
+				if(logUserName == null || logUserName.equals(""))
+					logUserName = authenticatedUserName;
+				if(logUserName == null || logUserName.equals(""))
+					logUserName = "Unknown";
+				
+				NotificationMessage notificationMessage = new NotificationMessage("Login success:", "Authentication", logUserName, NotificationMessage.AUTHENTICATION_SUCCESS, "" + authenticatedUserName, "name");
 				TransactionHistoryController.getController().create(notificationMessage);
 
 			    if(successLoginBaseUrl != null && !URL.startsWith(successLoginBaseUrl))
