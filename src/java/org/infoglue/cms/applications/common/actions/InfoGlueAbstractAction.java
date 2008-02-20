@@ -357,6 +357,21 @@ public abstract class InfoGlueAbstractAction extends WebworkAbstractAction
 		}
 	}
 
+	public static InfoGluePrincipal getSessionInfoGluePrincipal()
+	{
+		InfoGluePrincipal infoGluePrincipal = null;
+		try
+		{
+			infoGluePrincipal = (InfoGluePrincipal)ActionContext.getRequest().getSession().getAttribute("org.infoglue.cms.security.user");
+		}
+		catch (Exception e) 
+		{
+			logger.error("Problem getting principal from session:" + e.getMessage());
+		}
+		
+		return infoGluePrincipal;
+	}
+
 	public final Integer getUploadMaxSize()
 	{
 		Integer maxSize = new Integer(Integer.MAX_VALUE);

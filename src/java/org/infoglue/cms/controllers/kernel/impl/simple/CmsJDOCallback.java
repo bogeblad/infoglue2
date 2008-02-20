@@ -27,6 +27,7 @@ import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.CacheManager;
 import org.exolab.castor.jdo.Database;
 import org.exolab.castor.persist.spi.CallbackInterceptor;
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.entities.content.Content;
 import org.infoglue.cms.entities.content.ContentVersion;
 import org.infoglue.cms.entities.content.impl.simple.ContentImpl;
@@ -65,6 +66,7 @@ import org.infoglue.cms.entities.structure.impl.simple.SiteNodeVersionImpl;
 import org.infoglue.cms.entities.structure.impl.simple.SmallSiteNodeVersionImpl;
 import org.infoglue.cms.entities.workflow.impl.simple.WorkflowDefinitionImpl;
 import org.infoglue.cms.exception.Bug;
+import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.ChangeNotificationController;
 import org.infoglue.cms.util.NotificationMessage;
 import org.infoglue.cms.util.RemoteCacheUpdater;
@@ -109,6 +111,10 @@ public class CmsJDOCallback implements CallbackInterceptor
 	    	logger.info("Actually stored it:" + object + ":" + modified);
     	    
 			String userName = "SYSTEM";
+			InfoGluePrincipal principal = InfoGlueAbstractAction.getSessionInfoGluePrincipal();
+			if(principal != null && principal.getName() != null)
+				userName = principal.getName();
+			
 			NotificationMessage notificationMessage = new NotificationMessage("CmsJDOCallback", object.getClass().getName(), userName, NotificationMessage.TRANS_UPDATE, getObjectIdentity(object), object.toString());
 			ChangeNotificationController.getInstance().addNotificationMessage(notificationMessage);
 			if(object.getClass().getName().indexOf("org.infoglue.cms.entities.management") > -1 && !object.getClass().getName().equals(RegistryImpl.class.getName()))
@@ -267,6 +273,10 @@ public class CmsJDOCallback implements CallbackInterceptor
     	if (TransactionHistoryImpl.class.getName().indexOf(object.getClass().getName()) == -1 && RegistryImpl.class.getName().indexOf(object.getClass().getName()) == -1)
 	    {
     	    String userName = "SYSTEM";
+			InfoGluePrincipal principal = InfoGlueAbstractAction.getSessionInfoGluePrincipal();
+			if(principal != null && principal.getName() != null)
+				userName = principal.getName();
+
     	    NotificationMessage notificationMessage = new NotificationMessage("CMSJDOCallback", object.getClass().getName(), userName, NotificationMessage.TRANS_CREATE, getObjectIdentity(object), object.toString());
     	    ChangeNotificationController.getInstance().addNotificationMessage(notificationMessage);
 			if(object.getClass().getName().indexOf("org.infoglue.cms.entities.management") > -1 && !object.getClass().getName().equals(RegistryImpl.class.getName()))
@@ -390,6 +400,10 @@ public class CmsJDOCallback implements CallbackInterceptor
        	if (TransactionHistoryImpl.class.getName().indexOf(object.getClass().getName()) == -1 && RegistryImpl.class.getName().indexOf(object.getClass().getName()) == -1)
 	    {
        	    String userName = "SYSTEM";
+			InfoGluePrincipal principal = InfoGlueAbstractAction.getSessionInfoGluePrincipal();
+			if(principal != null && principal.getName() != null)
+				userName = principal.getName();
+
 		    NotificationMessage notificationMessage = new NotificationMessage("CMSJDOCallback", object.getClass().getName(), userName, NotificationMessage.TRANS_DELETE, getObjectIdentity(object), object.toString());
 		    ChangeNotificationController.getInstance().addNotificationMessage(notificationMessage);
 			if(object.getClass().getName().indexOf("org.infoglue.cms.entities.management") > -1 && !object.getClass().getName().equals(RegistryImpl.class.getName()))
@@ -524,6 +538,10 @@ public class CmsJDOCallback implements CallbackInterceptor
 	    {
 	        logger.info("Actually releasing it:" + object + ":" + committed);
     		String userName = "SYSTEM";
+    		InfoGluePrincipal principal = InfoGlueAbstractAction.getSessionInfoGluePrincipal();
+			if(principal != null && principal.getName() != null)
+				userName = principal.getName();
+
 	    	NotificationMessage notificationMessage = new NotificationMessage("CmsJDOCallback", object.getClass().getName(), userName, NotificationMessage.TRANS_UPDATE, getObjectIdentity(object), object.toString());
 	    	ChangeNotificationController.getInstance().addNotificationMessage(notificationMessage);
 	    }
@@ -546,6 +564,10 @@ public class CmsJDOCallback implements CallbackInterceptor
      	if (TransactionHistoryImpl.class.getName().indexOf(object.getClass().getName()) == -1)
 	    {
 	    	String userName = "Fix later";
+			InfoGluePrincipal principal = InfoGlueAbstractAction.getSessionInfoGluePrincipal();
+			if(principal != null && principal.getName() != null)
+				userName = principal.getName();
+
 	    	NotificationMessage notificationMessage = new NotificationMessage("CMSJDOCallback:" + object.getClass().getName(), object.getClass().getName(), userName, CmsSystem.TRANS_UPDATE, getEntityId(object), object.toString());
 	    	ChangeNotificationController.getInstance().addNotificationMessage(notificationMessage);
 	    }
