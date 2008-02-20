@@ -24,6 +24,7 @@
 
 package org.infoglue.deliver.applications.actions;
 
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -42,6 +43,7 @@ import org.infoglue.cms.controllers.kernel.impl.simple.UserControllerProxy;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.deliver.applications.databeans.CacheEvictionBean;
+import org.infoglue.deliver.controllers.kernel.impl.simple.ExtranetController;
 import org.infoglue.deliver.controllers.kernel.impl.simple.PageEditorHelper;
 import org.infoglue.deliver.util.CacheController;
 import org.infoglue.deliver.util.RequestAnalyser;
@@ -95,7 +97,9 @@ public class AjaxComponentDeliveryServiceAction extends InfoGlueAbstractAction
        	 	System.out.println("cmsUserName:" + cmsUserName);
         	if(cmsUserName != null)
        	 		principal = UserControllerProxy.getController(db).getUser(cmsUserName);
-
+        	else
+        		principal = (InfoGluePrincipal)this.getAnonymousPrincipal();
+        	
        	 	System.out.println("cmsUserName:" + cmsUserName);
         	Locale locale = this.getLocale();
         	if(languageId != null)
@@ -157,12 +161,14 @@ public class AjaxComponentDeliveryServiceAction extends InfoGlueAbstractAction
     	{
     		beginTransaction(db);
     	
-        	InfoGluePrincipal principal = this.getInfoGluePrincipal();
+    		InfoGluePrincipal principal = this.getInfoGluePrincipal();
         	String cmsUserName = (String)this.getHttpSession().getAttribute("cmsUserName");
        	 	System.out.println("cmsUserName:" + cmsUserName);
         	if(cmsUserName != null)
        	 		principal = UserControllerProxy.getController(db).getUser(cmsUserName);
-
+        	else
+        		principal = (InfoGluePrincipal)this.getAnonymousPrincipal();
+        	
        	 	System.out.println("cmsUserName:" + cmsUserName);
         	Locale locale = this.getLocale();
         	if(languageId != null)
