@@ -50,6 +50,11 @@ import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
+import org.infoglue.cms.util.XMLHelper;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 import webwork.action.Action;
 import webwork.action.ActionContext;
@@ -71,6 +76,7 @@ public class CreatePageTemplateAction extends InfoGlueAbstractAction implements 
 	
 	private Integer parentContentId;
 	private Integer repositoryId;
+	private Integer componentId;
 	private ConstraintExceptionBuffer ceb;
 
 	private Integer siteNodeId;
@@ -95,6 +101,9 @@ public class CreatePageTemplateAction extends InfoGlueAbstractAction implements 
         logger.info("name:" + name);
         
         ContentTypeDefinitionVO contentTypeDefinitionVO = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithName("PageTemplate");
+        if(componentId != null)
+            contentTypeDefinitionVO = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithName("PagePartTemplate");
+
         if(contentTypeDefinitionVO == null)
             throw new SystemException("The system does not have the content type named 'PageTemplate' which is required for this operation.");
         
@@ -119,7 +128,25 @@ public class CreatePageTemplateAction extends InfoGlueAbstractAction implements 
 		
 	    componentStructure = ContentVersionController.getContentVersionController().getAttributeValue(originalContentVersionVO.getId(), "ComponentStructure", false);
 	    logger.info("componentStructure:" + componentStructure);
-		
+		if(componentId != null)
+		{
+			logger.info("We should strip all but componentId:" + componentId);
+			Document document = XMLHelper.readDocumentFromByteArray(componentStructure.getBytes("UTF-8"));
+			String componentXPath = "//component[@id=" + componentId + "]";
+
+			Node node = org.apache.xpath.XPathAPI.selectSingleNode(document.getDocumentElement(), componentXPath);
+			if(node != null)
+			{
+				Element component = (Element)node;
+				component.setAttribute("pagePartTemplateContentId", "-1");
+				component.setAttribute("isInherited", "true");
+					
+				String modifiedXML = XMLHelper.serializeDom(component, new StringBuffer()).toString(); 
+				logger.info("modifiedXML:" + modifiedXML);
+				componentStructure = "<?xml version='1.0' encoding='UTF-8'?><components>" + modifiedXML + "</components>";
+			}
+		}
+	    
 		//Create initial content version also... in masterlanguage
 		String versionValue = "<?xml version='1.0' encoding='UTF-8'?><article xmlns=\"x-schema:ArticleSchema.xml\"><attributes><Name><![CDATA[" + this.name + "]]></Name><ComponentStructure><![CDATA[" + componentStructure + "]]></ComponentStructure></attributes></article>";
 	
@@ -311,4 +338,14 @@ public class CreatePageTemplateAction extends InfoGlueAbstractAction implements 
     {
         this.name = name;
     }
+
+	public Integer getComponentId()
+	{
+		return componentId;
+	}
+
+	public void setComponentId(Integer componentId)
+	{
+		this.componentId = componentId;
+	}
 }
