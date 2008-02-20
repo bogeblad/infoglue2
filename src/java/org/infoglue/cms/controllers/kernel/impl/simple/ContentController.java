@@ -812,9 +812,14 @@ public class ContentController extends BaseController
 		arguments.put("method", "selectListOnContentTypeName");
 
 		List argumentList = new ArrayList();
-		HashMap argument = new HashMap();
-		argument.put("contentTypeDefinitionName", contentTypeDefinitionName);
-		argumentList.add(argument);
+		String[] names = contentTypeDefinitionName.split(",");
+		for(int i = 0; i < names.length; i++)
+		{
+			HashMap argument = new HashMap();
+			argument.put("contentTypeDefinitionName", names[i]);
+			argumentList.add(argument);
+		}
+		
 		arguments.put("arguments", argumentList);
         try 
 		{
@@ -1721,6 +1726,19 @@ public class ContentController extends BaseController
 	    ContentVO contentVO = ContentController.getContentController().getContentVOWithId(contentId);
 		
 		ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentVO.getId(), languageId);
+
+		attribute = ContentVersionController.getContentVersionController().getAttributeValue(contentVersionVO, attributeName, false);
+		
+		return attribute;
+	}	
+
+	public String getContentAttribute(Database db, Integer contentId, Integer languageId, String attributeName) throws Exception
+	{
+	    String attribute = "Undefined";
+	    
+	    ContentVO contentVO = ContentController.getContentController().getContentVOWithId(contentId, db);
+		
+		ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentVO.getId(), languageId, db);
 
 		attribute = ContentVersionController.getContentVersionController().getAttributeValue(contentVersionVO, attributeName, false);
 		
