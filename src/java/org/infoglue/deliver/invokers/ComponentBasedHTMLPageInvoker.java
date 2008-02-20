@@ -444,7 +444,9 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 			//component.setName(name);
 			component.setSlotName(name);
 			component.setParentComponent(parentComponent);
-			
+			if(parentComponent != null)
+				component.setIsInherited(parentComponent.getIsInherited());
+				
 			//Change to this later
 			//getComponentProperties(child, component, locale, templateController);
 			//System.out.println("componentXPath - B:" + componentXPath);
@@ -668,7 +670,8 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 			//component.setName(name);
 			component.setSlotName(name);
 			component.setParentComponent(parentComponent);
-			////logger.info("Name:" + name);
+			if(parentComponent != null)
+				component.setIsInherited(parentComponent.getIsInherited());
 
 			//Change to this later
 			//getComponentProperties(child, component, locale, templateController);
@@ -1335,6 +1338,9 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 					component.setParentComponent(parentComponent);
 					if(isInherited != null && isInherited.equals("true"))
 						component.setIsInherited(true);
+					else if(parentComponent != null)
+						component.setIsInherited(parentComponent.getIsInherited());
+
 					if(pagePartTemplateContentId != null && !pagePartTemplateContentId.equals("") && !pagePartTemplateContentId.equals("-1"))
 					{
 						Integer pptContentId = new Integer(pagePartTemplateContentId);
@@ -1346,7 +1352,8 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 						partTemplateReferenceComponent.setName(pptContentIdContentVO.getName());
 						partTemplateReferenceComponent.setSlotName(name);
 						partTemplateReferenceComponent.setParentComponent(parentComponent);
-
+						partTemplateReferenceComponent.setIsInherited(true);
+						
 						component.setPagePartTemplateContentId(pptContentId);
 						component.setPagePartTemplateComponent(partTemplateReferenceComponent);
 					}
