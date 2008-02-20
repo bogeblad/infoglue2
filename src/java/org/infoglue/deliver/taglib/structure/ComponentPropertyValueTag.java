@@ -23,6 +23,9 @@
 
 package org.infoglue.deliver.taglib.structure;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 import javax.servlet.jsp.JspException;
 
 import org.infoglue.deliver.taglib.component.ComponentLogicTag;
@@ -37,7 +40,8 @@ public class ComponentPropertyValueTag extends ComponentLogicTag
 	private boolean useInheritance = true;
 	private boolean useRepositoryInheritance = true;
     private boolean useStructureInheritance = true;
-
+    private boolean parseToMap = false;
+    
     public ComponentPropertyValueTag()
     {
         super();
@@ -47,21 +51,43 @@ public class ComponentPropertyValueTag extends ComponentLogicTag
     {
 	    try
 	    {
+	    	String propertyValue = null;
+	    	
 	        if(siteNodeId == null)
 	        {
-		        String propertyValue = getComponentLogic().getPropertyValue(propertyName, useLanguageFallback, useInheritance, useRepositoryInheritance, useStructureInheritance);
-		        setResultAttribute(propertyValue);
+		        propertyValue = getComponentLogic().getPropertyValue(propertyName, useLanguageFallback, useInheritance, useRepositoryInheritance, useStructureInheritance);
 	        }
 	        else
 	        {
-		        String propertyValue = getComponentLogic().getPropertyValue(siteNodeId, propertyName, useLanguageFallback, useInheritance);
-		        setResultAttribute(propertyValue);
+		        propertyValue = getComponentLogic().getPropertyValue(siteNodeId, propertyName, useLanguageFallback, useInheritance);
+	        }
+
+	        if(parseToMap)
+	        {
+	        	Map orderedMap = new LinkedHashMap(); 
+	        	String separator = System.getProperty("line.separator");
+	        	String[] lines = propertyValue.split(separator);
+	        	for(int i=0; i<lines.length; i++)
+	        	{
+	        		String line = lines[i];
+	        		String[] nameValue = line.split("=");
+	        		if(nameValue.length == 2)
+	        			orderedMap.put(nameValue[0], nameValue[1]);
+	        	}
+
+	        	setResultAttribute(orderedMap);	        	
+	        }
+	        else
+	        {
+	        	setResultAttribute(propertyValue);
 	        }
 	    }
 	    catch(Exception e)
 	    {
 	        e.printStackTrace();
 	    }
+	    
+	    parseToMap = false;
 	    
 		return EVAL_PAGE;
     }
@@ -89,6 +115,11 @@ public class ComponentPropertyValueTag extends ComponentLogicTag
     public void setUseStructureInheritance(boolean useStructureInheritance)
     {
         this.useStructureInheritance = useStructureInheritance;
+    }
+
+    public void setParseToMap(boolean parseToMap)
+    {
+        this.parseToMap = parseToMap;
     }
 
 }
