@@ -10,6 +10,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
@@ -314,7 +315,7 @@ public class PageEditorHelper
 
 				sb.append("	</div>");
 				sb.append("	" + helpSB + "");
-				
+
 				if(hasAccessToProperty)
 				    propertyIndex++;
 			}
@@ -325,22 +326,22 @@ public class PageEditorHelper
 				helpSB.append("" + (componentProperty.getDescription() == null || componentProperty.getDescription().equalsIgnoreCase("") ? "No description" : componentProperty.getDescription()) + "");
 				helpSB.append("</div>");
 
-				sb.append("		<tr class=\"igtr\">");
-				sb.append("			<td class=\"igpropertylabel\" valign=\"top\" align=\"left\">" + componentProperty.getName() + "</td>");
-				sb.append("			<td class=\"igtd\" width=\"16\"><img src=\"" + componentEditorUrl + "/images/questionMarkGrad.gif\" onMouseOver=\"showDiv('helpLayer" + componentProperty.getComponentId() + "_" + componentProperty.getName() + "');\" onMouseOut=\"javascript:hideDiv('helpLayer" + componentProperty.getComponentId() + "_" + componentProperty.getName() + "');\">" + helpSB + "</td>");
+				sb.append("	<div class=\"propertyRow\">");
+				sb.append("		<label for=\"" + componentProperty.getName() + "\" onMouseOver=\"showDiv('helpLayer" + componentProperty.getComponentId() + "_" + componentProperty.getName() + "');\" onMouseOut=\"javascript:hideDiv('helpLayer" + componentProperty.getComponentId() + "_" + componentProperty.getName() + "');\">" + componentProperty.getName() + "</label>");
 				
 				if(hasAccessToProperty)
-					sb.append("			<td class=\"igpropertyvalue\" align=\"left\"><input type=\"hidden\" name=\"" + propertyIndex + "_propertyName\" value=\"" + componentProperty.getName() + "\"><textarea class=\"propertytextarea\" name=\"" + componentProperty.getName() + "\" onkeydown=\"setDirty();\">" + (componentProperty.getValue() == null ? "" : componentProperty.getValue()) + "</textarea></td>");
+				{
+					sb.append("	<input type=\"hidden\" name=\"" + propertyIndex + "_propertyName\" value=\"" + componentProperty.getName() + "\"/>");
+					sb.append("	<textarea class=\"propertytextarea\" name=\"" + componentProperty.getName() + "\" onkeydown=\"setDirty();\">" + (componentProperty.getValue() == null ? "" : componentProperty.getValue()) + "</textarea>");
+				}
 				else
-					sb.append("			<td class=\"igpropertyvalue\" align=\"left\">" + componentProperty.getValue() + "</td>");
+					sb.append("	" + componentProperty.getValue() + "");
 	
 				if(hasAccessToProperty)
-					sb.append("			<td class=\"igtd\" width=\"16\"><a class=\"componentEditorLink\" href=\"" + componentEditorUrl + "ViewSiteNodePageComponents!deleteComponentPropertyValue.action?siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&propertyName=" + componentProperty.getName() + "&showSimple=" + showSimple + "\"><img src=\"" + componentEditorUrl + "/images/delete.gif\" border=\"0\"></a></td>");
-				else
-					sb.append("			<td class=\"igtd\" width=\"16\"></td>");
+					sb.append("	<a class=\"componentEditorLink\" href=\"" + componentEditorUrl + "ViewSiteNodePageComponents!deleteComponentPropertyValue.action?siteNodeId=" + siteNodeId + "&amp;languageId=" + languageId + "&amp;contentId=" + contentId + "&amp;componentId=" + componentId + "&amp;propertyName=" + componentProperty.getName() + "&amp;showSimple=" + showSimple + "\"><img src=\"" + componentEditorUrl + "/images/delete.gif\" border=\"0\"/></a>");
 				
-				sb.append("			<!--<td>&nbsp;</td>-->");
-				sb.append("		</tr>");
+				sb.append("	</div>");
+				sb.append("	" + helpSB + "");
 				
 				if(hasAccessToProperty)
 				    propertyIndex++;
@@ -1309,6 +1310,9 @@ public class PageEditorHelper
 				path = property.attributeValue("path_" + locale.getLanguage());
 
 			value = path;
+		
+			String separator = System.getProperty("line.separator");
+			value = value.replaceAll("igbr", separator);
 		}
 		
 		return value;
