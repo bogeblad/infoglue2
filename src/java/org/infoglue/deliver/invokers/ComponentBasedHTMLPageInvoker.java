@@ -96,11 +96,11 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 		int isPagePartReferenceIndex = componentXML.indexOf("isPagePartReference");
 		while(isPagePartReferenceIndex > -1)
 		{
-			System.out.println("isPagePartReferenceIndex:" + isPagePartReferenceIndex);
+			//System.out.println("isPagePartReferenceIndex:" + isPagePartReferenceIndex);
 			int tagStartIndex = componentXML.lastIndexOf("<component ", isPagePartReferenceIndex);
 			int tagEndIndex = componentXML.indexOf(">", isPagePartReferenceIndex);
 			String componentString = componentXML.substring(tagStartIndex, tagEndIndex);
-			System.out.println("componentString:" + componentString);
+			//System.out.println("componentString:" + componentString);
 			
 			int contentIdIndex = componentString.indexOf(" contentId=");
 			String contentId = componentString.substring(contentIdIndex + 12, componentString.indexOf("\"", contentIdIndex + 12));
@@ -132,20 +132,20 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 			ContentTypeDefinitionVO contentTypeDefinitionVO = ContentDeliveryController.getContentDeliveryController().getContentTypeDefinitionVO(getDatabase(), contentId);
 		    if(contentTypeDefinitionVO != null && contentTypeDefinitionVO.getName().equals("PagePartTemplate"))
 		    {
-		    	System.out.println("This was a pagePart reference..");
+		    	//System.out.println("This was a pagePart reference..");
 		    	String pagePartString = this.getTemplateController().getContentAttribute(contentId, "ComponentStructure", true);
 		    	pagePartString = pagePartString.replaceFirst(" id=\".*?\"", " id=\"" + id + "\"");
 		    	pagePartString = pagePartString.replaceFirst(" name=\".*?\"", " name=\"" + name + "\"");
 		    	pagePartString = pagePartString.replaceFirst(" pagePartTemplateContentId=\".*?\"", " pagePartTemplateContentId=\"" + contentId + "\"");
-		    	System.out.println("Bytte id och namn: " + pagePartString);
+		    	//System.out.println("Bytte id och namn: " + pagePartString);
 		    	
 		    	pagePartString = pagePartString.substring(pagePartString.indexOf("<component "));
 		    	pagePartString = pagePartString.substring(0, pagePartString.lastIndexOf("</components>"));
 		    	
-		    	System.out.println("componentXML: " + componentXML);
-		    	System.out.println("contentId" + contentId);
+		    	//System.out.println("componentXML: " + componentXML);
+		    	//System.out.println("contentId" + contentId);
 		    	String newComponentXML = componentXML.replaceAll("<component contentId=\"" + contentId + ".*?</component>", "" + pagePartString);
-		    	System.out.println("newComponentXML: " + newComponentXML);
+		    	//System.out.println("newComponentXML: " + newComponentXML);
 		    	resultComponentXML = newComponentXML;
 		    }
 		}
@@ -431,9 +431,9 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 			Integer contentId 	= new Integer(child.attributeValue("contentId"));
 			String name 	  	= child.attributeValue("name");
 			
-			System.out.println("id 2:" + id);
-			System.out.println("contentId 2:" + contentId);
-			System.out.println("name 2:" + name);
+			//System.out.println("id 2:" + id);
+			//System.out.println("contentId 2:" + contentId);
+			//System.out.println("name 2:" + name);
 			
 			ContentVO contentVO = ContentDeliveryController.getContentDeliveryController().getContentVO(contentId, db);
 			
@@ -1025,9 +1025,9 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
    
 	protected List getInheritedComponents(Database db, TemplateController templateController, InfoGlueComponent component, Integer siteNodeId, String id, boolean inherit) throws Exception
 	{
-	    System.out.println("slotId:" + id);
-	    System.out.println("component:" + component);
-	    System.out.println("getInheritedComponents with " + component.getName() + ":" + component.getSlotName() + ":" + component.getId());
+		//System.out.println("slotId:" + id);
+		//System.out.println("component:" + component);
+		//System.out.println("getInheritedComponents with " + component.getName() + ":" + component.getSlotName() + ":" + component.getId());
 		List inheritedComponents = new ArrayList();
 		
 		NodeDeliveryController nodeDeliveryController = NodeDeliveryController.getNodeDeliveryController(templateController.getSiteNodeId(), templateController.getLanguageId(), templateController.getContentId());
@@ -1313,11 +1313,11 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 				String isInherited 					= componentElement.attributeValue("isInherited");
 				String pagePartTemplateContentId 	= componentElement.attributeValue("pagePartTemplateContentId");
 				
-				System.out.println("id 1: " + id);
-				System.out.println("contentId 1:" + contentId);
-				System.out.println("name 1: " + name);
-				System.out.println("isInherited 1: " + isInherited);
-				System.out.println("pagePartTemplateContentId 1: " + pagePartTemplateContentId);
+				//System.out.println("id 1: " + id);
+				//System.out.println("contentId 1:" + contentId);
+				//System.out.println("name 1: " + name);
+				//System.out.println("isInherited 1: " + isInherited);
+				//System.out.println("pagePartTemplateContentId 1: " + pagePartTemplateContentId);
 				
 				try
 				{
