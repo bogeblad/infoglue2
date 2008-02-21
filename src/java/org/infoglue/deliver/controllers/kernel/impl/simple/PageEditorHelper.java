@@ -1,3 +1,26 @@
+/* ===============================================================================
+ *
+ * Part of the InfoGlue Content Management Platform (www.infoglue.org)
+ *
+ * ===============================================================================
+ *
+ *  Copyright (C)
+ * 
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License version 2, as published by the
+ * Free Software Foundation. See the file LICENSE.html for more information.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY, including the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License along with
+ * this program; if not, write to the Free Software Foundation, Inc. / 59 Temple
+ * Place, Suite 330 / Boston, MA 02111-1307 / USA.
+ *
+ * ===============================================================================
+ */ 
+
 package org.infoglue.deliver.controllers.kernel.impl.simple;
 
 import java.io.PrintWriter;
@@ -45,10 +68,14 @@ import org.infoglue.deliver.applications.databeans.ComponentBinding;
 import org.infoglue.deliver.applications.databeans.ComponentProperty;
 import org.infoglue.deliver.applications.databeans.ComponentPropertyOption;
 import org.infoglue.deliver.applications.databeans.Slot;
-import org.infoglue.deliver.invokers.DecoratedComponentBasedHTMLPageInvoker;
 import org.infoglue.deliver.util.CacheController;
 import org.infoglue.deliver.util.Timer;
-import org.infoglue.deliver.util.VelocityTemplateProcessor;
+
+/**
+ * This class is the new Helper class for generating all kind of PageEditor-divs etc.
+ *
+ * @author Mattias Bogeblad
+ */
 
 public class PageEditorHelper
 {
@@ -96,7 +123,6 @@ public class PageEditorHelper
 
 		sb.append("<div id=\"component" + componentId + "Properties\" class=\"componentProperties\">");
 		sb.append("	<div id=\"component" + componentId + "PropertiesHandle\" class=\"componentPropertiesHandle\"><div id=\"leftPaletteHandleCompProps\">Properties - " + componentName + " - " + slotName + "</div><div id=\"rightPaletteHandle\"><a href=\"javascript:closeDiv('componentProperties');\" class=\"white\"><img src=\"" + componentEditorUrl + "/images/closeIcon.gif\" border=\"0\"/></a></div></div>");
-		//sb.append("	<div id=\"component" + componentId + "PropertiesBody\" class=\"componentPropertiesBody\">");
 		sb.append("	<div id=\"component" + componentId + "PropertiesBody\" class=\"componentPropertiesBody\">");
 		
 		sb.append("	<form id=\"componentPropertiesForm\" name=\"component" + componentId + "PropertiesForm\" action=\"" + componentEditorUrl + "ViewSiteNodePageComponents!updateComponentProperties.action\" method=\"POST\">");
@@ -438,6 +464,7 @@ public class PageEditorHelper
 			}
 		}
 		
+		sb.append("		<div style=\"clear:both;\"></div>");
 		sb.append("		<div class=\"buttonRow\">");
 		sb.append("			<input type=\"image\" style=\"width: 50px; height: 25px;\" src=\"" + componentEditorUrl + "" + getLocalizedString(locale, "images.contenttool.buttons.save") + "\" width=\"50\" height=\"25\" border=\"0\"/>");
 		sb.append("			<a href=\"javascript:clearComponentPropertiesInDiv('" + targetDiv + "');\"><img src=\"" + componentEditorUrl + "" + getLocalizedString(locale, "images.contenttool.buttons.close") + "\" width=\"50\" height=\"25\" border=\"0\"/></a>");
