@@ -836,6 +836,11 @@ public class CmsPropertyHandler
 		return getServerNodeProperty("showComponentsFirst", true, "true");
 	}
 	
+	public static String getDecoratedPageInvoker()
+	{
+		return getServerNodeProperty("decoratedPageInvoker", true, "simple");
+	}
+
 	public static String getShowAllWorkflows()
 	{
 		return getServerNodeProperty("showAllWorkflows", true, "true");

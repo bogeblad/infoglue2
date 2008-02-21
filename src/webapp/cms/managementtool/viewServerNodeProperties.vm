@@ -464,6 +464,7 @@
 			#yesNoDropDownWithInheritCSS("ServerNode.property.disableTemplateDebug" "disableTemplateDebug" "$this.getPropertyValue('disableTemplateDebug')")
 			#editPropertyFieldCSS("ServerNode.property.exportFormat" "exportFormat" "$this.getPropertyValue('exportFormat')" "51" "$!serverNodeId")
 			#editPropertyFieldCSS("ServerNode.property.digitalAssetUploadPath" "digitalAssetUploadPath" "$this.getPropertyValue('digitalAssetUploadPath')" "51" "$!serverNodeId")
+			#editPropertyFieldCSS("ServerNode.property.decoratedPageInvoker" "decoratedPageInvoker" "$this.getPropertyValue('decoratedPageInvoker')" "51" "$!serverNodeId")
 			
 			<div class="buttonRow">
 				<input type="image" src="$ui.getString("images.managementtool.buttons.save")" width="50" height="25" style="width: 50px;">
