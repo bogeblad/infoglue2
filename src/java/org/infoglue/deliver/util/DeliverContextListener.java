@@ -31,14 +31,11 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
-import org.apache.log4j.Appender;
-import org.apache.log4j.Category;
 import org.apache.log4j.Logger;
 import org.apache.log4j.RollingFileAppender;
 import org.infoglue.cms.security.InfoGlueAuthenticationFilter;
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.deliver.invokers.ComponentBasedHTMLPageInvoker;
-import org.infoglue.deliver.invokers.DecoratedComponentBasedHTMLPageInvoker;
 
 import com.opensymphony.oscache.base.OSCacheUtility;
 

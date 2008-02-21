@@ -1,0 +1,9 @@
+<script type="text/javascript">
+	var componentEditorUrl = "${componentEditorUrl}";
+	var currentUrl = "${currentUrl}";
+</script>
+<script type="text/javascript" src="${contextName}/script/dom-drag.js"></script>
+<script type="text/javascript" src="${contextName}/script/ajaxComponentEditor.js"></script>
+<link rel="stylesheet" type="text/css" href="${contextName}/css/ajaxComponentEditor.css" />
+
+</head>

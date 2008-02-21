@@ -95,13 +95,13 @@ public abstract class PageInvoker
 		this.templateController.setDeliveryContext(this.deliveryContext);
 	}
 	*/
-	
+
 	/**
 	 * This method should return an instance of the class that should be used for page editing inside the tools or in working. 
 	 * Makes it possible to have an alternative to the ordinary delivery optimized class.
 	 */
 	
-	public abstract PageInvoker getDecoratedPageInvoker() throws SystemException;
+	public abstract PageInvoker getDecoratedPageInvoker(TemplateController templateController) throws SystemException;
 	
 	/**
 	 * The default initializer for PageInvokers. 

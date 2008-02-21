@@ -32,6 +32,7 @@ import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.exception.NoBaseTemplateFoundException;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.deliver.controllers.kernel.impl.simple.NodeDeliveryController;
+import org.infoglue.deliver.controllers.kernel.impl.simple.TemplateController;
 import org.infoglue.deliver.util.VelocityTemplateProcessor;
 
 /**
@@ -50,7 +51,7 @@ public class HTMLPageInvoker extends PageInvoker
 	 * Makes it possible to have an alternative to the ordinary delivery optimized class.
 	 */
 	
-	public PageInvoker getDecoratedPageInvoker() throws SystemException
+	public PageInvoker getDecoratedPageInvoker(TemplateController templateController) throws SystemException
 	{
 	    return this;
 	}

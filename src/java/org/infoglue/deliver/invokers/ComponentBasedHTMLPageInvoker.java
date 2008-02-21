@@ -60,6 +60,7 @@ import org.infoglue.deliver.controllers.kernel.impl.simple.InfoGlueHashSet;
 import org.infoglue.deliver.controllers.kernel.impl.simple.IntegrationDeliveryController;
 import org.infoglue.deliver.controllers.kernel.impl.simple.LanguageDeliveryController;
 import org.infoglue.deliver.controllers.kernel.impl.simple.NodeDeliveryController;
+import org.infoglue.deliver.controllers.kernel.impl.simple.RepositoryDeliveryController;
 import org.infoglue.deliver.controllers.kernel.impl.simple.TemplateController;
 import org.infoglue.deliver.util.CacheController;
 import org.infoglue.deliver.util.NullObject;
@@ -77,16 +78,33 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 	private final static DOMBuilder domBuilder = new DOMBuilder();
 
     private final static Logger logger = Logger.getLogger(ComponentBasedHTMLPageInvoker.class.getName());
-
+    
    /**
 	 * This method should return an instance of the class that should be used for page editing inside the tools or in working. 
 	 * Makes it possible to have an alternative to the ordinary delivery optimized class.
 	 */
 	
-    public PageInvoker getDecoratedPageInvoker() throws SystemException
+    public PageInvoker getDecoratedPageInvoker(TemplateController templateController) throws SystemException
 	{
-	    return new DecoratedComponentBasedHTMLPageInvoker();
-	}
+    	String repositoryDecoratedPageInvoker = RepositoryDeliveryController.getRepositoryDeliveryController().getExtraPropertyValue(templateController.getSiteNode().getRepositoryId(), "decoratedPageInvoker");
+    	//System.out.println("repositoryDecoratedPageInvoker:" + repositoryDecoratedPageInvoker);
+    	if(repositoryDecoratedPageInvoker != null && !repositoryDecoratedPageInvoker.equals(""))
+    	{
+    		if(repositoryDecoratedPageInvoker != null && repositoryDecoratedPageInvoker.equalsIgnoreCase("ajax"))
+	    		return new AjaxDecoratedComponentBasedHTMLPageInvoker();
+	    	else
+	    		return new DecoratedComponentBasedHTMLPageInvoker();
+    	}
+    	else
+    	{
+	    	String decoratedPageInvoker = CmsPropertyHandler.getDecoratedPageInvoker();
+	    	//System.out.println("decoratedPageInvoker:" + decoratedPageInvoker);
+	    	if(decoratedPageInvoker != null && decoratedPageInvoker.equalsIgnoreCase("ajax"))
+	    		return new AjaxDecoratedComponentBasedHTMLPageInvoker();
+	    	else
+	    		return new DecoratedComponentBasedHTMLPageInvoker();
+    	}
+    }
 
     protected String appendPagePartTemplates(String componentXML) throws Exception
     {
