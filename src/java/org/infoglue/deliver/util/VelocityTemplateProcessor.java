@@ -83,11 +83,10 @@ public class VelocityTemplateProcessor
 		try
 		{
 		    Timer timer = new Timer();
-		    timer.setActive(false);
 			
 		    if(!forceVelocity && (templateAsString.indexOf("<%") > -1 || templateAsString.indexOf("http://java.sun.com/products/jsp/dtd/jspcore_1_0.dtd") > -1))
 		    {
-		    	dispatchJSP(params, pw, templateAsString);
+		    	dispatchJSP(params, pw, templateAsString, component);
 		    }
 		    else
 		    {
@@ -113,6 +112,9 @@ public class VelocityTemplateProcessor
 			        }
 			        
 			        Reader reader = new StringReader(templateAsString);
+			        if(logger.isInfoEnabled())
+			        	logger.info("Going to evaluate the string of length:" + templateAsString.length());
+			        
 			        boolean finished = Velocity.evaluate(context, pw, "Generator Error", reader);        
 		        }
 		    }
@@ -123,7 +125,8 @@ public class VelocityTemplateProcessor
 		    //System.out.println("componentName:" + componentName);
 		    
 		    RequestAnalyser.getRequestAnalyser().registerComponentStatistics(componentName, timer.getElapsedTime());
-		    timer.printElapsedTime("End renderTemplate");
+	        if(logger.isInfoEnabled())
+	        	logger.info("Rendering took:" + timer.getElapsedTime());
 		}
 		catch(Exception e)
 		{
@@ -153,7 +156,46 @@ public class VelocityTemplateProcessor
 	 * @throws ServletException
 	 * @throws IOException
 	 */
+	public void dispatchJSP(final Map params, final PrintWriter pw, final String templateAsString, final InfoGlueComponent component) throws ServletException, IOException, Exception
+	{
+		final String dir = CmsPropertyHandler.getContextRootPath() + "jsp";
+		final String fileName = "Template_" + component.getName().replaceAll( "[^\\w]", "" ) + "_" + templateAsString.hashCode() +  ".jsp";
+		final File template = new File(dir , fileName);
+		
+		synchronized (fileName.intern()) {
+		    if(!template.exists()) {
+			final PrintWriter fpw = new PrintWriter(template);
+			fpw.print(templateAsString);    
+			fpw.flush();
+			fpw.close();
+			//FileHelper.writeToFile(template, templateAsString, false);
+		    }
+		}
+		
+		final TemplateController templateController = (TemplateController)params.get("templateLogic");
+		final PortalController portletController = (PortalController)params.get("portalLogic");
+		final DeliveryContext deliveryContext = templateController.getDeliveryContext();
 
+		templateController.getHttpServletRequest().setAttribute("org.infoglue.cms.deliver.templateLogic", templateController);
+		templateController.getHttpServletRequest().setAttribute("org.infoglue.cms.deliver.portalLogic", portletController);
+		final CharResponseWrapper wrapper = new CharResponseWrapper(deliveryContext.getHttpServletResponse());
+		final RequestDispatcher dispatch = templateController.getHttpServletRequest().getRequestDispatcher("/jsp/" + fileName);
+		dispatch.include(templateController.getHttpServletRequest(), wrapper);
+		pw.println(wrapper.toString());
+	}
+
+	
+	/**
+	 * This methods renders a template which is written in JSP. The string is written to disk and then called.
+	 * 
+	 * @param params
+	 * @param pw
+	 * @param templateAsString
+	 * @throws ServletException
+	 * @throws IOException
+	 * @deprecated
+	 */
+	@Deprecated
 	public void dispatchJSP(Map params, PrintWriter pw, String templateAsString) throws ServletException, IOException, Exception
 	{
 	    Timer timer = new Timer();
