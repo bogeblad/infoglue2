@@ -65,6 +65,8 @@ public class ComponentLogic
 
 	private final static DOMBuilder domBuilder = new DOMBuilder();
 
+	private final String separator = System.getProperty("line.separator");
+
 	private TemplateController templateController = null;
 	private InfoGlueComponent infoGlueComponent = null;
 	private boolean useInheritance = true;
@@ -591,8 +593,8 @@ public class ComponentLogic
 			}
 		}
 
-		String separator = System.getProperty("line.separator");
-		propertyValue = propertyValue.replaceAll("igbr", separator);
+		if(propertyValue != null)
+			propertyValue = propertyValue.replaceAll("igbr", separator);
 
 		return propertyValue;
 	}
@@ -620,8 +622,8 @@ public class ComponentLogic
 			}
 		}
 
-		String separator = System.getProperty("line.separator");
-		propertyValue = propertyValue.replaceAll("igbr", separator);
+		if(propertyValue != null)
+			propertyValue = propertyValue.replaceAll("igbr", separator);
 
 		return propertyValue;
 	}
@@ -1464,8 +1466,8 @@ public class ComponentLogic
 						    if(propertyElement.hasAttribute("path_" + locale.getLanguage()))
 							    value = propertyElement.getAttribute("path_" + locale.getLanguage());
 						    
-							String separator = System.getProperty("line.separator");
-							value = value.replaceAll("igbr", separator);
+							if(value != null)
+								value = value.replaceAll("igbr", separator);
 						}
 						
 						property = new HashMap();
@@ -1883,8 +1885,8 @@ public class ComponentLogic
 			    if((value == null || value.equals("")) && propertyElement.hasAttribute("path_" + masterLocale.getLanguage()))
 			        value = propertyElement.getAttribute("path_" + masterLocale.getLanguage());
 			    
-				String separator = System.getProperty("line.separator");
-				value = value.replaceAll("igbr", separator);
+				if(value != null)
+					value = value.replaceAll("igbr", separator);
 			}
 			else
 			{
@@ -1982,8 +1984,8 @@ public class ComponentLogic
 			    if((value == null || value.equals("")) && (propertyElement.attributeValue("path_" + masterLocale.getLanguage()) != null && !propertyElement.attributeValue("path_" + masterLocale.getLanguage()).equals("")))
 			        value = propertyElement.attributeValue("path_" + masterLocale.getLanguage());
 			    
-				String separator = System.getProperty("line.separator");
-				value = value.replaceAll("igbr", separator);
+				if(value != null)
+					value = value.replaceAll("igbr", separator);
 			}
 			else
 			{
@@ -2006,8 +2008,8 @@ public class ComponentLogic
 					
 					value = path;
 					
-					String separator = System.getProperty("line.separator");
-					value = value.replaceAll("igbr", separator);
+					if(value != null)
+						value = value.replaceAll("igbr", separator);
 				}
 				
 			    //value = getComponentPropertyValue(inheritedPageComponentsXML, componentId, languageId, name);
@@ -2115,8 +2117,8 @@ public class ComponentLogic
 			    if((value == null || value.equals("")) && infosetItem.attribute("path_" + masterLocale.getLanguage()) != null)
 			        value = infosetItem.getAttributeValue(infosetItem.getNamespaceName(), "path_" + masterLocale.getLanguage());
 			    
-				String separator = System.getProperty("line.separator");
-				value = value.replaceAll("igbr", separator);
+				if(value != null)
+					value = value.replaceAll("igbr", separator);
 			}
 			else
 			{
@@ -2140,8 +2142,8 @@ public class ComponentLogic
 					
 					value = path;
 					
-					String separator = System.getProperty("line.separator");
-					value = value.replaceAll("igbr", separator);
+					if(value != null)
+						value = value.replaceAll("igbr", separator);
 				}
 			    //value = getComponentPropertyValue(inheritedPageComponentsXML, componentId, languageId, name);
 			}
@@ -2307,8 +2309,8 @@ public class ComponentLogic
 					    if(propertyElement.hasAttribute("path_" + locale.getLanguage()))
 						    value = propertyElement.getAttribute("path_" + locale.getLanguage());
 					    
-						String separator = System.getProperty("line.separator");
-						value = value.replaceAll("igbr", separator);
+						if(value != null)
+							value = value.replaceAll("igbr", separator);
 					}
 					else
 					{
@@ -2438,8 +2440,8 @@ public class ComponentLogic
 			value 				= path;
 		}
 
-		String separator = System.getProperty("line.separator");
-		value = value.replaceAll("igbr", separator);
+		if(value != null)
+			value = value.replaceAll("igbr", separator);
 
 		return value;
 	}
@@ -2463,8 +2465,8 @@ public class ComponentLogic
 		
 		value = path;
 		
-		String separator = System.getProperty("line.separator");
-		value = value.replaceAll("igbr", separator);
+		if(value != null)
+			value = value.replaceAll("igbr", separator);
 		
 		return value;
 	}
