@@ -86,7 +86,8 @@ public class VelocityTemplateProcessor
 			
 		    if(!forceVelocity && (templateAsString.indexOf("<%") > -1 || templateAsString.indexOf("http://java.sun.com/products/jsp/dtd/jspcore_1_0.dtd") > -1))
 		    {
-		    	dispatchJSP(params, pw, templateAsString, component);
+		    	dispatchJSP(params, pw, templateAsString);
+		    	//dispatchJSP(params, pw, templateAsString, component);
 		    }
 		    else
 		    {
