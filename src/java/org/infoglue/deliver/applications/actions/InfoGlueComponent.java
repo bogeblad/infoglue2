@@ -25,6 +25,7 @@ package org.infoglue.deliver.applications.actions;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -206,6 +207,23 @@ public class InfoGlueComponent
 	public void setPositionInSlot(Integer positionInSlot)
 	{
 		this.positionInSlot = positionInSlot;
+	}
+
+	public Slot getSlot(String slotId)
+	{
+		Slot slot = null;
+		Iterator<Slot> slotIterator = this.getSlotList().iterator();
+		while(slotIterator.hasNext())
+		{
+			Slot candidateSlot = slotIterator.next();
+			if(candidateSlot.getId().equalsIgnoreCase(slotId))
+			{
+				slot = candidateSlot;
+				break;
+			}
+		}
+		
+		return slot;
 	}
 
 }

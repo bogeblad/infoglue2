@@ -142,16 +142,23 @@ public class AjaxComponentDeliveryServiceAction extends InfoGlueAbstractAction
     	String contentIdString 			= this.getRequest().getParameter("contentId");
     	String componentContentIdString = this.getRequest().getParameter("componentContentId");
     	String slotName 				= this.getRequest().getParameter("slotName");
+    	String slotId 					= this.getRequest().getParameter("slotId");
     	String showSimple 				= this.getRequest().getParameter("showSimple");
     	String showLegend 				= this.getRequest().getParameter("showLegend");
     	String targetDiv 				= this.getRequest().getParameter("targetDivId");
-
-    	Integer repositoryId = new Integer(repositoryIdString);
-    	Integer siteNodeId = new Integer(siteNodeIdString);
-    	Integer languageId = new Integer(languageIdString);
-    	Integer componentId = new Integer(componentIdString);
-    	Integer contentId = new Integer(contentIdString);
-    	Integer componentContentId = new Integer(componentContentIdString);
+    	String slotClicked 				= this.getRequest().getParameter("slotClicked");
+    	String treeItemString			= this.getRequest().getParameter("treeItem");
+    		
+    	Integer repositoryId 			= new Integer(repositoryIdString);
+    	Integer siteNodeId 				= new Integer(siteNodeIdString);
+    	Integer languageId 				= new Integer(languageIdString);
+    	Integer componentId 			= new Integer(componentIdString);
+    	Integer contentId 				= new Integer(contentIdString);
+    	Integer componentContentId 		= new Integer(componentContentIdString);
+    	
+    	boolean treeItem = false;
+    	if(treeItemString != null && treeItemString.equals("true"))
+    		treeItem = true;
     		    
     	Database db = CastorDatabaseService.getDatabase();
     	
@@ -176,9 +183,9 @@ public class AjaxComponentDeliveryServiceAction extends InfoGlueAbstractAction
         		slotName = "";
         	
     		PageEditorHelper peh = new PageEditorHelper();
-	    	String componentTasksDiv = peh.getComponentTasksDiv(db, principal, this.getRequest(), locale, repositoryId, siteNodeId, languageId, contentId, componentId, componentContentId, slotName, showSimple, this.getOriginalFullURL(), showLegend, targetDiv);
+	    	String componentTasksDiv = peh.getComponentTasksDiv(db, principal, this.getRequest(), locale, repositoryId, siteNodeId, languageId, contentId, componentId, componentContentId, slotName, slotId, showSimple, this.getOriginalFullURL(), showLegend, targetDiv, slotClicked, treeItem);
 	    	tasksDiv.append(componentTasksDiv);
-    	
+
 	    	commitTransaction(db);
     	}
     	catch (Exception e) 
@@ -245,8 +252,10 @@ public class AjaxComponentDeliveryServiceAction extends InfoGlueAbstractAction
         	if(slotName == null)
         		slotName = "";
         	
+        	System.out.println("1");
     		PageEditorHelper peh = new PageEditorHelper();
 	    	availableComponentDiv = peh.getAvailableComponentsDiv(db, principal, locale, repositoryId, languageId, componentContentId, slotName, showLegend, targetDiv);
+        	System.out.println("2");
 	    	
 	    	commitTransaction(db);
     	}
@@ -263,6 +272,68 @@ public class AjaxComponentDeliveryServiceAction extends InfoGlueAbstractAction
         return NONE;
     }
     
+    
+    /**
+     * This method will return the page component structure. 
+     */
+         
+    public String doGetComponentStructureDiv() throws Exception
+    {
+    	StringBuffer componentStructureDiv = new StringBuffer();
+
+    	String repositoryIdString 		= this.getRequest().getParameter("repositoryId");
+    	String siteNodeIdString 		= this.getRequest().getParameter("siteNodeId");
+    	String languageIdString 		= this.getRequest().getParameter("languageId");
+    	String contentIdString 			= this.getRequest().getParameter("contentId");
+    	String showSimple 				= this.getRequest().getParameter("showSimple");
+    	String showLegend 				= this.getRequest().getParameter("showLegend");
+    	String targetDiv 				= this.getRequest().getParameter("targetDivId");
+    	
+    	Integer repositoryId 			= new Integer(repositoryIdString);
+    	Integer siteNodeId 				= new Integer(siteNodeIdString);
+    	Integer languageId 				= new Integer(languageIdString);
+    	Integer contentId 				= new Integer(contentIdString);
+    		    
+    	Database db = CastorDatabaseService.getDatabase();
+    	
+    	try
+    	{
+    		beginTransaction(db);
+    	
+        	InfoGluePrincipal principal = this.getInfoGluePrincipal();
+        	String cmsUserName = (String)this.getHttpSession().getAttribute("cmsUserName");
+       	 	System.out.println("cmsUserName:" + cmsUserName);
+        	if(cmsUserName != null)
+       	 		principal = UserControllerProxy.getController(db).getUser(cmsUserName);
+        	else
+        		principal = (InfoGluePrincipal)this.getAnonymousPrincipal();
+        	
+       	 	System.out.println("cmsUserName:" + cmsUserName);
+        	Locale locale = this.getLocale();
+        	if(languageId != null)
+        		locale = LanguageController.getController().getLocaleWithId(languageId);
+        	
+    		PageEditorHelper peh = new PageEditorHelper();
+	    	String componentStructure = peh.getComponentStructureDiv(db, principal, this.getRequest(), locale, repositoryId, siteNodeId, languageId, contentId, showSimple, this.getOriginalFullURL(), showLegend, targetDiv);
+	    	componentStructureDiv.append(componentStructure);
+    	
+	    	commitTransaction(db);
+    	}
+    	catch (Exception e) 
+    	{
+    		rollbackTransaction(db);
+    		e.printStackTrace();
+		}
+    	
+    	//tasksDiv = new StringBuffer("<div id='componentMenu' class='skin0'>" + System.currentTimeMillis() + "</div>");
+     	    	
+        this.getResponse().setContentType("text/plain");
+        this.getResponse().getWriter().println(componentStructureDiv.toString());
+
+        System.out.println("Returning:" + componentStructureDiv.toString());
+        return NONE;
+    }
+
  
     /**
      * This method is the application entry-point. The parameters has been set through the setters

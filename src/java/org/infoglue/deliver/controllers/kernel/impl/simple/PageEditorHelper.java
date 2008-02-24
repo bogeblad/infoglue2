@@ -502,12 +502,17 @@ public class PageEditorHelper
 			 Integer componentId, 
 			 Integer componentContentId, 
 			 String slotName, 
+			 String slotId, 
 			 String showSimple, 
 			 String originalFullURL,
 			 String showLegend,
-			 String targetDiv) throws Exception
+			 String targetDiv,
+			 String slotClicked,
+			 boolean treeItem) throws Exception
 		{	
-
+		
+		System.out.println("treeItem: " + treeItem);
+		
 		StringBuffer sb = new StringBuffer();
 
 		String componentEditorUrl = CmsPropertyHandler.getComponentEditorUrl();
@@ -614,24 +619,72 @@ public class PageEditorHelper
 		    System.out.println("hasAccessToDeleteComponent:" + hasAccessToDeleteComponent);
 		    System.out.println("hasAccessToChangeComponent:" + hasAccessToChangeComponent);
 
-			sb.append("<div class=\"igmenuitems\" onMouseover=\"javascript:highlightie5(event);\" onMouseout=\"javascript:lowlightie5(event);\" onClick=\"edit();\">" + editHTML + "</div>");
-			sb.append("<div class=\"igmenuitems\" onMouseover=\"javascript:highlightie5(event);\" onMouseout=\"javascript:lowlightie5(event);\" onClick=\"submitToPublish(" + siteNodeId + ", " + repositoryId + ", '" + URLEncoder.encode(originalFullURL, "UTF-8") + "');\">" + submitToPublishHTML + "</div>");
+		    System.out.println("slotId:" + slotId);
+		    Slot slot = null;
+		    InfoGlueComponent parentComponent = null;
+		    if(slotClicked == null || slotClicked.equalsIgnoreCase("true"))
+		    {
+			    System.out.println("Was slot which was clicked..");
+			    slot = component.getSlot(slotId);
+			    parentComponent = component;
+			}
+		    else
+		    {
+			    System.out.println("Was component which was clicked..");
+		    	slot = component.getContainerSlot();
+			    parentComponent = component.getParentComponent();
+		    }
+		    
+		    String allowedComponentNamesAsEncodedString = slot.getAllowedComponentsArrayAsUrlEncodedString();
+		    String disallowedComponentNamesAsEncodedString = slot.getDisallowedComponentsArrayAsUrlEncodedString();
+		    
+		    String addComponentUrl = "";
+		    String deleteComponentUrl = "";
+		    String changeComponentUrl = "";
+		    
+		    if(parentComponent != null)
+		    {
+			    System.out.println("slot:" + slot.getId());
+			    System.out.println("parentComponent:" + parentComponent.getId());
+			    System.out.println("allowedComponentNamesAsEncodedString:" + allowedComponentNamesAsEncodedString);
+			    System.out.println("disallowedComponentNamesAsEncodedString:" + disallowedComponentNamesAsEncodedString);
+		    
+			    addComponentUrl = "" + componentEditorUrl + "ViewSiteNodePageComponents!listComponents.action?siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&parentComponentId=" + parentComponent.getId() + "&slotId=" + slotId + "&showSimple=" + showSimple + ((allowedComponentNamesAsEncodedString != null) ? "&" + allowedComponentNamesAsEncodedString : "") + ((disallowedComponentNamesAsEncodedString != null) ? "&" + disallowedComponentNamesAsEncodedString : "");
+			    deleteComponentUrl = "" + componentEditorUrl + "ViewSiteNodePageComponents!deleteComponent.action?siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + component.getId() + "&slotId=" + slotId + "&showSimple=" + showSimple;
+			    changeComponentUrl = "" + componentEditorUrl + "ViewSiteNodePageComponents!listComponentsForChange.action?siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + component.getId() + "&slotId=" + slotId + "&showSimple=" + showSimple + ((allowedComponentNamesAsEncodedString != null) ? "&" + allowedComponentNamesAsEncodedString : "") + ((disallowedComponentNamesAsEncodedString != null) ? "&" + disallowedComponentNamesAsEncodedString : "");
+			    
+			    System.out.println("addComponentUrl:" + addComponentUrl);
+			    System.out.println("deleteComponentUrl:" + deleteComponentUrl);
+			    System.out.println("changeComponentUrl:" + changeComponentUrl);
+		    }
+		    else
+		    {
+			    addComponentUrl = "";
+			    deleteComponentUrl = "" + componentEditorUrl + "ViewSiteNodePageComponents!deleteComponent.action?siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + component.getId() + "&slotId=" + slotId + "&showSimple=" + showSimple;
+			    changeComponentUrl = "" + componentEditorUrl + "ViewSiteNodePageComponents!listComponentsForChange.action?siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + component.getId() + "&slotId=" + slotId + "&showSimple=" + showSimple + ((allowedComponentNamesAsEncodedString != null) ? "&" + allowedComponentNamesAsEncodedString : "") + ((disallowedComponentNamesAsEncodedString != null) ? "&" + disallowedComponentNamesAsEncodedString : "");
+
+			    hasAccessToAddComponent = false;
+		    }
+		    
+		    if(treeItem != true)
+		    	sb.append("<div class=\"igmenuitems\" onMouseover=\"javascript:highlightie5(event);\" onMouseout=\"javascript:lowlightie5(event);\" onClick=\"edit();\">" + editHTML + "</div>");
+		    if(treeItem != true)
+		    	sb.append("<div class=\"igmenuitems\" onMouseover=\"javascript:highlightie5(event);\" onMouseout=\"javascript:lowlightie5(event);\" onClick=\"submitToPublish(" + siteNodeId + ", " + repositoryId + ", '" + URLEncoder.encode(originalFullURL, "UTF-8") + "');\">" + submitToPublishHTML + "</div>");
 			if(hasAccessToAddComponent)
-				sb.append("<div class=\"igmenuitems\" onMouseover=\"javascript:highlightie5(event);\" onMouseout=\"javascript:lowlightie5(event);\" onClick=\"insertComponent();\">" + addComponentHTML + "</div>");
+				sb.append("<div class=\"igmenuitems\" onMouseover=\"javascript:highlightie5(event);\" onMouseout=\"javascript:lowlightie5(event);\" onClick=\"insertComponentByUrl('" + addComponentUrl + "');\">" + addComponentHTML + "</div>");
 			if(hasAccessToDeleteComponent)
-			    sb.append("<div class=\"igmenuitems\" onMouseover=\"javascript:highlightie5(event);\" onMouseout=\"javascript:lowlightie5(event);\" onClick=\"deleteComponent();\">" + deleteComponentHTML + "</div>");
+			    sb.append("<div class=\"igmenuitems\" onMouseover=\"javascript:highlightie5(event);\" onMouseout=\"javascript:lowlightie5(event);\" onClick=\"deleteComponentByUrl('" + deleteComponentUrl + "');\">" + deleteComponentHTML + "</div>");
 			if(hasAccessToChangeComponent)
-			    sb.append("<div class=\"igmenuitems\" onMouseover=\"javascript:highlightie5(event);\" onMouseout=\"javascript:lowlightie5(event);\" onClick=\"changeComponent();\">" + changeComponentHTML + "</div>");
+			    sb.append("<div class=\"igmenuitems\" onMouseover=\"javascript:highlightie5(event);\" onMouseout=\"javascript:lowlightie5(event);\" onClick=\"changeComponentByUrl('" + changeComponentUrl + "');\">" + changeComponentHTML + "</div>");
 			if(hasSaveTemplateAccess)
 			    sb.append("<div class=\"igmenuitems\" onMouseover=\"javascript:highlightie5(event);\" onMouseout=\"javascript:lowlightie5(event);\" onClick=\"saveComponentStructure('" + componentEditorUrl + "CreatePageTemplate!input.action?contentId=" + metaInfoContentVO.getId() + "');\">" + savePageTemplateHTML + "</div>");
 	
 			String upUrl = componentEditorUrl + "ViewSiteNodePageComponents!moveComponent.action?siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&direction=0&showSimple=" + showSimple + "";
 			String downUrl = componentEditorUrl + "ViewSiteNodePageComponents!moveComponent.action?siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&direction=1&showSimple=" + showSimple + "";
+		    System.out.println("upUrl:" + upUrl);
+		    System.out.println("downUrl:" + downUrl);
+		    System.out.println("component.getPositionInSlot():" + component.getPositionInSlot());
 			
-			//System.out.println("component3:" + component.getId() + " - " + component.getPositionInSlot());
-			//System.out.println("component1:" + component.getParentComponent());
-			//System.out.println("component1:" + component.getContainerSlot());
-			//System.out.println("component2:" + component.getContainerSlot().getComponents());
 			if(component.getPositionInSlot() > 0)
 			    sb.append("<div class=\"igmenuitems\" onMouseover=\"javascript:highlightie5(event);\" onMouseout=\"javascript:lowlightie5(event);\" onClick=\"invokeAddress('" + upUrl + "');\">" + moveComponentUpHTML + "</div>");
 			if(component.getContainerSlot().getComponents().size() - 1 > component.getPositionInSlot())
@@ -639,10 +692,13 @@ public class PageEditorHelper
 			
 			sb.append("<hr/>");
 			sb.append("<div class=\"igmenuitems\" onMouseover=\"javascript:highlightie5(event);\" onMouseout=\"javascript:lowlightie5(event);\" onClick=\"javascript:showComponentInDiv('generalPropertiesDiv', 'repositoryId=" + repositoryId + "&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&componentContentId=" + componentContentId + "&showSimple=" + showSimple + "&showLegend=false', false);\">" + propertiesHTML + "</div>");
-			sb.append("<hr/>");
-			sb.append("<div class=\"igmenuitems\" onMouseover=\"javascript:highlightie5(event);\" onMouseout=\"javascript:lowlightie5(event);\" onClick=\"javascript:toggleDiv('pageComponents');\">" + pageComponentsHTML + "</div>");
-			sb.append("<div class=\"igmenuitems\" onMouseover=\"javascript:highlightie5(event);\" onMouseout=\"javascript:lowlightie5(event);\" onClick=\"window.open(document.location.href,'PageComponents','');\">" + componentEditorInNewWindowHTML + "</div>");
-			sb.append("<div class=\"igmenuitems\" onMouseover=\"javascript:highlightie5(event);\" onMouseout=\"javascript:lowlightie5(event);\" onClick=\"javascript:viewSource();\">" + viewSourceHTML + "</div>");
+			if(treeItem != true)
+			{
+				sb.append("<hr/>");
+				sb.append("<div class=\"igmenuitems\" onMouseover=\"javascript:highlightie5(event);\" onMouseout=\"javascript:lowlightie5(event);\" onClick=\"javascript:showComponentStructure('componentStructure', 'repositoryId=" + repositoryId + "&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "');\">" + pageComponentsHTML + "</div>");
+				sb.append("<div class=\"igmenuitems\" onMouseover=\"javascript:highlightie5(event);\" onMouseout=\"javascript:lowlightie5(event);\" onClick=\"window.open(document.location.href, 'PageEditor', '');\">" + componentEditorInNewWindowHTML + "</div>");
+				sb.append("<div class=\"igmenuitems\" onMouseover=\"javascript:highlightie5(event);\" onMouseout=\"javascript:lowlightie5(event);\" onClick=\"javascript:viewSource();\">" + viewSourceHTML + "</div>");
+			}
 			sb.append("</div>");
 		}
    		
@@ -650,155 +706,92 @@ public class PageEditorHelper
 	}
 	
 
-	/**
-	 * This method creates an xml representing the page structure.
-	 */
-	
-	public String getPageComponentStructureDivJavascript(TemplateController templateController, Integer siteNodeId, Integer languageId, InfoGlueComponent component) throws Exception
-	{		
-	    if(templateController.getRequestParameter("skipComponentStructure") != null && templateController.getRequestParameter("skipComponentStructure").equalsIgnoreCase("true"))
-	        return "";
-	    
+	public String getComponentStructureDiv(Database db, InfoGluePrincipal principal, HttpServletRequest request, Locale locale, Integer repositoryId, Integer siteNodeId, Integer languageId, Integer contentId, String showSimple, String originalFullURL, String showLegend, String targetDiv) throws Exception
+	{
 		StringBuffer sb = new StringBuffer();
 		
-		sb.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"" + templateController.getHttpServletRequest().getContextPath() + "/script/yui/build/fonts/fonts-min.css?_yuiversion=2.4.1\" />\n");
-		sb.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"" + templateController.getHttpServletRequest().getContextPath() + "/script/yui/build/treeview/assets/skins/sam/treeview.css?_yuiversion=2.4.1\" />\n");
-		sb.append("<script type=\"text/javascript\" src=\"" + templateController.getHttpServletRequest().getContextPath() + "/script/yui/build/yahoo/yahoo.js?_yuiversion=2.4.1\"></script>\n");
-		sb.append("<script type=\"text/javascript\" src=\"" + templateController.getHttpServletRequest().getContextPath() + "/script/yui/build/event/event.js?_yuiversion=2.4.1\"></script>\n");
-		sb.append("<script type=\"text/javascript\" src=\"" + templateController.getHttpServletRequest().getContextPath() + "/script/yui/build/treeview/treeview.js?_yuiversion=2.4.1\"></script>\n");
+		//String componentEditorUrl = CmsPropertyHandler.getComponentEditorUrl();
+		//String componentRendererUrl = CmsPropertyHandler.getComponentRendererUrl();
+		String contextPath = request.getContextPath();
 		
-		sb.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"" + templateController.getHttpServletRequest().getContextPath() + "/script/yui/examples/treeview/assets/css/folders/tree.css\"></link>\n");
-		
-		sb.append("<style type=\"text/css\">\n");
-		sb.append(" #treewrapper {background: #fff; position:relative;}\n");
-		sb.append("	#treediv {position:relative; width:250px; background: #fff; padding:1em;}\n");
-		sb.append(" .icon-ppt { display:block; padding-left: 20px; background: transparent url(" + templateController.getHttpServletRequest().getContextPath() + "/script/yui/examples/treeview/assets/img/icons.png) 0 0px no-repeat; }\n");
-		sb.append(" .icon-dmg { display:block; padding-left: 20px; background: transparent url(" + templateController.getHttpServletRequest().getContextPath() + "/script/yui/examples/treeview/assets/img/icons.png) 0 -36px no-repeat; }\n");
-		sb.append(" .icon-prv { display:block; padding-left: 20px; background: transparent url(" + templateController.getHttpServletRequest().getContextPath() + "/script/yui/examples/treeview/assets/img/icons.png) 0 -72px no-repeat; }\n");
-		sb.append(" .icon-gen { display:block; padding-left: 20px; background: transparent url(" + templateController.getHttpServletRequest().getContextPath() + "/script/yui/examples/treeview/assets/img/icons.png) 0 -108px no-repeat; }\n");
-		sb.append(" .icon-doc { display:block; padding-left: 20px; background: transparent url(" + templateController.getHttpServletRequest().getContextPath() + "/script/yui/examples/treeview/assets/img/icons.png) 0 -144px no-repeat; }\n");
-		sb.append(" .icon-jar { display:block; padding-left: 20px; background: transparent url(" + templateController.getHttpServletRequest().getContextPath() + "/script/yui/examples/treeview/assets/img/icons.png) 0 -180px no-repeat; }\n");
-		sb.append(" .icon-zip { display:block; padding-left: 20px; background: transparent url(" + templateController.getHttpServletRequest().getContextPath() + "/script/yui/examples/treeview/assets/img/icons.png) 0 -216px no-repeat; }\n");
-		sb.append("</style>\n");
+		ContentVO metaInfoContentVO = getPageMetaInfoContentVO(db, siteNodeId, languageId, contentId, principal);
+		LanguageVO masterLanguageVO = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForSiteNode(db, siteNodeId);
 
-		sb.append("<div id=\"treewrapper\">\n");
-		sb.append("	<div id=\"treediv\"> </div>\n");
-		sb.append("</div>\n");
-		
-		sb.append("<script type=\"text/javascript\">\n");
-		sb.append("	//Wrap our initialization code in an anonymous function\n");
-		sb.append("	//to keep out of the global namespace:\n");
-		sb.append("	(function(){\n");
-		sb.append("		var init = function() {\n");
-		sb.append("     alert('Initializing');\n"); 			
-		sb.append("			//create the TreeView instance:\n");
-		sb.append("			var tree = new YAHOO.widget.TreeView(\"treediv\");\n");
-					
-		sb.append("			//get a reusable reference to the root node:\n");
-		sb.append("			var root = tree.getRoot();\n");
-					
-		sb.append("			//for Ahmed's documents, we'll use TextNodes.\n");
-		sb.append("			//First, create a parent node for his documents:\n");
-		sb.append("			var ahmedDocs = new YAHOO.widget.TextNode(\"Ahmed's Documents\", root, true);\n");
-		sb.append("				//Create a child node for his Word document:\n");
-		sb.append("				var ahmedMsWord = new YAHOO.widget.TextNode(\"Prospectus\", ahmedDocs, false);\n");
-		sb.append("				//Now, apply the \"icon-doc\" style to this node's\n");
-		sb.append("				//label:\n");
-		sb.append("				ahmedMsWord.labelStyle = \"icon-doc\";\n");
-		sb.append("				var ahmedPpt = new YAHOO.widget.TextNode(\"Presentation\", ahmedDocs, false);\n");
-		sb.append("				ahmedPpt.labelStyle = \"icon-ppt\";\n");
-		sb.append("				var ahmedPdf = new YAHOO.widget.TextNode(\"Prospectus-PDF version\", ahmedDocs, false);\n");
-		sb.append("				ahmedPdf.labelStyle = \"icon-prv\";\n");
-				
-		sb.append("			//for Susheela's documents, we'll use HTMLNodes.\n");
-		sb.append("			//First, create a parent node for her documents:\n");
-		sb.append("			var sushDocs = new YAHOO.widget.TextNode(\"Susheela's Documents\", root, true);\n");
-		sb.append("				//Create a child node for her zipped files:\n");
-		sb.append("				var sushZip = new YAHOO.widget.HTMLNode(\"Zipped Files\", sushDocs, false, true);\n");
-		sb.append("				//Now, apply the \"icon-zip\" style to this HTML node's\n");
-		sb.append("				//content:\n");
-		sb.append("				sushZip.contentStyle = \"icon-zip\";\n");
-		sb.append("				var sushDmg = new YAHOO.widget.HTMLNode(\"Files -- .dmg version\", sushDocs, false, true);\n");
-		sb.append("				sushDmg.contentStyle = \"icon-dmg\";\n");
-		sb.append("				var sushGen = new YAHOO.widget.HTMLNode(\"Script -- text version\", sushDocs, false, true);\n");
-		sb.append("				sushGen.contentStyle = \"icon-gen\";\n");
-		sb.append("				var sushJar = new YAHOO.widget.HTMLNode(\"JAR file\", sushDocs, false, true);\n");
-		sb.append("				sushJar.contentStyle = \"icon-jar\";\n");
-				
-		sb.append("			tree.draw();\n");
-		sb.append("		}\n");
-		sb.append("		//Add an onDOMReady handler to build the tree when the document is ready\n");
-		sb.append("	    YAHOO.util.Event.onDOMReady(init);\n");
-		sb.append("	})();\n");
-		sb.append("</script>\n");
-		
-		/*
-		String componentEditorUrl = CmsPropertyHandler.getComponentEditorUrl();
-
-		sb.append("<div id=\"pageComponents\" style=\"right:5px; top:5px; visibility:hidden; display: none;\">");
-
-		sb.append("	<div id=\"dragCorner\" style=\"position: absolute; width: 16px; height: 16px; background-color: white; bottom: 0px; right: 0px;\"><a href=\"javascript:expandWindow('pageComponents');\"><img src=\"" + templateController.getHttpServletRequest().getContextPath() + "/images/enlarge.gif\" border=\"0\" width=\"16\" height=\"16\"></a></div>");
-			
-		sb.append("		<div id=\"pageComponentsHandle\"><div id=\"leftPaletteHandle\">Page components</div><div id=\"rightPaletteHandle\"><a href=\"javascript:hideDiv('pageComponents');\" class=\"white\">close</a></div></div>");
-		sb.append("		<div id=\"pageComponentsBody\"><table class=\"igtable\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\">");
-
-		sb.append("		<tr class=\"igtr\">");
-	    sb.append("			<td class=\"igtd\" colspan=\"20\"><img src=\"" + templateController.getHttpServletRequest().getContextPath() + "/images/tcross.png\" width=\"19\" height=\"16\"><span id=\"" + component.getSlotName() + "ClickableDiv\" class=\"iglabel\"><img src=\"" + templateController.getHttpServletRequest().getContextPath() + "/images/slotIcon.gif\" width=\"16\" height=\"16\"><img src=\"" + templateController.getHttpServletRequest().getContextPath() + "/images/trans.gif\" width=\"5\" height=\"1\">" + component.getName() + "</span><script type=\"text/javascript\">initializeSlotEventHandler('" + component.getSlotName() + "ClickableDiv', '" + componentEditorUrl + "ViewSiteNodePageComponents!listComponents.action?CCC=1&siteNodeId=" + templateController.getSiteNodeId() + "&languageId=" + templateController.getLanguageId() + "&contentId=" + templateController.getContentId() + "&parentComponentId=" + component.getId() + "&slotId=base&showSimple=" + templateController.getDeliveryContext().getShowSimple() + "', '', '', 'base', '" + component.getContentId() + "');</script></td>");
-		sb.append("		</tr>");
-		
-		renderComponentTree(templateController, sb, component, 0, 0, 1);
-
-		sb.append("		<tr class=\"igtr\">");
-		for(int i=0; i<20; i++)
+		String pageComponentsString = getPageComponentsString(db, siteNodeId, languageId, contentId, principal);
+   		if(pageComponentsString != null && pageComponentsString.length() != 0)
 		{
-			sb.append("<td class=\"igtd\" width=\"19\"><img src=\"" + templateController.getHttpServletRequest().getContextPath() + "/images/trans.gif\" width=\"19\" height=\"1\"></td>");
+   			Document document = domBuilder.getDocument(pageComponentsString);
+			System.out.println("Getting components...");
+
+			List pageComponents = getPageComponents(db, pageComponentsString, document.getRootElement(), "base", null, null, siteNodeId, languageId, principal);
+			InfoGlueComponent component = (InfoGlueComponent)pageComponents.get(0);
+			
+			sb.append("<div id=\"pageComponents\" class=\"componentProperties\" style=\"left:0px; top:0px;\">");
+	
+			sb.append("	 <div id=\"dragCorner\" style=\"position: absolute; width: 16px; height: 16px; background-color: white; bottom: 0px; right: 0px;\"><a href=\"javascript:expandWindow('pageComponents');\"><img src=\"" + contextPath + "/images/enlarge.gif\" border=\"0\" width=\"16\" height=\"16\"></a></div>");
+				
+			sb.append("	 <div id=\"pageComponentsHandle\" class=\"componentPropertiesHandle\"><div id=\"leftHandleNarrow\">Page components</div><div id=\"rightPaletteHandle\"><a href=\"javascript:hideDiv('pageComponents');\" class=\"white\"><img src=\"" + contextPath + "/images/closeIcon.gif\" border=\"0\"/></a></div></div>");
+			sb.append("	 <div id=\"pageComponentsBody\" class=\"componentPropertiesBody\"><table class=\"igtable\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\">");
+	
+			sb.append("	 <tr class=\"igtr\">");
+		    sb.append("		<td class=\"igtd\" colspan=\"20\"><img src=\"" + contextPath + "/images/tcross.png\" width=\"19\" height=\"16\"><span id=\"" + component.getId() + component.getSlotName() + "ClickableDiv\" class=\"iglabel\"><img src=\"" + contextPath + "/images/slotIcon.gif\" width=\"16\" height=\"16\"><img src=\"" + contextPath + "/images/trans.gif\" width=\"5\" height=\"1\">" + component.getName() + "</span><script type=\"text/javascript\">initializeSlotEventHandler('" + component.getId() + component.getSlotName() + "ClickableDiv', '" + contextPath + "ViewSiteNodePageComponents!listComponents.action?CCC=1&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&parentComponentId=" + component.getId() + "&slotId=base&showSimple=" + showSimple + "', '', '', 'base', '" + component.getContentId() + "');</script></td>");
+			sb.append("	 </tr>");
+			
+			renderComponentTree(db, sb, component, 0, 0, 1, contextPath, repositoryId, siteNodeId, languageId, contentId, showSimple);
+	
+			sb.append("	 <tr class=\"igtr\">");
+			for(int i=0; i<20; i++)
+			{
+				sb.append("<td class=\"igtd\" width=\"19\"><img src=\"" + contextPath + "/images/trans.gif\" width=\"19\" height=\"1\"></td>");
+			}
+			sb.append("	 </tr>");
+			sb.append("	 </table>");
+			sb.append("	 </div>");
+			sb.append("</div>");
+			
+			sb.append("	<script type=\"text/javascript\">");
+			sb.append("		var theHandle = document.getElementById(\"pageComponentsHandle\");");
+			sb.append("		var theRoot   = document.getElementById(\"pageComponents\");");
+			sb.append("		Drag.init(theHandle, theRoot);");
+			sb.append("     theRoot.style.left = 160;");
+			sb.append("     theRoot.style.top = 150;");
+			sb.append("	</script>");
 		}
-		sb.append("		</tr>");
-		sb.append("		</table>");
-		sb.append("		</div>");
-		sb.append("	</div>");
-		
-		sb.append("	<script type=\"text/javascript\">");
-		sb.append("		var theHandle = document.getElementById(\"pageComponentsHandle\");");
-		sb.append("		var theRoot   = document.getElementById(\"pageComponents\");");
-		sb.append("		Drag.init(theHandle, theRoot);");
-		sb.append("     theRoot.style.left = 160;");
-		sb.append("     theRoot.style.top = 150;");
-		sb.append("	</script>");
-		*/
-		
+   		
 		return sb.toString();
 	}
-
+	
+	
 	/**
 	 * This method renders the component tree visually
 	 */
 	
-	private void renderComponentTree(TemplateController templateController, StringBuffer sb, InfoGlueComponent component, int level, int position, int maxPosition) throws Exception
+	private void renderComponentTree(Database db, StringBuffer sb, InfoGlueComponent component, int level, int position, int maxPosition, String contextPath, Integer repositoryId, Integer siteNodeId, Integer languageId, Integer contentId, String showSimple) throws Exception
 	{
 		String componentEditorUrl = CmsPropertyHandler.getComponentEditorUrl();
 
-		ContentVO componentContentVO = templateController.getContent(component.getContentId());
+		ContentVO componentContentVO = ContentController.getContentController().getContentVOWithId(component.getContentId(), db);
 		
 		int colspan = 20 - level;
 		
 		sb.append("		<tr class=\"igtr\">");
-		sb.append("			<td class=\"igtd\"><img src=\"" + templateController.getHttpServletRequest() + "/images/trans.gif\" width=\"19\" height=\"16\"></td>");
+		sb.append("			<td class=\"igtd\"><img src=\"" + contextPath + "/images/trans.gif\" width=\"19\" height=\"16\"></td>");
 		
 		for(int i=0; i<level; i++)
 		{
-			sb.append("<td class=\"igtd\" width=\"19\"><img src=\"" + templateController.getHttpServletRequest().getContextPath() + "/images/vline.png\" width=\"19\" height=\"16\"></td>");
+			sb.append("<td class=\"igtd\" width=\"19\"><img src=\"" + contextPath + "/images/vline.png\" width=\"19\" height=\"16\"></td>");
 		}
-			
-		String changeUrl = componentEditorUrl + "ViewSiteNodePageComponents!listComponentsForChange.action?siteNodeId=" + templateController.getSiteNodeId() + "&languageId=" + templateController.getLanguageId() + "&contentId=" + templateController.getContentId() + "&componentId=" + component.getId() + "&slotId=" + component.getId() + "&showSimple=" + templateController.getDeliveryContext().getShowSimple();
-		sb.append("<td class=\"igtd\" width=\"19\"><img src=\"" + templateController.getHttpServletRequest().getContextPath() + "/images/tcross.png\" width=\"19\" height=\"16\"></td><td class=\"igtd\"><img src=\"" + templateController.getHttpServletRequest().getContextPath() + "/images/componentIcon.gif\" width=\"16\" height=\"16\"></td><td class=\"igtd\" colspan=\"" + (colspan - 2) + "\"><span id=\"" + component.getId() + "\">" + componentContentVO.getName() + "</span><script type=\"text/javascript\">initializeComponentInTreeEventHandler('" + component.getId() + "', '" + component.getId() + "', '', '" + componentEditorUrl + "ViewSiteNodePageComponents!deleteComponent.action?siteNodeId=" + templateController.getSiteNodeId() + "&languageId=" + templateController.getLanguageId() + "&contentId=" + templateController.getContentId() + "&componentId=" + component.getId() + "&slotId=" + component.getId() + "&showSimple=" + templateController.getDeliveryContext().getShowSimple() + "', '" + changeUrl + "', '" + component.getSlotName() + "', 'APA');</script>");
-		String upUrl = componentEditorUrl + "ViewSiteNodePageComponents!moveComponent.action?siteNodeId=" + templateController.getSiteNodeId() + "&languageId=" + templateController.getLanguageId() + "&contentId=" + templateController.getContentId() + "&componentId=" + component.getId() + "&direction=0&showSimple=" + templateController.getDeliveryContext().getShowSimple() + "";
-		String downUrl = componentEditorUrl + "ViewSiteNodePageComponents!moveComponent.action?siteNodeId=" + templateController.getSiteNodeId() + "&languageId=" + templateController.getLanguageId() + "&contentId=" + templateController.getContentId() + "&componentId=" + component.getId() + "&direction=1&showSimple=" + templateController.getDeliveryContext().getShowSimple() + "";
+
+	    String tasks = "showComponentTasks('componentTasks', 'repositoryId=" + repositoryId + "&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + component.getId() + "&componentContentId=" + component.getContentId() + "&slotId=" + component.getContainerSlot().getId() + "&showSimple=false&showLegend=false&slotClicked=false&treeItem=true', false, event);";
+
+		sb.append("<td class=\"igtd\" width=\"19\"><img src=\"" + contextPath + "/images/tcross.png\" width=\"19\" height=\"16\"></td><td class=\"igtd\"><img src=\"" + contextPath + "/images/componentIcon.gif\" width=\"16\" height=\"16\"></td><td class=\"igtd\" colspan=\"" + (colspan - 2) + "\"><span id=\"" + component.getId() + "\" oncontextmenu=\"" + tasks + "\">" + componentContentVO.getName() + "</span>");
+		String upUrl = componentEditorUrl + "ViewSiteNodePageComponents!moveComponent.action?siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + component.getId() + "&direction=0&showSimple=" + showSimple + "";
+		String downUrl = componentEditorUrl + "ViewSiteNodePageComponents!moveComponent.action?siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + component.getId() + "&direction=1&showSimple=" + showSimple + "";
 		
 		if(position > 0)
-		    sb.append("<a href=\"" + upUrl + "\"><img src=\"" + templateController.getHttpServletRequest().getContextPath() + "/images/upArrow.gif\" border=\"0\" width=\"11\" width=\"10\"></a>");
+		    sb.append("<a href=\"" + upUrl + "\"><img src=\"" + contextPath + "/images/upArrow.gif\" border=\"0\" width=\"11\" width=\"10\"></a>");
 		if(maxPosition > position)
-		    sb.append("<a href=\"" + downUrl + "\"><img src=\"" + templateController.getHttpServletRequest().getContextPath() + "/images/downArrow.gif\" border=\"0\" width=\"11\" width=\"10\"></a>");
+		    sb.append("<a href=\"" + downUrl + "\"><img src=\"" + contextPath + "/images/downArrow.gif\" border=\"0\" width=\"11\" width=\"10\"></a>");
 		
 		sb.append("</td>");
 		
@@ -808,21 +801,21 @@ public class PageEditorHelper
 		/*
 		
 		sb.append("		<tr class=\"igtr\">");
-		sb.append("			<td class=\"igtd\"><img src=\"" + templateController.getHttpServletRequest().getContextPath() + "/images/trans.gif\" width=\"19\" height=\"1\"></td><td class=\"igtd\"><img src=\"" + templateController.getHttpServletRequest().getContextPath() + "/images/vline.png\" width=\"19\" height=\"16\"></td>");
+		sb.append("			<td class=\"igtd\"><img src=\"" + contextPath + "/images/trans.gif\" width=\"19\" height=\"1\"></td><td class=\"igtd\"><img src=\"" + contextPath + "/images/vline.png\" width=\"19\" height=\"16\"></td>");
 		for(int i=0; i<level; i++)
 		{
-			sb.append("<td class=\"igtd\"><img src=\"" + templateController.getHttpServletRequest().getContextPath() + "/images/vline.png\" width=\"19\" height=\"16\"></td>");
+			sb.append("<td class=\"igtd\"><img src=\"" + contextPath + "/images/vline.png\" width=\"19\" height=\"16\"></td>");
 		}
-		sb.append("<td class=\"igtd\"><img src=\"" + templateController.getHttpServletRequest().getContextPath() + "/images/tcross.png\" width=\"19\" height=\"16\"></td><td class=\"igtd\" width=\"19\"><img src=\"" + templateController.getHttpServletRequest().getContextPath() + "/images/propertiesIcon.gif\" width=\"16\" height=\"16\" border=\"0\"></td><td class=\"igtd\" colspan=\"" + (colspan - 3) + "\"><span onclick=\"javascript:showComponentProperties('component" + component.getId() + "Properties');\" class=\"iglabel\">Properties</span></td>");
+		sb.append("<td class=\"igtd\"><img src=\"" + contextPath + "/images/tcross.png\" width=\"19\" height=\"16\"></td><td class=\"igtd\" width=\"19\"><img src=\"" + contextPath + "/images/propertiesIcon.gif\" width=\"16\" height=\"16\" border=\"0\"></td><td class=\"igtd\" colspan=\"" + (colspan - 3) + "\"><span onclick=\"javascript:showComponentProperties('component" + component.getId() + "Properties');\" class=\"iglabel\">Properties</span></td>");
 		sb.append("		</tr>");
 		
 		sb.append("		<tr class=\"igtr\">");
-		sb.append("			<td class=\"igtd\" width=\"19\"><img src=\"" + templateController.getHttpServletRequest().getContextPath() + "/images/trans.gif\" width=\"19\" height=\"1\"></td><td class=\"igtd\" width=\"19\"><img src=\"" + templateController.getHttpServletRequest().getContextPath() + "/images/vline.png\" width=\"19\" height=\"16\"></td>");
+		sb.append("			<td class=\"igtd\" width=\"19\"><img src=\"" + contextPath + "/images/trans.gif\" width=\"19\" height=\"1\"></td><td class=\"igtd\" width=\"19\"><img src=\"" + contextPath + "/images/vline.png\" width=\"19\" height=\"16\"></td>");
 		for(int i=0; i<level; i++)
 		{
-			sb.append("<td class=\"igtd\"><img src=\"" + templateController.getHttpServletRequest().getContextPath() + "/images/vline.png\" width=\"19\" height=\"16\"></td>");
+			sb.append("<td class=\"igtd\"><img src=\"" + contextPath + "/images/vline.png\" width=\"19\" height=\"16\"></td>");
 		}
-		sb.append("<td class=\"igtd\" width=\"19\"><img src=\"" + templateController.getHttpServletRequest().getContextPath() + "/images/endline.png\" width=\"19\" height=\"16\"></td><td class=\"igtd\" width=\"19\"><img src=\"" + templateController.getHttpServletRequest().getContextPath() + "/images/containerIcon.gif\" width=\"16\" height=\"16\"></td><td class=\"igtd\" colspan=\"" + (colspan - 4) + "\"><span class=\"iglabel\">Slots</span></td>");
+		sb.append("<td class=\"igtd\" width=\"19\"><img src=\"" + contextPath + "/images/endline.png\" width=\"19\" height=\"16\"></td><td class=\"igtd\" width=\"19\"><img src=\"" + contextPath + "/images/containerIcon.gif\" width=\"16\" height=\"16\"></td><td class=\"igtd\" colspan=\"" + (colspan - 4) + "\"><span class=\"iglabel\">Slots</span></td>");
 		sb.append("</tr>");
 		*/
 		
@@ -832,22 +825,24 @@ public class PageEditorHelper
 			Slot slot = (Slot)slotIterator.next();
 	
 			sb.append("		<tr class=\"igtr\">");
-			sb.append("			<td class=\"igtd\" width=\"19\"><img src=\"" + templateController.getHttpServletRequest().getContextPath() + "/images/trans.gif\" width=\"19\" height=\"16\"></td><td class=\"igtd\" width=\"19\"><img src=\"" + templateController.getHttpServletRequest().getContextPath() + "/images/vline.png\" width=\"19\" height=\"16\"></td>");
+			sb.append("			<td class=\"igtd\" width=\"19\"><img src=\"" + contextPath + "/images/trans.gif\" width=\"19\" height=\"16\"></td><td class=\"igtd\" width=\"19\"><img src=\"" + contextPath + "/images/vline.png\" width=\"19\" height=\"16\"></td>");
 			for(int i=0; i<level; i++)
 			{
-				sb.append("<td class=\"igtd\" width=\"19\"><img src=\"" + templateController.getHttpServletRequest().getContextPath() + "/images/vline.png\" width=\"19\" height=\"16\"></td>");
+				sb.append("<td class=\"igtd\" width=\"19\"><img src=\"" + contextPath + "/images/vline.png\" width=\"19\" height=\"16\"></td>");
 			}
 			if(slot.getComponents().size() > 0)
-				sb.append("<td class=\"igtd\" width=\"19\"><img src=\"" + templateController.getHttpServletRequest().getContextPath() + "/images/tcross.png\" width=\"19\" height=\"16\"></td><td class=\"igtd\" width=\"19\"><img src=\"" + templateController.getHttpServletRequest().getContextPath() + "/images/slotIcon.gif\" width=\"16\" height=\"16\"></td>");
+				sb.append("<td class=\"igtd\" width=\"19\"><img src=\"" + contextPath + "/images/tcross.png\" width=\"19\" height=\"16\"></td><td class=\"igtd\" width=\"19\"><img src=\"" + contextPath + "/images/slotIcon.gif\" width=\"16\" height=\"16\"></td>");
 			else
-				sb.append("<td class=\"igtd\" width=\"19\"><img src=\"" + templateController.getHttpServletRequest().getContextPath() + "/images/endline.png\" width=\"19\" height=\"16\"></td><td class=\"igtd\" width=\"19\"><img src=\"" + templateController.getHttpServletRequest().getContextPath() + "/images/slotIcon.gif\" width=\"16\" height=\"16\"></td>");
+				sb.append("<td class=\"igtd\" width=\"19\"><img src=\"" + contextPath + "/images/endline.png\" width=\"19\" height=\"16\"></td><td class=\"igtd\" width=\"19\"><img src=\"" + contextPath + "/images/slotIcon.gif\" width=\"16\" height=\"16\"></td>");
 
 		    String allowedComponentNamesAsEncodedString = slot.getAllowedComponentsArrayAsUrlEncodedString();
 		    String disallowedComponentNamesAsEncodedString = slot.getDisallowedComponentsArrayAsUrlEncodedString();
 		    //System.out.println("allowedComponentNamesAsEncodedString:" + allowedComponentNamesAsEncodedString);
 		    //System.out.println("disallowedComponentNamesAsEncodedString:" + disallowedComponentNamesAsEncodedString);
 		    
-		    sb.append("<td class=\"igtd\" colspan=\"" + (colspan - 4) + "\"><span id=\"" + slot.getId() + "ClickableDiv\" class=\"iglabel\">" + slot.getId() + "</span><script type=\"text/javascript\">initializeSlotEventHandler('" + slot.getId() + "ClickableDiv', '" + componentEditorUrl + "ViewSiteNodePageComponents!listComponents.action?ddd=1&siteNodeId=" + templateController.getSiteNodeId() + "&languageId=" + templateController.getLanguageId() + "&contentId=" + templateController.getContentId() + "&parentComponentId=" + component.getId() + "&slotId=" + slot.getId() + "&showSimple=" + templateController.getDeliveryContext().getShowSimple() + ((allowedComponentNamesAsEncodedString != null) ? "&" + allowedComponentNamesAsEncodedString : "") + ((disallowedComponentNamesAsEncodedString != null) ? "&" + disallowedComponentNamesAsEncodedString : "") + "', '', '', '" + slot.getId() + "', '" + component.getContentId() + "');</script></td>");
+		    String slotTasks = "showComponentTasks('componentTasks', 'repositoryId=" + repositoryId + "&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + component.getId() + "&componentContentId=" + component.getContentId() + "&slotId=" + slot.getId() + "&showSimple=false&showLegend=false&slotClicked=true&treeItem=true', false, event);";
+		    
+		    sb.append("<td class=\"igtd\" colspan=\"" + (colspan - 4) + "\"><span id=\"" + slot.getId() + "ClickableDiv\" class=\"iglabel\" oncontextmenu=\"" + slotTasks + "\">" + slot.getId() + "</span></td>");
 			
 			sb.append("		</tr>");
 
@@ -861,14 +856,14 @@ public class PageEditorHelper
 				while(slotComponentIterator.hasNext())
 				{
 					InfoGlueComponent slotComponent = (InfoGlueComponent)slotComponentIterator.next();
-					ContentVO componentContent = templateController.getContent(slotComponent.getContentId()); 
+					ContentVO componentContent = ContentController.getContentController().getContentVOWithId(slotComponent.getContentId(), db); 
 					
-					String imageUrl = "" + templateController.getHttpServletRequest().getContextPath() + "/images/componentIcon.gif";
+					String imageUrl = "" + contextPath + "/images/componentIcon.gif";
 					//String imageUrlTemp = getDigitalAssetUrl(componentContent.getId(), "thumbnail");
 					//if(imageUrlTemp != null && imageUrlTemp.length() > 0)
 					//	imageUrl = imageUrlTemp;
 		
-					renderComponentTree(templateController, sb, slotComponent, level + 2, newPosition, slotComponents.size() - 1);
+					renderComponentTree(db, sb, slotComponent, level + 2, newPosition, slotComponents.size() - 1, contextPath, repositoryId, siteNodeId, languageId, contentId, showSimple);
 
 					newPosition++;
 				}	
@@ -1320,7 +1315,7 @@ public class PageEditorHelper
 	    		if(slot.getId().equals(slotName));
 	    		{
 	    	        String direction = "asc";
-	    	        List componentVOList = ComponentController.getController().getComponentVOList("name", direction, slot.getAllowedComponentsArray(), slot.getDisallowedComponentsArray(), principal);
+	    	        List componentVOList = ComponentController.getController().getComponentVOList("name", direction, slot.getAllowedComponentsArray(), slot.getDisallowedComponentsArray(), db, principal);
 	    	        Iterator componentVOListIterator = componentVOList.iterator();
 
     	        	sb.append("<fieldset>");
@@ -1335,7 +1330,7 @@ public class PageEditorHelper
 	    	        	if(repositoryId != null && !componentContentVO.getRepositoryId().equals(repositoryId))
 	    	        		continue;
 	    	        	
-	    	        	String imageUrl = getDigitalAssetUrl(componentContentVO.getId(), "thumbnail");
+	    	        	String imageUrl = getDigitalAssetUrl(componentContentVO.getId(), "thumbnail", db);
 	    				if(imageUrl == null || imageUrl.length() == 0)
 	    					imageUrl = "images/componentIcon.gif";
 
@@ -1511,23 +1506,23 @@ public class PageEditorHelper
 	 * This method fetches an url to the asset for the component.
 	 */
 	
-	public String getDigitalAssetUrl(Integer contentId, String key) throws Exception
+	public String getDigitalAssetUrl(Integer contentId, String key, Database db) throws Exception
 	{
 		String imageHref = null;
 		try
 		{
-			LanguageVO masterLanguage = LanguageController.getController().getMasterLanguage(ContentController.getContentController().getContentVOWithId(contentId).getRepositoryId());
-			ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentId, masterLanguage.getId());
+			LanguageVO masterLanguage = LanguageController.getController().getMasterLanguage(ContentController.getContentController().getContentVOWithId(contentId, db).getRepositoryId(), db);
+			ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentId, masterLanguage.getId(), db);
 			if(contentVersionVO != null)
 			{
-				List digitalAssets = DigitalAssetController.getDigitalAssetVOList(contentVersionVO.getId());
+				List digitalAssets = DigitalAssetController.getDigitalAssetVOList(contentVersionVO.getId(), db);
 				Iterator i = digitalAssets.iterator();
 				while(i.hasNext())
 				{
 					DigitalAssetVO digitalAssetVO = (DigitalAssetVO)i.next();
 					if(digitalAssetVO.getAssetKey().equals(key))
 					{
-						imageHref = DigitalAssetController.getDigitalAssetUrl(digitalAssetVO.getId()); 
+						imageHref = DigitalAssetController.getController().getDigitalAssetUrl(digitalAssetVO, db); 
 						break;
 					}
 				}

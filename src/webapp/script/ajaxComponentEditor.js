@@ -104,25 +104,24 @@ function getCookieValue(name)
 function expandWindow()
 {
 	width = document.getElementById('pageComponents').style.width;
-	//alert("width:" + width);
-	if(width.indexOf("300") > -1)
-	{
-		width = "350";
-		height = "500";	
-	}
-	else if(width.indexOf("350") > -1)
-	{
-		width = "400";
-		height = "550";	
-	}
-	else if(width.indexOf("400") > -1)
+	if(width.indexOf("400") > -1)
 	{
 		width = "450";
+		height = "500";	
+	}
+	else if(width.indexOf("450") > -1)
+	{
+		width = "500";
+		height = "550";	
+	}
+	else if(width.indexOf("500") > -1)
+	{
+		width = "550";
 		height = "600";	
 	}
 	else
 	{
-		width = "300";
+		width = "400";
 		height = "450";	
 	}
 	
@@ -138,6 +137,8 @@ function expandWindow()
 	setCookie(pageStructureDivHeightCookieName, height);
 	setCookie(pageStructureDivHeightBodyCookieName, heightBody);
 	
+	//if (evt && evt.stopPropagation) {evt.stopPropagation();}
+	//else if (window.event) {window.event.cancelBubble = true;}
 } 
  
  
@@ -832,23 +833,6 @@ function assignComponent(e, siteNodeId, languageId, contentId, parentComponentId
 		}
 		else
 		{
-			/*
-			//if(targ.id == "" + parentComponentId + "_" + slotId)
-			//{	
-				//alert("Yes - a match...");
-				//alert("AssignComponent:" + allowedComponentNamesUrlEncodedString);
-				//alert("draggedComponentId assignComponent:" + draggedComponentId);
-				//alert("slotId assignComponent:" + slotId);
-			*/
-			
-			//alert("siteNodeId" + siteNodeId);
-			//alert("languageId" + languageId);
-			//alert("contentId" + contentId);
-			//alert("parentComponentId" + parentComponentId);
-			//alert("slotId" + slotId);
-			//alert("specifyBaseTemplate" + specifyBaseTemplate);
-			//alert("draggedComponentId assignComponent:" + draggedComponentId);
-			
 			insertUrl = componentEditorUrl + "ViewSiteNodePageComponents!addComponent.action?siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&parentComponentId=" + parentComponentId + "&componentId=" + draggedComponentId + "&slotId=" + slotId + "&specifyBaseTemplate=" + specifyBaseTemplate + "&" + allowedComponentNamesUrlEncodedString + "&" + disallowedComponentNamesUrlEncodedString;
 			//alert("insertUrl:" + insertUrl);
 			document.location.href = insertUrl;
@@ -974,10 +958,26 @@ function deleteComponent()
 	document.location.href = deleteUrl;
 }
 
+function deleteComponentByUrl(url) 
+{
+	//alert("deleteUrl in deleteComponent:" +  + deleteUrl.substring(0, 50) + '\n' + deleteUrl.substring(50));
+	document.location.href = url;
+}
+
 function changeComponent() 
 {
 	details = "width=600,height=700,left=" + (document.body.clientWidth / 4) + ",top=" + (document.body.clientHeight / 4) + ",toolbar=no,status=no,scrollbars=yes,location=no,menubar=no,directories=no,resizable=no";
 	newWin=window.open(changeUrl, "Change", details);
+	if(newWin)
+		newWin.focus();
+	else
+		alert("Could not open component list - if you have a popup blocker this is most likely the cause.");
+}
+
+function changeComponentByUrl(url) 
+{
+	details = "width=600,height=700,left=" + (document.body.clientWidth / 4) + ",top=" + (document.body.clientHeight / 4) + ",toolbar=no,status=no,scrollbars=yes,location=no,menubar=no,directories=no,resizable=no";
+	newWin=window.open(url, "Change", details);
 	if(newWin)
 		newWin.focus();
 	else
@@ -1008,6 +1008,13 @@ function showComponentTasks(targetDiv, parameterString, skipFloat, e)
 	if (!e) 
 		e = window.event;
 	showComponentTasksInDiv(targetDiv, parameterString, skipFloat, e);
+}
+
+function showComponentStructure(targetDiv, parameterString, e) 
+{
+	if (!e) 
+		e = window.event;
+	showComponentStructureInDiv(targetDiv, parameterString, e);
 }
 
 function showComponentProperties(id, event) 
@@ -1073,34 +1080,9 @@ function showComponentPropertiesInDiv(id, targetDivId, parameterString, skipFloa
 			clientY = (clientY - 200);
 		
 		$(targetDiv).load("AjaxComponentDeliveryService!getComponentPropertyDiv.action?" + parameterString + "&targetDivId=" + targetDivId + "");
-
-		/*
-		propertiesDiv = document.getElementById(id);
-		if(propertiesDiv)
-			propertiesDiv.style.border = "1px solid red;";
-		else
-			alert("AAA");
-		*/
 	}	
 
 	targetDiv.style.display = "block";
-	//targetDiv.style.visibility = "visible";
-	
-	/*	
-	alert("propertiesDiv:" + propertiesDiv.style.visibility);
-	alert("test:" + $(propertiesDiv).get(0));
-	var clone = $(propertiesDiv).clone();
-	alert("clone:" + clone.get(0));
-	var propertyText = document.createTextNode("AAAAAAAAAA");
-	targetDiv.appendChild(propertyText);
-	//targetDiv.appendChild(propertiesDiv);
-	clone.get(0).style.visibility = "visible";
-	clone.get(0).style.position = "relative";
-	clone.get(0).style.right = "0px";
-	clone.get(0).style.top = "5px";
-	targetDiv.appendChild(clone.get(0));
-	clone.wrap(targetDiv);
-	*/
 	
 	menuDiv = propertiesDiv;
 }
@@ -1110,6 +1092,7 @@ var eventYPosition = 0;
 
 function showComponentTasksInDiv(targetDivId, parameterString, skipFloat, event) 
 {
+	//alert("event:" + event);
 	//alert("parameterString:" + parameterString);
 	targetDiv = document.getElementById(targetDivId);
 	
@@ -1138,8 +1121,46 @@ function showComponentTasksInDiv(targetDivId, parameterString, skipFloat, event)
 		
 		activeMenuId = "componentMenu";
 	});
+	
+    if (event && event.stopPropagation) {event.stopPropagation();}
+    else if (window.event) {window.event.cancelBubble = true;}	
 }
 
+function showComponentStructureInDiv(targetDivId, parameterString, event) 
+{
+	//alert("targetDivId:" + targetDivId);
+	//alert("parameterString:" + parameterString);
+	targetDiv = document.getElementById(targetDivId);
+	//alert("TargetDiv:" + targetDiv.id);
+	targetDiv.style.width = "100px";
+	targetDiv.style.height = "100px";
+	//alert("aaa");
+	eventXPosition = getEventPositionX(event);
+	eventYPosition = getEventPositionY(event);
+		
+	$(targetDiv).load("AjaxComponentDeliveryService!getComponentStructureDiv.action?" + parameterString + "&targetDivId=" + targetDivId + "",{}, function(event){
+		componentStructureDiv = document.getElementById("componentStructure");
+		
+		clientX = eventXPosition;
+		clientY = eventYPosition;
+		
+		var rightedge = document.body.clientWidth - clientX;
+		var bottomedge = getWindowHeight() - clientY;
+	
+		if (rightedge < componentStructureDiv.offsetWidth)
+			clientX = (clientX - componentStructureDiv.offsetWidth);
+		
+		if (bottomedge < componentStructureDiv.offsetHeight)
+			clientY = (clientY - componentStructureDiv.offsetHeight);
+				
+		componentStructureDiv.style.left 	= clientX + "px";
+		componentStructureDiv.style.top 	= clientY + "px";
+		
+		componentStructureDiv.style.visibility = "visible";
+		
+		//activeMenuId = "componentStructure";
+	});
+}
 
 function invokeAction() 
 {
@@ -1403,18 +1424,25 @@ function viewSource()
 	}
 		
 		
-	function initializeSlotEventHandler(id, insertUrl, deleteUrl, changeUrl, slotId, slotContentIdVar)
+	function initializeSlotEventHandler(id, insertUrl, deleteUrl, changeUrl, slotId, slotContentIdVar, repositoryId, siteNodeId, languageId, contentId, componentId, componentContentId)
 	{
 		//alert("initializeSlotEventHandler:" + id + ":" + slotId);
-		var object = new emptySlotEventHandler(id, id, insertUrl, deleteUrl, changeUrl, slotId, slotContentIdVar);
+		var object = new emptySlotEventHandler(id, id, insertUrl, deleteUrl, changeUrl, slotId, slotContentIdVar, repositoryId, siteNodeId, languageId, contentId, componentId, componentContentId);
 	}
 
-	function emptySlotEventHandler(eleId, objName, insertUrl, deleteUrl, changeUrl, slotId, slotContentIdVar)
+	function emptySlotEventHandler(eleId, objName, insertUrl, deleteUrl, changeUrl, slotId, slotContentIdVar, repositoryId, siteNodeId, languageId, contentId, componentId, componentContentId)
 	{
 		this.objName = objName;           // objName is a property of myObject4
 		this.insertUrl = insertUrl;
 		this.deleteUrl = deleteUrl;
 		this.changeUrl = changeUrl;
+		this.repositoryId = repositoryId;
+		this.siteNodeId = siteNodeId;
+		this.languageId = languageId;
+		this.contentId = contentId;
+		this.componentId = componentId;
+		this.componentContentId = componentContentId;
+		this.slotId = slotId;
 		//alert("slotId:" + slotId);
 		//alert("eleId:" + eleId);
 		//alert("this.insertUrl:" + this.insertUrl);
@@ -1448,19 +1476,10 @@ function viewSource()
 		  
 		this.onContextMenu = function(evt, ele) // onContextMenu is a method of myObject4
 		{
-			alert('emptySlotEventHandler.oncontextmenu()\nthis.objName = ' + this.objName + '\nele = ' + xName(ele));
+			//alert('emptySlotEventHandler.oncontextmenu()\nthis.objName = ' + this.objName + '\nele = ' + xName(ele));
 		    //showEmptySlotMenu(slotId, evt, ele.id, insertUrl, slotContentIdVar);
-			
-			/*
-		    repositoryId = "36";
-		    siteNodeId = "1035";
-		    languageId = "3";
-		    contentId = "-1";
-		    componentId = "4";
-		    componentContentId = "6118";
-		    
-		    showComponentTasks('componentTasks', 'repositoryId=' + repositoryId + '&siteNodeId=' + siteNodeId + '&languageId=' + languageId + '&contentId=' + contentId + '&componentId=' + componentId + '&componentContentId=' + componentContentId + '&slotId=' + slotId + '&showSimple=false&showLegend=false', false, evt);
-			*/
+						
+		    showComponentTasks('componentTasks', 'repositoryId=' + repositoryId + '&siteNodeId=' + siteNodeId + '&languageId=' + languageId + '&contentId=' + contentId + '&componentId=' + componentId + '&componentContentId=' + componentContentId + '&slotId=' + slotId + '&showSimple=false&showLegend=false&slotClicked=true', false, evt);
 			
 		    // cancel event bubbling
 		    if (evt && evt.stopPropagation) {evt.stopPropagation();}
@@ -1468,30 +1487,26 @@ function viewSource()
 		}
 	}
 	
-	function initializeComponentEventHandler(id, compId, insertUrl, deleteUrl, changeUrl, repositoryId, siteNodeId, languageId, contentId, componentId, componentContentId)
+	function initializeComponentEventHandler(id, compId, slotId, repositoryId, siteNodeId, languageId, contentId, componentId, componentContentId)
 	{
 		//alert("initializeComponentEventHandler" + id + " " + deleteUrl);
-		var object = new componentEventHandler(id, id, compId, insertUrl, deleteUrl, changeUrl, repositoryId, siteNodeId, languageId, contentId, componentId, componentContentId);
+		var object = new componentEventHandler(id, id, compId, slotId, repositoryId, siteNodeId, languageId, contentId, componentId, componentContentId);
 	}
 		
-	function componentEventHandler(eleId, objName, objId, insertUrl, deleteUrl, changeUrl, repositoryId, siteNodeId, languageId, contentId, componentId, componentContentId)
+	function componentEventHandler(eleId, objName, objId, slotId, repositoryId, siteNodeId, languageId, contentId, componentId, componentContentId)
 	{
 		this.objName = objName;           // objName is a property of myObject4
 		this.objId = objId;
-		this.insertUrl = insertUrl;
-		this.deleteUrl = deleteUrl;
-		this.changeUrl = changeUrl;
 		this.repositoryId = repositoryId;
 		this.siteNodeId = siteNodeId;
 		this.languageId = languageId;
 		this.contentId = contentId;
 		this.componentId = componentId;
 		this.componentContentId = componentContentId;
+		this.slotId = slotId;
 		//alert("eleId:" + eleId);
 		//alert("objName:" + objName);
 		//alert("objId:" + objId);
-		//alert("this.insertUrl:" + this.insertUrl);
-		//alert("this.deleteUrl:" + this.deleteUrl);
 		var ele = xGetElementById(eleId); // ele points to our related Element
 		//alert("ele:" + ele);
 		ele.thisObj = this;              // Add a property to ele which points
@@ -1521,16 +1536,7 @@ function viewSource()
 		this.onContextMenu = function(evt, ele) // onContextMenu is a method of myObject4
 		{
 			//alert('componentEventHandler.oncontextmenu()\nthis.objName = ' + this.objName + '\nele = ' + xName(ele) + '\ncomponentId = ' + this.componentId);
-		    //showComponentMenu(evt, ele.id, this.objId, insertUrl, deleteUrl, changeUrl);
-		    /*
-		    repositoryId = "36";
-		    siteNodeId = "1035";
-		    languageId = "3";
-		    contentId = "-1";
-		    componentId = "4";
-		    componentContentId = "6118";
-		    */
-		    showComponentTasks('componentTasks', 'repositoryId=' + repositoryId + '&siteNodeId=' + siteNodeId + '&languageId=' + languageId + '&contentId=' + contentId + '&componentId=' + componentId + '&componentContentId=' + componentContentId + '&showSimple=false&showLegend=false', false, evt);
+		    showComponentTasks('componentTasks', 'repositoryId=' + repositoryId + '&siteNodeId=' + siteNodeId + '&languageId=' + languageId + '&contentId=' + contentId + '&componentId=' + componentId + '&componentContentId=' + componentContentId + '&slotId=' + slotId + '&showSimple=false&showLegend=false&slotClicked=false', false, evt);
 		    
 		    // cancel event bubbling
 		    if (evt && evt.stopPropagation) {evt.stopPropagation();}

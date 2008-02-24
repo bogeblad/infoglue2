@@ -1,3 +1,10 @@
+#componentStructure {
+	position: absolute;
+	top: 10px;
+	left: 10px;
+	border: 1px solid red;
+}
+
 /*
 Component Properties Classes
 */
@@ -118,6 +125,13 @@ Component palette classes
 	}
 #leftPaletteHandleCompProps {
 	width: 350px; 
+	float: left;
+	color:white;
+	text-align: left;
+	line-height:10px;
+	}
+#leftHandleNarrow {
+	width: 150px; 
 	float: left;
 	color:white;
 	text-align: left;
@@ -328,7 +342,7 @@ Page components classes
 	
 #pageComponents {
 	position:absolute;
-	width:250px;
+	width:350px;
 	background-color:#F4F4F4;
     border:1px solid #333333;
 	z-index:1000002;
@@ -338,13 +352,13 @@ Page components classes
 	}
 
 #pageComponentsHandle {
-	padding-top:2px;
-	padding-bottom:2px;
-	width:100%;
+	margin:2px;
+	padding:2px;
+	color:white;
 	color:white;
 	background-color:navy;
-	font-family:verdana, sans-serif;
-	font-size:10px;
+	font-family: Tahoma, Arial, Helvetica, sans-serif;
+	font-size: 10pt;
 	}
 
 #pageComponentsBody {
@@ -430,7 +444,6 @@ Properties classes
 .componentPropertiesHandle {
 	margin:2px;
 	padding:2px;
-	awidth:440px;
 	color:white;
 	font-family: Tahoma, Arial, Helvetica, sans-serif;
 	font-size: 10pt;

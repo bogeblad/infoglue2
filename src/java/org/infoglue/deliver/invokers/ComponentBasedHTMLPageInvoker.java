@@ -1559,6 +1559,7 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 				{
 					logger.warn("There was deleted referenced component or some other problem when rendering siteNode: " + templateController.getCurrentPagePath() + "(" + templateController.getSiteNodeId() + ") in language " + templateController.getLanguageId() + ":" + e.getMessage(), e);
 				}
+				slotPosition++;
 			}			
 		}		
 		
