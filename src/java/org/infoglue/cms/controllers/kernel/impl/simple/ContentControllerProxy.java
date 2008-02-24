@@ -117,7 +117,7 @@ public class ContentControllerProxy extends ContentController
 	 * This method returns a list of content-objects after checking that it is accessable by the given user
 	 */
 		
-    public List getACContentVOList(InfoGluePrincipal infoGluePrincipal, HashMap argumentHashMap, Database db) throws SystemException, Bug
+    public List getACContentVOList(InfoGluePrincipal infoGluePrincipal, HashMap argumentHashMap, Database db) throws SystemException, Bug, Exception
     {
     	List contents = null;
     	
@@ -150,7 +150,7 @@ public class ContentControllerProxy extends ContentController
     	{
 			List arguments = (List)argumentHashMap.get("arguments");
 			logger.info("Arguments:" + arguments.size());   		
-			contents = getContentVOListByContentTypeNames(arguments);
+			contents = getContentVOListByContentTypeNames(arguments, db);
 			Iterator contentIterator = contents.iterator();
 			while(contentIterator.hasNext())
 			{
@@ -161,7 +161,7 @@ public class ContentControllerProxy extends ContentController
 		    	
 		    	try
 		    	{
-		    	    intercept(hashMap, "Content.Read", infoGluePrincipal, false);
+		    	    intercept(hashMap, "Content.Read", infoGluePrincipal, false, db);
 		    	}
 		    	catch(Exception e)
 		    	{

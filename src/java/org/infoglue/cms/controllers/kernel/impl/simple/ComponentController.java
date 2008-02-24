@@ -207,7 +207,7 @@ public class ComponentController extends BaseController
 		}
 		else
 		{
-		    components = getComponents(allowedComponentNames, disallowedComponentNames, principal);
+		    components = getComponents(allowedComponentNames, disallowedComponentNames, principal, db);
 			Iterator componentsIterator = components.iterator();
 			while(componentsIterator.hasNext())
 			{
@@ -315,6 +315,66 @@ public class ComponentController extends BaseController
 		arguments.put("arguments", argumentList);
 		
 		List results = ContentControllerProxy.getController().getACContentVOList(principal, arguments);
+		
+		if(allowedComponentNames != null && allowedComponentNames.length > 0)
+		{
+		    Iterator resultsIterator = results.iterator();
+		    while(resultsIterator.hasNext())
+		    {
+		        ContentVO contentVO = (ContentVO)resultsIterator.next();
+		        boolean isAllowed = false;
+		        for(int i=0; i<allowedComponentNames.length; i++)
+		        {
+		            if(contentVO.getName().equals(allowedComponentNames[i]))
+		                isAllowed = true;
+		        }
+		        
+		        if(!isAllowed)
+		            resultsIterator.remove();
+		    }
+		}
+
+		if(disallowedComponentNames != null && disallowedComponentNames.length > 0)
+		{
+		    Iterator resultsIterator = results.iterator();
+		    while(resultsIterator.hasNext())
+		    {
+		        ContentVO contentVO = (ContentVO)resultsIterator.next();
+		        boolean isAllowed = true;
+		        for(int i=0; i<disallowedComponentNames.length; i++)
+		        {
+		            if(contentVO.getName().equals(disallowedComponentNames[i]))
+		                isAllowed = false;
+		        }
+		        
+		        if(!isAllowed)
+		            resultsIterator.remove();
+		    }
+		}
+
+		return results;	
+	}
+
+
+	/**
+	 * This method returns the contents that are of contentTypeDefinition "HTMLTemplate"
+	 */
+	
+	public List getComponents(String[] allowedComponentNames, String[] disallowedComponentNames, InfoGluePrincipal principal, Database db) throws Exception
+	{
+		HashMap arguments = new HashMap();
+		arguments.put("method", "selectListOnContentTypeName");
+		
+		List argumentList = new ArrayList();
+		HashMap argument = new HashMap();
+		argument.put("contentTypeDefinitionName", "HTMLTemplate");
+		argumentList.add(argument);
+		HashMap argument2 = new HashMap();
+		argument2.put("contentTypeDefinitionName", "PagePartTemplate");
+		argumentList.add(argument2);
+		arguments.put("arguments", argumentList);
+		
+		List results = ContentControllerProxy.getController().getACContentVOList(principal, arguments, db);
 		
 		if(allowedComponentNames != null && allowedComponentNames.length > 0)
 		{
