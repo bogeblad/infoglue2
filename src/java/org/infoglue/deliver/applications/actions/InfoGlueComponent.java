@@ -47,6 +47,7 @@ public class InfoGlueComponent
 	private Map components 						= new HashMap();
 	private InfoGlueComponent parentComponent 	= null;
 	private InfoGlueComponent pagePartTemplateComponent = null;
+	private Integer positionInSlot				= null;
 	
 	public InfoGlueComponent()
 	{
@@ -196,5 +197,15 @@ public class InfoGlueComponent
     {
         return restrictions;
     }
+
+	public Integer getPositionInSlot()
+	{
+		return positionInSlot;
+	}
+
+	public void setPositionInSlot(Integer positionInSlot)
+	{
+		this.positionInSlot = positionInSlot;
+	}
 
 }

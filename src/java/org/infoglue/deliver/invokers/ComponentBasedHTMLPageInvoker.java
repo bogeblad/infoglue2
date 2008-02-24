@@ -1324,6 +1324,7 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 			List componentElements = element.selectNodes(componentXPath);
 			//logger.info("componentElements:" + componentElements.size());
 			Iterator componentIterator = componentElements.iterator();
+			int slotPosition = 0;
 			while(componentIterator.hasNext())
 			{
 				Element componentElement = (Element)componentIterator.next();
@@ -1349,6 +1350,7 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 				    groups = new String[]{"content_" + contentVO.getId()};
 				    
 					InfoGlueComponent component = new InfoGlueComponent();
+					component.setPositionInSlot(new Integer(slotPosition));
 					component.setId(id);
 					component.setContentId(contentId);
 					component.setName(contentVO.getName());
@@ -1365,6 +1367,7 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 					    ContentVO pptContentIdContentVO = ContentDeliveryController.getContentDeliveryController().getContentVO(pptContentId, db);
 
 						InfoGlueComponent partTemplateReferenceComponent = new InfoGlueComponent();
+						partTemplateReferenceComponent.setPositionInSlot(new Integer(slotPosition));
 						partTemplateReferenceComponent.setId(id);
 						partTemplateReferenceComponent.setContentId(pptContentId);
 						partTemplateReferenceComponent.setName(pptContentIdContentVO.getName());

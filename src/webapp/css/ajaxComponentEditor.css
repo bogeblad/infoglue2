@@ -361,14 +361,28 @@ Page components classes
 /*
 Edit on sight classes
 */
-
+#componentTasks {
+	aposition:absolute;
+	aleft: 50px;
+	atop: 100px;
+}
+#componentMenu {
+	position:absolute;
+	left: 0px;
+	top: 0px;
+	border: 1px solid #636563;
+	width: 200px;
+	background-image: url('/infoglueDeliverWorking/images/contextBackground.gif');
+	background-repeat: repeat-y;
+}
 .skin0 {
 	position:absolute;
 	z-index:1000004;
 	text-align:left;
 	width:350px;
-	background-color:#F9F8F7;
+	background-color: #F9F8F7;
 	font-family: Tahoma, Arial, Helvetica, sans-serif;
+	font-size: 10pt;
 	line-height:20px;
 	cursor:default;
 	visibility:hidden;
@@ -382,11 +396,14 @@ Edit on sight classes
 	font-size: 10pt;
 	width:160px;
 	overflow: hidden;
-	background-color:#F9F8F7;
-	background-image: url('../images/contextBackground.gif');
-	background-repeat: repeat-y;
 	border:1px solid #666666;
 	visibility:hidden;
+}
+.igmenuitems {
+	padding-left:31px;
+	padding-right:11px;
+	padding-top:3px;
+	padding-bottom:3px;
 }
 /*
 .igAddComponent {

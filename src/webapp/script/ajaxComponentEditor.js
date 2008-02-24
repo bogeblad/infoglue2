@@ -298,8 +298,6 @@ if (navigator.appName == "Netscape") {
   document.captureEvents(Event.CLICK);
 }
 
-//document.body.onclick = hidemenuie5();
-
 // returns the scroll left and top for the browser viewport.
 function getScrollX() {
    if (document.body.scrollTop != undefined) {	// IE model
@@ -432,7 +430,7 @@ function showComponentMenu(event, element, compId, anInsertUrl, anDeleteUrl, anC
 {
 	hidepreviousmenues();
 	
-	activeMenuId = "component" + compId + "Menu";
+	activeMenuId = "componentMenu";
 
 	componentId = compId;
 	insertUrl = anInsertUrl;
@@ -444,7 +442,7 @@ function showComponentMenu(event, element, compId, anInsertUrl, anDeleteUrl, anC
 	//alert("changeUrl:" + changeUrl);
     //alert("deleteUrl" + deleteUrl);
 	
-    document.body.onclick = hidemenuie5;
+    document.body.onclick = hidepreviousmenues;
 	getActiveMenuDiv().className = menuskin;
 	
 	clientX = getEventPositionX(event);
@@ -502,7 +500,7 @@ function showComponentInTreeMenu(event, element, compId, anInsertUrl, anDeleteUr
 
 	slotName = slotId;
 	slotContentId = slotContentIdVar;
-	//alert("slotId:" + slotId);
+	alert("slotId:" + slotId);
 	//alert("compId:" + compId);
 	
 	try
@@ -544,7 +542,7 @@ function showComponentInTreeMenu(event, element, compId, anInsertUrl, anDeleteUr
 	//alert("componentId" + componentId);
     //alert("changeUrl:" + changeUrl);
     
-    document.body.onclick = hidemenuie5;
+    document.body.onclick = hidepreviousmenues;
 	getActiveMenuDiv().className = menuskin;
 	
 	clientX = getEventPositionX(event);
@@ -587,57 +585,14 @@ function showComponentInTreeMenu(event, element, compId, anInsertUrl, anDeleteUr
 
 function showEmptySlotMenu(slotId, event, compId, anInsertUrl, slotContentIdVar) 
 {
+	/*
 	hidepreviousmenues();
 	
 	activeMenuId = "emptySlotMenu";
 	
 	slotName = slotId;
 	slotContentId = slotContentIdVar;
-	
-	try
-	{
-		//var access = eval("hasAccessToAddComponent" + compId + slotName); 
-		//alert("compId:" + compId);
-		var access = eval("hasAccessToAddComponent" + compId); 
-	    //alert("access:" + access);
-	    if(access) 
-	    {
-	    	document.getElementById("addComponentMenuItem").style.display = "block";
-	    	document.getElementById("emptySlotMenuTopSeparator").style.display = "block";
-		}
-		else
-		{
-	    	document.getElementById("addComponentMenuItem").style.display = "none";
-	    	document.getElementById("emptySlotMenuTopSeparator").style.display = "none";
-	    }
-
-		var accessToAccessRights = eval("hasAccessToAccessRights" + slotName); 
-	    //alert("accessToAccessRights:" + accessToAccessRights);
-	    if(accessToAccessRights) 
-	    {
-	    	document.getElementById("accessRightsMenuItem").style.display = "block";
-		}
-		else
-		{
-	    	document.getElementById("accessRightsMenuItem").style.display = "none";
-	    }
-
-		var hasAccessToChangeComponent = eval("hasAccessToChangeComponent" + slotName); 
-	    //alert("hasAccessToChangeComponent:" + hasAccessToChangeComponent);
-	    if(hasAccessToChangeComponent) 
-	    {
-	    	document.getElementById("changeComponentMenuItem").style.display = "block";
-		}
-		else
-		{
-	    	document.getElementById("changeComponentMenuItem").style.display = "none";
-	    }
-	}
-	catch(e)
-	{
-		alert("Error:" + e);
-	}
-	 
+		 
 	slotId = compId;
 	insertUrl = anInsertUrl;
 	//alert("slotId:" + slotId);
@@ -646,7 +601,7 @@ function showEmptySlotMenu(slotId, event, compId, anInsertUrl, slotContentIdVar)
 	//alert("CompId:" + compId);
     //alert(insertUrl);
 	
-    document.body.onclick = hidemenuie5;
+    document.body.onclick = hidepreviousmenues;
 	getActiveMenuDiv().className = menuskin;
 	
 	clientX = getEventPositionX(event);
@@ -657,19 +612,7 @@ function showEmptySlotMenu(slotId, event, compId, anInsertUrl, slotContentIdVar)
 	var bottomedge = getWindowHeight() - clientY;
 
 	menuDiv = getActiveMenuDiv();
-	
-	/*
-	if (rightedge < menuDiv.offsetWidth)
-		newLeft = (document.body.scrollLeft + clientX - menuDiv.offsetWidth);
-	else
-		newLeft = (document.body.scrollLeft + clientX);
-	
-	if (bottomedge < menuDiv.offsetHeight)
-		newTop = (document.body.scrollTop + clientY - menuDiv.offsetHeight);
-	else
-		newTop = (document.body.scrollTop + clientY);
-	*/
-	
+		
 	if (rightedge < menuDiv.offsetWidth)
 		clientX = (clientX - menuDiv.offsetWidth);
 	
@@ -679,38 +622,23 @@ function showEmptySlotMenu(slotId, event, compId, anInsertUrl, slotContentIdVar)
 	menuDiv.style.left 	= clientX + "px";
 	menuDiv.style.top 	= clientY + "px";
 
-	//menuDiv.style.left 	= newLeft + "px";
-	//menuDiv.style.top 	= newTop + "px";
-
 	menuDiv.style.visibility = "visible";
-
+	*/
 	return false;
 }
 
 
 function release()
 {
-        //alert("Releasing...");
-        busy = false;
+	//alert("Releasing...");
+	busy = false;
 }
 
 function hidepreviousmenues() 
 {
-	//alert("Hiding menu");
 	layer = getActiveMenuDiv();
 	if(layer)
 		layer.style.visibility = "hidden";
-}
-
-function hidemenuie5() 
-{
-	//alert("Hiding menu");
-	layer = getActiveMenuDiv();
-	if(layer)
-		layer.style.visibility = "hidden";
-	
-	//Settings actions to null again
-	editUrl = "";
 }
 
 function highlightie5(event) 
@@ -791,6 +719,7 @@ function showDiv(id)
 
 function hideDiv(id)
 {
+	//alert("Hiding div:" + id)
 	document.getElementById(id).style.visibility = 'hidden';
 	if(id == "pageComponents")
 	{
@@ -806,11 +735,13 @@ function openDiv(id)
 
 function closeDiv(id)
 {
+	//alert("closeDiv div:" + id)
 	document.getElementById(id).style.display = 'none';
 }
 
 function toggleDiv(id)
 {
+	//alert("toggleDiv div:" + id)
 	var div = document.getElementById(id);
 	if(div && div.style.visibility == 'visible')
 		div.style.visibility = 'hidden';
@@ -1072,6 +1003,13 @@ function showComponentInDiv(targetDiv, parameterString, skipFloat)
 	showComponentPropertiesInDiv("component" + componentId + "Properties", targetDiv, parameterString, skipFloat, e);
 }
 
+function showComponentTasks(targetDiv, parameterString, skipFloat, e) 
+{
+	if (!e) 
+		e = window.event;
+	showComponentTasksInDiv(targetDiv, parameterString, skipFloat, e);
+}
+
 function showComponentProperties(id, event) 
 {
 	//alert("id:" + id);
@@ -1117,18 +1055,7 @@ function showComponentPropertiesInDiv(id, targetDivId, parameterString, skipFloa
 
 	targetDiv = document.getElementById(targetDivId);
 	//propertiesDiv = document.getElementById(id);
-	/*
-  	$(document).ready(function()
-  	{ 
-  		$(id).clone().appendTo(targetDivId);
-  		$(targetDivId).css("display", "block");
-  		$(targetDivId).css("visibility", "visible");
-  	});
-  	
-	$(targetDivId).css("display", "block");
-	$(targetDivId).css("visibility", "visible");
-	$(targetDivId).before("bbbbbbbbbbb");
-	*/
+
 	if(skipFloat)
 		$(targetDiv).load("AjaxComponentDeliveryService!getComponentPropertyDiv.action?" + parameterString + "&targetDivId=" + targetDivId + " #componentPropertiesForm");
 	else
@@ -1139,17 +1066,14 @@ function showComponentPropertiesInDiv(id, targetDivId, parameterString, skipFloa
 		var rightedge = document.body.clientWidth - clientX;
 		var bottomedge = getWindowHeight() - clientY;
 
-		if (rightedge < menuDiv.offsetWidth)
+		if (rightedge < targetDiv.offsetWidth)
 			clientX = (clientX - 300);
 		
-		if (bottomedge < menuDiv.offsetHeight)
+		if (bottomedge < targetDiv.offsetHeight)
 			clientY = (clientY - 200);
-
+		
 		$(targetDiv).load("AjaxComponentDeliveryService!getComponentPropertyDiv.action?" + parameterString + "&targetDivId=" + targetDivId + "");
-		//alert("SubTarget:" + $(targetDiv).get(0));
-		//alert("SubTarget:" + $(targetDiv).get(0).firstChild.id);
-		//$(targetDiv).get(0).firstChild.style.top = clientY + "px";;
-		//$(targetDiv).get(0).firstChild.style.left = clientX + "px";;
+
 		/*
 		propertiesDiv = document.getElementById(id);
 		if(propertiesDiv)
@@ -1180,6 +1104,42 @@ function showComponentPropertiesInDiv(id, targetDivId, parameterString, skipFloa
 	
 	menuDiv = propertiesDiv;
 }
+
+var eventXPosition = 0;
+var eventYPosition = 0;
+
+function showComponentTasksInDiv(targetDivId, parameterString, skipFloat, event) 
+{
+	//alert("parameterString:" + parameterString);
+	targetDiv = document.getElementById(targetDivId);
+	
+	eventXPosition = getEventPositionX(event);
+	eventYPosition = getEventPositionY(event);
+		
+	$(targetDiv).load("AjaxComponentDeliveryService!getComponentTasksDiv.action?" + parameterString + "&targetDivId=" + targetDivId + "",{}, function(event){
+		menuDiv = document.getElementById("componentMenu");
+		
+		clientX = eventXPosition;
+		clientY = eventYPosition;
+		
+		var rightedge = document.body.clientWidth - clientX;
+		var bottomedge = getWindowHeight() - clientY;
+	
+		if (rightedge < menuDiv.offsetWidth)
+			clientX = (clientX - menuDiv.offsetWidth);
+		
+		if (bottomedge < menuDiv.offsetHeight)
+			clientY = (clientY - menuDiv.offsetHeight);
+				
+		menuDiv.style.left 	= clientX + "px";
+		menuDiv.style.top 	= clientY + "px";
+		
+		menuDiv.style.visibility = "visible";
+		
+		activeMenuId = "componentMenu";
+	});
+}
+
 
 function invokeAction() 
 {
@@ -1480,7 +1440,7 @@ function viewSource()
 			//alert('emptySlotEventHandler.onClick()\nthis.objName = ' + this.objName + '\nele = ' + xName(ele));
 		    //assignComponent();
 		    //assignComponent(siteNodeId, languageId, contentId, componentId, slotId, specifyBaseTemplate);
-		    hidemenuie5();
+		    hidepreviousmenues();
 		    // cancel event bubbling
 		    if (evt && evt.stopPropagation) {evt.stopPropagation();}
 		    else if (window.event) {window.event.cancelBubble = true;}
@@ -1488,27 +1448,45 @@ function viewSource()
 		  
 		this.onContextMenu = function(evt, ele) // onContextMenu is a method of myObject4
 		{
-			//alert('emptySlotEventHandler.oncontextmenu()\nthis.objName = ' + this.objName + '\nele = ' + xName(ele));
-		    showEmptySlotMenu(slotId, evt, ele.id, insertUrl, slotContentIdVar);
+			alert('emptySlotEventHandler.oncontextmenu()\nthis.objName = ' + this.objName + '\nele = ' + xName(ele));
+		    //showEmptySlotMenu(slotId, evt, ele.id, insertUrl, slotContentIdVar);
+			
+			/*
+		    repositoryId = "36";
+		    siteNodeId = "1035";
+		    languageId = "3";
+		    contentId = "-1";
+		    componentId = "4";
+		    componentContentId = "6118";
+		    
+		    showComponentTasks('componentTasks', 'repositoryId=' + repositoryId + '&siteNodeId=' + siteNodeId + '&languageId=' + languageId + '&contentId=' + contentId + '&componentId=' + componentId + '&componentContentId=' + componentContentId + '&slotId=' + slotId + '&showSimple=false&showLegend=false', false, evt);
+			*/
+			
 		    // cancel event bubbling
 		    if (evt && evt.stopPropagation) {evt.stopPropagation();}
 		    else if (window.event) {window.event.cancelBubble = true;}
 		}
 	}
 	
-	function initializeComponentEventHandler(id, compId, insertUrl, deleteUrl, changeUrl)
+	function initializeComponentEventHandler(id, compId, insertUrl, deleteUrl, changeUrl, repositoryId, siteNodeId, languageId, contentId, componentId, componentContentId)
 	{
 		//alert("initializeComponentEventHandler" + id + " " + deleteUrl);
-		var object = new componentEventHandler(id, id, compId, insertUrl, deleteUrl, changeUrl);
+		var object = new componentEventHandler(id, id, compId, insertUrl, deleteUrl, changeUrl, repositoryId, siteNodeId, languageId, contentId, componentId, componentContentId);
 	}
 		
-	function componentEventHandler(eleId, objName, objId, insertUrl, deleteUrl, changeUrl)
+	function componentEventHandler(eleId, objName, objId, insertUrl, deleteUrl, changeUrl, repositoryId, siteNodeId, languageId, contentId, componentId, componentContentId)
 	{
 		this.objName = objName;           // objName is a property of myObject4
 		this.objId = objId;
 		this.insertUrl = insertUrl;
 		this.deleteUrl = deleteUrl;
 		this.changeUrl = changeUrl;
+		this.repositoryId = repositoryId;
+		this.siteNodeId = siteNodeId;
+		this.languageId = languageId;
+		this.contentId = contentId;
+		this.componentId = componentId;
+		this.componentContentId = componentContentId;
 		//alert("eleId:" + eleId);
 		//alert("objName:" + objName);
 		//alert("objId:" + objId);
@@ -1534,7 +1512,7 @@ function viewSource()
 		this.onClick = function(evt, ele) // onClick is a method of myObject4
 		{
 			//alert('componentEventHandler.onClick()\nthis.objName = ' + this.objName + '\nele = ' + xName(ele));
-		    hidemenuie5();
+		    hidepreviousmenues();
 		    // cancel event bubbling
 		    if (evt && evt.stopPropagation) {evt.stopPropagation();}
 		    else if (window.event) {window.event.cancelBubble = true;}
@@ -1542,8 +1520,18 @@ function viewSource()
 		  
 		this.onContextMenu = function(evt, ele) // onContextMenu is a method of myObject4
 		{
-			//alert('componentEventHandler.oncontextmenu()\nthis.objName = ' + this.objName + '\nele = ' + xName(ele));
-		    showComponentMenu(evt, ele.id, this.objId, insertUrl, deleteUrl, changeUrl);
+			//alert('componentEventHandler.oncontextmenu()\nthis.objName = ' + this.objName + '\nele = ' + xName(ele) + '\ncomponentId = ' + this.componentId);
+		    //showComponentMenu(evt, ele.id, this.objId, insertUrl, deleteUrl, changeUrl);
+		    /*
+		    repositoryId = "36";
+		    siteNodeId = "1035";
+		    languageId = "3";
+		    contentId = "-1";
+		    componentId = "4";
+		    componentContentId = "6118";
+		    */
+		    showComponentTasks('componentTasks', 'repositoryId=' + repositoryId + '&siteNodeId=' + siteNodeId + '&languageId=' + languageId + '&contentId=' + contentId + '&componentId=' + componentId + '&componentContentId=' + componentContentId + '&showSimple=false&showLegend=false', false, evt);
+		    
 		    // cancel event bubbling
 		    if (evt && evt.stopPropagation) {evt.stopPropagation();}
 		    else if (window.event) {window.event.cancelBubble = true;}
@@ -1790,82 +1778,6 @@ function viewSource()
 
 	var groupHash = new Array();
 	//var componentIndex = 0;
-	
-	function moveRight(groupName)
-	{
-		componentIndex = groupHash[groupName + "CurrentIndex"];
-		//alert("componentIndex" + componentIndex);
-		if(!componentIndex)
-		{
-			groupHash[groupName + "CurrentIndex"] = 0;
-			componentIndex = 0;
-		}
-			
-		//alert("groupName: " + groupName);
-		var div = document.getElementById(groupName + "Components");
-		//alert("div: " + div.id);
-		var componentTDs = div.getElementsByTagName("div");
-		//alert("componentTDs:" + componentTDs.length);
-		//alert("componentIndex" + componentTDs.length);
-
-		if(componentIndex < componentTDs.length - 1)
-		{
-			//alert("componentIndex:" + componentIndex);
-			componentIndex = componentIndex + 1;
-		
-			for (var i = 0; i < componentTDs.length - 1; i++) 
-			{ 
-				//alert("Width of this a element is : " + componentTDs[i].style.width + ":" + componentTDs[i].id + "\n"); 
-				if(i < componentIndex)
-				{
-					//componentTDs[i].style.width = "0px";
-					componentTDs[i].style.display = "none";
-				}
-			} 
-		}
-		
-		groupHash[groupName + "CurrentIndex"] = componentIndex;
-	}
-	
-	function moveLeft(groupName)
-	{
-		componentIndex = groupHash[groupName + "CurrentIndex"];
-		//alert("componentIndex" + componentIndex);
-		if(!componentIndex)
-		{
-			groupHash[groupName + "CurrentIndex"] = 0;
-			componentIndex = 0;
-		}
-			
-		if(componentIndex > 0)
-		{
-			componentIndex = componentIndex - 1;
-			//alert("groupName: " + groupName);
-			var div = document.getElementById(groupName + "Components");
-			//alert("div: " + div.id);
-			var componentTDs = div.getElementsByTagName("div");
-			//alert("componentTDs:" + componentTDs.length);
-			//alert("componentIndex" + componentTDs.length);
-		
-			for (var i = 0; i < componentTDs.length - 1; i++) 
-			{ 
-				//alert("Width of this a element is : " + componentTDs[i].style.width + ":" + componentTDs[i].id + "\n"); 
-				//alert("i: " + i);
-				//alert("componentIndex: " + componentIndex);
-				if(i == componentIndex)
-				{
-					//componentTDs[i].style.width = "150px";
-					componentTDs[i].style.display = "block";					
-				}
-			} 
-	
-			//alert("Current:" + eval(groupName + "componentIndexStart"));
-			//alert("Current:" + eval(groupName + "componentIndexMax"));
-		}
-		
-		groupHash[groupName + "CurrentIndex"] = componentIndex;
-	}
-	
 	
 	//
 	// QueryString
