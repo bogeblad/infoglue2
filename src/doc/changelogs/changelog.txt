@@ -20,7 +20,15 @@ Abbreviated Changelog from 2.8.1 Final
 	* addComponentLinkHTML - this attribute lets replace the normal instruction to rightclick with html of 
 	  your choice - including the possibility to have a normal link/button/icon as the user can leftclick on. Easier yet.
 	* allowedNumberOfComponents - allows you to state that only a limited number of components are allowed in a slot.
-
+- Added jquery ui plugin and jquery 1.2.3
+- Added some actions/commands which we use in AJAX-calls in edit on sight. Makes the UI more lightweight and flexible. 
+- Added new feature which allows a user to save a part of a page (component structure) as a reusable part.
+- Improved transaction logging - now the real user's name is logged.
+- Fixed bug when userName was null in login transaction logging.
+- Added a new attribute "parseToMap" to componentPropertyValue-tag which enables you to have name/values sets in properties.
+- New tag (savePagePartTemplate) which allows you to output a link to the new save pagePartTemplate feature.
+- Added possibility to override what decorated component invoker the system uses.
+- Added the basics for a ajax-based page/component-editor. Improves performance a bit and makes the UI much more flexible.
 
 -------------------------------------------------------------------------------------
 - InfoGlue 2.8.1 Final
