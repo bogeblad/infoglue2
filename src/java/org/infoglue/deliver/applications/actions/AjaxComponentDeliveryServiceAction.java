@@ -94,13 +94,13 @@ public class AjaxComponentDeliveryServiceAction extends InfoGlueAbstractAction
     	
         	InfoGluePrincipal principal = this.getInfoGluePrincipal();
         	String cmsUserName = (String)this.getHttpSession().getAttribute("cmsUserName");
-       	 	System.out.println("cmsUserName:" + cmsUserName);
-        	if(cmsUserName != null)
+       	 	if(cmsUserName != null)
        	 		principal = UserControllerProxy.getController(db).getUser(cmsUserName);
         	else
         		principal = (InfoGluePrincipal)this.getAnonymousPrincipal();
         	
-       	 	System.out.println("cmsUserName:" + cmsUserName);
+       	 	logger.info("cmsUserName:" + cmsUserName);
+     	
         	Locale locale = this.getLocale();
         	if(languageId != null)
         		locale = LanguageController.getController().getLocaleWithId(languageId);
@@ -123,7 +123,9 @@ public class AjaxComponentDeliveryServiceAction extends InfoGlueAbstractAction
         this.getResponse().setContentType("text/plain");
         this.getResponse().getWriter().println(propertiesDiv.toString());
 
-        System.out.println("Returning:" + propertiesDiv.toString());
+        if(logger.isInfoEnabled())
+            logger.info("Returning:" + propertiesDiv.toString());
+        
         return NONE;
     }
     
@@ -168,13 +170,13 @@ public class AjaxComponentDeliveryServiceAction extends InfoGlueAbstractAction
     	
         	InfoGluePrincipal principal = this.getInfoGluePrincipal();
         	String cmsUserName = (String)this.getHttpSession().getAttribute("cmsUserName");
-       	 	System.out.println("cmsUserName:" + cmsUserName);
         	if(cmsUserName != null)
        	 		principal = UserControllerProxy.getController(db).getUser(cmsUserName);
         	else
         		principal = (InfoGluePrincipal)this.getAnonymousPrincipal();
         	
-       	 	System.out.println("cmsUserName:" + cmsUserName);
+        	logger.info("cmsUserName:" + cmsUserName);
+        	
         	Locale locale = this.getLocale();
         	if(languageId != null)
         		locale = LanguageController.getController().getLocaleWithId(languageId);
@@ -194,12 +196,12 @@ public class AjaxComponentDeliveryServiceAction extends InfoGlueAbstractAction
     		e.printStackTrace();
 		}
     	
-    	//tasksDiv = new StringBuffer("<div id='componentMenu' class='skin0'>" + System.currentTimeMillis() + "</div>");
-     	    	
         this.getResponse().setContentType("text/plain");
         this.getResponse().getWriter().println(tasksDiv.toString());
 
-        System.out.println("Returning:" + tasksDiv.toString());
+        if(logger.isInfoEnabled())
+            logger.info("Returning:" + tasksDiv.toString());
+        
         return NONE;
     }
 
@@ -238,13 +240,14 @@ public class AjaxComponentDeliveryServiceAction extends InfoGlueAbstractAction
     	
     		InfoGluePrincipal principal = this.getInfoGluePrincipal();
         	String cmsUserName = (String)this.getHttpSession().getAttribute("cmsUserName");
-       	 	System.out.println("cmsUserName:" + cmsUserName);
+
         	if(cmsUserName != null)
        	 		principal = UserControllerProxy.getController(db).getUser(cmsUserName);
         	else
         		principal = (InfoGluePrincipal)this.getAnonymousPrincipal();
         	
-       	 	System.out.println("cmsUserName:" + cmsUserName);
+        	logger.info("cmsUserName:" + cmsUserName);
+        	
         	Locale locale = this.getLocale();
         	if(languageId != null)
         		locale = LanguageController.getController().getLocaleWithId(languageId);
@@ -252,11 +255,9 @@ public class AjaxComponentDeliveryServiceAction extends InfoGlueAbstractAction
         	if(slotName == null)
         		slotName = "";
         	
-        	System.out.println("1");
-    		PageEditorHelper peh = new PageEditorHelper();
+        	PageEditorHelper peh = new PageEditorHelper();
 	    	availableComponentDiv = peh.getAvailableComponentsDiv(db, principal, locale, repositoryId, languageId, componentContentId, slotName, showLegend, targetDiv);
-        	System.out.println("2");
-	    	
+        	
 	    	commitTransaction(db);
     	}
     	catch (Exception e) 
@@ -268,7 +269,9 @@ public class AjaxComponentDeliveryServiceAction extends InfoGlueAbstractAction
         this.getResponse().setContentType("text/plain");
         this.getResponse().getWriter().println(availableComponentDiv);
 
-        System.out.println("Returning:" + availableComponentDiv);
+        if(logger.isInfoEnabled())
+        	logger.info("Returning:" + availableComponentDiv);
+        
         return NONE;
     }
     
@@ -302,13 +305,12 @@ public class AjaxComponentDeliveryServiceAction extends InfoGlueAbstractAction
     	
         	InfoGluePrincipal principal = this.getInfoGluePrincipal();
         	String cmsUserName = (String)this.getHttpSession().getAttribute("cmsUserName");
-       	 	System.out.println("cmsUserName:" + cmsUserName);
-        	if(cmsUserName != null)
+       	 	if(cmsUserName != null)
        	 		principal = UserControllerProxy.getController(db).getUser(cmsUserName);
         	else
         		principal = (InfoGluePrincipal)this.getAnonymousPrincipal();
         	
-       	 	System.out.println("cmsUserName:" + cmsUserName);
+       	 	logger.info("cmsUserName:" + cmsUserName);
         	Locale locale = this.getLocale();
         	if(languageId != null)
         		locale = LanguageController.getController().getLocaleWithId(languageId);
@@ -325,12 +327,12 @@ public class AjaxComponentDeliveryServiceAction extends InfoGlueAbstractAction
     		e.printStackTrace();
 		}
     	
-    	//tasksDiv = new StringBuffer("<div id='componentMenu' class='skin0'>" + System.currentTimeMillis() + "</div>");
-     	    	
         this.getResponse().setContentType("text/plain");
         this.getResponse().getWriter().println(componentStructureDiv.toString());
 
-        System.out.println("Returning:" + componentStructureDiv.toString());
+        if(logger.isInfoEnabled())
+        	logger.info("Returning:" + componentStructureDiv.toString());
+        
         return NONE;
     }
 

@@ -1064,7 +1064,9 @@ function showComponentPropertiesInDiv(id, targetDivId, parameterString, skipFloa
 	//propertiesDiv = document.getElementById(id);
 
 	if(skipFloat)
+	{
 		$(targetDiv).load("AjaxComponentDeliveryService!getComponentPropertyDiv.action?" + parameterString + "&targetDivId=" + targetDivId + " #componentPropertiesForm");
+	}
 	else
 	{
 		clientX = getEventPositionX(event);
@@ -1079,7 +1081,17 @@ function showComponentPropertiesInDiv(id, targetDivId, parameterString, skipFloa
 		if (bottomedge < targetDiv.offsetHeight)
 			clientY = (clientY - 200);
 		
-		$(targetDiv).load("AjaxComponentDeliveryService!getComponentPropertyDiv.action?" + parameterString + "&targetDivId=" + targetDivId + "");
+		$(targetDiv).load("AjaxComponentDeliveryService!getComponentPropertyDiv.action?" + parameterString + "&targetDivId=" + targetDivId + "",{}, function(event){
+
+			var theHandle = document.getElementById("componentPropertiesHandleCompProps");
+			var theRoot   = document.getElementById("componentProperties");
+			
+			Drag.init(theHandle, theRoot);
+			theRoot.style.left = 160;
+			theRoot.style.top = 150;
+			
+			floatDiv("componentProperties", 200, 50).flt();
+		});
 	}	
 
 	targetDiv.style.display = "block";
@@ -1098,6 +1110,9 @@ function showComponentTasksInDiv(targetDivId, parameterString, skipFloat, event)
 	
 	eventXPosition = getEventPositionX(event);
 	eventYPosition = getEventPositionY(event);
+
+    //if (event && event.stopPropagation) {event.stopPropagation();}
+    //else if (window.event) {window.event.cancelBubble = true;}	
 		
 	$(targetDiv).load("AjaxComponentDeliveryService!getComponentTasksDiv.action?" + parameterString + "&targetDivId=" + targetDivId + "",{}, function(event){
 		menuDiv = document.getElementById("componentMenu");
@@ -1124,6 +1139,7 @@ function showComponentTasksInDiv(targetDivId, parameterString, skipFloat, event)
 	
     if (event && event.stopPropagation) {event.stopPropagation();}
     else if (window.event) {window.event.cancelBubble = true;}	
+    return false;
 }
 
 function showComponentStructureInDiv(targetDivId, parameterString, event) 
@@ -1131,15 +1147,13 @@ function showComponentStructureInDiv(targetDivId, parameterString, event)
 	//alert("targetDivId:" + targetDivId);
 	//alert("parameterString:" + parameterString);
 	targetDiv = document.getElementById(targetDivId);
-	//alert("TargetDiv:" + targetDiv.id);
-	targetDiv.style.width = "100px";
-	targetDiv.style.height = "100px";
-	//alert("aaa");
+	
 	eventXPosition = getEventPositionX(event);
 	eventYPosition = getEventPositionY(event);
 		
 	$(targetDiv).load("AjaxComponentDeliveryService!getComponentStructureDiv.action?" + parameterString + "&targetDivId=" + targetDivId + "",{}, function(event){
 		componentStructureDiv = document.getElementById("componentStructure");
+		pageComponentsDiv 	  = document.getElementById("pageComponents");
 		
 		clientX = eventXPosition;
 		clientY = eventYPosition;
@@ -1152,12 +1166,14 @@ function showComponentStructureInDiv(targetDivId, parameterString, event)
 		
 		if (bottomedge < componentStructureDiv.offsetHeight)
 			clientY = (clientY - componentStructureDiv.offsetHeight);
+		
+		var divHeight = $("#pageComponents").height();
+		clientY = clientY - (divHeight / 2);
 				
 		componentStructureDiv.style.left 	= clientX + "px";
 		componentStructureDiv.style.top 	= clientY + "px";
 		
 		componentStructureDiv.style.visibility = "visible";
-		
 		//activeMenuId = "componentStructure";
 	});
 }

@@ -122,8 +122,8 @@ public class PageEditorHelper
 			slotName = slotName.substring(0, 10) + "...";
 
 		sb.append("<div id=\"componentProperties\" class=\"componentProperties\">");
-		sb.append("	<div id=\"componentPropertiesHandle\" class=\"componentPropertiesHandle\"><div id=\"leftPaletteHandleCompProps\">Properties - " + componentName + " - " + slotName + "</div><div id=\"rightPaletteHandle\"><a href=\"javascript:closeDiv('componentProperties');\" class=\"white\"><img src=\"" + componentEditorUrl + "/images/closeIcon.gif\" border=\"0\"/></a></div></div>");
-		sb.append("	<div id=\"componentPropertiesBody\" class=\"componentPropertiesBody\">");
+		sb.append("	<div id=\"componentPropertiesHandleCompProps\"><div id=\"leftPaletteHandleCompProps\">Properties - " + componentName + " - " + slotName + "</div><div id=\"rightPaletteHandleCompProps\"><a href=\"javascript:closeDiv('componentProperties');\" class=\"white\"><img src=\"" + componentEditorUrl + "/images/closeIcon.gif\" border=\"0\"/></a></div></div>");
+		sb.append("	<div id=\"componentPropertiesBodyCompProps\">");
 		
 		sb.append("	<form id=\"componentPropertiesForm\" name=\"component" + componentId + "PropertiesForm\" action=\"" + componentEditorUrl + "ViewSiteNodePageComponents!updateComponentProperties.action\" method=\"POST\">");
 		if(showLegend != null && showLegend.equals("true"))
@@ -133,13 +133,18 @@ public class PageEditorHelper
 		}
 		else
 		{
-			sb.append("		<fieldset style=\"border: 0px;\">");
+			sb.append("		<fieldset class=\"hiddenFieldSet\">");
 		}
 		
-		sb.append("		<div class=\"propertyRow\">");
+		sb.append("	<div class=\"propertyRow\">");
 
-		sb.append("		<label for=\"languageId\">Language</label>");
-		sb.append("		<select name=\"languageId\" onChange=\"javascript:changeLanguage(" + siteNodeId + ", this, " + contentId + ");\">");
+		sb.append("		<div class=\"propertyRowLeft\">");
+		sb.append("			<label for=\"languageId\">Language</label>");
+		sb.append("		</div>");
+
+		sb.append("		<div class=\"propertyRowRight\">");
+		sb.append("			<div class=\"fieldGroup\">");
+		sb.append("			<select name=\"languageId\" onChange=\"javascript:changeLanguage(" + siteNodeId + ", this, " + contentId + ");\">");
 		
 		List languages = LanguageDeliveryController.getLanguageDeliveryController().getLanguagesForSiteNode(db, siteNodeId, principal);
 			
@@ -161,9 +166,12 @@ public class PageEditorHelper
 			index++;
 		}
 
-		sb.append("		</select>");
+		sb.append("			</select>");
+		sb.append("			</div>");
+			
 		sb.append("		</div>");
-		
+		sb.append("		<div style=\"clear:both;\"></div>");
+
 		Collection componentProperties = getComponentProperties(componentId, document, siteNodeId, languageId, contentId, locale, db, principal);
 		
 		int propertyIndex = 0;
@@ -289,72 +297,89 @@ public class PageEditorHelper
 				}
 								
 				sb.append("		<div class=\"propertyRow\">");
-				sb.append("			<label for=\"\">" + componentProperty.getName() + "</label>");
-				//sb.append("			<td class=\"igtd\" width=\"16\"><img src=\"" + componentEditorUrl + "/images/questionMarkGrad.gif\" onMouseOver=\"javascript:showDiv('helpLayer" + componentProperty.getComponentId() + "_" + componentProperty.getName() + "');\" onMouseOut=\"javascript:hideDiv('helpLayer" + componentProperty.getComponentId() + "_" + componentProperty.getName() + "');\">" + helpSB + "</td>");
+				sb.append("			<div class=\"propertyRowLeft\">");
+				sb.append("				<label for=\"" + componentProperty.getName() + "\">" + componentProperty.getName() + "</label>");
+				sb.append("			</div>");
+
+				sb.append("			<div class=\"propertyRowRight\">");
 				
 				if(hasAccessToProperty)
 				{
 					String warningText = getLocalizedString(locale, "deliver.editOnSight.dirtyWarning");
-					sb.append("<a class=\"componentEditorLink\" href=\"javascript:if(checkDirty('" + warningText + "')){window.open('" + assignUrl + "','Assign','toolbar=no,status=yes,scrollbars=yes,location=no,menubar=no,directories=no,resizable=no,width=300,height=600,left=5,top=5')};\">");
+					sb.append("			<div class=\"fieldGroup\">");									
+					sb.append("				<a name=\"" + componentProperty.getName() + "\" class=\"componentEditorLink\" href=\"javascript:if(checkDirty('" + warningText + "')){window.open('" + assignUrl + "','Assign','toolbar=no,status=yes,scrollbars=yes,location=no,menubar=no,directories=no,resizable=no,width=300,height=600,left=5,top=5')};\">");
 				}
 
-				sb.append("" + (componentProperty.getValue() == null || componentProperty.getValue().equalsIgnoreCase("") ? "Undefined" : componentProperty.getValue()) + (componentProperty.getIsAssetBinding() ? " (" + componentProperty.getAssetKey() + ")" : ""));
+				sb.append("					" + (componentProperty.getValue() == null || componentProperty.getValue().equalsIgnoreCase("") ? "Undefined" : componentProperty.getValue()) + (componentProperty.getIsAssetBinding() ? " (" + componentProperty.getAssetKey() + ")" : ""));
 				
 				if(hasAccessToProperty)
-					sb.append("</a>");
+				{
+					sb.append("				</a>");
+					sb.append("			</div>");
+				}				
 				
-				//sb.append("</td>");
-				
+				sb.append("				<div class=\"actionGroup\">");
 				if(componentProperty.getValue() != null && componentProperty.getValue().equalsIgnoreCase("Undefined"))
 				{	
 					if(hasAccessToProperty && createUrl != null)
+					{
 						sb.append("			<a class=\"componentEditorLink\" href=\"" + createUrl + "\"><img src=\"" + componentEditorUrl + "/images/createContent.gif\" border=\"0\" alt=\"Create new content to show\"></a>");
+					}
 				}
 				else
 				{
 					if(hasAccessToProperty)
+					{
 						sb.append("			<a class=\"componentEditorLink\" href=\"" + componentEditorUrl + "ViewSiteNodePageComponents!deleteComponentPropertyValue.action?siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&propertyName=" + componentProperty.getName() + "&showSimple=" + showSimple + "\"><img src=\"" + componentEditorUrl + "/images/delete.gif\" border=\"0\"/></a>");
+					}
 				}
-				
+				sb.append("			</div>");
+				sb.append("			</div>");
+
 				sb.append("		</div>");
 			}
 			else if(componentProperty.getType().equalsIgnoreCase(ComponentProperty.TEXTFIELD))
 			{
-				StringBuffer helpSB = new StringBuffer();
-				helpSB.append("<div class=\"tooltipDiv\" id=\"helpLayer" + componentProperty.getComponentId() + "_" + componentProperty.getName() + "\">");
-				helpSB.append("" + (componentProperty.getDescription() == null || componentProperty.getDescription().equalsIgnoreCase("") ? "No description" : componentProperty.getDescription()) + "");
-				helpSB.append("</div>");
-
 				sb.append("	<div class=\"propertyRow\">");
-				sb.append("		<label for=\"" + componentProperty.getName() + "\" onMouseOver=\"showDiv('helpLayer" + componentProperty.getComponentId() + "_" + componentProperty.getName() + "');\" onMouseOut=\"javascript:hideDiv('helpLayer" + componentProperty.getComponentId() + "_" + componentProperty.getName() + "');\">" + componentProperty.getName() + "</label>");
+				sb.append("		<div class=\"propertyRowLeft\">");
+				sb.append("			<label for=\"" + componentProperty.getName() + "\" onMouseOver=\"showDiv('helpLayer" + componentProperty.getComponentId() + "_" + componentProperty.getName() + "');\" onMouseOut=\"javascript:hideDiv('helpLayer" + componentProperty.getComponentId() + "_" + componentProperty.getName() + "');\">" + componentProperty.getName() + "</label>");
+				sb.append("		</div>");
+
+				sb.append("		<div class=\"propertyRowRight\">");
 				
+				sb.append("			<div class=\"fieldGroup\">");									
 				if(hasAccessToProperty)
 				{
-					sb.append("	<input type=\"hidden\" name=\"" + propertyIndex + "_propertyName\" value=\"" + componentProperty.getName() + "\"/>");
-					sb.append("	<input type=\"text\" class=\"propertytextfield\" name=\"" + componentProperty.getName() + "\" value=\"" + componentProperty.getValue() + "\" onkeydown=\"setDirty();\"/>");
+					sb.append("			<input type=\"hidden\" name=\"" + propertyIndex + "_propertyName\" value=\"" + componentProperty.getName() + "\"/>");
+					sb.append("			<input type=\"text\" class=\"propertytextfield\" name=\"" + componentProperty.getName() + "\" value=\"" + componentProperty.getValue() + "\" onkeydown=\"setDirty();\"/>");
 				}
 				else
 					sb.append("	" + componentProperty.getValue() + "");
+				sb.append("			</div>");
 	
 				if(hasAccessToProperty)
-					sb.append("	<a class=\"componentEditorLink\" href=\"" + componentEditorUrl + "ViewSiteNodePageComponents!deleteComponentPropertyValue.action?siteNodeId=" + siteNodeId + "&amp;languageId=" + languageId + "&amp;contentId=" + contentId + "&amp;componentId=" + componentId + "&amp;propertyName=" + componentProperty.getName() + "&amp;showSimple=" + showSimple + "\"><img src=\"" + componentEditorUrl + "/images/delete.gif\" border=\"0\"/></a>");
+				{
+					sb.append("	<div class=\"actionGroup\">");
+					sb.append("		<a class=\"componentEditorLink\" href=\"" + componentEditorUrl + "ViewSiteNodePageComponents!deleteComponentPropertyValue.action?siteNodeId=" + siteNodeId + "&amp;languageId=" + languageId + "&amp;contentId=" + contentId + "&amp;componentId=" + componentId + "&amp;propertyName=" + componentProperty.getName() + "&amp;showSimple=" + showSimple + "\"><img src=\"" + componentEditorUrl + "/images/delete.gif\" border=\"0\"/></a>");
+					sb.append("	</div>");
+				}
+				sb.append("	</div>");
 
 				sb.append("	</div>");
-				sb.append("	" + helpSB + "");
 
 				if(hasAccessToProperty)
 				    propertyIndex++;
 			}
 			else if(componentProperty.getType().equalsIgnoreCase(ComponentProperty.TEXTAREA))
 			{
-				StringBuffer helpSB = new StringBuffer();
-				helpSB.append("<div class=\"tooltipDiv\" id=\"helpLayer" + componentProperty.getComponentId() + "_" + componentProperty.getName() + "\">");
-				helpSB.append("" + (componentProperty.getDescription() == null || componentProperty.getDescription().equalsIgnoreCase("") ? "No description" : componentProperty.getDescription()) + "");
-				helpSB.append("</div>");
-
 				sb.append("	<div class=\"propertyRow\">");
+				sb.append("		<div class=\"propertyRowLeft\">");
 				sb.append("		<label for=\"" + componentProperty.getName() + "\" onMouseOver=\"showDiv('helpLayer" + componentProperty.getComponentId() + "_" + componentProperty.getName() + "');\" onMouseOut=\"javascript:hideDiv('helpLayer" + componentProperty.getComponentId() + "_" + componentProperty.getName() + "');\">" + componentProperty.getName() + "</label>");
+				sb.append("		</div>");
+
+				sb.append("		<div class=\"propertyRowRight\">");
 				
+				sb.append("			<div class=\"fieldGroup\">");									
 				if(hasAccessToProperty)
 				{
 					sb.append("	<input type=\"hidden\" name=\"" + propertyIndex + "_propertyName\" value=\"" + componentProperty.getName() + "\"/>");
@@ -362,26 +387,31 @@ public class PageEditorHelper
 				}
 				else
 					sb.append("	" + componentProperty.getValue() + "");
+				sb.append("			</div>");
 	
 				if(hasAccessToProperty)
+				{
+					sb.append("	<div class=\"actionGroup\">");
 					sb.append("	<a class=\"componentEditorLink\" href=\"" + componentEditorUrl + "ViewSiteNodePageComponents!deleteComponentPropertyValue.action?siteNodeId=" + siteNodeId + "&amp;languageId=" + languageId + "&amp;contentId=" + contentId + "&amp;componentId=" + componentId + "&amp;propertyName=" + componentProperty.getName() + "&amp;showSimple=" + showSimple + "\"><img src=\"" + componentEditorUrl + "/images/delete.gif\" border=\"0\"/></a>");
-				
+					sb.append("	</div>");
+				}
 				sb.append("	</div>");
-				sb.append("	" + helpSB + "");
+
+				sb.append("	</div>");
 				
 				if(hasAccessToProperty)
 				    propertyIndex++;
 			}
 			else if(componentProperty.getType().equalsIgnoreCase(ComponentProperty.SELECTFIELD))
 			{
-				StringBuffer helpSB = new StringBuffer();
-				helpSB.append("<div class=\"tooltipDiv\" id=\"helpLayer" + componentProperty.getComponentId() + "_" + componentProperty.getName() + "\">");
-				helpSB.append("" + (componentProperty.getDescription() == null || componentProperty.getDescription().equalsIgnoreCase("") ? "No description" : componentProperty.getDescription()) + "");
-				helpSB.append("</div>");
-
 				sb.append("	<div class=\"propertyRow\">");
+				sb.append("		<div class=\"propertyRowLeft\">");
 				sb.append("		<label for=\"" + componentProperty.getName() + "\" onMouseOver=\"showDiv('helpLayer" + componentProperty.getComponentId() + "_" + componentProperty.getName() + "');\" onMouseOut=\"javascript:hideDiv('helpLayer" + componentProperty.getComponentId() + "_" + componentProperty.getName() + "');\">" + componentProperty.getName() + "</label>");
+				sb.append("		</div>");
+
+				sb.append("		<div class=\"propertyRowRight\">");
 				
+				sb.append("			<div class=\"fieldGroup\">");									
 				if(hasAccessToProperty)
 				{
 					sb.append("	<input type=\"hidden\" name=\"" + propertyIndex + "_propertyName\" value=\"" + componentProperty.getName() + "\">");
@@ -399,9 +429,16 @@ public class PageEditorHelper
 				}
 				else
 					sb.append("	" + componentProperty.getName() + "");
+				sb.append("		</div>");
 	
+				sb.append("	</div>");
+
 				if(hasAccessToProperty)
+				{
+					sb.append("	<div class=\"actionGroup\">");
 					sb.append("	<a class=\"componentEditorLink\" href=\"" + componentEditorUrl + "ViewSiteNodePageComponents!deleteComponentPropertyValue.action?siteNodeId=" + siteNodeId + "&amp;languageId=" + languageId + "&amp;contentId=" + contentId + "&amp;componentId=" + componentId + "&amp;propertyName=" + componentProperty.getName() + "&amp;showSimple=" + showSimple + "\"><img src=\"" + componentEditorUrl + "/images/delete.gif\" border=\"0\"/></a>");
+					sb.append("	</div>");
+				}
 				
 				sb.append("	</div>");
 				
@@ -410,11 +447,64 @@ public class PageEditorHelper
 			}
 			else if(componentProperty.getType().equalsIgnoreCase(ComponentProperty.CHECKBOXFIELD))
 			{
-				StringBuffer helpSB = new StringBuffer();
-				helpSB.append("<div class=\"tooltipDiv\" id=\"helpLayer" + componentProperty.getComponentId() + "_" + componentProperty.getName() + "\">");
-				helpSB.append("" + (componentProperty.getDescription() == null || componentProperty.getDescription().equalsIgnoreCase("") ? "No description" : componentProperty.getDescription()) + "");
-				helpSB.append("</div>");
+				sb.append("	<div class=\"propertyRow\">");
+				sb.append("		<div class=\"propertyRowLeft\">");
+				sb.append("		<label for=\"" + componentProperty.getName() + "\" onMouseOver=\"showDiv('helpLayer" + componentProperty.getComponentId() + "_" + componentProperty.getName() + "');\" onMouseOut=\"javascript:hideDiv('helpLayer" + componentProperty.getComponentId() + "_" + componentProperty.getName() + "');\">" + componentProperty.getName() + "</label>");
+				sb.append("		</div>");
 
+				sb.append("		<div class=\"propertyRowRight\">");
+				sb.append("			<div class=\"fieldGroup\">");									
+				if(hasAccessToProperty)
+				{
+					sb.append("		<input type=\"hidden\" name=\"" + propertyIndex + "_propertyName\" value=\"" + componentProperty.getName() + "\">");
+					int numberOfCheckboxes = 0;
+					Iterator optionsIterator = componentProperty.getOptions().iterator();
+					while(optionsIterator.hasNext())
+					{
+					    ComponentPropertyOption option = (ComponentPropertyOption)optionsIterator.next();
+					    boolean isSame = false;
+					    if(componentProperty != null && componentProperty.getValue() != null && option != null && option.getValue() != null)
+					    {
+					    	String[] values = componentProperty.getValue().split(",");
+					    	for(int i=0; i<values.length; i++)
+					    	{
+					    		isSame = values[i].equals(option.getValue());
+					    		if(isSame)
+					    			break;
+					    	}
+					    }
+
+					    sb.append("<input type=\"checkbox\" style=\"width: 20px;\" name=\"" + componentProperty.getName() + "\" value=\"" + option.getValue() + "\"" + (isSame ? " checked=\"1\"" : "") + " onclicked=\"setDirty();\"/>" + option.getName() + " ");
+					    numberOfCheckboxes++;
+					    if(numberOfCheckboxes == 2)
+					    {
+					    	numberOfCheckboxes = 0;
+					    	//sb.append("<br/>");
+					    }
+					}
+				}
+				else
+					sb.append("	" + componentProperty.getName() + "");
+
+				sb.append("	</div>");
+
+				if(hasAccessToProperty)
+				{
+					sb.append("	<div class=\"actionGroup\">");
+					sb.append("	<a class=\"componentEditorLink\" href=\"" + componentEditorUrl + "ViewSiteNodePageComponents!deleteComponentPropertyValue.action?siteNodeId=" + siteNodeId + "&amp;languageId=" + languageId + "&amp;contentId=" + contentId + "&amp;componentId=" + componentId + "&amp;propertyName=" + componentProperty.getName() + "&amp;showSimple=" + showSimple + "\"><img src=\"" + componentEditorUrl + "/images/delete.gif\" border=\"0\"/></a>");
+					sb.append("	</div>");
+				}
+				
+				sb.append("	</div>");
+				
+				sb.append("	</div>");
+				
+				if(hasAccessToProperty)
+				    propertyIndex++;
+			}
+			/*
+			else if(componentProperty.getType().equalsIgnoreCase(ComponentProperty.RADIOBUTTONFIELD))
+			{
 				sb.append("	<div class=\"propertyRow\">");
 				sb.append("		<label for=\"" + componentProperty.getName() + "\" onMouseOver=\"showDiv('helpLayer" + componentProperty.getComponentId() + "_" + componentProperty.getName() + "');\" onMouseOut=\"javascript:hideDiv('helpLayer" + componentProperty.getComponentId() + "_" + componentProperty.getName() + "');\">" + componentProperty.getName() + "</label>");
 				
@@ -438,7 +528,7 @@ public class PageEditorHelper
 					    	}
 					    }
 
-					    sb.append("<input type=\"checkbox\" name=\"" + componentProperty.getName() + "\" value=\"" + option.getValue() + "\"" + (isSame ? " checked=\"1\"" : "") + " onclicked=\"setDirty();\"/>" + option.getName() + " ");
+					    sb.append("<input type=\"checkbox\" style=\"width:30px;\" name=\"" + componentProperty.getName() + "\" value=\"" + option.getValue() + "\"" + (isSame ? " checked=\"1\"" : "") + " onclicked=\"setDirty();\"/> " + option.getName() + " ");
 					}
 				}
 				else
@@ -452,9 +542,11 @@ public class PageEditorHelper
 				if(hasAccessToProperty)
 				    propertyIndex++;
 			}
+			*/
+			
+			sb.append("	<div style=\"clear:both;\"></div>");
 		}
 		
-		sb.append("		<div style=\"clear:both;\"></div>");
 		sb.append("		<div class=\"buttonRow\">");
 		sb.append("			<input type=\"image\" style=\"width: 50px; height: 25px;\" src=\"" + componentEditorUrl + "" + getLocalizedString(locale, "images.contenttool.buttons.save") + "\" width=\"50\" height=\"25\" border=\"0\"/>");
 		sb.append("			<a href=\"javascript:clearComponentPropertiesInDiv('" + targetDiv + "');\"><img src=\"" + componentEditorUrl + "" + getLocalizedString(locale, "images.contenttool.buttons.close") + "\" width=\"50\" height=\"25\" border=\"0\"/></a>");
@@ -470,22 +562,6 @@ public class PageEditorHelper
 		sb.append("	</div>");
 
 		sb.append("	</div>");
-
-		sb.append("	<script type=\"text/javascript\">");
-		sb.append("		var theHandle = document.getElementById(\"componentPropertiesHandle\");");
-		sb.append("		var theRoot   = document.getElementById(\"componentProperties\");");
-		
-		sb.append("		componentId = \"" + componentId + "\";");
-		sb.append("		activatedComponentId = QueryString(\"activatedComponentId\");");
-		sb.append("		if(activatedComponentId && activatedComponentId == componentId)"); 
-		sb.append("			openDiv(\"componentProperties\");"); 
-
-		sb.append("		Drag.init(theHandle, theRoot);");
-		sb.append("     theRoot.style.left = 160;");
-		sb.append("     theRoot.style.top = 150;");
-		
-		sb.append("     floatDiv(\"componentProperties\", 200, 50).flt();");
-		sb.append("	</script>");
 		
 		return sb.toString();
 	}
@@ -695,7 +771,7 @@ public class PageEditorHelper
 			if(treeItem != true)
 			{
 				sb.append("<hr/>");
-				sb.append("<div class=\"igmenuitems\" onMouseover=\"javascript:highlightie5(event);\" onMouseout=\"javascript:lowlightie5(event);\" onClick=\"javascript:showComponentStructure('componentStructure', 'repositoryId=" + repositoryId + "&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "');\">" + pageComponentsHTML + "</div>");
+				sb.append("<div class=\"igmenuitems\" onMouseover=\"javascript:highlightie5(event);\" onMouseout=\"javascript:lowlightie5(event);\" onClick=\"javascript:showComponentStructure('componentStructure', 'repositoryId=" + repositoryId + "&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "', event);\">" + pageComponentsHTML + "</div>");
 				sb.append("<div class=\"igmenuitems\" onMouseover=\"javascript:highlightie5(event);\" onMouseout=\"javascript:lowlightie5(event);\" onClick=\"window.open(document.location.href, 'PageEditor', '');\">" + componentEditorInNewWindowHTML + "</div>");
 				sb.append("<div class=\"igmenuitems\" onMouseover=\"javascript:highlightie5(event);\" onMouseout=\"javascript:lowlightie5(event);\" onClick=\"javascript:viewSource();\">" + viewSourceHTML + "</div>");
 			}
@@ -726,12 +802,12 @@ public class PageEditorHelper
 			List pageComponents = getPageComponents(db, pageComponentsString, document.getRootElement(), "base", null, null, siteNodeId, languageId, principal);
 			InfoGlueComponent component = (InfoGlueComponent)pageComponents.get(0);
 			
-			sb.append("<div id=\"pageComponents\" class=\"componentProperties\" style=\"left:0px; top:0px;\">");
+			sb.append("<div id=\"pageComponents\" class=\"componentProperties\" style=\"left:0px; top:0px; width: 450px; height: 500px;\">");
 	
 			sb.append("	 <div id=\"dragCorner\" style=\"position: absolute; width: 16px; height: 16px; background-color: white; bottom: 0px; right: 0px;\"><a href=\"javascript:expandWindow('pageComponents');\"><img src=\"" + contextPath + "/images/enlarge.gif\" border=\"0\" width=\"16\" height=\"16\"></a></div>");
 				
 			sb.append("	 <div id=\"pageComponentsHandle\" class=\"componentPropertiesHandle\"><div id=\"leftHandleNarrow\">Page components</div><div id=\"rightPaletteHandle\"><a href=\"javascript:hideDiv('pageComponents');\" class=\"white\"><img src=\"" + contextPath + "/images/closeIcon.gif\" border=\"0\"/></a></div></div>");
-			sb.append("	 <div id=\"pageComponentsBody\" class=\"componentPropertiesBody\"><table class=\"igtable\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\">");
+			sb.append("	 <div id=\"pageComponentsBody\" class=\"componentPropertiesBody\" style=\"height: 480px;\"><table class=\"igtable\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\">");
 	
 			sb.append("	 <tr class=\"igtr\">");
 		    sb.append("		<td class=\"igtd\" colspan=\"20\"><img src=\"" + contextPath + "/images/tcross.png\" width=\"19\" height=\"16\"><span id=\"" + component.getId() + component.getSlotName() + "ClickableDiv\" class=\"iglabel\"><img src=\"" + contextPath + "/images/slotIcon.gif\" width=\"16\" height=\"16\"><img src=\"" + contextPath + "/images/trans.gif\" width=\"5\" height=\"1\">" + component.getName() + "</span><script type=\"text/javascript\">initializeSlotEventHandler('" + component.getId() + component.getSlotName() + "ClickableDiv', '" + contextPath + "ViewSiteNodePageComponents!listComponents.action?CCC=1&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&parentComponentId=" + component.getId() + "&slotId=base&showSimple=" + showSimple + "', '', '', 'base', '" + component.getContentId() + "');</script></td>");
@@ -784,7 +860,7 @@ public class PageEditorHelper
 
 	    String tasks = "showComponentTasks('componentTasks', 'repositoryId=" + repositoryId + "&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + component.getId() + "&componentContentId=" + component.getContentId() + "&slotId=" + component.getContainerSlot().getId() + "&showSimple=false&showLegend=false&slotClicked=false&treeItem=true', false, event);";
 
-		sb.append("<td class=\"igtd\" width=\"19\"><img src=\"" + contextPath + "/images/tcross.png\" width=\"19\" height=\"16\"></td><td class=\"igtd\"><img src=\"" + contextPath + "/images/componentIcon.gif\" width=\"16\" height=\"16\"></td><td class=\"igtd\" colspan=\"" + (colspan - 2) + "\"><span id=\"" + component.getId() + "\" oncontextmenu=\"" + tasks + "\">" + componentContentVO.getName() + "</span>");
+		sb.append("<td class=\"igtd\" width=\"19\"><img src=\"" + contextPath + "/images/tcross.png\" width=\"19\" height=\"16\"></td><td class=\"igtd\"><img src=\"" + contextPath + "/images/componentIcon.gif\" width=\"16\" height=\"16\"></td><td class=\"igtd\" colspan=\"" + (colspan - 2) + "\"><span id=\"" + component.getId() + "\" onclick=\"" + tasks + "\" oncontextmenu=\"hideDiv('pageComponents');\">" + componentContentVO.getName() + "</span>");
 		String upUrl = componentEditorUrl + "ViewSiteNodePageComponents!moveComponent.action?siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + component.getId() + "&direction=0&showSimple=" + showSimple + "";
 		String downUrl = componentEditorUrl + "ViewSiteNodePageComponents!moveComponent.action?siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + component.getId() + "&direction=1&showSimple=" + showSimple + "";
 		
@@ -842,7 +918,7 @@ public class PageEditorHelper
 		    
 		    String slotTasks = "showComponentTasks('componentTasks', 'repositoryId=" + repositoryId + "&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + component.getId() + "&componentContentId=" + component.getContentId() + "&slotId=" + slot.getId() + "&showSimple=false&showLegend=false&slotClicked=true&treeItem=true', false, event);";
 		    
-		    sb.append("<td class=\"igtd\" colspan=\"" + (colspan - 4) + "\"><span id=\"" + slot.getId() + "ClickableDiv\" class=\"iglabel\" oncontextmenu=\"" + slotTasks + "\">" + slot.getId() + "</span></td>");
+		    sb.append("<td class=\"igtd\" colspan=\"" + (colspan - 4) + "\"><span id=\"" + slot.getId() + "ClickableDiv\" class=\"iglabel\" onclick=\"" + slotTasks + "\" oncontextmenu=\"hideDiv('pageComponents');\">" + slot.getId() + "</span></td>");
 			
 			sb.append("		</tr>");
 
@@ -1040,13 +1116,9 @@ public class PageEditorHelper
 		timer.setActive(false);
 				
 		Document document = getPageComponentsDOM4JDocument(db, siteNodeId, languageId, contentId, principal);
-		System.out.println("document:" + document.asXML());
-		System.out.println("locale.getLanguage():" + locale.getLanguage());
 		
 		String componentXPath = "//component[@id=" + componentId + "]/properties/property[@name='" + name + "']";
-		System.out.println("componentXPath:" + componentXPath);
 		List anl = document.selectNodes(componentXPath);
-		System.out.println("anl:" + anl.size());
 		Iterator anlIterator = anl.iterator();
 		while(anlIterator.hasNext())
 		{
