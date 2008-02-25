@@ -438,8 +438,6 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 	{
 		initialize();
 			
-		NodeDeliveryController nodeDeliveryController			    = NodeDeliveryController.getNodeDeliveryController(siteNodeId, languageId, contentId);
-		
 		String componentXML   = getPageComponentsString(siteNodeId, this.masterLanguageVO.getId(), contentId);			
 		//logger.info("componentXML:" + componentXML);
 		
@@ -463,13 +461,18 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 			    while(previousNode != null && previousNode.getNodeType() != Node.ELEMENT_NODE)
 		        {
 				    previousNode = previousNode.getPreviousSibling();
-		        	break;
+		        	//break;
 		        }
 			    
 			    Element element = ((Element)previousNode);
 				while(element != null && !element.getAttribute("name").equalsIgnoreCase(name))
 			    {
 			        previousNode = previousNode.getPreviousSibling();
+			        while(previousNode != null && previousNode.getNodeType() != Node.ELEMENT_NODE)
+			        {
+					    previousNode = previousNode.getPreviousSibling();
+			        	//break;
+			        }
 					element = ((Element)previousNode);
 			    }
 				

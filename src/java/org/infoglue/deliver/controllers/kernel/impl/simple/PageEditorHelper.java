@@ -121,9 +121,9 @@ public class PageEditorHelper
 		if(slotName.length() > 10) 
 			slotName = slotName.substring(0, 10) + "...";
 
-		sb.append("<div id=\"componentProperties\" class=\"componentProperties\">");
-		sb.append("	<div id=\"componentPropertiesHandleCompProps\"><div id=\"leftPaletteHandleCompProps\">Properties - " + componentName + " - " + slotName + "</div><div id=\"rightPaletteHandleCompProps\"><a href=\"javascript:closeDiv('componentProperties');\" class=\"white\"><img src=\"" + componentEditorUrl + "/images/closeIcon.gif\" border=\"0\"/></a></div></div>");
-		sb.append("	<div id=\"componentPropertiesBodyCompProps\">");
+		sb.append("<div id=\"componentProperties\">");
+		sb.append("	<div id=\"componentPropertiesHandle\"><div id=\"leftComponentPropertiesHandle\">Properties - " + componentName + " - " + slotName + "</div><div id=\"rightComponentPropertiesHandle\"><a href=\"javascript:closeDiv('componentProperties');\" class=\"white\"><img src=\"" + componentEditorUrl + "/images/closeIcon.gif\" border=\"0\"/></a></div></div>");
+		sb.append("	<div id=\"componentPropertiesBody\">");
 		
 		sb.append("	<form id=\"componentPropertiesForm\" name=\"component" + componentId + "PropertiesForm\" action=\"" + componentEditorUrl + "ViewSiteNodePageComponents!updateComponentProperties.action\" method=\"POST\">");
 		if(showLegend != null && showLegend.equals("true"))
@@ -170,7 +170,8 @@ public class PageEditorHelper
 		sb.append("			</div>");
 			
 		sb.append("		</div>");
-		sb.append("		<div style=\"clear:both;\"></div>");
+		sb.append("	</div>");
+		sb.append("	<div style=\"clear:both;\"></div>");
 
 		Collection componentProperties = getComponentProperties(componentId, document, siteNodeId, languageId, contentId, locale, db, principal);
 		
@@ -474,7 +475,7 @@ public class PageEditorHelper
 					    	}
 					    }
 
-					    sb.append("<input type=\"checkbox\" style=\"width: 20px;\" name=\"" + componentProperty.getName() + "\" value=\"" + option.getValue() + "\"" + (isSame ? " checked=\"1\"" : "") + " onclicked=\"setDirty();\"/>" + option.getName() + " ");
+					    sb.append("<input type=\"checkbox\" style=\"width: 20px; border: 0px;\" name=\"" + componentProperty.getName() + "\" value=\"" + option.getValue() + "\"" + (isSame ? " checked=\"1\"" : "") + " onclicked=\"setDirty();\"/>" + option.getName() + " ");
 					    numberOfCheckboxes++;
 					    if(numberOfCheckboxes == 2)
 					    {
@@ -546,9 +547,9 @@ public class PageEditorHelper
 			
 			sb.append("	<div style=\"clear:both;\"></div>");
 		}
-		
+
 		sb.append("		<div class=\"buttonRow\">");
-		sb.append("			<input type=\"image\" style=\"width: 50px; height: 25px;\" src=\"" + componentEditorUrl + "" + getLocalizedString(locale, "images.contenttool.buttons.save") + "\" width=\"50\" height=\"25\" border=\"0\"/>");
+		sb.append("			<input type=\"image\" style=\"width: 50px; height: 25px; border: 0px;\" src=\"" + componentEditorUrl + "" + getLocalizedString(locale, "images.contenttool.buttons.save") + "\" width=\"50\" height=\"25\" border=\"0\"/>");
 		sb.append("			<a href=\"javascript:clearComponentPropertiesInDiv('" + targetDiv + "');\"><img src=\"" + componentEditorUrl + "" + getLocalizedString(locale, "images.contenttool.buttons.close") + "\" width=\"50\" height=\"25\" border=\"0\"/></a>");
 		sb.append("		</div>");
 		sb.append("		</fieldset>");
@@ -558,6 +559,7 @@ public class PageEditorHelper
 		sb.append("		<input type=\"hidden\" name=\"contentId\" value=\"" + contentId + "\"/>");
 		sb.append("		<input type=\"hidden\" name=\"componentId\" value=\"" + componentId + "\"/>");
 		sb.append("		<input type=\"hidden\" name=\"showSimple\" value=\"" + showSimple + "\"/>");
+
 		sb.append("		</form>");
 		sb.append("	</div>");
 
@@ -566,7 +568,31 @@ public class PageEditorHelper
 		return sb.toString();
 	}
 	
-	
+	/**
+	 * This method generates an appropriate context-menu for a component or slot.
+	 * Usually this is used by an ajax-based GUI.
+	 * 
+	 * @param db
+	 * @param principal
+	 * @param request
+	 * @param locale
+	 * @param repositoryId
+	 * @param siteNodeId
+	 * @param languageId
+	 * @param contentId
+	 * @param componentId
+	 * @param componentContentId
+	 * @param slotName
+	 * @param slotId
+	 * @param showSimple
+	 * @param originalFullURL
+	 * @param showLegend
+	 * @param targetDiv
+	 * @param slotClicked
+	 * @param treeItem
+	 * @return
+	 * @throws Exception
+	 */
 	public String getComponentTasksDiv(Database db, 
 			 InfoGluePrincipal principal, 
 			 HttpServletRequest request, 
@@ -587,7 +613,7 @@ public class PageEditorHelper
 			 boolean treeItem) throws Exception
 		{	
 		
-		System.out.println("treeItem: " + treeItem);
+		//System.out.println("treeItem: " + treeItem);
 		
 		StringBuffer sb = new StringBuffer();
 
@@ -601,27 +627,19 @@ public class PageEditorHelper
    		if(pageComponentsString != null && pageComponentsString.length() != 0)
 		{
    			Document document = domBuilder.getDocument(pageComponentsString);
-			System.out.println("Getting components...");
 			List pageComponents = getPageComponents(db, pageComponentsString, document.getRootElement(), "base", null, null, siteNodeId, languageId, principal);
 			InfoGlueComponent component = (InfoGlueComponent)pageComponents.get(0);
-			System.out.println("Searching for componentId:" + componentId);
 			if(!component.getId().equals(componentId))
 				component = getComponentWithId(component, componentId);
 
-			System.out.println("component:" + component);
-
-			System.out.println("Getting tasks for " + component.getName() + ":" + component.getSlotName() + ":" + component.getId());
+			//System.out.println("Getting tasks for " + component.getName() + ":" + component.getSlotName() + ":" + component.getId());
 			boolean hasAccessToAccessRights = AccessRightController.getController().getIsPrincipalAuthorized(db, principal, "ComponentEditor.ChangeSlotAccess", "");
-			System.out.println("Access for:" + "" + (component.getParentComponent() == null ? component.getContentId() : component.getParentComponent().getContentId()) + "_" + component.getSlotName());
 			boolean hasAccessToAddComponent = AccessRightController.getController().getIsPrincipalAuthorized(db, principal, "ComponentEditor.AddComponent", "" + (component.getParentComponent() == null ? component.getContentId() : component.getParentComponent().getContentId()) + "_" + component.getSlotName());
 			boolean hasAccessToDeleteComponent = AccessRightController.getController().getIsPrincipalAuthorized(db, principal, "ComponentEditor.DeleteComponent", "" + (component.getParentComponent() == null ? component.getContentId() : component.getParentComponent().getContentId()) + "_" + component.getSlotName());
 			boolean hasAccessToChangeComponent = AccessRightController.getController().getIsPrincipalAuthorized(db, principal, "ComponentEditor.ChangeComponent", "" + (component.getParentComponent() == null ? component.getContentId() : component.getParentComponent().getContentId()) + "_" + component.getSlotName());
 		    boolean hasSaveTemplateAccess = AccessRightController.getController().getIsPrincipalAuthorized(db, principal, "StructureTool.SaveTemplate", "");
+		    boolean hasSavePagePartTemplateAccess = hasSaveTemplateAccess;
 		    
-		    System.out.println("hasAccessToAddComponent:" + hasAccessToAddComponent);
-		    System.out.println("hasAccessToDeleteComponent:" + hasAccessToDeleteComponent);
-		    System.out.println("hasAccessToChangeComponent:" + hasAccessToChangeComponent);
-			
 		    boolean hasMaxComponents = false;
 			if(component.getParentComponent() != null && component.getParentComponent().getSlotList() != null)
 			{
@@ -690,23 +708,20 @@ public class PageEditorHelper
 			String viewSourceHTML 					= getLocalizedString(locale, "deliver.editOnSight.viewSourceHTML");
 			String componentEditorInNewWindowHTML 	= getLocalizedString(locale, "deliver.editOnSight.componentEditorInNewWindowHTML");
 			String savePageTemplateHTML		 		= getLocalizedString(locale, "deliver.editOnSight.savePageTemplateHTML");
+			String savePagePartTemplateHTML 		= getLocalizedString(locale, "deliver.editOnSight.savePagePartTemplateHTML");
 
-		    System.out.println("hasAccessToAddComponent:" + hasAccessToAddComponent);
-		    System.out.println("hasAccessToDeleteComponent:" + hasAccessToDeleteComponent);
-		    System.out.println("hasAccessToChangeComponent:" + hasAccessToChangeComponent);
-
-		    System.out.println("slotId:" + slotId);
+			//System.out.println("slotId:" + slotId);
 		    Slot slot = null;
 		    InfoGlueComponent parentComponent = null;
 		    if(slotClicked == null || slotClicked.equalsIgnoreCase("true"))
 		    {
-			    System.out.println("Was slot which was clicked..");
+		    	//System.out.println("Was slot which was clicked..");
 			    slot = component.getSlot(slotId);
 			    parentComponent = component;
 			}
 		    else
 		    {
-			    System.out.println("Was component which was clicked..");
+		    	//System.out.println("Was component which was clicked..");
 		    	slot = component.getContainerSlot();
 			    parentComponent = component.getParentComponent();
 		    }
@@ -717,29 +732,34 @@ public class PageEditorHelper
 		    String addComponentUrl = "";
 		    String deleteComponentUrl = "";
 		    String changeComponentUrl = "";
+			String savePartTemplateUrl = "";
 		    
 		    if(parentComponent != null)
 		    {
-			    System.out.println("slot:" + slot.getId());
-			    System.out.println("parentComponent:" + parentComponent.getId());
-			    System.out.println("allowedComponentNamesAsEncodedString:" + allowedComponentNamesAsEncodedString);
-			    System.out.println("disallowedComponentNamesAsEncodedString:" + disallowedComponentNamesAsEncodedString);
+		    	//System.out.println("slot:" + slot.getId());
+		    	//System.out.println("parentComponent:" + parentComponent.getId());
+		    	//System.out.println("allowedComponentNamesAsEncodedString:" + allowedComponentNamesAsEncodedString);
+		    	//System.out.println("disallowedComponentNamesAsEncodedString:" + disallowedComponentNamesAsEncodedString);
 		    
 			    addComponentUrl = "" + componentEditorUrl + "ViewSiteNodePageComponents!listComponents.action?siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&parentComponentId=" + parentComponent.getId() + "&slotId=" + slotId + "&showSimple=" + showSimple + ((allowedComponentNamesAsEncodedString != null) ? "&" + allowedComponentNamesAsEncodedString : "") + ((disallowedComponentNamesAsEncodedString != null) ? "&" + disallowedComponentNamesAsEncodedString : "");
 			    deleteComponentUrl = "" + componentEditorUrl + "ViewSiteNodePageComponents!deleteComponent.action?siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + component.getId() + "&slotId=" + slotId + "&showSimple=" + showSimple;
 			    changeComponentUrl = "" + componentEditorUrl + "ViewSiteNodePageComponents!listComponentsForChange.action?siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + component.getId() + "&slotId=" + slotId + "&showSimple=" + showSimple + ((allowedComponentNamesAsEncodedString != null) ? "&" + allowedComponentNamesAsEncodedString : "") + ((disallowedComponentNamesAsEncodedString != null) ? "&" + disallowedComponentNamesAsEncodedString : "");
-			    
-			    System.out.println("addComponentUrl:" + addComponentUrl);
-			    System.out.println("deleteComponentUrl:" + deleteComponentUrl);
-			    System.out.println("changeComponentUrl:" + changeComponentUrl);
+			    savePartTemplateUrl = "savePartComponentStructure('" + componentEditorUrl + "CreatePageTemplate!input.action?contentId=" + metaInfoContentVO.getId() + "', '" + component.getId() + "');";
+
+			    //System.out.println("addComponentUrl:" + addComponentUrl);
+			    //System.out.println("deleteComponentUrl:" + deleteComponentUrl);
+			    //System.out.println("changeComponentUrl:" + changeComponentUrl);
+			    //System.out.println("savePartTemplateUrl:" + savePartTemplateUrl);
 		    }
 		    else
 		    {
 			    addComponentUrl = "";
 			    deleteComponentUrl = "" + componentEditorUrl + "ViewSiteNodePageComponents!deleteComponent.action?siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + component.getId() + "&slotId=" + slotId + "&showSimple=" + showSimple;
 			    changeComponentUrl = "" + componentEditorUrl + "ViewSiteNodePageComponents!listComponentsForChange.action?siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + component.getId() + "&slotId=" + slotId + "&showSimple=" + showSimple + ((allowedComponentNamesAsEncodedString != null) ? "&" + allowedComponentNamesAsEncodedString : "") + ((disallowedComponentNamesAsEncodedString != null) ? "&" + disallowedComponentNamesAsEncodedString : "");
+			    savePartTemplateUrl = "";
 
 			    hasAccessToAddComponent = false;
+			    hasSavePagePartTemplateAccess = false;
 		    }
 		    
 		    if(treeItem != true)
@@ -754,12 +774,14 @@ public class PageEditorHelper
 			    sb.append("<div class=\"igmenuitems\" onMouseover=\"javascript:highlightie5(event);\" onMouseout=\"javascript:lowlightie5(event);\" onClick=\"changeComponentByUrl('" + changeComponentUrl + "');\">" + changeComponentHTML + "</div>");
 			if(hasSaveTemplateAccess)
 			    sb.append("<div class=\"igmenuitems\" onMouseover=\"javascript:highlightie5(event);\" onMouseout=\"javascript:lowlightie5(event);\" onClick=\"saveComponentStructure('" + componentEditorUrl + "CreatePageTemplate!input.action?contentId=" + metaInfoContentVO.getId() + "');\">" + savePageTemplateHTML + "</div>");
+			if(hasSavePagePartTemplateAccess)
+			    sb.append("<div class=\"igmenuitems\" onMouseover=\"javascript:highlightie5(event);\" onMouseout=\"javascript:lowlightie5(event);\" onClick=\"" + savePartTemplateUrl + "\">" + savePagePartTemplateHTML + "</div>");
 	
 			String upUrl = componentEditorUrl + "ViewSiteNodePageComponents!moveComponent.action?siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&direction=0&showSimple=" + showSimple + "";
 			String downUrl = componentEditorUrl + "ViewSiteNodePageComponents!moveComponent.action?siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&direction=1&showSimple=" + showSimple + "";
-		    System.out.println("upUrl:" + upUrl);
-		    System.out.println("downUrl:" + downUrl);
-		    System.out.println("component.getPositionInSlot():" + component.getPositionInSlot());
+			//System.out.println("upUrl:" + upUrl);
+			//System.out.println("downUrl:" + downUrl);
+			//System.out.println("component.getPositionInSlot():" + component.getPositionInSlot());
 			
 			if(component.getPositionInSlot() > 0)
 			    sb.append("<div class=\"igmenuitems\" onMouseover=\"javascript:highlightie5(event);\" onMouseout=\"javascript:lowlightie5(event);\" onClick=\"invokeAddress('" + upUrl + "');\">" + moveComponentUpHTML + "</div>");
@@ -767,11 +789,11 @@ public class PageEditorHelper
 			    sb.append("<div class=\"igmenuitems\" onMouseover=\"javascript:highlightie5(event);\" onMouseout=\"javascript:lowlightie5(event);\" onClick=\"invokeAddress('" + downUrl + "');\">" + moveComponentDownHTML + "</div>");
 			
 			sb.append("<hr/>");
-			sb.append("<div class=\"igmenuitems\" onMouseover=\"javascript:highlightie5(event);\" onMouseout=\"javascript:lowlightie5(event);\" onClick=\"javascript:showComponentInDiv('generalPropertiesDiv', 'repositoryId=" + repositoryId + "&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&componentContentId=" + componentContentId + "&showSimple=" + showSimple + "&showLegend=false', false);\">" + propertiesHTML + "</div>");
+			sb.append("<div class=\"igmenuitems\" onMouseover=\"javascript:highlightie5(event);\" onMouseout=\"javascript:lowlightie5(event);\" onClick=\"javascript:showComponentInDiv('componentPropertiesDiv', 'repositoryId=" + repositoryId + "&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&componentContentId=" + componentContentId + "&showSimple=" + showSimple + "&showLegend=false&originalUrl=" + URLEncoder.encode(originalFullURL, "UTF-8") + "', false);\">" + propertiesHTML + "</div>");
 			if(treeItem != true)
 			{
 				sb.append("<hr/>");
-				sb.append("<div class=\"igmenuitems\" onMouseover=\"javascript:highlightie5(event);\" onMouseout=\"javascript:lowlightie5(event);\" onClick=\"javascript:showComponentStructure('componentStructure', 'repositoryId=" + repositoryId + "&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "', event);\">" + pageComponentsHTML + "</div>");
+				sb.append("<div class=\"igmenuitems\" onMouseover=\"javascript:highlightie5(event);\" onMouseout=\"javascript:lowlightie5(event);\" onClick=\"javascript:showComponentStructure('componentStructure', 'repositoryId=" + repositoryId + "&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&originalUrl=" + URLEncoder.encode(originalFullURL, "UTF-8") + "', event);\">" + pageComponentsHTML + "</div>");
 				sb.append("<div class=\"igmenuitems\" onMouseover=\"javascript:highlightie5(event);\" onMouseout=\"javascript:lowlightie5(event);\" onClick=\"window.open(document.location.href, 'PageEditor', '');\">" + componentEditorInNewWindowHTML + "</div>");
 				sb.append("<div class=\"igmenuitems\" onMouseover=\"javascript:highlightie5(event);\" onMouseout=\"javascript:lowlightie5(event);\" onClick=\"javascript:viewSource();\">" + viewSourceHTML + "</div>");
 			}
@@ -797,12 +819,12 @@ public class PageEditorHelper
    		if(pageComponentsString != null && pageComponentsString.length() != 0)
 		{
    			Document document = domBuilder.getDocument(pageComponentsString);
-			System.out.println("Getting components...");
+   			//System.out.println("Getting components...");
 
 			List pageComponents = getPageComponents(db, pageComponentsString, document.getRootElement(), "base", null, null, siteNodeId, languageId, principal);
 			InfoGlueComponent component = (InfoGlueComponent)pageComponents.get(0);
 			
-			sb.append("<div id=\"pageComponents\" class=\"componentProperties\" style=\"left:0px; top:0px; width: 450px; height: 500px;\">");
+			sb.append("<div id=\"pageComponents\" style=\"left:0px; top:0px; width: 450px; height: 500px;\">");
 	
 			sb.append("	 <div id=\"dragCorner\" style=\"position: absolute; width: 16px; height: 16px; background-color: white; bottom: 0px; right: 0px;\"><a href=\"javascript:expandWindow('pageComponents');\"><img src=\"" + contextPath + "/images/enlarge.gif\" border=\"0\" width=\"16\" height=\"16\"></a></div>");
 				
@@ -813,7 +835,7 @@ public class PageEditorHelper
 		    sb.append("		<td class=\"igtd\" colspan=\"20\"><img src=\"" + contextPath + "/images/tcross.png\" width=\"19\" height=\"16\"><span id=\"" + component.getId() + component.getSlotName() + "ClickableDiv\" class=\"iglabel\"><img src=\"" + contextPath + "/images/slotIcon.gif\" width=\"16\" height=\"16\"><img src=\"" + contextPath + "/images/trans.gif\" width=\"5\" height=\"1\">" + component.getName() + "</span><script type=\"text/javascript\">initializeSlotEventHandler('" + component.getId() + component.getSlotName() + "ClickableDiv', '" + contextPath + "ViewSiteNodePageComponents!listComponents.action?CCC=1&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&parentComponentId=" + component.getId() + "&slotId=base&showSimple=" + showSimple + "', '', '', 'base', '" + component.getContentId() + "');</script></td>");
 			sb.append("	 </tr>");
 			
-			renderComponentTree(db, sb, component, 0, 0, 1, contextPath, repositoryId, siteNodeId, languageId, contentId, showSimple);
+			renderComponentTree(db, sb, component, 0, 0, 1, contextPath, repositoryId, siteNodeId, languageId, contentId, showSimple, originalFullURL);
 	
 			sb.append("	 <tr class=\"igtr\">");
 			for(int i=0; i<20; i++)
@@ -824,14 +846,6 @@ public class PageEditorHelper
 			sb.append("	 </table>");
 			sb.append("	 </div>");
 			sb.append("</div>");
-			
-			sb.append("	<script type=\"text/javascript\">");
-			sb.append("		var theHandle = document.getElementById(\"pageComponentsHandle\");");
-			sb.append("		var theRoot   = document.getElementById(\"pageComponents\");");
-			sb.append("		Drag.init(theHandle, theRoot);");
-			sb.append("     theRoot.style.left = 160;");
-			sb.append("     theRoot.style.top = 150;");
-			sb.append("	</script>");
 		}
    		
 		return sb.toString();
@@ -842,7 +856,7 @@ public class PageEditorHelper
 	 * This method renders the component tree visually
 	 */
 	
-	private void renderComponentTree(Database db, StringBuffer sb, InfoGlueComponent component, int level, int position, int maxPosition, String contextPath, Integer repositoryId, Integer siteNodeId, Integer languageId, Integer contentId, String showSimple) throws Exception
+	private void renderComponentTree(Database db, StringBuffer sb, InfoGlueComponent component, int level, int position, int maxPosition, String contextPath, Integer repositoryId, Integer siteNodeId, Integer languageId, Integer contentId, String showSimple, String originalUrl) throws Exception
 	{
 		String componentEditorUrl = CmsPropertyHandler.getComponentEditorUrl();
 
@@ -858,7 +872,18 @@ public class PageEditorHelper
 			sb.append("<td class=\"igtd\" width=\"19\"><img src=\"" + contextPath + "/images/vline.png\" width=\"19\" height=\"16\"></td>");
 		}
 
-	    String tasks = "showComponentTasks('componentTasks', 'repositoryId=" + repositoryId + "&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + component.getId() + "&componentContentId=" + component.getContentId() + "&slotId=" + component.getContainerSlot().getId() + "&showSimple=false&showLegend=false&slotClicked=false&treeItem=true', false, event);";
+		String tasks = "";
+		if(component.getPagePartTemplateComponent() != null)
+		{
+			tasks = "showComponentTasks('componentTasks', 'repositoryId=" + repositoryId + "&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + component.getPagePartTemplateComponent().getId() + "&componentContentId=" + component.getPagePartTemplateComponent().getContentId() + "&slotId=" + component.getPagePartTemplateComponent().getContainerSlot().getId() + "&showSimple=false&showLegend=false&slotClicked=false&treeItem=true&originalUrl=" + URLEncoder.encode(originalUrl, "UTF-8") + "', false, event);";
+		}
+		else
+		{
+			if(component.getContainerSlot() != null)
+				tasks = "showComponentTasks('componentTasks', 'repositoryId=" + repositoryId + "&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + component.getId() + "&componentContentId=" + component.getContentId() + "&slotId=" + component.getContainerSlot().getId() + "&showSimple=false&showLegend=false&slotClicked=false&treeItem=true&originalUrl=" + URLEncoder.encode(originalUrl, "UTF-8") + "', false, event);";
+			else
+				tasks = "showComponentTasks('componentTasks', 'repositoryId=" + repositoryId + "&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + component.getId() + "&componentContentId=" + component.getContentId() + "&slotId=-1&showSimple=false&showLegend=false&slotClicked=false&treeItem=true&originalUrl=" + URLEncoder.encode(originalUrl, "UTF-8") + "', false, event);";
+		}
 
 		sb.append("<td class=\"igtd\" width=\"19\"><img src=\"" + contextPath + "/images/tcross.png\" width=\"19\" height=\"16\"></td><td class=\"igtd\"><img src=\"" + contextPath + "/images/componentIcon.gif\" width=\"16\" height=\"16\"></td><td class=\"igtd\" colspan=\"" + (colspan - 2) + "\"><span id=\"" + component.getId() + "\" onclick=\"" + tasks + "\" oncontextmenu=\"hideDiv('pageComponents');\">" + componentContentVO.getName() + "</span>");
 		String upUrl = componentEditorUrl + "ViewSiteNodePageComponents!moveComponent.action?siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + component.getId() + "&direction=0&showSimple=" + showSimple + "";
@@ -872,28 +897,6 @@ public class PageEditorHelper
 		sb.append("</td>");
 		
 		sb.append("		</tr>");
-		
-		//Properties
-		/*
-		
-		sb.append("		<tr class=\"igtr\">");
-		sb.append("			<td class=\"igtd\"><img src=\"" + contextPath + "/images/trans.gif\" width=\"19\" height=\"1\"></td><td class=\"igtd\"><img src=\"" + contextPath + "/images/vline.png\" width=\"19\" height=\"16\"></td>");
-		for(int i=0; i<level; i++)
-		{
-			sb.append("<td class=\"igtd\"><img src=\"" + contextPath + "/images/vline.png\" width=\"19\" height=\"16\"></td>");
-		}
-		sb.append("<td class=\"igtd\"><img src=\"" + contextPath + "/images/tcross.png\" width=\"19\" height=\"16\"></td><td class=\"igtd\" width=\"19\"><img src=\"" + contextPath + "/images/propertiesIcon.gif\" width=\"16\" height=\"16\" border=\"0\"></td><td class=\"igtd\" colspan=\"" + (colspan - 3) + "\"><span onclick=\"javascript:showComponentProperties('component" + component.getId() + "Properties');\" class=\"iglabel\">Properties</span></td>");
-		sb.append("		</tr>");
-		
-		sb.append("		<tr class=\"igtr\">");
-		sb.append("			<td class=\"igtd\" width=\"19\"><img src=\"" + contextPath + "/images/trans.gif\" width=\"19\" height=\"1\"></td><td class=\"igtd\" width=\"19\"><img src=\"" + contextPath + "/images/vline.png\" width=\"19\" height=\"16\"></td>");
-		for(int i=0; i<level; i++)
-		{
-			sb.append("<td class=\"igtd\"><img src=\"" + contextPath + "/images/vline.png\" width=\"19\" height=\"16\"></td>");
-		}
-		sb.append("<td class=\"igtd\" width=\"19\"><img src=\"" + contextPath + "/images/endline.png\" width=\"19\" height=\"16\"></td><td class=\"igtd\" width=\"19\"><img src=\"" + contextPath + "/images/containerIcon.gif\" width=\"16\" height=\"16\"></td><td class=\"igtd\" colspan=\"" + (colspan - 4) + "\"><span class=\"iglabel\">Slots</span></td>");
-		sb.append("</tr>");
-		*/
 		
 		Iterator slotIterator = component.getSlotList().iterator();
 		while(slotIterator.hasNext())
@@ -913,10 +916,8 @@ public class PageEditorHelper
 
 		    String allowedComponentNamesAsEncodedString = slot.getAllowedComponentsArrayAsUrlEncodedString();
 		    String disallowedComponentNamesAsEncodedString = slot.getDisallowedComponentsArrayAsUrlEncodedString();
-		    //System.out.println("allowedComponentNamesAsEncodedString:" + allowedComponentNamesAsEncodedString);
-		    //System.out.println("disallowedComponentNamesAsEncodedString:" + disallowedComponentNamesAsEncodedString);
 		    
-		    String slotTasks = "showComponentTasks('componentTasks', 'repositoryId=" + repositoryId + "&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + component.getId() + "&componentContentId=" + component.getContentId() + "&slotId=" + slot.getId() + "&showSimple=false&showLegend=false&slotClicked=true&treeItem=true', false, event);";
+		    String slotTasks = "showComponentTasks('componentTasks', 'repositoryId=" + repositoryId + "&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + component.getId() + "&componentContentId=" + component.getContentId() + "&slotId=" + slot.getId() + "&showSimple=false&showLegend=false&slotClicked=true&treeItem=true&originalUrl=" + URLEncoder.encode(originalUrl, "UTF-8") + "', false, event);";
 		    
 		    sb.append("<td class=\"igtd\" colspan=\"" + (colspan - 4) + "\"><span id=\"" + slot.getId() + "ClickableDiv\" class=\"iglabel\" onclick=\"" + slotTasks + "\" oncontextmenu=\"hideDiv('pageComponents');\">" + slot.getId() + "</span></td>");
 			
@@ -939,7 +940,7 @@ public class PageEditorHelper
 					//if(imageUrlTemp != null && imageUrlTemp.length() > 0)
 					//	imageUrl = imageUrlTemp;
 		
-					renderComponentTree(db, sb, slotComponent, level + 2, newPosition, slotComponents.size() - 1, contextPath, repositoryId, siteNodeId, languageId, contentId, showSimple);
+					renderComponentTree(db, sb, slotComponent, level + 2, newPosition, slotComponents.size() - 1, contextPath, repositoryId, siteNodeId, languageId, contentId, showSimple, originalUrl);
 
 					newPosition++;
 				}	
@@ -1314,8 +1315,6 @@ public class PageEditorHelper
 		try
 		{
 		    Integer masterLanguageId = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForSiteNode(db, siteNodeId).getId();
-			System.out.println("contentId:" + contentId);
-			System.out.println("masterLanguageId:" + masterLanguageId);
 			componentPropertiesString = ContentController.getContentController().getContentAttribute(db, contentId, masterLanguageId, "ComponentProperties");
 			//componentPropertiesString = ContentDeliveryController.getContentDeliveryController().getContentAttribute(db, contentId, masterLanguageId, "ComponentProperties", siteNodeId, true, null, principal, false, true);
 
@@ -1351,8 +1350,6 @@ public class PageEditorHelper
 		{
 			ContentVO contentVO = ContentController.getContentController().getContentVOWithId(componentContentId, db);
 		    Integer masterLanguageId = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForRepository(contentVO.getRepositoryId(), db).getId();
-			System.out.println("componentContentId:" + componentContentId);
-			System.out.println("masterLanguageId:" + masterLanguageId);
 			templateString = ContentController.getContentController().getContentAttribute(db, componentContentId, masterLanguageId, "Template");
 
 			if(templateString == null)
@@ -1383,7 +1380,6 @@ public class PageEditorHelper
 	    	while(slotsIterator.hasNext())
 	    	{
 	    		Slot slot = slotsIterator.next();
-	    		System.out.println("slot:" + slot.getId() + "-" + slot.getName());
 	    		if(slot.getId().equals(slotName));
 	    		{
 	    	        String direction = "asc";
@@ -1500,7 +1496,6 @@ public class PageEditorHelper
 			{    
 			    String allowedComponentNames = slot.substring(allowedComponentNamesIndex + 24, slot.indexOf("\"", allowedComponentNamesIndex + 24));
 			    allowedComponentNamesArray = allowedComponentNames.split(",");
-			    //System.out.println("allowedComponentNamesArray:" + allowedComponentNamesArray.length);
 			    slotBean.setAllowedComponentsArray(allowedComponentNamesArray);
 			}
 
@@ -1510,7 +1505,6 @@ public class PageEditorHelper
 			{    
 			    String disallowedComponentNames = slot.substring(disallowedComponentNamesIndex + 27, slot.indexOf("\"", disallowedComponentNamesIndex + 27));
 			    disallowedComponentNamesArray = disallowedComponentNames.split(",");
-			    //System.out.println("disallowedComponentNamesArray:" + disallowedComponentNamesArray.length);
 			    slotBean.setDisallowedComponentsArray(disallowedComponentNamesArray);
 			}
 
@@ -1635,8 +1629,6 @@ public class PageEditorHelper
 				components = null;				
 			else
 				components = (List)componentsCandidate;
-			
-			System.out.println("Components were cached");
 		}
 		else
 		{
@@ -1667,7 +1659,7 @@ public class PageEditorHelper
 				try
 				{
 				    ContentVO contentVO = ContentDeliveryController.getContentDeliveryController().getContentVO(contentId, db);
-				    System.out.println("contentVO for current component:" + contentVO.getName());
+				    //System.out.println("contentVO for current component:" + contentVO.getName());
 				   
 				    //System.out.println("slotName:" + slotName + " should get connected with content_" + contentVO.getId());
 				    
@@ -1685,8 +1677,8 @@ public class PageEditorHelper
 						System.out.println("Adding component to container slot:" + component.getId() + ":" + containerSlot.getId());
 						//containerSlot.getComponents().add(component);
 						component.setContainerSlot(containerSlot);
-						System.out.println("containerSlot:" + containerSlot);
-						System.out.println("containerSlot:" + containerSlot);
+						//System.out.println("containerSlot:" + containerSlot);
+						//System.out.println("containerSlot:" + containerSlot);
 					}
 					if(isInherited != null && isInherited.equals("true"))
 						component.setIsInherited(true);
@@ -1708,7 +1700,7 @@ public class PageEditorHelper
 						partTemplateReferenceComponent.setParentComponent(parentComponent);
 						if(containerSlot != null)
 						{
-							System.out.println("Adding component to container slot:" + partTemplateReferenceComponent.getId() + ":" + containerSlot.getId());
+							//System.out.println("Adding component to container slot:" + partTemplateReferenceComponent.getId() + ":" + containerSlot.getId());
 							partTemplateReferenceComponent.setContainerSlot(containerSlot);
 							//containerSlot.getComponents().add(partTemplateReferenceComponent);
 						}
@@ -1915,7 +1907,7 @@ public class PageEditorHelper
 		else
 			CacheController.cacheObjectInAdvancedCache("pageComponentsCache", key, new NullObject(), groups, false);
 		
-		System.out.println("Returning " + components.size() + " components for:" + slotName);
+		//System.out.println("Returning " + components.size() + " components for:" + slotName);
 		return components;
 	}
 
@@ -1964,16 +1956,16 @@ public class PageEditorHelper
 		outer:while(slotListIterator.hasNext())
 		{
 			Slot slot = (Slot)slotListIterator.next();
-			System.out.println("slot:" + slot.getId());
+			//System.out.println("slot:" + slot.getId());
 			
 			List components = slot.getComponents();
-			System.out.println("components:" + components.size());
+			//System.out.println("components:" + components.size());
 			
 			Iterator componentsIterator = components.iterator();
 			while(componentsIterator.hasNext())
 			{
 				InfoGlueComponent subComponent = (InfoGlueComponent)componentsIterator.next();
-				System.out.println("subComponent:" + subComponent.getId());
+				//System.out.println("subComponent:" + subComponent.getId());
 				if(subComponent.getId().equals(componentId))
 				{
 					component = subComponent;

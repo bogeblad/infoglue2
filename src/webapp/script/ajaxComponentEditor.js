@@ -249,46 +249,6 @@ function setToolbarInitialPosition()
 	
 }
 
-function moveDivDown(id)
-{
-	//alert("clientHeight:" + this.parent.document.body.clientHeight);
-	//alert("windowHeight:" + getWindowHeight())
-	position = this.parent.document.body.clientHeight - 120 + "px";
-	//position = "500px";
-
-	var div = document.getElementById(id);
-
-	setCookie(toolbarLockPositionCookieName, "down");
-	floatDiv("paletteDiv", 0, -80).flt();	
-}
-
-function moveDivUp(id)
-{
-	position = "0px";
-
-	var div = document.getElementById(id);
-	
-	setCookie(toolbarLockPositionCookieName, "up");
-	
-	floatDiv("paletteDiv", 0, 0).flt();
-	//if(div)
-	//	div.style.top = position;
-	/*
-	if(document.cookie != document.cookie)
-		index = document.cookie.indexOf(toolbarTopPositionCookieName);
-	else
-		index = -1;
-	
-	if (index == -1)
-		document.cookie=toolbarTopPositionCookieName+"="+position+"; expires=Monday, 04-Apr-2010 05:00:00 GMT";
-	*/
-}
-
-
-
-
-
-
 
 var activeMenuId = "";
 var menuskin = "skin1"; // skin0, or skin1
@@ -853,9 +813,8 @@ function saveComponentStructure(url)
 		alert("Could not save - if you have a popup blocker this is most likely the cause.");
 }
 
-function savePartComponentStructure(url) 
+function savePartComponentStructure(url, componentId) 
 {
-	alert("componentId:" + componentId);
 	//alert("insertUrl in insertComponent:" + insertUrl.substring(0, 50) + '\n' + insertUrl.substring(50));
 	details = "width=500,height=600,left=" + (document.body.clientWidth / 4) + ",top=" + (document.body.clientHeight / 4) + ",toolbar=no,status=no,scrollbars=yes,location=no,menubar=no,directories=no,resizable=no";
 	newWin=window.open(url + "&componentId=" + componentId, "Save", details);
@@ -1000,7 +959,7 @@ function showComponentInDiv(targetDiv, parameterString, skipFloat)
 {
 	//if (!e) 
 		e = window.event;
-	showComponentPropertiesInDiv("component" + componentId + "Properties", targetDiv, parameterString, skipFloat, e);
+	showComponentPropertiesInDiv(targetDiv, parameterString, skipFloat, e);
 }
 
 function showComponentTasks(targetDiv, parameterString, skipFloat, e) 
@@ -1052,16 +1011,12 @@ function clearComponentPropertiesInDiv(targetDivId)
 	$(targetDiv).html("");
 }
 
-function showComponentPropertiesInDiv(id, targetDivId, parameterString, skipFloat, event) 
+function showComponentPropertiesInDiv(targetDivId, parameterString, skipFloat, event) 
 {
 	//alert("targetDivId:" + targetDivId);
-	//alert("id:" + id);
 	//alert("parameterString:" + parameterString);
-	
-	//showDiv(id);
 
 	targetDiv = document.getElementById(targetDivId);
-	//propertiesDiv = document.getElementById(id);
 
 	if(skipFloat)
 	{
@@ -1083,7 +1038,7 @@ function showComponentPropertiesInDiv(id, targetDivId, parameterString, skipFloa
 		
 		$(targetDiv).load("AjaxComponentDeliveryService!getComponentPropertyDiv.action?" + parameterString + "&targetDivId=" + targetDivId + "",{}, function(event){
 
-			var theHandle = document.getElementById("componentPropertiesHandleCompProps");
+			var theHandle = document.getElementById("componentPropertiesHandle");
 			var theRoot   = document.getElementById("componentProperties");
 			
 			Drag.init(theHandle, theRoot);
@@ -1174,6 +1129,13 @@ function showComponentStructureInDiv(targetDivId, parameterString, event)
 		componentStructureDiv.style.top 	= clientY + "px";
 		
 		componentStructureDiv.style.visibility = "visible";
+		
+		var theHandle = document.getElementById("pageComponentsHandle");
+		var theRoot   = document.getElementById("pageComponents");
+		Drag.init(theHandle, theRoot);
+		theRoot.style.left = 160;
+		theRoot.style.top = 150;
+		
 		//activeMenuId = "componentStructure";
 	});
 }
@@ -1440,18 +1402,15 @@ function viewSource()
 	}
 		
 		
-	function initializeSlotEventHandler(id, insertUrl, deleteUrl, changeUrl, slotId, slotContentIdVar, repositoryId, siteNodeId, languageId, contentId, componentId, componentContentId)
+	function initializeSlotEventHandler(id, slotId, slotContentIdVar, repositoryId, siteNodeId, languageId, contentId, componentId, componentContentId, originalUrl)
 	{
 		//alert("initializeSlotEventHandler:" + id + ":" + slotId);
-		var object = new emptySlotEventHandler(id, id, insertUrl, deleteUrl, changeUrl, slotId, slotContentIdVar, repositoryId, siteNodeId, languageId, contentId, componentId, componentContentId);
+		var object = new emptySlotEventHandler(id, id, slotId, slotContentIdVar, repositoryId, siteNodeId, languageId, contentId, componentId, componentContentId, originalUrl);
 	}
 
-	function emptySlotEventHandler(eleId, objName, insertUrl, deleteUrl, changeUrl, slotId, slotContentIdVar, repositoryId, siteNodeId, languageId, contentId, componentId, componentContentId)
+	function emptySlotEventHandler(eleId, objName, slotId, slotContentIdVar, repositoryId, siteNodeId, languageId, contentId, componentId, componentContentId, originalUrl)
 	{
 		this.objName = objName;           // objName is a property of myObject4
-		this.insertUrl = insertUrl;
-		this.deleteUrl = deleteUrl;
-		this.changeUrl = changeUrl;
 		this.repositoryId = repositoryId;
 		this.siteNodeId = siteNodeId;
 		this.languageId = languageId;
@@ -1459,6 +1418,7 @@ function viewSource()
 		this.componentId = componentId;
 		this.componentContentId = componentContentId;
 		this.slotId = slotId;
+		this.originalUrl = originalUrl;
 		//alert("slotId:" + slotId);
 		//alert("eleId:" + eleId);
 		//alert("this.insertUrl:" + this.insertUrl);
@@ -1495,7 +1455,7 @@ function viewSource()
 			//alert('emptySlotEventHandler.oncontextmenu()\nthis.objName = ' + this.objName + '\nele = ' + xName(ele));
 		    //showEmptySlotMenu(slotId, evt, ele.id, insertUrl, slotContentIdVar);
 						
-		    showComponentTasks('componentTasks', 'repositoryId=' + repositoryId + '&siteNodeId=' + siteNodeId + '&languageId=' + languageId + '&contentId=' + contentId + '&componentId=' + componentId + '&componentContentId=' + componentContentId + '&slotId=' + slotId + '&showSimple=false&showLegend=false&slotClicked=true', false, evt);
+		    showComponentTasks('componentTasks', 'repositoryId=' + repositoryId + '&siteNodeId=' + siteNodeId + '&languageId=' + languageId + '&contentId=' + contentId + '&componentId=' + componentId + '&componentContentId=' + componentContentId + '&slotId=' + slotId + '&showSimple=false&showLegend=false&slotClicked=true&originalUrl=' + this.originalUrl, false, evt);
 			
 		    // cancel event bubbling
 		    if (evt && evt.stopPropagation) {evt.stopPropagation();}
@@ -1503,13 +1463,13 @@ function viewSource()
 		}
 	}
 	
-	function initializeComponentEventHandler(id, compId, slotId, repositoryId, siteNodeId, languageId, contentId, componentId, componentContentId)
+	function initializeComponentEventHandler(id, compId, slotId, repositoryId, siteNodeId, languageId, contentId, componentId, componentContentId, originalUrl)
 	{
 		//alert("initializeComponentEventHandler" + id + " " + deleteUrl);
-		var object = new componentEventHandler(id, id, compId, slotId, repositoryId, siteNodeId, languageId, contentId, componentId, componentContentId);
+		var object = new componentEventHandler(id, id, compId, slotId, repositoryId, siteNodeId, languageId, contentId, componentId, componentContentId, originalUrl);
 	}
 		
-	function componentEventHandler(eleId, objName, objId, slotId, repositoryId, siteNodeId, languageId, contentId, componentId, componentContentId)
+	function componentEventHandler(eleId, objName, objId, slotId, repositoryId, siteNodeId, languageId, contentId, componentId, componentContentId, originalUrl)
 	{
 		this.objName = objName;           // objName is a property of myObject4
 		this.objId = objId;
@@ -1520,6 +1480,7 @@ function viewSource()
 		this.componentId = componentId;
 		this.componentContentId = componentContentId;
 		this.slotId = slotId;
+		this.originalUrl = originalUrl;
 		//alert("eleId:" + eleId);
 		//alert("objName:" + objName);
 		//alert("objId:" + objId);
@@ -1552,7 +1513,7 @@ function viewSource()
 		this.onContextMenu = function(evt, ele) // onContextMenu is a method of myObject4
 		{
 			//alert('componentEventHandler.oncontextmenu()\nthis.objName = ' + this.objName + '\nele = ' + xName(ele) + '\ncomponentId = ' + this.componentId);
-		    showComponentTasks('componentTasks', 'repositoryId=' + repositoryId + '&siteNodeId=' + siteNodeId + '&languageId=' + languageId + '&contentId=' + contentId + '&componentId=' + componentId + '&componentContentId=' + componentContentId + '&slotId=' + slotId + '&showSimple=false&showLegend=false&slotClicked=false', false, evt);
+		    showComponentTasks('componentTasks', 'repositoryId=' + repositoryId + '&siteNodeId=' + siteNodeId + '&languageId=' + languageId + '&contentId=' + contentId + '&componentId=' + componentId + '&componentContentId=' + componentContentId + '&slotId=' + slotId + '&showSimple=false&showLegend=false&slotClicked=false&originalUrl=' + this.originalUrl, false, evt);
 		    
 		    // cancel event bubbling
 		    if (evt && evt.stopPropagation) {evt.stopPropagation();}

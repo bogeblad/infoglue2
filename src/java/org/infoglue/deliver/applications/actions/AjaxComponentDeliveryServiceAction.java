@@ -78,6 +78,7 @@ public class AjaxComponentDeliveryServiceAction extends InfoGlueAbstractAction
     	String showSimple 				= this.getRequest().getParameter("showSimple");
     	String showLegend 				= this.getRequest().getParameter("showLegend");
     	String targetDiv 				= this.getRequest().getParameter("targetDivId");
+    	String originalUrl				= this.getRequest().getParameter("originalUrl");
 
     	Integer repositoryId = new Integer(repositoryIdString);
     	Integer siteNodeId = new Integer(siteNodeIdString);
@@ -108,8 +109,9 @@ public class AjaxComponentDeliveryServiceAction extends InfoGlueAbstractAction
         	if(slotName == null)
         		slotName = "";
         	
+        	//System.out.println("originalUrl:" + originalUrl);
     		PageEditorHelper peh = new PageEditorHelper();
-	    	String componentPropertiesDiv = peh.getComponentPropertiesDiv(db, principal, this.getRequest(), locale, repositoryId, siteNodeId, languageId, contentId, componentId, componentContentId, slotName, showSimple, this.getOriginalFullURL(), showLegend, targetDiv);
+	    	String componentPropertiesDiv = peh.getComponentPropertiesDiv(db, principal, this.getRequest(), locale, repositoryId, siteNodeId, languageId, contentId, componentId, componentContentId, slotName, showSimple, originalUrl, showLegend, targetDiv);
 	    	propertiesDiv.append(componentPropertiesDiv);
     	
 	    	commitTransaction(db);
@@ -125,6 +127,7 @@ public class AjaxComponentDeliveryServiceAction extends InfoGlueAbstractAction
 
         if(logger.isInfoEnabled())
             logger.info("Returning:" + propertiesDiv.toString());
+        //System.out.println("Returning:" + propertiesDiv.toString());
         
         return NONE;
     }
@@ -150,7 +153,8 @@ public class AjaxComponentDeliveryServiceAction extends InfoGlueAbstractAction
     	String targetDiv 				= this.getRequest().getParameter("targetDivId");
     	String slotClicked 				= this.getRequest().getParameter("slotClicked");
     	String treeItemString			= this.getRequest().getParameter("treeItem");
-    		
+    	String originalFullURL			= this.getRequest().getParameter("originalUrl");
+    	
     	Integer repositoryId 			= new Integer(repositoryIdString);
     	Integer siteNodeId 				= new Integer(siteNodeIdString);
     	Integer languageId 				= new Integer(languageIdString);
@@ -184,8 +188,10 @@ public class AjaxComponentDeliveryServiceAction extends InfoGlueAbstractAction
         	if(slotName == null)
         		slotName = "";
         	
+        	//System.out.println("originalFullURL in tasks:" + originalFullURL);
+
     		PageEditorHelper peh = new PageEditorHelper();
-	    	String componentTasksDiv = peh.getComponentTasksDiv(db, principal, this.getRequest(), locale, repositoryId, siteNodeId, languageId, contentId, componentId, componentContentId, slotName, slotId, showSimple, this.getOriginalFullURL(), showLegend, targetDiv, slotClicked, treeItem);
+	    	String componentTasksDiv = peh.getComponentTasksDiv(db, principal, this.getRequest(), locale, repositoryId, siteNodeId, languageId, contentId, componentId, componentContentId, slotName, slotId, showSimple, originalFullURL, showLegend, targetDiv, slotClicked, treeItem);
 	    	tasksDiv.append(componentTasksDiv);
 
 	    	commitTransaction(db);
@@ -291,7 +297,8 @@ public class AjaxComponentDeliveryServiceAction extends InfoGlueAbstractAction
     	String showSimple 				= this.getRequest().getParameter("showSimple");
     	String showLegend 				= this.getRequest().getParameter("showLegend");
     	String targetDiv 				= this.getRequest().getParameter("targetDivId");
-    	
+    	String originalFullURL			= this.getRequest().getParameter("originalUrl");
+
     	Integer repositoryId 			= new Integer(repositoryIdString);
     	Integer siteNodeId 				= new Integer(siteNodeIdString);
     	Integer languageId 				= new Integer(languageIdString);
@@ -315,8 +322,10 @@ public class AjaxComponentDeliveryServiceAction extends InfoGlueAbstractAction
         	if(languageId != null)
         		locale = LanguageController.getController().getLocaleWithId(languageId);
         	
+        	//System.out.println("originalFullURL in structure:" + originalFullURL);
+
     		PageEditorHelper peh = new PageEditorHelper();
-	    	String componentStructure = peh.getComponentStructureDiv(db, principal, this.getRequest(), locale, repositoryId, siteNodeId, languageId, contentId, showSimple, this.getOriginalFullURL(), showLegend, targetDiv);
+	    	String componentStructure = peh.getComponentStructureDiv(db, principal, this.getRequest(), locale, repositoryId, siteNodeId, languageId, contentId, showSimple, originalFullURL, showLegend, targetDiv);
 	    	componentStructureDiv.append(componentStructure);
     	
 	    	commitTransaction(db);
