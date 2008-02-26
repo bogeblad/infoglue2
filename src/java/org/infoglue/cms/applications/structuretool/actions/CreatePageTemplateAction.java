@@ -48,6 +48,7 @@ import org.infoglue.cms.entities.management.RepositoryVO;
 import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
+import org.infoglue.cms.io.FileHelper;
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
 import org.infoglue.cms.util.XMLHelper;
@@ -105,8 +106,32 @@ public class CreatePageTemplateAction extends InfoGlueAbstractAction implements 
             contentTypeDefinitionVO = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithName("PagePartTemplate");
 
         if(contentTypeDefinitionVO == null)
-            throw new SystemException("The system does not have the content type named 'PageTemplate' which is required for this operation.");
-        
+        {
+        	if(componentId != null)
+        	{
+        		String xml = FileHelper.getFileAsString(new File(CmsPropertyHandler.getContextRootPath() + "cms/defaults/contenttypes/PagePartTemplate.xml"));
+        		ContentTypeDefinitionVO newContentTypeDefinitionVO = new ContentTypeDefinitionVO();
+        		newContentTypeDefinitionVO.setName("PagePartTemplate");
+        		newContentTypeDefinitionVO.setSchemaValue(xml);
+        		newContentTypeDefinitionVO.setType(ContentTypeDefinitionVO.CONTENT);
+        		
+        		contentTypeDefinitionVO = ContentTypeDefinitionController.getController().create(newContentTypeDefinitionVO);
+        		//System.out.println("contentTypeDefinitionVO:" + contentTypeDefinitionVO.getId());
+        	}
+        	else
+        	{
+        		String xml = FileHelper.getFileAsString(new File(CmsPropertyHandler.getContextRootPath() + "cms/defaults/contenttypes/PageTemplate.xml"));
+        		ContentTypeDefinitionVO newContentTypeDefinitionVO = new ContentTypeDefinitionVO();
+        		newContentTypeDefinitionVO.setName("PageTemplate");
+        		newContentTypeDefinitionVO.setSchemaValue(xml);
+        		newContentTypeDefinitionVO.setType(ContentTypeDefinitionVO.CONTENT);
+        		
+        		contentTypeDefinitionVO = ContentTypeDefinitionController.getController().create(newContentTypeDefinitionVO);
+        		//System.out.println("contentTypeDefinitionVO:" + contentTypeDefinitionVO.getId());        		
+        	}
+        	//throw new SystemException("The system does not have the content type named 'PageTemplate' which is required for this operation.");
+        }
+                
         ContentVO contentVO = new ContentVO();
         
 		contentVO.setCreatorName(this.getInfoGluePrincipal().getName());
