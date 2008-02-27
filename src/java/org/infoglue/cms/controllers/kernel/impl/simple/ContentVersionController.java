@@ -1800,10 +1800,18 @@ public class ContentVersionController extends BaseController
         }
 	}
 	
+    /**
+     * @param contentId
+     * @param languageId
+     * @param hitSize
+     * @param db
+     * @return
+     * @throws Exception
+     */
     @SuppressWarnings("unchecked")
-    public List<ContentVersion> getLatestContentVersionsForHitSize(final Integer contentId, final Integer languageId, final int hitSize, final Database db) throws Exception
+    public List<ContentVersion> getLatestActiveContentVersionsForHitSize(final Integer contentId, final Integer languageId, final int hitSize, final Database db) throws Exception
     {
-        if (hitSize == 0) {
+        if (hitSize <= 0) {
             throw new SystemException("Illegal argument supplied, argument <hitSize> must be greater then zero.");
         }
 
@@ -1823,6 +1831,15 @@ public class ContentVersionController extends BaseController
         return contentVersionList;
     }
 
+    /**
+     * @param contentId
+     * @param languageId
+     * @param db
+     * @return
+     * @throws SystemException
+     * @throws Bug
+     * @throws Exception
+     */
     public List<ContentVersion> getContentVersionsWithParentAndLanguage(final Integer contentId, final Integer languageId, final Database db) throws SystemException, Bug, Exception
     {
         final List<ContentVersion> resultList = new ArrayList<ContentVersion>();
