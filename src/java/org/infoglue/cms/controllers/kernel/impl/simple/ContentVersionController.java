@@ -1799,5 +1799,45 @@ public class ContentVersionController extends BaseController
             throw new SystemException(e.getMessage());
         }
 	}
+	
+    @SuppressWarnings("unchecked")
+    public List<ContentVersion> getLatestContentVersionsForHitSize(final Integer contentId, final Integer languageId, final int hitSize, final Database db) throws Exception
+    {
+        if (hitSize == 0) {
+            throw new SystemException("Illegal argument supplied, argument <hitSize> must be greater then zero.");
+        }
+
+        final List<ContentVersion> contentVersionList = new ArrayList<ContentVersion>();
+        final OQLQuery oql = db.getOQLQuery("SELECT cv FROM org.infoglue.cms.entities.content.impl.simple.ContentVersionImpl cv WHERE cv.owningContent.contentId = $1 AND cv.language.languageId = $2 AND cv.isActive = $3 ORDER BY cv.contentVersionId desc");
+        oql.bind(contentId);
+        oql.bind(languageId);
+        oql.bind(true);
+        final QueryResults results = oql.execute(Database.ReadOnly);
+        int cnt = 0;
+        while (results.hasMore() && ++cnt <= hitSize)
+        {
+            contentVersionList.add((ContentVersion) results.next());
+        }
+        results.close();
+        oql.close();
+        return contentVersionList;
+    }
+
+    public List<ContentVersion> getContentVersionsWithParentAndLanguage(final Integer contentId, final Integer languageId, final Database db) throws SystemException, Bug, Exception
+    {
+        final List<ContentVersion> resultList = new ArrayList<ContentVersion>();
+        final OQLQuery oql = db.getOQLQuery( "SELECT cv FROM org.infoglue.cms.entities.content.impl.simple.ContentVersionImpl cv WHERE cv.owningContent.contentId = $1 and cv.language.languageId = $2 ORDER BY cv.contentVersionId desc");
+        oql.bind(contentId);
+        oql.bind(languageId);
+        final QueryResults results = oql.execute();
+        while (results.hasMore()) {
+            final ContentVersion contentVersion = (ContentVersion)results.next();
+            resultList.add(contentVersion);
+        }
+        results.close();
+        oql.close();
+        return resultList;
+    }
+
 
 }
