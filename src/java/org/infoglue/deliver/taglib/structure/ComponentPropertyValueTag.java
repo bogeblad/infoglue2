@@ -28,7 +28,10 @@ import java.util.Map;
 
 import javax.servlet.jsp.JspException;
 
+import org.infoglue.deliver.applications.actions.InfoGlueComponent;
 import org.infoglue.deliver.taglib.component.ComponentLogicTag;
+
+import sun.security.action.GetLongAction;
 
 public class ComponentPropertyValueTag extends ComponentLogicTag 
 {
@@ -41,6 +44,7 @@ public class ComponentPropertyValueTag extends ComponentLogicTag
 	private boolean useRepositoryInheritance = true;
     private boolean useStructureInheritance = true;
     private boolean parseToMap = false;
+    private InfoGlueComponent component = null;
     
     public ComponentPropertyValueTag()
     {
@@ -55,11 +59,17 @@ public class ComponentPropertyValueTag extends ComponentLogicTag
 	    	
 	        if(siteNodeId == null)
 	        {
-		        propertyValue = getComponentLogic().getPropertyValue(propertyName, useLanguageFallback, useInheritance, useRepositoryInheritance, useStructureInheritance);
+	        	if(component != null)
+	        		propertyValue = getComponentLogic().getPropertyValue(propertyName, useLanguageFallback, useInheritance, useRepositoryInheritance, useStructureInheritance, component);
+	        	else
+	        		propertyValue = getComponentLogic().getPropertyValue(propertyName, useLanguageFallback, useInheritance, useRepositoryInheritance, useStructureInheritance);
 	        }
 	        else
 	        {
-		        propertyValue = getComponentLogic().getPropertyValue(siteNodeId, propertyName, useLanguageFallback, useInheritance);
+	        	if(component != null)
+	        		propertyValue = getComponentLogic().getPropertyValue(siteNodeId, propertyName, useLanguageFallback, useInheritance, component);	
+	        	else
+	        		propertyValue = getComponentLogic().getPropertyValue(siteNodeId, propertyName, useLanguageFallback, useInheritance);	
 	        }
 
 	        if(parseToMap)
@@ -95,6 +105,11 @@ public class ComponentPropertyValueTag extends ComponentLogicTag
     public void setSiteNodeId(String siteNodeId) throws JspException
     {
         this.siteNodeId = evaluateInteger("componentPropertyValue", "siteNodeId", siteNodeId);
+    }
+
+    public void setComponent(String component) throws JspException
+    {
+        this.component = (InfoGlueComponent)evaluate("componentPropertyValue", "component", component, InfoGlueComponent.class);
     }
 
     public void setPropertyName(String propertyName) throws JspException

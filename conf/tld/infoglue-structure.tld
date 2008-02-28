@@ -339,6 +339,11 @@
 	        <rtexprvalue>true</rtexprvalue>
     	</attribute>
         <attribute>
+    	    <name>component</name>
+        	<required>false</required>
+	        <rtexprvalue>true</rtexprvalue>
+    	</attribute>
+        <attribute>
     	    <name>useInheritance</name>
         	<required>false</required>
 	        <rtexprvalue>false</rtexprvalue>
@@ -441,6 +446,16 @@
     	</attribute>
         <attribute>
     	    <name>slotId</name>
+        	<required>false</required>
+	        <rtexprvalue>false</rtexprvalue>
+    	</attribute>
+        <attribute>
+    	    <name>seekRecursive</name>
+        	<required>false</required>
+	        <rtexprvalue>false</rtexprvalue>
+    	</attribute>
+        <attribute>
+    	    <name>propertyFilterStrings</name>
         	<required>false</required>
 	        <rtexprvalue>false</rtexprvalue>
     	</attribute>

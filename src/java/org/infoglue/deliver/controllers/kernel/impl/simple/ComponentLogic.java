@@ -599,6 +599,35 @@ public class ComponentLogic
 		return propertyValue;
 	}
 
+	public String getPropertyValue(String propertyName, boolean useLangaugeFallback, boolean useInheritance, boolean useRepositoryInheritance, boolean useStructureInheritance, InfoGlueComponent component) throws SystemException
+	{
+		String propertyValue = "";
+
+		Locale locale = LanguageDeliveryController.getLanguageDeliveryController().getLocaleWithId(templateController.getDatabase(), templateController.getLanguageId());
+
+		Map property = getInheritedComponentProperty(component, propertyName, useInheritance, useRepositoryInheritance, useStructureInheritance);
+		if(property != null)
+		{	
+			if(property != null)
+			{
+				propertyValue = (String)property.get("path");
+				if(propertyValue == null)
+				{
+					Iterator keysIterator = property.keySet().iterator();
+					while(keysIterator.hasNext())
+					{
+						String key = (String)keysIterator.next();
+					}
+				}
+			}
+		}
+
+		if(propertyValue != null)
+			propertyValue = propertyValue.replaceAll("igbr", separator);
+
+		return propertyValue;
+	}
+
 	public String getPropertyValue(Integer siteNodeId, String propertyName, boolean useLangaugeFallback, boolean useInheritance) throws SystemException
 	{
 		String propertyValue = "";
@@ -628,6 +657,34 @@ public class ComponentLogic
 		return propertyValue;
 	}
 
+	public String getPropertyValue(Integer siteNodeId, String propertyName, boolean useLangaugeFallback, boolean useInheritance, InfoGlueComponent component) throws SystemException
+	{
+		String propertyValue = "";
+
+		Locale locale = LanguageDeliveryController.getLanguageDeliveryController().getLocaleWithId(templateController.getDatabase(), templateController.getLanguageId());
+
+		Map property = getInheritedComponentProperty(siteNodeId, component, propertyName, useInheritance);
+		if(property != null)
+		{	
+			if(property != null)
+			{
+				propertyValue = (String)property.get("path");
+				if(propertyValue == null)
+				{
+					Iterator keysIterator = property.keySet().iterator();
+					while(keysIterator.hasNext())
+					{
+						String key = (String)keysIterator.next();
+					}
+				}
+			}
+		}
+
+		if(propertyValue != null)
+			propertyValue = propertyValue.replaceAll("igbr", separator);
+
+		return propertyValue;
+	}
 
 	
 	public ContentVO getBoundContent(String propertyName)
@@ -2411,6 +2468,44 @@ public class ComponentLogic
 		return template;
 	}
 	
+	/**
+	 * This method returns a value for a property if it's set. The value is collected in the
+	 * properties for the page.
+	 */
+	
+	public String getComponentPropertyValue(Integer siteNodeId, Integer componentId, Integer languageId, Integer contentId, String name) throws Exception
+	{
+        Set contentVersionIdList = new InfoGlueHashSet();
+
+		String componentXML = getPageComponentsString(templateController, siteNodeId, languageId, contentId, contentVersionIdList);
+
+		String value = "Undefined";
+		
+		Locale locale = LanguageDeliveryController.getLanguageDeliveryController().getLocaleWithId(templateController.getDatabase(), languageId);
+
+		Document document = XMLHelper.readDocumentFromByteArray(componentXML.getBytes("UTF-8"));
+		String componentXPath = "//component[@id=" + componentId + "]/properties/property[@name='" + name + "']";
+		//logger.info("componentXPath:" + componentXPath);
+		NodeList anl = org.apache.xpath.XPathAPI.selectNodeList(document.getDocumentElement(), componentXPath);
+		for(int i=0; i < anl.getLength(); i++)
+		{
+			Element property = (Element)anl.item(i);
+			
+			String id 			= property.getAttribute("type");
+			String path 		= property.getAttribute("path");
+			
+			if(property.hasAttribute("path_" + locale.getLanguage()))
+				path = property.getAttribute("path_" + locale.getLanguage());
+			
+			value 				= path;
+		}
+
+		if(value != null)
+			value = value.replaceAll("igbr", separator);
+
+		return value;
+	}
+
 	
 	/**
 	 * This method returns a value for a property if it's set. The value is collected in the
@@ -2488,7 +2583,30 @@ public class ComponentLogic
 	{
 	    return getChildComponents(this.getInfoGlueComponent(), slotId);
 	}
+
+	/**
+	 * This method returns all components which are on a given slots under the current component.
+	 */
 	
+	public List getChildComponents(String slotId, boolean searchRecursive, String propertyFilterStrings)
+	{
+		List filters = new ArrayList();
+        String[] filtersArray = propertyFilterStrings.split(",");
+        for(int i=0; i<filtersArray.length; i++)
+        {
+        	String nameValuePair = filtersArray[i];
+        	String[] pair = nameValuePair.split("=");
+        	String name = pair[0];
+        	String value = pair[1];
+        	Map nameValues = new HashMap();
+        	nameValues.put("name", name);
+        	nameValues.put("value", value);
+        	filters.add(nameValues);
+        }
+        
+	    return getChildComponents(this.getInfoGlueComponent(), slotId, searchRecursive, filters);
+	}
+
 	/**
 	 * This method returns all components which are on slots under the current component.
 	 */
@@ -2511,7 +2629,76 @@ public class ComponentLogic
         
         return childComponents;
 	}
+
+	/**
+	 * This method returns all components which are on slots under the current component - potentially recursive and filtered.
+	 */
 	
+	public List getChildComponents(InfoGlueComponent component, String slotId, boolean searchRecursive, List filters)
+	{
+        List childComponents = new ArrayList();
+        System.out.println("getChildComponents for " + component.getId() + "_" + component.getName());
+        
+	    List slotList = component.getSlotList();
+        
+        Iterator slotListIterator = slotList.iterator();
+        while(slotListIterator.hasNext())
+        {
+            Slot slot = (Slot)slotListIterator.next();
+            if(slotId == null || slotId.equalsIgnoreCase(slot.getId()))
+            {
+            	List slotChildComponents = slot.getComponents();
+                childComponents.addAll(slotChildComponents);
+            	if(searchRecursive)
+            	{
+	                Iterator slotChildComponentsIterator = slotChildComponents.iterator();
+	            	while(slotChildComponentsIterator.hasNext())
+	            	{
+	            		InfoGlueComponent slotChildComponent = (InfoGlueComponent)slotChildComponentsIterator.next();
+	            		List subChildComponents = getChildComponents(slotChildComponent, slotId, searchRecursive, filters);
+	            		childComponents.addAll(subChildComponents);
+	            	}
+            	}
+            }
+        }
+                
+        Iterator childComponentsIterator = childComponents.iterator();
+        while(childComponentsIterator.hasNext())
+        {
+        	InfoGlueComponent childComponent = (InfoGlueComponent)childComponentsIterator.next();
+        	boolean deleteComponent = true;
+        	System.out.println("filters:" + filters);
+        	Iterator filtersIterator = filters.iterator();
+        	while(filtersIterator.hasNext())
+        	{
+        		Map filter = (Map)filtersIterator.next();
+        		String name = (String)filter.get("name");
+        		String value = (String)filter.get("value");
+        								
+        		try
+        		{
+	            	String propertyValue = getComponentPropertyValue(templateController.getSiteNodeId(), childComponent.getId(), templateController.getLanguageId(), templateController.getContentId(), name);
+	            	System.out.println("" + propertyValue + "=" + value);
+	            	if(propertyValue.trim().equalsIgnoreCase(value.trim()))
+	            	{
+		            	System.out.println("The component was a valid one...");
+	            		deleteComponent = false;
+	            		break;
+	            	}
+        		}
+        		catch (Exception e) 
+        		{
+        			e.printStackTrace();
+        		}
+        	}
+        	
+        	if(deleteComponent)
+        		childComponentsIterator.remove();
+        }
+        
+        return childComponents;
+	}
+
 	/**
 	 * This method fetches the pageComponent structure from the metainfo content.
 	 */

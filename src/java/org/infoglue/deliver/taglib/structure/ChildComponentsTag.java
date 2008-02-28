@@ -34,6 +34,8 @@ public class ChildComponentsTag extends ComponentLogicTag
 	private static final long serialVersionUID = 4050206323348354355L;
 
 	private String slotId = null;
+	private boolean seekRecursive = false;
+	private String propertyFilterStrings = null;
 	
     public ChildComponentsTag()
     {
@@ -42,16 +44,37 @@ public class ChildComponentsTag extends ComponentLogicTag
 
 	public int doEndTag() throws JspException
     {
-        List childComponents = getComponentLogic().getChildComponents(slotId);
-
+		List childComponents = null;
+		if(!seekRecursive && propertyFilterStrings == null)
+		{
+			childComponents = getComponentLogic().getChildComponents(slotId);
+		}
+		else
+		{
+			childComponents = getComponentLogic().getChildComponents(slotId, seekRecursive, propertyFilterStrings);
+		}
+		
         setResultAttribute(childComponents);
 	    
+        seekRecursive = false;
+        propertyFilterStrings = null;
+        
 		return EVAL_PAGE;
     }
 
-	public void setSlotId(String slotId)
+	public void setSlotId(String slotId) throws JspException
 	{
-	    this.slotId = slotId;
+	    this.slotId = evaluateString("childComponents", "slotId", slotId);
+	}
+
+	public void setSeekRecursive(boolean seekRecursive) throws JspException
+	{
+		this.seekRecursive = seekRecursive;
+	}
+
+	public void setPropertyFilterStrings(String propertyFilterStrings) throws JspException
+	{
+		this.propertyFilterStrings = evaluateString("childComponents", "propertyFilterStrings", propertyFilterStrings);
 	}
 
 }
