@@ -97,7 +97,7 @@
 	<td id="digitalAsset$formatter.encodeURI($formatter.encodeURI($digitalAsset.assetKey, 'utf-8'), 'utf-8')" valign="bottom" align="center" class="bordered" #if($assetKey == "$digitalAsset.assetKey") style="background-color: #C2D0E2;" #else style="background-color: white;" #end>
 		<input type="hidden" id="digitalAsset$formatter.encodeURI($formatter.encodeURI($digitalAsset.assetKey, 'utf-8'), 'utf-8')" value="$this.getDigitalAssetUrl($digitalAsset.digitalAssetId)">
 		#set($trippleEncodedAssetKey = "$formatter.encodeURI($formatter.encodeURI($formatter.encodeURI($digitalAsset.assetKey, 'utf-8'), 'utf-8'), 'utf-8')")
-		#set($doubleEncodedAssetKey = "$formatter.encodeURI($formatter.encodeURI($formatter.encodeURI($digitalAsset.assetKey, 'utf-8'), 'utf-8'), 'utf-8')")
+		#set($doubleEncodedAssetKey = "$formatter.encodeURI($formatter.encodeURI($digitalAsset.assetKey, 'utf-8'), 'utf-8')")
 		<a ondblclick="onOk();" href="javascript:markAsset(this, $!contentId, '$trippleEncodedAssetKey', '$doubleEncodedAssetKey', '$this.getDigitalAssetThumbnailUrl($digitalAsset.digitalAssetId)');"><img class="scaledbordered" src="$this.getDigitalAssetThumbnailUrl($digitalAsset.digitalAssetId)">
 		<br/>AssetKey: $digitalAsset.assetKey</a><br/>
 		#if($showSelectButtonByEachImage)<a href="javascript:markAsset(this, $!contentId, '$trippleEncodedAssetKey', '$doubleEncodedAssetKey', '$this.getDigitalAssetThumbnailUrl($digitalAsset.digitalAssetId)');onOk();"><b>Add asset to selection</b></a>#end
