@@ -46,7 +46,12 @@
 		</attribute>
 	    <attribute>
 		    <name>list</name>
-	    	<required>true</required>
+	    	<required>false</required>
+	        <rtexprvalue>true</rtexprvalue>
+		</attribute>
+	    <attribute>
+		    <name>map</name>
+	    	<required>false</required>
 	        <rtexprvalue>true</rtexprvalue>
 		</attribute>
 	</tag>
@@ -928,4 +933,25 @@
 		</attribute>
 	</tag>
 	
+	<tag>
+	    <name>contains</name>
+	    <tagclass>org.infoglue.deliver.taglib.common.ContainsTag</tagclass>
+	    <bodycontent>empty</bodycontent>
+	    <info></info>
+	    <attribute>
+		    <name>id</name>
+	    	<required>true</required>
+	        <rtexprvalue>true</rtexprvalue>
+		</attribute>
+	    <attribute>
+		    <name>object</name>
+	    	<required>true</required>
+	        <rtexprvalue>true</rtexprvalue>
+		</attribute>
+	    <attribute>
+		    <name>value</name>
+	    	<required>true</required>
+	        <rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
 </taglib>

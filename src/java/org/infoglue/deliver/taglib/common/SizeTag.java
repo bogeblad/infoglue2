@@ -23,6 +23,7 @@
 package org.infoglue.deliver.taglib.common;
 
 import java.util.Collection;
+import java.util.Map;
 
 import javax.servlet.jsp.JspException;
 
@@ -43,6 +44,7 @@ public class SizeTag extends AbstractTag
 	 * The collection.
 	 */
 	private Collection collection;
+	private Map map;
 	
 	/**
 	 * Default constructor.
@@ -60,7 +62,13 @@ public class SizeTag extends AbstractTag
 	 */
 	public int doEndTag() throws JspException
     {
-	    setResultAttribute(new Integer(collection == null ? 0 : collection.size()));
+		if(map != null)
+		    setResultAttribute(new Integer(map == null ? 0 : map.size()));
+		else if(collection != null)
+			setResultAttribute(new Integer(collection == null ? 0 : collection.size()));
+		else
+			throw new JspException("You must set either map or collection attribute on common:size-tag");
+		
         return EVAL_PAGE;
     }
 
@@ -74,5 +82,10 @@ public class SizeTag extends AbstractTag
     public void setList(final String collection) throws JspException
     {
         this.collection = evaluateCollection("size", "list", collection);
+    }
+    
+    public void setMap(final String map) throws JspException
+    {
+        this.map = (Map)evaluate("size", "map", map, Map.class);
     }
 }
