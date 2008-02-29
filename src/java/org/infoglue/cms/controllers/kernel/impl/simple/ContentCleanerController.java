@@ -21,7 +21,7 @@ import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
 
-@SuppressWarnings({"unused", "unchecked"})
+@SuppressWarnings({"unused", "unchecked", "static-access"})
 public class ContentCleanerController  extends BaseController
 {
     private final static Logger logger                                     = Logger.getLogger(ContentCleanerController.class);
@@ -37,21 +37,20 @@ public class ContentCleanerController  extends BaseController
     private Integer deletedContentVersionsCnt                              = 0, 
                     deletedDigitalAssetsCnt                                = 0;
     
-    /**
-     * @return
-     */
     public static ContentCleanerController getContentCleanerController()
     {
         return new ContentCleanerController();
     }
     
-    /**
-     * 
-     */
     private ContentCleanerController() {}
     
+    
     /**
-     * @param hitSize2Retain
+     * This method will clean all content versions foreach language foreach content that exists in the db.
+     * Except thoose content versions that are supposed to be retianed specified by hitSize. 
+     * @param hitSize2Retain Is used look up the last active content versions by language 
+     * for the given number, and also the last published if that one wasnt included in 
+     * the resulting query from the database. 
      * @throws Exception
      */
     public void cleanSweep(final int hitSize2Retain) throws Exception
@@ -69,14 +68,15 @@ public class ContentCleanerController  extends BaseController
         }   
         catch(Exception e)
         {
-            logger.error("An error occurred when tried to make a obtain languages or content:" + e, e);
-            throw new SystemException(e.getMessage());
+            e.printStackTrace();
+            //logger.error(e);
         }       
     }
     
     /**
-     * @param contentId
-     * @param hitSize2Retain
+     * This method will clean a single content up on it's content versions for the specified content id.
+     * @param contentId The content to perform a clean up on.
+     * @param hitSize2Retain The number of content versions to retain.
      * @throws Exception
      */
     public void clean(final Integer contentId, final int hitSize2Retain) throws Exception
@@ -90,9 +90,11 @@ public class ContentCleanerController  extends BaseController
     }
     
     /**
-     * @param contentId
-     * @param hitSize2Retain
-     * @param languageVOList
+     * This method will clean a single content up on it's content versions for the specified content id 
+     * and for the specified languages.
+     * @param contentId The content to perform a clean up on.
+     * @param hitSize2Retain The number of content versions to retain.
+     * @param languageVOList The specified languages to clean this content for.
      * @throws Exception
      */
     public void clean(final Integer contentId, final int hitSize2Retain, final List<LanguageVO> languageVOList) throws Exception
@@ -105,9 +107,12 @@ public class ContentCleanerController  extends BaseController
     }
     
     /**
-     * @param contentVO
-     * @param hitSize2Retain
-     * @param languageVOList
+     * This method will clean a single content up on it's content versions for the specified ContentVO object  
+     * and for the specified languages. If the ContentVO object is a branch this method will perform a recursively
+     * clean up on all child Contents and their content versions.
+     * @param contentVO The content to perform a clean up on.
+     * @param hitSize2Retain The number of content versions to retain.
+     * @param languageVOList The specified languages to clean this content for.
      * @throws Exception
      */
     public void clean(final ContentVO contentVO, final int hitSize2Retain, final List<LanguageVO> languageVOList) throws Exception
@@ -124,83 +129,92 @@ public class ContentCleanerController  extends BaseController
         // Start cleaning content
         for (final LanguageVO languageVO : languageVOList)
         {
-            clean(contentVO, languageVO, hitSize2Retain);
+            clean(contentVO, hitSize2Retain, languageVO);
         }                   
     }
     
     /**
-     * @param contentVO
-     * @param languageVO
-     * @param hitSize2Retain
+     * This method is called internally by either of the clean methods above. 
+     * This method is responsible for collecting content versions up on a content 
+     * and validateing wheter or not a clean is neccessary. 
+     * @param contentVO The content to perform a clean up on.
+     * @param hitSize2Retain The number of content versions to retain.
+     * @param languageVOList The specified languages to clean this content for.
      * @throws Exception
      */
-    private void clean(final ContentVO contentVO, final LanguageVO languageVO, final int hitSize2Retain) throws Exception
+    private void clean(final ContentVO contentVO, final int hitSize2Retain, final LanguageVO languageVO) throws Exception
     {
-        final List<ContentVersion> contentVersionList2Retain = 
-            collectContentVersionList2Retain(contentVO, languageVO, hitSize2Retain);
+        final List<ContentVersionVO> contentVersionsList2Retain = 
+            collectContentVersionsList2Retain(contentVO, languageVO, hitSize2Retain);
         // Do this only when we have a sufficient number of content versions, if less there is no need to do this.
         // The list of content versions can hold both the <hitSize> quantity and one copy of the latest published content version,
         // this happens if none of the content versions found was the last published.  
-        if (contentVersionList2Retain.size() >= hitSize2Retain)
+        if (contentVersionsList2Retain.size() >= hitSize2Retain)
         {
-            cleanContent(contentVO, languageVO, contentVersionList2Retain);
+            cleanContent(contentVO, languageVO, contentVersionsList2Retain);
         }
     }
     
     /**
-     * @param contentVO
-     * @param languageVO
-     * @param contentVersionList2Retain
+     * This is the method where the actually cleaning process occurrs. 
+     * This method is called internally from the private clean method above.
+     * @param contentVO The content to perform a clean up on.
+     * @param languageVO The content language to collect content versions up on. 
+     * @param contentVersionsList2Retain The list of content versions to retain.
      * @throws Exception
      */
     private void cleanContent(final ContentVO contentVO, final LanguageVO languageVO, 
-            final List<ContentVersion> contentVersionList2Retain) throws Exception
+            final List<ContentVersionVO> contentVersionsList2Retain) throws Exception
     {
         final long startTime = System.currentTimeMillis();
         final Database db = CastorDatabaseService.getDatabase();
         beginTransaction(db);
         // Retrive all conten verisons for this content
-        final List<ContentVersion> contentVerisionList = 
+        final List<ContentVersionVO> contentVerisionList = 
             contentVersionController.getContentVersionsWithParentAndLanguage(
                     contentVO.getContentId(), languageVO.getLanguageId(), db);      
-        for (final ContentVersion contentVersion : contentVerisionList)
+        commitTransaction(db);
+        logger.info(contentVerisionList.size() + "  content versions found for contentId " + contentVO.getContentId());
+        logger.info("I will hunt them down and clean them all.");
+        for (final ContentVersionVO contentVersion : contentVerisionList)
         {
             // Should this content version be retained?
-            if (!isRetainedContentVersion(contentVersion, contentVersionList2Retain))
+            if (!isRetainedContentVersion(contentVersion, contentVersionsList2Retain))
             {
-                logger.info("Listing digital assets for ContentVersion:" + contentVersion.getContentVersionId());
+                final Integer contentVersionId = contentVersion.getContentVersionId();
+                logger.info("Listing digital assets for content version:" + contentVersionId);
                 // Retrive all digital assets for this content version
-                final ArrayList<DigitalAsset> items = new ArrayList(contentVersion.getDigitalAssets());
-                deletedContentVersionsCnt += items.size();
-                for (final DigitalAsset digitalAsset : items) 
+                final List<DigitalAssetVO> items = digitalAssetController.getDigitalAssetVOList(contentVersionId);
+                logger.info(items.size() + " digital assets for content version " + contentVersionId + " found.");
+                for (final DigitalAssetVO digitalAsset : items) 
                 {
-                    recoveredDiskSpaceCnt += digitalAsset.getAssetFileSize();
                     final Integer digitalAssetId = digitalAsset.getDigitalAssetId();
+                    recoveredDiskSpaceCnt += digitalAsset.getAssetFileSize();
                     logger.info("\tDead Digital Asset: " + digitalAsset.getAssetFileName());
                     // Delete all digital assets and their references that belongs to this content version
-                    contentVersionController.deleteDigitalAssetRelation(contentVersion.getContentVersionId(), digitalAsset, db);
-                    digitalAssetController.delete(digitalAssetId, db);
+                    contentVersionController.deleteDigitalAssetRelation(contentVersionId, digitalAssetId);
+                    digitalAssetController.delete(digitalAssetId);
+                    deletedDigitalAssetsCnt += 1;                   
                 }
                 // Delete the content version as well
+                contentVersionController.forceDelete(contentVersion);
                 deletedContentVersionsCnt += 1;
-                contentVersionController.delete(contentVersion, db, true);
-                logger.info("ContentVersion: " + contentVersion.getContentVersionId() + " Is Dead Meat.");
-                
+                logger.info("ContentVersion: " + contentVersion.getContentVersionId() + " Is Dead Meat.");                              
             }
         }
-        commitTransaction(db);
         elapsedTime += System.currentTimeMillis() - startTime;
     }
     
     /**
-     * @param contentVersion
-     * @param contentVerisionList2Retain
-     * @return
+     * This method checks wheter a content version exist in the retained list.
+     * @param contentVersion the content version to check.
+     * @param contentVerisionList2Retain the lists that holds the retained content versions.
+     * @return Wheterthis is a retained content version or not. 
      */
-    private boolean isRetainedContentVersion(final ContentVersion contentVersion, 
-            final List<ContentVersion> contentVerisionList2Retain)
+    private boolean isRetainedContentVersion(final ContentVersionVO contentVersion, 
+            final List<ContentVersionVO> contentVerisionList2Retain)
     {
-        for (final ContentVersion retainedContentVersion : contentVerisionList2Retain)
+        for (final ContentVersionVO retainedContentVersion : contentVerisionList2Retain)
         {
             if (contentVersion.getContentVersionId().intValue() == 
                 retainedContentVersion.getContentVersionId().intValue())
@@ -212,43 +226,51 @@ public class ContentCleanerController  extends BaseController
     }
     
     /**
-     * @param contentVO
-     * @param languageVO
-     * @param hitSize
-     * @return
+     * This method collects the latest active content versions for the specified hitSize 
+     * or as many as there is if the number of content versions in the db are insufficient.
+     * It is also responsible of making sure that the latest published content version 
+     * is collected and retained.
+     * @param contentVO The content to collect content versions for.
+     * @param languageVO The language up on the contenet versions should be collected for.
+     * @param hitSize The number of content versions to retain.
+     * @return A list containing the latest published content version for this content and
+     * the latest active content versions for the specified hitSize or as many as there is if
+     * the hitsSize number of content versions in the db are insufficient. 
      * @throws Exception
      */
-    private List<ContentVersion> collectContentVersionList2Retain(final ContentVO contentVO, final LanguageVO languageVO, 
+    private List<ContentVersionVO> collectContentVersionsList2Retain(final ContentVO contentVO, final LanguageVO languageVO, 
             final int hitSize) throws Exception
     {
         final Integer contentId = contentVO.getContentId(), languageId = languageVO.getLanguageId();
         final Database db = CastorDatabaseService.getDatabase();
         beginTransaction(db);
         // Retrive the latest content versions for hitSize
-        final List<ContentVersion> contentVerisionsList2Retain = 
+        final List<ContentVersionVO> contentVersionsList2Retain = 
             contentVersionController.getLatestActiveContentVersionsForHitSize(contentId, languageId, hitSize, db);
         // If none of them is published, fetch the latest published to this list also
-        if (!hasState(contentVerisionsList2Retain, ContentVersionVO.PUBLISHED_STATE))
+        if (!hasState(contentVersionsList2Retain, ContentVersionVO.PUBLISHED_STATE))
         {
             final ContentVersion latestPublished = 
                 contentVersionController.getLatestPublishedContentVersion(contentId, languageId, db);
             if (latestPublished != null)
             {
-                contentVerisionsList2Retain.add(latestPublished);
+                contentVersionsList2Retain.add(latestPublished.getValueObject());
             }
         }
         commitTransaction(db);
-        return contentVerisionsList2Retain;
+        return contentVersionsList2Retain;
     }
     
     /**
-     * @param contentVerisionsList2Retain
-     * @param state
-     * @return
+     * This method checks if any of the content version in the contentVerisionsList2Retain  
+     * has a specific state.
+     * @param contentVerisionsList2Retain The list to perform check against. 
+     * @param state The state to look for.
+     * @return Wheter or not the list had a content version in a specific state.
      */
-    private boolean hasState(final List<ContentVersion> contentVerisionsList2Retain, final Integer state)
+    private boolean hasState(final List<ContentVersionVO> contentVerisionsList2Retain, final Integer state)
     {
-        for (final ContentVersion contentVersion : contentVerisionsList2Retain)
+        for (final ContentVersionVO contentVersion : contentVerisionsList2Retain)
         {
             if (contentVersion.getStateId().intValue() == state.intValue())
             {
@@ -299,9 +321,6 @@ public class ContentCleanerController  extends BaseController
         return null;
     }
     
-    /**
-     * @param args
-     */
     public static void main(String[] args) {
         final ContentCleanerController controller = ContentCleanerController.getContentCleanerController();
         try {
@@ -310,7 +329,8 @@ public class ContentCleanerController  extends BaseController
             logger.info("Removed " + controller.getDeletedContentVersionsCounter() + " content versions.");
             logger.info("Removed " + controller.getDeletedDigitalAsstesCounter() + " digital assets.");
             logger.info("Recovered " + controller.getCDSFactor(ContentCleanerController.FACTOR_MB) + " mb disk space.");
-            logger.info("Time elapsed: " + ((controller.getElapsedTime()/1000) / 60) + " min.");            
+            logger.info("Time elapsed: " + (controller.getElapsedTime()/1000) + " sec.");
+            //System.out.println("Time elapsed: " + ((controller.getElapsedTime()/1000) / 60) + " min.");       
         } catch (Exception e) {
             e.printStackTrace();
         }

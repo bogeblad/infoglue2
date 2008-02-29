@@ -1800,18 +1800,51 @@ public class ContentVersionController extends BaseController
         }
 	}
 	
+
     /**
-     * @param contentId
-     * @param languageId
-     * @param hitSize
-     * @param db
-     * @return
-     * @throws Exception
+     * 
+     * @param contentId a valid ContentId
+     * @param languageId a valid languagId
+     * @param db a db transaction
+     * @return a List of contentVersion depending on parent and language id, if none found an empty List is returned.
+     * @throws SystemException if an error occures.
+     * @throws Bug if an error occures.
+     * @throws Exception if an error occures.
+     */
+    public List<ContentVersionVO> getContentVersionsWithParentAndLanguage(final Integer contentId,
+            final Integer languageId, final Database db) throws SystemException, Bug, Exception
+    {
+        final List<ContentVersion> resultList = new ArrayList<ContentVersion>();
+        final OQLQuery oql = db.getOQLQuery("SELECT cv FROM org.infoglue.cms.entities.content.impl.simple.ContentVersionImpl cv WHERE cv.owningContent.contentId = $1 and cv.language.languageId = $2 ORDER BY cv.contentVersionId desc");
+        oql.bind(contentId);
+        oql.bind(languageId);
+        final QueryResults results = oql.execute();
+        while (results.hasMore())
+        {
+            final ContentVersion contentVersion = (ContentVersion) results.next();
+            resultList.add(contentVersion);
+        }
+        results.close();
+        oql.close();
+        return toVOList(resultList);
+    }
+
+    /**
+     * Get a list of lates n contentVersions where the isActive equals true.
+     * 
+     * @param contentId a valid contentId.
+     * @param languageId a valid languageId.
+     * @param hitSize the number of contentversions to be retrieved.
+     * @param db a db transaction
+     * @return returns a empty list if none found. The list is ordered by latest contentVersionId.
+     * @throws Exception if an error occurres.
      */
     @SuppressWarnings("unchecked")
-    public List<ContentVersion> getLatestActiveContentVersionsForHitSize(final Integer contentId, final Integer languageId, final int hitSize, final Database db) throws Exception
+    public List<ContentVersionVO> getLatestActiveContentVersionsForHitSize(final Integer contentId,
+            final Integer languageId, final int hitSize, final Database db) throws Exception
     {
-        if (hitSize <= 0) {
+        if (hitSize == 0)
+        {
             throw new SystemException("Illegal argument supplied, argument <hitSize> must be greater then zero.");
         }
 
@@ -1828,33 +1861,33 @@ public class ContentVersionController extends BaseController
         }
         results.close();
         oql.close();
-        return contentVersionList;
+        return toVOList(contentVersionList);
     }
 
     /**
-     * @param contentId
-     * @param languageId
-     * @param db
-     * @return
-     * @throws SystemException
-     * @throws Bug
-     * @throws Exception
+     * Forces a delete of a specified contentVersion.
+     * @param contentVersionVO a valid object.
+     * @throws SystemException if an error occurres.
      */
-    public List<ContentVersion> getContentVersionsWithParentAndLanguage(final Integer contentId, final Integer languageId, final Database db) throws SystemException, Bug, Exception
-    {
-        final List<ContentVersion> resultList = new ArrayList<ContentVersion>();
-        final OQLQuery oql = db.getOQLQuery( "SELECT cv FROM org.infoglue.cms.entities.content.impl.simple.ContentVersionImpl cv WHERE cv.owningContent.contentId = $1 and cv.language.languageId = $2 ORDER BY cv.contentVersionId desc");
-        oql.bind(contentId);
-        oql.bind(languageId);
-        final QueryResults results = oql.execute();
-        while (results.hasMore()) {
-            final ContentVersion contentVersion = (ContentVersion)results.next();
-            resultList.add(contentVersion);
+    public void forceDelete(final ContentVersionVO contentVersionVO) throws SystemException {
+        final Database db = CastorDatabaseService.getDatabase();
+        beginTransaction(db);
+        try {
+            final ContentVersion contentVersion = getContentVersionWithId(contentVersionVO.getContentVersionId(), db);
+            contentCategoryController.deleteByContentVersion(contentVersion, db);
+            final Content content = contentVersion.getOwningContent();
+            if (content != null)
+            {
+                content.getContentVersions().remove(contentVersion);
+            }
+            db.remove(contentVersion);
+            commitTransaction(db);
         }
-        results.close();
-        oql.close();
-        return resultList;
+        catch (Exception e)
+        {
+            logger.error("An error occurred so we should not completes the transaction:" + e, e);
+            rollbackTransaction(db);
+            throw new SystemException(e.getMessage());
+        }
     }
-
-
 }
