@@ -60,14 +60,14 @@ public class ComponentPropertyValueTag extends ComponentLogicTag
 	        if(siteNodeId == null)
 	        {
 	        	if(component != null)
-	        		propertyValue = getComponentLogic().getPropertyValue(propertyName, useLanguageFallback, useInheritance, useRepositoryInheritance, useStructureInheritance, component);
+	        		propertyValue = getComponentLogic().getPropertyValue(propertyName, useLanguageFallback, false, false, false, false, component);
 	        	else
 	        		propertyValue = getComponentLogic().getPropertyValue(propertyName, useLanguageFallback, useInheritance, useRepositoryInheritance, useStructureInheritance);
 	        }
 	        else
 	        {
 	        	if(component != null)
-	        		propertyValue = getComponentLogic().getPropertyValue(siteNodeId, propertyName, useLanguageFallback, useInheritance, component);	
+	        		propertyValue = getComponentLogic().getPropertyValue(siteNodeId, propertyName, useLanguageFallback, false, component);	
 	        	else
 	        		propertyValue = getComponentLogic().getPropertyValue(siteNodeId, propertyName, useLanguageFallback, useInheritance);	
 	        }
