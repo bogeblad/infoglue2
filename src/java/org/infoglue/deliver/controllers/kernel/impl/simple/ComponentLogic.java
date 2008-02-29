@@ -599,13 +599,13 @@ public class ComponentLogic
 		return propertyValue;
 	}
 
-	public String getPropertyValue(String propertyName, boolean useLangaugeFallback, boolean useInheritance, boolean useRepositoryInheritance, boolean useStructureInheritance, InfoGlueComponent component) throws SystemException
+	public String getPropertyValue(String propertyName, boolean useLangaugeFallback, boolean useInheritance, boolean useRepositoryInheritance, boolean useStructureInheritance, boolean useComponentInheritance, InfoGlueComponent component) throws SystemException
 	{
 		String propertyValue = "";
 
 		Locale locale = LanguageDeliveryController.getLanguageDeliveryController().getLocaleWithId(templateController.getDatabase(), templateController.getLanguageId());
 
-		Map property = getInheritedComponentProperty(component, propertyName, useInheritance, useRepositoryInheritance, useStructureInheritance);
+		Map property = getInheritedComponentProperty(component, propertyName, useInheritance, useRepositoryInheritance, useStructureInheritance, useComponentInheritance);
 		if(property != null)
 		{	
 			if(property != null)
@@ -1267,12 +1267,21 @@ public class ComponentLogic
 	{
 		return getInheritedComponentProperty(component, propertyName, useInheritance, useRepositoryInheritance, true);
 	}
-	
+
 	/**
 	 * This method gets a property from the component and if not found there checks in parent components.
 	 */
 
 	public Map getInheritedComponentProperty(InfoGlueComponent component, String propertyName, boolean useInheritance, boolean useRepositoryInheritance, boolean useStructureInheritance)
+	{
+		return getInheritedComponentProperty(component, propertyName, useInheritance, useRepositoryInheritance, useStructureInheritance, true);
+	}
+	
+	/**
+	 * This method gets a property from the component and if not found there checks in parent components.
+	 */
+
+	public Map getInheritedComponentProperty(InfoGlueComponent component, String propertyName, boolean useInheritance, boolean useRepositoryInheritance, boolean useStructureInheritance, boolean useComponentInheritance)
 	{
 		Map property = null;
 		
@@ -1282,7 +1291,7 @@ public class ComponentLogic
 	    	
 	    try
 		{
-		    String key = "" + templateController.getSiteNodeId() + "_" + templateController.getLanguageId() + "_" + component.getName() + "_" + component.getSlotName() + "_" + component.getContentId() + "_" + component.getId() + "_" + component.getIsInherited() + "_" + propertyName + "_" + useInheritance + "_" + useRepositoryInheritance + "_" + useStructureInheritance; 
+		    String key = "" + templateController.getSiteNodeId() + "_" + templateController.getLanguageId() + "_" + component.getName() + "_" + component.getSlotName() + "_" + component.getContentId() + "_" + component.getId() + "_" + component.getIsInherited() + "_" + propertyName + "_" + useInheritance + "_" + useRepositoryInheritance + "_" + useStructureInheritance + "_" + useComponentInheritance; 
 		    String versionKey = key + "_contentVersionIds";
 			Object propertyCandidate = CacheController.getCachedObjectFromAdvancedCache("componentPropertyCache", key);
 			Set propertyCandidateVersions = (Set)CacheController.getCachedObjectFromAdvancedCache("componentPropertyCache", versionKey);
@@ -1305,7 +1314,7 @@ public class ComponentLogic
 					property = (Map)component.getProperties().get(propertyName);
 					InfoGlueComponent parentComponent = component.getParentComponent();
 					//logger.info("parentComponent: " + parentComponent);
-					while(property == null && parentComponent != null)
+					while(property == null && parentComponent != null && useComponentInheritance)
 					{
 						property = (Map)parentComponent.getProperties().get(propertyName);
 						parentComponent = parentComponent.getParentComponent();
@@ -2590,19 +2599,23 @@ public class ComponentLogic
 	
 	public List getChildComponents(String slotId, boolean searchRecursive, String propertyFilterStrings)
 	{
-		List filters = new ArrayList();
-        String[] filtersArray = propertyFilterStrings.split(",");
-        for(int i=0; i<filtersArray.length; i++)
-        {
-        	String nameValuePair = filtersArray[i];
-        	String[] pair = nameValuePair.split("=");
-        	String name = pair[0];
-        	String value = pair[1];
-        	Map nameValues = new HashMap();
-        	nameValues.put("name", name);
-        	nameValues.put("value", value);
-        	filters.add(nameValues);
-        }
+		List filters = null;
+		if(propertyFilterStrings != null && !propertyFilterStrings.equals(""))
+		{
+			filters = new ArrayList();
+	        String[] filtersArray = propertyFilterStrings.split(",");
+	        for(int i=0; i<filtersArray.length; i++)
+	        {
+	        	String nameValuePair = filtersArray[i];
+	        	String[] pair = nameValuePair.split("=");
+	        	String name = pair[0];
+	        	String value = pair[1];
+	        	Map nameValues = new HashMap();
+	        	nameValues.put("name", name);
+	        	nameValues.put("value", value);
+	        	filters.add(nameValues);
+	        }
+		}
         
 	    return getChildComponents(this.getInfoGlueComponent(), slotId, searchRecursive, filters);
 	}
@@ -2662,38 +2675,41 @@ public class ComponentLogic
             }
         }
                 
-        Iterator childComponentsIterator = childComponents.iterator();
-        while(childComponentsIterator.hasNext())
+        if(filters != null && filters.size() > 0)
         {
-        	InfoGlueComponent childComponent = (InfoGlueComponent)childComponentsIterator.next();
-        	boolean deleteComponent = true;
-        	System.out.println("filters:" + filters);
-        	Iterator filtersIterator = filters.iterator();
-        	while(filtersIterator.hasNext())
-        	{
-        		Map filter = (Map)filtersIterator.next();
-        		String name = (String)filter.get("name");
-        		String value = (String)filter.get("value");
-        								
-        		try
-        		{
-	            	String propertyValue = getComponentPropertyValue(templateController.getSiteNodeId(), childComponent.getId(), templateController.getLanguageId(), templateController.getContentId(), name);
-	            	System.out.println("" + propertyValue + "=" + value);
-	            	if(propertyValue.trim().equalsIgnoreCase(value.trim()))
-	            	{
-		            	System.out.println("The component was a valid one...");
-	            		deleteComponent = false;
-	            		break;
-	            	}
-        		}
-        		catch (Exception e) 
-        		{
-        			e.printStackTrace();
-        		}
-        	}
-        	
-        	if(deleteComponent)
-        		childComponentsIterator.remove();
+	        Iterator childComponentsIterator = childComponents.iterator();
+	        while(childComponentsIterator.hasNext())
+	        {
+	        	InfoGlueComponent childComponent = (InfoGlueComponent)childComponentsIterator.next();
+	        	boolean deleteComponent = true;
+	        	//System.out.println("filters:" + filters);
+	        	Iterator filtersIterator = filters.iterator();
+	        	while(filtersIterator.hasNext())
+	        	{
+	        		Map filter = (Map)filtersIterator.next();
+	        		String name = (String)filter.get("name");
+	        		String value = (String)filter.get("value");
+	        								
+	        		try
+	        		{
+		            	String propertyValue = getComponentPropertyValue(templateController.getSiteNodeId(), childComponent.getId(), templateController.getLanguageId(), templateController.getContentId(), name);
+		            	System.out.println("" + propertyValue + "=" + value);
+		            	if(propertyValue.trim().equalsIgnoreCase(value.trim()))
+		            	{
+			            	//System.out.println("The component was a valid one...");
+		            		deleteComponent = false;
+		            		break;
+		            	}
+	        		}
+	        		catch (Exception e) 
+	        		{
+	        			e.printStackTrace();
+	        		}
+	        	}
+	        	
+	        	if(deleteComponent)
+	        		childComponentsIterator.remove();
+	        }
         }
         
         return childComponents;
