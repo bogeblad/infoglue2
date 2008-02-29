@@ -29,6 +29,14 @@ Abbreviated Changelog from 2.8.1 Final
 - New tag (savePagePartTemplate) which allows you to output a link to the new save pagePartTemplate feature.
 - Added possibility to override what decorated component invoker the system uses.
 - Added the basics for a ajax-based page/component-editor. Improves performance a bit and makes the UI much more flexible.
+- Improved save page part template and save page template action so it now auto-creates the needed content-types if not installed.
+- Fixed bug in change component logic - it did not regard allowedComponentNames or disallowedComponentNames before.
+- Fixed issue with i18names in assetkeys
+- Added new attribute "component" to componentPropertyValue so you can get property connected to a specific component.
+- Added new attributes "seekRecursive" and "propertyFilterStrings" which allows you to get a subcomponent which has a given property.
+- Added jquery validate plugin - great javascript library for validating forms.
+- Added new attribute "map" to common:size tag so one can choose to size up maps as well.
+- Added new tag commons:contains which returns if an object is equal to or is contained in another object or collection/map.
 
 -------------------------------------------------------------------------------------
 - InfoGlue 2.8.1 Final
