@@ -470,6 +470,15 @@ public interface TemplateController
      */
     public abstract String getParsedContentAttribute(ContentVersionVO contentVersionVO, String attributeName, boolean clean);
 
+	/**
+	 * This method parses an infoglue text - which may contain wysiwyg-content including internal links and images.
+	 */
+	public String getParsedText(String text);
+
+	//public abstract static String transformAttribute(String plainAttribute);
+
+	//public abstract static String untransformAttribute(String plainAttribute);
+
     /**
      * This method deliveres a list of strings which represents all assetKeys for a content.
      */

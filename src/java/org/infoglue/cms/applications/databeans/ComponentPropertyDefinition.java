@@ -47,11 +47,14 @@ public class ComponentPropertyDefinition
     private Boolean assetBinding;
     private String allowedContentTypeNames;
     private String description;
-    
+	private String defaultValue 		= "";
+	private Boolean WYSIWYGEnabled 		= new Boolean(false);
+	private String WYSIWYGToolbar 		= "";
+
     private List options = new ArrayList();
 
     
-    public ComponentPropertyDefinition(String name, String type, String entity, Boolean multiple, Boolean assetBinding, String allowedContentTypeNames, String description)
+    public ComponentPropertyDefinition(String name, String type, String entity, Boolean multiple, Boolean assetBinding, String allowedContentTypeNames, String description, String defaultValue, Boolean WYSIWYGEnabled, String WYSIWYGToolbar)
     {
         this.name 						= name;
         this.type 						= type;
@@ -60,6 +63,9 @@ public class ComponentPropertyDefinition
         this.assetBinding 				= assetBinding;
         this.allowedContentTypeNames 	= allowedContentTypeNames;
         this.description				= description;
+        this.defaultValue				= defaultValue;
+        this.WYSIWYGEnabled				= WYSIWYGEnabled;
+        this.WYSIWYGToolbar				= WYSIWYGToolbar;
     }
         
     public String getEntity()
@@ -97,8 +103,24 @@ public class ComponentPropertyDefinition
         return description;
     }
 
-	public List getOptions() {
+	public List getOptions() 
+	{
 		return options;
+	}
+
+	public String getDefaultValue()
+	{
+		return defaultValue;
+	}
+
+	public Boolean getWYSIWYGEnabled()
+	{
+		return WYSIWYGEnabled;
+	}
+
+	public String getWYSIWYGToolbar()
+	{
+		return WYSIWYGToolbar;
 	}
 
 }

@@ -1186,6 +1186,7 @@ public class AjaxDecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHT
 					
 					String name							 = binding.attributeValue("name");
 					String description					 = binding.attributeValue("description");
+					String defaultValue					 = binding.attributeValue("defaultValue");
 					String type							 = binding.attributeValue("type");
 					String allowedContentTypeNamesString = binding.attributeValue("allowedContentTypeDefinitionNames");
 					String visualizingAction 			 = binding.attributeValue("visualizingAction");
@@ -1197,6 +1198,7 @@ public class AjaxDecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHT
 					property.setComponentId(componentId);
 					property.setName(name);
 					property.setDescription(description);
+					property.setDefaultValue(defaultValue);
 					property.setType(type);
 					property.setVisualizingAction(visualizingAction);
 					property.setCreateAction(createAction);
@@ -1226,14 +1228,17 @@ public class AjaxDecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHT
 					{		
 						String value = getComponentPropertyValue(componentId, name);
 						timer.printElapsedTime("Set property2");
-						//logger.info("value:" + value);
 						property.setValue(value);
 					}
 					else if(type.equalsIgnoreCase(ComponentProperty.TEXTAREA))	
 					{		
+						boolean WYSIWYGEnabled = new Boolean(binding.attributeValue("WYSIWYGEnabled")).booleanValue();
+						property.setWYSIWYGEnabled(WYSIWYGEnabled);
+						String WYSIWYGToolbar = binding.attributeValue("WYSIWYGToolbar");
+						property.setWYSIWYGToolbar(WYSIWYGToolbar);
+
 						String value = getComponentPropertyValue(componentId, name);
 						timer.printElapsedTime("Set property2");
-						//logger.info("value:" + value);
 						property.setValue(value);
 					}
 					else if(type.equalsIgnoreCase(ComponentProperty.SELECTFIELD))	
@@ -1327,6 +1332,7 @@ public class AjaxDecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHT
 					
 					String name							 = binding.attributeValue("name");
 					String description					 = binding.attributeValue("description");
+					String defaultValue					 = binding.attributeValue("defaultValue");
 					String type							 = binding.attributeValue("type");
 					String allowedContentTypeNamesString = binding.attributeValue("allowedContentTypeDefinitionNames");
 					String visualizingAction 			 = binding.attributeValue("visualizingAction");
@@ -1338,6 +1344,7 @@ public class AjaxDecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHT
 					property.setComponentId(componentId);
 					property.setName(name);
 					property.setDescription(description);
+					property.setDefaultValue(defaultValue);
 					property.setType(type);
 					property.setVisualizingAction(visualizingAction);
 					property.setCreateAction(createAction);
@@ -1372,6 +1379,11 @@ public class AjaxDecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHT
 					}
 					else if(type.equalsIgnoreCase(ComponentProperty.TEXTAREA))	
 					{		
+						boolean WYSIWYGEnabled = new Boolean(binding.attributeValue("WYSIWYGEnabled")).booleanValue();
+						property.setWYSIWYGEnabled(WYSIWYGEnabled);
+						String WYSIWYGToolbar = binding.attributeValue("WYSIWYGToolbar");
+						property.setWYSIWYGToolbar(WYSIWYGToolbar);
+
 						String value = getComponentPropertyValue(componentId, name, templateController);
 						timer.printElapsedTime("Set property2");
 						//logger.info("value:" + value);

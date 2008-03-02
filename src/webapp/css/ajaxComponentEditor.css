@@ -15,7 +15,7 @@ Component Properties Classes
 	border: 1px solid #333333;
 	z-index: 1000003;
 	top: 100px;
-	width: 520px;
+	width: 620px;
 }
 
 #componentPropertiesForm
@@ -32,7 +32,7 @@ Component Properties Classes
 	font-family: Tahoma, Arial, Helvetica, sans-serif;
 	font-size:10pt;
 	float: left;
-	max-height: 400px;
+	max-height: 500px;
 	overflow: auto;
 }
 
@@ -44,16 +44,18 @@ Component Properties Classes
 	font-family: Tahoma, Arial, Helvetica, sans-serif;
 	font-size: 10pt;
 	background-image: url('../images/handleBackground.gif');
+	border-bottom: 1px solid #CCCCCC;
 	float: left;
 }
 
 #leftComponentPropertiesHandle 
 {
-	width: 493px; 
+	width: 588px; 
 	float: left;
 	color: white;
 	text-align: left;
 	line-height: 10pt;
+	padding-left: 5px;
 }
 #rightComponentPropertiesHandle 
 {
@@ -96,7 +98,7 @@ Component Properties Classes
 	float: left;
 	font-family: Verdana, Arial, San serif;
 	font-size: 8pt;
-	width: 480px;
+	width: 580px;
 	border-bottom: 1px solid #cccccc;
 }
 .propertyRowLeft
@@ -109,12 +111,12 @@ Component Properties Classes
 .propertyRowRight
 {
 	float: right;
-	width: 260px;
+	width: 360px;
 }
 .fieldGroup
 {
 	float: left;
-	width: 240px;
+	width: 340px;
 }
 .actionGroup
 {
@@ -153,14 +155,14 @@ Component Properties Classes
 {
 	background: white;
 	border: 1px solid #cccccc;
-	width: 210px;
+	width: 330px;
 }
 #componentPropertiesForm fieldset div textarea
 {
 	background: white;
 	border: 1px solid #cccccc;
-	width: 210px;
-	height: 60px;
+	width: 330px;
+	height: 50px;
 	float: left;
 }
 #componentPropertiesForm fieldset .buttonRow

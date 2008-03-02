@@ -71,16 +71,20 @@
 			{
 				var property = propertyVector.getElementAt(i);
 				
-				propertyName 	= property.getName();
-				propertyType   	= property.getType();
-				propertyEntity 	= property.getEntity();
-				propertyMultiple= property.getMultiple();
-				propertyAssetBinding= property.getAssetBinding();
-				propertyDescription= property.getDescription();
+				propertyName 					= property.getName();
+				propertyType   					= property.getType();
+				propertyEntity 					= property.getEntity();
+				propertyMultiple				= property.getMultiple();
+				propertyAssetBinding			= property.getAssetBinding();
+				propertyDescription				= property.getDescription();
+				propertyDefaultValue			= property.getDefaultValue();
+				propertyWYSIWYGEnabled			= property.getWYSIWYGEnabled();
+				propertyWYSIWYGToolbar			= property.getWYSIWYGToolbar();
 				propertyAllowedContentTypeNames = property.getAllowedContentTypeNames();
+				
 				if(propertyType == "select" || propertyType == "checkbox")
 				{
-					propertiesXML += "<property name='" + propertyName + "' type='" + propertyType + "' multiple='" + propertyMultiple + "' assetBinding='" + propertyAssetBinding + "' description='" + propertyDescription + "'>";
+					propertiesXML += "<property name='" + propertyName + "' type='" + propertyType + "' multiple='" + propertyMultiple + "' assetBinding='" + propertyAssetBinding + "' description='" + propertyDescription + "' defaultValue='" + propertyDefaultValue + "'>";
 
 					for (var j=0; j<property.getOptions().getSize(); j++)
 					{
@@ -94,7 +98,7 @@
 					propertiesXML += "</property>";					
 				}
 				else
-					propertiesXML += "<property name='" + propertyName + "' type='" + propertyType + "' entity='" + propertyEntity + "' multiple='" + propertyMultiple + "' assetBinding='" + propertyAssetBinding + "' allowedContentTypeDefinitionNames='" + propertyAllowedContentTypeNames + "' description='" + propertyDescription + "'/>";
+					propertiesXML += "<property name='" + propertyName + "' type='" + propertyType + "' entity='" + propertyEntity + "' multiple='" + propertyMultiple + "' assetBinding='" + propertyAssetBinding + "' allowedContentTypeDefinitionNames='" + propertyAllowedContentTypeNames + "' description='" + propertyDescription + "' defaultValue='" + propertyDefaultValue + "' WYSIWYGEnabled='" + propertyWYSIWYGEnabled + "' WYSIWYGToolbar='" + propertyWYSIWYGToolbar + "'/>";
 			}
 		   	
 		   	propertiesXML += "</properties>";
@@ -252,6 +256,10 @@
 
 			document.componentPropertyDefinitionForm.componentPropertyDefinition_description.value = componentPropertyDefinition.description;
 			
+			document.componentPropertyDefinitionForm.componentPropertyDefinition_defaultValue.value = componentPropertyDefinition.defaultValue;
+			document.componentPropertyDefinitionForm.componentPropertyDefinition_WYSIWYGEnabled.value = componentPropertyDefinition.WYSIWYGEnabled;
+			document.componentPropertyDefinitionForm.componentPropertyDefinition_WYSIWYGToolbar.value = componentPropertyDefinition.WYSIWYGToolbar;
+			
 			var allowedContentTypeNamesArray = componentPropertyDefinition.getAllowedContentTypeNames().split(",");
 			var selObject = document.componentPropertyDefinitionForm.componentPropertyDefinition_allowedContentTypeNames;
 
@@ -322,6 +330,7 @@
 
 			componentPropertyDefinition.setName(document.getElementById("componentPropertyDefinition_name").value);
 			componentPropertyDefinition.setDescription(document.getElementById("componentPropertyDefinition_description").value);
+			
 			componentPropertyDefinition.setType(document.getElementById("componentPropertyDefinition_type").value);
 			if(componentPropertyDefinition.getType() == "binding")
 			{
@@ -351,6 +360,10 @@
 				componentPropertyDefinition.setMultiple("");
 				componentPropertyDefinition.setAssetBinding("");
 				componentPropertyDefinition.setAllowedContentTypeNames("");
+		
+				componentPropertyDefinition.setDefaultValue(document.getElementById("componentPropertyDefinition_defaultValue").value);
+				componentPropertyDefinition.setWYSIWYGEnabled(document.getElementById("componentPropertyDefinition_WYSIWYGEnabled").value);
+				componentPropertyDefinition.setWYSIWYGToolbar(document.getElementById("componentPropertyDefinition_WYSIWYGToolbar").value);
 			}
 			
 			hideProperties();
@@ -505,7 +518,7 @@
 
 		function addProperty()
 		{
-			property = new ComponentPropertyDefinition("NewProperty", "binding", "Content", "false", "false", "", "No description yet");
+			property = new ComponentPropertyDefinition("NewProperty", "binding", "Content", "false", "false", "", "No description yet", "", "false", "Basic");
 			propertyVector.addElement(property);
 				
 			drawList();
@@ -523,13 +536,16 @@
 				var property 			= propertyVector.getElementAt(index);
 				var previousProperty 	= propertyVector.getElementAt(index - 1);
 				
-				name 		= property.getName();
-				type		= property.getType();
-				entity		= property.getEntity();
-				multiple 	= property.getMultiple();
+				name 		 			= property.getName();
+				type		 			= property.getType();
+				entity		 			= property.getEntity();
+				multiple 	 			= property.getMultiple();
 				allowedContentTypeNames = property.getAllowedContentTypeNames();
-				description = property.getDescription();
-				assetBinding = property.getAssetBinding();
+				description  			= property.getDescription();
+				assetBinding 			= property.getAssetBinding();
+				defaultValue 			= property.getDefaultValue();
+				WYSIWYGEnabled 			= property.getWYSIWYGEnabled();
+				WYSIWYGToolbar 			= property.getWYSIWYGToolbar();
 				
 				property.setName(previousProperty.getName());
 				property.setType(previousProperty.getType());
@@ -539,6 +555,9 @@
 					property.setAssetBinding(previousProperty.getAssetBinding());
 				property.setAllowedContentTypeNames(previousProperty.getAllowedContentTypeNames());
 				property.setDescription(previousProperty.getDescription());
+				property.setDefaultValue(previousProperty.getDefaultValue());
+				property.setWYSIWYGEnabled(previousProperty.getWYSIWYGEnabled());
+				property.setWYSIWYGToolbar(previousProperty.getWYSIWYGToolbar());
 				
 				previousProperty.setName(name);
 				previousProperty.setType(type);
@@ -548,6 +567,9 @@
 					previousProperty.setAssetBinding(assetBinding);
 				previousProperty.setAllowedContentTypeNames(allowedContentTypeNames);
 				previousProperty.setDescription(description);
+				previousProperty.setDefaultValue(defaultValue);
+				previousProperty.setWYSIWYGEnabled(WYSIWYGEnabled);
+				previousProperty.setWYSIWYGToolbar(WYSIWYGToolbar);
 				
 				drawList();
 			}			
@@ -571,6 +593,9 @@
 				allowedContentTypeNames = property.getAllowedContentTypeNames();
 				description = property.getDescription();
 				assetBinding = property.getAssetBinding();
+				defaultValue 			= property.getDefaultValue();
+				WYSIWYGEnabled 			= property.getWYSIWYGEnabled();
+				WYSIWYGToolbar 			= property.getWYSIWYGToolbar();
 				
 				property.setName(previousProperty.getName())
 				property.setType(previousProperty.getType())
@@ -580,6 +605,9 @@
 					property.setAssetBinding(previousProperty.getAssetBinding());
 				property.setAllowedContentTypeNames(previousProperty.getAllowedContentTypeNames());
 				property.setDescription(previousProperty.getDescription());
+				property.setDefaultValue(previousProperty.getDefaultValue());
+				property.setWYSIWYGEnabled(previousProperty.getWYSIWYGEnabled());
+				property.setWYSIWYGToolbar(previousProperty.getWYSIWYGToolbar());
 				
 				previousProperty.setName(name);
 				previousProperty.setType(type);
@@ -589,6 +617,9 @@
 					previousProperty.setAssetBinding(assetBinding);
 				previousProperty.setAllowedContentTypeNames(allowedContentTypeNames);
 				previousProperty.setDescription(description);
+				previousProperty.setDefaultValue(defaultValue);
+				previousProperty.setWYSIWYGEnabled(WYSIWYGEnabled);
+				previousProperty.setWYSIWYGToolbar(WYSIWYGToolbar);
 			
 				drawList();
 			}
@@ -680,8 +711,17 @@
 		function validateTypeChoice()
 		{
 			selectBox = document.componentPropertyDefinitionForm.componentPropertyDefinition_type;
-			if(selectBox.value == "textfield" || selectBox.value == "textarea")
+			if(selectBox.value == "textfield")
 			{							 
+				document.getElementById("optionsParagraph").style.display = "none";
+				document.getElementById("entityParagraph").style.display = "none";
+				document.getElementById("multipleParagraph").style.display = "none";
+				document.getElementById("assetParagraph").style.display = "none";
+				document.getElementById("allowedContentTypeNamesParagraph").style.display = "none";
+			}
+			else if(selectBox.value == "textarea")
+			{							 
+				document.getElementById("wysiwygParagraph").style.display = "block";
 				document.getElementById("optionsParagraph").style.display = "none";
 				document.getElementById("entityParagraph").style.display = "none";
 				document.getElementById("multipleParagraph").style.display = "none";
@@ -730,8 +770,7 @@
 		{
 			#foreach($propertyDefinition in $componentPropertyDefinitions)
 				//alert("$propertyDefinition");
-				
-				property = new ComponentPropertyDefinition("$propertyDefinition.name", "$propertyDefinition.type", "$propertyDefinition.entity", "$propertyDefinition.multiple", "$propertyDefinition.assetBinding", "$propertyDefinition.allowedContentTypeNames", "$propertyDefinition.description");
+				property = new ComponentPropertyDefinition("$propertyDefinition.name", "$propertyDefinition.type", "$propertyDefinition.entity", "$propertyDefinition.multiple", "$propertyDefinition.assetBinding", "$propertyDefinition.allowedContentTypeNames", "$propertyDefinition.description", "$!propertyDefinition.defaultValue", "$!propertyDefinition.WYSIWYGEnabled", "$!propertyDefinition.WYSIWYGToolbar");
 
 				#foreach($propertyOptionDefinition in $propertyDefinition.options)
 					propertyOption = new ComponentPropertyOptionDefinition("$propertyOptionDefinition.name", "$propertyOptionDefinition.value");
@@ -780,6 +819,7 @@
 <br/>
 <p><label for="name">Name:</label><input type="textfield" name="componentPropertyDefinition_name" id="componentPropertyDefinition_name" value=""/></p>
 <p><label for="name">Description:</label><input type="textfield" name="componentPropertyDefinition_description" id="componentPropertyDefinition_description" value=""/></p>
+<p><label for="name">Default value:</label><input type="textfield" name="componentPropertyDefinition_defaultValue" id="componentPropertyDefinition_defaultValue" value=""/></p>
 <p><label for="name">Property type:</label>
 	<select size="1" name="componentPropertyDefinition_type" id="componentPropertyDefinition_type" class="sitedropbox" onchange="validateTypeChoice();">
 		<option value="binding">binding</option>
@@ -813,6 +853,16 @@
   	</fieldset>
 </div>
 
+<p id="wysiwygParagraph" style="display: block;">
+	<label for="name">Enable WYSIWYG:</label>
+	<select size="1" name="componentPropertyDefinition_WYSIWYGEnabled" id="componentPropertyDefinition_WYSIWYGEnabled" class="sitedropbox">
+	    <option value="false">No</option>
+	    <option value="true">Yes</option>
+	</select>
+	<div style="clear: both;"></div>
+	<label for="name">Toolbar:</label>
+	<input type="textfield" name="componentPropertyDefinition_WYSIWYGToolbar" id="componentPropertyDefinition_WYSIWYGToolbar" value=""/>
+</p>
 <p id="entityParagraph" style="display: block;"><label for="name">Entity:</label>
 	<select size="1" name="componentPropertyDefinition_entity" id="componentPropertyDefinition_entity" class="sitedropbox" onchange="validateEntityChoice();">
 	    <option value="Content">Content</option>

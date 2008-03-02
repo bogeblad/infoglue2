@@ -1020,7 +1020,22 @@ function showComponentPropertiesInDiv(targetDivId, parameterString, skipFloat, e
 
 	if(skipFloat)
 	{
-		$(targetDiv).load("AjaxComponentDeliveryService!getComponentPropertyDiv.action?" + parameterString + "&targetDivId=" + targetDivId + " #componentPropertiesForm");
+		$(targetDiv).load("AjaxComponentDeliveryService!getComponentPropertyDiv.action?" + parameterString + "&targetDivId=" + targetDivId + " #componentPropertiesForm",{}, function(event)
+		{	
+			$(targetDiv).find(".wysiwygeditor").each(function(){
+					var fck = new FCKeditor("myFCKeditor");
+					var id = $(this).attr("id");
+					var toolbarName = $(this).attr("toolbarName");
+					if(!toolbarName || toolbarName == "")
+						toolbarName = "Basic";
+						
+					var oFCKeditor = new FCKeditor( id ) ;
+					oFCKeditor.BasePath = "" + componentEditorUrl + "applications/FCKEditor/" ;
+					oFCKeditor.Config["CustomConfigurationsPath"] = "" + componentEditorUrl + "WYSIWYGProperties.action?" + parameterString;
+					oFCKeditor.ToolbarSet = toolbarName;
+					oFCKeditor.ReplaceTextarea() ;
+				});
+		});
 	}
 	else
 	{
@@ -1036,7 +1051,21 @@ function showComponentPropertiesInDiv(targetDivId, parameterString, skipFloat, e
 		if (bottomedge < targetDiv.offsetHeight)
 			clientY = (clientY - 200);
 		
-		$(targetDiv).load("AjaxComponentDeliveryService!getComponentPropertyDiv.action?" + parameterString + "&targetDivId=" + targetDivId + "",{}, function(event){
+		$(targetDiv).load("AjaxComponentDeliveryService!getComponentPropertyDiv.action?" + parameterString + "&targetDivId=" + targetDivId + "",{}, function(event)
+		{	
+			$(targetDiv).find(".wysiwygeditor").each(function(){
+					var fck = new FCKeditor("myFCKeditor");
+					var id = $(this).attr("id");
+					var toolbarName = $(this).attr("toolbarName");
+					if(!toolbarName || toolbarName == "")
+						toolbarName = "Basic";
+						
+					var oFCKeditor = new FCKeditor( id ) ;
+					oFCKeditor.BasePath = "" + componentEditorUrl + "applications/FCKEditor/" ;
+					oFCKeditor.Config["CustomConfigurationsPath"] = "" + componentEditorUrl + "WYSIWYGProperties.action?" + parameterString;
+					oFCKeditor.ToolbarSet = toolbarName;
+					oFCKeditor.ReplaceTextarea() ;
+				});
 
 			var theHandle = document.getElementById("componentPropertiesHandle");
 			var theRoot   = document.getElementById("componentProperties");

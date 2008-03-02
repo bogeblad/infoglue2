@@ -1861,6 +1861,46 @@ public class BasicTemplateController implements TemplateController
 	}
 
 	/**
+	 * This method parses an infoglue text - which may contain wysiwyg-content including internal links and images.
+	 */
+	 
+	public String getParsedText(String text) 
+	{
+		String parsedText = "";
+		
+		try
+		{
+			if(text != null)
+			{
+		        System.out.println("Parsing text:" + text);
+
+				String unparsedAttributeValue = text;
+				
+				Map context = new HashMap();
+				context.put("inheritedTemplateLogic", this);
+				context.put("templateLogic", getTemplateController(this.siteNodeId, languageId, contentId, this.request, this.infoGluePrincipal, this.deliveryContext));
+				context.putAll(templateLogicContext);
+				
+				StringWriter cacheString = new StringWriter();
+				PrintWriter cachedStream = new PrintWriter(cacheString);
+				new VelocityTemplateProcessor().renderTemplate(context, cachedStream, unparsedAttributeValue, true);
+				parsedText = cacheString.toString();
+		        
+				System.out.println("parsedText:" + parsedText);
+			}
+		}
+		catch(Exception e)
+		{
+			logger.error("\nError on url: " + this.getOriginalFullURL() + "\nAn error occurred trying to parse text=" + text + "\nReason:" + e.getMessage(), e);
+		}
+				
+		return parsedText;
+	}
+
+	
+	
+	
+	/**
 	 * This method is just a dummy method used to ensure that we can ensure to not get a decorated attribute
 	 * value if OnSiteEdit is on.
 	 */
@@ -3084,7 +3124,7 @@ public class BasicTemplateController implements TemplateController
 			String fileName = uniqueId + ".pdf";
 
 			int i = 0;
-			String filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i);
+			String filePath = CmsPropertyHandler.getDigitalAssetPath0();
 			while(filePath != null)
 			{
 				File pdfFile = new File(filePath + java.io.File.separator + fileName);
@@ -3128,7 +3168,7 @@ public class BasicTemplateController implements TemplateController
 			uniqueFileName = vf.replaceNonAscii(uniqueFileName, '_');
 	
 			int i = 0;
-			String filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i);
+			String filePath = CmsPropertyHandler.getDigitalAssetPath0();
 			while(filePath != null)
 			{
 				File file = new File(filePath + java.io.File.separator + uniqueFileName);
@@ -3175,7 +3215,7 @@ public class BasicTemplateController implements TemplateController
 			String fileName = uniqueId + ".pdf";
 			
 			int i = 0;
-			String filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i);
+			String filePath = CmsPropertyHandler.getDigitalAssetPath0();
 			while(filePath != null)
 			{
 				File pdfFile = new File(filePath + java.io.File.separator + fileName);
@@ -3428,7 +3468,7 @@ public class BasicTemplateController implements TemplateController
     {
         // write the result
         int i = 0;
-        String filePath = CmsPropertyHandler.getProperty( "digitalAssetPath." + i );
+        String filePath = CmsPropertyHandler.getDigitalAssetPath0();
         while ( filePath != null )
         {
             File imageFile = new File( filePath, fileName );
@@ -3472,7 +3512,7 @@ public class BasicTemplateController implements TemplateController
 			String fileName = uniqueId + ".png";
 			
 			int i = 0;
-			String filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i);
+			String filePath = CmsPropertyHandler.getDigitalAssetPath0();
 			while(filePath != null)
 			{
 				File imageFile = new File(filePath + java.io.File.separator + fileName);
@@ -3632,7 +3672,7 @@ public class BasicTemplateController implements TemplateController
 			String fileName = uniqueId + ".png";
 			
 			int i = 0;
-			String filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i);
+			String filePath = CmsPropertyHandler.getDigitalAssetPath0();
 			while(filePath != null)
 			{
 				File imageFile = new File(filePath + java.io.File.separator + fileName);
@@ -3754,7 +3794,7 @@ public class BasicTemplateController implements TemplateController
 	{
 		String url = "";
 	
-        String context = CmsPropertyHandler.getProperty(FilterConstants.CMS_PROPERTY_SERVLET_CONTEXT);
+        String context = CmsPropertyHandler.getServletContext();
 
 		SiteNode siteNode = this.nodeDeliveryController.getSiteNode(getDatabase(), this.siteNodeId);
 		String dnsName = CmsPropertyHandler.getWebServerAddress();
@@ -6552,7 +6592,7 @@ public class BasicTemplateController implements TemplateController
 		{
 			int i = 0;
 			String fileName = null;
-			String filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i);
+			String filePath = CmsPropertyHandler.getDigitalAssetPath0();
 			while(filePath != null)
 			{
 				fileName = ExportImportController.getController().exportContent(contentIdList, filePath, fileNamePrefix, includeContentTypes, includeCategories);

@@ -55,8 +55,10 @@ import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.XMLHelper;
 import org.infoglue.deliver.applications.databeans.DeliveryContext;
+import org.infoglue.deliver.controllers.kernel.impl.simple.BasicTemplateController;
 import org.infoglue.deliver.controllers.kernel.impl.simple.IntegrationDeliveryController;
 import org.infoglue.deliver.controllers.kernel.impl.simple.NodeDeliveryController;
+import org.infoglue.deliver.controllers.kernel.impl.simple.PageEditorHelper;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
@@ -614,7 +616,10 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 			logger.info("propertyValue:" + propertyValue);
 			String separator = System.getProperty("line.separator");
 			propertyValue = propertyValue.replaceAll(separator, "igbr");
-
+			System.out.println("propertyValue1:" + propertyValue);
+        	propertyValue = PageEditorHelper.untransformAttribute(propertyValue);
+			System.out.println("propertyValue2:" + propertyValue);
+ 
 			if(propertyValue != null && !propertyValue.equals("") && !propertyValue.equalsIgnoreCase("undefined"))
 			{
 				String componentPropertyXPath = "//component[@id=" + this.componentId + "]/properties/property[@name='" + propertyName + "']";

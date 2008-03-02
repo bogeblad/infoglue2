@@ -50,7 +50,8 @@ public class ComponentProperty
 	
 	private Integer id;
 	private String name;
-	private String description = "";
+	private String description 			= "";
+	private String defaultValue 		= null;
 	private String type;
 	private String[] allowedContentTypeNamesArray = null;
 	private Integer componentId;
@@ -58,10 +59,12 @@ public class ComponentProperty
 	private Integer entityId;
 	private String assetKey;
 	private String value;
-	private boolean isMultipleBinding = false;
-	private boolean isAssetBinding = false;
-	private String visualizingAction = null;
-	private String createAction = null;
+	private boolean isMultipleBinding 	= false;
+	private boolean isAssetBinding 		= false;
+	private boolean WYSIWYGEnabled 		= false;
+	private String WYSIWYGToolbar 		= "";
+	private String visualizingAction 	= null;
+	private String createAction 		= null;
 
 	private List options = new ArrayList();
 	
@@ -322,6 +325,39 @@ public class ComponentProperty
 	public void setBindings(List<ComponentBinding> bindings)
 	{
 		this.bindings = bindings;
+	}
+
+	public boolean getIsWYSIWYGEnabled()
+	{
+		return WYSIWYGEnabled;
+	}
+
+	public void setWYSIWYGEnabled(boolean WYSIWYGEnabled)
+	{
+		this.WYSIWYGEnabled = WYSIWYGEnabled;
+	}
+
+	public String getWYSIWYGToolbar()
+	{
+		return WYSIWYGToolbar;
+	}
+
+	public void setWYSIWYGToolbar(String WYSIWYGToolbar)
+	{
+		this.WYSIWYGToolbar = WYSIWYGToolbar;
+	}
+
+	public String getDefaultValue()
+	{
+		if(defaultValue != null)
+			return defaultValue;
+		else
+			return "Undefined";
+	}
+
+	public void setDefaultValue(String defaultValue)
+	{
+		this.defaultValue = defaultValue;
 	}
 	
 }

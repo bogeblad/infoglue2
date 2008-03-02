@@ -12,7 +12,7 @@
  * ComponentPropertyDefinition object
  */
 
-function ComponentPropertyDefinition(name, type, entity, multiple, assetBinding, allowedContentTypeNames, description)
+function ComponentPropertyDefinition(name, type, entity, multiple, assetBinding, allowedContentTypeNames, description, defaultValue, WYSIWYGEnabled, WYSIWYGToolbar)
 {
 	this.name 						= name;
 	this.type 						= type;
@@ -21,6 +21,9 @@ function ComponentPropertyDefinition(name, type, entity, multiple, assetBinding,
 	this.assetBinding 				= assetBinding;
 	this.allowedContentTypeNames 	= allowedContentTypeNames;
 	this.description				= description;
+	this.defaultValue				= defaultValue;
+	this.WYSIWYGEnabled				= WYSIWYGEnabled;
+	this.WYSIWYGToolbar				= WYSIWYGToolbar;
 	this.options					= new Vector(0);
 	  
   	this.getName 					= getName;
@@ -31,6 +34,9 @@ function ComponentPropertyDefinition(name, type, entity, multiple, assetBinding,
   	this.getAllowedContentTypeNames = getAllowedContentTypeNames;
 	this.getDescription				= getDescription;
 	this.getOptions					= getOptions;
+	this.getDefaultValue			= getDefaultValue;
+	this.getWYSIWYGEnabled			= getWYSIWYGEnabled;
+	this.getWYSIWYGToolbar			= getWYSIWYGToolbar;
 	
   	this.setName 					= setName;
   	this.setType 					= setType;
@@ -39,6 +45,9 @@ function ComponentPropertyDefinition(name, type, entity, multiple, assetBinding,
   	this.setAssetBinding			= setAssetBinding;
   	this.setAllowedContentTypeNames = setAllowedContentTypeNames;
 	this.setDescription				= setDescription;
+	this.setDefaultValue			= setDefaultValue;
+	this.setWYSIWYGEnabled			= setWYSIWYGEnabled;
+	this.setWYSIWYGToolbar			= setWYSIWYGToolbar;
 }
   
 function getName()
@@ -114,4 +123,34 @@ function setAllowedContentTypeNames(allowedContentTypeNames)
 function setDescription(description)
 {
 	this.description = description;
+}
+
+function getDefaultValue()
+{
+	return this.defaultValue;
+}
+
+function setDefaultValue(defaultValue)
+{
+	this.defaultValue = defaultValue;
+}
+	
+function getWYSIWYGEnabled()
+{
+	return this.WYSIWYGEnabled;
+}
+
+function setWYSIWYGEnabled(WYSIWYGEnabled)
+{
+	this.WYSIWYGEnabled = WYSIWYGEnabled;
+}
+
+function getWYSIWYGToolbar()
+{
+	return this.WYSIWYGToolbar;
+}
+
+function setWYSIWYGToolbar(WYSIWYGToolbar)
+{
+	this.WYSIWYGToolbar = WYSIWYGToolbar;
 }

@@ -89,9 +89,11 @@ public class ComponentPropertyDefinitionController extends BaseController
 				    String assetBinding 			= propertyElement.getAttribute("assetBinding");
 				    String allowedContentTypeNames 	= propertyElement.getAttribute("allowedContentTypeDefinitionNames");
 				    String description				= propertyElement.getAttribute("description");
+				    String defaultValue				= propertyElement.getAttribute("defaultValue");
+				    String WYSIWYGEnabled			= propertyElement.getAttribute("WYSIWYGEnabled");
+				    String WYSIWYGToolbar			= propertyElement.getAttribute("WYSIWYGToolbar");
 				    				    
-				    ComponentPropertyDefinition cpd = new ComponentPropertyDefinition(name, type, entity, new Boolean(multiple), new Boolean(assetBinding), allowedContentTypeNames, description);
-
+				    ComponentPropertyDefinition cpd = new ComponentPropertyDefinition(name, type, entity, new Boolean(multiple), new Boolean(assetBinding), allowedContentTypeNames, description, defaultValue, new Boolean(WYSIWYGEnabled), WYSIWYGToolbar);
 				    
 					NodeList optionsNodeList = propertyElement.getElementsByTagName("option");
 					for(int k=0; k<optionsNodeList.getLength(); k++)

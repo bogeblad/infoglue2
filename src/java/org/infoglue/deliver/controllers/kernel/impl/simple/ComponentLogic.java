@@ -35,11 +35,15 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
+import org.exolab.castor.jdo.Database;
+import org.infoglue.cms.applications.databeans.ComponentPropertyDefinition;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
 import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.content.ContentVersion;
+import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.entities.structure.SiteNodeVO;
 import org.infoglue.cms.exception.SystemException;
+import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.XMLHelper;
 import org.infoglue.cms.util.dom.DOMBuilder;
@@ -47,10 +51,13 @@ import org.infoglue.deliver.applications.actions.InfoGlueComponent;
 import org.infoglue.deliver.applications.databeans.ComponentDeliveryContext;
 import org.infoglue.deliver.util.NullObject;
 import org.infoglue.deliver.applications.databeans.ComponentBinding;
+import org.infoglue.deliver.applications.databeans.ComponentProperty;
+import org.infoglue.deliver.applications.databeans.ComponentPropertyOption;
 import org.infoglue.deliver.applications.databeans.Slot;
 import org.infoglue.deliver.applications.databeans.WebPage;
 import org.infoglue.deliver.util.CacheController;
 import org.infoglue.deliver.util.Support;
+import org.infoglue.deliver.util.Timer;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -574,8 +581,6 @@ public class ComponentLogic
 	{
 		String propertyValue = "";
 
-		Locale locale = LanguageDeliveryController.getLanguageDeliveryController().getLocaleWithId(templateController.getDatabase(), templateController.getLanguageId());
-
 		Map property = getInheritedComponentProperty(this.infoGlueComponent, propertyName, useInheritance, useRepositoryInheritance, useStructureInheritance);
 		if(property != null)
 		{	
@@ -590,6 +595,24 @@ public class ComponentLogic
 						String key = (String)keysIterator.next();
 					}
 				}
+			}
+		}
+		System.out.println("------->propertyValue:" + propertyValue);
+		if(propertyValue == null || propertyValue.equals(""))
+		{
+			try
+			{
+				ContentVO contentVO = templateController.getContent(this.infoGlueComponent.getContentId());
+				LanguageVO masterLanguage = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForRepository(templateController.getDatabase(), contentVO.getRepositoryId());
+	
+				System.out.println("Getting default value...");
+				ComponentPropertyDefinition propertyDefinition = getComponentPropertyDefinition(this.infoGlueComponent.getContentId(), propertyName, templateController.getSiteNodeId(), masterLanguage.getId(), templateController.getContentId(), templateController.getDatabase(), templateController.getPrincipal());
+				propertyValue = propertyDefinition.getDefaultValue();
+				System.out.println("propertyValue:" + propertyValue);
+			}
+			catch (Exception e) 
+			{
+				e.printStackTrace();
 			}
 		}
 
@@ -622,6 +645,24 @@ public class ComponentLogic
 			}
 		}
 
+		if(propertyValue == null || propertyValue.equals(""))
+		{
+			try
+			{
+				ContentVO contentVO = templateController.getContent(component.getContentId());
+				LanguageVO masterLanguage = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForRepository(templateController.getDatabase(), contentVO.getRepositoryId());
+	
+				System.out.println("Getting default value...");
+				ComponentPropertyDefinition propertyDefinition = getComponentPropertyDefinition(component.getContentId(), propertyName, templateController.getSiteNodeId(), masterLanguage.getId(), templateController.getContentId(), templateController.getDatabase(), templateController.getPrincipal());
+				propertyValue = propertyDefinition.getDefaultValue();
+				System.out.println("propertyValue:" + propertyValue);
+			}
+			catch (Exception e) 
+			{
+				e.printStackTrace();
+			}
+		}
+
 		if(propertyValue != null)
 			propertyValue = propertyValue.replaceAll("igbr", separator);
 
@@ -651,6 +692,24 @@ public class ComponentLogic
 			}
 		}
 
+		if(propertyValue == null || propertyValue.equals(""))
+		{
+			try
+			{
+				ContentVO contentVO = templateController.getContent(this.infoGlueComponent.getContentId());
+				LanguageVO masterLanguage = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForRepository(templateController.getDatabase(), contentVO.getRepositoryId());
+	
+				System.out.println("Getting default value...");
+				ComponentPropertyDefinition propertyDefinition = getComponentPropertyDefinition(this.infoGlueComponent.getContentId(), propertyName, templateController.getSiteNodeId(), masterLanguage.getId(), templateController.getContentId(), templateController.getDatabase(), templateController.getPrincipal());
+				propertyValue = propertyDefinition.getDefaultValue();
+				System.out.println("propertyValue:" + propertyValue);
+			}
+			catch (Exception e) 
+			{
+				e.printStackTrace();
+			}
+		}
+
 		if(propertyValue != null)
 			propertyValue = propertyValue.replaceAll("igbr", separator);
 
@@ -677,6 +736,24 @@ public class ComponentLogic
 						String key = (String)keysIterator.next();
 					}
 				}
+			}
+		}
+
+		if(propertyValue == null || propertyValue.equals(""))
+		{
+			try
+			{
+				ContentVO contentVO = templateController.getContent(component.getContentId());
+				LanguageVO masterLanguage = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForRepository(templateController.getDatabase(), contentVO.getRepositoryId());
+	
+				System.out.println("Getting default value...");
+				ComponentPropertyDefinition propertyDefinition = getComponentPropertyDefinition(component.getContentId(), propertyName, templateController.getSiteNodeId(), masterLanguage.getId(), templateController.getContentId(), templateController.getDatabase(), templateController.getPrincipal());
+				propertyValue = propertyDefinition.getDefaultValue();
+				System.out.println("propertyValue:" + propertyValue);
+			}
+			catch (Exception e) 
+			{
+				e.printStackTrace();
 			}
 		}
 
@@ -1907,7 +1984,6 @@ public class ComponentLogic
 		Document document = XMLHelper.readDocumentFromByteArray(inheritedPageComponentsXML.getBytes("UTF-8"));
 		String propertyXPath = "//component[@id=" + componentId + "]/properties/property[@name='" + propertyName + "']";
 		NodeList anl = org.apache.xpath.XPathAPI.selectNodeList(document.getDocumentElement(), propertyXPath);
-		//logger.info("*********************************************************anl:" + anl.getLength());
 		
 		//If not found on the same component id - let's check them all and use the first we find.
 		if(anl == null || anl.getLength() == 0)
@@ -1915,14 +1991,11 @@ public class ComponentLogic
 			String globalPropertyXPath = "//component/properties/property[@name='" + propertyName + "'][1]";
 			System.out.println("globalPropertyXPath4:" + globalPropertyXPath);
 			anl = org.apache.xpath.XPathAPI.selectNodeList(document.getDocumentElement(), globalPropertyXPath);
-			//logger.info("*********************************************************anl:" + anl.getLength());
 		}			
 		
 		for(int i=0; i < anl.getLength(); i++)
 		{
 			Element propertyElement = (Element)anl.item(i);
-			//logger.info(XMLHelper.serializeDom(propertyElement, new StringBuffer()));
-			//logger.info("YES - we read the property...");		
 			
 			String name		= propertyElement.getAttribute("name");
 			String type		= propertyElement.getAttribute("type");
@@ -1941,9 +2014,7 @@ public class ComponentLogic
 			    value = propertyElement.getAttribute("path");
 
 			    Locale locale = LanguageDeliveryController.getLanguageDeliveryController().getLocaleWithId(templateController.getDatabase(), languageId);
-			    //System.out.println("locale:" + languageId + ":" + locale.getDisplayLanguage());
 				Locale masterLocale = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForSiteNode(templateController.getDatabase(), siteNodeId).getLocale();
-				//System.out.println("masterLocale:" + masterLocale.getDisplayLanguage());
 				
 			    if(propertyElement.hasAttribute("path_" + locale.getLanguage()))
 				    value = propertyElement.getAttribute("path_" + locale.getLanguage());
@@ -2500,13 +2571,24 @@ public class ComponentLogic
 		{
 			Element property = (Element)anl.item(i);
 			
-			String id 			= property.getAttribute("type");
-			String path 		= property.getAttribute("path");
+			String componentContentId 	= property.getAttribute("contentId");
+			String id 					= property.getAttribute("type");
+			String path 				= property.getAttribute("path");
+			System.out.println("componentContentId:" + componentContentId);
 			
 			if(property.hasAttribute("path_" + locale.getLanguage()))
 				path = property.getAttribute("path_" + locale.getLanguage());
 			
-			value 				= path;
+			value = path;
+			
+			System.out.println("AAAAAAAAAAAAAAAAAA:" + value);
+			if(value == null)
+			{
+				System.out.println("Getting default value...");
+				ComponentPropertyDefinition propertyDefinition = getComponentPropertyDefinition(new Integer(componentContentId), name, siteNodeId, languageId, contentId, templateController.getDatabase(), templateController.getPrincipal());
+				value = propertyDefinition.getDefaultValue();
+				System.out.println("value:" + value);
+			}
 		}
 
 		if(value != null)
@@ -2535,13 +2617,24 @@ public class ComponentLogic
 		{
 			Element property = (Element)anl.item(i);
 			
-			String id 			= property.getAttribute("type");
-			String path 		= property.getAttribute("path");
+			String componentContentId 	= property.getAttribute("contentId");
+			String id 					= property.getAttribute("type");
+			String path 				= property.getAttribute("path");
 			
 			if(property.hasAttribute("path_" + locale.getLanguage()))
 				path = property.getAttribute("path_" + locale.getLanguage());
 			
-			value 				= path;
+			value = path;
+			
+			System.out.println("BBBBBBBBBBBB:" + value);
+
+			if(value == null)
+			{
+				System.out.println("Getting default value...");
+				ComponentPropertyDefinition propertyDefinition = getComponentPropertyDefinition(new Integer(componentContentId), name, templateController.getSiteNodeId(), languageId, templateController.getContentId(), templateController.getDatabase(), templateController.getPrincipal());
+				value = propertyDefinition.getDefaultValue();
+				System.out.println("value:" + value);
+			}
 		}
 
 		if(value != null)
@@ -2561,14 +2654,25 @@ public class ComponentLogic
 		
 		Locale locale = LanguageDeliveryController.getLanguageDeliveryController().getLocaleWithId(templateController.getDatabase(), languageId);
 
-		String id = property.getAttribute("type");
-		String path	= property.getAttribute("path");
+		String componentContentId 	= property.getAttribute("contentId");
+		String id 					= property.getAttribute("type");
+		String path					= property.getAttribute("path");
 		
 		if(property.hasAttribute("path_" + locale.getLanguage()))
 			path = property.getAttribute("path_" + locale.getLanguage());
 		
 		value = path;
-		
+
+		System.out.println("CCCCCCCCCCCCCCCC:" + value);
+
+		if(value == null)
+		{
+			System.out.println("Getting default value...");
+			ComponentPropertyDefinition propertyDefinition = getComponentPropertyDefinition(new Integer(componentContentId), name, templateController.getSiteNodeId(), languageId, templateController.getContentId(), templateController.getDatabase(), templateController.getPrincipal());
+			value = propertyDefinition.getDefaultValue();
+			System.out.println("value:" + value);
+		}
+
 		if(value != null)
 			value = value.replaceAll("igbr", separator);
 		
@@ -3198,4 +3302,58 @@ public class ComponentLogic
 		return pages;
 	}
 	*/
+	
+	/*
+	 * This method returns a bean representing a list of ComponentProperties that the component has.
+	 */
+	private static PageEditorHelper pageEditorHelper = new PageEditorHelper();
+	
+	private ComponentPropertyDefinition getComponentPropertyDefinition(Integer componentContentId, String propertyName, Integer siteNodeId, Integer languageId, Integer contentId, Database db, InfoGluePrincipal principal) throws Exception
+	{
+		//TODO - här kan vi säkert cache:a.
+		
+		ComponentPropertyDefinition propertyDefinition = null;
+		
+		Timer timer = new Timer();
+		timer.setActive(false);
+
+		try
+		{
+			org.dom4j.Document document = pageEditorHelper.getComponentPropertiesDOM4JDocument(siteNodeId, languageId, contentId, db, principal);
+			
+			if(document != null)
+			{
+				timer.printElapsedTime("Read document");
+
+				String propertyXPath = "//property[@name='" + propertyName + "']";
+				//logger.info("propertyXPath:" + propertyXPath);
+				org.dom4j.Node node = document.selectSingleNode(propertyXPath);
+				timer.printElapsedTime("Set property xpath");
+				if(node != null)
+				{
+					org.dom4j.Element element = (org.dom4j.Element)node;
+											
+					String name						= element.attributeValue("name");
+					String type					 	= element.attributeValue("type");
+					String entity					= element.attributeValue("entity");
+					String multiple					= element.attributeValue("multiple");
+					String assetBinding 			= element.attributeValue("assetBinding");
+					String allowedContTypeDefNames	= element.attributeValue("allowedContentTypeDefinitionNames");
+					String description 				= element.attributeValue("description");
+					String defaultValue 			= element.attributeValue("defaultValue");
+					String WYSIWYGEnabled 			= element.attributeValue("WYSIWYGEnabled");
+					String WYSIWYGToolbar 			= element.attributeValue("WYSIWYGToolbar");
+
+					propertyDefinition = new ComponentPropertyDefinition(name, type, entity, new Boolean(multiple), new Boolean(assetBinding), allowedContTypeDefNames, description, defaultValue, new Boolean(WYSIWYGEnabled), WYSIWYGToolbar);
+				}
+			}
+		}
+		catch(Exception e)
+		{
+			logger.warn("The property " + propertyName + " on component with contentId: " + componentContentId + " had a incorrect xml defining it's properties:" + e.getMessage(), e);
+		}
+							
+		return propertyDefinition;
+	}
+
 }
