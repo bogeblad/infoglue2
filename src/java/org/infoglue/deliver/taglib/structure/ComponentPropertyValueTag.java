@@ -43,6 +43,7 @@ public class ComponentPropertyValueTag extends ComponentLogicTag
 	private boolean useInheritance = true;
 	private boolean useRepositoryInheritance = true;
     private boolean useStructureInheritance = true;
+    private boolean parse = false;
     private boolean parseToMap = false;
     private InfoGlueComponent component = null;
     
@@ -71,7 +72,14 @@ public class ComponentPropertyValueTag extends ComponentLogicTag
 	        	else
 	        		propertyValue = getComponentLogic().getPropertyValue(siteNodeId, propertyName, useLanguageFallback, useInheritance);	
 	        }
-
+	        
+	        //System.out.println("parse:" + parse);
+	        //System.out.println("propertyValue:" + propertyValue);
+	        if(parse && propertyValue != null && !propertyValue.equals(""))
+	        {
+	        	propertyValue = getController().getParsedText(propertyValue);
+	        }
+	        
 	        if(parseToMap)
 	        {
 	        	Map orderedMap = new LinkedHashMap(); 
@@ -130,6 +138,11 @@ public class ComponentPropertyValueTag extends ComponentLogicTag
     public void setUseStructureInheritance(boolean useStructureInheritance)
     {
         this.useStructureInheritance = useStructureInheritance;
+    }
+
+    public void setParse(boolean parse)
+    {
+        this.parse = parse;
     }
 
     public void setParseToMap(boolean parseToMap)

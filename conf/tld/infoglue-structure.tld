@@ -359,6 +359,11 @@
             <rtexprvalue>false</rtexprvalue>
         </attribute>
         <attribute>
+            <name>parse</name>
+            <required>false</required>
+            <rtexprvalue>false</rtexprvalue>
+        </attribute>
+        <attribute>
             <name>parseToMap</name>
             <required>false</required>
             <rtexprvalue>false</rtexprvalue>
