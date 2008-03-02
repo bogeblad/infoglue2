@@ -82,7 +82,7 @@ public class ChartHelper
 			String fileName = uniqueId + ".png";
 			
 			int i = 0;
-			String filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i);
+			String filePath = CmsPropertyHandler.getDigitalAssetPath0();
 			File file = null;
 			while(filePath != null)
 			{

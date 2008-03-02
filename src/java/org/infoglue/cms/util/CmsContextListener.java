@@ -82,15 +82,9 @@ public final class CmsContextListener implements ServletContextListener
 			// String up2datePath = event.getServletContext().getRealPath("/") + "ut2date" + File.separator;
 			// CmsPropertyHandler.setProperty("up2datePath", up2datePath);
 			
-			CmsPropertyHandler.setProperty("contextRootPath", contextRootPath); 
 			CmsPropertyHandler.setContextRootPath(contextRootPath); 
 			
 			String logPath = CmsPropertyHandler.getLogPath();
-			if(logPath == null || logPath.equals(""))
-			{
-				logPath = contextRootPath + "logs" + File.separator + "infoglueCMS.log";
-				CmsPropertyHandler.setProperty("logPath", logPath);
-			}			
 			
 			Enumeration enumeration = Logger.getLogger("org.infoglue.cms").getAllAppenders();
 	        while(enumeration.hasMoreElements())
@@ -106,25 +100,7 @@ public final class CmsContextListener implements ServletContextListener
 	        }
 
 			String URIEncoding = CmsPropertyHandler.getURIEncoding();
-			if(URIEncoding == null || URIEncoding.equals(""))
-			{
-				URIEncoding = "ISO-8859-1";
-				CmsPropertyHandler.setProperty("URIEncoding", URIEncoding);
-			}			
 			
-			String assetPath = CmsPropertyHandler.getDigitalAssetPath();
-			if(assetPath == null || assetPath.equals(""))
-			{
-				assetPath = contextRootPath + "digitalAssets";
-				CmsPropertyHandler.setProperty("digitalAssetPath", assetPath);
-
-				String digitalAssetPath0 = CmsPropertyHandler.getProperty("digitalAssetPath.0");
-				if(digitalAssetPath0 == null || digitalAssetPath0.equals(""))
-				{
-					CmsPropertyHandler.setProperty("digitalAssetPath.0", assetPath);
-				}
-			}
-
 			String expireCacheAutomaticallyString = CmsPropertyHandler.getExpireCacheAutomatically();
 			if(expireCacheAutomaticallyString != null)
 				cacheController.setExpireCacheAutomatically(Boolean.parseBoolean(expireCacheAutomaticallyString));
@@ -138,7 +114,7 @@ public final class CmsContextListener implements ServletContextListener
 				cacheController.start();
 
 			OSCacheUtility.setServletCacheParams(event.getServletContext());
-
+			
 			CmsPropertyHandler.setStartupTime(new Date()); 
 
 			System.out.println("**************************************\n");

@@ -1307,7 +1307,7 @@ public class NodeDeliveryController extends BaseDeliveryController
 		try
 		{			
 			int i = 0;
-			String filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i);
+			String filePath = CmsPropertyHandler.getDigitalAssetPath0();
 			while(filePath != null)
 			{
 				try

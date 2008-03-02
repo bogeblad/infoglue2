@@ -81,6 +81,7 @@ public class CmsPropertyHandler
 	private static String operatingMode				= null;
 	private static File propertyFile 				= null;
 	private static Date startupTime					= null;
+	private static String servletContext 			= null;
 	
 	public static void setApplicationName(String theApplicationName)
 	{
@@ -90,6 +91,16 @@ public class CmsPropertyHandler
 	public static void setContextRootPath(String contextRootPath)
 	{
 		CmsPropertyHandler.contextRootPath = contextRootPath;
+	}
+
+	public static String getServletContext()
+	{
+		return servletContext;
+	}
+
+	public static void setServletContext(String servletContext)
+	{
+		CmsPropertyHandler.servletContext = servletContext;
 	}
 
 	public static void setOperatingMode(String operatingMode)
@@ -653,7 +664,7 @@ public class CmsPropertyHandler
 
 	public static String getDigitalAssetUploadPath()
 	{
-	    return getServerNodeProperty("digitalAssetUploadPath", true);
+	    return getServerNodeProperty("digitalAssetUploadPath", true, "" + contextRootPath + "uploads");
 	}
 	
 	public static String getExtranetCookieTimeout()
@@ -758,7 +769,7 @@ public class CmsPropertyHandler
 
 	public static String getLogPath()
 	{
-		return getServerNodeProperty("logPath", true);
+		return getServerNodeProperty("logPath", true, "" + contextRootPath + "logs" + File.separator + applicationName + ".log");
 	}
 
 	public static String getLogTransactions()
@@ -1019,9 +1030,14 @@ public class CmsPropertyHandler
 
 	public static String getDigitalAssetPath()
 	{
-	    return getServerNodeProperty("digitalAssetPath", true);
+	    return getServerNodeProperty("digitalAssetPath", true, "" + contextRootPath + "digitalAssets");
 	}
-	
+
+	public static String getDigitalAssetPath0()
+	{
+	    return getServerNodeProperty("digitalAssetPath.0", true, "" + contextRootPath + "digitalAssets");
+	}
+
 	public static String getEnableDiskAssets()
 	{
 	    return getServerNodeProperty("enableDiskAssets", true, "false");
@@ -1124,7 +1140,7 @@ public class CmsPropertyHandler
 
 	public static String getStatisticsLogPath()
 	{
-	    return getServerNodeProperty("statisticsLogPath", true);
+	    return getServerNodeProperty("statisticsLogPath", true, "" + contextRootPath + "logs");
 	}
 
 	public static String getStatisticsLogOneFilePerDay()

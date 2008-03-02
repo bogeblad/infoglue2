@@ -41,7 +41,6 @@ public abstract class FilterConstants
     public final static String REPOSITORY_NAME_REQUEST_PARAMETER            = "repositoryName";
     public final static String LANGUAGE_ID_REQUEST_PARAMETER                = "languageId";
 
-    public final static String CMS_PROPERTY_SERVLET_CONTEXT                 = "ServletContext";
     public final static String REPOSITORY_ID                                = "RepositoryId";
     public final static String LANGUAGE_ID                                  = "LanguageId";
 

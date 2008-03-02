@@ -209,6 +209,7 @@ public class ViewPageFilter implements Filter
 		                {
 		                    RepositoryVO repositoryVO = (RepositoryVO)repositorVOListIterator.next();
 		                    logger.info("Getting node from:" + repositoryVO.getName());
+		                    //TODO
 		                    siteNodeId = NodeDeliveryController.getSiteNodeIdFromPath(infoGluePrincipal, repositoryVO, nodeNames, attributeName, languageId, DeliveryContext.getDeliveryContext());
 		                    if(siteNodeId != null)
 		                        break;
@@ -293,10 +294,9 @@ public class ViewPageFilter implements Filter
 
     private void validateCmsProperties(HttpServletRequest request) 
     {
-        if (CmsPropertyHandler.getProperty(FilterConstants.CMS_PROPERTY_SERVLET_CONTEXT) == null) {
-            CmsPropertyHandler.setProperty(
-                FilterConstants.CMS_PROPERTY_SERVLET_CONTEXT,
-                request.getContextPath());
+        if (CmsPropertyHandler.getServletContext() == null) 
+        {
+        	CmsPropertyHandler.setServletContext(request.getContextPath());
         }
     }
 

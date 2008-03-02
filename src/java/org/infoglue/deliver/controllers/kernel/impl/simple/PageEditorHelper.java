@@ -311,7 +311,7 @@ public class PageEditorHelper
 					sb.append("				<a name=\"" + componentProperty.getName() + "\" class=\"componentEditorLink\" href=\"javascript:if(checkDirty('" + warningText + "')){window.open('" + assignUrl + "','Assign','toolbar=no,status=yes,scrollbars=yes,location=no,menubar=no,directories=no,resizable=no,width=300,height=600,left=5,top=5')};\">");
 				}
 
-				sb.append("					" + (componentProperty.getValue() == null || componentProperty.getValue().equalsIgnoreCase("") ? "Undefined" : componentProperty.getValue()) + (componentProperty.getIsAssetBinding() ? " (" + componentProperty.getAssetKey() + ")" : ""));
+				sb.append("					" + (componentProperty.getValue() == null || componentProperty.getValue().equalsIgnoreCase("") ? componentProperty.getDefaultValue() : componentProperty.getValue()) + (componentProperty.getIsAssetBinding() ? " (" + componentProperty.getAssetKey() + ")" : ""));
 				
 				if(hasAccessToProperty)
 				{
@@ -384,7 +384,10 @@ public class PageEditorHelper
 				if(hasAccessToProperty)
 				{
 					sb.append("	<input type=\"hidden\" name=\"" + propertyIndex + "_propertyName\" value=\"" + componentProperty.getName() + "\"/>");
-					sb.append("	<textarea class=\"propertytextarea\" name=\"" + componentProperty.getName() + "\" onkeydown=\"setDirty();\">" + (componentProperty.getValue() == null ? "" : componentProperty.getValue()) + "</textarea>");
+					if(componentProperty.getIsWYSIWYGEnabled())
+						sb.append("	<textarea toolbarName=\"" + componentProperty.getWYSIWYGToolbar() + "\" class=\"propertytextarea wysiwygeditor\" id=\"" + componentProperty.getName() + "\" name=\"" + componentProperty.getName() + "\" onkeydown=\"setDirty();\">" + (componentProperty.getValue() == null ? "" : componentProperty.getValue()) + "</textarea>");
+					else
+						sb.append("	<textarea class=\"propertytextarea\" id=\"" + componentProperty.getName() + "\" name=\"" + componentProperty.getName() + "\" onkeydown=\"setDirty();\">" + (componentProperty.getValue() == null ? "" : componentProperty.getValue()) + "</textarea>");
 				}
 				else
 					sb.append("	" + componentProperty.getValue() + "");
@@ -1005,6 +1008,7 @@ public class PageEditorHelper
 					
 					String name							 = binding.attributeValue("name");
 					String description					 = binding.attributeValue("description");
+					String defaultValue					 = binding.attributeValue("defaultValue");
 					String type							 = binding.attributeValue("type");
 					String allowedContentTypeNamesString = binding.attributeValue("allowedContentTypeDefinitionNames");
 					String visualizingAction 			 = binding.attributeValue("visualizingAction");
@@ -1016,6 +1020,7 @@ public class PageEditorHelper
 					property.setComponentId(componentId);
 					property.setName(name);
 					property.setDescription(description);
+					property.setDefaultValue(defaultValue);
 					property.setType(type);
 					property.setVisualizingAction(visualizingAction);
 					property.setCreateAction(createAction);
@@ -1032,7 +1037,7 @@ public class PageEditorHelper
 						boolean isAssetBinding 	  = new Boolean(binding.attributeValue("assetBinding")).booleanValue();
 						
 						property.setEntityClass(entity);
-						String value = getComponentPropertyValue(componentId, name, siteNodeId, languageId, contentId, locale, db, principal);
+						String value = getComponentPropertyValue(componentId, name, siteNodeId, languageId, contentId, locale, db, principal, property);
 						timer.printElapsedTime("Set property1");
 
 						property.setValue(value);
@@ -1043,21 +1048,26 @@ public class PageEditorHelper
 					}
 					else if(type.equalsIgnoreCase(ComponentProperty.TEXTFIELD))	
 					{		
-						String value = getComponentPropertyValue(componentId, name, siteNodeId, languageId, contentId, locale, db, principal);
+						String value = getComponentPropertyValue(componentId, name, siteNodeId, languageId, contentId, locale, db, principal, property);
 						timer.printElapsedTime("Set property2");
 						//logger.info("value:" + value);
 						property.setValue(value);
 					}
 					else if(type.equalsIgnoreCase(ComponentProperty.TEXTAREA))	
 					{		
-						String value = getComponentPropertyValue(componentId, name, siteNodeId, languageId, contentId, locale, db, principal);
+						boolean WYSIWYGEnabled = new Boolean(binding.attributeValue("WYSIWYGEnabled")).booleanValue();
+						property.setWYSIWYGEnabled(WYSIWYGEnabled);
+						String WYSIWYGToolbar = binding.attributeValue("WYSIWYGToolbar");
+						property.setWYSIWYGToolbar(WYSIWYGToolbar);
+
+						String value = getComponentPropertyValue(componentId, name, siteNodeId, languageId, contentId, locale, db, principal, property);
 						timer.printElapsedTime("Set property2");
 						//logger.info("value:" + value);
 						property.setValue(value);
 					}
 					else if(type.equalsIgnoreCase(ComponentProperty.SELECTFIELD))	
 					{		
-						String value = getComponentPropertyValue(componentId, name, siteNodeId, languageId, contentId, locale, db, principal);
+						String value = getComponentPropertyValue(componentId, name, siteNodeId, languageId, contentId, locale, db, principal, property);
 						timer.printElapsedTime("Set property2");
 						
 						List optionList = binding.elements("option");
@@ -1078,7 +1088,7 @@ public class PageEditorHelper
 					}
 					else if(type.equalsIgnoreCase(ComponentProperty.CHECKBOXFIELD))	
 					{		
-						String value = getComponentPropertyValue(componentId, name, siteNodeId, languageId, contentId, locale, db, principal);
+						String value = getComponentPropertyValue(componentId, name, siteNodeId, languageId, contentId, locale, db, principal, property);
 						timer.printElapsedTime("Set property3");
 						
 						List optionList = binding.elements("option");
@@ -1115,9 +1125,9 @@ public class PageEditorHelper
 	 * properties for the page.
 	 */
 	
-	private String getComponentPropertyValue(Integer componentId, String name, Integer siteNodeId, Integer languageId, Integer contentId, Locale locale, Database db, InfoGluePrincipal principal) throws Exception
+	private String getComponentPropertyValue(Integer componentId, String name, Integer siteNodeId, Integer languageId, Integer contentId, Locale locale, Database db, InfoGluePrincipal principal, ComponentProperty componentProperty) throws Exception
 	{
-		String value = "Undefined";
+		String value = componentProperty.getDefaultValue();
 		
 		Timer timer = new Timer();
 		timer.setActive(false);
@@ -1274,7 +1284,7 @@ public class PageEditorHelper
 		return pageComponentsString;
 	}
 
-	protected Document getComponentPropertiesDOM4JDocument(Integer siteNodeId, Integer languageId, Integer contentId, Database db, InfoGluePrincipal principal) throws SystemException, Exception
+	public Document getComponentPropertiesDOM4JDocument(Integer siteNodeId, Integer languageId, Integer contentId, Database db, InfoGluePrincipal principal) throws SystemException, Exception
 	{ 
 		String cacheName 	= "componentEditorCache";
 		String cacheKey		= "componentPropertiesDocument_" + siteNodeId + "_" + languageId + "_" + contentId;
@@ -2105,5 +2115,70 @@ public class PageEditorHelper
 
 		return componentTasksString;
 	}
+
+	public static String transformAttribute(String plainAttribute, String languageId)
+	{
+		String newAttribute = "";
+		String remainingAttribute = plainAttribute;
+		int startPosition;
+		int endPosition;
+
+		startPosition = remainingAttribute.indexOf("$templateLogic.getInlineAssetUrl(");
+		while(startPosition > -1)
+		{
+			newAttribute = newAttribute + remainingAttribute.substring(0, startPosition);
+			remainingAttribute = remainingAttribute.substring(startPosition + 33);
+			
+			int seperatorCharIndex = remainingAttribute.indexOf(",");
+			String contentId = remainingAttribute.substring(0, seperatorCharIndex);
+			String assetKey = remainingAttribute.substring(seperatorCharIndex + 1, remainingAttribute.indexOf(")")).trim();
+			assetKey = assetKey.substring(1, assetKey.length() - 1);
+			
+			newAttribute = newAttribute + "DownloadAsset.action?contentId=" + contentId +"&languageId=" + languageId + "&assetKey=" + assetKey + "\"";
+			
+			int endIndex = remainingAttribute.indexOf(")");
+			
+			remainingAttribute = remainingAttribute.substring(endIndex + 1);
+			
+			startPosition = remainingAttribute.indexOf("$templateLogic.getInlineAssetUrl(");
+		}
+		newAttribute = newAttribute + remainingAttribute;
+
+		return newAttribute;
+	}
+
+
+
+	public static String untransformAttribute(String plainAttribute)
+	{
+		String newAttribute = "";
+		String remainingAttribute = plainAttribute;
+		int startPosition;
+		int endPosition;
+
+		startPosition = remainingAttribute.indexOf("DownloadAsset.action?contentId=");
+		while(startPosition > -1)
+		{
+			newAttribute = newAttribute + remainingAttribute.substring(0, startPosition);
+			remainingAttribute = remainingAttribute.substring(startPosition + 31);
+			
+			int seperatorCharIndex = remainingAttribute.indexOf("&amp;");
+			String contentId = remainingAttribute.substring(0, seperatorCharIndex);
+			String assetKey = remainingAttribute.substring(seperatorCharIndex + 1, remainingAttribute.indexOf("\""));
+			int assetStartIndex = assetKey.indexOf("assetKey=") + 9;
+			assetKey = assetKey.substring(assetStartIndex);
+			
+			newAttribute = newAttribute + "$templateLogic.getInlineAssetUrl(" + contentId + ", \"" + assetKey + "\")\"";
+			
+			int endIndex = remainingAttribute.indexOf("\"");
+			
+			remainingAttribute = remainingAttribute.substring(endIndex + 1);
+			
+			startPosition = remainingAttribute.indexOf("DownloadAsset.action?contentId=");
+		}
+		newAttribute = newAttribute + remainingAttribute;
+
+		return newAttribute;
+	}	
 
 }

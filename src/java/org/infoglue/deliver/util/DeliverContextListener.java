@@ -79,7 +79,7 @@ public final class DeliverContextListener implements ServletContextListener
 			String contextRootPath = event.getServletContext().getRealPath("/");
 			if(!contextRootPath.endsWith("/") && !contextRootPath.endsWith("\\")) 
 				contextRootPath = contextRootPath + "/";
-			
+						
 			System.out.println("\n**************************************");
 			System.out.println("Initializing deliver context for directory:" + contextRootPath);
 					
@@ -89,12 +89,7 @@ public final class DeliverContextListener implements ServletContextListener
 			CmsPropertyHandler.setOperatingMode(CmsPropertyHandler.getProperty("operatingMode"));
 			
 			String logPath = CmsPropertyHandler.getLogPath();
-			if(logPath == null || logPath.equals(""))
-			{
-				logPath = contextRootPath + "logs" + File.separator + "infoglueDeliver.log";
-				CmsPropertyHandler.setProperty("logPath", logPath);
-			}
-
+			
 			Enumeration enumeration = Logger.getLogger("org.infoglue.cms").getAllAppenders();
 	        while(enumeration.hasMoreElements())
 	        {
@@ -107,33 +102,6 @@ public final class DeliverContextListener implements ServletContextListener
 	            	break;
 	            }
 	        }
-
-			String statisticsLogPath = CmsPropertyHandler.getStatisticsLogPath();
-			if(statisticsLogPath == null || statisticsLogPath.equals(""))
-			{
-				statisticsLogPath = contextRootPath + "logs";
-				CmsPropertyHandler.setProperty("statisticsLogPath", statisticsLogPath);
-			}
-
-			String assetPath = CmsPropertyHandler.getDigitalAssetPath();
-			if(assetPath == null || assetPath.equals(""))
-			{
-				assetPath = contextRootPath + "digitalAssets";
-				CmsPropertyHandler.setProperty("digitalAssetPath", assetPath);
-			}
-
-			String digitalAssetPath0 = CmsPropertyHandler.getProperty("digitalAssetPath.0");
-			if(digitalAssetPath0 == null || digitalAssetPath0.equals(""))
-			{
-				CmsPropertyHandler.setProperty("digitalAssetPath.0", assetPath);
-			}
-
-			String assetUploadPath = CmsPropertyHandler.getDigitalAssetUploadPath();
-			if(assetUploadPath == null || assetUploadPath.equals(""))
-			{
-			    assetUploadPath = contextRootPath + "uploads";
-				CmsPropertyHandler.setProperty("digitalAssetUploadPath", assetUploadPath);
-			}
 
 			String expireCacheAutomaticallyString = CmsPropertyHandler.getExpireCacheAutomatically();
 			if(expireCacheAutomaticallyString != null)

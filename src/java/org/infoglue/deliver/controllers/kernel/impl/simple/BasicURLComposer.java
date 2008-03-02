@@ -81,7 +81,7 @@ public class BasicURLComposer extends URLComposer
 	            sb.append(base);
 	        }
 	        
-	        String servletContext = CmsPropertyHandler.getProperty(FilterConstants.CMS_PROPERTY_SERVLET_CONTEXT);
+	        String servletContext = CmsPropertyHandler.getServletContext();
 	        
         	sb.append(servletContext);
 	        
@@ -127,7 +127,7 @@ public class BasicURLComposer extends URLComposer
     		    }
 		    }
 
-            String context = CmsPropertyHandler.getProperty(FilterConstants.CMS_PROPERTY_SERVLET_CONTEXT);
+            String context = CmsPropertyHandler.getServletContext();
 
             assetUrl = dnsName + context + "/DownloadProtectedAsset.action?siteNodeId=" + siteNodeId + "&contentId=" + contentId + "&languageId=" + languageId + "&assetKey=" + assetKey;
         }
@@ -188,7 +188,7 @@ public class BasicURLComposer extends URLComposer
 	            sb.append(base);
 	        }
 	        
-	        String servletContext = CmsPropertyHandler.getProperty(FilterConstants.CMS_PROPERTY_SERVLET_CONTEXT);
+	        String servletContext = CmsPropertyHandler.getServletContext();
 	        String digitalAssetPath = CmsPropertyHandler.getDigitalAssetBaseUrl();
 	        if (!digitalAssetPath.startsWith("/"))
 	        	digitalAssetPath = "/" + digitalAssetPath;
@@ -253,7 +253,7 @@ public class BasicURLComposer extends URLComposer
     		    }
 		    }
 
-            String context = CmsPropertyHandler.getProperty(FilterConstants.CMS_PROPERTY_SERVLET_CONTEXT);
+            String context = CmsPropertyHandler.getServletContext();
 
             if(folderName != null)
             	assetUrl = dnsName + context + "/" + CmsPropertyHandler.getDigitalAssetBaseUrl() + "/" + folderName + "/" + filename;
@@ -287,7 +287,7 @@ public class BasicURLComposer extends URLComposer
 
         if(enableNiceURI.equalsIgnoreCase("true") && deliveryContext.getHttpServletRequest().getRequestURI().indexOf("!renderDecoratedPage") == -1 && !deliveryContext.getDisableNiceUri())
         {
-            String context = CmsPropertyHandler.getProperty(FilterConstants.CMS_PROPERTY_SERVLET_CONTEXT);
+            String context = CmsPropertyHandler.getServletContext();
             
             SiteNode siteNode = SiteNodeController.getSiteNodeWithId(siteNodeId, db, true);
             SiteNode currentSiteNode = SiteNodeController.getSiteNodeWithId(deliveryContext.getSiteNodeId(), db, true);
@@ -470,7 +470,7 @@ public class BasicURLComposer extends URLComposer
 	    		    }
 			    }
 
-	            String context = CmsPropertyHandler.getProperty(FilterConstants.CMS_PROPERTY_SERVLET_CONTEXT);
+	            String context = CmsPropertyHandler.getServletContext();
 
 	            String url = dnsName + context + "/" + CmsPropertyHandler.getApplicationBaseAction() + "?" + arguments;
 
@@ -499,7 +499,7 @@ public class BasicURLComposer extends URLComposer
     	            sb.append(base);
     	        }
                 
-                String servletContext = CmsPropertyHandler.getProperty(FilterConstants.CMS_PROPERTY_SERVLET_CONTEXT);
+                String servletContext = CmsPropertyHandler.getServletContext();
     	        
                 if(siteNodeId == null)
 	    			siteNodeId = new Integer(-1);
@@ -601,7 +601,7 @@ public class BasicURLComposer extends URLComposer
     		    }
 		    }
 
-            String context = CmsPropertyHandler.getProperty(FilterConstants.CMS_PROPERTY_SERVLET_CONTEXT);
+            String context = CmsPropertyHandler.getServletContext();
         	
             return dnsName + context + "/" + CmsPropertyHandler.getApplicationBaseAction();
         }
