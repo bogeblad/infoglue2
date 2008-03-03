@@ -7,4 +7,20 @@
 <link rel="stylesheet" type="text/css" href="${contextName}/css/ajaxComponentEditor.css" />
 <script src="${contextName}/script/jquery/jquery-1.2.3.min.js"></script>
 <script type="text/javascript" src="${contextName}/applications/FCKEditor/fckeditor.js"></script>
+
+<script type="text/javascript">
+
+	$(function()
+	{
+        var $activeElement = $('#${focusElementId}Comp');
+        if($activeElement)
+        {
+			$(window)[0].scrollTo(0, $activeElement.offset().top - 300);
+		}
+		var activatedComponentId = ${activatedComponentId};
+        if(activatedComponentId > 0)
+			showComponentInDiv('componentPropertiesDiv', '${parameters}', false);
+	});	
+
+</script>
 </head>

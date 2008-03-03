@@ -83,16 +83,18 @@ public class ComponentPropertyValueTag extends ComponentLogicTag
 	        if(parseToMap)
 	        {
 	        	Map orderedMap = new LinkedHashMap(); 
-	        	String separator = System.getProperty("line.separator");
-	        	String[] lines = propertyValue.split(separator);
-	        	for(int i=0; i<lines.length; i++)
+	        	if(propertyValue != null)
 	        	{
-	        		String line = lines[i];
-	        		String[] nameValue = line.split("=");
-	        		if(nameValue.length == 2)
-	        			orderedMap.put(nameValue[0], nameValue[1]);
+		        	String separator = System.getProperty("line.separator");
+		        	String[] lines = propertyValue.split(separator);
+		        	for(int i=0; i<lines.length; i++)
+		        	{
+		        		String line = lines[i];
+		        		String[] nameValue = line.split("=");
+		        		if(nameValue.length == 2)
+		        			orderedMap.put(nameValue[0], nameValue[1]);
+		        	}
 	        	}
-
 	        	setResultAttribute(orderedMap);	        	
 	        }
 	        else

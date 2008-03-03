@@ -172,12 +172,10 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		//TODO - TEST
 		decoratePageTemplate += propertiesDivs + tasksDivs;
 		
-		String componentEditorUrl = CmsPropertyHandler.getComponentEditorUrl();
-		
-		//-- moved the creation of a default context into the baseclass
-		// (robert)
+		/*
 		Map context = getDefaultContext();
 
+		String componentEditorUrl = CmsPropertyHandler.getComponentEditorUrl();
 		context.put("componentEditorUrl", componentEditorUrl);
 		boolean oldUseFullUrl = this.getTemplateController().getDeliveryContext().getUseFullUrl();
 		this.getTemplateController().getDeliveryContext().setUseFullUrl(true);
@@ -191,6 +189,8 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		new VelocityTemplateProcessor().renderTemplate(context, cachedStream, decoratePageTemplate, false, baseComponent);
 
 		String pageString = cacheString.toString();
+		*/
+		String pageString = decoratePageTemplate;
 		pageString = decorateHeadAndPageWithVarsFromComponents(pageString);
 
 		this.setPageString(pageString);
@@ -292,11 +292,24 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 
 		    String extraHeader 	= FileHelper.getFileAsString(new File(CmsPropertyHandler.getContextRootPath() + "preview/pageComponentEditorHeader.vm"));
 		    String extraBody 	= FileHelper.getFileAsString(new File(CmsPropertyHandler.getContextRootPath() + "preview/pageComponentEditorBody.vm"));
+
+			boolean oldUseFullUrl = this.getTemplateController().getDeliveryContext().getUseFullUrl();
+			this.getTemplateController().getDeliveryContext().setUseFullUrl(true);
 			
+			String parameters = "repositoryId=" + templateController.getSiteNode().getRepositoryId() + "&siteNodeId=" + templateController.getSiteNodeId() + "&languageId=" + templateController.getLanguageId() + "&contentId=" + templateController.getContentId() + "&componentId=" + this.getRequest().getParameter("activatedComponentId") + "&componentContentId=" + this.getRequest().getParameter("componentContentId") + "&showSimple=false&showLegend=false&originalUrl=" + URLEncoder.encode(this.getTemplateController().getCurrentPageUrl(), "UTF-8");
+
+			extraHeader = extraHeader.replaceAll("\\$\\{focusElementId\\}", "" + this.getRequest().getParameter("focusElementId"));
+			extraHeader = extraHeader.replaceAll("\\$\\{contextName\\}", this.getRequest().getContextPath());
+			extraHeader = extraHeader.replaceAll("\\$\\{componentEditorUrl\\}", componentEditorUrl);
+			extraHeader = extraHeader.replaceAll("\\$\\{currentUrl\\}", URLEncoder.encode(this.getTemplateController().getCurrentPageUrl(), "UTF-8"));
+			extraHeader = extraHeader.replaceAll("\\$\\{activatedComponentId\\}", "" + this.getRequest().getParameter("activatedComponentId"));
+			extraHeader = extraHeader.replaceAll("\\$\\{parameters\\}", parameters);
+
+			this.getTemplateController().getDeliveryContext().setUseFullUrl(oldUseFullUrl);
+
 		    String changeUrl = componentEditorUrl + "ViewSiteNodePageComponents!listComponentsForChange.action?siteNodeId=" + templateController.getSiteNodeId() + "&languageId=" + templateController.getLanguageId() + "&contentId=" + templateController.getContentId() + "&componentId=" + component.getId() + "&slotId=base&showSimple=" + this.getTemplateController().getDeliveryContext().getShowSimple();
 		    extraBody = extraBody + "<script type=\"text/javascript\">initializeComponentEventHandler('base0_" + component.getId() + "Comp', '" + component.getId() + "', '', '" + componentEditorUrl + "ViewSiteNodePageComponents!deleteComponent.action?siteNodeId=" + templateController.getSiteNodeId() + "&languageId=" + templateController.getLanguageId() + "&contentId=" + templateController.getContentId() + "&componentId=" + component.getId() + "&slotId=base&showSimple=" + this.getTemplateController().getDeliveryContext().getShowSimple() + "','" + changeUrl + "');</script>";
 
-		    //Locale locale = templateController.getLocale();
 		    Locale locale = templateController.getLocaleAvailableInTool();
 		    
 			String submitToPublishHTML = getLocalizedString(locale, "deliver.editOnSight.submitToPublish");

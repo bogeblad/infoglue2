@@ -173,12 +173,10 @@ public class AjaxDecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHT
 		//decoratePageTemplate += propertiesDivs + tasksDivs;																																							
 		decoratePageTemplate += "<div id=\"availableComponents\"></div><div id=\"componentTasks\"><div id=\"componentMenu\" class=\"skin0\">Loading menu...</div></div><div id=\"componentPropertiesDiv\"></div><div id=\"componentStructure\"></div>";
 		
-		String componentEditorUrl = CmsPropertyHandler.getComponentEditorUrl();
-		
-		//-- moved the creation of a default context into the baseclass
-		// (robert)
+		/*
 		Map context = getDefaultContext();
-
+		
+		String componentEditorUrl = CmsPropertyHandler.getComponentEditorUrl();
 		context.put("componentEditorUrl", componentEditorUrl);
 		boolean oldUseFullUrl = this.getTemplateController().getDeliveryContext().getUseFullUrl();
 		this.getTemplateController().getDeliveryContext().setUseFullUrl(true);
@@ -192,8 +190,10 @@ public class AjaxDecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHT
 		new VelocityTemplateProcessor().renderTemplate(context, cachedStream, decoratePageTemplate, false, baseComponent);
 
 		String pageString = cacheString.toString();
+		*/
+		String pageString = decoratePageTemplate;
 		//pageString = decorateHeadAndPageWithVarsFromComponents(pageString);
-
+		
 		this.setPageString(pageString);
 		
 		timer.printElapsedTime("End invokePage");
@@ -295,6 +295,20 @@ public class AjaxDecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHT
 		    //String extraBody 	= FileHelper.getFileAsString(new File(CmsPropertyHandler.getContextRootPath() + "preview/ajax/pageComponentEditorBody.vm"));
 		    String extraBody 	= "";
 			
+			boolean oldUseFullUrl = this.getTemplateController().getDeliveryContext().getUseFullUrl();
+			this.getTemplateController().getDeliveryContext().setUseFullUrl(true);
+
+			String parameters = "repositoryId=" + templateController.getSiteNode().getRepositoryId() + "&siteNodeId=" + templateController.getSiteNodeId() + "&languageId=" + templateController.getLanguageId() + "&contentId=" + templateController.getContentId() + "&componentId=" + this.getRequest().getParameter("activatedComponentId") + "&componentContentId=" + this.getRequest().getParameter("componentContentId") + "&showSimple=false&showLegend=false&originalUrl=" + URLEncoder.encode(this.getTemplateController().getCurrentPageUrl(), "UTF-8");
+			
+			extraHeader = extraHeader.replaceAll("\\$\\{focusElementId\\}", "" + this.getRequest().getParameter("focusElementId"));
+			extraHeader = extraHeader.replaceAll("\\$\\{contextName\\}", this.getRequest().getContextPath());
+			extraHeader = extraHeader.replaceAll("\\$\\{componentEditorUrl\\}", componentEditorUrl);
+			extraHeader = extraHeader.replaceAll("\\$\\{currentUrl\\}", URLEncoder.encode(this.getTemplateController().getCurrentPageUrl(), "UTF-8"));
+			extraHeader = extraHeader.replaceAll("\\$\\{activatedComponentId\\}", "" + this.getRequest().getParameter("activatedComponentId"));
+			extraHeader = extraHeader.replaceAll("\\$\\{parameters\\}", parameters);
+			
+			this.getTemplateController().getDeliveryContext().setUseFullUrl(oldUseFullUrl);
+
 		    extraBody = extraBody + "<script type=\"text/javascript\">initializeComponentEventHandler('base0_" + component.getId() + "Comp', '" + component.getId() + "', 'base', " + templateController.getSiteNode().getRepositoryId() + ", " + templateController.getSiteNodeId() + ", " + templateController.getLanguageId() + ", " + templateController.getContentId() + ", " + component.getId() + ", " + component.getContentId() + ", '" + URLEncoder.encode(templateController.getOriginalFullURL(), "UTF-8") + "');</script>";
 
 		    //Locale locale = templateController.getLocale();
@@ -646,7 +660,7 @@ public class AjaxDecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHT
 								//logger.info("Inherited..." + contentId);
 								String childComponentsString = decorateComponent(subComponent, templateController, repositoryId, siteNodeId, languageId, contentId/*, metainfoContentId*/);
 								if(!this.getTemplateController().getDeliveryContext().getShowSimple())
-								    subComponentString += "<span id=\""+ id + index + "Comp\" class=\"inheritedslot\">" + childComponentsString + "</span>";
+								    subComponentString += "<a id=\"" + index + "Comp\" name=\"" + index + "Comp\"></a><span id=\""+ id + index + "Comp\" class=\"inheritedslot\">" + childComponentsString + "</span>";
 								else
 								    subComponentString += childComponentsString;
 								    
@@ -681,11 +695,11 @@ public class AjaxDecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHT
 
 								    if(subComponent.getPagePartTemplateComponent() != null)
 								    {
-									    subComponentString += "<span id=\""+ id + index + "_" + subComponent.getPagePartTemplateComponent().getId() + "Comp\">" + childComponentsString + "<script type=\"text/javascript\">initializeComponentEventHandler('" + id + index + "_" + subComponent.getPagePartTemplateComponent().getId() + "Comp', '" + subComponent.getPagePartTemplateComponent().getId() + ", '" + id + "', " + templateController.getSiteNode().getRepositoryId() + ", " + templateController.getSiteNodeId() + ", " + templateController.getLanguageId() + ", " + templateController.getContentId() + ", " + subComponent.getPagePartTemplateComponent().getId() + ", " + subComponent.getPagePartTemplateComponent().getContentId() + ", '" + URLEncoder.encode(templateController.getOriginalFullURL(), "UTF-8") + "');</script></span>";
+									    subComponentString += "<a id=\"" + subComponent.getPagePartTemplateComponent().getId() + "Comp\" name=\"" + subComponent.getPagePartTemplateComponent().getId() + "Comp\"></a><span id=\""+ id + index + "_" + subComponent.getPagePartTemplateComponent().getId() + "Comp\">" + childComponentsString + "<script type=\"text/javascript\">initializeComponentEventHandler('" + id + index + "_" + subComponent.getPagePartTemplateComponent().getId() + "Comp', '" + subComponent.getPagePartTemplateComponent().getId() + ", '" + id + "', " + templateController.getSiteNode().getRepositoryId() + ", " + templateController.getSiteNodeId() + ", " + templateController.getLanguageId() + ", " + templateController.getContentId() + ", " + subComponent.getPagePartTemplateComponent().getId() + ", " + subComponent.getPagePartTemplateComponent().getContentId() + ", '" + URLEncoder.encode(templateController.getOriginalFullURL(), "UTF-8") + "');</script></span>";
 								    }
 								    else
 								    {
-									    subComponentString += "<span id=\""+ id + index + "_" + subComponent.getId() + "Comp\">" + childComponentsString + "<script type=\"text/javascript\">initializeComponentEventHandler('" + id + index + "_" + subComponent.getId() + "Comp', '" + subComponent.getId() + "', '" + id + "', " + templateController.getSiteNode().getRepositoryId() + ", " + templateController.getSiteNodeId() + ", " + templateController.getLanguageId() + ", " + templateController.getContentId() + ", " + subComponent.getId() + ", " + subComponent.getContentId() + ", '" + URLEncoder.encode(templateController.getOriginalFullURL(), "UTF-8") + "');</script></span>";
+									    subComponentString += "<a id=\"" + subComponent.getId() + "Comp\" name=\"" + subComponent.getId() + "Comp\"></a><span id=\""+ id + index + "_" + subComponent.getId() + "Comp\">" + childComponentsString + "<script type=\"text/javascript\">initializeComponentEventHandler('" + id + index + "_" + subComponent.getId() + "Comp', '" + subComponent.getId() + "', '" + id + "', " + templateController.getSiteNode().getRepositoryId() + ", " + templateController.getSiteNodeId() + ", " + templateController.getLanguageId() + ", " + templateController.getContentId() + ", " + subComponent.getId() + ", " + subComponent.getContentId() + ", '" + URLEncoder.encode(templateController.getOriginalFullURL(), "UTF-8") + "');</script></span>";
 								    }
 								}
 								else
