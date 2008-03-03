@@ -607,7 +607,8 @@ public class ComponentLogic
 	
 				System.out.println("Getting default value...");
 				ComponentPropertyDefinition propertyDefinition = getComponentPropertyDefinition(this.infoGlueComponent.getContentId(), propertyName, templateController.getSiteNodeId(), masterLanguage.getId(), templateController.getContentId(), templateController.getDatabase(), templateController.getPrincipal());
-				propertyValue = propertyDefinition.getDefaultValue();
+				if(propertyDefinition != null)
+					propertyValue = propertyDefinition.getDefaultValue();
 				System.out.println("propertyValue:" + propertyValue);
 			}
 			catch (Exception e) 
@@ -654,7 +655,8 @@ public class ComponentLogic
 	
 				System.out.println("Getting default value...");
 				ComponentPropertyDefinition propertyDefinition = getComponentPropertyDefinition(component.getContentId(), propertyName, templateController.getSiteNodeId(), masterLanguage.getId(), templateController.getContentId(), templateController.getDatabase(), templateController.getPrincipal());
-				propertyValue = propertyDefinition.getDefaultValue();
+				if(propertyDefinition != null)
+					propertyValue = propertyDefinition.getDefaultValue();
 				System.out.println("propertyValue:" + propertyValue);
 			}
 			catch (Exception e) 
@@ -701,7 +703,8 @@ public class ComponentLogic
 	
 				System.out.println("Getting default value...");
 				ComponentPropertyDefinition propertyDefinition = getComponentPropertyDefinition(this.infoGlueComponent.getContentId(), propertyName, templateController.getSiteNodeId(), masterLanguage.getId(), templateController.getContentId(), templateController.getDatabase(), templateController.getPrincipal());
-				propertyValue = propertyDefinition.getDefaultValue();
+				if(propertyDefinition != null)
+					propertyValue = propertyDefinition.getDefaultValue();
 				System.out.println("propertyValue:" + propertyValue);
 			}
 			catch (Exception e) 
@@ -748,7 +751,8 @@ public class ComponentLogic
 	
 				System.out.println("Getting default value...");
 				ComponentPropertyDefinition propertyDefinition = getComponentPropertyDefinition(component.getContentId(), propertyName, templateController.getSiteNodeId(), masterLanguage.getId(), templateController.getContentId(), templateController.getDatabase(), templateController.getPrincipal());
-				propertyValue = propertyDefinition.getDefaultValue();
+				if(propertyDefinition != null)
+					propertyValue = propertyDefinition.getDefaultValue();
 				System.out.println("propertyValue:" + propertyValue);
 			}
 			catch (Exception e) 
@@ -2586,7 +2590,8 @@ public class ComponentLogic
 			{
 				System.out.println("Getting default value...");
 				ComponentPropertyDefinition propertyDefinition = getComponentPropertyDefinition(new Integer(componentContentId), name, siteNodeId, languageId, contentId, templateController.getDatabase(), templateController.getPrincipal());
-				value = propertyDefinition.getDefaultValue();
+				if(propertyDefinition != null)
+					value = propertyDefinition.getDefaultValue();
 				System.out.println("value:" + value);
 			}
 		}
@@ -2632,7 +2637,8 @@ public class ComponentLogic
 			{
 				System.out.println("Getting default value...");
 				ComponentPropertyDefinition propertyDefinition = getComponentPropertyDefinition(new Integer(componentContentId), name, templateController.getSiteNodeId(), languageId, templateController.getContentId(), templateController.getDatabase(), templateController.getPrincipal());
-				value = propertyDefinition.getDefaultValue();
+				if(propertyDefinition != null)
+					value = propertyDefinition.getDefaultValue();
 				System.out.println("value:" + value);
 			}
 		}
@@ -2669,7 +2675,8 @@ public class ComponentLogic
 		{
 			System.out.println("Getting default value...");
 			ComponentPropertyDefinition propertyDefinition = getComponentPropertyDefinition(new Integer(componentContentId), name, templateController.getSiteNodeId(), languageId, templateController.getContentId(), templateController.getDatabase(), templateController.getPrincipal());
-			value = propertyDefinition.getDefaultValue();
+			if(propertyDefinition != null)
+				value = propertyDefinition.getDefaultValue();
 			System.out.println("value:" + value);
 		}
 
@@ -3319,14 +3326,16 @@ public class ComponentLogic
 
 		try
 		{
-			org.dom4j.Document document = pageEditorHelper.getComponentPropertiesDOM4JDocument(siteNodeId, languageId, contentId, db, principal);
+			System.out.println("componentContentId:" + componentContentId);
+			org.dom4j.Document document = pageEditorHelper.getComponentPropertiesDOM4JDocument(siteNodeId, languageId, componentContentId, db, principal);
+			System.out.println("document:" + document);
 			
 			if(document != null)
 			{
 				timer.printElapsedTime("Read document");
 
 				String propertyXPath = "//property[@name='" + propertyName + "']";
-				//logger.info("propertyXPath:" + propertyXPath);
+				System.out.println("propertyXPath:" + propertyXPath);
 				org.dom4j.Node node = document.selectSingleNode(propertyXPath);
 				timer.printElapsedTime("Set property xpath");
 				if(node != null)
