@@ -23,8 +23,16 @@
 
 package org.infoglue.cms.applications.managementtool.actions;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
+import org.infoglue.cms.controllers.kernel.impl.simple.GroupControllerProxy;
+import org.infoglue.cms.controllers.kernel.impl.simple.RoleControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.UserControllerProxy;
+import org.infoglue.cms.controllers.kernel.impl.simple.UserPropertiesController;
+import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
 import org.infoglue.cms.entities.management.SystemUserVO;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
@@ -51,6 +59,9 @@ public class CreateSystemUserAction extends InfoGlueAbstractAction
     private java.lang.String lastName;
     private java.lang.String email;*/
 
+	private List availableRoles = new ArrayList();
+	private List availableGroups = new ArrayList();
+	private List contentTypeDefinitionVOList;   
 
 	public CreateSystemUserAction()
 	{
@@ -65,6 +76,10 @@ public class CreateSystemUserAction extends InfoGlueAbstractAction
 	
 	public String doInput() throws Exception
     {
+		this.availableRoles 				= RoleControllerProxy.getController().getAvailableRoles(this.getInfoGluePrincipal(), "Role.ManageUsers");
+		this.availableGroups 				= GroupControllerProxy.getController().getAvailableGroups(this.getInfoGluePrincipal(), "Group.ManageUsers");
+		this.contentTypeDefinitionVOList 	= ContentTypeDefinitionController.getController().getContentTypeDefinitionVOList(ContentTypeDefinitionVO.EXTRANET_USER_PROPERTIES);
+	
     	return "input";
     }
 	
@@ -73,7 +88,22 @@ public class CreateSystemUserAction extends InfoGlueAbstractAction
 		ceb = this.systemUserVO.validate();
     	ceb.throwIfNotEmpty();		
 		
+		String[] roles = getRequest().getParameterValues("roleName");
+		String[] groups = getRequest().getParameterValues("groupName");
+		String[] contentTypeDefinitionIds = getRequest().getParameterValues("contentTypeDefinitionId");
+
+		System.out.println("roles:" + roles);
+		System.out.println("groups:" + groups);
+		System.out.println("contentTypeDefinitionIds:" + contentTypeDefinitionIds);
+
 		this.infoGluePrincipal = UserControllerProxy.getController().createUser(this.systemUserVO);
+		if(roles != null && groups != null)
+		{
+			UserControllerProxy.getController().updateUser(systemUserVO, roles, groups);
+		}
+		
+		if(contentTypeDefinitionIds != null && contentTypeDefinitionIds.length > 0 && !contentTypeDefinitionIds[0].equals(""))
+			UserPropertiesController.getController().updateContentTypeDefinitions(this.getUserName(), contentTypeDefinitionIds);
 
 		return "success";
 	}
@@ -127,5 +157,20 @@ public class CreateSystemUserAction extends InfoGlueAbstractAction
     {
     	this.systemUserVO.setPassword(password);
     }
+
+	public List getAvailableRoles()
+	{
+		return availableRoles;
+	}
+
+	public List getAvailableGroups()
+	{
+		return availableGroups;
+	}
+
+	public List getContentTypeDefinitionVOList()
+	{
+		return contentTypeDefinitionVOList;
+	}
     
 }

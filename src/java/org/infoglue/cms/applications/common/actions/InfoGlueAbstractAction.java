@@ -333,41 +333,7 @@ public abstract class InfoGlueAbstractAction extends WebworkAbstractAction
 			return false;
 		}
 	}
-
-	/**
-	 * Used by the view pages to determine if the current user has sufficient access rights
-	 * to perform the action specific by the interception point name.
-	 *
-	 * @param interceptionPointName THe Name of the interception point to check access rights
-	 * @return True is access is allowed, false otherwise
-	 */
-	public boolean hasAccessTo(String interceptionPointName, String extraParameter, boolean returnSuccessIfNoInterceptionPointOrNoAccessRightsSet)
-	{
-		return hasAccessTo(interceptionPointName, extraParameter, returnSuccessIfNoInterceptionPointOrNoAccessRightsSet, !returnSuccessIfNoInterceptionPointOrNoAccessRightsSet, returnSuccessIfNoInterceptionPointOrNoAccessRightsSet);
-	}
-	
-	/**
-	 * Used by the view pages to determine if the current user has sufficient access rights
-	 * to perform the action specific by the interception point name.
-	 *
-	 * @param interceptionPointName THe Name of the interception point to check access rights
-	 * @return True is access is allowed, false otherwise
-	 */
-	public boolean hasAccessTo(String interceptionPointName, String extraParameter, boolean returnSuccessIfInterceptionPointNotDefined, boolean returnFailureIfInterceptionPointNotDefined, boolean returnSuccessIfNoAccessRightsSet)
-	{
-		logger.info("Checking if " + getUserName() + " has access to " + interceptionPointName + " with extraParameter " + extraParameter);
-
-		try
-		{
-		    return AccessRightController.getController().getIsPrincipalAuthorized(this.getInfoGluePrincipal(), interceptionPointName, extraParameter, returnSuccessIfInterceptionPointNotDefined, returnFailureIfInterceptionPointNotDefined, returnSuccessIfNoAccessRightsSet);
-		}
-		catch (SystemException e)
-		{
-		    logger.warn("Error checking access rights", e);
-			return false;
-		}
-	}
-
+		
 	/**
 	 * Get the username for the currently logged in user
 	 */

@@ -525,21 +525,26 @@ public class AccessRightController extends BaseController
 		
 		try
 		{
-		    logger.info("getAccessRightList(Integer interceptionPointId, String roleName, Database db)");
-			logger.info("interceptionPointId: " + interceptionPointId);
-			logger.info("roleName: " + roleName);
-			
+		    if(logger.isInfoEnabled())
+		    {
+				logger.info("getAccessRightList(Integer interceptionPointId, String roleName, Database db)");
+				logger.info("interceptionPointId: " + interceptionPointId);
+				logger.info("roleName: " + roleName);
+		    }
+
 			OQLQuery oql = db.getOQLQuery("SELECT f FROM org.infoglue.cms.entities.management.impl.simple.AccessRightImpl f WHERE f.interceptionPoint = $1 AND f.roles.roleName = $2");
 			oql.bind(interceptionPointId);
 			oql.bind(roleName);
 			
+			System.out.println("interceptionPointId:" + interceptionPointId);
+			System.out.println("roleName:" + roleName);
+
 			QueryResults results = oql.execute();
 			this.logger.info("Fetching entity in read/write mode");
 
 			while (results.hasMore()) 
 			{
 				AccessRight accessRight = (AccessRight)results.next();
-				logger.info("accessRight:" + accessRight.getAccessRightId());
 				accessRightList.add(accessRight);
 			}
 
@@ -1024,6 +1029,41 @@ public class AccessRightController extends BaseController
 		return isPrincipalAuthorized;
 	}
 	
+
+	/**
+	 * This method checks if a role has access to an entity. It takes name and id of the entity. 
+	 */
+	/*
+	public boolean getIsPrincipalAuthorized(InfoGluePrincipal infoGluePrincipal, String interceptionPointName, String parameters, boolean returnSuccessIfInterceptionPointNotDefined, boolean returnFailureIfInterceptionPointNotDefined) throws SystemException
+	{
+	    if(infoGluePrincipal == null)
+	        return false;
+	        
+		if(infoGluePrincipal != null && infoGluePrincipal.getIsAdministrator())
+			return true;
+			
+		boolean isPrincipalAuthorized = false;
+		
+		Database db = CastorDatabaseService.getDatabase();
+
+		try 
+		{
+			beginTransaction(db);
+			
+			isPrincipalAuthorized = getIsPrincipalAuthorized(db, infoGluePrincipal, interceptionPointName, parameters, returnSuccessIfInterceptionPointNotDefined, returnFailureIfInterceptionPointNotDefined);
+		
+			commitTransaction(db);
+		} 
+		catch (Exception e) 
+		{
+			logger.info("An error occurred so we should not complete the transaction:" + e);
+			rollbackTransaction(db);
+			throw new SystemException(e.getMessage());
+		}
+					
+		return isPrincipalAuthorized;
+	}
+	*/
 	
 	/**
 	 * This method checks if a role has access to an entity. It takes name and id of the entity. 
@@ -1340,6 +1380,105 @@ public class AccessRightController extends BaseController
 		return isPrincipalAuthorized;
 	}
 
+	/**
+	 * This method checks if a role has access to an entity. It takes name and id of the entity. 
+	 */
+	/*
+	public boolean getIsPrincipalAuthorized(Database db, InfoGluePrincipal infoGluePrincipal, String interceptionPointName, String extraParameters, boolean returnSuccessIfInterceptionPointNotDefined, boolean returnFailureIfInterceptionPointNotDefined) throws SystemException
+	{		
+	    if(infoGluePrincipal.getIsAdministrator())
+			return true;
+
+		boolean isPrincipalAuthorized = false;
+		boolean limitOnGroups = false;
+		boolean principalHasRole = false;
+		boolean principalHasGroup = false;
+		   
+		Collection roles = infoGluePrincipal.getRoles();
+		Collection groups = infoGluePrincipal.getGroups();
+		InterceptionPoint interceptionPoint = InterceptionPointController.getController().getInterceptionPointWithName(interceptionPointName, db);
+		if(interceptionPoint == null && returnSuccessIfInterceptionPointNotDefined)
+			return true;
+		
+		if(interceptionPoint == null && returnFailureIfInterceptionPointNotDefined)
+			return false;
+		
+		List accessRightList = this.getAccessRightList(interceptionPoint.getId(), extraParameters, db);
+		System.out.println("extraParameters:" + extraParameters);
+		System.out.println("accessRightList:" + accessRightList.size());
+			
+		Iterator accessRightListIterator = accessRightList.iterator();
+		while(accessRightListIterator.hasNext() && !isPrincipalAuthorized)
+		{
+		    AccessRight accessRight = (AccessRight)accessRightListIterator.next();
+		    Collection approvedRoles = accessRight.getRoles();
+		    Collection approvedGroups = accessRight.getGroups();
+		    Collection approvedUsers = accessRight.getUsers();
+
+			Iterator approvedUsersIterator = approvedUsers.iterator();
+			while(approvedUsersIterator.hasNext())
+			{
+			    AccessRightUser accessRightUser = (AccessRightUser)approvedUsersIterator.next();
+			    if(accessRightUser.getUserName().equals(infoGluePrincipal.getName()))
+			    {
+			        isPrincipalAuthorized = true;
+			    }
+			}
+
+			if(!isPrincipalAuthorized)
+			{
+			    Iterator rolesIterator = roles.iterator();
+				outer:while(rolesIterator.hasNext())
+				{
+					InfoGlueRole role = (InfoGlueRole)rolesIterator.next();
+					logger.info("role:" + role.getName());
+					
+					Iterator approvedRolesIterator = approvedRoles.iterator();
+					while(approvedRolesIterator.hasNext())
+					{
+					    AccessRightRole accessRightRole = (AccessRightRole)approvedRolesIterator.next();
+					    if(accessRightRole.getRoleName().equals(role.getName()))
+					    {
+					        principalHasRole = true;
+					        break outer;
+					    }
+					}
+				}
+	 
+			    Iterator approvedGroupsIterator = approvedGroups.iterator();
+				outer:while(approvedGroupsIterator.hasNext())
+				{
+				    AccessRightGroup accessRightGroup = (AccessRightGroup)approvedGroupsIterator.next();
+				    logger.info("accessRightGroup:" + accessRightGroup.getGroupName());
+	
+				    limitOnGroups = true;
+	
+				    Iterator groupsIterator = groups.iterator();
+					while(groupsIterator.hasNext())
+					{
+					    InfoGlueGroup group = (InfoGlueGroup)groupsIterator.next();
+					    if(accessRightGroup.getGroupName().equals(group.getName()))
+					    {
+					        principalHasGroup = true;
+					        break outer;
+					    }
+					}
+				}
+			}
+		}
+		
+	    if((principalHasRole && principalHasGroup) || (principalHasRole && !limitOnGroups))
+		    isPrincipalAuthorized = true;
+		
+		if(logger.isInfoEnabled() && !isPrincipalAuthorized)
+			logger.info("Principal " + infoGluePrincipal.getName() + " was not allowed to " + interceptionPointName);
+		
+		if(logger.isInfoEnabled())
+			logger.info("isPrincipalAuthorized:" + isPrincipalAuthorized);
+	    
+		return isPrincipalAuthorized;
+	}
+	*/
 	//TEST
 	
 	

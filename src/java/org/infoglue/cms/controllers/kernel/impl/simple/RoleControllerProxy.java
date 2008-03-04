@@ -26,6 +26,7 @@ package org.infoglue.cms.controllers.kernel.impl.simple;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 import org.exolab.castor.jdo.Database;
@@ -35,8 +36,10 @@ import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.AuthorizationModule;
 import org.infoglue.cms.security.InfoGlueAuthenticationFilter;
+import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.security.InfoGlueRole;
 import org.infoglue.cms.util.sorters.ReflectionComparator;
+import org.infoglue.deliver.util.CacheController;
 
 /**
  * @author Mattias Bogeblad
@@ -193,6 +196,51 @@ public class RoleControllerProxy extends BaseController
 	public BaseEntityVO getNewVO()
 	{
 		return null;
+	}
+
+	public List getAvailableRoles(InfoGluePrincipal infoGluePrincipal, String interceptionPointName) throws ConstraintException, SystemException, Exception 
+	{
+		List availableRoles = new ArrayList();
+		List allRoles = getAuthorizationModule().getRoles();
+		
+		if(this.transactionObject == null)
+		{
+			Database db = CastorDatabaseService.getDatabase();
+	
+			try 
+			{
+				beginTransaction(db);
+				
+				Iterator allRolesIterator = allRoles.iterator();
+				while(allRolesIterator.hasNext())
+				{
+					InfoGlueRole role = (InfoGlueRole)allRolesIterator.next();
+					boolean hasAccess = AccessRightController.getController().getIsPrincipalAuthorized(db, infoGluePrincipal, interceptionPointName, "" + role.getName());
+					if(hasAccess)
+						availableRoles.add(role);
+				}			
+				
+				commitTransaction(db);
+			} 
+			catch (Exception e) 
+			{
+				rollbackTransaction(db);
+				throw new SystemException(e);
+			}
+		}
+		else
+		{
+			Iterator allRolesIterator = allRoles.iterator();
+			while(allRolesIterator.hasNext())
+			{
+				InfoGlueRole role = (InfoGlueRole)allRolesIterator.next();
+				boolean hasAccess = AccessRightController.getController().getIsPrincipalAuthorized(this.transactionObject, infoGluePrincipal, interceptionPointName, "" + role.getName());
+				if(hasAccess)
+					availableRoles.add(role);
+			}						
+		}
+		
+		return availableRoles;
 	}
  
 }

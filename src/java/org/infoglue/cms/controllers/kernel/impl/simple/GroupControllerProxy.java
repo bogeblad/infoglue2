@@ -26,6 +26,7 @@ package org.infoglue.cms.controllers.kernel.impl.simple;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 import org.exolab.castor.jdo.Database;
@@ -36,6 +37,8 @@ import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.AuthorizationModule;
 import org.infoglue.cms.security.InfoGlueAuthenticationFilter;
 import org.infoglue.cms.security.InfoGlueGroup;
+import org.infoglue.cms.security.InfoGluePrincipal;
+import org.infoglue.cms.security.InfoGlueRole;
 import org.infoglue.cms.util.sorters.ReflectionComparator;
 
 /**
@@ -194,4 +197,49 @@ public class GroupControllerProxy extends BaseController
 		return null;
 	}
  
+	public List getAvailableGroups(InfoGluePrincipal infoGluePrincipal, String interceptionPointName) throws ConstraintException, SystemException, Exception 
+	{
+		List availableGroups = new ArrayList();
+		List allGroups = getAuthorizationModule().getGroups();
+		
+		if(this.transactionObject == null)
+		{
+			Database db = CastorDatabaseService.getDatabase();
+	
+			try 
+			{
+				beginTransaction(db);
+				
+				Iterator allRolesIterator = allGroups.iterator();
+				while(allRolesIterator.hasNext())
+				{
+					InfoGlueGroup group = (InfoGlueGroup)allRolesIterator.next();
+					boolean hasAccess = AccessRightController.getController().getIsPrincipalAuthorized(db, infoGluePrincipal, interceptionPointName, "" + group.getName());
+					if(hasAccess)
+						availableGroups.add(group);
+				}			
+				
+				commitTransaction(db);
+			} 
+			catch (Exception e) 
+			{
+				rollbackTransaction(db);
+				throw new SystemException(e);
+			}
+		}
+		else
+		{
+			Iterator allRolesIterator = allGroups.iterator();
+			while(allRolesIterator.hasNext())
+			{
+				InfoGlueGroup group = (InfoGlueGroup)allRolesIterator.next();
+				boolean hasAccess = AccessRightController.getController().getIsPrincipalAuthorized(this.transactionObject, infoGluePrincipal, interceptionPointName, "" + group.getName());
+				if(hasAccess)
+					availableGroups.add(group);
+			}						
+		}
+		
+		return availableGroups;
+	}
+
 }
