@@ -134,6 +134,23 @@ public class InterceptionPointController extends BaseController
 	    systemInterceptionPoints.put("ManagementToolMenu.SystemTools", new InterceptionPointVO("ManagementToolMenu", "ManagementToolMenu.SystemTools", "Intercepts access to the menu item 'SystemTools' in management tool", false));
 	    systemInterceptionPoints.put("ManagementToolMenu.TransactionHistory", new InterceptionPointVO("ManagementToolMenu", "ManagementToolMenu.TransactionHistory", "Intercepts access to the menu item 'TransactionHistory' in management tool", false));
 
+	    systemInterceptionPoints.put("Role.Read", new InterceptionPointVO("Role", "Role.Read", "Intercepts the read of a role", true));
+	    systemInterceptionPoints.put("Role.ReadForAssignment", new InterceptionPointVO("Role", "Role.ReadForAssignment", "Intercepts the read of a role when assigning them to a user", true));
+	    systemInterceptionPoints.put("Role.Write", new InterceptionPointVO("Role", "Role.Write", "Intercepts the write of a role", true));
+	    systemInterceptionPoints.put("Role.Create", new InterceptionPointVO("Role", "Role.Create", "Intercepts the creation of a new role", true));
+	    systemInterceptionPoints.put("Role.Delete", new InterceptionPointVO("Role", "Role.Delete", "Intercepts the deletion of a role", true));
+	    systemInterceptionPoints.put("Role.ManageUsers", new InterceptionPointVO("Role", "Role.ManageUsers", "Intercepts the management of users", true));
+	    systemInterceptionPoints.put("Role.ManageAccessRights", new InterceptionPointVO("Role", "Role.ManageAccessRights", "Intercepts the management of access rights", true));
+	    systemInterceptionPoints.put("Role.ManageAllAccessRights", new InterceptionPointVO("Role", "Role.ManageAllAccessRights", "Intercepts the management of access rights", false));
+
+	    systemInterceptionPoints.put("Group.Read", new InterceptionPointVO("Group", "Group.Read", "Intercepts the read of a group", true));
+	    systemInterceptionPoints.put("Group.ReadForAssignment", new InterceptionPointVO("Group", "Group.ReadForAssignment", "Intercepts the read of a group when assigning them to a user", true));
+	    systemInterceptionPoints.put("Group.Write", new InterceptionPointVO("Group", "Group.Write", "Intercepts the write of a group", true));
+	    systemInterceptionPoints.put("Group.Create", new InterceptionPointVO("Group", "Group.Create", "Intercepts the creation of a new group", true));
+	    systemInterceptionPoints.put("Group.Delete", new InterceptionPointVO("Group", "Group.Delete", "Intercepts the deletion of a group", true));
+	    systemInterceptionPoints.put("Group.ManageUsers", new InterceptionPointVO("Group", "Group.ManageUsers", "Intercepts the management of users", true));
+	    systemInterceptionPoints.put("Group.ManageAccessRights", new InterceptionPointVO("Group", "Group.ManageAccessRights", "Intercepts the management of access rights", true));
+	    systemInterceptionPoints.put("Group.ManageAllAccessRights", new InterceptionPointVO("Group", "Group.ManageAllAccessRights", "Intercepts the management of access rights", false));
 	}
     
 	/**

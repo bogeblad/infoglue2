@@ -94,8 +94,6 @@ public class ViewManagementToolToolBarAction extends InfoGlueAbstractAction
 	
 	private InterceptionPointVO interceptionPointVO = null;
 	
-	private static HashMap buttonsMap = new HashMap();
-		
 	public String doExecute() throws Exception
     {
     	if(this.interceptionPointId != null)
@@ -501,6 +499,11 @@ public class ViewManagementToolToolBarAction extends InfoGlueAbstractAction
 		
 		if(this.getInfoGluePrincipal().getIsAdministrator())
 			buttons.add(new ImageButton("AuthorizationSwitchManagement!inputRole.action?roleName=" + URLEncoder.encode(URLEncoder.encode(this.roleName, URIEncoding)), getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.transferRoleAccessRights"), "Transfer Roles Access Rights"));
+		
+		boolean hasAccessToManageAllAccessRights = this.hasAccessTo("Role.ManageAllAccessRights", true);
+		boolean hasAccessToManageAccessRights = this.hasAccessTo("Role.ManageAccessRights", "" + this.groupName);
+		if(hasAccessToManageAllAccessRights || hasAccessToManageAccessRights)
+			buttons.add(new ImageButton("ViewAccessRights.action?interceptionPointCategory=Role&extraParameters=" + URLEncoder.encode(this.roleName, URIEncoding) + "&returnAddress=ViewRole.action?roleName=" + URLEncoder.encode(this.roleName, URIEncoding) + "&colorScheme=ManagementTool", getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.accessRights"), "Role Access Rights"));
 
 		return buttons;				
 	}
@@ -535,6 +538,11 @@ public class ViewManagementToolToolBarAction extends InfoGlueAbstractAction
 		if(this.getInfoGluePrincipal().getIsAdministrator())
 			buttons.add(new ImageButton("AuthorizationSwitchManagement!inputGroup.action?groupName=" + URLEncoder.encode(URLEncoder.encode(this.groupName, URIEncoding)), getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.transferGroupAccessRights"), "Transfer Groups Access Rights"));
 				
+		boolean hasAccessToManageAllAccessRights = this.hasAccessTo("Group.ManageAllAccessRights", true);
+		boolean hasAccessToManageAccessRights = this.hasAccessTo("Group.ManageAccessRights", "" + this.groupName);
+		if(hasAccessToManageAllAccessRights || hasAccessToManageAccessRights)
+			buttons.add(new ImageButton("ViewAccessRights.action?interceptionPointCategory=Group&extraParameters=" + URLEncoder.encode(this.groupName, URIEncoding) + "&returnAddress=ViewGroup.action?groupName=" + URLEncoder.encode(this.groupName, URIEncoding) + "&colorScheme=ManagementTool", getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.accessRights"), "Group Access Rights"));
+
 		return buttons;				
 	}
 
