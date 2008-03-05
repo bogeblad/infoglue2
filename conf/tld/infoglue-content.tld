@@ -222,7 +222,7 @@
         <attribute>
             <name>contentId</name>
             <required>false</required>
-            <rtexprvalue>false</rtexprvalue>
+            <rtexprvalue>true</rtexprvalue>
         </attribute>
         <attribute>
             <name>propertyName</name>
@@ -338,7 +338,7 @@
 	    <attribute>
 		    <name>contentId</name>
 	    	<required>false</required>
-	        <rtexprvalue>false</rtexprvalue>
+	        <rtexprvalue>true</rtexprvalue>
 		</attribute>
 	    <attribute>
 		    <name>contentTypeDefinitionName</name>
@@ -360,7 +360,7 @@
 	    <attribute>
 		    <name>contentId</name>
 	    	<required>true</required>
-	        <rtexprvalue>false</rtexprvalue>
+	        <rtexprvalue>true</rtexprvalue>
 		</attribute>
 	    <attribute>
 		    <name>attributeName</name>
@@ -387,7 +387,7 @@
 	    <attribute>
 		    <name>contentId</name>
 	    	<required>true</required>
-	        <rtexprvalue>false</rtexprvalue>
+	        <rtexprvalue>true</rtexprvalue>
 		</attribute>
 	    <attribute>
 		    <name>maxPages</name>
@@ -446,7 +446,7 @@
         <attribute>
             <name>contentId</name>
             <required>false</required>
-            <rtexprvalue>false</rtexprvalue>
+            <rtexprvalue>true</rtexprvalue>
         </attribute>
         <attribute>
             <name>languageId</name>
@@ -515,12 +515,12 @@
         <attribute>
             <name>siteNodeId</name>
             <required>false</required>
-            <rtexprvalue>false</rtexprvalue>
+            <rtexprvalue>true</rtexprvalue>
         </attribute>
         <attribute>
             <name>contentId</name>
             <required>false</required>
-            <rtexprvalue>false</rtexprvalue>
+            <rtexprvalue>true</rtexprvalue>
         </attribute>
         <attribute>
             <name>propertyName</name>
@@ -798,7 +798,7 @@
         <attribute>
     	    <name>contentId</name>
         	<required>false</required>
-	        <rtexprvalue>false</rtexprvalue>
+	        <rtexprvalue>true</rtexprvalue>
     	</attribute>
         <attribute>
     	    <name>languageId</name>
@@ -954,7 +954,7 @@
         <attribute>
     	    <name>parentContentId</name>
         	<required>false</required>
-	        <rtexprvalue>false</rtexprvalue>
+	        <rtexprvalue>true</rtexprvalue>
     	</attribute>
         <attribute>
     	    <name>contentPath</name>
@@ -1089,7 +1089,7 @@
 	    <attribute>
     	    <name>contentId</name>
         	<required>true</required>
-	        <rtexprvalue>false</rtexprvalue>
+	        <rtexprvalue>true</rtexprvalue>
     	</attribute>
 	    <attribute>
     	    <name>forceDelete</name>
@@ -1121,7 +1121,7 @@
 	    <attribute>
     	    <name>contentId</name>
         	<required>true</required>
-	        <rtexprvalue>false</rtexprvalue>
+	        <rtexprvalue>true</rtexprvalue>
     	</attribute>
         <attribute>
     	    <name>name</name>
@@ -1190,7 +1190,7 @@
         <attribute>
     	    <name>contentId</name>
         	<required>false</required>
-	        <rtexprvalue>false</rtexprvalue>
+	        <rtexprvalue>true</rtexprvalue>
     	</attribute>
         <attribute>
     	    <name>languageId</name>
@@ -1242,7 +1242,7 @@
      	<attribute>
     	    <name>contentId</name>
         	<required>false</required>
-	        <rtexprvalue>false</rtexprvalue>
+	        <rtexprvalue>true</rtexprvalue>
     	</attribute>
         <attribute>
     	    <name>languageId</name>
@@ -1280,7 +1280,7 @@
 	    <attribute>
     	    <name>contentId</name>
         	<required>true</required>
-	        <rtexprvalue>false</rtexprvalue>
+	        <rtexprvalue>true</rtexprvalue>
     	</attribute>
 	    <attribute>
     	    <name>languageId</name>
