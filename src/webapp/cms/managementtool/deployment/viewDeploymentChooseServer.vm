@@ -28,18 +28,18 @@
 	</p>
 	<h3>Items to synchronize</h3>
 	<p>
+		#*
 		<select name="deploymentServerIndex" class="dropbox">
 			<option value="synchronizeContentTypeDefinitions">Content types</option>
 			<option value="synchronizeCategories">Categories</option>
 			<option value="synchronizeWorkflows">Workflows</option>
 			<option value="synchronizeComponents">Components (HTMLTemplates)</option>
 		</select>
-		#*
+		*#
 		<input type="checkbox" name="synchronizeContentTypeDefinitions" value="true"/> Content types<br>
 		<input type="checkbox" name="synchronizeCategories" value="true"/> Categories<br>
 		<input type="checkbox" name="synchronizeWorkflows" value="true"/> Workflows<br>
 		<input type="checkbox" name="synchronizeComponents" value="true"/> Components (HTMLTemplates)<br>
-		*#
 	</p>
 	<h3>Synchronization method</h3>
 	<p>
