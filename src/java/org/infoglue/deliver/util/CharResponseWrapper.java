@@ -37,6 +37,11 @@ public class CharResponseWrapper extends HttpServletResponseWrapper
 		return output.toString();
 	}
 	
+	public char[] toCharArray() 
+	{
+	    return output.toCharArray();
+	}
+	
 	public CharResponseWrapper(HttpServletResponse response) 
 	{
 		super(response);

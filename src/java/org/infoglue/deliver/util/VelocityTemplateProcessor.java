@@ -24,10 +24,15 @@
 package org.infoglue.deliver.util;
 
 import java.io.File;
+import java.io.FileDescriptor;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.StringReader;
+import java.nio.ByteBuffer;
+import java.nio.channels.FileChannel;
+import java.nio.channels.FileLock;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -35,6 +40,7 @@ import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 
 import org.apache.log4j.Logger;
+import org.apache.tools.ant.types.FileList;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.Velocity;
 import org.infoglue.cms.io.FileHelper;
@@ -43,6 +49,9 @@ import org.infoglue.deliver.applications.actions.InfoGlueComponent;
 import org.infoglue.deliver.applications.databeans.DeliveryContext;
 import org.infoglue.deliver.controllers.kernel.impl.simple.TemplateController;
 import org.infoglue.deliver.portal.PortalController;
+
+import com.sun.star.ui.dialogs.FilePickerEvent;
+import com.sun.syndication.feed.rss.Channel;
 
 /**
  *
@@ -78,16 +87,16 @@ public class VelocityTemplateProcessor
 	 * Improve later - cache for example the engine.
 	 */
 	
-	public void renderTemplate(Map params, PrintWriter pw, String templateAsString, boolean forceVelocity, InfoGlueComponent component) throws Exception 
+	public void renderTemplate(final Map params, PrintWriter pw, String templateAsString, boolean forceVelocity, InfoGlueComponent component) throws Exception 
 	{
 		try
 		{
-		    Timer timer = new Timer();
+		    final Timer timer = new Timer();
 			
 		    if(!forceVelocity && (templateAsString.indexOf("<%") > -1 || templateAsString.indexOf("http://java.sun.com/products/jsp/dtd/jspcore_1_0.dtd") > -1))
 		    {
-		    	dispatchJSP(params, pw, templateAsString);
-		    	//dispatchJSP(params, pw, templateAsString, component);
+		    	//dispatchJSP(params, pw, templateAsString);
+		    	dispatchJSP(params, pw, templateAsString, component);
 		    }
 		    else
 		    {
@@ -103,7 +112,6 @@ public class VelocityTemplateProcessor
 		        else
 		        {
 					Velocity.init();
-			
 			        VelocityContext context = new VelocityContext();
 			        Iterator i = params.keySet().iterator();
 			        while(i.hasNext())
@@ -113,9 +121,7 @@ public class VelocityTemplateProcessor
 			        }
 			        
 			        Reader reader = new StringReader(templateAsString);
-			        if(logger.isInfoEnabled())
-			        	logger.info("Going to evaluate the string of length:" + templateAsString.length());
-			        
+		        	logger.info("Going to evaluate the string of length:" + templateAsString.length());
 			        boolean finished = Velocity.evaluate(context, pw, "Generator Error", reader);        
 		        }
 		    }
@@ -126,12 +132,11 @@ public class VelocityTemplateProcessor
 		    //System.out.println("componentName:" + componentName);
 		    
 		    RequestAnalyser.getRequestAnalyser().registerComponentStatistics(componentName, timer.getElapsedTime());
-	        if(logger.isInfoEnabled())
-	        	logger.info("Rendering took:" + timer.getElapsedTime());
+        	logger.info("Rendering took:" + timer.getElapsedTime());
 		}
 		catch(Exception e)
 		{
-			logger.warn("templateAsString: \n" + (templateAsString.length() > 500 ? templateAsString.substring(0, 500) + "... (template truncated)." : templateAsString));
+			logger.warn("templateAsString: \n" + (templateAsString.length() > 500 ? templateAsString.substring(0, 500) + "... (template truncated).\n---8<---\n" : templateAsString), e);
 		    
 			//If error we don't want the error cached - right?
 			TemplateController templateController = (TemplateController)params.get("templateLogic");
@@ -159,30 +164,70 @@ public class VelocityTemplateProcessor
 	 */
 	public void dispatchJSP(final Map params, final PrintWriter pw, final String templateAsString, final InfoGlueComponent component) throws ServletException, IOException, Exception
 	{
-		final String dir = CmsPropertyHandler.getContextRootPath() + "jsp";
-		final String fileName = "Template_" + component.getName().replaceAll( "[^\\w]", "" ) + "_" + templateAsString.hashCode() +  ".jsp";
-		final File template = new File(dir , fileName);
-		
-		synchronized (fileName.intern()) {
+	    final String dir = CmsPropertyHandler.getContextRootPath() + "jsp";
+	    final String fileName;
+	    if ( component != null ) {
+	        fileName = "Template_" + component.getName().replaceAll( "[^\\w]", "" ) + "_" + templateAsString.hashCode() +  ".jsp";
+	    } else {
+	        fileName = "Template_" + templateAsString.hashCode() + ".jsp";
+	    }
+	    final File template = new File(dir , fileName);
+
+	    /*
+	     * This is untested and work in progress. per jonsson 2008-03-06
+	     * 
+	    FileOutputStream fileOutputStream = null;
+	    FileChannel channel = null;
+	    FileLock fileLock = null;
+	    try {
+	        fileOutputStream = new FileOutputStream(template, false);
+	        channel = fileOutputStream.getChannel();
+	        // The .lock() is blocking until the lock can be fetched.
+	        // the .tryLock() is not blocking.
+	        fileLock = channel.lock();
+	        logger.info("Lock aquired: + " + fileLock);
+	        if ( fileLock != null && fileLock.isValid()) {
+	            if ( !template.exists() ) {
+        	        final PrintWriter fpw = new PrintWriter(fileOutputStream);
+        	        fpw.print(templateAsString);    
+        	        fpw.flush();
+        	        fpw.close();
+        	        logger.info("templet written: " + templateAsString);
+        	        fileLock.release();
+	            }
+	        }
+	    } catch ( IOException ioe ) {
+	        // Do nothing, file exists.
+	        ioe.printStackTrace();
+	    } finally {
+	        if ( fileOutputStream != null ) {
+	            fileOutputStream.close();
+	        }
+	        if ( channel != null) { 
+	            channel.close();
+	        }
+	    }
+	    */
+	    
+	    synchronized (fileName.intern()) {
 		    if(!template.exists()) {
-			final PrintWriter fpw = new PrintWriter(template);
-			fpw.print(templateAsString);    
-			fpw.flush();
-			fpw.close();
-			//FileHelper.writeToFile(template, templateAsString, false);
+		        final PrintWriter fpw = new PrintWriter(template);
+		        fpw.print(templateAsString);    
+		        fpw.flush();
+		        fpw.close();
 		    }
 		}
-		
-		final TemplateController templateController = (TemplateController)params.get("templateLogic");
-		final PortalController portletController = (PortalController)params.get("portalLogic");
-		final DeliveryContext deliveryContext = templateController.getDeliveryContext();
 
-		templateController.getHttpServletRequest().setAttribute("org.infoglue.cms.deliver.templateLogic", templateController);
-		templateController.getHttpServletRequest().setAttribute("org.infoglue.cms.deliver.portalLogic", portletController);
-		final CharResponseWrapper wrapper = new CharResponseWrapper(deliveryContext.getHttpServletResponse());
-		final RequestDispatcher dispatch = templateController.getHttpServletRequest().getRequestDispatcher("/jsp/" + fileName);
-		dispatch.include(templateController.getHttpServletRequest(), wrapper);
-		pw.println(wrapper.toString());
+	    final TemplateController templateController = (TemplateController)params.get("templateLogic");
+	    final PortalController portletController = (PortalController)params.get("portalLogic");
+	    final DeliveryContext deliveryContext = templateController.getDeliveryContext();
+
+	    templateController.getHttpServletRequest().setAttribute("org.infoglue.cms.deliver.templateLogic", templateController);
+	    templateController.getHttpServletRequest().setAttribute("org.infoglue.cms.deliver.portalLogic", portletController);
+	    final CharResponseWrapper wrapper = new CharResponseWrapper(deliveryContext.getHttpServletResponse());
+	    final RequestDispatcher dispatch = templateController.getHttpServletRequest().getRequestDispatcher("/jsp/" + fileName);
+	    dispatch.include(templateController.getHttpServletRequest(), wrapper);
+	    pw.println(wrapper.toCharArray());
 	}
 
 	
