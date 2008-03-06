@@ -760,12 +760,15 @@ function listRowOff()
 
 
 var draggedComponentId;
+var movedComponentId = "";
 
-function assignComponent(e, siteNodeId, languageId, contentId, parentComponentId, slotId, specifyBaseTemplate, allowedComponentNamesUrlEncodedString, disallowedComponentNamesUrlEncodedString) 
+function assignComponent(e, siteNodeId, languageId, contentId, parentComponentId, slotId, specifyBaseTemplate, allowedComponentNamesUrlEncodedString, disallowedComponentNamesUrlEncodedString, slotPositionComponentId) 
 {	
+	//alert("slotPositionComponentId:" + slotPositionComponentId);
 	//alert("slotId:" + slotId);
-	
-	if(draggedComponentId > 0)
+	//alert("draggedComponentId:" + draggedComponentId);
+	//alert("movedComponentId:" + movedComponentId);
+	if(movedComponentId && movedComponentId != "")
 	{
 		//alert("isIE:" + isIE);
 		if(isIE)
@@ -786,19 +789,52 @@ function assignComponent(e, siteNodeId, languageId, contentId, parentComponentId
 			parentComponentId = targ.id.substring(0, targ.id.indexOf("_"));
 			slotId = targ.id.substring(targ.id.indexOf("_") + 1);
 			
-			insertUrl = componentEditorUrl + "ViewSiteNodePageComponents!addComponent.action?siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&parentComponentId=" + parentComponentId + "&componentId=" + draggedComponentId + "&slotId=" + slotId + "&specifyBaseTemplate=" + specifyBaseTemplate + "&" + allowedComponentNamesUrlEncodedString + "&" + disallowedComponentNamesUrlEncodedString;
+			insertUrl = componentEditorUrl + "ViewSiteNodePageComponents!moveComponentToSlot.action?siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&parentComponentId=" + parentComponentId + "&componentId=" + movedComponentId + "&slotId=" + slotId + "&slotPositionComponentId=" + slotPositionComponentId + "&specifyBaseTemplate=" + specifyBaseTemplate + "&" + allowedComponentNamesUrlEncodedString + "&" + disallowedComponentNamesUrlEncodedString;
 			//alert("insertUrl:" + insertUrl);
 			document.location.href = insertUrl;
 			window.event.cancelBubble = true;
 		}
 		else
 		{
-			insertUrl = componentEditorUrl + "ViewSiteNodePageComponents!addComponent.action?siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&parentComponentId=" + parentComponentId + "&componentId=" + draggedComponentId + "&slotId=" + slotId + "&specifyBaseTemplate=" + specifyBaseTemplate + "&" + allowedComponentNamesUrlEncodedString + "&" + disallowedComponentNamesUrlEncodedString;
+			insertUrl = componentEditorUrl + "ViewSiteNodePageComponents!moveComponentToSlot.action?siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&parentComponentId=" + parentComponentId + "&componentId=" + movedComponentId + "&slotId=" + slotId + "&slotPositionComponentId=" + slotPositionComponentId + "&specifyBaseTemplate=" + specifyBaseTemplate + "&" + allowedComponentNamesUrlEncodedString + "&" + disallowedComponentNamesUrlEncodedString;
 			//alert("insertUrl:" + insertUrl);
 			document.location.href = insertUrl;
-			draggedComponentId = -1;
-			//}
 		}
+		movedComponentId = "";
+	}
+	else if(draggedComponentId > 0)
+	{
+		//alert("isIE:" + isIE);
+		if(isIE)
+		{
+			var targ;
+			if (!e) 
+				var e = window.event;
+				
+			if (e.target) 
+				targ = e.target;
+			else if (e.srcElement) 
+				targ = e.srcElement;
+			if (targ.nodeType == 3) // defeat Safari bug
+				targ = targ.parentNode;
+			
+			//alert("Target:" + targ + ":" + targ.id);
+
+			parentComponentId = targ.id.substring(0, targ.id.indexOf("_"));
+			slotId = targ.id.substring(targ.id.indexOf("_") + 1);
+			
+			insertUrl = componentEditorUrl + "ViewSiteNodePageComponents!addComponent.action?siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&parentComponentId=" + parentComponentId + "&componentId=" + draggedComponentId + "&slotId=" + slotId + "&slotPositionComponentId=" + slotPositionComponentId + "&specifyBaseTemplate=" + specifyBaseTemplate + "&" + allowedComponentNamesUrlEncodedString + "&" + disallowedComponentNamesUrlEncodedString;
+			//alert("insertUrl:" + insertUrl);
+			document.location.href = insertUrl;
+			window.event.cancelBubble = true;
+		}
+		else
+		{
+			insertUrl = componentEditorUrl + "ViewSiteNodePageComponents!addComponent.action?siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&parentComponentId=" + parentComponentId + "&componentId=" + draggedComponentId + "&slotId=" + slotId + "&slotPositionComponentId=" + slotPositionComponentId + "&specifyBaseTemplate=" + specifyBaseTemplate + "&" + allowedComponentNamesUrlEncodedString + "&" + disallowedComponentNamesUrlEncodedString;
+			//alert("insertUrl:" + insertUrl);
+			document.location.href = insertUrl;
+		}
+		draggedComponentId = -1;
 	}
 }
 
@@ -1080,7 +1116,7 @@ function showComponentPropertiesInDiv(targetDivId, parameterString, skipFloat, e
 
 	targetDiv.style.display = "block";
 	
-	menuDiv = propertiesDiv;
+	menuDiv = targetDiv;
 }
 
 var eventXPosition = 0;
@@ -1471,8 +1507,6 @@ function viewSource()
 		this.onClick = function(evt, ele) // onClick is a method of myObject4
 		{
 			//alert('emptySlotEventHandler.onClick()\nthis.objName = ' + this.objName + '\nele = ' + xName(ele));
-		    //assignComponent();
-		    //assignComponent(siteNodeId, languageId, contentId, componentId, slotId, specifyBaseTemplate);
 		    hidepreviousmenues();
 		    // cancel event bubbling
 		    if (evt && evt.stopPropagation) {evt.stopPropagation();}
@@ -1499,7 +1533,7 @@ function viewSource()
 	}
 		
 	function componentEventHandler(eleId, objName, objId, slotId, repositoryId, siteNodeId, languageId, contentId, componentId, componentContentId, originalUrl)
-	{
+	{		
 		this.objName = objName;           // objName is a property of myObject4
 		this.objId = objId;
 		this.repositoryId = repositoryId;
@@ -1859,3 +1893,26 @@ function viewSource()
 		}
 	}
 	
+	function registerOnMouseUp(elementId, siteNodeId, languageId, contentId, componentId, id, skipFloatDiv, allowedComponentsArrayAsUrlEncodedString, disallowedComponentsArrayAsUrlEncodedString, slotPositionComponentId)
+	{
+		/*
+		alert("elementId:" + elementId);
+		alert("siteNodeId:" + siteNodeId);
+		alert("languageId:" + languageId);
+		alert("contentId:" + contentId);
+		alert("componentId:" + componentId);
+		alert("id:" + id);
+		alert("skipFloatDiv:" + skipFloatDiv);
+		alert("allowedComponentsArrayAsUrlEncodedString:" + allowedComponentsArrayAsUrlEncodedString);
+		alert("disallowedComponentsArrayAsUrlEncodedString:" + disallowedComponentsArrayAsUrlEncodedString);
+		*/
+		var element = document.getElementById(elementId);
+				    
+	   	if (document.addEventListener != null)
+	    	element.addEventListener("mouseup", function (event){ assignComponent(event, siteNodeId, languageId, contentId, componentId, id, skipFloatDiv, allowedComponentsArrayAsUrlEncodedString, disallowedComponentsArrayAsUrlEncodedString, slotPositionComponentId);}, false);
+	    else{
+	    	element.attachEvent("onmouseup", function (evt){
+	    		assignComponent(evt, siteNodeId, languageId, contentId, componentId, id, skipFloatDiv, allowedComponentsArrayAsUrlEncodedString, disallowedComponentsArrayAsUrlEncodedString, slotPositionComponentId);
+	   		})
+	    }
+	}	

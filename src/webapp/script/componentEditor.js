@@ -853,7 +853,7 @@ function listRowOff()
 
 
 
-function assignComponent(siteNodeId, languageId, contentId, parentComponentId, slotId, specifyBaseTemplate, allowedComponentNamesUrlEncodedString, disallowedComponentNamesUrlEncodedString) 
+function assignComponent(siteNodeId, languageId, contentId, parentComponentId, slotId, specifyBaseTemplate, allowedComponentNamesUrlEncodedString, disallowedComponentNamesUrlEncodedString, slotPositionComponentId) 
 {
 	//alert("AssignComponent:" + allowedComponentNamesUrlEncodedString);
 	//alert("draggedComponentId:" + draggedComponentId);
@@ -866,7 +866,7 @@ function assignComponent(siteNodeId, languageId, contentId, parentComponentId, s
 		//alert("slotId" + slotId);
 		//alert("specifyBaseTemplate" + specifyBaseTemplate);
 		
-		insertUrl = componentEditorUrl + "ViewSiteNodePageComponents!addComponent.action?siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&parentComponentId=" + parentComponentId + "&componentId=" + draggedComponentId + "&slotId=" + slotId + "&specifyBaseTemplate=" + specifyBaseTemplate + "&" + allowedComponentNamesUrlEncodedString + "&" + disallowedComponentNamesUrlEncodedString;
+		insertUrl = componentEditorUrl + "ViewSiteNodePageComponents!addComponent.action?siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&parentComponentId=" + parentComponentId + "&componentId=" + draggedComponentId + "&slotId=" + slotId + "&slotPositionComponentId=" + slotPositionComponentId + "&specifyBaseTemplate=" + specifyBaseTemplate + "&" + allowedComponentNamesUrlEncodedString + "&" + disallowedComponentNamesUrlEncodedString;
 		//alert("insertUrl:" + insertUrl);
 		document.location.href = insertUrl;
 		draggedComponentId = -1;
@@ -1345,8 +1345,6 @@ function viewSource()
 		this.onClick = function(evt, ele) // onClick is a method of myObject4
 		{
 			//alert('emptySlotEventHandler.onClick()\nthis.objName = ' + this.objName + '\nele = ' + xName(ele));
-		    //assignComponent();
-		    //assignComponent(siteNodeId, languageId, contentId, componentId, slotId, specifyBaseTemplate);
 		    hidemenuie5();
 		    // cancel event bubbling
 		    if (evt && evt.stopPropagation) {evt.stopPropagation();}

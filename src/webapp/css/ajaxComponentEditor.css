@@ -1,3 +1,26 @@
+.droppable-active {
+	opacity: 1.0;
+}
+.droppable-hover {
+	outline: 1px solid black;
+}
+.slotPosition {
+	padding: 0px;
+	margin: 0px;
+}
+.slotPosition-active {
+	width: 50px; 
+	height: 5px;
+	background-color: red;
+	outline: 1px solid black;
+	opacity: 1.0;
+}
+.slotPosition-hover {
+	display:block;
+	outline: 1px solid black;
+}
+
+
 #componentStructure 
 {
 	position: absolute;
@@ -324,13 +347,15 @@ Edit on sight classes
 	padding-top:3px;
 	padding-bottom:3px;
 }
-/*
+
 .igAddComponent {
 	background-color:#F9F8F7;
 	font-family: Verdana, Arial, Helvetica, sans-serif;
-	font-size: 8pt;
+	font-size: 8px;
+	border: 1px dotted #333;
+	padding: 4px;
+	line-height: 22px;
 }
-*/
 
 /*
 Properties classes

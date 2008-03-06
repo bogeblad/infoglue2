@@ -41,18 +41,23 @@ import org.dom4j.Element;
 import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.controllers.kernel.impl.simple.AccessRightController;
+import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
 import org.infoglue.cms.controllers.kernel.impl.simple.ComponentController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.DigitalAssetController;
 import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
+import org.infoglue.cms.controllers.kernel.impl.simple.RepositoryController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeController;
 import org.infoglue.cms.controllers.kernel.impl.simple.UserControllerProxy;
 import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.entities.content.DigitalAssetVO;
 import org.infoglue.cms.entities.management.LanguageVO;
+import org.infoglue.cms.entities.management.Repository;
+import org.infoglue.cms.entities.management.impl.simple.RepositoryImpl;
 import org.infoglue.cms.entities.structure.SiteNodeVO;
+import org.infoglue.cms.entities.workflow.impl.simple.EventImpl;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.CmsPropertyHandler;
@@ -76,7 +81,7 @@ import org.infoglue.deliver.util.Timer;
  * @author Mattias Bogeblad
  */
 
-public class PageEditorHelper
+public class PageEditorHelper extends BaseDeliveryController
 {
 	private final String separator = System.getProperty("line.separator");
 
@@ -1460,32 +1465,33 @@ public class PageEditorHelper
 	    {
 	        e.printStackTrace();
 	    }
-		/*
-	    sb.append("<script type=\"text/javascript\">");
-	    sb.append("<!--");
-   		sb.append("alert('Problem...');");
-   		sb.append("alert(\"Size:\" + $(\".dragable\").size());");
-   		sb.append("$(\".dragable\").draggable({helper: 'clone'});");
-	    */
-	    /*
-   		$(".block").draggable({helper: 'clone'});
-	    	$(".drop").droppable({
-	    		accept: ".block",
-	    		activeClass: 'droppable-active',
-	    		hoverClass: 'droppable-hover',
-	    		drop: function(ev, ui) {
-	    			$(this).append("<br>Dropped!");
-	    		}
-	    	  });
-   		sb.append("});");
-	    */
-	    /*
-   		sb.append("-->");
-   		sb.append("</script>");
-	    */
+	
 		return sb.toString();
 	}
 
+	public List<Slot> getSlots(Integer componentContentId, Integer languageId, InfoGluePrincipal principal) throws Exception
+	{
+		List<Slot> slots = new ArrayList<Slot>();
+	
+		Database db = CastorDatabaseService.getDatabase();
+
+		beginTransaction(db);
+		
+		try
+	    {
+			slots = getSlots(componentContentId, languageId, db, principal);
+			
+	        commitTransaction(db);
+	    }
+	    catch(Exception e)
+	    {
+	    	//logger.error("An error occurred so we should not completes the transaction:" + e, e);
+	        rollbackTransaction(db);
+	        throw new SystemException(e.getMessage());
+	    }
+	    
+	    return slots;
+	}
 	
 	public List<Slot> getSlots(Integer componentContentId, Integer languageId, Database db, InfoGluePrincipal principal) throws Exception
 	{

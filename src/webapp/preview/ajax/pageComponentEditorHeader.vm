@@ -4,16 +4,69 @@
 </script>
 <script type="text/javascript" src="${contextName}/script/dom-drag.js"></script>
 <script type="text/javascript" src="${contextName}/script/ajaxComponentEditor.js"></script>
-<link rel="stylesheet" type="text/css" href="${contextName}/css/ajaxComponentEditor.css" />
-<script src="${contextName}/script/jquery/jquery-1.2.3.min.js"></script>
+
+<script type="text/javascript" src="${contextName}/script/jquery/jquery-1.2.3.min.js"></script>
+<script type="text/javascript" src="${contextName}/script/jqueryplugins/ui/jquery.dimensions.js"></script>
+<script type="text/javascript" src="${contextName}/script/jqueryplugins/ui/ui.mouse.js"></script>
+<script type="text/javascript" src="${contextName}/script/jqueryplugins/ui/ui.draggable.js"></script>
+<script type="text/javascript" src="${contextName}/script/jqueryplugins/ui/ui.draggable.ext.js"></script>
+<script type="text/javascript" src="${contextName}/script/jqueryplugins/ui/ui.droppable.js"></script>
+<script type="text/javascript" src="${contextName}/script/jqueryplugins/ui/ui.droppable.ext.js"></script>
+<script type="text/javascript" src="${contextName}/script/jqueryplugins/ui/ui.sortable.js"></script>
+<script type="text/javascript" src="${contextName}/script/jqueryplugins/ui/ui.sortable.ext.js"></script>
+
 <script type="text/javascript" src="${contextName}/applications/FCKEditor/fckeditor.js"></script>
 
 <script type="text/javascript">
-
+	
+	/*
+	$(window).bind("load",function(){
+		$("#apa").sortable({ revert: true });
+	});
+	*/
+		
 	$(function()
 	{
+		
+		$(".dragableComponent").draggable({cursorAt: {left: -1 }, helper: 'clone', start: function(ev, ui) {
+		    	$(ui.helper).css('border', '1px solid #ccc');
+		    	$(ui.helper).css('background-color', 'white');
+		    	var currentMovedComponentId = $(ui.helper).attr("id");
+		    	if(currentMovedComponentId != '-1' && currentMovedComponentId != movedComponentId)
+				{
+					currentMovedComponentId = currentMovedComponentId.substring(currentMovedComponentId.indexOf("_") + 1, currentMovedComponentId.indexOf("Comp"));
+					movedComponentId = currentMovedComponentId;
+				}
+			}
+		});
+		
+		$(".dropArea").droppable({
+			accept: '.availableComponentsDiv .dragable .dragableComponent',
+			activeClass: 'droppable-active',
+			hoverClass: 'droppable-hover'
+			});
+
+		$(".slotPosition").droppable({
+			accept: '.availableComponentsDiv .dragable .dragableComponent',
+			activeClass: 'slotPosition-active',
+			hoverClass: 'slotPosition-hover'
+			});
+		
+	    //subComponentString += "	   	 $(element).css('border','3px solid blue');";
+	    //subComponentString += "	   	 $(element).parent().css('border','3px solid red');";
+	    //subComponentString += "	   	 alert('Parent:' + $(element).parent().attr('id'));";
+	    //subComponentString += "	   	 $(element).parent().sortable({});";
+
+		//$(".dragableComponent").parent().css("border","3px solid red");
+		//$(".dragableComponent").parent().sortable({items: '.dragableComponent', revert: true, containment: 'parent'});
+		
+		//$(".dropArea", function(){
+		//	alert("Found span:" + $(this).id);
+		//}); //).css('border', '1px solid red'); //.sortable({});
+		
+		
         var $activeElement = $('#${focusElementId}Comp');
-        if($activeElement)
+        if($activeElement && $activeElement.offset())
         {
 			$(window)[0].scrollTo(0, $activeElement.offset().top - 300);
 		}
@@ -23,4 +76,7 @@
 	});	
 
 </script>
+
+<link rel="stylesheet" type="text/css" href="${contextName}/css/ajaxComponentEditor.css" />
+
 </head>
