@@ -44,6 +44,7 @@ public class UpdateMySettingsAction extends InfoGlueAbstractAction
 	
 	private String languageCode 				= null;
 	private String defaultToolId				= null;
+	private String defaultRepositoryId			= null;
 
 	    
     /**
@@ -58,35 +59,11 @@ public class UpdateMySettingsAction extends InfoGlueAbstractAction
 	    
 	    ps.setString("principal_" + this.getInfoGluePrincipal().getName() + "_languageCode", languageCode);
 	    ps.setString("principal_" + this.getInfoGluePrincipal().getName() + "_defaultToolId", defaultToolId);
+	    ps.setString("principal_" + this.getInfoGluePrincipal().getName() + "_defaultRepositoryId", defaultRepositoryId);
 
         return "success";
     }
     
-    /**
-     * The main method that fetches the Value-objects for this use-case
-     */
-    /*
-    public String doSave() throws Exception
-    {
-    	Map args = new HashMap();
-	    args.put("globalKey", "infoglue");
-	    PropertySet ps = PropertySetManager.getInstance("jdbc", args);
-	    
-	    ps.setData("repository_" + this.getRepositoryId() + "_WYSIWYGConfig", WYSIWYGConfig.getBytes("utf-8"));
-	    ps.setData("repository_" + this.getRepositoryId() + "_StylesXML", stylesXML.getBytes("utf-8"));
-	    ps.setString("repository_" + this.getRepositoryId() + "_defaultFolderContentTypeName", defaultFolderContentTypeName);
-	    ps.setString("repository_" + this.getRepositoryId() + "_defaultTemplateRepository", defaultTemplateRepository);
-	    ps.setString("repository_" + this.getRepositoryId() + "_parentRepository", parentRepository);
-	    
-	    //TODO - hack to get the caches to be updated when properties are affected..
-	    RepositoryVO repositoryVO = RepositoryController.getController().getFirstRepositoryVO();
-	    repositoryVO.setDescription(repositoryVO.getDescription() + ".");
-	    RepositoryController.getController().update(repositoryVO);
-	    
-    	return "save";
-    }
-    */
-
 
     public void setLanguageCode(String languageCode)
     {
@@ -96,5 +73,10 @@ public class UpdateMySettingsAction extends InfoGlueAbstractAction
     public void setDefaultToolId(String defaultToolId)
     {
         this.defaultToolId = defaultToolId;
+    }
+
+    public void setDefaultRepositoryId(String defaultRepositoryId)
+    {
+        this.defaultRepositoryId = defaultRepositoryId;
     }
 }

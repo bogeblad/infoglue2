@@ -42,6 +42,16 @@
 		</td>
 	</tr>
 	<tr>
+		<td>
+			$ui.getString("entity.Repository.property.defaultRepository.label")<br/>
+			<select name="defaultRepositoryId" class="sitedropbox" style="width: 100px;">
+			#foreach($repository in $repositories)
+				<option value="$repository.id" #if($defaultRepositoryId == $repository.id)selected="1"#end>$repository.name</option>
+			#end
+			</select>
+		</td>
+	</tr>
+	<tr>
 		<td>	
 			$ui.getString("tool.managementtool.mysettings.defaultToolId.label")<br/>
 			<select class="sitedropbox" name="defaultToolId">

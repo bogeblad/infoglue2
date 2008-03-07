@@ -111,6 +111,16 @@ public class ViewStructureToolHeaderAction extends InfoGlueAbstractAction
 	    		
 	    		if(this.repositoryId == null)
 	    		{
+		    		String prefferedRepositoryId = CmsPropertyHandler.getPreferredRepositoryId(this.getInfoGluePrincipal().getName());
+		    		if(prefferedRepositoryId != null && prefferedRepositoryId.length() > 0)
+		    		{
+		    			this.repositoryId = new Integer(prefferedRepositoryId);
+		    			getHttpSession().setAttribute("repositoryId", this.repositoryId);		
+		    		}
+		    	}
+	    		
+	    		if(this.repositoryId == null)
+	    		{
 		    		this.repositoryId = getTopRepositoryId();
 		    		getHttpSession().setAttribute("repositoryId", this.repositoryId);		
 		    	}

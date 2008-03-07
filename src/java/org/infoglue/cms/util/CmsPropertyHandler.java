@@ -1243,6 +1243,11 @@ public class CmsPropertyHandler
 	    return propertySet.getString("principal_" + userName + "_defaultToolId");
 	}
 
+	public static String getPreferredRepositoryId(String userName)
+	{
+	    return propertySet.getString("principal_" + userName + "_defaultRepositoryId");
+	}
+
 	public static String getPropertiesParser()
 	{
 	    return getServerNodeProperty("propertiesParser", false, "xpp3");

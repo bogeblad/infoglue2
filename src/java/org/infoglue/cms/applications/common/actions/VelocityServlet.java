@@ -169,4 +169,13 @@ public class VelocityServlet extends WebWorkVelocityServlet
 	    return ps.getString("principal_" + request.getRemoteUser() + "_defaultToolId");
 	}
 
+	private String getPreferredRepositoryId(HttpServletRequest request)
+	{
+        Map args = new HashMap();
+	    args.put("globalKey", "infoglue");
+	    PropertySet ps = PropertySetManager.getInstance("jdbc", args);
+	    
+	    return ps.getString("principal_" + request.getRemoteUser() + "_defaultRepositoryId");
+	}
+
 }

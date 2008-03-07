@@ -23,12 +23,14 @@
 
 package org.infoglue.cms.applications.cmstool.actions;
 
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.RepositoryController;
 import org.infoglue.cms.entities.management.RepositoryVO;
+import org.infoglue.cms.util.CmsPropertyHandler;
 
 /**
  * This class implements the base class for a tool.
@@ -66,11 +68,28 @@ public abstract class ViewCMSAbstractToolAction extends InfoGlueAbstractAction
 					List authorizedRepositoryVOList = RepositoryController.getController().getAuthorizedRepositoryVOList(this.getInfoGluePrincipal(), false);
 					if(authorizedRepositoryVOList.size() > 0)
 					{
-						RepositoryVO repositoryVO = (RepositoryVO)authorizedRepositoryVOList.get(0);
-						this.repositoryId = repositoryVO.getId();
+			    		String prefferedRepositoryId = CmsPropertyHandler.getPreferredRepositoryId(this.getInfoGluePrincipal().getName());
+			    		if(prefferedRepositoryId != null && prefferedRepositoryId.length() > 0)
+			    		{
+			    			Iterator authorizedRepositoryVOListIterator = authorizedRepositoryVOList.iterator();
+			    			while(authorizedRepositoryVOListIterator.hasNext())
+			    			{
+			    				RepositoryVO repositoryVO = (RepositoryVO)authorizedRepositoryVOListIterator.next();
+			    				if(repositoryVO.getId().toString().equals(prefferedRepositoryId))
+			    				{
+			    					this.repositoryId = repositoryVO.getId();
+			    					break;
+			    				}
+			    			}
+			    		}
+			    		else
+			    		{
+							RepositoryVO repositoryVO = (RepositoryVO)authorizedRepositoryVOList.get(0);
+							this.repositoryId = repositoryVO.getId();
+				    	}
 			    		getHttpSession().setAttribute("repositoryId", this.repositoryId);		
 			    		logger.info("We set the defaultRepositoryId in the users session to " + this.repositoryId);
-					}
+		    		}
 		    		else
 		    		{
 		    		    this.repositoryId = new Integer(-1);

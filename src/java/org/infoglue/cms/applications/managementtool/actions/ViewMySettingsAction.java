@@ -24,9 +24,11 @@
 package org.infoglue.cms.applications.managementtool.actions;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
+import org.infoglue.cms.controllers.kernel.impl.simple.RepositoryController;
 
 import com.opensymphony.module.propertyset.PropertySet;
 import com.opensymphony.module.propertyset.PropertySetManager;
@@ -46,7 +48,10 @@ public class ViewMySettingsAction extends InfoGlueAbstractAction
 	
 	private String languageCode 				= null;
 	private String defaultToolId				= null;
-	    
+	private String defaultRepositoryId			= null;
+	
+	private List repositories = null;
+	
     /**
      * The main method that fetches the Value-objects for this use-case
      */
@@ -57,39 +62,14 @@ public class ViewMySettingsAction extends InfoGlueAbstractAction
 	    args.put("globalKey", "infoglue");
 	    PropertySet ps = PropertySetManager.getInstance("jdbc", args);
 	    
-	    this.languageCode 	= ps.getString("principal_" + this.getInfoGluePrincipal().getName() + "_languageCode");
-	    this.defaultToolId 	= ps.getString("principal_" + this.getInfoGluePrincipal().getName() + "_defaultToolId");
+	    this.languageCode 			= ps.getString("principal_" + this.getInfoGluePrincipal().getName() + "_languageCode");
+	    this.defaultToolId 			= ps.getString("principal_" + this.getInfoGluePrincipal().getName() + "_defaultToolId");
+	    this.defaultRepositoryId 	= ps.getString("principal_" + this.getInfoGluePrincipal().getName() + "_defaultRepositoryId");
+
+		this.repositories = RepositoryController.getController().getAuthorizedRepositoryVOList(this.getInfoGluePrincipal(), false);
 
         return "success";
     }
-    
-   
-	
-    /**
-     * The main method that fetches the Value-objects for this use-case
-     */
-    /*
-    public String doSave() throws Exception
-    {
-    	Map args = new HashMap();
-	    args.put("globalKey", "infoglue");
-	    PropertySet ps = PropertySetManager.getInstance("jdbc", args);
-	    
-	    ps.setData("repository_" + this.getRepositoryId() + "_WYSIWYGConfig", WYSIWYGConfig.getBytes("utf-8"));
-	    ps.setData("repository_" + this.getRepositoryId() + "_StylesXML", stylesXML.getBytes("utf-8"));
-	    ps.setString("repository_" + this.getRepositoryId() + "_defaultFolderContentTypeName", defaultFolderContentTypeName);
-	    ps.setString("repository_" + this.getRepositoryId() + "_defaultTemplateRepository", defaultTemplateRepository);
-	    ps.setString("repository_" + this.getRepositoryId() + "_parentRepository", parentRepository);
-	    
-	    //TODO - hack to get the caches to be updated when properties are affected..
-	    RepositoryVO repositoryVO = RepositoryController.getController().getFirstRepositoryVO();
-	    repositoryVO.setDescription(repositoryVO.getDescription() + ".");
-	    RepositoryController.getController().update(repositoryVO);
-	    
-    	return "save";
-    }
-    */
-
 
     public String getLanguageCode()
     {
@@ -100,4 +80,14 @@ public class ViewMySettingsAction extends InfoGlueAbstractAction
     {
         return defaultToolId;
     }
+
+	public String getDefaultRepositoryId()
+	{
+		return defaultRepositoryId;
+	}
+
+	public List getRepositories()
+	{
+		return repositories;
+	}
 }
