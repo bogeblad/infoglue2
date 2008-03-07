@@ -761,6 +761,7 @@ function listRowOff()
 
 var draggedComponentId;
 var movedComponentId = "";
+var movedElementId = "";
 
 function assignComponent(e, siteNodeId, languageId, contentId, parentComponentId, slotId, specifyBaseTemplate, allowedComponentNamesUrlEncodedString, disallowedComponentNamesUrlEncodedString, slotPositionComponentId) 
 {	
@@ -773,6 +774,7 @@ function assignComponent(e, siteNodeId, languageId, contentId, parentComponentId
 		//alert("isIE:" + isIE);
 		if(isIE)
 		{
+			/*
 			var targ;
 			if (!e) 
 				var e = window.event;
@@ -784,23 +786,25 @@ function assignComponent(e, siteNodeId, languageId, contentId, parentComponentId
 			if (targ.nodeType == 3) // defeat Safari bug
 				targ = targ.parentNode;
 			
-			//alert("Target:" + targ + ":" + targ.id);
+			alert("Target:" + targ + ":" + targ.id);
 
 			parentComponentId = targ.id.substring(0, targ.id.indexOf("_"));
 			slotId = targ.id.substring(targ.id.indexOf("_") + 1);
+			*/
 			
-			insertUrl = componentEditorUrl + "ViewSiteNodePageComponents!moveComponentToSlot.action?siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&parentComponentId=" + parentComponentId + "&componentId=" + movedComponentId + "&slotId=" + slotId + "&slotPositionComponentId=" + slotPositionComponentId + "&specifyBaseTemplate=" + specifyBaseTemplate + "&" + allowedComponentNamesUrlEncodedString + "&" + disallowedComponentNamesUrlEncodedString;
-			//alert("insertUrl:" + insertUrl);
-			document.location.href = insertUrl;
+			moveUrl = componentEditorUrl + "ViewSiteNodePageComponents!moveComponentToSlot.action?siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&parentComponentId=" + parentComponentId + "&componentId=" + movedComponentId + "&slotId=" + slotId + "&slotPositionComponentId=" + slotPositionComponentId + "&specifyBaseTemplate=" + specifyBaseTemplate + "&" + allowedComponentNamesUrlEncodedString + "&" + disallowedComponentNamesUrlEncodedString;
+			//alert("moveUrl:" + moveUrl);
+			document.location.href = moveUrl;
 			window.event.cancelBubble = true;
 		}
 		else
 		{
-			insertUrl = componentEditorUrl + "ViewSiteNodePageComponents!moveComponentToSlot.action?siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&parentComponentId=" + parentComponentId + "&componentId=" + movedComponentId + "&slotId=" + slotId + "&slotPositionComponentId=" + slotPositionComponentId + "&specifyBaseTemplate=" + specifyBaseTemplate + "&" + allowedComponentNamesUrlEncodedString + "&" + disallowedComponentNamesUrlEncodedString;
-			//alert("insertUrl:" + insertUrl);
-			document.location.href = insertUrl;
+			moveUrl = componentEditorUrl + "ViewSiteNodePageComponents!moveComponentToSlot.action?siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&parentComponentId=" + parentComponentId + "&componentId=" + movedComponentId + "&slotId=" + slotId + "&slotPositionComponentId=" + slotPositionComponentId + "&specifyBaseTemplate=" + specifyBaseTemplate + "&" + allowedComponentNamesUrlEncodedString + "&" + disallowedComponentNamesUrlEncodedString;
+			//alert("moveUrl:" + moveUrl);
+			document.location.href = moveUrl;
 		}
 		movedComponentId = "";
+		movedElementId = "";
 	}
 	else if(draggedComponentId > 0)
 	{
@@ -1907,11 +1911,98 @@ function viewSource()
 		alert("disallowedComponentsArrayAsUrlEncodedString:" + disallowedComponentsArrayAsUrlEncodedString);
 		*/
 		var element = document.getElementById(elementId);
-				    
+		
+		//accept: '.availableComponentsDiv .dragable .dragableComponent',
+		
+		/*	
+		$(element).droppable({
+			accept: '#col12_82Comp',
+			activeClass: 'slotPosition-active',
+			hoverClass: 'slotPosition-hover'
+			});
+		*/
+			   
 	   	if (document.addEventListener != null)
-	    	element.addEventListener("mouseup", function (event){ assignComponent(event, siteNodeId, languageId, contentId, componentId, id, skipFloatDiv, allowedComponentsArrayAsUrlEncodedString, disallowedComponentsArrayAsUrlEncodedString, slotPositionComponentId);}, false);
-	    else{
-	    	element.attachEvent("onmouseup", function (evt){
+	   	{
+	   		element.addEventListener("mouseover", function(event) { 
+	   			if(movedComponentId && movedComponentId != "") 
+	   			{
+		   			var draggedElement = document.getElementById(movedElementId);
+		   			var height = $(draggedElement).height();
+	   				
+	   				var targ;
+					if (!event) 
+						var event = window.event;
+						
+					if (event.target) 
+						targ = event.target;
+					else if (event.srcElement) 
+						targ = event.srcElement;
+					if (targ.nodeType == 3) // defeat Safari bug
+						targ = targ.parentNode;
+			   		
+			   		if(targ.id != movedElementId)
+			   		{
+			   			//alert("targ.id:" + targ.id + " - movedElementId:" + movedElementId);
+		   				var ghost = $("#ghost").clone();
+		   				//$("#ghost").remove();
+		   				//$(element).prepend(ghost);
+		   				$("#ghost").remove();
+		   				$(element).prepend("<span id='ghost' style='padding: 2px; border: 1px dotted #ccc; background-color:#ff8a18; display: table; clear: both; height: 1px;'><b>Move here</b></span>");
+		   			}
+	   			} 
+	   		    if (event && event.stopPropagation) {event.stopPropagation();}
+    			else if (window.event) {window.event.cancelBubble = true;}	
+	   		}, false);
+	   		element.addEventListener("mouseout", function(event) { 
+	   			if(movedComponentId && movedComponentId != "") 
+	   			{
+	   				//$("#ghost").remove();
+	   				//element.style.borderTop = '2px solid white';
+	   				//element.style.paddingTop = '0px';
+	   			} 
+	   		    if (event && event.stopPropagation) {event.stopPropagation();}
+    			else if (window.event) {window.event.cancelBubble = true;}	
+	   		}, false);
+	   			
+	    	element.addEventListener("mouseup", function (event){ 
+	    		assignComponent(event, siteNodeId, languageId, contentId, componentId, id, skipFloatDiv, allowedComponentsArrayAsUrlEncodedString, disallowedComponentsArrayAsUrlEncodedString, slotPositionComponentId);
+	    	}, false);
+	    }
+	    else
+	    {
+	    	element.attachEvent("onmouseover", function (evt) { 
+	   			if(movedComponentId && movedComponentId != "") 
+	   			{
+		   			var draggedElement = document.getElementById(movedElementId);
+		   			var height = $(draggedElement).height();
+	   				
+	   				var targ;
+					if (!evt) 
+						var evt = window.event;
+						
+					if (evt.target) 
+						targ = evt.target;
+					else if (evt.srcElement) 
+						targ = evt.srcElement;
+					if (targ.nodeType == 3) // defeat Safari bug
+						targ = targ.parentNode;
+			   		
+			   		if(targ.id != movedElementId)
+			   		{
+			   			//alert("targ.id:" + targ.id + " - movedElementId:" + movedElementId);
+		   				var ghost = $("#ghost").clone();
+		   				//$("#ghost").remove();
+		   				//$(element).prepend(ghost);
+		   				$("#ghost").remove();
+		   				$(element).prepend("<span id='ghost' style='padding: 2px; border: 1px dotted #ccc; background-color:#ff8a18; display: table; clear: both; height: 1px;'><b>Move here</b></span>");
+		   			}
+	   			} 
+	   		    if (event && event.stopPropagation) {event.stopPropagation();}
+    			else if (window.event) {window.event.cancelBubble = true;}	
+	   		});
+	    	
+	    	element.attachEvent("onmouseup", function (evt) {
 	    		assignComponent(evt, siteNodeId, languageId, contentId, componentId, id, skipFloatDiv, allowedComponentsArrayAsUrlEncodedString, disallowedComponentsArrayAsUrlEncodedString, slotPositionComponentId);
 	   		})
 	    }

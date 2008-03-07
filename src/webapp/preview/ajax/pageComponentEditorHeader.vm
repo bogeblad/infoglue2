@@ -28,18 +28,20 @@
 	$(function()
 	{
 		
-		$(".dragableComponent").draggable({cursorAt: {left: -1 }, helper: 'clone', start: function(ev, ui) {
+		$(".dragableComponent").draggable({cursorAt: {left: -10 }, helper: 'clone', start: function(ev, ui) {
 		    	$(ui.helper).css('border', '1px solid #ccc');
 		    	$(ui.helper).css('background-color', 'white');
 		    	var currentMovedComponentId = $(ui.helper).attr("id");
 		    	if(currentMovedComponentId != '-1' && currentMovedComponentId != movedComponentId)
 				{
+					movedElementId = currentMovedComponentId;
 					currentMovedComponentId = currentMovedComponentId.substring(currentMovedComponentId.indexOf("_") + 1, currentMovedComponentId.indexOf("Comp"));
 					movedComponentId = currentMovedComponentId;
 				}
 			}
 		});
 		
+		/*
 		$(".dropArea").droppable({
 			accept: '.availableComponentsDiv .dragable .dragableComponent',
 			activeClass: 'droppable-active',
@@ -51,7 +53,8 @@
 			activeClass: 'slotPosition-active',
 			hoverClass: 'slotPosition-hover'
 			});
-		
+		*/
+					
 	    //subComponentString += "	   	 $(element).css('border','3px solid blue');";
 	    //subComponentString += "	   	 $(element).parent().css('border','3px solid red');";
 	    //subComponentString += "	   	 alert('Parent:' + $(element).parent().attr('id'));";

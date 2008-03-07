@@ -5,19 +5,23 @@
 	outline: 1px solid black;
 }
 .slotPosition {
+	display: table;
+	afloat: left;
+	aborder: 1px solid blue;
 	padding: 0px;
 	margin: 0px;
 }
 .slotPosition-active {
-	width: 50px; 
-	height: 5px;
-	background-color: red;
-	outline: 1px solid black;
+	display: table;
+	border-top: 1px solid white;
+	abackground-color: red;
+	aoutline: 1px solid black;
 	opacity: 1.0;
 }
 .slotPosition-hover {
-	display:block;
-	outline: 1px solid black;
+	display: table;
+	border-top: 2px solid #ff8a18;
+	aoutline: 1px solid black;
 }
 
 

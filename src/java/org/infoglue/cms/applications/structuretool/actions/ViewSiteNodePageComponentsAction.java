@@ -538,7 +538,7 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 					component.getParentNode().removeChild(component);
 					component.setAttribute("name", slotId);
 					
-					if(slotPositionComponentId != null)
+					if(slotPositionComponentId != null && !slotPositionComponentId.equals(""))
 					{
 						NodeList childNodes = parentComponentComponentsElement.getChildNodes();
 						for(int i=0; i< childNodes.getLength(); i++)
@@ -577,7 +577,7 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 					component.getParentNode().removeChild(component);
 					component.setAttribute("name", slotId);
 
-					if(slotPositionComponentId != null)
+					if(slotPositionComponentId != null && !slotPositionComponentId.equals(""))
 					{
 						NodeList childNodes = parentComponentComponentsElement.getChildNodes();
 						for(int i=0; i< childNodes.getLength(); i++)

@@ -172,6 +172,9 @@ public class AjaxDecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHT
 		//TODO - TEST
 		//decoratePageTemplate += propertiesDivs + tasksDivs;																																							
 		decoratePageTemplate += "<div id=\"availableComponents\"></div><div id=\"componentTasks\"><div id=\"componentMenu\" class=\"skin0\">Loading menu...</div></div><div id=\"componentPropertiesDiv\"></div><div id=\"componentStructure\"></div>";
+		
+		//decoratePageTemplate += "<span id='ghost' style='padding: 2px; border: 1px dotted #ccc; background-color:#ff8a18; display: table; clear: both; height: 40px;'><b>Move here</b></span>";
+		
 		/*
 		decoratePageTemplate += "<div id=\"test\"><ul id=\"apa\" style=\"list-style-position: inside; height: 30px; cursor: hand; cursor: pointer;\">" +
 									"<li style='float: left; padding: 5px; border: 1px solid #bbb; margin: 3px; background: #fff;'>Drag us</li>" + 
@@ -604,12 +607,12 @@ public class AjaxDecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHT
 				    //subComponentString += "	   	 $(element).parent().sortable({});";
 				    
 				    /*
-				    subComponentString += "	     $('.dropArea').droppable({";
+				    subComponentString += "	     $(element).droppable({";
 				    subComponentString += "		   accept: '.availableComponentsDiv .dragable .dragableComponent',";
 				    subComponentString += "		   activeClass: 'droppable-active',";
 				    subComponentString += "		   hoverClass: 'droppable-hover'";
 				    subComponentString += "	   });";
-				    */
+				   */
 				    
 				    subComponentString += "    if (document.addEventListener != null)\n";
 				    subComponentString += "		 element.addEventListener('mouseup', function (event){assignComponent(event, '" + siteNodeId + "', '" + languageId + "', '" + contentId + "', '" + component.getId() + "', '" + id + "', '" + false + "', '" + slotBean.getAllowedComponentsArrayAsUrlEncodedString() + "', '" + slotBean.getDisallowedComponentsArrayAsUrlEncodedString() + "', '');}, false);\n";
@@ -714,11 +717,11 @@ public class AjaxDecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHT
 
 								    if(subComponent.getPagePartTemplateComponent() != null)
 								    {
-									    subComponentString += "<a id=\"" + subComponent.getPagePartTemplateComponent().getId() + "Comp\" name=\"" + subComponent.getPagePartTemplateComponent().getId() + "Comp\"><img class=\"slotPosition\" src=\"images/trans.gif\" width=\"1\" height=\"1\" border=\"0\"/></a><span class=\"dragableComponent\" id=\""+ id + index + "_" + subComponent.getPagePartTemplateComponent().getId() + "Comp\">" + childComponentsString + "<script type=\"text/javascript\">initializeComponentEventHandler('" + id + index + "_" + subComponent.getPagePartTemplateComponent().getId() + "Comp', '" + subComponent.getPagePartTemplateComponent().getId() + ", '" + id + "', " + templateController.getSiteNode().getRepositoryId() + ", " + templateController.getSiteNodeId() + ", " + templateController.getLanguageId() + ", " + templateController.getContentId() + ", " + subComponent.getPagePartTemplateComponent().getId() + ", " + subComponent.getPagePartTemplateComponent().getContentId() + ", '" + URLEncoder.encode(templateController.getOriginalFullURL(), "UTF-8") + "');</script></span>";
+									    subComponentString += "<a id=\"" + subComponent.getPagePartTemplateComponent().getId() + "Comp\" name=\"" + subComponent.getPagePartTemplateComponent().getId() + "Comp\"></a><span class=\"dragableComponent slotPosition\" id=\"" + id + index + "_" + subComponent.getPagePartTemplateComponent().getId() + "Comp\">" + childComponentsString + "<script type=\"text/javascript\">initializeComponentEventHandler('" + id + index + "_" + subComponent.getPagePartTemplateComponent().getId() + "Comp', '" + subComponent.getPagePartTemplateComponent().getId() + ", '" + id + "', " + templateController.getSiteNode().getRepositoryId() + ", " + templateController.getSiteNodeId() + ", " + templateController.getLanguageId() + ", " + templateController.getContentId() + ", " + subComponent.getPagePartTemplateComponent().getId() + ", " + subComponent.getPagePartTemplateComponent().getContentId() + ", '" + URLEncoder.encode(templateController.getOriginalFullURL(), "UTF-8") + "');</script></span>";
 								    }
 								    else
 								    {
-									    subComponentString += "<a id=\"" + subComponent.getId() + "Comp\" name=\"" + subComponent.getId() + "Comp\"><img id=\"" + subComponent.getId() + "Comp\" class=\"slotPosition\" src=\"images/trans.gif\" width=\"1\" height=\"1\" border=\"0\"/></a><span class=\"dragableComponent\" id=\""+ id + index + "_" + subComponent.getId() + "Comp\">" + childComponentsString + "<script type=\"text/javascript\">initializeComponentEventHandler('" + id + index + "_" + subComponent.getId() + "Comp', '" + subComponent.getId() + "', '" + id + "', " + templateController.getSiteNode().getRepositoryId() + ", " + templateController.getSiteNodeId() + ", " + templateController.getLanguageId() + ", " + templateController.getContentId() + ", " + subComponent.getId() + ", " + subComponent.getContentId() + ", '" + URLEncoder.encode(templateController.getOriginalFullURL(), "UTF-8") + "'); " + "registerOnMouseUp('" + subComponent.getId() + "Comp', " + templateController.getSiteNodeId() + ", " + templateController.getLanguageId() + ", " + templateController.getContentId() + ", '" + component.getId() + "', '" + id + "', false, '" + allowedComponentNamesAsEncodedString + "', '" + disallowedComponentNamesAsEncodedString + "', " + subComponent.getId() + ");</script></span>";
+									    subComponentString += "<a id=\"" + subComponent.getId() + "Comp\" name=\"" + subComponent.getId() + "Comp\"></a><span class=\"dragableComponent slotPosition\" id=\"" + id + index + "_" + subComponent.getId() + "Comp\">" + childComponentsString + "<script type=\"text/javascript\">initializeComponentEventHandler('" + id + index + "_" + subComponent.getId() + "Comp', '" + subComponent.getId() + "', '" + id + "', " + templateController.getSiteNode().getRepositoryId() + ", " + templateController.getSiteNodeId() + ", " + templateController.getLanguageId() + ", " + templateController.getContentId() + ", " + subComponent.getId() + ", " + subComponent.getContentId() + ", '" + URLEncoder.encode(templateController.getOriginalFullURL(), "UTF-8") + "'); " + "registerOnMouseUp('" + id + index + "_" + subComponent.getId() + "Comp', " + templateController.getSiteNodeId() + ", " + templateController.getLanguageId() + ", " + templateController.getContentId() + ", '" + component.getId() + "', '" + id + "', false, '" + allowedComponentNamesAsEncodedString + "', '" + disallowedComponentNamesAsEncodedString + "', " + subComponent.getId() + ");</script></span>";
 								    }
 								}
 								else
