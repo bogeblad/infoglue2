@@ -1425,11 +1425,9 @@ public class PageEditorHelper extends BaseDeliveryController
 
 	    				sb.append("<div id=\"componentRow\" name=\"" +  componentContentVO.getId() + "\" class=\"dragable\">");
 	    	    		
-    					sb.append("	<div id=\"componentIcon\"><img src=\"" + imageUrl + "\" border=\"0\"/></div>");
-	    				
 	    				i++;
 	    				
-	    	        	sb.append("	<div id=\"componentName\">" + componentContentVO.getName() + "</div>");
+	    	        	sb.append("	<div id=\"componentName\" style=\"padding-left: 22px; background-image: url('" + imageUrl + "'); background-repeat: no-repeat;\">" + componentContentVO.getName() + "</div>");
 
 	    	        	/*
     					<td valign="middle" rowspan="2" style="border-bottom: 1px solid #666666;">

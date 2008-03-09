@@ -413,7 +413,34 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 				if(contentTypeDefinitionVO.getName().equals("PagePartTemplate"))
 					isPagePartReference = true;
 				
-				Element newComponent = addComponentElement(component, new Integer(newComponentId.intValue()), this.slotId, this.componentId, isPagePartReference);
+				
+				
+				if(slotPositionComponentId != null && !slotPositionComponentId.equals(""))
+				{
+					NodeList childNodes = component.getChildNodes();
+					for(int i=0; i< childNodes.getLength(); i++)
+					{
+						Node node = childNodes.item(i);
+						if(node.getNodeType() == Node.ELEMENT_NODE)
+						{
+							Element element = (Element)node;
+							if(element.getAttribute("id").equals(slotPositionComponentId))
+							{
+								System.out.println("Inserting component before: " + element);
+								Element newComponent = addComponentElementBefore(component, element, new Integer(newComponentId.intValue()), this.slotId, this.componentId, isPagePartReference);
+								//component.insertBefore(component, element);
+								break;
+							}
+						}
+					}
+				}
+				else
+				{
+					Element newComponent = addComponentElement(component, new Integer(newComponentId.intValue()), this.slotId, this.componentId, isPagePartReference);
+				}
+				
+				
+				
 				String modifiedXML = XMLHelper.serializeDom(document, new StringBuffer()).toString(); 
 
 				ContentVO contentVO = NodeDeliveryController.getNodeDeliveryController(siteNodeId, this.masterLanguageVO.getId(), contentId).getBoundContent(this.getInfoGluePrincipal(), siteNodeId, this.masterLanguageVO.getId(), true, "Meta information", DeliveryContext.getDeliveryContext());
@@ -533,13 +560,19 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 				System.out.println("slotPositionComponentId:" + slotPositionComponentId);
 				if((component.getParentNode() == parentComponentComponentsElement && slotId.equalsIgnoreCase(component.getAttribute("name"))))
 				{
-					System.out.println("Moving component...");
+					System.out.println("Yes...");
 
 					component.getParentNode().removeChild(component);
 					component.setAttribute("name", slotId);
 					
+					System.out.println("slotPositionComponentId:" + slotPositionComponentId);
+
 					if(slotPositionComponentId != null && !slotPositionComponentId.equals(""))
 					{
+						System.out.println("Moving component to slot: " + slotPositionComponentId);
+
+						Element afterElement = null;
+						
 						NodeList childNodes = parentComponentComponentsElement.getChildNodes();
 						for(int i=0; i< childNodes.getLength(); i++)
 						{
@@ -549,15 +582,25 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 								Element element = (Element)node;
 								if(element.getAttribute("id").equals(slotPositionComponentId))
 								{
-									System.out.println("Inserting component before: " + element);
-									parentComponentComponentsElement.insertBefore(component, element);
+									afterElement = element;
 									break;
 								}
 							}
 						}
+						
+						if(afterElement != null)
+						{
+							System.out.println("Inserting component before: " + afterElement);
+							parentComponentComponentsElement.insertBefore(component, afterElement);
+						}
+						else
+						{
+							parentComponentComponentsElement.appendChild(component);													
+						}
 					}
 					else
 					{
+						System.out.println("Appending component...");
 						parentComponentComponentsElement.appendChild(component);						
 					}
 					
@@ -1420,7 +1463,29 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 		parent.appendChild(element);
 		return element;
 	}
-	   
+
+	/**
+	 * This method creates a parameter for the given input type.
+	 * This is to support form steering information later.
+	 */
+	
+	private Element addComponentElementBefore(Element parent, Element beforeElement, Integer id, String name, Integer contentId, boolean isPagePartReference)
+	{
+		Element element = parent.getOwnerDocument().createElement("component");
+		if(isPagePartReference)
+			element.setAttribute("isPagePartReference", "true");
+			
+		element.setAttribute("id", id.toString());
+		element.setAttribute("contentId", contentId.toString());
+		element.setAttribute("name", name);
+		Element properties = parent.getOwnerDocument().createElement("properties");
+		element.appendChild(properties);
+		Element subComponents = parent.getOwnerDocument().createElement("components");
+		element.appendChild(subComponents);
+		parent.insertBefore(element, beforeElement);
+		return element;
+	}
+
 	/**
 	 * This method creates a parameter for the given input type.
 	 * This is to support form steering information later.

@@ -762,6 +762,8 @@ function listRowOff()
 var draggedComponentId;
 var movedComponentId = "";
 var movedElementId = "";
+var skipComponentPropertiesLoad = false;
+var clearMovedComponent = false;
 
 function assignComponent(e, siteNodeId, languageId, contentId, parentComponentId, slotId, specifyBaseTemplate, allowedComponentNamesUrlEncodedString, disallowedComponentNamesUrlEncodedString, slotPositionComponentId) 
 {	
@@ -811,6 +813,7 @@ function assignComponent(e, siteNodeId, languageId, contentId, parentComponentId
 		//alert("isIE:" + isIE);
 		if(isIE)
 		{
+			/*
 			var targ;
 			if (!e) 
 				var e = window.event;
@@ -821,11 +824,11 @@ function assignComponent(e, siteNodeId, languageId, contentId, parentComponentId
 				targ = e.srcElement;
 			if (targ.nodeType == 3) // defeat Safari bug
 				targ = targ.parentNode;
-			
 			//alert("Target:" + targ + ":" + targ.id);
 
 			parentComponentId = targ.id.substring(0, targ.id.indexOf("_"));
 			slotId = targ.id.substring(targ.id.indexOf("_") + 1);
+			*/
 			
 			insertUrl = componentEditorUrl + "ViewSiteNodePageComponents!addComponent.action?siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&parentComponentId=" + parentComponentId + "&componentId=" + draggedComponentId + "&slotId=" + slotId + "&slotPositionComponentId=" + slotPositionComponentId + "&specifyBaseTemplate=" + specifyBaseTemplate + "&" + allowedComponentNamesUrlEncodedString + "&" + disallowedComponentNamesUrlEncodedString;
 			//alert("insertUrl:" + insertUrl);
@@ -1559,6 +1562,19 @@ function viewSource()
 		{   
 		  	//alert("onclick");                              // so 'this' will point to event.currentTarget.
 		    this.thisObj.onClick(e, this);
+		    
+		    var alternateComponentPropertiesDiv = $("#alternateComponentPropertiesDiv");
+			//alert("alternateComponentPropertiesDiv:" + alternateComponentPropertiesDiv);
+			
+			//alert("skipComponentPropertiesLoad:" + skipComponentPropertiesLoad);
+			if(alternateComponentPropertiesDiv && !skipComponentPropertiesLoad)
+			{
+				var parameters = "repositoryId=" + repositoryId + "&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&componentContentId=" + componentContentId + "&showSimple=false&showLegend=true&originalUrl=" + originalUrl;
+				//alert("parameters:" + parameters);
+				showComponentInDiv('alternateComponentPropertiesDiv', parameters, true);
+			}
+			skipComponentPropertiesLoad = false;
+			//alert("skipComponentPropertiesLoad:" + skipComponentPropertiesLoad);
 		}
 		  
 		ele.oncontextmenu = function(e)         	// onclick is a method of ele not myObject4
@@ -1912,19 +1928,21 @@ function viewSource()
 		*/
 		var element = document.getElementById(elementId);
 		
-		//accept: '.availableComponentsDiv .dragable .dragableComponent',
-		
-		/*	
-		$(element).droppable({
-			accept: '#col12_82Comp',
-			activeClass: 'slotPosition-active',
-			hoverClass: 'slotPosition-hover'
-			});
-		*/
-			   
 	   	if (document.addEventListener != null)
 	   	{
 	   		element.addEventListener("mouseover", function(event) { 
+	   		
+	   			//alert("clearMovedComponent:" + clearMovedComponent);
+	   			if(clearMovedComponent)
+	   			{
+	   				draggedComponentId = -1;
+					movedComponentId = "";
+					movedElementId = "";
+					clearMovedComponent = false;
+				}
+				
+	    		//$("#debugDiv").html("Testing debug:" + draggedComponentId + " - " + movedComponentId + " - " + movedElementId);
+				
 	   			if(movedComponentId && movedComponentId != "") 
 	   			{
 		   			var draggedElement = document.getElementById(movedElementId);
@@ -1943,10 +1961,30 @@ function viewSource()
 			   		
 			   		if(targ.id != movedElementId)
 			   		{
-			   			//alert("targ.id:" + targ.id + " - movedElementId:" + movedElementId);
-		   				var ghost = $("#ghost").clone();
-		   				//$("#ghost").remove();
-		   				//$(element).prepend(ghost);
+		   				$("#ghost").remove();
+		   				$(element).prepend("<span id='ghost' style='padding: 2px; border: 1px dotted #ccc; background-color:#ff8a18; display: table; clear: both; height: 1px;'><b>Move here</b></span>");
+		   			}
+	   			}
+	   			else if(draggedComponentId && draggedComponentId != "" && draggedComponentId != '-1') 
+	   			{
+	   				var draggedElement = document.getElementById(draggedComponentId);
+		   			var height = $(draggedElement).height();
+	   				
+	   				var targ;
+					if (!event) 
+						var event = window.event;
+						
+					if (event.target) 
+						targ = event.target;
+					else if (event.srcElement) 
+						targ = event.srcElement;
+					if (targ.nodeType == 3) // defeat Safari bug
+						targ = targ.parentNode;
+			   		
+		    		//$("#debugDiv").html("Testing debug:" + draggedComponentId + " - " + movedComponentId + " - " + movedElementId + " - " + targ.id);
+
+			   		if(targ.id != draggedComponentId)
+			   		{
 		   				$("#ghost").remove();
 		   				$(element).prepend("<span id='ghost' style='padding: 2px; border: 1px dotted #ccc; background-color:#ff8a18; display: table; clear: both; height: 1px;'><b>Move here</b></span>");
 		   			}
@@ -1954,6 +1992,7 @@ function viewSource()
 	   		    if (event && event.stopPropagation) {event.stopPropagation();}
     			else if (window.event) {window.event.cancelBubble = true;}	
 	   		}, false);
+			/*	
 	   		element.addEventListener("mouseout", function(event) { 
 	   			if(movedComponentId && movedComponentId != "") 
 	   			{
@@ -1964,7 +2003,7 @@ function viewSource()
 	   		    if (event && event.stopPropagation) {event.stopPropagation();}
     			else if (window.event) {window.event.cancelBubble = true;}	
 	   		}, false);
-	   			
+	   		*/	
 	    	element.addEventListener("mouseup", function (event){ 
 	    		assignComponent(event, siteNodeId, languageId, contentId, componentId, id, skipFloatDiv, allowedComponentsArrayAsUrlEncodedString, disallowedComponentsArrayAsUrlEncodedString, slotPositionComponentId);
 	    	}, false);
@@ -1972,10 +2011,33 @@ function viewSource()
 	    else
 	    {
 	    	element.attachEvent("onmouseover", function (evt) { 
-	   			if(movedComponentId && movedComponentId != "") 
+	    	
+	    		/*
+	    		var targ;
+				if (!evt) 
+					var evt = window.event;
+					
+				if (evt.target) 
+					targ = evt.target;
+				else if (evt.srcElement) 
+					targ = evt.srcElement;
+				if (targ.nodeType == 3) // defeat Safari bug
+					targ = targ.parentNode;
+				*/	
+	    		//$("#debugDiv").html("<p>Mouse over: " + element.id + "<br/>Event:" + evt + "<br/>Target.id: " + targ.id + "<br/>Event.target:" + evt.target + "<br>evt.srcElement:" + evt.srcElement.id + "</p>");
+	    		
+	   			//alert("clearMovedComponent:" + clearMovedComponent);
+	   			if(clearMovedComponent)
+	   			{
+	   				draggedComponentId = -1;
+					movedComponentId = "";
+					movedElementId = "";
+					clearMovedComponent = false;
+				}
+	    		
+	    		if(movedComponentId && movedComponentId != "") 
 	   			{
 		   			var draggedElement = document.getElementById(movedElementId);
-		   			var height = $(draggedElement).height();
 	   				
 	   				var targ;
 					if (!evt) 
@@ -1987,13 +2049,38 @@ function viewSource()
 						targ = evt.srcElement;
 					if (targ.nodeType == 3) // defeat Safari bug
 						targ = targ.parentNode;
+
+		    		//$("#debugDiv").html("<p>Mouse over: " + element.id + "<br/>Event:" + evt + "<br/>Target.id: " + targ.id + "<br/>movedComponentId:" + movedComponentId + "</p>");
+		    		
+		    		//$("#debugDiv").html("Testing debug:" + draggedComponentId + " - " + movedComponentId + " - " + movedElementId + " - " + evt + ":" + targ.id + ":" + evt.target + ":" + evt.srcElement.id);
 			   		
 			   		if(targ.id != movedElementId)
 			   		{
-			   			//alert("targ.id:" + targ.id + " - movedElementId:" + movedElementId);
-		   				var ghost = $("#ghost").clone();
-		   				//$("#ghost").remove();
-		   				//$(element).prepend(ghost);
+		   				$("#ghost").remove();
+		   				$(element).prepend("<span id='ghost' style='padding: 2px; border: 1px dotted #ccc; background-color:#ff8a18; display: table; clear: both; height: 1px;'><b>Move here</b></span>");
+		   			}
+	   			} 
+	   			else if(draggedComponentId && draggedComponentId != "" && draggedComponentId != '-1') 
+	   			{
+		   			var draggedElement = document.getElementById(draggedComponentId);
+	   				
+	   				var targ;
+					if (!evt) 
+						var evt = window.event;
+						
+					if (evt.target) 
+						targ = evt.target;
+					else if (evt.srcElement) 
+						targ = evt.srcElement;
+					if (targ.nodeType == 3) // defeat Safari bug
+						targ = targ.parentNode;
+
+		    		//$("#debugDiv").html("<p>Mouse over: " + element.id + "<br/>Event:" + evt + "<br/>Target.id: " + targ.id + "<br/>draggedComponentId:" + draggedComponentId + "</p>");
+
+		    		//$("#debugDiv").html("Testing debug:" + draggedComponentId + " - " + movedComponentId + " - " + movedElementId + " - " + evt + ":" + targ.id + ":" + evt.target + ":" + evt.srcElement.id);
+			   		
+			   		if(targ.id != draggedComponentId)
+			   		{
 		   				$("#ghost").remove();
 		   				$(element).prepend("<span id='ghost' style='padding: 2px; border: 1px dotted #ccc; background-color:#ff8a18; display: table; clear: both; height: 1px;'><b>Move here</b></span>");
 		   			}

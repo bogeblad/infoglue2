@@ -28,7 +28,10 @@
 	$(function()
 	{
 		
-		$(".dragableComponent").draggable({cursorAt: {left: -10 }, helper: 'clone', start: function(ev, ui) {
+		$(".dragableComponent").draggable({cursorAt: {left: -10 }, cursor: 'move', distance: 10, helper: 'clone', stop: function(ev, ui) {
+				$("#ghost").remove();
+				clearMovedComponent = true;
+			}, start: function(ev, ui) {
 		    	$(ui.helper).css('border', '1px solid #ccc');
 		    	$(ui.helper).css('background-color', 'white');
 		    	var currentMovedComponentId = $(ui.helper).attr("id");
@@ -74,8 +77,16 @@
 			$(window)[0].scrollTo(0, $activeElement.offset().top - 300);
 		}
 		var activatedComponentId = ${activatedComponentId};
+
         if(activatedComponentId > 0)
-			showComponentInDiv('componentPropertiesDiv', '${parameters}', false);
+        {
+        	var alternateComponentPropertiesDiv = $("#alternateComponentPropertiesDiv");
+			//alert("alternateComponentPropertiesDiv:" + alternateComponentPropertiesDiv);
+			if(alternateComponentPropertiesDiv)
+				showComponentInDiv('alternateComponentPropertiesDiv', '${parameters}', true);
+			else
+				showComponentInDiv('componentPropertiesDiv', '${parameters}', false);
+		}
 	});	
 
 </script>
