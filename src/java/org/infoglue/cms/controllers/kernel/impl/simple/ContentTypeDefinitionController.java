@@ -26,6 +26,7 @@ package org.infoglue.cms.controllers.kernel.impl.simple;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -53,6 +54,8 @@ import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
+import org.infoglue.cms.util.CmsPropertyHandler;
+import org.infoglue.cms.util.sorters.ReflectionComparator;
 import org.infoglue.deliver.util.NullObject;
 import org.infoglue.deliver.util.CacheController;
 import org.w3c.dom.Document;
@@ -158,7 +161,51 @@ public class ContentTypeDefinitionController extends BaseController
     	
 		return accessableContentTypeDefinitionVOList;
 	}
+
+	/**
+	 * This method can be used by actions and use-case-controllers that only need to have simple access to the
+	 * functionality. They don't get the transaction-safety but probably just wants to show the info.
+	 */	
 	
+	public List getSortedAuthorizedContentTypeDefinitionVOList(InfoGluePrincipal infoGluePrincipal, Database db) throws ConstraintException, SystemException, Bug
+	{
+		List authorizedContentTypeDefinitionVOList = getAuthorizedContentTypeDefinitionVOList(infoGluePrincipal, db);
+		
+		Collections.sort(authorizedContentTypeDefinitionVOList, new ReflectionComparator("name"));
+		
+		return authorizedContentTypeDefinitionVOList;
+	}
+	
+	/**
+	 * This method can be used by actions and use-case-controllers that only need to have simple access to the
+	 * functionality. They don't get the transaction-safety but probably just wants to show the info.
+	 */	
+	
+	public List getAuthorizedContentTypeDefinitionVOList(InfoGluePrincipal infoGluePrincipal, Database db) throws ConstraintException, SystemException, Bug
+	{    	
+		List accessableContentTypeDefinitionVOList = new ArrayList();
+    	
+		List allContentTypeDefinitionVOList = this.getContentTypeDefinitionVOList(db); 
+
+		String protectContentTypes = CmsPropertyHandler.getProtectContentTypes();
+		if(protectContentTypes != null && protectContentTypes.equalsIgnoreCase("true"))
+		{
+			Iterator i = allContentTypeDefinitionVOList.iterator();
+			while(i.hasNext())
+			{
+			    ContentTypeDefinitionVO contentTypeDefinitionVO = (ContentTypeDefinitionVO)i.next();
+				if(getIsAccessApproved(contentTypeDefinitionVO.getId(), infoGluePrincipal, db))
+				    accessableContentTypeDefinitionVOList.add(contentTypeDefinitionVO);
+			}
+		}
+		else
+		{
+			accessableContentTypeDefinitionVOList.addAll(allContentTypeDefinitionVOList);
+		}
+		
+		return accessableContentTypeDefinitionVOList;
+	}
+
 	/**
 	 * This method returns true if the user should have access to the contentTypeDefinition sent in.
 	 */
@@ -187,7 +234,21 @@ public class ContentTypeDefinitionController extends BaseController
     
 		return hasAccess;
 	}
-	
+
+	/**
+	 * This method returns true if the user should have access to the contentTypeDefinition sent in.
+	 */
+    
+	public boolean getIsAccessApproved(Integer contentTypeDefinitionId, InfoGluePrincipal infoGluePrincipal, Database db) throws SystemException
+	{
+		logger.info("getIsAccessApproved for " + contentTypeDefinitionId + " AND " + infoGluePrincipal);
+		boolean hasAccess = false;
+    	
+		hasAccess = AccessRightController.getController().getIsPrincipalAuthorized(db, infoGluePrincipal, "ContentTypeDefinition.Read", contentTypeDefinitionId.toString());
+		
+		return hasAccess;
+	}
+
 	/**
 	 * Returns the Content Type Definition with the given name.
 	 *
