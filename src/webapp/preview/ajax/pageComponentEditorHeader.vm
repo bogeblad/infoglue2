@@ -18,13 +18,7 @@
 <script type="text/javascript" src="${contextName}/applications/FCKEditor/fckeditor.js"></script>
 
 <script type="text/javascript">
-	
-	/*
-	$(window).bind("load",function(){
-		$("#apa").sortable({ revert: true });
-	});
-	*/
-		
+			
 	$(function()
 	{
 		
@@ -43,34 +37,7 @@
 				}
 			}
 		});
-		
-		/*
-		$(".dropArea").droppable({
-			accept: '.availableComponentsDiv .dragable .dragableComponent',
-			activeClass: 'droppable-active',
-			hoverClass: 'droppable-hover'
-			});
-
-		$(".slotPosition").droppable({
-			accept: '.availableComponentsDiv .dragable .dragableComponent',
-			activeClass: 'slotPosition-active',
-			hoverClass: 'slotPosition-hover'
-			});
-		*/
-					
-	    //subComponentString += "	   	 $(element).css('border','3px solid blue');";
-	    //subComponentString += "	   	 $(element).parent().css('border','3px solid red');";
-	    //subComponentString += "	   	 alert('Parent:' + $(element).parent().attr('id'));";
-	    //subComponentString += "	   	 $(element).parent().sortable({});";
-
-		//$(".dragableComponent").parent().css("border","3px solid red");
-		//$(".dragableComponent").parent().sortable({items: '.dragableComponent', revert: true, containment: 'parent'});
-		
-		//$(".dropArea", function(){
-		//	alert("Found span:" + $(this).id);
-		//}); //).css('border', '1px solid red'); //.sortable({});
-		
-		
+			
         var $activeElement = $('#${focusElementId}Comp');
         if($activeElement && $activeElement.offset())
         {

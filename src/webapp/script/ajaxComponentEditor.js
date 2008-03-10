@@ -4,7 +4,7 @@ var ns = (navigator.appName.indexOf("Netscape") != -1);
 var d = document;
 var px = document.layers ? "" : "px";
 var elementArray = new Array();
-	
+
 function floatDiv(id, sx, sy)
 {
 	var el=d.getElementById?d.getElementById(id):d.all?d.all[id]:d.layers[id];
@@ -461,7 +461,7 @@ function showComponentInTreeMenu(event, element, compId, anInsertUrl, anDeleteUr
 
 	slotName = slotId;
 	slotContentId = slotContentIdVar;
-	alert("slotId:" + slotId);
+	//alert("slotId:" + slotId);
 	//alert("compId:" + compId);
 	
 	try
@@ -1064,7 +1064,10 @@ function showComponentProperties(id, event)
 function clearComponentPropertiesInDiv(targetDivId) 
 {
 	targetDiv = document.getElementById(targetDivId);
-	$(targetDiv).html("");
+	if(targetDiv)
+		$(targetDiv).html("");
+	else
+		closeDiv("componentPropertiesDiv");
 }
 
 function showComponentPropertiesInDiv(targetDivId, parameterString, skipFloat, event) 
@@ -1074,7 +1077,7 @@ function showComponentPropertiesInDiv(targetDivId, parameterString, skipFloat, e
 
 	targetDiv = document.getElementById(targetDivId);
 
-	if(skipFloat)
+	if(skipFloat && targetDiv)
 	{
 		$(targetDiv).load("AjaxComponentDeliveryService!getComponentPropertyDiv.action?" + parameterString + "&targetDivId=" + targetDivId + " #componentPropertiesForm",{}, function(event)
 		{	
@@ -1095,6 +1098,9 @@ function showComponentPropertiesInDiv(targetDivId, parameterString, skipFloat, e
 	}
 	else
 	{
+		if(!targetDiv)
+			targetDiv = document.getElementById("componentPropertiesDiv");
+	
 		clientX = getEventPositionX(event);
 		clientY = getEventPositionY(event);
 		
@@ -1134,9 +1140,11 @@ function showComponentPropertiesInDiv(targetDivId, parameterString, skipFloat, e
 		});
 	}	
 
-	targetDiv.style.display = "block";
-	
-	menuDiv = targetDiv;
+	if(targetDiv)
+	{
+		targetDiv.style.display = "block";
+		menuDiv = targetDiv;
+	}
 }
 
 var eventXPosition = 0;
@@ -1144,25 +1152,25 @@ var eventYPosition = 0;
 
 function showComponentTasksInDiv(targetDivId, parameterString, skipFloat, event) 
 {
+	//alert("targetDivId:" + targetDivId);
 	//alert("event:" + event);
 	//alert("parameterString:" + parameterString);
+	//alert("skipFloat:" + skipFloat);
 	targetDiv = document.getElementById(targetDivId);
 	
 	eventXPosition = getEventPositionX(event);
 	eventYPosition = getEventPositionY(event);
-
-    //if (event && event.stopPropagation) {event.stopPropagation();}
-    //else if (window.event) {window.event.cancelBubble = true;}	
 		
 	$(targetDiv).load("AjaxComponentDeliveryService!getComponentTasksDiv.action?" + parameterString + "&targetDivId=" + targetDivId + "",{}, function(event){
 		menuDiv = document.getElementById("componentMenu");
+		//alert("menuDiv:" + menuDiv);
 		
 		clientX = eventXPosition;
 		clientY = eventYPosition;
 		
 		var rightedge = document.body.clientWidth - clientX;
 		var bottomedge = getWindowHeight() - clientY;
-	
+		
 		if (rightedge < menuDiv.offsetWidth)
 			clientX = (clientX - menuDiv.offsetWidth);
 		
@@ -1575,19 +1583,6 @@ function viewSource()
 		{   
 		  	//alert("onclick");                              // so 'this' will point to event.currentTarget.
 		    this.thisObj.onClick(e, this);
-		    
-		    var alternateComponentPropertiesDiv = $("#alternateComponentPropertiesDiv");
-			//alert("alternateComponentPropertiesDiv:" + alternateComponentPropertiesDiv);
-			
-			//alert("skipComponentPropertiesLoad:" + skipComponentPropertiesLoad);
-			if(alternateComponentPropertiesDiv && !skipComponentPropertiesLoad)
-			{
-				var parameters = "repositoryId=" + repositoryId + "&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&componentContentId=" + componentContentId + "&showSimple=false&showLegend=true&originalUrl=" + originalUrl;
-				//alert("parameters:" + parameters);
-				showComponentInDiv('alternateComponentPropertiesDiv', parameters, true);
-			}
-			skipComponentPropertiesLoad = false;
-			//alert("skipComponentPropertiesLoad:" + skipComponentPropertiesLoad);
 		}
 		  
 		ele.oncontextmenu = function(e)         	// onclick is a method of ele not myObject4
@@ -1601,6 +1596,20 @@ function viewSource()
 		{
 			//alert('componentEventHandler.onClick()\nthis.objName = ' + this.objName + '\nele = ' + xName(ele));
 		    hidepreviousmenues();
+
+		    var alternateComponentPropertiesDiv = document.getElementById("alternateComponentPropertiesDiv");
+			//alert("alternateComponentPropertiesDiv:" + alternateComponentPropertiesDiv);
+			
+			//alert("skipComponentPropertiesLoad:" + skipComponentPropertiesLoad);
+			if(alternateComponentPropertiesDiv && !skipComponentPropertiesLoad)
+			{
+				var parameters = "repositoryId=" + repositoryId + "&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&componentContentId=" + componentContentId + "&showSimple=false&showLegend=true&originalUrl=" + originalUrl;
+				//alert("parameters:" + parameters);
+				showComponentInDiv('alternateComponentPropertiesDiv', parameters, true);
+			}
+			skipComponentPropertiesLoad = false;
+			//alert("skipComponentPropertiesLoad:" + skipComponentPropertiesLoad);
+
 		    // cancel event bubbling
 		    if (evt && evt.stopPropagation) {evt.stopPropagation();}
 		    else if (window.event) {window.event.cancelBubble = true;}

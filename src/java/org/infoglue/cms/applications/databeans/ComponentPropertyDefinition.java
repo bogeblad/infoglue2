@@ -47,14 +47,16 @@ public class ComponentPropertyDefinition
     private Boolean assetBinding;
     private String allowedContentTypeNames;
     private String description;
-	private String defaultValue 		= "";
-	private Boolean WYSIWYGEnabled 		= new Boolean(false);
-	private String WYSIWYGToolbar 		= "";
+	private String defaultValue 			= "";
+	private String dataProvider 			= "";
+	private String dataProviderParameters 	= "";
+	private Boolean WYSIWYGEnabled 			= new Boolean(false);
+	private String WYSIWYGToolbar 			= "";
 
     private List options = new ArrayList();
 
     
-    public ComponentPropertyDefinition(String name, String type, String entity, Boolean multiple, Boolean assetBinding, String allowedContentTypeNames, String description, String defaultValue, Boolean WYSIWYGEnabled, String WYSIWYGToolbar)
+    public ComponentPropertyDefinition(String name, String type, String entity, Boolean multiple, Boolean assetBinding, String allowedContentTypeNames, String description, String defaultValue, Boolean WYSIWYGEnabled, String WYSIWYGToolbar, String dataProvider, String dataProviderParameters)
     {
         this.name 						= name;
         this.type 						= type;
@@ -66,6 +68,8 @@ public class ComponentPropertyDefinition
         this.defaultValue				= defaultValue;
         this.WYSIWYGEnabled				= WYSIWYGEnabled;
         this.WYSIWYGToolbar				= WYSIWYGToolbar;
+        this.dataProvider 				= dataProvider;
+        this.dataProviderParameters		= dataProviderParameters;
     }
         
     public String getEntity()
@@ -121,6 +125,16 @@ public class ComponentPropertyDefinition
 	public String getWYSIWYGToolbar()
 	{
 		return WYSIWYGToolbar;
+	}
+
+	public String getDataProvider()
+	{
+		return dataProvider;
+	}
+
+	public String getDataProviderParameters()
+	{
+		return dataProviderParameters;
 	}
 
 }

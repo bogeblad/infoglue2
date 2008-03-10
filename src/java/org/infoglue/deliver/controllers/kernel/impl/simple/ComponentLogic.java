@@ -71,7 +71,7 @@ public class ComponentLogic
     private final static Logger logger = Logger.getLogger(ComponentLogic.class.getName());
 
 	private final static DOMBuilder domBuilder = new DOMBuilder();
-
+ 
 	private final String separator = System.getProperty("line.separator");
 
 	private TemplateController templateController = null;
@@ -3350,10 +3350,12 @@ public class ComponentLogic
 					String allowedContTypeDefNames	= element.attributeValue("allowedContentTypeDefinitionNames");
 					String description 				= element.attributeValue("description");
 					String defaultValue 			= element.attributeValue("defaultValue");
+					String dataProvider 			= element.attributeValue("dataProvider");
+					String dataProviderParameters 	= element.attributeValue("dataProviderParameters");
 					String WYSIWYGEnabled 			= element.attributeValue("WYSIWYGEnabled");
 					String WYSIWYGToolbar 			= element.attributeValue("WYSIWYGToolbar");
 
-					propertyDefinition = new ComponentPropertyDefinition(name, type, entity, new Boolean(multiple), new Boolean(assetBinding), allowedContTypeDefNames, description, defaultValue, new Boolean(WYSIWYGEnabled), WYSIWYGToolbar);
+					propertyDefinition = new ComponentPropertyDefinition(name, type, entity, new Boolean(multiple), new Boolean(assetBinding), allowedContTypeDefNames, description, defaultValue, new Boolean(WYSIWYGEnabled), WYSIWYGToolbar, dataProvider, dataProviderParameters);
 				}
 			}
 		}

@@ -17,7 +17,7 @@
 		fieldset
 		{
 			border: 1px solid #cccccc;
-			width: 350px;
+			width: 420px;
 		}
 		legend
 		{
@@ -28,7 +28,7 @@
 		}
 		label
 		{
-			width: 130px;
+			width: 160px;
 			float: left;
 			text-align: right;
 			margin-right: 0.5em;
@@ -40,7 +40,7 @@
 			border: 1px solid #cccccc;
 			font-family: Verdana, Arial, San serif;
 			font-size: 8pt;
-			width: 230px;
+			width: 270px;
 		}
 		p
 		{
@@ -82,6 +82,7 @@
 				propertyWYSIWYGToolbar			= property.getWYSIWYGToolbar();
 				propertyAllowedContentTypeNames = property.getAllowedContentTypeNames();
 				propertyDataProvider 			= property.getDataProvider();
+				propertyDataProviderParameters 	= property.getDataProviderParameters();
 				
 				if(propertyType == "select" || propertyType == "checkbox")
 				{
@@ -260,6 +261,8 @@
 			document.componentPropertyDefinitionForm.componentPropertyDefinition_description.value = componentPropertyDefinition.description;
 			
 			document.componentPropertyDefinitionForm.componentPropertyDefinition_defaultValue.value = componentPropertyDefinition.defaultValue;
+			document.componentPropertyDefinitionForm.componentPropertyDefinition_dataProvider.value = componentPropertyDefinition.dataProvider;
+			document.componentPropertyDefinitionForm.componentPropertyDefinition_dataProviderParameters.value = componentPropertyDefinition.dataProviderParameters;
 			document.componentPropertyDefinitionForm.componentPropertyDefinition_WYSIWYGEnabled.value = componentPropertyDefinition.WYSIWYGEnabled;
 			document.componentPropertyDefinitionForm.componentPropertyDefinition_WYSIWYGToolbar.value = componentPropertyDefinition.WYSIWYGToolbar;
 			
@@ -523,7 +526,7 @@
 
 		function addProperty()
 		{
-			property = new ComponentPropertyDefinition("NewProperty", "binding", "Content", "false", "false", "", "No description yet", "", "false", "Basic", "");
+			property = new ComponentPropertyDefinition("NewProperty", "binding", "Content", "false", "false", "", "No description yet", "", "false", "Basic", "", "");
 			propertyVector.addElement(property);
 				
 			drawList();
@@ -790,7 +793,7 @@
 		{
 			#foreach($propertyDefinition in $componentPropertyDefinitions)
 				//alert("$propertyDefinition");
-				property = new ComponentPropertyDefinition("$propertyDefinition.name", "$propertyDefinition.type", "$propertyDefinition.entity", "$propertyDefinition.multiple", "$propertyDefinition.assetBinding", "$propertyDefinition.allowedContentTypeNames", "$propertyDefinition.description", "$!propertyDefinition.defaultValue", "$!propertyDefinition.WYSIWYGEnabled", "$!propertyDefinition.WYSIWYGToolbar", "$!propertyDefinition.dataProvider", , "$!propertyDefinition.dataProviderParameters");
+				property = new ComponentPropertyDefinition("$propertyDefinition.name", "$propertyDefinition.type", "$propertyDefinition.entity", "$propertyDefinition.multiple", "$propertyDefinition.assetBinding", "$propertyDefinition.allowedContentTypeNames", "$propertyDefinition.description", "$!propertyDefinition.defaultValue", "$!propertyDefinition.WYSIWYGEnabled", "$!propertyDefinition.WYSIWYGToolbar", "$!propertyDefinition.dataProvider", "$!propertyDefinition.dataProviderParameters");
 
 				#foreach($propertyOptionDefinition in $propertyDefinition.options)
 					propertyOption = new ComponentPropertyOptionDefinition("$propertyOptionDefinition.name", "$propertyOptionDefinition.value");
@@ -835,12 +838,12 @@
 
 <form name="componentPropertyDefinitionForm">
 <br/>
-<p><label for="name">Name:</label><input type="textfield" name="componentPropertyDefinition_name" id="componentPropertyDefinition_name" value=""/></p>
-<p><label for="name">Description:</label><input type="textfield" name="componentPropertyDefinition_description" id="componentPropertyDefinition_description" value=""/></p>
-<p><label for="name">Default value:</label><input type="textfield" name="componentPropertyDefinition_defaultValue" id="componentPropertyDefinition_defaultValue" value=""/></p>
-<p><label for="name">Data provider class:</label><input type="textfield" name="componentPropertyDefinition_dataProvider" id="componentPropertyDefinition_dataProvider" value=""/></p>
-<p><label for="name">Data provider parameters:</label><input type="textfield" name="componentPropertyDefinition_dataProviderParameters" id="componentPropertyDefinition_dataProviderParameters" value=""/></p>
-<p><label for="name">Property type:</label>
+<p><label for="componentPropertyDefinition_name">Name:</label><input type="textfield" name="componentPropertyDefinition_name" id="componentPropertyDefinition_name" value=""/></p>
+<p><label for="componentPropertyDefinition_description">Description:</label><input type="textfield" name="componentPropertyDefinition_description" id="componentPropertyDefinition_description" value=""/></p>
+<p><label for="componentPropertyDefinition_defaultValue">Default value:</label><input type="textfield" name="componentPropertyDefinition_defaultValue" id="componentPropertyDefinition_defaultValue" value=""/></p>
+<p><label for="componentPropertyDefinition_dataProvider">Data provider class:</label><input type="textfield" name="componentPropertyDefinition_dataProvider" id="componentPropertyDefinition_dataProvider" value=""/></p>
+<p><label for="componentPropertyDefinition_dataProviderParameters">Data provider parameters:</label><input type="textfield" name="componentPropertyDefinition_dataProviderParameters" id="componentPropertyDefinition_dataProviderParameters" value=""/></p>
+<p><label for="componentPropertyDefinition_type">Property type:</label>
 	<select size="1" name="componentPropertyDefinition_type" id="componentPropertyDefinition_type" class="sitedropbox" onchange="validateTypeChoice();">
 		<option value="binding">binding</option>
 		<option value="textfield">textfield</option>
@@ -912,7 +915,7 @@
 	    #end
  	</select>
 </p>
-<p style="margin-left: 135px;">
+<p style="margin-left: 165px;">
 	<br/>
 	<a href="javascript:updateProperties();"><img src="$ui.getString("images.managementtool.buttons.save")" width="50" height="25" border="0"></a>
 	<a href="javascript:hideDiv('componentPropertyDefinition');"><img src="$ui.getString("images.managementtool.buttons.cancel")" width="50" height="25" border="0"></a>

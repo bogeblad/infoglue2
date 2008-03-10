@@ -82,7 +82,7 @@
 
 .smallPropDiv {
 	position:absolute;
-	width:400px;
+	width:500px;
 	background-color: white;
 	background-color:#F4F4F4;
 	border:1px solid #333333;
@@ -93,7 +93,7 @@
 .smallPropDivHandle {
 	margin:2px;
 	padding:2px;
-	width:390px;
+	width:490px;
 	color:white;
 	background-color:navy;
 	font-family:verdana, sans-serif;
@@ -103,7 +103,7 @@
 .smallPropDivBody {
 	margin:2px;
 	padding:2px;
-	width:390px;
+	width:490px;
 	color:black;
 	background-color:white;
 	font-family:verdana, sans-serif;
