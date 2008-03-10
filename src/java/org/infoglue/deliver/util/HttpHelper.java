@@ -36,6 +36,7 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.URL;
 import java.net.URLConnection;
+import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -621,4 +622,34 @@ public class HttpHelper
 	    }
 	    return buffer.toString();
 	}
+
+	/**
+	 * Parses a http-encoded string into a Map.
+	 * 
+	 * @param parameters The parameter string to parse
+	 * @return The url encoding to expects
+	 */
+		
+	public Map toMap(String parameters, String encoding) throws Exception
+	{
+		Map map = new HashMap();
+		
+		if(parameters != null && parameters.length() > 0)
+		{
+		    String[] parametersArray = parameters.split("&");
+		    for(int i=0; i<parametersArray.length; i++)
+		    {
+		    	String parameterNameValueString = parametersArray[i];
+		    	String[] nameValueArray = parameterNameValueString.split("=");
+		    	String name = URLDecoder.decode(nameValueArray[0], encoding);
+		    	String value = "";
+		    	if(nameValueArray.length > 1)
+		    		value = URLDecoder.decode(nameValueArray[0], encoding);
+		    	map.put(name, value);
+		    }
+		}
+		
+	    return map;
+	}
+
 }
