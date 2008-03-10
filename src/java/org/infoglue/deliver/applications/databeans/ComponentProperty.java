@@ -42,16 +42,16 @@ public class ComponentProperty
 {
     public final static Logger logger = Logger.getLogger(ComponentProperty.class.getName());
     
-	public static final String BINDING 		= "binding";
-	public static final String TEXTFIELD 	= "textfield";
-	public static final String TEXTAREA 	= "textarea";
-	public static final String SELECTFIELD 	= "select";
-	public static final String CHECKBOXFIELD= "checkbox";
+	public static final String BINDING 							= "binding";
+	public static final String TEXTFIELD 						= "textfield";
+	public static final String TEXTAREA 						= "textarea";
+	public static final String SELECTFIELD 						= "select";
+	public static final String CHECKBOXFIELD					= "checkbox";
 	
 	private Integer id;
 	private String name;
-	private String description 			= "";
-	private String defaultValue 		= null;
+	private String description 				= "";
+	private String defaultValue 			= null;
 	private String type;
 	private String[] allowedContentTypeNamesArray = null;
 	private Integer componentId;
@@ -59,12 +59,14 @@ public class ComponentProperty
 	private Integer entityId;
 	private String assetKey;
 	private String value;
-	private boolean isMultipleBinding 	= false;
-	private boolean isAssetBinding 		= false;
-	private boolean WYSIWYGEnabled 		= false;
-	private String WYSIWYGToolbar 		= "";
-	private String visualizingAction 	= null;
-	private String createAction 		= null;
+	private boolean isMultipleBinding 		= false;
+	private boolean isAssetBinding 			= false;
+	private boolean WYSIWYGEnabled 			= false;
+	private String WYSIWYGToolbar 			= "";
+	private String visualizingAction 		= null;
+	private String createAction 			= null;
+	private String dataProvider 			= null;
+	private String dataProviderParameters 	= null;
 
 	private List options = new ArrayList();
 	
@@ -349,7 +351,7 @@ public class ComponentProperty
 
 	public String getDefaultValue()
 	{
-		if(defaultValue != null)
+		if(defaultValue != null && !defaultValue.equals(""))
 			return defaultValue;
 		else
 			return "Undefined";
@@ -359,5 +361,25 @@ public class ComponentProperty
 	{
 		this.defaultValue = defaultValue;
 	}
-	
+
+	public String getDataProvider()
+	{
+		return dataProvider;
+	}
+
+	public void setDataProvider(String dataProvider)
+	{
+		this.dataProvider = dataProvider;
+	}
+
+	public String getDataProviderParameters()
+	{
+		return dataProviderParameters;
+	}
+
+	public void setDataProviderParameters(String dataProviderParameters)
+	{
+		this.dataProviderParameters = dataProviderParameters;
+	}
+
 }
