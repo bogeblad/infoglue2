@@ -12,7 +12,7 @@
  * ComponentPropertyDefinition object
  */
 
-function ComponentPropertyDefinition(name, type, entity, multiple, assetBinding, allowedContentTypeNames, description, defaultValue, WYSIWYGEnabled, WYSIWYGToolbar)
+function ComponentPropertyDefinition(name, type, entity, multiple, assetBinding, allowedContentTypeNames, description, defaultValue, WYSIWYGEnabled, WYSIWYGToolbar, dataProvider, dataProviderParameters)
 {
 	this.name 						= name;
 	this.type 						= type;
@@ -24,6 +24,8 @@ function ComponentPropertyDefinition(name, type, entity, multiple, assetBinding,
 	this.defaultValue				= defaultValue;
 	this.WYSIWYGEnabled				= WYSIWYGEnabled;
 	this.WYSIWYGToolbar				= WYSIWYGToolbar;
+	this.dataProvider 				= dataProvider;
+	this.dataProviderParameters		= dataProviderParameters;
 	this.options					= new Vector(0);
 	  
   	this.getName 					= getName;
@@ -37,6 +39,8 @@ function ComponentPropertyDefinition(name, type, entity, multiple, assetBinding,
 	this.getDefaultValue			= getDefaultValue;
 	this.getWYSIWYGEnabled			= getWYSIWYGEnabled;
 	this.getWYSIWYGToolbar			= getWYSIWYGToolbar;
+	this.getDataProvider			= getDataProvider;
+	this.getDataProviderParameters	= getDataProviderParameters;
 	
   	this.setName 					= setName;
   	this.setType 					= setType;
@@ -48,6 +52,8 @@ function ComponentPropertyDefinition(name, type, entity, multiple, assetBinding,
 	this.setDefaultValue			= setDefaultValue;
 	this.setWYSIWYGEnabled			= setWYSIWYGEnabled;
 	this.setWYSIWYGToolbar			= setWYSIWYGToolbar;
+	this.setDataProvider			= setDataProvider;
+	this.setDataProviderParameters	= setDataProviderParameters;
 }
   
 function getName()
@@ -153,4 +159,24 @@ function getWYSIWYGToolbar()
 function setWYSIWYGToolbar(WYSIWYGToolbar)
 {
 	this.WYSIWYGToolbar = WYSIWYGToolbar;
+}
+
+function getDataProvider()
+{
+	return this.dataProvider;
+}
+
+function setDataProvider(dataProvider)
+{
+	this.dataProvider = dataProvider;
+}
+
+function getDataProviderParameters()
+{
+	return this.dataProviderParameters;
+}
+
+function setDataProviderParameters(dataProviderParameters)
+{
+	this.dataProviderParameters = dataProviderParameters;
 }

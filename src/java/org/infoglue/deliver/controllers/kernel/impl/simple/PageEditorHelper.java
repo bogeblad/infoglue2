@@ -44,6 +44,7 @@ import org.infoglue.cms.controllers.kernel.impl.simple.AccessRightController;
 import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
 import org.infoglue.cms.controllers.kernel.impl.simple.ComponentController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.DigitalAssetController;
 import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
@@ -53,6 +54,7 @@ import org.infoglue.cms.controllers.kernel.impl.simple.UserControllerProxy;
 import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.entities.content.DigitalAssetVO;
+import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
 import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.entities.management.Repository;
 import org.infoglue.cms.entities.management.impl.simple.RepositoryImpl;
@@ -71,7 +73,10 @@ import org.infoglue.deliver.applications.databeans.ComponentPropertyOption;
 import org.infoglue.deliver.applications.databeans.ComponentRestriction;
 import org.infoglue.deliver.applications.databeans.ComponentTask;
 import org.infoglue.deliver.applications.databeans.Slot;
+import org.infoglue.deliver.integration.dataproviders.PropertyOptionsDataProvider;
 import org.infoglue.deliver.util.CacheController;
+import org.infoglue.deliver.util.HttpHelper;
+import org.infoglue.deliver.util.HttpUtilities;
 import org.infoglue.deliver.util.NullObject;
 import org.infoglue.deliver.util.Timer;
 
@@ -87,6 +92,7 @@ public class PageEditorHelper extends BaseDeliveryController
 
 	private final static DOMBuilder domBuilder = new DOMBuilder();
 	private final static VisualFormatter formatter = new VisualFormatter();
+	private final static HttpHelper httpHelper = new HttpHelper();
 	//protected NodeDeliveryController nodeDeliveryController = NodeDeliveryController.getNodeDeliveryController();
 
     private final static Logger logger = Logger.getLogger(PageEditorHelper.class.getName());
@@ -313,9 +319,9 @@ public class PageEditorHelper extends BaseDeliveryController
 				{
 					String warningText = getLocalizedString(locale, "deliver.editOnSight.dirtyWarning");
 					sb.append("			<div class=\"fieldGroup\">");									
-					sb.append("				<a name=\"" + componentProperty.getName() + "\" class=\"componentEditorLink\" href=\"javascript:if(checkDirty('" + warningText + "')){window.open('" + assignUrl + "','Assign','toolbar=no,status=yes,scrollbars=yes,location=no,menubar=no,directories=no,resizable=no,width=300,height=600,left=5,top=5')};\">");
+					sb.append("				<a name=\"" + componentProperty.getName() + "\" class=\"componentEditorLink\" href=\"javascript:openAssignDialog('" + warningText + "', '" + assignUrl +"');\">");
 				}
-
+				
 				sb.append("					" + (componentProperty.getValue() == null || componentProperty.getValue().equalsIgnoreCase("") ? componentProperty.getDefaultValue() : componentProperty.getValue()) + (componentProperty.getIsAssetBinding() ? " (" + componentProperty.getAssetKey() + ")" : ""));
 				
 				if(hasAccessToProperty)
@@ -426,7 +432,28 @@ public class PageEditorHelper extends BaseDeliveryController
 					sb.append("	<input type=\"hidden\" name=\"" + propertyIndex + "_propertyName\" value=\"" + componentProperty.getName() + "\">");
 					sb.append("	<select class=\"propertyselect\" name=\"" + componentProperty.getName() + "\" onchange=\"setDirty();\">");
 					
-					Iterator optionsIterator = componentProperty.getOptions().iterator();
+					Iterator<ComponentPropertyOption> optionsIterator = componentProperty.getOptions().iterator();
+
+					if(componentProperty.getDataProvider() != null && !componentProperty.getDataProvider().equals(""))
+					{
+						try
+						{
+							PropertyOptionsDataProvider provider = (PropertyOptionsDataProvider)Class.forName(componentProperty.getDataProvider()).newInstance();
+							Map parameters = httpHelper.toMap(componentProperty.getDataProviderParameters(), "UTF-8");
+							optionsIterator = provider.getPropertyOptions(parameters, principal, db).iterator();
+						}
+						catch (Exception e) 
+						{
+							logger.warn("A problem loading the data provider for property " + componentProperty.getName() + ":" + e.getMessage(), e);
+							List<ComponentPropertyOption> errorOptions = new ArrayList<ComponentPropertyOption>();
+							ComponentPropertyOption componentPropertyOption = new ComponentPropertyOption();
+							componentPropertyOption.setName("Error:" + e.getMessage());
+							componentPropertyOption.setValue("");
+							errorOptions.add(componentPropertyOption);
+							optionsIterator = errorOptions.iterator();
+						}
+					}
+					
 					while(optionsIterator.hasNext())
 					{
 					    ComponentPropertyOption option = (ComponentPropertyOption)optionsIterator.next();
@@ -801,7 +828,7 @@ public class PageEditorHelper extends BaseDeliveryController
 			    sb.append("<div class=\"igmenuitems\" onMouseover=\"javascript:highlightie5(event);\" onMouseout=\"javascript:lowlightie5(event);\" onClick=\"invokeAddress('" + downUrl + "');\">" + moveComponentDownHTML + "</div>");
 			
 			sb.append("<hr/>");
-			sb.append("<div class=\"igmenuitems\" onMouseover=\"javascript:highlightie5(event);\" onMouseout=\"javascript:lowlightie5(event);\" onClick=\"javascript:showComponentInDiv('componentPropertiesDiv', 'repositoryId=" + repositoryId + "&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&componentContentId=" + componentContentId + "&showSimple=" + showSimple + "&showLegend=false&originalUrl=" + URLEncoder.encode(originalFullURL, "UTF-8") + "', false);\">" + propertiesHTML + "</div>");
+			sb.append("<div class=\"igmenuitems\" onMouseover=\"javascript:highlightie5(event);\" onMouseout=\"javascript:lowlightie5(event);\" onClick=\"javascript:showComponentInDiv('componentPropertiesDiv', 'repositoryId=" + repositoryId + "&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&componentContentId=" + componentContentId + "&slotName=" + component.getSlotName() + "&showSimple=" + showSimple + "&showLegend=false&originalUrl=" + URLEncoder.encode(originalFullURL, "UTF-8") + "', false);\">" + propertiesHTML + "</div>");
 			sb.append("<hr/>");
 			if(hasAccessToAccessRights)
 				sb.append("<div class=\"igmenuitems\" onMouseover=\"javascript:highlightie5(event);\" onMouseout=\"javascript:lowlightie5(event);\" onClick=\"setAccessRights('" + slotId + "', " + componentContentId + ");\">" + accessRightsHTML + "</div>");
@@ -1014,6 +1041,8 @@ public class PageEditorHelper extends BaseDeliveryController
 					String name							 = binding.attributeValue("name");
 					String description					 = binding.attributeValue("description");
 					String defaultValue					 = binding.attributeValue("defaultValue");
+					String dataProvider					 = binding.attributeValue("dataProvider");
+					String dataProviderParameters		 = binding.attributeValue("dataProviderParameters");
 					String type							 = binding.attributeValue("type");
 					String allowedContentTypeNamesString = binding.attributeValue("allowedContentTypeDefinitionNames");
 					String visualizingAction 			 = binding.attributeValue("visualizingAction");
@@ -1026,6 +1055,8 @@ public class PageEditorHelper extends BaseDeliveryController
 					property.setName(name);
 					property.setDescription(description);
 					property.setDefaultValue(defaultValue);
+					property.setDataProvider(dataProvider);
+					property.setDataProviderParameters(dataProviderParameters);
 					property.setType(type);
 					property.setVisualizingAction(visualizingAction);
 					property.setCreateAction(createAction);

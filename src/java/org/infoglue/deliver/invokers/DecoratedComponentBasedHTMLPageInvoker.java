@@ -1995,6 +1995,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 					String name							 = binding.attributeValue("name");
 					String description					 = binding.attributeValue("description");
 					String defaultValue					 = binding.attributeValue("defaultValue");
+					String dataProvider					 = binding.attributeValue("dataProvider");
 					String type							 = binding.attributeValue("type");
 					String allowedContentTypeNamesString = binding.attributeValue("allowedContentTypeDefinitionNames");
 					String visualizingAction 			 = binding.attributeValue("visualizingAction");
@@ -2007,6 +2008,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 					property.setName(name);
 					property.setDescription(description);
 					property.setDefaultValue(defaultValue);
+					property.setDataProvider(dataProvider);
 					property.setType(type);
 					property.setVisualizingAction(visualizingAction);
 					property.setCreateAction(createAction);
@@ -2143,6 +2145,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 					String name							 = binding.attributeValue("name");
 					String description					 = binding.attributeValue("description");
 					String defaultValue					 = binding.attributeValue("defaultValue");
+					String dataProvider					 = binding.attributeValue("dataProvider");
 					String type							 = binding.attributeValue("type");
 					String allowedContentTypeNamesString = binding.attributeValue("allowedContentTypeDefinitionNames");
 					String visualizingAction 			 = binding.attributeValue("visualizingAction");
@@ -2155,6 +2158,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 					property.setName(name);
 					property.setDescription(description);
 					property.setDefaultValue(defaultValue);
+					property.setDataProvider(dataProvider);
 					property.setType(type);
 					property.setVisualizingAction(visualizingAction);
 					property.setCreateAction(createAction);
