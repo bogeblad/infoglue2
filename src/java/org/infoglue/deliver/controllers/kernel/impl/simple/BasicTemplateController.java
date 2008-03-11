@@ -6618,7 +6618,7 @@ public class BasicTemplateController implements TemplateController
 		
 		return url;
 	}
-	
+
 	/**
 	 * This method returns the neccessairy html to assign by klicking on a link.
 	 * @param componentContentId
@@ -6628,6 +6628,19 @@ public class BasicTemplateController implements TemplateController
 	 * @return
 	 */
 	public String getAssignPropertyBindingTag(String propertyName, boolean createNew, String html, boolean showInPublishedMode, boolean showDecorated)
+	{
+		return getAssignPropertyBindingTag(propertyName, createNew, html, showInPublishedMode, showDecorated, null);
+	}
+
+	/**
+	 * This method returns the neccessairy html to assign by klicking on a link.
+	 * @param componentContentId
+	 * @param propertyName
+	 * @param html
+	 * @param showInPublishedMode
+	 * @return
+	 */
+	public String getAssignPropertyBindingTag(String propertyName, boolean createNew, String html, boolean showInPublishedMode, boolean showDecorated, String extraParameters)
 	{
 		String result = "";
 		
@@ -6740,16 +6753,33 @@ public class BasicTemplateController implements TemplateController
 				    //String returnAddress = URLEncoder.encode(key, "UTF-8");
 					
 					if(property.getIsMultipleBinding())
-						createUrl = componentEditorUrl + "CreateContentWizardFinish.action?repositoryId=" + this.getSiteNode().getRepositoryId() + "&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&propertyName=" + property.getName() + allowedContentTypeIdParameters + "&refreshAddress=" + returnAddress + "&cancelAddress=" + cancelAddress + "&showSimple=" + getDeliveryContext().getShowSimple() + "&showDecorated=" + showDecorated;
+						createUrl = componentEditorUrl + "CreateContentWizardFinish.action?repositoryId=" + this.getSiteNode().getRepositoryId() + "&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&propertyName=" + property.getName() + allowedContentTypeIdParameters + "&refreshAddress=" + returnAddress + "&cancelAddress=" + cancelAddress + "&showSimple=" + getDeliveryContext().getShowSimple() + "&showDecorated=" + showDecorated + (extraParameters != null ? "&" + extraParameters : "");
 					else
-						createUrl = componentEditorUrl + "CreateContentWizardFinish.action?repositoryId=" + this.getSiteNode().getRepositoryId() + "&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&propertyName=" + property.getName() + allowedContentTypeIdParameters + "&refreshAddress=" + returnAddress + "&cancelAddress=" + cancelAddress + "&showSimple=" + getDeliveryContext().getShowSimple() + "&showDecorated=" + showDecorated;
+						createUrl = componentEditorUrl + "CreateContentWizardFinish.action?repositoryId=" + this.getSiteNode().getRepositoryId() + "&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&propertyName=" + property.getName() + allowedContentTypeIdParameters + "&refreshAddress=" + returnAddress + "&cancelAddress=" + cancelAddress + "&showSimple=" + getDeliveryContext().getShowSimple() + "&showDecorated=" + showDecorated + (extraParameters != null ? "&" + extraParameters : "");
 				}
 				else if(property.getEntityClass().equalsIgnoreCase("SiteNode"))
 				{
+				    String key = "ViewSiteNodePageComponents!addComponentPropertyBinding.action?siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=-1&entity=SiteNode&entityId=#entityId&componentId=" + componentId + "&propertyName=" + property.getName() + "&path=#path&showSimple=" + getDeliveryContext().getShowSimple() + "&showDecorated=" + showDecorated;
+				    
+			        String returnAddress = (String)CacheController.getCachedObjectFromAdvancedCache("encodedStringsCache", key);
+			        if(returnAddress == null)
+			        {
+			        	returnAddress = URLEncoder.encode(key, "UTF-8");
+			        	CacheController.cacheObjectInAdvancedCache("encodedStringsCache", key, returnAddress);
+			        }
+			        
+			        String cancelKey = this.getOriginalFullURL();
+			        String cancelAddress = (String)CacheController.getCachedObjectFromAdvancedCache("encodedStringsCache", cancelKey);
+			        if(cancelAddress == null)
+			        { 
+			        	cancelAddress = URLEncoder.encode(cancelKey, "UTF-8");
+			        	CacheController.cacheObjectInAdvancedCache("encodedStringsCache", cancelKey, cancelAddress);
+			        }
+
 					if(property.getIsMultipleBinding())
-						createUrl = componentEditorUrl + "CreateSiteNodeWizard!input.action?repositoryId=" + this.getSiteNode().getRepositoryId() + "&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&propertyName=" + property.getName() + "&showSimple=" + getDeliveryContext().getShowSimple() + "&showDecorated=" + showDecorated;
+						createUrl = componentEditorUrl + "CreateSiteNodeWizardFinish.action?repositoryId=" + this.getSiteNode().getRepositoryId() + "&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&propertyName=" + property.getName() + "&refreshAddress=" + returnAddress + "&cancelAddress=" + cancelAddress + "&showSimple=" + getDeliveryContext().getShowSimple() + "&showDecorated=" + showDecorated + (extraParameters != null ? "&" + extraParameters : "");
 					else
-						createUrl = componentEditorUrl + "CreateSiteNodeWizard!input.action?repositoryId=" + this.getSiteNode().getRepositoryId() + "&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&propertyName=" + property.getName() + "&showSimple=" + getDeliveryContext().getShowSimple() + "&showDecorated=" + showDecorated;
+						createUrl = componentEditorUrl + "CreateSiteNodeWizardFinish.action?repositoryId=" + this.getSiteNode().getRepositoryId() + "&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&propertyName=" + property.getName() + "&refreshAddress=" + returnAddress + "&cancelAddress=" + cancelAddress + "&showSimple=" + getDeliveryContext().getShowSimple() + "&showDecorated=" + showDecorated + (extraParameters != null ? "&" + extraParameters : "");
 				}
 			}
 	

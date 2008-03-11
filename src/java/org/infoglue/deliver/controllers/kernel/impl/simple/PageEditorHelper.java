@@ -828,14 +828,14 @@ public class PageEditorHelper extends BaseDeliveryController
 			    sb.append("<div class=\"igmenuitems\" onMouseover=\"javascript:highlightie5(event);\" onMouseout=\"javascript:lowlightie5(event);\" onClick=\"invokeAddress('" + downUrl + "');\">" + moveComponentDownHTML + "</div>");
 			
 			sb.append("<hr/>");
-			sb.append("<div class=\"igmenuitems\" onMouseover=\"javascript:highlightie5(event);\" onMouseout=\"javascript:lowlightie5(event);\" onClick=\"javascript:showComponentInDiv('componentPropertiesDiv', 'repositoryId=" + repositoryId + "&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&componentContentId=" + componentContentId + "&slotName=" + component.getSlotName() + "&showSimple=" + showSimple + "&showLegend=false&originalUrl=" + URLEncoder.encode(originalFullURL, "UTF-8") + "', false);\">" + propertiesHTML + "</div>");
+			sb.append("<div class=\"igmenuitems\" onMouseover=\"javascript:highlightie5(event);\" onMouseout=\"javascript:lowlightie5(event);\" onClick=\"showComponentInDiv('componentPropertiesDiv', 'repositoryId=" + repositoryId + "&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&componentContentId=" + componentContentId + "&slotName=" + component.getSlotName() + "&showSimple=" + showSimple + "&showLegend=false&originalUrl=" + URLEncoder.encode(originalFullURL, "UTF-8") + "', false);\">" + propertiesHTML + "</div>");
 			sb.append("<hr/>");
 			if(hasAccessToAccessRights)
 				sb.append("<div class=\"igmenuitems\" onMouseover=\"javascript:highlightie5(event);\" onMouseout=\"javascript:lowlightie5(event);\" onClick=\"setAccessRights('" + slotId + "', " + componentContentId + ");\">" + accessRightsHTML + "</div>");
 			if(treeItem != true)
-				sb.append("<div class=\"igmenuitems\" onMouseover=\"javascript:highlightie5(event);\" onMouseout=\"javascript:lowlightie5(event);\" onClick=\"javascript:showComponentStructure('componentStructure', 'repositoryId=" + repositoryId + "&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&originalUrl=" + URLEncoder.encode(originalFullURL, "UTF-8") + "', event);\">" + pageComponentsHTML + "</div>");
+				sb.append("<div class=\"igmenuitems\" onMouseover=\"javascript:highlightie5(event);\" onMouseout=\"javascript:lowlightie5(event);\" onClick=\"showComponentStructure('componentStructure', 'repositoryId=" + repositoryId + "&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&originalUrl=" + URLEncoder.encode(originalFullURL, "UTF-8") + "', event);\">" + pageComponentsHTML + "</div>");
 
-			sb.append("<div class=\"igmenuitems\" onMouseover=\"javascript:highlightie5(event);\" onMouseout=\"javascript:lowlightie5(event);\" onClick=\"window.open(document.location.href, 'PageEditor', '');\">" + componentEditorInNewWindowHTML + "</div>");
+			sb.append("<div class=\"igmenuitems\" onMouseover=\"javascript:highlightie5(event);\" onMouseout=\"javascript:lowlightie5(event);\" onClick=\"openWindow(document.location.href, 'PageEditor', '');\">" + componentEditorInNewWindowHTML + "</div>");
 			sb.append("<div class=\"igmenuitems\" onMouseover=\"javascript:highlightie5(event);\" onMouseout=\"javascript:lowlightie5(event);\" onClick=\"javascript:viewSource();\">" + viewSourceHTML + "</div>");
 
 			sb.append("</div>");
