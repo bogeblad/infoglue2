@@ -845,6 +845,14 @@ function assignComponent(e, siteNodeId, languageId, contentId, parentComponentId
 	}
 }
 
+function openWindow(url, windowTitle, options) 
+{
+	newWin = window.open(url, windowTitle, options);
+	if(newWin)
+		newWin.focus();
+	else
+		alert("Could not open in new window - if you have a popup blocker this is most likely the cause.");
+}
 
 function saveComponentStructure(url) 
 {
