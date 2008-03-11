@@ -36,6 +36,11 @@
   <beanMapping languageSpecificType="java:org.infoglue.cms.entities.management.CategoryVO" qname="ns1:CategoryVO" xmlns:ns1="infoglue"/>
   <beanMapping languageSpecificType="java:org.infoglue.cms.entities.content.ContentCategoryVO" qname="ns1:ContentCategoryVO" xmlns:ns1="infoglue"/>
  </service>
+ <service name="RemoteSiteNodeService" provider="java:RPC">
+  <parameter name="allowedMethods" value="*"/>
+  <parameter name="className" value="org.infoglue.cms.webservices.RemoteSiteNodeServiceImpl"/>
+  <beanMapping languageSpecificType="java:org.infoglue.cms.entities.structure.SiteNodeVO" qname="ns1:SiteNodeVO" xmlns:ns1="infoglue"/>
+ </service>
  <service name="RemoteUserService" provider="java:RPC">
   <parameter name="allowedMethods" value="*"/>
   <parameter name="className" value="org.infoglue.cms.webservices.RemoteUserServiceImpl"/>
