@@ -46,5 +46,9 @@ public interface FormEntryValue extends IBaseEntity
     public java.lang.String getValue();
     
     public void setValue(java.lang.String Value) throws ConstraintException;
-        
+
+    public FormEntry getFormEntry();
+    
+    public void setFormEntry(FormEntry formEntry) throws ConstraintException;
+
 }

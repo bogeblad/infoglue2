@@ -23,6 +23,8 @@
 
 package org.infoglue.cms.entities.management;
 
+import java.util.Collection;
+
 import org.infoglue.cms.entities.kernel.IBaseEntity;
 import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
@@ -58,5 +60,9 @@ public interface FormEntry extends IBaseEntity
     public java.lang.String getUserAgent();
     
     public void setUserAgent(java.lang.String userAgent) throws ConstraintException;
+
+    public Collection getFormEntryValues();
+    
+    public void setFormEntryValues(Collection formEntryValues) throws SystemException;
 
 }

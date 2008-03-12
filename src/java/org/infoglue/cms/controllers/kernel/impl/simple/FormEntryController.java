@@ -39,9 +39,12 @@ import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
 import org.infoglue.cms.entities.management.FormEntry;
 import org.infoglue.cms.entities.management.FormEntryVO;
+import org.infoglue.cms.entities.management.FormEntryValue;
+import org.infoglue.cms.entities.management.FormEntryValueVO;
 import org.infoglue.cms.entities.management.Repository;
 import org.infoglue.cms.entities.management.RepositoryVO;
 import org.infoglue.cms.entities.management.impl.simple.FormEntryImpl;
+import org.infoglue.cms.entities.management.impl.simple.FormEntryValueImpl;
 import org.infoglue.cms.entities.management.impl.simple.RepositoryImpl;
 import org.infoglue.cms.entities.structure.SiteNodeVO;
 import org.infoglue.cms.exception.Bug;
@@ -102,7 +105,7 @@ public class FormEntryController extends BaseController
 	 * @throws Bug
 	 */
 	
-	public List getFormEntryVOList(String formContentId) throws SystemException, Bug
+	public List getFormEntryVOList(Integer formContentId) throws SystemException, Bug
 	{
 		List formEntryVOList = null;
 		
@@ -137,7 +140,7 @@ public class FormEntryController extends BaseController
 	 * @throws Bug
 	 */
 
-	public List getFormEntryList(String formContentId, Database db) throws SystemException, Bug
+	public List getFormEntryList(Integer formContentId, Database db) throws SystemException, Bug
 	{
 		List formEntryList = new ArrayList();
 		
@@ -170,6 +173,48 @@ public class FormEntryController extends BaseController
         formEntry.setValueObject(redirectVO);
         formEntry = (FormEntry) createEntity(formEntry);
         return formEntry.getValueObject();
+    }
+
+    public FormEntryVO create(FormEntryVO formEntryVO, List<FormEntryValueVO> formEntryValueVOList) throws ConstraintException, SystemException
+    {
+		Database db = CastorDatabaseService.getDatabase();
+		ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
+
+		FormEntryVO newFormEntryVO = null;
+	
+		beginTransaction(db);
+
+		try
+		{
+	        FormEntry formEntry = new FormEntryImpl();
+	        formEntry.setValueObject(formEntryVO);
+	        formEntry = (FormEntry) createEntity(formEntry, db);
+	        
+	        Iterator<FormEntryValueVO> formEntryValueVOListIterator = formEntryValueVOList.iterator();
+	        while(formEntryValueVOListIterator.hasNext())
+	        {
+	        	FormEntryValueVO formEntryValueVO = formEntryValueVOListIterator.next();
+	        	
+	        	FormEntryValue formEntryValue = new FormEntryValueImpl();
+	        	formEntryValue.setFormEntry(formEntry);
+	        	formEntry.getFormEntryValues().add(formEntryValue);
+	        	formEntryValue.setValueObject(formEntryValueVO);
+	        	formEntryValue = (FormEntryValue) createEntity(formEntryValue, db);
+	        }
+	        
+	        if(formEntry != null)
+	        	newFormEntryVO = formEntry.getValueObject();
+	        
+			commitTransaction(db);
+		}
+		catch(Exception e)
+		{
+			logger.error("An error occurred so we should not completes the transaction:" + e, e);
+			rollbackTransaction(db);
+			throw new SystemException(e.getMessage());
+		}
+
+        return newFormEntryVO;
     }
 
     public void delete(FormEntryVO formEntryVO) throws ConstraintException, SystemException
