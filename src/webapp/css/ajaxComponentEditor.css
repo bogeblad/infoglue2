@@ -57,7 +57,7 @@ Component Properties Classes
 	margin:0px;
 	padding:0px;
 	font-family: Tahoma, Arial, Helvetica, sans-serif;
-	font-size:10pt;
+	font-size: 8pt;
 	float: left;
 	max-height: 500px;
 	overflow: auto;
@@ -69,7 +69,7 @@ Component Properties Classes
 	padding: 2px;
 	color: white;
 	font-family: Tahoma, Arial, Helvetica, sans-serif;
-	font-size: 10pt;
+	font-size: 8pt;
 	background-image: url('../images/handleBackground.gif');
 	border-bottom: 1px solid #CCCCCC;
 	float: left;
@@ -113,8 +113,8 @@ Component Properties Classes
 	border: 1px solid #cccccc;
 	padding: 2px;
 	margin-bottom: 8px;
-	font-size: 10px;
-	font-family: Verdana, Arial, San serif;
+	font-size: 8pt;
+	font-family: Tahoma, Arial, Helvetica, sans-serif;
 }
 
 .propertyRow
@@ -123,7 +123,7 @@ Component Properties Classes
 	padding-top: 6px;
 	padding-bottom: 6px;
 	float: left;
-	font-family: Verdana, Arial, San serif;
+	font-family: Tahoma, Arial, Helvetica, sans-serif;
 	font-size: 8pt;
 	width: 580px;
 	border-bottom: 1px solid #cccccc;
@@ -159,7 +159,7 @@ Component Properties Classes
 	padding-bottom: 4px;
 	float: left;
 	clear: both;
-	font-family: Verdana, Arial, San serif;
+	font-family: Tahoma, Arial, Helvetica, sans-serif;
 	font-size: 8pt;
 }
 #componentPropertiesForm fieldset div label
@@ -169,7 +169,9 @@ Component Properties Classes
 	text-align: left;
 	margin-right: 0.5em;
 	display: block;
-	font-weight: bold;
+	afont-weight: bold;
+	font-family: Tahoma, Arial, Helvetica, sans-serif;
+	font-size: 8pt;
 }
 #componentPropertiesForm fieldset div select
 {
@@ -177,12 +179,16 @@ Component Properties Classes
 	border: 1px solid #cccccc;
 	width: 140px;
 	float: left;
+	font-family: Tahoma, Arial, Helvetica, sans-serif;
+	font-size: 8pt;
 }
 #componentPropertiesForm fieldset div input
 {
 	background: white;
 	border: 1px solid #cccccc;
 	width: 330px;
+	font-family: Tahoma, Arial, Helvetica, sans-serif;
+	font-size: 8pt;
 }
 #componentPropertiesForm fieldset div textarea
 {
@@ -191,6 +197,8 @@ Component Properties Classes
 	width: 330px;
 	height: 50px;
 	float: left;
+	font-family: Tahoma, Arial, Helvetica, sans-serif;
+	font-size: 8pt;
 }
 #componentPropertiesForm fieldset .buttonRow
 {
@@ -284,21 +292,21 @@ Page components classes
 	}
 
 #pageComponentsHandle {
-	margin:2px;
-	padding:2px;
-	color:white;
-	color:white;
-	background-color:navy;
+	margin: 2px;
+	padding: 2px;
+	color: white;
+	color: white;
+	background-color: navy;
 	font-family: Tahoma, Arial, Helvetica, sans-serif;
-	font-size: 10pt;
+	font-size: 8pt;
 	}
 
 #pageComponentsBody {
-	padding-top:2px;
-	padding-bottom:2px;
-	width:100%;
-	font-family:verdana, sans-serif;
-	font-size:10px;
+	padding-top: 2px;
+	padding-bottom: 2px;
+	width: 100%;
+	font-family: verdana, sans-serif;
+	font-size: 8pt;
 	height: 380px;
 	overflow: auto;
 	}
@@ -308,7 +316,7 @@ Page components classes
 Edit on sight classes
 */
 #componentTasks {
-	aposition:absolute;
+	aposition: absolute;
 	aleft: 50px;
 	atop: 100px;
 }
@@ -355,7 +363,7 @@ Edit on sight classes
 .igAddComponent {
 	background-color:#F9F8F7;
 	font-family: Verdana, Arial, Helvetica, sans-serif;
-	font-size: 8px;
+	font-size: 8pt;
 	border: 1px dotted #333;
 	padding: 4px;
 	line-height: 22px;
@@ -527,9 +535,9 @@ input.propertytextfield {
 	height			 : 150px;
 }
 select.propertyselect {
-	font-family:verdana, sans-serif;
-	font-size:10px;
-	font-weight:normal;
+	font-family: verdana, sans-serif;
+	font-size: 8pt;
+	font-weight: normal;
 }
 
 .inheritedOverlay
@@ -568,7 +576,7 @@ tr.white {
 
 .smalllabel {
 	font-family:verdana, sans-serif;
-	font-size:10px;
+	font-size: 10px;
 	}
 
 .smallwhitelabel {
