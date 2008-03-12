@@ -54,6 +54,7 @@ import org.infoglue.cms.entities.structure.SiteNodeVersionVO;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.XMLHelper;
+import org.infoglue.cms.util.dom.DOMBuilder;
 import org.infoglue.deliver.applications.databeans.DeliveryContext;
 import org.infoglue.deliver.applications.databeans.Slot;
 import org.infoglue.deliver.controllers.kernel.impl.simple.BasicTemplateController;
@@ -98,6 +99,7 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 	private Integer pageTemplateContentId;
 	private String showDecorated = "true";
 	private String slotPositionComponentId = null;
+	private Integer pagePartContentId = null;
 	
 	LanguageVO masterLanguageVO = null;
 	
@@ -460,6 +462,115 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 	    return NONE; 
 	}
 
+	/**
+	 * This method adds a component to the page. 
+	 */
+    
+	public String doAddOrReplaceComponent() throws Exception
+	{
+		try
+		{
+		System.out.println("************************************************************");
+		System.out.println("* ADDING OR REPLACING COMPONENT                            *");
+		System.out.println("************************************************************");
+		System.out.println("siteNodeId:" + this.siteNodeId);
+		System.out.println("languageId:" + this.languageId);
+		System.out.println("contentId:" + this.contentId);
+		System.out.println("queryString:" + this.getRequest().getQueryString());
+		System.out.println("parentComponentId:" + this.parentComponentId);
+		System.out.println("componentId:" + this.componentId);
+		System.out.println("slotId:" + this.slotId);
+		System.out.println("specifyBaseTemplate:" + this.specifyBaseTemplate);
+		System.out.println("pagePartContentId:" + this.pagePartContentId);
+
+		initialize();
+
+		System.out.println("masterLanguageId:" + this.masterLanguageVO.getId());
+
+		Integer newComponentId = new Integer(0);
+
+	    String componentXML   = getPageComponentsString(siteNodeId, this.masterLanguageVO.getId(), contentId);			
+
+		Document document = XMLHelper.readDocumentFromByteArray(componentXML.getBytes("UTF-8"));
+		String componentXPath = "//component[@id=" + this.parentComponentId + "]";
+
+		Node componentNode = org.apache.xpath.XPathAPI.selectSingleNode(document.getDocumentElement(), componentXPath);
+		if(componentNode != null)
+		{
+			//Element componentElement = (Element)componentNode;
+			
+			String componentsXPath = "//component";
+			NodeList nodes = org.apache.xpath.XPathAPI.selectNodeList(document.getDocumentElement(), componentsXPath);
+			for(int i=0; i < nodes.getLength(); i++)
+			{
+				Element element = (Element)nodes.item(i);
+				if(new Integer(element.getAttribute("id")).intValue() > newComponentId.intValue())
+					newComponentId = new Integer(element.getAttribute("id"));
+			}
+			newComponentId = new Integer(newComponentId.intValue() + 1);
+			
+			NodeList childNodes = componentNode.getChildNodes();
+			System.out.println("childNodes:" + childNodes.getLength());
+			
+			Node child = componentNode.getFirstChild();
+			while (child != null)
+			{
+				System.out.println("Removing:" + child);
+	        	componentNode.removeChild(child);
+	        	child = componentNode.getFirstChild();
+			}
+
+			/*
+			int length = childNodes.getLength();
+			for(int i=0; i < length; i++)
+			{
+				Node childNode = childNodes.
+				if()
+				System.out.println("Removing:" + childNode.getNodeValue());
+				//childNode.getParentNode().removeChild(childNode);
+				componentNode.removeChild(childNode);
+				//System.out.println("Removing:" + childNode.getNodeValue() + " from " + componentElement.getNodeName() + ":" + componentElement.getAttribute("id"));
+			}
+			*/
+			System.out.println("childNodes:" + childNodes.getLength());
+			StringBuffer sb = new StringBuffer();
+			XMLHelper.serializeDom(componentNode, sb);
+			System.out.println("SB:" + sb);
+			
+			if(this.pagePartContentId != null)
+			{
+				ContentVersionVO pagePartContentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(this.pagePartContentId, this.masterLanguageVO.getId());
+				String componentStructure = ContentVersionController.getContentVersionController().getAttributeValue(pagePartContentVersionVO.getId(), "ComponentStructure", false);
+				
+				componentStructure = componentStructure.replaceAll(" isInherited=\"true\"", "");
+				componentStructure = componentStructure.replaceAll(" pagePartTemplateContentId=\"-1\"", "");
+				Document componentStructureDocument = XMLHelper.readDocumentFromByteArray(componentStructure.getBytes("UTF-8"));
+				Node rootNode = componentStructureDocument.getDocumentElement();
+				
+				componentNode.appendChild(document.importNode(rootNode, true));
+
+				String modifiedXML = XMLHelper.serializeDom(document, new StringBuffer()).toString(); 
+
+				ContentVO contentVO = NodeDeliveryController.getNodeDeliveryController(siteNodeId, this.masterLanguageVO.getId(), contentId).getBoundContent(this.getInfoGluePrincipal(), siteNodeId, this.masterLanguageVO.getId(), true, "Meta information", DeliveryContext.getDeliveryContext());
+				ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentVO.getId(), this.masterLanguageVO.getId());
+				
+				ContentVersionController.getContentVersionController().updateAttributeValue(contentVersionVO.getContentVersionId(), "ComponentStructure", modifiedXML, this.getInfoGluePrincipal());
+			}						
+		}
+		
+		logger.info("newComponentId:" + newComponentId);
+		
+		this.url = getComponentRendererUrl() + getComponentRendererAction() + "?siteNodeId=" + this.siteNodeId + "&languageId=" + this.languageId + "&contentId=" + this.contentId + "&focusElementId=" + newComponentId + "&activatedComponentId=" + newComponentId + "&componentContentId=" + this.componentId + "&showSimple=" + this.showSimple;
+		//this.getResponse().sendRedirect(url);		
+		}
+		catch (Exception e) 
+		{
+			e.printStackTrace();
+		}
+		this.url = this.getResponse().encodeURL(url);
+		this.getResponse().sendRedirect(url);
+	    return NONE; 
+	}
 
 	/**
 	 * This method adds a component to the page. 
@@ -1929,6 +2040,16 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 	public void setSlotPositionComponentId(String slotPositionComponentId)
 	{
 		this.slotPositionComponentId = slotPositionComponentId;
+	}
+
+	public Integer getPagePartContentId()
+	{
+		return pagePartContentId;
+	}
+
+	public void setPagePartContentId(Integer pagePartContentId)
+	{
+		this.pagePartContentId = pagePartContentId;
 	}
 
 }
