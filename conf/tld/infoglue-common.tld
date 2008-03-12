@@ -367,6 +367,32 @@
 	        <rtexprvalue>true</rtexprvalue>
 		</attribute>
 	</tag>
+    <tag>
+	    <name>proxy</name>
+	    <tagclass>org.infoglue.deliver.taglib.common.ProxyTag</tagclass>
+	   	<bodycontent>JSP</bodycontent>
+	    <info></info>
+	    <attribute>
+		    <name>id</name>
+	    	<required>false</required>
+	        <rtexprvalue>false</rtexprvalue>
+		</attribute>
+	    <attribute>
+		    <name>url</name>
+	    	<required>true</required>
+	        <rtexprvalue>true</rtexprvalue>
+		</attribute>
+	    <attribute>
+		    <name>charEncoding</name>
+	    	<required>false</required>
+	        <rtexprvalue>true</rtexprvalue>
+		</attribute>
+	    <attribute>
+		    <name>timeout</name>
+	    	<required>false</required>
+	        <rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
 
     <tag>
 	    <name>cropText</name>
@@ -954,4 +980,22 @@
 	        <rtexprvalue>true</rtexprvalue>
 		</attribute>
 	</tag>
+
+	<tag>
+	    <name>sendRedirect</name>
+	    <tagclass>org.infoglue.deliver.taglib.common.SendRedirectTag</tagclass>
+	    <bodycontent>empty</bodycontent>
+	    <info></info>
+	    <attribute>
+		    <name>id</name>
+	    	<required>false</required>
+	        <rtexprvalue>true</rtexprvalue>
+		</attribute>
+	    <attribute>
+		    <name>url</name>
+	    	<required>true</required>
+	        <rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
 </taglib>
