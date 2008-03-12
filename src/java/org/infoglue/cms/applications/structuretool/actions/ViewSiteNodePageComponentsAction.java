@@ -520,18 +520,6 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 	        	child = componentNode.getFirstChild();
 			}
 
-			/*
-			int length = childNodes.getLength();
-			for(int i=0; i < length; i++)
-			{
-				Node childNode = childNodes.
-				if()
-				System.out.println("Removing:" + childNode.getNodeValue());
-				//childNode.getParentNode().removeChild(childNode);
-				componentNode.removeChild(childNode);
-				//System.out.println("Removing:" + childNode.getNodeValue() + " from " + componentElement.getNodeName() + ":" + componentElement.getAttribute("id"));
-			}
-			*/
 			System.out.println("childNodes:" + childNodes.getLength());
 			StringBuffer sb = new StringBuffer();
 			XMLHelper.serializeDom(componentNode, sb);
@@ -544,6 +532,9 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 				
 				componentStructure = componentStructure.replaceAll(" isInherited=\"true\"", "");
 				componentStructure = componentStructure.replaceAll(" pagePartTemplateContentId=\"-1\"", "");
+				componentStructure = componentStructure.replaceFirst("<properties>", "<properties><property name=\"pagePartContentId\" path=\"" + pagePartContentId + "\"/>");
+				System.out.println("componentStructure:" + componentStructure);
+								
 				Document componentStructureDocument = XMLHelper.readDocumentFromByteArray(componentStructure.getBytes("UTF-8"));
 				Node rootNode = componentStructureDocument.getDocumentElement();
 				

@@ -28,6 +28,7 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.Locale;
 
 import org.apache.log4j.Logger;
 import org.infoglue.cms.applications.common.VisualFormatter;
@@ -78,6 +79,7 @@ public class CreatePageTemplateAction extends InfoGlueAbstractAction implements 
 	private Integer parentContentId;
 	private Integer repositoryId;
 	private Integer componentId;
+	private Integer pagePartContentId;
 	private ConstraintExceptionBuffer ceb;
 
 	private Integer siteNodeId;
@@ -245,6 +247,62 @@ public class CreatePageTemplateAction extends InfoGlueAbstractAction implements 
         return Action.SUCCESS;
     }
     
+    public String doUpdate() throws Exception
+    {
+        logger.info("pagePartContentId:" + pagePartContentId);
+        logger.info("contentId:" + contentId);
+        logger.info("componentId:" + componentId);
+        
+        ContentVO pagePartContentVO = ContentController.getContentController().getContentVOWithId(pagePartContentId);
+		Integer pagePartMasterLanguageId = LanguageController.getController().getMasterLanguage(pagePartContentVO.getRepositoryId()).getId();
+		ContentVersionVO pagePartContentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(pagePartContentId, pagePartMasterLanguageId);
+		Locale pagePartMasterLocale = LanguageController.getController().getLocaleWithId(pagePartMasterLanguageId);
+		
+		ContentVO metaInfoContentVO = ContentController.getContentController().getContentVOWithId(this.contentId);
+		Integer originalMetaInfoMasterLanguageId = LanguageController.getController().getMasterLanguage(metaInfoContentVO.getRepositoryId()).getId();
+		ContentVersionVO originalContentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(this.contentId, originalMetaInfoMasterLanguageId);
+		logger.info("originalMetaInfoMasterLanguageId:" + originalMetaInfoMasterLanguageId);
+		logger.info("contentId:" + contentId);
+		logger.info("originalContentVersionVO:" + originalContentVersionVO);
+		
+	    String componentStructure = ContentVersionController.getContentVersionController().getAttributeValue(originalContentVersionVO.getId(), "ComponentStructure", false);
+	    logger.info("componentStructure:" + componentStructure);
+		if(componentId != null)
+		{
+			logger.info("We should strip all but componentId:" + componentId);
+			Document document = XMLHelper.readDocumentFromByteArray(componentStructure.getBytes("UTF-8"));
+			String componentXPath = "//component[@id=" + componentId + "]";
+
+			Node node = org.apache.xpath.XPathAPI.selectSingleNode(document.getDocumentElement(), componentXPath);
+			if(node != null)
+			{
+				Element component = (Element)node;
+				component.setAttribute("pagePartTemplateContentId", "-1");
+				component.setAttribute("isInherited", "true");
+				/*
+				NodeList propertiesNL = component.getElementsByTagName("properties");
+				if(propertiesNL != null && propertiesNL.getLength() > 0)
+				{
+					Node propertiesNode = propertiesNL.item(0);
+					addPropertyElement((Element)propertiesNode, "pagePartContentId", "" + pagePartContentId, "textfield", pagePartMasterLocale);
+				}
+				*/
+				String modifiedXML = XMLHelper.serializeDom(component, new StringBuffer()).toString(); 
+				logger.info("modifiedXML:" + modifiedXML);
+				componentStructure = "<?xml version='1.0' encoding='UTF-8'?><components>" + modifiedXML + "</components>";
+			}
+		}
+	    
+		String versionValue = "<?xml version='1.0' encoding='UTF-8'?><article xmlns=\"x-schema:ArticleSchema.xml\"><attributes><Name><![CDATA[" + this.name + "]]></Name><ComponentStructure><![CDATA[" + componentStructure + "]]></ComponentStructure></attributes></article>";
+	
+		ContentVersionVO contentVersionVO = pagePartContentVersionVO;
+		contentVersionVO.setVersionComment("Saved page template");
+		contentVersionVO.setVersionModifier(this.getInfoGluePrincipal().getName());
+		contentVersionVO.setVersionValue(versionValue);
+		ContentVersionController.getContentVersionController().update(pagePartContentVO.getId(), pagePartMasterLanguageId, contentVersionVO, this.getInfoGluePrincipal());
+		
+        return Action.SUCCESS;
+    }
     
 	public Integer getTopRepositoryId() throws ConstraintException, SystemException, Bug
 	{
@@ -372,5 +430,40 @@ public class CreatePageTemplateAction extends InfoGlueAbstractAction implements 
 	public void setComponentId(Integer componentId)
 	{
 		this.componentId = componentId;
+	}
+
+	public Integer getPagePartContentId()
+	{
+		return pagePartContentId;
+	}
+
+	public void setPagePartContentId(Integer pagePartContentId)
+	{
+		this.pagePartContentId = pagePartContentId;
+	}
+
+	/**
+	 * This method creates a parameter for the given input type.
+	 * This is to support form steering information later.
+	 */
+	
+	private Element addPropertyElement(Element parent, String name, String path, String type, Locale locale)
+	{
+		Element element = parent.getOwnerDocument().createElement("property");
+		element.setAttribute("name", name);
+		
+		if(type.equalsIgnoreCase("siteNodeBinding") || type.equalsIgnoreCase("contentBinding"))
+		{
+			element.setAttribute("path", path);
+			element.setAttribute("path_" + locale.getLanguage(), path);
+		}
+		else
+		{
+			element.setAttribute("path_" + locale.getLanguage(), path);
+		}
+		
+		element.setAttribute("type", type);
+		parent.appendChild(element);
+		return element;
 	}
 }

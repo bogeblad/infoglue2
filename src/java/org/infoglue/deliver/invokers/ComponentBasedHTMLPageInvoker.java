@@ -155,13 +155,15 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 		    	pagePartString = pagePartString.replaceFirst(" id=\".*?\"", " id=\"" + id + "\"");
 		    	pagePartString = pagePartString.replaceFirst(" name=\".*?\"", " name=\"" + name + "\"");
 		    	pagePartString = pagePartString.replaceFirst(" pagePartTemplateContentId=\".*?\"", " pagePartTemplateContentId=\"" + contentId + "\"");
-		    	//System.out.println("Bytte id och namn: " + pagePartString);
+		    	System.out.println("Bytte id och namn: " + pagePartString);
 		    	
 		    	pagePartString = pagePartString.substring(pagePartString.indexOf("<component "));
 		    	pagePartString = pagePartString.substring(0, pagePartString.lastIndexOf("</components>"));
 		    	
+		    	
 		    	//System.out.println("componentXML: " + componentXML);
-		    	//System.out.println("contentId" + contentId);
+		    	System.out.println("contentId" + contentId);
+		    	System.out.println("pagePartString" + pagePartString);
 		    	String newComponentXML = componentXML.replaceAll("<component contentId=\"" + contentId + ".*?</component>", "" + pagePartString);
 		    	//System.out.println("newComponentXML: " + newComponentXML);
 		    	resultComponentXML = newComponentXML;
