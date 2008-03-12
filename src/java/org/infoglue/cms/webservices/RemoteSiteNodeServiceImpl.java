@@ -313,6 +313,7 @@ public class RemoteSiteNodeServiceImpl extends RemoteInfoGlueService
 	           	siteNodeVO.setSiteNodeTypeDefinitionId(siteNodeTypeDefinitionId);
 	           	siteNodeVO.setRepositoryId(repositoryId);
 	           	siteNodeVO.setParentSiteNodeId(parentSiteNodeId);
+	           	siteNodeVO.setIsBranch(true);
 	            
 	            if(siteNodeVO.getCreatorName() == null)
 	            	siteNodeVO.setCreatorName(this.principal.getName());
