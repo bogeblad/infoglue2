@@ -50,7 +50,14 @@ public class ViewListRoleAction extends InfoGlueAbstractAction
 	    
 	    return "success";
 	}
-	
+
+	public String doListManagableRoles() throws Exception 
+	{
+		this.roles = RoleControllerProxy.getController().getAvailableRoles(this.getInfoGluePrincipal(), "Role.ManageUsers");
+	    
+	    return "success";
+	}
+
 	public List getRoles()
 	{
 		return this.roles;		

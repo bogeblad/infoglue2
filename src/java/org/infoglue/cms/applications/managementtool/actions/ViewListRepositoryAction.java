@@ -52,6 +52,13 @@ public class ViewListRepositoryAction extends InfoGlueAbstractAction
 	    return "success";
 	}
 	
+	public String doV3() throws Exception 
+	{
+	    this.repositories = RepositoryController.getController().getRepositoryVOList();
+	    Collections.sort(this.repositories, new ReflectionComparator("name"));
+
+	    return "successV3";
+	}
 
 	public List getRepositories()
 	{

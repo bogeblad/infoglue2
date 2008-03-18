@@ -32,11 +32,13 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.applications.managementtool.actions.WYSIWYGPropertiesAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.ShortcutController;
 import org.infoglue.cms.controllers.kernel.impl.simple.WorkflowController;
 import org.infoglue.cms.entities.mydesktop.WorkflowActionVO;
+import org.infoglue.cms.entities.mydesktop.WorkflowStepVO;
 import org.infoglue.cms.entities.mydesktop.WorkflowVO;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.util.CmsPropertyHandler;
@@ -63,7 +65,8 @@ public class ViewMyDesktopToolStartPageAction extends InfoGlueAbstractAction
 
 	private static final WorkflowController controller = WorkflowController.getController();
 	private static final ShortcutController shortcutController = ShortcutController.getController();
-
+	private static final VisualFormatter formatter = new VisualFormatter();
+	
 	private List availableWorkflowVOList;
 	private List workflowVOList;
 	private List availableShortcutVOList;
@@ -153,6 +156,17 @@ public class ViewMyDesktopToolStartPageAction extends InfoGlueAbstractAction
 	{
 		populateLists();
 		return SUCCESS;
+	}
+
+	/**
+	 * Populates the lists of workflow and workflow action VOs.
+	 * @return Action.SUCCESS
+	 * @throws SystemException if a workflow error occurs
+	 */
+	public String doTaskList() throws SystemException
+	{
+		populateActiveWorkflowVOList();
+		return "successTaskList";
 	}
 
 	/**
@@ -371,4 +385,142 @@ public class ViewMyDesktopToolStartPageAction extends InfoGlueAbstractAction
 			this.finalReturnAddress = finalReturnAddress;
 		}
 	}
+	
+	private void populateActiveWorkflowVOList() throws SystemException
+	{
+		final String showAllWorkflows = CmsPropertyHandler.getShowAllWorkflows();
+		if(showAllWorkflows == null || showAllWorkflows.equalsIgnoreCase("true"))
+		{
+			workflowVOList = controller.getCurrentWorkflowVOList(getInfoGluePrincipal());
+		}
+		else
+		{
+			workflowVOList = controller.getMyCurrentWorkflowVOList(getInfoGluePrincipal());
+		}
+	}
+	
+	/**
+	 * Here are some ajax-methods
+	 */
+	
+	public String doGetActiveWorkflowProperties() throws Exception
+	{
+		StringBuffer sb = new StringBuffer();
+		
+		String activeWorkflowId = getRequest().getParameter("activeWorkflowId");
+		
+		populateActiveWorkflowVOList();
+		
+		List currentWorkflowVOList = workflowVOList;
+		Iterator activeWorkflowVOListIterator = currentWorkflowVOList.iterator();
+		while(activeWorkflowVOListIterator.hasNext())
+		{
+			WorkflowVO workflowVO = (WorkflowVO)activeWorkflowVOListIterator.next();
+			if(activeWorkflowId.equals(workflowVO.getId().toString()))
+			{
+				sb.append("<div id=\"activeWorkflowDetailsProperties\" class=\"propertiesDiv\" style=\"z-index:10\">");
+				sb.append("	<div id=\"activeWorkflowDetailsPropertiesHandle\" class=\"propertiesDivHandle\">");
+				sb.append("		<div id=\"propertiesDivLeftHandle\" class=\"propertiesDivLeftHandle\" style=\"width: 300px;\">" + workflowVO.getName() + "&nbsp;-&nbsp;#" + workflowVO.getId() + "</div><div id=\"propertiesDivRightHandle\" class=\"propertiesDivRightHandle\"><a href=\"javascript:hideDiv('activeWorkflowDetailsProperties');\" class=\"white\">close</a></div>");
+				sb.append("	</div>");
+				sb.append("	<div id=\"activeWorkflowDetailsPropertiesBody\" class=\"propertiesDivBody\">");
+				sb.append("		<table border=\"0\" cellpadding=\"4\" cellspacing=\"0\" width=\"100%\">");
+				
+				Iterator stepsIterator = workflowVO.getSteps().iterator();
+				while(stepsIterator.hasNext())
+				{
+					WorkflowStepVO workflowStepVO = (WorkflowStepVO)stepsIterator.next();
+					
+					sb.append("		<tr>");
+					sb.append("			<td style=\"" + (workflowStepVO.getFinishDate() == null ? "color: black;" : "color: silver;") + "\">" + workflowStepVO.getName() + "</td>");
+					sb.append("			<td style=\"" + (workflowStepVO.getFinishDate() == null ? "color: black;" : "color: silver;") + "\">" + (workflowStepVO.getOwner() != null ? workflowStepVO.getOwner() : "Not specified") + "</td>");
+					sb.append("			<td style=\"" + (workflowStepVO.getFinishDate() == null ? "color: black;" : "color: silver;") + "\">" + (workflowStepVO.getCaller() != null ? workflowStepVO.getCaller() : "Not specified") + "</td>");
+					sb.append("			<td style=\"" + (workflowStepVO.getFinishDate() == null ? "color: black;" : "color: silver;") + "\">" + workflowStepVO.getStatus() + "</td>");
+					sb.append("			<td style=\"" + (workflowStepVO.getFinishDate() == null ? "color: black;" : "color: silver;") + "\">" + (workflowStepVO.getStartDate() == null ? "Not started" : formatter.formatDate(workflowStepVO.getStartDate(), "yyyy-MM-dd")) + "</td>");
+					sb.append("			<td style=\"" + (workflowStepVO.getFinishDate() == null ? "color: black;" : "color: silver;") + "\">" + (workflowStepVO.getFinishDate() == null ? "Not completed" : formatter.formatDate(workflowStepVO.getFinishDate(), "yyyy-MM-dd")) + "</td>");
+					sb.append("		</tr>");
+				}
+				
+				sb.append("		</table>");
+				sb.append("		</div>");
+				sb.append("	</div>");
+				break;
+			}
+		}	
+		
+		//System.out.println("Div: " + sb.toString());
+		
+		this.getResponse().setContentType("text/plain");
+        this.getResponse().getWriter().println(sb.toString());
+		
+		return NONE;
+	}
+
+	/**
+	 * Gets a description div of a workflow
+	 */
+	
+	public String doGetAvailableWorkflowProperties() throws Exception
+	{
+		StringBuffer sb = new StringBuffer();
+		
+		String workflowName = getRequest().getParameter("workflowName");
+
+		try
+		{
+			List availableWorkflowVOList = controller.getAvailableWorkflowVOList(getInfoGluePrincipal());
+			
+			Iterator availableWorkflowVOListIterator = availableWorkflowVOList.iterator();
+			while(availableWorkflowVOListIterator.hasNext())
+			{
+				WorkflowVO availableWorkflowVO = (WorkflowVO)availableWorkflowVOListIterator.next();
+				if(workflowName.equals(availableWorkflowVO.getName()))
+				{
+					sb.append("<div id=\"availableWorkflowDetailsProperties\" class=\"propertiesDiv\" style=\"z-index: 10;\">");
+					sb.append("	<div id=\"availableWorkflowDetailsPropertiesHandle\" class=\"propertiesDivHandle\">");
+					sb.append("		<div id=\"propertiesDivLeftHandle\" class=\"propertiesDivLeftHandle\">" + availableWorkflowVO.getName() + "</div><div id=\"propertiesDivRightHandle\" class=\"propertiesDivRightHandle\"><a href=\"javascript:hideDiv('availableWorkflowDetailsProperties');\" class=\"white\">close</a></div>");
+					sb.append("	</div>");
+					sb.append("	<div id=\"availableWorkflowDetailsPropertiesBody\" class=\"propertiesDivBody\">");
+					sb.append("		<table border=\"0\" cellpadding=\"4\" cellspacing=\"0\" width=\"100%\">");
+						
+					Iterator workflowStepVOIterator = availableWorkflowVO.getDeclaredSteps().iterator();
+					while(workflowStepVOIterator.hasNext())
+					{		
+						WorkflowStepVO workflowStepVO = (WorkflowStepVO)workflowStepVOIterator.next();
+						
+						sb.append("		<tr style=\"background-color: white;\">");
+						sb.append("			<td>" + workflowStepVO.getName() + "</td>");
+						sb.append("			<td>" + (workflowStepVO.getOwner() != null ? workflowStepVO.getOwner() : "Not specified") + "</td>");
+						sb.append("		</tr>");
+					
+						Iterator workflowActionVOIterator = workflowStepVO.getActions().iterator();
+						while(workflowActionVOIterator.hasNext())
+						{
+							WorkflowActionVO workflowActionVO = (WorkflowActionVO)workflowActionVOIterator.next();
+	
+							sb.append("<tr style=\"background-color: #eeeeee;\">");
+							sb.append("	<td style=\"padding-left: 20px; font-size:10px;\">" + workflowActionVO.getName() + "</td>");
+							sb.append("		<td style=\"padding-left: 20px; font-size:10px;\"><!--" + workflowActionVO.getView() + "--></td>");
+							sb.append("	</tr>");
+									
+						}
+					}
+					sb.append("		</table>");
+					sb.append("	</div>");
+					sb.append("</div>");
+				}
+			}
+		}
+		catch (Exception e) 
+		{
+			e.printStackTrace();
+		}
+		
+		//System.out.println("Div: " + sb.toString());
+
+		this.getResponse().setContentType("text/plain");
+		this.getResponse().getWriter().println(sb.toString());
+		
+		return NONE;
+	}
+
 }

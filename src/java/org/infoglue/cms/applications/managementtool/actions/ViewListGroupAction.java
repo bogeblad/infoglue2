@@ -28,6 +28,7 @@ import java.util.List;
 
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.GroupControllerProxy;
+import org.infoglue.cms.controllers.kernel.impl.simple.RoleControllerProxy;
 import org.infoglue.cms.util.sorters.ReflectionComparator;
 
 
@@ -48,6 +49,13 @@ public class ViewListGroupAction extends InfoGlueAbstractAction
 	{
 	    this.groups = GroupControllerProxy.getController().getAllGroups();
 
+	    return "success";
+	}
+	
+	public String doListManagableGroups() throws Exception 
+	{
+		this.groups = GroupControllerProxy.getController().getAvailableGroups(this.getInfoGluePrincipal(), "Group.ManageUsers");
+	    
 	    return "success";
 	}
 	
