@@ -1223,6 +1223,11 @@ public class CmsPropertyHandler
 		return getServerNodeProperty("forceIdentityCheck", true, "false");
 	}
 
+	public static String getNumberOfVersionsToKeepDuringClean()
+	{
+		return getServerNodeProperty("numberOfVersionsToKeepDuringClean", true, "-1");
+	}
+
 	public static String getAllowPublicationEventFilter()
 	{
 	    return getServerNodeProperty("allowPublicationEventFilter", true, "false");
