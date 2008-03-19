@@ -52,9 +52,11 @@ import org.infoglue.cms.entities.content.impl.simple.ContentVersionImpl;
 import org.infoglue.cms.entities.content.impl.simple.MediumDigitalAssetImpl;
 import org.infoglue.cms.entities.content.impl.simple.SmallContentVersionImpl;
 import org.infoglue.cms.entities.content.impl.simple.SmallDigitalAssetImpl;
+import org.infoglue.cms.entities.content.impl.simple.SmallestContentVersionImpl;
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.entities.management.ContentTypeDefinition;
 import org.infoglue.cms.entities.management.Language;
+import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.entities.management.RegistryVO;
 import org.infoglue.cms.entities.management.impl.simple.LanguageImpl;
 import org.infoglue.cms.entities.publishing.PublicationVO;
@@ -1399,19 +1401,21 @@ public class ContentVersionController extends BaseController
 		    DigitalAssetVO digitalAssetVO = digitalAsset.getValueObject();
 		    
 		    InputStream is = DigitalAssetController.getController().getAssetInputStream(digitalAsset, true);
-		    try
+		    synchronized (is)
 		    {
-			    if(is == null && !allowBrokenAssets)
-			    	throw new ConstraintException("DigitalAsset.assetBlob", "3308", "Broken asset found on content '" + originalContentVersion.getValueObject().getContentName() + "' with id " + originalContentVersion.getValueObject().getContentId());
-			    	
-			    DigitalAssetController.create(digitalAssetVO, is, newContentVersion, db);
-			    //DigitalAssetController.create(digitalAssetVO, digitalAsset.getAssetBlob(), newContentVersion, db);
-		    }
-		    finally
-		    {
-		    	if(is != null)
-		    		is.close();
-		    }
+			    try
+			    {
+				    if(is == null && !allowBrokenAssets)
+				    	throw new ConstraintException("DigitalAsset.assetBlob", "3308", "Broken asset found on content '" + originalContentVersion.getValueObject().getContentName() + "' with id " + originalContentVersion.getValueObject().getContentId());
+				    	
+				    DigitalAssetController.create(digitalAssetVO, is, newContentVersion, db);
+			    }
+			    finally
+			    {
+			    	if(is != null)
+			    		is.close();
+			    }
+			}
 			logger.info("digitalAssets:" + digitalAssets.size());
 		}
 		//newContentVersion.setDigitalAssets(digitalAssets);
@@ -1661,6 +1665,133 @@ public class ContentVersionController extends BaseController
 	}
 
 	/**
+	 * This method are here to return all content versions that are x number of versions behind the current active version. This is for cleanup purposes.
+	 * 
+	 * @param numberOfVersionsToKeep
+	 * @return
+	 * @throws SystemException 
+	 */
+	
+	public void cleanContentVersions(int numberOfVersionsToKeep) throws SystemException 
+	{
+		int batchLimit = 200;
+		List languageVOList = LanguageController.getController().getLanguageVOList();
+		
+		Iterator<LanguageVO> languageVOListIterator = languageVOList.iterator();
+		while(languageVOListIterator.hasNext())
+		{
+			LanguageVO languageVO = languageVOListIterator.next();
+			List<ContentVersionVO> contentVersionVOList = getContentVersionVOList(languageVO.getId(), numberOfVersionsToKeep);
+		
+			logger.info("Deleting " + contentVersionVOList.size() + " versions for language " + languageVO.getName());
+			int maxIndex = (contentVersionVOList.size() > batchLimit ? batchLimit : contentVersionVOList.size());
+			List partList = contentVersionVOList.subList(0, maxIndex);
+			while(partList.size() > 0)
+			{
+				cleanVersions(numberOfVersionsToKeep, partList);
+				partList.clear();
+				maxIndex = (contentVersionVOList.size() > batchLimit ? batchLimit : contentVersionVOList.size());
+				partList = contentVersionVOList.subList(0, maxIndex);
+			}
+		}
+	}
+	
+	/**
+	 * Cleans the list of versions - even published ones. Use with care only for cleanup purposes.
+	 * 
+	 * @param numberOfVersionsToKeep
+	 * @param contentVersionVOList
+	 * @throws SystemException
+	 */
+	
+	private void cleanVersions(int numberOfVersionsToKeep, List contentVersionVOList) throws SystemException
+	{
+		Database db = CastorDatabaseService.getDatabase();
+    	
+        beginTransaction(db);
+
+        try
+        {
+			Iterator<ContentVersionVO> contentVersionVOIdListIterator = contentVersionVOList.iterator();
+			while(contentVersionVOIdListIterator.hasNext())
+			{
+				ContentVersionVO contentVersionVO = contentVersionVOIdListIterator.next();
+				ContentVersion contentVersion = getContentVersionWithId(contentVersionVO.getContentVersionId(), db);
+				logger.info("Deleting the contentVersion " + contentVersion.getId() + " on content " + contentVersion.getOwningContent().getName());
+				delete(contentVersion, db, true);
+			}
+			Thread.sleep(10000);
+
+			commitTransaction(db);
+        }
+        catch(Exception e)
+        {
+            logger.error("An error occurred so we should not completes the transaction:" + e, e);
+            rollbackTransaction(db);
+            throw new SystemException(e.getMessage());
+        }
+	}
+	
+	/**
+	 * This method are here to return all content versions that are x number of versions behind the current active version. This is for cleanup purposes.
+	 * 
+	 * @param numberOfVersionsToKeep
+	 * @return
+	 * @throws SystemException 
+	 */
+	
+	public List<ContentVersionVO> getContentVersionVOList(Integer languageId, int numberOfVersionsToKeep) throws SystemException 
+	{
+		logger.info("numberOfVersionsToKeep:" + numberOfVersionsToKeep);
+
+		Database db = CastorDatabaseService.getDatabase();
+    	
+    	List<ContentVersionVO> contentVersionsIdList = new ArrayList();
+
+        beginTransaction(db);
+
+        try
+        {
+            OQLQuery oql = db.getOQLQuery("SELECT cv FROM org.infoglue.cms.entities.content.impl.simple.SmallestContentVersionImpl cv WHERE cv.languageId = $1 ORDER BY cv.contentId, cv.contentVersionId desc");
+        	oql.bind(languageId);
+        	
+        	QueryResults results = oql.execute(Database.ReadOnly);
+			
+        	int numberOfLaterVersions = 0;
+        	Integer previousContentId = null;
+			while (results.hasMore())
+            {
+				SmallestContentVersionImpl version = (SmallestContentVersionImpl)results.next();
+				if(previousContentId != null && previousContentId.intValue() != version.getContentId().intValue())
+				{
+					numberOfLaterVersions = 0;
+				}
+				
+				if(numberOfLaterVersions > numberOfVersionsToKeep)
+            	{
+					contentVersionsIdList.add(version.getValueObject());
+            	}
+            	
+				previousContentId = version.getContentId();
+				numberOfLaterVersions++;
+            }
+            
+			results.close();
+			oql.close();
+
+			commitTransaction(db);
+        }
+        catch(Exception e)
+        {
+            logger.error("An error occurred so we should not completes the transaction:" + e, e);
+            rollbackTransaction(db);
+            throw new SystemException(e.getMessage());
+        }
+        
+		return contentVersionsIdList;
+	}
+
+	/**
 	 * This method are here to return all content versions that have somewhat heavy digitalAssets
 	 * and are x number of versions behind the current active version. This is for archiving purposes.
 	 * 
@@ -1763,8 +1894,6 @@ public class ContentVersionController extends BaseController
 				}
 			}
 		}
-		//System.out.println("numberOfNewerVersions:" + numberOfNewerVersions);
-		//System.out.println("minNewerVersions:" + minNewerVersions);
 
 		return numberOfNewerVersions >= minNewerVersions;
 	}
