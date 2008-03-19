@@ -282,6 +282,9 @@ public class ViewServerNodePropertiesAction extends InfoGluePropertiesAbstractAc
 	    
 	    populate(ps, "allowPublicationEventFilter");
 	    populate(ps, "defaultPublicationEventFilter");
+	    
+	    populate(ps, "numberOfVersionsToKeepDuringClean");
+
 
 	    try
 	    {

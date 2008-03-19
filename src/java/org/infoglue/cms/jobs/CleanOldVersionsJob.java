@@ -79,7 +79,7 @@ public class CleanOldVersionsJob implements Job
 		{
 
 	    	String numberOfVersionsToKeepDuringClean = CmsPropertyHandler.getNumberOfVersionsToKeepDuringClean();
-			System.out.println("numberOfVersionsToKeepDuringClean:" + numberOfVersionsToKeepDuringClean);
+	    	logger.info("numberOfVersionsToKeepDuringClean:" + numberOfVersionsToKeepDuringClean);
 			Integer numberOfVersionsToKeepDuringCleanInteger = new Integer(numberOfVersionsToKeepDuringClean);
 			if(numberOfVersionsToKeepDuringCleanInteger.intValue() > -1)
 				ContentVersionController.getContentVersionController().cleanContentVersions(numberOfVersionsToKeepDuringCleanInteger.intValue());

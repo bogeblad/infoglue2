@@ -388,7 +388,7 @@ public abstract class InfoGlueAbstractAction extends WebworkAbstractAction
 		}
 		catch (Exception e) 
 		{
-			logger.error("Problem getting principal from session:" + e.getMessage());
+			logger.warn("Problem getting principal from session:" + e.getMessage());
 		}
 		
 		return infoGluePrincipal;
