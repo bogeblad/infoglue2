@@ -62,40 +62,6 @@ public class RefreshJob implements Job
     	logger.info("* Starting refresh job which should run with nice intervals         *");
     	logger.info("* Purpose is to keep connection pool alive and to clear live caches *");
     	logger.info("*********************************************************************");
-
-    	/*
-		try
-		{
-	    	logger.error("Fetching redirects just to get anything really - really.");
-	    	Database db1 = CastorDatabaseService.getDatabase();
-			Database db2 = CastorDatabaseService.getDatabase();
-			Database db3 = CastorDatabaseService.getDatabase();
-			Database db4 = CastorDatabaseService.getDatabase();
-			Database db5 = CastorDatabaseService.getDatabase();
-			getRedirects(db1);
-			getRedirects(db2);
-			getRedirects(db3);
-			getRedirects(db4);
-			getRedirects(db5);
-		}
-		catch (Exception e) 
-		{
-			logger.error("Problem getting data.");
-		}
-		
-		try
-		{
-		    logger.error("Getting propertySet...");
-			Map args = new HashMap();
-		    args.put("globalKey", "dummy");
-		    PropertySet propertySet = PropertySetManager.getInstance("jdbc", args);
-		    propertySet.getKeys();
-		}
-		catch(Exception e)
-	    {
-	    	logger.error("Could not get property set: " + e.getMessage());
-	    }
-		*/
 		
 		try
 		{
@@ -112,27 +78,5 @@ public class RefreshJob implements Job
 	   
 	   	logger.info("Refresh-job finished");
     }
-
-	private void getRedirects(Database db) throws Bug, TransactionNotInProgressException, PersistenceException
-	{
-		try
-		{
-			db.begin();
-			
-			List redirects = RedirectController.getController().getRedirectVOList(db);
-			logger.error("redirects:" + redirects.size());
-			
-			db.commit();
-		}
-		catch (Exception e) 
-		{
-			logger.error("Problem getting data.");
-			db.rollback();
-		}
-		finally
-		{
-			db.close();
-		}
-	}
     
 }
