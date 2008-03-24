@@ -38,6 +38,7 @@ import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.controllers.kernel.impl.simple.AccessRightController;
 import org.infoglue.cms.controllers.kernel.impl.simple.InfoGluePrincipalControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
+import org.infoglue.cms.controllers.kernel.impl.simple.ToolbarController;
 import org.infoglue.cms.controllers.kernel.impl.simple.UserControllerProxy;
 import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.exception.SystemException;
@@ -134,25 +135,13 @@ public abstract class InfoGlueAbstractAction extends WebworkAbstractAction
 	public List getToolLocales()
 	{
 		return CmsPropertyHandler.getToolLocales();
-		/*
-	    List toolLocales = new ArrayList();
-	    
-	    int index = 0;
-	    String languageCode = CmsPropertyHandler.getProperty(index + ".toolLanguageCode");
-	    while(languageCode != null)
-	    {
-	        Locale locale = new java.util.Locale(languageCode);
-	        if(locale != null)
-	            toolLocales.add(locale);
-	        
-	        index++;
-	        languageCode = CmsPropertyHandler.getProperty(index + ".toolLanguageCode");
-	    }
-	    
-	    return toolLocales;
-	    */
 	}
 
+	public List getToolbarButtons(String toolbarKey, String primaryKey, String extraParameters)
+	{
+		ToolbarController toolbarController = new ToolbarController();
+		return toolbarController.getToolbarButtons(toolbarKey, getInfoGluePrincipal(), getLocale(), primaryKey, extraParameters);
+	}
 	
 	/**
 	 * This method returns a propertyValue for the logged in user.
