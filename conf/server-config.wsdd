@@ -56,6 +56,10 @@
   <parameter name="allowedMethods" value="*"/>
   <parameter name="className" value="org.infoglue.cms.webservices.RemoteWorkflowServiceImpl"/>
  </service>
+ <service name="RemoteFormService" provider="java:RPC">
+  <parameter name="allowedMethods" value="*"/>
+  <parameter name="className" value="org.infoglue.cms.webservices.RemoteFormServiceImpl"/>
+ </service>
  <service name="RemoteDeploymentService" provider="java:RPC">
   <parameter name="allowedMethods" value="*"/>
   <parameter name="className" value="org.infoglue.cms.webservices.RemoteDeploymentServiceImpl"/>
