@@ -521,9 +521,9 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 			}
 
 			System.out.println("childNodes:" + childNodes.getLength());
-			StringBuffer sb = new StringBuffer();
-			XMLHelper.serializeDom(componentNode, sb);
-			System.out.println("SB:" + sb);
+			//StringBuffer sb = new StringBuffer();
+			//XMLHelper.serializeDom(componentNode, sb);
+			//System.out.println("SB:" + sb);
 			
 			if(this.pagePartContentId != null)
 			{
@@ -532,7 +532,9 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 				
 				componentStructure = componentStructure.replaceAll(" isInherited=\"true\"", "");
 				componentStructure = componentStructure.replaceAll(" pagePartTemplateContentId=\"-1\"", "");
-				componentStructure = componentStructure.replaceFirst("<properties>", "<properties><property name=\"pagePartContentId\" path=\"" + pagePartContentId + "\"/>");
+				componentStructure = componentStructure.replaceAll("<property name=\"pagePartContentId\" path=\".*?\"></property>", "");
+				componentStructure = componentStructure.replaceAll("<property name=\"pagePartContentId\" path=\".*?\"/>", "");
+				componentStructure = componentStructure.replaceAll("<properties>", "<properties><property name=\"pagePartContentId\" path=\"" + pagePartContentId + "\"/>");
 				System.out.println("componentStructure:" + componentStructure);
 								
 				Document componentStructureDocument = XMLHelper.readDocumentFromByteArray(componentStructure.getBytes("UTF-8"));
