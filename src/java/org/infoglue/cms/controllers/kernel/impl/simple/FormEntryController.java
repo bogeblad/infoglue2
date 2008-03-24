@@ -72,14 +72,14 @@ public class FormEntryController extends BaseController
 		return new FormEntryController();
 	}
 
-    public FormEntryVO getFormEntryVOWithId(Integer redirectId) throws SystemException, Bug
+    public FormEntryVO getFormEntryVOWithId(Integer formEntryId) throws SystemException, Bug
     {
-		return (FormEntryVO) getVOWithId(FormEntryImpl.class, redirectId);
+		return (FormEntryVO) getVOWithId(FormEntryImpl.class, formEntryId);
     }
 
-    public FormEntry getFormEntryWithId(Integer redirectId, Database db) throws SystemException, Bug
+    public FormEntry getFormEntryWithId(Integer formEntryId, Database db) throws SystemException, Bug
     {
-		return (FormEntry) getObjectWithId(FormEntryImpl.class, redirectId, db);
+		return (FormEntry) getObjectWithId(FormEntryImpl.class, formEntryId, db);
     }
 
     public List getFormEntryVOList() throws SystemException, Bug
@@ -129,7 +129,41 @@ public class FormEntryController extends BaseController
 		
 		return formEntryVOList;	
 	}
+
+	/**
+	 * Returns the RepositoryVO with the given name.
+	 * 
+	 * @param name
+	 * @return
+	 * @throws SystemException
+	 * @throws Bug
+	 */
 	
+	public List getFormEntryValueVOList(Integer formEntryId) throws SystemException, Bug
+	{
+		List formEntryValueVOList = null;
+		
+		Database db = CastorDatabaseService.getDatabase();
+
+		try 
+		{
+			beginTransaction(db);
+
+			FormEntry formEntry = getFormEntryWithId(formEntryId, db);
+			formEntryValueVOList = toVOList(formEntry.getFormEntryValues());
+				
+			commitTransaction(db);
+		} 
+		catch (Exception e) 
+		{
+			logger.info("An error occurred so we should not complete the transaction:" + e);
+			rollbackTransaction(db);
+			throw new SystemException(e.getMessage());
+		}
+		
+		return formEntryValueVOList;	
+	}
+
 	/**
 	 * Returns the Repository with the given name fetched within a given transaction.
 	 * 
@@ -175,46 +209,25 @@ public class FormEntryController extends BaseController
         return formEntry.getValueObject();
     }
 
-    public FormEntryVO create(FormEntryVO formEntryVO, List<FormEntryValueVO> formEntryValueVOList) throws ConstraintException, SystemException
+    public FormEntry create(FormEntryVO formEntryVO, List<FormEntryValueVO> formEntryValueVOList, Database db) throws ConstraintException, SystemException, Exception
     {
-		Database db = CastorDatabaseService.getDatabase();
-		ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
-
-		FormEntryVO newFormEntryVO = null;
-	
-		beginTransaction(db);
-
-		try
-		{
-	        FormEntry formEntry = new FormEntryImpl();
-	        formEntry.setValueObject(formEntryVO);
-	        formEntry = (FormEntry) createEntity(formEntry, db);
+        FormEntry formEntry = new FormEntryImpl();
+        formEntry.setValueObject(formEntryVO);
+        formEntry = (FormEntry) createEntity(formEntry, db);
+        
+        Iterator<FormEntryValueVO> formEntryValueVOListIterator = formEntryValueVOList.iterator();
+        while(formEntryValueVOListIterator.hasNext())
+        {
+        	FormEntryValueVO formEntryValueVO = formEntryValueVOListIterator.next();
+        	
+        	FormEntryValue formEntryValue = new FormEntryValueImpl();
+        	formEntryValue.setFormEntry(formEntry);
+        	formEntry.getFormEntryValues().add(formEntryValue);
+        	formEntryValue.setValueObject(formEntryValueVO);
+        	formEntryValue = (FormEntryValue) createEntity(formEntryValue, db);
+        }
 	        
-	        Iterator<FormEntryValueVO> formEntryValueVOListIterator = formEntryValueVOList.iterator();
-	        while(formEntryValueVOListIterator.hasNext())
-	        {
-	        	FormEntryValueVO formEntryValueVO = formEntryValueVOListIterator.next();
-	        	
-	        	FormEntryValue formEntryValue = new FormEntryValueImpl();
-	        	formEntryValue.setFormEntry(formEntry);
-	        	formEntry.getFormEntryValues().add(formEntryValue);
-	        	formEntryValue.setValueObject(formEntryValueVO);
-	        	formEntryValue = (FormEntryValue) createEntity(formEntryValue, db);
-	        }
-	        
-	        if(formEntry != null)
-	        	newFormEntryVO = formEntry.getValueObject();
-	        
-			commitTransaction(db);
-		}
-		catch(Exception e)
-		{
-			logger.error("An error occurred so we should not completes the transaction:" + e, e);
-			rollbackTransaction(db);
-			throw new SystemException(e.getMessage());
-		}
-
-        return newFormEntryVO;
+        return formEntry;
     }
 
     public void delete(FormEntryVO formEntryVO) throws ConstraintException, SystemException
