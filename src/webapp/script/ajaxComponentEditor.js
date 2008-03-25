@@ -317,6 +317,20 @@ function getEventPositionY(e)
   	return mY;
 }
 
+function getElementHeight(element)
+{
+	var y;
+	if (element.innerHeight) // all except Explorer
+	{
+		y = element.innerHeight;
+	}
+	else if (document.body) // other Explorers
+	{
+		y = element.clientHeight;
+	}
+	return y;
+}
+
 function getWindowHeight()
 {
 	var y;
@@ -907,6 +921,76 @@ function edit()
 			newWin.focus();
 		else
 			alert("Could not open new window - if you have a popup blocker this is most likely the cause.");
+	}
+}
+
+function editInline() 
+{
+	if(!editUrl || editUrl == "")
+	{
+		alert("You must right click on a text to be able to use this feature.");
+	}
+	else
+	{
+		var type = $("#attribute" + selectedContentId + selectedAttributeName).attr("class");
+		//alert("type:" + type);
+		if(type && type == "textarea")
+		{
+			var parameterString = "repositoryId=44&contentId=" + selectedContentId + "&languageId=" + selectedLanguageId;
+			
+			var element = document.getElementById("attribute" + selectedContentId + selectedAttributeName);
+
+			var totalHeight = 100;
+			$("#attribute" + selectedContentId + selectedAttributeName + " > *").each(function(i){
+				//alert("Element found...");
+				//alert("Element:" + $(this).get(0));
+				totalHeight = totalHeight + getElementHeight( $(this).get(0) );
+				//totalHeight = $(this);
+			});
+			
+			var span = document.getElementById("attribute" + selectedContentId + selectedAttributeName);
+			//span.style.height = "20px";
+			var oFCKeditor = new FCKeditor("attribute" + selectedContentId + selectedAttributeName);
+			oFCKeditor.BasePath = "" + componentEditorUrl + "applications/FCKEditor/" ;
+			oFCKeditor.Config["CustomConfigurationsPath"] = "" + componentEditorUrl + "WYSIWYGProperties.action?" + parameterString;
+			oFCKeditor.Config['ToolbarStartExpanded'] = false ;
+			oFCKeditor.ToolbarSet = "Basic";
+			oFCKeditor.Height = totalHeight;
+			oFCKeditor.Value = span.innerHTML;
+			//span.innerHTML = "";
+			$("#attribute" + selectedContentId + selectedAttributeName).replaceWith(oFCKeditor.CreateHtml());
+			//span.innerHTML = oFCKeditor.CreateHtml();
+			//alert("HTML:" + oFCKeditor.CreateHtml());
+			/*
+			//alert("Height: " + element.style.height);
+			//var calculatedHeight = getElementHeight(element);
+			//alert("Calculated Height: " + calculatedHeight);
+			//alert("Inline editing...:" + selectedContentId + ":" + selectedAttributeName);
+			var html = $("#attribute" + selectedContentId + selectedAttributeName).html();
+			//var firstElement = $("#attribute" + selectedContentId + selectedAttributeName + " :first").get(0);
+			var totalHeight = 50;
+			$("#attribute" + selectedContentId + selectedAttributeName + " > *").each(function(i){
+				//alert("Element found...");
+				//alert("Element:" + $(this).get(0));
+				totalHeight = totalHeight + getElementHeight( $(this).get(0) );
+				//totalHeight = $(this);
+			});
+			
+			//alert("totalHeight:" + totalHeight);
+			$("#attribute" + selectedContentId + selectedAttributeName).html("<textarea id='" + "textarea" + selectedContentId + selectedAttributeName + "'>" + html + "</textarea>");
+			var id = "textarea" + selectedContentId + selectedAttributeName;
+			//alert("Replacing:" + id);
+			*/
+		}
+		else if(type && type == "textfield")
+		{
+			var elementObject = $("#attribute" + selectedContentId + selectedAttributeName);
+			var text = elementObject.html();
+			var fontSize = elementObject.parent().css("font-size");
+			elementObject.html("<span id='spanInput" + selectedContentId + selectedAttributeName + "' class='inEditW'><input class='edit' id='input" + selectedContentId + selectedAttributeName + "' type='text' value='" + text + "' /><a onclick='postEdit(\"input" + selectedContentId + selectedAttributeName + "\");' class='editSave'>Save</a></span>");
+			$(".edit").css("font-size", fontSize);
+			$(".edit").css("border", "1px solid #ccc");
+		}
 	}
 }
 

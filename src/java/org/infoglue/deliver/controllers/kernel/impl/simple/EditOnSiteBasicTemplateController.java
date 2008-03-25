@@ -24,6 +24,7 @@
 package org.infoglue.deliver.controllers.kernel.impl.simple;
 
 import java.io.File;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
@@ -31,6 +32,8 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
 import org.infoglue.cms.entities.content.ContentVO;
+import org.infoglue.cms.entities.management.ContentTypeAttribute;
+import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.io.FileHelper;
 import org.infoglue.cms.security.InfoGluePrincipal;
@@ -59,18 +62,42 @@ public class EditOnSiteBasicTemplateController extends BasicTemplateController
 	
 	private String decorateTag(Integer contentId, Integer languageId, String attributeName, String attributeValue)
 	{
-	    if(attributeValue != null && !attributeValue.trim().equals(""))
+		if(attributeValue != null && !attributeValue.trim().equals(""))
 	    {
+			ContentTypeAttribute contentTypeAttribute = null;
+			
+			ContentVO contentVO = this.getContent(contentId);
+			ContentTypeDefinitionVO contentTypeDefinitionVO = getContentTypeDefinitionVO(contentId);
+			Collection attributes = this.getContentTypeDefinitionAttributes(contentTypeDefinitionVO.getSchemaValue());
+			Iterator attributesIterator = attributes.iterator();
+			while(attributesIterator.hasNext())
+			{
+				
+				ContentTypeAttribute contentTypeAttributeCandidate = (ContentTypeAttribute)attributesIterator.next();
+				if(contentTypeAttributeCandidate.getName().equals(attributeName))
+				{
+					contentTypeAttribute = contentTypeAttributeCandidate;
+					break;
+				}
+			}
+			
+			String className = "";
+			if(contentTypeAttribute != null)
+			{
+				className = contentTypeAttribute.getInputType();
+			}
+
 			String editOnSiteUrl = CmsPropertyHandler.getEditOnSiteUrl();
             StringBuffer requestDelim = new StringBuffer( CmsPropertyHandler.getRequestArgumentDelimiter() );
 			StringBuffer decoratedAttributeValue = new StringBuffer();
-            decoratedAttributeValue.append("<span oncontextmenu=\"setContentItemParameters(" );
+            decoratedAttributeValue.append("<span class=\"" + className + "\" id=\"attribute" + contentId + attributeName + "\" oncontextmenu=\"setContentItemParameters(" );
             decoratedAttributeValue.append( contentId ).append( "," ).append( languageId );
             decoratedAttributeValue.append( ",'").append( attributeName ).append( "'); setEditUrl('");
             decoratedAttributeValue.append( editOnSiteUrl ).append( "?contentId=" ).append( contentId );
             decoratedAttributeValue.append( requestDelim ).append( "languageId=").append( languageId );
             decoratedAttributeValue.append( requestDelim ).append( "attributeName=" ).append( attributeName );
-            decoratedAttributeValue.append( requestDelim ).append( "forceWorkingChange=true');\">" );
+            decoratedAttributeValue.append( requestDelim ).append( "forceWorkingChange=true" );
+            decoratedAttributeValue.append( "#" + attributeName + "Anchor');\">" );
             decoratedAttributeValue.append( attributeValue + "</span>");
 			return decoratedAttributeValue.toString();
 	    }
