@@ -89,8 +89,21 @@ public class EditOnSiteBasicTemplateController extends BasicTemplateController
 
 			String editOnSiteUrl = CmsPropertyHandler.getEditOnSiteUrl();
             StringBuffer requestDelim = new StringBuffer( CmsPropertyHandler.getRequestArgumentDelimiter() );
-			StringBuffer decoratedAttributeValue = new StringBuffer();
-            decoratedAttributeValue.append("<span class=\"" + className + "\" id=\"attribute" + contentId + attributeName + "\" oncontextmenu=\"setContentItemParameters(" );
+            StringBuffer setContentItemParametersJavascript = new StringBuffer();
+            setContentItemParametersJavascript.append("setContentItemParameters(" );
+            setContentItemParametersJavascript.append( contentId ).append( "," ).append( languageId );
+            setContentItemParametersJavascript.append( ",'").append( attributeName ).append( "'); setEditUrl('");
+            setContentItemParametersJavascript.append( editOnSiteUrl ).append( "?contentId=" ).append( contentId );
+            setContentItemParametersJavascript.append( requestDelim ).append( "languageId=").append( languageId );
+            setContentItemParametersJavascript.append( requestDelim ).append( "attributeName=" ).append( attributeName );
+            setContentItemParametersJavascript.append( requestDelim ).append( "forceWorkingChange=true" );
+            setContentItemParametersJavascript.append( "#" + attributeName + "Anchor');" );
+            
+            StringBuffer decoratedAttributeValue = new StringBuffer();
+            decoratedAttributeValue.append("<span class=\" " + className + "\" id=\"attribute" + contentId + attributeName + "\" ondblclick=\"" + setContentItemParametersJavascript + " editInline(" + this.getSiteNode().getRepositoryId() + ");\" oncontextmenu=\"" + setContentItemParametersJavascript + "\");\">" + attributeValue + "</span>");
+
+            /*
+            decoratedAttributeValue.append("<span class=\" " + className + "\" id=\"attribute" + contentId + attributeName + "\" ondblclick=\"\" oncontextmenu=\"setContentItemParameters(" );
             decoratedAttributeValue.append( contentId ).append( "," ).append( languageId );
             decoratedAttributeValue.append( ",'").append( attributeName ).append( "'); setEditUrl('");
             decoratedAttributeValue.append( editOnSiteUrl ).append( "?contentId=" ).append( contentId );
@@ -99,6 +112,7 @@ public class EditOnSiteBasicTemplateController extends BasicTemplateController
             decoratedAttributeValue.append( requestDelim ).append( "forceWorkingChange=true" );
             decoratedAttributeValue.append( "#" + attributeName + "Anchor');\">" );
             decoratedAttributeValue.append( attributeValue + "</span>");
+			*/
 			return decoratedAttributeValue.toString();
 	    }
 	    else
