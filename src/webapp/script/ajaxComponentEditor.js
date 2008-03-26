@@ -924,7 +924,7 @@ function edit()
 	}
 }
 
-function editInline() 
+function editInline(repositoryId) 
 {
 	if(!editUrl || editUrl == "")
 	{
@@ -936,7 +936,7 @@ function editInline()
 		//alert("type:" + type);
 		if(type && type == "textarea")
 		{
-			var parameterString = "repositoryId=44&contentId=" + selectedContentId + "&languageId=" + selectedLanguageId;
+			var parameterString = "repositoryId=" + repositoryId + "&contentId=" + selectedContentId + "&languageId=" + selectedLanguageId;
 			
 			var element = document.getElementById("attribute" + selectedContentId + selectedAttributeName);
 
@@ -958,7 +958,7 @@ function editInline()
 			oFCKeditor.Height = totalHeight;
 			oFCKeditor.Value = span.innerHTML;
 			//span.innerHTML = "";
-			$("#attribute" + selectedContentId + selectedAttributeName).replaceWith(oFCKeditor.CreateHtml());
+			$("#attribute" + selectedContentId + selectedAttributeName).replaceWith(oFCKeditor.CreateHtml() + "<a href=\"\">Save</a>");
 			//span.innerHTML = oFCKeditor.CreateHtml();
 			//alert("HTML:" + oFCKeditor.CreateHtml());
 			/*
@@ -987,11 +987,31 @@ function editInline()
 			var elementObject = $("#attribute" + selectedContentId + selectedAttributeName);
 			var text = elementObject.html();
 			var fontSize = elementObject.parent().css("font-size");
-			elementObject.html("<span id='spanInput" + selectedContentId + selectedAttributeName + "' class='inEditW'><input class='edit' id='input" + selectedContentId + selectedAttributeName + "' type='text' value='" + text + "' /><a onclick='postEdit(\"input" + selectedContentId + selectedAttributeName + "\");' class='editSave'>Save</a></span>");
+			elementObject.html("<span id='spanInput" + selectedContentId + selectedAttributeName + "' class='inEditW'><input class='edit' id='input" + selectedContentId + selectedAttributeName + "' type='text' value='" + text + "' /><a onclick='saveAttribute(" + selectedContentId + ", " + selectedLanguageId + ", \"" + selectedAttributeName + "\");' class='editSave'>Save</a></span>");
 			$(".edit").css("font-size", fontSize);
 			$(".edit").css("border", "1px solid #ccc");
 		}
 	}
+}
+
+function saveAttribute(selectedContentId, selectedLanguageId, selectedAttributeName)
+{
+	//alert("Saving: " + selectedContentId + " " + selectedLanguageId + " " +  selectedAttributeName);
+	var value = $("#input" + selectedContentId + selectedAttributeName).val();
+	//alert("Value: " + value);
+	var data = "contentId=" + selectedContentId + "&languageId=" + selectedLanguageId + "&attributeName=" + selectedAttributeName + "&" + selectedAttributeName + "=" + value;
+
+	$.ajax({
+	   type: "POST",
+	   url: "http://localhost:8080/infoglueCMS/UpdateContentVersionAttribute!saveAndReturnValue.action",
+	   data: data,
+	   success: function(msg){
+	     //alert( "Data Saved: " + msg );
+	     $("#spanInput" + selectedContentId + selectedAttributeName).replaceWith(msg);
+	   }
+	 });
+
+	//$("#spanInput" + selectedContentId + selectedAttributeName).html("Saved field");
 }
 
 //--------------------------------------------

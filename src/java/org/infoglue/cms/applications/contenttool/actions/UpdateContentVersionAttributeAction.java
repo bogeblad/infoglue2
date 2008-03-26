@@ -69,11 +69,17 @@ public class UpdateContentVersionAttributeAction extends ViewContentVersionActio
 	
 	public String doExecute() throws Exception
     {
+		System.out.println("Updating content version attribute....");
+		System.out.println("contentId:" + contentId);
+		System.out.println("languageId:" + languageId);
+		System.out.println("attributeName:" + attributeName);
+		
     	super.initialize(this.contentVersionId, this.contentId, this.languageId);
 
 		this.contentVersionVO = this.getContentVersionVO();
 
 		String attributeValue = getRequest().getParameter(this.attributeName);
+		System.out.println("attributeValue:" + attributeValue);
 		if(attributeValue != null)
 		{
 			setAttributeValue(this.contentVersionVO, this.attributeName, attributeValue);
@@ -86,6 +92,33 @@ public class UpdateContentVersionAttributeAction extends ViewContentVersionActio
 		return "success";
 	}
 
+	public String doSaveAndReturnValue() throws Exception
+    {
+		System.out.println("Updating content version attribute through ajax....");
+		System.out.println("contentId:" + contentId);
+		System.out.println("languageId:" + languageId);
+		System.out.println("attributeName:" + attributeName);
+		
+    	super.initialize(this.contentVersionId, this.contentId, this.languageId);
+
+		this.contentVersionVO = this.getContentVersionVO();
+
+		String attributeValue = getRequest().getParameter(this.attributeName);
+		System.out.println("attributeValue:" + attributeValue);
+		if(attributeValue != null)
+		{
+			setAttributeValue(this.contentVersionVO, this.attributeName, attributeValue);
+			ceb.throwIfNotEmpty();
+			
+			this.contentVersionVO.setVersionModifier(this.getInfoGluePrincipal().getName());
+    		ContentVersionController.getContentVersionController().update(this.contentId, this.languageId, this.contentVersionVO, this.getInfoGluePrincipal());
+		}
+		
+		this.getResponse().setContentType("text/plain");
+        this.getResponse().getWriter().println(attributeValue);
+		
+		return NONE;
+	}
 
 	/**
 	 * This method sets a value to the xml that is the contentVersions Value. 
