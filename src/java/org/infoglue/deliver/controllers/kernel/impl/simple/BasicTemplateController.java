@@ -2055,6 +2055,26 @@ public class BasicTemplateController implements TemplateController
 	 * This method deliveres a list of strings which represents all assetKeys defined for a contentTypeDefinition.
 	 */
 	 
+	public Collection getContentTypeDefinitionAttributes(String schemaValue) 
+	{
+		Collection attributes = new ArrayList();
+		
+		try
+		{
+			attributes = ContentTypeDefinitionController.getController().getContentTypeAttributes(schemaValue);
+		}
+		catch(Exception e)
+		{
+			logger.error("An error occurred trying to get attributes on content with id: " + contentId + ":" + e.getMessage(), e);
+		}
+				
+		return attributes;
+	}
+ 
+	/**
+	 * This method deliveres a list of strings which represents all assetKeys defined for a contentTypeDefinition.
+	 */
+	 
 	public Collection getContentTypeDefinitionAssetKeys(String schemaValue) 
 	{
 		Collection assetKeys = new ArrayList();
@@ -6579,7 +6599,7 @@ public class BasicTemplateController implements TemplateController
 	    else
 	    {
 	    	String editOnSiteUrl = CmsPropertyHandler.getEditOnSiteUrl();
-			String decoratedAttributeValue = "<a href=\"#\" onClick=\"window.open('" + editOnSiteUrl + "?contentId=" + contentId + "&languageId=" + languageId + "&attributeName=" + attributeName + "&forceWorkingChange=true', 'Edit', 'width=500,height=600,left=' + (document.body.clientWidth / 4) + ',top=50,toolbar=no,status=no,scrollbars=yes,location=no,menubar=no,directories=no,resizable=no');\">" + html + "</a>";
+			String decoratedAttributeValue = "<a href=\"#\" onClick=\"window.open('" + editOnSiteUrl + "?contentId=" + contentId + "&languageId=" + languageId + "&attributeName=" + attributeName + "&forceWorkingChange=true#" + attributeName + "Anchor', 'Edit', 'width=500,height=600,left=' + (document.body.clientWidth / 4) + ',top=50,toolbar=no,status=no,scrollbars=yes,location=no,menubar=no,directories=no,resizable=no');\">" + html + "</a>";
 			return decoratedAttributeValue;
 	    }
 	} 
