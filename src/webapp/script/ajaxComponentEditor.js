@@ -932,9 +932,9 @@ function editInline(repositoryId)
 	}
 	else
 	{
-		var type = $("#attribute" + selectedContentId + selectedAttributeName).attr("class");
+		var type = jQuery.trim($("#attribute" + selectedContentId + selectedAttributeName).attr("class"));
 		//alert("type:" + type);
-		if(type && type == "textarea")
+		if(type == "textarea")
 		{
 			var parameterString = "repositoryId=" + repositoryId + "&contentId=" + selectedContentId + "&languageId=" + selectedLanguageId;
 			
@@ -957,16 +957,23 @@ function editInline(repositoryId)
 			oFCKeditor.ToolbarSet = "Basic";
 			oFCKeditor.Height = totalHeight;
 			oFCKeditor.Value = span.innerHTML;
-			$("#attribute" + selectedContentId + selectedAttributeName).html(oFCKeditor.CreateHtml() + "<a onclick='saveAttribute(" + selectedContentId + ", " + selectedLanguageId + ", \"" + selectedAttributeName + "\", \"textarea\");'><img src=\"images/v3/saveInlineIcon.gif\" alt=\"Save\" border=\"0\"/></a>");
+			$("#attribute" + selectedContentId + selectedAttributeName).html(oFCKeditor.CreateHtml() + "<a onclick='saveAttribute(" + selectedContentId + ", " + selectedLanguageId + ", \"" + selectedAttributeName + "\", \"textarea\");'>&nbsp;<img src=\"images/v3/saveInlineIcon.gif\" alt=\"Save\" border=\"0\"/></a>");
 		}
-		else if(type && type == "textfield")
+		else if(type == "textfield")
 		{
 			var elementObject = $("#attribute" + selectedContentId + selectedAttributeName);
+			//alert("elementObject:" + elementObject);
 			var text = elementObject.html();
+			//alert("text:" + text);
 			var fontSize = elementObject.parent().css("font-size");
-			elementObject.html("<span id='spanInput" + selectedContentId + selectedAttributeName + "' class='inEditW'><input class='edit' ondblclick='if (event && event.stopPropagation) {event.stopPropagation();}else if (window.event) {window.event.cancelBubble = true;}return false;' id='input" + selectedContentId + selectedAttributeName + "' type='text' value='" + text + "' /><a onclick='saveAttribute(" + selectedContentId + ", " + selectedLanguageId + ", \"" + selectedAttributeName + "\", \"textfield\");' class='editSave'><img src=\"images/v3/saveInlineIcon.gif\" alt=\"Save\" border=\"0\"/></a></span>");
+			//alert("fontSize:" + fontSize);
+			elementObject.html("<span id='spanInput" + selectedContentId + selectedAttributeName + "' class='inEditW'><input class='edit' ondblclick='if (event && event.stopPropagation) {event.stopPropagation();}else if (window.event) {window.event.cancelBubble = true;}return false;' id='input" + selectedContentId + selectedAttributeName + "' type='text' value='" + text + "' /><a onclick='saveAttribute(" + selectedContentId + ", " + selectedLanguageId + ", \"" + selectedAttributeName + "\", \"textfield\");' class='editSave'>&nbsp;<img src=\"images/v3/saveInlineIcon.gif\" alt=\"Save\" border=\"0\"/></a></span>");
 			$(".edit").css("font-size", fontSize);
 			$(".edit").css("border", "1px solid #ccc");
+		}
+		else
+		{
+			alert("Nope: " + type);
 		}
 	}
 }

@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+#beginManagementToolV3("tool.managementtool.createRole.header" "tool.managementtool.createRole.header" "")
+
+<SCRIPT type="text/javascript" SRC="script/OptionTransfer.js"></SCRIPT>
+
+<script type="text/javascript" src="script/yui/build/yahoo-dom-event/yahoo-dom-event.js"></script>
+<script type="text/javascript" src="script/yui/build/element/element-beta-min.js"></script>
+<script type="text/javascript" src="script/yui/build/button/button-min.js"></script>
+
+<style>
+	
+	.yui-skin-sam .yui-button {
+		border-width: 1px 0;
+		border-style: solid;
+		border-color: #808080;
+		background: url(script/yui/assets/skins/sam/sprite.png) repeat-x 0 0;
+		margin: auto .25em;
+	}
+	
+	.yui-skin-sam .yui-button .first-child {
+		border-width: 0 1px;
+		border-style: solid;
+		border-color: #808080;
+		margin: 0 -1px; *
+		position: relative; *
+		left: -1px;
+	}
+
+	.yui-skin-sam .yui-button-hover {
+		border-color: #7D98B8;
+		background-position: 0 -1300px;
+	}
+	
+	.yui-skin-sam .yui-button-hover .first-child {
+		border-color: #7D98B8;
+	}
+</style>
+<script type="text/javascript">
+
+	$(document).ready(function(){
+		$(":input:first").focus();
+
+ 		$("div").each(function(i,e){
+ 			$(this).attr("tabindex", "-1");
+		}); 
+ 	});
+	
+    YAHOO.example.init = function () 
+    {
+        YAHOO.util.Event.onContentReady("buttons", function () 
+        {
+			var oSaveButton = new YAHOO.widget.Button("saveButton");
+			var oSaveAndExitButton = new YAHOO.widget.Button("saveAndExitButton");
+			var oCancelButton = new YAHOO.widget.Button("cancelButton");
+
+			var oRightButton = new YAHOO.widget.Button("transferRightButton");
+			var oLeftButton = new YAHOO.widget.Button("transferLeftButton");
+
+        	oSaveButton.on("click", function (p_oEvent){
+        		save(document.inputForm);
+        	});
+        	oCancelButton.on("click", function (p_oEvent){
+        		document.location.href = 'ViewListRole!listManagableRoles.action';
+        	});
+			
+        	oRightButton.on("click", function (p_oEvent){
+	   			!$('#unassignedUserNameList option:selected').remove().appendTo('#userName');  
+        	});
+        	oLeftButton.on("click", function (p_oEvent){
+				!$('#userName option:selected').remove().appendTo('#unassignedUserNameList');  
+        	});
+        });
+    }();
+
+	function markNearestOption()
+	{
+		var searchField = document.getElementById("searchField");
+		var list        = document.getElementById("unassignedUserNameList");
+		
+	  	sNode = list.options;
+	  	for(i=0;i<sNode.length;i++) 
+	  	{
+			currentNode = sNode[i];
+			if(currentNode.text.toLowerCase().indexOf(searchField.value.toLowerCase()) > -1) 
+			{
+				list.selectedIndex = i;
+			  	break;		
+			}
+	  	}
+	}
+	
+	function save(form)
+	{
+		$('#userName option').each(function(i) {  
+			$(this).attr("selected", "selected");  
+			});
+		form.submit();
+	}
+
+	function saveAndExit(form, action)
+	{
+		form.action = action;
+		save(form);
+	}
+
+</script>
+
+
+<div id="menutoolbar">
+	<div style="float: left; padding-top: 8px; padding-left: 10px;">$ui.getString("tool.managementtool.createRole.header")</div>
+</div>
+
+<div style="clear: both;"></div>
+
+<div id="igEditArea">
+
+	<form id="inputForm" name="inputForm" class="ig-form" method="post" action="CreateRole!v3.action">
+
+		<fieldset class="ig-fieldset">
+			<!--<legend class="ig-legend">$ui.getString("tool.managementtool.createRole.header")</legend>-->
+			#editTextFieldCSS("Role.name" "roleName" "$!roleName" "51" true)
+			#editTextFieldCSS("Role.description" "description" "$!description" "51" true)
+
+			#labelCSS("tool.managementtool.roleManageMemebers.label" "ig-section-label")
+			
+			<div>
+				<table cellpadding="0" cellspacing="0">
+					<tr>
+					  <td>
+						<table width="100%" border="0" cellpadding="0" cellspacing="2">
+						  <tr>
+						    <td>State a name or choose from list:<br>
+						        <input type="text" id="searchField" name="searchField" class="ig-textfield" style="width:300px;" onkeypress="javascript:markNearestOption();" onchange="javascript:markNearestOption();">
+						      </td>
+						    <td>&nbsp;</td>
+						    <td valign="bottom">Members</td>
+						  </tr>
+						  <tr>
+						    <td>
+						    	<select class="ig-select" id="unassignedUserNameList" name="unassignedUserNameList" MULTIPLE SIZE="10" style="width:300px;">
+						          	#foreach ($infoGluePrincipal in $infoGluePrincipals)
+										<option value="$infoGluePrincipal.name" title="$infoGluePrincipal.name">$infoGluePrincipal.name</option>
+									#end
+						        </select>
+						    </td>
+						    <td align="center">
+						        <input id="transferRightButton" name="transferRightButton" type="button" name="right" value="&gt;&gt;" style="width:50px; font-family: verdana; font-size: 10px;"><BR><BR>
+								<input id="transferLeftButton" name="transferLeftButton" type="button" name="left" value="&lt;&lt;" style="width:50px; font-family: verdana; font-size: 10px;"><BR><BR>
+							</td>
+						    <td>
+						      	<select class="ig-select" id="userName" name="userName" multiple size="10" style="width:300px;">
+							    </select>
+						    </td>
+						</tr>
+						</table>
+						</td>
+					</tr>
+				</table>
+			</div>
+						
+			<div class="ig-row">
+				<label class="ig-label-nl" for="contentTypeDefinitionId">$ui.getString("tool.managementtool.roleContentTypeDefinition.label")</label>
+				<select name="contentTypeDefinitionId" class="ig-select">
+					<option value="">Choose type</option>
+					#foreach ($contentTypeDefinitionVO in $contentTypeDefinitionVOList)
+						#set($selected = "")
+						#foreach ($assignedContentTypeDefinitionVO in $assignedContentTypeDefinitionVOList)
+							#if($assignedContentTypeDefinitionVO.id == $contentTypeDefinitionVO.id)
+								#set($selected = "selected")
+							#end 
+						#end
+						<option value="$contentTypeDefinitionVO.id" $selected>$contentTypeDefinitionVO.getName()</option>
+					#end
+				</select>
+			</div>
+			
+			<div id="buttons" class="ig-buttonRow">
+				<input type="button" id="saveButton" name="saveButton" value="Save" title="Save"/>
+				<input type="button" id="saveAndExitButton" name="saveAndExitButton" value="Save and exit" title="Save and exit to list again"/>
+				<input type="button" id="cancelButton" name="cancelButton" value="Cancel" title="Cancel"/>
+			</div>
+		</fieldset>
+	
+	</form>
+
+</div>
+
+#endManagementToolV3()
