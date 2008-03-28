@@ -49,6 +49,42 @@
 #end
 
 
+##*****************************************************
+## This is the header for all V3 managementtool pages *
+##*****************************************************
+
+#macro(beginManagementToolV3 $titleKey $hasDataTable)
+
+<html>
+<head>
+	<title>$ui.getString($titleKey)</title>
+	<script type="text/javascript" src="script/yui/build/yahoo-dom-event/yahoo-dom-event.js"></script>
+	<script type="text/javascript" src="script/yui/build/element/element-beta-min.js"></script>
+	<script type="text/javascript" src="script/yui/build/button/button-min.js"></script>
+	<script type="text/javascript" src="script/jquery/jquery-1.2.3.min.js"></script>
+	
+	#if($hasDataTable)
+		<link rel="stylesheet" type="text/css" href="script/yui/build/fonts/fonts-min.css" />
+		<link rel="stylesheet" type="text/css" href="script/yui/build/datatable/assets/skins/sam/datatable.css" />
+		<script type="text/javascript" src="script/yui/build/utilities/utilities.js"></script>
+		<script type="text/javascript" src="script/yui/build/datasource/datasource-beta.js"></script>
+		<script type="text/javascript" src="script/yui/build/datatable/datatable-beta.js"></script>
+	#end
+	
+	<link rel="stylesheet" type="text/css" href="css/v3/infoglue.css" />
+	<link rel="stylesheet" type="text/css" href="css/cms.css" />
+	
+	<meta http-equiv="Expires" content="Tue, 01 Jan 1980 1:00:00 GMT" />
+	<meta http-equiv="Cache-Control" content="no-cache" />
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+</head>
+
+<body class="generaltooledit yui-skin-sam">
+#set( $lvColor = "silver")
+
+#end
+
 ##**************************************************
 ## This is the header for all contenttool pages    *
 ##**************************************************
@@ -169,6 +205,17 @@
 
 #macro(endManagementTool)
 </div>
+<div id="systemMessages"></div>
+<div id="systemMessagesDialog"></div>
+</body>
+</html>
+#end
+
+##**************************************************
+## This is the footer for all managementtool pages *
+##**************************************************
+
+#macro(endManagementToolV3)
 <div id="systemMessages"></div>
 <div id="systemMessagesDialog"></div>
 </body>
@@ -847,6 +894,24 @@ $ui.getString("entity.${fieldNameKey}.label")<br/>
 	#end
 #end
 
+##***********************************************************
+## A macro to add a toolbar to a page
+##***********************************************************
+#macro(menuToolbar $headline $buttons)
+<div id="menutoolbar">
+	<div style="float:left">
+		#if($headline != "")
+			<div style="float: left; padding-top: 8px; padding-left: 10px;">$headline</div>
+		#end
+		#foreach($button in $buttons)
+			<input type="button" id="button$velocityCount" name="button$velocityCount" value="$button.text" title="$button.title"/>
+		#end
+	</div>
+	<div style="float:right">
+		<input type="button" id="buttonHelp" name="buttonHelp" value="Help" title="Help on this dialog"/>
+	</div>
+</div>
+#end
 
 
 ##**************************************************
@@ -1038,6 +1103,36 @@ $ui.getString("entity.${fieldNameKey}.label")<br/>
 	<div class="row">
 		<label for="$fieldName">$fieldNameLabel</label>
   	  	<input type="text" class="text" id="$fieldName" name="$fieldName" value="$!fieldValue" size="$length"/><a href="ViewServerNodeProperties!deleteProperty.action?serverNodeId=$!serverNodeId&key=$fieldName"><img src="images/delete.gif" border="0"/></a>
+	</div>
+#end
+
+#macro(editTextFieldCSS $fieldNameKey $fieldName $fieldValue $length $mandatory $disabled)
+  #editTextFieldCSS3($ui.getString("entity.${fieldNameKey}.label") $fieldNameKey $fieldName $fieldValue $length $mandatory, $disabled)
+#end
+
+#macro(editTextFieldCSS3 $fieldNameLabel $errorKey $fieldName $fieldValue $length $mandatory $disabled)
+	
+	#set($errorMessageText = "")
+	#if($errors.hasErrors($errorKey))
+		#foreach($errorMessage in $errors.getErrors($errorKey))
+			#if($velocityCount > 1)
+				#set($errorMessageText = "$errorMessageText, $errorMessage")
+			#else
+				#set($errorMessageText = "$errorMessage")
+			#end
+		#end
+		#set($errorMessageText = "<font color='red'>$errorMessageText</font>")
+	#end
+	
+	<div class="ig-row">
+		<label class="ig-label" for="$fieldName">$fieldNameLabel #if($mandatory)<em style="color:red;" title="$ui.getString("tool.common.mandatoryField")">*</em>#end</label>
+  	  	<input type="text" class="ig-textfield" id="$fieldName" name="$fieldName" value="$!fieldValue" size="$length" $disabled/> $errorMessageText
+	</div>
+#end
+
+#macro(labelCSS $labelKey $css)
+	<div class="ig-row">
+		<p class="$css">$ui.getString("$labelKey")</p>
 	</div>
 #end
 

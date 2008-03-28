@@ -1,4 +1,4 @@
-<!-- $Id: actions.xml,v 1.57 2008/03/18 22:35:51 mattias Exp $ -->
+<!-- $Id: actions.xml,v 1.58 2008/03/28 17:06:46 mattias Exp $ -->
 <actions>
 
 	<!-- MySettings -->
@@ -562,25 +562,34 @@
 	<!-- Role -->
 	<action name="org.infoglue.cms.applications.managementtool.actions.ViewListRoleAction" alias="ViewListRole">
 		<view name="success">/cms/managementtool/viewListRole.vm</view>
+		<view name="successV3">/cms/managementtool/v3/viewListRole.vm</view>
 		<view name="error">/cms/managementtool/error.vm</view>
 	</action>
 	<action name="org.infoglue.cms.applications.managementtool.actions.ViewRoleAction" alias="ViewRole">
 		<view name="success">/cms/managementtool/viewRole.vm</view>
+		<view name="successV3">/cms/managementtool/v3/viewRole.vm</view>
 		<view name="error">/cms/managementtool/error.vm</view>
 	</action>
 	<action name="org.infoglue.cms.applications.managementtool.actions.CreateRoleAction" alias="CreateRole">
 		<view name="input">/cms/managementtool/createRole.vm</view>
 		<view name="success">ViewRole.action</view>
+		<view name="inputV3">/cms/managementtool/v3/createRole.vm</view>
+		<view name="successV3">ViewRole!v3.action?roleName=${roleName}</view>
+		<view name="successSaveAndExitV3">ViewListRole!listManagableRoles.action</view>
 		<view name="error">/cms/managementtool/error.vm</view>
 	</action>
 	<action name="org.infoglue.cms.applications.managementtool.actions.DeleteRoleAction" alias="DeleteRole">
 		<view name="success">ViewListRole.action</view>
+		<view name="successV3">ViewListRole!listManagableRoles.action</view>
 		<view name="error">/cms/managementtool/error.vm</view>
 	</action>
 	<action name="org.infoglue.cms.applications.managementtool.actions.UpdateRoleAction" alias="UpdateRole">
 		<view name="input">/cms/managementtool/viewRole.vm</view>
 		<view name="success">ViewRole.action</view>
 		<view name="saveAndExit">ViewListRole.action</view>
+		<view name="inputV3">/cms/managementtool/v3/viewRole.vm</view>
+		<view name="successV3">ViewRole!v3.action</view>
+		<view name="saveAndExitV3">ViewListRole!listManagableRoles.action</view>
 		<view name="error">/cms/managementtool/error.vm</view>
 	</action>
 	<action name="org.infoglue.cms.applications.managementtool.actions.ViewRoleUsersAction" alias="ViewRoleUsers">

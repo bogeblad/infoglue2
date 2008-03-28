@@ -2,42 +2,8 @@
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
-#beginManagementToolV3("tool.managementtool.createRole.header" "tool.managementtool.createRole.header" "")
+#beginManagementToolV3("tool.managementtool.createRole.header" true)
 
-<SCRIPT type="text/javascript" SRC="script/OptionTransfer.js"></SCRIPT>
-
-<script type="text/javascript" src="script/yui/build/yahoo-dom-event/yahoo-dom-event.js"></script>
-<script type="text/javascript" src="script/yui/build/element/element-beta-min.js"></script>
-<script type="text/javascript" src="script/yui/build/button/button-min.js"></script>
-
-<style>
-	
-	.yui-skin-sam .yui-button {
-		border-width: 1px 0;
-		border-style: solid;
-		border-color: #808080;
-		background: url(script/yui/assets/skins/sam/sprite.png) repeat-x 0 0;
-		margin: auto .25em;
-	}
-	
-	.yui-skin-sam .yui-button .first-child {
-		border-width: 0 1px;
-		border-style: solid;
-		border-color: #808080;
-		margin: 0 -1px; *
-		position: relative; *
-		left: -1px;
-	}
-
-	.yui-skin-sam .yui-button-hover {
-		border-color: #7D98B8;
-		background-position: 0 -1300px;
-	}
-	
-	.yui-skin-sam .yui-button-hover .first-child {
-		border-color: #7D98B8;
-	}
-</style>
 <script type="text/javascript">
 
 	$(document).ready(function(){
@@ -62,6 +28,9 @@
         	oSaveButton.on("click", function (p_oEvent){
         		save(document.inputForm);
         	});
+        	oSaveAndExitButton.on("click", function (p_oEvent){
+        		saveAndExit(document.inputForm, "CreateRole!saveAndExitV3.action");
+        	});
         	oCancelButton.on("click", function (p_oEvent){
         		document.location.href = 'ViewListRole!listManagableRoles.action';
         	});
@@ -73,6 +42,15 @@
 				!$('#userName option:selected').remove().appendTo('#unassignedUserNameList');  
         	});
         });
+        
+        YAHOO.util.Event.onContentReady("menutoolbar", function () 
+        {            
+			var oButtonHelp = new YAHOO.widget.Button("buttonHelp");
+        	oButtonHelp.on("click", function (p_oEvent){
+        		document.location.href = 'http://www.infoglue.org';
+        	});
+        });
+        
     }();
 
 	function markNearestOption()
@@ -108,10 +86,7 @@
 
 </script>
 
-
-<div id="menutoolbar">
-	<div style="float: left; padding-top: 8px; padding-left: 10px;">$ui.getString("tool.managementtool.createRole.header")</div>
-</div>
+#menuToolbar("$ui.getString('tool.managementtool.createRole.header')" $buttons) 
 
 <div style="clear: both;"></div>
 
@@ -121,8 +96,8 @@
 
 		<fieldset class="ig-fieldset">
 			<!--<legend class="ig-legend">$ui.getString("tool.managementtool.createRole.header")</legend>-->
-			#editTextFieldCSS("Role.name" "roleName" "$!roleName" "51" true)
-			#editTextFieldCSS("Role.description" "description" "$!description" "51" true)
+			#editTextFieldCSS("Role.roleName" "roleName" "$!roleName" "51" true "")
+			#editTextFieldCSS("Role.description" "description" "$!description" "51" true "")
 
 			#labelCSS("tool.managementtool.roleManageMemebers.label" "ig-section-label")
 			
@@ -132,11 +107,11 @@
 					  <td>
 						<table width="100%" border="0" cellpadding="0" cellspacing="2">
 						  <tr>
-						    <td>State a name or choose from list:<br>
+						    <td>$ui.getString("tool.managementtool.stateNameOrChooseFromList.label"):<br>
 						        <input type="text" id="searchField" name="searchField" class="ig-textfield" style="width:300px;" onkeypress="javascript:markNearestOption();" onchange="javascript:markNearestOption();">
 						      </td>
 						    <td>&nbsp;</td>
-						    <td valign="bottom">Members</td>
+						    <td valign="bottom">$ui.getString("tool.managementtool.members.label")</td>
 						  </tr>
 						  <tr>
 						    <td>
@@ -164,7 +139,7 @@
 			<div class="ig-row">
 				<label class="ig-label-nl" for="contentTypeDefinitionId">$ui.getString("tool.managementtool.roleContentTypeDefinition.label")</label>
 				<select name="contentTypeDefinitionId" class="ig-select">
-					<option value="">Choose type</option>
+					<option value="">$ui.getString("tool.managementtool.chooseContentTypeDefinition.label")</option>
 					#foreach ($contentTypeDefinitionVO in $contentTypeDefinitionVOList)
 						#set($selected = "")
 						#foreach ($assignedContentTypeDefinitionVO in $assignedContentTypeDefinitionVOList)
