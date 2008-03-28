@@ -748,7 +748,7 @@
 			else if(selectBox.value == "select" || selectBox.value == "checkbox")
 			{
 				var dataProvider = document.getElementById("componentPropertyDefinition_dataProvider").value;
-				if(dataProvider != '')
+				if(dataProvider == '')
 					document.getElementById("optionsParagraph").style.display = "block";
 				else
 					document.getElementById("optionsParagraph").style.display = "none";
