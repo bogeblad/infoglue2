@@ -84,6 +84,10 @@
 				propertyDataProvider 			= property.getDataProvider();
 				propertyDataProviderParameters 	= property.getDataProviderParameters();
 				
+				propertyAutoCreateContent	 	= property.getAutoCreateContent();
+				propertyAutoCreateContentMethod	= property.getAutoCreateContentMethod();
+				propertyAutoCreateContentPath	= property.getAutoCreateContentPath();
+				
 				if(propertyType == "select" || propertyType == "checkbox")
 				{
 					propertiesXML += "<property name='" + propertyName + "' type='" + propertyType + "' multiple='" + propertyMultiple + "' assetBinding='" + propertyAssetBinding + "' description='" + propertyDescription + "' defaultValue='" + propertyDefaultValue + "' dataProvider='" + propertyDataProvider + "' dataProviderParameters='" + propertyDataProviderParameters + "'>";
@@ -100,7 +104,7 @@
 					propertiesXML += "</property>";					
 				}
 				else
-					propertiesXML += "<property name='" + propertyName + "' type='" + propertyType + "' entity='" + propertyEntity + "' multiple='" + propertyMultiple + "' assetBinding='" + propertyAssetBinding + "' allowedContentTypeDefinitionNames='" + propertyAllowedContentTypeNames + "' description='" + propertyDescription + "' defaultValue='" + propertyDefaultValue + "' WYSIWYGEnabled='" + propertyWYSIWYGEnabled + "' WYSIWYGToolbar='" + propertyWYSIWYGToolbar + "' dataProvider='" + propertyDataProvider + "' dataProviderParameters='" + propertyDataProviderParameters + "'/>";
+					propertiesXML += "<property name='" + propertyName + "' type='" + propertyType + "' entity='" + propertyEntity + "' multiple='" + propertyMultiple + "' assetBinding='" + propertyAssetBinding + "' allowedContentTypeDefinitionNames='" + propertyAllowedContentTypeNames + "' description='" + propertyDescription + "' defaultValue='" + propertyDefaultValue + "' WYSIWYGEnabled='" + propertyWYSIWYGEnabled + "' WYSIWYGToolbar='" + propertyWYSIWYGToolbar + "' dataProvider='" + propertyDataProvider + "' dataProviderParameters='" + propertyDataProviderParameters + "' autoCreateContent='" + propertyAutoCreateContent + "' autoCreateContentMethod='" + propertyAutoCreateContentMethod + "' autoCreateContentPath='" + propertyAutoCreateContentPath + "'/>";
 			}
 		   	
 		   	propertiesXML += "</properties>";
@@ -260,11 +264,25 @@
 
 			document.componentPropertyDefinitionForm.componentPropertyDefinition_description.value = componentPropertyDefinition.description;
 			
-			document.componentPropertyDefinitionForm.componentPropertyDefinition_defaultValue.value = componentPropertyDefinition.defaultValue;
-			document.componentPropertyDefinitionForm.componentPropertyDefinition_dataProvider.value = componentPropertyDefinition.dataProvider;
+			document.componentPropertyDefinitionForm.componentPropertyDefinition_defaultValue.value 	= componentPropertyDefinition.defaultValue;
+			document.componentPropertyDefinitionForm.componentPropertyDefinition_dataProvider.value 	= componentPropertyDefinition.dataProvider;
 			document.componentPropertyDefinitionForm.componentPropertyDefinition_dataProviderParameters.value = componentPropertyDefinition.dataProviderParameters;
-			document.componentPropertyDefinitionForm.componentPropertyDefinition_WYSIWYGEnabled.value = componentPropertyDefinition.WYSIWYGEnabled;
-			document.componentPropertyDefinitionForm.componentPropertyDefinition_WYSIWYGToolbar.value = componentPropertyDefinition.WYSIWYGToolbar;
+			document.componentPropertyDefinitionForm.componentPropertyDefinition_WYSIWYGEnabled.value 	= componentPropertyDefinition.WYSIWYGEnabled;
+			document.componentPropertyDefinitionForm.componentPropertyDefinition_WYSIWYGToolbar.value 	= componentPropertyDefinition.WYSIWYGToolbar;
+			
+			if(componentPropertyDefinition.autoCreateContent == "false")
+				document.componentPropertyDefinitionForm.componentPropertyDefinition_autoCreateContent.options[0].selected = 1;
+			else
+				document.componentPropertyDefinitionForm.componentPropertyDefinition_autoCreateContent.options[1].selected = 1;
+
+			if(componentPropertyDefinition.autoCreateContentMethod == "fixedPath")
+				document.componentPropertyDefinitionForm.componentPropertyDefinition_autoCreateContentMethod.options[1].selected = 1;
+			else
+				document.componentPropertyDefinitionForm.componentPropertyDefinition_autoCreateContentMethod.options[0].selected = 1;
+			
+			document.componentPropertyDefinitionForm.componentPropertyDefinition_autoCreateContent.value 		= componentPropertyDefinition.autoCreateContent;
+			document.componentPropertyDefinitionForm.componentPropertyDefinition_autoCreateContentMethod.value 	= componentPropertyDefinition.autoCreateContentMethod;
+			document.componentPropertyDefinitionForm.componentPropertyDefinition_autoCreateContentPath.value 	= componentPropertyDefinition.autoCreateContentPath;
 			
 			var allowedContentTypeNamesArray = componentPropertyDefinition.getAllowedContentTypeNames().split(",");
 			var selObject = document.componentPropertyDefinitionForm.componentPropertyDefinition_allowedContentTypeNames;
@@ -343,6 +361,10 @@
 				componentPropertyDefinition.setEntity(document.getElementById("componentPropertyDefinition_entity").value);
 				componentPropertyDefinition.setMultiple(document.getElementById("componentPropertyDefinition_multiple").value);
 				componentPropertyDefinition.setAssetBinding(document.getElementById("componentPropertyDefinition_assetBinding").value);
+				
+				componentPropertyDefinition.setAutoCreateContent(document.getElementById("componentPropertyDefinition_autoCreateContent").value);
+				componentPropertyDefinition.setAutoCreateContentMethod(document.getElementById("componentPropertyDefinition_autoCreateContentMethod").value);
+				componentPropertyDefinition.setAutoCreateContentPath(document.getElementById("componentPropertyDefinition_autoCreateContentPath").value);
 				
 				var selObject = document.getElementById("componentPropertyDefinition_allowedContentTypeNames");
 				var length = selObject.options.length;
@@ -570,6 +592,9 @@
 				property.setWYSIWYGToolbar(previousProperty.getWYSIWYGToolbar());
 				property.setDataProvider(previousProperty.getDataProvider());
 				property.setDataProviderParameters(previousProperty.getDataProviderParameters());
+				property.setAutoCreateContent(previousProperty.getAutoCreateContent());
+				property.setAutoCreateContentMethod(previousProperty.getAutoCreateContentMethod());
+				property.setAutoCreateContentPath(previousProperty.getAutoCreateContentPath());
 				
 				previousProperty.setName(name);
 				previousProperty.setType(type);
@@ -584,6 +609,9 @@
 				previousProperty.setWYSIWYGToolbar(WYSIWYGToolbar);
 				previousProperty.setDataProvider(dataProvider);
 				previousProperty.setDataProviderParameters(dataProviderParameters);
+				previousProperty.setAutoCreateContent(property.getAutoCreateContent());
+				previousProperty.setAutoCreateContentMethod(property.getAutoCreateContentMethod());
+				previousProperty.setAutoCreateContentPath(property.getAutoCreateContentPath());
 				
 				drawList();
 			}			
@@ -626,6 +654,9 @@
 				property.setWYSIWYGToolbar(previousProperty.getWYSIWYGToolbar());
 				property.setDataProvider(previousProperty.getDataProvider());
 				property.setDataProviderParameters(previousProperty.getDataProviderParameters());
+				property.setAutoCreateContent(previousProperty.getAutoCreateContent());
+				property.setAutoCreateContentMethod(previousProperty.getAutoCreateContentMethod());
+				property.setAutoCreateContentPath(previousProperty.getAutoCreateContentPath());
 				
 				previousProperty.setName(name);
 				previousProperty.setType(type);
@@ -640,6 +671,9 @@
 				previousProperty.setWYSIWYGToolbar(WYSIWYGToolbar);
 				previousProperty.setDataProvider(dataProvider);
 				previousProperty.setDataProviderParameters(dataProviderParameters);
+				previousProperty.setAutoCreateContent(property.getAutoCreateContent());
+				previousProperty.setAutoCreateContentMethod(property.getAutoCreateContentMethod());
+				previousProperty.setAutoCreateContentPath(property.getAutoCreateContentPath());
 			
 				drawList();
 			}
@@ -792,8 +826,8 @@
 		function init()
 		{
 			#foreach($propertyDefinition in $componentPropertyDefinitions)
-				//alert("$propertyDefinition");
-				property = new ComponentPropertyDefinition("$propertyDefinition.name", "$propertyDefinition.type", "$propertyDefinition.entity", "$propertyDefinition.multiple", "$propertyDefinition.assetBinding", "$propertyDefinition.allowedContentTypeNames", "$propertyDefinition.description", "$!propertyDefinition.defaultValue", "$!propertyDefinition.WYSIWYGEnabled", "$!propertyDefinition.WYSIWYGToolbar", "$!propertyDefinition.dataProvider", "$!propertyDefinition.dataProviderParameters");
+				alert("$propertyDefinition.autoCreateContentPath");
+				property = new ComponentPropertyDefinition("$propertyDefinition.name", "$propertyDefinition.type", "$propertyDefinition.entity", "$propertyDefinition.multiple", "$propertyDefinition.assetBinding", "$propertyDefinition.allowedContentTypeNames", "$propertyDefinition.description", "$!propertyDefinition.defaultValue", "$!propertyDefinition.WYSIWYGEnabled", "$!propertyDefinition.WYSIWYGToolbar", "$!propertyDefinition.dataProvider", "$!propertyDefinition.dataProviderParameters", "$!propertyDefinition.autoCreateContent", "$!propertyDefinition.autoCreateContentMethod", "$!propertyDefinition.autoCreateContentPath");
 
 				#foreach($propertyOptionDefinition in $propertyDefinition.options)
 					propertyOption = new ComponentPropertyOptionDefinition("$propertyOptionDefinition.name", "$propertyOptionDefinition.value");
@@ -832,7 +866,7 @@
 </div>
 
 
-<div id="componentPropertyDefinition" class="smallPropDiv" style="border-style:solid; border-width:1px; background-color: white; LEFT:150px; position:absolute; TOP:150px; visibility:hidden; z-index:1">
+<div id="componentPropertyDefinition" class="smallPropDiv" style="border-style:solid; border-width:1px; background-color: white; LEFT:150px; position:absolute; TOP:50px; visibility:hidden; z-index:1">
 <div id="componentPropertyDefinitionHandle" class="smallPropDivHandle">Edit component property</div>
 <div id="componentPropertyDefinitionBody" class="smallPropDivBody">	
 
@@ -915,6 +949,26 @@
 	    #end
  	</select>
 </p>
+<div id="autoCreateContentParagraph" style="display: block;">
+	<p>
+	<label for="name">Auto create content:</label>
+	<select size="1" name="componentPropertyDefinition_autoCreateContent" id="componentPropertyDefinition_autoCreateContent" class="sitedropbox">
+	    <option value="false">No</option>
+	    <option value="true">Yes</option>
+	</select>
+	</p>
+	<p>
+	<label for="name">Auto create content method:</label>
+	<select size="1" name="componentPropertyDefinition_autoCreateContentMethod" id="componentPropertyDefinition_autoCreateContentMethod" class="sitedropbox">
+	    <option value="siteStructure">Mimic site structure</option>
+	    <option value="fixedPath">Fixed path</option>
+	</select>
+	</p>
+	<p>
+	<label for="name">Auto create content base path:</label>
+	<input type="textfield" name="componentPropertyDefinition_autoCreateContentPath" id="componentPropertyDefinition_autoCreateContentPath" value=""/>
+	</p>
+</div>
 <p style="margin-left: 165px;">
 	<br/>
 	<a href="javascript:updateProperties();"><img src="$ui.getString("images.managementtool.buttons.save")" width="50" height="25" border="0"></a>

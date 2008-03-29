@@ -30,6 +30,7 @@ import java.util.List;
 import org.apache.xerces.parsers.DOMParser;
 import org.infoglue.cms.applications.databeans.ComponentPropertyDefinition;
 import org.infoglue.cms.applications.databeans.ComponentPropertyOptionDefinition;
+import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -53,6 +54,14 @@ public class ComponentPropertyDefinitionController extends BaseController
 	public static ComponentPropertyDefinitionController getController()
 	{
 		return new ComponentPropertyDefinitionController();
+	}
+	
+	public List getComponentPropertyDefinitions(Integer contentId, Integer languageId) throws Exception
+	{
+		ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentId, languageId);
+		String propertyXML = ContentVersionController.getContentVersionController().getAttributeValue(contentVersionVO, "ComponentProperties", false);
+		
+		return parseComponentPropertyDefinitions(propertyXML);
 	}
 	
 	public List parseComponentPropertyDefinitions(String xml)
@@ -94,8 +103,11 @@ public class ComponentPropertyDefinitionController extends BaseController
 				    String dataProviderParameters	= propertyElement.getAttribute("dataProviderParameters");
 				    String WYSIWYGEnabled			= propertyElement.getAttribute("WYSIWYGEnabled");
 				    String WYSIWYGToolbar			= propertyElement.getAttribute("WYSIWYGToolbar");
+				    String autoCreateContent		= propertyElement.getAttribute("autoCreateContent");
+				    String autoCreateContentMethod	= propertyElement.getAttribute("autoCreateContentMethod");
+				    String autoCreateContentPath	= propertyElement.getAttribute("autoCreateContentPath");
 				    				    
-				    ComponentPropertyDefinition cpd = new ComponentPropertyDefinition(name, type, entity, new Boolean(multiple), new Boolean(assetBinding), allowedContentTypeNames, description, defaultValue, new Boolean(WYSIWYGEnabled), WYSIWYGToolbar, dataProvider, dataProviderParameters);
+				    ComponentPropertyDefinition cpd = new ComponentPropertyDefinition(name, type, entity, new Boolean(multiple), new Boolean(assetBinding), allowedContentTypeNames, description, defaultValue, new Boolean(WYSIWYGEnabled), WYSIWYGToolbar, dataProvider, dataProviderParameters, new Boolean(autoCreateContent), autoCreateContentMethod, autoCreateContentPath);
 				    
 					NodeList optionsNodeList = propertyElement.getElementsByTagName("option");
 					for(int k=0; k<optionsNodeList.getLength(); k++)

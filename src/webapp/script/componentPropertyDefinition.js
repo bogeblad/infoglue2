@@ -12,7 +12,7 @@
  * ComponentPropertyDefinition object
  */
 
-function ComponentPropertyDefinition(name, type, entity, multiple, assetBinding, allowedContentTypeNames, description, defaultValue, WYSIWYGEnabled, WYSIWYGToolbar, dataProvider, dataProviderParameters)
+function ComponentPropertyDefinition(name, type, entity, multiple, assetBinding, allowedContentTypeNames, description, defaultValue, WYSIWYGEnabled, WYSIWYGToolbar, dataProvider, dataProviderParameters, autoCreateContent, autoCreateContentMethod, autoCreateContentPath)
 {
 	this.name 						= name;
 	this.type 						= type;
@@ -26,6 +26,9 @@ function ComponentPropertyDefinition(name, type, entity, multiple, assetBinding,
 	this.WYSIWYGToolbar				= WYSIWYGToolbar;
 	this.dataProvider 				= dataProvider;
 	this.dataProviderParameters		= dataProviderParameters;
+	this.autoCreateContent			= autoCreateContent;
+	this.autoCreateContentMethod	= autoCreateContentMethod;
+	this.autoCreateContentPath		= autoCreateContentPath;
 	this.options					= new Vector(0);
 	  
   	this.getName 					= getName;
@@ -41,6 +44,9 @@ function ComponentPropertyDefinition(name, type, entity, multiple, assetBinding,
 	this.getWYSIWYGToolbar			= getWYSIWYGToolbar;
 	this.getDataProvider			= getDataProvider;
 	this.getDataProviderParameters	= getDataProviderParameters;
+	this.getAutoCreateContent		= getAutoCreateContent;
+	this.getAutoCreateContentMethod	= getAutoCreateContentMethod;
+	this.getAutoCreateContentPath	= getAutoCreateContentPath;
 	
   	this.setName 					= setName;
   	this.setType 					= setType;
@@ -54,6 +60,9 @@ function ComponentPropertyDefinition(name, type, entity, multiple, assetBinding,
 	this.setWYSIWYGToolbar			= setWYSIWYGToolbar;
 	this.setDataProvider			= setDataProvider;
 	this.setDataProviderParameters	= setDataProviderParameters;
+	this.setAutoCreateContent		= setAutoCreateContent;
+	this.setAutoCreateContentMethod	= setAutoCreateContentMethod;
+	this.setAutoCreateContentPath	= setAutoCreateContentPath;
 }
   
 function getName()
@@ -179,4 +188,34 @@ function getDataProviderParameters()
 function setDataProviderParameters(dataProviderParameters)
 {
 	this.dataProviderParameters = dataProviderParameters;
+}
+
+function getAutoCreateContent()
+{
+	return this.autoCreateContent;
+}
+
+function setAutoCreateContent(autoCreateContent)
+{
+	this.autoCreateContent = autoCreateContent;
+}
+
+function getAutoCreateContentMethod()
+{
+	return this.autoCreateContentMethod;
+}
+
+function setAutoCreateContentMethod(autoCreateContentMethod)
+{
+	this.autoCreateContentMethod = autoCreateContentMethod;
+}
+
+function getAutoCreateContentPath()
+{
+	return this.autoCreateContentPath;
+}
+
+function setAutoCreateContentPath(autoCreateContentPath)
+{
+	this.autoCreateContentPath = autoCreateContentPath;
 }

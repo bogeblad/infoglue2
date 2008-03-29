@@ -52,11 +52,14 @@ public class ComponentPropertyDefinition
 	private String dataProviderParameters 	= "";
 	private Boolean WYSIWYGEnabled 			= new Boolean(false);
 	private String WYSIWYGToolbar 			= "";
-
+	private Boolean autoCreateContent		= new Boolean(false);
+	private String autoCreateContentMethod	= "";
+	private String autoCreateContentPath	= "";
+	
     private List options = new ArrayList();
 
     
-    public ComponentPropertyDefinition(String name, String type, String entity, Boolean multiple, Boolean assetBinding, String allowedContentTypeNames, String description, String defaultValue, Boolean WYSIWYGEnabled, String WYSIWYGToolbar, String dataProvider, String dataProviderParameters)
+    public ComponentPropertyDefinition(String name, String type, String entity, Boolean multiple, Boolean assetBinding, String allowedContentTypeNames, String description, String defaultValue, Boolean WYSIWYGEnabled, String WYSIWYGToolbar, String dataProvider, String dataProviderParameters, Boolean autoCreateContent, String autoCreateContentMethod, String autoCreateContentPath)
     {
         this.name 						= name;
         this.type 						= type;
@@ -70,6 +73,9 @@ public class ComponentPropertyDefinition
         this.WYSIWYGToolbar				= WYSIWYGToolbar;
         this.dataProvider 				= dataProvider;
         this.dataProviderParameters		= dataProviderParameters;
+        this.autoCreateContent 			= autoCreateContent;
+        this.autoCreateContentMethod 	= autoCreateContentMethod;
+        this.autoCreateContentPath		= autoCreateContentPath;
     }
         
     public String getEntity()
@@ -135,6 +141,21 @@ public class ComponentPropertyDefinition
 	public String getDataProviderParameters()
 	{
 		return dataProviderParameters;
+	}
+
+	public Boolean getAutoCreateContent()
+	{
+		return autoCreateContent;
+	}
+
+	public String getAutoCreateContentMethod()
+	{
+		return autoCreateContentMethod;
+	}
+
+	public String getAutoCreateContentPath()
+	{
+		return autoCreateContentPath;
 	}
 
 }

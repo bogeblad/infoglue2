@@ -1086,8 +1086,26 @@ public class SiteNodeController extends BaseController
 			
 		return protectedSiteNodeVersionId;
 	}
-	
 
+	public String getSiteNodePath(Integer siteNodeId) throws Exception
+	{
+		StringBuffer sb = new StringBuffer();
+		
+		SiteNodeVO siteNodeVO = getSiteNodeVOWithId(siteNodeId);
+		while(siteNodeVO != null)
+		{
+			System.out.println("name:" + siteNodeVO.getName());
+			sb.insert(0, "/" + siteNodeVO.getName());
+			if(siteNodeVO.getParentSiteNodeId() != null)
+				siteNodeVO = getSiteNodeVOWithId(siteNodeVO.getParentSiteNodeId());
+			else
+				siteNodeVO = null;
+		}
+			
+		return sb.toString();
+	}
+	
+	
 
 }
  

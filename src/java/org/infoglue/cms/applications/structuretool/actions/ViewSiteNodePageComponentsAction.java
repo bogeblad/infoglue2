@@ -34,7 +34,9 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
+import org.infoglue.cms.applications.databeans.ComponentPropertyDefinition;
 import org.infoglue.cms.controllers.kernel.impl.simple.ComponentController;
+import org.infoglue.cms.controllers.kernel.impl.simple.ComponentPropertyDefinitionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
@@ -51,6 +53,8 @@ import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
 import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.entities.structure.SiteNodeVO;
 import org.infoglue.cms.entities.structure.SiteNodeVersionVO;
+import org.infoglue.cms.exception.Bug;
+import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.XMLHelper;
@@ -389,8 +393,8 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 		}
 		else
 		{
-		    String componentXML   = getPageComponentsString(siteNodeId, this.masterLanguageVO.getId(), contentId);			
-	
+		    String componentXML   = getPageComponentsString(siteNodeId, this.masterLanguageVO.getId());			
+		    
 			Document document = XMLHelper.readDocumentFromByteArray(componentXML.getBytes("UTF-8"));
 			String componentXPath = "//component[@id=" + this.parentComponentId + "]/components";
 
@@ -415,8 +419,6 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 				if(contentTypeDefinitionVO.getName().equals("PagePartTemplate"))
 					isPagePartReference = true;
 				
-				
-				
 				if(slotPositionComponentId != null && !slotPositionComponentId.equals(""))
 				{
 					NodeList childNodes = component.getChildNodes();
@@ -440,8 +442,8 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 				{
 					Element newComponent = addComponentElement(component, new Integer(newComponentId.intValue()), this.slotId, this.componentId, isPagePartReference);
 				}
-				
-				
+
+				checkAndAutoCreateContents(newComponentId, document, templateContentVO);
 				
 				String modifiedXML = XMLHelper.serializeDom(document, new StringBuffer()).toString(); 
 
@@ -460,6 +462,68 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 		this.url = this.getResponse().encodeURL(url);
 		this.getResponse().sendRedirect(url);
 	    return NONE; 
+	}
+
+	private void checkAndAutoCreateContents(Integer newComponentId, Document document, ContentVO templateContentVO) throws Exception, SystemException, Bug, ConstraintException
+	{
+		List componentPropertyDefinitions = ComponentPropertyDefinitionController.getController().getComponentPropertyDefinitions(templateContentVO.getId(), this.masterLanguageVO.getId());
+		Iterator componentPropertyDefinitionsIterator = componentPropertyDefinitions.iterator();
+		while(componentPropertyDefinitionsIterator.hasNext())
+		{
+			ComponentPropertyDefinition componentPropertyDefinition = (ComponentPropertyDefinition)componentPropertyDefinitionsIterator.next();
+			System.out.println("componentPropertyDefinition:" + componentPropertyDefinition);
+			if(componentPropertyDefinition.getAutoCreateContent())
+			{
+				System.out.println("componentPropertyDefinition vill ha en auto create:" + componentPropertyDefinition);
+				String method = componentPropertyDefinition.getAutoCreateContentMethod();
+				String path = componentPropertyDefinition.getAutoCreateContentPath();
+				String allowedContentTypeNames = componentPropertyDefinition.getAllowedContentTypeNames();
+				String allowedContentTypeName = allowedContentTypeNames.split(",")[0];
+				ContentTypeDefinitionVO createContentTypeDefinitionVO = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithName(allowedContentTypeName);
+				System.out.println("method:" + method);
+				System.out.println("path:" + path);
+				System.out.println("createContentTypeDefinitionVO:" + createContentTypeDefinitionVO.getName());
+				if(path.indexOf("/") == 0)
+					path = path.substring(1);
+				
+				SiteNodeVO siteNodeVO = SiteNodeController.getController().getSiteNodeVOWithId(this.siteNodeId);
+				ContentVO parentContentVO = ContentController.getContentController().getRootContentVO(siteNodeVO.getRepositoryId(), getInfoGluePrincipal().getName(), true);
+				if(method.equals("siteStructure"))
+				{
+					String siteNodePath = SiteNodeController.getController().getSiteNodePath(siteNodeVO.getId());
+					System.out.println("siteNodePath:" + siteNodePath);
+					parentContentVO = ContentController.getContentController().getContentVOWithPath(siteNodeVO.getRepositoryId(), path + siteNodePath, true, getInfoGluePrincipal());
+				}
+				else if(method.equals("fixedPath"))
+				{
+					parentContentVO = ContentController.getContentController().getContentVOWithPath(siteNodeVO.getRepositoryId(), path, true, this.getInfoGluePrincipal());
+				}
+				
+				ContentVO autoContentVO = new ContentVO();
+				autoContentVO.setName(siteNodeVO.getName() + " - " + componentPropertyDefinition.getName());
+				autoContentVO.setCreatorName(this.getInfoGluePrincipal().getName());
+				autoContentVO.setIsBranch(false);
+
+				String defaultValue = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><article xmlns=\"x-schema:ArticleSchema.xml\"><attributes><Title><![CDATA[State title]]></Title><NavigationTitle><![CDATA[State nav title]]></NavigationTitle><FullText><![CDATA[<p>State text</p>]]></FullText><Leadin><![CDATA[State leadin]]></Leadin></attributes></article>";
+
+				ContentVersionVO autoContentVersionVO = new ContentVersionVO();
+				autoContentVersionVO.setVersionComment("Automatically created");
+				autoContentVersionVO.setVersionModifier(this.getInfoGluePrincipal().getName());
+				autoContentVersionVO.setVersionValue(defaultValue);
+				
+				autoContentVO = ContentController.getContentController().create(parentContentVO.getId(), createContentTypeDefinitionVO.getId(), siteNodeVO.getRepositoryId(), autoContentVO);
+				ContentVersionController.getContentVersionController().create(autoContentVO.getId(), languageId, autoContentVersionVO, null);
+				
+				Locale locale = LanguageController.getController().getLocaleWithId(languageId);
+				LanguageVO masterLanguageVO = LanguageController.getController().getMasterLanguage(siteNodeVO.getRepositoryId());		
+
+				String entity = "Content";
+				Integer entityId  = new Integer(autoContentVO.getId());
+				String propertyName = "" + componentPropertyDefinition.getName();
+				
+				ComponentController.getController().addComponentPropertyBinding(document, locale, siteNodeId, languageId, masterLanguageVO.getId(), entity, entityId, propertyName, newComponentId, path, assetKey, getInfoGluePrincipal());
+			}
+		}
 	}
 
 	/**
@@ -489,7 +553,7 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 
 		Integer newComponentId = new Integer(0);
 
-	    String componentXML   = getPageComponentsString(siteNodeId, this.masterLanguageVO.getId(), contentId);			
+	    String componentXML   = getPageComponentsString(siteNodeId, this.masterLanguageVO.getId());			
 
 		Document document = XMLHelper.readDocumentFromByteArray(componentXML.getBytes("UTF-8"));
 		String componentXPath = "//component[@id=" + this.parentComponentId + "]";
@@ -595,7 +659,7 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 		}
 		else
 		{
-			String componentXML = getPageComponentsString(siteNodeId, this.masterLanguageVO.getId(), contentId);			
+			String componentXML = getPageComponentsString(siteNodeId, this.masterLanguageVO.getId());			
 	
 			Document document = XMLHelper.readDocumentFromByteArray(componentXML.getBytes("UTF-8"));
 			
@@ -778,7 +842,7 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 	{
 		initialize();
 			
-		String componentXML   = getPageComponentsString(siteNodeId, this.masterLanguageVO.getId(), contentId);			
+		String componentXML   = getPageComponentsString(siteNodeId, this.masterLanguageVO.getId());			
 		//logger.info("componentXML:" + componentXML);
 		
 		Document document = XMLHelper.readDocumentFromByteArray(componentXML.getBytes("UTF-8"));
@@ -914,7 +978,7 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 		
 		String entity  		= this.getRequest().getParameter("entity");
 		
-		String componentXML = getPageComponentsString(siteNodeId, this.masterLanguageVO.getId(), contentId);			
+		String componentXML = getPageComponentsString(siteNodeId, this.masterLanguageVO.getId());			
 		//logger.info("componentXML:" + componentXML);
 		
 		ContentVO contentVO = NodeDeliveryController.getNodeDeliveryController(siteNodeId, languageId, contentId).getBoundContent(this.getInfoGluePrincipal(), siteNodeId, languageId, true, "Meta information", DeliveryContext.getDeliveryContext());
@@ -1031,7 +1095,7 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 				
 		logger.info("doDeleteComponent:" + this.getRequest().getQueryString());
 		
-		String componentXML   = getPageComponentsString(siteNodeId, this.masterLanguageVO.getId(), contentId);			
+		String componentXML   = getPageComponentsString(siteNodeId, this.masterLanguageVO.getId());			
 
 		Document document = XMLHelper.readDocumentFromByteArray(componentXML.getBytes("UTF-8"));
 		String componentXPath = "//component[@id=" + this.componentId + "]";
@@ -1081,7 +1145,7 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 
 		Integer newComponentId = new Integer(0);
 
-		String componentXML   = getPageComponentsString(siteNodeId, this.masterLanguageVO.getId(), contentId);			
+		String componentXML   = getPageComponentsString(siteNodeId, this.masterLanguageVO.getId());			
 		logger.info("componentXML:" + componentXML);
 		
 		Document document = XMLHelper.readDocumentFromByteArray(componentXML.getBytes("UTF-8"));
@@ -1162,7 +1226,7 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 		Integer entityId  = new Integer(this.getRequest().getParameter("entityId"));
 		String propertyName = this.getRequest().getParameter("propertyName");
 			
-		String componentXML = getPageComponentsString(siteNodeId, this.masterLanguageVO.getId(), contentId);			
+		String componentXML = getPageComponentsString(siteNodeId, this.masterLanguageVO.getId());
 
 		Document document = XMLHelper.readDocumentFromByteArray(componentXML.getBytes("UTF-8"));
 		String componentPropertyXPath = "//component[@id=" + this.componentId + "]/properties/property[@name='" + propertyName + "']";
@@ -1279,7 +1343,7 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 			
 		NodeDeliveryController nodeDeliveryController			    = NodeDeliveryController.getNodeDeliveryController(siteNodeId, languageId, contentId);
 		
-		String componentXML   = getPageComponentsString(siteNodeId, this.masterLanguageVO.getId(), contentId);			
+		String componentXML   = getPageComponentsString(siteNodeId, this.masterLanguageVO.getId());			
 		//logger.info("componentXML:" + componentXML);
 
 		Document document = XMLHelper.readDocumentFromByteArray(componentXML.getBytes("UTF-8"));
@@ -1357,7 +1421,7 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 		NodeDeliveryController nodeDeliveryController			    = NodeDeliveryController.getNodeDeliveryController(siteNodeId, languageId, contentId);
 		
 		//String templateString = getPageTemplateString(templateController, siteNodeId, languageId, contentId); 
-		String componentXML   = getPageComponentsString(siteNodeId, this.masterLanguageVO.getId(), contentId);			
+		String componentXML   = getPageComponentsString(siteNodeId, this.masterLanguageVO.getId());			
 		//logger.info("componentXML:" + componentXML);
 
 		Document document = XMLHelper.readDocumentFromByteArray(componentXML.getBytes("UTF-8"));
@@ -1408,11 +1472,9 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 			//logger.info("languageId:" + languageId);
 			//logger.info("contentId:" + contentId);
 			//logger.info("**********************************************************************************");
-				
-			NodeDeliveryController nodeDeliveryController			    = NodeDeliveryController.getNodeDeliveryController(siteNodeId, languageId, contentId);
-			
+							
 			//String templateString = getPageTemplateString(templateController, siteNodeId, languageId, contentId); 
-			String componentXML   = getPageComponentsString(siteNodeId, this.masterLanguageVO.getId(), contentId);			
+			String componentXML   = getPageComponentsString(siteNodeId, this.masterLanguageVO.getId());			
 			//logger.info("componentXML:" + componentXML);
 	
 			Document document = XMLHelper.readDocumentFromByteArray(componentXML.getBytes("UTF-8"));
@@ -1484,9 +1546,7 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 		//logger.info("contentId:" + contentId);
 		//logger.info("propertyName:" + propertyName);
 			
-		NodeDeliveryController nodeDeliveryController			    = NodeDeliveryController.getNodeDeliveryController(siteNodeId, languageId, contentId);
-		
-		String componentXML   = getPageComponentsString(siteNodeId, this.masterLanguageVO.getId(), contentId);			
+		String componentXML   = getPageComponentsString(siteNodeId, this.masterLanguageVO.getId());			
 		//logger.info("componentXML:" + componentXML);
 
 		Document document = XMLHelper.readDocumentFromByteArray(componentXML.getBytes("UTF-8"));
@@ -1661,7 +1721,7 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 	 * This method fetches the template-string.
 	 */
     
-	private String getPageComponentsString(Integer siteNodeId, Integer languageId, Integer contentId) throws SystemException, Exception
+	private String getPageComponentsString(Integer siteNodeId, Integer languageId) throws SystemException, Exception
 	{
 		String template = null;
     	

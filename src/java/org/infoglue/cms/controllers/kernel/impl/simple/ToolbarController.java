@@ -28,12 +28,39 @@ public class ToolbarController
 
 	private InfoGluePrincipal principal = null;
 	private Locale locale = null;
+	private String toolbarKey = null;
 	private String primaryKey = null;
 	private Integer primaryKeyAsInteger = null;
 	private String extraParameters = null;
 	
+	public List<ToolbarButton> getRightToolbarButtons(String toolbarKey, InfoGluePrincipal principal, Locale locale, String primaryKey, String extraParameters)
+	{
+		this.toolbarKey = toolbarKey;
+		this.principal = principal;
+		this.locale = locale;
+		this.primaryKey = primaryKey;
+		this.extraParameters = extraParameters;
+		try
+		{
+			primaryKeyAsInteger = new Integer(primaryKey);
+		}
+		catch (Exception e) 
+		{
+			//Do nothing
+		}
+
+		try
+		{
+			return getHelpButton();
+		}
+		catch(Exception e) {e.printStackTrace();}			
+					
+		return null;	
+	}
+	
 	public List<ToolbarButton> getToolbarButtons(String toolbarKey, InfoGluePrincipal principal, Locale locale, String primaryKey, String extraParameters)
 	{
+		this.toolbarKey = toolbarKey;
 		this.principal = principal;
 		this.locale = locale;
 		this.primaryKey = primaryKey;
@@ -64,9 +91,9 @@ public class ToolbarController
 	*/
 			if(toolbarKey.equalsIgnoreCase("tool.managementtool.viewRoleList.header"))
 				return getRolesButtons();
-		/*
 			if(toolbarKey.equalsIgnoreCase("tool.managementtool.viewRole.header"))
 				return getRoleDetailsButtons();
+			/*
 			if(toolbarKey.equalsIgnoreCase("tool.managementtool.viewGroupList.header"))
 				return getGroupsButtons();
 			if(toolbarKey.equalsIgnoreCase("tool.managementtool.viewGroup.header"))
@@ -202,42 +229,76 @@ public class ToolbarController
 	{
 		List<ToolbarButton> buttons = new ArrayList<ToolbarButton>();
 		if(UserControllerProxy.getController().getSupportCreate())
-			buttons.add(new ToolbarButton(getLocalizedString(locale, "tool.managementtool.createRole.header"), 
-										  getLocalizedString(locale, "tool.managementtool.createRole.header"),
-										  "CreateRole!inputV3.action",
-										  "images/v3/createBackgroundPenPaper.gif"));
+		{
+			boolean hasAccessToCreateRole = hasAccessTo(principal, "Role.Create", true);
+			if(hasAccessToCreateRole)
+			{
+				buttons.add(new ToolbarButton("",
+											  getLocalizedString(locale, "tool.managementtool.createRole.header"), 
+											  getLocalizedString(locale, "tool.managementtool.createRole.header"),
+											  "CreateRole!inputV3.action",
+											  "images/v3/createBackgroundPenPaper.gif"));
+			}
+		}
 		
 		return buttons;
 	}
 	
-	/*
 	private List<ToolbarButton> getRoleDetailsButtons() throws Exception
 	{
 		List<ToolbarButton> buttons = new ArrayList<ToolbarButton>();
 		
-		String yesDestination 	= URLEncoder.encode("DeleteRole.action?roleName=" + URLEncoder.encode(this.primaryKey, URIEncoding), URIEncoding);
-		String noDestination  	= URLEncoder.encode("ViewListRole.action?title=Roles", URIEncoding);
+		String yesDestination 	= URLEncoder.encode("DeleteRole!v3.action?roleName=" + URLEncoder.encode(this.primaryKey, URIEncoding), URIEncoding);
+		String noDestination  	= URLEncoder.encode("ViewListRole!listManagableRoles.action", URIEncoding);
 		String message 		 	= URLEncoder.encode("Do you really want to delete the role " + URLEncoder.encode(this.primaryKey, URIEncoding), URIEncoding);
 		
 		InfoGlueRole role = RoleControllerProxy.getController().getRole(this.primaryKey);
 		if(role.getAutorizationModule().getSupportDelete())
-			buttons.add(new ToolbarButton("Confirm.action?header=tool.managementtool.deleteRole.header&yesDestination=" + yesDestination + "&noDestination=" + noDestination + "&message=tool.managementtool.deleteRole.text&extraParameters=" + URLEncoder.encode(primaryKey, URIEncoding), getLocalizedString(locale, "images.managementtool.buttons.deleteRole"), "tool.managementtool.deleteRole.header"));
+		{
+			boolean hasAccessToDeleteRole = hasAccessTo(principal, "Role.Delete", "" + this.primaryKey);
+			if(hasAccessToDeleteRole)
+			{
+				buttons.add(new ToolbarButton("",
+						  getLocalizedString(locale, "tool.managementtool.deleteRole.header"), 
+						  getLocalizedString(locale, "tool.managementtool.deleteRole.header"),
+						  "Confirm.action?header=tool.managementtool.deleteRole.header&yesDestination=" + yesDestination + "&noDestination=" + noDestination + "&message=tool.managementtool.deleteRole.text&extraParameters=" + URLEncoder.encode(primaryKey, URIEncoding),
+						  "images/v3/deleteBackgroundWasteBasket.gif"));
+			}
+		}
 		
-		List<ToolbarButton> contentTypeDefinitionVOList<ToolbarButton> = RolePropertiesController.getController().getContentTypeDefinitionVOList(this.primaryKey);
+		List contentTypeDefinitionVOList = RolePropertiesController.getController().getContentTypeDefinitionVOList(this.primaryKey);
 		if(contentTypeDefinitionVOList.size() > 0)
-			buttons.add(new ToolbarButton("ViewRoleProperties.action?roleName=" + URLEncoder.encode(URLEncoder.encode(this.primaryKey, URIEncoding)), getLocalizedString(locale, "images.managementtool.buttons.viewRoleProperties"), "View Role Properties"));
-		
-		if(principal.getIsAdministrator())
-			buttons.add(new ToolbarButton("AuthorizationSwitchManagement!inputRole.action?roleName=" + URLEncoder.encode(URLEncoder.encode(this.primaryKey, URIEncoding)), getLocalizedString(locale, "images.managementtool.buttons.transferRoleAccessRights"), "Transfer Roles Access Rights"));
-		
+		{
+			boolean hasAccessToEditProperties = hasAccessTo(principal, "Role.EditProperties", true);
+			if(hasAccessToEditProperties)
+			{
+				buttons.add(new ToolbarButton("",
+					  getLocalizedString(locale, "tool.managementtool.viewRoleProperties.header"), 
+					  getLocalizedString(locale, "tool.managementtool.viewRoleProperties.header"),
+					  "ViewRoleProperties!v3.action?roleName=" + URLEncoder.encode(URLEncoder.encode(this.primaryKey, URIEncoding)),
+					  "images/v3/advancedSettingsIcon.gif"));
+			}
+		}
+
 		boolean hasAccessToManageAllAccessRights = hasAccessTo(principal, "Role.ManageAllAccessRights", true);
 		boolean hasAccessToManageAccessRights = hasAccessTo(principal, "Role.ManageAccessRights", "" + this.primaryKey);
 		if(hasAccessToManageAllAccessRights || hasAccessToManageAccessRights)
-			buttons.add(new ToolbarButton("ViewAccessRights.action?interceptionPointCategory=Role&extraParameters=" + URLEncoder.encode(this.primaryKey, URIEncoding) + "&returnAddress=ViewRole.action?roleName=" + URLEncoder.encode(primaryKey, URIEncoding) + "&colorScheme=ManagementTool", getLocalizedString(locale, "images.managementtool.buttons.accessRights"), "Role Access Rights"));
+		{
+			buttons.add(new ToolbarButton("",
+				  getLocalizedString(locale, "tool.contenttool.accessRights.header"), 
+				  getLocalizedString(locale, "tool.contenttool.accessRights.header"),
+				  "ViewAccessRights.action?interceptionPointCategory=Role&extraParameters=" + URLEncoder.encode(this.primaryKey, URIEncoding) + "&returnAddress=ViewRole!v3.action?roleName=" + URLEncoder.encode(primaryKey, URIEncoding) + "&colorScheme=ManagementTool",
+				  "images/v3/accessRightsIcon.gif"));
+		}
+		/*
+		if(principal.getIsAdministrator())
+			buttons.add(new ToolbarButton("AuthorizationSwitchManagement!inputRole.action?roleName=" + URLEncoder.encode(URLEncoder.encode(this.primaryKey, URIEncoding)), getLocalizedString(locale, "images.managementtool.buttons.transferRoleAccessRights"), "Transfer Roles Access Rights"));
+		*/
 
 		return buttons;				
 	}
 	
+	/*
 	private List<ToolbarButton> getGroupsButtons() throws Exception
 	{
 		List<ToolbarButton> buttons = new ArrayList<ToolbarButton>();
@@ -506,6 +567,27 @@ public class ToolbarController
 		return buttons;
 	}
 	*/
+	
+	private List<ToolbarButton> getHelpButton() throws Exception
+	{
+		String helpPageBaseUrl = "http://www.infoglue.org";
+		
+		String helpPageUrl = "";
+		if(toolbarKey.equalsIgnoreCase("tool.managementtool.viewRoleList.header"))
+			helpPageUrl = "/help/tools/managementtool/roles";
+		if(toolbarKey.equalsIgnoreCase("tool.managementtool.viewRole.header"))
+			helpPageUrl = "/help/tools/managementtool/role";
+		if(toolbarKey.equalsIgnoreCase("tool.managementtool.createRole.header"))
+			helpPageUrl = "/help/tools/managementtool/create_role";
+		
+		List<ToolbarButton> buttons = new ArrayList<ToolbarButton>();
+		buttons.add(new ToolbarButton("helpButton",
+									  getLocalizedString(locale, "tool.common.helpButton.label"), 
+									  getLocalizedString(locale, "tool.common.helpButton.title"),
+									  helpPageUrl,
+									  "images/v3/helpIcon.gif"));
+		return buttons;
+	}
 	
 	/**
 	 * Used by the view pages to determine if the current user has sufficient access rights
