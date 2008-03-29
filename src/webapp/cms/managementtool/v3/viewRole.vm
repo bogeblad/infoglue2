@@ -2,57 +2,9 @@
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
-#beginManagementToolV3("tool.managementtool.viewRole.header" true)
-
-#set($buttons = $this.getToolbarButtons("tool.managementtool.viewRole.header", "$roleName", ""))
-
-<style type="text/css">
-
-#foreach($button in $buttons)
-	
-	#button${velocityCount}.yui-button {
-		border-width: 1px 0;
-		border-style: solid;
-		border-color: transparent;
-		background: transparent; 
-		margin: auto .25em;
-	}
-	#button${velocityCount}.yui-button .first-child {
-		border-width: 0 1px;
-		border-style: solid;
-		border-color: transparent;
-	}
-	
-	#button${velocityCount}.yui-button-hover {
-		border-color: #808080;
-		background-position: 0 0;
-	}
-
-	#button${velocityCount}.yui-button-hover .first-child {
-		border-color: #808080;
-	}
-	
-	#button$velocityCount button {
-	    background: url($button.backgroundImageURL) 2px 6px no-repeat;
-	    text-indent: 20px;
-	    padding: 6px;
-	    border: 0px;
-	    height: 28px;
-	}
-		
-#end
-
-</style>
+#beginManagementToolV3("tool.managementtool.viewRole.header" "$!roleName" false)
 
 <script type="text/javascript">
-
-	$(document).ready(function(){
-		$(":input:first").focus();
-
- 		$("div").each(function(i,e){
- 			$(this).attr("tabindex", "-1");
-		}); 
- 	});
 	
     YAHOO.example.init = function () 
     {
@@ -133,30 +85,7 @@
 
 </SCRIPT>
 
-
-<script type="text/javascript">
-
-    YAHOO.example.init = function () 
-    {
-        YAHOO.util.Event.onContentReady("menutoolbar", function () 
-        {
-			#foreach($button in $buttons)
-				var oButton${velocityCount} = new YAHOO.widget.Button("button${velocityCount}");
-            	oButton${velocityCount}.on("click", function (p_oEvent){
-            		document.location.href = '$button.actionURL';
-            	});
-            #end
-
-			var oButtonHelp = new YAHOO.widget.Button("buttonHelp");
-        	oButtonHelp.on("click", function (p_oEvent){
-        		document.location.href = 'http://www.infoglue.org';
-        	});
-        });
-    }();
-
-</script>
-
-#menuToolbar("" $buttons) 
+#menuToolbar("" $buttons $rightButtons) 
 
 <div style="clear: both;"></div>
 

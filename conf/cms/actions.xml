@@ -1,4 +1,4 @@
-<!-- $Id: actions.xml,v 1.58 2008/03/28 17:06:46 mattias Exp $ -->
+<!-- $Id: actions.xml,v 1.59 2008/03/29 00:31:42 mattias Exp $ -->
 <actions>
 
 	<!-- MySettings -->
@@ -609,13 +609,16 @@
 	<!-- RoleProperties -->
 	<action name="org.infoglue.cms.applications.managementtool.actions.ViewRolePropertiesAction" alias="ViewRoleProperties">
 		<view name="success">/cms/managementtool/viewEntityProperties.vm</view>
+		<view name="successV3">/cms/managementtool/v3/viewEntityProperties.vm</view>
 		<view name="error">/cms/managementtool/error.vm</view>
 	</action>
 	<action name="org.infoglue.cms.applications.managementtool.actions.UpdateRolePropertiesAction" alias="UpdateRoleProperties">
 		<view name="success">ViewRoleProperties.action?roleName=${ownerEntityId}&amp;languageId=${languageId}</view>
-		<!--<view name="success">ViewRoleProperties.action</view>-->
 		<view name="saveAndExit">ViewRole.action</view>
 		<view name="saveAndExitStandalone">ViewContent!standalone.action</view>
+		<view name="successV3">ViewRoleProperties!v3.action?roleName=${ownerEntityId}&amp;languageId=${languageId}</view>
+		<view name="saveAndExitV3">ViewRole!v3.action</view>
+		<view name="saveAndExitStandaloneV3">ViewContent!standaloneV3.action</view>
 		<view name="error">/cms/managementtool/error.vm</view>
 	</action>
 

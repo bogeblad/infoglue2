@@ -142,7 +142,13 @@ public abstract class InfoGlueAbstractAction extends WebworkAbstractAction
 		ToolbarController toolbarController = new ToolbarController();
 		return toolbarController.getToolbarButtons(toolbarKey, getInfoGluePrincipal(), getLocale(), primaryKey, extraParameters);
 	}
-	
+
+	public List getRightToolbarButtons(String toolbarKey, String primaryKey, String extraParameters)
+	{
+		ToolbarController toolbarController = new ToolbarController();
+		return toolbarController.getRightToolbarButtons(toolbarKey, getInfoGluePrincipal(), getLocale(), primaryKey, extraParameters);
+	}
+
 	/**
 	 * This method returns a propertyValue for the logged in user.
 	 * 

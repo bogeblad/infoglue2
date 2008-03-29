@@ -2,20 +2,13 @@
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
-#beginManagementToolV3("tool.managementtool.createRole.header" true)
+#beginManagementToolV3("tool.managementtool.createRole.header" "", false)
 
 <script type="text/javascript">
-
-	$(document).ready(function(){
-		$(":input:first").focus();
-
- 		$("div").each(function(i,e){
- 			$(this).attr("tabindex", "-1");
-		}); 
- 	});
 	
     YAHOO.example.init = function () 
     {
+
         YAHOO.util.Event.onContentReady("buttons", function () 
         {
 			var oSaveButton = new YAHOO.widget.Button("saveButton");
@@ -40,14 +33,6 @@
         	});
         	oLeftButton.on("click", function (p_oEvent){
 				!$('#userName option:selected').remove().appendTo('#unassignedUserNameList');  
-        	});
-        });
-        
-        YAHOO.util.Event.onContentReady("menutoolbar", function () 
-        {            
-			var oButtonHelp = new YAHOO.widget.Button("buttonHelp");
-        	oButtonHelp.on("click", function (p_oEvent){
-        		document.location.href = 'http://www.infoglue.org';
         	});
         });
         
@@ -86,7 +71,7 @@
 
 </script>
 
-#menuToolbar("$ui.getString('tool.managementtool.createRole.header')" $buttons) 
+#menuToolbar("$ui.getString('tool.managementtool.createRole.header')" $buttons $rightButtons) 
 
 <div style="clear: both;"></div>
 

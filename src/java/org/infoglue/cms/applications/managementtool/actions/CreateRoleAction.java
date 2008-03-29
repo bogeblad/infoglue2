@@ -23,9 +23,20 @@
 
 package org.infoglue.cms.applications.managementtool.actions;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
+import org.infoglue.cms.controllers.kernel.impl.simple.AccessRightController;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.RoleControllerProxy;
+import org.infoglue.cms.controllers.kernel.impl.simple.RolePropertiesController;
+import org.infoglue.cms.controllers.kernel.impl.simple.SystemUserController;
+import org.infoglue.cms.controllers.kernel.impl.simple.UserControllerProxy;
+import org.infoglue.cms.controllers.kernel.impl.simple.UserPropertiesController;
+import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
 import org.infoglue.cms.entities.management.RoleVO;
+import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.security.InfoGlueRole;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
 
@@ -46,6 +57,8 @@ public class CreateRoleAction extends InfoGlueAbstractAction
 	
 	private RoleVO roleVO;
 	private InfoGlueRole infoGlueRole;
+	private List infoGluePrincipals = new ArrayList();
+	private List contentTypeDefinitionVOList;
 	private ConstraintExceptionBuffer ceb;
 
 	public CreateRoleAction()
@@ -63,17 +76,63 @@ public class CreateRoleAction extends InfoGlueAbstractAction
     {
     	return "input";
     }
-	
+
+	public String doInputV3() throws Exception
+    {
+		this.infoGluePrincipals	= UserControllerProxy.getController().getAllUsers();
+		this.contentTypeDefinitionVOList = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOList(ContentTypeDefinitionVO.EXTRANET_ROLE_PROPERTIES);
+
+    	return "inputV3";
+    }
+
 	protected String doExecute() throws Exception 
 	{
 		ceb.add(this.roleVO.validate());
     	ceb.throwIfNotEmpty();	
     				
+		String[] userNames = getRequest().getParameterValues("userName");
+		String[] contentTypeDefinitionIds = getRequest().getParameterValues("contentTypeDefinitionId");
+
 		this.infoGlueRole = RoleControllerProxy.getController().createRole(this.roleVO);
+		if(userNames != null)
+		{
+			RoleControllerProxy.getController().updateRole(this.roleVO, userNames);
+		}
 		
+		if(contentTypeDefinitionIds != null && contentTypeDefinitionIds.length > 0 && !contentTypeDefinitionIds[0].equals(""))
+			RolePropertiesController.getController().updateContentTypeDefinitions(this.getRoleName(), contentTypeDefinitionIds);
+
 		return "success";
 	}
-	
+
+	public String doV3() throws Exception 
+	{
+		try
+		{
+			doExecute();
+			
+			String[] interceptionPointNames = new String[]{"Role.ManageUsers", "Role.ManageAccessRights", "Role.ReadForAssignment"};
+			AccessRightController.getController().addUserRights(interceptionPointNames, getRoleName(), getInfoGluePrincipal());
+		}
+		catch(ConstraintException e) 
+        {
+			this.infoGluePrincipals	= UserControllerProxy.getController().getAllUsers();
+			this.contentTypeDefinitionVOList = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOList(ContentTypeDefinitionVO.EXTRANET_ROLE_PROPERTIES);
+
+			e.setResult(INPUT + "V3");
+			throw e;
+        }
+		
+		return "successV3";
+	}
+
+	public String doSaveAndExitV3() throws Exception 
+	{
+		doV3();
+		
+		return "successSaveAndExitV3";
+	}
+
 	public void setRoleName(String roleName)
 	{
 		this.roleVO.setRoleName(roleName);	
@@ -93,7 +152,15 @@ public class CreateRoleAction extends InfoGlueAbstractAction
 	{
 		return this.roleVO.getDescription();	
 	}
-    
 
+	public List getInfoGluePrincipals()
+	{
+		return infoGluePrincipals;
+	}
+
+	public List getContentTypeDefinitionVOList()
+	{
+		return contentTypeDefinitionVOList;
+	}
 
 }

@@ -65,7 +65,14 @@ public class ViewRoleAction extends InfoGlueAbstractAction
         
         return "success";
     }
+
+    public String doV3() throws Exception
+    {
+        this.initialize(getRoleName());
         
+        return "successV3";
+    }
+
     public String getRoleName()
     {
         return roleName;

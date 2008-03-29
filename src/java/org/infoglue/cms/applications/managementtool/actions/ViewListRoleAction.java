@@ -55,7 +55,7 @@ public class ViewListRoleAction extends InfoGlueAbstractAction
 	{
 		this.roles = RoleControllerProxy.getController().getAvailableRoles(this.getInfoGluePrincipal(), "Role.ManageUsers");
 	    
-	    return "success";
+	    return "successV3";
 	}
 
 	public List getRoles()

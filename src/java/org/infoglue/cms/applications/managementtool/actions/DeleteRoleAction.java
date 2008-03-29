@@ -39,7 +39,14 @@ public class DeleteRoleAction extends InfoGlueAbstractAction
 
 		return "success";
 	}
-	
+
+	public String doV3() throws Exception 
+	{
+		RoleControllerProxy.getController().deleteRole(roleName);
+
+		return "successV3";
+	}
+
 	public void setRoleName(String string)
 	{
 		roleName = string;

@@ -2,90 +2,10 @@
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
-#beginManagementToolV3("tool.managementtool.viewRoleList.header" true)
-
-#set($buttons = $this.getToolbarButtons("tool.managementtool.viewRoleList.header", "", ""))
-
-<style type="text/css">
-
-#foreach($button in $buttons)
-	
-	#button${velocityCount}.yui-button {
-		border-width: 1px 0;
-		border-style: solid;
-		border-color: transparent;
-		background: transparent; 
-		margin: auto .25em;
-	}
-	#button${velocityCount}.yui-button .first-child {
-		border-width: 0 1px;
-		border-style: solid;
-		border-color: transparent;
-	}
-	
-	#button${velocityCount}.yui-button-hover {
-		border-color: #808080;
-		background-position: 0 0;
-	}
-
-	#button${velocityCount}.yui-button-hover .first-child {
-		border-color: #808080;
-	}
-	
-	#button$velocityCount button {
-	    background: url($button.backgroundImageURL) 2px 6px no-repeat;
-	    text-indent: 20px;
-	    padding: 6px;
-	    border: 0px;
-	    height: 28px;
-	}
-#end
-	
-	table.yui-dt-table {
-		width: 100%;
-	}
-	
-	.yui-skin-sam .yui-dt-table th {
-		background: url(images/v3/tableHeaderBackground.gif) repeat-x 0 0;
-		font-family: arial;
-		font-size: 8pt;
-		padding: 1px 10px 1px 10px;
-		text-align: left;
-	}
-	.yui-skin-sam .yui-dt-table {
-		font-family: arial;
-		font-size: inherit;
-	}
-
-	.yui-skin-sam .yui-dt-table td {
-		font-family: arial;
-		font-size: 8pt;
-	}
-</style>
+#beginManagementToolV3("tool.managementtool.viewRoleList.header" "" true)
 
 <script type="text/javascript">
-
-    YAHOO.example.init = function () 
-    {
-        YAHOO.util.Event.onContentReady("menutoolbar", function () 
-        {
-			#foreach($button in $buttons)
-				var oButton${velocityCount} = new YAHOO.widget.Button("button${velocityCount}");
-            	oButton${velocityCount}.on("click", function (p_oEvent){
-            		document.location.href = '$button.actionURL';
-            	});
-            #end
-            
-			var oButtonHelp = new YAHOO.widget.Button("buttonHelp");
-        	oButtonHelp.on("click", function (p_oEvent){
-        		document.location.href = 'http://www.infoglue.org';
-        	});
-        });
-    }();
-
-</script>
-
-<script type="text/javascript">
+	
 	YAHOO.example.Data = {
 	    roles: 
 	    [
@@ -95,39 +15,37 @@
 	    ]
 	}
 	
-</script>
-<script type="text/javascript">
-YAHOO.util.Event.addListener(window, "load", function() {
-    YAHOO.example.Basic = new function() {
-        var myColumnDefs = [
-            {key:"sel", label:"", formatter:"checkbox", width:"30px"},
-            {key:"id", label:"$ui.getString("entity.Role.roleName.label")", sortable:true, resizeable:true, formatter:"link"},
-            {key:"displayName", label:"$ui.getString("entity.Role.displayName.label")", sortable:true, resizeable:true},
-            {key:"description", label:"$ui.getString("entity.Role.description.label")", sortable:true, resizeable:true}
-        ];
-		
-		this.myDataSource = new YAHOO.util.DataSource(YAHOO.example.Data.roles);
-        this.myDataSource.responseType = YAHOO.util.DataSource.TYPE_JSARRAY;
-        this.myDataSource.responseSchema = {
-            fields: ["id","name","displayName","description"]
-        };
-		
-        this.myDataTable = new YAHOO.widget.DataTable("roles", myColumnDefs, this.myDataSource);
-        this.myDataTable.subscribe("rowClickEvent",this.myDataTable.onEventSelectRow);
-        this.myDataTable.subscribe("checkboxClickEvent", this.myDataTable.onEventSelectRow);
-		
-		this.myDataTable.subscribe("linkClickEvent", function(oArgs){
-			YAHOO.util.Event.stopEvent(oArgs.event);
-            var oRecord = this.getRecord(oArgs.target);
-            //alert(YAHOO.lang.dump(oRecord.getData()));
-            document.location.href = "ViewRole!v3.action?roleName=" + oRecord.getData().id;
-        });
-        
-    };
-});
+	YAHOO.util.Event.addListener(window, "load", function() {
+	    YAHOO.example.Basic = new function() {
+	        var myColumnDefs = [
+	            {key:"sel", label:"", formatter:"checkbox", width:"30px"},
+	            {key:"id", label:"$ui.getString("entity.Role.roleName.label")", sortable:true, resizeable:true, formatter:"link"},
+	            {key:"displayName", label:"$ui.getString("entity.Role.displayName.label")", sortable:true, resizeable:true},
+	            {key:"description", label:"$ui.getString("entity.Role.description.label")", sortable:true, resizeable:true}
+	        ];
+			
+			this.myDataSource = new YAHOO.util.DataSource(YAHOO.example.Data.roles);
+	        this.myDataSource.responseType = YAHOO.util.DataSource.TYPE_JSARRAY;
+	        this.myDataSource.responseSchema = {
+	            fields: ["id","name","displayName","description"]
+	        };
+			
+	        this.myDataTable = new YAHOO.widget.DataTable("roles", myColumnDefs, this.myDataSource);
+	        this.myDataTable.subscribe("rowClickEvent",this.myDataTable.onEventSelectRow);
+	        this.myDataTable.subscribe("checkboxClickEvent", this.myDataTable.onEventSelectRow);
+			
+			this.myDataTable.subscribe("linkClickEvent", function(oArgs){
+				YAHOO.util.Event.stopEvent(oArgs.event);
+	            var oRecord = this.getRecord(oArgs.target);
+	            //alert(YAHOO.lang.dump(oRecord.getData()));
+	            document.location.href = "ViewRole!v3.action?roleName=" + oRecord.getData().id;
+	        });
+	        
+	    };
+	});
 </script>
 
-#menuToolbar("" $buttons) 
+#menuToolbar("" $buttons $rightButtons) 
 
 <div style="clear: both;"></div>
 

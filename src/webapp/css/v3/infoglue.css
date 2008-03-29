@@ -157,7 +157,7 @@ body.generaltooledit {
 	border-color: #7D98B8;
 }
 
-#buttonHelp.yui-button button {
+#helpButton.yui-button button {
     background: url(../../images/v3/helpIcon.gif) 2px 6px no-repeat;
     text-indent: 20px;
     padding: 6px;
@@ -166,25 +166,25 @@ body.generaltooledit {
     border: 0px;
     height: 28px;
 }
-#buttonHelp.yui-button {
+#helpButton.yui-button {
 	border-width: 1px 0;
 	border-style: solid;
 	border-color: transparent;
 	background: transparent; 
 	margin: auto .25em;
 }
-#buttonHelp.yui-button .first-child {
+#helpButton.yui-button .first-child {
 	border-width: 0 1px;
 	border-style: solid;
 	border-color: transparent;
 }
 
-#buttonHelp.yui-button-hover {
+#helpButton.yui-button-hover {
 	border-color: #808080;
 	background-position: 0 0;
 }
 
-#buttonHelp.yui-button-hover .first-child {
+#helpButton.yui-button-hover .first-child {
 	border-color: #808080;
 }
 

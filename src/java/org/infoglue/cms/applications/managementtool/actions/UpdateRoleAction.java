@@ -26,6 +26,7 @@ package org.infoglue.cms.applications.managementtool.actions;
 import org.infoglue.cms.controllers.kernel.impl.simple.RoleControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.RolePropertiesController;
 import org.infoglue.cms.entities.management.RoleVO;
+import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
 
 /**
@@ -69,10 +70,40 @@ public class UpdateRoleAction extends ViewRoleAction //WebworkAbstractAction
 	public String doSaveAndExit() throws Exception
     {
 		doExecute();
-						
+		
 		return "saveAndExit";
 	}
 
+	public String doV3() throws Exception
+    {
+		try
+		{
+			doExecute();
+		}
+		catch(ConstraintException e) 
+        {
+			e.setResult(INPUT + "V3");
+			throw e;
+        }
+		
+		return "successV3";
+	}
+
+	public String doSaveAndExitV3() throws Exception
+    {
+		try
+		{
+			doExecute();
+		}
+		catch(ConstraintException e) 
+        {
+			e.setResult(INPUT + "V3");
+			throw e;
+        }
+		
+		return "saveAndExitV3";
+	}
+	
     public void setRoleName(String roleName)
     {
 		this.roleVO.setRoleName(roleName);
@@ -92,6 +123,4 @@ public class UpdateRoleAction extends ViewRoleAction //WebworkAbstractAction
 	{
 		return this.roleVO.getDescription();	
 	}
-	
-
 }

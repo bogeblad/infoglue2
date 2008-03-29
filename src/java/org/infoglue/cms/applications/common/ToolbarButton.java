@@ -32,6 +32,7 @@ import java.util.List;
 
 public class ToolbarButton
 {
+	private String id            		= "";
 	private String text            		= "";
 	private String title            	= "";
 	private String backgroundImageURL   = "";
@@ -41,12 +42,18 @@ public class ToolbarButton
 	//private List subButtons			= new ArrayList();
 	//private boolean isSelfContained	= false;
 
-	public ToolbarButton(String text, String title, String actionURL, String backgroundImageURL)
+	public ToolbarButton(String id, String text, String title, String actionURL, String backgroundImageURL)
 	{
+		this.id 				= id;
 		this.text 				= text;
 		this.title     			= title;
 		this.backgroundImageURL = backgroundImageURL;
 		this.actionURL 			= actionURL;
+	}
+
+	public String getId()
+	{
+		return id;
 	}
 
 	public String getText()
@@ -68,7 +75,4 @@ public class ToolbarButton
 	{
 		return actionURL;
 	}
-	
-
-
 }
