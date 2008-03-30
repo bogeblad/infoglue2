@@ -17,6 +17,11 @@
 
 <script type="text/javascript" src="${contextName}/applications/FCKEditor/fckeditor.js"></script>
 
+<script type="text/javascript" src="${contextName}/applications/jscalendar/calendar.js"></script>
+<script type="text/javascript" src="${contextName}/applications/jscalendar/lang/calendar-en.js"></script>
+<script type="text/javascript" src="${contextName}/applications/jscalendar/calendar-setup.js"></script>
+<link rel="stylesheet" type="text/css" media="all" href="${contextName}/applications/jscalendar/skins/aqua/theme.css" title="aqua" />
+
 <script type="text/javascript">
 			
 	$(function()
