@@ -21,6 +21,8 @@
 				/ViewApplicationState.action,
 				/ViewLogging.action,
                 /ErrorPage.action,
+                /applications/FCKEditor/*,
+                /applications/jscalendar/*,
                 /digitalAssets/*,
                 /scripts/*,
                 /script/*,
@@ -45,6 +47,8 @@
     	<init-param>
             <param-name>FilterURIs</param-name>
             <param-value>
+                /applications/FCKEditor/*,
+                /applications/jscalendar/*,
                 /digitalAssets/*,
                 /scripts/*,
                 /script/*,
@@ -84,6 +88,8 @@
             <param-name>FilterURIs</param-name>
             <param-value>
                 *.action,
+                /applications/FCKEditor/*,
+                /applications/jscalendar/*,
                 /digitalAssets/*,
                 /scripts/*,
                 /script/*,
@@ -116,6 +122,8 @@
             <param-name>FilterURIs</param-name>
             <param-value>
                 *.action,
+                /applications/FCKEditor/*,
+                /applications/jscalendar/*,
                 /digitalAssets/*,
                 /scripts/*,
                 /script/*,
