@@ -244,8 +244,10 @@
 				document.componentPropertyDefinitionForm.componentPropertyDefinition_type.options[3].selected = 1;
 			else if(componentPropertyDefinition.type == "checkbox")
 				document.componentPropertyDefinitionForm.componentPropertyDefinition_type.options[4].selected = 1;
-			else
+			else if(componentPropertyDefinition.type == "datefield")
 				document.componentPropertyDefinitionForm.componentPropertyDefinition_type.options[5].selected = 1;
+			else
+				document.componentPropertyDefinitionForm.componentPropertyDefinition_type.options[6].selected = 1;
 
 			if(componentPropertyDefinition.entity == "Content")
 				document.componentPropertyDefinitionForm.componentPropertyDefinition_entity.options[0].selected = 1;
@@ -769,6 +771,7 @@
 				document.getElementById("assetParagraph").style.display = "none";
 				document.getElementById("wysiwygParagraph").style.display = "none";
 				document.getElementById("allowedContentTypeNamesParagraph").style.display = "none";
+				document.getElementById("autoCreateContentParagraph").style.display = "none";
 			}
 			else if(selectBox.value == "textarea")
 			{							 
@@ -778,6 +781,7 @@
 				document.getElementById("multipleParagraph").style.display = "none";
 				document.getElementById("assetParagraph").style.display = "none";
 				document.getElementById("allowedContentTypeNamesParagraph").style.display = "none";
+				document.getElementById("autoCreateContentParagraph").style.display = "none";
 			}
 			else if(selectBox.value == "select" || selectBox.value == "checkbox")
 			{
@@ -792,6 +796,17 @@
 				document.getElementById("assetParagraph").style.display = "none";
 				document.getElementById("wysiwygParagraph").style.display = "none";
 				document.getElementById("allowedContentTypeNamesParagraph").style.display = "none";
+				document.getElementById("autoCreateContentParagraph").style.display = "none";
+			}
+			else if(selectBox.value == "datefield")
+			{							 
+				document.getElementById("optionsParagraph").style.display = "none";
+				document.getElementById("entityParagraph").style.display = "none";
+				document.getElementById("multipleParagraph").style.display = "none";
+				document.getElementById("assetParagraph").style.display = "none";
+				document.getElementById("wysiwygParagraph").style.display = "none";
+				document.getElementById("allowedContentTypeNamesParagraph").style.display = "none";
+				document.getElementById("autoCreateContentParagraph").style.display = "none";
 			}
 			else
 			{
@@ -884,6 +899,7 @@
 		<option value="textarea">textarea</option>
 		<option value="select">select</option>
 		<option value="checkbox">checkbox</option>
+		<option value="datefield">datefield</option>
 	</select>
 </p>
 
