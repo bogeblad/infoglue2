@@ -7,7 +7,7 @@ Component palette classes
 	background-color:#F4F4F4;
 	font-family:verdana, sans-serif;
 	font-size:10px;
-	z-index:1000001;
+	z-index:50;
 	height:80px; 
 	width:100%; 
 	left:0px; 
@@ -218,7 +218,7 @@ Buffer
 
 #buffer { 
 	position:	absolute;
-	z-index:	1000003;
+	z-index:	80;
 	height:		1em;
 	width:		1em;
 	background:	#777777;
@@ -251,7 +251,7 @@ Page components classes
 	width:250px;
 	background-color:#F4F4F4;
     border:1px solid #333333;
-	z-index:1000002;
+	z-index:70;
 	right:5px;
 	top:100px;
 	height: 400px;
@@ -284,7 +284,7 @@ Edit on sight classes
 
 .skin0 {
 	position:absolute;
-	z-index:1000004;
+	z-index:90;
 	text-align:left;
 	width:350px;
 	background-color:#F9F8F7;
@@ -296,7 +296,7 @@ Edit on sight classes
 .skin1 {
 	cursor:default;
 	position:absolute;
-	z-index:1000004;
+	z-index:90;
 	text-align:left;
 	font-family: Tahoma, Arial, Helvetica, sans-serif;
 	font-size: 10pt;
@@ -325,7 +325,7 @@ Properties classes
 	width:450px;
 	background-color:#F4F4F4;
 	border:1px solid #333333;
-	z-index:1000003;
+	z-index:80;
 	right:5px;
 	top:100px;
 	}
@@ -475,6 +475,14 @@ input.propertytextfield {
 	border-width	 : 1px;	
 	border-color     : #C2D0E2;
 	width            : 200px;
+}	  
+input.propertydatefield {
+	font-family      : verdana, arial, sans-serif;
+	font-size        : 8pt;
+	border-style	 : solid;
+	border-width	 : 1px;	
+	border-color     : #C2D0E2;
+	width            : 100px;
 }
 .propertytextarea {
 	font-family      : verdana, arial, sans-serif;
@@ -610,7 +618,7 @@ select.mediumdrop {
 	width: 200px; 
 	display: block; 
 	visibility: hidden; 
-	z-index: 200000; 
+	z-index: 99; 
 	position: absolute; 
 	font-size: 8pt; 
 	font-family: Verdana; 
