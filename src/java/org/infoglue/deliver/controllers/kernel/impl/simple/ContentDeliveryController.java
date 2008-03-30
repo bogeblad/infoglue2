@@ -207,14 +207,23 @@ public class ContentDeliveryController extends BaseDeliveryController
 			contentVersion = getContentVersion(content, languageId, getOperatingMode(), deliveryContext, db);
 			if(contentVersion == null && useLanguageFallback)
 			{
-				logger.info("Did not find it in requested languge... lets check the masterlanguage....");
-				
 				Integer masterLanguageId = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForSiteNode(db, siteNodeId).getLanguageId();
 				if(languageId != null && !languageId.equals(masterLanguageId))
 				{
 					contentVersion = getContentVersion(content, masterLanguageId, getOperatingMode(), deliveryContext, db);
 				}
+				
+				//Added fallback to the content repository master language... useful for mixing components between sites
+				if(languageId != null && contentVersion == null && useLanguageFallback)
+				{
+					Integer contentMasterLanguageId = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForRepository(db, content.getRepositoryId()).getLanguageId();
+					if(languageId != null && !languageId.equals(contentMasterLanguageId) && !masterLanguageId.equals(contentMasterLanguageId))
+					{
+						contentVersion = getContentVersion(content, contentMasterLanguageId, getOperatingMode(), deliveryContext, db);
+					}
+				}
 			}
+			
 		}
 		
 		return contentVersion;
