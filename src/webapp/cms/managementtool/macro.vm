@@ -718,7 +718,7 @@
     #end
   #end
   <br/>
-  <input type="text" $readOnly class="$className" id="$fieldName" name="$fieldName" value="$!fieldValue" size="$length"/>&nbsp;<a name="calendar_$fieldName" id="calendar_$fieldName" aonclick="javascript:openDatePopup(event, '$url', 'Calendar');"><img src="images/calendar.gif" border="0" /></a>
+  <input type="text" $readOnly class="$className" id="$fieldName" name="$fieldName" value="$!fieldValue" size="$length"/>&nbsp;<a name="calendar_$fieldName" id="calendar_$fieldName"><img src="images/calendar.gif" border="0" /></a>
   <script type="text/javascript">
     Calendar.setup({
 	        inputField     :    "$fieldName",     		// id of the input field
@@ -735,7 +735,7 @@
 
 #macro(editDateFieldCSS $fieldNameKey $fieldName $fieldValue $length $className $url $readOnly)
   <label for="$fieldName">$ui.getString("${fieldNameKey}")</label>
-  <input type="text" $readOnly class="$className" id="$fieldName" name="$fieldName" value="$!fieldValue" size="$length"/>&nbsp;<a name="calendar_$fieldName" id="calendar_$fieldName" aonclick="javascript:openDatePopup(event, '$url', 'Calendar');"><img src="images/calendar.gif" border="0" /></a>
+  <input type="text" $readOnly class="$className" id="$fieldName" name="$fieldName" value="$!fieldValue" size="$length"/>&nbsp;<a name="calendar_$fieldName" id="calendar_$fieldName"><img src="images/calendar.gif" border="0" /></a>
   <script type="text/javascript">
     Calendar.setup({
 	        inputField     :    "$fieldName",     		// id of the input field
