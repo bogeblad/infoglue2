@@ -70,9 +70,14 @@
 		
 	<link rel="stylesheet" type="text/css" href="css/cms.css" /> 
 	<script type="text/javascript" src="script/listview.js"></script>
-	<script type="text/javascript" src="script/calendar1.js"></script>
 	<script type="text/javascript" src="script/editorForFCKEditor.js"></script>
 	<script type="text/javascript" src="script/hotkeys.js"></script>
+	
+	<link rel="stylesheet" type="text/css" media="all" href="applications/jscalendar/skins/aqua/theme.css" title="aqua" />
+	<script type="text/javascript" src="applications/jscalendar/calendar.js"></script>
+	<script type="text/javascript" src="applications/jscalendar/lang/calendar-en.js"></script>
+	<script type="text/javascript" src="applications/jscalendar/calendar-setup.js"></script>
+	
 	<META HTTP-EQUIV="pragma" CONTENT="no-cache" />
 	<META HTTP-EQUIV="expires" CONTENT="-1" />
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
@@ -527,6 +532,22 @@
 							
 				#if($attribute.inputType == "hidden")
 					<input type="hidden" id="$attribute.name" name="$attribute.name" value="$value"/>
+				#elseif($attribute.inputType == "datefield")
+					$attributeTitle ("$attribute.name") $attributeDescription
+					#printError("ContentVersion.$attribute.name")
+					<input $readonly type="text" length="20" class="date" maxlength="20" id="$attribute.name" name="$attribute.name" value="$value"/>&nbsp;<a name="calendar_$attribute.name" id="calendar_$attribute.name"><img src="images/calendar.gif" border="0"/></a>
+					<script type="text/javascript">
+						Calendar.setup({
+						        inputField     :    "$attribute.name",     		// id of the input field
+						        ifFormat       :    "%Y-%m-%d %H:%M",      	// format of the input field
+						        button         :    "calendar_$attribute.name",  // trigger for the calendar (button ID)
+						        align          :    "BR",           		// alignment (defaults to "Bl")
+						        singleClick    :    true,
+						        firstDay  	   : 	1,
+						        showsTime	   :    true,
+						        timeFormat     :    "24"
+						});
+					</script>
 				#elseif($attribute.inputType == "textfield")
 					$attributeTitle ("$attribute.name") $attributeDescription
 					#printError("ContentVersion.$attribute.name")

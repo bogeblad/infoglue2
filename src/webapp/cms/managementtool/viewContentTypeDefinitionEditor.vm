@@ -274,6 +274,7 @@
 			    <option value="radiobutton" #checkSelected("radiobutton" "$attribute.inputType")>RadioButton</option>
 			    <option value="select" #checkSelected("select" "$attribute.inputType")>SelectBox</option>
 			    <option value="hidden" #checkSelected("hidden" "$attribute.inputType")>Hidden</option>
+			    <option value="datefield" #checkSelected("datefield" "$attribute.inputType")>DateField</option>
 			    <!--<option value="password" #checkSelected("password" "$attribute.inputType")>Password</option>-->
 			    <!--<option value="image" #checkSelected("image" "$attribute.inputType")>SubmitImage</option>-->
 			    <!--<option value="submit" #checkSelected("submit" "$attribute.inputType")>SubmitButton</option>-->
@@ -505,6 +506,7 @@
 						    <option value="radiobutton">RadioButton</option>
 						    <option value="select">SelectBox</option>
 						    <option value="hidden">Hidden</option>
+						    <option value="dateField">DateField</option>
 						    <!--<option value="password">Password</option>-->
 						    <!--<option value="image">SubmitImage</option>-->
 						    <!--<option value="submit">SubmitButton</option>-->
@@ -563,6 +565,7 @@
 						    <option value="radiobutton">RadioButton</option>
 						    <option value="select">SelectBox</option>
 						    <option value="hidden">Hidden</option>
+						    <option value="dateField">DateField</option>
 						    <!--<option value="password">Password</option>-->
 						    <!--<option value="image">SubmitImage</option>-->
 						    <!--<option value="submit">SubmitButton</option>-->
