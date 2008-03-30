@@ -127,7 +127,7 @@ public abstract class WebworkAbstractAction implements Action, ServletRequestAwa
         {
         	logger.info("ConstraintException " + e, e);
             setErrors(e);
-            result = INPUT;
+			result = INPUT;
         } 
         catch(Bug e) 
         {
@@ -294,21 +294,18 @@ public abstract class WebworkAbstractAction implements Action, ServletRequestAwa
 			} 
 			catch(ResultException e) 
 			{
-				//e.printStackTrace();
 				logger.error("ResultException " + e, e);
 				result = e.getResult();
 			} 
 			catch(AccessConstraintException e) 
 			{
-				//e.printStackTrace();
-				logger.warn("AccessConstraintException " + e, e);
+				logger.info("AccessConstraintException " + e, e);
 				setErrors(e);
 				result = ACCESS_DENIED;
 			} 
 			catch(ConstraintException e) 
 			{
-				//e.printStackTrace();
-				logger.warn("ConstraintException " + e, e);
+				logger.info("ConstraintException " + e, e);
 				setErrors(e);
 				if(e.getResult() != null)
 					result = e.getResult();
@@ -317,34 +314,29 @@ public abstract class WebworkAbstractAction implements Action, ServletRequestAwa
 			} 
 			catch(Bug e) 
 			{
-				//e.printStackTrace();
 				logger.error("Bug " + e);
 				setError(e, e.getCause());
 				result = ERROR;
 			} 
 			catch(ConfigurationError e) 
 			{
-				//e.printStackTrace();
 				logger.error("ConfigurationError " + e);
 				setError(e, e.getCause());
 				result = ERROR;
 			} 
 			catch(SystemException e) 
 			{
-				//e.printStackTrace();
 				logger.error("SystemException " + e, e);
 				setError(e, e.getCause());
 				result = ERROR;
 			} 
 			catch(Throwable e) 
 			{
-				//e.printStackTrace();
 				logger.error("Throwable " + e);
 				final Bug bug = new Bug("Uncaught exception!", e);
 				setError(bug, bug.getCause());
 				result = ERROR;
-			}
-	        
+			}	        
     	}
 
     	try
