@@ -826,7 +826,7 @@
 		function init()
 		{
 			#foreach($propertyDefinition in $componentPropertyDefinitions)
-				alert("$propertyDefinition.autoCreateContentPath");
+				//alert("$propertyDefinition.autoCreateContentPath");
 				property = new ComponentPropertyDefinition("$propertyDefinition.name", "$propertyDefinition.type", "$propertyDefinition.entity", "$propertyDefinition.multiple", "$propertyDefinition.assetBinding", "$propertyDefinition.allowedContentTypeNames", "$propertyDefinition.description", "$!propertyDefinition.defaultValue", "$!propertyDefinition.WYSIWYGEnabled", "$!propertyDefinition.WYSIWYGToolbar", "$!propertyDefinition.dataProvider", "$!propertyDefinition.dataProviderParameters", "$!propertyDefinition.autoCreateContent", "$!propertyDefinition.autoCreateContentMethod", "$!propertyDefinition.autoCreateContentPath");
 
 				#foreach($propertyOptionDefinition in $propertyDefinition.options)
