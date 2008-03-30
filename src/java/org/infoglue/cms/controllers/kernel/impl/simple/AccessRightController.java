@@ -813,6 +813,58 @@ public class AccessRightController extends BaseController
 	 * @throws SystemException
 	 */
 	
+	public void addUserRights(String[] interceptionPointNames, String parameters, InfoGluePrincipal principal) throws ConstraintException, SystemException
+	{
+		Database db = CastorDatabaseService.getDatabase();
+		
+		try 
+		{
+			beginTransaction(db);
+					
+			for(int i=0; i<interceptionPointNames.length; i++)
+			{
+				String interceptionPointName = interceptionPointNames[i];
+				//System.out.println("interceptionPointName:" + interceptionPointName);
+				//System.out.println("parameters:" + parameters);
+				//System.out.println("principal:" + principal);
+				InterceptionPoint interceptionPoint = InterceptionPointController.getController().getInterceptionPointWithName(interceptionPointName, db);
+				if(interceptionPoint != null)
+				{
+					AccessRightVO accessRightVO = new AccessRightVO();
+					accessRightVO.setParameters(parameters);
+		
+					AccessRight accessRight = create(accessRightVO, interceptionPoint, db);
+				    
+					if(principal != null && accessRight != null)
+					{
+					    AccessRightUserVO accessRightUserVO = new AccessRightUserVO();
+					    accessRightUserVO.setUserName(principal.getName());
+					    AccessRightUser accessRightUser = createAccessRightUser(db, accessRightUserVO, accessRight);
+					    accessRight.getUsers().add(accessRightUser);
+					}
+				}
+			}			
+			
+		    commitTransaction(db);
+		} 
+		catch (Exception e) 
+		{
+			logger.info("An error occurred so we should not complete the transaction:" + e);
+			rollbackTransaction(db);
+			throw new SystemException(e.getMessage());
+		}
+	}
+
+	/**
+	 * Adds a user to have access
+	 * 
+	 * @param accessRightId
+	 * @param parameters
+	 * @param userName
+	 * @throws ConstraintException
+	 * @throws SystemException
+	 */
+	
 	public void deleteUser(String interceptionPointCategory, String parameters, String userName, HttpServletRequest request) throws ConstraintException, SystemException
 	{
 		Database db = CastorDatabaseService.getDatabase();
@@ -841,7 +893,6 @@ public class AccessRightController extends BaseController
 		} 
 		catch (Exception e) 
 		{
-		    e.printStackTrace();
 			logger.info("An error occurred so we should not complete the transaction:" + e);
 			rollbackTransaction(db);
 			throw new SystemException(e.getMessage());
