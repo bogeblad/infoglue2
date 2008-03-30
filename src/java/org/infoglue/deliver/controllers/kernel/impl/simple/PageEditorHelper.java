@@ -382,6 +382,50 @@ public class PageEditorHelper extends BaseDeliveryController
 				if(hasAccessToProperty)
 				    propertyIndex++;
 			}
+			else if(componentProperty.getType().equalsIgnoreCase(ComponentProperty.DATEFIELD))
+			{
+				sb.append("	<div class=\"propertyRow\">");
+				sb.append("		<div class=\"propertyRowLeft\">");
+				sb.append("			<label for=\"" + componentProperty.getName() + "\" onMouseOver=\"showDiv('helpLayer" + componentProperty.getComponentId() + "_" + componentProperty.getName() + "');\" onMouseOut=\"javascript:hideDiv('helpLayer" + componentProperty.getComponentId() + "_" + componentProperty.getName() + "');\">" + componentProperty.getName() + "</label>");
+				sb.append("		</div>");
+
+				sb.append("		<div class=\"propertyRowRight\">");
+				
+				sb.append("			<div class=\"fieldGroup\">");									
+				if(hasAccessToProperty)
+				{
+					sb.append("			<input type=\"hidden\" name=\"" + propertyIndex + "_propertyName\" value=\"" + componentProperty.getName() + "\"/>");
+					sb.append("			<input type=\"text\" class=\"propertydatefield\" style=\"width: 100px;\" id=\"" + componentProperty.getName() + "\" name=\"" + componentProperty.getName() + "\" value=\"" + componentProperty.getValue() + "\" onkeydown=\"setDirty();\"/>&nbsp;<a name=\"calendar_" + componentProperty.getName() + "\" id=\"calendar_" + componentProperty.getName() + "\"><img src=\"" + componentEditorUrl + "/images/calendar.gif\" border=\"0\"/></a>");
+					sb.append("			<script type=\"text/javascript\">");
+					sb.append("				Calendar.setup({");
+					sb.append("	        		inputField     :    \"" + componentProperty.getName() + "\",");
+					sb.append("	        		ifFormat       :    \"%Y-%m-%d %H:%M\",");
+					sb.append("	        		button         :    \"calendar_" + componentProperty.getName() + "\",");
+					sb.append("	        		align          :    \"BR\",");
+					sb.append("	        		singleClick    :    true,");
+					sb.append("	        		firstDay  	   : 	1,");
+					sb.append("	        		showsTime	   :    true,");
+					sb.append("	        		timeFormat     :    \"24\"");
+					sb.append("				});");
+					sb.append("			</script>");
+				}
+				else
+					sb.append("	" + componentProperty.getValue() + "");
+				sb.append("			</div>");
+	
+				if(hasAccessToProperty)
+				{
+					sb.append("	<div class=\"actionGroup\">");
+					sb.append("		<a class=\"componentEditorLink\" href=\"" + componentEditorUrl + "ViewSiteNodePageComponents!deleteComponentPropertyValue.action?siteNodeId=" + siteNodeId + "&amp;languageId=" + languageId + "&amp;contentId=" + contentId + "&amp;componentId=" + componentId + "&amp;propertyName=" + componentProperty.getName() + "&amp;showSimple=" + showSimple + "\"><img src=\"" + componentEditorUrl + "/images/delete.gif\" border=\"0\"/></a>");
+					sb.append("	</div>");
+				}
+				sb.append("	</div>");
+
+				sb.append("	</div>");
+
+				if(hasAccessToProperty)
+				    propertyIndex++;
+			}
 			else if(componentProperty.getType().equalsIgnoreCase(ComponentProperty.TEXTAREA))
 			{
 				sb.append("	<div class=\"propertyRow\">");
@@ -803,6 +847,8 @@ public class PageEditorHelper extends BaseDeliveryController
 		    
 		    if(treeItem != true)
 		    	sb.append("<div class=\"igmenuitems\" onMouseover=\"javascript:highlightie5(event);\" onMouseout=\"javascript:lowlightie5(event);\" onClick=\"edit();\">" + editHTML + "</div>");
+		    if(treeItem != true)
+		    	sb.append("<div class=\"igmenuitems\" onMouseover=\"javascript:highlightie5(event);\" onMouseout=\"javascript:lowlightie5(event);\" onClick=\"editInline(" + repositoryId + ");\">" + editHTML + " Inline</div>");
 		    if(treeItem != true)
 		    	sb.append("<div class=\"igmenuitems\" onMouseover=\"javascript:highlightie5(event);\" onMouseout=\"javascript:lowlightie5(event);\" onClick=\"submitToPublish(" + siteNodeId + ", " + repositoryId + ", '" + URLEncoder.encode(originalFullURL, "UTF-8") + "');\">" + submitToPublishHTML + "</div>");
 			if(hasAccessToAddComponent)
@@ -1367,7 +1413,7 @@ public class PageEditorHelper extends BaseDeliveryController
 		try
 		{
 		    Integer masterLanguageId = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForSiteNode(db, siteNodeId).getId();
-			componentPropertiesString = ContentController.getContentController().getContentAttribute(db, contentId, masterLanguageId, "ComponentProperties");
+			componentPropertiesString = ContentController.getContentController().getContentAttribute(db, contentId, masterLanguageId, "ComponentProperties", true);
 			//componentPropertiesString = ContentDeliveryController.getContentDeliveryController().getContentAttribute(db, contentId, masterLanguageId, "ComponentProperties", siteNodeId, true, null, principal, false, true);
 
 			if(componentPropertiesString == null)
@@ -1402,7 +1448,7 @@ public class PageEditorHelper extends BaseDeliveryController
 		{
 			ContentVO contentVO = ContentController.getContentController().getContentVOWithId(componentContentId, db);
 		    Integer masterLanguageId = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForRepository(contentVO.getRepositoryId(), db).getId();
-			templateString = ContentController.getContentController().getContentAttribute(db, componentContentId, masterLanguageId, "Template");
+			templateString = ContentController.getContentController().getContentAttribute(db, componentContentId, masterLanguageId, "Template", true);
 
 			if(templateString == null)
 				throw new SystemException("There was no template on the content: " + componentContentId);
@@ -1788,6 +1834,14 @@ public class PageEditorHelper extends BaseDeliveryController
 							if(propertyElement.attributeValue("path_" + locale.getLanguage()) != null)
 								path = propertyElement.attributeValue("path_" + locale.getLanguage());
 					
+							if(path == null || path.equals(""))
+							{
+								System.out.println("Falling back to content master language 1 for property:" + propertyName);
+								LanguageVO contentMasterLangaugeVO = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForRepository(db, contentVO.getRepositoryId());
+								if(propertyElement.attributeValue("path_" + contentMasterLangaugeVO.getLanguageCode()) != null)
+									path = propertyElement.attributeValue("path_" + contentMasterLangaugeVO.getLanguageCode());	
+							}
+
 							Map property = new HashMap();
 							property.put("name", propertyName);
 							property.put("path", path);
@@ -1812,16 +1866,6 @@ public class PageEditorHelper extends BaseDeliveryController
 								componentBinding.setBindingPath(path);
 								
 								bindings.add(componentBinding);
-								/*
-								if(entity.equalsIgnoreCase("Content"))
-								{
-									bindings.add(entityId);
-								}
-								else
-								{
-									bindings.add(entityId); 
-								}
-								*/ 
 							}
 			
 							property.put("bindings", bindings);

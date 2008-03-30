@@ -47,6 +47,7 @@ public class ComponentProperty
 	public static final String TEXTAREA 						= "textarea";
 	public static final String SELECTFIELD 						= "select";
 	public static final String CHECKBOXFIELD					= "checkbox";
+	public static final String DATEFIELD						= "datefield";
 	
 	private Integer id;
 	private String name;
