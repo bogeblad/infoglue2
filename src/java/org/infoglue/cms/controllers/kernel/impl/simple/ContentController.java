@@ -1739,8 +1739,28 @@ public class ContentController extends BaseController
 	    ContentVO contentVO = ContentController.getContentController().getContentVOWithId(contentId, db);
 		
 		ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentVO.getId(), languageId, db);
+		if(contentVersionVO != null)
+			attribute = ContentVersionController.getContentVersionController().getAttributeValue(contentVersionVO, attributeName, false);
+		
+		return attribute;
+	}	
 
-		attribute = ContentVersionController.getContentVersionController().getAttributeValue(contentVersionVO, attributeName, false);
+	public String getContentAttribute(Database db, Integer contentId, Integer languageId, String attributeName, boolean useLanguageFallBack) throws Exception
+	{
+	    String attribute = "Undefined";
+	    
+	    ContentVO contentVO = ContentController.getContentController().getContentVOWithId(contentId, db);
+		
+		ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentVO.getId(), languageId, db);
+		if(contentVersionVO == null && useLanguageFallBack)
+		{
+			LanguageVO masterLanguageVO = LanguageController.getController().getMasterLanguage(contentVO.getRepositoryId(), db);
+			//System.out.println("Falling back to masterLanguageVO:" + masterLanguageVO);
+			contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentVO.getId(), masterLanguageVO.getId(), db);
+		}
+		
+		if(contentVersionVO != null)
+			attribute = ContentVersionController.getContentVersionController().getAttributeValue(contentVersionVO, attributeName, false);
 		
 		return attribute;
 	}	
