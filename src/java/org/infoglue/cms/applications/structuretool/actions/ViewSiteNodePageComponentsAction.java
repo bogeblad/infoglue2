@@ -332,7 +332,7 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 
 		Integer newComponentId = new Integer(0);
 
-		NodeDeliveryController nodeDeliveryController			    = NodeDeliveryController.getNodeDeliveryController(siteNodeId, languageId, contentId);
+		NodeDeliveryController nodeDeliveryController = NodeDeliveryController.getNodeDeliveryController(siteNodeId, languageId, contentId);
 		
 		if(this.pageTemplateContentId != null)
 		{
@@ -340,7 +340,27 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 			ContentVersionVO pageTemplateContentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(this.pageTemplateContentId, languageId);
 			
 		    String componentXML = ContentVersionController.getContentVersionController().getAttributeValue(pageTemplateContentVersionVO.getId(), "ComponentStructure", false);
-		
+		    
+			Document document = XMLHelper.readDocumentFromByteArray(componentXML.getBytes("UTF-8"));
+			
+			String componentXPath = "//component";
+
+			System.out.println("componentXPath:" + componentXPath);
+			
+			NodeList componentNodes = org.apache.xpath.XPathAPI.selectNodeList(document.getDocumentElement(), componentXPath);
+			System.out.println("Found componentNodes:" + componentNodes.getLength());
+			for(int i=0; i < componentNodes.getLength(); i++)
+			{
+				Element element = (Element)componentNodes.item(i);
+				String componentId = element.getAttribute("id");
+				String componentContentId = element.getAttribute("contentId");
+				System.out.println("componentId:" + componentId);
+				System.out.println("componentContentId:" + componentContentId);
+				
+				ComponentController.getController().checkAndAutoCreateContents(this.siteNodeId, languageId, this.masterLanguageVO.getId(), this.assetKey, new Integer(componentId), document, new Integer(componentContentId), getInfoGluePrincipal());
+				componentXML = XMLHelper.serializeDom(document, new StringBuffer()).toString();
+			}
+				
 			ContentVO pageMetaInfoContentVO = nodeDeliveryController.getBoundContent(this.getInfoGluePrincipal(), siteNodeId, languageId, true, "Meta information", DeliveryContext.getDeliveryContext());
 			//ContentVO templateContentVO = nodeDeliveryController.getBoundContent(siteNodeId, "Meta information");		
 			
@@ -443,8 +463,8 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 					Element newComponent = addComponentElement(component, new Integer(newComponentId.intValue()), this.slotId, this.componentId, isPagePartReference);
 				}
 
-				checkAndAutoCreateContents(newComponentId, document, templateContentVO);
-				
+				ComponentController.getController().checkAndAutoCreateContents(this.siteNodeId, languageId, this.masterLanguageVO.getId(), this.assetKey, newComponentId, document, templateContentVO.getId(), getInfoGluePrincipal());
+
 				String modifiedXML = XMLHelper.serializeDom(document, new StringBuffer()).toString(); 
 
 				ContentVO contentVO = NodeDeliveryController.getNodeDeliveryController(siteNodeId, this.masterLanguageVO.getId(), contentId).getBoundContent(this.getInfoGluePrincipal(), siteNodeId, this.masterLanguageVO.getId(), true, "Meta information", DeliveryContext.getDeliveryContext());
@@ -464,67 +484,6 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 	    return NONE; 
 	}
 
-	private void checkAndAutoCreateContents(Integer newComponentId, Document document, ContentVO templateContentVO) throws Exception, SystemException, Bug, ConstraintException
-	{
-		List componentPropertyDefinitions = ComponentPropertyDefinitionController.getController().getComponentPropertyDefinitions(templateContentVO.getId(), this.masterLanguageVO.getId());
-		Iterator componentPropertyDefinitionsIterator = componentPropertyDefinitions.iterator();
-		while(componentPropertyDefinitionsIterator.hasNext())
-		{
-			ComponentPropertyDefinition componentPropertyDefinition = (ComponentPropertyDefinition)componentPropertyDefinitionsIterator.next();
-			System.out.println("componentPropertyDefinition:" + componentPropertyDefinition);
-			if(componentPropertyDefinition.getAutoCreateContent())
-			{
-				System.out.println("componentPropertyDefinition vill ha en auto create:" + componentPropertyDefinition);
-				String method = componentPropertyDefinition.getAutoCreateContentMethod();
-				String path = componentPropertyDefinition.getAutoCreateContentPath();
-				String allowedContentTypeNames = componentPropertyDefinition.getAllowedContentTypeNames();
-				String allowedContentTypeName = allowedContentTypeNames.split(",")[0];
-				ContentTypeDefinitionVO createContentTypeDefinitionVO = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithName(allowedContentTypeName);
-				System.out.println("method:" + method);
-				System.out.println("path:" + path);
-				System.out.println("createContentTypeDefinitionVO:" + createContentTypeDefinitionVO.getName());
-				if(path.indexOf("/") == 0)
-					path = path.substring(1);
-				
-				SiteNodeVO siteNodeVO = SiteNodeController.getController().getSiteNodeVOWithId(this.siteNodeId);
-				ContentVO parentContentVO = ContentController.getContentController().getRootContentVO(siteNodeVO.getRepositoryId(), getInfoGluePrincipal().getName(), true);
-				if(method.equals("siteStructure"))
-				{
-					String siteNodePath = SiteNodeController.getController().getSiteNodePath(siteNodeVO.getId());
-					System.out.println("siteNodePath:" + siteNodePath);
-					parentContentVO = ContentController.getContentController().getContentVOWithPath(siteNodeVO.getRepositoryId(), path + siteNodePath, true, getInfoGluePrincipal());
-				}
-				else if(method.equals("fixedPath"))
-				{
-					parentContentVO = ContentController.getContentController().getContentVOWithPath(siteNodeVO.getRepositoryId(), path, true, this.getInfoGluePrincipal());
-				}
-				
-				ContentVO autoContentVO = new ContentVO();
-				autoContentVO.setName(siteNodeVO.getName() + " - " + componentPropertyDefinition.getName());
-				autoContentVO.setCreatorName(this.getInfoGluePrincipal().getName());
-				autoContentVO.setIsBranch(false);
-
-				String defaultValue = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><article xmlns=\"x-schema:ArticleSchema.xml\"><attributes><Title><![CDATA[State title]]></Title><NavigationTitle><![CDATA[State nav title]]></NavigationTitle><FullText><![CDATA[<p>State text</p>]]></FullText><Leadin><![CDATA[State leadin]]></Leadin></attributes></article>";
-
-				ContentVersionVO autoContentVersionVO = new ContentVersionVO();
-				autoContentVersionVO.setVersionComment("Automatically created");
-				autoContentVersionVO.setVersionModifier(this.getInfoGluePrincipal().getName());
-				autoContentVersionVO.setVersionValue(defaultValue);
-				
-				autoContentVO = ContentController.getContentController().create(parentContentVO.getId(), createContentTypeDefinitionVO.getId(), siteNodeVO.getRepositoryId(), autoContentVO);
-				ContentVersionController.getContentVersionController().create(autoContentVO.getId(), languageId, autoContentVersionVO, null);
-				
-				Locale locale = LanguageController.getController().getLocaleWithId(languageId);
-				LanguageVO masterLanguageVO = LanguageController.getController().getMasterLanguage(siteNodeVO.getRepositoryId());		
-
-				String entity = "Content";
-				Integer entityId  = new Integer(autoContentVO.getId());
-				String propertyName = "" + componentPropertyDefinition.getName();
-				
-				ComponentController.getController().addComponentPropertyBinding(document, locale, siteNodeId, languageId, masterLanguageVO.getId(), entity, entityId, propertyName, newComponentId, path, assetKey, getInfoGluePrincipal());
-			}
-		}
-	}
 
 	/**
 	 * This method adds a component to the page. 

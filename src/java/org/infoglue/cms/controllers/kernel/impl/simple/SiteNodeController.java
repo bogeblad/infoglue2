@@ -59,6 +59,10 @@ import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
+import org.infoglue.cms.util.XMLHelper;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
 
 import com.opensymphony.module.propertyset.PropertySet;
 import com.opensymphony.module.propertyset.PropertySetManager;
@@ -844,10 +848,27 @@ public class SiteNodeController extends BaseController
         	String componentStructure = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><components></components>";
         	if(pageTemplateContentId != null)
         	{
-        	    Integer languageId = LanguageController.getController().getMasterLanguage(db, repositoryId).getId();
-        		ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(pageTemplateContentId, languageId, db);
+        	    Integer masterLanguageId = LanguageController.getController().getMasterLanguage(db, repositoryId).getId();
+        		ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(pageTemplateContentId, masterLanguageId, db);
         		
         	    componentStructure = ContentVersionController.getContentVersionController().getAttributeValue(contentVersionVO, "ComponentStructure", false);
+        	
+    			Document document = XMLHelper.readDocumentFromByteArray(componentStructure.getBytes("UTF-8"));
+    			String componentXPath = "//component";
+    			System.out.println("componentXPath:" + componentXPath);
+    			NodeList componentNodes = org.apache.xpath.XPathAPI.selectNodeList(document.getDocumentElement(), componentXPath);
+    			System.out.println("Found componentNodes:" + componentNodes.getLength());
+    			for(int i=0; i < componentNodes.getLength(); i++)
+    			{
+    				Element element = (Element)componentNodes.item(i);
+    				String componentId = element.getAttribute("id");
+    				String componentContentId = element.getAttribute("contentId");
+    				System.out.println("componentId:" + componentId);
+    				System.out.println("componentContentId:" + componentContentId);
+    				
+    				ComponentController.getController().checkAndAutoCreateContents(db, newSiteNode.getId(), masterLanguageId, masterLanguageId, null, new Integer(componentId), document, new Integer(componentContentId), principal);
+    				componentStructure = XMLHelper.serializeDom(document, new StringBuffer()).toString();
+    			}
         	}
 
         	//Create initial content version also... in masterlanguage
@@ -1087,17 +1108,17 @@ public class SiteNodeController extends BaseController
 		return protectedSiteNodeVersionId;
 	}
 
-	public String getSiteNodePath(Integer siteNodeId) throws Exception
+	public String getSiteNodePath(Integer siteNodeId, Database db) throws Exception
 	{
 		StringBuffer sb = new StringBuffer();
 		
-		SiteNodeVO siteNodeVO = getSiteNodeVOWithId(siteNodeId);
+		SiteNodeVO siteNodeVO = getSiteNodeVOWithId(siteNodeId, db);
 		while(siteNodeVO != null)
 		{
 			System.out.println("name:" + siteNodeVO.getName());
 			sb.insert(0, "/" + siteNodeVO.getName());
 			if(siteNodeVO.getParentSiteNodeId() != null)
-				siteNodeVO = getSiteNodeVOWithId(siteNodeVO.getParentSiteNodeId());
+				siteNodeVO = getSiteNodeVOWithId(siteNodeVO.getParentSiteNodeId(), db);
 			else
 				siteNodeVO = null;
 		}

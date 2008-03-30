@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.xerces.parsers.DOMParser;
+import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.applications.databeans.ComponentPropertyDefinition;
 import org.infoglue.cms.applications.databeans.ComponentPropertyOptionDefinition;
 import org.infoglue.cms.entities.content.ContentVersionVO;
@@ -56,9 +57,9 @@ public class ComponentPropertyDefinitionController extends BaseController
 		return new ComponentPropertyDefinitionController();
 	}
 	
-	public List getComponentPropertyDefinitions(Integer contentId, Integer languageId) throws Exception
+	public List getComponentPropertyDefinitions(Database db, Integer contentId, Integer languageId) throws Exception
 	{
-		ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentId, languageId);
+		ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentId, languageId, db);
 		String propertyXML = ContentVersionController.getContentVersionController().getAttributeValue(contentVersionVO, "ComponentProperties", false);
 		
 		return parseComponentPropertyDefinitions(propertyXML);

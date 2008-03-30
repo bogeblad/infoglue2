@@ -32,16 +32,22 @@ import java.util.Locale;
 
 import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
+import org.infoglue.cms.applications.databeans.ComponentPropertyDefinition;
+import org.infoglue.cms.entities.content.Content;
 import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.content.ContentVersion;
 import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
+import org.infoglue.cms.entities.management.ContentTypeAttribute;
+import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
 import org.infoglue.cms.entities.management.Language;
 import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.entities.structure.SiteNodeVO;
 import org.infoglue.cms.exception.Bug;
+import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
+import org.infoglue.cms.util.ConstraintExceptionBuffer;
 import org.infoglue.cms.util.XMLHelper;
 import org.infoglue.cms.util.sorters.ContentComparator;
 import org.infoglue.deliver.applications.databeans.DeliveryContext;
@@ -426,7 +432,107 @@ public class ComponentController extends BaseController
 		return results;	
 	}
 
+	public void checkAndAutoCreateContents(Integer siteNodeId, Integer languageId, Integer masterLanguageId, String assetKey, Integer newComponentId, Document document, Integer componentContentId, InfoGluePrincipal principal) throws Exception, SystemException, Bug, ConstraintException
+	{
+		Database db = CastorDatabaseService.getDatabase();
+        ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
+
+        beginTransaction(db);
+
+        try
+        {
+        	checkAndAutoCreateContents(db, siteNodeId, languageId, masterLanguageId, assetKey, newComponentId, document, componentContentId, principal);
+        	
+            commitTransaction(db);
+        }
+        catch(Exception e)
+        {
+            logger.error("An error occurred so we should not complete the transaction:" + e, e);
+            rollbackTransaction(db);
+            throw new SystemException(e.getMessage());
+        }
+	}
 	
+	public void checkAndAutoCreateContents(Database db, Integer siteNodeId, Integer languageId, Integer masterLanguageId, String assetKey, Integer newComponentId, Document document, Integer componentContentId, InfoGluePrincipal principal) throws Exception, SystemException, Bug, ConstraintException
+	{
+		List componentPropertyDefinitions = ComponentPropertyDefinitionController.getController().getComponentPropertyDefinitions(db, componentContentId, masterLanguageId);
+		Iterator componentPropertyDefinitionsIterator = componentPropertyDefinitions.iterator();
+		while(componentPropertyDefinitionsIterator.hasNext())
+		{
+			ComponentPropertyDefinition componentPropertyDefinition = (ComponentPropertyDefinition)componentPropertyDefinitionsIterator.next();
+			System.out.println("componentPropertyDefinition:" + componentPropertyDefinition);
+			if(componentPropertyDefinition.getAutoCreateContent())
+			{
+				System.out.println("componentPropertyDefinition vill ha en auto create:" + componentPropertyDefinition);
+				String method = componentPropertyDefinition.getAutoCreateContentMethod();
+				String path = componentPropertyDefinition.getAutoCreateContentPath();
+				String allowedContentTypeNames = componentPropertyDefinition.getAllowedContentTypeNames();
+				String allowedContentTypeName = allowedContentTypeNames.split(",")[0];
+				ContentTypeDefinitionVO createContentTypeDefinitionVO = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithName(allowedContentTypeName, db);
+				System.out.println("method:" + method);
+				System.out.println("path:" + path);
+				System.out.println("createContentTypeDefinitionVO:" + createContentTypeDefinitionVO.getName());
+				if(path.indexOf("/") == 0)
+					path = path.substring(1);
+				
+				SiteNodeVO siteNodeVO = SiteNodeController.getController().getSiteNodeVOWithId(siteNodeId, db);
+				ContentVO parentContentVO = ContentController.getContentController().getRootContent(db, siteNodeVO.getRepositoryId(), principal.getName(), true).getValueObject();
+				if(method.equals("siteStructure"))
+				{
+					String siteNodePath = SiteNodeController.getController().getSiteNodePath(siteNodeVO.getId(), db);
+					System.out.println("siteNodePath:" + siteNodePath);
+					parentContentVO = ContentController.getContentController().getContentVOWithPath(siteNodeVO.getRepositoryId(), path + siteNodePath, true, principal, db);
+				}
+				else if(method.equals("fixedPath"))
+				{
+					parentContentVO = ContentController.getContentController().getContentVOWithPath(siteNodeVO.getRepositoryId(), path, true, principal, db);
+				}
+				
+				ContentVO autoContentVO = new ContentVO();
+				autoContentVO.setName(siteNodeVO.getName() + " - " + componentPropertyDefinition.getName());
+				autoContentVO.setCreatorName(principal.getName());
+				autoContentVO.setIsBranch(false);
+
+				StringBuffer sb = new StringBuffer();
+				sb.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?><article xmlns=\"x-schema:ArticleSchema.xml\"><attributes>");
+				List contentTypeAttributes = ContentTypeDefinitionController.getController().getContentTypeAttributes(createContentTypeDefinitionVO.getSchemaValue());
+				Iterator contentTypeAttributesIterator = contentTypeAttributes.iterator();
+				while(contentTypeAttributesIterator.hasNext())
+				{
+					ContentTypeAttribute contentTypeAttribute = (ContentTypeAttribute)contentTypeAttributesIterator.next();
+					String initialValue = contentTypeAttribute.getContentTypeAttribute("initialData").getContentTypeAttributeParameterValue().getValue("label");
+					if(initialValue == null || initialValue.trim().equals(""))
+						initialValue = "State " + contentTypeAttribute.getName();
+					sb.append("<" + contentTypeAttribute.getName() + "><![CDATA[" + initialValue + "]]></" + contentTypeAttribute.getName() + ">");
+				}
+				sb.append("</attributes></article>");
+				
+				String defaultValue = sb.toString(); 
+
+				ContentVersionVO autoContentVersionVO = new ContentVersionVO();
+				autoContentVersionVO.setVersionComment("Automatically created");
+				autoContentVersionVO.setVersionModifier(principal.getName());
+				autoContentVersionVO.setVersionValue(defaultValue);
+				
+				autoContentVO = ContentController.getContentController().create(db, parentContentVO.getId(), createContentTypeDefinitionVO.getId(), siteNodeVO.getRepositoryId(), autoContentVO).getValueObject();
+				ContentVersionController.getContentVersionController().create(autoContentVO.getId(), languageId, autoContentVersionVO, null, db);
+				
+				Locale locale = LanguageController.getController().getLocaleWithId(languageId, db);
+				LanguageVO masterLanguageVO = LanguageController.getController().getMasterLanguage(siteNodeVO.getRepositoryId(), db);		
+
+				String entity = "Content";
+				Integer entityId  = new Integer(autoContentVO.getId());
+				String propertyName = "" + componentPropertyDefinition.getName();
+				
+				System.out.println("FFFFFF:" + XMLHelper.serializeDom(document.getDocumentElement(), new StringBuffer()).toString());
+				
+				ComponentController.getController().addComponentPropertyBinding(document, locale, siteNodeId, languageId, masterLanguageVO.getId(), entity, entityId, propertyName, newComponentId, path, assetKey, principal);
+
+				System.out.println("GGGGG:" + XMLHelper.serializeDom(document.getDocumentElement(), new StringBuffer()).toString());
+			}
+		}
+	}
+
 	/**
 	 * This method shows the user a list of Components(HTML Templates). 
 	 */
@@ -456,7 +562,6 @@ public class ComponentController extends BaseController
 		//logger.info("assetKey:" + assetKey);
 				
 		String componentPropertyXPath = "//component[@id=" + componentId + "]/properties/property[@name='" + propertyName + "']";
-		//logger.info("componentPropertyXPath:" + componentPropertyXPath);
 		NodeList anl = org.apache.xpath.XPathAPI.selectNodeList(document.getDocumentElement(), componentPropertyXPath);
 		System.out.println("AAAAAAAAAAAAAAAAAAAAAA:" + componentPropertyXPath + ":" + anl.getLength());
 		if(anl.getLength() == 0)
@@ -464,6 +569,7 @@ public class ComponentController extends BaseController
 			String componentXPath = "//component[@id=" + componentId + "]/properties";
 			//logger.info("componentXPath:" + componentXPath);
 			NodeList componentNodeList = org.apache.xpath.XPathAPI.selectNodeList(document.getDocumentElement(), componentXPath);
+			System.out.println("AAAAAAAAAAAAAAAAAAAAAA:" + componentXPath + ":" + componentNodeList.getLength());
 			if(componentNodeList.getLength() > 0)
 			{
 				Element componentProperties = (Element)componentNodeList.item(0);
@@ -473,10 +579,11 @@ public class ComponentController extends BaseController
 				    addPropertyElement(componentProperties, propertyName, path, "contentBinding", locale);
 				
 				anl = org.apache.xpath.XPathAPI.selectNodeList(document.getDocumentElement(), componentPropertyXPath);
+				System.out.println("anl:" + anl.getLength());
 			}
 		}
 		
-		//logger.info("anl:" + anl);
+		System.out.println("anl after:" + anl);
 		if(anl.getLength() > 0)
 		{
 			Element component = (Element)anl.item(0);
@@ -485,9 +592,7 @@ public class ComponentController extends BaseController
 			NamedNodeMap attributes = component.getAttributes();
 			logger.debug("NumberOfAttributes:" + attributes.getLength() + ":" + attributes);
 			
-			StringBuffer sb = new StringBuffer();
-			XMLHelper.serializeDom(component, sb);
-			logger.debug("SB:" + sb.toString());
+			System.out.println("11111:" + XMLHelper.serializeDom(component, new StringBuffer()).toString());
 			
 			List removableAttributes = new ArrayList();
 			for(int i=0; i<attributes.getLength(); i++)
@@ -515,7 +620,9 @@ public class ComponentController extends BaseController
 				component.removeChild(node);
 			}
 			
-			Element newComponent = addBindingElement(component, entity, entityId, assetKey);
+			addBindingElement(component, entity, entityId, assetKey);
+			
+			System.out.println("22222:" + XMLHelper.serializeDom(component, new StringBuffer()).toString());
 		}
 	}
 
