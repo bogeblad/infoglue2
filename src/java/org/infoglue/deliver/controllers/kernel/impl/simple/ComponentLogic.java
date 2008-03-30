@@ -38,8 +38,10 @@ import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.applications.databeans.ComponentPropertyDefinition;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
+import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
 import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.content.ContentVersion;
+import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
 import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.entities.structure.SiteNodeVO;
 import org.infoglue.cms.exception.SystemException;
@@ -580,8 +582,13 @@ public class ComponentLogic
 	public String getPropertyValue(String propertyName, boolean useLangaugeFallback, boolean useInheritance, boolean useRepositoryInheritance, boolean useStructureInheritance) throws SystemException
 	{
 		String propertyValue = "";
+		
+		if(propertyName.equals("Label text"))
+			System.out.println("\nStarting getPropertyValue:" + propertyName);
 
 		Map property = getInheritedComponentProperty(this.infoGlueComponent, propertyName, useInheritance, useRepositoryInheritance, useStructureInheritance);
+		if(propertyName.equals("Label text"))
+			System.out.println("property:" + property);
 		if(property != null)
 		{	
 			if(property != null)
@@ -597,7 +604,8 @@ public class ComponentLogic
 				}
 			}
 		}
-		System.out.println("------->propertyValue:" + propertyValue);
+		if(propertyName.equals("Label text"))
+			System.out.println("------->propertyValue:" + propertyValue);
 		if(propertyValue == null || propertyValue.equals(""))
 		{
 			try
@@ -605,11 +613,13 @@ public class ComponentLogic
 				ContentVO contentVO = templateController.getContent(this.infoGlueComponent.getContentId());
 				LanguageVO masterLanguage = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForRepository(templateController.getDatabase(), contentVO.getRepositoryId());
 	
-				System.out.println("Getting default value...");
+				if(propertyName.equals("Label text"))
+					System.out.println("Getting default value...");
 				ComponentPropertyDefinition propertyDefinition = getComponentPropertyDefinition(this.infoGlueComponent.getContentId(), propertyName, templateController.getSiteNodeId(), masterLanguage.getId(), templateController.getContentId(), templateController.getDatabase(), templateController.getPrincipal());
 				if(propertyDefinition != null)
 					propertyValue = propertyDefinition.getDefaultValue();
-				System.out.println("propertyValue:" + propertyValue);
+				if(propertyName.equals("Label text"))
+					System.out.println("propertyValue:" + propertyValue);
 			}
 			catch (Exception e) 
 			{
@@ -1389,7 +1399,12 @@ public class ComponentLogic
 			}
 			else
 			{
+				if(propertyName.equals("Label text"))
+					System.out.println("Before getComponentProperty");
+				
 		    	property = getComponentProperty(propertyName, useInheritance, useStructureInheritance, contentVersionIdList, useRepositoryInheritance);
+		    	if(propertyName.equals("Label text"))
+		    		System.out.println("property:" + property);
 				if(property == null)
 				{	
 					property = (Map)component.getProperties().get(propertyName);
@@ -1431,7 +1446,6 @@ public class ComponentLogic
 			templateController.getDeliveryContext().addUsedContentVersion("contentVersion_" + currentContentVersionId);
 		}
 
-	    
 		return property;
 	}
 
@@ -1759,6 +1773,8 @@ public class ComponentLogic
 	{
 		Map property = (Map)this.infoGlueComponent.getProperties().get(propertyName);
     	//Map property = getInheritedComponentProperty(this.templateController, templateController.getSiteNodeId(), this.templateController.getLanguageId(), this.templateController.getContentId(), this.infoGlueComponent.getId(), propertyName, contentVersionIdList);
+		if(propertyName.equals("Label text"))
+			System.out.println("getComponentProperty for property:" + property);
 		
 		if(useInheritance)
 		{
@@ -1863,6 +1879,9 @@ public class ComponentLogic
 	 
 	private Map getInheritedComponentProperty(TemplateController templateController, Integer siteNodeId, Integer languageId, Integer contentId, Integer componentId, String propertyName, Set contentVersionIdList) throws Exception
 	{
+		if(propertyName.equals("Label text"))
+			System.out.println("getInheritedComponentProperty:" + propertyName);
+
 	    String key = "inherited_" + templateController.getSiteNodeId() + "_" + siteNodeId + "_" + languageId + "_" + componentId + "_" + propertyName;
 	    String versionKey = key + "_contentVersionIds";
 		Object propertyCandidate = CacheController.getCachedObjectFromAdvancedCache("componentPropertyCache", key);
@@ -1881,23 +1900,22 @@ public class ComponentLogic
 			{
 				contentVersionIdList.addAll(propertyCandidateVersions);
 				
-				//synchronized(propertyCandidateVersions)
-				//{
-					Iterator propertyCandidateVersionsIterator = propertyCandidateVersions.iterator();
-					while(propertyCandidateVersionsIterator.hasNext())
-					{
-						Integer currentContentVersionId = (Integer)propertyCandidateVersionsIterator.next();
-						templateController.getDeliveryContext().addUsedContentVersion("contentVersion_" + currentContentVersionId);
-					}
-				//}
+				Iterator propertyCandidateVersionsIterator = propertyCandidateVersions.iterator();
+				while(propertyCandidateVersionsIterator.hasNext())
+				{
+					Integer currentContentVersionId = (Integer)propertyCandidateVersionsIterator.next();
+					templateController.getDeliveryContext().addUsedContentVersion("contentVersion_" + currentContentVersionId);
+				}
 			}
 			
 			//logger.info("There was an cached content attribute:" + attribute);
-		    //System.out.println("Returning cached property for key " + key);
+		    System.out.println("Returning cached property for key " + key);
 		}
 		else
 		{
 			String inheritedPageComponentsXML = getPageComponentsString(templateController, siteNodeId, languageId, contentId, contentVersionIdList);
+			if(propertyName.equals("Label text"))
+				System.out.println("inheritedPageComponentsXML for propertyName:" + propertyName + "\n" + inheritedPageComponentsXML);
 
 			if(logger.isDebugEnabled())
 			{
@@ -1907,6 +1925,8 @@ public class ComponentLogic
 			
 			if(inheritedPageComponentsXML != null && inheritedPageComponentsXML.length() > 0)
 			{
+				if(propertyName.equals("Label text"))
+					System.out.println("Parsing properties for propertyName:" + propertyName);
 				property = parseProperties(inheritedPageComponentsXML, componentId, propertyName, siteNodeId, languageId);
 			}
 			
@@ -2088,7 +2108,7 @@ public class ComponentLogic
 		
 		org.dom4j.Document document = domBuilder.getDocument(inheritedPageComponentsXML);
 		String propertyXPath = "//component[@id=" + componentId + "]/properties/property[@name='" + propertyName + "']";
-		//System.out.println("propertyXPath3:" + propertyXPath);
+		System.out.println("propertyXPathDom4J:" + propertyXPath);
 		
 		List anl = document.getRootElement().selectNodes(propertyXPath);
 		//If not found on the same component id - let's check them all and use the first we find.
@@ -2115,9 +2135,10 @@ public class ComponentLogic
 			    value = propertyElement.attributeValue("path");
 
 			    Locale locale = LanguageDeliveryController.getLanguageDeliveryController().getLocaleWithId(templateController.getDatabase(), languageId);
-			    //System.out.println("locale:" + languageId + ":" + locale.getDisplayLanguage());
+			    System.out.println("locale:" + languageId + ":" + locale.getDisplayLanguage());
 				Locale masterLocale = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForSiteNode(templateController.getDatabase(), siteNodeId).getLocale();
-				//System.out.println("masterLocale:" + masterLocale.getDisplayLanguage());
+				System.out.println("masterLocale:" + masterLocale.getDisplayLanguage());
+				System.out.println("propertyElement:" + propertyElement);
 				
 			    if(propertyElement.attributeValue("path_" + locale.getLanguage()) != null && !propertyElement.attributeValue("path_" + locale.getLanguage()).equals(""))
 				    value = propertyElement.attributeValue("path_" + locale.getLanguage());
@@ -2213,7 +2234,12 @@ public class ComponentLogic
         XmlDocument doc = builder.parseReader(new StringReader( inheritedPageComponentsXML ) );
 
 		String propertyXPath = "//component[@id=" + componentId + "]/properties/property[@name='" + propertyName + "']";
-
+		if(propertyName.equals("Field name"))
+		{
+			System.out.println("inheritedPageComponentsXML:" + inheritedPageComponentsXML);
+			System.out.println("propertyXPath:" + propertyXPath);
+		}
+		
 		Xb1XPath xpathObject = (Xb1XPath)cachedXPathObjects.get(propertyXPath);
         if(xpathObject == null)
         {
@@ -2361,7 +2387,6 @@ public class ComponentLogic
 				    if(newParentSiteNodeVO == null && !skipRepositoryInheritance)
 					{
 					    Integer parentRepositoryId = this.templateController.getParentRepositoryId(parentSiteNodeVO.getRepositoryId());
-					    logger.info("parentRepositoryId:" + parentRepositoryId);
 					    if(parentRepositoryId != null)
 					    {
 					        newParentSiteNodeVO = this.templateController.getRepositoryRootSiteNode(parentRepositoryId);
@@ -2392,7 +2417,8 @@ public class ComponentLogic
 	    //logger.info("Checking for property " + propertyName + " on siteNodeId " + siteNodeId);
 		String inheritedPageComponentsXML = getPageComponentsString(templateController, siteNodeId, languageId, contentId, contentVersionIdList);
 		//logger.info("inheritedPageComponentsXML:" + inheritedPageComponentsXML);
-		
+		System.out.println("inheritedPageComponentsXML:" + inheritedPageComponentsXML);
+
 	    String key = "all_" + siteNodeId + "_" + languageId + "_" + propertyName;
 	    String versionKey = key + "_contentVersionIds";
 		List properties = (List)CacheController.getCachedObjectFromAdvancedCache("componentPropertyCache", key);
@@ -2403,24 +2429,18 @@ public class ComponentLogic
 			//TODO - add used content version perhaps??
 			if(propertyCandidateVersions != null)
 				contentVersionIdList.addAll(propertyCandidateVersions);
-			
-			//logger.info("There was an cached content attribute:" + attribute);
-		    ////System.out.println("Returning cached property...");
 		}
 		else
 		{
 			properties = new ArrayList();
-			
-		    ////System.out.println("Have to fetch property from XML...:" + contentVersionIdList.size());
-        
-			//HashMap property = null;
 			
 			if(inheritedPageComponentsXML != null && inheritedPageComponentsXML.length() > 0)
 			{
 				Document document = XMLHelper.readDocumentFromByteArray(inheritedPageComponentsXML.getBytes("UTF-8"));
 				
 				String globalPropertyXPath = "//component/properties/property[@name='" + propertyName + "']";
-				//logger.info("globalPropertyXPath:" + globalPropertyXPath);
+				System.out.println("propertyName:" + propertyName);
+				System.out.println("globalPropertyXPath:" + globalPropertyXPath);
 				NodeList anl = org.apache.xpath.XPathAPI.selectNodeList(document.getDocumentElement(), globalPropertyXPath);
 				
 				for(int i=0; i < anl.getLength(); i++)
@@ -2843,7 +2863,7 @@ public class ComponentLogic
 																			
 		if(cachedPageComponentsString != null)
 		{
-			//System.out.println("Returning cachedPageComponentsString for cacheKey: " + cacheKey + ":" + contentVersionIds);
+			System.out.println("Returning cachedPageComponentsString for cacheKey: " + cacheKey + ":" + contentVersionIds);
 		    if(usedContentVersionId != null && contentVersionIds != null)
 		        usedContentVersionId.addAll(contentVersionIds);
 	        
@@ -2857,16 +2877,18 @@ public class ComponentLogic
 		if(contentVO == null)
 			throw new SystemException("There was no Meta Information bound to this page [" + siteNodeId + "] which makes it impossible to render.");	
 		
+		//System.out.println("Working in getPageComponentsString");
+		
 		Integer masterLanguageId = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForSiteNode(templateController.getDatabase(), siteNodeId).getId();
-		//pageComponentsString = templateController.getContentAttributeWithReturningId(contentVO.getContentId(), masterLanguageId, "ComponentStructure", true, contentVersionIds);
-		//System.out.println("contentVersionIds before:" + usedContentVersionId.size());
 		pageComponentsString = templateController.getContentAttributeWithReturningId(contentVO.getContentId(), masterLanguageId, "ComponentStructure", true, usedContentVersionId);
-		//System.out.println("contentVersionIds after:" + usedContentVersionId.size());
+		pageComponentsString = appendPagePartTemplates(pageComponentsString, templateController);
+
+		//System.out.println("Appended page templates....");
 		
 		if(pageComponentsString == null)
 			throw new SystemException("There was no Meta Information bound to this page [" + siteNodeId + "] which makes it impossible to render.");	
 				    
-		logger.info("pageComponentsString: " + pageComponentsString);
+		//System.out.println("\n\npageComponentsString: \n" + pageComponentsString + "\n");
 	
 		CacheController.cacheObject(cacheName, cacheKey, pageComponentsString);
 		
@@ -3326,16 +3348,16 @@ public class ComponentLogic
 
 		try
 		{
-			System.out.println("componentContentId:" + componentContentId);
+			//System.out.println("componentContentId:" + componentContentId);
 			org.dom4j.Document document = pageEditorHelper.getComponentPropertiesDOM4JDocument(siteNodeId, languageId, componentContentId, db, principal);
-			System.out.println("document:" + document);
+			//System.out.println("document:" + document);
 			
 			if(document != null)
 			{
 				timer.printElapsedTime("Read document");
 
 				String propertyXPath = "//property[@name='" + propertyName + "']";
-				System.out.println("propertyXPath:" + propertyXPath);
+				//System.out.println("propertyXPath:" + propertyXPath);
 				org.dom4j.Node node = document.selectSingleNode(propertyXPath);
 				timer.printElapsedTime("Set property xpath");
 				if(node != null)
@@ -3354,8 +3376,11 @@ public class ComponentLogic
 					String dataProviderParameters 	= element.attributeValue("dataProviderParameters");
 					String WYSIWYGEnabled 			= element.attributeValue("WYSIWYGEnabled");
 					String WYSIWYGToolbar 			= element.attributeValue("WYSIWYGToolbar");
+					String autoCreatContent 		= element.attributeValue("autoCreatContent");
+					String autoCreatContentMethod 	= element.attributeValue("autoCreatContentMethod");
+					String autoCreatContentPath		= element.attributeValue("autoCreatContentPath");
 
-					propertyDefinition = new ComponentPropertyDefinition(name, type, entity, new Boolean(multiple), new Boolean(assetBinding), allowedContTypeDefNames, description, defaultValue, new Boolean(WYSIWYGEnabled), WYSIWYGToolbar, dataProvider, dataProviderParameters);
+					propertyDefinition = new ComponentPropertyDefinition(name, type, entity, new Boolean(multiple), new Boolean(assetBinding), allowedContTypeDefNames, description, defaultValue, new Boolean(WYSIWYGEnabled), WYSIWYGToolbar, dataProvider, dataProviderParameters, new Boolean(autoCreatContent), autoCreatContentMethod, autoCreatContentPath);
 				}
 			}
 		}
@@ -3367,4 +3392,79 @@ public class ComponentLogic
 		return propertyDefinition;
 	}
 
+	protected String appendPagePartTemplates(String componentXML, TemplateController templateController) throws Exception
+    {
+    	String resultComponentXML = componentXML;
+    	
+		List entries = new ArrayList();
+		int isPagePartReferenceIndex = componentXML.indexOf("isPagePartReference");
+		while(isPagePartReferenceIndex > -1)
+		{
+			//System.out.println("isPagePartReferenceIndex:" + isPagePartReferenceIndex);
+			int tagStartIndex = componentXML.lastIndexOf("<component ", isPagePartReferenceIndex);
+			int tagEndIndex = componentXML.indexOf(">", isPagePartReferenceIndex);
+			String componentString = componentXML.substring(tagStartIndex, tagEndIndex);
+			//System.out.println("componentString:" + componentString);
+			
+			int contentIdIndex = componentString.indexOf(" contentId=");
+			String contentId = componentString.substring(contentIdIndex + 12, componentString.indexOf("\"", contentIdIndex + 12));
+			
+			int idIndex = componentString.indexOf(" id=");
+			String id = componentString.substring(idIndex + 5, componentString.indexOf("\"", idIndex + 5));
+
+			int nameIndex = componentString.indexOf(" name=");
+			String name = componentString.substring(nameIndex + 7, componentString.indexOf("\"", nameIndex + 7));
+			
+			Map entry = new HashMap();
+			entry.put("contentId", contentId);
+			entry.put("id", id);
+			entry.put("name", name);
+			entries.add(entry);
+			
+			isPagePartReferenceIndex = componentXML.indexOf("isPagePartReference", isPagePartReferenceIndex + 20);
+		}
+		
+		Iterator entriesIterator = entries.iterator();
+		while(entriesIterator.hasNext())
+		{
+			Map entry = (Map)entriesIterator.next();
+			
+			String contentIdString = (String)entry.get("contentId");
+			Integer contentId = new Integer(contentIdString);
+			String id = (String)entry.get("id");
+			String name = (String)entry.get("name");
+			ContentTypeDefinitionVO contentTypeDefinitionVO = ContentDeliveryController.getContentDeliveryController().getContentTypeDefinitionVO(templateController.getDatabase(), contentId);
+		    if(contentTypeDefinitionVO != null && contentTypeDefinitionVO.getName().equals("PagePartTemplate"))
+		    {
+		    	//System.out.println("This was a pagePart reference..");
+		    	String pagePartString = templateController.getContentAttribute(contentId, "ComponentStructure", true);
+		    	//System.out.println("pagePartString: " + pagePartString);
+		    	if(pagePartString == null || pagePartString.equals(""))
+		    	{
+		    		ContentVO contentVO = ContentDeliveryController.getContentDeliveryController().getContentVO(templateController.getDatabase(), contentId, templateController.getDeliveryContext());
+		    		LanguageVO masterLanguageVO = LanguageController.getController().getMasterLanguage(contentVO.getRepositoryId(), templateController.getDatabase());
+		    		pagePartString = templateController.getContentAttribute(contentId, masterLanguageVO.getId(), "ComponentStructure", true);
+			    	//System.out.println("pagePartString: " + pagePartString);
+		    	}
+		    	
+		    	pagePartString = pagePartString.replaceFirst(" id=\".*?\"", " id=\"" + id + "\"");
+		    	pagePartString = pagePartString.replaceFirst(" name=\".*?\"", " name=\"" + name + "\"");
+		    	pagePartString = pagePartString.replaceFirst(" pagePartTemplateContentId=\".*?\"", " pagePartTemplateContentId=\"" + contentId + "\"");
+		    	//System.out.println("Bytte id och namn: " + pagePartString);
+		    	
+		    	pagePartString = pagePartString.substring(pagePartString.indexOf("<component "));
+		    	pagePartString = pagePartString.substring(0, pagePartString.lastIndexOf("</components>"));
+		    	
+		    	
+		    	//System.out.println("componentXML: " + componentXML);
+		    	//System.out.println("contentId" + contentId);
+		    	//System.out.println("pagePartString" + pagePartString);
+		    	String newComponentXML = componentXML.replaceAll("<component contentId=\"" + contentId + ".*?</component>", "" + pagePartString);
+		    	//System.out.println("newComponentXML: " + newComponentXML);
+		    	resultComponentXML = newComponentXML;
+		    }
+		}
+
+    	return resultComponentXML;
+    }
 }

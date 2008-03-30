@@ -41,6 +41,7 @@ import org.dom4j.io.OutputFormat;
 import org.dom4j.io.XMLWriter;
 import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
+import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
 import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.content.ContentVersion;
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
@@ -152,6 +153,15 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 		    {
 		    	//System.out.println("This was a pagePart reference..");
 		    	String pagePartString = this.getTemplateController().getContentAttribute(contentId, "ComponentStructure", true);
+		    	System.out.println("pagePartString: " + pagePartString);
+		    	if(pagePartString == null || pagePartString.equals(""))
+		    	{
+		    		ContentVO contentVO = ContentDeliveryController.getContentDeliveryController().getContentVO(getTemplateController().getDatabase(), contentId, getTemplateController().getDeliveryContext());
+		    		LanguageVO masterLanguageVO = LanguageController.getController().getMasterLanguage(contentVO.getRepositoryId(), getTemplateController().getDatabase());
+		    		pagePartString = this.getTemplateController().getContentAttribute(contentId, masterLanguageVO.getId(), "ComponentStructure", true);
+			    	System.out.println("pagePartString: " + pagePartString);
+		    	}
+		    	
 		    	pagePartString = pagePartString.replaceFirst(" id=\".*?\"", " id=\"" + id + "\"");
 		    	pagePartString = pagePartString.replaceFirst(" name=\".*?\"", " name=\"" + name + "\"");
 		    	pagePartString = pagePartString.replaceFirst(" pagePartTemplateContentId=\".*?\"", " pagePartTemplateContentId=\"" + contentId + "\"");
@@ -499,6 +509,14 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 						path = propertyElement.attributeValue("path_" + locale.getLanguage());
 					//logger.info("path:" + path);
 
+					if(path == null || path.equals(""))
+					{
+						System.out.println("Falling back to content master language 1 for property:" + propertyName);
+						LanguageVO contentMasterLangaugeVO = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForRepository(getDatabase(), contentVO.getRepositoryId());
+						if(propertyElement.attributeValue("path_" + contentMasterLangaugeVO.getLanguageCode()) != null)
+							path = propertyElement.attributeValue("path_" + contentMasterLangaugeVO.getLanguageCode());	
+					}
+					
 					Map property = new HashMap();
 					property.put("name", propertyName);
 					property.put("path", path);
@@ -525,17 +543,6 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 						componentBinding.setBindingPath(path);
 						
 						bindings.add(componentBinding);
-						
-						/*
-						if(entity.equalsIgnoreCase("Content"))
-						{
-							bindings.add(entityId);
-						}
-						else
-						{
-							bindings.add(entityId); 
-						} 
-						*/
 					}
 	
 					property.put("bindings", bindings);
@@ -724,6 +731,14 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 						path = propertyElement.attributeValue("path_" + locale.getLanguage());
 					//logger.info("path:" + path);
 
+					if(path == null || path.equals(""))
+					{
+						System.out.println("Falling back to content master language 2 for property:" + propertyName);
+						LanguageVO contentMasterLangaugeVO = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForRepository(getDatabase(), contentVO.getRepositoryId());
+						if(propertyElement.attributeValue("path_" + contentMasterLangaugeVO.getLanguageCode()) != null)
+							path = propertyElement.attributeValue("path_" + contentMasterLangaugeVO.getLanguageCode());	
+					}
+
 					Map property = new HashMap();
 					property.put("name", propertyName);
 					property.put("path", path);
@@ -750,19 +765,6 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 						componentBinding.setBindingPath(path);
 						
 						bindings.add(componentBinding);
-
-						/*
-						if(entity.equalsIgnoreCase("Content"))
-						{
-							////logger.info("Content added:" + entity + ":" + entityId);
-							bindings.add(entityId);
-						}
-						else
-						{
-							////logger.info("SiteNode added:" + entity + ":" + entityId);
-							bindings.add(entityId); 
-						} 
-						*/
 					}
 	
 					property.put("bindings", bindings);
@@ -1008,7 +1010,7 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 	protected String getComponentString(TemplateController templateController, Integer contentId, InfoGlueComponent component) throws SystemException, Exception
 	{
 		String template = null;
-   	
+
 		try
 		{
 		    if(templateController.getDeliveryContext().getShowSimple() == true)
@@ -1029,7 +1031,7 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 		    }
 		    else
 		        template = templateController.getContentAttribute(contentId, templateController.getTemplateAttributeName(), true);
-			
+
 			if(template == null)
 				throw new SystemException("There was no template available on the content with id " + contentId + ". Check so that the templates language are active on your site.");	
 		}
@@ -1408,6 +1410,14 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 							if(propertyElement.attributeValue("path_" + locale.getLanguage()) != null)
 								path = propertyElement.attributeValue("path_" + locale.getLanguage());
 					
+							if(path == null || path.equals(""))
+							{
+								System.out.println("Falling back to content master language 1 for property:" + propertyName);
+								LanguageVO contentMasterLangaugeVO = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForRepository(getDatabase(), contentVO.getRepositoryId());
+								if(propertyElement.attributeValue("path_" + contentMasterLangaugeVO.getLanguageCode()) != null)
+									path = propertyElement.attributeValue("path_" + contentMasterLangaugeVO.getLanguageCode());	
+							}
+
 							Map property = new HashMap();
 							property.put("name", propertyName);
 							property.put("path", path);
@@ -1432,16 +1442,6 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 								componentBinding.setBindingPath(path);
 								
 								bindings.add(componentBinding);
-								/*
-								if(entity.equalsIgnoreCase("Content"))
-								{
-									bindings.add(entityId);
-								}
-								else
-								{
-									bindings.add(entityId); 
-								}
-								*/ 
 							}
 			
 							property.put("bindings", bindings);
@@ -1579,6 +1579,7 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 	/**
 	 * This method gets the component properties
 	 */
+	/*
 	private void getComponentProperties(Element child, InfoGlueComponent component, Locale locale, TemplateController templateController) throws Exception
 	{
 		List propertiesNodeList = child.selectNodes("properties");
@@ -1610,6 +1611,14 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 					path = propertyElement.attributeValue("path_" + locale.getLanguage());
 				//logger.info("path:" + path);
 
+				if(path == null || path.equals(""))
+				{
+					System.out.println("Falling back to content master language 1 for property:" + propertyName);
+					LanguageVO contentMasterLangaugeVO = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForRepository(getDatabase(), contentVO.getRepositoryId());
+					if(propertyElement.attributeValue("path_" + contentMasterLangaugeVO.getLanguageCode()) != null)
+						path = propertyElement.attributeValue("path_" + contentMasterLangaugeVO.getLanguageCode());	
+				}
+
 				Map property = new HashMap();
 				property.put("name", propertyName);
 				property.put("path", path);
@@ -1636,16 +1645,6 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 					componentBinding.setBindingPath(path);
 					
 					bindings.add(componentBinding);
-					/*
-					if(entity.equalsIgnoreCase("Content"))
-					{
-						bindings.add(entityId);
-					}
-					else
-					{
-						bindings.add(entityId); 
-					} 
-					*/
 				}
 
 				property.put("bindings", bindings);
@@ -1654,7 +1653,7 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 			}
 		}
 	}
-
+	*/
 
 	/**
 	 * This method gets the restrictions for this component
