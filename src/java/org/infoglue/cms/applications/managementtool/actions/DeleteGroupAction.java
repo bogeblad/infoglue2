@@ -24,6 +24,7 @@
 package org.infoglue.cms.applications.managementtool.actions;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.GroupControllerProxy;
+import org.infoglue.cms.controllers.kernel.impl.simple.RoleControllerProxy;
 
 /**
  * @author Mattias Bogeblad
@@ -42,6 +43,13 @@ public class DeleteGroupAction extends InfoGlueAbstractAction
 		return "success";
 	}
 	
+	public String doV3() throws Exception 
+	{
+		GroupControllerProxy.getController().deleteGroup(groupName);
+
+		return "successV3";
+	}
+
 	public void setGroupName(String string)
 	{
 	    groupName = string;

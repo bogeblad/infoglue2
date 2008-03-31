@@ -26,6 +26,7 @@ package org.infoglue.cms.applications.managementtool.actions;
 import org.infoglue.cms.controllers.kernel.impl.simple.GroupControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.GroupPropertiesController;
 import org.infoglue.cms.entities.management.GroupVO;
+import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
 
 /**
@@ -71,6 +72,36 @@ public class UpdateGroupAction extends ViewGroupAction
 		doExecute();
 						
 		return "saveAndExit";
+	}
+
+	public String doV3() throws Exception
+    {
+		try
+		{
+			doExecute();
+		}
+		catch(ConstraintException e) 
+        {
+			e.setResult(INPUT + "V3");
+			throw e;
+        }
+		
+		return "successV3";
+	}
+
+	public String doSaveAndExitV3() throws Exception
+    {
+		try
+		{
+			doExecute();
+		}
+		catch(ConstraintException e) 
+        {
+			e.setResult(INPUT + "V3");
+			throw e;
+        }
+		
+		return "saveAndExitV3";
 	}
 
     public void setGroupName(String groupName)

@@ -220,25 +220,6 @@ body.generaltooledit {
 	text-decoration: none;
 }
 
-/*
-.yui-skin-sam .yui-button {
-	border-width: 1px 0;
-	border-style: solid;
-	border-color: transparent; //#808080;
-	background: url(script/yui/assets/skins/sam/sprite.png) repeat-x 0 0;
-	margin: auto .25em;
-}
-
-.yui-skin-sam .yui-button .first-child {
-	border-width: 0 1px;
-	border-style: solid;
-	border-color: transparent; //#808080;
-	margin: 0 -1px; *
-	position: relative; *
-	left: -1px;
-}
-*/
-
 .yui-skin-sam .yui-button button,.yui-skin-sam .yui-button a {
 	padding: 0 10px;
 	font-size: 93%;

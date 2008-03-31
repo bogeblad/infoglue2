@@ -65,7 +65,14 @@ public class ViewGroupAction extends InfoGlueAbstractAction
         
         return "success";
     }
+     
+    public String doV3() throws Exception
+    {
+        this.initialize(getGroupName());
         
+        return "successV3";
+    }
+
     public String getGroupName()
     {
         return groupName;

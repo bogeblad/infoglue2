@@ -78,7 +78,14 @@ public class ViewSystemUserAction extends InfoGlueAbstractAction
         
         return "success";
     }
-		
+
+    public String doV3() throws Exception
+    {
+        this.initialize(getUserName());
+        
+        return "successV3";
+    }
+
 	public List getAssignedRoles() throws Exception
 	{
 		return this.assignedRoleVOList;

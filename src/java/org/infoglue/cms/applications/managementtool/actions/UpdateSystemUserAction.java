@@ -97,6 +97,28 @@ public class UpdateSystemUserAction extends ViewSystemUserAction //WebworkAbstra
 		return "passwordSentSuccess";
 	}
 
+	public String doV3() throws Exception
+    {
+    	doExecute();
+		
+		return "successV3";
+
+	}
+
+	public String doSaveAndExitV3() throws Exception
+    {
+		doV3();
+		
+		return "saveAndExitV3";
+	} 
+
+	public String doChangePasswordV3() throws Exception
+	{
+		doChangePassword();
+		
+		return "passwordSentSuccessV3";
+	}
+
 	private String[] getRoller()
 	{
 		return this.roller;	

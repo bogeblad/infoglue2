@@ -1,4 +1,4 @@
-<!-- $Id: actions.xml,v 1.60 2008/03/31 09:09:16 mattias Exp $ -->
+<!-- $Id: actions.xml,v 1.61 2008/03/31 22:12:25 mattias Exp $ -->
 <actions>
 
 	<!-- MySettings -->
@@ -500,18 +500,23 @@
 	<!-- SystemUser -->
 	<action name="org.infoglue.cms.applications.managementtool.actions.ViewListSystemUserAction" alias="ViewListSystemUser">
 		<view name="success">/cms/managementtool/viewListSystemUser.vm</view>
+		<view name="successV3">/cms/managementtool/v3/viewListSystemUser.vm</view>
 		<view name="successPopup">/cms/managementtool/viewListSystemUserForPopup.vm</view>
 		<view name="error">/cms/managementtool/error.vm</view>
 	</action>
 	<action name="org.infoglue.cms.applications.managementtool.actions.ViewSystemUserAction" alias="ViewSystemUser">
 		<view name="input">CreateSystemUserForm.action</view>
 		<view name="success">/cms/managementtool/viewSystemUser.vm</view>
+		<view name="successV3">/cms/managementtool/v3/viewSystemUser.vm</view>
 		<view name="error">/cms/managementtool/error.vm</view>
 	</action>
 	<action name="org.infoglue.cms.applications.managementtool.actions.UpdateSystemUserAction" alias="UpdateSystemUser">
 		<view name="input">/cms/managementtool/viewSystemUser.vm</view>
+		<view name="inputV3">/cms/managementtool/v3/viewSystemUser.vm</view>
 		<view name="success">ViewSystemUser.action</view>
 		<view name="saveAndExit">ViewListSystemUser.action</view>
+		<view name="successV3">ViewSystemUser!v3.action</view>
+		<view name="saveAndExitV3">ViewListSystemUser!v3.action</view>
 		<view name="passwordSentSuccess">ViewSystemUser.action</view>
 		<view name="error">/cms/managementtool/error.vm</view>
 	</action>
@@ -519,14 +524,17 @@
 		<view name="input">/cms/managementtool/viewSystemUserPasswordDialog.vm</view>
 		<view name="inputStandalone">/cms/managementtool/viewMySettingsPasswordDialog.vm</view>
 		<view name="success">ViewSystemUser.action</view>
+		<view name="success">ViewSystemUser!v3.action</view>
 		<view name="error">/cms/managementtool/error.vm</view>
 	</action>
 	<action name="org.infoglue.cms.applications.managementtool.actions.DeleteSystemUserAction" alias="DeleteSystemUser">
 		<view name="success">ViewListSystemUser.action</view>
+		<view name="successV3">ViewListSystemUser!v3.action</view>
 		<view name="error">/cms/managementtool/error.vm</view>
 	</action>
 	<action name="org.infoglue.cms.applications.managementtool.actions.CreateSystemUserAction" alias="CreateSystemUser">
 		<view name="input">/cms/managementtool/createSystemUser.vm</view>
+		<view name="inputV3">/cms/managementtool/v3/createSystemUser.vm</view>
 		<view name="success">ViewSystemUser.action</view>
 		<view name="saveAndExit">ViewListSystemUser.action</view>
 		<view name="error">/cms/managementtool/error.vm</view>
@@ -625,31 +633,41 @@
 	<!-- Group -->
 	<action name="org.infoglue.cms.applications.managementtool.actions.ViewListGroupAction" alias="ViewListGroup">
 		<view name="success">/cms/managementtool/viewListGroup.vm</view>
+		<view name="successV3">/cms/managementtool/v3/viewListGroup.vm</view>
 		<view name="error">/cms/managementtool/error.vm</view>
 	</action>
 	<action name="org.infoglue.cms.applications.managementtool.actions.ViewGroupAction" alias="ViewGroup">
 		<view name="success">/cms/managementtool/viewGroup.vm</view>
+		<view name="successV3">/cms/managementtool/v3/viewGroup.vm</view>
 		<view name="error">/cms/managementtool/error.vm</view>
 	</action>
 	<action name="org.infoglue.cms.applications.managementtool.actions.CreateGroupAction" alias="CreateGroup">
 		<view name="input">/cms/managementtool/createGroup.vm</view>
 		<view name="success">ViewGroup.action</view>
+		<view name="inputV3">/cms/managementtool/v3/createGroup.vm</view>
+		<view name="successV3">ViewGroup!v3.action?groupName=${groupName}</view>
+		<view name="successSaveAndExitV3">ViewListGroup!listManagableGroups.action</view>
 		<view name="error">/cms/managementtool/error.vm</view>
 	</action>
 	<action name="org.infoglue.cms.applications.managementtool.actions.DeleteGroupAction" alias="DeleteGroup">
 		<view name="success">ViewListGroup.action</view>
+		<view name="successV3">ViewListGroup!listManagableGroups.action</view>
 		<view name="error">/cms/managementtool/error.vm</view>
 	</action>
 	<action name="org.infoglue.cms.applications.managementtool.actions.UpdateGroupAction" alias="UpdateGroup">
 		<view name="input">/cms/managementtool/viewGroup.vm</view>
 		<view name="success">ViewGroup.action</view>
 		<view name="saveAndExit">ViewListGroup.action</view>
+		<view name="inputV3">/cms/managementtool/v3/viewGroup.vm</view>
+		<view name="successV3">ViewGroup!v3.action</view>
+		<view name="saveAndExitV3">ViewListGroup!listManagableGroups.action</view>
 		<view name="error">/cms/managementtool/error.vm</view>
 	</action>
 
 	<!-- GroupProperties -->
 	<action name="org.infoglue.cms.applications.managementtool.actions.ViewGroupPropertiesAction" alias="ViewGroupProperties">
 		<view name="success">/cms/managementtool/viewEntityProperties.vm</view>
+		<view name="successV3">/cms/managementtool/v3/viewEntityProperties.vm</view>
 		<view name="error">/cms/managementtool/error.vm</view>
 	</action>
 	<action name="org.infoglue.cms.applications.managementtool.actions.UpdateGroupPropertiesAction" alias="UpdateGroupProperties">
@@ -657,6 +675,9 @@
 		<!-- <view name="standalone">ViewContentVersion!standalone.action</view> -->
 		<view name="saveAndExit">ViewGroup.action</view>
 		<view name="saveAndExitStandalone">ViewContent!standalone.action</view>
+		<view name="successV3">ViewGroupProperties!v3.action?groupName=${ownerEntityId}&amp;languageId=${languageId}</view>
+		<view name="saveAndExitV3">ViewGroup!v3.action</view>
+		<view name="saveAndExitStandaloneV3">ViewContent!standaloneV3.action</view>
 		<view name="error">/cms/managementtool/error.vm</view>
 	</action>
 

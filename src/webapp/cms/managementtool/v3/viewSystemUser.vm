@@ -1,0 +1,254 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+#beginManagementToolV3("tool.managementtool.viewSystemUser.header" "$!userName" false)
+
+<script type="text/javascript">
+	
+    YAHOO.example.init = function () 
+    {
+        YAHOO.util.Event.onContentReady("buttons", function () 
+        {	        
+			var oSaveButton = new YAHOO.widget.Button("saveButton");
+			var oSaveAndExitButton = new YAHOO.widget.Button("saveAndExitButton");
+			var oCancelButton = new YAHOO.widget.Button("cancelButton");
+			/*
+			var oRoleRightButton = new YAHOO.widget.Button("roleRight");
+			var oRolesRightButton = new YAHOO.widget.Button("rolesRight");
+			var oRoleLeftButton = new YAHOO.widget.Button("roleLeft");
+			var oRolesLeftButton = new YAHOO.widget.Button("rolesLeft");
+
+			var oGroupRightButton = new YAHOO.widget.Button("groupRight");
+			var oGroupsRightButton = new YAHOO.widget.Button("groupsRight");
+			var oGroupLeftButton = new YAHOO.widget.Button("groupLeft");
+			var oGroupsLeftButton = new YAHOO.widget.Button("groupsLeft");
+			*/
+        	oSaveButton.on("click", function (p_oEvent){
+        		save(document.editForm);
+        	});
+        	oSaveAndExitButton.on("click", function (p_oEvent){
+        		saveAndExit(document.editForm, "UpdateSystemUser!saveAndExitV3.action");
+        	});
+        	oCancelButton.on("click", function (p_oEvent){
+        		document.location.href = 'ViewListSystemUser!v3.action';
+        	});			
+        });
+    }();
+
+</script>
+
+<SCRIPT type="text/javascript" SRC="script/OptionTransfer.js"></SCRIPT>
+
+<SCRIPT LANGUAGE="JavaScript">
+
+	var opt1 = new OptionTransfer("unassignedRoleNameList","roleName");
+	opt1.setAutoSort(true);
+	opt1.setDelimiter(",");
+	opt1.saveRemovedLeftOptions("removedLeft");
+	opt1.saveRemovedRightOptions("removedRight");
+	opt1.saveAddedLeftOptions("addedLeft");
+	opt1.saveAddedRightOptions("addedRight");
+	opt1.saveNewLeftOptions("newLeft");
+	opt1.saveNewRightOptions("newRight");
+	
+	var opt2 = new OptionTransfer("unassignedGroupNameList","groupName");
+	opt2.setAutoSort(true);
+	opt2.setDelimiter(",");
+	opt2.saveRemovedLeftOptions("removedLeft");
+	opt2.saveRemovedRightOptions("removedRight");
+	opt2.saveAddedLeftOptions("addedLeft");
+	opt2.saveAddedRightOptions("addedRight");
+	opt2.saveNewLeftOptions("newLeft");
+	opt2.saveNewRightOptions("newRight");
+
+	
+	function save(form)
+	{
+		var roleList = document.getElementById("roleName");
+		
+	  	rolesNode = roleList.options;
+	  	for(i=0;i<rolesNode.length;i++)
+		{
+			currentNode = rolesNode[i];
+			currentNode.selected = true;
+		}
+		
+		var groupList = document.getElementById("groupName");
+		
+	  	groupsNode = groupList.options;
+	  	for(i=0;i<groupsNode.length;i++)
+		{
+			currentNode = groupsNode[i];
+			currentNode.selected = true;
+		}
+
+		form.submit();
+	}
+
+	function saveAndExit(form, action)
+	{
+		form.action = action;
+		save(form);
+	}
+
+</SCRIPT>
+
+#menuToolbar("" $buttons $rightButtons) 
+
+#if($supportsUpdate == false)
+	#set($readonly = "disabled")
+#else
+	#set($readonly = "")
+#end
+
+<div id="igEditArea">
+
+<form method="POST" name="editForm" action="UpdateSystemUser.action">
+<fieldset class="ig-fieldset">
+
+	#editTextFieldCSS("SystemUser.userName" "userName" "$!userName" "51" true "disabled")
+	#editTextFieldCSS("SystemUser.password" "password" "********" "51" true "disabled")
+	#editTextFieldCSS("SystemUser.firstName" "firstName" "$!firstName" "51" true, "$readonly")
+	#editTextFieldCSS("SystemUser.lastName" "lastName" "$!lastName" "51" true "$readonly")
+	#editTextFieldCSS("SystemUser.email" "email" $!email "51" true "$readonly")
+	<br/>
+	<a href="UpdateSystemUser!changePasswordV3.action?userName=$formatter.encodeURI($userName)">Send me a new password</a>
+		
+	#labelCSS("tool.managementtool.userManageRoles.label" "ig-section-label")
+		
+	<div class="ig-row">
+		<table border="0">
+		<tr>
+		  <td>
+		  	Available roles<br/>
+			<SELECT $readonly id="unassignedRoleNameList" NAME="unassignedRoleNameList" MULTIPLE SIZE="15" onDblClick="opt1.transferRight()" style="font-size: 10px; width:300px; border: solid 1px #C2D0E2;">
+	        #if($supportsUpdate)
+	          	#foreach ($roleVO in $allRoles)
+					#set($hasAccessToManageUsersInRole = $this.hasAccessTo("Role.ManageUsers", "$roleVO.name"))
+					#set($checked = "")
+					#foreach ($assignedRoleVO in $assignedRoles)
+						#if($assignedRoleVO.name == $roleVO.name)
+							#set($checked = "checked")
+						#end 
+					#end
+					
+					#if($checked == "")
+						<option value="$roleVO.name" title="$roleVO.name" #if(!$hasAccessToManageUsersInRole)disabled="1" style="color:#999; background:white;"#end>$roleVO.name</option>
+					#end
+				#end
+			#else
+				<option value="" disabled="1" style="color:#999;>No need to show roles</option>
+			#end	
+	        </select>
+		  </td>
+		  <td align="center"><br>
+	        <INPUT TYPE="button" id="roleRight" NAME="roleRight" VALUE="&gt;&gt;" ONCLICK="opt1.transferRight()" style="width:60px; font-family: verdana; font-size: 10px;"><BR><BR>
+			<INPUT TYPE="button" id="rolesRight" NAME="roleRight" VALUE="All &gt;&gt;" ONCLICK="opt1.transferAllRight()" style="width:60px; font-family: verdana; font-size: 10px;"><BR><BR>
+			<INPUT TYPE="button" id="roleLeft" NAME="roleLeft" VALUE="&lt;&lt;" ONCLICK="opt1.transferLeft()" style="width:60px; font-family: verdana; font-size: 10px;"><BR><BR>
+			<INPUT TYPE="button" id="rolesLeft" NAME="roleLeft" VALUE="All &lt;&lt;" ONCLICK="opt1.transferAllLeft()" style="width:60px; font-family: verdana; font-size: 10px;">
+		  </td>
+		  <td>
+		  	Current Roles<br/>
+		  	<SELECT $readonly id="roleName" name="roleName" multiple size="15" onDblClick="opt1.transferLeft()" style="font-size: 10px; width:300px; border: solid 1px #C2D0E2;">
+	        	#foreach ($assignedRoleVO in $assignedRoles)
+					#set($hasAccessToManageUsersInRole = $this.hasAccessTo("Role.ManageUsers", "$assignedRoleVO.name"))
+					<option value="$assignedRoleVO.name" title="$assignedRoleVO.name" #if(!$hasAccessToManageUsersInRole)disabled="1" style="color:#999; background:white;"#end>$assignedRoleVO.name</option>
+				#end
+		    </select>
+		  </td>
+		</tr>
+		</table>
+	</div>
+	
+	#labelCSS("tool.managementtool.userManageGroups.label" "ig-section-label")
+
+	<div class="ig-row">
+		<table>
+		<tr>
+		    <td>
+		    	Available groups<br/>
+		    	<SELECT $readonly id="unassignedGroupNameList" NAME="unassignedGroupNameList" MULTIPLE SIZE="15" onDblClick="opt2.transferRight()" style="font-size: 10px; width:300px; border: solid 1px #C2D0E2;">
+		        #if($supportsUpdate)
+		          	#foreach ($groupVO in $allGroups)
+						#set($hasAccessToManageUsersInGroup = $this.hasAccessTo("Group.ManageUsers", "$groupVO.name"))
+						#set($checked = "")
+						#foreach ($assignedGroupVO in $assignedGroups)
+							#if($assignedGroupVO.name == $groupVO.name)
+								#set($checked = "checked")
+							#end 
+						#end
+						
+						#if($checked == "")
+							<option value="$groupVO.name" title="$groupVO.name" #if(!$hasAccessToManageUsersInGroup)disabled="1" style="color:#999; background:white;"#end>$groupVO.name</option>
+						#end
+					#end
+				#else
+					<option value="">No need to show groups</option>
+				#end						
+		        </select>
+		    </td>
+		    <td align="center"><br>
+		        <INPUT TYPE="button" id="groupRight" NAME="groupRight" VALUE="&gt;&gt;" ONCLICK="opt2.transferRight()" style="width:60px; font-family: verdana; font-size: 10px;"><BR><BR>
+				<INPUT TYPE="button" id="groupsRight" NAME="groupsRight" VALUE="All &gt;&gt;" ONCLICK="opt2.transferAllRight()" style="width:60px; font-family: verdana; font-size: 10px;"><BR><BR>
+				<INPUT TYPE="button" id="groupLeft" NAME="groupLeft" VALUE="&lt;&lt;" ONCLICK="opt2.transferLeft()" style="width:60px; font-family: verdana; font-size: 10px;"><BR><BR>
+				<INPUT TYPE="button" id="groupsLeft" NAME="groupsLeft" VALUE="All &lt;&lt;" ONCLICK="opt2.transferAllLeft()" style="width:60px; font-family: verdana; font-size: 10px;">
+		    </td>
+		    <td>
+		    	Current Groups<br/>
+		      	<SELECT $readonly id="groupName" name="groupName" multiple size="15" onDblClick="opt2.transferLeft()" style="font-size: 10px; width:300px; border: solid 1px #C2D0E2;">
+		        	#foreach ($assignedGroupVO in $assignedGroups)
+		        		#set($hasAccessToManageUsersInGroup = $this.hasAccessTo("Group.ManageUsers", "$assignedGroupVO.name"))
+						<option value="$assignedGroupVO.name" title="$assignedGroupVO.name" #if(!$hasAccessToManageUsersInGroup)disabled="1" style="color:#999; background:white;"#end>$assignedGroupVO.name</option>
+					#end
+			    </select>
+		    </td>
+		</tr>
+		</table>
+	</div>
+	
+	<div class="ig-row">
+		Base user properties on content type definition
+		
+		<select name="contentTypeDefinitionId">
+			<option value="">Choose type</option>
+			#foreach ($contentTypeDefinitionVO in $contentTypeDefinitionVOList)
+				#set($selected = "")
+				#foreach ($assignedContentTypeDefinitionVO in $assignedContentTypeDefinitionVOList)
+					#if($assignedContentTypeDefinitionVO.id == $contentTypeDefinitionVO.id)
+						#set($selected = "selected")
+					#end 
+				#end
+				<option value="$contentTypeDefinitionVO.id" $selected>$contentTypeDefinitionVO.getName()</option>
+			#end
+		</select>
+	</div>
+	
+	##if($supportsUpdate)
+		<input type="hidden" name="userName" value="$!userName">
+		<div id="buttons" class="ig-buttonRow">
+			<input type="button" id="saveButton" name="saveButton" value="Save" title="Save"/>
+			<input type="button" id="saveAndExitButton" name="saveAndExitButton" value="Save and exit" title="Save and exit to list again"/>
+			<input type="button" id="cancelButton" name="cancelButton" value="Cancel" title="Cancel"/>
+			<!--
+			<a href="javascript:save(document.editForm);"><img src="$ui.getString("images.managementtool.buttons.save")" width="50" height="25" border="0" onClick='showWorking();'></a>
+			<a href="javascript:saveAndExit(document.editForm);"><img src="$ui.getString("images.managementtool.buttons.saveAndExit")" width="80" height="25" border="0" onClick='JavaScript:showWorking();'></a>
+			<a href="ViewListSystemUser.action"><img border="0" src="$ui.getString("images.managementtool.buttons.cancel")" width="50" height="25"></a>
+			-->
+		</div>
+	##end
+	</fieldset>
+
+</form>
+</div>
+
+#if($supportsUpdate)
+<script type="text/javascript">
+	//alert("Initializing form..");
+	opt1.init(document.editForm);
+	opt2.init(document.editForm);
+</script>
+#end
+
+</body>
+</html>

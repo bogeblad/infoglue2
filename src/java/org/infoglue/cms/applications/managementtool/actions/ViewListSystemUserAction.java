@@ -78,6 +78,28 @@ public class ViewListSystemUserAction extends InfoGlueAbstractAction
 	    return "success";
 	}
 
+	public String doV3() throws Exception 
+	{
+		this.filterRoleNames = this.getRequest().getParameterValues("filterRoleName");
+		if(filterFirstName == null && filterLastName == null && filterUserName == null && filterEmail == null && (filterRoleNames == null || filterRoleNames.length == 0 || (filterRoleNames.length == 1 && filterRoleNames[0].equals(""))))
+		{
+			this.infogluePrincipals = UserControllerProxy.getController().getAllUsers();
+			this.numberOfSlots = this.infogluePrincipals.size() / 100;
+			int startIndex = 0 + (slotId * 100);
+			int endIndex = 0 + (slotId * 100) + 100;
+			if(endIndex > this.infogluePrincipals.size())
+				endIndex = this.infogluePrincipals.size();
+			
+			this.infogluePrincipals = this.infogluePrincipals.subList(startIndex, endIndex);
+		}
+		else
+		{
+			this.infogluePrincipals = UserControllerProxy.getController().getFilteredUsers(this.filterFirstName, this.filterLastName, this.filterUserName, this.filterEmail, filterRoleNames);
+		}
+
+	    return "successV3";
+	}
+
 	public String doUserListForPopup() throws Exception 
 	{
 		this.infogluePrincipals = UserControllerProxy.getController().getAllUsers();

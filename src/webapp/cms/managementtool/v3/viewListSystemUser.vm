@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+#beginManagementToolV3("tool.managementtool.viewSystemUserList.header" "" true)
+
+#menuToolbar("" $buttons $rightButtons) 
+
+<div style="clear: both;"></div>
+
+<div id="systemUsers"></div>
+<div id="bottom_pagination"></div>
+
+<script type="text/javascript">
+	
+	YAHOO.example.Data = {
+	    systemUsers: 
+	    [
+	    	#foreach ($infogluePrincipal in $infogluePrincipals)
+	    		{sel:0,id:"$infogluePrincipal.name", firstName:"$infogluePrincipal.firstName", lastName:"$infogluePrincipal.lastName", rolesAndGroups:"#inlinesimpleroles($infogluePrincipal.getRoles())"}#if($velocityCount < $infogluePrincipals.size()),#end
+		 	#end
+	    ]
+	}
+	
+	YAHOO.util.Event.addListener(window, "load", function() {
+	
+	    YAHOO.example.Basic = new function() {
+	
+			var myConfigs = { 
+				paginator: new YAHOO.widget.Paginator({
+                    rowsPerPage: 20,
+                    containers : "bottom_pagination", 
+                })
+            }; 
+			
+	        var myColumnDefs = [
+	            {key:"sel", label:"", formatter:"checkbox", width:"20px"},
+	            {key:"id", label:"$ui.getString("entity.SystemUser.userName.label")", sortable:true, resizeable:true, formatter:"link", minWidth:"200px"},
+	            {key:"firstName", label:"$ui.getString("entity.SystemUser.firstName.label")", sortable:true, resizeable:true, width:"120px"},
+	            {key:"lastName", label:"$ui.getString("entity.SystemUser.lastName.label")", sortable:true, resizeable:true, width:"120px"},
+	            {key:"rolesAndGroups", label:"$ui.getString("entity.SystemUser.rolesAndGroups.label")", sortable:true, resizeable:true, width:"50%"}
+	        ];
+			
+			this.myDataSource = new YAHOO.util.DataSource(YAHOO.example.Data.systemUsers);
+	        this.myDataSource.responseType = YAHOO.util.DataSource.TYPE_JSARRAY;
+	        this.myDataSource.responseSchema = {
+	            fields: ["id","firstName","lastName","rolesAndGroups"]
+	        };
+			
+	        this.myDataTable = new YAHOO.widget.DataTable("systemUsers", myColumnDefs, this.myDataSource, myConfigs);
+	        this.myDataTable.subscribe("rowClickEvent",this.myDataTable.onEventSelectRow);
+	        this.myDataTable.subscribe("checkboxClickEvent", this.myDataTable.onEventSelectRow);
+			
+			this.myDataTable.subscribe("linkClickEvent", function(oArgs){
+				YAHOO.util.Event.stopEvent(oArgs.event);
+	            var oRecord = this.getRecord(oArgs.target);
+	            //alert(YAHOO.lang.dump(oRecord.getData()));
+	            document.location.href = "ViewSystemUser!v3.action?userName=" + oRecord.getData().id;
+	        });
+
+	    };
+	});
+
+</script>
+
+#endManagementTool()

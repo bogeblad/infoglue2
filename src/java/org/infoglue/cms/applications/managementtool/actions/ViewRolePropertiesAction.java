@@ -48,17 +48,6 @@ public class ViewRolePropertiesAction extends ViewEntityPropertiesAction
 	private List rolePropertiesVOList;
 	
 	
-    public ViewRolePropertiesAction()
-    {
-        this.setCurrentAction("ViewRoleProperties.action");
-        this.setUpdateAction("UpdateRoleProperties");
-        this.setCancelAction("ViewRole.action");
-        this.setToolbarKey("tool.managementtool.viewRoleProperties.header");
-        this.setTitleKey("tool.managementtool.viewRoleProperties.header");
-        this.setArguments("");
-        this.setEntityName(RoleProperties.class.getName());
-    }
-		
 	/**
 	 * Initializes all properties needed for the usecase.
 	 * @param extranetRoleId
@@ -98,11 +87,33 @@ public class ViewRolePropertiesAction extends ViewEntityPropertiesAction
 
 	public String doExecute() throws Exception
 	{
+        this.setCurrentAction("ViewRoleProperties.action");
+        this.setUpdateAction("UpdateRoleProperties");
+        this.setCancelAction("ViewRole.action");
+        this.setToolbarKey("tool.managementtool.viewRoleProperties.header");
+        this.setTitleKey("tool.managementtool.viewRoleProperties.header");
+        this.setArguments("");
+        this.setEntityName(RoleProperties.class.getName());
+
 		this.initialize(getRoleName());   
 		
 		return "success";
 	}
 
+	public String doV3() throws Exception
+	{
+        this.setCurrentAction("ViewRoleProperties!v3.action");
+        this.setUpdateAction("UpdateRoleProperties!v3");
+        this.setCancelAction("ViewRole!v3.action");
+        this.setToolbarKey("tool.managementtool.viewRoleProperties.header");
+        this.setTitleKey("tool.managementtool.viewRoleProperties.header");
+        this.setArguments("");
+        this.setEntityName(RoleProperties.class.getName());
+
+        doExecute();   
+		
+		return "successV3";
+	}
 
 	/**
 	 * Returns a list of digital assets available for this content version.

@@ -56,7 +56,7 @@ public class ViewListGroupAction extends InfoGlueAbstractAction
 	{
 		this.groups = GroupControllerProxy.getController().getAvailableGroups(this.getInfoGluePrincipal(), "Group.ManageUsers");
 	    
-	    return "success";
+	    return "successV3";
 	}
 	
 	public List getGroups()

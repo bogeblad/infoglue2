@@ -52,12 +52,6 @@ public class CreateSystemUserAction extends InfoGlueAbstractAction
 	private ConstraintExceptionBuffer ceb;
 	private SystemUserVO systemUserVO;
 	private InfoGluePrincipal infoGluePrincipal;
-  	//private java.lang.Integer systemUserId;
-    /*private java.lang.String userName;
-    private java.lang.String password;
-    private java.lang.String firstName;
-    private java.lang.String lastName;
-    private java.lang.String email;*/
 
 	private List availableRoles = new ArrayList();
 	private List availableGroups = new ArrayList();
@@ -82,7 +76,16 @@ public class CreateSystemUserAction extends InfoGlueAbstractAction
 	
     	return "input";
     }
+
+	public String doInputV3() throws Exception
+    {
+		this.availableRoles 				= RoleControllerProxy.getController().getAvailableRoles(this.getInfoGluePrincipal(), "Role.ManageUsers");
+		this.availableGroups 				= GroupControllerProxy.getController().getAvailableGroups(this.getInfoGluePrincipal(), "Group.ManageUsers");
+		this.contentTypeDefinitionVOList 	= ContentTypeDefinitionController.getController().getContentTypeDefinitionVOList(ContentTypeDefinitionVO.EXTRANET_USER_PROPERTIES);
 	
+    	return "inputV3";
+    }
+
 	protected String doExecute() throws Exception 
 	{
 		ceb = this.systemUserVO.validate();

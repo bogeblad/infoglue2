@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+#beginManagementToolV3("tool.managementtool.viewGroupList.header" "" true)
+
+<script type="text/javascript">
+	
+	YAHOO.example.Data = {
+	    groups: 
+	    [
+	    	#foreach ($groupVO in $groups)
+	    		{sel:0,id:"$groupVO.name", displayName:"$groupVO.displayName", description:"$groupVO.description"}#if($velocityCount < $groups.size()),#end
+		 	#end
+	    ]
+	}
+	
+	YAHOO.util.Event.addListener(window, "load", function() {
+	    YAHOO.example.Basic = new function() {
+	        var myColumnDefs = [
+	            {key:"sel", label:"", formatter:"checkbox", width:"30px"},
+	            {key:"id", label:"$ui.getString("entity.Group.groupName.label")", sortable:true, resizeable:true, formatter:"link"},
+	            {key:"displayName", label:"$ui.getString("entity.Group.displayName.label")", sortable:true, resizeable:true},
+	            {key:"description", label:"$ui.getString("entity.Group.description.label")", sortable:true, resizeable:true}
+	        ];
+			
+			this.myDataSource = new YAHOO.util.DataSource(YAHOO.example.Data.groups);
+	        this.myDataSource.responseType = YAHOO.util.DataSource.TYPE_JSARRAY;
+	        this.myDataSource.responseSchema = {
+	            fields: ["id","name","displayName","description"]
+	        };
+			
+	        this.myDataTable = new YAHOO.widget.DataTable("groups", myColumnDefs, this.myDataSource);
+	        this.myDataTable.subscribe("rowClickEvent",this.myDataTable.onEventSelectRow);
+	        this.myDataTable.subscribe("checkboxClickEvent", this.myDataTable.onEventSelectRow);
+			
+			this.myDataTable.subscribe("linkClickEvent", function(oArgs){
+				YAHOO.util.Event.stopEvent(oArgs.event);
+	            var oRecord = this.getRecord(oArgs.target);
+	            //alert(YAHOO.lang.dump(oRecord.getData()));
+	            document.location.href = "ViewGroup!v3.action?groupName=" + oRecord.getData().id;
+	        });
+	        
+	    };
+	});
+</script>
+
+#menuToolbar("" $buttons $rightButtons) 
+
+<div style="clear: both;"></div>
+
+<div id="groups"></div>
+
+#endManagementTool()

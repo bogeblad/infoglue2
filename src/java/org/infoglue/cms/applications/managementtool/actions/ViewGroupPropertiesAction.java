@@ -103,6 +103,12 @@ public class ViewGroupPropertiesAction extends ViewEntityPropertiesAction
 		return "success";
 	}
 
+	public String doV3() throws Exception
+	{
+		this.initialize(getGroupName());   
+		
+		return "successV3";
+	}
 
 	/**
 	 * Returns a list of digital assets available for this content version.

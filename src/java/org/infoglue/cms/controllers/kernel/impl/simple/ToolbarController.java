@@ -84,20 +84,20 @@ public class ToolbarController
 				return getRepositoriesButtons();
 			if(toolbarKey.equalsIgnoreCase("tool.managementtool.viewRepository.header"))
 				return getRepositoryDetailsButtons();
+			*/
 			if(toolbarKey.equalsIgnoreCase("tool.managementtool.viewSystemUserList.header"))
 				return getSystemUsersButtons();
 			if(toolbarKey.equalsIgnoreCase("tool.managementtool.viewSystemUser.header"))
 				return getSystemUserDetailsButtons();
-	*/
 			if(toolbarKey.equalsIgnoreCase("tool.managementtool.viewRoleList.header"))
 				return getRolesButtons();
 			if(toolbarKey.equalsIgnoreCase("tool.managementtool.viewRole.header"))
 				return getRoleDetailsButtons();
-			/*
 			if(toolbarKey.equalsIgnoreCase("tool.managementtool.viewGroupList.header"))
 				return getGroupsButtons();
 			if(toolbarKey.equalsIgnoreCase("tool.managementtool.viewGroup.header"))
 				return getGroupDetailsButtons();
+			/*
 			if(toolbarKey.equalsIgnoreCase("tool.managementtool.viewLanguageList.header"))
 				return getLanguagesButtons();
 			if(toolbarKey.equalsIgnoreCase("tool.managementtool.viewLanguage.header"))
@@ -189,46 +189,94 @@ public class ToolbarController
 		buttons.add(new ToolbarButton(true, "javascript:submitListForm('updatePackage');", getLocalizedString(locale, "images.managementtool.buttons.installUpdate"), "Install update"));
 		return buttons;
 	}
-	
+	*/
 	private List<ToolbarButton> getSystemUsersButtons() throws Exception
 	{
 		List<ToolbarButton> buttons = new ArrayList<ToolbarButton>();
 		if(UserControllerProxy.getController().getSupportCreate())
-			buttons.add(new ToolbarButton("CreateSystemUser!input.action", getLocalizedString(locale, "images.managementtool.buttons.newSystemUser"), "New System User"));	
-		//if(UserControllerProxy.getController().getSupportDelete())
-		//	buttons.add(new ToolbarButton(true, "javascript:submitListFormWithPrimaryKey('systemUser', 'userName');", getLocalizedString(locale, "images.managementtool.buttons.deleteSystemUser"), "tool.managementtool.deleteSystemUsers.header"));
+		{
+			boolean hasAccessToCreateRole = hasAccessTo(principal, "SystemUser.Create", true);
+			if(hasAccessToCreateRole)
+			{
+				buttons.add(new ToolbarButton("",
+											  getLocalizedString(locale, "tool.managementtool.createSystemUser.header"), 
+											  getLocalizedString(locale, "tool.managementtool.createSystemUser.header"),
+											  "CreateSystemUser!inputV3.action",
+											  "images/v3/createBackgroundPenPaper.gif"));
+			}
+		}
+		
+		/*		
 		buttons.add(new ToolbarButton(true, "javascript:toggleSearchForm();", getLocalizedString(locale, "images.managementtool.buttons.searchButton"), "Search Form"));
+		*/
+		
 		return buttons;
 	}
 
 	private List<ToolbarButton> getSystemUserDetailsButtons() throws Exception
 	{
 		List<ToolbarButton> buttons = new ArrayList<ToolbarButton>();
+
+		String yesDestination 	= URLEncoder.encode("DeleteSystemUser!v3.action?userName=" + URLEncoder.encode(this.primaryKey, URIEncoding), URIEncoding);
+		String noDestination  	= URLEncoder.encode("ViewListSystemUser!v3.action", URIEncoding);
+		String message 		 	= URLEncoder.encode("Do you really want to delete the user " + URLEncoder.encode(this.primaryKey, URIEncoding), URIEncoding);
+
 		if(!this.primaryKey.equals(CmsPropertyHandler.getAnonymousUser()))
 		{
 			InfoGluePrincipal user = UserControllerProxy.getController().getUser(primaryKey);
 			if(user.getAutorizationModule().getSupportDelete())
-				buttons.add(new ToolbarButton("Confirm.action?header=tool.managementtool.deleteSystemUser.header&yesDestination=" + URLEncoder.encode("DeleteSystemUser.action?userName=" + URLEncoder.encode(primaryKey, URIEncoding), URIEncoding) + "&noDestination=" + URLEncoder.encode("ViewListSystemUser.action?title=SystemUsers", URIEncoding) + "&message=tool.managementtool.deleteSystemUser.text&extraParameters=" + URLEncoder.encode(primaryKey, URIEncoding), getLocalizedString(locale, "images.managementtool.buttons.deleteSystemUser"), "tool.managementtool.deleteSystemUser.header"));
+			{
+				buttons.add(new ToolbarButton("",
+						  getLocalizedString(locale, "tool.managementtool.deleteSystemUser.header"), 
+						  getLocalizedString(locale, "tool.managementtool.deleteSystemUser.header"),
+						  "Confirm.action?header=tool.managementtool.deleteSystemUser.header&yesDestination=" + yesDestination + "&noDestination=" + noDestination + "&message=tool.managementtool.deleteSystemUser.text&extraParameters=" + URLEncoder.encode(primaryKey, URIEncoding),
+						  "images/v3/createBackgroundPenPaper.gif"));
+
+				//buttons.add(new ToolbarButton("Confirm.action?header=tool.managementtool.deleteSystemUser.header&yesDestination=" + URLEncoder.encode("DeleteSystemUser.action?userName=" + URLEncoder.encode(primaryKey, URIEncoding), URIEncoding) + "&noDestination=" + URLEncoder.encode("ViewListSystemUser.action?title=SystemUsers", URIEncoding) + "&message=tool.managementtool.deleteSystemUser.text&extraParameters=" + URLEncoder.encode(primaryKey, URIEncoding), getLocalizedString(locale, "images.managementtool.buttons.deleteSystemUser"), "tool.managementtool.deleteSystemUser.header"));
+			}
 		
 			if(user.getAutorizationModule().getSupportUpdate())
-				buttons.add(new ToolbarButton("UpdateSystemUserPassword!input.action?userName=" + URLEncoder.encode(URLEncoder.encode(primaryKey, URIEncoding), URIEncoding), getLocalizedString(locale, "images.managementtool.buttons.updateSystemUserPassword"), "Update user password"));
+			{
+				buttons.add(new ToolbarButton("",
+						  getLocalizedString(locale, "tool.managementtool.viewSystemUserPasswordDialog.header"), 
+						  getLocalizedString(locale, "tool.managementtool.viewSystemUserPasswordDialog.header"),
+						  "UpdateSystemUserPassword!input.action?userName=" + URLEncoder.encode(URLEncoder.encode(primaryKey, URIEncoding), URIEncoding),
+						  "images/v3/passwordIcon.gif"));
+
+				//buttons.add(new ToolbarButton("UpdateSystemUserPassword!input.action?userName=" + URLEncoder.encode(URLEncoder.encode(primaryKey, URIEncoding), URIEncoding), getLocalizedString(locale, "images.managementtool.buttons.updateSystemUserPassword"), "Update user password"));
+			}
 		}
 		
-		List<ToolbarButton> contentTypeDefinitionVOList<ToolbarButton> = UserPropertiesController.getController().getContentTypeDefinitionVOList(primaryKey);
+		List contentTypeDefinitionVOList = UserPropertiesController.getController().getContentTypeDefinitionVOList(primaryKey);
 		if(contentTypeDefinitionVOList.size() > 0)
-			buttons.add(new ToolbarButton("ViewUserProperties.action?userName=" + URLEncoder.encode(URLEncoder.encode(primaryKey, URIEncoding), URIEncoding), getLocalizedString(locale, "images.managementtool.buttons.viewSystemUserProperties"), "View User Properties"));
+		{
+			buttons.add(new ToolbarButton("",
+					  getLocalizedString(locale, "tool.managementtool.viewUserProperties.header"), 
+					  getLocalizedString(locale, "tool.managementtool.viewUserProperties.header"),
+					  "ViewUserProperties.action?userName=" + URLEncoder.encode(URLEncoder.encode(primaryKey, URIEncoding), URIEncoding),
+					  "images/v3/advancedSettingsIcon.gif"));
+
+			//buttons.add(new ToolbarButton("ViewUserProperties.action?userName=" + URLEncoder.encode(URLEncoder.encode(primaryKey, URIEncoding), URIEncoding), getLocalizedString(locale, "images.managementtool.buttons.viewSystemUserProperties"), "View User Properties"));
+		}
 		
 		if(principal.getIsAdministrator())
-			buttons.add(new ToolbarButton("AuthorizationSwitchManagement!inputUser.action?userName=" + URLEncoder.encode(URLEncoder.encode(primaryKey, URIEncoding)), getLocalizedString(locale, "images.managementtool.buttons.transferUserAccessRights"), "Transfer Users Access Rights"));
+		{
+			buttons.add(new ToolbarButton("",
+					  getLocalizedString(locale, "tool.managementtool.transferAccessRights.header"), 
+					  getLocalizedString(locale, "tool.managementtool.transferAccessRights.header"),
+					  "AuthorizationSwitchManagement!inputUser.action?userName=" + URLEncoder.encode(URLEncoder.encode(primaryKey, URIEncoding)),
+					  "images/v3/createBackgroundPenPaper.gif"));
+
+			//buttons.add(new ToolbarButton("AuthorizationSwitchManagement!inputUser.action?userName=" + URLEncoder.encode(URLEncoder.encode(primaryKey, URIEncoding)), getLocalizedString(locale, "images.managementtool.buttons.transferUserAccessRights"), "Transfer Users Access Rights"));
+		}
 
 		return buttons;				
 	}
-	*/
 	
 	private List<ToolbarButton> getRolesButtons() throws Exception
 	{
 		List<ToolbarButton> buttons = new ArrayList<ToolbarButton>();
-		if(UserControllerProxy.getController().getSupportCreate())
+		if(RoleControllerProxy.getController().getSupportCreate())
 		{
 			boolean hasAccessToCreateRole = hasAccessTo(principal, "Role.Create", true);
 			if(hasAccessToCreateRole)
@@ -297,7 +345,80 @@ public class ToolbarController
 
 		return buttons;				
 	}
-	
+
+	private List<ToolbarButton> getGroupsButtons() throws Exception
+	{
+		List<ToolbarButton> buttons = new ArrayList<ToolbarButton>();
+		if(GroupControllerProxy.getController().getSupportCreate())
+		{
+			boolean hasAccessToCreateGroup = hasAccessTo(principal, "Group.Create", true);
+			if(hasAccessToCreateGroup)
+			{
+				buttons.add(new ToolbarButton("",
+											  getLocalizedString(locale, "tool.managementtool.createGroup.header"), 
+											  getLocalizedString(locale, "tool.managementtool.createGroup.header"),
+											  "CreateGroup!inputV3.action",
+											  "images/v3/createBackgroundPenPaper.gif"));
+			}
+		}
+		
+		return buttons;
+	}
+
+	private List<ToolbarButton> getGroupDetailsButtons() throws Exception
+	{
+		List<ToolbarButton> buttons = new ArrayList<ToolbarButton>();
+		
+		String yesDestination 	= URLEncoder.encode("DeleteGroup!v3.action?groupName=" + URLEncoder.encode(this.primaryKey, URIEncoding), URIEncoding);
+		String noDestination  	= URLEncoder.encode("ViewListGroup!listManagableGroups.action", URIEncoding);
+		String message 		 	= URLEncoder.encode("Do you really want to delete the group " + URLEncoder.encode(this.primaryKey, URIEncoding), URIEncoding);
+		
+		InfoGlueGroup group = GroupControllerProxy.getController().getGroup(this.primaryKey);
+		if(group.getAutorizationModule().getSupportDelete())
+		{
+			boolean hasAccessToDeleteGroup = hasAccessTo(principal, "Group.Delete", "" + this.primaryKey);
+			if(hasAccessToDeleteGroup)
+			{
+				buttons.add(new ToolbarButton("",
+						  getLocalizedString(locale, "tool.managementtool.deleteGroup.header"), 
+						  getLocalizedString(locale, "tool.managementtool.deleteGroup.header"),
+						  "Confirm.action?header=tool.managementtool.deleteGroup.header&yesDestination=" + yesDestination + "&noDestination=" + noDestination + "&message=tool.managementtool.deleteGroup.text&extraParameters=" + URLEncoder.encode(primaryKey, URIEncoding),
+						  "images/v3/deleteBackgroundWasteBasket.gif"));
+			}
+		}
+		
+		List contentTypeDefinitionVOList = GroupPropertiesController.getController().getContentTypeDefinitionVOList(this.primaryKey);
+		if(contentTypeDefinitionVOList.size() > 0)
+		{
+			boolean hasAccessToEditProperties = hasAccessTo(principal, "Group.EditProperties", true);
+			if(hasAccessToEditProperties)
+			{
+				buttons.add(new ToolbarButton("",
+					  getLocalizedString(locale, "tool.managementtool.viewGroupProperties.header"), 
+					  getLocalizedString(locale, "tool.managementtool.viewGroupProperties.header"),
+					  "ViewGroupProperties!v3.action?groupName=" + URLEncoder.encode(URLEncoder.encode(this.primaryKey, URIEncoding)),
+					  "images/v3/advancedSettingsIcon.gif"));
+			}
+		}
+
+		boolean hasAccessToManageAllAccessRights = hasAccessTo(principal, "Group.ManageAllAccessRights", true);
+		boolean hasAccessToManageAccessRights = hasAccessTo(principal, "Group.ManageAccessRights", "" + this.primaryKey);
+		if(hasAccessToManageAllAccessRights || hasAccessToManageAccessRights)
+		{
+			buttons.add(new ToolbarButton("",
+				  getLocalizedString(locale, "tool.contenttool.accessRights.header"), 
+				  getLocalizedString(locale, "tool.contenttool.accessRights.header"),
+				  "ViewAccessRights.action?interceptionPointCategory=Group&extraParameters=" + URLEncoder.encode(this.primaryKey, URIEncoding) + "&returnAddress=ViewGroup!v3.action?groupName=" + URLEncoder.encode(primaryKey, URIEncoding) + "&colorScheme=ManagementTool",
+				  "images/v3/accessRightsIcon.gif"));
+		}
+		/*
+		if(principal.getIsAdministrator())
+			buttons.add(new ToolbarButton("AuthorizationSwitchManagement!inputGroup.action?groupName=" + URLEncoder.encode(URLEncoder.encode(this.primaryKey, URIEncoding)), getLocalizedString(locale, "images.managementtool.buttons.transferGroupAccessRights"), "Transfer Groups Access Rights"));
+		*/
+
+		return buttons;				
+	}
+
 	/*
 	private List<ToolbarButton> getGroupsButtons() throws Exception
 	{
@@ -579,7 +700,14 @@ public class ToolbarController
 			helpPageUrl = "/help/tools/managementtool/role";
 		if(toolbarKey.equalsIgnoreCase("tool.managementtool.createRole.header"))
 			helpPageUrl = "/help/tools/managementtool/create_role";
-		
+
+		if(toolbarKey.equalsIgnoreCase("tool.managementtool.viewGroupList.header"))
+			helpPageUrl = "/help/tools/managementtool/groups";
+		if(toolbarKey.equalsIgnoreCase("tool.managementtool.viewGroup.header"))
+			helpPageUrl = "/help/tools/managementtool/group";
+		if(toolbarKey.equalsIgnoreCase("tool.managementtool.createGroup.header"))
+			helpPageUrl = "/help/tools/managementtool/create_group";
+
 		List<ToolbarButton> buttons = new ArrayList<ToolbarButton>();
 		buttons.add(new ToolbarButton("helpButton",
 									  getLocalizedString(locale, "tool.common.helpButton.label"), 
