@@ -377,6 +377,20 @@ function getWindowHeight()
 	return y;
 }
 
+function getElementHeight(element)
+{
+	var y;
+	if (element.innerHeight) // all except Explorer
+	{
+		y = element.innerHeight;
+	}
+	else if (document.body) // other Explorers
+	{
+		y = element.clientHeight;
+	}
+	return y;
+}
+
 function getWindowWidth()
 {
 	var x;
@@ -917,6 +931,185 @@ function edit()
 			alert("Could not open new window - if you have a popup blocker this is most likely the cause.");
 	}
 }
+
+function editInline(repositoryId) 
+{
+	if(!editUrl || editUrl == "")
+	{
+		alert("You must right click on a text to be able to use this feature.");
+	}
+	else
+	{
+		var type = jQuery.trim($("#attribute" + selectedContentId + selectedAttributeName).attr("class"));
+		//alert("type:" + type);
+		if(type == "textarea")
+		{
+			var parameterString = "repositoryId=" + repositoryId + "&contentId=" + selectedContentId + "&languageId=" + selectedLanguageId;
+			
+			var element = document.getElementById("attribute" + selectedContentId + selectedAttributeName);
+
+			var totalHeight = 100;
+			$("#attribute" + selectedContentId + selectedAttributeName + " > *").each(function(i){
+				//alert("Element found...");
+				//alert("Element:" + $(this).get(0));
+				totalHeight = totalHeight + getElementHeight( $(this).get(0) );
+				//totalHeight = $(this);
+			});
+			
+			var span = document.getElementById("attribute" + selectedContentId + selectedAttributeName);
+			//span.style.height = "20px";
+			var oFCKeditor = new FCKeditor("attribute" + selectedContentId + selectedAttributeName);
+			oFCKeditor.BasePath = "" + componentEditorUrl + "applications/FCKEditor/" ;
+			oFCKeditor.Config["CustomConfigurationsPath"] = "" + componentEditorUrl + "WYSIWYGProperties.action?" + parameterString;
+			oFCKeditor.Config['ToolbarStartExpanded'] = false ;
+			oFCKeditor.ToolbarSet = "Basic";
+			oFCKeditor.Height = totalHeight;
+			oFCKeditor.Value = span.innerHTML;
+			$("#attribute" + selectedContentId + selectedAttributeName).html(oFCKeditor.CreateHtml() + "<a onclick='saveAttribute(" + selectedContentId + ", " + selectedLanguageId + ", \"" + selectedAttributeName + "\", \"textarea\");'>&nbsp;<img src=\"images/v3/saveInlineIcon.gif\" alt=\"Save\" border=\"0\"/></a>");
+		}
+		else if(type == "textfield")
+		{
+			var elementObject = $("#attribute" + selectedContentId + selectedAttributeName);
+			//alert("elementObject:" + elementObject);
+			var text = elementObject.html();
+			//alert("text:" + text);
+			var fontSize = elementObject.parent().css("font-size");
+			//alert("fontSize:" + fontSize);
+			elementObject.html("<span id='spanInput" + selectedContentId + selectedAttributeName + "' class='inEditW'><input class='edit' ondblclick='if (event && event.stopPropagation) {event.stopPropagation();}else if (window.event) {window.event.cancelBubble = true;}return false;' id='input" + selectedContentId + selectedAttributeName + "' type='text' value='" + text + "' /><a onclick='saveAttribute(" + selectedContentId + ", " + selectedLanguageId + ", \"" + selectedAttributeName + "\", \"textfield\");' class='editSave'>&nbsp;<img src=\"images/v3/saveInlineIcon.gif\" alt=\"Save\" border=\"0\"/></a></span>");
+			$(".edit").css("font-size", fontSize);
+			$(".edit").css("border", "1px solid #ccc");
+		}
+		else
+		{
+			alert("Nope: " + type);
+		}
+	}
+}
+
+function saveAttribute(selectedContentId, selectedLanguageId, selectedAttributeName, type)
+{
+	if(type == "textarea")
+	{
+		var oEditor = FCKeditorAPI.GetInstance("attribute" + selectedContentId + selectedAttributeName) ;
+		var value = oEditor.GetXHTML( true )
+		//alert("Value: " + value);
+		value = Url.encode(value);
+		
+		//alert("Value: " + value);
+		var data = "contentId=" + selectedContentId + "&languageId=" + selectedLanguageId + "&attributeName=" + selectedAttributeName + "&" + selectedAttributeName + "=" + value;
+	
+		$.ajax({
+		   type: "POST",
+		   url: "http://localhost:8080/infoglueCMS/UpdateContentVersionAttribute!saveAndReturnValue.action",
+		   data: data,
+		   success: function(msg){
+		   	 //alert( "Data Saved: " + msg );
+		     var oEditor = FCKeditorAPI.GetInstance("attribute" + selectedContentId + selectedAttributeName) ;
+		     //alert("oEditor:" + oEditor.LinkedField.parentNode.parentNode);
+			 $(oEditor.LinkedField.parentNode.parentNode).html(msg);
+		     //$("#xEditingArea").replaceWith(msg);
+		     //$("#attribute" + selectedContentId + selectedAttributeName).replaceWith(msg);
+		   }
+		 });
+	}
+	else if(type == "textfield")
+	{
+		//alert("Saving: " + selectedContentId + " " + selectedLanguageId + " " +  selectedAttributeName);
+		var value = $("#input" + selectedContentId + selectedAttributeName).val();
+		//alert("Value: " + value);
+		var data = "contentId=" + selectedContentId + "&languageId=" + selectedLanguageId + "&attributeName=" + selectedAttributeName + "&" + selectedAttributeName + "=" + value;
+	
+		$.ajax({
+		   type: "POST",
+		   url: "http://localhost:8080/infoglueCMS/UpdateContentVersionAttribute!saveAndReturnValue.action",
+		   data: data,
+		   success: function(msg){
+		     //alert( "Data Saved: " + msg );
+		     $("#spanInput" + selectedContentId + selectedAttributeName).replaceWith(msg);
+		   }
+		 });
+	}
+}
+
+
+
+
+var Url = {
+
+    // public method for url encoding
+    encode : function (string) {
+        return escape(this._utf8_encode(string));
+    },
+
+    // public method for url decoding
+    decode : function (string) {
+        return this._utf8_decode(unescape(string));
+    },
+
+    // private method for UTF-8 encoding
+    _utf8_encode : function (string) {
+        string = string.replace(/\r\n/g,"\n");
+        var utftext = "";
+
+        for (var n = 0; n < string.length; n++) {
+
+            var c = string.charCodeAt(n);
+
+            if (c < 128) {
+                utftext += String.fromCharCode(c);
+            }
+            else if((c > 127) && (c < 2048)) {
+                utftext += String.fromCharCode((c >> 6) | 192);
+                utftext += String.fromCharCode((c & 63) | 128);
+            }
+            else {
+                utftext += String.fromCharCode((c >> 12) | 224);
+                utftext += String.fromCharCode(((c >> 6) & 63) | 128);
+                utftext += String.fromCharCode((c & 63) | 128);
+            }
+
+        }
+
+        return utftext;
+    },
+
+    // private method for UTF-8 decoding
+    _utf8_decode : function (utftext) {
+        var string = "";
+        var i = 0;
+        var c = c1 = c2 = 0;
+
+        while ( i < utftext.length ) {
+
+            c = utftext.charCodeAt(i);
+
+            if (c < 128) {
+                string += String.fromCharCode(c);
+                i++;
+            }
+            else if((c > 191) && (c < 224)) {
+                c2 = utftext.charCodeAt(i+1);
+                string += String.fromCharCode(((c & 31) << 6) | (c2 & 63));
+                i += 2;
+            }
+            else {
+                c2 = utftext.charCodeAt(i+1);
+                c3 = utftext.charCodeAt(i+2);
+                string += String.fromCharCode(((c & 15) << 12) | ((c2 & 63) << 6) | (c3 & 63));
+                i += 3;
+            }
+
+        }
+
+        return string;
+    }
+
+}
+
+
+
+
+
 
 //--------------------------------------------
 // Function submitting the page to publishing
