@@ -1,4 +1,4 @@
-<!-- $Id: actions.xml,v 1.59 2008/03/29 00:31:42 mattias Exp $ -->
+<!-- $Id: actions.xml,v 1.60 2008/03/31 09:09:16 mattias Exp $ -->
 <actions>
 
 	<!-- MySettings -->
@@ -840,7 +840,7 @@
 		<view name="success">/cms/contenttool/viewContentVersion.vm</view>
 		<view name="standalone">/cms/contenttool/viewContentVersionStandalone.vm</view>
 		<view name="successForFCKEditor">/cms/contenttool/viewContentVersionForFCKEditor.vm</view>
-		<view name="standaloneForFCKEditor">/cms/contenttool/v3/viewContentVersionStandaloneForFCKEditor.vm</view>
+		<view name="standaloneForFCKEditor">/cms/contenttool/viewContentVersionStandaloneForFCKEditor.vm</view>
 		<view name="background">/cms/contenttool/viewContentVersionBackground.vm</view>
 		<view name="viewAssetsDialog">/cms/contenttool/viewContentAssets.vm</view>
 		<view name="viewAssetsDialogForFCKEditor">/cms/contenttool/viewContentAssetsForFCKEditor.vm</view>
