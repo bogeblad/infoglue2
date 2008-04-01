@@ -85,6 +85,13 @@ public class ToolbarController
 			if(toolbarKey.equalsIgnoreCase("tool.managementtool.viewRepository.header"))
 				return getRepositoryDetailsButtons();
 			*/
+			if(toolbarKey.equalsIgnoreCase("tool.managementtool.viewGroupProperties.header"))
+				return getGroupPropertiesButtons();
+			if(toolbarKey.equalsIgnoreCase("tool.managementtool.viewRoleProperties.header"))
+				return getRolePropertiesButtons();
+			if(toolbarKey.equalsIgnoreCase("tool.managementtool.viewUserProperties.header"))
+				return getUserPropertiesButtons();
+
 			if(toolbarKey.equalsIgnoreCase("tool.managementtool.viewSystemUserList.header"))
 				return getSystemUsersButtons();
 			if(toolbarKey.equalsIgnoreCase("tool.managementtool.viewSystemUser.header"))
@@ -240,7 +247,7 @@ public class ToolbarController
 				buttons.add(new ToolbarButton("",
 						  getLocalizedString(locale, "tool.managementtool.viewSystemUserPasswordDialog.header"), 
 						  getLocalizedString(locale, "tool.managementtool.viewSystemUserPasswordDialog.header"),
-						  "UpdateSystemUserPassword!input.action?userName=" + URLEncoder.encode(URLEncoder.encode(primaryKey, URIEncoding), URIEncoding),
+						  "UpdateSystemUserPassword!inputV3.action?userName=" + URLEncoder.encode(URLEncoder.encode(primaryKey, URIEncoding), URIEncoding),
 						  "images/v3/passwordIcon.gif"));
 
 				//buttons.add(new ToolbarButton("UpdateSystemUserPassword!input.action?userName=" + URLEncoder.encode(URLEncoder.encode(primaryKey, URIEncoding), URIEncoding), getLocalizedString(locale, "images.managementtool.buttons.updateSystemUserPassword"), "Update user password"));
@@ -417,6 +424,45 @@ public class ToolbarController
 		*/
 
 		return buttons;				
+	}
+
+	private List<ToolbarButton> getGroupPropertiesButtons() throws Exception
+	{
+		List<ToolbarButton> buttons = new ArrayList<ToolbarButton>();
+
+		buttons.add(new ToolbarButton("",
+									  getLocalizedString(locale, "tool.contenttool.uploadDigitalAsset.label"), 
+									  getLocalizedString(locale, "tool.contenttool.uploadDigitalAsset.label"),
+									  "javascript:openWindow('ViewDigitalAsset.action?entity=org.infoglue.cms.entities.management.GroupProperties&entityId=" + this.primaryKey + "', 'DigitalAsset', 'width=400,height=200,resizable=no');",
+									  "images/v3/attachAssetBackgroundIcon.gif"));
+		
+		return buttons;
+	}
+
+	private List<ToolbarButton> getRolePropertiesButtons() throws Exception
+	{
+		List<ToolbarButton> buttons = new ArrayList<ToolbarButton>();
+
+		buttons.add(new ToolbarButton("",
+									  getLocalizedString(locale, "tool.contenttool.uploadDigitalAsset.label"), 
+									  getLocalizedString(locale, "tool.contenttool.uploadDigitalAsset.label"),
+									  "javascript:openWindow('ViewDigitalAsset.action?entity=org.infoglue.cms.entities.management.RoleProperties&entityId=" + this.primaryKey + "', 'DigitalAsset', 'width=400,height=200,resizable=no');",
+									  "images/v3/attachAssetBackgroundIcon.gif"));
+		
+		return buttons;
+	}
+
+	private List<ToolbarButton> getUserPropertiesButtons() throws Exception
+	{
+		List<ToolbarButton> buttons = new ArrayList<ToolbarButton>();
+
+		buttons.add(new ToolbarButton("",
+									  getLocalizedString(locale, "tool.contenttool.uploadDigitalAsset.label"), 
+									  getLocalizedString(locale, "tool.contenttool.uploadDigitalAsset.label"),
+									  "javascript:openWindow('ViewDigitalAsset.action?entity=org.infoglue.cms.entities.management.UserProperties&entityId=" + this.primaryKey + "', 'DigitalAsset', 'width=400,height=200,resizable=no');",
+									  "images/v3/attachAssetBackgroundIcon.gif"));
+		
+		return buttons;
 	}
 
 	/*

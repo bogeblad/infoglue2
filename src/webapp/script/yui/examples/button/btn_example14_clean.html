@@ -19,11 +19,13 @@ body {
 <link rel="stylesheet" type="text/css" href="../../build/fonts/fonts-min.css" />
 <link rel="stylesheet" type="text/css" href="../../build/menu/assets/skins/sam/menu.css" />
 <link rel="stylesheet" type="text/css" href="../../build/button/assets/skins/sam/button.css" />
-<script type="text/javascript" src="../../build/utilities/utilities.js"></script>
-<script type="text/javascript" src="../../build/slider/slider.js"></script>
-<script type="text/javascript" src="../../build/container/container_core.js"></script>
-<script type="text/javascript" src="../../build/menu/menu.js"></script>
-<script type="text/javascript" src="../../build/button/button.js"></script>
+<script type="text/javascript" src="../../build/yahoo-dom-event/yahoo-dom-event.js"></script>
+<script type="text/javascript" src="../../build/dragdrop/dragdrop-min.js"></script>
+<script type="text/javascript" src="../../build/slider/slider-min.js"></script>
+<script type="text/javascript" src="../../build/container/container_core-min.js"></script>
+<script type="text/javascript" src="../../build/menu/menu-min.js"></script>
+<script type="text/javascript" src="../../build/element/element-beta-min.js"></script>
+<script type="text/javascript" src="../../build/button/button-min.js"></script>
 
 
 <!--begin custom header content for this example-->
@@ -116,6 +118,12 @@ body {
 
     }
 
+	#opacitybutton  {
+	
+		vertical-align: middle;
+		
+	}
+
 </style>
 <!--end custom header content for this example-->
 
@@ -177,7 +185,7 @@ create an opacity slider button, similar to that found in Adobe Photoshop.
             */
 
             var oButton = new YAHOO.widget.Button({ 
-                                                type: "split", 
+                                                type: "menu", 
                                                 id: "opacitybutton", 
                                                 label: "<em id=\"opacitybutton-currentopactiy\">100%</em>", 
                                                 menu: oOpacityMenu,  
@@ -204,7 +212,7 @@ create an opacity slider button, similar to that found in Adobe Photoshop.
             oHTMLButton.id = "opacitybutton-button";
             
                                                 
-            function onButtonOption() {
+            function onButtonClick() {
 
                 // Add Slider markup to the Menu instance's body element
 
@@ -225,21 +233,21 @@ create an opacity slider button, similar to that found in Adobe Photoshop.
                 
 
                 /*
-                    Unsubscribe the listener from the "option" event so that
+                    Unsubscribe the listener from the "click" event so that
                     this code runs only once.
                 */ 
 
-                this.unsubscribe("option", onButtonOption);
+                this.unsubscribe("click", onButtonClick);
             
             }
 
 
             /*
-                Subscribe to the Button instance's "option" event to render the 
+                Subscribe to the Button instance's "click" event to render the 
                 Button instance's menu the first time it is made visible.
             */
 
-            oButton.on("option", onButtonOption);
+            oButton.on("click", onButtonClick);
 
 
 

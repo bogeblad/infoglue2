@@ -13,7 +13,7 @@
 
 	<div id="hd">
         <a href="http://developer.yahoo.com/yui/"><h1>Yahoo! UI Library</h1></a>
-        <h3>editor&nbsp; <span class="subtitle">2.4.1</span></h3>
+        <h3>editor&nbsp; <span class="subtitle">2.5.1</span></h3>
         <p>
         <a href="./index.html">Yahoo! UI Library</a> 
             &gt; <a href="./module_editor.html">editor</a>
@@ -61,19 +61,7 @@
     
     <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">widget</span><span class="o">.</span><span class="nx">Editor</span> <span class="o">=</span> <span class="k">function</span><span class="o">(</span><span class="nx">el</span><span class="o">,</span> <span class="nx">attrs</span><span class="o">)</span> <span class="o">{</span>
         <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">log</span><span class="o">(</span><span class="s1">&#39;Editor Initalizing&#39;</span><span class="o">,</span> <span class="s1">&#39;info&#39;</span><span class="o">,</span> <span class="s1">&#39;Editor&#39;</span><span class="o">);</span>
-        
-        <span class="k">var</span> <span class="nx">oConfig</span> <span class="o">=</span> <span class="o">{</span>
-            <span class="nx">element</span><span class="o">:</span> <span class="kc">null</span><span class="o">,</span>
-            <span class="nx">attributes</span><span class="o">:</span> <span class="o">(</span><span class="nx">attrs</span> <span class="o">||</span> <span class="o">{})</span>
-        <span class="o">},</span> <span class="nx">id</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
-
-        <span class="k">if</span> <span class="o">(</span><span class="nx">Lang</span><span class="o">.</span><span class="nx">isString</span><span class="o">(</span><span class="nx">el</span><span class="o">))</span> <span class="o">{</span>
-            <span class="nx">id</span> <span class="o">=</span> <span class="nx">el</span><span class="o">;</span>
-        <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
-            <span class="nx">id</span> <span class="o">=</span> <span class="nx">el</span><span class="o">.</span><span class="nx">id</span><span class="o">;</span>
-        <span class="o">}</span>
-        <span class="nx">oConfig</span><span class="o">.</span><span class="nx">element</span> <span class="o">=</span> <span class="nx">el</span><span class="o">;</span>
-        <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">widget</span><span class="o">.</span><span class="nx">Editor</span><span class="o">.</span><span class="nx">superclass</span><span class="o">.</span><span class="nx">constructor</span><span class="o">.</span><span class="nx">call</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="nx">oConfig</span><span class="o">.</span><span class="nx">element</span><span class="o">,</span> <span class="nx">oConfig</span><span class="o">.</span><span class="nx">attributes</span><span class="o">);</span>
+        <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">widget</span><span class="o">.</span><span class="nx">Editor</span><span class="o">.</span><span class="nx">superclass</span><span class="o">.</span><span class="nx">constructor</span><span class="o">.</span><span class="nx">call</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="nx">el</span><span class="o">,</span> <span class="nx">attrs</span><span class="o">);</span>
     <span class="o">};</span>
 
     <span class="c">/**</span>
@@ -211,7 +199,94 @@
 <span class="c">        */</span>
         <span class="nx">init</span><span class="o">:</span> <span class="k">function</span><span class="o">(</span><span class="nx">p_oElement</span><span class="o">,</span> <span class="nx">p_oAttributes</span><span class="o">)</span> <span class="o">{</span>
             <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">log</span><span class="o">(</span><span class="s1">&#39;init&#39;</span><span class="o">,</span> <span class="s1">&#39;info&#39;</span><span class="o">,</span> <span class="s1">&#39;Editor&#39;</span><span class="o">);</span>
+
+            <span class="k">this</span><span class="o">.</span><span class="nx">_defaultToolbar</span> <span class="o">=</span> <span class="o">{</span>
+                <span class="nx">collapse</span><span class="o">:</span> <span class="kc">true</span><span class="o">,</span>
+                <span class="nx">titlebar</span><span class="o">:</span> <span class="s1">&#39;Text Editing Tools&#39;</span><span class="o">,</span>
+                <span class="nx">draggable</span><span class="o">:</span> <span class="kc">false</span><span class="o">,</span>
+                <span class="nx">buttonType</span><span class="o">:</span> <span class="s1">&#39;advanced&#39;</span><span class="o">,</span>
+                <span class="nx">buttons</span><span class="o">:</span> <span class="o">[</span>
+                    <span class="o">{</span> <span class="nx">group</span><span class="o">:</span> <span class="s1">&#39;fontstyle&#39;</span><span class="o">,</span> <span class="k">label</span><span class="o">:</span> <span class="s1">&#39;Font Name and Size&#39;</span><span class="o">,</span>
+                        <span class="nx">buttons</span><span class="o">:</span> <span class="o">[</span>
+                            <span class="o">{</span> <span class="nx">type</span><span class="o">:</span> <span class="s1">&#39;select&#39;</span><span class="o">,</span> <span class="k">label</span><span class="o">:</span> <span class="s1">&#39;Arial&#39;</span><span class="o">,</span> <span class="nx">value</span><span class="o">:</span> <span class="s1">&#39;fontname&#39;</span><span class="o">,</span> <span class="nx">disabled</span><span class="o">:</span> <span class="kc">true</span><span class="o">,</span>
+                                <span class="nx">menu</span><span class="o">:</span> <span class="o">[</span>
+                                    <span class="o">{</span> <span class="nx">text</span><span class="o">:</span> <span class="s1">&#39;Arial&#39;</span><span class="o">,</span> <span class="nx">checked</span><span class="o">:</span> <span class="kc">true</span> <span class="o">},</span>
+                                    <span class="o">{</span> <span class="nx">text</span><span class="o">:</span> <span class="s1">&#39;Arial Black&#39;</span> <span class="o">},</span>
+                                    <span class="o">{</span> <span class="nx">text</span><span class="o">:</span> <span class="s1">&#39;Comic Sans MS&#39;</span> <span class="o">},</span>
+                                    <span class="o">{</span> <span class="nx">text</span><span class="o">:</span> <span class="s1">&#39;Courier New&#39;</span> <span class="o">},</span>
+                                    <span class="o">{</span> <span class="nx">text</span><span class="o">:</span> <span class="s1">&#39;Lucida Console&#39;</span> <span class="o">},</span>
+                                    <span class="o">{</span> <span class="nx">text</span><span class="o">:</span> <span class="s1">&#39;Tahoma&#39;</span> <span class="o">},</span>
+                                    <span class="o">{</span> <span class="nx">text</span><span class="o">:</span> <span class="s1">&#39;Times New Roman&#39;</span> <span class="o">},</span>
+                                    <span class="o">{</span> <span class="nx">text</span><span class="o">:</span> <span class="s1">&#39;Trebuchet MS&#39;</span> <span class="o">},</span>
+                                    <span class="o">{</span> <span class="nx">text</span><span class="o">:</span> <span class="s1">&#39;Verdana&#39;</span> <span class="o">}</span>
+                                <span class="o">]</span>
+                            <span class="o">},</span>
+                            <span class="o">{</span> <span class="nx">type</span><span class="o">:</span> <span class="s1">&#39;spin&#39;</span><span class="o">,</span> <span class="k">label</span><span class="o">:</span> <span class="s1">&#39;13&#39;</span><span class="o">,</span> <span class="nx">value</span><span class="o">:</span> <span class="s1">&#39;fontsize&#39;</span><span class="o">,</span> <span class="nx">range</span><span class="o">:</span> <span class="o">[</span> <span class="m">9</span><span class="o">,</span> <span class="m">75</span> <span class="o">],</span> <span class="nx">disabled</span><span class="o">:</span> <span class="kc">true</span> <span class="o">}</span>
+                        <span class="o">]</span>
+                    <span class="o">},</span>
+                    <span class="o">{</span> <span class="nx">type</span><span class="o">:</span> <span class="s1">&#39;separator&#39;</span> <span class="o">},</span>
+                    <span class="o">{</span> <span class="nx">group</span><span class="o">:</span> <span class="s1">&#39;textstyle&#39;</span><span class="o">,</span> <span class="k">label</span><span class="o">:</span> <span class="s1">&#39;Font Style&#39;</span><span class="o">,</span>
+                        <span class="nx">buttons</span><span class="o">:</span> <span class="o">[</span>
+                            <span class="o">{</span> <span class="nx">type</span><span class="o">:</span> <span class="s1">&#39;push&#39;</span><span class="o">,</span> <span class="k">label</span><span class="o">:</span> <span class="s1">&#39;Bold CTRL + SHIFT + B&#39;</span><span class="o">,</span> <span class="nx">value</span><span class="o">:</span> <span class="s1">&#39;bold&#39;</span> <span class="o">},</span>
+                            <span class="o">{</span> <span class="nx">type</span><span class="o">:</span> <span class="s1">&#39;push&#39;</span><span class="o">,</span> <span class="k">label</span><span class="o">:</span> <span class="s1">&#39;Italic CTRL + SHIFT + I&#39;</span><span class="o">,</span> <span class="nx">value</span><span class="o">:</span> <span class="s1">&#39;italic&#39;</span> <span class="o">},</span>
+                            <span class="o">{</span> <span class="nx">type</span><span class="o">:</span> <span class="s1">&#39;push&#39;</span><span class="o">,</span> <span class="k">label</span><span class="o">:</span> <span class="s1">&#39;Underline CTRL + SHIFT + U&#39;</span><span class="o">,</span> <span class="nx">value</span><span class="o">:</span> <span class="s1">&#39;underline&#39;</span> <span class="o">},</span>
+                            <span class="o">{</span> <span class="nx">type</span><span class="o">:</span> <span class="s1">&#39;separator&#39;</span> <span class="o">},</span>
+                            <span class="o">{</span> <span class="nx">type</span><span class="o">:</span> <span class="s1">&#39;push&#39;</span><span class="o">,</span> <span class="k">label</span><span class="o">:</span> <span class="s1">&#39;Subscript&#39;</span><span class="o">,</span> <span class="nx">value</span><span class="o">:</span> <span class="s1">&#39;subscript&#39;</span><span class="o">,</span> <span class="nx">disabled</span><span class="o">:</span> <span class="kc">true</span> <span class="o">},</span>
+                            <span class="o">{</span> <span class="nx">type</span><span class="o">:</span> <span class="s1">&#39;push&#39;</span><span class="o">,</span> <span class="k">label</span><span class="o">:</span> <span class="s1">&#39;Superscript&#39;</span><span class="o">,</span> <span class="nx">value</span><span class="o">:</span> <span class="s1">&#39;superscript&#39;</span><span class="o">,</span> <span class="nx">disabled</span><span class="o">:</span> <span class="kc">true</span> <span class="o">},</span>
+                            <span class="o">{</span> <span class="nx">type</span><span class="o">:</span> <span class="s1">&#39;separator&#39;</span> <span class="o">},</span>
+                            <span class="o">{</span> <span class="nx">type</span><span class="o">:</span> <span class="s1">&#39;color&#39;</span><span class="o">,</span> <span class="k">label</span><span class="o">:</span> <span class="s1">&#39;Font Color&#39;</span><span class="o">,</span> <span class="nx">value</span><span class="o">:</span> <span class="s1">&#39;forecolor&#39;</span><span class="o">,</span> <span class="nx">disabled</span><span class="o">:</span> <span class="kc">true</span> <span class="o">},</span>
+                            <span class="o">{</span> <span class="nx">type</span><span class="o">:</span> <span class="s1">&#39;color&#39;</span><span class="o">,</span> <span class="k">label</span><span class="o">:</span> <span class="s1">&#39;Background Color&#39;</span><span class="o">,</span> <span class="nx">value</span><span class="o">:</span> <span class="s1">&#39;backcolor&#39;</span><span class="o">,</span> <span class="nx">disabled</span><span class="o">:</span> <span class="kc">true</span> <span class="o">},</span>
+                            <span class="o">{</span> <span class="nx">type</span><span class="o">:</span> <span class="s1">&#39;separator&#39;</span> <span class="o">},</span>
+                            <span class="o">{</span> <span class="nx">type</span><span class="o">:</span> <span class="s1">&#39;push&#39;</span><span class="o">,</span> <span class="k">label</span><span class="o">:</span> <span class="s1">&#39;Remove Formatting&#39;</span><span class="o">,</span> <span class="nx">value</span><span class="o">:</span> <span class="s1">&#39;removeformat&#39;</span><span class="o">,</span> <span class="nx">disabled</span><span class="o">:</span> <span class="kc">true</span> <span class="o">},</span>
+                            <span class="o">{</span> <span class="nx">type</span><span class="o">:</span> <span class="s1">&#39;push&#39;</span><span class="o">,</span> <span class="k">label</span><span class="o">:</span> <span class="s1">&#39;Show/Hide Hidden Elements&#39;</span><span class="o">,</span> <span class="nx">value</span><span class="o">:</span> <span class="s1">&#39;hiddenelements&#39;</span> <span class="o">}</span>
+                        <span class="o">]</span>
+                    <span class="o">},</span>
+                    <span class="o">{</span> <span class="nx">type</span><span class="o">:</span> <span class="s1">&#39;separator&#39;</span> <span class="o">},</span>
+                    <span class="o">{</span> <span class="nx">group</span><span class="o">:</span> <span class="s1">&#39;alignment&#39;</span><span class="o">,</span> <span class="k">label</span><span class="o">:</span> <span class="s1">&#39;Alignment&#39;</span><span class="o">,</span>
+                        <span class="nx">buttons</span><span class="o">:</span> <span class="o">[</span>
+                            <span class="o">{</span> <span class="nx">type</span><span class="o">:</span> <span class="s1">&#39;push&#39;</span><span class="o">,</span> <span class="k">label</span><span class="o">:</span> <span class="s1">&#39;Align Left CTRL + SHIFT + [&#39;</span><span class="o">,</span> <span class="nx">value</span><span class="o">:</span> <span class="s1">&#39;justifyleft&#39;</span> <span class="o">},</span>
+                            <span class="o">{</span> <span class="nx">type</span><span class="o">:</span> <span class="s1">&#39;push&#39;</span><span class="o">,</span> <span class="k">label</span><span class="o">:</span> <span class="s1">&#39;Align Center CTRL + SHIFT + |&#39;</span><span class="o">,</span> <span class="nx">value</span><span class="o">:</span> <span class="s1">&#39;justifycenter&#39;</span> <span class="o">},</span>
+                            <span class="o">{</span> <span class="nx">type</span><span class="o">:</span> <span class="s1">&#39;push&#39;</span><span class="o">,</span> <span class="k">label</span><span class="o">:</span> <span class="s1">&#39;Align Right CTRL + SHIFT + ]&#39;</span><span class="o">,</span> <span class="nx">value</span><span class="o">:</span> <span class="s1">&#39;justifyright&#39;</span> <span class="o">},</span>
+                            <span class="o">{</span> <span class="nx">type</span><span class="o">:</span> <span class="s1">&#39;push&#39;</span><span class="o">,</span> <span class="k">label</span><span class="o">:</span> <span class="s1">&#39;Justify&#39;</span><span class="o">,</span> <span class="nx">value</span><span class="o">:</span> <span class="s1">&#39;justifyfull&#39;</span> <span class="o">}</span>
+                        <span class="o">]</span>
+                    <span class="o">},</span>
+                    <span class="o">{</span> <span class="nx">type</span><span class="o">:</span> <span class="s1">&#39;separator&#39;</span> <span class="o">},</span>
+                    <span class="o">{</span> <span class="nx">group</span><span class="o">:</span> <span class="s1">&#39;parastyle&#39;</span><span class="o">,</span> <span class="k">label</span><span class="o">:</span> <span class="s1">&#39;Paragraph Style&#39;</span><span class="o">,</span>
+                        <span class="nx">buttons</span><span class="o">:</span> <span class="o">[</span>
+                        <span class="o">{</span> <span class="nx">type</span><span class="o">:</span> <span class="s1">&#39;select&#39;</span><span class="o">,</span> <span class="k">label</span><span class="o">:</span> <span class="s1">&#39;Normal&#39;</span><span class="o">,</span> <span class="nx">value</span><span class="o">:</span> <span class="s1">&#39;heading&#39;</span><span class="o">,</span> <span class="nx">disabled</span><span class="o">:</span> <span class="kc">true</span><span class="o">,</span>
+                            <span class="nx">menu</span><span class="o">:</span> <span class="o">[</span>
+                                <span class="o">{</span> <span class="nx">text</span><span class="o">:</span> <span class="s1">&#39;Normal&#39;</span><span class="o">,</span> <span class="nx">value</span><span class="o">:</span> <span class="s1">&#39;none&#39;</span><span class="o">,</span> <span class="nx">checked</span><span class="o">:</span> <span class="kc">true</span> <span class="o">},</span>
+                                <span class="o">{</span> <span class="nx">text</span><span class="o">:</span> <span class="s1">&#39;Header 1&#39;</span><span class="o">,</span> <span class="nx">value</span><span class="o">:</span> <span class="s1">&#39;h1&#39;</span> <span class="o">},</span>
+                                <span class="o">{</span> <span class="nx">text</span><span class="o">:</span> <span class="s1">&#39;Header 2&#39;</span><span class="o">,</span> <span class="nx">value</span><span class="o">:</span> <span class="s1">&#39;h2&#39;</span> <span class="o">},</span>
+                                <span class="o">{</span> <span class="nx">text</span><span class="o">:</span> <span class="s1">&#39;Header 3&#39;</span><span class="o">,</span> <span class="nx">value</span><span class="o">:</span> <span class="s1">&#39;h3&#39;</span> <span class="o">},</span>
+                                <span class="o">{</span> <span class="nx">text</span><span class="o">:</span> <span class="s1">&#39;Header 4&#39;</span><span class="o">,</span> <span class="nx">value</span><span class="o">:</span> <span class="s1">&#39;h4&#39;</span> <span class="o">},</span>
+                                <span class="o">{</span> <span class="nx">text</span><span class="o">:</span> <span class="s1">&#39;Header 5&#39;</span><span class="o">,</span> <span class="nx">value</span><span class="o">:</span> <span class="s1">&#39;h5&#39;</span> <span class="o">},</span>
+                                <span class="o">{</span> <span class="nx">text</span><span class="o">:</span> <span class="s1">&#39;Header 6&#39;</span><span class="o">,</span> <span class="nx">value</span><span class="o">:</span> <span class="s1">&#39;h6&#39;</span> <span class="o">}</span>
+                            <span class="o">]</span>
+                        <span class="o">}</span>
+                        <span class="o">]</span>
+                    <span class="o">},</span>
+                    <span class="o">{</span> <span class="nx">type</span><span class="o">:</span> <span class="s1">&#39;separator&#39;</span> <span class="o">},</span>
+                    <span class="o">{</span> <span class="nx">group</span><span class="o">:</span> <span class="s1">&#39;indentlist&#39;</span><span class="o">,</span> <span class="k">label</span><span class="o">:</span> <span class="s1">&#39;Indenting and Lists&#39;</span><span class="o">,</span>
+                        <span class="nx">buttons</span><span class="o">:</span> <span class="o">[</span>
+                            <span class="o">{</span> <span class="nx">type</span><span class="o">:</span> <span class="s1">&#39;push&#39;</span><span class="o">,</span> <span class="k">label</span><span class="o">:</span> <span class="s1">&#39;Indent&#39;</span><span class="o">,</span> <span class="nx">value</span><span class="o">:</span> <span class="s1">&#39;indent&#39;</span><span class="o">,</span> <span class="nx">disabled</span><span class="o">:</span> <span class="kc">true</span> <span class="o">},</span>
+                            <span class="o">{</span> <span class="nx">type</span><span class="o">:</span> <span class="s1">&#39;push&#39;</span><span class="o">,</span> <span class="k">label</span><span class="o">:</span> <span class="s1">&#39;Outdent&#39;</span><span class="o">,</span> <span class="nx">value</span><span class="o">:</span> <span class="s1">&#39;outdent&#39;</span><span class="o">,</span> <span class="nx">disabled</span><span class="o">:</span> <span class="kc">true</span> <span class="o">},</span>
+                            <span class="o">{</span> <span class="nx">type</span><span class="o">:</span> <span class="s1">&#39;push&#39;</span><span class="o">,</span> <span class="k">label</span><span class="o">:</span> <span class="s1">&#39;Create an Unordered List&#39;</span><span class="o">,</span> <span class="nx">value</span><span class="o">:</span> <span class="s1">&#39;insertunorderedlist&#39;</span> <span class="o">},</span>
+                            <span class="o">{</span> <span class="nx">type</span><span class="o">:</span> <span class="s1">&#39;push&#39;</span><span class="o">,</span> <span class="k">label</span><span class="o">:</span> <span class="s1">&#39;Create an Ordered List&#39;</span><span class="o">,</span> <span class="nx">value</span><span class="o">:</span> <span class="s1">&#39;insertorderedlist&#39;</span> <span class="o">}</span>
+                        <span class="o">]</span>
+                    <span class="o">},</span>
+                    <span class="o">{</span> <span class="nx">type</span><span class="o">:</span> <span class="s1">&#39;separator&#39;</span> <span class="o">},</span>
+                    <span class="o">{</span> <span class="nx">group</span><span class="o">:</span> <span class="s1">&#39;insertitem&#39;</span><span class="o">,</span> <span class="k">label</span><span class="o">:</span> <span class="s1">&#39;Insert Item&#39;</span><span class="o">,</span>
+                        <span class="nx">buttons</span><span class="o">:</span> <span class="o">[</span>
+                            <span class="o">{</span> <span class="nx">type</span><span class="o">:</span> <span class="s1">&#39;push&#39;</span><span class="o">,</span> <span class="k">label</span><span class="o">:</span> <span class="s1">&#39;HTML Link CTRL + SHIFT + L&#39;</span><span class="o">,</span> <span class="nx">value</span><span class="o">:</span> <span class="s1">&#39;createlink&#39;</span><span class="o">,</span> <span class="nx">disabled</span><span class="o">:</span> <span class="kc">true</span> <span class="o">},</span>
+                            <span class="o">{</span> <span class="nx">type</span><span class="o">:</span> <span class="s1">&#39;push&#39;</span><span class="o">,</span> <span class="k">label</span><span class="o">:</span> <span class="s1">&#39;Insert Image&#39;</span><span class="o">,</span> <span class="nx">value</span><span class="o">:</span> <span class="s1">&#39;insertimage&#39;</span> <span class="o">}</span>
+                        <span class="o">]</span>
+                    <span class="o">}</span>
+                <span class="o">]</span>
+            <span class="o">};</span>
+
             <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">widget</span><span class="o">.</span><span class="nx">Editor</span><span class="o">.</span><span class="nx">superclass</span><span class="o">.</span><span class="nx">init</span><span class="o">.</span><span class="nx">call</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="nx">p_oElement</span><span class="o">,</span> <span class="nx">p_oAttributes</span><span class="o">);</span>
+
         <span class="o">},</span>
         <span class="c">/**</span>
 <span class="c">        * @method initAttributes</span>
@@ -307,96 +382,6 @@
 <span class="c">        * @type Object</span>
 <span class="c">        */</span>
         <span class="nx">_alwaysEnabled</span><span class="o">:</span> <span class="o">{</span> <span class="nx">hiddenelements</span><span class="o">:</span> <span class="kc">true</span> <span class="o">},</span>
-        <span class="c">/**</span>
-<span class="c">        * @property _defaultToolbar</span>
-<span class="c">        * @private</span>
-<span class="c">        * @description Default toolbar config.</span>
-<span class="c">        * @type Object</span>
-<span class="c">        */</span>
-        <span class="nx">_defaultToolbar</span><span class="o">:</span> <span class="o">{</span>
-            <span class="nx">collapse</span><span class="o">:</span> <span class="kc">true</span><span class="o">,</span>
-            <span class="nx">titlebar</span><span class="o">:</span> <span class="s1">&#39;Text Editing Tools&#39;</span><span class="o">,</span>
-            <span class="nx">draggable</span><span class="o">:</span> <span class="kc">false</span><span class="o">,</span>
-            <span class="nx">buttonType</span><span class="o">:</span> <span class="s1">&#39;advanced&#39;</span><span class="o">,</span>
-            <span class="nx">buttons</span><span class="o">:</span> <span class="o">[</span>
-                <span class="o">{</span> <span class="nx">group</span><span class="o">:</span> <span class="s1">&#39;fontstyle&#39;</span><span class="o">,</span> <span class="k">label</span><span class="o">:</span> <span class="s1">&#39;Font Name and Size&#39;</span><span class="o">,</span>
-                    <span class="nx">buttons</span><span class="o">:</span> <span class="o">[</span>
-                        <span class="o">{</span> <span class="nx">type</span><span class="o">:</span> <span class="s1">&#39;select&#39;</span><span class="o">,</span> <span class="k">label</span><span class="o">:</span> <span class="s1">&#39;Arial&#39;</span><span class="o">,</span> <span class="nx">value</span><span class="o">:</span> <span class="s1">&#39;fontname&#39;</span><span class="o">,</span> <span class="nx">disabled</span><span class="o">:</span> <span class="kc">true</span><span class="o">,</span>
-                            <span class="nx">menu</span><span class="o">:</span> <span class="o">[</span>
-                                <span class="o">{</span> <span class="nx">text</span><span class="o">:</span> <span class="s1">&#39;Arial&#39;</span><span class="o">,</span> <span class="nx">checked</span><span class="o">:</span> <span class="kc">true</span> <span class="o">},</span>
-                                <span class="o">{</span> <span class="nx">text</span><span class="o">:</span> <span class="s1">&#39;Arial Black&#39;</span> <span class="o">},</span>
-                                <span class="o">{</span> <span class="nx">text</span><span class="o">:</span> <span class="s1">&#39;Comic Sans MS&#39;</span> <span class="o">},</span>
-                                <span class="o">{</span> <span class="nx">text</span><span class="o">:</span> <span class="s1">&#39;Courier New&#39;</span> <span class="o">},</span>
-                                <span class="o">{</span> <span class="nx">text</span><span class="o">:</span> <span class="s1">&#39;Lucida Console&#39;</span> <span class="o">},</span>
-                                <span class="o">{</span> <span class="nx">text</span><span class="o">:</span> <span class="s1">&#39;Tahoma&#39;</span> <span class="o">},</span>
-                                <span class="o">{</span> <span class="nx">text</span><span class="o">:</span> <span class="s1">&#39;Times New Roman&#39;</span> <span class="o">},</span>
-                                <span class="o">{</span> <span class="nx">text</span><span class="o">:</span> <span class="s1">&#39;Trebuchet MS&#39;</span> <span class="o">},</span>
-                                <span class="o">{</span> <span class="nx">text</span><span class="o">:</span> <span class="s1">&#39;Verdana&#39;</span> <span class="o">}</span>
-                            <span class="o">]</span>
-                        <span class="o">},</span>
-                        <span class="o">{</span> <span class="nx">type</span><span class="o">:</span> <span class="s1">&#39;spin&#39;</span><span class="o">,</span> <span class="k">label</span><span class="o">:</span> <span class="s1">&#39;13&#39;</span><span class="o">,</span> <span class="nx">value</span><span class="o">:</span> <span class="s1">&#39;fontsize&#39;</span><span class="o">,</span> <span class="nx">range</span><span class="o">:</span> <span class="o">[</span> <span class="m">9</span><span class="o">,</span> <span class="m">75</span> <span class="o">],</span> <span class="nx">disabled</span><span class="o">:</span> <span class="kc">true</span> <span class="o">}</span>
-                    <span class="o">]</span>
-                <span class="o">},</span>
-                <span class="o">{</span> <span class="nx">type</span><span class="o">:</span> <span class="s1">&#39;separator&#39;</span> <span class="o">},</span>
-                <span class="o">{</span> <span class="nx">group</span><span class="o">:</span> <span class="s1">&#39;textstyle&#39;</span><span class="o">,</span> <span class="k">label</span><span class="o">:</span> <span class="s1">&#39;Font Style&#39;</span><span class="o">,</span>
-                    <span class="nx">buttons</span><span class="o">:</span> <span class="o">[</span>
-                        <span class="o">{</span> <span class="nx">type</span><span class="o">:</span> <span class="s1">&#39;push&#39;</span><span class="o">,</span> <span class="k">label</span><span class="o">:</span> <span class="s1">&#39;Bold CTRL + SHIFT + B&#39;</span><span class="o">,</span> <span class="nx">value</span><span class="o">:</span> <span class="s1">&#39;bold&#39;</span> <span class="o">},</span>
-                        <span class="o">{</span> <span class="nx">type</span><span class="o">:</span> <span class="s1">&#39;push&#39;</span><span class="o">,</span> <span class="k">label</span><span class="o">:</span> <span class="s1">&#39;Italic CTRL + SHIFT + I&#39;</span><span class="o">,</span> <span class="nx">value</span><span class="o">:</span> <span class="s1">&#39;italic&#39;</span> <span class="o">},</span>
-                        <span class="o">{</span> <span class="nx">type</span><span class="o">:</span> <span class="s1">&#39;push&#39;</span><span class="o">,</span> <span class="k">label</span><span class="o">:</span> <span class="s1">&#39;Underline CTRL + SHIFT + U&#39;</span><span class="o">,</span> <span class="nx">value</span><span class="o">:</span> <span class="s1">&#39;underline&#39;</span> <span class="o">},</span>
-                        <span class="o">{</span> <span class="nx">type</span><span class="o">:</span> <span class="s1">&#39;separator&#39;</span> <span class="o">},</span>
-                        <span class="o">{</span> <span class="nx">type</span><span class="o">:</span> <span class="s1">&#39;push&#39;</span><span class="o">,</span> <span class="k">label</span><span class="o">:</span> <span class="s1">&#39;Subscript&#39;</span><span class="o">,</span> <span class="nx">value</span><span class="o">:</span> <span class="s1">&#39;subscript&#39;</span><span class="o">,</span> <span class="nx">disabled</span><span class="o">:</span> <span class="kc">true</span> <span class="o">},</span>
-                        <span class="o">{</span> <span class="nx">type</span><span class="o">:</span> <span class="s1">&#39;push&#39;</span><span class="o">,</span> <span class="k">label</span><span class="o">:</span> <span class="s1">&#39;Superscript&#39;</span><span class="o">,</span> <span class="nx">value</span><span class="o">:</span> <span class="s1">&#39;superscript&#39;</span><span class="o">,</span> <span class="nx">disabled</span><span class="o">:</span> <span class="kc">true</span> <span class="o">},</span>
-                        <span class="o">{</span> <span class="nx">type</span><span class="o">:</span> <span class="s1">&#39;separator&#39;</span> <span class="o">},</span>
-                        <span class="o">{</span> <span class="nx">type</span><span class="o">:</span> <span class="s1">&#39;color&#39;</span><span class="o">,</span> <span class="k">label</span><span class="o">:</span> <span class="s1">&#39;Font Color&#39;</span><span class="o">,</span> <span class="nx">value</span><span class="o">:</span> <span class="s1">&#39;forecolor&#39;</span><span class="o">,</span> <span class="nx">disabled</span><span class="o">:</span> <span class="kc">true</span> <span class="o">},</span>
-                        <span class="o">{</span> <span class="nx">type</span><span class="o">:</span> <span class="s1">&#39;color&#39;</span><span class="o">,</span> <span class="k">label</span><span class="o">:</span> <span class="s1">&#39;Background Color&#39;</span><span class="o">,</span> <span class="nx">value</span><span class="o">:</span> <span class="s1">&#39;backcolor&#39;</span><span class="o">,</span> <span class="nx">disabled</span><span class="o">:</span> <span class="kc">true</span> <span class="o">},</span>
-                        <span class="o">{</span> <span class="nx">type</span><span class="o">:</span> <span class="s1">&#39;separator&#39;</span> <span class="o">},</span>
-                        <span class="o">{</span> <span class="nx">type</span><span class="o">:</span> <span class="s1">&#39;push&#39;</span><span class="o">,</span> <span class="k">label</span><span class="o">:</span> <span class="s1">&#39;Remove Formatting&#39;</span><span class="o">,</span> <span class="nx">value</span><span class="o">:</span> <span class="s1">&#39;removeformat&#39;</span><span class="o">,</span> <span class="nx">disabled</span><span class="o">:</span> <span class="kc">true</span> <span class="o">},</span>
-                        <span class="o">{</span> <span class="nx">type</span><span class="o">:</span> <span class="s1">&#39;push&#39;</span><span class="o">,</span> <span class="k">label</span><span class="o">:</span> <span class="s1">&#39;Show/Hide Hidden Elements&#39;</span><span class="o">,</span> <span class="nx">value</span><span class="o">:</span> <span class="s1">&#39;hiddenelements&#39;</span> <span class="o">}</span>
-                    <span class="o">]</span>
-                <span class="o">},</span>
-                <span class="o">{</span> <span class="nx">type</span><span class="o">:</span> <span class="s1">&#39;separator&#39;</span> <span class="o">},</span>
-                <span class="o">{</span> <span class="nx">group</span><span class="o">:</span> <span class="s1">&#39;alignment&#39;</span><span class="o">,</span> <span class="k">label</span><span class="o">:</span> <span class="s1">&#39;Alignment&#39;</span><span class="o">,</span>
-                    <span class="nx">buttons</span><span class="o">:</span> <span class="o">[</span>
-                        <span class="o">{</span> <span class="nx">type</span><span class="o">:</span> <span class="s1">&#39;push&#39;</span><span class="o">,</span> <span class="k">label</span><span class="o">:</span> <span class="s1">&#39;Align Left CTRL + SHIFT + [&#39;</span><span class="o">,</span> <span class="nx">value</span><span class="o">:</span> <span class="s1">&#39;justifyleft&#39;</span> <span class="o">},</span>
-                        <span class="o">{</span> <span class="nx">type</span><span class="o">:</span> <span class="s1">&#39;push&#39;</span><span class="o">,</span> <span class="k">label</span><span class="o">:</span> <span class="s1">&#39;Align Center CTRL + SHIFT + |&#39;</span><span class="o">,</span> <span class="nx">value</span><span class="o">:</span> <span class="s1">&#39;justifycenter&#39;</span> <span class="o">},</span>
-                        <span class="o">{</span> <span class="nx">type</span><span class="o">:</span> <span class="s1">&#39;push&#39;</span><span class="o">,</span> <span class="k">label</span><span class="o">:</span> <span class="s1">&#39;Align Right CTRL + SHIFT + ]&#39;</span><span class="o">,</span> <span class="nx">value</span><span class="o">:</span> <span class="s1">&#39;justifyright&#39;</span> <span class="o">},</span>
-                        <span class="o">{</span> <span class="nx">type</span><span class="o">:</span> <span class="s1">&#39;push&#39;</span><span class="o">,</span> <span class="k">label</span><span class="o">:</span> <span class="s1">&#39;Justify&#39;</span><span class="o">,</span> <span class="nx">value</span><span class="o">:</span> <span class="s1">&#39;justifyfull&#39;</span> <span class="o">}</span>
-                    <span class="o">]</span>
-                <span class="o">},</span>
-                <span class="o">{</span> <span class="nx">type</span><span class="o">:</span> <span class="s1">&#39;separator&#39;</span> <span class="o">},</span>
-                <span class="o">{</span> <span class="nx">group</span><span class="o">:</span> <span class="s1">&#39;parastyle&#39;</span><span class="o">,</span> <span class="k">label</span><span class="o">:</span> <span class="s1">&#39;Paragraph Style&#39;</span><span class="o">,</span>
-                    <span class="nx">buttons</span><span class="o">:</span> <span class="o">[</span>
-                    <span class="o">{</span> <span class="nx">type</span><span class="o">:</span> <span class="s1">&#39;select&#39;</span><span class="o">,</span> <span class="k">label</span><span class="o">:</span> <span class="s1">&#39;Normal&#39;</span><span class="o">,</span> <span class="nx">value</span><span class="o">:</span> <span class="s1">&#39;heading&#39;</span><span class="o">,</span> <span class="nx">disabled</span><span class="o">:</span> <span class="kc">true</span><span class="o">,</span>
-                        <span class="nx">menu</span><span class="o">:</span> <span class="o">[</span>
-                            <span class="o">{</span> <span class="nx">text</span><span class="o">:</span> <span class="s1">&#39;Normal&#39;</span><span class="o">,</span> <span class="nx">value</span><span class="o">:</span> <span class="s1">&#39;none&#39;</span><span class="o">,</span> <span class="nx">checked</span><span class="o">:</span> <span class="kc">true</span> <span class="o">},</span>
-                            <span class="o">{</span> <span class="nx">text</span><span class="o">:</span> <span class="s1">&#39;Header 1&#39;</span><span class="o">,</span> <span class="nx">value</span><span class="o">:</span> <span class="s1">&#39;h1&#39;</span> <span class="o">},</span>
-                            <span class="o">{</span> <span class="nx">text</span><span class="o">:</span> <span class="s1">&#39;Header 2&#39;</span><span class="o">,</span> <span class="nx">value</span><span class="o">:</span> <span class="s1">&#39;h2&#39;</span> <span class="o">},</span>
-                            <span class="o">{</span> <span class="nx">text</span><span class="o">:</span> <span class="s1">&#39;Header 3&#39;</span><span class="o">,</span> <span class="nx">value</span><span class="o">:</span> <span class="s1">&#39;h3&#39;</span> <span class="o">},</span>
-                            <span class="o">{</span> <span class="nx">text</span><span class="o">:</span> <span class="s1">&#39;Header 4&#39;</span><span class="o">,</span> <span class="nx">value</span><span class="o">:</span> <span class="s1">&#39;h4&#39;</span> <span class="o">},</span>
-                            <span class="o">{</span> <span class="nx">text</span><span class="o">:</span> <span class="s1">&#39;Header 5&#39;</span><span class="o">,</span> <span class="nx">value</span><span class="o">:</span> <span class="s1">&#39;h5&#39;</span> <span class="o">},</span>
-                            <span class="o">{</span> <span class="nx">text</span><span class="o">:</span> <span class="s1">&#39;Header 6&#39;</span><span class="o">,</span> <span class="nx">value</span><span class="o">:</span> <span class="s1">&#39;h6&#39;</span> <span class="o">}</span>
-                        <span class="o">]</span>
-                    <span class="o">}</span>
-                    <span class="o">]</span>
-                <span class="o">},</span>
-                <span class="o">{</span> <span class="nx">type</span><span class="o">:</span> <span class="s1">&#39;separator&#39;</span> <span class="o">},</span>
-                <span class="o">{</span> <span class="nx">group</span><span class="o">:</span> <span class="s1">&#39;indentlist&#39;</span><span class="o">,</span> <span class="k">label</span><span class="o">:</span> <span class="s1">&#39;Indenting and Lists&#39;</span><span class="o">,</span>
-                    <span class="nx">buttons</span><span class="o">:</span> <span class="o">[</span>
-                        <span class="o">{</span> <span class="nx">type</span><span class="o">:</span> <span class="s1">&#39;push&#39;</span><span class="o">,</span> <span class="k">label</span><span class="o">:</span> <span class="s1">&#39;Indent&#39;</span><span class="o">,</span> <span class="nx">value</span><span class="o">:</span> <span class="s1">&#39;indent&#39;</span><span class="o">,</span> <span class="nx">disabled</span><span class="o">:</span> <span class="kc">true</span> <span class="o">},</span>
-                        <span class="o">{</span> <span class="nx">type</span><span class="o">:</span> <span class="s1">&#39;push&#39;</span><span class="o">,</span> <span class="k">label</span><span class="o">:</span> <span class="s1">&#39;Outdent&#39;</span><span class="o">,</span> <span class="nx">value</span><span class="o">:</span> <span class="s1">&#39;outdent&#39;</span><span class="o">,</span> <span class="nx">disabled</span><span class="o">:</span> <span class="kc">true</span> <span class="o">},</span>
-                        <span class="o">{</span> <span class="nx">type</span><span class="o">:</span> <span class="s1">&#39;push&#39;</span><span class="o">,</span> <span class="k">label</span><span class="o">:</span> <span class="s1">&#39;Create an Unordered List&#39;</span><span class="o">,</span> <span class="nx">value</span><span class="o">:</span> <span class="s1">&#39;insertunorderedlist&#39;</span> <span class="o">},</span>
-                        <span class="o">{</span> <span class="nx">type</span><span class="o">:</span> <span class="s1">&#39;push&#39;</span><span class="o">,</span> <span class="k">label</span><span class="o">:</span> <span class="s1">&#39;Create an Ordered List&#39;</span><span class="o">,</span> <span class="nx">value</span><span class="o">:</span> <span class="s1">&#39;insertorderedlist&#39;</span> <span class="o">}</span>
-                    <span class="o">]</span>
-                <span class="o">},</span>
-                <span class="o">{</span> <span class="nx">type</span><span class="o">:</span> <span class="s1">&#39;separator&#39;</span> <span class="o">},</span>
-                <span class="o">{</span> <span class="nx">group</span><span class="o">:</span> <span class="s1">&#39;insertitem&#39;</span><span class="o">,</span> <span class="k">label</span><span class="o">:</span> <span class="s1">&#39;Insert Item&#39;</span><span class="o">,</span>
-                    <span class="nx">buttons</span><span class="o">:</span> <span class="o">[</span>
-                        <span class="o">{</span> <span class="nx">type</span><span class="o">:</span> <span class="s1">&#39;push&#39;</span><span class="o">,</span> <span class="k">label</span><span class="o">:</span> <span class="s1">&#39;HTML Link CTRL + SHIFT + L&#39;</span><span class="o">,</span> <span class="nx">value</span><span class="o">:</span> <span class="s1">&#39;createlink&#39;</span><span class="o">,</span> <span class="nx">disabled</span><span class="o">:</span> <span class="kc">true</span> <span class="o">},</span>
-                        <span class="o">{</span> <span class="nx">type</span><span class="o">:</span> <span class="s1">&#39;push&#39;</span><span class="o">,</span> <span class="k">label</span><span class="o">:</span> <span class="s1">&#39;Insert Image&#39;</span><span class="o">,</span> <span class="nx">value</span><span class="o">:</span> <span class="s1">&#39;insertimage&#39;</span> <span class="o">}</span>
-                    <span class="o">]</span>
-                <span class="o">}</span>
-            <span class="o">]</span>
-        <span class="o">},</span>
         <span class="c">/**</span>
 <span class="c">        * @private</span>
 <span class="c">        * @method _handleKeyDown</span>
@@ -729,7 +714,7 @@
                 <span class="k">if</span> <span class="o">((</span><span class="nx">height</span> <span class="o">!=</span> <span class="nx">oheight</span><span class="o">)</span> <span class="o">||</span> <span class="o">(</span><span class="nx">width</span> <span class="o">!=</span> <span class="nx">owidth</span><span class="o">))</span> <span class="o">{</span>
                     <span class="nx">orgSize</span> <span class="o">=</span> <span class="s1">&#39;&lt;span class=&quot;info&quot;&gt;&#39;</span> <span class="o">+</span> <span class="k">this</span><span class="o">.</span><span class="nx">STR_IMAGE_ORIG_SIZE</span> <span class="o">+</span> <span class="s1">&#39;&lt;br&gt;&#39;</span><span class="o">+</span> <span class="nx">owidth</span> <span class="o">+</span><span class="s1">&#39; x &#39;</span> <span class="o">+</span> <span class="nx">oheight</span> <span class="o">+</span> <span class="s1">&#39;&lt;/span&gt;&#39;</span><span class="o">;</span>
                 <span class="o">}</span>
-                <span class="nx">hw</span><span class="o">.</span><span class="nx">innerHTML</span> <span class="o">+=</span> <span class="s1">&#39;&lt;span&gt;&lt;input type=&quot;text&quot; size=&quot;3&quot; value=&quot;&#39;</span><span class="o">+</span><span class="nx">width</span><span class="o">+</span><span class="s1">&#39;&quot; id=&quot;insertimage_width&quot;&gt; x &lt;input type=&quot;text&quot; size=&quot;3&quot; value=&quot;&#39;</span><span class="o">+</span><span class="nx">height</span><span class="o">+</span><span class="s1">&#39;&quot; id=&quot;insertimage_height&quot;&gt;&lt;/span&gt;&#39;</span> <span class="o">+</span> <span class="nx">orgSize</span><span class="o">;</span>
+                <span class="nx">hw</span><span class="o">.</span><span class="nx">innerHTML</span> <span class="o">+=</span> <span class="s1">&#39;&lt;span tabIndex=&quot;-1&quot;&gt;&lt;input type=&quot;text&quot; size=&quot;3&quot; value=&quot;&#39;</span><span class="o">+</span><span class="nx">width</span><span class="o">+</span><span class="s1">&#39;&quot; id=&quot;insertimage_width&quot;&gt; x &lt;input type=&quot;text&quot; size=&quot;3&quot; value=&quot;&#39;</span><span class="o">+</span><span class="nx">height</span><span class="o">+</span><span class="s1">&#39;&quot; id=&quot;insertimage_height&quot;&gt;&lt;/span&gt;&#39;</span> <span class="o">+</span> <span class="nx">orgSize</span><span class="o">;</span>
                 <span class="nx">cont</span><span class="o">.</span><span class="nx">insertBefore</span><span class="o">(</span><span class="nx">hw</span><span class="o">,</span> <span class="nx">cont</span><span class="o">.</span><span class="nx">firstChild</span><span class="o">);</span>
 
                 <span class="nx">Event</span><span class="o">.</span><span class="nx">onAvailable</span><span class="o">(</span><span class="s1">&#39;insertimage_width&#39;</span><span class="o">,</span> <span class="k">function</span><span class="o">()</span> <span class="o">{</span>
@@ -737,8 +722,9 @@
                         <span class="k">var</span> <span class="nx">value</span> <span class="o">=</span> <span class="nb">parseInt</span><span class="o">(</span><span class="nx">Dom</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s1">&#39;insertimage_width&#39;</span><span class="o">).</span><span class="nx">value</span><span class="o">,</span> <span class="m">10</span><span class="o">);</span>
                         <span class="k">if</span> <span class="o">(</span><span class="nx">value</span> <span class="o">&gt;</span> <span class="m">5</span><span class="o">)</span> <span class="o">{</span>
                             <span class="nx">el</span><span class="o">.</span><span class="nx">style</span><span class="o">.</span><span class="nx">width</span> <span class="o">=</span> <span class="nx">value</span> <span class="o">+</span> <span class="s1">&#39;px&#39;</span><span class="o">;</span>
-                            <span class="k">this</span><span class="o">.</span><span class="nx">moveWindow</span><span class="o">();</span>
-                        <span class="o">}</span>
+                            <span class="c">//Removed moveWindow call so the window doesn&#39;t jump</span>
+<span class="c"></span>                            <span class="c">//this.moveWindow();</span>
+<span class="c"></span>                        <span class="o">}</span>
                     <span class="o">},</span> <span class="k">this</span><span class="o">,</span> <span class="kc">true</span><span class="o">);</span>
                 <span class="o">},</span> <span class="k">this</span><span class="o">,</span> <span class="kc">true</span><span class="o">);</span>
                 <span class="nx">Event</span><span class="o">.</span><span class="nx">onAvailable</span><span class="o">(</span><span class="s1">&#39;insertimage_height&#39;</span><span class="o">,</span> <span class="k">function</span><span class="o">()</span> <span class="o">{</span>
@@ -746,8 +732,9 @@
                         <span class="k">var</span> <span class="nx">value</span> <span class="o">=</span> <span class="nb">parseInt</span><span class="o">(</span><span class="nx">Dom</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s1">&#39;insertimage_height&#39;</span><span class="o">).</span><span class="nx">value</span><span class="o">,</span> <span class="m">10</span><span class="o">);</span>
                         <span class="k">if</span> <span class="o">(</span><span class="nx">value</span> <span class="o">&gt;</span> <span class="m">5</span><span class="o">)</span> <span class="o">{</span>
                             <span class="nx">el</span><span class="o">.</span><span class="nx">style</span><span class="o">.</span><span class="nx">height</span> <span class="o">=</span> <span class="nx">value</span> <span class="o">+</span> <span class="s1">&#39;px&#39;</span><span class="o">;</span>
-                            <span class="k">this</span><span class="o">.</span><span class="nx">moveWindow</span><span class="o">();</span>
-                        <span class="o">}</span>
+                            <span class="c">//Removed moveWindow call so the window doesn&#39;t jump</span>
+<span class="c"></span>                            <span class="c">//this.moveWindow();</span>
+<span class="c"></span>                        <span class="o">}</span>
                     <span class="o">},</span> <span class="k">this</span><span class="o">,</span> <span class="kc">true</span><span class="o">);</span>
                 <span class="o">},</span> <span class="k">this</span><span class="o">,</span> <span class="kc">true</span><span class="o">);</span>
 
@@ -854,7 +841,8 @@
 
                 <span class="nx">win</span><span class="o">.</span><span class="nx">setHeader</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">STR_IMAGE_PROP_TITLE</span><span class="o">);</span>
                 <span class="nx">win</span><span class="o">.</span><span class="nx">setBody</span><span class="o">(</span><span class="nx">body</span><span class="o">);</span>
-                <span class="k">if</span> <span class="o">((</span><span class="k">this</span><span class="o">.</span><span class="nx">browser</span><span class="o">.</span><span class="nx">webkit</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="k">this</span><span class="o">.</span><span class="nx">browser</span><span class="o">.</span><span class="nx">webkit3</span><span class="o">)</span> <span class="o">||</span> <span class="k">this</span><span class="o">.</span><span class="nx">browser</span><span class="o">.</span><span class="nx">opera</span><span class="o">)</span> <span class="o">{</span>
+                <span class="c">//Adobe AIR Code</span>
+<span class="c"></span>                <span class="k">if</span> <span class="o">((</span><span class="k">this</span><span class="o">.</span><span class="nx">browser</span><span class="o">.</span><span class="nx">webkit</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="k">this</span><span class="o">.</span><span class="nx">browser</span><span class="o">.</span><span class="nx">webkit3</span> <span class="o">||</span> <span class="k">this</span><span class="o">.</span><span class="nx">browser</span><span class="o">.</span><span class="nx">air</span><span class="o">)</span> <span class="o">||</span> <span class="k">this</span><span class="o">.</span><span class="nx">browser</span><span class="o">.</span><span class="nx">opera</span><span class="o">)</span> <span class="o">{</span>                
                     <span class="nx">win</span><span class="o">.</span><span class="nx">setFooter</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">STR_IMAGE_COPY</span><span class="o">);</span>
                 <span class="o">}</span>
                 <span class="k">this</span><span class="o">.</span><span class="nx">openWindow</span><span class="o">(</span><span class="nx">win</span><span class="o">);</span>
@@ -882,7 +870,8 @@
                             <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
                                 <span class="nx">Dom</span><span class="o">.</span><span class="nx">removeClass</span><span class="o">(</span><span class="nx">url</span><span class="o">,</span> <span class="s1">&#39;warning&#39;</span><span class="o">);</span>
                                 <span class="k">this</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s1">&#39;panel&#39;</span><span class="o">).</span><span class="nx">setFooter</span><span class="o">(</span><span class="s1">&#39; &#39;</span><span class="o">);</span>
-                                <span class="k">if</span> <span class="o">((</span><span class="k">this</span><span class="o">.</span><span class="nx">browser</span><span class="o">.</span><span class="nx">webkit</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="k">this</span><span class="o">.</span><span class="nx">browser</span><span class="o">.</span><span class="nx">webkit3</span><span class="o">)</span> <span class="o">||</span> <span class="k">this</span><span class="o">.</span><span class="nx">browser</span><span class="o">.</span><span class="nx">opera</span><span class="o">)</span> <span class="o">{</span>
+                                <span class="c">//Adobe AIR Code</span>
+<span class="c"></span>                                <span class="k">if</span> <span class="o">((</span><span class="k">this</span><span class="o">.</span><span class="nx">browser</span><span class="o">.</span><span class="nx">webkit</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="k">this</span><span class="o">.</span><span class="nx">browser</span><span class="o">.</span><span class="nx">webkit3</span> <span class="o">||</span> <span class="k">this</span><span class="o">.</span><span class="nx">browser</span><span class="o">.</span><span class="nx">air</span><span class="o">)</span> <span class="o">||</span> <span class="k">this</span><span class="o">.</span><span class="nx">browser</span><span class="o">.</span><span class="nx">opera</span><span class="o">)</span> <span class="o">{</span>                
                                     <span class="k">this</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s1">&#39;panel&#39;</span><span class="o">).</span><span class="nx">setFooter</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">STR_IMAGE_COPY</span><span class="o">);</span>
                                 <span class="o">}</span>
                             <span class="o">}</span>
@@ -890,6 +879,13 @@
 
                         <span class="nx">Event</span><span class="o">.</span><span class="nx">on</span><span class="o">(</span><span class="s1">&#39;insertimage_url&#39;</span><span class="o">,</span> <span class="s1">&#39;blur&#39;</span><span class="o">,</span> <span class="k">function</span><span class="o">()</span> <span class="o">{</span>
                             <span class="k">var</span> <span class="nx">url</span> <span class="o">=</span> <span class="nx">Dom</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s1">&#39;insertimage_url&#39;</span><span class="o">);</span>
+                            <span class="k">if</span> <span class="o">(</span><span class="nx">url</span><span class="o">.</span><span class="nx">value</span> <span class="o">&amp;&amp;</span> <span class="nx">el</span><span class="o">)</span> <span class="o">{</span>
+                                <span class="k">if</span> <span class="o">(</span><span class="nx">url</span><span class="o">.</span><span class="nx">value</span> <span class="o">==</span> <span class="nx">el</span><span class="o">.</span><span class="nx">getAttribute</span><span class="o">(</span><span class="s1">&#39;src&#39;</span><span class="o">,</span> <span class="m">2</span><span class="o">))</span> <span class="o">{</span>
+                                    <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">log</span><span class="o">(</span><span class="s1">&#39;Images are the same, bail on blur handler&#39;</span><span class="o">,</span> <span class="s1">&#39;info&#39;</span><span class="o">,</span> <span class="s1">&#39;Editor&#39;</span><span class="o">);</span>
+                                    <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+                                <span class="o">}</span>
+                            <span class="o">}</span>
+                            <span class="nx">YAHOO</span><span class="o">.</span><span class="nx">log</span><span class="o">(</span><span class="s1">&#39;Images are different, process blur handler&#39;</span><span class="o">,</span> <span class="s1">&#39;info&#39;</span><span class="o">,</span> <span class="s1">&#39;Editor&#39;</span><span class="o">);</span>
                             <span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">_isLocalFile</span><span class="o">(</span><span class="nx">url</span><span class="o">.</span><span class="nx">value</span><span class="o">))</span> <span class="o">{</span>
                                 <span class="c">//Local File throw Warning</span>
 <span class="c"></span>                                <span class="nx">Dom</span><span class="o">.</span><span class="nx">addClass</span><span class="o">(</span><span class="nx">url</span><span class="o">,</span> <span class="s1">&#39;warning&#39;</span><span class="o">);</span>
@@ -898,7 +894,8 @@
                             <span class="o">}</span> <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">currentElement</span><span class="o">[</span><span class="m">0</span><span class="o">])</span> <span class="o">{</span>
                                 <span class="nx">Dom</span><span class="o">.</span><span class="nx">removeClass</span><span class="o">(</span><span class="nx">url</span><span class="o">,</span> <span class="s1">&#39;warning&#39;</span><span class="o">);</span>
                                 <span class="k">this</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s1">&#39;panel&#39;</span><span class="o">).</span><span class="nx">setFooter</span><span class="o">(</span><span class="s1">&#39; &#39;</span><span class="o">);</span>
-                                <span class="k">if</span> <span class="o">((</span><span class="k">this</span><span class="o">.</span><span class="nx">browser</span><span class="o">.</span><span class="nx">webkit</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="k">this</span><span class="o">.</span><span class="nx">browser</span><span class="o">.</span><span class="nx">webkit3</span><span class="o">)</span> <span class="o">||</span> <span class="k">this</span><span class="o">.</span><span class="nx">browser</span><span class="o">.</span><span class="nx">opera</span><span class="o">)</span> <span class="o">{</span>
+                                <span class="c">//Adobe AIR Code</span>
+<span class="c"></span>                                <span class="k">if</span> <span class="o">((</span><span class="k">this</span><span class="o">.</span><span class="nx">browser</span><span class="o">.</span><span class="nx">webkit</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="k">this</span><span class="o">.</span><span class="nx">browser</span><span class="o">.</span><span class="nx">webkit3</span> <span class="o">||</span> <span class="k">this</span><span class="o">.</span><span class="nx">browser</span><span class="o">.</span><span class="nx">air</span><span class="o">)</span> <span class="o">||</span> <span class="k">this</span><span class="o">.</span><span class="nx">browser</span><span class="o">.</span><span class="nx">opera</span><span class="o">)</span> <span class="o">{</span>                
                                     <span class="k">this</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s1">&#39;panel&#39;</span><span class="o">).</span><span class="nx">setFooter</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">STR_IMAGE_COPY</span><span class="o">);</span>
                                 <span class="o">}</span>
                                 
@@ -925,9 +922,10 @@
                                                 <span class="nx">self</span><span class="o">.</span><span class="nx">currentElement</span><span class="o">[</span><span class="m">0</span><span class="o">].</span><span class="nx">_width</span> <span class="o">=</span> <span class="nx">img</span><span class="o">.</span><span class="nx">width</span><span class="o">;</span>
                                             <span class="o">}</span>
                                         <span class="o">}</span>
-                                        <span class="nx">self</span><span class="o">.</span><span class="nx">moveWindow</span><span class="o">();</span>
-                                    <span class="o">},</span> <span class="m">200</span><span class="o">);</span>
-
+                                        <span class="c">//Removed moveWindow call so the window doesn&#39;t jump</span>
+<span class="c"></span>                                        <span class="c">//self.moveWindow();</span>
+<span class="c"></span>                                    <span class="o">},</span> <span class="m">800</span><span class="o">);</span> <span class="c">//Bumped the timeout up to account for larger images..</span>
+<span class="c"></span>
                                     <span class="k">if</span> <span class="o">(</span><span class="nx">url</span><span class="o">.</span><span class="nx">value</span> <span class="o">!=</span> <span class="k">this</span><span class="o">.</span><span class="nx">STR_IMAGE_HERE</span><span class="o">)</span> <span class="o">{</span>
                                         <span class="nx">img</span><span class="o">.</span><span class="nx">src</span> <span class="o">=</span> <span class="nx">url</span><span class="o">.</span><span class="nx">value</span><span class="o">;</span>
                                     <span class="o">}</span>
@@ -1159,19 +1157,18 @@
 <span class="c"></span>                <span class="nx">newXY</span> <span class="o">=</span> <span class="o">[(</span><span class="nx">xy</span><span class="o">[</span><span class="m">0</span><span class="o">]</span> <span class="o">+</span> <span class="nx">elXY</span><span class="o">[</span><span class="m">0</span><span class="o">]),</span> <span class="o">(</span><span class="nx">xy</span><span class="o">[</span><span class="m">1</span><span class="o">]</span> <span class="o">+</span> <span class="nx">elXY</span><span class="o">[</span><span class="m">1</span><span class="o">])],</span>
                 <span class="nx">wWidth</span> <span class="o">=</span> <span class="o">(</span><span class="nb">parseInt</span><span class="o">(</span><span class="nx">win</span><span class="o">.</span><span class="nx">attrs</span><span class="o">.</span><span class="nx">width</span><span class="o">,</span> <span class="m">10</span><span class="o">)</span> <span class="o">/</span> <span class="m">2</span><span class="o">),</span>
                 <span class="nx">align</span> <span class="o">=</span> <span class="s1">&#39;center&#39;</span><span class="o">,</span>
-                <span class="nx">orgXY</span> <span class="o">=</span> <span class="nx">panel</span><span class="o">.</span><span class="nx">cfg</span><span class="o">.</span><span class="nx">getProperty</span><span class="o">(</span><span class="s1">&#39;xy&#39;</span><span class="o">),</span>
+                <span class="nx">orgXY</span> <span class="o">=</span> <span class="nx">panel</span><span class="o">.</span><span class="nx">cfg</span><span class="o">.</span><span class="nx">getProperty</span><span class="o">(</span><span class="s1">&#39;xy&#39;</span><span class="o">)</span> <span class="o">||</span> <span class="o">[</span><span class="m">0</span><span class="o">,</span><span class="m">0</span><span class="o">],</span>
                 <span class="nx">_knob</span> <span class="o">=</span> <span class="nx">win</span><span class="o">.</span><span class="nx">_knob</span><span class="o">,</span>
                 <span class="nx">xDiff</span> <span class="o">=</span> <span class="m">0</span><span class="o">,</span>
                 <span class="nx">yDiff</span> <span class="o">=</span> <span class="m">0</span><span class="o">,</span>
                 <span class="nx">anim</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+
 
             <span class="nx">newXY</span><span class="o">[</span><span class="m">0</span><span class="o">]</span> <span class="o">=</span> <span class="o">((</span><span class="nx">newXY</span><span class="o">[</span><span class="m">0</span><span class="o">]</span> <span class="o">-</span> <span class="nx">wWidth</span><span class="o">)</span> <span class="o">+</span> <span class="m">20</span><span class="o">);</span>
             <span class="c">//Account for the Scroll bars in a scrolled editor window.</span>
 <span class="c"></span>            <span class="nx">newXY</span><span class="o">[</span><span class="m">0</span><span class="o">]</span> <span class="o">=</span> <span class="nx">newXY</span><span class="o">[</span><span class="m">0</span><span class="o">]</span> <span class="o">-</span> <span class="nx">Dom</span><span class="o">.</span><span class="nx">getDocumentScrollLeft</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">_getDoc</span><span class="o">());</span>
             <span class="nx">newXY</span><span class="o">[</span><span class="m">1</span><span class="o">]</span> <span class="o">=</span> <span class="nx">newXY</span><span class="o">[</span><span class="m">1</span><span class="o">]</span> <span class="o">-</span> <span class="nx">Dom</span><span class="o">.</span><span class="nx">getDocumentScrollTop</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">_getDoc</span><span class="o">());</span>
             
-
-
             <span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">_isElement</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">currentElement</span><span class="o">[</span><span class="m">0</span><span class="o">],</span> <span class="s1">&#39;img&#39;</span><span class="o">))</span> <span class="o">{</span>
                 <span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">currentElement</span><span class="o">[</span><span class="m">0</span><span class="o">].</span><span class="nx">src</span><span class="o">.</span><span class="nx">indexOf</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s1">&#39;blankimage&#39;</span><span class="o">))</span> <span class="o">!=</span> <span class="o">-</span><span class="m">1</span><span class="o">)</span> <span class="o">{</span>
                     <span class="nx">newXY</span><span class="o">[</span><span class="m">0</span><span class="o">]</span> <span class="o">=</span> <span class="o">(</span><span class="nx">newXY</span><span class="o">[</span><span class="m">0</span><span class="o">]</span> <span class="o">+</span> <span class="o">(</span><span class="m">75</span> <span class="sr">/ 2)); /</span><span class="o">/</span><span class="nx">Placeholder</span> <span class="nx">size</span>
@@ -1205,6 +1202,16 @@
                 <span class="nx">xDiff</span> <span class="o">=</span> <span class="o">(</span><span class="nx">newXY</span><span class="o">[</span><span class="m">0</span><span class="o">]</span> <span class="o">-</span> <span class="nx">orgXY</span><span class="o">[</span><span class="m">0</span><span class="o">]);</span>
                 <span class="nx">yDiff</span> <span class="o">=</span> <span class="o">(</span><span class="nx">newXY</span><span class="o">[</span><span class="m">1</span><span class="o">]</span> <span class="o">-</span> <span class="nx">orgXY</span><span class="o">[</span><span class="m">1</span><span class="o">]);</span>
             <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nx">e</span><span class="o">)</span> <span class="o">{}</span>
+
+
+            <span class="k">var</span> <span class="nx">iTop</span> <span class="o">=</span> <span class="nx">elXY</span><span class="o">[</span><span class="m">1</span><span class="o">]</span> <span class="o">+</span> <span class="nb">parseInt</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s1">&#39;height&#39;</span><span class="o">),</span> <span class="m">10</span><span class="o">);</span>
+            <span class="k">var</span> <span class="nx">iLeft</span> <span class="o">=</span> <span class="nx">elXY</span><span class="o">[</span><span class="m">0</span><span class="o">]</span> <span class="o">+</span> <span class="nb">parseInt</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="nx">get</span><span class="o">(</span><span class="s1">&#39;width&#39;</span><span class="o">),</span> <span class="m">10</span><span class="o">);</span>
+            <span class="k">if</span> <span class="o">(</span><span class="nx">newXY</span><span class="o">[</span><span class="m">1</span><span class="o">]</span> <span class="o">&gt;</span> <span class="nx">iTop</span><span class="o">)</span> <span class="o">{</span>
+                <span class="nx">newXY</span><span class="o">[</span><span class="m">1</span><span class="o">]</span> <span class="o">=</span> <span class="nx">iTop</span><span class="o">;</span>
+            <span class="o">}</span>
+            <span class="k">if</span> <span class="o">(</span><span class="nx">newXY</span><span class="o">[</span><span class="m">0</span><span class="o">]</span> <span class="o">&gt;</span> <span class="nx">iLeft</span><span class="o">)</span> <span class="o">{</span>
+                <span class="nx">newXY</span><span class="o">[</span><span class="m">0</span><span class="o">]</span> <span class="o">=</span> <span class="o">(</span><span class="nx">iLeft</span> <span class="o">/</span> <span class="m">2</span><span class="o">);</span>
+            <span class="o">}</span>
             
             <span class="c">//Convert negative numbers to positive so we can get the difference in distance</span>
 <span class="c"></span>            <span class="nx">xDiff</span> <span class="o">=</span> <span class="o">((</span><span class="nx">xDiff</span> <span class="o">&lt;</span> <span class="m">0</span><span class="o">)</span> <span class="o">?</span> <span class="o">(</span><span class="nx">xDiff</span> <span class="o">*</span> <span class="o">-</span><span class="m">1</span><span class="o">)</span> <span class="o">:</span> <span class="nx">xDiff</span><span class="o">);</span>
@@ -1221,13 +1228,13 @@
                 <span class="k">var</span> <span class="nx">leftOffset</span> <span class="o">=</span> <span class="nx">xy</span><span class="o">[</span><span class="m">0</span><span class="o">]</span> <span class="o">+</span> <span class="nx">elXY</span><span class="o">[</span><span class="m">0</span><span class="o">]</span> <span class="o">+</span> <span class="nx">elW</span><span class="o">;</span>
                 <span class="nx">_knobLeft</span> <span class="o">=</span> <span class="nx">leftOffset</span> <span class="o">-</span> <span class="nx">newXY</span><span class="o">[</span><span class="m">0</span><span class="o">];</span>
                 <span class="c">//Check to see if the knob will go off either side &amp; reposition it</span>
-<span class="c"></span>                <span class="k">if</span> <span class="o">(</span><span class="nx">_knobLeft</span> <span class="o">&gt;</span> <span class="o">(</span><span class="nb">parseInt</span><span class="o">(</span><span class="nx">win</span><span class="o">.</span><span class="nx">attrs</span><span class="o">.</span><span class="nx">width</span><span class="o">,</span> <span class="m">10</span><span class="o">)</span> <span class="o">-</span> <span class="m">40</span><span class="o">))</span> <span class="o">{</span>
-                    <span class="nx">_knobLeft</span> <span class="o">=</span> <span class="nb">parseInt</span><span class="o">(</span><span class="nx">win</span><span class="o">.</span><span class="nx">attrs</span><span class="o">.</span><span class="nx">width</span><span class="o">,</span> <span class="m">10</span><span class="o">)</span> <span class="o">-</span> <span class="m">40</span><span class="o">;</span>
+<span class="c"></span>                <span class="k">if</span> <span class="o">(</span><span class="nx">_knobLeft</span> <span class="o">&gt;</span> <span class="o">(</span><span class="nb">parseInt</span><span class="o">(</span><span class="nx">win</span><span class="o">.</span><span class="nx">attrs</span><span class="o">.</span><span class="nx">width</span><span class="o">,</span> <span class="m">10</span><span class="o">)</span> <span class="o">-</span> <span class="m">1</span><span class="o">))</span> <span class="o">{</span>
+                    <span class="nx">_knobLeft</span> <span class="o">=</span> <span class="o">((</span><span class="nb">parseInt</span><span class="o">(</span><span class="nx">win</span><span class="o">.</span><span class="nx">attrs</span><span class="o">.</span><span class="nx">width</span><span class="o">,</span> <span class="m">10</span><span class="o">)</span> <span class="o">-</span> <span class="m">30</span><span class="o">)</span> <span class="o">-</span> <span class="m">1</span><span class="o">);</span>
                 <span class="o">}</span> <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="nx">_knobLeft</span> <span class="o">&lt;</span> <span class="m">40</span><span class="o">)</span> <span class="o">{</span>
-                    <span class="nx">_knobLeft</span> <span class="o">=</span> <span class="m">40</span><span class="o">;</span>
+                    <span class="nx">_knobLeft</span> <span class="o">=</span> <span class="m">1</span><span class="o">;</span>
                 <span class="o">}</span>
                 <span class="k">if</span> <span class="o">(</span><span class="nb">isNaN</span><span class="o">(</span><span class="nx">_knobLeft</span><span class="o">))</span> <span class="o">{</span>
-                    <span class="nx">_knobLeft</span> <span class="o">=</span> <span class="m">40</span><span class="o">;</span>
+                    <span class="nx">_knobLeft</span> <span class="o">=</span> <span class="m">1</span><span class="o">;</span>
                 <span class="o">}</span>
                 <span class="k">if</span> <span class="o">(</span><span class="nx">force</span><span class="o">)</span> <span class="o">{</span>
                     <span class="k">if</span> <span class="o">(</span><span class="nx">_knob</span><span class="o">)</span> <span class="o">{</span>
@@ -1680,11 +1687,11 @@
 
                                 <li class=""><a href="module_container.html">container</a></li>
 
+                                <li class=""><a href="module_cookie.html">cookie</a></li>
+
                                 <li class=""><a href="module_datasource.html">datasource</a></li>
 
                                 <li class=""><a href="module_datatable.html">datatable</a></li>
-
-                                <li class=""><a href="module_date.html">date</a></li>
 
                                 <li class=""><a href="module_dom.html">dom</a></li>
 
@@ -1700,17 +1707,23 @@
 
                                 <li class=""><a href="module_history.html">history</a></li>
 
+                                <li class=""><a href="module_imagecropper.html">imagecropper</a></li>
+
                                 <li class=""><a href="module_imageloader.html">imageloader</a></li>
 
                                 <li class=""><a href="module_json.html">json</a></li>
+
+                                <li class=""><a href="module_layout.html">layout</a></li>
 
                                 <li class=""><a href="module_logger.html">logger</a></li>
 
                                 <li class=""><a href="module_menu.html">menu</a></li>
 
-                                <li class=""><a href="module_number.html">number</a></li>
-
                                 <li class=""><a href="module_profiler.html">profiler</a></li>
+
+                                <li class=""><a href="module_profilerviewer.html">profilerviewer</a></li>
+
+                                <li class=""><a href="module_resize.html">resize</a></li>
 
                                 <li class=""><a href="module_selector.html">selector</a></li>
 
@@ -1719,6 +1732,8 @@
                                 <li class=""><a href="module_tabview.html">tabview</a></li>
 
                                 <li class=""><a href="module_treeview.html">treeview</a></li>
+
+                                <li class=""><a href="module_uploader.html">uploader</a></li>
 
                                 <li class=""><a href="module_yahoo.html">yahoo</a></li>
 

@@ -110,7 +110,7 @@
 
 </script>
 
-#menuToolbar("" $buttons $rightButtons) 
+#menuToolbar("$ui.getString('tool.managementtool.createSystemUser.header')" $buttons $rightButtons) 
 
 <div id="igEditArea">
 

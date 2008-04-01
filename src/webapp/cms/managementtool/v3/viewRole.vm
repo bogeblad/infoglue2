@@ -85,7 +85,7 @@
 
 </SCRIPT>
 
-#menuToolbar("" $buttons $rightButtons) 
+#menuToolbar("$!primaryKey" $buttons $rightButtons) 
 
 <div style="clear: both;"></div>
 

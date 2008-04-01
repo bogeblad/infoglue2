@@ -17,17 +17,15 @@ body {
 </style>
 
 <link rel="stylesheet" type="text/css" href="../../build/fonts/fonts-min.css" />
-<script type="text/javascript" src="../../build/yahoo/yahoo.js"></script>
-<script type="text/javascript" src="../../build/event/event.js"></script>
-<script type="text/javascript" src="../../build/connection/connection.js"></script>
+<script type="text/javascript" src="../../build/yahoo/yahoo-min.js"></script>
+<script type="text/javascript" src="../../build/event/event-min.js"></script>
+<script type="text/javascript" src="../../build/connection/connection-min.js"></script>
 
 
 <!--begin custom header content for this example-->
 <style>
-#container {min-height:15em;}
-#container li {margin-left:2em;}
+#container {margin-left:2em;}
 </style>
-
 <!--end custom header content for this example-->
 
 </head>
@@ -56,7 +54,7 @@ var div = document.getElementById('container');
 var transactionObject = {
 	start:function(type, args){
 		YAHOO.log("Custom Event *start* fired for transaction" + args[0].tId + ".", "info", "example");
-		div.innerHTML += "<li>Transaction " + args[0].tId + " " + type + " event fired.</li>";
+		div.innerHTML = "<li>Transaction " + args[0].tId + " " + type + " event fired.</li>";
 	},
 
 	complete:function(type, args){

@@ -76,7 +76,7 @@
 <input type="hidden" name="groupName" value="$!groupName">
 <table>
 	<tr>
-		<td>#editReadOnlyField("Group.name" "newUserName" $!groupName "51" "disabled")</td>
+		<td>#editReadOnlyField("Group.groupName" "newGroupName" $!groupName "51" "disabled")</td>
 	</tr>	
 		
 	<tr>

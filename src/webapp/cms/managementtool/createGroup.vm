@@ -8,7 +8,7 @@
 <form method="POST" action="CreateGroup.action">
 <table class="managementtooledit" cellpadding="2" cellspacing="2" border="0" width="100%" height="30">
 	<tr>
-		<td>#editField("Group.name" "groupName" $!groupName "51")</td>
+		<td>#editField("Group.groupName" "groupName" $!groupName "51")</td>
 	</tr>	
 	<tr>
 		<td width="400">#editTextArea("Group.description" "description" $description "50" "5" "normaltextarea")</td>

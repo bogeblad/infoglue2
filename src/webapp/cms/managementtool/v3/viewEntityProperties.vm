@@ -2,7 +2,7 @@
  
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
   
-#beginManagementToolV3("$toolbarKey" "$!arguments" false)
+#beginManagementToolV3("$toolbarKey" "$!entityId" false)
 
 <script type="text/javascript">
 	
@@ -119,14 +119,14 @@
 -->
 </script>
 	
-#menuToolbar("" $buttons $rightButtons) 
+#menuToolbar("$ui.getString($titleKey)" $buttons $rightButtons) 
 
 <div id="igEditArea">
 
 <form method="post" name="editForm" action="${updateAction}.action">
 	<fieldset class="ig-fieldset">
-
-		<div id="igScrollArea" style="overflow: auto; max-height: 600px; width: 100%;">
+		
+		<div id="igScrollArea" style="overflow: auto; amax-height: 600px; width: 100%;">
 		
 		<div class="ig-row">
 			<label class="ig-label-nl" for="languageId">$ui.getString("tool.contenttool.languageVersionsLabel")</label>
@@ -443,96 +443,100 @@
 		
 			#set($allCategoryKeys = $definedCategoryKeys)
 			#if($allCategoryKeys.size() > 0)
-				$ui.getString("tool.contenttool.relatedCategories")<br/>
-				<div class="bordered">
-					#foreach($categoryKey in $allCategoryKeys)
-						<div class="ig-row">
-						#set($keyAttribute = $categoryKey.value)
-						#set($dropdownName = "${keyAttribute}${velocityCount}categoryId")
-						#set($availableCategories = $this.getAvailableCategories($categoryKey.categoryId))
-						<table border="0" width="100%" cellspacing="0" style="background-color: white;">
-							<tr valign="bottom" class="darkgreen">
-								<td width="80%">$categoryKey.title ("$keyAttribute") - $categoryKey.description</td>
-								<td align="right">
-		                        #if($entityId)
+				<br/>
+				$ui.getString("tool.contenttool.relatedCategories")
+				#foreach($categoryKey in $allCategoryKeys)
+					#set($keyAttribute = $categoryKey.value)
+					#set($dropdownName = "${keyAttribute}${velocityCount}categoryId")
+					#set($availableCategories = $this.getAvailableCategories($categoryKey.categoryId))
+					<div class="ig-row" style="display: block; width: 750px; margin-bottom: 10px;">
+						<div style="float: left; background-color: #C2D0E2; padding: 2px; border: 1px solid #666666;">
+							<div style="float:left; margin-top: 2px;">$categoryKey.title ("$keyAttribute") - $categoryKey.description</div>
+							<div style="float:right; padding-top: 0px; margin-top: 0px;">
+								<div style="float:left; display: inline;">
+								#if($entityId)
 									#addCategorySelect($dropdownName $availableCategories "")
 								#end
-								</td>
-								<td align="right">
+								</div>
+								<div style="float:left; display: inline;">
 		                        #if($entityId)
 									<a href="javascript:addCategory('${keyAttribute}', '${dropdownName}');"><img src="$ui.getString("images.contenttool.buttons.addCategory")" border="0"/></a>
 								#end
-								</td>
-							</tr>
-						</table>
-						<table border="0" width="100%" cellspacing="0" cellpadding="2" aclass="bordered" style="border-top: 1px solid black;">
+								</div>
+							</div>
+						</div>
+						<div style="clear: both;"></div>
+						<div style="float: left; background-color: white; border: 1px solid #666666; border-top: 0px;">
 						#set($relatedCategories = $this.getRelatedCategories($keyAttribute))
 						#foreach($relation in $relatedCategories)
 		                    #set($isOdd = $velocityCount % 2)
-							#set($class = "class='white'")
+							#set($bgcolor = "background-color: white;")
 							#if($isOdd == 0)
-								##set($class = "class='darkgreen'")
-								#set($class = "class='lightgreen'")
+								#set($bgcolor = "background-color: #E3ECF8;")
 							#end
-							<tr $class>
-								<td width="50%">$relation.category.name</td>
-								<td width="50%" align="right">
-									<a href="javascript:deleteCategory('$relation.propertiesCategoryId');"><img src="images/delete.gif" border="0"/></a>
-								</td>
-							</tr>
+							<div style="float: left; $bgcolor padding: 4px;">
+								<div style="float:left;">$relation.category.name</div>
+								<div style="float:right;"><a href="javascript:deleteCategory('$relation.propertiesCategoryId');"><img src="images/delete.gif" border="0"/></a></div>
+							</div>
+							<div style="clear: both;"></div>
 						#end
 						#if($relatedCategories.size() == 0)
-							<tr class="white">
-								<td colspan="2">
-								#if(!$entityId)
-									$ui.getString("tool.contenttool.saveToRelateCategoriesPrefix") $keyAttribute
-								#else
-									$ui.getString("tool.contenttool.noCategoriesPrefix") $keyAttribute
-								#end
-								</td>
-							</tr>
+							#if($entityId > -1)
+							<div>
+								<div style="float:left; padding: 4px;">
+									#if(!$entityId)
+										$ui.getString("tool.contenttool.saveToRelateCategoriesPrefix") $keyAttribute
+									#else
+										$ui.getString("tool.contenttool.noCategoriesPrefix") $keyAttribute
+									#end
+								</div>
+								<div style="float:right;"></div>
+							</div>
+							#else
+							<div>
+								<div style="float:left; padding: 4px;">
+									#if(!$entityId)
+										$ui.getString("tool.contenttool.saveToRelateCategoriesPrefix") $keyAttribute
+									#else
+										$ui.getString("tool.contenttool.noCategoriesPrefix") $keyAttribute
+									#end
+								</div>
+								<div style="float:right;"></div>
+							</div>
+							#end
 						#end
-						</table>
+						</div>
+					</div>
+					#end
+				#end
+			#end
+			
+			#if($entityId)
+				<div class="ig-row" style="width: 750px; float: left; border: 1px solid #666666;">
+					$ui.getString("tool.contenttool.associatedAttachments")<br/>
+					#foreach($digitalAsset in $digitalAssets)
+						#set($digitalAssetUrl = "$this.getDigitalAssetUrl($digitalAsset.digitalAssetId)")
+						<div style="border: 1px solid #cccccc; float: left; min-width: 80px; height: 90px; padding: 6px; text-align: center; font-size: 8pt; font-family: arial;">
+							<input type="hidden" id="digitalAsset$digitalAsset.assetKey" value="$digitalAssetUrl"/>
+							<a href="javascript:openWindow('$digitalAssetUrl', 'Preview', 'width=600,height=500,resizable=yes');"><img class="scaledbordered" src="$this.getDigitalAssetThumbnailUrl($digitalAsset.digitalAssetId)">
+							<br/>$digitalAsset.assetKey</a><br/>
+							#if($readonly == "")
+								<a href="javascript:openWindow('ViewDigitalAsset!update.action?digitalAssetId=$digitalAsset.digitalAssetId&amp;entity=$!entityName&amp;entityId=$entityId','DigitalAsset','width=400,height=200,resizable=no');">$ui.getString("tool.contenttool.editAttachment")</a> / 
+								<a href="DeleteDigitalAsset.action?digitalAssetId=$digitalAsset.digitalAssetId&amp;entity=$!entityName&amp;entityId=$entityId&amp;returnAddress=$formatter.encodeURI($currentURL)">$ui.getString("tool.contenttool.deleteAttachment")</a>
+							#end
 						</div>
 					#end
-					</div>
-				#end
-			
-			#*
-			<div class="ig-row">
-				$ui.getString("tool.contenttool.associatedAttachments")<br/>
-				#set($counter = 0)
-				#foreach($digitalAsset in $digitalAssets)
-					#set($digitalAssetUrl = "$this.getDigitalAssetUrl($digitalAsset.digitalAssetId)")
-					<td valign="bottom" align="center" class="bordered">
-						<input type="hidden" id="digitalAsset$digitalAsset.assetKey" value="$digitalAssetUrl"/>
-						<a href="javascript:openWindow('$digitalAssetUrl', 'Preview', 'width=600,height=500,resizable=yes');"><img class="scaledbordered" src="$this.getDigitalAssetThumbnailUrl($digitalAsset.digitalAssetId)">
-						<br/>$digitalAsset.assetKey</a><br/>
-						#if($readonly == "")
-							<a href="javascript:openWindow('ViewDigitalAsset!update.action?digitalAssetId=$digitalAsset.digitalAssetId&amp;entity=$!entityName&amp;entityId=$entityId','DigitalAsset','width=400,height=200,resizable=no');">$ui.getString("tool.contenttool.editAttachment")</a> / 
-							<a href="DeleteDigitalAsset.action?digitalAssetId=$digitalAsset.digitalAssetId&amp;entity=$!entityName&amp;entityId=$entityId&amp;returnAddress=$formatter.encodeURI($currentURL)">$ui.getString("tool.contenttool.deleteAttachment")</a>
-						#end
-					</td>
-					#set($counter = $counter + 1)
-					#if ($counter == 5)
-					</tr>
-					<tr>
-						#set($counter = 0)	
-					#end
-				#end
-				
-				#if($counter == 0)
-					<td>$ui.getString("tool.contenttool.noAttachmentsRightNow")</td>
-				#end	
-
-				<a href="javascript:openWindow('ViewDigitalAsset.action?entity=$!entityName&amp;entityId=$entityId', 'DigitalAsset', 'width=400,height=200,resizable=no')">Upload new asset</a>
-			</div>
-			*#
-		#else
-				$ui.getString("tool.contenttool.associatedAttachments")<br/>
-				You must save the properties before you can upload any assets
-		#end
-		
+					
+					#if($counter == 0)
+						$ui.getString("tool.contenttool.noAttachmentsRightNow")
+					#end	
+				</div>
+			#else
+				<div class="ig-row">
+					$ui.getString("tool.contenttool.associatedAttachments")<br/>
+					You must save the properties before you can upload any assets
+				</div>
+			#end
 							
 		<script type="text/javascript">
 		<!--

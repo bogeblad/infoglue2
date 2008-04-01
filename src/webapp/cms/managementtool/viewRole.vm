@@ -76,7 +76,7 @@
 <input type="hidden" name="roleName" value="$!roleName">
 <table>
 	<tr>
-		<td>#editReadOnlyField("Role.name" "newUserName" $!roleName "51" "disabled")</td>
+		<td>#editReadOnlyField("Role.roleName" "newRoleName" $!roleName "51" "disabled")</td>
 	</tr>	
 		
 	<tr>

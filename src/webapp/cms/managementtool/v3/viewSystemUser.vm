@@ -84,7 +84,7 @@
 
 </SCRIPT>
 
-#menuToolbar("" $buttons $rightButtons) 
+#menuToolbar("$!primaryKey" $buttons $rightButtons) 
 
 #if($supportsUpdate == false)
 	#set($readonly = "disabled")
