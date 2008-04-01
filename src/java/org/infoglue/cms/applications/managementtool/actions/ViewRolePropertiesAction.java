@@ -89,6 +89,7 @@ public class ViewRolePropertiesAction extends ViewEntityPropertiesAction
 	{
         this.setCurrentAction("ViewRoleProperties.action");
         this.setUpdateAction("UpdateRoleProperties");
+        this.setUpdateAndExitAction("UpdateRoleProperties!saveAndExit");
         this.setCancelAction("ViewRole.action");
         this.setToolbarKey("tool.managementtool.viewRoleProperties.header");
         this.setTitleKey("tool.managementtool.viewRoleProperties.header");
@@ -104,6 +105,7 @@ public class ViewRolePropertiesAction extends ViewEntityPropertiesAction
 	{
         this.setCurrentAction("ViewRoleProperties!v3.action");
         this.setUpdateAction("UpdateRoleProperties!v3");
+        this.setUpdateAndExitAction("UpdateRoleProperties!saveAndExitV3");
         this.setCancelAction("ViewRole!v3.action");
         this.setToolbarKey("tool.managementtool.viewRoleProperties.header");
         this.setTitleKey("tool.managementtool.viewRoleProperties.header");

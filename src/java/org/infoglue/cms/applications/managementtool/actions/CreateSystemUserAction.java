@@ -34,6 +34,7 @@ import org.infoglue.cms.controllers.kernel.impl.simple.UserControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.UserPropertiesController;
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
 import org.infoglue.cms.entities.management.SystemUserVO;
+import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
 
@@ -86,7 +87,7 @@ public class CreateSystemUserAction extends InfoGlueAbstractAction
     	return "inputV3";
     }
 
-	protected String doExecute() throws Exception 
+	public String doExecute() throws Exception 
 	{
 		ceb = this.systemUserVO.validate();
     	ceb.throwIfNotEmpty();		
@@ -110,7 +111,33 @@ public class CreateSystemUserAction extends InfoGlueAbstractAction
 
 		return "success";
 	}
-	
+
+	public String doV3() throws Exception 
+	{
+		try
+		{
+			doExecute();
+		}
+		catch(ConstraintException e) 
+        {
+			this.availableRoles 				= RoleControllerProxy.getController().getAvailableRoles(this.getInfoGluePrincipal(), "Role.ManageUsers");
+			this.availableGroups 				= GroupControllerProxy.getController().getAvailableGroups(this.getInfoGluePrincipal(), "Group.ManageUsers");
+			this.contentTypeDefinitionVOList 	= ContentTypeDefinitionController.getController().getContentTypeDefinitionVOList(ContentTypeDefinitionVO.EXTRANET_USER_PROPERTIES);
+
+			e.setResult(INPUT + "V3");
+			throw e;
+        }
+		
+		return "successV3";
+	}
+
+	public String doSaveAndExitV3() throws Exception 
+	{
+		doV3();
+		
+		return "successSaveAndExitV3";
+	}
+
 	public void setuserName(String userName)
 	{
 		this.systemUserVO.setUserName(userName);	

@@ -30,7 +30,6 @@ body.generaltooledit {
 	padding-bottom: 20px;
 	width: 100%; 
 	float: left;
-	aborder:1px solid red;
 	display: inline;
 	background-color: #d6e7f7;
 }
@@ -45,7 +44,6 @@ body.generaltooledit {
 	padding: 0px;
 	margin: 0px;
 	width: 100%;
-	aborder:1px solid blue;
 }
 .ig-fieldset {
 	float: left;
@@ -66,8 +64,8 @@ body.generaltooledit {
 	color: red;
 }
 .ig-label {
-	min-width: 80px;
-	max-width: 120px;
+	min-width: 120px;
+	max-width: 150px;
 	float: left;
 	text-align: left;
 	margin-right: 0.5em;
@@ -76,7 +74,6 @@ body.generaltooledit {
 	display: block;
 }
 .ig-label-nl {
-	awidth: 90%;
 	aoverflow: hidden;
 	float: left;
 	text-align: left;
@@ -162,7 +159,6 @@ body.generaltooledit {
     text-indent: 20px;
     padding: 6px;
     min-width: 50px;
-    amax-width: 100px;
     border: 0px;
     height: 28px;
 }

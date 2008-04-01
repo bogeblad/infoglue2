@@ -163,9 +163,9 @@
 		</div>
 		
 		<div id="buttons" class="ig-buttonRow">
-			<input type="button" id="saveButton" name="saveButton" value="Save" title="Save"/>
-			<input type="button" id="saveAndExitButton" name="saveAndExitButton" value="Save and exit" title="Save and exit to list again"/>
-			<input type="button" id="cancelButton" name="cancelButton" value="Cancel" title="Cancel"/>
+			<input type="button" id="saveButton" name="saveButton" value="$ui.getString("tool.common.saveButton.label")" title="$ui.getString("tool.common.saveButton.title")"/>
+			<input type="button" id="saveAndExitButton" name="saveAndExitButton" value="$ui.getString("tool.common.saveAndExitButton.label")" title="$ui.getString("tool.common.saveAndExitButton.title")"/>
+			<input type="button" id="cancelButton" name="cancelButton" value="$ui.getString("tool.common.cancelButton.label")" title="$ui.getString("tool.common.cancelButton.title")"/>
 		</div>
 	</fieldset>
 

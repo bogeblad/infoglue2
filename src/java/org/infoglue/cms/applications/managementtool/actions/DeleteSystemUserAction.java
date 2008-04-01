@@ -59,7 +59,14 @@ public class DeleteSystemUserAction extends InfoGlueAbstractAction
 		
 		return "success";
 	}
-	
+
+	public String doV3() throws Exception 
+	{
+		doExecute();		
+		
+		return "successV3";
+	}
+
 	public void setUserName(String userName)
 	{
 		this.systemUserVO.setUserName(userName);	

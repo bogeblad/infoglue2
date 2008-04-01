@@ -23,6 +23,7 @@
 
 package org.infoglue.cms.applications.managementtool.actions;
 
+import java.net.URLEncoder;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -35,22 +36,18 @@ import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
 import org.infoglue.cms.controllers.kernel.impl.simple.UserControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.UserPropertiesController;
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
+import org.infoglue.cms.entities.management.GroupProperties;
 import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.entities.management.UserPropertiesVO;
 import org.infoglue.cms.security.InfoGluePrincipal;
+import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.dom.DOMBuilder;
 
-public class ViewSystemUserPropertiesAction extends InfoGlueAbstractAction
+public class ViewSystemUserPropertiesAction extends ViewEntityPropertiesAction
 {
     private final static Logger logger = Logger.getLogger(ViewSystemUserPropertiesAction.class.getName());
 
 	private static final long serialVersionUID = 1L;
-
-	private final String currentAction		= "ViewSystemUserProperties.action";
-	private final String updateAction 		= "UpdateSystemUserProperties";
-	private final String labelKey 			= "SystemUser Properties";
-	private final String title 				= "SystemUser Properties";
-	private final String extraParameters 	= "";
 	
 	private String userName;
 	private UserPropertiesVO userPropertiesVO;
@@ -108,10 +105,35 @@ public class ViewSystemUserPropertiesAction extends InfoGlueAbstractAction
 	public String doExecute() throws Exception
 	{
 		this.initialize(getUserName());   
-		
+
+		this.setCurrentAction("ViewSystemUserProperties.action");
+        this.setUpdateAction("UpdateSystemUserProperties");
+        this.setUpdateAndExitAction("UpdateSystemUserProperties!saveAndExitV3");
+        this.setCancelAction("ViewSystemUser.action");
+        this.setToolbarKey("tool.managementtool.viewUserProperties.header");
+        this.setTitleKey("tool.managementtool.viewUserProperties.header");
+        this.setArguments("");
+        this.setEntityName(GroupProperties.class.getName());
+
 		return "success";
 	}
-		
+
+	public String doV3() throws Exception
+	{
+		this.initialize(getUserName());   
+
+		this.setCurrentAction("ViewSystemUserProperties!v3.action");
+        this.setUpdateAction("UpdateSystemUserProperties!v3");
+        this.setUpdateAndExitAction("UpdateSystemUserProperties!saveAndExitV3");
+        this.setCancelAction("ViewSystemUser!v3.action");
+        this.setToolbarKey("tool.managementtool.viewUserProperties.header");
+        this.setTitleKey("tool.managementtool.viewUserProperties.header");
+        this.setArguments("");
+        this.setEntityName(GroupProperties.class.getName());
+
+		return "successV3";
+	}
+
 	/**
 	 * This method fetches a value from the xml that is the contentVersions Value. If the 
 	 * contentVersioVO is null the contentVersion has not been created yet and no values are present.
@@ -165,31 +187,6 @@ public class ViewSystemUserPropertiesAction extends InfoGlueAbstractAction
 	public UserPropertiesVO getUserPropertiesVO()
 	{
 		return userPropertiesVO;
-	}
-
-	public String getExtraParameters()
-	{
-		return extraParameters;
-	}
-
-	public String getLabelKey()
-	{
-		return labelKey;
-	}
-
-	public String getTitle()
-	{
-		return title;
-	}
-
-	public String getUpdateAction()
-	{
-		return updateAction;
-	}
-
-	public String getCurrentAction()
-	{
-		return currentAction;
 	}
 
 	public String getXML()
@@ -255,5 +252,17 @@ public class ViewSystemUserPropertiesAction extends InfoGlueAbstractAction
 	{
 		this.userName = userName;
 	}
+
+    public String getReturnAddress() throws Exception
+    {
+    	String URIEncoding = CmsPropertyHandler.getURIEncoding();
+        return this.getCurrentAction() + "?userName=" + URLEncoder.encode(this.userName, URIEncoding) + "&amp;languageId=" + this.getLanguageId();
+    }
+
+    public String getCancelAddress() throws Exception
+    {
+    	String URIEncoding = CmsPropertyHandler.getURIEncoding();
+        return this.getCancelAction() + "?userName=" + URLEncoder.encode(this.userName, URIEncoding);
+    }
 
 }

@@ -74,7 +74,24 @@ public class UpdateGroupPropertiesAction extends InfoGlueAbstractAction
 						 
 		return "saveAndExitStandalone";
 	}
-				
+
+	public String doV3() throws Exception
+	{
+		ceb.throwIfNotEmpty();
+		GroupPropertiesController.getController().update(this.languageId, this.contentTypeDefinitionId, this.groupPropertiesVO);
+		
+		this.getResponse().sendRedirect(returnAddress);
+	    
+	    return NONE;	
+	}
+
+	public String doSaveAndExitV3() throws Exception
+	{
+	    GroupPropertiesController.getController().update(this.languageId, this.contentTypeDefinitionId, this.groupPropertiesVO);
+						 
+		return "saveAndExitV3";
+	}
+
 	public void setEntityId(Integer groupPropertiesId)
 	{
 		this.groupPropertiesVO.setGroupPropertiesId(groupPropertiesId);

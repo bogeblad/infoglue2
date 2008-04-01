@@ -61,6 +61,7 @@
 <html>
 <head>
 	<title>$ui.getString($titleKey)</title>
+	
 	<script type="text/javascript" src="script/yui/build/yahoo-dom-event/yahoo-dom-event.js"></script>
 	<script type="text/javascript" src="script/yui/build/element/element-beta-min.js"></script>
 	<script type="text/javascript" src="script/yui/build/button/button-min.js"></script>
@@ -70,13 +71,13 @@
 		<link rel="stylesheet" type="text/css" href="script/yui/build/fonts/fonts-min.css" />
 		<link rel="stylesheet" type="text/css" href="script/yui/build/datatable/assets/skins/sam/datatable.css" />
 		<script type="text/javascript" src="script/yui/build/utilities/utilities.js"></script>
-		<script type="text/javascript" src="script/yui/build/datasource/datasource-beta.js"></script>
-		<script type="text/javascript" src="script/yui/build/datatable/datatable-beta.js"></script>
+		<script type="text/javascript" src="script/yui/build/datasource/datasource-beta-min.js"></script>
+		<script type="text/javascript" src="script/yui/build/datatable/datatable-beta-min.js"></script>
 	#end
-	
+
 	<link rel="stylesheet" type="text/css" href="css/v3/infoglue.css" />
 	<link rel="stylesheet" type="text/css" href="css/cms.css" />
-	
+		
 	<style type="text/css">
 
 	#foreach($button in $buttons)
@@ -111,27 +112,44 @@
 		    height: 28px;
 		}
 	#end
-		
-		table.yui-dt-table {
+	
+	#if($hasDataTable)
+		.yui-dt {
+			width: 100%;
+		}
+		.yui-dt-hd {
+			width: 100%;
+		}
+		.yui-dt-bd {
+			width: 100%;
+		}
+		table {
 			width: 100%;
 		}
 		
-		.yui-skin-sam .yui-dt-table th {
-			background: url(images/v3/tableHeaderBackground.gif) repeat-x 0 0;
+		.yui-skin-sam .yui-dt th {
+			background: #D8D8DA url(images/v3/tableHeaderBackground.gif) repeat-x 0 0;
 			font-family: arial;
 			font-size: 8pt;
-			padding: 1px 10px 1px 10px;
+			margin:0;
+			padding:0;
 			text-align: left;
 		}
-		.yui-skin-sam .yui-dt-table {
+		.yui-skin-sam .yui-dt-liner { 
+		    margin:0;padding:0; 
+		    padding:1px 10px 1px 10px; 
+		} 
+		
+		.yui-skin-sam .yui-dt {
 			font-family: arial;
 			font-size: inherit;
 		}
 	
-		.yui-skin-sam .yui-dt-table td {
+		.yui-skin-sam .yui-dt td {
 			font-family: arial;
 			font-size: 8pt;
 		}
+		#end
 	</style>
 	<script type="text/javascript">
 
@@ -553,6 +571,10 @@
 
 #macro(inlineroles $rolelist)
 #foreach($roleVO in $rolelist)#if($velocityCount > 1), #end<a title="$roleVO.name">$roleVO.displayName</a>#end
+#end
+
+#macro(inlinesimpleroles $rolelist)
+#foreach($roleVO in $rolelist)#if($velocityCount > 1), #end$roleVO.displayName#end
 #end
 
 #macro(inlineusers $userlist)
@@ -1238,10 +1260,14 @@ $ui.getString("entity.${fieldNameKey}.label")<br/>
 #end
 
 #macro(editTextFieldCSS $fieldNameKey $fieldName $fieldValue $length $mandatory $disabled)
-  #editTextFieldCSS3($ui.getString("entity.${fieldNameKey}.label") $fieldNameKey $fieldName $fieldValue $length $mandatory, $disabled)
+  #editTextFieldCSS3($ui.getString("entity.${fieldNameKey}.label") $fieldNameKey $fieldName $fieldValue $length $mandatory, $disabled, false)
 #end
 
-#macro(editTextFieldCSS3 $fieldNameLabel $errorKey $fieldName $fieldValue $length $mandatory $disabled)
+#macro(editPasswordFieldCSS $fieldNameKey $fieldName $fieldValue $length $mandatory $disabled)
+  #editTextFieldCSS3($ui.getString("entity.${fieldNameKey}.label") $fieldNameKey $fieldName $fieldValue $length $mandatory, $disabled, true)
+#end
+
+#macro(editTextFieldCSS3 $fieldNameLabel $errorKey $fieldName $fieldValue $length $mandatory $disabled $password)
 	
 	#set($errorMessageText = "")
 	#if($errors.hasErrors($errorKey))
@@ -1257,7 +1283,11 @@ $ui.getString("entity.${fieldNameKey}.label")<br/>
 	
 	<div class="ig-row">
 		<label class="ig-label" for="$fieldName">$fieldNameLabel #if($mandatory)<em style="color:red;" title="$ui.getString("tool.common.mandatoryField")">*</em>#end</label>
-  	  	<input type="text" class="ig-textfield" id="$fieldName" name="$fieldName" value="$!fieldValue" size="$length" $disabled/> $errorMessageText
+  	  	#if($password)
+	  	  	<input type="password" class="ig-textfield" id="$fieldName" name="$fieldName" value="$!fieldValue" size="$length" $disabled/> $errorMessageText
+		#else
+	  	  	<input type="text" class="ig-textfield" id="$fieldName" name="$fieldName" value="$!fieldValue" size="$length" $disabled/> $errorMessageText
+		#end
 	</div>
 #end
 

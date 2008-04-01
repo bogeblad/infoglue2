@@ -13,17 +13,7 @@
 			var oSaveButton = new YAHOO.widget.Button("saveButton");
 			var oSaveAndExitButton = new YAHOO.widget.Button("saveAndExitButton");
 			var oCancelButton = new YAHOO.widget.Button("cancelButton");
-			/*
-			var oRoleRightButton = new YAHOO.widget.Button("roleRight");
-			var oRolesRightButton = new YAHOO.widget.Button("rolesRight");
-			var oRoleLeftButton = new YAHOO.widget.Button("roleLeft");
-			var oRolesLeftButton = new YAHOO.widget.Button("rolesLeft");
 
-			var oGroupRightButton = new YAHOO.widget.Button("groupRight");
-			var oGroupsRightButton = new YAHOO.widget.Button("groupsRight");
-			var oGroupLeftButton = new YAHOO.widget.Button("groupLeft");
-			var oGroupsLeftButton = new YAHOO.widget.Button("groupsLeft");
-			*/
         	oSaveButton.on("click", function (p_oEvent){
         		save(document.editForm);
         	});
@@ -104,7 +94,7 @@
 
 <div id="igEditArea">
 
-<form method="POST" name="editForm" action="UpdateSystemUser.action">
+<form method="POST" name="editForm" action="UpdateSystemUser!v3.action">
 <fieldset class="ig-fieldset">
 
 	#editTextFieldCSS("SystemUser.userName" "userName" "$!userName" "51" true "disabled")
@@ -122,7 +112,7 @@
 		<tr>
 		  <td>
 		  	Available roles<br/>
-			<SELECT $readonly id="unassignedRoleNameList" NAME="unassignedRoleNameList" MULTIPLE SIZE="15" onDblClick="opt1.transferRight()" style="font-size: 10px; width:300px; border: solid 1px #C2D0E2;">
+			<SELECT $readonly id="unassignedRoleNameList" NAME="unassignedRoleNameList" MULTIPLE SIZE="10" onDblClick="opt1.transferRight()" style="font-size: 10px; width:300px; border: solid 1px #C2D0E2;">
 	        #if($supportsUpdate)
 	          	#foreach ($roleVO in $allRoles)
 					#set($hasAccessToManageUsersInRole = $this.hasAccessTo("Role.ManageUsers", "$roleVO.name"))
@@ -150,7 +140,7 @@
 		  </td>
 		  <td>
 		  	Current Roles<br/>
-		  	<SELECT $readonly id="roleName" name="roleName" multiple size="15" onDblClick="opt1.transferLeft()" style="font-size: 10px; width:300px; border: solid 1px #C2D0E2;">
+		  	<SELECT $readonly id="roleName" name="roleName" multiple size="10" onDblClick="opt1.transferLeft()" style="font-size: 10px; width:300px; border: solid 1px #C2D0E2;">
 	        	#foreach ($assignedRoleVO in $assignedRoles)
 					#set($hasAccessToManageUsersInRole = $this.hasAccessTo("Role.ManageUsers", "$assignedRoleVO.name"))
 					<option value="$assignedRoleVO.name" title="$assignedRoleVO.name" #if(!$hasAccessToManageUsersInRole)disabled="1" style="color:#999; background:white;"#end>$assignedRoleVO.name</option>
@@ -168,7 +158,7 @@
 		<tr>
 		    <td>
 		    	Available groups<br/>
-		    	<SELECT $readonly id="unassignedGroupNameList" NAME="unassignedGroupNameList" MULTIPLE SIZE="15" onDblClick="opt2.transferRight()" style="font-size: 10px; width:300px; border: solid 1px #C2D0E2;">
+		    	<SELECT $readonly id="unassignedGroupNameList" NAME="unassignedGroupNameList" MULTIPLE SIZE="10" onDblClick="opt2.transferRight()" style="font-size: 10px; width:300px; border: solid 1px #C2D0E2;">
 		        #if($supportsUpdate)
 		          	#foreach ($groupVO in $allGroups)
 						#set($hasAccessToManageUsersInGroup = $this.hasAccessTo("Group.ManageUsers", "$groupVO.name"))
@@ -196,7 +186,7 @@
 		    </td>
 		    <td>
 		    	Current Groups<br/>
-		      	<SELECT $readonly id="groupName" name="groupName" multiple size="15" onDblClick="opt2.transferLeft()" style="font-size: 10px; width:300px; border: solid 1px #C2D0E2;">
+		      	<SELECT $readonly id="groupName" name="groupName" multiple size="10" onDblClick="opt2.transferLeft()" style="font-size: 10px; width:300px; border: solid 1px #C2D0E2;">
 		        	#foreach ($assignedGroupVO in $assignedGroups)
 		        		#set($hasAccessToManageUsersInGroup = $this.hasAccessTo("Group.ManageUsers", "$assignedGroupVO.name"))
 						<option value="$assignedGroupVO.name" title="$assignedGroupVO.name" #if(!$hasAccessToManageUsersInGroup)disabled="1" style="color:#999; background:white;"#end>$assignedGroupVO.name</option>
@@ -208,9 +198,8 @@
 	</div>
 	
 	<div class="ig-row">
-		Base user properties on content type definition
-		
-		<select name="contentTypeDefinitionId">
+		<label class="ig-label-nl" for="contentTypeDefinitionId">$ui.getString("tool.managementtool.userContentTypeDefinition.label")</label>
+		<select name="contentTypeDefinitionId" class="ig-select">
 			<option value="">Choose type</option>
 			#foreach ($contentTypeDefinitionVO in $contentTypeDefinitionVOList)
 				#set($selected = "")
@@ -227,14 +216,9 @@
 	##if($supportsUpdate)
 		<input type="hidden" name="userName" value="$!userName">
 		<div id="buttons" class="ig-buttonRow">
-			<input type="button" id="saveButton" name="saveButton" value="Save" title="Save"/>
-			<input type="button" id="saveAndExitButton" name="saveAndExitButton" value="Save and exit" title="Save and exit to list again"/>
-			<input type="button" id="cancelButton" name="cancelButton" value="Cancel" title="Cancel"/>
-			<!--
-			<a href="javascript:save(document.editForm);"><img src="$ui.getString("images.managementtool.buttons.save")" width="50" height="25" border="0" onClick='showWorking();'></a>
-			<a href="javascript:saveAndExit(document.editForm);"><img src="$ui.getString("images.managementtool.buttons.saveAndExit")" width="80" height="25" border="0" onClick='JavaScript:showWorking();'></a>
-			<a href="ViewListSystemUser.action"><img border="0" src="$ui.getString("images.managementtool.buttons.cancel")" width="50" height="25"></a>
-			-->
+			<input type="button" id="saveButton" name="saveButton" value="$ui.getString("tool.common.saveButton.label")" title="$ui.getString("tool.common.saveButton.title")"/>
+			<input type="button" id="saveAndExitButton" name="saveAndExitButton" value="$ui.getString("tool.common.saveAndExitButton.label")" title="$ui.getString("tool.common.saveAndExitButton.title")"/>
+			<input type="button" id="cancelButton" name="cancelButton" value="$ui.getString("tool.common.cancelButton.label")" title="$ui.getString("tool.common.cancelButton.title")"/>
 		</div>
 	##end
 	</fieldset>

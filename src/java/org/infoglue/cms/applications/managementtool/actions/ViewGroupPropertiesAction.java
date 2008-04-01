@@ -34,6 +34,7 @@ import org.infoglue.cms.controllers.kernel.impl.simple.GroupPropertiesController
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
 import org.infoglue.cms.entities.management.GroupProperties;
 import org.infoglue.cms.entities.management.GroupPropertiesVO;
+import org.infoglue.cms.entities.management.RoleProperties;
 import org.infoglue.cms.security.InfoGlueGroup;
 import org.infoglue.cms.util.CmsPropertyHandler;
 
@@ -46,19 +47,7 @@ public class ViewGroupPropertiesAction extends ViewEntityPropertiesAction
 	private String groupName;
 	private GroupPropertiesVO groupPropertiesVO;
 	private List groupPropertiesVOList;
-	
-	
-    public ViewGroupPropertiesAction()
-    {
-        this.setCurrentAction("ViewGroupProperties.action");
-        this.setUpdateAction("UpdateGroupProperties");
-        this.setCancelAction("ViewGroup.action");
-        this.setToolbarKey("tool.managementtool.viewGroupProperties.header");
-        this.setTitleKey("tool.managementtool.viewGroupProperties.header");
-        this.setArguments("");
-        this.setEntityName(GroupProperties.class.getName());
-    }
-		
+			
 	/**
 	 * Initializes all properties needed for the usecase.
 	 * @param extranetGroupId
@@ -100,6 +89,15 @@ public class ViewGroupPropertiesAction extends ViewEntityPropertiesAction
 	{
 		this.initialize(getGroupName());   
 		
+        this.setCurrentAction("ViewGroupProperties.action");
+        this.setUpdateAction("UpdateGroupProperties");
+        this.setUpdateAndExitAction("UpdateGroupProperties!saveAndExit");
+        this.setCancelAction("ViewGroup.action");
+        this.setToolbarKey("tool.managementtool.viewGroupProperties.header");
+        this.setTitleKey("tool.managementtool.viewGroupProperties.header");
+        this.setArguments("");
+        this.setEntityName(GroupProperties.class.getName());
+
 		return "success";
 	}
 
@@ -107,6 +105,15 @@ public class ViewGroupPropertiesAction extends ViewEntityPropertiesAction
 	{
 		this.initialize(getGroupName());   
 		
+        this.setCurrentAction("ViewGroupProperties!v3.action");
+        this.setUpdateAction("UpdateGroupProperties!v3");
+        this.setUpdateAndExitAction("UpdateGroupProperties!saveAndExitV3");
+        this.setCancelAction("ViewGroup!v3.action");
+        this.setToolbarKey("tool.managementtool.viewGroupProperties.header");
+        this.setTitleKey("tool.managementtool.viewGroupProperties.header");
+        this.setArguments("");
+        this.setEntityName(GroupProperties.class.getName());
+
 		return "successV3";
 	}
 
@@ -199,7 +206,7 @@ public class ViewGroupPropertiesAction extends ViewEntityPropertiesAction
     public String getReturnAddress() throws Exception
     {
     	String URIEncoding = CmsPropertyHandler.getURIEncoding();
-        return this.getCurrentAction() + "?groupName=" + URLEncoder.encode(this.groupName, URIEncoding) + "&languageId=" + this.getLanguageId();
+        return this.getCurrentAction() + "?groupName=" + URLEncoder.encode(this.groupName, URIEncoding) + "&amp;languageId=" + this.getLanguageId();
     }
 
     public String getCancelAddress() throws Exception

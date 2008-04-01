@@ -24,7 +24,10 @@
 package org.infoglue.cms.applications.managementtool.actions;
 
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
+import org.infoglue.cms.controllers.kernel.impl.simple.AccessRightController;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.UserControllerProxy;
+import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
 import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.util.CmsPropertyHandler;
@@ -50,7 +53,12 @@ public class UpdateSystemUserPasswordAction extends InfoGlueAbstractAction
     {
     	return Action.INPUT;
     }
-    
+
+    public String doInputV3() throws Exception
+    {
+    	return Action.INPUT + "V3";
+    }
+
     public String doInputStandalone() throws Exception
     {
     	return "inputStandalone";
@@ -74,7 +82,34 @@ public class UpdateSystemUserPasswordAction extends InfoGlueAbstractAction
 	    else
 	        return Action.SUCCESS;
 	}
-	
+
+	public String doV3() throws Exception 
+	{
+		try
+		{
+			if(userName.equals(CmsPropertyHandler.getAnonymousUser()))
+		        throw new SystemException("You must not change password on this user as it's needed by the system.");
+
+		    if(!newPassword.equals(verifiedNewPassword))
+		        throw new ConstraintException("SystemUser.newPassword", "309");
+		    
+		    UserControllerProxy.getController().updateUserPassword(this.userName, this.oldPassword, this.newPassword);
+		}
+		catch(ConstraintException e) 
+        {
+			e.setResult(INPUT + "V3");
+			throw e;
+        }
+		
+	    if(this.returnAddress != null && !this.returnAddress.equalsIgnoreCase(""))
+	    {
+	        ActionContext.getResponse().sendRedirect(returnAddress);
+	        return Action.NONE;
+	    }
+	    else
+	        return Action.SUCCESS + "V3";	    
+	}
+
     public String getNewPassword()
     {
         return newPassword;

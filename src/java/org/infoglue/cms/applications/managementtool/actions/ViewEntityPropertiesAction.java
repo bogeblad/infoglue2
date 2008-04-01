@@ -60,9 +60,10 @@ public abstract class ViewEntityPropertiesAction extends InfoGlueAbstractAction
     private static CategoryController categoryController = CategoryController.getController();
 	private static PropertiesCategoryController propertiesCategoryController = PropertiesCategoryController.getController();
 	
-	private String currentAction	= "";
-	private String updateAction 	= "";
-	private String cancelAction 	= "";
+	private String currentAction		= "";
+	private String updateAction 		= "";
+	private String updateAndExitAction 	= "";
+	private String cancelAction 		= "";
 
 	private String toolbarKey 		= "";
 	private String titleKey 		= "";
@@ -411,7 +412,17 @@ public abstract class ViewEntityPropertiesAction extends InfoGlueAbstractAction
     {
         this.updateAction = updateAction;
     }
+
+    public String getUpdateAndExitAction()
+    {
+        return updateAndExitAction;
+    }
     
+    public void setUpdateAndExitAction(String updateAndExitAction)
+    {
+        this.updateAndExitAction = updateAndExitAction;
+    }
+
     public void setArguments(String arguments)
     {
         this.arguments = arguments;
