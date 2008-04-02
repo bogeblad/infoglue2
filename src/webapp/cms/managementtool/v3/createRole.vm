@@ -103,8 +103,8 @@
 						        </select>
 						    </td>
 						    <td align="center">
-						        <input id="transferRightButton" name="transferRightButton" type="button" name="right" value="&gt;&gt;" style="width:50px; font-family: verdana; font-size: 10px;"><BR><BR>
-								<input id="transferLeftButton" name="transferLeftButton" type="button" name="left" value="&lt;&lt;" style="width:50px; font-family: verdana; font-size: 10px;"><BR><BR>
+						        <input id="transferRightButton" name="transferRightButton" type="button" name="right" value=" &gt;&gt; " style="width:50px; font-family: verdana; font-size: 10px;"><BR><BR>
+								<input id="transferLeftButton" name="transferLeftButton" type="button" name="left" value=" &lt;&lt; " style="width:50px; font-family: verdana; font-size: 10px;"><BR><BR>
 							</td>
 						    <td>
 						      	<select class="ig-select" id="userName" name="userName" multiple size="10" style="width:300px;">
