@@ -95,153 +95,186 @@
 #set($currentWorkflowVOList = $workflowVOList)
 #set($availableWorkflows = $availableWorkflowVOList)
 
-<div id="menu" style="min-height: 600px; min-width: 250px; max-width: 350px; width: 350px; border: 1px solid blue; float: left; overflow: hidden; margin-left: 10px; margin-top: 10px;">
+<style type="text/css">
+	#contentwrapper {
+		float: left;
+		width: 100%;
+		height: 100%;
+	}
+	
+	#contentcolumn {
+		margin-left: 350px; /*Set left margin to LeftColumnWidth*/
+		margin-top: 10px;
+		margin-right: 10px;
+		height: 100%;
+		padding: 0px;
+		border: 0px solid red;
+	}
+	
+	#leftcolumn {
+		float: left;
+		width: 340px; /*Width of left column*/
+		margin-left: -100%;
+		margin-top: 10px;
+	}
+	
+</style>
 
-	<div id="activeWorkflows" style="float:left; border: 1px solid red;">
-		<table border="0" bgcolor="#666666" width="100%" cellpadding="1" cellspacing="0" style="float:left;">
-		<tr>
-			<td>
-				#set($lvConstraint = 0)
-				#set($ongoingWorkflowLabel = $ui.getString("tool.mydesktoptool.ongoingWorkflows"))
-				#lvHeadSlimmed(["", $ongoingWorkflowLabel, "Action"] "" "" "" "")
-				#set($cnt = 0)
-				#set($quote = '"')
-				#foreach ($workflowVO in $currentWorkflowVOList)
-					#set($action = "")
-					#foreach ($workflowActionVO in $workflowVO.globalActions)
-						#set($iconUrl = $workflowActionVO.metaAttributes.get("icon"))
-						#set($viewGlobalAction = $workflowActionVO.getView())
-						#if($viewGlobalAction == "")
-							#set($viewGlobalAction = "ViewMyDesktopToolStartPage!invoke.action")
-						#end
-						#set($viewGlobalAction = "$quote$viewGlobalAction$quote")
-						#set($action = "$!action <a href='javascript:invokeWorkflowView($workflowActionVO.getWorkflowId(), $workflowActionVO.getId(), $viewGlobalAction);'><img src='$iconUrl' border='0' width='15' height='15' alt='$workflowActionVO.getName()'/></a>")
-					#end
-	
-					#set($view = "$quote$workflowVO.getView()$quote")				
-					#if($workflowVO.getTitle())
-					  	#set($fullTitle = "$workflowVO.getName() - $workflowVO.getTitle()")
-						#set($visibleTitle = $fullTitle)
-						#if($fullTitle.length() > 40)
-							#set($visibleTitle = "$fullTitle.substring(0,37)...")
-						#end
-					#else
-						#set($fullTitle = "$workflowVO.getName()")
-						#set($visibleTitle = $fullTitle)
-						#if($fullTitle.length() > 40)
-							#set($visibleTitle = "$fullTitle.substring(0,37)...")
-						#end
-					#end
-					
-					##set($row = ["<a href='javascript:showDiv(${quote}activeWorkflow${workflowVO.workflowId}DetailsProperties${quote});'><img src='images/infoWorkflow.gif' border='0' alt='Start workflow'></a>", "<a title='$fullTitle' href='javascript:showDiv(${quote}activeWorkflow${workflowVO.workflowId}DetailsProperties${quote});'>$visibleTitle</a>", "$!action"])
-					#set($row = ["<a href='javascript:showWorkflowProperties(${workflowVO.workflowId});'><img src='images/infoWorkflow.gif' border='0' alt='Start workflow'></a>", "<a title='$fullTitle' href='javascript:showWorkflowProperties(${workflowVO.workflowId});'>$visibleTitle</a>", "$!action"])
-					#set($cnt = $cnt + 1)
-					#lvAddRow($row $cnt "$workflowVO.getWorkflowId()")
-				#end
-	
-				#if($cnt == 0)
-					#set($noActiveWorkflows = $ui.getString("tool.mydesktoptool.noActiveWorkflows"))
-					#set($row = ["", $noActiveWorkflows, ""])
-					#lvAddRow($row $cnt "")
-				#end
-	
-				#lvEnd()
-			</td>
-		</tr>
-		</table>
+<div id="maincontainer">
+
+	<div id="contentwrapper">
+		<div id="contentcolumn">
+			<iframe style="height:600px; width: 100%; z-index:2; margin: 0px; padding: 0px; border: 0px solid #9caabd;" id="workArea" name="workArea" src="ViewMyDesktopToolStartPage!taskList.action"></iframe>
+		</div>
 	</div>
-			
-	<div style="margin-bottom: 10px; clear:both;"></div>
 	
-	<div id="availableWorkflows">
-	
-		<table tableborder="0" border="0" bgcolor="#666666" width="100%" cellpadding="1" cellspacing="0">
-		<tr>
-			<td>
-				#set($lvConstraint = 0)
-				#set($availableWorkflowsLabel = $ui.getString("tool.mydesktoptool.availableWorkflows"))
-				#lvHeadSlimmed(["", $availableWorkflowsLabel, "Action"] "" "" "" "")
-				#set($cnt = 0)
-				#set($quote = '"')
-				#foreach ($availableWorkflowVO in $availableWorkflows)
-					#set($view = "$quote$availableWorkflowVO.getView()$quote")
-					
-					#set($fullTitle = "$availableWorkflowVO.getName()")
-					#if($availableWorkflowVO.status == 1)
-						#set($fullTitle = "$availableWorkflowVO.name - $availableWorkflowVO.statusMessage")
-					#end
-					
-					#set($visibleTitle = $fullTitle)
-					#if($fullTitle.length() > 40)
-						#set($visibleTitle = "$fullTitle.substring(0,37)...")
-					#end
-					
-					#if($availableWorkflowVO.status == 0)
-						##set($row = ["<a href=${quote}javascript:showAvailableWorkflowProperties('$formatter.encodeURI($availableWorkflowVO.name)');${quote}><img src='images/infoWorkflow.gif' border='0' alt='Workflow info'></a>", "<a title='$fullTitle' href='javascript:openUrl(${quote}ViewMyDesktopToolStartPage!startWorkflow.action?workflowName=$formatter.encodeURI($availableWorkflowVO.getName())${quote}, false);'>$visibleTitle</a>", "<a href='ViewMyDesktopToolStartPage!startWorkflow.action?workflowName=$formatter.encodeURI($availableWorkflowVO.getName())'><img src='images/startWorkflow.gif' border='0' alt='Start workflow'></a>"])
-						#set($row = ["<a href=${quote}javascript:showAvailableWorkflowProperties('$formatter.encodeURI($availableWorkflowVO.name)');${quote}><img src='images/infoWorkflow.gif' border='0' alt='Workflow info'></a>", "<a title='$fullTitle' href='ViewMyDesktopToolStartPage!startWorkflow.action?workflowName=$formatter.encodeURI($availableWorkflowVO.getName())'>$visibleTitle</a>", "<a href='ViewMyDesktopToolStartPage!startWorkflow.action?workflowName=$formatter.encodeURI($availableWorkflowVO.getName())'><img src='images/startWorkflow.gif' border='0' alt='Start workflow'></a>"])
-					#else
-						#set($row = ["<a href=${quote}javascript:showAvailableWorkflowProperties('$formatter.encodeURI($availableWorkflowVO.name)');${quote}><img src='images/infoWorkflow.gif' border='0' alt='Workflow info'></a>", "<a title='$fullTitle' style='color:red'>$visibleTitle</a>", "&nbsp;"])
-					#end
-	
-					#set($cnt = $cnt + 1)
-					#lvAddRow($row $cnt "$availableWorkflowVO.getWorkflowId()")
-				#end
-	
-				#if($cnt == 0)
-					#set($noWorkflows = $ui.getString("tool.mydesktoptool.noWorkflows"))
-					#set($row = ["", $noWorkflows, ""])
-					#lvAddRow($row $cnt "")
-				#end
-	
-				#lvEnd()
-	
-			</td>
-		</tr>
-		</table>
-	</div>
-			
-	<div style="margin-bottom: 10px; clear:both;"></div>
-	
-	<div id="availableWorkflows">
-					
-		<table tableborder="0" border="0" bgcolor="#666666" width="100%" cellpadding="1" cellspacing="0">
-		<tr>
-			<td>
-				#set($lvConstraint = 0)
-				#set($availableShortcutsLabel = $ui.getString("tool.mydesktoptool.availableShortcuts"))
-				#lvHeadSlimmed(["", $availableShortcutsLabel, "Action"] "" "" "" "")
-				#set($cnt = 0)
-				#set($quote = '"')
-				#foreach ($availableShortcutVO in $availableShortcutVOList)
-					#set($view = "$quote$availableShortcutVO.getView()$quote")
-					
-					#set($fullTitle = $availableShortcutVO.getName())
-					#set($visibleTitle = $fullTitle)
-					#if($fullTitle.length() > 40)
-						#set($visibleTitle = "$fullTitle.substring(0,37)...")
-					#end
-	
-					#set($row = ["<a href='javascript:showDiv(${quote}availableShortcut${availableShortcutVO.name}DetailsProperties${quote});'><img src='images/infoWorkflow.gif' border='0' alt='Start Shortcut'></a>", "<a title='$fullTitle' href='javascript:openUrl(${quote}$availableShortcutVO.getURL()${quote}, $availableShortcutVO.popup);'>$visibleTitle</a>", "<a href='$availableShortcutVO.getURL()' #if($availableShortcutVO.popup == true)target='_blank'#end><img src='images/startWorkflow.gif' border='0' alt='Start workflow'></a>"])
-					#set($cnt = $cnt + 1)
-					#lvAddRow($row $cnt "$availableShortcutVO.getShortcutId()")
-				#end
-	
-				#if($cnt == 0)
-					#set($noShortcuts = $ui.getString("tool.mydesktoptool.noShortcuts"))
-					#set($row = ["", $noShortcuts, ""])
-					#lvAddRow($row $cnt "")
-				#end
-	
-				#lvEnd()
-	
-			</td>
-		</tr>
-		</table>
+	<div id="leftcolumn">
+		<div id="activeWorkflows" style="float:left; border: 0px solid red; ">
+			<table border="0" bgcolor="#666666" width="100%" cellpadding="1" cellspacing="0" style="float:left;">
+			<tr>
+				<td>
+					#set($lvConstraint = 0)
+					#set($ongoingWorkflowLabel = $ui.getString("tool.mydesktoptool.ongoingWorkflows"))
+					#lvHeadSlimmed(["", $ongoingWorkflowLabel, "Action"] "" "" "" "")
+					#set($cnt = 0)
+					#set($quote = '"')
+					#foreach ($workflowVO in $currentWorkflowVOList)
+						#set($action = "")
+						#foreach ($workflowActionVO in $workflowVO.globalActions)
+							#set($iconUrl = $workflowActionVO.metaAttributes.get("icon"))
+							#set($viewGlobalAction = $workflowActionVO.getView())
+							#if($viewGlobalAction == "")
+								#set($viewGlobalAction = "ViewMyDesktopToolStartPage!invoke.action")
+							#end
+							#set($viewGlobalAction = "$quote$viewGlobalAction$quote")
+							#set($action = "$!action <a href='javascript:invokeWorkflowView($workflowActionVO.getWorkflowId(), $workflowActionVO.getId(), $viewGlobalAction);'><img src='$iconUrl' border='0' width='15' height='15' alt='$workflowActionVO.getName()'/></a>")
+						#end
 		
-	</div>
-</div>
+						#set($view = "$quote$workflowVO.getView()$quote")				
+						#if($workflowVO.getTitle())
+						  	#set($fullTitle = "$workflowVO.getName() - $workflowVO.getTitle()")
+							#set($visibleTitle = $fullTitle)
+							#if($fullTitle.length() > 40)
+								#set($visibleTitle = "$fullTitle.substring(0,37)...")
+							#end
+						#else
+							#set($fullTitle = "$workflowVO.getName()")
+							#set($visibleTitle = $fullTitle)
+							#if($fullTitle.length() > 40)
+								#set($visibleTitle = "$fullTitle.substring(0,37)...")
+							#end
+						#end
+						
+						##set($row = ["<a href='javascript:showDiv(${quote}activeWorkflow${workflowVO.workflowId}DetailsProperties${quote});'><img src='images/infoWorkflow.gif' border='0' alt='Start workflow'></a>", "<a title='$fullTitle' href='javascript:showDiv(${quote}activeWorkflow${workflowVO.workflowId}DetailsProperties${quote});'>$visibleTitle</a>", "$!action"])
+						#set($row = ["<a href='javascript:showWorkflowProperties(${workflowVO.workflowId});'><img src='images/infoWorkflow.gif' border='0' alt='Start workflow'></a>", "<a title='$fullTitle' href='javascript:showWorkflowProperties(${workflowVO.workflowId});'>$visibleTitle</a>", "$!action"])
+						#set($cnt = $cnt + 1)
+						#lvAddRow($row $cnt "$workflowVO.getWorkflowId()")
+					#end
+		
+					#if($cnt == 0)
+						#set($noActiveWorkflows = $ui.getString("tool.mydesktoptool.noActiveWorkflows"))
+						#set($row = ["", $noActiveWorkflows, ""])
+						#lvAddRow($row $cnt "")
+					#end
+		
+					#lvEnd()
+				</td>
+			</tr>
+			</table>
+		</div>
+				
+		<div style="margin-bottom: 10px; clear:both;"></div>
+		
+		<div id="availableWorkflows">
+		
+			<table tableborder="0" border="0" bgcolor="#666666" width="100%" cellpadding="1" cellspacing="0">
+			<tr>
+				<td>
+					#set($lvConstraint = 0)
+					#set($availableWorkflowsLabel = $ui.getString("tool.mydesktoptool.availableWorkflows"))
+					#lvHeadSlimmed(["", $availableWorkflowsLabel, "Action"] "" "" "" "")
+					#set($cnt = 0)
+					#set($quote = '"')
+					#foreach ($availableWorkflowVO in $availableWorkflows)
+						#set($view = "$quote$availableWorkflowVO.getView()$quote")
+						
+						#set($fullTitle = "$availableWorkflowVO.getName()")
+						#if($availableWorkflowVO.status == 1)
+							#set($fullTitle = "$availableWorkflowVO.name - $availableWorkflowVO.statusMessage")
+						#end
+						
+						#set($visibleTitle = $fullTitle)
+						#if($fullTitle.length() > 40)
+							#set($visibleTitle = "$fullTitle.substring(0,37)...")
+						#end
+						
+						#if($availableWorkflowVO.status == 0)
+							##set($row = ["<a href=${quote}javascript:showAvailableWorkflowProperties('$formatter.encodeURI($availableWorkflowVO.name)');${quote}><img src='images/infoWorkflow.gif' border='0' alt='Workflow info'></a>", "<a title='$fullTitle' href='javascript:openUrl(${quote}ViewMyDesktopToolStartPage!startWorkflow.action?workflowName=$formatter.encodeURI($availableWorkflowVO.getName())${quote}, false);'>$visibleTitle</a>", "<a href='ViewMyDesktopToolStartPage!startWorkflow.action?workflowName=$formatter.encodeURI($availableWorkflowVO.getName())'><img src='images/startWorkflow.gif' border='0' alt='Start workflow'></a>"])
+							#set($row = ["<a href=${quote}javascript:showAvailableWorkflowProperties('$formatter.encodeURI($availableWorkflowVO.name)');${quote}><img src='images/infoWorkflow.gif' border='0' alt='Workflow info'></a>", "<a title='$fullTitle' href='ViewMyDesktopToolStartPage!startWorkflow.action?workflowName=$formatter.encodeURI($availableWorkflowVO.getName())'>$visibleTitle</a>", "<a href='ViewMyDesktopToolStartPage!startWorkflow.action?workflowName=$formatter.encodeURI($availableWorkflowVO.getName())'><img src='images/startWorkflow.gif' border='0' alt='Start workflow'></a>"])
+						#else
+							#set($row = ["<a href=${quote}javascript:showAvailableWorkflowProperties('$formatter.encodeURI($availableWorkflowVO.name)');${quote}><img src='images/infoWorkflow.gif' border='0' alt='Workflow info'></a>", "<a title='$fullTitle' style='color:red'>$visibleTitle</a>", "&nbsp;"])
+						#end
+		
+						#set($cnt = $cnt + 1)
+						#lvAddRow($row $cnt "$availableWorkflowVO.getWorkflowId()")
+					#end
+		
+					#if($cnt == 0)
+						#set($noWorkflows = $ui.getString("tool.mydesktoptool.noWorkflows"))
+						#set($row = ["", $noWorkflows, ""])
+						#lvAddRow($row $cnt "")
+					#end
+		
+					#lvEnd()
+		
+				</td>
+			</tr>
+			</table>
+		</div>
+				
+		<div style="margin-bottom: 10px; clear:both;"></div>
+		
+		<div id="availableWorkflows">
+						
+			<table tableborder="0" border="0" bgcolor="#666666" width="100%" cellpadding="1" cellspacing="0">
+			<tr>
+				<td>
+					#set($lvConstraint = 0)
+					#set($availableShortcutsLabel = $ui.getString("tool.mydesktoptool.availableShortcuts"))
+					#lvHeadSlimmed(["", $availableShortcutsLabel, "Action"] "" "" "" "")
+					#set($cnt = 0)
+					#set($quote = '"')
+					#foreach ($availableShortcutVO in $availableShortcutVOList)
+						#set($view = "$quote$availableShortcutVO.getView()$quote")
+						
+						#set($fullTitle = $availableShortcutVO.getName())
+						#set($visibleTitle = $fullTitle)
+						#if($fullTitle.length() > 40)
+							#set($visibleTitle = "$fullTitle.substring(0,37)...")
+						#end
+		
+						#set($row = ["<a href='javascript:showDiv(${quote}availableShortcut${availableShortcutVO.name}DetailsProperties${quote});'><img src='images/infoWorkflow.gif' border='0' alt='Start Shortcut'></a>", "<a title='$fullTitle' href='javascript:openUrl(${quote}$availableShortcutVO.getURL()${quote}, $availableShortcutVO.popup);'>$visibleTitle</a>", "<a href='$availableShortcutVO.getURL()' #if($availableShortcutVO.popup == true)target='_blank'#end><img src='images/startWorkflow.gif' border='0' alt='Start workflow'></a>"])
+						#set($cnt = $cnt + 1)
+						#lvAddRow($row $cnt "$availableShortcutVO.getShortcutId()")
+					#end
+		
+					#if($cnt == 0)
+						#set($noShortcuts = $ui.getString("tool.mydesktoptool.noShortcuts"))
+						#set($row = ["", $noShortcuts, ""])
+						#lvAddRow($row $cnt "")
+					#end
+		
+					#lvEnd()
+		
+				</td>
+			</tr>
+			</table>
+			
+		</div>
 
-<iframe style="position:absolute; left:370px; top:10px; right: 10px; height:95%; width: 70%; z-index:2; margin: 0px; padding: 0px; border: 1px solid #9caabd;" id="workArea" name="workArea" src="ViewMyDesktopToolStartPage!taskList.action"></iframe>
+	</div>
+
+</div>
 
 <div id="activeWorkflowProperties"></div>
 <div id="availableWorkflowProperties"></div>
