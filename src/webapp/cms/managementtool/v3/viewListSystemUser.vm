@@ -1,7 +1,3 @@
-<?xml version="1.0" encoding="UTF-8"?> 
-
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
 #beginManagementToolV3("tool.managementtool.viewSystemUserList.header" "" true)
 
 #menuToolbar("" $buttons $rightButtons) 
@@ -25,13 +21,14 @@
 	YAHOO.util.Event.addListener(window, "load", function() {
 	
 	    YAHOO.example.Basic = new function() {
-	
-			var myConfigs = { 
-				paginator: new YAHOO.widget.Paginator({
+			
+			var myConfigs = {
+                paginator: new YAHOO.widget.Paginator({
                     rowsPerPage: 20,
-                    containers : "bottom_pagination", 
-                })
-            }; 
+                    containers : "bottom_pagination"
+                }),
+                initialRequest: ""
+        	};
 			
 	        var myColumnDefs = [
 	            {key:"sel", label:"", formatter:"checkbox", width:"20px"},

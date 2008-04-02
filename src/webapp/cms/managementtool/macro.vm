@@ -58,7 +58,10 @@
 #set($buttons = $this.getToolbarButtons("$titleKey", "$!primaryKey", ""))
 #set($rightButtons = $this.getRightToolbarButtons("$titleKey", "$!primaryKey", ""))
 
-<html>
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 	<title>$ui.getString($titleKey)</title>
 	
@@ -86,6 +89,8 @@
 			border-width: 1px 0;
 			border-style: solid;
 			border-color: transparent;
+			_border-color:tomato; /*For IE6-*/  
+			_filter:chroma(color=tomato);/*For IE6-*/
 			background: transparent; 
 			margin: auto .25em;
 		}
@@ -93,6 +98,8 @@
 			border-width: 0 1px;
 			border-style: solid;
 			border-color: transparent;
+			_border-color:tomato; /*For IE6-*/  
+			_filter:chroma(color=tomato);/*For IE6-*/
 		}
 		
 		#button${velocityCount}.yui-button-hover {
@@ -177,7 +184,11 @@
 	        	#foreach($button in $buttons)
 					var oButton${velocityCount} = new YAHOO.widget.Button("button${velocityCount}");
 	            	oButton${velocityCount}.on("click", function (p_oEvent){
-	            		document.location.href = '$button.actionURL';
+	            		#if($button.actionURL.indexOf("javascript") == -1)
+		            		document.location.href = '$button.actionURL';
+		            	#else
+		            		$button.actionURL
+		            	#end
 	            	});
 	            #end
 	            
@@ -1048,7 +1059,7 @@ $ui.getString("entity.${fieldNameKey}.label")<br/>
 <div id="menutoolbar">
 	<div style="float:left">
 		#if($headline != "")
-			<div style="float: left; padding-top: 8px; padding-left: 10px;">$headline</div>
+			<div style="float: left; padding-top: 8px; padding-left: 10px;">$headline | </div>
 		#end
 		#foreach($button in $buttons)
 			<input type="button" id="button$velocityCount" name="button$velocityCount" value="$button.text" title="$button.title"/>

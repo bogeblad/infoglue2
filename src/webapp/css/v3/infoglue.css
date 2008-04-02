@@ -174,7 +174,7 @@ img.scaledbordered {
     text-indent: 20px;
     padding: 6px;
     min-width: 50px;
-    border: 0px;
+    border: 0px solid red;
     height: 28px;
 }
 #helpButton.yui-button {
@@ -182,12 +182,16 @@ img.scaledbordered {
 	border-style: solid;
 	border-color: transparent;
 	background: transparent; 
+	_border-color:tomato; /*For IE6-*/  
+	_filter:chroma(color=tomato);/*For IE6-*/
 	margin: auto .25em;
 }
 #helpButton.yui-button .first-child {
 	border-width: 0 1px;
 	border-style: solid;
 	border-color: transparent;
+	_border-color:tomato; /*For IE6-*/  
+	_filter:chroma(color=tomato);/*For IE6-*/
 }
 
 #helpButton.yui-button-hover {

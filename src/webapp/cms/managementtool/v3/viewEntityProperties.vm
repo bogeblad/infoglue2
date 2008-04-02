@@ -1,7 +1,3 @@
-<?xml version="1.0" encoding="UTF-8"?> 
- 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-  
 #beginManagementToolV3("$toolbarKey" "$!entityId" false)
 
 <script type="text/javascript">
@@ -682,6 +678,8 @@
 		
 		</div>
 				
+		<div style="clear: both;"></div>
+
 		<div id="buttons" class="ig-buttonRow">
 			#if($readonly == "")
 			<input type="button" id="saveButton" name="saveButton" value="$ui.getString("tool.common.saveButton.label")" title="$ui.getString("tool.common.saveButton.title")"/>
