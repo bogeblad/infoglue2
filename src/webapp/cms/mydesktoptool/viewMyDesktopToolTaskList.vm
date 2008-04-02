@@ -20,19 +20,7 @@
 	<!--
 		function invokeWorkflowView(workflowId, actionId, view)
 		{
-			//alert("workflowId:" + workflowId);
-			//alert("actionId:" + actionId);
-			//alert("view:" + view);
-			//document.location.href="ViewMyDesktopToolStartPage!invoke.action?workflowId=" + workflowId + "&actionId=" + actionId;
-			var url = "";
-	
-			if(view.indexOf("?") > -1)
-				url="" + view + "&workflowId=" + workflowId + "&actionId=" + actionId + "&returnAddress=$URLBase/ViewMyDesktopToolStartPage!invoke.action";
-			else
-				url="" + view + "?workflowId=" + workflowId + "&actionId=" + actionId + "&returnAddress=$URLBase/ViewMyDesktopToolStartPage!invoke.action";
-			//alert(url);
-	
-			document.location.href=url;
+			parent.invokeWorkflowView(workflowId, actionId, view);
 		}
 	-->
 	</script>
