@@ -968,7 +968,7 @@ function editInline(repositoryId)
 				 oFCKeditor.ToolbarSet = "Basic";
 				 oFCKeditor.Height = totalHeight;
 				 oFCKeditor.Value = plainAttribute;
-				 $("#attribute" + selectedContentId + selectedAttributeName).html(oFCKeditor.CreateHtml() + "<a onclick='saveAttribute(" + selectedContentId + ", " + selectedLanguageId + ", \"" + selectedAttributeName + "\", \"textarea\");'>&nbsp;<img src=\"images/v3/saveInlineIcon.gif\" alt=\"Save\" border=\"0\"/></a>");
+				 $("#attribute" + selectedContentId + selectedAttributeName).html(oFCKeditor.CreateHtml() + "<a onclick='saveAttribute(" + selectedContentId + ", " + selectedLanguageId + ", \"" + selectedAttributeName + "\", \"textarea\");' style='text-decoration: none;'>&nbsp;<img src=\"images/v3/saveInlineIcon.gif\" alt=\"Save\" border=\"0\"/></a><a onclick='cancelSaveAttribute(" + selectedContentId + ", " + selectedLanguageId + ", \"" + selectedAttributeName + "\", \"textarea\");' style='text-decoration: none;'>&nbsp;<img src=\"images/v3/cancelInlineIcon.gif\" style=\"background-image: none;\" alt=\"Cancel\" border=\"0\"/></a>");
 			   }
 			});
 		}
@@ -1036,6 +1036,39 @@ function saveAttribute(selectedContentId, selectedLanguageId, selectedAttributeN
 	}
 }
 
+function cancelSaveAttribute(selectedContentId, selectedLanguageId, selectedAttributeName, type)
+{
+	if(type == "textarea")
+	{
+		var data = "contentId=" + selectedContentId + "&languageId=" + selectedLanguageId + "&attributeName=" + selectedAttributeName + "&deliverContext=" + currentContext;
+
+		$.ajax({
+		   type: "GET",
+		   url: "" + componentEditorUrl + "UpdateContentVersionAttribute!getAttributeValue.action",
+		   data: data,
+		   success: function(msg){
+		     var oEditor = FCKeditorAPI.GetInstance("attribute" + selectedContentId + selectedAttributeName) ;
+		     $(oEditor.LinkedField.parentNode.parentNode).html(msg);
+		   }
+		 });
+	}
+	else if(type == "textfield")
+	{
+		//alert("Saving: " + selectedContentId + " " + selectedLanguageId + " " +  selectedAttributeName);
+		var value = $("#input" + selectedContentId + selectedAttributeName).val();
+		//alert("Value: " + value);
+		var data = "contentId=" + selectedContentId + "&languageId=" + selectedLanguageId + "&attributeName=" + selectedAttributeName + "&deliverContext=" + currentContext;
+	
+		$.ajax({
+		   type: "GET",
+		   url: "" + componentEditorUrl + "UpdateContentVersionAttribute!getAttributeValue.action",
+		   data: data,
+		   success: function(msg){
+		     $("#spanInput" + selectedContentId + selectedAttributeName).replaceWith(msg);
+		   }
+		 });
+	}
+}
 
 
 

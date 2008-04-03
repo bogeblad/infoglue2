@@ -26,6 +26,7 @@ package org.infoglue.cms.applications.contenttool.actions;
 import java.io.StringReader;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -33,11 +34,17 @@ import java.util.regex.Pattern;
 import org.apache.log4j.Logger;
 import org.apache.xerces.parsers.DOMParser;
 import org.exolab.castor.jdo.Database;
+import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
 import org.infoglue.cms.entities.content.Content;
+import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.content.ContentVersion;
 import org.infoglue.cms.entities.content.ContentVersionVO;
+import org.infoglue.cms.entities.management.ContentTypeAttribute;
+import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
 import org.infoglue.cms.entities.management.RegistryVO;
 import org.infoglue.cms.entities.structure.SiteNode;
 import org.infoglue.cms.util.CmsPropertyHandler;
@@ -118,20 +125,49 @@ public class UpdateContentVersionAttributeAction extends ViewContentVersionActio
     	super.initialize(this.contentVersionId, this.contentId, this.languageId);
 
 		this.contentVersionVO = this.getContentVersionVO();
+		if(this.contentVersionVO == null)
+		{
+			ContentVO contentVO = ContentController.getContentController().getContentVOWithId(contentId);
+			ContentTypeDefinitionVO contentTypeDefinitionVO = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithId(contentVO.getContentTypeDefinitionId());
 
+			StringBuffer sb = new StringBuffer();
+			sb.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?><article xmlns=\"x-schema:ArticleSchema.xml\"><attributes>");
+			List contentTypeAttributes = ContentTypeDefinitionController.getController().getContentTypeAttributes(contentTypeDefinitionVO.getSchemaValue());
+			Iterator contentTypeAttributesIterator = contentTypeAttributes.iterator();
+			while(contentTypeAttributesIterator.hasNext())
+			{
+				ContentTypeAttribute contentTypeAttribute = (ContentTypeAttribute)contentTypeAttributesIterator.next();
+				String initialValue = contentTypeAttribute.getContentTypeAttribute("initialData").getContentTypeAttributeParameterValue().getValue("label");
+				if(initialValue == null || initialValue.trim().equals(""))
+					initialValue = "State " + contentTypeAttribute.getName();
+				sb.append("<" + contentTypeAttribute.getName() + "><![CDATA[" + initialValue + "]]></" + contentTypeAttribute.getName() + ">");
+			}
+			sb.append("</attributes></article>");
+			
+			ContentVersionVO contentVersionVO = new ContentVersionVO();
+			contentVersionVO.setVersionComment("Autocreated");
+			contentVersionVO.setVersionModifier(this.getInfoGluePrincipal().getName());
+			contentVersionVO.setVersionValue(sb.toString());
+			this.contentVersionVO = ContentVersionController.getContentVersionController().create(contentId, languageId, contentVersionVO, null);
+		}
+		
 		String attributeValue = getRequest().getParameter(this.attributeName);
+		System.out.println("*************************************************");
+		System.out.println("** SAVING **");
+		System.out.println("*************************************************");
 		System.out.println("attributeValue:" + attributeValue);
 		if(attributeValue != null)
 		{
+			System.out.println("\n\nattributeValue original:" + attributeValue);
+			attributeValue = parseInlineAssetReferences(attributeValue);
+			System.out.println("attributeValue transformed:" + attributeValue + "\n\n");
+
 			setAttributeValue(this.contentVersionVO, this.attributeName, attributeValue);
 			ceb.throwIfNotEmpty();
 			
-			System.out.println("attributeValue original:" + attributeValue);
-			attributeValue = parseInlineAssetReferences(attributeValue);
-			System.out.println("attributeValue transformed:" + attributeValue);
-			
 			this.contentVersionVO.setVersionModifier(this.getInfoGluePrincipal().getName());
     		ContentVersionController.getContentVersionController().update(this.contentId, this.languageId, this.contentVersionVO, this.getInfoGluePrincipal());
+    		System.out.println("*************************************************");
 		
     		attributeValue = parseAttributeForInlineEditing(attributeValue);
 		}
@@ -162,9 +198,7 @@ public class UpdateContentVersionAttributeAction extends ViewContentVersionActio
 		
 		return NONE;		
 	}
-	
-	//"DownloadAsset.action?contentId=6938&amp;languageId=1&amp;assetKey=downloadIcon"
-	
+		
 	private String parseInlineAssetReferences(String attributeValue) throws Exception
 	{
 		Map<String,String> replacements = new HashMap<String,String>();
@@ -268,7 +302,7 @@ public class UpdateContentVersionAttributeAction extends ViewContentVersionActio
         		String parsedAssetKey = match.substring(match.lastIndexOf(",") + 1, match.lastIndexOf(")")).trim();
         		parsedAssetKey = parsedAssetKey.replaceAll("\"", "");
         		
-	            String url = this.getCMSBaseUrl() + "/DownloadAsset.action?contentId=" + contentId + "&languageId=" + this.languageId + "&assetKey=" + parsedAssetKey;
+	            String url = "DownloadAsset.action?contentId=" + contentId + "&languageId=" + this.languageId + "&assetKey=" + parsedAssetKey;
 	            System.out.println("url:" + url);
 	            replacements.put(match, url);
 	        }

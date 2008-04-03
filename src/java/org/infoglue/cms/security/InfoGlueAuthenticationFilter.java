@@ -143,6 +143,11 @@ public class InfoGlueAuthenticationFilter implements Filter
 
     	try
 		{			
+	        if (CmsPropertyHandler.getServletContext() == null) 
+	        {
+	        	CmsPropertyHandler.setServletContext(httpServletRequest.getContextPath());
+	        }
+
 			String URI = httpServletRequest.getRequestURI();
 			String URL = httpServletRequest.getRequestURL().toString();
 			if(logger.isInfoEnabled())
