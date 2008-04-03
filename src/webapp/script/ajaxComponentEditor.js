@@ -949,15 +949,28 @@ function editInline(repositoryId)
 			});
 			
 			var span = document.getElementById("attribute" + selectedContentId + selectedAttributeName);
-			//span.style.height = "20px";
-			var oFCKeditor = new FCKeditor("attribute" + selectedContentId + selectedAttributeName);
-			oFCKeditor.BasePath = "" + componentEditorUrl + "applications/FCKEditor/" ;
-			oFCKeditor.Config["CustomConfigurationsPath"] = "" + componentEditorUrl + "WYSIWYGProperties.action?" + parameterString;
-			oFCKeditor.Config['ToolbarStartExpanded'] = false ;
-			oFCKeditor.ToolbarSet = "Basic";
-			oFCKeditor.Height = totalHeight;
-			oFCKeditor.Value = span.innerHTML;
-			$("#attribute" + selectedContentId + selectedAttributeName).html(oFCKeditor.CreateHtml() + "<a onclick='saveAttribute(" + selectedContentId + ", " + selectedLanguageId + ", \"" + selectedAttributeName + "\", \"textarea\");'>&nbsp;<img src=\"images/v3/saveInlineIcon.gif\" alt=\"Save\" border=\"0\"/></a>");
+
+			var data = "contentId=" + selectedContentId + "&languageId=" + selectedLanguageId + "&attributeName=" + selectedAttributeName + "&deliverContext=" + currentContext;
+
+			var plainAttribute = span.innerHTML;
+			$.ajax({
+			   type: "GET",
+			   url: "" + componentEditorUrl + "UpdateContentVersionAttribute!getAttributeValue.action",
+			   data: data,
+			   success: function(msg){
+			   	 //alert( "Attribute fetched: " + msg );
+			   	 plainAttribute = msg;
+
+				 var oFCKeditor = new FCKeditor("attribute" + selectedContentId + selectedAttributeName);
+				 oFCKeditor.BasePath = "" + componentEditorUrl + "applications/FCKEditor/" ;
+				 oFCKeditor.Config["CustomConfigurationsPath"] = "" + componentEditorUrl + "WYSIWYGProperties.action?" + parameterString;
+				 oFCKeditor.Config['ToolbarStartExpanded'] = false ;
+				 oFCKeditor.ToolbarSet = "Basic";
+				 oFCKeditor.Height = totalHeight;
+				 oFCKeditor.Value = plainAttribute;
+				 $("#attribute" + selectedContentId + selectedAttributeName).html(oFCKeditor.CreateHtml() + "<a onclick='saveAttribute(" + selectedContentId + ", " + selectedLanguageId + ", \"" + selectedAttributeName + "\", \"textarea\");'>&nbsp;<img src=\"images/v3/saveInlineIcon.gif\" alt=\"Save\" border=\"0\"/></a>");
+			   }
+			});
 		}
 		else if(type == "textfield")
 		{
@@ -988,11 +1001,11 @@ function saveAttribute(selectedContentId, selectedLanguageId, selectedAttributeN
 		value = Url.encode(value);
 		
 		//alert("Value: " + value);
-		var data = "contentId=" + selectedContentId + "&languageId=" + selectedLanguageId + "&attributeName=" + selectedAttributeName + "&" + selectedAttributeName + "=" + value;
+		var data = "contentId=" + selectedContentId + "&languageId=" + selectedLanguageId + "&attributeName=" + selectedAttributeName + "&" + selectedAttributeName + "=" + value + "&deliverContext=" + currentContext;
 	
 		$.ajax({
 		   type: "POST",
-		   url: "http://localhost:8080/infoglueCMS/UpdateContentVersionAttribute!saveAndReturnValue.action",
+		   url: "" + componentEditorUrl + "UpdateContentVersionAttribute!saveAndReturnValue.action",
 		   data: data,
 		   success: function(msg){
 		   	 //alert( "Data Saved: " + msg );
@@ -1013,7 +1026,7 @@ function saveAttribute(selectedContentId, selectedLanguageId, selectedAttributeN
 	
 		$.ajax({
 		   type: "POST",
-		   url: "http://localhost:8080/infoglueCMS/UpdateContentVersionAttribute!saveAndReturnValue.action",
+		   url: "" + componentEditorUrl + "UpdateContentVersionAttribute!saveAndReturnValue.action",
 		   data: data,
 		   success: function(msg){
 		     //alert( "Data Saved: " + msg );

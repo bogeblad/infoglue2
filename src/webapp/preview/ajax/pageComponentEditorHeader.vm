@@ -1,5 +1,6 @@
 <script type="text/javascript">
 	var componentEditorUrl = "${componentEditorUrl}";
+	var currentContext = "${contextName}";
 	var currentUrl = "${currentUrl}";
 </script>
 <script type="text/javascript" src="${contextName}/script/dom-drag.js"></script>
