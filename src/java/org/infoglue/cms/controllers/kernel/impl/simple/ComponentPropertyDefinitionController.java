@@ -31,8 +31,10 @@ import org.apache.xerces.parsers.DOMParser;
 import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.applications.databeans.ComponentPropertyDefinition;
 import org.infoglue.cms.applications.databeans.ComponentPropertyOptionDefinition;
+import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
+import org.infoglue.cms.entities.management.LanguageVO;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -59,7 +61,16 @@ public class ComponentPropertyDefinitionController extends BaseController
 	
 	public List getComponentPropertyDefinitions(Database db, Integer contentId, Integer languageId) throws Exception
 	{
+		System.out.println("Getting content for properties def: " + contentId);
+		ContentVO contentVO = ContentController.getContentController().getContentVOWithId(contentId, db);
+		System.out.println("contentVO: " + contentVO.getName());
 		ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentId, languageId, db);
+		if(contentVersionVO == null)
+		{
+			LanguageVO masterLanguageVO = LanguageController.getController().getMasterLanguage(contentVO.getRepositoryId(), db);
+			contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentId, masterLanguageVO.getId(), db);
+		}
+		
 		String propertyXML = ContentVersionController.getContentVersionController().getAttributeValue(contentVersionVO, "ComponentProperties", false);
 		
 		return parseComponentPropertyDefinitions(propertyXML);

@@ -968,7 +968,7 @@ function editInline(repositoryId)
 				 oFCKeditor.ToolbarSet = "Basic";
 				 oFCKeditor.Height = totalHeight;
 				 oFCKeditor.Value = plainAttribute;
-				 $("#attribute" + selectedContentId + selectedAttributeName).html(oFCKeditor.CreateHtml() + "<a onclick='saveAttribute(" + selectedContentId + ", " + selectedLanguageId + ", \"" + selectedAttributeName + "\", \"textarea\");' style='text-decoration: none;'>&nbsp;<img src=\"images/v3/saveInlineIcon.gif\" alt=\"Save\" border=\"0\"/></a><a onclick='cancelSaveAttribute(" + selectedContentId + ", " + selectedLanguageId + ", \"" + selectedAttributeName + "\", \"textarea\");' style='text-decoration: none;'>&nbsp;<img src=\"images/v3/cancelInlineIcon.gif\" style=\"background-image: none;\" alt=\"Cancel\" border=\"0\"/></a>");
+				 $("#attribute" + selectedContentId + selectedAttributeName).html(oFCKeditor.CreateHtml() + "<a onclick='saveAttribute(" + selectedContentId + ", " + selectedLanguageId + ", \"" + selectedAttributeName + "\", \"textarea\");' style='text-decoration: none;' title='Save'>&nbsp;<img src=\"images/v3/saveInlineIcon.gif\" alt=\"Save\" border=\"0\"/></a><a onclick='cancelSaveAttribute(" + selectedContentId + ", " + selectedLanguageId + ", \"" + selectedAttributeName + "\", \"textarea\");' style='text-decoration: none;' title='Cancel edit'>&nbsp;<img src=\"images/v3/cancelInlineIcon.gif\" style=\"background-image: none;\" alt=\"Cancel\" border=\"0\"/></a>");
 			   }
 			});
 		}
@@ -980,7 +980,7 @@ function editInline(repositoryId)
 			//alert("text:" + text);
 			var fontSize = elementObject.parent().css("font-size");
 			//alert("fontSize:" + fontSize);
-			elementObject.html("<span id='spanInput" + selectedContentId + selectedAttributeName + "' class='inEditW'><input class='edit' ondblclick='if (event && event.stopPropagation) {event.stopPropagation();}else if (window.event) {window.event.cancelBubble = true;}return false;' id='input" + selectedContentId + selectedAttributeName + "' type='text' value='" + text + "' /><a onclick='saveAttribute(" + selectedContentId + ", " + selectedLanguageId + ", \"" + selectedAttributeName + "\", \"textfield\");' class='editSave'>&nbsp;<img src=\"images/v3/saveInlineIcon.gif\" alt=\"Save\" border=\"0\"/></a></span>");
+			elementObject.html("<span id='spanInput" + selectedContentId + selectedAttributeName + "' class='inEditW'><input class='edit' ondblclick='if (event && event.stopPropagation) {event.stopPropagation();}else if (window.event) {window.event.cancelBubble = true;}return false;' id='input" + selectedContentId + selectedAttributeName + "' type='text' value='" + text + "' /><a onclick='saveAttribute(" + selectedContentId + ", " + selectedLanguageId + ", \"" + selectedAttributeName + "\", \"textfield\");' style='text-decoration: none;' class='editSave'>&nbsp;<img src=\"images/v3/saveInlineIcon.gif\" alt=\"Save\" border=\"0\"/></a><a onclick='cancelSaveAttribute(" + selectedContentId + ", " + selectedLanguageId + ", \"" + selectedAttributeName + "\", \"textfield\");' style='text-decoration: none;' title='Cancel edit'>&nbsp;<img src=\"images/v3/cancelInlineIcon.gif\" style=\"background-image: none;\" alt=\"Cancel\" border=\"0\"/></a></span>");
 			$(".edit").css("font-size", fontSize);
 			$(".edit").css("border", "1px solid #ccc");
 		}
@@ -1191,7 +1191,9 @@ function executeTask(url, openInPopup)
 			alert("Could not start task - if you have a popup blocker this is most likely the cause.");
 	}
 	else
+	{
 		document.location.href = url;
+	}
 }
 
 function insertComponent() 

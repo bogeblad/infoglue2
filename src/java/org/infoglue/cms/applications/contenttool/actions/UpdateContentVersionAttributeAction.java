@@ -180,21 +180,35 @@ public class UpdateContentVersionAttributeAction extends ViewContentVersionActio
 
 	public String doGetAttributeValue() throws Exception
 	{
-		System.out.println("Getting content version attribute through ajax....");
-		System.out.println("contentId:" + contentId);
-		System.out.println("languageId:" + languageId);
-		System.out.println("attributeName:" + attributeName);
-		
-		super.initialize(this.contentVersionId, this.contentId, this.languageId);
-		this.contentVersionVO = this.getContentVersionVO();
-		
-		String attributeValue = ContentVersionController.getContentVersionController().getAttributeValue(contentVersionVO, attributeName, false);
-		System.out.println("attributeValue:" + attributeValue);
-		
-		attributeValue = parseAttributeForInlineEditing(attributeValue);		
-		
-		this.getResponse().setContentType("text/plain");
-        this.getResponse().getWriter().println(attributeValue);
+		try
+		{
+			/*
+			System.out.println("Getting content version attribute through ajax....");
+			System.out.println("contentId:" + contentId);
+			System.out.println("languageId:" + languageId);
+			System.out.println("attributeName:" + attributeName);
+			*/
+			
+			super.initialize(this.contentVersionId, this.contentId, this.languageId);
+			this.contentVersionVO = this.getContentVersionVO();
+			
+			String attributeValue = "";
+			if(this.contentVersionVO != null)
+			{
+				attributeValue = ContentVersionController.getContentVersionController().getAttributeValue(contentVersionVO, attributeName, false);
+			}
+			//System.out.println("attributeValue:" + attributeValue);
+			
+			attributeValue = parseAttributeForInlineEditing(attributeValue);		
+			
+			this.getResponse().setContentType("text/plain");
+	        this.getResponse().getWriter().println(attributeValue);			
+		}
+		catch (Exception e) 
+		{
+			e.printStackTrace();
+			throw e;
+		}
 		
 		return NONE;		
 	}
