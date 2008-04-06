@@ -166,6 +166,34 @@ public abstract class InfoGlueAbstractAction extends WebworkAbstractAction
 	 * @author Mattias Bogeblad
 	 */
 	
+	public String getPrincipalPropertyValue(InfoGluePrincipal infoGluePrincipal, String propertyName, boolean escapeSpecialCharacters, boolean findLargestValue)
+	{
+		logger.info("propertyName: " + propertyName);
+		logger.info("escapeSpecialCharacters: " + escapeSpecialCharacters);
+		logger.info("findLargestValue: " + findLargestValue);
+	    
+		String value = "";
+		
+		try
+		{
+		    LanguageVO languageVO = (LanguageVO)LanguageController.getController().getLanguageVOList().get(0);
+		    value = InfoGluePrincipalControllerProxy.getController().getPrincipalPropertyValue(infoGluePrincipal, propertyName, languageVO.getId(), null, false, escapeSpecialCharacters, findLargestValue);
+		}
+		catch(Exception e)
+		{
+		    logger.warn("An error occurred trying to get property " + propertyName + " from infoGluePrincipal:" + e.getMessage(), e);
+		}
+		
+		return value;
+	}
+
+	
+	/**
+	 * This method returns a propertyValue for the logged in user.
+	 * 
+	 * @author Mattias Bogeblad
+	 */
+	
 	public String getPrincipalPropertyValue(String propertyName, boolean escapeSpecialCharacters, boolean findLargestValue)
 	{
 		logger.info("propertyName: " + propertyName);
