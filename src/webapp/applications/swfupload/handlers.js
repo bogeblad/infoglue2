@@ -25,7 +25,7 @@ function fileQueueError(file, errorCode, message) {
 			break;
 		}
 
-		addImage("images/" + imageName);
+		addImage("images/" + imageName, "");
 
 	} catch (ex) {
 		this.debug(ex);
@@ -65,7 +65,8 @@ function uploadProgress(file, bytesLoaded) {
 function uploadSuccess(file, serverData) {
 	//alert("Upload ok:" + file + ": " + serverData);
 	try {
-		addImage("../" + serverData);
+		var dataArray = serverData.split(":");
+		addImage("" + dataArray[0], dataArray[1]);
 
 		var progress = new FileProgress(file,  this.customSettings.upload_target);
 
@@ -95,10 +96,11 @@ function uploadComplete(file) {
 }
 
 function uploadError(file, errorCode, message) {
-	alert("Upload error:" + file + ": " + errorCode + " - " + message);
+	//alert("Upload error:" + file + ": " + errorCode + " - " + message);
 	var imageName =  "error.gif";
 	var progress;
 	try {
+		//alert("errorCode:" + errorCode);
 		switch (errorCode) {
 		case SWFUpload.UPLOAD_ERROR.FILE_CANCELLED:
 			try {
@@ -124,12 +126,15 @@ function uploadError(file, errorCode, message) {
 		case SWFUpload.UPLOAD_ERROR.UPLOAD_LIMIT_EXCEEDED:
 			imageName = "uploadlimit.gif";
 			break;
+		case -200:
+			imageName = "existingAssetKeyError.gif";
+			break;
 		default:
 			alert(message);
 			break;
 		}
 
-		addImage("images/" + imageName);
+		addImage("images/" + imageName, "");
 
 	} catch (ex3) {
 		this.debug(ex3);
@@ -138,11 +143,14 @@ function uploadError(file, errorCode, message) {
 }
 
 
-function addImage(src) {
-	var newImg = document.createElement("img");
-	newImg.style.margin = "5px";
+function addImage(src, name) {
+	$("#thumbnails").append("<div style='float: left; height: 80px; text-align: center;'><img style='margin: 5px; border: 1px solid black;' src='" + src + "'/><br/><span style='font-size: 10px;'>" + name + "</span></div>");
 
-	document.getElementById("thumbnails").appendChild(newImg);
+	var thumbnailsElement = document.getElementById("thumbnails");
+	thumbnailsElement.style.border = "1px solid #c6d3e7";
+	thumbnailsElement.style.backgroundColor = "white";
+	thumbnailsElement.style.height = "200px";
+	 
 	if (newImg.filters) {
 		try {
 			newImg.filters.item("DXImageTransform.Microsoft.Alpha").opacity = 0;
@@ -198,6 +206,10 @@ function fadeIn(element, opacity) {
  * ****************************************** */
 
 function FileProgress(file, targetID) {
+	
+	var targetElement = document.getElementById(targetID);
+	targetElement.style.height = "50px";
+	
 	this.fileProgressID = "divFileProgress";
 
 	this.fileProgressWrapper = document.getElementById(this.fileProgressID);

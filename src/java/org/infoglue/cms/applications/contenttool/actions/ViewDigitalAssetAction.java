@@ -109,7 +109,14 @@ public class ViewDigitalAssetAction extends InfoGlueAbstractAction
         
         return "success";
     }
-       
+
+    public String doMultiple() throws Exception
+    {
+    	doExecute();
+    	
+        return "successMultiple";
+    }
+
     public String doUpdate() throws Exception
     {
     	this.digitalAssetVO = DigitalAssetController.getDigitalAssetVOWithId(this.digitalAssetId);

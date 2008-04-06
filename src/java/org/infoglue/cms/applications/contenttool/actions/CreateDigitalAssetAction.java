@@ -29,11 +29,13 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.applications.databeans.AssetKeyDefinition;
+import org.infoglue.cms.applications.databeans.SessionInfoBean;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
@@ -50,7 +52,9 @@ import org.infoglue.cms.entities.management.RoleProperties;
 import org.infoglue.cms.entities.management.RolePropertiesVO;
 import org.infoglue.cms.entities.management.UserProperties;
 import org.infoglue.cms.entities.management.UserPropertiesVO;
+import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.CmsPropertyHandler;
+import org.infoglue.cms.util.CmsSessionContextListener;
 
 import webwork.action.ActionContext;
 import webwork.config.Configuration;
@@ -77,6 +81,8 @@ public class CreateDigitalAssetAction extends ViewDigitalAssetAction
 	private String closeOnLoad;
 	private Integer contentTypeDefinitionId;
 	private String returnAddress = "";
+	private InfoGluePrincipal principal = null;
+	private boolean useFileNameAsContentTypeBase = false;
 
 	private VisualFormatter formatter = new VisualFormatter();
 	
@@ -119,8 +125,66 @@ public class CreateDigitalAssetAction extends ViewDigitalAssetAction
 		return ContentTypeDefinitionController.getController().getDefinedAssetKeys(this.contentTypeDefinitionVO.getSchemaValue());
 	}
 	
+    public String doMultiple() throws Exception //throws Exception
+    {
+    	System.out.println("Uploading file....");
+    	this.principal = getInfoGluePrincipal();
+    	
+		System.out.println("QueryString:" + this.getRequest().getQueryString());
+		String requestSessionId = this.getRequest().getParameter("JSESSIONID");
+		System.out.println("JSESSIONID:" + requestSessionId);
+		boolean allowedSessionId = false;
+		List activeSessionBeanList = CmsSessionContextListener.getSessionInfoBeanList();
+		Iterator activeSessionsIterator = activeSessionBeanList.iterator();
+		System.out.println("activeSessionBeanList:" + activeSessionBeanList.size());
+		while(activeSessionsIterator.hasNext())
+		{
+			SessionInfoBean sessionBean = (SessionInfoBean)activeSessionsIterator.next();
+			System.out.println("sessionBean:" + sessionBean.getId() + "=" + sessionBean.getPrincipal().getName());
+			if(sessionBean.getId().equals(requestSessionId))
+			{
+				System.out.println("Found a matching sessionId");
+				allowedSessionId = true;
+		    	this.principal = sessionBean.getPrincipal();
+
+				break;
+			}
+		}
+		
+		if(!allowedSessionId)
+		{
+			return "uploadFailed";	
+		}
+		
+		useFileNameAsContentTypeBase = true;
+		
+		String result = doExecute();
+		
+		if(result.equals("success"))
+		{
+			String assetUrl = getDigitalAssetUrl();
+			System.out.println("assetUrl:" + assetUrl);
+			String assetThumbnailUrl = getAssetThumbnailUrl();
+			System.out.println("assetThumbnailUrl:" + assetThumbnailUrl);
+			this.getResponse().setContentType("text/plain");
+	        this.getResponse().getWriter().println(assetThumbnailUrl + ":" + this.digitalAssetKey);
+	        return NONE;
+		}
+		else
+		{
+			this.getResponse().setContentType("text/plain");
+            this.getResponse().setStatus(this.getResponse().SC_INTERNAL_SERVER_ERROR);
+            this.getResponse().getWriter().println("Error uploading to " + this.digitalAssetKey);
+            return NONE;
+		}
+	}
+    
     public String doExecute() throws IOException //throws Exception
     {
+    	System.out.println("Uploading file....");
+    	if(this.principal == null)
+    		this.principal = getInfoGluePrincipal();
+    	
         try
         {
             MultiPartRequestWrapper mpr = ActionContext.getMultiPartRequest();
@@ -180,16 +244,55 @@ public class CreateDigitalAssetAction extends ViewDigitalAssetAction
 							toEncoding = "utf-8";
 						
 		            	digitalAssetKey = new String(digitalAssetKey.getBytes(fromEncoding), toEncoding);
+		            			            	
+		            	System.out.println("digitalAssetKey:" + digitalAssetKey);
+		            	System.out.println("name:" + name);
+		            	System.out.println("contentType:" + contentType);
+		            	System.out.println("fileSystemName:" + fileSystemName);
+		            	if(digitalAssetKey == null || digitalAssetKey.equals(""))
+		            	{
+		            		if(fileSystemName.lastIndexOf(".") > -1)
+		            			digitalAssetKey = fileSystemName.substring(0, fileSystemName.lastIndexOf("."));
+		            		digitalAssetKey = formatter.replaceNonAscii(digitalAssetKey, '_');
+		            	}
+		            	System.out.println("digitalAssetKey:" + digitalAssetKey);
 		            	
-		            	logger.info("digitalAssetKey:" + digitalAssetKey);
-		            	logger.info("name:" + name);
-		            	logger.info("contentType:" + contentType);
-		            	logger.info("fileSystemName:" + fileSystemName);
+		            	if(useFileNameAsContentTypeBase)
+		            	{
+		            		if(fileSystemName.lastIndexOf(".") > -1)
+		            		{
+		            			String extension = fileSystemName.substring(fileSystemName.lastIndexOf(".") + 1);
+		            			System.out.println("extension:" + extension);	
 
+		            			if(extension.equalsIgnoreCase("gif"))
+			            			contentType = "image/gif";
+			            		else if(extension.equalsIgnoreCase("jpg"))
+			            			contentType = "image/jpg";
+			            		else if(extension.equalsIgnoreCase("png"))
+			            			contentType = "image/png";
+			            		
+			            		else if(extension.equalsIgnoreCase("pdf"))
+			            			contentType = "application/pdf";
+			            		else if(extension.equalsIgnoreCase("doc"))
+			            			contentType = "application/msword";
+			            		else if(extension.equalsIgnoreCase("xls"))
+			            			contentType = "application/vnd.ms-excel";
+			            		else if(extension.equalsIgnoreCase("ppt"))
+			            			contentType = "application/vnd.ms-powerpoint";
+			            		else if(extension.equalsIgnoreCase("zip"))
+			            			contentType = "application/zip";
+			            		else if(extension.equalsIgnoreCase("xml"))
+			            			contentType = "text/xml";		            		
+		            		}
+		            	}
+		            	System.out.println("contentType:" + contentType);
+		            	
 		            	file = mpr.getFile(name);
 		            	//String fileName = this.contentVersionId + "_" + System.currentTimeMillis() + "_" + fileSystemName;
 						String fileName = fileSystemName;
-						
+
+		            	System.out.println("fileSystemName:" + fileSystemName);
+
 						fileName = new VisualFormatter().replaceNonAscii(fileName, '_');
 						
 						String tempFileName = "tmp_" + System.currentTimeMillis() + "_" + fileName;
@@ -211,8 +314,27 @@ public class CreateDigitalAssetAction extends ViewDigitalAssetAction
 						//is = new FileInputStream(renamedFile);
 						if(CmsPropertyHandler.getEnableDiskAssets().equals("false"))
 							is = new FileInputStream(file);
-						
-						String fileUploadMaximumSize = getPrincipalPropertyValue("fileUploadMaximumSize", false, true);
+
+		            	List existingAssetVOList = DigitalAssetController.getDigitalAssetVOList(contentVersionId);
+		            	Iterator existingAssetVOListIterator = existingAssetVOList.iterator();
+		            	while(existingAssetVOListIterator.hasNext())
+		            	{
+		            		DigitalAssetVO existingDigitalAssetVO = (DigitalAssetVO)existingAssetVOListIterator.next();
+		            		if(existingDigitalAssetVO.getAssetKey().equalsIgnoreCase(digitalAssetKey))
+		            		{
+							    file.delete();
+							    this.reasonKey = "tool.contenttool.fileUpload.fileUploadFailedOnAssetKeyExistingText";
+				                this.uploadMaxSize = "\"" + digitalAssetKey + "\"";
+				                this.getResponse().setContentType("text/html; charset=UTF-8");
+				    	        //this.getResponse().setStatus(responseCode);
+				                System.out.println("this.getResponse():" + this.getResponse());
+				                this.getResponse().setHeader("sendIGError", "true");
+				    	        
+			                	return "uploadFailed";						        
+		            		}
+		            	}
+
+						String fileUploadMaximumSize = getPrincipalPropertyValue(this.principal, "fileUploadMaximumSize", false, true);
 						logger.info("fileUploadMaximumSize in create:" + fileUploadMaximumSize);
 						if(!fileUploadMaximumSize.equalsIgnoreCase("-1") && new Integer(fileUploadMaximumSize).intValue() < new Long(file.length()).intValue())
 						{
