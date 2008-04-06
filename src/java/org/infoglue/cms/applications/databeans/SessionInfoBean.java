@@ -34,8 +34,18 @@ import org.infoglue.cms.security.InfoGluePrincipal;
 
 public class SessionInfoBean
 {
+    private String id;
     private InfoGluePrincipal principal;
     private Date lastAccessedDate;
+    
+    private SessionInfoBean()
+    {
+    }
+    
+    public SessionInfoBean(String id)
+    {
+    	this.id = id;
+    }
     
 	public Date getLastAccessedDate() 
 	{
@@ -55,5 +65,10 @@ public class SessionInfoBean
 	public void setPrincipal(InfoGluePrincipal principal) 
 	{
 		this.principal = principal;
+	}
+
+	public String getId()
+	{
+		return id;
 	}
 }

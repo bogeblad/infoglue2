@@ -92,7 +92,7 @@ public class CmsSessionContextListener implements HttpSessionListener
 				String s = (String) iter.next();
 				HttpSession sess = (HttpSession) sessions.get(s);
 			
-				SessionInfoBean sib = new SessionInfoBean();
+				SessionInfoBean sib = new SessionInfoBean(sess.getId());
 				
 				InfoGluePrincipal principal = (InfoGluePrincipal)sess.getAttribute(InfoGlueAuthenticationFilter.INFOGLUE_FILTER_USER);
 				if(principal == null)
