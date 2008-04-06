@@ -433,6 +433,8 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
     	ContentVersionController.getContentVersionController().deleteDigitalAssetRelation(getContentVersionId(), this.digitalAssetId);
     	//this.initialize(getContentVersionId(), getContentId(), this.languageId);
     	//return "success";
+    	anchor = "digitalAssetsBlock";
+    	
     	return doExecute();
     }
     
@@ -441,6 +443,8 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
     	ContentVersionController.getContentVersionController().deleteDigitalAssetRelation(getContentVersionId(), this.digitalAssetId);
     	//this.initialize(getContentVersionId(), getContentId(), this.languageId);
     	//return "success";
+    	anchor = "digitalAssetsBlock";
+
     	return doStandalone();
     }
     

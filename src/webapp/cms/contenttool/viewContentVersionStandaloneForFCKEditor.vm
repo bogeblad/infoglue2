@@ -879,7 +879,7 @@
 		</tr>
 		<tr>
 			<td colspan="3">
-				$ui.getString("tool.contenttool.associatedAttachments")<br/>
+				<a name="digitalAssetsBlock">$ui.getString("tool.contenttool.associatedAttachments")</a><br/>
 				<table border="0" width="100%" cellspacing="0">
 				<tr>
 					#set($counter = 0)
