@@ -37,6 +37,36 @@ Abbreviated Changelog from 2.8.1 Final
 - Added jquery validate plugin - great javascript library for validating forms.
 - Added new attribute "map" to common:size tag so one can choose to size up maps as well.
 - Added new tag commons:contains which returns if an object is equal to or is contained in another object or collection/map.
+- Added possibility to state more options on component properties: defaultValue, WYSIWYGEnabled and WYSIWYGToolbar
+- Added a parse-attribute to structure:componentPropertyValue-tag so now wysiwyg-content can be rendered ok.
+- Improved startup handling of property loading.
+- Worked on improved access rights to role/user/group-management. The new feature allows you to distribute management in an organisation.
+- Improved create user screen so one can select roles and groups directly. The roles and groups are filtered (if you have that turned on) so you only let users assign roles/groups they are allowed to assign.
+- Fixed bug in deployment tool.
+- Made it possible to move components between slots and within a slot by dragging it.
+- Added a setting under my settings in the tools so one can define which repository should be default when you log in.
+- Added new exiting features in component properties. Now it's possible to define dataProviders for properties of type select, checkbox or radiobuttons. Added an initial contenttypes data provider.
+- Added extraParameters to assignPropertyBindingTag
+- Fixed issues where popup windows did not get focus before.
+- Added new tags (RemoteSiteNodeTag and SiteNodeParameterTag) to enable programmatic page creation from deliver.
+- Added a redirect-tag called commons:sendRedirect. 
+- Added method for replacing a component structure on a page - an effort because we wanted one page to be able to load and edit pagepart-definitions.
+- Added a new cleaup-job which deletes old content versions. Great for keeping down database size. By default it keeps the 10 latest versions of each language but you can define this yourself.
+- Added floatdiv as a seperate js-file.
+- Worked on a more flexible mydesktop with a more outlook approach.
+- New images and css for version 3
+- Added classes for the new Toolbar system for version 3
+- Added tags (management:formEntryParameter etc) and form webservice.
+- Started implementing the new inline editing feature.
+- Added initial version of a feature that let's you define that content bindings are automatically created with a new content. Makes it supereasy for new users.
+- Added new date property-type.
+- Added new date content type attribute.
+- Added method which allows fallback to other language than masterlanguage - now supports so components between repositories can be shared even though in different languages.
+- Started adding multi file upload through the eminent swfupload-flash component.
+- Fixed so the screen scrolls down to to the assets after you delete one. 
+- Added feature which checks if the content version has an identical assetKey allready and denies duplicates.
+- Added possibility to automatically convert images to other formats/sizes upon upload. Only works for jpg, png and gif so far. Will be expanded later with other file formats. Convenient for controlling what users upload.
+
 
 -------------------------------------------------------------------------------------
 - InfoGlue 2.8.1 Final
