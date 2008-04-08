@@ -24,6 +24,7 @@
 package org.infoglue.cms.applications.contenttool.actions;
 
 import java.awt.Image;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -33,6 +34,8 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.dom4j.Document;
+import org.dom4j.Element;
 import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.applications.databeans.AssetKeyDefinition;
 import org.infoglue.cms.applications.databeans.SessionInfoBean;
@@ -55,6 +58,11 @@ import org.infoglue.cms.entities.management.UserPropertiesVO;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.CmsSessionContextListener;
+import org.infoglue.cms.util.XMLHelper;
+import org.infoglue.cms.util.dom.DOMBuilder;
+
+import com.mullassery.imaging.Imaging;
+import com.mullassery.imaging.ImagingFactory;
 
 import webwork.action.ActionContext;
 import webwork.config.Configuration;
@@ -85,6 +93,7 @@ public class CreateDigitalAssetAction extends ViewDigitalAssetAction
 	private boolean useFileNameAsContentTypeBase = false;
 
 	private VisualFormatter formatter = new VisualFormatter();
+	private Imaging imaging = ImagingFactory.createImagingInstance(ImagingFactory.AWT_LOADER, ImagingFactory.JAVA2D_TRANSFORMER);
 	
     public CreateDigitalAssetAction()
     {
@@ -424,9 +433,15 @@ public class CreateDigitalAssetAction extends ViewDigitalAssetAction
 						}
 						
 						if(this.contentVersionId != null)
-						    digitalAssetVO = DigitalAssetController.create(newAsset, is, this.contentVersionId);
-			         	else
-			         	    digitalAssetVO = DigitalAssetController.create(newAsset, is, this.entity, this.entityId);
+						{
+						    boolean keepOriginal = handleTransformations(newAsset, file, contentType);
+						    if(keepOriginal)
+						    	digitalAssetVO = DigitalAssetController.create(newAsset, is, this.contentVersionId);
+						}
+						else
+						{
+							digitalAssetVO = DigitalAssetController.create(newAsset, is, this.entity, this.entityId);
+						}
 
 						if(CmsPropertyHandler.getEnableDiskAssets().equals("true"))
 						{
@@ -479,6 +494,126 @@ public class CreateDigitalAssetAction extends ViewDigitalAssetAction
         
         return "success";
     }
+
+	private boolean handleTransformations(DigitalAssetVO originalAssetVO, File file, String contentType)
+	{
+		boolean keepOriginal = true;
+		try
+		{
+			String transformationsXML = CmsPropertyHandler.getAssetUploadTransformationsSettings();
+			if(transformationsXML == null || transformationsXML.equals(""))
+				return keepOriginal;
+				
+			DOMBuilder domBuilder = new DOMBuilder();
+			Document document = domBuilder.getDocument(transformationsXML);
+		    Element rootElement = document.getRootElement();
+		    
+			String transformationXPath = "//transformation";
+			List transformationElements = rootElement.selectNodes(transformationXPath);
+			System.out.println("transformationElements:" + transformationElements.size());
+			
+			/*
+			<transformations>
+			  <transformation inputFilePattern=".*(jpeg|jpg|gif|png).*" keepOriginal="false">
+			    <tranformResult type="scaleImage" width="100" height="100" outputFormat="png" assetSuffix="medium"/>
+			    <tranformResult type="scaleImage" width="50" height="50" outputFormat="jpg" assetSuffix="small"/>
+			  </transformation>
+			</transformations>
+			*/
+			
+			Iterator transformationElementsIterator = transformationElements.iterator();
+			while(transformationElementsIterator.hasNext())
+			{
+				Element transformationElement = (Element)transformationElementsIterator.next();
+			
+				String inputFilePattern  = transformationElement.attributeValue("inputFilePattern");
+				String keepOriginalAsset = transformationElement.attributeValue("keepOriginal");
+				if(keepOriginalAsset != null && keepOriginalAsset.equalsIgnoreCase("false"))
+					keepOriginal = false;
+				
+				System.out.println("inputFilePattern: " + inputFilePattern);
+				System.out.println("keepOriginal:" + keepOriginal);
+				
+				if(contentType.matches(inputFilePattern))
+				{
+					System.out.println("We got a match on contentType:" + contentType + " : " + inputFilePattern);
+
+					List tranformResultElements = transformationElement.elements("tranformResult");
+					Iterator tranformResultElementsIterator = tranformResultElements.iterator();
+					while(tranformResultElementsIterator.hasNext())
+					{
+						Element tranformResultElement = (Element)tranformResultElementsIterator.next();
+					
+						String type 		= tranformResultElement.attributeValue("type");
+						String width 		= tranformResultElement.attributeValue("width");
+						String height 		= tranformResultElement.attributeValue("height");
+						String outputFormat	= tranformResultElement.attributeValue("outputFormat");
+						String assetSuffix 	= tranformResultElement.attributeValue("assetSuffix");
+	
+						System.out.println("type: " + type);
+						System.out.println("width: " + width);
+						System.out.println("height: " + height);
+						System.out.println("outputFormat: " + outputFormat);
+						System.out.println("assetSuffix: " + assetSuffix);
+						
+						if(type.equalsIgnoreCase("scaleImage"))
+							scaleAndSaveImage(originalAssetVO, file, Integer.parseInt(width), Integer.parseInt(height), outputFormat, assetSuffix);
+					}
+				}
+				else
+					System.out.println("NOOOO match on contentType:" + contentType + " : " + inputFilePattern);
+			}
+		}
+		catch (Exception e) 
+		{
+			e.printStackTrace();
+		}
+		
+		return keepOriginal;
+	}
+
+	private void scaleAndSaveImage(DigitalAssetVO originalAssetVO, File file, int width, int height, String outputFormat, String assetSuffix) throws Exception
+	{
+		System.out.println("Scaling image to new format:" + originalAssetVO + ":" + outputFormat);
+    	BufferedImage original = javax.imageio.ImageIO.read(file);
+    	
+    	int originalWidth = original.getWidth();
+    	int originalHeight = original.getHeight();
+    	float aspect = (float)originalWidth / (float)originalHeight;
+    	BufferedImage image = null;
+    	
+    	if(height == -1 && width != -1)
+    		aspect = (float)width / (float)originalWidth;
+    	else if(width == -1 && height != -1)
+    		aspect = (float)height / (float)originalHeight;
+    	else
+    		aspect = (float)width / (float)originalWidth;
+    	
+    	System.out.println("aspect:" + aspect);
+    	
+    	image = imaging.scale(original, aspect);        	
+	
+    	String workingFileName = "" + originalAssetVO.getDigitalAssetId() + "_" + assetSuffix + "." + outputFormat.toLowerCase();
+    	File outputFile = new File(CmsPropertyHandler.getDigitalAssetPath() + File.separator + workingFileName);
+		javax.imageio.ImageIO.write(image, outputFormat, outputFile);
+		
+		String assetContentType = "image/png";
+		if(outputFormat.equalsIgnoreCase("gif"))
+			assetContentType = "image/gif";
+		if(outputFormat.equalsIgnoreCase("jpg"))
+			assetContentType = "image/jpeg";
+		
+		DigitalAssetVO digitalAssetVO = new DigitalAssetVO();
+		digitalAssetVO.setAssetContentType(assetContentType);
+		digitalAssetVO.setAssetFileName(outputFile.getName());
+		digitalAssetVO.setAssetFilePath(outputFile.getPath());
+		digitalAssetVO.setAssetFileSize(new Integer((int)outputFile.length()));
+		digitalAssetVO.setAssetKey(originalAssetVO.getAssetKey() + "_" + assetSuffix);
+		
+		InputStream is = new FileInputStream(outputFile);
+		this.digitalAssetVO = DigitalAssetController.create(digitalAssetVO, is, this.contentVersionId);
+		is.close();
+	}
 
 	/**
 	 * This method fetches the blob from the database and saves it on the disk.

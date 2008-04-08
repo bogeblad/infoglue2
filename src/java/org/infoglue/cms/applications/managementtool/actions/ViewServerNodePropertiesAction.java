@@ -284,6 +284,7 @@ public class ViewServerNodePropertiesAction extends InfoGluePropertiesAbstractAc
 	    populate(ps, "defaultPublicationEventFilter");
 	    
 	    populate(ps, "numberOfVersionsToKeepDuringClean");
+	    populateData(ps, "assetUploadTransformationsSettings");
 
 
 	    try

@@ -1228,6 +1228,11 @@ public class CmsPropertyHandler
 		return getServerNodeProperty("numberOfVersionsToKeepDuringClean", true, "-1");
 	}
 
+	public static String getAssetUploadTransformationsSettings()
+	{
+		return getServerNodeDataProperty(null, "assetUploadTransformationsSettings", true, "");
+	}
+
 	public static String getAllowPublicationEventFilter()
 	{
 	    return getServerNodeProperty("allowPublicationEventFilter", true, "false");
