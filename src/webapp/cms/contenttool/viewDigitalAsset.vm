@@ -32,7 +32,7 @@
 					"contentVersionId": "$!contentVersionId",
 					"uploadedFilesCounter": "$!uploadedFilesCounter",
 					"closeOnLoad": "$!closeOnLoad",
-					"JSESSIONID": "$this.getRequest().getSession().getId()"
+					"JSESSIONID": "$this.getSessionId()"
 					},
 
 				// File Upload Settings

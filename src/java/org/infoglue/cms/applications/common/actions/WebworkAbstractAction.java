@@ -421,5 +421,8 @@ public abstract class WebworkAbstractAction implements Action, ServletRequestAwa
         return new Session(getHttpSession());
     }
   
-
+    public final String getSessionId()
+    {
+    	return getHttpSession().getId();
+    }
 }
