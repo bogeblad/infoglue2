@@ -91,6 +91,7 @@
 				/ViewApplicationState!setLogLevel.action,
 				/ViewMessageCenter!getSystemMessages.action,
 				/ErrorPage.action,
+				/CreateDigitalAsset!multiple.action,
                 /index-cms.html,
                 /scripts/*,
                 /script/*,
