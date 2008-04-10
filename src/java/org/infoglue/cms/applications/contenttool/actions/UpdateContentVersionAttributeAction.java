@@ -35,8 +35,10 @@ import org.apache.log4j.Logger;
 import org.apache.xerces.parsers.DOMParser;
 import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.applications.common.VisualFormatter;
+import org.infoglue.cms.controllers.kernel.impl.simple.AccessRightController;
 import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
 import org.infoglue.cms.entities.content.Content;
@@ -47,6 +49,9 @@ import org.infoglue.cms.entities.management.ContentTypeAttribute;
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
 import org.infoglue.cms.entities.management.RegistryVO;
 import org.infoglue.cms.entities.structure.SiteNode;
+import org.infoglue.cms.exception.AccessConstraintException;
+import org.infoglue.cms.exception.ConstraintException;
+import org.infoglue.cms.util.AccessConstraintExceptionBuffer;
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
 import org.infoglue.cms.util.XMLHelper;
@@ -191,6 +196,15 @@ public class UpdateContentVersionAttributeAction extends ViewContentVersionActio
 			
 			super.initialize(this.contentVersionId, this.contentId, this.languageId);
 			this.contentVersionVO = this.getContentVersionVO();
+			
+			AccessConstraintExceptionBuffer ceb = new AccessConstraintExceptionBuffer();
+			
+			Integer protectedContentId = ContentControllerProxy.getController().getProtectedContentId(this.contentVersionVO.getContentId());
+			System.out.println("protectedContentId:" + protectedContentId);
+			if(protectedContentId != null && !AccessRightController.getController().getIsPrincipalAuthorized(this.getInfoGluePrincipal(), "Content.Write", protectedContentId.toString()))
+				ceb.add(new AccessConstraintException("Content.contentId", "1001"));
+
+			ceb.throwIfNotEmpty();
 			
 			String attributeValue = "";
 			if(this.contentVersionVO != null)

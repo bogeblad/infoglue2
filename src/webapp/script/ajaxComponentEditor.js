@@ -969,6 +969,10 @@ function editInline(repositoryId)
 				 oFCKeditor.Height = totalHeight;
 				 oFCKeditor.Value = plainAttribute;
 				 $("#attribute" + selectedContentId + selectedAttributeName).html(oFCKeditor.CreateHtml() + "<a onclick='saveAttribute(" + selectedContentId + ", " + selectedLanguageId + ", \"" + selectedAttributeName + "\", \"textarea\");' style='text-decoration: none;' title='Save'>&nbsp;<img src=\"images/v3/saveInlineIcon.gif\" alt=\"Save\" border=\"0\"/></a><a onclick='cancelSaveAttribute(" + selectedContentId + ", " + selectedLanguageId + ", \"" + selectedAttributeName + "\", \"textarea\");' style='text-decoration: none;' title='Cancel edit'>&nbsp;<img src=\"images/v3/cancelInlineIcon.gif\" style=\"background-image: none;\" alt=\"Cancel\" border=\"0\"/></a>");
+			   },
+			   error: function (XMLHttpRequest, textStatus, errorThrown) {
+				  alert("You are not allowed to edit this text!");
+				  this; 
 			   }
 			});
 		}

@@ -2,6 +2,8 @@
 	var componentEditorUrl = "${componentEditorUrl}";
 	var currentContext = "${contextName}";
 	var currentUrl = "${currentUrl}";
+	
+	${limitedUserWarning}
 </script>
 <script type="text/javascript" src="${contextName}/script/dom-drag.js"></script>
 <script type="text/javascript" src="${contextName}/script/ajaxComponentEditor.js"></script>
