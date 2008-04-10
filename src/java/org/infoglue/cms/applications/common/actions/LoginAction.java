@@ -23,9 +23,14 @@
 
 package org.infoglue.cms.applications.common.actions;
 
+import javax.servlet.ServletContext;
+
 import org.infoglue.cms.controllers.usecases.common.LoginUCC;
 import org.infoglue.cms.controllers.usecases.common.LoginUCCFactory;
 import org.infoglue.cms.security.AuthenticationModule;
+import org.infoglue.deliver.util.HttpHelper;
+
+import webwork.action.ActionContext;
 
 public class LoginAction extends InfoGlueAbstractAction
 {
@@ -36,6 +41,8 @@ public class LoginAction extends InfoGlueAbstractAction
 	private String errorMessage = "";
 	private String referringUrl = null;
 	
+	private HttpHelper httpHelper = new HttpHelper();
+
 	public void setUserName(String userName)
 	{
 		this.userName = userName;
@@ -105,6 +112,10 @@ public class LoginAction extends InfoGlueAbstractAction
 	public String doLogout() throws Exception
 	{
 		getHttpSession().invalidate();
+		
+		String encodedUserNameCookie = httpHelper.getCookie(this.getRequest(), "iguserid");
+		if(encodedUserNameCookie != null)
+			ActionContext.getServletContext().removeAttribute(encodedUserNameCookie);
 		
 		AuthenticationModule authenticationModule = AuthenticationModule.getAuthenticationModule(null, null);
 		boolean redirected = authenticationModule.logoutUser(getRequest(), getResponse());
