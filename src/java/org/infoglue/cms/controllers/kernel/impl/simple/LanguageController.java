@@ -260,27 +260,36 @@ public class LanguageController extends BaseController
 	
 	public LanguageVO getLanguageVOWithCode(String code) throws SystemException, Bug
 	{
-		LanguageVO languageVO = null;
-		
-		Database db = CastorDatabaseService.getDatabase();
-
-		try 
+		String key = "" + code;
+		LanguageVO languageVO = (LanguageVO)CacheController.getCachedObject("languageCache", key);
+		if(languageVO != null)
 		{
-			beginTransaction(db);
-
-			Language language = getLanguageWithCode(code, db);
-			if(language != null)
-				languageVO = language.getValueObject();
-			
-			commitTransaction(db);
-		} 
-		catch (Exception e) 
-		{
-			logger.info("An error occurred so we should not complete the transaction:" + e);
-			rollbackTransaction(db);
-			throw new SystemException(e.getMessage());
+			logger.info("There was an cached languageVO:" + languageVO);
 		}
-		
+		else
+		{
+			Database db = CastorDatabaseService.getDatabase();
+
+			try 
+			{
+				beginTransaction(db);
+
+				Language language = getLanguageWithCode(code, db);
+				if(language != null)
+					languageVO = language.getValueObject();
+				
+				commitTransaction(db);
+			} 
+			catch (Exception e) 
+			{
+				logger.info("An error occurred so we should not complete the transaction:" + e);
+				rollbackTransaction(db);
+				throw new SystemException(e.getMessage());
+			}
+
+			CacheController.cacheObject("languageCache", key, languageVO);				
+		}
+
 		return languageVO;	
 	}
 	

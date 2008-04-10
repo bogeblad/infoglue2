@@ -35,6 +35,7 @@ import org.infoglue.cms.entities.workflow.impl.simple.WorkflowDefinitionImpl;
 import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
+import org.infoglue.deliver.util.CacheController;
 
 /**
  * @author Mattias Bogeblad
@@ -134,20 +135,17 @@ public class WorkflowDefinitionController extends BaseController
 
     public List getWorkflowDefinitionVOList() throws SystemException, Bug
     {
-		/*
+		
         String key = "workflowDefinitionVOList";
-		logger.info("key:" + key);
-		List cachedWorkflowDefinitionVOList = (List)CacheController.getCachedObject("workflowDefinitionCache", key);
+		List cachedWorkflowDefinitionVOList = (List)CacheController.getCachedObject("workflowCache", key);
 		if(cachedWorkflowDefinitionVOList != null)
 		{
-			logger.info("There was an cached workflowDefinitionVOList:" + cachedWorkflowDefinitionVOList.size());
 			return cachedWorkflowDefinitionVOList;
 		}
-		*/
-        
-		List workflowDefinitionVOList = getAllVOObjects(WorkflowDefinitionImpl.class, "workflowDefinitionId");
+		
+        List workflowDefinitionVOList = getAllVOObjects(WorkflowDefinitionImpl.class, "workflowDefinitionId");
 
-		//CacheController.cacheObject("workflowDefinitionCache", key, workflowDefinitionVOList);
+		CacheController.cacheObject("workflowCache", key, workflowDefinitionVOList);
 
 		return workflowDefinitionVOList;
     }

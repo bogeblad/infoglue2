@@ -37,6 +37,7 @@ import org.infoglue.deliver.util.CacheController;
 import com.opensymphony.workflow.FactoryException;
 import com.opensymphony.workflow.InvalidWorkflowDescriptorException;
 import com.opensymphony.workflow.loader.AbstractWorkflowFactory;
+import com.opensymphony.workflow.loader.StepDescriptor;
 import com.opensymphony.workflow.loader.WorkflowDescriptor;
 import com.opensymphony.workflow.loader.WorkflowLoader;
 
@@ -274,7 +275,18 @@ public class InfoGlueWorkflowFactory extends AbstractWorkflowFactory
             
             //System.out.println("c.workflowDefinitionVO.getValue():\n" + c.workflowDefinitionVO.getValue());
             //c.descriptor = WorkflowLoader.load(new ByteArrayInputStream(c.workflowDefinitionVO.getValue().getBytes("ISO-8859-1")) , validate);
-            c.descriptor = WorkflowLoader.load(new ByteArrayInputStream(c.workflowDefinitionVO.getValue().getBytes(encoding)) , validate);
+            WorkflowDescriptor workflowDescriptor = (WorkflowDescriptor)CacheController.getCachedObject("workflowCache", "workflowDescriptor_" + c.workflowDefinitionVO.getName());
+            if(workflowDescriptor == null)
+            {
+            	//System.out.println("No cached workflow descriptor - reading it...");
+            	workflowDescriptor = WorkflowLoader.load(new ByteArrayInputStream(c.workflowDefinitionVO.getValue().getBytes(encoding)) , validate);
+            	CacheController.cacheObject("workflowCache", "workflowDescriptor_" + c.workflowDefinitionVO.getName(), workflowDescriptor);
+            }
+            else
+            {
+            	//System.out.println("Found cached workflow descriptor - using it...");
+            }
+            c.descriptor = workflowDescriptor; //WorkflowLoader.load(new ByteArrayInputStream(c.workflowDefinitionVO.getValue().getBytes(encoding)) , validate);
         } 
         catch (Exception e) 
         {
