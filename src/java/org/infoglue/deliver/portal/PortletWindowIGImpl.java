@@ -96,7 +96,8 @@ class PortletWindowIGImpl implements PortletWindowIG
     		{
             	wrappedRequest.setAttribute("infogluePrincipal", infogluePrincipal);
             	wrappedRequest.setAttribute("infoglueRemoteUser", infogluePrincipal.getName());
-            }
+            	wrappedRequest.setAttribute("cmsUserName", infogluePrincipal.getName());
+    		}
             
             // -- Ask portlet container to render the portlet (into buffer)
             portletContainer.renderPortlet(renderWindow, wrappedRequest, wrappedResponse);

@@ -523,13 +523,17 @@ public class ViewPageAction extends InfoGlueAbstractAction
 
 			String protectWorking = CmsPropertyHandler.getProtectDeliverWorking();
 			String protectPreview = CmsPropertyHandler.getProtectDeliverPreview();
+			boolean protectDeliver = true;
+			
+			/*
 			boolean protectDeliver = false;
-
+			
 			if(protectWorking.equals("true") && CmsPropertyHandler.getOperatingMode().equals("0"))
 				protectDeliver = true;
 			else if(protectPreview.equals("true") && CmsPropertyHandler.getOperatingMode().equals("2"))
 				protectDeliver = true;
-				
+			*/
+			
 			if(protectedSiteNodeVersionId != null || protectDeliver)
 				isUserRedirected = handleExtranetLogic(dbWrapper.getDatabase(), this.repositoryId, protectedSiteNodeVersionId, protectDeliver);
 			/*
@@ -540,7 +544,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 					isUserRedirected = handleExtranetLogic(dbWrapper.getDatabase(), true);
 			}
 			*/
-
+			
 	    	String pageKey = this.nodeDeliveryController.getPageCacheKey(dbWrapper.getDatabase(), this.getHttpSession(), this.getRequest(), this.siteNodeId, this.languageId, this.contentId, browserBean.getUseragent(), this.getRequest().getQueryString(), "_" + this.showSimple + "_pagecomponentDecorated");
 
 	    	if(logger.isInfoEnabled())
@@ -980,7 +984,8 @@ public class ViewPageAction extends InfoGlueAbstractAction
 					{
 					    this.getHttpSession().setAttribute("infogluePrincipal", principal);
 						this.getHttpSession().setAttribute("infoglueRemoteUser", principal.getName());
-	
+						this.getHttpSession().setAttribute("cmsUserName", principal.getName());
+						
 					    this.principal = principal;
 					}
 			    }
@@ -996,6 +1001,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 					{
 					    this.getHttpSession().setAttribute("infogluePrincipal", principal);
 					    this.getHttpSession().setAttribute("infoglueRemoteUser", principal.getName());
+					    this.getHttpSession().setAttribute("cmsUserName", principal.getName());
 					}
 				}
 			}
@@ -1016,7 +1022,8 @@ public class ViewPageAction extends InfoGlueAbstractAction
 				{
 				    this.getHttpSession().setAttribute("infogluePrincipal", principal);
 					this.getHttpSession().setAttribute("infoglueRemoteUser", principal.getName());
-
+					this.getHttpSession().setAttribute("cmsUserName", principal.getName());
+					
 				    this.principal = principal;
 				}
 				
@@ -1036,6 +1043,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 						{
 							this.getHttpSession().setAttribute("infogluePrincipal", principal);
 							this.getHttpSession().setAttribute("infoglueRemoteUser", principal.getName());
+							this.getHttpSession().setAttribute("cmsUserName", principal.getName());
 							
 							boolean isAuthorized = false;
 							if(!protectDeliver)
@@ -1127,7 +1135,8 @@ public class ViewPageAction extends InfoGlueAbstractAction
 					{
 						this.getHttpSession().setAttribute("infogluePrincipal", principal);
 						this.getHttpSession().setAttribute("infoglueRemoteUser", principal.getName());
-		
+						this.getHttpSession().setAttribute("cmsUserName", principal.getName());
+						
 						this.principal = principal;
 					}
 				}
@@ -1179,6 +1188,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 								this.principal = principal;
 							    this.getHttpSession().setAttribute("infogluePrincipal", principal);
 								this.getHttpSession().setAttribute("infoglueRemoteUser", principal.getName());
+								this.getHttpSession().setAttribute("cmsUserName", principal.getName());
 							}
 						}
 						else
@@ -1209,7 +1219,8 @@ public class ViewPageAction extends InfoGlueAbstractAction
 					
 					//this.getHttpSession().setAttribute("infogluePrincipal", anonymousPrincipal);
 					//this.getHttpSession().setAttribute("infoglueRemoteUser", anonymousPrincipal.getName());
-	
+					//this.getHttpSession().setAttribute("cmsUserName", principal.getName());
+					
 					this.principal = anonymousPrincipal;
 				}
 			}
@@ -1250,6 +1261,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 				{
 					this.getHttpSession().setAttribute("infogluePrincipal", principal);
 					this.getHttpSession().setAttribute("infoglueRemoteUser", principal.getName());
+					this.getHttpSession().setAttribute("cmsUserName", principal.getName());
 				}
 
 				return isRedirected;
@@ -1284,7 +1296,8 @@ public class ViewPageAction extends InfoGlueAbstractAction
 					{
 					    this.getHttpSession().setAttribute("infogluePrincipal", principal);
 						this.getHttpSession().setAttribute("infoglueRemoteUser", principal.getName());
-	
+						this.getHttpSession().setAttribute("cmsUserName", principal.getName());
+						
 					    this.principal = principal;
 					}
 			    }
@@ -1307,7 +1320,8 @@ public class ViewPageAction extends InfoGlueAbstractAction
 				{
 				    this.getHttpSession().setAttribute("infogluePrincipal", principal);
 					this.getHttpSession().setAttribute("infoglueRemoteUser", principal.getName());
-
+					this.getHttpSession().setAttribute("cmsUserName", principal.getName());
+					
 				    this.principal = principal;
 				}
 				
@@ -1327,6 +1341,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 						{
 							this.getHttpSession().setAttribute("infogluePrincipal", principal);
 							this.getHttpSession().setAttribute("infoglueRemoteUser", principal.getName());
+							this.getHttpSession().setAttribute("cmsUserName", principal.getName());
 						}
 					}
 					catch(Exception e) 
@@ -1338,7 +1353,8 @@ public class ViewPageAction extends InfoGlueAbstractAction
 				{
 					this.getHttpSession().setAttribute("infogluePrincipal", principal);
 					this.getHttpSession().setAttribute("infoglueRemoteUser", principal.getName());
-	
+					this.getHttpSession().setAttribute("cmsUserName", principal.getName());
+					
 					this.principal = principal;
 				}
 
@@ -1425,6 +1441,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 				{
 				    this.getHttpSession().setAttribute("infogluePrincipal", principal);
 					this.getHttpSession().setAttribute("infoglueRemoteUser", principal.getName());
+					this.getHttpSession().setAttribute("cmsUserName", principal.getName());
 				}
 			    
 		    }
@@ -1462,6 +1479,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			{
 			    this.getHttpSession().setAttribute("infogluePrincipal", principal);
 				this.getHttpSession().setAttribute("infoglueRemoteUser", principal.getName());
+				this.getHttpSession().setAttribute("cmsUserName", principal.getName());
 			}
 	    }		    
 	    else if(userName != null && password != null)
@@ -1475,6 +1493,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			{
 			    this.getHttpSession().setAttribute("infogluePrincipal", principal);
 				this.getHttpSession().setAttribute("infoglueRemoteUser", principal.getName());
+				this.getHttpSession().setAttribute("cmsUserName", principal.getName());
 			}
 	    }
 	    

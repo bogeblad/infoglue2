@@ -25,8 +25,10 @@ package org.infoglue.deliver.applications.actions;
 
 import java.net.URLEncoder;
 import java.security.Principal;
+import java.util.HashMap;
 import java.util.Map;
 
+import javax.servlet.ServletContext;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -37,6 +39,8 @@ import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.DesEncryptionHelper;
 import org.infoglue.deliver.controllers.kernel.impl.simple.ExtranetController;
 import org.infoglue.deliver.util.HttpUtilities;
+
+import webwork.action.ActionContext;
 
 /**
  * This class is meant to be the authentication central for extranet users.
@@ -96,10 +100,11 @@ public final class ExtranetLoginAction extends InfoGlueAbstractAction
 		    Map arguments = HttpUtilities.requestToHashtable(hreq);
 		    
 			principal = ExtranetController.getController().getAuthenticatedPrincipal(arguments);
+			System.out.println("principal:"+ principal);
 		}
 		catch(Exception e)
 		{
-			
+			e.printStackTrace();
 		}
 		
 		if(principal != null) 
@@ -110,10 +115,13 @@ public final class ExtranetLoginAction extends InfoGlueAbstractAction
 		//System.out.println("isAuthenticated:" + isAuthenticated);		
 		if(isAuthenticated)
 		{
-			//System.out.println("Yes - we try to send the user back to:" + this.returnAddress);		
+			//System.out.println("Yes - we try to send the user back to:" + this.returnAddress);
 			this.getHttpSession().setAttribute("infogluePrincipal", principal);
 			this.getHttpSession().setAttribute("infoglueRemoteUser", principal.getName());
-
+			this.getHttpSession().setAttribute("cmsUserName", principal.getName());
+			System.out.println("session set to:"+ principal);
+			System.out.println("After:"+ this.getInfoGluePrincipal());
+			
 			handleCookies();
 			
 		    this.getResponse().sendRedirect(this.returnAddress);
@@ -247,9 +255,45 @@ public final class ExtranetLoginAction extends InfoGlueAbstractAction
 	{
 		this.referer = referer;
 	}
-
+	
 	private void handleCookies()
 	{
+	    DesEncryptionHelper encHelper = new DesEncryptionHelper();
+		String userName = this.getRequest().getParameter("j_username");
+	    String encryptedName = encHelper.encrypt(userName);
+		String password = this.getRequest().getParameter("j_password");
+	    String encryptedPassword = encHelper.encrypt(password);
+	    System.out.println("encryptedName:" + encryptedName);
+	    System.out.println("encryptedPassword:" + encryptedPassword);
+
+	    ServletContext servletContext = ActionContext.getServletContext().getContext("/infoglueCMS");
+	    System.out.println("servletContext:" + servletContext.getServletContextName() + ":" + servletContext.getServletNames());
+	    servletContext.setAttribute(encryptedName, userName);
+	    System.out.println(encryptedName + "=" + userName);
+	    System.out.println("After attribute:" + servletContext.getAttribute(encryptedName));
+	    
+	    int cmsCookieTimeout = 1800; //30 minutes default
+	    String cmsCookieTimeoutString = null; //CmsPropertyHandler.getCmsCookieTimeout();
+	    if(cmsCookieTimeoutString != null)
+	    {
+	        try
+		    {
+	        	cmsCookieTimeout = Integer.parseInt(cmsCookieTimeoutString.trim());
+		    }
+	        catch(Exception e) {}
+		}
+	
+		Cookie cookie_iguserid = new Cookie("iguserid", encryptedName);
+		cookie_iguserid.setPath("/");
+		cookie_iguserid.setMaxAge(cmsCookieTimeout); 
+	    this.getResponse().addCookie(cookie_iguserid);
+	    
+	    Cookie cookie_igpassword = new Cookie ("igpassword", encryptedPassword);
+	    cookie_igpassword.setPath("/");
+	    cookie_igpassword.setMaxAge(cmsCookieTimeout);
+	    this.getResponse().addCookie(cookie_igpassword);
+	    //END CMS COOKIE
+	    
 	    if(storeUserInfoCookie == null || !storeUserInfoCookie.equalsIgnoreCase("true"))
 	        return;
 	    
@@ -267,16 +311,16 @@ public final class ExtranetLoginAction extends InfoGlueAbstractAction
 	
 	    if(enableExtranetCookies )
 	    {
-		    DesEncryptionHelper encHelper = new DesEncryptionHelper();
+		    //DesEncryptionHelper encHelper = new DesEncryptionHelper();
 	
-			String userName = this.getRequest().getParameter("j_username");
-		    String encryptedName = encHelper.encrypt(userName);
+			//String userName = this.getRequest().getParameter("j_username");
+	    	//String encryptedName = encHelper.encrypt(userName);
 			Cookie cookie_userid = new Cookie("igextranetuserid", encryptedName);
 		    cookie_userid.setMaxAge(30 * 24 * 60 * 60); //30 days
 		    this.getResponse().addCookie(cookie_userid);
 		    
-			String password = this.getRequest().getParameter("j_password");
-		    String encryptedPassword = encHelper.encrypt(password);
+		    //String password = this.getRequest().getParameter("j_password");
+		    //String encryptedPassword = encHelper.encrypt(password);
 		    Cookie cookie_password = new Cookie ("igextranetpassword", encryptedPassword);
 		    cookie_password.setMaxAge(30 * 24 * 60 * 60);  //30 days
 		    this.getResponse().addCookie(cookie_password);

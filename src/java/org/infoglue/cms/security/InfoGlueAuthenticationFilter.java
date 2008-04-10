@@ -29,6 +29,7 @@ import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -43,6 +44,7 @@ import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -52,9 +54,14 @@ import org.infoglue.cms.applications.common.Session;
 import org.infoglue.cms.controllers.kernel.impl.simple.TransactionHistoryController;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.util.CmsPropertyHandler;
+import org.infoglue.cms.util.DesEncryptionHelper;
 import org.infoglue.cms.util.NotificationMessage;
 import org.infoglue.deliver.applications.filters.URIMatcher;
+import org.infoglue.deliver.controllers.kernel.impl.simple.ExtranetController;
 import org.infoglue.deliver.util.CacheController;
+import org.infoglue.deliver.util.HttpHelper;
+
+import webwork.action.ActionContext;
 
 /**
  * This filter protects actions withing InfoGlue from access without authentication. 
@@ -88,6 +95,7 @@ public class InfoGlueAuthenticationFilter implements Filter
 
     private FilterConfig filterConfig = null;
     private URIMatcher uriMatcher = null;
+	private HttpHelper httpHelper = new HttpHelper();
 
 	public void init(FilterConfig config) throws ServletException 
 	{
@@ -218,11 +226,23 @@ public class InfoGlueAuthenticationFilter implements Filter
 			    	logger.info("Now trusting the container logged in identity...");
 			    }
 			}
-
+			
 			String authenticatedUserName = userName;
 			
 			if(!isAdministrator)
-				authenticatedUserName = authenticateUser(httpServletRequest, httpServletResponse, fc);
+			{
+				String encodedUserNameCookie = httpHelper.getCookie(httpServletRequest, "iguserid");
+				if(encodedUserNameCookie != null && !encodedUserNameCookie.equals(""))
+				{
+					String servletContextUserName = (String)filterConfig.getServletContext().getAttribute(encodedUserNameCookie);
+					System.out.println("servletContextUserName:" + servletContextUserName);
+					if(servletContextUserName != null && !servletContextUserName.equals(""))
+						authenticatedUserName = servletContextUserName;
+				}
+				
+				if(authenticatedUserName == null || authenticatedUserName.equals(""))
+					authenticatedUserName = authenticateUser(httpServletRequest, httpServletResponse, fc);
+			}
 			
 			if(authenticatedUserName != null)
 			{	

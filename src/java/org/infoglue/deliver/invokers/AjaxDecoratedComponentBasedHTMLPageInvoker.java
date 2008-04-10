@@ -294,7 +294,7 @@ public class AjaxDecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHT
 
 			InfoGluePrincipal principal = templateController.getPrincipal();
 		    String cmsUserName = (String)templateController.getHttpServletRequest().getSession().getAttribute("cmsUserName");
-		    if(cmsUserName != null)
+		    if(cmsUserName != null && !CmsPropertyHandler.getAnonymousUser().equalsIgnoreCase(cmsUserName))
 			    principal = templateController.getPrincipal(cmsUserName);
 
 		    boolean hasAccessToAccessRights = AccessRightController.getController().getIsPrincipalAuthorized(templateController.getDatabase(), principal, "ComponentEditor.ChangeSlotAccess", "");
@@ -315,6 +315,10 @@ public class AjaxDecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHT
 			extraHeader = extraHeader.replaceAll("\\$\\{focusElementId\\}", "" + this.getRequest().getParameter("focusElementId"));
 			extraHeader = extraHeader.replaceAll("\\$\\{contextName\\}", this.getRequest().getContextPath());
 			extraHeader = extraHeader.replaceAll("\\$\\{componentEditorUrl\\}", componentEditorUrl);
+			if(principal.getName().equalsIgnoreCase(CmsPropertyHandler.getAnonymousUser()))
+				extraHeader = extraHeader.replaceAll("\\$\\{limitedUserWarning\\}", "alert('User was " + principal.getName() + "');");
+			else
+				extraHeader = extraHeader.replaceAll("\\$\\{limitedUserWarning\\}", "");
 			extraHeader = extraHeader.replaceAll("\\$\\{currentUrl\\}", URLEncoder.encode(this.getTemplateController().getCurrentPageUrl(), "UTF-8"));
 			extraHeader = extraHeader.replaceAll("\\$\\{activatedComponentId\\}", "" + this.getRequest().getParameter("activatedComponentId"));
 			extraHeader = extraHeader.replaceAll("\\$\\{parameters\\}", parameters);
