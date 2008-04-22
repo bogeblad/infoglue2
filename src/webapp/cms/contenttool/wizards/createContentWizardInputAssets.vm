@@ -4,7 +4,7 @@
 
 <html>
 <head>
-	<title>Upload attachment</title>
+	<title>$ui.getString("tool.contenttool.uploadDigitalAsset.header")</title>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 	
 	<link rel="stylesheet" type="text/css" href="css/cms.css" /> 
@@ -196,8 +196,8 @@
 	</tr>		
 	#if($inputMoreAssets == "true")
 	<tr>
-		<td class="smalllabel">									   
-			You can upload as many extra assets as you wish. Click on the "Save"-button to add more assets and then the "Next"-button to finish and proceed to the next step.
+		<td class="smalllabel">
+			$ui.getString("tool.contenttool.createContentWizardUploadIntroduction.label")
 		</td>
 	</tr>
 	<tr>
