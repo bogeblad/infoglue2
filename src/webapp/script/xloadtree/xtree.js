@@ -203,7 +203,10 @@ var webFXTreeConfig = {
 	openFolderIcon  : 'images/openfoldericon.png',
 	hiddenFolderIcon      : 'images/hiddenFoldericon.png',
 	hiddenOpenFolderIcon  : 'images/hiddenOpenfoldericon.png',
+	protectedFolderIcon   	: 'images/protectedFolder.png',
+	protectedOpenFolderIcon : 'images/protectedOpenFolder.png',
 	fileIcon        : 'images/file.png',
+	protectedFileIcon : 'images/protectedFile.png',
 	iIcon           : 'images/I.png',
 	lIcon           : 'images/L.png',
 	lMinusIcon      : 'images/Lminus.png',
@@ -263,14 +266,12 @@ WebFXCookie.prototype.setCookie = function (key, value) {
 	if(length < 10) //We don't wan't the cookie length to be to long - IE-issues.
 	{
 		document.cookie = key + "=" + escape(value)+"; expires=Monday, 04-Apr-2020 05:00:00 GMT";
-		//alert("A");
 	}
 	else
 	{
 		var startIndex = document.cookie.indexOf(key);
 		if(startIndex > -1) //If the key exists we can replace it without affecting the length
 		{
-			//alert("B");
 			document.cookie = key + "=" + escape(value)+"; expires=Monday, 04-Apr-2020 05:00:00 GMT";
 		}
 		else
@@ -546,9 +547,12 @@ WebFXTreeAbstractNode.prototype.indent = function(lvl, del, last, level, nodesLe
  * WebFXTree class
  */
 
-function WebFXTree(sText, sAction, sBehavior, sIcon, sOpenIcon) {
+function WebFXTree(sText, sAction, sBehavior, sIcon, sOpenIcon, isProtected, stateId) {
 	this.base = WebFXTreeAbstractNode;
 	this.base(sText, sAction);
+	this.isProtected = isProtected;
+	this.stateId = stateId;
+	
 	this.icon      = sIcon || webFXTreeConfig.rootIcon;
 	this.openIcon  = sOpenIcon || webFXTreeConfig.openRootIcon;
 	/* Defaults to open */
@@ -636,9 +640,12 @@ WebFXTree.prototype.toString = function() {
  * WebFXTreeItem class
  */
 
-function WebFXTreeItem(sText, sAction, eParent, sIcon, sOpenIcon) {
+function WebFXTreeItem(sText, sAction, eParent, sIcon, sOpenIcon, isProtected, stateId) {
 	this.base = WebFXTreeAbstractNode;
 	this.base(sText, sAction);
+	this.isProtected = isProtected;
+	this.stateId = stateId;
+	
 	/* Defaults to close */
 	if (webFXTreeConfig.usePersistence)
 		this.open = (webFXTreeHandler.cookies.getCookie(this.id.substr(18,this.id.length - 18)) == '1')?true:false;
@@ -784,12 +791,31 @@ WebFXTreeItem.prototype.toString = function (nItem, nItemCount) {
 		if (!this.icon) { this.icon = webFXTreeConfig.folderIcon; }
 		if (!this.openIcon) { this.openIcon = webFXTreeConfig.openFolderIcon; }
 	}
-	else if (!this.icon) { this.icon = webFXTreeConfig.fileIcon; }
+	else if (!this.icon) { 
+		this.icon = webFXTreeConfig.fileIcon;
+		if(this.isProtected == 'true') {
+			this.icon = webFXTreeConfig.protectedFileIcon;
+		}
+	}
+	var styleInfo = "";
+	var stateInfo = "";
+	if(this.stateId == "0") { 
+		styleInfo = "color: green";
+		stateInfo = " (working)";
+	}
+	if(this.stateId == "1"){ 
+		styleInfo = "color: yellow";
+		stateInfo = " (finished)";
+	}
+	if(this.stateId == "2"){ 
+		styleInfo = "color: red";
+		stateInfo = " (publish)";
+	}
 	var label = this.text.replace(/</g, '&lt;').replace(/>/g, '&gt;');
 	var str = "<div id=\"" + this.id + "\" ondblclick=\"webFXTreeHandler.toggle(this);\" class=\"webfx-tree-item\" onmousedown=\"grabIt(event);\" onkeydown=\"return webFXTreeHandler.keydown(this, event)\">";
 	str += indent;
 	str += "<img id=\"" + this.id + "-plus\" src=\"" + ((this.folder)?((this.open)?((this.parentNode._last)?webFXTreeConfig.lMinusIcon:webFXTreeConfig.tMinusIcon):((this.parentNode._last)?webFXTreeConfig.lPlusIcon:webFXTreeConfig.tPlusIcon)):((this.parentNode._last)?webFXTreeConfig.lIcon:webFXTreeConfig.tIcon)) + "\" onclick=\"webFXTreeHandler.toggle(this);\">"
-	str += "<img id=\"" + this.id + "-icon\" class=\"webfx-tree-icon\" src=\"" + ((webFXTreeHandler.behavior == 'classic' && this.open)?this.openIcon:this.icon) + "\" onclick=\"javascript:onTreeItemSelect('" + this.id + "');" + this.action + "\"><a isContainer=\"" + isContainer + "\" entityId=\"" + this.myId + "\" href=\"javascript:void(" + this.myId + ");\" id=\"" + this.id + "-anchor\" onclick=\"javascript:onTreeItemSelect('" + this.id + "');" + this.action + "\" onfocus=\"webFXTreeHandler.focus(this);\">" + label + "</a></div>";
+	str += "<img id=\"" + this.id + "-icon\" class=\"webfx-tree-icon\" src=\"" + ((webFXTreeHandler.behavior == 'classic' && this.open)?this.openIcon:this.icon) + "\" onclick=\"javascript:onTreeItemSelect('" + this.id + "');" + this.action + "\"><a isContainer=\"" + isContainer + "\" entityId=\"" + this.myId + "\" href=\"javascript:void(" + this.myId + ");\" id=\"" + this.id + "-anchor\" onclick=\"javascript:onTreeItemSelect('" + this.id + "');" + this.action + "\" onfocus=\"webFXTreeHandler.focus(this);\" style=\"" + styleInfo + "\">" + label + stateInfo + "</a></div>";
 	str += "<div id=\"" + this.id + "-cont\" class=\"webfx-tree-container\" style=\"display: " + ((this.open)?'block':'none') + ";\">";
 	for (var i = 0; i < this.childNodes.length; i++) {
 		str += this.childNodes[i].toString(i,this.childNodes.length);

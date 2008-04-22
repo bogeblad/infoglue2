@@ -79,7 +79,7 @@ public abstract class SimpleXmlServiceAction extends InfoGlueAbstractAction
 
     private static final String protectedPropertyFragments = "password,administrator,authorizer,authenticator,masterserver,slaveserver,log";
     
-    protected static final String SERVICEREVISION = "$Revision: 1.22 $"; 
+    protected static final String SERVICEREVISION = "$Revision: 1.23 $"; 
 	protected static String ENCODING = "UTF-8";
     protected static String TYPE_FOLDER = "Folder";
     protected static String TYPE_ITEM = "Item";
@@ -375,7 +375,13 @@ public abstract class SimpleXmlServiceAction extends InfoGlueAbstractAction
 			
 	        if(node.getParameters().containsKey("contentTypeDefinitionId"))
 	        	elm.addAttribute("contentTypeDefinitionId", (String)node.getParameters().get("contentTypeDefinitionId"));
-	        
+
+	        if(node.getParameters().containsKey("isProtected"))
+	        	elm.addAttribute("isProtected", (String)node.getParameters().get("isProtected"));
+
+	        if(node.getParameters().containsKey("stateId"))
+	        	elm.addAttribute("stateId", (String)node.getParameters().get("stateId"));
+
     	    out(getFormattedDocument(doc));
     		return null;
     	}
@@ -419,6 +425,12 @@ public abstract class SimpleXmlServiceAction extends InfoGlueAbstractAction
 		        if(theNode.getParameters().containsKey("contentTypeDefinitionId"))
 		        	elm.addAttribute("contentTypeDefinitionId", "" + theNode.getParameters().get("contentTypeDefinitionId"));
 		        
+		        if(theNode.getParameters().containsKey("isProtected"))
+		        	elm.addAttribute("isProtected", (String)theNode.getParameters().get("isProtected"));
+
+		        if(theNode.getParameters().containsKey("stateId"))
+		        	elm.addAttribute("stateId", (String)theNode.getParameters().get("stateId"));
+
 		        if(createAction) elm.addAttribute("action", makeAction(theNode));
 			}
 			 
@@ -441,7 +453,13 @@ public abstract class SimpleXmlServiceAction extends InfoGlueAbstractAction
 
 		        if(theNode.getParameters().containsKey("contentTypeDefinitionId"))
 		        	elm.addAttribute("contentTypeDefinitionId", "" + theNode.getParameters().get("contentTypeDefinitionId"));
-		        
+
+		        if(theNode.getParameters().containsKey("isProtected"))
+		        	elm.addAttribute("isProtected", (String)theNode.getParameters().get("isProtected"));
+
+		        if(theNode.getParameters().containsKey("stateId"))
+		        	elm.addAttribute("stateId", (String)theNode.getParameters().get("stateId"));
+
 		        if(createAction) 
 		        	elm.addAttribute("action", action);
 		        else

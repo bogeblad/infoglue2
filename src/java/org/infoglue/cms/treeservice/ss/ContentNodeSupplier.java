@@ -36,8 +36,12 @@ import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
+import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
 import org.infoglue.cms.entities.content.ContentVO;
+import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
+import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
@@ -64,14 +68,18 @@ public class ContentNodeSupplier extends BaseNodeSupplier
 	private boolean showLeafs = true;
 	private String[] allowedContentTypeIds = null;
 	private InfoGluePrincipal infogluePrincipal = null;
-		
+	private Integer repositoryId = null;
+	private List languageVOList = null;
+	
 	public ContentNodeSupplier(Integer repositoryId, InfoGluePrincipal infogluePrincipal) throws SystemException
 	{
 		ContentVO vo =null;
 		try
 		{
 		    this.infogluePrincipal = infogluePrincipal;
-		    
+		    this.repositoryId = repositoryId;
+		    this.languageVOList = LanguageController.getController().getLanguageVOList(repositoryId);
+
 			Timer t = new Timer();
 			if(repositoryId != null && repositoryId.intValue() > 0)
 			{
@@ -178,7 +186,7 @@ public class ContentNodeSupplier extends BaseNodeSupplier
 		
 		if(logger.isDebugEnabled())
 			t.printElapsedTime("Done filtering children");
-		
+				
 		//Sort the tree nodes if setup to do so
 		String sortProperty = CmsPropertyHandler.getContentTreeSort();
 		if(sortProperty != null)
@@ -203,6 +211,28 @@ public class ContentNodeSupplier extends BaseNodeSupplier
 				String disableCustomIcons = CmsPropertyHandler.getDisableCustomIcons();
 				if(disableCustomIcons == null || !disableCustomIcons.equals("true"))
 					node.getParameters().put("contentTypeDefinitionId", vo.getContentTypeDefinitionId());
+				
+				if(vo.getIsProtected().intValue() == ContentVO.YES.intValue())
+					node.getParameters().put("isProtected", "true");
+				
+				try
+				{
+					Iterator languageVOListIterator = languageVOList.iterator();
+					while(languageVOListIterator.hasNext())
+					{
+						LanguageVO languageVO = (LanguageVO)languageVOListIterator.next();
+						ContentVersionVO latestContentVersion = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(vo.getId(), languageVO.getId());
+						if(latestContentVersion != null && !latestContentVersion.getStateId().equals(ContentVersionVO.PUBLISHED_STATE))
+						{
+							node.getParameters().put("stateId", "" + latestContentVersion.getStateId());							
+							break;
+						}
+					}
+				}
+				catch (Exception e) 
+				{
+					logger.warn("A problem when fecthing latest master content version: " + e.getMessage(), e);
+				}
 				
 				if (vo.getIsBranch().booleanValue())
 				{

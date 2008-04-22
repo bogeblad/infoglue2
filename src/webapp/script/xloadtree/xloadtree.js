@@ -100,10 +100,10 @@ WebFXLoadTree.prototype.expand = function() {
  * WebFXLoadTreeItem class
  */
 
-function WebFXLoadTreeItem(sText, sXmlSrc, sAction, eParent, sIcon, sOpenIcon, hasChildren) {
+function WebFXLoadTreeItem(sText, sXmlSrc, sAction, eParent, sIcon, sOpenIcon, hasChildren, isProtected, stateId) {
 	// call super
 	this.WebFXTreeItem = WebFXTreeItem;
-	this.WebFXTreeItem(sText, sAction, eParent, sIcon, sOpenIcon);
+	this.WebFXTreeItem(sText, sAction, eParent, sIcon, sOpenIcon, isProtected, stateId);
 
 	// setup default property values
 	this.src = sXmlSrc;
@@ -201,6 +201,8 @@ function _xmlTreeToJsTree(oNode) {
 	//alert("isHidden:" + isHidden);
 	//alert("src:" + src + ":" + hidden);
 	var hasChildren = oNode.getAttribute("hasChildren");
+	var isProtected = oNode.getAttribute("isProtected");
+	var stateId = oNode.getAttribute("stateId");
 	
 	// Stefan Sik addition 20041120
 	var type = oNode.getAttribute("type");
@@ -209,12 +211,22 @@ function _xmlTreeToJsTree(oNode) {
 		if(isHidden == "true")
 			icon = webFXTreeConfig.hiddenFolderIcon;
 		else
-			icon = webFXTreeConfig.folderIcon;
-	
+		{
+			if(isProtected == 'true')
+				icon = webFXTreeConfig.protectedFolderIcon;
+			else
+				icon = webFXTreeConfig.folderIcon;
+		}
+			
 		if(isHidden == "true")
 			openIcon = webFXTreeConfig.hiddenOpenFolderIcon;
 		else
-			openIcon = webFXTreeConfig.openFolderIcon;
+		{
+			if(isProtected == 'true')
+				openIcon = webFXTreeConfig.protectedOpenFolderIcon;
+			else
+				openIcon = webFXTreeConfig.openFolderIcon;
+		}
 	}
 	
 	if(contentTypeDefinitionId)
@@ -232,9 +244,9 @@ function _xmlTreeToJsTree(oNode) {
 	// create jsNode
 	var jsNode;
 	if (src != null && src != "")
-		jsNode = new WebFXLoadTreeItem(text, src, action, parent, icon, openIcon, hasChildren);
+		jsNode = new WebFXLoadTreeItem(text, src, action, parent, icon, openIcon, hasChildren, isProtected, stateId);
 	else
-		jsNode = new WebFXTreeItem(text, action, parent, icon, openIcon);
+		jsNode = new WebFXTreeItem(text, action, parent, icon, openIcon, isProtected, stateId);
 		
 
 	jsNode.myType = type;

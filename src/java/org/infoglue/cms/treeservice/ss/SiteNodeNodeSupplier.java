@@ -36,6 +36,7 @@ import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeController;
+import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeVersionController;
 import org.infoglue.cms.controllers.usecases.structuretool.ViewSiteNodeTreeUCC;
 import org.infoglue.cms.controllers.usecases.structuretool.ViewSiteNodeTreeUCCFactory;
 import org.infoglue.cms.entities.content.Content;
@@ -46,6 +47,7 @@ import org.infoglue.cms.entities.management.Language;
 import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.entities.structure.SiteNode;
 import org.infoglue.cms.entities.structure.SiteNodeVO;
+import org.infoglue.cms.entities.structure.SiteNodeVersionVO;
 import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
@@ -284,6 +286,16 @@ public class SiteNodeNodeSupplier extends BaseNodeSupplier
 					node.setId(vo.getId());
 					node.setTitle(vo.getName());
 					node.getParameters().put("isHidden", vo.getExtraProperties().get("isHidden"));
+					
+					SiteNodeVersionVO latestSiteNodeVO = SiteNodeVersionController.getController().getLatestActiveSiteNodeVersionVO(db, vo.getId());
+					if(latestSiteNodeVO != null)
+					{
+						if(latestSiteNodeVO.getIsProtected().intValue() == SiteNodeVersionVO.YES.intValue())
+							node.getParameters().put("isProtected", "true");
+	
+						if(!latestSiteNodeVO.getStateId().equals(SiteNodeVersionVO.PUBLISHED_STATE))
+							node.getParameters().put("stateId", "" + latestSiteNodeVO.getStateId());							
+					}
 					
 					if (vo.getIsBranch().booleanValue())
 					{
