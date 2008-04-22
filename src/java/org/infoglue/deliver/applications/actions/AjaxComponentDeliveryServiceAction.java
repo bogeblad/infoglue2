@@ -85,8 +85,13 @@ public class AjaxComponentDeliveryServiceAction extends InfoGlueAbstractAction
     	Integer languageId = new Integer(languageIdString);
     	Integer componentId = new Integer(componentIdString);
     	Integer contentId = new Integer(contentIdString);
-    	Integer componentContentId = new Integer(componentContentIdString);
-    		    
+    	//System.out.println("componentContentIdString:" + componentContentIdString);
+    	Integer componentContentId = null;
+    	if(componentContentIdString != null && !componentContentIdString.equals("null"))
+    		componentContentId = new Integer(componentContentIdString);
+    	else
+    		return NONE;
+    	
     	Database db = CastorDatabaseService.getDatabase();
     	
     	try
