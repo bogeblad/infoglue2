@@ -320,13 +320,19 @@ public class InfoGlueCommonAccessRightsInterceptor implements InfoGlueIntercepto
 		
 		AccessConstraintExceptionBuffer ceb = new AccessConstraintExceptionBuffer();
 		
-		/*
 		if(interceptionPointVO.getName().equalsIgnoreCase("Content.Read"))
 		{
 			Integer contentId = (Integer)extradata.get("contentId");
-			if(ContentControllerProxy.getController().getIsContentProtected(contentId) && !AccessRightController.getController().getIsPrincipalAuthorized(infoGluePrincipal, "Content.Read", contentId.toString()))
-				ceb.add(new AccessConstraintException("Content.contentId", "1000"));
+			ContentVO contentVO = ContentControllerProxy.getController().getContentVOWithId(contentId, db);
+			if(!allowCreatorAccess || !contentVO.getCreatorName().equalsIgnoreCase(infoGluePrincipal.getName()))
+			{
+				Integer protectedContentId = ContentControllerProxy.getController().getProtectedContentId(contentId, db);
+				if(protectedContentId != null && !AccessRightController.getController().getIsPrincipalAuthorized(db, infoGluePrincipal, "Content.Read", protectedContentId.toString()))
+					ceb.add(new AccessConstraintException("Content.contentId", "1000"));
+			}
 		}
+		
+		/*
 		else if(interceptionPointVO.getName().equalsIgnoreCase("Content.Write"))
 		{
 			Integer contentId = (Integer)extradata.get("contentId");
@@ -412,11 +418,11 @@ public class InfoGlueCommonAccessRightsInterceptor implements InfoGlueIntercepto
 		else*/ if(interceptionPointVO.getName().equalsIgnoreCase("SiteNodeVersion.CreateSiteNode"))
 		{
 			Integer parentSiteNodeId = (Integer)extradata.get("siteNodeId");
-			SiteNodeVersionVO siteNodeVersionVO = SiteNodeVersionController.getController().getLatestSiteNodeVersionVO(parentSiteNodeId);
+			SiteNodeVersionVO siteNodeVersionVO = SiteNodeVersionController.getController().getLatestSiteNodeVersionVO(db, parentSiteNodeId);
 			if(!allowCreatorAccess || !siteNodeVersionVO.getVersionModifier().equalsIgnoreCase(infoGluePrincipal.getName()))
 			{
-				Integer protectedSiteNodeVersionId = SiteNodeVersionControllerProxy.getSiteNodeVersionControllerProxy().getProtectedSiteNodeVersionId(siteNodeVersionVO.getId());
-				if(protectedSiteNodeVersionId != null && !AccessRightController.getController().getIsPrincipalAuthorized(infoGluePrincipal, "SiteNodeVersion.CreateSiteNode", protectedSiteNodeVersionId.toString()))
+				Integer protectedSiteNodeVersionId = SiteNodeVersionControllerProxy.getSiteNodeVersionControllerProxy().getProtectedSiteNodeVersionId(siteNodeVersionVO.getId(), db);
+				if(protectedSiteNodeVersionId != null && !AccessRightController.getController().getIsPrincipalAuthorized(db, infoGluePrincipal, "SiteNodeVersion.CreateSiteNode", protectedSiteNodeVersionId.toString()))
 					ceb.add(new AccessConstraintException("SiteNodeVersion.siteNodeId", "1002"));
 			}
 		}
