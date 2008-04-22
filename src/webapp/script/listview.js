@@ -329,31 +329,6 @@ function saveAndExit(form, action)
 }
 
 
-
-//-----------------------------------------------
-// This function sets a different command to the editForm so that  
-// the user can be handled different after the submit
-//-----------------------------------------------
-
-function changeSiteNodeState(siteNodeVersionId)
-{
-	stateId    	  = document.editForm.stateId.value;
-	siteNodeId    = document.editForm.siteNodeId.value;
-	repositoryId  = document.editForm.repositoryId.value;
-	//alert("stateId:" + stateId);
-	//alert("siteNodeId:" + siteNodeId);
-	//alert("repositoryId:" + repositoryId);
-	
-	if (confirm('Are you sure you want to change state? If you have any unsaved changes they will be lost.'))
-	{
-		//if(stateId == 2) //If publish
-		//	window.location.href="ViewSiteNode!commentVersion.action?siteNodeVersionId=" + siteNodeVersionId + "&stateId=" + stateId + "&siteNodeId=" + siteNodeId + "&repositoryId=" + repositoryId;
-		//else
-			window.location.href="ChangeSiteNodeState.action?siteNodeVersionId=" + siteNodeVersionId + "&stateId=" + stateId + "&siteNodeId=" + siteNodeId + "&repositoryId=" + repositoryId;
-	}
-}
-
-
 //-----------------------------------------------
 // This function sets the focus on a given field
 //----------------------------------------------- 
