@@ -196,7 +196,32 @@ public class UpdateContentVersionAttributeAction extends ViewContentVersionActio
 			
 			super.initialize(this.contentVersionId, this.contentId, this.languageId);
 			this.contentVersionVO = this.getContentVersionVO();
-			
+			if(this.contentVersionVO == null)
+			{
+				ContentVO contentVO = ContentController.getContentController().getContentVOWithId(contentId);
+				ContentTypeDefinitionVO contentTypeDefinitionVO = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithId(contentVO.getContentTypeDefinitionId());
+
+				StringBuffer sb = new StringBuffer();
+				sb.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?><article xmlns=\"x-schema:ArticleSchema.xml\"><attributes>");
+				List contentTypeAttributes = ContentTypeDefinitionController.getController().getContentTypeAttributes(contentTypeDefinitionVO.getSchemaValue());
+				Iterator contentTypeAttributesIterator = contentTypeAttributes.iterator();
+				while(contentTypeAttributesIterator.hasNext())
+				{
+					ContentTypeAttribute contentTypeAttribute = (ContentTypeAttribute)contentTypeAttributesIterator.next();
+					String initialValue = contentTypeAttribute.getContentTypeAttribute("initialData").getContentTypeAttributeParameterValue().getValue("label");
+					if(initialValue == null || initialValue.trim().equals(""))
+						initialValue = "State " + contentTypeAttribute.getName();
+					sb.append("<" + contentTypeAttribute.getName() + "><![CDATA[" + initialValue + "]]></" + contentTypeAttribute.getName() + ">");
+				}
+				sb.append("</attributes></article>");
+				
+				ContentVersionVO contentVersionVO = new ContentVersionVO();
+				contentVersionVO.setVersionComment("Autocreated");
+				contentVersionVO.setVersionModifier(this.getInfoGluePrincipal().getName());
+				contentVersionVO.setVersionValue(sb.toString());
+				this.contentVersionVO = ContentVersionController.getContentVersionController().create(contentId, languageId, contentVersionVO, null);
+			}
+
 			AccessConstraintExceptionBuffer ceb = new AccessConstraintExceptionBuffer();
 			
 			Integer protectedContentId = ContentControllerProxy.getController().getProtectedContentId(this.contentVersionVO.getContentId());
