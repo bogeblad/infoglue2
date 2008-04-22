@@ -4,7 +4,7 @@
 
 <html>
 <head>
-	<title>Select image</title>
+	<title>$ui.getString("tool.contenttool.selectImageTitle")</title>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 	
 	<link rel="stylesheet" type="text/css" href="css/cms.css" /> 
@@ -154,7 +154,7 @@
 	<td valign="top">
 		<table cellpadding="0" cellspacing="0" border="0" width="350">
 		<tr class="darkgreen">
-			<td class="smalllabel">Click on the content you wish to fetch the asset from</td>
+			<td class="smalllabel">$ui.getString("tool.contenttool.chooseContentLabel")</td>
 			<td class="smalllabel"><img src="images/spyglassIcon.gif" width="16" height="16" onclick="toggleDiv('searchDiv', 'treeDiv');"></td>
 		</tr>
 		<tr>

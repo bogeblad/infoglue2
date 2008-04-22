@@ -4,7 +4,7 @@
 
 <html>
 <head>
-	<title>Upload attachment</title>
+	<title>$ui.getString("tool.contenttool.uploadDigitalAsset.header")</title>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 	
 	<link rel="stylesheet" type="text/css" href="css/cms.css" /> 
@@ -312,8 +312,8 @@
 <div class="fullymarginalized">
 
 <ul class="settingsTabs">
-	<li id="detailedUploadTab" class=""><a href="javascript:activateTab('detailedUpload');">Detailed upload</a></li>
-	<li id="bulkUploadTab" class=""><a href="javascript:activateTab('bulkUpload');">Bulk upload</a></li>
+	<li id="detailedUploadTab" class=""><a href="javascript:activateTab('detailedUpload');">$ui.getString("tool.contenttool.fileUpload.fileUploadDetailedUploadLabel")</a></li>
+	<li id="bulkUploadTab" class=""><a href="javascript:activateTab('bulkUpload');">$ui.getString("tool.contenttool.fileUpload.fileUploadBulkUploadLabel")</a></li>
 </ul>
 <div style="clear: both;"/>
 
