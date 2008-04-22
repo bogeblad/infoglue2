@@ -96,7 +96,10 @@ public class RemoteContentServiceTag extends TemplateControllerTag
 	   }
 	   
 	   contents.clear();
-
+	   this.principal = null;
+	   this.name = null;
+	   this.operationName = null;
+	   
        return EVAL_PAGE;
    }
    
