@@ -158,6 +158,15 @@
 		languageId = document.editForm.languageId.value;
 		contentId = document.editForm.contentId.value;
 		
+		#if(!$this.hasAccessTo("Common.SubmitToPublishButton", true))
+		if(stateId == "2")
+		{
+			alert("$ui.getString("tool.contenttool.statePublishForbidden")");
+			document.editForm.stateId.selectedIndex = originalStateIndex - 1;
+			return;
+		}
+		#end
+		
 		if (confirm('$ui.getString("tool.contenttool.stateChangeQuestion")'))
 		{
 			window.location.href="ChangeContentState.action?contentVersionId=" + contentVersionId + "&stateId=" + stateId + "&contentId=" + contentId + "&languageId=" + languageId;

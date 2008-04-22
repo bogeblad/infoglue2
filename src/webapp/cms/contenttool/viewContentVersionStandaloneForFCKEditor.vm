@@ -171,6 +171,15 @@
 		contentId 	  = document.getElementById("contentId").value;
 		attributeName = document.editForm.attributeName.value;
 		
+		#if(!$this.hasAccessTo("Common.SubmitToPublishButton", true))
+		if(stateId == "2")
+		{
+			alert("$ui.getString("tool.contenttool.statePublishForbidden")");
+			document.editForm.stateId.selectedIndex = originalStateIndex - 1;
+			return;
+		}
+		#end
+		
 		if (confirm('$ui.getString("tool.contenttool.stateChangeQuestion")'))
 		{
 			var url = "ChangeContentState!standalone.action?contentVersionId=" + contentVersionId + "&stateId=" + stateId + "&contentId=" + contentId + "&languageId=" + languageId + "&attributeName=" + attributeName;

@@ -132,9 +132,11 @@
 </a>
 #end
 
+#if($this.hasAccessTo("Common.SubmitToPublishButton", true))
 <a href="javascript:submitToPublish('false');">
 <img src="$ui.getString("images.contenttool.buttons.submitToPublish")" width="60" height="25" border="0">
 </a>
+#end
 
 <a href="ViewContent.action?contentId=$contentId&repositoryId=$!repositoryId">
 <img src="$ui.getString("images.contenttool.buttons.cancel60x25")" width="60" height="25" border="0">
@@ -266,9 +268,11 @@
 </a>
 #end
 
+#if($this.hasAccessTo("Common.SubmitToPublishButton", true))
 <a href="javascript:submitToPublish('false');">
 <img src="$ui.getString("images.contenttool.buttons.submitToPublish")" width="60" height="25" border="0">
 </a>
+#end
 
 <a href="ViewContent.action?contentId=$contentId&repositoryId=$!repositoryId">
 <img src="$ui.getString("images.contenttool.buttons.cancel60x25")" width="60" height="25" border="0">

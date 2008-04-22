@@ -4,6 +4,40 @@
 
 #beginContentTool("Content version" "Content version" "contentId=$contentId&languageId=$languageId&contentVersionId=$contentVersionId" "0" "0" "0")
 
+<script language="javascript">
+
+//-----------------------------------------------
+// This function sets a different command to the editForm so that  
+// the user can be handled different after the submit
+//-----------------------------------------------
+
+function changeSiteNodeState(siteNodeVersionId)
+{
+	stateId    	  = document.editForm.stateId.value;
+	siteNodeId    = document.editForm.siteNodeId.value;
+	repositoryId  = document.editForm.repositoryId.value;
+	
+	#if(!$this.hasAccessTo("Common.SubmitToPublishButton", true))
+	if(stateId == "2")
+	{
+		alert("$ui.getString("tool.contenttool.statePublishForbidden")");
+		document.editForm.stateId.selectedIndex = originalStateIndex - 1;
+		return;
+	}
+	#end
+
+	
+	if (confirm('Are you sure you want to change state? If you have any unsaved changes they will be lost.'))
+	{
+		//if(stateId == 2) //If publish
+		//	window.location.href="ViewSiteNode!commentVersion.action?siteNodeVersionId=" + siteNodeVersionId + "&stateId=" + stateId + "&siteNodeId=" + siteNodeId + "&repositoryId=" + repositoryId;
+		//else
+			window.location.href="ChangeSiteNodeState.action?siteNodeVersionId=" + siteNodeVersionId + "&stateId=" + stateId + "&siteNodeId=" + siteNodeId + "&repositoryId=" + repositoryId;
+	}
+}
+
+</script>
+
 <div class="fullymarginalized">
 
 <form method="POST" name="editForm" action="UpdateContentVersion.action">
@@ -23,26 +57,53 @@
 		</td>
 		<td width="40%"><img src="images/trans.gif" width="10" height="1"></td>
 		<td>
-			Current state<br/>
+			#set($dropIndex = 1)
+			$ui.getString("tool.contenttool.stateLabel")<br/>
 			<select class="mediumdrop" name="stateId" onChange="javascript:changeSiteNodeState($!contentVersionId);">
 				#if($stateId == 0)
 					<option value="0" selected>working</option>
+					<script type="text/javascript">
+					<!-- 
+					var originalStateIndex = $dropIndex; 
+					-->
+					</script>
 				#else
 					<option value="0">working</option>
+					#set($dropIndex = $dropIndex + 1)
 				#end
-				
-				<!--
+<!--
 				#if($stateId == 1)
 					<option value="1" selected>final</option>
+					<script type="text/javascript">
+					<!-- 
+					var originalStateIndex = $dropIndex; 
+					-->
+					</script>
 				#else
 					<option value="1">final</option>
 				#end
-				-->
-				
+-->				
 				#if($stateId == 2)
 					<option value="2" selected>publish</option>
+					<script type="text/javascript">
+					<!-- 
+					var originalStateIndex = $dropIndex; 
+					-->
+					</script>
 				#else
+					#if($stateId != 3)
 					<option value="2">publish</option>
+					#set($dropIndex = $dropIndex + 1)
+					#end
+				#end
+
+				#if($stateId == 3)
+					<option value="3" selected>published</option>
+					<script type="text/javascript">
+					<!-- 
+					var originalStateIndex = $dropIndex; 
+					-->
+					</script>
 				#end
 				
 			</select>

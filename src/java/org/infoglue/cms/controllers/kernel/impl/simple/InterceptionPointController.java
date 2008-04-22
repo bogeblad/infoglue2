@@ -111,7 +111,9 @@ public class InterceptionPointController extends BaseController
 	    systemInterceptionPoints.put("ComponentPropertyEditor.EditProperty", new InterceptionPointVO("ComponentPropertyEditor", "ComponentPropertyEditor.EditProperty", "This interception point limits who can edit a specific component property", true));
 	    
 	    systemInterceptionPoints.put("Publication.Write", new InterceptionPointVO("Publication", "Publication.Write", "This interception point intercepts publications", true));
-
+	    systemInterceptionPoints.put("Common.SubmitToPublishButton", new InterceptionPointVO("Common", "Common.SubmitToPublishButton", "Intercepts the submit to publish button", false));
+	    systemInterceptionPoints.put("Common.PublishButton", new InterceptionPointVO("Common", "Common.PublishButton", "Intercepts the publish button", false));
+	    
 	    systemInterceptionPoints.put("ManagementToolMenu.Repositories", new InterceptionPointVO("ManagementToolMenu", "ManagementToolMenu.Repositories", "Intercepts access to the menu item 'Repositories' in management tool", false));
 	    systemInterceptionPoints.put("ManagementToolMenu.SystemUsers", new InterceptionPointVO("ManagementToolMenu", "ManagementToolMenu.SystemUsers", "Intercepts access to the menu item 'SystemUsers' in management tool", false));
 	    systemInterceptionPoints.put("ManagementToolMenu.Roles", new InterceptionPointVO("ManagementToolMenu", "ManagementToolMenu.Roles", "Intercepts access to the menu item 'Roles' in management tool", false));
