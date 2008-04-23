@@ -85,9 +85,11 @@ public class DigitalAssetController extends BaseController
     
     private final static String BROKENFILENAME = "brokenAsset.gif";
     
+    private final static DigitalAssetController singelton = new DigitalAssetController(); 
+    
     public static DigitalAssetController getController()
     {
-        return new DigitalAssetController();
+        return singelton;
     }
 
     
@@ -427,11 +429,16 @@ public class DigitalAssetController extends BaseController
    		File[] cachedAssets = (File[])CacheController.getCachedObjectFromAdvancedCache("cachedAssetFileList", "allAssets", 300);
    		if(cachedAssets == null)
    		{
-   			File assetDirectory = new File(CmsPropertyHandler.getDigitalAssetPath());
-   			cachedAssets = assetDirectory.listFiles(); 
-			//System.out.println("Read and cached files:" + cachedAssets);
-			
-   			CacheController.cacheObjectInAdvancedCache("cachedAssetFileList", "allAssets", cachedAssets);
+   			String assetPath = CmsPropertyHandler.getDigitalAssetPath();
+   			if(assetPath != null && !assetPath.equals(""))
+   			{
+	   			File assetDirectory = new File(assetPath);
+	   			if(assetDirectory.exists())
+	   				cachedAssets = assetDirectory.listFiles(); 
+				//System.out.println("Read and cached files:" + cachedAssets);
+				
+	   			CacheController.cacheObjectInAdvancedCache("cachedAssetFileList", "allAssets", cachedAssets);
+   			}
    		}   			
    		
    		return cachedAssets;
@@ -446,13 +453,16 @@ public class DigitalAssetController extends BaseController
 		try
 		{
 			File[] cachedFiles = getCachedFiles();
-			for(int i=0; i<cachedFiles.length; i++)
+			if(cachedFiles != null)
 			{
-				File cachedFile = cachedFiles[i];
-				if(cachedFile.getName().startsWith("" + digitalAssetId))
+				for(int i=0; i<cachedFiles.length; i++)
 				{
-					//File file = files[i];
-					cachedFile.delete();
+					File cachedFile = cachedFiles[i];
+					if(cachedFile.getName().startsWith("" + digitalAssetId))
+					{
+						//File file = files[i];
+						cachedFile.delete();
+					}
 				}
 			}
 			/*
@@ -918,7 +928,13 @@ public class DigitalAssetController extends BaseController
 			String fileName = digitalAssetVO.getDigitalAssetId() + "_" + digitalAssetVO.getAssetFileName();
 			String filePath = CmsPropertyHandler.getDigitalAssetPath() + File.separator + folderName;
 			dumpDigitalAsset(digitalAssetVO, fileName, filePath, db);
-			assetUrl = CmsPropertyHandler.getWebServerAddress() + "/" + CmsPropertyHandler.getDigitalAssetBaseUrl() + "/" + folderName + "/" + fileName;
+			System.out.println("WebServerAddress:" + CmsPropertyHandler.getWebServerAddress());
+			System.out.println("ServletContext:" + CmsPropertyHandler.getServletContext());
+			
+			if(CmsPropertyHandler.getWebServerAddress().indexOf(CmsPropertyHandler.getServletContext()) > -1)
+				assetUrl = CmsPropertyHandler.getWebServerAddress() + "/" + CmsPropertyHandler.getDigitalAssetBaseUrl() + "/" + folderName + "/" + fileName;
+			else
+				assetUrl = CmsPropertyHandler.getWebServerAddress() + CmsPropertyHandler.getServletContext() + "/" + CmsPropertyHandler.getDigitalAssetBaseUrl() + "/" + folderName + "/" + fileName;
 		}			       	
     	
 		return assetUrl;
@@ -993,35 +1009,35 @@ public class DigitalAssetController extends BaseController
 					File originalFile = new File(filePath + File.separator + fileName);
 					if(!originalFile.exists())
 					{
-						assetUrl = "images" + File.separator + BROKENFILENAME;
+						assetUrl = CmsPropertyHandler.getWebServerAddress() + "/" + CmsPropertyHandler.getImagesBaseUrl() + "/" + BROKENFILENAME;
 					}
 					else if(contentType.equalsIgnoreCase("application/pdf"))
 					{
-						assetUrl = "images/pdf.gif"; 
+						assetUrl = CmsPropertyHandler.getWebServerAddress() + "/" + CmsPropertyHandler.getImagesBaseUrl() + "/" + "pdf.gif"; 
 					}
 					else if(contentType.equalsIgnoreCase("application/msword"))
 					{
-						assetUrl = "images/msword.gif"; 
+						assetUrl = CmsPropertyHandler.getWebServerAddress() + "/" + CmsPropertyHandler.getImagesBaseUrl() + "/" + "msword.gif"; 
 					}
 					else if(contentType.equalsIgnoreCase("application/vnd.ms-excel"))
 					{
-						assetUrl = "images/msexcel.gif"; 
+						assetUrl = CmsPropertyHandler.getWebServerAddress() + "/" + CmsPropertyHandler.getImagesBaseUrl() + "/" + "msexcel.gif"; 
 					}
 					else if(contentType.equalsIgnoreCase("application/vnd.ms-powerpoint"))
 					{
-						assetUrl = "images/mspowerpoint.gif"; 
+						assetUrl = CmsPropertyHandler.getWebServerAddress() + "/" + CmsPropertyHandler.getImagesBaseUrl() + "/" + "mspowerpoint.gif"; 
 					}
 					else if(contentType.equalsIgnoreCase("application/zip"))
 					{
-						assetUrl = "images/zipIcon.gif"; 
+						assetUrl = CmsPropertyHandler.getWebServerAddress() + "/" + CmsPropertyHandler.getImagesBaseUrl() + "/" + "zipIcon.gif"; 
 					}
 					else if(contentType.equalsIgnoreCase("text/xml"))
 					{
-						assetUrl = "images/xmlIcon.gif"; 
+						assetUrl = CmsPropertyHandler.getWebServerAddress() + "/" + CmsPropertyHandler.getImagesBaseUrl() + "/" + "xmlIcon.gif"; 
 					}
 					else
 					{
-						assetUrl = "images/digitalAsset.gif"; 
+						assetUrl = CmsPropertyHandler.getWebServerAddress() + "/" + CmsPropertyHandler.getImagesBaseUrl() + "/" + "digitalAsset.gif"; 
 					}		
 				}	
 			}	
@@ -1143,6 +1159,23 @@ public class DigitalAssetController extends BaseController
 		
 		assetKey = new String(assetKey.getBytes(fromEncoding), toEncoding);
 		
+		StringBuffer sb = new StringBuffer(256);
+			
+		String servletContext = CmsPropertyHandler.getServletContext();
+        String digitalAssetPath = CmsPropertyHandler.getDigitalAssetBaseUrl();
+        if (!digitalAssetPath.startsWith("/"))
+        	digitalAssetPath = "/" + digitalAssetPath;
+
+        System.out.println("digitalAssetPath: " + digitalAssetPath);
+        System.out.println("servletContext: " + servletContext);
+        if(digitalAssetPath.indexOf(servletContext) == -1)
+        	sb.append(servletContext);	
+		
+        sb.append(digitalAssetPath);
+	     
+        if(!sb.toString().endsWith("/"))
+        	sb.append("/");
+
     	ContentVersion contentVersion = ContentVersionController.getContentVersionController().getLatestActiveContentVersion(contentId, languageId, db);
     	LanguageVO masterLanguageVO = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForRepository(content.getRepository().getRepositoryId(), db);	
 		logger.info("contentVersion:" + contentVersion);
@@ -1163,7 +1196,9 @@ public class DigitalAssetController extends BaseController
 				String filePath = CmsPropertyHandler.getDigitalAssetPath() + File.separator + folderName;
 				
 				dumpDigitalAsset(digitalAssetVO, fileName, filePath, db);
-				assetUrl = CmsPropertyHandler.getWebServerAddress() + "/" + CmsPropertyHandler.getDigitalAssetBaseUrl() + "/" + folderName + "/" + fileName;
+				assetUrl = sb.toString() + folderName + "/" + fileName;
+				//assetUrl = CmsPropertyHandler.getWebServerAddress() + "/" + CmsPropertyHandler.getDigitalAssetBaseUrl() + "/" + folderName + "/" + fileName;
+				System.out.println("assetUrl 1:" + assetUrl);
 			}
 			else
 			{
@@ -1194,7 +1229,9 @@ public class DigitalAssetController extends BaseController
 					String filePath = CmsPropertyHandler.getDigitalAssetPath() + File.separator + folderName;
 					
 					dumpDigitalAsset(digitalAssetVO, fileName, filePath, db);
-					assetUrl = CmsPropertyHandler.getWebServerAddress() + "/" + CmsPropertyHandler.getDigitalAssetBaseUrl() + "/" + folderName + "/" + fileName;
+					assetUrl = sb.toString() + folderName + "/" + fileName;
+					//assetUrl = CmsPropertyHandler.getWebServerAddress() + "/" + CmsPropertyHandler.getDigitalAssetBaseUrl() + "/" + folderName + "/" + fileName;
+					System.out.println("assetUrl 2:" + assetUrl);
 				}
 			}
 		}
@@ -1493,47 +1530,41 @@ public class DigitalAssetController extends BaseController
 	 * that means that the file is allready cached on the server. If not we take out the stream from the 
 	 * digitalAsset-object and dumps it.
 	 */
-   	
-	public static boolean dumpDigitalAsset(DigitalAssetVO digitalAssetVO, String fileName, String filePath, Database db) throws Exception
+   	/*
+		public static boolean dumpDigitalAsset(final DigitalAssetVO digitalAssetVO, final String fileName, final String filePath, final Database db) throws Exception
 	{
-		File outputFile = new File(filePath + File.separator + fileName);
-		File tmpOutputFile = new File(filePath + File.separator + "tmp_" + fileName);
+		final File outputFile = new File(filePath + File.separator + fileName);
+		final File tmpOutputFile = new File(filePath + File.separator + "tmp_" + fileName);
 		if(outputFile.exists())
 		{
-			if(logger.isInfoEnabled())
-				logger.info("The file allready exists so we don't need to dump it again..");
-			
+		    	logger.info("The file allready exists so we don't need to dump it again..");
 			return true;
 		}
-
 		try
 		{
 			long timer = System.currentTimeMillis();
-	
-			File outputFileDir = new File(filePath);
-			outputFileDir.mkdirs();
-			
-			DigitalAsset digitalAsset = getDigitalAssetWithId(digitalAssetVO.getDigitalAssetId(), db);
+			final DigitalAsset digitalAsset = getDigitalAssetWithId(digitalAssetVO.getDigitalAssetId(), db);
 			
 			if((CmsPropertyHandler.getEnableDiskAssets().equals("false") || !tmpOutputFile.exists()) && digitalAsset.getAssetBlob() != null)
 			{
-				logger.info("Dumping from blob.");
+			    synchronized (fileName.intern()) {
+				if (!outputFile.exists() && digitalAsset.getAssetBlob() != null) {
+				    new File(filePath).mkdirs();
+				    final FileOutputStream fos = new FileOutputStream(outputFile);
+				    final BufferedOutputStream bos = new BufferedOutputStream(fos);
+				    final BufferedInputStream bis = new BufferedInputStream(digitalAsset.getAssetBlob());
 
-				FileOutputStream fis = new FileOutputStream(outputFile);
-				BufferedOutputStream bos = new BufferedOutputStream(fis);
-				
-				BufferedInputStream bis = new BufferedInputStream(digitalAsset.getAssetBlob());
-		
-				int character;
-				while ((character = bis.read()) != -1)
-				{
-					bos.write(character);
+				    int offset;
+				    final byte[] buffer = new byte[4096];
+				    while ((offset = bis.read(buffer)) != -1) {
+					bos.write(buffer, 0, offset);
+				    }
+				    bos.flush();
+				    bis.close();
+				    bos.close();
+				    fos.close();
 				}
-				bos.flush();
-				
-				bis.close();
-				fis.close();
-				bos.close();
+			    }
 			}
 			else
 			{
@@ -1579,6 +1610,115 @@ public class DigitalAssetController extends BaseController
 		
 		return outputFile.exists();
 	}
+	*/
+	public static boolean dumpDigitalAsset(DigitalAssetVO digitalAssetVO, String fileName, String filePath, Database db) throws Exception
+	{
+		logger.info("fileName:" + fileName);
+		File outputFile = new File(filePath + File.separator + fileName);
+		File tmpOutputFile = new File(filePath + File.separator + "tmp_" + Thread.currentThread().getId() + "_" + fileName);
+		if(outputFile.exists())
+		{
+			if(logger.isInfoEnabled())
+				logger.info("The file allready exists so we don't need to dump it again..");
+			
+			return true;
+		}
+
+		try
+		{
+			long timer = System.currentTimeMillis();
+	
+			File outputFileDir = new File(filePath);
+			outputFileDir.mkdirs();
+			
+			DigitalAsset digitalAsset = getDigitalAssetWithId(digitalAssetVO.getDigitalAssetId(), db);
+			
+			InputStream is = digitalAsset.getAssetBlob();
+			synchronized (is)
+			{
+				if((CmsPropertyHandler.getEnableDiskAssets().equals("false") || !tmpOutputFile.exists()) && is != null)
+				{
+					FileOutputStream fis = new FileOutputStream(tmpOutputFile);
+					BufferedOutputStream bos = new BufferedOutputStream(fis);
+					
+					BufferedInputStream bis = new BufferedInputStream(is);
+			
+					int character;
+					while ((character = bis.read()) != -1)
+					{
+						bos.write(character);
+					}
+					bos.flush();
+					
+					bis.close();
+					fis.close();
+					bos.close();
+	
+					logger.info("\n\nExists" + tmpOutputFile.getAbsolutePath() + "=" + tmpOutputFile.exists() + " OR " + outputFile.exists() + ":" + outputFile.length());
+					if(tmpOutputFile.length() == 0 || tmpOutputFile.length() != digitalAsset.getAssetFileSize() || outputFile.exists())
+					{
+						logger.info("outputFile:" + outputFile.getAbsolutePath());	
+						logger.info("written file:" + tmpOutputFile.length() + " - removing temp and not renaming it...");	
+						tmpOutputFile.delete();
+					}
+					else
+					{
+						if(tmpOutputFile.length() == digitalAsset.getAssetFileSize())
+						{
+							logger.info("written file:" + tmpOutputFile.getAbsolutePath() + " - renaming it to " + outputFile.getAbsolutePath());	
+							tmpOutputFile.renameTo(outputFile);
+							logger.info("Renamed to" + outputFile.getAbsolutePath() + "=" + outputFile.exists());
+						}
+						else
+						{
+							tmpOutputFile.delete();
+						}
+					}
+				}
+				else
+				{
+					if(logger.isInfoEnabled())
+					{
+						logger.info("Dumping from file - diskassets is on probably.");
+						logger.info("Inside the cms-app I think - we should take the file from disk");
+						logger.info("tmpOutputFile:" + tmpOutputFile.getAbsolutePath() + ":" + tmpOutputFile.exists());
+						logger.info("outputFile:" + outputFile.getAbsolutePath() + ":" + outputFile.exists());
+					}
+					
+					if(tmpOutputFile.exists())
+					{
+						logger.info("\n\nExists" + tmpOutputFile.getAbsolutePath() + "=" + tmpOutputFile.exists() + " OR " + outputFile.exists() + ":" + outputFile.length());
+						if(tmpOutputFile.length() == 0 || tmpOutputFile.length() == digitalAsset.getAssetFileSize() || outputFile.exists())
+						{
+							logger.info("outputFile:" + outputFile.getAbsolutePath());	
+							logger.info("written file:" + tmpOutputFile.length() + " - removing temp and not renaming it...");	
+							tmpOutputFile.delete();
+						}
+						else
+						{
+							logger.info("written file:" + tmpOutputFile.getAbsolutePath() + " - renaming it to " + outputFile.getAbsolutePath());	
+							tmpOutputFile.renameTo(outputFile);
+							logger.info("Renamed to" + outputFile.getAbsolutePath() + "=" + outputFile.exists());
+						}
+					}				
+				}
+				logger.info("end");
+			}
+			
+			if(logger.isInfoEnabled())
+			{
+				logger.info("Time for dumping file " + fileName + ":" + (System.currentTimeMillis() - timer));
+				logger.info("assetPath in dump:" + filePath + File.separator + fileName);
+				logger.info("Time for dumping file " + fileName + ":" + (System.currentTimeMillis() - timer));
+			}
+		}
+		catch (Exception e) 
+		{
+			e.printStackTrace();
+		}
+		
+		return outputFile.exists();
+	}
 	
 	
 	/**
@@ -1586,7 +1726,40 @@ public class DigitalAssetController extends BaseController
 	 * that means that the file is allready cached on the server. If not we take out the stream from the 
 	 * digitalAsset-object and dumps it.
 	 */
-   	
+	/*
+   	public static boolean dumpDigitalAsset(final DigitalAsset digitalAsset, final String fileName, final String filePath) throws Exception
+	{
+	    boolean result = false;
+	    if ( digitalAsset.getAssetFileSize() != -1 ) {
+		final long timer = System.currentTimeMillis();
+		final int BUFF_SIZE = 4096;
+
+		final File outputFile = new File(filePath + File.separator + fileName);
+
+		synchronized (fileName.intern()) {
+		    if (!outputFile.exists() && digitalAsset.getAssetBlob() != null) {
+			new File(filePath).mkdirs();
+			final FileOutputStream fos = new FileOutputStream(outputFile);
+			final BufferedOutputStream bos = new BufferedOutputStream(fos);
+			final BufferedInputStream bis = new BufferedInputStream(digitalAsset.getAssetBlob());
+
+			int offset;
+			final byte[] buffer = new byte[BUFF_SIZE];
+			while ((offset = bis.read(buffer)) != -1) {
+			    bos.write(buffer, 0, offset);
+			}
+			bos.flush();
+			bis.close();
+			bos.close();
+			fos.close();
+			result = true;
+		    }
+		}
+		logger.info("Time for dumping file, success: " +  result + ", filename: " + fileName + ", time:" + (System.currentTimeMillis() - timer));
+	    }
+	    return result;
+	}
+	*/
 	public static boolean dumpDigitalAsset(DigitalAsset digitalAsset, String fileName, String filePath) throws Exception
 	{
 		if(digitalAsset.getAssetFileSize().intValue() == -1)
@@ -1597,6 +1770,7 @@ public class DigitalAssetController extends BaseController
 		long timer = System.currentTimeMillis();
 
 		File outputFile = new File(filePath + File.separator + fileName);
+		File tmpOutputFile = new File(filePath + File.separator + "tmp_" + Thread.currentThread().getId() + "_" + fileName);
 		if(outputFile.exists())
 		{
 			if(logger.isInfoEnabled())
@@ -1605,35 +1779,60 @@ public class DigitalAssetController extends BaseController
 			return true;
 		}
 		
-		if(digitalAsset.getAssetBlob() != null)
-		{
-			new File(filePath).mkdirs();
-
-			FileOutputStream fis = new FileOutputStream(outputFile);
-			BufferedOutputStream bos = new BufferedOutputStream(fis);
-			
-			BufferedInputStream bis = new BufferedInputStream(digitalAsset.getAssetBlob());
-			
-			int character;
-			while ((character = bis.read()) != -1)
+		InputStream is = digitalAsset.getAssetBlob();
+		//synchronized (is)
+		//{
+			if(is != null)
 			{
-				bos.write(character);
-			}
-			bos.flush();
-			
-			bis.close();
-			fis.close();
-			bos.close();
-			
-			if(logger.isInfoEnabled())
-				logger.info("Time for dumping file " + fileName + ":" + (System.currentTimeMillis() - timer));
+				new File(filePath).mkdirs();
+	
+				FileOutputStream fis = new FileOutputStream(tmpOutputFile);
+				BufferedOutputStream bos = new BufferedOutputStream(fis);
+				
+				BufferedInputStream bis = new BufferedInputStream(is);
+				
+				int character;
+				while ((character = bis.read()) != -1)
+				{
+					bos.write(character);
+				}
+				bos.flush();
+				
+				bis.close();
+				fis.close();
+				bos.close();
+	
+				logger.info("\n\nExists" + tmpOutputFile.getAbsolutePath() + "=" + tmpOutputFile.exists() + " OR " + outputFile.exists() + ":" + outputFile.length());
+				if(tmpOutputFile.length() == 0 || tmpOutputFile.length() == digitalAsset.getAssetFileSize() || outputFile.exists())
+				{
+					logger.info("outputFile:" + outputFile.getAbsolutePath());	
+					logger.info("written file:" + tmpOutputFile.length() + " - removing temp and not renaming it...");	
+					tmpOutputFile.delete();
+				}
+				else
+				{
+					if(tmpOutputFile.length() == digitalAsset.getAssetFileSize())
+					{
+						logger.info("written file:" + tmpOutputFile.getAbsolutePath() + " - renaming it to " + outputFile.getAbsolutePath());	
+						tmpOutputFile.renameTo(outputFile);
+						logger.info("Renamed to" + outputFile.getAbsolutePath() + "=" + outputFile.exists());
+					}
+					else
+					{
+						tmpOutputFile.delete();
+					}
+				}
 
-			return true;
-		}
-		else
-		{
-			return false;
-		}
+				if(logger.isInfoEnabled())
+					logger.info("Time for dumping file " + fileName + ":" + (System.currentTimeMillis() - timer));
+	
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		//}
 	}
 
 	/**
