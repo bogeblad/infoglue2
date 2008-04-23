@@ -527,16 +527,17 @@ public class CreateDigitalAssetAction extends ViewDigitalAssetAction
 				Element transformationElement = (Element)transformationElementsIterator.next();
 			
 				String inputFilePattern  = transformationElement.attributeValue("inputFilePattern");
-				String keepOriginalAsset = transformationElement.attributeValue("keepOriginal");
-				if(keepOriginalAsset != null && keepOriginalAsset.equalsIgnoreCase("false"))
-					keepOriginal = false;
-				
 				System.out.println("inputFilePattern: " + inputFilePattern);
-				System.out.println("keepOriginal:" + keepOriginal);
 				
 				if(contentType.matches(inputFilePattern))
 				{
 					System.out.println("We got a match on contentType:" + contentType + " : " + inputFilePattern);
+
+					String keepOriginalAsset = transformationElement.attributeValue("keepOriginal");
+					if(keepOriginalAsset != null && keepOriginalAsset.equalsIgnoreCase("false"))
+						keepOriginal = false;
+					
+					System.out.println("keepOriginal:" + keepOriginal);
 
 					List tranformResultElements = transformationElement.elements("tranformResult");
 					Iterator tranformResultElementsIterator = tranformResultElements.iterator();
@@ -561,7 +562,9 @@ public class CreateDigitalAssetAction extends ViewDigitalAssetAction
 					}
 				}
 				else
+				{
 					System.out.println("NOOOO match on contentType:" + contentType + " : " + inputFilePattern);
+				}
 			}
 		}
 		catch (Exception e) 
