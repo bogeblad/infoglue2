@@ -451,7 +451,7 @@ function showComponentMenu(event, element, compId, anInsertUrl, anDeleteUrl, anC
 	//alert("bottomedge:" + bottomedge);
 	//alert("document.body.clientHeight:" + document.body.clientHeight);
 	//alert("menuDiv.offsetWidth:" + menuDiv.offsetWidth);
-	
+		
 	if (rightedge < menuDiv.offsetWidth)
 		clientX = (clientX - menuDiv.offsetWidth);
 	
@@ -1438,6 +1438,9 @@ function showComponentTasksInDiv(targetDivId, parameterString, skipFloat, event)
 		
 		if (bottomedge < menuDiv.offsetHeight)
 			clientY = (clientY - menuDiv.offsetHeight);
+		
+		if(window.parent.name == "PageEditor")
+			$(menuDiv).find("#componentEditorInNewWindowDiv").css("display", "none");
 				
 		menuDiv.style.left 	= clientX + "px";
 		menuDiv.style.top 	= clientY + "px";
