@@ -1265,7 +1265,7 @@
 			<a href="javascript:validateAndSubmitContentForm();"><img src="$ui.getString("images.contenttool.buttons.save")" width="50" height="25" border="0"></a>
 			<a href="javascript:validateAndSubmitContentFormThenExit();"><img src="$ui.getString("images.contenttool.buttons.saveAndExitToCover")" width="80" height="25" border="0"></a>
 			#end
-			<a href="ViewContent.action?contentId=$contentId&repositoryId=$!repositoryId"><img border="0" src="$ui.getString("images.contenttool.buttons.cancel")" width="50" height="25"></a></td>
+			<a href="ViewContent.action?contentId=$contentId&repositoryId=$!repositoryId&stay=true"><img border="0" src="$ui.getString("images.contenttool.buttons.cancel")" width="50" height="25"></a></td>
 		</td>
 	</tr>
 </table>
