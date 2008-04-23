@@ -31,6 +31,8 @@
 		var cssFile = "script/menu/skins/winclassic.css";
 		document.write("<link type=\"text/css\" rel=\"StyleSheet\" href=\"" + cssFile + "\" />" );
 
+		var languageCode = "$languageCode";
+		
 		// OTHER STUFF
 		function syncWithTree(path)
 		{

@@ -12,6 +12,8 @@
 
 	<script type="text/javascript" language="JavaScript">
 	<!-- 
+		var languageCode = "$languageCode";
+		
 		var oldSelected;
 		function htmlTreeItemClick(itemId, repoId, path)
 		{
