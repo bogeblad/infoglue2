@@ -73,8 +73,17 @@ public class DocumentConverterTag extends TemplateControllerTag
 		else if (docUrl != null && !docUrl.equals(""))
 		{
 			String fileName = docUrl.substring(docUrl.lastIndexOf("/") + 1);
-			String filePath = CmsPropertyHandler.getDigitalAssetPath();
-			String assetPath = filePath + File.separator + fileName;		
+			String filePath = CmsPropertyHandler.getDigitalAssetPath0();
+			int idIndex = fileName.indexOf("_");
+			if(idIndex > -1)
+			{
+				String fileIdString = fileName.substring(0, idIndex);
+				int fileId = Integer.parseInt(fileIdString);
+				String folderName = "" + (fileId / 1000);
+				filePath = CmsPropertyHandler.getDigitalAssetPath0() + File.separator + folderName;
+			}
+			
+			String assetPath = filePath + File.separator + fileName;
 			returnFile = new File(assetPath);
 		}
 		
