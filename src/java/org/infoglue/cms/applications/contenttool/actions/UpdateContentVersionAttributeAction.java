@@ -236,9 +236,11 @@ public class UpdateContentVersionAttributeAction extends ViewContentVersionActio
 			{
 				attributeValue = ContentVersionController.getContentVersionController().getAttributeValue(contentVersionVO, attributeName, false);
 			}
-			//System.out.println("attributeValue:" + attributeValue);
+			//System.out.println("attributeValue before parse:" + attributeValue);
 			
 			attributeValue = parseAttributeForInlineEditing(attributeValue);		
+			
+			//System.out.println("attributeValue after parse:" + attributeValue);
 			
 			this.getResponse().setContentType("text/plain");
 	        this.getResponse().getWriter().println(attributeValue);			
@@ -309,6 +311,7 @@ public class UpdateContentVersionAttributeAction extends ViewContentVersionActio
 	{
 		Map<String,String> replacements = new HashMap<String,String>();
 		
+		/*
 	    Pattern pattern = Pattern.compile("\\$templateLogic\\.getPageUrl\\(.*?\\)");
 	    Matcher matcher = pattern.matcher(attributeValue);
 	    while ( matcher.find() ) 
@@ -335,8 +338,8 @@ public class UpdateContentVersionAttributeAction extends ViewContentVersionActio
 	            }
 	        }
 	    }
+	    */
 
-	    //$templateLogic.getInlineAssetUrl(6938, "downloadIcon")
 	    Pattern assetPattern = Pattern.compile("\\$templateLogic\\.getInlineAssetUrl\\(.*?\\)");
 	    Matcher assetMatcher = assetPattern.matcher(attributeValue);
 	    while ( assetMatcher.find() ) 
@@ -376,6 +379,8 @@ public class UpdateContentVersionAttributeAction extends ViewContentVersionActio
 	    	patternToReplace = patternToReplace.replaceAll("\\(", "\\\\(");
 	    	System.out.println("patternToReplace " + patternToReplace);
 	    	patternToReplace = patternToReplace.replaceAll("\\)", "\\\\)");
+	    	System.out.println("patternToReplace " + patternToReplace);
+	    	patternToReplace = patternToReplace.replaceAll("\\+", "\\\\+");
 	    	System.out.println("patternToReplace " + patternToReplace);
 	    	
 	    	System.out.println("attributeValue before " + attributeValue);
