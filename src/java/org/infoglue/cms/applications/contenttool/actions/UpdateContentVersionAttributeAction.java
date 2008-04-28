@@ -24,6 +24,7 @@
 package org.infoglue.cms.applications.contenttool.actions;
 
 import java.io.StringReader;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -39,6 +40,7 @@ import org.infoglue.cms.controllers.kernel.impl.simple.AccessRightController;
 import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentControllerProxy;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentStateController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
 import org.infoglue.cms.entities.content.Content;
@@ -62,6 +64,8 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
+
+import com.sun.star.embed.StateChangeInProgressException;
 
 /**
   * This is the action-class for UpdateContentVersionVersion
@@ -154,6 +158,12 @@ public class UpdateContentVersionAttributeAction extends ViewContentVersionActio
 			contentVersionVO.setVersionModifier(this.getInfoGluePrincipal().getName());
 			contentVersionVO.setVersionValue(sb.toString());
 			this.contentVersionVO = ContentVersionController.getContentVersionController().create(contentId, languageId, contentVersionVO, null);
+		}
+		else if(!this.contentVersionVO.getStateId().equals(ContentVersionVO.WORKING_STATE))
+		{
+		    ContentVersion contentVersion = ContentStateController.changeState(this.contentVersionVO.getContentVersionId(), ContentVersionVO.WORKING_STATE, "Edit on sight", false, null, this.getInfoGluePrincipal(), this.contentVersionVO.getContentId(), new ArrayList());
+		    this.contentVersionId = contentVersion.getContentVersionId();
+		    this.contentVersionVO = contentVersion.getValueObject();
 		}
 		
 		String attributeValue = getRequest().getParameter(this.attributeName);
