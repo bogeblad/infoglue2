@@ -61,22 +61,38 @@ import org.infoglue.deliver.util.Timer;
  * This authentication module authenticates an user against the ordinary infoglue database.
  */
 
-public class SimplifiedFallbackJNDIBasicAuthorizationModule implements AuthorizationModule, Serializable, Runnable
+public class SimplifiedFallbackJNDIBasicAuthorizationModule extends Thread implements AuthorizationModule, Serializable
 {
     private final static Logger logger = Logger.getLogger(SimplifiedFallbackJNDIBasicAuthorizationModule.class.getName());
 
+    private static Thread classThread = null;
+    
 	protected Properties extraProperties = null;
 	
 	public SimplifiedFallbackJNDIBasicAuthorizationModule()
 	{
-		new Thread(this).start();
+		if(classThread == null)
+		{
+			classThread = this;
+			classThread.start();
+		}			
 	}
 	
 	public void run()
 	{
+		try
+		{
+			Thread.sleep(3000);
+		} 
+		catch (InterruptedException e1)
+		{
+			e1.printStackTrace();
+		}
+		
 		while(true)
 		{
-			System.out.println("Running SimplifiedFallbackJNDIBasicAuthorizationModule thread which updates the auth cache..");
+			System.out.println("Running SimplifiedFallbackJNDIBasicAuthorizationModule thread which updates the auth cache:" + CmsPropertyHandler.getContextRootPath());
+			Timer t = new Timer();
 			
 			try
 			{
@@ -84,13 +100,15 @@ public class SimplifiedFallbackJNDIBasicAuthorizationModule implements Authoriza
 				
 				try
 				{
-					List roles = getRoles(ctx, true);
+					List roles = getRoles(ctx, true, null);
+					t.printElapsedTime("Caching roles took");
 					Iterator rolesIterator = roles.iterator();
 					while(rolesIterator.hasNext())
 					{
 						InfoGlueRole infoGlueRole = (InfoGlueRole)rolesIterator.next();
 						getAuthorizedInfoGlueRole(infoGlueRole.getName(), ctx, true);
 					}
+					t.printElapsedTime("Caching individual roles took");
 				}
 				catch (Exception e) 
 				{
@@ -103,13 +121,15 @@ public class SimplifiedFallbackJNDIBasicAuthorizationModule implements Authoriza
 	
 				try
 				{
-					List groups = getGroups(ctx, true);
+					List groups = getGroups(ctx, true, null);
+					t.printElapsedTime("Caching groups took");
 					Iterator groupsIterator = groups.iterator();
 					while(groupsIterator.hasNext())
 					{
 						InfoGlueGroup infoGlueGroup = (InfoGlueGroup)groupsIterator.next();
 						getAuthorizedInfoGlueGroup(infoGlueGroup.getName(), ctx, true);
 					}
+					t.printElapsedTime("Caching individual groups took");
 				}
 				catch (Exception e) 
 				{
@@ -121,12 +141,14 @@ public class SimplifiedFallbackJNDIBasicAuthorizationModule implements Authoriza
 				}
 	
 				List users = getUsers(true);
+				t.printElapsedTime("Caching users took");
 				Iterator usersIterator = users.iterator();
 				while(usersIterator.hasNext())
 				{
 					InfoGluePrincipal infoGluePrincipal = (InfoGluePrincipal)usersIterator.next();
 					getAuthorizedInfoGluePrincipal(infoGluePrincipal.getName(), true);
 				}
+				t.printElapsedTime("Caching individual users took");
 			}
 			catch (Exception e) 
 			{
@@ -140,6 +162,7 @@ public class SimplifiedFallbackJNDIBasicAuthorizationModule implements Authoriza
 				if(userCacheTimeout != null && !userCacheTimeout.equals(""))
 					threadSleep = Integer.parseInt(userCacheTimeout) * 1000;
 				
+				System.out.println("threadSleep:" + threadSleep);
 				Thread.sleep(threadSleep);
 			} 
 			catch (InterruptedException e)
@@ -358,10 +381,12 @@ public class SimplifiedFallbackJNDIBasicAuthorizationModule implements Authoriza
 
 				if(logger.isInfoEnabled())
 					logger.info("userAttributes:" + userName);
-				Map userAttributes = getUserAttributes(userName, ctx);
+				
+				List memberOfNames = new ArrayList();
+				Map userAttributes = getUserAttributes(userName, memberOfNames, ctx);
 
-				List roles = getRoles(userName, ctx, skipCaches);
-				List groups = getGroups(userName, ctx, skipCaches);
+				List roles = getRoles(userName, memberOfNames, ctx);
+				List groups = getGroups(userName, memberOfNames, ctx);
 				
 				infogluePrincipal = new InfoGluePrincipal(userName, (String)userAttributes.get("displayName"), (String)userAttributes.get("firstName"), (String)userAttributes.get("lastName"), (String)userAttributes.get("mail"), roles, groups, isAdministrator, this);
 				infogluePrincipal.getMetaInformation().putAll(userAttributes);
@@ -560,13 +585,14 @@ public class SimplifiedFallbackJNDIBasicAuthorizationModule implements Authoriza
 		{				
 			try
 			{
-				Map userAttributes = getUserAttributes(userName, ctx);
+				List memberOfNames = new ArrayList();
+				Map userAttributes = getUserAttributes(userName, memberOfNames, ctx);
 				List roles = new ArrayList();
 				List groups = new ArrayList();
 				if(attachRolesAndGroups)
 				{
-					roles = getRoles(userName, ctx, skipCaches);
-					groups = getGroups(userName, ctx, skipCaches);
+					roles = getRoles(userName, memberOfNames, ctx);
+					groups = getGroups(userName, memberOfNames, ctx);
 				}
 				
 				infogluePrincipal = new InfoGluePrincipal(userName, (String)userAttributes.get("displayName"), (String)userAttributes.get("firstName"), (String)userAttributes.get("lastName"), (String)userAttributes.get("mail"), roles, groups, isAdministrator, this);
@@ -634,11 +660,11 @@ public class SimplifiedFallbackJNDIBasicAuthorizationModule implements Authoriza
 			else
 			{
 				infoglueRole = (InfoGlueRole)infoglueRoleObject;
-				//logger.info("Returning cached user:" + userName + ":" + infogluePrincipal);
+				//System.out.println("Returning cached role:" + roleName + " for key " + key);
 				return infoglueRole;
 			}
 		}
-		
+
 		logger.info("\n\n\n ---------- getAuthorizedInfoGlueRole starting ---------\n\n\n");
 
 		String roleNameAttribute 		= this.extraProperties.getProperty("roleNameAttribute", "distinguishedName");
@@ -702,7 +728,7 @@ public class SimplifiedFallbackJNDIBasicAuthorizationModule implements Authoriza
 		    {	
 		    	CacheController.cacheObjectInAdvancedCache("JNDIAuthorizationCache", key, infoglueRole, null, false);
 		    }
-		    
+
 		    logger.info("-----------------------\n");
 		}
 		catch (Exception e) 
@@ -743,7 +769,7 @@ public class SimplifiedFallbackJNDIBasicAuthorizationModule implements Authoriza
 	
 	public InfoGlueGroup getAuthorizedInfoGlueGroup(String groupName, DirContext ctx, boolean skipCaches) throws Exception
 	{
-		String userCacheTimeout = this.extraProperties.getProperty("groupCacheTimeout", "1800");
+		String groupCacheTimeout = this.extraProperties.getProperty("groupCacheTimeout", "1800");
 
 	    String authorizerIndex = this.extraProperties.getProperty("authorizerIndex");
 	    if(authorizerIndex == null)
@@ -751,7 +777,7 @@ public class SimplifiedFallbackJNDIBasicAuthorizationModule implements Authoriza
 		
 	    String key = "group_" + groupName + "_" + authorizerIndex;
 	    InfoGlueGroup infoglueGroup = null;
-	    Object infoglueGroupObject = CacheController.getCachedObjectFromAdvancedCache("JNDIAuthorizationCache", key, new Integer(userCacheTimeout).intValue());
+	    Object infoglueGroupObject = CacheController.getCachedObjectFromAdvancedCache("JNDIAuthorizationCache", key, new Integer(groupCacheTimeout).intValue());
 		if(infoglueGroupObject != null && !skipCaches)
 		{
 			if(infoglueGroupObject instanceof NullObject)
@@ -854,7 +880,7 @@ public class SimplifiedFallbackJNDIBasicAuthorizationModule implements Authoriza
 	 * @exception NamingException if a directory server error occurs
 	 */
 	
-	protected Map getUserAttributes(String userName) throws NamingException, Exception
+	protected Map getUserAttributes(String userName, List memberOfNames) throws NamingException, Exception
 	{
 		Map attributes = null;
 		
@@ -862,7 +888,7 @@ public class SimplifiedFallbackJNDIBasicAuthorizationModule implements Authoriza
 		
 		try
 		{
-			attributes = getUserAttributes(userName, ctx);
+			attributes = getUserAttributes(userName, memberOfNames, ctx);
 		}
 		finally
 		{
@@ -881,20 +907,26 @@ public class SimplifiedFallbackJNDIBasicAuthorizationModule implements Authoriza
 	 * @exception NamingException if a directory server error occurs
 	 */
 	
-	protected Map getUserAttributes(String userName, DirContext ctx) throws NamingException, Exception
+	protected Map getUserAttributes(String userName, List memberOfNames, DirContext ctx) throws NamingException, Exception
 	{
 		logger.info("userName:" + userName);
 		logger.info("userName:" + userName);
 		
 		Map userAttributes = new HashMap();
 		
-		String userAttributesFilter		= this.extraProperties.getProperty("userAttributesFilter", "cn, distinguishedName");
+		String userAttributesFilter			= this.extraProperties.getProperty("userAttributesFilter", "cn, distinguishedName");
 		String userDisplayNameFilter		= this.extraProperties.getProperty("displayNameFilter", "displayName");
 		String userNameAttributeFilter		= this.extraProperties.getProperty("userNameAttributeFilter", "distinguishedName");
 		String userFirstNameAttributeFilter	= this.extraProperties.getProperty("userFirstNameAttributeFilter", "givenName");
 		String userLastNameAttributeFilter	= this.extraProperties.getProperty("userLastNameAttributeFilter", "sn");
 		String userMailAttributeFilter		= this.extraProperties.getProperty("userMailAttributeFilter", "mail");
 
+		String memberOfAttributeFilter		= this.extraProperties.getProperty("memberOfFilter", "memberOf");
+		
+		memberOfAttributeFilter = memberOfAttributeFilter.toLowerCase().trim();
+		
+		String[] memberOfAttributes = memberOfAttributeFilter.split(",");
+		
 		try 
 		{
 			/*
@@ -926,7 +958,7 @@ public class SimplifiedFallbackJNDIBasicAuthorizationModule implements Authoriza
 			Attribute userFirstNameAttribute 	= attributes.get(userFirstNameAttributeFilter);
 			Attribute userLastNameAttribute 	= attributes.get(userLastNameAttributeFilter);
 			Attribute userMailAttribute	 		= attributes.get(userMailAttributeFilter);
-			
+		
 			if(logger.isInfoEnabled())
 			{
 				logger.info("userNameAttribute:" + userNameAttribute);
@@ -965,6 +997,28 @@ public class SimplifiedFallbackJNDIBasicAuthorizationModule implements Authoriza
 				}
 			}
 
+			//System.out.println("memberOfAttributes:" + memberOfAttributes.length);
+			for(int i=0; i<memberOfAttributes.length; i++)
+			{
+				String memberOfAttributeName = memberOfAttributes[i];
+				Attribute value = attributes.get(memberOfAttributeName);
+				if(value != null)
+				{
+					NamingEnumeration e = value.getAll();
+					while(e.hasMore()) 
+					{
+						Object memberOfNameObject = e.next();
+						String memberOfName = memberOfNameObject.toString().trim();
+						//System.out.println("memberOfName:" + memberOfName);
+									
+						memberOfNames.add((memberOfNameObject == null ? "Unknown" : memberOfName));
+					}
+				}
+				else
+				{
+					System.out.println("User " + userName + " had no member of attributes..");
+				}
+			}
 		}
 		catch (Exception e) 
 		{
@@ -1026,7 +1080,8 @@ public class SimplifiedFallbackJNDIBasicAuthorizationModule implements Authoriza
 		logger.info("userName:" + userName);
 		
 		List roles = new ArrayList();
-		List allRoles = getRoles(ctx, skipCaches);
+		Map allRoleNamesMap = new HashMap();
+		List allRoles = getRoles(ctx, skipCaches, allRoleNamesMap);
 
 		String memberOfAttribute	= this.extraProperties.getProperty("memberOfAttributeFilter");
 		String roleFilter			= this.extraProperties.getProperty("roleFilter", "InfoGlue");
@@ -1065,6 +1120,12 @@ public class SimplifiedFallbackJNDIBasicAuthorizationModule implements Authoriza
 					
 					if(roleFilter.equalsIgnoreCase("*") || roleName.indexOf(roleFilter) > -1)
 					{
+						InfoGlueRole cachedRole = (InfoGlueRole)allRoleNamesMap.get(roleName);
+						if(cachedRole != null)
+						{
+							roles.add(cachedRole);
+						}
+						/*
 						InfoGlueRole infoGlueRole = getAuthorizedInfoGlueRole(roleName, ctx, skipCaches);
 						if(allRoles.contains(infoGlueRole))
 					    {
@@ -1072,6 +1133,7 @@ public class SimplifiedFallbackJNDIBasicAuthorizationModule implements Authoriza
 							logger.info("Adding role.................:" + fullRoleName);
 							roles.add(infoGlueRole);
 					    }
+					    */
 					}
 				}
 			}
@@ -1086,6 +1148,88 @@ public class SimplifiedFallbackJNDIBasicAuthorizationModule implements Authoriza
 		return roles;
 	}
 
+	/**
+	 * Return a List of roles associated with the given User. Any
+	 * roles present in the user's directory entry are supplemented by
+	 * a directory search. If no roles are associated with this user,
+	 * a zero-length List is returned.
+	 *
+	 * @param context The directory context we are searching
+	 * @param user The User to be checked
+	 *
+	 * @exception NamingException if a directory server error occurs
+	 */
+	
+	protected List getRoles(String userName, List memberOfNames, DirContext ctx) throws NamingException, Exception 
+	{
+		logger.info("**************************************************");
+		logger.info("*In JNDI version								 *");
+		logger.info("**************************************************");
+		logger.info("userName:" + userName);
+		
+		List roles = new ArrayList();
+		Map allRoleNamesMap = new HashMap();
+		List allRoles = getRoles(ctx, false, allRoleNamesMap);
+
+		try 
+		{
+			if(memberOfNames == null)
+				throw new SystemException("No memberOfNames found for user:" + userName);
+
+			String roleFilter = this.extraProperties.getProperty("roleFilter", "InfoGlue");
+
+			Iterator memberOfNamesIterator = memberOfNames.iterator();
+			while(memberOfNamesIterator.hasNext())
+			{
+				String memberOfName = (String)memberOfNamesIterator.next();
+				//logger.info("roleNameObject:" + attr);
+
+				logger.info("memberOfName:" + memberOfName);
+					
+				if(roleFilter.equalsIgnoreCase("*") || memberOfName.indexOf(roleFilter) > -1)
+				{
+					InfoGlueRole cachedRole = (InfoGlueRole)allRoleNamesMap.get(memberOfName);
+					if(cachedRole != null)
+					{
+						//InfoGlueRole infoGlueRole = getAuthorizedInfoGlueRole(memberOfName, ctx, false);
+						//logger.info("Adding role.................:" + memberOfName);
+						roles.add(cachedRole);
+					}
+					/*
+					Iterator allRolesIterator = allRoles.iterator();
+					while(allRolesIterator.hasNext())
+					{
+						InfoGlueRole existingInfoGlueRole = (InfoGlueRole)allRolesIterator.next();
+						if(existingInfoGlueRole.getName().equals(memberOfName))
+						{
+							InfoGlueRole infoGlueRole = getAuthorizedInfoGlueRole(memberOfName, ctx, false);
+							logger.info("Adding role.................:" + memberOfName);
+							roles.add(infoGlueRole);
+							break;
+						}
+					}
+					*/
+					/*
+					InfoGlueRole infoGlueRole = getAuthorizedInfoGlueRole(memberOfName, ctx, false);
+					if(allRoles.contains(infoGlueRole))
+				    {
+						//InfoGlueRole infoGlueRole = new InfoGlueRole(roleName, "Not available from JNDI-source");
+						logger.info("Adding role.................:" + memberOfName);
+						roles.add(infoGlueRole);
+				    }
+				    */
+				}
+			}
+		}
+		catch (Exception e) 
+		{
+			logger.warn("Could not find role for userName: " + userName + e);
+			e.printStackTrace();
+			throw e;
+		}
+
+		return roles;
+	}
 	
 	/**
 	 * Return a List of roles associated with the given User. Any
@@ -1137,7 +1281,8 @@ public class SimplifiedFallbackJNDIBasicAuthorizationModule implements Authoriza
 		logger.info("userName:" + userName);
 		
 		List groups = new ArrayList();
-		List allGroups = getGroups(ctx, skipCaches);
+		Map allGroupsMap = new HashMap();
+		List allGroups = getGroups(ctx, skipCaches, allGroupsMap);
 	    
 		String memberOfAttribute	= this.extraProperties.getProperty("memberOfAttributeFilter");
 		String groupFilter			= this.extraProperties.getProperty("groupFilter", "InfoGlue");
@@ -1176,6 +1321,20 @@ public class SimplifiedFallbackJNDIBasicAuthorizationModule implements Authoriza
 					
 					if(groupFilter.equalsIgnoreCase("*") || groupName.indexOf(groupFilter) > -1)
 					{
+						InfoGlueGroup cachedGroup = (InfoGlueGroup)allGroupsMap.get(groupName);
+						if(cachedGroup != null)
+						{
+							groups.add(cachedGroup);							
+						}
+						/*
+						if(allGroupsMap.get(groupName) != null)
+						{
+							InfoGlueGroup infoGlueGroup = getAuthorizedInfoGlueGroup(groupName, ctx, skipCaches);
+							logger.info("Adding group.................:" + fullGroupName);
+							groups.add(infoGlueGroup);						
+						}
+						*/
+						/*
 						InfoGlueGroup infoGlueGroup = getAuthorizedInfoGlueGroup(groupName, ctx, skipCaches);
 					    if(allGroups.contains(infoGlueGroup))
 					    {
@@ -1183,6 +1342,7 @@ public class SimplifiedFallbackJNDIBasicAuthorizationModule implements Authoriza
 							logger.info("Adding group.................:" + fullGroupName);
 							groups.add(infoGlueGroup);
 					    }
+					    */
 					}
 				}
 			}
@@ -1197,6 +1357,95 @@ public class SimplifiedFallbackJNDIBasicAuthorizationModule implements Authoriza
 		return groups;
 	}
 	
+	/**
+	 * Return a List of roles associated with the given User. Any
+	 * roles present in the user's directory entry are supplemented by
+	 * a directory search. If no roles are associated with this user,
+	 * a zero-length List is returned.
+	 *
+	 * @param context The directory context we are searching
+	 * @param user The User to be checked
+	 *
+	 * @exception NamingException if a directory server error occurs
+	 */
+	
+	protected List getGroups(String userName, List memberOfNames, DirContext ctx) throws NamingException, Exception 
+	{
+		logger.info("**************************************************");
+		logger.info("*In JNDI version								  *");
+		logger.info("**************************************************");
+		logger.info("userName:" + userName);
+		
+		List groups = new ArrayList();
+		Map allGroupsMap = new HashMap();
+		List allGroups = getGroups(ctx, false, allGroupsMap);
+	    
+		String groupFilter = this.extraProperties.getProperty("groupFilter", "InfoGlue");
+		
+		try 
+		{
+			if(memberOfNames == null)
+				throw new SystemException("No user memberOfNames for user:" + userName);
+
+			Iterator memberOfNamesIterator = memberOfNames.iterator();
+			while(memberOfNamesIterator.hasNext())
+			{
+				String memberOfName = (String)memberOfNamesIterator.next();
+				//logger.info("memberOfName:" + memberOfName);
+
+				logger.info("memberOfName:" + memberOfName);
+					
+				if(groupFilter.equalsIgnoreCase("*") || memberOfName.indexOf(groupFilter) > -1)
+				{
+					InfoGlueGroup cachedGroup = (InfoGlueGroup)allGroupsMap.get(memberOfName);
+					if(cachedGroup != null)
+					{
+						groups.add(cachedGroup);							
+					}
+					/*
+					if(allGroupsMap.get(memberOfName) != null)
+					{
+						InfoGlueGroup infoGlueGroup = getAuthorizedInfoGlueGroup(memberOfName, ctx, false);
+						logger.info("Adding group.................:" + memberOfName);
+						groups.add(infoGlueGroup);						
+					}
+					*/
+					/*
+					Iterator allGroupsIterator = allGroups.iterator();
+					while(allGroupsIterator.hasNext())
+					{
+						InfoGlueGroup existingInfoGlueGroup = (InfoGlueGroup)allGroupsIterator.next();
+						if(existingInfoGlueGroup.getName().equals(memberOfName))
+						{
+							InfoGlueGroup infoGlueGroup = getAuthorizedInfoGlueGroup(memberOfName, ctx, false);
+							logger.info("Adding group.................:" + memberOfName);
+							groups.add(infoGlueGroup);
+							break;
+						}
+					}
+					*/
+					
+					/*
+					InfoGlueGroup infoGlueGroup = getAuthorizedInfoGlueGroup(memberOfName, ctx, false);
+				    if(allGroups.contains(infoGlueGroup))
+				    {
+						//InfoGlueGroup infoGlueGroup = new InfoGluegroup(groupName, "Not available from JNDI-source");
+						logger.info("Adding group.................:" + memberOfName);
+						groups.add(infoGlueGroup);
+				    }
+				    */
+				}
+			}
+		}
+		catch (Exception e) 
+		{
+			logger.warn("Could not find Group for userName: " + userName + e);
+			e.printStackTrace();
+			throw e;
+		}
+
+		return groups;
+	}
 	
     /**
      * This method returns a list of all roles available to InfoGlue.
@@ -1209,7 +1458,7 @@ public class SimplifiedFallbackJNDIBasicAuthorizationModule implements Authoriza
 		
 		try
 		{
-			roles = getRoles(ctx, false);
+			roles = getRoles(ctx, false, null);
 		}
 		finally
 		{
@@ -1223,7 +1472,7 @@ public class SimplifiedFallbackJNDIBasicAuthorizationModule implements Authoriza
 	 * This method gets a list of roles
 	 */
 	
-	public List getRoles(DirContext ctx, boolean skipCaches) throws Exception
+	public List getRoles(DirContext ctx, boolean skipCaches, Map allRolesMap) throws Exception
 	{
 	    logger.info("getRoles start....");
 	    
@@ -1233,10 +1482,24 @@ public class SimplifiedFallbackJNDIBasicAuthorizationModule implements Authoriza
 	    if(authorizerIndex == null)
 	    	authorizerIndex = "";
 
+	    if(allRolesMap == null)
+	    	allRolesMap = new HashMap();
+	    
 	    String key = "allRoles" + authorizerIndex;
 		List roles = (List)CacheController.getCachedObjectFromAdvancedCache("JNDIAuthorizationCache", key, new Integer(roleCacheTimeout).intValue());
 		if(roles != null && !skipCaches)
+		{
+			if(allRolesMap != null)
+			{
+				Map cachedRolesMap = (Map)CacheController.getCachedObjectFromAdvancedCache("JNDIAuthorizationCache", key + "_namesMap");
+				if(cachedRolesMap != null)
+					allRolesMap.putAll(cachedRolesMap);
+				else
+					System.out.println("Problem getting all roles - was not cached before - strange");
+			}
+			
 			return roles;
+		}
 		
 		roles = new ArrayList();
 
@@ -1340,6 +1603,8 @@ public class SimplifiedFallbackJNDIBasicAuthorizationModule implements Authoriza
 					
 					InfoGlueRole infoGlueRole = new InfoGlueRole(roleName, displayName, "Not available from JNDI-source", this);
 					roles.add(infoGlueRole);
+					if(allRolesMap != null)
+						allRolesMap.put(infoGlueRole.getName(), infoGlueRole);
 				} 
 				logger.info("-----------------------\n");
 			}
@@ -1353,10 +1618,11 @@ public class SimplifiedFallbackJNDIBasicAuthorizationModule implements Authoriza
 
 	    if(roles != null)
 	    {
-	    	System.out.println("Read all roles and cached them");
 	    	CacheController.cacheObjectInAdvancedCache("JNDIAuthorizationCache", key, roles, null, false);
+		    if(allRolesMap != null)
+		    	CacheController.cacheObjectInAdvancedCache("JNDIAuthorizationCache", key + "_namesMap", allRolesMap, null, false);	
 	    }
-	    
+	    	
 		return roles;
 	}
 
@@ -1431,6 +1697,11 @@ public class SimplifiedFallbackJNDIBasicAuthorizationModule implements Authoriza
 				logger.info("Searching for users in " + baseDN + " - users was " + users.size());
 
 			DirContext ctx = getContext();
+
+			Map roleNamesMap = new HashMap();
+			List allRoles = getRoles(ctx, skipCaches, roleNamesMap);
+			Map groupNamesMap = new HashMap();
+			List allGroups = getGroups(ctx, skipCaches, groupNamesMap);
 
 			try 
 			{
@@ -1565,9 +1836,13 @@ public class SimplifiedFallbackJNDIBasicAuthorizationModule implements Authoriza
 										logger.info("indexOf:" + roleName.indexOf(roleNameAttribute));
 									}
 									
-									InfoGlueRole infoGlueRole = this.getAuthorizedInfoGlueRole(roleName, ctx, skipCaches);
-								    //InfoGlueRole infoGlueRole = new InfoGlueRole(roleName, "Not available from JNDI-source", this);
-									roles.add(infoGlueRole);
+									InfoGlueRole cachedRole = (InfoGlueRole)roleNamesMap.get(roleName);
+									if(cachedRole != null)
+									{
+										//InfoGlueRole infoGlueRole = this.getAuthorizedInfoGlueRole(roleName, ctx, false);
+									    //InfoGlueRole infoGlueRole = new InfoGlueRole(roleName, "Not available from JNDI-source", this);
+										roles.add(cachedRole);
+									}
 								}
 							}
 						}
@@ -1596,9 +1871,13 @@ public class SimplifiedFallbackJNDIBasicAuthorizationModule implements Authoriza
 										logger.info("indexOf:" + groupName.indexOf(roleNameAttribute));
 									}
 									
-									InfoGlueGroup infoGlueGroup = this.getAuthorizedInfoGlueGroup(groupName, ctx, skipCaches);
-									//InfoGlueGroup infoGlueGroup = new InfoGlueGroup(groupName, "Not available from JNDI-source", this);
-								    groups.add(infoGlueGroup);
+									InfoGlueGroup cachedGroup = (InfoGlueGroup)groupNamesMap.get(groupName);
+									if(cachedGroup != null)
+									{
+										//InfoGlueGroup infoGlueGroup = this.getAuthorizedInfoGlueGroup(groupName, ctx, false);
+										//InfoGlueGroup infoGlueGroup = new InfoGlueGroup(groupName, "Not available from JNDI-source", this);
+									    groups.add(cachedGroup);
+									}
 								}
 							}
 						}
@@ -1636,7 +1915,6 @@ public class SimplifiedFallbackJNDIBasicAuthorizationModule implements Authoriza
 
 	    if(users != null)
 	    {
-	    	System.out.println("Read all users and cached them");
 	    	CacheController.cacheObjectInAdvancedCache("JNDIAuthorizationCache", key, users, null, false);
 	    }
 	   
@@ -1798,7 +2076,7 @@ public class SimplifiedFallbackJNDIBasicAuthorizationModule implements Authoriza
 		
 		try
 		{
-			groups = getGroups(ctx, false);
+			groups = getGroups(ctx, false, null);
 		}
 		finally
 		{
@@ -1811,7 +2089,7 @@ public class SimplifiedFallbackJNDIBasicAuthorizationModule implements Authoriza
     /**
      * This method returns a list of all groups available to InfoGlue.
      */
-    public List getGroups(DirContext ctx, boolean skipCaches) throws Exception
+    public List getGroups(DirContext ctx, boolean skipCaches, Map groupNamesMap) throws Exception
     {
 	    logger.info("getGroups start....");
 
@@ -1821,10 +2099,24 @@ public class SimplifiedFallbackJNDIBasicAuthorizationModule implements Authoriza
 	    if(authorizerIndex == null)
 	    	authorizerIndex = "";
 
+	    if(groupNamesMap == null)
+	    	groupNamesMap = new HashMap();
+	    
 		String key = "allGroups" + authorizerIndex;
 		List groups = (List)CacheController.getCachedObjectFromAdvancedCache("JNDIAuthorizationCache", key, new Integer(groupCacheTimeout).intValue());
 		if(groups != null && !skipCaches)
+		{
+			if(groupNamesMap != null)
+			{
+				Map cachedGroupNamesMap = (Map)CacheController.getCachedObjectFromAdvancedCache("JNDIAuthorizationCache", key + "_namesMap");
+				if(cachedGroupNamesMap != null)
+					groupNamesMap.putAll(cachedGroupNamesMap);
+				else
+					System.out.println("Error getting cached group names map - strange...");
+			}
+			
 			return groups;
+		}
 		
 		groups = new ArrayList();
 		
@@ -1913,7 +2205,9 @@ public class SimplifiedFallbackJNDIBasicAuthorizationModule implements Authoriza
 					}
 					
 					InfoGlueGroup infoGlueGroup = new InfoGlueGroup(groupName, displayName, "Not available from JNDI-source", this);
-					groups.add(infoGlueGroup);				
+					groups.add(infoGlueGroup);	
+					if(groupNamesMap != null)
+						groupNamesMap.put(infoGlueGroup.getName(), infoGlueGroup);
 				} 
 				
 				logger.info("-----------------------\n");
@@ -1928,8 +2222,9 @@ public class SimplifiedFallbackJNDIBasicAuthorizationModule implements Authoriza
 
 	    if(groups != null)
 	    {
-	    	System.out.println("Read all groups and cached them");
 	    	CacheController.cacheObjectInAdvancedCache("JNDIAuthorizationCache", key, groups, null, false);
+		    if(groupNamesMap != null)
+		    	CacheController.cacheObjectInAdvancedCache("JNDIAuthorizationCache", key + "_namesMap", groupNamesMap, null, false);	
 	    }
 	    
 		return groups;
