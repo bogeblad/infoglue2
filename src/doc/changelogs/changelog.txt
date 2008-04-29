@@ -66,7 +66,15 @@ Abbreviated Changelog from 2.8.1 Final
 - Fixed so the screen scrolls down to to the assets after you delete one. 
 - Added feature which checks if the content version has an identical assetKey allready and denies duplicates.
 - Added possibility to automatically convert images to other formats/sizes upon upload. Only works for jpg, png and gif so far. Will be expanded later with other file formats. Convenient for controlling what users upload.
-
+- Added better handling of users in decorated view.
+- Changed so pageKey by default contains principal.
+- Translated more texts in the tools
+- Added interception points for submit to publish button. Good if you want to only allow direct publishing.
+- Made so the tree view shows if pages or contents are protected. Also changes the labels so one can see if contents or pages are in working-mode etc.
+- Cancel-button in content-version now moves user to content cover.
+- Fixed bug in asset dialog concerning i18n asset keys.
+- Made the context menu in structure tool hide "Open in new window" if the window is allready expanded.
+- Worked on and optimized/improved the new SimplifiedFallbackJNDIBasicAuthorizationModule which now recaches all users/roles/groups in the background at regular intervals. No more hickups after cache expiration.
 
 -------------------------------------------------------------------------------------
 - InfoGlue 2.8.1 Final
