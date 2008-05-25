@@ -32,23 +32,30 @@ import java.util.List;
 
 public class ToolbarButton
 {
-	private String id            		= "";
-	private String text            		= "";
-	private String title            	= "";
-	private String backgroundImageURL   = "";
-	private String actionURL  	    	= "";
-	//private Integer height			= new Integer(22);
-	//private Integer width				= new Integer(76);
-	//private List subButtons			= new ArrayList();
-	//private boolean isSelfContained	= false;
+	private String id            			= "";
+	private String text            			= "";
+	private String title            		= "";
+	private String backgroundImageURL   	= "";
+	private String backgroundImageAlignment	= "left";
+	private String actionURL  	    		= "";
+	//private Integer height				= new Integer(22);
+	//private Integer width					= new Integer(76);
+	private List<ToolbarButton> subButtons 	= new ArrayList<ToolbarButton>();
+	//private boolean isSelfContained		= false;
 
 	public ToolbarButton(String id, String text, String title, String actionURL, String backgroundImageURL)
 	{
-		this.id 				= id;
-		this.text 				= text;
-		this.title     			= title;
-		this.backgroundImageURL = backgroundImageURL;
-		this.actionURL 			= actionURL;
+		this(id, text, title, actionURL, backgroundImageURL, "left");
+	}
+
+	public ToolbarButton(String id, String text, String title, String actionURL, String backgroundImageURL, String backgroundImageAlignment)
+	{
+		this.id 						= id;
+		this.text 						= text;
+		this.title     					= title;
+		this.backgroundImageURL 		= backgroundImageURL;
+		this.backgroundImageAlignment 	= backgroundImageAlignment;
+		this.actionURL 					= actionURL;
 	}
 
 	public String getId()
@@ -75,4 +82,15 @@ public class ToolbarButton
 	{
 		return actionURL;
 	}
+
+	public List<ToolbarButton> getSubButtons()
+	{
+		return subButtons;
+	}
+
+	public String getBackgroundImageAlignment()
+	{
+		return backgroundImageAlignment;
+	}
+	
 }

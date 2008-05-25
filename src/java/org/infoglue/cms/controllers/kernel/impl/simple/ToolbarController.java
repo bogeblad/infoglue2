@@ -2,13 +2,19 @@ package org.infoglue.cms.controllers.kernel.impl.simple;
 
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.infoglue.cms.applications.common.ToolbarButton;
 import org.infoglue.cms.applications.common.ToolbarButton;
+import org.infoglue.cms.entities.content.ContentVO;
+import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.entities.management.InterceptionPointVO;
+import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.entities.workflow.WorkflowDefinitionVO;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGlueGroup;
@@ -17,6 +23,9 @@ import org.infoglue.cms.security.InfoGlueRole;
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.StringManager;
 import org.infoglue.cms.util.StringManagerFactory;
+import org.infoglue.deliver.util.HttpHelper;
+import org.infoglue.deliver.util.HttpUtilities;
+import org.infoglue.deliver.util.Timer;
 
 public class ToolbarController
 {
@@ -60,6 +69,8 @@ public class ToolbarController
 	
 	public List<ToolbarButton> getToolbarButtons(String toolbarKey, InfoGluePrincipal principal, Locale locale, String primaryKey, String extraParameters)
 	{
+		Timer t = new Timer();
+		
 		this.toolbarKey = toolbarKey;
 		this.principal = principal;
 		this.locale = locale;
@@ -77,8 +88,13 @@ public class ToolbarController
 		logger.info("primaryKey:" + primaryKey);
 		logger.info("extraParameters:" + extraParameters);
 		
+		t.printElapsedTime("Button 1 took");
+		
 		try
 		{
+			if(toolbarKey.equalsIgnoreCase("tool.contenttool.contentVersionHeader"))
+				return getContentVersionButtons();
+			
 			/*
 			if(toolbarKey.equalsIgnoreCase("tool.managementtool.repositoryList.header"))
 				return getRepositoriesButtons();
@@ -162,6 +178,78 @@ public class ToolbarController
 		return null;				
 	}
 	
+	
+	private List<ToolbarButton> getContentVersionButtons() throws Exception
+	{
+		Timer t = new Timer();
+		List<ToolbarButton> buttons = new ArrayList<ToolbarButton>();
+
+		buttons.add(new ToolbarButton("",
+									  getLocalizedString(locale, "tool.contenttool.save.label"), 
+									  getLocalizedString(locale, "tool.contenttool.save.label"),
+									  "javascript:validateAndSubmitContentForm();",
+									  "images/v3/saveInlineIcon.gif"));
+
+		buttons.add(new ToolbarButton("",
+									  getLocalizedString(locale, "tool.contenttool.saveAndExit.label"), 
+									  getLocalizedString(locale, "tool.contenttool.saveAndExit.label"),
+									  "javascript:validateAndSubmitContentFormThenClose();",
+									  "images/v3/saveAndExitInlineIcon.gif"));
+
+		buttons.add(new ToolbarButton("",
+									  getLocalizedString(locale, "tool.contenttool.publish.label"), 
+									  getLocalizedString(locale, "tool.contenttool.publish.label"),
+									  "javascript:validateAndSubmitContentFormThenSubmitToPublish();",
+				  					  "images/v3/publishIcon.gif"));
+
+		buttons.add(new ToolbarButton("",
+				  					  getLocalizedString(locale, "tool.contenttool.cancel.label"), 
+				  					  getLocalizedString(locale, "tool.contenttool.cancel.label"),
+				  					  "javascript:refreshCaller();",
+				  					  "images/v3/cancelIcon.gif"));
+
+		System.out.println("primaryKeyAsInteger:" + primaryKeyAsInteger);
+		LanguageVO currentLanguageVO = null;
+		ContentVO contentVO = null;
+		if(primaryKeyAsInteger != null)
+		{
+			ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getContentVersionVOWithId(primaryKeyAsInteger);
+			contentVO = ContentController.getContentController().getContentVOWithId(contentVersionVO.getContentId());
+			currentLanguageVO = LanguageController.getController().getLanguageVOWithId(contentVersionVO.getLanguageId());
+		}
+		else
+		{
+			System.out.println("extraInformation:" + extraParameters);
+			Map extraParametersMap = new HttpHelper().toMap(extraParameters, "UTF-8");
+			contentVO = ContentController.getContentController().getContentVOWithId(new Integer((String)extraParametersMap.get("contentId")));
+			currentLanguageVO = LanguageController.getController().getLanguageVOWithId(new Integer((String)extraParametersMap.get("languageId")));
+		}
+			
+		
+		ToolbarButton languageDropButton = new ToolbarButton("",
+															 StringUtils.capitalize(currentLanguageVO.getDisplayLanguage()), 
+															 StringUtils.capitalize(currentLanguageVO.getDisplayLanguage()),
+				  											 "",
+					  										 "images/v3/menu-button-arrow.png",
+					  										 "right");
+		
+		Iterator repositoryLanguagesIterator = LanguageController.getController().getLanguageVOList(contentVO.getRepositoryId()).iterator();
+		while(repositoryLanguagesIterator.hasNext())
+		{
+			LanguageVO languageVO = (LanguageVO)repositoryLanguagesIterator.next();
+			languageDropButton.getSubButtons().add(new ToolbarButton("" + languageVO.getId(),
+					 StringUtils.capitalize(languageVO.getDisplayLanguage()), 
+					 StringUtils.capitalize(languageVO.getDisplayLanguage()),
+					 "changeLanguage(" + contentVO.getId() + ", " + languageVO.getId() + ");",
+					 ""));
+		}
+		
+		buttons.add(languageDropButton);
+
+		
+		return buttons;
+	}
+
 	/*
 	private List<ToolbarButton> getRepositoriesButtons() throws Exception
 	{
@@ -740,6 +828,10 @@ public class ToolbarController
 		String helpPageBaseUrl = "http://www.infoglue.org";
 		
 		String helpPageUrl = "";
+
+		if(toolbarKey.equalsIgnoreCase("tool.contenttool.contentVersionHeader"))
+			helpPageUrl = "/help/tools/contenttool/contentVersion";
+
 		if(toolbarKey.equalsIgnoreCase("tool.managementtool.viewRoleList.header"))
 			helpPageUrl = "/help/tools/managementtool/roles";
 		if(toolbarKey.equalsIgnoreCase("tool.managementtool.viewRole.header"))
