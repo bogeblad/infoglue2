@@ -122,9 +122,6 @@ public class FormEntryVO implements BaseEntityVO
 	{
     	ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
     	
-    	//ValidatorFactory.createStringValidator("Redirect.url", true, 1, 1024, true, RedirectImpl.class, this.getId(), null).validate(this.url, ceb);
-    	//ValidatorFactory.createStringValidator("Redirect.redirectUrl", true, 1, 1024).validate(redirectUrl, ceb); 
-    	
     	return ceb;
 	}
 
