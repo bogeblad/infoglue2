@@ -41,6 +41,7 @@ public class ComponentPropertyDefinition
     public final static String CHECKBOXFIELD= "checkbox";
     
     private String name;
+    private String displayName;
     private String type;
     private String entity;
     private Boolean multiple;
@@ -59,9 +60,10 @@ public class ComponentPropertyDefinition
     private List options = new ArrayList();
 
     
-    public ComponentPropertyDefinition(String name, String type, String entity, Boolean multiple, Boolean assetBinding, String allowedContentTypeNames, String description, String defaultValue, Boolean WYSIWYGEnabled, String WYSIWYGToolbar, String dataProvider, String dataProviderParameters, Boolean autoCreateContent, String autoCreateContentMethod, String autoCreateContentPath)
+    public ComponentPropertyDefinition(String name, String displayName, String type, String entity, Boolean multiple, Boolean assetBinding, String allowedContentTypeNames, String description, String defaultValue, Boolean WYSIWYGEnabled, String WYSIWYGToolbar, String dataProvider, String dataProviderParameters, Boolean autoCreateContent, String autoCreateContentMethod, String autoCreateContentPath)
     {
         this.name 						= name;
+        this.displayName				= displayName;
         this.type 						= type;
         this.entity 					= entity;
         this.multiple 					= multiple;
@@ -97,7 +99,12 @@ public class ComponentPropertyDefinition
     {
         return name;
     }
-    
+
+    public String getDisplayName()
+    {
+        return displayName;
+    }
+
     public String getType()
     {
         return type;
