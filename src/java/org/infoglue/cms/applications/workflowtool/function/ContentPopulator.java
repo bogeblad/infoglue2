@@ -136,8 +136,11 @@ public class ContentPopulator extends InfoglueFunction
 			if(languageVO == null)
 				setPropertySetDataString(name, getRequestParameter(name));
 			else
+			{
+				setPropertySetDataString(name, getRequestParameter(name));
 				setPropertySetDataString(languageVO.getLanguageCode() + "_" + name, getRequestParameter(name));
-				
+			}
+			
 			logger.debug(name + " is found in the request; propertyset updated.");
 		} 
 		else
@@ -148,7 +151,6 @@ public class ContentPopulator extends InfoglueFunction
 			return propertySetContains(name) ? getPropertySetDataString(name) : "";
 		else
 			return propertySetContains(languageVO.getLanguageCode() + "_" + name) ? getPropertySetDataString(languageVO.getLanguageCode() + "_" + name) : "";
-				
 	}
 	/**
 	 * 
