@@ -476,6 +476,31 @@ public abstract class InfoGlueAbstractAction extends WebworkAbstractAction
 	    return CmsPropertyHandler.getDisableCustomIcons();
 	}
 
+	public String getWorkingStyleInformation()
+	{
+	    return CmsPropertyHandler.getWorkingStyleInformation();
+	}
+
+	public String getFinalStyleInformation()
+	{
+	    return CmsPropertyHandler.getFinalStyleInformation();
+	}
+
+	public String getPublishStyleInformation()
+	{
+	    return CmsPropertyHandler.getPublishStyleInformation();
+	}
+
+	public String getPublishedStyleInformation()
+	{
+	    return CmsPropertyHandler.getPublishedStyleInformation();
+	}
+
+	public Map getCustomContentTypeIcons()
+	{
+	    return CmsPropertyHandler.getCustomContentTypeIcons();
+	}
+	
     public String getEnableDateTimeDirectEditing()
     {
         return CmsPropertyHandler.getEnableDateTimeDirectEditing();
