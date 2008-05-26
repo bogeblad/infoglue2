@@ -24,6 +24,7 @@
 package org.infoglue.cms.applications.common.actions;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -34,6 +35,7 @@ import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.InterceptionPointController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SubscriptionController;
 import org.infoglue.cms.entities.management.InterceptionPointVO;
+import org.infoglue.cms.entities.management.SubscriptionFilterVO;
 import org.infoglue.cms.entities.management.SubscriptionVO;
 
 
@@ -61,6 +63,13 @@ public class SubscriptionsAction extends InfoGlueAbstractAction
 	private Map subscriptions = new HashMap();
 	private String interceptionPointIdString = "";
 	
+	//Global subscriptions
+	private Collection subscriptionVOList = null;
+	private String name;
+	private String filterType;
+	private String filterCondition;
+	private Boolean isAndCondition;
+	
 	private static SubscriptionController subscriptionsController = SubscriptionController.getController();
 	
 	public String doInput() throws Exception
@@ -73,7 +82,7 @@ public class SubscriptionsAction extends InfoGlueAbstractAction
 				InterceptionPointVO interceptionPointVO = InterceptionPointController.getController().getInterceptionPointVOWithName(interceptionPointName);
 				interceptionPointIdString += interceptionPointVO.getId() + ",";
 				
-				List subscriptionVOList = subscriptionsController.getSubscriptionVOList(interceptionPointVO.getId(), entityName, entityId, this.getInfoGluePrincipal().getName(), null);
+				List subscriptionVOList = subscriptionsController.getSubscriptionVOList(interceptionPointVO.getId(), null, null, entityName, entityId, this.getInfoGluePrincipal().getName(), null);
 				if(subscriptionVOList != null && subscriptionVOList.size() > 0)
 					subscriptions.put(interceptionPointVO.getId(), true);
 				else
@@ -102,7 +111,7 @@ public class SubscriptionsAction extends InfoGlueAbstractAction
 					InterceptionPointVO interceptionPointVO = (InterceptionPointVO)interceptionPointVOListIterator.next();
 					interceptionPointIdString += interceptionPointVO.getId() + ",";
 					
-					List subscriptionVOList = subscriptionsController.getSubscriptionVOList(interceptionPointVO.getId(), entityName, entityId, this.getInfoGluePrincipal().getName(), null);
+					List subscriptionVOList = subscriptionsController.getSubscriptionVOList(interceptionPointVO.getId(), null, null, entityName, entityId, this.getInfoGluePrincipal().getName(), null);
 					if(subscriptionVOList != null && subscriptionVOList.size() > 0)
 						subscriptions.put(interceptionPointVO.getId(), true);
 					else
@@ -122,7 +131,7 @@ public class SubscriptionsAction extends InfoGlueAbstractAction
     	{
     		String key = "subscription_" + interceptionPointIds[i] + "_" + extraParameters;
     		System.out.println("removing key:" + key);
-			List subscriptionVOList = subscriptionsController.getSubscriptionVOList(interceptionPointId, entityName, entityId, this.getInfoGluePrincipal().getName(), null);
+			List subscriptionVOList = subscriptionsController.getSubscriptionVOList(interceptionPointId, null, null, entityName, entityId, this.getInfoGluePrincipal().getName(), null);
     		Iterator<SubscriptionVO> subscriptionVOListIterator = subscriptionVOList.iterator();
     		while(subscriptionVOListIterator.hasNext())
     		{
@@ -148,6 +157,35 @@ public class SubscriptionsAction extends InfoGlueAbstractAction
     	return "success";
     }
 
+    
+	public String doInputGlobalSubscriptions() throws Exception
+    {
+		this.subscriptionVOList = subscriptionsController.getSubscriptionVOList(null, null, new Boolean(true), null, null, this.getInfoGluePrincipal().getName(), null);
+		
+		return "inputGlobalSubscriptions";
+    }
+    
+    public String doGlobalSubscriptions() throws Exception
+    {
+    	SubscriptionVO subscriptionVO = new SubscriptionVO();
+    	subscriptionVO.setIsGlobal(true);
+    	subscriptionVO.setInterceptionPointId(interceptionPointId);
+    	subscriptionVO.setName(name);
+    	subscriptionVO.setUserName(this.getInfoGluePrincipal().getName());
+    	
+    	List<SubscriptionFilterVO> subscriptionFilterVOList = new ArrayList<SubscriptionFilterVO>();
+    	
+    	SubscriptionFilterVO subscriptionFilterVO = new SubscriptionFilterVO();
+    	subscriptionFilterVO.setFilterType(filterType);
+    	subscriptionFilterVO.setFilterCondition(filterCondition);
+    	subscriptionFilterVO.setIsAndCondition(isAndCondition);
+    	subscriptionFilterVOList.add(subscriptionFilterVO);
+    	
+    	subscriptionsController.create(subscriptionVO, subscriptionFilterVOList);
+    	
+    	return "successGlobalSubscriptions";
+    }
+    
 	public String getReturnAddress()
 	{
 		return returnAddress;
@@ -256,5 +294,50 @@ public class SubscriptionsAction extends InfoGlueAbstractAction
 	public void setEntityId(String entityId)
 	{
 		this.entityId = entityId;
+	}
+
+	public Collection getSubscriptionVOList()
+	{
+		return subscriptionVOList;
+	}
+
+	public String getName()
+	{
+		return name;
+	}
+
+	public void setName(String name)
+	{
+		this.name = name;
+	}
+
+	public String getFilterType()
+	{
+		return filterType;
+	}
+
+	public void setFilterType(String filterType)
+	{
+		this.filterType = filterType;
+	}
+
+	public String getFilterCondition()
+	{
+		return filterCondition;
+	}
+
+	public void setFilterCondition(String filterCondition)
+	{
+		this.filterCondition = filterCondition;
+	}
+
+	public Boolean getIsAndCondition()
+	{
+		return isAndCondition;
+	}
+
+	public void setIsAndCondition(Boolean isAndCondition)
+	{
+		this.isAndCondition = isAndCondition;
 	}
 }

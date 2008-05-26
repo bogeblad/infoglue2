@@ -26,9 +26,12 @@ package org.infoglue.cms.applications.managementtool.actions;
 import java.util.Collections;
 import java.util.List;
 
+import javax.servlet.ServletOutputStream;
+
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.RoleControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.UserControllerProxy;
+import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.sorters.ReflectionComparator;
 import org.infoglue.deliver.util.Timer;
 
@@ -106,6 +109,24 @@ public class ViewListSystemUserAction extends InfoGlueAbstractAction
 		Collections.sort(this.infogluePrincipals, new ReflectionComparator("firstName"));
 		
 	    return "successPopup";
+	}
+	
+	public String doUserListSearch() throws Exception
+	{
+		String searchString 					= this.getRequest().getParameter("searchString");		
+		List<InfoGluePrincipal> searchResult 	= UserControllerProxy.getController().getFilteredUsers(searchString, null, null, null, null);
+		ServletOutputStream myOut 				= getResponse().getOutputStream();
+		
+		myOut.print("<select name=\"searchResult\" size=\"10\" class=\"userSelectBox\" multiple=\"true\">");
+		
+		for (InfoGluePrincipal igp : searchResult)
+		{
+			myOut.print("<option value=\"" + igp.getName() + "\">" + igp.getFirstName() + " " + igp.getLastName() + "</option>");
+		}
+		
+		myOut.print("</select>");
+		
+		return "none";
 	}
 	
 	public List getRoles() throws Exception

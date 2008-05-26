@@ -1,0 +1,31 @@
+#beginManagementToolV3("tool.managementtool.viewMessageCenter.header" "" false)
+
+<link rel="stylesheet" href="script/jqueryplugins/ui/themes/flora/flora.all.css" type="text/css" media="screen" title="Flora (Default)">
+
+<script type="text/javascript" src="script/jquery/jquery-1.2.3.min.js"></script>
+<script type="text/javascript" src="script/jqueryplugins/ui/jquery-ui-igcommon15.min.js"></script>
+
+<div style="color: black;">
+	<p>$ui.getString("tool.managementtool.createEmailComposeEmail.title")</p>
+	
+	<form name="mailForm" method="POST" action="CreateEmail!executeV3.action">
+		<input type="hidden" name="recipients" value="$usersAddresses"/>
+		<input type="hidden" name="extraText" value="$extraText"/>
+		
+		#if($errorMessage != "")
+			<span style="color:red">$errorMessage</span><br/>
+		#end
+	  	$ui.getString("tool.managementtool.from.label"):<br/>
+	  	<input type="textfield" id="from" name="from" class="longtextfield"/><br/>
+	  	$ui.getString("tool.managementtool.subject.label"):<br/>
+	  	<input type="textfield" id="subject" name="subject" class="longtextfield"/><br/>
+		$ui.getString("tool.managementtool.yourMessage.label"):<br/>
+		<textarea name="message" class="normaltextarea"></textarea><br/>
+		<br/>		
+		<div id="buttons" class="ig-buttonRow">
+			<input type="submit" id="nextButton" name="nextButton" value="$ui.getString("tool.common.nextButton.label")" title="$ui.getString("tool.common.nextButton.title")"/>
+		</div>
+  	</form>
+</div>
+
+#endManagementTool()

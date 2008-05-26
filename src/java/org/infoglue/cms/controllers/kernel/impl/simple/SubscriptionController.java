@@ -24,6 +24,7 @@
 package org.infoglue.cms.controllers.kernel.impl.simple;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
@@ -33,7 +34,10 @@ import org.exolab.castor.jdo.OQLQuery;
 import org.exolab.castor.jdo.QueryResults;
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.entities.management.Subscription;
+import org.infoglue.cms.entities.management.SubscriptionFilter;
+import org.infoglue.cms.entities.management.SubscriptionFilterVO;
 import org.infoglue.cms.entities.management.SubscriptionVO;
+import org.infoglue.cms.entities.management.impl.simple.SubscriptionFilterImpl;
 import org.infoglue.cms.entities.management.impl.simple.SubscriptionImpl;
 import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.ConstraintException;
@@ -84,6 +88,66 @@ public class SubscriptionController extends BaseController
         return subscription.getValueObject();
     }
 
+    public SubscriptionVO create(SubscriptionVO subscriptionVO,List<SubscriptionFilterVO> subscriptionFilterVOList) throws ConstraintException, SystemException
+    {
+    	SubscriptionVO newSubscriptionVO = null;
+    	
+    	Database db = CastorDatabaseService.getDatabase();
+		
+		try 
+		{
+			beginTransaction(db);
+			
+			Subscription subscription = new SubscriptionImpl();
+			subscription.setValueObject(subscriptionVO);
+	        subscription = (Subscription) createEntity(subscription, db);
+
+			Iterator<SubscriptionFilterVO> subscriptionFilterVOListIterator = subscriptionFilterVOList.iterator();
+			while(subscriptionFilterVOListIterator.hasNext())
+			{
+				SubscriptionFilterVO subscriptionFilterVO = subscriptionFilterVOListIterator.next();
+		    	SubscriptionFilterImpl subscriptionFilter = new SubscriptionFilterImpl();
+		    	subscriptionFilter.setValueObject(subscriptionFilterVO);
+		    	subscriptionFilter.setSubscription(subscription);
+		    	subscription.getSubscriptionFilters().add(subscriptionFilter);	        				
+			}
+
+	        newSubscriptionVO = subscription.getValueObject();
+	        
+	        commitTransaction(db);
+		}
+		catch (Exception e)		
+		{
+			e.printStackTrace();
+		    logger.warn("An error occurred so we should not complete the transaction:" + e);
+		    rollbackTransaction(db);
+		}
+
+		return newSubscriptionVO;
+    }
+
+    public void addFilter(Integer subscriptionId, SubscriptionFilterVO subscriptionFilterVO) throws ConstraintException, SystemException
+    {
+		Database db = CastorDatabaseService.getDatabase();
+		
+		try 
+		{
+			beginTransaction(db);
+			
+	    	Subscription subscription = getSubscriptionWithId(subscriptionId, db);
+	    	SubscriptionFilterImpl subscriptionFilter = new SubscriptionFilterImpl();
+	    	subscriptionFilter.setValueObject(subscriptionFilterVO);
+	    	subscription.getSubscriptionFilters().add(subscriptionFilter);
+	    	
+	        commitTransaction(db);
+		}
+		catch (Exception e)		
+		{
+		    logger.warn("An error occurred so we should not complete the transaction:" + e);
+		    rollbackTransaction(db);
+		}
+    }
+
     public void delete(SubscriptionVO subscriptionVO) throws ConstraintException, SystemException
     {
     	deleteEntity(SubscriptionImpl.class, subscriptionVO.getSubscriptionId());
@@ -99,9 +163,9 @@ public class SubscriptionController extends BaseController
 	 * Gets matching subscriptions
 	 */
 	
-	public List<SubscriptionVO> getSubscriptionVOList(Integer interceptionPointId, String entityName, String entityId, String userName, String userEmail) throws SystemException, Exception
+	public List<SubscriptionVO> getSubscriptionVOList(Integer interceptionPointId, String name, Boolean isGlobal, String entityName, String entityId, String userName, String userEmail) throws SystemException, Exception
 	{
-		List subscriptionVOList = new ArrayList();
+		List<SubscriptionVO> subscriptionVOList = new ArrayList<SubscriptionVO>();
 		
 		Database db = CastorDatabaseService.getDatabase();
 		
@@ -109,8 +173,22 @@ public class SubscriptionController extends BaseController
 		{
 			beginTransaction(db);
 			
-			List subscriptionList = getSubscriptionList(interceptionPointId, entityName, entityId, userName, userEmail, db, true);
-			subscriptionVOList = toVOList(subscriptionList);
+			List<Subscription> subscriptionList = getSubscriptionList(interceptionPointId, name, isGlobal, entityName, entityId, userName, userEmail, db, true);
+			Iterator<Subscription> subscriptionListIterator = subscriptionList.iterator();
+			while(subscriptionListIterator.hasNext())
+			{
+				Subscription subscription = (Subscription)subscriptionListIterator.next();
+				Collection<SubscriptionFilterImpl> subscriptionFilters = subscription.getSubscriptionFilters();
+				System.out.println("subscriptionFilters:" + subscriptionFilters.size());
+				Iterator<SubscriptionFilterImpl> subscriptionFiltersIterator = subscriptionFilters.iterator();
+				while(subscriptionFiltersIterator.hasNext())
+				{
+					subscription.getValueObject().getSubscriptionFilterVOList().add(subscriptionFiltersIterator.next().getValueObject());
+				}
+				subscriptionVOList.add(subscription.getValueObject());
+			}
+
+			//subscriptionVOList = toVOList(subscriptionList);
 			
 	        commitTransaction(db);
 		}
@@ -123,13 +201,14 @@ public class SubscriptionController extends BaseController
 		return subscriptionVOList;
 	}
 
+
 	/**
 	 * Gets matching subscriptions
 	 */
 	
-	public List getSubscriptionList(Integer interceptionPointId, String entityName, String entityId, String userName, String userEmail, Database db, boolean readOnly) throws SystemException, Exception
+	public List<Subscription> getSubscriptionList(Integer interceptionPointId, String name, Boolean isGlobal, String entityName, String entityId, String userName, String userEmail, Database db, boolean readOnly) throws SystemException, Exception
 	{
-	    List subscriptionList = new ArrayList();
+	    List<Subscription> subscriptionList = new ArrayList<Subscription>();
 	    
 	    StringBuffer sql = new StringBuffer("SELECT s FROM org.infoglue.cms.entities.management.impl.simple.SubscriptionImpl s WHERE ");
 	    List bindings = new ArrayList();
@@ -141,6 +220,24 @@ public class SubscriptionController extends BaseController
 	    		sql.append(" AND ");
 	    	sql.append("s.interceptionPointId = $" + bindingIndex);
 	    	bindings.add(interceptionPointId);
+	    	bindingIndex++;
+	    }
+
+	    if(name != null)
+	    {
+	    	if(bindingIndex > 1)
+	    		sql.append(" AND ");
+	    	sql.append("s.name = $" + bindingIndex);
+	    	bindings.add(name);
+	    	bindingIndex++;
+	    }
+
+	    if(isGlobal != null)
+	    {
+	    	if(bindingIndex > 1)
+	    		sql.append(" AND ");
+	    	sql.append("s.isGlobal = $" + bindingIndex);
+	    	bindings.add(isGlobal);
 	    	bindingIndex++;
 	    }
 

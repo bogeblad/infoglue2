@@ -1,0 +1,33 @@
+#beginManagementToolV3("tool.managementtool.viewMessageCenter.header" "" false)
+
+<form method="POST" name="editForm" action="/infoglueCMS/Subscriptions.action">
+	<input type="hidden" name="extraParameters" value="$extraParameters"/>
+	<input type="hidden" name="interceptionPointIdString" value="$interceptionPointIdString"/>
+	<input type="hidden" name="entityName" value="$entityName"/>
+	<input type="hidden" name="entityId" value="$entityId"/>
+	
+	<div style="color: black;">
+		<p>$ui.getString("tool.common.subscriptions.title")</p>
+		#if($errorMessage != "")
+			<span style="color:red">$errorMessage</span><br/>
+		#end
+		
+		#foreach($interceptionPointsGroup in $interceptionPointsGroupsMap.entrySet())
+
+			<h2>$interceptionPointsGroup.key</h2>
+			#foreach($interceptionPointVO in $interceptionPointsGroup.value)
+			#set($dotIndex = $interceptionPointVO.name.indexOf(".") + 1)
+			#set($hasSubscription = $subscriptions.get($interceptionPointVO.id))
+			<input type="checkbox" name="subscribedInterceptionPointId" value="$interceptionPointVO.id" #if($hasSubscription) checked="1" #end/> $interceptionPointVO.name.substring($dotIndex)<br/>
+			#end
+		
+		#end
+				
+		<br/>
+		<div id="buttons" class="ig-buttonRow">
+			<input type="submit" id="saveButton" name="saveButton" value="$ui.getString("tool.common.saveButton.label")" title="$ui.getString("tool.common.saveButton.title")"/>
+		</div>
+	</div>
+</form>
+
+#endManagementTool()

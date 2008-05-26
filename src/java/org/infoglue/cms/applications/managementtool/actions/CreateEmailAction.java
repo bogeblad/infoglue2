@@ -91,44 +91,6 @@ public class CreateEmailAction extends InfoGlueAbstractAction
     	
         return "success";
     }
-    
-    public String doExecuteV3() throws Exception
-    {
-    	System.out.println("Inne i doExecuteV3");
-    	
-    	if(subject == null || subject.length() == 0 || message == null || message.length() == 0)
-    	{
-    		usersAddresses 	= getRequest().getParameter("recipients");
-    		errorMessage 	= "Must enter information in all fields below.";
-    		return "inputCreateEmailV3";
-    	}
-    	else
-    	{
-			if(from == null  || from.length() == 0)
-			{
-    			String systemEmailSender = CmsPropertyHandler.getSystemEmailSender();
-    			if(systemEmailSender == null || systemEmailSender.equalsIgnoreCase(""))
-    				systemEmailSender = "InfoGlueCMS@" + CmsPropertyHandler.getMailSmtpHost();
-
-    			from = systemEmailSender;
-			}
-
-	        String contentType = CmsPropertyHandler.getMailContentType();
-	        if(contentType == null || contentType.length() == 0)
-	            contentType = "text/html";
-
-		    if(contentType.equalsIgnoreCase("text/html"))
-		    {
-		    	VisualFormatter ui = new VisualFormatter();
-		    	message = ui.escapeHTMLforXMLService(message);
-				message = "<div>" + message.replaceAll("\n", "<br/>\n") + "</div>";
-		    }
-			
-			MailServiceFactory.getService().sendEmail(from, from, recipients, subject, message, "utf-8");
-    	}
-    	
-        return "success";
-    }
    
     public String doInputChooseRecipients() throws Exception
     {    	
@@ -208,27 +170,64 @@ public class CreateEmailAction extends InfoGlueAbstractAction
     	return "inputCreateEmail";
     }
     
+    public String doExecuteV3() throws Exception
+    {
+    	extraText 	= getRequest().getParameter("extraText");
+    	
+    	if(subject == null || subject.length() == 0 || message == null || message.length() == 0)
+    	{
+    		usersAddresses 	= getRequest().getParameter("recipients");
+    		errorMessage 	= "Must enter information in all fields below.";
+    		return "inputCreateEmailV3";
+    	}
+    	else
+    	{
+			if(from == null  || from.length() == 0)
+			{
+    			String systemEmailSender = CmsPropertyHandler.getSystemEmailSender();
+    			if(systemEmailSender == null || systemEmailSender.equalsIgnoreCase(""))
+    				systemEmailSender = "InfoGlueCMS@" + CmsPropertyHandler.getMailSmtpHost();
+
+    			from = systemEmailSender;
+			}
+
+	        String contentType = CmsPropertyHandler.getMailContentType();
+	        if(contentType == null || contentType.length() == 0)
+	            contentType = "text/html";
+
+		    if(contentType.equalsIgnoreCase("text/html"))
+		    {
+		    	VisualFormatter ui = new VisualFormatter();
+		    	message = ui.escapeHTMLforXMLService(message);
+				message = "<div>" + message.replaceAll("\n", "<br/>\n") + "</div>";
+		    }
+		    
+		    message += "<br/>";
+		    message += extraText;		    		
+			
+			MailServiceFactory.getService().sendEmail(from, from, recipients, subject, message, "utf-8");
+    	}
+    	
+        return "successV3";
+    }
+    
     public String doInputChooseRecipientsV3() throws Exception
     {
-    	System.out.println("Inne i doInputChooseRecipientsV3");
-    	
-    	users 	= UserControllerProxy.getController().getAllUsers();
-    	roles 	= RoleControllerProxy.getController().getAllRoles();
-    	groups 	= GroupControllerProxy.getController().getAllGroups();
+    	extraText 	= getRequest().getParameter("extraText");    	
+    	users 		= UserControllerProxy.getController().getAllUsers();
+    	roles 		= RoleControllerProxy.getController().getAllRoles();
+    	groups 		= GroupControllerProxy.getController().getAllGroups();
     	
     	return "inputChooseRecipientsV3";
     }
 
     public String doInputCreateEmailV3() throws Exception
     {
-    	System.out.println("Inne i doInputCreateEmailV3");
-    	
+    	extraText 	= getRequest().getParameter("extraText");
     	userNames 	= getRequest().getParameterValues("userName");
     	roleNames 	= getRequest().getParameterValues("roleName");
     	groupNames 	= getRequest().getParameterValues("groupName");
 
-    	System.out.println("userNames: " + userNames);
-    	
     	if (userNames == null && roleNames == null && groupNames == null)
     	{    		
     		errorMessage = "You must select at least one recipient.";

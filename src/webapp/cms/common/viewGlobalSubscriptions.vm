@@ -1,0 +1,71 @@
+#beginManagementToolV3("tool.managementtool.viewMessageCenter.header" "" false "" "")
+
+<script type="text/javascript">
+<!--
+	function showDiv(id)
+	{
+		document.getElementById(id).style.display = 'block';
+	}
+	
+	function hideDiv(id)
+	{
+		document.getElementById(id).style.display = 'none';
+	}
+//-->
+</script>
+
+<div style="color: black;">
+	<p>$ui.getString("tool.common.subscriptions.title")</p>
+	#if($errorMessage != "")
+		<span style="color:red">$errorMessage</span><br/>
+	#end
+	
+	#foreach($subscriptionVO in $subscriptionVOList)
+
+		<h2>$subscriptionVO.name</h2>
+		#foreach($subscriptionFilterVO in $subscriptionVO.subscriptionFilterVOList)
+			$subscriptionFilterVO.filterType - $subscriptionFilterVO.filterCondition - $subscriptionFilterVO.isAndCondition<br/>
+		#end
+	
+	#end
+			
+	<br/>
+	<div id="buttons" class="ig-buttonRow">
+		<a href="javascript:showDiv('newSubscriptionForm');">Add subscription</a>
+	</div>
+</div>
+
+<div id="newSubscriptionForm" style="display: none; position: absolute; width: 300px; border: 1px solid black;">
+	<form action="Subscriptions!globalSubscriptions.action" name="inputForm" method="post">
+		<fieldset>
+			<label for="name">Name</label>
+			<input type="text" name="name"/>
+			
+			<label for="interceptionPointId">Type</label>
+			<select name="interceptionPointId">
+				<option value="33">Content.Published</option>
+				<option value="22">Content.Delete</option>
+			</select>
+	
+			<label for="filterType">Filter type</label>
+			<select name="filterType">
+				<option value="0">Content types</option>
+				<option value="1">Categories</option>
+			</select>
+	
+			<label for="filterCondition">Filter condition</label>
+			<select name="filterCondition">
+				<option value="0">Article</option>
+				<option value="1">News</option>
+				<option value="2">Mini article</option>
+			</select>
+	
+			<label for="isAndCondition">isAndCondition</label>
+			<input type="checkbox" name="isAndCondition" value="true"/> Yes
+			
+			<input type="submit" value="Save"/>
+		</fieldset>
+	</form>
+</div>
+
+#endManagementTool()

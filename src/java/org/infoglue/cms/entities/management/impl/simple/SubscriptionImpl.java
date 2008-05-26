@@ -24,6 +24,10 @@
 package org.infoglue.cms.entities.management.impl.simple;
 
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.entities.management.Subscription;
 import org.infoglue.cms.entities.management.SubscriptionVO;
@@ -34,7 +38,8 @@ import org.infoglue.cms.exception.SystemException;
 public class SubscriptionImpl implements Subscription
 {
     private SubscriptionVO valueObject = new SubscriptionVO();
-
+    private Collection<SubscriptionFilterImpl> subscriptionFilters = new ArrayList<SubscriptionFilterImpl>();
+    
 	public String toString()
 	{
 		return this.valueObject.toString();
@@ -109,6 +114,16 @@ public class SubscriptionImpl implements Subscription
 		return this.valueObject.getUserName();
 	}
 
+	public String getName()
+	{
+		return this.valueObject.getName();
+	}
+
+	public Date getLastNotifiedDateTime()
+	{
+		return this.valueObject.getLastNotifiedDateTime();
+	}
+
 	public void setEntityId(String entityId) throws ConstraintException
 	{
 		this.valueObject.setEntityId(entityId);
@@ -133,5 +148,35 @@ public class SubscriptionImpl implements Subscription
 	{
 		this.valueObject.setUserName(userName);
 	}
-      
+
+	public void setName(String name) throws ConstraintException
+	{
+		this.valueObject.setName(name);
+	}
+
+	public Boolean getIsGlobal()
+	{
+		return this.valueObject.getIsGlobal();
+	}
+
+	public void setIsGlobal(Boolean isGlobal) throws ConstraintException
+	{
+		this.valueObject.setIsGlobal(isGlobal);
+	}
+
+	public void setLastNotifiedDateTime(Date lastNotifiedDateTime) throws ConstraintException
+	{
+		this.valueObject.setLastNotifiedDateTime(lastNotifiedDateTime);
+	}
+
+	public Collection<SubscriptionFilterImpl> getSubscriptionFilters()
+	{
+		return subscriptionFilters;
+	}
+
+	public void setSubscriptionFilters(Collection<SubscriptionFilterImpl> subscriptionFilters)
+	{
+		this.subscriptionFilters = subscriptionFilters;
+	}
+
 }        

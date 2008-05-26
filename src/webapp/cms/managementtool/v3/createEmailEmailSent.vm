@@ -1,0 +1,13 @@
+#beginManagementToolV3("tool.managementtool.viewMessageCenter.header" "" false)
+
+<link rel="stylesheet" href="script/jqueryplugins/ui/themes/flora/flora.all.css" type="text/css" media="screen" title="Flora (Default)">
+
+<script type="text/javascript" src="script/jquery/jquery-1.2.3.min.js"></script>
+<script type="text/javascript" src="script/jqueryplugins/ui/jquery-ui-igcommon15.min.js"></script>
+
+<p>$ui.getString("tool.managementtool.messageSent.title"):</p>
+<p>
+  	$ui.getString("tool.managementtool.messageSent.text"): $recipients.replaceAll(";", ", ")
+</p>
+
+#endManagementTool()

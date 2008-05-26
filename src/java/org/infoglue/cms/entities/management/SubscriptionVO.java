@@ -23,6 +23,9 @@
 
 package org.infoglue.cms.entities.management;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
 import java.util.regex.Pattern;
 
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
@@ -32,12 +35,16 @@ import org.infoglue.cms.util.validators.ValidatorFactory;
 
 public class SubscriptionVO implements BaseEntityVO
 {
-    private java.lang.Integer subscriptionId;
-    private java.lang.Integer interceptionPointId;
-    private java.lang.String entityName;
-    private java.lang.String entityId;
-    private java.lang.String userName;
-    private java.lang.String userEmail;
+    private Integer subscriptionId;
+    private Integer interceptionPointId;
+    private String entityName;
+    private String entityId;
+    private String userName;
+    private String userEmail;
+    private String name;
+    private Boolean isGlobal = new Boolean(false);
+    private Date lastNotifiedDateTime;
+    private Collection<SubscriptionFilterVO> subscriptionFilterVO = new ArrayList();
     
 	/**
 	 * @see org.infoglue.cms.entities.kernel.BaseEntityVO#getId()
@@ -113,6 +120,36 @@ public class SubscriptionVO implements BaseEntityVO
 		this.userEmail = userEmail;
 	}
         
+	public String getName()
+	{
+		return name;
+	}
+
+	public void setName(String name)
+	{
+		this.name = name;
+	}
+
+	public Boolean getIsGlobal()
+	{
+		return isGlobal;
+	}
+
+	public void setIsGlobal(Boolean isGlobal)
+	{
+		this.isGlobal = isGlobal;
+	}
+	
+	public Date getLastNotifiedDateTime()
+	{
+		return lastNotifiedDateTime;
+	}
+
+	public void setLastNotifiedDateTime(Date lastNotifiedDateTime)
+	{
+		this.lastNotifiedDateTime = lastNotifiedDateTime;
+	}
+
 	/**
 	 * @see org.infoglue.cms.entities.kernel.BaseEntityVO#validate()
 	 */
@@ -124,6 +161,11 @@ public class SubscriptionVO implements BaseEntityVO
     	//ValidatorFactory.createStringValidator("Subscription.subscriptionUrl", true, 1, 1024).validate(subscriptionUrl, ceb); 
     	
     	return ceb;
+	}
+
+	public Collection<SubscriptionFilterVO> getSubscriptionFilterVOList()
+	{
+		return subscriptionFilterVO;
 	}
 
 }

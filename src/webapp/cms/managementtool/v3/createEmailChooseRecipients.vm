@@ -1,0 +1,246 @@
+#beginManagementToolV3("tool.managementtool.viewMessageCenter.header" "" false)
+
+<link rel="stylesheet" href="script/jqueryplugins/ui/themes/flora/flora.all.css" type="text/css" media="screen" title="Flora (Default)">
+
+<script type="text/javascript" src="script/jquery/jquery-1.2.3.min.js"></script>
+<script type="text/javascript" src="script/jqueryplugins/ui/jquery-ui-igcommon15.min.js"></script>
+
+<style type="text/css">
+	.recipientTab
+	{
+		height: auto;
+		width: auto;
+		overflow: auto;
+		color: black;
+	}
+	
+	.userSelectBox
+	{
+		width: 200px;
+		height: 200px;
+	}
+	
+	.moveButton
+	{
+		width: 50px;
+	}
+</style>
+
+<script type="text/javascript">
+	<!--
+		$(document).ready(function(){
+		$("#tabsContainer > ul").tabs();
+		});
+		
+		var xmlHttp;
+
+		try
+		{
+			// Firefox, Opera 8.0+, Safari
+			xmlHttp=new XMLHttpRequest();
+		}
+		catch (e)
+		{
+			// Internet Explorer
+			try
+			{
+				xmlHttp=new ActiveXObject("Msxml2.XMLHTTP");
+			}
+			catch (e)
+			{
+				try
+				{
+					xmlHttp=new ActiveXObject("Microsoft.XMLHTTP");
+				}
+				catch (e)
+				{
+					alert("Your browser does not support AJAX!");			
+				}
+			}
+		}
+		
+		function performAjaxSearch()
+		{
+			var query = document.editForm.elements["query"].value;
+			var queryUrl = "http://localhost:8080/infoglueCMS/ViewListSystemUser!userListSearch.action?searchString=" + query;
+			makeAjaxCall(queryUrl, "searchResultDiv");			
+		}
+		
+		function makeAjaxCall(aAjaxUrl, aTargetDiv)
+		{
+			xmlHttp.open("POST", aAjaxUrl, true);
+			xmlHttp.onreadystatechange 	= function()
+			{
+				handleAjaxResponse(aTargetDiv);
+			}
+			xmlHttp.send(null);
+		}
+		
+		function handleAjaxResponse(aTargetDiv)
+		{		
+			if(xmlHttp.readyState == 4)
+			{		
+				if (aTargetDiv != "")
+				{			
+					document.getElementById(aTargetDiv).innerHTML = xmlHttp.responseText;								
+				}			
+			}
+		}
+		
+		function addAll()
+		{
+			selectAll("searchResult");
+			addSelected();
+			unselectAll("searchResult");
+		}
+
+		function removeAll()
+		{
+			selectAll("userName");
+			removeSelected();
+		}
+
+		function addSelected()
+		{
+			var searchResultSize 	= document.editForm.elements["searchResult"].options.length;
+			var userNameSize		= 0;
+			var selectedUser		= null;
+			var alreadyInList 		= false;
+			var userId				= "";
+			var userName 			= "";
+
+			for (x = 0; x < searchResultSize; x ++)
+			{
+				if (document.editForm.elements["searchResult"].options[x].selected == true)
+				{
+					selectedUser	= document.editForm.elements["searchResult"].options[x].value;
+					alreadyInList 	= false;
+
+					for (i = 0; i < userNameSize; i ++)
+					{
+						if (document.editForm.elements["userName"].options[i].value == selectedUser)
+						{
+							alreadyInList = true;
+							break;
+						}
+					}
+
+					if (!alreadyInList)
+					{
+						userNameSize	= document.editForm.elements["userName"].options.length;
+						userId 			= document.editForm.elements["searchResult"].options[x].value;
+						userName 		= document.editForm.elements["searchResult"].options[x].text;
+						document.editForm.elements["userName"].options[userNameSize] = new Option(userName,userId);
+					}
+				}
+			}
+
+		}
+
+		function removeSelected()
+		{
+			var userNameSize 	= document.editForm.elements["userName"].options.length;
+
+			for (x = 0; x < userNameSize; x ++)
+			{
+				if (document.editForm.elements["userName"].options[x].selected == true)
+				{
+					document.editForm.elements["userName"].options[x] = null;
+					x --;
+					userNameSize --
+				}
+			}
+		}
+
+		function selectAll(aElementName)
+		{
+			var size = document.editForm.elements[aElementName].options.length;
+
+			for (i = 0; i < size; i ++)
+			{
+				document.editForm.elements[aElementName].options[i].selected = true;
+			}
+		}
+		
+		function unselectAll(aElementName)
+		{
+			var size = document.editForm.elements[aElementName].options.length;
+
+			for (i = 0; i < size; i ++)
+			{
+				document.editForm.elements[aElementName].options[i].selected = false;
+			}
+		}
+	-->
+</script>
+
+<form method="POST" name="editForm" action="CreateEmail!inputCreateEmailV3.action" autocomplete="off" onsubmit="selectAll('userName')">
+	<input type="hidden" name="extraText" value="$extraText"/>
+	
+	<div style="color: black;">
+		<p>$ui.getString("tool.managementtool.createEmailChooseRecipients.title")</p>
+		#if($errorMessage != "")
+			<span style="color:red">$errorMessage</span><br/>
+		#end
+		
+		<div id="tabsContainer" class="flora">      
+			<ul>
+		        <li><a href="#usersTab"><span>Users</span></a></li>
+		        <li><a href="#rolesTab"><span>Roles</span></a></li>
+		        <li><a href="#groupsTab"><span>Groups</span></a></li>
+		    </ul>
+
+			<div id="usersTab" class="recipientTab">	
+				<table>
+					<tr>
+						<td colspan="3">
+							<span style="font-weight: bold;">Filter</span><br/>
+							<input type="text" name="query" onkeyup="performAjaxSearch();" onchange="performAjaxSearch();"/>
+							<input type="button" value="Clear" onclick="document.editForm.elements['query'].value = ''; performAjaxSearch();"/>
+						</td>
+					</tr>
+					<tr>
+						<td valign="top">
+							<span style="font-weight: bold;">Available users</span><br/>					
+							<div id="searchResultDiv" style="margin: 0px; float: left;">			
+								<select name="searchResult" size="10" class="userSelectBox" multiple="true">
+									#foreach ($userVO in $users)
+										<option value="$userVO.name">$userVO.firstName $userVO.lastName</option>
+									#end
+								</select>			
+							</div>	
+						</td>
+						<td>
+							<input type="button" class="moveButton" onclick="addAll()" value=">>"/><br/>
+							<input type="button" class="moveButton" onclick="addSelected()" value=">"/><br/>
+							<input type="button" class="moveButton" onclick="removeSelected()" value="<"/><br/>
+							<input type="button" class="moveButton" onclick="removeAll()" value="<<"/><br/>
+						</td>
+						<td valign="top">	
+							<span style="font-weight: bold;">Selected users</span><br/>							
+							<select name="userName" size="10" class="userSelectBox" multiple="true">
+							</select>	
+						</td>
+					</tr>
+				</table>				
+			</div>
+			
+			<div id="rolesTab" class="recipientTab" style="display: none;"> 				
+				#foreach ($roleVO in $roles)
+					<input type="checkbox" name="roleName" value="$roleVO.name"/> $roleVO.name<br/>
+				#end
+			</div>
+			
+			<div id="groupsTab" class="recipientTab" style="display: none;"> 				
+				#foreach ($groupVO in $groups)
+					<input type="checkbox" name="groupName" value="$groupVO.name"/> $groupVO.name<br/>
+				#end
+			</div>
+		</div>		
+		<div id="buttons" class="ig-buttonRow" style="clear: both;">
+			<input type="submit" id="nextButton" name="nextButton" value="$ui.getString("tool.common.nextButton.label")" title="$ui.getString("tool.common.nextButton.title")"/>
+		</div>
+	</div>
+</form>
+
+#endManagementTool()

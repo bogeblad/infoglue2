@@ -23,7 +23,11 @@
 
 package org.infoglue.cms.entities.management;
 
+import java.util.Collection;
+import java.util.Date;
+
 import org.infoglue.cms.entities.kernel.IBaseEntity;
+import org.infoglue.cms.entities.management.impl.simple.SubscriptionFilterImpl;
 import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
 
@@ -58,5 +62,21 @@ public interface Subscription extends IBaseEntity
     public java.lang.String getUserEmail();
     
     public void setUserEmail(java.lang.String userEmail) throws ConstraintException;
+
+    public java.lang.String getName();
+    
+    public void setName(java.lang.String name) throws ConstraintException;
+
+    public Boolean getIsGlobal();
+    
+    public void setIsGlobal(Boolean IsGlobal) throws ConstraintException;
+
+    public Date getLastNotifiedDateTime();
+    
+    public void setLastNotifiedDateTime(Date lastNotifiedDateTime) throws ConstraintException;
+
+    public Collection<SubscriptionFilterImpl> getSubscriptionFilters();
+    
+    public void setSubscriptionFilters(Collection<SubscriptionFilterImpl> subscriptionFilters) throws ConstraintException;
 
 }

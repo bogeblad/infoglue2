@@ -1,4 +1,4 @@
-<!-- $Id: actions.xml,v 1.63 2008/04/06 18:23:44 mattias Exp $ -->
+<!-- $Id: actions.xml,v 1.64 2008/05/26 16:22:26 mattias Exp $ -->
 <actions>
 
 	<!-- MySettings -->
@@ -15,6 +15,13 @@
 	<action name="org.infoglue.cms.applications.managementtool.InstallationValidatorAction" alias="InstallationValidator">
 		<view name="input">/cms/managementtool/viewValidationForm.vm</view>
 		<view name="success">/cms/managementtool/viewValidationResults.vm</view>
+		<view name="error">/cms/managementtool/error.vm</view>
+	</action>
+
+	<!-- Configuration Validator -->
+	<action name="org.infoglue.cms.applications.common.actions.ConfigurationAction" alias="Configuration">
+		<view name="input">/cms/managementtool/viewConfiguration.vm</view>
+		<view name="success">/cms/managementtool/viewConfiguration.vm</view>
 		<view name="error">/cms/managementtool/error.vm</view>
 	</action>
 
@@ -502,6 +509,7 @@
 		<view name="success">/cms/managementtool/viewListSystemUser.vm</view>
 		<view name="successV3">/cms/managementtool/v3/viewListSystemUser.vm</view>
 		<view name="successPopup">/cms/managementtool/viewListSystemUserForPopup.vm</view>
+		<view name="userSearch">/cms/managementtool/viewListSystemUserSearch.vm</view>
 		<view name="error">/cms/managementtool/error.vm</view>
 	</action>
 	<action name="org.infoglue.cms.applications.managementtool.actions.ViewSystemUserAction" alias="ViewSystemUser">
@@ -865,7 +873,7 @@
 		<view name="success">/cms/contenttool/viewContentVersion.vm</view>
 		<view name="standalone">/cms/contenttool/viewContentVersionStandalone.vm</view>
 		<view name="successForFCKEditor">/cms/contenttool/viewContentVersionForFCKEditor.vm</view>
-		<view name="standaloneForFCKEditor">/cms/contenttool/viewContentVersionStandaloneForFCKEditor.vm</view>
+		<view name="standaloneForFCKEditor">/cms/contenttool/v3/viewContentVersionStandaloneForFCKEditor.vm</view>
 		<view name="background">/cms/contenttool/viewContentVersionBackground.vm</view>
 		<view name="viewAssetsDialog">/cms/contenttool/viewContentAssets.vm</view>
 		<view name="viewAssetsDialogForFCKEditor">/cms/contenttool/viewContentAssetsForFCKEditor.vm</view>
@@ -1515,6 +1523,9 @@
 		<view name="inputChooseRecipients">/cms/managementtool/createEmailChooseRecipients.vm</view>
 		<view name="inputCreateEmail">/cms/managementtool/createEmailComposeText.vm</view>
 		<view name="success">/cms/managementtool/createEmailEmailSent.vm</view>
+		<view name="inputChooseRecipientsV3">/cms/managementtool/v3/createEmailChooseRecipients.vm</view>
+		<view name="inputCreateEmailV3">/cms/managementtool/v3/createEmailComposeText.vm</view>
+		<view name="successV3">/cms/managementtool/v3/createEmailEmailSent.vm</view>		
 		<view name="error">/cms/managementtool/error.vm</view>
 	</action>
 
@@ -1577,6 +1588,15 @@
 		<view name="input">/cms/managementtool/viewPasswordToolInput.vm</view>
 		<view name="success">/cms/managementtool/viewPasswordToolResult.vm</view>
 		<view name="error">/cms/managementtool/error.vm</view>
+	</action>
+
+	<!--  InfoGlue Subscriptions -->
+	<action name="org.infoglue.cms.applications.common.actions.SubscriptionsAction" alias="Subscriptions">
+		<view name="input">/cms/common/viewSubscriptions.vm</view>
+		<view name="success">/cms/common/viewSubscriptions.vm</view>
+		<view name="inputGlobalSubscriptions">/cms/common/viewGlobalSubscriptions.vm</view>
+		<view name="successGlobalSubscriptions">/cms/common/viewGlobalSubscriptions.vm</view>
+		<view name="error">/cms/common/error.vm</view>
 	</action>
 
 </actions>
