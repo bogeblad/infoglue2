@@ -1,4 +1,4 @@
-<!-- $Id: actions.xml,v 1.64 2008/05/26 16:22:26 mattias Exp $ -->
+<!-- $Id: actions.xml,v 1.65 2008/05/27 13:25:42 mattias Exp $ -->
 <actions>
 
 	<!-- MySettings -->
@@ -1593,9 +1593,9 @@
 	<!--  InfoGlue Subscriptions -->
 	<action name="org.infoglue.cms.applications.common.actions.SubscriptionsAction" alias="Subscriptions">
 		<view name="input">/cms/common/viewSubscriptions.vm</view>
-		<view name="success">/cms/common/viewSubscriptions.vm</view>
+		<view name="success">Subscriptions!inputGlobalSubscriptions.action</view>
 		<view name="inputGlobalSubscriptions">/cms/common/viewGlobalSubscriptions.vm</view>
-		<view name="successGlobalSubscriptions">/cms/common/viewGlobalSubscriptions.vm</view>
+		<view name="successGlobalSubscriptions">Subscriptions!inputGlobalSubscriptions.action</view>
 		<view name="error">/cms/common/error.vm</view>
 	</action>
 

@@ -32,8 +32,12 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
+import org.infoglue.cms.controllers.kernel.impl.simple.CategoryController;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.InterceptionPointController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SubscriptionController;
+import org.infoglue.cms.entities.management.CategoryVO;
+import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
 import org.infoglue.cms.entities.management.InterceptionPointVO;
 import org.infoglue.cms.entities.management.SubscriptionFilterVO;
 import org.infoglue.cms.entities.management.SubscriptionVO;
@@ -66,9 +70,10 @@ public class SubscriptionsAction extends InfoGlueAbstractAction
 	//Global subscriptions
 	private Collection subscriptionVOList = null;
 	private String name;
-	private String filterType;
-	private String filterCondition;
-	private Boolean isAndCondition;
+	private Integer subscriptionId;
+	
+	private List contentTypeDefintionVOList;
+	private List categoryVOList;
 	
 	private static SubscriptionController subscriptionsController = SubscriptionController.getController();
 	
@@ -161,6 +166,8 @@ public class SubscriptionsAction extends InfoGlueAbstractAction
 	public String doInputGlobalSubscriptions() throws Exception
     {
 		this.subscriptionVOList = subscriptionsController.getSubscriptionVOList(null, null, new Boolean(true), null, null, this.getInfoGluePrincipal().getName(), null);
+		this.contentTypeDefintionVOList = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOList();
+		this.categoryVOList = CategoryController.getController().findAllActiveCategories();
 		
 		return "inputGlobalSubscriptions";
     }
@@ -175,17 +182,158 @@ public class SubscriptionsAction extends InfoGlueAbstractAction
     	
     	List<SubscriptionFilterVO> subscriptionFilterVOList = new ArrayList<SubscriptionFilterVO>();
     	
-    	SubscriptionFilterVO subscriptionFilterVO = new SubscriptionFilterVO();
-    	subscriptionFilterVO.setFilterType(filterType);
-    	subscriptionFilterVO.setFilterCondition(filterCondition);
-    	subscriptionFilterVO.setIsAndCondition(isAndCondition);
-    	subscriptionFilterVOList.add(subscriptionFilterVO);
+    	int i=0;
+    	String filterType = this.getRequest().getParameter("filterType_" + i);
+    	while(filterType != null && !filterType.equals("") && filterType != "-1")
+    	{
+	    	String filterCondition = this.getRequest().getParameter("filterCondition_" + i);
+	    	String andParagraph = this.getRequest().getParameter("andParagraph_" + i);
+	    	if(andParagraph == null || andParagraph.equals(""))
+	    		andParagraph = "true";
+	    	
+	    	SubscriptionFilterVO subscriptionFilterVO = new SubscriptionFilterVO();
+	    	subscriptionFilterVO.setFilterType(filterType);
+	    	subscriptionFilterVO.setFilterCondition(filterCondition);
+	    	subscriptionFilterVO.setIsAndCondition(new Boolean(andParagraph));
+	    	subscriptionFilterVOList.add(subscriptionFilterVO);
+
+	    	i++;
+	    	filterType = this.getRequest().getParameter("filterType_" + i);
+    	}
     	
     	subscriptionsController.create(subscriptionVO, subscriptionFilterVOList);
     	
     	return "successGlobalSubscriptions";
     }
-    
+
+    public String doUpdateGlobalSubscription() throws Exception
+    {
+    	SubscriptionVO subscriptionVO = subscriptionsController.getSubscriptionVOWithId(subscriptionId);
+
+    	subscriptionVO.setIsGlobal(true);
+    	subscriptionVO.setInterceptionPointId(interceptionPointId);
+    	subscriptionVO.setName(name);
+    	
+    	List<SubscriptionFilterVO> subscriptionFilterVOList = new ArrayList<SubscriptionFilterVO>();
+    	
+    	int i=0;
+    	String filterType = this.getRequest().getParameter("filterType_" + i);
+    	System.out.println("filterType[" + i + "]:" + filterType);
+    	while(filterType != null && !filterType.equals("") && filterType != "-1")
+    	{
+	    	String filterCondition = this.getRequest().getParameter("filterCondition_" + i);
+	    	String andParagraph = this.getRequest().getParameter("andParagraph_" + i);
+	    	if(andParagraph == null || andParagraph.equals(""))
+	    		andParagraph = "true";
+	    	
+	    	SubscriptionFilterVO subscriptionFilterVO = new SubscriptionFilterVO();
+	    	subscriptionFilterVO.setFilterType(filterType);
+	    	subscriptionFilterVO.setFilterCondition(filterCondition);
+	    	subscriptionFilterVO.setIsAndCondition(new Boolean(andParagraph));
+	    	subscriptionFilterVOList.add(subscriptionFilterVO);
+
+	    	i++;
+	    	filterType = this.getRequest().getParameter("filterType_" + i);
+	    	System.out.println("filterType[" + i + "]:" + filterType);
+    	}
+    	
+    	subscriptionsController.update(subscriptionVO, subscriptionFilterVOList);
+    	
+    	return "successGlobalSubscriptions";
+    }
+
+    public String doGetSubscriptionForm() throws Exception
+    {
+    	SubscriptionVO subscriptionVO = subscriptionsController.getSubscriptionVOWithId(subscriptionId);
+    	
+    	StringBuffer sb = new StringBuffer();
+    	
+    	sb.append("<form action=\"Subscriptions!updateGlobalSubscription.action\" name=\"inputForm\" method=\"post\">");
+    	sb.append("<input type=\"text\" name=\"subscriptionId\" value=\"" + subscriptionVO.getId() + "\">");
+    	sb.append("<fieldset>");
+    	sb.append("	<label for=\"name\">Name</label><br/>");
+    	sb.append("	<input type=\"text\" name=\"name\" value=\"" + subscriptionVO.getName() + "\"/>");
+    	
+    	sb.append("	<label for=\"interceptionPointId\">Type</label>");
+    	sb.append("	<select name=\"interceptionPointId\">");
+    	sb.append("		<option value=\"33\" " + (subscriptionVO.getInterceptionPointId().intValue() == 33 ? "selected='selected'" : "") + ">Content.Published</option>");
+    	sb.append("		<option value=\"22\" " + (subscriptionVO.getInterceptionPointId().intValue() == 22 ? "selected='selected'" : "") + ">Content.Delete</option>");
+    	sb.append("	</select>");
+			
+    	sb.append("	<h3>Filters</h3>");
+		
+    	this.contentTypeDefintionVOList = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOList();
+		this.categoryVOList = CategoryController.getController().findAllActiveCategories();
+		
+    	int i = 0;
+    	Iterator<SubscriptionFilterVO> subscriptionFilterVOListIterator = subscriptionVO.getSubscriptionFilterVOList().iterator();
+    	while(subscriptionFilterVOListIterator.hasNext())
+    	{
+    		SubscriptionFilterVO subscriptionFilterVO = subscriptionFilterVOListIterator.next();
+    		
+	    	sb.append("	<div id=\"filterRow_" + i + "\">");
+	    	sb.append("		<label for=\"filterType_" + i + "\">Filter type</label>");
+	    	sb.append("		<select id=\"filterType_" + i + "\" name=\"filterType_" + i + "\" onchange=\"updateConditionInput(" + i + ");\">");
+	    	sb.append("			<option value=\"0\"" + (subscriptionFilterVO.getFilterType().equals("0") ? "selected='selected'" : "") + ">Content types</option>");
+	    	sb.append("			<option value=\"1\"" + (subscriptionFilterVO.getFilterType().equals("1") ? "selected='selected'" : "") + ">Categories</option>");
+	    	sb.append("		</select>");
+			
+	   		sb.append("		<label for=\"filterCondition_" + i + "\">Filter condition</label>");
+	   		sb.append("		<select id=\"filterCondition_" + i + "\" name=\"filterCondition_" + i + "\" multiple=\"multiple\" size=\"5\">");
+	   		
+	   		if(subscriptionFilterVO.getFilterType().equals("0"))
+	   		{
+	   			Iterator contentTypeDefintionVOListIterator = contentTypeDefintionVOList.iterator();
+	   			while(contentTypeDefintionVOListIterator.hasNext())
+	   			{
+	   				ContentTypeDefinitionVO ctd = (ContentTypeDefinitionVO)contentTypeDefintionVOListIterator.next();
+	   				sb.append("<option value=\"" + ctd.getId() + "\"" + (subscriptionFilterVO.getFilterCondition().equals(ctd.getId().toString()) ? "selected='selected'" : "") + ">" + ctd.getName() + "</option>");
+	   			}
+	   		}
+	   		else if(subscriptionFilterVO.getFilterType().equals("1"))
+	   		{
+	   			Iterator categoryVOListIterator = categoryVOList.iterator();
+	   			while(categoryVOListIterator.hasNext())
+	   			{
+	   				CategoryVO categoryVO = (CategoryVO)categoryVOListIterator.next();
+	   				sb.append("<option value=\"" + categoryVO.getId() + "\"" + (subscriptionFilterVO.getFilterCondition().equals(categoryVO.getId().toString()) ? "selected='selected'" : "") + ">" + categoryVO.getName() + "</option>");
+	   			}	   			
+	   		}
+	   		
+	   		sb.append("		</select>");
+					
+	   		sb.append("		<a href=\"javascript:removeFilterRow(" + i + ");\">Remove filter</a>");
+					
+	   		sb.append("		<p id=\"andParagraph_" + i + "\" style=\"padding: 30px; display: none;\">");
+	   		sb.append("			<label for=\"isAndCondition_" + i + "\">isAndCondition</label>");
+			sb.append("			<select id=\"isAndCondition_" + i + "\" name=\"isAndCondition_0\">';");
+			sb.append("				<option value=\"true\"" + (subscriptionFilterVO.getIsAndCondition().booleanValue() ? "selected='selected'" : "") + ">AND</option>';");
+			sb.append("				<option value=\"false\"" + (!subscriptionFilterVO.getIsAndCondition().booleanValue() ? "selected='selected'" : "") + ">OR</option>';");
+			sb.append("			</select>");
+			sb.append("		</p>");
+			sb.append("	</div>");
+									
+			sb.append("	<div id=\"break_" + i + "\" style=\"clear:both\"></div>");
+			
+			i++;
+	    }
+    	
+		sb.append("	<br/>");
+		sb.append("	<a href=\"javascript:addFilterRow();\">Add filter</a>");
+		sb.append("	<br/>");
+		sb.append("	<br/>");
+			
+		sb.append("	<input type=\"submit\" value=\"Save\"/>");
+		sb.append("</fieldset>");
+		sb.append("</form>");
+		sb.append("<script type='text/javascript'>i=" + i + ";</script>");
+    	
+		this.getResponse().setContentType("text/plain");
+        this.getResponse().getWriter().println(sb.toString());
+        
+        return NONE;
+    }
+
 	public String getReturnAddress()
 	{
 		return returnAddress;
@@ -311,33 +459,23 @@ public class SubscriptionsAction extends InfoGlueAbstractAction
 		this.name = name;
 	}
 
-	public String getFilterType()
+	public List getContentTypeDefintionVOList()
 	{
-		return filterType;
+		return contentTypeDefintionVOList;
 	}
 
-	public void setFilterType(String filterType)
+	public List getCategoryVOList()
 	{
-		this.filterType = filterType;
+		return categoryVOList;
 	}
 
-	public String getFilterCondition()
+	public Integer getSubscriptionId()
 	{
-		return filterCondition;
+		return subscriptionId;
 	}
 
-	public void setFilterCondition(String filterCondition)
+	public void setSubscriptionId(Integer subscriptionId)
 	{
-		this.filterCondition = filterCondition;
-	}
-
-	public Boolean getIsAndCondition()
-	{
-		return isAndCondition;
-	}
-
-	public void setIsAndCondition(Boolean isAndCondition)
-	{
-		this.isAndCondition = isAndCondition;
+		this.subscriptionId = subscriptionId;
 	}
 }

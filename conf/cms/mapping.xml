@@ -1578,7 +1578,7 @@
   	<!--  Mapping for Subscription entity  -->
   	<class name="org.infoglue.cms.entities.management.impl.simple.SubscriptionImpl" identity="subscriptionId" key-generator="IDENTITY">
 	    <description>Subscription</description>
-	    <cache-type type="unlimited" capacity="1000"/>
+	    <cache-type type="none"/>
 	    <map-to table="cmSubscription"/>
 	    <field name="subscriptionId" type="java.lang.Integer">
 	      <sql name="id" type="integer" dirty="check" />
@@ -1615,7 +1615,7 @@
   	<!--  Mapping for SubscriptionFilter entity  -->
   	<class name="org.infoglue.cms.entities.management.impl.simple.SubscriptionFilterImpl" identity="subscriptionFilterId" key-generator="IDENTITY" depends="org.infoglue.cms.entities.management.impl.simple.SubscriptionImpl">
 	    <description>SubscriptionFilter</description>
-	    <cache-type type="unlimited" capacity="1000"/>
+	    <cache-type type="none"/>
 	    <map-to table="cmSubscriptionFilter"/>
 	    <field name="subscriptionFilterId" type="java.lang.Integer">
 	      <sql name="id" type="integer" dirty="check" />

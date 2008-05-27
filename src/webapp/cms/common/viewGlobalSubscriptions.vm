@@ -11,6 +11,104 @@
 	{
 		document.getElementById(id).style.display = 'none';
 	}
+		
+	function loadExistingSubscription(id)
+	{
+		//alert("Init " + id);
+		$("#newSubscriptionForm").load("Subscriptions!getSubscriptionForm.action?subscriptionId=" + id);
+		$("#newSubscriptionForm").css("display", "block"); 
+	}
+	
+	var i=1;
+	function addFilterRow()
+	{
+		var addition = ' <div id="filterRow_' + i + '">';
+		addition += ' <label id="filterRow_' + i + 'Label" for="filterType_' + i + '">Filter type</label>';
+		addition += ' <select id="filterType_' + i + '" name="filterType_' + i + '" onchange="updateConditionInput(' + i + ');">';
+		addition += '	<option value="">Choose filter type</option>';
+		addition += '	<option value="0">Content types</option>';
+		addition += '	<option value="1">Categories</option>';
+		addition += ' </select>';
+
+		addition += ' <label id="filterCondition_' + i + 'Label" for="filterCondition_' + i + '">Filter condition</label>';
+		addition += ' <select id="filterCondition_' + i + '" name="filterCondition_' + i + '" multiple="multiple" size="5">';
+		addition += '	<option value="-1">Choose filter type</option>';
+		addition += ' </select>';
+
+		addition += ' <a id="removeFilterRowLink' + i + '" href="javascript:removeFilterRow(' + i + ');">Remove filter</a>';
+		
+		addition += ' <p id="andParagraph_' + i + '" style="padding: 30px; display: none;"><label for="isAndCondition_' + i + '">isAndCondition</label>';
+		addition += ' <select id="isAndCondition_' + i + '" name="isAndCondition_' + i + '">';
+		addition += '	<option value="true">AND</option>';
+		addition += '	<option value="false">OR</option>';
+		addition += ' </select></p>';
+		addition += ' </div>';
+		
+		addition += ' <div id="break_' + i + '" style="clear:both"></div>';
+	
+		$("#break_" + (i-1)).after(addition);
+		
+		$("#andParagraph_" + (i-1)).css("display", "block"); 
+		
+		i++;
+	}
+
+
+	function removeFilterRow(index)
+	{
+		$("#filterRow_" + index).remove(); 
+		$("#break_" + index).remove(); 
+		
+		var currentIndex = index;
+		while(currentIndex < i)
+		{
+			alert("Changing " + (currentIndex + 1) + " to " + currentIndex);
+			$("#filterRow_" + (currentIndex + 1) + "Label").attr("id", "filterRow_" + currentIndex + "Label");
+			$("#filterRow_" + (currentIndex + 1)).attr("id", "filterRow_" + currentIndex);
+			$("#filterType_" + (currentIndex + 1)).attr("id", "filterType_" + currentIndex);
+			$("#filterType_" + (currentIndex + 1) + "Label").attr("id", "filterType_" + currentIndex + "Label");
+			$("#filterCondition_" + (currentIndex + 1)).attr("id", "filterCondition_" + currentIndex);
+			$("#andParagraph_" + (currentIndex + 1)).attr("id", "andParagraph_" + currentIndex);
+			$("#removeFilterRowLink" + (currentIndex + 1)).attr("id", "removeFilterRowLink" + currentIndex);
+			$("#removeFilterRowLink" + (currentIndex + 1)).attr("href", "javascript:removeFilterRow(" + currentIndex + ");");
+			$("#break_" + (currentIndex + 1)).attr("id", "break_" + currentIndex);
+			currentIndex++;
+		}
+		i--;
+	}
+	
+	var contentTypes = '<option value="">Choose filter type</option>';
+	#foreach($contentTypeDefintionVO in $contentTypeDefintionVOList)
+		contentTypes += '<option value="$contentTypeDefintionVO.id">$contentTypeDefintionVO.name</option>';
+	#end
+
+	var categories = '<option value="">Choose filter type</option>';
+	#foreach($categoryVO in $categoryVOList)
+		categories += '<option value="$categoryVO.id">$categoryVO.name</option>';
+	#end
+	
+	function updateConditionInput(filterIndex)
+	{
+		//alert("filterIndex:" + filterIndex);
+		var value = $("#filterType_" + filterIndex).val();
+		//alert("value:" + value + " - " + filterIndex);
+		if(value == -1)
+		{
+			$("#filterCondition_" + filterIndex).html("<option value='-1'>Choose filter type</option>");
+		}
+		if(value == 0)
+		{
+			$("#filterCondition_" + filterIndex).html(contentTypes);
+		}
+		else if(value == 1)
+		{
+			$("#filterCondition_" + filterIndex).html(categories);
+		}
+	}
+	
+	$(document).ready(function(){
+    	$("#filterType_0 option:first").attr( "selected", "selected" );
+	});
 //-->
 </script>
 
@@ -22,7 +120,7 @@
 	
 	#foreach($subscriptionVO in $subscriptionVOList)
 
-		<h2>$subscriptionVO.name</h2>
+		<a href="javascript:loadExistingSubscription($subscriptionVO.id);">$subscriptionVO.name</a>
 		#foreach($subscriptionFilterVO in $subscriptionVO.subscriptionFilterVOList)
 			$subscriptionFilterVO.filterType - $subscriptionFilterVO.filterCondition - $subscriptionFilterVO.isAndCondition<br/>
 		#end
@@ -35,10 +133,14 @@
 	</div>
 </div>
 
-<div id="newSubscriptionForm" style="display: none; position: absolute; width: 300px; border: 1px solid black;">
+<div id="existingSubscriptionForm" style="display: none; position: absolute; width: 700px; border: 1px solid black;">
+	aaaaaaaaaaaaaaaaa
+</div>
+
+<div id="newSubscriptionForm" style="display: none; position: absolute; width: 700px; border: 1px solid black;">
 	<form action="Subscriptions!globalSubscriptions.action" name="inputForm" method="post">
 		<fieldset>
-			<label for="name">Name</label>
+			<label for="name">Name</label><br/>
 			<input type="text" name="name"/>
 			
 			<label for="interceptionPointId">Type</label>
@@ -46,22 +148,39 @@
 				<option value="33">Content.Published</option>
 				<option value="22">Content.Delete</option>
 			</select>
-	
-			<label for="filterType">Filter type</label>
-			<select name="filterType">
-				<option value="0">Content types</option>
-				<option value="1">Categories</option>
-			</select>
-	
-			<label for="filterCondition">Filter condition</label>
-			<select name="filterCondition">
-				<option value="0">Article</option>
-				<option value="1">News</option>
-				<option value="2">Mini article</option>
-			</select>
-	
-			<label for="isAndCondition">isAndCondition</label>
-			<input type="checkbox" name="isAndCondition" value="true"/> Yes
+			
+			<h3>Filters</h3>
+			
+			<div id="filterRow_0">
+				<label for="filterType_0">Filter type</label>
+				<select id="filterType_0" name="filterType_0" onchange="updateConditionInput(0);">
+					<option value="-1" selected="selected">Choose filter type</option>
+					<option value="0">Content types</option>
+					<option value="1">Categories</option>
+				</select>
+		
+				<label for="filterCondition_0">Filter condition</label>
+				<select id="filterCondition_0" name="filterCondition_0" multiple="multiple" size="5">
+					<option value="">Choose filter type</option>
+				</select>
+				
+				<a href="javascript:removeFilterRow(0);">Remove filter</a>
+				
+				<p id="andParagraph_0" style="padding: 30px; display: none;">
+					<label for="isAndCondition_0">isAndCondition</label>
+					<select id="isAndCondition_0" name="isAndCondition_0">';
+						<option value="true">AND</option>';
+						<option value="false">OR</option>';
+					</select>
+				</p>
+			</div>
+								
+			<div id="break_0" style="clear:both"></div>
+			
+			<br/>
+			<a href="javascript:addFilterRow();">Add filter</a>
+			<br/>
+			<br/>
 			
 			<input type="submit" value="Save"/>
 		</fieldset>

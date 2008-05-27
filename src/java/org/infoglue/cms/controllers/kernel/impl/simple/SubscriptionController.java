@@ -98,21 +98,7 @@ public class SubscriptionController extends BaseController
 		{
 			beginTransaction(db);
 			
-			Subscription subscription = new SubscriptionImpl();
-			subscription.setValueObject(subscriptionVO);
-	        subscription = (Subscription) createEntity(subscription, db);
-
-			Iterator<SubscriptionFilterVO> subscriptionFilterVOListIterator = subscriptionFilterVOList.iterator();
-			while(subscriptionFilterVOListIterator.hasNext())
-			{
-				SubscriptionFilterVO subscriptionFilterVO = subscriptionFilterVOListIterator.next();
-		    	SubscriptionFilterImpl subscriptionFilter = new SubscriptionFilterImpl();
-		    	subscriptionFilter.setValueObject(subscriptionFilterVO);
-		    	subscriptionFilter.setSubscription(subscription);
-		    	subscription.getSubscriptionFilters().add(subscriptionFilter);	        				
-			}
-
-	        newSubscriptionVO = subscription.getValueObject();
+	        newSubscriptionVO = create(subscriptionVO, subscriptionFilterVOList, db).getValueObject();
 	        
 	        commitTransaction(db);
 		}
@@ -124,6 +110,70 @@ public class SubscriptionController extends BaseController
 		}
 
 		return newSubscriptionVO;
+    }
+
+    public Subscription create(SubscriptionVO subscriptionVO,List<SubscriptionFilterVO> subscriptionFilterVOList, Database db) throws ConstraintException, SystemException, Exception
+    {
+    	Subscription subscription = new SubscriptionImpl();
+		subscription.setValueObject(subscriptionVO);
+        subscription = (Subscription) createEntity(subscription, db);
+
+		Iterator<SubscriptionFilterVO> subscriptionFilterVOListIterator = subscriptionFilterVOList.iterator();
+		while(subscriptionFilterVOListIterator.hasNext())
+		{
+			SubscriptionFilterVO subscriptionFilterVO = subscriptionFilterVOListIterator.next();
+	    	SubscriptionFilterImpl subscriptionFilter = new SubscriptionFilterImpl();
+	    	subscriptionFilter.setValueObject(subscriptionFilterVO);
+	    	subscriptionFilter.setSubscription(subscription);
+	    	subscription.getSubscriptionFilters().add(subscriptionFilter);	        				
+		}
+
+		return subscription;
+    }
+
+    public SubscriptionVO update(SubscriptionVO subscriptionVO, List<SubscriptionFilterVO> subscriptionFilterVOList) throws ConstraintException, SystemException
+    {
+    	Database db = CastorDatabaseService.getDatabase();
+		
+		try 
+		{
+			beginTransaction(db);
+			
+			Subscription subscription = getSubscriptionWithId(subscriptionVO.getId(), db);
+			//db.remove(subscription);
+			/*
+	        System.out.println("subscription before:" + subscription.getSubscriptionFilters().size());
+			*/
+	        subscription.setValueObject(subscriptionVO);
+			subscription.setSubscriptionFilters(new ArrayList());
+			
+			Iterator<SubscriptionFilterVO> subscriptionFilterVOListIterator = subscriptionFilterVOList.iterator();
+			while(subscriptionFilterVOListIterator.hasNext())
+			{
+				SubscriptionFilterVO subscriptionFilterVO = subscriptionFilterVOListIterator.next();
+		    	SubscriptionFilterImpl subscriptionFilter = new SubscriptionFilterImpl();
+		    	subscriptionFilter.setValueObject(subscriptionFilterVO);
+		    	subscriptionFilter.setSubscription(subscription);
+		    	System.out.println("Adding subscriptionFilter:" + subscriptionFilter);
+		    	subscription.getSubscriptionFilters().add(subscriptionFilter);	        				
+			}
+
+			subscriptionVO = subscription.getValueObject();
+	        System.out.println("subscription after:" + subscription.getSubscriptionFilters().size());
+	        
+		
+		//	create(subscriptionVO, subscriptionFilterVOList, db);
+			
+	        commitTransaction(db);
+		}
+		catch (Exception e)		
+		{
+			e.printStackTrace();
+		    logger.warn("An error occurred so we should not complete the transaction:" + e);
+		    rollbackTransaction(db);
+		}
+
+		return subscriptionVO;
     }
 
     public void addFilter(Integer subscriptionId, SubscriptionFilterVO subscriptionFilterVO) throws ConstraintException, SystemException
@@ -174,21 +224,7 @@ public class SubscriptionController extends BaseController
 			beginTransaction(db);
 			
 			List<Subscription> subscriptionList = getSubscriptionList(interceptionPointId, name, isGlobal, entityName, entityId, userName, userEmail, db, true);
-			Iterator<Subscription> subscriptionListIterator = subscriptionList.iterator();
-			while(subscriptionListIterator.hasNext())
-			{
-				Subscription subscription = (Subscription)subscriptionListIterator.next();
-				Collection<SubscriptionFilterImpl> subscriptionFilters = subscription.getSubscriptionFilters();
-				System.out.println("subscriptionFilters:" + subscriptionFilters.size());
-				Iterator<SubscriptionFilterImpl> subscriptionFiltersIterator = subscriptionFilters.iterator();
-				while(subscriptionFiltersIterator.hasNext())
-				{
-					subscription.getValueObject().getSubscriptionFilterVOList().add(subscriptionFiltersIterator.next().getValueObject());
-				}
-				subscriptionVOList.add(subscription.getValueObject());
-			}
-
-			//subscriptionVOList = toVOList(subscriptionList);
+			subscriptionVOList = toVOList(subscriptionList);
 			
 	        commitTransaction(db);
 		}
