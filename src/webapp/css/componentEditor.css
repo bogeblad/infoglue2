@@ -1,143 +1,153 @@
 /* 
 Component palette classes
 */
-
 #paletteDiv {
-	position:absolute; 
-	background-color:#F4F4F4;
-	font-family:verdana, sans-serif;
-	font-size:10px;
-	z-index:50;
-	height:80px; 
-	width:100%; 
-	left:0px; 
-	top:0px;
-	margin: 0px 0px 0px 0px; 
+	position: absolute;
+	background-color: #F4F4F4;
+	font-family: verdana, sans-serif;
+	font-size: 10px;
+	z-index: 50;
+	height: 80px;
+	width: 100%;
+	left: 0px;
+	top: 0px;
+	margin: 0px 0px 0px 0px;
 	padding: 0px 0px 0px 0px;
-	line-height:100%;
-	}
+	line-height: 100%;
+}
+
 #paletteHandle {
-	padding-top:2px;
-	padding-bottom:2px;
-	color:white;
-	overflow:hidden;
-	line-height:10px;
-	background-color:navy;
-	font-family:verdana, sans-serif;
-	font-size:10px;
-	width:100%; 
-	height:10px; 
-	}
+	padding-top: 2px;
+	padding-bottom: 2px;
+	color: white;
+	overflow: hidden;
+	line-height: 10px;
+	background-color: navy;
+	font-family: verdana, sans-serif;
+	font-size: 10px;
+	width: 100%;
+	height: 10px;
+}
 
 #leftPaletteHandle {
-	width: 150px; 
+	width: 150px;
 	float: left;
-	color:white;
+	color: white;
 	text-align: left;
-	line-height:10px;
-	}
+	line-height: 10px;
+}
+
 #leftPaletteHandleCompProps {
-	width: 350px; 
+	width: 350px;
 	float: left;
-	color:white;
+	color: white;
 	text-align: left;
-	line-height:10px;
-	}
+	line-height: 10px;
+}
+
 #rightPaletteHandle {
-	color:white;
+	color: white;
 	text-align: right;
-	line-height:10px;	
-	}
+	line-height: 10px;
+}
+
 #paletteHeader {
-	padding-top:2px;
-	padding-bottom:2px;
-	width:244px;
-	font-family:verdana, sans-serif;
-	font-size:10px;
+	padding-top: 2px;
+	padding-bottom: 2px;
+	width: 244px;
+	font-family: verdana, sans-serif;
+	font-size: 10px;
 	height: 30px;
-	}
+}
+
 #statusListBg {
-	position:absolute; 
-	top:65px; 
-	left:0px; 
-	border-bottom: 1px solid gray; 
-	background:#CCCCCC; 
-	width:100%; 
-	height:15px;
-	}
+	position: absolute;
+	top: 65px;
+	left: 0px;
+	border-bottom: 1px solid gray;
+	background: #CCCCCC;
+	width: 100%;
+	height: 15px;
+}
+
 #paletteBody {
-	padding-top:2px;
-	padding-bottom:2px;
-	font-family:verdana, sans-serif;
-	font-size:10px;
+	padding-top: 2px;
+	padding-bottom: 2px;
+	font-family: verdana, sans-serif;
+	font-size: 10px;
 	overflow: auto;
-	background-color: #999999; 
-	height:30px; 
-	width:100%; 
-	left:0px; 
-	top:0px;
-	}
+	background-color: #999999;
+	height: 30px;
+	width: 100%;
+	left: 0px;
+	top: 0px;
+}
+
 .tabPanel {
-	position:absolute; 
-	width:100%; 
+	position: absolute;
+	width: 100%;
 	height: 24px;
 	overflow: hidden;
-	}
-.thistab
- {
-	font-family:verdana,arial,helvetica;
-	font-size:8pt;
+}
+
+.thistab {
+	font-family: verdana, arial, helvetica;
+	font-size: 8pt;
 	font-weight: bold;
-	text-align:center;
+	text-align: center;
 	color: #000000;
-	background:#cccccc;
+	background: #cccccc;
 	border-top: solid thin white;
 	border-right: solid thin none;
 	border-left: solid thin white;
 	border-bottom: solid 0px white;
-	cursor:pointer;
-	visibility:inherit;
-	z-index:1;
+	cursor: pointer;
+	visibility: inherit;
+	z-index: 1;
 	overflow: auto;
 	white-space: nowrap;
-	padding:0px 4px 0px 4px;
-	}
-.igtab
- {
-	font-family:verdana,arial,helvetica;
-	font-size:8pt;
+	padding: 0px 4px 0px 4px;
+}
+
+.igtab {
+	font-family: verdana, arial, helvetica;
+	font-size: 8pt;
 	font-weight: normal;
-	text-align:center;
-	background:#999999;
+	text-align: center;
+	background: #999999;
 	color: #000000;
 	border-top: solid 1px black;
 	border-right: none 1px black;
 	border-left: solid 1px black;
 	border-bottom: solid 1px white;
-	cursor:pointer;
-	visibility:inherit;
-	z-index:20;
+	cursor: pointer;
+	visibility: inherit;
+	z-index: 20;
 	overflow: auto;
 	space: nowrap;
-	padding:0px 4px 0px 4px;
-	}
+	padding: 0px 4px 0px 4px;
+}
+
 .igpalettetd {
 	background-color: #CCCCCC;
 	text-align: left;
 	height: 10px;
 	vertical-align: top;
-	border:0px solid blue;
+	border: 0px solid blue;
 }
+
 .igpalettetd:hover {
 	background-color: #CCCCCC;
-	color			: #000000;
+	color: #000000;
 }
+
 .igmenuitems {
-	padding-left:31px;
-	padding-right:11px;
-	padding-top:3px;
-	padding-bottom:3px;
+	padding-left: 31px;
+	padding-right: 11px;
+	padding-top: 3px;
+	padding-bottom: 3px;
 }
+
 /*
 This can be replaced by componentEditor.js:highighi5 and lowlighti5
 when explorer get better support for hover.
@@ -146,7 +156,6 @@ when explorer get better support for hover.
 	border:1px solid black;
 	}
 */
-
 .menudivider {
 	height: 1px;
 	text-align: right;
@@ -156,472 +165,555 @@ when explorer get better support for hover.
 }
 
 .draggableItem {
-	font-family:verdana, sans-serif;
-	font-size:10px;
+	font-family: verdana, sans-serif;
+	font-size: 10px;
 	white-space: nowrap;
-	}
+}
+
 .components {
 	text-align: center;
 	background: #CCCCCC;
 	border-left: solid 1px white;
 	border-bottom: solid 1px black;
-	left:0px;
-	width:100%;
-	height:30px;
-	cursor:pointer;
+	left: 0px;
+	width: 100%;
+	height: 30px;
+	cursor: pointer;
 	white-space: nowrap;
-	visibility:inherit;
+	visibility: inherit;
 }
+
 .component {
-	text-align:center;
-	background:#CCCCCC;
-	cursor:pointer;
+	text-align: center;
+	background: #CCCCCC;
+	cursor: pointer;
 	white-space: nowrap;
-	padding:0px 4px 0px 4px;
-	visibility:inherit;
+	padding: 0px 4px 0px 4px;
+	visibility: inherit;
 }
+
 .componentsBackground {
- 	border-bottom: 1px solid gray; 
- 	background:#CCCCCC; 
- 	width:100%; 
- 	height:24px; 
- 	position:absolute; 
- 	top:50px; 
- 	left:10px; 
- 	visibility: inherit;
+	border-bottom: 1px solid gray;
+	background: #CCCCCC;
+	width: 100%;
+	height: 24px;
+	position: absolute;
+	top: 50px;
+	left: 10px;
+	visibility: inherit;
 }
+
 .componentsStatus {
-	font-family:verdana,arial,helvetica;
-	font-size:8pt;
+	font-family: verdana, arial, helvetica;
+	font-size: 8pt;
 	font-weight: normal;
 	border-bottom: solid 1px black;
 	border-top: solid thin gray;
-	position:absolute; 
-	z-index:2; 
-	width:100%; 
-	top:60px; 
-	left:0px; 
-	height:16px; 
-	visibility:visible;
-	background:#CCCCCC;
-}
-.componentsStatusText {
-	font-family:verdana,arial,helvetica;
-	font-size:7pt;
-	font-weight: normal;
+	position: absolute;
+	z-index: 2;
+	width: 100%;
+	top: 60px;
+	left: 0px;
+	height: 16px;
+	visibility: visible;
+	background: #CCCCCC;
 }
 
+.componentsStatusText {
+	font-family: verdana, arial, helvetica;
+	font-size: 7pt;
+	font-weight: normal;
+}
 
 /*
 Buffer
 */
-
-#buffer { 
-	position:	absolute;
-	z-index:	80;
-	height:		1em;
-	width:		1em;
-	background:	#777777;
-	border: 	0px solid black;
-	color:		#ffffff;
-	visibility:	hidden; 
-	top:		0px;
-	left:		0px;
+#buffer {
+	position: absolute;
+	z-index: 80;
+	height: 1em;
+	width: 1em;
+	background: #777777;
+	border: 0px solid black;
+	color: #ffffff;
+	visibility: hidden;
+	top: 0px;
+	left: 0px;
 }
-	
+
 /* 
 Other classes
-*/
-	
-/*	
+*/ /*	
 .siteBody {
 	position: absolute; 
 	border: 0px solid blue; 
 	margin: 0px 0px 0px 0px; 
 	padding: 0px 0px 0px 0px;
 	}
-*/
-
-/* 
+*/ /* 
 Page components classes
 */
-	
 #pageComponents {
-	position:absolute;
-	width:250px;
-	background-color:#F4F4F4;
-    border:1px solid #333333;
-	z-index:70;
-	right:5px;
-	top:100px;
+	position: absolute;
+	width: 250px;
+	background-color: #F4F4F4;
+	border: 1px solid #333333;
+	z-index: 70;
+	right: 5px;
+	top: 100px;
 	height: 400px;
-	}
+}
 
 #pageComponentsHandle {
-	padding-top:2px;
-	padding-bottom:2px;
-	width:100%;
-	color:white;
-	background-color:navy;
-	font-family:verdana, sans-serif;
-	font-size:10px;
-	}
+	padding-top: 2px;
+	padding-bottom: 2px;
+	width: 100%;
+	color: white;
+	background-color: navy;
+	font-family: verdana, sans-serif;
+	font-size: 10px;
+}
 
 #pageComponentsBody {
-	padding-top:2px;
-	padding-bottom:2px;
-	width:100%;
-	font-family:verdana, sans-serif;
-	font-size:10px;
+	padding-top: 2px;
+	padding-bottom: 2px;
+	width: 100%;
+	font-family: verdana, sans-serif;
+	font-size: 10px;
 	height: 380px;
 	overflow: auto;
-	}
-
+}
 
 /*
 Edit on sight classes
 */
-
 .skin0 {
-	position:absolute;
-	z-index:90;
-	text-align:left;
-	width:350px;
-	background-color:#F9F8F7;
+	position: absolute;
+	z-index: 90;
+	text-align: left;
+	width: 350px;
+	background-color: #F9F8F7;
 	font-family: Tahoma, Arial, Helvetica, sans-serif;
-	line-height:20px;
-	cursor:default;
-	visibility:hidden;
+	line-height: 20px;
+	cursor: default;
+	visibility: hidden;
 }
+
 .skin1 {
-	cursor:default;
-	position:absolute;
-	z-index:90;
-	text-align:left;
+	cursor: default;
+	position: absolute;
+	z-index: 90;
+	text-align: left;
 	font-family: Tahoma, Arial, Helvetica, sans-serif;
 	font-size: 10pt;
-	width:160px;
+	width: 160px;
 	overflow: hidden;
-	background-color:#F9F8F7;
+	background-color: #F9F8F7;
 	background-image: url('../images/contextBackground.gif');
 	background-repeat: repeat-y;
-	border:1px solid #666666;
-	visibility:hidden;
+	border: 1px solid #666666;
+	visibility: hidden;
 }
+
 /*
 .igAddComponent {
 	background-color:#F9F8F7;
 	font-family: Verdana, Arial, Helvetica, sans-serif;
 	font-size: 8pt;
 }
-*/
-
-/*
+*/ /*
 Properties classes
 */
-
 .componentProperties {
-	position:absolute;
-	width:450px;
-	background-color:#F4F4F4;
-	border:1px solid #333333;
-	z-index:80;
-	right:5px;
-	top:100px;
-	}
+	position: absolute;
+	width: 450px;
+	background-color: #F4F4F4;
+	border: 1px solid #333333;
+	z-index: 80;
+	right: 5px;
+	top: 100px;
+}
 
 .componentPropertiesHandle {
-	margin:2px;
-	padding:2px;
-	width:440px;
-	color:white;
+	margin: 2px;
+	padding: 2px;
+	width: 440px;
+	color: white;
 	font-family: Tahoma, Arial, Helvetica, sans-serif;
 	font-size: 10pt;
 	background-image: url('../images/handleBackground.gif');
-	}
+}
 
 #componentPropertiesBody {
-	margin:2px;
-	padding:2px;
-	width:440px;
-	font-family:verdana, sans-serif;
-	font-size:10px;
-	}
+	margin: 2px;
+	padding: 2px;
+	width: 440px;
+	font-family: verdana, sans-serif;
+	font-size: 10px;
+}
 
 .igPropertiesTable {
-	border:0px solid #FFFFFF;
+	border: 0px solid #FFFFFF;
 	text-align: left;
 	width: 100%;
 	height: 10px;
 }
+
 .igtable {
 	text-align: left;
 	height: 10px;
-	border:0px solid #FFFFFF;
+	border: 0px solid #FFFFFF;
 }
+
 .igtr {
-	border:0px solid #FFFFFF;
+	border: 0px solid #FFFFFF;
 	text-align: left;
 }
+
 .igtr:hover {
 	background-color: #F9F9F9;
-	color			: #000000;
+	color: #000000;
 }
+
 .igtd {
 	text-align: left;
 	height: 10px;
 	vertical-align: top;
-	border:0px solid red;
+	border: 0px solid red;
 	line-height: 10px;
 }
+
 .igtd:hover {
 	text-align: left;
 	height: 10px;
 	vertical-align: top;
-	border:0px solid red;
-}
-.componentEditorLink {
-	font-family	     : verdana, arial, sans-serif;
-	font-size        : 8pt;
-	color		 	 : #333333;
-}
-.igpropertylabel {
-	text-align 	 	 : left;
-	font-family      : verdana, arial, sans-serif;
-	font-size        : 8pt;
-	color		 	 : #333333;
-	font-weight		 : bold;
-	border	 		 : 0px solid #FFFFFF;
-	width			 : 40%;
-}
-.igpropertyvalue {
-	text-align	 	 : left;
-	font-family      : verdana, arial, sans-serif;
-	font-size        : 8pt;
-	color		 	 : #333333;
-	background		 : #FFFFFF;
-	border-style	 : solid;
-	border-width	 : 1px;	
-	border-color     : #C2D0E2;
-	width			 : 40%;
+	border: 0px solid red;
 }
 
-td.propertiesheader {	
-	font-family 	 : Verdana; 
-	font-size		 : 12pt;
-	font-weight		 : bold;
-	height			 : 16px;
-	background-color : #E3ECF8;
-	border-style     : solid; 
-	border-width     : 1px;
-	border-color     : black;
+.componentEditorLink {
+	font-family: verdana, arial, sans-serif;
+	font-size: 8pt;
+	color: #333333;
+}
+
+.igpropertylabel {
+	text-align: left;
+	font-family: verdana, arial, sans-serif;
+	font-size: 8pt;
+	color: #333333;
+	font-weight: bold;
+	border: 0px solid #FFFFFF;
+	width: 40%;
+}
+
+.igpropertyvalue {
+	text-align: left;
+	font-family: verdana, arial, sans-serif;
+	font-size: 8pt;
+	color: #333333;
+	background: #FFFFFF;
+	border-style: solid;
+	border-width: 1px;
+	border-color: #C2D0E2;
+	width: 40%;
+}
+
+td.propertiesheader {
+	font-family: Verdana;
+	font-size: 12pt;
+	font-weight: bold;
+	height: 16px;
+	background-color: #E3ECF8;
+	border-style: solid;
+	border-width: 1px;
+	border-color: black;
 }
 
 td.label {
-	font-family      : verdana, arial, sans-serif;
-	font-size        : 8pt;
-	font-weight		 : bold;
-	color		 	 : #333333;
+	font-family: verdana, arial, sans-serif;
+	font-size: 8pt;
+	font-weight: bold;
+	color: #333333;
 }
 
 td.value {
-	font-family      : verdana, arial, sans-serif;
-	font-size        : 8pt;
-	color		 	 : #333333;
+	font-family: verdana, arial, sans-serif;
+	font-size: 8pt;
+	color: #333333;
 }
 
 /*
 Slot classes
 */
-
 .emptyslot {
-	font-family      : verdana, arial, sans-serif;
-	font-size        : 10pt;
-	color		 	 : #333333;
+	font-family: verdana, arial, sans-serif;
+	font-size: 10pt;
+	color: #333333;
 }
+
 .filledslot {
-	font-family      : verdana, arial, sans-serif;
-	font-size        : 10pt;
-	color		 	 : #333333;
+	font-family: verdana, arial, sans-serif;
+	font-size: 10pt;
+	color: #333333;
 }
+
 .inheritedslot {
+	
 }
+
 .inheritedComponentDiv {
-    border			 : dotted 0px #0070FF;
+	border: dotted 0px #0070FF;
 }
+
 .inheritedComponentDiv:hover {
-    border 			 : solid 0px red;
+	border: solid 0px red;
 }
+
 .componentDiv {
-    border			 : dotted 0px #0070FF; 
+	border: dotted 0px #0070FF;
 }
+
 .componentDiv:hover {
-    border 			 : solid 0px red;
+	border: solid 0px red;
 }
 
 input.normaltextfield {
-	font-family      : verdana, arial, sans-serif;
-	font-size        : 8pt;
-	border-style	 : solid;
-	border-width	 : 1px;	
-	border-color     : #C2D0E2;
-	width            : 300px;
+	font-family: verdana, arial, sans-serif;
+	font-size: 8pt;
+	border-style: solid;
+	border-width: 1px;
+	border-color: #C2D0E2;
+	width: 300px;
 }
 
 input.propertytextfield {
-	font-family      : verdana, arial, sans-serif;
-	font-size        : 8pt;
-	border-style	 : solid;
-	border-width	 : 1px;	
-	border-color     : #C2D0E2;
-	width            : 200px;
-}	  
-input.propertydatefield {
-	font-family      : verdana, arial, sans-serif;
-	font-size        : 8pt;
-	border-style	 : solid;
-	border-width	 : 1px;	
-	border-color     : #C2D0E2;
-	width            : 100px;
-}
-.propertytextarea {
-	font-family      : verdana, arial, sans-serif;
-	font-size        : 8pt;
-	border-style	 : solid;
-	border-width	 : 1px;	
-	border-color     : #C2D0E2;
-	width            : 200px;
-	height			 : 150px;
-}
-select.propertyselect {
-	font-family:verdana, sans-serif;
-	font-size:10px;
-	font-weight:normal;
+	font-family: verdana, arial, sans-serif;
+	font-size: 8pt;
+	border-style: solid;
+	border-width: 1px;
+	border-color: #C2D0E2;
+	width: 200px;
 }
 
-.inheritedOverlay
-{
- 	font-family      : verdana, arial, sans-serif;
-	font-size        : 8pt;
-	color		 	 : #333333;
-    position:relative;
-	visibility:visible;
-	z-index:10;
-	width:100%;
+input.propertydatefield {
+	font-family: verdana, arial, sans-serif;
+	font-size: 8pt;
+	border-style: solid;
+	border-width: 1px;
+	border-color: #C2D0E2;
+	width: 100px;
+}
+
+.propertytextarea {
+	font-family: verdana, arial, sans-serif;
+	font-size: 8pt;
+	border-style: solid;
+	border-width: 1px;
+	border-color: #C2D0E2;
+	width: 200px;
+	height: 150px;
+}
+
+select.propertyselect {
+	font-family: verdana, sans-serif;
+	font-size: 10px;
+	font-weight: normal;
+}
+
+.inheritedOverlay {
+	font-family: verdana, arial, sans-serif;
+	font-size: 8pt;
+	color: #333333;
+	position: relative;
+	visibility: visible;
+	z-index: 10;
+	width: 100%;
 	text-align: center;
 	vertical-align: middle;
-	height:10px;
-	border-style	 : solid;
-	border-width	 : 1px;	
-	border-color     : #000000;
+	height: 10px;
+	border-style: solid;
+	border-width: 1px;
+	border-color: #000000;
 }
-.inherited
-{
-    position: relative;
-	visibility:visible;
-	z-index:1;
-	width:100%;
+
+.inherited {
+	position: relative;
+	visibility: visible;
+	z-index: 1;
+	width: 100%;
 }
-	
+
 tr.lightyellow {
-	background-color : #FEF8D0;
-	height 			 : 14pt;
+	background-color: #FEF8D0;
+	height: 14pt;
 }
 
 tr.white {
-	background-color : #FFFFFF;
-	height 			 : 14pt;
+	background-color: #FFFFFF;
+	height: 14pt;
 }
 
 .smalllabel {
-	font-family:verdana, sans-serif;
-	font-size:10px;
-	}
+	font-family: verdana, sans-serif;
+	font-size: 10px;
+}
 
 .smallwhitelabel {
-	font-family:verdana, sans-serif;
-	font-size:10px;
-	color:white;
-	}
+	font-family: verdana, sans-serif;
+	font-size: 10px;
+	color: white;
+}
 
 a.white {
-    text-decoration:none;
-    color: white;
-	font-size:10px;
-    }
+	text-decoration: none;
+	color: white;
+	font-size: 10px;
+}
+
 a.white:visited {
-    text-decoration:none;
-    color: white;
-	font-size:10px;
-    }
+	text-decoration: none;
+	color: white;
+	font-size: 10px;
+}
+
 a.white:hover {
-	text-decoration:underline;
-	}
+	text-decoration: underline;
+}
+
 a.white:active {
 	font-weight: bold;
-	}
+}
 
 .boldsmalllabel {
-	font-family:verdana, sans-serif;
-	font-size:10px;
-	font-weight:bold;
-	}
-	
+	font-family: verdana, sans-serif;
+	font-size: 10px;
+	font-weight: bold;
+}
+
 .slot {
-	border:0px solid #333333;
-	font-family:verdana, sans-serif;
-	font-size:10px;
-	}
+	border: 0px solid #333333;
+	font-family: verdana, sans-serif;
+	font-size: 10px;
+}
 
 .iglabel {
-	margin:0px;
-	padding:0px;
-	font-family:verdana, sans-serif;
-	font-size:10px;
-	font-weight:normal;
-	height:12px;
-	}
+	margin: 0px;
+	padding: 0px;
+	font-family: verdana, sans-serif;
+	font-size: 10px;
+	font-weight: normal;
+	height: 12px;
+}
+
 select.mediumdrop {
-	font-family:verdana, sans-serif;
-	font-size:10px;
-	font-weight:normal;
+	font-family: verdana, sans-serif;
+	font-size: 10px;
+	font-weight: normal;
 }
 
 .clickableLabel {
-	margin:0px;
-	padding:0px;
-	font-family:verdana, sans-serif;
-	font-size:10px;
-	font-weight:normal;
-	text-decoration:underline;
-	color:blue;
-	height:12px;
+	margin: 0px;
+	padding: 0px;
+	font-family: verdana, sans-serif;
+	font-size: 10px;
+	font-weight: normal;
+	text-decoration: underline;
+	color: blue;
+	height: 12px;
 	white-space: nowrap;
-	}
+}
+
 .acomponentsBackground {
-	border: 0px solid red; 
+	border: 0px solid red;
 	border-left: solid thin white;
-	position:absolute; 
-	z-index:2; 
-	width:2000px; 
-	top:20px; 
-	left:0px; 
-	height:30px; 
-	clip:rect(0px 10px 10px 0px); 
-	visibility:inherit;
+	position: absolute;
+	z-index: 2;
+	width: 2000px;
+	top: 20px;
+	left: 0px;
+	height: 30px;
+	clip: rect(0px, 10px, 10px, 0px);
+	visibility: inherit;
 }
 
 .tooltipDiv {
-	border: 1px solid black; 
-	background-color: white; 
-	padding: 4px; 
-	width: 200px; 
-	display: block; 
-	visibility: hidden; 
-	z-index: 99; 
-	position: absolute; 
-	font-size: 8pt; 
-	font-family: Verdana; 
-	font-weight:normal;
+	border: 1px solid black;
+	background-color: white;
+	padding: 4px;
+	width: 200px;
+	display: block;
+	visibility: hidden;
+	z-index: 99;
+	position: absolute;
+	font-size: 8pt;
+	font-family: Verdana;
+	font-weight: normal;
 	color: black;
 }
+
+
+.editOnSightDiv {
+	border: 1px solid black;
+	background-color: #F9F8F7;
+	background-image: url('../images/contextBackground.gif');
+	background-repeat: repeat-y;
+	text-align: left;
+	font-family: Tahoma, Arial, Helvetica, sans-serif;
+	font-size: 10pt;
+	display: block;
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	width: auto;
+	padding: 0px;
+}
+
+.editOnSightDiv a {
+	text-decoration: none;
+	color: black;
+}
+
+.editOnSightDiv a:hover {
+	color: black;
+}
+
+/* POPUP MENU */
+
+.popup_menu {
+	/*border-left:solid 3px #ff891e;*/
+	border:solid 1px #000;
+	float:left;
+	background:url(../images/v3/tileGradient.gif) repeat-y left;
+	padding:0px 10px 0px 0;
+	}
+.popupMenuLinks {
+	list-style-type:none;
+	padding:0 0 0 7px;
+	margin:0;
+	}
+.popup_menu ul a{
+	font-family:Verdana, Arial, Helvetica, sans-serif;
+	font-size:12px;
+	line-height:22px;
+	color:#555;
+	text-decoration:none;
+	padding-top:2px;
+	}
+.popup_menu ul li a:hover{
+	text-decoration:underline;
+	}
+.designStuff {
+	}
+.linkMetadata { background:url(../images/v3/metadataIcon.gif) no-repeat left center;}
+.linkCreatePage {background:url(../images/v3/createPageIcon.gif) no-repeat left center;}
+.linkEditArticle {background:url(../images/v3/editContentIcon.gif) no-repeat left center;}
+.linkCategorizeArticle {background:url(../images/v3/categorizeContentIcon.gif) no-repeat left center;}
+.linkPublish {background:url(../images/v3/publishPageIcon.gif) no-repeat left center;}
+.linkNotify {background:url(../images/v3/notifyIcon.gif) no-repeat left center;}
+.linkTakeContent {background:url(../images/v3/subscribeToContentIcon.gif) no-repeat left center;}
+.linkTakePage {background:url(../images/v3/subscribeToPageIcon.gif) no-repeat left center;}
+.linkTranslate {background:url(../images/v3/translateContentIcon.gif) no-repeat left center;}
+.linkCreateNews {background:url(../images/v3/createNewsForContentIcon.gif) no-repeat left center;}
+
+.linkMetadata, .linkCreatePage, .linkEditArticle, .linkCategorizeArticle, .linkPublish, .linkNotify, .linkTakeContent, .linkTakePage, .linkTranslate, .linkCreateNews {
+padding-left:28px;}

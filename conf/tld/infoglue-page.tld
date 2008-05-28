@@ -128,4 +128,41 @@
     	</attribute>
     </tag>
 
+    <tag>
+        <name>editOnSightMenu</name>
+        <tagclass>org.infoglue.deliver.taglib.page.EditOnSightMenuTag</tagclass>
+        <bodycontent>empty</bodycontent>
+        <info>TemplateLogic.getEditOnSightMenuTag</info>
+        <attribute>
+    	    <name>id</name>
+        	<required>false</required>
+	        <rtexprvalue>false</rtexprvalue>
+    	</attribute>
+        <attribute>
+            <name>html</name>
+            <required>false</required>
+            <rtexprvalue>false</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>showInPublishedMode</name>
+            <required>false</required>
+            <rtexprvalue>false</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>contentId</name>
+            <required>false</required>
+            <rtexprvalue>false</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>showEditInline</name>
+            <required>false</required>
+            <rtexprvalue>false</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>showEditPopup</name>
+            <required>false</required>
+            <rtexprvalue>false</rtexprvalue>
+        </attribute>
+    </tag>
+
 </taglib>
