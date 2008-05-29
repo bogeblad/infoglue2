@@ -274,6 +274,54 @@ public class CreateSiteNodeAction extends InfoGlueAbstractAction
 		
 		return "input";
     }
+    
+    public String doExecuteV3() throws Exception
+    {
+        ceb = this.siteNodeVO.validate();
+    	ceb.throwIfNotEmpty();
+    	
+    	logger.info("name:" + this.siteNodeVO.getName());
+    	logger.info("publishDateTime:" + this.siteNodeVO.getPublishDateTime());
+    	logger.info("expireDateTime:" + this.siteNodeVO.getExpireDateTime());
+    	logger.info("isBranch:" + this.siteNodeVO.getIsBranch());
+    	
+    	Database db = CastorDatabaseService.getDatabase();
+        ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
+
+        beginTransaction(db);
+
+        try
+        {
+            SiteNode newSiteNode = SiteNodeControllerProxy.getSiteNodeControllerProxy().acCreate(this.getInfoGluePrincipal(), this.parentSiteNodeId, this.siteNodeTypeDefinitionId, this.repositoryId, this.siteNodeVO, db);            
+            newSiteNodeVO = newSiteNode.getValueObject();
+            
+            SiteNodeController.getController().createSiteNodeMetaInfoContent(db, newSiteNode, this.repositoryId, this.getInfoGluePrincipal(), this.pageTemplateContentId);
+            
+            commitTransaction(db);
+        }
+        catch(Exception e)
+        {
+            logger.error("An error occurred so we should not completes the transaction:" + e, e);
+            rollbackTransaction(db);
+            throw new SystemException(e.getMessage());
+        }
+    	
+        return "successV3";
+    }
+
+
+    public String doInputV3() throws Exception
+    {    	
+    	AccessConstraintExceptionBuffer ceb = new AccessConstraintExceptionBuffer();
+		
+		Integer protectedSiteNodeVersionId = SiteNodeControllerProxy.getController().getProtectedSiteNodeVersionId(parentSiteNodeId);
+		if(protectedSiteNodeVersionId != null && !AccessRightController.getController().getIsPrincipalAuthorized(this.getInfoGluePrincipal(), "SiteNodeVersion.CreateSiteNode", protectedSiteNodeVersionId.toString()))
+			ceb.add(new AccessConstraintException("SiteNode.siteNodeId", "1002"));
+		
+		ceb.throwIfNotEmpty();
+		
+		return "inputV3";
+    }
         
     public Integer getPageTemplateContentId()
     {
