@@ -53,10 +53,10 @@
 ## This is the header for all V3 managementtool pages *
 ##*****************************************************
 
-#macro(beginManagementToolV3 $titleKey $primaryKey $hasDataTable)
+#macro(beginManagementToolV3 $titleKey $primaryKey $extraData $hasDataTable $endHeadAndDefineBody)
 
-#set($buttons = $this.getToolbarButtons("$titleKey", "$!primaryKey", ""))
-#set($rightButtons = $this.getRightToolbarButtons("$titleKey", "$!primaryKey", ""))
+#set($buttons = $this.getToolbarButtons("$titleKey", "$!primaryKey", "$extraData"))
+#set($rightButtons = $this.getRightToolbarButtons("$titleKey", "$!primaryKey", "$extraData"))
 
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -68,6 +68,12 @@
 	<script type="text/javascript" src="script/yui/build/yahoo-dom-event/yahoo-dom-event.js"></script>
 	<script type="text/javascript" src="script/yui/build/element/element-beta-min.js"></script>
 	<script type="text/javascript" src="script/yui/build/button/button-min.js"></script>
+	
+	<link rel="stylesheet" type="text/css" href="script/yui/build/menu/assets/skins/sam/menu.css" />
+	<link rel="stylesheet" type="text/css" href="script/yui/build/button/assets/skins/sam/button.css" />
+	<script type="text/javascript" src="script/yui/build/container/container_core-min.js"></script>
+	<script type="text/javascript" src="script/yui/build/menu/menu-min.js"></script>
+
 	<script type="text/javascript" src="script/jquery/jquery-1.2.3.min.js"></script>
 	
 	#if($hasDataTable)
@@ -80,6 +86,7 @@
 
 	<link rel="stylesheet" type="text/css" href="css/v3/infoglue.css" />
 	<link rel="stylesheet" type="text/css" href="css/cms.css" />
+	
 		
 	<style type="text/css">
 
@@ -111,13 +118,26 @@
 			border-color: #808080;
 		}
 		
-		#button$velocityCount button {
-		    background: url($button.backgroundImageURL) 2px 6px no-repeat;
-		    text-indent: 20px;
-		    padding: 6px;
-		    border: 0px;
-		    height: 28px;
-		}
+		#if($button.backgroundImageAlignment == "left")
+			#button$velocityCount button {
+			    background: url($button.backgroundImageURL) 2px 6px no-repeat;
+			    text-indent: 20px;
+			    padding: 6px;
+			    border: 0px;
+			    height: 28px;
+			}
+		#else
+			#button$velocityCount button {
+				padding: 6px;
+			    padding-right:20px;
+				background-position:right center;
+				background-repeat:no-repeat;
+			    background-image: url($button.backgroundImageURL);
+			    text-indent: 0px;
+			    border: 1px;
+			    height: 28px;
+			}
+		#end
 	#end
 	
 	#if($hasDataTable)
@@ -157,6 +177,8 @@
 			font-size: 8pt;
 		}
 		#end
+		
+	    
 	</style>
 	<script type="text/javascript">
 
@@ -182,16 +204,40 @@
 	        YAHOO.util.Event.onContentReady("menutoolbar", function () 
 	        {
 	        	#foreach($button in $buttons)
-					var oButton${velocityCount} = new YAHOO.widget.Button("button${velocityCount}");
-	            	oButton${velocityCount}.on("click", function (p_oEvent){
-	            		#if($button.actionURL.indexOf("javascript") == -1)
-		            		document.location.href = '$button.actionURL';
-		            	#else
-		            		$button.actionURL
-		            	#end
-	            	});
+					#if($button.subButtons.size() == 0)
+					
+						var oButton${velocityCount} = new YAHOO.widget.Button("button${velocityCount}");
+		            	oButton${velocityCount}.on("click", function (p_oEvent){
+		            		#if($button.actionURL.indexOf("javascript") == -1)
+			            		document.location.href = '$button.actionURL';
+			            	#else
+			            		$button.actionURL
+			            	#end
+		            	});
+
+					#else
+						
+						#foreach($subButton in $button.subButtons)
+							function onMenuItemClick${velocityCount}(p_sType, p_aArgs, p_oItem) {
+							   	oButton${velocityCount}.set("label", p_oItem.cfg.getProperty("text"));
+							   	$subButton.actionURL;
+							}
+						#end
+							
+						var aMenuButton4Menu = [
+							#foreach($subButton in $button.subButtons)
+						    #if(${velocityCount} > 1),#end
+						    { 	text: "$subButton.text", value: $subButton.id, onclick: { fn: onMenuItemClick${velocityCount} }  }
+						    #end
+						];
+						
+						var oButton${velocityCount} = new YAHOO.widget.Button("button${velocityCount}", { 
+		                            type: "menu", 
+		                            menu: aMenuButton4Menu });
+		                            
+					#end
 	            #end
-	            
+	            	            
 	            #foreach($button in $rightButtons)
 	         		#if($button.id != "")
 						var o${button.id} = new YAHOO.widget.Button("${button.id}");
@@ -232,10 +278,13 @@
 	<meta http-equiv="Cache-Control" content="no-cache" />
 	<meta http-equiv="Pragma" content="no-cache" />
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+#if($endHeadAndDefineBody)
 </head>
 
 <body class="generaltooledit yui-skin-sam">
 #set( $lvColor = "silver")
+#end
 
 #end
 
@@ -1056,7 +1105,7 @@ $ui.getString("entity.${fieldNameKey}.label")<br/>
 ## A macro to add a toolbar to a page
 ##***********************************************************
 #macro(menuToolbar $headline $buttons $rightButtons)
-<div id="menutoolbar">
+<div id="menutoolbar" onfocus="this.blur();">
 	<div style="float:left">
 		#if($headline != "")
 			<div style="float: left; padding-top: 8px; padding-left: 10px;">$headline | </div>
