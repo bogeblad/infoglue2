@@ -1,35 +1,14 @@
-#beginManagementToolV3("tool.managementtool.viewMessageCenter.header" "" "" false false)
+#beginCommonToolV3("tool.structuretool.createSiteNodeHeader" "" "" false true)
 
-<link rel="stylesheet" href="css/v3/tabs.css" type="text/css" media="screen">
-
-<script type="text/javascript" src="script/jquery/jquery-1.2.3.min.js"></script>
-<script type="text/javascript" src="script/jqueryplugins/ui/jquery-ui-igcommon15.min.js"></script>
-
-<style type="text/css">
-	.myTab
-	{
-		height: auto;
-		width: auto;
-		overflow: auto;
-		color: black;
-	}
-	
-	.userSelectBox
-	{
-		width: 200px;
-		height: 200px;
-	}
-	
-	.moveButton
-	{
-		width: 50px;
-	}
-</style>
+<link rel="stylesheet" type="text/css" media="all" href="applications/jscalendar/skins/aqua/theme.css" title="aqua" />
+<script type="text/javascript" src="applications/jscalendar/calendar.js"></script>
+<script type="text/javascript" src="applications/jscalendar/lang/calendar-en.js"></script>
+<script type="text/javascript" src="applications/jscalendar/calendar-setup.js"></script>
 
 <script language="JavaScript">
 <!--
 	$(document).ready(function(){
-	$("#tabsContainer > ul").tabs();
+		$("#tabsContainer > ul").tabs();
 	});
 	
 	var selectedAssetElement;
@@ -65,108 +44,112 @@
 	#set($dateReadonly = "readonly")
 #end
 
-<form name="editForm" method="POST" action="CreateSiteNode.action">
-	<div id="tabsContainer" class="flora">      
-		<ul>
-	        <li><a href="#basicTab"><span>Basic</span></a></li>
-	        <li><a href="#advancedTab"><span>Advanced</span></a></li>	        
-	    </ul>
+<div>
+    
+	#menuToolbar("" $buttons $rightButtons) 
 
-		<div id="basicTab" class="myTab">
-			<table>
-				<tr>
-					<td colspan="3">#editTextField("SiteNode.name" "name" $!name "30" "normaltextfield" "")</td>
-				</tr>
-				<tr>
-					<td colspan="4">#editDateField("SiteNode.publishDateTime" "publishDateTime" $!publishDateTime "30" "date"  "ViewCalendar.action?date=$!publishDateTimeAsLong&formPath=document.editForm.publishDateTime" "$dateReadonly")
-				</tr>		
-				<tr>
-					<td colspan="4">#editDateField("SiteNode.expireDateTime" "expireDateTime" $!expireDateTime "30" "date"  "ViewCalendar.action?date=$!expireDateTimeAsLong&formPath=document.editForm.expireDateTime" "$dateReadonly")</td>
-				</tr>						
-				<tr>
-					<td colspan="3">&nbsp;</td>
-				</tr>	
-				<tr>
-					<td colspan="4" width=>
-						<table border="0" cellspacing="0" cellpadding="3px">
-							<tr>
-								$ui.getString("tool.structuretool.pageTemplates.header")<br/>
-								<br/>
-								#set($counter = 0)
-								#set($sortedPageTemplates = $this.getSortedPageTemplates($sortProperty))
-								#foreach ($content in $sortedPageTemplates)
-									##if($filterRepositoryId == -1 || $content.repositoryId == $filterRepositoryId)
-										#if($isOdd)
-											#set($class = "class='lightapricot'")
-											#set($isOdd = false)
-										#else
-											#set($class = "class='white'")
-											#set($isOdd = true)
-										#end
-										
-										##set($imageUrl = "images/componentIcon.gif")
-										#set($imageUrl = $this.getDigitalAssetUrl($content.id, "thumbnail"))
-										#if(!$imageUrl || $imageUrl == "")
-											#set($imageUrl = "images/undefinedPageTemplate.jpg")
-										#end
-										<td valign="top" align="center" width="100" style="padding: 3px;">
-											<img id="digitalAsset$content.id" src="$imageUrl" onclick="markPageTemplate(this, $content.id);" border="0" style="width: 100px; border: 1px solid black; margin: 3px;" alt="$content.getName()" title="$content.getName()">
-										</td>
-										<td valign="top">
-											<span style="font-weight: bold;"><a href="javascript:markPageTemplate(this, $content.id);">$content.getName()</a></span><br/>
-											#if($content.extraProperties.get("Description") != "Unknown" && $content.extraProperties.get("Description") != "")
-												$content.extraProperties.get("Description")
-											#end
-										</td>
-										#set($counter = $counter + 1)
-										#if ($counter == 2)
-										</tr>
-										<tr>
-											#set($counter = 0)	
-										#end
-									##end
-									#set($imageUrl = "")
-								#end
-							</tr>
-						</table>		
-					</td>
-				</tr>						
-			</table>
-		</div>
-		
-		<div id="advancedTab" class="myTab">
-			<table>
-				##if(!$!isBranch)
+	<div style="clear: both;"></div>
+	
+	<h3 style="text-indent: 16px;">Skapa undersida till "$parentSiteNodeVO.name"</h3>
+
+	<form name="editForm" method="POST" action="CreateSiteNode!executeV3.action">
+		<input type="hidden" name="returnAddress" value="$returnAddress"/>
+		<div id="tabsContainer" class="flora">      
+			<ul>
+		        <li><a href="#basicTab"><span>Basic</span></a></li>
+		        <li><a href="#advancedTab"><span>Advanced</span></a></li>	        
+		    </ul>
+	
+			<div id="basicTab" class="inlineTabDiv">
+				<table>
 					<tr>
-						<td colspan="3">
-							SiteNode type<br/>
-							<select class="siteNodetypes" name="siteNodeTypeDefinitionId">
-							#foreach ($siteNodeTypeDefinitionVO in $siteNodeTypeDefinitions)
-								<option value="$siteNodeTypeDefinitionVO.getSiteNodeTypeDefinitionId()">$siteNodeTypeDefinitionVO.getName()</option>
-							#end
-							</select>
-						</td>
+						<td colspan="3">#editTextField("SiteNode.name" "name" $!name "30" "normaltextfield" "")</td>
 					</tr>
-				##end	
-			</table>
+					<tr>
+						<td colspan="4">#editDateField("SiteNode.publishDateTime" "publishDateTime" $!publishDateTime "30" "date"  "ViewCalendar.action?date=$!publishDateTimeAsLong&formPath=document.editForm.publishDateTime" "$dateReadonly")
+					</tr>		
+					<tr>
+						<td colspan="4">#editDateField("SiteNode.expireDateTime" "expireDateTime" $!expireDateTime "30" "date"  "ViewCalendar.action?date=$!expireDateTimeAsLong&formPath=document.editForm.expireDateTime" "$dateReadonly")</td>
+					</tr>						
+					<tr>
+						<td colspan="3">&nbsp;</td>
+					</tr>	
+					<tr>
+						<td colspan="4" width=>
+							<table border="0" cellspacing="0" cellpadding="3px">
+								<tr>
+									$ui.getString("tool.structuretool.pageTemplates.header")<br/>
+									<br/>
+									#set($counter = 0)
+									#set($sortedPageTemplates = $this.getSortedPageTemplates($sortProperty))
+									#foreach ($content in $sortedPageTemplates)
+										##if($filterRepositoryId == -1 || $content.repositoryId == $filterRepositoryId)
+											#if($isOdd)
+												#set($class = "class='lightapricot'")
+												#set($isOdd = false)
+											#else
+												#set($class = "class='white'")
+												#set($isOdd = true)
+											#end
+											
+											##set($imageUrl = "images/componentIcon.gif")
+											#set($imageUrl = $this.getDigitalAssetUrl($content.id, "thumbnail"))
+											#if(!$imageUrl || $imageUrl == "")
+												#set($imageUrl = "images/undefinedPageTemplate.jpg")
+											#end
+											<td valign="top" align="center" width="100" style="padding: 3px;">
+												<img id="digitalAsset$content.id" src="$imageUrl" onclick="markPageTemplate(this, $content.id);" border="0" style="width: 100px; border: 1px solid black; margin: 3px;" alt="$content.getName()" title="$content.getName()">
+											</td>
+											<td valign="top">
+												<span style="font-weight: bold;"><a href="javascript:markPageTemplate(this, $content.id);">$content.getName()</a></span><br/>
+												#if($content.extraProperties.get("Description") != "Unknown" && $content.extraProperties.get("Description") != "")
+													$content.extraProperties.get("Description")
+												#end
+											</td>
+											#set($counter = $counter + 1)
+											#if ($counter == 2)
+											</tr>
+											<tr>
+												#set($counter = 0)	
+											#end
+										##end
+										#set($imageUrl = "")
+									#end
+								</tr>
+							</table>		
+						</td>
+					</tr>						
+				</table>
+			</div>
+			
+			<div id="advancedTab" class="inlineTabDiv">
+				<table>
+					##if(!$!isBranch)
+						<tr>
+							<td colspan="3">
+								SiteNode type<br/>
+								<select class="siteNodetypes" name="siteNodeTypeDefinitionId">
+								#foreach ($siteNodeTypeDefinitionVO in $siteNodeTypeDefinitions)
+									<option value="$siteNodeTypeDefinitionVO.getSiteNodeTypeDefinitionId()">$siteNodeTypeDefinitionVO.getName()</option>
+								#end
+								</select>
+							</td>
+						</tr>
+					##end	
+				</table>
+			</div>
 		</div>
-	</div>
-	<input type="hidden" name="isBranch" value="$!isBranch">
-	<input type="hidden" name="parentSiteNodeId" value="$!parentSiteNodeId">
-	<input type="hidden" name="repositoryId" value="$!repositoryId">
-	<input type="hidden" name="unrefreshedSiteNodeId" value="$!parentSiteNodeId">
-	<input type="hidden" name="changeTypeId" value="2">
-	<input type="hidden" name="pageTemplateContentId" value="">
-	<br/>
-	<input type=submit value="$ui.getString("tool.common.saveButton.label")"/>
-	<input type="button" value="$ui.getString("tool.common.cancelButton.label")" onclick="document.location='ViewSiteNode.action?siteNodeId=$!parentSiteNodeId'"/>
+		<input type="hidden" name="isBranch" value="$!isBranch">
+		<input type="hidden" name="parentSiteNodeId" value="$!parentSiteNodeId">
+		<input type="hidden" name="repositoryId" value="$!repositoryId">
+		<input type="hidden" name="unrefreshedSiteNodeId" value="$!parentSiteNodeId">
+		<input type="hidden" name="changeTypeId" value="2">
+		<input type="hidden" name="pageTemplateContentId" value="">
+		
+		#footerToolbar($footerButtons)
+	
+	</form>
 
-</form>
+</div>
 
-<script language="JavaScript">
-<!--
-document.editForm.name.focus();
-//-->
-</script>
-
-#endStructureTool()
+#endCommonToolV3()

@@ -13,6 +13,338 @@
 #end
 
 
+##*****************************************************
+## This is the header for all V3 managementtool pages *
+##*****************************************************
+
+#macro(beginCommonToolV3 $titleKey $primaryKey $extraData $hasDataTable $endHeadAndDefineBody)
+
+#set($buttons = $this.getToolbarButtons("$titleKey", "$!primaryKey", "$extraData"))
+#set($rightButtons = $this.getRightToolbarButtons("$titleKey", "$!primaryKey", "$extraData"))
+#set($footerButtons = $this.getFooterToolbarButtons("$titleKey", "$!primaryKey", "$extraData"))
+
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<title>$ui.getString($titleKey)</title>
+	
+	<script type="text/javascript" src="script/yui/build/yahoo-dom-event/yahoo-dom-event.js"></script>
+	<script type="text/javascript" src="script/yui/build/element/element-beta-min.js"></script>
+	<script type="text/javascript" src="script/yui/build/button/button-min.js"></script>
+	
+	<link rel="stylesheet" type="text/css" href="script/yui/build/menu/assets/skins/sam/menu.css" />
+	<link rel="stylesheet" type="text/css" href="script/yui/build/button/assets/skins/sam/button.css" />
+	<script type="text/javascript" src="script/yui/build/container/container_core-min.js"></script>
+	<script type="text/javascript" src="script/yui/build/menu/menu-min.js"></script>
+
+	<script type="text/javascript" src="script/jquery/jquery-1.2.3.min.js"></script>
+	<script type="text/javascript" src="script/jqueryplugins/ui/jquery-ui-igcommon15.min.js"></script>
+	
+	#if($hasDataTable)
+		<link rel="stylesheet" type="text/css" href="script/yui/build/fonts/fonts-min.css" />
+		<link rel="stylesheet" type="text/css" href="script/yui/build/datatable/assets/skins/sam/datatable.css" />
+		<script type="text/javascript" src="script/yui/build/utilities/utilities.js"></script>
+		<script type="text/javascript" src="script/yui/build/datasource/datasource-beta-min.js"></script>
+		<script type="text/javascript" src="script/yui/build/datatable/datatable-beta-min.js"></script>
+	#end
+
+	<link rel="stylesheet" type="text/css" href="css/v3/infoglue.css" />
+	<link rel="stylesheet" type="text/css" href="css/v3/tabs.css" media="screen">
+	<link rel="stylesheet" type="text/css" href="css/cms.css" />
+		
+	<style type="text/css">
+
+	#foreach($button in $buttons)
+		
+		#button${velocityCount}.yui-button {
+			border-width: 1px 0;
+			border-style: solid;
+			border-color: transparent;
+			_border-color:tomato; /*For IE6-*/  
+			_filter:chroma(color=tomato);/*For IE6-*/
+			background: transparent; 
+			margin: auto .25em;
+		}
+		#button${velocityCount}.yui-button .first-child {
+			border-width: 0 1px;
+			border-style: solid;
+			border-color: transparent;
+			_border-color:tomato; /*For IE6-*/  
+			_filter:chroma(color=tomato);/*For IE6-*/
+		}
+		
+		#button${velocityCount}.yui-button-hover {
+			border-color: #808080;
+			background-position: 0 0;
+		}
+	
+		#button${velocityCount}.yui-button-hover .first-child {
+			border-color: #808080;
+		}
+		
+		#if($button.backgroundImageAlignment == "left")
+			#button$velocityCount button {
+			    background: url($button.backgroundImageURL) 2px 6px no-repeat;
+			    text-indent: 20px;
+			    padding: 6px;
+			    border: 0px;
+			    height: 28px;
+			}
+		#else
+			#button$velocityCount button {
+				padding: 6px;
+			    padding-right:20px;
+				background-position:right center;
+				background-repeat:no-repeat;
+			    background-image: url($button.backgroundImageURL);
+			    text-indent: 0px;
+			    border: 1px;
+			    height: 28px;
+			}
+		#end
+	#end
+	
+	#foreach($button in $footerButtons)
+		
+		#footerButton${velocityCount}.yui-button {
+			border-width: 1px 0;
+			border-style: solid;
+			border-color: #808080;
+			_border-color:tomato; /*For IE6-*/  
+			_filter:chroma(color=tomato);/*For IE6-*/
+			background: url(sprite.png) repeat-x 0 0; 
+			margin: auto .25em;
+		}
+		#footerButton${velocityCount}.yui-button .first-child {
+			border-width: 0 1px;
+			border-style: solid;
+			border-color: #808080;
+			_border-color:tomato; /*For IE6-*/  
+			_filter:chroma(color=tomato);/*For IE6-*/
+		}
+		
+		#footerButton${velocityCount}.yui-button-hover {
+			border-color: #808080;
+			background-position: 0 0;
+		}
+	
+		#footerButton${velocityCount}.yui-button-hover .first-child {
+			border-color: #808080;
+		}
+		
+		#if($button.backgroundImageAlignment == "left")
+			#footerButton$velocityCount button {
+			    background: url($button.backgroundImageURL) 2px 6px no-repeat;
+			    text-indent: 20px;
+			    padding: 6px;
+			    border: 0px;
+			    height: 28px;
+			}
+		#else
+			#footerButton$velocityCount button {
+				padding: 6px;
+			    padding-right:20px;
+				background-position:right center;
+				background-repeat:no-repeat;
+			    background-image: url($button.backgroundImageURL);
+			    text-indent: 0px;
+			    border: 1px;
+			    height: 28px;
+			}
+		#end
+	#end
+	
+	#if($hasDataTable)
+		.yui-dt {
+			width: 100%;
+		}
+		.yui-dt-hd {
+			width: 100%;
+		}
+		.yui-dt-bd {
+			width: 100%;
+		}
+		table {
+			width: 100%;
+		}
+		
+		.yui-skin-sam .yui-dt th {
+			background: #D8D8DA url(images/v3/tableHeaderBackground.gif) repeat-x 0 0;
+			font-family: arial;
+			font-size: 8pt;
+			margin:0;
+			padding:0;
+			text-align: left;
+		}
+		.yui-skin-sam .yui-dt-liner { 
+		    margin:0;padding:0; 
+		    padding:1px 10px 1px 10px; 
+		} 
+		
+		.yui-skin-sam .yui-dt {
+			font-family: arial;
+			font-size: inherit;
+		}
+	
+		.yui-skin-sam .yui-dt td {
+			font-family: arial;
+			font-size: 8pt;
+		}
+		#end
+		
+	    
+	</style>
+	<script type="text/javascript">
+
+		$(document).ready(function(){
+			
+			$(":input:first").focus();
+	
+	 		$("div").each(function(i,e){
+	 			$(this).attr("tabindex", "-1");
+			});
+			 
+	 	});
+
+		function openWindow(url, windowTitle, options) 
+		{
+			newWin = window.open(url, windowTitle, options);
+			if(newWin)
+				newWin.focus();
+			else
+				alert("Could not open in new window - if you have a popup blocker this is most likely the cause.");
+		}
+			
+	    YAHOO.example.init = function () 
+	    {
+	        YAHOO.util.Event.onContentReady("menutoolbar", function () 
+	        {
+	        	#foreach($button in $buttons)
+					#if($button.subButtons.size() == 0)
+					
+						var oButton${velocityCount} = new YAHOO.widget.Button("button${velocityCount}");
+		            	oButton${velocityCount}.on("click", function (p_oEvent){
+		            		#if($button.actionURL.indexOf("javascript") == -1)
+			            		document.location.href = '$button.actionURL';
+			            	#else
+			            		$button.actionURL
+			            	#end
+		            	});
+
+					#else
+						
+						#foreach($subButton in $button.subButtons)
+							function onMenuItemClick${velocityCount}(p_sType, p_aArgs, p_oItem) {
+							   	oButton${velocityCount}.set("label", p_oItem.cfg.getProperty("text"));
+							   	$subButton.actionURL;
+							}
+						#end
+							
+						var aMenuButton4Menu = [
+							#foreach($subButton in $button.subButtons)
+						    #if(${velocityCount} > 1),#end
+						    { 	text: "$subButton.text", value: $subButton.id, onclick: { fn: onMenuItemClick${velocityCount} }  }
+						    #end
+						];
+						
+						var oButton${velocityCount} = new YAHOO.widget.Button("button${velocityCount}", { 
+		                            type: "menu", 
+		                            menu: aMenuButton4Menu });
+		                            
+					#end
+	            #end
+	            	            
+	            #foreach($button in $rightButtons)
+	            	#if($button.isJavascript == false)
+		         		#if($button.id != "")
+							var o${button.id} = new YAHOO.widget.Button("${button.id}");
+				        	o${button.id}.on("click", function (p_oEvent){
+								callUrlWithAlternative('http://www.infoglue.org${button.actionURL}', '/infoglueDeliverWorking${button.actionURL}');
+				        	});
+		        		#else
+							var oRightButton${velocityCount} = new YAHOO.widget.Button("rightButton${velocityCount}");
+				        	oRightButton${velocityCount}.on("click", function (p_oEvent){
+								callUrlWithAlternative('http://www.infoglue.org${button.actionURL}', '/infoglueDeliverWorking${button.actionURL}');
+							});
+		        		#end
+		        	#else
+		        		#if($button.id != "")
+							var o${button.id} = new YAHOO.widget.Button("${button.id}");
+				        	o${button.id}.on("click", function (p_oEvent){
+								$button.actionURL
+				        	});
+		        		#else
+			        		var oRightButton${velocityCount} = new YAHOO.widget.Button("rightButton${velocityCount}");
+					        oRightButton${velocityCount}.on("click", function (p_oEvent){
+								$button.actionURL
+							});
+		        		#end
+		        	#end
+	        	#end
+
+	        });
+	        
+   	        YAHOO.util.Event.onContentReady("footertoolbar", function () 
+	        {
+	        	#foreach($button in $footerButtons)
+
+					var oButton${velocityCount} = new YAHOO.widget.Button("footerButton${velocityCount}");
+	            	oButton${velocityCount}.on("click", function (p_oEvent){
+	            		#if($button.isJavascript == false)
+		            		document.location.href = '$button.actionURL';
+		            	#else
+		            		$button.actionURL
+		            	#end
+	            	});
+
+	            #end
+
+	        });
+	        
+	    }();
+
+		function callUrlWithAlternative(url, alternateUrl)
+		{
+			#set($dollarSign = "$")
+			
+			${dollarSign}.ajax({
+			    url: '' + alternateUrl,
+			    type: 'GET',
+			    dataType: 'html',
+			    timeout: 1000,
+			    error: function(){
+	        		openWindow(url, "Help", "");
+			    },
+			    success: function(xml){
+				  	openWindow(alternateUrl, "Help", "");
+			    }
+			});
+		}
+
+	</script>
+	
+	<meta http-equiv="Expires" content="Tue, 01 Jan 1980 1:00:00 GMT" />
+	<meta http-equiv="Cache-Control" content="no-cache" />
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+#if($endHeadAndDefineBody)
+</head>
+
+<body class="generaltooledit yui-skin-sam">
+#set( $lvColor = "silver")
+#end
+
+#end
+
+
+
+
+
+
+
 ##**************************************************
 ## This is the header for all managementtool pages *
 ##**************************************************
@@ -462,6 +794,18 @@
 #end
 
 ##**************************************************
+## This is the footer for all publishingtool pages *
+##**************************************************
+
+#macro(endCommonToolV3)
+</div>
+<div id="systemMessages"></div>
+<div id="systemMessagesDialog"></div>
+</body>
+</html>
+#end
+
+##**************************************************
 ## This is the header for all list-pages in the    *
 ## management tool                                 *
 ##**************************************************
@@ -487,7 +831,7 @@
 		}
 	</style>
 
-	## Inget formul�r om inget kan selectas
+	## Inget formulär om inget kan selectas
 	#if($lvConstraint != 0)
 		<form name="listForm" action="Confirm.action" method="POST">
 			<input type="hidden" name="header" value="$header"/>
@@ -1126,6 +1470,19 @@ $ui.getString("entity.${fieldNameKey}.label")<br/>
 </div>
 #end
 
+##***********************************************************
+## A macro to add a toolbar to a page
+##***********************************************************
+#macro(footerToolbar $buttons)
+<div style="clear: both;"></div>
+<div id="footertoolbar" onfocus="this.blur();">
+	<div style="float:left; margin-left: 10px; padding-top: 6px;">
+		#foreach($button in $buttons)
+			<input type="button" id="footerButton$velocityCount" name="footerButton$velocityCount" value="$button.text" title="$button.title" style="margin-right: 10px;"/>
+		#end
+	</div>
+</div>
+#end
 
 ##**************************************************
 ## OTHER - PLEASE CLEAN UP						   *

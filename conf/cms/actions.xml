@@ -1,4 +1,4 @@
-<!-- $Id: actions.xml,v 1.66 2008/05/29 08:13:15 mattias Exp $ -->
+<!-- $Id: actions.xml,v 1.67 2008/05/29 15:26:25 mattias Exp $ -->
 <actions>
 
 	<!-- MySettings -->
@@ -1127,7 +1127,7 @@
 		<view name="input">/cms/structuretool/createSiteNode.vm</view>
 		<view name="success">ViewSiteNode.action?stay=true</view>
 		<view name="inputV3">/cms/structuretool/v3/createSiteNode.vm</view>
-		<view name="successV3">ViewSiteNode.action</view>
+		<view name="successV3">ExtendedRedirect.action?url=ViewSiteNode.action#siteNodeId</view>
 		<view name="error">/cms/structuretool/error.vm</view>
 		<view name="accessDenied">/cms/structuretool/viewConstraintException.vm</view>
 	</action>

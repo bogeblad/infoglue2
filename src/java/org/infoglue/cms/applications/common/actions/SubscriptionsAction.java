@@ -23,6 +23,7 @@
 
 package org.infoglue.cms.applications.common.actions;
 
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -72,6 +73,7 @@ public class SubscriptionsAction extends InfoGlueAbstractAction
 	private String name;
 	private Integer subscriptionId;
 	
+	private List interceptionPointVOList;
 	private List contentTypeDefintionVOList;
 	private List categoryVOList;
 	
@@ -168,6 +170,43 @@ public class SubscriptionsAction extends InfoGlueAbstractAction
 		this.subscriptionVOList = subscriptionsController.getSubscriptionVOList(null, null, new Boolean(true), null, null, this.getInfoGluePrincipal().getName(), null);
 		this.contentTypeDefintionVOList = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOList();
 		this.categoryVOList = CategoryController.getController().findAllActiveCategories();
+
+		this.interceptionPointVOList = new ArrayList();
+		List allInterceptionPointVOList = InterceptionPointController.getController().getInterceptionPointVOList();
+		Iterator allInterceptionPointVOListIterator = allInterceptionPointVOList.iterator();
+		while(allInterceptionPointVOListIterator.hasNext())
+		{
+			InterceptionPointVO interceptionPointVO = (InterceptionPointVO)allInterceptionPointVOListIterator.next();
+			String name = interceptionPointVO.getName();
+			if(name.equals("ContentVersion.Publish") ||
+			   name.equals("SiteNodeVersion.Publish") ||
+			   name.equals("Content.ExpireDateComingUp") || 
+			   name.equals("SiteNode.ExpireDateComingUp"))
+			{
+				this.interceptionPointVOList.add(interceptionPointVO);	
+			}
+		}
+		
+		/*
+		Content.Write
+	    Content.Create
+	    Content.Delete
+	    Content.Move
+	    Content.SubmitToPublish
+	    Content.ChangeAccessRights
+	    Content.CreateVersion
+	    ContentVersion.Delete
+	    ContentVersion.Write
+	    ContentVersion.Publish
+	    SiteNodeVersion.Write
+	    SiteNodeVersion.CreateSiteNode
+	    SiteNodeVersion.DeleteSiteNode
+	    SiteNodeVersion.MoveSiteNode
+	    SiteNodeVersion.SubmitToPublish
+	    SiteNodeVersion.ChangeAccessRights
+	    SiteNodeVersion.Publish
+	    Publication.Write
+		*/
 		
 		return "inputGlobalSubscriptions";
     }
@@ -186,14 +225,22 @@ public class SubscriptionsAction extends InfoGlueAbstractAction
     	String filterType = this.getRequest().getParameter("filterType_" + i);
     	while(filterType != null && !filterType.equals("") && filterType != "-1")
     	{
-	    	String filterCondition = this.getRequest().getParameter("filterCondition_" + i);
+	    	String[] filterConditions = this.getRequest().getParameterValues("filterCondition_" + i);
+	    	StringBuffer filterConditionStringBuffer = new StringBuffer();
+	    	for(int j=0; j<filterConditions.length; j++)
+	    	{
+	    		if(j > 0)
+	    			filterConditionStringBuffer.append(",");
+	    		filterConditionStringBuffer.append(URLEncoder.encode(filterConditions[j], "utf-8"));
+	    	}
+	    	
 	    	String andParagraph = this.getRequest().getParameter("andParagraph_" + i);
 	    	if(andParagraph == null || andParagraph.equals(""))
 	    		andParagraph = "true";
 	    	
 	    	SubscriptionFilterVO subscriptionFilterVO = new SubscriptionFilterVO();
 	    	subscriptionFilterVO.setFilterType(filterType);
-	    	subscriptionFilterVO.setFilterCondition(filterCondition);
+	    	subscriptionFilterVO.setFilterCondition(filterConditionStringBuffer.toString());
 	    	subscriptionFilterVO.setIsAndCondition(new Boolean(andParagraph));
 	    	subscriptionFilterVOList.add(subscriptionFilterVO);
 
@@ -221,14 +268,22 @@ public class SubscriptionsAction extends InfoGlueAbstractAction
     	System.out.println("filterType[" + i + "]:" + filterType);
     	while(filterType != null && !filterType.equals("") && filterType != "-1")
     	{
-	    	String filterCondition = this.getRequest().getParameter("filterCondition_" + i);
+	    	String[] filterConditions = this.getRequest().getParameterValues("filterCondition_" + i);
+	    	StringBuffer filterConditionStringBuffer = new StringBuffer();
+	    	for(int j=0; j<filterConditions.length; j++)
+	    	{
+	    		if(j > 0)
+	    			filterConditionStringBuffer.append(",");
+	    		filterConditionStringBuffer.append(URLEncoder.encode(filterConditions[j], "utf-8"));
+	    	}
+
 	    	String andParagraph = this.getRequest().getParameter("andParagraph_" + i);
 	    	if(andParagraph == null || andParagraph.equals(""))
 	    		andParagraph = "true";
 	    	
 	    	SubscriptionFilterVO subscriptionFilterVO = new SubscriptionFilterVO();
 	    	subscriptionFilterVO.setFilterType(filterType);
-	    	subscriptionFilterVO.setFilterCondition(filterCondition);
+	    	subscriptionFilterVO.setFilterCondition(filterConditionStringBuffer.toString());
 	    	subscriptionFilterVO.setIsAndCondition(new Boolean(andParagraph));
 	    	subscriptionFilterVOList.add(subscriptionFilterVO);
 
@@ -242,6 +297,13 @@ public class SubscriptionsAction extends InfoGlueAbstractAction
     	return "successGlobalSubscriptions";
     }
 
+    public String doDeleteGlobalSubscription() throws Exception
+    {
+    	subscriptionsController.delete(subscriptionId);
+    	
+    	return "successGlobalSubscriptions";
+    }
+    
     public String doGetSubscriptionForm() throws Exception
     {
     	SubscriptionVO subscriptionVO = subscriptionsController.getSubscriptionVOWithId(subscriptionId);
@@ -266,6 +328,7 @@ public class SubscriptionsAction extends InfoGlueAbstractAction
 		this.categoryVOList = CategoryController.getController().findAllActiveCategories();
 		
     	int i = 0;
+    	int size = subscriptionVO.getSubscriptionFilterVOList().size();
     	Iterator<SubscriptionFilterVO> subscriptionFilterVOListIterator = subscriptionVO.getSubscriptionFilterVOList().iterator();
     	while(subscriptionFilterVOListIterator.hasNext())
     	{
@@ -287,7 +350,7 @@ public class SubscriptionsAction extends InfoGlueAbstractAction
 	   			while(contentTypeDefintionVOListIterator.hasNext())
 	   			{
 	   				ContentTypeDefinitionVO ctd = (ContentTypeDefinitionVO)contentTypeDefintionVOListIterator.next();
-	   				sb.append("<option value=\"" + ctd.getId() + "\"" + (subscriptionFilterVO.getFilterCondition().equals(ctd.getId().toString()) ? "selected='selected'" : "") + ">" + ctd.getName() + "</option>");
+	   				sb.append("<option value=\"" + ctd.getId() + "\"" + (hasValue(subscriptionFilterVO.getFilterCondition(), ctd.getId().toString()) ? "selected='selected'" : "") + ">" + ctd.getName() + "</option>");
 	   			}
 	   		}
 	   		else if(subscriptionFilterVO.getFilterType().equals("1"))
@@ -296,15 +359,19 @@ public class SubscriptionsAction extends InfoGlueAbstractAction
 	   			while(categoryVOListIterator.hasNext())
 	   			{
 	   				CategoryVO categoryVO = (CategoryVO)categoryVOListIterator.next();
-	   				sb.append("<option value=\"" + categoryVO.getId() + "\"" + (subscriptionFilterVO.getFilterCondition().equals(categoryVO.getId().toString()) ? "selected='selected'" : "") + ">" + categoryVO.getName() + "</option>");
+	   				sb.append("<option value=\"" + categoryVO.getId() + "\"" + (hasValue(subscriptionFilterVO.getFilterCondition(), categoryVO.getId().toString()) ? "selected='selected'" : "") + ">" + categoryVO.getName() + "</option>");
 	   			}	   			
 	   		}
 	   		
 	   		sb.append("		</select>");
 					
-	   		sb.append("		<a href=\"javascript:removeFilterRow(" + i + ");\">Remove filter</a>");
+	   		sb.append("		<a id=\"removeFilterRowLink" + i + "\" href=\"javascript:removeFilterRow(" + i + ");\">Remove filter</a>");
 					
-	   		sb.append("		<p id=\"andParagraph_" + i + "\" style=\"padding: 30px; display: none;\">");
+	   		if(size-1 > i)
+	   			sb.append("		<p id=\"andParagraph_" + i + "\" style=\"padding: 30px; display: block;\">");
+	   		else
+	   			sb.append("		<p id=\"andParagraph_" + i + "\" style=\"padding: 30px; display: none;\">");
+		   		
 	   		sb.append("			<label for=\"isAndCondition_" + i + "\">isAndCondition</label>");
 			sb.append("			<select id=\"isAndCondition_" + i + "\" name=\"isAndCondition_0\">';");
 			sb.append("				<option value=\"true\"" + (subscriptionFilterVO.getIsAndCondition().booleanValue() ? "selected='selected'" : "") + ">AND</option>';");
@@ -334,6 +401,19 @@ public class SubscriptionsAction extends InfoGlueAbstractAction
         return NONE;
     }
 
+    private boolean hasValue(String setValuesAsCommaseperatedString, String value)
+    {
+    	String[] setValues = setValuesAsCommaseperatedString.split(",");
+    	for(int i=0; i<setValues.length; i++)
+    	{
+    		String setValue = setValues[i];
+    		if(setValue.equals(value))
+    			return true;
+    	}
+    	
+    	return false;
+    }
+    
 	public String getReturnAddress()
 	{
 		return returnAddress;
@@ -477,5 +557,10 @@ public class SubscriptionsAction extends InfoGlueAbstractAction
 	public void setSubscriptionId(Integer subscriptionId)
 	{
 		this.subscriptionId = subscriptionId;
+	}
+
+	public List getInterceptionPointVOList()
+	{
+		return interceptionPointVOList;
 	}
 }

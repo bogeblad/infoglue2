@@ -106,3 +106,25 @@
 *:first-child+html .ui-tabs-nav  { /* auto clear @ IE 7 Standards Mode - do not group selectors, otherwise IE 6 will ignore complete rule (because of the unknown + combinator)... */
     display: inline-block;
 }
+
+.inlineTabDiv {
+	height: 556px; 
+	overflow: auto;
+}
+
+#contentVersionDiv {
+	height: 556px; 
+	overflow: auto;
+}
+#contentVersionCategoriesDiv {
+	height: 556px; 
+	overflow: auto;
+}
+#contentVersionAssetsDiv {
+	height: 556px; 
+	overflow: auto;
+}
+#contentCoverDiv {
+	height: 556px; 
+	overflow: auto;
+}

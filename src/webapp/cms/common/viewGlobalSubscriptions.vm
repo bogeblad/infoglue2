@@ -64,13 +64,12 @@
 		{
 			alert("Changing " + (currentIndex + 1) + " to " + currentIndex);
 			$("#filterRow_" + (currentIndex + 1) + "Label").attr("id", "filterRow_" + currentIndex + "Label");
-			$("#filterRow_" + (currentIndex + 1)).attr("id", "filterRow_" + currentIndex);
-			$("#filterType_" + (currentIndex + 1)).attr("id", "filterType_" + currentIndex);
+			$("#filterRow_" + (currentIndex + 1)).attr("id", "filterRow_" + currentIndex).attr("name", "filterRow_" + currentIndex);
 			$("#filterType_" + (currentIndex + 1) + "Label").attr("id", "filterType_" + currentIndex + "Label");
-			$("#filterCondition_" + (currentIndex + 1)).attr("id", "filterCondition_" + currentIndex);
-			$("#andParagraph_" + (currentIndex + 1)).attr("id", "andParagraph_" + currentIndex);
-			$("#removeFilterRowLink" + (currentIndex + 1)).attr("id", "removeFilterRowLink" + currentIndex);
-			$("#removeFilterRowLink" + (currentIndex + 1)).attr("href", "javascript:removeFilterRow(" + currentIndex + ");");
+			$("#filterType_" + (currentIndex + 1)).attr("id", "filterType_" + currentIndex).attr("name", "filterType_" + currentIndex);
+			$("#filterCondition_" + (currentIndex + 1)).attr("id", "filterCondition_" + currentIndex).attr("name", "filterCondition_" + currentIndex);
+			$("#andParagraph_" + (currentIndex + 1)).attr("id", "andParagraph_" + currentIndex).attr("name", "andParagraph_" + currentIndex);
+			$("#removeFilterRowLink" + (currentIndex + 1)).attr("id", "removeFilterRowLink" + currentIndex).attr("href", "javascript:removeFilterRow(" + currentIndex + ");");
 			$("#break_" + (currentIndex + 1)).attr("id", "break_" + currentIndex);
 			currentIndex++;
 		}
@@ -120,10 +119,13 @@
 	
 	#foreach($subscriptionVO in $subscriptionVOList)
 
-		<a href="javascript:loadExistingSubscription($subscriptionVO.id);">$subscriptionVO.name</a>
+		<a href="javascript:loadExistingSubscription($subscriptionVO.id);">$subscriptionVO.name</a> - 
+		<!-- 
 		#foreach($subscriptionFilterVO in $subscriptionVO.subscriptionFilterVOList)
 			$subscriptionFilterVO.filterType - $subscriptionFilterVO.filterCondition - $subscriptionFilterVO.isAndCondition<br/>
 		#end
+ 		-->
+		<a href="Subscriptions!deleteGlobalSubscription.action?subscriptionId=$subscriptionVO.id">Delete</a><br/>
 	
 	#end
 			
@@ -131,10 +133,6 @@
 	<div id="buttons" class="ig-buttonRow">
 		<a href="javascript:showDiv('newSubscriptionForm');">Add subscription</a>
 	</div>
-</div>
-
-<div id="existingSubscriptionForm" style="display: none; position: absolute; width: 700px; border: 1px solid black;">
-	aaaaaaaaaaaaaaaaa
 </div>
 
 <div id="newSubscriptionForm" style="display: none; position: absolute; width: 700px; border: 1px solid black;">
@@ -145,8 +143,9 @@
 			
 			<label for="interceptionPointId">Type</label>
 			<select name="interceptionPointId">
-				<option value="33">Content.Published</option>
-				<option value="22">Content.Delete</option>
+				#foreach($interceptionPointVO in $interceptionPointVOList)
+				<option value="$interceptionPointVO.id">$ui.getString($interceptionPointVO.name)</option>
+				#end
 			</select>
 			
 			<h3>Filters</h3>

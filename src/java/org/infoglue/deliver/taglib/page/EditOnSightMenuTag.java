@@ -64,9 +64,9 @@ public class EditOnSightMenuTag extends ComponentLogicTag
 	        
 	    	try
 	    	{
-	    		String returnAddress = "/infoglueDeliverWorking/ViewInlineOperationMessages.action?returnAddress=" + URLEncoder.encode(this.getController().getCurrentPageUrl(), "utf-8");
+	    		String componentEditorUrl = CmsPropertyHandler.getComponentEditorUrl();
+		    	String returnAddress = "" + componentEditorUrl + "ViewInlineOperationMessages.action?returnAddress=" + URLEncoder.encode(this.getController().getCurrentPageUrl(), "utf-8");
 		    	String extraText = URLEncoder.encode("<a href='" + this.getController().getOriginalFullURL() + "'>Klicka här för att komma till sidan</a>", "iso-8859-1");
-		    	String componentEditorUrl = CmsPropertyHandler.getComponentEditorUrl();
 		    	System.out.println("componentEditorUrl:" + componentEditorUrl);
 		    	
 	    		sb.append("<script type=\"text/javascript\" src=\"script/jquery/jquery-1.2.3.min.js\"></script>");
@@ -75,70 +75,32 @@ public class EditOnSightMenuTag extends ComponentLogicTag
 		    	sb.append("	@import \"script/jqueryplugins/thickbox/thickbox.css\";");
 		    	sb.append("</style>");
 
-		    	sb.append("<div id=\"editOnSightDiv" + this.getComponentLogic().getInfoGlueComponent().getId() + "\" class=\"popup_menu\">");
+		    	sb.append("<div id=\"editOnSightDiv" + this.getComponentLogic().getInfoGlueComponent().getId() + "\" class=\"popup_menu\" style=\"position: absolute; display: none; background-color: white;\">");
 
-		    	sb.append("    <ul class=\"popupMenuLinks\" style='margin: 0px; padding: 0px;'>");
-		    	sb.append("        <li style='margin: 0px; padding: 2px 0px 2px 7px; list-style: none;'><a href=\"" + componentEditorUrl + "ViewAndCreateContentForServiceBinding.action?siteNodeId=1131&repositoryId=47&siteNodeVersionId=2109&KeepThis=true&TB_iframe=true&height=600&width=750&modal=true\" class=\"editOnSightImageLink linkMetadata thickbox\" rel=\"metaInfo\">Ändra sidans metadata</a></li>");
-		    	sb.append("        <li style='margin: 0px; padding: 2px 0px 2px 7px; list-style: none;'><a href=\"" + componentEditorUrl + "CreateSiteNodeWizardFinish.action?repositoryId=47&parentSiteNodeId=" + this.getController().getSiteNodeId() + "&languageId=" + this.getController().getLanguageId() + "&componentId=" + this.getController().getComponentLogic().getInfoGlueComponent().getId() + "&propertyName=dummy&refreshAddress=" + URLEncoder.encode(returnAddress, "utf-8") + "&KeepThis=true&TB_iframe=true&height=400&width=600&modal=true\" class=\"editOnSightImageLink linkCreatePage thickbox\" rel=\"subpage\">Skapa sida till nuvarande</a></li>");
-		    	sb.append("        <li style='margin: 0px; padding: 2px 0px 2px 7px; list-style: none;'><a href=\"" + componentEditorUrl + "ViewContentVersion!standalone.action?contentId=" + this.contentId + "&languageId=" + getController().getLanguageId() + "&anchorName=contentVersionBlock&KeepThis=true&TB_iframe=true&height=700&width=750&modal=true\" class=\"editOnSightImageLink linkEditArticle thickbox\" rel=\"editContent\">Redigera artikel</a></li>");
-		    	sb.append("        <li style='margin: 0px; padding: 2px 0px 2px 7px; list-style: none;'><a href=\"" + componentEditorUrl + "ViewContentVersion!standalone.action?contentId=" + this.contentId + "&languageId=" + getController().getLanguageId() + "&anchor=categoriesBlock&KeepThis=true&TB_iframe=true&height=700&width=750&modal=true\" class=\"editOnSightImageLink linkCategorizeArticle thickbox\" rel=\"categorize\">Kategorisera artikel</a></li>");
-		    	sb.append("        <li style='margin: 0px; padding: 2px 0px 2px 7px; list-style: none;'><a href=\"" + componentEditorUrl + "ViewListSiteNodeVersion.action?siteNodeId=" + this.getController().getSiteNodeId() + "&repositoryId=" + this.getController().getSiteNode().getRepositoryId() + "&recurseSiteNodes=false&KeepThis=true&TB_iframe=true&height=600&width=750&modal=true\" class=\"editOnSightImageLink linkPublish thickbox\" rel=\"publish\">Publicera</a></li>");
-		    	sb.append("        <li style='margin: 0px; padding: 2px 0px 2px 7px; list-style: none;'><a href=\"" + componentEditorUrl + "CreateEmail!inputChooseRecipientsV3.action?extraText=" + extraText + "&KeepThis=true&TB_iframe=true&height=400&width=600&modal=true\" class=\"editOnSightImageLink linkNotify thickbox\" rel=\"notifications\">Notifiera</a></li>");
-		    	sb.append("        <li style='margin: 0px; padding: 2px 0px 2px 7px; list-style: none;'><a href=\"" + componentEditorUrl + "Subscriptions!input.action?interceptionPointCategory=Content&entityName=" + Content.class.getName() + "&entityId=" + this.contentId + "&extraParameters=" + this.contentId + "&returnAddress=" + URLEncoder.encode(returnAddress, "utf-8") + "&KeepThis=true&TB_iframe=true&height=400&width=600&modal=true\" class=\"editOnSightImageLink linkTakeContent thickbox\" rel=\"subscribe\">Prenumerera på innehållet</a></li>");
-		    	sb.append("        <li style='margin: 0px; padding: 2px 0px 2px 7px; list-style: none;'><a href=\"" + componentEditorUrl + "Subscriptions!input.action?interceptionPointCategory=Content&entityName=" + SiteNode.class.getName() + "&entityId=" + this.getController().getSiteNodeId() + "&returnAddress=" + URLEncoder.encode(returnAddress, "utf-8") + "&KeepThis=true&TB_iframe=true&height=400&width=600&modal=true\" class=\"editOnSightImageLink linkTakePage thickbox\">Prenumerera på sidan</a></li>");
-		    	sb.append("        <li style='margin: 0px; padding: 2px 0px 2px 7px; list-style: none;'><a href=\"#\" class=\"linkTranslate\">Översätt</a></li>");
-		    	sb.append("        <li style='margin: 0px; padding: 2px 0px 2px 7px; list-style: none;'><a href=\"#\" class=\"linkCreateNews\">Skapa nyhet om denna artikel</a></li>");
+		    	sb.append("    <ul class=\"popupMenuLinks\" style='margin: 0px; margin-right: 0px; padding: 0px; padding-right: 0px;'>");
+		    	sb.append("        <li style='margin: 0px; margin-left: 4px; padding: 2px 0px 2px 2px; list-style: none;'><a href=\"" + componentEditorUrl + "ViewAndCreateContentForServiceBinding.action?siteNodeId=1131&repositoryId=47&siteNodeVersionId=2109&KeepThis=true&TB_iframe=true&height=700&width=750&modal=true\" class=\"editOnSightImageLink linkMetadata thickbox\" rel=\"metaInfo\">Ändra sidans metadata</a></li>");
+		    	sb.append("        <li style='margin: 0px; margin-left: 4px; padding: 2px 0px 2px 2px; list-style: none;'><a href=\"" + componentEditorUrl + "CreateSiteNode!inputV3.action?repositoryId=47&parentSiteNodeId=" + this.getController().getSiteNodeId() + "&languageId=" + this.getController().getLanguageId() + "&returnAddress=" + URLEncoder.encode(returnAddress, "utf-8") + "&KeepThis=true&TB_iframe=true&height=700&width=750&modal=true\" class=\"editOnSightImageLink linkCreatePage thickbox\" rel=\"subpage\">Skapa undersida till nuvarande</a></li>");
+
+		    	if(contentId != null)
+		    	{
+			    	sb.append("        <li style='margin: 0px; margin-left: 4px; padding: 2px 0px 2px 2px; list-style: none;'><a href=\"" + componentEditorUrl + "ViewContentVersion!standalone.action?contentId=" + this.contentId + "&languageId=" + getController().getLanguageId() + "&anchorName=contentVersionBlock&KeepThis=true&TB_iframe=true&height=700&width=750&modal=true\" class=\"editOnSightImageLink linkEditArticle thickbox\" rel=\"editContent\">Redigera artikel</a></li>");
+			    	sb.append("        <li style='margin: 0px; margin-left: 4px; padding: 2px 0px 2px 2px; list-style: none;'><a href=\"" + componentEditorUrl + "ViewContentVersion!standalone.action?contentId=" + this.contentId + "&languageId=" + getController().getLanguageId() + "&anchor=categoriesBlock&KeepThis=true&TB_iframe=true&height=700&width=750&modal=true\" class=\"editOnSightImageLink linkCategorizeArticle thickbox\" rel=\"categorize\">Kategorisera artikel</a></li>");
+		    	}
+			    sb.append("        <li style='margin: 0px; margin-left: 4px; padding: 2px 0px 2px 2px; list-style: none;'><a href=\"" + componentEditorUrl + "ViewListSiteNodeVersion.action?siteNodeId=" + this.getController().getSiteNodeId() + "&repositoryId=" + this.getController().getSiteNode().getRepositoryId() + "&recurseSiteNodes=false&KeepThis=true&TB_iframe=true&height=700&width=750&modal=true\" class=\"editOnSightImageLink linkPublish thickbox\" rel=\"publish\">Publicera</a></li>");
+		    	sb.append("        <li style='margin: 0px; margin-left: 4px; padding: 2px 0px 2px 2px; list-style: none;'><a href=\"" + componentEditorUrl + "CreateEmail!inputChooseRecipientsV3.action?extraText=" + extraText + "&KeepThis=true&TB_iframe=true&height=700&width=750&modal=true\" class=\"editOnSightImageLink linkNotify thickbox\" rel=\"notifications\">Notifiera</a></li>");
+		    	
+		    	if(contentId != null)
+		    	{
+		    		sb.append("        <li style='margin: 0px; margin-left: 4px; padding: 2px 0px 2px 2px; list-style: none;'><a href=\"" + componentEditorUrl + "Subscriptions!input.action?interceptionPointCategory=Content&entityName=" + Content.class.getName() + "&entityId=" + this.contentId + "&extraParameters=" + this.contentId + "&returnAddress=" + URLEncoder.encode(returnAddress, "utf-8") + "&KeepThis=true&TB_iframe=true&height=700&width=750&modal=true\" class=\"editOnSightImageLink linkTakeContent thickbox\" rel=\"subscribe\">Prenumerera på innehållet</a></li>");
+		    	}
+		    	
+		    	sb.append("        <li style='margin: 0px; margin-left: 4px; padding: 2px 0px 2px 2px; list-style: none;'><a href=\"" + componentEditorUrl + "Subscriptions!input.action?interceptionPointCategory=Content&entityName=" + SiteNode.class.getName() + "&entityId=" + this.getController().getSiteNodeId() + "&returnAddress=" + URLEncoder.encode(returnAddress, "utf-8") + "&KeepThis=true&TB_iframe=true&height=700&width=750&modal=true\" class=\"editOnSightImageLink linkTakePage thickbox\">Prenumerera på sidan</a></li>");
+		    	sb.append("        <li style='margin: 0px; margin-left: 4px; padding: 2px 0px 2px 2px; list-style: none;'><a href=\"#\" class=\"linkTranslate\">Översätt</a></li>");
+		    	sb.append("        <li style='margin: 0px; margin-left: 4px; padding: 2px 0px 2px 2px; list-style: none;'><a href=\"#\" class=\"linkCreateNews\">Skapa nyhet om denna artikel</a></li>");
 		    	sb.append("    </ul>");
 
 		    	sb.append("</div>");
 
-		    			    	     
-
-		    	/*
-		    	
-		    	sb.append("<div id=\"editOnSightDiv" + this.getComponentLogic().getInfoGlueComponent().getId() + "\" class=\"editOnSightDiv\" style=\"display: none;\">");
-		    	sb.append("		<div class=\"igmenuitems\" onmouseover=\"highlightLI(event);\" onmouseout=\"lowlightLI(event);\">");
-		    	sb.append("			<a href=\"" + componentEditorUrl + "ViewAndCreateContentForServiceBinding.action?siteNodeId=1131&repositoryId=47&siteNodeVersionId=2109&KeepThis=true&TB_iframe=true&height=600&width=750&modal=true\" class=\"editOnSightImageLink link4 thickbox\" rel=\"metaInfo\">Ändra sidans metadata</a>");
-		    	sb.append("		</div>");
-		    	sb.append("		<div class=\"igmenuitems\" onmouseover=\"highlightLI(event);\" onmouseout=\"lowlightLI(event);\">");
-		    	sb.append("			<a href=\"" + componentEditorUrl + "CreateSiteNodeWizardFinish.action?repositoryId=47&parentSiteNodeId=" + this.getController().getSiteNodeId() + "&languageId=" + this.getController().getLanguageId() + "&componentId=" + this.getController().getComponentLogic().getInfoGlueComponent().getId() + "&propertyName=dummy&refreshAddress=" + URLEncoder.encode(returnAddress, "utf-8") + "&KeepThis=true&TB_iframe=true&height=400&width=600&modal=true\" class=\"editOnSightImageLink link3 thickbox\" rel=\"subpage\">Skapa undersida till nuvarande</a>");
-		    	sb.append("		</div>");
-
-		    	if(contentId != null)
-		    	{
-			    	sb.append("		<div class=\"igmenuitems\" onmouseover=\"highlightLI(event);\" onmouseout=\"lowlightLI(event);\">");
-			    	sb.append("			<a href=\"" + componentEditorUrl + "ViewContentVersion!standalone.action?contentId=" + this.contentId + "&languageId=" + getController().getLanguageId() + "&anchorName=contentVersionBlock&KeepThis=true&TB_iframe=true&height=700&width=750&modal=true\" class=\"editOnSightImageLink link1 thickbox\" rel=\"editContent\">Redigera artikeln</a>");
-			    	sb.append("		</div>");
-			    	sb.append("		<div class=\"igmenuitems\" onmouseover=\"highlightLI(event);\" onmouseout=\"lowlightLI(event);\">");
-			    	sb.append("			<a href=\"" + componentEditorUrl + "ViewContentVersion!standalone.action?contentId=" + this.contentId + "&languageId=" + getController().getLanguageId() + "&anchor=categoriesBlock&KeepThis=true&TB_iframe=true&height=700&width=750&modal=true\" class=\"editOnSightImageLink link1 thickbox\" rel=\"categorize\">Kategorisera artikeln</a>");
-			    	sb.append("		</div>");
-		    	}
-		    	
-		    	sb.append("		<div class=\"igmenuitems\" onmouseover=\"highlightLI(event);\" onmouseout=\"lowlightLI(event);\">");
-		    	sb.append("			<a href=\"" + componentEditorUrl + "ViewListSiteNodeVersion.action?siteNodeId=" + this.getController().getSiteNodeId() + "&repositoryId=" + this.getController().getSiteNode().getRepositoryId() + "&recurseSiteNodes=false&KeepThis=true&TB_iframe=true&height=600&width=750&modal=true\" class=\"editOnSightImageLink link2 thickbox\" rel=\"publish\">Publicera sidan</a>");
-		    	sb.append("		</div>");
-		    	sb.append("		<div class=\"igmenuitems\" onmouseover=\"highlightLI(event);\" onmouseout=\"lowlightLI(event);\">");
-		    	sb.append("			<a href=\"" + componentEditorUrl + "CreateEmail!inputChooseRecipientsV3.action?extraText=" + extraText + "&KeepThis=true&TB_iframe=true&height=400&width=600&modal=true\" class=\"editOnSightImageLink link3 thickbox\" rel=\"notifications\">Notifiera</a>");
-		    	sb.append("		</div>");
-		    	
-		    	if(contentId != null)
-		    	{
-			    	sb.append("		<div class=\"igmenuitems\" onmouseover=\"highlightLI(event);\" onmouseout=\"lowlightLI(event);\">");
-			    	sb.append("			<a href=\"" + componentEditorUrl + "Subscriptions!input.action?interceptionPointCategory=Content&entityName=" + Content.class.getName() + "&entityId=" + this.contentId + "&extraParameters=" + this.contentId + "&returnAddress=" + URLEncoder.encode(returnAddress, "utf-8") + "&KeepThis=true&TB_iframe=true&height=400&width=600&modal=true\" class=\"editOnSightImageLink link4 thickbox\" rel=\"subscribe\">Prenumerera på innehållet</a>");
-			    	sb.append("		</div>");
-		    	}
-			    
-		    	sb.append("		<div class=\"igmenuitems\" onmouseover=\"highlightLI(event);\" onmouseout=\"lowlightLI(event);\">");
-		    	sb.append("			<a href=\"" + componentEditorUrl + "Subscriptions!input.action?interceptionPointCategory=Content&entityName=" + SiteNode.class.getName() + "&entityId=" + this.getController().getSiteNodeId() + "&returnAddress=" + URLEncoder.encode(returnAddress, "utf-8") + "&KeepThis=true&TB_iframe=true&height=400&width=600&modal=true\" class=\"editOnSightImageLink link4 thickbox\" rel=\"subscribe\">Prenumerera på sidan</a>");
-		    	sb.append("		</div>");
-		    	sb.append("		<div class=\"igmenuitems\" onmouseover=\"highlightLI(event);\" onmouseout=\"lowlightLI(event);\">");
-		    	sb.append("			<a href=\"#\" class=\"editOnSightImageLink link4\">Översätt</a>");
-		    	sb.append("		</div>");
-		    	sb.append("		<div class=\"igmenuitems\" onmouseover=\"highlightLI(event);\" onmouseout=\"lowlightLI(event);\">");
-		    	sb.append("			<a href=\"#\" class=\"editOnSightImageLink link4\">Skapa nyhet om denna artikel</a>");
-		    	sb.append("		</div>");
-		    	sb.append("</div>");
-		    	*/	        
 		        sb.append("<a id=\"editOnSightButton" + this.getComponentLogic().getInfoGlueComponent().getId() + "\" href=\"javascript:positionDivAtElement('editOnSightDiv" + this.getComponentLogic().getInfoGlueComponent().getId() + "', 'editOnSightButton" + this.getComponentLogic().getInfoGlueComponent().getId() + "'); openCloseDiv('editOnSightDiv" + this.getComponentLogic().getInfoGlueComponent().getId() + "');\" class=\"editOnSightMenuButton\">InfoGlue&nbsp;actions&nbsp;</a>");
 	    	
 		        produceResult(sb.toString());

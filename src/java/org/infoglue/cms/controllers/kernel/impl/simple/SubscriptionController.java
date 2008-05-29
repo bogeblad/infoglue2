@@ -203,6 +203,11 @@ public class SubscriptionController extends BaseController
     	deleteEntity(SubscriptionImpl.class, subscriptionVO.getSubscriptionId());
     }
 
+    public void delete(Integer subscriptionId) throws ConstraintException, SystemException
+    {
+    	deleteEntity(SubscriptionImpl.class, subscriptionId);
+    }
+
     public SubscriptionVO update(SubscriptionVO subscriptionVO) throws ConstraintException, SystemException
     {
     	return (SubscriptionVO) updateEntity(SubscriptionImpl.class, subscriptionVO);

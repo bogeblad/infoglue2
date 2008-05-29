@@ -38,6 +38,7 @@ public class ToolbarButton
 	private String backgroundImageURL   	= "";
 	private String backgroundImageAlignment	= "left";
 	private String actionURL  	    		= "";
+	private boolean isJavascript			= false;
 	//private Integer height				= new Integer(22);
 	//private Integer width					= new Integer(76);
 	private List<ToolbarButton> subButtons 	= new ArrayList<ToolbarButton>();
@@ -45,10 +46,10 @@ public class ToolbarButton
 
 	public ToolbarButton(String id, String text, String title, String actionURL, String backgroundImageURL)
 	{
-		this(id, text, title, actionURL, backgroundImageURL, "left");
+		this(id, text, title, actionURL, backgroundImageURL, "left", false);
 	}
 
-	public ToolbarButton(String id, String text, String title, String actionURL, String backgroundImageURL, String backgroundImageAlignment)
+	public ToolbarButton(String id, String text, String title, String actionURL, String backgroundImageURL, String backgroundImageAlignment, boolean isJavascript)
 	{
 		this.id 						= id;
 		this.text 						= text;
@@ -56,6 +57,7 @@ public class ToolbarButton
 		this.backgroundImageURL 		= backgroundImageURL;
 		this.backgroundImageAlignment 	= backgroundImageAlignment;
 		this.actionURL 					= actionURL;
+		this.isJavascript 				= isJavascript;
 	}
 
 	public String getId()
@@ -81,6 +83,11 @@ public class ToolbarButton
 	public String getActionURL()
 	{
 		return actionURL;
+	}
+
+	public boolean getIsJavascript()
+	{
+		return isJavascript;
 	}
 
 	public List<ToolbarButton> getSubButtons()

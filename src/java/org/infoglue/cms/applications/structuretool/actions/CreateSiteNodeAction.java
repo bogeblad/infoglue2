@@ -71,9 +71,11 @@ public class CreateSiteNodeAction extends InfoGlueAbstractAction
     private Integer siteNodeTypeDefinitionId;
     private Integer pageTemplateContentId;
     private Integer repositoryId;
-   	private ConstraintExceptionBuffer ceb;
+    private String returnAddress;
+    private ConstraintExceptionBuffer ceb;
    	private SiteNodeVO siteNodeVO;
    	private SiteNodeVO newSiteNodeVO;
+   	private SiteNodeVO parentSiteNodeVO;
    	private String sortProperty = "name";
   
   	public CreateSiteNodeAction()
@@ -257,7 +259,7 @@ public class CreateSiteNodeAction extends InfoGlueAbstractAction
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
-    	
+        
         return "success";
     }
 
@@ -306,7 +308,21 @@ public class CreateSiteNodeAction extends InfoGlueAbstractAction
             throw new SystemException(e.getMessage());
         }
     	
-        return "successV3";
+        System.out.println();
+        System.out.println("returnAddress:" + this.returnAddress);
+        if(this.returnAddress != null && !this.returnAddress.equals(""))
+        {
+	        String arguments = "isAutomaticRedirect=false&message=Här kommer mitt meddelande!&actionLinks=link1,Länk 1,Testlänk,Det här är en länk till CG-channel,http://www.cgchannel.com,http://www.iconarchive.com/icons/zakar/shining-z/Casque-SZ-24x24.png;link1,Länk Lala,Testlänk 2,Det här är en länk till Silo-forumet,http://www.silo3d.com/forum/,http://www.iconarchive.com/icons/zakar/shining-z/Deamontools-SZ-24x24.png";
+	        String messageUrl = returnAddress + (returnAddress.indexOf("?") > -1 ? "&" : "?") + arguments;
+	        
+	        System.out.println("messageUrl:" + messageUrl);
+	        this.getResponse().sendRedirect(messageUrl);
+	        return NONE;
+        }
+        else
+        {
+        	return "successV3";
+        }
     }
 
 
@@ -320,6 +336,8 @@ public class CreateSiteNodeAction extends InfoGlueAbstractAction
 		
 		ceb.throwIfNotEmpty();
 		
+		parentSiteNodeVO = SiteNodeControllerProxy.getController().getSiteNodeVOWithId(parentSiteNodeId);
+		
 		return "inputV3";
     }
         
@@ -332,4 +350,19 @@ public class CreateSiteNodeAction extends InfoGlueAbstractAction
     {
         this.pageTemplateContentId = pageTemplateContentId;
     }
+
+	public SiteNodeVO getParentSiteNodeVO()
+	{
+		return parentSiteNodeVO;
+	}
+
+	public void setReturnAddress(String returnAddress)
+	{
+		this.returnAddress = returnAddress;
+	}
+
+	public String getReturnAddress()
+	{
+		return returnAddress;
+	}
 }

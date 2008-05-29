@@ -60,7 +60,12 @@ public class ToolbarController
 
 		try
 		{
-			return getHelpButton();
+			List<ToolbarButton> toolbarButtons = new ArrayList<ToolbarButton>();
+	
+			toolbarButtons.addAll(getHelpButton());
+			toolbarButtons.addAll(getWindowCloseButton());
+
+			return toolbarButtons;
 		}
 		catch(Exception e) {e.printStackTrace();}			
 					
@@ -94,6 +99,11 @@ public class ToolbarController
 		{
 			if(toolbarKey.equalsIgnoreCase("tool.contenttool.contentVersionHeader"))
 				return getContentVersionButtons();
+			
+			/*
+			if(toolbarKey.equalsIgnoreCase("tool.structuretool.createSiteNodeHeader"))
+				return getCreateSiteNodeButtons();
+			*/
 			
 			/*
 			if(toolbarKey.equalsIgnoreCase("tool.managementtool.repositoryList.header"))
@@ -178,6 +188,120 @@ public class ToolbarController
 		return null;				
 	}
 	
+	public List<ToolbarButton> getFooterToolbarButtons(String toolbarKey, InfoGluePrincipal principal, Locale locale, String primaryKey, String extraParameters)
+	{
+		Timer t = new Timer();
+		
+		this.toolbarKey = toolbarKey;
+		this.principal = principal;
+		this.locale = locale;
+		this.primaryKey = primaryKey;
+		this.extraParameters = extraParameters;
+		try
+		{
+			primaryKeyAsInteger = new Integer(primaryKey);
+		}
+		catch (Exception e) 
+		{
+			//Do nothing
+		}
+		logger.info("toolbarKey:" + toolbarKey);
+		logger.info("primaryKey:" + primaryKey);
+		logger.info("extraParameters:" + extraParameters);
+		
+		t.printElapsedTime("Button 1 took");
+		
+		try
+		{
+			if(toolbarKey.equalsIgnoreCase("tool.contenttool.contentVersionHeader"))
+				return getContentVersionButtons();
+			
+			if(toolbarKey.equalsIgnoreCase("tool.structuretool.createSiteNodeHeader"))
+				return getCreateSiteNodeFooterButtons();
+			
+			/*
+			if(toolbarKey.equalsIgnoreCase("tool.managementtool.repositoryList.header"))
+				return getRepositoriesButtons();
+			if(toolbarKey.equalsIgnoreCase("tool.managementtool.viewRepository.header"))
+				return getRepositoryDetailsButtons();
+			*/
+			if(toolbarKey.equalsIgnoreCase("tool.managementtool.viewGroupProperties.header"))
+				return getGroupPropertiesButtons();
+			if(toolbarKey.equalsIgnoreCase("tool.managementtool.viewRoleProperties.header"))
+				return getRolePropertiesButtons();
+			if(toolbarKey.equalsIgnoreCase("tool.managementtool.viewUserProperties.header"))
+				return getUserPropertiesButtons();
+
+			if(toolbarKey.equalsIgnoreCase("tool.managementtool.viewSystemUserList.header"))
+				return getSystemUsersButtons();
+			if(toolbarKey.equalsIgnoreCase("tool.managementtool.viewSystemUser.header"))
+				return getSystemUserDetailsButtons();
+			if(toolbarKey.equalsIgnoreCase("tool.managementtool.viewRoleList.header"))
+				return getRolesButtons();
+			if(toolbarKey.equalsIgnoreCase("tool.managementtool.viewRole.header"))
+				return getRoleDetailsButtons();
+			if(toolbarKey.equalsIgnoreCase("tool.managementtool.viewGroupList.header"))
+				return getGroupsButtons();
+			if(toolbarKey.equalsIgnoreCase("tool.managementtool.viewGroup.header"))
+				return getGroupDetailsButtons();
+			/*
+			if(toolbarKey.equalsIgnoreCase("tool.managementtool.viewLanguageList.header"))
+				return getLanguagesButtons();
+			if(toolbarKey.equalsIgnoreCase("tool.managementtool.viewLanguage.header"))
+				return getLanguageDetailsButtons();
+			if(toolbarKey.equalsIgnoreCase("tool.managementtool.viewInterceptionPointList.header"))
+				return getInterceptionPointsButtons();
+			if(toolbarKey.equalsIgnoreCase("tool.managementtool.viewInterceptionPoint.header"))
+				return getInterceptionPointButtons();
+			if(toolbarKey.equalsIgnoreCase("tool.managementtool.viewInterceptorList.header"))
+				return getInterceptorsButtons();
+			if(toolbarKey.equalsIgnoreCase("tool.managementtool.viewInterceptor.header"))
+				return getInterceptorButtons();
+			if(toolbarKey.equalsIgnoreCase("tool.managementtool.viewServiceDefinitionList.header"))
+				return getServiceDefinitionsButtons();
+			if(toolbarKey.equalsIgnoreCase("tool.managementtool.viewServiceDefinition.header"))
+				return getServiceDefinitionDetailsButtons();
+			if(toolbarKey.equalsIgnoreCase("tool.managementtool.viewAvailableServiceBindingList.header"))
+				return getAvailableServiceBindingsButtons();
+			if(toolbarKey.equalsIgnoreCase("tool.managementtool.viewAvailableServiceBinding.header"))
+				return getAvailableServiceBindingDetailsButtons();
+			if(toolbarKey.equalsIgnoreCase("tool.managementtool.viewSiteNodeTypeDefinitionList.header"))
+				return getSiteNodeTypeDefinitionsButtons();
+			if(toolbarKey.equalsIgnoreCase("tool.managementtool.viewSiteNodeTypeDefinition.header"))
+				return getSiteNodeTypeDefinitionDetailsButtons();
+			if(toolbarKey.equalsIgnoreCase("tool.managementtool.viewContentTypeDefinitionList.header"))
+				return getContentTypeDefinitionsButtons();
+			if(toolbarKey.equalsIgnoreCase("tool.managementtool.viewContentTypeDefinition.header"))
+				return getContentTypeDefinitionDetailsButtons();
+			if(toolbarKey.equalsIgnoreCase("tool.managementtool.viewCategoryList.header") || toolbarKey.equalsIgnoreCase("tool.managementtool.editCategory.header"))
+				return getCategoryButtons();
+			if(toolbarKey.equalsIgnoreCase("tool.managementtool.viewUp2DateList.header"))
+				return getAvailablePackagesButtons();
+			if(toolbarKey.equalsIgnoreCase("tool.managementtool.viewWorkflowDefinitionList.header"))
+				return getWorkflowDefinitionsButtons();
+			if(toolbarKey.equalsIgnoreCase("tool.managementtool.viewWorkflowDefinition.header"))
+				return getWorkflowDefinitionDetailsButtons();
+			if(toolbarKey.equalsIgnoreCase("tool.managementtool.portletList.header"))
+				return getPortletsButtons();
+			//if(toolbarKey.equalsIgnoreCase("tool.managementtool.portlet.header"))
+			//	return getPortletDetailsButtons();
+			if(toolbarKey.equalsIgnoreCase("tool.managementtool.redirectList.header"))
+				return getRedirectsButtons();
+			if(toolbarKey.equalsIgnoreCase("tool.managementtool.viewRedirect.header"))
+				return getRedirectDetailsButtons();
+			if(toolbarKey.equalsIgnoreCase("tool.managementtool.serverNodeList.header"))
+				return getServerNodesButtons();
+			if(toolbarKey.equalsIgnoreCase("tool.managementtool.viewServerNode.header"))
+				return getServerNodeDetailsButtons();
+			if(toolbarKey.equalsIgnoreCase("tool.managementtool.viewMessageCenter.header"))
+				return getMessageCenterButtons();
+			*/
+		}
+		catch(Exception e) {e.printStackTrace();}			
+					
+		return null;				
+	}
+
 	
 	private List<ToolbarButton> getContentVersionButtons() throws Exception
 	{
@@ -231,7 +355,8 @@ public class ToolbarController
 															 StringUtils.capitalize(currentLanguageVO.getDisplayLanguage()),
 				  											 "",
 					  										 "images/v3/menu-button-arrow.png",
-					  										 "right");
+					  										 "right",
+					  										 false);
 		
 		Iterator repositoryLanguagesIterator = LanguageController.getController().getLanguageVOList(contentVO.getRepositoryId()).iterator();
 		while(repositoryLanguagesIterator.hasNext())
@@ -247,6 +372,42 @@ public class ToolbarController
 		buttons.add(languageDropButton);
 
 		
+		return buttons;
+	}
+
+	private List<ToolbarButton> getCreateSiteNodeButtons() throws Exception
+	{
+		List<ToolbarButton> buttons = new ArrayList<ToolbarButton>();
+
+		buttons.add(new ToolbarButton("",
+				  getLocalizedString(locale, "tool.contenttool.save.label"), 
+				  getLocalizedString(locale, "tool.contenttool.save.label"),
+				  "javascript:validateAndSubmitContentForm();",
+				  "images/v3/saveInlineIcon.gif"));
+	
+		return buttons;
+	}
+	
+	private List<ToolbarButton> getCreateSiteNodeFooterButtons() throws Exception
+	{
+		List<ToolbarButton> buttons = new ArrayList<ToolbarButton>();
+
+		buttons.add(new ToolbarButton("",
+									  getLocalizedString(locale, "tool.common.saveButton.label"), 
+									  getLocalizedString(locale, "tool.common.saveButton.label"),
+									  "document.editForm.submit()",
+									  "images/v3/createBackgroundPenPaper.gif",
+				  					  "left",
+									  true));
+
+		buttons.add(new ToolbarButton("",
+				  					  getLocalizedString(locale, "tool.common.cancelButton.label"), 
+				  					  getLocalizedString(locale, "tool.common.cancelButton.label"),
+				  					  "parent.closeDialog();",
+				  					  "images/v3/cancelIcon.gif",
+				  					  "left",
+				  					  true));
+
 		return buttons;
 	}
 
@@ -854,7 +1015,21 @@ public class ToolbarController
 									  "images/v3/helpIcon.gif"));
 		return buttons;
 	}
-	
+
+	private List<ToolbarButton> getWindowCloseButton() throws Exception
+	{
+		List<ToolbarButton> buttons = new ArrayList<ToolbarButton>();
+
+		buttons.add(new ToolbarButton("exitButton",
+									  getLocalizedString(locale, "tool.common.closeWindowButton.label"), 
+									  getLocalizedString(locale, "tool.common.closeWindowButton.title"),
+									  "parent.closeDialog();",
+				  					  "images/v3/closeWindowIcon.gif",
+				  					  "right",
+				  					  true));
+		return buttons;
+	}
+
 	/**
 	 * Used by the view pages to determine if the current user has sufficient access rights
 	 * to perform the action specific by the interception point name.
