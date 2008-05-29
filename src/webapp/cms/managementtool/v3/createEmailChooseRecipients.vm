@@ -1,18 +1,7 @@
-#beginManagementToolV3("tool.managementtool.viewMessageCenter.header" "" false)
+#beginCommonToolV3("tool.managementtool.viewMessageCenter.header" "" "" false true)
 
-<link rel="stylesheet" href="script/jqueryplugins/ui/themes/flora/flora.all.css" type="text/css" media="screen" title="Flora (Default)">
-
-<script type="text/javascript" src="script/jquery/jquery-1.2.3.min.js"></script>
-<script type="text/javascript" src="script/jqueryplugins/ui/jquery-ui-igcommon15.min.js"></script>
 
 <style type="text/css">
-	.recipientTab
-	{
-		height: auto;
-		width: auto;
-		overflow: auto;
-		color: black;
-	}
 	
 	.userSelectBox
 	{
@@ -171,76 +160,95 @@
 				document.editForm.elements[aElementName].options[i].selected = false;
 			}
 		}
+		
+		function submitForm()
+		{
+			selectAll('userName'); 
+			document.editForm.submit();
+		}
 	-->
 </script>
 
-<form method="POST" name="editForm" action="CreateEmail!inputCreateEmailV3.action" autocomplete="off" onsubmit="selectAll('userName')">
-	<input type="hidden" name="extraText" value="$extraText"/>
+<div onfocus="this.blur();">
+    
+	#menuToolbar("" $buttons $rightButtons) 
+
+	<div style="clear: both;"></div>
 	
-	<div style="color: black;">
-		<p>$ui.getString("tool.managementtool.createEmailChooseRecipients.title")</p>
+	<h3 style="text-indent: 16px;">$ui.getString("tool.managementtool.createEmailChooseRecipients.title") 
 		#if($errorMessage != "")
 			<span style="color:red">$errorMessage</span><br/>
 		#end
+	</h3>
+
+
+	<form method="POST" name="editForm" action="CreateEmail!inputCreateEmailV3.action" autocomplete="off" onsubmit="selectAll('userName')">
+		<input type="hidden" name="returnAddress" value="$returnAddress"/>
+		<input type="hidden" name="extraText" value="$extraText"/>
 		
-		<div id="tabsContainer" class="flora">      
-			<ul>
-		        <li><a href="#usersTab"><span>Users</span></a></li>
-		        <li><a href="#rolesTab"><span>Roles</span></a></li>
-		        <li><a href="#groupsTab"><span>Groups</span></a></li>
-		    </ul>
-
-			<div id="usersTab" class="recipientTab">	
-				<table>
-					<tr>
-						<td colspan="3">
-							<span style="font-weight: bold;">Filter</span><br/>
-							<input type="text" name="query" onkeyup="performAjaxSearch();" onchange="performAjaxSearch();"/>
-							<input type="button" value="Clear" onclick="document.editForm.elements['query'].value = ''; performAjaxSearch();"/>
-						</td>
-					</tr>
-					<tr>
-						<td valign="top">
-							<span style="font-weight: bold;">Available users</span><br/>					
-							<div id="searchResultDiv" style="margin: 0px; float: left;">			
-								<select name="searchResult" size="10" class="userSelectBox" multiple="true">
-									#foreach ($userVO in $users)
-										<option value="$userVO.name">$userVO.firstName $userVO.lastName</option>
-									#end
-								</select>			
-							</div>	
-						</td>
-						<td>
-							<input type="button" class="moveButton" onclick="addAll()" value=">>"/><br/>
-							<input type="button" class="moveButton" onclick="addSelected()" value=">"/><br/>
-							<input type="button" class="moveButton" onclick="removeSelected()" value="<"/><br/>
-							<input type="button" class="moveButton" onclick="removeAll()" value="<<"/><br/>
-						</td>
-						<td valign="top">	
-							<span style="font-weight: bold;">Selected users</span><br/>							
-							<select name="userName" size="10" class="userSelectBox" multiple="true">
-							</select>	
-						</td>
-					</tr>
-				</table>				
-			</div>
+		<div style="color: black;">
 			
-			<div id="rolesTab" class="recipientTab" style="display: none;"> 				
-				#foreach ($roleVO in $roles)
-					<input type="checkbox" name="roleName" value="$roleVO.name"/> $roleVO.name<br/>
-				#end
-			</div>
+			<div id="tabsContainer" class="flora">      
+				<ul>
+			        <li><a href="#usersTab"><span>Users</span></a></li>
+			        <li><a href="#rolesTab"><span>Roles</span></a></li>
+			        <li><a href="#groupsTab"><span>Groups</span></a></li>
+			    </ul>
+	
+				<div id="usersTab" class="recipientTab inlineTabDiv">	
+					<table>
+						<tr>
+							<td colspan="3">
+								<span style="font-weight: bold;">Filter</span><br/>
+								<input type="text" name="query" onkeyup="performAjaxSearch();" onchange="performAjaxSearch();"/>
+								<input type="button" value="Clear" onclick="document.editForm.elements['query'].value = ''; performAjaxSearch();"/>
+							</td>
+						</tr>
+						<tr>
+							<td valign="top">
+								<span style="font-weight: bold;">Available users</span><br/>					
+								<div id="searchResultDiv" style="margin: 0px; float: left;">			
+									<select name="searchResult" size="10" class="userSelectBox" multiple="true">
+										#foreach ($userVO in $users)
+											<option value="$userVO.name">$userVO.firstName $userVO.lastName</option>
+										#end
+									</select>			
+								</div>	
+							</td>
+							<td>
+								<input type="button" class="moveButton" onclick="addAll()" value=">>"/><br/>
+								<input type="button" class="moveButton" onclick="addSelected()" value=">"/><br/>
+								<input type="button" class="moveButton" onclick="removeSelected()" value="<"/><br/>
+								<input type="button" class="moveButton" onclick="removeAll()" value="<<"/><br/>
+							</td>
+							<td valign="top">	
+								<span style="font-weight: bold;">Selected users</span><br/>							
+								<select name="userName" size="10" class="userSelectBox" multiple="true">
+								</select>	
+							</td>
+						</tr>
+					</table>				
+				</div>
+				
+				<div id="rolesTab" class="recipientTab inlineTabDiv" style="display: none;"> 				
+					#foreach ($roleVO in $roles)
+						<input type="checkbox" name="roleName" value="$roleVO.name"/> $roleVO.name<br/>
+					#end
+				</div>
+				
+				<div id="groupsTab" class="recipientTab inlineTabDiv" style="display: none;"> 				
+					#foreach ($groupVO in $groups)
+						<input type="checkbox" name="groupName" value="$groupVO.name"/> $groupVO.name<br/>
+					#end
+				</div>
+			</div>		
 			
-			<div id="groupsTab" class="recipientTab" style="display: none;"> 				
-				#foreach ($groupVO in $groups)
-					<input type="checkbox" name="groupName" value="$groupVO.name"/> $groupVO.name<br/>
-				#end
-			</div>
-		</div>		
-		<div id="buttons" class="ig-buttonRow" style="clear: both;">
-			<input type="submit" id="nextButton" name="nextButton" value="$ui.getString("tool.common.nextButton.label")" title="$ui.getString("tool.common.nextButton.title")"/>
 		</div>
-	</div>
-</form>
+		
+		#footerToolbar($footerButtons)
+	
+	</form>
 
-#endManagementTool()
+</div>
+
+#endCommonToolV3()

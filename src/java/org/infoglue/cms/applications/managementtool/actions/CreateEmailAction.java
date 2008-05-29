@@ -56,6 +56,7 @@ public class CreateEmailAction extends InfoGlueAbstractAction
 	private String extraText;
 	
 	private String errorMessage = "";
+	private String returnAddress;
 	
     public String doExecute() throws Exception
     {
@@ -205,10 +206,24 @@ public class CreateEmailAction extends InfoGlueAbstractAction
 		    message += "<br/>";
 		    message += extraText;		    		
 			
-			MailServiceFactory.getService().sendEmail(from, from, recipients, subject, message, "utf-8");
+			//MailServiceFactory.getService().sendEmail(from, from, recipients, subject, message, "utf-8");
     	}
     	
-        return "successV3";
+        System.out.println();
+        System.out.println("returnAddress:" + this.returnAddress);
+        if(this.returnAddress != null && !this.returnAddress.equals(""))
+        {
+	        String arguments = "isAutomaticRedirect=false&message=Mailetskickat!&actionLinks=link1,Länk 1,Testlänk,Det här är en länk till CG-channel,http://www.cgchannel.com,http://www.iconarchive.com/icons/zakar/shining-z/Casque-SZ-24x24.png;link1,Länk Lala,Testlänk 2,Det här är en länk till Silo-forumet,http://www.silo3d.com/forum/,http://www.iconarchive.com/icons/zakar/shining-z/Deamontools-SZ-24x24.png";
+	        String messageUrl = returnAddress + (returnAddress.indexOf("?") > -1 ? "&" : "?") + arguments;
+	        
+	        System.out.println("messageUrl:" + messageUrl);
+	        this.getResponse().sendRedirect(messageUrl);
+	        return NONE;
+        }
+        else
+        {
+        	return "successV3";
+        }
     }
     
     public String doInputChooseRecipientsV3() throws Exception
@@ -227,7 +242,8 @@ public class CreateEmailAction extends InfoGlueAbstractAction
     	userNames 	= getRequest().getParameterValues("userName");
     	roleNames 	= getRequest().getParameterValues("roleName");
     	groupNames 	= getRequest().getParameterValues("groupName");
-
+    	
+    	System.out.println("userNames:" + userNames);
     	if (userNames == null && roleNames == null && groupNames == null)
     	{    		
     		errorMessage = "You must select at least one recipient.";
@@ -371,4 +387,15 @@ public class CreateEmailAction extends InfoGlueAbstractAction
 	public void setExtraText(String extraText) {
 		this.extraText = extraText;
 	}
+
+	public String getReturnAddress()
+	{
+		return returnAddress;
+	}
+
+	public void setReturnAddress(String returnAddress)
+	{
+		this.returnAddress = returnAddress;
+	}
+
 }

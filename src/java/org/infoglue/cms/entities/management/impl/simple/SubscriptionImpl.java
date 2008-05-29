@@ -27,6 +27,7 @@ package org.infoglue.cms.entities.management.impl.simple;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.Iterator;
 
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.entities.management.Subscription;
@@ -177,6 +178,12 @@ public class SubscriptionImpl implements Subscription
 	public void setSubscriptionFilters(Collection<SubscriptionFilterImpl> subscriptionFilters)
 	{
 		this.subscriptionFilters = subscriptionFilters;
+		System.out.println("subscriptionFilters:" + subscriptionFilters.size());
+		Iterator<SubscriptionFilterImpl> subscriptionFiltersIterator = subscriptionFilters.iterator();
+		while(subscriptionFiltersIterator.hasNext())
+		{
+			getValueObject().getSubscriptionFilterVOList().add(subscriptionFiltersIterator.next().getValueObject());
+		}
 	}
 
 }        

@@ -3,13 +3,32 @@
 		top.location.href = "$firstActionLink.actionURL";
 	</script>	
 #else
-	#beginManagementToolV3("tool.managementtool.viewMessageCenter.header" "" false)
+
+	#beginCommonToolV3("tool.common.inlineOperationDoneHeader" "" "" false true)
+		
+	<div onfocus="this.blur();">
+	    
+		#menuToolbar("" $buttons $rightButtons) 
 	
-		<h2>$message</h2>
+		<div style="clear: both;"></div>
 		
-		#foreach($link in $actionLinks)			
-			<a id="$link.id" href="$link.actionURL" target="_top" style="background-image: url('$link.backgroundImageURL'); background-repeat: no-repeat; padding-left: 24px;">$link.text</a>&nbsp;$link.description<br/>
-		#end
+		<h3 style="text-indent: 16px;">$message</h3>
 		
-	#endManagementTool()
+		<div class="inlineTabDiv" onfocus="this.blur();">	
+		
+			#foreach($link in $actionLinks)			
+			<p>
+				<a id="$link.id" href="$link.actionURL" target="_top" style="display:block; background-image: url('$link.backgroundImageURL'); background-repeat: no-repeat; padding-left: 26px; padding-top: 8px; height: 20px;"><strong>$link.text</strong></a>
+				$link.description
+			</p>
+			#end
+		
+		</div>
+	
+		#footerToolbar($footerButtons)
+			
+	</div>
+	
+	#endCommonToolV3()
+
 #end

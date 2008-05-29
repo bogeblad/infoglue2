@@ -45,7 +45,13 @@ public class SubscriptionFilterVO implements BaseEntityVO
 
 	public String toString()
 	{  
-		return "" + subscriptionFilterId;
+		StringBuffer sb = new StringBuffer();
+		sb.append("subscriptionFilterId: " + subscriptionFilterId + "\n");
+		sb.append("subscriptionId: " + subscriptionId + "\n");
+		sb.append("filterType: " + filterType + "\n");
+		sb.append("filterCondition: " + filterCondition + "\n");
+		sb.append("isAndCondition: " + isAndCondition + "\n");
+		return sb.toString();
 	}
   
     public java.lang.Integer getSubscriptionFilterId()

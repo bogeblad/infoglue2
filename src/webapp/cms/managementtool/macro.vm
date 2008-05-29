@@ -50,6 +50,8 @@
 		<script type="text/javascript" src="script/yui/build/datatable/datatable-beta-min.js"></script>
 	#end
 
+	<script type="text/javascript" src="script/v3/infoglue.js"></script>
+
 	<link rel="stylesheet" type="text/css" href="css/v3/infoglue.css" />
 	<link rel="stylesheet" type="text/css" href="css/v3/tabs.css" media="screen">
 	<link rel="stylesheet" type="text/css" href="css/cms.css" />
@@ -1015,7 +1017,7 @@
     #end
   #end
   <br/>
-  <input type="text" class="$className" name="$fieldName" value="$!fieldValue" size="$length" onChange="JavaScript:setDirty();"/>
+  <input type="text" class="$className" name="$fieldName" value="$!fieldValue" size="$length" onchange="setDirty();"/>
 #end
 
 #macro(editTextField $fieldNameKey $fieldName $fieldValue $length $className $isReadOnly)
@@ -1030,7 +1032,7 @@
     #end
   #end
   <br/>
-  <input type="text" $isReadOnly class="$className" name="$fieldName" value="$!fieldValue" size="$length" onChange="JavaScript:setDirty();"/>
+  <input type="text" $isReadOnly class="$className" name="$fieldName" value="$!fieldValue" size="$length" onchange="setDirty();"/>
 #end
 
 

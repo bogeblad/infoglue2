@@ -109,6 +109,7 @@
 
 .inlineTabDiv {
 	height: 556px; 
+	padding-left: 20px;
 	overflow: auto;
 }
 

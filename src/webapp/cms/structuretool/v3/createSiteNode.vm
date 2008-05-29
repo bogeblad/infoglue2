@@ -44,7 +44,7 @@
 	#set($dateReadonly = "readonly")
 #end
 
-<div>
+<div onfocus="this.blur();">
     
 	#menuToolbar("" $buttons $rightButtons) 
 
