@@ -55,14 +55,21 @@ public class ViewInlineOperationMessagesAction extends InfoGlueAbstractAction
          
     public String doExecute() throws Exception
     {    	
-    	actionLinks 					= new ArrayList<LinkBean>();
-    	message							= getRequest().getParameter("message");
-		String actionLinkString			= getRequest().getParameter("actionLinks");	
-		String automaticRedirectString	= getRequest().getParameter("isAutomaticRedirect");	
+    	actionLinks 						= new ArrayList<LinkBean>();
+    	message								= getRequest().getParameter("message");
+		String actionLinkString				= getRequest().getParameter("actionLinks");	
+		String isAutomaticRedirectString	= getRequest().getParameter("isAutomaticRedirect");	
 		
-		if (automaticRedirectString != null)
+		if (isAutomaticRedirectString != null)
 		{
-			
+			try
+			{
+				isAutomaticRedirect = Boolean.parseBoolean(isAutomaticRedirectString);
+			}
+			catch (Exception e)
+			{
+				// Do nothing. Use the default value.
+			}
 		}
 		
 		String[] elements;
