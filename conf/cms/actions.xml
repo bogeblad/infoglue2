@@ -1,4 +1,4 @@
-<!-- $Id: actions.xml,v 1.65 2008/05/27 13:25:42 mattias Exp $ -->
+<!-- $Id: actions.xml,v 1.66 2008/05/29 08:13:15 mattias Exp $ -->
 <actions>
 
 	<!-- MySettings -->
@@ -1126,6 +1126,8 @@
 	<action name="org.infoglue.cms.applications.structuretool.actions.CreateSiteNodeAction" alias="CreateSiteNode">
 		<view name="input">/cms/structuretool/createSiteNode.vm</view>
 		<view name="success">ViewSiteNode.action?stay=true</view>
+		<view name="inputV3">/cms/structuretool/v3/createSiteNode.vm</view>
+		<view name="successV3">ViewSiteNode.action</view>
 		<view name="error">/cms/structuretool/error.vm</view>
 		<view name="accessDenied">/cms/structuretool/viewConstraintException.vm</view>
 	</action>
@@ -1593,10 +1595,16 @@
 	<!--  InfoGlue Subscriptions -->
 	<action name="org.infoglue.cms.applications.common.actions.SubscriptionsAction" alias="Subscriptions">
 		<view name="input">/cms/common/viewSubscriptions.vm</view>
-		<view name="success">Subscriptions!inputGlobalSubscriptions.action</view>
+		<view name="success">ExtendedRedirect.action?url=Subscriptions!inputGlobalSubscriptions.action</view>
 		<view name="inputGlobalSubscriptions">/cms/common/viewGlobalSubscriptions.vm</view>
-		<view name="successGlobalSubscriptions">Subscriptions!inputGlobalSubscriptions.action</view>
+		<view name="successGlobalSubscriptions">ExtendedRedirect.action?url=Subscriptions!inputGlobalSubscriptions.action</view>
 		<view name="error">/cms/common/error.vm</view>
+	</action>
+
+	<!-- Inline operations results -->
+	<action name="org.infoglue.cms.applications.common.actions.ViewInlineOperationMessagesAction" alias="ViewInlineOperationMessages">
+		<view name="success">/cms/common/inlineOperationDone.vm</view>
+		<view name="error">/cms/structuretool/error.vm</view>
 	</action>
 
 </actions>

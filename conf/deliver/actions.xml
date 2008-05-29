@@ -1,4 +1,4 @@
-<!-- $Id: actions.xml,v 1.9 2008/02/19 22:54:05 mattias Exp $ -->
+<!-- $Id: actions.xml,v 1.10 2008/05/29 08:13:15 mattias Exp $ -->
 <actions>
 
 	<!-- InstallationValidator -->
@@ -121,6 +121,12 @@
 
 	<!-- Site Delivery -->
 	<action name="org.infoglue.deliver.applications.actions.ViewPageAction" alias="ViewPage">
+		<view name="error">/deliver/error.vm</view>
+	</action>
+
+	<!-- Inline operations results -->
+	<action name="org.infoglue.cms.applications.common.actions.ViewInlineOperationMessagesAction" alias="ViewInlineOperationMessages">
+		<view name="success">/cms/common/inlineOperationDone.vm</view>
 		<view name="error">/deliver/error.vm</view>
 	</action>
 
