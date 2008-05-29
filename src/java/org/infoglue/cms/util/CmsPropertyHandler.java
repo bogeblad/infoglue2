@@ -712,6 +712,26 @@ public class CmsPropertyHandler
 	    return getServerNodeProperty("disableCustomIcons", true, "true");
 	}
 
+	public static String getWorkingStyleInformation()
+	{
+	    return getServerNodeProperty("workingStyleInformation", true, "color: #007900");
+	}
+
+	public static String getFinalStyleInformation()
+	{
+	    return getServerNodeProperty("finalStyleInformation", true, "color: #baaf00");
+	}
+
+	public static String getPublishStyleInformation()
+	{
+	    return getServerNodeProperty("publishStyleInformation", true, "color: #ba0000");
+	}
+
+	public static String getPublishedStyleInformation()
+	{
+	    return getServerNodeProperty("publishedStyleInformation", true, "");
+	}
+	
 	public static String getPreviewDeliveryUrl()
 	{
 	    return getServerNodeProperty("previewDeliveryUrl", true);
@@ -820,6 +840,11 @@ public class CmsPropertyHandler
 	public static String getProtectCategories()
 	{
 		return getServerNodeProperty("protectCategories", true, "false");
+	}
+
+	public static String getHideProtectedProperties()
+	{
+		return getServerNodeProperty("hideProtectedProperties", true, "true");
 	}
 
 	public static String getMaxRows()
@@ -1228,6 +1253,11 @@ public class CmsPropertyHandler
 		return getServerNodeProperty("numberOfVersionsToKeepDuringClean", true, "-1");
 	}
 
+	public static String getKeepOnlyOldPublishedVersionsDuringClean()
+	{
+		return getServerNodeProperty("keepOnlyOldPublishedVersionsDuringClean", true, "true");
+	}
+
 	public static String getAssetUploadTransformationsSettings()
 	{
 		return getServerNodeDataProperty(null, "assetUploadTransformationsSettings", true, "");
@@ -1445,6 +1475,29 @@ public class CmsPropertyHandler
 	    }
 
 	    return toolLocales;
+	}
+
+	public static Map getCustomContentTypeIcons()
+	{
+		Map customContentTypeIcons = new HashMap();
+		
+	    String customContentTypeIconsString = CmsPropertyHandler.getServerNodeDataProperty(null, "customContentTypeIcons", true, null);
+	    if(customContentTypeIconsString != null && !customContentTypeIconsString.equals(""))
+		{
+	    	try
+			{
+	    		Properties properties = new Properties();
+				properties.load(new ByteArrayInputStream(customContentTypeIconsString.getBytes("UTF-8")));
+				customContentTypeIcons.putAll(properties);
+			}	
+			catch(Exception e)
+			{
+			    logger.error("Error loading properties from string. Reason:" + e.getMessage());
+				e.printStackTrace();
+			}
+		}
+	    
+	    return customContentTypeIcons;
 	}
 
 	public static Map getCacheSettings()
