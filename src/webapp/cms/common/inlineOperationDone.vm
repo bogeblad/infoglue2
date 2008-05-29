@@ -1,6 +1,15 @@
-<html>
-<body>
-	<h2>Sidan skapades korrekt</h2>
-	<p>Klicka <a href="$returnAddress" target="_top">här</a> för att fortsätta</p>
-</body>
-</html>
+#if ($isAutomaticRedirect)		
+	<script type="text/javascript">
+		top.location.href = "$firstActionLink.actionURL";
+	</script>	
+#else
+	#beginManagementToolV3("tool.managementtool.viewMessageCenter.header" "" false)
+	
+		<h2>$message</h2>
+		
+		#foreach($link in $actionLinks)			
+			<a id="$link.id" href="$link.actionURL" target="_top" style="background-image: url('$link.backgroundImageURL'); background-repeat: no-repeat; padding-left: 24px;">$link.text</a>&nbsp;$link.description<br/>
+		#end
+		
+	#endManagementTool()
+#end

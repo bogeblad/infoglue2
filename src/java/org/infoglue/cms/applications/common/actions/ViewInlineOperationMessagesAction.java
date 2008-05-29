@@ -23,41 +23,30 @@
 
 package org.infoglue.cms.applications.common.actions;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.security.Principal;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.StringTokenizer;
 
-import org.apache.log4j.Logger;
-import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
-import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
-import org.infoglue.cms.exception.SystemException;
-import org.infoglue.cms.security.InfoGluePrincipal;
-import org.infoglue.cms.util.CmsPropertyHandler;
-import org.infoglue.deliver.applications.databeans.DatabaseWrapper;
-import org.infoglue.deliver.controllers.kernel.impl.simple.BasicTemplateController;
-import org.infoglue.deliver.controllers.kernel.impl.simple.ComponentLogic;
-import org.infoglue.deliver.controllers.kernel.impl.simple.ExtranetController;
-import org.infoglue.deliver.controllers.kernel.impl.simple.IntegrationDeliveryController;
-import org.infoglue.deliver.controllers.kernel.impl.simple.NodeDeliveryController;
-import org.infoglue.deliver.controllers.kernel.impl.simple.TemplateController;
+import org.infoglue.cms.applications.databeans.LinkBean;
 
 /**
  * This action is used as a jump-point from inline actions in deliver edit on sight back to other actions.
  *
  * @author Mattias Bogeblad
+ * @author Johan Dahlgren
  */
 
 public class ViewInlineOperationMessagesAction extends InfoGlueAbstractAction 
 {
-    private final static Logger logger = Logger.getLogger(ViewInlineOperationMessagesAction.class.getName());
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -739264056619967471L;
+	//private final static Logger logger = Logger.getLogger(ViewInlineOperationMessagesAction.class.getName());
     
-    private String returnAddress;
+    private String message;
+    private List<LinkBean> actionLinks;
+    private boolean isAutomaticRedirect = false;
     
     /**
      * This method is the application entry-point. The parameters has been set through the setters
@@ -65,18 +54,66 @@ public class ViewInlineOperationMessagesAction extends InfoGlueAbstractAction
      */
          
     public String doExecute() throws Exception
-    {
+    {    	
+    	actionLinks 					= new ArrayList<LinkBean>();
+    	message							= getRequest().getParameter("message");
+		String actionLinkString			= getRequest().getParameter("actionLinks");	
+		String automaticRedirectString	= getRequest().getParameter("isAutomaticRedirect");	
+		
+		if (automaticRedirectString != null)
+		{
+			
+		}
+		
+		String[] elements;
+		String[] values;
+
+		if (actionLinkString != null)
+		{
+			elements = actionLinkString.split(";");
+			
+    		for (String element : elements)
+    		{    			
+    			values 				= element.split(",");    			    			
+    			LinkBean myLinkBean = new LinkBean(values[0], values[1], values[2], values[3], values[4], values[5]);
+    			actionLinks.add(myLinkBean);
+    		}
+		}
+		
 		return SUCCESS;
     }
 
-	public String getReturnAddress()
-	{
-		return returnAddress;
+    public String getMessage()
+	{				
+    	if (message == null)
+    	{
+    		message = "Undefined";
+    	}
+		return message;
 	}
-
-	public void setReturnAddress(String returnAddress)
-	{
-		this.returnAddress = returnAddress;
+    
+    public void setMessage(String message)
+    {
+    	this.message = message;
+    }
+    
+	public List<LinkBean> getActionLinks()
+	{				
+		return actionLinks;
 	}
-
+	
+	public LinkBean getFirstActionLink()
+	{		
+		return actionLinks.get(0);
+	}
+	
+	public boolean getIsAutomaticRedirect()
+	{
+		return isAutomaticRedirect;
+	}
+	
+	public void setIsAutomaticRedirect(boolean isAutomaticRedirect)
+	{
+		this.isAutomaticRedirect = isAutomaticRedirect;
+	}
 }
