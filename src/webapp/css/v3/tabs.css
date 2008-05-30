@@ -108,24 +108,24 @@
 }
 
 .inlineTabDiv {
-	height: 556px; 
+	height: 550px; 
 	padding-left: 20px;
 	overflow: auto;
 }
 
 #contentVersionDiv {
-	height: 556px; 
+	height: 550px; 
 	overflow: auto;
 }
 #contentVersionCategoriesDiv {
-	height: 556px; 
+	height: 550px; 
 	overflow: auto;
 }
 #contentVersionAssetsDiv {
-	height: 556px; 
+	height: 550px; 
 	overflow: auto;
 }
 #contentCoverDiv {
-	height: 556px; 
+	height: 550px; 
 	overflow: auto;
 }

@@ -154,6 +154,8 @@ public class SubscriptionsAction extends InfoGlueAbstractAction
     		System.out.println("interceptionPointId:" + interceptionPointId);
     		SubscriptionVO subscriptionVO = new SubscriptionVO();
     		subscriptionVO.setInterceptionPointId(interceptionPointId);
+        	subscriptionVO.setName(name);
+        	subscriptionVO.setIsGlobal(false);
     		subscriptionVO.setEntityName(entityName);
     		subscriptionVO.setEntityId(entityId);
     		subscriptionVO.setUserName(this.getInfoGluePrincipal().getName());
@@ -161,7 +163,21 @@ public class SubscriptionsAction extends InfoGlueAbstractAction
     		subscriptionsController.create(subscriptionVO);
     	}
     	
-    	return "success";
+        System.out.println();
+        System.out.println("returnAddress:" + this.returnAddress);
+        if(this.returnAddress != null && !this.returnAddress.equals(""))
+        {
+	        String arguments = "isAutomaticRedirect=false&message=Prenumsparad!&actionLinks=link1,Länk 1,Testlänk,Det här är en länk till CG-channel,http://www.cgchannel.com,http://www.iconarchive.com/icons/zakar/shining-z/Casque-SZ-24x24.png;link1,Länk Lala,Testlänk 2,Det här är en länk till Silo-forumet,http://www.silo3d.com/forum/,http://www.iconarchive.com/icons/zakar/shining-z/Deamontools-SZ-24x24.png";
+	        String messageUrl = returnAddress + (returnAddress.indexOf("?") > -1 ? "&" : "?") + arguments;
+	        
+	        System.out.println("messageUrl:" + messageUrl);
+	        this.getResponse().sendRedirect(messageUrl);
+	        return NONE;
+        }
+        else
+        {
+        	return SUCCESS;
+        }
     }
 
     

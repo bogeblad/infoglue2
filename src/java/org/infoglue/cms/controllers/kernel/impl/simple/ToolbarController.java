@@ -205,6 +205,7 @@ public class ToolbarController
 		{
 			//Do nothing
 		}
+		System.out.println("toolbarKey:" + toolbarKey);
 		logger.info("toolbarKey:" + toolbarKey);
 		logger.info("primaryKey:" + primaryKey);
 		logger.info("extraParameters:" + extraParameters);
@@ -221,7 +222,10 @@ public class ToolbarController
 			
 			if(toolbarKey.equalsIgnoreCase("tool.managementtool.viewMessageCenter.header"))
 				return getMessageCenterFooterButtons();
-			
+
+			if(toolbarKey.equalsIgnoreCase("tool.common.subscriptions.header"))
+				return getSaveCancelFooterButtons();
+
 			/*
 			if(toolbarKey.equalsIgnoreCase("tool.managementtool.repositoryList.header"))
 				return getRepositoriesButtons();
@@ -423,6 +427,29 @@ public class ToolbarController
 									  getLocalizedString(locale, "tool.common.nextButton.label"),
 									  "submitForm();",
 									  "images/v3/nextBackground.gif",
+				  					  "left",
+									  true));
+
+		buttons.add(new ToolbarButton("",
+				  					  getLocalizedString(locale, "tool.common.cancelButton.label"), 
+				  					  getLocalizedString(locale, "tool.common.cancelButton.label"),
+				  					  "parent.closeDialog();",
+				  					  "images/v3/cancelIcon.gif",
+				  					  "left",
+				  					  true));
+
+		return buttons;
+	}
+
+	private List<ToolbarButton> getSaveCancelFooterButtons()
+	{
+		List<ToolbarButton> buttons = new ArrayList<ToolbarButton>();
+
+		buttons.add(new ToolbarButton("",
+									  getLocalizedString(locale, "tool.common.saveButton.label"), 
+									  getLocalizedString(locale, "tool.common.saveButton.label"),
+									  "submitForm();",
+									  "images/v3/createBackgroundPenPaper.gif",
 				  					  "left",
 									  true));
 
