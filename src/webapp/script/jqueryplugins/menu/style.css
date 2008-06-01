@@ -110,6 +110,7 @@ html>body .innerbox
 {
 	margin: 0;
 	display: inherit;
+	background:url(../../../images/v3/tileGradient.gif) repeat-y left;
 }
 
 #root-menu-div ul {

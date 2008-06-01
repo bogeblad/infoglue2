@@ -271,6 +271,10 @@
 	  	#else
 	  		$("#tabsContainer > ul").tabs();
 		#end	
+
+		#if($translate)
+		  	$("#otherLanguageTabsContainer > ul").tabs();
+		#end
 		
 		generateWYSIWYGS();
 		#if($anchor)
@@ -292,7 +296,9 @@
 	
 	<h3 style="text-indent: 16px;">Redigeringsvy innehåll "$contentVO.name"</h3>
 	
-	<div id="tabsContainer" class="flora">
+	<div id="allDivs">
+	
+	<div id="tabsContainer" class="flora" style="#if($translate == false)width: 100%;#end float:left; aborder: 1px solid red;">
 	
 	<ul>
         <li><a href="#contentVersionDiv"><span>Text</span></a></li>
@@ -719,14 +725,14 @@
 					</tr>
 				#end
 	
-					#if($contentVersionVO)
-					<tr>
-						<td colspan="3">&nbsp;</td>
-					</tr>
-					<tr>
-						<td colspan="3">$ui.getString("tool.contenttool.versionLastUpdatedByLabel") $contentVersionVO.versionModifier ($formatter.formatDate($contentVersionVO.modifiedDateTime, "yyyy-MM-dd HH:mm") - $contentVersionVO.versionComment)</td>
-					</tr>
-					#end
+				#if($contentVersionVO)
+				<tr>
+					<td colspan="3">&nbsp;</td>
+				</tr>
+				<tr>
+					<td colspan="3">$ui.getString("tool.contenttool.versionLastUpdatedByLabel") $contentVersionVO.versionModifier ($formatter.formatDate($contentVersionVO.modifiedDateTime, "yyyy-MM-dd HH:mm") - $contentVersionVO.versionComment)</td>
+				</tr>
+				#end
 				
 				<script type="text/javascript">
 					
@@ -1037,17 +1043,131 @@
 			<iframe src="${root}/ViewContent.action?contentId=$contentId&stay=true" border="0" width="100%" height="500px"></iframe>
 		</div>
 		
-	</div>
+	</div><!-- End first tabs collection -->
+	
+	#if($translate)
+	<div id="otherLanguageTabsContainer" style="float: right; aborder: 1px solid green; width: 480px;">
+		
+		<ul>
+	        <li><a href="#otherContentVersionDiv"><span>English</span></a></li>
+	    </ul>
+		
+		<div id="otherContentVersionDiv" class="inlineTabDiv">
+			
+			<table border="0" width="100%">	
+					<!-- here goes the field generation -->
+								
+					#foreach($attribute in $contentTypeAttributes)
+						
+						## ANNOTATION ELEMENTS
+						#set($attributeTitle = "")
+						#set($attributeTitle = $!attribute.getContentTypeAttribute("title").getContentTypeAttributeParameterValue().getLocalizedValue("label", $session.locale))
+						#if($attributeTitle == "")
+							#set($attributeTitle = "$attribute.name")
+						#end
+				
+						#set($attributeDescription = "")
+						#set($attributeDescription = $!attribute.getContentTypeAttribute("description").getContentTypeAttributeParameterValue().getLocalizedValue("label", $session.locale))
+						#if($attributeDescription != "")
+							#set($attributeDescription = "- $attributeDescription")
+						#end
+					
+						#set($attributeInitialData = "")
+						#set($attributeInitialData = $!attribute.getContentTypeAttribute("initialData").getContentTypeAttributeParameterValue().getValue("label"))
+						#if($attributeInitialData != "")
+							#set($attributeInitialData = "$attributeInitialData")
+						#end
+					
+						#set($class = "")
+						#set($class = $!attribute.getContentTypeAttribute("class").getContentTypeAttributeParameterValue().getValue("label"))
+						#if($class == "")
+							#set($class = "longtextfield")
+						#end
+				
+						#set($rows = "")
+						#set($rows = $!attribute.getContentTypeAttribute("rows").getContentTypeAttributeParameterValue().getValue("label"))
+						#if($rows == "")
+							#set($rows = "5")
+						#end
+				
+						#set($cols = "")
+						#set($cols = $!attribute.getContentTypeAttribute("cols").getContentTypeAttributeParameterValue().getValue("label"))
+						#if($cols == "")
+							#set($cols = "75")
+						#end
+						
+						<tr>
+							<td colspan="3"><a id="${attribute.name}AnchorComp" name="${attribute.name}AnchorComp"/><img src="images/trans.gif" width="1" height="5"/></td>
+						</tr>
+						<tr class="$trClass">
+							<td colspan="3">
+								
+								#set($value = "$!this.getOriginalLanguageAttributeValue($attribute.name)")
+								#if("$!contentVersionId" == "" && "$value" == "")
+									#set($value = $attributeInitialData)
+								#end
+											
+								#if($attribute.inputType == "datefield")
+									$attributeTitle ("$attribute.name") $attributeDescription
+									<input readonly="readonly" style="max-width: 400px;" type="text" length="20" class="date" maxlength="20" id="${attribute.name}Comp" name="${attribute.name}Comp" value="$value"/>
+								#elseif($attribute.inputType == "textfield")
+									$attributeTitle ("$attribute.name") $attributeDescription
+									<input readonly="readonly" style="max-width: 400px;" type="text" length="50" class="$class" maxlength="" id="${attribute.name}Comp" name="${attribute.name}Comp" value="$value"/>
+								#elseif($attribute.inputType == "textarea")
+									
+									#set($unescapedValue = "$!this.getOriginalLanguageUnescapedAttributeValue($attribute.name)")
+									#if("$!contentVersionId" == "" && "$unescapedValue" == "")
+										#set($unescapedValue = $attributeInitialData)
+									#end
+	
+									#set($height = 0)
+									#set($height = $!attribute.getContentTypeAttribute("height").getContentTypeAttributeParameterValue().getLocalizedValueAsInt("label", $session.locale))
+									#if($height == 0)
+										#set($height = 150)
+									#end
+									
+									$attributeTitle ("$attribute.name") $attributeDescription
+									<div style="padding: 4px; visibility: visible; max-width:400px; height:${height}px; border: 1px solid #C2D0E2;font-family:verdana,arial,sans-serif;font-size:8pt;" id="${attribute.name}Comp" name="${attribute.name}Comp">
+										$unescapedValue
+									</div> 
+										
+								#elseif($attribute.inputType == "select")
+								<!-- Handles the input type select = dropbox -->
+									$attributeTitle ("$attribute.name") $attributeDescription <br/>
+									<select readonly="readonly" style="max-width: 400px;" size="1" id="${attribute.name}Comp" name="${attribute.name}Comp" class="$class">
+						    			#foreach($value in $attribute.getContentTypeAttribute("values").getContentTypeAttributeParameterValues())
+						    				<option value="$value.id" #checkSelected("$value.id" "$this.getAttributeValue($attribute.name)")>$value.getLocalizedValue("label", $session.locale)</option>
+						    			#end
+						    		</select>
+				
+								#elseif($attribute.inputType == "checkbox")
+								<!-- Handles the input type checkbox -->
+									$attributeTitle ("$attribute.name") $attributeDescription <br/>
+					    			#foreach($value in $attribute.getContentTypeAttribute("values").getContentTypeAttributeParameterValues())
+										<input readonly="readonly" style="max-width: 400px;" type="checkbox" id="${attribute.name}Comp" name="${attribute.name}Comp" value="$value.id" #checkChecked("$value.id" "$this.getAttributeValue($attribute.name)")>$value.getLocalizedValue("label", $session.locale)
+					    			#end
+				
+								#elseif($attribute.inputType == "radiobutton")
+								<!-- Handles the input type radiobutton -->
+									$attributeTitle ("$attribute.name") $attributeDescription <br/>
+									#foreach($value in $attribute.getContentTypeAttribute("values").getContentTypeAttributeParameterValues())
+										<input readonly="readonly" style="max-width: 400px;" type="radio" id="${attribute.name}Comp" name="${attribute.name}Comp" value="$value.id" #checkChecked("$value.id" "$this.getAttributeValue($attribute.name)")>$value.getLocalizedValue("label", $session.locale)
+					    			#end
+				
+								#end
+							</td>
+						</tr>
+					#end
+					
+				</table>
+			##</div>
+		</div>
+	#end
+	
+	</div><!-- End double pane --> 
 	
 </div>	
 
 #footerToolbar($footerButtons)
-#*
-<div style="clear: both;"></div>
-
-<div id="footer" style="position: absolute; height: 34px; width: 100%; bottom: 0px; border-top: 0px solid #cccccc;" onfocus="this.blur();">
-	
-</div>
-*#
 
 #endCommonToolV3()
