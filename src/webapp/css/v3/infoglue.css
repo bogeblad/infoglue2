@@ -157,6 +157,81 @@ img.scaledbordered {
 	border-color     : #000000;
 }
 
+/* Classes concerned with dialogs */
+.dialogDivHandle {
+	margin:0px;
+	padding:0px;
+	width:100%;
+	color:#555;
+	height: 35px;
+	background-color:white;
+	background: url(../../images/v3/toolbarBackground.gif) repeat-x 0 0;
+	font-family:Tahoma, verdana, sans-serif;
+	font-size:10pt;
+	}
+.dialogDivLeftHandle {
+	padding: 8px 0px 0px 10px;
+	width: 250px; 
+	float: left;
+	color:#555;
+	text-align: left;
+	line-height: 18px;	
+	}
+.dialogDivRightHandle {
+	padding: 8px 8px 0px 0px;
+	color:#555;
+	text-align: right;
+	line-height: 14px;	
+	float: right;
+	}
+.dialogDivRightHandle a {
+	color:#555;
+	font-family: Tahoma, verdana, sans-serif;
+	font-size: 10pt;
+	display: block;
+	text-indent: 20px;
+	line-height: 18px;	
+	background: url(../../images/v3/closeWindowIcon.gif) no-repeat 0 0;
+	}
+
+.dialogDivBody {
+    padding-top:2px;
+	padding-bottom:2px;
+	width:100%;
+	aheight:450px;
+	background-color: white;
+	font-family:verdana, sans-serif;
+	font-size:10pt;
+	overflow: auto;
+	}
+
+.dialogDivBody fieldset {
+	border: 1px solid #781351;
+	width: 20em
+	}
+.formRow {
+	vertical-align: top;
+	margin-bottom: 10px;
+	}
+.dialogDivBody label {
+	width: 8em;
+	float: left;
+	text-align: right;
+	margin-right: 0.5em;
+	display: block;
+	vertical-align: top;
+	}
+
+.dialogDivBody .submit, input, select {
+	amargin-left: 4.5em;
+	margin-bottom: 5px;
+	vertical-align: top;
+	display: block;
+	float: left;
+	border: 1px solid #bbb;
+	}
+	
+
 /* MY General button classes */
 .yui-skin-sam .yui-button {
 	border-width: 1px 0;

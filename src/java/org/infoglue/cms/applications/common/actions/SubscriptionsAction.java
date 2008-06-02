@@ -319,7 +319,7 @@ public class SubscriptionsAction extends InfoGlueAbstractAction
     	
     	return "successGlobalSubscriptions";
     }
-    
+        
     public String doGetSubscriptionForm() throws Exception
     {
     	SubscriptionVO subscriptionVO = subscriptionsController.getSubscriptionVOWithId(subscriptionId);
@@ -330,15 +330,15 @@ public class SubscriptionsAction extends InfoGlueAbstractAction
     	sb.append("<input type=\"hidden\" name=\"subscriptionId\" value=\"" + subscriptionVO.getId() + "\" style=\"border: 0px;\"/>");
     	sb.append("<fieldset style=\"width: 90%; border: 0px solid red; margin: 0px; padding-left: 10px;\">");
     	
-    	sb.append("	<h3>Subscription basics</h3>");
+    	sb.append("	<h3>" + getLocalizedString(getLocale(), "tool.common.subscriptionBasics.label") + "</h3>");
     	sb.append("	<p style=\"clear: both;\">");
     	
-    	sb.append("	<label for=\"name\">Name</label>");
+    	sb.append("	<label for=\"name\">" + getLocalizedString(getLocale(), "tool.common.subscriptionName.label") + "</label>");
     	sb.append("	<input type=\"text\" name=\"name\" value=\"" + subscriptionVO.getName() + "\"/>");
     	sb.append("	</p>");
 		
 		sb.append("	<p style=\"clear: both;\">");
-    	sb.append("	<label for=\"interceptionPointId\">Type</label>");
+    	sb.append("	<label for=\"interceptionPointId\">" + getLocalizedString(getLocale(), "tool.common.subscriptionType.label") + "</label>");
     	sb.append("	<select name=\"interceptionPointId\">");
     	sb.append("		<option value=\"33\" " + (subscriptionVO.getInterceptionPointId().intValue() == 33 ? "selected='selected'" : "") + ">Content.Published</option>");
     	sb.append("		<option value=\"22\" " + (subscriptionVO.getInterceptionPointId().intValue() == 22 ? "selected='selected'" : "") + ">Content.Delete</option>");
@@ -347,7 +347,7 @@ public class SubscriptionsAction extends InfoGlueAbstractAction
 			
     	sb.append("	<div style=\"clear: both;\"></div>");
 		
-    	sb.append("	<h4 style=\"border-bottom: 1px solid #bbb;\">Filters</h4>");
+    	sb.append("	<h4 style=\"border-bottom: 1px solid #bbb;\">" + getLocalizedString(getLocale(), "tool.common.subscriptionsFilters.label") + "</h4>");
 
     	this.contentTypeDefintionVOList = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOList();
 		this.categoryVOList = CategoryController.getController().findAllActiveCategories();
@@ -360,13 +360,13 @@ public class SubscriptionsAction extends InfoGlueAbstractAction
     		SubscriptionFilterVO subscriptionFilterVO = subscriptionFilterVOListIterator.next();
     		
 	    	sb.append("	<div id=\"filterRow_" + i + "\" class=\"formRow\" style=\"min-height: 50px; border: 0px solid red; border-bottom: 1px solid #bbb;\">");
-	    	sb.append("		<label for=\"filterType_" + i + "\">Filter type:</label>");
+	    	sb.append("		<label for=\"filterType_" + i + "\">" + getLocalizedString(getLocale(), "tool.common.subscriptionFilterType.label") + "</label>");
 	    	sb.append("		<select id=\"filterType_" + i + "\" name=\"filterType_" + i + "\" onchange=\"updateConditionInput(" + i + ");\">");
 	    	sb.append("			<option value=\"0\"" + (subscriptionFilterVO.getFilterType().equals("0") ? "selected='selected'" : "") + ">Content types</option>");
 	    	sb.append("			<option value=\"1\"" + (subscriptionFilterVO.getFilterType().equals("1") ? "selected='selected'" : "") + ">Categories</option>");
 	    	sb.append("		</select>");
 			
-	   		sb.append("		<label for=\"filterCondition_" + i + "\">Filter condition:</label>");
+	   		sb.append("		<label for=\"filterCondition_" + i + "\">" + getLocalizedString(getLocale(), "tool.common.subscriptionFilterCondition.label") + "</label>");
 	   		sb.append("		<select id=\"filterCondition_" + i + "\" name=\"filterCondition_" + i + "\" multiple=\"multiple\" size=\"3\">");
 	   		
 	   		if(subscriptionFilterVO.getFilterType().equals("0"))
@@ -390,14 +390,14 @@ public class SubscriptionsAction extends InfoGlueAbstractAction
 	   		
 	   		sb.append("		</select>");
 					
-	   		sb.append("		&nbsp; <a id=\"removeFilterRowLink" + i + "\" href=\"javascript:removeFilterRow(" + i + ");\">Remove filter</a>");
+	   		sb.append("		&nbsp; <a id=\"removeFilterRowLink" + i + "\" href=\"javascript:removeFilterRow(" + i + ");\">" + getLocalizedString(getLocale(), "tool.common.deleteFilter.label") + "</a>");
 					
 	   		if(size-1 > i)
 	   			sb.append("		<p id=\"andParagraph_" + i + "\" style=\"padding: 30px; display: block;\">");
 	   		else
 	   			sb.append("		<p id=\"andParagraph_" + i + "\" style=\"padding: 30px; display: none;\">");
 		   		
-	   		sb.append("			<label for=\"isAndCondition_" + i + "\">isAndCondition</label>");
+	   		sb.append("			<label for=\"isAndCondition_" + i + "\">" + getLocalizedString(getLocale(), "tool.common.subscriptionFilterIsAndCondition.label") + "</label>");
 			sb.append("			<select id=\"isAndCondition_" + i + "\" name=\"isAndCondition_0\">';");
 			sb.append("				<option value=\"true\"" + (subscriptionFilterVO.getIsAndCondition().booleanValue() ? "selected='selected'" : "") + ">AND</option>';");
 			sb.append("				<option value=\"false\"" + (!subscriptionFilterVO.getIsAndCondition().booleanValue() ? "selected='selected'" : "") + ">OR</option>';");
@@ -410,8 +410,8 @@ public class SubscriptionsAction extends InfoGlueAbstractAction
 			i++;
 	    }
     	
-		sb.append("	<br/>");
-		sb.append("	<a href=\"javascript:addFilterRow();\">Add filter</a>");
+   		sb.append("	<br/>");
+		sb.append("	<a href=\"javascript:addFilterRow();\">" + getLocalizedString(getLocale(), "tool.common.addFilter.label") + "</a>");
 		sb.append("	<br/>");
 		sb.append("	<br/>");
 			

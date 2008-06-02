@@ -70,7 +70,7 @@
 
 		function openMySettings()
 		{
-			openPopup('ViewMySettings.action', 'MySettings', 'width=500,height=400,resizable=no');
+			openPopup('ViewMySettings.action', 'MySettings', 'width=800,height=700,resizable=no');
 		}
 		
 	-->

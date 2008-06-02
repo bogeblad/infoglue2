@@ -23,16 +23,16 @@
 	function addFilterRow()
 	{
 		var addition = ' <div id="filterRow_' + i + '" class="formRow" style="min-height: 50px; border: 0px solid red; border-bottom: 1px solid #bbb;">';
-		addition += ' <label id="filterRow_' + i + 'Label" for="filterType_' + i + '">Filter type:</label>';
+		addition += ' <label id="filterRow_' + i + 'Label" for="filterType_' + i + '">$ui.getString("tool.common.subscriptionFilterType.label")</label>';
 		addition += ' <select id="filterType_' + i + '" name="filterType_' + i + '" onchange="updateConditionInput(' + i + ');">';
-		addition += '	<option value="">Choose filter type</option>';
+		addition += '	<option value="">$ui.getString("tool.common.chooseFilterType.label")</option>';
 		addition += '	<option value="0">Content types</option>';
 		addition += '	<option value="1">Categories</option>';
 		addition += ' </select>';
 
-		addition += ' <label id="filterCondition_' + i + 'Label" for="filterCondition_' + i + '">Filter condition:</label>';
+		addition += ' <label id="filterCondition_' + i + 'Label" for="filterCondition_' + i + '">$ui.getString("tool.common.subscriptionFilterCondition.label")</label>';
 		addition += ' <select id="filterCondition_' + i + '" name="filterCondition_' + i + '" multiple="multiple" size="3" style="width: 150px;">';
-		addition += '	<option value="-1">Choose filter type</option>';
+		addition += '	<option value="-1">$ui.getString("tool.common.chooseFilterType.label")</option>';
 		addition += ' </select>';
 
 		addition += ' &nbsp; <a id="removeFilterRowLink' + i + '" href="javascript:removeFilterRow(' + i + ');">Remove filter</a>';
@@ -137,72 +137,72 @@
 	#end
 		
 	#if($subscriptionVOList.size() == 0)
-		No subscriptions found
+		$ui.getString("tool.common.noSubscriptionsFount.label")
 	#end
 	</div>
 </div>
 	
 <div id="newSubscriptionForm" style="display: none; position: absolute; top: 100px; left: 50px; width: 700px; border: 1px solid black;">
-<div id="dialogHandle" class="dialogDivHandle"><div id="dialogDivLeftHandle" class="dialogDivLeftHandle">Create/change subscription</div><div id="dialogDivRightHandle" class="dialogDivRightHandle"><a href="javascript:hideDiv('newSubscriptionForm');">close</a></div></div>
-<div id="dialogDivBody" class="dialogDivBody">
-	<form action="Subscriptions!globalSubscriptions.action" name="inputForm" method="post">
-		<fieldset style="width: 90%; border: 0px solid red; margin: 0px; padding-left: 10px;">
-
-			<h3>Subscription basics</h3>
-			<p style="clear: both;">
-			<label for="name">Name</label>
-			<input type="text" name="name"/>
-			</p>
-			
-			<p style="clear: both;">
-			<label for="interceptionPointId">Type</label>
-			<select name="interceptionPointId">
-				#foreach($interceptionPointVO in $interceptionPointVOList)
-				<option value="$interceptionPointVO.id">$ui.getString($interceptionPointVO.name)</option>
-				#end
-			</select>
-			</p>
-			
-			<div style="clear: both;"></div>
-			
-			<h4 style="border-bottom: 1px solid #bbb;">Filters</h4>
-			
-			<div id="filterRow_0" class="formRow" style="min-height: 50px; border: 0px solid red; border-bottom: 1px solid #bbb;">
-				<label for="filterType_0">Filter type:</label>
-				<select id="filterType_0" name="filterType_0" onchange="updateConditionInput(0);">
-					<option value="-1" selected="selected">Choose filter type</option>
-					<option value="0">Content types</option>
-					<option value="1">Categories</option>
-				</select>
-		
-				<label for="filterCondition_0">Filter condition:</label>
-				<select id="filterCondition_0" name="filterCondition_0" multiple="multiple" size="3" style="width: 150px;">
-					<option value="">Choose filter type</option>
-				</select>
-				
-				&nbsp; <a href="javascript:removeFilterRow(0);">Remove filter</a>
-				
-				<p id="andParagraph_0" style="padding-left: 300px; display: none; float: left; text-align: center;">
-					<!-- <label for="isAndCondition_0">isAndCondition</label> -->
-					<select id="isAndCondition_0" name="isAndCondition_0">';
-						<option value="true">AND</option>';
-						<option value="false">OR</option>';
-					</select>
+	<div id="dialogHandle" class="dialogDivHandle"><div id="dialogDivLeftHandle" class="dialogDivLeftHandle">$ui.getString("tool.common.createChangeSubscriptions.label")</div><div id="dialogDivRightHandle" class="dialogDivRightHandle"><a href="javascript:hideDiv('newSubscriptionForm');">$ui.getString("tool.common.closeWindowButton.label")</a></div></div>
+	<div id="dialogDivBody" class="dialogDivBody">
+		<form action="Subscriptions!globalSubscriptions.action" name="inputForm" method="post">
+			<fieldset style="width: 90%; border: 0px solid red; margin: 0px; padding-left: 10px;">
+	
+				<h3>$ui.getString("tool.common.subscriptionBasics.label")</h3>
+				<p style="clear: both;">
+				<label for="name">$ui.getString("tool.common.subscriptionName.label")</label>
+				<input type="text" name="name"/>
 				</p>
-			</div>
-								
-			<div id="break_0" style="clear:both"></div>
+				
+				<p style="clear: both;">
+				<label for="interceptionPointId">$ui.getString("tool.common.subscriptionType.label")</label>
+				<select name="interceptionPointId">
+					#foreach($interceptionPointVO in $interceptionPointVOList)
+					<option value="$interceptionPointVO.id">$ui.getString($interceptionPointVO.name)</option>
+					#end
+				</select>
+				</p>
+				
+				<div style="clear: both;"></div>
+				
+				<h4 style="border-bottom: 1px solid #bbb;">$ui.getString("tool.common.subscriptionsFilters.label")</h4>
+				
+				<div id="filterRow_0" class="formRow" style="min-height: 50px; border: 0px solid red; border-bottom: 1px solid #bbb;">
+					<label for="filterType_0">$ui.getString("tool.common.subscriptionFilterType.label")</label>
+					<select id="filterType_0" name="filterType_0" onchange="updateConditionInput(0);">
+						<option value="-1" selected="selected">$ui.getString("tool.common.chooseFilterType.label")</option>
+						<option value="0">Content types</option>
+						<option value="1">Categories</option>
+					</select>
 			
-			<br/>
-			<a href="javascript:addFilterRow();">Add filter</a>
-			<br/>
-			<br/>
-			
-			<input type="submit" value="Save"/>
-
-		</fieldset>
-	</form>
-</div>
+					<label for="filterCondition_0">$ui.getString("tool.common.subscriptionFilterCondition.label")</label>
+					<select id="filterCondition_0" name="filterCondition_0" multiple="multiple" size="3" style="width: 150px;">
+						<option value="">$ui.getString("tool.common.chooseFilterType.label")</option>
+					</select>
+					
+					&nbsp; <a href="javascript:removeFilterRow(0);">Remove filter</a>
+					
+					<p id="andParagraph_0" style="padding-left: 300px; display: none; float: left; text-align: center;">
+						<!-- <label for="isAndCondition_0">tool.common.subscriptionFilterIsAndCondition.label</label> -->
+						<select id="isAndCondition_0" name="isAndCondition_0">';
+							<option value="true">AND</option>';
+							<option value="false">OR</option>';
+						</select>
+					</p>
+				</div>
+									
+				<div id="break_0" style="clear:both"></div>
+				
+				<br/>
+				<a href="javascript:addFilterRow();">Add filter</a>
+				<br/>
+				<br/>
+				
+				<input type="submit" value="Save"/>
+	
+			</fieldset>
+		</form>
+	</div>
 </div>
 
 #footerToolbar($footerButtons)

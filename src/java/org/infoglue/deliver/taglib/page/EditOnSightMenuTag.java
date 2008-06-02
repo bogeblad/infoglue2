@@ -108,44 +108,42 @@ public class EditOnSightMenuTag extends ComponentLogicTag
 		    	sb.append("});\n");
 		    	sb.append("</script>\n");
 		    					
-		    	sb.append("<div id=\"editOnSightDiv" + this.getComponentLogic().getInfoGlueComponent().getId() + "\" aclass=\"popup_menu\" astyle=\"position: absolute; display: none; background-color: white;\">");
-		    	//sb.append("<div id=\"editOnSightDiv" + this.getComponentLogic().getInfoGlueComponent().getId() + "\" style=\"display:none;\">");
+		    	sb.append("<div id=\"editOnSightDiv" + this.getComponentLogic().getInfoGlueComponent().getId() + "\">");
 		    		
-		        sb.append("InfoGlue&nbsp;actions&nbsp; <a href=\"javascript:tb_show('Hepp', '/infoglueCMS/Subscriptions!input.action?interceptionPointCategory=Content&entityName=org.infoglue.cms.entities.content.Content&entityId=7582&extraParameters=7582&returnAddress=%2FinfoglueCMS%2FViewInlineOperationMessages.action%3FreturnAddress%3D%252FinfoglueDeliverWorking%252FViewPage%2521renderDecoratedPage.action%253FsiteNodeId%253D1130%2526amp%253BlanguageId%253D3%2526amp%253BcontentId%253D-1&TB_iframe=true&height=700&width=750&modal=true', 'apa');\">AAA</a>");
-		    	//sb.append("<span id=\"editOnSightButton" + this.getComponentLogic().getInfoGlueComponent().getId() + "\" class=\"editOnSightMenuButton\">InfoGlue&nbsp;actions&nbsp;</span>");
+		        sb.append("InfoGlue&nbsp;actions");
 		    	
-		    	sb.append("    <ul id=\"menufivelist\">");
-		    	sb.append("        <li><a href='#' class=\"editOnSightImageLink linkMetadata thickbox\" rel=\"metaInfo\">Ändra sidans metadata</a></li>");
-		    	sb.append("        <li><a href='#' class=\"editOnSightImageLink linkCreatePage thickbox\" rel=\"subpage\">Skapa undersida till nuvarande</a></li>");
+		    	sb.append("    <ul>");
+		    	sb.append("        <li><a href='#' class=\"editOnSightHref linkMetadata thickbox\" rel=\"metaInfo\">Ändra sidans metadata</a></li>");
+		    	sb.append("        <li><a href='#' class=\"editOnSightHref linkCreatePage thickbox\" rel=\"subpage\">Skapa undersida till nuvarande</a></li>");
 
 		    	if(contentId != null)
 		    	{
-			    	sb.append("        <li><a href=\"#\" class=\"editOnSightImageLink linkEditArticle thickbox\" rel=\"editContent\">Redigera artikel</a></li>");
-			    	sb.append("        <li><a href=\"#\" class=\"editOnSightImageLink linkCategorizeArticle thickbox\" rel=\"categorize\">Kategorisera artikel</a></li>");
+			    	sb.append("        <li><a href=\"#\" class=\"editOnSightHref linkEditArticle thickbox\" rel=\"editContent\">Redigera artikel</a></li>");
+			    	sb.append("        <li><a href=\"#\" class=\"editOnSightHref linkCategorizeArticle thickbox\" rel=\"categorize\">Kategorisera artikel</a></li>");
 		    	}
-			    sb.append("        <li><a href=\"#\" class=\"editOnSightImageLink linkPublish thickbox\" rel=\"publish\">Publicera</a></li>");
-		    	sb.append("        <li><a href=\"#\" class=\"editOnSightImageLink linkNotify thickbox\" rel=\"notifications\">Notifiera</a></li>");
+			    sb.append("        <li><a href=\"#\" class=\"editOnSightHref linkPublish thickbox\" rel=\"publish\">Publicera</a></li>");
+		    	sb.append("        <li><a href=\"#\" class=\"editOnSightHref linkNotify thickbox\" rel=\"notifications\">Notifiera</a></li>");
 		    	
 		    	if(contentId != null)
 		    	{
-		    		sb.append("        <li><a href=\"#\" class=\"editOnSightImageLink linkTakeContent thickbox\" rel=\"subscribe\">Prenumerera på innehållet</a></li>");
+		    		sb.append("        <li><a href=\"#\" class=\"editOnSightHref linkTakeContent thickbox\" rel=\"subscribe\">Prenumerera på innehållet</a></li>");
 		    	}
 		    	
-		    	sb.append("        <li><a href=\"#\" class=\"editOnSightImageLink linkTakePage thickbox\">Prenumerera på sidan</a></li>");
-		    	sb.append("        <li><a href=\"#\" class=\"editOnSightImageLink linkTranslate thickbox\" rel=\"editContent\">Översätt</a></li>");
+		    	sb.append("        <li><a href=\"#\" class=\"editOnSightHref linkTakePage thickbox\">Prenumerera på sidan</a></li>");
+		    	sb.append("        <li><a href=\"#\" class=\"editOnSightHref linkTranslate thickbox\" rel=\"editContent\">Översätt</a></li>");
 
-		    	sb.append("        <li id=\"choice1\"><a href=\"#\" class=\"editOnSightImageLink linkTranslate\">Översätt</a>");
+		    	sb.append("        <li id=\"choice1\"><a href=\"#\" class=\"editOnSightHref linkTranslate thickbox\">Översätt</a>");
 		    	sb.append("        	<ul>");
 		    	sb.append("        		<li>");
-		    	sb.append("        			<a href=\"#\">Till Engelska</a>");
+		    	sb.append("        			<a href=\"#\" class=\"editOnSightHref linkTranslate thickbox\">Till Engelska</a>");
 		    	sb.append("        		</li>");
 		    	sb.append("        		<li>");
-		    	sb.append("        			<a href=\"#\">Till Franska</a>");
+		    	sb.append("        			<a href=\"#\" class=\"editOnSightHref linkTranslate thickbox\">Till Franska</a>");
 		    	sb.append("        		</li>");
 		    	sb.append("        </ul>");
 		    	sb.append("        </li>");
 			
-		    	sb.append("        <li><a href=\"#\" class=\"linkCreateNews\">Skapa nyhet om denna artikel</a></li>");
+		    	sb.append("        <li><a href=\"#\" class=\"editOnSightHref linkCreateNews\">Skapa nyhet om denna artikel</a></li>");
 		    	sb.append("    </ul>");
 
 		    	sb.append("</div>");
@@ -204,26 +202,26 @@ public class EditOnSightMenuTag extends ComponentLogicTag
 		    	//sb.append("<span id=\"editOnSightButton" + this.getComponentLogic().getInfoGlueComponent().getId() + "\" class=\"editOnSightMenuButton\">InfoGlue&nbsp;actions&nbsp;</span>");
 		    	
 		    	sb.append("    <ul id=\"menufivelist\" aclass=\"popupMenuLinks\" astyle='margin: 0px; margin-right: 0px; padding: 0px; padding-right: 0px;'>");
-		    	sb.append("        <li style='margin: 0px; margin-left: 4px; padding: 2px 0px 2px 2px; list-style: none;'><a href=\"" + componentEditorUrl + "ViewAndCreateContentForServiceBinding.action?siteNodeId=1131&repositoryId=47&siteNodeVersionId=2109&KeepThis=true&TB_iframe=true&height=700&width=750&modal=true\" class=\"editOnSightImageLink linkMetadata thickbox\" rel=\"metaInfo\">Ändra sidans metadata</a></li>");
-		    	sb.append("        <li style='margin: 0px; margin-left: 4px; padding: 2px 0px 2px 2px; list-style: none;'><a href=\"" + componentEditorUrl + "CreateSiteNode!inputV3.action?repositoryId=47&parentSiteNodeId=" + this.getController().getSiteNodeId() + "&languageId=" + this.getController().getLanguageId() + "&returnAddress=" + URLEncoder.encode(returnAddress, "utf-8") + "&KeepThis=true&TB_iframe=true&height=700&width=750&modal=true\" class=\"editOnSightImageLink linkCreatePage thickbox\" rel=\"subpage\">Skapa undersida till nuvarande</a></li>");
+		    	sb.append("        <li style='margin: 0px; margin-left: 4px; padding: 2px 0px 2px 2px; list-style: none;'><a href=\"" + componentEditorUrl + "ViewAndCreateContentForServiceBinding.action?siteNodeId=1131&repositoryId=47&siteNodeVersionId=2109&KeepThis=true&TB_iframe=true&height=700&width=750&modal=true\" class=\"linkMetadata thickbox\" rel=\"metaInfo\">Ändra sidans metadata</a></li>");
+		    	sb.append("        <li style='margin: 0px; margin-left: 4px; padding: 2px 0px 2px 2px; list-style: none;'><a href=\"" + componentEditorUrl + "CreateSiteNode!inputV3.action?repositoryId=47&parentSiteNodeId=" + this.getController().getSiteNodeId() + "&languageId=" + this.getController().getLanguageId() + "&returnAddress=" + URLEncoder.encode(returnAddress, "utf-8") + "&KeepThis=true&TB_iframe=true&height=700&width=750&modal=true\" class=\"linkCreatePage thickbox\" rel=\"subpage\">Skapa undersida till nuvarande</a></li>");
 
 		    	if(contentId != null)
 		    	{
-			    	sb.append("        <li style='margin: 0px; margin-left: 4px; padding: 2px 0px 2px 2px; list-style: none;'><a href=\"" + componentEditorUrl + "ViewContentVersion!standalone.action?contentId=" + this.contentId + "&languageId=" + getController().getLanguageId() + "&anchorName=contentVersionBlock&KeepThis=true&TB_iframe=true&height=700&width=750&modal=true\" class=\"editOnSightImageLink linkEditArticle thickbox\" rel=\"editContent\">Redigera artikel</a></li>");
-			    	sb.append("        <li style='margin: 0px; margin-left: 4px; padding: 2px 0px 2px 2px; list-style: none;'><a href=\"" + componentEditorUrl + "ViewContentVersion!standalone.action?contentId=" + this.contentId + "&languageId=" + getController().getLanguageId() + "&anchor=categoriesBlock&KeepThis=true&TB_iframe=true&height=700&width=750&modal=true\" class=\"editOnSightImageLink linkCategorizeArticle thickbox\" rel=\"categorize\">Kategorisera artikel</a></li>");
+			    	sb.append("        <li style='margin: 0px; margin-left: 4px; padding: 2px 0px 2px 2px; list-style: none;'><a href=\"" + componentEditorUrl + "ViewContentVersion!standalone.action?contentId=" + this.contentId + "&languageId=" + getController().getLanguageId() + "&anchorName=contentVersionBlock&KeepThis=true&TB_iframe=true&height=700&width=750&modal=true\" class=\"linkEditArticle thickbox\" rel=\"editContent\">Redigera artikel</a></li>");
+			    	sb.append("        <li style='margin: 0px; margin-left: 4px; padding: 2px 0px 2px 2px; list-style: none;'><a href=\"" + componentEditorUrl + "ViewContentVersion!standalone.action?contentId=" + this.contentId + "&languageId=" + getController().getLanguageId() + "&anchor=categoriesBlock&KeepThis=true&TB_iframe=true&height=700&width=750&modal=true\" class=\"linkCategorizeArticle thickbox\" rel=\"categorize\">Kategorisera artikel</a></li>");
 		    	}
-			    sb.append("        <li style='margin: 0px; margin-left: 4px; padding: 2px 0px 2px 2px; list-style: none;'><a href=\"" + componentEditorUrl + "ViewListSiteNodeVersion.action?siteNodeId=" + this.getController().getSiteNodeId() + "&repositoryId=" + this.getController().getSiteNode().getRepositoryId() + "&recurseSiteNodes=false&KeepThis=true&TB_iframe=true&height=700&width=750&modal=true\" class=\"editOnSightImageLink linkPublish thickbox\" rel=\"publish\">Publicera</a></li>");
-		    	sb.append("        <li style='margin: 0px; margin-left: 4px; padding: 2px 0px 2px 2px; list-style: none;'><a href=\"" + componentEditorUrl + "CreateEmail!inputChooseRecipientsV3.action?extraText=" + extraText + "&returnAddress=" + URLEncoder.encode(returnAddress, "utf-8") + "&KeepThis=true&TB_iframe=true&height=700&width=750&modal=true\" class=\"editOnSightImageLink linkNotify thickbox\" rel=\"notifications\">Notifiera</a></li>");
+			    sb.append("        <li style='margin: 0px; margin-left: 4px; padding: 2px 0px 2px 2px; list-style: none;'><a href=\"" + componentEditorUrl + "ViewListSiteNodeVersion.action?siteNodeId=" + this.getController().getSiteNodeId() + "&repositoryId=" + this.getController().getSiteNode().getRepositoryId() + "&recurseSiteNodes=false&KeepThis=true&TB_iframe=true&height=700&width=750&modal=true\" class=\"linkPublish thickbox\" rel=\"publish\">Publicera</a></li>");
+		    	sb.append("        <li style='margin: 0px; margin-left: 4px; padding: 2px 0px 2px 2px; list-style: none;'><a href=\"" + componentEditorUrl + "CreateEmail!inputChooseRecipientsV3.action?extraText=" + extraText + "&returnAddress=" + URLEncoder.encode(returnAddress, "utf-8") + "&KeepThis=true&TB_iframe=true&height=700&width=750&modal=true\" class=\"linkNotify thickbox\" rel=\"notifications\">Notifiera</a></li>");
 		    	
 		    	if(contentId != null)
 		    	{
-		    		sb.append("        <li style='margin: 0px; margin-left: 4px; padding: 2px 0px 2px 2px; list-style: none;'><a href=\"" + componentEditorUrl + "Subscriptions!input.action?interceptionPointCategory=Content&entityName=" + Content.class.getName() + "&entityId=" + this.contentId + "&extraParameters=" + this.contentId + "&returnAddress=" + URLEncoder.encode(returnAddress, "utf-8") + "&KeepThis=true&TB_iframe=true&height=700&width=750&modal=true\" class=\"editOnSightImageLink linkTakeContent thickbox\" rel=\"subscribe\">Prenumerera på innehållet</a></li>");
+		    		sb.append("        <li style='margin: 0px; margin-left: 4px; padding: 2px 0px 2px 2px; list-style: none;'><a href=\"" + componentEditorUrl + "Subscriptions!input.action?interceptionPointCategory=Content&entityName=" + Content.class.getName() + "&entityId=" + this.contentId + "&extraParameters=" + this.contentId + "&returnAddress=" + URLEncoder.encode(returnAddress, "utf-8") + "&KeepThis=true&TB_iframe=true&height=700&width=750&modal=true\" class=\"linkTakeContent thickbox\" rel=\"subscribe\">Prenumerera på innehållet</a></li>");
 		    	}
 		    	
-		    	sb.append("        <li style='margin: 0px; margin-left: 4px; padding: 2px 0px 2px 2px; list-style: none;'><a href=\"" + componentEditorUrl + "Subscriptions!input.action?interceptionPointCategory=SiteNodeVersion&entityName=" + SiteNode.class.getName() + "&entityId=" + this.getController().getSiteNodeId() + "&returnAddress=" + URLEncoder.encode(returnAddress, "utf-8") + "&KeepThis=true&TB_iframe=true&height=700&width=750&modal=true\" class=\"editOnSightImageLink linkTakePage thickbox\">Prenumerera på sidan</a></li>");
-		    	sb.append("        <li style='margin: 0px; margin-left: 4px; padding: 2px 0px 2px 2px; list-style: none;'><a href=\"" + componentEditorUrl + "ViewContentVersion!standalone.action?contentId=" + this.contentId + "&languageId=" + getController().getLanguageId() + "&anchorName=contentVersionBlock&translate=true&fromLanguageId=3&toLanguageId=1&KeepThis=true&TB_iframe=true&height=700&width=1000&modal=true\" class=\"editOnSightImageLink linkTranslate thickbox\" rel=\"editContent\">Översätt</a></li>");
+		    	sb.append("        <li style='margin: 0px; margin-left: 4px; padding: 2px 0px 2px 2px; list-style: none;'><a href=\"" + componentEditorUrl + "Subscriptions!input.action?interceptionPointCategory=SiteNodeVersion&entityName=" + SiteNode.class.getName() + "&entityId=" + this.getController().getSiteNodeId() + "&returnAddress=" + URLEncoder.encode(returnAddress, "utf-8") + "&KeepThis=true&TB_iframe=true&height=700&width=750&modal=true\" class=\"linkTakePage thickbox\">Prenumerera på sidan</a></li>");
+		    	sb.append("        <li style='margin: 0px; margin-left: 4px; padding: 2px 0px 2px 2px; list-style: none;'><a href=\"" + componentEditorUrl + "ViewContentVersion!standalone.action?contentId=" + this.contentId + "&languageId=" + getController().getLanguageId() + "&anchorName=contentVersionBlock&translate=true&fromLanguageId=3&toLanguageId=1&KeepThis=true&TB_iframe=true&height=700&width=1000&modal=true\" class=\"linkTranslate thickbox\" rel=\"editContent\">Översätt</a></li>");
 
-		    	sb.append("        <li style='margin: 0px; margin-left: 4px; padding: 2px 0px 2px 2px; list-style: none;' id=\"choice1\"><a href=\"#\" class=\"editOnSightImageLink linkTranslate\">Översätt</a>");
+		    	sb.append("        <li style='margin: 0px; margin-left: 4px; padding: 2px 0px 2px 2px; list-style: none;' id=\"choice1\"><a href=\"#\" class=\"linkTranslate\">Översätt</a>");
 		    	sb.append("        	<ul>");
 		    	sb.append("        		<li>");
 		    	sb.append("        			<a href=\"javascript: alert('Engelska');\">Till Engelska</a>");
