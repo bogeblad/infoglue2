@@ -100,6 +100,9 @@ public class ToolbarController
 			if(toolbarKey.equalsIgnoreCase("tool.contenttool.contentVersionHeader"))
 				return getContentVersionButtons();
 			
+			if(toolbarKey.equalsIgnoreCase("tool.common.globalSubscriptions.header"))
+				return getGlobalSubscriptionsButtons();
+			
 			/*
 			if(toolbarKey.equalsIgnoreCase("tool.structuretool.createSiteNodeHeader"))
 				return getCreateSiteNodeButtons();
@@ -499,6 +502,22 @@ public class ToolbarController
 		return buttons;
 	}
 	*/
+	
+	private List<ToolbarButton> getGlobalSubscriptionsButtons()
+	{
+		List<ToolbarButton> buttons = new ArrayList<ToolbarButton>();
+		buttons.add(new ToolbarButton("",
+				  getLocalizedString(locale, "tool.common.createSubscription.header"), 
+				  getLocalizedString(locale, "tool.common.createSubscription.header"),
+				  "showDiv('newSubscriptionForm')",
+				  "images/v3/createBackgroundPenPaper.gif",
+				  "left",
+				  true));
+		
+		return buttons;
+	}
+
+	
 	private List<ToolbarButton> getSystemUsersButtons() throws Exception
 	{
 		List<ToolbarButton> buttons = new ArrayList<ToolbarButton>();

@@ -327,19 +327,28 @@ public class SubscriptionsAction extends InfoGlueAbstractAction
     	StringBuffer sb = new StringBuffer();
     	
     	sb.append("<form action=\"Subscriptions!updateGlobalSubscription.action\" name=\"inputForm\" method=\"post\">");
-    	sb.append("<input type=\"text\" name=\"subscriptionId\" value=\"" + subscriptionVO.getId() + "\">");
-    	sb.append("<fieldset>");
-    	sb.append("	<label for=\"name\">Name</label><br/>");
-    	sb.append("	<input type=\"text\" name=\"name\" value=\"" + subscriptionVO.getName() + "\"/>");
+    	sb.append("<input type=\"hidden\" name=\"subscriptionId\" value=\"" + subscriptionVO.getId() + "\" style=\"border: 0px;\"/>");
+    	sb.append("<fieldset style=\"width: 90%; border: 0px solid red; margin: 0px; padding-left: 10px;\">");
     	
+    	sb.append("	<h3>Subscription basics</h3>");
+    	sb.append("	<p style=\"clear: both;\">");
+    	
+    	sb.append("	<label for=\"name\">Name</label>");
+    	sb.append("	<input type=\"text\" name=\"name\" value=\"" + subscriptionVO.getName() + "\"/>");
+    	sb.append("	</p>");
+		
+		sb.append("	<p style=\"clear: both;\">");
     	sb.append("	<label for=\"interceptionPointId\">Type</label>");
     	sb.append("	<select name=\"interceptionPointId\">");
     	sb.append("		<option value=\"33\" " + (subscriptionVO.getInterceptionPointId().intValue() == 33 ? "selected='selected'" : "") + ">Content.Published</option>");
     	sb.append("		<option value=\"22\" " + (subscriptionVO.getInterceptionPointId().intValue() == 22 ? "selected='selected'" : "") + ">Content.Delete</option>");
     	sb.append("	</select>");
+    	sb.append("	</p>");
 			
-    	sb.append("	<h3>Filters</h3>");
+    	sb.append("	<div style=\"clear: both;\"></div>");
 		
+    	sb.append("	<h4 style=\"border-bottom: 1px solid #bbb;\">Filters</h4>");
+
     	this.contentTypeDefintionVOList = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOList();
 		this.categoryVOList = CategoryController.getController().findAllActiveCategories();
 		
@@ -350,15 +359,15 @@ public class SubscriptionsAction extends InfoGlueAbstractAction
     	{
     		SubscriptionFilterVO subscriptionFilterVO = subscriptionFilterVOListIterator.next();
     		
-	    	sb.append("	<div id=\"filterRow_" + i + "\">");
-	    	sb.append("		<label for=\"filterType_" + i + "\">Filter type</label>");
+	    	sb.append("	<div id=\"filterRow_" + i + "\" class=\"formRow\" style=\"min-height: 50px; border: 0px solid red; border-bottom: 1px solid #bbb;\">");
+	    	sb.append("		<label for=\"filterType_" + i + "\">Filter type:</label>");
 	    	sb.append("		<select id=\"filterType_" + i + "\" name=\"filterType_" + i + "\" onchange=\"updateConditionInput(" + i + ");\">");
 	    	sb.append("			<option value=\"0\"" + (subscriptionFilterVO.getFilterType().equals("0") ? "selected='selected'" : "") + ">Content types</option>");
 	    	sb.append("			<option value=\"1\"" + (subscriptionFilterVO.getFilterType().equals("1") ? "selected='selected'" : "") + ">Categories</option>");
 	    	sb.append("		</select>");
 			
-	   		sb.append("		<label for=\"filterCondition_" + i + "\">Filter condition</label>");
-	   		sb.append("		<select id=\"filterCondition_" + i + "\" name=\"filterCondition_" + i + "\" multiple=\"multiple\" size=\"5\">");
+	   		sb.append("		<label for=\"filterCondition_" + i + "\">Filter condition:</label>");
+	   		sb.append("		<select id=\"filterCondition_" + i + "\" name=\"filterCondition_" + i + "\" multiple=\"multiple\" size=\"3\">");
 	   		
 	   		if(subscriptionFilterVO.getFilterType().equals("0"))
 	   		{
@@ -381,7 +390,7 @@ public class SubscriptionsAction extends InfoGlueAbstractAction
 	   		
 	   		sb.append("		</select>");
 					
-	   		sb.append("		<a id=\"removeFilterRowLink" + i + "\" href=\"javascript:removeFilterRow(" + i + ");\">Remove filter</a>");
+	   		sb.append("		&nbsp; <a id=\"removeFilterRowLink" + i + "\" href=\"javascript:removeFilterRow(" + i + ");\">Remove filter</a>");
 					
 	   		if(size-1 > i)
 	   			sb.append("		<p id=\"andParagraph_" + i + "\" style=\"padding: 30px; display: block;\">");
