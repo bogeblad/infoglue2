@@ -3365,6 +3365,7 @@ public class ComponentLogic
 					org.dom4j.Element element = (org.dom4j.Element)node;
 											
 					String name						= element.attributeValue("name");
+					String displayName				= element.attributeValue("displayName");
 					String type					 	= element.attributeValue("type");
 					String entity					= element.attributeValue("entity");
 					String multiple					= element.attributeValue("multiple");
@@ -3380,7 +3381,7 @@ public class ComponentLogic
 					String autoCreatContentMethod 	= element.attributeValue("autoCreatContentMethod");
 					String autoCreatContentPath		= element.attributeValue("autoCreatContentPath");
 
-					propertyDefinition = new ComponentPropertyDefinition(name, type, entity, new Boolean(multiple), new Boolean(assetBinding), allowedContTypeDefNames, description, defaultValue, new Boolean(WYSIWYGEnabled), WYSIWYGToolbar, dataProvider, dataProviderParameters, new Boolean(autoCreatContent), autoCreatContentMethod, autoCreatContentPath);
+					propertyDefinition = new ComponentPropertyDefinition(name, displayName, type, entity, new Boolean(multiple), new Boolean(assetBinding), allowedContTypeDefNames, description, defaultValue, new Boolean(WYSIWYGEnabled), WYSIWYGToolbar, dataProvider, dataProviderParameters, new Boolean(autoCreatContent), autoCreatContentMethod, autoCreatContentPath);
 				}
 			}
 		}

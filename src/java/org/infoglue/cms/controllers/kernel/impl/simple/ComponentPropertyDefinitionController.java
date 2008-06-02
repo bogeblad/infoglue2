@@ -104,6 +104,7 @@ public class ComponentPropertyDefinitionController extends BaseController
 				    Element propertyElement = (Element)propertyNode;
 				    
 				    String name 					= propertyElement.getAttribute("name");
+				    String displayName 				= propertyElement.getAttribute("displayName");
 				    String type 					= propertyElement.getAttribute("type");
 				    String entity 					= propertyElement.getAttribute("entity");
 				    String multiple 				= propertyElement.getAttribute("multiple");
@@ -119,7 +120,7 @@ public class ComponentPropertyDefinitionController extends BaseController
 				    String autoCreateContentMethod	= propertyElement.getAttribute("autoCreateContentMethod");
 				    String autoCreateContentPath	= propertyElement.getAttribute("autoCreateContentPath");
 				    				    
-				    ComponentPropertyDefinition cpd = new ComponentPropertyDefinition(name, type, entity, new Boolean(multiple), new Boolean(assetBinding), allowedContentTypeNames, description, defaultValue, new Boolean(WYSIWYGEnabled), WYSIWYGToolbar, dataProvider, dataProviderParameters, new Boolean(autoCreateContent), autoCreateContentMethod, autoCreateContentPath);
+				    ComponentPropertyDefinition cpd = new ComponentPropertyDefinition(name, displayName, type, entity, new Boolean(multiple), new Boolean(assetBinding), allowedContentTypeNames, description, defaultValue, new Boolean(WYSIWYGEnabled), WYSIWYGToolbar, dataProvider, dataProviderParameters, new Boolean(autoCreateContent), autoCreateContentMethod, autoCreateContentPath);
 				    
 					NodeList optionsNodeList = propertyElement.getElementsByTagName("option");
 					for(int k=0; k<optionsNodeList.getLength(); k++)
