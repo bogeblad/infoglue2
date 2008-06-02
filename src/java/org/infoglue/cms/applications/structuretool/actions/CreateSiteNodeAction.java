@@ -29,6 +29,7 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
+import org.infoglue.cms.applications.common.ImageButton;
 import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.applications.databeans.LinkBean;
@@ -39,17 +40,20 @@ import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.DigitalAssetController;
 import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
 import org.infoglue.cms.controllers.kernel.impl.simple.PageTemplateController;
+import org.infoglue.cms.controllers.kernel.impl.simple.RepositoryController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeTypeDefinitionController;
 import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.entities.content.DigitalAssetVO;
 import org.infoglue.cms.entities.management.LanguageVO;
+import org.infoglue.cms.entities.management.RepositoryVO;
 import org.infoglue.cms.entities.structure.SiteNode;
 import org.infoglue.cms.entities.structure.SiteNodeVO;
 import org.infoglue.cms.exception.AccessConstraintException;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.util.AccessConstraintExceptionBuffer;
+import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
 import org.infoglue.cms.util.sorters.ReflectionComparator;
 
@@ -69,12 +73,14 @@ public class CreateSiteNodeAction extends InfoGlueAbstractAction
     private Integer pageTemplateContentId;
     private Integer repositoryId;
     private String returnAddress;
+    private String originalAddress;
     private ConstraintExceptionBuffer ceb;
    	private SiteNodeVO siteNodeVO;
    	private SiteNodeVO newSiteNodeVO;
    	private SiteNodeVO parentSiteNodeVO;
    	private String sortProperty = "name";
-  
+   	private String userSessionKey;
+   	
   	public CreateSiteNodeAction()
 	{
 		this(new SiteNodeVO());
@@ -297,6 +303,9 @@ public class CreateSiteNodeAction extends InfoGlueAbstractAction
             SiteNodeController.getController().createSiteNodeMetaInfoContent(db, newSiteNode, this.repositoryId, this.getInfoGluePrincipal(), this.pageTemplateContentId);
             
             commitTransaction(db);
+
+            System.out.println("userSessionKey:" + userSessionKey + " - " + newSiteNodeVO.getId());
+            addActionLink(userSessionKey, new LinkBean("newPageUrl", "Direkt till sidan du skapade","Klicka här om du vill komma direkt till sidan du just startat.", "Klicka här om du vill komma direkt till sidan du just startat.", getDecoratedPageUrl(newSiteNodeVO.getId()), ""));
         }
         catch(Exception e)
         {
@@ -304,15 +313,10 @@ public class CreateSiteNodeAction extends InfoGlueAbstractAction
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
-    	
-        String userSessionKey = "" + System.currentTimeMillis();
-        
-        addActionLink(userSessionKey, new LinkBean("link666", "Länk numero uno","Title på länken", "Det här är en en länk till Dahlgrens nyheter (kommer från sessionen)", "http://www.dahlgren.st", "http://www.iconarchive.com/icons/zakar/shining-z/Casque-SZ-24x24.png"));
-        addActionLink(userSessionKey, new LinkBean("link888", "Länk numero due","Title på länken tralala", "Det här är en en länk till GP (kommer från sessionen)", "http://www.gp.st", "http://www.dahlgren.st/spelkvall/miscellaneousContent/avatars/badAvatar2.jpg"));
-        
+    	        
         if(this.returnAddress != null && !this.returnAddress.equals(""))
         {
-	        String arguments 	= "userSessionKey=" + userSessionKey + "&isAutomaticRedirect=false&message=Här kommer mitt meddelande!&actionLinks=link1,Länk 1,Testlänk,Det här är en länk till CG-channel,http://www.cgchannel.com,http://www.iconarchive.com/icons/zakar/shining-z/Casque-SZ-24x24.png;link2,Länk Lala,Testlänk 2,Det här är en länk till Silo-forumet,http://www.silo3d.com/forum/,http://www.iconarchive.com/icons/zakar/shining-z/Deamontools-SZ-24x24.png";
+	        String arguments 	= "userSessionKey=" + userSessionKey + "&isAutomaticRedirect=false";
 	        String messageUrl 	= returnAddress + (returnAddress.indexOf("?") > -1 ? "&" : "?") + arguments;
 	        
 	        this.getResponse().sendRedirect(messageUrl);
@@ -334,12 +338,47 @@ public class CreateSiteNodeAction extends InfoGlueAbstractAction
 			ceb.add(new AccessConstraintException("SiteNode.siteNodeId", "1002"));
 		
 		ceb.throwIfNotEmpty();
-		
+
+        userSessionKey = "" + System.currentTimeMillis();
+        System.out.println("userSessionKey input:" + userSessionKey);
+
 		parentSiteNodeVO = SiteNodeControllerProxy.getController().getSiteNodeVOWithId(parentSiteNodeId);
-		
+
+        setActionMessage(userSessionKey, "Sidan skapades korrekt under &quot;" + parentSiteNodeVO.getName() + "&quot;. Fortsätt genom att välja något av alternativen nedan.");
+        addActionLink(userSessionKey, new LinkBean("currentPageUrl", "Tillbaka till sidan du utgick från", "Klicka här om du vill komma tillbaka till sidan där du startade flödet.", "Klicka här om du vill komma tillbaka till sidan där du startade flödet.", this.originalAddress, ""));
+
 		return "inputV3";
     }
         
+    
+	private String getDecoratedPageUrl(Integer siteNodeId) throws Exception
+	{
+		RepositoryVO repositoryVO = RepositoryController.getController().getRepositoryVOWithId(this.repositoryId);
+		
+		String dnsName = repositoryVO.getDnsName();
+
+	    String workingUrl = null;
+	    
+	    String keyword = "working=";
+	    int startIndex = (dnsName == null) ? -1 : dnsName.indexOf(keyword);
+	    if(startIndex != -1)
+	    {
+	        int endIndex = dnsName.indexOf(",", startIndex);
+		    if(endIndex > -1)
+	            dnsName = dnsName.substring(startIndex, endIndex);
+	        else
+	            dnsName = dnsName.substring(startIndex);
+
+		    workingUrl = dnsName.split("=")[1] + CmsPropertyHandler.getComponentRendererUrl() + "ViewPage!renderDecoratedPage.action";
+	    }
+	    else
+	    {
+	        workingUrl = CmsPropertyHandler.getPreviewDeliveryUrl();
+	    }
+	    
+		return "" + workingUrl + "?siteNodeId=" + siteNodeId;
+	}
+
     public Integer getPageTemplateContentId()
     {
         return pageTemplateContentId;
@@ -363,5 +402,25 @@ public class CreateSiteNodeAction extends InfoGlueAbstractAction
 	public String getReturnAddress()
 	{
 		return returnAddress;
+	}
+
+	public String getUserSessionKey()
+	{
+		return userSessionKey;
+	}
+
+	public void setUserSessionKey(String userSessionKey)
+	{
+		this.userSessionKey = userSessionKey;
+	}
+
+	public String getOriginalAddress()
+	{
+		return originalAddress;
+	}
+
+	public void setOriginalAddress(String originalAddress)
+	{
+		this.originalAddress = originalAddress;
 	}
 }

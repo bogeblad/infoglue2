@@ -294,17 +294,17 @@
 
 	<div style="clear: both;"></div>
 	
-	<h3 style="text-indent: 16px;">Redigeringsvy innehåll "$contentVO.name"</h3>
+	<h3 style="text-indent: 16px;">#if($translate)Översättningsvy #else Redigeringsvy #end innehåll "$contentVO.name" ($currentLanguageVO.name)</h3>
 	
 	<div id="allDivs">
 	
 	<div id="tabsContainer" class="flora" style="#if($translate == false)width: 100%;#end float:left; aborder: 1px solid red;">
 	
 	<ul>
-        <li><a href="#contentVersionDiv"><span>Text</span></a></li>
-        <li><a href="#contentVersionCategoriesDiv"><span>Categories</span></a></li>
-        <li><a href="#contentVersionAssetsDiv"><span>Assets</span></a></li>
-        <li><a href="#contentCoverDiv"><span>Content cover</span></a></li>
+        <li><a href="#contentVersionDiv"><span>Textinnehåll</span></a></li>
+        <li><a href="#contentVersionCategoriesDiv"><span>Kategorier</span></a></li>
+        <li><a href="#contentVersionAssetsDiv"><span>Bifogade filer</span></a></li>
+        <li><a href="#contentCoverDiv"><span>Omslagsinformation</span></a></li>
     </ul>
 	
 	<div id="contentVersionDiv">
@@ -1049,7 +1049,7 @@
 	<div id="otherLanguageTabsContainer" style="float: right; aborder: 1px solid green; width: 480px;">
 		
 		<ul>
-	        <li><a href="#otherContentVersionDiv"><span>English</span></a></li>
+	        <li><a href="#otherContentVersionDiv"><span>$originalLanguageContentVersionVO.languageName</span></a></li>
 	    </ul>
 		
 		<div id="otherContentVersionDiv" class="inlineTabDiv">

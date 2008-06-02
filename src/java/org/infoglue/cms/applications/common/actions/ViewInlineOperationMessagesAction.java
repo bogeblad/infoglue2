@@ -45,6 +45,7 @@ public class ViewInlineOperationMessagesAction extends InfoGlueAbstractAction
 	private final static Logger logger = Logger.getLogger(ViewInlineOperationMessagesAction.class.getName());
     
     private String message;
+    private String userSessionKey;
     private List<LinkBean> actionLinks;
     private boolean isAutomaticRedirect = false;
     
@@ -59,6 +60,7 @@ public class ViewInlineOperationMessagesAction extends InfoGlueAbstractAction
     	message								= getRequest().getParameter("message");
 		String actionLinkString				= getRequest().getParameter("actionLinks");	
 		String isAutomaticRedirectString	= getRequest().getParameter("isAutomaticRedirect");	
+		//String userSessionKey 				= getRequest().getParameter("userSessionKey");
 		
 		if (isAutomaticRedirectString != null)
 		{
@@ -75,8 +77,6 @@ public class ViewInlineOperationMessagesAction extends InfoGlueAbstractAction
 		String[] elements;
 		String[] values;
 
-		String userSessionKey = getRequest().getParameter("userSessionKey");
-		
 		//-----------------------------------------------------------
 		// Retrieve any actionLinks previously stored in the session
 		//-----------------------------------------------------------
@@ -131,8 +131,11 @@ public class ViewInlineOperationMessagesAction extends InfoGlueAbstractAction
 	{				
     	if (message == null)
     	{
-    		message = "Undefined";
+    		message = getActionMessage(userSessionKey);
+    		if(message == null)
+    			message = "Undefined";
     	}
+    	
 		return message;
 	}
     
@@ -159,5 +162,15 @@ public class ViewInlineOperationMessagesAction extends InfoGlueAbstractAction
 	public void setIsAutomaticRedirect(boolean isAutomaticRedirect)
 	{
 		this.isAutomaticRedirect = isAutomaticRedirect;
+	}
+
+	public String getUserSessionKey()
+	{
+		return userSessionKey;
+	}
+
+	public void setUserSessionKey(String userSessionKey)
+	{
+		this.userSessionKey = userSessionKey;
 	}
 }

@@ -222,7 +222,7 @@ img.scaledbordered {
 	vertical-align: top;
 	}
 
-.dialogDivBody .submit, input, select {
+.dialogDivBody .submit, .dialogDivBody  input, .dialogDivBody  select {
 	amargin-left: 4.5em;
 	margin-bottom: 5px;
 	vertical-align: top;
@@ -230,7 +230,6 @@ img.scaledbordered {
 	float: left;
 	border: 1px solid #bbb;
 	}
-	
 
 /* MY General button classes */
 .yui-skin-sam .yui-button {

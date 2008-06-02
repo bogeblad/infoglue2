@@ -53,7 +53,6 @@
 	<h3 style="text-indent: 16px;">Skapa undersida till "$parentSiteNodeVO.name"</h3>
 
 	<form name="editForm" method="POST" action="CreateSiteNode!executeV3.action">
-		<input type="hidden" name="returnAddress" value="$returnAddress"/>
 		<div id="tabsContainer" class="flora">      
 			<ul>
 		        <li><a href="#basicTab"><span>Basic</span></a></li>
@@ -145,6 +144,8 @@
 		<input type="hidden" name="unrefreshedSiteNodeId" value="$!parentSiteNodeId">
 		<input type="hidden" name="changeTypeId" value="2">
 		<input type="hidden" name="pageTemplateContentId" value="">
+		<input type="hidden" name="userSessionKey" value="$!userSessionKey"/>
+		<input type="hidden" name="returnAddress" value="$returnAddress"/>
 		
 		#footerToolbar($footerButtons)
 	

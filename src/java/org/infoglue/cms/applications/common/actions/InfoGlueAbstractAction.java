@@ -663,5 +663,17 @@ public abstract class InfoGlueAbstractAction extends WebworkAbstractAction
 		
 		setActionLinks(aUserSessionKey, actionLinks);
 	}
+
+	public void setActionMessage(String aUserSessionKey, String actionMessage)
+	{
+		String key = aUserSessionKey + "_actionMessage";
+		getRequest().getSession().setAttribute(key, actionMessage);
+	}
+
+	public String getActionMessage(String aUserSessionKey)
+	{
+		String key = aUserSessionKey + "_actionMessage";
+		return (String)getRequest().getSession().getAttribute(key);
+	}
 }
 

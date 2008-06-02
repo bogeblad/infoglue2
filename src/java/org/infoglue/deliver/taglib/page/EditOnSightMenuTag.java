@@ -24,10 +24,14 @@
 package org.infoglue.deliver.taglib.page;
 
 import java.net.URLEncoder;
+import java.util.Iterator;
+import java.util.List;
 
 import javax.servlet.jsp.JspException;
 
 import org.infoglue.cms.entities.content.Content;
+import org.infoglue.cms.entities.content.ContentVersionVO;
+import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.entities.structure.SiteNode;
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.deliver.taglib.component.ComponentLogicTag;
@@ -65,10 +69,19 @@ public class EditOnSightMenuTag extends ComponentLogicTag
 	    	try
 	    	{
 	    		String componentEditorUrl = CmsPropertyHandler.getComponentEditorUrl();
-		    	String returnAddress = "" + componentEditorUrl + "ViewInlineOperationMessages.action?returnAddress=" + URLEncoder.encode(this.getController().getCurrentPageUrl(), "utf-8");
-		    	String extraText = URLEncoder.encode("<a href='" + this.getController().getOriginalFullURL() + "'>Klicka här för att komma till sidan</a>", "iso-8859-1");
+		    	String returnAddress = "" + componentEditorUrl + "ViewInlineOperationMessages.action";
+		    	String extraText = URLEncoder.encode(this.getController().getOriginalFullURL(), "iso-8859-1");
 		    	System.out.println("componentEditorUrl:" + componentEditorUrl);
 		    	
+		    	String metaDataUrl 			= componentEditorUrl + "ViewAndCreateContentForServiceBinding.action?siteNodeId=" + this.getController().getSiteNodeId() + "&repositoryId=" + this.getController().getSiteNode().getRepositoryId() + "&asiteNodeVersionId=2109&KeepThis=true&TB_iframe=true&height=700&width=750&modal=true";
+		    	String createSiteNodeUrl 	= componentEditorUrl + "CreateSiteNode!inputV3.action?repositoryId=" + this.getController().getSiteNode().getRepositoryId() + "&parentSiteNodeId=" + this.getController().getSiteNodeId() + "&languageId=" + this.getController().getLanguageId() + "&returnAddress=" + URLEncoder.encode(returnAddress, "utf-8") + "&originalAddress=" + URLEncoder.encode(this.getController().getCurrentPageUrl(), "utf-8") + "&KeepThis=true&TB_iframe=true&height=700&width=750&modal=true";
+		    	String contentVersionUrl 	= componentEditorUrl + "ViewContentVersion!standalone.action?contentId=" + this.contentId + "&languageId=" + getController().getLanguageId() + "&anchorName=contentVersionBlock&KeepThis=true&TB_iframe=true&height=700&width=750&modal=true";
+		    	String categoriesUrl 		= componentEditorUrl + "ViewContentVersion!standalone.action?contentId=" + this.contentId + "&languageId=" + getController().getLanguageId() + "&anchor=categoriesBlock&KeepThis=true&TB_iframe=true&height=700&width=750&modal=true";
+		    	String publishUrl 			= componentEditorUrl + "ViewListSiteNodeVersion.action?siteNodeId=" + this.getController().getSiteNodeId() + "&repositoryId=" + this.getController().getSiteNode().getRepositoryId() + "&recurseSiteNodes=false&KeepThis=true&TB_iframe=true&height=700&width=750&modal=true";
+		    	String notifyUrl 			= componentEditorUrl + "CreateEmail!inputChooseRecipientsV3.action?extraText=" + extraText + "&returnAddress=" + URLEncoder.encode(returnAddress, "utf-8") + "&KeepThis=true&TB_iframe=true&height=700&width=750&modal=true";
+		    	String subscriptionUrl 		= componentEditorUrl + "Subscriptions!input.action?interceptionPointCategory=Content&entityName=" + Content.class.getName() + "&entityId=" + this.contentId + "&extraParameters=" + this.contentId + "&returnAddress=" + URLEncoder.encode(returnAddress, "utf-8") + "&KeepThis=true&TB_iframe=true&height=700&width=750&modal=true";
+		    	String pageSubscriptionUrl 	= componentEditorUrl + "Subscriptions!input.action?interceptionPointCategory=SiteNodeVersion&entityName=" + SiteNode.class.getName() + "&entityId=" + this.getController().getSiteNodeId() + "&returnAddress=" + URLEncoder.encode(returnAddress, "utf-8") + "&KeepThis=true&TB_iframe=true&height=700&width=750&modal=true";
+		    			    	
 	    		sb.append("<script type=\"text/javascript\" src=\"script/jquery/jquery-1.2.3.min.js\"></script>");
 		    	sb.append("<script type=\"text/javascript\" src=\"script/jqueryplugins/thickbox/thickbox-compressed.js\"></script>");
 		    	sb.append("<style type=\"text/css\" media=\"all\">");
@@ -79,9 +92,11 @@ public class EditOnSightMenuTag extends ComponentLogicTag
 		    	sb.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"script/jqueryplugins/menu/style.css\" />");
 		    	
 		    	sb.append("<script type='text/javascript'>\n");
-		    	sb.append("function openDiv(menuItem, text, url) { \n");
+		    	//sb.append("function openDiv(menuItem, text, url) { \n");
+		    	sb.append("function openDiv(url) { \n");
+		    	/*
 		    	sb.append("		var metaDataUrl 		= '" + componentEditorUrl + "ViewAndCreateContentForServiceBinding.action?siteNodeId=1131&repositoryId=47&siteNodeVersionId=2109&KeepThis=true&TB_iframe=true&height=700&width=750&modal=true';");
-		    	sb.append("		var createSiteNodeUrl 	= '" + componentEditorUrl + "CreateSiteNode!inputV3.action?repositoryId=47&parentSiteNodeId=" + this.getController().getSiteNodeId() + "&languageId=" + this.getController().getLanguageId() + "&returnAddress=" + URLEncoder.encode(returnAddress, "utf-8") + "&KeepThis=true&TB_iframe=true&height=700&width=750&modal=true';");
+		    	sb.append("		var createSiteNodeUrl 	= '" + componentEditorUrl + "CreateSiteNode!inputV3.action?repositoryId=" + this.getController().getSiteNode().getRepositoryId() + "&parentSiteNodeId=" + this.getController().getSiteNodeId() + "&languageId=" + this.getController().getLanguageId() + "&returnAddress=" + URLEncoder.encode(returnAddress, "utf-8") + "&originalAddress=" + URLEncoder.encode(this.getController().getCurrentPageUrl(), "utf-8") + "&KeepThis=true&TB_iframe=true&height=700&width=750&modal=true';");
 		    	sb.append("		var contentVersionUrl 	= '" + componentEditorUrl + "ViewContentVersion!standalone.action?contentId=" + this.contentId + "&languageId=" + getController().getLanguageId() + "&anchorName=contentVersionBlock&KeepThis=true&TB_iframe=true&height=700&width=750&modal=true';");
 		    	sb.append("		var categoriesUrl 		= '" + componentEditorUrl + "ViewContentVersion!standalone.action?contentId=" + this.contentId + "&languageId=" + getController().getLanguageId() + "&anchor=categoriesBlock&KeepThis=true&TB_iframe=true&height=700&width=750&modal=true';");
 		    	sb.append("		var publishUrl 			= '" + componentEditorUrl + "ViewListSiteNodeVersion.action?siteNodeId=" + this.getController().getSiteNodeId() + "&repositoryId=" + this.getController().getSiteNode().getRepositoryId() + "&recurseSiteNodes=false&KeepThis=true&TB_iframe=true&height=700&width=750&modal=true';");
@@ -89,61 +104,67 @@ public class EditOnSightMenuTag extends ComponentLogicTag
 		    	sb.append("		var subscriptionUrl 	= '" + componentEditorUrl + "Subscriptions!input.action?interceptionPointCategory=Content&entityName=" + Content.class.getName() + "&entityId=" + this.contentId + "&extraParameters=" + this.contentId + "&returnAddress=" + URLEncoder.encode(returnAddress, "utf-8") + "&KeepThis=true&TB_iframe=true&height=700&width=750&modal=true';");
 		    	sb.append("		var pageSubscriptionUrl = '" + componentEditorUrl + "Subscriptions!input.action?interceptionPointCategory=SiteNodeVersion&entityName=" + SiteNode.class.getName() + "&entityId=" + this.getController().getSiteNodeId() + "&returnAddress=" + URLEncoder.encode(returnAddress, "utf-8") + "&KeepThis=true&TB_iframe=true&height=700&width=750&modal=true';");
 		    	sb.append("		var translateUrl 		= '" + componentEditorUrl + "ViewContentVersion!standalone.action?contentId=" + this.contentId + "&languageId=" + getController().getLanguageId() + "&anchorName=contentVersionBlock&translate=true&fromLanguageId=3&toLanguageId=1&KeepThis=true&TB_iframe=true&height=700&width=1000&modal=true';");
-		    	
-		    	sb.append("		alert('you clicked item \"' + text + url + '\"');\n");
-		    	sb.append("		if(text == 'Ändra sidans metadata') {\n");
-		    	sb.append("			tb_show('Redigera', metaDataUrl, 'Redigera');\n");
-		    	sb.append("		} \n");
-		    	sb.append("		else if(text == 'Skapa undersida till nuvarande') {\n");
-		    	sb.append("			tb_show('Subpage', createSiteNodeUrl, 'Subpage');\n");
-		    	sb.append("		} \n");
-		    	sb.append("		else if(text == 'Redigera artikel') {\n");
-		    	sb.append("			tb_show('Redigera', contentVersionUrl, 'Redigera');\n");
-		    	sb.append("		} \n");
+				*/
+		    	//sb.append("		alert('you clicked item \"' + url + '\"');\n");
+		    	sb.append("		tb_show('Redigera', url, 'Redigera');\n");
+
 		    	sb.append("} \n");
 		    	sb.append("$(document).ready(function(){\n");
-		    	sb.append("		var options = {minWidth: 120, arrowSrc: 'script/jqueryplugins/menu/arrow_right.gif', copyClassAttr: true, onClick: function(e, menuItem){ openDiv('', $(this).text(), $(this).src); }};\n");
+		    	sb.append("		var options = {minWidth: 120, arrowSrc: 'script/jqueryplugins/menu/arrow_right.gif', copyClassAttr: true/*, onClick: function(e, menuItem){ alert('menuItem:' + menuItem); openDiv('', $(this).text(), $(this).find('a').attr('href')); }*/};\n");
 		    		
 		    	sb.append("		$('#editOnSightDiv" + this.getComponentLogic().getInfoGlueComponent().getId() + "').menu(options);\n");
 		    	sb.append("});\n");
 		    	sb.append("</script>\n");
 		    					
 		    	sb.append("<div id=\"editOnSightDiv" + this.getComponentLogic().getInfoGlueComponent().getId() + "\">");
-		    		
+
 		        sb.append("InfoGlue&nbsp;actions");
 		    	
 		    	sb.append("    <ul>");
-		    	sb.append("        <li><a href='#' class=\"editOnSightHref linkMetadata thickbox\" rel=\"metaInfo\">Ändra sidans metadata</a></li>");
-		    	sb.append("        <li><a href='#' class=\"editOnSightHref linkCreatePage thickbox\" rel=\"subpage\">Skapa undersida till nuvarande</a></li>");
+		    	sb.append("        <li><a href=\"javascript:openDiv('" + metaDataUrl + "');\" class=\"editOnSightHref linkMetadata thickbox\" rel=\"metaInfo\">Ändra sidans metadata</a></li>");
+		    	sb.append("        <li><a href=\"javascript:openDiv('" + createSiteNodeUrl + "');\" class=\"editOnSightHref linkCreatePage thickbox\" rel=\"subpage\">Skapa undersida till nuvarande</a></li>");
 
 		    	if(contentId != null)
 		    	{
-			    	sb.append("        <li><a href=\"#\" class=\"editOnSightHref linkEditArticle thickbox\" rel=\"editContent\">Redigera artikel</a></li>");
-			    	sb.append("        <li><a href=\"#\" class=\"editOnSightHref linkCategorizeArticle thickbox\" rel=\"categorize\">Kategorisera artikel</a></li>");
+			    	sb.append("        <li><a href=\"javascript:openDiv('" + contentVersionUrl + "');\" class=\"editOnSightHref linkEditArticle thickbox\" rel=\"editContent\">Redigera artikel</a></li>");
+			    	sb.append("        <li><a href=\"javascript:openDiv('" + categoriesUrl + "');\" class=\"editOnSightHref linkCategorizeArticle thickbox\" rel=\"categorize\">Kategorisera artikel</a></li>");
 		    	}
-			    sb.append("        <li><a href=\"#\" class=\"editOnSightHref linkPublish thickbox\" rel=\"publish\">Publicera</a></li>");
-		    	sb.append("        <li><a href=\"#\" class=\"editOnSightHref linkNotify thickbox\" rel=\"notifications\">Notifiera</a></li>");
+			    sb.append("        <li><a href=\"javascript:openDiv('" + publishUrl + "');\" class=\"editOnSightHref linkPublish thickbox\" rel=\"publish\">Publicera</a></li>");
+		    	sb.append("        <li><a href=\"javascript:openDiv('" + notifyUrl + "');\" class=\"editOnSightHref linkNotify thickbox\" rel=\"notifications\">Notifiera</a></li>");
 		    	
 		    	if(contentId != null)
 		    	{
-		    		sb.append("        <li><a href=\"#\" class=\"editOnSightHref linkTakeContent thickbox\" rel=\"subscribe\">Prenumerera på innehållet</a></li>");
+		    		sb.append("        <li><a href=\"javascript:openDiv('" + subscriptionUrl + "');\" class=\"editOnSightHref linkTakeContent thickbox\" rel=\"subscribe\">Prenumerera på innehållet</a></li>");
 		    	}
 		    	
-		    	sb.append("        <li><a href=\"#\" class=\"editOnSightHref linkTakePage thickbox\">Prenumerera på sidan</a></li>");
-		    	sb.append("        <li><a href=\"#\" class=\"editOnSightHref linkTranslate thickbox\" rel=\"editContent\">Översätt</a></li>");
+		    	sb.append("        <li><a href=\"javascript:openDiv('" + pageSubscriptionUrl + "');\" class=\"editOnSightHref linkTakePage thickbox\">Prenumerera på sidan</a></li>");
+		    	//sb.append("        <li><a href=\"javascript:openDiv('" + translateUrl + "');\" class=\"editOnSightHref linkTranslate thickbox\" rel=\"editContent\">Översätt</a></li>");
 
-		    	sb.append("        <li id=\"choice1\"><a href=\"#\" class=\"editOnSightHref linkTranslate thickbox\">Översätt</a>");
+		    	sb.append("        <li id=\"choice1\"><a href=\"javascript:void();\" class=\"editOnSightHref linkTranslate thickbox\">Översätt</a>");
 		    	sb.append("        	<ul>");
-		    	sb.append("        		<li>");
-		    	sb.append("        			<a href=\"#\" class=\"editOnSightHref linkTranslate thickbox\">Till Engelska</a>");
-		    	sb.append("        		</li>");
-		    	sb.append("        		<li>");
-		    	sb.append("        			<a href=\"#\" class=\"editOnSightHref linkTranslate thickbox\">Till Franska</a>");
-		    	sb.append("        		</li>");
+		    	
+		    	ContentVersionVO contentVersionVO = this.getController().getContentVersion(contentId, this.getController().getLanguageId(), true);
+		    	System.out.println("Current contentVersionVO:" + contentVersionVO.getLanguageName() + ":" + contentVersionVO.getLanguageId());
+		    	List languages = this.getController().getPageLanguages();
+		    	
+		    	Iterator languagesIterator = languages.iterator();
+		    	while(languagesIterator.hasNext())
+		    	{
+		    		LanguageVO languageVO = (LanguageVO)languagesIterator.next();
+		    		if(contentVersionVO.getLanguageId().equals(languageVO.getId()))
+		    		{
+			    		String translateUrl = componentEditorUrl + "ViewContentVersion!standalone.action?contentId=" + this.contentId + "&languageId=" + contentVersionVO.getLanguageId() + "&anchorName=contentVersionBlock&translate=true&fromLanguageId=" + contentVersionVO.getLanguageId() + "&toLanguageId=" + languageVO.getId() + "&KeepThis=true&TB_iframe=true&height=700&width=1000&modal=true";
+						
+				    	sb.append("        		<li>");
+				    	sb.append("        			<a href=\"javascript:openDiv('" + translateUrl + "');\" class=\"editOnSightHref linkTranslate thickbox\">Till Engelska</a>");
+				    	sb.append("        		</li>");
+		    		}
+		    	}
+
 		    	sb.append("        </ul>");
 		    	sb.append("        </li>");
 			
-		    	sb.append("        <li><a href=\"#\" class=\"editOnSightHref linkCreateNews\">Skapa nyhet om denna artikel</a></li>");
+		    	sb.append("        <li><a href=\"javascript:openDiv('" + metaDataUrl + "');\" class=\"editOnSightHref linkCreateNews\">Skapa nyhet om denna artikel</a></li>");
 		    	sb.append("    </ul>");
 
 		    	sb.append("</div>");

@@ -99,6 +99,8 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 			
     private ContentVO contentVO;
     protected ContentVersionVO contentVersionVO;
+    protected ContentVersionVO originalLanguageContentVersionVO;
+    private LanguageVO currentLanguageVO;
 	public List attributes = null;
 
 	private List repositories;
@@ -128,9 +130,16 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 	private String assignedAssetKey;
 	
 	private String anchor = null;
+	private String anchorName = null;
 	
 	private boolean showActionButtons = true;
 	private boolean showSelectButtonByEachImage = false;
+	
+	//New translation parameters
+	private boolean translate = false;
+	private Integer fromLanguageId;
+	private Integer toLanguageId;
+	
 	
 	public String getQualifyerPath(String entity, String entityId)
 	{	
@@ -284,18 +293,25 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 			this.contentVersionVO = ContentVersionControllerProxy.getController().getACContentVersionVOWithId(this.getInfoGluePrincipal(), contentVersionId);    		 	
     		//this.contentVersionVO = ContentVersionController.getContentVersionVOWithId(contentVersionId);    		 	
 
+        /*
 		if(this.forceWorkingChange && contentVersionVO != null && !contentVersionVO.getStateId().equals(ContentVersionVO.WORKING_STATE))
 		{
 		    ContentVersion contentVersion = ContentStateController.changeState(contentVersionVO.getContentVersionId(), ContentVersionVO.WORKING_STATE, "Edit on sight", false, null, this.getInfoGluePrincipal(), this.getContentId(), new ArrayList());
 		    contentVersionId = contentVersion.getContentVersionId();
 		    contentVersionVO = contentVersion.getValueObject();
 		}
+		*/
 
         if(this.contentTypeDefinitionVO != null)
         {
             this.contentTypeDefinitionVO = ContentTypeDefinitionController.getController().validateAndUpdateContentType(this.contentTypeDefinitionVO);
             this.attributes = ContentTypeDefinitionController.getController().getContentTypeAttributes(this.contentTypeDefinitionVO.getSchemaValue());
         }
+
+        if(this.fromLanguageId != null)
+			this.originalLanguageContentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentId, fromLanguageId);
+        if(this.languageId != null)
+        	this.currentLanguageVO = LanguageController.getController().getMasterLanguage(languageId);
     } 
 
     public String doExecute() throws Exception
@@ -430,9 +446,9 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 
     public String doDeleteDigitalAsset() throws Exception
     {
-    	ContentVersionController.getContentVersionController().deleteDigitalAssetRelation(getContentVersionId(), this.digitalAssetId);
-    	//this.initialize(getContentVersionId(), getContentId(), this.languageId);
-    	//return "success";
+    	ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().deleteDigitalAssetRelation(getContentVersionId(), this.digitalAssetId, this.getInfoGluePrincipal());
+    	this.setContentVersionId(contentVersionVO.getId());
+    	
     	anchor = "digitalAssetsBlock";
     	
     	return doExecute();
@@ -440,9 +456,8 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
     
     public String doDeleteDigitalAssetStandalone() throws Exception
     {
-    	ContentVersionController.getContentVersionController().deleteDigitalAssetRelation(getContentVersionId(), this.digitalAssetId);
-    	//this.initialize(getContentVersionId(), getContentId(), this.languageId);
-    	//return "success";
+    	ContentVersionController.getContentVersionController().deleteDigitalAssetRelation(getContentVersionId(), this.digitalAssetId, this.getInfoGluePrincipal());
+
     	anchor = "digitalAssetsBlock";
 
     	return doStandalone();
@@ -794,37 +809,7 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 				{
 					value = xml.substring(startTagIndex + key.length() + 11, endTagIndex);
 					value = new VisualFormatter().escapeHTML(value);
-				}					
-				
-				/*
-		        InputSource inputSource = new InputSource(new StringReader(this.contentVersionVO.getVersionValue()));
-				
-				DOMParser parser = new DOMParser();
-				parser.parse(inputSource);
-				Document document = parser.getDocument();
-				NodeList nl = document.getDocumentElement().getChildNodes();
-				Node n = nl.item(0);
-
-				nl = n.getChildNodes();
-				for(int i=0; i<nl.getLength(); i++)
-				{
-					n = nl.item(i);
-					if(n.getNodeName().equalsIgnoreCase(key))
-					{
-						if(n.getFirstChild() != null && n.getFirstChild().getNodeValue() != null)
-						{
-							value = n.getFirstChild().getNodeValue();
-							logger.info("Getting value: " + value);
-
-							//logger.info("VersionValue:" + value);
-							if(value != null)
-								value = new VisualFormatter().escapeHTML(value);
-							
-							break;
-						}
-					}
-				}	
-				*/	   				
+				}									
 	        }
 	        catch(Exception e)
 	        {
@@ -861,31 +846,6 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 				{
 					value = xml.substring(startTagIndex + key.length() + 11, endTagIndex);
 				}					
-
-				/*
-				InputSource inputSource = new InputSource(new StringReader(this.contentVersionVO.getVersionValue()));
-				
-				DOMParser parser = new DOMParser();
-				parser.parse(inputSource);
-				Document document = parser.getDocument();
-				NodeList nl = document.getDocumentElement().getChildNodes();
-				Node n = nl.item(0);
-
-				nl = n.getChildNodes();
-				for(int i=0; i<nl.getLength(); i++)
-				{
-					n = nl.item(i);
-					if(n.getNodeName().equalsIgnoreCase(key))
-					{
-						if(n.getFirstChild() != null && n.getFirstChild().getNodeValue() != null)
-						{
-							value = n.getFirstChild().getNodeValue();
-							logger.info("Getting value: " + value);
-							break;
-						}
-					}
-				}	
-				*/	        	
 			}
 			catch(Exception e)
 			{
@@ -895,6 +855,80 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 		//logger.info("value:" + value);	
 		return value;
 	}
+
+	
+	/**
+	 * This method fetches a value from the xml that is the contentVersions Value. If the 
+	 * contentVersioVO is null the contentVersion has not been created yet and no values are present.
+	 */
+	 
+	public String getOriginalLanguageAttributeValue(String key)
+	{
+		String value = "";
+		
+		//System.out.println("this.contentVersionVO:" + this.contentVersionVO);
+
+		if(this.contentVersionVO != null)
+		{
+			try
+	        {
+		        logger.info("key:" + key);
+				
+				String xml = this.originalLanguageContentVersionVO.getVersionValue();
+				
+				int startTagIndex = xml.indexOf("<" + key + ">");
+				int endTagIndex   = xml.indexOf("]]></" + key + ">");
+
+				if(startTagIndex > 0 && startTagIndex < xml.length() && endTagIndex > startTagIndex && endTagIndex <  xml.length())
+				{
+					value = xml.substring(startTagIndex + key.length() + 11, endTagIndex);
+					value = new VisualFormatter().escapeHTML(value);
+				}									
+	        }
+	        catch(Exception e)
+	        {
+	        	e.printStackTrace();
+	        }
+		}
+		
+		logger.info("value:" + value);	
+		
+		return value;
+	}
+	
+	/**
+	 * This method fetches a value from the xml that is the contentVersions Value. If the 
+	 * contentVersioVO is null the contentVersion has not been created yet and no values are present.
+	 */
+	 
+	public String getOriginalLanguageUnescapedAttributeValue(String key)
+	{
+		String value = "";
+		if(this.contentVersionVO != null)
+		{
+			try
+			{
+				logger.info("key:" + key);
+				
+				String xml = this.originalLanguageContentVersionVO.getVersionValue();
+				
+				int startTagIndex = xml.indexOf("<" + key + ">");
+				int endTagIndex   = xml.indexOf("]]></" + key + ">");
+
+				if(startTagIndex > 0 && startTagIndex < xml.length() && endTagIndex > startTagIndex && endTagIndex <  xml.length())
+				{
+					value = xml.substring(startTagIndex + key.length() + 11, endTagIndex);
+				}					
+			}
+			catch(Exception e)
+			{
+				e.printStackTrace();
+			}
+		}
+		//logger.info("value:" + value);	
+		return value;
+	}
+	
 	
 	/**
 	 * This method returns the attributes in the content type definition for generation.
@@ -1406,6 +1440,66 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 	public void setShowSelectButtonByEachImage(boolean showSelectButtonByEachImage)
 	{
 		this.showSelectButtonByEachImage = showSelectButtonByEachImage;
+	}
+
+
+	public String getAnchorName()
+	{
+		return anchorName;
+	}
+
+
+	public void setAnchorName(String anchorName)
+	{
+		this.anchorName = anchorName;
+	}
+
+
+	public boolean getTranslate()
+	{
+		return translate;
+	}
+
+
+	public void setTranslate(boolean translate)
+	{
+		this.translate = translate;
+	}
+
+
+	public Integer getFromLanguageId()
+	{
+		return fromLanguageId;
+	}
+
+
+	public void setFromLanguageId(Integer fromLanguageId)
+	{
+		this.fromLanguageId = fromLanguageId;
+	}
+
+
+	public Integer getToLanguageId()
+	{
+		return toLanguageId;
+	}
+
+
+	public void setToLanguageId(Integer toLanguageId)
+	{
+		this.toLanguageId = toLanguageId;
+	}
+
+
+	public ContentVersionVO getOriginalLanguageContentVersionVO()
+	{
+		return originalLanguageContentVersionVO;
+	}
+
+
+	public LanguageVO getCurrentLanguageVO()
+	{
+		return currentLanguageVO;
 	}
 
 }
