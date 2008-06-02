@@ -30,11 +30,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
+import org.infoglue.cms.applications.databeans.LinkBean;
 import org.infoglue.cms.controllers.kernel.impl.simple.AccessRightController;
 import org.infoglue.cms.controllers.kernel.impl.simple.InfoGluePrincipalControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
@@ -61,7 +59,7 @@ public abstract class InfoGlueAbstractAction extends WebworkAbstractAction
 {
     private final static Logger logger = Logger.getLogger(InfoGlueAbstractAction.class.getName());
 
-    protected String colorScheme = null;
+    protected String colorScheme = null; 
     
 	/**
 	 * This method lets the velocity template get hold of all actions inheriting.
@@ -634,9 +632,36 @@ public abstract class InfoGlueAbstractAction extends WebworkAbstractAction
 		}
 		catch(Exception e)
 		{
-			logger.warn("An error occurred when we close database. Reason:" + e.getMessage());
+			logger.warn("An error occurred when we closed the database. Reason:" + e.getMessage());
 			throw new SystemException("An error occurred when we tried to close a database. Reason:" + e.getMessage(), e);    
 		}
+	}
+
+	public List<LinkBean> getActionLinks(String aUserSessionKey)
+	{
+		String key = aUserSessionKey + "_actionLinks";
+		return (List<LinkBean>)getRequest().getSession().getAttribute(key);
+	}
+
+	public void setActionLinks(String aUserSessionKey, List<LinkBean> actionLinks)
+	{
+		String key = aUserSessionKey + "_actionLinks";
+		getRequest().getSession().setAttribute(key, actionLinks);
+	}
+	
+	public void addActionLink(String aUserSessionKey, LinkBean aLinkBean)
+	{
+		List<LinkBean> actionLinks = getActionLinks(aUserSessionKey);
+		
+		
+		if (actionLinks == null)
+		{			
+			actionLinks = new ArrayList<LinkBean>();
+		}
+		
+		actionLinks.add(aLinkBean);
+		
+		setActionLinks(aUserSessionKey, actionLinks);
 	}
 }
 
