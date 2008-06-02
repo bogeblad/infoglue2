@@ -17,7 +17,8 @@
 		<input type="hidden" name="recipients" value="$usersAddresses"/>
 		<input type="hidden" name="extraText" value="$extraText"/>
 		<input type="hidden" name="returnAddress" value="$returnAddress"/>
-			
+		<input type="hidden" name="userSessionKey" value="$userSessionKey"/>
+		
 		<div style="clear: both;"></div>
 		
 		<h3 style="text-indent: 16px;">
@@ -35,10 +36,10 @@
 			<textarea name="message" class="normaltextarea"></textarea><br/>
 	
 		</div>
-	
-		#footerToolbar($footerButtons)
-		
+			
   	</form>
+	
+	#footerToolbar($footerButtons)
 		
 </div>
 

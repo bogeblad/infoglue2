@@ -23,6 +23,7 @@
 
 package org.infoglue.cms.applications.databeans;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,7 +31,7 @@ import java.util.List;
  * This class represents a button in the CMSTools menu.
  */
 
-public class LinkBean
+public class LinkBean implements Serializable
 {
 	private String id            			= "";
 	private String text            			= "";

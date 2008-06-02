@@ -28,8 +28,10 @@ import java.util.List;
 
 import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
+import org.infoglue.cms.applications.databeans.LinkBean;
 import org.infoglue.cms.controllers.kernel.impl.simple.GroupControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.RoleControllerProxy;
+import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.UserControllerProxy;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.CmsPropertyHandler;
@@ -57,7 +59,8 @@ public class CreateEmailAction extends InfoGlueAbstractAction
 	
 	private String errorMessage = "";
 	private String returnAddress;
-	
+   	private String userSessionKey;
+
     public String doExecute() throws Exception
     {
     	if(recipients != null && recipients.length() > 0 && subject != null && subject.length() > 0 && message != null && message.length() > 0)
@@ -233,6 +236,12 @@ public class CreateEmailAction extends InfoGlueAbstractAction
     	roles 		= RoleControllerProxy.getController().getAllRoles();
     	groups 		= GroupControllerProxy.getController().getAllGroups();
     	
+        userSessionKey = "" + System.currentTimeMillis();
+        System.out.println("userSessionKey input:" + userSessionKey);
+
+        setActionMessage(userSessionKey, "Notifiering skickad. Fortsätt genom att välja något av alternativen nedan.");
+        addActionLink(userSessionKey, new LinkBean("currentPageUrl", "Tillbaka till sidan du utgick från", "Klicka här om du vill komma tillbaka till sidan där du startade flödet.", "Klicka här om du vill komma tillbaka till sidan där du startade flödet.", "javascript:tb_close();", ""));
+    	
     	return "inputChooseRecipientsV3";
     }
 
@@ -396,6 +405,16 @@ public class CreateEmailAction extends InfoGlueAbstractAction
 	public void setReturnAddress(String returnAddress)
 	{
 		this.returnAddress = returnAddress;
+	}
+
+	public String getUserSessionKey()
+	{
+		return userSessionKey;
+	}
+
+	public void setUserSessionKey(String userSessionKey)
+	{
+		this.userSessionKey = userSessionKey;
 	}
 
 }
