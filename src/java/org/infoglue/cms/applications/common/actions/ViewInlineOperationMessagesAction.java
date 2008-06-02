@@ -25,8 +25,8 @@ package org.infoglue.cms.applications.common.actions;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.StringTokenizer;
 
+import org.apache.log4j.Logger;
 import org.infoglue.cms.applications.databeans.LinkBean;
 
 /**
@@ -42,7 +42,7 @@ public class ViewInlineOperationMessagesAction extends InfoGlueAbstractAction
 	 * 
 	 */
 	private static final long serialVersionUID = -739264056619967471L;
-	//private final static Logger logger = Logger.getLogger(ViewInlineOperationMessagesAction.class.getName());
+	private final static Logger logger = Logger.getLogger(ViewInlineOperationMessagesAction.class.getName());
     
     private String message;
     private List<LinkBean> actionLinks;
@@ -75,14 +75,51 @@ public class ViewInlineOperationMessagesAction extends InfoGlueAbstractAction
 		String[] elements;
 		String[] values;
 
-		if (actionLinkString != null)
+		String userSessionKey = getRequest().getParameter("userSessionKey");
+		
+		//-----------------------------------------------------------
+		// Retrieve any actionLinks previously stored in the session
+		//-----------------------------------------------------------
+		
+		if (userSessionKey != null && !userSessionKey.trim().equals(""))
 		{
+			if (getActionLinks(userSessionKey) != null)
+			{
+				actionLinks = getActionLinks(userSessionKey);
+			}
+			else
+			{
+				logger.warn("You submitted a userSessionKey but there are no action links stored in the session variable\"" + userSessionKey + "_actionLinks\".");
+			}
+		}
+		
+		//-----------------------------------------------------------
+		// Add any actionLinks submitted in the request
+		//-----------------------------------------------------------
+		
+		if (actionLinkString != null)
+		{			
 			elements = actionLinkString.split(";");
+			
+			String attr1 = "";
+			String attr2 = "";
+			String attr3 = "";
+			String attr4 = "";
+			String attr5 = "";
+			String attr6 = "";
 			
     		for (String element : elements)
     		{    			
-    			values 				= element.split(",");    			    			
-    			LinkBean myLinkBean = new LinkBean(values[0], values[1], values[2], values[3], values[4], values[5]);
+    			values 							= element.split(","); 
+    			
+    			if (values.length > 0) attr1 	= values[0];
+    			if (values.length > 1) attr2	= values[1];
+    			if (values.length > 2) attr3	= values[2];
+    			if (values.length > 3) attr4	= values[3];
+    			if (values.length > 4) attr5	= values[4]; 
+    			if (values.length > 5) attr6	= values[5];
+    			
+    			LinkBean myLinkBean 			= new LinkBean(attr1, attr2, attr3, attr4, attr5, attr6);
     			actionLinks.add(myLinkBean);
     		}
 		}
