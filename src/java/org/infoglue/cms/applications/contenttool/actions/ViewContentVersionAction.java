@@ -310,8 +310,11 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 
         if(this.fromLanguageId != null)
 			this.originalLanguageContentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentId, fromLanguageId);
-        if(this.languageId != null)
-        	this.currentLanguageVO = LanguageController.getController().getMasterLanguage(languageId);
+        
+        if(this.toLanguageId != null)
+			this.currentLanguageVO = LanguageController.getController().getLanguageVOWithId(toLanguageId);
+        else if(this.languageId != null)
+        	this.currentLanguageVO = LanguageController.getController().getLanguageVOWithId(languageId);
     } 
 
     public String doExecute() throws Exception

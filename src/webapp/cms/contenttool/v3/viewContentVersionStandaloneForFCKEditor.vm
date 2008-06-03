@@ -1,3 +1,36 @@
+#if(($closeOnLoad == "true" && !$errors.hasErrors()) || $publishOnLoad == "true" && !$errors.hasErrors())
+<html>
+<head>
+	<script type="text/javascript">
+		
+		function refreshCaller()
+		{
+			parent.closeDialog();
+			parent.location.reload();
+		}
+		
+		function submitToPublish()
+		{
+			var returnAddress = "$formatter.encodeURI("ViewContentVersion!standalone.action?contentId=$contentId&languageId=$languageId&closeOnLoad=true", 'UTF-8')";
+			document.location.href = "ViewListContentVersion.action?contentId=$contentId&returnAddress=" + returnAddress;
+		}
+		
+	</script>
+</head>
+<body>
+	Saving and reloading...
+	<script type="text/javascript">
+		#if($closeOnLoad)
+			refreshCaller();
+		#elseif($publishOnLoad)
+			submitToPublish();
+		#end
+	</script>
+</body>
+</html>
+
+#else
+
 #beginCommonToolV3("tool.contenttool.contentVersionHeader" "$!contentVersionId" "contentId=$!contentId&languageId=$languageId" false false)
 
 	<script type="text/javascript" src="${root}/applications/FCKEditor/fckeditor.js"></script>
@@ -15,12 +48,16 @@
 	
 		function refreshCaller()
 		{
+			parent.closeDialog();
+			parent.location.reload();
+			/*
 			if(window.opener && window.opener.parent && window.opener.parent.frames['main'])
 				window.opener.parent.frames['main'].location.reload();
 			else
 				window.opener.location.reload();	
 	
 			window.close();
+			*/
 		}
 	
 		//*******************************************
@@ -32,15 +69,9 @@
 			var returnAddress = "$formatter.encodeURI("ViewContentVersion!standalone.action?contentId=$contentId&languageId=$languageId&closeOnLoad=true", 'UTF-8')";
 			document.location.href = "ViewListContentVersion.action?contentId=$contentId&returnAddress=" + returnAddress;
 		}
-	
-		#if($closeOnLoad == "true" && !$errors.hasErrors()) 
-		window.onLoad = refreshCaller();
-		#end
 		
-		#if($publishOnLoad == "true")
-		window.onLoad = submitToPublish();
-		#end
-		
+		alert("$closeOnLoad: $closeOnLoad");
+				
 		var inlineImageDefaultRepositoryId = null;
 		#set($inlineImageDefaultRepositoryId = $map.get("inlineImageDefaultRepositoryId"))
 		#if($inlineImageDefaultRepositoryId && $inlineImageDefaultRepositoryId != "")
@@ -72,8 +103,7 @@
 	#end	
 #end
 
-<body class="generaltooledit yui-skin-sam" #if($closeOnLoad == "true" && !$errors.hasErrors())onload="refreshCaller();"#end #if($publishOnLoad == "true")onload="submitToPublish();"#end onkeypress="hotKeys(event);">
-#set( $lvColor = "silver")
+<body class="generaltooledit yui-skin-sam" onkeypress="hotKeys(event);">
 
 <script type="text/javascript">
 <!--
@@ -120,37 +150,6 @@
 	{
 		allowSave = false;
 		openPopup(url, "RelationEditor", "width=700,height=600,left=" + (document.body.clientWidth / 4) + ",top=50,toolbar=no,status=yes,scrollbars=yes,location=no,menubar=no,directories=no,resizable=yes");
-	}
-
-	//*******************************************
-	// This method changes state on a content
-	//*******************************************
-	 
-	function changeContentState(contentVersionId)
-	{
-		stateId 	  = document.editForm.stateId.value;
-		languageId    = document.editForm.languageId.value;
-		contentId 	  = document.getElementById("contentId").value;
-		attributeName = document.editForm.attributeName.value;
-		
-		#if(!$this.hasAccessTo("Common.SubmitToPublishButton", true))
-		if(stateId == "2")
-		{
-			alert("$ui.getString("tool.contenttool.statePublishForbidden")");
-			document.editForm.stateId.selectedIndex = originalStateIndex - 1;
-			return;
-		}
-		#end
-		
-		if (confirm('$ui.getString("tool.contenttool.stateChangeQuestion")'))
-		{
-			var url = "ChangeContentState!standalone.action?contentVersionId=" + contentVersionId + "&stateId=" + stateId + "&contentId=" + contentId + "&languageId=" + languageId + "&attributeName=" + attributeName;
-			window.location.href=url;
-		}
-		else
-		{
-			document.editForm.stateId.selectedIndex = originalStateIndex - 1;
-		}
 	}
 	
 
@@ -1171,3 +1170,5 @@
 #footerToolbar($footerButtons)
 
 #endCommonToolV3()
+
+#end

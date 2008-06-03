@@ -916,6 +916,7 @@ function savePartComponentStructure(url)
 //--------------------------------------------
 // Here comes the menu items actions
 //--------------------------------------------
+var oldWindow;
 
 function edit() 
 {
@@ -927,87 +928,152 @@ function edit()
 	{
 		//alert("editUrl in edit:" + editUrl);
 		details = "width=500,height=600,left=" + (document.body.clientWidth / 4) + ",top=50,toolbar=no,status=no,scrollbars=yes,location=no,menubar=no,directories=no,resizable=no";
-		newWin=window.open(editUrl, "Edit", details);
+		if(oldWindow)
+			oldWindow.close();
+		newWin=window.open(editUrl, "EditOnSight", details);
 		if(newWin)
+		{
 			newWin.focus();
+			oldWindow = newWin;
+		}
 		else
 			alert("Could not open new window - if you have a popup blocker this is most likely the cause.");
 	}
+	
+	return false;
 }
 
 function editInline(repositoryId) 
 {
-	if(!editUrl || editUrl == "")
+	return editInline(repositoryId, selectedContentId, selectedLanguageId, false);
+}
+
+function editInline(repositoryId, selectedContentId, selectedLanguageId, directEditing) 
+{
+	if((!editUrl || editUrl == "") && !directEditing)
 	{
-		alert("You must right click on a text to be able to use this feature.");
+		alert("You must right click on a text or double click on a text to be able to use this feature.");
 	}
 	else
 	{
-		var type = jQuery.trim($("#attribute" + selectedContentId + selectedAttributeName).attr("class"));
-		//alert("type:" + type);
-		if(type == "textarea")
-		{
-			var parameterString = "repositoryId=" + repositoryId + "&contentId=" + selectedContentId + "&languageId=" + selectedLanguageId;
+		//$(".attribute" + selectedContentId).css("border","3px solid red");
+		//alert("contentId:" + selectedContentId);	
+		//alert("HTML: " + $(".attribute" + selectedContentId));
+		
+		var $lastThis;
+		$(".attribute" + selectedContentId).each(function (i) {
+	    	var $this = $(this);
+	    	$lastThis = $this;
+	    	//alert("this:" + this.id);
+	    	var type = jQuery.trim($this.attr("class"));
+			//alert("type:" + type);
 			
-			var element = document.getElementById("attribute" + selectedContentId + selectedAttributeName);
+			if(type.indexOf("textarea") > -1)
+			{
+				var attributeName = editOnSightAttributeNames[$(this).get(0).id];
+				//alert("attributeName:" + attributeName);
 
-			var totalHeight = 100;
-			$("#attribute" + selectedContentId + selectedAttributeName + " > *").each(function(i){
-				//alert("Element found...");
-				//alert("Element:" + $(this).get(0));
-				totalHeight = totalHeight + getElementHeight( $(this).get(0) );
-				//totalHeight = $(this);
-			});
-			
-			var span = document.getElementById("attribute" + selectedContentId + selectedAttributeName);
-
-			var data = "contentId=" + selectedContentId + "&languageId=" + selectedLanguageId + "&attributeName=" + selectedAttributeName + "&deliverContext=" + currentContext;
-
-			var plainAttribute = span.innerHTML;
-			$.ajax({
-			   type: "GET",
-			   url: "" + componentEditorUrl + "UpdateContentVersionAttribute!getAttributeValue.action",
-			   data: data,
-			   success: function(msg){
-			   	 //alert( "Attribute fetched: " + msg );
-			   	 plainAttribute = msg;
-
-				 var oFCKeditor = new FCKeditor("attribute" + selectedContentId + selectedAttributeName);
-				 oFCKeditor.BasePath = "" + componentEditorUrl + "applications/FCKEditor/" ;
-				 oFCKeditor.Config["CustomConfigurationsPath"] = "" + componentEditorUrl + "WYSIWYGProperties.action?" + parameterString;
-				 oFCKeditor.Config['ToolbarStartExpanded'] = false ;
-				 oFCKeditor.ToolbarSet = "Basic";
-				 oFCKeditor.Height = totalHeight;
-				 oFCKeditor.Value = plainAttribute;
-				 $("#attribute" + selectedContentId + selectedAttributeName).html(oFCKeditor.CreateHtml() + "<a onclick='saveAttribute(" + selectedContentId + ", " + selectedLanguageId + ", \"" + selectedAttributeName + "\", \"textarea\");' style='text-decoration: none;' title='Save'>&nbsp;<img src=\"images/v3/saveInlineIcon.gif\" style=\"background-image: none;\" alt=\"Save\" border=\"0\"/></a><a onclick='cancelSaveAttribute(" + selectedContentId + ", " + selectedLanguageId + ", \"" + selectedAttributeName + "\", \"textarea\");' style='text-decoration: none;' title='Cancel edit'>&nbsp;<img src=\"images/v3/cancelInlineIcon.gif\" style=\"background-image: none;\" alt=\"Cancel\" border=\"0\"/></a>");
-			   },
-			   error: function (XMLHttpRequest, textStatus, errorThrown) {
-				  alert("You are not allowed to edit this text!");
-				  this; 
-			   }
-			});
-		}
-		else if(type == "textfield")
-		{
-			var elementObject = $("#attribute" + selectedContentId + selectedAttributeName);
-			//alert("elementObject:" + elementObject);
-			var text = elementObject.html();
-			//alert("text:" + text);
-			var fontSize = elementObject.parent().css("font-size");
-			//alert("fontSize:" + fontSize);
-			
-			elementObject.html("<span id='spanInput" + selectedContentId + selectedAttributeName + "' class='inEditW'><input class='edit' style='width: 80%' ondblclick='if (event && event.stopPropagation) {event.stopPropagation();}else if (window.event) {window.event.cancelBubble = true;}return false;' id='input" + selectedContentId + selectedAttributeName + "' type='text' value='" + text + "' /><a onclick='saveAttribute(" + selectedContentId + ", " + selectedLanguageId + ", \"" + selectedAttributeName + "\", \"textfield\");' style='text-decoration: none;' class='editSave'>&nbsp;<img src=\"images/v3/saveInlineIcon.gif\" alt=\"Save\" border=\"0\"/></a><a onclick='cancelSaveAttribute(" + selectedContentId + ", " + selectedLanguageId + ", \"" + selectedAttributeName + "\", \"textfield\");' style='text-decoration: none;' title='Cancel edit'>&nbsp;<img src=\"images/v3/cancelInlineIcon.gif\" style=\"background-image: none;\" alt=\"Cancel\" border=\"0\"/></a></span>");
-			$(".edit").css("font-size", fontSize);
-			$(".edit").css("border", "1px solid #ccc");
-		}
-		else
-		{
-			alert("Nope: " + type);
-		}
+				var parameterString = "repositoryId=" + repositoryId + "&contentId=" + selectedContentId + "&languageId=" + selectedLanguageId;
+				
+				var element = $(this).get(0);
+	
+				var totalHeight = 100;
+				$("#attribute" + selectedContentId + attributeName + " > *").each(function(i){
+					totalHeight = totalHeight + getElementHeight( $(this).get(0) );
+				});
+				totalHeight = totalHeight * 1.3;
+				//alert("totalHeight: " + totalHeight);
+				
+				var span = $(this).get(0);
+					
+				var data = "contentId=" + selectedContentId + "&languageId=" + selectedLanguageId + "&attributeName=" + attributeName + "&deliverContext=" + currentContext;
+	
+				var plainAttribute = span.innerHTML;
+				$.ajax({
+				   type: "GET",
+				   url: "" + componentEditorUrl + "UpdateContentVersionAttribute!getAttributeValue.action",
+				   data: data,
+				   success: function(msg){
+				   	 plainAttribute = msg;
+					 
+					 var oFCKeditor = new FCKeditor($this.get(0).id);
+					 oFCKeditor.BasePath = "" + componentEditorUrl + "applications/FCKEditor/" ;
+					 oFCKeditor.Config["CustomConfigurationsPath"] = "" + componentEditorUrl + "WYSIWYGProperties.action?" + parameterString;
+					 oFCKeditor.Config['ToolbarStartExpanded'] = false ;
+					 oFCKeditor.ToolbarSet = "Basic";
+					 oFCKeditor.Height = totalHeight;
+					 oFCKeditor.Value = plainAttribute;
+					 $this.html(oFCKeditor.CreateHtml());
+				   },
+				   error: function (XMLHttpRequest, textStatus, errorThrown) {
+					  alert("You are not allowed to edit this text!");
+					  this; 
+				   }
+				});
+			}
+			else if(type.indexOf("textfield") > -1)
+			{
+				var attributeName = editOnSightAttributeNames[$(this).get(0).id];
+				//alert("attributeName:" + attributeName);
+				
+				var elementObject = $this;
+				var text = elementObject.html();
+				//alert("text:" + text);
+				var fontSize = elementObject.parent().css("font-size");
+				//alert("fontSize:" + fontSize);
+				
+				elementObject.html("<span id='spanInput" + $this.get(0).id + "' class='inEditW'><input class='edit' style='width: 80%' ondblclick='if (event && event.stopPropagation) {event.stopPropagation();}else if (window.event) {window.event.cancelBubble = true;}return false;' id='input" + $this.get(0).id + "' type='text' value='" + text + "' /> <a onclick='saveAttribute(" + selectedContentId + ", " + selectedLanguageId + ", \"" + attributeName + "\", \"textfield\");' style='text-decoration: none;' class='editSave'></span>");
+				$(".edit").css("font-size", fontSize);
+				$(".edit").css("border", "1px solid #ccc");
+			}
+			else
+			{
+				alert("Nope: " + type);
+			}
+	    });
+				
+		$lastThis.after("<div id=\"saveButtons" + selectedContentId + "\"><a class='igButton' onclick='saveAttributes(" + selectedContentId + ", " + selectedLanguageId + ");'' title='Save'><span class='igButtonOuterSpan'><span class='linkSave'>Save</span></span></a><a class='igButton' onclick='cancelSaveAttributes(" + selectedContentId + ", " + selectedLanguageId + ");' title='Cancel edit'><span class='igButtonOuterSpan'><span class='linkCancel'>Cancel</span></span></a></div>");
 	}
 }
 
-function saveAttribute(selectedContentId, selectedLanguageId, selectedAttributeName, type)
+function saveAttributes(selectedContentId, selectedLanguageId) 
+{
+	//alert("selectedContentId: " + selectedContentId + " - " + selectedLanguageId);
+	for (key in editOnSightAttributeNames)
+	{
+		//alert("Key:" + key);
+		if(key.indexOf("attribute" + selectedContentId) > -1 && key.indexOf("_type") == -1)
+		{
+			var attributeName = editOnSightAttributeNames[key];
+			var attributeType = editOnSightAttributeNames[key + "_type"];
+			//alert("Saving:" + attributeName + " - " + attributeType);
+			saveAttribute(selectedContentId, selectedLanguageId, attributeName, attributeType, key);
+		}
+	}
+	
+	$("#saveButtons" + selectedContentId).remove();
+}
+
+function cancelSaveAttributes(selectedContentId, selectedLanguageId) 
+{
+	//alert("selectedContentId: " + selectedContentId + " - " + selectedLanguageId);
+	for (key in editOnSightAttributeNames)
+	{
+		//alert("Key:" + key);
+		if(key.indexOf("attribute" + selectedContentId) > -1 && key.indexOf("_type") == -1)
+		{
+			var attributeName = editOnSightAttributeNames[key];
+			var attributeType = editOnSightAttributeNames[key + "_type"];
+			//alert("Saving:" + attributeName + " - " + attributeType);
+			cancelSaveAttribute(selectedContentId, selectedLanguageId, attributeName, attributeType, key);
+		}
+	}
+	
+	$("#saveButtons" + selectedContentId).remove();
+}
+
+
+function saveAttribute(selectedContentId, selectedLanguageId, selectedAttributeName, type, key)
 {
 	if(type == "textarea")
 	{
@@ -1036,7 +1102,7 @@ function saveAttribute(selectedContentId, selectedLanguageId, selectedAttributeN
 	else if(type == "textfield")
 	{
 		//alert("Saving: " + selectedContentId + " " + selectedLanguageId + " " +  selectedAttributeName);
-		var value = $("#input" + selectedContentId + selectedAttributeName).val();
+		var value = $("#inputattribute" + selectedContentId + selectedAttributeName).val();
 		//alert("Value: " + value);
 		var data = "contentId=" + selectedContentId + "&languageId=" + selectedLanguageId + "&attributeName=" + selectedAttributeName + "&" + selectedAttributeName + "=" + value;
 	
@@ -1046,13 +1112,13 @@ function saveAttribute(selectedContentId, selectedLanguageId, selectedAttributeN
 		   data: data,
 		   success: function(msg){
 		     //alert( "Data Saved: " + msg );
-		     $("#spanInput" + selectedContentId + selectedAttributeName).replaceWith(msg);
+		     $("#spanInput" + key).replaceWith(msg);
 		   }
 		 });
 	}
 }
 
-function cancelSaveAttribute(selectedContentId, selectedLanguageId, selectedAttributeName, type)
+function cancelSaveAttribute(selectedContentId, selectedLanguageId, selectedAttributeName, type, key)
 {
 	if(type == "textarea")
 	{
@@ -1071,7 +1137,7 @@ function cancelSaveAttribute(selectedContentId, selectedLanguageId, selectedAttr
 	else if(type == "textfield")
 	{
 		//alert("Saving: " + selectedContentId + " " + selectedLanguageId + " " +  selectedAttributeName);
-		var value = $("#input" + selectedContentId + selectedAttributeName).val();
+		var value = $("#inputattribute" + selectedContentId + selectedAttributeName).val();
 		//alert("Value: " + value);
 		var data = "contentId=" + selectedContentId + "&languageId=" + selectedLanguageId + "&attributeName=" + selectedAttributeName + "&deliverContext=" + currentContext;
 	
@@ -1080,10 +1146,12 @@ function cancelSaveAttribute(selectedContentId, selectedLanguageId, selectedAttr
 		   url: "" + componentEditorUrl + "UpdateContentVersionAttribute!getAttributeValue.action",
 		   data: data,
 		   success: function(msg){
-		     $("#spanInput" + selectedContentId + selectedAttributeName).replaceWith(msg);
+		     $("#spanInput" + key).replaceWith(msg);
 		   }
 		 });
 	}
+	
+	$("#saveButtons" + selectedContentId).remove();
 }
 
 
@@ -1199,10 +1267,10 @@ function executeTask(url, openInPopup)
 	}
 	else
 	{
-		//$(document.body).append("<div id='dialogDiv' style='border: 1px solid black; position: absolute; top: 100px; left: 200px; width: 400px; height: 400px; background-color: white;'>Dialog div</div>");
-		//$("#dialogDiv").html("AAAAAAAAAAAAAAAA");
-		//$("#dialogDiv").load(url + " form", {});
-		document.location.href = url;
+		$(document.body).append("<div id='dialogDiv' style='border: 1px solid black; position: absolute; top: 100px; left: 200px; width: 600px; height: 500px; background-color: white;'><iframe id='dialogFrame' name='dialogFrame' src='' width='100%' height='100%' border='0'></iframe></div>");
+		$("#dialogFrame").attr('src', url);
+		//$("#dialogFrame").load(url + " form", {});
+		//document.location.href = url;
 	}
 }
 
@@ -2047,3 +2115,13 @@ function viewSource()
 			return true;
 		}
 	}
+	
+//TEST
+
+var previousEditOnSightMenuDivId = ''; 
+function closeDialog()
+{
+	tb_remove();
+	if(previousEditOnSightMenuDivId != '')
+		openCloseDiv(previousEditOnSightMenuDivId);
+}

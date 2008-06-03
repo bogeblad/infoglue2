@@ -218,7 +218,7 @@ public class ToolbarController
 		try
 		{
 			if(toolbarKey.equalsIgnoreCase("tool.contenttool.contentVersionHeader"))
-				return getContentVersionButtons();
+				return getContentVersionFooterButtons();
 			
 			if(toolbarKey.equalsIgnoreCase("tool.structuretool.createSiteNodeHeader"))
 				return getCreateSiteNodeFooterButtons();
@@ -318,6 +318,7 @@ public class ToolbarController
 		Timer t = new Timer();
 		List<ToolbarButton> buttons = new ArrayList<ToolbarButton>();
 
+		/*
 		buttons.add(new ToolbarButton("",
 									  getLocalizedString(locale, "tool.contenttool.save.label"), 
 									  getLocalizedString(locale, "tool.contenttool.save.label"),
@@ -341,7 +342,8 @@ public class ToolbarController
 				  					  getLocalizedString(locale, "tool.contenttool.cancel.label"),
 				  					  "javascript:refreshCaller();",
 				  					  "images/v3/cancelIcon.gif"));
-
+		*/
+		
 		System.out.println("primaryKeyAsInteger:" + primaryKeyAsInteger);
 		LanguageVO currentLanguageVO = null;
 		ContentVO contentVO = null;
@@ -372,15 +374,52 @@ public class ToolbarController
 		while(repositoryLanguagesIterator.hasNext())
 		{
 			LanguageVO languageVO = (LanguageVO)repositoryLanguagesIterator.next();
-			languageDropButton.getSubButtons().add(new ToolbarButton("" + languageVO.getId(),
-					 StringUtils.capitalize(languageVO.getDisplayLanguage()), 
-					 StringUtils.capitalize(languageVO.getDisplayLanguage()),
-					 "changeLanguage(" + contentVO.getId() + ", " + languageVO.getId() + ");",
-					 ""));
+			if(!currentLanguageVO.getId().equals(languageVO.getId()))
+			{
+				languageDropButton.getSubButtons().add(new ToolbarButton("" + languageVO.getId(),
+						 StringUtils.capitalize(languageVO.getDisplayLanguage()), 
+						 StringUtils.capitalize(languageVO.getDisplayLanguage()),
+						 "changeLanguage(" + contentVO.getId() + ", " + languageVO.getId() + ");",
+						 ""));
+			}
 		}
 		
 		buttons.add(languageDropButton);
 
+		
+		return buttons;
+	}
+
+	private List<ToolbarButton> getContentVersionFooterButtons() throws Exception
+	{
+		Timer t = new Timer();
+		List<ToolbarButton> buttons = new ArrayList<ToolbarButton>();
+
+		buttons.add(new ToolbarButton("",
+									  getLocalizedString(locale, "tool.contenttool.save.label"), 
+									  getLocalizedString(locale, "tool.contenttool.save.label"),
+									  "javascript:validateAndSubmitContentForm();",
+									  "images/v3/saveInlineIcon.gif"));
+
+		buttons.add(new ToolbarButton("",
+									  getLocalizedString(locale, "tool.contenttool.saveAndExit.label"), 
+									  getLocalizedString(locale, "tool.contenttool.saveAndExit.label"),
+									  "javascript:validateAndSubmitContentFormThenClose();",
+									  "images/v3/saveAndExitInlineIcon.gif"));
+		
+		/*
+		buttons.add(new ToolbarButton("",
+									  getLocalizedString(locale, "tool.contenttool.publish.label"), 
+									  getLocalizedString(locale, "tool.contenttool.publish.label"),
+									  "javascript:validateAndSubmitContentFormThenSubmitToPublish();",
+				  					  "images/v3/publishIcon.gif"));
+		*/
+		
+		buttons.add(new ToolbarButton("",
+				  					  getLocalizedString(locale, "tool.contenttool.cancel.label"), 
+				  					  getLocalizedString(locale, "tool.contenttool.cancel.label"),
+				  					  "parent.closeDialog();",
+				  					  "images/v3/cancelIcon.gif"));
 		
 		return buttons;
 	}
