@@ -679,41 +679,95 @@ select.mediumdrop {
 
 /* POPUP MENU */
 
-.popup_menu {
-	/*border-left:solid 3px #ff891e;*/
-	border:solid 1px #000;
-	float:left;
-	background:url(../images/v3/tileGradient.gif) repeat-y left;
-	padding:0px 10px 0px 0;
-	}
 .popupMenuLinks {
 	list-style-type:none;
-	padding:0 0 0 7px;
-	margin:0;
-	}
-.popup_menu ul a{
-	font-family:Verdana, Arial, Helvetica, sans-serif;
-	font-size:12px;
-	line-height:22px;
-	color:#555;
-	text-decoration:none;
-	padding-top:2px;
+	padding: 0px 0px 0px 7px;
+	margin: 0px 0px 0px 0px;
 	}
 .popup_menu ul li a:hover{
 	text-decoration:underline;
 	}
 .designStuff {
 	}
-.linkMetadata { background:url(../images/v3/metadataIcon.gif) no-repeat left center;}
-.linkCreatePage {background:url(../images/v3/createPageIcon.gif) no-repeat left center;}
-.linkEditArticle {background:url(../images/v3/editContentIcon.gif) no-repeat left center;}
-.linkCategorizeArticle {background:url(../images/v3/categorizeContentIcon.gif) no-repeat left center;}
-.linkPublish {background:url(../images/v3/publishPageIcon.gif) no-repeat left center;}
-.linkNotify {background:url(../images/v3/notifyIcon.gif) no-repeat left center;}
-.linkTakeContent {background:url(../images/v3/subscribeToContentIcon.gif) no-repeat left center;}
-.linkTakePage {background:url(../images/v3/subscribeToPageIcon.gif) no-repeat left center;}
-.linkTranslate {background:url(../images/v3/translateContentIcon.gif) no-repeat left center;}
-.linkCreateNews {background:url(../images/v3/createNewsForContentIcon.gif) no-repeat left center;}
+.editOnSightHref {
+	line-height:22px;
+	padding-top:2px;
+	text-decoration:none;
+	display: inline;	
+	adisplay: table;	
+	font-family: Tahoma, Arial, Helvetica, sans-serif; 
+	font-size: 10pt; 
+	color: black;
+	afloat: left;
+	}
+a.editOnSightHref:hover{
+	text-decoration:none;
+	color: black;
+}
+.linkMetadata { background:url(../images/v3/metadataIcon.gif) no-repeat left center; background-position: 4px 6px;}
+.linkCreatePage {background:url(../images/v3/createPageIcon.gif) no-repeat left center; background-position: 4px 6px;}
+.linkEditArticle {background:url(../images/v3/editContentIcon.gif) no-repeat left center; background-position: 4px 6px;}
+.linkCategorizeArticle {background:url(../images/v3/categorizeContentIcon.gif) no-repeat left center; background-position: 4px 6px;}
+.linkPublish {background:url(../images/v3/publishPageIcon.gif) no-repeat left center; background-position: 4px 6px;}
+.linkNotify {background:url(../images/v3/notifyIcon.gif) no-repeat left center; background-position: 4px 6px;}
+.linkTakeContent {background:url(../images/v3/subscribeToContentIcon.gif) no-repeat left center; background-position: 4px 6px;}
+.linkTakePage {background:url(../images/v3/subscribeToPageIcon.gif) no-repeat left center; background-position: 4px 6px;}
+.linkTranslate {background:url(../images/v3/translateContentIcon.gif) no-repeat left center; background-position: 4px 6px;}
+.linkCreateNews {background:url(../images/v3/createNewsForContentIcon.gif) no-repeat left center; background-position: 4px 6px;}
+
+.linkSave {background:url(../images/v3/saveInlineIcon.gif) no-repeat left center; background-position: 0px -2px;}
+.linkCancel {background:url(../images/v3/cancelIcon.gif) no-repeat left center; background-position: 0px 0px;}
+.linkInfoGlueFunctions {background:url(../images/v3/infoglueFunctionsIcon.gif) no-repeat left center; background-position: 0px 0px;}
 
 .linkMetadata, .linkCreatePage, .linkEditArticle, .linkCategorizeArticle, .linkPublish, .linkNotify, .linkTakeContent, .linkTakePage, .linkTranslate, .linkCreateNews {
-padding-left:28px;}
+padding-left:28px;
+}
+
+/* Button in IG */
+.igButton
+{
+	background-image: url("../images/v3/igButtonBackground.png");
+	background-position: 100% -26px;
+	background-repeat: no-repeat;
+	line-height: 26px;
+	height: 26px;
+	padding-right: 20px;
+	color: #555;
+	display: block;
+	float: left;
+	margin: 4px;
+	margin-left: 0px;
+	margin-right: 10px;
+	cursor: pointer;
+}
+
+.igButtonOuterSpan
+{
+	background-image: url("../images/v3/igButtonBackground.png");
+	background-position: 0px 0px;
+	background-repeat: no-repeat;
+	font-family: Tahoma;
+	font-size: 10pt;
+	padding-left: 20px;
+	line-height: 26px;
+	text-decoration: none;
+	height: 26px;
+	display: block;
+	float: left;
+}
+
+.igButtonOuterSpan span {
+	padding-left: 24px;
+	}
+
+.igButton:hover
+{
+	abackground-position: 100% -78px;
+	color: white;
+	text-decoration: none;
+}
+
+.igButtonOuterSpan:hover
+{
+	abackground-position: 0px -52px;
+}
