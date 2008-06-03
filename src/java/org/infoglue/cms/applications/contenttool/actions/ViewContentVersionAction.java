@@ -871,7 +871,7 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 		
 		//System.out.println("this.contentVersionVO:" + this.contentVersionVO);
 
-		if(this.contentVersionVO != null)
+		if(this.originalLanguageContentVersionVO != null)
 		{
 			try
 	        {
@@ -907,7 +907,7 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 	public String getOriginalLanguageUnescapedAttributeValue(String key)
 	{
 		String value = "";
-		if(this.contentVersionVO != null)
+		if(this.originalLanguageContentVersionVO != null)
 		{
 			try
 			{
