@@ -43,6 +43,7 @@ import org.infoglue.cms.controllers.kernel.impl.simple.ContentControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentStateController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionControllerProxy;
 import org.infoglue.cms.entities.content.Content;
 import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.content.ContentVersion;
@@ -124,72 +125,122 @@ public class UpdateContentVersionAttributeAction extends ViewContentVersionActio
 		return "success";
 	}
 
-	public synchronized String doSaveAndReturnValue() throws Exception
+	private static Boolean active = new Boolean(false);
+	public String doSaveAndReturnValue()
     {
-		System.out.println("Updating content version attribute through ajax....");
-		System.out.println("contentId:" + contentId);
-		System.out.println("languageId:" + languageId);
-		System.out.println("attributeName:" + attributeName);
-		
-    	super.initialize(this.contentVersionId, this.contentId, this.languageId);
-
-		this.contentVersionVO = this.getContentVersionVO();
-		if(this.contentVersionVO == null)
+		while(active)
 		{
-			ContentVO contentVO = ContentController.getContentController().getContentVOWithId(contentId);
-			ContentTypeDefinitionVO contentTypeDefinitionVO = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithId(contentVO.getContentTypeDefinitionId());
-
-			StringBuffer sb = new StringBuffer();
-			sb.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?><article xmlns=\"x-schema:ArticleSchema.xml\"><attributes>");
-			List contentTypeAttributes = ContentTypeDefinitionController.getController().getContentTypeAttributes(contentTypeDefinitionVO.getSchemaValue());
-			Iterator contentTypeAttributesIterator = contentTypeAttributes.iterator();
-			while(contentTypeAttributesIterator.hasNext())
+			System.out.println("Waiting for previous thread..");
+			try
 			{
-				ContentTypeAttribute contentTypeAttribute = (ContentTypeAttribute)contentTypeAttributesIterator.next();
-				String initialValue = contentTypeAttribute.getContentTypeAttribute("initialData").getContentTypeAttributeParameterValue().getValue("label");
-				if(initialValue == null || initialValue.trim().equals(""))
-					initialValue = "State " + contentTypeAttribute.getName();
-				sb.append("<" + contentTypeAttribute.getName() + "><![CDATA[" + initialValue + "]]></" + contentTypeAttribute.getName() + ">");
+				Thread.sleep(10);
+			} 
+			catch (Exception e)
+			{
 			}
-			sb.append("</attributes></article>");
-			
-			ContentVersionVO contentVersionVO = new ContentVersionVO();
-			contentVersionVO.setVersionComment("Autocreated");
-			contentVersionVO.setVersionModifier(this.getInfoGluePrincipal().getName());
-			contentVersionVO.setVersionValue(sb.toString());
-			this.contentVersionVO = ContentVersionController.getContentVersionController().create(contentId, languageId, contentVersionVO, null);
-		}
-		else if(!this.contentVersionVO.getStateId().equals(ContentVersionVO.WORKING_STATE))
-		{
-		    ContentVersion contentVersion = ContentStateController.changeState(this.contentVersionVO.getContentVersionId(), ContentVersionVO.WORKING_STATE, "Edit on sight", false, null, this.getInfoGluePrincipal(), this.contentVersionVO.getContentId(), new ArrayList());
-		    this.contentVersionId = contentVersion.getContentVersionId();
-		    this.contentVersionVO = contentVersion.getValueObject();
 		}
 		
-		String attributeValue = getRequest().getParameter(this.attributeName);
-		System.out.println("*************************************************");
-		System.out.println("** SAVING **");
-		System.out.println("*************************************************");
-		System.out.println("attributeValue:" + attributeValue);
-		if(attributeValue != null)
+		synchronized(active)
 		{
-			System.out.println("\n\nattributeValue original:" + attributeValue);
-			attributeValue = parseInlineAssetReferences(attributeValue);
-			System.out.println("attributeValue transformed:" + attributeValue + "\n\n");
+			active = new Boolean(true);
+		}
 
-			setAttributeValue(this.contentVersionVO, this.attributeName, attributeValue);
-			ceb.throwIfNotEmpty();
+		try
+		{
+			System.out.println("Updating content version attribute through ajax....");
+			System.out.println("contentId:" + contentId);
+			System.out.println("languageId:" + languageId);
+			System.out.println("attributeName:" + attributeName);
 			
-			this.contentVersionVO.setVersionModifier(this.getInfoGluePrincipal().getName());
-    		ContentVersionController.getContentVersionController().update(this.contentId, this.languageId, this.contentVersionVO, this.getInfoGluePrincipal());
-    		System.out.println("*************************************************");
-		
-    		attributeValue = parseAttributeForInlineEditing(attributeValue);
+	    	super.initialize(this.contentVersionId, this.contentId, this.languageId);
+	
+			this.contentVersionVO = this.getContentVersionVO();
+			if(this.contentVersionVO == null)
+			{
+				ContentVO contentVO = ContentController.getContentController().getContentVOWithId(contentId);
+				ContentTypeDefinitionVO contentTypeDefinitionVO = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithId(contentVO.getContentTypeDefinitionId());
+	
+				StringBuffer sb = new StringBuffer();
+				sb.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?><article xmlns=\"x-schema:ArticleSchema.xml\"><attributes>");
+				List contentTypeAttributes = ContentTypeDefinitionController.getController().getContentTypeAttributes(contentTypeDefinitionVO.getSchemaValue());
+				Iterator contentTypeAttributesIterator = contentTypeAttributes.iterator();
+				while(contentTypeAttributesIterator.hasNext())
+				{
+					ContentTypeAttribute contentTypeAttribute = (ContentTypeAttribute)contentTypeAttributesIterator.next();
+					String initialValue = contentTypeAttribute.getContentTypeAttribute("initialData").getContentTypeAttributeParameterValue().getValue("label");
+					if(initialValue == null || initialValue.trim().equals(""))
+						initialValue = "State " + contentTypeAttribute.getName();
+					sb.append("<" + contentTypeAttribute.getName() + "><![CDATA[" + initialValue + "]]></" + contentTypeAttribute.getName() + ">");
+				}
+				sb.append("</attributes></article>");
+				
+				ContentVersionVO contentVersionVO = new ContentVersionVO();
+				contentVersionVO.setVersionComment("Autocreated");
+				contentVersionVO.setVersionModifier(this.getInfoGluePrincipal().getName());
+				contentVersionVO.setVersionValue(sb.toString());
+				this.contentVersionVO = ContentVersionController.getContentVersionController().create(contentId, languageId, contentVersionVO, null);
+			}
+			else if(!this.contentVersionVO.getStateId().equals(ContentVersionVO.WORKING_STATE))
+			{
+			    ContentVersion contentVersion = ContentStateController.changeState(this.contentVersionVO.getContentVersionId(), ContentVersionVO.WORKING_STATE, "Edit on sight", false, null, this.getInfoGluePrincipal(), this.contentVersionVO.getContentId(), new ArrayList());
+			    this.contentVersionId = contentVersion.getContentVersionId();
+			    this.contentVersionVO = contentVersion.getValueObject();
+			}
+			
+			String attributeValue = getRequest().getParameter(this.attributeName);
+			System.out.println("*************************************************");
+			System.out.println("** SAVING **");
+			System.out.println("*************************************************");
+			System.out.println("attributeValue real:" + attributeValue);
+			System.out.println("attributeValue comp: Mattias testar åäö ÅÄÖ:");
+			if(attributeValue != null)
+			{
+				String fromEncoding = CmsPropertyHandler.getUploadFromEncoding();
+				if(fromEncoding == null)
+					fromEncoding = "iso-8859-1";
+				
+				String toEncoding = CmsPropertyHandler.getUploadToEncoding();
+				if(toEncoding == null)
+					toEncoding = "utf-8";
+				
+				if(attributeValue.indexOf("å") == -1 && 
+				   attributeValue.indexOf("ä") == -1 && 
+				   attributeValue.indexOf("ö") == -1 && 
+				   attributeValue.indexOf("Å") == -1 && 
+				   attributeValue.indexOf("Ä") == -1 && 
+				   attributeValue.indexOf("Ö") == -1)
+				{
+					attributeValue = new String(attributeValue.getBytes(fromEncoding), toEncoding);
+				}
+				
+				System.out.println("\n\nattributeValue original:" + attributeValue);
+				attributeValue = parseInlineAssetReferences(attributeValue);
+				System.out.println("attributeValue transformed:" + attributeValue + "\n\n");
+	
+				setAttributeValue(this.contentVersionVO, this.attributeName, attributeValue);
+				ceb.throwIfNotEmpty();
+				
+				this.contentVersionVO.setVersionModifier(this.getInfoGluePrincipal().getName());
+	    		ContentVersionController.getContentVersionController().update(this.contentId, this.languageId, this.contentVersionVO, this.getInfoGluePrincipal());
+	    		System.out.println("*************************************************");
+			
+	    		attributeValue = parseAttributeForInlineEditing(attributeValue);
+			}
+	
+			this.getResponse().setContentType("text/plain");
+	        this.getResponse().getWriter().println(attributeValue);
+		}
+		catch (Exception e) 
+		{
+			e.printStackTrace();
+			return ERROR;
 		}
 		
-		this.getResponse().setContentType("text/plain");
-        this.getResponse().getWriter().println(attributeValue);
-		
+		synchronized(active)
+		{
+			active = new Boolean(false);
+		}
+
 		return NONE;
 	}
 
