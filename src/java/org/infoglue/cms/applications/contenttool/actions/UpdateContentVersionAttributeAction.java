@@ -124,7 +124,7 @@ public class UpdateContentVersionAttributeAction extends ViewContentVersionActio
 		return "success";
 	}
 
-	public String doSaveAndReturnValue() throws Exception
+	public synchronized String doSaveAndReturnValue() throws Exception
     {
 		System.out.println("Updating content version attribute through ajax....");
 		System.out.println("contentId:" + contentId);
