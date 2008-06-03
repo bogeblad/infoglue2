@@ -100,9 +100,12 @@ public class EditOnSiteBasicTemplateController extends BasicTemplateController
             setContentItemParametersJavascript.append( "#" + attributeName + "Anchor');" );
             
             StringBuffer decoratedAttributeValue = new StringBuffer();
-            decoratedAttributeValue.append("<span class=\" " + className + "\" id=\"attribute" + contentId + attributeName + "\" oncontextmenu=\"" + setContentItemParametersJavascript + "\");\">" + attributeValue + "</span>");
-            decoratedAttributeValue.append("<script type=\"text/javascript\">var element = $(\"#attribute" + contentId + attributeName + "\");" +
-            		"element.dblclick(function () {" + setContentItemParametersJavascript + " editInline(" + this.getSiteNode().getRepositoryId() + ");" +
+            decoratedAttributeValue.append("<span class=\"" + className + " attribute" + contentId + "\" id=\"attribute" + contentId + attributeName + "\" oncontextmenu=\"" + setContentItemParametersJavascript + "\");\">" + attributeValue + "</span>");
+            decoratedAttributeValue.append("<script type=\"text/javascript\"> " +
+            		"editOnSightAttributeNames[\"attribute" + contentId + attributeName + "\"] = \"" + attributeName + "\";" +
+            		"editOnSightAttributeNames[\"attribute" + contentId + attributeName + "_type\"] = \"" + className + "\";" +
+            		"var element = $(\"#attribute" + contentId + attributeName + "\");" +
+            		"element.dblclick(function () {/*" + setContentItemParametersJavascript + "*/ editInline(" + this.getSiteNode().getRepositoryId() + ", " + contentId + "," + languageId + ", true);" +
             		"});" +
             		"</script>");
             
