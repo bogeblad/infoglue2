@@ -31,6 +31,7 @@
 
 #else
 
+
 #beginCommonToolV3("tool.contenttool.contentVersionHeader" "$!contentVersionId" "contentId=$!contentId&languageId=$languageId" false false)
 
 	<script type="text/javascript" src="${root}/applications/FCKEditor/fckeditor.js"></script>
@@ -69,9 +70,7 @@
 			var returnAddress = "$formatter.encodeURI("ViewContentVersion!standalone.action?contentId=$contentId&languageId=$languageId&closeOnLoad=true", 'UTF-8')";
 			document.location.href = "ViewListContentVersion.action?contentId=$contentId&returnAddress=" + returnAddress;
 		}
-		
-		alert("$closeOnLoad: $closeOnLoad");
-				
+						
 		var inlineImageDefaultRepositoryId = null;
 		#set($inlineImageDefaultRepositoryId = $map.get("inlineImageDefaultRepositoryId"))
 		#if($inlineImageDefaultRepositoryId && $inlineImageDefaultRepositoryId != "")
@@ -251,7 +250,7 @@
 	//setTimeout("warnForTimeout()", timeout);
 -->
 </script>
-	
+
 <script type="text/javascript">
 <!--
 
@@ -276,9 +275,6 @@
 		#end
 		
 		generateWYSIWYGS();
-		#if($anchor)
-			location.hash = "$anchor";
-		#end	
   	});
   	
 -->
@@ -297,13 +293,13 @@
 	
 	<div id="allDivs">
 	
-	<div id="tabsContainer" class="flora" style="#if($translate == false)width: 100%;#end float:left; aborder: 1px solid red;">
+	<div id="tabsContainer" class="flora" style="#if($translate == false)width: 95%;#else width: 550px; #end float:left; aborder: 1px solid red;">
 	
 	<ul>
         <li><a href="#contentVersionDiv"><span>Textinnehåll</span></a></li>
         <li><a href="#contentVersionCategoriesDiv"><span>Kategorier</span></a></li>
         <li><a href="#contentVersionAssetsDiv"><span>Bifogade filer</span></a></li>
-        <li><a href="#contentCoverDiv"><span>Omslagsinformation</span></a></li>
+        <li><a href="#contentCoverDiv"><span>Omslagsinfo</span></a></li>
     </ul>
 	
 	<div id="contentVersionDiv">
@@ -734,12 +730,7 @@
 				#end
 				
 				<script type="text/javascript">
-					
-					if(document.location.href.indexOf("#") == -1)
-					{
-						document.location.href = "#errorMessage";	
-					}
-					
+										
 					function validateAndSubmitContentForm()
 					{
 						if(allowSave == false)
@@ -1045,7 +1036,7 @@
 	</div><!-- End first tabs collection -->
 	
 	#if($translate)
-	<div id="otherLanguageTabsContainer" style="float: right; aborder: 1px solid green; width: 480px;">
+	<div id="otherLanguageTabsContainer" style="float: right; aborder: 1px solid green; width: 450px;">
 		
 		<ul>
 	        <li><a href="#otherContentVersionDiv"><span>$originalLanguageContentVersionVO.languageName</span></a></li>
@@ -1053,7 +1044,7 @@
 		
 		<div id="otherContentVersionDiv" class="inlineTabDiv">
 			
-			<table border="0" width="100%">	
+			<table width="100%">	
 					<!-- here goes the field generation -->
 								
 					#foreach($attribute in $contentTypeAttributes)
@@ -1098,7 +1089,7 @@
 						<tr>
 							<td colspan="3"><a id="${attribute.name}AnchorComp" name="${attribute.name}AnchorComp"/><img src="images/trans.gif" width="1" height="5"/></td>
 						</tr>
-						<tr class="$trClass">
+						<tr>
 							<td colspan="3">
 								
 								#set($value = "$!this.getOriginalLanguageAttributeValue($attribute.name)")
@@ -1111,7 +1102,7 @@
 									<input readonly="readonly" style="max-width: 400px;" type="text" length="20" class="date" maxlength="20" id="${attribute.name}Comp" name="${attribute.name}Comp" value="$value"/>
 								#elseif($attribute.inputType == "textfield")
 									$attributeTitle ("$attribute.name") $attributeDescription
-									<input readonly="readonly" style="max-width: 400px;" type="text" length="50" class="$class" maxlength="" id="${attribute.name}Comp" name="${attribute.name}Comp" value="$value"/>
+									<input readonly="readonly" style="max-width: 400px;" type="text" length="40" class="$class" maxlength="" id="${attribute.name}Comp" name="${attribute.name}Comp" value="$value"/>
 								#elseif($attribute.inputType == "textarea")
 									
 									#set($unescapedValue = "$!this.getOriginalLanguageUnescapedAttributeValue($attribute.name)")
