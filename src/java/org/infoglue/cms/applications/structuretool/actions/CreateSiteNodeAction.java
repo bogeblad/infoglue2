@@ -340,7 +340,6 @@ public class CreateSiteNodeAction extends InfoGlueAbstractAction
 		ceb.throwIfNotEmpty();
 
         userSessionKey = "" + System.currentTimeMillis();
-        System.out.println("userSessionKey input:" + userSessionKey);
 
 		parentSiteNodeVO = SiteNodeControllerProxy.getController().getSiteNodeVOWithId(parentSiteNodeId);
 
