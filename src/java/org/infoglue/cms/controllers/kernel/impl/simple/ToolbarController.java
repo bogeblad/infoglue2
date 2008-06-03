@@ -419,7 +419,9 @@ public class ToolbarController
 				  					  getLocalizedString(locale, "tool.contenttool.cancel.label"), 
 				  					  getLocalizedString(locale, "tool.contenttool.cancel.label"),
 				  					  "parent.closeDialog();",
-				  					  "images/v3/cancelIcon.gif"));
+				  					  "images/v3/cancelIcon.gif",
+				  					  "left",
+				  					  true));
 		
 		return buttons;
 	}
