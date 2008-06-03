@@ -72,6 +72,7 @@
 				var property = propertyVector.getElementAt(i);
 				
 				propertyName 					= property.getName();
+				propertyDisplayName 			= property.getDisplayName();
 				propertyType   					= property.getType();
 				propertyEntity 					= property.getEntity();
 				propertyMultiple				= property.getMultiple();
@@ -90,7 +91,7 @@
 				
 				if(propertyType == "select" || propertyType == "checkbox")
 				{
-					propertiesXML += "<property name='" + propertyName + "' type='" + propertyType + "' multiple='" + propertyMultiple + "' assetBinding='" + propertyAssetBinding + "' description='" + propertyDescription + "' defaultValue='" + propertyDefaultValue + "' dataProvider='" + propertyDataProvider + "' dataProviderParameters='" + propertyDataProviderParameters + "'>";
+					propertiesXML += "<property name='" + propertyName + "' displayName='" + propertyDisplayName + "' type='" + propertyType + "' multiple='" + propertyMultiple + "' assetBinding='" + propertyAssetBinding + "' description='" + propertyDescription + "' defaultValue='" + propertyDefaultValue + "' dataProvider='" + propertyDataProvider + "' dataProviderParameters='" + propertyDataProviderParameters + "'>";
 
 					for (var j=0; j<property.getOptions().getSize(); j++)
 					{
@@ -104,7 +105,7 @@
 					propertiesXML += "</property>";					
 				}
 				else
-					propertiesXML += "<property name='" + propertyName + "' type='" + propertyType + "' entity='" + propertyEntity + "' multiple='" + propertyMultiple + "' assetBinding='" + propertyAssetBinding + "' allowedContentTypeDefinitionNames='" + propertyAllowedContentTypeNames + "' description='" + propertyDescription + "' defaultValue='" + propertyDefaultValue + "' WYSIWYGEnabled='" + propertyWYSIWYGEnabled + "' WYSIWYGToolbar='" + propertyWYSIWYGToolbar + "' dataProvider='" + propertyDataProvider + "' dataProviderParameters='" + propertyDataProviderParameters + "' autoCreateContent='" + propertyAutoCreateContent + "' autoCreateContentMethod='" + propertyAutoCreateContentMethod + "' autoCreateContentPath='" + propertyAutoCreateContentPath + "'/>";
+					propertiesXML += "<property name='" + propertyName + "' displayName='" + propertyDisplayName + "' type='" + propertyType + "' entity='" + propertyEntity + "' multiple='" + propertyMultiple + "' assetBinding='" + propertyAssetBinding + "' allowedContentTypeDefinitionNames='" + propertyAllowedContentTypeNames + "' description='" + propertyDescription + "' defaultValue='" + propertyDefaultValue + "' WYSIWYGEnabled='" + propertyWYSIWYGEnabled + "' WYSIWYGToolbar='" + propertyWYSIWYGToolbar + "' dataProvider='" + propertyDataProvider + "' dataProviderParameters='" + propertyDataProviderParameters + "' autoCreateContent='" + propertyAutoCreateContent + "' autoCreateContentMethod='" + propertyAutoCreateContentMethod + "' autoCreateContentPath='" + propertyAutoCreateContentPath + "'/>";
 			}
 		   	
 		   	propertiesXML += "</properties>";
@@ -233,6 +234,7 @@
 			var componentPropertyDefinition = propertyVector.getElementAt(index);
 
 			document.componentPropertyDefinitionForm.componentPropertyDefinition_name.value = componentPropertyDefinition.name;
+			document.componentPropertyDefinitionForm.componentPropertyDefinition_displayName.value = componentPropertyDefinition.displayName;
 			
 			if(componentPropertyDefinition.type == "binding")
 				document.componentPropertyDefinitionForm.componentPropertyDefinition_type.options[0].selected = 1;
@@ -355,6 +357,7 @@
 			//alert("componentPropertyDefinition:" + componentPropertyDefinition.getName());
 
 			componentPropertyDefinition.setName(document.getElementById("componentPropertyDefinition_name").value);
+			componentPropertyDefinition.setDisplayName(document.getElementById("componentPropertyDefinition_displayName").value);
 			componentPropertyDefinition.setDescription(document.getElementById("componentPropertyDefinition_description").value);
 			
 			componentPropertyDefinition.setType(document.getElementById("componentPropertyDefinition_type").value);
@@ -456,6 +459,7 @@
 				myTR.appendChild(actionTD);
 				
 				addTD(myTR, componentPropertyDefinition.name)
+				addTD(myTR, componentPropertyDefinition.displayName)
 				addTD(myTR, componentPropertyDefinition.type)
 				addTD(myTR, componentPropertyDefinition.entity)
 				addTD(myTR, componentPropertyDefinition.multiple)
@@ -550,7 +554,7 @@
 
 		function addProperty()
 		{
-			property = new ComponentPropertyDefinition("NewProperty", "binding", "Content", "false", "false", "", "No description yet", "", "false", "Basic", "", "");
+			property = new ComponentPropertyDefinition("NewProperty", "NewProperty", "binding", "Content", "false", "false", "", "No description yet", "", "false", "Basic", "", "");
 			propertyVector.addElement(property);
 				
 			drawList();
@@ -569,6 +573,7 @@
 				var previousProperty 	= propertyVector.getElementAt(index - 1);
 				
 				name 		 			= property.getName();
+				displayName 		 	= property.getDisplayName();
 				type		 			= property.getType();
 				entity		 			= property.getEntity();
 				multiple 	 			= property.getMultiple();
@@ -582,6 +587,7 @@
 				dataProviderParameters 	= property.getDataProviderParameters();
 				
 				property.setName(previousProperty.getName());
+				property.setDisplayName(previousProperty.getDisplayName());
 				property.setType(previousProperty.getType());
 				property.setEntity(previousProperty.getEntity());
 				property.setMultiple(previousProperty.getMultiple());
@@ -599,6 +605,7 @@
 				property.setAutoCreateContentPath(previousProperty.getAutoCreateContentPath());
 				
 				previousProperty.setName(name);
+				previousProperty.setDisplayName(displayName);
 				previousProperty.setType(type);
 				previousProperty.setEntity(entity);
 				previousProperty.setMultiple(multiple);
@@ -631,6 +638,7 @@
 				var previousProperty 	= propertyVector.getElementAt(index + 1);
 				
 				name 		= property.getName();
+				displayName = property.getDisplayName();
 				type		= property.getType();
 				entity		= property.getEntity();
 				multiple 	= property.getMultiple();
@@ -644,6 +652,7 @@
 				dataProviderParameters 	= property.getDataProviderParameters();
 				
 				property.setName(previousProperty.getName())
+				property.setDisplayName(previousProperty.getDisplayName())
 				property.setType(previousProperty.getType())
 				property.setEntity(previousProperty.getEntity())
 				property.setMultiple(previousProperty.getMultiple())
@@ -661,6 +670,7 @@
 				property.setAutoCreateContentPath(previousProperty.getAutoCreateContentPath());
 				
 				previousProperty.setName(name);
+				previousProperty.setDisplayName(displayName)
 				previousProperty.setType(type);
 				previousProperty.setEntity(entity);
 				previousProperty.setMultiple(multiple);
@@ -680,9 +690,6 @@
 				drawList();
 			}
 		}
-
-
-
 
 		/**
 		 * This method removes a property option from the vector.
@@ -842,7 +849,7 @@
 		{
 			#foreach($propertyDefinition in $componentPropertyDefinitions)
 				//alert("$propertyDefinition.autoCreateContentPath");
-				property = new ComponentPropertyDefinition("$propertyDefinition.name", "$propertyDefinition.type", "$propertyDefinition.entity", "$propertyDefinition.multiple", "$propertyDefinition.assetBinding", "$propertyDefinition.allowedContentTypeNames", "$propertyDefinition.description", "$!propertyDefinition.defaultValue", "$!propertyDefinition.WYSIWYGEnabled", "$!propertyDefinition.WYSIWYGToolbar", "$!propertyDefinition.dataProvider", "$!propertyDefinition.dataProviderParameters", "$!propertyDefinition.autoCreateContent", "$!propertyDefinition.autoCreateContentMethod", "$!propertyDefinition.autoCreateContentPath");
+				property = new ComponentPropertyDefinition("$propertyDefinition.name", "$!propertyDefinition.displayName", "$propertyDefinition.type", "$propertyDefinition.entity", "$propertyDefinition.multiple", "$propertyDefinition.assetBinding", "$propertyDefinition.allowedContentTypeNames", "$propertyDefinition.description", "$!propertyDefinition.defaultValue", "$!propertyDefinition.WYSIWYGEnabled", "$!propertyDefinition.WYSIWYGToolbar", "$!propertyDefinition.dataProvider", "$!propertyDefinition.dataProviderParameters", "$!propertyDefinition.autoCreateContent", "$!propertyDefinition.autoCreateContentMethod", "$!propertyDefinition.autoCreateContentPath");
 
 				#foreach($propertyOptionDefinition in $propertyDefinition.options)
 					propertyOption = new ComponentPropertyOptionDefinition("$propertyOptionDefinition.name", "$propertyOptionDefinition.value");
@@ -888,6 +895,7 @@
 <form name="componentPropertyDefinitionForm">
 <br/>
 <p><label for="componentPropertyDefinition_name">Name:</label><input type="textfield" name="componentPropertyDefinition_name" id="componentPropertyDefinition_name" value=""/></p>
+<p><label for="componentPropertyDefinition_displayName">Display name:</label><input type="textfield" name="componentPropertyDefinition_displayName" id="componentPropertyDefinition_displayName" value=""/></p>
 <p><label for="componentPropertyDefinition_description">Description:</label><input type="textfield" name="componentPropertyDefinition_description" id="componentPropertyDefinition_description" value=""/></p>
 <p><label for="componentPropertyDefinition_defaultValue">Default value:</label><input type="textfield" name="componentPropertyDefinition_defaultValue" id="componentPropertyDefinition_defaultValue" value=""/></p>
 <p><label for="componentPropertyDefinition_dataProvider">Data provider class:</label><input type="textfield" name="componentPropertyDefinition_dataProvider" id="componentPropertyDefinition_dataProvider" value=""/></p>

@@ -12,9 +12,10 @@
  * ComponentPropertyDefinition object
  */
 
-function ComponentPropertyDefinition(name, type, entity, multiple, assetBinding, allowedContentTypeNames, description, defaultValue, WYSIWYGEnabled, WYSIWYGToolbar, dataProvider, dataProviderParameters, autoCreateContent, autoCreateContentMethod, autoCreateContentPath)
+function ComponentPropertyDefinition(name, displayName, type, entity, multiple, assetBinding, allowedContentTypeNames, description, defaultValue, WYSIWYGEnabled, WYSIWYGToolbar, dataProvider, dataProviderParameters, autoCreateContent, autoCreateContentMethod, autoCreateContentPath)
 {
 	this.name 						= name;
+	this.displayName				= displayName;
 	this.type 						= type;
 	this.entity						= entity;
 	this.multiple					= multiple;
@@ -32,6 +33,7 @@ function ComponentPropertyDefinition(name, type, entity, multiple, assetBinding,
 	this.options					= new Vector(0);
 	  
   	this.getName 					= getName;
+  	this.getDisplayName 			= getDisplayName;
   	this.getType 					= getType;
   	this.getEntity 					= getEntity;
   	this.getMultiple				= getMultiple;
@@ -49,6 +51,7 @@ function ComponentPropertyDefinition(name, type, entity, multiple, assetBinding,
 	this.getAutoCreateContentPath	= getAutoCreateContentPath;
 	
   	this.setName 					= setName;
+  	this.setDisplayName 			= setDisplayName;
   	this.setType 					= setType;
   	this.setEntity 					= setEntity;
   	this.setMultiple				= setMultiple;
@@ -68,6 +71,11 @@ function ComponentPropertyDefinition(name, type, entity, multiple, assetBinding,
 function getName()
 {
   	return this.name;
+}
+
+function getDisplayName()
+{
+  	return this.displayName;
 }
 
 function getType()
@@ -108,6 +116,11 @@ function getOptions()
 function setName(name)
 {
   	this.name = name;
+}
+
+function setDisplayName(displayName)
+{
+  	this.displayName = displayName;
 }
 
 function setType(type)
