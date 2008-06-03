@@ -1019,11 +1019,15 @@ function editInline(repositoryId, selectedContentId, selectedLanguageId, directE
 				var elementObject = $this;
 				var text = elementObject.html();
 				//alert("text:" + text);
+				var fontFamily = elementObject.parent().css("font-family");
 				var fontSize = elementObject.parent().css("font-size");
+				var color = elementObject.parent().css("color");
 				//alert("fontSize:" + fontSize);
 				
 				elementObject.html("<span id='spanInput" + $this.get(0).id + "' class='inEditW'><input class='edit' style='width: 80%' ondblclick='if (event && event.stopPropagation) {event.stopPropagation();}else if (window.event) {window.event.cancelBubble = true;}return false;' id='input" + $this.get(0).id + "' type='text' value='" + text + "' /> <a onclick='saveAttribute(" + selectedContentId + ", " + selectedLanguageId + ", \"" + attributeName + "\", \"textfield\");' style='text-decoration: none;' class='editSave'></span>");
+				$(".edit").css("font-family", fontFamily);
 				$(".edit").css("font-size", fontSize);
+				$(".edit").css("color", color);
 				$(".edit").css("border", "1px solid #ccc");
 			}
 			else
@@ -1081,7 +1085,6 @@ function saveAttribute(selectedContentId, selectedLanguageId, selectedAttributeN
 		var value = oEditor.GetXHTML( true )
 		//alert("Value: " + value);
 		value = Url.encode(value);
-		
 		//alert("Value: " + value);
 		var data = "contentId=" + selectedContentId + "&languageId=" + selectedLanguageId + "&attributeName=" + selectedAttributeName + "&" + selectedAttributeName + "=" + value + "&deliverContext=" + currentContext;
 	
@@ -1103,6 +1106,8 @@ function saveAttribute(selectedContentId, selectedLanguageId, selectedAttributeN
 	{
 		//alert("Saving: " + selectedContentId + " " + selectedLanguageId + " " +  selectedAttributeName);
 		var value = $("#inputattribute" + selectedContentId + selectedAttributeName).val();
+		//alert("Value: " + value);
+		//value = Url.encode(value);
 		//alert("Value: " + value);
 		var data = "contentId=" + selectedContentId + "&languageId=" + selectedLanguageId + "&attributeName=" + selectedAttributeName + "&" + selectedAttributeName + "=" + value;
 	
