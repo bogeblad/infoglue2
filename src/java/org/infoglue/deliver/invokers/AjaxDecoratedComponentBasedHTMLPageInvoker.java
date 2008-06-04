@@ -1225,6 +1225,7 @@ public class AjaxDecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHT
 					Element binding = (Element)anlIterator.next();
 					
 					String name							 = binding.attributeValue("name");
+					String displayName					 = binding.attributeValue("displayName");
 					String description					 = binding.attributeValue("description");
 					String defaultValue					 = binding.attributeValue("defaultValue");
 					String dataProvider					 = binding.attributeValue("dataProvider");
@@ -1238,6 +1239,7 @@ public class AjaxDecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHT
 					ComponentProperty property = new ComponentProperty();
 					property.setComponentId(componentId);
 					property.setName(name);
+					property.setDisplayName(displayName);
 					property.setDescription(description);
 					property.setDefaultValue(defaultValue);
 					property.setDataProvider(dataProvider);
@@ -1373,6 +1375,7 @@ public class AjaxDecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHT
 					Element binding = (Element)anlIterator.next();
 					
 					String name							 = binding.attributeValue("name");
+					String displayName					 = binding.attributeValue("displayName");
 					String description					 = binding.attributeValue("description");
 					String defaultValue					 = binding.attributeValue("defaultValue");
 					String dataProvider					 = binding.attributeValue("dataProvider");
@@ -1386,6 +1389,7 @@ public class AjaxDecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHT
 					ComponentProperty property = new ComponentProperty();
 					property.setComponentId(componentId);
 					property.setName(name);
+					property.setDisplayName(displayName);
 					property.setDescription(description);
 					property.setDefaultValue(defaultValue);
 					property.setDataProvider(dataProvider);
