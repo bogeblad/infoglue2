@@ -315,7 +315,8 @@ public class ViewPageAction extends InfoGlueAbstractAction
 				if(logger.isInfoEnabled())
 					logger.info("this.templateController.getPrincipal():" + this.templateController.getPrincipal());
 				
-				DeliveryContext deliveryContext = DeliveryContext.getDeliveryContext(/*(InfoGluePrincipal)this.principal*/);
+				DeliveryContext deliveryContext = DeliveryContext.getDeliveryContext(true);
+				System.out.println("deliveryContext:" + deliveryContext);
 				deliveryContext.setRepositoryName(this.repositoryName);
 				deliveryContext.setSiteNodeId(this.siteNodeId);
 				deliveryContext.setContentId(this.contentId);
@@ -584,7 +585,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			{	
 				logger.info("this.templateController.getPrincipal():" + this.templateController.getPrincipal());
 		
-				DeliveryContext deliveryContext = DeliveryContext.getDeliveryContext(/*this.templateController.getPrincipal()*/);
+				DeliveryContext deliveryContext = DeliveryContext.getDeliveryContext(true);
 				deliveryContext.setRepositoryName(this.repositoryName);
 				deliveryContext.setSiteNodeId(this.siteNodeId);
 				deliveryContext.setLanguageId(this.languageId);
@@ -597,6 +598,8 @@ public class ViewPageAction extends InfoGlueAbstractAction
 				deliveryContext.setHttpServletResponse(this.getResponse());
 				deliveryContext.setUseFullUrl(Boolean.parseBoolean(CmsPropertyHandler.getUseDNSNameInURI()));
 
+				deliveryContext.setDisablePageCache(true);
+				
 				SiteNode siteNode = nodeDeliveryController.getSiteNode(dbWrapper.getDatabase(), this.siteNodeId);
 				if(siteNode == null)
 				    throw new SystemException("There was no page with this id.");
