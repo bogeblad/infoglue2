@@ -81,6 +81,7 @@ public class InterceptionPointController extends BaseController
 	    systemInterceptionPoints.put("Content.SubmitToPublish", new InterceptionPointVO("Content", "Content.SubmitToPublish", "Intercepts the submittance to publish of all content versions", true));
 	    systemInterceptionPoints.put("Content.ChangeAccessRights", new InterceptionPointVO("Content", "Content.ChangeAccessRights", "Intercepts the attempt to change access rights", true));
 	    systemInterceptionPoints.put("Content.CreateVersion", new InterceptionPointVO("Content", "Content.CreateVersion", "Intercepts the creation of a new contentversion", true));
+	    systemInterceptionPoints.put("Content.ExpireDateComingUp", new InterceptionPointVO("Content", "Content.ExpireDateComingUp", "Intercepts the event of a content coming close to it's expire date", true));
 	    
 	    systemInterceptionPoints.put("ContentTypeDefinition.Read", new InterceptionPointVO("ContentTypeDefinition", "ContentTypeDefinition.Read", "This point checks access to read/use a content type definition", true));
 	    systemInterceptionPoints.put("ContentVersion.Delete", new InterceptionPointVO("ContentVersion", "ContentVersion.Delete", "Intercepts the deletion of a contentversion", true));
@@ -99,6 +100,7 @@ public class InterceptionPointController extends BaseController
 	    systemInterceptionPoints.put("SiteNodeVersion.SubmitToPublish", new InterceptionPointVO("SiteNodeVersion", "SiteNodeVersion.SubmitToPublish", "Intercepts the submittance to publish of all content versions", true));
 	    systemInterceptionPoints.put("SiteNodeVersion.ChangeAccessRights", new InterceptionPointVO("SiteNodeVersion", "SiteNodeVersion.ChangeAccessRights", "Intercepts the attempt to change access rights", true));
 	    systemInterceptionPoints.put("SiteNodeVersion.Publish", new InterceptionPointVO("SiteNodeVersion", "SiteNodeVersion.Publish", "Intercepts the direct publishing of a siteNode version", true));
+	    systemInterceptionPoints.put("SiteNode.ExpireDateComingUp", new InterceptionPointVO("SiteNode", "SiteNode.ExpireDateComingUp", "Intercepts the event of a site node coming close to it's expire date", true));
 	    
 	    systemInterceptionPoints.put("StructureTool.SaveTemplate", new InterceptionPointVO("StructureTool", "StructureTool.SaveTemplate", "This interception point limits who get the save-button in the toolbar", false));
 	    systemInterceptionPoints.put("StructureTool.Palette", new InterceptionPointVO("StructureTool", "StructureTool.Palette", "This interception point limits who sees the toolbar", false));
