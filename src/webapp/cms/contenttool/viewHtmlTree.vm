@@ -255,6 +255,12 @@
 	
 	#if($treeMode != "classic")
 	<!-- DYNAMIC VERSION SCRIPTS -->
+	<script type="text/javascript">
+		var defaultWorkingStyleInformation = "$this.workingStyleInformation";
+		var defaultFinalStyleInformation = "$this.finalStyleInformation";
+		var defaultPublishStyleInformation = "$this.publishStyleInformation";
+		var defaultPublishedStyleInformation = "$this.publishedStyleInformation";
+	</script>
 	<script type="text/javascript" src="script/xloadtree/xtree.js"></script>
 	<script type="text/javascript" src="script/xloadtree/xmlextras.js"></script>
 	<script type="text/javascript" src="script/xloadtree/xloadtree.js"></script>
@@ -278,19 +284,11 @@
 	<script type="text/javascript">
 	
 	#if($disableCustomIcons != "true")
-
-		#foreach($contentTypeDefinitionVO in $contentTypeDefinitions)
-			var imageUrl${contentTypeDefinitionVO.id} = '$this.getCMSBaseUrl()/script/xloadtree/images/xp/${contentTypeDefinitionVO.id}.png';
-			//alert("imageUrl:" + imageUrl${contentTypeDefinitionVO.id});
-			var img$contentTypeDefinitionVO.id = new Image();
-			img${contentTypeDefinitionVO.id}.onload = function (evt) {
-			  	//alert(this.src + " is loaded.");
-				webFXTreeConfig.contentTypeIcons["$contentTypeDefinitionVO.id"] = imageUrl${contentTypeDefinitionVO.id};
-			}
-			img${contentTypeDefinitionVO.id}.src = imageUrl${contentTypeDefinitionVO.id};
+		#foreach($customContentTypeIcon in $customContentTypeIcons.entrySet())
+			webFXTreeConfig.contentTypeIcons["$customContentTypeIcon.key"] = "$customContentTypeIcon.value";
 		#end
-	
 	#end
+	
 	
 	webFXTreeConfig.rootIcon		= "images/tree/contentRoot.gif"; // "script/xloadtree/images/xp/folder.png";
 	webFXTreeConfig.openRootIcon	= "images/tree/contentRoot.gif"; // "script/xloadtree/images/xp/openfolder.png";

@@ -232,10 +232,59 @@ function _xmlTreeToJsTree(oNode) {
 	if(contentTypeDefinitionId)
 	{
 		var contentTypeIcon = webFXTreeConfig.contentTypeIcons[contentTypeDefinitionId];
+		var contentTypeIconHiddenIcon = webFXTreeConfig.contentTypeIcons[contentTypeDefinitionId + "_hiddenIcon"];
+		var contentTypeIconProtectedIcon = webFXTreeConfig.contentTypeIcons[contentTypeDefinitionId + "_protectedIcon"];
+		var contentTypeIconFolderIcon = webFXTreeConfig.contentTypeIcons[contentTypeDefinitionId + "_folderIcon"];
+		var contentTypeIconOpenFolderIcon = webFXTreeConfig.contentTypeIcons[contentTypeDefinitionId + "_openFolderIcon"];
+		var contentTypeIconHiddenFolderIcon = webFXTreeConfig.contentTypeIcons[contentTypeDefinitionId + "_hiddenFolderIcon"];
+		var contentTypeIconHiddenOpenFolderIcon = webFXTreeConfig.contentTypeIcons[contentTypeDefinitionId + "_hiddenOpenFolderIcon"];
+		var contentTypeIconProtectedFolderIcon = webFXTreeConfig.contentTypeIcons[contentTypeDefinitionId + "_protectedFolderIcon"];
+		var contentTypeIconProtectedOpenFolderIcon = webFXTreeConfig.contentTypeIcons[contentTypeDefinitionId + "_protectedOpenFolderIcon"];
 		if(contentTypeIcon)
-		{
 			icon = contentTypeIcon;
-			openIcon = contentTypeIcon;
+		
+		if(contentTypeIconOpenFolderIcon)
+			openIcon = contentTypeIconOpenFolderIcon;
+
+		if(type.indexOf("Folder") > -1)
+		{
+			if(isHidden == "true" && contentTypeIconHiddenFolderIcon)
+				icon = contentTypeIconHiddenFolderIcon;
+			else
+			{
+				if(isProtected == 'true' && contentTypeIconProtectedFolderIcon)
+					icon = contentTypeIconProtectedFolderIcon;
+				else if(contentTypeIconFolderIcon)
+					icon = contentTypeIconFolderIcon;
+			}
+				
+			if(isHidden == "true")
+				openIcon = contentTypeIconHiddenOpenFolderIcon;
+			else
+			{
+				if(isProtected == 'true' && contentTypeIconProtectedOpenFolderIcon)
+					openIcon = contentTypeIconProtectedOpenFolderIcon;
+				else if(contentTypeIconOpenFolderIcon)
+					openIcon = contentTypeIconOpenFolderIcon;
+			}
+			
+			if(contentTypeIconProtectedFolderIcon)
+				icon = contentTypeIconProtectedFolderIcon;
+	
+			if(contentTypeIconProtectedOpenFolderIcon)
+				openIcon = contentTypeIconProtectedOpenFolderIcon;
+		}
+		else
+		{
+			if(isHidden == "true" && contentTypeIconHiddenIcon)
+				icon = contentTypeIconHiddenIcon;
+			else
+			{
+				if(isProtected == 'true' && contentTypeIconProtectedIcon)
+					icon = contentTypeIconProtectedIcon;
+				else if(contentTypeIcon)
+					icon = contentTypeIcon;
+			}							
 		}
 	}
 	

@@ -170,6 +170,12 @@
 	</script>
 	#if($treeMode != "classic")
 	<!-- DYNAMIC VERSION SCRIPTS -->
+	<script type="text/javascript">
+		var defaultWorkingStyleInformation = "$this.workingStyleInformation";
+		var defaultFinalStyleInformation = "$this.finalStyleInformation";
+		var defaultPublishStyleInformation = "$this.publishStyleInformation";
+		var defaultPublishedStyleInformation = "$this.publishedStyleInformation";
+	</script>
 	<script type="text/javascript" src="script/xloadtree/xtree.js"></script>
 	<script type="text/javascript" src="script/xloadtree/xmlextras.js"></script>
 	<script type="text/javascript" src="script/xloadtree/xloadtree.js"></script>

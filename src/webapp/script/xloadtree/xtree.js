@@ -799,24 +799,38 @@ WebFXTreeItem.prototype.toString = function (nItem, nItemCount) {
 	}
 	var styleInfo = "";
 	var stateInfo = "";
-	if(this.stateId == "0") { 
-		styleInfo = "color: green";
+	
+	if(this.stateId == "0") {
+		if(defaultWorkingStyleInformation && defaultWorkingStyleInformation != "")
+			styleInfo = defaultWorkingStyleInformation;
+		else
+			styleInfo = "color: green";
+	
 		stateInfo = " (working)";
 		if(languageCode == "sv")
 			stateInfo = " (arbetskopia)";
 	}
 	if(this.stateId == "1"){ 
-		styleInfo = "color: yellow";
+		if(defaultFinalStyleInformation && defaultFinalStyleInformation != "")
+			styleInfo = defaultFinalStyleInformation;
+		else
+			styleInfo = "color: yellow";
+		
 		stateInfo = " (finished)";
 		if(languageCode == "sv")
 			stateInfo = " (slutförd)";
 	}
 	if(this.stateId == "2"){ 
-		styleInfo = "color: red";
+		if(defaultPublishStyleInformation && defaultPublishStyleInformation != "")
+			styleInfo = defaultPublishStyleInformation;
+		else
+			styleInfo = "color: red";
+		
 		stateInfo = " (publish)";
 		if(languageCode == "sv")
 			stateInfo = " (publicerbar)";
 	}
+		
 	var label = this.text.replace(/</g, '&lt;').replace(/>/g, '&gt;');
 	var str = "<div id=\"" + this.id + "\" ondblclick=\"webFXTreeHandler.toggle(this);\" class=\"webfx-tree-item\" onmousedown=\"grabIt(event);\" onkeydown=\"return webFXTreeHandler.keydown(this, event)\">";
 	str += indent;

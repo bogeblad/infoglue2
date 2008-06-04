@@ -320,7 +320,7 @@
 	<td colspan="3" bgcolor="FFFFFF"><img src="images/trans.gif" width="1" height="1"/></td>
 </tr>
 <tr>
-	<td class="actionheader"><img src="images/trans.gif" width="15" height="1"/>$ui.getString($title)</td>
+	<td class="actionheader"><img src="images/trans.gif" width="15" height="1"/>$ui.getString($title) $!extraInformation</td>
 </tr>
 <tr class="lightgreen">
 	<td colspan="3" height="1"><img src="images/trans.gif" width="1" height="1"/></td>
