@@ -20,7 +20,7 @@
  *
  * ===============================================================================
  *
- * $Id: ContentStateControllerTest.java,v 1.5 2006/12/13 15:16:32 mattias Exp $
+ * $Id: ContentStateControllerTest.java,v 1.6 2008/06/04 07:19:51 mattias Exp $
  */
 package org.infoglue.cms.controllers;
 
@@ -35,6 +35,7 @@ import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentStateController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.EventController;
+import org.infoglue.cms.controllers.kernel.impl.simple.InfoGluePrincipalControllerProxy;
 import org.infoglue.cms.entities.content.ContentCategoryVO;
 import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.content.ContentVersion;
@@ -93,7 +94,7 @@ public class ContentStateControllerTest extends InfoGlueTestCase
 		testContentCategory.setAttributeName(getName());
 		testContentCategory.setContentVersionId(testContentVersion.getId());
 		testContentCategory.setCategory(testCategory);
-		testContentCategory = contentCategoryStore.save(testContentCategory);
+		testContentCategory = contentCategoryStore.save(testContentCategory, InfoGluePrincipalControllerProxy.getController().getTestPrincipal());
 	}
 
 

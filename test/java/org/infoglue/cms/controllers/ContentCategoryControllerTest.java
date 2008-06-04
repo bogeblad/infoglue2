@@ -20,7 +20,7 @@
  *
  * ===============================================================================
  *
- * $Id: ContentCategoryControllerTest.java,v 1.3 2006/03/06 16:54:01 mattias Exp $
+ * $Id: ContentCategoryControllerTest.java,v 1.4 2008/06/04 07:19:51 mattias Exp $
  */
 package org.infoglue.cms.controllers;
 
@@ -30,6 +30,7 @@ import java.util.List;
 
 import org.infoglue.cms.controllers.kernel.impl.simple.CategoryController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentCategoryController;
+import org.infoglue.cms.controllers.kernel.impl.simple.InfoGluePrincipalControllerProxy;
 import org.infoglue.cms.entities.content.ContentCategoryVO;
 import org.infoglue.cms.entities.management.CategoryVO;
 import org.infoglue.cms.util.InfoGlueTestCase;
@@ -61,19 +62,19 @@ public class ContentCategoryControllerTest extends InfoGlueTestCase
 		testContentCategory.setAttributeName(getName());
 		testContentCategory.setContentVersionId(VERSION_ID);
 		testContentCategory.setCategory(testCategory);
-		testContentCategory = testController.save(testContentCategory);
+		testContentCategory = testController.save(testContentCategory, InfoGluePrincipalControllerProxy.getController().getTestPrincipal());
 	}
 
 	protected void tearDown() throws Exception
 	{
 		if (!deleted)
 		{
-			testController.delete(testContentCategory.getId());
+			testController.delete(testContentCategory.getId(), InfoGluePrincipalControllerProxy.getController().getTestPrincipal());
 			assertRemoved();
 		}
 
 		for (Iterator i = extraContentCategories.iterator(); i.hasNext();)
-			testController.delete(((ContentCategoryVO)i.next()).getId());
+			testController.delete(((ContentCategoryVO)i.next()).getId(), InfoGluePrincipalControllerProxy.getController().getTestPrincipal());
 
 		// If you delete the category first, then try to delete the ContentCategory
 		// it will barf because it cannot pull up the Category relationship
@@ -93,14 +94,14 @@ public class ContentCategoryControllerTest extends InfoGlueTestCase
 		sameAttribute.setAttributeName(getName());
 		sameAttribute.setContentVersionId(VERSION_ID);
 		sameAttribute.setCategory(testCategory);
-		sameAttribute = testController.save(sameAttribute);
+		sameAttribute = testController.save(sameAttribute, InfoGluePrincipalControllerProxy.getController().getTestPrincipal());
 		extraContentCategories.add(sameAttribute);
 
 		ContentCategoryVO differentAttribute = new ContentCategoryVO();
 		differentAttribute.setAttributeName("randomAttribute");
 		differentAttribute.setContentVersionId(VERSION_ID);
 		differentAttribute.setCategory(testCategory);
-		differentAttribute = testController.save(differentAttribute);
+		differentAttribute = testController.save(differentAttribute, InfoGluePrincipalControllerProxy.getController().getTestPrincipal());
 		extraContentCategories.add(differentAttribute);
 
 		List found = testController.findByContentVersionAttribute(getName(), VERSION_ID);
@@ -130,14 +131,14 @@ public class ContentCategoryControllerTest extends InfoGlueTestCase
 		sameAttribute.setAttributeName(getName());
 		sameAttribute.setContentVersionId(VERSION_ID);
 		sameAttribute.setCategory(testCategory);
-		sameAttribute = testController.save(sameAttribute);
+		sameAttribute = testController.save(sameAttribute, InfoGluePrincipalControllerProxy.getController().getTestPrincipal());
 		extraContentCategories.add(sameAttribute);
 
 		ContentCategoryVO differentAttribute = new ContentCategoryVO();
 		differentAttribute.setAttributeName("randomAttribute");
 		differentAttribute.setContentVersionId(VERSION_ID);
 		differentAttribute.setCategory(testCategory);
-		differentAttribute = testController.save(differentAttribute);
+		differentAttribute = testController.save(differentAttribute, InfoGluePrincipalControllerProxy.getController().getTestPrincipal());
 		extraContentCategories.add(differentAttribute);
 
 		List found = testController.findByContentVersion(VERSION_ID);
@@ -160,7 +161,7 @@ public class ContentCategoryControllerTest extends InfoGlueTestCase
 		differentAttribute.setAttributeName("randomAttribute");
 		differentAttribute.setContentVersionId(VERSION_ID);
 		differentAttribute.setCategory(testCategory);
-		differentAttribute = testController.save(differentAttribute);
+		differentAttribute = testController.save(differentAttribute, InfoGluePrincipalControllerProxy.getController().getTestPrincipal());
 		extraContentCategories.add(differentAttribute);
 
 		List found = testController.findByCategory(testCategory.getId());
@@ -175,7 +176,7 @@ public class ContentCategoryControllerTest extends InfoGlueTestCase
 		differentAttribute.setAttributeName("randomAttribute");
 		differentAttribute.setContentVersionId(VERSION_ID);
 		differentAttribute.setCategory(testCategory);
-		differentAttribute = testController.save(differentAttribute);
+		differentAttribute = testController.save(differentAttribute, InfoGluePrincipalControllerProxy.getController().getTestPrincipal());
 		extraContentCategories.add(differentAttribute);
 
 		List found = testController.findByCategory(new Integer(-999));
@@ -211,7 +212,7 @@ public class ContentCategoryControllerTest extends InfoGlueTestCase
 
 	private ContentCategoryVO createWithRandomAttribute() throws Exception
 	{
-		return testController.save(new ContentCategoryVO("randomAttribute", VERSION_ID, testCategory));
+		return testController.save(new ContentCategoryVO("randomAttribute", VERSION_ID, testCategory), InfoGluePrincipalControllerProxy.getController().getTestPrincipal());
 	}
 
 	/**

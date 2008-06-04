@@ -20,7 +20,7 @@
  *
  * ===============================================================================
  *
- * $Id: ContentDeliveryControllerTest.java,v 1.5 2006/12/13 15:16:32 mattias Exp $
+ * $Id: ContentDeliveryControllerTest.java,v 1.6 2008/06/04 07:19:51 mattias Exp $
  */
 package org.infoglue.deliver.controllers;
 
@@ -35,6 +35,7 @@ import org.infoglue.cms.controllers.kernel.impl.simple.CategoryController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentCategoryController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
+import org.infoglue.cms.controllers.kernel.impl.simple.InfoGluePrincipalControllerProxy;
 import org.infoglue.cms.entities.content.ContentCategoryVO;
 import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.content.ContentVersionVO;
@@ -202,7 +203,7 @@ public class ContentDeliveryControllerTest extends InfoGlueTestCase
 		cc.setAttributeName(attributeName);
 		cc.setContentVersionId(contentVersionId);
 		cc.setCategory(category);
-		cc = contentCategoryStore.save(cc);
+		cc = contentCategoryStore.save(cc, InfoGluePrincipalControllerProxy.getController().getTestPrincipal());
 		allContentCategories.add(cc);
 		return cc;
 	}

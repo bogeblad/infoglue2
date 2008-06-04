@@ -20,7 +20,7 @@
  *
  * ===============================================================================
  *
- * $Id: ContentCategoryActionTest.java,v 1.2 2006/03/06 16:54:01 mattias Exp $
+ * $Id: ContentCategoryActionTest.java,v 1.3 2008/06/04 07:19:51 mattias Exp $
  */
 package org.infoglue.cms.applications.contenttool;
 
@@ -30,6 +30,7 @@ import java.util.Iterator;
 import org.infoglue.cms.applications.contenttool.actions.ContentCategoryAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.CategoryController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentCategoryController;
+import org.infoglue.cms.controllers.kernel.impl.simple.InfoGluePrincipalControllerProxy;
 import org.infoglue.cms.entities.content.ContentCategoryVO;
 import org.infoglue.cms.entities.management.CategoryVO;
 import org.infoglue.cms.exception.SystemException;
@@ -62,16 +63,16 @@ public class ContentCategoryActionTest extends WebWorkTestCase
 		testContentCategory.setAttributeName(getName());
 		testContentCategory.setContentVersionId(VERSION_ID);
 		testContentCategory.setCategory(testCategory);
-		testContentCategory = testController.save(testContentCategory);
+		testContentCategory = testController.save(testContentCategory, InfoGluePrincipalControllerProxy.getController().getTestPrincipal());
 	}
 
 	protected void tearDown() throws Exception
 	{
 		if (testContentCategory != null)
-			testController.delete(testContentCategory.getId());
+			testController.delete(testContentCategory.getId(), InfoGluePrincipalControllerProxy.getController().getTestPrincipal());
 
 		for (Iterator i = extraContentCategories.iterator(); i.hasNext();)
-			testController.delete(((ContentCategoryVO)i.next()).getId());
+			testController.delete(((ContentCategoryVO)i.next()).getId(), InfoGluePrincipalControllerProxy.getController().getTestPrincipal());
 
 		// If you delete the category first, then try to delete the ContentCategory
 		// it will barf because it cannot pull up the Category relationship

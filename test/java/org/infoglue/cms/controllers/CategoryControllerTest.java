@@ -20,7 +20,7 @@
  *
  * ===============================================================================
  *
- * $Id: CategoryControllerTest.java,v 1.2 2006/03/06 16:54:01 mattias Exp $
+ * $Id: CategoryControllerTest.java,v 1.3 2008/06/04 07:19:51 mattias Exp $
  */
 package org.infoglue.cms.controllers;
 
@@ -30,8 +30,10 @@ import java.util.List;
 
 import org.infoglue.cms.controllers.kernel.impl.simple.CategoryController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentCategoryController;
+import org.infoglue.cms.controllers.kernel.impl.simple.InfoGluePrincipalControllerProxy;
 import org.infoglue.cms.entities.content.ContentCategoryVO;
 import org.infoglue.cms.entities.management.CategoryVO;
+import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.InfoGlueTestCase;
 
 /**
@@ -44,7 +46,7 @@ public class CategoryControllerTest extends InfoGlueTestCase
 	private CategoryController testController = CategoryController.getController();
 
 	private ContentCategoryController contentCategoryStore = ContentCategoryController.getController();
-
+	
 	protected void setUp() throws Exception
 	{
 		super.setUp();
@@ -179,7 +181,7 @@ public class CategoryControllerTest extends InfoGlueTestCase
 		cc.setContentVersionId(new Integer(-999));
 		cc.setAttributeName(getName());
 		cc.setCategory(testCategory);
-		cc = contentCategoryStore.save(cc);
+		cc = contentCategoryStore.save(cc, InfoGluePrincipalControllerProxy.getController().getTestPrincipal());
 
 		List found = contentCategoryStore.findByCategory(testCategory.getId());
 		assertEquals("Wrong number of ContentCategories found", 1, found.size());
