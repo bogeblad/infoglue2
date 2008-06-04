@@ -301,48 +301,50 @@ public abstract class PageInvoker
 		    contentType = this.deliveryContext.getContentType();
 		
 		//TEST
-		
-		Date lastModifiedDateTime = null;
-		if(this.deliveryContext.getUsedContentVersions().size() > 0)
+		if(this.getTemplateController().getOperatingMode().equals("3"))
 		{
-			Iterator userContentVersionIterator = this.deliveryContext.getUsedContentVersions().iterator();
-			while(userContentVersionIterator.hasNext())
+			Date lastModifiedDateTime = null;
+			if(this.deliveryContext.getUsedContentVersions().size() > 0)
 			{
-				String usedContentVersion = (String)userContentVersionIterator.next();	
-				if(usedContentVersion != null && usedContentVersion.startsWith("contentVersion_"))
-		    	{
-		    		try
-		            {
-		    			String versionId = usedContentVersion.substring(15);
-		    			//System.out.println("versionId:" + versionId);
-		    			if(!versionId.equals("null") && !versionId.equals(""))
-		    			{
-			    			Integer contentVersionId = new Integer(versionId);
-			    			ContentVersion contentVersion = ContentVersionController.getContentVersionController().getContentVersionWithId(contentVersionId, getDatabase());
-			    			//ContentVersionVO contentVersion = ContentVersionController.getContentVersionController().getContentVersionVOWithId(contentVersionId, getDatabase());
-			    			if(lastModifiedDateTime == null || contentVersion.getModifiedDateTime().after(lastModifiedDateTime))
+				Iterator userContentVersionIterator = this.deliveryContext.getUsedContentVersions().iterator();
+				while(userContentVersionIterator.hasNext())
+				{
+					String usedContentVersion = (String)userContentVersionIterator.next();	
+					if(usedContentVersion != null && usedContentVersion.startsWith("contentVersion_"))
+			    	{
+			    		try
+			            {
+			    			String versionId = usedContentVersion.substring(15);
+			    			//System.out.println("versionId:" + versionId);
+			    			if(!versionId.equals("null") && !versionId.equals(""))
 			    			{
-			    				//System.out.println("this:" + this.hashCode());
-			    				//System.out.println("lastModifiedDateTime:" + lastModifiedDateTime);
-			    				//System.out.println("contentVersionVO:" + contentVersion.getModifiedDateTime());
-			    				lastModifiedDateTime = contentVersion.getModifiedDateTime();
+				    			Integer contentVersionId = new Integer(versionId);
+				    			ContentVersion contentVersion = ContentVersionController.getContentVersionController().getContentVersionWithId(contentVersionId, getDatabase());
+				    			//ContentVersionVO contentVersion = ContentVersionController.getContentVersionController().getContentVersionVOWithId(contentVersionId, getDatabase());
+				    			if(lastModifiedDateTime == null || contentVersion.getModifiedDateTime().after(lastModifiedDateTime))
+				    			{
+				    				//System.out.println("this:" + this.hashCode());
+				    				//System.out.println("lastModifiedDateTime:" + lastModifiedDateTime);
+				    				//System.out.println("contentVersionVO:" + contentVersion.getModifiedDateTime());
+				    				lastModifiedDateTime = contentVersion.getModifiedDateTime();
+				    			}
 			    			}
-		    			}
-		            }
-		    		catch (Exception e) 
-		    		{
-		    			e.printStackTrace();
-					}
-		    	}
+			            }
+			    		catch (Exception e) 
+			    		{
+			    			e.printStackTrace();
+						}
+			    	}
+				}
 			}
-		}
-		System.out.println("**********************\nSetting last modified to:" + lastModifiedDateTime);
-		
-		if(lastModifiedDateTime != null)
-		{
-			this.deliveryContext.getHttpHeaders().put("Last-Modified", lastModifiedDateTime);
-			//this.deliveryContext.getHttpHeaders().put("Cache-Control", "max-age=600");
-			//this.deliveryContext.getHttpHeaders().put("Expires", new Date(new Date().getTime() + (600 * 1000)));
+			System.out.println("**********************\nSetting last modified to:" + lastModifiedDateTime);
+			
+			if(lastModifiedDateTime != null)
+			{
+				this.deliveryContext.getHttpHeaders().put("Last-Modified", lastModifiedDateTime);
+				//this.deliveryContext.getHttpHeaders().put("Cache-Control", "max-age=600");
+				//this.deliveryContext.getHttpHeaders().put("Expires", new Date(new Date().getTime() + (600 * 1000)));
+			}
 		}
 		//END
 			
