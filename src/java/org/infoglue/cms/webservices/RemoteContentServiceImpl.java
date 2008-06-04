@@ -381,7 +381,7 @@ public class RemoteContentServiceImpl extends RemoteInfoGlueService
 							//is = new FileInputStream(renamedFile);
 							InputStream is = new ByteArrayInputStream(remoteAttachment.getBytes());
 		
-			    	        DigitalAssetController.create(newAsset, is, newContentVersionId);
+			    	        DigitalAssetController.create(newAsset, is, newContentVersionId, principal);
 			    	    }	 
 	    	        }
 	    	        
@@ -661,7 +661,7 @@ public class RemoteContentServiceImpl extends RemoteInfoGlueService
 					newAsset.setAssetFileSize(new Integer(new Long(remoteAttachment.getBytes().length).intValue()));
 					InputStream is = new ByteArrayInputStream(remoteAttachment.getBytes());
 	
-	    	        DigitalAssetController.create(newAsset, is, contentVersionVO.getContentVersionId());
+	    	        DigitalAssetController.create(newAsset, is, contentVersionVO.getContentVersionId(), principal);
 	    	    }
             }
             

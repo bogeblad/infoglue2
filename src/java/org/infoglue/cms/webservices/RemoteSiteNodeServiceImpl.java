@@ -568,7 +568,7 @@ public class RemoteSiteNodeServiceImpl extends RemoteInfoGlueService
 					newAsset.setAssetFileSize(new Integer(new Long(remoteAttachment.getBytes().length).intValue()));
 					InputStream is = new ByteArrayInputStream(remoteAttachment.getBytes());
 	
-	    	        DigitalAssetController.create(newAsset, is, contentVersionVO.getContentVersionId());
+	    	        DigitalAssetController.create(newAsset, is, contentVersionVO.getContentVersionId(), principal);
 	    	    }
             }
             
