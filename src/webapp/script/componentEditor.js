@@ -950,6 +950,8 @@ function editInline(repositoryId)
 
 function editInline(repositoryId, selectedContentId, selectedLanguageId, directEditing) 
 {
+	hideIGMenu();
+	
 	if((!editUrl || editUrl == "") && !directEditing)
 	{
 		alert("You must right click on a text or double click on a text to be able to use this feature.");
@@ -1024,7 +1026,7 @@ function editInline(repositoryId, selectedContentId, selectedLanguageId, directE
 				var color = elementObject.parent().css("color");
 				//alert("fontSize:" + fontSize);
 				
-				elementObject.html("<span id='spanInput" + $this.get(0).id + "' class='inEditW'><input class='edit' style='width: 80%' ondblclick='if (event && event.stopPropagation) {event.stopPropagation();}else if (window.event) {window.event.cancelBubble = true;}return false;' id='input" + $this.get(0).id + "' type='text' value='" + text + "' /> <a onclick='saveAttribute(" + selectedContentId + ", " + selectedLanguageId + ", \"" + attributeName + "\", \"textfield\");' style='text-decoration: none;' class='editSave'></span>");
+				elementObject.html("<span id='spanInput" + $this.get(0).id + "'><input class='edit' style='width: 80%' ondblclick='if (event && event.stopPropagation) {event.stopPropagation();}else if (window.event) {window.event.cancelBubble = true;}return false;' id='input" + $this.get(0).id + "' type='text' value='" + text + "' /> </span>");
 				$(".edit").css("font-family", fontFamily);
 				$(".edit").css("font-size", fontSize);
 				$(".edit").css("color", color);
@@ -2122,6 +2124,63 @@ function viewSource()
 	}
 	
 //TEST
+
+var previousIGMenuId;
+
+function showIGMenu(id, event)
+{
+	//alert("event:" + event);
+	if(!event)
+		event = window.event;
+		
+	hideIGMenu();
+	
+	var currentMenuDiv = document.getElementById(id);	    
+    document.body.onclick = hideIGMenu;
+	
+	clientX = getEventPositionX(event);
+	clientY = getEventPositionY(event);
+	
+	//alert("clientX:" + clientX);
+	//alert("clientY:" + clientY);
+	
+	var rightedge = document.body.clientWidth - clientX;
+	var bottomedge = getWindowHeight() - clientY;
+
+	//alert("rightedge:" + rightedge);
+	//alert("bottomedge:" + bottomedge);
+
+	currentMenuDiv.style.display = 'block';
+	currentMenuDiv.style.visibility = 'hidden';
+
+	//alert("currentMenuDiv.offsetWidth:" + currentMenuDiv.offsetWidth);
+	//alert("currentMenuDiv.offsetHeight:" + currentMenuDiv.offsetHeight);
+		
+	if (rightedge < currentMenuDiv.offsetWidth)
+		clientX = (clientX - currentMenuDiv.offsetWidth);
+	
+	if (bottomedge < currentMenuDiv.offsetHeight)
+		clientY = (clientY - currentMenuDiv.offsetHeight);
+		
+	currentMenuDiv.style.left 	= clientX + "px";
+	currentMenuDiv.style.top 	= clientY + "px";
+
+	currentMenuDiv.style.visibility = 'visible';
+	
+	previousIGMenuId = id;
+	
+	return false;
+}
+
+function hideIGMenu()
+{
+	if(previousIGMenuId && previousIGMenuId != '')
+	{
+		var element = document.getElementById(previousIGMenuId);
+		if(element)
+			element.style.display = 'none';
+	}   
+}
 
 var previousEditOnSightMenuDivId = ''; 
 function closeDialog()

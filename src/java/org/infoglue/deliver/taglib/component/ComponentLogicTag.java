@@ -42,4 +42,9 @@ public abstract class ComponentLogicTag extends TemplateControllerTag
 	{
 		return getController().getComponentLogic();
 	}
+	
+	protected Integer getComponentId() throws JspTagException
+	{
+		return getComponentLogic().getInfoGlueComponent().getId();
+	}
 }

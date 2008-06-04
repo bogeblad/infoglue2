@@ -5,6 +5,13 @@
 	var editOnSightAttributeNames = new Array();
 	
 	${limitedUserWarning}
+	
+	try 
+	{
+  		document.execCommand('BackgroundImageCache', false, true);
+	} 
+	catch(e) {}
+	
 </script>
 <script type="text/javascript" src="${contextName}/script/dom-drag.js"></script>
 <script type="text/javascript" src="${contextName}/script/ajaxComponentEditor.js"></script>
@@ -18,6 +25,9 @@
 <script type="text/javascript" src="${contextName}/script/jqueryplugins/ui/ui.droppable.ext.js"></script>
 <script type="text/javascript" src="${contextName}/script/jqueryplugins/ui/ui.sortable.js"></script>
 <script type="text/javascript" src="${contextName}/script/jqueryplugins/ui/ui.sortable.ext.js"></script>
+
+<script type="text/javascript" src="${contextName}/script/jqueryplugins/thickbox/thickbox-compressed.js"></script>
+<style type="text/css" media="all">@import "${contextName}/script/jqueryplugins/thickbox/thickbox.css";</style>
 
 <script type="text/javascript" src="${contextName}/applications/FCKEditor/fckeditor.js"></script>
 
@@ -64,6 +74,11 @@
 				showComponentInDiv('componentPropertiesDiv', '${parameters}', false);
 		}
 	});	
+
+   	function openInlineDiv(url) {
+   		tb_show('Redigera', url, 'Redigera');
+   		hideIGMenu();
+   	}
 
 </script>
 
