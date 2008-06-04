@@ -436,7 +436,7 @@ public class CreateDigitalAssetAction extends ViewDigitalAssetAction
 						{
 						    boolean keepOriginal = handleTransformations(newAsset, file, contentType);
 						    if(keepOriginal)
-						    	digitalAssetVO = DigitalAssetController.create(newAsset, is, this.contentVersionId);
+						    	digitalAssetVO = DigitalAssetController.create(newAsset, is, this.contentVersionId, this.getInfoGluePrincipal());
 						}
 						else
 						{
@@ -614,7 +614,7 @@ public class CreateDigitalAssetAction extends ViewDigitalAssetAction
 		digitalAssetVO.setAssetKey(originalAssetVO.getAssetKey() + "_" + assetSuffix);
 		
 		InputStream is = new FileInputStream(outputFile);
-		this.digitalAssetVO = DigitalAssetController.create(digitalAssetVO, is, this.contentVersionId);
+		this.digitalAssetVO = DigitalAssetController.create(digitalAssetVO, is, this.contentVersionId, this.getInfoGluePrincipal());
 		is.close();
 	}
 

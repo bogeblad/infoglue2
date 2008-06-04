@@ -313,7 +313,7 @@ public class ImageEditorAction extends InfoGlueAbstractAction
 		}
 		
 		if(this.contentVersionId != null)
-		    digitalAssetVO = DigitalAssetController.create(newAsset, is, this.contentVersionId);
+		    digitalAssetVO = DigitalAssetController.create(newAsset, is, this.contentVersionId, this.getInfoGluePrincipal());
  		//else
 		//    digitalAssetVO = DigitalAssetController.create(newAsset, is, this.entity, this.entityId);
 

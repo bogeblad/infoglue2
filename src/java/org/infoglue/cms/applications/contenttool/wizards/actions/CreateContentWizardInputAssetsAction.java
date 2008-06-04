@@ -182,7 +182,7 @@ public class CreateContentWizardInputAssetsAction extends CreateContentWizardAbs
 						//DigitalAssetController.create(newAsset, is, this.contentVersionId);
 						//CreateContentWizardInfoBean createContentWizardInfoBean = this.getCreateContentWizardInfoBean();
 						//createContentWizardInfoBean.getDigitalAssets().put(digitalAssetKey + "_" + this.languageId, newAsset);
-					    DigitalAssetVO digitalAssetVO = DigitalAssetController.create(newAsset, is, this.contentVersionId);
+					    DigitalAssetVO digitalAssetVO = DigitalAssetController.create(newAsset, is, this.contentVersionId, this.getInfoGluePrincipal());
 						
 						this.uploadedFilesCounter = new Integer(this.uploadedFilesCounter.intValue() + 1);
 					}

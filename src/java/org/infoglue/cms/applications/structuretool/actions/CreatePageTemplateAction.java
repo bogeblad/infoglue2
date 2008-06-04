@@ -220,7 +220,7 @@ public class CreatePageTemplateAction extends InfoGlueAbstractAction implements 
 					newAsset.setAssetFileSize(new Integer(new Long(file.length()).intValue()));
 					is = new FileInputStream(file);
 					
-				    DigitalAssetController.create(newAsset, is, newContentVersion.getContentVersionId());	         		    
+				    DigitalAssetController.create(newAsset, is, newContentVersion.getContentVersionId(), this.getInfoGluePrincipal());	         		    
 	         	}
     		}
     		else

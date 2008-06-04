@@ -2,6 +2,7 @@ package org.infoglue.cms.applications.contenttool.actions;
 
 import org.infoglue.cms.applications.common.actions.ModelAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentCategoryController;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
 import org.infoglue.cms.entities.content.ContentCategoryVO;
 import org.infoglue.cms.entities.kernel.Persistent;
 import org.infoglue.cms.exception.SystemException;
@@ -33,25 +34,25 @@ public class ContentCategoryAction extends ModelAction
 
 	public String doAdd() throws SystemException
 	{
-		setModel(controller.save(getContentCategory()));
+		setModel(controller.save(getContentCategory(), this.getInfoGluePrincipal()));
 		return SUCCESS;
 	}
 
 	public String doDelete() throws SystemException
 	{
-		controller.delete(getContentCategoryId());
+		controller.delete(getContentCategoryId(), this.getInfoGluePrincipal());
 		return SUCCESS;
 	}
 
 	public String doAddStandalone() throws SystemException
 	{
-		setModel(controller.save(getContentCategory()));
+		setModel(controller.save(getContentCategory(), this.getInfoGluePrincipal()));
 		return SUCCESS;
 	}
 
 	public String doDeleteStandalone() throws SystemException
 	{
-		controller.delete(getContentCategoryId());
+		controller.delete(getContentCategoryId(), this.getInfoGluePrincipal());
 		return SUCCESS;
 	}
 

@@ -20,7 +20,7 @@
  *
  * ===============================================================================
  *
- * $Id: ContentCategoryController.java,v 1.19 2007/05/06 18:45:59 mattias Exp $
+ * $Id: ContentCategoryController.java,v 1.20 2008/06/04 06:48:12 mattias Exp $
  */
 package org.infoglue.cms.controllers.kernel.impl.simple;
 
@@ -42,6 +42,7 @@ import org.infoglue.cms.entities.management.Category;
 import org.infoglue.cms.entities.management.CategoryVO;
 import org.infoglue.cms.entities.management.impl.simple.CategoryImpl;
 import org.infoglue.cms.exception.SystemException;
+import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
 
 /**
@@ -245,8 +246,11 @@ public class ContentCategoryController extends BaseController
 	 * @return	The saved ContentCategoryVO
 	 * @throws	SystemException If an error happens
 	 */
-	public ContentCategoryVO save(ContentCategoryVO c) throws SystemException
+	public ContentCategoryVO save(ContentCategoryVO c, InfoGluePrincipal principal) throws SystemException
 	{
+		ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().checkStateAndChangeIfNeeded(c.getContentVersionId(), principal);
+		c.setContentVersionId(contentVersionVO.getId());
+		
 		return c.isUnsaved() ? create(c) : (ContentCategoryVO)updateEntity(ContentCategoryImpl.class, c);
 	}
 
@@ -365,24 +369,39 @@ public class ContentCategoryController extends BaseController
 	 * @param	id The id of the ContentCategory to delete
 	 * @throws	SystemException If an error happens
 	 */
-	public void delete(Integer id) throws SystemException
+	public void delete(Integer id, InfoGluePrincipal principal) throws SystemException
 	{
 		Database db = beginTransaction();
 
 		try
 		{
-		    ContentCategory contentCategory = (ContentCategory)getObjectWithId(ContentCategoryImpl.class, id, db);
-		    ContentVersion contentVersion = (ContentVersion)getObjectWithId(ContentVersionImpl.class, contentCategory.getContentVersionId(), db);
-		    //System.out.println("contentVersion:" + contentVersion.getContentCategories().size());
-		    contentVersion.getContentCategories().remove(contentCategory);
-		    //System.out.println("contentVersion:" + contentVersion.getContentCategories().size());
-		    db.remove(contentCategory);
+			ContentCategory contentCategory = (ContentCategory)getObjectWithId(ContentCategoryImpl.class, id, db);
+		    ContentVersion contentVersion = ContentVersionController.getContentVersionController().checkStateAndChangeIfNeeded(contentCategory.getContentVersionId(), principal, db);
+						
+		    //ContentCategory contentCategory = (ContentCategory)getObjectWithId(ContentCategoryImpl.class, id, db);
+		    //ContentVersion contentVersion = (ContentVersion)getObjectWithId(ContentVersionImpl.class, contentCategory.getContentVersionId(), db);
+		    Iterator contentCategoriesIterator = contentVersion.getContentCategories().iterator();
+		    while(contentCategoriesIterator.hasNext())
+		    {
+		    	ContentCategory currentContentCategory = (ContentCategory)contentCategoriesIterator.next();
+		    	ContentCategoryVO currentContentCategoryVO = currentContentCategory.getValueObject();
+			    if(currentContentCategoryVO.getAttributeName().equals(contentCategory.getAttributeName()) && currentContentCategory.getCategory().getId().equals(contentCategory.getCategory().getId())) 
+		    	{
+		    		contentCategoriesIterator.remove();
+		    		db.remove(currentContentCategory);
+		    		break;
+		    	}
+		    }
+		    
+		    //contentVersion.getContentCategories().remove(contentCategory);
+		    //db.remove(contentCategory);
 		    
 			commitTransaction(db);
 		}
 		catch (Exception e)
 		{
 			rollbackTransaction(db);
+			e.printStackTrace();
 			throw new SystemException(e.getMessage());
 		}
 		
