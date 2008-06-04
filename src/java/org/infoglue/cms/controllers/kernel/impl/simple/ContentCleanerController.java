@@ -80,7 +80,7 @@ public class ContentCleanerController  extends BaseController
      * the resulting query from the database. 
      * @throws Exception
      */
-    public void cleanSweep(final int hitSize2Retain) throws Exception
+    public void cleanSweep(final int hitSize2Retain, InfoGluePrincipal principal) throws Exception
     {
         try {
             final Database db = CastorDatabaseService.getDatabase();
@@ -90,7 +90,7 @@ public class ContentCleanerController  extends BaseController
             commitTransaction(db);
             for (final ContentVO contentVO : contentVOList)
             {                   
-                clean(contentVO, hitSize2Retain, languageVOList);
+                clean(contentVO, hitSize2Retain, languageVOList, principal);
             }           
         }   
         catch(Exception e)
@@ -106,14 +106,14 @@ public class ContentCleanerController  extends BaseController
      * @param hitSize2Retain The number of content versions to retain.
      * @throws Exception
      */
-    public void clean(final Integer contentId, final int hitSize2Retain) throws Exception
+    public void clean(final Integer contentId, final int hitSize2Retain, InfoGluePrincipal principal) throws Exception
     {
         final Database db = CastorDatabaseService.getDatabase();
         beginTransaction(db);
         final ContentVO contentVO = contentController.getContentVOWithId(contentId);                
         final List<LanguageVO> languageVOList = languageController.getLanguageVOList(db);
         commitTransaction(db);
-        clean(contentVO, hitSize2Retain, languageVOList);
+        clean(contentVO, hitSize2Retain, languageVOList, principal);
     }
     
     /**
@@ -124,13 +124,13 @@ public class ContentCleanerController  extends BaseController
      * @param languageVOList The specified languages to clean this content for.
      * @throws Exception
      */
-    public void clean(final Integer contentId, final int hitSize2Retain, final List<LanguageVO> languageVOList) throws Exception
+    public void clean(final Integer contentId, final int hitSize2Retain, final List<LanguageVO> languageVOList, InfoGluePrincipal principal) throws Exception
     {
         final Database db = CastorDatabaseService.getDatabase();
         beginTransaction(db);
         final ContentVO contentVO = contentController.getContentVOWithId(contentId);                
         commitTransaction(db);
-        clean(contentVO, hitSize2Retain, languageVOList);
+        clean(contentVO, hitSize2Retain, languageVOList, principal);
     }
     
     /**
@@ -142,7 +142,7 @@ public class ContentCleanerController  extends BaseController
      * @param languageVOList The specified languages to clean this content for.
      * @throws Exception
      */
-    public void clean(final ContentVO contentVO, final int hitSize2Retain, final List<LanguageVO> languageVOList) throws Exception
+    public void clean(final ContentVO contentVO, final int hitSize2Retain, final List<LanguageVO> languageVOList, InfoGluePrincipal principal) throws Exception
     {
         // Recursive clean for branches
         if (contentVO.getIsBranch())
@@ -150,13 +150,13 @@ public class ContentCleanerController  extends BaseController
             final List<ContentVO> childs = contentController.getContentChildrenVOList(contentVO.getContentId());
             for (final ContentVO child : childs)
             {
-                clean(child, hitSize2Retain, languageVOList);
+                clean(child, hitSize2Retain, languageVOList, principal);
             }
         }
         // Start cleaning content
         for (final LanguageVO languageVO : languageVOList)
         {
-            clean(contentVO, hitSize2Retain, languageVO);
+            clean(contentVO, hitSize2Retain, languageVO, principal);
         }                   
     }
     
@@ -169,7 +169,7 @@ public class ContentCleanerController  extends BaseController
      * @param languageVOList The specified languages to clean this content for.
      * @throws Exception
      */
-    private void clean(final ContentVO contentVO, final int hitSize2Retain, final LanguageVO languageVO) throws Exception
+    private void clean(final ContentVO contentVO, final int hitSize2Retain, final LanguageVO languageVO, InfoGluePrincipal principal) throws Exception
     {
         final List<ContentVersionVO> contentVersionsList2Retain = 
             collectContentVersionsList2Retain(contentVO, languageVO, hitSize2Retain);
@@ -178,7 +178,7 @@ public class ContentCleanerController  extends BaseController
         // this happens if none of the content versions found was the last published.  
         if (contentVersionsList2Retain.size() >= hitSize2Retain)
         {
-            cleanContent(contentVO, languageVO, contentVersionsList2Retain);
+            cleanContent(contentVO, languageVO, contentVersionsList2Retain, principal);
         }
     }
     
@@ -191,7 +191,7 @@ public class ContentCleanerController  extends BaseController
      * @throws Exception
      */
     private void cleanContent(final ContentVO contentVO, final LanguageVO languageVO, 
-            final List<ContentVersionVO> contentVersionsList2Retain) throws Exception
+            final List<ContentVersionVO> contentVersionsList2Retain, InfoGluePrincipal principal) throws Exception
     {
         final long startTime = System.currentTimeMillis();
         final Database db = CastorDatabaseService.getDatabase();
@@ -217,7 +217,7 @@ public class ContentCleanerController  extends BaseController
                     recoveredDiskSpaceCnt += digitalAsset.getAssetFileSize();
                     logger.info("\tDead Digital Asset: " + digitalAsset.getAssetFileName());
                     // Delete all digital assets and their references that belongs to this content version
-                    contentVersionController.deleteDigitalAssetRelation(contentVersionId, digitalAssetId);
+                    contentVersionController.deleteDigitalAssetRelation(contentVersionId, digitalAssetId, principal);
                     digitalAssetController.delete(digitalAssetId);
                     deletedDigitalAssetsCnt += 1;                   
                 }
@@ -345,19 +345,5 @@ public class ContentCleanerController  extends BaseController
     public BaseEntityVO getNewVO() {
         return null;
     }
-    
-    public static void main(String[] args) {
-        final ContentCleanerController controller = ContentCleanerController.getContentCleanerController();
-        try {
-            controller.cleanSweep(1);
-            //controller.clean(325, 1);
-            logger.info("Removed " + controller.getDeletedContentVersionsCounter() + " content versions.");
-            logger.info("Removed " + controller.getDeletedDigitalAsstesCounter() + " digital assets.");
-            logger.info("Recovered " + controller.getCDSFactor(ContentCleanerController.FACTOR_MB) + " mb disk space.");
-            logger.info("Time elapsed: " + (controller.getElapsedTime()/1000) + " sec.");
-            //System.out.println("Time elapsed: " + ((controller.getElapsedTime()/1000) / 60) + " min.");       
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
+
 }
