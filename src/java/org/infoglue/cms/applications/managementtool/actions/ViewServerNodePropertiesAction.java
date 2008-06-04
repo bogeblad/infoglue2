@@ -211,12 +211,19 @@ public class ViewServerNodePropertiesAction extends InfoGluePropertiesAbstractAc
 	    populate(ps, "deliver_casProxyValidateUrl");
 	    populate(ps, "deliver_casServiceUrl");
 	    populate(ps, "deliver_casLogoutUrl");
+
+	    populate(ps, "workingStyleInformation");
+	    populate(ps, "finalStyleInformation");
+	    populate(ps, "publishStyleInformation");
+	    populate(ps, "publishedStyleInformation");
+	    populateData(ps, "customContentTypeIcons");
 	    populateData(ps, "shortcuts");
 	    populateData(ps, "WYSIWYGToolbarComboPreviewCSS");
    		populateData(ps, "WYSIWYGEditorAreaCSS");
 
 	    populate(ps, "disableImageEditor");
-
+	    populate(ps, "hideProtectedProperties");
+	    
 	    populate(ps, "protectContentTypes");
 	    populate(ps, "protectWorkflows");
 	    populate(ps, "protectCategories");
@@ -284,6 +291,7 @@ public class ViewServerNodePropertiesAction extends InfoGluePropertiesAbstractAc
 	    populate(ps, "defaultPublicationEventFilter");
 	    
 	    populate(ps, "numberOfVersionsToKeepDuringClean");
+	    populate(ps, "keepOnlyOldPublishedVersionsDuringClean");
 	    populateData(ps, "assetUploadTransformationsSettings");
 
 
