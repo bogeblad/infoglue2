@@ -62,6 +62,8 @@ import org.infoglue.cms.entities.management.impl.simple.AccessRightImpl;
 import org.infoglue.cms.entities.management.impl.simple.AvailableServiceBindingImpl;
 import org.infoglue.cms.entities.management.impl.simple.CategoryImpl;
 import org.infoglue.cms.entities.management.impl.simple.ContentTypeDefinitionImpl;
+import org.infoglue.cms.entities.management.impl.simple.FormEntryImpl;
+import org.infoglue.cms.entities.management.impl.simple.FormEntryValueImpl;
 import org.infoglue.cms.entities.management.impl.simple.GroupContentTypeDefinitionImpl;
 import org.infoglue.cms.entities.management.impl.simple.GroupImpl;
 import org.infoglue.cms.entities.management.impl.simple.GroupPropertiesImpl;
@@ -80,6 +82,7 @@ import org.infoglue.cms.entities.management.impl.simple.ServerNodeImpl;
 import org.infoglue.cms.entities.management.impl.simple.ServiceDefinitionImpl;
 import org.infoglue.cms.entities.management.impl.simple.SiteNodeTypeDefinitionImpl;
 import org.infoglue.cms.entities.management.impl.simple.SmallAvailableServiceBindingImpl;
+import org.infoglue.cms.entities.management.impl.simple.SubscriptionImpl;
 import org.infoglue.cms.entities.management.impl.simple.SystemUserImpl;
 import org.infoglue.cms.entities.management.impl.simple.UserContentTypeDefinitionImpl;
 import org.infoglue.cms.entities.management.impl.simple.UserPropertiesImpl;
@@ -1036,7 +1039,11 @@ public class CacheController extends Thread
 			clearCache(db, PropertiesCategoryImpl.class);
 			
 			clearCache(db, ServerNodeImpl.class);			
-			
+
+			clearCache(db, SubscriptionImpl.class);
+			clearCache(db, FormEntryImpl.class);
+			clearCache(db, FormEntryValueImpl.class);
+
 		    //commitTransaction(db);
 
 			logger.info("Emptied the Castor Caches");
