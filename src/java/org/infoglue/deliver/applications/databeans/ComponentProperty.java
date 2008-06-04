@@ -51,6 +51,7 @@ public class ComponentProperty
 	
 	private Integer id;
 	private String name;
+	private String displayName;
 	private String description 				= "";
 	private String defaultValue 			= null;
 	private String type;
@@ -104,6 +105,11 @@ public class ComponentProperty
 	public String getName()
 	{
 		return name;
+	}
+
+	public String getDisplayName()
+	{
+		return (displayName == null ? name : displayName);
 	}
 
 	public List getSiteNodeBindings()
@@ -168,6 +174,11 @@ public class ComponentProperty
 	public void setName(String string)
 	{
 		name = string;
+	}
+
+	public void setDisplayName(String displayName)
+	{
+		this.displayName = displayName;
 	}
 
     public String getDescription()
@@ -305,6 +316,7 @@ public class ComponentProperty
 		StringBuffer sb = new StringBuffer();
 		sb.append("id=").append(id)
 			.append(" name=").append(name)
+			.append(" displayName=").append(displayName)
 			.append(" type=").append(type)
 			.append(" componentId=").append(componentId)
 			.append(" entityClass=").append(entityClass)
