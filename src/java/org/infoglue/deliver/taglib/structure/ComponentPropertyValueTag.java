@@ -31,8 +31,6 @@ import javax.servlet.jsp.JspException;
 import org.infoglue.deliver.applications.actions.InfoGlueComponent;
 import org.infoglue.deliver.taglib.component.ComponentLogicTag;
 
-import sun.security.action.GetLongAction;
-
 public class ComponentPropertyValueTag extends ComponentLogicTag 
 {
 	private static final long serialVersionUID = 4050206323348354355L;
