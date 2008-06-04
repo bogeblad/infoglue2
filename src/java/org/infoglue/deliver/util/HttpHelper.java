@@ -644,7 +644,7 @@ public class HttpHelper
 		    	String name = URLDecoder.decode(nameValueArray[0], encoding);
 		    	String value = "";
 		    	if(nameValueArray.length > 1)
-		    		value = URLDecoder.decode(nameValueArray[0], encoding);
+		    		value = URLDecoder.decode(nameValueArray[1], encoding);
 		    	map.put(name, value);
 		    }
 		}
