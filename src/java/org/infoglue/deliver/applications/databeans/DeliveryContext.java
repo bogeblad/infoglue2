@@ -24,6 +24,9 @@
 package org.infoglue.deliver.applications.databeans;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -36,6 +39,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.infoglue.cms.applications.common.Session;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
+import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.deliver.controllers.kernel.impl.simple.InfoGlueHashSet;
 
 /**
@@ -98,6 +103,9 @@ public class DeliveryContext implements UsageListener
 	
 	private Set usedPageMetaInfoContentVersionIdSet = new InfoGlueHashSet();
 	
+	private Date lastModifiedDateTime = null;
+	private boolean registerLastModifiedDate = false;
+	
 	//private InfoGluePrincipal infoGluePrincipal = null;
 	
 	//This variable sets if all urls generated should contain the server name etc.
@@ -126,10 +134,22 @@ public class DeliveryContext implements UsageListener
 	{
 		return new DeliveryContext();
 	}
+
+	public static DeliveryContext getDeliveryContext(boolean registerLastModifiedDate)
+	{
+		return new DeliveryContext(registerLastModifiedDate);
+	}
 	
 	private DeliveryContext()
 	{
+		this(false);
 	}
+
+	private DeliveryContext(boolean registerLastModifiedDate)
+	{
+		this.registerLastModifiedDate = registerLastModifiedDate;
+	}
+	
 	/*
 	public static DeliveryContext getDeliveryContext(InfoGluePrincipal infoGluePrincipal)
 	{
@@ -261,7 +281,7 @@ public class DeliveryContext implements UsageListener
 	{
 		this.httpServletResponse = httpServletResponse;
 	}
-
+	
     public void addUsedContent(String usedContent)
     {
         this.usedContents.add(usedContent);
@@ -464,6 +484,21 @@ public class DeliveryContext implements UsageListener
 		Map pageAttributes = (Map)extraData.get("pageAttributes");
 		if(pageAttributes != null)
 			this.getPageAttributes().putAll(pageAttributes);
+	}
+
+	public Date getLastModifiedDateTime()
+	{
+		return lastModifiedDateTime;
+	}
+
+	public void setLastModifiedDateTime(Date lastModifiedDateTime)
+	{
+		this.lastModifiedDateTime = lastModifiedDateTime;
+	}
+
+	public Set getUsedContentVersions()
+	{
+		return Collections.unmodifiableSet(usedContentVersions);
 	}
 
 }
