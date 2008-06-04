@@ -109,6 +109,11 @@
 												<value id="enableWYSIWYG" label="true"/>
 											</values>
 										</param>
+										<param id="WYSIWYGToolbar" inputTypeId="0">
+											<values>
+												<value id="WYSIWYGToolbar" label="Default"/>
+											</values>
+										</param>
 										<param id="enableTemplateEditor" inputTypeId="0">
 											<values>
 												<value id="enableTemplateEditor" label="false"/>
