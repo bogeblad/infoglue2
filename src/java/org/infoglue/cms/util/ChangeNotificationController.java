@@ -223,25 +223,31 @@ public class ChangeNotificationController
 	public void addNotificationMessage(NotificationMessage notificationMessage)
 	{
 		logger.info("Got a new notification:" + notificationMessage.getName() + ":" + notificationMessage.getType() + ":" + notificationMessage.getObjectId() + ":" + notificationMessage.getObjectName());
-		Iterator i = listeners.iterator();
-		while(i.hasNext())
+		synchronized (listeners)
 		{
-			try
+			Iterator i = listeners.iterator();
+			while(i.hasNext())
 			{
-				NotificationListener nl = (NotificationListener)i.next();
-				if(!unregisteredlisteners.contains(nl))
+				try
 				{
-					logger.info("Notifying the listener:" + nl.getClass().getName());
-					nl.notify(notificationMessage);
+					NotificationListener nl = (NotificationListener)i.next();
+					if(!unregisteredlisteners.contains(nl))
+					{
+						logger.info("Notifying the listener:" + nl.getClass().getName());
+						nl.notify(notificationMessage);
+					}
+				}
+				catch(Exception e)
+				{
+					logger.error("One of the listeners threw an exception but we carry on with the others. Error: " + e.getMessage(), e);
 				}
 			}
-			catch(Exception e)
-			{
-				logger.error("One of the listeners threw an exception but we carry on with the others. Error: " + e.getMessage(), e);
-			}
+			listeners.removeAll(unregisteredlisteners);
 		}
-		listeners.removeAll(unregisteredlisteners);
-		unregisteredlisteners.clear();
+		synchronized (unregisteredlisteners)
+		{
+			unregisteredlisteners.clear();			
+		}
 	}	
 			
 
