@@ -27,6 +27,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -39,6 +40,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
+import org.infoglue.cms.entities.content.ContentVersion;
+import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.exception.NoBaseTemplateFoundException;
 import org.infoglue.cms.exception.SystemException;
@@ -296,6 +300,52 @@ public abstract class PageInvoker
 		if(this.deliveryContext.getContentType() != null && !contentType.equalsIgnoreCase(this.deliveryContext.getContentType()))
 		    contentType = this.deliveryContext.getContentType();
 		
+		//TEST
+		
+		Date lastModifiedDateTime = null;
+		if(this.deliveryContext.getUsedContentVersions().size() > 0)
+		{
+			Iterator userContentVersionIterator = this.deliveryContext.getUsedContentVersions().iterator();
+			while(userContentVersionIterator.hasNext())
+			{
+				String usedContentVersion = (String)userContentVersionIterator.next();	
+				if(usedContentVersion != null && usedContentVersion.startsWith("contentVersion_"))
+		    	{
+		    		try
+		            {
+		    			String versionId = usedContentVersion.substring(15);
+		    			//System.out.println("versionId:" + versionId);
+		    			if(!versionId.equals("null") && !versionId.equals(""))
+		    			{
+			    			Integer contentVersionId = new Integer(versionId);
+			    			ContentVersion contentVersion = ContentVersionController.getContentVersionController().getContentVersionWithId(contentVersionId, getDatabase());
+			    			//ContentVersionVO contentVersion = ContentVersionController.getContentVersionController().getContentVersionVOWithId(contentVersionId, getDatabase());
+			    			if(lastModifiedDateTime == null || contentVersion.getModifiedDateTime().after(lastModifiedDateTime))
+			    			{
+			    				//System.out.println("this:" + this.hashCode());
+			    				//System.out.println("lastModifiedDateTime:" + lastModifiedDateTime);
+			    				//System.out.println("contentVersionVO:" + contentVersion.getModifiedDateTime());
+			    				lastModifiedDateTime = contentVersion.getModifiedDateTime();
+			    			}
+		    			}
+		            }
+		    		catch (Exception e) 
+		    		{
+		    			e.printStackTrace();
+					}
+		    	}
+			}
+		}
+		System.out.println("**********************\nSetting last modified to:" + lastModifiedDateTime);
+		
+		if(lastModifiedDateTime != null)
+		{
+			this.deliveryContext.getHttpHeaders().put("Last-Modified", lastModifiedDateTime);
+			//this.deliveryContext.getHttpHeaders().put("Cache-Control", "max-age=600");
+			//this.deliveryContext.getHttpHeaders().put("Expires", new Date(new Date().getTime() + (600 * 1000)));
+		}
+		//END
+			
 		//logger.info("ContentType:" + contentType);
 		if(contentType.indexOf("charset=") > -1)
 			this.getResponse().setContentType(contentType);
@@ -306,8 +356,17 @@ public abstract class PageInvoker
 		while(headersIterator.hasNext())
 		{
 			String key = (String)headersIterator.next();
-			String value = (String)this.getDeliveryContext().getHttpHeaders().get(key);
-			this.getResponse().setHeader(key, value);
+			Object valueObject = this.getDeliveryContext().getHttpHeaders().get(key);
+			if(valueObject instanceof Date)
+			{
+				Date value = (Date)valueObject;
+				this.getResponse().setDateHeader(key, value.getTime());
+			}
+			else
+			{
+				String value = (String)valueObject;
+				this.getResponse().setHeader(key, value);				
+			}
 		}
 		
 		if(logger.isInfoEnabled())
