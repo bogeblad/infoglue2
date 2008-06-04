@@ -201,13 +201,13 @@
 	<script type="text/javascript">
 
 		$(document).ready(function(){
-			
+			/*
 			$(":input:first").focus();
 	
 	 		$("div").each(function(i,e){
 	 			$(this).attr("tabindex", "-1");
 			});
-			 
+			*/ 
 	 	});
 
 		function openWindow(url, windowTitle, options) 
@@ -228,7 +228,7 @@
 					
 						var oButton${velocityCount} = new YAHOO.widget.Button("button${velocityCount}");
 		            	oButton${velocityCount}.on("click", function (p_oEvent){
-		            		#if($button.actionURL.indexOf("javascript") == -1)
+		            		#if($button.actionURL.indexOf("javascript") == -1 && $button.isJavascript == false)
 			            		document.location.href = '$button.actionURL';
 			            	#else
 			            		$button.actionURL
