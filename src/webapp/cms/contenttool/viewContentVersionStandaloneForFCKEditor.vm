@@ -8,7 +8,7 @@
 	
 	<script type="text/javascript" src="${root}/applications/FCKEditor/fckeditor.js"></script>
 	
-		<script type="text/javascript">
+	<script type="text/javascript">
 		
 		function hotkeyS()
 		{
@@ -87,10 +87,11 @@
 	</script> 
 	
 </head>
-
+#*
 #if($stateId == 1 || $stateId == 2 || $stateId == 3)
 	#set($readonly = "disabled") 
 #else
+*#
 	#if($contentTypeDefinitionVO.name == "Meta info")
 		#set($masterContentVersionVO = $this.getMasterContentVersionVO($contentId, $repositoryId))
 		#if($masterContentVersionVO.stateId == 1 || $masterContentVersionVO.stateId == 2 || $masterContentVersionVO.stateId == 3)
@@ -106,8 +107,9 @@
 			#set($readonly = "")
 		#end	
 	#end
+#*
 #end
-
+*#
 
 <body class="contenttooledit" #if($closeOnLoad == "true" && !$errors.hasErrors())onload="refreshCaller();"#end #if($publishOnLoad == "true")onload="submitToPublish();"#end onkeypress="hotKeys(event);">
 
@@ -119,6 +121,7 @@
 	var currentEditorIdHash = new Array();
 	var attributesStatus = new Array();
 	var plainEditors = new Array();
+	var plainEditorsToolbars = new Array();
 	var htmlEditors = new Array();
 	
 	//*******************************************
@@ -218,6 +221,7 @@
 			for (var i in plainEditors) 
 			{
 				var plainTextAreaName = plainEditors[i];
+				var WYSIWYGToolbar = plainEditorsToolbars[plainTextAreaName];
 				//alert("Creating a textarea for " + plainTextAreaName + " = " + i);
 				document.getElementById(plainTextAreaName).value = transformAttribute(document.getElementById(plainTextAreaName).value);
 				
@@ -228,6 +232,7 @@
 				oFCKeditor.Config["CustomConfigurationsPath"] = "${root}/WYSIWYGProperties.action?repositoryId=$!repositoryId&contentId=$!contentId&languageId=$languageId";
 				oFCKeditor.Config["AutoDetectLanguage"] = false ;
 				oFCKeditor.Config["DefaultLanguage"]    = '$languageCode' ;
+				oFCKeditor.ToolbarSet = WYSIWYGToolbar ;
 				oFCKeditor.ReplaceTextarea();
 				
 				htmlEditors[plainTextAreaName + "WYSIWYGEditor"] = oFCKeditor;
@@ -282,8 +287,8 @@
 		setTimeout("doTimer();", minute);
 	}
 	
-	doTimer();
-	setTimeout("warnForTimeout()", timeout);
+	//doTimer();
+	//setTimeout("warnForTimeout()", timeout);
 -->
 </script>
 	
@@ -484,6 +489,12 @@
 			#set($enableWYSIWYG = "false")
 		#end
 
+		#set($WYSIWYGToolbar = "")
+		#set($WYSIWYGToolbar = $!attribute.getContentTypeAttribute("WYSIWYGToolbar").getContentTypeAttributeParameterValue().getLocalizedValue("label", $session.locale))
+		#if($WYSIWYGToolbar == "")
+			#set($WYSIWYGToolbar = "Default")
+		#end
+
 		#set($enableTemplateEditor = "")
 		#set($enableTemplateEditor = $!attribute.getContentTypeAttribute("enableTemplateEditor").getContentTypeAttributeParameterValue().getLocalizedValue("label", $session.locale))
 		#if($enableTemplateEditor == "")
@@ -605,6 +616,7 @@
 						<script type="text/javascript">
 							// Replace an existing textarea with an HTMLArea object having the above config.
 							plainEditors["${attribute.name}"] = "${attribute.name}";
+							plainEditorsToolbars["${attribute.name}"] = "${WYSIWYGToolbar}";
 							
 							currentEditorIdHash["${attribute.name}CurrentEditorId"] = 1;
 							#set($currentEditorId = 1)
@@ -892,6 +904,7 @@
 				<table border="0" width="100%" cellspacing="0">
 				<tr>
 					#set($counter = 0)
+					#set($totalCounter = 0)
 					#foreach($digitalAsset in $digitalAssets)
 						#set($digitalAssetUrl = "$this.getDigitalAssetUrl($digitalAsset.digitalAssetId)")
 						<td valign="bottom" align="center" class="bordered">
@@ -907,6 +920,7 @@
 							#end
 						</td>
 						#set($counter = $counter + 1)
+						#set($totalCounter = $totalCounter + 1)
 						#if ($counter == 5)
 						</tr>
 						<tr>
@@ -914,7 +928,7 @@
 						#end
 					#end
 					
-					#if($counter == 0)
+					#if($totalCounter == 0)
 						<td>$ui.getString("tool.contenttool.noAttachmentsRightNow")
 						#if (!$contentVersionId)
 							<br />$ui.getString("tool.contenttool.saveToAddAttachment")
