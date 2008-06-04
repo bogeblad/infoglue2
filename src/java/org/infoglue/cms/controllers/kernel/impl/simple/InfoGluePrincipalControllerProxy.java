@@ -25,6 +25,7 @@
 package org.infoglue.cms.controllers.kernel.impl.simple;
 
 import java.io.ByteArrayInputStream;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -329,6 +330,11 @@ public class InfoGluePrincipalControllerProxy extends BaseController
 		return properties;
 	}	
 
+	public InfoGluePrincipal getTestPrincipal()
+	{
+		return new InfoGluePrincipal("TestUser", "none", "none", "none", new ArrayList(), new ArrayList(), true, null);
+	}
+	
 	
 	public BaseEntityVO getNewVO()
 	{
