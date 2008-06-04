@@ -384,6 +384,15 @@
 	<div class="tab" id="cmsGUI">
 		<fieldset>
 			<legend>$ui.getString("entity.ServerNode.property.cmsGUI.label")</legend>
+			#editPropertyFieldCSS("ServerNode.property.workingStyleInformation" "workingStyleInformation" "$this.getPropertyValue('workingStyleInformation')" "51" "$!serverNodeId")
+			#editPropertyFieldCSS("ServerNode.property.finalStyleInformation" "finalStyleInformation" "$this.getPropertyValue('finalStyleInformation')" "51" "$!serverNodeId")
+			#editPropertyFieldCSS("ServerNode.property.publishStyleInformation" "publishStyleInformation" "$this.getPropertyValue('publishStyleInformation')" "51" "$!serverNodeId")
+			#editPropertyFieldCSS("ServerNode.property.publishedStyleInformation" "publishedStyleInformation" "$this.getPropertyValue('publishedStyleInformation')" "51" "$!serverNodeId")
+
+			#set($customContentTypeIcons = $this.getDataPropertyValue("customContentTypeIcons"))
+			#set($customContentTypeIcons = $customContentTypeIcons.replaceAll("&amp;", "&amp;amp;"))
+			#editPropertyTextAreaCSS("ServerNode.property.customContentTypeIcons" "customContentTypeIcons" "$customContentTypeIcons" "50" "10" "normaltextarea" "$!serverNodeId")
+
 			#set($shortcuts = $this.getDataPropertyValue("shortcuts"))
 			#set($shortcuts = $shortcuts.replaceAll("&amp;", "&amp;amp;"))
 			#editPropertyTextAreaCSS("ServerNode.property.shortcuts" "shortcuts" "$shortcuts" "50" "10" "normaltextarea" "$!serverNodeId")
@@ -413,6 +422,7 @@
 			#yesNoDropDownWithInheritCSS("ServerNode.property.protectWorkflows" "protectWorkflows" "$this.getPropertyValue('protectWorkflows')")
 			#yesNoDropDownWithInheritCSS("ServerNode.property.protectCategories" "protectCategories" "$this.getPropertyValue('protectCategories')")
 			#yesNoDropDownWithInheritCSS("ServerNode.property.allowPublicationEventFilter" "allowPublicationEventFilter" "$this.getPropertyValue('allowPublicationEventFilter')")
+			#yesNoDropDownWithInheritCSS("ServerNode.property.hideProtectedProperties" "hideProtectedProperties" "$this.getPropertyValue('hideProtectedProperties')")
 				
 			#set($option1 = ["$ui.getString('tool.common.inherit')", "$ui.getString('tool.common.inherit')"])
 			#set($option2 = ["$ui.getString('entity.ServerNode.property.allPublicationEventFilter.value')", "$ui.getString('entity.ServerNode.property.allPublicationEventFilter.label')"])
