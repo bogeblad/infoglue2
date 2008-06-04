@@ -40,6 +40,7 @@ public class DocumentConverterTag extends TemplateControllerTag
 	private String title;
 	private String menuTextLength;
 	private List cssList;
+	private String rewrite;
 	
     public DocumentConverterTag()
     {
@@ -52,7 +53,7 @@ public class DocumentConverterTag extends TemplateControllerTag
         {			
 			File docFile = createFileObject();
 			
-            setResultAttribute(this.getController().getDocumentTransformerHelper().convert(docFile, title, menuTextLength, cssList));
+            setResultAttribute(this.getController().getDocumentTransformerHelper().convert(docFile, title, menuTextLength, cssList, rewrite));
         } 
 		catch (Exception e)
         {
@@ -73,14 +74,14 @@ public class DocumentConverterTag extends TemplateControllerTag
 		else if (docUrl != null && !docUrl.equals(""))
 		{
 			String fileName = docUrl.substring(docUrl.lastIndexOf("/") + 1);
-			String filePath = CmsPropertyHandler.getDigitalAssetPath0();
+			String filePath = CmsPropertyHandler.getDigitalAssetPath();
 			int idIndex = fileName.indexOf("_");
 			if(idIndex > -1)
 			{
 				String fileIdString = fileName.substring(0, idIndex);
 				int fileId = Integer.parseInt(fileIdString);
 				String folderName = "" + (fileId / 1000);
-				filePath = CmsPropertyHandler.getDigitalAssetPath0() + File.separator + folderName;
+				filePath = CmsPropertyHandler.getDigitalAssetPath() + File.separator + folderName;
 			}
 			
 			String assetPath = filePath + File.separator + fileName;
@@ -113,5 +114,10 @@ public class DocumentConverterTag extends TemplateControllerTag
     public void setCssList(String cssList) throws JspException
     {
         this.cssList = (List)evaluate("DocumentConverterTag", "cssList", cssList, List.class);
+    }
+    
+    public void setRewrite(String rewrite) throws JspException
+    {
+        this.rewrite = evaluateString("DocumentConverterTag", "rewrite", rewrite);
     }
 }
