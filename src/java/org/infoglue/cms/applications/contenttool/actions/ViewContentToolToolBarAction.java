@@ -40,6 +40,7 @@ import org.infoglue.cms.entities.content.ContentVersion;
 import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.entities.management.RepositoryVO;
 import org.infoglue.cms.entities.structure.SiteNodeVO;
+import org.infoglue.cms.entities.structure.SiteNodeVersionVO;
 import org.infoglue.cms.util.CmsPropertyHandler;
 
 /**
@@ -68,6 +69,8 @@ public class ViewContentToolToolBarAction extends InfoGlueAbstractAction
 	private Integer contentVersionId = null;
 	private Integer lastPublishedContentVersionId = null;
 	private String languageName = "";
+	
+	private String extraInformation = "";
 	
 	private ContentVO contentVO = null;
 	
@@ -420,7 +423,9 @@ public class ViewContentToolToolBarAction extends InfoGlueAbstractAction
 		        ContentVersionVO latestContentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(currentContentVersionVO.getContentId(), currentContentVersionVO.getLanguageId());
 		        if(currentContentVersionVO.getId().intValue() != latestContentVersionVO.getId().intValue())
 		            latest = false;
-			}
+		        
+		        extraInformation = "" + getStateDescription(currentContentVersionVO);
+		    }
 		    
 		    buttons.add(getCoverButton());
 		    
@@ -644,6 +649,30 @@ public class ViewContentToolToolBarAction extends InfoGlueAbstractAction
 	{
 		String returnAddress = URLEncoder.encode(URLEncoder.encode("ViewContentVersion.action?contentVersionId=" + this.contentVersionId + "&contentId=" + contentId + "&languageId=" + languageId, "UTF-8"), "UTF-8");
 		return new ImageButton("ViewAccessRights.action?interceptionPointCategory=ContentVersion&extraParameters=" + this.contentVersionId +"&colorScheme=ContentTool&returnAddress=" + returnAddress, getLocalizedString(getSession().getLocale(), "images.contenttool.buttons.contentAccessRights"), "tool.contenttool.contentVersionAccessRights.header");
+	}
+
+	public String getStateDescription(ContentVersionVO contentVersionVO)
+	{
+		String state = "";
+		
+		if(contentVersionVO != null)
+		{
+			if(contentVersionVO.getStateId().equals(ContentVersionVO.WORKING_STATE))
+				state = "<span style=\"color:#333333; font-weight: bold;\">(" + getLocalizedString(getSession().getLocale(), "tool.contenttool.state.working") + ")</span>";
+			else if(contentVersionVO.getStateId().equals(ContentVersionVO.FINAL_STATE))
+				state = "<span style=\"color:#AAAAAA; font-weight: bold;\">(" + getLocalizedString(getSession().getLocale(), "tool.contenttool.state.final") + ")</span>";
+			else if(contentVersionVO.getStateId().equals(ContentVersionVO.PUBLISH_STATE))
+				state = "<span style=\"color:#888888; font-weight: bold;\">(" + getLocalizedString(getSession().getLocale(), "tool.contenttool.state.publish") + ")</span>";
+			else if(contentVersionVO.getStateId().equals(ContentVersionVO.PUBLISHED_STATE))
+				state = "<span style=\"color:#666666; font-weight: bold;\">(" + getLocalizedString(getSession().getLocale(), "tool.contenttool.state.published") + ")</span>";
+		}
+		
+		return state;
+	}
+
+	public String getExtraInformation()
+	{
+		return extraInformation;
 	}
 
 }
