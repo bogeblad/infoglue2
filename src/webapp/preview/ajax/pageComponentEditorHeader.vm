@@ -2,6 +2,7 @@
 	var componentEditorUrl = "${componentEditorUrl}";
 	var currentContext = "${contextName}";
 	var currentUrl = "${currentUrl}";
+	var editOnSightAttributeNames = new Array();
 	
 	${limitedUserWarning}
 </script>

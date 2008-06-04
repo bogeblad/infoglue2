@@ -2,7 +2,8 @@
 	var componentEditorUrl = "${componentEditorUrl}";
 	var currentContext = "${contextName}";
 	var currentUrl = "${currentUrl}";
-
+	var editOnSightAttributeNames = new Array();
+	
 	${limitedUserWarning}
 </script>
 <script type="text/javascript" src="${contextName}/script/dom-drag.js"></script>
