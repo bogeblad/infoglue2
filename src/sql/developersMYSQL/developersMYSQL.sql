@@ -722,8 +722,35 @@ CREATE TABLE cmInfoGlueProperties (
   PRIMARY KEY  (propertyId)
 ) TYPE=InnoDB;
 
+DROP TABLE IF EXISTS cmSubscription;
+
+CREATE TABLE cmSubscription (
+  id int(10) unsigned NOT NULL AUTO_INCREMENT,
+  interceptionPointId INTEGER UNSIGNED NOT NULL,
+  name varchar(100) NOT NULL,
+  isGlobal tinyint(4) NOT NULL default '0',
+  entityName varchar(100),
+  entityId varchar(200),
+  userName varchar(150) NOT NULL,
+  userEmail varchar(150),
+  lastNotifiedDateTime timestamp(14) NOT NULL,
+  PRIMARY KEY(id)
+) TYPE = InnoDB DEFAULT CHARSET=utf8;
+
+DROP TABLE IF EXISTS cmSubscriptionFilter;
+
+CREATE TABLE cmSubscriptionFilter (
+  id int(10) unsigned NOT NULL AUTO_INCREMENT,
+  subscriptionId INTEGER UNSIGNED NOT NULL,
+  filterType varchar(50) NOT NULL,
+  filterCondition varchar(255) NOT NULL,
+  isAndCondition tinyint(4) NOT NULL default '1',
+  PRIMARY KEY(id)
+) TYPE = InnoDB DEFAULT CHARSET=utf8;
+
+
 INSERT INTO cmInfoGlueProperties(name, value) VALUES
-  ('version', '2.3');
+  ('version', '2.9');
  
 CREATE INDEX serviceBindingId ON cmQualifyer(serviceBindingId);
 CREATE INDEX serviceDefinitionId ON cmServiceBinding(serviceDefinitionId);
