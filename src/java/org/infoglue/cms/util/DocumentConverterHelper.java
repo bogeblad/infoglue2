@@ -59,7 +59,7 @@ public class DocumentConverterHelper
 {
 	private final static Logger logger = Logger.getLogger(DocumentConverterHelper.class.getName());
 
-	public ConvertedDocumentBean convert(File aDocFile, String aTitle, String aMenuTextLength, List aCssList) 
+	public ConvertedDocumentBean convert(File aDocFile, String aTitle, String aMenuTextLength, List aCssList, String rewrite) 
 	{
 		ConvertedDocumentBean convertedDocument = new ConvertedDocumentBean();
 		int menuMaxLength						= 20;
@@ -94,7 +94,25 @@ public class DocumentConverterHelper
 			//------------------------
 			
 			String fileName 		= aDocFile.getName().substring(0, aDocFile.getName().indexOf("."));
-			String digitalAssetPath = CmsPropertyHandler.getDigitalAssetPath() + File.separator + fileName;
+			int idIndex 			= fileName.indexOf("_");
+			String digitalAssetPath = CmsPropertyHandler.getDigitalAssetPath();
+			String folderName		= "";
+			
+			if(idIndex > -1)
+			{
+				String fileIdString = fileName.substring(0, idIndex);
+				int fileId 			= Integer.parseInt(fileIdString);
+				folderName 	= "" + (fileId / 1000);
+				digitalAssetPath	= digitalAssetPath + File.separator + folderName;
+			}
+						
+			digitalAssetPath 		= digitalAssetPath + File.separator + fileName;
+			
+			logger.info("Directory to write files to: " + digitalAssetPath);			
+			
+			//-------------------------------------------------
+			// Add a folder where the files are to be written.
+			//-------------------------------------------------
 			
 			String newFilePath 		= digitalAssetPath + File.separator + fileName;
 						
@@ -110,8 +128,14 @@ public class DocumentConverterHelper
 			
 			File documentDir = new File(digitalAssetPath);
 
-			if (!documentDir.exists())
+			if (!documentDir.exists() || rewrite.equals("true"))
 			{
+				logger.info("The directory " + digitalAssetPath + " does not exist. Creating it.");
+				
+				documentDir.mkdir();
+				
+				logger.info("The directory " + digitalAssetPath + " was successfully created.");
+				
 				logger.info("Connecting to server...");								
 				
 				connection.connect();
@@ -119,10 +143,10 @@ public class DocumentConverterHelper
 				logger.info("Connection ok");
 				
 				logger.info("Conversion START");
-	
-				convertDocument(aDocFile, pdfFile, connection);
+					
 				convertDocument(aDocFile, htmlFile, connection);
 				convertDocument(aDocFile, odtFile, connection);
+				convertDocument(aDocFile, pdfFile, connection);
 				connection.disconnect();
 				
 				logger.info("Conversion END");			
@@ -134,10 +158,11 @@ public class DocumentConverterHelper
 				
 				logger.info("Extracting content.xml...");
 				
-				String targetPath = odtFile.getAbsolutePath();
-				targetPath = targetPath.substring(0, targetPath.lastIndexOf("\\") + 1);
-	
-				contentXmlFile = extractContentXml(odtFile, targetPath);
+				logger.info("odtFile: " + odtFile.getPath());
+				
+				logger.info("target path: : " + digitalAssetPath);
+				
+				contentXmlFile = extractContentXml(odtFile, digitalAssetPath);
 				
 				logger.info("Done extracting content.xml");
 				
@@ -153,6 +178,27 @@ public class DocumentConverterHelper
 				
 				logger.info("Done updating handbook with extra info");
 			}
+
+			//--------------------------------
+			// Get the URL:s to the resources
+			//--------------------------------
+			
+			logger.info("Extracting URL:s to resources.");
+			
+			String digitalAssetUrl = CmsPropertyHandler.getDigitalAssetBaseUrl();
+			
+			if (!folderName.equals(""))
+			{
+				digitalAssetUrl = digitalAssetUrl + "/" + folderName;
+			}
+						
+			String htmlFileUrl 	= digitalAssetUrl + "/" + fileName + "/" + htmlFile.getName();
+			String pdfFileUrl	= digitalAssetUrl + "/" + fileName + "/" + pdfFile.getName();
+			String odtFileUrl	= digitalAssetUrl + "/" + fileName + "/" + odtFile.getName();
+			
+			logger.info("htmlFileUrl: " + htmlFileUrl);
+			logger.info("pdfFileUrl: " + pdfFileUrl);
+			logger.info("odtFileUrl: " + odtFileUrl);
 			
 			//--------------------------
 			// Generate HTML TOC string
@@ -160,11 +206,8 @@ public class DocumentConverterHelper
 			
 			logger.info("Generating TOC...");
 			
-			String htmlFileUrl 	= CmsPropertyHandler.getDigitalAssetBaseUrl() + "/" + fileName + "/" + htmlFile.getName();
-			String pdfFileUrl	= CmsPropertyHandler.getDigitalAssetBaseUrl() + "/" + fileName + "/" + pdfFile.getName();
-			String odtFileUrl	= CmsPropertyHandler.getDigitalAssetBaseUrl() + "/" + fileName + "/" + odtFile.getName();
 			String tocString 	= generateHtmlToc(contentXmlFile, htmlFileUrl, aTitle, menuMaxLength);
-			
+
 			logger.info("Done generating TOC");
 			
 			convertedDocument.setHtmlFileUrl(htmlFileUrl);
@@ -184,6 +227,8 @@ public class DocumentConverterHelper
 	
 	private static String generateHtmlToc(File aContentXmlFile, String aHtmlFileUrl, String aTitle, int aMenuMaxLength) throws Exception 
 	{		
+		logger.info("Start generating HTML TOC: xmlFile: " + aContentXmlFile.getPath() + ", htmlFileUrl: " + aHtmlFileUrl);
+		
 		Namespace officeNs 	= Namespace.getNamespace("office", "urn:oasis:names:tc:opendocument:xmlns:office:1.0");
 		Namespace textNs 	= Namespace.getNamespace("text", "urn:oasis:names:tc:opendocument:xmlns:text:1.0");
 		
@@ -197,12 +242,12 @@ public class DocumentConverterHelper
 		
 		try
 		{
-			Element rootElement = doc.getRootElement();			
-			Element bodyElement = rootElement.getChild("body", officeNs);
-			Element textElement = bodyElement.getChild("text", officeNs);		
-			Element tocElement 	= textElement.getChild("table-of-content", textNs);		 
-			Element textIndexBodyElement = tocElement.getChild("index-body", textNs);		
-			tocElements	= textIndexBodyElement.getChildren();					
+			Element rootElement 			= doc.getRootElement();			
+			Element bodyElement 			= rootElement.getChild("body", officeNs);
+			Element textElement 			= bodyElement.getChild("text", officeNs);		
+			Element tocElement 				= textElement.getChild("table-of-content", textNs);		 
+			Element textIndexBodyElement 	= tocElement.getChild("index-body", textNs);		
+			tocElements						= textIndexBodyElement.getChildren();					
 		}
 		catch(Exception e)
 		{
@@ -215,6 +260,7 @@ public class DocumentConverterHelper
 		
 		if (tocElements != null)
 		{
+			logger.info("Found TOC elements, generating TOC.");
 			StringBuffer htmlMenuSb = new StringBuffer();			
 			generateHtml(tocElements.toArray(), htmlMenuSb, aHtmlFileUrl, aTitle, aMenuMaxLength);		
 			return htmlMenuSb.toString();
@@ -241,28 +287,26 @@ public class DocumentConverterHelper
 		int cropCounter					= 0;
 		boolean willCrop				= false;
 		
-		aReturnSb.append("<div id=\"submenu\" class=\"noprint\">");
+		aReturnSb.append("<div id=\"submenu\">");
 		aReturnSb.append("<div class=\"menuheader\">" + aTitle + "</div>");
-		aReturnSb.append("<ul>");
-		
+
 		while (startPosition < aTocElements.length)
 		{				
 			child 			= (Element)aTocElements[startPosition];
 			elementText 	= child.getText();	
-			
+		
 			if (elementText != null && !elementText.equals("") && elementText.indexOf(" ") != -1)
 			{
-				headingNumber 	= elementText.substring(0, elementText.indexOf(" "));
-				st = new StringTokenizer(headingNumber, ".");
-				level = st.countTokens();
+				headingNumber 	= elementText.substring(0, elementText.indexOf(" "));				
+				st 				= new StringTokenizer(headingNumber, ".");
+				level 			= st.countTokens();
 				
-				if (headingNumber.length() > previousHeadingNumber.length() && !previousHeadingNumber.equals(""))
-				{									
+				if (level > previousLevel)
+				{						
 					aReturnSb.append("<ul>");					
-					level ++;
 				}
-				else if(headingNumber.length() < previousHeadingNumber.length() && !previousHeadingNumber.equals(""))
-				{		
+				else if(level < previousLevel)
+				{							
 					numberOfEndUls = previousLevel - level;
 
 					for (int i = 0; i < numberOfEndUls; i ++)
@@ -306,14 +350,13 @@ public class DocumentConverterHelper
 				}
 								
 				aReturnSb.append("<li><p><a target=\"handbookFrame\" href=\"" + aHtmlFileUrl + "#link" + linkCounter + "\" title=\"" + elementText + "\">" + croppedElementText + "</a></p></li>");
-				previousHeadingNumber = headingNumber;
-				previousLevel = level;
+				previousHeadingNumber 	= headingNumber;				
+				previousLevel 			= level;
 				linkCounter ++;
 			}			
 			startPosition = startPosition + 1;
 		}
-		
-		aReturnSb.append("</ul>");
+
 		aReturnSb.append("</div>");
 
 		return aReturnSb;		
@@ -330,17 +373,14 @@ public class DocumentConverterHelper
 	
 	private static String fixCss(String aHtmlContent, List aCssList)
 	{		
-		StringBuffer sb = new StringBuffer();
-		
-		int cssStartIndex = aHtmlContent.indexOf("<STYLE TYPE=\"text/css\">");
-		
-		String start = aHtmlContent.substring(0, cssStartIndex);
-		String temp = aHtmlContent.substring(cssStartIndex + 1);
-		String end = temp.substring(temp.indexOf("</STYLE>") + 8);
-		
-		StringBuffer linkedCssString = new StringBuffer();
-		Iterator it = aCssList.iterator();
-		String cssString = "";
+		StringBuffer sb 				= new StringBuffer();		
+		int cssStartIndex 				= aHtmlContent.indexOf("<STYLE TYPE=\"text/css\">");		
+		String start 					= aHtmlContent.substring(0, cssStartIndex);
+		String temp 					= aHtmlContent.substring(cssStartIndex + 1);
+		String end 						= temp.substring(temp.indexOf("</STYLE>") + 8);		
+		StringBuffer linkedCssString 	= new StringBuffer();
+		Iterator it 					= aCssList.iterator();
+		String cssString 				= "";
 		
 		while (it.hasNext())
 		{
@@ -348,9 +388,6 @@ public class DocumentConverterHelper
 			cssString = "<link href=\"" + cssString + "\" rel=\"stylesheet\" type=\"text/css\" />" + '\n';
 			linkedCssString.append(cssString);
 		}
-		
-		//"<link href=\"/infoglueDeliverWorking/ViewPage.action?siteNodeId=38&amp;languageId=3&amp;contentId=-1\" rel=\"stylesheet\" type=\"text/css\" />" + 
-		//	"<link href=\"/infoglueDeliverWorking/ViewPage.action?siteNodeId=101&amp;languageId=3&amp;contentId=-1\" rel=\"stylesheet\" type=\"text/css\" />";
 		
 		sb.append(start);
 		sb.append(linkedCssString.toString());
@@ -361,17 +398,46 @@ public class DocumentConverterHelper
 	
 	private static String removeTocFromHtml(String aHtmlContent)
 	{
-		StringBuffer sb = new StringBuffer();
+		logger.info("About to remove TOC from HTML");
 		
-		int tocStartIndex = aHtmlContent.indexOf("<DIV ID=\"Table of Contents1\" DIR=\"LTR\">");
+		StringBuffer sb 	= new StringBuffer();
 		
-		String start = aHtmlContent.substring(0, tocStartIndex);
-		String temp = aHtmlContent.substring(tocStartIndex + 1);
-		String end = temp.substring(temp.indexOf("</DIV>") + 6);
+		int tocStartIndex 	= -1;
 		
-		sb.append(start);
-		sb.append(end);
+		//--------------------------------------------------
+		// Look for the start of the TOC if it's in English
+		//--------------------------------------------------
 		
+		tocStartIndex		= aHtmlContent.indexOf("<DIV ID=\"Table of Contents1\" DIR=\"LTR\">");
+		
+		//--------------------------------------------------
+		// Look for the start of the TOC if it's in Swedish
+		//--------------------------------------------------
+		
+		if (tocStartIndex == -1)
+		{
+			tocStartIndex	= aHtmlContent.indexOf("<DIV ID=\"Inneh&aring;llsf&ouml;rteckning1\" DIR=\"LTR\">");
+		}
+		
+		if (tocStartIndex > -1)
+		{		
+			logger.info("The HTML string contains a TOC beginning at position " + tocStartIndex + ". Removing it.");
+			
+			String start 	= aHtmlContent.substring(0, tocStartIndex);
+			String temp 	= aHtmlContent.substring(tocStartIndex + 1);
+			String end 		= temp.substring(temp.indexOf("</DIV>") + 6);
+			
+			sb.append(start);
+			sb.append(end);
+			
+			logger.info("The TOC was succesfully removed.");
+		}
+		else
+		{
+			logger.info("No TOC found in the HTML string.");
+			
+			sb.append(aHtmlContent);
+		}
 		return sb.toString();
 	}
 
@@ -500,8 +566,10 @@ public class DocumentConverterHelper
 	public static void convertDocument(File aInputFile, File aOutputFile, OpenOfficeConnection aConnection)
 	{							
 		String fileType = "";
-		fileType = aOutputFile.getAbsolutePath().substring(aOutputFile.getAbsolutePath().lastIndexOf(".") + 1);
+		fileType 		= aOutputFile.getAbsolutePath().substring(aOutputFile.getAbsolutePath().lastIndexOf(".") + 1);
 		
+		logger.info("Converting document to " + fileType + "...");
+
 		//--------------------------------------------
 		// Connect to server and create the converter
 		//--------------------------------------------
@@ -512,7 +580,7 @@ public class DocumentConverterHelper
 		// Convert the document to the selected format
 		//---------------------------------------------
 		
-		logger.info("Converting document to " + fileType + "...");
+		logger.info("Converting from " + aInputFile.getPath() + " to " + aOutputFile.getPath());
 		
 		converter.convert(aInputFile, aOutputFile);
 		
@@ -521,22 +589,34 @@ public class DocumentConverterHelper
 	
 	public static File extractContentXml(File aOdtFile, String aTargetDirectory) throws ZipException, IOException
 	{
+		logger.info("Target directory for content.xml: " + aTargetDirectory);
+		
 		File contentXmlFile = null;
 		ZipFile  zipFile 	= new ZipFile(aOdtFile);		
 		Enumeration entries = zipFile.entries();
 
 		while(entries.hasMoreElements()) 
-		{
+		{			
 			ZipEntry entry = (ZipEntry)entries.nextElement();
-		
+			
 			if (entry.getName().equals("content.xml"))
 			{	
-				contentXmlFile = new File(aTargetDirectory + entry.getName());					
+				logger.info("Found the content.xml file.");
+				
+				contentXmlFile = new File(aTargetDirectory + File.separator + entry.getName());
+				
+				logger.info("Copying entry " + entry.getName() + " from ODT file to " + contentXmlFile.getPath());
+				
 				copyInputStream(zipFile.getInputStream(entry), new BufferedOutputStream(new FileOutputStream(contentXmlFile)));
+				
+				logger.info("Success!");
+				
 				break;
 			}			
 		}	
 		zipFile.close();
+		
+		logger.info("Content XML extraction successful.");
 		
 		return(contentXmlFile);
 	}
