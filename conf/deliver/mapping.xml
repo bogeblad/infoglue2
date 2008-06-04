@@ -1550,9 +1550,112 @@
 		    <sql name="dnsName" type="varchar" dirty="check" />
 	    </field>
   	</class>
-  	
-    
+	
+	<!--  Mapping for FormEntry  -->
+  	<class name="org.infoglue.cms.entities.management.impl.simple.FormEntryImpl" identity="formEntryId" key-generator="IDENTITY">
+    	<description>FormEntry</description>
+    	<cache-type type="none"/>
+	    <map-to table="cmFormEntry"/>
+	    <field name="formEntryId" type="java.lang.Integer">
+	      	<sql name="id" type="integer" dirty="check" />
+	    </field>
+	    <field name="originAddress" type="java.lang.String">
+	      	<sql name="originAddress" type="varchar" dirty="check" />
+	    </field>
+	    <field name="formName" type="java.lang.String">
+	      	<sql name="formName" type="varchar" dirty="check" />
+	    </field>
+	    <field name="formContentId" type="java.lang.Integer">
+		    <sql name="formContentId" type="integer" dirty="check" />
+	    </field>
+	    <field name="userIP" type="java.lang.String">
+	      	<sql name="userIP" type="varchar" dirty="check" />
+	    </field>
+	    <field name="userAgent" type="java.lang.String">
+	      	<sql name="userAgent" type="varchar" dirty="check" />
+	    </field>
+		<field name="formEntryValues" type="org.infoglue.cms.entities.management.impl.simple.FormEntryValueImpl" collection="collection">
+		  <sql many-key="formEntryId"/>
+		</field>
+  	</class>
+
+	<!--  Mapping for FormEntryValue  -->
+  	<class name="org.infoglue.cms.entities.management.impl.simple.FormEntryValueImpl" identity="formEntryValueId" key-generator="IDENTITY">
+    	<description>FormEntryValue</description>
+    	<cache-type type="none"/>
+	    <map-to table="cmFormEntryValue"/>
+	    <field name="formEntryValueId" type="java.lang.Integer">
+	      	<sql name="id" type="integer" dirty="check" />
+	    </field>
+	    <field name="name" type="java.lang.String">
+	      	<sql name="name" type="varchar" dirty="check" />
+	    </field>
+	    <field name="value" type="java.lang.String">
+	      	<sql name="value" type="varchar" dirty="check" />
+	    </field>
+		<field name="formEntry" type="org.infoglue.cms.entities.management.impl.simple.FormEntryImpl">
+		  <sql name="formEntryId"/>
+		</field>
+  	</class>
+
+  	<!--  Mapping for Subscription entity  -->
+  	<class name="org.infoglue.cms.entities.management.impl.simple.SubscriptionImpl" identity="subscriptionId" key-generator="IDENTITY">
+	    <description>Subscription</description>
+	    <cache-type type="none"/>
+	    <map-to table="cmSubscription"/>
+	    <field name="subscriptionId" type="java.lang.Integer">
+	      <sql name="id" type="integer" dirty="check" />
+	    </field>
+	    <field name="interceptionPointId" type="java.lang.Integer">
+	      <sql name="interceptionPointId" type="integer" dirty="check" />
+	    </field>
+		<field name="name" type="java.lang.String">
+			<sql name="name" type="varchar" dirty="check" />
+		</field>
+	    <field name="isGlobal" type="java.lang.Boolean">
+	      <sql name="isGlobal" type="integer" dirty="check" />
+	    </field>
+		<field name="entityName" type="java.lang.String">
+			<sql name="entityName" type="varchar" dirty="check" />
+		</field>
+		<field name="entityId" type="java.lang.String">
+			<sql name="entityId" type="varchar" dirty="check" />
+		</field>
+	    <field name="userName" type="java.lang.String">
+	      <sql name="userName" type="varchar" dirty="check" />
+	    </field>
+	    <field name="userEmail" type="java.lang.String">
+	      <sql name="userEmail" type="varchar" dirty="check" />
+	    </field>
+	    <field name="lastNotifiedDateTime" type="java.util.Date">
+	      <sql name="lastNotifiedDateTime" type="timestamp" dirty="check" />
+	    </field>
+	    <field name="subscriptionFilters" type="org.infoglue.cms.entities.management.impl.simple.SubscriptionFilterImpl" collection="collection" lazy="false">
+	      <sql many-key="subscriptionId" />
+	    </field>    
+  	</class>
+
+  	<!--  Mapping for SubscriptionFilter entity  -->
+  	<class name="org.infoglue.cms.entities.management.impl.simple.SubscriptionFilterImpl" identity="subscriptionFilterId" key-generator="IDENTITY" depends="org.infoglue.cms.entities.management.impl.simple.SubscriptionImpl">
+	    <description>SubscriptionFilter</description>
+	    <cache-type type="none"/>
+	    <map-to table="cmSubscriptionFilter"/>
+	    <field name="subscriptionFilterId" type="java.lang.Integer">
+	      <sql name="id" type="integer" dirty="check" />
+	    </field>
+		<field name="filterType" type="java.lang.String">
+			<sql name="filterType" type="varchar" dirty="check" />
+		</field>
+		<field name="filterCondition" type="java.lang.String">
+			<sql name="filterCondition" type="varchar" dirty="check" />
+		</field>
+	    <field name="isAndCondition" type="java.lang.Boolean">
+	      <sql name="isAndCondition" type="integer" dirty="check" />
+	    </field>
+	    <field name="subscription" type="org.infoglue.cms.entities.management.impl.simple.SubscriptionImpl">
+	      <sql name="subscriptionId" />
+	    </field>    
+  	</class>
+
 </mapping>
-
-
 
