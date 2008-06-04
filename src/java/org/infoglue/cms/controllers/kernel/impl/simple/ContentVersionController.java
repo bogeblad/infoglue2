@@ -78,6 +78,8 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
+import com.frovi.ss.Tree.INodeSupplier;
+
 /**
  * @author Mattias Bogeblad
  *
@@ -1015,8 +1017,20 @@ public class ContentVersionController extends BaseController
 	    	}
 	    	else
 	    	{
-	    	    contentVersion = ContentVersionController.getContentVersionController().getContentVersionWithId(contentVersionVO.getId(), db);
-	    	    contentVersion.setValueObject(contentVersionVO);
+	    	    if(!contentVersionVO.getStateId().equals(ContentVersionVO.WORKING_STATE))
+				{
+					ContentVersionVO oldContentVersionVO = ContentVersionController.getContentVersionController().getContentVersionVOWithId(contentVersionVO.getId(), db);
+					System.out.println("Setting state to working...");
+			    	List events = new ArrayList();
+					contentVersion = ContentStateController.changeState(oldContentVersionVO.getId(), ContentVersionVO.WORKING_STATE, "new working version", false, null, principal, oldContentVersionVO.getContentId(), db, events);
+					contentVersion.setVersionValue(contentVersionVO.getVersionValue());
+				}
+				else
+				{
+					contentVersion = ContentVersionController.getContentVersionController().getContentVersionWithId(contentVersionVO.getId(), db);
+					//contentVersionVO.setModifiedDateTime(DateHelper.getSecondPreciseDate());
+					contentVersion.setValueObject(contentVersionVO);
+				}
 	    	}
 
 		    if(principal != null && contentTypeDefinition.getName().equalsIgnoreCase("Meta info"))
@@ -1345,15 +1359,35 @@ public class ContentVersionController extends BaseController
 	/**
 	 * This method deletes the relation to a digital asset - not the asset itself.
 	 */
-	public void deleteDigitalAssetRelation(Integer contentVersionId, Integer digitalAssetId) throws SystemException, Bug
+	public ContentVersionVO deleteDigitalAssetRelation(Integer contentVersionId, Integer digitalAssetId, InfoGluePrincipal principal) throws SystemException, Bug
     {
+		ContentVersionVO editedContentVersionVO = null;
+			
     	Database db = CastorDatabaseService.getDatabase();
         beginTransaction(db);
 
         try
-        {           
-        	ContentVersion contentVersion = getContentVersionWithId(contentVersionId, db);
-			DigitalAsset digitalAsset = DigitalAssetController.getDigitalAssetWithId(digitalAssetId, db);			
+        {      
+        	ContentVersion contentVersion = null;
+        	ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getContentVersionVOWithId(contentVersionId, db);
+        	DigitalAssetVO digitalAssetVO = DigitalAssetController.getController().getDigitalAssetVOWithId(digitalAssetId, db);
+    	    if(!contentVersionVO.getStateId().equals(ContentVersionVO.WORKING_STATE))
+			{
+				System.out.println("Setting state to working...");
+		    	List events = new ArrayList();
+				contentVersion = ContentStateController.changeState(contentVersionVO.getId(), ContentVersionVO.WORKING_STATE, "new working version", false, null, principal, contentVersionVO.getContentId(), db, events);
+				digitalAssetVO = DigitalAssetController.getController().getLatestDigitalAssetVO(contentVersion.getId(), digitalAssetVO.getAssetKey(), db);
+			}
+			else
+			{
+				contentVersion = ContentVersionController.getContentVersionController().getContentVersionWithId(contentVersionVO.getId(), db);
+			}
+    	    
+    	    editedContentVersionVO = contentVersion.getValueObject();
+    	    
+        	//ContentVersion contentVersion = getContentVersionWithId(contentVersionId, db);
+        	
+			DigitalAsset digitalAsset = DigitalAssetController.getDigitalAssetWithId(digitalAssetVO.getId(), db);			
 			contentVersion.getDigitalAssets().remove(digitalAsset);
             digitalAsset.getContentVersions().remove(contentVersion);
             commitTransaction(db);
@@ -1364,6 +1398,8 @@ public class ContentVersionController extends BaseController
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
+        
+        return editedContentVersionVO;
     }
     
 	
@@ -1672,7 +1708,7 @@ public class ContentVersionController extends BaseController
 	 * @throws SystemException 
 	 */
 	
-	public void cleanContentVersions(int numberOfVersionsToKeep) throws SystemException 
+	public void cleanContentVersions(int numberOfVersionsToKeep, boolean keepOnlyOldPublishedVersions) throws SystemException 
 	{
 		int batchLimit = 200;
 		List languageVOList = LanguageController.getController().getLanguageVOList();
@@ -1681,7 +1717,7 @@ public class ContentVersionController extends BaseController
 		while(languageVOListIterator.hasNext())
 		{
 			LanguageVO languageVO = languageVOListIterator.next();
-			List<ContentVersionVO> contentVersionVOList = getContentVersionVOList(languageVO.getId(), numberOfVersionsToKeep);
+			List<ContentVersionVO> contentVersionVOList = getContentVersionVOList(languageVO.getId(), numberOfVersionsToKeep, keepOnlyOldPublishedVersions);
 		
 			logger.info("Deleting " + contentVersionVOList.size() + " versions for language " + languageVO.getName());
 			int maxIndex = (contentVersionVOList.size() > batchLimit ? batchLimit : contentVersionVOList.size());
@@ -1740,7 +1776,7 @@ public class ContentVersionController extends BaseController
 	 * @throws SystemException 
 	 */
 	
-	public List<ContentVersionVO> getContentVersionVOList(Integer languageId, int numberOfVersionsToKeep) throws SystemException 
+	public List<ContentVersionVO> getContentVersionVOList(Integer languageId, int numberOfVersionsToKeep, boolean keepOnlyOldPublishedVersions) throws SystemException 
 	{
 		logger.info("numberOfVersionsToKeep:" + numberOfVersionsToKeep);
 
@@ -1767,7 +1803,7 @@ public class ContentVersionController extends BaseController
 					numberOfLaterVersions = 0;
 				}
 				
-				if(numberOfLaterVersions > numberOfVersionsToKeep)
+				if(numberOfLaterVersions > numberOfVersionsToKeep || (keepOnlyOldPublishedVersions && numberOfLaterVersions > 0 && !version.getStateId().equals(ContentVersionVO.PUBLISHED_STATE)))
             	{
 					contentVersionsIdList.add(version.getValueObject());
             	}
@@ -2019,4 +2055,111 @@ public class ContentVersionController extends BaseController
             throw new SystemException(e.getMessage());
         }
     }
+    
+	/**
+	 * This method deletes the relation to a digital asset - not the asset itself.
+	 */
+	public ContentVersionVO checkStateAndChangeIfNeeded(Integer contentVersionId, InfoGluePrincipal principal) throws SystemException, Bug
+    {
+		ContentVersionVO resultingContentVersionVO = null;
+			
+    	Database db = CastorDatabaseService.getDatabase();
+        beginTransaction(db);
+
+        try
+        {      
+        	ContentVersion contentVersion = checkStateAndChangeIfNeeded(contentVersionId, principal, db);
+    	    
+    	    resultingContentVersionVO = contentVersion.getValueObject();
+    	    
+            commitTransaction(db);
+        }
+        catch(Exception e)
+        {
+            logger.error("An error occurred so we should not completes the transaction:" + e, e);
+            rollbackTransaction(db);
+            throw new SystemException(e.getMessage());
+        }
+        
+        return resultingContentVersionVO;
+    }
+
+	/**
+	 * This method deletes the relation to a digital asset - not the asset itself.
+	 */
+	public ContentVersion checkStateAndChangeIfNeeded(Integer contentVersionId, InfoGluePrincipal principal, Database db) throws ConstraintException, SystemException, Bug
+    {
+    	ContentVersion contentVersion = null;
+    	ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getContentVersionVOWithId(contentVersionId, db);
+    	if(!contentVersionVO.getStateId().equals(ContentVersionVO.WORKING_STATE))
+		{
+			System.out.println("Setting state to working...");
+	    	List events = new ArrayList();
+			contentVersion = ContentStateController.changeState(contentVersionVO.getId(), ContentVersionVO.WORKING_STATE, "new working version", false, null, principal, contentVersionVO.getContentId(), db, events);
+		}
+		else
+		{
+			contentVersion = ContentVersionController.getContentVersionController().getContentVersionWithId(contentVersionVO.getId(), db);
+		}
+    	            
+        return contentVersion;
+    }
+	
+	/**
+	 * This method deletes the relation to a digital asset - not the asset itself.
+	 */
+	public DigitalAssetVO checkStateAndChangeIfNeeded(Integer contentVersionId, Integer digitalAssetId, InfoGluePrincipal principal) throws SystemException, Bug
+    {
+		DigitalAssetVO resultingDigitalAssetVO = null;
+			
+    	Database db = CastorDatabaseService.getDatabase();
+        beginTransaction(db);
+
+        try
+        {      
+        	ContentVersion contentVersion = null;
+        	ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getContentVersionVOWithId(contentVersionId, db);
+        	DigitalAssetVO digitalAssetVO = DigitalAssetController.getController().getDigitalAssetVOWithId(digitalAssetId, db);
+    	    if(!contentVersionVO.getStateId().equals(ContentVersionVO.WORKING_STATE))
+			{
+				System.out.println("Setting state to working...");
+		    	List events = new ArrayList();
+				contentVersion = ContentStateController.changeState(contentVersionVO.getId(), ContentVersionVO.WORKING_STATE, "new working version", false, null, principal, contentVersionVO.getContentId(), db, events);
+				digitalAssetVO = DigitalAssetController.getController().getLatestDigitalAssetVO(contentVersion.getId(), digitalAssetVO.getAssetKey(), db);
+			}
+    	    
+    	    resultingDigitalAssetVO = digitalAssetVO;
+    	    
+            commitTransaction(db);
+        }
+        catch(Exception e)
+        {
+            logger.error("An error occurred so we should not completes the transaction:" + e, e);
+            rollbackTransaction(db);
+            throw new SystemException(e.getMessage());
+        }
+        
+        return resultingDigitalAssetVO;
+    }
+
+
+	/**
+	 * This method deletes the relation to a digital asset - not the asset itself.
+	 */
+	public DigitalAssetVO checkStateAndChangeIfNeeded(Integer contentVersionId, Integer digitalAssetId, InfoGluePrincipal principal, Database db) throws ConstraintException, SystemException, Bug, Exception
+    {
+    	ContentVersion contentVersion = null;
+    	ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getContentVersionVOWithId(contentVersionId, db);
+    	DigitalAssetVO digitalAssetVO = DigitalAssetController.getController().getDigitalAssetVOWithId(digitalAssetId, db);
+	    if(!contentVersionVO.getStateId().equals(ContentVersionVO.WORKING_STATE))
+		{
+			System.out.println("Setting state to working...");
+	    	List events = new ArrayList();
+			contentVersion = ContentStateController.changeState(contentVersionVO.getId(), ContentVersionVO.WORKING_STATE, "new working version", false, null, principal, contentVersionVO.getContentId(), db, events);
+			digitalAssetVO = DigitalAssetController.getController().getLatestDigitalAssetVO(contentVersion.getId(), digitalAssetVO.getAssetKey(), db);
+		}
+    	    
+    	return digitalAssetVO;
+    }
+
 }
