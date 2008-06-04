@@ -1,0 +1,104 @@
+#beginCommonToolV3("tool.managementtool.mysettings.header" "" "" false true)
+
+<script type="text/javascript">
+	<!--
+	$(document).ready(function(){
+		$("#tabsContainer > ul").tabs();
+	});
+	-->
+</script>
+
+<div>
+    
+	#menuToolbar("" $buttons $rightButtons) 
+
+	<div style="clear: both;"></div>
+	
+	<h3 style="text-indent: 16px;">$ui.getString("tool.managementtool.mysettings.header") 
+		#if($errorMessage != "")
+			<span style="color:red">$errorMessage</span><br/>
+		#end
+	</h3>
+	<p style="text-indent: 16px;">
+		$ui.getString("tool.managementtool.mysettings.introduction")
+	</p>
+
+	<div id="tabsContainer" class="flora">      
+		<ul>
+	        <li><a href="#generalSettingsTab"><span>General</span></a></li>
+	        #*<li><a href="#subscriptionsTab"><span>Subscriptions</span></a></li>*#
+	    </ul>
+
+		<div id="generalSettingsTab" class="recipientTab inlineTabDiv">
+
+			<form name="editForm" method="POST" action="UpdateMySettings.action">
+				<fieldset style="width: 90%; border: 0px solid red; margin: 0px; padding-left: 10px;">
+	
+				<p style="clear: both;">
+					<label for="languageCode">$ui.getString("entity.Language.property.defaultLanguageCode.label")</label>
+					<select name="languageCode" id="languageCode" class="sitedropbox" style="width: 100px;">
+					#foreach($toolLocale in $toolLocales)
+						<option value="$toolLocale.language" #if($languageCode == $toolLocale.language)selected="1"#end>$toolLocale.displayName</option>
+					#end
+					</select>
+				</p>
+						
+				<p style="clear: both;">
+					<label for="defaultRepositoryId">$ui.getString("entity.Repository.property.defaultRepository.label")</label>
+					<select name="defaultRepositoryId" id="defaultRepositoryId" class="sitedropbox" style="width: 100px;">
+					#foreach($repository in $repositories)
+						<option value="$repository.id" #if($defaultRepositoryId == $repository.id)selected="1"#end>$repository.name</option>
+					#end
+					</select>
+				</p>
+
+				<p style="clear: both;">
+					<label for="defaultToolId">$ui.getString("tool.managementtool.mysettings.defaultToolId.label")</label>
+					<select class="sitedropbox" id="defaultToolId" name="defaultToolId">
+						#if($this.hasAccessTo("ContentTool.Read"))
+						<option value="0" #if($defaultToolId == "0")selected="1"#end>$ui.getString("tool.common.contentTool.name")</option>
+						#end
+						#if($this.hasAccessTo("StructureTool.Read"))
+						<option value="1" #if($defaultToolId == "1")selected="1"#end>$ui.getString("tool.common.structureTool.name")</option>
+						#end
+						#if($this.hasAccessTo("ManagementTool.Read"))
+						<option value="2" #if($defaultToolId == "2")selected="1"#end>$ui.getString("tool.common.managementTool.name")</option>
+						#end
+						#if($this.hasAccessTo("PublishingTool.Read"))
+						<option value="3" #if($defaultToolId == "3")selected="1"#end>$ui.getString("tool.common.publishingTool.name")</option>
+						#end
+						#if($this.hasAccessTo("MyDesktopTool.Read"))
+						<option value="4" #if($defaultToolId == "4")selected="1"#end>$ui.getString("tool.common.myDesktopTool.name")</option>
+						#end
+					</select>	
+				</p>
+
+				<p style="clear: both;">
+					<a href="Subscriptions!inputGlobalSubscriptions.action" target="_blank">Open up subsriptions in a new window</a>
+				</p>
+				
+				<p style="clear: both;">
+					<a href="UpdateSystemUserPassword!inputStandalone.action?userName=$infoGluePrincipal.name&returnAddress=ViewMySettings.action">Change password</a>
+				</p>
+
+				<p style="clear: both;">
+					<input type="image" src="$ui.getString("images.managementtool.buttons.save")" width="50" height="25">
+					<a href="javascript:self.opener.top.location.href='ViewCMSTool.action?languageCode=$languageCode'; window.close();"><img src="$ui.getString("images.managementtool.buttons.cancel")" width="50" height="25" border="0"></a>
+				</p>
+			</form>
+		</div>
+		
+		#*
+		<div id="subscriptionsTab" class="recipientTab inlineTabDiv" style="display: none;">
+			<a href="Subscriptions!inputGlobalSubscriptions.action">Open up subsriptions in a new window</a>
+		</div>
+		*#
+	</div>		
+	
+	#footerToolbar($footerButtons)
+	
+	</form>
+
+</div>
+
+#endCommonToolV3()
