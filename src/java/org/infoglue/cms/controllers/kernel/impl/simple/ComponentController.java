@@ -500,7 +500,10 @@ public class ComponentController extends BaseController
 				while(contentTypeAttributesIterator.hasNext())
 				{
 					ContentTypeAttribute contentTypeAttribute = (ContentTypeAttribute)contentTypeAttributesIterator.next();
-					String initialValue = contentTypeAttribute.getContentTypeAttribute("initialData").getContentTypeAttributeParameterValue().getValue("label");
+					String initialValue = null;
+					if(contentTypeAttribute.getContentTypeAttribute("initialData") != null && contentTypeAttribute.getContentTypeAttribute("initialData").getContentTypeAttributeParameterValue() != null)
+						contentTypeAttribute.getContentTypeAttribute("initialData").getContentTypeAttributeParameterValue().getValue("label");
+					
 					if(initialValue == null || initialValue.trim().equals(""))
 						initialValue = "State " + contentTypeAttribute.getName();
 					sb.append("<" + contentTypeAttribute.getName() + "><![CDATA[" + initialValue + "]]></" + contentTypeAttribute.getName() + ">");
