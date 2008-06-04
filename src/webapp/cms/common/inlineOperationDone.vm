@@ -12,7 +12,7 @@
 	
 		<div style="clear: both;"></div>
 		
-		<h3 style="text-indent: 16px;">$message</h3>
+		<h3 style="padding-left: 16px;">$message</h3>
 		
 		<div class="inlineTabDiv" onfocus="this.blur();">	
 		
