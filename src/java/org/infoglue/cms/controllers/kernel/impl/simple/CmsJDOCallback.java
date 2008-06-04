@@ -56,6 +56,7 @@ import org.infoglue.cms.entities.management.impl.simple.RepositoryImpl;
 import org.infoglue.cms.entities.management.impl.simple.RepositoryLanguageImpl;
 import org.infoglue.cms.entities.management.impl.simple.RoleImpl;
 import org.infoglue.cms.entities.management.impl.simple.RolePropertiesImpl;
+import org.infoglue.cms.entities.management.impl.simple.SubscriptionFilterImpl;
 import org.infoglue.cms.entities.management.impl.simple.SystemUserImpl;
 import org.infoglue.cms.entities.management.impl.simple.TransactionHistoryImpl;
 import org.infoglue.cms.entities.management.impl.simple.UserPropertiesImpl;
@@ -105,7 +106,9 @@ public class CmsJDOCallback implements CallbackInterceptor
         // ( (Persistent) object ).jdoStore( modified );
    		
    		//logger.info("Should we store -------------->" + object + ":" + modified);
-    	if (TransactionHistoryImpl.class.getName().indexOf(object.getClass().getName()) == -1 && RegistryImpl.class.getName().indexOf(object.getClass().getName()) == -1 && modified)
+    	if (TransactionHistoryImpl.class.getName().indexOf(object.getClass().getName()) == -1 && 
+    		RegistryImpl.class.getName().indexOf(object.getClass().getName()) == -1 && 
+    		SubscriptionFilterImpl.class.getName().indexOf(object.getClass().getName()) == -1 && modified)
 	    {
 	        //System.out.println("Actually stored it:" + object + ":" + modified);
 	    	logger.info("Actually stored it:" + object + ":" + modified);
@@ -268,9 +271,11 @@ public class CmsJDOCallback implements CallbackInterceptor
     	//String className = object.getClass().getName();		
 		//if (CmsSystem.getTransactionHistoryEntityClassName().indexOf(className) == -1)
 		//	CmsSystem.transactionLogEntry("CMSJDOCallback:" + object.getClass().getName(), CmsSystem.TRANS_CREATE, getEntityId(object), object.toString());        
-		//System.out.println("created...:" + object);
-    	logger.info("created..........................." + object);
-    	if (TransactionHistoryImpl.class.getName().indexOf(object.getClass().getName()) == -1 && RegistryImpl.class.getName().indexOf(object.getClass().getName()) == -1)
+		//System.out.println("created...:" + object + ":" + object.getClass().getName());
+    	logger.info("created..........................." + object + ":" + object.getClass().getName());
+    	if (TransactionHistoryImpl.class.getName().indexOf(object.getClass().getName()) == -1 && 
+    		RegistryImpl.class.getName().indexOf(object.getClass().getName()) == -1 && 
+    		SubscriptionFilterImpl.class.getName().indexOf(object.getClass().getName()) == -1)
 	    {
     	    String userName = "SYSTEM";
 			InfoGluePrincipal principal = InfoGlueAbstractAction.getSessionInfoGluePrincipal();
@@ -397,7 +402,9 @@ public class CmsJDOCallback implements CallbackInterceptor
 		//System.out.println("removed...:" + object);
         // ( (Persistent) object ).jdoAfterRemove();
         
-       	if (TransactionHistoryImpl.class.getName().indexOf(object.getClass().getName()) == -1 && RegistryImpl.class.getName().indexOf(object.getClass().getName()) == -1)
+       	if (TransactionHistoryImpl.class.getName().indexOf(object.getClass().getName()) == -1 && 
+       		RegistryImpl.class.getName().indexOf(object.getClass().getName()) == -1 && 
+    		SubscriptionFilterImpl.class.getName().indexOf(object.getClass().getName()) == -1)
 	    {
        	    String userName = "SYSTEM";
 			InfoGluePrincipal principal = InfoGlueAbstractAction.getSessionInfoGluePrincipal();
