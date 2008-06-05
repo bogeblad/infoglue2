@@ -77,7 +77,7 @@ public class EditOnSightMenuTag extends ComponentLogicTag
 		    	String createSiteNodeUrl 	= componentEditorUrl + "CreateSiteNode!inputV3.action?repositoryId=" + this.getController().getSiteNode().getRepositoryId() + "&parentSiteNodeId=" + this.getController().getSiteNodeId() + "&languageId=" + this.getController().getLanguageId() + "&returnAddress=" + URLEncoder.encode(returnAddress, "utf-8") + "&originalAddress=" + URLEncoder.encode(this.getController().getCurrentPageUrl(), "utf-8") + "&KeepThis=true&TB_iframe=true&height=700&width=750&modal=true";
 		    	String contentVersionUrl 	= componentEditorUrl + "ViewContentVersion!standalone.action?contentId=" + this.contentId + "&languageId=" + getController().getLanguageId() + "&anchorName=contentVersionBlock&KeepThis=true&TB_iframe=true&height=700&width=750&modal=true";
 		    	String categoriesUrl 		= componentEditorUrl + "ViewContentVersion!standalone.action?contentId=" + this.contentId + "&languageId=" + getController().getLanguageId() + "&anchor=categoriesBlock&KeepThis=true&TB_iframe=true&height=700&width=750&modal=true";
-		    	String publishUrl 			= componentEditorUrl + "ViewListSiteNodeVersion.action?siteNodeId=" + this.getController().getSiteNodeId() + "&repositoryId=" + this.getController().getSiteNode().getRepositoryId() + "&recurseSiteNodes=false&KeepThis=true&TB_iframe=true&height=700&width=750&modal=true";
+		    	String publishUrl 			= componentEditorUrl + "ViewListSiteNodeVersion!v3.action?siteNodeId=" + this.getController().getSiteNodeId() + "&repositoryId=" + this.getController().getSiteNode().getRepositoryId() + "&recurseSiteNodes=false&returnAddress=" + URLEncoder.encode(returnAddress, "utf-8") + "&originalAddress=" + URLEncoder.encode(this.getController().getCurrentPageUrl(), "utf-8") + "&KeepThis=true&TB_iframe=true&height=700&width=750&modal=true";
 		    	String notifyUrl 			= componentEditorUrl + "CreateEmail!inputChooseRecipientsV3.action?originalUrl=" + originalUrl + "&returnAddress=" + URLEncoder.encode(returnAddress, "utf-8") + "&KeepThis=true&TB_iframe=true&height=700&width=750&modal=true";
 		    	String subscriptionUrl 		= componentEditorUrl + "Subscriptions!input.action?interceptionPointCategory=Content&entityName=" + Content.class.getName() + "&entityId=" + this.contentId + "&extraParameters=" + this.contentId + "&returnAddress=" + URLEncoder.encode(returnAddress, "utf-8") + "&KeepThis=true&TB_iframe=true&height=700&width=750&modal=true";
 		    	String pageSubscriptionUrl 	= componentEditorUrl + "Subscriptions!input.action?interceptionPointCategory=SiteNodeVersion&entityName=" + SiteNode.class.getName() + "&entityId=" + this.getController().getSiteNodeId() + "&returnAddress=" + URLEncoder.encode(returnAddress, "utf-8") + "&KeepThis=true&TB_iframe=true&height=700&width=750&modal=true";
@@ -108,23 +108,26 @@ public class EditOnSightMenuTag extends ComponentLogicTag
 		    	sb.append("        <li style='margin: 0px; margin-left: 4px; padding: 2px 0px 2px 2px; list-style-type:none;'><a href=\"javascript:openInlineDiv('" + pageSubscriptionUrl + "');\" class=\"editOnSightHref linkTakePage\">Prenumerera på sidan</a></li>");
 		    			    	
 		    	ContentVersionVO contentVersionVO = this.getController().getContentVersion(contentId, this.getController().getLanguageId(), true);
-		    	System.out.println("Current contentVersionVO:" + contentVersionVO.getLanguageName() + ":" + contentVersionVO.getLanguageId());
-		    	List languages = this.getController().getPageLanguages();
-		    	
-		    	Iterator languagesIterator = languages.iterator();
-		    	while(languagesIterator.hasNext())
+		    	if(contentVersionVO != null)
 		    	{
-		    		LanguageVO languageVO = (LanguageVO)languagesIterator.next();
-		    		if(!contentVersionVO.getLanguageId().equals(languageVO.getId()))
-		    		{
-			    		String translateUrl = componentEditorUrl + "ViewContentVersion!standalone.action?contentId=" + this.contentId + "&languageId=" + languageVO.getLanguageId() + "&anchorName=contentVersionBlock&translate=true&fromLanguageId=" + contentVersionVO.getLanguageId() + "&toLanguageId=" + languageVO.getId() + "&KeepThis=true&TB_iframe=true&height=700&width=1000&modal=true";
-						
-				    	sb.append("	<li style='margin: 0px; margin-left: 4px; padding: 2px 0px 2px 2px; list-style-type:none;'>");
-				    	sb.append("    	<a href=\"javascript:openInlineDiv('" + translateUrl + "');\" class=\"editOnSightHref linkTranslate\">Översätt till &quot;" + languageVO.getLocalizedDisplayLanguage() + "&quot;</a>");
-				    	sb.append(" </li>");
-		    		}
+			    	System.out.println("Current contentVersionVO:" + contentVersionVO.getLanguageName() + ":" + contentVersionVO.getLanguageId());
+			    	List languages = this.getController().getPageLanguages();
+			    	
+			    	Iterator languagesIterator = languages.iterator();
+			    	while(languagesIterator.hasNext())
+			    	{
+			    		LanguageVO languageVO = (LanguageVO)languagesIterator.next();
+			    		if(!contentVersionVO.getLanguageId().equals(languageVO.getId()))
+			    		{
+				    		String translateUrl = componentEditorUrl + "ViewContentVersion!standalone.action?contentId=" + this.contentId + "&languageId=" + languageVO.getLanguageId() + "&anchorName=contentVersionBlock&translate=true&fromLanguageId=" + contentVersionVO.getLanguageId() + "&toLanguageId=" + languageVO.getId() + "&KeepThis=true&TB_iframe=true&height=700&width=1000&modal=true";
+							
+					    	sb.append("	<li style='margin: 0px; margin-left: 4px; padding: 2px 0px 2px 2px; list-style-type:none;'>");
+					    	sb.append("    	<a href=\"javascript:openInlineDiv('" + translateUrl + "');\" class=\"editOnSightHref linkTranslate\">Översätt till &quot;" + languageVO.getLocalizedDisplayLanguage() + "&quot;</a>");
+					    	sb.append(" </li>");
+			    		}
+			    	}
 		    	}
-			
+		    	
 		    	sb.append("        <li style='margin: 0px; margin-left: 4px; padding: 2px 0px 2px 2px; list-style-type:none;'><a href=\"javascript:openInlineDiv('" + newsFlowUrl + "');\" class=\"editOnSightHref linkCreateNews\">Skapa nyhet om denna artikel</a></li>");
 		    	sb.append("    </ul>");
 

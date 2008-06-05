@@ -59,6 +59,8 @@ public class ChangeMultiSiteNodeVersionStatePublishAction extends InfoGlueAbstra
 	private Integer repositoryId;
 	private String attemptDirectPublishing = "false";
 	private String returnAddress;
+   	private String userSessionKey;
+
 			    
 	/**
 	 * This method gets called when calling this action. 
@@ -98,6 +100,19 @@ public class ChangeMultiSiteNodeVersionStatePublishAction extends InfoGlueAbstra
 		    publicationVO = PublicationController.getController().createAndPublish(publicationVO, events, overrideVersionModifyer, this.getInfoGluePrincipal());
 		}
 
+        if(this.returnAddress != null && !this.returnAddress.equals(""))
+        {
+	        String arguments 	= "userSessionKey=" + userSessionKey + "&isAutomaticRedirect=false";
+	        String messageUrl 	= returnAddress + (returnAddress.indexOf("?") > -1 ? "&" : "?") + arguments;
+	        
+	        this.getResponse().sendRedirect(messageUrl);
+	        return NONE;
+        }
+        else
+        {
+        	return SUCCESS;
+        }
+        /*
 		if(this.returnAddress != null && !this.returnAddress.equals(""))
 		{
 			this.returnAddress = this.getResponse().encodeURL(returnAddress);
@@ -109,6 +124,7 @@ public class ChangeMultiSiteNodeVersionStatePublishAction extends InfoGlueAbstra
 		{
 	       	return "success";
 		}
+		*/
     }
         
     public java.lang.Integer getSiteNodeId()
@@ -203,5 +219,15 @@ public class ChangeMultiSiteNodeVersionStatePublishAction extends InfoGlueAbstra
 
 	public void setRecipientFilter(String recipientFilter) {
 		this.recipientFilter = recipientFilter;
+	}
+
+	public String getUserSessionKey()
+	{
+		return userSessionKey;
+	}
+
+	public void setUserSessionKey(String userSessionKey)
+	{
+		this.userSessionKey = userSessionKey;
 	}
 }

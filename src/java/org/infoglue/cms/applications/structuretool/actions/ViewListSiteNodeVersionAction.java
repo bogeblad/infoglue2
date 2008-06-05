@@ -32,6 +32,7 @@ import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
+import org.infoglue.cms.applications.databeans.LinkBean;
 import org.infoglue.cms.controllers.kernel.impl.simple.AccessRightController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeVersionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeVersionControllerProxy;
@@ -62,6 +63,8 @@ public class ViewListSiteNodeVersionAction extends InfoGlueAbstractAction
 	private Integer repositoryId;
 	private String returnAddress;
 	private boolean recurseSiteNodes = true;
+    private String originalAddress;
+   	private String userSessionKey;
 
 	protected String doExecute() throws Exception 
 	{
@@ -89,7 +92,19 @@ public class ViewListSiteNodeVersionAction extends InfoGlueAbstractAction
 
 	    return "success";
 	}
-	
+
+	public String doV3() throws Exception 
+	{
+		doExecute();
+		
+        userSessionKey = "" + System.currentTimeMillis();
+
+        setActionMessage(userSessionKey, "Publiceringen genomfördes korrekt. Fortsätt genom att välja något av alternativen nedan.");
+        addActionLink(userSessionKey, new LinkBean("currentPageUrl", "Tillbaka till sidan du utgick från", "Klicka här om du vill komma tillbaka till sidan där du startade flödet.", "Klicka här om du vill komma tillbaka till sidan där du startade flödet.", this.originalAddress, ""));
+
+	    return "successV3";
+	}
+
 
 	public Set getSiteNodeVersions()
 	{
@@ -155,5 +170,25 @@ public class ViewListSiteNodeVersionAction extends InfoGlueAbstractAction
 	public void setRecurseSiteNodes(boolean recurseSiteNodes) 
 	{
 		this.recurseSiteNodes = recurseSiteNodes;
+	}
+
+	public String getUserSessionKey()
+	{
+		return userSessionKey;
+	}
+
+	public void setUserSessionKey(String userSessionKey)
+	{
+		this.userSessionKey = userSessionKey;
+	}
+
+	public String getOriginalAddress()
+	{
+		return originalAddress;
+	}
+
+	public void setOriginalAddress(String originalAddress)
+	{
+		this.originalAddress = originalAddress;
 	}
 }

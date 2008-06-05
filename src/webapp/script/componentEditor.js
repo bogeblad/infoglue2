@@ -390,6 +390,19 @@ function getElementHeight(element)
 	}
 	return y;
 }
+function getElementWidth(element)
+{
+	var x;
+	if (element.innerWidth) // all except Explorer
+	{
+		x = element.innerWidth;
+	}
+	else if (document.body) // other Explorers
+	{
+		x = element.clientWidth;
+	}
+	return x;
+}
 
 function getWindowWidth()
 {
@@ -979,11 +992,21 @@ function editInline(repositoryId, selectedContentId, selectedLanguageId, directE
 				
 				var element = $(this).get(0);
 	
+				var totalWidth = $(this).parent().width();
+				//alert("width for " + $(this).get(0).id + " - " + totalWidth);
+				//alert("width for " + $(this).width());
+				//alert("width for " + $(this).parent().get(0).id + " - " + totalWidth);
+				//alert("width for " + $(this).parent().width());
+				//alert("width for " + $(this).width());
+				//alert("totalWidth " + totalWidth);
+				
 				var totalHeight = 100;
 				$("#attribute" + selectedContentId + attributeName + " > *").each(function(i){
 					totalHeight = totalHeight + getElementHeight( $(this).get(0) );
 				});
 				totalHeight = totalHeight * 1.3;
+				if(totalHeight < 300)
+					totalHeight = 300;
 				//alert("totalHeight: " + totalHeight);
 				
 				var span = $(this).get(0);
@@ -1004,6 +1027,8 @@ function editInline(repositoryId, selectedContentId, selectedLanguageId, directE
 					 oFCKeditor.Config['ToolbarStartExpanded'] = false ;
 					 oFCKeditor.ToolbarSet = "Basic";
 					 oFCKeditor.Height = totalHeight;
+					 if(totalWidth > 100)
+						oFCKeditor.Width = totalWidth;
 					 oFCKeditor.Value = plainAttribute;
 					 $this.html(oFCKeditor.CreateHtml());
 				   },

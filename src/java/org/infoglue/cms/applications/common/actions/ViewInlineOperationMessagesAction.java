@@ -92,7 +92,9 @@ public class ViewInlineOperationMessagesAction extends InfoGlueAbstractAction
 				logger.warn("You submitted a userSessionKey but there are no action links stored in the session variable\"" + userSessionKey + "_actionLinks\".");
 			}
 		}
-		
+
+		actionLinks.add(new LinkBean("closeDialog", "Stäng dialogen","Klicka här för att stänga dialogen.", "Klicka här för att stänga dialogen.", "javascript:parent.closeDialog();", ""));
+
 		//-----------------------------------------------------------
 		// Add any actionLinks submitted in the request
 		//-----------------------------------------------------------
@@ -132,8 +134,8 @@ public class ViewInlineOperationMessagesAction extends InfoGlueAbstractAction
     	if (message == null)
     	{
     		message = getActionMessage(userSessionKey);
-    		if(message == null)
-    			message = "Undefined";
+    		if(message == null || message.equals(""))
+    			message = "Operationen genomförd.";
     	}
     	
 		return message;
