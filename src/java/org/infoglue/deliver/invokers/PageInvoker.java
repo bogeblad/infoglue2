@@ -346,6 +346,12 @@ public abstract class PageInvoker
 				//this.deliveryContext.getHttpHeaders().put("Expires", new Date(new Date().getTime() + (600 * 1000)));
 			}
 		}
+		else
+		{
+			getResponse().setHeader("Cache-Control","no-cache"); 
+	    	getResponse().setHeader("Pragma","no-cache");
+	    	getResponse().setDateHeader ("Expires", 0);
+		}
 		//END
 			
 		//logger.info("ContentType:" + contentType);
