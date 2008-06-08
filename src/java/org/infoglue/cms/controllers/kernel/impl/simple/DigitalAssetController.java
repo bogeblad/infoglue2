@@ -904,7 +904,7 @@ public class DigitalAssetController extends BaseController
 		String filePath = CmsPropertyHandler.getDigitalAssetPath() + File.separator + folderName;
 		boolean ok = dumpDigitalAsset(digitalAsset, fileName, filePath);
 		File assetFile = new File(filePath + File.separator + fileName);
-		if(ok)
+		if(ok && assetFile.exists())
 		{
 			return new FileInputStream(assetFile);
 		}
