@@ -2184,7 +2184,7 @@ function showIGMenu(id, event)
 	if (rightedge < currentMenuDiv.offsetWidth)
 		clientX = (clientX - currentMenuDiv.offsetWidth);
 	
-	if (bottomedge < currentMenuDiv.offsetHeight)
+	if (bottomedge < currentMenuDiv.offsetHeight && (clientY - currentMenuDiv.offsetHeight > 0))
 		clientY = (clientY - currentMenuDiv.offsetHeight);
 		
 	currentMenuDiv.style.left 	= clientX + "px";
