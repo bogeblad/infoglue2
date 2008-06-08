@@ -38,8 +38,19 @@
 
 <script type="text/javascript">
 <!--
-   	function openInlineDiv(url) {
-   		tb_show('Redigera', url, 'Redigera');
+   	function openInlineDiv(url, height, width, modal) {
+		var windowHeight = getWindowHeight();
+   		//alert("windowHeight:" + windowHeight);
+   		if(windowHeight < height)
+   			height = windowHeight - 40;
+
+		var windowWidth = getWindowWidth();
+   		//alert("windowWidth:" + windowWidth);
+   		if(windowWidth < width)
+   			width = windowWidth - 60;
+   			
+   		var addition = "&KeepThis=true&TB_iframe=true&height=" + height + "&width=" + width + "&modal=true";
+   		tb_show('Redigera', url + addition, 'Redigera');
    		hideIGMenu();
    	}
 //-->
