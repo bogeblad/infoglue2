@@ -8,9 +8,10 @@
 <script language="JavaScript">
 <!--
 	$(document).ready(function(){
-		$("#tabsContainer > ul").tabs();
+		$("#tabsContainer > ul").tabs({ show:function() { resizeInlineTabDivs();} });
+		setTimeout("resizeInlineTabDivs()", 100);
 	});
-	
+		
 	var selectedAssetElement;
 	var contentId;
 		

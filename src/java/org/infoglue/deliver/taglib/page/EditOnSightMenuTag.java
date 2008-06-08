@@ -73,39 +73,39 @@ public class EditOnSightMenuTag extends ComponentLogicTag
 		    	String originalUrl = URLEncoder.encode(this.getController().getOriginalFullURL(), "iso-8859-1");
 		    	System.out.println("componentEditorUrl:" + componentEditorUrl);
 		    	
-		    	String metaDataUrl 			= componentEditorUrl + "ViewAndCreateContentForServiceBinding.action?siteNodeId=" + this.getController().getSiteNodeId() + "&repositoryId=" + this.getController().getSiteNode().getRepositoryId() + "&asiteNodeVersionId=2109&KeepThis=true&TB_iframe=true&height=700&width=750&modal=true";
-		    	String createSiteNodeUrl 	= componentEditorUrl + "CreateSiteNode!inputV3.action?repositoryId=" + this.getController().getSiteNode().getRepositoryId() + "&parentSiteNodeId=" + this.getController().getSiteNodeId() + "&languageId=" + this.getController().getLanguageId() + "&returnAddress=" + URLEncoder.encode(returnAddress, "utf-8") + "&originalAddress=" + URLEncoder.encode(this.getController().getCurrentPageUrl(), "utf-8") + "&KeepThis=true&TB_iframe=true&height=700&width=750&modal=true";
-		    	String contentVersionUrl 	= componentEditorUrl + "ViewContentVersion!standalone.action?contentId=" + this.contentId + "&languageId=" + getController().getLanguageId() + "&anchorName=contentVersionBlock&KeepThis=true&TB_iframe=true&height=700&width=750&modal=true";
-		    	String categoriesUrl 		= componentEditorUrl + "ViewContentVersion!standalone.action?contentId=" + this.contentId + "&languageId=" + getController().getLanguageId() + "&anchor=categoriesBlock&KeepThis=true&TB_iframe=true&height=700&width=750&modal=true";
-		    	String publishUrl 			= componentEditorUrl + "ViewListSiteNodeVersion!v3.action?siteNodeId=" + this.getController().getSiteNodeId() + "&repositoryId=" + this.getController().getSiteNode().getRepositoryId() + "&recurseSiteNodes=false&returnAddress=" + URLEncoder.encode(returnAddress, "utf-8") + "&originalAddress=" + URLEncoder.encode(this.getController().getCurrentPageUrl(), "utf-8") + "&KeepThis=true&TB_iframe=true&height=700&width=750&modal=true";
-		    	String notifyUrl 			= componentEditorUrl + "CreateEmail!inputChooseRecipientsV3.action?originalUrl=" + originalUrl + "&returnAddress=" + URLEncoder.encode(returnAddress, "utf-8") + "&KeepThis=true&TB_iframe=true&height=700&width=750&modal=true";
-		    	String subscriptionUrl 		= componentEditorUrl + "Subscriptions!input.action?interceptionPointCategory=Content&entityName=" + Content.class.getName() + "&entityId=" + this.contentId + "&extraParameters=" + this.contentId + "&returnAddress=" + URLEncoder.encode(returnAddress, "utf-8") + "&KeepThis=true&TB_iframe=true&height=700&width=750&modal=true";
-		    	String pageSubscriptionUrl 	= componentEditorUrl + "Subscriptions!input.action?interceptionPointCategory=SiteNodeVersion&entityName=" + SiteNode.class.getName() + "&entityId=" + this.getController().getSiteNodeId() + "&returnAddress=" + URLEncoder.encode(returnAddress, "utf-8") + "&KeepThis=true&TB_iframe=true&height=700&width=750&modal=true";
-		    	String newsFlowUrl 			= componentEditorUrl + "ViewMyDesktopToolStartPage!startWorkflow.action?workflowName=Skapa+nyhet&finalReturnAddress=" + URLEncoder.encode(returnAddress, "utf-8") + "&KeepThis=true&TB_iframe=true&height=700&width=750&modal=true";
+		    	String metaDataUrl 			= componentEditorUrl + "ViewAndCreateContentForServiceBinding.action?siteNodeId=" + this.getController().getSiteNodeId() + "&repositoryId=" + this.getController().getSiteNode().getRepositoryId() + "&asiteNodeVersionId=2109"; //&KeepThis=true&TB_iframe=true&height=700&width=750&modal=true";
+		    	String createSiteNodeUrl 	= componentEditorUrl + "CreateSiteNode!inputV3.action?repositoryId=" + this.getController().getSiteNode().getRepositoryId() + "&parentSiteNodeId=" + this.getController().getSiteNodeId() + "&languageId=" + this.getController().getLanguageId() + "&returnAddress=" + URLEncoder.encode(returnAddress, "utf-8") + "&originalAddress=" + URLEncoder.encode(this.getController().getCurrentPageUrl(), "utf-8"); // + "&KeepThis=true&TB_iframe=true&height=700&width=750&modal=true";
+		    	String contentVersionUrl 	= componentEditorUrl + "ViewContentVersion!standalone.action?contentId=" + this.contentId + "&languageId=" + getController().getLanguageId() + "&anchorName=contentVersionBlock"; //&KeepThis=true&TB_iframe=true&height=700&width=750&modal=true";
+		    	String categoriesUrl 		= componentEditorUrl + "ViewContentVersion!standalone.action?contentId=" + this.contentId + "&languageId=" + getController().getLanguageId() + "&anchor=categoriesBlock"; //&KeepThis=true&TB_iframe=true&height=700&width=750&modal=true";
+		    	String publishUrl 			= componentEditorUrl + "ViewListSiteNodeVersion!v3.action?siteNodeId=" + this.getController().getSiteNodeId() + "&repositoryId=" + this.getController().getSiteNode().getRepositoryId() + "&recurseSiteNodes=false&returnAddress=" + URLEncoder.encode(returnAddress, "utf-8") + "&originalAddress=" + URLEncoder.encode(this.getController().getCurrentPageUrl(), "utf-8"); // + "&KeepThis=true&TB_iframe=true&height=700&width=750&modal=true";
+		    	String notifyUrl 			= componentEditorUrl + "CreateEmail!inputChooseRecipientsV3.action?originalUrl=" + originalUrl + "&returnAddress=" + URLEncoder.encode(returnAddress, "utf-8") + ""; //"&KeepThis=true&TB_iframe=true&height=700&width=750&modal=true";
+		    	String subscriptionUrl 		= componentEditorUrl + "Subscriptions!input.action?interceptionPointCategory=Content&entityName=" + Content.class.getName() + "&entityId=" + this.contentId + "&extraParameters=" + this.contentId + "&returnAddress=" + URLEncoder.encode(returnAddress, "utf-8"); // + "&KeepThis=true&TB_iframe=true&height=700&width=750&modal=true";
+		    	String pageSubscriptionUrl 	= componentEditorUrl + "Subscriptions!input.action?interceptionPointCategory=SiteNodeVersion&entityName=" + SiteNode.class.getName() + "&entityId=" + this.getController().getSiteNodeId() + "&returnAddress=" + URLEncoder.encode(returnAddress, "utf-8"); // + "&KeepThis=true&TB_iframe=true&height=700&width=750&modal=true";
+		    	String newsFlowUrl 			= componentEditorUrl + "ViewMyDesktopToolStartPage!startWorkflow.action?workflowName=Skapa+nyhet&finalReturnAddress=" + URLEncoder.encode(returnAddress, "utf-8") + ""; //"&KeepThis=true&TB_iframe=true&height=700&width=750&modal=true";
 		    			    	
 		    	sb.append("<p id='igMenuButton" + getComponentId() + "'><a class='igButton' href=\"#\" onclick=\"showIGMenu('editOnSightDiv" + getComponentId() + "', event);\"><span class='igButtonOuterSpan'><span class='linkInfoGlueFunctions'>InfoGlue&nbsp;actions</span></span></a></p>");
 		    	
 		    	sb.append("<div id=\"editOnSightDiv" + getComponentId() + "\" class=\"editOnSightMenuDiv\" style=\"padding: 0px; margin: 0px; padding-top: 0; min-width: 240px; position: absolute; top: 20px; display: none; background-color: white; border: 1px solid #555;\">");
 
 		    	sb.append("    <ul class='editOnSightUL'>");
-		    	sb.append("        <li style='margin: 0px; margin-left: 4px; padding: 2px 0px 2px 2px; list-style-type:none;'><a href=\"javascript:openInlineDiv('" + metaDataUrl + "');\" class=\"editOnSightHref linkMetadata\">Ändra sidans metadata</a></li>");
-		    	sb.append("        <li style='margin: 0px; margin-left: 4px; padding: 2px 0px 2px 2px; list-style-type:none;'><a href=\"javascript:openInlineDiv('" + createSiteNodeUrl + "');\" class=\"editOnSightHref linkCreatePage\">Skapa undersida till nuvarande</a></li>");
+		    	sb.append("        <li style='margin: 0px; margin-left: 4px; padding: 2px 0px 2px 2px; list-style-type:none;'><a href=\"javascript:openInlineDiv('" + metaDataUrl + "', 700, 750, true);\" class=\"editOnSightHref linkMetadata\">Ändra sidans metadata</a></li>");
+		    	sb.append("        <li style='margin: 0px; margin-left: 4px; padding: 2px 0px 2px 2px; list-style-type:none;'><a href=\"javascript:openInlineDiv('" + createSiteNodeUrl + "', 700, 750, true);\" class=\"editOnSightHref linkCreatePage\">Skapa undersida till nuvarande</a></li>");
 
 		    	if(contentId != null)
 		    	{
 			    	sb.append("    <li style='margin: 0px; margin-left: 4px; padding: 2px 0px 2px 2px; list-style-type:none;'><a href=\"javascript:editInline(" + this.getController().getSiteNode().getRepositoryId() + ", " + this.contentId + ", " + this.getController().getLanguageId() + ", true);\" class=\"editOnSightHref linkEditArticle\">Redigera artikeln i sidan</a></li>");
-			    	sb.append("    <li style='margin: 0px; margin-left: 4px; padding: 2px 0px 2px 2px; list-style-type:none;'><a href=\"javascript:openInlineDiv('" + contentVersionUrl + "');\" class=\"editOnSightHref linkEditArticle\">Redigera artikel</a></li>");
-			    	sb.append("    <li style='margin: 0px; margin-left: 4px; padding: 2px 0px 2px 2px; list-style-type:none;'><a href=\"javascript:openInlineDiv('" + categoriesUrl + "');\" class=\"editOnSightHref linkCategorizeArticle\">Kategorisera artikel</a></li>");
+			    	sb.append("    <li style='margin: 0px; margin-left: 4px; padding: 2px 0px 2px 2px; list-style-type:none;'><a href=\"javascript:openInlineDiv('" + contentVersionUrl + "', 700, 750, true);\" class=\"editOnSightHref linkEditArticle\">Redigera artikel</a></li>");
+			    	sb.append("    <li style='margin: 0px; margin-left: 4px; padding: 2px 0px 2px 2px; list-style-type:none;'><a href=\"javascript:openInlineDiv('" + categoriesUrl + "', 700, 750, true);\" class=\"editOnSightHref linkCategorizeArticle\">Kategorisera artikel</a></li>");
 		    	}
-			    sb.append("        <li style='margin: 0px; margin-left: 4px; padding: 2px 0px 2px 2px; list-style-type:none;'><a href=\"javascript:openInlineDiv('" + publishUrl + "');\" class=\"editOnSightHref linkPublish\">Publicera</a></li>");
-		    	sb.append("        <li style='margin: 0px; margin-left: 4px; padding: 2px 0px 2px 2px; list-style-type:none;'><a href=\"javascript:openInlineDiv('" + notifyUrl + "');\" class=\"editOnSightHref linkNotify\">Notifiera</a></li>");
+			    sb.append("        <li style='margin: 0px; margin-left: 4px; padding: 2px 0px 2px 2px; list-style-type:none;'><a href=\"javascript:openInlineDiv('" + publishUrl + "', 700, 750, true);\" class=\"editOnSightHref linkPublish\">Publicera</a></li>");
+		    	sb.append("        <li style='margin: 0px; margin-left: 4px; padding: 2px 0px 2px 2px; list-style-type:none;'><a href=\"javascript:openInlineDiv('" + notifyUrl + "', 700, 750, true);\" class=\"editOnSightHref linkNotify\">Notifiera</a></li>");
 		    	
 		    	if(contentId != null)
 		    	{
-		    		sb.append("    <li style='margin: 0px; margin-left: 4px; padding: 2px 0px 2px 2px; list-style-type:none;'><a href=\"javascript:openInlineDiv('" + subscriptionUrl + "');\" class=\"editOnSightHref linkTakeContent\">Prenumerera på innehållet</a></li>");
+		    		sb.append("    <li style='margin: 0px; margin-left: 4px; padding: 2px 0px 2px 2px; list-style-type:none;'><a href=\"javascript:openInlineDiv('" + subscriptionUrl + "', 700, 750, true);\" class=\"editOnSightHref linkTakeContent\">Prenumerera på innehållet</a></li>");
 		    	}
 		    	
-		    	sb.append("        <li style='margin: 0px; margin-left: 4px; padding: 2px 0px 2px 2px; list-style-type:none;'><a href=\"javascript:openInlineDiv('" + pageSubscriptionUrl + "');\" class=\"editOnSightHref linkTakePage\">Prenumerera på sidan</a></li>");
+		    	sb.append("        <li style='margin: 0px; margin-left: 4px; padding: 2px 0px 2px 2px; list-style-type:none;'><a href=\"javascript:openInlineDiv('" + pageSubscriptionUrl + "', 700, 750, true);\" class=\"editOnSightHref linkTakePage\">Prenumerera på sidan</a></li>");
 		    			    	
 		    	ContentVersionVO contentVersionVO = this.getController().getContentVersion(contentId, this.getController().getLanguageId(), true);
 		    	if(contentVersionVO != null)
@@ -119,16 +119,16 @@ public class EditOnSightMenuTag extends ComponentLogicTag
 			    		LanguageVO languageVO = (LanguageVO)languagesIterator.next();
 			    		if(!contentVersionVO.getLanguageId().equals(languageVO.getId()))
 			    		{
-				    		String translateUrl = componentEditorUrl + "ViewContentVersion!standalone.action?contentId=" + this.contentId + "&languageId=" + languageVO.getLanguageId() + "&anchorName=contentVersionBlock&translate=true&fromLanguageId=" + contentVersionVO.getLanguageId() + "&toLanguageId=" + languageVO.getId() + "&KeepThis=true&TB_iframe=true&height=700&width=1000&modal=true";
+				    		String translateUrl = componentEditorUrl + "ViewContentVersion!standalone.action?contentId=" + this.contentId + "&languageId=" + languageVO.getLanguageId() + "&anchorName=contentVersionBlock&translate=true&fromLanguageId=" + contentVersionVO.getLanguageId() + "&toLanguageId=" + languageVO.getId(); // + "&KeepThis=true&TB_iframe=true&height=700&width=1000&modal=true";
 							
 					    	sb.append("	<li style='margin: 0px; margin-left: 4px; padding: 2px 0px 2px 2px; list-style-type:none;'>");
-					    	sb.append("    	<a href=\"javascript:openInlineDiv('" + translateUrl + "');\" class=\"editOnSightHref linkTranslate\">Översätt till &quot;" + languageVO.getLocalizedDisplayLanguage() + "&quot;</a>");
+					    	sb.append("    	<a href=\"javascript:openInlineDiv('" + translateUrl + "', 700, 1000, true);\" class=\"editOnSightHref linkTranslate\">Översätt till &quot;" + languageVO.getLocalizedDisplayLanguage() + "&quot;</a>");
 					    	sb.append(" </li>");
 			    		}
 			    	}
 		    	}
 		    	
-		    	sb.append("        <li style='margin: 0px; margin-left: 4px; padding: 2px 0px 2px 2px; list-style-type:none;'><a href=\"javascript:openInlineDiv('" + newsFlowUrl + "');\" class=\"editOnSightHref linkCreateNews\">Skapa nyhet om denna artikel</a></li>");
+		    	sb.append("        <li style='margin: 0px; margin-left: 4px; padding: 2px 0px 2px 2px; list-style-type:none;'><a href=\"javascript:openInlineDiv('" + newsFlowUrl + "', 700, 750, true);\" class=\"editOnSightHref linkCreateNews\">Skapa nyhet om denna artikel</a></li>");
 		    	sb.append("    </ul>");
 
 		    	sb.append("</div>");

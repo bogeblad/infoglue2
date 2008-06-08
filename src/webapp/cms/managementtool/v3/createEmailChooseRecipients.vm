@@ -18,7 +18,7 @@
 <script type="text/javascript">
 	<!--
 		$(document).ready(function(){
-		$("#tabsContainer > ul").tabs();
+		$("#tabsContainer > ul").tabs({ show:function() { resizeInlineTabDivs();} });
 		});
 		
 		var xmlHttp;
@@ -51,7 +51,7 @@
 		function performAjaxSearch()
 		{
 			var query = document.editForm.elements["query"].value;
-			var queryUrl = "http://localhost:8080/infoglueCMS/ViewListSystemUser!userListSearch.action?searchString=" + query;
+			var queryUrl = "ViewListSystemUser!userListSearch.action?searchString=" + query;
 			makeAjaxCall(queryUrl, "searchResultDiv");			
 		}
 		

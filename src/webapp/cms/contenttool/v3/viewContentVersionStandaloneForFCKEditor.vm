@@ -257,21 +257,21 @@
   	$(document).ready(function(){
     	#if($anchor)
 	    	#if($!anchor == "contentVersionBlock")
-		    	$("#tabsContainer > ul").tabs({ selected: 0 });
+		    	$("#tabsContainer > ul").tabs({ selected: 0, show:function() { resizeInlineTabDivs();} });
 		    #elseif($!anchor == "categoriesBlock")
-		    	$("#tabsContainer > ul").tabs({ selected: 1 });
+		    	$("#tabsContainer > ul").tabs({ selected: 1, show:function() { resizeInlineTabDivs();} });
 		    #elseif($!anchor == "digitalAssetsBlock")
-		    	$("#tabsContainer > ul").tabs({ selected: 2 });
+		    	$("#tabsContainer > ul").tabs({ selected: 2, show:function() { resizeInlineTabDivs();} });
 		    #else 
-	  			$("#tabsContainer > ul").tabs();
+	  			$("#tabsContainer > ul").tabs({ show:function() { resizeInlineTabDivs();} });
 		    	alert("Anchor: $anchor");
 	  		#end
 	  	#else
-	  		$("#tabsContainer > ul").tabs();
+	  		$("#tabsContainer > ul").tabs({ show:function() { resizeInlineTabDivs();} });
 		#end	
 
 		#if($translate)
-		  	$("#otherLanguageTabsContainer > ul").tabs();
+		  	$("#otherLanguageTabsContainer > ul").tabs({ show:function() { resizeInlineTabDivs();} });
 		#end
 		
 		generateWYSIWYGS();
