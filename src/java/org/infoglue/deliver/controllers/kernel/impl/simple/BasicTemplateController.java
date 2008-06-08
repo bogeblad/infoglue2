@@ -4374,6 +4374,15 @@ public class BasicTemplateController implements TemplateController
 	}
 
 	/**
+	 * This method returns the configured mailserver.
+	 */
+	
+	public String getSmtpPort()
+	{
+		return CmsPropertyHandler.getMailSmtpPort();
+	}
+
+	/**
 	 * This method deliveres a String with the URL to the page asked for.
 	 * As the siteNode can have multiple bindings the method requires a bindingName 
 	 * which refers to the AvailableServiceBinding.name-attribute. This method also allows the user

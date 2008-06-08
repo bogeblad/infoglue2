@@ -194,10 +194,13 @@ public class MailService
 			*/
 			HtmlEmail email = new HtmlEmail();
 		    String mailServer = CmsPropertyHandler.getMailSmtpHost();
+		    String mailPort = CmsPropertyHandler.getMailSmtpPort();
 		    String systemEmailSender = CmsPropertyHandler.getSystemEmailSender();
 		    
 		    email.setHostName(mailServer);
-
+		    if(mailPort != null && !mailPort.equals(""))
+		    	email.setSmtpPort(Integer.parseInt(mailPort));
+		    
 		  	boolean needsAuthentication = false;
 		  	try 
 		  	{
@@ -225,6 +228,7 @@ public class MailService
 		    	logger.info("to:" + to);
 		    	logger.info("from:" + from);
 		    	logger.info("mailServer:" + mailServer);
+		    	logger.info("mailPort:" + mailPort);
 		    	logger.info("cc:" + cc);
 		    	logger.info("bcc:" + bcc);
 		    	logger.info("subject:" + subject);
@@ -267,10 +271,13 @@ public class MailService
 		{
 		    SimpleEmail email = new SimpleEmail();
 		    String mailServer = CmsPropertyHandler.getMailSmtpHost();
+		    String mailPort = CmsPropertyHandler.getMailSmtpPort();
 		    String systemEmailSender = CmsPropertyHandler.getSystemEmailSender();
 		    
 		    email.setHostName(mailServer);
-
+		    if(mailPort != null && !mailPort.equals(""))
+		    	email.setSmtpPort(Integer.parseInt(mailPort));
+		    
 		  	boolean needsAuthentication = false;
 		  	try 
 		  	{

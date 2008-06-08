@@ -174,6 +174,7 @@ public class ViewServerNodePropertiesAction extends InfoGluePropertiesAbstractAc
 	    populate(ps, "enablePortal");
 	    populate(ps, "portletBase");
 	    populate(ps, "mail.smtp.host");
+	    populate(ps, "mail.smtp.port");
 	    populate(ps, "mail.smtp.auth");
 	    populate(ps, "mail.smtp.user");
 	    populate(ps, "mail.smtp.password");

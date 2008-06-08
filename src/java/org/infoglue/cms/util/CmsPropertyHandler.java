@@ -1193,6 +1193,11 @@ public class CmsPropertyHandler
 	    return getServerNodeProperty("mail.smtp.host", true);
 	}
 
+	public static String getMailSmtpPort()
+	{
+	    return getServerNodeProperty("mail.smtp.port", true);
+	}
+
 	public static String getMailSmtpAuth()
 	{
 	    return getServerNodeProperty("mail.smtp.auth", true);

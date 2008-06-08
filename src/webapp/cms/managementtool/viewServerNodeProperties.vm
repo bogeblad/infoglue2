@@ -316,6 +316,7 @@
 		<fieldset>
 			<legend>$ui.getString("entity.ServerNode.property.mailSettings.label")</legend>
 			#editPropertyFieldCSS("ServerNode.property.mail.smtp.host" "mail.smtp.host" "$this.getPropertyValue('mail.smtp.host')" "51" "$!serverNodeId")
+			#editPropertyFieldCSS("ServerNode.property.mail.smtp.port" "mail.smtp.port" "$this.getPropertyValue('mail.smtp.port')" "51" "$!serverNodeId")
 			#yesNoDropDownWithInheritCSS("ServerNode.property.mail.smtp.auth" "mail.smtp.auth" "$this.getPropertyValue('mail.smtp.auth')")
 			#editPropertyFieldCSS("ServerNode.property.mail.smtp.user" "mail.smtp.user" "$this.getPropertyValue('mail.smtp.user')" "51" "$!serverNodeId")
 			#editPropertyFieldCSS("ServerNode.property.mail.smtp.password" "mail.smtp.password" "$this.getPropertyValue('mail.smtp.password')" "51" "$!serverNodeId")
