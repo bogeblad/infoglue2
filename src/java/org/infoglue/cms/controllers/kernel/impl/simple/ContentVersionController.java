@@ -1437,21 +1437,22 @@ public class ContentVersionController extends BaseController
 		    DigitalAssetVO digitalAssetVO = digitalAsset.getValueObject();
 		    
 		    InputStream is = DigitalAssetController.getController().getAssetInputStream(digitalAsset, true);
-		    synchronized (is)
+	
+		    if(is == null && !allowBrokenAssets)
+		    	throw new ConstraintException("DigitalAsset.assetBlob", "3308", "Broken asset found on content '" + originalContentVersion.getValueObject().getContentName() + "' with id " + originalContentVersion.getValueObject().getContentId());
+		    
+	        try
 		    {
-			    try
+	        	synchronized (is)
 			    {
-				    if(is == null && !allowBrokenAssets)
-				    	throw new ConstraintException("DigitalAsset.assetBlob", "3308", "Broken asset found on content '" + originalContentVersion.getValueObject().getContentName() + "' with id " + originalContentVersion.getValueObject().getContentId());
-				    	
 				    DigitalAssetController.create(digitalAssetVO, is, newContentVersion, db);
-			    }
-			    finally
-			    {
-			    	if(is != null)
-			    		is.close();
-			    }
-			}
+				}
+		    }
+		    finally
+		    {
+		    	if(is != null)
+		    		is.close();
+		    }
 			logger.info("digitalAssets:" + digitalAssets.size());
 		}
 		//newContentVersion.setDigitalAssets(digitalAssets);
