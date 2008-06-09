@@ -1448,6 +1448,10 @@ public class ContentVersionController extends BaseController
 				    DigitalAssetController.create(digitalAssetVO, is, newContentVersion, db);
 				}
 		    }
+	        catch (Exception e) 
+	        {
+				e.printStackTrace();
+			}
 		    finally
 		    {
 		    	if(is != null)
