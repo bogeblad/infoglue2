@@ -93,7 +93,7 @@ public class ViewInlineOperationMessagesAction extends InfoGlueAbstractAction
 			}
 		}
 
-		actionLinks.add(new LinkBean("closeDialog", "Stäng dialogen","Klicka här för att stänga dialogen.", "Klicka här för att stänga dialogen.", "javascript:parent.closeDialog();", ""));
+		actionLinks.add(new LinkBean("closeDialog", "Stäng dialogen","Klicka här för att stänga dialogen.", "Klicka här för att stänga dialogen.", "javascript:parent.closeDialog();", true, ""));
 
 		//-----------------------------------------------------------
 		// Add any actionLinks submitted in the request
@@ -121,7 +121,11 @@ public class ViewInlineOperationMessagesAction extends InfoGlueAbstractAction
     			if (values.length > 4) attr5	= values[4]; 
     			if (values.length > 5) attr6	= values[5];
     			
-    			LinkBean myLinkBean 			= new LinkBean(attr1, attr2, attr3, attr4, attr5, attr6);
+    			boolean isJavascriptLink = false;
+    			if(attr5.indexOf("javascript:") > -1)
+    				isJavascriptLink = true;
+    			
+    			LinkBean myLinkBean 			= new LinkBean(attr1, attr2, attr3, attr4, attr5, isJavascriptLink, attr6);
     			actionLinks.add(myLinkBean);
     		}
 		}

@@ -56,9 +56,11 @@ public class CreateEmailAction extends InfoGlueAbstractAction
 	private String subject;
 	private String message;
 	private String extraText;
+	private String extraTextProperty;
 	
 	private String errorMessage = "";
 	private String returnAddress;
+	private String originalUrl;
    	private String userSessionKey;
 
     public String doExecute() throws Exception
@@ -176,7 +178,9 @@ public class CreateEmailAction extends InfoGlueAbstractAction
     
     public String doExecuteV3() throws Exception
     {
+    	VisualFormatter ui = new VisualFormatter();
     	extraText 	= getRequest().getParameter("extraText");
+    	extraTextProperty 	= getRequest().getParameter("extraTextProperty");
     	
     	if(subject == null || subject.length() == 0 || message == null || message.length() == 0)
     	{
@@ -199,24 +203,37 @@ public class CreateEmailAction extends InfoGlueAbstractAction
 	        if(contentType == null || contentType.length() == 0)
 	            contentType = "text/html";
 
+	        System.out.println("message0:" + message);
+	        
 		    if(contentType.equalsIgnoreCase("text/html"))
 		    {
-		    	VisualFormatter ui = new VisualFormatter();
 		    	message = ui.escapeHTMLforXMLService(message);
+		        System.out.println("message0.1:" + message);
 				message = "<div>" + message.replaceAll("\n", "<br/>\n") + "</div>";
+		        System.out.println("message0.2:" + message);
 		    }
+
+	        System.out.println("message1:" + message);
+	        
+	        if(extraText != null && !extraText.equals(""))
+	        {
+	        	message += "<br/>";
+	        	message += extraText;		    		
+	        }
+	        
+		    if(extraTextProperty != null && !extraTextProperty.equals(""))
+		    	message += getLocalizedString(getLocale(), extraTextProperty, originalUrl);
+
+		    System.out.println("message:" + message);
 		    
-		    message += "<br/>";
-		    message += extraText;		    		
-			
-			//MailServiceFactory.getService().sendEmail(from, from, recipients, subject, message, "utf-8");
+			MailServiceFactory.getService().sendEmail(from, from, recipients, subject, message, "utf-8");
     	}
     	
         System.out.println();
         System.out.println("returnAddress:" + this.returnAddress);
         if(this.returnAddress != null && !this.returnAddress.equals(""))
         {
-	        String arguments = "isAutomaticRedirect=false&message=Mailetskickat!&actionLinks=link1,Länk 1,Testlänk,Det här är en länk till CG-channel,http://www.cgchannel.com,http://www.iconarchive.com/icons/zakar/shining-z/Casque-SZ-24x24.png;link1,Länk Lala,Testlänk 2,Det här är en länk till Silo-forumet,http://www.silo3d.com/forum/,http://www.iconarchive.com/icons/zakar/shining-z/Deamontools-SZ-24x24.png";
+	        String arguments = "userSessionKey=" + userSessionKey + "&isAutomaticRedirect=false";
 	        String messageUrl = returnAddress + (returnAddress.indexOf("?") > -1 ? "&" : "?") + arguments;
 	        
 	        System.out.println("messageUrl:" + messageUrl);
@@ -238,9 +255,9 @@ public class CreateEmailAction extends InfoGlueAbstractAction
     	
         userSessionKey = "" + System.currentTimeMillis();
         System.out.println("userSessionKey input:" + userSessionKey);
-
-        setActionMessage(userSessionKey, "Notifiering skickad. Fortsätt genom att välja något av alternativen nedan.");
-        addActionLink(userSessionKey, new LinkBean("currentPageUrl", "Tillbaka till sidan du utgick från", "Klicka här om du vill komma tillbaka till sidan där du startade flödet.", "Klicka här om du vill komma tillbaka till sidan där du startade flödet.", "javascript:tb_close();", ""));
+                
+        setActionMessage(userSessionKey, "Notifiering skickad.");
+        //addActionLink(userSessionKey, new LinkBean("currentPageUrl", "Tillbaka till sidan du utgick från", "Klicka här om du vill komma tillbaka till sidan där du startade flödet.", "Klicka här om du vill komma tillbaka till sidan där du startade flödet.", "javascript:tb_close();", ""));
     	
     	return "inputChooseRecipientsV3";
     }
@@ -415,6 +432,26 @@ public class CreateEmailAction extends InfoGlueAbstractAction
 	public void setUserSessionKey(String userSessionKey)
 	{
 		this.userSessionKey = userSessionKey;
+	}
+
+	public String getOriginalUrl()
+	{
+		return originalUrl;
+	}
+
+	public void setOriginalUrl(String originalUrl)
+	{
+		this.originalUrl = originalUrl;
+	}
+
+	public String getExtraTextProperty()
+	{
+		return extraTextProperty;
+	}
+
+	public void setExtraTextProperty(String extraTextProperty)
+	{
+		this.extraTextProperty = extraTextProperty;
 	}
 
 }

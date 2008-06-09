@@ -100,7 +100,7 @@ public class ViewListSiteNodeVersionAction extends InfoGlueAbstractAction
         userSessionKey = "" + System.currentTimeMillis();
 
         setActionMessage(userSessionKey, "Publiceringen genomfördes korrekt. Fortsätt genom att välja något av alternativen nedan.");
-        addActionLink(userSessionKey, new LinkBean("currentPageUrl", "Tillbaka till sidan du utgick från", "Klicka här om du vill komma tillbaka till sidan där du startade flödet.", "Klicka här om du vill komma tillbaka till sidan där du startade flödet.", this.originalAddress, ""));
+        addActionLink(userSessionKey, new LinkBean("currentPageUrl", "Tillbaka till sidan du utgick från", "Klicka här om du vill komma tillbaka till sidan där du startade flödet.", "Klicka här om du vill komma tillbaka till sidan där du startade flödet.", this.originalAddress, false, ""));
 
 	    return "successV3";
 	}

@@ -305,7 +305,7 @@ public class CreateSiteNodeAction extends InfoGlueAbstractAction
             commitTransaction(db);
 
             System.out.println("userSessionKey:" + userSessionKey + " - " + newSiteNodeVO.getId());
-            addActionLink(userSessionKey, new LinkBean("newPageUrl", "Direkt till sidan du skapade","Klicka här om du vill komma direkt till sidan du just startat.", "Klicka här om du vill komma direkt till sidan du just startat.", getDecoratedPageUrl(newSiteNodeVO.getId()), ""));
+            addActionLink(userSessionKey, new LinkBean("newPageUrl", "Direkt till sidan du skapade","Klicka här om du vill komma direkt till sidan du just startat.", "Klicka här om du vill komma direkt till sidan du just startat.", getDecoratedPageUrl(newSiteNodeVO.getId()), false, ""));
         }
         catch(Exception e)
         {
@@ -344,7 +344,7 @@ public class CreateSiteNodeAction extends InfoGlueAbstractAction
 		parentSiteNodeVO = SiteNodeControllerProxy.getController().getSiteNodeVOWithId(parentSiteNodeId);
 
         setActionMessage(userSessionKey, "Sidan skapades korrekt under &quot;" + parentSiteNodeVO.getName() + "&quot;. Fortsätt genom att välja något av alternativen nedan.");
-        addActionLink(userSessionKey, new LinkBean("currentPageUrl", "Tillbaka till sidan du utgick från", "Klicka här om du vill komma tillbaka till sidan där du startade flödet.", "Klicka här om du vill komma tillbaka till sidan där du startade flödet.", this.originalAddress, ""));
+        addActionLink(userSessionKey, new LinkBean("currentPageUrl", "Tillbaka till sidan du utgick från", "Klicka här om du vill komma tillbaka till sidan där du startade flödet.", "Klicka här om du vill komma tillbaka till sidan där du startade flödet.", this.originalAddress, false, ""));
 
 		return "inputV3";
     }
