@@ -1024,7 +1024,7 @@ function editInline(repositoryId, selectedContentId, selectedLanguageId, directE
 					 var oFCKeditor = new FCKeditor($this.get(0).id);
 					 oFCKeditor.BasePath = "" + componentEditorUrl + "applications/FCKEditor/" ;
 					 oFCKeditor.Config["CustomConfigurationsPath"] = "" + componentEditorUrl + "WYSIWYGProperties.action?" + parameterString;
-					 oFCKeditor.Config['ToolbarStartExpanded'] = false ;
+					 //oFCKeditor.Config['ToolbarStartExpanded'] = false ;
 					 oFCKeditor.ToolbarSet = "Basic";
 					 oFCKeditor.Height = totalHeight;
 					 if(totalWidth > 100)

@@ -964,7 +964,7 @@ function editInline(repositoryId)
 				 var oFCKeditor = new FCKeditor("attribute" + selectedContentId + selectedAttributeName);
 				 oFCKeditor.BasePath = "" + componentEditorUrl + "applications/FCKEditor/" ;
 				 oFCKeditor.Config["CustomConfigurationsPath"] = "" + componentEditorUrl + "WYSIWYGProperties.action?" + parameterString;
-				 oFCKeditor.Config['ToolbarStartExpanded'] = false ;
+				 //oFCKeditor.Config['ToolbarStartExpanded'] = false ;
 				 oFCKeditor.ToolbarSet = "Basic";
 				 oFCKeditor.Height = totalHeight;
 				 oFCKeditor.Value = plainAttribute;
