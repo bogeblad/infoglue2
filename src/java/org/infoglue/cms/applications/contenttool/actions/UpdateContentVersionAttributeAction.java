@@ -133,7 +133,7 @@ public class UpdateContentVersionAttributeAction extends ViewContentVersionActio
 			System.out.println("Waiting for previous thread..");
 			try
 			{
-				Thread.sleep(10);
+				Thread.sleep(50);
 			} 
 			catch (Exception e)
 			{
@@ -230,9 +230,9 @@ public class UpdateContentVersionAttributeAction extends ViewContentVersionActio
 			this.getResponse().setContentType("text/plain");
 	        this.getResponse().getWriter().println(attributeValue);
 		}
-		catch (Exception e) 
+		catch (Throwable t) 
 		{
-			e.printStackTrace();
+			t.printStackTrace();
 			return ERROR;
 		}
 		
