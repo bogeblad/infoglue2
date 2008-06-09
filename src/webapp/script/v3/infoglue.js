@@ -55,14 +55,14 @@ function resizeInlineTabDivs()
 {
 	var dimensionsWidth = $(window).width();
 	var dimensionsHeight = $(window).height();
-  		if(dimensionsWidth != 0)
-  		{
+  	if(dimensionsWidth != 0)
+  	{
 		$(".inlineTabDiv").css("height", dimensionsHeight - 160);
 		$(".inlineTabDiv").css("width", dimensionsWidth - 30);
 	}
 	else
 	{
-		setTimeout("resizeDivs()", 100);
+		setTimeout("resizeInlineTabDivs()", 100);
 	}
 }
 
