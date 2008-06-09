@@ -257,7 +257,14 @@ public abstract class WebworkAbstractAction implements Action, ServletRequestAwa
 
     	return stringManager.getString(key);
   	}
-  
+
+  	public String getLocalizedString(Locale locale, String key, Object arg1) 
+  	{
+    	StringManager stringManager = StringManagerFactory.getPresentationStringManager("org.infoglue.cms.applications", locale);
+
+    	return stringManager.getString(key, arg1);
+  	}
+
    /**
    	*
    	*/

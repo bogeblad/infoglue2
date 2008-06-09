@@ -15,8 +15,10 @@
 
 	<form name="editForm" method="POST" action="CreateEmail!executeV3.action">
 		<input type="hidden" name="recipients" value="$usersAddresses"/>
-		<input type="hidden" name="extraText" value="$extraText"/>
-		<input type="hidden" name="returnAddress" value="$returnAddress"/>
+		<input type="hidden" name="extraText" value="$!extraText"/>
+		<input type="hidden" name="extraTextProperty" value="$!extraTextProperty"/>
+		<input type="hidden" name="returnAddress" value="$!returnAddress"/>
+		<input type="hidden" name="originalUrl" value="$!originalUrl"/>
 		<input type="hidden" name="userSessionKey" value="$userSessionKey"/>
 		
 		<div style="clear: both;"></div>
