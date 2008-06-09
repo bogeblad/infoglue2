@@ -63,7 +63,12 @@ public class ToolbarController
 			List<ToolbarButton> toolbarButtons = new ArrayList<ToolbarButton>();
 	
 			toolbarButtons.addAll(getHelpButton());
-			toolbarButtons.addAll(getWindowCloseButton());
+			
+			if(toolbarKey.equalsIgnoreCase("tool.common.globalSubscriptions.header") || 
+			   toolbarKey.equalsIgnoreCase("tool.managementtool.mysettings.header"))
+				toolbarButtons.addAll(getWindowCloseButton());
+			else
+				toolbarButtons.addAll(getDialogCloseButton());
 
 			return toolbarButtons;
 		}
@@ -1130,6 +1135,20 @@ public class ToolbarController
 	}
 
 	private List<ToolbarButton> getWindowCloseButton() throws Exception
+	{
+		List<ToolbarButton> buttons = new ArrayList<ToolbarButton>();
+
+		buttons.add(new ToolbarButton("exitButton",
+									  getLocalizedString(locale, "tool.common.closeWindowButton.label"), 
+									  getLocalizedString(locale, "tool.common.closeWindowButton.title"),
+									  "window.close();",
+				  					  "images/v3/closeWindowIcon.gif",
+				  					  "right",
+				  					  true));
+		return buttons;
+	}
+
+	private List<ToolbarButton> getDialogCloseButton() throws Exception
 	{
 		List<ToolbarButton> buttons = new ArrayList<ToolbarButton>();
 
