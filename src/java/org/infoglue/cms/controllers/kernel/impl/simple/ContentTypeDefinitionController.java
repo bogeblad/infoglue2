@@ -824,6 +824,7 @@ public class ContentTypeDefinitionController extends BaseController
 					addParameterElement(params, "height", "0", "150");
 					addParameterElement(params, "enableWYSIWYG", "0", "false");
 					addParameterElement(params, "WYSIWYGToolbar", "0", "Default");
+					addParameterElement(params, "WYSIWYGExtraConfig", "0", "");
 					addParameterElement(params, "enableTemplateEditor", "0", "false");
 					addParameterElement(params, "enableFormEditor", "0", "false");
 					addParameterElement(params, "enableContentRelationEditor", "0", "false");
@@ -1056,6 +1057,7 @@ public class ContentTypeDefinitionController extends BaseController
 										addParameterElement(paramsElement, "height", "0", "150");
 										addParameterElement(paramsElement, "enableWYSIWYG", "0", "false");
 										addParameterElement(paramsElement, "WYSIWYGToolbar", "0", "Default");
+										addParameterElement(paramsElement, "WYSIWYGExtraConfig", "0", "");
 										addParameterElement(paramsElement, "enableTemplateEditor", "0", "false");
 										addParameterElement(paramsElement, "enableFormEditor", "0", "false");
 										addParameterElement(paramsElement, "enableContentRelationEditor", "0", "false");
@@ -1082,6 +1084,7 @@ public class ContentTypeDefinitionController extends BaseController
 										addParameterElement(paramsElement, "height", "0", "150");
 										addParameterElement(paramsElement, "enableWYSIWYG", "0", "false");
 										addParameterElement(paramsElement, "WYSIWYGToolbar", "0", "Default");
+										addParameterElement(paramsElement, "WYSIWYGExtraConfig", "0", "");
 										addParameterElement(paramsElement, "enableTemplateEditor", "0", "false");
 										addParameterElement(paramsElement, "enableFormEditor", "0", "false");
 										addParameterElement(paramsElement, "enableContentRelationEditor", "0", "false");
@@ -1113,6 +1116,7 @@ public class ContentTypeDefinitionController extends BaseController
 									addParameterElement(paramsElement, "height", "0", "150");
 									addParameterElement(paramsElement, "enableWYSIWYG", "0", "false");
 									addParameterElement(paramsElement, "WYSIWYGToolbar", "0", "Default");
+									addParameterElement(paramsElement, "WYSIWYGExtraConfig", "0", "");
 									addParameterElement(paramsElement, "enableTemplateEditor", "0", "false");
 									addParameterElement(paramsElement, "enableFormEditor", "0", "false");
 									addParameterElement(paramsElement, "enableContentRelationEditor", "0", "false");
@@ -1146,6 +1150,7 @@ public class ContentTypeDefinitionController extends BaseController
 								addParameterElement(paramsElement, "height", "0", "150");
 								addParameterElement(paramsElement, "enableWYSIWYG", "0", "false");
 								addParameterElement(paramsElement, "WYSIWYGToolbar", "0", "Default");
+								addParameterElement(paramsElement, "WYSIWYGExtraConfig", "0", "");
 								addParameterElement(paramsElement, "enableTemplateEditor", "0", "false");
 								addParameterElement(paramsElement, "enableFormEditor", "0", "false");
 								addParameterElement(paramsElement, "enableContentRelationEditor", "0", "false");
@@ -1192,6 +1197,7 @@ public class ContentTypeDefinitionController extends BaseController
 										addParameterElementIfNotExists(paramsElement, "height", "0", "150");
 										addParameterElementIfNotExists(paramsElement, "enableWYSIWYG", "0", "false");
 										addParameterElementIfNotExists(paramsElement, "WYSIWYGToolbar", "0", "Default");
+										addParameterElementIfNotExists(paramsElement, "WYSIWYGExtraConfig", "0", "");
 										addParameterElementIfNotExists(paramsElement, "enableTemplateEditor", "0", "false");
 										addParameterElementIfNotExists(paramsElement, "enableFormEditor", "0", "false");
 										addParameterElementIfNotExists(paramsElement, "enableContentRelationEditor", "0", "false");
@@ -1324,6 +1330,40 @@ public class ContentTypeDefinitionController extends BaseController
 									Element paramsElement = (Element)paramsNodeList.item(0);
 
 									addParameterElementIfNotExists(paramsElement, "WYSIWYGToolbar", "0", "Default");
+									addParameterElementIfNotExists(paramsElement, "WYSIWYGExtraConfig", "0", "");
+
+									isModified = true;
+								}
+							}
+						}
+					}
+				}
+				else if(schemaElement.getAttribute("version") != null && schemaElement.getAttribute("version").equalsIgnoreCase("2.5"))
+				{
+					isModified = true;
+					schemaElement.setAttribute("version", "2.5.1");
+
+					//Now we deal with the individual attributes and parameters
+					String attributesXPath = "/xs:schema/xs:complexType/xs:all/xs:element/xs:complexType/xs:all/xs:element";
+					NodeList anl = org.apache.xpath.XPathAPI.selectNodeList(document.getDocumentElement(), attributesXPath);
+					for(int k=0; k < anl.getLength(); k++)
+					{
+						Element childElement = (Element)anl.item(k);
+
+						String inputTypeId = childElement.getAttribute("type");
+
+						NodeList annotationNodeList = childElement.getElementsByTagName("xs:annotation");
+						if(annotationNodeList != null && annotationNodeList.getLength() > 0)
+						{
+							NodeList appinfoNodeList = childElement.getElementsByTagName("xs:appinfo");
+							if(appinfoNodeList != null && appinfoNodeList.getLength() > 0)
+							{
+								NodeList paramsNodeList = childElement.getElementsByTagName("params");
+								if(paramsNodeList != null && paramsNodeList.getLength() > 0)
+								{
+									Element paramsElement = (Element)paramsNodeList.item(0);
+
+									addParameterElementIfNotExists(paramsElement, "WYSIWYGExtraConfig", "0", "");
 
 									isModified = true;
 								}

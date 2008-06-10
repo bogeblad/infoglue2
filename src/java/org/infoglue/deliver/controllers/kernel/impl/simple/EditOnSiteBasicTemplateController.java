@@ -82,9 +82,20 @@ public class EditOnSiteBasicTemplateController extends BasicTemplateController
 			}
 			
 			String className = "";
+			String WYSIWYGToolbar = "Default";
+			String WYSIWYGExtraConfig = "";
 			if(contentTypeAttribute != null)
 			{
 				className = contentTypeAttribute.getInputType();
+				try
+				{
+					WYSIWYGToolbar = contentTypeAttribute.getContentTypeAttribute("WYSIWYGToolbar").getContentTypeAttributeParameterValue().getLocalizedValue("label", getLocale());
+					WYSIWYGExtraConfig = contentTypeAttribute.getContentTypeAttribute("WYSIWYGExtraConfig").getContentTypeAttributeParameterValue().getLocalizedValue("label", getLocale());
+				}
+				catch (Exception e) 
+				{
+					logger.warn("Error setting WYSIWYGToolbar or WYSIWYGExtraConfig for attribute:" + contentTypeAttribute.getName() + " - " + e.getMessage());
+				}
 			}
 
 			String editOnSiteUrl = CmsPropertyHandler.getEditOnSiteUrl();
@@ -104,6 +115,8 @@ public class EditOnSiteBasicTemplateController extends BasicTemplateController
             decoratedAttributeValue.append("<script type=\"text/javascript\"> " +
             		"editOnSightAttributeNames[\"attribute" + contentId + attributeName + "\"] = \"" + attributeName + "\";" +
             		"editOnSightAttributeNames[\"attribute" + contentId + attributeName + "_type\"] = \"" + className + "\";" +
+            		"editOnSightAttributeNames[\"attribute" + contentId + attributeName + "_WYSIWYGToolbar\"] = \"" + WYSIWYGToolbar + "\";" +
+            		"editOnSightAttributeNames[\"attribute" + contentId + attributeName + "_WYSIWYGExtraConfig\"] = \"" + WYSIWYGExtraConfig + "\";" +
             		"var element = $(\"#attribute" + contentId + attributeName + "\");" +
             		"element.dblclick(function () {/*" + setContentItemParametersJavascript + "*/ editInline(" + this.getSiteNode().getRepositoryId() + ", " + contentId + "," + languageId + ", true);" +
             		"});" +
