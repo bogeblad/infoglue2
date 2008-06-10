@@ -32,7 +32,7 @@
 #else
 
 
-#beginCommonToolV3("tool.contenttool.contentVersionHeader" "$!contentVersionId" "contentId=$!contentId&languageId=$languageId" false false)
+#beginCommonToolV3("tool.contenttool.contentVersionHeader" "$!contentVersionId" "contentId=$!contentId&languageId=$languageId" false false $!isInlineDialog)
 
 	<script type="text/javascript" src="${root}/applications/FCKEditor/fckeditor.js"></script>
 
@@ -111,6 +111,7 @@
 	var attributesStatus = new Array();
 	var plainEditors = new Array();
 	var plainEditorsToolbars = new Array();
+	var plainEditorsExtraConfig = new Array();
 	var htmlEditors = new Array();
 	
 	//*******************************************
@@ -179,6 +180,7 @@
 			{
 				var plainTextAreaName = plainEditors[i];
 				var WYSIWYGToolbar = plainEditorsToolbars[plainTextAreaName];
+				var WYSIWYGExtraConfig = plainEditorsExtraConfig[plainTextAreaName];
 				//alert("Creating a textarea for " + plainTextAreaName + " = " + i);
 				document.getElementById(plainTextAreaName).value = transformAttribute(document.getElementById(plainTextAreaName).value);
 				
@@ -190,8 +192,12 @@
 				oFCKeditor.Config["AutoDetectLanguage"] = false ;
 				oFCKeditor.Config["DefaultLanguage"]    = '$languageCode' ;
 				oFCKeditor.ToolbarSet = WYSIWYGToolbar ;
-				oFCKeditor.Config["ToolbarStartExpanded"] = false;
-				oFCKeditor.ToolbarStartExpanded = false ;
+				
+				if(WYSIWYGExtraConfig && WYSIWYGExtraConfig != '')
+					eval(WYSIWYGExtraConfig);
+					
+				//oFCKeditor.Config["ToolbarStartExpanded"] = false;
+				//oFCKeditor.ToolbarStartExpanded = false ;
 				oFCKeditor.ReplaceTextarea();
 				
 				htmlEditors[plainTextAreaName + "WYSIWYGEditor"] = oFCKeditor;
@@ -274,6 +280,8 @@
 		  	$("#otherLanguageTabsContainer > ul").tabs({ show:function() { resizeInlineTabDivs();} });
 		#end
 		
+		setTimeout("resizeInlineTabDivs()", 100);
+		
 		generateWYSIWYGS();
   	});
   	
@@ -302,7 +310,7 @@
         <li><a href="#contentCoverDiv"><span>Omslagsinfo</span></a></li>
     </ul>
 	
-	<div id="contentVersionDiv">
+	<div id="contentVersionDiv" class="inlineTabDiv">
 		
 		<form method="POST" name="editForm" action="UpdateContentVersion!standalone.action" style="float:left;">
 			<input type="hidden" name="contentId" value="$!contentId">
@@ -382,6 +390,12 @@
 					#set($WYSIWYGToolbar = $!attribute.getContentTypeAttribute("WYSIWYGToolbar").getContentTypeAttributeParameterValue().getLocalizedValue("label", $session.locale))
 					#if($WYSIWYGToolbar == "")
 						#set($WYSIWYGToolbar = "Default")
+					#end
+			
+					#set($WYSIWYGExtraConfig = "")
+					#set($WYSIWYGExtraConfig = $!attribute.getContentTypeAttribute("WYSIWYGExtraConfig").getContentTypeAttributeParameterValue().getLocalizedValue("label", $session.locale))
+					#if($WYSIWYGExtraConfig == "")
+						#set($WYSIWYGExtraConfig = "")
 					#end
 			
 					#set($enableTemplateEditor = "")
@@ -506,6 +520,7 @@
 										// Replace an existing textarea with an HTMLArea object having the above config.
 										plainEditors["${attribute.name}"] = "${attribute.name}";
 										plainEditorsToolbars["${attribute.name}"] = "${WYSIWYGToolbar}";
+										plainEditorsExtraConfig["${attribute.name}"] = "${WYSIWYGExtraConfig}";
 										
 										currentEditorIdHash["${attribute.name}CurrentEditorId"] = 1;
 										#set($currentEditorId = 1)
@@ -822,6 +837,14 @@
 								versionValue += "</$attribute.name>";
 							#end
 						#end
+
+						versionValue += "<AuthorFullName>";
+						versionValue += "<![CDATA[$infoGluePrincipal.firstName $infoGluePrincipal.lastName]]>";
+						versionValue += "</AuthorFullName>";
+
+						versionValue += "<AuthorEmail>";
+						versionValue += "<![CDATA[$infoGluePrincipal.email]]>";
+						versionValue += "</AuthorEmail>";
 						
 						versionValue += "</attributes>";
 						versionValue += "</article>";
@@ -909,7 +932,7 @@
 					
 		</div>
 	
-		<div id="contentVersionCategoriesDiv">
+		<div id="contentVersionCategoriesDiv" class="inlineTabDiv">
 			
 			#set($allCategoryKeys = $definedCategoryKeys)
 			#if($allCategoryKeys.size() > 0)
@@ -979,7 +1002,7 @@
 		</div>
 		
 		
-		<div id="contentVersionAssetsDiv">
+		<div id="contentVersionAssetsDiv" class="inlineTabDiv">
 			
 			<table border="0" width="100%" cellspacing="0">
 			<tr>
@@ -1029,7 +1052,7 @@
 		</div>
 		
 		
-		<div id="contentCoverDiv">
+		<div id="contentCoverDiv" class="inlineTabDiv">
 			<iframe src="${root}/ViewContent.action?contentId=$contentId&stay=true" border="0" width="100%" height="500px"></iframe>
 		</div>
 		

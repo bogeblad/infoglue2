@@ -1154,6 +1154,14 @@
 				#end
 			#end
 			
+			versionValue += "<AuthorFullName>";
+			versionValue += "<![CDATA[$infoGluePrincipal.firstName $infoGluePrincipal.lastName]]>";
+			versionValue += "</AuthorFullName>";
+
+			versionValue += "<AuthorEmail>";
+			versionValue += "<![CDATA[$infoGluePrincipal.email]]>";
+			versionValue += "</AuthorEmail>";
+			
 			versionValue += "</attributes>";
 			versionValue += "</article>";
 			

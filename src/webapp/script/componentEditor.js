@@ -986,6 +986,8 @@ function editInline(repositoryId, selectedContentId, selectedLanguageId, directE
 			if(type.indexOf("textarea") > -1)
 			{
 				var attributeName = editOnSightAttributeNames[$(this).get(0).id];
+				var WYSIWYGToolbar = editOnSightAttributeNames[$(this).get(0).id + "_WYSIWYGToolbar"];
+				var WYSIWYGExtraConfig = editOnSightAttributeNames[$(this).get(0).id + "_WYSIWYGExtraConfig"];
 				//alert("attributeName:" + attributeName);
 
 				var parameterString = "repositoryId=" + repositoryId + "&contentId=" + selectedContentId + "&languageId=" + selectedLanguageId;
@@ -1025,7 +1027,12 @@ function editInline(repositoryId, selectedContentId, selectedLanguageId, directE
 					 oFCKeditor.BasePath = "" + componentEditorUrl + "applications/FCKEditor/" ;
 					 oFCKeditor.Config["CustomConfigurationsPath"] = "" + componentEditorUrl + "WYSIWYGProperties.action?" + parameterString;
 					 //oFCKeditor.Config['ToolbarStartExpanded'] = false ;
-					 oFCKeditor.ToolbarSet = "Basic";
+					 //oFCKeditor.ToolbarSet = "Basic";
+					 oFCKeditor.ToolbarSet = WYSIWYGToolbar;
+					 //oFCKeditor.Config['ToolbarStartExpanded'] = false ;
+					 if(WYSIWYGExtraConfig && WYSIWYGExtraConfig != '')
+					 	eval(WYSIWYGExtraConfig);
+					 
 					 oFCKeditor.Height = totalHeight;
 					 if(totalWidth > 100)
 						oFCKeditor.Width = totalWidth;

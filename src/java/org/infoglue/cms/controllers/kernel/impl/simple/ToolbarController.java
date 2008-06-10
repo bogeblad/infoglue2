@@ -41,14 +41,16 @@ public class ToolbarController
 	private String primaryKey = null;
 	private Integer primaryKeyAsInteger = null;
 	private String extraParameters = null;
+	private boolean isInlineDialog = false;
 	
-	public List<ToolbarButton> getRightToolbarButtons(String toolbarKey, InfoGluePrincipal principal, Locale locale, String primaryKey, String extraParameters)
+	public List<ToolbarButton> getRightToolbarButtons(String toolbarKey, InfoGluePrincipal principal, Locale locale, String primaryKey, String extraParameters, boolean isInlineDialog)
 	{
 		this.toolbarKey = toolbarKey;
 		this.principal = principal;
 		this.locale = locale;
 		this.primaryKey = primaryKey;
 		this.extraParameters = extraParameters;
+		this.isInlineDialog = isInlineDialog;
 		try
 		{
 			primaryKeyAsInteger = new Integer(primaryKey);
@@ -64,8 +66,9 @@ public class ToolbarController
 	
 			toolbarButtons.addAll(getHelpButton());
 			
-			if(toolbarKey.equalsIgnoreCase("tool.common.globalSubscriptions.header") || 
-			   toolbarKey.equalsIgnoreCase("tool.managementtool.mysettings.header"))
+			if((toolbarKey.equalsIgnoreCase("tool.common.globalSubscriptions.header") || 
+			   toolbarKey.equalsIgnoreCase("tool.managementtool.mysettings.header")) && 
+			   !this.isInlineDialog)
 				toolbarButtons.addAll(getWindowCloseButton());
 			else
 				toolbarButtons.addAll(getDialogCloseButton());
@@ -196,7 +199,7 @@ public class ToolbarController
 		return null;				
 	}
 	
-	public List<ToolbarButton> getFooterToolbarButtons(String toolbarKey, InfoGluePrincipal principal, Locale locale, String primaryKey, String extraParameters)
+	public List<ToolbarButton> getFooterToolbarButtons(String toolbarKey, InfoGluePrincipal principal, Locale locale, String primaryKey, String extraParameters, boolean isInlineDialog)
 	{
 		Timer t = new Timer();
 		
@@ -205,6 +208,7 @@ public class ToolbarController
 		this.locale = locale;
 		this.primaryKey = primaryKey;
 		this.extraParameters = extraParameters;
+		this.isInlineDialog = isInlineDialog;
 		try
 		{
 			primaryKeyAsInteger = new Integer(primaryKey);

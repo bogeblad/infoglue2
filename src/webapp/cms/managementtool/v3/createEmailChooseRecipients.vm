@@ -1,4 +1,4 @@
-#beginCommonToolV3("tool.managementtool.viewMessageCenter.header" "" "" false true)
+#beginCommonToolV3("tool.managementtool.viewMessageCenter.header" "" "" false true $!isInlineDialog)
 
 
 <style type="text/css">
@@ -188,7 +188,8 @@
 		<input type="hidden" name="extraText" value="$!extraText"/>
 		<input type="hidden" name="extraTextProperty" value="$!extraTextProperty"/>
 		<input type="hidden" name="userSessionKey" value="$userSessionKey"/>
-		
+		<input type="hidden" name="isInlineDialog" value="$!isInlineDialog"/>
+				
 		<div style="color: black;">
 			
 			<div id="tabsContainer" class="flora">      

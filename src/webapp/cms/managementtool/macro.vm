@@ -17,11 +17,11 @@
 ## This is the header for all V3 managementtool pages *
 ##*****************************************************
 
-#macro(beginCommonToolV3 $titleKey $primaryKey $extraData $hasDataTable $endHeadAndDefineBody)
+#macro(beginCommonToolV3 $titleKey $primaryKey $extraData $hasDataTable $endHeadAndDefineBody $isInlineDialog)
 
 #set($buttons = $this.getToolbarButtons("$titleKey", "$!primaryKey", "$extraData"))
-#set($rightButtons = $this.getRightToolbarButtons("$titleKey", "$!primaryKey", "$extraData"))
-#set($footerButtons = $this.getFooterToolbarButtons("$titleKey", "$!primaryKey", "$extraData"))
+#set($rightButtons = $this.getRightToolbarButtons("$titleKey", "$!primaryKey", "$extraData", $!isInlineDialog))
+#set($footerButtons = $this.getFooterToolbarButtons("$titleKey", "$!primaryKey", "$extraData", $!isInlineDialog))
 
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -1471,6 +1471,12 @@ $ui.getString("entity.${fieldNameKey}.label")<br/>
 	</div>
 </div>
 #end
+
+#*
+#foreach($button in $rightButtons)
+	<a class="igToolbarButton" href="#" title="$button.title" onclick="alert('aaa');"><span class="igToolbarButtonOuterSpan"><span class="linkInfoGlueFunctions" style="background:url($button.backgroundImageURL) no-repeat left center; background-position: 0px 0px; line-height: 20px; height: 20px; float: left; display: block; margin: 2px;">$button.text</span></span></a>
+#end
+*#		
 
 ##***********************************************************
 ## A macro to add a toolbar to a page

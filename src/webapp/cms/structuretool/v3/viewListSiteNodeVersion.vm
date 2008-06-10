@@ -1,4 +1,4 @@
-#beginCommonToolV3("tool.structuretool.publishSiteNode.header" "" "" false true)
+#beginCommonToolV3("tool.structuretool.publishSiteNode.header" "" "" false true $!isInlineDialog)
 
 <script language="JavaScript">
 <!--
@@ -195,6 +195,7 @@
 	#hiddenField("repositoryId" $!repositoryId)
 	#hiddenField("returnAddress" $!returnAddress)
 	#hiddenField("userSessionKey" $!userSessionKey)
+	#hiddenField("isInlineDialog" $!isInlineDialog)		
 	
 	#set($lvChkBoxName = "selSiteNodeVersions")
 	

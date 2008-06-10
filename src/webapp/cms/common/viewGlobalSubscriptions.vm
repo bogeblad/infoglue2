@@ -1,4 +1,4 @@
-#beginCommonToolV3("tool.common.globalSubscriptions.header" "" "" false true)
+#beginCommonToolV3("tool.common.globalSubscriptions.header" "" "" false true false)
 
 <script type="text/javascript">
 <!--

@@ -1,4 +1,4 @@
-#beginCommonToolV3("tool.managementtool.mysettings.header" "" "" false true)
+#beginCommonToolV3("tool.managementtool.mysettings.header" "" "" false true $!isInlineDialog)
 
 <script type="text/javascript">
 	<!--
@@ -74,11 +74,11 @@
 				</p>
 
 				<p style="clear: both;">
-					<a href="Subscriptions!inputGlobalSubscriptions.action" target="_blank">Open up subsriptions in a new window</a>
+					<a href="Subscriptions!inputGlobalSubscriptions.action" target="_blank">$ui.getString("tool.managementtool.openSubscriptionsInNewWindow.label")</a>
 				</p>
 				
 				<p style="clear: both;">
-					<a href="UpdateSystemUserPassword!inputStandalone.action?userName=$infoGluePrincipal.name&returnAddress=ViewMySettings.action">Change password</a>
+					<a href="UpdateSystemUserPassword!inputStandalone.action?userName=$infoGluePrincipal.name&returnAddress=ViewMySettings.action">$ui.getString("tool.managementtool.changePassword.label")</a>
 				</p>
 
 				<p style="clear: both;">

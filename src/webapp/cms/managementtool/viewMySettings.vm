@@ -75,7 +75,7 @@
 	</tr>
 	<tr>
 		<td>
-			<a href="UpdateSystemUserPassword!inputStandalone.action?userName=$infoGluePrincipal.name&returnAddress=ViewMySettings.action">Change password</a>
+			<a href="UpdateSystemUserPassword!inputStandalone.action?userName=$infoGluePrincipal.name&returnAddress=ViewMySettings.action">$ui.getString("tool.managementtool.changePassword.label")</a>
 		</td>
 	</tr>
 	<tr>

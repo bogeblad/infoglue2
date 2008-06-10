@@ -1,4 +1,4 @@
-#beginCommonToolV3("tool.common.subscriptions.header" "" "" false true)
+#beginCommonToolV3("tool.common.subscriptions.header" "" "" false true $!isInlineDialog)
 
 <script type="text/javascript">
 <!--
