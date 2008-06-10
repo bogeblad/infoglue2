@@ -729,12 +729,13 @@ a.editOnSightHref:hover{
 .linkTakePage {background:url(../images/v3/subscribeToPageIcon.gif) no-repeat left center; background-position: 4px 2px;}
 .linkTranslate {background:url(../images/v3/translateContentIcon.gif) no-repeat left center; background-position: 4px 2px;}
 .linkCreateNews {background:url(../images/v3/createNewsForContentIcon.gif) no-repeat left center; background-position: 4px 2px;}
+.linkMySettings {background:url(../images/v3/mySettingsIcon.gif) no-repeat left center; background-position: 4px 2px;}
 
 .linkSave {background:url(../images/v3/saveInlineIcon.gif) no-repeat left center; background-position: 0px -2px;}
 .linkCancel {background:url(../images/v3/cancelIcon.gif) no-repeat left center; background-position: 0px 0px;}
 .linkInfoGlueFunctions {background:url(../images/v3/infoglueFunctionsIcon.gif) no-repeat left center; background-position: 0px 0px;}
 
-.linkMetadata, .linkCreatePage, .linkEditArticle, .linkCategorizeArticle, .linkPublish, .linkNotify, .linkTakeContent, .linkTakePage, .linkTranslate, .linkCreateNews {
+.linkMetadata, .linkCreatePage, .linkEditArticle, .linkCategorizeArticle, .linkPublish, .linkNotify, .linkTakeContent, .linkTakePage, .linkTranslate, .linkCreateNews, .linkMySettings {
 padding-left:28px;
 }
 

@@ -74,7 +74,7 @@ public class EditOnSightMenuTag extends ComponentLogicTag
 		    	System.out.println("componentEditorUrl:" + componentEditorUrl);
 		    	
 		    	String metaDataUrl 			= componentEditorUrl + "ViewAndCreateContentForServiceBinding.action?siteNodeId=" + this.getController().getSiteNodeId() + "&repositoryId=" + this.getController().getSiteNode().getRepositoryId() + "&asiteNodeVersionId=2109&changeStateToWorking=true"; //&KeepThis=true&TB_iframe=true&height=700&width=750&modal=true";
-		    	String createSiteNodeUrl 	= componentEditorUrl + "CreateSiteNode!inputV3.action?repositoryId=" + this.getController().getSiteNode().getRepositoryId() + "&parentSiteNodeId=" + this.getController().getSiteNodeId() + "&languageId=" + this.getController().getLanguageId() + "&returnAddress=" + URLEncoder.encode(returnAddress, "utf-8") + "&originalAddress=" + URLEncoder.encode(this.getController().getCurrentPageUrl(), "utf-8"); // + "&KeepThis=true&TB_iframe=true&height=700&width=750&modal=true";
+		    	String createSiteNodeUrl 	= componentEditorUrl + "CreateSiteNode!inputV3.action?isBranch=true&repositoryId=" + this.getController().getSiteNode().getRepositoryId() + "&parentSiteNodeId=" + this.getController().getSiteNodeId() + "&languageId=" + this.getController().getLanguageId() + "&returnAddress=" + URLEncoder.encode(returnAddress, "utf-8") + "&originalAddress=" + URLEncoder.encode(this.getController().getCurrentPageUrl(), "utf-8"); // + "&KeepThis=true&TB_iframe=true&height=700&width=750&modal=true";
 		    	String contentVersionUrl 	= componentEditorUrl + "ViewContentVersion!standalone.action?contentId=" + this.contentId + "&languageId=" + getController().getLanguageId() + "&anchorName=contentVersionBlock"; //&KeepThis=true&TB_iframe=true&height=700&width=750&modal=true";
 		    	String categoriesUrl 		= componentEditorUrl + "ViewContentVersion!standalone.action?contentId=" + this.contentId + "&languageId=" + getController().getLanguageId() + "&anchor=categoriesBlock"; //&KeepThis=true&TB_iframe=true&height=700&width=750&modal=true";
 		    	String publishUrl 			= componentEditorUrl + "ViewListSiteNodeVersion!v3.action?siteNodeId=" + this.getController().getSiteNodeId() + "&repositoryId=" + this.getController().getSiteNode().getRepositoryId() + "&recurseSiteNodes=false&returnAddress=" + URLEncoder.encode(returnAddress, "utf-8") + "&originalAddress=" + URLEncoder.encode(this.getController().getCurrentPageUrl(), "utf-8"); // + "&KeepThis=true&TB_iframe=true&height=700&width=750&modal=true";
@@ -82,6 +82,7 @@ public class EditOnSightMenuTag extends ComponentLogicTag
 		    	String subscriptionUrl 		= componentEditorUrl + "Subscriptions!input.action?interceptionPointCategory=Content&entityName=" + Content.class.getName() + "&entityId=" + this.contentId + "&extraParameters=" + this.contentId + "&returnAddress=" + URLEncoder.encode(returnAddress, "utf-8"); // + "&KeepThis=true&TB_iframe=true&height=700&width=750&modal=true";
 		    	String pageSubscriptionUrl 	= componentEditorUrl + "Subscriptions!input.action?interceptionPointCategory=SiteNodeVersion&entityName=" + SiteNode.class.getName() + "&entityId=" + this.getController().getSiteNodeId() + "&returnAddress=" + URLEncoder.encode(returnAddress, "utf-8"); // + "&KeepThis=true&TB_iframe=true&height=700&width=750&modal=true";
 		    	String newsFlowUrl 			= componentEditorUrl + "ViewMyDesktopToolStartPage!startWorkflow.action?workflowName=Skapa+nyhet&finalReturnAddress=" + URLEncoder.encode(returnAddress, "utf-8") + ""; //"&KeepThis=true&TB_iframe=true&height=700&width=750&modal=true";
+		    	String mySettingsUrl 		= componentEditorUrl + "ViewMySettings.action"; //"&KeepThis=true&TB_iframe=true&height=700&width=750&modal=true";
 		    			    	
 		    	sb.append("<p id='igMenuButton" + getComponentId() + "'><a class='igButton' href=\"#\" onclick=\"showIGMenu('editOnSightDiv" + getComponentId() + "', event);\"><span class='igButtonOuterSpan'><span class='linkInfoGlueFunctions'>Administration</span></span></a></p>");
 		    	
@@ -129,6 +130,7 @@ public class EditOnSightMenuTag extends ComponentLogicTag
 		    	}
 		    	
 		    	sb.append("        <li style='margin: 0px; margin-left: 4px; padding: 2px 0px 2px 2px; list-style-type:none;'><a href=\"javascript:openInlineDiv('" + newsFlowUrl + "', 700, 750, true);\" class=\"editOnSightHref linkCreateNews\">Skapa nyhet om denna artikel</a></li>");
+		    	sb.append("        <li style='margin: 0px; margin-left: 4px; padding: 2px 0px 2px 2px; list-style-type:none;'><a href=\"javascript:openInlineDiv('" + mySettingsUrl + "', 700, 750, true);\" class=\"editOnSightHref linkMySettings\">Mina inställningar</a></li>");
 		    	sb.append("    </ul>");
 
 		    	sb.append("</div>");
