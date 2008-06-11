@@ -242,6 +242,20 @@ public class SubscriptionController extends BaseController
 		return subscriptionVOList;
 	}
 
+	/**
+	 * Gets matching subscriptions
+	 */
+	
+	public List<SubscriptionVO> getSubscriptionVOList(Integer interceptionPointId, String name, Boolean isGlobal, String entityName, String entityId, String userName, String userEmail, Database db, boolean readOnly) throws SystemException, Exception
+	{
+		List<SubscriptionVO> subscriptionVOList = new ArrayList<SubscriptionVO>();
+		
+		List<Subscription> subscriptionList = getSubscriptionList(interceptionPointId, name, isGlobal, entityName, entityId, userName, userEmail, db, true);
+		subscriptionVOList = toVOList(subscriptionList);
+		
+		return subscriptionVOList;
+	}
+
 
 	/**
 	 * Gets matching subscriptions
