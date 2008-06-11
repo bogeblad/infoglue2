@@ -23,8 +23,12 @@
 
 package org.infoglue.deliver.taglib;
 
+import java.util.Locale;
+
 import javax.servlet.jsp.JspTagException;
 
+import org.infoglue.cms.util.StringManager;
+import org.infoglue.cms.util.StringManagerFactory;
 import org.infoglue.deliver.controllers.kernel.impl.simple.TemplateController;
 
 /**
@@ -68,4 +72,26 @@ public abstract class TemplateControllerTag extends AbstractTag
 			
 		return controller;
 	}
+	
+	protected String getLocalizedString(Locale locale, String key) 
+  	{
+    	StringManager stringManager = StringManagerFactory.getPresentationStringManager("org.infoglue.cms.applications", locale);
+
+    	return stringManager.getString(key);
+  	}
+
+	protected String getLocalizedString(Locale locale, String key, Object arg1) 
+  	{
+    	StringManager stringManager = StringManagerFactory.getPresentationStringManager("org.infoglue.cms.applications", locale);
+
+    	return stringManager.getString(key, arg1);
+  	}
+
+	protected String getLocalizedString(Locale locale, String key, Object arg1, Object arg2) 
+  	{
+    	StringManager stringManager = StringManagerFactory.getPresentationStringManager("org.infoglue.cms.applications", locale);
+
+    	return stringManager.getString(key, arg1, arg2);
+  	}
+
 }

@@ -26,8 +26,10 @@ package org.infoglue.cms.controllers.kernel.impl.simple;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
@@ -48,10 +50,16 @@ import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.security.interceptors.InfoGlueInterceptor;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
+import org.infoglue.cms.util.StringManager;
+import org.infoglue.cms.util.StringManagerFactory;
 import org.infoglue.cms.util.validators.Constants;
 import org.infoglue.cms.util.validators.ConstraintRule;
 import org.infoglue.cms.util.validators.EmailValidator;
 import org.infoglue.cms.util.validators.StringValidator;
+import org.infoglue.deliver.util.CacheController;
+
+import com.opensymphony.module.propertyset.PropertySet;
+import com.opensymphony.module.propertyset.PropertySetManager;
 
 /**
  * BaseController.java
@@ -1215,6 +1223,87 @@ public abstract class BaseController
             logger.warn("An error occurred when we tried to rollback an transaction. Reason:" + e.getMessage());
         }
     }
+
+	public String getLocalizedString(Locale locale, String key) 
+  	{
+    	StringManager stringManager = StringManagerFactory.getPresentationStringManager("org.infoglue.cms.applications", locale);
+
+    	return stringManager.getString(key);
+  	}
+
+	public String getLocalizedString(Locale locale, String key, Object arg1) 
+  	{
+    	StringManager stringManager = StringManagerFactory.getPresentationStringManager("org.infoglue.cms.applications", locale);
+
+    	return stringManager.getString(key, arg1);
+  	}
+
+	public String getLocalizedString(Locale locale, String key, Object arg1, Object arg2) 
+  	{
+    	StringManager stringManager = StringManagerFactory.getPresentationStringManager("org.infoglue.cms.applications", locale);
+
+    	return stringManager.getString(key, arg1, arg2);
+  	}
+
+	public Locale getUserPrefferedLocale(String userName)
+	{
+		Locale locale = Locale.ENGLISH;
+		
+		if(userName != null)
+		{
+			try
+			{
+			    Map args = new HashMap();
+			    args.put("globalKey", "infoglue");
+			    PropertySet ps = PropertySetManager.getInstance("jdbc", args);
+			    
+			    String languageCode = ps.getString("principal_" + userName + "_languageCode");
+			    locale = getLocaleWithCode(languageCode);
+			}
+			catch (Exception e) 
+			{
+				logger.warn("Error getting users prefferred language: " + e.getMessage(), e);
+			}
+		}
+		
+		return locale;
+	}
+
+	/**
+	 * This method returns language with the languageCode sent in. 
+	 */
+	
+	public Locale getLocaleWithCode(String languageCode)
+	{
+		String key = "" + languageCode;
+		logger.info("key:" + key);
+		Locale locale = (Locale)CacheController.getCachedObject("localeCache", key);
+		if(locale != null)
+		{
+			logger.info("There was an cached locale:" + locale);
+		}
+		else
+		{
+			locale = Locale.getDefault();
+			
+			if (languageCode != null)
+			{
+				try 
+				{
+					locale = new Locale(languageCode);
+				} 
+				catch (Exception e) 
+				{
+					logger.error("An error occurred in getLocaleWithCode: getting locale with languageCode:" + languageCode + "," + e, e);
+				}	
+			}
+			
+			CacheController.cacheObject("localeCache", key, locale);				
+		}
+		
+		return locale; 
+	}
+
 
 	public abstract BaseEntityVO getNewVO();
 }
