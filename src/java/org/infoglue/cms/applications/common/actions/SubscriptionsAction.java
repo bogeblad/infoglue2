@@ -76,7 +76,9 @@ public class SubscriptionsAction extends InfoGlueAbstractAction
 	private List interceptionPointVOList;
 	private List contentTypeDefintionVOList;
 	private List categoryVOList;
-	
+
+	private String userSessionKey;
+
 	private static SubscriptionController subscriptionsController = SubscriptionController.getController();
 	
 	public String doInput() throws Exception
@@ -167,7 +169,7 @@ public class SubscriptionsAction extends InfoGlueAbstractAction
         System.out.println("returnAddress:" + this.returnAddress);
         if(this.returnAddress != null && !this.returnAddress.equals(""))
         {
-	        String arguments = "isAutomaticRedirect=false&message=Prenumsparad!&actionLinks=link1,Länk 1,Testlänk,Det här är en länk till CG-channel,http://www.cgchannel.com,http://www.iconarchive.com/icons/zakar/shining-z/Casque-SZ-24x24.png;link1,Länk Lala,Testlänk 2,Det här är en länk till Silo-forumet,http://www.silo3d.com/forum/,http://www.iconarchive.com/icons/zakar/shining-z/Deamontools-SZ-24x24.png";
+	        String arguments = "userSessionKey=" + userSessionKey + "&isAutomaticRedirect=false";
 	        String messageUrl = returnAddress + (returnAddress.indexOf("?") > -1 ? "&" : "?") + arguments;
 	        
 	        System.out.println("messageUrl:" + messageUrl);

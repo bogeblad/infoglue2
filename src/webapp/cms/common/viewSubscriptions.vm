@@ -27,6 +27,7 @@
 		<input type="hidden" name="entityName" value="$entityName"/>
 		<input type="hidden" name="entityId" value="$entityId"/>
 		<input type="hidden" name="returnAddress" value="$returnAddress"/>
+		<input type="hidden" name="userSessionKey" value="$userSessionKey"/>
 		
 		<div class="inlineTabDiv" onfocus="this.blur();">
 			#foreach($interceptionPointsGroup in $interceptionPointsGroupsMap.entrySet())
