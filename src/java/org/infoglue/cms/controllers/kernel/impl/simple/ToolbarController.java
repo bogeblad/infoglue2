@@ -1145,7 +1145,7 @@ public class ToolbarController
 		buttons.add(new ToolbarButton("exitButton",
 									  getLocalizedString(locale, "tool.common.closeWindowButton.label"), 
 									  getLocalizedString(locale, "tool.common.closeWindowButton.title"),
-									  "window.close();",
+									  "if(parent) parent.closeDialog(); else window.close();",
 				  					  "images/v3/closeWindowIcon.gif",
 				  					  "right",
 				  					  true));
@@ -1159,7 +1159,7 @@ public class ToolbarController
 		buttons.add(new ToolbarButton("exitButton",
 									  getLocalizedString(locale, "tool.common.closeWindowButton.label"), 
 									  getLocalizedString(locale, "tool.common.closeWindowButton.title"),
-									  "parent.closeDialog();",
+									  "if(parent) parent.closeDialog(); else window.close();",
 				  					  "images/v3/closeWindowIcon.gif",
 				  					  "right",
 				  					  true));
