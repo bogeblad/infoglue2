@@ -381,6 +381,7 @@ Properties classes
 	vertical-align: top;
 	border: 0px solid red;
 	line-height: 10px;
+	padding-left: 2px;
 }
 
 .igtd:hover {
@@ -404,6 +405,7 @@ Properties classes
 	font-weight: bold;
 	border: 0px solid #FFFFFF;
 	width: 40%;
+	padding-left: 2px;
 }
 
 .igpropertyvalue {
@@ -484,6 +486,7 @@ input.normaltextfield {
 	border-width: 1px;
 	border-color: #C2D0E2;
 	width: 300px;
+	color: black;
 }
 
 input.propertytextfield {
@@ -493,6 +496,7 @@ input.propertytextfield {
 	border-width: 1px;
 	border-color: #C2D0E2;
 	width: 200px;
+	color: black;
 }
 
 input.propertydatefield {
@@ -502,6 +506,7 @@ input.propertydatefield {
 	border-width: 1px;
 	border-color: #C2D0E2;
 	width: 100px;
+	color: black;
 }
 
 .propertytextarea {
@@ -512,12 +517,16 @@ input.propertydatefield {
 	border-color: #C2D0E2;
 	width: 200px;
 	height: 150px;
+	color: black;
 }
 
 select.propertyselect {
 	font-family: verdana, sans-serif;
 	font-size: 10px;
 	font-weight: normal;
+	color: black;
+	min-width: 100px;
+	max-width: 200px;
 }
 
 .inheritedOverlay {
@@ -609,6 +618,9 @@ select.mediumdrop {
 	font-family: verdana, sans-serif;
 	font-size: 10px;
 	font-weight: normal;
+	color: black;
+	min-width: 100px;
+	max-width: 200px;
 }
 
 .clickableLabel {
