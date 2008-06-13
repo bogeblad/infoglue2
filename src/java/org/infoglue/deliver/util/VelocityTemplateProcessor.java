@@ -40,7 +40,6 @@ import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 
 import org.apache.log4j.Logger;
-import org.apache.tools.ant.types.FileList;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.Velocity;
 import org.infoglue.cms.io.FileHelper;
@@ -49,9 +48,6 @@ import org.infoglue.deliver.applications.actions.InfoGlueComponent;
 import org.infoglue.deliver.applications.databeans.DeliveryContext;
 import org.infoglue.deliver.controllers.kernel.impl.simple.TemplateController;
 import org.infoglue.deliver.portal.PortalController;
-
-import com.sun.star.ui.dialogs.FilePickerEvent;
-import com.sun.syndication.feed.rss.Channel;
 
 /**
  *
@@ -87,7 +83,17 @@ public class VelocityTemplateProcessor
 	 * Improve later - cache for example the engine.
 	 */
 	
-	public void renderTemplate(final Map params, PrintWriter pw, String templateAsString, boolean forceVelocity, InfoGlueComponent component) throws Exception 
+	public void renderTemplate(Map params, PrintWriter pw, String templateAsString, boolean forceVelocity, InfoGlueComponent component) throws Exception 
+	{
+	    renderTemplate(params, pw, templateAsString, forceVelocity, component, null);
+	}
+
+	/**
+	 * This method takes arguments and renders a template given as a string to the specified outputstream.
+	 * Improve later - cache for example the engine.
+	 */
+	
+	public void renderTemplate(final Map params, PrintWriter pw, String templateAsString, boolean forceVelocity, InfoGlueComponent component, String statisticsSuffix) throws Exception 
 	{
 		try
 		{
@@ -121,7 +127,9 @@ public class VelocityTemplateProcessor
 			        }
 			        
 			        Reader reader = new StringReader(templateAsString);
-		        	logger.info("Going to evaluate the string of length:" + templateAsString.length());
+			        if(logger.isInfoEnabled())
+			        	logger.info("Going to evaluate the string of length:" + templateAsString.length());
+			        
 			        boolean finished = Velocity.evaluate(context, pw, "Generator Error", reader);        
 		        }
 		    }
@@ -131,12 +139,13 @@ public class VelocityTemplateProcessor
 		    	componentName = "" + component.getName() + "(" + component.getContentId() + ")";
 		    //System.out.println("componentName:" + componentName);
 		    
-		    RequestAnalyser.getRequestAnalyser().registerComponentStatistics(componentName, timer.getElapsedTime());
-        	logger.info("Rendering took:" + timer.getElapsedTime());
+		    RequestAnalyser.getRequestAnalyser().registerComponentStatistics(componentName + (statisticsSuffix == null ? "" : statisticsSuffix), timer.getElapsedTime());
+	        if(logger.isInfoEnabled())
+	        	logger.info("Rendering took:" + timer.getElapsedTime());
 		}
 		catch(Exception e)
 		{
-			logger.warn("templateAsString: \n" + (templateAsString.length() > 500 ? templateAsString.substring(0, 500) + "... (template truncated).\n---8<---\n" : templateAsString), e);
+			logger.warn("templateAsString: \n" + (templateAsString.length() > 500 ? templateAsString.substring(0, 500) + "... (template truncated)." : templateAsString));
 		    
 			//If error we don't want the error cached - right?
 			TemplateController templateController = (TemplateController)params.get("templateLogic");
