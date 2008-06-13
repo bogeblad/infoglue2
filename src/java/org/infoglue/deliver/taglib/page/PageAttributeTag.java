@@ -39,8 +39,15 @@ public class PageAttributeTag extends TemplateControllerTag
 
 	public int doEndTag() throws JspException
     {
-		getController().getDeliveryContext().getPageAttributes().put(name, value);
-        return EVAL_PAGE;
+		if(value == null) //Read operation
+			produceResult(getController().getDeliveryContext().getPageAttributes().get(name));
+		else
+			getController().getDeliveryContext().getPageAttributes().put(name, value);
+        
+		name = null;
+		value = null;
+		
+		return EVAL_PAGE;
     }	
 	
 	/**
