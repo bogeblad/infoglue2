@@ -139,7 +139,12 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		    
 			decoratorTimer.printElapsedTime("After reading document");
 			
-			List pageComponents = getPageComponents(getDatabase(), componentXML, document.getRootElement(), "base", this.getTemplateController(), null);
+   			List unsortedPageComponents = new ArrayList();
+			List pageComponents = getPageComponents(getDatabase(), componentXML, document.getRootElement(), "base", this.getTemplateController(), null, unsortedPageComponents);
+
+			Timer t = new Timer();
+			preProcessComponents(nodeDeliveryController, repositoryId, unsortedPageComponents, pageComponents);
+			t.printElapsedTime("Time to preprocess components in decorated mode");
 
 			if(pageComponents.size() > 0)
 			{
@@ -893,11 +898,13 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		}
 		
 		Collection componentProperties = getComponentProperties(componentId, document);
+		System.out.println("componentProperties in loop:" + componentProperties.size());
 		
 		String hideProtectedProperties = CmsPropertyHandler.getHideProtectedProperties();
 		int numberOfHiddenProperties = 0;
 		
 		int propertyIndex = 0;
+		boolean isAdvancedProperties = false;
 		Iterator componentPropertiesIterator = componentProperties.iterator();
 		while(componentPropertiesIterator.hasNext())
 		{
@@ -909,6 +916,36 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 			    principal = templateController.getPrincipal(cmsUserName);
 
 			boolean hasAccessToProperty = AccessRightController.getController().getIsPrincipalAuthorized(templateController.getDatabase(), principal, "ComponentPropertyEditor.EditProperty", "" + componentContentId + "_" + componentProperty.getName());
+			boolean isFirstAdvancedProperty = false;
+			if(componentProperty.getName().equalsIgnoreCase("CacheResult"))
+			{
+				isFirstAdvancedProperty = true;
+				isAdvancedProperties = true;
+			}
+			
+			System.out.println("componentProperty:" + componentProperty.getName() + ":" + isAdvancedProperties);
+			if(componentProperty.getName().equalsIgnoreCase("CacheResult") ||
+			   componentProperty.getName().equalsIgnoreCase("UpdateInterval") ||
+			   componentProperty.getName().equalsIgnoreCase("CacheKey") ||
+			   componentProperty.getName().equalsIgnoreCase("PreRenderOrder"))
+			{
+				hasAccessToProperty = true;
+			}
+			
+			//Advanced properties
+			if(isFirstAdvancedProperty)
+			{
+				if(componentProperties.size() - numberOfHiddenProperties < 1)
+				{
+					sb.append("		<tr class=\"igtr\">");
+					sb.append("			<td class=\"igpropertyvalue\" valign=\"top\" align=\"left\" colspan=\"4\" style=\"padding: 6px 0px 6px 2px;\">" + getLocalizedString(locale, "deliver.editOnSight.noPropertiesVisible") + " </td>");
+					sb.append("		</tr>");
+				}
+
+				sb.append("		<tr class=\"igtr\">");
+				sb.append("			<td class=\"igpropertylabel\" valign=\"top\" align=\"left\" colspan=\"4\" style=\"padding: 6px 0px 6px 2px;\">" + getLocalizedString(locale, "deliver.editOnSight.advancedProperties") + " <img src='images/downArrow.gif' onclick=\"$('.advancedProperty" + componentId + "').toggle();\"/></td>");
+				sb.append("		</tr>");
+			}
 			
 			if(!hasAccessToProperty && hideProtectedProperties.equalsIgnoreCase("true"))
 			{
@@ -1039,8 +1076,12 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 						}
 					}
 									
-					sb.append("		<tr class=\"igtr\">");
-					sb.append("			<td class=\"igpropertylabel\" valign=\"top\" align=\"left\">" + componentProperty.getDisplayName() + "</td>");
+					if(isAdvancedProperties)
+						sb.append("		<tr class=\"igtr advancedProperty" + componentId + "\" style='display:none;'>");
+					else
+						sb.append("		<tr class=\"igtr\">");
+					
+					sb.append("			<td class=\"igpropertylabel\" valign=\"top\" align=\"left\">" + componentProperty.getDisplayName() + " - " + isAdvancedProperties + "</td>");
 					sb.append("			<td class=\"igtd\" width=\"16\"><img src=\"" + componentEditorUrl + "/images/questionMarkGrad.gif\" onMouseOver=\"javascript:showDiv('helpLayer" + componentProperty.getComponentId() + "_" + componentProperty.getName() + "');\" onMouseOut=\"javascript:hideDiv('helpLayer" + componentProperty.getComponentId() + "_" + componentProperty.getName() + "');\">" + helpSB + "</td>");
 					sb.append("			<td class=\"igpropertyvalue\" align=\"left\">");
 	
@@ -1074,7 +1115,11 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 				}
 				else if(componentProperty.getType().equalsIgnoreCase(ComponentProperty.TEXTFIELD))
 				{
-					sb.append("		<tr class=\"igtr\">");
+					if(isAdvancedProperties)
+						sb.append("	<tr class=\"igtr advancedProperty" + componentId + "\" style='display:none;'>");
+					else
+						sb.append("	<tr class=\"igtr\">");
+					
 					sb.append("			<td class=\"igpropertylabel\" valign=\"top\" align=\"left\">" + componentProperty.getDisplayName() + "</td>");
 					sb.append("			<td class=\"igtd\" width=\"16\"><img src=\"" + componentEditorUrl + "/images/questionMarkGrad.gif\" onMouseOver=\"showDiv('helpLayer" + componentProperty.getComponentId() + "_" + componentProperty.getName() + "');\" onMouseOut=\"javascript:hideDiv('helpLayer" + componentProperty.getComponentId() + "_" + componentProperty.getName() + "');\">" + helpSB + "</td>");
 					
@@ -1096,7 +1141,11 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 				}
 				else if(componentProperty.getType().equalsIgnoreCase(ComponentProperty.TEXTAREA))
 				{
-					sb.append("		<tr class=\"igtr\">");
+					if(isAdvancedProperties)
+						sb.append("	<tr class=\"igtr advancedProperty" + componentId + "\" style='display:none;'>");
+					else
+						sb.append("	<tr class=\"igtr\">");
+
 					sb.append("			<td class=\"igpropertylabel\" valign=\"top\" align=\"left\">" + componentProperty.getDisplayName() + "</td>");
 					sb.append("			<td class=\"igtd\" width=\"16\"><img src=\"" + componentEditorUrl + "/images/questionMarkGrad.gif\" onMouseOver=\"showDiv('helpLayer" + componentProperty.getComponentId() + "_" + componentProperty.getName() + "');\" onMouseOut=\"javascript:hideDiv('helpLayer" + componentProperty.getComponentId() + "_" + componentProperty.getName() + "');\">" + helpSB + "</td>");
 					
@@ -1118,7 +1167,11 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 				}
 				else if(componentProperty.getType().equalsIgnoreCase(ComponentProperty.SELECTFIELD))
 				{
-					sb.append("		<tr class=\"igtr\">");
+					if(isAdvancedProperties)
+						sb.append("	<tr class=\"igtr advancedProperty" + componentId + "\" style='display:none;'>");
+					else
+						sb.append("	<tr class=\"igtr\">");
+
 					sb.append("			<td class=\"igpropertylabel\" valign=\"top\" align=\"left\">" + componentProperty.getDisplayName() + "</td>");
 					sb.append("			<td class=\"igtd\" width=\"16\"><img src=\"" + componentEditorUrl + "/images/questionMarkGrad.gif\" onMouseOver=\"showDiv('helpLayer" + componentProperty.getComponentId() + "_" + componentProperty.getName() + "');\" onMouseOut=\"javascript:hideDiv('helpLayer" + componentProperty.getComponentId() + "_" + componentProperty.getName() + "');\">" + helpSB + "</td>");
 					
@@ -1154,7 +1207,11 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 				}
 				else if(componentProperty.getType().equalsIgnoreCase(ComponentProperty.CHECKBOXFIELD))
 				{
-					sb.append("		<tr class=\"igtr\">");
+					if(isAdvancedProperties)
+						sb.append("	<tr class=\"igtr advancedProperty" + componentId + "\" style='display:none;'>");
+					else
+						sb.append("	<tr class=\"igtr\">");
+
 					sb.append("			<td class=\"igpropertylabel\" valign=\"top\" align=\"left\">" + componentProperty.getDisplayName() + "</td>");
 					sb.append("			<td class=\"igtd\" width=\"16\"><img src=\"" + componentEditorUrl + "/images/questionMarkGrad.gif\" onMouseOver=\"showDiv('helpLayer" + componentProperty.getComponentId() + "_" + componentProperty.getName() + "');\" onMouseOut=\"javascript:hideDiv('helpLayer" + componentProperty.getComponentId() + "_" + componentProperty.getName() + "');\">" + helpSB + "</td>");
 					
@@ -1201,11 +1258,11 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		}
 		
 		timer.printElapsedTime("getComponentPropertiesDiv: 5");
-
+		
 		if(numberOfHiddenProperties > 0)
 		{
 			sb.append("		<tr class=\"igtr\">");
-			sb.append("			<td colspan=\"4\" class=\"igtd\" style=\"padding-left: 2px; color: darkred;\">" + getLocalizedString(locale, "deliver.editOnSight.protectedPropertiesExists") + "</td>");
+			sb.append("			<td colspan=\"4\" class=\"igtd\" style=\"padding: 6px 0px 6px 2px; color: darkred;\">" + getLocalizedString(locale, "deliver.editOnSight.protectedPropertiesExists") + "</td>");
 			sb.append("		</tr>");
 		}
 		
@@ -1213,7 +1270,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		sb.append("			<td colspan=\"4\"><img src=\"" + this.getRequest().getContextPath() + "/images/trans.gif\" height=\"5\" width=\"1\"></td>");
 		sb.append("		</tr>");
 		sb.append("		<tr class=\"igtr\">");
-		sb.append("			<td colspan=\"4\">");
+		sb.append("			<td colspan=\"4\" style=\"padding: 6px 0px 6px 2px;\">");
 		sb.append("				<a href=\"javascript:submitForm('component" + componentId + "PropertiesForm');\"><img src=\"" + componentEditorUrl + "" + this.getDeliveryContext().getInfoGlueAbstractAction().getLocalizedString(this.getDeliveryContext().getSession().getLocale(), "images.contenttool.buttons.save") + "\" width=\"50\" height=\"25\" border=\"0\"></a>");
 		sb.append("				<a href=\"javascript:hideDiv('component" + componentId + "Properties');\"><img src=\"" + componentEditorUrl + "" + this.getDeliveryContext().getInfoGlueAbstractAction().getLocalizedString(this.getDeliveryContext().getSession().getLocale(), "images.contenttool.buttons.close") + "\" width=\"50\" height=\"25\" border=\"0\"></a>");
 		sb.append("			</td>");
@@ -2094,9 +2151,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 							Element option = (Element)optionListIterator.next();
 							String optionName	= option.attributeValue("name");
 							String optionValue	= option.attributeValue("value");
-							ComponentPropertyOption cpo = new ComponentPropertyOption();
-							cpo.setName(optionName);
-							cpo.setValue(optionValue);
+							ComponentPropertyOption cpo = new ComponentPropertyOption(optionName, optionValue);
 							property.getOptions().add(cpo);
 						}
 						
@@ -2115,9 +2170,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 							Element option = (Element)optionListIterator.next();
 							String optionName	= option.attributeValue("name");
 							String optionValue	= option.attributeValue("value");
-							ComponentPropertyOption cpo = new ComponentPropertyOption();
-							cpo.setName(optionName);
-							cpo.setValue(optionValue);
+							ComponentPropertyOption cpo = new ComponentPropertyOption(optionName, optionValue);
 							property.getOptions().add(cpo);
 						}
 						
@@ -2128,6 +2181,10 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 					componentProperties.add(property);
 				}
 			}
+			
+			System.out.println("componentProperties before:" + componentProperties.size());
+			addSystemProperties(componentProperties, componentId);
+			System.out.println("componentProperties after:" + componentProperties.size());
 		}
 		catch(Exception e)
 		{
@@ -2142,6 +2199,102 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 	 * This method returns a bean representing a list of ComponentProperties that the component has.
 	 */
 	 
+	public void addSystemProperties(List componentProperties, Integer componentId) throws Exception
+	{
+		ComponentProperty cacheResultProperty = new ComponentProperty();
+		cacheResultProperty.setComponentId(componentId);
+		cacheResultProperty.setName("CacheResult");
+		cacheResultProperty.setDisplayName("Cache Result");
+		cacheResultProperty.setDescription("Do you want to cache the components rendered result.");
+		cacheResultProperty.setDefaultValue("false");
+		cacheResultProperty.setDataProvider("");
+		cacheResultProperty.setType("select");
+		cacheResultProperty.setVisualizingAction("");
+		cacheResultProperty.setCreateAction("");
+		
+		ComponentPropertyOption cpoNo = new ComponentPropertyOption("No", "false");
+		ComponentPropertyOption cpoYes = new ComponentPropertyOption("Yes", "true");
+		cacheResultProperty.getOptions().add(cpoNo);
+		cacheResultProperty.getOptions().add(cpoYes);
+			
+		String value = getComponentPropertyValue(componentId, "CacheResult");
+		cacheResultProperty.setValue(value);
+		
+		componentProperties.add(cacheResultProperty);
+
+		ComponentProperty cacheIntervalProperty = new ComponentProperty();
+		cacheIntervalProperty.setComponentId(componentId);
+		cacheIntervalProperty.setName("UpdateInterval");
+		cacheIntervalProperty.setDisplayName("Cache Update Interval");
+		cacheIntervalProperty.setDescription("Interval before the cache gets updated");
+		cacheIntervalProperty.setDefaultValue("-1");
+		cacheIntervalProperty.setDataProvider("");
+		cacheIntervalProperty.setType("select");
+		cacheIntervalProperty.setVisualizingAction("");
+		cacheIntervalProperty.setCreateAction("");
+		
+		cacheIntervalProperty.getOptions().add(new ComponentPropertyOption("1 second", "1"));
+		cacheIntervalProperty.getOptions().add(new ComponentPropertyOption("2 seconds", "2"));
+		cacheIntervalProperty.getOptions().add(new ComponentPropertyOption("3 seconds", "3"));
+		cacheIntervalProperty.getOptions().add(new ComponentPropertyOption("4 seconds", "4"));
+		cacheIntervalProperty.getOptions().add(new ComponentPropertyOption("5 seconds", "5"));
+		cacheIntervalProperty.getOptions().add(new ComponentPropertyOption("10 seconds", "10"));
+		cacheIntervalProperty.getOptions().add(new ComponentPropertyOption("15 seconds", "15"));
+		cacheIntervalProperty.getOptions().add(new ComponentPropertyOption("20 seconds", "20"));
+		cacheIntervalProperty.getOptions().add(new ComponentPropertyOption("30 seconds", "30"));
+		cacheIntervalProperty.getOptions().add(new ComponentPropertyOption("1 minute", "60"));
+		cacheIntervalProperty.getOptions().add(new ComponentPropertyOption("2 minutes", "120"));
+		cacheIntervalProperty.getOptions().add(new ComponentPropertyOption("5 minutes", "300"));
+		cacheIntervalProperty.getOptions().add(new ComponentPropertyOption("10 minutes", "600"));
+		cacheIntervalProperty.getOptions().add(new ComponentPropertyOption("30 minutes", "1800"));
+		cacheIntervalProperty.getOptions().add(new ComponentPropertyOption("1 hour", "3600"));
+		cacheIntervalProperty.getOptions().add(new ComponentPropertyOption("2 hours", "7200"));
+		cacheIntervalProperty.getOptions().add(new ComponentPropertyOption("6 hours", "21600"));
+		cacheIntervalProperty.getOptions().add(new ComponentPropertyOption("12 hours", "43200"));
+		cacheIntervalProperty.getOptions().add(new ComponentPropertyOption("24 hours", "86400"));
+
+		String updateIntervalValue = getComponentPropertyValue(componentId, "UpdateInterval");
+		cacheIntervalProperty.setValue(updateIntervalValue);
+		
+		componentProperties.add(cacheIntervalProperty);
+
+		ComponentProperty cacheKeyProperty = new ComponentProperty();
+		cacheKeyProperty.setComponentId(componentId);
+		cacheKeyProperty.setName("CacheKey");
+		cacheKeyProperty.setDisplayName("Cache Key");
+		cacheKeyProperty.setDescription("Key for the component cache");
+		cacheKeyProperty.setDefaultValue("");
+		cacheKeyProperty.setDataProvider("");
+		cacheKeyProperty.setType("textfield");
+		cacheKeyProperty.setVisualizingAction("");
+		cacheKeyProperty.setCreateAction("");
+		
+		String cacheKeyValue = getComponentPropertyValue(componentId, "CacheKey");
+		cacheKeyProperty.setValue(cacheKeyValue);
+		
+		componentProperties.add(cacheKeyProperty);
+
+		ComponentProperty priorityProperty = new ComponentProperty();
+		priorityProperty.setComponentId(componentId);
+		priorityProperty.setName("PreRenderOrder");
+		priorityProperty.setDisplayName("Pre processing order");
+		priorityProperty.setDescription("State the order in which the component get's prerendered");
+		priorityProperty.setDefaultValue("99");
+		priorityProperty.setDataProvider("");
+		priorityProperty.setType("select");
+		priorityProperty.setVisualizingAction("");
+		priorityProperty.setCreateAction("");
+		
+		for(int i=0; i<15; i++)
+			priorityProperty.getOptions().add(new ComponentPropertyOption("" + i, "" + i));
+
+		String preRenderOrderPropertyValue = getComponentPropertyValue(componentId, "PreRenderOrder");
+		priorityProperty.setValue(preRenderOrderPropertyValue);
+		
+		componentProperties.add(priorityProperty);
+
+	}
+
 	private List getComponentProperties(Integer componentId, Document document, TemplateController templateController) throws Exception
 	{
 		//TODO - här kan vi säkert cache:a.
@@ -2246,9 +2399,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 							Element option = (Element)optionListIterator.next();
 							String optionName	= option.attributeValue("name");
 							String optionValue	= option.attributeValue("value");
-							ComponentPropertyOption cpo = new ComponentPropertyOption();
-							cpo.setName(optionName);
-							cpo.setValue(optionValue);
+							ComponentPropertyOption cpo = new ComponentPropertyOption(optionName, optionValue);
 							property.getOptions().add(cpo);
 						}
 						

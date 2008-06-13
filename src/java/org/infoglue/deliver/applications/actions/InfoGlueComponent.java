@@ -33,6 +33,11 @@ import org.infoglue.deliver.applications.databeans.Slot;
 
 public class InfoGlueComponent
 {	
+	public final static String PREPROCESSING_ORDER_PROPERTYNAME = "PreRenderOrder";
+	public final static String CACHE_RESULT_PROPERTYNAME 		= "CacheResult";
+	public final static String UPDATE_INTERVAL_PROPERTYNAME 	= "UpdateInterval";
+	public final static String CACHE_KEY_PROPERTYNAME 			= "CacheKey";
+	
 	private Integer id							= null;
 	private Integer contentId 					= null;
 	private String name 	 					= null;
@@ -49,6 +54,11 @@ public class InfoGlueComponent
 	private InfoGlueComponent parentComponent 	= null;
 	private InfoGlueComponent pagePartTemplateComponent = null;
 	private Integer positionInSlot				= null;
+
+	private boolean cacheResult					= false;
+	private int updateInterval					= -1;
+	private String cacheKey						= null;
+	private String preProcessingOrder			= "";
 	
 	public InfoGlueComponent()
 	{
@@ -224,6 +234,46 @@ public class InfoGlueComponent
 		}
 		
 		return slot;
+	}
+
+	public String getPreProcessingOrder()
+	{
+		return preProcessingOrder;
+	}
+
+	public void setPreProcessingOrder(String preProcessingOrder)
+	{
+		this.preProcessingOrder = preProcessingOrder;
+	}
+
+	public boolean getCacheResult()
+	{
+		return cacheResult;
+	}
+
+	public void setCacheResult(boolean cacheResult)
+	{
+		this.cacheResult = cacheResult;
+	}
+
+	public int getUpdateInterval()
+	{
+		return updateInterval;
+	}
+
+	public void setUpdateInterval(int updateInterval)
+	{
+		this.updateInterval = updateInterval;
+	}
+
+	public String getCacheKey()
+	{
+		return cacheKey;
+	}
+
+	public void setCacheKey(String cacheKey)
+	{
+		this.cacheKey = cacheKey;
 	}
 
 }

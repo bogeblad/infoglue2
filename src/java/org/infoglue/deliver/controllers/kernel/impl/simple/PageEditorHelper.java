@@ -195,12 +195,50 @@ public class PageEditorHelper extends BaseDeliveryController
 		int numberOfHiddenProperties = 0;
 		
 		int propertyIndex = 0;
+		boolean isAdvancedProperties = false;
 		Iterator componentPropertiesIterator = componentProperties.iterator();
 		while(componentPropertiesIterator.hasNext())
 		{
 			ComponentProperty componentProperty = (ComponentProperty)componentPropertiesIterator.next();
 			
 			boolean hasAccessToProperty = AccessRightController.getController().getIsPrincipalAuthorized(db, principal, "ComponentPropertyEditor.EditProperty", "" + componentContentId + "_" + componentProperty.getName());
+			boolean isFirstAdvancedProperty = false;
+			
+			if(componentProperty.getName().equalsIgnoreCase("CacheResult"))
+			{
+				isFirstAdvancedProperty = true;
+				isAdvancedProperties = true;
+			}
+			
+			System.out.println("componentProperty:" + componentProperty.getName() + ":" + isAdvancedProperties);
+			if(componentProperty.getName().equalsIgnoreCase("CacheResult") ||
+			   componentProperty.getName().equalsIgnoreCase("UpdateInterval") ||
+			   componentProperty.getName().equalsIgnoreCase("CacheKey") ||
+			   componentProperty.getName().equalsIgnoreCase("PreRenderOrder"))
+			{
+				hasAccessToProperty = true;
+			}
+
+			//Advanced properties
+			if(isFirstAdvancedProperty)
+			{
+				if(componentProperties.size() - numberOfHiddenProperties < 1)
+				{
+					sb.append("	<div class=\"propertyRow\">");
+					sb.append("		<div class=\"propertyRowLeft\">");
+					sb.append("			<label>" + getLocalizedString(locale, "deliver.editOnSight.noPropertiesVisible") + "</label>");
+					sb.append("		</div>");
+					sb.append("	</div>");
+					sb.append("	<div style=\"clear:both;\"></div>");
+				}
+
+				sb.append("	<div class=\"propertyRow\">");
+				sb.append("		<div class=\"propertyRowLeft\">");
+				sb.append("			" + getLocalizedString(locale, "deliver.editOnSight.advancedProperties") + " <img src='images/downArrow.gif' onclick=\"$('.advancedProperty" + componentId + "').toggle();\"/>");
+				sb.append("		</div>");
+				sb.append("	</div>");
+				sb.append("	<div style=\"clear:both;\"></div>");
+			}
 			
 			if(!hasAccessToProperty && hideProtectedProperties.equalsIgnoreCase("true"))
 			{
@@ -321,8 +359,12 @@ public class PageEditorHelper extends BaseDeliveryController
 								createUrl = componentEditorUrl + "CreateSiteNodeWizardFinish.action?repositoryId=" + repositoryId + "&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&propertyName=" + componentProperty.getName() + "&refreshAddress=" + returnAddress + "&cancelAddress=" + cancelAddress + "&showSimple=" + showSimple;
 						}
 					}
-									
-					sb.append("		<div class=\"propertyRow\">");
+					
+					if(isAdvancedProperties)
+						sb.append("	<div class=\"propertyRow advancedProperty" + componentId + "\" style='display:none;'>");
+					else
+						sb.append("	<div class=\"propertyRow\">");
+					
 					sb.append("			<div class=\"propertyRowLeft\">");
 					sb.append("				<label for=\"" + componentProperty.getName() + "\">" + componentProperty.getDisplayName() + "</label>");
 					sb.append("			</div>");
@@ -366,7 +408,12 @@ public class PageEditorHelper extends BaseDeliveryController
 				}
 				else if(componentProperty.getType().equalsIgnoreCase(ComponentProperty.TEXTFIELD))
 				{
-					sb.append("	<div class=\"propertyRow\">");
+					if(isAdvancedProperties)
+						sb.append("	<div class=\"propertyRow advancedProperty" + componentId + "\" style='display:none;'>");
+					else
+						sb.append("	<div class=\"propertyRow\">");
+					
+					//sb.append("	<div class=\"propertyRow\">");
 					sb.append("		<div class=\"propertyRowLeft\">");
 					sb.append("			<label for=\"" + componentProperty.getName() + "\" onMouseOver=\"showDiv('helpLayer" + componentProperty.getComponentId() + "_" + componentProperty.getName() + "');\" onMouseOut=\"javascript:hideDiv('helpLayer" + componentProperty.getComponentId() + "_" + componentProperty.getName() + "');\">" + componentProperty.getDisplayName() + "</label>");
 					sb.append("		</div>");
@@ -398,7 +445,12 @@ public class PageEditorHelper extends BaseDeliveryController
 				}
 				else if(componentProperty.getType().equalsIgnoreCase(ComponentProperty.DATEFIELD))
 				{
-					sb.append("	<div class=\"propertyRow\">");
+					if(isAdvancedProperties)
+						sb.append("	<div class=\"propertyRow advancedProperty" + componentId + "\" style='display:none;'>");
+					else
+						sb.append("	<div class=\"propertyRow\">");
+					
+					//sb.append("	<div class=\"propertyRow\">");
 					sb.append("		<div class=\"propertyRowLeft\">");
 					sb.append("			<label for=\"" + componentProperty.getName() + "\" onMouseOver=\"showDiv('helpLayer" + componentProperty.getComponentId() + "_" + componentProperty.getName() + "');\" onMouseOut=\"javascript:hideDiv('helpLayer" + componentProperty.getComponentId() + "_" + componentProperty.getName() + "');\">" + componentProperty.getDisplayName() + "</label>");
 					sb.append("		</div>");
@@ -442,7 +494,12 @@ public class PageEditorHelper extends BaseDeliveryController
 				}
 				else if(componentProperty.getType().equalsIgnoreCase(ComponentProperty.TEXTAREA))
 				{
-					sb.append("	<div class=\"propertyRow\">");
+					if(isAdvancedProperties)
+						sb.append("	<div class=\"propertyRow advancedProperty" + componentId + "\" style='display:none;'>");
+					else
+						sb.append("	<div class=\"propertyRow\">");
+					
+					//sb.append("	<div class=\"propertyRow\">");
 					sb.append("		<div class=\"propertyRowLeft\">");
 					sb.append("		<label for=\"" + componentProperty.getName() + "\" onMouseOver=\"showDiv('helpLayer" + componentProperty.getComponentId() + "_" + componentProperty.getName() + "');\" onMouseOut=\"javascript:hideDiv('helpLayer" + componentProperty.getComponentId() + "_" + componentProperty.getName() + "');\">" + componentProperty.getDisplayName() + "</label>");
 					sb.append("		</div>");
@@ -477,7 +534,12 @@ public class PageEditorHelper extends BaseDeliveryController
 				}
 				else if(componentProperty.getType().equalsIgnoreCase(ComponentProperty.SELECTFIELD))
 				{
-					sb.append("	<div class=\"propertyRow\">");
+					if(isAdvancedProperties)
+						sb.append("	<div class=\"propertyRow advancedProperty" + componentId + "\" style='display:none;'>");
+					else
+						sb.append("	<div class=\"propertyRow\">");
+					
+					//sb.append("	<div class=\"propertyRow\">");
 					sb.append("		<div class=\"propertyRowLeft\">");
 					sb.append("		<label for=\"" + componentProperty.getName() + "\" onMouseOver=\"showDiv('helpLayer" + componentProperty.getComponentId() + "_" + componentProperty.getName() + "');\" onMouseOut=\"javascript:hideDiv('helpLayer" + componentProperty.getComponentId() + "_" + componentProperty.getName() + "');\">" + componentProperty.getDisplayName() + "</label>");
 					sb.append("		</div>");
@@ -542,7 +604,12 @@ public class PageEditorHelper extends BaseDeliveryController
 				}
 				else if(componentProperty.getType().equalsIgnoreCase(ComponentProperty.CHECKBOXFIELD))
 				{
-					sb.append("	<div class=\"propertyRow\">");
+					if(isAdvancedProperties)
+						sb.append("	<div class=\"propertyRow advancedProperty" + componentId + "\" style='display:none;'>");
+					else
+						sb.append("	<div class=\"propertyRow\">");
+					
+					//sb.append("	<div class=\"propertyRow\">");
 					sb.append("		<div class=\"propertyRowLeft\">");
 					sb.append("		<label for=\"" + componentProperty.getName() + "\" onMouseOver=\"showDiv('helpLayer" + componentProperty.getComponentId() + "_" + componentProperty.getName() + "');\" onMouseOut=\"javascript:hideDiv('helpLayer" + componentProperty.getComponentId() + "_" + componentProperty.getName() + "');\">" + componentProperty.getDisplayName() + "</label>");
 					sb.append("		</div>");
@@ -600,7 +667,12 @@ public class PageEditorHelper extends BaseDeliveryController
 				/*
 				else if(componentProperty.getType().equalsIgnoreCase(ComponentProperty.RADIOBUTTONFIELD))
 				{
-					sb.append("	<div class=\"propertyRow\">");
+					if(isAdvancedProperties)
+						sb.append("	<div class=\"propertyRow advancedProperty" + componentId + "\" style='display:none;'>");
+					else
+						sb.append("	<div class=\"propertyRow\">");
+					
+					//sb.append("	<div class=\"propertyRow\">");
 					sb.append("		<label for=\"" + componentProperty.getName() + "\" onMouseOver=\"showDiv('helpLayer" + componentProperty.getComponentId() + "_" + componentProperty.getName() + "');\" onMouseOut=\"javascript:hideDiv('helpLayer" + componentProperty.getComponentId() + "_" + componentProperty.getName() + "');\">" + componentProperty.getDisplayName() + "</label>");
 					
 					if(hasAccessToProperty)
@@ -1220,6 +1292,8 @@ public class PageEditorHelper extends BaseDeliveryController
 					componentProperties.add(property);
 				}
 			}
+			
+			addSystemProperties(componentProperties, componentId, siteNodeId, languageId, contentId, locale, db, principal);
 		}
 		catch(Exception e)
 		{
@@ -1874,6 +1948,23 @@ public class PageEditorHelper extends BaseDeliveryController
 							property.put("path", path);
 							property.put("type", type);
 							
+							if(propertyName.equals(InfoGlueComponent.CACHE_RESULT_PROPERTYNAME) && (path.equalsIgnoreCase("true") || path.equalsIgnoreCase("yes")))
+							{
+								component.setCacheResult(true);
+							}
+							if(propertyName.equals(InfoGlueComponent.UPDATE_INTERVAL_PROPERTYNAME) && !path.equals(""))
+							{
+								try { component.setUpdateInterval(Integer.parseInt(path)); } catch (Exception e) { logger.warn("The component " + component.getName() + " " + InfoGlueComponent.UPDATE_INTERVAL_PROPERTYNAME + " with a faulty value on page with siteNodeId=" + siteNodeId + ":" + e.getMessage()); }
+							}
+							if(propertyName.equals(InfoGlueComponent.CACHE_KEY_PROPERTYNAME) && !path.equals(""))
+							{
+								component.setCacheKey(path);
+							}
+							if(propertyName.equals(InfoGlueComponent.PREPROCESSING_ORDER_PROPERTYNAME) && !path.equals(""))
+							{
+								component.setPreProcessingOrder(path);
+							}
+
 							List<ComponentBinding> bindings = new ArrayList<ComponentBinding>();
 							List bindingNodeList = propertyElement.selectNodes("binding");
 							Iterator bindingNodeListIterator = bindingNodeList.iterator();
@@ -2287,4 +2378,103 @@ public class PageEditorHelper extends BaseDeliveryController
 		return newAttribute;
 	}	
 
+	/*
+	 * This method returns a bean representing a list of ComponentProperties that the component has.
+	 */
+	 
+	public void addSystemProperties(List componentProperties, Integer componentId, Integer siteNodeId, Integer languageId, Integer contentId, Locale locale, Database db, InfoGluePrincipal principal) throws Exception
+	{
+		ComponentProperty cacheResultProperty = new ComponentProperty();
+		cacheResultProperty.setComponentId(componentId);
+		cacheResultProperty.setName("CacheResult");
+		cacheResultProperty.setDisplayName("Cache Result");
+		cacheResultProperty.setDescription("Do you want to cache the components rendered result.");
+		cacheResultProperty.setDefaultValue("false");
+		cacheResultProperty.setDataProvider("");
+		cacheResultProperty.setType("select");
+		cacheResultProperty.setVisualizingAction("");
+		cacheResultProperty.setCreateAction("");
+		
+		ComponentPropertyOption cpoNo = new ComponentPropertyOption("No", "false");
+		ComponentPropertyOption cpoYes = new ComponentPropertyOption("Yes", "true");
+		cacheResultProperty.getOptions().add(cpoNo);
+		cacheResultProperty.getOptions().add(cpoYes);
+			
+		String value = getComponentPropertyValue(componentId, "CacheResult", siteNodeId, languageId, contentId, locale, db, principal, cacheResultProperty);
+		cacheResultProperty.setValue(value);
+		
+		componentProperties.add(cacheResultProperty);
+
+		ComponentProperty cacheIntervalProperty = new ComponentProperty();
+		cacheIntervalProperty.setComponentId(componentId);
+		cacheIntervalProperty.setName("UpdateInterval");
+		cacheIntervalProperty.setDisplayName("Cache Update Interval");
+		cacheIntervalProperty.setDescription("Interval before the cache gets updated");
+		cacheIntervalProperty.setDefaultValue("-1");
+		cacheIntervalProperty.setDataProvider("");
+		cacheIntervalProperty.setType("select");
+		cacheIntervalProperty.setVisualizingAction("");
+		cacheIntervalProperty.setCreateAction("");
+		
+		cacheIntervalProperty.getOptions().add(new ComponentPropertyOption("1 second", "1"));
+		cacheIntervalProperty.getOptions().add(new ComponentPropertyOption("2 seconds", "2"));
+		cacheIntervalProperty.getOptions().add(new ComponentPropertyOption("3 seconds", "3"));
+		cacheIntervalProperty.getOptions().add(new ComponentPropertyOption("4 seconds", "4"));
+		cacheIntervalProperty.getOptions().add(new ComponentPropertyOption("5 seconds", "5"));
+		cacheIntervalProperty.getOptions().add(new ComponentPropertyOption("10 seconds", "10"));
+		cacheIntervalProperty.getOptions().add(new ComponentPropertyOption("15 seconds", "15"));
+		cacheIntervalProperty.getOptions().add(new ComponentPropertyOption("20 seconds", "20"));
+		cacheIntervalProperty.getOptions().add(new ComponentPropertyOption("30 seconds", "30"));
+		cacheIntervalProperty.getOptions().add(new ComponentPropertyOption("1 minute", "60"));
+		cacheIntervalProperty.getOptions().add(new ComponentPropertyOption("2 minutes", "120"));
+		cacheIntervalProperty.getOptions().add(new ComponentPropertyOption("5 minutes", "300"));
+		cacheIntervalProperty.getOptions().add(new ComponentPropertyOption("10 minutes", "600"));
+		cacheIntervalProperty.getOptions().add(new ComponentPropertyOption("30 minutes", "1800"));
+		cacheIntervalProperty.getOptions().add(new ComponentPropertyOption("1 hour", "3600"));
+		cacheIntervalProperty.getOptions().add(new ComponentPropertyOption("2 hours", "7200"));
+		cacheIntervalProperty.getOptions().add(new ComponentPropertyOption("6 hours", "21600"));
+		cacheIntervalProperty.getOptions().add(new ComponentPropertyOption("12 hours", "43200"));
+		cacheIntervalProperty.getOptions().add(new ComponentPropertyOption("24 hours", "86400"));
+
+		String updateIntervalValue = getComponentPropertyValue(componentId, "UpdateInterval", siteNodeId, languageId, contentId, locale, db, principal, cacheIntervalProperty);
+		cacheIntervalProperty.setValue(updateIntervalValue);
+		
+		componentProperties.add(cacheIntervalProperty);
+
+		ComponentProperty cacheKeyProperty = new ComponentProperty();
+		cacheKeyProperty.setComponentId(componentId);
+		cacheKeyProperty.setName("CacheKey");
+		cacheKeyProperty.setDisplayName("Cache Key");
+		cacheKeyProperty.setDescription("Key for the component cache");
+		cacheKeyProperty.setDefaultValue("");
+		cacheKeyProperty.setDataProvider("");
+		cacheKeyProperty.setType("textfield");
+		cacheKeyProperty.setVisualizingAction("");
+		cacheKeyProperty.setCreateAction("");
+		
+		String cacheKeyValue = getComponentPropertyValue(componentId, "CacheKey", siteNodeId, languageId, contentId, locale, db, principal, cacheKeyProperty);
+		cacheKeyProperty.setValue(cacheKeyValue);
+		
+		componentProperties.add(cacheKeyProperty);
+
+		ComponentProperty priorityProperty = new ComponentProperty();
+		priorityProperty.setComponentId(componentId);
+		priorityProperty.setName("PreRenderOrder");
+		priorityProperty.setDisplayName("Pre processing order");
+		priorityProperty.setDescription("State the order in which the component get's prerendered");
+		priorityProperty.setDefaultValue("99");
+		priorityProperty.setDataProvider("");
+		priorityProperty.setType("select");
+		priorityProperty.setVisualizingAction("");
+		priorityProperty.setCreateAction("");
+		
+		for(int i=0; i<15; i++)
+			priorityProperty.getOptions().add(new ComponentPropertyOption("" + i, "" + i));
+
+		String preRenderOrderPropertyValue = getComponentPropertyValue(componentId, "PreRenderOrder", siteNodeId, languageId, contentId, locale, db, principal, priorityProperty);
+		priorityProperty.setValue(preRenderOrderPropertyValue);
+		
+		componentProperties.add(priorityProperty);
+
+	}
 }

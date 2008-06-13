@@ -581,19 +581,18 @@ public class ComponentLogic
 
 	public String getPropertyValue(String propertyName, boolean useLangaugeFallback, boolean useInheritance, boolean useRepositoryInheritance, boolean useStructureInheritance) throws SystemException
 	{
+		Timer t = new Timer();
+		
 		String propertyValue = "";
 		
-		if(propertyName.equals("Label text"))
-			System.out.println("\nStarting getPropertyValue:" + propertyName);
-
 		Map property = getInheritedComponentProperty(this.infoGlueComponent, propertyName, useInheritance, useRepositoryInheritance, useStructureInheritance);
-		if(propertyName.equals("Label text"))
-			System.out.println("property:" + property);
+		//t.printElapsedTimeNano("p1");
 		if(property != null)
 		{	
 			if(property != null)
 			{
 				propertyValue = (String)property.get("path");
+				/*
 				if(propertyValue == null)
 				{
 					Iterator keysIterator = property.keySet().iterator();
@@ -602,34 +601,40 @@ public class ComponentLogic
 						String key = (String)keysIterator.next();
 					}
 				}
+				*/
 			}
 		}
-		if(propertyName.equals("Label text"))
-			System.out.println("------->propertyValue:" + propertyValue);
+		//t.printElapsedTimeNano("p2");
+
+		//System.out.println("Detta måste tas fram och optimeras...");
+		
 		if(propertyValue == null || propertyValue.equals(""))
 		{
 			try
 			{
 				ContentVO contentVO = templateController.getContent(this.infoGlueComponent.getContentId());
+				//t.printElapsedTimeNano("p3");
 				LanguageVO masterLanguage = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForRepository(templateController.getDatabase(), contentVO.getRepositoryId());
+				//t.printElapsedTimeNano("p4");
 	
-				if(propertyName.equals("Label text"))
-					System.out.println("Getting default value...");
 				ComponentPropertyDefinition propertyDefinition = getComponentPropertyDefinition(this.infoGlueComponent.getContentId(), propertyName, templateController.getSiteNodeId(), masterLanguage.getId(), templateController.getContentId(), templateController.getDatabase(), templateController.getPrincipal());
 				if(propertyDefinition != null)
 					propertyValue = propertyDefinition.getDefaultValue();
-				if(propertyName.equals("Label text"))
-					System.out.println("propertyValue:" + propertyValue);
+				//t.printElapsedTimeNano("p5");
+
 			}
 			catch (Exception e) 
 			{
 				e.printStackTrace();
 			}
 		}
-
+		
+		
 		if(propertyValue != null)
 			propertyValue = propertyValue.replaceAll("igbr", separator);
 
+		//t.printElapsedTimeNano("Getting property took");
+		
 		return propertyValue;
 	}
 
@@ -2863,7 +2868,7 @@ public class ComponentLogic
 																			
 		if(cachedPageComponentsString != null)
 		{
-			System.out.println("Returning cachedPageComponentsString for cacheKey: " + cacheKey + ":" + contentVersionIds);
+			//System.out.println("Returning cachedPageComponentsString for cacheKey: " + cacheKey + ":" + contentVersionIds);
 		    if(usedContentVersionId != null && contentVersionIds != null)
 		        usedContentVersionId.addAll(contentVersionIds);
 	        

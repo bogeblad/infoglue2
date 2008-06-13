@@ -26,6 +26,7 @@ package org.infoglue.deliver.invokers;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -205,7 +206,13 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 		{
    			Document document = domBuilder.getDocument(componentXML);
 			
-			List pageComponents = getPageComponents(getDatabase(), componentXML, document.getRootElement(), "base", this.getTemplateController(), null);
+   			List unsortedPageComponents = new ArrayList();
+			List pageComponents = getPageComponents(getDatabase(), componentXML, document.getRootElement(), "base", this.getTemplateController(), null, unsortedPageComponents);
+			
+			Timer t = new Timer();
+			preProcessComponents(nodeDeliveryController, repositoryId, unsortedPageComponents, pageComponents);
+			t.printElapsedTime("\nTime to preprocess components\n");
+			
 			if(pageComponents.size() > 0)
 			{
 				baseComponent = (InfoGlueComponent)pageComponents.get(0);
@@ -248,6 +255,68 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 		pageString = decorateHeadAndPageWithVarsFromComponents(pageString);
 		
 		this.setPageString(pageString);
+	}
+
+	protected void preProcessComponents(NodeDeliveryController nodeDeliveryController, Integer repositoryId, List unsortedPageComponents, List pageComponents) throws SystemException, Exception
+	{
+		//System.out.println("pageComponents:" + pageComponents.size());
+		//System.out.println("unsortedPageComponents:" + unsortedPageComponents.size());
+
+		Timer t = new Timer();
+		
+		List sortedPageComponents = new ArrayList();
+		Iterator unsortedPageComponentsIterator = unsortedPageComponents.iterator();
+		while(unsortedPageComponentsIterator.hasNext())
+		{
+			InfoGlueComponent component = (InfoGlueComponent)unsortedPageComponentsIterator.next();
+			//System.out.println("Unsorted component:" + component.getName() + " - " + component.getContentId());
+			//System.out.println("Properties:" + component.getProperties());
+			//t.printElapsedTime("1");
+			this.getTemplateController().setComponentLogic(new ComponentLogic(this.getTemplateController(), component));
+			this.getTemplateController().getDeliveryContext().getUsageListeners().add(this.getTemplateController().getComponentLogic().getComponentDeliveryContext());
+			//t.printElapsedTime("2");
+			//String preRenderOrder = this.getTemplateController().getComponentLogic().getPropertyValue("PreRenderOrder", true, false);
+			//t.printElapsedTime("3");
+			
+			int index = 0;
+			Iterator sortedPageComponentsIterator = sortedPageComponents.iterator();
+			while(sortedPageComponentsIterator.hasNext())
+			{
+				InfoGlueComponent sortedComponent = (InfoGlueComponent)sortedPageComponentsIterator.next();
+				//System.out.println("component:" + component.getName() + " - " + component.getContentId());
+				//System.out.println("Properties:" + component.getProperties());
+				this.getTemplateController().setComponentLogic(new ComponentLogic(this.getTemplateController(), sortedComponent));
+				this.getTemplateController().getDeliveryContext().getUsageListeners().add(this.getTemplateController().getComponentLogic().getComponentDeliveryContext());
+				//String existingPreRenderOrder = this.getTemplateController().getComponentLogic().getPropertyValue("PreRenderOrder", true, false);
+				//System.out.println(existingPreRenderOrder + "=" + preRenderOrder + "[" + existingPreRenderOrder.compareTo(preRenderOrder) + "]");
+				if(sortedComponent.getPreProcessingOrder().compareTo(component.getPreProcessingOrder()) < 0)
+					break;
+
+				index++;
+			}
+			//t.printElapsedTime("4");
+			
+			sortedPageComponents.add(index, component);
+		}
+
+		Iterator sortedPageComponentsIterator = sortedPageComponents.iterator();
+		while(sortedPageComponentsIterator.hasNext())
+		{
+			InfoGlueComponent component = (InfoGlueComponent)sortedPageComponentsIterator.next();
+			//System.out.println("Sorted component:" + component.getName() + " - " + component.getContentId());
+			//System.out.println("Properties:" + component.getProperties());
+			//t.printElapsedTime("5");
+			this.getTemplateController().setComponentLogic(new ComponentLogic(this.getTemplateController(), component));
+			this.getTemplateController().getDeliveryContext().getUsageListeners().add(this.getTemplateController().getComponentLogic().getComponentDeliveryContext());
+			//t.printElapsedTime("6");
+			
+			ContentVO metaInfoContentVO = nodeDeliveryController.getBoundContent(getDatabase(), this.getTemplateController().getPrincipal(), this.getDeliveryContext().getSiteNodeId(), this.getDeliveryContext().getLanguageId(), true, "Meta information", this.getDeliveryContext());
+			//t.printElapsedTime("7");
+			preProcessComponent(component, this.getTemplateController(), repositoryId, this.getDeliveryContext().getSiteNodeId(), this.getDeliveryContext().getLanguageId(), this.getDeliveryContext().getContentId(), metaInfoContentVO.getId());
+			//t.printElapsedTime("8");
+		}
+		
+		t.printElapsedTime("part 2 took");
 	}
 	
 	
@@ -522,6 +591,23 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 					property.put("path", path);
 					property.put("type", type);
 					
+					if(propertyName.equals(InfoGlueComponent.CACHE_RESULT_PROPERTYNAME) && (path.equalsIgnoreCase("true") || path.equalsIgnoreCase("yes")))
+					{
+						component.setCacheResult(true);
+					}
+					if(propertyName.equals(InfoGlueComponent.UPDATE_INTERVAL_PROPERTYNAME) && !path.equals(""))
+					{
+						try { component.setUpdateInterval(Integer.parseInt(path)); } catch (Exception e) { logger.warn("The component " + component.getName() + " " + InfoGlueComponent.UPDATE_INTERVAL_PROPERTYNAME + " with a faulty value on page " + this.getTemplateController().getOriginalFullURL() + ":" + e.getMessage()); }
+					}
+					if(propertyName.equals(InfoGlueComponent.CACHE_KEY_PROPERTYNAME) && !path.equals(""))
+					{
+						component.setCacheKey(path);
+					}
+					if(propertyName.equals(InfoGlueComponent.PREPROCESSING_ORDER_PROPERTYNAME) && !path.equals(""))
+					{
+						component.setPreProcessingOrder(path);
+					}
+					
 					List bindings = new ArrayList();
 					List bindingNodeList = propertyElement.selectNodes("binding");
 					//logger.info("bindingNodeList:" + bindingNodeList.getLength());
@@ -744,6 +830,23 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 					property.put("path", path);
 					property.put("type", type);
 					
+					if(propertyName.equals(InfoGlueComponent.CACHE_RESULT_PROPERTYNAME) && (path.equalsIgnoreCase("true") || path.equalsIgnoreCase("yes")))
+					{
+						component.setCacheResult(true);
+					}
+					if(propertyName.equals(InfoGlueComponent.UPDATE_INTERVAL_PROPERTYNAME) && !path.equals(""))
+					{
+						try { component.setUpdateInterval(Integer.parseInt(path)); } catch (Exception e) { logger.warn("The component " + component.getName() + " " + InfoGlueComponent.UPDATE_INTERVAL_PROPERTYNAME + " with a faulty value on page " + this.getTemplateController().getOriginalFullURL() + ":" + e.getMessage()); }
+					}
+					if(propertyName.equals(InfoGlueComponent.CACHE_KEY_PROPERTYNAME) && !path.equals(""))
+					{
+						component.setCacheKey(path);
+					}
+					if(propertyName.equals(InfoGlueComponent.PREPROCESSING_ORDER_PROPERTYNAME) && !path.equals(""))
+					{
+						component.setPreProcessingOrder(path);
+					}
+
 					List bindings = new ArrayList();
 					List bindingNodeList = propertyElement.selectNodes("binding");
 					////logger.info("bindingNodeList:" + bindingNodeList.getLength());
@@ -820,9 +923,13 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 	    boolean renderComponent = false;
 	    boolean cacheComponent = false;
 
-		String cacheResult 		 = templateController.getComponentLogic().getPropertyValue("CacheResult", true, false);
-		String updateInterval 	 = templateController.getComponentLogic().getPropertyValue("UpdateInterval", true, false);
-		String componentCacheKey = templateController.getComponentLogic().getPropertyValue("CacheKey", true, false);
+		//String cacheResult 		 = templateController.getComponentLogic().getPropertyValue("CacheResult", true, false);
+	    //String updateInterval 	 = templateController.getComponentLogic().getPropertyValue("UpdateInterval", true, false);
+	    //String componentCacheKey = templateController.getComponentLogic().getPropertyValue("CacheKey", true, false);
+
+		boolean cacheResult  		= component.getCacheResult();
+		int updateInterval 	 		= component.getUpdateInterval();
+		String componentCacheKey 	= component.getCacheKey();
 		
 		if(componentCacheKey == null || componentCacheKey.equals(""))
 			componentCacheKey = CmsPropertyHandler.getComponentKey();
@@ -861,8 +968,9 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 			logger.debug("componentCacheKey:" + componentCacheKey);
 		}
 
-	    if(cacheResult == null || !cacheResult.equalsIgnoreCase("true"))
-		{
+	    //if(cacheResult == null || !cacheResult.equalsIgnoreCase("true"))
+	    if(!cacheResult)
+	    {
 		    renderComponent = true;
 		}
 		else
@@ -881,9 +989,10 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 			if(logger.isDebugEnabled())
 				logger.debug("componentCacheKey:" + componentCacheKey);
 
-            if(updateInterval != null && !updateInterval.equals("") && !updateInterval.equals("-1"))
+            //if(updateInterval != null && !updateInterval.equals("") && !updateInterval.equals("-1"))
+            if(updateInterval > 0)
             {
-            	String cachedString = (String)CacheController.getCachedObjectFromAdvancedCache("componentCache", componentCacheKey, new Integer(updateInterval).intValue());
+            	String cachedString = (String)CacheController.getCachedObjectFromAdvancedCache("componentCache", componentCacheKey, updateInterval);
             	if(cachedString != null)
     	        	decoratedComponent.append(cachedString);
             }
@@ -1002,6 +1111,60 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 		return decoratedComponent.toString();
 	}
 
+	/**
+	 * This method renders the base component and all it's children.
+	 */
+
+	private String preProcessComponent(InfoGlueComponent component, TemplateController templateController, Integer repositoryId, Integer siteNodeId, Integer languageId, Integer contentId, Integer metainfoContentId) throws Exception
+	{
+		if(logger.isDebugEnabled())
+		{
+			logger.debug("\n\n**** Pre processing component ****");
+			logger.debug("id: " + component.getId());
+			logger.debug("contentId: " + component.getContentId());
+			logger.debug("name: " + component.getName());
+			logger.debug("slotName: " + component.getSlotName());
+		}
+		
+		StringBuffer decoratedComponent = new StringBuffer();
+		
+		templateController.setComponentLogic(new ComponentLogic(templateController, component));
+		templateController.getDeliveryContext().getUsageListeners().add(templateController.getComponentLogic().getComponentDeliveryContext());
+
+		try
+		{
+		    String componentString = getComponentPreProcessingTemplateString(templateController, component.getContentId(), component); 
+			if(logger.isDebugEnabled())
+				logger.debug("componentString:" + componentString);
+		    
+			if(componentString != null && !componentString.equals(""))
+			{
+				Map context = getDefaultContext();
+		    	context.put("templateLogic", templateController);
+		    	StringWriter cacheString = new StringWriter();
+				PrintWriter cachedStream = new PrintWriter(cacheString);
+				//Timer t = new Timer();
+				new VelocityTemplateProcessor().renderTemplate(context, cachedStream, componentString, false, component, " - PreTemplate");
+				//t.printElapsedTime("Rendering of " + component.getName() + " took ");
+				componentString = cacheString.toString();
+	
+				System.out.println("componentString:" + componentString.trim());
+			}
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		    logger.warn("An component with either an empty template or with no template in the sitelanguages was found:" + e.getMessage(), e);	
+		}    	
+		
+		templateController.getDeliveryContext().getUsageListeners().remove(templateController.getComponentLogic().getComponentDeliveryContext());
+
+		if(logger.isDebugEnabled())
+			logger.debug("decoratedComponent:" + decoratedComponent.toString());
+
+		return decoratedComponent.toString();
+	}
+
 
 	/**
 	 * This method fetches the component template as a string.
@@ -1043,6 +1206,27 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 
 		return template;
 	}
+	
+	/**
+	 * This method fetches the component template as a string.
+	 */
+   
+	protected String getComponentPreProcessingTemplateString(TemplateController templateController, Integer contentId, InfoGlueComponent component) throws SystemException, Exception
+	{
+		String template = null;
+
+		try
+		{
+	        template = templateController.getContentAttribute(contentId, "PreTemplate", true);
+		}
+		catch(Exception e)
+		{
+			logger.error(e.getMessage(), e);
+		}
+
+		return template;
+	}
+
 	
 	/**
 	 * This method fetches a subcomponent from either the current page or from a parent node if it's not defined.
@@ -1299,8 +1483,13 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 	 *
 	 * @author mattias
 	 */
-
+	/*
 	protected List getPageComponents(Database db, String componentXML, Element element, String slotName, TemplateController templateController, InfoGlueComponent parentComponent) throws Exception
+	{
+		return getPageComponents(db, componentXML, element, slotName, templateController, parentComponent, null);
+	}
+	*/
+	protected List getPageComponents(Database db, String componentXML, Element element, String slotName, TemplateController templateController, InfoGlueComponent parentComponent, List sortedPageComponents) throws Exception
 	{
 		//List components = new ArrayList();
 		
@@ -1309,15 +1498,26 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 		String key = "" + componentXML.hashCode() + "_" +  templateController.getLanguageId() + "_" + slotName;
 		if(parentComponent != null)
 			key = "" + componentXML.hashCode() + "_" +  templateController.getLanguageId() + "_" + slotName + "_" + parentComponent.getId() + "_" + parentComponent.getName() + "_" + parentComponent.getIsInherited();
-		
-		Object componentsCandidate = CacheController.getCachedObjectFromAdvancedCache("pageComponentsCache", key);
-		List components = new ArrayList();
-		String[] groups = null;
+		String keyChildComponents = key + "_childComponents";
 			
+		Object componentsCandidate = CacheController.getCachedObjectFromAdvancedCache("pageComponentsCache", key);
+		Object childComponentsCandidate = CacheController.getCachedObjectFromAdvancedCache("pageComponentsCache", keyChildComponents);
+		List components = new ArrayList();
+		List childComponents = new ArrayList();
+		String[] groups = null;
+
+		if(childComponentsCandidate != null)
+		{
+			if(componentsCandidate instanceof NullObject)
+				childComponents = Collections.EMPTY_LIST;
+			else
+				childComponents = (List)childComponentsCandidate;
+		}
+
 		if(componentsCandidate != null)
 		{
 			if(componentsCandidate instanceof NullObject)
-				components = null;				
+				components = null;
 			else
 				components = (List)componentsCandidate;
 		}
@@ -1423,6 +1623,23 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 							property.put("path", path);
 							property.put("type", type);
 							
+							if(propertyName.equals(InfoGlueComponent.CACHE_RESULT_PROPERTYNAME) && (path.equalsIgnoreCase("true") || path.equalsIgnoreCase("yes")))
+							{
+								component.setCacheResult(true);
+							}
+							if(propertyName.equals(InfoGlueComponent.UPDATE_INTERVAL_PROPERTYNAME) && !path.equals(""))
+							{
+								try { component.setUpdateInterval(Integer.parseInt(path)); } catch (Exception e) { logger.warn("The component " + component.getName() + " " + InfoGlueComponent.UPDATE_INTERVAL_PROPERTYNAME + " with a faulty value on page " + this.getTemplateController().getOriginalFullURL() + ":" + e.getMessage()); }
+							}
+							if(propertyName.equals(InfoGlueComponent.CACHE_KEY_PROPERTYNAME) && !path.equals(""))
+							{
+								component.setCacheKey(path);
+							}
+							if(propertyName.equals(InfoGlueComponent.PREPROCESSING_ORDER_PROPERTYNAME) && !path.equals(""))
+							{
+								component.setPreProcessingOrder(path);
+							}
+
 							List<ComponentBinding> bindings = new ArrayList<ComponentBinding>();
 							List bindingNodeList = propertyElement.selectNodes("binding");
 							Iterator bindingNodeListIterator = bindingNodeList.iterator();
@@ -1540,8 +1757,10 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 							
 							//groups = new String[]{"content_" + contentVO.getId()};
 							
-							List subComponents = getPageComponents(db, componentXML, componentsElement, slotId, templateController, component);
-							//logger.info("subComponents:" + subComponents);
+							List tempChildComponents = new ArrayList();
+							List subComponents = getPageComponents(db, componentXML, componentsElement, slotId, templateController, component, childComponents);
+							childComponents.addAll(tempChildComponents);
+							System.out.println("subComponents:" + subComponents.size());
 							slot.setComponents(subComponents);
 							
 							component.getSlotList().add(slot);
@@ -1563,15 +1782,29 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 				}
 				slotPosition++;
 			}			
+
+			if(groups == null)
+				groups = new String[]{"selectiveCacheUpdateNonApplicable"};
+			
+			if(components != null)
+			{
+				CacheController.cacheObjectInAdvancedCache("pageComponentsCache", key, components, groups, false);				
+				CacheController.cacheObjectInAdvancedCache("pageComponentsCache", keyChildComponents, childComponents, groups, false);				
+			}
+			else
+			{
+				CacheController.cacheObjectInAdvancedCache("pageComponentsCache", key, new NullObject(), groups, false);
+				CacheController.cacheObjectInAdvancedCache("pageComponentsCache", keyChildComponents, new NullObject(), groups, false);
+			}
 		}		
 		
-		if(groups == null)
-			groups = new String[]{"selectiveCacheUpdateNonApplicable"};
-		
-		if(components != null)
-			CacheController.cacheObjectInAdvancedCache("pageComponentsCache", key, components, groups, false);
-		else
-			CacheController.cacheObjectInAdvancedCache("pageComponentsCache", key, new NullObject(), groups, false);
+		//System.out.println("sortedPageComponents:" + sortedPageComponents.size());
+		//System.out.println("childComponents:" + childComponents.size());
+		if(sortedPageComponents != null)
+		{
+			sortedPageComponents.addAll(components);
+			sortedPageComponents.addAll(childComponents);
+		}
 		
 		return components;
 	}

@@ -32,7 +32,16 @@ public class ComponentPropertyOption
 {
 	private String name;
 	private String value;
-		
+
+	public ComponentPropertyOption()
+	{
+	}
+
+	public ComponentPropertyOption(String name, String value)
+	{
+		this.name = name;
+		this.value = value;
+	}
 	
     public String getName()
     {

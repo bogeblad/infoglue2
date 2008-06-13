@@ -139,7 +139,12 @@ public class AjaxDecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHT
 		    
 			decoratorTimer.printElapsedTime("After reading document");
 			
-			List pageComponents = getPageComponents(getDatabase(), componentXML, document.getRootElement(), "base", this.getTemplateController(), null);
+   			List unsortedPageComponents = new ArrayList();
+			List pageComponents = getPageComponents(getDatabase(), componentXML, document.getRootElement(), "base", this.getTemplateController(), null, unsortedPageComponents);
+
+			Timer t = new Timer();
+			preProcessComponents(nodeDeliveryController, repositoryId, unsortedPageComponents, pageComponents);
+			t.printElapsedTime("Time to preprocess components in ajax decorated mode");
 
 			if(pageComponents.size() > 0)
 			{
