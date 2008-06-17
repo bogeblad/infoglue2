@@ -1,6 +1,9 @@
+* :focus { outline: 0; }
+
 body.generaltooledit {
 	color            : #000000;
-	background-color : #FFFFFF;
+	/*background-color : #FFFFFF;*/
+	background-color: #f6f6f6;
 	padding			 : 0px;
 	margin			 : 0px;
 	width			 : 100%; 
@@ -40,11 +43,14 @@ body.generaltooledit {
 #igEditArea {
 	padding: 0px;
 	margin: 0px;
-	padding-bottom: 20px;
+	/*padding-bottom: 20px;*/
 	width: 100%; 
 	float: left;
 	display: inline;
-	background-color: #d6e7f7;
+	/*background-color: #d6e7f7;*/
+}
+.igScrollArea {
+	overflow: auto;
 }
 .ig-section-label {
 	font-weight		 : bold;
@@ -230,6 +236,63 @@ img.scaledbordered {
 	float: left;
 	border: 1px solid #bbb;
 	}
+
+
+/* Button in IG */
+.igToolbarButton
+{
+	abackground-image: url("../../images/v3/igToolbarButtonBackground.png");
+	abackground-position: 100% -26px;
+	abackground-repeat: no-repeat;
+	line-height: 26px;
+	height: 26px;
+	padding-right: 6px;
+	color: #555;
+	display: block;
+	float: left;
+	margin: 4px;
+	margin-left: 0px;
+	margin-right: 10px;
+	cursor: pointer;
+	border: 1px solid transparent;
+	-moz-border-radius: 3px;
+	-webkit-border-radius: 3px;
+}
+
+.igToolbarButtonOuterSpan
+{
+	abackground-image: url("../../images/v3/igToolbarButtonBackground.png");
+	background-position: 0px 0px;
+	background-repeat: no-repeat;
+	font-family: Tahoma;
+	font-size: 10pt;
+	padding-left: 6px;
+	line-height: 26px;
+	text-decoration: none;
+	height: 26px;
+	display: block;
+	float: left;
+}
+
+.igToolbarButtonOuterSpan span {
+	padding-left: 24px;
+	}
+
+.igToolbarButton:hover
+{
+	abackground-position: 100% -78px;
+	acolor: white;
+	text-decoration: none;
+	border: 1px solid #808080;
+	-moz-border-radius: 3px;
+	-webkit-border-radius: 3px;
+}
+
+.igToolbarButtonOuterSpan:hover
+{
+	abackground-position: 0px -52px;
+}
+
 
 /* MY General button classes */
 .yui-skin-sam .yui-button {

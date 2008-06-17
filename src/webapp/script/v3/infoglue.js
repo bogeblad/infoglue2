@@ -66,3 +66,18 @@ function resizeInlineTabDivs()
 	}
 }
 
+function resizeScrollArea()
+{
+	var dimensionsWidth = $(window).width();
+	var dimensionsHeight = $(window).height();
+  	//alert("dimensionsHeight:" + (dimensionsHeight - 78));
+  	if(dimensionsWidth != 0)
+  	{
+		$(".igScrollArea").css("height", dimensionsHeight - 78);
+		//$(".igScrollArea").css("width", dimensionsWidth);
+	}
+	else
+	{
+		setTimeout("resizeScrollArea()", 100);
+	}
+}
