@@ -1642,9 +1642,9 @@ public class DigitalAssetController extends BaseController
 			DigitalAsset digitalAsset = getDigitalAssetWithId(digitalAssetVO.getDigitalAssetId(), db);
 			
 			InputStream is = digitalAsset.getAssetBlob();
-			synchronized (is)
+			if((CmsPropertyHandler.getEnableDiskAssets().equals("false") || !tmpOutputFile.exists()) && is != null)
 			{
-				if((CmsPropertyHandler.getEnableDiskAssets().equals("false") || !tmpOutputFile.exists()) && is != null)
+				synchronized (is)
 				{
 					FileOutputStream fis = new FileOutputStream(tmpOutputFile);
 					BufferedOutputStream bos = new BufferedOutputStream(fis);
@@ -1683,35 +1683,46 @@ public class DigitalAssetController extends BaseController
 						}
 					}
 				}
-				else
-				{
-					if(logger.isInfoEnabled())
-					{
-						logger.info("Dumping from file - diskassets is on probably.");
-						logger.info("Inside the cms-app I think - we should take the file from disk");
-						logger.info("tmpOutputFile:" + tmpOutputFile.getAbsolutePath() + ":" + tmpOutputFile.exists());
-						logger.info("outputFile:" + outputFile.getAbsolutePath() + ":" + outputFile.exists());
-					}
-					
-					if(tmpOutputFile.exists())
-					{
-						logger.info("\n\nExists" + tmpOutputFile.getAbsolutePath() + "=" + tmpOutputFile.exists() + " OR " + outputFile.exists() + ":" + outputFile.length());
-						if(tmpOutputFile.length() == 0 || tmpOutputFile.length() == digitalAsset.getAssetFileSize() || outputFile.exists())
-						{
-							logger.info("outputFile:" + outputFile.getAbsolutePath());	
-							logger.info("written file:" + tmpOutputFile.length() + " - removing temp and not renaming it...");	
-							tmpOutputFile.delete();
-						}
-						else
-						{
-							logger.info("written file:" + tmpOutputFile.getAbsolutePath() + " - renaming it to " + outputFile.getAbsolutePath());	
-							tmpOutputFile.renameTo(outputFile);
-							logger.info("Renamed to" + outputFile.getAbsolutePath() + "=" + outputFile.exists());
-						}
-					}				
-				}
-				logger.info("end");
 			}
+			else
+			{
+				if(logger.isInfoEnabled())
+				{
+					logger.info("Dumping from file - diskassets is on probably.");
+					logger.info("Inside the cms-app I think - we should take the file from disk");
+					logger.info("tmpOutputFile:" + tmpOutputFile.getAbsolutePath() + ":" + tmpOutputFile.exists());
+					logger.info("outputFile:" + outputFile.getAbsolutePath() + ":" + outputFile.exists());
+				}
+				
+				if(tmpOutputFile.exists())
+				{
+					logger.info("\n\nExists" + tmpOutputFile.getAbsolutePath() + "=" + tmpOutputFile.exists() + " OR " + outputFile.exists() + ":" + outputFile.length());
+					if(tmpOutputFile.length() == 0 || tmpOutputFile.length() == digitalAsset.getAssetFileSize() || outputFile.exists())
+					{
+						logger.info("outputFile:" + outputFile.getAbsolutePath());	
+						logger.info("written file:" + tmpOutputFile.length() + " - removing temp and not renaming it...");	
+						tmpOutputFile.delete();
+					}
+					else
+					{
+						logger.info("written file:" + tmpOutputFile.getAbsolutePath() + " - renaming it to " + outputFile.getAbsolutePath());	
+						tmpOutputFile.renameTo(outputFile);
+						logger.info("Renamed to" + outputFile.getAbsolutePath() + "=" + outputFile.exists());
+					}
+				}
+				else if(CmsPropertyHandler.getApplicationName().equalsIgnoreCase("deliver"))
+				{
+					System.out.println("Was a deliver request and no asset was found on " + tmpOutputFile.getName() + " so let's get it from the cms.");
+					String cmsBaseUrl = CmsPropertyHandler.getCmsFullBaseUrl();
+					//System.out.println("cmsBaseUrl:" + cmsBaseUrl);
+					if(CmsPropertyHandler.getEnableDiskAssets().equals("true"))
+					{
+						HttpHelper httpHelper = new HttpHelper();
+						httpHelper.downloadFile("" + cmsBaseUrl + "/DownloadProtectedAsset.action?digitalAssetId=" + digitalAssetVO.getId(), outputFile);
+					}
+				}
+			}
+			logger.info("end");
 			
 			if(logger.isInfoEnabled())
 			{

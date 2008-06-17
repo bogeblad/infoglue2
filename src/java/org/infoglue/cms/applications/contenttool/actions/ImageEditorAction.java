@@ -316,10 +316,25 @@ public class ImageEditorAction extends InfoGlueAbstractAction
 		    digitalAssetVO = DigitalAssetController.create(newAsset, is, this.contentVersionId, this.getInfoGluePrincipal());
  		//else
 		//    digitalAssetVO = DigitalAssetController.create(newAsset, is, this.entity, this.entityId);
-
+		
+		if(is != null)
+			is.close();
+		
     	workingFileName = "imageEditorWK_" + System.currentTimeMillis() + "_" + this.getInfoGluePrincipal().getName().hashCode() + "_" + digitalAssetVO.getDigitalAssetId() + ".png";
-		boolean deleted = file.delete();
-		//System.out.println("file:" + file.getAbsolutePath() + ":" + deleted);
+    	if(CmsPropertyHandler.getEnableDiskAssets().equals("true") && file.exists())
+    	{
+			String folderName = "" + (digitalAssetVO.getDigitalAssetId().intValue() / 1000);
+			String assetFileName = "" + digitalAssetVO.getAssetFilePath() + File.separator + folderName + File.separator + digitalAssetVO.getId() + "_" + digitalAssetVO.getAssetFileName();
+			//System.out.println("Going to move " + file.getName() + " to " + assetFileName);
+    		File finalAssetFile = new File(assetFileName);
+    		boolean moved = file.renameTo(finalAssetFile);
+			//System.out.println("moved:" + finalAssetFile.getAbsolutePath() + ":" + moved);    		
+    	}
+    	else
+    	{
+    		boolean deleted = file.delete();
+			//System.out.println("file:" + file.getAbsolutePath() + ":" + deleted);
+    	}
 
 		cleanOldWorkingFiles(true);
 		

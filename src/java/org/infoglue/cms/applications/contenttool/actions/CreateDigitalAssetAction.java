@@ -432,9 +432,10 @@ public class CreateDigitalAssetAction extends ViewDigitalAssetAction
 							}
 						}
 						
+						boolean keepOriginal = true;
 						if(this.contentVersionId != null)
 						{
-						    boolean keepOriginal = handleTransformations(newAsset, file, contentType);
+							keepOriginal = handleTransformations(newAsset, file, contentType);
 						    if(keepOriginal)
 						    	digitalAssetVO = DigitalAssetController.create(newAsset, is, this.contentVersionId, this.getInfoGluePrincipal());
 						}
@@ -445,12 +446,17 @@ public class CreateDigitalAssetAction extends ViewDigitalAssetAction
 
 						if(CmsPropertyHandler.getEnableDiskAssets().equals("true"))
 						{
-							String assetFileName = "" + digitalAssetVO.getAssetFilePath() + File.separator + digitalAssetVO.getId() + "_" + digitalAssetVO.getAssetFileName();
-							//System.out.println("newAsset:" + assetFileName);
-							File assetFile = new File(assetFileName);
-							//System.out.println("Renaming:" + file.getAbsolutePath() + " to " + assetFile.getAbsolutePath());
-							file.renameTo(assetFile);
-							//System.out.println("apaFile:" + assetFile.exists());
+							if(keepOriginal)
+							{
+								//String assetFileName = "" + digitalAssetVO.getAssetFilePath() + File.separator + digitalAssetVO.getId() + "_" + digitalAssetVO.getAssetFileName();
+								String folderName = "" + (digitalAssetVO.getDigitalAssetId().intValue() / 1000);
+								String assetFileName = "" + digitalAssetVO.getAssetFilePath() + File.separator + folderName + File.separator + digitalAssetVO.getId() + "_" + digitalAssetVO.getAssetFileName();
+								//System.out.println("newAsset:" + assetFileName);
+								File assetFile = new File(assetFileName);
+								//System.out.println("Renaming:" + file.getAbsolutePath() + " to " + assetFile.getAbsolutePath());
+								file.renameTo(assetFile);
+								//System.out.println("apaFile:" + assetFile.exists());
+							}
 						}
 						
 						this.uploadedFilesCounter = new Integer(this.uploadedFilesCounter.intValue() + 1);
@@ -597,7 +603,11 @@ public class CreateDigitalAssetAction extends ViewDigitalAssetAction
     	image = imaging.scale(original, aspect);        	
 	
     	String workingFileName = "" + originalAssetVO.getDigitalAssetId() + "_" + assetSuffix + "." + outputFormat.toLowerCase();
-    	File outputFile = new File(CmsPropertyHandler.getDigitalAssetPath() + File.separator + workingFileName);
+    	long timeStamp = System.currentTimeMillis();
+    	if(originalAssetVO.getDigitalAssetId() == null)
+    		workingFileName = "" + timeStamp + "_" + assetSuffix + "." + outputFormat.toLowerCase();
+    	
+    	File outputFile = new File(CmsPropertyHandler.getDigitalAssetPath() + File.separator + File.separator + workingFileName);
 		javax.imageio.ImageIO.write(image, outputFormat, outputFile);
 		
 		String assetContentType = "image/png";
@@ -616,6 +626,12 @@ public class CreateDigitalAssetAction extends ViewDigitalAssetAction
 		InputStream is = new FileInputStream(outputFile);
 		this.digitalAssetVO = DigitalAssetController.create(digitalAssetVO, is, this.contentVersionId, this.getInfoGluePrincipal());
 		is.close();
+		
+		//System.out.println("this.digitalAssetVO in scale:" + this.digitalAssetVO.getId());
+    	String folderName = "" + (this.digitalAssetVO.getId().intValue() / 1000);
+		String newWorkingFileName = "" + this.digitalAssetVO.getId() + "_" + timeStamp + "_" + assetSuffix + "." + outputFormat.toLowerCase();
+    	File finalOutputFile = new File(CmsPropertyHandler.getDigitalAssetPath() + File.separator + folderName + File.separator + newWorkingFileName);
+    	outputFile.renameTo(finalOutputFile);
 	}
 
 	/**

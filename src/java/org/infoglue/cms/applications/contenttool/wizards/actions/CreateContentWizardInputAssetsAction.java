@@ -134,6 +134,7 @@ public class CreateContentWizardInputAssetsAction extends CreateContentWizardAbs
 	{
 		InputStream is = null;
 		File renamedFile = null;
+		DigitalAssetVO digitalAssetVO = null;
 		
 		try 
 		{
@@ -182,7 +183,7 @@ public class CreateContentWizardInputAssetsAction extends CreateContentWizardAbs
 						//DigitalAssetController.create(newAsset, is, this.contentVersionId);
 						//CreateContentWizardInfoBean createContentWizardInfoBean = this.getCreateContentWizardInfoBean();
 						//createContentWizardInfoBean.getDigitalAssets().put(digitalAssetKey + "_" + this.languageId, newAsset);
-					    DigitalAssetVO digitalAssetVO = DigitalAssetController.create(newAsset, is, this.contentVersionId, this.getInfoGluePrincipal());
+					    digitalAssetVO = DigitalAssetController.create(newAsset, is, this.contentVersionId, this.getInfoGluePrincipal());
 						
 						this.uploadedFilesCounter = new Integer(this.uploadedFilesCounter.intValue() + 1);
 					}
@@ -202,7 +203,22 @@ public class CreateContentWizardInputAssetsAction extends CreateContentWizardAbs
 			try
 			{
 				is.close();
-				renamedFile.delete();
+				
+			    if(CmsPropertyHandler.getEnableDiskAssets().equals("true"))
+				{
+					//String assetFileName = "" + digitalAssetVO.getAssetFilePath() + File.separator + digitalAssetVO.getId() + "_" + digitalAssetVO.getAssetFileName();
+					String folderName = "" + (digitalAssetVO.getDigitalAssetId().intValue() / 1000);
+					String assetFileName = "" + digitalAssetVO.getAssetFilePath() + File.separator + folderName + File.separator + digitalAssetVO.getId() + "_" + digitalAssetVO.getAssetFileName();
+					//System.out.println("newAsset:" + assetFileName);
+					File assetFile = new File(assetFileName);
+					//System.out.println("Renaming:" + renamedFile.getAbsolutePath() + " to " + assetFile.getAbsolutePath());
+					renamedFile.renameTo(assetFile);
+					//System.out.println("apaFile:" + assetFile.exists());
+				}
+			    else
+			    {
+			    	renamedFile.delete();
+			    }
 			}
 			catch(Exception e){}
 		}
