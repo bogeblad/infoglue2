@@ -41,16 +41,16 @@ public class ToolbarController
 	private String primaryKey = null;
 	private Integer primaryKeyAsInteger = null;
 	private String extraParameters = null;
-	private boolean isInlineDialog = false;
+	private boolean disableCloseButton = false;
 	
-	public List<ToolbarButton> getRightToolbarButtons(String toolbarKey, InfoGluePrincipal principal, Locale locale, String primaryKey, String extraParameters, boolean isInlineDialog)
+	public List<ToolbarButton> getRightToolbarButtons(String toolbarKey, InfoGluePrincipal principal, Locale locale, String primaryKey, String extraParameters, boolean disableCloseButton)
 	{
 		this.toolbarKey = toolbarKey;
 		this.principal = principal;
 		this.locale = locale;
 		this.primaryKey = primaryKey;
 		this.extraParameters = extraParameters;
-		this.isInlineDialog = isInlineDialog;
+		this.disableCloseButton = disableCloseButton;
 		try
 		{
 			primaryKeyAsInteger = new Integer(primaryKey);
@@ -66,13 +66,11 @@ public class ToolbarController
 	
 			toolbarButtons.addAll(getHelpButton());
 			
-			if((toolbarKey.equalsIgnoreCase("tool.common.globalSubscriptions.header") || 
-			   toolbarKey.equalsIgnoreCase("tool.managementtool.mysettings.header")) && 
-			   !this.isInlineDialog)
-				toolbarButtons.addAll(getWindowCloseButton());
-			else
+			if(!disableCloseButton)
+			{
 				toolbarButtons.addAll(getDialogCloseButton());
-
+			}
+			
 			return toolbarButtons;
 		}
 		catch(Exception e) {e.printStackTrace();}			
@@ -199,7 +197,7 @@ public class ToolbarController
 		return null;				
 	}
 	
-	public List<ToolbarButton> getFooterToolbarButtons(String toolbarKey, InfoGluePrincipal principal, Locale locale, String primaryKey, String extraParameters, boolean isInlineDialog)
+	public List<ToolbarButton> getFooterToolbarButtons(String toolbarKey, InfoGluePrincipal principal, Locale locale, String primaryKey, String extraParameters, boolean disableCloseButton)
 	{
 		Timer t = new Timer();
 		
@@ -208,7 +206,7 @@ public class ToolbarController
 		this.locale = locale;
 		this.primaryKey = primaryKey;
 		this.extraParameters = extraParameters;
-		this.isInlineDialog = isInlineDialog;
+		this.disableCloseButton = disableCloseButton;
 		try
 		{
 			primaryKeyAsInteger = new Integer(primaryKey);
@@ -245,24 +243,24 @@ public class ToolbarController
 				return getRepositoryDetailsButtons();
 			*/
 			if(toolbarKey.equalsIgnoreCase("tool.managementtool.viewGroupProperties.header"))
-				return getGroupPropertiesButtons();
+				return getEntityPropertiesFooterButtons();
 			if(toolbarKey.equalsIgnoreCase("tool.managementtool.viewRoleProperties.header"))
-				return getRolePropertiesButtons();
+				return getEntityPropertiesFooterButtons();
 			if(toolbarKey.equalsIgnoreCase("tool.managementtool.viewUserProperties.header"))
-				return getUserPropertiesButtons();
-
-			if(toolbarKey.equalsIgnoreCase("tool.managementtool.viewSystemUserList.header"))
-				return getSystemUsersButtons();
+				return getEntityPropertiesFooterButtons();
+			if(toolbarKey.equalsIgnoreCase("tool.managementtool.createSystemUser.header"))
+				return getCreateSystemUserFooterButtons();
 			if(toolbarKey.equalsIgnoreCase("tool.managementtool.viewSystemUser.header"))
-				return getSystemUserDetailsButtons();
-			if(toolbarKey.equalsIgnoreCase("tool.managementtool.viewRoleList.header"))
-				return getRolesButtons();
+				return getSystemUserDetailFooterButtons();
 			if(toolbarKey.equalsIgnoreCase("tool.managementtool.viewRole.header"))
-				return getRoleDetailsButtons();
-			if(toolbarKey.equalsIgnoreCase("tool.managementtool.viewGroupList.header"))
-				return getGroupsButtons();
+				return getRoleDetailFooterButtons();
+			if(toolbarKey.equalsIgnoreCase("tool.managementtool.createRole.header"))
+				return getCreateRoleFooterButtons();
 			if(toolbarKey.equalsIgnoreCase("tool.managementtool.viewGroup.header"))
-				return getGroupDetailsButtons();
+				return getGroupDetailFooterButtons();
+			if(toolbarKey.equalsIgnoreCase("tool.managementtool.createGroup.header"))
+				return getCreateGroupFooterButtons();
+			
 			/*
 			if(toolbarKey.equalsIgnoreCase("tool.managementtool.viewLanguageList.header"))
 				return getLanguagesButtons();
@@ -321,6 +319,115 @@ public class ToolbarController
 		return null;				
 	}
 
+	
+	private List<ToolbarButton> getGroupDetailFooterButtons() throws Exception
+	{
+		List<ToolbarButton> buttons = new ArrayList<ToolbarButton>();
+
+		buttons.add(getCommonFooterSaveButton());
+		buttons.add(getCommonFooterSaveAndExitButton("UpdateGroup!saveAndExitV3.action"));
+		buttons.add(getCommonFooterCancelButton("ViewListGroup!listManagableGroups.action"));
+				
+		return buttons;
+	}
+
+	private List<ToolbarButton> getCreateGroupFooterButtons() throws Exception
+	{
+		List<ToolbarButton> buttons = new ArrayList<ToolbarButton>();
+
+		buttons.add(getCommonFooterSaveButton());
+		buttons.add(getCommonFooterSaveAndExitButton("CreateGroup!saveAndExitV3.action"));
+		buttons.add(getCommonFooterCancelButton("ViewListGroup!listManagableGroups.action"));
+				
+		return buttons;
+	}
+
+	private List<ToolbarButton> getRoleDetailFooterButtons() throws Exception
+	{
+		List<ToolbarButton> buttons = new ArrayList<ToolbarButton>();
+
+		buttons.add(getCommonFooterSaveButton());
+		buttons.add(getCommonFooterSaveAndExitButton("UpdateRole!saveAndExitV3.action"));
+		buttons.add(getCommonFooterCancelButton("ViewListRole!listManagableRoles.action"));
+				
+		return buttons;
+	}
+
+	private List<ToolbarButton> getCreateRoleFooterButtons() throws Exception
+	{
+		List<ToolbarButton> buttons = new ArrayList<ToolbarButton>();
+
+		buttons.add(getCommonFooterSaveButton());
+		buttons.add(getCommonFooterSaveAndExitButton("CreateRole!saveAndExitV3.action"));
+		buttons.add(getCommonFooterCancelButton("ViewListRole!listManagableRoles.action"));
+				
+		return buttons;
+	}
+
+	private List<ToolbarButton> getSystemUserDetailFooterButtons() throws Exception
+	{
+		List<ToolbarButton> buttons = new ArrayList<ToolbarButton>();
+
+		InfoGluePrincipal infoGluePrincipal = UserControllerProxy.getController().getUser(this.primaryKey);
+		if(infoGluePrincipal == null)
+			throw new SystemException("No user found called '" + this.primaryKey + "'. This could be an encoding issue if you gave your user a login name with non ascii chars in it. Look in the administrative manual on how to solve it.");
+		boolean supportsUpdate = infoGluePrincipal.getAutorizationModule().getSupportUpdate();
+		
+		if(supportsUpdate)
+		{
+			buttons.add(getCommonFooterSaveButton());
+			buttons.add(getCommonFooterSaveAndExitButton("UpdateSystemUser!saveAndExitV3.action"));
+		}
+		buttons.add(getCommonFooterCancelButton("ViewListSystemUser!v3.action"));
+				
+		return buttons;
+	}
+
+	private List<ToolbarButton> getCreateSystemUserFooterButtons() throws Exception
+	{
+		List<ToolbarButton> buttons = new ArrayList<ToolbarButton>();
+
+		buttons.add(getCommonFooterSaveButton());
+		buttons.add(getCommonFooterSaveAndExitButton("CreateSystemUser!saveAndExitV3.action"));
+		buttons.add(getCommonFooterCancelButton("ViewListSystemUser!listManagableSystemUsers.action"));
+				
+		return buttons;
+	}
+	
+	private List<ToolbarButton> getEntityPropertiesFooterButtons() throws Exception
+	{
+		List<ToolbarButton> buttons = new ArrayList<ToolbarButton>();
+
+		buttons.add(new ToolbarButton("",
+									  getLocalizedString(locale, "tool.contenttool.save.label"), 
+									  getLocalizedString(locale, "tool.contenttool.save.label"),
+									  "validateAndSubmitContentForm();",
+									  "images/v3/saveInlineIcon.gif",
+									  "left",
+									  true));
+
+		buttons.add(new ToolbarButton("",
+									  getLocalizedString(locale, "tool.contenttool.saveAndExit.label"), 
+									  getLocalizedString(locale, "tool.contenttool.saveAndExit.label"),
+									  "validateAndSubmitContentFormThenExit();",
+									  "images/v3/saveAndExitInlineIcon.gif",
+									  "left",
+									  true));
+		
+		buttons.add(new ToolbarButton("",
+				  					  getLocalizedString(locale, "tool.contenttool.cancel.label"), 
+				  					  getLocalizedString(locale, "tool.contenttool.cancel.label"),
+				  					  "cancel();",
+				  					  "images/v3/cancelIcon.gif",
+				  					  "left",
+				  					  true));
+		
+		return buttons;
+	}
+	
+	
+	
+	
 	
 	private List<ToolbarButton> getContentVersionButtons() throws Exception
 	{
@@ -399,9 +506,10 @@ public class ToolbarController
 		return buttons;
 	}
 
+	
+
 	private List<ToolbarButton> getContentVersionFooterButtons() throws Exception
 	{
-		Timer t = new Timer();
 		List<ToolbarButton> buttons = new ArrayList<ToolbarButton>();
 
 		buttons.add(new ToolbarButton("",
@@ -631,7 +739,7 @@ public class ToolbarController
 			buttons.add(new ToolbarButton("",
 					  getLocalizedString(locale, "tool.managementtool.viewUserProperties.header"), 
 					  getLocalizedString(locale, "tool.managementtool.viewUserProperties.header"),
-					  "ViewUserProperties.action?userName=" + URLEncoder.encode(URLEncoder.encode(primaryKey, URIEncoding), URIEncoding),
+					  "ViewUserProperties!v3.action?userName=" + URLEncoder.encode(URLEncoder.encode(primaryKey, URIEncoding), URIEncoding),
 					  "images/v3/advancedSettingsIcon.gif"));
 
 			//buttons.add(new ToolbarButton("ViewUserProperties.action?userName=" + URLEncoder.encode(URLEncoder.encode(primaryKey, URIEncoding), URIEncoding), getLocalizedString(locale, "images.managementtool.buttons.viewSystemUserProperties"), "View User Properties"));
@@ -724,6 +832,7 @@ public class ToolbarController
 		return buttons;				
 	}
 
+	
 	private List<ToolbarButton> getGroupsButtons() throws Exception
 	{
 		List<ToolbarButton> buttons = new ArrayList<ToolbarButton>();
@@ -804,8 +913,10 @@ public class ToolbarController
 		buttons.add(new ToolbarButton("",
 									  getLocalizedString(locale, "tool.contenttool.uploadDigitalAsset.label"), 
 									  getLocalizedString(locale, "tool.contenttool.uploadDigitalAsset.label"),
-									  "javascript:openWindow('ViewDigitalAsset.action?entity=org.infoglue.cms.entities.management.GroupProperties&entityId=" + this.primaryKey + "', 'DigitalAsset', 'width=400,height=200,resizable=no');",
-									  "images/v3/attachAssetBackgroundIcon.gif"));
+									  "openWindow('ViewDigitalAsset.action?entity=org.infoglue.cms.entities.management.GroupProperties&entityId=" + this.primaryKey + "', 'DigitalAsset', 'width=400,height=200,resizable=no');",
+									  "images/v3/attachAssetBackgroundIcon.gif",
+									  "left",
+									  true));
 		
 		return buttons;
 	}
@@ -817,8 +928,10 @@ public class ToolbarController
 		buttons.add(new ToolbarButton("",
 									  getLocalizedString(locale, "tool.contenttool.uploadDigitalAsset.label"), 
 									  getLocalizedString(locale, "tool.contenttool.uploadDigitalAsset.label"),
-									  "javascript:openWindow('ViewDigitalAsset.action?entity=org.infoglue.cms.entities.management.RoleProperties&entityId=" + this.primaryKey + "', 'DigitalAsset', 'width=400,height=200,resizable=no');",
-									  "images/v3/attachAssetBackgroundIcon.gif"));
+									  "openWindow('ViewDigitalAsset.action?entity=org.infoglue.cms.entities.management.RoleProperties&entityId=" + this.primaryKey + "', 'DigitalAsset', 'width=400,height=200,resizable=no');",
+									  "images/v3/attachAssetBackgroundIcon.gif",
+									  "left",
+									  true));
 		
 		return buttons;
 	}
@@ -830,8 +943,10 @@ public class ToolbarController
 		buttons.add(new ToolbarButton("",
 									  getLocalizedString(locale, "tool.contenttool.uploadDigitalAsset.label"), 
 									  getLocalizedString(locale, "tool.contenttool.uploadDigitalAsset.label"),
-									  "javascript:openWindow('ViewDigitalAsset.action?entity=org.infoglue.cms.entities.management.UserProperties&entityId=" + this.primaryKey + "', 'DigitalAsset', 'width=400,height=200,resizable=no');",
-									  "images/v3/attachAssetBackgroundIcon.gif"));
+									  "openWindow('ViewDigitalAsset.action?entity=org.infoglue.cms.entities.management.UserProperties&entityId=" + this.primaryKey + "', 'DigitalAsset', 'width=400,height=200,resizable=no');",
+									  "images/v3/attachAssetBackgroundIcon.gif",
+									  "left",
+									  true));
 		
 		return buttons;
 	}
@@ -1164,6 +1279,39 @@ public class ToolbarController
 				  					  "right",
 				  					  true));
 		return buttons;
+	}
+
+	private ToolbarButton getCommonFooterSaveButton()
+	{
+		return new ToolbarButton("",
+				  getLocalizedString(locale, "tool.contenttool.save.label"), 
+				  getLocalizedString(locale, "tool.contenttool.save.label"),
+				  "save(document.inputForm);",
+				  "images/v3/saveInlineIcon.gif",
+				  "left",
+				  true);
+	}
+
+	private ToolbarButton getCommonFooterSaveAndExitButton(String exitUrl)
+	{
+		return new ToolbarButton("",
+				  getLocalizedString(locale, "tool.contenttool.saveAndExit.label"), 
+				  getLocalizedString(locale, "tool.contenttool.saveAndExit.label"),
+				  "saveAndExit(document.inputForm, \"" + exitUrl + "\");",
+				  "images/v3/saveAndExitInlineIcon.gif",
+				  "left",
+				  true);
+	}
+	
+	private ToolbarButton getCommonFooterCancelButton(String cancelUrl)
+	{
+		return new ToolbarButton("",
+				  getLocalizedString(locale, "tool.contenttool.cancel.label"), 
+				  getLocalizedString(locale, "tool.contenttool.cancel.label"),
+				  "" + cancelUrl + "",
+				  "images/v3/cancelIcon.gif",
+				  "left",
+				  false);
 	}
 
 	/**
