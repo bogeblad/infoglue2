@@ -60,7 +60,6 @@ public abstract class InfoGlueAbstractAction extends WebworkAbstractAction
     private final static Logger logger = Logger.getLogger(InfoGlueAbstractAction.class.getName());
 
     protected String colorScheme = null; 
-    protected boolean isInlineDialog = false;
     
 	/**
 	 * This method lets the velocity template get hold of all actions inheriting.
@@ -142,16 +141,16 @@ public abstract class InfoGlueAbstractAction extends WebworkAbstractAction
 		return toolbarController.getToolbarButtons(toolbarKey, getInfoGluePrincipal(), getLocale(), primaryKey, extraParameters);
 	}
 
-	public List getRightToolbarButtons(String toolbarKey, String primaryKey, String extraParameters, boolean isInlineDialog)
+	public List getRightToolbarButtons(String toolbarKey, String primaryKey, String extraParameters, boolean disableCloseButton)
 	{
 		ToolbarController toolbarController = new ToolbarController();
-		return toolbarController.getRightToolbarButtons(toolbarKey, getInfoGluePrincipal(), getLocale(), primaryKey, extraParameters, isInlineDialog);
+		return toolbarController.getRightToolbarButtons(toolbarKey, getInfoGluePrincipal(), getLocale(), primaryKey, extraParameters, disableCloseButton);
 	}
 
-	public List getFooterToolbarButtons(String toolbarKey, String primaryKey, String extraParameters, boolean isInlineDialog)
+	public List getFooterToolbarButtons(String toolbarKey, String primaryKey, String extraParameters, boolean disableCloseButton)
 	{
 		ToolbarController toolbarController = new ToolbarController();
-		return toolbarController.getFooterToolbarButtons(toolbarKey, getInfoGluePrincipal(), getLocale(), primaryKey, extraParameters, isInlineDialog);
+		return toolbarController.getFooterToolbarButtons(toolbarKey, getInfoGluePrincipal(), getLocale(), primaryKey, extraParameters, disableCloseButton);
 	}
 
 	/**
@@ -677,14 +676,14 @@ public abstract class InfoGlueAbstractAction extends WebworkAbstractAction
 		return (String)getRequest().getSession().getAttribute(key);
 	}
 
-	public boolean getIsInlineDialog()
+	public boolean getDisableCloseButton()
 	{
-		String isInlineDialog = this.getRequest().getParameter("isInlineDialog");
-		//System.out.println("get isInlineDialog:" + isInlineDialog);
-		if(isInlineDialog != null && !isInlineDialog.equals(""))
+		String disableCloseButton = this.getRequest().getParameter("disableCloseButton");
+		//System.out.println("get disableCloseButton:" + disableCloseButton);
+		if(disableCloseButton != null && !disableCloseButton.equals(""))
 		{	
-			//System.out.println("returning isInlineDialog:" + Boolean.parseBoolean(isInlineDialog));
-			return Boolean.parseBoolean(isInlineDialog);
+			//System.out.println("returning disableCloseButton:" + Boolean.parseBoolean(disableCloseButton));
+			return Boolean.parseBoolean(disableCloseButton);
 		}
 		else
 			return false;
