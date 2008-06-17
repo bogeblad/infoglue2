@@ -210,7 +210,7 @@ public class PageEditorHelper extends BaseDeliveryController
 				isAdvancedProperties = true;
 			}
 			
-			System.out.println("componentProperty:" + componentProperty.getName() + ":" + isAdvancedProperties);
+			//System.out.println("componentProperty:" + componentProperty.getName() + ":" + isAdvancedProperties);
 			if(componentProperty.getName().equalsIgnoreCase("CacheResult") ||
 			   componentProperty.getName().equalsIgnoreCase("UpdateInterval") ||
 			   componentProperty.getName().equalsIgnoreCase("CacheKey") ||

@@ -1884,9 +1884,6 @@ public class ComponentLogic
 	 
 	private Map getInheritedComponentProperty(TemplateController templateController, Integer siteNodeId, Integer languageId, Integer contentId, Integer componentId, String propertyName, Set contentVersionIdList) throws Exception
 	{
-		if(propertyName.equals("Label text"))
-			System.out.println("getInheritedComponentProperty:" + propertyName);
-
 	    String key = "inherited_" + templateController.getSiteNodeId() + "_" + siteNodeId + "_" + languageId + "_" + componentId + "_" + propertyName;
 	    String versionKey = key + "_contentVersionIds";
 		Object propertyCandidate = CacheController.getCachedObjectFromAdvancedCache("componentPropertyCache", key);
@@ -1914,14 +1911,11 @@ public class ComponentLogic
 			}
 			
 			//logger.info("There was an cached content attribute:" + attribute);
-		    System.out.println("Returning cached property for key " + key);
+		    //System.out.println("Returning cached property for key " + key);
 		}
 		else
 		{
 			String inheritedPageComponentsXML = getPageComponentsString(templateController, siteNodeId, languageId, contentId, contentVersionIdList);
-			if(propertyName.equals("Label text"))
-				System.out.println("inheritedPageComponentsXML for propertyName:" + propertyName + "\n" + inheritedPageComponentsXML);
-
 			if(logger.isDebugEnabled())
 			{
 				logger.info("Checking for property " + propertyName + " on siteNodeId " + siteNodeId);
@@ -1930,8 +1924,6 @@ public class ComponentLogic
 			
 			if(inheritedPageComponentsXML != null && inheritedPageComponentsXML.length() > 0)
 			{
-				if(propertyName.equals("Label text"))
-					System.out.println("Parsing properties for propertyName:" + propertyName);
 				property = parseProperties(inheritedPageComponentsXML, componentId, propertyName, siteNodeId, languageId);
 			}
 			

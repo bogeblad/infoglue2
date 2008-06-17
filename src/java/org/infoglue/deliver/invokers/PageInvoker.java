@@ -519,7 +519,7 @@ public abstract class PageInvoker
 				else
 					lastModifiedDateTimeIndex = sb.indexOf("<ig:lastModifiedDateTime");
 					
-				System.out.println("OOOOOOOOOOOOO lastModifiedDateTimeIndex:" + lastModifiedDateTimeIndex);
+				//System.out.println("OOOOOOOOOOOOO lastModifiedDateTimeIndex:" + lastModifiedDateTimeIndex);
 				if(lastModifiedDateTimeIndex > -1)
 				{
 					if(sb == null)
@@ -528,7 +528,7 @@ public abstract class PageInvoker
 					int lastModifiedDateTimeEndIndex = sb.indexOf("</ig:lastModifiedDateTime>", lastModifiedDateTimeIndex);
 	
 					String tagInfo = sb.substring(lastModifiedDateTimeIndex, lastModifiedDateTimeEndIndex);
-					System.out.println("tagInfo:" + tagInfo);
+					//System.out.println("tagInfo:" + tagInfo);
 					String dateFormat = "yyyy-MM-dd HH:mm";
 					int formatStartIndex = tagInfo.indexOf("format");
 					if(formatStartIndex > -1)
@@ -537,12 +537,12 @@ public abstract class PageInvoker
 						if(formatEndIndex > -1)
 							dateFormat = tagInfo.substring(formatStartIndex + 8, formatEndIndex);
 					}
-					System.out.println("dateFormat:" + dateFormat);
+					//System.out.println("dateFormat:" + dateFormat);
 						
 					String dateString = vf.formatDate(this.getTemplateController().getDeliveryContext().getLastModifiedDateTime(), this.getTemplateController().getLocale(), dateFormat);
-					System.out.println("dateString:" + dateString);
+					//System.out.println("dateString:" + dateString);
 					sb.replace(lastModifiedDateTimeIndex, lastModifiedDateTimeEndIndex + "</ig:lastModifiedDateTime>".length(), dateString);
-					System.out.println("Replaced:" + lastModifiedDateTimeIndex + " to " + lastModifiedDateTimeEndIndex + "</ig:lastModifiedDateTime>".length() + " with " + dateString);
+					//System.out.println("Replaced:" + lastModifiedDateTimeIndex + " to " + lastModifiedDateTimeEndIndex + "</ig:lastModifiedDateTime>".length() + " with " + dateString);
 				}
 			}
 			catch (Exception e) 

@@ -212,9 +212,7 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
    			List unsortedPageComponents = new ArrayList();
 			List pageComponents = getPageComponents(getDatabase(), componentXML, document.getRootElement(), "base", this.getTemplateController(), null, unsortedPageComponents);
 			
-			Timer t = new Timer();
 			preProcessComponents(nodeDeliveryController, repositoryId, unsortedPageComponents, pageComponents);
-			t.printElapsedTime("\nTime to preprocess components\n");
 			
 			if(pageComponents.size() > 0)
 			{
@@ -359,7 +357,6 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 				else
 					lastModifiedDateTimeIndex = sb.indexOf("<ig:lastModifiedDateTime");
 					
-				System.out.println("OOOOOOOOOOOOO lastModifiedDateTimeIndex:" + lastModifiedDateTimeIndex);
 				if(lastModifiedDateTimeIndex > -1)
 				{
 					if(sb == null)

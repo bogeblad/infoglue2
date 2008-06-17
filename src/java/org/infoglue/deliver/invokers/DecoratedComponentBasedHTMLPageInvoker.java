@@ -142,10 +142,8 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
    			List unsortedPageComponents = new ArrayList();
 			List pageComponents = getPageComponents(getDatabase(), componentXML, document.getRootElement(), "base", this.getTemplateController(), null, unsortedPageComponents);
 
-			Timer t = new Timer();
 			preProcessComponents(nodeDeliveryController, repositoryId, unsortedPageComponents, pageComponents);
-			t.printElapsedTime("Time to preprocess components in decorated mode");
-
+			
 			if(pageComponents.size() > 0)
 			{
 				baseComponent = (InfoGlueComponent)pageComponents.get(0);
@@ -923,7 +921,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 				isAdvancedProperties = true;
 			}
 			
-			System.out.println("componentProperty:" + componentProperty.getName() + ":" + isAdvancedProperties);
+			//System.out.println("componentProperty:" + componentProperty.getName() + ":" + isAdvancedProperties);
 			if(componentProperty.getName().equalsIgnoreCase("CacheResult") ||
 			   componentProperty.getName().equalsIgnoreCase("UpdateInterval") ||
 			   componentProperty.getName().equalsIgnoreCase("CacheKey") ||
