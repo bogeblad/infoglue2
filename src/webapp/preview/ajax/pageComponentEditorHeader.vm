@@ -90,7 +90,7 @@
    		if(url.indexOf("?") > -1)
 	  		separatorSign = "&";
 
-   		var addition = separatorSign + "isInlineDialog=true&KeepThis=true&TB_iframe=true&height=" + height + "&width=" + width + "&modal=true";
+   		var addition = separatorSign + "KeepThis=true&TB_iframe=true&height=" + height + "&width=" + width + "&modal=true";
 			   		
    		tb_show('Redigera', url + addition, 'Redigera');
    		hideIGMenu();

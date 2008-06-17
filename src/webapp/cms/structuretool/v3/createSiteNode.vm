@@ -1,4 +1,4 @@
-#beginCommonToolV3("tool.structuretool.createSiteNodeHeader" "" "" false true $!isInlineDialog)
+#beginCommonToolV3("tool.structuretool.createSiteNodeHeader" "" "" false true $!disableCloseButton)
 
 <link rel="stylesheet" type="text/css" media="all" href="applications/jscalendar/skins/aqua/theme.css" title="aqua" />
 <script type="text/javascript" src="applications/jscalendar/calendar.js"></script>
@@ -147,7 +147,7 @@
 		<input type="hidden" name="pageTemplateContentId" value="">
 		<input type="hidden" name="userSessionKey" value="$!userSessionKey"/>
 		<input type="hidden" name="returnAddress" value="$returnAddress"/>
-		<input type="hidden" name="isInlineDialog" value="$!isInlineDialog"/>
+		<input type="hidden" name="disableCloseButton" value="$!disableCloseButton"/>
 				
 		#footerToolbar($footerButtons)
 	

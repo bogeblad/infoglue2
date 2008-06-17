@@ -1,4 +1,4 @@
-#beginCommonToolV3("tool.common.subscriptions.header" "" "" false true $!isInlineDialog)
+#beginCommonToolV3("tool.common.subscriptions.header" "" "" false true $!disableCloseButton)
 
 <script type="text/javascript">
 <!--

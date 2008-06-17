@@ -32,7 +32,7 @@
 #else
 
 
-#beginCommonToolV3("tool.contenttool.contentVersionHeader" "$!contentVersionId" "contentId=$!contentId&languageId=$languageId" false false $!isInlineDialog)
+#beginCommonToolV3("tool.contenttool.contentVersionHeader" "$!contentVersionId" "contentId=$!contentId&languageId=$languageId" false false $!disableCloseButton)
 
 	<script type="text/javascript" src="${root}/applications/FCKEditor/fckeditor.js"></script>
 
