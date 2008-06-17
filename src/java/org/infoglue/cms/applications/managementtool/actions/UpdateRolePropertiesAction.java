@@ -74,7 +74,31 @@ public class UpdateRolePropertiesAction extends InfoGlueAbstractAction
 						 
 		return "saveAndExitStandalone";
 	}
-				   
+
+	public String doV3() throws Exception
+	{
+	    ceb.throwIfNotEmpty();
+		RolePropertiesController.getController().update(this.languageId, this.contentTypeDefinitionId, this.rolePropertiesVO);
+		
+		this.getResponse().sendRedirect(returnAddress);
+	    
+	    return NONE;
+	}
+
+	public String doSaveAndExitV3() throws Exception
+	{
+	    RolePropertiesController.getController().update(this.languageId, this.contentTypeDefinitionId, this.rolePropertiesVO);
+						 
+		return "saveAndExitV3";
+	}
+
+	public String doSaveAndExitStandaloneV3() throws Exception
+	{
+	    RolePropertiesController.getController().update(this.languageId, this.contentTypeDefinitionId, this.rolePropertiesVO);
+						 
+		return "saveAndExitStandaloneV3";
+	}
+
 	public void setEntityId(Integer rolePropertiesId)
 	{
 		this.rolePropertiesVO.setRolePropertiesId(rolePropertiesId);

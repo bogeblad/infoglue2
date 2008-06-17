@@ -87,6 +87,8 @@ public class ViewRolePropertiesAction extends ViewEntityPropertiesAction
 
 	public String doExecute() throws Exception
 	{
+		this.initialize(getRoleName());   
+
         this.setCurrentAction("ViewRoleProperties.action");
         this.setUpdateAction("UpdateRoleProperties");
         this.setUpdateAndExitAction("UpdateRoleProperties!saveAndExit");
@@ -96,14 +98,14 @@ public class ViewRolePropertiesAction extends ViewEntityPropertiesAction
         this.setArguments("");
         this.setEntityName(RoleProperties.class.getName());
 
-		this.initialize(getRoleName());   
-		
 		return "success";
 	}
 
 	public String doV3() throws Exception
 	{
-        this.setCurrentAction("ViewRoleProperties!v3.action");
+		this.initialize(getRoleName());   
+
+		this.setCurrentAction("ViewRoleProperties!v3.action");
         this.setUpdateAction("UpdateRoleProperties!v3");
         this.setUpdateAndExitAction("UpdateRoleProperties!saveAndExitV3");
         this.setCancelAction("ViewRole!v3.action");
@@ -111,8 +113,6 @@ public class ViewRolePropertiesAction extends ViewEntityPropertiesAction
         this.setTitleKey("tool.managementtool.viewRoleProperties.header");
         this.setArguments("");
         this.setEntityName(RoleProperties.class.getName());
-
-        doExecute();   
 		
 		return "successV3";
 	}

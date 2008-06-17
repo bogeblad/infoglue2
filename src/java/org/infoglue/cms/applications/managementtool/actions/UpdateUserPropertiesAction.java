@@ -24,6 +24,7 @@
 package org.infoglue.cms.applications.managementtool.actions;
 
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
+import org.infoglue.cms.controllers.kernel.impl.simple.RolePropertiesController;
 import org.infoglue.cms.controllers.kernel.impl.simple.UserPropertiesController;
 import org.infoglue.cms.entities.management.UserPropertiesVO;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
@@ -53,7 +54,6 @@ public class UpdateUserPropertiesAction extends InfoGlueAbstractAction
 		
 	public String doExecute() throws Exception
 	{
-		//super.initialize(this.contentVersionId, this.contentId, this.languageId);
 		ceb.throwIfNotEmpty();
 		UserPropertiesController.getController().update(this.languageId, this.contentTypeDefinitionId, this.userPropertiesVO);
 		
@@ -74,6 +74,30 @@ public class UpdateUserPropertiesAction extends InfoGlueAbstractAction
 	    UserPropertiesController.getController().update(this.languageId, this.contentTypeDefinitionId, this.userPropertiesVO);
 						 
 		return "saveAndExitStandalone";
+	}
+
+	public String doV3() throws Exception
+	{
+	    ceb.throwIfNotEmpty();
+	    UserPropertiesController.getController().update(this.languageId, this.contentTypeDefinitionId, this.userPropertiesVO);
+		
+		this.getResponse().sendRedirect(returnAddress);
+	    
+	    return NONE;
+	}
+
+	public String doSaveAndExitV3() throws Exception
+	{
+		UserPropertiesController.getController().update(this.languageId, this.contentTypeDefinitionId, this.userPropertiesVO);
+						 
+		return "saveAndExitV3";
+	}
+
+	public String doSaveAndExitStandaloneV3() throws Exception
+	{
+		UserPropertiesController.getController().update(this.languageId, this.contentTypeDefinitionId, this.userPropertiesVO);
+						 
+		return "saveAndExitStandaloneV3";
 	}
 
 	public void setEntityId(Integer userPropertiesId)

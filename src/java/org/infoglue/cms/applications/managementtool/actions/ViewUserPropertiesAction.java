@@ -43,17 +43,6 @@ public class ViewUserPropertiesAction extends ViewEntityPropertiesAction
 
 	private static final long serialVersionUID = 1L;
 
-    public ViewUserPropertiesAction()
-    {
-        this.setCurrentAction("ViewUserProperties.action");
-        this.setUpdateAction("UpdateUserProperties");
-        this.setCancelAction("ViewSystemUser.action");
-        this.setToolbarKey("tool.managementtool.viewUserProperties.header");
-        this.setTitleKey("tool.managementtool.viewUserProperties.header");
-        this.setArguments("");
-        this.setEntityName(UserProperties.class.getName());
-    }
-	
 	private String userName;
 	private UserPropertiesVO userPropertiesVO;
 	private List userPropertiesVOList;
@@ -100,9 +89,33 @@ public class ViewUserPropertiesAction extends ViewEntityPropertiesAction
 	{
 		this.initialize(getUserName());   
 		
+        this.setCurrentAction("ViewUserProperties.action");
+        this.setUpdateAction("UpdateUserProperties");
+        this.setUpdateAndExitAction("UpdateUserProperties");
+        this.setCancelAction("ViewSystemUser!v3.action");
+        this.setToolbarKey("tool.managementtool.viewUserProperties.header");
+        this.setTitleKey("tool.managementtool.viewUserProperties.header");
+        this.setArguments("");
+        this.setEntityName(UserProperties.class.getName());
+
 		return "success";
 	}
 
+	public String doV3() throws Exception
+	{
+		this.initialize(getUserName());   
+
+        this.setCurrentAction("ViewUserProperties!v3.action");
+        this.setUpdateAction("UpdateUserProperties!v3");
+        this.setUpdateAndExitAction("UpdateUserProperties!saveAndExitV3");
+        this.setCancelAction("ViewSystemUser!v3.action");
+        this.setToolbarKey("tool.managementtool.viewUserProperties.header");
+        this.setTitleKey("tool.managementtool.viewUserProperties.header");
+        this.setArguments("");
+        this.setEntityName(UserProperties.class.getName());
+
+		return "successV3";
+	}
 
 	/**
 	 * Returns a list of digital assets available for this content version.
