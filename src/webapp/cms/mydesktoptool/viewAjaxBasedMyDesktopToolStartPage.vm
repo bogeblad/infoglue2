@@ -25,7 +25,11 @@
 <script type="text/javascript" src="script/jqueryplugins/ui/ui.accordion.js"></script>
 <script>
   $(document).ready(function(){
-    $("#example").accordion({fillSpace: true});
+    //$("#example").accordion({fillSpace: true});
+    $("#workArea").css("height", $(window).height() - 20);
+    $(window).resize( function() {
+     	$("#workArea").css("height", $(window).height() - 20);
+ 		});
   });
 </script>
 <style type="text/css">
