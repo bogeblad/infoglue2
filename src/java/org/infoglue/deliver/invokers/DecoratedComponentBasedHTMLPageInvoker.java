@@ -196,7 +196,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		String pageString = cacheString.toString();
 		*/
 		String pageString = decoratePageTemplate;
-		pageString = decorateHeadAndPageWithVarsFromComponents(pageString);
+		//pageString = decorateHeadAndPageWithVarsFromComponents(pageString);
 
 		this.setPageString(pageString);
 		

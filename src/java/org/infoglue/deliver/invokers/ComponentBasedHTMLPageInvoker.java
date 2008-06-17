@@ -41,6 +41,7 @@ import org.dom4j.Element;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.XMLWriter;
 import org.exolab.castor.jdo.Database;
+import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
 import org.infoglue.cms.entities.content.ContentVO;
@@ -50,6 +51,7 @@ import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.entities.structure.SiteNodeVO;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.util.CmsPropertyHandler;
+import org.infoglue.cms.util.DateHelper;
 import org.infoglue.cms.util.XMLHelper;
 import org.infoglue.cms.util.dom.DOMBuilder;
 import org.infoglue.deliver.applications.actions.InfoGlueComponent;
@@ -78,7 +80,8 @@ import org.infoglue.deliver.util.VelocityTemplateProcessor;
 public class ComponentBasedHTMLPageInvoker extends PageInvoker
 {
 	private final static DOMBuilder domBuilder = new DOMBuilder();
-
+	private final static VisualFormatter vf = new VisualFormatter();
+	
     private final static Logger logger = Logger.getLogger(ComponentBasedHTMLPageInvoker.class.getName());
     
    /**
@@ -252,7 +255,7 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 			pageString = cacheString.toString();
 		}
 
-		pageString = decorateHeadAndPageWithVarsFromComponents(pageString);
+		//pageString = decorateHeadAndPageWithVarsFromComponents(pageString);
 		
 		this.setPageString(pageString);
 	}
@@ -319,12 +322,14 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 		t.printElapsedTime("part 2 took");
 	}
 	
-	
+	/*
 	protected String decorateHeadAndPageWithVarsFromComponents(String pageString)
 	{
 		if(pageString.length() < 500000)
 		{
 			pageString = this.getTemplateController().decoratePage(pageString);
+			
+			StringBuffer sb = null;
 			
 			List htmlHeadItems = this.getTemplateController().getDeliveryContext().getHtmlHeadItems();
 			if(htmlHeadItems != null || htmlHeadItems.size() > 0)
@@ -335,29 +340,57 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 	
 				if(indexOfHeadEndTag != -1)
 				{
-					StringBuffer sb = new StringBuffer(pageString);
+					sb = new StringBuffer(pageString);
 					Iterator htmlHeadItemsIterator = htmlHeadItems.iterator();
 					while(htmlHeadItemsIterator.hasNext())
 					{
 						String value = (String)htmlHeadItemsIterator.next();
 						sb.insert(indexOfHeadEndTag, value + "\n");
 					}
-					pageString = sb.toString();
+					//pageString = sb.toString();
 				}
 			}
 			
-			/*
-			Map pageAttributes = this.getTemplateController().getDeliveryContext().getPageAttributes();
-			System.out.println("pageAttributes:" + pageAttributes);
-			Iterator pageAttributesIterator = pageAttributes.keySet().iterator();
-			while(pageAttributesIterator.hasNext())
+			try
 			{
-				String key = (String)pageAttributesIterator.next();
-				String value = (String)pageAttributes.get(key);
-				System.out.println("key:" + key);
-				System.out.println("value:" + value);
+				int lastModifiedDateTimeIndex;
+				if(sb == null)
+					lastModifiedDateTimeIndex = pageString.indexOf("<ig:lastModifiedDateTime");
+				else
+					lastModifiedDateTimeIndex = sb.indexOf("<ig:lastModifiedDateTime");
+					
+				System.out.println("OOOOOOOOOOOOO lastModifiedDateTimeIndex:" + lastModifiedDateTimeIndex);
+				if(lastModifiedDateTimeIndex > -1)
+				{
+					if(sb == null)
+						sb = new StringBuffer(pageString);
+
+					int lastModifiedDateTimeEndIndex = sb.indexOf("</ig:lastModifiedDateTime>", lastModifiedDateTimeIndex);
+	
+					String tagInfo = sb.substring(lastModifiedDateTimeIndex, lastModifiedDateTimeEndIndex);
+					System.out.println("tagInfo:" + tagInfo);
+					String dateFormat = "yyyy-MM-dd HH:mm";
+					int formatStartIndex = tagInfo.indexOf("format");
+					if(formatStartIndex > -1)
+					{
+						int formatEndIndex = tagInfo.indexOf("\"", formatStartIndex + 7);
+						if(formatEndIndex > -1)
+							dateFormat = tagInfo.substring(formatStartIndex + 7, formatEndIndex);
+					}
+						
+					String dateString = vf.formatDate(this.getTemplateController().getDeliveryContext().getLastModifiedDateTime(), this.getTemplateController().getLocale(), dateFormat);
+					System.out.println("dateString:" + dateString);
+					sb.replace(lastModifiedDateTimeIndex, lastModifiedDateTimeEndIndex + "</ig:lastModifiedDateTime>".length(), dateString);
+					System.out.println("Replaced:" + lastModifiedDateTimeIndex + " to " + lastModifiedDateTimeEndIndex + "</ig:lastModifiedDateTime>".length() + " with " + dateString);
+				}
 			}
-			*/
+			catch (Exception e) 
+			{
+				logger.error("Problem setting lastModifiedDateTime:" + e.getMessage(), e);
+			}
+			
+			if(sb != null)
+				pageString = sb.toString();			
 		}
 		else
 		{
@@ -367,7 +400,8 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 		
 		return pageString;
 	}
-
+	*/
+	
 	/**
 	 * This method fetches the pageComponent structure from the metainfo content.
 	 */

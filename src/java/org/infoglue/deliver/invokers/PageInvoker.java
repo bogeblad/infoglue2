@@ -30,6 +30,7 @@ import java.io.PrintWriter;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.zip.GZIPOutputStream;
 import java.util.zip.ZipEntry;
@@ -40,10 +41,12 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
+import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
 import org.infoglue.cms.entities.content.ContentVersion;
 import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.entities.management.LanguageVO;
+import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.NoBaseTemplateFoundException;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.util.CmsPropertyHandler;
@@ -54,6 +57,7 @@ import org.infoglue.deliver.controllers.kernel.impl.simple.TemplateController;
 import org.infoglue.deliver.portal.PortalController;
 import org.infoglue.deliver.util.CacheController;
 import org.infoglue.deliver.util.CompressionHelper;
+import org.infoglue.deliver.util.Timer;
 
 /**
  * @author Mattias Bogeblad
@@ -68,6 +72,7 @@ public abstract class PageInvoker
     private final static Logger logger = Logger.getLogger(PageInvoker.class.getName());
 
 	private static CompressionHelper compressionHelper = new CompressionHelper();
+	private final static VisualFormatter vf = new VisualFormatter();
 
     private DatabaseWrapper dbWrapper				= null;
 	private HttpServletRequest request				= null;
@@ -194,7 +199,7 @@ public abstract class PageInvoker
 				}
 				
 			    if(cachedCompressedData != null)
-			        this.pageString = compressionHelper.decompress(cachedCompressedData);					
+			        this.pageString = compressionHelper.decompress(cachedCompressedData);		
 			    if(cachedExtraData != null)
 			    	this.getDeliveryContext().populateExtraData(cachedExtraData);
 			}
@@ -219,6 +224,10 @@ public abstract class PageInvoker
 				invokePage();
 				this.pageString = getPageString();
 
+				//TEST
+				getLastModifiedDateTime();
+				//END TEST
+				
 				if(!this.getTemplateController().getIsPageCacheDisabled() && !this.getDeliveryContext().getDisablePageCache()) //Caching page if not disabled
 				{
 				    if(compressPageCache != null && compressPageCache.equalsIgnoreCase("true"))
@@ -281,6 +290,10 @@ public abstract class PageInvoker
 			invokePage();
 			this.pageString = getPageString();
 			
+			//TEST
+			getLastModifiedDateTime();
+			//END TEST
+
 			this.getDeliveryContext().setPagePath(this.templateController.getCurrentPagePath());
 		}
 
@@ -301,9 +314,11 @@ public abstract class PageInvoker
 		    contentType = this.deliveryContext.getContentType();
 		
 		//TEST
-		if(this.getTemplateController().getOperatingMode().equals("3"))
-		{
+		//if(!this.getTemplateController().getIsDecorated())
+		//{
+		/*
 			Date lastModifiedDateTime = null;
+			System.out.println("this.deliveryContext.getUsedContentVersions().size():" + this.deliveryContext.getUsedContentVersions().size());
 			if(this.deliveryContext.getUsedContentVersions().size() > 0)
 			{
 				Iterator userContentVersionIterator = this.deliveryContext.getUsedContentVersions().iterator();
@@ -337,16 +352,19 @@ public abstract class PageInvoker
 			    	}
 				}
 			}
-			System.out.println("**********************\nSetting last modified to:" + lastModifiedDateTime);
+			*/
+			System.out.println("**********************\nSetting last modified to:" + this.deliveryContext.getLastModifiedDateTime());
 			
-			if(lastModifiedDateTime != null)
+			if(this.deliveryContext.getLastModifiedDateTime() != null)
 			{
-				this.deliveryContext.getHttpHeaders().put("Last-Modified", lastModifiedDateTime);
+				//this.deliveryContext.setLastModifiedDateTime(this.deliveryContext.getLastModifiedDateTime());
+				this.deliveryContext.getHttpHeaders().put("Last-Modified", this.deliveryContext.getLastModifiedDateTime());
 				//this.deliveryContext.getHttpHeaders().put("Cache-Control", "max-age=600");
 				//this.deliveryContext.getHttpHeaders().put("Expires", new Date(new Date().getTime() + (600 * 1000)));
 			}
-		}
-		else
+		//}
+		//else	
+		if(!this.getTemplateController().getOperatingMode().equals("3"))
 		{
 			getResponse().setHeader("Cache-Control","no-cache"); 
 	    	getResponse().setHeader("Pragma","no-cache");
@@ -354,6 +372,10 @@ public abstract class PageInvoker
 		}
 		//END
 			
+		Timer t = new Timer();
+		pageString = decorateHeadAndPageWithVarsFromComponents(pageString);
+		t.printElapsedTime("Took this much to add the last variables to the page:");
+		
 		//logger.info("ContentType:" + contentType);
 		if(contentType.indexOf("charset=") > -1)
 			this.getResponse().setContentType(contentType);
@@ -421,7 +443,124 @@ public abstract class PageInvoker
 			logger.info("sent all data to client:" + pageString.length());
 	}
 
+	private void getLastModifiedDateTime() throws Bug
+	{
+		Date lastModifiedDateTime = null;
+		System.out.println("this.deliveryContext.getUsedContentVersions().size():" + this.deliveryContext.getUsedContentVersions().size());
+		if(this.deliveryContext.getUsedContentVersions().size() > 0)
+		{
+			Iterator userContentVersionIterator = this.deliveryContext.getUsedContentVersions().iterator();
+			while(userContentVersionIterator.hasNext())
+			{
+				String usedContentVersion = (String)userContentVersionIterator.next();	
+				if(usedContentVersion != null && usedContentVersion.startsWith("contentVersion_"))
+		    	{
+		    		try
+		            {
+		    			String versionId = usedContentVersion.substring(15);
+		    			//System.out.println("versionId:" + versionId);
+		    			if(!versionId.equals("null") && !versionId.equals(""))
+		    			{
+			    			Integer contentVersionId = new Integer(versionId);
+			    			ContentVersion contentVersion = ContentVersionController.getContentVersionController().getContentVersionWithId(contentVersionId, getDatabase());
+			    			//ContentVersionVO contentVersion = ContentVersionController.getContentVersionController().getContentVersionVOWithId(contentVersionId, getDatabase());
+			    			if(lastModifiedDateTime == null || contentVersion.getModifiedDateTime().after(lastModifiedDateTime))
+			    			{
+			    				//System.out.println("this:" + this.hashCode());
+			    				//System.out.println("lastModifiedDateTime:" + lastModifiedDateTime);
+			    				//System.out.println("contentVersionVO:" + contentVersion.getModifiedDateTime());
+			    				lastModifiedDateTime = contentVersion.getModifiedDateTime();
+			    			}
+		    			}
+		            }
+		    		catch (Exception e) 
+		    		{
+		    			e.printStackTrace();
+					}
+		    	}
+			}
+			this.deliveryContext.setLastModifiedDateTime(lastModifiedDateTime);
+		}
+	}
+
+	protected String decorateHeadAndPageWithVarsFromComponents(String pageString)
+	{
+		if(pageString.length() < 500000)
+		{
+			pageString = this.getTemplateController().decoratePage(pageString);
+			
+			StringBuffer sb = null;
+			
+			List htmlHeadItems = this.getTemplateController().getDeliveryContext().getHtmlHeadItems();
+			if(htmlHeadItems != null || htmlHeadItems.size() > 0)
+			{
+				int indexOfHeadEndTag = pageString.indexOf("</head");
+				if(indexOfHeadEndTag == -1)
+					indexOfHeadEndTag = pageString.indexOf("</HEAD");
 	
+				if(indexOfHeadEndTag != -1)
+				{
+					sb = new StringBuffer(pageString);
+					Iterator htmlHeadItemsIterator = htmlHeadItems.iterator();
+					while(htmlHeadItemsIterator.hasNext())
+					{
+						String value = (String)htmlHeadItemsIterator.next();
+						sb.insert(indexOfHeadEndTag, value + "\n");
+					}
+					//pageString = sb.toString();
+				}
+			}
+			
+			try
+			{
+				int lastModifiedDateTimeIndex;
+				if(sb == null)
+					lastModifiedDateTimeIndex = pageString.indexOf("<ig:lastModifiedDateTime");
+				else
+					lastModifiedDateTimeIndex = sb.indexOf("<ig:lastModifiedDateTime");
+					
+				System.out.println("OOOOOOOOOOOOO lastModifiedDateTimeIndex:" + lastModifiedDateTimeIndex);
+				if(lastModifiedDateTimeIndex > -1)
+				{
+					if(sb == null)
+						sb = new StringBuffer(pageString);
+
+					int lastModifiedDateTimeEndIndex = sb.indexOf("</ig:lastModifiedDateTime>", lastModifiedDateTimeIndex);
+	
+					String tagInfo = sb.substring(lastModifiedDateTimeIndex, lastModifiedDateTimeEndIndex);
+					System.out.println("tagInfo:" + tagInfo);
+					String dateFormat = "yyyy-MM-dd HH:mm";
+					int formatStartIndex = tagInfo.indexOf("format");
+					if(formatStartIndex > -1)
+					{
+						int formatEndIndex = tagInfo.indexOf("\"", formatStartIndex + 8);
+						if(formatEndIndex > -1)
+							dateFormat = tagInfo.substring(formatStartIndex + 8, formatEndIndex);
+					}
+					System.out.println("dateFormat:" + dateFormat);
+						
+					String dateString = vf.formatDate(this.getTemplateController().getDeliveryContext().getLastModifiedDateTime(), this.getTemplateController().getLocale(), dateFormat);
+					System.out.println("dateString:" + dateString);
+					sb.replace(lastModifiedDateTimeIndex, lastModifiedDateTimeEndIndex + "</ig:lastModifiedDateTime>".length(), dateString);
+					System.out.println("Replaced:" + lastModifiedDateTimeIndex + " to " + lastModifiedDateTimeEndIndex + "</ig:lastModifiedDateTime>".length() + " with " + dateString);
+				}
+			}
+			catch (Exception e) 
+			{
+				logger.error("Problem setting lastModifiedDateTime:" + e.getMessage(), e);
+			}
+			
+			if(sb != null)
+				pageString = sb.toString();			
+		}
+		else
+		{
+			if(logger.isInfoEnabled())
+				logger.info("pageString was to large (" + pageString.length() + ") so the headers was not inserted.");
+		}
+		
+		return pageString;
+	}
 				
 	/**
 	 * This method is used to allow pagecaching on a general level.
