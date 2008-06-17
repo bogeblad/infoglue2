@@ -1,4 +1,4 @@
-#beginCommonToolV3("tool.managementtool.viewMessageCenter.header" "" "" false true $!isInlineDialog)
+#beginCommonToolV3("tool.managementtool.viewMessageCenter.header" "" "" false true $!disableCloseButton)
 
 
 <style type="text/css">
@@ -188,7 +188,7 @@
 		<input type="hidden" name="extraText" value="$!extraText"/>
 		<input type="hidden" name="extraTextProperty" value="$!extraTextProperty"/>
 		<input type="hidden" name="userSessionKey" value="$userSessionKey"/>
-		<input type="hidden" name="isInlineDialog" value="$!isInlineDialog"/>
+		<input type="hidden" name="disableCloseButton" value="$!disableCloseButton"/>
 				
 		<div style="color: black;">
 			

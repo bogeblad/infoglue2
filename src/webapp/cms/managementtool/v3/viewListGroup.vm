@@ -1,7 +1,7 @@
-#beginManagementToolV3("tool.managementtool.viewGroupList.header" "" true)
+#beginCommonToolV3("tool.managementtool.viewGroupList.header" "" "" true true true)
 
 <script type="text/javascript">
-	
+		
 	YAHOO.example.Data = {
 	    groups: 
 	    [
@@ -45,6 +45,8 @@
 
 <div style="clear: both;"></div>
 
-<div id="groups"></div>
+<div id="groups" class="igScrollArea"></div>
 
-#endManagementTool()
+#footerToolbar($footerButtons)
+
+#endCommonToolV3()

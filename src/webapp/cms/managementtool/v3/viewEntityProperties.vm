@@ -1,4 +1,4 @@
-#beginManagementToolV3("$toolbarKey" "$!entityId" false)
+#beginCommonToolV3("$toolbarKey" "$!entityId" "" false true true)
 
 <script type="text/javascript">
 	
@@ -72,6 +72,11 @@
 		document.getElementById("propertiesCategoryId").value = propertiesCategoryId;
 		document.catForm.submit();
 	}
+	
+	function cancel()
+	{
+		document.location.href = "$cancelAddress";
+	}
 
 	//*******************************************
 	// This is a timer that warns the user about saving his work once in a while so he does not
@@ -117,7 +122,7 @@
 	
 #menuToolbar("$ui.getString($titleKey)" $buttons $rightButtons) 
 
-<div id="igEditArea">
+<div id="igEditArea" class="igScrollArea">
 
 <form method="post" name="editForm" action="${updateAction}.action">
 	<fieldset class="ig-fieldset">
@@ -678,16 +683,6 @@
 		
 		</div>
 				
-		<div style="clear: both;"></div>
-
-		<div id="buttons" class="ig-buttonRow">
-			#if($readonly == "")
-			<input type="button" id="saveButton" name="saveButton" value="$ui.getString("tool.common.saveButton.label")" title="$ui.getString("tool.common.saveButton.title")"/>
-			<input type="button" id="saveAndExitButton" name="saveAndExitButton" value="$ui.getString("tool.common.saveAndExitButton.label")" title="$ui.getString("tool.common.saveAndExitButton.title")"/>
-			#end
-			<input type="button" id="cancelButton" name="cancelButton" value="$ui.getString("tool.common.cancelButton.label")" title="$ui.getString("tool.common.cancelButton.title")"/>
-		</div>
-
 	</fieldset>
 
 </form>
@@ -702,5 +697,6 @@
 	<input type="hidden" name="returnAddress" value="$returnAddress"/>
 </form>
 
-</body>
-</html>
+#footerToolbar($footerButtons)
+
+#endCommonToolV3()

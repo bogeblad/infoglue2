@@ -1,4 +1,4 @@
-#beginCommonToolV3("tool.managementtool.mysettings.header" "" "" false true $!isInlineDialog)
+#beginCommonToolV3("tool.managementtool.mysettings.header" "" "" false true $!disableCloseButton)
 
 <script type="text/javascript">
 	<!--

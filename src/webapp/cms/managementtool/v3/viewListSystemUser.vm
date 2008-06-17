@@ -1,14 +1,16 @@
-#beginManagementToolV3("tool.managementtool.viewSystemUserList.header" "" true)
+#beginCommonToolV3("tool.managementtool.viewSystemUserList.header" "" "" true true true)
 
 #menuToolbar("" $buttons $rightButtons) 
 
 <div style="clear: both;"></div>
 
+<div class="igScrollArea">
 <div id="systemUsers"></div>
 <div id="bottom_pagination"></div>
+</div>
 
 <script type="text/javascript">
-	
+		
 	YAHOO.example.Data = {
 	    systemUsers: 
 	    [
@@ -59,5 +61,7 @@
 	});
 
 </script>
+
+#footerToolbar($footerButtons)
 
 #endManagementTool()

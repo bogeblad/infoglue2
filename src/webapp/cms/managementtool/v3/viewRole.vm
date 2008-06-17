@@ -1,4 +1,4 @@
-#beginManagementToolV3("tool.managementtool.viewRole.header" "$!roleName" false)
+#beginCommonToolV3("tool.managementtool.viewRole.header" "$!roleName" "" false true true)
 
 <script type="text/javascript">
 	
@@ -6,22 +6,8 @@
     {
         YAHOO.util.Event.onContentReady("buttons", function () 
         {	        
-			var oSaveButton = new YAHOO.widget.Button("saveButton");
-			var oSaveAndExitButton = new YAHOO.widget.Button("saveAndExitButton");
-			var oCancelButton = new YAHOO.widget.Button("cancelButton");
-
 			var oRightButton = new YAHOO.widget.Button("transferRightButton");
 			var oLeftButton = new YAHOO.widget.Button("transferLeftButton");
-
-        	oSaveButton.on("click", function (p_oEvent){
-        		save(document.inputForm);
-        	});
-        	oSaveAndExitButton.on("click", function (p_oEvent){
-        		saveAndExit(document.inputForm, "UpdateRole!saveAndExitV3.action");
-        	});
-        	oCancelButton.on("click", function (p_oEvent){
-        		document.location.href = 'ViewListRole!listManagableRoles.action';
-        	});
 			
         	oRightButton.on("click", function (p_oEvent){
 	   			!$('#unassignedUserNameList option:selected').remove().appendTo('#userName');  
@@ -92,7 +78,7 @@
 #end
 #set($hasAccessToManageUsers = $this.hasAccessTo("Role.ManageUsers", "$roleName"))
 
-<div id="igEditArea">
+<div id="igEditArea" class="igScrollArea">
 
 <form id="inputForm" name="inputForm" method="POST" action="UpdateRole!v3.action">
 <input type="hidden" name="roleName" value="$!roleName">
@@ -158,17 +144,11 @@
 			</select>
 		</div>
 		
-		<div style="clear: both;"></div>
-
-		<div id="buttons" class="ig-buttonRow">
-			<input type="button" id="saveButton" name="saveButton" value="$ui.getString("tool.common.saveButton.label")" title="$ui.getString("tool.common.saveButton.title")"/>
-			<input type="button" id="saveAndExitButton" name="saveAndExitButton" value="$ui.getString("tool.common.saveAndExitButton.label")" title="$ui.getString("tool.common.saveAndExitButton.title")"/>
-			<input type="button" id="cancelButton" name="cancelButton" value="$ui.getString("tool.common.cancelButton.label")" title="$ui.getString("tool.common.cancelButton.title")"/>
-		</div>
 	</fieldset>
 
 </form>
 </div>
 
-</body>
-</html>
+#footerToolbar($footerButtons)
+
+#endCommonToolV3()

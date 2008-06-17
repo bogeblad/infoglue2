@@ -1,28 +1,4 @@
-#beginManagementToolV3("tool.managementtool.viewSystemUser.header" "$!userName" false)
-
-<script type="text/javascript">
-	
-    YAHOO.example.init = function () 
-    {
-        YAHOO.util.Event.onContentReady("buttons", function () 
-        {	        
-			var oSaveButton = new YAHOO.widget.Button("saveButton");
-			var oSaveAndExitButton = new YAHOO.widget.Button("saveAndExitButton");
-			var oCancelButton = new YAHOO.widget.Button("cancelButton");
-
-        	oSaveButton.on("click", function (p_oEvent){
-        		save(document.editForm);
-        	});
-        	oSaveAndExitButton.on("click", function (p_oEvent){
-        		saveAndExit(document.editForm, "UpdateSystemUser!saveAndExitV3.action");
-        	});
-        	oCancelButton.on("click", function (p_oEvent){
-        		document.location.href = 'ViewListSystemUser!v3.action';
-        	});			
-        });
-    }();
-
-</script>
+#beginCommonToolV3("tool.managementtool.viewSystemUser.header" "$!userName" "" false true true)
 
 <script type="text/javascript" src="script/OptionTransfer.js"></script>
 
@@ -87,9 +63,10 @@
 	#set($readonly = "")
 #end
 
-<div id="igEditArea">
+<div id="igEditArea" class="igScrollArea">
 
-<form method="POST" name="editForm" action="UpdateSystemUser!v3.action">
+<form method="POST" name="inputForm" action="UpdateSystemUser!v3.action">
+<input type="hidden" name="userName" value="$!userName">
 <fieldset class="ig-fieldset">
 
 	#editTextFieldCSS("SystemUser.userName" "userName" "$!userName" "51" true "disabled")
@@ -207,17 +184,7 @@
 			#end
 		</select>
 	</div>
-	
-	<div style="clear: both;"></div>
-
-	#if($supportsUpdate)
-		<input type="hidden" name="userName" value="$!userName">
-		<div id="buttons" class="ig-buttonRow">
-			<input type="button" id="saveButton" name="saveButton" value="$ui.getString("tool.common.saveButton.label")" title="$ui.getString("tool.common.saveButton.title")"/>
-			<input type="button" id="saveAndExitButton" name="saveAndExitButton" value="$ui.getString("tool.common.saveAndExitButton.label")" title="$ui.getString("tool.common.saveAndExitButton.title")"/>
-			<input type="button" id="cancelButton" name="cancelButton" value="$ui.getString("tool.common.cancelButton.label")" title="$ui.getString("tool.common.cancelButton.title")"/>
-		</div>
-	#end
+		
 	</fieldset>
 
 </form>
@@ -226,10 +193,11 @@
 #if($supportsUpdate)
 <script type="text/javascript">
 	//alert("Initializing form..");
-	opt1.init(document.editForm);
-	opt2.init(document.editForm);
+	opt1.init(document.inputForm);
+	opt2.init(document.inputForm);
 </script>
 #end
 
-</body>
-</html>
+#footerToolbar($footerButtons)
+
+#endCommonToolV3()

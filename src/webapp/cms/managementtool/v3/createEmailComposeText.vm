@@ -1,4 +1,4 @@
-#beginCommonToolV3("tool.managementtool.viewMessageCenter.header" "" "" false true $!isInlineDialog)
+#beginCommonToolV3("tool.managementtool.viewMessageCenter.header" "" "" false true $!disableCloseButton)
 
 <script type="text/javascript">
 <!--
@@ -20,7 +20,7 @@
 		<input type="hidden" name="returnAddress" value="$!returnAddress"/>
 		<input type="hidden" name="originalUrl" value="$!originalUrl"/>
 		<input type="hidden" name="userSessionKey" value="$userSessionKey"/>
-		<input type="hidden" name="isInlineDialog" value="$!isInlineDialog"/>
+		<input type="hidden" name="disableCloseButton" value="$!disableCloseButton"/>
 		 
 		<div style="clear: both;"></div>
 		

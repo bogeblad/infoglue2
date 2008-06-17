@@ -1,4 +1,4 @@
-<!-- $Id: actions.xml,v 1.68 2008/06/05 08:29:58 mattias Exp $ -->
+<!-- $Id: actions.xml,v 1.69 2008/06/17 11:39:11 mattias Exp $ -->
 <actions>
 
 	<!-- MySettings -->
@@ -568,14 +568,17 @@
 
 	<!-- UserProperties -->
 	<action name="org.infoglue.cms.applications.managementtool.actions.ViewUserPropertiesAction" alias="ViewUserProperties">
-		<!--<view name="success">/cms/managementtool/viewUserProperties.vm</view>-->
 		<view name="success">/cms/managementtool/viewEntityProperties.vm</view>
+		<view name="successV3">/cms/managementtool/v3/viewEntityProperties.vm</view>
 		<view name="error">/cms/managementtool/error.vm</view>
 	</action>
 	<action name="org.infoglue.cms.applications.managementtool.actions.UpdateUserPropertiesAction" alias="UpdateUserProperties">
 		<view name="success">ViewUserProperties.action</view>
 		<view name="saveAndExit">ViewSystemUser.action</view>
 		<view name="saveAndExitStandalone">ViewContent!standalone.action</view>
+		<view name="successV3">ViewSystemUserProperties!v3.action?userName=${ownerEntityId}&amp;languageId=${languageId}</view>
+		<view name="saveAndExitV3">ViewSystemUser!v3.action</view>
+		<view name="saveAndExitStandaloneV3">ViewContent!standaloneV3.action</view>
 		<view name="error">/cms/managementtool/error.vm</view>
 	</action>
 

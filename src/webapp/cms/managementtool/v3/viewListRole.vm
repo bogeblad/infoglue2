@@ -1,4 +1,4 @@
-#beginManagementToolV3("tool.managementtool.viewRoleList.header" "" true)
+#beginCommonToolV3("tool.managementtool.viewRoleList.header" "" "" true true true)
 
 <script type="text/javascript">
 	
@@ -45,6 +45,8 @@
 
 <div style="clear: both;"></div>
 
-<div id="roles"></div>
+<div id="roles" class="igScrollArea"></div>
+
+#footerToolbar($footerButtons)
 
 #endManagementTool()
