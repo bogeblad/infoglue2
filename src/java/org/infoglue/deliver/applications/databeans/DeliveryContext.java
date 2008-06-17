@@ -466,7 +466,8 @@ public class DeliveryContext implements UsageListener
 		
 		extraData.put("contentType", this.getContentType());
 		extraData.put("headers", this.getHttpHeaders());
-		extraData.put("pageAttributes", this.getPageAttributes());
+		//extraData.put("pageAttributes", this.getPageAttributes());
+		extraData.put("lastModifiedDateTime", this.lastModifiedDateTime);
 		
 		return extraData;
 	}
@@ -481,9 +482,15 @@ public class DeliveryContext implements UsageListener
 		if(headers != null)
 			this.getHttpHeaders().putAll(headers);
 		
+		/*
 		Map pageAttributes = (Map)extraData.get("pageAttributes");
 		if(pageAttributes != null)
 			this.getPageAttributes().putAll(pageAttributes);
+		*/
+		
+		Date lastModifiedDateTime = (Date)extraData.get("lastModifiedDateTime");
+		if(lastModifiedDateTime != null)
+			this.lastModifiedDateTime = lastModifiedDateTime;
 	}
 
 	public Date getLastModifiedDateTime()
