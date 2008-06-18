@@ -32,11 +32,18 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
+import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.controllers.kernel.impl.simple.BaseController;
 import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentControllerProxy;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.InterceptionPointController;
+import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
+import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeController;
+import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeControllerProxy;
+import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeVersionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SubscriptionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.UserControllerProxy;
 import org.infoglue.cms.entities.content.Content;
@@ -45,12 +52,15 @@ import org.infoglue.cms.entities.content.ContentVersion;
 import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.entities.management.InterceptionPointVO;
+import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.entities.management.SubscriptionVO;
 import org.infoglue.cms.entities.management.TransactionHistory;
 import org.infoglue.cms.entities.management.TransactionHistoryVO;
 import org.infoglue.cms.entities.management.impl.simple.TransactionHistoryImpl;
 import org.infoglue.cms.entities.structure.SiteNode;
+import org.infoglue.cms.entities.structure.SiteNodeVO;
 import org.infoglue.cms.entities.structure.SiteNodeVersion;
+import org.infoglue.cms.entities.structure.SiteNodeVersionVO;
 import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
@@ -69,7 +79,7 @@ import sun.security.action.GetLongAction;
 
 public class SubscriptionsInterceptor extends BaseController implements InfoGlueInterceptor
 {	
-	class TransactionQueueVO extends TransactionHistoryVO
+	public class TransactionQueueVO extends TransactionHistoryVO
 	{
 		private String subject;
 		private String description;
@@ -109,6 +119,7 @@ public class SubscriptionsInterceptor extends BaseController implements InfoGlue
 	}
 	
     private final static Logger logger = Logger.getLogger(SubscriptionsInterceptor.class.getName());
+    private final static VisualFormatter vf = new VisualFormatter();
     
     private static List<TransactionQueueVO> transactionQueue = Collections.synchronizedList(new ArrayList<TransactionQueueVO>());
     
@@ -279,9 +290,17 @@ public class SubscriptionsInterceptor extends BaseController implements InfoGlue
 			entityId = contentVersionId.toString();
 			ContentVersionVO contentVersionVO = ContentVersionControllerProxy.getController().getContentVersionVOWithId(contentVersionId, db);
 			ContentVO contentVO = ContentControllerProxy.getController().getContentVOWithId(contentVersionVO.getContentId(), db);
-			InterceptionPointVO contentInterceptionPointVO = InterceptionPointController.getController().getInterceptionPointVOWithName("Content.Write", db);
+			InterceptionPointVO contentInterceptionPointVO = InterceptionPointController.getController().getInterceptionPointVOWithName("Content.Write", db); //TODO - is Content.Write correct
 			addTransactionHistory(contentInterceptionPointVO, "SubscriptionsEvents", infoGluePrincipal.getName(), new Integer(999), Content.class.getName(), contentVersionVO.getContentId().toString(), "Subscription: Content deleted", "A user has changed the content '" + contentVO.getName() + "'. You subscribe to this event why this message is sent.");
 			addTransactionHistory(interceptionPointVO, "SubscriptionsEvents", infoGluePrincipal.getName(), new Integer(999), entityName, entityId, "Subscription notification", "The entity " + entityName + " was deleted. You subscribe to this event why this message is sent.");
+		}
+		else if(interceptionPointVO.getName().equalsIgnoreCase("Content.ExpireDateComingUp"))
+		{
+			ContentVO contentVO = (ContentVO)extradata.get("contentVO");
+			entityName = ContentVersion.class.getName();
+			entityId = contentVO.getId().toString();
+			String fullPath = ContentController.getContentController().getContentPath(new Integer(entityId), true, true);
+			addTransactionHistory(interceptionPointVO, "SubscriptionsEvents", infoGluePrincipal.getName(), new Integer(999), entityName, entityId, "Subscription notification", "The content \"" + fullPath + "\" will expire on " + vf.formatDate(contentVO.getExpireDateTime(), "yyyy-MM-dd HH:ss") + ". <hr/>You either subscribe to this event, created the content or was the last person to modify the content why this message is sent.");
 		}
 		/*
 		else if(interceptionPointVO.getName().equalsIgnoreCase("SiteNodeVersion.Read"))
@@ -291,6 +310,14 @@ public class SubscriptionsInterceptor extends BaseController implements InfoGlue
 			entityId = siteNodeVersionId.toString();
 		}
 		*/
+		else if(interceptionPointVO.getName().equalsIgnoreCase("SiteNode.ExpireDateComingUp"))
+		{
+			SiteNodeVO siteNodeVO = (SiteNodeVO)extradata.get("siteNodeVO");
+			entityName = ContentVersion.class.getName();
+			entityId = siteNodeVO.getId().toString();
+			String fullPath = SiteNodeController.getController().getSiteNodePath(new Integer(entityId), db);
+			addTransactionHistory(interceptionPointVO, "SubscriptionsEvents", infoGluePrincipal.getName(), new Integer(999), entityName, entityId, "Subscription notification", "The page \"" + fullPath + "\" will expire on " + vf.formatDate(siteNodeVO.getExpireDateTime(), "yyyy-MM-dd HH:ss") + ". <hr/>You either subscribe to this event, created the page or was the last person to modify the page why this message is sent.");
+		}
 		else if(interceptionPointVO.getName().equalsIgnoreCase("SiteNodeVersion.Write"))
 		{
 			Integer siteNodeVersionId = (Integer)extradata.get("siteNodeVersionId");
@@ -330,8 +357,9 @@ public class SubscriptionsInterceptor extends BaseController implements InfoGlue
 		
 	}
 	
-	public void processTransactionQueue() throws Exception
+	public List processTransactionQueue() throws Exception
 	{
+		List<TransactionQueueVO> completeTransactions = new ArrayList<TransactionQueueVO>();
 		List<TransactionQueueVO> localTransactionQueue = new ArrayList<TransactionQueueVO>();
 		
 		synchronized (transactionQueue)
@@ -356,11 +384,83 @@ public class SubscriptionsInterceptor extends BaseController implements InfoGlue
 				System.out.println("	" + transactionQueueVO.getTransactionObjectName() + "=" + transactionQueueVO.getTransactionObjectId());
 				List<SubscriptionVO> subscriptionVOList = SubscriptionController.getController().getSubscriptionVOList(transactionQueueVO.getInterceptionPointVO().getId(), null, false, transactionQueueVO.getTransactionObjectName(), transactionQueueVO.getTransactionObjectId(), null, null, db, true);
 				System.out.println("subscriptionVOList:" + subscriptionVOList.size());
+				if(transactionQueueVO.getInterceptionPointVO().getName().equalsIgnoreCase("SiteNode.ExpireDateComingUp"))
+				{
+					System.out.println("It's a expiredate coming up event... let's find add a fake subscription on the last modifier.");
+					SiteNodeVO siteNodeVO = SiteNodeController.getController().getSiteNodeVOWithId(new Integer(transactionQueueVO.getTransactionObjectId()), db);
+					if(siteNodeVO != null)
+					{
+						SiteNodeVersionVO version = SiteNodeVersionController.getController().getLatestSiteNodeVersionVO(db, siteNodeVO.getId());
+
+						SubscriptionVO creatorSubscriptionVO = new SubscriptionVO();
+						creatorSubscriptionVO.setEntityId(transactionQueueVO.getTransactionObjectId());
+						creatorSubscriptionVO.setEntityName(transactionQueueVO.getTransactionObjectName());
+						creatorSubscriptionVO.setInterceptionPointId(transactionQueueVO.getInterceptionPointVO().getId());
+						creatorSubscriptionVO.setName("Standard subscription");
+						creatorSubscriptionVO.setUserName(siteNodeVO.getCreatorName());
+						subscriptionVOList.add(creatorSubscriptionVO);
+
+						if(version != null)
+						{
+							if(!version.getVersionModifier().equals(siteNodeVO.getCreatorName()))
+							{
+								SubscriptionVO modifyerSubscriptionVO = new SubscriptionVO();
+								modifyerSubscriptionVO.setEntityId(transactionQueueVO.getTransactionObjectId());
+								modifyerSubscriptionVO.setEntityName(transactionQueueVO.getTransactionObjectName());
+								modifyerSubscriptionVO.setInterceptionPointId(transactionQueueVO.getInterceptionPointVO().getId());
+								modifyerSubscriptionVO.setName("Standard subscription");
+								modifyerSubscriptionVO.setUserName(version.getVersionModifier());
+								subscriptionVOList.add(modifyerSubscriptionVO);
+							}
+						}
+					}
+				}
+				else if(transactionQueueVO.getInterceptionPointVO().getName().equalsIgnoreCase("Content.ExpireDateComingUp"))
+				{
+					System.out.println("It's a expiredate coming up event... let's find add a fake subscription on the last modifier.");
+					ContentVO contentVO = ContentController.getContentController().getContentVOWithId(new Integer(transactionQueueVO.getTransactionObjectId()), db);
+					
+					if(contentVO != null)
+					{
+						SubscriptionVO creatorSubscriptionVO = new SubscriptionVO();
+						creatorSubscriptionVO.setEntityId(transactionQueueVO.getTransactionObjectId());
+						creatorSubscriptionVO.setEntityName(transactionQueueVO.getTransactionObjectName());
+						creatorSubscriptionVO.setInterceptionPointId(transactionQueueVO.getInterceptionPointVO().getId());
+						creatorSubscriptionVO.setName("Standard subscription");
+						creatorSubscriptionVO.setUserName(contentVO.getCreatorName());
+						subscriptionVOList.add(creatorSubscriptionVO);
+	
+						List languages = LanguageController.getController().getLanguageVOList(contentVO.getRepositoryId(), db);
+						Iterator languagesIterator = languages.iterator();
+						while(languagesIterator.hasNext())
+						{
+							LanguageVO languageVO = (LanguageVO)languagesIterator.next();
+							ContentVersionVO version = ContentVersionController.getContentVersionController().getLatestContentVersionVO(contentVO.getId(), languageVO.getId(), db);
+							
+							if(version != null)
+							{							
+								if(!version.getVersionModifier().equals(contentVO.getCreatorName()))
+								{
+									SubscriptionVO modifyerSubscriptionVO = new SubscriptionVO();
+									modifyerSubscriptionVO.setEntityId(transactionQueueVO.getTransactionObjectId());
+									modifyerSubscriptionVO.setEntityName(transactionQueueVO.getTransactionObjectName());
+									modifyerSubscriptionVO.setInterceptionPointId(transactionQueueVO.getInterceptionPointVO().getId());
+									modifyerSubscriptionVO.setName("Standard subscription");
+									modifyerSubscriptionVO.setUserName(version.getVersionModifier());
+									subscriptionVOList.add(modifyerSubscriptionVO);
+								}
+							}
+						}
+					}
+				}
+				
 				Iterator<SubscriptionVO> subscriptionVOListIterator = subscriptionVOList.iterator();
 				while(subscriptionVOListIterator.hasNext())
 				{
 					SubscriptionVO subscriptionVO = subscriptionVOListIterator.next();
-					handleSubscription(subscriptionVO, transactionQueueVO, db);
+					boolean subscriptionHandled = handleSubscription(subscriptionVO, transactionQueueVO, db);
+					if(subscriptionHandled)
+						completeTransactions.add(transactionQueueVO);
 				}
 	        
 	            commitTransaction(db);
@@ -373,14 +473,17 @@ public class SubscriptionsInterceptor extends BaseController implements InfoGlue
 		}
 		
 		System.out.println("localTransactionQueue:" + localTransactionQueue.size());
-
+		return completeTransactions;
 	}
 
-	private void handleSubscription(SubscriptionVO subscriptionVO, TransactionQueueVO transactionQueueVO, Database db) throws Exception
+	private boolean handleSubscription(SubscriptionVO subscriptionVO, TransactionQueueVO transactionQueueVO, Database db) throws Exception
 	{
+		boolean handledSubscription = true;
+		
 		System.out.println("subscriptionVO:" + subscriptionVO);
 		if(subscriptionVO.getSubscriptionFilterVOList() == null || subscriptionVO.getSubscriptionFilterVOList().size() == 0)
 		{
+			//This first part handles simple subscriptions - that is subscriptions on an interception point with id or without filters
 			String email = subscriptionVO.getUserEmail();
 			if(email == null)
 			{
@@ -393,6 +496,13 @@ public class SubscriptionsInterceptor extends BaseController implements InfoGlue
 			
 			MailServiceFactory.getService().sendEmail(CmsPropertyHandler.getSystemEmailSender(), email, null, null, transactionQueueVO.getSubject(), transactionQueueVO.getDescription(), "utf-8");
 		}
+		else
+		{
+			//This part handles more complex subscriptions. 
+			
+		}
+		
+		return handledSubscription;
 	}
 
 	@Override
