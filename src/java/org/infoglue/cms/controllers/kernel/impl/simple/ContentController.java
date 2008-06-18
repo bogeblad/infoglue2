@@ -24,7 +24,9 @@
 package org.infoglue.cms.controllers.kernel.impl.simple;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -56,6 +58,9 @@ import org.infoglue.cms.entities.management.impl.simple.ContentTypeDefinitionImp
 import org.infoglue.cms.entities.management.impl.simple.RepositoryImpl;
 import org.infoglue.cms.entities.structure.Qualifyer;
 import org.infoglue.cms.entities.structure.ServiceBinding;
+import org.infoglue.cms.entities.structure.SiteNode;
+import org.infoglue.cms.entities.structure.SiteNodeVO;
+import org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl;
 import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
@@ -1824,6 +1829,50 @@ public class ContentController extends BaseController
 		}
 		
 		return sb.toString();
+	}
+
+	public List<ContentVO> getUpcomingExpiringContents(int numberOfWeeks) throws Exception
+	{
+		List<ContentVO> contentVOList = new ArrayList<ContentVO>();
+
+		Database db = CastorDatabaseService.getDatabase();
+        ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
+
+        beginTransaction(db);
+
+        try
+        {
+    		OQLQuery oql = db.getOQLQuery("SELECT c FROM org.infoglue.cms.entities.content.impl.simple.ContentImpl c WHERE " +
+    				"c.expireDateTime > $1 AND c.expireDateTime < $2 AND c.publishDateTime < $3");
+
+        	Calendar now = Calendar.getInstance();
+        	Date currentDate = now.getTime();
+        	oql.bind(currentDate);
+        	now.add(Calendar.DAY_OF_YEAR, numberOfWeeks);
+        	Date futureDate = now.getTime();
+           	oql.bind(futureDate);
+           	oql.bind(currentDate);
+
+        	QueryResults results = oql.execute();
+    		while(results.hasMore()) 
+            {
+    			Content content = (ContentImpl)results.next();
+    			contentVOList.add(content.getValueObject());
+            }
+
+    		results.close();
+    		oql.close();
+        	
+            commitTransaction(db);
+        }
+        catch(Exception e)
+        {
+            logger.error("An error occurred so we should not complete the transaction:" + e, e);
+            rollbackTransaction(db);
+            throw new SystemException(e.getMessage());
+        }
+        
+        return contentVOList;
 	}
 
 }

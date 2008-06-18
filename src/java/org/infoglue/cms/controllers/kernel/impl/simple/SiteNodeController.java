@@ -24,7 +24,9 @@
 package org.infoglue.cms.controllers.kernel.impl.simple;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -59,6 +61,7 @@ import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
+import org.infoglue.cms.util.DateHelper;
 import org.infoglue.cms.util.XMLHelper;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -1124,6 +1127,50 @@ public class SiteNodeController extends BaseController
 		}
 			
 		return sb.toString();
+	}
+
+	public List<SiteNodeVO> getUpcomingExpiringSiteNodes(int numberOfWeeks) throws Exception
+	{
+		List<SiteNodeVO> siteNodeVOList = new ArrayList<SiteNodeVO>();
+
+		Database db = CastorDatabaseService.getDatabase();
+        ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
+
+        beginTransaction(db);
+
+        try
+        {
+    		OQLQuery oql = db.getOQLQuery("SELECT sn FROM org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl sn WHERE " +
+    				"sn.expireDateTime > $1 AND sn.expireDateTime < $2 AND sn.publishDateTime < $3");
+
+        	Calendar now = Calendar.getInstance();
+        	Date currentDate = now.getTime();
+        	oql.bind(currentDate);
+        	now.add(Calendar.DAY_OF_YEAR, numberOfWeeks);
+        	Date futureDate = now.getTime();
+           	oql.bind(futureDate);
+           	oql.bind(currentDate);
+
+        	QueryResults results = oql.execute();
+    		while(results.hasMore()) 
+            {
+    			SiteNode siteNode = (SiteNodeImpl)results.next();
+    			siteNodeVOList.add(siteNode.getValueObject());
+            }
+
+    		results.close();
+    		oql.close();
+        	
+            commitTransaction(db);
+        }
+        catch(Exception e)
+        {
+            logger.error("An error occurred so we should not complete the transaction:" + e, e);
+            rollbackTransaction(db);
+            throw new SystemException(e.getMessage());
+        }
+        
+        return siteNodeVOList;
 	}
 	
 	
