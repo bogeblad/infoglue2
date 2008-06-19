@@ -280,6 +280,10 @@
 		  	$("#otherLanguageTabsContainer > ul").tabs({ show:function() { resizeInlineTabDivs();} });
 		#end
 		
+		$(window).resize( function() {
+     		resizeInlineTabDivs();
+ 		});
+ 			
 		setTimeout("resizeInlineTabDivs()", 100);
 		
 		generateWYSIWYGS();
