@@ -55,6 +55,7 @@ function resizeInlineTabDivs()
 {
 	var dimensionsWidth = $(window).width();
 	var dimensionsHeight = $(window).height();
+  	//alert("dimensionsWidth:" + dimensionsWidth);
   	if(dimensionsWidth != 0)
   	{
 		$(".inlineTabDiv").css("height", dimensionsHeight - 160);
