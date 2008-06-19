@@ -1576,4 +1576,42 @@ public class CmsPropertyHandler
 		return userName;
 	}
 
+	public static Properties getCharacterReplacingMapping()
+	{
+		Properties properties = new Properties();
+
+		String characterReplacingMappingString = CmsPropertyHandler.getServerNodeDataProperty(null, "niceURICharacterReplacingMapping", true, null);
+	    System.out.println("characterReplacingMappingString:" + characterReplacingMappingString);
+	    if(characterReplacingMappingString != null && !characterReplacingMappingString.equals(""))
+		{
+	    	try
+			{
+				properties.load(new ByteArrayInputStream(characterReplacingMappingString.getBytes("ISO-8859-1")));
+			}	
+			catch(Exception e)
+			{
+			    logger.error("Error loading properties from string. Reason:" + e.getMessage());
+				e.printStackTrace();
+			}
+		}
+	    if(properties.size() == 0)
+	    {
+	    	properties.put("å", "a");
+	    	properties.put("ä", "a");
+	    	properties.put("ö", "o");
+	    	properties.put("Å", "A");
+	    	properties.put("Ä", "A");
+	    	properties.put("Ö", "O");
+	    }
+	    
+	    return properties;
+	}
+
+	public static boolean getNiceURIUseLowerCase()
+	{
+		String niceURIUseLowerCase = getServerNodeProperty("niceURIUseLowerCase", true, "false");
+		
+		return Boolean.parseBoolean(niceURIUseLowerCase);
+	}
+
 }

@@ -152,6 +152,8 @@ public class ViewServerNodePropertiesAction extends InfoGluePropertiesAbstractAc
 	    populate(ps, "enableDiskAssets");
 	    populate(ps, "niceURIEncoding");
 	    populate(ps, "niceURIAttributeName");
+	    populateData(ps, "niceURICharacterReplacingMapping");
+	    populate(ps, "niceURIUseLowerCase");
 	    populate(ps, "requestArgumentDelimiter");
 	    populate(ps, "errorHandling");
 	    populate(ps, "errorUrl");

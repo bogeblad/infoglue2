@@ -27,6 +27,7 @@ import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Properties;
 
 import org.apache.log4j.Logger;
 import org.infoglue.cms.util.CmsPropertyHandler;
@@ -436,7 +437,54 @@ public class VisualFormatter
 		}
 		return sb.toString();
 	}
+
+	/**
+	 * This method replaces all non-ascii-characters with a corresponding one defined in the system properties-object. 
+	 * If not defined there it replaces the char with the default character.
+	 * @param s
+	 * @param defaultCharacter
+	 * @return
+	 */
 	
+	public final String replaceNiceURINonAsciiWithSpecifiedChars(String s, char defaultCharacter)
+	{
+		if(s == null)
+			return null;
+		
+		boolean toLowerCase = CmsPropertyHandler.getNiceURIUseLowerCase();
+		Properties properties = CmsPropertyHandler.getCharacterReplacingMapping();
+		
+		StringBuffer sb = new StringBuffer();
+		int n = s.length();
+		for (int i = 0; i < n; i++) 
+		{
+			char c = s.charAt(i);
+			if(c < 128 && c > 32)
+			{
+			    if(Character.isLetterOrDigit(c) ||  c == '-' || c == '_' || c == '.')
+			        sb.append(c);
+			    else
+			    {
+			    	String replaceChar = properties.getProperty("" + c);
+			        if(replaceChar != null && !replaceChar.equals(""))
+			        	sb.append(replaceChar);
+			        else
+			        	sb.append(defaultCharacter);
+			    }
+			}
+			else
+			{
+		    	String replaceChar = properties.getProperty("" + c);
+		        if(replaceChar != null && !replaceChar.equals(""))
+		        	sb.append(replaceChar);
+		        else
+		        	sb.append(defaultCharacter);
+			}
+		}
+		
+		return (toLowerCase ? sb.toString().toLowerCase() : sb.toString());
+	}
+
 	/**
 	 * This method converts all non-standard characters to html-equivalents.
 	 */
