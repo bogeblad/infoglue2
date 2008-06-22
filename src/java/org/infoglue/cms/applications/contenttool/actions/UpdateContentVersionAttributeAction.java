@@ -235,12 +235,14 @@ public class UpdateContentVersionAttributeAction extends ViewContentVersionActio
 			t.printStackTrace();
 			return ERROR;
 		}
-		
-		synchronized(active)
+		finally
 		{
-			active = new Boolean(false);
+			synchronized(active)
+			{
+				active = new Boolean(false);
+			}
 		}
-
+		
 		return NONE;
 	}
 
