@@ -301,6 +301,8 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 			
 			String parameters = "repositoryId=" + templateController.getSiteNode().getRepositoryId() + "&siteNodeId=" + templateController.getSiteNodeId() + "&languageId=" + templateController.getLanguageId() + "&contentId=" + templateController.getContentId() + "&componentId=" + this.getRequest().getParameter("activatedComponentId") + "&componentContentId=" + this.getRequest().getParameter("componentContentId") + "&showSimple=false&showLegend=false&originalUrl=" + URLEncoder.encode(this.getTemplateController().getCurrentPageUrl(), "UTF-8");
 
+			StringBuffer path = getPagePathAsCommaseparatedIds(templateController);
+			
 			extraHeader = extraHeader.replaceAll("\\$\\{focusElementId\\}", "" + this.getRequest().getParameter("focusElementId"));
 			extraHeader = extraHeader.replaceAll("\\$\\{contextName\\}", this.getRequest().getContextPath());
 			extraHeader = extraHeader.replaceAll("\\$\\{componentEditorUrl\\}", componentEditorUrl);
@@ -311,6 +313,10 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 			extraHeader = extraHeader.replaceAll("\\$\\{currentUrl\\}", URLEncoder.encode(this.getTemplateController().getCurrentPageUrl(), "UTF-8"));
 			extraHeader = extraHeader.replaceAll("\\$\\{activatedComponentId\\}", "" + this.getRequest().getParameter("activatedComponentId"));
 			extraHeader = extraHeader.replaceAll("\\$\\{parameters\\}", parameters);
+			extraHeader = extraHeader.replaceAll("\\$\\{siteNodeId\\}", "" + templateController.getSiteNodeId());
+			extraHeader = extraHeader.replaceAll("\\$\\{parentSiteNodeId\\}", "" + templateController.getSiteNode().getParentSiteNodeId());
+			extraHeader = extraHeader.replaceAll("\\$\\{repositoryId\\}", "" + templateController.getSiteNode().getRepositoryId());
+			extraHeader = extraHeader.replaceAll("\\$\\{path\\}", "" + path.substring(1));
 
 			this.getTemplateController().getDeliveryContext().setUseFullUrl(oldUseFullUrl);
 
@@ -329,6 +335,9 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 			String componentEditorInNewWindowHTML = getLocalizedString(locale, "deliver.editOnSight.componentEditorInNewWindowHTML");
 			String savePageTemplateHTML = getLocalizedString(locale, "deliver.editOnSight.savePageTemplateHTML");
 			String savePagePartTemplateHTML = getLocalizedString(locale, "deliver.editOnSight.savePagePartTemplateHTML");
+			String editHTML = getLocalizedString(locale, "deliver.editOnSight.editHTML");
+			String editInlineHTML = getLocalizedString(locale, "deliver.editOnSight.editContentInlineLabel");
+			String propertiesHTML = getLocalizedString(locale, "deliver.editOnSight.propertiesHTML");
 
 			String saveTemplateUrl = "saveComponentStructure('" + componentEditorUrl + "CreatePageTemplate!input.action?contentId=" + templateController.getSiteNode(deliveryContext.getSiteNodeId()).getMetaInfoContentId() + "');";
 			String savePartTemplateUrl = "savePartComponentStructure('" + componentEditorUrl + "CreatePageTemplate!input.action?contentId=" + templateController.getSiteNode(deliveryContext.getSiteNodeId()).getMetaInfoContentId() + "');";
@@ -342,6 +351,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 			extraBody = extraBody.replaceAll("\\$repositoryId", "" + templateController.getSiteNode().getRepositoryId());
 			extraBody = extraBody.replaceAll("\\$originalFullURL", URLEncoder.encode(templateController.getOriginalFullURL(), "UTF-8"));
 			
+			extraBody = extraBody.replaceAll("\\$editHTML", editHTML);
 			extraBody = extraBody.replaceAll("\\$submitToPublishHTML", submitToPublishHTML);
 			extraBody = extraBody.replaceAll("\\$addComponentHTML", addComponentHTML);
 			extraBody = extraBody.replaceAll("\\$deleteComponentHTML", deleteComponentHTML);
@@ -355,6 +365,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		    extraBody = extraBody.replaceAll("\\$saveTemplateUrl", saveTemplateUrl);
 		    extraBody = extraBody.replaceAll("\\$savePartTemplateUrl", savePartTemplateUrl);
 		    extraBody = extraBody.replaceAll("\\$viewSource", viewSourceHTML);
+			extraBody = extraBody.replaceAll("\\$propertiesHTML", propertiesHTML);
 		    
 		    extraBody = extraBody.replaceAll("\\$addComponentJavascript", "var hasAccessToAddComponent" + component.getId() + "_" + component.getSlotName() + " = " + hasAccessToAddComponent + ";");
 		    extraBody = extraBody.replaceAll("\\$deleteComponentJavascript", "var hasAccessToDeleteComponent" + component.getSlotName() + " = " + hasAccessToDeleteComponent + ";");
@@ -438,6 +449,22 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		}
 		
 		return decoratedTemplate;
+	}
+
+	private StringBuffer getPagePathAsCommaseparatedIds(TemplateController templateController)
+	{
+		StringBuffer path = new StringBuffer("");
+		
+		SiteNodeVO currentSiteNode = templateController.getSiteNode();
+		while(currentSiteNode != null)
+		{
+			path.insert(0, "," + currentSiteNode.getId().toString());
+			if(currentSiteNode.getParentSiteNodeId() != null)
+				currentSiteNode = templateController.getSiteNode(currentSiteNode.getParentSiteNodeId());
+			else
+				currentSiteNode = null;
+		}
+		return path;
 	}
 
    
@@ -1285,19 +1312,19 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		sb.append("	</div>");
 
 		sb.append("	<script type=\"text/javascript\">");
-		sb.append("		var theHandle = document.getElementById(\"component" + componentId + "PropertiesHandle\");");
-		sb.append("		var theRoot   = document.getElementById(\"component" + componentId + "Properties\");");
+		sb.append("		var theHandle = document.getElementById(\"component" + componentId + "PropertiesHandle\");\n");
+		sb.append("		var theRoot   = document.getElementById(\"component" + componentId + "Properties\");\n");
 		
-		sb.append("		componentId = \"" + componentId + "\";");
-		sb.append("		activatedComponentId = QueryString(\"activatedComponentId\");");
-		sb.append("		if(activatedComponentId && activatedComponentId == componentId)"); 
-		sb.append("			showDiv(\"component\" + componentId + \"Properties\");"); 
+		sb.append("		componentId = \"" + componentId + "\";\n");
+		sb.append("		activatedComponentId = QueryString(\"activatedComponentId\");\n");
+		sb.append("		if(activatedComponentId && activatedComponentId == componentId)\n"); 
+		sb.append("			//showDiv(\"component\" + componentId + \"Properties\");\n"); 
 
-		sb.append("		Drag.init(theHandle, theRoot);");
-		sb.append("     theRoot.style.left = 160;");
-		sb.append("     theRoot.style.top = 150;");
+		sb.append("		Drag.init(theHandle, theRoot);\n");
+		sb.append("     theRoot.style.left = 160;\n");
+		sb.append("     theRoot.style.top = 150;\n");
 		
-		sb.append("     floatDiv(\"component" + componentId + "Properties\", 200, 50).flt();");
+		sb.append("     floatDiv(\"component" + componentId + "Properties\", 200, 50).flt();\n");
 		sb.append("	</script>");
 
 		return sb.toString();
@@ -1369,11 +1396,10 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		String originalFullURL = "" + templateController.getOriginalFullURL();
 		String componentRendererUrl = "" + CmsPropertyHandler.getComponentRendererUrl();
 
-		//if(component.getIsInherited())
-		//    sb.append("<div id=\"inheritedComponent" + component.getId() + "Menu\" class=\"skin0\">");
-		//else 
-		    sb.append("<div id=\"component" + component.getId() + "Menu\" class=\"skin0\">");
+		sb.append("<div id=\"component" + component.getId() + "Menu\" class=\"skin0 editOnSightMenuDiv\">");
 		
+		//sb.append("<div id=\"component" + component.getId() + "Menu\" class=\"skin0 editOnSightMenuDiv\" astyle=\"padding: 0px; margin: 0px; padding-top: 0; min-width: 240px; position: absolute; top: 20px; display: none; background-color: white; border: 1px solid #555;\"");
+		    		
 		Collection componentTasks = getComponentTasks(component.getId(), document);
 
 		int taskIndex = 0;
@@ -1392,13 +1418,14 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		    view = view.replaceAll("\\$siteNodeId", siteNodeId.toString());
 		    view = view.replaceAll("\\$languageId", languageId.toString());
 		    view = view.replaceAll("\\$componentId", component.getId().toString());
-		    sb.append("<div class=\"igmenuitems\" onMouseover=\"javascript:highlightie5(event);\" onMouseout=\"javascript:lowlightie5(event);\" onClick=\"executeTask('" + view + "', " + openInPopup + ");\">" + componentTask.getName() + "</div>");
+		    sb.append("<div class=\"igmenuitems\" onClick=\"executeTask('" + view + "', " + openInPopup + ");\"><a href='#'>" + componentTask.getName() + "</a></div>");
 		}
 
 		//Locale locale = templateController.getLocale();
 		Locale locale = templateController.getLocaleAvailableInTool();
 		
 		String editHTML = getLocalizedString(locale, "deliver.editOnSight.editHTML");
+		String editInlineHTML = getLocalizedString(locale, "deliver.editOnSight.editContentInlineLabel");
 		String submitToPublishHTML = getLocalizedString(locale, "deliver.editOnSight.submitToPublish");
 		String addComponentHTML = getLocalizedString(locale, "deliver.editOnSight.addComponentHTML");
 		String deleteComponentHTML = getLocalizedString(locale, "deliver.editOnSight.deleteComponentHTML");
@@ -1411,38 +1438,40 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		String componentEditorInNewWindowHTML = getLocalizedString(locale, "deliver.editOnSight.componentEditorInNewWindowHTML");
 		String savePageTemplateHTML = getLocalizedString(locale, "deliver.editOnSight.savePageTemplateHTML");
 
-		sb.append("<div class=\"igmenuitems\" onMouseover=\"javascript:highlightie5(event);\" onMouseout=\"javascript:lowlightie5(event);\" onClick=\"edit();\">" + editHTML + "</div>");
-	    sb.append("<div class=\"igmenuitems\" onMouseover=\"javascript:highlightie5(event);\" onMouseout=\"javascript:lowlightie5(event);\" onClick=\"editInline(" + repositoryId + ");\">" + editHTML + " Inline</div>");
+		
+		sb.append("<div class=\"igmenuitems linkEditArticle\" onClick=\"edit();\"><a href='#'>" + editHTML + "</a></div>");
+	    sb.append("<div class=\"igmenuitems linkEditArticle\" onClick=\"editInlineSimple(" + repositoryId + ");\"><a href='#'>" + editInlineHTML + "</a></div>");
 
-		sb.append("<div class=\"igmenuitems\" onMouseover=\"javascript:highlightie5(event);\" onMouseout=\"javascript:lowlightie5(event);\" onClick=\"submitToPublish(" + siteNodeId + ", " + repositoryId + ", '" + URLEncoder.encode(templateController.getOriginalFullURL(), "UTF-8") + "');\">" + submitToPublishHTML + "</div>");
+		sb.append("<div class=\"igmenuitems linkPublish\" onClick=\"submitToPublish(" + siteNodeId + ", " + repositoryId + ", '" + URLEncoder.encode(templateController.getOriginalFullURL(), "UTF-8") + "');\"><a href='#'>" + submitToPublishHTML + "</a></div>");
 		if(hasAccessToAddComponent)
-			sb.append("<div class=\"igmenuitems\" onMouseover=\"javascript:highlightie5(event);\" onMouseout=\"javascript:lowlightie5(event);\" onClick=\"insertComponent();\">" + addComponentHTML + "</div>");
+			sb.append("<div class=\"igmenuitems linkAddComponent\" onClick=\"insertComponent();\"><a href='#'>" + addComponentHTML + "</a></div>");
 		if(hasAccessToDeleteComponent)
-		    sb.append("<div class=\"igmenuitems\" onMouseover=\"javascript:highlightie5(event);\" onMouseout=\"javascript:lowlightie5(event);\" onClick=\"deleteComponent();\">" + deleteComponentHTML + "</div>");
+		    sb.append("<div class=\"igmenuitems linkDeleteComponent\" onClick=\"deleteComponent();\"><a href='#'>" + deleteComponentHTML + "</a></div>");
 		if(hasAccessToChangeComponent)
-		    sb.append("<div class=\"igmenuitems\" onMouseover=\"javascript:highlightie5(event);\" onMouseout=\"javascript:lowlightie5(event);\" onClick=\"changeComponent();\">" + changeComponentHTML + "</div>");
+		    sb.append("<div class=\"igmenuitems linkChangeComponent\" onClick=\"changeComponent();\"><a href='#'>" + changeComponentHTML + "</a></div>");
 		if(hasSaveTemplateAccess)
-		    sb.append("<div class=\"igmenuitems\" onMouseover=\"javascript:highlightie5(event);\" onMouseout=\"javascript:lowlightie5(event);\" onClick=\"saveComponentStructure('" + componentEditorUrl + "CreatePageTemplate!input.action?contentId=" + templateController.getSiteNode(siteNodeId).getMetaInfoContentId() + "');\">" + savePageTemplateHTML + "</div>");
+		    sb.append("<div class=\"igmenuitems linkCreatePageTemplate\" onClick=\"saveComponentStructure('" + componentEditorUrl + "CreatePageTemplate!input.action?contentId=" + templateController.getSiteNode(siteNodeId).getMetaInfoContentId() + "');\"><a href='#'>" + savePageTemplateHTML + "</a></div>");
 
 		String upUrl = componentEditorUrl + "ViewSiteNodePageComponents!moveComponent.action?siteNodeId=" + templateController.getSiteNodeId() + "&languageId=" + templateController.getLanguageId() + "&contentId=" + templateController.getContentId() + "&componentId=" + component.getId() + "&direction=0&showSimple=" + this.getTemplateController().getDeliveryContext().getShowSimple() + "";
 		String downUrl = componentEditorUrl + "ViewSiteNodePageComponents!moveComponent.action?siteNodeId=" + templateController.getSiteNodeId() + "&languageId=" + templateController.getLanguageId() + "&contentId=" + templateController.getContentId() + "&componentId=" + component.getId() + "&direction=1&showSimple=" + this.getTemplateController().getDeliveryContext().getShowSimple() + "";
 				
 		if(position > 0)
-		    sb.append("<div class=\"igmenuitems\" onMouseover=\"javascript:highlightie5(event);\" onMouseout=\"javascript:lowlightie5(event);\" onClick=\"invokeAddress('" + upUrl + "');\">" + moveComponentUpHTML + "</div>");
+		    sb.append("<div class=\"igmenuitems linkMoveComponentUp\" onClick=\"invokeAddress('" + upUrl + "');\"><a href='#'>" + moveComponentUpHTML + "</a></div>");
 		if(maxPosition > position)
-		    sb.append("<div class=\"igmenuitems\" onMouseover=\"javascript:highlightie5(event);\" onMouseout=\"javascript:lowlightie5(event);\" onClick=\"invokeAddress('" + downUrl + "');\">" + moveComponentDownHTML + "</div>");
+		    sb.append("<div class=\"igmenuitems linkMoveComponentDown\" onClick=\"invokeAddress('" + downUrl + "');\"><a href='#'>" + moveComponentDownHTML + "</a></div>");
 		
 		//sb.append("<div class=\"igmenudivider\"><img src=\" + this.getRequest().getContextPath() + "/images/dividerLine.gif\"  width=\"115\" height=\"1\"></div>");
-		sb.append("<hr/>");
-		sb.append("<div class=\"igmenuitems\" onMouseover=\"javascript:highlightie5(event);\" onMouseout=\"javascript:lowlightie5(event);\" onClick=\"javascript:showComponent();\">" + propertiesHTML + "</div>");
-		sb.append("<hr/>");
+		sb.append("<hr style='border:0px; border-top:1px solid #bbb; margin-top:4px;'/>");
+		sb.append("<div class=\"igmenuitems linkComponentProperties\" onClick=\"javascript:showComponent();\"><a href='#'>" + propertiesHTML + "</a></div>");
+		sb.append("<hr style='border:0px; border-top:1px solid #bbb; margin-top:4px;'/>");
 		//sb.append("<div class=\"igmenudivider\"><img src=\" + this.getRequest().getContextPath() + "/images/dividerLine.gif\"  width=\"115\" height=\"1\"></div>");
-		sb.append("<div class=\"igmenuitems\" onMouseover=\"javascript:highlightie5(event);\" onMouseout=\"javascript:lowlightie5(event);\" onClick=\"javascript:toggleDiv('pageComponents');\">" + pageComponentsHTML + "</div>");
-		sb.append("<div id=\"componentEditorInNewWindowDiv" + component.getId() + "\" class=\"igmenuitems\" onMouseover=\"javascript:highlightie5(event);\" onMouseout=\"javascript:lowlightie5(event);\" onClick=\"window.open(document.location.href,'PageComponents','');\">" + componentEditorInNewWindowHTML + "</div>");
-		sb.append("<div class=\"igmenuitems\" onMouseover=\"javascript:highlightie5(event);\" onMouseout=\"javascript:lowlightie5(event);\" onClick=\"javascript:viewSource();\">" + viewSourceHTML + "</div>");
+		sb.append("<div class=\"igmenuitems linkPageComponents\" onClick=\"javascript:toggleDiv('pageComponents');\"><a href='#'>" + pageComponentsHTML + "</a></div>");
+		sb.append("<div id=\"componentEditorInNewWindowDiv" + component.getId() + "\" class=\"igmenuitems linkOpenInNewWindow\"  onClick=\"window.open(document.location.href,'PageComponents','');\"><a href='#'>" + componentEditorInNewWindowHTML + "</a></div>");
+		sb.append("<div class=\"igmenuitems linkViewSource\" onClick=\"javascript:viewSource();\"><a href='javascript:viewSource();'>" + viewSourceHTML + "</a></div>");
 		//sb.append("<div class=\"igmenuitems\">getComponentTasksDiv_" + component.getSlotName() + "</div>");
 		sb.append("</div>");
 		
+    	
 		sb.append("<script type=\"text/javascript\">");
 		//sb.append("<!--");
 		sb.append("hasAccessToAddComponent" + component.getId() + "_" + component.getSlotName() + " = " + hasAccessToAddComponent + ";");

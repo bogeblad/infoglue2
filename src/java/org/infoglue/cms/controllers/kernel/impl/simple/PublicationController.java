@@ -275,7 +275,8 @@ public class PublicationController extends BaseController
 	        	}
         	}
 
-        	InfoGluePrincipal infoGluePrincipal = InfoGluePrincipalControllerProxy.getController().getInfoGluePrincipal(event.getCreator());
+        	//InfoGluePrincipal infoGluePrincipal = InfoGluePrincipalControllerProxy.getController().getInfoGluePrincipal(event.getCreator());
+        	InfoGluePrincipal infoGluePrincipal = UserControllerProxy.getController().getUser(event.getCreator());
         	mailNotification(event, publisher.getName(), publisher.getEmail(), infoGluePrincipal.getEmail(), comment, referenceUrl);
 
 			commitTransaction(db);
@@ -308,7 +309,8 @@ public class PublicationController extends BaseController
 				EventVO eventVO = (EventVO)eventIterator.next();
 
 				Event event = EventController.getEventWithId(eventVO.getId(), db);
-				InfoGluePrincipal infoGluePrincipal = InfoGluePrincipalControllerProxy.getController().getInfoGluePrincipal(event.getCreator());
+				//InfoGluePrincipal infoGluePrincipal = InfoGluePrincipalControllerProxy.getController().getInfoGluePrincipal(event.getCreator());
+	        	InfoGluePrincipal infoGluePrincipal = UserControllerProxy.getController().getUser(event.getCreator());
 
 				if(event.getTypeId().intValue() == EventVO.PUBLISH.intValue())
 				{

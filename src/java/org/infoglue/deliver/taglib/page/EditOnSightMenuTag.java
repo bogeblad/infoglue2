@@ -110,7 +110,7 @@ public class EditOnSightMenuTag extends ComponentLogicTag
 		    	
 		    	sb.append("<div id=\"editOnSightDiv" + getComponentId() + "\" class=\"editOnSightMenuDiv\" style=\"padding: 0px; margin: 0px; padding-top: 0; min-width: 240px; position: absolute; top: 20px; display: none; background-color: white; border: 1px solid #555;\">");
 
-		    	sb.append("    <ul class='editOnSightUL'>");
+		    	sb.append("    <ul class='editOnSightUL' style='margin: 0px; padding: 0px; list-style-type:none; list-style-image: none;'>");
 		    	sb.append("        <li style='margin: 0px; margin-left: 4px; padding: 2px 0px 2px 2px; list-style-type:none;'><a href=\"javascript:openInlineDiv('" + metaDataUrl + "', 700, 750, true);\" class=\"editOnSightHref linkMetadata\">" + changePageMetaDataLabel + "</a></li>");
 		    	sb.append("        <li style='margin: 0px; margin-left: 4px; padding: 2px 0px 2px 2px; list-style-type:none;'><a href=\"javascript:openInlineDiv('" + createSiteNodeUrl + "', 700, 750, true);\" class=\"editOnSightHref linkCreatePage\">" + createSubPageToCurrentLabel + "</a></li>");
 

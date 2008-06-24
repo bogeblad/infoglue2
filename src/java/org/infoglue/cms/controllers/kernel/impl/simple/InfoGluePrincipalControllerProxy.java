@@ -25,6 +25,7 @@
 package org.infoglue.cms.controllers.kernel.impl.simple;
 
 import java.io.ByteArrayInputStream;
+import java.security.AccessControlException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -44,7 +45,9 @@ import org.infoglue.cms.entities.management.RoleProperties;
 import org.infoglue.cms.entities.management.UserProperties;
 import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
+import org.infoglue.cms.jobs.SubscriptionsJob;
 import org.infoglue.cms.security.AuthorizationModule;
+import org.infoglue.cms.security.BasicMethodAccessManager;
 import org.infoglue.cms.security.InfoGlueAuthenticationFilter;
 import org.infoglue.cms.security.InfoGlueGroup;
 import org.infoglue.cms.security.InfoGluePrincipal;
@@ -73,7 +76,7 @@ public class InfoGluePrincipalControllerProxy extends BaseController
 	/**
 	 * This method returns a specific content-object
 	 */
-	
+	/*
     public InfoGluePrincipal getInfoGluePrincipal(String userName) throws ConstraintException, SystemException
     {
 		InfoGluePrincipal infoGluePrincipal = null;
@@ -92,7 +95,7 @@ public class InfoGluePrincipalControllerProxy extends BaseController
     	
     	return infoGluePrincipal;
     }
- 
+ 	*/
     
 	/**
 	 * Getting a property for a Principal - used for personalisation. 
@@ -332,6 +335,18 @@ public class InfoGluePrincipalControllerProxy extends BaseController
 
 	public InfoGluePrincipal getTestPrincipal()
 	{
+		/*
+		StackTraceElement ste = stackElements[1];
+	    String className = ste.getClassName();
+        System.out.println ("Full class name: " + className);
+        System.out.println ("Method name: " + ste.getMethodName());
+    
+		if(ste.getClassName().equals(SubscriptionsJob.class.getName()))
+			throw new AccessControlException("No access to this method - fuck off");
+		*/
+		
+		BasicMethodAccessManager.checkAccessToCall(new String[]{SubscriptionsJob.class.getName()}, "FUCK OFF - your attempt have been registered.");
+		
 		return new InfoGluePrincipal("TestUser", "none", "none", "none", new ArrayList(), new ArrayList(), true, null);
 	}
 	
