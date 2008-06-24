@@ -797,6 +797,8 @@ function checkV(e)
 	{
 		if (e.which==2||e.which==3)
 			return false;
+		else
+			return true;
 	}
 	else
 		return false;
@@ -956,13 +958,13 @@ function edit()
 	return false;
 }
 
-function editInline(repositoryId) 
+function editInlineSimple(repositoryId) 
 {
 	return editInline(repositoryId, selectedContentId, selectedLanguageId, false);
 }
 
 function editInline(repositoryId, selectedContentId, selectedLanguageId, directEditing) 
-{
+{	
 	hideIGMenu();
 	
 	if((!editUrl || editUrl == "") && !directEditing)
@@ -1041,7 +1043,6 @@ function editInline(repositoryId, selectedContentId, selectedLanguageId, directE
 				   },
 				   error: function (XMLHttpRequest, textStatus, errorThrown) {
 					  alert("You are not allowed to edit this text!");
-					  this; 
 				   }
 				});
 			}
@@ -1281,17 +1282,6 @@ function submitToPublish(siteNodeId, repositoryId, returnAddress)
 	document.location.href = componentEditorUrl + "ViewListSiteNodeVersion.action?siteNodeId=" + siteNodeId + "&repositoryId=" + repositoryId + "&returnAddress=" + returnAddress;	
 }
 
-function executeTask(url) 
-{
-	//alert("insertUrl in insertComponent:" + insertUrl.substring(0, 50) + '\n' + insertUrl.substring(50));
-	details = "width=500,height=600,left=" + (document.body.clientWidth / 4) + ",top=" + (document.body.clientHeight / 4) + ",toolbar=no,status=no,scrollbars=yes,location=no,menubar=no,directories=no,resizable=no";
-	newWin=window.open(url, "Edit", details);
-	if(newWin)
-		newWin.focus();
-	else
-		alert("Could not start task - if you have a popup blocker this is most likely the cause.");
-}
-
 function executeTask(url, openInPopup) 
 {
 	if(openInPopup)
@@ -1308,8 +1298,6 @@ function executeTask(url, openInPopup)
 	{
 		$(document.body).append("<div id='dialogDiv' style='border: 1px solid black; position: absolute; top: 100px; left: 200px; width: 600px; height: 500px; background-color: white;'><iframe id='dialogFrame' name='dialogFrame' src='' width='100%' height='100%' border='0'></iframe></div>");
 		$("#dialogFrame").attr('src', url);
-		//$("#dialogFrame").load(url + " form", {});
-		//document.location.href = url;
 	}
 }
 

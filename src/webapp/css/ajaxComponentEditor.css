@@ -169,7 +169,6 @@ Component Properties Classes
 	text-align: left;
 	margin-right: 0.5em;
 	display: block;
-	afont-weight: bold;
 	font-family: Tahoma, Arial, Helvetica, sans-serif;
 	font-size: 8pt;
 }
@@ -358,6 +357,7 @@ Edit on sight classes
 	padding-right:11px;
 	padding-top:3px;
 	padding-bottom:3px;
+	color: #000000;
 }
 
 .igAddComponent {

@@ -3,9 +3,9 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 #if($tree == "applet")
-	#set($preferedTree="ViewStructureToolMenu.action?tree=applet&")
+	#set($preferedTree="$this.getCMSBaseUrl()/ViewStructureToolMenu.action?tree=applet&")
 #else
-	#set($preferedTree="ViewStructureToolMenu.action?tree=html&exp=${exp}&")
+	#set($preferedTree="$this.getCMSBaseUrl()/ViewStructureToolMenu.action?tree=html&exp=${exp}&")
 #end
 
 <html>
@@ -18,16 +18,34 @@
 	
 	<script type="text/javascript" language="Javascript">
 
-		function reloadMenu(selectBox)
+		function changeRepository(repositoryId, path)
 		{
+			//alert("repositoryId:" + repositoryId);
+			//alert("path:" + path);
+			var listForm = document.selectbox;
+			//alert("listForm:" + listForm + " - " + listForm.repositoryId.options);
+			for(var i=0;i<listForm.repositoryId.options.length;i++)
+			{
+				if(listForm.repositoryId.options[i].value == repositoryId)
+				{
+					//alert("Yes - " + listForm.repositoryId.options[i].text);
+					listForm.repositoryId.options[i].selected = true;
+				}
+			}
+			reloadMenu(listForm.repositoryId, path);
+		}
+		
+		function reloadMenu(selectBox, path)
+		{
+			//alert("path:" + path);
 			//alert("top:" + top);
 		    repositoryId = selectBox.value;
 		    
 			var agt=navigator.userAgent.toLowerCase();
 	   	    if(agt.indexOf("safari")!=-1)
-		    	parent.frames[1].location = "${preferedTree}repositoryId=" + repositoryId;
+		    	parent.frames[1].location = "${preferedTree}repositoryId=" + repositoryId + "&path=" + path;
 			else
-			    parent.frames[1].location.href = "${preferedTree}repositoryId=" + repositoryId;
+			    parent.frames[1].location.href = "${preferedTree}repositoryId=" + repositoryId + "&path=" + path;
 	
 			top.document.title = "Structure - " + selectBox.options[selectBox.selectedIndex].text + " - InfoGlue CMS";
 			selectBox.selectedIndex = 0;
@@ -58,7 +76,7 @@
 	<td bgcolor="#FFFFFF"><img src="images/trans.gif" width="1" height="1" /></a>
 	<td class="toolheader"><img src="images/$ui.getString("images.structuretool.repositoryLabel")" width="70" height="19" /></td> 
 	<td>
-  		<select size="1" name="repositoryId" class="sitedropbox" onchange="javascript:reloadMenu(this);">
+  		<select size="1" name="repositoryId" class="sitedropbox" onchange="javascript:reloadMenu(this, '');">
 		    #if ($repositories.size() > 1)
 		    	<option value="">$ui.getString("tool.structuretool.chooseRepositoryLabel")</option>
 		    #end

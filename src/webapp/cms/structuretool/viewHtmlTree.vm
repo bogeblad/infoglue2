@@ -11,7 +11,7 @@
 	<title>Menus</title>
 
 	<script type="text/javascript" language="JavaScript">
-	<!-- 
+	<!-- 		
 		var languageCode = "$languageCode";
 		
 		var oldSelected;
@@ -122,6 +122,59 @@
 				*/
 			}	
 		}
+		
+		// OTHER STUFF
+		function syncWithTree(path)
+		{
+			//alert('apa');
+			#if($treeMode == "classic")
+			var pathArr = path.split(',');
+			// var exp = "$exp";
+			var exp = "";
+			for(i=0;i<pathArr.length;i++)
+			{
+				exp = exp + "/" + pathArr[i] + "/";
+			}
+			document.location.href="ViewContentHtmlTree.action?exp=" + exp + "&repositoryId=${repositoryId}&select=" + pathArr[pathArr.length-1];
+			#else
+			var pathArr = path.split(',');
+			syncWithTreeRec(pathArr, 0);
+			#end			
+		}
+		
+		function syncWithTreeRec(pathArr, level)
+		{
+			if(pathArr.length <= 2)
+			{
+				var node = tree.getNodeWithMyId(pathArr[0]);
+				var id = pathArr[pathArr.length -1];
+				selectWhenLoaded(node, id);
+				return;
+			}
+		
+			if(level >= pathArr.length -1) 
+			{
+				var node = tree.getNodeWithMyId(pathArr[pathArr.length -2]);
+				var id = pathArr[pathArr.length-1];
+				selectWhenLoaded(node, id);
+				return;
+			}
+			
+			var node = tree.getNodeWithMyId(pathArr[level]);
+
+			if(!node.loading) node.expand();
+			if(node.loading) 
+			{
+				window.setTimeout(function () {
+					syncWithTreeRec(pathArr, level);
+				}, 10);
+			}
+			else
+			{
+				syncWithTreeRec(pathArr, level+1);
+			}
+		}
+		
 		
 		function expandTreeRec(pathArr, level)
 		{			

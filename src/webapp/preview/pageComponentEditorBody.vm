@@ -1,40 +1,40 @@
 <div id="emptySlotMenu" class="skin0">
-<div class="igmenuitems" onMouseover="javascript:highlightie5(event);" onMouseout="javascript:lowlightie5(event);" onClick="submitToPublish($siteNodeId, $repositoryId, '$originalFullURL');">$submitToPublishHTML</div>
-<div id="addComponentMenuItem" class="igmenuitems" onMouseover="javascript:highlightie5(event);" onMouseout="javascript:lowlightie5(event);" onClick="insertComponent();">$addComponentHTML</div>
-<div class="igmenuitems" onMouseover="javascript:highlightie5(event);" onMouseout="javascript:lowlightie5(event);" onClick="$saveTemplateUrl">$savePageTemplateHTML</div>
-<hr id="emptySlotMenuTopSeparator"/>
-<div id="accessRightsMenuItem" class="igmenuitems" onMouseover="javascript:highlightie5(event);" onMouseout="javascript:lowlightie5(event);" onClick="setAccessRights(slotName, slotContentId);">$accessRightsHTML</div>
-<div class="igmenuitems" onMouseover="javascript:highlightie5(event);" onMouseout="javascript:lowlightie5(event);" onClick="toggleDiv('pageComponents');">$pageComponents</div>
-<div class="igmenuitems" onMouseover="javascript:highlightie5(event);" onMouseout="javascript:lowlightie5(event);" onClick="window.open(document.location.href,'PageComponents','');">$componentEditorInNewWindowHTML</div>
-<div class="igmenuitems" onMouseover="javascript:highlightie5(event);" onMouseout="javascript:lowlightie5(event);" onClick="javascript:viewSource();">$viewSource</div>
+<div class="igmenuitems linkPublish" onClick="submitToPublish($siteNodeId, $repositoryId, '$originalFullURL');"><a href='#'>$submitToPublishHTML</a></div>
+<div id="addComponentMenuItem" class="igmenuitems linkAddComponent" onClick="insertComponent();"><a href='#'>$addComponentHTML</a></div>
+<div class="igmenuitems linkCreatePageTemplate" onClick="$saveTemplateUrl"><a href='#'>$savePageTemplateHTML</a></div>
+<hr id="emptySlotMenuTopSeparator" style="border:0px; border-top:1px solid #bbb; margin-top:4px;"/>
+<div id="accessRightsMenuItem" class="igmenuitems linkAccessRights" onClick="setAccessRights(slotName, slotContentId);"><a href='#'>$accessRightsHTML</a></div>
+<div class="igmenuitems linkPageComponents" onClick="toggleDiv('pageComponents');"><a href='#'>$pageComponents</a></div>
+<div class="igmenuitems linkOpenInNewWindow" onClick="window.open(document.location.href,'PageComponents','');"><a href='#'>$componentEditorInNewWindowHTML</a></div>
+<div class="igmenuitems linkViewSource"><a href='javascript:viewSource();'>$viewSource</div>
 </div>
 
 <div id="componentMenu" class="skin0">
-<div class="igmenuitems" onMouseover="javascript:highlightie5(event);" onMouseout="javascript:lowlightie5(event);" onClick="edit();">Edit</div>
-<div id="addComponentMenuItem" class="igmenuitems" onMouseover="javascript:highlightie5(event);" onMouseout="javascript:lowlightie5(event);" onClick="insertComponent();">$addComponentHTML</div>
-<div id="deleteComponentMenuItem" class="igmenuitems" onMouseover="javascript:highlightie5(event);" onMouseout="javascript:lowlightie5(event);" onClick="deleteComponent();">$deleteComponentHTML</div>
-<div id="changeComponentMenuItem" class="igmenuitems" onMouseover="javascript:highlightie5(event);" onMouseout="javascript:lowlightie5(event);" onClick="changeComponent();">$changeComponentHTML</div>
-<div class="igmenuitems" onMouseover="javascript:highlightie5(event);" onMouseout="javascript:lowlightie5(event);" onClick="$saveTemplateUrl">$savePageTemplateHTML</div>
-<div class="igmenuitems" onMouseover="javascript:highlightie5(event);" onMouseout="javascript:lowlightie5(event);" onClick="$savePartTemplateUrl">$savePagePartTemplateHTML</div>
-<hr id="componentMenuTopSeparator">
-<div class="igmenuitems" onMouseover="javascript:highlightie5(event);" onMouseout="javascript:lowlightie5(event);" onClick="javascript:showComponent();">Properties</div>
-<hr id="componentMenuMiddleSeparator"/>
-<div class="igmenuitems" onMouseover="javascript:highlightie5(event);" onMouseout="javascript:lowlightie5(event);" onClick="toggleDiv('pageComponents');">$pageComponents</div>
-<div class="igmenuitems" onMouseover="javascript:highlightie5(event);" onMouseout="javascript:lowlightie5(event);" onClick="window.open(document.location.href,'PageComponents','');">$componentEditorInNewWindowHTML</div>
-<div class="igmenuitems" onMouseover="javascript:highlightie5(event);" onMouseout="javascript:lowlightie5(event);" onClick="javascript:viewSource();"><nobr>View Source</nobr></div>
+<div class="igmenuitems linkEditArticle" onClick="edit();"><a href='#'>$editHTML</a></div>
+<div id="addComponentMenuItem" class="igmenuitems linkAddComponent" onClick="insertComponent();"><a href='#'>$addComponentHTML</a></div>
+<div id="deleteComponentMenuItem" class="igmenuitems linkDeleteComponent" onClick="deleteComponent();"><a href='#'>$deleteComponentHTML</a></div>
+<div id="changeComponentMenuItem" class="igmenuitems linkChangeComponent" onClick="changeComponent();"><a href='#'>$changeComponentHTML</a></div>
+<div class="igmenuitems linkCreatePageTemplate" onClick="$saveTemplateUrl"><a href='#'>$savePageTemplateHTML</a></div>
+<div class="igmenuitems linkCreatePageTemplate" onClick="$savePartTemplateUrl"><a href='#'>$savePagePartTemplateHTML</a></div>
+<hr id="componentMenuTopSeparator" style="border:0px; border-top:1px solid #bbb; margin-top:4px;">
+<div class="igmenuitems linkComponentProperties" onClick="javascript:showComponent();"><a href='#'>$propertiesHTML</a></div>
+<hr id="componentMenuMiddleSeparator" style="border:0px; border-top:1px solid #bbb; margin-top:4px;"/>
+<div class="igmenuitems linkPageComponents" onClick="toggleDiv('pageComponents');"><a href='#'>$pageComponents</a></div>
+<div class="igmenuitems linkOpenInNewWindow" onClick="window.open(document.location.href,'PageComponents','');"><a href='#'>$componentEditorInNewWindowHTML</a></div>
+<div class="igmenuitems linkViewSource"><a href='javascript:viewSource();'>$viewSource</a></div>
 </div>
 
 <div id="componentInTreeMenu" class="skin0">
-<div id="deleteComponentInTreeMenuItem" class="igmenuitems" onMouseover="javascript:highlightie5(event);" onMouseout="javascript:lowlightie5(event);" onClick="deleteComponent();">$deleteComponentHTML</div>
-<div id="changeComponentInTreeMenuItem" class="igmenuitems" onMouseover="javascript:highlightie5(event);" onMouseout="javascript:lowlightie5(event);" onClick="changeComponent();">$changeComponentHTML</div>
-<div class="igmenuitems" onMouseover="javascript:highlightie5(event);" onMouseout="javascript:lowlightie5(event);" onClick="$saveTemplateUrl">$savePageTemplateHTML</div>
-<div class="igmenuitems" onMouseover="javascript:highlightie5(event);" onMouseout="javascript:lowlightie5(event);" onClick="$savePartTemplateUrl">$savePagePartTemplateHTML</div>
-<hr id="componentInTreeMenuTopSeparator"/>
-<div class="igmenuitems" onMouseover="javascript:highlightie5(event);" onMouseout="javascript:lowlightie5(event);" onClick="javascript:showComponent();">Properties</div>
-<hr id="emptySlotMenuMiddleSeparator">
-<div class="igmenuitems" onMouseover="javascript:highlightie5(event);" onMouseout="javascript:lowlightie5(event);" onClick="toggleDiv('pageComponents');">$pageComponents</div>
-<div class="igmenuitems" onMouseover="javascript:highlightie5(event);" onMouseout="javascript:lowlightie5(event);" onClick="window.open(document.location.href,'PageComponents','');">$componentEditorInNewWindowHTML</div>
-<div class="igmenuitems" onMouseover="javascript:highlightie5(event);" onMouseout="javascript:lowlightie5(event);" onClick="javascript:viewSource();">View Source</div>
+<div id="deleteComponentInTreeMenuItem" class="igmenuitems linkDeleteComponent" onClick="deleteComponent();"><a href='#'>$deleteComponentHTML</a></div>
+<div id="changeComponentInTreeMenuItem" class="igmenuitems linkChangeComponent" onClick="changeComponent();"><a href='#'>$changeComponentHTML</a></div>
+<div class="igmenuitems linkCreatePageTemplate" onClick="$saveTemplateUrl"><a href='#'>$savePageTemplateHTML</a></div>
+<div class="igmenuitems linkCreatePageTemplate" onClick="$savePartTemplateUrl"><a href='#'>$savePagePartTemplateHTML</a></div>
+<hr id="componentInTreeMenuTopSeparator" style="border:0px; border-top:1px solid #bbb; margin-top:4px;"/>
+<div class="igmenuitems linkComponentProperties" onClick="javascript:showComponent();"><a href='#'>$propertiesHTML</a></div>
+<hr id="emptySlotMenuMiddleSeparator" style="border:0px; border-top:1px solid #bbb; margin-top:4px;">
+<div class="igmenuitems linkPageComponents" onClick="toggleDiv('pageComponents');"><a href='#'>$pageComponents</a></div>
+<div class="igmenuitems linkOpenInNewWindow" onClick="window.open(document.location.href,'PageComponents','');"><a href='#'>$componentEditorInNewWindowHTML</a></div>
+<div class="igmenuitems linkViewSource"><a href='javascript:viewSource();'>$viewSource</a></div>
 </div>
 <script type="text/javascript">
 $addComponentJavascript

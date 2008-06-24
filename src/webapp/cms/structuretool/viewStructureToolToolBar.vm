@@ -126,11 +126,28 @@
 		{
 			document.getElementById("scroll").style.zIndex = "3000";
 		}
+		
 		function disableScrollLayer()
 		{
 			document.getElementById("scroll").style.zIndex = "1";
 		}
 
+		function refreshStructureToolBar(title, toolbarKey, arguments, repositoryId, siteNodeId, path)
+		{
+			if(parent.frames["toolbar"].document)
+			{
+				//alert('toolbarKey:' + toolbarKey);
+				//toolbarKey 	= escape(toolbarKey);	
+				toolbarKey 	= hexcode(toolbarKey);	
+				if(parent.frames["toolbar"].document.getElementById("lockLayer"))
+					parent.frames["toolbar"].document.getElementById("lockLayer").style.display="block";
+				
+				//alert("location: $this.getCMSBaseUrl()/ViewStructureToolToolBar.action");
+				parent.frames["toolbar"].location.href = '$this.getCMSBaseUrl()/ViewStructureToolToolBar.action?title=' + title + '&toolbarKey=' + toolbarKey + '&' + arguments;
+				
+				parent.frames["menu"].syncWithTree(path, repositoryId);
+			}
+		}
 	-->
 	</script>
 	
@@ -288,7 +305,7 @@
 	<td colspan="3" bgcolor="FFFFFF"><img src="images/trans.gif" width="1" height="1"></td>
 </tr>
 <tr>
-	<td class="actionheader"><div class="leftmarginalized">$ui.getString($title) $!stateDescription</div></td>
+	<td class="actionheader"><div class="leftmarginalized">$ui.getString($title) $!stateDescription - $!siteNodeVO.name</div></td>
 </tr>
 <tr class="lightgreen">
 	<td colspan="3" height="1"><img src="images/trans.gif" width="1" height="1"></td>

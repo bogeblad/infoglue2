@@ -9,6 +9,7 @@
 	<meta http-equiv="Expires" content="Tue, 01 Jan 1980 1:00:00 GMT" />
 	<meta http-equiv="Cache-Control" content="no-cache" />
 	<meta http-equiv="Pragma" content="no-cache" />
+	<script type="text/javascript" src="script/jquery/jquery-1.2.3.min.js"></script>
 
 	<script type="text/javascript" language="JavaScript">
 	<!-- 
@@ -195,15 +196,27 @@
 			}
 		}
 
-		window.onResize = resize;
-		window.onLoad   = resize;
+		$(document).ready(function(){
+			resize();
+			//alert('path: $!path');
+			//alert('exp: $!exp');
+			if("$!path" == "")
+				reloadMain();
+			else
+				syncWithTree("$!path", currentRepositoryId);
+				
+			$(window).resize( function() {
+     			resize();
+ 			});
+ 		});
+
 	-->
 	</script>
 	
 	<link rel="stylesheet" type="text/css" href="css/cms.css" /> 
 </head>
 
-<body class="contenttool" onload="javascript:reloadMain();" onResize="javascript:resize();">
+<body class="contenttool">
 
 <div id="buffer" style="top: 0; left: 0"></div>
 

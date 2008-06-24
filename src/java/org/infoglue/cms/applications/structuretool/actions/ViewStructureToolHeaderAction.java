@@ -47,6 +47,8 @@ public class ViewStructureToolHeaderAction extends InfoGlueAbstractAction
 	private String tree;
 	private Integer repositoryId;
     
+    private String exp=""; // for html tree support to start expanded
+
     public String doExecute() throws Exception
     {
     	// Get / Set tree preferance
@@ -176,4 +178,21 @@ public class ViewStructureToolHeaderAction extends InfoGlueAbstractAction
 		this.tree = tree;
 	}
 
+	/**
+	 * Returns the exp.
+	 * @return String
+	 */
+	public String getExp()
+	{
+		return exp;
+	}
+
+	/**
+	 * Sets the exp.
+	 * @param exp The exp to set
+	 */
+	public void setExp(String exp)
+	{
+		this.exp = exp;
+	}
 }

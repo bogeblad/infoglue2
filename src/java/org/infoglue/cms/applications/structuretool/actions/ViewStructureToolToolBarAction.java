@@ -68,8 +68,8 @@ public class ViewStructureToolToolBarAction extends InfoGlueAbstractAction
 	private Integer siteNodeVersionId = null;
 	private Integer lastPublishedSiteNodeVersionId = null;
 	private Integer metaInfoAvailableServiceBindingId = null;
-	//private Integer serviceBindingId = null;
 	private SiteNodeVersionVO siteNodeVersionVO = null;
+	private SiteNodeVO siteNodeVO = null;
 	
    	private VisualFormatter formatter = new VisualFormatter();
 
@@ -85,48 +85,14 @@ public class ViewStructureToolToolBarAction extends InfoGlueAbstractAction
 			if(siteNodeVersionId != null)
 	    	{
 				this.siteNodeVersionVO = SiteNodeVersionController.getController().getSiteNodeVersionVOWithId(siteNodeVersionId);
-				
-				/*
-				AvailableServiceBindingVO availableServiceBindingVO = AvailableServiceBindingController.getController().getAvailableServiceBindingVOWithName("Meta information");
-				if(availableServiceBindingVO != null)
-					this.metaInfoAvailableServiceBindingId = availableServiceBindingVO.getAvailableServiceBindingId();
-				
-				List serviceBindings = SiteNodeVersionController.getServiceBindningVOList(siteNodeVersionId);
-				Iterator serviceBindingIterator = serviceBindings.iterator();
-				while(serviceBindingIterator.hasNext())
-				{
-					ServiceBindingVO serviceBindingVO = (ServiceBindingVO)serviceBindingIterator.next();
-					if(serviceBindingVO.getAvailableServiceBindingId().intValue() == metaInfoAvailableServiceBindingId.intValue())
-					{
-						this.serviceBindingId = serviceBindingVO.getServiceBindingId();
-						break;
-					}
-				}
-				*/
+				this.siteNodeVO = SiteNodeController.getController().getSiteNodeVOWithId(this.siteNodeVersionVO.getSiteNodeId());
 			}
 			else if(siteNodeId != null)
 			{
+				this.siteNodeVO = SiteNodeController.getController().getSiteNodeVOWithId(siteNodeId);
 				this.siteNodeVersionVO = SiteNodeVersionController.getController().getLatestActiveSiteNodeVersionVO(siteNodeId);
 				if(this.siteNodeVersionVO != null)
 					this.siteNodeVersionId = this.siteNodeVersionVO.getSiteNodeVersionId();
-				
-				/*
-				AvailableServiceBindingVO availableServiceBindingVO = AvailableServiceBindingController.getController().getAvailableServiceBindingVOWithName("Meta information");
-				if(availableServiceBindingVO != null)
-					this.metaInfoAvailableServiceBindingId = availableServiceBindingVO.getAvailableServiceBindingId();
-				
-				List serviceBindings = SiteNodeVersionController.getServiceBindningVOList(siteNodeVersionVO.getId());
-				Iterator serviceBindingIterator = serviceBindings.iterator();
-				while(serviceBindingIterator.hasNext())
-				{
-					ServiceBindingVO serviceBindingVO = (ServiceBindingVO)serviceBindingIterator.next();
-					if(serviceBindingVO.getAvailableServiceBindingId().intValue() == metaInfoAvailableServiceBindingId.intValue())
-					{
-						this.serviceBindingId = serviceBindingVO.getServiceBindingId();
-						break;
-					}
-				}	
-				*/	    
 			}
 	    }
 	    catch(Exception e)
@@ -559,15 +525,14 @@ public class ViewStructureToolToolBarAction extends InfoGlueAbstractAction
 		
 		return state;
 	}
-/*
-	public Integer getServiceBindingId()
+
+	public SiteNodeVersionVO getSiteNodeVersionVO()
 	{
-		return serviceBindingId;
+		return siteNodeVersionVO;
 	}
 
-	public void setServiceBindingId(Integer integer)
+	public SiteNodeVO getSiteNodeVO()
 	{
-		serviceBindingId = integer;
+		return siteNodeVO;
 	}
-*/
 }

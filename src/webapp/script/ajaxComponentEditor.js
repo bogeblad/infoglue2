@@ -1171,17 +1171,6 @@ function submitToPublish(siteNodeId, repositoryId, returnAddress)
 	document.location.href = componentEditorUrl + "ViewListSiteNodeVersion.action?siteNodeId=" + siteNodeId + "&repositoryId=" + repositoryId + "&returnAddress=" + returnAddress;	
 }
 
-function executeTask(url) 
-{
-	//alert("insertUrl in insertComponent:" + insertUrl.substring(0, 50) + '\n' + insertUrl.substring(50));
-	details = "width=500,height=600,left=" + (document.body.clientWidth / 4) + ",top=" + (document.body.clientHeight / 4) + ",toolbar=no,status=no,scrollbars=yes,location=no,menubar=no,directories=no,resizable=no";
-	newWin=window.open(url, "Edit", details);
-	if(newWin)
-		newWin.focus();
-	else
-		alert("Could not start task - if you have a popup blocker this is most likely the cause.");
-}
-
 function executeTask(url, openInPopup) 
 {
 	if(openInPopup)

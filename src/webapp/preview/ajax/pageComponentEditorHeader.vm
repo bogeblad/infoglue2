@@ -6,11 +6,8 @@
 	
 	${limitedUserWarning}
 	
-	try 
-	{
-  		document.execCommand('BackgroundImageCache', false, true);
-	} 
-	catch(e) {}
+	try { document.execCommand('BackgroundImageCache', false, true); } catch(e) {}
+	try { if(parent && parent.updateLocation()) parent.updateLocation("${siteNodeId}"); } catch(e) {alert("e:" + e);}
 	
 </script>
 <script type="text/javascript" src="${contextName}/script/dom-drag.js"></script>

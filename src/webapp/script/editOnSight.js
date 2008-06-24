@@ -49,7 +49,7 @@ function setEditUrl(anEditUrl)
 
 function setContentItemParameters(contentId, languageId, attributeName)
 {
-	//alert("Setting contentId:" + contentId);
+	alert("Setting contentId wrong:" + contentId);
 	//alert("Setting languageId:" + languageId);
 	//alert("Setting attributeName:" + attributeName);
 	selectedContentId = contentId;

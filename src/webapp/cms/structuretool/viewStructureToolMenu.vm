@@ -7,12 +7,59 @@
 	<title>Menus</title>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 	<script language="JavaScript" src="script/listview.js"></script>
+	<script type="text/javascript" src="script/jquery/jquery-1.2.3.min.js"></script>
 	
 	<script type="text/javascript" language="JavaScript">
 	<!-- 
 		setCMSContext('$this.getCMSBaseUrl()');
 		
 		var exp;
+		var currentRepositoryId = "$!repositoryId";
+
+		/*		
+		function syncWhenReady(path)
+		{
+			functionExists = false;
+			try
+			{
+				functionExists = frames['itreeFrame'].syncWithTree;
+			}
+			catch (e) {alert("Hepp:" + e);}
+			
+			if(functionExists)
+				frames['itreeFrame'].syncWithTree(path);
+			else
+			{
+				window.setTimeout(function () {
+					syncWhenReady(path);
+					}, 1000);
+			}
+		}
+		*/
+		
+		function syncWithTree(path, repositoryId)
+		{
+			var timeout = 500;
+			//alert("AAA:" + path + " - " + repositoryId + ":" + currentRepositoryId + ":" + parent);
+			if(repositoryId && currentRepositoryId != repositoryId)
+			{
+				parent.frames['header'].changeRepository(repositoryId, escape(path));
+				timeout = 2000;
+			}
+			
+			#if($tree == "applet")
+				alert('Not implemented in this tree');
+			#else
+				//syncWhenReady(path);
+				//window.setTimeout(function () {syncWhenReady(path);}, 1000);
+				
+				window.setTimeout(function () {
+					frames['itreeFrame'].syncWithTree(path);
+					}, timeout);
+			
+			#end
+		}
+		
 		function treeView()
 		{
 			#if($tree == "applet")
@@ -33,13 +80,13 @@
 		{
 			resize();
 			//alert('Setting the main area');
-			parent.frames[3].location.href = "ViewStructureToolStartPage.action?repositoryId=$repositoryId";
+			parent.frames[3].location.href = "$this.getCMSBaseUrl()/ViewStructureToolStartPage.action?repositoryId=$repositoryId";
 		}
 		
 		function loadMainArea(siteNodeId, repositoryId, path)
 		{
 		    //alert("siteNodeId:" + siteNodeId);
-		    parent.frames[3].location.href = "ViewSiteNode.action?siteNodeId=" + siteNodeId + "&repositoryId=" + repositoryId;
+		    parent.frames[3].location.href = "$this.getCMSBaseUrl()/ViewSiteNode.action?siteNodeId=" + siteNodeId + "&repositoryId=" + repositoryId;
 		}
 	    
 	    function refreshNode(nodeId, changeTypeId, addedNodeId)
@@ -48,13 +95,7 @@
 			#if($tree == "applet")			
 				treeView().refreshTreeNode(nodeId, changeTypeId, addedNodeId);
 			#else
-				
 				frames['itreeFrame'].refreshTreeNode(parseInt(nodeId), parseInt(changeTypeId), parseInt(addedNodeId));
-			
-				/*if (changeTypeId == 4)
-					frames['itreeFrame'].location.reload();
-				else
-					frames['itreeFrame'].location.href="ViewStructureHtmlTree.action?exp=" + exp + "&repositoryId=${repositoryId}" + "&akey=/" + nodeId + "/&select=" + addedNodeId;*/
 			#end
 			
 		}
@@ -92,8 +133,7 @@
 
 	   	function resize() 
 	    {
-
-		    var w_newWidth;
+			var w_newWidth;
 		    var w_newHeight;
 		    var w_maxWidth  = 1600;
 		    var w_maxHeight = 1200;
@@ -148,15 +188,26 @@
 			}
         }
 
-		window.onResize = resize;
-		window.onLoad   = resize;
+		$(document).ready(function(){
+			resize();
+			//alert('path: $!path');
+			//alert('exp: $!exp');
+			if("$!path" == "")
+				reloadMain();
+			else
+				syncWithTree("$!path", currentRepositoryId);
+				
+			$(window).resize( function() {
+     			resize();
+ 			});
+ 		});
 	-->
 	</script>
 	
 	<link rel="stylesheet" type="text/css" href="css/cms.css" /> 
 </head>
 
-<body class="structuretool" onload="javascript:reloadMain();" onResize="javascript:resize();">
+<body class="structuretool">
 
 <div style="LEFT:0px; RIGHT:0px; position:absolute; TOP:0px; height:100%; visibility:visible; z-index:0">
 <table class="structuretool" cellpadding="0" cellspacing="0" border="0" width="100%" height="100%">

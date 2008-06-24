@@ -40,6 +40,7 @@ public class ViewStructureToolMenuAction extends InfoGlueAbstractAction
 
     private Integer repositoryId;
     private String tree;
+    private String path;
     
     public void setRepositoryId(Integer repositoryId)
     {
@@ -87,5 +88,15 @@ public class ViewStructureToolMenuAction extends InfoGlueAbstractAction
 	public LanguageVO getMasterLanguageVO() throws Exception
 	{
 	    return LanguageController.getController().getMasterLanguage(repositoryId);
+	}
+
+	public String getPath()
+	{
+		return path;
+	}
+
+	public void setPath(String path)
+	{
+		this.path = path;
 	}
 }

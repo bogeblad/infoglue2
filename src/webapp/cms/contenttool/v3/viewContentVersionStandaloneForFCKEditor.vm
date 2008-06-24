@@ -1125,10 +1125,10 @@
 								#end
 											
 								#if($attribute.inputType == "datefield")
-									$attributeTitle ("$attribute.name") $attributeDescription
+									$attributeTitle ("$attribute.name") $attributeDescription<br/>
 									<input readonly="readonly" style="max-width: 400px;" type="text" length="20" class="date" maxlength="20" id="${attribute.name}Comp" name="${attribute.name}Comp" value="$value"/>
 								#elseif($attribute.inputType == "textfield")
-									$attributeTitle ("$attribute.name") $attributeDescription
+									$attributeTitle ("$attribute.name") $attributeDescription<br/>
 									<input readonly="readonly" style="max-width: 400px;" type="text" length="40" class="$class" maxlength="" id="${attribute.name}Comp" name="${attribute.name}Comp" value="$value"/>
 								#elseif($attribute.inputType == "textarea")
 									

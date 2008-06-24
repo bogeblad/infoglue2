@@ -697,7 +697,7 @@ li.normalitem {
 .name { 
 	font-weight: bold; 
 }
-li {
+#bindings li {
 	border-bottom: 1px solid #666666; 
 	padding-top: 2px; 
 	padding-bottom: 2px; 
