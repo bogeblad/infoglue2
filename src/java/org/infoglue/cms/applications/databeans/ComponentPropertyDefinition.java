@@ -102,7 +102,10 @@ public class ComponentPropertyDefinition
 
     public String getDisplayName()
     {
-        return displayName;
+    	if(displayName == null || displayName.equals(""))
+    		return name;
+    	else
+    		return displayName;
     }
 
     public String getType()

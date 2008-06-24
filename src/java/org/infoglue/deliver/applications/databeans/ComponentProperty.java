@@ -109,7 +109,10 @@ public class ComponentProperty
 
 	public String getDisplayName()
 	{
-		return (displayName == null ? name : displayName);
+    	if(displayName == null || displayName.equals(""))
+    		return name;
+    	else
+    		return displayName;
 	}
 
 	public List getSiteNodeBindings()
