@@ -842,13 +842,13 @@
 							#end
 						#end
 
-						versionValue += "<AuthorFullName>";
+						versionValue += "<IGAuthorFullName>";
 						versionValue += "<![CDATA[$infoGluePrincipal.firstName $infoGluePrincipal.lastName]]>";
-						versionValue += "</AuthorFullName>";
+						versionValue += "</IGAuthorFullName>";
 
-						versionValue += "<AuthorEmail>";
+						versionValue += "<IGAuthorEmail>";
 						versionValue += "<![CDATA[$infoGluePrincipal.email]]>";
-						versionValue += "</AuthorEmail>";
+						versionValue += "</IGAuthorEmail>";
 						
 						versionValue += "</attributes>";
 						versionValue += "</article>";

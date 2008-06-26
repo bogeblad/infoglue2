@@ -140,6 +140,7 @@ public class ContentStateController extends BaseController
 				    newContentVersionVO.setVersionModifier(infoGluePrincipal.getName());
 			    else
 			        newContentVersionVO.setVersionModifier(oldContentVersion.getVersionModifier());
+
 				newContentVersionVO.setVersionValue(oldContentVersion.getVersionValue());
 				newContentVersion = ContentVersionController.getContentVersionController().create(contentId, oldContentVersion.getLanguage().getLanguageId(), newContentVersionVO, oldContentVersion.getContentVersionId(), true, db);
 				
@@ -198,8 +199,13 @@ public class ContentStateController extends BaseController
 				
 				oldContentVersion.setStateId(stateId);
 				oldContentVersion.setIsActive(new Boolean(true));
-				newContentVersion = oldContentVersion;
 
+				//New logic to add meta data in some cases... ugly but needed if users are removed.
+				insertIGMetaDataAttributes(oldContentVersion, infoGluePrincipal);
+				//End new logic 
+				
+				newContentVersion = oldContentVersion;
+				
 				//Creating the event that will notify the editor...
 				if(oldContentVersionStateId.intValue() == ContentVersionVO.WORKING_STATE.intValue())
 				{
@@ -285,6 +291,23 @@ public class ContentStateController extends BaseController
 		}
 	}
 
+	/**
+	 * New logic to add meta data in some cases... ugly but needed if users are removed.
+	 */
+	
+	private static void insertIGMetaDataAttributes(ContentVersion version, InfoGluePrincipal infoGluePrincipal)
+	{
+		String authorXML = "<IGAuthorFullName><![CDATA[" + infoGluePrincipal.getFirstName() + " " + infoGluePrincipal.getLastName() + "]]></IGAuthorFullName><IGAuthorEmail><![CDATA[" + infoGluePrincipal.getEmail() + "]]></IGAuthorEmail>";
+		
+		String oldVersionValue = version.getVersionValue();
+		
+		if(oldVersionValue.indexOf("<IGAuthorFullName>") > -1)
+			oldVersionValue = oldVersionValue.replaceAll("<IGAuthorFullName>.*?</IGAuthorEmail>", authorXML);
+		else
+			oldVersionValue = oldVersionValue.replaceAll("</attributes>", authorXML + "</attributes>");
+		
+		version.setVersionValue(oldVersionValue);
+	}
 
 	/**
 	 * This method should never be called.
