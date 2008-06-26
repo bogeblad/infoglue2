@@ -335,17 +335,7 @@ public class InfoGluePrincipalControllerProxy extends BaseController
 
 	public InfoGluePrincipal getTestPrincipal()
 	{
-		/*
-		StackTraceElement ste = stackElements[1];
-	    String className = ste.getClassName();
-        System.out.println ("Full class name: " + className);
-        System.out.println ("Method name: " + ste.getMethodName());
-    
-		if(ste.getClassName().equals(SubscriptionsJob.class.getName()))
-			throw new AccessControlException("No access to this method - fuck off");
-		*/
-		
-		BasicMethodAccessManager.checkAccessToCall(new String[]{SubscriptionsJob.class.getName()}, "FUCK OFF - your attempt have been registered.");
+		//BasicMethodAccessManager.checkAccessToCall(new String[]{SubscriptionsJob.class.getName()}, "FUCK OFF - your attempt have been registered.");
 		
 		return new InfoGluePrincipal("TestUser", "none", "none", "none", new ArrayList(), new ArrayList(), true, null);
 	}
