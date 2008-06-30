@@ -159,12 +159,63 @@
             <rtexprvalue>false</rtexprvalue>
         </attribute>
         <attribute>
+            <name>showEditMetaData</name>
+            <required>false</required>
+            <rtexprvalue>false</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>showCreateSubpage</name>
+            <required>false</required>
+            <rtexprvalue>false</rtexprvalue>
+        </attribute>
+        <attribute>
             <name>showEditInline</name>
             <required>false</required>
             <rtexprvalue>false</rtexprvalue>
         </attribute>
         <attribute>
-            <name>showEditPopup</name>
+            <name>showEditContent</name>
+            <required>false</required>
+            <rtexprvalue>false</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>showCategorizeContent</name>
+            <required>false</required>
+            <rtexprvalue>false</rtexprvalue>
+        </attribute>
+
+        <attribute>
+            <name>showPublishPage</name>
+            <required>false</required>
+            <rtexprvalue>false</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>showNotifyUserOfPage</name>
+            <required>false</required>
+            <rtexprvalue>false</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>showPageNotifications</name>
+            <required>false</required>
+            <rtexprvalue>false</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>showContentNotifications</name>
+            <required>false</required>
+            <rtexprvalue>false</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>showTranslateArticle</name>
+            <required>false</required>
+            <rtexprvalue>false</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>showCreateNewsFromContent</name>
+            <required>false</required>
+            <rtexprvalue>false</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>showMySettings</name>
             <required>false</required>
             <rtexprvalue>false</rtexprvalue>
         </attribute>

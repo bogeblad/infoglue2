@@ -52,17 +52,22 @@ public class EditOnSightMenuTag extends ComponentLogicTag
 	
 	private String html = null;
     private boolean showInPublishedMode = false;
-    
-    //Använda
     private Integer contentId = null;
     
-    
+    private boolean showEditMetaData = true;
+    private boolean showCreateSubpage = true;
     private boolean showEditInline = true;
-    private boolean showEditPopup = true;
-    private boolean showChooseArticle = true;
-    private boolean showCreateNewArticle = true;
-    private boolean showPublishArticle = true;
+    private boolean showEditContent = true;
+    private boolean showCategorizeContent = true;
+    private boolean showPublishPage = true;
+    private boolean showNotifyUserOfPage = true;
+    private boolean showPageNotifications = true;
+    private boolean showContentNotifications = true;
     private boolean showTranslateArticle = true;
+    private boolean showCreateNewsFromContent = true;
+    private boolean showMySettings = true;
+    //private boolean showChooseArticle = true;
+    //private boolean showCreateNewArticle = true;
 
     public int doEndTag() throws JspException
     {
@@ -75,7 +80,7 @@ public class EditOnSightMenuTag extends ComponentLogicTag
 	    		String componentEditorUrl = CmsPropertyHandler.getComponentEditorUrl();
 		    	String returnAddress = "" + componentEditorUrl + "ViewInlineOperationMessages.action";
 		    	String originalUrl = URLEncoder.encode(this.getController().getOriginalFullURL(), "iso-8859-1");
-		    	System.out.println("componentEditorUrl:" + componentEditorUrl);
+		    	//System.out.println("componentEditorUrl:" + componentEditorUrl);
 		    	
 		    	String metaDataUrl 			= componentEditorUrl + "ViewAndCreateContentForServiceBinding.action?siteNodeId=" + this.getController().getSiteNodeId() + "&repositoryId=" + this.getController().getSiteNode().getRepositoryId() + "&asiteNodeVersionId=2109&changeStateToWorking=true";
 		    	String createSiteNodeUrl 	= componentEditorUrl + "CreateSiteNode!inputV3.action?isBranch=true&repositoryId=" + this.getController().getSiteNode().getRepositoryId() + "&parentSiteNodeId=" + this.getController().getSiteNodeId() + "&languageId=" + this.getController().getLanguageId() + "&returnAddress=" + URLEncoder.encode(returnAddress, "utf-8") + "&originalAddress=" + URLEncoder.encode(this.getController().getCurrentPageUrl(), "utf-8");
@@ -90,7 +95,7 @@ public class EditOnSightMenuTag extends ComponentLogicTag
 		    			    	
 				//boolean hasAccessToAccessRights = AccessRightController.getController().getIsPrincipalAuthorized(templateController.getDatabase(), principal, "ComponentEditor.ChangeSlotAccess", "");
 				Locale locale = this.getController().getLocaleAvailableInTool();
-				System.out.println("locale in tag:" + locale);
+				//System.out.println("locale in tag:" + locale);
 				
 		    	String buttonLabel 					= this.getLocalizedString(locale, "deliver.editOnSight.buttonLabel");
 		    	String changePageMetaDataLabel 		= this.getLocalizedString(locale, "deliver.editOnSight.changePageMetaDataLabel");
@@ -106,34 +111,46 @@ public class EditOnSightMenuTag extends ComponentLogicTag
 		    	String createNewsOnArticleLabel 	= this.getLocalizedString(locale, "deliver.editOnSight.createNewsOnArticleLabel");
 		    	String mySettingsLabel 				= this.getLocalizedString(locale, "deliver.editOnSight.mySettingsLabel");
 		    	
-		    	sb.append("<p id='igMenuButton" + getComponentId() + "'><a class='igButton' href=\"#\" onclick=\"showIGMenu('editOnSightDiv" + getComponentId() + "', event);\"><span class='igButtonOuterSpan'><span class='linkInfoGlueFunctions'>" + buttonLabel + "</span></span></a></p>");
+		    	if(html != null && !html.equals(""))
+		    		sb.append(html);
+		    	else
+		    		sb.append("<p id='igMenuButton" + getComponentId() + "'><a class='igButton' href=\"#\" onclick=\"showIGMenu('editOnSightDiv" + getComponentId() + "', event);\"><span class='igButtonOuterSpan'><span class='linkInfoGlueFunctions'>" + buttonLabel + "</span></span></a></p>");
 		    	
 		    	sb.append("<div id=\"editOnSightDiv" + getComponentId() + "\" class=\"editOnSightMenuDiv\" style=\"padding: 0px; margin: 0px; padding-top: 0; min-width: 240px; position: absolute; top: 20px; display: none; background-color: white; border: 1px solid #555;\">");
 
 		    	sb.append("    <ul class='editOnSightUL' style='margin: 0px; padding: 0px; list-style-type:none; list-style-image: none;'>");
-		    	sb.append("        <li style='margin: 0px; margin-left: 4px; padding: 2px 0px 2px 2px; list-style-type:none;'><a href=\"javascript:openInlineDiv('" + metaDataUrl + "', 700, 750, true);\" class=\"editOnSightHref linkMetadata\">" + changePageMetaDataLabel + "</a></li>");
-		    	sb.append("        <li style='margin: 0px; margin-left: 4px; padding: 2px 0px 2px 2px; list-style-type:none;'><a href=\"javascript:openInlineDiv('" + createSiteNodeUrl + "', 700, 750, true);\" class=\"editOnSightHref linkCreatePage\">" + createSubPageToCurrentLabel + "</a></li>");
+		    	if(showEditMetaData) 
+		    		sb.append("        <li style='margin: 0px; margin-left: 4px; padding: 2px 0px 2px 2px; list-style-type:none;'><a href=\"javascript:openInlineDiv('" + metaDataUrl + "', 700, 750, true);\" class=\"editOnSightHref linkMetadata\">" + changePageMetaDataLabel + "</a></li>");
+		    	if(showCreateSubpage) 
+			    	sb.append("        <li style='margin: 0px; margin-left: 4px; padding: 2px 0px 2px 2px; list-style-type:none;'><a href=\"javascript:openInlineDiv('" + createSiteNodeUrl + "', 700, 750, true);\" class=\"editOnSightHref linkCreatePage\">" + createSubPageToCurrentLabel + "</a></li>");
 
 		    	if(contentId != null)
 		    	{
-			    	sb.append("    <li style='margin: 0px; margin-left: 4px; padding: 2px 0px 2px 2px; list-style-type:none;'><a href=\"javascript:editInline(" + this.getController().getSiteNode().getRepositoryId() + ", " + this.contentId + ", " + this.getController().getLanguageId() + ", true);\" class=\"editOnSightHref linkEditArticle\">" + editContentInlineLabel + "</a></li>");
-			    	sb.append("    <li style='margin: 0px; margin-left: 4px; padding: 2px 0px 2px 2px; list-style-type:none;'><a href=\"javascript:openInlineDiv('" + contentVersionUrl + "', 700, 750, true);\" class=\"editOnSightHref linkEditArticle\">" + editContentLabel + "</a></li>");
-			    	sb.append("    <li style='margin: 0px; margin-left: 4px; padding: 2px 0px 2px 2px; list-style-type:none;'><a href=\"javascript:openInlineDiv('" + categoriesUrl + "', 700, 750, true);\" class=\"editOnSightHref linkCategorizeArticle\">" + categorizeContentLabel + "</a></li>");
+		    		if(showEditInline)
+		    			sb.append("    <li style='margin: 0px; margin-left: 4px; padding: 2px 0px 2px 2px; list-style-type:none;'><a href=\"javascript:editInline(" + this.getController().getSiteNode().getRepositoryId() + ", " + this.contentId + ", " + this.getController().getLanguageId() + ", true);\" class=\"editOnSightHref linkEditArticle\">" + editContentInlineLabel + "</a></li>");
+		    		if(showEditContent)
+		    			sb.append("    <li style='margin: 0px; margin-left: 4px; padding: 2px 0px 2px 2px; list-style-type:none;'><a href=\"javascript:openInlineDiv('" + contentVersionUrl + "', 700, 750, true);\" class=\"editOnSightHref linkEditArticle\">" + editContentLabel + "</a></li>");
+			    	if(showCategorizeContent)
+			    		sb.append("    <li style='margin: 0px; margin-left: 4px; padding: 2px 0px 2px 2px; list-style-type:none;'><a href=\"javascript:openInlineDiv('" + categoriesUrl + "', 700, 750, true);\" class=\"editOnSightHref linkCategorizeArticle\">" + categorizeContentLabel + "</a></li>");
 		    	}
-			    sb.append("        <li style='margin: 0px; margin-left: 4px; padding: 2px 0px 2px 2px; list-style-type:none;'><a href=\"javascript:openInlineDiv('" + publishUrl + "', 700, 750, true);\" class=\"editOnSightHref linkPublish\">" + publishPageLabel + "</a></li>");
-		    	sb.append("        <li style='margin: 0px; margin-left: 4px; padding: 2px 0px 2px 2px; list-style-type:none;'><a href=\"javascript:openInlineDiv('" + notifyUrl + "', 700, 750, true);\" class=\"editOnSightHref linkNotify\">" + notifyLabel + "</a></li>");
 		    	
-		    	if(contentId != null)
+		    	if(showPublishPage)
+		    		sb.append("        <li style='margin: 0px; margin-left: 4px; padding: 2px 0px 2px 2px; list-style-type:none;'><a href=\"javascript:openInlineDiv('" + publishUrl + "', 700, 750, true);\" class=\"editOnSightHref linkPublish\">" + publishPageLabel + "</a></li>");
+		    	if(showNotifyUserOfPage)
+			    	sb.append("        <li style='margin: 0px; margin-left: 4px; padding: 2px 0px 2px 2px; list-style-type:none;'><a href=\"javascript:openInlineDiv('" + notifyUrl + "', 700, 750, true);\" class=\"editOnSightHref linkNotify\">" + notifyLabel + "</a></li>");
+		    	
+		    	if(contentId != null && showContentNotifications)
 		    	{
 		    		sb.append("    <li style='margin: 0px; margin-left: 4px; padding: 2px 0px 2px 2px; list-style-type:none;'><a href=\"javascript:openInlineDiv('" + subscriptionUrl + "', 700, 750, true);\" class=\"editOnSightHref linkTakeContent\">" + subscribeToContentLabel + "</a></li>");
 		    	}
 		    	
-		    	sb.append("        <li style='margin: 0px; margin-left: 4px; padding: 2px 0px 2px 2px; list-style-type:none;'><a href=\"javascript:openInlineDiv('" + pageSubscriptionUrl + "', 700, 750, true);\" class=\"editOnSightHref linkTakePage\">" + subscribeToPageLabel + "</a></li>");
-		    			    	
+		    	if(showPageNotifications)
+		    		sb.append("        <li style='margin: 0px; margin-left: 4px; padding: 2px 0px 2px 2px; list-style-type:none;'><a href=\"javascript:openInlineDiv('" + pageSubscriptionUrl + "', 700, 750, true);\" class=\"editOnSightHref linkTakePage\">" + subscribeToPageLabel + "</a></li>");
+		    			    
 		    	ContentVersionVO contentVersionVO = this.getController().getContentVersion(contentId, this.getController().getLanguageId(), true);
-		    	if(contentVersionVO != null)
+		    	if(contentVersionVO != null && showTranslateArticle)
 		    	{
-			    	System.out.println("Current contentVersionVO:" + contentVersionVO.getLanguageName() + ":" + contentVersionVO.getLanguageId());
+			    	//System.out.println("Current contentVersionVO:" + contentVersionVO.getLanguageName() + ":" + contentVersionVO.getLanguageId());
 			    	List languages = this.getController().getPageLanguages();
 			    	
 			    	Iterator languagesIterator = languages.iterator();
@@ -144,15 +161,17 @@ public class EditOnSightMenuTag extends ComponentLogicTag
 			    		{
 				    		String translateUrl = componentEditorUrl + "ViewContentVersion!standalone.action?contentId=" + this.contentId + "&languageId=" + languageVO.getLanguageId() + "&anchorName=contentVersionBlock&translate=true&fromLanguageId=" + contentVersionVO.getLanguageId() + "&toLanguageId=" + languageVO.getId(); // + "&KeepThis=true&TB_iframe=true&height=700&width=1000&modal=true";
 							
-					    	sb.append("	<li style='margin: 0px; margin-left: 4px; padding: 2px 0px 2px 2px; list-style-type:none;'>");
+				    		sb.append("	<li style='margin: 0px; margin-left: 4px; padding: 2px 0px 2px 2px; list-style-type:none;'>");
 					    	sb.append("    	<a href=\"javascript:openInlineDiv('" + translateUrl + "', 700, 1000, true);\" class=\"editOnSightHref linkTranslate\">" + translateContentLabel + " &quot;" + languageVO.getLocalizedDisplayLanguage() + "&quot;</a>");
 					    	sb.append(" </li>");
 			    		}
 			    	}
 		    	}
 		    	
-		    	sb.append("        <li style='margin: 0px; margin-left: 4px; padding: 2px 0px 2px 2px; list-style-type:none;'><a href=\"javascript:openInlineDiv('" + newsFlowUrl + "', 700, 750, true);\" class=\"editOnSightHref linkCreateNews\">" + createNewsOnArticleLabel + "</a></li>");
-		    	sb.append("        <li style='margin: 0px; margin-left: 4px; padding: 2px 0px 2px 2px; list-style-type:none;'><a href=\"javascript:openInlineDiv('" + mySettingsUrl + "', 700, 750, true);\" class=\"editOnSightHref linkMySettings\">" + mySettingsLabel + "</a></li>");
+		    	if(showCreateNewsFromContent)
+		    		sb.append("        <li style='margin: 0px; margin-left: 4px; padding: 2px 0px 2px 2px; list-style-type:none;'><a href=\"javascript:openInlineDiv('" + newsFlowUrl + "', 700, 750, true);\" class=\"editOnSightHref linkCreateNews\">" + createNewsOnArticleLabel + "</a></li>");
+		    	if(showMySettings)
+		    		sb.append("        <li style='margin: 0px; margin-left: 4px; padding: 2px 0px 2px 2px; list-style-type:none;'><a href=\"javascript:openInlineDiv('" + mySettingsUrl + "', 700, 750, true);\" class=\"editOnSightHref linkMySettings\">" + mySettingsLabel + "</a></li>");
 		    	sb.append("    </ul>");
 
 		    	sb.append("</div>");
@@ -171,7 +190,6 @@ public class EditOnSightMenuTag extends ComponentLogicTag
         
         return EVAL_PAGE;
     }
-
  
     public void setHtml(final String html) throws JspException
     {
@@ -186,6 +204,66 @@ public class EditOnSightMenuTag extends ComponentLogicTag
 	public void setContentId(final String contentId) throws JspException
 	{
         this.contentId = evaluateInteger("EditOnSightMenuTag", "contentId", contentId);
+	}
+
+	public void setShowEditMetaData(boolean showEditMetaData)
+	{
+		this.showEditMetaData = showEditMetaData;
+	}
+
+	public void setShowCreateSubpage(boolean showCreateSubpage)
+	{
+		this.showCreateSubpage = showCreateSubpage;
+	}
+
+	public void setShowEditInline(boolean showEditInline)
+	{
+		this.showEditInline = showEditInline;
+	}
+
+	public void setShowEditContent(boolean showEditContent)
+	{
+		this.showEditContent = showEditContent;
+	}
+
+	public void setShowCategorizeContent(boolean showCategorizeContent)
+	{
+		this.showCategorizeContent = showCategorizeContent;
+	}
+
+	public void setShowPublishPage(boolean showPublishPage)
+	{
+		this.showPublishPage = showPublishPage;
+	}
+
+	public void setShowNotifyUserOfPage(boolean showNotifyUserOfPage)
+	{
+		this.showNotifyUserOfPage = showNotifyUserOfPage;
+	}
+
+	public void setShowPageNotifications(boolean showPageNotifications)
+	{
+		this.showPageNotifications = showPageNotifications;
+	}
+
+	public void setShowContentNotifications(boolean showContentNotifications)
+	{
+		this.showContentNotifications = showContentNotifications;
+	}
+
+	public void setShowTranslateArticle(boolean showTranslateArticle)
+	{
+		this.showTranslateArticle = showTranslateArticle;
+	}
+
+	public void setShowCreateNewsFromContent(boolean showCreateNewsFromContent)
+	{
+		this.showCreateNewsFromContent = showCreateNewsFromContent;
+	}
+
+	public void setShowMySettings(boolean showMySettings)
+	{
+		this.showMySettings = showMySettings;
 	}
     
 }
