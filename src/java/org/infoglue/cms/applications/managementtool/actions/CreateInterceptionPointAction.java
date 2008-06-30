@@ -24,11 +24,14 @@
 package org.infoglue.cms.applications.managementtool.actions;
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.InterceptionPointController;
 import org.infoglue.cms.entities.management.InterceptionPointVO;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
+import org.infoglue.cms.util.sorters.ReflectionComparator;
 
 /**
  * This action represents the Create InterceptionPoint Usecase.
@@ -40,7 +43,7 @@ public class CreateInterceptionPointAction extends InfoGlueAbstractAction
    	private InterceptionPointVO interceptionPointVO;
    	private String interceptionPointVOName;
    	
-   	private Collection inactiveInterceptionPointVOList = null;
+   	private List<InterceptionPointVO> inactiveInterceptionPointVOList = null;
   
   	public CreateInterceptionPointAction()
 	{
@@ -72,7 +75,9 @@ public class CreateInterceptionPointAction extends InfoGlueAbstractAction
     public String doInput() throws Exception
     {
     	this.inactiveInterceptionPointVOList = InterceptionPointController.getController().getInactiveInterceptionPointVOList();
-       
+    	
+		Collections.sort(this.inactiveInterceptionPointVOList, new ReflectionComparator("name"));
+
     	return "input";
     }
 

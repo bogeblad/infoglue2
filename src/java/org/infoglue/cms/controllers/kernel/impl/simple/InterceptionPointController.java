@@ -109,7 +109,11 @@ public class InterceptionPointController extends BaseController
 	    systemInterceptionPoints.put("ComponentEditor.AddComponent", new InterceptionPointVO("ComponentEditor", "ComponentEditor.AddComponent", "This interception point limits who can add a component to a specific slot", true));
 	    systemInterceptionPoints.put("ComponentEditor.DeleteComponent", new InterceptionPointVO("ComponentEditor", "ComponentEditor.DeleteComponent", "This interception point limits who can delete a component in a specific slot", true));
 	    systemInterceptionPoints.put("ComponentEditor.ChangeComponent", new InterceptionPointVO("ComponentEditor", "ComponentEditor.ChangeComponent", "This interception point limits who can change a component to another in a specific slot", true));
-	    
+	    systemInterceptionPoints.put("ComponentEditor.SubmitToPublish", new InterceptionPointVO("ComponentEditor", "ComponentEditor.SubmitToPublish", "This interception point limits who have access to the Submit to publish choice in edit on sight", false));
+		systemInterceptionPoints.put("ComponentEditor.PageStructure", new InterceptionPointVO("ComponentEditor", "ComponentEditor.PageStructure", "This interception point limits who can see the page structure menu option in edit on sight", false));
+		systemInterceptionPoints.put("ComponentEditor.OpenInNewWindow", new InterceptionPointVO("ComponentEditor", "ComponentEditor.OpenInNewWindow", "This interception point limits who can see the Open in new window in edit on sight", false));
+		systemInterceptionPoints.put("ComponentEditor.ViewSource", new InterceptionPointVO("ComponentEditor", "ComponentEditor.ViewSource", "This interception point limits who can see the view source menu in edit on sight", false));
+
 	    systemInterceptionPoints.put("ComponentPropertyEditor.EditProperty", new InterceptionPointVO("ComponentPropertyEditor", "ComponentPropertyEditor.EditProperty", "This interception point limits who can edit a specific component property", true));
 	    
 	    systemInterceptionPoints.put("Publication.Write", new InterceptionPointVO("Publication", "Publication.Write", "This interception point intercepts publications", true));
@@ -187,8 +191,10 @@ public class InterceptionPointController extends BaseController
 	 * @throws SystemException
 	 * @throws Bug
 	 */
-	public Collection getInactiveInterceptionPointVOList() throws SystemException, Bug
+	public List<InterceptionPointVO> getInactiveInterceptionPointVOList() throws SystemException, Bug
 	{
+		List<InterceptionPointVO> inactiveInterceptionPointVOList = new ArrayList();
+		
 		List interceptionPointVOList = getInterceptionPointVOList();
 
 		Collection allInterceptionPoints = systemInterceptionPoints.values();
@@ -206,11 +212,13 @@ public class InterceptionPointController extends BaseController
 					exists = true;
 			}
 			
-			if(exists)
-				allInterceptionPointsIterator.remove();
+			//if(exists)
+			//	allInterceptionPointsIterator.remove();
+			if(!exists)
+				inactiveInterceptionPointVOList.add(possibleInterceptionPoint);
 		}
 		
-		return allInterceptionPoints;
+		return inactiveInterceptionPointVOList;
 	}
 
 	public List getSortedInterceptionPointVOList() throws SystemException, Bug
