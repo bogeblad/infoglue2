@@ -4,9 +4,9 @@
 <div class="igmenuitems linkCreatePageTemplate" onClick="$saveTemplateUrl"><a href='#'>$savePageTemplateHTML</a></div>
 <hr id="emptySlotMenuTopSeparator" style="border:0px; border-top:1px solid #bbb; margin-top:4px;"/>
 <div id="accessRightsMenuItem" class="igmenuitems linkAccessRights" onClick="setAccessRights(slotName, slotContentId);"><a href='#'>$accessRightsHTML</a></div>
-<div class="igmenuitems linkPageComponents" onClick="toggleDiv('pageComponents');"><a href='#'>$pageComponents</a></div>
-<div class="igmenuitems linkOpenInNewWindow" onClick="window.open(document.location.href,'PageComponents','');"><a href='#'>$componentEditorInNewWindowHTML</a></div>
-<div class="igmenuitems linkViewSource"><a href='javascript:viewSource();'>$viewSource</div>
+<div id="pageComponentsMenuItem" class="igmenuitems linkPageComponents" onClick="toggleDiv('pageComponents');"><a href='#'>$pageComponents</a></div>
+<div id="openInNewWindowMenuItem" class="igmenuitems linkOpenInNewWindow" onClick="window.open(document.location.href,'PageComponents','');"><a href='#'>$componentEditorInNewWindowHTML</a></div>
+<div id="viewSourceMenuItem" class="igmenuitems linkViewSource"><a href='javascript:viewSource();'>$viewSource</div>
 </div>
 
 <div id="componentMenu" class="skin0">
@@ -19,9 +19,9 @@
 <hr id="componentMenuTopSeparator" style="border:0px; border-top:1px solid #bbb; margin-top:4px;">
 <div class="igmenuitems linkComponentProperties" onClick="javascript:showComponent();"><a href='#'>$propertiesHTML</a></div>
 <hr id="componentMenuMiddleSeparator" style="border:0px; border-top:1px solid #bbb; margin-top:4px;"/>
-<div class="igmenuitems linkPageComponents" onClick="toggleDiv('pageComponents');"><a href='#'>$pageComponents</a></div>
-<div class="igmenuitems linkOpenInNewWindow" onClick="window.open(document.location.href,'PageComponents','');"><a href='#'>$componentEditorInNewWindowHTML</a></div>
-<div class="igmenuitems linkViewSource"><a href='javascript:viewSource();'>$viewSource</a></div>
+<div id="pageComponentsMenuItem" class="igmenuitems linkPageComponents" onClick="toggleDiv('pageComponents');"><a href='#'>$pageComponents</a></div>
+<div id="openInNewWindowMenuItem" class="igmenuitems linkOpenInNewWindow" onClick="window.open(document.location.href,'PageComponents','');"><a href='#'>$componentEditorInNewWindowHTML</a></div>
+<div id="viewSourceMenuItem" class="igmenuitems linkViewSource"><a href='javascript:viewSource();'>$viewSource</a></div>
 </div>
 
 <div id="componentInTreeMenu" class="skin0">
@@ -32,13 +32,18 @@
 <hr id="componentInTreeMenuTopSeparator" style="border:0px; border-top:1px solid #bbb; margin-top:4px;"/>
 <div class="igmenuitems linkComponentProperties" onClick="javascript:showComponent();"><a href='#'>$propertiesHTML</a></div>
 <hr id="emptySlotMenuMiddleSeparator" style="border:0px; border-top:1px solid #bbb; margin-top:4px;">
-<div class="igmenuitems linkPageComponents" onClick="toggleDiv('pageComponents');"><a href='#'>$pageComponents</a></div>
-<div class="igmenuitems linkOpenInNewWindow" onClick="window.open(document.location.href,'PageComponents','');"><a href='#'>$componentEditorInNewWindowHTML</a></div>
-<div class="igmenuitems linkViewSource"><a href='javascript:viewSource();'>$viewSource</a></div>
+<div id="pageComponentsMenuItem" class="igmenuitems linkPageComponents" onClick="toggleDiv('pageComponents');"><a href='#'>$pageComponents</a></div>
+<div id="openInNewWindowMenuItem" class="igmenuitems linkOpenInNewWindow" onClick="window.open(document.location.href,'PageComponents','');"><a href='#'>$componentEditorInNewWindowHTML</a></div>
+<div id="viewSourceMenuItem" class="igmenuitems linkViewSource"><a href='javascript:viewSource();'>$viewSource</a></div>
 </div>
 <script type="text/javascript">
 $addComponentJavascript
 $deleteComponentJavascript
 $changeComponentJavascript
 $changeAccessJavascript
+
+$submitToPublishJavascript
+$pageStructureJavascript
+$openInNewWindowJavascript
+$allowViewSourceJavascript
 </script>

@@ -507,7 +507,7 @@ function showComponentInTreeMenu(event, element, compId, anInsertUrl, anDeleteUr
 	}
 	catch(e)
 	{
-		alert("Error:" + e);
+		//alert("Error:" + e);
 	}
 
 	componentId = compId;

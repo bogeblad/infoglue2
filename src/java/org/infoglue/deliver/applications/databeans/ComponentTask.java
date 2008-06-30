@@ -32,6 +32,7 @@ public class ComponentTask
 {
 	private String name;
 	private String view;
+	private String icon;
 	private Integer componentId;	
 	private boolean openInPopup;
 		
@@ -73,5 +74,15 @@ public class ComponentTask
 	public void setOpenInPopup(boolean openInPopup)
 	{
 		this.openInPopup = openInPopup;
+	}
+
+	public String getIcon()
+	{
+		return icon;
+	}
+
+	public void setIcon(String icon)
+	{
+		this.icon = icon;
 	}
 }

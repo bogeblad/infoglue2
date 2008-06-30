@@ -780,6 +780,8 @@ a.editOnSightHref:hover{
 .linkViewSource {background:url(../images/v3/showHTMLIcon.gif) no-repeat left center; background-position: 4px 6px;}
 .linkAccessRights {background:url(../images/v3/accessRightIcon.gif) no-repeat left center; background-position: 4px 6px;}
 
+.linkComponentTask {background:url(../images/v3/componentTaskIcon.gif) no-repeat left center; background-position: 4px 6px;}
+
 .linkSave {background:url(../images/v3/saveInlineIcon.gif) no-repeat left center; background-position: 0px -2px;}
 .linkCancel {background:url(../images/v3/cancelIcon.gif) no-repeat left center; background-position: 0px 0px;}
 .linkInfoGlueFunctions {background:url(../images/v3/infoglueFunctionsIcon.gif) no-repeat left center; background-position: 0px 0px;}
@@ -787,7 +789,7 @@ a.editOnSightHref:hover{
 .linkMetadata, .linkCreatePage, .linkEditArticle, .linkCategorizeArticle, .linkPublish, .linkNotify, 
 .linkTakeContent, .linkTakePage, .linkTranslate, .linkCreateNews, .linkMySettings, .linkAddComponent, .linkDeleteComponent,
 .linkChangeComponent, .linkCreatePageTemplate, .linkMoveComponentUp, .linkMoveComponentDown, .linkComponentProperties, .linkPageComponents,
-.linkOpenInNewWindow, .linkViewSource, .linkAccessRights {
+.linkOpenInNewWindow, .linkViewSource, .linkAccessRights, .linkComponentTask {
 padding-left:28px;
 }
 

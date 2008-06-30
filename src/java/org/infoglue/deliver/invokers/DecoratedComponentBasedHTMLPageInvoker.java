@@ -293,6 +293,11 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 			boolean hasAccessToChangeComponent = AccessRightController.getController().getIsPrincipalAuthorized(templateController.getDatabase(), principal, "ComponentEditor.ChangeComponent", "" + component.getContentId() + "_" + component.getSlotName());
 			boolean hasSaveTemplateAccess = AccessRightController.getController().getIsPrincipalAuthorized(templateController.getDatabase(), principal, "StructureTool.SaveTemplate", "");
 
+		    boolean hasSubmitToPublishAccess = AccessRightController.getController().getIsPrincipalAuthorized(templateController.getDatabase(), principal, "ComponentEditor.SubmitToPublish", "");
+		    boolean hasPageStructureAccess = AccessRightController.getController().getIsPrincipalAuthorized(templateController.getDatabase(), principal, "ComponentEditor.PageStructure", "");
+		    boolean hasOpenInNewWindowAccess = AccessRightController.getController().getIsPrincipalAuthorized(templateController.getDatabase(), principal, "ComponentEditor.OpenInNewWindow", "");
+		    boolean hasViewSourceAccess = AccessRightController.getController().getIsPrincipalAuthorized(templateController.getDatabase(), principal, "ComponentEditor.ViewSource", "");
+
 		    String extraHeader 	= FileHelper.getFileAsString(new File(CmsPropertyHandler.getContextRootPath() + "preview/pageComponentEditorHeader.vm"));
 		    String extraBody 	= FileHelper.getFileAsString(new File(CmsPropertyHandler.getContextRootPath() + "preview/pageComponentEditorBody.vm"));
 
@@ -371,7 +376,12 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		    extraBody = extraBody.replaceAll("\\$deleteComponentJavascript", "var hasAccessToDeleteComponent" + component.getSlotName() + " = " + hasAccessToDeleteComponent + ";");
 		    extraBody = extraBody.replaceAll("\\$changeComponentJavascript", "var hasAccessToChangeComponent" + component.getSlotName() + " = " + hasAccessToChangeComponent + ";");
 		    extraBody = extraBody.replaceAll("\\$changeAccessJavascript", "var hasAccessToAccessRights" + component.getSlotName() + " = " + hasAccessToAccessRights + ";");
-		    		    
+		    
+		    extraBody = extraBody.replaceAll("\\$submitToPublishJavascript", "var hasAccessToSubmitToPublish = " + hasSubmitToPublishAccess + ";");
+		    extraBody = extraBody.replaceAll("\\$pageStructureJavascript", "var hasPageStructureAccess = " + hasPageStructureAccess + ";");
+		    extraBody = extraBody.replaceAll("\\$openInNewWindowJavascript", "var hasOpenInNewWindowAccess = " + hasOpenInNewWindowAccess + ";");
+		    extraBody = extraBody.replaceAll("\\$allowViewSourceJavascript", "var hasAccessToViewSource = " + hasViewSourceAccess + ";");
+
 		    //List tasks = getTasks();
 			//component.setTasks(tasks);
 			
@@ -923,7 +933,6 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		}
 		
 		Collection componentProperties = getComponentProperties(componentId, document);
-		System.out.println("componentProperties in loop:" + componentProperties.size());
 		
 		String hideProtectedProperties = CmsPropertyHandler.getHideProtectedProperties();
 		int numberOfHiddenProperties = 0;
@@ -1347,7 +1356,12 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		boolean hasAccessToDeleteComponent = AccessRightController.getController().getIsPrincipalAuthorized(templateController.getDatabase(), principal, "ComponentEditor.DeleteComponent", "" + (component.getParentComponent() == null ? component.getContentId() : component.getParentComponent().getContentId()) + "_" + component.getSlotName());
 		boolean hasAccessToChangeComponent = AccessRightController.getController().getIsPrincipalAuthorized(templateController.getDatabase(), principal, "ComponentEditor.ChangeComponent", "" + (component.getParentComponent() == null ? component.getContentId() : component.getParentComponent().getContentId()) + "_" + component.getSlotName());
 	    boolean hasSaveTemplateAccess = AccessRightController.getController().getIsPrincipalAuthorized(templateController.getDatabase(), principal, "StructureTool.SaveTemplate", "");
-	    
+	   
+	    boolean hasSubmitToPublishAccess = AccessRightController.getController().getIsPrincipalAuthorized(templateController.getDatabase(), principal, "ComponentEditor.SubmitToPublish", "");
+	    boolean hasPageStructureAccess = AccessRightController.getController().getIsPrincipalAuthorized(templateController.getDatabase(), principal, "ComponentEditor.PageStructure", "");
+	    boolean hasOpenInNewWindowAccess = AccessRightController.getController().getIsPrincipalAuthorized(templateController.getDatabase(), principal, "ComponentEditor.OpenInNewWindow", "");
+	    boolean hasViewSourceAccess = AccessRightController.getController().getIsPrincipalAuthorized(templateController.getDatabase(), principal, "ComponentEditor.ViewSource", "");
+
 	    boolean hasMaxComponents = false;
 		if(component.getParentComponent() != null && component.getParentComponent().getSlotList() != null)
 		{
@@ -1383,7 +1397,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 			sb.append("hasAccessToDeleteComponent" + component.getSlotName() + " = " + hasAccessToDeleteComponent + ";");
 			sb.append("hasAccessToChangeComponent" + component.getSlotName() + " = " + hasAccessToChangeComponent + ";");
 			sb.append("hasAccessToAccessRights" + component.getSlotName() + " = " + hasAccessToAccessRights + ";");
-		    //sb.append("-->");
+			//sb.append("-->");
 			sb.append("</script>");
 			return sb.toString();
 		}
@@ -1410,6 +1424,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		    
 		    String view = componentTask.getView();
 		    boolean openInPopup = componentTask.getOpenInPopup();
+		    String icon = componentTask.getIcon();
 		    
 		    view = view.replaceAll("\\$componentEditorUrl", componentEditorUrl);
 			view = view.replaceAll("\\$originalFullURL", originalFullURL);
@@ -1418,7 +1433,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		    view = view.replaceAll("\\$siteNodeId", siteNodeId.toString());
 		    view = view.replaceAll("\\$languageId", languageId.toString());
 		    view = view.replaceAll("\\$componentId", component.getId().toString());
-		    sb.append("<div class=\"igmenuitems\" onClick=\"executeTask('" + view + "', " + openInPopup + ");\"><a href='#'>" + componentTask.getName() + "</a></div>");
+		    sb.append("<div class=\"igmenuitems linkComponentTask\" " + ((icon != null && !icon.equals("")) ? "style=\"background-image:url(" + icon + ")\"" : "") + " onClick=\"executeTask('" + view + "', " + openInPopup + ");\"><a href='#'>" + componentTask.getName() + "</a></div>");
 		}
 
 		//Locale locale = templateController.getLocale();
@@ -1442,7 +1457,8 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		sb.append("<div class=\"igmenuitems linkEditArticle\" onClick=\"edit();\"><a href='#'>" + editHTML + "</a></div>");
 	    sb.append("<div class=\"igmenuitems linkEditArticle\" onClick=\"editInlineSimple(" + repositoryId + ");\"><a href='#'>" + editInlineHTML + "</a></div>");
 
-		sb.append("<div class=\"igmenuitems linkPublish\" onClick=\"submitToPublish(" + siteNodeId + ", " + repositoryId + ", '" + URLEncoder.encode(templateController.getOriginalFullURL(), "UTF-8") + "');\"><a href='#'>" + submitToPublishHTML + "</a></div>");
+	    if(hasSubmitToPublishAccess)
+	    	sb.append("<div class=\"igmenuitems linkPublish\" onClick=\"submitToPublish(" + siteNodeId + ", " + repositoryId + ", '" + URLEncoder.encode(templateController.getOriginalFullURL(), "UTF-8") + "');\"><a href='#'>" + submitToPublishHTML + "</a></div>");
 		if(hasAccessToAddComponent)
 			sb.append("<div class=\"igmenuitems linkAddComponent\" onClick=\"insertComponent();\"><a href='#'>" + addComponentHTML + "</a></div>");
 		if(hasAccessToDeleteComponent)
@@ -1460,24 +1476,25 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		if(maxPosition > position)
 		    sb.append("<div class=\"igmenuitems linkMoveComponentDown\" onClick=\"invokeAddress('" + downUrl + "');\"><a href='#'>" + moveComponentDownHTML + "</a></div>");
 		
-		//sb.append("<div class=\"igmenudivider\"><img src=\" + this.getRequest().getContextPath() + "/images/dividerLine.gif\"  width=\"115\" height=\"1\"></div>");
 		sb.append("<hr style='border:0px; border-top:1px solid #bbb; margin-top:4px;'/>");
 		sb.append("<div class=\"igmenuitems linkComponentProperties\" onClick=\"javascript:showComponent();\"><a href='#'>" + propertiesHTML + "</a></div>");
-		sb.append("<hr style='border:0px; border-top:1px solid #bbb; margin-top:4px;'/>");
-		//sb.append("<div class=\"igmenudivider\"><img src=\" + this.getRequest().getContextPath() + "/images/dividerLine.gif\"  width=\"115\" height=\"1\"></div>");
-		sb.append("<div class=\"igmenuitems linkPageComponents\" onClick=\"javascript:toggleDiv('pageComponents');\"><a href='#'>" + pageComponentsHTML + "</a></div>");
-		sb.append("<div id=\"componentEditorInNewWindowDiv" + component.getId() + "\" class=\"igmenuitems linkOpenInNewWindow\"  onClick=\"window.open(document.location.href,'PageComponents','');\"><a href='#'>" + componentEditorInNewWindowHTML + "</a></div>");
-		sb.append("<div class=\"igmenuitems linkViewSource\" onClick=\"javascript:viewSource();\"><a href='javascript:viewSource();'>" + viewSourceHTML + "</a></div>");
-		//sb.append("<div class=\"igmenuitems\">getComponentTasksDiv_" + component.getSlotName() + "</div>");
+		if(hasPageStructureAccess || hasOpenInNewWindowAccess || hasViewSourceAccess)
+			sb.append("<hr style='border:0px; border-top:1px solid #bbb; margin-top:4px;'/>");
+		if(hasPageStructureAccess)
+			sb.append("<div class=\"igmenuitems linkPageComponents\" onClick=\"javascript:toggleDiv('pageComponents');\"><a href='#'>" + pageComponentsHTML + "</a></div>");
+		if(hasOpenInNewWindowAccess)
+			sb.append("<div id=\"componentEditorInNewWindowDiv" + component.getId() + "\" class=\"igmenuitems linkOpenInNewWindow\"  onClick=\"window.open(document.location.href,'PageComponents','');\"><a href='#'>" + componentEditorInNewWindowHTML + "</a></div>");
+		if(hasViewSourceAccess)
+			sb.append("<div class=\"igmenuitems linkViewSource\" onClick=\"javascript:viewSource();\"><a href='javascript:viewSource();'>" + viewSourceHTML + "</a></div>");
 		sb.append("</div>");
 		
     	
 		sb.append("<script type=\"text/javascript\">");
 		//sb.append("<!--");
-		sb.append("hasAccessToAddComponent" + component.getId() + "_" + component.getSlotName() + " = " + hasAccessToAddComponent + ";");
-		sb.append("hasAccessToDeleteComponent" + component.getSlotName() + " = " + hasAccessToDeleteComponent + ";");
-		sb.append("hasAccessToChangeComponent" + component.getSlotName() + " = " + hasAccessToChangeComponent + ";");
-		sb.append("hasAccessToAccessRights" + component.getSlotName() + " = " + hasAccessToAccessRights + ";");
+		sb.append("hasAccessToAddComponent" + component.getId() + "_" + component.getSlotName() + " = " + hasAccessToAddComponent + ";\n");
+		sb.append("hasAccessToDeleteComponent" + component.getSlotName() + " = " + hasAccessToDeleteComponent + ";\n");
+		sb.append("hasAccessToChangeComponent" + component.getSlotName() + " = " + hasAccessToChangeComponent + ";\n");
+		sb.append("hasAccessToAccessRights" + component.getSlotName() + " = " + hasAccessToAccessRights + ";\n");
 		//sb.append("-->");
 		sb.append("</script>");
 		
@@ -2209,9 +2226,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 				}
 			}
 			
-			System.out.println("componentProperties before:" + componentProperties.size());
 			addSystemProperties(componentProperties, componentId);
-			System.out.println("componentProperties after:" + componentProperties.size());
 		}
 		catch(Exception e)
 		{
@@ -2474,6 +2489,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 					
 					String name			= binding.attributeValue("name");
 					String view			= binding.attributeValue("view");
+					String icon			= binding.attributeValue("icon");
 					String openInPopup 	= binding.attributeValue("openInPopup");
 					if(openInPopup == null || (!openInPopup.equals("true") && !openInPopup.equals("false")))
 						openInPopup = "true";
@@ -2488,6 +2504,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 					ComponentTask task = new ComponentTask();
 					task.setName(name);
 					task.setView(view);
+					task.setIcon(icon);
 					task.setOpenInPopup(new Boolean(openInPopup));
 					task.setComponentId(componentId);
 					

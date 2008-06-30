@@ -505,8 +505,9 @@ function showComponentMenu(event, element, compId, anInsertUrl, anDeleteUrl, anC
 	//alert("document.body.clientHeight:" + document.body.clientHeight);
 	//alert("menuDiv.offsetWidth:" + menuDiv.offsetWidth);
 	
-	if(window.parent.name == "PageComponents")
-		document.getElementById("componentEditorInNewWindowDiv" + compId).style.display = "none";
+	var componentEditorInNewWindowDivCompElement = document.getElementById("componentEditorInNewWindowDiv" + compId);
+	if(window.parent.name == "PageComponents" && componentEditorInNewWindowDivCompElement)
+		componentEditorInNewWindowDivCompElement.style.display = "none";
 	
 	if (rightedge < menuDiv.offsetWidth)
 		clientX = (clientX - menuDiv.offsetWidth);
@@ -562,7 +563,7 @@ function showComponentInTreeMenu(event, element, compId, anInsertUrl, anDeleteUr
 	}
 	catch(e)
 	{
-		alert("Error:" + e);
+		//alert("Error:" + e);
 	}
 
 	componentId = compId;
@@ -659,10 +660,41 @@ function showEmptySlotMenu(slotId, event, compId, anInsertUrl, slotContentIdVar)
 		{
 	    	document.getElementById("changeComponentMenuItem").style.display = "none";
 	    }
+
+		/*
+		var hasAccessToSubmitToPublish = eval("hasAccessToSubmitToPublish"); 
+	    alert("hasAccessToSubmitToPublish:" + hasAccessToSubmitToPublish);
+	    if(hasAccessToSubmitToPublish) 
+	    	document.getElementById("submitToPublishMenuItem").style.display = "block";
+		else
+	    	document.getElementById("submitToPublishMenuItem").style.display = "none";
+		*/
+		
+		var hasAccessToSubmitToPageComponents = eval("hasPageStructureAccess"); 
+	    //alert("hasAccessToPageComponents:" + hasAccessToSubmitToPageComponents);
+	    if(hasAccessToSubmitToPageComponents) 
+	    	document.getElementById("pageComponentsMenuItem").style.display = "block";
+		else
+	    	document.getElementById("pageComponentsMenuItem").style.display = "none";
+
+		var hasAccessToOpenInNewWindow = eval("hasOpenInNewWindowAccess"); 
+	    //alert("hasAccessToOpenInNewWindow:" + hasAccessToOpenInNewWindow);
+	    if(hasAccessToOpenInNewWindow) 
+	    	document.getElementById("openInNewWindowMenuItem").style.display = "block";
+		else
+	    	document.getElementById("openInNewWindowMenuItem").style.display = "none";
+
+		var hasAccessToViewSource = eval("hasAccessToViewSource"); 
+	    //alert("hasAccessToViewSource:" + hasAccessToViewSource);
+	    if(hasAccessToViewSource) 
+	    	document.getElementById("viewSourceMenuItem").style.display = "block";
+		else
+	    	document.getElementById("viewSourceMenuItem").style.display = "none";
+
 	}
 	catch(e)
 	{
-		alert("Error:" + e);
+		//alert("Error:" + e);
 	}
 	 
 	slotId = compId;
