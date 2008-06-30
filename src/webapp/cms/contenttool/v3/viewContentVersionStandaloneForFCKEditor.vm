@@ -5,8 +5,25 @@
 		
 		function refreshCaller()
 		{
-			parent.closeDialog();
-			parent.location.reload();
+			if(window.opener)
+			{
+				refreshCallerWindow();
+			}
+			else
+			{
+				parent.closeDialog();
+				parent.location.reload();
+			}
+		}
+		
+		function refreshCallerWindow()
+		{
+			if(window.opener && window.opener.parent && window.opener.parent.frames['main'])
+				window.opener.parent.frames['main'].location.reload();
+			else
+				window.opener.location.reload();	
+	
+			window.close();
 		}
 		
 		function submitToPublish()
