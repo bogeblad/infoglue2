@@ -372,9 +372,7 @@ public abstract class PageInvoker
 		}
 		//END
 			
-		Timer t = new Timer();
 		pageString = decorateHeadAndPageWithVarsFromComponents(pageString);
-		t.printElapsedTime("Took this much to add the last variables to the page:");
 		
 		//logger.info("ContentType:" + contentType);
 		if(contentType.indexOf("charset=") > -1)

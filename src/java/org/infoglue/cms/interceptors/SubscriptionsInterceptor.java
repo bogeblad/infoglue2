@@ -138,7 +138,7 @@ public class SubscriptionsInterceptor extends BaseController implements InfoGlue
     	
     	synchronized (transactionQueue)
 		{
-    		System.out.println("Adding transactionQueue:" + interceptionPointVO.getName() + " - " + objectName);
+    		logger.info("Adding transactionQueue:" + interceptionPointVO.getName() + " - " + objectName);
     		transactionQueue.add(transVO);
 		}
     }
@@ -364,7 +364,7 @@ public class SubscriptionsInterceptor extends BaseController implements InfoGlue
 		
 		synchronized (transactionQueue)
 		{
-			System.out.println("Moving the transactions to this threads local queue...");
+			logger.info("Moving the transactions to this threads local queue...");
 			localTransactionQueue.addAll(transactionQueue);
 			transactionQueue.clear();
 		}
@@ -380,13 +380,13 @@ public class SubscriptionsInterceptor extends BaseController implements InfoGlue
 	        {
 		        beginTransaction(db);
 			         
-				System.out.println("InterceptionPointVO:" + transactionQueueVO.getInterceptionPointVO().getName());
-				System.out.println("	" + transactionQueueVO.getTransactionObjectName() + "=" + transactionQueueVO.getTransactionObjectId());
+				logger.info("InterceptionPointVO:" + transactionQueueVO.getInterceptionPointVO().getName());
+				logger.info("	" + transactionQueueVO.getTransactionObjectName() + "=" + transactionQueueVO.getTransactionObjectId());
 				List<SubscriptionVO> subscriptionVOList = SubscriptionController.getController().getSubscriptionVOList(transactionQueueVO.getInterceptionPointVO().getId(), null, false, transactionQueueVO.getTransactionObjectName(), transactionQueueVO.getTransactionObjectId(), null, null, db, true);
-				System.out.println("subscriptionVOList:" + subscriptionVOList.size());
+				logger.info("subscriptionVOList:" + subscriptionVOList.size());
 				if(transactionQueueVO.getInterceptionPointVO().getName().equalsIgnoreCase("SiteNode.ExpireDateComingUp"))
 				{
-					System.out.println("It's a expiredate coming up event... let's find add a fake subscription on the last modifier.");
+					logger.info("It's a expiredate coming up event... let's find add a fake subscription on the last modifier.");
 					SiteNodeVO siteNodeVO = SiteNodeController.getController().getSiteNodeVOWithId(new Integer(transactionQueueVO.getTransactionObjectId()), db);
 					if(siteNodeVO != null)
 					{
@@ -417,7 +417,7 @@ public class SubscriptionsInterceptor extends BaseController implements InfoGlue
 				}
 				else if(transactionQueueVO.getInterceptionPointVO().getName().equalsIgnoreCase("Content.ExpireDateComingUp"))
 				{
-					System.out.println("It's a expiredate coming up event... let's find add a fake subscription on the last modifier.");
+					logger.info("It's a expiredate coming up event... let's find add a fake subscription on the last modifier.");
 					ContentVO contentVO = ContentController.getContentController().getContentVOWithId(new Integer(transactionQueueVO.getTransactionObjectId()), db);
 					
 					if(contentVO != null)
@@ -472,7 +472,7 @@ public class SubscriptionsInterceptor extends BaseController implements InfoGlue
 			}
 		}
 		
-		System.out.println("localTransactionQueue:" + localTransactionQueue.size());
+		logger.info("localTransactionQueue:" + localTransactionQueue.size());
 		return completeTransactions;
 	}
 
@@ -480,7 +480,7 @@ public class SubscriptionsInterceptor extends BaseController implements InfoGlue
 	{
 		boolean handledSubscription = true;
 		
-		System.out.println("subscriptionVO:" + subscriptionVO);
+		logger.info("subscriptionVO:" + subscriptionVO);
 		if(subscriptionVO.getSubscriptionFilterVOList() == null || subscriptionVO.getSubscriptionFilterVOList().size() == 0)
 		{
 			//This first part handles simple subscriptions - that is subscriptions on an interception point with id or without filters
@@ -488,11 +488,11 @@ public class SubscriptionsInterceptor extends BaseController implements InfoGlue
 			if(email == null)
 			{
 				InfoGluePrincipal principal = UserControllerProxy.getController(db).getUser(subscriptionVO.getUserName());
-				System.out.println("principal:" + principal.getEmail());
+				logger.info("principal:" + principal.getEmail());
 				email = principal.getEmail();
 			}
 			
-			System.out.println("Was a simple subscription without filters:" + email);
+			logger.info("Was a simple subscription without filters:" + email);
 			
 			MailServiceFactory.getService().sendEmail(CmsPropertyHandler.getSystemEmailSender(), email, null, null, transactionQueueVO.getSubject(), transactionQueueVO.getDescription(), "utf-8");
 		}

@@ -1791,7 +1791,6 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 							List tempChildComponents = new ArrayList();
 							List subComponents = getPageComponents(db, componentXML, componentsElement, slotId, templateController, component, childComponents);
 							childComponents.addAll(tempChildComponents);
-							System.out.println("subComponents:" + subComponents.size());
 							slot.setComponents(subComponents);
 							
 							component.getSlotList().add(slot);

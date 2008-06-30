@@ -536,9 +536,11 @@ public class AccessRightController extends BaseController
 			oql.bind(interceptionPointId);
 			oql.bind(roleName);
 			
+			/*
 			System.out.println("interceptionPointId:" + interceptionPointId);
 			System.out.println("roleName:" + roleName);
-
+			*/
+			
 			QueryResults results = oql.execute();
 			this.logger.info("Fetching entity in read/write mode");
 

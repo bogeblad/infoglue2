@@ -263,23 +263,23 @@ public final class ExtranetLoginAction extends InfoGlueAbstractAction
 	    String encryptedName = encHelper.encrypt(userName);
 		String password = this.getRequest().getParameter("j_password");
 	    String encryptedPassword = encHelper.encrypt(password);
-	    System.out.println("encryptedName:" + encryptedName);
-	    System.out.println("encryptedPassword:" + encryptedPassword);
+	    //System.out.println("encryptedName:" + encryptedName);
+	    //System.out.println("encryptedPassword:" + encryptedPassword);
 	    
 	    try
 	    {
 			String cmsBaseUrl = CmsPropertyHandler.getCmsFullBaseUrl();
-			System.out.println("cmsBaseUrl:" + cmsBaseUrl);
+			//System.out.println("cmsBaseUrl:" + cmsBaseUrl);
 			String[] parts = cmsBaseUrl.split("/");
 			
 			cmsBaseUrl = "/" + parts[parts.length -1];
-			System.out.println("used cmsBaseUrl:" + cmsBaseUrl);
+			//System.out.println("used cmsBaseUrl:" + cmsBaseUrl);
 			
 		    ServletContext servletContext = ActionContext.getServletContext().getContext(cmsBaseUrl);
-		    System.out.println("servletContext:" + servletContext.getServletContextName() + ":" + servletContext.getServletNames());
+		    //System.out.println("servletContext:" + servletContext.getServletContextName() + ":" + servletContext.getServletNames());
 		    servletContext.setAttribute(encryptedName, userName);
-		    System.out.println(encryptedName + "=" + userName);
-		    System.out.println("After attribute:" + servletContext.getAttribute(encryptedName));
+		    //System.out.println(encryptedName + "=" + userName);
+		    //System.out.println("After attribute:" + servletContext.getAttribute(encryptedName));
 	    }
 	    catch (Exception e) 
 	    {

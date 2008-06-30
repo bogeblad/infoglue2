@@ -87,7 +87,7 @@ public class SubscriptionsJob implements Job
     	
 		try
 		{
-			System.out.println("SubscriptionsJob...");
+			logger.info("SubscriptionsJob...");
 		    logger.info("SubscriptionsJob...");
 		    
 			Map args = new HashMap();
@@ -105,7 +105,7 @@ public class SubscriptionsJob implements Job
 
 		    registerDoneSubscriptionProcessing(ps, numberOfDays, processedTransactions);
 		    
-			System.out.println("SubscriptionsJob ended...");
+			logger.info("SubscriptionsJob ended...");
 		    
 		}
 		catch(Exception e)
@@ -126,13 +126,13 @@ public class SubscriptionsJob implements Job
 			if(transactionQueueVO.getInterceptionPointVO().getName().equalsIgnoreCase("Content.ExpireDateComingUp"))
 			{
 				String key = "content_" + transactionQueueVO.getTransactionObjectId() + "_" + numberOfDays + "_days_isProcessed";
-				System.out.println("Setting key so we don't get the same warning again: " + key);
+				logger.info("Setting key so we don't get the same warning again: " + key);
 			    ps.setString(key, vf.formatDate(new Date(), "yyyy-MM-dd"));
 			}
 			else if(transactionQueueVO.getInterceptionPointVO().getName().equalsIgnoreCase("SiteNode.ExpireDateComingUp"))
 			{
 				String key = "siteNode_" + transactionQueueVO.getTransactionObjectId() + "_" + numberOfDays + "_days_isProcessed";
-				System.out.println("Setting key so we don't get the same warning again: " + key);
+				logger.info("Setting key so we don't get the same warning again: " + key);
 			    ps.setString(key, vf.formatDate(new Date(), "yyyy-MM-dd"));
 			}
 		}
@@ -146,13 +146,13 @@ public class SubscriptionsJob implements Job
 		while(upcomingSiteNodesIterator.hasNext())
 		{
 			SiteNodeVO siteNodeVO = upcomingSiteNodesIterator.next();
-			System.out.println("siteNodeVO:" + siteNodeVO.getName() + " - " + siteNodeVO.getExpireDateTime());
+			logger.info("siteNodeVO:" + siteNodeVO.getName() + " - " + siteNodeVO.getExpireDateTime());
 			String key = "siteNode_" + siteNodeVO.getId() + "_" + numberOfDays + "_days_isProcessed";
-			System.out.println("key:" + key);
+			logger.info("key:" + key);
 			String isProcessed = ps.getString(key);
 		    if(isProcessed == null || isProcessed.equals(""))
 		    {
-		    	System.out.println("The node " + siteNodeVO.getName() + " has not been processed.");
+		    	logger.info("The node " + siteNodeVO.getName() + " has not been processed.");
 		    	
 		    	Map data = new HashMap();
 		    	data.put("siteNodeVO", siteNodeVO);
@@ -166,13 +166,13 @@ public class SubscriptionsJob implements Job
 		while(upcomingContentIterator.hasNext())
 		{
 			ContentVO contentVO = upcomingContentIterator.next();
-			System.out.println("contentVO:" + contentVO.getName() + " - " + contentVO.getExpireDateTime());
+			logger.info("contentVO:" + contentVO.getName() + " - " + contentVO.getExpireDateTime());
 			String key = "content_" + contentVO.getId() + "_" + numberOfDays + "_days_isProcessed";
-			System.out.println("key:" + key);
+			logger.info("key:" + key);
 			String dateProcessed = ps.getString(key);
 		    if(dateProcessed == null || dateProcessed.equals(""))
 		    {
-		    	System.out.println("The node " + contentVO.getName() + " has not been processed.");
+		    	logger.info("The node " + contentVO.getName() + " has not been processed.");
 		    	
 		    	Map data = new HashMap();
 		    	data.put("contentVO", contentVO);
@@ -191,13 +191,13 @@ public class SubscriptionsJob implements Job
 		{
 			String key = (String)keysIterator.next();
 			String value = ps.getString(key);
-			System.out.println("Found key:" + key + "=" + value);
+			logger.info("Found key:" + key + "=" + value);
 			Date lastDate = vf.parseDate(value, "yyyy-MM-dd"); 
 			Calendar removeDate = Calendar.getInstance();
 			removeDate.add(Calendar.DAY_OF_YEAR, -(numberOfDays+10));
 			if(lastDate.before(removeDate.getTime()))
 			{
-				System.out.println("Removing key:" + key);
+				logger.info("Removing key:" + key);
 				ps.remove(key);
 			}		    	
 		}
