@@ -235,14 +235,19 @@ public class InfoGlueAuthenticationFilter implements Filter
 				if(encodedUserNameCookie != null && !encodedUserNameCookie.equals(""))
 				{
 					String servletContextUserName = (String)filterConfig.getServletContext().getAttribute(encodedUserNameCookie);
-					System.out.println("servletContextUserName:" + servletContextUserName);
+					logger.info("servletContextUserName:" + servletContextUserName);
 					if(servletContextUserName != null && !servletContextUserName.equals(""))
+					{
 						authenticatedUserName = servletContextUserName;
+					}
 				}
-				
-				if(authenticatedUserName == null || authenticatedUserName.equals(""))
+				else
+				{
 					authenticatedUserName = authenticateUser(httpServletRequest, httpServletResponse, fc);
+				}
 			}
+			
+			logger.info("authenticatedUserName:" + authenticatedUserName);
 			
 			if(authenticatedUserName != null)
 			{	
