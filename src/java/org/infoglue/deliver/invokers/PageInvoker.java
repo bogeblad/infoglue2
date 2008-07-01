@@ -352,8 +352,6 @@ public abstract class PageInvoker
 				}
 			}
 			*/
-			System.out.println("**********************\nSetting last modified to:" + this.deliveryContext.getLastModifiedDateTime());
-			
 			if(this.deliveryContext.getLastModifiedDateTime() != null)
 			{
 				//this.deliveryContext.setLastModifiedDateTime(this.deliveryContext.getLastModifiedDateTime());
@@ -443,7 +441,7 @@ public abstract class PageInvoker
 	private void getLastModifiedDateTime() throws Bug
 	{
 		Date lastModifiedDateTime = null;
-		System.out.println("this.deliveryContext.getUsedContentVersions().size():" + this.deliveryContext.getUsedContentVersions().size());
+		//System.out.println("this.deliveryContext.getUsedContentVersions().size():" + this.deliveryContext.getUsedContentVersions().size());
 		if(this.deliveryContext.getUsedContentVersions().size() > 0)
 		{
 			Iterator userContentVersionIterator = this.deliveryContext.getUsedContentVersions().iterator();

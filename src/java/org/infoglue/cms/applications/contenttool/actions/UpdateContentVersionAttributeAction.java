@@ -102,17 +102,17 @@ public class UpdateContentVersionAttributeAction extends ViewContentVersionActio
 	
 	public String doExecute() throws Exception
     {
-		System.out.println("Updating content version attribute....");
-		System.out.println("contentId:" + contentId);
-		System.out.println("languageId:" + languageId);
-		System.out.println("attributeName:" + attributeName);
+		logger.info("Updating content version attribute....");
+		logger.info("contentId:" + contentId);
+		logger.info("languageId:" + languageId);
+		logger.info("attributeName:" + attributeName);
 		
     	super.initialize(this.contentVersionId, this.contentId, this.languageId);
 
 		this.contentVersionVO = this.getContentVersionVO();
 
 		String attributeValue = getRequest().getParameter(this.attributeName);
-		System.out.println("attributeValue:" + attributeValue);
+		logger.info("attributeValue:" + attributeValue);
 		if(attributeValue != null)
 		{
 			setAttributeValue(this.contentVersionVO, this.attributeName, attributeValue);
@@ -130,7 +130,7 @@ public class UpdateContentVersionAttributeAction extends ViewContentVersionActio
     {
 		while(active)
 		{
-			System.out.println("Waiting for previous thread..");
+			logger.info("Waiting for previous thread..");
 			try
 			{
 				Thread.sleep(50);
@@ -147,10 +147,10 @@ public class UpdateContentVersionAttributeAction extends ViewContentVersionActio
 
 		try
 		{
-			System.out.println("Updating content version attribute through ajax....");
-			System.out.println("contentId:" + contentId);
-			System.out.println("languageId:" + languageId);
-			System.out.println("attributeName:" + attributeName);
+			logger.info("Updating content version attribute through ajax....");
+			logger.info("contentId:" + contentId);
+			logger.info("languageId:" + languageId);
+			logger.info("attributeName:" + attributeName);
 			
 	    	super.initialize(this.contentVersionId, this.contentId, this.languageId);
 	
@@ -188,11 +188,11 @@ public class UpdateContentVersionAttributeAction extends ViewContentVersionActio
 			}
 			
 			String attributeValue = getRequest().getParameter(this.attributeName);
-			System.out.println("*************************************************");
-			System.out.println("** SAVING **");
-			System.out.println("*************************************************");
-			System.out.println("attributeValue real:" + attributeValue);
-			System.out.println("attributeValue comp: Mattias testar åäö ÅÄÖ:");
+			logger.info("*************************************************");
+			logger.info("** SAVING **");
+			logger.info("*************************************************");
+			logger.info("attributeValue real:" + attributeValue);
+			logger.info("attributeValue comp: Mattias testar åäö ÅÄÖ:");
 			if(attributeValue != null)
 			{
 				String fromEncoding = CmsPropertyHandler.getUploadFromEncoding();
@@ -213,16 +213,16 @@ public class UpdateContentVersionAttributeAction extends ViewContentVersionActio
 					attributeValue = new String(attributeValue.getBytes(fromEncoding), toEncoding);
 				}
 				
-				System.out.println("\n\nattributeValue original:" + attributeValue);
+				logger.info("\n\nattributeValue original:" + attributeValue);
 				attributeValue = parseInlineAssetReferences(attributeValue);
-				System.out.println("attributeValue transformed:" + attributeValue + "\n\n");
+				logger.info("attributeValue transformed:" + attributeValue + "\n\n");
 	
 				setAttributeValue(this.contentVersionVO, this.attributeName, attributeValue);
 				ceb.throwIfNotEmpty();
 				
 				this.contentVersionVO.setVersionModifier(this.getInfoGluePrincipal().getName());
 	    		ContentVersionController.getContentVersionController().update(this.contentId, this.languageId, this.contentVersionVO, this.getInfoGluePrincipal());
-	    		System.out.println("*************************************************");
+	    		logger.info("*************************************************");
 			
 	    		attributeValue = parseAttributeForInlineEditing(attributeValue);
 			}
@@ -251,10 +251,10 @@ public class UpdateContentVersionAttributeAction extends ViewContentVersionActio
 		try
 		{
 			/*
-			System.out.println("Getting content version attribute through ajax....");
-			System.out.println("contentId:" + contentId);
-			System.out.println("languageId:" + languageId);
-			System.out.println("attributeName:" + attributeName);
+			logger.info("Getting content version attribute through ajax....");
+			logger.info("contentId:" + contentId);
+			logger.info("languageId:" + languageId);
+			logger.info("attributeName:" + attributeName);
 			*/
 			
 			super.initialize(this.contentVersionId, this.contentId, this.languageId);
@@ -288,7 +288,7 @@ public class UpdateContentVersionAttributeAction extends ViewContentVersionActio
 			AccessConstraintExceptionBuffer ceb = new AccessConstraintExceptionBuffer();
 			
 			Integer protectedContentId = ContentControllerProxy.getController().getProtectedContentId(this.contentVersionVO.getContentId());
-			System.out.println("protectedContentId:" + protectedContentId);
+			logger.info("protectedContentId:" + protectedContentId);
 			if(protectedContentId != null && !AccessRightController.getController().getIsPrincipalAuthorized(this.getInfoGluePrincipal(), "Content.Write", protectedContentId.toString()))
 				ceb.add(new AccessConstraintException("Content.contentId", "1001"));
 
@@ -299,11 +299,11 @@ public class UpdateContentVersionAttributeAction extends ViewContentVersionActio
 			{
 				attributeValue = ContentVersionController.getContentVersionController().getAttributeValue(contentVersionVO, attributeName, false);
 			}
-			//System.out.println("attributeValue before parse:" + attributeValue);
+			//logger.info("attributeValue before parse:" + attributeValue);
 			
 			attributeValue = parseAttributeForInlineEditing(attributeValue);		
 			
-			//System.out.println("attributeValue after parse:" + attributeValue);
+			//logger.info("attributeValue after parse:" + attributeValue);
 			
 			this.getResponse().setContentType("text/plain");
 	        this.getResponse().getWriter().println(attributeValue);			
@@ -321,27 +321,27 @@ public class UpdateContentVersionAttributeAction extends ViewContentVersionActio
 	{
 		Map<String,String> replacements = new HashMap<String,String>();
 		
-		System.out.println("********************\n\n");
+		logger.info("********************\n\n");
 	    Pattern pattern = Pattern.compile("\"DownloadAsset.action.*?\"");
 	    Matcher matcher = pattern.matcher(attributeValue);
 	    while ( matcher.find() ) 
 	    { 
 	        String match = matcher.group();
-	        System.out.println("Found a inline asset: " + match);
+	        logger.info("Found a inline asset: " + match);
 	        String parsedContentId = match.substring(match.indexOf("contentId=") + 10, match.indexOf("&", 10));
-	        System.out.println("parsedContentId: " + parsedContentId);
+	        logger.info("parsedContentId: " + parsedContentId);
 	        int langStartIndex = match.indexOf("languageId=") + 11;
 	        String parsedLanguageId = match.substring(langStartIndex, match.indexOf("&", langStartIndex));
-	        System.out.println("parsedLanguageId: " + parsedLanguageId);
+	        logger.info("parsedLanguageId: " + parsedLanguageId);
 	        int assetStartIndex = match.indexOf("assetKey=") + 9;
 	        String parsedAssetKey = match.substring(assetStartIndex, match.indexOf("\"", assetStartIndex));
-	        System.out.println("parsedAssetKey: " + parsedAssetKey);
+	        logger.info("parsedAssetKey: " + parsedAssetKey);
 	        
 	        String url = "$templateLogic.getInlineAssetUrl(" + parsedContentId + ", \"" + parsedAssetKey + "\")";
-    	    System.out.println("url:" + url);
+    	    logger.info("url:" + url);
             replacements.put(match.substring(1, match.length() - 1), url);
 	    }
-		System.out.println("********************\n\n");
+		logger.info("********************\n\n");
 	    
 	    Iterator<String> replacementsIterator = replacements.keySet().iterator();
 	    while(replacementsIterator.hasNext())
@@ -349,22 +349,22 @@ public class UpdateContentVersionAttributeAction extends ViewContentVersionActio
 	    	String patternToReplace = replacementsIterator.next();
 	    	String replacement = replacements.get(patternToReplace);
 	    	
-	    	System.out.println("Replacing " + patternToReplace + " with " + replacement);
+	    	logger.info("Replacing " + patternToReplace + " with " + replacement);
 	    	patternToReplace = patternToReplace.replaceAll("\\?", "\\\\?");
-	    	System.out.println("patternToReplace " + patternToReplace);
+	    	logger.info("patternToReplace " + patternToReplace);
 	    	
 	    	replacement = replacement.replaceAll("\\$", "\\\\\\$");
-	    	System.out.println("replacement " + replacement);
+	    	logger.info("replacement " + replacement);
 	    	replacement = replacement.replaceAll("\\.", "\\\\.");
-	    	System.out.println("replacement " + replacement);
+	    	logger.info("replacement " + replacement);
 	    	replacement = replacement.replaceAll("\\(", "\\\\(");
-	    	System.out.println("replacement " + replacement);
+	    	logger.info("replacement " + replacement);
 	    	replacement = replacement.replaceAll("\\)", "\\\\)");
-	    	System.out.println("replacement " + replacement);
+	    	logger.info("replacement " + replacement);
 
-	    	System.out.println("attributeValue before " + attributeValue);
+	    	logger.info("attributeValue before " + attributeValue);
 	    	attributeValue = attributeValue.replaceAll(patternToReplace, replacement);
-	    	System.out.println("attributeValue after " + attributeValue);
+	    	logger.info("attributeValue after " + attributeValue);
 	    }
 	    
 	    return attributeValue;
@@ -380,7 +380,7 @@ public class UpdateContentVersionAttributeAction extends ViewContentVersionActio
 	    while ( matcher.find() ) 
 	    { 
 	        String match = matcher.group();
-	        System.out.println("Adding match to registry after some processing: " + match);
+	        logger.info("Adding match to registry after some processing: " + match);
 	        Integer siteNodeId;
 	        
 	        int siteNodeStartIndex = match.indexOf("(");
@@ -392,11 +392,11 @@ public class UpdateContentVersionAttributeAction extends ViewContentVersionActio
 	            if(siteNodeIdString.indexOf("templateLogic.siteNodeId") == -1)
 	            {
 	            	siteNodeId = new Integer(siteNodeIdString);
-	        		System.out.println("siteNodeId:" + siteNodeId);
+	        		logger.info("siteNodeId:" + siteNodeId);
 	        		String parsedContentId = match.substring(match.lastIndexOf(",") + 1, match.lastIndexOf(")")).trim();
 	        			
 		            String url = getDeliverContext() + "/ViewPage!renderDecoratedPage.action?siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + parsedContentId;
-		            System.out.println("url:" + url);
+		            logger.info("url:" + url);
 		            replacements.put(match, url);
 	            }
 	        }
@@ -408,7 +408,7 @@ public class UpdateContentVersionAttributeAction extends ViewContentVersionActio
 	    while ( assetMatcher.find() ) 
 	    { 
 	        String match = assetMatcher.group();
-	        System.out.println("Adding match to registry after some processing: " + match);
+	        logger.info("Adding match to registry after some processing: " + match);
 	        
 	        int contentStartIndex = match.indexOf("(");
 	        int contentEndIndex = match.indexOf(",");
@@ -417,12 +417,12 @@ public class UpdateContentVersionAttributeAction extends ViewContentVersionActio
 	            String contentIdString = match.substring(contentStartIndex + 1, contentEndIndex); 
 
             	contentId = new Integer(contentIdString);
-        		System.out.println("contentId:" + contentId);
+        		logger.info("contentId:" + contentId);
         		String parsedAssetKey = match.substring(match.lastIndexOf(",") + 1, match.lastIndexOf(")")).trim();
         		parsedAssetKey = parsedAssetKey.replaceAll("\"", "");
         		
 	            String url = "DownloadAsset.action?contentId=" + contentId + "&languageId=" + this.languageId + "&assetKey=" + parsedAssetKey;
-	            System.out.println("url:" + url);
+	            logger.info("url:" + url);
 	            replacements.put(match, url);
 	        }
 	    }
@@ -433,22 +433,22 @@ public class UpdateContentVersionAttributeAction extends ViewContentVersionActio
 	    	String patternToReplace = replacementsIterator.next();
 	    	String replacement = replacements.get(patternToReplace);
 	    	
-	    	System.out.println("Replacing " + patternToReplace + " with " + replacement);
+	    	logger.info("Replacing " + patternToReplace + " with " + replacement);
 	    	//Fel just nu...
 	    	patternToReplace = patternToReplace.replaceAll("\\$", "\\\\\\$");
-	    	System.out.println("patternToReplace " + patternToReplace);
+	    	logger.info("patternToReplace " + patternToReplace);
 	    	patternToReplace = patternToReplace.replaceAll("\\.", "\\\\.");
-	    	System.out.println("patternToReplace " + patternToReplace);
+	    	logger.info("patternToReplace " + patternToReplace);
 	    	patternToReplace = patternToReplace.replaceAll("\\(", "\\\\(");
-	    	System.out.println("patternToReplace " + patternToReplace);
+	    	logger.info("patternToReplace " + patternToReplace);
 	    	patternToReplace = patternToReplace.replaceAll("\\)", "\\\\)");
-	    	System.out.println("patternToReplace " + patternToReplace);
+	    	logger.info("patternToReplace " + patternToReplace);
 	    	patternToReplace = patternToReplace.replaceAll("\\+", "\\\\+");
-	    	System.out.println("patternToReplace " + patternToReplace);
+	    	logger.info("patternToReplace " + patternToReplace);
 	    	
-	    	System.out.println("attributeValue before " + attributeValue);
+	    	logger.info("attributeValue before " + attributeValue);
 	    	attributeValue = attributeValue.replaceAll(patternToReplace, replacement);
-	    	System.out.println("attributeValue after " + attributeValue);
+	    	logger.info("attributeValue after " + attributeValue);
 	    }
 		
 	    return attributeValue;

@@ -826,9 +826,6 @@ public class AccessRightController extends BaseController
 			for(int i=0; i<interceptionPointNames.length; i++)
 			{
 				String interceptionPointName = interceptionPointNames[i];
-				//System.out.println("interceptionPointName:" + interceptionPointName);
-				//System.out.println("parameters:" + parameters);
-				//System.out.println("principal:" + principal);
 				InterceptionPoint interceptionPoint = InterceptionPointController.getController().getInterceptionPointWithName(interceptionPointName, db);
 				if(interceptionPoint != null)
 				{

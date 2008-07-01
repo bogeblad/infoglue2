@@ -100,7 +100,6 @@ public final class ExtranetLoginAction extends InfoGlueAbstractAction
 		    Map arguments = HttpUtilities.requestToHashtable(hreq);
 		    
 			principal = ExtranetController.getController().getAuthenticatedPrincipal(arguments);
-			System.out.println("principal:"+ principal);
 		}
 		catch(Exception e)
 		{
@@ -112,15 +111,11 @@ public final class ExtranetLoginAction extends InfoGlueAbstractAction
 			isAuthenticated = true;
 		}
 
-		//System.out.println("isAuthenticated:" + isAuthenticated);		
 		if(isAuthenticated)
 		{
-			//System.out.println("Yes - we try to send the user back to:" + this.returnAddress);
 			this.getHttpSession().setAttribute("infogluePrincipal", principal);
 			this.getHttpSession().setAttribute("infoglueRemoteUser", principal.getName());
 			this.getHttpSession().setAttribute("cmsUserName", principal.getName());
-			System.out.println("session set to:"+ principal);
-			System.out.println("After:"+ this.getInfoGluePrincipal());
 			
 			handleCookies();
 			

@@ -1183,8 +1183,6 @@ public class ViewPageAction extends InfoGlueAbstractAction
 						if(ssoUserName != null)
 						{
 							principal = UserControllerProxy.getController().getUser(ssoUserName);
-
-							//System.out.println("principal:" + principal);
 							if(principal != null)
 							{
 								this.principal = principal;

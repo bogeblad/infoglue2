@@ -260,42 +260,29 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 
 	protected void preProcessComponents(NodeDeliveryController nodeDeliveryController, Integer repositoryId, List unsortedPageComponents, List pageComponents) throws SystemException, Exception
 	{
-		//System.out.println("pageComponents:" + pageComponents.size());
-		//System.out.println("unsortedPageComponents:" + unsortedPageComponents.size());
-
-		Timer t = new Timer();
-		
 		List sortedPageComponents = new ArrayList();
 		Iterator unsortedPageComponentsIterator = unsortedPageComponents.iterator();
 		while(unsortedPageComponentsIterator.hasNext())
 		{
 			InfoGlueComponent component = (InfoGlueComponent)unsortedPageComponentsIterator.next();
-			//System.out.println("Unsorted component:" + component.getName() + " - " + component.getContentId());
-			//System.out.println("Properties:" + component.getProperties());
-			//t.printElapsedTime("1");
+
 			this.getTemplateController().setComponentLogic(new ComponentLogic(this.getTemplateController(), component));
 			this.getTemplateController().getDeliveryContext().getUsageListeners().add(this.getTemplateController().getComponentLogic().getComponentDeliveryContext());
-			//t.printElapsedTime("2");
-			//String preRenderOrder = this.getTemplateController().getComponentLogic().getPropertyValue("PreRenderOrder", true, false);
-			//t.printElapsedTime("3");
 			
 			int index = 0;
 			Iterator sortedPageComponentsIterator = sortedPageComponents.iterator();
 			while(sortedPageComponentsIterator.hasNext())
 			{
 				InfoGlueComponent sortedComponent = (InfoGlueComponent)sortedPageComponentsIterator.next();
-				//System.out.println("component:" + component.getName() + " - " + component.getContentId());
-				//System.out.println("Properties:" + component.getProperties());
+
 				this.getTemplateController().setComponentLogic(new ComponentLogic(this.getTemplateController(), sortedComponent));
 				this.getTemplateController().getDeliveryContext().getUsageListeners().add(this.getTemplateController().getComponentLogic().getComponentDeliveryContext());
-				//String existingPreRenderOrder = this.getTemplateController().getComponentLogic().getPropertyValue("PreRenderOrder", true, false);
-				//System.out.println(existingPreRenderOrder + "=" + preRenderOrder + "[" + existingPreRenderOrder.compareTo(preRenderOrder) + "]");
+
 				if(sortedComponent.getPreProcessingOrder().compareTo(component.getPreProcessingOrder()) < 0)
 					break;
 
 				index++;
 			}
-			//t.printElapsedTime("4");
 			
 			sortedPageComponents.add(index, component);
 		}
@@ -304,20 +291,13 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 		while(sortedPageComponentsIterator.hasNext())
 		{
 			InfoGlueComponent component = (InfoGlueComponent)sortedPageComponentsIterator.next();
-			//System.out.println("Sorted component:" + component.getName() + " - " + component.getContentId());
-			//System.out.println("Properties:" + component.getProperties());
-			//t.printElapsedTime("5");
+
 			this.getTemplateController().setComponentLogic(new ComponentLogic(this.getTemplateController(), component));
 			this.getTemplateController().getDeliveryContext().getUsageListeners().add(this.getTemplateController().getComponentLogic().getComponentDeliveryContext());
-			//t.printElapsedTime("6");
 			
 			ContentVO metaInfoContentVO = nodeDeliveryController.getBoundContent(getDatabase(), this.getTemplateController().getPrincipal(), this.getDeliveryContext().getSiteNodeId(), this.getDeliveryContext().getLanguageId(), true, "Meta information", this.getDeliveryContext());
-			//t.printElapsedTime("7");
 			preProcessComponent(component, this.getTemplateController(), repositoryId, this.getDeliveryContext().getSiteNodeId(), this.getDeliveryContext().getLanguageId(), this.getDeliveryContext().getContentId(), metaInfoContentVO.getId());
-			//t.printElapsedTime("8");
 		}
-		
-		t.printElapsedTime("part 2 took");
 	}
 	
 	/*
