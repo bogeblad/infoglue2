@@ -1,4 +1,83 @@
 -------------------------------------------------------------------------------------
+- InfoGlue 2.9 Final
+-------------------------------------------------------------------------------------
+
+Release notes
+---------------------------------------
+This is a . 
+    
+Thanx for all reports and proposals for bugfixes.
+The InfoGlue Team
+
+
+Abbreviated Changelog from 2.8.1 Final 
+---------------------------------------
+- Added a new subscription infrastructure. This let's users subscribe (when implemented in full) on selected interceptionPoints. This means they will get an email about events.
+- I18n-adjusted more labels in the system.
+- Improved new toolbar system
+- Made it possible to state a displayName which differs from the name of a component-property. Nice for your users.
+- Added new tag "EditOnSight" which puts a function button on the page with all infoglue features.
+- Added possibility to better control custom icons per content type.
+- Added possibility to style state-information in the tree-views. 
+- Added new setting which let's you hide component-properties the user are not allowed to edit.
+- Worked on subscriptions, new design for inline actions and a lot more.
+- Worked more on subscriptions, a new translation screen and the new edit on sight tag.
+- Worked on new component property features
+- Improved the ViewInlineOperationsMessages action which is great for allowing actions to end up in a summary screen with several choices for the user.
+- Added double-click feature to edit on sight. Inline editing that is.
+- Added new property attribute 'propertyDisplayName' so one can have a different visual name from the programatic name used.
+- Added state info to content toolbar area
+- Updated to fit the new handling where published versions can be edited directly and handles versioning itself
+- Worked on new properties for 
+	- state styling (working, publish, published)
+	- Being able to state if protected properties should be hidden.
+	- Better possibility to state custom icons in tree.
+	- Possible to state if the new version cleanup job should only keep published versions.
+- Made subscriptions not be propagated through callback mechanism.
+- Improved the content cleaner so it can clean only working/publish versions. Also possible to state how many back in time.
+- Added possibility to have different toolbars for different fields in a content type.	
+- Made quite some changes to make it possible for the user to edit a published copy and it automatically changes into a working copy without any extra user interaction.
+- Added new interception points:
+	- Content.ExpireDateComingUp
+	- SiteNode.ExpireDateComingUp
+- New test-help-method. Remove perhaps? ??????????
+- Added synchronization on ChangeNotificationController
+- Updated DocumentConverterHelper a lot - it now honors the new digitalAsset tree
+- Automatically disable the pagecache for decorated views
+- Added new rewrite attribute to DocumentConverterTag
+- Worked on making the tree in content and structure show more info.
+- New my settings screen
+- Made last modified not be written in working/preview environments... only in live.
+- Fixed issue with null input stream in some asset handling situations.
+- Updated so inline dialogs get's handled better on small screens.
+- Added possibility to set smtp-port in mail settings
+- Added cache control headers in non published mode
+- Fixed issue where direct publishing is made from a remote content service tag.
+- Added logic for a new parameter for content type attribute. WYSIWYGExtraConfig can be set to any javascript.
+- Made PageAttribute tag not demand the value attribute. This is so if only stated with name it outputs the value of the attribute with that name.
+- Added new cool preProcessing possibility for components. This allows components and in some respect portlets to communicate internally before the renderphase which allows for a much more interactive and dynamic page. 
+- Added some parameters (CacheResult, UpdateInterval, CacheKey and PreProcessingOrder) as fixed system properties for all components and show them under a advanced part.
+- Improved the button javascript for close.
+- Fixed issues with asset handling and store assets on disk (not in database).
+- Implemented preProcessing of page so components can communicate with each other by passing data to each other.
+- Made it possible to add a new tag <ig:lastModifiedDateTime format="yyyy-MM-dd HH:ss"></ig:lastModifiedDateTime> on a page if you want the latest date on all contents used on the page to be written. That is the same date also given in the HTTP-headers.
+- Added automatic resize and some button classes to new v3-interfaces.
+- Added logic to warn when expiration dates are closing on content or sitenodes.
+- Fixed content and structure tool toolbar arrows bug in Firefox 3
+- Made edit on sight open larger edit window.
+- Added two new parameters:
+  * niceURICharacterMapping which allows you to state how individual chars should be converted when auto-creating nice uri:s.
+  * NiceURIForceLowerCase which allows you to force all nice URI:s to become lowercase.
+- Added so structure tool (menu and tree) follows the activity in the preview/edit on sight. 
+- Worked on a new edit on sight menu with better looks and better features.
+- Added new automatic attributes to content versions when publishing. IGAuthorFullName and IGAuthorEmail. 
+  The idea is that those fields can be used if a user has been removed from the auth system. LDAP:s never inform IG so we can use that as a fallback mechanism.
+- Upgraded jquery to 1.2.6
+- Made default page cache key consider pricipal. 
+- Added possibility to turn off deletion of assets in work and live cache update threads. Needed for situations where you let the applications share one single digitalAssetDirectory.
+
+ 
+-------------------------------------------------------------------------------------
 - InfoGlue 2.8.2 Final
 -------------------------------------------------------------------------------------
 
