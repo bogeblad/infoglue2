@@ -3398,11 +3398,9 @@ public class ComponentLogic
 		int isPagePartReferenceIndex = componentXML.indexOf("isPagePartReference");
 		while(isPagePartReferenceIndex > -1)
 		{
-			//System.out.println("isPagePartReferenceIndex:" + isPagePartReferenceIndex);
 			int tagStartIndex = componentXML.lastIndexOf("<component ", isPagePartReferenceIndex);
 			int tagEndIndex = componentXML.indexOf(">", isPagePartReferenceIndex);
 			String componentString = componentXML.substring(tagStartIndex, tagEndIndex);
-			//System.out.println("componentString:" + componentString);
 			
 			int contentIdIndex = componentString.indexOf(" contentId=");
 			String contentId = componentString.substring(contentIdIndex + 12, componentString.indexOf("\"", contentIdIndex + 12));

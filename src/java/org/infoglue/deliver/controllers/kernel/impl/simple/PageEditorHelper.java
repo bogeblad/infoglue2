@@ -1995,12 +1995,10 @@ public class PageEditorHelper extends BaseDeliveryController
 					
 					getComponentRestrictions(componentElement, component, locale);
 					
-					//System.out.println("getting slots and subcomponents...");
 					//Getting slots for the component
 					try
 					{
 						String componentString = getComponentTemplateString(contentId, languageId, db, principal);
-						//System.out.println("componentString:" + componentString);
 						
 						int offset = 0;
 						int slotStartIndex = componentString.indexOf("<ig:slot", offset);
