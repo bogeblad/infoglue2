@@ -13,7 +13,7 @@
 	<script language="JavaScript" src="script/listview.js"></script>
 	<script type="text/javascript" src="script/infogluecommons.js"></script>
 	
-	<script type="text/javascript" src="script/jquery/jquery-1.2.3.min.js"></script>
+	<script type="text/javascript" src="script/jquery/jquery-1.2.6.min.js"></script>
 
 	<link href="applications/swfupload/css/default.css" rel="stylesheet" type="text/css" />
 	<script type="text/javascript" src="applications/swfupload/swfupload.js"></script>

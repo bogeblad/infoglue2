@@ -666,7 +666,17 @@ public class CmsPropertyHandler
 	{
 	    return getServerNodeProperty("digitalAssetUploadPath", true, "" + contextRootPath + "uploads");
 	}
-	
+
+	public static String getDisableAssetDeletionInWorkThread()
+	{
+	    return getServerNodeProperty("disableAssetDeletionInWorkThread", true, "false");
+	}
+
+	public static String getDisableAssetDeletionInLiveThread()
+	{
+	    return getServerNodeProperty("getDisableAssetDeletionInLiveThread", true, "false");
+	}
+
 	public static String getExtranetCookieTimeout()
 	{
 	    return getServerNodeProperty("extranetCookieTimeout", true, "1800");

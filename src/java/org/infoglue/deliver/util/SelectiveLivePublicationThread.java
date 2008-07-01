@@ -187,8 +187,13 @@ public class SelectiveLivePublicationThread extends PublicationThread
 							Object[] idsExtraMedium = {new Integer(objectId)};
 							CacheController.clearCache(typesExtraMedium, idsExtraMedium);
 
-						    logger.info("We should delete all images with digitalAssetId " + objectId);
-							DigitalAssetDeliveryController.getDigitalAssetDeliveryController().deleteDigitalAssets(new Integer(objectId));
+							String disableAssetDeletionInLiveThread = CmsPropertyHandler.getDisableAssetDeletionInLiveThread();
+							if(disableAssetDeletionInLiveThread != null && !disableAssetDeletionInLiveThread.equals("true"))
+							{
+								logger.info("We should delete all images with digitalAssetId " + objectId);
+								//System.out.println("We should delete all images with digitalAssetId " + objectId);
+								DigitalAssetDeliveryController.getDigitalAssetDeliveryController().deleteDigitalAssets(new Integer(objectId));
+							}
 						}
 						else if(Class.forName(className).getName().equals(PublicationImpl.class.getName()))
 						{

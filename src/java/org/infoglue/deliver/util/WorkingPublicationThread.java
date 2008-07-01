@@ -177,8 +177,13 @@ public class WorkingPublicationThread extends Thread
 							Object[] idsExtraMedium = {new Integer(objectId)};
 							CacheController.clearCache(typesExtraMedium, idsExtraMedium);
 
-							logger.info("We should delete all images with digitalAssetId " + objectId);
-							DigitalAssetDeliveryController.getDigitalAssetDeliveryController().deleteDigitalAssets(new Integer(objectId));
+							String disableAssetDeletionInWorkThread = CmsPropertyHandler.getDisableAssetDeletionInWorkThread();
+							if(disableAssetDeletionInWorkThread != null && !disableAssetDeletionInWorkThread.equals("true"))
+							{
+								logger.info("We should delete all images with digitalAssetId " + objectId);
+								//System.out.println("We should delete all images with digitalAssetId " + objectId);
+								DigitalAssetDeliveryController.getDigitalAssetDeliveryController().deleteDigitalAssets(new Integer(objectId));
+							}
 						}
 					    logger.info("4");
 					}	

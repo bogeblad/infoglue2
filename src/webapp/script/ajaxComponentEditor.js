@@ -914,6 +914,8 @@ function edit()
 	}
 	else
 	{
+		openInlineDiv(editUrl, 700, 750, true);
+		/*
 		//alert("editUrl in edit:" + editUrl);
 		details = "width=750,height=700,left=" + (document.body.clientWidth / 4) + ",top=50,toolbar=no,status=no,scrollbars=yes,location=no,menubar=no,directories=no,resizable=no";
 		newWin=window.open(editUrl, "Edit", details);
@@ -921,6 +923,7 @@ function edit()
 			newWin.focus();
 		else
 			alert("Could not open new window - if you have a popup blocker this is most likely the cause.");
+		*/
 	}
 }
 

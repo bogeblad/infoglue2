@@ -94,15 +94,16 @@ public class HTMLPageInvoker extends PageInvoker
 	{
 		String template = null;
     	
-		logger.info("DeliveryContext:" + this.getDeliveryContext().toString());
 		ContentVO contentVO = NodeDeliveryController.getNodeDeliveryController(this.getDeliveryContext().getSiteNodeId(), this.getDeliveryContext().getLanguageId(), this.getDeliveryContext().getContentId()).getBoundContent(this.getTemplateController().getDatabase(), this.getTemplateController().getPrincipal(), this.getDeliveryContext().getSiteNodeId(), this.getDeliveryContext().getLanguageId(), true, "Template", this.getDeliveryContext());		
 
-		logger.info("contentVO:" + contentVO);
+		if(logger.isDebugEnabled())
+			logger.info("contentVO:" + contentVO);
 
 		if(contentVO == null)
 			throw new NoBaseTemplateFoundException("There was no template bound to this page which makes it impossible to render.");	
 		
-		logger.info("contentVO:" + contentVO.getName());
+		if(logger.isDebugEnabled())
+			logger.info("contentVO:" + contentVO.getName());
 
 		template = this.getTemplateController().getContentAttribute(contentVO.getContentId(), this.getTemplateController().getTemplateAttributeName());
 		

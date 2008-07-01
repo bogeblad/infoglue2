@@ -316,7 +316,6 @@ public class ViewPageAction extends InfoGlueAbstractAction
 					logger.info("this.templateController.getPrincipal():" + this.templateController.getPrincipal());
 				
 				DeliveryContext deliveryContext = DeliveryContext.getDeliveryContext(true);
-				System.out.println("deliveryContext:" + deliveryContext);
 				deliveryContext.setRepositoryName(this.repositoryName);
 				deliveryContext.setSiteNodeId(this.siteNodeId);
 				deliveryContext.setContentId(this.contentId);

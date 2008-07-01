@@ -309,7 +309,6 @@ public abstract class PageInvoker
 		}
 		
 		String contentType = this.getTemplateController().getPageContentType();
-		//logger.info("ContentType in deliveryContext:" + this.deliveryContext.getContentType());
 		if(this.deliveryContext.getContentType() != null && !contentType.equalsIgnoreCase(this.deliveryContext.getContentType()))
 		    contentType = this.deliveryContext.getContentType();
 		

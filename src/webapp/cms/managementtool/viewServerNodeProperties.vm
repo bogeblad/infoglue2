@@ -286,6 +286,9 @@
 			#editPropertyFieldCSS("ServerNode.property.imagesBaseUrl" "imagesBaseUrl" "$this.getPropertyValue('imagesBaseUrl')" "51" "$!serverNodeId")
 			#editPropertyFieldCSS("ServerNode.property.digitalAssetPath" "digitalAssetPath" "$this.getPropertyValue('digitalAssetPath')" "51" "$!serverNodeId")
 			#yesNoDropDownWithInheritCSS("ServerNode.property.enableDiskAssets" "enableDiskAssets" "$this.getPropertyValue('enableDiskAssets')")
+			#editPropertyFieldCSS("ServerNode.property.disableAssetDeletionInWorkThread" "disableAssetDeletionInWorkThread" "$this.getPropertyValue('disableAssetDeletionInWorkThread')" "51" "$!serverNodeId")
+			#editPropertyFieldCSS("ServerNode.property.disableAssetDeletionInLiveThread" "disableAssetDeletionInLiveThread" "$this.getPropertyValue('disableAssetDeletionInLiveThread')" "51" "$!serverNodeId")
+			
 			<div class="buttonRow">
 				<input type="image" src="$ui.getString("images.managementtool.buttons.save")" width="50" height="25" style="width: 50px;">
 				<a href="javascript:saveAndExit(document.editForm, 'ViewServerNodeProperties!saveAndExit.action');"><img src="$ui.getString("images.managementtool.buttons.saveAndExit")" width="80" height="25" border="0"></a>

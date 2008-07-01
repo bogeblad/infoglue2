@@ -9,7 +9,7 @@
 	<meta http-equiv="Expires" content="Tue, 01 Jan 1980 1:00:00 GMT" />
 	<meta http-equiv="Cache-Control" content="no-cache" />
 	<meta http-equiv="Pragma" content="no-cache" />
-	<script type="text/javascript" src="script/jquery/jquery-1.2.3.min.js"></script>
+	<script type="text/javascript" src="script/jquery/jquery-1.2.6.min.js"></script>
 
 	<script type="text/javascript" language="JavaScript">
 	<!-- 

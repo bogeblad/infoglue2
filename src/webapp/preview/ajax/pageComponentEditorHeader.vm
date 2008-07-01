@@ -13,7 +13,7 @@
 <script type="text/javascript" src="${contextName}/script/dom-drag.js"></script>
 <script type="text/javascript" src="${contextName}/script/ajaxComponentEditor.js"></script>
 
-<script type="text/javascript" src="${contextName}/script/jquery/jquery-1.2.3.min.js"></script>
+<script type="text/javascript" src="${contextName}/script/jquery/jquery-1.2.6.min.js"></script>
 <script type="text/javascript" src="${contextName}/script/jqueryplugins/ui/jquery.dimensions.js"></script>
 <script type="text/javascript" src="${contextName}/script/jqueryplugins/ui/ui.mouse.js"></script>
 <script type="text/javascript" src="${contextName}/script/jqueryplugins/ui/ui.draggable.js"></script>
