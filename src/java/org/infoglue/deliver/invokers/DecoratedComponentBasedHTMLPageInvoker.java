@@ -1482,10 +1482,10 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		if(maxPosition > position)
 		    sb.append("<div class=\"igmenuitems linkMoveComponentDown\" onClick=\"invokeAddress('" + downUrl + "');\"><a href='#'>" + moveComponentDownHTML + "</a></div>");
 		
-		sb.append("<hr style='border:0px; border-top:1px solid #bbb; margin-top:4px;'/>");
+		sb.append("<div style='border-top: 1px solid #bbb; height: 1px; margin: 0px; padding: 0px; line-height: 1px;'></div>");
 		sb.append("<div class=\"igmenuitems linkComponentProperties\" onClick=\"javascript:showComponent();\"><a href='#'>" + propertiesHTML + "</a></div>");
 		if(hasPageStructureAccess || hasOpenInNewWindowAccess || hasViewSourceAccess)
-			sb.append("<hr style='border:0px; border-top:1px solid #bbb; margin-top:4px;'/>");
+			sb.append("<div style='border-top: 1px solid #bbb; height: 1px; margin:0px; padding: 0px; line-height: 1px;'></div>");
 		if(hasPageStructureAccess)
 			sb.append("<div class=\"igmenuitems linkPageComponents\" onClick=\"javascript:toggleDiv('pageComponents');\"><a href='#'>" + pageComponentsHTML + "</a></div>");
 		if(hasOpenInNewWindowAccess)
