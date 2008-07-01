@@ -139,7 +139,7 @@ public class SubscriptionsAction extends InfoGlueAbstractAction
     	for(int i=0; i<interceptionPointIds.length; i++)
     	{
     		String key = "subscription_" + interceptionPointIds[i] + "_" + extraParameters;
-    		System.out.println("removing key:" + key);
+    		//System.out.println("removing key:" + key);
 			List subscriptionVOList = subscriptionsController.getSubscriptionVOList(interceptionPointId, null, null, entityName, entityId, this.getInfoGluePrincipal().getName(), null);
     		Iterator<SubscriptionVO> subscriptionVOListIterator = subscriptionVOList.iterator();
     		while(subscriptionVOListIterator.hasNext())
@@ -153,7 +153,7 @@ public class SubscriptionsAction extends InfoGlueAbstractAction
 	    for(int i=0; i<subscribedInterceptionPointId.length; i++)
     	{
     		Integer interceptionPointId = subscribedInterceptionPointId[i];
-    		System.out.println("interceptionPointId:" + interceptionPointId);
+    		//System.out.println("interceptionPointId:" + interceptionPointId);
     		SubscriptionVO subscriptionVO = new SubscriptionVO();
     		subscriptionVO.setInterceptionPointId(interceptionPointId);
         	subscriptionVO.setName(name);
@@ -165,14 +165,14 @@ public class SubscriptionsAction extends InfoGlueAbstractAction
     		subscriptionsController.create(subscriptionVO);
     	}
     	
-        System.out.println();
-        System.out.println("returnAddress:" + this.returnAddress);
+	    //System.out.println();
+	    //System.out.println("returnAddress:" + this.returnAddress);
         if(this.returnAddress != null && !this.returnAddress.equals(""))
         {
 	        String arguments = "userSessionKey=" + userSessionKey + "&isAutomaticRedirect=false";
 	        String messageUrl = returnAddress + (returnAddress.indexOf("?") > -1 ? "&" : "?") + arguments;
 	        
-	        System.out.println("messageUrl:" + messageUrl);
+	        //System.out.println("messageUrl:" + messageUrl);
 	        this.getResponse().sendRedirect(messageUrl);
 	        return NONE;
         }
@@ -283,7 +283,7 @@ public class SubscriptionsAction extends InfoGlueAbstractAction
     	
     	int i=0;
     	String filterType = this.getRequest().getParameter("filterType_" + i);
-    	System.out.println("filterType[" + i + "]:" + filterType);
+    	//System.out.println("filterType[" + i + "]:" + filterType);
     	while(filterType != null && !filterType.equals("") && filterType != "-1")
     	{
 	    	String[] filterConditions = this.getRequest().getParameterValues("filterCondition_" + i);
@@ -307,7 +307,7 @@ public class SubscriptionsAction extends InfoGlueAbstractAction
 
 	    	i++;
 	    	filterType = this.getRequest().getParameter("filterType_" + i);
-	    	System.out.println("filterType[" + i + "]:" + filterType);
+	    	//System.out.println("filterType[" + i + "]:" + filterType);
     	}
     	
     	subscriptionsController.update(subscriptionVO, subscriptionFilterVOList);

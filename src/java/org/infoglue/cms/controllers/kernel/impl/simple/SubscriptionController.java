@@ -159,7 +159,7 @@ public class SubscriptionController extends BaseController
 			}
 
 			subscriptionVO = subscription.getValueObject();
-	        System.out.println("subscription after:" + subscription.getSubscriptionFilters().size());
+	        //System.out.println("subscription after:" + subscription.getSubscriptionFilters().size());
 	        
 		
 		//	create(subscriptionVO, subscriptionFilterVOList, db);
@@ -334,7 +334,7 @@ public class SubscriptionController extends BaseController
 
 	    sql.append(" ORDER BY s.subscriptionId");
 	    
-	    System.out.println("sql: " + sql);
+	    //System.out.println("sql: " + sql);
 		OQLQuery oql = db.getOQLQuery(sql.toString());
 		Iterator bindingsIterator = bindings.iterator();
 		while(bindingsIterator.hasNext())

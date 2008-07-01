@@ -213,7 +213,7 @@ public class ToolbarController
 		{
 			//Do nothing
 		}
-		System.out.println("toolbarKey:" + toolbarKey);
+
 		logger.info("toolbarKey:" + toolbarKey);
 		logger.info("primaryKey:" + primaryKey);
 		logger.info("extraParameters:" + extraParameters);

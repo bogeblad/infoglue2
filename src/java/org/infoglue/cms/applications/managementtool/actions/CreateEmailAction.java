@@ -208,13 +208,9 @@ public class CreateEmailAction extends InfoGlueAbstractAction
 		    if(contentType.equalsIgnoreCase("text/html"))
 		    {
 		    	message = ui.escapeHTMLforXMLService(message);
-		        System.out.println("message0.1:" + message);
 				message = "<div>" + message.replaceAll("\n", "<br/>\n") + "</div>";
-		        System.out.println("message0.2:" + message);
 		    }
 
-	        System.out.println("message1:" + message);
-	        
 	        if(extraText != null && !extraText.equals(""))
 	        {
 	        	message += "<br/>";
@@ -224,19 +220,15 @@ public class CreateEmailAction extends InfoGlueAbstractAction
 		    if(extraTextProperty != null && !extraTextProperty.equals(""))
 		    	message += getLocalizedString(getLocale(), extraTextProperty, originalUrl);
 
-		    System.out.println("message:" + message);
-		    
 			MailServiceFactory.getService().sendEmail(from, from, recipients, subject, message, "utf-8");
     	}
     	
-        System.out.println();
-        System.out.println("returnAddress:" + this.returnAddress);
         if(this.returnAddress != null && !this.returnAddress.equals(""))
         {
 	        String arguments = "userSessionKey=" + userSessionKey + "&isAutomaticRedirect=false";
 	        String messageUrl = returnAddress + (returnAddress.indexOf("?") > -1 ? "&" : "?") + arguments;
 	        
-	        System.out.println("messageUrl:" + messageUrl);
+	        //System.out.println("messageUrl:" + messageUrl);
 	        this.getResponse().sendRedirect(messageUrl);
 	        return NONE;
         }
