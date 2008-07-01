@@ -380,7 +380,7 @@
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 </head>
 
-<body class="managementtooledit" aonload="refreshManagementToolBar('$toolbarKey', '$arguments');">
+<body class="managementtooledit">
 #workingDiv()
 <div class="listmarginalized">
 <!--div class="fullymarginalized"-->

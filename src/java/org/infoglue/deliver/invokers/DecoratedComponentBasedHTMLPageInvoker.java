@@ -74,7 +74,6 @@ import org.infoglue.deliver.controllers.kernel.impl.simple.TemplateController;
 import org.infoglue.deliver.util.CacheController;
 import org.infoglue.deliver.util.Timer;
 import org.infoglue.deliver.util.VelocityTemplateProcessor;
-//import org.w3c.dom.NodeList;
 
 /**
 * @author Mattias Bogeblad
@@ -1335,11 +1334,9 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		sb.append("		if(activatedComponentId && activatedComponentId == componentId)\n"); 
 		sb.append("			//showDiv(\"component\" + componentId + \"Properties\");\n"); 
 
-		sb.append("		Drag.init(theHandle, theRoot);\n");
-		sb.append("     theRoot.style.left = 160;\n");
-		sb.append("     theRoot.style.top = 150;\n");
+		sb.append("		$(theHandle).css('cursor', 'move');\n");
+		sb.append("		$(theRoot).draggable({handle: theHandle});\n");
 		
-		sb.append("     floatDiv(\"component" + componentId + "Properties\", 200, 50).flt();\n");
 		sb.append("	</script>");
 
 		return sb.toString();
@@ -1483,7 +1480,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		    sb.append("<div class=\"igmenuitems linkMoveComponentDown\" onClick=\"invokeAddress('" + downUrl + "');\"><a href='#'>" + moveComponentDownHTML + "</a></div>");
 		
 		sb.append("<div style='border-top: 1px solid #bbb; height: 1px; margin: 0px; padding: 0px; line-height: 1px;'></div>");
-		sb.append("<div class=\"igmenuitems linkComponentProperties\" onClick=\"javascript:showComponent();\"><a href='#'>" + propertiesHTML + "</a></div>");
+		sb.append("<div class=\"igmenuitems linkComponentProperties\" onClick=\"showComponent(event);\"><a href='#'>" + propertiesHTML + "</a></div>");
 		if(hasPageStructureAccess || hasOpenInNewWindowAccess || hasViewSourceAccess)
 			sb.append("<div style='border-top: 1px solid #bbb; height: 1px; margin:0px; padding: 0px; line-height: 1px;'></div>");
 		if(hasPageStructureAccess)
@@ -1546,9 +1543,9 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		sb.append("	<script type=\"text/javascript\">");
 		sb.append("		var theHandle = document.getElementById(\"pageComponentsHandle\");");
 		sb.append("		var theRoot   = document.getElementById(\"pageComponents\");");
-		sb.append("		Drag.init(theHandle, theRoot);");
-		sb.append("     theRoot.style.left = 160;");
-		sb.append("     theRoot.style.top = 150;");
+
+		sb.append("		$(theHandle).css('cursor', 'move');\n");
+		sb.append("		$(theRoot).draggable({handle: theHandle});\n");
 		sb.append("	</script>");
 
 		return sb.toString();
@@ -1834,8 +1831,9 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		
 		sb.append("		var theHandle = document.getElementById(\"paletteHandle\");");
 		sb.append("		var theRoot   = document.getElementById(\"paletteDiv\");");
-		sb.append("		Drag.init(theHandle, theRoot, 0, 0, 0, 1000);");
 		
+		sb.append("		$(theHandle).css('cursor', 'move');\n");
+		sb.append("		$(theRoot).draggable({handle: theHandle});\n");
 		sb.append("	</script>");
 
 		sb.append("</div>");

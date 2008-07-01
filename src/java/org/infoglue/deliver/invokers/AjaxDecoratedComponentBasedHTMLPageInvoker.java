@@ -1019,8 +1019,10 @@ public class AjaxDecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHT
 		
 		sb.append("		var theHandle = document.getElementById(\"paletteHandle\");");
 		sb.append("		var theRoot   = document.getElementById(\"paletteDiv\");");
-		sb.append("		Drag.init(theHandle, theRoot, 0, 0, 0, 1000);");
-		
+
+		sb.append("		$(theHandle).css('cursor', 'move');\n");
+		sb.append("		$(theRoot).draggable({handle: theHandle});\n");
+
 		sb.append("	</script>");
 
 		sb.append("</div>");

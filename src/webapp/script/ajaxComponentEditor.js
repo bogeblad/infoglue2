@@ -1386,11 +1386,8 @@ function showComponentPropertiesInDiv(targetDivId, parameterString, skipFloat, e
 			var theHandle = document.getElementById("componentPropertiesHandle");
 			var theRoot   = document.getElementById("componentProperties");
 			
-			Drag.init(theHandle, theRoot);
-			theRoot.style.left = 160;
-			theRoot.style.top = 150;
-			
-			floatDiv("componentProperties", 200, 50).flt();
+			$(theHandle).css("cursor", "move");
+			$(theRoot).draggable({handle: theHandle});
 		});
 	}	
 
@@ -1482,10 +1479,10 @@ function showComponentStructureInDiv(targetDivId, parameterString, event)
 		
 		var theHandle = document.getElementById("pageComponentsHandle");
 		var theRoot   = document.getElementById("pageComponents");
-		Drag.init(theHandle, theRoot);
-		theRoot.style.left = 160;
-		theRoot.style.top = 150;
 		
+		$(theHandle).css("cursor", "move");
+		$(theRoot).draggable({handle: theHandle});
+	
 		//activeMenuId = "componentStructure";
 	});
 }

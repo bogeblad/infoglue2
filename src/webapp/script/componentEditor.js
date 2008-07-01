@@ -482,18 +482,6 @@ function showComponentMenu(event, element, compId, anInsertUrl, anDeleteUrl, anC
 	
 	menuDiv = getActiveMenuDiv();
 
-/*	
-	if (rightedge < menuDiv.offsetWidth)
-		newLeft = (document.body.scrollLeft + clientX - menuDiv.offsetWidth);
-	else
-		newLeft = (document.body.scrollLeft + clientX);
-	
-	if (bottomedge < menuDiv.offsetHeight)
-		newTop = (document.body.scrollTop + clientY - menuDiv.offsetHeight);
-	else
-		newTop = (document.body.scrollTop + clientY);
-*/
-
 	//var offsetYInWindow = clientY - getScrollY();
 	//alert("getScrollY():" + getScrollY());
 	//alert("e.pageY:" + e.pageY);
@@ -1390,6 +1378,7 @@ function showComponent(e)
 {
 	if (!e) 
 		e = window.event;
+
 	showComponentProperties("component" + componentId + "Properties", e);
 }
 
@@ -1416,18 +1405,14 @@ function showComponentProperties(id, event)
 		newLeft = (document.body.scrollLeft + clientX);
 	
 	newTop = (document.body.scrollTop + clientY);
+
+	if(newTop - $(menuDiv).height() > 0)
+		newTop = newTop - $(menuDiv).height();
+	if(newLeft - $(menuDiv).width() > 0)
+		newLeft = newLeft - $(menuDiv).width();
 	
 	menuDiv.style.left 	= newLeft + "px";
 	menuDiv.style.top 	= newTop + "px";
-	
-/*
-	newLeft = (getScrollX() + (document.body.clientWidth / 2) - (propertiesDiv.offsetWidth / 2));
-	newTop = (getScrollY() + (document.body.clientHeight / 2) - (propertiesDiv.offsetHeight / 2));
-	alert("newTop:" + newTop);
-		
-	propertiesDiv.style.top = newTop + "px";	
-	propertiesDiv.style.left = newLeft + "px";	
-*/
 }
 
 function invokeAction() 

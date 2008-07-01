@@ -10,7 +10,6 @@
 	try { if(parent && parent.updateLocation()) parent.updateLocation("${siteNodeId}"); } catch(e) {alert("e:" + e);}
 	
 </script>
-<script type="text/javascript" src="${contextName}/script/dom-drag.js"></script>
 <script type="text/javascript" src="${contextName}/script/ajaxComponentEditor.js"></script>
 
 <script type="text/javascript" src="${contextName}/script/jquery/jquery-1.2.6.min.js"></script>

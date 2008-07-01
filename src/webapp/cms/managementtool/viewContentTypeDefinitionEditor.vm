@@ -4,7 +4,7 @@
 
 #beginManagementTool("tool.managementtool.viewContentTypeDefinition.header" "tool.managementtool.viewContentTypeDefinition.header" "contentTypeDefinitionId=$contentTypeDefinitionId&name=$name")
 
-<script Language=JavaScript1.2>
+<script type="text/javascript">
 <!--
 	function submitNewAttribute()
 	{
@@ -74,29 +74,14 @@
 		document.newValidatorForm.attributeToExpand.value = attributeName;
 		showDiv('newValidatorFormLayer');
 	}
-	
-	/****************************
-	 * Hook method to get informed when a drag starts
- 	 ****************************/
-
-	function dragStarted(object)
-	{
-		//alert("dragStarted:" + object.id);
-		isDragged = true;
-	} 
-
-	/****************************
-	 * Hook method to get informed when a drag ends
-	 ****************************/
-	function dragEnded(object, left, top)
-	{
-		//alert("dragEnded:" + object.id);
-	}
-	
+		
 -->
 </script>
-<script type="text/javascript" src="script/componentEditor.js"></script>
-<script type="text/javascript" src="script/dom-drag.js"></script>
+<script type="text/javascript" src="script/jquery/jquery-1.2.6.min.js"></script>
+<script type="text/javascript" src="script/jqueryplugins/ui/jquery-ui-igcommon15.min.js"></script>
+<script type="text/javascript" src="script/jqueryplugins/ui/ui.mouse.js"></script>
+<script type="text/javascript" src="script/jqueryplugins/ui/ui.draggable.js"></script>
+<script type="text/javascript" src="script/jqueryplugins/ui/ui.draggable.ext.js"></script>
 
 <div id="newValidatorFormLayer" style="border: 1px solid black; background-color: white; LEFT:250px; position:absolute; TOP:250px; visibility:hidden; z-index:1">
 	<form name="newValidatorForm" action="ViewContentTypeDefinition!insertAttributeValidator.action" method="POST">
@@ -349,7 +334,7 @@
 	#end
 	<tr>
 		<td colspan="2">
-			<img src="images/trans.gif" width="80" height="25" border="0">
+			<img src="images/trans.gif" width="80" height="5" border="0">
 		</td>
 	</tr>
 	<tr>
@@ -370,14 +355,10 @@
 <script type="text/javascript">		
 	var theHandle = document.getElementById("${attribute.name}PropertyHandle");		
 	var theRoot   = document.getElementById("${attribute.name}PropertyLayer");		
-	//alert("theHandle:" + theHandle);
-	//alert("theRoot:" + theRoot);
-	//Drag.init(theHandle, theRoot);   
-	Drag.init(theHandle, theRoot, 50, 50, 0, 1000);    
-	//theRoot.style.left = 160;     
-	//theRoot.style.top = 150;	
-	floatDiv("${attribute.name}PropertyLayer", 50, 50).flt();
-	
+
+	$(theHandle).css("cursor", "move");
+	$(theRoot).draggable({handle: theHandle});
+
 </script>
 #end
 
@@ -415,7 +396,7 @@
 	</tr>
 	<tr>
 		<td colspan="2">
-			<img src="images/trans.gif" width="80" height="25" border="0">
+			<img src="images/trans.gif" width="80" height="5" border="0">
 		</td>
 	</tr>
 	<tr>

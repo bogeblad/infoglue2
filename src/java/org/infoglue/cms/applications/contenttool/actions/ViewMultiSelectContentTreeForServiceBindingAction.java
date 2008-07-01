@@ -70,8 +70,7 @@ public class ViewMultiSelectContentTreeForServiceBindingAction extends InfoGlueA
    	private Integer oldSortOrder;
    	private Integer serviceBindingId;
    	
-   	// SS test drag drop
-		private Integer requestedPosition;   	
+   	private Integer requestedPosition;   	
    	
    	private ServiceBindingVO serviceBindingVO = null;
    
