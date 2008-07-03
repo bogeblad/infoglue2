@@ -379,7 +379,7 @@
 		<tr>
 			<td colspan="3">
 				#set($value = "$!this.getAttributeValue($attribute.name)")
-				#if("$!contentVersionId" == "" && "$value" == "")
+				#if("$value" == "")
 					#set($value = $attributeInitialData)
 				#end
 				
