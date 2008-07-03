@@ -8,7 +8,6 @@ import java.util.Map;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspTagException;
 
-import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.webservices.elements.RemoteAttachment;
 
 /**
@@ -39,11 +38,6 @@ public class UpdateContentVersionTag extends InfoGlueWebServiceTag implements Co
 	private Integer languageId;
    	private Integer contentId;
 	private String versionValue;
-
-    /**
-     *  
-     */
-    private InfoGluePrincipal principal;
 
     /**
      *  
@@ -162,14 +156,6 @@ public class UpdateContentVersionTag extends InfoGlueWebServiceTag implements Co
     public void setOperationName(final String operationName)
     {
         this.operationName = operationName;
-    }
-
-    /**
-     *  
-     */
-    public void setPrincipal(final String principalString) throws JspException
-    {
-        this.principal = (InfoGluePrincipal) this.evaluate("remoteContentService", "principal", principalString, InfoGluePrincipal.class);
     }
 
     public void setContentVersionId(String contentVersionId) throws JspException

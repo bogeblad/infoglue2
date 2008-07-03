@@ -794,8 +794,6 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 	{
 		String value = "";
 		
-		//System.out.println("this.contentVersionVO:" + this.contentVersionVO);
-
 		if(this.contentVersionVO != null)
 		{
 			try
@@ -869,8 +867,6 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 	{
 		String value = "";
 		
-		//System.out.println("this.contentVersionVO:" + this.contentVersionVO);
-
 		if(this.originalLanguageContentVersionVO != null)
 		{
 			try

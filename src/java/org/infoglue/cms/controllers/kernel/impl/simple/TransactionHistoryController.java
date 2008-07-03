@@ -153,7 +153,6 @@ public class TransactionHistoryController extends BaseController
 		    }
 		    if(transactionType != null)
 		    {
-		    	//System.out.println("Adding parameter:" + transactionType + " at " + i);
 		    	whereArguments += (whereArguments.equals("") ? "" : " AND ") + " th.transactionTypeId IN LIST (";
 		    	int localIndex = 0;
 		    	Iterator transactionTypeIterator = transactionType.iterator();
@@ -170,21 +169,19 @@ public class TransactionHistoryController extends BaseController
 		    }
 		    if(startDateTime != null)
 		    {
-		    	//System.out.println("Adding parameter:" + startDateTime + " at " + i);
 		    	whereArguments += (whereArguments.equals("") ? "" : " AND ") + " th.transactionDateTime >= $" + i + " ";
 		    	bindings.add(startDateTime);
 		    	i++;
 		    }
 		    if(endDateTime != null)
 		    {
-		    	//System.out.println("Adding parameter:" + endDateTime + " at " + i);
 		    	whereArguments += (whereArguments.equals("") ? "" : " AND ") + " th.transactionDateTime <= $" + i + " ";
 		    	bindings.add(endDateTime);
 		    	i++;
 		    }
 
 		    String sql = baseSQL + (whereArguments.equals("") ? "" : " WHERE ") + whereArguments + " ORDER BY th.transactionDateTime desc";
-		    //System.out.println("sql:" + sql);
+		    //logger.info("sql:" + sql);
 
 		    OQLQuery oql = db.getOQLQuery(sql);
 			Iterator bindingIterator = bindings.iterator();
@@ -192,7 +189,6 @@ public class TransactionHistoryController extends BaseController
 			{
 				Object value = bindingIterator.next();
 				oql.bind(value);
-				//System.out.println("value:" + value);
 			}
 		    
 		    //OQLQuery oql = db.getOQLQuery( "SELECT th FROM org.infoglue.cms.entities.management.impl.simple.TransactionHistoryImpl th WHERE th.transactionObjectName LIKE $1 AND th.transactionObjectId = $2 ORDER BY th.transactionDateTime desc");

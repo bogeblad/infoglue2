@@ -421,19 +421,19 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
 	 			} catch (Throwable e) {
 	 				String svc = svcs[i].substring(svcs[i].lastIndexOf('.') + 1);
 	 				String msg = "Initialization of " + svc + " service for hot deployment failed!"; 
-	 				System.out.println(msg);
+	 				logger.error(msg);
 	 				break;
 	 			}
 	 	
 	 			try {
-	 				System.out.println("ServletConfigContainer.getContainer().getServletConfig():" + ServletConfigContainer.getContainer().getServletConfig());
-	 				System.out.println("ServletConfigContainer.getContainer().getServletConfig().getServletContext():" + ServletConfigContainer.getContainer().getServletConfig().getServletContext());
-	 				System.out.println("svcs[i]:" + svcs[i]);
+	 				logger.error("ServletConfigContainer.getContainer().getServletConfig():" + ServletConfigContainer.getContainer().getServletConfig());
+	 				logger.error("ServletConfigContainer.getContainer().getServletConfig().getServletContext():" + ServletConfigContainer.getContainer().getServletConfig().getServletContext());
+	 				logger.error("svcs[i]:" + svcs[i]);
 					ServiceManager.postHotInit(ServletConfigContainer.getContainer().getServletConfig(), svcs[i]);
 	 			} catch (Throwable e) {
 	 				String svc = svcs[i].substring(svcs[i].lastIndexOf('.') + 1);
 	 				String msg = "Post initialization of " + svc + " service for hot deployment failed!"; 
-	 				System.out.println(msg);
+	 				logger.error(msg);
 	 				break;
 	 			}
 			}
@@ -636,7 +636,6 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
     	while(attributesEnumeration.hasMoreElements())
     	{
     		String attributeName = (String)attributesEnumeration.nextElement();
-    		//System.out.println("attributeName:" + attributeName);
     		if(attributeName.indexOf("org.apache.catalina") == -1 && attributeName.indexOf("__oscache") == -1 && attributeName.indexOf("javax.servlet") == -1)
     		{
     			applicationMap.put(attributeName, ActionContext.getServletContext().getAttribute(attributeName).getClass().getName());

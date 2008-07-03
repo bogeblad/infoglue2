@@ -210,7 +210,6 @@ public class PageEditorHelper extends BaseDeliveryController
 				isAdvancedProperties = true;
 			}
 			
-			//System.out.println("componentProperty:" + componentProperty.getName() + ":" + isAdvancedProperties);
 			if(componentProperty.getName().equalsIgnoreCase("CacheResult") ||
 			   componentProperty.getName().equalsIgnoreCase("UpdateInterval") ||
 			   componentProperty.getName().equalsIgnoreCase("CacheKey") ||
@@ -785,8 +784,6 @@ public class PageEditorHelper extends BaseDeliveryController
 			 boolean treeItem) throws Exception
 		{	
 		
-		//System.out.println("treeItem: " + treeItem);
-		
 		StringBuffer sb = new StringBuffer();
 
 		String componentEditorUrl = CmsPropertyHandler.getComponentEditorUrl();
@@ -804,7 +801,6 @@ public class PageEditorHelper extends BaseDeliveryController
 			if(!component.getId().equals(componentId))
 				component = getComponentWithId(component, componentId);
 
-			//System.out.println("Getting tasks for " + component.getName() + ":" + component.getSlotName() + ":" + component.getId());
 			boolean hasAccessToAccessRights = AccessRightController.getController().getIsPrincipalAuthorized(db, principal, "ComponentEditor.ChangeSlotAccess", "");
 			boolean hasAccessToAddComponent = AccessRightController.getController().getIsPrincipalAuthorized(db, principal, "ComponentEditor.AddComponent", "" + (component.getParentComponent() == null ? component.getContentId() : component.getParentComponent().getContentId()) + "_" + component.getSlotName());
 			boolean hasAccessToDeleteComponent = AccessRightController.getController().getIsPrincipalAuthorized(db, principal, "ComponentEditor.DeleteComponent", "" + (component.getParentComponent() == null ? component.getContentId() : component.getParentComponent().getContentId()) + "_" + component.getSlotName());
@@ -885,18 +881,15 @@ public class PageEditorHelper extends BaseDeliveryController
 			String savePageTemplateHTML		 		= getLocalizedString(locale, "deliver.editOnSight.savePageTemplateHTML");
 			String savePagePartTemplateHTML 		= getLocalizedString(locale, "deliver.editOnSight.savePagePartTemplateHTML");
 
-			//System.out.println("slotId:" + slotId);
 		    Slot slot = null;
 		    InfoGlueComponent parentComponent = null;
 		    if(slotClicked == null || slotClicked.equalsIgnoreCase("true"))
 		    {
-		    	//System.out.println("Was slot which was clicked..");
 			    slot = component.getSlot(slotId);
 			    parentComponent = component;
 			}
 		    else
 		    {
-		    	//System.out.println("Was component which was clicked..");
 		    	slot = component.getContainerSlot();
 			    parentComponent = component.getParentComponent();
 		    }
@@ -916,20 +909,20 @@ public class PageEditorHelper extends BaseDeliveryController
 		    
 		    if(parentComponent != null)
 		    {
-		    	//System.out.println("slot:" + slot.getId());
-		    	//System.out.println("parentComponent:" + parentComponent.getId());
-		    	//System.out.println("allowedComponentNamesAsEncodedString:" + allowedComponentNamesAsEncodedString);
-		    	//System.out.println("disallowedComponentNamesAsEncodedString:" + disallowedComponentNamesAsEncodedString);
+		    	//logger.info("slot:" + slot.getId());
+		    	//logger.info("parentComponent:" + parentComponent.getId());
+		    	//logger.info("allowedComponentNamesAsEncodedString:" + allowedComponentNamesAsEncodedString);
+		    	//logger.info("disallowedComponentNamesAsEncodedString:" + disallowedComponentNamesAsEncodedString);
 		    
 			    addComponentUrl = "" + componentEditorUrl + "ViewSiteNodePageComponents!listComponents.action?siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&parentComponentId=" + parentComponent.getId() + "&slotId=" + slotId + "&showSimple=" + showSimple + ((allowedComponentNamesAsEncodedString != null) ? "&" + allowedComponentNamesAsEncodedString : "") + ((disallowedComponentNamesAsEncodedString != null) ? "&" + disallowedComponentNamesAsEncodedString : "");
 			    deleteComponentUrl = "" + componentEditorUrl + "ViewSiteNodePageComponents!deleteComponent.action?siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + component.getId() + "&slotId=" + slotId + "&showSimple=" + showSimple;
 			    changeComponentUrl = "" + componentEditorUrl + "ViewSiteNodePageComponents!listComponentsForChange.action?siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + component.getId() + "&slotId=" + slotId + "&showSimple=" + showSimple + ((allowedComponentNamesAsEncodedString != null) ? "&" + allowedComponentNamesAsEncodedString : "") + ((disallowedComponentNamesAsEncodedString != null) ? "&" + disallowedComponentNamesAsEncodedString : "");
 			    savePartTemplateUrl = "savePartComponentStructure('" + componentEditorUrl + "CreatePageTemplate!input.action?contentId=" + metaInfoContentVO.getId() + "', '" + component.getId() + "');";
 
-			    //System.out.println("addComponentUrl:" + addComponentUrl);
-			    //System.out.println("deleteComponentUrl:" + deleteComponentUrl);
-			    //System.out.println("changeComponentUrl:" + changeComponentUrl);
-			    //System.out.println("savePartTemplateUrl:" + savePartTemplateUrl);
+			    //logger.info("addComponentUrl:" + addComponentUrl);
+			    //logger.info("deleteComponentUrl:" + deleteComponentUrl);
+			    //logger.info("changeComponentUrl:" + changeComponentUrl);
+			    //logger.info("savePartTemplateUrl:" + savePartTemplateUrl);
 		    }
 		    else
 		    {
@@ -961,9 +954,9 @@ public class PageEditorHelper extends BaseDeliveryController
 	
 			String upUrl = componentEditorUrl + "ViewSiteNodePageComponents!moveComponent.action?siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&direction=0&showSimple=" + showSimple + "";
 			String downUrl = componentEditorUrl + "ViewSiteNodePageComponents!moveComponent.action?siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&direction=1&showSimple=" + showSimple + "";
-			//System.out.println("upUrl:" + upUrl);
-			//System.out.println("downUrl:" + downUrl);
-			//System.out.println("component.getPositionInSlot():" + component.getPositionInSlot());
+			//logger.info("upUrl:" + upUrl);
+			//logger.info("downUrl:" + downUrl);
+			//logger.info("component.getPositionInSlot():" + component.getPositionInSlot());
 			
 			if(component.getPositionInSlot() > 0)
 			    sb.append("<div class=\"igmenuitems\" onMouseover=\"javascript:highlightie5(event);\" onMouseout=\"javascript:lowlightie5(event);\" onClick=\"invokeAddress('" + upUrl + "');\">" + moveComponentUpHTML + "</div>");
@@ -1003,8 +996,7 @@ public class PageEditorHelper extends BaseDeliveryController
    		if(pageComponentsString != null && pageComponentsString.length() != 0)
 		{
    			Document document = domBuilder.getDocument(pageComponentsString);
-   			//System.out.println("Getting components...");
-
+   			
 			List pageComponents = getPageComponents(db, pageComponentsString, document.getRootElement(), "base", null, null, siteNodeId, languageId, principal);
 			InfoGlueComponent component = (InfoGlueComponent)pageComponents.get(0);
 			
@@ -1831,10 +1823,10 @@ public class PageEditorHelper extends BaseDeliveryController
 		else
 		{
 			String componentXPath = "component[@name='" + slotName + "']";
-			//System.out.println("componentXPath:" + componentXPath);
+			//logger.info("componentXPath:" + componentXPath);
 			List componentElements = element.selectNodes(componentXPath);
 			//logger.info("componentElements:" + componentElements.size());
-			//System.out.println("componentElements:" + componentElements.size());
+			//logger.info("componentElements:" + componentElements.size());
 			
 			Iterator componentIterator = componentElements.iterator();
 			int slotPosition = 0;
@@ -1848,18 +1840,11 @@ public class PageEditorHelper extends BaseDeliveryController
 				String isInherited 					= componentElement.attributeValue("isInherited");
 				String pagePartTemplateContentId 	= componentElement.attributeValue("pagePartTemplateContentId");
 				
-				//System.out.println("id 1: " + id);
-				//System.out.println("contentId 1:" + contentId);
-				//System.out.println("name 1: " + name);
-				//System.out.println("isInherited 1: " + isInherited);
-				//System.out.println("pagePartTemplateContentId 1: " + pagePartTemplateContentId);
-				
 				try
 				{
 				    ContentVO contentVO = ContentDeliveryController.getContentDeliveryController().getContentVO(contentId, db);
-				    //System.out.println("contentVO for current component:" + contentVO.getName());
-				   
-				    //System.out.println("slotName:" + slotName + " should get connected with content_" + contentVO.getId());
+				    //logger.info("contentVO for current component:" + contentVO.getName());
+				    //logger.info("slotName:" + slotName + " should get connected with content_" + contentVO.getId());
 				    
 				    groups = new String[]{"content_" + contentVO.getId()};
 				    
@@ -1872,11 +1857,11 @@ public class PageEditorHelper extends BaseDeliveryController
 					component.setParentComponent(parentComponent);
 					if(containerSlot != null)
 					{
-						System.out.println("Adding component to container slot:" + component.getId() + ":" + containerSlot.getId());
+						//logger.info("Adding component to container slot:" + component.getId() + ":" + containerSlot.getId());
 						//containerSlot.getComponents().add(component);
 						component.setContainerSlot(containerSlot);
-						//System.out.println("containerSlot:" + containerSlot);
-						//System.out.println("containerSlot:" + containerSlot);
+						//logger.info("containerSlot:" + containerSlot);
+						//logger.info("containerSlot:" + containerSlot);
 					}
 					if(isInherited != null && isInherited.equals("true"))
 						component.setIsInherited(true);
@@ -1891,14 +1876,14 @@ public class PageEditorHelper extends BaseDeliveryController
 						InfoGlueComponent partTemplateReferenceComponent = new InfoGlueComponent();
 						partTemplateReferenceComponent.setPositionInSlot(new Integer(slotPosition));
 						partTemplateReferenceComponent.setId(id);
-						//System.out.println("Setting component:" + partTemplateReferenceComponent.getId() + " - " + partTemplateReferenceComponent.getPositionInSlot());
+						//logger.info("Setting component:" + partTemplateReferenceComponent.getId() + " - " + partTemplateReferenceComponent.getPositionInSlot());
 						partTemplateReferenceComponent.setContentId(pptContentId);
 						partTemplateReferenceComponent.setName(pptContentIdContentVO.getName());
 						partTemplateReferenceComponent.setSlotName(name);
 						partTemplateReferenceComponent.setParentComponent(parentComponent);
 						if(containerSlot != null)
 						{
-							//System.out.println("Adding component to container slot:" + partTemplateReferenceComponent.getId() + ":" + containerSlot.getId());
+							//logger.info("Adding component to container slot:" + partTemplateReferenceComponent.getId() + ":" + containerSlot.getId());
 							partTemplateReferenceComponent.setContainerSlot(containerSlot);
 							//containerSlot.getComponents().add(partTemplateReferenceComponent);
 						}
@@ -1937,7 +1922,7 @@ public class PageEditorHelper extends BaseDeliveryController
 					
 							if(path == null || path.equals(""))
 							{
-								System.out.println("Falling back to content master language 1 for property:" + propertyName);
+								logger.info("Falling back to content master language 1 for property:" + propertyName);
 								LanguageVO contentMasterLangaugeVO = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForRepository(db, contentVO.getRepositoryId());
 								if(propertyElement.attributeValue("path_" + contentMasterLangaugeVO.getLanguageCode()) != null)
 									path = propertyElement.attributeValue("path_" + contentMasterLangaugeVO.getLanguageCode());	
@@ -2118,7 +2103,7 @@ public class PageEditorHelper extends BaseDeliveryController
 		else
 			CacheController.cacheObjectInAdvancedCache("pageComponentsCache", key, new NullObject(), groups, false);
 		
-		//System.out.println("Returning " + components.size() + " components for:" + slotName);
+		//logger.info("Returning " + components.size() + " components for:" + slotName);
 		return components;
 	}
 
@@ -2127,7 +2112,7 @@ public class PageEditorHelper extends BaseDeliveryController
 	 */
 	private void getComponentRestrictions(Element child, InfoGlueComponent component, Locale locale) throws Exception
 	{
-	    //System.out.println("Getting restrictions for " + component.getId() + ":" + child.getName());
+	    //logger.info("Getting restrictions for " + component.getId() + ":" + child.getName());
 		List restrictionsNodeList = child.selectNodes("restrictions");
 		//logger.info("restrictionsNodeList:" + restrictionsNodeList.getLength());
 		if(restrictionsNodeList.size() > 0)
@@ -2167,16 +2152,16 @@ public class PageEditorHelper extends BaseDeliveryController
 		outer:while(slotListIterator.hasNext())
 		{
 			Slot slot = (Slot)slotListIterator.next();
-			//System.out.println("slot:" + slot.getId());
+			//logger.info("slot:" + slot.getId());
 			
 			List components = slot.getComponents();
-			//System.out.println("components:" + components.size());
+			//logger.info("components:" + components.size());
 			
 			Iterator componentsIterator = components.iterator();
 			while(componentsIterator.hasNext())
 			{
 				InfoGlueComponent subComponent = (InfoGlueComponent)componentsIterator.next();
-				//System.out.println("subComponent:" + subComponent.getId());
+				//logger.info("subComponent:" + subComponent.getId());
 				if(subComponent.getId().equals(componentId))
 				{
 					component = subComponent;

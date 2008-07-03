@@ -1872,8 +1872,6 @@ public class BasicTemplateController implements TemplateController
 		{
 			if(text != null)
 			{
-		        System.out.println("Parsing text:" + text);
-
 				String unparsedAttributeValue = text;
 				
 				Map context = new HashMap();
@@ -1885,8 +1883,6 @@ public class BasicTemplateController implements TemplateController
 				PrintWriter cachedStream = new PrintWriter(cacheString);
 				new VelocityTemplateProcessor().renderTemplate(context, cachedStream, unparsedAttributeValue, true);
 				parsedText = cacheString.toString();
-		        
-				System.out.println("parsedText:" + parsedText);
 			}
 		}
 		catch(Exception e)
@@ -4223,7 +4219,7 @@ public class BasicTemplateController implements TemplateController
 				if(ContentDeliveryController.getContentDeliveryController().isValidContent(this.getDatabase(), contentVersionVO.getContentId(), this.languageId, USE_LANGUAGE_FALLBACK, true, getPrincipal(), this.deliveryContext))
 					result.add(contentVersionVO);
 			}
-			System.out.println("result:" + result.size());
+
 			return result;
 		}
 		catch(Exception e)
@@ -4320,7 +4316,6 @@ public class BasicTemplateController implements TemplateController
 				for(Iterator i = set.iterator(); i.hasNext(); ) 
 				{
 					final Content content = (Content) i.next();
-					//System.out.println("content: " + content.getName());
 					if(ContentDeliveryController.getContentDeliveryController().isValidContent(this.getDatabase(), content.getId(), this.languageId, USE_LANGUAGE_FALLBACK, true, getPrincipal(), this.deliveryContext))
 						result.add(content.getValueObject());
 				}
@@ -6831,7 +6826,6 @@ public class BasicTemplateController implements TemplateController
 			result = "";
 		}
 		
-		//System.out.println("result:" + result);
 		return result;
 	}
 

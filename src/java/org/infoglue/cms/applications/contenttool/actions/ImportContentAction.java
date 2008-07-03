@@ -328,8 +328,6 @@ public class ImportContentAction extends InfoGlueAbstractAction
 	    		}
 	    	}
 
-	    	//System.out.println("originalContentTypeDefinition:" + originalContentTypeDefinition);
-
 	    	if(originalContentTypeDefinition != null)
 	    	{
 		    	contentTypeDefinition = ContentTypeDefinitionController.getController().getContentTypeDefinitionWithName(originalContentTypeDefinition.getName(), db);
@@ -347,10 +345,10 @@ public class ImportContentAction extends InfoGlueAbstractAction
 
 	    	}
 		    else
-		    	System.out.println("The content " + content.getName() + " had a content type not found amongst the listed ones:" + contentTypeDefinitionId);
+		    	logger.error("The content " + content.getName() + " had a content type not found amongst the listed ones:" + contentTypeDefinitionId);
 		}
 	    else
-	    	System.out.println("The content " + content.getName() + " had no content type at all");
+	    	logger.error("The content " + content.getName() + " had no content type at all");
 	    
 	    if(content.getContentTypeDefinition() == null)
 	    	logger.error("No content type definition for content:" + content.getId());
@@ -630,11 +628,6 @@ public class ImportContentAction extends InfoGlueAbstractAction
 	    		before = xml.substring(0, startIndex);
 	    		after = xml.substring(stopIndex + 12);
 	    		qualifyer = xml.substring(startIndex, stopIndex + 12);
-	    		//logger.info("startIndex: " + startIndex);
-	    		//System.out.println("stopIndex: " + stopIndex);
-	    		//System.out.println("before: " + before);
-	    		//System.out.println("after: " + after);
-	    		//System.out.println("qualifyer: " + qualifyer);
 	    		
 	    		String newQualifyer = qualifyer;
 	    		
@@ -645,7 +638,6 @@ public class ImportContentAction extends InfoGlueAbstractAction
 	    			
 	    		newXML.append(before);
 	    		newXML.append(newQualifyer);
-	    		//System.out.println("newXML:" + newXML);
 	    		xml = after;
     		}
     		else

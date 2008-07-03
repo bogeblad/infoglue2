@@ -462,18 +462,13 @@ public class NodeDeliveryController extends BaseDeliveryController
 	{
 	    SiteNodeVersion siteNodeVersion = null;
 		
-	    String versionKey = "" + siteNodeId + "_" + getOperatingMode() + "_siteNodeVersionId";
-		//System.out.println("versionKey:" + versionKey);
-		
+	    String versionKey = "" + siteNodeId + "_" + getOperatingMode() + "_siteNodeVersionId";		
 	    
 		Integer siteNodeVersionId = (Integer)CacheController.getCachedObject("latestSiteNodeVersionCache", versionKey);
 		if(siteNodeVersionId != null)
 		{
 		    logger.info("There was a cached sitenode version id:" + siteNodeVersionId);
-		    //System.out.println("There was a cached content version id:" + contentVersionId);
 		    siteNodeVersion = (SiteNodeVersion)getObjectWithId(SiteNodeVersionImpl.class, siteNodeVersionId, db);
-		    //System.out.println("Loaded the version from cache instead of querying it:" + contentVersionId);
-		    //logger.info("contentVersion read");
 		}
 		else
 		{
@@ -1404,17 +1399,7 @@ public class NodeDeliveryController extends BaseDeliveryController
 			context.setDisableNiceUri(disableNiceUri);
 			context.setUseFullUrl(fullUrl);
 		}
-		
-		/*
-		if(pageAsDigitalAssetUrl == null || pageAsDigitalAssetUrl.equals(""))
-		{
-			System.out.println("No pageAsDigitalAssetUrl.... - investigate...");
-			//System.out.println("pageUrl:" + pageUrl);
-			//System.out.println("pageContent:" + pageContent);
-			//System.out.println("fileName:" + fileName);			
-		}
-		*/
-		
+				
 		return pageAsDigitalAssetUrl;
 	}
 
@@ -1514,8 +1499,6 @@ public class NodeDeliveryController extends BaseDeliveryController
             siteNodes = this.getChildSiteNodes(db, parentSiteNodeId);
         }
         
-        //System.out.println("siteNodes:" + siteNodes.size());
-        
         Iterator siteNodeIterator = siteNodes.iterator();
         while (siteNodeIterator.hasNext()) 
         {
@@ -1528,7 +1511,6 @@ public class NodeDeliveryController extends BaseDeliveryController
 	        }
 	        
 	        logger.info("Continued with siteNode: " + siteNodeVO.getName());
-	        //System.out.println("Continued with siteNode: " + siteNodeVO.getName());
 	        
 	        if(siteNodeVO.getMetaInfoContentId() == null)
 	        	throw new SystemException("The site node " + siteNodeVO.getName() + "(" + siteNodeVO.getId() + ") had no meta info. Fix this by editing the site node. Should never happen.");

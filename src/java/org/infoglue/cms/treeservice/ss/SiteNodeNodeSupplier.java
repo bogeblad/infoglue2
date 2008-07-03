@@ -212,9 +212,7 @@ public class SiteNodeNodeSupplier extends BaseNodeSupplier
 							for(int i=sortOrders.length - 1; i > -1; i--)
 							{
 								String sortOrderProperty = sortOrders[i].trim();
-								//System.out.println("sortOrderProperty:" + sortOrderProperty);
 								
-								//if(contentVersion != null && sortOrderProperty.startsWith("extra:"))
 								if(sortOrderProperty.startsWith("extra:"))
 								{
 									LanguageVO masterLanguage = LanguageController.getController().getMasterLanguage(contentVO.getRepositoryId(), db);
@@ -252,18 +250,15 @@ public class SiteNodeNodeSupplier extends BaseNodeSupplier
 				for(int i=sortOrders.length - 1; i > -1; i--)
 				{
 					String sortOrderProperty = sortOrders[i].trim();
-					//System.out.println("sortOrderProperty:" + sortOrderProperty);
 					if(sortOrderProperty.startsWith("extra:"))
 						sortOrderProperty = sortOrderProperty.substring(6);
 						
 					Collections.sort(childrenVOList, new SiteNodeComparator(sortOrderProperty, "asc", null));
-					//Collections.sort(childrenVOList, new ReflectionComparator(sortOrderProperty));
-	
+					
 					Iterator siteNodeChildrenIterator = childrenVOList.iterator();
 					while(siteNodeChildrenIterator.hasNext())
 					{
 						SiteNodeVO vo = (SiteNodeVO) siteNodeChildrenIterator.next();
-						//System.out.println("vo:" + vo.getName());
 					}
 				}
 			}
@@ -275,10 +270,8 @@ public class SiteNodeNodeSupplier extends BaseNodeSupplier
 				
 				boolean hasUserPageAccess = true;
 				String useAccessRightsOnStructureTreeString = CmsPropertyHandler.getUseAccessRightsOnStructureTree();
-				//System.out.println("useAccessRightsOnStructureTreeString:" + useAccessRightsOnStructureTreeString);
 				if(useAccessRightsOnStructureTreeString != null && useAccessRightsOnStructureTreeString.equalsIgnoreCase("true"))
 					hasUserPageAccess = getHasUserPageAccess(this.infogluePrincipal, vo.getId());
-				//System.out.println("hasUserPageAccess:" + hasUserPageAccess + ":" + this.infogluePrincipal.getName());
 				
 				if(hasUserPageAccess)
 				{

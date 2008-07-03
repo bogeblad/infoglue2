@@ -332,15 +332,13 @@ public class PortletDefinitionRegistryServiceFileImplIG extends PortletDefinitio
         while (iterator.hasNext())
         {
             PortletApplicationDefinition papp = (PortletApplicationDefinition)iterator.next();
-            //System.out.println("papp: " + papp.toString());
             
             // fill portletsKeyObjectId
             Iterator portlets = papp.getPortletDefinitionList().iterator();
             while (portlets.hasNext())
             {
                 PortletDefinition portlet = (PortletDefinition)portlets.next();
-                //System.out.println("portlet: " + portlet.toString());
-
+            
                 portletsKeyObjectId.put(portlet.getId(), portlet);
                 log.debug("Putting in portletsKeyObjectId[" + portletsKeyObjectId.hashCode() + "]:" + portlet.getId() + "=" + portlet.toString() + "[" + papp.getId() + "]");
             }

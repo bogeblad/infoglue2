@@ -317,7 +317,7 @@ public abstract class PageInvoker
 		//{
 		/*
 			Date lastModifiedDateTime = null;
-			System.out.println("this.deliveryContext.getUsedContentVersions().size():" + this.deliveryContext.getUsedContentVersions().size());
+			logger.info("this.deliveryContext.getUsedContentVersions().size():" + this.deliveryContext.getUsedContentVersions().size());
 			if(this.deliveryContext.getUsedContentVersions().size() > 0)
 			{
 				Iterator userContentVersionIterator = this.deliveryContext.getUsedContentVersions().iterator();
@@ -329,7 +329,7 @@ public abstract class PageInvoker
 			    		try
 			            {
 			    			String versionId = usedContentVersion.substring(15);
-			    			//System.out.println("versionId:" + versionId);
+			    			//logger.info("versionId:" + versionId);
 			    			if(!versionId.equals("null") && !versionId.equals(""))
 			    			{
 				    			Integer contentVersionId = new Integer(versionId);
@@ -337,9 +337,9 @@ public abstract class PageInvoker
 				    			//ContentVersionVO contentVersion = ContentVersionController.getContentVersionController().getContentVersionVOWithId(contentVersionId, getDatabase());
 				    			if(lastModifiedDateTime == null || contentVersion.getModifiedDateTime().after(lastModifiedDateTime))
 				    			{
-				    				//System.out.println("this:" + this.hashCode());
-				    				//System.out.println("lastModifiedDateTime:" + lastModifiedDateTime);
-				    				//System.out.println("contentVersionVO:" + contentVersion.getModifiedDateTime());
+				    				//logger.info("this:" + this.hashCode());
+				    				//logger.info("lastModifiedDateTime:" + lastModifiedDateTime);
+				    				//logger.info("contentVersionVO:" + contentVersion.getModifiedDateTime());
 				    				lastModifiedDateTime = contentVersion.getModifiedDateTime();
 				    			}
 			    			}
@@ -441,7 +441,7 @@ public abstract class PageInvoker
 	private void getLastModifiedDateTime() throws Bug
 	{
 		Date lastModifiedDateTime = null;
-		//System.out.println("this.deliveryContext.getUsedContentVersions().size():" + this.deliveryContext.getUsedContentVersions().size());
+		//logger.info("this.deliveryContext.getUsedContentVersions().size():" + this.deliveryContext.getUsedContentVersions().size());
 		if(this.deliveryContext.getUsedContentVersions().size() > 0)
 		{
 			Iterator userContentVersionIterator = this.deliveryContext.getUsedContentVersions().iterator();
@@ -453,7 +453,7 @@ public abstract class PageInvoker
 		    		try
 		            {
 		    			String versionId = usedContentVersion.substring(15);
-		    			//System.out.println("versionId:" + versionId);
+		    			//logger.info("versionId:" + versionId);
 		    			if(!versionId.equals("null") && !versionId.equals(""))
 		    			{
 			    			Integer contentVersionId = new Integer(versionId);
@@ -461,9 +461,9 @@ public abstract class PageInvoker
 			    			//ContentVersionVO contentVersion = ContentVersionController.getContentVersionController().getContentVersionVOWithId(contentVersionId, getDatabase());
 			    			if(lastModifiedDateTime == null || contentVersion.getModifiedDateTime().after(lastModifiedDateTime))
 			    			{
-			    				//System.out.println("this:" + this.hashCode());
-			    				//System.out.println("lastModifiedDateTime:" + lastModifiedDateTime);
-			    				//System.out.println("contentVersionVO:" + contentVersion.getModifiedDateTime());
+			    				//logger.info("this:" + this.hashCode());
+			    				//logger.info("lastModifiedDateTime:" + lastModifiedDateTime);
+			    				//logger.info("contentVersionVO:" + contentVersion.getModifiedDateTime());
 			    				lastModifiedDateTime = contentVersion.getModifiedDateTime();
 			    			}
 		    			}
@@ -514,7 +514,7 @@ public abstract class PageInvoker
 				else
 					lastModifiedDateTimeIndex = sb.indexOf("<ig:lastModifiedDateTime");
 					
-				//System.out.println("OOOOOOOOOOOOO lastModifiedDateTimeIndex:" + lastModifiedDateTimeIndex);
+				//logger.info("OOOOOOOOOOOOO lastModifiedDateTimeIndex:" + lastModifiedDateTimeIndex);
 				if(lastModifiedDateTimeIndex > -1)
 				{
 					if(sb == null)
@@ -523,7 +523,7 @@ public abstract class PageInvoker
 					int lastModifiedDateTimeEndIndex = sb.indexOf("</ig:lastModifiedDateTime>", lastModifiedDateTimeIndex);
 	
 					String tagInfo = sb.substring(lastModifiedDateTimeIndex, lastModifiedDateTimeEndIndex);
-					//System.out.println("tagInfo:" + tagInfo);
+					//logger.info("tagInfo:" + tagInfo);
 					String dateFormat = "yyyy-MM-dd HH:mm";
 					int formatStartIndex = tagInfo.indexOf("format");
 					if(formatStartIndex > -1)
@@ -532,12 +532,12 @@ public abstract class PageInvoker
 						if(formatEndIndex > -1)
 							dateFormat = tagInfo.substring(formatStartIndex + 8, formatEndIndex);
 					}
-					//System.out.println("dateFormat:" + dateFormat);
+					//logger.info("dateFormat:" + dateFormat);
 						
 					String dateString = vf.formatDate(this.getTemplateController().getDeliveryContext().getLastModifiedDateTime(), this.getTemplateController().getLocale(), dateFormat);
-					//System.out.println("dateString:" + dateString);
+					//logger.info("dateString:" + dateString);
 					sb.replace(lastModifiedDateTimeIndex, lastModifiedDateTimeEndIndex + "</ig:lastModifiedDateTime>".length(), dateString);
-					//System.out.println("Replaced:" + lastModifiedDateTimeIndex + " to " + lastModifiedDateTimeEndIndex + "</ig:lastModifiedDateTime>".length() + " with " + dateString);
+					//logger.info("Replaced:" + lastModifiedDateTimeIndex + " to " + lastModifiedDateTimeEndIndex + "</ig:lastModifiedDateTime>".length() + " with " + dateString);
 				}
 			}
 			catch (Exception e) 

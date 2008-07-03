@@ -118,12 +118,8 @@ public class RedirectController extends BaseController
 
             logger.info("base:" + base);
 
-            //String requestURL = request.getRequestURL().toString();
             String requestURI = base + getContextURI(request);
-            //System.out.println("requestURL:" + requestURL);
             logger.info("requestURI:" + requestURI);
-            
-            
             logger.info("full requestURI:" + requestURI);
             
             Collection cachedRedirects = (Collection)CacheController.getCachedObject("redirectCache", "allRedirects");

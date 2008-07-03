@@ -26,7 +26,9 @@ package org.infoglue.cms.applications.managementtool.actions;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
+import org.infoglue.cms.applications.common.actions.SubscriptionsAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.GroupControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.RoleControllerProxy;
@@ -48,6 +50,8 @@ import org.infoglue.cms.util.ConstraintExceptionBuffer;
 
 public class CreateSystemUserAction extends InfoGlueAbstractAction
 {
+    private final static Logger logger = Logger.getLogger(CreateSystemUserAction.class.getName());
+
 	private static final long serialVersionUID = 1L;
 	
 	private ConstraintExceptionBuffer ceb;
@@ -96,9 +100,9 @@ public class CreateSystemUserAction extends InfoGlueAbstractAction
 		String[] groups = getRequest().getParameterValues("groupName");
 		String[] contentTypeDefinitionIds = getRequest().getParameterValues("contentTypeDefinitionId");
 
-		System.out.println("roles:" + roles);
-		System.out.println("groups:" + groups);
-		System.out.println("contentTypeDefinitionIds:" + contentTypeDefinitionIds);
+		logger.info("roles:" + roles);
+		logger.info("groups:" + groups);
+		logger.info("contentTypeDefinitionIds:" + contentTypeDefinitionIds);
 
 		this.infoGluePrincipal = UserControllerProxy.getController().createUser(this.systemUserVO);
 		if(roles != null && groups != null)

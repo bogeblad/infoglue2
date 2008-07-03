@@ -43,17 +43,14 @@ public class ComponentDeploymentComparator implements Comparator
 		{
 			Comparable valueOne = contentVersionVO1.getModifiedDateTime();
 			Comparable valueTwo = contentVersionVO2.getModifiedDateTime();
-			//System.out.println("Sorting:" + valueOne + ":" + valueTwo);
 								
 			if(sortOrder.equalsIgnoreCase("desc"))
 			    result = valueTwo.compareTo(valueOne);
 			else
 			    result = valueOne.compareTo(valueTwo);
-			
-			//System.out.println("result:" + result);
 		}
 		else
-			System.out.println("A parameter was null... should not happen....:" + contentVO1 + ":" + contentVO2);
+			logger.error("A parameter was null... should not happen....:" + contentVO1 + ":" + contentVO2);
 		
 		return result;
 	}

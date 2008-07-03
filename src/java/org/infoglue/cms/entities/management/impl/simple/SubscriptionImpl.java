@@ -178,7 +178,6 @@ public class SubscriptionImpl implements Subscription
 	public void setSubscriptionFilters(Collection<SubscriptionFilterImpl> subscriptionFilters)
 	{
 		this.subscriptionFilters = subscriptionFilters;
-		System.out.println("subscriptionFilters:" + subscriptionFilters.size());
 		Iterator<SubscriptionFilterImpl> subscriptionFiltersIterator = subscriptionFilters.iterator();
 		while(subscriptionFiltersIterator.hasNext())
 		{

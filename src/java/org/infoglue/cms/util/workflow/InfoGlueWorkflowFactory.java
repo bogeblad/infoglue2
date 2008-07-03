@@ -29,6 +29,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.infoglue.cms.controllers.kernel.impl.simple.WorkflowDefinitionController;
 import org.infoglue.cms.entities.workflow.WorkflowDefinitionVO;
 import org.infoglue.cms.util.CmsPropertyHandler;
@@ -48,7 +49,8 @@ import com.opensymphony.workflow.loader.WorkflowLoader;
 
 public class InfoGlueWorkflowFactory extends AbstractWorkflowFactory
 {
-    //protected Map workflows;
+    private final static Logger logger = Logger.getLogger(InfoGlueWorkflowFactory.class.getName());
+
     protected boolean reload;
 
     public void setLayout(String workflowName, Object layout) 
@@ -273,18 +275,18 @@ public class InfoGlueWorkflowFactory extends AbstractWorkflowFactory
             if(encoding == null || encoding.length() == 0 || encoding.equalsIgnoreCase("@workflowEncoding@"))
                 encoding = "UTF-8";
             
-            //System.out.println("c.workflowDefinitionVO.getValue():\n" + c.workflowDefinitionVO.getValue());
-            //c.descriptor = WorkflowLoader.load(new ByteArrayInputStream(c.workflowDefinitionVO.getValue().getBytes("ISO-8859-1")) , validate);
             WorkflowDescriptor workflowDescriptor = (WorkflowDescriptor)CacheController.getCachedObject("workflowCache", "workflowDescriptor_" + c.workflowDefinitionVO.getName());
             if(workflowDescriptor == null)
             {
-            	//System.out.println("No cached workflow descriptor - reading it...");
+            	if(logger.isInfoEnabled())
+            		logger.info("No cached workflow descriptor - reading it...");
             	workflowDescriptor = WorkflowLoader.load(new ByteArrayInputStream(c.workflowDefinitionVO.getValue().getBytes(encoding)) , validate);
             	CacheController.cacheObject("workflowCache", "workflowDescriptor_" + c.workflowDefinitionVO.getName(), workflowDescriptor);
             }
             else
             {
-            	//System.out.println("Found cached workflow descriptor - using it...");
+            	if(logger.isInfoEnabled())
+            		logger.info("Found cached workflow descriptor - using it...");
             }
             c.descriptor = workflowDescriptor; //WorkflowLoader.load(new ByteArrayInputStream(c.workflowDefinitionVO.getValue().getBytes(encoding)) , validate);
         } 

@@ -60,7 +60,6 @@ public class RemoteInfoGlueService
     protected HttpServletRequest getRequest() 
     {
     	HttpServletRequest request = (HttpServletRequest)MessageContext.getCurrentContext().getProperty(HTTPConstants.MC_HTTP_SERVLETREQUEST);
-    	//System.out.println("request:" + request);
     	return request;
 	}
 
@@ -87,8 +86,6 @@ public class RemoteInfoGlueService
         attributeValue = attributeValue.replaceAll("templateLogic.getPageUrl", "\\$templateLogic.getPageUrl");
         attributeValue = attributeValue.replaceAll("templateLogic.getInlineAssetUrl", "\\$templateLogic.getInlineAssetUrl");
 
-        //System.out.println("attributeValue:" + attributeValue);
-        
         return attributeValue;
     }
 

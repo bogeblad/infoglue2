@@ -235,7 +235,6 @@ public class DigitalAssetImpl implements DigitalAsset
 			catch(Exception e)
 			{
 				System.out.println("The asset with id:" + this.getId() + " had no assetBlob or an error occurred when we tried to get it:" + e.getMessage());
-				//e.printStackTrace();
 			}
 		}
 				

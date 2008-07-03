@@ -118,7 +118,6 @@ public class DigitalAssetDeliveryController extends BaseDeliveryController
 			String folderName = "" + (digitalAssetVO.getDigitalAssetId().intValue() / 1000);
 			logger.info("folderName:" + folderName);
 			String filePath = CmsPropertyHandler.getDigitalAssetPath0() + File.separator + folderName;
-			//System.out.println("filePath:" + filePath);
 			while(filePath != null)
 			{
 				try
@@ -134,7 +133,6 @@ public class DigitalAssetDeliveryController extends BaseDeliveryController
 				filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i);
 			    if(filePath != null)
 			    	filePath += File.separator + folderName;
-				//System.out.println("filePath:" + filePath);
 			}
 
 			//DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpDigitalAsset(digitalAsset, fileName, filePath);
@@ -167,7 +165,6 @@ public class DigitalAssetDeliveryController extends BaseDeliveryController
 			String folderName = "" + (digitalAsset.getDigitalAssetId().intValue() / 1000);
 			logger.info("folderName:" + folderName);
 			String filePath = CmsPropertyHandler.getDigitalAssetPath0() + File.separator + folderName;
-			//System.out.println("filePath:" + filePath);
 			while(filePath != null)
 			{
 				try
@@ -183,7 +180,6 @@ public class DigitalAssetDeliveryController extends BaseDeliveryController
 				filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i);
 			    if(filePath != null)
 			    	filePath += File.separator + folderName;
-				//System.out.println("filePath:" + filePath);
 			}
 
 			//DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpDigitalAsset(digitalAsset, fileName, filePath);
@@ -355,35 +351,6 @@ public class DigitalAssetDeliveryController extends BaseDeliveryController
 		return outputFile;
 	}
 
-   	/**
-   	 * This method checks if the given file exists on disk. If it does it's ignored because
-   	 * that means that the file is allready cached on the server. If not we dump
-   	 * the given url on it.
-   	 */
-   	/*
-	public String getUrlToFile(String url, Map headers, String fileName, String filePath) throws Exception
-	{
-		String pageContent = null;
-		
-		File outputFile = new File(filePath + File.separator + fileName);
-		System.out.println("outputFile:" + outputFile.getAbsolutePath());
-		if(!outputFile.exists() || outputFile.length() == 0)
-		{
-			HttpHelper helper = new HttpHelper();
-			pageContent = helper.getUrlContent(url, headers);
-			System.out.println("pageContent:" + pageContent);
-			if(pageContent == null || pageContent.equals(""))
-				return null;
-
-			PrintWriter pw = new PrintWriter(new FileWriter(outputFile));
-	        pw.println(pageContent);    
-	        pw.close();
-		}
-		
-		return pageContent;
-	}
-	*/
-	
 	
 	public File dumpDigitalAsset(DigitalAssetVO digitalAssetVO, String fileName, String filePath, Database db) throws Exception
 	{
@@ -401,18 +368,12 @@ public class DigitalAssetDeliveryController extends BaseDeliveryController
 
 		try 
 		{
-			//System.out.println("tmpOutputFile:" + tmpOutputFile.getAbsolutePath());
-			//System.out.println("outputFile:" + outputFile.getAbsolutePath());
-			
-			//System.out.println("Dumping asset " + Thread.currentThread().getId() + ":" + fileName);
-			//Thread.sleep(2000);
 			File outputFileDir = new File(filePath);
 			outputFileDir.mkdirs();
 
 			DigitalAsset digitalAsset = DigitalAssetController.getDigitalAssetWithId(digitalAssetVO.getId(), db);
 			
 			String cmsBaseUrl = CmsPropertyHandler.getCmsFullBaseUrl();
-			//System.out.println("cmsBaseUrl:" + cmsBaseUrl);
 			if(CmsPropertyHandler.getEnableDiskAssets().equals("true"))
 			{
 				HttpHelper httpHelper = new HttpHelper();
@@ -557,12 +518,6 @@ public class DigitalAssetDeliveryController extends BaseDeliveryController
 
 		try 
 		{
-			//System.out.println("tmpOutputFile:" + tmpOutputFile.getAbsolutePath());
-			//System.out.println("outputFile:" + outputFile.getAbsolutePath());
-			
-			//System.out.println("Dumping asset " + Thread.currentThread().getId() + ":" + fileName);
-			//Thread.sleep(2000);
-			
 			InputStream inputStream = digitalAsset.getAssetBlob();
 			logger.info("inputStream:" + inputStream + ":" + inputStream.getClass().getName() + ":" + digitalAsset);
 			synchronized(inputStream)
@@ -628,7 +583,6 @@ public class DigitalAssetDeliveryController extends BaseDeliveryController
 		long timer = System.currentTimeMillis();
 		
 		File outputFile = new File(filePath + File.separator + fileName);
-		//System.out.println("outputFile:" + filePath + File.separator + fileName + ":" + outputFile.length());
 		if(outputFile.exists() && outputFile.length() > 0)
 		{
 			//logger.info("The file allready exists so we don't need to dump it again..");
@@ -638,8 +592,6 @@ public class DigitalAssetDeliveryController extends BaseDeliveryController
 		try 
 		{
 			new File(filePath).mkdirs();
-			
-			//System.out.println("outputFile:" + filePath + File.separator + fileName);
 			outputFile.createNewFile();
 			
 			FileOutputStream fis = new FileOutputStream(outputFile);

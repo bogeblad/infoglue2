@@ -97,8 +97,7 @@ public class ImageEditorAction extends InfoGlueAbstractAction
         if(this.workingFileName == null)
         {
 	        String filePath = DigitalAssetController.getDigitalAssetFilePath(this.digitalAssetVO.getDigitalAssetId());
-	        //System.out.println("filePath:" + filePath);
-	    	BufferedImage original = javax.imageio.ImageIO.read(new File(filePath));
+	        BufferedImage original = javax.imageio.ImageIO.read(new File(filePath));
 	
 	    	workingFileName = "imageEditorWK_" + System.currentTimeMillis() + "_" + this.getInfoGluePrincipal().getName().hashCode() + "_" + digitalAssetVO.getDigitalAssetId() + ".png";
 	    	File outputFile = new File(getImageEditorPath() + File.separator + workingFileName);
@@ -106,7 +105,7 @@ public class ImageEditorAction extends InfoGlueAbstractAction
 		}
         
     	this.modifiedFileUrl = getImageEditorBaseUrl() + workingFileName;
-    	//System.out.println("modifiedFileUrl:" + modifiedFileUrl);
+    	//logger.info("modifiedFileUrl:" + modifiedFileUrl);
     
         return "success";
     }    
@@ -132,34 +131,33 @@ public class ImageEditorAction extends InfoGlueAbstractAction
     	int originalHeight = original.getHeight();
     	float aspect = (float)originalWidth / (float)originalHeight;
     	BufferedImage image = null;
-    	/*
-    	System.out.println("originalWidth: " + originalWidth);
-    	System.out.println("originalHeight: " + originalHeight);
-    	System.out.println("height: " + height);
-    	System.out.println("width: " + width);
-    	System.out.println("keepRatio: " + keepRatio);
-    	System.out.println("bestFit: " + bestFit);
-    	*/
+
+    	logger.info("originalWidth: " + originalWidth);
+    	logger.info("originalHeight: " + originalHeight);
+    	logger.info("height: " + height);
+    	logger.info("width: " + width);
+    	logger.info("keepRatio: " + keepRatio);
+    	logger.info("bestFit: " + bestFit);
     	
     	if(keepRatio.equalsIgnoreCase("true"))
     	{
         	if(height == -1 && width != -1)
         	{
         		aspect = (float)width / (float)originalWidth;
-        		//System.out.println("aspect1:" + aspect);
+        		//logger.info("aspect1:" + aspect);
         	}
         	else if(width == -1 && height != -1)
         	{
         		aspect = (float)height / (float)originalHeight;
-        		//System.out.println("aspect2:" + aspect);
+        		//logger.info("aspect2:" + aspect);
         	}
         	else
         	{
         		aspect = (float)width / (float)originalWidth;
-        		//System.out.println("aspect3:" + aspect + " from " + width + "/" + originalWidth + "(" + ((float)width / (float)originalWidth) + ")");
+        		//logger.info("aspect3:" + aspect + " from " + width + "/" + originalWidth + "(" + ((float)width / (float)originalWidth) + ")");
         	}
         	
-        	//System.out.println("aspect:" + aspect);
+        	//logger.info("aspect:" + aspect);
         	
         	image = imaging.scale(original, aspect);        	
     	}
@@ -173,9 +171,9 @@ public class ImageEditorAction extends InfoGlueAbstractAction
     	outputFile.mkdirs();
     	javax.imageio.ImageIO.write(image, "PNG", outputFile);
 
-    	//System.out.println("outputFile:" + outputFile.length());
+    	//logger.info("outputFile:" + outputFile.length());
 		this.modifiedFileUrl = getImageEditorBaseUrl() + workingFileName;
-		//System.out.println("modifiedFileUrl:" + modifiedFileUrl);
+		//logger.info("modifiedFileUrl:" + modifiedFileUrl);
 		
         return "successResize";
     }    
@@ -197,9 +195,9 @@ public class ImageEditorAction extends InfoGlueAbstractAction
     	File outputFile = new File(getImageEditorPath() + File.separator + workingFileName);
     	javax.imageio.ImageIO.write(image, "PNG", outputFile);
 
-    	//System.out.println("outputFile:" + outputFile.length());
+    	//logger.info("outputFile:" + outputFile.length());
 		this.modifiedFileUrl = getImageEditorBaseUrl() + workingFileName;
-		//System.out.println("modifiedFileUrl:" + modifiedFileUrl);
+		//logger.info("modifiedFileUrl:" + modifiedFileUrl);
 		
         return "successCrop";
     }    
@@ -213,7 +211,7 @@ public class ImageEditorAction extends InfoGlueAbstractAction
         this.contentTypeDefinitionVO = ContentController.getContentController().getContentTypeDefinition(contentVersionVO.getContentId());
 
     	File file = new File(getImageEditorPath() + File.separator + workingFileName);
-    	//System.out.println("saving file:" + file.getAbsolutePath());
+    	//logger.info("saving file:" + file.getAbsolutePath());
 
    		String contentType = digitalAssetVO.getAssetContentType();
    		
@@ -325,15 +323,15 @@ public class ImageEditorAction extends InfoGlueAbstractAction
     	{
 			String folderName = "" + (digitalAssetVO.getDigitalAssetId().intValue() / 1000);
 			String assetFileName = "" + digitalAssetVO.getAssetFilePath() + File.separator + folderName + File.separator + digitalAssetVO.getId() + "_" + digitalAssetVO.getAssetFileName();
-			//System.out.println("Going to move " + file.getName() + " to " + assetFileName);
+			//logger.info("Going to move " + file.getName() + " to " + assetFileName);
     		File finalAssetFile = new File(assetFileName);
     		boolean moved = file.renameTo(finalAssetFile);
-			//System.out.println("moved:" + finalAssetFile.getAbsolutePath() + ":" + moved);    		
+			//logger.info("moved:" + finalAssetFile.getAbsolutePath() + ":" + moved);    		
     	}
     	else
     	{
     		boolean deleted = file.delete();
-			//System.out.println("file:" + file.getAbsolutePath() + ":" + deleted);
+			//logger.info("file:" + file.getAbsolutePath() + ":" + deleted);
     	}
 
 		cleanOldWorkingFiles(true);
@@ -356,8 +354,8 @@ public class ImageEditorAction extends InfoGlueAbstractAction
     	{
     		public boolean accept(File dir, String name) 
             {
-    			//System.out.println("name: " + name + ":" + name.indexOf(matchString));
-    			//System.out.println("matchString: " + matchString);
+    			//logger.info("name: " + name + ":" + name.indexOf(matchString));
+    			//logger.info("matchString: " + matchString);
     			return name.indexOf(matchString) > -1;
             }
         };
@@ -366,7 +364,7 @@ public class ImageEditorAction extends InfoGlueAbstractAction
     	for(int i=0; i < files.length; i++)
     	{
     		File file = files[i];
-    		//System.out.println("file:" + file.getName());
+    		//logger.info("file:" + file.getName());
     		boolean deleted = file.delete();
     	}
 

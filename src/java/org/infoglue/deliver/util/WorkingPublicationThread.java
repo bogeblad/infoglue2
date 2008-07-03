@@ -72,8 +72,6 @@ public class WorkingPublicationThread extends Thread
 
 	public void run() 
 	{
-		System.out.println("Hepp...");
-
 		work();
 	}
 	
@@ -181,7 +179,6 @@ public class WorkingPublicationThread extends Thread
 							if(disableAssetDeletionInWorkThread != null && !disableAssetDeletionInWorkThread.equals("true"))
 							{
 								logger.info("We should delete all images with digitalAssetId " + objectId);
-								//System.out.println("We should delete all images with digitalAssetId " + objectId);
 								DigitalAssetDeliveryController.getDigitalAssetDeliveryController().deleteDigitalAssets(new Integer(objectId));
 							}
 						}

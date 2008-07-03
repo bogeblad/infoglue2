@@ -59,8 +59,6 @@ public class ImprovedInfoglueHibernateWorkflowStore extends AbstractHibernateWor
     
     public void init(Map props) throws StoreException 
     {
-    	//System.out.println("props in init: " + props + " in " + this.hashCode());
-    	
     	setSessionFactory((SessionFactory) props.get("sessionFactory"));
     	setSession((Session) props.get("session"));
 
@@ -75,8 +73,6 @@ public class ImprovedInfoglueHibernateWorkflowStore extends AbstractHibernateWor
         } 
         catch (HibernateException e) 
         {
-        	//System.out.println("Session in error:" + getSession().hashCode());
-        	//e.printStackTrace();
         	throw new StoreException(e);
         }
     }
@@ -91,10 +87,8 @@ public class ImprovedInfoglueHibernateWorkflowStore extends AbstractHibernateWor
 	 */
     public ImprovedInfoglueHibernateWorkflowStore(SessionFactory sessionFactory) throws StoreException 
     {
-		//super(sessionFactory);
 		super();
 		this.setSessionFactory(sessionFactory);
-		//System.out.println("Constructor ImprovedInfoglueHibernateWorkflowStore...");
     }
 
     
@@ -153,33 +147,6 @@ public class ImprovedInfoglueHibernateWorkflowStore extends AbstractHibernateWor
     			
     			//Proposal - remove the cache by key
 	        	CacheController.clearCache("propertySetCache", key);
-	        	
-	        	/*
-    			try
-    			{
-					System.out.println("\n\nRestoring the session factory in getPropertySet....");
-	    			//sessionFactory.close();
-					this.setSessionFactory(new Configuration().configure().buildSessionFactory());
-					
-					InfoglueDefaultHibernateConfigurationProvider configurationProvider = new InfoglueDefaultHibernateConfigurationProvider();
-			        configurationProvider.setSessionFactory(this.getSessionFactory());
-			
-			        Map args = new HashMap();
-			        args.put("configurationProvider", configurationProvider);
-			        
-					ps = new CachingPropertySet();
-					
-					Map args2 = new HashMap();
-					args2.put("PropertySet", PropertySetManager.getInstance("hibernate", args));
-					args2.put("bulkload", new Boolean(true));
-					
-					ps.init(new HashMap(), args2);
-    			}
-				catch (HibernateException he)
-				{
-					he.printStackTrace();
-				}
-				*/
     		}
     	}
     	

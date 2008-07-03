@@ -343,7 +343,6 @@ public class LanguageDeliveryController extends BaseDeliveryController
 		if(languageVO != null)
 		{
 		    logger.info("There was an cached master language:" + languageVO.getName());
-			//System.out.println("There was an cached master language:" + languageVO.getName());
 		}
 		else
 		{
@@ -359,7 +358,6 @@ public class LanguageDeliveryController extends BaseDeliveryController
             {
 				Language language = (Language)results.next();
 				LanguageVO languageVOCandidate = language.getValueObject();
-				//System.out.println("languageVOCandidate:" + languageVOCandidate.getDisplayLanguage());
 				if(getIsValidLanguage(db, ndc, siteNode, languageVOCandidate.getId()))
 				{
 					languageVO = languageVOCandidate;		

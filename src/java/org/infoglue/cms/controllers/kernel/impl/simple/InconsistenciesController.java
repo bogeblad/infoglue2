@@ -74,39 +74,6 @@ public class InconsistenciesController extends BaseController
 	{
 		return new InconsistenciesController();
 	}
-
-	/*
-	public List getMetaDataInconsistencies() throws Exception
-	{
-		List inconsistencies = new ArrayList();
-		
-		HashMap arguments = new HashMap();
-		arguments.put("method", "selectListOnContentTypeName");
-		
-		List argumentList = new ArrayList();
-		HashMap argument = new HashMap();
-		argument.put("contentTypeDefinitionName", "HTMLTemplate");
-		argumentList.add(argument);
-		arguments.put("arguments", argumentList);
-		
-		List metaInfoContentVOList = ContentController.getContentController().getContentVOList(arguments);
-		System.out.println("metaInfoContentVOList:" + metaInfoContentVOList);
-		if(metaInfoContentVOList != null && metaInfoContentVOList.size() > 0)
-		{
-			Iterator metaInfoContentVOListIterator = metaInfoContentVOList.iterator();
-			while(metaInfoContentVOListIterator.hasNext())
-			{
-				ContentVO contentVO = (ContentVO)metaInfoContentVOListIterator.next();
-				System.out.println("metaInfoContentVOList:" + metaInfoContentVOList.size());
-				LanguageVO masterLanguageVO = LanguageController.getController().getMasterLanguage(contentVO.getRepositoryId());
-				ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentVO.getId(), masterLanguageVO.getId());
-				System.out.println("contentVersionVO:" + contentVersionVO);
-			}
-		}
-		
-		return inconsistencies;
-	}
-	*/
 	
 	public List getAllInconsistencies() throws Exception
 	{
@@ -119,14 +86,12 @@ public class InconsistenciesController extends BaseController
 			beginTransaction(db);
 		
 			List registryVOList = RegistryController.getController().getRegistryVOList(db);
-			//System.out.println("registryVOList:" + registryVOList);
 			if(registryVOList != null && registryVOList.size() > 0)
 			{
 				Iterator registryVOListIterator = registryVOList.iterator();
 				while(registryVOListIterator.hasNext())
 				{
 					RegistryVO registryVO = (RegistryVO)registryVOListIterator.next();
-					//System.out.println("registryVO:" + registryVO.getEntityName() + "-" + registryVO.getEntityId());
 					if(registryVO.getEntityName().equals(Content.class.getName()))
 					{
 						try
@@ -159,7 +124,7 @@ public class InconsistenciesController extends BaseController
 					}
 					else
 					{
-						System.out.println("The registry contained not supported entities:" + registryVO.getEntityName());
+						logger.error("The registry contained not supported entities:" + registryVO.getEntityName());
 					}
 				}
 			}
@@ -210,12 +175,12 @@ public class InconsistenciesController extends BaseController
 			}
 			else
 			{
-				System.out.println("The registry contained a not supported referencingEntityCompletingName:" + referencingEntityCompletingName);			
+				logger.error("The registry contained a not supported referencingEntityCompletingName:" + referencingEntityCompletingName);			
 			}
 		}
 		catch(Exception e)
 		{
-			System.out.println("There seems to be a problem with finding the inconsistency for registryVO " + registryVO.getRegistryId() + ":" + e.getMessage());
+			logger.error("There seems to be a problem with finding the inconsistency for registryVO " + registryVO.getRegistryId() + ":" + e.getMessage());
 		}
 	}
 
@@ -254,12 +219,12 @@ public class InconsistenciesController extends BaseController
 			}
 			else
 			{
-				System.out.println("The registry contained a not supported referencingEntityCompletingName:" + referencingEntityCompletingName);			
+				logger.error("The registry contained a not supported referencingEntityCompletingName:" + referencingEntityCompletingName);			
 			}
 		}
 		catch(Exception e)
 		{
-			System.out.println("There seems to be a problem with finding the inconsistency for registryVO " + registryVO.getRegistryId() + ":" + e.getMessage());
+			logger.error("There seems to be a problem with finding the inconsistency for registryVO " + registryVO.getRegistryId() + ":" + e.getMessage());
 		}
 	}
 
@@ -320,7 +285,7 @@ public class InconsistenciesController extends BaseController
 		}
 		else
 		{
-			System.out.println("The registry contained a not supported referencingEntityCompletingName:" + referencingEntityCompletingName);			
+			logger.error("The registry contained a not supported referencingEntityCompletingName:" + referencingEntityCompletingName);			
 		}
 		
 	}
@@ -476,8 +441,6 @@ public class InconsistenciesController extends BaseController
 		{
 			e.printStackTrace();
 		}
-
-		System.out.println("cleanedVersionValue:" + cleanedVersionValue);
 		
 		return cleanedVersionValue;
 	}

@@ -19,7 +19,7 @@
  * Place, Suite 330 / Boston, MA 02111-1307 / USA.
  *
  * ===============================================================================
- * $Id: InitializeCreateNews.java,v 1.7 2006/03/06 17:52:59 mattias Exp $
+ * $Id: InitializeCreateNews.java,v 1.8 2008/07/03 11:48:23 mattias Exp $
  */
 package org.infoglue.cms.applications.workflowtool.functions;
 
@@ -34,7 +34,7 @@ import com.opensymphony.workflow.FunctionProvider;
 
 /**
  * THIS IS VERY TEMPORARY SOLUTION FOR ASSESSING WHERE TO PUT THE NEWS ITEMS.
- * @version $Revision: 1.7 $ $Date: 2006/03/06 17:52:59 $
+ * @version $Revision: 1.8 $ $Date: 2008/07/03 11:48:23 $
  */
 public class InitializeCreateNews implements FunctionProvider
 {
@@ -42,8 +42,6 @@ public class InitializeCreateNews implements FunctionProvider
 
 	public void execute(Map transientVars, Map args, PropertySet propertySet)
 	{
-		System.out.println("Now I start by setting some basic parameters like where this content should end up...");
-
 		try
 		{
 		    Integer repositoryId 	= new Integer(((String[])transientVars.get("repositoryId"))[0]);

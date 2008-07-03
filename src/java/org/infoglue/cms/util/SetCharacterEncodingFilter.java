@@ -101,8 +101,8 @@ public class SetCharacterEncodingFilter implements Filter
 	                String languageId = referer.substring(startIndex + 12);
 	                if(endIndex != -1)
 	                	languageId = referer.substring(startIndex + 12, endIndex);
-		            //System.out.println("languageId:" + languageId);
-		            LanguageVO languageVO = LanguageController.getController().getLanguageVOWithId(new Integer(languageId));
+		            
+	                LanguageVO languageVO = LanguageController.getController().getLanguageVOWithId(new Integer(languageId));
 
 		            if(logger.isInfoEnabled())
 		            	logger.info("encoding decorated:" + languageVO.getCharset());

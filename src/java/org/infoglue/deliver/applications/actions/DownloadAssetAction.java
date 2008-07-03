@@ -90,8 +90,8 @@ public class DownloadAssetAction extends InfoGlueAbstractAction
         }
 
     	getAssetInformation();
-    	//System.out.println("assetFilePath:" + assetFilePath);
-    	//System.out.println("digitalAssetVO:" + digitalAssetVO);
+    	//logger.info("assetFilePath:" + assetFilePath);
+    	//logger.info("digitalAssetVO:" + digitalAssetVO);
     	
     	if(assetFilePath != null && digitalAssetVO != null)
     	{

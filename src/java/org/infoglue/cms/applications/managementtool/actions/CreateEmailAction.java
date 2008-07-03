@@ -26,6 +26,7 @@ package org.infoglue.cms.applications.managementtool.actions;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.applications.databeans.LinkBean;
@@ -39,6 +40,8 @@ import org.infoglue.cms.util.mail.MailServiceFactory;
 
 public class CreateEmailAction extends InfoGlueAbstractAction
 {
+    private final static Logger logger = Logger.getLogger(CreateEmailAction.class.getName());
+
 	private static final long serialVersionUID = 1L;
 	
 	private List users = null;
@@ -203,7 +206,7 @@ public class CreateEmailAction extends InfoGlueAbstractAction
 	        if(contentType == null || contentType.length() == 0)
 	            contentType = "text/html";
 
-	        System.out.println("message0:" + message);
+	        logger.error("message:" + message);
 	        
 		    if(contentType.equalsIgnoreCase("text/html"))
 		    {
@@ -228,7 +231,6 @@ public class CreateEmailAction extends InfoGlueAbstractAction
 	        String arguments = "userSessionKey=" + userSessionKey + "&isAutomaticRedirect=false";
 	        String messageUrl = returnAddress + (returnAddress.indexOf("?") > -1 ? "&" : "?") + arguments;
 	        
-	        //System.out.println("messageUrl:" + messageUrl);
 	        this.getResponse().sendRedirect(messageUrl);
 	        return NONE;
         }
@@ -246,10 +248,8 @@ public class CreateEmailAction extends InfoGlueAbstractAction
     	groups 		= GroupControllerProxy.getController().getAllGroups();
     	
         userSessionKey = "" + System.currentTimeMillis();
-        System.out.println("userSessionKey input:" + userSessionKey);
                 
         setActionMessage(userSessionKey, "Notifiering skickad.");
-        //addActionLink(userSessionKey, new LinkBean("currentPageUrl", "Tillbaka till sidan du utgick från", "Klicka här om du vill komma tillbaka till sidan där du startade flödet.", "Klicka här om du vill komma tillbaka till sidan där du startade flödet.", "javascript:tb_close();", ""));
     	
     	return "inputChooseRecipientsV3";
     }
@@ -261,7 +261,6 @@ public class CreateEmailAction extends InfoGlueAbstractAction
     	roleNames 	= getRequest().getParameterValues("roleName");
     	groupNames 	= getRequest().getParameterValues("groupName");
     	
-    	System.out.println("userNames:" + userNames);
     	if (userNames == null && roleNames == null && groupNames == null)
     	{    		
     		errorMessage = "You must select at least one recipient.";

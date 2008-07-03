@@ -85,7 +85,7 @@ public class AjaxComponentDeliveryServiceAction extends InfoGlueAbstractAction
     	Integer languageId = new Integer(languageIdString);
     	Integer componentId = new Integer(componentIdString);
     	Integer contentId = new Integer(contentIdString);
-    	//System.out.println("componentContentIdString:" + componentContentIdString);
+
     	Integer componentContentId = null;
     	if(componentContentIdString != null && !componentContentIdString.equals("null"))
     		componentContentId = new Integer(componentContentIdString);
@@ -114,7 +114,6 @@ public class AjaxComponentDeliveryServiceAction extends InfoGlueAbstractAction
         	if(slotName == null)
         		slotName = "";
         	
-        	//System.out.println("originalUrl:" + originalUrl);
     		PageEditorHelper peh = new PageEditorHelper();
 	    	String componentPropertiesDiv = peh.getComponentPropertiesDiv(db, principal, this.getRequest(), locale, repositoryId, siteNodeId, languageId, contentId, componentId, componentContentId, slotName, showSimple, originalUrl, showLegend, targetDiv);
 	    	propertiesDiv.append(componentPropertiesDiv);
@@ -132,7 +131,6 @@ public class AjaxComponentDeliveryServiceAction extends InfoGlueAbstractAction
 
         if(logger.isInfoEnabled())
             logger.info("Returning:" + propertiesDiv.toString());
-        //System.out.println("Returning:" + propertiesDiv.toString());
         
         return NONE;
     }
@@ -193,8 +191,6 @@ public class AjaxComponentDeliveryServiceAction extends InfoGlueAbstractAction
         	if(slotName == null)
         		slotName = "";
         	
-        	//System.out.println("originalFullURL in tasks:" + originalFullURL);
-
     		PageEditorHelper peh = new PageEditorHelper();
 	    	String componentTasksDiv = peh.getComponentTasksDiv(db, principal, this.getRequest(), locale, repositoryId, siteNodeId, languageId, contentId, componentId, componentContentId, slotName, slotId, showSimple, originalFullURL, showLegend, targetDiv, slotClicked, treeItem);
 	    	tasksDiv.append(componentTasksDiv);
@@ -327,8 +323,6 @@ public class AjaxComponentDeliveryServiceAction extends InfoGlueAbstractAction
         	if(languageId != null)
         		locale = LanguageController.getController().getLocaleWithId(languageId);
         	
-        	//System.out.println("originalFullURL in structure:" + originalFullURL);
-
     		PageEditorHelper peh = new PageEditorHelper();
 	    	String componentStructure = peh.getComponentStructureDiv(db, principal, this.getRequest(), locale, repositoryId, siteNodeId, languageId, contentId, showSimple, originalFullURL, showLegend, targetDiv);
 	    	componentStructureDiv.append(componentStructure);

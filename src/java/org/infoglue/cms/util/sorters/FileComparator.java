@@ -45,8 +45,7 @@ public class FileComparator implements Comparator
 		}
 		catch (Exception e)
 		{
-			System.out.println(getClass().getName() + " Error finding property " + property);
-			logger.info(getClass().getName() + " Error finding property " + property, e);
+			logger.warn(getClass().getName() + " Error finding property " + property, e);
 			return new Comparable()
 			{
 				public int compareTo(Object o)

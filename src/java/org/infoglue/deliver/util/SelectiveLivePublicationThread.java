@@ -191,7 +191,6 @@ public class SelectiveLivePublicationThread extends PublicationThread
 							if(disableAssetDeletionInLiveThread != null && !disableAssetDeletionInLiveThread.equals("true"))
 							{
 								logger.info("We should delete all images with digitalAssetId " + objectId);
-								//System.out.println("We should delete all images with digitalAssetId " + objectId);
 								DigitalAssetDeliveryController.getDigitalAssetDeliveryController().deleteDigitalAssets(new Integer(objectId));
 							}
 						}

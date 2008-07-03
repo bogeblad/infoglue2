@@ -3,7 +3,9 @@ package org.infoglue.cms.util.workflow.hibernate;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.infoglue.cms.applications.workflowtool.util.InfogluePropertySet;
+import org.infoglue.cms.util.workflow.WorkflowFacade;
 import org.infoglue.deliver.util.CacheController;
 import org.infoglue.deliver.util.Timer;
 
@@ -23,7 +25,10 @@ import com.opensymphony.workflow.spi.hibernate.HibernateWorkflowStore;
 /**
  * Quickfix
  */
-public class InfoglueHibernateWorkflowStore extends HibernateWorkflowStore {
+public class InfoglueHibernateWorkflowStore extends HibernateWorkflowStore 
+{
+	private final static Logger logger = Logger.getLogger(InfoglueHibernateWorkflowStore.class.getName());
+
 	/**
 	 * 
 	 */
@@ -92,7 +97,7 @@ public class InfoglueHibernateWorkflowStore extends HibernateWorkflowStore {
     			
     			try
     			{
-					System.out.println("\n\nRestoring the session factory....");
+					logger.error("\n\nRestoring the session factory....");
 	    			//sessionFactory.close();
 					sessionFactory = new Configuration().configure().buildSessionFactory();
 					

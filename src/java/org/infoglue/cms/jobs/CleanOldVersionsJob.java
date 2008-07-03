@@ -71,7 +71,7 @@ public class CleanOldVersionsJob implements Job
     		running = true;
     	else
     	{
-    		System.out.println("CleanOldVersionsJob allready running... skipping.");
+    		logger.info("CleanOldVersionsJob allready running... skipping.");
     		return;
     	}
     	

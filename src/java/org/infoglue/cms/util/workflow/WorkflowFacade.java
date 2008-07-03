@@ -73,7 +73,7 @@ import com.opensymphony.workflow.spi.WorkflowEntry;
  * the Workflow interface.  The idea is to encapsulate the interactions with OSWorkflow and eliminate the
  * need to pass a Workflow reference and the workflow ID all over the place when extracting data from OSWorkflow
  * @author <a href="mailto:jedprentice@gmail.com">Jed Prentice</a>
- * @version $Revision: 1.39 $ $Date: 2007/11/16 17:04:31 $
+ * @version $Revision: 1.40 $ $Date: 2008/07/03 11:49:55 $
  */
 public class WorkflowFacade
 {
@@ -181,7 +181,6 @@ public class WorkflowFacade
 			com.opensymphony.workflow.config.Configuration config = new /*InfoGlueHibernate*/DefaultConfiguration();
 			config.getPersistenceArgs().put("session", session);
 			config.getPersistenceArgs().put("sessionFactory", hibernateSessionFactory);
-			//System.out.println("hibernateSessionFactory:" + hibernateSessionFactory);
 			workflow.setConfiguration(config);
 		}
 		else
@@ -468,57 +467,7 @@ public class WorkflowFacade
 		}
 	}
 	
-	/*
-	private void restoreSessionFactory(AbstractWorkflow workflow, Throwable we) throws WorkflowException
-	{
-		if(workflow != null)
-		{
-			try
-			{
-				System.out.println("Restoring session factory...");
 
-				String serverName = "Unknown";
-		    	try
-		    	{
-				    InetAddress localhost = InetAddress.getLocalHost();
-				    serverName = localhost.getHostName();
-		    	}
-		    	catch(Exception e) {}
-
-				StringWriter sw = new StringWriter();
-				we.printStackTrace(new PrintWriter(sw));
-				String stacktrace = sw.toString().replaceAll("(\r\n|\r|\n|\n\r)", "<br/>");
-
-				String subject = "CMS - Restoring session factory on " + serverName;
-				String message = "OS Workflow had problems accessing the database or some other problem occurred. Check why the database went away or the error occurred.";
-				message = message + "\n\n" + we.getMessage() + "\n\n" + stacktrace;
-				
-		        String warningEmailReceiver = CmsPropertyHandler.getWarningEmailReceiver();
-		        if(warningEmailReceiver != null && !warningEmailReceiver.equals("") && warningEmailReceiver.indexOf("@warningEmailReceiver@") == -1)
-		        {
-					try
-					{
-						MailServiceFactory.getService().sendEmail(warningEmailReceiver, warningEmailReceiver, null, subject, message, "utf-8");
-					} 
-					catch (Exception e)
-					{
-						logger.error("Could not send mail:" + e.getMessage(), e);
-					}
-		        }
-
-				//hibernateSessionFactory.close();
-				hibernateSessionFactory = new Configuration().configure().buildSessionFactory();
-				workflow.getConfiguration().getPersistenceArgs().put("sessionFactory", hibernateSessionFactory);
-				workflow.getConfiguration().getWorkflowStore().init(workflow.getConfiguration().getPersistenceArgs());
-			}
-			catch (HibernateException e)
-			{
-				logger.error("An error occurred when we tried to restore the hibernate session factory:" + e.getMessage());
-				throw new ExceptionInInitializerError(e);
-			}
-		}
-	}
-	*/
 	/**
 	 * Performs an action using the given inputs.
 	 * A <code>DatabaseSession</code> object whose lifecycle is handled by this method is inserted into the <code>inputs</code>.

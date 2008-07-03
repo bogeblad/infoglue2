@@ -136,23 +136,23 @@ public class CreateDigitalAssetAction extends ViewDigitalAssetAction
 	
     public String doMultiple() throws Exception //throws Exception
     {
-    	System.out.println("Uploading file....");
+    	logger.info("Uploading file....");
     	this.principal = getInfoGluePrincipal();
     	
-		System.out.println("QueryString:" + this.getRequest().getQueryString());
+		logger.info("QueryString:" + this.getRequest().getQueryString());
 		String requestSessionId = this.getRequest().getParameter("JSESSIONID");
-		System.out.println("JSESSIONID:" + requestSessionId);
+		logger.info("JSESSIONID:" + requestSessionId);
 		boolean allowedSessionId = false;
 		List activeSessionBeanList = CmsSessionContextListener.getSessionInfoBeanList();
 		Iterator activeSessionsIterator = activeSessionBeanList.iterator();
-		System.out.println("activeSessionBeanList:" + activeSessionBeanList.size());
+		logger.info("activeSessionBeanList:" + activeSessionBeanList.size());
 		while(activeSessionsIterator.hasNext())
 		{
 			SessionInfoBean sessionBean = (SessionInfoBean)activeSessionsIterator.next();
-			System.out.println("sessionBean:" + sessionBean.getId() + "=" + sessionBean.getPrincipal().getName());
+			logger.info("sessionBean:" + sessionBean.getId() + "=" + sessionBean.getPrincipal().getName());
 			if(sessionBean.getId().equals(requestSessionId))
 			{
-				System.out.println("Found a matching sessionId");
+				logger.info("Found a matching sessionId");
 				allowedSessionId = true;
 		    	this.principal = sessionBean.getPrincipal();
 
@@ -172,9 +172,9 @@ public class CreateDigitalAssetAction extends ViewDigitalAssetAction
 		if(result.equals("success"))
 		{
 			String assetUrl = getDigitalAssetUrl();
-			System.out.println("assetUrl:" + assetUrl);
+			logger.info("assetUrl:" + assetUrl);
 			String assetThumbnailUrl = getAssetThumbnailUrl();
-			System.out.println("assetThumbnailUrl:" + assetThumbnailUrl);
+			logger.info("assetThumbnailUrl:" + assetThumbnailUrl);
 			this.getResponse().setContentType("text/plain");
 	        this.getResponse().getWriter().println(assetThumbnailUrl + ":" + this.digitalAssetKey);
 	        return NONE;
@@ -190,7 +190,7 @@ public class CreateDigitalAssetAction extends ViewDigitalAssetAction
     
     public String doExecute() throws IOException //throws Exception
     {
-    	System.out.println("Uploading file....");
+    	logger.info("Uploading file....");
     	if(this.principal == null)
     		this.principal = getInfoGluePrincipal();
     	
@@ -254,24 +254,24 @@ public class CreateDigitalAssetAction extends ViewDigitalAssetAction
 						
 		            	digitalAssetKey = new String(digitalAssetKey.getBytes(fromEncoding), toEncoding);
 		            			            	
-		            	System.out.println("digitalAssetKey:" + digitalAssetKey);
-		            	System.out.println("name:" + name);
-		            	System.out.println("contentType:" + contentType);
-		            	System.out.println("fileSystemName:" + fileSystemName);
+		            	logger.info("digitalAssetKey:" + digitalAssetKey);
+		            	logger.info("name:" + name);
+		            	logger.info("contentType:" + contentType);
+		            	logger.info("fileSystemName:" + fileSystemName);
 		            	if(digitalAssetKey == null || digitalAssetKey.equals(""))
 		            	{
 		            		if(fileSystemName.lastIndexOf(".") > -1)
 		            			digitalAssetKey = fileSystemName.substring(0, fileSystemName.lastIndexOf("."));
 		            		digitalAssetKey = formatter.replaceNonAscii(digitalAssetKey, '_');
 		            	}
-		            	System.out.println("digitalAssetKey:" + digitalAssetKey);
+		            	logger.info("digitalAssetKey:" + digitalAssetKey);
 		            	
 		            	if(useFileNameAsContentTypeBase)
 		            	{
 		            		if(fileSystemName.lastIndexOf(".") > -1)
 		            		{
 		            			String extension = fileSystemName.substring(fileSystemName.lastIndexOf(".") + 1);
-		            			System.out.println("extension:" + extension);	
+		            			logger.info("extension:" + extension);	
 
 		            			if(extension.equalsIgnoreCase("gif"))
 			            			contentType = "image/gif";
@@ -294,13 +294,13 @@ public class CreateDigitalAssetAction extends ViewDigitalAssetAction
 			            			contentType = "text/xml";		            		
 		            		}
 		            	}
-		            	System.out.println("contentType:" + contentType);
+		            	logger.info("contentType:" + contentType);
 		            	
 		            	file = mpr.getFile(name);
 		            	//String fileName = this.contentVersionId + "_" + System.currentTimeMillis() + "_" + fileSystemName;
 						String fileName = fileSystemName;
 
-		            	System.out.println("fileSystemName:" + fileSystemName);
+		            	logger.info("fileSystemName:" + fileSystemName);
 
 						fileName = new VisualFormatter().replaceNonAscii(fileName, '_');
 						
@@ -336,7 +336,7 @@ public class CreateDigitalAssetAction extends ViewDigitalAssetAction
 				                this.uploadMaxSize = "\"" + digitalAssetKey + "\"";
 				                this.getResponse().setContentType("text/html; charset=UTF-8");
 				    	        //this.getResponse().setStatus(responseCode);
-				                System.out.println("this.getResponse():" + this.getResponse());
+				                logger.info("this.getResponse():" + this.getResponse());
 				                this.getResponse().setHeader("sendIGError", "true");
 				    	        
 			                	return "uploadFailed";						        
@@ -451,11 +451,11 @@ public class CreateDigitalAssetAction extends ViewDigitalAssetAction
 								//String assetFileName = "" + digitalAssetVO.getAssetFilePath() + File.separator + digitalAssetVO.getId() + "_" + digitalAssetVO.getAssetFileName();
 								String folderName = "" + (digitalAssetVO.getDigitalAssetId().intValue() / 1000);
 								String assetFileName = "" + digitalAssetVO.getAssetFilePath() + File.separator + folderName + File.separator + digitalAssetVO.getId() + "_" + digitalAssetVO.getAssetFileName();
-								//System.out.println("newAsset:" + assetFileName);
+								//logger.info("newAsset:" + assetFileName);
 								File assetFile = new File(assetFileName);
-								//System.out.println("Renaming:" + file.getAbsolutePath() + " to " + assetFile.getAbsolutePath());
+								//logger.info("Renaming:" + file.getAbsolutePath() + " to " + assetFile.getAbsolutePath());
 								file.renameTo(assetFile);
-								//System.out.println("apaFile:" + assetFile.exists());
+								//logger.info("apaFile:" + assetFile.exists());
 							}
 						}
 						
@@ -516,7 +516,7 @@ public class CreateDigitalAssetAction extends ViewDigitalAssetAction
 		    
 			String transformationXPath = "//transformation";
 			List transformationElements = rootElement.selectNodes(transformationXPath);
-			System.out.println("transformationElements:" + transformationElements.size());
+			logger.info("transformationElements:" + transformationElements.size());
 			
 			/*
 			<transformations>
@@ -533,17 +533,17 @@ public class CreateDigitalAssetAction extends ViewDigitalAssetAction
 				Element transformationElement = (Element)transformationElementsIterator.next();
 			
 				String inputFilePattern  = transformationElement.attributeValue("inputFilePattern");
-				System.out.println("inputFilePattern: " + inputFilePattern);
+				logger.info("inputFilePattern: " + inputFilePattern);
 				
 				if(contentType.matches(inputFilePattern))
 				{
-					System.out.println("We got a match on contentType:" + contentType + " : " + inputFilePattern);
+					logger.info("We got a match on contentType:" + contentType + " : " + inputFilePattern);
 
 					String keepOriginalAsset = transformationElement.attributeValue("keepOriginal");
 					if(keepOriginalAsset != null && keepOriginalAsset.equalsIgnoreCase("false"))
 						keepOriginal = false;
 					
-					System.out.println("keepOriginal:" + keepOriginal);
+					logger.info("keepOriginal:" + keepOriginal);
 
 					List tranformResultElements = transformationElement.elements("tranformResult");
 					Iterator tranformResultElementsIterator = tranformResultElements.iterator();
@@ -557,11 +557,11 @@ public class CreateDigitalAssetAction extends ViewDigitalAssetAction
 						String outputFormat	= tranformResultElement.attributeValue("outputFormat");
 						String assetSuffix 	= tranformResultElement.attributeValue("assetSuffix");
 	
-						System.out.println("type: " + type);
-						System.out.println("width: " + width);
-						System.out.println("height: " + height);
-						System.out.println("outputFormat: " + outputFormat);
-						System.out.println("assetSuffix: " + assetSuffix);
+						logger.info("type: " + type);
+						logger.info("width: " + width);
+						logger.info("height: " + height);
+						logger.info("outputFormat: " + outputFormat);
+						logger.info("assetSuffix: " + assetSuffix);
 						
 						if(type.equalsIgnoreCase("scaleImage"))
 							scaleAndSaveImage(originalAssetVO, file, Integer.parseInt(width), Integer.parseInt(height), outputFormat, assetSuffix);
@@ -569,7 +569,7 @@ public class CreateDigitalAssetAction extends ViewDigitalAssetAction
 				}
 				else
 				{
-					System.out.println("NOOOO match on contentType:" + contentType + " : " + inputFilePattern);
+					logger.info("NOOOO match on contentType:" + contentType + " : " + inputFilePattern);
 				}
 			}
 		}
@@ -583,7 +583,7 @@ public class CreateDigitalAssetAction extends ViewDigitalAssetAction
 
 	private void scaleAndSaveImage(DigitalAssetVO originalAssetVO, File file, int width, int height, String outputFormat, String assetSuffix) throws Exception
 	{
-		System.out.println("Scaling image to new format:" + originalAssetVO + ":" + outputFormat);
+		logger.info("Scaling image to new format:" + originalAssetVO + ":" + outputFormat);
     	BufferedImage original = javax.imageio.ImageIO.read(file);
     	
     	int originalWidth = original.getWidth();
@@ -598,7 +598,7 @@ public class CreateDigitalAssetAction extends ViewDigitalAssetAction
     	else
     		aspect = (float)width / (float)originalWidth;
     	
-    	System.out.println("aspect:" + aspect);
+    	logger.info("aspect:" + aspect);
     	
     	image = imaging.scale(original, aspect);        	
 	
@@ -627,7 +627,7 @@ public class CreateDigitalAssetAction extends ViewDigitalAssetAction
 		this.digitalAssetVO = DigitalAssetController.create(digitalAssetVO, is, this.contentVersionId, this.getInfoGluePrincipal());
 		is.close();
 		
-		//System.out.println("this.digitalAssetVO in scale:" + this.digitalAssetVO.getId());
+		//logger.info("this.digitalAssetVO in scale:" + this.digitalAssetVO.getId());
     	String folderName = "" + (this.digitalAssetVO.getId().intValue() / 1000);
 		String newWorkingFileName = "" + this.digitalAssetVO.getId() + "_" + timeStamp + "_" + assetSuffix + "." + outputFormat.toLowerCase();
     	File finalOutputFile = new File(CmsPropertyHandler.getDigitalAssetPath() + File.separator + folderName + File.separator + newWorkingFileName);

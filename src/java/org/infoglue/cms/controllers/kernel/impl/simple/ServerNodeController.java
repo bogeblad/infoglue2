@@ -220,7 +220,6 @@ public class ServerNodeController extends BaseController
 	    while(keysIterator.hasNext())
 	    {
 	    	String key = (String)keysIterator.next();
-	    	//System.out.println("key:" + key);
 	    	if(key.indexOf("serverNode_" + serverNodeId + "_") > -1)
 	    		ps.remove(key);
 	    }
@@ -263,11 +262,9 @@ public class ServerNodeController extends BaseController
 	{
 	    boolean isIPAllowed = false;
 
-	    //System.out.println("useUpdateSecurity:" + useUpdateSecurity);
 	    if(useUpdateSecurity != null && useUpdateSecurity.equals("true"))
 	    {
 		    String remoteIP = request.getRemoteAddr();
-		    //System.out.println("remoteIP:" + remoteIP);
 		    if(remoteIP.equals("127.0.0.1"))
 		    {
 		        isIPAllowed = true;
@@ -281,11 +278,9 @@ public class ServerNodeController extends BaseController
 		            String allowedIP = (String)i.next();
 		            if(!allowedIP.trim().equals(""))
 		            {
-			            //System.out.println("allowedIP:" + allowedIP);
 			            int index = allowedIP.indexOf(".*");
 			            if(index > -1)
 			                allowedIP = allowedIP.substring(0, index);
-						//System.out.println("allowedIP:" + allowedIP);
 				            
 			            if(remoteIP.startsWith(allowedIP))
 			            {

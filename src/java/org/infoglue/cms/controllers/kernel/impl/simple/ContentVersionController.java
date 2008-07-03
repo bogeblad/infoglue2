@@ -1020,8 +1020,7 @@ public class ContentVersionController extends BaseController
 	    	    if(!contentVersionVO.getStateId().equals(ContentVersionVO.WORKING_STATE))
 				{
 					ContentVersionVO oldContentVersionVO = ContentVersionController.getContentVersionController().getContentVersionVOWithId(contentVersionVO.getId(), db);
-					System.out.println("Setting state to working...");
-			    	List events = new ArrayList();
+					List events = new ArrayList();
 					contentVersion = ContentStateController.changeState(oldContentVersionVO.getId(), ContentVersionVO.WORKING_STATE, "new working version", false, null, principal, oldContentVersionVO.getContentId(), db, events);
 					contentVersion.setVersionValue(contentVersionVO.getVersionValue());
 				}
@@ -1373,7 +1372,6 @@ public class ContentVersionController extends BaseController
         	DigitalAssetVO digitalAssetVO = DigitalAssetController.getController().getDigitalAssetVOWithId(digitalAssetId, db);
     	    if(!contentVersionVO.getStateId().equals(ContentVersionVO.WORKING_STATE))
 			{
-				System.out.println("Setting state to working...");
 		    	List events = new ArrayList();
 				contentVersion = ContentStateController.changeState(contentVersionVO.getId(), ContentVersionVO.WORKING_STATE, "new working version", false, null, principal, contentVersionVO.getContentId(), db, events);
 				digitalAssetVO = DigitalAssetController.getController().getLatestDigitalAssetVO(contentVersion.getId(), digitalAssetVO.getAssetKey(), db);
@@ -1863,9 +1861,7 @@ public class ContentVersionController extends BaseController
             {
 				boolean keep = true;
             	
-				//DigitalAsset digitalAsset = (DigitalAsset)results.next();
             	MediumDigitalAssetImpl digitalAsset = (MediumDigitalAssetImpl)results.next();
-            	//System.out.println("found one:" + digitalAsset.getId() + ":" + digitalAsset.getAssetKey() + ":" + digitalAsset.getAssetContentType());
             	if(digitalAsset.getAssetKey().equals("portletentityregistry.xml"))
             		keep = false;
             	
@@ -1875,7 +1871,6 @@ public class ContentVersionController extends BaseController
             	while(contentVersionsIterator.hasNext())
             	{
             		contentVersion = (ContentVersion)contentVersionsIterator.next();
-            		//System.out.println("contentVersion:" + contentVersion.getId() + ":" + contentVersion.getIsActive());
             		if(!isOldVersion(contentVersion, numberOfVersionsToKeep))
             			keep = false;
             	}
@@ -1885,8 +1880,7 @@ public class ContentVersionController extends BaseController
             		if(contentVersion.getOwningContent() != null)
             		{
 	            		String contentPath = ContentController.getContentController().getContentPath(contentVersion.getOwningContent().getId(), true, true);
-	            		//System.out.println("Adding asset:" + digitalAsset.getId() + ":" + digitalAsset.getAssetKey() + ":" + contentVersions.size());
-		            	optimizationBeanList.addDigitalAsset(digitalAsset);
+	            		optimizationBeanList.addDigitalAsset(digitalAsset);
 		            	optimizationBeanList.addEventVersions(toVOList(contentVersions));
 		            	optimizationBeanList.setContentPath(digitalAsset.getId(), contentPath);
 		            	i++;
@@ -2098,8 +2092,7 @@ public class ContentVersionController extends BaseController
     	ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getContentVersionVOWithId(contentVersionId, db);
     	if(!contentVersionVO.getStateId().equals(ContentVersionVO.WORKING_STATE))
 		{
-			System.out.println("Setting state to working...");
-	    	List events = new ArrayList();
+			List events = new ArrayList();
 			contentVersion = ContentStateController.changeState(contentVersionVO.getId(), ContentVersionVO.WORKING_STATE, "new working version", false, null, principal, contentVersionVO.getContentId(), db, events);
 		}
 		else
@@ -2127,8 +2120,7 @@ public class ContentVersionController extends BaseController
         	DigitalAssetVO digitalAssetVO = DigitalAssetController.getController().getDigitalAssetVOWithId(digitalAssetId, db);
     	    if(!contentVersionVO.getStateId().equals(ContentVersionVO.WORKING_STATE))
 			{
-				System.out.println("Setting state to working...");
-		    	List events = new ArrayList();
+				List events = new ArrayList();
 				contentVersion = ContentStateController.changeState(contentVersionVO.getId(), ContentVersionVO.WORKING_STATE, "new working version", false, null, principal, contentVersionVO.getContentId(), db, events);
 				digitalAssetVO = DigitalAssetController.getController().getLatestDigitalAssetVO(contentVersion.getId(), digitalAssetVO.getAssetKey(), db);
 			}
@@ -2158,7 +2150,6 @@ public class ContentVersionController extends BaseController
     	DigitalAssetVO digitalAssetVO = DigitalAssetController.getController().getDigitalAssetVOWithId(digitalAssetId, db);
 	    if(!contentVersionVO.getStateId().equals(ContentVersionVO.WORKING_STATE))
 		{
-			System.out.println("Setting state to working...");
 	    	List events = new ArrayList();
 			contentVersion = ContentStateController.changeState(contentVersionVO.getId(), ContentVersionVO.WORKING_STATE, "new working version", false, null, principal, contentVersionVO.getContentId(), db, events);
 			digitalAssetVO = DigitalAssetController.getController().getLatestDigitalAssetVO(contentVersion.getId(), digitalAssetVO.getAssetKey(), db);

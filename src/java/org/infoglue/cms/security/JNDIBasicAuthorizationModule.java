@@ -101,8 +101,6 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule, Serial
 	
 	public DirContext getContext() throws Exception
 	{
-		//System.out.println("Creating JNDI-context...");
-		
 		String connectionURL 		= this.extraProperties.getProperty("connectionURL");
 		String ldapVersion			= this.extraProperties.getProperty("ldapVersion");
 		String socketFactory		= this.extraProperties.getProperty("socketFactory");
@@ -110,8 +108,6 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule, Serial
 		String connectionName		= this.extraProperties.getProperty("connectionName");
 		String connectionPassword	= this.extraProperties.getProperty("connectionPassword");
 
-		//System.out.println("connectionURL:" + connectionURL);
-		
 		// Create a Hashtable object.
 		Hashtable env = new Hashtable();
 		
@@ -213,15 +209,12 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule, Serial
 			else
 			{
 				infogluePrincipal = (InfoGluePrincipal)infogluePrincipalObject;
-				//System.out.println("Returning cached user:" + userName + ":" + infogluePrincipal);
 				return infogluePrincipal;
 			}
 		}
 
 		String administratorUserName = CmsPropertyHandler.getAdministratorUserName();
 		String administratorEmail 	 = CmsPropertyHandler.getAdministratorEmail();
-		//String administratorUserName = CmsPropertyHandler.getProperty("administratorUserName");
-		//String administratorEmail 	 = CmsPropertyHandler.getProperty("administratorEmail");
 		
 		final boolean isAdministrator = userName.equalsIgnoreCase(administratorUserName) ? true : false;
 		if(isAdministrator)
@@ -281,7 +274,6 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule, Serial
 			else
 			{
 				infogluePrincipal = (InfoGluePrincipal)infogluePrincipalObject;
-				//System.out.println("Returning cached user:" + userName + ":" + infogluePrincipal);
 				return infogluePrincipal;
 			}
 		}

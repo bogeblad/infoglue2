@@ -104,10 +104,9 @@ public class ViewMessageCenterAction extends InfoGlueAbstractAction
     {
     	if(getInfoGluePrincipal() == null)
     		return ERROR;
-    	//System.out.println("Adding message:" + message);
     	
     	chat.addMessage(this.getUserName(), CHAT_MESSAGE_TYPE, this.message);
-    	//System.out.println("this.isSystemMessage:" + this.isSystemMessage);
+
     	if(this.isSystemMessage)
     	    systemMessagesChat.addMessage(this.getUserName(), SYSTEM_MESSAGE_TYPE, "openChat('" + this.message + "');");
     	

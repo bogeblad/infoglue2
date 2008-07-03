@@ -141,9 +141,6 @@ public class SubscriptionController extends BaseController
 			
 			Subscription subscription = getSubscriptionWithId(subscriptionVO.getId(), db);
 			//db.remove(subscription);
-			/*
-	        System.out.println("subscription before:" + subscription.getSubscriptionFilters().size());
-			*/
 	        subscription.setValueObject(subscriptionVO);
 			subscription.setSubscriptionFilters(new ArrayList());
 			
@@ -154,15 +151,11 @@ public class SubscriptionController extends BaseController
 		    	SubscriptionFilterImpl subscriptionFilter = new SubscriptionFilterImpl();
 		    	subscriptionFilter.setValueObject(subscriptionFilterVO);
 		    	subscriptionFilter.setSubscription(subscription);
-		    	System.out.println("Adding subscriptionFilter:" + subscriptionFilter);
+		    	logger.info("Adding subscriptionFilter:" + subscriptionFilter);
 		    	subscription.getSubscriptionFilters().add(subscriptionFilter);	        				
 			}
 
 			subscriptionVO = subscription.getValueObject();
-	        //System.out.println("subscription after:" + subscription.getSubscriptionFilters().size());
-	        
-		
-		//	create(subscriptionVO, subscriptionFilterVOList, db);
 			
 	        commitTransaction(db);
 		}
@@ -334,7 +327,6 @@ public class SubscriptionController extends BaseController
 
 	    sql.append(" ORDER BY s.subscriptionId");
 	    
-	    //System.out.println("sql: " + sql);
 		OQLQuery oql = db.getOQLQuery(sql.toString());
 		Iterator bindingsIterator = bindings.iterator();
 		while(bindingsIterator.hasNext())

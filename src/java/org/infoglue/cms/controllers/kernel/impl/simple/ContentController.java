@@ -251,7 +251,6 @@ public class ContentController extends BaseController
 			/*
         	synchronized (controller)
 			{
-        		System.out.println("Start create");
         		//db.lock(parentContent);
 			*/
 	            content = new ContentImpl();
@@ -348,13 +347,11 @@ public class ContentController extends BaseController
 		}
 		
 		Content parent = content.getParentContent();
-		//System.out.println("parent:" + parent.hashCode());
 		if(parent != null)
 		{
 			/*
 			synchronized (controller)
 			{
-				System.out.println("In sync:" + parent.hashCode());
 				//db.lock(controller);
 			*/	
 				Iterator childContentIterator = parent.getChildren().iterator();
@@ -367,7 +364,6 @@ public class ContentController extends BaseController
 				    }
 				}
 			/*
-				System.out.println("Done sync:" + parent.hashCode());
 			}
 			*/
 		}
@@ -1760,7 +1756,6 @@ public class ContentController extends BaseController
 		if(contentVersionVO == null && useLanguageFallBack)
 		{
 			LanguageVO masterLanguageVO = LanguageController.getController().getMasterLanguage(contentVO.getRepositoryId(), db);
-			//System.out.println("Falling back to masterLanguageVO:" + masterLanguageVO);
 			contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentVO.getId(), masterLanguageVO.getId(), db);
 		}
 		

@@ -36,8 +36,6 @@ public class HardcodedPageComparator implements Comparator
 
 	public int compare(Object o1, Object o2)
 	{
-	    //System.out.println("sortOrder: " + sortOrder);
-
 	    Comparable valueOne = getProperty(o1, sortProperty);
 		Comparable valueTwo = getProperty(o2, sortProperty);
 		
@@ -110,8 +108,6 @@ public class HardcodedPageComparator implements Comparator
 	    int index1 = namesInOrderString.indexOf(valueOneName.toString());
 	    int index2 = namesInOrderString.indexOf(valueTwoName.toString());
 	    
-	    //System.out.println("" + valueOneName.toString() + ":" + index1);
-	    //System.out.println("" + valueTwoName.toString() + ":" + index2);
 	    if(index1 != -1 && index2 != -1)
 	    {
 	        if(index1 > index2)
@@ -150,24 +146,7 @@ public class HardcodedPageComparator implements Comparator
 	    	    if(result > 0)
 	    	        return true;
 	    	    else
-	    	        return false;
-	    	    
-	            /*
-		        if(sortOrder.equalsIgnoreCase("desc"))
-		        {
-		            if(valueTwo.compareTo(valueOne) < 0)
-		                return false;
-		            else
-		                return true;
-		        }
-			    else
-			    {
-			        if(valueTwo.compareTo(valueOne) > 0)
-				        return false;
-		            else
-		                return true;
-			    }
-			    */
+	    	        return false;	    	    
 	        }
 	    }
 	}

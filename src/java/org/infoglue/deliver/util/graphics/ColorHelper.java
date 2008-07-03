@@ -80,7 +80,6 @@ public class ColorHelper
 	
 	public static Color getColor( String separatedRGBA, String delimiter )
 	{
-	    //System.out.println("separatedRGBA: " + separatedRGBA + ", " + delimiter );
 	    StringTokenizer st = new StringTokenizer( separatedRGBA, delimiter, false );
 	    int r = 0, g = 0, b = 0, a = 0;
 	    if ( st.hasMoreTokens() )
@@ -99,7 +98,6 @@ public class ColorHelper
 	    {
 	        a = Integer.parseInt( st.nextToken().trim() );
 	    }
-	    //System.out.println( r + ", " + g + ", " + b + ", " + a );
 	    return new Color( r, g, b, a );
 	}
 

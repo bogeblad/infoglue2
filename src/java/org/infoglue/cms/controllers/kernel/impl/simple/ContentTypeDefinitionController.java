@@ -630,9 +630,7 @@ public class ContentTypeDefinitionController extends BaseController
 		//List attributes = new ArrayList();
 
 	    String key = "schemaValue_" + schemaValue.hashCode();
-	    //System.out.println("key:" + key);
 		Object attributesCandidate = CacheController.getCachedObject("contentTypeDefinitionCache", key);
-		//System.out.println("propertyCandidate for key " + key + "=" + propertyCandidate);
 		List attributes = new ArrayList();
 			
 		if(attributesCandidate != null)
@@ -1490,11 +1488,9 @@ public class ContentTypeDefinitionController extends BaseController
 			
 			String attributesXPath = "/xs:schema/xs:complexType/xs:all/xs:element/xs:complexType/xs:all";
 			Node attributesNode = org.apache.xpath.XPathAPI.selectSingleNode(localDocument.getDocumentElement(), attributesXPath);
-			System.out.println("attributesNode:" + attributesNode);
+			logger.info("attributesNode:" + attributesNode);
 			if(attributesNode != null && localDocument != null && attributeNode != null)
 			{
-				System.out.println("localDocument:" + localDocument);
-				System.out.println("attributeNode:" + attributeNode);
 				Node node = localDocument.importNode(attributeNode, true);
 	
 				attributesNode.appendChild(node);
@@ -1505,7 +1501,7 @@ public class ContentTypeDefinitionController extends BaseController
 			}
 			else
 			{
-				System.out.println("Problem:" + attributesNode + " - " + localDocument + " - " + attributeNode);
+				logger.error("Problem:" + attributesNode + " - " + localDocument + " - " + attributeNode);
 			}
 		}
 		catch (Exception e) 
@@ -1527,11 +1523,9 @@ public class ContentTypeDefinitionController extends BaseController
 			
 			String attributeXPath = "/xs:schema/xs:simpleType[@name='categoryKeys']/xs:restriction/xs:enumeration[@value='" + categoryName + "']";
 			Node attributeNode = org.apache.xpath.XPathAPI.selectSingleNode(remoteDocument.getDocumentElement(), attributeXPath);
-			//System.out.println("attributeNode:" + attributeNode);
-
+			
 			String attributesXPath = "/xs:schema/xs:simpleType[@name='categoryKeys']/xs:restriction";
 			Node attributesNode = org.apache.xpath.XPathAPI.selectSingleNode(localDocument.getDocumentElement(), attributesXPath);
-			//System.out.println("attributesNode:" + attributesNode);
 			if(attributesNode == null)
 			{
 				attributesNode = ContentTypeDefinitionController.getController().createNewEnumerationKey(localDocument, ContentTypeDefinitionController.CATEGORY_KEYS);
@@ -1548,7 +1542,7 @@ public class ContentTypeDefinitionController extends BaseController
 			}
 			else
 			{
-				System.out.println("Problem:" + attributesNode + " - " + localDocument + " - " + attributeNode);
+				logger.error("Problem:" + attributesNode + " - " + localDocument + " - " + attributeNode);
 			}
 		}
 		catch (Exception e) 
@@ -1570,11 +1564,9 @@ public class ContentTypeDefinitionController extends BaseController
 
 			String attributeXPath = "/xs:schema/xs:simpleType[@name='assetKeys']/xs:restriction/xs:enumeration[@value='" + assetKey + "']";
 			Node attributeNode = org.apache.xpath.XPathAPI.selectSingleNode(remoteDocument.getDocumentElement(), attributeXPath);
-			//System.out.println("attributeNode:" + attributeNode);
-
+		
 			String attributesXPath = "/xs:schema/xs:simpleType[@name='assetKeys']/xs:restriction";
 			Node attributesNode = org.apache.xpath.XPathAPI.selectSingleNode(localDocument.getDocumentElement(), attributesXPath);
-			//System.out.println("attributesNode:" + attributesNode);
 			if(attributesNode == null)
 			{
 				attributesNode = ContentTypeDefinitionController.getController().createNewEnumerationKey(localDocument, ContentTypeDefinitionController.ASSET_KEYS);
@@ -1591,7 +1583,7 @@ public class ContentTypeDefinitionController extends BaseController
 			}
 			else
 			{
-				System.out.println("Problem:" + attributesNode + " - " + localDocument + " - " + attributeNode);
+				logger.error("Problem:" + attributesNode + " - " + localDocument + " - " + attributeNode);
 			}
 		}
 		catch (Exception e) 

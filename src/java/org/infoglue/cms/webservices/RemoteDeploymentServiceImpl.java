@@ -139,12 +139,10 @@ public class RemoteDeploymentServiceImpl extends RemoteInfoGlueService
 	        
         try
         {
-        	System.out.println("input:" + input);
-        	
         	final DynamicWebserviceSerializer serializer = new DynamicWebserviceSerializer();
         	Map arguments = (Map)serializer.deserialize(input);
         	
-            System.out.println("arguments:" + arguments);
+            logger.info("arguments:" + arguments);
                     	
 			if(logger.isInfoEnabled())
 	        {
@@ -155,9 +153,9 @@ public class RemoteDeploymentServiceImpl extends RemoteInfoGlueService
 			List missingContentTypeNameArray = (List)arguments.get("missingContentTypeNameArray");
 			List deviatingContentTypeNameArray = (List)arguments.get("deviatingContentTypeNameArray");
 			
-			System.out.println("remoteContentTypeDefinitionVOList:" + remoteContentTypeDefinitionVOList);
-			System.out.println("missingContentTypeNameArray:" + missingContentTypeNameArray);
-			System.out.println("deviatingContentTypeNameArray:" + deviatingContentTypeNameArray);
+			logger.info("remoteContentTypeDefinitionVOList:" + remoteContentTypeDefinitionVOList);
+			logger.info("missingContentTypeNameArray:" + missingContentTypeNameArray);
+			logger.info("deviatingContentTypeNameArray:" + deviatingContentTypeNameArray);
 			
 			if(missingContentTypeNameArray != null)
 	    	{
@@ -165,16 +163,16 @@ public class RemoteDeploymentServiceImpl extends RemoteInfoGlueService
 		    	while(missingContentTypeNameArrayIterator.hasNext())
 		    	{
 		    		String missingContentTypeName = (String)missingContentTypeNameArrayIterator.next();
-		    		System.out.println("Updating missingContentTypeName:" + missingContentTypeName);
+		    		logger.info("Updating missingContentTypeName:" + missingContentTypeName);
 		
 		        	Iterator remoteContentTypeDefinitionVOListIterator = remoteContentTypeDefinitionVOList.iterator();
 		        	while(remoteContentTypeDefinitionVOListIterator.hasNext())
 		        	{
 		        		ContentTypeDefinitionVO remoteContentTypeDefinitionVO = (ContentTypeDefinitionVO)remoteContentTypeDefinitionVOListIterator.next();
-		        		//System.out.println("remoteContentTypeDefinitionVO:" + remoteContentTypeDefinitionVO.getName());
+		        		//logger.info("remoteContentTypeDefinitionVO:" + remoteContentTypeDefinitionVO.getName());
 		        		if(remoteContentTypeDefinitionVO.getName().equals(missingContentTypeName))
 		        		{
-		        			System.out.println("Creating remoteContentTypeDefinitionVO:" + remoteContentTypeDefinitionVO.getName());
+		        			logger.info("Creating remoteContentTypeDefinitionVO:" + remoteContentTypeDefinitionVO.getName());
 		        			ContentTypeDefinitionController.getController().create(remoteContentTypeDefinitionVO);
 		        		}
 		        	}
@@ -187,15 +185,15 @@ public class RemoteDeploymentServiceImpl extends RemoteInfoGlueService
 		    	while(deviatingContentTypeNameArrayIterator.hasNext())
 		    	{
 		    		String deviatingContentTypeName = (String)deviatingContentTypeNameArrayIterator.next();
-		    		//System.out.println("Updating deviatingContentTypeName:" + deviatingContentTypeName);
+		    		//logger.info("Updating deviatingContentTypeName:" + deviatingContentTypeName);
 		    		Map deviationArguments = (Map)arguments.get("deviationArguments_" + deviatingContentTypeName);
-					System.out.println("deviationArguments:" + deviationArguments);
+					logger.info("deviationArguments:" + deviationArguments);
 
 		        	Iterator remoteContentTypeDefinitionVOListIterator = remoteContentTypeDefinitionVOList.iterator();
 		        	while(remoteContentTypeDefinitionVOListIterator.hasNext())
 		        	{
 		        		ContentTypeDefinitionVO remoteContentTypeDefinitionVO = (ContentTypeDefinitionVO)remoteContentTypeDefinitionVOListIterator.next();
-		        		//System.out.println("remoteContentTypeDefinitionVO:" + remoteContentTypeDefinitionVO.getName());
+		        		//logger.info("remoteContentTypeDefinitionVO:" + remoteContentTypeDefinitionVO.getName());
 		        		if(remoteContentTypeDefinitionVO.getName().equals(deviatingContentTypeName))
 		        		{
 		        			ContentTypeDefinitionVO localContentTypeDefinitionVO = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithName(remoteContentTypeDefinitionVO.getName());
@@ -204,7 +202,7 @@ public class RemoteDeploymentServiceImpl extends RemoteInfoGlueService
 		        			//Enkelt - vid push tillåter vi bara push av hela innehållstypen
 		        			newSchemaValue = remoteContentTypeDefinitionVO.getSchemaValue();
 		        			/*
-							System.out.println("deviationArguments:" + deviationArguments);
+							logger.info("deviationArguments:" + deviationArguments);
 							List attributes 	= (List)deviationArguments.get("attributes");
 							List categories 	= (List)deviationArguments.get("categories");
 							List assets 		= (List)deviationArguments.get("assets");
@@ -215,7 +213,7 @@ public class RemoteDeploymentServiceImpl extends RemoteInfoGlueService
 		        	    		while(attributesIterator.hasNext())
 		        	    		{
 			        	    		String attributeName = (String)attributesIterator.next();
-			        	    		System.out.println("  * Updating attributeName:" + attributeName);
+			        	    		logger.info("  * Updating attributeName:" + attributeName);
 			        			
 				        			newSchemaValue = contentTypeDefinitionController.copyAttribute(remoteContentTypeDefinitionVO.getSchemaValue(), newSchemaValue, attributeName);
 				        		}
@@ -227,7 +225,7 @@ public class RemoteDeploymentServiceImpl extends RemoteInfoGlueService
 		        	    		while(categoryIterator.hasNext())
 		        	    		{
 			        	    		String categoryName = (String)categoryIterator.next();
-			        	    		System.out.println("  * Updating categoryName:" + categoryName);
+			        	    		logger.info("  * Updating categoryName:" + categoryName);
 			        			
 				        			newSchemaValue = contentTypeDefinitionController.copyCategory(remoteContentTypeDefinitionVO.getSchemaValue(), newSchemaValue, categoryName);
 				        		}
@@ -239,7 +237,7 @@ public class RemoteDeploymentServiceImpl extends RemoteInfoGlueService
 		        	    		while(assetsIterator.hasNext())
 		        	    		{
 			        	    		String assetKey = (String)assetsIterator.next();
-			        	    		System.out.println("  * Updating assetKey:" + assetKey);
+			        	    		logger.info("  * Updating assetKey:" + assetKey);
 			        			
 				        			newSchemaValue = contentTypeDefinitionController.copyAssetKey(remoteContentTypeDefinitionVO.getSchemaValue(), newSchemaValue, assetKey);
 				        		}
@@ -247,7 +245,7 @@ public class RemoteDeploymentServiceImpl extends RemoteInfoGlueService
 		        	    	*/
 		        			
 		        			localContentTypeDefinitionVO.setSchemaValue(newSchemaValue);
-		        			System.out.println("Updating localContentTypeDefinitionVO:" + localContentTypeDefinitionVO.getName());
+		        			logger.info("Updating localContentTypeDefinitionVO:" + localContentTypeDefinitionVO.getName());
 				
 		        			ContentTypeDefinitionController.getController().update(localContentTypeDefinitionVO);
 		        		}
@@ -289,17 +287,17 @@ public class RemoteDeploymentServiceImpl extends RemoteInfoGlueService
 	        
         try
         {
-        	System.out.println("input:" + input);
+        	logger.info("input:" + input);
         	
         	final DynamicWebserviceSerializer serializer = new DynamicWebserviceSerializer();
         	Map arguments = (Map)serializer.deserialize(input);
         	
-            System.out.println("arguments:" + arguments);
+            logger.info("arguments:" + arguments);
                     	
 			List remoteCategoryVOList = (List)arguments.get("categoryVOList");
 			Map requestMap = (Map)arguments.get("requestMap");
         	
-            System.out.println("remoteCategoryVOList:" + remoteCategoryVOList);
+            logger.info("remoteCategoryVOList:" + remoteCategoryVOList);
                     	
 			if(logger.isInfoEnabled())
 	        {
@@ -307,7 +305,7 @@ public class RemoteDeploymentServiceImpl extends RemoteInfoGlueService
 	        }
 						
 		    List<CategoryVO> allLocalCategories = CategoryController.getController().findAllActiveCategories();
-		    //System.out.println("allLocalCategories:" + allLocalCategories.size());
+		    //logger.info("allLocalCategories:" + allLocalCategories.size());
 	    	
 		    Map handledRemoteCategoryPaths = new HashMap();
 		    
@@ -347,17 +345,17 @@ public class RemoteDeploymentServiceImpl extends RemoteInfoGlueService
 	        
         try
         {
-        	System.out.println("input:" + input);
+        	logger.info("input:" + input);
         	
         	final DynamicWebserviceSerializer serializer = new DynamicWebserviceSerializer();
         	Map arguments = (Map)serializer.deserialize(input);
         	
-            System.out.println("arguments:" + arguments);
+            logger.info("arguments:" + arguments);
                     	
 			List remoteWorkflowDefinitionVOList = (List)arguments.get("workflowDefinitionVOList");
 			Map requestMap = (Map)arguments.get("requestMap");
         	
-            System.out.println("remoteWorkflowDefinitionVOList:" + remoteWorkflowDefinitionVOList);
+            logger.info("remoteWorkflowDefinitionVOList:" + remoteWorkflowDefinitionVOList);
                     	
 			if(logger.isInfoEnabled())
 	        {
@@ -410,12 +408,12 @@ public class RemoteDeploymentServiceImpl extends RemoteInfoGlueService
 	        
         try
         {
-        	System.out.println("input:" + input);
+        	logger.info("input:" + input);
         	
         	final DynamicWebserviceSerializer serializer = new DynamicWebserviceSerializer();
         	Map arguments = (Map)serializer.deserialize(input);
         	
-            System.out.println("arguments:" + arguments);
+            logger.info("arguments:" + arguments);
                     	
 	    	List components = ContentController.getContentController().getContentVOWithContentTypeDefinition("HTMLTemplate");
 	    	ContentTypeDefinitionVO contentTypeDefinitionVO = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithName("HTMLTemplate");
@@ -427,7 +425,7 @@ public class RemoteDeploymentServiceImpl extends RemoteInfoGlueService
 			InfoGluePrincipal principal = UserControllerProxy.getController().getUser(principalName);
 
 	    	List missingRemoteComponents = (List)arguments.get("missingComponents");
-            System.out.println("missingRemoteComponents:" + missingRemoteComponents);
+            logger.info("missingRemoteComponents:" + missingRemoteComponents);
                     
 			Iterator missingRemoteComponentsIterator = missingRemoteComponents.iterator();
 			while(missingRemoteComponentsIterator.hasNext())
@@ -436,9 +434,9 @@ public class RemoteDeploymentServiceImpl extends RemoteInfoGlueService
 				if(missingRemoteContentVO != null)
 					missingRemoteContentVO.setIsBranch(Boolean.FALSE);
 				
-				System.out.println("missingRemoteContentVO:" + missingRemoteContentVO + ":" + missingRemoteContentVO.getFullPath());
+				logger.info("missingRemoteContentVO:" + missingRemoteContentVO + ":" + missingRemoteContentVO.getFullPath());
 				String fullPath = missingRemoteContentVO.getFullPath();
-				System.out.println("fullPath:" + fullPath);
+				logger.info("fullPath:" + fullPath);
 				int siteNodeEnd = fullPath.indexOf(" - /");
 				String repositoryString = fullPath.substring(0, siteNodeEnd);
 				String restString = fullPath.substring(siteNodeEnd + 4);
@@ -449,20 +447,20 @@ public class RemoteDeploymentServiceImpl extends RemoteInfoGlueService
 				else
 					restString = "";
 				
-				System.out.println("repositoryString:" + repositoryString);
-				System.out.println("restString:" + restString);
+				logger.info("repositoryString:" + repositoryString);
+				logger.info("restString:" + restString);
 				try
 				{
 					RepositoryVO repositoryVO = RepositoryController.getController().getRepositoryVOWithName(repositoryString);
-					System.out.println("repositoryVO:" + repositoryVO);
+					logger.info("repositoryVO:" + repositoryVO);
 					if(repositoryVO != null)
 					{
 						LanguageVO languageVO = LanguageController.getController().getMasterLanguage(repositoryVO.getRepositoryId());
 	
 						ContentVO parentContent = ContentController.getContentController().getContentVOWithPath(repositoryVO.getId(), restString, true, principal);
-						System.out.println("parentContent:" + parentContent);
+						logger.info("parentContent:" + parentContent);
 						ContentVO newContentVO = ContentController.getContentController().create(parentContent.getId(), contentTypeDefinitionVO.getContentTypeDefinitionId(), parentContent.getRepositoryId(), missingRemoteContentVO);
-						System.out.println("Now we want to create the version also on:" + newContentVO.getName());
+						logger.info("Now we want to create the version also on:" + newContentVO.getName());
 						ContentVersionVO contentVersionVO = new ContentVersionVO();
 						contentVersionVO.setVersionComment("deployment");
 						contentVersionVO.setVersionModifier(principal.getName());
@@ -481,20 +479,20 @@ public class RemoteDeploymentServiceImpl extends RemoteInfoGlueService
 			
 			//Getting ready to handle deviating ones
 	    	List remoteComponents = (List)arguments.get("deviatingComponents");
-            System.out.println("remoteComponents:" + remoteComponents);
+            logger.info("remoteComponents:" + remoteComponents);
                     
 			Iterator remoteComponentsIterator = remoteComponents.iterator();
 			while(remoteComponentsIterator.hasNext())
 			{
 				ContentVO remoteContentVO = (ContentVO)remoteComponentsIterator.next();
-				System.out.println("remoteContentVO:" + remoteContentVO + ":" + remoteContentVO.getFullPath());
+				logger.info("remoteContentVO:" + remoteContentVO + ":" + remoteContentVO.getFullPath());
 
 				Iterator componentsIterator = components.iterator();
 		    	while(componentsIterator.hasNext())
 		    	{
 		    		ContentVO contentVO = (ContentVO)componentsIterator.next();
 		    		String fullPath = ContentController.getContentController().getContentPath(contentVO.getId(), true, true);					
-		    		System.out.println("fullPath:" + fullPath);
+		    		logger.info("fullPath:" + fullPath);
 		    		if(fullPath.equalsIgnoreCase(remoteContentVO.getFullPath()))
 		    		{
 						LanguageVO languageVO = LanguageController.getController().getMasterLanguage(contentVO.getRepositoryId());
@@ -504,7 +502,7 @@ public class RemoteDeploymentServiceImpl extends RemoteInfoGlueService
 							if(remoteContentVO.getVersions() != null && remoteContentVO.getVersions().length > 0)
 							{
 								contentVersionVO.setVersionValue(remoteContentVO.getVersions()[0]);
-								System.out.println("Updating :" + contentVersionVO.getContentName() + " with new latest versionValue:" + remoteContentVO.getVersions()[0].length());
+								logger.info("Updating :" + contentVersionVO.getContentName() + " with new latest versionValue:" + remoteContentVO.getVersions()[0].length());
 								ContentVersionController.getContentVersionController().update(contentVersionVO.getId(), contentVersionVO);								
 							}
 						}		
@@ -655,7 +653,7 @@ public class RemoteDeploymentServiceImpl extends RemoteInfoGlueService
 					contentVOListIterator.remove();
 				}
 				
-				//System.out.println("Versions on remote:" + contentVO.getContentVersion());
+				//logger.info("Versions on remote:" + contentVO.getContentVersion());
 				contentVO.setFullPath(fullPath);
 			}
         }

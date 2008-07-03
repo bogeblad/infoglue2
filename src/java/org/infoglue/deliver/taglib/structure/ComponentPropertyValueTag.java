@@ -71,8 +71,6 @@ public class ComponentPropertyValueTag extends ComponentLogicTag
 	        		propertyValue = getComponentLogic().getPropertyValue(siteNodeId, propertyName, useLanguageFallback, useInheritance);	
 	        }
 	        
-	        //System.out.println("parse:" + parse);
-	        //System.out.println("propertyValue:" + propertyValue);
 	        if(parse && propertyValue != null && !propertyValue.equals(""))
 	        {
 	        	propertyValue = getController().getParsedText(propertyValue);

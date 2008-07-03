@@ -141,7 +141,6 @@ public class BasicURLComposer extends URLComposer
     	if(filename != null && filename.indexOf("_") > -1)
     	{
     		String assetId = filename.substring(0, filename.indexOf("_"));
-    		//System.out.println("assetId:" + assetId);
     		try 
     		{
 				folderName = "" + (new Integer(assetId).intValue() / 1000);

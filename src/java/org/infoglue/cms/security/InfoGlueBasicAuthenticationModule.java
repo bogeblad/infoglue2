@@ -238,7 +238,7 @@ public class InfoGlueBasicAuthenticationModule extends AuthenticationModule
 			}
 			catch (Exception e) 
 			{
-				System.out.println("Error encrypting password before auth:" + e.getMessage());
+				logger.error("Error encrypting password before auth:" + e.getMessage());
 			}
 		}
 		

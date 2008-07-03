@@ -82,7 +82,6 @@ public class RequestCentricCachePopulator
         String recacheUrl = CmsPropertyHandler.getRecacheUrl() + "?siteNodeId=" + siteNodeId + "&refresh=true&isRecacheCall=true";
         logger.info("recacheUrl:" + recacheUrl);
         String response = helper.getUrlContent(recacheUrl, 30000);
-        //System.out.println("response:" + response);
         
         logger.info("recache stopped..");
 	}

@@ -286,9 +286,7 @@ public class InfoGlueSettingsController extends BaseController implements Castor
     
     public void updateProperty(InfoGlueProperty property, String value, Database database) throws Exception 
     {
-		System.out.println("sat value ....");
     	property.setValue(value);
-    	property.setComment("Updated on " + DateHelper.getSecondPreciseDate());
     }
 
 
@@ -320,16 +318,13 @@ public class InfoGlueSettingsController extends BaseController implements Castor
 		
         String cacheKey = "" + key + "_" + name + "_" + variationId + "_" + skipInfoGlueProperty + "_" + fallbackToDefault + "_" + fallbackToKey + "_" + useDerivedValue;
         Object cacheObject = CacheController.getCachedObject(CacheController.SETTINGSPROPERTIESCACHENAME, cacheKey);
-	    //System.out.println("cacheObject:" + cacheObject);
 	    if(cacheObject instanceof NullObject)
 		{
-	    	//System.out.println("Returning nullObject for " + key);
-			return null;
+	    	return null;
 		}
 	    else if(cacheObject != null)
 		{
-	    	//System.out.println("Key:" + key + " was " + cacheObject.toString().trim());
-			return cacheObject.toString().trim();
+	    	return cacheObject.toString().trim();
 		}
 
 	    String property = "";
@@ -346,8 +341,6 @@ public class InfoGlueSettingsController extends BaseController implements Castor
 		        	derivedValue = derivedObject.toString();
 	        }
 	        
-	        //System.out.println("key:" + key);
-	        //System.out.println("derivedValue:" + derivedValue);
 	        if(!skipInfoGlueProperty)
 	        {
 		        if(derivedValue != null)
@@ -369,7 +362,6 @@ public class InfoGlueSettingsController extends BaseController implements Castor
 	    
 		    if(property == null)
 		    {
-		    	//System.out.println("Caching null object for " + key);
 		    	CacheController.cacheObject(CacheController.SETTINGSPROPERTIESCACHENAME, cacheKey, new NullObject());
 		    }
 		    else

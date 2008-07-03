@@ -27,6 +27,7 @@ import javax.servlet.jsp.JspException;
 
 import org.apache.log4j.Logger;
 import org.infoglue.cms.util.CmsPropertyHandler;
+import org.infoglue.deliver.controllers.kernel.impl.simple.BasicTemplateController;
 import org.infoglue.deliver.taglib.TemplateControllerTag;
 import org.infoglue.deliver.util.CacheController;
 import org.infoglue.deliver.util.PublicationThread;
@@ -38,6 +39,8 @@ import org.infoglue.deliver.util.RequestAnalyser;
 
 public class ClearCacheTag extends TemplateControllerTag
 {
+    private final static Logger logger = Logger.getLogger(ClearCacheTag.class.getName());
+
 	private static final long serialVersionUID = 3905242346756059449L;
 
 	private String entity = null;
@@ -52,8 +55,6 @@ public class ClearCacheTag extends TemplateControllerTag
     {
 		try
 		{	
-			System.out.println("Thread:" + Thread.currentThread().getId() + ":" + this.getController().getDeliveryContext().getHttpServletRequest());
-
 			CacheController.clearCache(Class.forName(entity), new Object[]{entityId}, true);
 		    CacheController.clearCaches(entity, entityId, null, true);
 		    //CacheController.clearCaches(null, null, null, true);
@@ -92,7 +93,7 @@ public class ClearCacheTag extends TemplateControllerTag
 			} 
 			catch (Exception e)
 			{
-			    System.out.println("An error occurred in the PublicationThread:" + e.getMessage());
+			    logger.error("An error occurred in the PublicationThread:" + e.getMessage());
 			}
 		}
 	}

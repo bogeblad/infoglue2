@@ -453,16 +453,7 @@ public class CASBasicAuthenticationModule extends AuthenticationModule//, Author
 			
 			service = referer;
 		}
-		
-		/*
-		if(this.casServiceUrl.equals("$currentUrl"))
-		{
-		  	String originalFullURL = getCurrentURL(request);
-		  	System.out.println("originalFullURL:" + originalFullURL);
-		  	this.casServiceUrl = originalFullURL;
-		}
-		*/
-	  	
+			  	
 		response.sendRedirect(this.getCasLogoutUrl() + "?service=" + service);
 		
 		return true;
@@ -485,17 +476,6 @@ public class CASBasicAuthenticationModule extends AuthenticationModule//, Author
 		  	String originalFullURL = getCurrentURL(request);
 		  	
 		  	String referer = request.getHeader("Referer");
-		    //System.out.println("referer:" + referer);
-			/*
-		    String service = getService(request);
-			if(referer != null && !referer.equals(""))
-			{
-				if(referer.lastIndexOf("/") > 0)
-					referer = referer.substring(0, referer.lastIndexOf("/"));
-				
-				service = referer;
-			}
-			*/
 		  	
 		  	logger.info("originalFullURL:" + originalFullURL);
 		  	this.casServiceUrl = originalFullURL;
@@ -708,7 +688,6 @@ public class CASBasicAuthenticationModule extends AuthenticationModule//, Author
 				redirectUrl = loginUrl + "?service=" + getService(request) + ((casRenew != null && !casRenew.equals("")) ? "&renew="+ casRenew : "") + ((gateway != null && !gateway.equals("")) ? "&gateway="+ gateway : "");
 			
 			logger.info("redirectUrl 6:" + redirectUrl);
-			System.out.println();
 			
 			response.sendRedirect(redirectUrl);
 			status.put("redirected", new Boolean(true));

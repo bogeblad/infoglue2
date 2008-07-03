@@ -67,15 +67,6 @@ public final class DeliverContextListener implements ServletContextListener
     {
 		try
 		{		    
-		    /*
-			String isHeadless = System.getProperty("java.awt.headless");
-			System.out.println("java.awt.headless=" + isHeadless);
-			if(isHeadless == null || !isHeadless.equalsIgnoreCase("true"))
-			{
-				System.setProperty("java.awt.headless", "true");
-			}
-			*/
-		    
 			String contextRootPath = event.getServletContext().getRealPath("/");
 			if(!contextRootPath.endsWith("/") && !contextRootPath.endsWith("\\")) 
 				contextRootPath = contextRootPath + "/";

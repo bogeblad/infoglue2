@@ -456,7 +456,6 @@ public class ToolbarController
 				  					  "images/v3/cancelIcon.gif"));
 		*/
 		
-		//System.out.println("primaryKeyAsInteger:" + primaryKeyAsInteger);
 		LanguageVO currentLanguageVO = null;
 		ContentVO contentVO = null;
 		if(primaryKeyAsInteger != null)
@@ -467,7 +466,6 @@ public class ToolbarController
 		}
 		else
 		{
-			//System.out.println("extraInformation:" + extraParameters);
 			Map extraParametersMap = new HttpHelper().toMap(extraParameters, "UTF-8");
 			contentVO = ContentController.getContentController().getContentVOWithId(new Integer((String)extraParametersMap.get("contentId")));
 			currentLanguageVO = LanguageController.getController().getLanguageVOWithId(new Integer((String)extraParametersMap.get("languageId")));

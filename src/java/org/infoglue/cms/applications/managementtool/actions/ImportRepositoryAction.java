@@ -440,7 +440,6 @@ public class ImportRepositoryAction extends InfoGlueAbstractAction
 		{
 			if(contentIdMap.containsKey(siteNode.getMetaInfoContentId().toString()))
 				mappedMetaInfoContentId = (String)contentIdMap.get(siteNode.getMetaInfoContentId().toString());
-			//System.out.println("siteNode meta info content id was:" + siteNode.getMetaInfoContentId() + " and is now " + mappedMetaInfoContentId);
 		}
 		siteNode.setMetaInfoContentId(new Integer(mappedMetaInfoContentId));
 		
@@ -514,7 +513,7 @@ public class ImportRepositoryAction extends InfoGlueAbstractAction
 				ServiceDefinition originalServiceDefinition = serviceBinding.getServiceDefinition();
 				if(originalServiceDefinition == null)
 				{
-					System.out.println("Skipping serviceBinding:" + serviceBinding.getName() + ":" + "serviceBinding:" + serviceBinding.getId() + " " + serviceBinding.getServiceDefinition());
+					logger.error("Skipping serviceBinding:" + serviceBinding.getName() + ":" + "serviceBinding:" + serviceBinding.getId() + " " + serviceBinding.getServiceDefinition());
 					continue;
 				}
 				
@@ -638,8 +637,6 @@ public class ImportRepositoryAction extends InfoGlueAbstractAction
 		    		}
 		    	}
 
-		    	//System.out.println("originalContentTypeDefinition:" + originalContentTypeDefinition);
-
 		    	if(originalContentTypeDefinition != null)
 		    	{
 			    	contentTypeDefinition = ContentTypeDefinitionController.getController().getContentTypeDefinitionWithName(originalContentTypeDefinition.getName(), db);
@@ -657,10 +654,10 @@ public class ImportRepositoryAction extends InfoGlueAbstractAction
 
 		    	}
 			    else
-			    	System.out.println("The content " + content.getName() + " had a content type not found amongst the listed ones:" + contentTypeDefinitionId);
+			    	logger.error("The content " + content.getName() + " had a content type not found amongst the listed ones:" + contentTypeDefinitionId);
 			}
 		    else
-		    	System.out.println("The content " + content.getName() + " had no content type at all");
+		    	logger.error("The content " + content.getName() + " had no content type at all");
 	    }
 	    else if(version == 1)
 	    {
@@ -829,128 +826,6 @@ public class ImportRepositoryAction extends InfoGlueAbstractAction
 	/**
 	 * This method updates all the bindings in content-versions to reflect the move. 
 	 */
-	/*
-	private void updateContentVersions(List allContents, Map contentIdMap, Map siteNodeIdMap)
-	{
-	    logger.info("allContents:" + allContents.size());
-	    Iterator allContentsIterator = allContents.iterator();
-	    while(allContentsIterator.hasNext())
-	    {
-	        Content content = (Content)allContentsIterator.next();
-	        
-	        logger.info("content:" + content.getName());
-	        Collection contentVersions = content.getContentVersions();
-	        
-			if(onlyLatestVersions.equalsIgnoreCase("true"))
-			{
-				logger.info("org contentVersions:" + contentVersions.size());
-				List selectedContentVersions = new ArrayList();
-				Iterator realContentVersionsIterator = contentVersions.iterator();
-				while(realContentVersionsIterator.hasNext())
-				{
-					ContentVersion contentVersion = (ContentVersion)realContentVersionsIterator.next();			
-					Iterator selectedContentVersionsIterator = selectedContentVersions.iterator();
-					boolean addLanguageVersion = true;
-					boolean noLanguageVersionFound = true;
-					while(selectedContentVersionsIterator.hasNext())
-					{
-						ContentVersion currentContentVersion = (ContentVersion)selectedContentVersionsIterator.next();
-						logger.info("" + currentContentVersion.getLanguage().getLanguageCode() + "=" + contentVersion.getLanguage().getLanguageCode());
-						if(currentContentVersion.getLanguage().getLanguageCode().equals(contentVersion.getLanguage().getLanguageCode()))
-						{
-							noLanguageVersionFound = false;
-							
-							logger.info("" + contentVersion.getIsActive() + "=" + contentVersion.getLanguage().getLanguageCode());
-							if(contentVersion.getIsActive().booleanValue() && contentVersion.getContentVersionId().intValue() > currentContentVersion.getContentVersionId().intValue())
-							{
-								logger.info("A later version was found... removing this one..");
-								selectedContentVersionsIterator.remove();
-								addLanguageVersion = true;
-							}						
-						}
-					}
-		
-					if(addLanguageVersion || noLanguageVersionFound)
-						selectedContentVersions.add(contentVersion);
-				}	
-				
-				contentVersions = selectedContentVersions;
-			}
-
-	        
-	        Iterator contentVersionIterator = contentVersions.iterator();
-	        while(contentVersionIterator.hasNext())
-	        {
-	            ContentVersion contentVersion = (ContentVersion)contentVersionIterator.next();
-	            String contentVersionValue = contentVersion.getVersionValue();
-
-                contentVersionValue = contentVersionValue.replaceAll("contentId=\"", "contentId=\"old_");
-                contentVersionValue = contentVersionValue.replaceAll("\\?contentId=", "\\?contentId=old_");
-                contentVersionValue = contentVersionValue.replaceAll("getInlineAssetUrl\\(", "getInlineAssetUrl\\(old_");
-                contentVersionValue = contentVersionValue.replaceAll("languageId,", "languageId,old_");
-                contentVersionValue = contentVersionValue.replaceAll("entity=\"Content\" entityId=\"", "entity=\"Content\" entityId=\"old_");
-                contentVersionValue = contentVersionValue.replaceAll("entity='Content'><id>", "entity='Content'><id>old_");
-
-                contentVersionValue = contentVersionValue.replaceAll("siteNodeId=\"", "siteNodeId=\"old_");
-                //if(contentVersionValue.indexOf("getPageUrl") > -1)
-                //	System.out.println("contentVersionValue:" + contentVersionValue);
-                
-                contentVersionValue = contentVersionValue.replaceAll("getPageUrl\\((\\d)", "getPageUrl\\(old_$1");
-                
-                //if(contentVersionValue.indexOf("getPageUrl") > -1)
-                //	System.out.println("contentVersionValue:" + contentVersionValue);
-                
-                contentVersionValue = contentVersionValue.replaceAll("entity=\"SiteNode\" entityId=\"", "entity=\"SiteNode\" entityId=\"old_");
-                contentVersionValue = contentVersionValue.replaceAll("entity='SiteNode'><id>", "entity='SiteNode'><id>old_");
-	            
-	            //logger.info("contentVersionValue before:" + contentVersionValue);
-                
-	            Iterator contentIdMapIterator = contentIdMap.keySet().iterator();
-	            while (contentIdMapIterator.hasNext()) 
-	            {
-	                String oldContentId = (String)contentIdMapIterator.next();
-	                String newContentId = (String)contentIdMap.get(oldContentId);
-	                
-	                //logger.info("Replacing all:" + oldContentId + " with " + newContentId);
-	                
-	                contentVersionValue = contentVersionValue.replaceAll("contentId=\"old_" + oldContentId + "\"", "contentId=\"" + newContentId + "\"");
-	                contentVersionValue = contentVersionValue.replaceAll("\\?contentId=old_" + oldContentId + "&", "\\?contentId=" + newContentId + "&");
-	                contentVersionValue = contentVersionValue.replaceAll("getInlineAssetUrl\\(old_" + oldContentId + ",", "getInlineAssetUrl\\(" + newContentId + ",");
-	                contentVersionValue = contentVersionValue.replaceAll("languageId,old_" + oldContentId + "\\)", "languageId," + newContentId + "\\)");
-	                contentVersionValue = contentVersionValue.replaceAll("entity=\"Content\" entityId=\"old_" + oldContentId + "\"", "entity=\"Content\" entityId=\"" + newContentId + "\"");
-	                contentVersionValue = contentVersionValue.replaceAll("entity='Content'><id>old_" + oldContentId + "</id>", "entity='Content'><id>" + newContentId + "</id>");
-	                //contentVersionValue = contentVersionValue.replaceAll("<id>" + oldContentId + "</id>", "<id>" + newContentId + "</id>");
-	            }
-	            
-	            Iterator siteNodeIdMapIterator = siteNodeIdMap.keySet().iterator();
-	            while (siteNodeIdMapIterator.hasNext()) 
-	            {
-	                String oldSiteNodeId = (String)siteNodeIdMapIterator.next();
-	                String newSiteNodeId = (String)siteNodeIdMap.get(oldSiteNodeId);
-	                
-	                //logger.info("Replacing all:" + oldSiteNodeId + " with " + newSiteNodeId);
-	                
-	                contentVersionValue = contentVersionValue.replaceAll("siteNodeId=\"old_" + oldSiteNodeId + "\"", "siteNodeId=\"" + newSiteNodeId + "\"");
-	                contentVersionValue = contentVersionValue.replaceAll("getPageUrl\\(old_" + oldSiteNodeId + ",", "getPageUrl\\(" + newSiteNodeId + ",");
-	                contentVersionValue = contentVersionValue.replaceAll("entity=\"SiteNode\" entityId=\"old_" + oldSiteNodeId + "\"", "entity=\"SiteNode\" entityId=\"" + newSiteNodeId + "\"");
-	                contentVersionValue = contentVersionValue.replaceAll("entity='SiteNode'><id>old_" + oldSiteNodeId + "</id>", "entity='SiteNode'><id>" + newSiteNodeId + "</id>");
-	            }
-	            
-	            //logger.info("contentVersionValue after:" + contentVersionValue);
-	            
-	            //Now replace all occurrances of old as they should never be there.
-                contentVersionValue = contentVersionValue.replaceAll("old_", "");
-
-	            logger.info("new contentVersionValue:" + contentVersionValue);
-	            contentVersion.setVersionValue(contentVersionValue);
-	        }
-	    }
-	}
-	*/
-
-	/**
-	 * This method updates all the bindings in content-versions to reflect the move. 
-	 */
 	private void updateContentVersions(Content content, Map contentIdMap, Map siteNodeIdMap) throws Exception
 	{
 	    logger.info("content:" + content.getName());
@@ -1081,11 +956,6 @@ public class ImportRepositoryAction extends InfoGlueAbstractAction
 	    		before = xml.substring(0, startIndex);
 	    		after = xml.substring(stopIndex + 12);
 	    		qualifyer = xml.substring(startIndex, stopIndex + 12);
-	    		//logger.info("startIndex: " + startIndex);
-	    		//System.out.println("stopIndex: " + stopIndex);
-	    		//System.out.println("before: " + before);
-	    		//System.out.println("after: " + after);
-	    		//System.out.println("qualifyer: " + qualifyer);
 	    		
 	    		String newQualifyer = qualifyer;
 	    		
@@ -1096,7 +966,6 @@ public class ImportRepositoryAction extends InfoGlueAbstractAction
 	    			
 	    		newXML.append(before);
 	    		newXML.append(newQualifyer);
-	    		//System.out.println("newXML:" + newXML);
 	    		xml = after;
     		}
     		else

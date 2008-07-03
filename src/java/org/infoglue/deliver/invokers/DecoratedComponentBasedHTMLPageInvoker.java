@@ -551,7 +551,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 				{    
 				    String allowedComponentNames = slot.substring(allowedComponentNamesIndex + 24, slot.indexOf("\"", allowedComponentNamesIndex + 24));
 				    allowedComponentNamesArray = allowedComponentNames.split(",");
-				    //System.out.println("allowedComponentNamesArray:" + allowedComponentNamesArray.length);
+				    //logger.info("allowedComponentNamesArray:" + allowedComponentNamesArray.length);
 				    slotBean.setAllowedComponentsArray(allowedComponentNamesArray);
 				}
 
@@ -561,7 +561,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 				{    
 				    String disallowedComponentNames = slot.substring(disallowedComponentNamesIndex + 27, slot.indexOf("\"", disallowedComponentNamesIndex + 27));
 				    disallowedComponentNamesArray = disallowedComponentNames.split(",");
-				    //System.out.println("disallowedComponentNamesArray:" + disallowedComponentNamesArray.length);
+				    //logger.info("disallowedComponentNamesArray:" + disallowedComponentNamesArray.length);
 				    slotBean.setDisallowedComponentsArray(disallowedComponentNamesArray);
 				}
 
@@ -960,7 +960,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 				isAdvancedProperties = true;
 			}
 			
-			//System.out.println("componentProperty:" + componentProperty.getName() + ":" + isAdvancedProperties);
+			//logger.info("componentProperty:" + componentProperty.getName() + ":" + isAdvancedProperties);
 			if(componentProperty.getName().equalsIgnoreCase("CacheResult") ||
 			   componentProperty.getName().equalsIgnoreCase("UpdateInterval") ||
 			   componentProperty.getName().equalsIgnoreCase("CacheKey") ||
@@ -1635,8 +1635,8 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 
 		    String allowedComponentNamesAsEncodedString = slot.getAllowedComponentsArrayAsUrlEncodedString();
 		    String disallowedComponentNamesAsEncodedString = slot.getDisallowedComponentsArrayAsUrlEncodedString();
-		    //System.out.println("allowedComponentNamesAsEncodedString:" + allowedComponentNamesAsEncodedString);
-		    //System.out.println("disallowedComponentNamesAsEncodedString:" + disallowedComponentNamesAsEncodedString);
+		    //logger.info("allowedComponentNamesAsEncodedString:" + allowedComponentNamesAsEncodedString);
+		    //logger.info("disallowedComponentNamesAsEncodedString:" + disallowedComponentNamesAsEncodedString);
 		    
 		    sb.append("<td class=\"igtd\" colspan=\"" + (colspan - 4) + "\"><span id=\"" + component.getId() + slot.getId() + "ClickableDiv\" class=\"iglabel\">" + slot.getId() + "</span><script type=\"text/javascript\">initializeSlotEventHandler('" + component.getId() + slot.getId() + "ClickableDiv', '" + componentEditorUrl + "ViewSiteNodePageComponents!listComponents.action?ddd=1&siteNodeId=" + templateController.getSiteNodeId() + "&languageId=" + templateController.getLanguageId() + "&contentId=" + templateController.getContentId() + "&parentComponentId=" + component.getId() + "&slotId=" + slot.getId() + "&showSimple=" + this.getTemplateController().getDeliveryContext().getShowSimple() + ((allowedComponentNamesAsEncodedString != null) ? "&" + allowedComponentNamesAsEncodedString : "") + ((disallowedComponentNamesAsEncodedString != null) ? "&" + disallowedComponentNamesAsEncodedString : "") + "', '', '', '" + slot.getId() + "', '" + component.getContentId() + "');</script></td>");
 			
@@ -2552,10 +2552,10 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		if(this.getRequest().getParameter("languageId") != null && this.getRequest().getParameter("languageId").length() > 0)
 		{
 			languageId = new Integer(this.getRequest().getParameter("languageId"));
-			//System.out.println("" + languageId + "=" + this.getTemplateController().getDeliveryContext().getLanguageId());
+			//logger.info("" + languageId + "=" + this.getTemplateController().getDeliveryContext().getLanguageId());
 			if(!languageId.equals(this.getTemplateController().getDeliveryContext().getLanguageId()))
 			{
-				//System.out.println("Getting 2");
+				//logger.info("Getting 2");
 				languageId = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForSiteNodeWithValityCheck(getDatabase(), nodeDeliveryController, siteNodeId).getId();				
 			}
 		}
@@ -2564,7 +2564,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 			languageId = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForSiteNodeWithValityCheck(getDatabase(), nodeDeliveryController, siteNodeId).getId();
 		}
 		
-		//System.out.println("languageId:" + languageId);
+		//logger.info("languageId:" + languageId);
 
 		Locale locale = LanguageDeliveryController.getLanguageDeliveryController().getLocaleWithId(getDatabase(), languageId);
 		
@@ -2585,7 +2585,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 			String id 			= property.attributeValue("type");
 			String path 		= property.attributeValue("path");
 			
-			//System.out.println("Locale:" + locale.getLanguage());
+			//logger.info("Locale:" + locale.getLanguage());
 			if(property.attribute("path_" + locale.getLanguage()) != null)
 				path = property.attributeValue("path_" + locale.getLanguage());
 

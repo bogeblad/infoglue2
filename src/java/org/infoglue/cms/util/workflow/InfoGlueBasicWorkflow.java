@@ -48,21 +48,18 @@ public class InfoGlueBasicWorkflow extends BasicWorkflow
     public void changeEntryState(long id, int newState) throws WorkflowException 
     {
         super.changeEntryState(id, newState);
-        //System.out.println("Change state - clear cache");
         CacheController.clearCache("myActiveWorkflows");
     }
 
     public void doAction(long id, int actionId, Map inputs) throws WorkflowException 
     {
         super.doAction(id, actionId, inputs);
-        //System.out.println("Did action - clear cache");
         CacheController.clearCache("myActiveWorkflows");
     }
 
     public long initialize(String workflowName, int initialState, Map inputs) throws WorkflowException 
     {
         long id = super.initialize(workflowName, initialState, inputs);
-        //System.out.println("Change state - clear cache");
         CacheController.clearCache("myActiveWorkflows");
         return id;
     }

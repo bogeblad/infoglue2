@@ -167,45 +167,15 @@ public class AjaxDecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHT
 					decoratePageTemplate = decorateComponent(baseComponent, this.getTemplateController(), repositoryId, this.getDeliveryContext().getSiteNodeId(), this.getDeliveryContext().getLanguageId(), this.getDeliveryContext().getContentId()/*, metaInfoContentVO.getId()*/);
 					decoratePageTemplate = decorateTemplate(this.getTemplateController(), decoratePageTemplate, this.getDeliveryContext(), baseComponent);
 				//}
-			}
+					
+				//TODO - TEST
+				//decoratePageTemplate += propertiesDivs + tasksDivs;																																							
+				decoratePageTemplate += "<div id=\"availableComponents\"></div><div id=\"componentTasks\"><div id=\"componentMenu\" class=\"skin0\">Loading menu...</div></div><div id=\"componentPropertiesDiv\"></div><div id=\"componentStructure\"></div>";
+			}		
 		}
 		
 		timer.printElapsedTime("After main decoration");
-		
-		//TODO - TEST
-		//decoratePageTemplate += propertiesDivs + tasksDivs;																																							
-		decoratePageTemplate += "<div id=\"availableComponents\"></div><div id=\"componentTasks\"><div id=\"componentMenu\" class=\"skin0\">Loading menu...</div></div><div id=\"componentPropertiesDiv\"></div><div id=\"componentStructure\"></div>";
-		
-		//decoratePageTemplate += "<span id='ghost' style='padding: 2px; border: 1px dotted #ccc; background-color:#ff8a18; display: table; clear: both; height: 40px;'><b>Move here</b></span>";
-		
-		/*
-		decoratePageTemplate += "<div id=\"test\"><ul id=\"apa\" style=\"list-style-position: inside; height: 30px; cursor: hand; cursor: pointer;\">" +
-									"<li style='float: left; padding: 5px; border: 1px solid #bbb; margin: 3px; background: #fff;'>Drag us</li>" + 
-									"<li style='float: left; padding: 5px; border: 1px solid #bbb; margin: 3px; background: #fff;'>around</li>" + 
-									"<li style='float: left; padding: 5px; border: 1px solid #bbb; margin: 3px; background: #fff;'>and change</li>" + 
-									"<li style='float: left; padding: 5px; border: 1px solid #bbb; margin: 3px; background: #fff;'>our</li>" + 
-									"<li style='float: left; padding: 5px; border: 1px solid #bbb; margin: 3px; background: #fff;'>positions</li>" + 
-									"</ul></div><script type='text/javascript'>$(\"#apa\").sortable({ revert: true });</script>";
-		*/
-		
-		/*
-		Map context = getDefaultContext();
-		
-		String componentEditorUrl = CmsPropertyHandler.getComponentEditorUrl();
-		context.put("componentEditorUrl", componentEditorUrl);
-		boolean oldUseFullUrl = this.getTemplateController().getDeliveryContext().getUseFullUrl();
-		this.getTemplateController().getDeliveryContext().setUseFullUrl(true);
-		context.put("currentUrl", URLEncoder.encode(this.getTemplateController().getCurrentPageUrl(), "UTF-8"));
-		context.put("contextName", this.getRequest().getContextPath());
-		
-		this.getTemplateController().getDeliveryContext().setUseFullUrl(oldUseFullUrl);
-		StringWriter cacheString = new StringWriter();
-		PrintWriter cachedStream = new PrintWriter(cacheString);
-		
-		new VelocityTemplateProcessor().renderTemplate(context, cachedStream, decoratePageTemplate, false, baseComponent);
-
-		String pageString = cacheString.toString();
-		*/
+				
 		String pageString = decoratePageTemplate;
 		//pageString = decorateHeadAndPageWithVarsFromComponents(pageString);
 		
@@ -1603,32 +1573,12 @@ public class AjaxDecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHT
 			String id 			= property.attributeValue("type");
 			String path 		= property.attributeValue("path");
 			
-			//System.out.println("Locale:" + locale.getLanguage());
 			if(property.attribute("path_" + locale.getLanguage()) != null)
 				path = property.attributeValue("path_" + locale.getLanguage());
 
 			value 				= path;
 		}
 
-		/*
-		org.w3c.dom.Document document = getPageComponentsDocument(getDatabase(), this.getTemplateController(), siteNodeId, languageId, contentId);
-		
-		String componentXPath = "//component[@id=" + componentId + "]/properties/property[@name='" + name + "']";
-		//logger.info("componentXPath:" + componentXPath);
-		NodeList anl = org.apache.xpath.XPathAPI.selectNodeList(document.getDocumentElement(), componentXPath);
-		for(int i=0; i < anl.getLength(); i++)
-		{
-			org.w3c.dom.Element property = (org.w3c.dom.Element)anl.item(i);
-			
-			String id 			= property.getAttribute("type");
-			String path 		= property.getAttribute("path");
-			
-			if(property.hasAttribute("path_" + locale.getLanguage()))
-				path = property.getAttribute("path_" + locale.getLanguage());
-
-			value 				= path;
-		}
-		*/
 		
 		return value;
 	}

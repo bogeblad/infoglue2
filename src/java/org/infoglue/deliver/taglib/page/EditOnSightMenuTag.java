@@ -80,7 +80,6 @@ public class EditOnSightMenuTag extends ComponentLogicTag
 	    		String componentEditorUrl = CmsPropertyHandler.getComponentEditorUrl();
 		    	String returnAddress = "" + componentEditorUrl + "ViewInlineOperationMessages.action";
 		    	String originalUrl = URLEncoder.encode(this.getController().getOriginalFullURL(), "iso-8859-1");
-		    	//System.out.println("componentEditorUrl:" + componentEditorUrl);
 		    	
 		    	String metaDataUrl 			= componentEditorUrl + "ViewAndCreateContentForServiceBinding.action?siteNodeId=" + this.getController().getSiteNodeId() + "&repositoryId=" + this.getController().getSiteNode().getRepositoryId() + "&asiteNodeVersionId=2109&changeStateToWorking=true";
 		    	String createSiteNodeUrl 	= componentEditorUrl + "CreateSiteNode!inputV3.action?isBranch=true&repositoryId=" + this.getController().getSiteNode().getRepositoryId() + "&parentSiteNodeId=" + this.getController().getSiteNodeId() + "&languageId=" + this.getController().getLanguageId() + "&returnAddress=" + URLEncoder.encode(returnAddress, "utf-8") + "&originalAddress=" + URLEncoder.encode(this.getController().getCurrentPageUrl(), "utf-8");
@@ -93,9 +92,7 @@ public class EditOnSightMenuTag extends ComponentLogicTag
 		    	String newsFlowUrl 			= componentEditorUrl + "ViewMyDesktopToolStartPage!startWorkflow.action?workflowName=Skapa+nyhet&finalReturnAddress=" + URLEncoder.encode(returnAddress, "utf-8") + ""; 
 		    	String mySettingsUrl 		= componentEditorUrl + "ViewMySettings.action"; 
 		    			    	
-				//boolean hasAccessToAccessRights = AccessRightController.getController().getIsPrincipalAuthorized(templateController.getDatabase(), principal, "ComponentEditor.ChangeSlotAccess", "");
 				Locale locale = this.getController().getLocaleAvailableInTool();
-				//System.out.println("locale in tag:" + locale);
 				
 		    	String buttonLabel 					= this.getLocalizedString(locale, "deliver.editOnSight.buttonLabel");
 		    	String changePageMetaDataLabel 		= this.getLocalizedString(locale, "deliver.editOnSight.changePageMetaDataLabel");
@@ -150,7 +147,6 @@ public class EditOnSightMenuTag extends ComponentLogicTag
 		    	ContentVersionVO contentVersionVO = this.getController().getContentVersion(contentId, this.getController().getLanguageId(), true);
 		    	if(contentVersionVO != null && showTranslateArticle)
 		    	{
-			    	//System.out.println("Current contentVersionVO:" + contentVersionVO.getLanguageName() + ":" + contentVersionVO.getLanguageId());
 			    	List languages = this.getController().getPageLanguages();
 			    	
 			    	Iterator languagesIterator = languages.iterator();

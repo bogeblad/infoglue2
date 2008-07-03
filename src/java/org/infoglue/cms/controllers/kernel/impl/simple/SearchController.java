@@ -233,17 +233,14 @@ public class SearchController extends BaseController
 			    
 			String sql = "SELECT cv FROM org.infoglue.cms.entities.content.impl.simple.ContentVersionImpl cv WHERE cv.isActive = $1 AND cv.versionValue LIKE $2 " + repositoryArgument + extraArguments + " ORDER BY cv.owningContent asc, cv.language, cv.contentVersionId desc";
 			logger.info("sql:" + sql);
-			//System.out.println("sql:" + sql);
 			OQLQuery oql = db.getOQLQuery(sql);
 			oql.bind(new Boolean(true));
 			oql.bind("%" + searchString + "%");
-			//oql.bind(repositoryId);
 			Iterator repIterator = repArguments.iterator();
 			while(repIterator.hasNext())
 			{
 				Integer repositoryIdAsInteger = (Integer)repIterator.next();
 				oql.bind(repositoryIdAsInteger);
-			    //System.out.println("repositoryIdAsInteger:" + repositoryIdAsInteger);
 			}
 	        
 			Iterator iterator = arguments.iterator();
@@ -432,19 +429,9 @@ public class SearchController extends BaseController
 			String sql = "SELECT cv FROM org.infoglue.cms.entities.content.impl.simple.FullContentVersionImpl cv WHERE cv.isActive = $1 AND " /*+ repositoryArgument*/ + extraArguments + " ORDER BY cv.contentId asc, cv.language, cv.contentVersionId desc";
 			if(logger.isInfoEnabled())
 				logger.info("sql:" + sql);
-			System.out.println("sql:" + sql);
+
 			OQLQuery oql = db.getOQLQuery(sql);
 			oql.bind(new Boolean(true));
-			//oql.bind(repositoryId);
-			/*
-			Iterator repIterator = repArguments.iterator();
-			while(repIterator.hasNext())
-			{
-				Integer repositoryIdAsInteger = (Integer)repIterator.next();
-				oql.bind(repositoryIdAsInteger);
-			    //System.out.println("repositoryIdAsInteger:" + repositoryIdAsInteger);
-			}
-	        */
 			
 			Iterator iterator = arguments.iterator();
 			while(iterator.hasNext())

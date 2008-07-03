@@ -3,7 +3,9 @@ package org.infoglue.cms.applications.managementtool.actions;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.infoglue.cms.applications.common.actions.ModelAction;
+import org.infoglue.cms.applications.common.actions.SubscriptionsAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.CategoryController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentCategoryController;
 import org.infoglue.cms.entities.kernel.Persistent;
@@ -16,6 +18,8 @@ import org.infoglue.cms.exception.SystemException;
  */
 public class CategoryAction extends ModelAction
 {
+    private final static Logger logger = Logger.getLogger(CategoryAction.class.getName());
+
 	private static final long serialVersionUID = 1L;
 	
 	public static final String MAIN = "main";
@@ -80,7 +84,7 @@ public class CategoryAction extends ModelAction
 		}
 		catch (Exception e) 
 		{
-			System.out.println("Error getting references:" + e.getMessage());
+			logger.error("Error getting references:" + e.getMessage());
 		}
 		
 		if(references.size() > 0 && !forceDelete)

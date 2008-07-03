@@ -890,7 +890,7 @@ public class WorkflowController extends BaseController
 	{
 		try
 		{
-			System.out.println("Restoring session factory...");
+			logger.error("Restoring session factory...");
 
 			String serverName = "Unknown";
 	    	try
@@ -928,7 +928,7 @@ public class WorkflowController extends BaseController
 	        }
 	        try
 	        {
-	        	System.out.println("Closing:" + hibernateSessionFactory);
+	        	logger.info("Closing:" + hibernateSessionFactory);
 	        	hibernateSessionFactory.close();
 	        	CacheController.clearCache("propertySetCache");
 	        }
@@ -937,7 +937,7 @@ public class WorkflowController extends BaseController
 				logger.error("An error occurred when we tried to close the hibernate session factory:" + e.getMessage());	        	
 			}
 	        hibernateSessionFactory = new Configuration().configure().buildSessionFactory();
-        	System.out.println("Opened:" + hibernateSessionFactory);
+	        logger.info("Opened:" + hibernateSessionFactory);
 		}
 		catch (Exception e)
 		{

@@ -91,7 +91,7 @@ public class SimplifiedFallbackJNDIBasicAuthorizationModule extends Thread imple
 		
 		while(true)
 		{
-			System.out.println("Running SimplifiedFallbackJNDIBasicAuthorizationModule thread which updates the auth cache:" + CmsPropertyHandler.getContextRootPath());
+			logger.info("Running SimplifiedFallbackJNDIBasicAuthorizationModule thread which updates the auth cache:" + CmsPropertyHandler.getContextRootPath());
 			Timer t = new Timer();
 			
 			try
@@ -162,7 +162,7 @@ public class SimplifiedFallbackJNDIBasicAuthorizationModule extends Thread imple
 				if(userCacheTimeout != null && !userCacheTimeout.equals(""))
 					threadSleep = Integer.parseInt(userCacheTimeout) * 1000;
 				
-				System.out.println("threadSleep:" + threadSleep);
+				logger.info("threadSleep:" + threadSleep);
 				Thread.sleep(threadSleep);
 			} 
 			catch (InterruptedException e)
@@ -660,7 +660,6 @@ public class SimplifiedFallbackJNDIBasicAuthorizationModule extends Thread imple
 			else
 			{
 				infoglueRole = (InfoGlueRole)infoglueRoleObject;
-				//System.out.println("Returning cached role:" + roleName + " for key " + key);
 				return infoglueRole;
 			}
 		}
@@ -997,7 +996,7 @@ public class SimplifiedFallbackJNDIBasicAuthorizationModule extends Thread imple
 				}
 			}
 
-			//System.out.println("memberOfAttributes:" + memberOfAttributes.length);
+			//logger.info("memberOfAttributes:" + memberOfAttributes.length);
 			for(int i=0; i<memberOfAttributes.length; i++)
 			{
 				String memberOfAttributeName = memberOfAttributes[i];
@@ -1009,14 +1008,14 @@ public class SimplifiedFallbackJNDIBasicAuthorizationModule extends Thread imple
 					{
 						Object memberOfNameObject = e.next();
 						String memberOfName = memberOfNameObject.toString().trim();
-						//System.out.println("memberOfName:" + memberOfName);
+						//logger.info("memberOfName:" + memberOfName);
 									
 						memberOfNames.add((memberOfNameObject == null ? "Unknown" : memberOfName));
 					}
 				}
 				else
 				{
-					System.out.println("User " + userName + " had no member of attributes..");
+					logger.warn("User " + userName + " had no member of attributes..");
 				}
 			}
 		}
@@ -1495,7 +1494,7 @@ public class SimplifiedFallbackJNDIBasicAuthorizationModule extends Thread imple
 				if(cachedRolesMap != null)
 					allRolesMap.putAll(cachedRolesMap);
 				else
-					System.out.println("Problem getting all roles - was not cached before - strange");
+					logger.error("Problem getting all roles - was not cached before - strange");
 			}
 			
 			return roles;
@@ -2112,7 +2111,7 @@ public class SimplifiedFallbackJNDIBasicAuthorizationModule extends Thread imple
 				if(cachedGroupNamesMap != null)
 					groupNamesMap.putAll(cachedGroupNamesMap);
 				else
-					System.out.println("Error getting cached group names map - strange...");
+					logger.error("Error getting cached group names map - strange...");
 			}
 			
 			return groups;

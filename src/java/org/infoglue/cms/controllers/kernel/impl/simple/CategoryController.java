@@ -20,7 +20,7 @@
  *
  * ===============================================================================
  *
- * $Id: CategoryController.java,v 1.19 2007/12/05 22:39:53 mattias Exp $
+ * $Id: CategoryController.java,v 1.20 2008/07/03 11:49:04 mattias Exp $
  */
 package org.infoglue.cms.controllers.kernel.impl.simple;
 
@@ -598,7 +598,6 @@ public class CategoryController extends BaseController
     	while(remoteCategoryVOListIterator.hasNext())
     	{
     		CategoryVO remoteCategoryVO = (CategoryVO)remoteCategoryVOListIterator.next();
-    		//System.out.println("remoteCategoryVO:" + remoteCategoryVO.getName());
     		
     		boolean categoryExists = false;
     		CategoryVO localCategoryVO = null;
@@ -606,7 +605,6 @@ public class CategoryController extends BaseController
     		while(allLocalCategoriesIterator.hasNext())
         	{
         		localCategoryVO = (CategoryVO)allLocalCategoriesIterator.next();
-        		//System.out.println("remoteCategoryVO:" + remoteCategoryVO.getName());
         		if(localCategoryVO.getName().equals(remoteCategoryVO.getName()))
         		{
         			categoryExists = true;
@@ -623,18 +621,12 @@ public class CategoryController extends BaseController
         		{
         			beginTransaction(db);
         			
-        			//System.out.println("Category:" + remoteCategoryVO.getId() + "-" + remoteCategoryVO.getName() + " (" + remoteCategoryVO.getCategoryPath() + ") did not exist.");
         			String remoteParentPath = remoteCategoryVO.getCategoryPath();
-        			//System.out.println("remoteParentPath:" + remoteParentPath);
-
-            		String isCategorySelected = (String)request.get(remoteParentPath + "_transfer");
-            		//System.out.println("isCategorySelected:[" + isCategorySelected + "]");
+        			String isCategorySelected = (String)request.get(remoteParentPath + "_transfer");
             		if(isCategorySelected != null && isCategorySelected.equals("true"))
             		{
-            			//System.out.println("Before - remoteCategoryVO:" + remoteCategoryVO);
             			skipLocalCategory = true;
             			handleSubCategories(localParentCategory, remoteCategoryVO, handledRemoteCategoryPaths, request, db);
-            			
             		}
             		
         			commitTransaction(db);
@@ -662,33 +654,29 @@ public class CategoryController extends BaseController
     
     public void handleSubCategories(CategoryVO localParentCategory, CategoryVO remoteCategoryVO, Map handledRemoteCategoryPaths, Map request, Database db) throws SystemException
     {
-    	//System.out.println("\n");
 		String isCategorySelected = (String)request.get(remoteCategoryVO.getCategoryPath() + "_transfer");
-		//System.out.println("isCategorySelected:[" + isCategorySelected + "]");
 		if(isCategorySelected != null && isCategorySelected.equals("true"))
 		{
 			if(handledRemoteCategoryPaths.containsKey(remoteCategoryVO.getCategoryPath()))
 			{
-				//System.out.println("Category with path " + remoteCategoryVO.getCategoryPath() + " was allready handled.");
+				logger.info("Category with path " + remoteCategoryVO.getCategoryPath() + " was allready handled.");
 			}
 			else
 			{
-				//System.out.println("Creating local version of:" + remoteCategoryVO + " under " + localParentCategory);
+				logger.info("Creating local version of:" + remoteCategoryVO + " under " + localParentCategory);
 				remoteCategoryVO.setCategoryId(null);
 				if(localParentCategory != null)
 					remoteCategoryVO.setParentId(localParentCategory.getId());
 				
 				Category newLocalCategory = CategoryController.getController().save(remoteCategoryVO, db);
 				handledRemoteCategoryPaths.put(remoteCategoryVO.getCategoryPath(), "true");
-				//if(localParentCategory != null)
-				//	localParentCategory.getChildren().add(newLocalCategory.getValueObject());
 
 		    	List subCategories = remoteCategoryVO.getChildren();
 		    	Iterator subCategoriesIterator = subCategories.iterator();
 		    	while(subCategoriesIterator.hasNext())
 		    	{
 		    		CategoryVO subCategory = (CategoryVO)subCategoriesIterator.next();
-		    		//System.out.println("subCategory:[" + subCategory + "]");
+		    		logger.info("subCategory:[" + subCategory + "]");
 		    		handleSubCategories(newLocalCategory.getValueObject(), subCategory, handledRemoteCategoryPaths, request, db);
 		    	}
 			}

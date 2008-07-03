@@ -123,11 +123,9 @@ public class VelocityServlet extends WebWorkVelocityServlet
             try
             {
             	ResourceBundle sk = ResourceBundle.getBundle("org.infoglue.cms.applications.PresentationStrings", session.getLocale());
-            	//System.out.println("Locale:" + sk.getLocale() + ":" + session.getLocale());
             	if(!sk.getLocale().equals(session.getLocale()))
             	{
-            		//System.out.println("Not equals.. setting to english");
-                	session.setLocale(java.util.Locale.ENGLISH);
+            		session.setLocale(java.util.Locale.ENGLISH);
             	}
             }
             catch (Throwable e) 

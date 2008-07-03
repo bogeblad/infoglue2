@@ -74,7 +74,7 @@ public class RemoteWorkflowServiceImpl extends RemoteInfoGlueService
 		} 
 		catch(Throwable t) 
 		{
-			System.out.println(t);
+			logger.error("Error:" + t.getMessage(), t);
 			return Boolean.FALSE;
 		}
 		
@@ -110,7 +110,7 @@ public class RemoteWorkflowServiceImpl extends RemoteInfoGlueService
 		} 
 		catch(Throwable t) 
 		{
-			System.out.println(t);
+			logger.error("Error:" + t.getMessage(), t);
 			return Boolean.FALSE;
 		}
 		

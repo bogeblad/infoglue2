@@ -422,9 +422,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 				float memoryLeft = ((float)Runtime.getRuntime().maxMemory() - (float)Runtime.getRuntime().totalMemory()) / 1024f / 1024f;
 				float percentLeft = (memoryLeft / ((float)Runtime.getRuntime().maxMemory() / 1024f / 1024f)) * 100f;
 				float percentLeft2 = ((float)Runtime.getRuntime().freeMemory() / (float)Runtime.getRuntime().totalMemory()) * 100f;
-				//System.out.println("memoryLeft:" + memoryLeft);
-				//System.out.println("maxMemory:" + (Runtime.getRuntime().maxMemory() / 1024 / 1024));
-				//System.out.println("percentLeft:" + percentLeft);
+
 				if(percentLeft < 15 && percentLeft2 < 15)
 				{
 					memoryWarningSent = true;

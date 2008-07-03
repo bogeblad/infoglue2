@@ -11,12 +11,17 @@ import org.apache.commons.validator.Validator;
 import org.apache.commons.validator.ValidatorResources;
 import org.apache.commons.validator.ValidatorResult;
 import org.apache.commons.validator.ValidatorResults;
+import org.apache.log4j.Logger;
 import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
 import org.infoglue.cms.exception.ConstraintException;
+import org.infoglue.cms.security.SimplifiedFallbackJNDIBasicAuthorizationModule;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
 
-public class ContentVersionValidator {
+public class ContentVersionValidator 
+{
+    private final static Logger logger = Logger.getLogger(ContentVersionValidator.class.getName());
+
 	/**
 	 * 
 	 */
@@ -68,7 +73,7 @@ public class ContentVersionValidator {
 			InputStream is = readValidatorXML(contentType);
 			return new ValidatorResources(is);
 		} catch(Exception e) {
-			System.out.println(e.toString());
+			logger.error("Error loading resource: " + e.getMessage());
 		}
 		return null;
     }

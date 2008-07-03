@@ -109,7 +109,6 @@ public class GenericCombinedAuthorizationModule implements AuthorizationModule, 
 			while(propertiesIterator.hasNext())
 			{
 				String property = (String)propertiesIterator.next();
-				//System.out.println("property:" + property);
 				String value = this.extraProperties.getProperty(property);
 				if(property.startsWith("" + index + "."))
 					property = property.substring(2);
@@ -154,7 +153,7 @@ public class GenericCombinedAuthorizationModule implements AuthorizationModule, 
 		while(authorizerClassName != null && !authorizerClassName.equals("") && infogluePrincipal == null)
 		{
 			if(logger.isInfoEnabled())
-				System.out.println("getAuthorizedInfoGluePrincipal in " + authorizerClassName);
+				logger.info("getAuthorizedInfoGluePrincipal in " + authorizerClassName);
 			
 			try
 			{
@@ -274,7 +273,7 @@ public class GenericCombinedAuthorizationModule implements AuthorizationModule, 
 			{
 				List systemRoles = getAuthorizationModule(authorizerClassName, i).getRoles();
 				if(logger.isInfoEnabled())
-					System.out.println("\nFound:" + systemRoles.size() + " roles in " + i);
+					logger.info("\nFound:" + systemRoles.size() + " roles in " + i);
 				roles.addAll(systemRoles);
 			}
 			catch(Exception e)
@@ -304,7 +303,7 @@ public class GenericCombinedAuthorizationModule implements AuthorizationModule, 
 		while(authorizerClassName != null && !authorizerClassName.equals(""))
 		{
 			if(logger.isInfoEnabled())
-				System.out.println("Looking for user in " + authorizerClassName);
+				logger.info("Looking for user in " + authorizerClassName);
 			
 			try
 			{
@@ -337,7 +336,7 @@ public class GenericCombinedAuthorizationModule implements AuthorizationModule, 
 		while(authorizerClassName != null && !authorizerClassName.equals(""))
 		{
 			if(logger.isInfoEnabled())
-				System.out.println("Looking for users in " + authorizerClassName);
+				logger.info("Looking for users in " + authorizerClassName);
 			
 			try
 			{
@@ -400,7 +399,7 @@ public class GenericCombinedAuthorizationModule implements AuthorizationModule, 
 		while(authorizerClassName != null && !authorizerClassName.equals(""))
 		{
 			if(logger.isInfoEnabled())
-				System.out.println("Creating user in " + authorizerClassName);
+				logger.info("Creating user in " + authorizerClassName);
 			
 			try
 			{
@@ -470,7 +469,7 @@ public class GenericCombinedAuthorizationModule implements AuthorizationModule, 
 		while(authorizerClassName != null && !authorizerClassName.equals(""))
 		{
 			if(logger.isInfoEnabled())
-				System.out.println("Creating role in " + authorizerClassName);
+				logger.info("Creating role in " + authorizerClassName);
 			
 			try
 			{
@@ -507,7 +506,7 @@ public class GenericCombinedAuthorizationModule implements AuthorizationModule, 
 		while(authorizerClassName != null && !authorizerClassName.equals(""))
 		{
 			if(logger.isInfoEnabled())
-				System.out.println("Creating Group in " + authorizerClassName);
+				logger.info("Creating Group in " + authorizerClassName);
 			
 			try
 			{

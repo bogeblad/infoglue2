@@ -20,7 +20,7 @@
  *
  * ===============================================================================
  *
- * $Id: ContentCategoryController.java,v 1.20 2008/06/04 06:48:12 mattias Exp $
+ * $Id: ContentCategoryController.java,v 1.21 2008/07/03 11:49:05 mattias Exp $
  */
 package org.infoglue.cms.controllers.kernel.impl.simple;
 
@@ -98,9 +98,7 @@ public class ContentCategoryController extends BaseController
 	 * @throws	SystemException If an error happens
 	 */
 	public List findByContentVersionAttribute(String attribute, Integer versionId) throws SystemException
-	{
-	    //System.out.println("findByContentVersionAttribute with " + attribute + " and " + versionId + " no db " + System.currentTimeMillis());
-	    
+	{	    
 	    /*
 	    List params = new ArrayList();
 		params.add(attribute);
@@ -131,7 +129,6 @@ public class ContentCategoryController extends BaseController
 		}
 
 		
-		//System.out.println("findByContentVersionAttribute with " + attribute + " and " + versionId + " no db " + System.currentTimeMillis());
 		return contentCategoryVOList;
 	}
 

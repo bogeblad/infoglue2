@@ -155,7 +155,7 @@ public class EditOnSiteBasicTemplateController extends BasicTemplateController
 	public String decoratePage(String page)
 	{
 		String decoratedTemplate = page;
-		
+		/*
 		try
 		{
 		    String extraHeader 	= FileHelper.getFileAsString(new File(CmsPropertyHandler.getContextRootPath() + "preview/editOnSiteHeader.vm"));
@@ -212,7 +212,7 @@ public class EditOnSiteBasicTemplateController extends BasicTemplateController
 		{
 			logger.warn("An error occurred when deliver tried to decorate your template to enable onSiteEditing. Reason " + e.getMessage(), e);
 		}
-		
+		*/
 		return decoratedTemplate;
 	}
 	

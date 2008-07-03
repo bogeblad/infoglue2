@@ -416,7 +416,6 @@ public class DynamicWebservice
 		final QName type = new QName(namespace + className, className);
 		mappings.put(c, type);
 		logger.debug("addMapping=[" + c.getName() + "," + type + "]");
-		//System.out.println("addMapping=[" + c.getName() + "," + type + "]");
 		return type;
 	}
 

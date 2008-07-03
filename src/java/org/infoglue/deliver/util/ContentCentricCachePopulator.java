@@ -197,8 +197,6 @@ public class ContentCentricCachePopulator
 	        recurseSiteNodeTree(childSiteNode.getSiteNodeId(), languageId, templateController);
 	        
 	        Integer metaInfoContentId = templateController.getMetaInformationContentId(childSiteNode.getSiteNodeId()); 
-	        //System.out.println("childSiteNode:" + childSiteNode.getName());
-	        //System.out.println("metaInfoContentId:" + metaInfoContentId);
 	        templateController.getContentAttribute(metaInfoContentId, languageId, "ComponentStructure", true); 
         }
 	}

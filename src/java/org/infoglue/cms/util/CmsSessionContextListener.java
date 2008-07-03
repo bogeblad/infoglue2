@@ -54,7 +54,6 @@ public class CmsSessionContextListener implements HttpSessionListener
 	
 	public void	sessionCreated(HttpSessionEvent	se)	
 	{
-		//System.out.println("Session created..");
 	    activeSessions++;
 	    synchronized (sessions)
 	    {
@@ -64,7 +63,6 @@ public class CmsSessionContextListener implements HttpSessionListener
 	
 	public void	sessionDestroyed(HttpSessionEvent se) 
 	{
-		//System.out.println("Session destroyed..");
 	    if(activeSessions >	0)
 			activeSessions--;
 	    
@@ -83,7 +81,6 @@ public class CmsSessionContextListener implements HttpSessionListener
 	{
 		List stiList = new ArrayList();
 
-		//System.out.println("Sessions:" + sessions.size());
 		synchronized(sessions)
 		{
 			Iterator iter = sessions.keySet().iterator();

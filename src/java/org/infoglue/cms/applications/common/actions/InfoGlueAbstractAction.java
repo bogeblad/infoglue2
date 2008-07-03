@@ -679,10 +679,8 @@ public abstract class InfoGlueAbstractAction extends WebworkAbstractAction
 	public boolean getDisableCloseButton()
 	{
 		String disableCloseButton = this.getRequest().getParameter("disableCloseButton");
-		//System.out.println("get disableCloseButton:" + disableCloseButton);
 		if(disableCloseButton != null && !disableCloseButton.equals(""))
 		{	
-			//System.out.println("returning disableCloseButton:" + Boolean.parseBoolean(disableCloseButton));
 			return Boolean.parseBoolean(disableCloseButton);
 		}
 		else

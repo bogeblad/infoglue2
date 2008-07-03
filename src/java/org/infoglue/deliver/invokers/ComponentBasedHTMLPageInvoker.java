@@ -92,7 +92,6 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
     public PageInvoker getDecoratedPageInvoker(TemplateController templateController) throws SystemException
 	{
     	String repositoryDecoratedPageInvoker = RepositoryDeliveryController.getRepositoryDeliveryController().getExtraPropertyValue(templateController.getSiteNode().getRepositoryId(), "decoratedPageInvoker");
-    	//System.out.println("repositoryDecoratedPageInvoker:" + repositoryDecoratedPageInvoker);
     	if(repositoryDecoratedPageInvoker != null && !repositoryDecoratedPageInvoker.equals(""))
     	{
     		if(repositoryDecoratedPageInvoker != null && repositoryDecoratedPageInvoker.equalsIgnoreCase("ajax"))
@@ -103,7 +102,6 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
     	else
     	{
 	    	String decoratedPageInvoker = CmsPropertyHandler.getDecoratedPageInvoker();
-	    	//System.out.println("decoratedPageInvoker:" + decoratedPageInvoker);
 	    	if(decoratedPageInvoker != null && decoratedPageInvoker.equalsIgnoreCase("ajax"))
 	    		return new AjaxDecoratedComponentBasedHTMLPageInvoker();
 	    	else
@@ -153,31 +151,31 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 			ContentTypeDefinitionVO contentTypeDefinitionVO = ContentDeliveryController.getContentDeliveryController().getContentTypeDefinitionVO(getDatabase(), contentId);
 		    if(contentTypeDefinitionVO != null && contentTypeDefinitionVO.getName().equals("PagePartTemplate"))
 		    {
-		    	//System.out.println("This was a pagePart reference..");
+		    	//logger.info("This was a pagePart reference..");
 		    	String pagePartString = this.getTemplateController().getContentAttribute(contentId, "ComponentStructure", true);
-		    	System.out.println("pagePartString: " + pagePartString);
+		    	logger.info("pagePartString: " + pagePartString);
 		    	if(pagePartString == null || pagePartString.equals(""))
 		    	{
 		    		ContentVO contentVO = ContentDeliveryController.getContentDeliveryController().getContentVO(getTemplateController().getDatabase(), contentId, getTemplateController().getDeliveryContext());
 		    		LanguageVO masterLanguageVO = LanguageController.getController().getMasterLanguage(contentVO.getRepositoryId(), getTemplateController().getDatabase());
 		    		pagePartString = this.getTemplateController().getContentAttribute(contentId, masterLanguageVO.getId(), "ComponentStructure", true);
-			    	System.out.println("pagePartString: " + pagePartString);
+			    	logger.info("pagePartString: " + pagePartString);
 		    	}
 		    	
 		    	pagePartString = pagePartString.replaceFirst(" id=\".*?\"", " id=\"" + id + "\"");
 		    	pagePartString = pagePartString.replaceFirst(" name=\".*?\"", " name=\"" + name + "\"");
 		    	pagePartString = pagePartString.replaceFirst(" pagePartTemplateContentId=\".*?\"", " pagePartTemplateContentId=\"" + contentId + "\"");
-		    	System.out.println("Bytte id och namn: " + pagePartString);
+		    	logger.info("Bytte id och namn: " + pagePartString);
 		    	
 		    	pagePartString = pagePartString.substring(pagePartString.indexOf("<component "));
 		    	pagePartString = pagePartString.substring(0, pagePartString.lastIndexOf("</components>"));
 		    	
 		    	
-		    	//System.out.println("componentXML: " + componentXML);
-		    	System.out.println("contentId" + contentId);
-		    	System.out.println("pagePartString" + pagePartString);
+		    	//logger.info("componentXML: " + componentXML);
+		    	logger.info("contentId" + contentId);
+		    	logger.info("pagePartString" + pagePartString);
 		    	String newComponentXML = componentXML.replaceAll("<component contentId=\"" + contentId + ".*?</component>", "" + pagePartString);
-		    	//System.out.println("newComponentXML: " + newComponentXML);
+		    	//logger.info("newComponentXML: " + newComponentXML);
 		    	resultComponentXML = newComponentXML;
 		    }
 		}
@@ -343,7 +341,7 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 					int lastModifiedDateTimeEndIndex = sb.indexOf("</ig:lastModifiedDateTime>", lastModifiedDateTimeIndex);
 	
 					String tagInfo = sb.substring(lastModifiedDateTimeIndex, lastModifiedDateTimeEndIndex);
-					System.out.println("tagInfo:" + tagInfo);
+					logger.info("tagInfo:" + tagInfo);
 					String dateFormat = "yyyy-MM-dd HH:mm";
 					int formatStartIndex = tagInfo.indexOf("format");
 					if(formatStartIndex > -1)
@@ -354,9 +352,9 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 					}
 						
 					String dateString = vf.formatDate(this.getTemplateController().getDeliveryContext().getLastModifiedDateTime(), this.getTemplateController().getLocale(), dateFormat);
-					System.out.println("dateString:" + dateString);
+					logger.info("dateString:" + dateString);
 					sb.replace(lastModifiedDateTimeIndex, lastModifiedDateTimeEndIndex + "</ig:lastModifiedDateTime>".length(), dateString);
-					System.out.println("Replaced:" + lastModifiedDateTimeIndex + " to " + lastModifiedDateTimeEndIndex + "</ig:lastModifiedDateTime>".length() + " with " + dateString);
+					logger.info("Replaced:" + lastModifiedDateTimeIndex + " to " + lastModifiedDateTimeEndIndex + "</ig:lastModifiedDateTime>".length() + " with " + dateString);
 				}
 			}
 			catch (Exception e) 
@@ -404,7 +402,7 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 
 	    String cachedPageComponentsString = (String)CacheController.getCachedObject(cacheName, cacheKey);
 	    Set contentVersionId = (Set)CacheController.getCachedObjectFromAdvancedCache("contentVersionCache", versionKey);
-	    //System.out.println("Getting with versionKey-------------------------->:" + versionKey);
+	    //logger.info("Getting with versionKey-------------------------->:" + versionKey);
 
 
 		if(cachedPageComponentsString != null)
@@ -418,7 +416,7 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 				{
 					Integer currentContentVersionId = (Integer)contentVersionIdIterator.next();
 					templateController.getDeliveryContext().addUsedContentVersion("contentVersion_" + currentContentVersionId);
-			    	//System.out.println("\nThere was a cached page string and the meta info content version was " + contentVersionId);
+			    	//logger.info("\nThere was a cached page string and the meta info content version was " + contentVersionId);
 			    	templateController.getDeliveryContext().getUsedPageMetaInfoContentVersionIdSet().add(currentContentVersionId);
 				}
 			}
@@ -438,7 +436,7 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 		logger.info("pageComponentsString: " + pageComponentsString);
 	
 		CacheController.cacheObject(cacheName, cacheKey, pageComponentsString);
-	    //System.out.println("Caching usedContentVersionId for cacheKey: " + cacheKey + ":" + templateController.getDeliveryContext().getPageMetaInfoContentVersionId());
+	    //logger.info("Caching usedContentVersionId for cacheKey: " + cacheKey + ":" + templateController.getDeliveryContext().getPageMetaInfoContentVersionId());
 		
 	    Set contentVersionIds = new InfoGlueHashSet();
 	    //TODO - måste fixa så att inte nulls slängs in i getUsedPageMetaInfoContentVersionIdSet... hur det kan hända
@@ -529,7 +527,7 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 		Map components = new HashMap();
 		
 		String componentXPath = "component";
-		//System.out.println("componentXPath - A:" + componentXPath);
+		//logger.info("componentXPath - A:" + componentXPath);
 		List componentNodeList = element.selectNodes(componentXPath);
 		Iterator componentNodeListIterator = componentNodeList.iterator();
 		while(componentNodeListIterator.hasNext())
@@ -539,9 +537,9 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 			Integer contentId 	= new Integer(child.attributeValue("contentId"));
 			String name 	  	= child.attributeValue("name");
 			
-			//System.out.println("id 2:" + id);
-			//System.out.println("contentId 2:" + contentId);
-			//System.out.println("name 2:" + name);
+			//logger.info("id 2:" + id);
+			//logger.info("contentId 2:" + contentId);
+			//logger.info("name 2:" + name);
 			
 			ContentVO contentVO = ContentDeliveryController.getContentDeliveryController().getContentVO(contentId, db);
 			
@@ -557,7 +555,7 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 				
 			//Change to this later
 			//getComponentProperties(child, component, locale, templateController);
-			//System.out.println("componentXPath - B:" + componentXPath);
+			//logger.info("componentXPath - B:" + componentXPath);
 			List propertiesNodeList = child.selectNodes("properties");
 			//logger.info("propertiesNodeList:" + propertiesNodeList.getLength());
 			if(propertiesNodeList.size() > 0)
@@ -589,7 +587,7 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 
 					if(path == null || path.equals(""))
 					{
-						System.out.println("Falling back to content master language 1 for property:" + propertyName);
+						logger.info("Falling back to content master language 1 for property:" + propertyName);
 						LanguageVO contentMasterLangaugeVO = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForRepository(getDatabase(), contentVO.getRepositoryId());
 						if(propertyElement.attributeValue("path_" + contentMasterLangaugeVO.getLanguageCode()) != null)
 							path = propertyElement.attributeValue("path_" + contentMasterLangaugeVO.getLanguageCode());	
@@ -771,7 +769,7 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 		Map components = new HashMap();
 		
 		String componentXPath = getComponentXPath(parentComponent) + "/components/component[@name='" + componentName + "']";
-		//System.out.println("componentXPath:" + componentXPath);
+		//logger.info("componentXPath:" + componentXPath);
 		
 		//logger.info("componentXPath:" + componentXPath);
 		List componentNodeList = element.selectNodes(componentXPath);
@@ -828,7 +826,7 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 
 					if(path == null || path.equals(""))
 					{
-						System.out.println("Falling back to content master language 2 for property:" + propertyName);
+						logger.info("Falling back to content master language 2 for property:" + propertyName);
 						LanguageVO contentMasterLangaugeVO = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForRepository(getDatabase(), contentVO.getRepositoryId());
 						if(propertyElement.attributeValue("path_" + contentMasterLangaugeVO.getLanguageCode()) != null)
 							path = propertyElement.attributeValue("path_" + contentMasterLangaugeVO.getLanguageCode());	
@@ -1241,9 +1239,9 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
    
 	protected List getInheritedComponents(Database db, TemplateController templateController, InfoGlueComponent component, Integer siteNodeId, String id, boolean inherit) throws Exception
 	{
-		//System.out.println("slotId:" + id);
-		//System.out.println("component:" + component);
-		//System.out.println("getInheritedComponents with " + component.getName() + ":" + component.getSlotName() + ":" + component.getId());
+		//logger.info("slotId:" + id);
+		//logger.info("component:" + component);
+		//logger.info("getInheritedComponents with " + component.getName() + ":" + component.getSlotName() + ":" + component.getId());
 		List inheritedComponents = new ArrayList();
 		
 		NodeDeliveryController nodeDeliveryController = NodeDeliveryController.getNodeDeliveryController(templateController.getSiteNodeId(), templateController.getLanguageId(), templateController.getContentId());
@@ -1296,12 +1294,12 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 			Map components = (Map)CacheController.getCachedObjectFromAdvancedCache("componentPropertyCache", mapKey);
 			if(components == null)
 			{
-				//System.out.println("No components...");
+				//logger.info("No components...");
 				Object componentsCandidate = CacheController.getCachedObjectFromAdvancedCache("componentPropertyCache", key);
 				Document document = null;
 				if(componentsCandidate == null)
 				{
-					//System.out.println("Parsing dom document..." + key);
+					//logger.info("Parsing dom document..." + key);
 					document = domBuilder.getDocument(componentXML);
 					//TODO - could be enabled perhaps....
 					//CacheController.cacheObjectInAdvancedCache("componentPropertyCache", key, document, new String[]{}, false);
@@ -1312,18 +1310,18 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 				}
 				
 				components = getComponent(db, document.getRootElement(), id, templateController, component);
-				//System.out.println("components:" + components);
+				//logger.info("components:" + components);
 				//TODO
 				if(components != null)
 					CacheController.cacheObjectInAdvancedCache("componentPropertyCache", mapKey, components, null, false);
 			}
 			
 			//logger.info("components:" + components.size());
-			//System.out.println("id:" + id);
+			//logger.info("id:" + id);
 			if(components.containsKey(id))
 			{
 				inheritedComponents = (List)components.get(id);
-				//System.out.println("inheritedComponents:" + inheritedComponents);
+				//logger.info("inheritedComponents:" + inheritedComponents);
 				Iterator inheritedComponentIterator = inheritedComponents.iterator();
 				while(inheritedComponentIterator.hasNext())
 				{
@@ -1531,7 +1529,7 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 		else
 		{
 			String componentXPath = "component[@name='" + slotName + "']";
-			//System.out.println("componentXPath:" + componentXPath);
+			//logger.info("componentXPath:" + componentXPath);
 			List componentElements = element.selectNodes(componentXPath);
 			//logger.info("componentElements:" + componentElements.size());
 			Iterator componentIterator = componentElements.iterator();
@@ -1546,17 +1544,17 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 				String isInherited 					= componentElement.attributeValue("isInherited");
 				String pagePartTemplateContentId 	= componentElement.attributeValue("pagePartTemplateContentId");
 				
-				//System.out.println("id 1: " + id);
-				//System.out.println("contentId 1:" + contentId);
-				//System.out.println("name 1: " + name);
-				//System.out.println("isInherited 1: " + isInherited);
-				//System.out.println("pagePartTemplateContentId 1: " + pagePartTemplateContentId);
+				//logger.info("id 1: " + id);
+				//logger.info("contentId 1:" + contentId);
+				//logger.info("name 1: " + name);
+				//logger.info("isInherited 1: " + isInherited);
+				//logger.info("pagePartTemplateContentId 1: " + pagePartTemplateContentId);
 				
 				try
 				{
 				    ContentVO contentVO = ContentDeliveryController.getContentDeliveryController().getContentVO(contentId, db);
 				    
-				    //System.out.println("slotName:" + slotName + " should get connected with content_" + contentVO.getId());
+				    //logger.info("slotName:" + slotName + " should get connected with content_" + contentVO.getId());
 				    
 				    groups = new String[]{"content_" + contentVO.getId()};
 				    
@@ -1619,7 +1617,7 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 					
 							if(path == null || path.equals(""))
 							{
-								System.out.println("Falling back to content master language 1 for property:" + propertyName);
+								logger.info("Falling back to content master language 1 for property:" + propertyName);
 								LanguageVO contentMasterLangaugeVO = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForRepository(getDatabase(), contentVO.getRepositoryId());
 								if(propertyElement.attributeValue("path_" + contentMasterLangaugeVO.getLanguageCode()) != null)
 									path = propertyElement.attributeValue("path_" + contentMasterLangaugeVO.getLanguageCode());	
@@ -1804,8 +1802,8 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 			}
 		}		
 		
-		//System.out.println("sortedPageComponents:" + sortedPageComponents.size());
-		//System.out.println("childComponents:" + childComponents.size());
+		//logger.info("sortedPageComponents:" + sortedPageComponents.size());
+		//logger.info("childComponents:" + childComponents.size());
 		if(sortedPageComponents != null)
 		{
 			sortedPageComponents.addAll(components);
@@ -1852,7 +1850,7 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 
 				if(path == null || path.equals(""))
 				{
-					System.out.println("Falling back to content master language 1 for property:" + propertyName);
+					logger.info("Falling back to content master language 1 for property:" + propertyName);
 					LanguageVO contentMasterLangaugeVO = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForRepository(getDatabase(), contentVO.getRepositoryId());
 					if(propertyElement.attributeValue("path_" + contentMasterLangaugeVO.getLanguageCode()) != null)
 						path = propertyElement.attributeValue("path_" + contentMasterLangaugeVO.getLanguageCode());	
@@ -1899,7 +1897,7 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 	 */
 	private void getComponentRestrictions(Element child, InfoGlueComponent component, Locale locale, TemplateController templateController) throws Exception
 	{
-	    //System.out.println("Getting restrictions for " + component.getId() + ":" + child.getName());
+	    //logger.info("Getting restrictions for " + component.getId() + ":" + child.getName());
 		List restrictionsNodeList = child.selectNodes("restrictions");
 		//logger.info("restrictionsNodeList:" + restrictionsNodeList.getLength());
 		if(restrictionsNodeList.size() > 0)

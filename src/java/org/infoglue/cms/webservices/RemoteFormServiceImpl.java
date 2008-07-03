@@ -142,13 +142,13 @@ public class RemoteFormServiceImpl extends RemoteInfoGlueService
 
 	            Map formEntryValues 	= (Map)formEntry.get("formEntryValues");
 	            
-	            System.out.println("formName:" + formName);
-	            System.out.println("formContentId:" + formContentId);
-	            System.out.println("originAddress:" + originAddress);
-	            System.out.println("userIP:" + userIP);
-	            System.out.println("userAgent:" + userAgent);
+	            logger.info("formName:" + formName);
+	            logger.info("formContentId:" + formContentId);
+	            logger.info("originAddress:" + originAddress);
+	            logger.info("userIP:" + userIP);
+	            logger.info("userAgent:" + userAgent);
 
-	            System.out.println("formEntryValues:" + formEntryValues);
+	            logger.info("formEntryValues:" + formEntryValues);
 
 	            List formEntryValueVOList = new ArrayList();
 	            Iterator formEntryValuesIterator = formEntryValues.keySet().iterator();

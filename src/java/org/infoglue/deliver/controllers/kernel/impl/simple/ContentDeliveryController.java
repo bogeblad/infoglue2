@@ -259,61 +259,6 @@ public class ContentDeliveryController extends BaseDeliveryController
 	/**
 	 * This method gets a contentVersion with a state and a language which is active.
 	 */
-	/*
-	private ContentVersion getContentVersion(Content content, Integer languageId, Integer operatingMode, DeliveryContext deliveryContext, Database db) throws Exception
-	{
-	    logger.info("content:" + content.getId());
-	    logger.info("operatingMode:" + operatingMode);
-	    logger.info("languageId:" + languageId);
-		
-		ContentVersion contentVersion = null;
-		
-	    String versionKey = "" + content.getId() + "_" + languageId + "_" + operatingMode + "_contentVersionId";
-		//System.out.println("versionKey:" + versionKey);
-		
-		Integer contentVersionId = (Integer)CacheController.getCachedObjectFromAdvancedCache("contentVersionCache", versionKey);
-		if(contentVersionId != null)
-		{
-			logger.info("There was a cached content version id:" + contentVersionId);
-		    //System.out.println("There was a cached content version id:" + contentVersionId);
-		    contentVersion = (ContentVersion)getObjectWithId(ContentVersionImpl.class, contentVersionId, db);
-		    //System.out.println("Loaded the version from cache instead of querying it:" + contentVersionId);
-		    logger.info("contentVersion read");
-		}
-		else
-		{
-			Collection contentVersions = content.getContentVersions();
-			
-			Iterator versionIterator = contentVersions.iterator();
-			while(versionIterator.hasNext())
-			{
-				ContentVersion contentVersionCandidate = (ContentVersion)versionIterator.next();	
-				logger.info("contentVersionCandidate:" + contentVersionCandidate.getId() + ":" + contentVersionCandidate.getIsActive() + ":" + contentVersionCandidate.getLanguage() + ":" + contentVersionCandidate.getStateId() + ":" + operatingMode);
-				logger.info("" + contentVersionCandidate.getIsActive().booleanValue());
-				logger.info("" + contentVersionCandidate.getLanguage().getId().intValue());
-				logger.info("" + languageId.intValue());
-				logger.info("" + contentVersionCandidate.getStateId().intValue());
-				logger.info("" + operatingMode.intValue());
-				
-				if(contentVersionCandidate.getIsActive().booleanValue() && contentVersionCandidate.getLanguage().getId().intValue() ==  languageId.intValue() && contentVersionCandidate.getStateId().intValue() >= operatingMode.intValue())
-				{
-					if(contentVersion == null || contentVersion.getId().intValue() < contentVersionCandidate.getId().intValue())
-					{
-						contentVersion = contentVersionCandidate;
-					}
-				}
-			}
-			
-			if(contentVersion != null)
-				CacheController.cacheObjectInAdvancedCache("contentVersionCache", versionKey, contentVersion.getId(), new String[]{"contentVersion_" + contentVersion.getId(), "content_" + contentVersion.getValueObject().getContentId()}, true);
-		}
-		
-		if(contentVersion != null)
-		    deliveryContext.addUsedContentVersion("contentVersion_" + contentVersion.getId());
-		
-		return contentVersion;
-	}
-	*/
 
 	private ContentVersion getContentVersion(Content content, Integer languageId, Integer operatingMode, DeliveryContext deliveryContext, Database db) throws Exception
     {
@@ -324,7 +269,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 	    logger.info("languageId:" + languageId);
 
 	    String versionKey = "" + content.getId() + "_" + languageId + "_" + operatingMode + "_contentVersionId";
-		//System.out.println("versionKey:" + versionKey);
+		//logger.info("versionKey:" + versionKey);
 		
 		Object object = CacheController.getCachedObjectFromAdvancedCache("contentVersionCache", versionKey);
 		//Integer contentVersionId = (Integer)CacheController.getCachedObjectFromAdvancedCache("contentVersionCache", versionKey);
@@ -336,14 +281,14 @@ public class ContentDeliveryController extends BaseDeliveryController
 		{
 			Integer contentVersionId = (Integer)object;
 			logger.info("There was a cached content version id:" + contentVersionId);
-		    //System.out.println("There was a cached content version id:" + contentVersionId);
+		    //logger.info("There was a cached content version id:" + contentVersionId);
 		    contentVersion = (ContentVersion)getObjectWithId(ContentVersionImpl.class, contentVersionId, db);
-		    //System.out.println("Loaded the version from cache instead of querying it:" + contentVersionId);
+		    //logger.info("Loaded the version from cache instead of querying it:" + contentVersionId);
 		    logger.info("contentVersion read");
 		}
 		else
 		{
-			//System.out.println("Querying for verson: " + versionKey); 
+			//logger.info("Querying for verson: " + versionKey); 
 		    OQLQuery oql = db.getOQLQuery( "SELECT cv FROM org.infoglue.cms.entities.content.impl.simple.ContentVersionImpl cv WHERE cv.contentId = $1 AND cv.language.languageId = $2 AND cv.stateId >= $3 AND cv.isActive = $4 ORDER BY cv.contentVersionId desc");
 	    	oql.bind(content.getId());
 	    	oql.bind(languageId);
@@ -357,7 +302,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 	        	contentVersion = (ContentVersion)results.next();
 	        	logger.info("found one:" + contentVersion.getId());
 
-	        	//System.out.println("Caching content version for key:" + versionKey);
+	        	//logger.info("Caching content version for key:" + versionKey);
 				CacheController.cacheObjectInAdvancedCache("contentVersionCache", versionKey, contentVersion.getId(), new String[]{"contentVersion_" + contentVersion.getId(), "content_" + contentVersion.getValueObject().getContentId()}, true);
 	        }
 			else
@@ -483,7 +428,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 		if(contentId == null || contentId.intValue() < 1)
 			return "";
 		
-		//System.out.println("usedContentVersionId:" + usedContentVersionId);
+		//logger.info("usedContentVersionId:" + usedContentVersionId);
 		String enforceRigidContentAccess = CmsPropertyHandler.getEnforceRigidContentAccess();
 		if(enforceRigidContentAccess != null && enforceRigidContentAccess.equalsIgnoreCase("true"))
 		{
@@ -534,14 +479,9 @@ public class ContentDeliveryController extends BaseDeliveryController
 			{
 				contentVersionId = (Integer)CacheController.getCachedObjectFromAdvancedCache("contentVersionCache", versionKey);
 				//logger.info("There was an cached content attribute:" + attribute);
-				//if(contentId != null && contentId.intValue() == 3135)
-				//	System.out.println("There was an cached content attribute:" + attribute);
 			}
 			else
 			{
-				//if(contentId != null && contentId.intValue() == 3135)
-				//	System.out.println("No cached attribute");
-				
 				ContentVersionVO contentVersionVO = getContentVersionVO(db, siteNodeId, contentId, languageId, useLanguageFallback, deliveryContext, infogluePrincipal);
 			   
 	        	if (contentVersionVO != null) 

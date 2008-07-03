@@ -447,8 +447,6 @@ public class ViewMyDesktopToolStartPageAction extends InfoGlueAbstractAction
 			}
 		}	
 		
-		//System.out.println("Div: " + sb.toString());
-		
 		this.getResponse().setContentType("text/plain");
         this.getResponse().getWriter().println(sb.toString());
 		
@@ -515,8 +513,6 @@ public class ViewMyDesktopToolStartPageAction extends InfoGlueAbstractAction
 			e.printStackTrace();
 		}
 		
-		//System.out.println("Div: " + sb.toString());
-
 		this.getResponse().setContentType("text/plain");
 		this.getResponse().getWriter().println(sb.toString());
 		

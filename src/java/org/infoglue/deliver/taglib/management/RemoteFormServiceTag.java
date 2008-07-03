@@ -129,7 +129,6 @@ public class RemoteFormServiceTag extends TemplateControllerTag
     */
    public void addFormEntryMap(final Map formEntryMap) 
    {
-	   System.out.println("formEntryMap:" + formEntryMap);
 	   this.formEntries.add(formEntryMap);
    }
 

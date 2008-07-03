@@ -581,7 +581,6 @@ public class RemoteSiteNodeServiceImpl extends RemoteInfoGlueService
     	        while(contentCategoriesIterator.hasNext())
     	        {
     	        	String contentCategoryString = (String)contentCategoriesIterator.next();
-    	        	//System.out.println("contentCategoryString:" + contentCategoryString);
     	        	String[] split = contentCategoryString.split("=");
     	        	String categoryKey = split[0];
     	        	String fullCategoryName = split[1];

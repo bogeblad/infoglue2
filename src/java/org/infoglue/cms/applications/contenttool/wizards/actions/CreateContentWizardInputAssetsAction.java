@@ -209,11 +209,8 @@ public class CreateContentWizardInputAssetsAction extends CreateContentWizardAbs
 					//String assetFileName = "" + digitalAssetVO.getAssetFilePath() + File.separator + digitalAssetVO.getId() + "_" + digitalAssetVO.getAssetFileName();
 					String folderName = "" + (digitalAssetVO.getDigitalAssetId().intValue() / 1000);
 					String assetFileName = "" + digitalAssetVO.getAssetFilePath() + File.separator + folderName + File.separator + digitalAssetVO.getId() + "_" + digitalAssetVO.getAssetFileName();
-					//System.out.println("newAsset:" + assetFileName);
 					File assetFile = new File(assetFileName);
-					//System.out.println("Renaming:" + renamedFile.getAbsolutePath() + " to " + assetFile.getAbsolutePath());
 					renamedFile.renameTo(assetFile);
-					//System.out.println("apaFile:" + assetFile.exists());
 				}
 			    else
 			    {

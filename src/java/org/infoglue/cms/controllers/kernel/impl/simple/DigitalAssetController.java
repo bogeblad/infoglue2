@@ -443,7 +443,6 @@ public class DigitalAssetController extends BaseController
 	   			File assetDirectory = new File(assetPath);
 	   			if(assetDirectory.exists())
 	   				cachedAssets = assetDirectory.listFiles(); 
-				//System.out.println("Read and cached files:" + cachedAssets);
 				
 	   			CacheController.cacheObjectInAdvancedCache("cachedAssetFileList", "allAssets", cachedAssets);
    			}
@@ -936,8 +935,11 @@ public class DigitalAssetController extends BaseController
 			String fileName = digitalAssetVO.getDigitalAssetId() + "_" + digitalAssetVO.getAssetFileName();
 			String filePath = CmsPropertyHandler.getDigitalAssetPath() + File.separator + folderName;
 			dumpDigitalAsset(digitalAssetVO, fileName, filePath, db);
-			System.out.println("WebServerAddress:" + CmsPropertyHandler.getWebServerAddress());
-			System.out.println("ServletContext:" + CmsPropertyHandler.getServletContext());
+			if(logger.isInfoEnabled())
+			{
+				logger.info("WebServerAddress:" + CmsPropertyHandler.getWebServerAddress());
+				logger.info("ServletContext:" + CmsPropertyHandler.getServletContext());
+			}
 			
 			if(CmsPropertyHandler.getWebServerAddress().indexOf(CmsPropertyHandler.getServletContext()) > -1)
 				assetUrl = CmsPropertyHandler.getWebServerAddress() + "/" + CmsPropertyHandler.getDigitalAssetBaseUrl() + "/" + folderName + "/" + fileName;
@@ -1174,8 +1176,6 @@ public class DigitalAssetController extends BaseController
         if (!digitalAssetPath.startsWith("/"))
         	digitalAssetPath = "/" + digitalAssetPath;
 
-        System.out.println("digitalAssetPath: " + digitalAssetPath);
-        System.out.println("servletContext: " + servletContext);
         if(digitalAssetPath.indexOf(servletContext) == -1)
         	sb.append(servletContext);	
 		
@@ -1205,8 +1205,6 @@ public class DigitalAssetController extends BaseController
 				
 				dumpDigitalAsset(digitalAssetVO, fileName, filePath, db);
 				assetUrl = sb.toString() + folderName + "/" + fileName;
-				//assetUrl = CmsPropertyHandler.getWebServerAddress() + "/" + CmsPropertyHandler.getDigitalAssetBaseUrl() + "/" + folderName + "/" + fileName;
-				System.out.println("assetUrl 1:" + assetUrl);
 			}
 			else
 			{
@@ -1238,8 +1236,6 @@ public class DigitalAssetController extends BaseController
 					
 					dumpDigitalAsset(digitalAssetVO, fileName, filePath, db);
 					assetUrl = sb.toString() + folderName + "/" + fileName;
-					//assetUrl = CmsPropertyHandler.getWebServerAddress() + "/" + CmsPropertyHandler.getDigitalAssetBaseUrl() + "/" + folderName + "/" + fileName;
-					System.out.println("assetUrl 2:" + assetUrl);
 				}
 			}
 		}
@@ -1712,9 +1708,8 @@ public class DigitalAssetController extends BaseController
 				}
 				else if(CmsPropertyHandler.getApplicationName().equalsIgnoreCase("deliver"))
 				{
-					System.out.println("Was a deliver request and no asset was found on " + tmpOutputFile.getName() + " so let's get it from the cms.");
+					logger.info("Was a deliver request and no asset was found on " + tmpOutputFile.getName() + " so let's get it from the cms.");
 					String cmsBaseUrl = CmsPropertyHandler.getCmsFullBaseUrl();
-					//System.out.println("cmsBaseUrl:" + cmsBaseUrl);
 					if(CmsPropertyHandler.getEnableDiskAssets().equals("true"))
 					{
 						HttpHelper httpHelper = new HttpHelper();
@@ -1740,45 +1735,7 @@ public class DigitalAssetController extends BaseController
 	}
 	
 	
-	/**
-	 * This method checks if the given file exists on disk. If it does it's ignored because
-	 * that means that the file is allready cached on the server. If not we take out the stream from the 
-	 * digitalAsset-object and dumps it.
-	 */
-	/*
-   	public static boolean dumpDigitalAsset(final DigitalAsset digitalAsset, final String fileName, final String filePath) throws Exception
-	{
-	    boolean result = false;
-	    if ( digitalAsset.getAssetFileSize() != -1 ) {
-		final long timer = System.currentTimeMillis();
-		final int BUFF_SIZE = 4096;
 
-		final File outputFile = new File(filePath + File.separator + fileName);
-
-		synchronized (fileName.intern()) {
-		    if (!outputFile.exists() && digitalAsset.getAssetBlob() != null) {
-			new File(filePath).mkdirs();
-			final FileOutputStream fos = new FileOutputStream(outputFile);
-			final BufferedOutputStream bos = new BufferedOutputStream(fos);
-			final BufferedInputStream bis = new BufferedInputStream(digitalAsset.getAssetBlob());
-
-			int offset;
-			final byte[] buffer = new byte[BUFF_SIZE];
-			while ((offset = bis.read(buffer)) != -1) {
-			    bos.write(buffer, 0, offset);
-			}
-			bos.flush();
-			bis.close();
-			bos.close();
-			fos.close();
-			result = true;
-		    }
-		}
-		logger.info("Time for dumping file, success: " +  result + ", filename: " + fileName + ", time:" + (System.currentTimeMillis() - timer));
-	    }
-	    return result;
-	}
-	*/
 	public static boolean dumpDigitalAsset(DigitalAsset digitalAsset, String fileName, String filePath) throws Exception
 	{
 		if(digitalAsset.getAssetFileSize().intValue() == -1)

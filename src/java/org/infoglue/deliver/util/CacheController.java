@@ -833,8 +833,7 @@ public class CacheController extends Thread
 						    		cacheInstance.flushGroup("contentVersion_" + entityId);
 						    		cacheInstance.flushGroup("selectiveCacheUpdateNonApplicable");
 							    	logger.info("clearing " + e.getKey() + " with group " + "contentVersion_" + entityId);
-							    	//System.out.println("clearing " + e.getKey() + " with group " + "contentVersion_" + entityId);
-		
+							    	
 							    	try
 							    	{
 								    	logger.info("Before contentVersionVO...");
@@ -844,7 +843,6 @@ public class CacheController extends Thread
 									    	logger.info("Before flushGroup2...");
 							    			cacheInstance.flushGroup("content_" + contentId);
 									    	logger.info("After flushGroup2...");
-							    			//System.out.println("also clearing " + e.getKey() + " with group " + "content_" + contentVersionVO.getContentId());
 							    		}
 								    	/*
 								    	ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getContentVersionVOWithId(new Integer(entityId));

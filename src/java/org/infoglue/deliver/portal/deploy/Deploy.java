@@ -423,7 +423,6 @@ public class Deploy {
             for (Enumeration entries = jar.entries(); entries.hasMoreElements();) 
             {
                 JarEntry entry = (JarEntry) entries.nextElement();
-                //System.out.println("entry:" + entry.getName());
                 JarEntry newEntry = new JarEntry(entry.getName());
                 tempJar.putNextEntry(newEntry);
                 

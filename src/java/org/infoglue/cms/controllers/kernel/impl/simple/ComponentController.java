@@ -460,18 +460,18 @@ public class ComponentController extends BaseController
 		while(componentPropertyDefinitionsIterator.hasNext())
 		{
 			ComponentPropertyDefinition componentPropertyDefinition = (ComponentPropertyDefinition)componentPropertyDefinitionsIterator.next();
-			System.out.println("componentPropertyDefinition:" + componentPropertyDefinition);
+			logger.info("componentPropertyDefinition:" + componentPropertyDefinition);
 			if(componentPropertyDefinition.getAutoCreateContent())
 			{
-				System.out.println("componentPropertyDefinition vill ha en auto create:" + componentPropertyDefinition);
+				logger.info("componentPropertyDefinition vill ha en auto create:" + componentPropertyDefinition);
 				String method = componentPropertyDefinition.getAutoCreateContentMethod();
 				String path = componentPropertyDefinition.getAutoCreateContentPath();
 				String allowedContentTypeNames = componentPropertyDefinition.getAllowedContentTypeNames();
 				String allowedContentTypeName = allowedContentTypeNames.split(",")[0];
 				ContentTypeDefinitionVO createContentTypeDefinitionVO = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithName(allowedContentTypeName, db);
-				System.out.println("method:" + method);
-				System.out.println("path:" + path);
-				System.out.println("createContentTypeDefinitionVO:" + createContentTypeDefinitionVO.getName());
+				logger.info("method:" + method);
+				logger.info("path:" + path);
+				logger.info("createContentTypeDefinitionVO:" + createContentTypeDefinitionVO.getName());
 				if(path.indexOf("/") == 0)
 					path = path.substring(1);
 				
@@ -480,7 +480,7 @@ public class ComponentController extends BaseController
 				if(method.equals("siteStructure"))
 				{
 					String siteNodePath = SiteNodeController.getController().getSiteNodePath(siteNodeVO.getId(), db);
-					System.out.println("siteNodePath:" + siteNodePath);
+					logger.info("siteNodePath:" + siteNodePath);
 					parentContentVO = ContentController.getContentController().getContentVOWithPath(siteNodeVO.getRepositoryId(), path + siteNodePath, true, principal, db);
 				}
 				else if(method.equals("fixedPath"))
@@ -527,11 +527,7 @@ public class ComponentController extends BaseController
 				Integer entityId  = new Integer(autoContentVO.getId());
 				String propertyName = "" + componentPropertyDefinition.getName();
 				
-				System.out.println("FFFFFF:" + XMLHelper.serializeDom(document.getDocumentElement(), new StringBuffer()).toString());
-				
 				ComponentController.getController().addComponentPropertyBinding(document, locale, siteNodeId, languageId, masterLanguageVO.getId(), entity, entityId, propertyName, newComponentId, path, assetKey, principal);
-
-				System.out.println("GGGGG:" + XMLHelper.serializeDom(document.getDocumentElement(), new StringBuffer()).toString());
 			}
 		}
 	}
@@ -566,13 +562,11 @@ public class ComponentController extends BaseController
 				
 		String componentPropertyXPath = "//component[@id=" + componentId + "]/properties/property[@name='" + propertyName + "']";
 		NodeList anl = org.apache.xpath.XPathAPI.selectNodeList(document.getDocumentElement(), componentPropertyXPath);
-		System.out.println("AAAAAAAAAAAAAAAAAAAAAA:" + componentPropertyXPath + ":" + anl.getLength());
 		if(anl.getLength() == 0)
 		{
 			String componentXPath = "//component[@id=" + componentId + "]/properties";
 			//logger.info("componentXPath:" + componentXPath);
 			NodeList componentNodeList = org.apache.xpath.XPathAPI.selectNodeList(document.getDocumentElement(), componentXPath);
-			System.out.println("AAAAAAAAAAAAAAAAAAAAAA:" + componentXPath + ":" + componentNodeList.getLength());
 			if(componentNodeList.getLength() > 0)
 			{
 				Element componentProperties = (Element)componentNodeList.item(0);
@@ -582,11 +576,9 @@ public class ComponentController extends BaseController
 				    addPropertyElement(componentProperties, propertyName, path, "contentBinding", locale);
 				
 				anl = org.apache.xpath.XPathAPI.selectNodeList(document.getDocumentElement(), componentPropertyXPath);
-				System.out.println("anl:" + anl.getLength());
 			}
 		}
 		
-		System.out.println("anl after:" + anl);
 		if(anl.getLength() > 0)
 		{
 			Element component = (Element)anl.item(0);
@@ -594,9 +586,7 @@ public class ComponentController extends BaseController
 			//component.setAttribute("path_" + locale.getLanguage(), path);
 			NamedNodeMap attributes = component.getAttributes();
 			logger.debug("NumberOfAttributes:" + attributes.getLength() + ":" + attributes);
-			
-			System.out.println("11111:" + XMLHelper.serializeDom(component, new StringBuffer()).toString());
-			
+						
 			List removableAttributes = new ArrayList();
 			for(int i=0; i<attributes.getLength(); i++)
 			{
@@ -624,8 +614,6 @@ public class ComponentController extends BaseController
 			}
 			
 			addBindingElement(component, entity, entityId, assetKey);
-			
-			System.out.println("22222:" + XMLHelper.serializeDom(component, new StringBuffer()).toString());
 		}
 	}
 

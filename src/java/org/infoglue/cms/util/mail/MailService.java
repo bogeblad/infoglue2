@@ -184,14 +184,6 @@ public class MailService
 	{
 		try 
 		{
-			/*
-			System.out.println("from:" + from);
-			System.out.println("to:" + to);
-			System.out.println("bcc:" + bcc);
-			System.out.println("subject:" + subject);
-			System.out.println("content:" + content);
-			System.out.println("encoding:" + encoding);
-			*/
 			HtmlEmail email = new HtmlEmail();
 		    String mailServer = CmsPropertyHandler.getMailSmtpHost();
 		    String mailPort = CmsPropertyHandler.getMailSmtpPort();

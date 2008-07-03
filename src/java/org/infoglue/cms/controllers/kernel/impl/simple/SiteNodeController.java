@@ -858,16 +858,12 @@ public class SiteNodeController extends BaseController
         	
     			Document document = XMLHelper.readDocumentFromByteArray(componentStructure.getBytes("UTF-8"));
     			String componentXPath = "//component";
-    			System.out.println("componentXPath:" + componentXPath);
     			NodeList componentNodes = org.apache.xpath.XPathAPI.selectNodeList(document.getDocumentElement(), componentXPath);
-    			System.out.println("Found componentNodes:" + componentNodes.getLength());
     			for(int i=0; i < componentNodes.getLength(); i++)
     			{
     				Element element = (Element)componentNodes.item(i);
     				String componentId = element.getAttribute("id");
     				String componentContentId = element.getAttribute("contentId");
-    				System.out.println("componentId:" + componentId);
-    				System.out.println("componentContentId:" + componentContentId);
     				
     				ComponentController.getController().checkAndAutoCreateContents(db, newSiteNode.getId(), masterLanguageId, masterLanguageId, null, new Integer(componentId), document, new Integer(componentContentId), principal);
     				componentStructure = XMLHelper.serializeDom(document, new StringBuffer()).toString();
@@ -1118,7 +1114,6 @@ public class SiteNodeController extends BaseController
 		SiteNodeVO siteNodeVO = getSiteNodeVOWithId(siteNodeId, db);
 		while(siteNodeVO != null)
 		{
-			System.out.println("name:" + siteNodeVO.getName());
 			sb.insert(0, "/" + siteNodeVO.getName());
 			if(siteNodeVO.getParentSiteNodeId() != null)
 				siteNodeVO = getSiteNodeVOWithId(siteNodeVO.getParentSiteNodeId(), db);

@@ -121,7 +121,7 @@ public class ExportRepositoryAction extends InfoGlueAbstractAction
 				Repository repository 	= RepositoryController.getController().getRepositoryWithId(repositoryId, db);
 				SiteNode siteNode 		= SiteNodeController.getController().getRootSiteNode(repositoryId, db);
 				Content content 		= ContentController.getContentController().getRootContent(repositoryId, db);
-				//System.out.println("content type def:" + content.getContentTypeDefinitionId());
+
 				siteNodes.add(siteNode);
 				contents.add(content);
 				names = names + "_" + repository.getName();

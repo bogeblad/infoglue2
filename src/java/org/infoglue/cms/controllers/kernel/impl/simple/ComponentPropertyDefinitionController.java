@@ -61,9 +61,7 @@ public class ComponentPropertyDefinitionController extends BaseController
 	
 	public List getComponentPropertyDefinitions(Database db, Integer contentId, Integer languageId) throws Exception
 	{
-		System.out.println("Getting content for properties def: " + contentId);
 		ContentVO contentVO = ContentController.getContentController().getContentVOWithId(contentId, db);
-		System.out.println("contentVO: " + contentVO.getName());
 		ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentId, languageId, db);
 		if(contentVersionVO == null)
 		{

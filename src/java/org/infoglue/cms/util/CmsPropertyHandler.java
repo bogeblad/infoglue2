@@ -347,28 +347,23 @@ public class CmsPropertyHandler
 		    	if(prefix != null)
 		    	{
 			        value = propertySet.getString("serverNode_" + localSettingsServerNodeId + "_" + prefix + "_" + key);
-			        //System.out.println("Local value: " + value);
 			        if(value == null || value.equals("") || value.equalsIgnoreCase("inherit") && inherit)
 			        {
 			            value = propertySet.getString("serverNode_" + globalSettingsServerNodeId + "_" + prefix + "_" + key);
-				        //System.out.println("Global value: " + value);
 				        if(value == null || value.equals("") || value.equalsIgnoreCase("inherit") && inherit)
 				        {
 				            value = propertySet.getString("serverNode_" + globalSettingsServerNodeId + "_" + key);
-					        //System.out.println("Global value: " + value);
-				        }
+					    }
 	
 			        }
 		    	}
 		    	else
 		    	{
 			        value = propertySet.getString("serverNode_" + localSettingsServerNodeId + "_" + key);
-			        //System.out.println("Local value: " + value);
 			        if(value == null || value.equals("") || value.equalsIgnoreCase("inherit") && inherit)
 			        {
 			            value = propertySet.getString("serverNode_" + globalSettingsServerNodeId + "_" + key);
-				        //System.out.println("Global value: " + value);
-			        }	    		
+				    }	    		
 		    	}
 		    }
 			else
@@ -376,17 +371,14 @@ public class CmsPropertyHandler
 				if(prefix != null)
 		    	{
 					value = propertySet.getString("serverNode_" + globalSettingsServerNodeId + "_" + prefix + "_" + key);
-					//System.out.println("Global value immediately: " + value);
-			        if(value == null || value.equals("") || value.equalsIgnoreCase("inherit") && inherit)
+					if(value == null || value.equals("") || value.equalsIgnoreCase("inherit") && inherit)
 			        {
 			            value = propertySet.getString("serverNode_" + globalSettingsServerNodeId + "_" + key);
-				        //System.out.println("Global value: " + value);
-			        }	    		
+				    }	    		
 		    	}
 				else
 				{
 					value = propertySet.getString("serverNode_" + globalSettingsServerNodeId + "_" + key);
-					//System.out.println("Global value immediately: " + value);				
 				}
 		    }
 		}
@@ -394,7 +386,6 @@ public class CmsPropertyHandler
 	    if(value == null || value.equals("") || value.equalsIgnoreCase("inherit") && inherit)
 	    {
 	        value = getProperty(key);
-	        //System.out.println("Property value: " + value);
 	    }
 
 	    if((value == null || value.indexOf(key) > -1) && defaultValue != null)
@@ -457,15 +448,12 @@ public class CmsPropertyHandler
 	    	if(prefix != null)
 	    	{
 		        value = getDataPropertyValue("serverNode_" + localSettingsServerNodeId + "_" + prefix + "_" + key);
-		        //System.out.println("Local value: " + value);
 		        if(value == null || value.equals("") || value.equalsIgnoreCase("inherit") && inherit)
 		        {
 		            value = getDataPropertyValue("serverNode_" + globalSettingsServerNodeId + "_" + prefix + "_" + key);
-			        //System.out.println("Global value: " + value);
 			        if(value == null || value.equals("") || value.equalsIgnoreCase("inherit") && inherit)
 			        {
 			            value = getDataPropertyValue("serverNode_" + globalSettingsServerNodeId + "_" + key);
-				        //System.out.println("Global value: " + value);
 			        }
 
 		        }
@@ -473,11 +461,9 @@ public class CmsPropertyHandler
 	    	else
 	    	{
 		        value = getDataPropertyValue("serverNode_" + localSettingsServerNodeId + "_" + key);
-		        //System.out.println("Local value: " + value);
 		        if(value == null || value.equals("") || value.equalsIgnoreCase("inherit") && inherit)
 		        {
 		            value = getDataPropertyValue("serverNode_" + globalSettingsServerNodeId + "_" + key);
-			        //System.out.println("Global value: " + value);
 		        }	    		
 	    	}
 	    }
@@ -486,12 +472,10 @@ public class CmsPropertyHandler
 			if(prefix != null)
 	    	{
 				value = getDataPropertyValue("serverNode_" + globalSettingsServerNodeId + "_" + prefix + "_" + key);
-				//System.out.println("Global value immediately: " + value);
 	    	}
 			else
 			{
 				value = getDataPropertyValue("serverNode_" + globalSettingsServerNodeId + "_" + key);
-				//System.out.println("Global value immediately: " + value);				
 			}
 	    }
 		
@@ -1332,7 +1316,6 @@ public class CmsPropertyHandler
 		List urls = new ArrayList();
 		
 	    String internalDeliverUrlsString = CmsPropertyHandler.getServerNodeDataProperty(null, "internalDeliveryUrls", true, null);
-	    //System.out.println("internalDeliverUrlsString:" + internalDeliverUrlsString);
 	    if(internalDeliverUrlsString != null && !internalDeliverUrlsString.equals(""))
 		{
 	    	try
@@ -1374,7 +1357,6 @@ public class CmsPropertyHandler
 		List urls = new ArrayList();
 		
 	    String publicDeliverUrlString = CmsPropertyHandler.getServerNodeDataProperty(null, "publicDeliveryUrls", true, null);
-	    //System.out.println("publicDeliverUrlString:" + publicDeliverUrlString);
 	    if(publicDeliverUrlString != null && !publicDeliverUrlString.equals(""))
 		{
 	    	try
@@ -1447,7 +1429,6 @@ public class CmsPropertyHandler
 		List toolLocales = new ArrayList();
 		
 	    String toolLanguagesString = CmsPropertyHandler.getServerNodeDataProperty(null, "toolLanguages", true, null);
-	    //System.out.println("toolLanguagesString:" + toolLanguagesString);
 	    if(toolLanguagesString != null && !toolLanguagesString.equals(""))
 		{
 	    	try
@@ -1568,20 +1549,15 @@ public class CmsPropertyHandler
 		if(specifiedPassword != null && !specifiedPassword.equalsIgnoreCase("") && specifiedPassword.indexOf("security.anonymous.password") == -1)
 			password = specifiedPassword;
 		
-		//System.out.println("password:" + password);
-		
 		return password;
 	}
 
 	public static String getAnonymousUser()
 	{
 		String userName = "anonymous";
-		//String specifiedUserName = getProperty("security.anonymous.username");
 		String specifiedUserName = getServerNodeProperty("deliver", "security.anonymous.username", true, "anonymous");
 		if(specifiedUserName != null && !specifiedUserName.equalsIgnoreCase("") && specifiedUserName.indexOf("security.anonymous.username") == -1)
 			userName = specifiedUserName;
-		
-		//System.out.println("userName:" + userName);
 		
 		return userName;
 	}
@@ -1591,7 +1567,7 @@ public class CmsPropertyHandler
 		Properties properties = new Properties();
 
 		String characterReplacingMappingString = CmsPropertyHandler.getServerNodeDataProperty(null, "niceURICharacterReplacingMapping", true, null);
-	    System.out.println("characterReplacingMappingString:" + characterReplacingMappingString);
+		logger.info("characterReplacingMappingString:" + characterReplacingMappingString);
 	    if(characterReplacingMappingString != null && !characterReplacingMappingString.equals(""))
 		{
 	    	try

@@ -56,10 +56,8 @@ public class InstallUpdateAction extends InfoGlueAbstractAction
 		logger.info("Executing doExecute on RefreshUpdates..");
 		String path = getRequest().getRealPath("/") + "up2date/";
 		
-		System.out.println("UP2DATE: PATH: " + path);
+		logger.info("UP2DATE: PATH: " + path);
 		String url = CmsPropertyHandler.getUp2dateUrl();	
-	
-		
 		
 		uc = new UpdateController(url, path);
 		

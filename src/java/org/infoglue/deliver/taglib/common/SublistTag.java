@@ -108,16 +108,12 @@ public class SublistTag extends AbstractTag
 	{
 		// Don't use List.sublist()  
 		final List result = new ArrayList();
-		//System.out.println("getRealCount() " + getRealCount());
 		int endIndex = startIndex + count.intValue();
 		if(endIndex > list.size())
 			endIndex = list.size();
-		//System.out.println("startIndex " + startIndex);
-		//System.out.println("endIndex " + endIndex);
 		
 		for(int i=startIndex; i<endIndex; i++)
 		{
-			//System.out.println("Adding element at position " + i);
 			result.add(list.get(i));
 		}
 		

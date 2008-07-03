@@ -304,7 +304,6 @@ public class CreateSiteNodeAction extends InfoGlueAbstractAction
             
             commitTransaction(db);
 
-            System.out.println("userSessionKey:" + userSessionKey + " - " + newSiteNodeVO.getId());
             addActionLink(userSessionKey, new LinkBean("newPageUrl", "Direkt till sidan du skapade","Klicka här om du vill komma direkt till sidan du just startat.", "Klicka här om du vill komma direkt till sidan du just startat.", getDecoratedPageUrl(newSiteNodeVO.getId()), false, ""));
         }
         catch(Exception e)

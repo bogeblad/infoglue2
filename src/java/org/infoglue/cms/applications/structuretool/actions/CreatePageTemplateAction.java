@@ -118,7 +118,6 @@ public class CreatePageTemplateAction extends InfoGlueAbstractAction implements 
         		newContentTypeDefinitionVO.setType(ContentTypeDefinitionVO.CONTENT);
         		
         		contentTypeDefinitionVO = ContentTypeDefinitionController.getController().create(newContentTypeDefinitionVO);
-        		//System.out.println("contentTypeDefinitionVO:" + contentTypeDefinitionVO.getId());
         	}
         	else
         	{
@@ -129,7 +128,6 @@ public class CreatePageTemplateAction extends InfoGlueAbstractAction implements 
         		newContentTypeDefinitionVO.setType(ContentTypeDefinitionVO.CONTENT);
         		
         		contentTypeDefinitionVO = ContentTypeDefinitionController.getController().create(newContentTypeDefinitionVO);
-        		//System.out.println("contentTypeDefinitionVO:" + contentTypeDefinitionVO.getId());        		
         	}
         	//throw new SystemException("The system does not have the content type named 'PageTemplate' which is required for this operation.");
         }

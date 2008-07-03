@@ -122,7 +122,7 @@ public class ViewContentAction extends InfoGlueAbstractAction
 	        
 	        if(contentVO.getRepositoryId() != null && !hasAccessTo("Repository.Read", "" + contentVO.getRepositoryId()))
 	        {
-	        	System.out.println("You had no access to Repository.Read and " + this.contentVO.getRepositoryId());
+	        	logger.error("The user " + this.getInfoGluePrincipal().getName() + " had no access to Repository.Read and " + this.contentVO.getRepositoryId() + ". Could be an hacker attempt.");
 	    		AccessConstraintExceptionBuffer ceb = new AccessConstraintExceptionBuffer();
 	    		ceb.add(new AccessConstraintException("Content.contentId", "1000"));
 	    		ceb.throwIfNotEmpty();

@@ -118,7 +118,6 @@ public class CastorSettingsController
 		String key = "propertyDocument_" + nameSpace + "_" + name;
 		
 		Object object = CacheController.getCachedObject(CacheController.SETTINGSPROPERTIESDOCUMENTCACHENAME, key);
-		//System.out.println("propertyDocument:" + key + "=" + object);
 		//log.debug("Cached object:" + object);
 		if(object instanceof NullObject)
 			return null;
@@ -127,7 +126,6 @@ public class CastorSettingsController
 		
 		if(document == null)
 		{
-			//System.out.println("Reading document from database as it was uncached...");
 			InfoGlueProperty property = settingsPersister.getProperty(nameSpace, name, database);
 			if(property != null)
 			{
@@ -171,12 +169,10 @@ public class CastorSettingsController
 		
 			if(document != null)
 			{
-				//System.out.println("caching document:" + CacheController.SETTINGSPROPERTIESDOCUMENTCACHENAME + ":" + key + ":" + document);
 				CacheController.cacheObject(CacheController.SETTINGSPROPERTIESDOCUMENTCACHENAME, key, document);
 			}
 			else
 			{
-				//System.out.println("caching document:" + CacheController.SETTINGSPROPERTIESDOCUMENTCACHENAME + ":" + key + ":" + new NullObject());
 				CacheController.cacheObject(CacheController.SETTINGSPROPERTIESDOCUMENTCACHENAME, key, new NullObject());
 			}
 		}
@@ -273,12 +269,10 @@ public class CastorSettingsController
 				Element labelElement = labelsElement.element(key);
 				if(labelElement == null)
 				{
-					System.out.println("labelElement was unexisting for key " + key);
 					labelElement = domBuilder.addElement(labelsElement, key);					
 				}
 				else
 				{
-					System.out.println("labelElement was existing for key " + key);
 					labelElement.clearContent();
 				
 					List elements = labelElement.elements();
@@ -292,12 +286,10 @@ public class CastorSettingsController
 				}
 				
 				domBuilder.addCDATAElement(labelElement, value);
-				System.out.println("Adding element " + key + ":" + labelElement.asXML());
 			}
 		}
 		
         String xml = domBuilder.getFormattedDocument(document, "UTF-8");
-        System.out.println("xml:" + xml);
 
         settingsPersister.updateProperty(nameSpace, name, xml, database);
 
@@ -319,8 +311,6 @@ public class CastorSettingsController
 	{
 		String setting = null;
 
-		//System.out.println("name: " + name);
-
 		if(id == null || id.equals("-1"))
 			id = "default";
 			
@@ -330,30 +320,16 @@ public class CastorSettingsController
 				key = "NP" + key;
 	
 			Document document = getPropertyDocument(nameSpace, name, database);
-			//System.out.println("name: " + name);
-			
-			//System.out.println("Document: " + document.asXML());
-			
-			//System.out.println("key: " + key);
-			//log.debug("key:" + key);
-			//log.debug("locale.getLanguage():" + locale.getLanguage());
 	        if(document != null)
 	        {
 				if(id == null)
 		    		id = "default";
 		    	
 				String xpath = "/variations/variation[@id='" + id +"']/setting/" + key;
-		        //log.debug("xpath:" + xpath);
-				//System.out.println("xpath:" + xpath);
-				
 				Element labelElement = (Element)document.selectSingleNode(xpath);
-				//log.debug("labelElement:" + labelElement);
-				//System.out.println("labelElement: " + labelElement);
 				
 				if(labelElement != null)
 					setting = labelElement.getText();
-
-				//System.out.println("setting: " + setting);
 	        }
 		}
 		

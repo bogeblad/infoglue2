@@ -65,7 +65,7 @@ public class ChangeNotificationController
 	
 	public void put(NotificationMessage notificationMessage) 
 	{
-		//System.out.println("Adding notificationMessage:" + notificationMessage);
+		//logger.info("Adding notificationMessage:" + notificationMessage);
 	    list.getList().add(notificationMessage);
 	}
 	
@@ -81,8 +81,6 @@ public class ChangeNotificationController
 		while(iterator.hasNext())
 		{
         	NotificationMessage notificationMessage = (NotificationMessage)iterator.next();
-			//System.out.println("notificationMessage:" + notificationMessage.getClassName() + notificationMessage.getType());
-						
 			if(notificationMessage.getType() == NotificationMessage.PUBLISHING || notificationMessage.getType() == NotificationMessage.UNPUBLISHING || notificationMessage.getType() == NotificationMessage.SYSTEM)
 			{
 				publicMessageList.add(notificationMessage);

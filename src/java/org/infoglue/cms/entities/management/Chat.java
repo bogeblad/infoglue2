@@ -33,8 +33,6 @@ public class Chat
 
     public List getMessages(int lastIndex)
     {
-    	//System.out.println("lastIndex:" + lastIndex + ":" + messageId);
-
     	if(messageId == lastIndex)
     		return new ArrayList();
     	
