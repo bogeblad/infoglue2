@@ -32,7 +32,7 @@
 	-->
 	</script>
 	
-	<style>
+	<style type="text/css">
 		fieldset
 		{
 			border: 1px solid #cccccc;
@@ -86,6 +86,7 @@
 			line-heigh: 12px;
 			margin: 0px;
 			padding-bottom: 4px;
+			clear: both;
 		}
 	</style>
 	
@@ -123,32 +124,32 @@
 	 		<fieldset>
 			<legend>Export options</legend>
 	 		<p>
-	 		<label for="assetMaxSize">$ui.getString("tool.contenttool.exportContent.assetMaxSizeLabel"):</label>
-	 		<select name="assetMaxSize">
-	 			<option value="-1" #checkSelected("-1" "$assetMaxSize")>No limit</option>
-	 			<option value="50000" #checkSelected("50000" "$assetMaxSize")>50 KB</option>
-	 			<option value="100000" #checkSelected("100000" "$assetMaxSize")>100 KB</option>
-	 			<option value="300000" #checkSelected("300000" "$assetMaxSize")>300 KB</option>
-	 			<option value="500000" #checkSelected("500000" "$assetMaxSize")>500 KB</option>
-	 			<option value="1000000" #checkSelected("1000000" "$assetMaxSize")>1 MB</option>
-	 			<option value="5000000" #checkSelected("5000000" "$assetMaxSize")>5 MB</option>
-	 			<option value="10000000" #checkSelected("10000000" "$assetMaxSize")>10 MB</option>
-	 			<option value="100000000" #checkSelected("100000000" "$assetMaxSize")>100 MB</option>
-	 		</select>
+		 		<label for="assetMaxSize">$ui.getString("tool.contenttool.exportContent.assetMaxSizeLabel"):</label>
+		 		<select name="assetMaxSize">
+		 			<option value="-1" #checkSelected("-1" "$assetMaxSize")>No limit</option>
+		 			<option value="50000" #checkSelected("50000" "$assetMaxSize")>50 KB</option>
+		 			<option value="100000" #checkSelected("100000" "$assetMaxSize")>100 KB</option>
+		 			<option value="300000" #checkSelected("300000" "$assetMaxSize")>300 KB</option>
+		 			<option value="500000" #checkSelected("500000" "$assetMaxSize")>500 KB</option>
+		 			<option value="1000000" #checkSelected("1000000" "$assetMaxSize")>1 MB</option>
+		 			<option value="5000000" #checkSelected("5000000" "$assetMaxSize")>5 MB</option>
+		 			<option value="10000000" #checkSelected("10000000" "$assetMaxSize")>10 MB</option>
+		 			<option value="100000000" #checkSelected("100000000" "$assetMaxSize")>100 MB</option>
+		 		</select>
 	 		</p>
 	 		<p>
-			<label for="exportFileName">Export file name (optional):</label>
-			<input type="textfield" name="exportFileName" value="">
+				<label for="exportFileName">Export file name (optional):</label>
+				<input type="textfield" name="exportFileName" value="">
 	 		</p>
 	 		<p>
-			<label for="exportFileName">Additional repositories to include:</label>
-			<select name="repositoryId" multiple="true" size="10">
-			#foreach($repository in $repositories)
-				#if($repository.id != $!repositoryId)
-					<option value="$repository.id"> $repository.name</option>
-				#end
-			#end		
-			</select>
+				<label for="exportFileName">Additional repositories to include:</label>
+				<select name="repositoryId" multiple="true" size="10">
+				#foreach($repository in $repositories)
+					#if($repository.id != $!repositoryId)
+						<option value="$repository.id"> $repository.name</option>
+					#end
+				#end		
+				</select>
 	 		</p>
 			</fieldset><br/>
 		</td>
