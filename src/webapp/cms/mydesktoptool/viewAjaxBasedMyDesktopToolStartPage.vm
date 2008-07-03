@@ -20,7 +20,7 @@
 <body class="mydesktoptooledit">
 #set( $lvColor = "yellow")
 
-<script type="text/javascript" src="script/jquery/jquery-1.2.3.min.js"></script>
+<script type="text/javascript" src="script/jquery/jquery-1.2.6.min.js"></script>
 <script type="text/javascript" src="script/jqueryplugins/ui/jquery.dimensions.js"></script>
 <script type="text/javascript" src="script/jqueryplugins/ui/ui.accordion.js"></script>
 <script>
