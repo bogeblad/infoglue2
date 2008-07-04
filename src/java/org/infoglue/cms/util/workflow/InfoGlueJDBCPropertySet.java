@@ -709,6 +709,7 @@ public class InfoGlueJDBCPropertySet extends JDBCPropertySet
  
     public static void clearCaches()
     {
+    	/*
     	try
     	{
     		throw new Exception("Clearing caches.......................................................");
@@ -717,7 +718,8 @@ public class InfoGlueJDBCPropertySet extends JDBCPropertySet
     	{
     		e.printStackTrace();
     	}
-
+		*/
+    	
     	if(valueMap != null)
         {
 	    	synchronized (valueMap) 
