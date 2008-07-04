@@ -1049,11 +1049,11 @@
   </class>
 
   <class name="org.infoglue.cms.entities.content.impl.simple.SmallestContentVersionImpl" identity="contentVersionId" key-generator="SEQUENCE">
-    <description>SmallContentVersion</description>
+    <description>SmallestContentVersion</description>
     <cache-type type="none"/>
-    <map-to table="cmContentVersion"/>
+    <map-to table="cmContVer"/>
     <field name="contentVersionId" type="java.lang.Integer">
-      <sql name="contentVersionId" type="integer" dirty="check" />
+      <sql name="contVerId" type="integer" dirty="check" />
     </field>
     <field name="stateId" type="java.lang.Integer">
       <sql name="stateId" type="integer" dirty="check" />
