@@ -1414,8 +1414,6 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		String componentRendererUrl = "" + CmsPropertyHandler.getComponentRendererUrl();
 
 		sb.append("<div id=\"component" + component.getId() + "Menu\" class=\"skin0 editOnSightMenuDiv\">");
-		
-		//sb.append("<div id=\"component" + component.getId() + "Menu\" class=\"skin0 editOnSightMenuDiv\" astyle=\"padding: 0px; margin: 0px; padding-top: 0; min-width: 240px; position: absolute; top: 20px; display: none; background-color: white; border: 1px solid #555;\"");
 		    		
 		Collection componentTasks = getComponentTasks(component.getId(), document);
 
@@ -1442,19 +1440,20 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		//Locale locale = templateController.getLocale();
 		Locale locale = templateController.getLocaleAvailableInTool();
 		
-		String editHTML = getLocalizedString(locale, "deliver.editOnSight.editHTML");
-		String editInlineHTML = getLocalizedString(locale, "deliver.editOnSight.editContentInlineLabel");
-		String submitToPublishHTML = getLocalizedString(locale, "deliver.editOnSight.submitToPublish");
-		String addComponentHTML = getLocalizedString(locale, "deliver.editOnSight.addComponentHTML");
-		String deleteComponentHTML = getLocalizedString(locale, "deliver.editOnSight.deleteComponentHTML");
-		String changeComponentHTML = getLocalizedString(locale, "deliver.editOnSight.changeComponentHTML");
-		String moveComponentUpHTML = getLocalizedString(locale, "deliver.editOnSight.moveComponentUpHTML");
-		String moveComponentDownHTML = getLocalizedString(locale, "deliver.editOnSight.moveComponentDownHTML");
-		String propertiesHTML = getLocalizedString(locale, "deliver.editOnSight.propertiesHTML");
-		String pageComponentsHTML = getLocalizedString(locale, "deliver.editOnSight.pageComponentsHTML");
-		String viewSourceHTML = getLocalizedString(locale, "deliver.editOnSight.viewSourceHTML");
-		String componentEditorInNewWindowHTML = getLocalizedString(locale, "deliver.editOnSight.componentEditorInNewWindowHTML");
-		String savePageTemplateHTML = getLocalizedString(locale, "deliver.editOnSight.savePageTemplateHTML");
+		String editHTML 						= getLocalizedString(locale, "deliver.editOnSight.editHTML");
+		String editInlineHTML 					= getLocalizedString(locale, "deliver.editOnSight.editContentInlineLabel");
+		String submitToPublishHTML 				= getLocalizedString(locale, "deliver.editOnSight.submitToPublish");
+		String addComponentHTML 				= getLocalizedString(locale, "deliver.editOnSight.addComponentHTML");
+		String deleteComponentHTML 				= getLocalizedString(locale, "deliver.editOnSight.deleteComponentHTML");
+		String changeComponentHTML 				= getLocalizedString(locale, "deliver.editOnSight.changeComponentHTML");
+		String moveComponentUpHTML 				= getLocalizedString(locale, "deliver.editOnSight.moveComponentUpHTML");
+		String moveComponentDownHTML 			= getLocalizedString(locale, "deliver.editOnSight.moveComponentDownHTML");
+		String propertiesHTML 					= getLocalizedString(locale, "deliver.editOnSight.propertiesHTML");
+		String pageComponentsHTML 				= getLocalizedString(locale, "deliver.editOnSight.pageComponentsHTML");
+		String viewSourceHTML		 			= getLocalizedString(locale, "deliver.editOnSight.viewSourceHTML");
+		String componentEditorInNewWindowHTML 	= getLocalizedString(locale, "deliver.editOnSight.componentEditorInNewWindowHTML");
+		String savePageTemplateHTML 			= getLocalizedString(locale, "deliver.editOnSight.savePageTemplateHTML");
+		String savePagePartTemplateHTML 		= getLocalizedString(locale, "deliver.editOnSight.savePagePartTemplateHTML");
 
 		
 		sb.append("<div class=\"igmenuitems linkEditArticle\" onClick=\"edit();\"><a href='#'>" + editHTML + "</a></div>");

@@ -588,7 +588,6 @@ public class AjaxDecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHT
 				    subComponentString += "\n<script type=\"text/javascript\">\n";
 				    subComponentString += "    $(document).ready(function() {";
 
-				    //subComponentString += "	   	 alert('AAAAAAAAAAAAAA');";
 				    subComponentString += "      var element = document.getElementById(\"" + component.getId() + "_" + id + "\");\n";
 				    
 				    //subComponentString += "	   	 $(element).css('border','3px solid blue');";
@@ -1488,6 +1487,7 @@ public class AjaxDecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHT
 					String name			= binding.attributeValue("name");
 					String view			= binding.attributeValue("view");
 					String openInPopup 	= binding.attributeValue("openInPopup");
+					String icon			= binding.attributeValue("icon");
 					if(openInPopup == null || (!openInPopup.equals("true") && !openInPopup.equals("false")))
 						openInPopup = "true";
 					
@@ -1501,6 +1501,7 @@ public class AjaxDecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHT
 					ComponentTask task = new ComponentTask();
 					task.setName(name);
 					task.setView(view);
+					task.setIcon(icon);
 					task.setOpenInPopup(new Boolean(openInPopup));
 					task.setComponentId(componentId);
 					
