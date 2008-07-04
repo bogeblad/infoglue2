@@ -322,9 +322,7 @@ Edit on sight classes
 	font-size: 10pt;
 	width: 200px;
 	afloat: left;
-	adisplay: block;
 	overflow: hidden;
-	//background: url(../images/v3/tileGradient.gif) repeat-y left;
 	background-image: url('../images/v3/tileGradient.gif');
 	background-repeat: repeat-y;
 	background-position: left;
