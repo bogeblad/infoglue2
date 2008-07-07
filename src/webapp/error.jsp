@@ -112,3 +112,21 @@
  
 </body>
 </html>
+
+<%
+System.out.println("Error.jsp called");
+String errorUrl = (String)pageContext.getRequest().getAttribute("javax.servlet.error.request_uri");
+System.out.println("Possible errorUrl:" + errorUrl);
+
+Exception e = (Exception)pageContext.getRequest().getAttribute("error");
+if(e != null)
+{
+  System.out.println("Error: " + e.getMessage());
+  System.out.println(e.getStackTrace()[0].toString());
+  System.out.println(e.getStackTrace()[1].toString());
+  System.out.println(e.getStackTrace()[2].toString());
+  System.out.println(e.getStackTrace()[3].toString());
+  System.out.println(e.getStackTrace()[4].toString());
+  System.out.println(e.getStackTrace()[5].toString());
+}
+%>
