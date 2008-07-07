@@ -89,8 +89,10 @@ public class EditOnSiteBasicTemplateController extends BasicTemplateController
 				className = contentTypeAttribute.getInputType();
 				try
 				{
-					WYSIWYGToolbar = contentTypeAttribute.getContentTypeAttribute("WYSIWYGToolbar").getContentTypeAttributeParameterValue().getLocalizedValue("label", getLocale());
-					WYSIWYGExtraConfig = contentTypeAttribute.getContentTypeAttribute("WYSIWYGExtraConfig").getContentTypeAttributeParameterValue().getLocalizedValue("label", getLocale());
+					if(contentTypeAttribute.getContentTypeAttribute("WYSIWYGToolbar") != null && contentTypeAttribute.getContentTypeAttribute("WYSIWYGToolbar").getContentTypeAttributeParameterValue() != null)
+						WYSIWYGToolbar = contentTypeAttribute.getContentTypeAttribute("WYSIWYGToolbar").getContentTypeAttributeParameterValue().getLocalizedValue("label", getLocale());
+					if(contentTypeAttribute.getContentTypeAttribute("WYSIWYGExtraConfig") != null && contentTypeAttribute.getContentTypeAttribute("WYSIWYGExtraConfig").getContentTypeAttributeParameterValue() != null)
+						WYSIWYGExtraConfig = contentTypeAttribute.getContentTypeAttribute("WYSIWYGExtraConfig").getContentTypeAttributeParameterValue().getLocalizedValue("label", getLocale());
 				}
 				catch (Exception e) 
 				{

@@ -1,4 +1,4 @@
-<!-- $Id: actions.xml,v 1.69 2008/06/17 11:39:11 mattias Exp $ -->
+<!-- $Id: actions.xml,v 1.70 2008/07/07 21:03:27 mattias Exp $ -->
 <actions>
 
 	<!-- MySettings -->
@@ -765,8 +765,10 @@
 	</action>
 	<action name="org.infoglue.cms.applications.contenttool.actions.ViewContentAction" alias="ViewContent">
 		<view name="success">/cms/contenttool/viewContent.vm</view>
+		<view name="successV3">/cms/contenttool/v3/viewContent.vm</view>
 		<view name="standalone">/cms/contenttool/viewContentStandalone.vm</view>
 		<view name="viewVersion">ViewContentVersion.action?contentId=${contentId}&amp;languageId=${languageId}&amp;unrefreshedContentId=${unrefreshedContentId}&amp;changeTypeId=${changeTypeId}&amp;newContentId=${newContentId}</view>
+		<view name="viewVersionV3">ViewContentVersion!v3.action?contentId=${contentId}&amp;languageId=${languageId}&amp;unrefreshedContentId=${unrefreshedContentId}&amp;changeTypeId=${changeTypeId}&amp;newContentId=${newContentId}</view>
 		<view name="error">/cms/contenttool/error.vm</view>
 		<view name="accessDenied">/cms/contenttool/viewConstraintException.vm</view>
 	</action>
@@ -782,6 +784,7 @@
 		<view name="input">/cms/contenttool/viewContent.vm</view>
 		<view name="successInputContentType">/cms/contenttool/viewChangeContentType.vm</view>
 		<view name="success">ViewContent.action?stay=true</view>
+		<view name="successV3">ViewContent!v3.action?stay=true</view>
 		<view name="successStandalone">ViewContent!standalone.action</view>
 		<view name="saveAndExit">ViewListContent.action</view>
 		<view name="error">/cms/contenttool/error.vm</view>

@@ -459,16 +459,16 @@
 					
 					#set($currentEditorId = 0)
 					
-					#set($trClass = "")
+					#set($tdClass = "")
 					#if($attribute.name == "$attributeName")
-						#set($trClass = "highlightedAttribute")
+						#set($tdClass = "highlightedAttribute")
 					#end
 					
 					<tr>
 						<td colspan="3"><a id="${attribute.name}Anchor" name="${attribute.name}Anchor"/><img src="images/trans.gif" width="1" height="5"/></td>
 					</tr>
-					<tr class="$trClass">
-						<td colspan="3">
+					<tr>
+						<td colspan="3" class="$tdClass">
 							#set($value = "$!this.getAttributeValue($attribute.name)")
 							#if("$!contentVersionId" == "" && "$value" == "")
 								#set($value = $attributeInitialData)
@@ -966,7 +966,7 @@
 					#set($dropdownName = "${keyAttribute}${velocityCount}categoryId")
 					#set($availableCategories = $this.getAvailableCategories($categoryKey.categoryId))
 					<table border="0" width="100%" cellspacing="0" style="background-color: white;">
-						<tr valign="bottom" class="darkgreen">
+						<tr valign="bottom" class="sectionDivider">
 							<td width="80%">$categoryKey.title ("$keyAttribute") - $categoryKey.description</td>
 							<td align="right">
                             #if($contentVersionId)
@@ -1009,7 +1009,12 @@
 					#end
 					</table>
 				#end
-
+			#else
+				<table border="0" width="100%" cellspacing="0">
+				<tr>
+					<td>There are no category attributes defined in this content type</td>
+				</tr>
+				</table>
 			#end
 			
 			<form id="catForm" name="catForm" action="${root}/ContentCategory!addStandalone.action" method="POST">
@@ -1074,7 +1079,7 @@
 		
 		
 		<div id="contentCoverDiv" class="inlineTabDiv">
-			<iframe src="${root}/ViewContent.action?contentId=$contentId&stay=true" border="0" width="100%" height="500px"></iframe>
+			<iframe src="${root}/ViewContent!v3.action?contentId=$contentId&stay=true" border="0" width="100%" height="500px" style="border: 0px;"></iframe>
 		</div>
 		
 	</div><!-- End first tabs collection -->

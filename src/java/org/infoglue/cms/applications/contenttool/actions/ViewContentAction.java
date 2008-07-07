@@ -160,7 +160,47 @@ public class ViewContentAction extends InfoGlueAbstractAction
 		this.initialize(getContentId());
 		return "standalone";
 	}
+
+	public String doV3() throws Exception
+	{
+		try
+        {
+	        ContentVO contentVO = ContentControllerProxy.getController().getACContentVOWithId(this.getInfoGluePrincipal(), getContentId());
+	        
+	        if(contentVO.getRepositoryId() != null && !hasAccessTo("Repository.Read", "" + contentVO.getRepositoryId()))
+	        {
+	        	logger.error("The user " + this.getInfoGluePrincipal().getName() + " had no access to Repository.Read and " + this.contentVO.getRepositoryId() + ". Could be an hacker attempt.");
+	    		AccessConstraintExceptionBuffer ceb = new AccessConstraintExceptionBuffer();
+	    		ceb.add(new AccessConstraintException("Content.contentId", "1000"));
+	    		ceb.throwIfNotEmpty();
+	        }
+
+	        if((this.stay == null || !this.stay.equalsIgnoreCase("true")) && contentVO.getIsBranch().booleanValue() == false && contentVO.getContentTypeDefinitionId() != null && getShowContentVersionFirst().equalsIgnoreCase("true"))
+	        {
+	            if(this.repositoryId == null)
+	                this.repositoryId = contentVO.getRepositoryId();
+	            
+		        this.languageId = getInitialLanguageVO().getId();
+	            return "viewVersionV3";
+	        }
+	        else
+	        {
+	            this.initialize(getContentId());
+	            return "successV3";
+	        }
+        }
+        catch(ConstraintException ce)
+        {
+            throw ce;
+        }
+        catch(Exception e) 
+        {
+            e.printStackTrace();
+        }
         
+        return Action.NONE;
+	}
+
     public java.lang.Integer getContentId()
     {
         return this.contentVO.getContentId();

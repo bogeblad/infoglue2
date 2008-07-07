@@ -104,6 +104,24 @@ public class UpdateContentAction extends ViewContentAction //WebworkAbstractActi
 		
 		return "success";
 	}
+	
+	public String doV3() throws Exception
+	{
+		super.initialize(getContentId());
+		ContentVO oldContentVO = ContentController.getContentController().getContentVOWithId(getContentId());
+		
+		this.contentVO.setCreatorName(this.getInfoGluePrincipal().getName());
+		this.contentVO.setIsBranch(oldContentVO.getIsBranch());
+		
+		ceb = this.contentVO.validate();
+		
+		ceb.throwIfNotEmpty();
+    	
+    	ContentControllerProxy.getController().acUpdate(this.getInfoGluePrincipal(), this.contentVO, this.contentTypeDefinitionId);
+		
+		return "successV3";
+	}
+
 
 	public String doStandalone() throws Exception
 	{

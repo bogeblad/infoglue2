@@ -116,7 +116,7 @@
 			border-color: #808080;
 			_border-color:tomato; /*For IE6-*/  
 			_filter:chroma(color=tomato);/*For IE6-*/
-			background: url(sprite.png) repeat-x 0 0; 
+			background: url(../../script/yui/assets/skins/sam/sprite.png) repeat-x 0 0; 
 			margin: auto .25em;
 		}
 		#footerButton${velocityCount}.yui-button .first-child {

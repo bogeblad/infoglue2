@@ -142,6 +142,10 @@ tr.lightyellow {
 	background-color : #ededb2;
 	height 			 : 14pt;
 }
+tr.sectionDivider {
+	background-color : #e7e3e7;
+	height 			 : 14pt;
+}
 tr.white {
 	background-color : #FFFFFF;
 	height 			 : 14pt;
@@ -185,8 +189,8 @@ tr.hilightbrown {
 	height 			 : 14pt;
 }
 
-tr.highlightedAttribute {
-	background-color : #CCD4FF;
+td.highlightedAttribute {
+	background: url("../images/v3/markedAttributeBackground.gif") 0px 0px no-repeat;
 }
 
 table.bordered {	
