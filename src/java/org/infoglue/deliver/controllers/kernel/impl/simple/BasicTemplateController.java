@@ -2777,7 +2777,7 @@ public class BasicTemplateController implements TemplateController
 						id = child.getText();
 		
 					ContentVO contentVO = this.getContent(new Integer(id));
-					if(ContentDeliveryController.getContentDeliveryController().isValidContent(this.getDatabase(), contentVO.getId(), this.languageId, USE_LANGUAGE_FALLBACK, true, getPrincipal(), this.deliveryContext))
+					if(contentVO != null && ContentDeliveryController.getContentDeliveryController().isValidContent(this.getDatabase(), contentVO.getId(), this.languageId, USE_LANGUAGE_FALLBACK, true, getPrincipal(), this.deliveryContext))
 						relatedContentVOList.add(contentVO);
 				}				
 			}
