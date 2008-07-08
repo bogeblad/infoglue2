@@ -466,12 +466,17 @@ public class ViewContentTypeDefinitionAction extends InfoGlueAbstractAction
 						{
 							((Element)element.getParentNode().getParentNode()).setAttribute("inputTypeId", "1");
 						}
+						else if(extraParameterName.equalsIgnoreCase("Markup") && this.inputTypeId.equalsIgnoreCase("customfield"))
+						{
+							((Element)element.getParentNode().getParentNode()).setAttribute("inputTypeId", "2");
+						}
 						else
 						{
 							((Element)element.getParentNode().getParentNode()).setAttribute("inputTypeId", "0");
 						}
 
-						if(((Element)element.getParentNode().getParentNode()).getAttribute("inputTypeId").equals("0"))
+						String inputTypeId = ((Element)element.getParentNode().getParentNode()).getAttribute("inputTypeId");
+						if(inputTypeId.equals("0") || inputTypeId.equals("2"))
 						{
 							if(this.currentContentTypeEditorViewLanguageCode != null && this.currentContentTypeEditorViewLanguageCode.length() > 0)
 							{

@@ -374,6 +374,7 @@ Properties classes
 	padding-left: 6px;
 }
 .igPropertiesTable {
+	border-collapse: separate;
 	border: 0px solid #FFFFFF;
 	text-align: left;
 	width: 100%;
@@ -382,6 +383,7 @@ Properties classes
 }
 
 .igtable {
+	border-collapse: separate;
 	text-align: left;
 	height: 10px;
 	border: 0px solid #FFFFFF;

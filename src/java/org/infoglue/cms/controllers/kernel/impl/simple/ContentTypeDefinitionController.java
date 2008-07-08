@@ -830,6 +830,11 @@ public class ContentTypeDefinitionController extends BaseController
 					addParameterElement(params, "enableComponentPropertiesEditor", "0", "false");
 					addParameterElement(params, "activateExtendedEditorOnLoad", "0", "false");
 				}
+
+				if(inputTypeId.equalsIgnoreCase("customfield"))
+				{
+					addParameterElement(params, "Markup", "2", "");
+				}
 			}
 
 			StringBuffer sb = new StringBuffer();

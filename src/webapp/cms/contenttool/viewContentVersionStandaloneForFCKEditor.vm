@@ -825,6 +825,15 @@
 						<input $readonly type="radio" id="$attribute.name" name="$attribute.name" value="$value.id" #checkChecked("$value.id" "$this.getAttributeValue($attribute.name)")>$value.getLocalizedValue("label", $session.locale)
 	    			#end
 
+				#elseif($attribute.inputType == "customfield")
+				<!-- Handles the input type customfield -->
+					#set($attributeMarkup = $!attribute.getContentTypeAttribute("Markup").getContentTypeAttributeParameterValue().getValue("label"))
+					$attributeTitle ("$attribute.name") $attributeDescription
+					#printError("ContentVersion.$attribute.name")
+					#set($processedMarkup = $attributeMarkup.replaceAll("attributeName", "$attribute.name"))
+					#set($processedMarkup = $processedMarkup.replaceAll("attributeValue", "$value"))
+	    			$processedMarkup
+
 				#end
 				
 			</td>

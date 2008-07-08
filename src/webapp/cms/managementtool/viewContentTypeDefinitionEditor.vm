@@ -219,6 +219,7 @@
 				<input type="hidden" name="currentContentTypeEditorViewLanguageCode" value="$!currentContentTypeEditorViewLanguageCode">
 				<input type="hidden" name="attributeToExpand" value="${attribute.name}">
 				</form>
+				
 			</div>
 
 			#end
@@ -239,10 +240,14 @@
 #end
 
 <div id="${attribute.name}PropertyLayer" class="propertiesDiv" style="border: 1px solid black; background-color: white; position:absolute; left:20px; top:20px; display:${display}; visibility:${visibility}; z-index:0">
+<form name="${attribute.name}PropertiesForm" action="ViewContentTypeDefinition!updateAttribute.action" method="POST">
+<input type="hidden" name="contentTypeDefinitionId" value="$contentTypeDefinitionId">
+<input type="hidden" name="currentContentTypeEditorViewLanguageCode" value="$!currentContentTypeEditorViewLanguageCode">
+<input type="hidden" name="attributeName" value="$attribute.name">
+<input type="hidden" name="attributeToExpand" value="${attribute.name}">
 <div id="${attribute.name}PropertyHandle" class="propertiesDivHandle"><div id="propertiesDivLeftHandle" class="propertiesDivLeftHandle">Properties for attribute</div><div id="propertiesDivRightHandle" class="propertiesDivRightHandle"><a href="javascript:hidePropertyDiv('${attribute.name}PropertyLayer');" class="white">close</a></div></div>
 <div id="propertiesDivBody" class="propertiesDivBody">
-	<form name="${attribute.name}PropertiesForm" action="ViewContentTypeDefinition!updateAttribute.action" method="POST">
-	<table border="0" cellpadding="2" cellspacing="0">
+	<table border="0" cellpadding="2" cellspacing="0" width="100%">
 	<tr>
 		<td><b>Name</b></td>
 		<td><input type="textfield" name="newAttributeName" value="$attribute.name" class="normaltextfield"></td>
@@ -260,6 +265,7 @@
 			    <option value="select" #checkSelected("select" "$attribute.inputType")>SelectBox</option>
 			    <option value="hidden" #checkSelected("hidden" "$attribute.inputType")>Hidden</option>
 			    <option value="datefield" #checkSelected("datefield" "$attribute.inputType")>DateField</option>
+			    <option value="customfield" #checkSelected("customfield" "$attribute.inputType")>Custom field</option>
 			    <!--<option value="password" #checkSelected("password" "$attribute.inputType")>Password</option>-->
 			    <!--<option value="image" #checkSelected("image" "$attribute.inputType")>SubmitImage</option>-->
 			    <!--<option value="submit" #checkSelected("submit" "$attribute.inputType")>SubmitButton</option>-->
@@ -268,6 +274,9 @@
 		</td>
 	</tr>
 	<tr>
+		<td colspan="2"><img src="images/trans.gif" width="1" height="6"/></td>
+	</tr>
+	<tr class="sectionDivider">
 		<td colspan="2"><b>Validation</b></td>
 	</tr>
 	#foreach($validator in $attribute.validators)
@@ -294,6 +303,9 @@
 	</tr>
 
 	<tr>
+		<td colspan="2"><img src="images/trans.gif" width="1" height="6"/></td>
+	</tr>
+	<tr class="sectionDivider">
 		<td colspan="2"><b>Extra parameters</b></td>
 	</tr>
 
@@ -305,6 +317,8 @@
 			#set($values = $parameter.value.getContentTypeAttributeParameterValues())
 			#if($parameter.value.type == 0)
 				<input type="textfield" name="$parameter.key" value="$parameter.value.getContentTypeAttributeParameterValue().getLocalizedValue("label", "$!currentContentTypeEditorViewLanguageCode")" class="normaltextfield">
+			#elseif($parameter.value.type == 2)
+				<textarea name="$parameter.key" class="normaltextarea">$parameter.value.getContentTypeAttributeParameterValue().getLocalizedValue("label", "$!currentContentTypeEditorViewLanguageCode")</textarea>
 			#else
 				<table border="0" cellpadding="2" cellspacing="0">
 				<tr>
@@ -337,20 +351,13 @@
 			<img src="images/trans.gif" width="80" height="5" border="0">
 		</td>
 	</tr>
-	<tr>
-		<td>&nbsp;</td>
-		<td>
-			<input type="image" src="$ui.getString("images.managementtool.buttons.saveAndExit")" width="80" height="25" border="0"></a>
-			<a href="javascript:hideDiv('${attribute.name}PropertyLayer');"><img src="$ui.getString("images.managementtool.buttons.cancel")" width="50" height="25" border="0"></a>
-		</td>
-	</tr>
 	</table>
-	<input type="hidden" name="contentTypeDefinitionId" value="$contentTypeDefinitionId">
-	<input type="hidden" name="currentContentTypeEditorViewLanguageCode" value="$!currentContentTypeEditorViewLanguageCode">
-	<input type="hidden" name="attributeName" value="$attribute.name">
-	<input type="hidden" name="attributeToExpand" value="${attribute.name}">
-	</form>
 </div>
+<div style="text-indent: 10px; background-color: white; float: left; position: absolute; bottom: 0px; border-top: 1px #ccc solid; padding-top: 2px; width: 100%;">
+	<input type="image" src="$ui.getString("images.managementtool.buttons.saveAndExit")" width="80" height="25" border="0"></a>
+	<a href="javascript:hideDiv('${attribute.name}PropertyLayer');"><img src="$ui.getString("images.managementtool.buttons.cancel")" width="50" height="25" border="0"></a>
+</div>
+</form>
 </div>
 <script type="text/javascript">		
 	var theHandle = document.getElementById("${attribute.name}PropertyHandle");		
@@ -488,6 +495,7 @@
 						    <option value="select">SelectBox</option>
 						    <option value="hidden">Hidden</option>
 						    <option value="dateField">DateField</option>
+			   		 		<option value="customfield">Custom field</option>
 						    <!--<option value="password">Password</option>-->
 						    <!--<option value="image">SubmitImage</option>-->
 						    <!--<option value="submit">SubmitButton</option>-->
@@ -547,6 +555,7 @@
 						    <option value="select">SelectBox</option>
 						    <option value="hidden">Hidden</option>
 						    <option value="dateField">DateField</option>
+			    			<option value="customfield">Custom field</option>
 						    <!--<option value="password">Password</option>-->
 						    <!--<option value="image">SubmitImage</option>-->
 						    <!--<option value="submit">SubmitButton</option>-->

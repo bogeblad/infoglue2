@@ -5,17 +5,12 @@
 	outline: 1px solid black;
 }
 .slotPosition {
-	adisplay: table;
-	afloat: left;
-	aborder: 1px solid blue;
 	padding: 0px;
 	margin: 0px;
 }
 .slotPosition-active {
 	display: table;
 	border-top: 1px solid white;
-	abackground-color: red;
-	aoutline: 1px solid black;
 	opacity: 1.0;
 }
 .slotPosition-hover {
@@ -420,6 +415,7 @@ Properties classes
 	}
 */
 .igtable {
+	border-collapse: separate;
 	text-align: left;
 	height: 10px;
 	border:0px solid #FFFFFF;

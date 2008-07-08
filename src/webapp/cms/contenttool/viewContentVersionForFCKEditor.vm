@@ -62,6 +62,9 @@
 	<script type="text/javascript" src="script/editorForFCKEditor.js"></script>
 	<script type="text/javascript" src="script/hotkeys.js"></script>
 
+	<script type="text/javascript" src="script/jquery/jquery-1.2.6.min.js"></script>
+	<script type="text/javascript" src="script/jqueryplugins/ui/jquery-ui-igcommon15.min.js"></script>
+
 	<link rel="stylesheet" type="text/css" media="all" href="applications/jscalendar/skins/aqua/theme.css" title="aqua" />
 	<script type="text/javascript" src="applications/jscalendar/calendar.js"></script>
 	<script type="text/javascript" src="applications/jscalendar/lang/calendar-en.js"></script>
@@ -915,6 +918,15 @@
 					#foreach($value in $attribute.getContentTypeAttribute("values").getContentTypeAttributeParameterValues())
 						<input $readonly type="radio" id="$attribute.name" name="$attribute.name" value="$value.id" #checkChecked("$value.id" "$this.getAttributeValue($attribute.name)") $onchange>$value.getLocalizedValue("label", $session.locale)
 	    			#end
+
+				#elseif($attribute.inputType == "customfield")
+				<!-- Handles the input type customfield -->
+					#set($attributeMarkup = $!attribute.getContentTypeAttribute("Markup").getContentTypeAttributeParameterValue().getValue("label"))
+					$attributeTitle ("$attribute.name") $attributeDescription
+					#printError("ContentVersion.$attribute.name")
+					#set($processedMarkup = $attributeMarkup.replaceAll("attributeName", "$attribute.name"))
+					#set($processedMarkup = $processedMarkup.replaceAll("attributeValue", "$value"))
+	    			$processedMarkup
 
 				#end
 				
