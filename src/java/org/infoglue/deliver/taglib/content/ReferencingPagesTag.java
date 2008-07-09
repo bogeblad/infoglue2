@@ -33,11 +33,11 @@ public class ReferencingPagesTag extends ComponentLogicTag
 
 	private Integer contentId;
 	private Integer maxPages = new Integer(50);
-		
+	private Boolean excludeCurrentPage = new Boolean(false);
 
 	public int doEndTag() throws JspException
     {
-        setResultAttribute(getController().getReferencingPages(contentId, maxPages.intValue()));
+        setResultAttribute(getController().getReferencingPages(contentId, maxPages.intValue(), excludeCurrentPage));
 	    
 	    return EVAL_PAGE;
     }
@@ -52,4 +52,8 @@ public class ReferencingPagesTag extends ComponentLogicTag
         this.maxPages = evaluateInteger("ReferencingPagesTag", "maxPages", maxPages);
     }
 
+    public void setExcludeCurrentPage(String excludeCurrentPage) throws JspException
+    {
+        this.excludeCurrentPage = (Boolean)evaluate("ReferencingPagesTag", "excludeCurrentPage", excludeCurrentPage, Boolean.class);
+    }
 }

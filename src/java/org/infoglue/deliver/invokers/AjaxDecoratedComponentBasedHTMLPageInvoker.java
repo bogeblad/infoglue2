@@ -990,7 +990,7 @@ public class AjaxDecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHT
 		sb.append("		var theRoot   = document.getElementById(\"paletteDiv\");");
 
 		sb.append("		$(theHandle).css('cursor', 'move');\n");
-		sb.append("		$(theRoot).draggable({handle: theHandle});\n");
+		sb.append("		$(theRoot).draggable({handle: theHandle, cursor: 'move', distance: 10});\n");
 
 		sb.append("	</script>");
 
@@ -1242,9 +1242,10 @@ public class AjaxDecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHT
 					if(type.equalsIgnoreCase(ComponentProperty.BINDING))
 					{
 						String entity 	= binding.attributeValue("entity");
-						boolean isMultipleBinding = new Boolean(binding.attributeValue("multiple")).booleanValue();
-						boolean isAssetBinding 	  = new Boolean(binding.attributeValue("assetBinding")).booleanValue();
-						
+						boolean isMultipleBinding 		= new Boolean(binding.attributeValue("multiple")).booleanValue();
+						boolean isAssetBinding 	  		= new Boolean(binding.attributeValue("assetBinding")).booleanValue();
+						boolean isPuffContentForPage 	= new Boolean(binding.attributeValue("isPuffContentForPage")).booleanValue();
+
 						property.setEntityClass(entity);
 						String value = getComponentPropertyValue(componentId, name);
 						timer.printElapsedTime("Set property1");
@@ -1252,6 +1253,7 @@ public class AjaxDecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHT
 						property.setValue(value);
 						property.setIsMultipleBinding(isMultipleBinding);
 						property.setIsAssetBinding(isAssetBinding);
+						property.setIsPuffContentForPage(isPuffContentForPage);
 						List<ComponentBinding> bindings = getComponentPropertyBindings(componentId, name, this.getTemplateController());
 						property.setBindings(bindings);
 					}
@@ -1391,10 +1393,11 @@ public class AjaxDecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHT
 					
 					if(type.equalsIgnoreCase(ComponentProperty.BINDING))
 					{
-						String entity 	= binding.attributeValue("entity");
-						boolean isMultipleBinding = new Boolean(binding.attributeValue("multiple")).booleanValue();
-						boolean isAssetBinding = new Boolean(binding.attributeValue("assetBinding")).booleanValue();
-						
+						String entity 					= binding.attributeValue("entity");
+						boolean isMultipleBinding 		= new Boolean(binding.attributeValue("multiple")).booleanValue();
+						boolean isAssetBinding 			= new Boolean(binding.attributeValue("assetBinding")).booleanValue();
+						boolean isPuffContentForPage 	= new Boolean(binding.attributeValue("isPuffContentForPage")).booleanValue();
+
 						property.setEntityClass(entity);
 						String value = getComponentPropertyValue(componentId, name, templateController);
 						timer.printElapsedTime("Set property1");
@@ -1402,6 +1405,7 @@ public class AjaxDecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHT
 						property.setValue(value);
 						property.setIsMultipleBinding(isMultipleBinding);
 						property.setIsAssetBinding(isAssetBinding);
+						property.setIsPuffContentForPage(isPuffContentForPage);
 						List<ComponentBinding> bindings = getComponentPropertyBindings(componentId, name, templateController);
 						property.setBindings(bindings);
 					}

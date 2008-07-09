@@ -12,7 +12,7 @@
  * ComponentPropertyDefinition object
  */
 
-function ComponentPropertyDefinition(name, displayName, type, entity, multiple, assetBinding, allowedContentTypeNames, description, defaultValue, WYSIWYGEnabled, WYSIWYGToolbar, dataProvider, dataProviderParameters, autoCreateContent, autoCreateContentMethod, autoCreateContentPath)
+function ComponentPropertyDefinition(name, displayName, type, entity, multiple, assetBinding, isPuffContentForPage, allowedContentTypeNames, description, defaultValue, WYSIWYGEnabled, WYSIWYGToolbar, dataProvider, dataProviderParameters, autoCreateContent, autoCreateContentMethod, autoCreateContentPath)
 {
 	this.name 						= name;
 	this.displayName				= displayName;
@@ -20,6 +20,7 @@ function ComponentPropertyDefinition(name, displayName, type, entity, multiple, 
 	this.entity						= entity;
 	this.multiple					= multiple;
 	this.assetBinding 				= assetBinding;
+	this.isPuffContentForPage		= isPuffContentForPage;
 	this.allowedContentTypeNames 	= allowedContentTypeNames;
 	this.description				= description;
 	this.defaultValue				= defaultValue;
@@ -38,6 +39,7 @@ function ComponentPropertyDefinition(name, displayName, type, entity, multiple, 
   	this.getEntity 					= getEntity;
   	this.getMultiple				= getMultiple;
   	this.getAssetBinding			= getAssetBinding;
+	this.getIsPuffContentForPage	= getIsPuffContentForPage;
   	this.getAllowedContentTypeNames = getAllowedContentTypeNames;
 	this.getDescription				= getDescription;
 	this.getOptions					= getOptions;
@@ -56,6 +58,7 @@ function ComponentPropertyDefinition(name, displayName, type, entity, multiple, 
   	this.setEntity 					= setEntity;
   	this.setMultiple				= setMultiple;
   	this.setAssetBinding			= setAssetBinding;
+  	this.setIsPuffContentForPage	= setIsPuffContentForPage;
   	this.setAllowedContentTypeNames = setAllowedContentTypeNames;
 	this.setDescription				= setDescription;
 	this.setDefaultValue			= setDefaultValue;
@@ -96,6 +99,11 @@ function getMultiple()
 function getAssetBinding()
 {
   	return this.assetBinding;
+}
+
+function getIsPuffContentForPage()
+{
+	return this.isPuffContentForPage;
 }
 
 function getAllowedContentTypeNames()
@@ -141,6 +149,11 @@ function setMultiple(multiple)
 function setAssetBinding(assetBinding)
 {
   	this.assetBinding = assetBinding;
+}
+
+function setIsPuffContentForPage(isPuffContentForPage)
+{
+	this.isPuffContentForPage = isPuffContentForPage;
 }
 
 function setAllowedContentTypeNames(allowedContentTypeNames)

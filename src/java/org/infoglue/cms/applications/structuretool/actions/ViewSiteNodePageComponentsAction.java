@@ -986,7 +986,10 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 				}
 				propertyValue = sb.toString();
 			}
-			
+
+			System.out.println("propertyName:" + propertyName);
+			System.out.println("propertyValue:" + propertyValue);
+
 			logger.info("propertyName:" + propertyName);
 			logger.info("propertyValue:" + propertyValue);
 			String separator = System.getProperty("line.separator");
@@ -1228,11 +1231,7 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 			//component.setAttribute("path_" + locale.getLanguage(), path);
 			NamedNodeMap attributes = component.getAttributes();
 			logger.debug("NumberOfAttributes:" + attributes.getLength() + ":" + attributes);
-			
-			StringBuffer sb = new StringBuffer();
-			XMLHelper.serializeDom(component, sb);
-			logger.debug("SB:" + sb.toString());
-			
+						
 			List removableAttributes = new ArrayList();
 			for(int i=0; i<attributes.getLength(); i++)
 			{
@@ -1389,8 +1388,6 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 		//logger.info("languageId:" + languageId);
 		//logger.info("contentId:" + contentId);
 			
-		NodeDeliveryController nodeDeliveryController			    = NodeDeliveryController.getNodeDeliveryController(siteNodeId, languageId, contentId);
-		
 		//String templateString = getPageTemplateString(templateController, siteNodeId, languageId, contentId); 
 		String componentXML   = getPageComponentsString(siteNodeId, this.masterLanguageVO.getId());			
 		//logger.info("componentXML:" + componentXML);
@@ -1404,9 +1401,7 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 		{
 			Element component = (Element)anl.item(0);
 			component.getParentNode().removeChild(component);
-			//logger.info(XMLHelper.serializeDom(component, new StringBuffer()));
 			String modifiedXML = XMLHelper.serializeDom(document, new StringBuffer()).toString(); 
-			//logger.info("modifiedXML:" + modifiedXML);
 			
 			ContentVO contentVO = NodeDeliveryController.getNodeDeliveryController(siteNodeId, languageId, contentId).getBoundContent(this.getInfoGluePrincipal(), siteNodeId, languageId, true, "Meta information", DeliveryContext.getDeliveryContext());
 			ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentVO.getId(), this.masterLanguageVO.getId());
@@ -1527,6 +1522,21 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 		if(anl.getLength() > 0)
 		{
 			Node propertyNode = anl.item(0);
+			Element propertyElement = (Element)propertyNode;
+			
+			propertyElement.removeAttribute("path_" + locale.getLanguage());
+			if(propertyElement.getAttributes().getLength() == 0);
+			{
+				propertyNode.getParentNode().removeChild(propertyNode);
+			}
+		}
+
+		String detailSiteNodeIdPropertyXPath = "//component[@id=" + this.componentId + "]/properties/property[@name='" + propertyName + "_detailSiteNodeId']";
+		//logger.info("componentPropertyXPath:" + componentPropertyXPath);
+		NodeList anl2 = org.apache.xpath.XPathAPI.selectNodeList(document.getDocumentElement(), detailSiteNodeIdPropertyXPath);
+		if(anl2.getLength() > 0)
+		{
+			Node propertyNode = anl2.item(0);
 			Element propertyElement = (Element)propertyNode;
 			
 			propertyElement.removeAttribute("path_" + locale.getLanguage());

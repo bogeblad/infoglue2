@@ -1214,17 +1214,18 @@ public class PageEditorHelper extends BaseDeliveryController
 					
 					if(type.equalsIgnoreCase(ComponentProperty.BINDING))
 					{
-						String entity 	= binding.attributeValue("entity");
-						boolean isMultipleBinding = new Boolean(binding.attributeValue("multiple")).booleanValue();
-						boolean isAssetBinding 	  = new Boolean(binding.attributeValue("assetBinding")).booleanValue();
+						String entity 					= binding.attributeValue("entity");
+						boolean isMultipleBinding 		= new Boolean(binding.attributeValue("multiple")).booleanValue();
+						boolean isAssetBinding			= new Boolean(binding.attributeValue("assetBinding")).booleanValue();
+						boolean isPuffContentForPage	= new Boolean(binding.attributeValue("isPuffContentForPage")).booleanValue();
 						
 						property.setEntityClass(entity);
 						String value = getComponentPropertyValue(componentId, name, siteNodeId, languageId, contentId, locale, db, principal, property);
-						timer.printElapsedTime("Set property1");
 
 						property.setValue(value);
 						property.setIsMultipleBinding(isMultipleBinding);
 						property.setIsAssetBinding(isAssetBinding);
+						property.setIsPuffContentForPage(isPuffContentForPage);
 						List<ComponentBinding> bindings = getComponentPropertyBindings(componentId, name, siteNodeId, languageId, contentId, locale, db, principal);
 						property.setBindings(bindings);
 					}

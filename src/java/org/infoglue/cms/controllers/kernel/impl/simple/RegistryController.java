@@ -20,7 +20,7 @@
  *
  * ===============================================================================
  *
- * $Id: RegistryController.java,v 1.36 2007/11/20 23:59:37 mattias Exp $
+ * $Id: RegistryController.java,v 1.37 2008/07/09 15:34:34 mattias Exp $
  */
 
 package org.infoglue.cms.controllers.kernel.impl.simple;
@@ -824,8 +824,7 @@ public class RegistryController extends BaseController
 
 	public List getReferencingObjectsForContent(Integer contentId, int maxRows) throws SystemException
     {
-		
-        List referenceBeanList = new ArrayList();
+		List referenceBeanList = new ArrayList();
         
 		Database db = CastorDatabaseService.getDatabase();
 		
@@ -852,7 +851,6 @@ public class RegistryController extends BaseController
 
 	public List getReferencingObjectsForContent(Integer contentId, int maxRows, Database db) throws SystemException, Exception
     {
-		
         List referenceBeanList = new ArrayList();
 
         Map entries = new HashMap();

@@ -206,6 +206,10 @@ public class RepositoryController extends BaseController
 		return  (RepositoryVO) getVOWithId(RepositoryImpl.class, repositoryId);        
     }
 	
+    public RepositoryVO getRepositoryVOWithId(Integer repositoryId, Database db) throws ConstraintException, SystemException, Bug
+    {
+		return  (RepositoryVO) getVOWithId(RepositoryImpl.class, repositoryId, db);        
+    }
     
 	/**
 	 * Returns the RepositoryVO with the given name.

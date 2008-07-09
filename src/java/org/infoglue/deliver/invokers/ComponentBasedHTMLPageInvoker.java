@@ -641,6 +641,10 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 					property.put("bindings", bindings);
 					
 					component.getProperties().put(propertyName, property);
+
+					//TEST
+					//component.getProperties().put(propertyName, property);
+
 				}
 			}
 			

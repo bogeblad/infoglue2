@@ -66,6 +66,7 @@ import org.infoglue.cms.controllers.kernel.impl.simple.AccessRightController;
 import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
 import org.infoglue.cms.controllers.kernel.impl.simple.CategoryConditions;
 import org.infoglue.cms.controllers.kernel.impl.simple.CategoryController;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.DigitalAssetController;
@@ -76,6 +77,7 @@ import org.infoglue.cms.controllers.kernel.impl.simple.GroupControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.GroupPropertiesController;
 import org.infoglue.cms.controllers.kernel.impl.simple.InfoGluePrincipalControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.RegistryController;
+import org.infoglue.cms.controllers.kernel.impl.simple.RepositoryController;
 import org.infoglue.cms.controllers.kernel.impl.simple.RoleControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.RolePropertiesController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SearchController;
@@ -88,9 +90,12 @@ import org.infoglue.cms.entities.content.DigitalAssetVO;
 import org.infoglue.cms.entities.management.ContentTypeAttribute;
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
 import org.infoglue.cms.entities.management.LanguageVO;
+import org.infoglue.cms.entities.management.RepositoryVO;
 import org.infoglue.cms.entities.structure.SiteNode;
 import org.infoglue.cms.entities.structure.SiteNodeVO;
 import org.infoglue.cms.entities.structure.SiteNodeVersionVO;
+import org.infoglue.cms.exception.Bug;
+import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.io.FileHelper;
 import org.infoglue.cms.security.AuthenticationModule;
@@ -2962,14 +2967,22 @@ public class BasicTemplateController implements TemplateController
 		return relatedPages;
 	}
 
-
 	/**
 	 * This method gets a List of pages referencing the given content.
 	 */
 
 	public List getReferencingPages(Integer contentId, int maxRows)
 	{
-		String cacheKey = "content_" + contentId + "_" + maxRows;
+		return getReferencingPages(contentId, maxRows, new Boolean(true));
+	}
+
+	/**
+	 * This method gets a List of pages referencing the given content.
+	 */
+
+	public List getReferencingPages(Integer contentId, int maxRows, Boolean excludeCurrentPage)
+	{
+		String cacheKey = "content_" + contentId + "_" + maxRows + "_" + excludeCurrentPage;
 		
 		if(logger.isInfoEnabled())
 			logger.info("cacheKey:" + cacheKey);
@@ -2982,11 +2995,11 @@ public class BasicTemplateController implements TemplateController
 		}
 		else
 		{
-			//List referencingPages = new ArrayList();
 			referencingPages = new ArrayList();
 			try
 			{
 				List referencingObjects = RegistryController.getController().getReferencingObjectsForContent(contentId, maxRows, this.getDatabase());
+				
 				Iterator referencingObjectsIterator = referencingObjects.iterator();
 				while(referencingObjectsIterator.hasNext())
 				{
@@ -2994,7 +3007,8 @@ public class BasicTemplateController implements TemplateController
 					Object pageCandidate = referenceBean.getReferencingCompletingObject();
 					if(pageCandidate instanceof SiteNodeVO)
 					{
-						referencingPages.add(pageCandidate);
+						if(!excludeCurrentPage || !((SiteNodeVO)pageCandidate).getId().equals(getSiteNodeId()))
+							referencingPages.add(pageCandidate);
 					}
 				}
 				
@@ -4580,6 +4594,86 @@ public class BasicTemplateController implements TemplateController
 		return pagePath;
 	}
 
+	/**
+	 * This method constructs a string representing the path to the page with respect to where in the
+	 * structure the page is. It also takes the page title into consideration.
+	 */
+	 
+	public String getPagePath(Integer siteNodeId, Integer languageId) 
+	{
+		String pagePath = "";
+		
+		try
+		{
+			pagePath = this.nodeDeliveryController.getPagePath(getDatabase(), this.getPrincipal(), siteNodeId, languageId, this.contentId, META_INFO_BINDING_NAME, NAV_TITLE_ATTRIBUTE_NAME, USE_LANGUAGE_FALLBACK, this.deliveryContext);
+		}
+		catch(Exception e)
+		{
+			logger.error("An error occurred trying to get current page url:" + e.getMessage(), e);
+		}
+				
+		return pagePath;
+	}
+
+	
+	/**
+	 * Returns the path to, and including, the supplied content.
+	 * 
+	 * @param contentId the content to 
+	 * 
+	 * @return String the path to, and including, this content "library/library/..."
+	 * 
+	 */
+	public String getContentPath(Integer contentId)
+    {
+		return getContentPath(contentId, false, false);
+    }
+
+
+	/**
+	 * Returns the path to, and including, the supplied content.
+	 * 
+	 * @param contentId the content to 
+	 * 
+	 * @return String the path to, and including, this content "library/library/..."
+	 * 
+	 */
+	public String getContentPath(Integer contentId, boolean includeRootContent, boolean includeRepositoryName)
+	{
+		StringBuffer sb = new StringBuffer();
+
+		ContentVO contentVO = getContent(contentId);
+
+		sb.insert(0, contentVO.getName());
+
+		while (contentVO.getParentContentId() != null)
+		{
+			contentVO = getContent(contentVO.getParentContentId());
+
+			if (includeRootContent || contentVO.getParentContentId() != null)
+			{
+				sb.insert(0, contentVO.getName() + "/");
+			}
+		}
+
+		if (includeRepositoryName)
+		{
+			try
+			{
+				RepositoryVO repositoryVO = RepositoryController.getController().getRepositoryVOWithId(contentVO.getRepositoryId(), getDatabase());
+				if(repositoryVO != null)
+					sb.insert(0, repositoryVO.getName() + " - /");
+			}
+			catch (Exception e) 
+			{
+				logger.error("The repository for content " + contentVO.getName() + ":" + contentVO.getId() + " did not exist. Must be an inconsistency.");
+			}
+		}
+		
+		return sb.toString();
+	}
+
+	
 	/**
 	 * This method returns the parent siteNode to the given siteNode.
 	 */

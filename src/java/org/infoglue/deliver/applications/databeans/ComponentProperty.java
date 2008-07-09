@@ -63,6 +63,8 @@ public class ComponentProperty
 	private String value;
 	private boolean isMultipleBinding 		= false;
 	private boolean isAssetBinding 			= false;
+	private boolean isPuffContentForPage	= false;
+	private Integer detailSiteNodeId		= null;
 	private boolean WYSIWYGEnabled 			= false;
 	private String WYSIWYGToolbar 			= "";
 	private String visualizingAction 		= null;
@@ -237,6 +239,16 @@ public class ComponentProperty
 		this.isAssetBinding = isAssetBinding;
 	}
 
+	public boolean getIsPuffContentForPage()
+	{
+		return isPuffContentForPage;
+	}
+
+	public void setIsPuffContentForPage(boolean isPuffContentForPage)
+	{
+		this.isPuffContentForPage = isPuffContentForPage;
+	}
+
 	public String getVisualizingAction()
 	{
 		return visualizingAction;
@@ -398,4 +410,13 @@ public class ComponentProperty
 		this.dataProviderParameters = dataProviderParameters;
 	}
 
+	public Integer getDetailSiteNodeId()
+	{
+		return detailSiteNodeId;
+	}
+
+	public void setDetailSiteNodeId(Integer detailSiteNodeId)
+	{
+		this.detailSiteNodeId = detailSiteNodeId;
+	}
 }

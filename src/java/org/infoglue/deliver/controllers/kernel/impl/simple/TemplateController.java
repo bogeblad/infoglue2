@@ -38,12 +38,17 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.applications.common.VisualFormatter;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
+import org.infoglue.cms.controllers.kernel.impl.simple.RepositoryController;
 import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.entities.content.DigitalAssetVO;
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
 import org.infoglue.cms.entities.management.LanguageVO;
+import org.infoglue.cms.entities.management.RepositoryVO;
 import org.infoglue.cms.entities.structure.SiteNodeVO;
+import org.infoglue.cms.exception.Bug;
+import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.DesEncryptionHelper;
@@ -684,6 +689,12 @@ public interface TemplateController
 
 	public List getReferencingPages(Integer contentId, int maxRows);
 
+	/**
+	 * This method gets a List of pages referencing the given content.
+	 */
+
+	public List getReferencingPages(Integer contentId, int maxRows, Boolean excludeCurrentPage);
+
     /**
      * This method deliveres a String with the URL to the base path of the directory resulting from 
      * an unpacking of a uploaded zip-digitalAsset.
@@ -998,6 +1009,33 @@ public interface TemplateController
      */
     public abstract String getCurrentPagePath();
 
+	/**
+	 * This method constructs a string representing the path to the page with respect to where in the
+	 * structure the page is. It also takes the page title into consideration.
+	 */
+	 
+	public String getPagePath(Integer siteNodeId, Integer languageId);
+
+	/**
+	 * Returns the path to, and including, the supplied content.
+	 * 
+	 * @param contentId the content to 
+	 * 
+	 * @return String the path to, and including, this content "library/library/..."
+	 * 
+	 */
+	public String getContentPath(Integer contentId);
+
+	/**
+	 * Returns the path to, and including, the supplied content.
+	 * 
+	 * @param contentId the content to 
+	 * 
+	 * @return String the path to, and including, this content "library/library/..."
+	 * 
+	 */
+	public String getContentPath(Integer contentId, boolean includeRootContent, boolean includeRepositoryName);
+	
     /**
      * This method returns the parent siteNode to the given siteNode.
      */

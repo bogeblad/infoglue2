@@ -782,6 +782,22 @@ public class ComponentLogic
 		return content;
 	}
 
+	public ContentVO getBoundContentWithDetailSiteNodeId(String propertyName, boolean useInheritance, boolean useRepositoryInheritance, boolean useStructureInheritance)
+	{
+		ContentVO content = null;
+
+		Map property = getInheritedComponentProperty(this.infoGlueComponent, propertyName, useInheritance, useRepositoryInheritance, useStructureInheritance);
+		Map detailSiteNodeIdProperty = getInheritedComponentProperty(this.infoGlueComponent, propertyName + "_detailSiteNodeId", useInheritance, useRepositoryInheritance, useStructureInheritance);
+		Integer contentId = getContentId(property);
+		if(contentId != null)
+			content = this.templateController.getContent(contentId);
+		
+		if(detailSiteNodeIdProperty != null && detailSiteNodeIdProperty.get("path") != null && !detailSiteNodeIdProperty.get("path").equals("Undefined"))
+			content.getExtraProperties().put("detailSiteNodeId", new Integer((String)detailSiteNodeIdProperty.get("path")));
+			
+		return content;
+	}
+
 	public ContentVO getBoundContent(Integer siteNodeId, String propertyName, boolean useInheritance)
 	{
 		ContentVO content = null;
@@ -791,6 +807,22 @@ public class ComponentLogic
 		if(contentId != null)
 			content = this.templateController.getContent(contentId);
 		
+		return content;
+	}
+
+	public ContentVO getBoundContentWithDetailSiteNodeId(Integer siteNodeId, String propertyName, boolean useInheritance)
+	{
+		ContentVO content = null;
+
+		Map property = getInheritedComponentProperty(siteNodeId, this.infoGlueComponent, propertyName, useInheritance);
+		Map detailSiteNodeIdProperty = getInheritedComponentProperty(this.infoGlueComponent, propertyName + "_detailSiteNodeId", useInheritance, useRepositoryInheritance, useStructureInheritance);
+		Integer contentId = getContentId(property);
+		if(contentId != null)
+			content = this.templateController.getContent(contentId);
+
+		if(detailSiteNodeIdProperty != null && detailSiteNodeIdProperty.get("path") != null && !detailSiteNodeIdProperty.get("path").equals("Undefined"))
+			content.getExtraProperties().put("detailSiteNodeId", new Integer((String)detailSiteNodeIdProperty.get("path")));
+
 		return content;
 	}
 
@@ -3268,6 +3300,7 @@ public class ComponentLogic
 					String entity					= element.attributeValue("entity");
 					String multiple					= element.attributeValue("multiple");
 					String assetBinding 			= element.attributeValue("assetBinding");
+					String isPuffContentForPage 	= element.attributeValue("isPuffContentForPage");
 					String allowedContTypeDefNames	= element.attributeValue("allowedContentTypeDefinitionNames");
 					String description 				= element.attributeValue("description");
 					String defaultValue 			= element.attributeValue("defaultValue");
@@ -3279,7 +3312,7 @@ public class ComponentLogic
 					String autoCreatContentMethod 	= element.attributeValue("autoCreatContentMethod");
 					String autoCreatContentPath		= element.attributeValue("autoCreatContentPath");
 
-					propertyDefinition = new ComponentPropertyDefinition(name, displayName, type, entity, new Boolean(multiple), new Boolean(assetBinding), allowedContTypeDefNames, description, defaultValue, new Boolean(WYSIWYGEnabled), WYSIWYGToolbar, dataProvider, dataProviderParameters, new Boolean(autoCreatContent), autoCreatContentMethod, autoCreatContentPath);
+					propertyDefinition = new ComponentPropertyDefinition(name, displayName, type, entity, new Boolean(multiple), new Boolean(assetBinding), new Boolean(isPuffContentForPage), allowedContTypeDefNames, description, defaultValue, new Boolean(WYSIWYGEnabled), WYSIWYGToolbar, dataProvider, dataProviderParameters, new Boolean(autoCreatContent), autoCreatContentMethod, autoCreatContentPath);
 				}
 			}
 		}

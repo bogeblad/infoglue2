@@ -113,17 +113,19 @@ public class InfoGlueComponent
 	{
 		this.slots = slots;
 	}
-
+	
 	public Map getProperties()
 	{
 		return this.properties;
 	}
-
+	
+	/*
 	public void setProperties(Map properties)
 	{
 		this.properties = properties;
 	}
-
+	*/
+	
 	public Map getTasks()
 	{
 		return this.tasks;
