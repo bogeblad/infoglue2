@@ -842,7 +842,7 @@
 
 	## Inget formulär om inget kan selectas
 	#if($lvConstraint != 0)
-		<form name="listForm" action="Confirm.action" method="POST">
+		<form name="listForm" action="Confirm.action" method="post">
 			<input type="hidden" name="header" value="$header"/>
 			<input type="hidden" name="yesDestination" value="$yesDestination"/>
 			<input type="hidden" name="noDestination" value="$noDestination"/>
