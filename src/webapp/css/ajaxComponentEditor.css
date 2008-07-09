@@ -68,11 +68,12 @@ Component Properties Classes
 	background-image: url('../images/handleBackground.gif');
 	border-bottom: 1px solid #CCCCCC;
 	float: left;
+	width: 610px;
 }
 
 #leftComponentPropertiesHandle 
 {
-	width: 588px; 
+	width: 550px; 
 	float: left;
 	color: white;
 	text-align: left;
@@ -84,6 +85,8 @@ Component Properties Classes
 	color: white;
 	text-align: right;
 	line-height: 10pt;	
+	float: right;
+	width: 50px;
 }
 
 #componentPropertiesForm fieldset

@@ -169,8 +169,16 @@ public class AjaxDecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHT
 				//}
 					
 				//TODO - TEST
-				//decoratePageTemplate += propertiesDivs + tasksDivs;																																							
-				decoratePageTemplate += "<div id=\"availableComponents\"></div><div id=\"componentTasks\"><div id=\"componentMenu\" class=\"skin0\">Loading menu...</div></div><div id=\"componentPropertiesDiv\"></div><div id=\"componentStructure\"></div>";
+				//decoratePageTemplate += propertiesDivs + tasksDivs;	
+				int indexOfBODYStartTag = decoratePageTemplate.indexOf("</body");
+				if(indexOfBODYStartTag == -1)
+					indexOfBODYStartTag = decoratePageTemplate.indexOf("</BODY");
+		
+				if(indexOfBODYStartTag > -1)
+				{
+					StringBuffer sb = new StringBuffer(decoratePageTemplate);
+					decoratePageTemplate = sb.insert(indexOfBODYStartTag, "<div id=\"availableComponents\"></div><div id=\"componentTasks\"><div id=\"componentMenu\" class=\"skin0\">Loading menu...</div></div><div id=\"componentPropertiesDiv\"></div><div id=\"componentStructure\"></div>").toString();
+				}
 			}		
 		}
 		

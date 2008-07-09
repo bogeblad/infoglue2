@@ -1173,10 +1173,10 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 					
 					sb.append("		</tr>");
 					
-					sb.append("		<tr>");
-
 					if(isPuffContentForPage && componentProperty.getBindings() != null && componentProperty.getBindings().size() > 0)
 					{
+						sb.append("	<tr>");
+
 						ComponentBinding binding = componentProperty.getBindings().get(0);
 						List referencingPages = templateController.getReferencingPages(binding.getEntityId(), 50, new Boolean(true));
 						
@@ -1214,8 +1214,8 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 						sb.append("			</td>");
 						sb.append("			<td class=\"igpropertylabel igpropertyDivider\"></td>");
 						sb.append("			<td class=\"igpropertylabel igpropertyDivider\"></td>");
+						sb.append("		</tr>");
 					}
-					sb.append("		</tr>");
 				}
 				else if(componentProperty.getType().equalsIgnoreCase(ComponentProperty.TEXTFIELD))
 				{

@@ -46,13 +46,13 @@ function floatDiv(id, sx, sy)
  * Called when rezising popup
  ****************************/
  
-toolbarLockPositionCookieName = "toolbarLockPosition";
-pageStructureDivVisibleCookieName = "pageStructureDivVisible";
-pageStructureDivWidthCookieName = "pageStructureDivWidth";
-pageStructureDivHeightCookieName = "pageStructureDivHeight";
-pageStructureDivHeightBodyCookieName = "pageStructureDivHeightBody";
-pageComponentsTopPositionCookieName = "pageStructureTopPosition";
-pageComponentsLeftPositionCookieName = "pageStructureLeftPosition";
+var toolbarLockPositionCookieName = "toolbarLockPosition";
+var pageStructureDivVisibleCookieName = "pageStructureDivVisible";
+var pageStructureDivWidthCookieName = "pageStructureDivWidth";
+var pageStructureDivHeightCookieName = "pageStructureDivHeight";
+var pageStructureDivHeightBodyCookieName = "pageStructureDivHeightBody";
+var pageComponentsTopPositionCookieName = "pageStructureTopPosition";
+var pageComponentsLeftPositionCookieName = "pageStructureLeftPosition";
 
 var pageStructureDivWidth = "300px";
 var pageStructureDivHeight = "380px";
@@ -65,6 +65,7 @@ var pageStructureDivHeightBody = "360px";
 function setCookie(name, value)
 {
 	var length = document.cookie.split(';').length;
+	var index;
 	if(length < 18)
     {
 		if(document.cookie != document.cookie)
@@ -84,6 +85,9 @@ function setCookie(name, value)
 function getCookieValue(name)
 { 
 	var value = "";
+	var index;
+	var namestart = "";
+	var nameend = "";
  	if(document.cookie)
 	{
 		index = document.cookie.indexOf(name);
@@ -156,7 +160,7 @@ function dragStarted(object)
  * Hook method to get informed when a drag ends
  ****************************/
 
-toolbarTopPositionCookieName = "toolbarTopPosition";
+var toolbarTopPositionCookieName = "toolbarTopPosition";
 var defaultToolbarTopPosition = "0px";
  
 function dragEnded(object, left, top)
@@ -165,15 +169,6 @@ function dragEnded(object, left, top)
 	//alert("dragEnded:" + object.id);
 	if(object.id == "paletteHandle")
 	{
-		/*
-		for (var i in elementArray) 
-		{
-			alert("i:" + i);
-			var htmlEditor = elementArray[i];
-			//alert("htmlEditor:" + htmlEditor);
-		}
-		*/
-
 		//el.cy = el.sy = 50;
 		topPosition = top;
 		setCookie(toolbarLockPositionCookieName, topPosition);
@@ -187,6 +182,13 @@ function dragEnded(object, left, top)
 	}
 }
 
+var defaultToolbarTopPosition;
+var toolbarLockPosition;
+var pageComponentsVisibility;	
+var pageStructureDivWidth;
+var pageStructureDivHeight;
+var pageStructureDivHeightBody;
+
 function setToolbarInitialPosition()
 {	
 	//alert("setToolbarInitialPosition ran");
@@ -197,7 +199,7 @@ function setToolbarInitialPosition()
 	pageStructureDivHeight = getCookieValue(pageStructureDivHeightCookieName);
 	pageStructureDivHeightBody = getCookieValue(pageStructureDivHeightBodyCookieName);
 
-	propertiesDiv = document.getElementById("pageComponents");
+	var propertiesDiv = document.getElementById("pageComponents");
 		
 	if(propertiesDiv)
 	{
@@ -429,18 +431,6 @@ function showComponentMenu(event, element, compId, anInsertUrl, anDeleteUrl, anC
 	
 	menuDiv = getActiveMenuDiv();
 
-/*	
-	if (rightedge < menuDiv.offsetWidth)
-		newLeft = (document.body.scrollLeft + clientX - menuDiv.offsetWidth);
-	else
-		newLeft = (document.body.scrollLeft + clientX);
-	
-	if (bottomedge < menuDiv.offsetHeight)
-		newTop = (document.body.scrollTop + clientY - menuDiv.offsetHeight);
-	else
-		newTop = (document.body.scrollTop + clientY);
-*/
-
 	//var offsetYInWindow = clientY - getScrollY();
 	//alert("getScrollY():" + getScrollY());
 	//alert("e.pageY:" + e.pageY);
@@ -611,7 +601,7 @@ function release()
 
 function hidepreviousmenues() 
 {
-	layer = getActiveMenuDiv();
+	var layer = getActiveMenuDiv();
 	if(layer)
 		layer.style.visibility = "hidden";
 }
@@ -652,9 +642,9 @@ function lowlightie5(event)
 // -------------------------------------
 
 
-isIE=document.all;
-isNN=!document.all&&document.getElementById;
-isN4=document.layers;
+var isIE=document.all;
+var isNN=!document.all&&document.getElementById;
+var isN4=document.layers;
 
 if (isIE||isNN)
 {
@@ -673,6 +663,8 @@ function checkV(e)
 	{
 		if (e.which==2||e.which==3)
 			return false;
+		else
+			return true;
 	}
 	else
 		return false;
@@ -975,7 +967,6 @@ function editInline(repositoryId)
 			   },
 			   error: function (XMLHttpRequest, textStatus, errorThrown) {
 				  alert("You are not allowed to edit this text!");
-				  this; 
 			   }
 			});
 		}
@@ -1326,6 +1317,8 @@ function clearComponentPropertiesInDiv(targetDivId)
 
 function showComponentPropertiesInDiv(targetDivId, parameterString, skipFloat, event) 
 {
+	try
+	{
 	//alert("targetDivId:" + targetDivId);
 	//alert("parameterString:" + parameterString);
 
@@ -1385,7 +1378,7 @@ function showComponentPropertiesInDiv(targetDivId, parameterString, skipFloat, e
 
 			var theHandle = document.getElementById("componentPropertiesHandle");
 			var theRoot   = document.getElementById("componentProperties");
-			
+
 			$(theHandle).css("cursor", "move");
 			$(theRoot).draggable({handle: theHandle});
 		});
@@ -1396,6 +1389,12 @@ function showComponentPropertiesInDiv(targetDivId, parameterString, skipFloat, e
 		targetDiv.style.display = "block";
 		menuDiv = targetDiv;
 	}
+	
+	}
+	catch(e)
+	{
+		alert("Error:" + e);
+	}
 }
 
 var eventXPosition = 0;
@@ -1403,34 +1402,40 @@ var eventYPosition = 0;
 
 function showComponentTasksInDiv(targetDivId, parameterString, skipFloat, event) 
 {
+	try
+	{
 	//alert("targetDivId:" + targetDivId);
 	//alert("event:" + event);
 	//alert("parameterString:" + parameterString);
 	//alert("skipFloat:" + skipFloat);
+	
 	targetDiv = document.getElementById(targetDivId);
+	//alert("targetDiv:" + targetDiv);
 	
 	eventXPosition = getEventPositionX(event);
 	eventYPosition = getEventPositionY(event);
+
+	//alert("eventXPosition:" + eventXPosition);
+	//alert("eventYPosition:" + eventYPosition);
 		
 	$(targetDiv).load("AjaxComponentDeliveryService!getComponentTasksDiv.action?" + parameterString + "&targetDivId=" + targetDivId + "",{}, function(event){
 		menuDiv = document.getElementById("componentMenu");
-		//alert("menuDiv:" + menuDiv);
-		
+
 		clientX = eventXPosition;
 		clientY = eventYPosition;
-		
+			
 		var rightedge = document.body.clientWidth - clientX;
 		var bottomedge = getWindowHeight() - clientY;
 		
 		if (rightedge < menuDiv.offsetWidth)
 			clientX = (clientX - menuDiv.offsetWidth);
-		
+			
 		if (bottomedge < menuDiv.offsetHeight)
 			clientY = (clientY - menuDiv.offsetHeight);
-		
+			
 		if(window.parent.name == "PageEditor")
 			$(menuDiv).find("#componentEditorInNewWindowDiv").css("display", "none");
-				
+					
 		menuDiv.style.left 	= clientX + "px";
 		menuDiv.style.top 	= clientY + "px";
 		
@@ -1438,7 +1443,13 @@ function showComponentTasksInDiv(targetDivId, parameterString, skipFloat, event)
 		
 		activeMenuId = "componentMenu";
 	});
-	
+
+	}
+	catch(e)
+	{
+		alert("Error:" + e);
+	}
+
     if (event && event.stopPropagation) {event.stopPropagation();}
     else if (window.event) {window.event.cancelBubble = true;}	
     return false;
@@ -1543,7 +1554,8 @@ function viewSource()
       function grabIt(e) {
 
         // -- event and target element references are browser-specific.  UGH
-        var e      = e? e: window.event;
+        if (!e) 
+        	e = window.event;
         var field  = IE? e.srcElement: e.target;   
         var target = getRect(field);	// target element position offsets
 		
@@ -1609,7 +1621,8 @@ function viewSource()
     //-----------------------------------------------------------------
     function dragIt(e) 
     {
-		var e = e? e: window.event;
+		if (!e) 
+        	e = window.event;
 	    
         // -- Move drag element by the same amount the cursor has moved.
         with (drag) 
@@ -1977,11 +1990,11 @@ function viewSource()
 	/**************************************************************************
 	Variables to set.
 	***************************************************************************/
-	sMenuheight = 20  //The height of the menu
-	sArrowwidth = 5  //Width of the arrows
-	sScrollspeed = 20 //Scroll speed: (in milliseconds, change this one and the next variable to change the speed)
-	sScrollPx = 8     //Pixels to scroll per timeout.
-	sScrollExtra = 15 //Extra speed to scroll onmousedown (pixels)
+	var sMenuheight = 20  //The height of the menu
+	var sArrowwidth = 5  //Width of the arrows
+	var sScrollspeed = 20 //Scroll speed: (in milliseconds, change this one and the next variable to change the speed)
+	var sScrollPx = 8     //Pixels to scroll per timeout.
+	var sScrollExtra = 15 //Extra speed to scroll onmousedown (pixels)
 	
 	var scrollHash = new Array();
 	
@@ -2119,7 +2132,6 @@ function viewSource()
 	}
 
 	var groupHash = new Array();
-	//var componentIndex = 0;
 	
 	//
 	// QueryString
@@ -2226,7 +2238,7 @@ function viewSource()
 	   				
 	   				var targ;
 					if (!event) 
-						var event = window.event;
+						event = window.event;
 						
 					if (event.target) 
 						targ = event.target;
@@ -2248,7 +2260,7 @@ function viewSource()
 	   				
 	   				var targ;
 					if (!event) 
-						var event = window.event;
+						event = window.event;
 						
 					if (event.target) 
 						targ = event.target;
@@ -2288,20 +2300,6 @@ function viewSource()
 	    {
 	    	element.attachEvent("onmouseover", function (evt) { 
 	    	
-	    		/*
-	    		var targ;
-				if (!evt) 
-					var evt = window.event;
-					
-				if (evt.target) 
-					targ = evt.target;
-				else if (evt.srcElement) 
-					targ = evt.srcElement;
-				if (targ.nodeType == 3) // defeat Safari bug
-					targ = targ.parentNode;
-				*/	
-	    		//$("#debugDiv").html("<p>Mouse over: " + element.id + "<br/>Event:" + evt + "<br/>Target.id: " + targ.id + "<br/>Event.target:" + evt.target + "<br>evt.srcElement:" + evt.srcElement.id + "</p>");
-	    		
 	   			//alert("clearMovedComponent:" + clearMovedComponent);
 	   			if(clearMovedComponent)
 	   			{
@@ -2317,7 +2315,7 @@ function viewSource()
 	   				
 	   				var targ;
 					if (!evt) 
-						var evt = window.event;
+						evt = window.event;
 						
 					if (evt.target) 
 						targ = evt.target;
@@ -2342,7 +2340,7 @@ function viewSource()
 	   				
 	   				var targ;
 					if (!evt) 
-						var evt = window.event;
+						evt = window.event;
 						
 					if (evt.target) 
 						targ = evt.target;

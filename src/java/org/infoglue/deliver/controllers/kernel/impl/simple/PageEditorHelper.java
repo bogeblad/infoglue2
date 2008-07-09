@@ -40,6 +40,7 @@ import org.dom4j.Document;
 import org.dom4j.Element;
 import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.applications.common.VisualFormatter;
+import org.infoglue.cms.applications.databeans.ReferenceBean;
 import org.infoglue.cms.controllers.kernel.impl.simple.AccessRightController;
 import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
 import org.infoglue.cms.controllers.kernel.impl.simple.ComponentController;
@@ -48,6 +49,7 @@ import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionCont
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.DigitalAssetController;
 import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
+import org.infoglue.cms.controllers.kernel.impl.simple.RegistryController;
 import org.infoglue.cms.controllers.kernel.impl.simple.RepositoryController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeController;
 import org.infoglue.cms.controllers.kernel.impl.simple.UserControllerProxy;
@@ -72,6 +74,7 @@ import org.infoglue.deliver.applications.databeans.ComponentProperty;
 import org.infoglue.deliver.applications.databeans.ComponentPropertyOption;
 import org.infoglue.deliver.applications.databeans.ComponentRestriction;
 import org.infoglue.deliver.applications.databeans.ComponentTask;
+import org.infoglue.deliver.applications.databeans.DeliveryContext;
 import org.infoglue.deliver.applications.databeans.Slot;
 import org.infoglue.deliver.integration.dataproviders.PropertyOptionsDataProvider;
 import org.infoglue.deliver.util.CacheController;
@@ -359,10 +362,14 @@ public class PageEditorHelper extends BaseDeliveryController
 						}
 					}
 					
+					boolean isPuffContentForPage = false;
+					if(componentProperty.getType().equalsIgnoreCase(ComponentProperty.BINDING) && componentProperty.getEntityClass().equalsIgnoreCase("Content") && componentProperty.getIsPuffContentForPage())
+						isPuffContentForPage = true;
+
 					if(isAdvancedProperties)
 						sb.append("	<div class=\"propertyRow advancedProperty" + componentId + "\" style='display:none;'>");
 					else
-						sb.append("	<div class=\"propertyRow\">");
+						sb.append("	<div class=\"propertyRow\"" + (isPuffContentForPage ? " style='border-bottom: 0px;'" : "") + ">");
 					
 					sb.append("			<div class=\"propertyRowLeft\">");
 					sb.append("				<label for=\"" + componentProperty.getName() + "\">" + componentProperty.getDisplayName() + "</label>");
@@ -404,6 +411,55 @@ public class PageEditorHelper extends BaseDeliveryController
 					sb.append("			</div>");
 	
 					sb.append("		</div>");
+					
+					if(isPuffContentForPage && componentProperty.getBindings() != null && componentProperty.getBindings().size() > 0)
+					{
+						sb.append("	<div class=\"propertyRow\">");
+						
+						ComponentBinding binding = componentProperty.getBindings().get(0);
+						List referencingPages = getReferencingPages(binding.getEntityId(), siteNodeId, 50, new Boolean(true), db);
+						
+						if(referencingPages.size() == 0)
+						{
+							sb.append("	<div class=\"propertyRowLeft\">");
+							sb.append("		<label>" + getLocalizedString(locale, "deliver.editOnSight.noDetailPageWithContentBinding.label") + "</label>");
+							sb.append("	</div>");
+						}
+						else if(referencingPages.size() == 1)
+						{
+							SiteNodeVO siteNodeVO = (SiteNodeVO)referencingPages.get(0);
+							String path = getPagePath(siteNodeVO.getId(), languageId, db, principal);
+							sb.append("	<div class=\"propertyRowLeft\">");
+							sb.append("		<label>" + getLocalizedString(locale, "deliver.editOnSight.detailPageWithContentBinding.label") + "<span title='" + path + "'>" + siteNodeVO.getName() + "(" + siteNodeVO.getSiteNodeId() + ")</span>" + "</label>");
+							sb.append("	</div>");
+						}
+						else
+						{
+							sb.append("	<div class=\"propertyRowLeft\">");
+							sb.append("		<label>" + getLocalizedString(locale, "deliver.editOnSight.detailPagesWithContentBinding.label") + "</label>");
+							sb.append("	</div>");
+							sb.append("	<div class=\"propertyRowRight\">");
+							sb.append("		<input type=\"hidden\" name=\"" + propertyIndex + "_propertyName\" value=\"" + componentProperty.getName() + "_detailSiteNodeId\"/>");
+							sb.append("		<select class=\"propertyselect\" name=\"" + componentProperty.getName() + "_detailSiteNodeId\">");	
+							Iterator referencingPagesIterator = referencingPages.iterator();
+							while(referencingPagesIterator.hasNext())
+							{
+								SiteNodeVO siteNodeVO = (SiteNodeVO)referencingPagesIterator.next();
+								String path = getPagePath(siteNodeVO.getId(), languageId, db, principal);
+								Integer detailSiteNodeId = componentProperty.getDetailSiteNodeId();
+								
+								if(detailSiteNodeId != null && detailSiteNodeId.equals(siteNodeVO.getSiteNodeId()))
+									sb.append("	<option value='" + siteNodeVO.getSiteNodeId() + "' title='" + path + "' selected=\"1\">" + siteNodeVO.getName() + "(" + siteNodeVO.getSiteNodeId() + ")" + "</option>");								
+								else
+									sb.append("	<option value='" + siteNodeVO.getSiteNodeId() + "' title='" + path + "'>" + siteNodeVO.getName() + "(" + siteNodeVO.getSiteNodeId() + ")" + "</option>");								
+							}
+							sb.append("		</select>");	
+							sb.append("	</div>");
+						}
+						
+						sb.append("	</div>");
+					}
+
 				}
 				else if(componentProperty.getType().equalsIgnoreCase(ComponentProperty.TEXTFIELD))
 				{
@@ -958,7 +1014,7 @@ public class PageEditorHelper extends BaseDeliveryController
 			    sb.append("<div class=\"igmenuitems linkCreatePageTemplate\" onClick=\"saveComponentStructure('" + componentEditorUrl + "CreatePageTemplate!input.action?contentId=" + metaInfoContentVO.getId() + "');\"><a href='#'>" + savePageTemplateHTML + "</a></div>");
 			if(hasSavePagePartTemplateAccess)
 			    sb.append("<div class=\"igmenuitems linkCreatePageTemplate\" onClick=\"" + savePartTemplateUrl + "\"><a href='#'>" + savePagePartTemplateHTML + "</a></div>");
-	
+			
 			String upUrl = componentEditorUrl + "ViewSiteNodePageComponents!moveComponent.action?siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&direction=0&showSimple=" + showSimple + "";
 			String downUrl = componentEditorUrl + "ViewSiteNodePageComponents!moveComponent.action?siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&direction=1&showSimple=" + showSimple + "";
 
@@ -976,12 +1032,12 @@ public class PageEditorHelper extends BaseDeliveryController
 			if(hasPageStructureAccess || hasOpenInNewWindowAccess || hasViewSourceAccess)
 				sb.append("<div style='border-top: 1px solid #bbb; height: 1px; margin:0px; padding: 0px; line-height: 1px;'></div>");
 			if(treeItem != true && hasPageStructureAccess)
-				sb.append("<div class=\"igmenuitems linkPageComponents\" onClick=\"javascript:toggleDiv('pageComponents');\"><a href='#'>" + pageComponentsHTML + "</a></div>");
+				sb.append("<div class=\"igmenuitems linkPageComponents\" onClick=\"showComponentStructure('componentStructure', 'repositoryId=" + repositoryId + "&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&originalUrl=" + URLEncoder.encode(originalFullURL, "UTF-8") + "', event);\"><a href='#'>" + pageComponentsHTML + "</a></div>");
+				
 			if(hasOpenInNewWindowAccess)
 				sb.append("<div id=\"componentEditorInNewWindowDiv\" class=\"igmenuitems linkOpenInNewWindow\"  onClick=\"window.open(document.location.href,'PageComponents','');\"><a href='#'>" + componentEditorInNewWindowHTML + "</a></div>");
 			if(hasViewSourceAccess)
 				sb.append("<div class=\"igmenuitems linkViewSource\" onClick=\"javascript:viewSource();\"><a href='javascript:viewSource();'>" + viewSourceHTML + "</a></div>");
-			sb.append("</div>");
 
 			sb.append("</div>");
 		}
@@ -2471,5 +2527,75 @@ public class PageEditorHelper extends BaseDeliveryController
 		
 		componentProperties.add(priorityProperty);
 
+	}
+	
+	/**
+	 * This method gets a List of pages referencing the given content.
+	 */
+
+	public List getReferencingPages(Integer contentId, Integer siteNodeId, int maxRows, Boolean excludeCurrentPage, Database db)
+	{
+		String cacheKey = "content_" + contentId + "_" + maxRows + "_" + excludeCurrentPage;
+		
+		if(logger.isInfoEnabled())
+			logger.info("cacheKey:" + cacheKey);
+		
+		List referencingPages = (List)CacheController.getCachedObject("referencingPagesCache", cacheKey);
+		if(referencingPages != null)
+		{
+			if(logger.isInfoEnabled())
+				logger.info("There was an cached referencingPages:" + referencingPages.size());
+		}
+		else
+		{
+			referencingPages = new ArrayList();
+			try
+			{
+				List referencingObjects = RegistryController.getController().getReferencingObjectsForContent(contentId, maxRows, db);
+				
+				Iterator referencingObjectsIterator = referencingObjects.iterator();
+				while(referencingObjectsIterator.hasNext())
+				{
+					ReferenceBean referenceBean = (ReferenceBean)referencingObjectsIterator.next();
+					Object pageCandidate = referenceBean.getReferencingCompletingObject();
+					if(pageCandidate instanceof SiteNodeVO)
+					{
+						if(!excludeCurrentPage || !((SiteNodeVO)pageCandidate).getId().equals(siteNodeId))
+							referencingPages.add(pageCandidate);
+					}
+				}
+				
+				if(referencingPages != null)
+					CacheController.cacheObject("referencingPagesCache", cacheKey, referencingPages);
+			}
+			catch(Exception e)
+			{
+				logger.error("An error occurred trying to get referencing pages for the contentId " + contentId + ":" + e.getMessage(), e);
+			}
+		}
+		
+		return referencingPages;
+	}
+	
+	/**
+	 * This method constructs a string representing the path to the page with respect to where in the
+	 * structure the page is. It also takes the page title into consideration.
+	 */
+	 
+	public String getPagePath(Integer siteNodeId, Integer languageId, Database db, InfoGluePrincipal principal) 
+	{
+		String pagePath = "";
+		
+		try
+		{
+			DeliveryContext dc = DeliveryContext.getDeliveryContext(false);
+			pagePath = NodeDeliveryController.getNodeDeliveryController(dc).getPagePath(db, principal, siteNodeId, languageId, new Integer(-1), BasicTemplateController.META_INFO_BINDING_NAME, BasicTemplateController.NAV_TITLE_ATTRIBUTE_NAME, BasicTemplateController.USE_LANGUAGE_FALLBACK, dc);
+		}
+		catch(Exception e)
+		{
+			logger.error("An error occurred trying to get current page url:" + e.getMessage(), e);
+		}
+				
+		return pagePath;
 	}
 }
