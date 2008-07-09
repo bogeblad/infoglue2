@@ -17,7 +17,7 @@ body.generaltooledit {
 	height: 32px;
 	background-image: url("../../images/v3/toolbarBackground.gif");
 	background-repeat: repeat-x;
-	background-color: blue;
+	background-color: white;
 	float: left;
 }
 #footertoolbar {
