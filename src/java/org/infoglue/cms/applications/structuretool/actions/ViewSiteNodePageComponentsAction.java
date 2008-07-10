@@ -987,9 +987,6 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 				propertyValue = sb.toString();
 			}
 
-			System.out.println("propertyName:" + propertyName);
-			System.out.println("propertyValue:" + propertyValue);
-
 			logger.info("propertyName:" + propertyName);
 			logger.info("propertyValue:" + propertyValue);
 			String separator = System.getProperty("line.separator");

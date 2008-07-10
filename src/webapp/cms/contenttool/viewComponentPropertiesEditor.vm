@@ -78,7 +78,6 @@
 				propertyMultiple				= property.getMultiple();
 				propertyAssetBinding			= property.getAssetBinding();
 				isPuffContentForPage			= property.getIsPuffContentForPage();
-				alert(isPuffContentForPage);
 				propertyDescription				= property.getDescription();
 				propertyDefaultValue			= property.getDefaultValue();
 				propertyWYSIWYGEnabled			= property.getWYSIWYGEnabled();
