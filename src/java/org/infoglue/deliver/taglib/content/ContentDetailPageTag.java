@@ -29,9 +29,16 @@ import javax.servlet.jsp.JspException;
 
 import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.structure.SiteNodeVO;
+import org.infoglue.deliver.applications.databeans.WebPage;
 import org.infoglue.deliver.taglib.component.ComponentLogicTag;
 
-public class ContentDetailPageUrlTag extends ComponentLogicTag 
+/**
+ * This class returns a WebPage containing info of which detail page this content is bound if any.
+ * 
+ * @author Mattias Bogeblad
+ */
+
+public class ContentDetailPageTag extends ComponentLogicTag 
 {
 	private static final long serialVersionUID = 4050206323348354355L;
 
@@ -41,7 +48,9 @@ public class ContentDetailPageUrlTag extends ComponentLogicTag
     private boolean useInheritance = true;
 	private boolean useRepositoryInheritance = true;
     private boolean useStructureInheritance = true;
-
+    private boolean escapeHTML = false;
+    private boolean hideUnauthorizedPages = false;
+    
 	public int doEndTag() throws JspException
     {
         ContentVO contentVO = getContent();
@@ -51,7 +60,8 @@ public class ContentDetailPageUrlTag extends ComponentLogicTag
 	        if(contentVO.getExtraProperties().get("detailSiteNodeId") != null)
 			{
 				Integer detailSiteNodeId = (Integer)contentVO.getExtraProperties().get("detailSiteNodeId");
-				setResultAttribute(getController().getPageUrl(detailSiteNodeId, getController().getLanguageId(), new Integer(-1)));
+				WebPage webPage = getController().getPage(detailSiteNodeId, getController().getLanguageId(), new Integer(-1), escapeHTML, hideUnauthorizedPages);
+				setResultAttribute(webPage);
 			}
 			else
 			{
@@ -59,7 +69,8 @@ public class ContentDetailPageUrlTag extends ComponentLogicTag
 				if(referencingSiteNodeVOList.size() > 0)
 				{
 					SiteNodeVO detailSiteNodeVO = (SiteNodeVO)referencingSiteNodeVOList.get(0);
-					setResultAttribute(getController().getPageUrl(detailSiteNodeVO.getId(), getController().getLanguageId(), new Integer(-1)));				
+					WebPage webPage = getController().getPage(detailSiteNodeVO.getId(), getController().getLanguageId(), new Integer(-1), escapeHTML, hideUnauthorizedPages);
+					setResultAttribute(webPage);				
 				}
 				else
 				{
@@ -130,5 +141,15 @@ public class ContentDetailPageUrlTag extends ComponentLogicTag
     {
         this.useStructureInheritance = useStructureInheritance;
     }
+
+	public void setEscapeHTML(boolean escapeHTML) 
+	{
+		this.escapeHTML = escapeHTML;
+	}
+
+	public void setHideUnauthorizedPages(boolean hideUnauthorizedPages) 
+	{
+		this.hideUnauthorizedPages = hideUnauthorizedPages;
+	}
 
 }

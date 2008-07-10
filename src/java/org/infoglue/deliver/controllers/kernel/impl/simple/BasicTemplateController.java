@@ -5076,6 +5076,29 @@ public class BasicTemplateController implements TemplateController
 
 	
 	/**
+     * The method returns a WebPage-object for the given page etc.
+     */
+    public WebPage getPage(Integer siteNodeId, Integer languageId, Integer contentId, boolean escapeHTML, boolean hideUnauthorizedPages)
+    {
+    	if(siteNodeId == null || siteNodeId.intValue() < 1)
+    		return null;
+    
+    	WebPage page = null;
+    	
+    	try
+    	{
+	    	SiteNodeVO siteNodeVO = getSiteNode(siteNodeId);
+	    	page = getPage(siteNodeVO, escapeHTML, hideUnauthorizedPages);
+    	}
+    	catch (Exception e) 
+    	{
+    		logger.warn("There was a problem getting the page for siteNodeId[" + siteNodeId + "]. Message: " + e.getMessage());
+		}
+    	
+    	return page;
+    }
+
+	/**
 	 * The method returns a list of WebPage-objects that is the children of the current 
 	 * siteNode. The method is great for navigation-purposes on a structured site. 
 	 */
@@ -5158,6 +5181,39 @@ public class BasicTemplateController implements TemplateController
 		return childPages;
 	}
 
+	/**
+	 * This method takes a sitenode and converts it to a webpage instead.
+	 * 
+	 * @param siteNodeVO
+	 * @param escapeHTML
+	 * @param hideUnauthorizedPages
+	 * @return
+	 * @throws Exception
+	 */
+	private WebPage getPage(SiteNodeVO siteNodeVO, boolean escapeHTML, boolean hideUnauthorizedPages) throws Exception
+	{
+		WebPage page = null;
+
+		if(!hideUnauthorizedPages || getHasUserPageAccess(siteNodeVO.getId()))
+		{
+			try
+			{
+				page = new WebPage();						
+				page.setSiteNodeId(siteNodeVO.getSiteNodeId());
+				page.setLanguageId(this.languageId);
+				page.setContentId(null);
+				page.setNavigationTitle(this.nodeDeliveryController.getPageNavigationTitle(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), this.languageId, null, META_INFO_BINDING_NAME, NAV_TITLE_ATTRIBUTE_NAME, USE_LANGUAGE_FALLBACK, this.deliveryContext, escapeHTML));
+				page.setMetaInfoContentId(this.nodeDeliveryController.getMetaInfoContentId(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), META_INFO_BINDING_NAME, USE_INHERITANCE, this.deliveryContext));
+				page.setUrl(this.nodeDeliveryController.getPageUrl(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), this.languageId, null, this.deliveryContext));
+			}
+			catch(Exception e)
+			{
+			    logger.info("An error occurred when looking up the page:" + e.getMessage(), e);
+			}
+		}
+		
+		return page;
+	}
 	/**
 	 * This method takes a list of sitenodes and converts it to a page list instead.
 	 * 

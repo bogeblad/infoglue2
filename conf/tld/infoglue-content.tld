@@ -402,8 +402,8 @@
 	</tag>
 	
 	<tag>
-	    <name>contentDetailPageUrl</name>
-	    <tagclass>org.infoglue.deliver.taglib.content.ContentDetailPageUrlTag</tagclass>
+	    <name>contentDetailPage</name>
+	    <tagclass>org.infoglue.deliver.taglib.content.ContentDetailPageTag</tagclass>
 	    <bodycontent>empty</bodycontent>
 	    <info>None</info>
 	   	<attribute>
@@ -441,6 +441,16 @@
             <required>false</required>
             <rtexprvalue>false</rtexprvalue>
         </attribute>
+            	<attribute>
+    	    <name>escapeHTML</name>
+        	<required>false</required>
+	        <rtexprvalue>false</rtexprvalue>
+    	</attribute>
+        <attribute>
+    	    <name>hideUnauthorizedPages</name>
+        	<required>false</required>
+	        <rtexprvalue>false</rtexprvalue>
+    	</attribute>
 	</tag>
 	
 
