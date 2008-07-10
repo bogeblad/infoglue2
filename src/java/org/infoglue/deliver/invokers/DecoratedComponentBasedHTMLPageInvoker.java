@@ -372,10 +372,10 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		    extraBody = extraBody.replaceAll("\\$viewSource", viewSourceHTML);
 			extraBody = extraBody.replaceAll("\\$propertiesHTML", propertiesHTML);
 		    
-		    extraBody = extraBody.replaceAll("\\$addComponentJavascript", "var hasAccessToAddComponent" + component.getId() + "_" + component.getSlotName() + " = " + hasAccessToAddComponent + ";");
-		    extraBody = extraBody.replaceAll("\\$deleteComponentJavascript", "var hasAccessToDeleteComponent" + component.getSlotName() + " = " + hasAccessToDeleteComponent + ";");
-		    extraBody = extraBody.replaceAll("\\$changeComponentJavascript", "var hasAccessToChangeComponent" + component.getSlotName() + " = " + hasAccessToChangeComponent + ";");
-		    extraBody = extraBody.replaceAll("\\$changeAccessJavascript", "var hasAccessToAccessRights" + component.getSlotName() + " = " + hasAccessToAccessRights + ";");
+		    extraBody = extraBody.replaceAll("\\$addComponentJavascript", "var hasAccessToAddComponent" + component.getId() + "_" + component.getSlotName().replaceAll("[^0-9,a-z,A-Z]", "_") + " = " + hasAccessToAddComponent + ";");
+		    extraBody = extraBody.replaceAll("\\$deleteComponentJavascript", "var hasAccessToDeleteComponent" + component.getId() + "_" + component.getSlotName().replaceAll("[^0-9,a-z,A-Z]", "_") + " = " + hasAccessToDeleteComponent + ";");
+		    extraBody = extraBody.replaceAll("\\$changeComponentJavascript", "var hasAccessToChangeComponent" + component.getId() + "_" + component.getSlotName().replaceAll("[^0-9,a-z,A-Z]", "_") + " = " + hasAccessToChangeComponent + ";");
+		    extraBody = extraBody.replaceAll("\\$changeAccessJavascript", "var hasAccessToAccessRights" + " = " + hasAccessToAccessRights + ";");
 		    
 		    extraBody = extraBody.replaceAll("\\$submitToPublishJavascript", "var hasAccessToSubmitToPublish = " + hasSubmitToPublishAccess + ";");
 		    extraBody = extraBody.replaceAll("\\$pageStructureJavascript", "var hasPageStructureAccess = " + hasPageStructureAccess + ";");
@@ -810,7 +810,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 
 				boolean hasAccessToAccessRights = AccessRightController.getController().getIsPrincipalAuthorized(templateController.getDatabase(), principal, "ComponentEditor.ChangeSlotAccess", "");
 				boolean hasAccessToDeleteComponent = AccessRightController.getController().getIsPrincipalAuthorized(templateController.getDatabase(), principal, "ComponentEditor.DeleteComponent", "" + component.getContentId() + "_" + id);
-				boolean hasAccessToChangeComponent = AccessRightController.getController().getIsPrincipalAuthorized(templateController.getDatabase(), principal, "ComponentEditor.ChangeComponent", "");
+				boolean hasAccessToChangeComponent = AccessRightController.getController().getIsPrincipalAuthorized(templateController.getDatabase(), principal, "ComponentEditor.ChangeComponent", "" + component.getContentId() + "_" + id);
 				if(slotBean.getDisableAccessControl())
 				{
 					hasAccessToDeleteComponent = true;
@@ -818,11 +818,9 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 				
 			    StringBuffer sb = new StringBuffer();
 			    sb.append("<script type=\"text/javascript\">");
-				//sb.append("<!--");
-				sb.append("hasAccessToAddComponent" + component.getId() + "_" + id + " = " + hasAccessToAddComponent + ";");
-				sb.append("hasAccessToChangeComponent" + id + " = " + hasAccessToChangeComponent + ";");
-				sb.append("hasAccessToAccessRights" + id + " = " + hasAccessToAccessRights + ";");
-			    //sb.append("-->");
+				sb.append("hasAccessToAddComponent" + component.getId() + "_" + id.replaceAll("[^0-9,a-z,A-Z]", "_") + " = " + hasAccessToAddComponent + ";");
+				sb.append("hasAccessToChangeComponent" + component.getId() + "_" + id.replaceAll("[^0-9,a-z,A-Z]", "_") + " = " + hasAccessToChangeComponent + ";");
+				sb.append("hasAccessToAccessRights = " + hasAccessToAccessRights + ";");
 				sb.append("</script>");
 
 				subComponentString += sb.toString();
@@ -1457,17 +1455,15 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 	    
 	    if(hasMaxComponents)
 	    	hasAccessToAddComponent = false;
-	    
+
 	    if(component.getIsInherited())
 		{
 		    StringBuffer sb = new StringBuffer();
 		    sb.append("<script type=\"text/javascript\">");
-			//sb.append("<!--");
-		    sb.append("hasAccessToAddComponent" + component.getId() + "_" + component.getSlotName() + " = " + hasAccessToAddComponent + ";");
-			sb.append("hasAccessToDeleteComponent" + component.getSlotName() + " = " + hasAccessToDeleteComponent + ";");
-			sb.append("hasAccessToChangeComponent" + component.getSlotName() + " = " + hasAccessToChangeComponent + ";");
-			sb.append("hasAccessToAccessRights" + component.getSlotName() + " = " + hasAccessToAccessRights + ";");
-			//sb.append("-->");
+		    sb.append("hasAccessToAddComponent" + component.getId() + "_" + component.getSlotName().replaceAll("[^0-9,a-z,A-Z]", "_") + " = " + hasAccessToAddComponent + ";");
+			sb.append("hasAccessToDeleteComponent" + component.getId() + "_" + component.getSlotName().replaceAll("[^0-9,a-z,A-Z]", "_") + " = " + hasAccessToDeleteComponent + ";");
+			sb.append("hasAccessToChangeComponent" + component.getId() + "_" + component.getSlotName().replaceAll("[^0-9,a-z,A-Z]", "_") + " = " + hasAccessToChangeComponent + ";");
+			sb.append("hasAccessToAccessRights = " + hasAccessToAccessRights + ";");
 			sb.append("</script>");
 			return sb.toString();
 		}
@@ -1559,12 +1555,10 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		
     	
 		sb.append("<script type=\"text/javascript\">");
-		//sb.append("<!--");
-		sb.append("hasAccessToAddComponent" + component.getId() + "_" + component.getSlotName() + " = " + hasAccessToAddComponent + ";\n");
-		sb.append("hasAccessToDeleteComponent" + component.getSlotName() + " = " + hasAccessToDeleteComponent + ";\n");
-		sb.append("hasAccessToChangeComponent" + component.getSlotName() + " = " + hasAccessToChangeComponent + ";\n");
-		sb.append("hasAccessToAccessRights" + component.getSlotName() + " = " + hasAccessToAccessRights + ";\n");
-		//sb.append("-->");
+		sb.append("hasAccessToAddComponent" + component.getId() + "_" + component.getSlotName().replaceAll("[^0-9,a-z,A-Z]", "_") + " = " + hasAccessToAddComponent + ";\n");
+		sb.append("hasAccessToDeleteComponent" + component.getId() + "_" + component.getSlotName().replaceAll("[^0-9,a-z,A-Z]", "_") + " = " + hasAccessToDeleteComponent + ";\n");
+		sb.append("hasAccessToChangeComponent" + component.getId() + "_" + component.getSlotName().replaceAll("[^0-9,a-z,A-Z]", "_") + " = " + hasAccessToChangeComponent + ";\n");
+		sb.append("hasAccessToAccessRights = " + hasAccessToAccessRights + ";\n");
 		sb.append("</script>");
 		
 		return sb.toString();

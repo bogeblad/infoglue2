@@ -525,7 +525,7 @@ function showComponentInTreeMenu(event, element, compId, anInsertUrl, anDeleteUr
 	
 	try
 	{
-		var access = eval("hasAccessToDeleteComponent" + slotName); 
+		var access = eval("hasAccessToDeleteComponent" + convertName(slotName)); 
 	    //alert("access:" + access);
 	    if(access) 
 	    {
@@ -538,7 +538,7 @@ function showComponentInTreeMenu(event, element, compId, anInsertUrl, anDeleteUr
 	    	document.getElementById("componentInTreeMenuTopSeparator").style.display = "none";
 	    }
 
-		var changeAccess = eval("hasAccessToChangeComponent" + slotName); 
+		var changeAccess = eval("hasAccessToChangeComponent" + convertName(slotName)); 
 	    //alert("changeAccess:" + changeAccess);
 	    if(changeAccess) 
 	    {
@@ -602,6 +602,12 @@ function showComponentInTreeMenu(event, element, compId, anInsertUrl, anDeleteUr
 	return false;
 }
 
+function convertName(val)
+{
+  	var regexp = new RegExp("[^0-9,a-z,A-Z]", "g");
+  	return val.replace(regexp, "_");
+}
+
 function showEmptySlotMenu(slotId, event, compId, anInsertUrl, slotContentIdVar) 
 {
 	hidepreviousmenues();
@@ -613,8 +619,7 @@ function showEmptySlotMenu(slotId, event, compId, anInsertUrl, slotContentIdVar)
 	
 	try
 	{
-		//var access = eval("hasAccessToAddComponent" + compId + slotName); 
-		var access = eval("hasAccessToAddComponent" + compId); 
+	    var access = eval("hasAccessToAddComponent" + convertName(compId)); 
 	    //alert("access:" + access);
 	    if(access) 
 	    {
@@ -627,7 +632,7 @@ function showEmptySlotMenu(slotId, event, compId, anInsertUrl, slotContentIdVar)
 	    	document.getElementById("emptySlotMenuTopSeparator").style.display = "none";
 	    }
 
-		var accessToAccessRights = eval("hasAccessToAccessRights" + slotName); 
+		var accessToAccessRights = eval("hasAccessToAccessRights"); 
 	    //alert("accessToAccessRights:" + accessToAccessRights);
 	    if(accessToAccessRights) 
 	    {
@@ -638,7 +643,7 @@ function showEmptySlotMenu(slotId, event, compId, anInsertUrl, slotContentIdVar)
 	    	document.getElementById("accessRightsMenuItem").style.display = "none";
 	    }
 
-		var hasAccessToChangeComponent = eval("hasAccessToChangeComponent" + slotName); 
+		var hasAccessToChangeComponent = eval("hasAccessToChangeComponent" + convertName(compId)); 
 	    //alert("hasAccessToChangeComponent:" + hasAccessToChangeComponent);
 	    if(hasAccessToChangeComponent) 
 	    {
@@ -682,7 +687,7 @@ function showEmptySlotMenu(slotId, event, compId, anInsertUrl, slotContentIdVar)
 	}
 	catch(e)
 	{
-		//alert("Error:" + e);
+		alert("Error:" + e);
 	}
 	 
 	slotId = compId;
