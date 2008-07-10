@@ -1467,33 +1467,10 @@ function showComponentStructureInDiv(targetDivId, parameterString, event)
 	$(targetDiv).load("AjaxComponentDeliveryService!getComponentStructureDiv.action?" + parameterString + "&targetDivId=" + targetDivId + "",{}, function(event){
 		componentStructureDiv = document.getElementById("componentStructure");
 		pageComponentsDiv 	  = document.getElementById("pageComponents");
-		
-		clientX = eventXPosition;
-		clientY = eventYPosition;
-		
-		var rightedge = document.body.clientWidth - clientX;
-		var bottomedge = getWindowHeight() - clientY;
-	
-		if (rightedge < componentStructureDiv.offsetWidth)
-			clientX = (clientX - componentStructureDiv.offsetWidth);
-		
-		if (bottomedge < componentStructureDiv.offsetHeight)
-			clientY = (clientY - componentStructureDiv.offsetHeight);
-		
-		var divHeight = $("#pageComponents").height();
-		clientY = clientY - (divHeight / 2);
-				
-		componentStructureDiv.style.left 	= clientX + "px";
-		componentStructureDiv.style.top 	= clientY + "px";
-		
+			
 		componentStructureDiv.style.visibility = "visible";
+		floatDiv("pageComponents", 200, 50).flt();
 		
-		var theHandle = document.getElementById("pageComponentsHandle");
-		var theRoot   = document.getElementById("pageComponents");
-		
-		$(theHandle).css("cursor", "move");
-		$(theRoot).draggable({handle: theHandle});
-	
 		//activeMenuId = "componentStructure";
 	});
 }
