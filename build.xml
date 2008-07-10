@@ -394,29 +394,42 @@
 	</target>
 
 	<!--
-    * Deploys the pluto classes to tomcat shared
-    -->
-    <target name="deploy-pluto" description="Moves pluto classes to shared/lib">
-            <echo message="Copying pluto to ${deploy.dir.shared}lib from ${lib}/shared"/>
-            <copy todir="${deploy.dir.shared}lib" overwrite="true">
-                    <fileset dir="${lib}/shared">
-	                    	<include name="activation.jar"/>
-	                    	<include name="mail.jar"/>
-                            <include name="pluto-1.0.1.jar"/>
-                            <include name="portlet-api-1.0.jar"/>
-	                    	<include name="saxon8.jar"/>
-	                        <include name="saxon8-ant.jar"/>
-	                    	<include name="saxon8-dom.jar"/>
-	                        <include name="saxon8-dom4j.jar"/>
-	                    	<include name="saxon8-jdom.jar"/>
-	                    	<include name="saxon8-sql.jar"/>
-	                    	<include name="saxon8-xom.jar"/>
-	                    	<include name="saxon8-xpath.jar"/>
-	                    	<include name="saxon8-xqj.jar"/>
-                    </fileset>
-            </copy>
-    </target>
-
+    	* Deploys the pluto classes to tomcat shared
+    	-->
+    	<target name="deploy-pluto" description="Moves pluto classes to shared/lib">
+    		<echo message="Copying pluto to ${deploy.dir.shared}lib from ${lib}/shared"/>
+		<delete verbose="true" defaultexcludes="true">
+			<fileset dir="${deploy.dir.shared}lib">
+				<include name="saxon8.jar"/>
+				<include name="saxon8-ant.jar"/>
+				<include name="saxon8-dom.jar"/>
+				<include name="saxon8-dom4j.jar"/>
+				<include name="saxon8-jdom.jar"/>
+				<include name="saxon8-sql.jar"/>
+				<include name="saxon8-xom.jar"/>
+				<include name="saxon8-xpath.jar"/>
+				<include name="saxon8-xqj.jar"/>
+	  		</fileset>
+	    	</delete>
+	        <copy todir="${deploy.dir.shared}lib" overwrite="true">
+	       		<fileset dir="${lib}/shared">
+			      	<include name="activation.jar"/>
+			      	<include name="mail.jar"/>
+			        <include name="pluto-1.0.1.jar"/>
+			        <include name="portlet-api-1.0.jar"/>
+				<include name="saxon9.jar"/>
+				<include name="saxon9-ant.jar"/>
+				<include name="saxon9-dom.jar"/>
+				<include name="saxon9-dom4j.jar"/>
+				<include name="saxon9-jdom.jar"/>
+				<include name="saxon9-sql.jar"/>
+				<include name="saxon9-xom.jar"/>
+				<include name="saxon9-xpath.jar"/>
+				<include name="saxon9-xqj.jar"/>
+				<include name="saxon9-s9api.jar"/>
+			</fileset>
+		</copy>
+	</target>																																																    
 	<target name="touch-filtered-files" depends="" description="Touch all files having filter values.">
 		<delete file="${deploy.dir.cms}/WEB-INF/classes/cms.properties"/>
 		<delete file="${deploy.dir.cms}/WEB-INF/classes/database.xml"/>
