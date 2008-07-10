@@ -598,7 +598,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			logger.warn("An error occurred trying to get the content with id " + contentId + ":" + e.getMessage(), e);
+			logger.warn("An error occurred trying to get the content with id " + contentId + ":" + e.getMessage());
 		}
 
 		return content;
@@ -4644,29 +4644,32 @@ public class BasicTemplateController implements TemplateController
 
 		ContentVO contentVO = getContent(contentId);
 
-		sb.insert(0, contentVO.getName());
-
-		while (contentVO.getParentContentId() != null)
+		if (contentVO != null)
 		{
-			contentVO = getContent(contentVO.getParentContentId());
-
-			if (includeRootContent || contentVO.getParentContentId() != null)
+			sb.insert(0, contentVO.getName());
+	
+			while (contentVO.getParentContentId() != null)
 			{
-				sb.insert(0, contentVO.getName() + "/");
+				contentVO = getContent(contentVO.getParentContentId());
+	
+				if (includeRootContent || contentVO.getParentContentId() != null)
+				{
+					sb.insert(0, contentVO.getName() + "/");
+				}
 			}
-		}
-
-		if (includeRepositoryName)
-		{
-			try
+	
+			if (includeRepositoryName)
 			{
-				RepositoryVO repositoryVO = RepositoryController.getController().getRepositoryVOWithId(contentVO.getRepositoryId(), getDatabase());
-				if(repositoryVO != null)
-					sb.insert(0, repositoryVO.getName() + " - /");
-			}
-			catch (Exception e) 
-			{
-				logger.error("The repository for content " + contentVO.getName() + ":" + contentVO.getId() + " did not exist. Must be an inconsistency.");
+				try
+				{
+					RepositoryVO repositoryVO = RepositoryController.getController().getRepositoryVOWithId(contentVO.getRepositoryId(), getDatabase());
+					if(repositoryVO != null)
+						sb.insert(0, repositoryVO.getName() + " - /");
+				}
+				catch (Exception e) 
+				{
+					logger.error("The repository for content " + contentVO.getName() + ":" + contentVO.getId() + " did not exist. Must be an inconsistency.");
+				}
 			}
 		}
 		

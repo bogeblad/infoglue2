@@ -33,6 +33,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.log4j.Logger;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.security.AuthenticationModule;
 import org.infoglue.cms.util.CmsPropertyHandler;
@@ -49,6 +50,8 @@ import webwork.action.ActionContext;
  
 public final class ExtranetLoginAction extends InfoGlueAbstractAction
 {
+	private final static Logger logger = Logger.getLogger(ExtranetLoginAction.class.getName());
+
 	private String userName     	= null;
 	private String password     	= null;
 	private String errorMessage 	= "";
@@ -272,13 +275,22 @@ public final class ExtranetLoginAction extends InfoGlueAbstractAction
 			
 		    ServletContext servletContext = ActionContext.getServletContext().getContext(cmsBaseUrl);
 		    //logger.info("servletContext:" + servletContext.getServletContextName() + ":" + servletContext.getServletNames());
-		    servletContext.setAttribute(encryptedName, userName);
+		    
+		    if (servletContext == null)
+		    {
+		    	logger.error("Could not autologin to CMS. Set cross context = true in Tomcat config.");
+		    }
+		    else
+		    {
+		    	servletContext.setAttribute(encryptedName, userName);
+		    }
+		   
 		    //logger.info(encryptedName + "=" + userName);
 		    //logger.info("After attribute:" + servletContext.getAttribute(encryptedName));
 	    }
 	    catch (Exception e) 
-	    {
-	    	e.printStackTrace();
+	    {	    	
+	    	logger.error("Error: " + e.getMessage(), e);
 		}
 	    
 	    int cmsCookieTimeout = 1800; //30 minutes default
