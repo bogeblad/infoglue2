@@ -23,6 +23,7 @@
 
 package org.infoglue.deliver.taglib.content;
 
+import java.util.Iterator;
 import java.util.List;
 
 import javax.servlet.jsp.JspException;
@@ -50,6 +51,8 @@ public class ContentDetailPageTag extends ComponentLogicTag
     private boolean useStructureInheritance = true;
     private boolean escapeHTML = false;
     private boolean hideUnauthorizedPages = false;
+    private boolean disableValidateBindingOnPage = false;
+    private boolean disableFallBack = false;
     
 	public int doEndTag() throws JspException
     {
@@ -57,16 +60,64 @@ public class ContentDetailPageTag extends ComponentLogicTag
         	
         if(contentVO != null)
         {
-	        if(contentVO.getExtraProperties().get("detailSiteNodeId") != null)
+        	if(contentVO.getExtraProperties().get("detailSiteNodeId") != null)
 			{
 				Integer detailSiteNodeId = (Integer)contentVO.getExtraProperties().get("detailSiteNodeId");
-				WebPage webPage = getController().getPage(detailSiteNodeId, getController().getLanguageId(), new Integer(-1), escapeHTML, hideUnauthorizedPages);
-				setResultAttribute(webPage);
+				
+				boolean isValid = false;
+				if(!disableValidateBindingOnPage)
+            	{
+					List referencingSiteNodeVOList = getController().getReferencingPages(contentVO.getId(), 50, true);
+            		Iterator referencingSiteNodeVOListIterator = referencingSiteNodeVOList.iterator();
+            		while(referencingSiteNodeVOListIterator.hasNext())
+            		{
+            			SiteNodeVO detailSiteNodeVO = (SiteNodeVO)referencingSiteNodeVOListIterator.next();
+            			if(detailSiteNodeVO.getId().equals(detailSiteNodeId))
+            			{
+            				isValid = true;
+            				break;
+            			}
+            		}
+            	}
+				else
+					isValid = true; 
+				
+				if(isValid)
+				{
+	            	WebPage webPage = getController().getPage(detailSiteNodeId, getController().getLanguageId(), new Integer(-1), escapeHTML, hideUnauthorizedPages);
+	            	setResultAttribute(webPage);
+				}
+				else
+				{
+					List referencingSiteNodeVOList = getController().getReferencingPages(contentVO.getId(), 50, true);
+					if(referencingSiteNodeVOList.size() == 1)
+					{
+						SiteNodeVO detailSiteNodeVO = (SiteNodeVO)referencingSiteNodeVOList.get(0);
+						WebPage webPage = getController().getPage(detailSiteNodeVO.getId(), getController().getLanguageId(), new Integer(-1), escapeHTML, hideUnauthorizedPages);
+						setResultAttribute(webPage);				
+					}
+					else if(!disableFallBack && referencingSiteNodeVOList.size() > 1)
+					{
+						SiteNodeVO detailSiteNodeVO = (SiteNodeVO)referencingSiteNodeVOList.get(0);
+						WebPage webPage = getController().getPage(detailSiteNodeVO.getId(), getController().getLanguageId(), new Integer(-1), escapeHTML, hideUnauthorizedPages);
+						setResultAttribute(webPage);				
+					}
+					else
+					{
+						setResultAttribute(null);
+					}
+				}
 			}
 			else
 			{
 				List referencingSiteNodeVOList = getController().getReferencingPages(contentVO.getId(), 50, true);
-				if(referencingSiteNodeVOList.size() > 0)
+				if(referencingSiteNodeVOList.size() == 1)
+				{
+					SiteNodeVO detailSiteNodeVO = (SiteNodeVO)referencingSiteNodeVOList.get(0);
+					WebPage webPage = getController().getPage(detailSiteNodeVO.getId(), getController().getLanguageId(), new Integer(-1), escapeHTML, hideUnauthorizedPages);
+					setResultAttribute(webPage);				
+				}
+				else if(!disableFallBack && referencingSiteNodeVOList.size() > 1)
 				{
 					SiteNodeVO detailSiteNodeVO = (SiteNodeVO)referencingSiteNodeVOList.get(0);
 					WebPage webPage = getController().getPage(detailSiteNodeVO.getId(), getController().getLanguageId(), new Integer(-1), escapeHTML, hideUnauthorizedPages);
@@ -150,6 +201,16 @@ public class ContentDetailPageTag extends ComponentLogicTag
 	public void setHideUnauthorizedPages(boolean hideUnauthorizedPages) 
 	{
 		this.hideUnauthorizedPages = hideUnauthorizedPages;
+	}
+
+	public void setDisableValidateBindingOnPage(boolean disableValidateBindingOnPage) 
+	{
+		this.disableValidateBindingOnPage = disableValidateBindingOnPage;
+	}
+
+	public void setDisableFallBack(boolean disableFallBack) 
+	{
+		this.disableFallBack = disableFallBack;
 	}
 
 }

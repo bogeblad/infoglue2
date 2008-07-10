@@ -1606,14 +1606,6 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		sb.append("		</div>");
 		sb.append("	</div>");
 		
-		sb.append("	<script type=\"text/javascript\">");
-		sb.append("		var theHandle = document.getElementById(\"pageComponentsHandle\");");
-		sb.append("		var theRoot   = document.getElementById(\"pageComponents\");");
-
-		sb.append("		$(theHandle).css('cursor', 'move');\n");
-		sb.append("		$(theRoot).draggable({handle: theHandle, cursor: 'move', distance: 10});\n");
-		sb.append("	</script>");
-
 		return sb.toString();
 	}
 
