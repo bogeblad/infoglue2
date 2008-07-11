@@ -82,6 +82,7 @@ public class EditOnSiteBasicTemplateController extends BasicTemplateController
 			}
 			
 			String className = "";
+			String enableWYSIWYG = "false";
 			String WYSIWYGToolbar = "Default";
 			String WYSIWYGExtraConfig = "";
 			if(contentTypeAttribute != null)
@@ -89,6 +90,8 @@ public class EditOnSiteBasicTemplateController extends BasicTemplateController
 				className = contentTypeAttribute.getInputType();
 				try
 				{
+					if(contentTypeAttribute.getContentTypeAttribute("enableWYSIWYG") != null && contentTypeAttribute.getContentTypeAttribute("enableWYSIWYG").getContentTypeAttributeParameterValue() != null)
+						enableWYSIWYG = contentTypeAttribute.getContentTypeAttribute("enableWYSIWYG").getContentTypeAttributeParameterValue().getLocalizedValue("label", getLocale());
 					if(contentTypeAttribute.getContentTypeAttribute("WYSIWYGToolbar") != null && contentTypeAttribute.getContentTypeAttribute("WYSIWYGToolbar").getContentTypeAttributeParameterValue() != null)
 						WYSIWYGToolbar = contentTypeAttribute.getContentTypeAttribute("WYSIWYGToolbar").getContentTypeAttributeParameterValue().getLocalizedValue("label", getLocale());
 					if(contentTypeAttribute.getContentTypeAttribute("WYSIWYGExtraConfig") != null && contentTypeAttribute.getContentTypeAttribute("WYSIWYGExtraConfig").getContentTypeAttributeParameterValue() != null)
@@ -117,6 +120,7 @@ public class EditOnSiteBasicTemplateController extends BasicTemplateController
             decoratedAttributeValue.append("<script type=\"text/javascript\"> " +
             		"editOnSightAttributeNames[\"attribute" + contentId + attributeName + "\"] = \"" + attributeName + "\";" +
             		"editOnSightAttributeNames[\"attribute" + contentId + attributeName + "_type\"] = \"" + className + "\";" +
+            		"editOnSightAttributeNames[\"attribute" + contentId + attributeName + "_enableWYSIWYG\"] = \"" + enableWYSIWYG + "\";" +
             		"editOnSightAttributeNames[\"attribute" + contentId + attributeName + "_WYSIWYGToolbar\"] = \"" + WYSIWYGToolbar + "\";" +
             		"editOnSightAttributeNames[\"attribute" + contentId + attributeName + "_WYSIWYGExtraConfig\"] = \"" + WYSIWYGExtraConfig + "\";" +
             		"var element = $(\"#attribute" + contentId + attributeName + "\");" +
