@@ -100,6 +100,8 @@ public class MailTag extends TemplateControllerTag
 			    }
 			    
 			    cc = sb.toString();
+			    if(cc.equals(""))
+			    	cc = null;
 			}
 			
 			if(bcc == null && recipients != null)
@@ -126,6 +128,8 @@ public class MailTag extends TemplateControllerTag
 			    }
 			    
 			    bcc = sb.toString();
+			    if(bcc.equals(""))
+			    	bcc = null;
 			}
 			
 			if(type == null)
