@@ -6756,7 +6756,7 @@ public class BasicTemplateController implements TemplateController
 	    else
 	    {
 	    	String editOnSiteUrl = CmsPropertyHandler.getEditOnSiteUrl();
-			String decoratedAttributeValue = "<a href=\"#\" onClick=\"window.open('" + editOnSiteUrl + "?contentId=" + contentId + "&languageId=" + languageId + "&attributeName=" + attributeName + "&forceWorkingChange=true#" + attributeName + "Anchor', 'Edit', 'width=500,height=600,left=' + (document.body.clientWidth / 4) + ',top=50,toolbar=no,status=no,scrollbars=yes,location=no,menubar=no,directories=no,resizable=no');\">" + html + "</a>";
+			String decoratedAttributeValue = "<a href=\"#\" onClick=\"window.open('" + editOnSiteUrl + "?contentId=" + contentId + "&languageId=" + languageId + "&attributeName=" + attributeName + "&forceWorkingChange=true#" + attributeName + "Anchor', 'Edit', 'width=750,height=700,left=' + (document.body.clientWidth / 4) + ',top=50,toolbar=no,status=no,scrollbars=yes,location=no,menubar=no,directories=no,resizable=no');\">" + html + "</a>";
 			return decoratedAttributeValue;
 	    }
 	} 
@@ -6948,7 +6948,7 @@ public class BasicTemplateController implements TemplateController
 			        String cancelKey = this.getOriginalFullURL();
 			        String cancelAddress = (String)CacheController.getCachedObjectFromAdvancedCache("encodedStringsCache", cancelKey);
 			        if(cancelAddress == null)
-			        { 
+			        {
 			        	cancelAddress = URLEncoder.encode(cancelKey, "UTF-8");
 			        	CacheController.cacheObjectInAdvancedCache("encodedStringsCache", cancelKey, cancelAddress);
 			        }
