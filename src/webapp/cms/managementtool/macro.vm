@@ -38,7 +38,7 @@
 	<link rel="stylesheet" type="text/css" href="script/yui/build/button/assets/skins/sam/button.css" />
 	<script type="text/javascript" src="script/yui/build/container/container_core-min.js"></script>
 	<script type="text/javascript" src="script/yui/build/menu/menu-min.js"></script>
-
+	
 	<script type="text/javascript" src="script/jquery/jquery-1.2.6.min.js"></script>
 	<script type="text/javascript" src="script/jqueryplugins/ui/jquery-ui-igcommon15.min.js"></script>
 	
@@ -199,7 +199,7 @@
 	    
 	</style>
 	<script type="text/javascript">
-
+		
 		$(document).ready(function(){
 			/*
 			$(":input:first").focus();
@@ -312,7 +312,7 @@
 	        });
 	        
 	    }();
-
+		
 		function callUrlWithAlternative(url, alternateUrl)
 		{
 			#set($dollarSign = "$")

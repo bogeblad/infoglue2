@@ -46,13 +46,13 @@ function floatDiv(id, sx, sy)
  * Called when rezising popup
  ****************************/
  
-toolbarLockPositionCookieName = "toolbarLockPosition";
-pageStructureDivVisibleCookieName = "pageStructureDivVisible";
-pageStructureDivWidthCookieName = "pageStructureDivWidth";
-pageStructureDivHeightCookieName = "pageStructureDivHeight";
-pageStructureDivHeightBodyCookieName = "pageStructureDivHeightBody";
-pageComponentsTopPositionCookieName = "pageStructureTopPosition";
-pageComponentsLeftPositionCookieName = "pageStructureLeftPosition";
+var toolbarLockPositionCookieName = "toolbarLockPosition";
+var pageStructureDivVisibleCookieName = "pageStructureDivVisible";
+var pageStructureDivWidthCookieName = "pageStructureDivWidth";
+var pageStructureDivHeightCookieName = "pageStructureDivHeight";
+var pageStructureDivHeightBodyCookieName = "pageStructureDivHeightBody";
+var pageComponentsTopPositionCookieName = "pageStructureTopPosition";
+var pageComponentsLeftPositionCookieName = "pageStructureLeftPosition";
 
 var pageStructureDivWidth = "300px";
 var pageStructureDivHeight = "380px";
@@ -65,6 +65,7 @@ var pageStructureDivHeightBody = "360px";
 function setCookie(name, value)
 {
 	var length = document.cookie.split(';').length;
+	var index;
 	if(length < 18)
     {
 		if(document.cookie != document.cookie)
@@ -84,6 +85,9 @@ function setCookie(name, value)
 function getCookieValue(name)
 { 
 	var value = "";
+	var index;
+	var namestart = "";
+	var nameend = "";
  	if(document.cookie)
 	{
 		index = document.cookie.indexOf(name);
@@ -104,25 +108,24 @@ function getCookieValue(name)
 function expandWindow()
 {
 	width = document.getElementById('pageComponents').style.width;
-	//alert("width:" + width);
-	if(width.indexOf("300") > -1)
-	{
-		width = "350";
-		height = "500";	
-	}
-	else if(width.indexOf("350") > -1)
-	{
-		width = "400";
-		height = "550";	
-	}
-	else if(width.indexOf("400") > -1)
+	if(width.indexOf("400") > -1)
 	{
 		width = "450";
+		height = "500";	
+	}
+	else if(width.indexOf("450") > -1)
+	{
+		width = "500";
+		height = "550";	
+	}
+	else if(width.indexOf("500") > -1)
+	{
+		width = "550";
 		height = "600";	
 	}
 	else
 	{
-		width = "300";
+		width = "400";
 		height = "450";	
 	}
 	
@@ -155,7 +158,7 @@ function dragStarted(object)
  * Hook method to get informed when a drag ends
  ****************************/
 
-toolbarTopPositionCookieName = "toolbarTopPosition";
+var toolbarTopPositionCookieName = "toolbarTopPosition";
 var defaultToolbarTopPosition = "0px";
  
 function dragEnded(object, left, top)
@@ -164,15 +167,6 @@ function dragEnded(object, left, top)
 	//alert("dragEnded:" + object.id);
 	if(object.id == "paletteHandle")
 	{
-		/*
-		for (var i in elementArray) 
-		{
-			alert("i:" + i);
-			var htmlEditor = elementArray[i];
-			//alert("htmlEditor:" + htmlEditor);
-		}
-		*/
-
 		//el.cy = el.sy = 50;
 		topPosition = top;
 		setCookie(toolbarLockPositionCookieName, topPosition);
@@ -186,6 +180,13 @@ function dragEnded(object, left, top)
 	}
 }
 
+var defaultToolbarTopPosition;
+var toolbarLockPosition;
+var pageComponentsVisibility;	
+var pageStructureDivWidth;
+var pageStructureDivHeight;
+var pageStructureDivHeightBody;
+
 function setToolbarInitialPosition()
 {	
 	//alert("setToolbarInitialPosition ran");
@@ -196,7 +197,7 @@ function setToolbarInitialPosition()
 	pageStructureDivHeight = getCookieValue(pageStructureDivHeightCookieName);
 	pageStructureDivHeightBody = getCookieValue(pageStructureDivHeightBodyCookieName);
 
-	propertiesDiv = document.getElementById("pageComponents");
+	var propertiesDiv = document.getElementById("pageComponents");
 		
 	if(propertiesDiv)
 	{
@@ -297,8 +298,6 @@ var editUrl = "";
 if (navigator.appName == "Netscape") {
   document.captureEvents(Event.CLICK);
 }
-
-//document.body.onclick = hidemenuie5();
 
 // returns the scroll left and top for the browser viewport.
 function getScrollX() {
@@ -687,7 +686,7 @@ function showEmptySlotMenu(slotId, event, compId, anInsertUrl, slotContentIdVar)
 	}
 	catch(e)
 	{
-		alert("Error:" + e);
+		//alert("Error:" + e);
 	}
 	 
 	slotId = compId;
@@ -967,20 +966,6 @@ function edit()
 	else
 	{
 		openInlineDiv(editUrl, 700, 750, true);
-		/*
-		//alert("editUrl in edit:" + editUrl);
-		details = "width=750,height=700,left=" + (document.body.clientWidth / 4) + ",top=50,toolbar=no,status=no,scrollbars=yes,location=no,menubar=no,directories=no,resizable=no";
-		if(oldWindow)
-			oldWindow.close();
-		newWin=window.open(editUrl, "EditOnSight", details);
-		if(newWin)
-		{
-			newWin.focus();
-			oldWindow = newWin;
-		}
-		else
-			alert("Could not open new window - if you have a popup blocker this is most likely the cause.");
-		*/
 	}
 	
 	return false;
@@ -997,9 +982,10 @@ function editInline(repositoryId, selectedContentId, selectedLanguageId, directE
 {	
 	hideIGMenu();
 		
-	if(isInInlineEditingMode["" + selectedContentId] == true)
+	//alert("isInInlineEditingMode: " + selectedContentId + ":" + isInInlineEditingMode["" + selectedContentId]);
+	if(isInInlineEditingMode["" + selectedContentId] == "true")
 	{
-		alert("Content " + selectedContentId + " is allready in inline editing mode");
+		//alert("Content " + selectedContentId + " is allready in inline editing mode");
 		return false;
 	}
 		
@@ -1010,122 +996,129 @@ function editInline(repositoryId, selectedContentId, selectedLanguageId, directE
 	else
 	{
 		var $lastThis;
+		var processedIds = new Array();
 		$(".attribute" + selectedContentId).each(function (i) {
-	    	var $this = $(this);
-	    	$lastThis = $this;
-	    	//alert("this:" + this.id);
-	    	var type = jQuery.trim($this.attr("class"));
-			//alert("type:" + type);
-			
-			if(type.indexOf("textarea") > -1)
-			{
-				var attributeName = editOnSightAttributeNames[$(this).get(0).id];
-				var enableWYSIWYG = editOnSightAttributeNames[$(this).get(0).id + "_enableWYSIWYG"];
-				var WYSIWYGToolbar = editOnSightAttributeNames[$(this).get(0).id + "_WYSIWYGToolbar"];
-				var WYSIWYGExtraConfig = editOnSightAttributeNames[$(this).get(0).id + "_WYSIWYGExtraConfig"];
-				//alert("attributeName:" + attributeName);
-
-				var parameterString = "repositoryId=" + repositoryId + "&contentId=" + selectedContentId + "&languageId=" + selectedLanguageId;
+	    	if(processedIds["" + this.id] != "true")
+	    	{
+		    	var $this = $(this);
+		    	$lastThis = $this;
+		    	//alert("this:" + this.id);
+		    	var type = jQuery.trim($this.attr("class"));
+				//alert("type:" + type);
 				
-				var element = $(this).get(0);
+				if(type.indexOf("textarea") > -1)
+				{
+					var attributeName = editOnSightAttributeNames[$(this).get(0).id];
+					var enableWYSIWYG = editOnSightAttributeNames[$(this).get(0).id + "_enableWYSIWYG"];
+					var WYSIWYGToolbar = editOnSightAttributeNames[$(this).get(0).id + "_WYSIWYGToolbar"];
+					var WYSIWYGExtraConfig = editOnSightAttributeNames[$(this).get(0).id + "_WYSIWYGExtraConfig"];
+					//alert("attributeName:" + attributeName);
 	
-				var totalWidth = $(this).parent().width();
-				//alert("width for " + $(this).get(0).id + " - " + totalWidth);
-				//alert("width for " + $(this).width());
-				//alert("width for " + $(this).parent().get(0).id + " - " + totalWidth);
-				//alert("width for " + $(this).parent().width());
-				//alert("width for " + $(this).width());
-				//alert("totalWidth " + totalWidth);
-				
-				var totalHeight = 100;
-				$("#attribute" + selectedContentId + attributeName + " > *").each(function(i){
-					totalHeight = totalHeight + getElementHeight( $(this).get(0) );
-				});
-				totalHeight = totalHeight * 1.3;
-				if(totalHeight < 300)
-					totalHeight = 300;
-				//alert("totalHeight: " + totalHeight);
-				
-				var span = $(this).get(0);
+					var parameterString = "repositoryId=" + repositoryId + "&contentId=" + selectedContentId + "&languageId=" + selectedLanguageId;
 					
-				var data = "contentId=" + selectedContentId + "&languageId=" + selectedLanguageId + "&attributeName=" + attributeName + "&deliverContext=" + currentContext;
-	
-				var plainAttribute = span.innerHTML;
-				$.ajax({
-				   	type: "GET",
-				   	url: "" + componentEditorUrl + "UpdateContentVersionAttribute!getAttributeValue.action",
-				   	data: data,
-				   	success: function(msg){
-				   		plainAttribute = msg;
-					 
-					 	if(enableWYSIWYG == "true")
-					 	{
-						 	var oFCKeditor = new FCKeditor($this.get(0).id);
-						 	oFCKeditor.BasePath = "" + componentEditorUrl + "applications/FCKEditor/" ;
-						 	oFCKeditor.Config["CustomConfigurationsPath"] = "" + componentEditorUrl + "WYSIWYGProperties.action?" + parameterString;
-						 	oFCKeditor.ToolbarSet = WYSIWYGToolbar;
-						 	if(WYSIWYGExtraConfig && WYSIWYGExtraConfig != '')
-						 		eval(WYSIWYGExtraConfig);
+					var element = $(this).get(0);
+		
+					var totalWidth = $(this).parent().width();
+					//alert("width for " + $(this).get(0).id + " - " + totalWidth);
+					//alert("width for " + $(this).width());
+					//alert("width for " + $(this).parent().get(0).id + " - " + totalWidth);
+					//alert("width for " + $(this).parent().width());
+					//alert("width for " + $(this).width());
+					//alert("totalWidth " + totalWidth);
+					
+					var totalHeight = 100;
+					$("#attribute" + selectedContentId + attributeName + " > *").each(function(i){
+						totalHeight = totalHeight + getElementHeight( $(this).get(0) );
+					});
+					totalHeight = totalHeight * 1.3;
+					if(totalHeight < 300)
+						totalHeight = 300;
+					//alert("totalHeight: " + totalHeight);
+					
+					var span = $(this).get(0);
+						
+					var data = "contentId=" + selectedContentId + "&languageId=" + selectedLanguageId + "&attributeName=" + attributeName + "&deliverContext=" + currentContext;
+		
+					var plainAttribute = span.innerHTML;
+					$.ajax({
+					   	type: "GET",
+					   	url: "" + componentEditorUrl + "UpdateContentVersionAttribute!getAttributeValue.action",
+					   	data: data,
+					   	success: function(msg){
+					   		plainAttribute = msg;
 						 
-						 	oFCKeditor.Height = totalHeight;
-						 	if(totalWidth > 100)
-								oFCKeditor.Width = totalWidth;
-						 	oFCKeditor.Value = plainAttribute;
-						 	$this.html(oFCKeditor.CreateHtml());
-					 	}
-					 	else
-					 	{
-							var fontFamily 	= $this.parent().css("font-family");
-							var fontSize 	= $this.parent().css("font-size");
-							var fontWeight 	= $this.parent().css("font-weight");
-							var color 		= $this.parent().css("color");
-							var textareaHeight = $this.parent().height();
-							if(textareaHeight < 50)
-								textareaHeight = 50;
-									
-					 		$this.html("<textarea id='input" + $this.get(0).id + "' ondblclick='if (event && event.stopPropagation) {event.stopPropagation();}else if (window.event) {window.event.cancelBubble = true;}return false;'>" + plainAttribute + "</textarea>");
-					 		$("#input" + $this.get(0).id + "").css("font-family", fontFamily);
-							$("#input" + $this.get(0).id + "").css("font-size", fontSize);
-							$("#input" + $this.get(0).id + "").css("font-weight", fontWeight);
-							$("#input" + $this.get(0).id + "").css("color", color);
-							$("#input" + $this.get(0).id + "").css("border", "1px solid #ccc");
-							$("#input" + $this.get(0).id + "").css("width", totalWidth);
-							$("#input" + $this.get(0).id + "").css("height", textareaHeight);
-					 	}
-				   },
-				   error: function (XMLHttpRequest, textStatus, errorThrown) {
-					  alert("You are not allowed to edit this text!");
-				   }
-				});
+						 	if(enableWYSIWYG == "true")
+						 	{
+							 	var oFCKeditor = new FCKeditor($this.get(0).id);
+							 	oFCKeditor.BasePath = "" + componentEditorUrl + "applications/FCKEditor/" ;
+							 	oFCKeditor.Config["CustomConfigurationsPath"] = "" + componentEditorUrl + "WYSIWYGProperties.action?" + parameterString;
+							 	oFCKeditor.ToolbarSet = WYSIWYGToolbar;
+							 	if(WYSIWYGExtraConfig && WYSIWYGExtraConfig != '')
+							 		eval(WYSIWYGExtraConfig);
+							 
+							 	oFCKeditor.Height = totalHeight;
+							 	if(totalWidth > 100)
+									oFCKeditor.Width = totalWidth;
+							 	oFCKeditor.Value = plainAttribute;
+							 	$this.html(oFCKeditor.CreateHtml());
+						 	}
+						 	else
+						 	{
+								var fontFamily 	= $this.parent().css("font-family");
+								var fontSize 	= $this.parent().css("font-size");
+								var fontWeight 	= $this.parent().css("font-weight");
+								var color 		= $this.parent().css("color");
+								var textareaHeight = $this.parent().height();
+								if(textareaHeight < 50)
+									textareaHeight = 50;
+										
+						 		$this.html("<textarea id='input" + $this.get(0).id + "' ondblclick='if (event && event.stopPropagation) {event.stopPropagation();}else if (window.event) {window.event.cancelBubble = true;}return false;'>" + plainAttribute + "</textarea>");
+						 		$("#input" + $this.get(0).id + "").css("font-family", fontFamily);
+								$("#input" + $this.get(0).id + "").css("font-size", fontSize);
+								$("#input" + $this.get(0).id + "").css("font-weight", fontWeight);
+								$("#input" + $this.get(0).id + "").css("color", color);
+								$("#input" + $this.get(0).id + "").css("border", "1px solid #ccc");
+								$("#input" + $this.get(0).id + "").css("width", totalWidth);
+								$("#input" + $this.get(0).id + "").css("height", textareaHeight);
+						 	}
+					   },
+					   error: function (XMLHttpRequest, textStatus, errorThrown) {
+						  alert("You are not allowed to edit this text!");
+					   }
+					});
+				}
+				else if(type.indexOf("textfield") > -1)
+				{
+					var attributeName = editOnSightAttributeNames[$(this).get(0).id];
+					//alert("attributeName:" + attributeName);
+					
+					var elementObject = $this;
+					var text = elementObject.html();
+					//alert("text:" + text);
+					var fontFamily = elementObject.parent().css("font-family");
+					var fontSize = elementObject.parent().css("font-size");
+					var color = elementObject.parent().css("color");
+					//alert("fontSize:" + fontSize);
+					
+					elementObject.html("<span id='spanInput" + $this.get(0).id + "'><input class='edit' style='width: 80%' ondblclick='if (event && event.stopPropagation) {event.stopPropagation();}else if (window.event) {window.event.cancelBubble = true;}return false;' id='input" + $this.get(0).id + "' type='text' value='" + text + "' /> </span>");
+					$(".edit").css("font-family", fontFamily);
+					$(".edit").css("font-size", fontSize);
+					$(".edit").css("color", color);
+					$(".edit").css("border", "1px solid #ccc");
+				}
+				else
+				{
+					alert("Nope: " + type);
+				}
+	
+		    	processedIds["" + this.id] = "true";
 			}
-			else if(type.indexOf("textfield") > -1)
-			{
-				var attributeName = editOnSightAttributeNames[$(this).get(0).id];
-				//alert("attributeName:" + attributeName);
-				
-				var elementObject = $this;
-				var text = elementObject.html();
-				//alert("text:" + text);
-				var fontFamily = elementObject.parent().css("font-family");
-				var fontSize = elementObject.parent().css("font-size");
-				var color = elementObject.parent().css("color");
-				//alert("fontSize:" + fontSize);
-				
-				elementObject.html("<span id='spanInput" + $this.get(0).id + "'><input class='edit' style='width: 80%' ondblclick='if (event && event.stopPropagation) {event.stopPropagation();}else if (window.event) {window.event.cancelBubble = true;}return false;' id='input" + $this.get(0).id + "' type='text' value='" + text + "' /> </span>");
-				$(".edit").css("font-family", fontFamily);
-				$(".edit").css("font-size", fontSize);
-				$(".edit").css("color", color);
-				$(".edit").css("border", "1px solid #ccc");
-			}
-			else
-			{
-				alert("Nope: " + type);
-			}
-			
-			isInInlineEditingMode["" + selectedContentId] = "true"
+			//else
+			//	alert("Attribute:" + this.id + " was allready processed");		
 	    });
 				
 		$lastThis.after("<div id=\"saveButtons" + selectedContentId + "\"><a class='igButton' onclick='saveAttributes(" + selectedContentId + ", " + selectedLanguageId + ");'' title='Save'><span class='igButtonOuterSpan'><span class='linkSave'>Save</span></span></a><a class='igButton' onclick='cancelSaveAttributes(" + selectedContentId + ", " + selectedLanguageId + ");' title='Cancel edit'><span class='igButtonOuterSpan'><span class='linkCancel'>Cancel</span></span></a></div><div style='clear:both;'></div>");
+		isInInlineEditingMode["" + selectedContentId] = "true"
 	}
 }
 
@@ -1218,14 +1211,14 @@ function saveAttribute(selectedContentId, selectedLanguageId, selectedAttributeN
 		var data = "contentId=" + selectedContentId + "&languageId=" + selectedLanguageId + "&attributeName=" + selectedAttributeName + "&" + selectedAttributeName + "=" + value;
 	
 		$.ajax({
-		   type: "POST",
-		   url: "" + componentEditorUrl + "UpdateContentVersionAttribute!saveAndReturnValue.action",
-		   data: data,
-		   success: function(msg){
-		     //alert( "Data Saved: " + msg );
-		     $("#spanInput" + key).replaceWith(msg);
-		   }
-		 });
+			type: "POST",
+		   	url: "" + componentEditorUrl + "UpdateContentVersionAttribute!saveAndReturnValue.action",
+		   	data: data,
+		   	success: function(msg){
+		   		//alert( "Data Saved: " + msg );
+		     	$("#spanInput" + key).replaceWith(msg);
+		   	}
+		});
 	}
 }
 
@@ -1528,7 +1521,8 @@ function viewSource()
       function grabIt(e) {
 
         // -- event and target element references are browser-specific.  UGH
-        var e      = e? e: window.event;
+        if (!e) 
+        	e = window.event;
         var field  = IE? e.srcElement: e.target;   
         var target = getRect(field);	// target element position offsets
 		
@@ -1594,7 +1588,8 @@ function viewSource()
     //-----------------------------------------------------------------
     function dragIt(e) 
     {
-		var e = e? e: window.event;
+		if (!e) 
+        	e = window.event;
 	    
         // -- Move drag element by the same amount the cursor has moved.
         with (drag) 
@@ -1932,11 +1927,11 @@ function viewSource()
 	/**************************************************************************
 	Variables to set.
 	***************************************************************************/
-	sMenuheight = 20  //The height of the menu
-	sArrowwidth = 5  //Width of the arrows
-	sScrollspeed = 20 //Scroll speed: (in milliseconds, change this one and the next variable to change the speed)
-	sScrollPx = 8     //Pixels to scroll per timeout.
-	sScrollExtra = 15 //Extra speed to scroll onmousedown (pixels)
+	var sMenuheight = 20  //The height of the menu
+	var sArrowwidth = 5  //Width of the arrows
+	var sScrollspeed = 20 //Scroll speed: (in milliseconds, change this one and the next variable to change the speed)
+	var sScrollPx = 8     //Pixels to scroll per timeout.
+	var sScrollExtra = 15 //Extra speed to scroll onmousedown (pixels)
 	
 	var scrollHash = new Array();
 	
@@ -2220,69 +2215,69 @@ function viewSource()
 		}
 	}
 	
-//TEST
-
-var previousIGMenuId;
-
-function showIGMenu(id, event)
-{
-	//alert("event:" + event);
-	if(!event)
-		event = window.event;
-		
-	hideIGMenu();
+	//TEST
 	
-	var currentMenuDiv = document.getElementById(id);	    
-    document.body.onclick = hideIGMenu;
+	var previousIGMenuId;
 	
-	clientX = getEventPositionX(event);
-	clientY = getEventPositionY(event);
-	
-	//alert("clientX:" + clientX);
-	//alert("clientY:" + clientY);
-	
-	var rightedge = document.body.clientWidth - clientX;
-	var bottomedge = getWindowHeight() - clientY;
-
-	//alert("rightedge:" + rightedge);
-	//alert("bottomedge:" + bottomedge);
-
-	currentMenuDiv.style.display = 'block';
-	currentMenuDiv.style.visibility = 'hidden';
-
-	//alert("currentMenuDiv.offsetWidth:" + currentMenuDiv.offsetWidth);
-	//alert("currentMenuDiv.offsetHeight:" + currentMenuDiv.offsetHeight);
-		
-	if (rightedge < currentMenuDiv.offsetWidth)
-		clientX = (clientX - currentMenuDiv.offsetWidth);
-	
-	if (bottomedge < currentMenuDiv.offsetHeight && (clientY - currentMenuDiv.offsetHeight > 0))
-		clientY = (clientY - currentMenuDiv.offsetHeight);
-		
-	currentMenuDiv.style.left 	= clientX + "px";
-	currentMenuDiv.style.top 	= clientY + "px";
-
-	currentMenuDiv.style.visibility = 'visible';
-	
-	previousIGMenuId = id;
-	
-	return false;
-}
-
-function hideIGMenu()
-{
-	if(previousIGMenuId && previousIGMenuId != '')
+	function showIGMenu(id, event)
 	{
-		var element = document.getElementById(previousIGMenuId);
-		if(element)
-			element.style.display = 'none';
-	}   
-}
-
-var previousEditOnSightMenuDivId = ''; 
-function closeDialog()
-{
-	tb_remove();
-	if(previousEditOnSightMenuDivId != '')
-		openCloseDiv(previousEditOnSightMenuDivId);
-}
+		//alert("event:" + event);
+		if(!event)
+			event = window.event;
+			
+		hideIGMenu();
+		
+		var currentMenuDiv = document.getElementById(id);	    
+	    document.body.onclick = hideIGMenu;
+		
+		clientX = getEventPositionX(event);
+		clientY = getEventPositionY(event);
+		
+		//alert("clientX:" + clientX);
+		//alert("clientY:" + clientY);
+		
+		var rightedge = document.body.clientWidth - clientX;
+		var bottomedge = getWindowHeight() - clientY;
+	
+		//alert("rightedge:" + rightedge);
+		//alert("bottomedge:" + bottomedge);
+	
+		currentMenuDiv.style.display = 'block';
+		currentMenuDiv.style.visibility = 'hidden';
+	
+		//alert("currentMenuDiv.offsetWidth:" + currentMenuDiv.offsetWidth);
+		//alert("currentMenuDiv.offsetHeight:" + currentMenuDiv.offsetHeight);
+			
+		if (rightedge < currentMenuDiv.offsetWidth)
+			clientX = (clientX - currentMenuDiv.offsetWidth);
+		
+		if (bottomedge < currentMenuDiv.offsetHeight && (clientY - currentMenuDiv.offsetHeight > 0))
+			clientY = (clientY - currentMenuDiv.offsetHeight);
+			
+		currentMenuDiv.style.left 	= clientX + "px";
+		currentMenuDiv.style.top 	= clientY + "px";
+	
+		currentMenuDiv.style.visibility = 'visible';
+		
+		previousIGMenuId = id;
+		
+		return false;
+	}
+	
+	function hideIGMenu()
+	{
+		if(previousIGMenuId && previousIGMenuId != '')
+		{
+			var element = document.getElementById(previousIGMenuId);
+			if(element)
+				element.style.display = 'none';
+		}   
+	}
+	
+	var previousEditOnSightMenuDivId = ''; 
+	function closeDialog()
+	{
+		tb_remove();
+		if(previousEditOnSightMenuDivId != '')
+			openCloseDiv(previousEditOnSightMenuDivId);
+	}
