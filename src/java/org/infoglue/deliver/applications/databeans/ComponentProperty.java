@@ -48,6 +48,7 @@ public class ComponentProperty
 	public static final String SELECTFIELD 						= "select";
 	public static final String CHECKBOXFIELD					= "checkbox";
 	public static final String DATEFIELD						= "datefield";
+	public static final String CUSTOMFIELD						= "customfield";
 	
 	private Integer id;
 	private String name;
@@ -71,6 +72,7 @@ public class ComponentProperty
 	private String createAction 			= null;
 	private String dataProvider 			= null;
 	private String dataProviderParameters 	= null;
+	private String customMarkup				= null;
 
 	private List options = new ArrayList();
 	
@@ -418,5 +420,15 @@ public class ComponentProperty
 	public void setDetailSiteNodeId(Integer detailSiteNodeId)
 	{
 		this.detailSiteNodeId = detailSiteNodeId;
+	}
+
+	public String getCustomMarkup()
+	{
+		return customMarkup;
+	}
+
+	public void setCustomMarkup(String customMarkup)
+	{
+		this.customMarkup = customMarkup;
 	}
 }

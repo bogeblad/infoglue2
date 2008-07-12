@@ -26,6 +26,8 @@ package org.infoglue.cms.applications.databeans;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.infoglue.cms.applications.common.VisualFormatter;
+
 /**
  * This bean represents a Asset Key definition. Used mostly by the content type definition editor.
  * 
@@ -57,11 +59,12 @@ public class ComponentPropertyDefinition
 	private Boolean autoCreateContent		= new Boolean(false);
 	private String autoCreateContentMethod	= "";
 	private String autoCreateContentPath	= "";
+	private String customMarkup 			= "";
 	
     private List options = new ArrayList();
 
     
-    public ComponentPropertyDefinition(String name, String displayName, String type, String entity, Boolean multiple, Boolean assetBinding, Boolean isPuffContentForPage, String allowedContentTypeNames, String description, String defaultValue, Boolean WYSIWYGEnabled, String WYSIWYGToolbar, String dataProvider, String dataProviderParameters, Boolean autoCreateContent, String autoCreateContentMethod, String autoCreateContentPath)
+    public ComponentPropertyDefinition(String name, String displayName, String type, String entity, Boolean multiple, Boolean assetBinding, Boolean isPuffContentForPage, String allowedContentTypeNames, String description, String defaultValue, Boolean WYSIWYGEnabled, String WYSIWYGToolbar, String dataProvider, String dataProviderParameters, Boolean autoCreateContent, String autoCreateContentMethod, String autoCreateContentPath, String customMarkup)
     {
         this.name 						= name;
         this.displayName				= displayName;
@@ -80,6 +83,7 @@ public class ComponentPropertyDefinition
         this.autoCreateContent 			= autoCreateContent;
         this.autoCreateContentMethod 	= autoCreateContentMethod;
         this.autoCreateContentPath		= autoCreateContentPath;
+        this.customMarkup 				= customMarkup;
     }
         
     public String getEntity()
@@ -173,6 +177,18 @@ public class ComponentPropertyDefinition
 	public String getAutoCreateContentPath()
 	{
 		return autoCreateContentPath;
+	}
+
+	public String getCustomMarkup()
+	{
+		return customMarkup;
+	}
+
+	public String getEncodedCustomMarkup()
+	{
+		VisualFormatter vf = new VisualFormatter();
+		
+		return vf.escapeExtendedHTML(customMarkup);
 	}
 
 }

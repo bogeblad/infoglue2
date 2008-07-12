@@ -12,7 +12,7 @@
  * ComponentPropertyDefinition object
  */
 
-function ComponentPropertyDefinition(name, displayName, type, entity, multiple, assetBinding, isPuffContentForPage, allowedContentTypeNames, description, defaultValue, WYSIWYGEnabled, WYSIWYGToolbar, dataProvider, dataProviderParameters, autoCreateContent, autoCreateContentMethod, autoCreateContentPath)
+function ComponentPropertyDefinition(name, displayName, type, entity, multiple, assetBinding, isPuffContentForPage, allowedContentTypeNames, description, defaultValue, WYSIWYGEnabled, WYSIWYGToolbar, dataProvider, dataProviderParameters, autoCreateContent, autoCreateContentMethod, autoCreateContentPath, customMarkup)
 {
 	this.name 						= name;
 	this.displayName				= displayName;
@@ -31,6 +31,7 @@ function ComponentPropertyDefinition(name, displayName, type, entity, multiple, 
 	this.autoCreateContent			= autoCreateContent;
 	this.autoCreateContentMethod	= autoCreateContentMethod;
 	this.autoCreateContentPath		= autoCreateContentPath;
+	this.customMarkup 				= customMarkup;
 	this.options					= new Vector(0);
 	  
   	this.getName 					= getName;
@@ -51,6 +52,7 @@ function ComponentPropertyDefinition(name, displayName, type, entity, multiple, 
 	this.getAutoCreateContent		= getAutoCreateContent;
 	this.getAutoCreateContentMethod	= getAutoCreateContentMethod;
 	this.getAutoCreateContentPath	= getAutoCreateContentPath;
+	this.getCustomMarkup			= getCustomMarkup;
 	
   	this.setName 					= setName;
   	this.setDisplayName 			= setDisplayName;
@@ -69,6 +71,7 @@ function ComponentPropertyDefinition(name, displayName, type, entity, multiple, 
 	this.setAutoCreateContent		= setAutoCreateContent;
 	this.setAutoCreateContentMethod	= setAutoCreateContentMethod;
 	this.setAutoCreateContentPath	= setAutoCreateContentPath;
+	this.setCustomMarkup			= setCustomMarkup;
 }
   
 function getName()
@@ -244,4 +247,14 @@ function getAutoCreateContentPath()
 function setAutoCreateContentPath(autoCreateContentPath)
 {
 	this.autoCreateContentPath = autoCreateContentPath;
+}
+
+function getCustomMarkup()
+{
+	return this.customMarkup;
+}
+
+function setCustomMarkup(customMarkup)
+{
+	this.customMarkup = customMarkup;
 }

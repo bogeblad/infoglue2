@@ -1271,6 +1271,22 @@ public class AjaxDecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHT
 						timer.printElapsedTime("Set property2");
 						property.setValue(value);
 					}
+					else if(type.equalsIgnoreCase(ComponentProperty.DATEFIELD))	
+					{		
+						String value = getComponentPropertyValue(componentId, name);
+						timer.printElapsedTime("Set property2");
+						property.setValue(value);
+					}
+					else if(type.equalsIgnoreCase(ComponentProperty.CUSTOMFIELD))	
+					{		
+						String value = getComponentPropertyValue(componentId, name);
+						String customMarkup = binding.attributeValue("customMarkup");
+						String processedMarkup =  customMarkup.replaceAll("propertyName", name);
+						processedMarkup = processedMarkup.replaceAll("propertyValue", value);
+
+						property.setCustomMarkup(processedMarkup);
+						property.setValue(value);
+					}
 					else if(type.equalsIgnoreCase(ComponentProperty.TEXTAREA))	
 					{		
 						boolean WYSIWYGEnabled = new Boolean(binding.attributeValue("WYSIWYGEnabled")).booleanValue();
@@ -1422,6 +1438,22 @@ public class AjaxDecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHT
 						String value = getComponentPropertyValue(componentId, name, templateController);
 						timer.printElapsedTime("Set property2");
 						//logger.info("value:" + value);
+						property.setValue(value);
+					}
+					else if(type.equalsIgnoreCase(ComponentProperty.DATEFIELD))	
+					{		
+						String value = getComponentPropertyValue(componentId, name);
+						timer.printElapsedTime("Set property2");
+						property.setValue(value);
+					}
+					else if(type.equalsIgnoreCase(ComponentProperty.CUSTOMFIELD))	
+					{		
+						String value = getComponentPropertyValue(componentId, name);
+						String customMarkup = binding.attributeValue("customMarkup");
+						String processedMarkup =  customMarkup.replaceAll("propertyName", name);
+						processedMarkup = processedMarkup.replaceAll("propertyValue", value);
+
+						property.setCustomMarkup(processedMarkup);
 						property.setValue(value);
 					}
 					else if(type.equalsIgnoreCase(ComponentProperty.TEXTAREA))	

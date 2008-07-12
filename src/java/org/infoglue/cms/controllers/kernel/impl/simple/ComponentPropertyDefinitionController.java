@@ -118,8 +118,9 @@ public class ComponentPropertyDefinitionController extends BaseController
 				    String autoCreateContent		= propertyElement.getAttribute("autoCreateContent");
 				    String autoCreateContentMethod	= propertyElement.getAttribute("autoCreateContentMethod");
 				    String autoCreateContentPath	= propertyElement.getAttribute("autoCreateContentPath");
+				    String customMarkup				= propertyElement.getAttribute("customMarkup");
 				    				    
-				    ComponentPropertyDefinition cpd = new ComponentPropertyDefinition(name, displayName, type, entity, new Boolean(multiple), new Boolean(assetBinding), new Boolean(isPuffContentForPage), allowedContentTypeNames, description, defaultValue, new Boolean(WYSIWYGEnabled), WYSIWYGToolbar, dataProvider, dataProviderParameters, new Boolean(autoCreateContent), autoCreateContentMethod, autoCreateContentPath);
+				    ComponentPropertyDefinition cpd = new ComponentPropertyDefinition(name, displayName, type, entity, new Boolean(multiple), new Boolean(assetBinding), new Boolean(isPuffContentForPage), allowedContentTypeNames, description, defaultValue, new Boolean(WYSIWYGEnabled), WYSIWYGToolbar, dataProvider, dataProviderParameters, new Boolean(autoCreateContent), autoCreateContentMethod, autoCreateContentPath, customMarkup);
 				    
 					NodeList optionsNodeList = propertyElement.getElementsByTagName("option");
 					for(int k=0; k<optionsNodeList.getLength(); k++)

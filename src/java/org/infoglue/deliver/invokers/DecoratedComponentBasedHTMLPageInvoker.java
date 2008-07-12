@@ -1214,6 +1214,9 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 						sb.append("			<td class=\"igpropertylabel igpropertyDivider\"></td>");
 						sb.append("		</tr>");
 					}
+					
+					if(hasAccessToProperty)
+					    propertyIndex++;
 				}
 				else if(componentProperty.getType().equalsIgnoreCase(ComponentProperty.TEXTFIELD))
 				{
@@ -1226,6 +1229,77 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 					
 					if(hasAccessToProperty)
 						sb.append("			<td class=\"igpropertyvalue igpropertyDivider\" align=\"left\"><input type=\"hidden\" name=\"" + propertyIndex + "_propertyName\" value=\"" + componentProperty.getName() + "\"><input type=\"text\" class=\"propertytextfield\" name=\"" + componentProperty.getName() + "\" value=\"" + componentProperty.getValue() + "\" onkeydown=\"setDirty();\"></td>");
+					else
+						sb.append("			<td class=\"igpropertyvalue igpropertyDivider\" align=\"left\">" + componentProperty.getValue() + "</td>");
+		
+					if(hasAccessToProperty)
+						sb.append("			<td class=\"igtd igpropertyDivider\" width=\"16\"><a class=\"componentEditorLink\" href=\"" + componentEditorUrl + "ViewSiteNodePageComponents!deleteComponentPropertyValue.action?siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&propertyName=" + componentProperty.getName() + "&showSimple=" + this.getTemplateController().getDeliveryContext().getShowSimple() + "\"><img src=\"" + componentEditorUrl + "/images/delete.gif\" border=\"0\" style='padding-top: 2px;'></a></td>");
+					else
+						sb.append("			<td class=\"igtd igpropertyDivider\" width=\"16\"></td>");
+					
+					sb.append("			<td class=\"igtd igpropertyDivider\" width=\"16\"><img src=\"" + componentEditorUrl + "/images/questionMarkGrad.gif\" onMouseOver=\"showDiv('helpLayer" + componentProperty.getComponentId() + "_" + componentProperty.getName() + "');\" onMouseOut=\"javascript:hideDiv('helpLayer" + componentProperty.getComponentId() + "_" + componentProperty.getName() + "');\">" + helpSB + "</td>");
+					sb.append("		</tr>");
+					
+					if(hasAccessToProperty)
+					    propertyIndex++;
+				}
+				else if(componentProperty.getType().equalsIgnoreCase(ComponentProperty.DATEFIELD))
+				{
+					sb.append("	<tr class=\"igtr\">");
+					
+					sb.append("			<td class=\"igpropertylabel igpropertyDivider\" valign=\"top\" align=\"left\">" + componentProperty.getDisplayName() + "</td>");
+					
+					if(hasAccessToProperty)
+					{
+						sb.append("			<td class=\"igpropertyvalue igpropertyDivider\" align=\"left\">");
+					
+						sb.append("			<input type=\"hidden\" name=\"" + propertyIndex + "_propertyName\" value=\"" + componentProperty.getName() + "\">");
+						sb.append("			<input type=\"text\" class=\"propertydatefield\" style=\"width: 100px;\" id=\"" + componentProperty.getName() + "\" name=\"" + componentProperty.getName() + "\" value=\"" + componentProperty.getValue() + "\" onkeydown=\"setDirty();\"/>&nbsp;<a name=\"calendar_" + componentProperty.getName() + "\" id=\"calendar_" + componentProperty.getName() + "\"><img src=\"" + componentEditorUrl + "/images/calendar.gif\" border=\"0\"/></a>");
+						sb.append("			<script type=\"text/javascript\">");
+						sb.append("				Calendar.setup({");
+						sb.append("	        		inputField     :    \"" + componentProperty.getName() + "\",");
+						sb.append("	        		ifFormat       :    \"%Y-%m-%d %H:%M\",");
+						sb.append("	        		button         :    \"calendar_" + componentProperty.getName() + "\",");
+						sb.append("	        		align          :    \"BR\",");
+						sb.append("	        		singleClick    :    true,");
+						sb.append("	        		firstDay  	   : 	1,");
+						sb.append("	        		showsTime	   :    true,");
+						sb.append("	        		timeFormat     :    \"24\"");
+						sb.append("				});");
+						sb.append("			</script>");
+						sb.append("			</td>");
+					}
+					else
+						sb.append("			<td class=\"igpropertyvalue igpropertyDivider\" align=\"left\">" + componentProperty.getValue() + "</td>");
+		
+					if(hasAccessToProperty)
+						sb.append("			<td class=\"igtd igpropertyDivider\" width=\"16\"><a class=\"componentEditorLink\" href=\"" + componentEditorUrl + "ViewSiteNodePageComponents!deleteComponentPropertyValue.action?siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&propertyName=" + componentProperty.getName() + "&showSimple=" + this.getTemplateController().getDeliveryContext().getShowSimple() + "\"><img src=\"" + componentEditorUrl + "/images/delete.gif\" border=\"0\" style='padding-top: 2px;'></a></td>");
+					else
+						sb.append("			<td class=\"igtd igpropertyDivider\" width=\"16\"></td>");
+					
+					sb.append("			<td class=\"igtd igpropertyDivider\" width=\"16\"><img src=\"" + componentEditorUrl + "/images/questionMarkGrad.gif\" onMouseOver=\"showDiv('helpLayer" + componentProperty.getComponentId() + "_" + componentProperty.getName() + "');\" onMouseOut=\"javascript:hideDiv('helpLayer" + componentProperty.getComponentId() + "_" + componentProperty.getName() + "');\">" + helpSB + "</td>");
+					sb.append("		</tr>");
+					
+					if(hasAccessToProperty)
+					    propertyIndex++;
+				}
+				else if(componentProperty.getType().equalsIgnoreCase(ComponentProperty.CUSTOMFIELD))
+				{
+					String processedMarkup =  componentProperty.getCustomMarkup().replaceAll("propertyName", componentProperty.getName());
+					processedMarkup = processedMarkup.replaceAll("propertyValue", componentProperty.getValue());
+
+					sb.append("	<tr class=\"igtr\">");
+					
+					sb.append("			<td class=\"igpropertylabel igpropertyDivider\" valign=\"top\" align=\"left\">" + componentProperty.getDisplayName() + "</td>");
+					
+					if(hasAccessToProperty)
+					{
+						sb.append("			<td class=\"igpropertyvalue igpropertyDivider\" align=\"left\">");
+					
+						sb.append("			<input type=\"hidden\" name=\"" + propertyIndex + "_propertyName\" value=\"" + componentProperty.getName() + "\">");
+						sb.append("			" + processedMarkup + "");
+						sb.append("			</td>");
+					}
 					else
 						sb.append("			<td class=\"igpropertyvalue igpropertyDivider\" align=\"left\">" + componentProperty.getValue() + "</td>");
 		
@@ -2235,6 +2309,22 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 						//logger.info("value:" + value);
 						property.setValue(value);
 					}
+					else if(type.equalsIgnoreCase(ComponentProperty.DATEFIELD))	
+					{		
+						String value = getComponentPropertyValue(componentId, name);
+						timer.printElapsedTime("Set property2");
+						property.setValue(value);
+					}
+					else if(type.equalsIgnoreCase(ComponentProperty.CUSTOMFIELD))	
+					{		
+						String value = getComponentPropertyValue(componentId, name);
+						String customMarkup = binding.attributeValue("customMarkup");
+						String processedMarkup =  customMarkup.replaceAll("propertyName", name);
+						processedMarkup = processedMarkup.replaceAll("propertyValue", value);
+
+						property.setCustomMarkup(processedMarkup);
+						property.setValue(value);
+					}
 					else if(type.equalsIgnoreCase(ComponentProperty.TEXTAREA))	
 					{		
 						boolean WYSIWYGEnabled = new Boolean(binding.attributeValue("WYSIWYGEnabled")).booleanValue();
@@ -2480,6 +2570,22 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 						String value = getComponentPropertyValue(componentId, name, templateController);
 						timer.printElapsedTime("Set property2");
 						//logger.info("value:" + value);
+						property.setValue(value);
+					}
+					else if(type.equalsIgnoreCase(ComponentProperty.DATEFIELD))	
+					{		
+						String value = getComponentPropertyValue(componentId, name);
+						timer.printElapsedTime("Set property2");
+						property.setValue(value);
+					}
+					else if(type.equalsIgnoreCase(ComponentProperty.CUSTOMFIELD))	
+					{		
+						String value = getComponentPropertyValue(componentId, name);
+						String customMarkup = binding.attributeValue("customMarkup");
+						String processedMarkup =  customMarkup.replaceAll("propertyName", name);
+						processedMarkup = processedMarkup.replaceAll("propertyValue", value);
+
+						property.setCustomMarkup(processedMarkup);
 						property.setValue(value);
 					}
 					else if(type.equalsIgnoreCase(ComponentProperty.TEXTAREA))	

@@ -1292,6 +1292,23 @@ public class PageEditorHelper extends BaseDeliveryController
 						//logger.info("value:" + value);
 						property.setValue(value);
 					}
+					else if(type.equalsIgnoreCase(ComponentProperty.DATEFIELD))	
+					{		
+						String value = getComponentPropertyValue(componentId, name, siteNodeId, languageId, contentId, locale, db, principal, property);
+						timer.printElapsedTime("Set property2");
+						//logger.info("value:" + value);
+						property.setValue(value);
+					}
+					else if(type.equalsIgnoreCase(ComponentProperty.CUSTOMFIELD))	
+					{		
+						String value = getComponentPropertyValue(componentId, name, siteNodeId, languageId, contentId, locale, db, principal, property);
+						String customMarkup = binding.attributeValue("customMarkup");
+						String processedMarkup =  customMarkup.replaceAll("propertyName", name);
+						processedMarkup = processedMarkup.replaceAll("propertyValue", value);
+
+						property.setCustomMarkup(processedMarkup);
+						property.setValue(value);
+					}
 					else if(type.equalsIgnoreCase(ComponentProperty.TEXTAREA))	
 					{		
 						boolean WYSIWYGEnabled = new Boolean(binding.attributeValue("WYSIWYGEnabled")).booleanValue();
