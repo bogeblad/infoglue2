@@ -1304,7 +1304,7 @@ public class CmsPropertyHandler
 
 	public static String getEncodeCasServiceUrl()
 	{
-        return getServerNodeProperty("encodeCasServiceUrl", true, "false");
+        return getServerNodeProperty("encodeCasServiceUrl", true, "true");
 	}
 	
 	public static String getWYSIWYGToolbarComboPreviewCSS()
