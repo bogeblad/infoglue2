@@ -410,33 +410,94 @@ public class CASBasicAuthenticationModule extends AuthenticationModule//, Author
 		 * in web.xml - see below)
 		 */
 
-		/* contact CAS and validate */
-		pv.validate(); 
-
-		/* if we want to look at the raw response, we can use getResponse() */
-		String xmlResponse = pv.getResponse();
-		logger.info("xmlResponse:" + xmlResponse);
+		/* contact CAS and validate */			
 		
-		/* read the response */
-		if(pv.isAuthenticationSuccesful()) 
+		try
 		{
-			String user = pv.getUser();
-			List proxyList = pv.getProxyList();
-			authenticatedUserName = pv.getUser();
-		} 
-		else 
+			//----------------------------------------------------------------------
+			// If this is a CAS 2.0 installation the response will be in XML format.
+			// If this is a CAS 1.0 the response will be a simple String and the 
+			// pv.validate() method will throw an exception 
+			// ("content not allowed in prolog"). If this exception is thrown we 
+			// will do a further check in the catch and see if the user was 
+			// verified even though the response was not in XML.
+			//-----------------------------------------------------------------------
+			
+			pv.validate();
+			
+			/* if we want to look at the raw response, we can use getResponse() */
+			String xmlResponse = pv.getResponse();
+			logger.info("xmlResponse:" + xmlResponse);
+			
+			/* read the response */
+			if(pv.isAuthenticationSuccesful()) 
+			{
+				String user = pv.getUser();
+				List proxyList = pv.getProxyList();
+				authenticatedUserName = pv.getUser();
+				
+				logger.info("The user " + user + " was authenticated successfully.");
+			} 
+			else 
+			{
+				String errorCode = pv.getErrorCode();
+				String errorMessage = pv.getErrorMessage();				
+				/* handle the error */
+			}
+
+			/* The user is now authenticated. */
+			/* If we did set the proxy callback url, we can get proxy tickets with: */
+
+			logger.info("proxies:\n " + pv.getProxyList()); 
+		}
+		catch (Exception e)
 		{
-			String errorCode = pv.getErrorCode();
-			String errorMessage = pv.getErrorMessage();
-			/* handle the error */
+			logger.info("-------------------------------------------------------------");
+			logger.info("(Johans utskrift)  Felmeddelande: " + e.getMessage());
+			logger.info("(Johans utskrift)  pv.getCasValidateUrl: " + pv.getCasValidateUrl());
+			logger.info("(Johans utskrift)  pv.getErrorCode(): " + pv.getErrorCode());
+			logger.info("(Johans utskrift)  pv.getErrorMessage: " + pv.getErrorMessage());
+			logger.info("(Johans utskrift)  pv.getPgtIou: " + pv.getPgtIou());
+			logger.info("(Johans utskrift)  pv.getProxyCallbackUrl: " + pv.getProxyCallbackUrl());
+			logger.info("(Johans utskrift)  pv.getResponse: " + pv.getResponse());
+			logger.info("(Johans utskrift)  pv.getUser: " + pv.getUser());
+			logger.info("(Johans utskrift)  pv.getClass: " + pv.getClass());
+			logger.info("(Johans utskrift)  pv.getProxyList: " + pv.getProxyList());
+			logger.info("-------------------------------------------------------------");
+			
+			//--------------------------------------------------------------------
+			// Check if the user was authenticated even though an exception occured.
+			// This will be the case if the CAS is a 1.0 installation.
+			//--------------------------------------------------------------------
+			
+			String casResponse = pv.getResponse();
+			
+			logger.info("CAS RESPONSE: " + casResponse.substring(0, 3));
+
+			String response = casResponse.substring(0, casResponse.indexOf('\n'));
+			String userId	= casResponse.substring(casResponse.indexOf('\n') + 1);
+			
+			if (response.equals("yes"))
+			{				
+				logger.info("The user " + userId + " was authenticated successfully against a CAS 1.0 installation");
+				
+				authenticatedUserName 	= userId.trim();
+			}
+			else if (response.equals("no"))
+			{
+				logger.info("Permission denied for the user " + userId + " against a CAS 1.0 installation");
+				// Do nothing
+			}
+			else
+			{
+				//------------------------------------------------------------
+				// Some other error occured and we throw the Exception again.
+				//------------------------------------------------------------
+				
+				throw e;
+			}
 		}
 
-		/* The user is now authenticated. */
-		/* If we did set the proxy callback url, we can get proxy tickets with: */
-
-		//String proxyTicket = edu.yale.its.tp.cas.proxy.ProxyTicketReceptor.getProxyTicket(pv.getPgtIou(), casServiceUrl);
-		logger.info("proxies:\n " + pv.getProxyList()); 
-		
 		return authenticatedUserName;
 	} 
 
