@@ -1592,9 +1592,8 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		String savePageTemplateHTML 			= getLocalizedString(locale, "deliver.editOnSight.savePageTemplateHTML");
 		String savePagePartTemplateHTML 		= getLocalizedString(locale, "deliver.editOnSight.savePagePartTemplateHTML");
 
-		
-		sb.append("<div class=\"igmenuitems linkEditArticle\" onClick=\"edit();\"><a href='#'>" + editHTML + "</a></div>");
-	    sb.append("<div class=\"igmenuitems linkEditArticle\" onClick=\"editInlineSimple(" + repositoryId + ");\"><a href='#'>" + editInlineHTML + "</a></div>");
+		sb.append("<div id=\"editDiv" + component.getId() + "\" class=\"igmenuitems linkEditArticle\"><a href='#'>" + editHTML + "</a></div>");
+	    sb.append("<div id=\"editInlineDiv" + component.getId() + "\" class=\"igmenuitems linkEditArticle\"><a href='#'>" + editInlineHTML + "</a></div>");
 
 	    if(hasSubmitToPublishAccess)
 	    	sb.append("<div class=\"igmenuitems linkPublish\" onClick=\"submitToPublish(" + siteNodeId + ", " + repositoryId + ", '" + URLEncoder.encode(templateController.getOriginalFullURL(), "UTF-8") + "');\"><a href='#'>" + submitToPublishHTML + "</a></div>");

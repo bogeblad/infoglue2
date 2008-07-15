@@ -999,9 +999,9 @@ public class PageEditorHelper extends BaseDeliveryController
 		    }
 		    		    
 		    if(treeItem != true)
-				sb.append("<div class=\"igmenuitems linkEditArticle\" onClick=\"edit();\"><a href='#'>" + editHTML + "</a></div>");
+				sb.append("<div id=\"editDiv\" class=\"igmenuitems linkEditArticle\"><a href='#'>" + editHTML + "</a></div>");
 		    if(treeItem != true)
-			    sb.append("<div class=\"igmenuitems linkEditArticle\" onClick=\"editInlineSimple(" + repositoryId + ");\"><a href='#'>" + editInlineHTML + "</a></div>");
+			    sb.append("<div id=\"editInlineDiv\" class=\"igmenuitems linkEditArticle\"><a href='#'>" + editInlineHTML + "</a></div>");
 		    if(treeItem != true && hasSubmitToPublishAccess)
 		    	sb.append("<div class=\"igmenuitems linkPublish\" onClick=\"submitToPublish(" + siteNodeId + ", " + repositoryId + ", '" + URLEncoder.encode(originalFullURL, "UTF-8") + "');\"><a href='#'>" + submitToPublishHTML + "</a></div>");
 			if(hasAccessToAddComponent)

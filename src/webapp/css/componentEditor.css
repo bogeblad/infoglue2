@@ -97,10 +97,10 @@ Component palette classes
 	text-align: center;
 	color: #000000;
 	background: #cccccc;
-	border-top: solid thin white;
-	border-right: solid thin none;
-	border-left: solid thin white;
-	border-bottom: solid 0px white;
+	border-top: thin solid white;
+	border-right: thin solid transparent;
+	border-left: thin solid white;
+	border-bottom: 0px solid white;
 	cursor: pointer;
 	visibility: inherit;
 	z-index: 1;
@@ -149,8 +149,6 @@ Component palette classes
 	padding-bottom: 5px;
 	white-space: nowrap;
 	color: #000000;
-	afloat: left;
-	adisplay: block;	
 }
 .igmenuitems a {
 	text-decoration: none;
@@ -321,7 +319,6 @@ Edit on sight classes
 	font-family: Tahoma, Arial, Helvetica, sans-serif;
 	font-size: 10pt;
 	width: 200px;
-	afloat: left;
 	overflow: hidden;
 	background-image: url('../images/v3/tileGradient.gif');
 	background-repeat: repeat-y;
@@ -751,7 +748,7 @@ select.mediumdrop {
 	display: block;
 }
 .editOnSightMenuDiv li:hover{
-	abackground-color: #BBB;
+	/*background-color: #BBB;*/
 	}
 .editOnSightMenuDiv li a:hover{
 	text-decoration:underline;
@@ -848,12 +845,12 @@ padding-left:28px;
 
 .igButton:hover
 {
-	abackground-position: 100% -78px;
+	/*background-position: 100% -78px;*/
 	color: white;
 	text-decoration: none;
 }
 
 .igButtonOuterSpan:hover
 {
-	abackground-position: 0px -52px;
+	/*background-position: 0px -52px;*/
 }

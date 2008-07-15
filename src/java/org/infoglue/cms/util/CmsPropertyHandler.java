@@ -1297,6 +1297,16 @@ public class CmsPropertyHandler
         return getServerNodeProperty("allowCrossSiteSubmitToPublish", true, "false");
 	}
 
+	public static String getEncodeValidateUrl()
+	{
+        return getServerNodeProperty("encodeValidateUrl", true, "false");
+	}
+
+	public static String getEncodeCasServiceUrl()
+	{
+        return getServerNodeProperty("encodeCasServiceUrl", true, "false");
+	}
+	
 	public static String getWYSIWYGToolbarComboPreviewCSS()
 	{
 		String WYSIWYGToolbarComboPreviewCSS = getServerNodeDataProperty(null, "WYSIWYGToolbarComboPreviewCSS", true, "p, div, h1, h2, h3, h4, h5, h6, pre, address { font-family: Verdana, Arial, Sans serif; font-size: 10px; font-style: normal; font-weight: normal; }");

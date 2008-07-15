@@ -404,11 +404,13 @@ function setEditUrl(anEditUrl)
 	editUrl = anEditUrl;
 }
 
-function setContentItemParameters(contentId, languageId, attributeName)
+function setContentItemParameters(repositoryId, contentId, languageId, attributeName)
 {
 	//alert("Setting contentId:" + contentId);
 	//alert("Setting languageId:" + languageId);
 	//alert("Setting attributeName:" + attributeName);
+	//alert("Setting repositoryId:" + repositoryId);
+	selectedRepositoryId = repositoryId;
 	selectedContentId = contentId;
 	selectedLanguageId = languageId;
 	selectedAttributeName = attributeName;
@@ -424,6 +426,7 @@ function showComponentMenu(event, element, compId, anInsertUrl, anDeleteUrl, anC
 	insertUrl = anInsertUrl;
 	deleteUrl = anDeleteUrl;
 	changeUrl = anChangeUrl;
+	//alert("selectedRepositoryId" + selectedRepositoryId);
 	//alert("componentId" + componentId);
 	//alert("activeMenuId" + activeMenuId);
 	//alert("editUrl" + editUrl);
@@ -451,7 +454,24 @@ function showComponentMenu(event, element, compId, anInsertUrl, anDeleteUrl, anC
 	//alert("bottomedge:" + bottomedge);
 	//alert("document.body.clientHeight:" + document.body.clientHeight);
 	//alert("menuDiv.offsetWidth:" + menuDiv.offsetWidth);
-	
+
+	var editDivElement = document.getElementById("editDiv" + compId);
+	var editInlineDivElement = document.getElementById("editInlineDiv" + compId);
+	if(!editUrl || editUrl == "")
+	{
+		editDivElement.style.display = "none";
+		editInlineDivElement.style.display = "none";
+	}
+	else
+	{
+		editDivElement.style.display = "block";
+		editInlineDivElement.style.display = "block";
+		//alert("Registering click to:" + editUrl);
+		var anEditUrl = editUrl;
+		$(editDivElement).click(function () { edit(anEditUrl); });
+		$(editInlineDivElement).click(function () { editInlineSimple(selectedRepositoryId); });
+	}
+		
 	var componentEditorInNewWindowDivCompElement = document.getElementById("componentEditorInNewWindowDiv" + compId);
 	if(window.parent.name == "PageComponents" && componentEditorInNewWindowDivCompElement)
 		componentEditorInNewWindowDivCompElement.style.display = "none";
@@ -468,6 +488,8 @@ function showComponentMenu(event, element, compId, anInsertUrl, anDeleteUrl, anC
 	//menuDiv.style.top 	= newTop + "px";
 	
 	menuDiv.style.visibility = "visible";
+	
+	editUrl = "";
 	
 	return false;
 }
@@ -914,7 +936,7 @@ function openAssignDialog(warningText, assignUrl)
 // Here comes the menu items actions
 //--------------------------------------------
 
-function edit() 
+function edit(editUrl) 
 {
 	if(!editUrl || editUrl == "")
 	{
@@ -930,12 +952,12 @@ function edit()
 
 var isInInlineEditingMode = new Array();
 
-function editInlineSimple(repositoryId) 
+function editInlineSimple(selectedRepositoryId) 
 {
-	return editInline(repositoryId, selectedContentId, selectedLanguageId, false);
+	return editInline(selectedRepositoryId, selectedContentId, selectedLanguageId, false);
 }
 
-function editInline(repositoryId, selectedContentId, selectedLanguageId, directEditing) 
+function editInline(selectedRepositoryId, selectedContentId, selectedLanguageId, directEditing) 
 {	
 	hideIGMenu();
 		
@@ -945,13 +967,15 @@ function editInline(repositoryId, selectedContentId, selectedLanguageId, directE
 		//alert("Content " + selectedContentId + " is allready in inline editing mode");
 		return false;
 	}
-		
+	
+	/*	
 	if((!editUrl || editUrl == "") && !directEditing)
 	{
 		alert("You must right click on a text or double click on a text to be able to use this feature.");
 	}
 	else
 	{
+	*/
 		var $lastThis;
 		var processedIds = new Array();
 		$(".attribute" + selectedContentId).each(function (i) {
@@ -971,7 +995,7 @@ function editInline(repositoryId, selectedContentId, selectedLanguageId, directE
 					var WYSIWYGExtraConfig = editOnSightAttributeNames[$(this).get(0).id + "_WYSIWYGExtraConfig"];
 					//alert("attributeName:" + attributeName);
 	
-					var parameterString = "repositoryId=" + repositoryId + "&contentId=" + selectedContentId + "&languageId=" + selectedLanguageId;
+					var parameterString = "repositoryId=" + selectedRepositoryId + "&contentId=" + selectedContentId + "&languageId=" + selectedLanguageId;
 					
 					var element = $(this).get(0);
 		
@@ -1076,7 +1100,7 @@ function editInline(repositoryId, selectedContentId, selectedLanguageId, directE
 				
 		$lastThis.after("<div id=\"saveButtons" + selectedContentId + "\"><a class='igButton' onclick='saveAttributes(" + selectedContentId + ", " + selectedLanguageId + ");'' title='Save'><span class='igButtonOuterSpan'><span class='linkSave'>Save</span></span></a><a class='igButton' onclick='cancelSaveAttributes(" + selectedContentId + ", " + selectedLanguageId + ");' title='Cancel edit'><span class='igButtonOuterSpan'><span class='linkCancel'>Cancel</span></span></a></div><div style='clear:both;'></div>");
 		isInInlineEditingMode["" + selectedContentId] = "true"
-	}
+	//}
 }
 
 function saveAttributes(selectedContentId, selectedLanguageId) 
@@ -1580,6 +1604,23 @@ function showComponentTasksInDiv(targetDivId, parameterString, skipFloat, event)
 		if (bottomedge < menuDiv.offsetHeight)
 			clientY = (clientY - menuDiv.offsetHeight);
 			
+		var editDivElement = document.getElementById("editDiv");
+		var editInlineDivElement = document.getElementById("editInlineDiv");
+		if(!editUrl || editUrl == "")
+		{
+			editDivElement.style.display = "none";
+			editInlineDivElement.style.display = "none";
+		}
+		else
+		{
+			editDivElement.style.display = "block";
+			editInlineDivElement.style.display = "block";
+			//alert("Registering click to:" + editUrl);
+			var anEditUrl = editUrl;
+			$(editDivElement).click(function () { edit(anEditUrl); });
+			$(editInlineDivElement).click(function () { editInlineSimple(selectedRepositoryId); });
+		}
+				
 		if(window.parent.name == "PageEditor")
 			$(menuDiv).find("#componentEditorInNewWindowDiv").css("display", "none");
 					
@@ -1587,6 +1628,8 @@ function showComponentTasksInDiv(targetDivId, parameterString, skipFloat, event)
 		menuDiv.style.top 	= clientY + "px";
 		
 		menuDiv.style.visibility = "visible";
+		
+		editUrl = "";
 		
 		activeMenuId = "componentMenu";
 	});

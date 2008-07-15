@@ -375,19 +375,33 @@ public class CASBasicAuthenticationModule extends AuthenticationModule//, Author
 		
 		/* set its parameters */
 		//pv.setCasValidateUrl(casValidateUrl);
+		
+		String encodeValidateUrl = CmsPropertyHandler.getEncodeValidateUrl();
+		String encodeCasServiceUrl = CmsPropertyHandler.getEncodeCasServiceUrl();
+		
 		if(ticket != null && ticket.substring(0, 2).equals("PT"))
 		{
-			pv.setCasValidateUrl(casProxyValidateUrl);
+			if(encodeValidateUrl != null && encodeValidateUrl.equals("true"))
+				casProxyValidateUrl = URLEncoder.encode(casProxyValidateUrl, "iso-8859-1");
+				
 			logger.info("setting casProxyValidateUrl: " + casProxyValidateUrl);
+			pv.setCasValidateUrl(casProxyValidateUrl);
+			
 		}
 		else
 		{
+			if(encodeValidateUrl != null && encodeValidateUrl.equals("true"))
+				casValidateUrl = URLEncoder.encode(casValidateUrl, "iso-8859-1");
+
 			pv.setCasValidateUrl(casValidateUrl);
 			logger.info("setting casValidateUrl: " + casValidateUrl);
 		}
 		
+		if(encodeCasServiceUrl != null && encodeCasServiceUrl.equals("true"))
+			casServiceUrl = URLEncoder.encode(casServiceUrl, "iso-8859-1");
+		
 		logger.info("validating: " + casServiceUrl);
-		pv.setService(URLEncoder.encode(casServiceUrl, "UTF-8"));
+		pv.setService(casServiceUrl);
 
 		pv.setServiceTicket(ticket);
 
