@@ -107,7 +107,7 @@ public class EditOnSiteBasicTemplateController extends BasicTemplateController
             StringBuffer requestDelim = new StringBuffer( CmsPropertyHandler.getRequestArgumentDelimiter() );
             StringBuffer setContentItemParametersJavascript = new StringBuffer();
             setContentItemParametersJavascript.append("setContentItemParameters(" );
-            setContentItemParametersJavascript.append( contentId ).append( "," ).append( languageId );
+            setContentItemParametersJavascript.append( this.getSiteNode().getRepositoryId() ).append( "," ).append( contentId ).append( "," ).append( languageId );
             setContentItemParametersJavascript.append( ",'").append( attributeName ).append( "'); setEditUrl('");
             setContentItemParametersJavascript.append( editOnSiteUrl ).append( "?contentId=" ).append( contentId );
             setContentItemParametersJavascript.append( requestDelim ).append( "languageId=").append( languageId );
