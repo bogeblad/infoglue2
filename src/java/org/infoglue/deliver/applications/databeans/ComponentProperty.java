@@ -72,7 +72,7 @@ public class ComponentProperty
 	private String createAction 			= null;
 	private String dataProvider 			= null;
 	private String dataProviderParameters 	= null;
-	private String customMarkup				= null;
+	private String customMarkup				= "";
 
 	private List options = new ArrayList();
 	

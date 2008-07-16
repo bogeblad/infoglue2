@@ -59,6 +59,9 @@
 			
 		function encodeXML(string) 
 		{
+			if(!string)
+				return "";
+				
 			var LT = new RegExp("<", "g");  
 			var GT = new RegExp(">", "g");  
 			var AMP = new RegExp("&", "g");  
@@ -70,6 +73,9 @@
 
 		function decodeXML(string) 
 		{
+			if(!string)
+				return "";
+
 			var LT = new RegExp('&lt;', "g");  
 			var GT = new RegExp('&gt;', "g");  
 			var AMP = new RegExp("&amp;", "g");  
@@ -112,6 +118,13 @@
 				propertyAutoCreateContentMethod	= property.getAutoCreateContentMethod();
 				propertyAutoCreateContentPath	= property.getAutoCreateContentPath();
 				propertyCustomMarkup			= property.getCustomMarkup();
+				
+				//alert("propertyCustomMarkup:" + propertyCustomMarkup);
+				document.getElementById("componentPropertyDefinition_customMarkup").value = propertyCustomMarkup;
+				propertyCustomMarkup = document.getElementById("componentPropertyDefinition_customMarkup").value;
+				if(propertyCustomMarkup.indexOf("igescaped") > -1)
+					propertyCustomMarkup = decodeXML(propertyCustomMarkup);
+				//alert("propertyCustomMarkup:" + propertyCustomMarkup);
 				
 				if(propertyType == "select" || propertyType == "checkbox")
 				{
@@ -305,7 +318,8 @@
 			document.componentPropertyDefinitionForm.componentPropertyDefinition_WYSIWYGEnabled.value 	= componentPropertyDefinition.WYSIWYGEnabled;
 			document.componentPropertyDefinitionForm.componentPropertyDefinition_WYSIWYGToolbar.value 	= componentPropertyDefinition.WYSIWYGToolbar;
 
-			document.componentPropertyDefinitionForm.componentPropertyDefinition_customMarkup.value 	= decodeXML(componentPropertyDefinition.customMarkup);
+			var decodedString = decodeXML(componentPropertyDefinition.customMarkup);
+			document.componentPropertyDefinitionForm.componentPropertyDefinition_customMarkup.value 	= decodedString.substring(0, decodedString.length - 16);
 			
 			if(componentPropertyDefinition.autoCreateContent)
 			{
@@ -437,7 +451,7 @@
 				componentPropertyDefinition.setWYSIWYGToolbar(document.getElementById("componentPropertyDefinition_WYSIWYGToolbar").value);
 				componentPropertyDefinition.setDataProvider(document.getElementById("componentPropertyDefinition_dataProvider").value);
 				componentPropertyDefinition.setDataProviderParameters(document.getElementById("componentPropertyDefinition_dataProviderParameters").value);
-				componentPropertyDefinition.setCustomMarkup(document.getElementById("componentPropertyDefinition_customMarkup").value);
+				componentPropertyDefinition.setCustomMarkup(document.getElementById("componentPropertyDefinition_customMarkup").value + "<!--igescaped-->");
 			}
 			
 			hideProperties();
@@ -822,7 +836,9 @@
 		{
 			selectBox = document.componentPropertyDefinitionForm.componentPropertyDefinition_type;
 			if(selectBox.value == "textfield")
-			{							 
+			{
+				document.getElementById("dataProviderParagraph").style.display = "none";
+				document.getElementById("customMarkupParagraph").style.display = "none";
 				document.getElementById("optionsParagraph").style.display = "none";
 				document.getElementById("entityParagraph").style.display = "none";
 				document.getElementById("multipleParagraph").style.display = "none";
@@ -830,9 +846,12 @@
 				document.getElementById("wysiwygParagraph").style.display = "none";
 				document.getElementById("allowedContentTypeNamesParagraph").style.display = "none";
 				document.getElementById("autoCreateContentParagraph").style.display = "none";
+				document.getElementById("isPuffContentForPageParagraph").style.display = "none";
 			}
 			else if(selectBox.value == "textarea")
 			{							 
+				document.getElementById("dataProviderParagraph").style.display = "none";
+				document.getElementById("customMarkupParagraph").style.display = "none";
 				document.getElementById("wysiwygParagraph").style.display = "block";
 				document.getElementById("optionsParagraph").style.display = "none";
 				document.getElementById("entityParagraph").style.display = "none";
@@ -840,24 +859,30 @@
 				document.getElementById("assetParagraph").style.display = "none";
 				document.getElementById("allowedContentTypeNamesParagraph").style.display = "none";
 				document.getElementById("autoCreateContentParagraph").style.display = "none";
+				document.getElementById("isPuffContentForPageParagraph").style.display = "none";
 			}
 			else if(selectBox.value == "select" || selectBox.value == "checkbox")
 			{
+				document.getElementById("dataProviderParagraph").style.display = "block";
+			
 				var dataProvider = document.getElementById("componentPropertyDefinition_dataProvider").value;
 				if(dataProvider == '')
 					document.getElementById("optionsParagraph").style.display = "block";
 				else
 					document.getElementById("optionsParagraph").style.display = "none";
 				
+				document.getElementById("customMarkupParagraph").style.display = "none";
 				document.getElementById("entityParagraph").style.display = "none";
 				document.getElementById("multipleParagraph").style.display = "none";
 				document.getElementById("assetParagraph").style.display = "none";
 				document.getElementById("wysiwygParagraph").style.display = "none";
 				document.getElementById("allowedContentTypeNamesParagraph").style.display = "none";
 				document.getElementById("autoCreateContentParagraph").style.display = "none";
+				document.getElementById("isPuffContentForPageParagraph").style.display = "none";
 			}
 			else if(selectBox.value == "datefield")
 			{							 
+				document.getElementById("customMarkupParagraph").style.display = "none";
 				document.getElementById("optionsParagraph").style.display = "none";
 				document.getElementById("entityParagraph").style.display = "none";
 				document.getElementById("multipleParagraph").style.display = "none";
@@ -865,6 +890,21 @@
 				document.getElementById("wysiwygParagraph").style.display = "none";
 				document.getElementById("allowedContentTypeNamesParagraph").style.display = "none";
 				document.getElementById("autoCreateContentParagraph").style.display = "none";
+				document.getElementById("isPuffContentForPageParagraph").style.display = "none";
+				document.getElementById("dataProviderParagraph").style.display = "none";
+			}
+			else if(selectBox.value == "customfield")
+			{							 
+				document.getElementById("customMarkupParagraph").style.display = "block";
+				document.getElementById("optionsParagraph").style.display = "none";
+				document.getElementById("entityParagraph").style.display = "none";
+				document.getElementById("multipleParagraph").style.display = "none";
+				document.getElementById("assetParagraph").style.display = "none";
+				document.getElementById("wysiwygParagraph").style.display = "none";
+				document.getElementById("allowedContentTypeNamesParagraph").style.display = "none";
+				document.getElementById("autoCreateContentParagraph").style.display = "none";
+				document.getElementById("isPuffContentForPageParagraph").style.display = "none";
+				document.getElementById("dataProviderParagraph").style.display = "none";
 			}
 			else
 			{
@@ -873,6 +913,8 @@
 				document.getElementById("multipleParagraph").style.display = "block";
 				document.getElementById("assetParagraph").style.display = "block";
 				document.getElementById("allowedContentTypeNamesParagraph").style.display = "block";
+				document.getElementById("isPuffContentForPageParagraph").style.display = "block";
+				document.getElementById("dataProviderParagraph").style.display = "none";
 			}
 		}
 
@@ -948,8 +990,6 @@
 <p><label for="componentPropertyDefinition_displayName">Display name:</label><input type="textfield" name="componentPropertyDefinition_displayName" id="componentPropertyDefinition_displayName" value=""/></p>
 <p><label for="componentPropertyDefinition_description">Description:</label><input type="textfield" name="componentPropertyDefinition_description" id="componentPropertyDefinition_description" value=""/></p>
 <p><label for="componentPropertyDefinition_defaultValue">Default value:</label><input type="textfield" name="componentPropertyDefinition_defaultValue" id="componentPropertyDefinition_defaultValue" value=""/></p>
-<p><label for="componentPropertyDefinition_dataProvider">Data provider class:</label><input type="textfield" name="componentPropertyDefinition_dataProvider" id="componentPropertyDefinition_dataProvider" value=""/></p>
-<p><label for="componentPropertyDefinition_dataProviderParameters">Data provider parameters:</label><input type="textfield" name="componentPropertyDefinition_dataProviderParameters" id="componentPropertyDefinition_dataProviderParameters" value=""/></p>
 <p><label for="componentPropertyDefinition_type">Property type:</label>
 	<select size="1" name="componentPropertyDefinition_type" id="componentPropertyDefinition_type" class="sitedropbox" onchange="validateTypeChoice();">
 		<option value="binding">binding</option>
@@ -961,11 +1001,15 @@
 		<option value="customfield">customfield</option>
 	</select>
 </p>
+<div id="dataProviderParagraph" style="display: none;">
+	<p><label for="componentPropertyDefinition_dataProvider">Data provider class:</label><input type="textfield" name="componentPropertyDefinition_dataProvider" id="componentPropertyDefinition_dataProvider" value=""/></p>
+	<p><label for="componentPropertyDefinition_dataProviderParameters">Data provider parameters:</label><input type="textfield" name="componentPropertyDefinition_dataProviderParameters" id="componentPropertyDefinition_dataProviderParameters" value=""/></p>
+</div>
 
-<div id="customMarkupParagraph" style="display: block;">
+<div id="customMarkupParagraph" style="display: none;">
 	<p>
 	<label for="customMarkup">Custom Markup:</label>
-	<textarea name="componentPropertyDefinition_customMarkup" id="componentPropertyDefinition_customMarkup"></textarea>
+	<textarea name="componentPropertyDefinition_customMarkup" id="componentPropertyDefinition_customMarkup" class="smalltextarea" style="width: 300px;"></textarea>
 	</p>
 </div>
 
