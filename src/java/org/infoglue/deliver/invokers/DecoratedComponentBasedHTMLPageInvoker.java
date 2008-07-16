@@ -1208,15 +1208,15 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 									sb.append("			<option value='" + siteNodeVO.getSiteNodeId() + "' title='" + path + "'>" + siteNodeVO.getName() + "(" + siteNodeVO.getSiteNodeId() + ")" + "</option>");								
 							}
 							sb.append("			</select>");	
+
+							if(hasAccessToProperty)
+							    propertyIndex++;
 						}
 						sb.append("			</td>");
 						sb.append("			<td class=\"igpropertylabel igpropertyDivider\"></td>");
 						sb.append("			<td class=\"igpropertylabel igpropertyDivider\"></td>");
 						sb.append("		</tr>");
 					}
-					
-					if(hasAccessToProperty)
-					    propertyIndex++;
 				}
 				else if(componentProperty.getType().equalsIgnoreCase(ComponentProperty.TEXTFIELD))
 				{

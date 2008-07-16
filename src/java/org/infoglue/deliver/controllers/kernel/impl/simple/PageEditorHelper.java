@@ -455,6 +455,9 @@ public class PageEditorHelper extends BaseDeliveryController
 							}
 							sb.append("		</select>");	
 							sb.append("	</div>");
+
+							if(hasAccessToProperty)
+							    propertyIndex++;
 						}
 						
 						sb.append("	</div>");
