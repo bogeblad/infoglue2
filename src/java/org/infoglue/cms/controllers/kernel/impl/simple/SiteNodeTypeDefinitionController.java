@@ -98,6 +98,16 @@ public class SiteNodeTypeDefinitionController extends BaseController
         return getAllVOObjects(SiteNodeTypeDefinitionImpl.class, "siteNodeTypeDefinitionId");
     }
 
+    public List getSiteNodeTypeDefinitionVOList(Database db) throws SystemException, Bug
+    {
+        return getAllVOObjects(SiteNodeTypeDefinitionImpl.class, "siteNodeTypeDefinitionId", db);
+    }
+
+    public List getSiteNodeTypeDefinitionList(Database db) throws SystemException, Bug
+    {
+        return getAllObjects(SiteNodeTypeDefinitionImpl.class, "siteNodeTypeDefinitionId", db);
+    }
+
     public List getSortedSiteNodeTypeDefinitionVOList() throws SystemException, Bug
     {
     	List siteNodeTypeDefinitionVOList = getSiteNodeTypeDefinitionVOList();
