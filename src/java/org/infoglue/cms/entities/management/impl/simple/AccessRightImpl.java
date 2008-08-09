@@ -96,6 +96,16 @@ public class AccessRightImpl implements AccessRight
 		this.interceptionPoint =  interceptionPoint;
 	}
 	
+    public java.lang.String getInterceptionPointName()
+    {
+        return this.valueObject.getInterceptionPointName(); 
+    }
+
+    public void setInterceptionPointName(String interceptionPointName)
+    {
+    	this.valueObject.setInterceptionPointName(interceptionPointName); 
+    }
+
 	public Integer getId()
 	{
 		return this.getAccessRightId();

@@ -46,7 +46,11 @@ public interface AccessRight extends IBaseEntity
 	public void setName(java.lang.String name);
 
 	public void setParameters(java.lang.String parameters);
-        	
+    
+    public java.lang.String getInterceptionPointName();
+
+    public void setInterceptionPointName(String interceptionPointName);
+
 	public InterceptionPoint getInterceptionPoint();
 	
 	public void setInterceptionPoint(InterceptionPoint interceptionPoint);
