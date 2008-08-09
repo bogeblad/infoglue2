@@ -31,6 +31,18 @@
     <field name="categories" type="org.infoglue.cms.entities.management.CategoryVO" collection="collection">
       	<bind-xml node="element"/>
     </field>
+    <field name="repositoryProperties" collection="hashtable">
+      	<bind-xml node="element"/> 
+    </field>
+    <field name="contentProperties" collection="hashtable">
+      	<bind-xml node="element"/>
+    </field>
+    <field name="siteNodeProperties" collection="hashtable">
+      	<bind-xml node="element"/>
+    </field>
+    <field name="accessRights" type="org.infoglue.cms.entities.management.impl.simple.AccessRightImpl" collection="collection">
+      	<bind-xml node="element"/>
+    </field>
 
   </class>
 
@@ -367,8 +379,8 @@
     <field name="parameters" type="java.lang.String">
       <bind-xml name="parameters" node="element"/>
     </field>
-    <field name="interceptionPoint" type="org.infoglue.cms.entities.management.impl.simple.InterceptionPointImpl">
-      <bind-xml name="interceptionPoint" node="element"/>
+    <field name="interceptionPointName" type="java.lang.String">
+      <bind-xml name="interceptionPointName" node="element"/>
     </field>
     <field name="roles" type="org.infoglue.cms.entities.management.impl.simple.AccessRightRoleImpl" collection="collection">
       <bind-xml name="roles" node="element"/>
@@ -388,11 +400,6 @@
     <field name="roleName" type="java.lang.String">
       <bind-xml name="roleName" node="element"/>
     </field>
-	<!--
-    <field name="accessRight" type="org.infoglue.cms.entities.management.impl.simple.AccessRightImpl">
-      <sql name="accessRightId"/>
-    </field>
-    -->
   </class>
   
   <class name="org.infoglue.cms.entities.management.impl.simple.AccessRightGroupImpl" identity="accessRightGroupId" key-generator="IDENTITY">
@@ -405,11 +412,6 @@
     <field name="groupName" type="java.lang.String">
 		<bind-xml name="groupName" node="element"/>
     </field>
-    <!--
-    <field name="accessRight" type="org.infoglue.cms.entities.management.impl.simple.AccessRightImpl">
-      <sql name="accessRightId"/>
-    </field>
-    -->
   </class>
 
 <!--  Mapping for ContentTypeDefinition  -->
@@ -660,7 +662,6 @@
     </field>
     -->
   </class>
-    
-      
+          
 </mapping>
 
