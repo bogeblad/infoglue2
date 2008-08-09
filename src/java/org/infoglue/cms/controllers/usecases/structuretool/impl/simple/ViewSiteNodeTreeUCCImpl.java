@@ -34,8 +34,10 @@ import org.infoglue.cms.controllers.kernel.impl.simple.BaseUCCController;
 import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
 import org.infoglue.cms.controllers.kernel.impl.simple.RepositoryController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeController;
+import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeTypeDefinitionController;
 import org.infoglue.cms.controllers.usecases.structuretool.ViewSiteNodeTreeUCC;
 import org.infoglue.cms.entities.management.Repository;
+import org.infoglue.cms.entities.management.SiteNodeTypeDefinition;
 import org.infoglue.cms.entities.structure.SiteNode;
 import org.infoglue.cms.entities.structure.SiteNodeVO;
 import org.infoglue.cms.exception.ConstraintException;
@@ -82,7 +84,12 @@ public class ViewSiteNodeTreeUCCImpl extends BaseUCCController implements ViewSi
 				rootSiteNodeVO.setName(repository.getName());
 				rootSiteNodeVO.setIsBranch(new Boolean(true));
 				rootSiteNodeVO.setMetaInfoContentId(new Integer(-1));
-				SiteNode siteNode = SiteNodeController.getController().create(db, null, null, infoGluePrincipal, repositoryId, rootSiteNodeVO);
+				List siteNodeTypeDefintionList = SiteNodeTypeDefinitionController.getController().getSiteNodeTypeDefinitionList(db);
+				Integer siteNodeTypeDefintionId = null;
+				if(siteNodeTypeDefintionList != null && siteNodeTypeDefintionList.size() == 1)
+					siteNodeTypeDefintionId = ((SiteNodeTypeDefinition)siteNodeTypeDefintionList.get(0)).getId();
+				
+				SiteNode siteNode = SiteNodeController.getController().create(db, null, siteNodeTypeDefintionId, infoGluePrincipal, repositoryId, rootSiteNodeVO);
 				//siteNodeVO = SiteNodeController.getController().create(null, null, infoGluePrincipal, repositoryId, siteNodeVO);
 				//siteNodeVO = SiteNodeControllerProxy.getSiteNodeControllerProxy().acCreate(infoGluePrincipal, null, null, repositoryId, rootSiteNodeVO);
 				siteNodeVO = siteNode.getValueObject();
