@@ -46,6 +46,7 @@ import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
 import org.infoglue.cms.controllers.kernel.impl.simple.CategoryController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
+import org.infoglue.cms.controllers.kernel.impl.simple.InterceptionPointController;
 import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ServiceDefinitionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeTypeDefinitionController;
@@ -56,11 +57,15 @@ import org.infoglue.cms.entities.content.DigitalAsset;
 import org.infoglue.cms.entities.content.impl.simple.ContentCategoryImpl;
 import org.infoglue.cms.entities.content.impl.simple.ContentImpl;
 import org.infoglue.cms.entities.content.impl.simple.ContentVersionImpl;
+import org.infoglue.cms.entities.management.AccessRight;
+import org.infoglue.cms.entities.management.AccessRightGroup;
+import org.infoglue.cms.entities.management.AccessRightRole;
 import org.infoglue.cms.entities.management.AvailableServiceBinding;
 import org.infoglue.cms.entities.management.Category;
 import org.infoglue.cms.entities.management.CategoryVO;
 import org.infoglue.cms.entities.management.ContentTypeDefinition;
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
+import org.infoglue.cms.entities.management.InterceptionPoint;
 import org.infoglue.cms.entities.management.Language;
 import org.infoglue.cms.entities.management.Repository;
 import org.infoglue.cms.entities.management.RepositoryLanguage;
@@ -84,6 +89,9 @@ import org.infoglue.cms.entities.structure.impl.simple.SiteNodeVersionImpl;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.FileUploadHelper;
+
+import com.opensymphony.module.propertyset.PropertySet;
+import com.opensymphony.module.propertyset.PropertySetManager;
 
 import webwork.action.ActionContext;
 
@@ -162,7 +170,7 @@ public class ImportRepositoryAction extends InfoGlueAbstractAction
 			else if(version == 2)
 			{
 			    logger.info("MappingFile:" + CastorDatabaseService.class.getResource("/xml_mapping_site_2.5.xml").toString());
-				map.loadMapping(CastorDatabaseService.class.getResource("/xml_mapping_site_2.5.xml").toString());	
+			    map.loadMapping(CastorDatabaseService.class.getResource("/xml_mapping_site_2.5.xml").toString());	
 			}
 
 			// All ODMG database access requires a transaction
@@ -186,7 +194,6 @@ public class ImportRepositoryAction extends InfoGlueAbstractAction
 			Map contentTypeIdMap = new HashMap();
 
 			importCategories(categories, null, categoryIdMap, db);
-			
 			updateContentTypeDefinitions(contentTypeDefinitions, categoryIdMap);
 			
 			List readSiteNodes = infoGlueExportImplRead.getRootSiteNode();
@@ -196,7 +203,9 @@ public class ImportRepositoryAction extends InfoGlueAbstractAction
 			//Content readContent = infoGlueExportImplRead.getRootContent();
 			//logger.info(readContent.getName());
 
+			Map repositoryIdMap = new HashMap();
 			Map contentIdMap = new HashMap();
+			Map siteNodeVersionIdMap = new HashMap();
 			Map siteNodeIdMap = new HashMap();
 			
 			List allContents = new ArrayList();
@@ -233,7 +242,10 @@ public class ImportRepositoryAction extends InfoGlueAbstractAction
 				
 				readContent.setRepository((RepositoryImpl)repositoryRead);
 
+				Integer repositoryIdBefore = repositoryRead.getId();
 				db.create(repositoryRead);
+				Integer repositoryIdAfter = repositoryRead.getId();
+				repositoryIdMap.put("" + repositoryIdBefore, "" + repositoryIdAfter);
 
 				Collection repositoryLanguages = repositoryRead.getRepositoryLanguages();
 				Iterator repositoryLanguagesIterator = repositoryLanguages.iterator();
@@ -262,7 +274,7 @@ public class ImportRepositoryAction extends InfoGlueAbstractAction
 				readSiteNode.setRepository((RepositoryImpl)repositoryRead);
 				
 				createContents(readContent, contentIdMap, contentTypeIdMap, allContents, Collections.unmodifiableCollection(contentTypeDefinitions), categoryIdMap, version, db);
-				createStructure(readSiteNode, contentIdMap, siteNodeIdMap, readAvailableServiceBindings, allSiteNodes, db);
+				createStructure(readSiteNode, contentIdMap, siteNodeIdMap, siteNodeVersionIdMap, readAvailableServiceBindings, allSiteNodes, db);
 			}
 						
 			List allContentIds = new ArrayList();
@@ -273,9 +285,105 @@ public class ImportRepositoryAction extends InfoGlueAbstractAction
 				allContentIds.add(content.getContentId());
 			}
 
+			//TEST
+			Map args = new HashMap();
+		    args.put("globalKey", "infoglue");
+		    PropertySet ps = PropertySetManager.getInstance("jdbc", args);
+
+			Map<String,String> repositoryProperties = infoGlueExportImplRead.getRepositoryProperties();
+			Iterator<String> repositoryPropertiesIterator = repositoryProperties.keySet().iterator();
+			while(repositoryPropertiesIterator.hasNext())
+			{
+				String key = repositoryPropertiesIterator.next();
+				String value = repositoryProperties.get(key);
+				String[] splittedString = key.split("_");
+				if(splittedString.length == 3)
+				{
+					String oldRepId = splittedString[1];
+					key = key.replaceAll(oldRepId, (String)repositoryIdMap.get(oldRepId));
+					
+					if(value != null && !value.equals("null"))
+					{
+						if(key.indexOf("_WYSIWYGConfig") > -1 || key.indexOf("_StylesXML") > -1 || key.indexOf("_extraProperties") > -1)
+							ps.setData(key, value.getBytes("utf-8"));
+						else
+							ps.setString(key, value);
+					}
+				}
+			}
+
+			Map<String,String> contentProperties = infoGlueExportImplRead.getContentProperties();
+			Iterator<String> contentPropertiesIterator = contentProperties.keySet().iterator();
+			while(contentPropertiesIterator.hasNext())
+			{
+				String key = contentPropertiesIterator.next();
+				String value = contentProperties.get(key);
+				String[] splittedString = key.split("_");
+				if(splittedString.length == 3)
+				{
+					String oldContentId = splittedString[1];
+					key = key.replaceAll(oldContentId, (String)contentIdMap.get(oldContentId));
+					if(value != null && !value.equals("null"))
+						ps.setString(key, value);
+				}
+			}
+
+			Map<String,String> siteNodeProperties = infoGlueExportImplRead.getSiteNodeProperties();
+			Iterator<String> siteNodePropertiesIterator = siteNodeProperties.keySet().iterator();
+			while(siteNodePropertiesIterator.hasNext())
+			{
+				String key = siteNodePropertiesIterator.next();
+				String value = siteNodeProperties.get(key);
+				String[] splittedString = key.split("_");
+				if(splittedString.length == 3)
+				{
+					String oldSiteNodeId = splittedString[1];
+					key = key.replaceAll(oldSiteNodeId, (String)siteNodeIdMap.get(oldSiteNodeId));
+					if(value != null && !value.equals("null"))
+						ps.setString(key, value);
+				}
+			}
+
+			Collection<AccessRight> accessRights = infoGlueExportImplRead.getAccessRights();
+			Iterator<AccessRight> accessRightsIterator = accessRights.iterator();
+			while(accessRightsIterator.hasNext())
+			{
+				AccessRight accessRight = accessRightsIterator.next();
+
+				InterceptionPoint interceptionPoint = InterceptionPointController.getController().getInterceptionPointWithName(accessRight.getInterceptionPointName(), db);
+				accessRight.setInterceptionPoint(interceptionPoint);
+				if(interceptionPoint.getName().indexOf("Content") > -1)
+					accessRight.setParameters((String)contentIdMap.get(accessRight.getParameters()));
+				else if(interceptionPoint.getName().indexOf("SiteNodeVersion") > -1)
+					accessRight.setParameters((String)siteNodeVersionIdMap.get(accessRight.getParameters()));
+				else if(interceptionPoint.getName().indexOf("SiteNode") > -1)
+					accessRight.setParameters((String)siteNodeIdMap.get(accessRight.getParameters()));
+				else if(interceptionPoint.getName().indexOf("Repository") > -1)
+					accessRight.setParameters((String)repositoryIdMap.get(accessRight.getParameters()));
+
+				db.create(accessRight);
+
+				Iterator accessRightRoleIterator = accessRight.getRoles().iterator();
+				while(accessRightRoleIterator.hasNext())
+				{
+					AccessRightRole accessRightRole = (AccessRightRole)accessRightRoleIterator.next();
+					accessRightRole.setAccessRight(accessRight);
+					db.create(accessRightRole);
+				}
+
+				Iterator accessRightGroupIterator = accessRight.getGroups().iterator();
+				while(accessRightGroupIterator.hasNext())
+				{
+					AccessRightGroup accessRightGroup = (AccessRightGroup)accessRightGroupIterator.next();
+					accessRightGroup.setAccessRight(accessRight);
+					db.create(accessRightGroup);
+				}
+			}
+
 			db.commit();
 			db.close();
-						
+			
+			
 			Iterator allContentIdsIterator = allContentIds.iterator();
 			while(allContentIdsIterator.hasNext())
 			{
@@ -411,7 +519,7 @@ public class ImportRepositoryAction extends InfoGlueAbstractAction
 	 * @param db
 	 * @throws Exception
 	 */
-	private void createStructure(SiteNode siteNode, Map contentIdMap, Map siteNodeIdMap, Map readAvailableServiceBindings, List allSiteNodes, Database db) throws Exception
+	private void createStructure(SiteNode siteNode, Map contentIdMap, Map siteNodeIdMap, Map siteNodeVersionIdMap, Map readAvailableServiceBindings, List allSiteNodes, Database db) throws Exception
 	{
 		logger.info("siteNode:" + siteNode.getName());
 
@@ -460,7 +568,7 @@ public class ImportRepositoryAction extends InfoGlueAbstractAction
 				SiteNode childSiteNode = (SiteNode)childSiteNodesIterator.next();
 				childSiteNode.setRepository(siteNode.getRepository());
 				childSiteNode.setParentSiteNode((SiteNodeImpl)siteNode);
-				createStructure(childSiteNode, contentIdMap, siteNodeIdMap, readAvailableServiceBindings, allSiteNodes, db);
+				createStructure(childSiteNode, contentIdMap, siteNodeIdMap, siteNodeVersionIdMap, readAvailableServiceBindings, allSiteNodes, db);
 			}
 		}
 
@@ -503,8 +611,13 @@ public class ImportRepositoryAction extends InfoGlueAbstractAction
 
 			siteNodeVersion.setOwningSiteNode((SiteNodeImpl)siteNode);
 			
+			Integer oldSiteNodeVersionId = siteNodeVersion.getId();
+
 			db.create(siteNodeVersion);
-						
+
+			Integer newSiteNodeVersionId = siteNodeVersion.getId();
+			siteNodeVersionIdMap.put(oldSiteNodeVersionId.toString(), newSiteNodeVersionId.toString());
+
 			Iterator serviceBindingsIterator = serviceBindings.iterator();
 			while(serviceBindingsIterator.hasNext())
 			{
@@ -766,7 +879,7 @@ public class ImportRepositoryAction extends InfoGlueAbstractAction
 			logger.info("contentCategories:" + contentCategories.size());
 			
 			db.create(contentVersion);
-			
+
 			if(contentCategories != null)
 			{
 				List initialContentCategories = new ArrayList();

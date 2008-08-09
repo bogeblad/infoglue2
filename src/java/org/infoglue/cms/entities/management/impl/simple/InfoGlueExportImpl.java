@@ -25,9 +25,13 @@ package org.infoglue.cms.entities.management.impl.simple;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 
 import org.infoglue.cms.entities.content.impl.simple.ContentImpl;
+import org.infoglue.cms.entities.management.AccessRight;
 import org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl;
 
 public class InfoGlueExportImpl
@@ -39,6 +43,10 @@ public class InfoGlueExportImpl
 	//private SiteNodeImpl rootSiteNode;
 	private Collection contentTypeDefinitions = new ArrayList();
 	private Collection categories = new ArrayList();
+	private Hashtable<String,String> repositoryProperties = new Hashtable<String,String>();
+	private Hashtable<String,String> contentProperties = new Hashtable<String,String>();
+	private Hashtable<String,String> siteNodeProperties = new Hashtable<String,String>();
+	private Collection<AccessRight> accessRights = new ArrayList<AccessRight>();
 	
 	public Integer getInfoGlueExportId()
 	{
@@ -102,4 +110,44 @@ public class InfoGlueExportImpl
 		this.categories = categories;
 	}
 
-}        
+	public Hashtable<String, String> getContentProperties()
+	{
+		return contentProperties;
+	}
+
+	public void setContentProperties(Hashtable<String, String> contentProperties)
+	{
+		this.contentProperties = contentProperties;
+	}
+
+	public Hashtable<String, String> getSiteNodeProperties()
+	{
+		return siteNodeProperties;
+	}
+
+	public void setSiteNodeProperties(Hashtable<String, String> siteNodeProperties)
+	{
+		this.siteNodeProperties = siteNodeProperties;
+	}
+
+	public Hashtable<String, String> getRepositoryProperties()
+	{
+		return repositoryProperties;
+	}
+
+	public void setRepositoryProperties(Hashtable<String, String> repositoryProperties)
+	{
+		this.repositoryProperties = repositoryProperties;
+	}
+
+	public Collection<AccessRight> getAccessRights()
+	{
+		return accessRights;
+	}
+
+	public void setAccessRights(Collection<AccessRight> accessRights)
+	{
+		this.accessRights = accessRights;
+	}
+
+}

@@ -28,7 +28,11 @@ import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
@@ -36,20 +40,32 @@ import org.exolab.castor.mapping.Mapping;
 import org.exolab.castor.xml.Marshaller;
 import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
+import org.infoglue.cms.controllers.kernel.impl.simple.AccessRightController;
 import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
 import org.infoglue.cms.controllers.kernel.impl.simple.CategoryController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
+import org.infoglue.cms.controllers.kernel.impl.simple.InterceptionPointController;
+import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
 import org.infoglue.cms.controllers.kernel.impl.simple.RepositoryController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeController;
+import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeVersionController;
 import org.infoglue.cms.entities.content.Content;
 import org.infoglue.cms.entities.content.impl.simple.ContentImpl;
+import org.infoglue.cms.entities.management.AccessRight;
+import org.infoglue.cms.entities.management.InterceptionPointVO;
+import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.entities.management.Repository;
 import org.infoglue.cms.entities.management.impl.simple.InfoGlueExportImpl;
 import org.infoglue.cms.entities.structure.SiteNode;
+import org.infoglue.cms.entities.structure.SiteNodeVersionVO;
 import org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl;
+import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.handlers.DigitalAssetBytesHandler;
+
+import com.opensymphony.module.propertyset.PropertySet;
+import com.opensymphony.module.propertyset.PropertySetManager;
 
 
 /**
@@ -110,8 +126,19 @@ public class ExportRepositoryAction extends InfoGlueAbstractAction
 			// All ODMG database access requires a transaction
 			db.begin();
 
-			List siteNodes = new ArrayList();
-			List contents = new ArrayList();
+			List<SiteNode> siteNodes = new ArrayList<SiteNode>();
+			List<Content> contents = new ArrayList<Content>();
+			Hashtable<String,String> allRepositoryProperties = new Hashtable<String,String>();
+			Hashtable<String,String> allSiteNodeProperties = new Hashtable<String,String>();
+			Hashtable<String,String> allContentProperties = new Hashtable<String,String>();
+			List<AccessRight> allAccessRights = new ArrayList<AccessRight>();
+			//List<AccessRight> allAccessRights = AccessRightController.getController().getAllAccessRightListForExportReadOnly(db);
+			
+			//TEST
+			Map args = new HashMap();
+		    args.put("globalKey", "infoglue");
+		    PropertySet ps = PropertySetManager.getInstance("jdbc", args);
+		    //END TEST
 			
 			String names = "";
 			String[] repositories = getRequest().getParameterValues("repositoryId");
@@ -122,9 +149,21 @@ public class ExportRepositoryAction extends InfoGlueAbstractAction
 				SiteNode siteNode 		= SiteNodeController.getController().getRootSiteNode(repositoryId, db);
 				Content content 		= ContentController.getContentController().getRootContent(repositoryId, db);
 
+			    InterceptionPointVO interceptionPointVO = InterceptionPointController.getController().getInterceptionPointVOWithName("Repository.Read", db);
+			    if(interceptionPointVO != null)
+			    	allAccessRights.addAll(AccessRightController.getController().getAccessRightListOnlyReadOnly(interceptionPointVO.getId(), repository.getId().toString(), db));
+
+			    interceptionPointVO = InterceptionPointController.getController().getInterceptionPointVOWithName("Repository.ReadForBinding", db);
+			    if(interceptionPointVO != null)
+			    	allAccessRights.addAll(AccessRightController.getController().getAccessRightListOnlyReadOnly(interceptionPointVO.getId(), repository.getId().toString(), db));
+
+				getContentPropertiesAndAccessRights(ps, allContentProperties, allAccessRights, content, db);
+				getSiteNodePropertiesAndAccessRights(ps, allSiteNodeProperties, allAccessRights, siteNode, db);
+				
 				siteNodes.add(siteNode);
 				contents.add(content);
 				names = names + "_" + repository.getName();
+				allRepositoryProperties = getRepositoryProperties(ps, repositoryId);
 			}
 			
 			List contentTypeDefinitions = ContentTypeDefinitionController.getController().getContentTypeDefinitionList(db);
@@ -169,6 +208,11 @@ public class ExportRepositoryAction extends InfoGlueAbstractAction
 			infoGlueExportImpl.setContentTypeDefinitions(contentTypeDefinitions);
 			infoGlueExportImpl.setCategories(categories);
 			
+			infoGlueExportImpl.setRepositoryProperties(allRepositoryProperties);
+			infoGlueExportImpl.setContentProperties(allContentProperties);
+			infoGlueExportImpl.setSiteNodeProperties(allSiteNodeProperties);
+			infoGlueExportImpl.setAccessRights(allAccessRights);
+			
 			marshaller.marshal(infoGlueExportImpl);
 			
 			osw.flush();
@@ -190,6 +234,145 @@ public class ExportRepositoryAction extends InfoGlueAbstractAction
 		return "success";
 	}
 
+
+	private void getContentPropertiesAndAccessRights(PropertySet ps, Hashtable<String, String> allContentProperties, List<AccessRight> allAccessRights, Content content, Database db) throws SystemException
+	{
+		String allowedContentTypeNames = ps.getString("content_" + content.getId() + "_allowedContentTypeNames");
+		if ( allowedContentTypeNames != null && !allowedContentTypeNames.equals(""))
+	    {
+        	allContentProperties.put("content_" + content.getId() + "_allowedContentTypeNames", allowedContentTypeNames);
+	    }
+        allContentProperties.put("content_" + content.getId() + "_defaultContentTypeName", "" + ps.getString("content_" + content.getId() + "_defaultContentTypeName"));
+        allContentProperties.put("content_" + content.getId() + "_initialLanguageId", "" + ps.getString("content_" + content.getId() + "_initialLanguageId"));
+
+	    InterceptionPointVO interceptionPointVO = InterceptionPointController.getController().getInterceptionPointVOWithName("Content.Read", db);
+	    if(interceptionPointVO != null)
+	    	allAccessRights.addAll(AccessRightController.getController().getAccessRightListOnlyReadOnly(interceptionPointVO.getId(), content.getId().toString(), db));
+
+	    interceptionPointVO = InterceptionPointController.getController().getInterceptionPointVOWithName("Content.Write", db);
+	    if(interceptionPointVO != null)
+	    	allAccessRights.addAll(AccessRightController.getController().getAccessRightListOnlyReadOnly(interceptionPointVO.getId(), content.getId().toString(), db));
+
+	    interceptionPointVO = InterceptionPointController.getController().getInterceptionPointVOWithName("Content.Create", db);
+	    if(interceptionPointVO != null)
+	    	allAccessRights.addAll(AccessRightController.getController().getAccessRightListOnlyReadOnly(interceptionPointVO.getId(), content.getId().toString(), db));
+
+	    interceptionPointVO = InterceptionPointController.getController().getInterceptionPointVOWithName("Content.Delete", db);
+	    if(interceptionPointVO != null)
+	    	allAccessRights.addAll(AccessRightController.getController().getAccessRightListOnlyReadOnly(interceptionPointVO.getId(), content.getId().toString(), db));
+
+	    interceptionPointVO = InterceptionPointController.getController().getInterceptionPointVOWithName("Content.Move", db);
+	    if(interceptionPointVO != null)
+	    	allAccessRights.addAll(AccessRightController.getController().getAccessRightListOnlyReadOnly(interceptionPointVO.getId(), content.getId().toString(), db));
+
+	    interceptionPointVO = InterceptionPointController.getController().getInterceptionPointVOWithName("Content.SubmitToPublish", db);
+	    if(interceptionPointVO != null)
+	    	allAccessRights.addAll(AccessRightController.getController().getAccessRightListOnlyReadOnly(interceptionPointVO.getId(), content.getId().toString(), db));
+	    
+	    interceptionPointVO = InterceptionPointController.getController().getInterceptionPointVOWithName("Content.ChangeAccessRights", db);
+	    if(interceptionPointVO != null)
+	    	allAccessRights.addAll(AccessRightController.getController().getAccessRightListOnlyReadOnly(interceptionPointVO.getId(), content.getId().toString(), db));
+
+	    interceptionPointVO = InterceptionPointController.getController().getInterceptionPointVOWithName("Content.CreateVersion", db);
+	    if(interceptionPointVO != null)
+	    	allAccessRights.addAll(AccessRightController.getController().getAccessRightListOnlyReadOnly(interceptionPointVO.getId(), content.getId().toString(), db));
+
+	    interceptionPointVO = InterceptionPointController.getController().getInterceptionPointVOWithName("ContentVersion.Delete", db);
+	    if(interceptionPointVO != null)
+	    	allAccessRights.addAll(AccessRightController.getController().getAccessRightListOnlyReadOnly(interceptionPointVO.getId(), content.getId().toString(), db));
+
+	    interceptionPointVO = InterceptionPointController.getController().getInterceptionPointVOWithName("ContentVersion.Write", db);
+	    if(interceptionPointVO != null)
+	    	allAccessRights.addAll(AccessRightController.getController().getAccessRightListOnlyReadOnly(interceptionPointVO.getId(), content.getId().toString(), db));
+
+	    interceptionPointVO = InterceptionPointController.getController().getInterceptionPointVOWithName("ContentVersion.Read", db);
+	    if(interceptionPointVO != null)
+	    	allAccessRights.addAll(AccessRightController.getController().getAccessRightListOnlyReadOnly(interceptionPointVO.getId(), content.getId().toString(), db));
+
+	    interceptionPointVO = InterceptionPointController.getController().getInterceptionPointVOWithName("ContentVersion.Publish", db);
+	    if(interceptionPointVO != null)
+	    	allAccessRights.addAll(AccessRightController.getController().getAccessRightListOnlyReadOnly(interceptionPointVO.getId(), content.getId().toString(), db));
+        
+        Iterator childContents = content.getChildren().iterator();
+        while(childContents.hasNext())
+        {
+        	Content childContent = (Content)childContents.next();
+        	getContentPropertiesAndAccessRights(ps, allContentProperties, allAccessRights, childContent, db);
+        }
+	}
+
+	private void getSiteNodePropertiesAndAccessRights(PropertySet ps, Hashtable<String, String> allSiteNodeProperties, List<AccessRight> allAccessRights, SiteNode siteNode, Database db) throws SystemException, Exception
+	{
+	    String disabledLanguagesString = "" + ps.getString("siteNode_" + siteNode.getId() + "_disabledLanguages");
+	    String enabledLanguagesString = "" + ps.getString("siteNode_" + siteNode.getId() + "_enabledLanguages");
+
+	    allSiteNodeProperties.put("siteNode_" + siteNode.getId() + "_disabledLanguages", disabledLanguagesString);
+        allSiteNodeProperties.put("siteNode_" + siteNode.getId() + "_enabledLanguages", enabledLanguagesString);
+        
+        SiteNodeVersionVO latestSiteNodeVersionVO = SiteNodeVersionController.getController().getLatestActiveSiteNodeVersionVO(db, siteNode.getId());
+        
+        InterceptionPointVO interceptionPointVO = InterceptionPointController.getController().getInterceptionPointVOWithName("SiteNodeVersion.Read", db);
+	    if(interceptionPointVO != null)
+	    	allAccessRights.addAll(AccessRightController.getController().getAccessRightListOnlyReadOnly(interceptionPointVO.getId(), latestSiteNodeVersionVO.getId().toString(), db));
+
+	    interceptionPointVO = InterceptionPointController.getController().getInterceptionPointVOWithName("SiteNodeVersion.Write", db);
+	    if(interceptionPointVO != null)
+	    	allAccessRights.addAll(AccessRightController.getController().getAccessRightListOnlyReadOnly(interceptionPointVO.getId(), latestSiteNodeVersionVO.getId().toString(), db));
+
+	    interceptionPointVO = InterceptionPointController.getController().getInterceptionPointVOWithName("SiteNodeVersion.CreateSiteNode", db);
+	    if(interceptionPointVO != null)
+	    	allAccessRights.addAll(AccessRightController.getController().getAccessRightListOnlyReadOnly(interceptionPointVO.getId(), latestSiteNodeVersionVO.getId().toString(), db));
+
+	    interceptionPointVO = InterceptionPointController.getController().getInterceptionPointVOWithName("SiteNodeVersion.DeleteSiteNode", db);
+	    if(interceptionPointVO != null)
+	    	allAccessRights.addAll(AccessRightController.getController().getAccessRightListOnlyReadOnly(interceptionPointVO.getId(), latestSiteNodeVersionVO.getId().toString(), db));
+
+	    interceptionPointVO = InterceptionPointController.getController().getInterceptionPointVOWithName("SiteNodeVersion.MoveSiteNode", db);
+	    if(interceptionPointVO != null)
+	    	allAccessRights.addAll(AccessRightController.getController().getAccessRightListOnlyReadOnly(interceptionPointVO.getId(), latestSiteNodeVersionVO.getId().toString(), db));
+
+	    interceptionPointVO = InterceptionPointController.getController().getInterceptionPointVOWithName("SiteNodeVersion.SubmitToPublish", db);
+	    if(interceptionPointVO != null)
+	    	allAccessRights.addAll(AccessRightController.getController().getAccessRightListOnlyReadOnly(interceptionPointVO.getId(), latestSiteNodeVersionVO.getId().toString(), db));
+
+	    interceptionPointVO = InterceptionPointController.getController().getInterceptionPointVOWithName("SiteNodeVersion.ChangeAccessRights", db);
+	    if(interceptionPointVO != null)
+	    	allAccessRights.addAll(AccessRightController.getController().getAccessRightListOnlyReadOnly(interceptionPointVO.getId(), latestSiteNodeVersionVO.getId().toString(), db));
+
+	    interceptionPointVO = InterceptionPointController.getController().getInterceptionPointVOWithName("SiteNodeVersion.Publish", db);
+	    if(interceptionPointVO != null)
+	    	allAccessRights.addAll(AccessRightController.getController().getAccessRightListOnlyReadOnly(interceptionPointVO.getId(), latestSiteNodeVersionVO.getId().toString(), db));
+        
+        Iterator childSiteNodes = siteNode.getChildSiteNodes().iterator();
+        while(childSiteNodes.hasNext())
+        {
+        	SiteNode childSiteNode = (SiteNode)childSiteNodes.next();
+        	getSiteNodePropertiesAndAccessRights(ps, allSiteNodeProperties, allAccessRights, childSiteNode, db);
+        }
+	}
+
+	private Hashtable<String,String> getRepositoryProperties(PropertySet ps, Integer repositoryId) throws Exception
+	{
+		Hashtable<String,String> properties = new Hashtable<String,String>();
+			    
+	    byte[] WYSIWYGConfigBytes = ps.getData("repository_" + repositoryId + "_WYSIWYGConfig");
+	    if(WYSIWYGConfigBytes != null)
+	    	properties.put("repository_" + repositoryId + "_WYSIWYGConfig", new String(WYSIWYGConfigBytes, "utf-8"));
+
+	    byte[] StylesXMLBytes = ps.getData("repository_" + repositoryId + "_StylesXML");
+	    if(StylesXMLBytes != null)
+	    	properties.put("repository_" + repositoryId + "_StylesXML", new String(StylesXMLBytes, "utf-8"));
+
+	    byte[] extraPropertiesBytes = ps.getData("repository_" + repositoryId + "_extraProperties");
+	    if(extraPropertiesBytes != null)
+	    	properties.put("repository_" + repositoryId + "_extraProperties", new String(extraPropertiesBytes, "utf-8"));
+
+    	properties.put("repository_" + repositoryId + "_defaultFolderContentTypeName", "" + ps.getString("repository_" + repositoryId + "_defaultFolderContentTypeName"));
+    	properties.put("repository_" + repositoryId + "_defaultTemplateRepository", "" + ps.getString("repository_" + repositoryId + "_defaultTemplateRepository"));
+    	properties.put("repository_" + repositoryId + "_parentRepository", "" + ps.getString("repository_" + repositoryId + "_parentRepository"));
+
+		return properties;
+	}
 
 	public void setRepositoryId(Integer repositoryId)
 	{
