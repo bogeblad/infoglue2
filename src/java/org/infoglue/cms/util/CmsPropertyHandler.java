@@ -1307,6 +1307,13 @@ public class CmsPropertyHandler
         return getServerNodeProperty("encodeCasServiceUrl", true, "true");
 	}
 	
+	public static boolean getDuplicateAssetsBetweenVersions()
+	{
+		String duplicateAssetsBetweenVersions = getServerNodeProperty("duplicateAssetsBetweenVersions", true, "false");
+		
+		return Boolean.parseBoolean(duplicateAssetsBetweenVersions);
+	}
+
 	public static String getWYSIWYGToolbarComboPreviewCSS()
 	{
 		String WYSIWYGToolbarComboPreviewCSS = getServerNodeDataProperty(null, "WYSIWYGToolbarComboPreviewCSS", true, "p, div, h1, h2, h3, h4, h5, h6, pre, address { font-family: Verdana, Arial, Sans serif; font-size: 10px; font-style: normal; font-weight: normal; }");
