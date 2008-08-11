@@ -1,10 +1,11 @@
 -------------------------------------------------------------------------------------
-- InfoGlue 2.9 Final
+- InfoGlue 2.9 Final Candidate
 -------------------------------------------------------------------------------------
 
 Release notes
 ---------------------------------------
-This is a . 
+This is a new big step towards better usability in InfoGlue. A number of new features/screens to support this is implemented and
+many of the screens have been updated with a new GUI etc. 
     
 Thanx for all reports and proposals for bugfixes.
 The InfoGlue Team
@@ -75,8 +76,19 @@ Abbreviated Changelog from 2.8.1 Final
 - Upgraded jquery to 1.2.6
 - Made default page cache key consider pricipal. 
 - Added possibility to turn off deletion of assets in work and live cache update threads. Needed for situations where you let the applications share one single digitalAssetDirectory.
+- Fixed so any default value defined in content type also is reflected in "create content wizard".
+- Added new field type in content types. The new customfield is targeted at organisations / developers 
+  who want to extend the content types with anything that you can do in html/javascript. You can fill in a piece of html/javascript code directly in the field-attrribute and thereby make the form behave as you want.
+- Fixed bug in IE7 in which if you used border-collapse: collapse; in your site infoglue:s hidden elements were outlined anyway.
+- Added new binding property attribute and a tag(content:contentDetailPageUrl) which makes infoglue derive a page where the content you push on a startpage for example is bound in the sub structure. This is nice in some situations where you want to push a subpage by using the leadin the main article on that page has without having both to state the page and the content. Now you only bind the content so the leadin can be fetched and then infoglue finds the page for you. If there are several pages with a content a list below the property is shown and you can select which detail page to use.
+- Upgraded to Saxon 9
+- Added possibility to have custom fields (you write your own markup) for component properties in the structure editor.
+- Improved repository export / import feature so it now also transfers properties and access rights (roles/groups right only for security reasons).
+- Improved so if only one SiteNodeTypeDefintion exists in the system root site nodes gets that automatically. Helps a little for new users.
+- Added so you can state transformation settings on each asset key if you want. Also - you can state assetKeyPattern in global transformation settings.
+- Added property so you can state if you wish to have assets duplicated allways or only when changed between versions. 
 
- 
+
 -------------------------------------------------------------------------------------
 - InfoGlue 2.8.2 Final
 -------------------------------------------------------------------------------------
@@ -154,6 +166,8 @@ Abbreviated Changelog from 2.8.1 Final
 - Fixed bug in asset dialog concerning i18n asset keys.
 - Made the context menu in structure tool hide "Open in new window" if the window is allready expanded.
 - Worked on and optimized/improved the new SimplifiedFallbackJNDIBasicAuthorizationModule which now recaches all users/roles/groups in the background at regular intervals. No more hickups after cache expiration.
+- Fixed so empty addresses in cc and bcc can be sent in and ignored
+- Made edit on sight not show edit and edit inline if the elements were not editable.
 
 -------------------------------------------------------------------------------------
 - InfoGlue 2.8.1 Final
