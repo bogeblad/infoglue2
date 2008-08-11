@@ -94,6 +94,7 @@ public class ViewContentTypeDefinitionAction extends InfoGlueAbstractAction
 	private String allowedContentTypes = "any";
 	private String imageWidth;
 	private String imageHeight;
+	private String assetUploadTransformationsSettings = "";
 	
 	private List activatedName = new ArrayList();
 
@@ -840,7 +841,7 @@ public class ViewContentTypeDefinitionAction extends InfoGlueAbstractAction
 		try
 		{
 			Document document = createDocumentFromDefinition();
-			updateAssetEnumerationKey(document, ContentTypeDefinitionController.ASSET_KEYS, getAssetKey(), getNewAssetKey(), this.isMandatory, this.description, this.maximumSize, this.allowedContentTypes, this.imageWidth, this.imageHeight);
+			updateAssetEnumerationKey(document, ContentTypeDefinitionController.ASSET_KEYS, getAssetKey(), getNewAssetKey(), this.isMandatory, this.description, this.maximumSize, this.allowedContentTypes, this.imageWidth, this.imageHeight, this.assetUploadTransformationsSettings);
 			saveUpdatedDefinition(document);
 		}
 		catch(Exception e)
@@ -987,7 +988,7 @@ public class ViewContentTypeDefinitionAction extends InfoGlueAbstractAction
 	 * Find an <xs:enumeration> element and update the key value.
 	 * @return The Element if child changes are needed, null if the element is not found
 	 */
-	private Element updateAssetEnumerationKey(Document document, String keyType, String oldKey, String newKey, Boolean isMandatory, String description, Integer maximumSize, String allowedContentTypes, String imageWidth, String imageHeight) throws TransformerException
+	private Element updateAssetEnumerationKey(Document document, String keyType, String oldKey, String newKey, Boolean isMandatory, String description, Integer maximumSize, String allowedContentTypes, String imageWidth, String imageHeight, String assetUploadTransformationsSettings) throws TransformerException
 	{
 		if(isMandatory == null)
 			isMandatory = new Boolean(false);
@@ -1016,12 +1017,20 @@ public class ViewContentTypeDefinitionAction extends InfoGlueAbstractAction
 			Element allowedContentTypesElement = (Element)XPathAPI.selectSingleNode(enumeration, "xs:annotation/xs:appinfo/params/allowedContentTypes");
 			Element imageWidthElement = (Element)XPathAPI.selectSingleNode(enumeration, "xs:annotation/xs:appinfo/params/imageWidth");
 			Element imageHeightElement = (Element)XPathAPI.selectSingleNode(enumeration, "xs:annotation/xs:appinfo/params/imageHeight");
+			Element assetUploadTransformationsSettingsElement = (Element)XPathAPI.selectSingleNode(enumeration, "xs:annotation/xs:appinfo/params/assetUploadTransformationsSettings");
 
 			if(isMandatoryElement == null && descriptionElement != null)
 			{
 				isMandatoryElement = createTextElement(document, "isMandatory", isMandatory.toString());
 				
 				descriptionElement.getParentNode().appendChild(isMandatoryElement);
+			}
+
+			if(assetUploadTransformationsSettingsElement == null && descriptionElement != null)
+			{
+				assetUploadTransformationsSettingsElement = createTextElement(document, "assetUploadTransformationsSettings", assetUploadTransformationsSettings.toString());
+				
+				descriptionElement.getParentNode().appendChild(assetUploadTransformationsSettingsElement);
 			}
 
 			if(descriptionElement == null)
@@ -1040,6 +1049,7 @@ public class ViewContentTypeDefinitionAction extends InfoGlueAbstractAction
 			    imageWidthElement = createTextElement(document, "imageWidth", imageWidth);
 			    imageHeightElement = createTextElement(document, "imageHeight", imageHeight);
 				isMandatoryElement = createTextElement(document, "isMandatory", isMandatory.toString());
+				assetUploadTransformationsSettingsElement = createTextElement(document, "assetUploadTransformationsSettings", assetUploadTransformationsSettings.toString());
 				
 				params.appendChild(descriptionElement);
 				params.appendChild(maximumSizeElement);
@@ -1056,6 +1066,7 @@ public class ViewContentTypeDefinitionAction extends InfoGlueAbstractAction
 				setTextElement(allowedContentTypesElement, allowedContentTypes);
 				setTextElement(imageWidthElement, imageWidth);
 				setTextElement(imageHeightElement, imageHeight);
+				setTextElement(assetUploadTransformationsSettingsElement, assetUploadTransformationsSettings);
 			}
 			
 			return enumeration;
@@ -1322,4 +1333,15 @@ public class ViewContentTypeDefinitionAction extends InfoGlueAbstractAction
 	{
 		this.isMandatory = isMandatory;
 	}
+	
+    public String getAssetUploadTransformationsSettings()
+	{
+		return assetUploadTransformationsSettings;
+	}
+    
+	public void setAssetUploadTransformationsSettings(String assetUploadTransformationsSettings)
+	{
+		this.assetUploadTransformationsSettings = assetUploadTransformationsSettings;
+	}
+
 }

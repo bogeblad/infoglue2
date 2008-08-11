@@ -435,7 +435,9 @@ public class CreateDigitalAssetAction extends ViewDigitalAssetAction
 						boolean keepOriginal = true;
 						if(this.contentVersionId != null)
 						{
-							keepOriginal = handleTransformations(newAsset, file, contentType);
+							AssetKeyDefinition assetKeyDefinition = ContentTypeDefinitionController.getController().getDefinedAssetKey(contentTypeDefinitionVO.getSchemaValue(), digitalAssetKey);
+							
+							keepOriginal = handleTransformations(newAsset, file, contentType, assetKeyDefinition);
 						    if(keepOriginal)
 						    	digitalAssetVO = DigitalAssetController.create(newAsset, is, this.contentVersionId, this.getInfoGluePrincipal());
 						}
@@ -501,15 +503,21 @@ public class CreateDigitalAssetAction extends ViewDigitalAssetAction
         return "success";
     }
 
-	private boolean handleTransformations(DigitalAssetVO originalAssetVO, File file, String contentType)
+	private boolean handleTransformations(DigitalAssetVO originalAssetVO, File file, String contentType, AssetKeyDefinition assetKeyDefinition)
 	{
 		boolean keepOriginal = true;
 		try
 		{
-			String transformationsXML = CmsPropertyHandler.getAssetUploadTransformationsSettings();
+			String transformationsXML = null;
+			if(assetKeyDefinition != null)
+				transformationsXML = assetKeyDefinition.getAssetUploadTransformationsSettings();
+
 			if(transformationsXML == null || transformationsXML.equals(""))
+				transformationsXML = CmsPropertyHandler.getAssetUploadTransformationsSettings();
+
+			if(transformationsXML == null || transformationsXML.equals("") || transformationsXML.equals("none"))
 				return keepOriginal;
-				
+			
 			DOMBuilder domBuilder = new DOMBuilder();
 			Document document = domBuilder.getDocument(transformationsXML);
 		    Element rootElement = document.getRootElement();
@@ -532,10 +540,17 @@ public class CreateDigitalAssetAction extends ViewDigitalAssetAction
 			{
 				Element transformationElement = (Element)transformationElementsIterator.next();
 			
+				String assetKeyPattern  = transformationElement.attributeValue("assetKeyPattern");
 				String inputFilePattern  = transformationElement.attributeValue("inputFilePattern");
 				logger.info("inputFilePattern: " + inputFilePattern);
 				
-				if(contentType.matches(inputFilePattern))
+				boolean assetKeyMatch = false;
+				if(assetKeyPattern == null || assetKeyPattern.equals(""))
+					assetKeyMatch = true;
+				else if(originalAssetVO.getAssetKey().matches(assetKeyPattern))
+					assetKeyMatch = true;
+										
+				if(assetKeyMatch && contentType.matches(inputFilePattern))
 				{
 					logger.info("We got a match on contentType:" + contentType + " : " + inputFilePattern);
 

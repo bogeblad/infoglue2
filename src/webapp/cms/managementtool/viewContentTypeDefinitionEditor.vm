@@ -422,7 +422,7 @@
 
 
 #foreach($assetKeyDefinition in $definedAssetKeys)
-<div id="${assetKeyDefinition.assetKey}PropertyLayer" class="smallPropDiv" style="LEFT:250px; position:absolute; TOP:250px; visibility:hidden; z-index:1">
+<div id="${assetKeyDefinition.assetKey}PropertyLayer" class="smallPropDiv" style="LEFT:200px; position:absolute; TOP:200px; width: 500px; visibility:hidden; z-index:1">
 	<div id="${assetKey}PropertiesHandle" class="smallPropDivHandle">
 		Edit AssetKey
 	</div>
@@ -452,6 +452,10 @@
 		<p>
 			<b>Height:</b></td>
 			<input id="imageProperties${assetKeyDefinition.assetKey}width" type="textfield" name="imageHeight" value="$!assetKeyDefinition.imageHeight" class="normaltextfield">
+		</p>
+		<p>
+			<b>Asset transformation setting:</b></td>
+			<textarea id="imageProperties${assetKeyDefinition.assetKey}assetUploadTransformationsSettings" name="assetUploadTransformationsSettings" class="normaltextarea" style="width: 400px;">$!assetKeyDefinition.assetUploadTransformationsSettings</textarea>
 		</p>
 		</div>
 		<p>

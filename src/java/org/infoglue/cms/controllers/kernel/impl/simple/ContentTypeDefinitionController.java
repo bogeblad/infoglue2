@@ -505,7 +505,8 @@ public class ContentTypeDefinitionController extends BaseController
 			    String allowedContentTypesValue = "*";
 			    String imageWidthValue = "*";
 			    String imageHeightValue = "*";
-		    
+			    String assetUploadTransformationsSettingsValue = "";
+			    
 			    if(params != null)
 			    {
 			    	isMandatoryValue = getElementValue(params, "isMandatory");
@@ -516,6 +517,7 @@ public class ContentTypeDefinitionController extends BaseController
 				    allowedContentTypesValue = getElementValue(params, "allowedContentTypes");
 				    imageWidthValue = getElementValue(params, "imageWidth");
 				    imageHeightValue = getElementValue(params, "imageHeight");
+				    assetUploadTransformationsSettingsValue = getElementValue(params, "assetUploadTransformationsSettings");
 			    }
 			    
 				AssetKeyDefinition assetKeyDefinition = new AssetKeyDefinition(); 
@@ -527,6 +529,7 @@ public class ContentTypeDefinitionController extends BaseController
 				assetKeyDefinition.setAllowedContentTypes(allowedContentTypesValue);
 				assetKeyDefinition.setImageWidth(imageWidthValue);
 				assetKeyDefinition.setImageHeight(imageHeightValue);
+				assetKeyDefinition.setAssetUploadTransformationsSettings(assetUploadTransformationsSettingsValue);
 				
 				logger.info("Adding assetKeyDefinition " + assetKeyDefinition.getAssetKey());
 				keys.add(assetKeyDefinition);

@@ -38,8 +38,9 @@ public class AssetKeyDefinition
     private String allowedContentTypes;
     private String imageWidth;
     private String imageHeight;
+    private String assetUploadTransformationsSettings;
     
-    public String getAssetKey()
+	public String getAssetKey()
     {
         return assetKey;
     }
@@ -101,4 +102,13 @@ public class AssetKeyDefinition
 	{
 		this.isMandatory = isMandatory;
 	}
+    public String getAssetUploadTransformationsSettings()
+	{
+		return assetUploadTransformationsSettings;
+	}
+	public void setAssetUploadTransformationsSettings(String assetUploadTransformationsSettings)
+	{
+		this.assetUploadTransformationsSettings = assetUploadTransformationsSettings;
+	}
+
 }
