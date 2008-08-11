@@ -1021,7 +1021,7 @@
 								<a href="javascript:openPopup('ImageEditor.action?contentVersionId=$contentVersionId&contentId=$contentId&languageId=$languageId&digitalAssetId=$digitalAsset.digitalAssetId','DigitalAsset','width=800,height=600,resizable=yes');">$ui.getString("tool.contenttool.editAttachment")</a> |
 								#end
 								<a href="javascript:openPopup('ViewDigitalAsset!update.action?contentVersionId=$contentVersionId&contentId=$contentId&languageId=$languageId&digitalAssetId=$digitalAsset.digitalAssetId','DigitalAsset','width=400,height=200,resizable=no');">$ui.getString("tool.contenttool.updateAttachment")</a> | 
-								<a href="ViewContentVersion!deleteDigitalAsset.action?contentVersionId=$contentVersionId&contentId=$contentId&languageId=$languageId&digitalAssetId=$digitalAsset.digitalAssetId">$ui.getString("tool.contenttool.deleteAttachment")</a>
+								<a href="ViewContentVersion!deleteDigitalAsset.action?contentVersionId=$contentVersionId&contentId=$contentId&languageId=$languageId&digitalAssetId=$digitalAsset.digitalAssetId&returnAddress=$formatter.encodeURI($currentURL)">$ui.getString("tool.contenttool.deleteAttachment")</a>
 							#end
 						</td>
 						#set($counter = $counter + 1)

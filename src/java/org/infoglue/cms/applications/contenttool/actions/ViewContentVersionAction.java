@@ -140,7 +140,8 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 	private Integer fromLanguageId;
 	private Integer toLanguageId;
 	
-	
+	private String returnAddress = "";
+
 	public String getQualifyerPath(String entity, String entityId)
 	{	
 		StringBuffer sb = new StringBuffer("");
@@ -454,7 +455,13 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
     	
     	anchor = "digitalAssetsBlock";
     	
-    	return doExecute();
+        if(returnAddress != null && !returnAddress.equals(""))
+		{
+			this.getResponse().sendRedirect(returnAddress + "#" + anchor);	    
+			return NONE;
+		}
+        
+        return doExecute();
     }
     
     public String doDeleteDigitalAssetStandalone() throws Exception
@@ -1499,6 +1506,11 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 	public LanguageVO getCurrentLanguageVO()
 	{
 		return currentLanguageVO;
+	}
+
+    public void setReturnAddress(String returnAddress) 
+	{
+		this.returnAddress = returnAddress;
 	}
 
 }
