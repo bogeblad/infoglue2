@@ -126,6 +126,7 @@ public class UpdateContentVersionAttributeAction extends ViewContentVersionActio
 	}
 
 	private static Boolean active = new Boolean(false);
+	
 	public String doSaveAndReturnValue()
     {
 		while(active)
@@ -224,7 +225,7 @@ public class UpdateContentVersionAttributeAction extends ViewContentVersionActio
 	    		ContentVersionController.getContentVersionController().update(this.contentId, this.languageId, this.contentVersionVO, this.getInfoGluePrincipal());
 	    		logger.info("*************************************************");
 			
-	    		attributeValue = parseAttributeForInlineEditing(attributeValue);
+	    		attributeValue = parseAttributeForInlineEditing(attributeValue, true);
 			}
 	
 			this.getResponse().setContentType("text/plain");
@@ -299,11 +300,12 @@ public class UpdateContentVersionAttributeAction extends ViewContentVersionActio
 			{
 				attributeValue = ContentVersionController.getContentVersionController().getAttributeValue(contentVersionVO, attributeName, false);
 			}
-			//logger.info("attributeValue before parse:" + attributeValue);
 			
-			attributeValue = parseAttributeForInlineEditing(attributeValue);		
+			logger.info("attributeValue before parse:" + attributeValue);
 			
-			//logger.info("attributeValue after parse:" + attributeValue);
+			attributeValue = parseAttributeForInlineEditing(attributeValue, false);		
+			
+			logger.info("attributeValue:" +attributeValue);
 			
 			this.getResponse().setContentType("text/plain");
 	        this.getResponse().getWriter().println(attributeValue);			
@@ -370,39 +372,40 @@ public class UpdateContentVersionAttributeAction extends ViewContentVersionActio
 	    return attributeValue;
 	}
 
-	private String parseAttributeForInlineEditing(String attributeValue) throws Exception
+	private String parseAttributeForInlineEditing(String attributeValue, boolean checkPageReferences) throws Exception
 	{
 		Map<String,String> replacements = new HashMap<String,String>();
 		
-		/*
-	    Pattern pattern = Pattern.compile("\\$templateLogic\\.getPageUrl\\(.*?\\)");
-	    Matcher matcher = pattern.matcher(attributeValue);
-	    while ( matcher.find() ) 
-	    { 
-	        String match = matcher.group();
-	        logger.info("Adding match to registry after some processing: " + match);
-	        Integer siteNodeId;
-	        
-	        int siteNodeStartIndex = match.indexOf("(");
-	        int siteNodeEndIndex = match.indexOf(",");
-	        if(siteNodeStartIndex > 0 && siteNodeEndIndex > 0 && siteNodeEndIndex > siteNodeStartIndex)
-	        {
-	            String siteNodeIdString = match.substring(siteNodeStartIndex + 1, siteNodeEndIndex); 
-
-	            if(siteNodeIdString.indexOf("templateLogic.siteNodeId") == -1)
-	            {
-	            	siteNodeId = new Integer(siteNodeIdString);
-	        		logger.info("siteNodeId:" + siteNodeId);
-	        		String parsedContentId = match.substring(match.lastIndexOf(",") + 1, match.lastIndexOf(")")).trim();
-	        			
-		            String url = getDeliverContext() + "/ViewPage!renderDecoratedPage.action?siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + parsedContentId;
-		            logger.info("url:" + url);
-		            replacements.put(match, url);
-	            }
-	        }
-	    }
-	    */
-
+		if(checkPageReferences)
+		{
+		    Pattern pattern = Pattern.compile("\\$templateLogic\\.getPageUrl\\(.*?\\)");
+		    Matcher matcher = pattern.matcher(attributeValue);
+		    while ( matcher.find() ) 
+		    { 
+		        String match = matcher.group();
+		        logger.info("Adding match to registry after some processing: " + match);
+		        Integer siteNodeId;
+		        
+		        int siteNodeStartIndex = match.indexOf("(");
+		        int siteNodeEndIndex = match.indexOf(",");
+		        if(siteNodeStartIndex > 0 && siteNodeEndIndex > 0 && siteNodeEndIndex > siteNodeStartIndex)
+		        {
+		            String siteNodeIdString = match.substring(siteNodeStartIndex + 1, siteNodeEndIndex); 
+	
+		            if(siteNodeIdString.indexOf("templateLogic.siteNodeId") == -1)
+		            {
+		            	siteNodeId = new Integer(siteNodeIdString);
+		        		logger.info("siteNodeId:" + siteNodeId);
+		        		String parsedContentId = match.substring(match.lastIndexOf(",") + 1, match.lastIndexOf(")")).trim();
+		        			
+			            String url = getDeliverContext() + "/ViewPage!renderDecoratedPage.action?siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + parsedContentId;
+			            logger.info("url:" + url);
+			            replacements.put(match, url);
+		            }
+		        }
+		    }
+		}
+		
 	    Pattern assetPattern = Pattern.compile("\\$templateLogic\\.getInlineAssetUrl\\(.*?\\)");
 	    Matcher assetMatcher = assetPattern.matcher(attributeValue);
 	    while ( assetMatcher.find() ) 
