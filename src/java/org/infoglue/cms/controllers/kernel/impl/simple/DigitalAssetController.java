@@ -59,6 +59,7 @@ import org.infoglue.cms.entities.content.DigitalAsset;
 import org.infoglue.cms.entities.content.DigitalAssetVO;
 import org.infoglue.cms.entities.content.impl.simple.DigitalAssetImpl;
 import org.infoglue.cms.entities.content.impl.simple.MediumContentImpl;
+import org.infoglue.cms.entities.content.impl.simple.MediumDigitalAssetImpl;
 import org.infoglue.cms.entities.content.impl.simple.SmallDigitalAssetImpl;
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.entities.management.GroupProperties;
@@ -116,6 +117,11 @@ public class DigitalAssetController extends BaseController
     public static DigitalAsset getDigitalAssetWithId(Integer digitalAssetId, Database db) throws SystemException, Bug
     {
 		return (DigitalAsset) getObjectWithId(DigitalAssetImpl.class, digitalAssetId, db);
+    }
+
+    public static DigitalAsset getMediumDigitalAssetWithId(Integer digitalAssetId, Database db) throws SystemException, Bug
+    {
+		return (DigitalAsset) getObjectWithIdAsReadOnly(MediumDigitalAssetImpl.class, digitalAssetId, db);
     }
 
     /**
@@ -420,7 +426,11 @@ public class DigitalAssetController extends BaseController
             else if(entity.equalsIgnoreCase(GroupProperties.class.getName()))
                 GroupPropertiesController.getController().deleteDigitalAssetRelation(entityId, digitalAsset, db);
 
-            db.remove(digitalAsset);
+            logger.info("digitalAsset size after:" + digitalAsset.getContentVersions().size());
+            if(digitalAsset.getContentVersions().size() == 0)
+            	db.remove(digitalAsset);
+
+            //db.remove(digitalAsset);
 
             commitTransaction(db);
         }
