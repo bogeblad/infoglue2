@@ -223,6 +223,7 @@
 			#yesNoDropDownWithInheritCSS("ServerNode.property.useShortTableNames" "useShortTableNames" "$this.getPropertyValue('useShortTableNames')")
 			#editPropertyFieldCSS("ServerNode.property.numberOfVersionsToKeepDuringClean" "numberOfVersionsToKeepDuringClean" "$this.getPropertyValue('numberOfVersionsToKeepDuringClean')" "51" "$!serverNodeId")
 			#editPropertyTextAreaCSS("ServerNode.property.assetUploadTransformationsSettings" "assetUploadTransformationsSettings" "$this.getDataPropertyValue('assetUploadTransformationsSettings')" "40" "6" "righttextarea" "$!serverNodeId")
+			#yesNoDropDownWithInheritCSS("ServerNode.property.duplicateAssetsBetweenVersions" "duplicateAssetsBetweenVersions" "$this.getPropertyValue('duplicateAssetsBetweenVersions')")
 			
 			<div class="buttonRow">
 				<input type="image" src="$ui.getString("images.managementtool.buttons.save")" width="50" height="25" style="width: 50px;">
