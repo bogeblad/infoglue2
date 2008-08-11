@@ -319,17 +319,17 @@
 
 	<div style="clear: both;"></div>
 	
-	<h3 style="text-indent: 16px;">#if($translate)Översättningsvy #else Redigeringsvy #end innehåll "$contentVO.name" ($currentLanguageVO.name)</h3>
+	<h3 style="text-indent: 16px;">#if($translate)$ui.getString('tool.contenttool.translationViewLabel') #else $ui.getString('tool.contenttool.editingViewLabel') #end $ui.getString('tool.contenttool.contentLabel') "$contentVO.name" ($currentLanguageVO.name)</h3>
 	
 	<div id="allDivs">
 	
 	<div id="tabsContainer" class="flora" style="#if($translate == false)width: 95%;#else width: 550px; #end float:left; aborder: 1px solid red;">
 	
 	<ul>
-        <li><a href="#contentVersionDiv"><span>Textinnehåll</span></a></li>
-        <li><a href="#contentVersionCategoriesDiv"><span>Kategorier</span></a></li>
-        <li><a href="#contentVersionAssetsDiv"><span>Bifogade filer</span></a></li>
-        <li><a href="#contentCoverDiv"><span>Omslagsinfo</span></a></li>
+        <li><a href="#contentVersionDiv"><span>$ui.getString('tool.contenttool.textContentTab')</span></a></li>
+        <li><a href="#contentVersionCategoriesDiv"><span>$ui.getString('tool.contenttool.categoriesTab')</span></a></li>
+        <li><a href="#contentVersionAssetsDiv"><span>$ui.getString('tool.contenttool.assetsTab')</span></a></li>
+        <li><a href="#contentCoverDiv"><span>$ui.getString('tool.contenttool.coverTab')</span></a></li>
     </ul>
 	
 	<div id="contentVersionDiv" class="inlineTabDiv">
