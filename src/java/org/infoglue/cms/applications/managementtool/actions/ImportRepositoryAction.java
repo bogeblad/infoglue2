@@ -46,6 +46,7 @@ import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
 import org.infoglue.cms.controllers.kernel.impl.simple.CategoryController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
+import org.infoglue.cms.controllers.kernel.impl.simple.ImportController;
 import org.infoglue.cms.controllers.kernel.impl.simple.InterceptionPointController;
 import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ServiceDefinitionController;
@@ -176,7 +177,13 @@ public class ImportRepositoryAction extends InfoGlueAbstractAction
 			// All ODMG database access requires a transaction
 			db.begin();
 			
+			Map contentIdMap = new HashMap();
+			Map siteNodeIdMap = new HashMap();
+			List allContentIds = new ArrayList();
 
+			ImportController.getController().importRepository(db, map, file, encoding, version, onlyLatestVersions, contentIdMap, siteNodeIdMap, allContentIds);
+			
+			/*
 			//String encoding = "ISO-8859-1";
 	        FileInputStream fis = new FileInputStream(file);
             InputStreamReader reader = new InputStreamReader(fis, encoding);
@@ -379,10 +386,10 @@ public class ImportRepositoryAction extends InfoGlueAbstractAction
 					db.create(accessRightGroup);
 				}
 			}
-
+			*/
+			
 			db.commit();
 			db.close();
-			
 			
 			Iterator allContentIdsIterator = allContentIds.iterator();
 			while(allContentIdsIterator.hasNext())
@@ -394,7 +401,8 @@ public class ImportRepositoryAction extends InfoGlueAbstractAction
 					db.begin();
 	
 					Content content = ContentController.getContentController().getContentWithId(contentId, db);
-					updateContentVersions(content, contentIdMap, siteNodeIdMap);
+					ImportController.getController().updateContentVersions(content, contentIdMap, siteNodeIdMap, onlyLatestVersions);
+					//updateContentVersions(content, contentIdMap, siteNodeIdMap);
 	
 					db.commit();
 				}
@@ -415,7 +423,7 @@ public class ImportRepositoryAction extends InfoGlueAbstractAction
 
 			//updateContentVersions(allContents, contentIdMap, siteNodeIdMap);
 			
-			reader.close();
+			//reader.close();
 			
 			//db.commit();
 			//db.close();
@@ -441,7 +449,7 @@ public class ImportRepositoryAction extends InfoGlueAbstractAction
 		return "success";
 	}
 
-	
+	/*
 	private void updateContentTypeDefinitions(Collection contentTypeDefinitions, Map categoryIdMap) 
 	{
 		Iterator contentTypeDefinitionsIterator = contentTypeDefinitions.iterator();
@@ -512,13 +520,6 @@ public class ImportRepositoryAction extends InfoGlueAbstractAction
 		}
 	}
 	
-	/**
-	 * This method copies a sitenode and all it relations.
-	 * 
-	 * @param siteNode
-	 * @param db
-	 * @throws Exception
-	 */
 	private void createStructure(SiteNode siteNode, Map contentIdMap, Map siteNodeIdMap, Map siteNodeVersionIdMap, Map readAvailableServiceBindings, List allSiteNodes, Database db) throws Exception
 	{
 		logger.info("siteNode:" + siteNode.getName());
@@ -716,14 +717,6 @@ public class ImportRepositoryAction extends InfoGlueAbstractAction
 	}
 
 
-	/**
-	 * This method copies a content and all it relations.
-	 * 
-	 * @param siteNode
-	 * @param db
-	 * @throws Exception
-	 */
-	
 	private List createContents(Content content, Map idMap, Map contentTypeDefinitionIdMap, List allContents, Collection contentTypeDefinitions, Map categoryIdMap, int version, Database db) throws Exception
 	{
 		ContentTypeDefinition contentTypeDefinition = null;
@@ -935,10 +928,6 @@ public class ImportRepositoryAction extends InfoGlueAbstractAction
 		return allContents;
 	}
 
-
-	/**
-	 * This method updates all the bindings in content-versions to reflect the move. 
-	 */
 	private void updateContentVersions(Content content, Map contentIdMap, Map siteNodeIdMap) throws Exception
 	{
 	    logger.info("content:" + content.getName());
@@ -1098,6 +1087,7 @@ public class ImportRepositoryAction extends InfoGlueAbstractAction
 		
 		return newXML.toString();
 	}
+	*/
 	
 	public String getOnlyLatestVersions() {
 		return onlyLatestVersions;
