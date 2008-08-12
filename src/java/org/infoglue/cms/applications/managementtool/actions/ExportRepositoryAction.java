@@ -163,7 +163,7 @@ public class ExportRepositoryAction extends InfoGlueAbstractAction
 				siteNodes.add(siteNode);
 				contents.add(content);
 				names = names + "_" + repository.getName();
-				allRepositoryProperties = getRepositoryProperties(ps, repositoryId);
+				allRepositoryProperties.putAll(getRepositoryProperties(ps, repositoryId));
 			}
 			
 			List contentTypeDefinitions = ContentTypeDefinitionController.getController().getContentTypeDefinitionList(db);

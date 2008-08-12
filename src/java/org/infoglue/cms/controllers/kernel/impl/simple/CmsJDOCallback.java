@@ -598,7 +598,7 @@ public class CmsJDOCallback implements CallbackInterceptor
 	{
 		Integer entityId = new Integer(-1);
 		
-		try 
+		try
 		{
 			entityId = ((IBaseEntity) entity).getId();
 		}
