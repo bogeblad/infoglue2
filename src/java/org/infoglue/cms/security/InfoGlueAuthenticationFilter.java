@@ -27,6 +27,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
+import java.net.CookieHandler;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.security.Principal;
@@ -239,6 +240,20 @@ public class InfoGlueAuthenticationFilter implements Filter
 					if(servletContextUserName != null && !servletContextUserName.equals(""))
 					{
 						authenticatedUserName = servletContextUserName;
+					}
+					else
+					{
+						Cookie cookie_iguserid = new Cookie("iguserid", "none");
+						cookie_iguserid.setPath("/");
+						cookie_iguserid.setMaxAge(0); 
+						httpServletResponse.addCookie(cookie_iguserid);
+					    
+					    Cookie cookie_igpassword = new Cookie ("igpassword", "none");
+					    cookie_igpassword.setPath("/");
+					    cookie_igpassword.setMaxAge(0);
+					    httpServletResponse.addCookie(cookie_igpassword);
+
+					    authenticatedUserName = authenticateUser(httpServletRequest, httpServletResponse, fc);
 					}
 				}
 				else
