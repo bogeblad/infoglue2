@@ -114,9 +114,13 @@ public class CmsJDOCallback implements CallbackInterceptor
 	    	logger.info("Actually stored it:" + object + ":" + modified);
     	    
 			String userName = "SYSTEM";
-			InfoGluePrincipal principal = InfoGlueAbstractAction.getSessionInfoGluePrincipal();
-			if(principal != null && principal.getName() != null)
-				userName = principal.getName();
+			try
+			{
+				InfoGluePrincipal principal = InfoGlueAbstractAction.getSessionInfoGluePrincipal();
+				if(principal != null && principal.getName() != null)
+					userName = principal.getName();				
+			} 
+			catch (NoClassDefFoundError e){}
 			
 			NotificationMessage notificationMessage = new NotificationMessage("CmsJDOCallback", object.getClass().getName(), userName, NotificationMessage.TRANS_UPDATE, getObjectIdentity(object), object.toString());
 			ChangeNotificationController.getInstance().addNotificationMessage(notificationMessage);
@@ -278,10 +282,14 @@ public class CmsJDOCallback implements CallbackInterceptor
     		SubscriptionFilterImpl.class.getName().indexOf(object.getClass().getName()) == -1)
 	    {
     	    String userName = "SYSTEM";
-			InfoGluePrincipal principal = InfoGlueAbstractAction.getSessionInfoGluePrincipal();
-			if(principal != null && principal.getName() != null)
-				userName = principal.getName();
-
+			try
+			{
+				InfoGluePrincipal principal = InfoGlueAbstractAction.getSessionInfoGluePrincipal();
+				if(principal != null && principal.getName() != null)
+					userName = principal.getName();
+		    } 
+			catch (NoClassDefFoundError e){}
+			
     	    NotificationMessage notificationMessage = new NotificationMessage("CMSJDOCallback", object.getClass().getName(), userName, NotificationMessage.TRANS_CREATE, getObjectIdentity(object), object.toString());
     	    ChangeNotificationController.getInstance().addNotificationMessage(notificationMessage);
 			if(object.getClass().getName().indexOf("org.infoglue.cms.entities.management") > -1 && !object.getClass().getName().equals(RegistryImpl.class.getName()))
@@ -407,9 +415,13 @@ public class CmsJDOCallback implements CallbackInterceptor
     		SubscriptionFilterImpl.class.getName().indexOf(object.getClass().getName()) == -1)
 	    {
        	    String userName = "SYSTEM";
-			InfoGluePrincipal principal = InfoGlueAbstractAction.getSessionInfoGluePrincipal();
-			if(principal != null && principal.getName() != null)
-				userName = principal.getName();
+			try
+			{	
+				InfoGluePrincipal principal = InfoGlueAbstractAction.getSessionInfoGluePrincipal();
+				if(principal != null && principal.getName() != null)
+					userName = principal.getName();
+			} 
+			catch (NoClassDefFoundError e){}
 
 		    NotificationMessage notificationMessage = new NotificationMessage("CMSJDOCallback", object.getClass().getName(), userName, NotificationMessage.TRANS_DELETE, getObjectIdentity(object), object.toString());
 		    ChangeNotificationController.getInstance().addNotificationMessage(notificationMessage);
