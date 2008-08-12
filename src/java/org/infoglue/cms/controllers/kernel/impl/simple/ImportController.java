@@ -125,7 +125,7 @@ public class ImportController extends BaseController
 		List readContents = infoGlueExportImplRead.getRootContent();
 		//Content readContent = infoGlueExportImplRead.getRootContent();
 		//logger.info(readContent.getName());
-
+		
 		Map repositoryIdMap = new HashMap();
 		//Map contentIdMap = new HashMap();
 		Map siteNodeVersionIdMap = new HashMap();
@@ -136,6 +136,15 @@ public class ImportController extends BaseController
 		
 		Map<String, AvailableServiceBinding> readAvailableServiceBindings = new HashMap<String, AvailableServiceBinding>();
 
+		Map repositoryContentMap = new HashMap();
+		Iterator readContentsIteratorDebug = readContents.iterator();
+		while(readContentsIteratorDebug.hasNext())
+		{
+			Content readContentCandidate = (Content)readContentsIteratorDebug.next();
+			repositoryContentMap.put("" + readContentCandidate.getRepositoryId(), readContentCandidate);
+			//System.out.println("readContentCandidate debug...:" + readContentCandidate.getName() + ":" + readContentCandidate.getId() + ":" + readContentCandidate.getRepositoryId());
+		}
+
 		Iterator readSiteNodesIterator = readSiteNodes.iterator();
 		while(readSiteNodesIterator.hasNext())
 		{
@@ -145,12 +154,20 @@ public class ImportController extends BaseController
 			logger.info(repositoryRead.getName());
 
 			Content readContent = null;
+
+			readContent = (Content)repositoryContentMap.get("" + repositoryRead.getId());
+			//System.out.println("readContent:" + readContent.getName() + ":" + readContent.getId());
+			/*
+			System.out.println("Read contents size:" + readContents.size());
 			if(readContents != null && readContents.size() > 1)
 			{
 				Iterator readContentsIterator = readContents.iterator();
 				while(readContentsIterator.hasNext())
 				{
 					Content readContentCandidate = (Content)readContentsIterator.next();
+					System.out.println("readContentCandidate:" + readContentCandidate.getName() + ":" + readContentCandidate.getId());
+					System.out.println("readContentCandidate.getRepositoryId():" + readContentCandidate.getRepositoryId());
+					System.out.println("repositoryRead:" + repositoryRead.getId());
 					if(readContentCandidate.getRepositoryId().equals(repositoryRead.getId()))
 					{
 						readContent = readContentCandidate;
@@ -162,6 +179,7 @@ public class ImportController extends BaseController
 			{
 				readContent = (Content)readContents.get(0);
 			}
+			*/
 			
 			readContent.setRepository((RepositoryImpl)repositoryRead);
 
@@ -196,6 +214,7 @@ public class ImportController extends BaseController
 			
 			readSiteNode.setRepository((RepositoryImpl)repositoryRead);
 			
+			System.out.println("***************************************\nreadContent:" + readContent.getName());
 			createContents(readContent, contentIdMap, contentTypeIdMap, allContents, Collections.unmodifiableCollection(contentTypeDefinitions), categoryIdMap, version, db, onlyLatestVersions);
 			createStructure(readSiteNode, contentIdMap, siteNodeIdMap, siteNodeVersionIdMap, readAvailableServiceBindings, allSiteNodes, db, onlyLatestVersions);
 		}
@@ -591,6 +610,8 @@ public class ImportController extends BaseController
 	
 	private List createContents(Content content, Map idMap, Map contentTypeDefinitionIdMap, List allContents, Collection contentTypeDefinitions, Map categoryIdMap, int version, Database db, String onlyLatestVersions) throws Exception
 	{
+    	//System.out.println("createContents:" + content.getName() + ":" + content.getId());
+
 		ContentTypeDefinition contentTypeDefinition = null;
 		
 	    Integer originalContentId = content.getContentId();
@@ -661,6 +682,12 @@ public class ImportController extends BaseController
 	    	
 	    logger.info("Creating content:" + content.getName());
 
+	    //if(content.getId().intValue() == 53)
+	    //{
+	    //	System.out.println("Creating content:" + content.getName());
+	    //	System.out.println(" Parent:" + content.getParentContent());
+	    //}
+	    
 	    db.create(content);
 		
 		allContents.add(content);
