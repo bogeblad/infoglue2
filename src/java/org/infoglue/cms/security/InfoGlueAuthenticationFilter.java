@@ -42,6 +42,7 @@ import java.util.StringTokenizer;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
@@ -292,6 +293,63 @@ public class InfoGlueAuthenticationFilter implements Filter
 					setUserProperties(session, user);
 				}
 				
+				//TEST - transferring auth to deliverworking
+			    try
+			    {
+				    DesEncryptionHelper encHelper = new DesEncryptionHelper();
+					String encryptedName = encHelper.encrypt(userName);
+					String encryptedPassword = encHelper.encrypt(password);
+
+					String deliverBaseUrl = CmsPropertyHandler.getComponentRendererUrl();
+			    	//System.out.println("deliverBaseUrl:" + deliverBaseUrl);
+					String[] parts = deliverBaseUrl.split("/");
+					
+					deliverBaseUrl = "/" + parts[parts.length -1];
+					//System.out.println("deliverBaseUrl:" + deliverBaseUrl);
+					//logger.info("used cmsBaseUrl:" + cmsBaseUrl);
+					
+				    ServletContext servletContext = filterConfig.getServletContext().getContext(deliverBaseUrl);
+					//System.out.println("servletContext:" + servletContext);
+				    
+				    if (servletContext == null)
+				    {
+				    	logger.error("Could not autologin to " + deliverBaseUrl + ". Set cross context = true in Tomcat config.");
+				    }
+				    else
+				    {
+				    	servletContext.setAttribute(encryptedName, user.getName());
+				    }
+				   
+				    int cmsCookieTimeout = 1800; //30 minutes default
+				    String cmsCookieTimeoutString = null; //CmsPropertyHandler.getCmsCookieTimeout();
+				    if(cmsCookieTimeoutString != null)
+				    {
+				        try
+					    {
+				        	cmsCookieTimeout = Integer.parseInt(cmsCookieTimeoutString.trim());
+					    }
+				        catch(Exception e) {}
+					}
+				
+					Cookie cookie_iguserid = new Cookie("iguserid", encryptedName);
+					cookie_iguserid.setPath("/");
+					cookie_iguserid.setMaxAge(cmsCookieTimeout); 
+					httpServletResponse.addCookie(cookie_iguserid);
+				    
+				    Cookie cookie_igpassword = new Cookie ("igpassword", encryptedPassword);
+				    cookie_igpassword.setPath("/");
+				    cookie_igpassword.setMaxAge(cmsCookieTimeout);
+				    httpServletResponse.addCookie(cookie_igpassword);
+
+				    //logger.info(encryptedName + "=" + userName);
+				    //logger.info("After attribute:" + servletContext.getAttribute(encryptedName));
+			    }
+			    catch (Exception e) 
+			    {	    	
+			    	logger.error("Error: " + e.getMessage(), e);
+				}
+			    //END TEST
+			    
 				String logUserName = userName;
 				if(logUserName == null || logUserName.equals("") && user != null)
 					logUserName = user.getName();

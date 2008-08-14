@@ -23,6 +23,7 @@
 
 package org.infoglue.deliver.applications.actions;
 
+import java.io.ByteArrayInputStream;
 import java.net.URLEncoder;
 import java.security.Principal;
 import java.util.Date;
@@ -57,6 +58,8 @@ import org.infoglue.cms.exception.NoBaseTemplateFoundException;
 import org.infoglue.cms.exception.PageNotFoundException;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.AuthenticationModule;
+import org.infoglue.cms.security.AuthorizationModule;
+import org.infoglue.cms.security.InfoGlueBasicAuthorizationModule;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.DesEncryptionHelper;
@@ -77,8 +80,12 @@ import org.infoglue.deliver.portal.PortalService;
 //import org.infoglue.deliver.services.StatisticsService;
 import org.infoglue.deliver.util.BrowserBean;
 import org.infoglue.deliver.util.CacheController;
+import org.infoglue.deliver.util.HttpHelper;
 import org.infoglue.deliver.util.RequestAnalyser;
 import org.infoglue.deliver.util.ThreadMonitor;
+import org.infoglue.deliver.util.Timer;
+
+import webwork.action.ActionContext;
 
 
 /**
@@ -1444,7 +1451,30 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			    
 		    }
 	    }
-	    
+
+	    if(principal == null)
+	    {
+	    	HttpHelper httpHelper = new HttpHelper();
+			String encodedUserNameCookie = httpHelper.getCookie(this.getRequest(), "iguserid");
+			//System.out.println("encodedUserNameCookie:" + encodedUserNameCookie);
+			if(encodedUserNameCookie != null && !encodedUserNameCookie.equals(""))
+			{
+				String servletContextUserName = (String)ActionContext.getServletContext().getAttribute(encodedUserNameCookie);
+				logger.info("servletContextUserName:" + servletContextUserName);
+				if(servletContextUserName != null && !servletContextUserName.equals(""))
+				{
+					principal = getAuthenticatedUser(servletContextUserName);
+					//System.out.println("principal:" + principal);
+					if(principal != null)
+					{
+					    this.getHttpSession().setAttribute("infogluePrincipal", principal);
+						this.getHttpSession().setAttribute("infoglueRemoteUser", principal.getName());
+						this.getHttpSession().setAttribute("cmsUserName", principal.getName());
+					}
+				}
+			}
+	    }
+
 	    return principal;
 	}
 	
@@ -1560,6 +1590,69 @@ public class ViewPageAction extends InfoGlueAbstractAction
 		return errorUrl;
   	}
 
+  	/**
+  	 * This method fetches the roles and other stuff for the user by invoking the autorizer-module.
+  	 */
+  	
+	private InfoGluePrincipal getAuthenticatedUser(String userName) throws ServletException, Exception 
+	{
+	    String authenticatorClass = CmsPropertyHandler.getServerNodeProperty("deliver", "authenticatorClass", true, null);
+	    String authorizerClass 	= CmsPropertyHandler.getServerNodeProperty("deliver", "authorizerClass", true, null);
+	    /*
+	    invalidLoginUrl 	= CmsPropertyHandler.getServerNodeProperty("deliver", "invalidLoginUrl", true, null);
+	    successLoginBaseUrl = CmsPropertyHandler.getServerNodeProperty("deliver", "successLoginBaseUrl", true, null);
+	    loginUrl 			= CmsPropertyHandler.getServerNodeProperty("deliver", "loginUrl", true, null);
+	    logoutUrl 			= CmsPropertyHandler.getServerNodeProperty("deliver", "logoutUrl", true, null);
+	    serverName 			= CmsPropertyHandler.getServerNodeProperty("deliver", "serverName", true, null);
+	    casRenew 			= CmsPropertyHandler.getServerNodeProperty("deliver", "casRenew", true, null);
+	    casServiceUrl 		= CmsPropertyHandler.getServerNodeProperty("deliver", "casServiceUrl", true, null);
+	    casValidateUrl 		= CmsPropertyHandler.getServerNodeProperty("deliver", "casValidateUrl", true, null);
+	    casProxyValidateUrl = CmsPropertyHandler.getServerNodeProperty("deliver", "casProxyValidateUrl", true, null);
+	    casLogoutUrl 		= CmsPropertyHandler.getServerNodeProperty("deliver", "casLogoutUrl", true, null);
+	    */
+	    Properties extraProperties	= null;
+	    
+	    String extraPropertiesString = CmsPropertyHandler.getServerNodeDataProperty("deliver", "extraSecurityParameters", true, null);
+	    if(extraPropertiesString != null)
+		{
+		    logger.info("Loading extra properties from propertyset. extraPropertiesString:" + extraPropertiesString);
+	    	try
+			{
+	    		extraProperties = new Properties();
+				extraProperties.load(new ByteArrayInputStream(extraPropertiesString.getBytes("UTF-8")));
+				//extraProperties.list(System.out);
+			}	
+			catch(Exception e)
+			{
+			    logger.error("Error loading properties from string. Reason:" + e.getMessage());
+				e.printStackTrace();
+			}
+		}
+
+		AuthorizationModule authorizationModule = null;
+		try
+		{
+			authorizationModule = (AuthorizationModule)Class.forName(authorizerClass).newInstance();
+		}
+		catch(Exception e)
+		{
+			logger.error("The authorizationModule-class was wrong:" + e.getMessage() + ": defaulting to infoglue:s own", e);
+			authorizationModule = (AuthorizationModule)Class.forName(InfoGlueBasicAuthorizationModule.class.getName()).newInstance();
+		}
+		
+		authorizationModule.setExtraProperties(extraProperties);
+		logger.info("authorizerClass:" + authorizerClass + ":" + authorizationModule.getClass().getName());
+		
+		InfoGluePrincipal infoGluePrincipal = authorizationModule.getAuthorizedInfoGluePrincipal(userName);
+		logger.info("infoGluePrincipal:" + infoGluePrincipal);
+		if(infoGluePrincipal != null)
+		{
+			logger.info("roles:" + infoGluePrincipal.getRoles());
+			logger.info("groups:" + infoGluePrincipal.getGroups());
+		}
+		
+		return infoGluePrincipal;		
+  	}
 	/**
 	 * Setters and getters for all things sent to the page in the request
 	 */
