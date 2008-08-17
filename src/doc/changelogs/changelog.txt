@@ -1,17 +1,23 @@
 -------------------------------------------------------------------------------------
-- InfoGlue 2.9 Final Candidate
+- InfoGlue 2.9.0 Final
 -------------------------------------------------------------------------------------
 
 Release notes
 ---------------------------------------
-This is a new big step towards better usability in InfoGlue. A number of new features/screens to support this is implemented and
-many of the screens have been updated with a new GUI etc. 
+We are happy to announce the immediate availability of the summer release of InfoGlue.
+The new release is a new big step towards better usability in InfoGlue. Efforts has been made
+to allow more work to be done directly in the decorated site view (edit on sight). 
+A number of new features/screens to support this is implemented and many of the screens have been 
+updated with what will later become the new GUI for 3.0.
+
+For system administrators and DBA:s we are happy to announce a few features that will strongly limit the 
+growth of the database. 
     
 Thanx for all reports and proposals for bugfixes.
 The InfoGlue Team
 
 
-Abbreviated Changelog from 2.8.1 Final 
+Abbreviated Changelog from 2.8.2 Final 
 ---------------------------------------
 - Added a new subscription infrastructure. This let's users subscribe (when implemented in full) on selected interceptionPoints. This means they will get an email about events.
 - I18n-adjusted more labels in the system.
