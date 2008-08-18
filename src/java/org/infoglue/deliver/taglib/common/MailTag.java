@@ -79,7 +79,7 @@ public class MailTag extends TemplateControllerTag
 			if(!toOk)
 				throw new AddressException("Invalid to address:" + to);
 			
-			if(cc != null)
+			if(cc != null && !cc.equals(""))
 			{
 				StringBuffer sb = new StringBuffer();
 				String[] emailAddresses = cc.split(";");
@@ -104,10 +104,13 @@ public class MailTag extends TemplateControllerTag
 			    	cc = null;
 			}
 			
+			if(cc != null && cc.equals(""))
+		    	cc = null;
+
 			if(bcc == null && recipients != null)
 				bcc = recipients;
 				
-			if(bcc != null)
+			if(bcc != null && !bcc.equals(""))
 			{
 				StringBuffer sb = new StringBuffer();
 				String[] emailAddresses = bcc.split(";");
@@ -132,6 +135,9 @@ public class MailTag extends TemplateControllerTag
 			    	bcc = null;
 			}
 			
+		    if(bcc != null && bcc.equals(""))
+		    	bcc = null;
+
 			if(type == null)
 				type = "text/html";
 			if(charset == null)
@@ -154,6 +160,7 @@ public class MailTag extends TemplateControllerTag
         }
 		catch (Exception e)
         {
+			e.printStackTrace();
 			logger.error("Problem sending mail:" + e.getMessage());
 			logger.error("	from:" + from);
 			logger.error("	to:" + to);
@@ -182,7 +189,7 @@ public class MailTag extends TemplateControllerTag
 
 	public void setTo(String to) throws JspException
 	{
-		this.to = evaluateString("MailTag", "valtoue", to);
+		this.to = evaluateString("MailTag", "to", to);
 	}
 	
 	/**
@@ -227,6 +234,6 @@ public class MailTag extends TemplateControllerTag
 	
 	public void setValidationRegexp(String validationRegexp) throws JspException
 	{
-		this.message = evaluateString("MailTag", "validationRegexp", validationRegexp);
+		this.validationRegexp = evaluateString("MailTag", "validationRegexp", validationRegexp);
 	}
 }
