@@ -61,7 +61,7 @@ public class FileUploadHelper
 		try 
 		{
 			if(mpr != null)
-			{ 
+			{
 				Enumeration names = mpr.getFileNames();
 				while (names.hasMoreElements()) 
 				{
@@ -77,9 +77,10 @@ public class FileUploadHelper
 						String fileName = "Import_" + System.currentTimeMillis() + fileSystemName;
 						fileName = new VisualFormatter().replaceNonAscii(fileName, '_');
 						
-						String filePath = CmsPropertyHandler.getDigitalAssetPath();
+						String filePath = CmsPropertyHandler.getDigitalAssetUploadPath();
 						fileSystemName =  filePath + File.separator + fileName;
-		            	
+						logger.info("fileSystemName:" + fileSystemName);
+						
 						renamedFile = new File(fileSystemName);
 						boolean isRenamed = file.renameTo(renamedFile);
 						logger.info("renamed file:" + renamedFile.getPath() + ":" + renamedFile.exists() + ":" + isRenamed);
