@@ -648,7 +648,7 @@ public class CmsPropertyHandler
 
 	public static String getDigitalAssetUploadPath()
 	{
-	    return getServerNodeProperty("digitalAssetUploadPath", true, "" + contextRootPath + "uploads");
+	    return getServerNodeProperty("digitalAssetUploadPath", true, "" + getContextRootPath() + "uploads");
 	}
 
 	public static String getDisableAssetDeletionInWorkThread()
