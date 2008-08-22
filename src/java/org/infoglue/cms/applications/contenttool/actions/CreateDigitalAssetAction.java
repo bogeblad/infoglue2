@@ -308,12 +308,7 @@ public class CreateDigitalAssetAction extends ViewDigitalAssetAction
 		            	//String filePath = file.getParentFile().getPath();
 		            	String filePath = CmsPropertyHandler.getDigitalAssetPath();
 		            	fileSystemName = filePath + File.separator + tempFileName;
-		            	
-						//logger.info("New fileSystemName:" + fileSystemName);
-		            	//renamedFile = new File(fileSystemName);
-						//boolean isRenamed = file.renameTo(renamedFile);
-						//logger.info("isRenamed:" + isRenamed);
-						
+		            							
 		            	DigitalAssetVO newAsset = new DigitalAssetVO();
 						newAsset.setAssetContentType(contentType);
 						newAsset.setAssetKey(digitalAssetKey);
