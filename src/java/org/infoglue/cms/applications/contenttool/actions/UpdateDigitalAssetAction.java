@@ -140,11 +140,6 @@ public class UpdateDigitalAssetAction extends ViewDigitalAssetAction
 		            	String filePath = CmsPropertyHandler.getDigitalAssetPath();
 		            	fileSystemName =  filePath + File.separator + tempFileName;
 		            	
-		            	/*
-		            	file = new File(tempFileName);
-		            	boolean isRenamed = file.renameTo(renamedFile);
-		            	*/
-		            	
 		            	digitalAssetVO.setAssetContentType(contentType);
 						digitalAssetVO.setAssetFileName(fileName);
 						digitalAssetVO.setAssetFilePath(filePath);
