@@ -15,6 +15,7 @@ import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.entities.management.InterceptionPointVO;
 import org.infoglue.cms.entities.management.LanguageVO;
+import org.infoglue.cms.entities.structure.SiteNodeVO;
 import org.infoglue.cms.entities.workflow.WorkflowDefinitionVO;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGlueGroup;
@@ -232,6 +233,12 @@ public class ToolbarController
 			if(toolbarKey.equalsIgnoreCase("tool.common.subscriptions.header"))
 				return getSaveCancelFooterButtons();
 
+			if(toolbarKey.equalsIgnoreCase("tool.structuretool.publishSiteNode.header"))
+				return getPublishPageFooterButtons();
+
+			if(toolbarKey.equalsIgnoreCase("tool.managementtool.mysettings.header"))
+				return getMySettingsFooterButtons();
+			
 			/*
 			if(toolbarKey.equalsIgnoreCase("tool.managementtool.repositoryList.header"))
 				return getRepositoriesButtons();
@@ -557,7 +564,7 @@ public class ToolbarController
 		buttons.add(new ToolbarButton("",
 									  getLocalizedString(locale, "tool.common.saveButton.label"), 
 									  getLocalizedString(locale, "tool.common.saveButton.label"),
-									  "document.editForm.submit()",
+									  "save();",
 									  "images/v3/createBackgroundPenPaper.gif",
 				  					  "left",
 									  true));
@@ -570,6 +577,25 @@ public class ToolbarController
 				  					  "left",
 				  					  true));
 
+		return buttons;
+	}
+
+	private List<ToolbarButton> getMySettingsFooterButtons() throws Exception
+	{
+		List<ToolbarButton> buttons = new ArrayList<ToolbarButton>();
+
+		buttons.add(new ToolbarButton("",
+									  getLocalizedString(locale, "tool.contenttool.save.label"), 
+									  getLocalizedString(locale, "tool.contenttool.save.label"),
+									  "javascript:save();",
+									  "images/v3/saveInlineIcon.gif"));
+
+		buttons.add(new ToolbarButton("",
+									  getLocalizedString(locale, "tool.common.closeWindowButton.label"), 
+									  getLocalizedString(locale, "tool.common.closeWindowButton.label"),
+									  "javascript:closeAndReload();",
+									  "images/v3/closeWindowIcon.gif"));
+						
 		return buttons;
 	}
 
@@ -615,6 +641,65 @@ public class ToolbarController
 				  					  "images/v3/cancelIcon.gif",
 				  					  "left",
 				  					  true));
+
+		return buttons;
+	}
+
+	private List<ToolbarButton> getPublishPageFooterButtons() throws Exception
+	{
+		List<ToolbarButton> buttons = new ArrayList<ToolbarButton>();
+
+		SiteNodeVO siteNodeVO = null;
+		if(primaryKeyAsInteger != null)
+			siteNodeVO = SiteNodeController.getController().getSiteNodeVOWithId(primaryKeyAsInteger);
+			
+		if(siteNodeVO != null && hasAccessTo(principal, "PublishingTool.Read", true) && hasAccessTo(principal, "Repository.Read", "" + siteNodeVO.getRepositoryId()))
+		{
+			buttons.add(new ToolbarButton("",
+					  getLocalizedString(locale, "tool.common.publishing.publishButtonLabel"), 
+					  getLocalizedString(locale, "tool.common.publishing.publishButtonLabel"),
+					  "submitToPublish('true');",
+					  "images/v3/publishPageIcon.gif",
+					  "left",
+					  true));
+		}
+		
+		if(siteNodeVO != null && hasAccessTo(principal, "Common.SubmitToPublishButton", true))
+		{
+			buttons.add(new ToolbarButton("",
+					  getLocalizedString(locale, "tool.common.publishing.submitToPublishButtonLabel"), 
+					  getLocalizedString(locale, "tool.common.publishing.submitToPublishButtonLabel"),
+					  "submitToPublish('true');",
+					  "images/v3/publishPageIcon.gif",
+					  "left",
+					  true));
+		}
+		
+		buttons.add(new ToolbarButton("",
+				  getLocalizedString(locale, "tool.common.cancelButton.label"), 
+				  getLocalizedString(locale, "tool.common.cancelButton.label"),
+				  "if(parent && parent.closeDialog) parent.closeDialog(); else window.close();",
+				  "images/v3/cancelIcon.gif",
+				  "left",
+				  true));
+		
+		/*
+		buttons.add(new ToolbarButton("",
+				  getLocalizedString(locale, "tool.common.checkAll.label"), 
+				  getLocalizedString(locale, "tool.common.checkAll.label"),
+				  "checkAll();",
+				  "images/trans.gif",
+				  "left",
+				  true));
+
+		buttons.add(new ToolbarButton("",
+				  getLocalizedString(locale, "tool.common.uncheckAll.label"), 
+				  getLocalizedString(locale, "tool.common.uncheckAll.label"),
+				  "uncheckAll();",
+				  "images/trans.gif",
+				  "left",
+				  true));
+		*/
 
 		return buttons;
 	}
