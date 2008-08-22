@@ -131,6 +131,9 @@ import org.infoglue.deliver.util.rss.RssHelper;
 import org.infoglue.deliver.util.webservices.InfoGlueWebServices;
 import org.infoglue.deliver.util.webservices.WebServiceHelper;
 
+import com.opensymphony.module.propertyset.PropertySet;
+import com.opensymphony.module.propertyset.PropertySetManager;
+
 /**
  * This is the most basic template controller supplying the templates using it with
  * methods to fetch contents, structure and other suff needed for a site. Mostly this class just acts as a
@@ -6656,17 +6659,43 @@ public class BasicTemplateController implements TemplateController
 	}
 
 	/**
-	 * This method supplies a method to get the locale of the language currently in use.
+	 * This method supplies a method to get the locale the current user prefers in the tools if it's available.
 	 */
 	
-	public Locale getLocaleAvailableInTool() throws SystemException
+	public Locale getLocaleAvailableInTool(InfoGluePrincipal principal) throws SystemException
 	{
-		Locale locale = LanguageDeliveryController.getLanguageDeliveryController().getLocaleWithId(getDatabase(), this.languageId);
+		String cacheKey = "principal_" + principal.getName() + "_locale";
 		
-		List toolLocales = CmsPropertyHandler.getToolLocales();
-		if(toolLocales != null && toolLocales.size() > 0 && !toolLocales.contains(locale))
-			locale = (Locale)toolLocales.get(0);
+		Locale locale = (Locale)CacheController.getCachedObject("principalToolPropertiesCache", cacheKey);
+		if(locale != null)
+		{
+			logger.debug("Cached locale:" + locale);
+		}
+		else
+		{
+	        Map args = new HashMap();
+		    args.put("globalKey", "infoglue");
+		    PropertySet ps = PropertySetManager.getInstance("jdbc", args);
+		    
+		    String prefferredLanguageCode = ps.getString("principal_" + principal.getName() + "_languageCode");
+			logger.info("prefferredLanguageCode:" + prefferredLanguageCode);
+			if(prefferredLanguageCode != null && !prefferredLanguageCode.equals(""))
+			{
+				locale = LanguageDeliveryController.getLanguageDeliveryController().getLocaleWithCode(prefferredLanguageCode);
+			}
+			else
+			{
+				locale = LanguageDeliveryController.getLanguageDeliveryController().getLocaleWithId(getDatabase(), this.languageId);
+			
+				List toolLocales = CmsPropertyHandler.getToolLocales();
+				if(toolLocales != null && toolLocales.size() > 0 && !toolLocales.contains(locale))
+					locale = (Locale)toolLocales.get(0);
+			}
 
+			if(locale != null)
+				CacheController.cacheObject("principalToolPropertiesCache", cacheKey, locale);
+		}
+		
 		return locale;
 	}
 

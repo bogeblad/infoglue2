@@ -1491,10 +1491,10 @@ public interface TemplateController
     public abstract Locale getLocale() throws SystemException;
 
 	/**
-	 * This method supplies a method to get the locale of the language currently in use.
+	 * This method supplies a method to get the locale the current user prefers in the tools if it's available.
 	 */
 	
-	public Locale getLocaleAvailableInTool() throws SystemException;
+	public Locale getLocaleAvailableInTool(InfoGluePrincipal principal) throws SystemException;
 
     /**
 	 * This method sets a cookie.

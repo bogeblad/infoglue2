@@ -35,7 +35,14 @@
 
 		document.editForm.pageTemplateContentId.value = contentId;
 	}
-		
+
+	function save()
+	{
+		if(document.editForm.pageTemplateContentId.value != "")
+			document.editForm.submit()
+		else
+			alert("$ui.getString("tool.structuretool.createSiteNodeMandatoryPageTemplateWarningText")");
+	}	
 -->
 </script>		
 
@@ -51,13 +58,13 @@
 
 	<div style="clear: both;"></div>
 	
-	<h3 style="text-indent: 16px;">Skapa undersida till "$parentSiteNodeVO.name"</h3>
+	<h3 style="text-indent: 16px;">$ui.getString("tool.structuretool.createSiteNodeHeadline") "$parentSiteNodeVO.name"</h3>
 
 	<form name="editForm" method="POST" action="CreateSiteNode!executeV3.action">
 		<div id="tabsContainer" class="flora">      
 			<ul>
-		        <li><a href="#basicTab"><span>Basic</span></a></li>
-		        <li><a href="#advancedTab"><span>Advanced</span></a></li>	        
+		        <li><a href="#basicTab"><span>$ui.getString("tool.common.basic.label")</span></a></li>
+		        <li><a href="#advancedTab"><span>$ui.getString("tool.common.advanced.label")</span></a></li>	        
 		    </ul>
 	
 			<div id="basicTab" class="inlineTabDiv">

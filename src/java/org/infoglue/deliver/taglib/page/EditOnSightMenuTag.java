@@ -35,6 +35,7 @@ import org.infoglue.cms.entities.content.Content;
 import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.entities.structure.SiteNode;
+import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.deliver.taglib.component.ComponentLogicTag;
 
@@ -81,18 +82,23 @@ public class EditOnSightMenuTag extends ComponentLogicTag
 		    	String returnAddress = "" + componentEditorUrl + "ViewInlineOperationMessages.action";
 		    	String originalUrl = URLEncoder.encode(this.getController().getOriginalFullURL(), "iso-8859-1");
 		    	
-		    	String metaDataUrl 			= componentEditorUrl + "ViewAndCreateContentForServiceBinding.action?siteNodeId=" + this.getController().getSiteNodeId() + "&repositoryId=" + this.getController().getSiteNode().getRepositoryId() + "&asiteNodeVersionId=2109&changeStateToWorking=true";
+		    	String metaDataUrl 			= componentEditorUrl + "ViewAndCreateContentForServiceBinding.action?siteNodeId=" + this.getController().getSiteNodeId() + "&repositoryId=" + this.getController().getSiteNode().getRepositoryId() + "&changeStateToWorking=true";
 		    	String createSiteNodeUrl 	= componentEditorUrl + "CreateSiteNode!inputV3.action?isBranch=true&repositoryId=" + this.getController().getSiteNode().getRepositoryId() + "&parentSiteNodeId=" + this.getController().getSiteNodeId() + "&languageId=" + this.getController().getLanguageId() + "&returnAddress=" + URLEncoder.encode(returnAddress, "utf-8") + "&originalAddress=" + URLEncoder.encode(this.getController().getCurrentPageUrl(), "utf-8");
 		    	String contentVersionUrl 	= componentEditorUrl + "ViewContentVersion!standalone.action?contentId=" + this.contentId + "&languageId=" + getController().getLanguageId() + "&anchorName=contentVersionBlock";
 		    	String categoriesUrl 		= componentEditorUrl + "ViewContentVersion!standalone.action?contentId=" + this.contentId + "&languageId=" + getController().getLanguageId() + "&anchor=categoriesBlock";
-		    	String publishUrl 			= componentEditorUrl + "ViewListSiteNodeVersion!v3.action?siteNodeId=" + this.getController().getSiteNodeId() + "&repositoryId=" + this.getController().getSiteNode().getRepositoryId() + "&recurseSiteNodes=false&returnAddress=" + URLEncoder.encode(returnAddress, "utf-8") + "&originalAddress=" + URLEncoder.encode(this.getController().getCurrentPageUrl(), "utf-8");
+		    	String publishUrl 			= componentEditorUrl + "ViewListSiteNodeVersion!v3.action?siteNodeId=" + this.getController().getSiteNodeId() + "&languageId=" + this.getController().getLanguageId() + "&repositoryId=" + this.getController().getSiteNode().getRepositoryId() + "&recurseSiteNodes=false&returnAddress=" + URLEncoder.encode(returnAddress, "utf-8") + "&originalAddress=" + URLEncoder.encode(this.getController().getCurrentPageUrl(), "utf-8");
 		    	String notifyUrl 			= componentEditorUrl + "CreateEmail!inputChooseRecipientsV3.action?originalUrl=" + originalUrl + "&returnAddress=" + URLEncoder.encode(returnAddress, "utf-8") + "&extraTextProperty=tool.managementtool.createEmailNotificationPageExtraText.text"; 
 		    	String subscriptionUrl 		= componentEditorUrl + "Subscriptions!input.action?interceptionPointCategory=Content&entityName=" + Content.class.getName() + "&entityId=" + this.contentId + "&extraParameters=" + this.contentId + "&returnAddress=" + URLEncoder.encode(returnAddress, "utf-8");
 		    	String pageSubscriptionUrl 	= componentEditorUrl + "Subscriptions!input.action?interceptionPointCategory=SiteNodeVersion&entityName=" + SiteNode.class.getName() + "&entityId=" + this.getController().getSiteNodeId() + "&returnAddress=" + URLEncoder.encode(returnAddress, "utf-8");
 		    	String newsFlowUrl 			= componentEditorUrl + "ViewMyDesktopToolStartPage!startWorkflow.action?workflowName=Skapa+nyhet&finalReturnAddress=" + URLEncoder.encode(returnAddress, "utf-8") + ""; 
 		    	String mySettingsUrl 		= componentEditorUrl + "ViewMySettings.action"; 
 		    			    	
-				Locale locale = this.getController().getLocaleAvailableInTool();
+				InfoGluePrincipal principal = getController().getPrincipal();
+			    String cmsUserName = (String)getController().getHttpServletRequest().getSession().getAttribute("cmsUserName");
+			    if(cmsUserName != null && !CmsPropertyHandler.getAnonymousUser().equalsIgnoreCase(cmsUserName))
+				    principal = getController().getPrincipal(cmsUserName);
+
+				Locale locale = this.getController().getLocaleAvailableInTool(principal);
 				
 		    	String buttonLabel 					= this.getLocalizedString(locale, "deliver.editOnSight.buttonLabel");
 		    	String changePageMetaDataLabel 		= this.getLocalizedString(locale, "deliver.editOnSight.changePageMetaDataLabel");
@@ -116,10 +122,6 @@ public class EditOnSightMenuTag extends ComponentLogicTag
 		    	sb.append("<div id=\"editOnSightDiv" + getComponentId() + "\" class=\"editOnSightMenuDiv\" style=\"padding: 0px; margin: 0px; padding-top: 0; min-width: 240px; position: absolute; top: 20px; display: none; background-color: white; border: 1px solid #555;\">");
 
 		    	sb.append("    <ul class='editOnSightUL' style='margin: 0px; padding: 0px; list-style-type:none; list-style-image: none;'>");
-		    	if(showEditMetaData) 
-		    		sb.append("        <li style='margin: 0px; margin-left: 4px; padding: 2px 0px 2px 2px; list-style-type:none;'><a href=\"javascript:openInlineDiv('" + metaDataUrl + "', 700, 750, true);\" class=\"editOnSightHref linkMetadata\">" + changePageMetaDataLabel + "</a></li>");
-		    	if(showCreateSubpage) 
-			    	sb.append("        <li style='margin: 0px; margin-left: 4px; padding: 2px 0px 2px 2px; list-style-type:none;'><a href=\"javascript:openInlineDiv('" + createSiteNodeUrl + "', 700, 750, true);\" class=\"editOnSightHref linkCreatePage\">" + createSubPageToCurrentLabel + "</a></li>");
 
 		    	if(contentId != null)
 		    	{
@@ -130,7 +132,12 @@ public class EditOnSightMenuTag extends ComponentLogicTag
 			    	if(showCategorizeContent)
 			    		sb.append("    <li style='margin: 0px; margin-left: 4px; padding: 2px 0px 2px 2px; list-style-type:none;'><a href=\"javascript:openInlineDiv('" + categoriesUrl + "', 700, 750, true);\" class=\"editOnSightHref linkCategorizeArticle\">" + categorizeContentLabel + "</a></li>");
 		    	}
-		    	
+
+		    	if(showEditMetaData) 
+		    		sb.append("        <li style='margin: 0px; margin-left: 4px; padding: 2px 0px 2px 2px; list-style-type:none;'><a href=\"javascript:openInlineDiv('" + metaDataUrl + "', 700, 750, true);\" class=\"editOnSightHref linkMetadata\">" + changePageMetaDataLabel + "</a></li>");
+		    	if(showCreateSubpage) 
+			    	sb.append("        <li style='margin: 0px; margin-left: 4px; padding: 2px 0px 2px 2px; list-style-type:none;'><a href=\"javascript:openInlineDiv('" + createSiteNodeUrl + "', 700, 750, true);\" class=\"editOnSightHref linkCreatePage\">" + createSubPageToCurrentLabel + "</a></li>");
+
 		    	if(showPublishPage)
 		    		sb.append("        <li style='margin: 0px; margin-left: 4px; padding: 2px 0px 2px 2px; list-style-type:none;'><a href=\"javascript:openInlineDiv('" + publishUrl + "', 700, 750, true);\" class=\"editOnSightHref linkPublish\">" + publishPageLabel + "</a></li>");
 		    	if(showNotifyUserOfPage)

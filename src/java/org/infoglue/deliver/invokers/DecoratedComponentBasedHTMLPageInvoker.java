@@ -319,6 +319,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 			extraHeader = extraHeader.replaceAll("\\$\\{activatedComponentId\\}", "" + this.getRequest().getParameter("activatedComponentId"));
 			extraHeader = extraHeader.replaceAll("\\$\\{parameters\\}", parameters);
 			extraHeader = extraHeader.replaceAll("\\$\\{siteNodeId\\}", "" + templateController.getSiteNodeId());
+			extraHeader = extraHeader.replaceAll("\\$\\{languageId\\}", "" + templateController.getLanguageId());
 			extraHeader = extraHeader.replaceAll("\\$\\{parentSiteNodeId\\}", "" + templateController.getSiteNode().getParentSiteNodeId());
 			extraHeader = extraHeader.replaceAll("\\$\\{repositoryId\\}", "" + templateController.getSiteNode().getRepositoryId());
 			extraHeader = extraHeader.replaceAll("\\$\\{path\\}", "" + path.substring(1));
@@ -328,7 +329,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		    String changeUrl = componentEditorUrl + "ViewSiteNodePageComponents!listComponentsForChange.action?siteNodeId=" + templateController.getSiteNodeId() + "&languageId=" + templateController.getLanguageId() + "&contentId=" + templateController.getContentId() + "&componentId=" + component.getId() + "&slotId=base&showSimple=" + this.getTemplateController().getDeliveryContext().getShowSimple();
 		    extraBody = extraBody + "<script type=\"text/javascript\">initializeComponentEventHandler('base0_" + component.getId() + "Comp', '" + component.getId() + "', '', '" + componentEditorUrl + "ViewSiteNodePageComponents!deleteComponent.action?siteNodeId=" + templateController.getSiteNodeId() + "&languageId=" + templateController.getLanguageId() + "&contentId=" + templateController.getContentId() + "&componentId=" + component.getId() + "&slotId=base&showSimple=" + this.getTemplateController().getDeliveryContext().getShowSimple() + "','" + changeUrl + "');</script>";
 
-		    Locale locale = templateController.getLocaleAvailableInTool();
+		    Locale locale = templateController.getLocaleAvailableInTool(principal);
 		    
 			String submitToPublishHTML = getLocalizedString(locale, "deliver.editOnSight.submitToPublish");
 		    String addComponentHTML = getLocalizedString(locale, "deliver.editOnSight.addComponentHTML");
@@ -661,7 +662,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 					}
 					else
 					{
-						Locale locale = templateController.getLocaleAvailableInTool();
+						Locale locale = templateController.getLocaleAvailableInTool(principal);
 						clickToAddHTML = getLocalizedString(locale, "deliver.editOnSight.slotInstructionHTML");
 					}
 				}
@@ -859,8 +860,13 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		Timer timer = new Timer();
 		timer.setActive(false);
 
+		InfoGluePrincipal principal = templateController.getPrincipal();
+	    String cmsUserName = (String)templateController.getHttpServletRequest().getSession().getAttribute("cmsUserName");
+	    if(cmsUserName != null && !CmsPropertyHandler.getAnonymousUser().equalsIgnoreCase(cmsUserName))
+		    principal = templateController.getPrincipal(cmsUserName);
+
 		//Locale locale = templateController.getLocale();
-	    Locale locale = templateController.getLocaleAvailableInTool();
+	    Locale locale = templateController.getLocaleAvailableInTool(principal);
 
 		timer.printElapsedTime("After locale");
 	    
@@ -946,11 +952,6 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		{
 			ComponentProperty componentProperty = (ComponentProperty)componentPropertiesIterator.next();
 		
-		    InfoGluePrincipal principal = templateController.getPrincipal();
-		    String cmsUserName = (String)templateController.getHttpServletRequest().getSession().getAttribute("cmsUserName");
-		    if(cmsUserName != null)
-			    principal = templateController.getPrincipal(cmsUserName);
-
 			boolean hasAccessToProperty = AccessRightController.getController().getIsPrincipalAuthorized(templateController.getDatabase(), principal, "ComponentPropertyEditor.EditProperty", "" + componentContentId + "_" + componentProperty.getName());
 			boolean isFirstAdvancedProperty = false;
 			if(componentProperty.getName().equalsIgnoreCase("CacheResult"))
@@ -1503,6 +1504,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 	    boolean hasPageStructureAccess 		= AccessRightController.getController().getIsPrincipalAuthorized(templateController.getDatabase(), principal, "ComponentEditor.PageStructure", "");
 	    boolean hasOpenInNewWindowAccess 	= AccessRightController.getController().getIsPrincipalAuthorized(templateController.getDatabase(), principal, "ComponentEditor.OpenInNewWindow", "");
 	    boolean hasViewSourceAccess 		= AccessRightController.getController().getIsPrincipalAuthorized(templateController.getDatabase(), principal, "ComponentEditor.ViewSource", "");
+	    boolean hasMySettingsAccess 		= AccessRightController.getController().getIsPrincipalAuthorized(templateController.getDatabase(), principal, "ComponentEditor.MySettings", "");
 
 	    boolean hasMaxComponents = false;
 		if(component.getParentComponent() != null && component.getParentComponent().getSlotList() != null)
@@ -1575,7 +1577,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		}
 
 		//Locale locale = templateController.getLocale();
-		Locale locale = templateController.getLocaleAvailableInTool();
+		Locale locale = templateController.getLocaleAvailableInTool(principal);
 		
 		String editHTML 						= getLocalizedString(locale, "deliver.editOnSight.editHTML");
 		String editInlineHTML 					= getLocalizedString(locale, "deliver.editOnSight.editContentInlineLabel");
@@ -1591,12 +1593,24 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		String componentEditorInNewWindowHTML 	= getLocalizedString(locale, "deliver.editOnSight.componentEditorInNewWindowHTML");
 		String savePageTemplateHTML 			= getLocalizedString(locale, "deliver.editOnSight.savePageTemplateHTML");
 		String savePagePartTemplateHTML 		= getLocalizedString(locale, "deliver.editOnSight.savePagePartTemplateHTML");
+    	String changePageMetaDataLabel 			= getLocalizedString(locale, "deliver.editOnSight.changePageMetaDataLabel");
+    	String createSubPageToCurrentLabel 		= getLocalizedString(locale, "deliver.editOnSight.createSubPageToCurrentLabel");
+    	String mySettingsLabel 					= getLocalizedString(locale, "deliver.editOnSight.mySettingsLabel");
 
-		sb.append("<div id=\"editDiv" + component.getId() + "\" class=\"igmenuitems linkEditArticle\"><a href='#'>" + editHTML + "</a></div>");
+		String returnAddress = "" + componentEditorUrl + "ViewInlineOperationMessages.action";
+		
+		String metaDataUrl 			= componentEditorUrl + "ViewAndCreateContentForServiceBinding.action?siteNodeId=" + siteNodeId + "&repositoryId=" + repositoryId + "&changeStateToWorking=true";
+    	String createSiteNodeUrl 	= componentEditorUrl + "CreateSiteNode!inputV3.action?isBranch=true&repositoryId=" + repositoryId + "&parentSiteNodeId=" + siteNodeId + "&languageId=" + languageId + "&returnAddress=" + URLEncoder.encode(returnAddress, "utf-8") + "&originalAddress=" + URLEncoder.encode(templateController.getCurrentPageUrl(), "utf-8");
+    	String mySettingsUrl 		= componentEditorUrl + "ViewMySettings.action"; 
+
 	    sb.append("<div id=\"editInlineDiv" + component.getId() + "\" class=\"igmenuitems linkEditArticle\"><a href='#'>" + editInlineHTML + "</a></div>");
+		sb.append("<div id=\"editDiv" + component.getId() + "\" class=\"igmenuitems linkEditArticle\"><a href='#'>" + editHTML + "</a></div>");
 
+		sb.append("<div class=\"igmenuitems linkMetadata\" onClick=\"openInlineDiv('" + metaDataUrl + "', 700, 750, true);\"><a href='#'>" + changePageMetaDataLabel + "</a></div>");
+		sb.append("<div class=\"igmenuitems linkCreatePage\" onClick=\"openInlineDiv('" + createSiteNodeUrl + "', 700, 750, true);\"><a href='#'>" + createSubPageToCurrentLabel + "</a></div>");
+		
 	    if(hasSubmitToPublishAccess)
-	    	sb.append("<div class=\"igmenuitems linkPublish\" onClick=\"submitToPublish(" + siteNodeId + ", " + repositoryId + ", '" + URLEncoder.encode(templateController.getOriginalFullURL(), "UTF-8") + "');\"><a href='#'>" + submitToPublishHTML + "</a></div>");
+	    	sb.append("<div class=\"igmenuitems linkPublish\" onClick=\"submitToPublish(" + siteNodeId + ", " + languageId + ", " + repositoryId + ", '" + URLEncoder.encode("" + componentEditorUrl + "ViewInlineOperationMessages.action", "UTF-8") + "');\"><a href='#'>" + submitToPublishHTML + "</a></div>");
 		if(hasAccessToAddComponent)
 			sb.append("<div class=\"igmenuitems linkAddComponent\" onClick=\"insertComponent();\"><a href='#'>" + addComponentHTML + "</a></div>");
 		if(hasAccessToDeleteComponent)
@@ -1624,6 +1638,9 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 			sb.append("<div id=\"componentEditorInNewWindowDiv" + component.getId() + "\" class=\"igmenuitems linkOpenInNewWindow\"  onClick=\"window.open(document.location.href,'PageComponents','');\"><a href='#'>" + componentEditorInNewWindowHTML + "</a></div>");
 		if(hasViewSourceAccess)
 			sb.append("<div class=\"igmenuitems linkViewSource\" onClick=\"javascript:viewSource();\"><a href='javascript:viewSource();'>" + viewSourceHTML + "</a></div>");
+		if(hasMySettingsAccess)
+			sb.append("<div class=\"igmenuitems linkMySettings\" onClick=\"javascript:openInlineDiv('" + mySettingsUrl + "', 700, 750, true);\"><a href='#'>" + mySettingsLabel + "</a></div>");
+
 		sb.append("</div>");
 		
     	

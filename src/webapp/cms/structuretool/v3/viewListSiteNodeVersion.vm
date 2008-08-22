@@ -1,4 +1,4 @@
-#beginCommonToolV3("tool.structuretool.publishSiteNode.header" "" "" false true $!disableCloseButton)
+#beginCommonToolV3("tool.structuretool.publishSiteNode.header" "$!siteNodeId" "" false true $!disableCloseButton)
 
 <script language="JavaScript">
 <!--
@@ -54,7 +54,15 @@
 		    		
 			return ret;
 		}
-		
+
+		function checkUncheckAll(checkbox)
+		{
+			if(checkbox.checked)
+				checkAll();
+			else
+				uncheckAll();				
+		}
+
 		function checkAll()
 		{
 			checkAllBoxes(document.listForm.selSiteNodeVersions);
@@ -114,6 +122,11 @@
 				listForm.submit();
 			}
 		}
+
+		$(document).ready(function(){
+			setTimeout("resizeInlineTabDivs()", 100);
+		});
+			
 -->
 </script>
 
@@ -122,8 +135,8 @@
 	#menuToolbar("" $buttons $rightButtons) 
 
 	<div style="clear: both;"></div>
-	
-	<h3 style="text-indent: 16px;">$ui.getString("tool.structuretool.stateChangeComment")</h3>
+
+	<h3 style="text-indent: 16px;">$ui.getString("tool.common.publishing.publishHeader")</h3>
 		
 	<div class="inlineTabDiv">	
 	
@@ -176,7 +189,7 @@
 	<tr>
 		<td colspan="2">
 			<br/><br/>
-			The marked versions will be submitted for publishing.<br><br>
+			$ui.getString("tool.common.publishing.markVersionsText")<br><br>
 		</td>
 	</tr>
 	<tr>
@@ -184,9 +197,14 @@
 	
 	#set($lvBorder = 0) 
 	#set($lvConstraint = -1) 
-	#lvHead(["Name", "Changed", "Modifyer"] "Publish items" "" "" "")
+	#set($nameHeader = $ui.getString("tool.common.publishing.nameLabel"))
+	#set($typeHeader = $ui.getString("tool.common.publishing.typeLabel"))
+	#set($changedHeader = $ui.getString("tool.common.publishing.changedLabel"))
+	#set($modifyerHeader = $ui.getString("tool.common.publishing.modifyerLabel"))
+	#lvHeadV3(["$nameHeader", "$typeHeader", "$changedHeader", "$modifyerHeader"] "Publish items" "" "" "", true)
 	
 	#hiddenField("siteNodeId" $siteNodeId)
+	#hiddenField("languageId" $languageId)
 	#hiddenField("siteNodeVersionId" $siteNodeVersionId)
 	#hiddenField("versionComment" $!versionComment)
 	#hiddenField("overrideVersionModifyer" $!overrideVersionModifyer)
@@ -205,11 +223,11 @@
 		#if($displayName == "")
 			#set($displayName = "$snv.versionModifier")
 		#end
-	
-		#set( $row = ["<img src='images/tree/structureRoot.gif'> $snv.getSiteNodeName() ($snv.getId())", "$formatter.formatDate($snv.modifiedDateTime, 'yyyy-MM-dd')", "$displayName"] )
+				
+		#set( $row = ["<img src='images/v3/pageIcon.gif'> $snv.getSiteNodeName() ($snv.getId())", $ui.getString("tool.common.publishing.typePageLabel"), "$formatter.formatDate($snv.modifiedDateTime, 'yyyy-MM-dd')", "$displayName"] )
 		#set($cnt = $cnt + 1)
 		
-		#lvAddRow($row $cnt $snv.getId())
+		#lvAddRowV3($row $cnt $snv.getId())
 	
 	#end
 	
@@ -223,10 +241,10 @@
 			#set($displayName = "$cv.versionModifier")
 		#end
 		
-		#set( $row = ["<img src='images/tree/contentRoot.gif'> $cv.getContentName() ($cv.getId())", "$formatter.formatDate($cv.modifiedDateTime, 'yyyy-MM-dd')", "$displayName"] )
+		#set( $row = ["<img src='images/v3/contentIcon.gif'> $cv.getContentName() ($cv.getId())", $ui.getString("tool.common.publishing.typeContentLabel"), "$formatter.formatDate($cv.modifiedDateTime, 'yyyy-MM-dd')", "$displayName"] )
 		#set($cnt = $cnt + 1)
 		
-		#lvAddRow($row $cnt $cv.getId())
+		#lvAddRowV3($row $cnt $cv.getId())
 	
 	#end
 	
@@ -235,35 +253,7 @@
 	</td>
 	</tr>
 	</table>
-	<br/><br/>
-	#if($this.hasAccessTo("PublishingTool.Read") && $this.hasAccessTo("Repository.Read", "$!repositoryId"))
-	<a href="javascript:submitToPublish('true');">
-	<img src="$ui.getString("images.contenttool.buttons.publish")" width="60" height="25" border="0">
-	</a>
-	#end
-	
-	#if($this.hasAccessTo("Common.SubmitToPublishButton", true))
-	<a href="javascript:submitToPublish('false');">
-	<img src="$ui.getString("images.contenttool.buttons.submitToPublish")" width="60" height="25" border="0">
-	</a>
-	#end
-	
-	<a href="ViewSiteNode.action?siteNodeId=$siteNodeId&repositoryId=$!repositoryId&stay=true">
-	<img src="$ui.getString("images.contenttool.buttons.cancel60x25")" width="60" height="25" border="0">
-	</a> &nbsp;&nbsp;
-	
-	#set($items = $siteNodeVersionVOList.size() + $contentVersionVOList.size())
-	#if($items > 0)
-		<a href="javascript:checkAll();">
-		<img src="$ui.getString("images.contenttool.buttons.checkAll60x25")" width="60" height="25" border="0">
-		</a>
-		
-		<a href="javascript:uncheckAll();">
-		<img src="$ui.getString("images.contenttool.buttons.uncheckAll60x25")" width="60" height="25" border="0">
-		</a>
-	#end
-	<br/><br/>
-	
+
 	</div>
 		
 	#footerToolbar($footerButtons)

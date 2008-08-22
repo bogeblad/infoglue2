@@ -860,19 +860,20 @@ public class PageEditorHelper extends BaseDeliveryController
 			if(!component.getId().equals(componentId))
 				component = getComponentWithId(component, componentId);
 
-			boolean hasAccessToAccessRights = AccessRightController.getController().getIsPrincipalAuthorized(db, principal, "ComponentEditor.ChangeSlotAccess", "");
-			boolean hasAccessToAddComponent = AccessRightController.getController().getIsPrincipalAuthorized(db, principal, "ComponentEditor.AddComponent", "" + (component.getParentComponent() == null ? component.getContentId() : component.getParentComponent().getContentId()) + "_" + component.getSlotName());
-			boolean hasAccessToDeleteComponent = AccessRightController.getController().getIsPrincipalAuthorized(db, principal, "ComponentEditor.DeleteComponent", "" + (component.getParentComponent() == null ? component.getContentId() : component.getParentComponent().getContentId()) + "_" + component.getSlotName());
-			boolean hasAccessToChangeComponent = AccessRightController.getController().getIsPrincipalAuthorized(db, principal, "ComponentEditor.ChangeComponent", "" + (component.getParentComponent() == null ? component.getContentId() : component.getParentComponent().getContentId()) + "_" + component.getSlotName());
-		    boolean hasSaveTemplateAccess = AccessRightController.getController().getIsPrincipalAuthorized(db, principal, "StructureTool.SaveTemplate", "");
+			boolean hasAccessToAccessRights 	= AccessRightController.getController().getIsPrincipalAuthorized(db, principal, "ComponentEditor.ChangeSlotAccess", "");
+			boolean hasAccessToAddComponent 	= AccessRightController.getController().getIsPrincipalAuthorized(db, principal, "ComponentEditor.AddComponent", "" + (component.getParentComponent() == null ? component.getContentId() : component.getParentComponent().getContentId()) + "_" + component.getSlotName());
+			boolean hasAccessToDeleteComponent 	= AccessRightController.getController().getIsPrincipalAuthorized(db, principal, "ComponentEditor.DeleteComponent", "" + (component.getParentComponent() == null ? component.getContentId() : component.getParentComponent().getContentId()) + "_" + component.getSlotName());
+			boolean hasAccessToChangeComponent	= AccessRightController.getController().getIsPrincipalAuthorized(db, principal, "ComponentEditor.ChangeComponent", "" + (component.getParentComponent() == null ? component.getContentId() : component.getParentComponent().getContentId()) + "_" + component.getSlotName());
+		    boolean hasSaveTemplateAccess 		= AccessRightController.getController().getIsPrincipalAuthorized(db, principal, "StructureTool.SaveTemplate", "");
 		    boolean hasSavePagePartTemplateAccess = hasSaveTemplateAccess;
 		    if(slotClicked != null && slotClicked.equalsIgnoreCase("true"))
-		    	hasAccessToAddComponent = AccessRightController.getController().getIsPrincipalAuthorized(db, principal, "ComponentEditor.AddComponent", "" + component.getContentId() + "_" + slotId);
+		    	hasAccessToAddComponent 		= AccessRightController.getController().getIsPrincipalAuthorized(db, principal, "ComponentEditor.AddComponent", "" + component.getContentId() + "_" + slotId);
 
-		    boolean hasSubmitToPublishAccess = AccessRightController.getController().getIsPrincipalAuthorized(db, principal, "ComponentEditor.SubmitToPublish", "");
-		    boolean hasPageStructureAccess = AccessRightController.getController().getIsPrincipalAuthorized(db, principal, "ComponentEditor.PageStructure", "");
-		    boolean hasOpenInNewWindowAccess = AccessRightController.getController().getIsPrincipalAuthorized(db, principal, "ComponentEditor.OpenInNewWindow", "");
-		    boolean hasViewSourceAccess = AccessRightController.getController().getIsPrincipalAuthorized(db, principal, "ComponentEditor.ViewSource", "");
+		    boolean hasSubmitToPublishAccess 	= AccessRightController.getController().getIsPrincipalAuthorized(db, principal, "ComponentEditor.SubmitToPublish", "");
+		    boolean hasPageStructureAccess 		= AccessRightController.getController().getIsPrincipalAuthorized(db, principal, "ComponentEditor.PageStructure", "");
+		    boolean hasOpenInNewWindowAccess 	= AccessRightController.getController().getIsPrincipalAuthorized(db, principal, "ComponentEditor.OpenInNewWindow", "");
+		    boolean hasViewSourceAccess 		= AccessRightController.getController().getIsPrincipalAuthorized(db, principal, "ComponentEditor.ViewSource", "");
+		    boolean hasMySettingsAccess 		= AccessRightController.getController().getIsPrincipalAuthorized(db, principal, "ComponentEditor.MySettings", "");
 
 		    boolean hasMaxComponents = false;
 			if(component.getParentComponent() != null && component.getParentComponent().getSlotList() != null)
@@ -946,6 +947,9 @@ public class PageEditorHelper extends BaseDeliveryController
 			String componentEditorInNewWindowHTML 	= getLocalizedString(locale, "deliver.editOnSight.componentEditorInNewWindowHTML");
 			String savePageTemplateHTML		 		= getLocalizedString(locale, "deliver.editOnSight.savePageTemplateHTML");
 			String savePagePartTemplateHTML 		= getLocalizedString(locale, "deliver.editOnSight.savePagePartTemplateHTML");
+	    	String changePageMetaDataLabel 			= getLocalizedString(locale, "deliver.editOnSight.changePageMetaDataLabel");
+	    	String createSubPageToCurrentLabel 		= getLocalizedString(locale, "deliver.editOnSight.createSubPageToCurrentLabel");
+	    	String mySettingsLabel 					= getLocalizedString(locale, "deliver.editOnSight.mySettingsLabel");
 
 		    Slot slot = null;
 		    InfoGlueComponent parentComponent = null;
@@ -1001,12 +1005,24 @@ public class PageEditorHelper extends BaseDeliveryController
 			    hasSavePagePartTemplateAccess = false;
 		    }
 		    		    
-		    if(treeItem != true)
-				sb.append("<div id=\"editDiv\" class=\"igmenuitems linkEditArticle\"><a href='#'>" + editHTML + "</a></div>");
+			String returnAddress = "" + componentEditorUrl + "ViewInlineOperationMessages.action";
+			
+			String metaDataUrl 			= componentEditorUrl + "ViewAndCreateContentForServiceBinding.action?siteNodeId=" + siteNodeId + "&repositoryId=" + repositoryId + "&changeStateToWorking=true";
+	    	String createSiteNodeUrl 	= componentEditorUrl + "CreateSiteNode!inputV3.action?isBranch=true&repositoryId=" + repositoryId + "&parentSiteNodeId=" + siteNodeId + "&languageId=" + languageId + "&returnAddress=" + URLEncoder.encode(returnAddress, "utf-8") + "&originalAddress=" + URLEncoder.encode(originalFullURL, "utf-8");
+	    	String mySettingsUrl 		= componentEditorUrl + "ViewMySettings.action"; 
+	    	
 		    if(treeItem != true)
 			    sb.append("<div id=\"editInlineDiv\" class=\"igmenuitems linkEditArticle\"><a href='#'>" + editInlineHTML + "</a></div>");
+		    if(treeItem != true)
+				sb.append("<div id=\"editDiv\" class=\"igmenuitems linkEditArticle\"><a href='#'>" + editHTML + "</a></div>");
+
+		    if(treeItem != true)
+		    	sb.append("<div class=\"igmenuitems linkMetadata\" onClick=\"openInlineDiv('" + metaDataUrl + "', 700, 750, true);\"><a href='#'>" + changePageMetaDataLabel + "</a></div>");
+		    if(treeItem != true)
+		    	sb.append("<div class=\"igmenuitems linkCreatePage\" onClick=\"openInlineDiv('" + createSiteNodeUrl + "', 700, 750, true);\"><a href='#'>" + createSubPageToCurrentLabel + "</a></div>");
+
 		    if(treeItem != true && hasSubmitToPublishAccess)
-		    	sb.append("<div class=\"igmenuitems linkPublish\" onClick=\"submitToPublish(" + siteNodeId + ", " + repositoryId + ", '" + URLEncoder.encode(originalFullURL, "UTF-8") + "');\"><a href='#'>" + submitToPublishHTML + "</a></div>");
+		    	sb.append("<div class=\"igmenuitems linkPublish\" onClick=\"submitToPublish(" + siteNodeId + ", " + languageId + ", " + repositoryId + ", '" + URLEncoder.encode("" + componentEditorUrl + "ViewInlineOperationMessages.action", "UTF-8") + "');\"><a href='#'>" + submitToPublishHTML + "</a></div>");
 			if(hasAccessToAddComponent)
 				sb.append("<div class=\"igmenuitems linkAddComponent\" onClick=\"insertComponentByUrl('" + addComponentUrl + "');\"><a href='#'>" + addComponentHTML + "</a></div>");
 			if(hasAccessToDeleteComponent)
@@ -1041,6 +1057,9 @@ public class PageEditorHelper extends BaseDeliveryController
 				sb.append("<div id=\"componentEditorInNewWindowDiv\" class=\"igmenuitems linkOpenInNewWindow\"  onClick=\"window.open(document.location.href,'PageComponents','');\"><a href='#'>" + componentEditorInNewWindowHTML + "</a></div>");
 			if(hasViewSourceAccess)
 				sb.append("<div class=\"igmenuitems linkViewSource\" onClick=\"javascript:viewSource();\"><a href='javascript:viewSource();'>" + viewSourceHTML + "</a></div>");
+
+			if(hasMySettingsAccess)
+				sb.append("<div class=\"igmenuitems linkMySettings\" onClick=\"javascript:openInlineDiv('" + mySettingsUrl + "', 700, 750, true);\"><a href='#'>" + mySettingsLabel + "</a></div>");
 
 			sb.append("</div>");
 		}

@@ -206,15 +206,20 @@
 <tr>
 	<td colspan="2">
 		<br/><br/>
-		The marked versions will be submitted for publishing.<br><br>
+		$ui.getString("tool.common.publishing.markVersionsText")<br><br>
 	</td>
 </tr>
 <tr>
 	<td colspan="2">
 
 #set($lvBorder = 0) 
-#set($lvConstraint = -1) 
-#lvHead(["Name", "Changed", "Modifyer"] "Publish items" "" "" "")
+#set($lvConstraint = -1)
+#set($nameHeader = $ui.getString("tool.common.publishing.nameLabel"))
+#set($typeHeader = $ui.getString("tool.common.publishing.typeLabel"))
+#set($changedHeader = $ui.getString("tool.common.publishing.changedLabel"))
+#set($modifyerHeader = $ui.getString("tool.common.publishing.modifyerLabel"))
+
+#lvHead(["$nameHeader", "$typeHeader", "$changedHeader", "$modifyerHeader"] "Publish items" "" "" "")
 
 #hiddenField("siteNodeId" $siteNodeId)
 #hiddenField("siteNodeVersionId" $siteNodeVersionId)
@@ -234,7 +239,7 @@
 		#set($displayName = "$snv.versionModifier")
 	#end
 
-	#set( $row = ["<img src='images/tree/structureRoot.gif'> $snv.getSiteNodeName() ($snv.getId())", "$formatter.formatDate($snv.modifiedDateTime, 'yyyy-MM-dd')", "$displayName"] )
+	#set( $row = ["<img src='images/tree/structureRoot.gif'> $snv.getSiteNodeName() ($snv.getId())", $ui.getString("tool.common.publishing.typePageLabel"), "$formatter.formatDate($snv.modifiedDateTime, 'yyyy-MM-dd')", "$displayName"] )
 	#set($cnt = $cnt + 1)
 	
 	#lvAddRow($row $cnt $snv.getId())
@@ -251,7 +256,7 @@
 		#set($displayName = "$cv.versionModifier")
 	#end
 	
-	#set( $row = ["<img src='images/tree/contentRoot.gif'> $cv.getContentName() ($cv.getId())", "$formatter.formatDate($cv.modifiedDateTime, 'yyyy-MM-dd')", "$displayName"] )
+	#set( $row = ["<img src='images/tree/contentRoot.gif'> $cv.getContentName() ($cv.getId())", $ui.getString("tool.common.publishing.typeContentLabel"), "$formatter.formatDate($cv.modifiedDateTime, 'yyyy-MM-dd')", "$displayName"] )
 	#set($cnt = $cnt + 1)
 	
 	#lvAddRow($row $cnt $cv.getId())
