@@ -1374,9 +1374,12 @@ var Url = {
 // Function submitting the page to publishing
 //--------------------------------------------
 
-function submitToPublish(siteNodeId, repositoryId, returnAddress) 
+function submitToPublish(siteNodeId, languageId, repositoryId, returnAddress)
 {
-	document.location.href = componentEditorUrl + "ViewListSiteNodeVersion.action?siteNodeId=" + siteNodeId + "&repositoryId=" + repositoryId + "&returnAddress=" + returnAddress;	
+	var url = componentEditorUrl + "ViewListSiteNodeVersion!v3.action?siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&repositoryId=" + repositoryId + "&recurseSiteNodes=false&returnAddress=" + returnAddress + "&originalAddress=" + currentUrl;
+	//var url = componentEditorUrl + "ViewListSiteNodeVersion.action?siteNodeId=" + siteNodeId + "&repositoryId=" + repositoryId + "&returnAddress=" + returnAddress;
+	//document.location.href = url;
+	openInlineDiv(url, 700, 750, true);
 }
 
 function executeTask(url, openInPopup) 

@@ -82,3 +82,89 @@ function resizeScrollArea()
 		setTimeout("resizeScrollArea()", 100);
 	}
 }
+
+function checkAllBoxes(element)
+{
+	if(element)
+	{
+		var length = element.length;
+	  	if(length == null)
+	  	{
+	  		element.checked = true;
+	  		rowId = element.getAttribute("rowId");
+			listRowMarked(document.getElementById(rowId));
+	  	}
+	  	else
+	  	{	
+		 	var field = element;
+		 	for (i = 0; i < field.length; i++)
+			{
+				field[i].checked = true;
+				rowId = field[i].getAttribute("rowId");
+				listRowMarked(document.getElementById(rowId));
+			}
+		}
+	}
+}
+
+function uncheckAllBoxes(element)
+{
+	if(element)
+	{
+		var length = element.length;
+	  	if(length == null)
+	  	{
+	  		element.checked = false;
+	  		rowId = element.getAttribute("rowId");
+			listRowUnMarked(document.getElementById(rowId));
+	  	}
+	  	else
+	  	{	
+		 	var field = element;
+		 	for (i = 0; i < field.length; i++)
+			{
+				field[i].checked = false;
+				rowId = field[i].getAttribute("rowId");
+				listRowUnMarked(document.getElementById(rowId));
+			}
+		}
+	}
+}
+
+function listRowMarked(rowEl)
+{
+	return;
+	/*
+	if (rowEl.className.slice(0,6) != "marked")
+		rowEl.className = "marked"+rowEl.className;
+	*/	
+	lastRow = rowEl;
+}
+
+
+function listRowUnMarked(rowEl)
+{
+	var rowClass = rowEl.className;
+	if(rowClass.length > 6)
+	{
+		if (rowClass.slice(0,6) == "marked")
+		{
+			rowEl.className = rowClass.slice(6, rowClass.length);
+		}
+	}
+			
+	lastRow = rowEl;
+}
+
+function CheckUncheck(row,chkbox)
+{
+	var rowEl=document.getElementById(row);
+	if (chkbox.checked)
+	{
+		listRowMarked(rowEl);
+	}
+	else
+	{
+		listRowUnMarked(rowEl);		
+	}
+}
