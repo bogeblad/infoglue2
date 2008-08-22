@@ -34,11 +34,14 @@ import org.apache.log4j.Logger;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.applications.databeans.LinkBean;
 import org.infoglue.cms.controllers.kernel.impl.simple.AccessRightController;
+import org.infoglue.cms.controllers.kernel.impl.simple.RepositoryController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeVersionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeVersionControllerProxy;
+import org.infoglue.cms.entities.management.RepositoryVO;
 import org.infoglue.cms.entities.structure.SiteNodeVersionVO;
 import org.infoglue.cms.exception.AccessConstraintException;
 import org.infoglue.cms.util.AccessConstraintExceptionBuffer;
+import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.sorters.ReflectionComparator;
 
 /**
@@ -60,6 +63,8 @@ public class ViewListSiteNodeVersionAction extends InfoGlueAbstractAction
 	private Set contentVersionVOList = new TreeSet(Collections.reverseOrder(new ReflectionComparator("modifiedDateTime")));
 	private Integer siteNodeVersionId;
 	private Integer siteNodeId;
+	private Integer languageId;
+
 	private Integer repositoryId;
 	private String returnAddress;
 	private boolean recurseSiteNodes = true;
@@ -98,10 +103,23 @@ public class ViewListSiteNodeVersionAction extends InfoGlueAbstractAction
 		doExecute();
 		
         userSessionKey = "" + System.currentTimeMillis();
-
-        setActionMessage(userSessionKey, "Publiceringen genomfördes korrekt. Fortsätt genom att välja något av alternativen nedan.");
-        addActionLink(userSessionKey, new LinkBean("currentPageUrl", "Tillbaka till sidan du utgick från", "Klicka här om du vill komma tillbaka till sidan där du startade flödet.", "Klicka här om du vill komma tillbaka till sidan där du startade flödet.", this.originalAddress, false, ""));
-
+        
+        RepositoryVO repositoryVO = RepositoryController.getController().getRepositoryVOWithId(repositoryId);
+        String liveAddressBaseUrl = repositoryVO.getLiveBaseUrl() + "";
+        
+        String firstPublicDeliveryUrl = (String)CmsPropertyHandler.getPublicDeliveryUrls().get(0);
+        logger.debug("firstPublicDeliveryUrl:" + firstPublicDeliveryUrl);
+        String[] firstPublicDeliveryUrlSplit = firstPublicDeliveryUrl.split("/");
+        
+        String context = firstPublicDeliveryUrlSplit[firstPublicDeliveryUrlSplit.length - 1];
+        logger.debug("context:" + context);
+        String liveAddress = liveAddressBaseUrl + "/" + context + "/ViewPage.action" + "?siteNodeId=" + this.getSiteNodeId() + "&languageId=" + this.languageId;
+        
+        setActionMessage(userSessionKey, getLocalizedString(getLocale(), "tool.common.publishing.publishingInlineOperationDoneHeader"));
+        addActionLink(userSessionKey, new LinkBean("publishedPageUrl", getLocalizedString(getLocale(), "tool.common.publishing.publishingInlineOperationViewPublishedPageLinkText"), getLocalizedString(getLocale(), "tool.common.publishing.publishingInlineOperationViewPublishedPageTitleText"), getLocalizedString(getLocale(), "tool.common.publishing.publishingInlineOperationViewPublishedPageTitleText"), liveAddress, false, "", "_blank"));
+        addActionLink(userSessionKey, new LinkBean("currentPageUrl", getLocalizedString(getLocale(), "tool.common.publishing.publishingInlineOperationBackToCurrentPageLinkText"), getLocalizedString(getLocale(), "tool.common.publishing.publishingInlineOperationBackToCurrentPageTitleText"), getLocalizedString(getLocale(), "tool.common.publishing.publishingInlineOperationBackToCurrentPageTitleText"), this.originalAddress, false, ""));
+        setActionExtraData(userSessionKey, "disableCloseLink", "true");
+        
 	    return "successV3";
 	}
 
@@ -120,6 +138,16 @@ public class ViewListSiteNodeVersionAction extends InfoGlueAbstractAction
 	public void setSiteNodeId(Integer siteNodeId)
 	{
 		this.siteNodeId = siteNodeId;
+	}
+
+	public Integer getLanguageId()
+	{
+		return languageId;
+	}
+
+	public void setLanguageId(Integer languageId)
+	{
+		this.languageId = languageId;
 	}
 
 	public Integer getSiteNodeVersionId()
