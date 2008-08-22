@@ -105,6 +105,28 @@ public class RepositoryVO implements BaseEntityVO
     	
     	return ceb;
 	}
+
+	public String getLiveBaseUrl()
+	{
+		String liveBaseUrl = "";
+		
+		String keyword = "live=";
+		int startIndex = dnsName.indexOf(keyword);
+	    if(startIndex != -1)
+	    {
+	        int endIndex = dnsName.indexOf(",", startIndex);
+		    if(endIndex > -1)
+	            dnsName = dnsName.substring(startIndex, endIndex);
+	        else
+	            dnsName = dnsName.substring(startIndex);
+	        
+	        dnsName = dnsName.split("=")[1];
+	        
+	        liveBaseUrl = dnsName;
+	    }
+	    
+	    return liveBaseUrl;
+	}
         
 }
         
