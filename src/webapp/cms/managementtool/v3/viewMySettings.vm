@@ -2,6 +2,20 @@
 
 <script type="text/javascript">
 	<!--
+
+	function save()
+	{
+		document.editForm.submit();
+	}
+
+	function closeAndReload()
+	{
+		if(!window.opener)
+		{
+			parent.location.reload();
+		}
+	}
+	
 	$(document).ready(function(){
 		$("#tabsContainer > ul").tabs({ show:function() { resizeInlineTabDivs();} });
 	});
@@ -79,11 +93,6 @@
 				
 				<p style="clear: both;">
 					<a href="UpdateSystemUserPassword!inputStandalone.action?userName=$infoGluePrincipal.name&returnAddress=ViewMySettings.action">$ui.getString("tool.managementtool.changePassword.label")</a>
-				</p>
-
-				<p style="clear: both;">
-					<input type="image" src="$ui.getString("images.managementtool.buttons.save")" width="50" height="25">
-					<a href="javascript:self.opener.top.location.href='ViewCMSTool.action?languageCode=$languageCode'; window.close();"><img src="$ui.getString("images.managementtool.buttons.cancel")" width="50" height="25" border="0"></a>
 				</p>
 			</form>
 		</div>
