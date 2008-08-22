@@ -41,13 +41,19 @@ public class LinkBean implements Serializable
 	private String backgroundImageAlignment	= "left";
 	private String actionURL  	    		= "";	
 	private boolean isJavascript  	    	= false;	
+	private String target  	    			= null;	
 
 	public LinkBean(String id, String text, String title, String description, String actionURL, boolean isJavascript, String backgroundImageURL)
 	{
-		this(id, text, title, description, actionURL, isJavascript, backgroundImageURL, "left");
+		this(id, text, title, description, actionURL, isJavascript, backgroundImageURL, "left", null);
 	}
 
-	public LinkBean(String id, String text, String title, String description, String actionURL, boolean isJavascript, String backgroundImageURL, String backgroundImageAlignment)
+	public LinkBean(String id, String text, String title, String description, String actionURL, boolean isJavascript, String backgroundImageURL, String target)
+	{
+		this(id, text, title, description, actionURL, isJavascript, backgroundImageURL, "left", target);
+	}
+
+	public LinkBean(String id, String text, String title, String description, String actionURL, boolean isJavascript, String backgroundImageURL, String backgroundImageAlignment, String target)
 	{
 		this.id 						= id;
 		this.text 						= text;
@@ -57,6 +63,7 @@ public class LinkBean implements Serializable
 		this.backgroundImageAlignment 	= backgroundImageAlignment;
 		this.actionURL 					= actionURL;
 		this.isJavascript 				= isJavascript;
+		this.target 					= target;
 	}
 
 	public String getId()
@@ -98,4 +105,10 @@ public class LinkBean implements Serializable
 	{
 		return isJavascript;
 	}
+	
+	public String getTarget()
+	{
+		return target;
+	}
+
 }
