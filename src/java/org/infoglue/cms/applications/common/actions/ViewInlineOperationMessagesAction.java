@@ -93,7 +93,9 @@ public class ViewInlineOperationMessagesAction extends InfoGlueAbstractAction
 			}
 		}
 
-		actionLinks.add(new LinkBean("closeDialog", "Stäng dialogen","Klicka här för att stänga dialogen.", "Klicka här för att stänga dialogen.", "javascript:parent.closeDialog();", true, ""));
+		String disableCloseLink = getActionExtraData(userSessionKey, "disableCloseLink");
+		if(disableCloseLink == null || !disableCloseLink.equals("true"))
+			actionLinks.add(new LinkBean("closeDialog", getLocalizedString(getLocale(), "tool.common.closeDialogLinkText"), getLocalizedString(getLocale(), "tool.common.closeDialogLinkTitle"), getLocalizedString(getLocale(), "tool.common.closeDialogLinkTitle"), "javascript:parent.closeDialog();", true, ""));
 
 		//-----------------------------------------------------------
 		// Add any actionLinks submitted in the request
