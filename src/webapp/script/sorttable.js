@@ -24,10 +24,13 @@ function ts_makeSortable(table) {
     // We have a first row: assume it's the header, and make its contents clickable links
     for (var i=0;i<firstRow.cells.length;i++) {
         var cell = firstRow.cells[i];
-        var txt = ts_getInnerText(cell);
-        cell.innerHTML = '<a href="#" class="sortheader" '+ 
-        'onclick="ts_resortTable(this, '+i+');return false;">' + 
-        txt+'<span class="sortarrow">&nbsp;&nbsp;&nbsp;</span></a>';
+        if(cell.className.indexOf("skipSortHeader") == -1)
+        {
+	        var txt = ts_getInnerText(cell);
+	        cell.innerHTML = '<a href="#" class="sortheader" '+ 
+	        'onclick="ts_resortTable(this, '+i+');return false;">' + 
+	        txt+'<span class="sortarrow">&nbsp;&nbsp;&nbsp;</span></a>';
+        }
     }
 }
 
