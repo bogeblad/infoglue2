@@ -676,6 +676,18 @@ public abstract class InfoGlueAbstractAction extends WebworkAbstractAction
 		return (String)getRequest().getSession().getAttribute(key);
 	}
 
+	public void setActionExtraData(String aUserSessionKey, String extraDataKey, String extraData)
+	{
+		String key = aUserSessionKey + "_" + extraDataKey;
+		getRequest().getSession().setAttribute(key, extraData);
+	}
+
+	public String getActionExtraData(String aUserSessionKey, String extraDataKey)
+	{
+		String key = aUserSessionKey + "_" + extraDataKey;
+		return (String)getRequest().getSession().getAttribute(key);
+	}
+
 	public boolean getDisableCloseButton()
 	{
 		String disableCloseButton = this.getRequest().getParameter("disableCloseButton");
