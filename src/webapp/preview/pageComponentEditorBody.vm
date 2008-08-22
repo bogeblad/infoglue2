@@ -1,5 +1,5 @@
 <div id="emptySlotMenu" class="skin0">
-<div class="igmenuitems linkPublish" onClick="submitToPublish($siteNodeId, $repositoryId, '$originalFullURL');"><a href='#'>$submitToPublishHTML</a></div>
+<div class="igmenuitems linkPublish" onClick="submitToPublish($siteNodeId, $languageId, $repositoryId, '$originalFullURL');"><a href='#'>$submitToPublishHTML</a></div>
 <div id="addComponentMenuItem" class="igmenuitems linkAddComponent" onClick="insertComponent();"><a href='#'>$addComponentHTML</a></div>
 <div class="igmenuitems linkCreatePageTemplate" onClick="$saveTemplateUrl"><a href='#'>$savePageTemplateHTML</a></div>
 <hr id="emptySlotMenuTopSeparator" style="border:0px; border-top:1px solid #bbb; margin-top:4px;"/>
