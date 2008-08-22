@@ -176,6 +176,7 @@ public class CacheController extends Thread
 	{
 		clearCache("serverNodePropertiesCache");
 		clearCache("encodedStringsCache");
+		clearCache("principalToolPropertiesCache");
 		if(reCache)
 			InfoGlueJDBCPropertySet.reCache();
    		else
