@@ -27,6 +27,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
+import org.infoglue.cms.util.ChangeNotificationController;
+import org.infoglue.cms.util.NotificationMessage;
+import org.infoglue.cms.util.RemoteCacheUpdater;
 
 import com.opensymphony.module.propertyset.PropertySet;
 import com.opensymphony.module.propertyset.PropertySetManager;
@@ -61,6 +64,9 @@ public class UpdateMySettingsAction extends InfoGlueAbstractAction
 	    ps.setString("principal_" + this.getInfoGluePrincipal().getName() + "_defaultToolId", defaultToolId);
 	    ps.setString("principal_" + this.getInfoGluePrincipal().getName() + "_defaultRepositoryId", defaultRepositoryId);
 
+		NotificationMessage notificationMessage = new NotificationMessage("UpdateMySettingsAction.doExecute():", "ServerNodeProperties", this.getInfoGluePrincipal().getName(), NotificationMessage.SYSTEM, "0", "ServerNodeProperties");
+		ChangeNotificationController.getInstance().addNotificationMessage(notificationMessage);
+		
         return "success";
     }
     
