@@ -866,6 +866,63 @@
 	</tr>
 #end
 
+##********************************************************************************************
+## This is the header for many list where you want to be able to check / uncheck all options *
+##********************************************************************************************
+
+#macro(lvHeadV3 $headers $header $yesDestination $noDestination $message $allowCheckUncheckAll)
+
+#if ($lvBorder == 1)
+	<table tableborder=0 border=0 bgcolor=666666 width="100%" cellpadding="1" cellspacing="0"><tr><td>
+#end
+
+#set($lvChkBoxName = "sel")
+
+<div class="listmarginalized">
+	<script language="JavaScript" type="text/javascript" src="script/sorttable.js"></script>
+	<style type="text/css">
+		/* Sortable tables */
+		table.sortable a.sortheader {
+		    font-weight: bold;
+		    display: block;
+		    padding-left: 5px;
+		}
+		table.sortable span.sortarrow {
+		}
+	</style>
+	
+	## Inget formulär om inget kan selectas
+	#if($lvConstraint != 0)
+		<form name="listForm" action="Confirm.action" method="post">
+			<input type="hidden" name="header" value="$header"/>
+			<input type="hidden" name="yesDestination" value="$yesDestination"/>
+			<input type="hidden" name="noDestination" value="$noDestination"/>
+			<input type="hidden" name="message" value="$message"/>
+			<input type="hidden" name="extraParameters" value="$extraParameters"/>
+	#end
+
+	#set( $span = $headers.size() * 2 )
+	<table class="sortable" id="sortableTable" cellpadding="0" cellspacing="0" border="0" width="100%">
+	<tr class="dark$lvColor" valign="center">
+		#if($allowCheckUncheckAll)
+		<td style="border-bottom: 1px solid #999999; border-top: 1px solid #ffffff; border-right: 1px solid #999999; white-space:nowrap; width: 20px;" class="listheader skipSortHeader" id="headerDiv1">
+			<div class="minormarginalized" style="white-space:nowrap;"><input type='checkbox' onclick='checkUncheckAll(this);' title="Select/Unselect all"/></div>
+		</td>
+		#end
+		#set( $hcnt=0 )
+		#foreach( $header in $headers )
+			#set( $hcnt=$hcnt + 1 )
+			<td style="border-bottom: 1px solid #999999; border-top: 1px solid #ffffff; border-right: 1px solid #999999; white-space:nowrap" class="listheader" id="headerDiv$hcnt">
+				<div class="minormarginalized" style="white-space:nowrap;">$header</div>
+			</td>
+			#if ($velocityCount != $headers.size())
+				#set( $hcnt=$hcnt + 1 )
+			#end
+		#end
+	</tr>
+#end
+
+
 ##**************************************************
 ## This is the header for all list-pages in the    *
 ## management tool                                 *
@@ -929,7 +986,7 @@
 	#end
 
 
-	<tr id="r$cnt" $class  onmouseover='listRowHiLight(this);' onmouseout='listRowUnHiLight(this);'>
+	<tr id="r$cnt" $class>
 
 		#foreach( $item in $row )
 			<td valign='middle'>
@@ -953,6 +1010,51 @@
 			#if ($velocityCount != $row.size())
 				##<td></td>
 			#end
+		#end
+	</tr>
+#end
+
+##**************************************************
+## This is the row in a list-pages in the          *
+## management tool                                 *
+##**************************************************
+
+#macro(lvAddRowV3 $row $cnt $objectId)
+	## set $lvConstraint to -1, 0 or 1
+	##		-1: unlimited number of items can be selected
+	##		0: no items can be selected (no checkboxes visible)
+	##		1: one item can be selected
+
+	#set( $loccnt = 0)
+	#set( $isOdd = $cnt % 2)
+	#if($isOdd==0)
+		#set($class = "class='light$lvColor'")
+	#else
+		#set($class = "class='white'")
+	#end
+
+
+	<tr id="r$cnt" $class>
+
+		<td valign='middle'>
+			<div class="minormarginalized">
+				#if($loccnt==0)
+					#if($lvConstraint==-1)
+						<input type="checkbox" id="CB$objectId" name="$lvChkBoxName" value="$objectId" rowId="r$cnt" onClick="CheckUncheck('r$cnt',this);"/>
+					#end
+					#if($lvConstraint==1)
+						<input type="checkbox" id="CB$objectId" name="$lvChkBoxName" value="$objectId" rowId="r$cnt" onClick="CheckUncheckSingle('r$cnt',this);"/>
+					#end
+					#set( $loccnt = 1 )
+				#end
+			</div>
+		</td>
+		#foreach( $item in $row )
+			<td valign='middle'>
+				<div class="minormarginalized" style="white-space:nowrap" >
+					$item
+				</div>
+			</td>
 		#end
 	</tr>
 #end
