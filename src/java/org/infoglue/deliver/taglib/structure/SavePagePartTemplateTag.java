@@ -27,6 +27,7 @@ import java.util.Locale;
 
 import javax.servlet.jsp.JspException;
 
+import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.StringManager;
 import org.infoglue.cms.util.StringManagerFactory;
@@ -68,7 +69,12 @@ public class SavePagePartTemplateTag extends ComponentLogicTag
 			
 			if(html == null)
 			{
-				Locale locale = getController().getLocaleAvailableInTool();
+				InfoGluePrincipal principal = getController().getPrincipal();
+			    String cmsUserName = (String)getController().getHttpServletRequest().getSession().getAttribute("cmsUserName");
+			    if(cmsUserName != null && !CmsPropertyHandler.getAnonymousUser().equalsIgnoreCase(cmsUserName))
+				    principal = getController().getPrincipal(cmsUserName);
+
+				Locale locale = getController().getLocaleAvailableInTool(principal);
 				String savePagePartTemplateHTML = getLocalizedString(locale, "deliver.editOnSight.savePagePartTemplateHTML");
 				html = "<a href=\"javascript:saveComponentStructure('$saveUrl');\">" + savePagePartTemplateHTML + "</a>";
 			}
