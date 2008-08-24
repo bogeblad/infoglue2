@@ -31,6 +31,8 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
+import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.io.FileHelper;
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.deliver.util.VelocityTemplateProcessor;
@@ -112,12 +114,22 @@ public class WYSIWYGPropertiesAction extends InfoGlueAbstractAction
 
 	    Map parameters = new HashMap();
 	    parameters.put("request", this.getRequest());
+		if(this.getRequest().getParameter("contentVersionId") == null)
+		{
+			logger.info("No content version sent in.. we fetch latest instead");
+			String contentId = this.getRequest().getParameter("contentId");
+			String languageId = this.getRequest().getParameter("languageId");
+			logger.info("contentId:" + contentId);
+			logger.info("languageId:" + languageId);
+			ContentVersionVO cvo = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(new Integer(contentId), new Integer(languageId));
+			parameters.put("contentVersionId", cvo.getId());
+		}
 	    
 		StringWriter tempString = new StringWriter();
 		PrintWriter pw = new PrintWriter(tempString);
 		new VelocityTemplateProcessor().renderTemplate(parameters, pw, this.WYSIWYGProperties, true);
 		this.WYSIWYGProperties = tempString.toString();
-
+				
 	    this.getResponse().setContentType("text/javascript");
 	    
 	    return this.WYSIWYGProperties;

@@ -12,6 +12,11 @@
 	
 	<META HTTP-EQUIV="pragma" CONTENT="no-cache" />
 	<META HTTP-EQUIV="expires" CONTENT="-1" />	
+	
+	#if($useFckUploadMessages)
+	<script type='text/javascript'>window.parent.OnUploadCompleted(101, '', '', '$ui.getString("$reasonKey")');</script>
+	#end
+	
 </head>
 
 <body class="contenttooledit">

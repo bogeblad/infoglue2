@@ -91,7 +91,8 @@ public class CreateDigitalAssetAction extends ViewDigitalAssetAction
 	private String returnAddress = "";
 	private InfoGluePrincipal principal = null;
 	private boolean useFileNameAsContentTypeBase = false;
-
+	private boolean useFckUploadMessages = false;
+	
 	private VisualFormatter formatter = new VisualFormatter();
 	private Imaging imaging = ImagingFactory.createImagingInstance(ImagingFactory.AWT_LOADER, ImagingFactory.JAVA2D_TRANSFORMER);
 	
@@ -488,7 +489,7 @@ public class CreateDigitalAssetAction extends ViewDigitalAssetAction
         { 
       	    logger.error("An error occurred when we tried to upload a new asset:" + e.getMessage(), e);
         }
-        
+                
         if(returnAddress != null && !returnAddress.equals(""))
 		{
 			this.getResponse().sendRedirect(returnAddress);	    
@@ -739,4 +740,20 @@ public class CreateDigitalAssetAction extends ViewDigitalAssetAction
 	{
 		return uploadMaxSize;
 	}
+	
+	public boolean getUseFckUploadMessages()
+	{
+		return useFckUploadMessages;
+	}
+
+	public void setUseFckUploadMessages(boolean useFckUploadMessages)
+	{
+		this.useFckUploadMessages = useFckUploadMessages;
+	}
+
+	public ContentVersionVO getContentVersionVO()
+	{
+		return contentVersionVO;
+	}
+
 }

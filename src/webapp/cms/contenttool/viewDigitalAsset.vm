@@ -10,6 +10,10 @@
 	<link rel="stylesheet" type="text/css" href="css/cms.css" /> 
 	<link rel="stylesheet" type="text/css" href="css/infogluecommons.css" /> 
 	
+	#if($useFckUploadMessages)
+	<script type='text/javascript'>window.parent.OnUploadCompleted(0, 'DownloadAsset.action?contentId=$!contentVersionVO.contentId&languageId=$!contentVersionVO.languageId&assetKey=$!digitalAssetKey', 'DownloadAsset.action?contentId=$!contentVersionVO.contentId&languageId=$!contentVersionVO.languageId&assetKey=$!digitalAssetKey', 'Upload was successful');</script>
+	#end
+	
 	<script language="JavaScript" src="script/listview.js"></script>
 	<script type="text/javascript" src="script/infogluecommons.js"></script>
 	
