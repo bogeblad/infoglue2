@@ -1097,6 +1097,7 @@ function editInline(selectedRepositoryId, selectedContentId, selectedLanguageId,
 									textareaHeight = 50;
 										
 						 		$this.html("<textarea id='input" + $this.get(0).id + "' ondblclick='if (event && event.stopPropagation) {event.stopPropagation();}else if (window.event) {window.event.cancelBubble = true;}return false;'>" + plainAttribute + "</textarea>");
+						 		$("#input" + $this.get(0).id + "").css("display", "block");
 						 		$("#input" + $this.get(0).id + "").css("font-family", fontFamily);
 								$("#input" + $this.get(0).id + "").css("font-size", fontSize);
 								$("#input" + $this.get(0).id + "").css("font-weight", fontWeight);
