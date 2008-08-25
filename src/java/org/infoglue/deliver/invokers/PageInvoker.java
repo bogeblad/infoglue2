@@ -228,6 +228,8 @@ public abstract class PageInvoker
 				getLastModifiedDateTime();
 				//END TEST
 				
+				pageString = decorateHeadAndPageWithVarsFromComponents(pageString);
+
 				if(!this.getTemplateController().getIsPageCacheDisabled() && !this.getDeliveryContext().getDisablePageCache()) //Caching page if not disabled
 				{
 				    if(compressPageCache != null && compressPageCache.equalsIgnoreCase("true"))
@@ -293,6 +295,8 @@ public abstract class PageInvoker
 			//TEST
 			getLastModifiedDateTime();
 			//END TEST
+
+			pageString = decorateHeadAndPageWithVarsFromComponents(pageString);
 
 			this.getDeliveryContext().setPagePath(this.templateController.getCurrentPagePath());
 		}
@@ -369,7 +373,9 @@ public abstract class PageInvoker
 		}
 		//END
 			
-		pageString = decorateHeadAndPageWithVarsFromComponents(pageString);
+		//System.out.println("pageString before:" + pageString);
+		//pageString = decorateHeadAndPageWithVarsFromComponents(pageString);
+		//System.out.println("pageString after:" + pageString);
 		
 		//logger.info("ContentType:" + contentType);
 		if(contentType.indexOf("charset=") > -1)
