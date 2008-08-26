@@ -114,9 +114,9 @@
 </html>
 
 <%
-System.out.println("Error.jsp called");
+org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger("InfoGlue");
 String errorUrl = (String)pageContext.getRequest().getAttribute("javax.servlet.error.request_uri");
-System.out.println("Possible errorUrl:" + errorUrl);
+logger.warn("Error.jsp called - Possible errorUrl:" + errorUrl);
 
 Exception e = (Exception)pageContext.getRequest().getAttribute("error");
 if(e != null)
