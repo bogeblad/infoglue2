@@ -190,7 +190,7 @@
 </table>
 </div>
 
-
+#*
 <div style="right:15px; position:absolute; top:4px; visibility: visible; z-index:1; border:0px solid black;">
 <table border="0" cellspacing="0" cellpadding="0" width="200">
 <tr>
@@ -211,6 +211,7 @@
 </tr>
 </table>
 </div>
+*#
 
 <div style="right:15px; position:absolute; top:27px; visibility: visible; z-index:1; border:0px solid black;">
 <table border="0" cellspacing="0" cellpadding="0" width="100">
