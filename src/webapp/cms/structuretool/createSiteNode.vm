@@ -4,6 +4,8 @@
 
 #beginStructureTool("tool.structuretool.createSiteNodeHeader" "New siteNode" "" "0" "0" "0")
 
+#set($sortedPageTemplates = $this.getSortedPageTemplates($sortProperty))
+
 <script language="JavaScript">
 <!--
 		
@@ -27,7 +29,19 @@
 		
 		document.editForm.pageTemplateContentId.value = contentId;	
 	}
-		
+
+	function save()
+	{
+		#if($sortedPageTemplates.size() > 0)
+			if(document.editForm.pageTemplateContentId.value != "")
+				document.editForm.submit()
+			else
+				alert("$ui.getString("tool.structuretool.createSiteNodeMandatoryPageTemplateWarningText")");
+		#else
+			document.editForm.submit()
+		#end
+	}	
+	
 -->
 </script>		
 
@@ -70,7 +84,6 @@
 			<tr>
 				$ui.getString("tool.structuretool.pageTemplates.header")<br>
 				#set($counter = 0)
-				#set($sortedPageTemplates = $this.getSortedPageTemplates($sortProperty))
 				#foreach ($content in $sortedPageTemplates)
 					##if($filterRepositoryId == -1 || $content.repositoryId == $filterRepositoryId)
 						#if($isOdd)
@@ -114,7 +127,7 @@
 		<input type="hidden" name="changeTypeId" value="2">
 		<input type="hidden" name="pageTemplateContentId" value="">
 		<td>
-			<input type="image" src="$ui.getString("images.structuretool.buttons.save")" width="50" height="25" border="0">
+			<a href="javascript:save();"><img border="0" src="$ui.getString("images.structuretool.buttons.save")" width="50" height="25"></a>
 			<a href="ViewSiteNode.action?siteNodeId=$!parentSiteNodeId"><img border="0" src="$ui.getString("images.structuretool.buttons.cancel")" width="50" height="25"></a>
 		</td>
 	</tr>

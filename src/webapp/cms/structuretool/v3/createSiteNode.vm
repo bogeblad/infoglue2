@@ -1,5 +1,7 @@
 #beginCommonToolV3("tool.structuretool.createSiteNodeHeader" "" "" false true $!disableCloseButton)
 
+#set($sortedPageTemplates = $this.getSortedPageTemplates($sortProperty))
+									
 <link rel="stylesheet" type="text/css" media="all" href="applications/jscalendar/skins/aqua/theme.css" title="aqua" />
 <script type="text/javascript" src="applications/jscalendar/calendar.js"></script>
 <script type="text/javascript" src="applications/jscalendar/lang/calendar-en.js"></script>
@@ -38,10 +40,14 @@
 
 	function save()
 	{
-		if(document.editForm.pageTemplateContentId.value != "")
+		#if($sortedPageTemplates.size() > 0)
+			if(document.editForm.pageTemplateContentId.value != "")
+				document.editForm.submit()
+			else
+				alert("$ui.getString("tool.structuretool.createSiteNodeMandatoryPageTemplateWarningText")");
+		#else
 			document.editForm.submit()
-		else
-			alert("$ui.getString("tool.structuretool.createSiteNodeMandatoryPageTemplateWarningText")");
+		#end
 	}	
 -->
 </script>		
@@ -88,7 +94,6 @@
 									$ui.getString("tool.structuretool.pageTemplates.header")<br/>
 									<br/>
 									#set($counter = 0)
-									#set($sortedPageTemplates = $this.getSortedPageTemplates($sortProperty))
 									#foreach ($content in $sortedPageTemplates)
 										##if($filterRepositoryId == -1 || $content.repositoryId == $filterRepositoryId)
 											#if($isOdd)
