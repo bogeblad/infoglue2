@@ -1,0 +1,268 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+ 
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+#beginContentTool("tool.contenttool.searchResultHeader" $ui.getString("tool.contenttool.searchResultHeader") "" "0" "0" "0")
+
+	<script type="text/javascript" src="script/overlib.js"></script>
+	<script type="text/javascript" language="JavaScript">
+	<!-- 		
+		
+		//-----------------------------------------------
+		// This function reloads the toolbar above the current 
+		// active action so that buttons related to the view 
+		// can be shown and a suitable headline be written.
+		//-----------------------------------------------
+		
+		function submitListForm(entityName)
+		{
+			//var searchString = document.editForm.searchString.value;
+			//var replaceString = document.editForm.replaceString.value;
+			
+			var listForm = document.listForm;
+			var selectedObjectsAsDelimitedString = getSelectedObjectsAsDelimitedString(listForm, entityName);
+				
+			/*
+			
+			var selectedObjects = getSelectedObjects(listForm, entityName);
+			var selectedTexts = getSelectedTexts(listForm);
+			*/
+			//alert("selectedObjects:" + selectedObjects);
+			if (selectedObjectsAsDelimitedString == "")
+			{
+				alert('$ui.getString("tool.contenttool.replaceAlertSelectVersions")');
+			  	return;
+			}
+			else
+			{
+				document.replaceForm.contentVersionId.value = selectedObjectsAsDelimitedString;
+				//listForm.message.value = listForm.message.value;
+				//listForm.extraParameters.value = selectedTexts;
+				//listForm.yesDestination.value = listForm.yesDestination.value + '?searchString=' + searchString + '&replaceString=' + replaceString + selectedObjects; //
+				//listForm.submit();
+				document.replaceForm.submit();
+			}
+
+		}
+		
+		
+		//-----------------------------------------------
+		// This function iterates through the list of select-boxes 
+		// and add the selected ones id's to the id-List 
+		//-----------------------------------------------
+
+		function getSelectedObjects(listForm, entityName)
+		{
+			var str = '';
+		
+			var length = listForm.sel.length;
+		  	if(length == null)
+		  	{
+		  		if (listForm.sel.checked)
+			    	str += '&' + entityName + 'Id=' + escape(listForm.sel.value);
+		  	}
+		  	else
+		  	{	
+			  	for (i=0; i<length; i++)
+			  	{
+			   		if (listForm.sel[i].checked)
+			    		str += '&' + entityName + 'Id=' + escape(listForm.sel[i].value);
+			 	}
+			}
+					 	
+		 	return str;
+		}
+		
+		//-----------------------------------------------
+		// This function iterates through the list of select-boxes 
+		// and add the selected ones id's to the id-List 
+		//-----------------------------------------------
+
+		function getSelectedObjectsAsDelimitedString(listForm, entityName)
+		{
+			var str = '';
+		
+			var length = listForm.sel.length;
+		  	if(length == null)
+		  	{
+		  		if (listForm.sel.checked)
+			    	str += ',' + escape(listForm.sel.value);
+		  	}
+		  	else
+		  	{	
+			  	for (i=0; i<length; i++)
+			  	{
+			   		if (listForm.sel[i].checked)
+			    		str += ',' + escape(listForm.sel[i].value);
+			 	}
+			}
+					 	
+		 	return str;
+		}
+
+
+		//-----------------------------------------------
+		// This function iterates through the list of select-boxes 
+		// and add the selected ones names to the messagesList 
+		//-----------------------------------------------
+		
+		function getSelectedTexts(listForm)
+		{
+			var str = '';
+
+			var length = listForm.sel.length;
+		  	if(length == null)
+		  	{
+		  		if (listForm.sel.checked)
+			    	str += listForm.rowtitle.value + "<br/>";
+		  	}
+		  	else
+		  	{	
+				for (i=0; i<length; i++)
+				{
+					if (listForm.sel[i].checked)
+				    	str += listForm.rowtitle[i].value + "<br/>";
+				}
+			}
+					
+			return str;
+		}
+
+		function toggleDiv(id)
+		{
+			var div = document.getElementById(id);
+			if(div && div.style.display == "none")
+			{
+				div.style.display = "block";
+		
+				if(id == "advancedOptions")
+				{
+					var resultDiv = document.getElementById("resultsLayer");
+					document.getElementById("advancedEnabled").value = "true";
+					resultDiv.style.top = "400px";
+				}
+					
+			}
+			else
+			{
+				div.style.display = "none";
+				
+				if(id == "advancedOptions")
+				{
+					var resultDiv = document.getElementById("resultsLayer");
+					document.getElementById("advancedEnabled").value = "false";
+					resultDiv.style.top = "100px";
+				}
+			}			
+		}
+		
+		function showReplaceDialog()
+		{
+			var advancedDiv = document.getElementById("advancedOptions");
+			advancedDiv.style.display = "none";
+
+			var searchDiv = document.getElementById("searchLayer");
+			searchDiv.style.display = "none";
+
+			var replaceDiv = document.getElementById("replaceLayer");
+			replaceDiv.style.display = "block";
+			
+			var resultDiv = document.getElementById("resultsLayer");
+			resultDiv.style.top = "150px";
+		}
+		
+		function showSearchDialog()
+		{
+			//var advancedDiv = document.getElementById("advancedOptions");
+			//advancedDiv.style.display = "block";
+
+			var searchDiv = document.getElementById("searchLayer");
+			searchDiv.style.display = "block";
+
+			var replaceDiv = document.getElementById("replaceLayer");
+			replaceDiv.style.display = "none";
+			
+			var resultDiv = document.getElementById("resultsLayer");
+			resultDiv.style.top = "100px";
+		}
+		
+		function resetSearchForm()
+		{
+			document.editForm.searchString.value = "";
+		}
+
+		function resetReplaceForm()
+		{
+			document.replaceForm.searchString.value = "";
+			document.replaceForm.replaceString.value = "";
+		}
+
+		function htmlTreeItemClick(itemId, repoId, path)
+		{
+			parent.htmlTreeItemClick(itemId, repoId, path);
+		}
+		
+		function setSelected(itemId, repoId, path)
+		{
+			if(itemId)
+				parent.document.inputForm.entityId.value     = itemId;
+			if(repoId)
+				parent.document.inputForm.repositoryId.value = repoId;
+			if(path)
+			 	parent.document.inputForm.path.value         = path;
+			
+			parent.submitBindning();
+		}
+	-->
+	</script>
+	
+#set($advanced = false)
+#if(($name && $name != "") || $languageId || $contentTypeDefinitionId || $caseSensitive == 1 || $stateId || $advancedEnabled)
+	#set($advanced = true)
+#end
+
+Här kommer alla $digitalAssetVOList ...
+#set($counter = 0)
+#foreach($digitalAsset in $digitalAssetVOList)
+<tr>
+	<td id="digitalAsset$formatter.encodeURI($digitalAsset.assetKey, 'utf-8')" valign="bottom" align="center" class="bordered" #if($assetKey == "$digitalAsset.assetKey") style="background-color: #C2D0E2;" #else style="background-color: white;" #end>
+		<input type="hidden" id="digitalAsset$formatter.encodeURI($formatter.encodeURI($digitalAsset.assetKey, 'utf-8'), 'utf-8')" value="$this.getDigitalAssetUrl($digitalAsset.digitalAssetId)">
+		#set($trippleEncodedAssetKey = "$formatter.encodeURI($formatter.encodeURI($formatter.encodeURI($digitalAsset.assetKey, 'utf-8'), 'utf-8'), 'utf-8')")
+		#set($doubleEncodedAssetKey = "$formatter.encodeURI($formatter.encodeURI($digitalAsset.assetKey, 'utf-8'), 'utf-8')")
+		<a ondblclick="onOk();" href="javascript:markAsset(this, $!contentId, '$doubleEncodedAssetKey', '$doubleEncodedAssetKey', '$this.getDigitalAssetThumbnailUrl($digitalAsset.digitalAssetId)');"><img class="scaledbordered" src="$this.getDigitalAssetThumbnailUrl($digitalAsset.digitalAssetId)">
+		<br/>AssetKey: $digitalAsset.assetKey</a><br/>
+		#if($showSelectButtonByEachImage)<a href="javascript:markAsset(this, $!contentId, '$doubleEncodedAssetKey', '$doubleEncodedAssetKey', '$this.getDigitalAssetThumbnailUrl($digitalAsset.digitalAssetId)');onOk();"><b>Add asset to selection</b></a>#end
+		AAAAAAA
+	</td>
+	#if($assetKey == $digitalAsset.assetKey)
+		<script type="text/javascript">
+		<!--
+			//markAsset(this, $!contentId, '$digitalAsset.assetKey');
+			firstAssetKey = '$formatter.encodeURI($digitalAsset.assetKey, 'utf-8')';
+			//alert("firstAssetKey1:" + firstAssetKey);
+		-->
+		</script>	
+	#else
+		#if($counter == 0 && (!$assetKey || $!assetKey == ''))
+			<script type="text/javascript">
+			<!--
+				//markAsset(this, $!contentId, '$digitalAsset.assetKey');
+				firstAssetKey = '$formatter.encodeURI($digitalAsset.assetKey, 'utf-8')';
+				//alert("firstAssetKey2:" + firstAssetKey);
+			-->
+			</script>
+		#end
+	#end
+	#set($counter = $counter + 1)
+</tr>
+#end
+
+#if($counter == 0)
+<tr>
+	<td id="digitalAsset$digitalAsset.assetKey" valign="bottom" align="center" class="bordered">
+		<br/>$ui.getString("tool.contenttool.noAssetsOrNoContentSelectedLabel")<br/><br/>
+	</td>
+</tr>
+#end
+
+#endContentTool()
