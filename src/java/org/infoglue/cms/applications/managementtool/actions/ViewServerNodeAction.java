@@ -61,6 +61,9 @@ public class ViewServerNodeAction extends InfoGlueAbstractAction
     
     public String doExecute() throws Exception
     {
+    	if(getServerNodeId() == null || getServerNodeId().intValue() == -1)
+    		return "redirectToList";
+    		
         this.initialize(getServerNodeId());
 
         return "success";
