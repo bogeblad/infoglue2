@@ -56,6 +56,33 @@ body.generaltooledit {
 	font-weight		 : bold;
 }
 
+/* Here comes text classes */
+h1 {
+	font-family		 : Arial, San serif;
+	font-size		 : 18pt;
+	font-weight		 : bold;
+	color			 : black;
+}
+h2 {
+	font-family		 : Arial, San serif;
+	font-size        : 16pt;
+	font-weight		 : bold;
+	color			 : black;
+}
+h3 {
+	font-family		 : Arial, San serif;
+	font-size        : 12pt;
+	font-weight		 : bold;
+	color			 : black;
+}
+h4 {
+	font-family		 : Arial, San serif;
+	font-size        : 10pt;
+	font-weight		 : bold;
+	color			 : black;
+}
+
+
 /* HERE COMES THE FORM CLASSES */
 
 .ig-form {
@@ -236,6 +263,58 @@ img.scaledbordered {
 	float: left;
 	border: 1px solid #bbb;
 	}
+
+
+/* Button in IG */
+.igButton
+{
+	background-image: url("../../images/v3/igButtonBackground.png");
+	background-position: 100% -26px;
+	background-repeat: no-repeat;
+	line-height: 26px;
+	height: 26px;
+	padding-right: 20px;
+	color: #555;
+	display: block;
+	float: left;
+	margin: 4px;
+	margin-left: 0px;
+	margin-right: 10px;
+	cursor: pointer;
+	text-decoration: none;
+}
+
+.igButtonOuterSpan
+{
+	background-image: url("../../images/v3/igButtonBackground.png");
+	background-position: 0px 0px;
+	background-repeat: no-repeat;
+	font-family: Tahoma;
+	font-size: 10pt;
+	padding-left: 20px;
+	line-height: 26px;
+	text-decoration: none;
+	height: 26px;
+	display: block;
+	float: left;
+}
+
+.igButtonOuterSpan span {
+	padding-left: 24px;
+	}
+
+.igButton:hover
+{
+	/*background-position: 100% -78px;*/
+	color: white;
+	text-decoration: none;
+}
+
+.igButtonOuterSpan:hover
+{
+	/*background-position: 0px -52px;*/
+}
+
 
 
 /* Button in IG */

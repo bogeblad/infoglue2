@@ -381,6 +381,23 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 		return "viewAssetsDialogForFCKEditor";
 	}
 
+	public String doViewAssetsDialogForFCKEditorV3() throws Exception
+	{
+	    if(this.oldContentId != null)
+		{
+	        this.contentVO = ContentControllerProxy.getController().getACContentVOWithId(this.getInfoGluePrincipal(), getOldContentId());
+		}
+		else
+		{
+		    if(getContentId() != null && getContentId().intValue() != -1)
+		        this.contentVO = ContentControllerProxy.getController().getACContentVOWithId(this.getInfoGluePrincipal(), getContentId());
+		}
+		
+		this.repositories = RepositoryController.getController().getAuthorizedRepositoryVOList(this.getInfoGluePrincipal(), true);
+
+		return "viewAssetsDialogForFCKEditorV3";
+	}
+
 	
 	public String doViewAssetsForComponentBinding() throws Exception
 	{
@@ -436,6 +453,31 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 		return "viewAssetsForFCKEditor";
 	}
 
+	public String doViewContentAssetsForFCKEditorV3() throws Exception
+	{
+		if(getContentId() != null && getContentId().intValue() != -1)
+		{
+		    this.initialize(getContentVersionId(), getContentId(), this.languageId, true, false);
+		}
+
+		this.repositories = RepositoryController.getController().getAuthorizedRepositoryVOList(this.getInfoGluePrincipal(), true);
+		
+		if(this.assetKey != null)
+		{
+			String fromEncoding = CmsPropertyHandler.getAssetKeyFromEncoding();
+			if(fromEncoding == null)
+				fromEncoding = "iso-8859-1";
+			
+			String toEncoding = CmsPropertyHandler.getAssetKeyToEncoding();
+			if(toEncoding == null)
+				toEncoding = "utf-8";
+			
+			this.assetKey = new String(assetKey.getBytes(fromEncoding), toEncoding);
+		}
+		
+		return "viewContentAssetsForFCKEditorV3";
+	}
+
     public String doPreview() throws Exception
     {
         this.initialize(getContentVersionId(), getContentId(), this.languageId);
@@ -469,7 +511,13 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
     	ContentVersionController.getContentVersionController().deleteDigitalAssetRelation(getContentVersionId(), this.digitalAssetId, this.getInfoGluePrincipal());
 
     	anchor = "digitalAssetsBlock";
-
+    	
+    	if(returnAddress != null && !returnAddress.equals(""))
+		{
+			this.getResponse().sendRedirect(returnAddress + "#" + anchor);	    
+			return NONE;
+		}
+    	
     	return doStandalone();
     }
     

@@ -1,21 +1,10 @@
-<?xml version="1.0" encoding="UTF-8"?> 
+#beginCommonToolV3("tool.contenttool.assetDialog.assetDialogHeader" "" "" false false $!disableCloseButton)
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
-<html>
-<head>
-	<title>Select inline image</title>
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-	
-	<link rel="stylesheet" type="text/css" href="scss/cms.css" /> 
-	<script type="text/javascript" src="script/listview.js"></script>
-	
-	<script language="JavaScript">
+	<script type="text/javascript">
 	<!--
-		
 		var selectedAssetElement;
 		var contentId;
-		var assetKey;
+		var assetKey = "";
 		var firstAssetKey;
 		var assetUrl;
 			
@@ -25,265 +14,142 @@
 			{
 				selectedAssetElement.parentNode.style.border = "1px solid #d8d8d8";
 				selectedAssetElement.parentNode.style.background = "url(images/v3/imgbox_bg.gif) repeat";
-				selectedAssetElement.parentNode.style.backgroundImage = "images/v3/imgbox_bg.gif";
+				selectedAssetElement.parentNode.style.backgroundImage = "url(images/v3/imgbox_bg.gif)";
 				selectedAssetElement.style.background = "url(images/v3/imgbox_bg.gif) repeat";
-				selectedAssetElement.style.backgroundImage = "images/v3/imgbox_bg.gif";
+				selectedAssetElement.style.backgroundImage = "url(images/v3/imgbox_bg.gif)";
 			}
 			
 			contentId = aContentId;	
-			//assetKey = anAssetKey;	
-			assetKey = actualAssetKey;
+			if(actualAssetKey)
+				assetKey = actualAssetKey;
 			assetUrl = anAssetUrl;
-			//alert("assetUrl: " + assetUrl);
 			
-			//alert("object:" + object);
-			//alert("contentId" + contentId);
-			//alert("assetKey" + assetKey);
-			//alert("Getting element: " + "digitalAsset" + anAssetKey);
 			selectedAssetElement = document.getElementById("digitalAsset" + anAssetKey);
-			//alert("selectedAssetElement found:" + selectedAssetElement);
 			if(selectedAssetElement)
 			{
 				selectedAssetElement.parentNode.style.border = "1px solid orange";
 				selectedAssetElement.parentNode.style.background = "url(images/v3/imgboxselected_bg.gif) repeat";
-				selectedAssetElement.parentNode.style.backgroundImage = "images/v3/imgboxselected_bg.gif";
+				selectedAssetElement.parentNode.style.backgroundImage = "url(images/v3/imgboxselected_bg.gif)";
 				selectedAssetElement.style.background = "url(images/v3/imgboxselected_bg.gif) repeat";
-				selectedAssetElement.style.backgroundImage = "images/v3/imgboxselected_bg.gif";
+				selectedAssetElement.style.backgroundImage = "url(images/v3/imgboxselected_bg.gif)";
 			}
-			
-			//alert("Parent:" + object.parentNode.id);
-			//object.parentNode.style.background = "url(images/v3/imgboxselected_bg.gif) repeat";
-			//object.parentNode.style.border = "2px solid orange";
 		}
-		
+	
 		function onOk()
 		{
-			#if(!$treatAsLink)
-				parent.onOk(contentId, assetKey, assetUrl);
-			#else
-				parent.onOk(contentId, assetKey, assetUrl);
-			#end
+			if(assetKey == "")
+				alert("$ui.getString("tool.contenttool.assetDialog.mustChooseAttachment")");
+			else
+			{
+				#if(!$treatAsLink)
+					parent.onOk(contentId, assetKey, assetUrl);
+				#else
+					parent.onOk(contentId, assetKey, assetUrl);
+				#end
+			}
 		}
-
+	
 		function onCancel() 
 		{
-		    //alert("Parent:" + parent.name) 
 		    parent.onCancel(null);
 			return false;
 		}	
-		
-		function initSub() 
+	
+		function initSub(contentId) 
 		{
-			//alert("firstAssetKey: " + firstAssetKey);
-			markAsset(this, '$!contentId', firstAssetKey, firstAssetKey, '');
+			if(document.referrer != null && document.referrer != '')
+				markAsset(this, '$!contentId', firstAssetKey, firstAssetKey, '');
+			else
+				markAsset(this, '$!contentId', lastAssetKey, lastAssetKey, '');
 		};
-		
-		-->
+	
+		function deleteAsset(url, assetKey)
+		{
+			var returnAddress = document.location.href;  
+			if (confirm('$ui.getString("tool.contenttool.assetDialog.confirmAssetDeletionLabel") ' + assetKey))
+			{
+				window.location.href=url + "&returnAddress=" + escape(returnAddress);
+			}
+		}
+	
+		$(document).ready(function(){
+			setTimeout("initSub()", 500);
+		});
+	-->
 	</script>
+	<link rel="stylesheet" type="text/css" href="css/v3/assets.css" />
 	
-	<style>
-	
-	.imgBoxContainer {
-		width: 640px;
-		height: 380px;
-		display: block;
-		float: left;
-		border-bottom: 1px solid silver;
-		overflow: auto;
-	}
-	.imgBox {
-		width:144px;
-		height:134px;
-		background:url(images/v3/imgbox_bg.gif) repeat;
-		border:solid 1px #d8d8d8;
-		display:block;
-		float:left;
-		margin:0px 10px 10px 0;
-		text-align:center;
-		}
-	.imgBoxTop { 
-		position:relative; 
-		height:100px; 
-		text-align:center;
-		margin: 10px 10px 0px 10px;
-		background:url(images/v3/imgbox_bg.gif) repeat;
-	}
-	.imgBoxTopInner { 
-		padding-top: 10px;
-		text-align:center;
-		background:url(images/v3/imgbox_bg.gif) repeat;
-	}
-	.imgBoxBottom { 
-		display:inline;
-		float:left;
-		text-align:center;
-		margin: 0px 13px 0px 13px;		
-	}
-	.imgBoxTopInner img {
-		border:solid 1px #d8d8d8;
-		cursor: pointer;
-	}
-	
-	.imgBoxBottom a {
-		font-family:Arial, Helvetica, sans-serif;
-		font-size:11px;
-		position:relative; 
-		width:38px;
-		height:16px;
-		display:block;
-		float:left;
-	}
-	.assetKeyP {
-		margin: 0px; 
-		padding: 0px;
-		text-align: center;
-		width: 100%;
-		float: left;
-		display: block;
-	}
-	.assetKeyHref {
-		font-family:Arial, Helvetica, sans-serif;
-		font-size:11px;
-	}
-	.editImg {
-		background:url(images/v3/edit_img.gif) no-repeat center;}
-	.refreshImg {
-		background:url(images/v3/refresh_img.gif) no-repeat center;}
-	.deleteImg {
-		background:url(images/v3/delete_img.gif) no-repeat center;}
-	
-	
-	/* Button in IG */
-	.igButton
-	{
-		background-image: url("images/v3/igButtonBackground.png");
-		background-position: 100% -26px;
-		background-repeat: no-repeat;
-		line-height: 26px;
-		height: 26px;
-		padding-right: 20px;
-		color: #555;
-		display: block;
-		float: left;
-		margin: 4px;
-		margin-left: 0px;
-		margin-right: 10px;
-		cursor: pointer;
-		text-decoration: none;
-	}
-	
-	.igButtonOuterSpan
-	{
-		background-image: url("images/v3/igButtonBackground.png");
-		background-position: 0px 0px;
-		background-repeat: no-repeat;
-		font-family: Tahoma;
-		font-size: 10pt;
-		padding-left: 20px;
-		line-height: 26px;
-		text-decoration: none;
-		height: 26px;
-		display: block;
-		float: left;
-	}
-	
-	.igButtonOuterSpan span {
-		padding-left: 24px;
-		}
-	
-	.igButton:hover
-	{
-		/*background-position: 100% -78px;*/
-		color: white;
-		text-decoration: none;
-	}
-	
-	.igButtonOuterSpan:hover
-	{
-		/*background-position: 0px -52px;*/
-	}
-
-
-	</style>
 	<META HTTP-EQUIV="pragma" CONTENT="no-cache" />
 	<META HTTP-EQUIV="expires" CONTENT="-1" />	
 </head>
 
-<body class="generaltooledit" style="padding: 0px; margin: 0px; width: 650px;">
+<body class="generaltooledit">
 
 <div id="assets" class="imgBoxContainer">
 
 #set($counter = 0)
 #foreach($digitalAsset in $inheritedDigitalAssets)
-
+	#set($digitalAssetUrl = $this.getDigitalAssetUrl($digitalAsset.digitalAssetId))
 	<div class="imgBox">
-    	<div class="imgBoxTop" id="digitalAsset$formatter.encodeURI($digitalAsset.assetKey, 'utf-8')" #if($assetKey == "$digitalAsset.assetKey") style="background-color: #C2D0E2;" #else style="background-color: white;" #end>
+    	<div class="imgBoxTop" id="digitalAsset$formatter.encodeURI($digitalAsset.assetKey, 'utf-8')" #if($assetKey == "$digitalAsset.assetKey") style="background:url(images/v3/imgboxselected_bg.gif) repeat;" #else style="background:url(images/v3/imgbox_bg.gif) repeat;" #end>
             <div id="imgBoxTopInner" class="imgBoxTopInner">
-            	<input type="hidden" id="digitalAsset$formatter.encodeURI($formatter.encodeURI($digitalAsset.assetKey, 'utf-8'), 'utf-8')" value="$this.getDigitalAssetUrl($digitalAsset.digitalAssetId)">
+            	<input type="hidden" id="digitalAsset$formatter.encodeURI($formatter.encodeURI($digitalAsset.assetKey, 'utf-8'), 'utf-8')" value="$digitalAssetUrl">
 				#set($trippleEncodedAssetKey = "$formatter.encodeURI($formatter.encodeURI($formatter.encodeURI($digitalAsset.assetKey, 'utf-8'), 'utf-8'), 'utf-8')")
 				#set($doubleEncodedAssetKey = "$formatter.encodeURI($formatter.encodeURI($digitalAsset.assetKey, 'utf-8'), 'utf-8')")
 				#set($thumbnailImageUrl = "$this.getDigitalAssetThumbnailUrl($digitalAsset.digitalAssetId, 100, 60, 'ffffff', 'center', 'middle', 100, 60, 75)")
-				<img ondblclick="onOk();" onclick="javascript:markAsset(this, $!contentId, '$doubleEncodedAssetKey', '$doubleEncodedAssetKey', '$thumbnailImageUrl');" src="$thumbnailImageUrl" alt="$digitalAsset.assetKey" />
-             	<p title="$digitalAsset.assetKey" class="assetKeyP"><a class="assetKeyHref" ondblclick="onOk();" href="javascript:markAsset(this, $!contentId, '$doubleEncodedAssetKey', '$doubleEncodedAssetKey', '$thumbnailImageUrl');">#if($digitalAsset.assetKey.length() > 18)$digitalAsset.assetKey.substring(0,18)..#else$digitalAsset.assetKey#end</a></p>
+				<img ondblclick="onOk();" onclick="javascript:markAsset(this, $!contentId, '$doubleEncodedAssetKey', '$doubleEncodedAssetKey', '$thumbnailImageUrl');" src="$thumbnailImageUrl" alt="$digitalAsset.assetKey ($digitalAsset.assetContentType - $formatter.formatFileSize($digitalAsset.assetFileSize))" />
+             	<p title="$digitalAsset.assetKey ($digitalAsset.assetContentType - $formatter.formatFileSize($digitalAsset.assetFileSize))" class="assetKeyP"><a class="assetKeyHref" ondblclick="onOk();" href="javascript:markAsset(this, $!contentId, '$doubleEncodedAssetKey', '$doubleEncodedAssetKey', '$thumbnailImageUrl');">#if($digitalAsset.assetKey.length() > 18)$digitalAsset.assetKey.substring(0,18)..#else$digitalAsset.assetKey#end</a></p>
                 #if($showSelectButtonByEachImage)<a href="javascript:markAsset(this, $!contentId, '$doubleEncodedAssetKey', '$doubleEncodedAssetKey', '$thumbnailImageUrl');onOk();"><b>Add asset to selection</b></a>#end
 				#if($assetKey == $digitalAsset.assetKey)
 					<script type="text/javascript">
 					<!--
-						firstAssetKey = '$formatter.encodeURI($digitalAsset.assetKey, 'utf-8')';
+						var firstAssetKey = '$formatter.encodeURI($digitalAsset.assetKey, 'utf-8')';
 					-->
 					</script>	
 				#else
 					#if($counter == 0 && (!$assetKey || $!assetKey == ''))
 						<script type="text/javascript">
 						<!--
-							firstAssetKey = '$formatter.encodeURI($digitalAsset.assetKey, 'utf-8')';
+							var firstAssetKey = '$formatter.encodeURI($digitalAsset.assetKey, 'utf-8')';
 						-->
 						</script>
 					#end
 				#end
+				<script type="text/javascript">
+				<!--
+					var lastAssetKey = '$formatter.encodeURI($digitalAsset.assetKey, 'utf-8')';
+				-->
+				</script>	
 				#set($counter = $counter + 1)
             </div>
         </div>
 	  	<div class="imgBoxBottom">
-        	<a href="#" class="editImg"></a>
-        	<a href="#" class="refreshImg"></a>
-        	<a href="#" class="deleteImg"></a>
-   		</div>
+			#if($disableImageEditor != "true" && ($digitalAssetUrl.indexOf(".gif") > -1 || $digitalAssetUrl.indexOf(".jpg") > -1 || $digitalAssetUrl.indexOf(".png") > -1))
+			<a class="editImg" href="#" onclick="openPopup('ImageEditor.action?contentVersionId=$contentVersionId&contentId=$contentId&languageId=$languageId&digitalAssetId=$digitalAsset.digitalAssetId','DigitalAsset','width=800,height=600,resizable=yes');" title="$ui.getString("tool.contenttool.editAttachment")"></a>
+			#end
+			<a class="updateImg" href="#" onclick="openPopup('ViewDigitalAsset!update.action?contentVersionId=$contentVersionId&contentId=$contentId&languageId=$languageId&digitalAssetId=$digitalAsset.digitalAssetId','DigitalAsset','width=400,height=200,resizable=no');" title="$ui.getString("tool.contenttool.updateAttachment")"></a>
+			<a class="deleteImg" href="#" onclick="deleteAsset('ViewContentVersion!deleteDigitalAssetStandalone.action?contentVersionId=$contentVersionId&contentId=$contentId&languageId=$languageId&digitalAssetId=$digitalAsset.digitalAssetId', '$digitalAsset.assetKey');" title="$ui.getString("tool.contenttool.deleteAttachment")"></a>
+		</div>
  	</div>
-
 #end
-</div>
 
-<div style="display: block; float: left; width: 100%; height: 20px;" >
 #if($counter == 0)
 <p>
 	$ui.getString("tool.contenttool.noAssetsOrNoContentSelectedLabel")
 </p>
 #end
 
-#if($contentVersionVO.id)
-	<p id="igMenuButton"><a class='igButton' href="#" onclick="openPopup('ViewDigitalAsset.action?contentVersionId=$contentVersionVO.id', 'DigitalAsset', 'width=400,height=200,resizable=no');"><span class='igButtonOuterSpan'><span class='linkInfoGlueFunctions'>$ui.getString("tool.contenttool.uploadNewAttachment")</span></span></a></p>
-#end
-
-#if($showActionButtons)
-	<p id="igMenuButton"><a class='igButton' href="#" onclick="onOk();"><span class='igButtonOuterSpan'><span class='linkInfoGlueFunctions'>Infoga markerad fil</span></span></a></p>
-#end
-
-#*
-<p>
-	#if($contentVersionVO.id)
-	<a href="javascript:openPopup('ViewDigitalAsset.action?contentVersionId=$contentVersionVO.id', 'DigitalAsset', 'width=400,height=200,resizable=no');">$ui.getString("tool.contenttool.uploadNewAttachment")</a>
-	#end
-
-	#if($showActionButtons)
-	<a href="javascript:onOk();">Infoga markerad fil</a>
-	#end
-</p>
-*#
 </div>
 
-<script type="text/javascript">
-	setTimeout("initSub()", 500);
-</script>
+<div style="display: block; float: left; width: 100%; height: 20px; padding-top: 10px;">
+
+	<a class='igButton' href="#" onclick="onOk();"><span class='igButtonOuterSpan'><span class='linkInsert'>$ui.getString("tool.contenttool.assetDialog.chooseAttachment")</span></span></a>
+
+#if($contentVersionVO.id)
+	<a class='igButton' href="#" onclick="openPopup('ViewDigitalAsset.action?contentVersionId=$contentVersionVO.id', 'DigitalAsset', 'width=400,height=200,resizable=no');"><span class='igButtonOuterSpan'><span class='linkUpload'>$ui.getString("tool.contenttool.uploadNewAttachment")</span></span></a>
+#end
+
+</div>
+
 </body>
 </html>

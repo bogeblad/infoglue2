@@ -1,4 +1,4 @@
-<!-- $Id: actions.xml,v 1.70 2008/07/07 21:03:27 mattias Exp $ -->
+<!-- $Id: actions.xml,v 1.71 2008/09/01 14:42:41 mattias Exp $ -->
 <actions>
 
 	<!-- MySettings -->
@@ -748,8 +748,11 @@
 		<view name="input">/cms/contenttool/viewContentVersionSearch.vm</view>
 		<view name="inputBinding">/cms/contenttool/viewContentVersionSearchForBinding.vm</view>
 		<view name="inputInlineAsset">/cms/contenttool/viewContentVersionSearchResultForInlineAsset.vm</view>
+		<view name="inputInlineAssetV3">/cms/contenttool/v3/viewDigitalAssetSearchResultForInlineAsset.vm</view>
 		<view name="successBindingResult">/cms/contenttool/viewContentVersionSearchResultForBinding.vm</view>
 		<view name="successInlineAssetResult">/cms/contenttool/viewContentVersionSearchResultForInlineAsset.vm</view>
+		<view name="successInlineAssetSearchV3">/cms/contenttool/v3/viewDigitalAssetSearchResultForInlineAsset.vm</view>
+		<view name="successLatestInlineAssetsV3">/cms/contenttool/v3/viewLatestDigitalAssetsForInlineAsset.vm</view>
 		<view name="success">/cms/contenttool/viewContentVersionSearchResult.vm</view>
 		<view name="error">/cms/contenttool/error.vm</view>
 	</action>
@@ -883,8 +886,10 @@
 		<view name="background">/cms/contenttool/viewContentVersionBackground.vm</view>
 		<view name="viewAssetsDialog">/cms/contenttool/viewContentAssets.vm</view>
 		<view name="viewAssetsDialogForFCKEditor">/cms/contenttool/viewContentAssetsForFCKEditor.vm</view>
+		<view name="viewAssetsDialogForFCKEditorV3">/cms/contenttool/v3/viewAssetBrowserForFCKEditor.vm</view>
 		<view name="viewAssets">/cms/contenttool/viewContentVersionAssets.vm</view>
 		<view name="viewAssetsForFCKEditor">/cms/contenttool/viewContentVersionAssetsForFCKEditor.vm</view>
+		<view name="viewContentAssetsForFCKEditorV3">/cms/contenttool/v3/viewContentVersionAssetsForFCKEditor.vm</view>
 		<view name="showContentAssetsForComponentBinding">/cms/structuretool/viewContentAssetsForComponentBinding.vm</view>
 		<view name="asXML">/cms/contenttool/viewContentVersionAsXML.vm</view>
 		<view name="error">/cms/contenttool/error.vm</view>
@@ -1494,6 +1499,7 @@
 	<action name="org.infoglue.cms.applications.managementtool.actions.ViewServerNodeAction" alias="ViewServerNode">
 		<view name="success">/cms/managementtool/viewServerNode.vm</view>
 		<view name="successLocal">/cms/managementtool/viewServerNodeLocal.vm</view>
+		<view name="redirectToList">ViewListServerNode.action</view>
 		<view name="error">/cms/managementtool/error.vm</view>
 	</action>
 	<action name="org.infoglue.cms.applications.managementtool.actions.UpdateServerNodeAction" alias="UpdateServerNode">

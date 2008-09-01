@@ -23,20 +23,37 @@
 
 package org.infoglue.cms.applications.contenttool.actions;
 
+import java.io.BufferedReader;
+import java.io.File;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
+import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.standard.StandardAnalyzer;
+import org.apache.lucene.document.Document;
+import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.queryParser.QueryParser;
+import org.apache.lucene.search.Hits;
+import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.search.Query;
+import org.apache.lucene.search.Searcher;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
 import org.infoglue.cms.controllers.kernel.impl.simple.RepositoryController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SearchController;
 import org.infoglue.cms.controllers.kernel.impl.simple.UserControllerProxy;
 import org.infoglue.cms.entities.content.ContentVO;
+import org.infoglue.cms.entities.content.ContentVersionVO;
+import org.infoglue.cms.entities.content.DigitalAssetVO;
 import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.util.CmsPropertyHandler;
 
@@ -57,8 +74,9 @@ public class SearchContentAction extends InfoGlueAbstractAction
 
 	private static final long serialVersionUID = 1L;
 	
-	private List contentVersionVOList;
+	private List contentVersionVOList = new ArrayList();
 	private Set contentVOSet;
+	private List<DigitalAssetVO> digitalAssetVOList = null;
 	private Integer repositoryId;
 	private String searchString;
 	private String name;
@@ -114,6 +132,132 @@ public class SearchContentAction extends InfoGlueAbstractAction
 	}
 	
 	public String doExecute() throws Exception 
+	{
+		/*
+		try 
+	    {
+			String index = "c:/temp/LuceneIndex/index";
+		    String field = "contents";
+		    String queries = null;
+		    int repeat = 0;
+		    boolean raw = false;
+		    String normsField = null;
+		    		    
+		    IndexReader reader = IndexReader.open(index);
+
+		    Searcher searcher = new IndexSearcher(reader);
+		    Analyzer analyzer = new StandardAnalyzer();
+
+		    QueryParser parser = new QueryParser(field, analyzer);
+
+		   
+			Query query = parser.parse(this.getSearchString());
+			System.out.println("Searching for: " + query.toString(field));
+
+			Hits hits = searcher.search(query);
+
+			if (repeat > 0)
+			{ 
+				Date start = new Date();
+				for (int i = 0; i < repeat; i++)
+				{
+					hits = searcher.search(query);
+				}
+				Date end = new Date();
+				System.out.println("Time: " + (end.getTime() - start.getTime()) + "ms");
+			}
+
+			System.out.println(hits.length() + " total matching documents");
+
+			final int HITS_PER_PAGE = 10;
+			for (int start = 0; start < hits.length(); start += HITS_PER_PAGE)
+			{
+				int end = Math.min(hits.length(), start + HITS_PER_PAGE);
+				for (int i = start; i < end; i++)
+				{
+
+					if (raw)
+					{ // output raw format
+						System.out.println("doc=" + hits.id(i) + " score=" + hits.score(i));
+						continue;
+					}
+
+					Document doc = hits.doc(i);
+					String contentVersionId = doc.get("contentVersionId");
+					String contentId = doc.get("contentId");
+					System.out.println("doc:" + doc);
+					System.out.println("contentVersionId:" + contentVersionId);
+					System.out.println("contentId:" + contentId);
+					//ContentVersionVO cvvo = ContentVersionControllerProxy.getController().getACContentVersionVOWithId(getInfoGluePrincipal(), new Integer(contentVersionId));
+					ContentVersionVO cvvo = ContentVersionController.getContentVersionController().getFullContentVersionVOWithId(new Integer(contentVersionId));
+					System.out.println("cvvo:" + cvvo);
+					contentVersionVOList.add(cvvo);
+					/*
+					String path = doc.get("path");
+					//contentVersionVOList
+					if (path != null)
+					{
+						System.out.println((i + 1) + ". " + path);
+						String title = doc.get("title");
+						if (title != null)
+						{
+							System.out.println("   Title: " + doc.get("title"));
+						}
+					} else
+					{
+						System.out.println((i + 1) + ". " + "No path for this document");
+					}
+					*/
+				}
+
+				if (queries != null) // non-interactive
+					break;
+			}
+			
+			reader.close();	
+	    } 
+	    catch (Exception e) 
+	    {
+	    	System.out.println(" caught a " + e.getClass() + "\n with message: " + e.getMessage());
+	    }
+	    */
+
+	    int maxRows = 100;
+		try
+		{
+			maxRows = Integer.parseInt(CmsPropertyHandler.getMaxRows());
+		}
+		catch(Exception e)
+		{
+		}
+
+		String[] repositoryIdToSearch = this.getRequest().getParameterValues("repositoryIdToSearch");
+		if(repositoryIdToSearch != null)
+		{
+			Integer[] repositoryIdAsIntegerToSearch = new Integer[repositoryIdToSearch.length];
+			for(int i=0; i < repositoryIdToSearch.length; i++)
+			{
+				repositoryIdAsIntegerToSearch[i] = new Integer(repositoryIdToSearch[i]);
+				selectedRepositoryIdList.add(repositoryIdToSearch[i]);
+			}
+			
+			contentVersionVOList = SearchController.getContentVersions(repositoryIdAsIntegerToSearch, this.getSearchString(), maxRows, name, languageId, new Integer[]{contentTypeDefinitionId}, caseSensitive, stateId, includeAssets);
+		}
+		else
+		{
+			contentVersionVOList = SearchController.getContentVersions(this.repositoryId, this.getSearchString(), maxRows, name, languageId, new Integer[]{contentTypeDefinitionId}, caseSensitive, stateId, includeAssets);
+			selectedRepositoryIdList.add("" + this.repositoryId);
+		}
+	    
+	    this.principals = UserControllerProxy.getController().getAllUsers();
+	    this.availableLanguages = LanguageController.getController().getLanguageVOList(this.repositoryId);
+	    this.contentTypeDefinitions = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOList();
+		this.repositories = RepositoryController.getController().getAuthorizedRepositoryVOList(this.getInfoGluePrincipal(), false);
+
+		return "success";
+	}
+
+	public String doAAAExecute() throws Exception 
 	{
 	    int maxRows = 100;
 		try
@@ -231,6 +375,74 @@ public class SearchContentAction extends InfoGlueAbstractAction
 		return "successInlineAssetResult";
 	}
 
+	public String doInlineAssetSearchV3() throws Exception 
+	{
+		int maxRows = 100;
+		try
+		{
+			maxRows = Integer.parseInt(CmsPropertyHandler.getMaxRows());
+		}
+		catch(Exception e)
+		{
+		}
+
+		String[] repositoryIdToSearch = this.getRequest().getParameterValues("repositoryIdToSearch");
+		if(repositoryIdToSearch != null)
+		{
+			Integer[] repositoryIdAsIntegerToSearch = new Integer[repositoryIdToSearch.length];
+			for(int i=0; i < repositoryIdToSearch.length; i++)
+			{
+				repositoryIdAsIntegerToSearch[i] = new Integer(repositoryIdToSearch[i]);
+				selectedRepositoryIdList.add(repositoryIdToSearch[i]);
+			}
+			
+			digitalAssetVOList = SearchController.getDigitalAssets(repositoryIdAsIntegerToSearch, this.getSearchString(), maxRows);
+		}
+		else 
+		{
+			digitalAssetVOList = SearchController.getDigitalAssets(new Integer[]{this.repositoryId}, this.getSearchString(), maxRows);
+			selectedRepositoryIdList.add("" + this.repositoryId);
+		}
+
+		return "successInlineAssetSearchV3";
+	}
+
+	public String doLatestInlineAssetsV3() throws Exception 
+	{
+		int maxRows = 30;
+		/*
+		try
+		{
+			maxRows = Integer.parseInt(CmsPropertyHandler.getMaxRows());
+			if(maxRows > 50)
+				maxRows = 30;
+		}
+		catch(Exception e)
+		{
+		}
+		*/
+
+		String[] repositoryIdToSearch = this.getRequest().getParameterValues("repositoryIdToSearch");
+		if(repositoryIdToSearch != null)
+		{
+			Integer[] repositoryIdAsIntegerToSearch = new Integer[repositoryIdToSearch.length];
+			for(int i=0; i < repositoryIdToSearch.length; i++)
+			{
+				repositoryIdAsIntegerToSearch[i] = new Integer(repositoryIdToSearch[i]);
+				selectedRepositoryIdList.add(repositoryIdToSearch[i]);
+			}
+			
+			digitalAssetVOList = SearchController.getLatestDigitalAssets(repositoryIdAsIntegerToSearch, maxRows);
+		}
+		else 
+		{
+			digitalAssetVOList = SearchController.getLatestDigitalAssets(new Integer[]{this.repositoryId}, maxRows);
+			selectedRepositoryIdList.add("" + this.repositoryId);
+		}
+
+		return "successLatestInlineAssetsV3";
+	}
+
 	/**
 	 * This method returns the advanced search interface to the user.
 	 */
@@ -267,7 +479,18 @@ public class SearchContentAction extends InfoGlueAbstractAction
 	    
 	    return Action.INPUT + "InlineAsset";
 	}
-	
+
+	/**
+	 * This method returns the binding search interface to the user.
+	 */
+
+	public String doInputInlineAssetV3() throws Exception 
+	{
+		this.repositories = RepositoryController.getController().getAuthorizedRepositoryVOList(this.getInfoGluePrincipal(), false);
+	    
+	    return Action.INPUT + "InlineAssetV3";
+	}
+
 	public ContentVO getContentVO(Integer contentId)
 	{
 		ContentVO contentVO = null;
@@ -302,7 +525,7 @@ public class SearchContentAction extends InfoGlueAbstractAction
 		
 		return sb.toString();
 	}
-	
+
 	public LanguageVO getLanguageVO(Integer languageId)
 	{
 		LanguageVO languageVO = null;
@@ -487,4 +710,10 @@ public class SearchContentAction extends InfoGlueAbstractAction
 	{
 		this.includeAssets = includeAssets;
 	}
+	
+	public List<DigitalAssetVO> getDigitalAssetVOList()
+	{
+		return digitalAssetVOList;
+	}
+
 }

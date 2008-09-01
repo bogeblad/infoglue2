@@ -1,221 +1,90 @@
-<?xml version="1.0" encoding="UTF-8"?> 
- 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+#beginCommonToolV3("tool.contenttool.assetDialog.assetDialogHeader" "" "" false false $!disableCloseButton)
 
-#beginContentTool("tool.contenttool.searchResultHeader" $ui.getString("tool.contenttool.searchResultHeader") "" "0" "0" "0")
-
-	<script type="text/javascript" src="script/overlib.js"></script>
-	<script type="text/javascript" language="JavaScript">
-	<!-- 		
-		
-		//-----------------------------------------------
-		// This function reloads the toolbar above the current 
-		// active action so that buttons related to the view 
-		// can be shown and a suitable headline be written.
-		//-----------------------------------------------
-		
-		function submitListForm(entityName)
+	<script type="text/javascript">
+	<!--
+		var selectedAssetElement;
+		var contentId;
+		var assetKey;
+		var firstAssetKey;
+		var assetUrl;
+			
+		function markAsset(object, digitalAssetId, aContentId, anAssetKey, actualAssetKey, anAssetUrl)
 		{
-			//var searchString = document.editForm.searchString.value;
-			//var replaceString = document.editForm.replaceString.value;
-			
-			var listForm = document.listForm;
-			var selectedObjectsAsDelimitedString = getSelectedObjectsAsDelimitedString(listForm, entityName);
-				
-			/*
-			
-			var selectedObjects = getSelectedObjects(listForm, entityName);
-			var selectedTexts = getSelectedTexts(listForm);
-			*/
-			//alert("selectedObjects:" + selectedObjects);
-			if (selectedObjectsAsDelimitedString == "")
+			if(selectedAssetElement)
 			{
-				alert('$ui.getString("tool.contenttool.replaceAlertSelectVersions")');
-			  	return;
+				selectedAssetElement.parentNode.style.border = "1px solid #d8d8d8";
+				selectedAssetElement.parentNode.style.background = "url(images/v3/imgbox_bg.gif) repeat";
+				selectedAssetElement.parentNode.style.backgroundImage = "url(images/v3/imgbox_bg.gif)";
+				selectedAssetElement.style.background = "url(images/v3/imgbox_bg.gif) repeat";
+				selectedAssetElement.style.backgroundImage = "url(images/v3/imgbox_bg.gif)";
 			}
+			
+			contentId = aContentId;	
+			if(actualAssetKey)
+				assetKey = actualAssetKey;
+			assetUrl = anAssetUrl;
+			
+			selectedAssetElement = document.getElementById(digitalAssetId);
+			if(selectedAssetElement)
+			{
+				selectedAssetElement.parentNode.style.border = "1px solid orange";
+				selectedAssetElement.parentNode.style.background = "url(images/v3/imgboxselected_bg.gif) repeat";
+				selectedAssetElement.parentNode.style.backgroundImage = "url(images/v3/imgboxselected_bg.gif)";
+				selectedAssetElement.style.background = "url(images/v3/imgboxselected_bg.gif) repeat";
+				selectedAssetElement.style.backgroundImage = "url(images/v3/imgboxselected_bg.gif)";
+			}
+		}
+	
+		function onOk()
+		{
+			if(assetKey == "")
+				alert("$ui.getString("tool.contenttool.assetDialog.mustChooseAttachment")");
 			else
 			{
-				document.replaceForm.contentVersionId.value = selectedObjectsAsDelimitedString;
-				//listForm.message.value = listForm.message.value;
-				//listForm.extraParameters.value = selectedTexts;
-				//listForm.yesDestination.value = listForm.yesDestination.value + '?searchString=' + searchString + '&replaceString=' + replaceString + selectedObjects; //
-				//listForm.submit();
-				document.replaceForm.submit();
+				#if(!$treatAsLink)
+					parent.onOk(contentId, assetKey, assetUrl);
+				#else
+					parent.onOk(contentId, assetKey, assetUrl);
+				#end
 			}
-
 		}
-		
-		
-		//-----------------------------------------------
-		// This function iterates through the list of select-boxes 
-		// and add the selected ones id's to the id-List 
-		//-----------------------------------------------
-
-		function getSelectedObjects(listForm, entityName)
+	
+		function onCancel() 
 		{
-			var str = '';
-		
-			var length = listForm.sel.length;
-		  	if(length == null)
-		  	{
-		  		if (listForm.sel.checked)
-			    	str += '&' + entityName + 'Id=' + escape(listForm.sel.value);
-		  	}
-		  	else
-		  	{	
-			  	for (i=0; i<length; i++)
-			  	{
-			   		if (listForm.sel[i].checked)
-			    		str += '&' + entityName + 'Id=' + escape(listForm.sel[i].value);
-			 	}
-			}
-					 	
-		 	return str;
-		}
-		
-		//-----------------------------------------------
-		// This function iterates through the list of select-boxes 
-		// and add the selected ones id's to the id-List 
-		//-----------------------------------------------
-
-		function getSelectedObjectsAsDelimitedString(listForm, entityName)
+		    parent.onCancel(null);
+			return false;
+		}	
+	
+		function initSub(contentId) 
 		{
-			var str = '';
-		
-			var length = listForm.sel.length;
-		  	if(length == null)
-		  	{
-		  		if (listForm.sel.checked)
-			    	str += ',' + escape(listForm.sel.value);
-		  	}
-		  	else
-		  	{	
-			  	for (i=0; i<length; i++)
-			  	{
-			   		if (listForm.sel[i].checked)
-			    		str += ',' + escape(listForm.sel[i].value);
-			 	}
-			}
-					 	
-		 	return str;
-		}
-
-
-		//-----------------------------------------------
-		// This function iterates through the list of select-boxes 
-		// and add the selected ones names to the messagesList 
-		//-----------------------------------------------
-		
-		function getSelectedTexts(listForm)
-		{
-			var str = '';
-
-			var length = listForm.sel.length;
-		  	if(length == null)
-		  	{
-		  		if (listForm.sel.checked)
-			    	str += listForm.rowtitle.value + "<br/>";
-		  	}
-		  	else
-		  	{	
-				for (i=0; i<length; i++)
-				{
-					if (listForm.sel[i].checked)
-				    	str += listForm.rowtitle[i].value + "<br/>";
-				}
-			}
-					
-			return str;
-		}
-
-		function toggleDiv(id)
-		{
-			var div = document.getElementById(id);
-			if(div && div.style.display == "none")
-			{
-				div.style.display = "block";
-		
-				if(id == "advancedOptions")
-				{
-					var resultDiv = document.getElementById("resultsLayer");
-					document.getElementById("advancedEnabled").value = "true";
-					resultDiv.style.top = "400px";
-				}
-					
-			}
+			if(document.referrer != null && document.referrer != '')
+				markAsset(this, firstAssetId, '$!contentId', firstAssetKey, firstAssetKey, '');
 			else
+				markAsset(this, firstAssetId, '$!contentId', lastAssetKey, lastAssetKey, '');
+		};
+	
+		function deleteAsset(url, assetKey)
+		{
+			var returnAddress = document.location.href;  
+			if (confirm('$ui.getString("tool.contenttool.assetDialog.confirmAssetDeletionLabel") ' + assetKey))
 			{
-				div.style.display = "none";
-				
-				if(id == "advancedOptions")
-				{
-					var resultDiv = document.getElementById("resultsLayer");
-					document.getElementById("advancedEnabled").value = "false";
-					resultDiv.style.top = "100px";
-				}
-			}			
+				window.location.href=url + "&returnAddress=" + escape(returnAddress);
+			}
 		}
-		
-		function showReplaceDialog()
-		{
-			var advancedDiv = document.getElementById("advancedOptions");
-			advancedDiv.style.display = "none";
-
-			var searchDiv = document.getElementById("searchLayer");
-			searchDiv.style.display = "none";
-
-			var replaceDiv = document.getElementById("replaceLayer");
-			replaceDiv.style.display = "block";
-			
-			var resultDiv = document.getElementById("resultsLayer");
-			resultDiv.style.top = "150px";
-		}
-		
-		function showSearchDialog()
-		{
-			//var advancedDiv = document.getElementById("advancedOptions");
-			//advancedDiv.style.display = "block";
-
-			var searchDiv = document.getElementById("searchLayer");
-			searchDiv.style.display = "block";
-
-			var replaceDiv = document.getElementById("replaceLayer");
-			replaceDiv.style.display = "none";
-			
-			var resultDiv = document.getElementById("resultsLayer");
-			resultDiv.style.top = "100px";
-		}
-		
-		function resetSearchForm()
-		{
-			document.editForm.searchString.value = "";
-		}
-
-		function resetReplaceForm()
-		{
-			document.replaceForm.searchString.value = "";
-			document.replaceForm.replaceString.value = "";
-		}
-
-		function htmlTreeItemClick(itemId, repoId, path)
-		{
-			parent.htmlTreeItemClick(itemId, repoId, path);
-		}
-		
-		function setSelected(itemId, repoId, path)
-		{
-			if(itemId)
-				parent.document.inputForm.entityId.value     = itemId;
-			if(repoId)
-				parent.document.inputForm.repositoryId.value = repoId;
-			if(path)
-			 	parent.document.inputForm.path.value         = path;
-			
-			parent.submitBindning();
-		}
+	
+		$(document).ready(function(){
+			setTimeout("initSub()", 500);
+		});
 	-->
 	</script>
+	<link rel="stylesheet" type="text/css" href="css/v3/assets.css" />
 	
+	<META HTTP-EQUIV="pragma" CONTENT="no-cache" />
+	<META HTTP-EQUIV="expires" CONTENT="-1" />	
+</head>
+
+<body class="generaltooledit">
+
 #set($advanced = false)
 #if(($name && $name != "") || $languageId || $contentTypeDefinitionId || $caseSensitive == 1 || $stateId || $advancedEnabled)
 	#set($advanced = true)
@@ -239,50 +108,59 @@
 </table>
 </form>
 
-<div id="overDiv" style="position:absolute; visibility:hidden; z-index:1000; border: 1px solid #333333; background-color: #CCCCFF;"></div>
+<div id="assets" class="imgBoxContainer" style="height: 310px;">
 
-Här kommer alla $digitalAssetVOList ...
 #set($counter = 0)
 #foreach($digitalAsset in $digitalAssetVOList)
-<tr>
-	<td id="digitalAsset$formatter.encodeURI($digitalAsset.assetKey, 'utf-8')" valign="bottom" align="center" class="bordered" #if($assetKey == "$digitalAsset.assetKey") style="background-color: #C2D0E2;" #else style="background-color: white;" #end>
-		<input type="hidden" id="digitalAsset$formatter.encodeURI($formatter.encodeURI($digitalAsset.assetKey, 'utf-8'), 'utf-8')" value="$this.getDigitalAssetUrl($digitalAsset.digitalAssetId)">
-		#set($trippleEncodedAssetKey = "$formatter.encodeURI($formatter.encodeURI($formatter.encodeURI($digitalAsset.assetKey, 'utf-8'), 'utf-8'), 'utf-8')")
-		#set($doubleEncodedAssetKey = "$formatter.encodeURI($formatter.encodeURI($digitalAsset.assetKey, 'utf-8'), 'utf-8')")
-		<a ondblclick="onOk();" href="javascript:markAsset(this, $!contentId, '$doubleEncodedAssetKey', '$doubleEncodedAssetKey', '$this.getDigitalAssetThumbnailUrl($digitalAsset.digitalAssetId)');"><img class="scaledbordered" src="$this.getDigitalAssetThumbnailUrl($digitalAsset.digitalAssetId)">
-		<br/>AssetKey: $digitalAsset.assetKey</a><br/>
-		#if($showSelectButtonByEachImage)<a href="javascript:markAsset(this, $!contentId, '$doubleEncodedAssetKey', '$doubleEncodedAssetKey', '$this.getDigitalAssetThumbnailUrl($digitalAsset.digitalAssetId)');onOk();"><b>Add asset to selection</b></a>#end
-		AAAAAAA
-	</td>
-	#if($assetKey == $digitalAsset.assetKey)
-		<script type="text/javascript">
-		<!--
-			//markAsset(this, $!contentId, '$digitalAsset.assetKey');
-			firstAssetKey = '$formatter.encodeURI($digitalAsset.assetKey, 'utf-8')';
-			//alert("firstAssetKey1:" + firstAssetKey);
-		-->
-		</script>	
-	#else
-		#if($counter == 0 && (!$assetKey || $!assetKey == ''))
-			<script type="text/javascript">
-			<!--
-				//markAsset(this, $!contentId, '$digitalAsset.assetKey');
-				firstAssetKey = '$formatter.encodeURI($digitalAsset.assetKey, 'utf-8')';
-				//alert("firstAssetKey2:" + firstAssetKey);
-			-->
-			</script>
-		#end
-	#end
-	#set($counter = $counter + 1)
-</tr>
+	#set($digitalAssetUrl = $this.getDigitalAssetUrl($digitalAsset.digitalAssetId))
+	<div class="imgBox">
+    	<div class="imgBoxTop" id="$digitalAsset.id" #if($assetKey == "$digitalAsset.assetKey") style="background:url(images/v3/imgboxselected_bg.gif) repeat;" #else style="background:url(images/v3/imgbox_bg.gif) repeat;" #end>
+            <div id="imgBoxTopInner" class="imgBoxTopInner">
+            	<input type="hidden" id="digitalAsset$formatter.encodeURI($formatter.encodeURI($digitalAsset.assetKey, 'utf-8'), 'utf-8')" value="$digitalAssetUrl">
+				#set($trippleEncodedAssetKey = "$formatter.encodeURI($formatter.encodeURI($formatter.encodeURI($digitalAsset.assetKey, 'utf-8'), 'utf-8'), 'utf-8')")
+				#set($doubleEncodedAssetKey = "$formatter.encodeURI($formatter.encodeURI($digitalAsset.assetKey, 'utf-8'), 'utf-8')")
+				#set($thumbnailImageUrl = "$this.getDigitalAssetThumbnailUrl($digitalAsset.digitalAssetId, 100, 60, 'ffffff', 'center', 'middle', 100, 60, 75)")
+				#set($contentId = $this.getDigitalAssetContentId($digitalAsset.digitalAssetId))
+				#set($path = "$this.getContentPath($contentId)")
+				<img ondblclick="onOk();" onclick="javascript:markAsset(this, $digitalAsset.id, $!contentId, '$doubleEncodedAssetKey', '$doubleEncodedAssetKey', '$thumbnailImageUrl');" src="$thumbnailImageUrl" alt="$digitalAsset.assetKey - $path - ($digitalAsset.assetContentType - $formatter.formatFileSize($digitalAsset.assetFileSize))" />
+             	<p title="$digitalAsset.assetKey - $path - ($digitalAsset.assetContentType - $formatter.formatFileSize($digitalAsset.assetFileSize))" class="assetKeyP"><a class="assetKeyHref" ondblclick="onOk();" href="javascript:markAsset(this, $!contentId, '$doubleEncodedAssetKey', '$doubleEncodedAssetKey', '$thumbnailImageUrl');">#if($digitalAsset.assetKey.length() > 18)$digitalAsset.assetKey.substring(0,18)..#else$digitalAsset.assetKey#end</a></p>
+                #if($showSelectButtonByEachImage)<a href="javascript:markAsset(this, $!contentId, '$doubleEncodedAssetKey', '$doubleEncodedAssetKey', '$thumbnailImageUrl');onOk();"><b>Add asset to selection</b></a>#end
+				#if($assetKey == $digitalAsset.assetKey)
+					<script type="text/javascript">
+					<!--
+						var firstAssetId = $digitalAsset.id;
+					-->
+					</script>	
+				#else
+					#if($counter == 0 && (!$assetKey || $!assetKey == ''))
+						<script type="text/javascript">
+						<!--
+							var firstAssetId = $digitalAsset.id;
+						-->
+						</script>
+					#end
+				#end
+				#set($counter = $counter + 1)
+            </div>
+        </div>
+	  	<div class="imgBoxBottom">
+		</div>
+ 	</div>
 #end
 
 #if($counter == 0)
-<tr>
-	<td id="digitalAsset$digitalAsset.assetKey" valign="bottom" align="center" class="bordered">
-		<br/>$ui.getString("tool.contenttool.noAssetsOrNoContentSelectedLabel")<br/><br/>
-	</td>
-</tr>
+<p>
+	$ui.getString("tool.contenttool.noAssetsOrNoContentSelectedLabel")
+</p>
 #end
 
-#endContentTool()
+</div>
+
+<div style="display: block; float: left; width: 100%; height: 20px; padding-top: 10px;">
+
+	<a class='igButton' href="#" onclick="onOk();"><span class='igButtonOuterSpan'><span class='linkInsert'>$ui.getString("tool.contenttool.assetDialog.chooseAttachment")</span></span></a>
+
+</div>
+
+</body>
+</html>

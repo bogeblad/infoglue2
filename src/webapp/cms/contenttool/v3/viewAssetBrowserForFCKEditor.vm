@@ -27,11 +27,15 @@
 	
 	function init() 
 	{
+		//alert(top.opener.document.title);
 		if(top.opener.document.title == "Image Properties")
-			var txtUrl 		= top.opener.document.getElementById("txtLnkUrl").value;
+			var txtUrl = top.opener.document.getElementById("txtLnkUrl").value;
+			if(txtUrl == null || txtUrl == "")
+				txtUrl = top.opener.document.getElementById("txtUrl").value;
 		else
-			var txtUrl 		= top.opener.document.getElementById("txtUrl").value;
-			
+			var txtUrl = top.opener.document.getElementById("txtUrl").value;
+		
+		//alert(txtUrl);
 		contentId 		= getRequestParameter(txtUrl, "contentId");
 		//alert("contentId:" + contentId);
 		if(!contentId || contentId == "")
@@ -39,7 +43,7 @@
 		languageId 		= getRequestParameter(txtUrl, "languageId");
 		assetKey 		= getRequestParameter(txtUrl, "assetKey");
 			
-		//alert("contentId:" + contentId);
+		//alert("assetKey:" + assetKey);
 		//document.getElementById("entityId").value = contentId;
 		 	
 		//document.getElementById("itreeFrame").src = "ViewContentHtmlTree.action?repositoryId=$!repositoryId&exp=$exp&akey=/" + contentId + "/&select=" + contentId;
@@ -75,22 +79,22 @@
 	
 		<div id="currentContentAssetsTab" class="inlineTabDiv">
 			#if($oldContentId > 0)
-				<IFRAME frameborder="0" name="contentVersionAssetsFrame" id="contentVersionAssetsFrame" src="" width="670" height="450" align="baseline"></IFRAME>
+				<IFRAME frameborder="0" name="contentVersionAssetsFrame" id="contentVersionAssetsFrame" src="" width="670" height="410" align="baseline"></IFRAME>
 			#else
-				<IFRAME frameborder="0" name="contentVersionAssetsFrame" id="contentVersionAssetsFrame" src="" width="670" height="450" align="baseline"></IFRAME>
+				<IFRAME frameborder="0" name="contentVersionAssetsFrame" id="contentVersionAssetsFrame" src="" width="670" height="410" align="baseline"></IFRAME>
 			#end
 		</div>
 
 		<div id="latestUploadedTab" class="inlineTabDiv">
-			<IFRAME frameborder="0" name="latestAssetsFrame" id="latestAssetsFrame" src="SearchContent!latestInlineAssetsV3.action?repositoryId=${contentVO.repositoryId}" width="700" height="400" align="baseline"></IFRAME>
+			<IFRAME frameborder="0" name="latestAssetsFrame" id="latestAssetsFrame" src="SearchContent!latestInlineAssetsV3.action?repositoryId=${contentVO.repositoryId}" width="670" height="410" align="baseline"></IFRAME>
 		</div>
 
 		<div id="repositoryBrowserTab" class="inlineTabDiv">
-			<IFRAME frameborder="0" name="repositoryBrowserFrame" id="repositoryBrowserFrame" src="ViewContentVersion!viewAssetsDialogForFCKEditor.action?repositoryId=$contentVO.repositoryId&contentId=$contentId&languageId=$languageId" width="650" height="400" align="baseline"></IFRAME>
+			<IFRAME frameborder="0" name="repositoryBrowserFrame" id="repositoryBrowserFrame" src="ViewContentVersion!viewAssetsDialogForFCKEditor.action?repositoryId=$contentVO.repositoryId&contentId=$contentId&languageId=$languageId" width="670" height="410" align="baseline"></IFRAME>
 		</div>
 			
 		<div id="searchTab" class="inlineTabDiv">
-			<IFRAME frameborder="0" name="contentVersionAssetSearchFrame" id="contentVersionAssetSearchFrame" src="SearchContent!inputInlineAssetV3.action?repositoryId=${contentVO.repositoryId}" width="700" height="400" align="baseline"></IFRAME>
+			<IFRAME frameborder="0" name="contentVersionAssetSearchFrame" id="contentVersionAssetSearchFrame" src="SearchContent!inputInlineAssetV3.action?repositoryId=${contentVO.repositoryId}" width="670" height="410" align="baseline"></IFRAME>
 		</div>
 
 	</div>
