@@ -124,7 +124,11 @@ public class WYSIWYGPropertiesAction extends InfoGlueAbstractAction
 			ContentVersionVO cvo = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(new Integer(contentId), new Integer(languageId));
 			parameters.put("contentVersionId", cvo.getId());
 		}
-	    
+		else
+		{
+			parameters.put("contentVersionId", this.getRequest().getParameter("contentVersionId"));
+		}
+		
 		StringWriter tempString = new StringWriter();
 		PrintWriter pw = new PrintWriter(tempString);
 		new VelocityTemplateProcessor().renderTemplate(parameters, pw, this.WYSIWYGProperties, true);
