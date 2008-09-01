@@ -23,6 +23,7 @@
 
 package org.infoglue.cms.controllers.kernel.impl.simple;
 
+import java.awt.Color;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
@@ -1074,6 +1075,119 @@ public class DigitalAssetController extends BaseController
 		return assetUrl;
     }
 
+	/**
+	 * This method should return a String containing the URL for this digital assets icon/thumbnail.
+	 * In the case of an image the downscaled image is returned - otherwise an icon that represents the
+	 * content-type of the file. It always fetches the latest one if several assets exists.
+	 */
+	   	
+	public static String getDigitalAssetThumbnailUrl(Integer digitalAssetId, int canvasWidth, int canvasHeight, Color canvasColor, String alignment, String valignment, int width, int height, int quality) throws SystemException, Bug
+    {
+    	Database db = CastorDatabaseService.getDatabase();
+
+    	String assetUrl = null;
+
+        beginTransaction(db);
+
+        try
+        {
+			DigitalAsset digitalAsset = getSmallDigitalAssetWithId(digitalAssetId, db);
+			if(digitalAsset != null)
+			{
+				String folderName = "" + (digitalAsset.getDigitalAssetId().intValue() / 1000);
+				if(logger.isInfoEnabled())
+				{
+					logger.info("folderName:" + folderName);
+					logger.info("Found a digital asset:" + digitalAsset.getAssetFileName());
+				}
+				String contentType = digitalAsset.getAssetContentType();
+				String assetFilePath = digitalAsset.getAssetFilePath();
+				if(assetFilePath.indexOf("IG_ARCHIVE:") > -1)
+				{
+					assetUrl = CmsPropertyHandler.getWebServerAddress() + "/" + CmsPropertyHandler.getImagesBaseUrl() + "/archivedAsset.gif";
+				}
+				else if(contentType.equalsIgnoreCase("image/gif") || contentType.equalsIgnoreCase("image/jpg") || contentType.equalsIgnoreCase("image/pjpeg") || contentType.equalsIgnoreCase("image/jpeg") || contentType.equalsIgnoreCase("image/png"))
+				{
+					String fileName = digitalAsset.getDigitalAssetId() + "_" + digitalAsset.getAssetFileName();
+					logger.info("fileName:" + fileName);
+					String filePath = CmsPropertyHandler.getDigitalAssetPath() + File.separator + folderName;
+					logger.info("filePath:" + filePath);
+					logger.info("Making thumb from:" + filePath + File.separator + fileName);
+					String thumbnailFileName = digitalAsset.getDigitalAssetId() + "_thumbnail_" + canvasWidth + "_" + canvasHeight + "_" + canvasColor + "_" + alignment + "_" + valignment + "_" + width + "_" + height + "_" + quality + "_" + digitalAsset.getAssetFileName();
+					//String thumbnailFileName = "thumbnail_" + fileName;
+					File thumbnailFile = new File(filePath + File.separator + thumbnailFileName);
+					File originalFile = new File(filePath + File.separator + fileName);
+					if(!originalFile.exists())
+					{
+						logger.warn("The original file " + filePath + File.separator + fileName + " was not found - missing from system.");
+						assetUrl = "images" + File.separator + BROKENFILENAME;
+					}
+					else
+					{
+						if(!thumbnailFile.exists() && originalFile.exists())
+						{
+							logger.info("transforming...");
+							ThumbnailGenerator tg = new ThumbnailGenerator();
+							tg.transform(filePath + File.separator + fileName, filePath + File.separator + thumbnailFileName, width, height, quality, canvasWidth, canvasHeight, canvasColor, alignment, valignment);
+							logger.info("transform done...");
+						}
+						
+						assetUrl = CmsPropertyHandler.getWebServerAddress() + "/" + CmsPropertyHandler.getDigitalAssetBaseUrl() + "/" + folderName + "/" + thumbnailFileName;
+						logger.info("assetUrl:" + assetUrl);
+					}
+				}
+				else
+				{
+					String fileName = digitalAsset.getDigitalAssetId() + "_" + digitalAsset.getAssetFileName();
+					String filePath = CmsPropertyHandler.getDigitalAssetPath() + File.separator + folderName;
+					File originalFile = new File(filePath + File.separator + fileName);
+					if(!originalFile.exists())
+					{
+						assetUrl = CmsPropertyHandler.getWebServerAddress() + "/" + CmsPropertyHandler.getImagesBaseUrl() + "/" + BROKENFILENAME;
+					}
+					else if(contentType.equalsIgnoreCase("application/pdf"))
+					{
+						assetUrl = CmsPropertyHandler.getWebServerAddress() + "/" + CmsPropertyHandler.getImagesBaseUrl() + "/" + "pdf.gif"; 
+					}
+					else if(contentType.equalsIgnoreCase("application/msword"))
+					{
+						assetUrl = CmsPropertyHandler.getWebServerAddress() + "/" + CmsPropertyHandler.getImagesBaseUrl() + "/" + "msword.gif"; 
+					}
+					else if(contentType.equalsIgnoreCase("application/vnd.ms-excel"))
+					{
+						assetUrl = CmsPropertyHandler.getWebServerAddress() + "/" + CmsPropertyHandler.getImagesBaseUrl() + "/" + "msexcel.gif"; 
+					}
+					else if(contentType.equalsIgnoreCase("application/vnd.ms-powerpoint"))
+					{
+						assetUrl = CmsPropertyHandler.getWebServerAddress() + "/" + CmsPropertyHandler.getImagesBaseUrl() + "/" + "mspowerpoint.gif"; 
+					}
+					else if(contentType.equalsIgnoreCase("application/zip"))
+					{
+						assetUrl = CmsPropertyHandler.getWebServerAddress() + "/" + CmsPropertyHandler.getImagesBaseUrl() + "/" + "zipIcon.gif"; 
+					}
+					else if(contentType.equalsIgnoreCase("text/xml"))
+					{
+						assetUrl = CmsPropertyHandler.getWebServerAddress() + "/" + CmsPropertyHandler.getImagesBaseUrl() + "/" + "xmlIcon.gif"; 
+					}
+					else
+					{
+						assetUrl = CmsPropertyHandler.getWebServerAddress() + "/" + CmsPropertyHandler.getImagesBaseUrl() + "/" + "digitalAsset.gif"; 
+					}		
+				}	
+			}	
+			            
+            commitTransaction(db);
+        }
+        catch(Exception e)
+        {
+            logger.info("An error occurred when we tried to cache and show the digital asset thumbnail:" + e);
+            rollbackTransaction(db);
+            throw new SystemException(e.getMessage());
+        }
+    	
+		return assetUrl;
+    }
+
    	
 	/**
 	 * This method should return a String containing the URL for this digital asset.
@@ -1411,6 +1525,37 @@ public class DigitalAssetController extends BaseController
     	
 		return assetUrl;
     }
+
+	
+	public Integer getContentId(Integer digitalAssetId) throws Exception
+	{
+    	Database db = CastorDatabaseService.getDatabase();
+
+    	Integer contentId = null;
+
+        beginTransaction(db);
+
+        try
+        {
+			DigitalAsset mediumDigitalAsset = getMediumDigitalAssetWithId(digitalAssetId, db);
+			if(mediumDigitalAsset.getContentVersions() != null && mediumDigitalAsset.getContentVersions().size() > 0)
+			{
+				ContentVersion cv = (ContentVersion)mediumDigitalAsset.getContentVersions().iterator().next();
+				if(cv != null)
+					contentId = cv.getValueObject().getContentId();
+			}
+			            
+            commitTransaction(db);
+        }
+        catch(Exception e)
+        {
+            logger.info("An error occurred when we tried to cache and show the digital asset thumbnail:" + e);
+            rollbackTransaction(db);
+            throw new SystemException(e.getMessage());
+        }
+    	
+		return contentId;
+	}
 
 	/**
 	 * Returns the latest digital asset for a contentversion.
@@ -1968,6 +2113,7 @@ public class DigitalAssetController extends BaseController
     	in.close();
     	out.close();    	
   	}
+
 
 }
 

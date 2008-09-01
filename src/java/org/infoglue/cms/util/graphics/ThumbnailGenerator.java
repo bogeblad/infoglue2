@@ -122,4 +122,87 @@ public class ThumbnailGenerator
 		    javax.imageio.ImageIO.write(thumbImage, "JPG", new File(thumbnailFile));
 		}
 	}
+
+    public void transform(String originalFile, String thumbnailFile, int thumbWidth, int thumbHeight, int quality, int canvasWidth, int canvasHeight, Color canvasColor, String alignment, String valignment) throws Exception
+    {
+		Image image = javax.imageio.ImageIO.read(new File(originalFile));
+		
+		double thumbRatio = (double)thumbWidth / (double)thumbHeight;
+		int imageWidth    = image.getWidth(null);
+		int imageHeight   = image.getHeight(null);
+		double imageRatio = (double)imageWidth / (double)imageHeight;
+		if (thumbRatio < imageRatio)
+		{
+		    thumbHeight = (int)(thumbWidth / imageRatio);
+		}
+		else
+		{
+		    thumbWidth = (int)(thumbHeight * imageRatio);
+		}
+		
+		if(imageWidth < thumbWidth && imageHeight < thumbHeight)
+		{
+		    thumbWidth = imageWidth;
+		    thumbHeight = imageHeight;
+		}
+		else if(imageWidth < thumbWidth)
+		    thumbWidth = imageWidth;
+		else if(imageHeight < thumbHeight)
+		    thumbHeight = imageHeight;
+		
+		if(thumbWidth < 1)
+		    thumbWidth = 1;
+		if(thumbHeight < 1)
+		    thumbHeight = 1;
+
+		if(thumbWidth > canvasWidth)
+			canvasWidth = thumbWidth;
+		if(thumbHeight > canvasHeight)
+			canvasHeight = thumbHeight;
+
+		if(CmsPropertyHandler.getExternalThumbnailGeneration() != null && !CmsPropertyHandler.getExternalThumbnailGeneration().equalsIgnoreCase("") && !CmsPropertyHandler.getExternalThumbnailGeneration().equalsIgnoreCase("@externalThumbnailGeneration@"))
+		{
+		    String[] args = new String[5];
+		    
+		    args[0] = CmsPropertyHandler.getExternalThumbnailGeneration();
+		    args[1] = "-resize";
+		    args[2] = String.valueOf(thumbWidth) + "x" + String.valueOf(thumbHeight);
+		    args[3] = originalFile;
+		    args[4] = thumbnailFile;
+		    
+		    try
+		    {
+		        Process p = Runtime.getRuntime().exec(args);
+		        p.waitFor();
+		    }
+		    catch(InterruptedException e)
+		    {
+		        new Exception("Error resizing image for thumbnail", e); 
+		    }		    
+		}
+		else
+		{
+		    BufferedImage thumbImage = new BufferedImage(canvasWidth, canvasHeight, BufferedImage.TYPE_INT_RGB);
+		    Graphics2D graphics2D = thumbImage.createGraphics();
+		    graphics2D.setBackground(canvasColor);
+		    graphics2D.setPaint(canvasColor);
+		    
+		    int startX = 0;
+		    if(alignment.equalsIgnoreCase("center"))
+		    	startX = (canvasWidth - thumbWidth) / 2;
+		    
+		    int startY = 0;
+		    if(valignment.equalsIgnoreCase("middle"))
+		    	startY = (canvasHeight - thumbHeight) / 2;
+		    else if(valignment.equalsIgnoreCase("bottom"))
+		    	startY = canvasHeight - thumbHeight;
+		    
+		    graphics2D.fillRect(0, 0, canvasWidth, canvasHeight);
+		    graphics2D.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+		    graphics2D.drawImage(image, startX, startY, thumbWidth, thumbHeight, null);
+		    
+		    javax.imageio.ImageIO.write(thumbImage, "JPG", new File(thumbnailFile));
+		}
+	}
+
 }
