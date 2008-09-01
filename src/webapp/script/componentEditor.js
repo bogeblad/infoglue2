@@ -1125,7 +1125,7 @@ function editInline(selectedRepositoryId, selectedContentId, selectedLanguageId,
 					var color = elementObject.parent().css("color");
 					//alert("fontSize:" + fontSize);
 					
-					elementObject.html("<span id='spanInput" + $this.get(0).id + "'><input class='edit' style='width: 80%' ondblclick='if (event && event.stopPropagation) {event.stopPropagation();}else if (window.event) {window.event.cancelBubble = true;}return false;' id='input" + $this.get(0).id + "' type='text' value='" + text + "' /> </span>");
+					elementObject.html("<span id='spanInput" + $this.get(0).id + "'><input class='edit' style='width: 80%' ondblclick='if (event && event.stopPropagation) {event.stopPropagation();}else if (window.event) {window.event.cancelBubble = true;}return false;' id='input" + $this.get(0).id + "' type='text' value='" + escapeAmpsAndQuotes(text) + "' /> </span>");
 					$(".edit").css("font-family", fontFamily);
 					$(".edit").css("font-size", fontSize);
 					$(".edit").css("color", color);
@@ -2308,4 +2308,12 @@ function viewSource()
 		tb_remove();
 		if(previousEditOnSightMenuDivId != '')
 			openCloseDiv(previousEditOnSightMenuDivId);
+	}
+	
+	function escapeAmpsAndQuotes(original)
+	{
+		var escapedString = original;
+		escapedString = escapedString.replace(/\'/g,"&#39;");
+		escapedString = escapedString.replace(/"/g,"&#34;");
+		return escapedString;
 	}
