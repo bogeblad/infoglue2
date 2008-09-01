@@ -1497,6 +1497,11 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		boolean hasAccessToAccessRights 	= AccessRightController.getController().getIsPrincipalAuthorized(templateController.getDatabase(), principal, "ComponentEditor.ChangeSlotAccess", "");
 		boolean hasAccessToAddComponent 	= AccessRightController.getController().getIsPrincipalAuthorized(templateController.getDatabase(), principal, "ComponentEditor.AddComponent", "" + (component.getParentComponent() == null ? component.getContentId() : component.getParentComponent().getContentId()) + "_" + component.getSlotName());
 		boolean hasAccessToDeleteComponent 	= AccessRightController.getController().getIsPrincipalAuthorized(templateController.getDatabase(), principal, "ComponentEditor.DeleteComponent", "" + (component.getParentComponent() == null ? component.getContentId() : component.getParentComponent().getContentId()) + "_" + component.getSlotName());
+		
+		
+		boolean hasMoveComponentUpAccess 	= AccessRightController.getController().getIsPrincipalAuthorized(templateController.getDatabase(), principal, "ComponentEditor.hasMoveComponentUpAccess", "" + (component.getParentComponent() == null ? component.getContentId() : component.getParentComponent().getContentId()) + "_" + component.getSlotName());
+		boolean hasMoveComponentDownAccess 	= AccessRightController.getController().getIsPrincipalAuthorized(templateController.getDatabase(), principal, "ComponentEditor.hasMoveComponentDownAccess", "" + (component.getParentComponent() == null ? component.getContentId() : component.getParentComponent().getContentId()) + "_" + component.getSlotName());
+		
 		boolean hasAccessToChangeComponent 	= AccessRightController.getController().getIsPrincipalAuthorized(templateController.getDatabase(), principal, "ComponentEditor.ChangeComponent", "" + (component.getParentComponent() == null ? component.getContentId() : component.getParentComponent().getContentId()) + "_" + component.getSlotName());
 	    boolean hasSaveTemplateAccess 		= AccessRightController.getController().getIsPrincipalAuthorized(templateController.getDatabase(), principal, "StructureTool.SaveTemplate", "");
 	   
@@ -1505,6 +1510,8 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 	    boolean hasOpenInNewWindowAccess 	= AccessRightController.getController().getIsPrincipalAuthorized(templateController.getDatabase(), principal, "ComponentEditor.OpenInNewWindow", "");
 	    boolean hasViewSourceAccess 		= AccessRightController.getController().getIsPrincipalAuthorized(templateController.getDatabase(), principal, "ComponentEditor.ViewSource", "");
 	    boolean hasMySettingsAccess 		= AccessRightController.getController().getIsPrincipalAuthorized(templateController.getDatabase(), principal, "ComponentEditor.MySettings", "");
+	    boolean hasCreateSubpageAccess 		= AccessRightController.getController().getIsPrincipalAuthorized(templateController.getDatabase(), principal, "ComponentEditor.CreateSubpage", "");
+	    boolean hasEditPageMetadataAccess 	= AccessRightController.getController().getIsPrincipalAuthorized(templateController.getDatabase(), principal, "ComponentEditor.EditPageMetadata", "");
 
 	    boolean hasMaxComponents = false;
 		if(component.getParentComponent() != null && component.getParentComponent().getSlotList() != null)
@@ -1606,8 +1613,10 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 	    sb.append("<div id=\"editInlineDiv" + component.getId() + "\" class=\"igmenuitems linkEditArticle\"><a href='#'>" + editInlineHTML + "</a></div>");
 		sb.append("<div id=\"editDiv" + component.getId() + "\" class=\"igmenuitems linkEditArticle\"><a href='#'>" + editHTML + "</a></div>");
 
-		sb.append("<div class=\"igmenuitems linkMetadata\" onClick=\"openInlineDiv('" + metaDataUrl + "', 700, 750, true);\"><a href='#'>" + changePageMetaDataLabel + "</a></div>");
-		sb.append("<div class=\"igmenuitems linkCreatePage\" onClick=\"openInlineDiv('" + createSiteNodeUrl + "', 700, 750, true);\"><a href='#'>" + createSubPageToCurrentLabel + "</a></div>");
+		if(hasEditPageMetadataAccess)
+			sb.append("<div class=\"igmenuitems linkMetadata\" onClick=\"openInlineDiv('" + metaDataUrl + "', 700, 750, true);\"><a href='#'>" + changePageMetaDataLabel + "</a></div>");
+		if(hasCreateSubpageAccess)
+			sb.append("<div class=\"igmenuitems linkCreatePage\" onClick=\"openInlineDiv('" + createSiteNodeUrl + "', 700, 750, true);\"><a href='#'>" + createSubPageToCurrentLabel + "</a></div>");
 		
 	    if(hasSubmitToPublishAccess)
 	    	sb.append("<div class=\"igmenuitems linkPublish\" onClick=\"submitToPublish(" + siteNodeId + ", " + languageId + ", " + repositoryId + ", '" + URLEncoder.encode("" + componentEditorUrl + "ViewInlineOperationMessages.action", "UTF-8") + "');\"><a href='#'>" + submitToPublishHTML + "</a></div>");
@@ -1622,11 +1631,14 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 
 		String upUrl = componentEditorUrl + "ViewSiteNodePageComponents!moveComponent.action?siteNodeId=" + templateController.getSiteNodeId() + "&languageId=" + templateController.getLanguageId() + "&contentId=" + templateController.getContentId() + "&componentId=" + component.getId() + "&direction=0&showSimple=" + this.getTemplateController().getDeliveryContext().getShowSimple() + "";
 		String downUrl = componentEditorUrl + "ViewSiteNodePageComponents!moveComponent.action?siteNodeId=" + templateController.getSiteNodeId() + "&languageId=" + templateController.getLanguageId() + "&contentId=" + templateController.getContentId() + "&componentId=" + component.getId() + "&direction=1&showSimple=" + this.getTemplateController().getDeliveryContext().getShowSimple() + "";
-				
-		if(position > 0)
-		    sb.append("<div class=\"igmenuitems linkMoveComponentUp\" onClick=\"invokeAddress('" + upUrl + "');\"><a href='#'>" + moveComponentUpHTML + "</a></div>");
-		if(maxPosition > position)
-		    sb.append("<div class=\"igmenuitems linkMoveComponentDown\" onClick=\"invokeAddress('" + downUrl + "');\"><a href='#'>" + moveComponentDownHTML + "</a></div>");
+			
+		if(hasMoveComponentUpAccess)
+			if(position > 0)
+				sb.append("<div class=\"igmenuitems linkMoveComponentUp\" onClick=\"invokeAddress('" + upUrl + "');\"><a href='#'>" + moveComponentUpHTML + "</a></div>");
+		
+		if(hasMoveComponentDownAccess)
+			if(maxPosition > position)
+				sb.append("<div class=\"igmenuitems linkMoveComponentDown\" onClick=\"invokeAddress('" + downUrl + "');\"><a href='#'>" + moveComponentDownHTML + "</a></div>");
 		
 		sb.append("<div style='border-top: 1px solid #bbb; height: 1px; margin: 0px; padding: 0px; line-height: 1px;'></div>");
 		sb.append("<div class=\"igmenuitems linkComponentProperties\" onClick=\"showComponent(event);\"><a href='#'>" + propertiesHTML + "</a></div>");

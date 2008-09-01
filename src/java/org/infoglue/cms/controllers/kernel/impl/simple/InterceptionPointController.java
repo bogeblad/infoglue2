@@ -108,12 +108,16 @@ public class InterceptionPointController extends BaseController
 	    systemInterceptionPoints.put("ComponentEditor.ChangeSlotAccess", new InterceptionPointVO("ComponentEditor", "ComponentEditor.ChangeSlotAccess", "This interception point limits who can set access rights to a slot", false));
 	    systemInterceptionPoints.put("ComponentEditor.AddComponent", new InterceptionPointVO("ComponentEditor", "ComponentEditor.AddComponent", "This interception point limits who can add a component to a specific slot", true));
 	    systemInterceptionPoints.put("ComponentEditor.DeleteComponent", new InterceptionPointVO("ComponentEditor", "ComponentEditor.DeleteComponent", "This interception point limits who can delete a component in a specific slot", true));
+	    systemInterceptionPoints.put("ComponentEditor.hasMoveComponentUpAccess", new InterceptionPointVO("ComponentEditor", "ComponentEditor.hasMoveComponentUpAccess", "This interception point limits who can move a component up in a specific slot", true));
+	    systemInterceptionPoints.put("ComponentEditor.hasMoveComponentDownAccess", new InterceptionPointVO("ComponentEditor", "ComponentEditor.hasMoveComponentDownAccess", "This interception point limits who can move a component down in a specific slot", true));
 	    systemInterceptionPoints.put("ComponentEditor.ChangeComponent", new InterceptionPointVO("ComponentEditor", "ComponentEditor.ChangeComponent", "This interception point limits who can change a component to another in a specific slot", true));
 	    systemInterceptionPoints.put("ComponentEditor.SubmitToPublish", new InterceptionPointVO("ComponentEditor", "ComponentEditor.SubmitToPublish", "This interception point limits who have access to the Submit to publish choice in edit on sight", false));
 		systemInterceptionPoints.put("ComponentEditor.PageStructure", new InterceptionPointVO("ComponentEditor", "ComponentEditor.PageStructure", "This interception point limits who can see the page structure menu option in edit on sight", false));
 		systemInterceptionPoints.put("ComponentEditor.OpenInNewWindow", new InterceptionPointVO("ComponentEditor", "ComponentEditor.OpenInNewWindow", "This interception point limits who can see the Open in new window in edit on sight", false));
 		systemInterceptionPoints.put("ComponentEditor.ViewSource", new InterceptionPointVO("ComponentEditor", "ComponentEditor.ViewSource", "This interception point limits who can see the view source menu in edit on sight", false));
-
+		systemInterceptionPoints.put("ComponentEditor.CreateSubpage", new InterceptionPointVO("ComponentEditor", "ComponentEditor.CreateSubpage", "This interception point limits who can see the create subpage menu in edit on sight", false));
+		systemInterceptionPoints.put("ComponentEditor.EditPageMetadata", new InterceptionPointVO("ComponentEditor", "ComponentEditor.EditPageMetadata", "This interception point limits who can see the edit page meta info menu in edit on sight", false));
+		
 	    systemInterceptionPoints.put("ComponentPropertyEditor.EditProperty", new InterceptionPointVO("ComponentPropertyEditor", "ComponentPropertyEditor.EditProperty", "This interception point limits who can edit a specific component property", true));
 	    
 	    systemInterceptionPoints.put("Publication.Write", new InterceptionPointVO("Publication", "Publication.Write", "This interception point intercepts publications", true));
