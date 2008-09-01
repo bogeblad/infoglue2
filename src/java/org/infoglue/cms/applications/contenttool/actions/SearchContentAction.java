@@ -192,7 +192,7 @@ public class SearchContentAction extends InfoGlueAbstractAction
 					ContentVersionVO cvvo = ContentVersionController.getContentVersionController().getFullContentVersionVOWithId(new Integer(contentVersionId));
 					System.out.println("cvvo:" + cvvo);
 					contentVersionVOList.add(cvvo);
-					/*
+					
 					String path = doc.get("path");
 					//contentVersionVOList
 					if (path != null)
@@ -207,7 +207,7 @@ public class SearchContentAction extends InfoGlueAbstractAction
 					{
 						System.out.println((i + 1) + ". " + "No path for this document");
 					}
-					*/
+					
 				}
 
 				if (queries != null) // non-interactive
