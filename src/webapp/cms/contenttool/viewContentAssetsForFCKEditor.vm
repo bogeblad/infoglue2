@@ -84,7 +84,13 @@
 		{
 			//window.resizeTo(770,680);
 
-      		var txtUrl 		= top.opener.document.getElementById("txtUrl").value;
+      		if(top.opener.document.title == "Image Properties")
+				var txtUrl 		= top.opener.document.getElementById("txtLnkUrl").value;
+				if(txtUrl == "")
+					txtUrl 		= top.opener.document.getElementById("txtUrl").value;
+			else
+				var txtUrl 		= top.opener.document.getElementById("txtUrl").value;
+			
 			contentId 		= getRequestParameter(txtUrl, "contentId");
 			//alert("contentId:" + contentId);
 			if(!contentId || contentId == "")
@@ -133,6 +139,7 @@
 <table border="0" width="100%" cellpadding="2" cellspacing="0">
 <tr>
 	<td valign="top">
+
 		<table cellpadding="0" cellspacing="0" border="0" width="350">
 		<tr class="darkgreen">
 			<td class="smalllabel">$ui.getString("tool.contenttool.chooseContentLabel")</td>

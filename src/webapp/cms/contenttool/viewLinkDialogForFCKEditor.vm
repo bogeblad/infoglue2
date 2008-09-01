@@ -40,10 +40,15 @@
 			
 			oldAssetContentId = "";
 			oldAssetKey = "";
-	
-			var txtUrl 		= top.opener.document.getElementById("txtUrl").value;
+
+			if(top.opener.document.title == "Image Properties")
+				var txtUrl 		= top.opener.document.getElementById("txtLnkUrl").value;
+				if(txtUrl == "")
+					txtUrl 		= top.opener.document.getElementById("txtUrl").value;
+			else
+				var txtUrl 		= top.opener.document.getElementById("txtUrl").value;
 			//alert("txtUrl:" + txtUrl);
-						
+			
 			if(txtUrl.indexOf("getPageUrl") > -1)
 			{				
 				if(txtUrl != "")
