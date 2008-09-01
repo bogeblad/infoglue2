@@ -23,6 +23,7 @@
 
 package org.infoglue.cms.applications.common.actions;
 
+import java.awt.Color;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -34,10 +35,13 @@ import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.applications.databeans.LinkBean;
 import org.infoglue.cms.controllers.kernel.impl.simple.AccessRightController;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
+import org.infoglue.cms.controllers.kernel.impl.simple.DigitalAssetController;
 import org.infoglue.cms.controllers.kernel.impl.simple.InfoGluePrincipalControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ToolbarController;
 import org.infoglue.cms.controllers.kernel.impl.simple.UserControllerProxy;
+import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.AuthenticationModule;
@@ -45,6 +49,7 @@ import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.deliver.controllers.kernel.impl.simple.ExtranetController;
 import org.infoglue.deliver.util.CacheController;
+import org.infoglue.deliver.util.graphics.ColorHelper;
 
 import webwork.action.ActionContext;
 import webwork.config.Configuration;
@@ -697,6 +702,120 @@ public abstract class InfoGlueAbstractAction extends WebworkAbstractAction
 		}
 		else
 			return false;
+	}
+
+	//TODO - make other base action for asset aware actions
+	/**
+	 * This method fetches the blob from the database and saves it on the disk.
+	 * Then it returnes a url for it
+	 */
+	
+	public String getDigitalAssetUrl(Integer digitalAssetId) throws Exception
+	{
+		String imageHref = null;
+		try
+		{
+       		imageHref = DigitalAssetController.getDigitalAssetUrl(digitalAssetId);
+		}
+		catch(Exception e)
+		{
+			logger.warn("We could not get the url of the digitalAsset: " + e.getMessage(), e);
+			imageHref = e.getMessage();
+		}
+		
+		return imageHref;
+	}
+	
+	
+	/**
+	 * This method fetches the blob from the database and saves it on the disk.
+	 * Then it returnes a url for it
+	 */
+	
+	public String getDigitalAssetThumbnailUrl(Integer digitalAssetId, int canvasWidth, int canvasHeight, String canvasColorHexCode, String alignment, String valignment, int width, int height, int quality) throws Exception
+	{
+		String imageHref = null;
+		try
+		{
+			ColorHelper ch = new ColorHelper();
+			Color canvasColor = ch.getHexColor(canvasColorHexCode);
+       		imageHref = DigitalAssetController.getDigitalAssetThumbnailUrl(digitalAssetId, canvasWidth, canvasHeight, canvasColor, alignment, valignment, width, height, quality);
+		}
+		catch(Exception e)
+		{
+			logger.warn("We could not get the url of the thumbnail: " + e.getMessage(), e);
+			imageHref = e.getMessage();
+		}
+		
+		return imageHref;
+	}
+
+	
+	/**
+	 * This method fetches the blob from the database and saves it on the disk.
+	 * Then it returnes a url for it
+	 */
+	
+	public String getDigitalAssetUrl(Integer contentId, Integer languageId) throws Exception
+	{
+		String imageHref = null;
+		try
+		{
+       		imageHref = DigitalAssetController.getDigitalAssetUrl(contentId, languageId);
+		}
+		catch(Exception e)
+		{
+			logger.warn("We could not get the url of the digitalAsset: " + e.getMessage(), e);
+			imageHref = e.getMessage();
+		}
+		
+		return imageHref;
+	}
+	
+	
+	/**
+	 * This method fetches the blob from the database and saves it on the disk.
+	 * Then it returnes a url for it
+	 */
+	
+	public String getDigitalAssetThumbnailUrl(Integer contentId, Integer languageId) throws Exception
+	{
+		String imageHref = null;
+		try
+		{
+       		imageHref = DigitalAssetController.getDigitalAssetThumbnailUrl(contentId, languageId);
+		}
+		catch(Exception e)
+		{
+			logger.warn("We could not get the url of the thumbnail: " + e.getMessage(), e);
+			imageHref = e.getMessage();
+		}
+		
+		return imageHref;
+	}
+
+
+	public Integer getDigitalAssetContentId(Integer digitalAssetId) throws Exception
+	{
+		StringBuffer sb = new StringBuffer();
+		
+		return DigitalAssetController.getController().getContentId(digitalAssetId);
+	}
+
+	public String getContentPath(Integer contentId) throws Exception
+	{
+		StringBuffer sb = new StringBuffer();
+		
+		ContentVO contentVO = ContentController.getContentController().getContentVOWithId(contentId);
+		sb.insert(0, contentVO.getName());
+		while(contentVO.getParentContentId() != null)
+		{
+			contentVO = ContentController.getContentController().getContentVOWithId(contentVO.getParentContentId());
+			sb.insert(0, contentVO.getName() + "/");
+		}
+		sb.insert(0, "/");
+		
+		return sb.toString();
 	}
 
 }
