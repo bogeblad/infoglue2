@@ -42,6 +42,7 @@ import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.content.ContentVersion;
 import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.entities.content.DigitalAsset;
+import org.infoglue.cms.entities.content.DigitalAssetVO;
 import org.infoglue.cms.entities.content.impl.simple.SmallDigitalAssetImpl;
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.exception.Bug;
@@ -469,6 +470,129 @@ public class SearchController extends BaseController
 		
    	}
    	
+   	
+   	public static List<DigitalAssetVO> getDigitalAssets(Integer[] repositoryId, String searchString, int maxRows) throws SystemException, Bug
+   	{
+   		List<DigitalAssetVO> matchingAssets = new ArrayList<DigitalAssetVO>();
+
+		ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
+		
+		Database db = CastorDatabaseService.getDatabase();
+		
+		try
+		{
+			beginTransaction(db);
+
+			String assetSQL = "SELECT da FROM org.infoglue.cms.entities.content.impl.simple.SmallDigitalAssetImpl da WHERE (da.assetKey LIKE $1 OR da.assetFileName LIKE $2) ORDER BY da.digitalAssetId asc";
+			logger.info("assetSQL:" + assetSQL);
+			OQLQuery assetOQL = db.getOQLQuery(assetSQL);
+			assetOQL.bind("%" + searchString + "%");
+			assetOQL.bind("%" + searchString + "%");
+	        
+			QueryResults assetResults = assetOQL.execute(Database.ReadOnly);
+			
+			Integer previousContentId  = new Integer(-1);
+			Integer previousLanguageId = new Integer(-1);  	
+			int currentCount = 0;
+			while(assetResults.hasMore() && currentCount < maxRows) 
+			{
+				SmallDigitalAssetImpl smallAsset = (SmallDigitalAssetImpl)assetResults.next();
+				DigitalAsset asset = DigitalAssetController.getDigitalAssetWithId(smallAsset.getId(), db);
+				logger.info("Found a asset matching " + searchString + ":" + asset.getId());
+				Collection versions = asset.getContentVersions();
+				Iterator versionsIterator = versions.iterator();
+				while(versionsIterator.hasNext())
+				{
+					ContentVersion contentVersion = (ContentVersion)versionsIterator.next();
+					if(contentVersion.getOwningContent().getId().intValue() != previousContentId.intValue() || contentVersion.getLanguage().getId().intValue() != previousLanguageId.intValue())
+					{
+					    ContentVersion latestContentVersion = ContentVersionController.getContentVersionController().getLatestActiveContentVersion(contentVersion.getOwningContent().getId(), contentVersion.getLanguage().getId(), db);
+						if(latestContentVersion.getId().intValue() == contentVersion.getId().intValue())
+						{
+							matchingAssets.add(asset.getValueObject());
+						    previousContentId = contentVersion.getOwningContent().getId();
+						    previousLanguageId = contentVersion.getLanguage().getId();
+						    currentCount++;
+						}
+					}						
+				}
+			}
+
+			assetResults.close();
+			assetOQL.close();
+			
+			commitTransaction(db);
+		}
+		catch ( Exception e )
+		{
+			rollbackTransaction(db);
+			throw new SystemException("An error occurred when we tried to search. Reason:" + e.getMessage(), e);			
+		}
+		
+		return matchingAssets;
+		
+   	}
+
+   	public static List<DigitalAssetVO> getLatestDigitalAssets(Integer[] repositoryId, int maxRows) throws SystemException, Bug
+   	{
+   		List<DigitalAssetVO> matchingAssets = new ArrayList<DigitalAssetVO>();
+
+		ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
+		
+		Database db = CastorDatabaseService.getDatabase();
+		
+		try
+		{
+			beginTransaction(db);
+
+			String assetSQL = "SELECT da FROM org.infoglue.cms.entities.content.impl.simple.SmallDigitalAssetImpl da ORDER BY da.digitalAssetId desc";
+			logger.info("assetSQL:" + assetSQL);
+			OQLQuery assetOQL = db.getOQLQuery(assetSQL);
+	        
+			QueryResults assetResults = assetOQL.execute(Database.ReadOnly);
+			
+			Integer previousContentId  = new Integer(-1);
+			Integer previousLanguageId = new Integer(-1);  	
+			int currentCount = 0;
+			while(assetResults.hasMore() && currentCount < maxRows) 
+			{
+				SmallDigitalAssetImpl smallAsset = (SmallDigitalAssetImpl)assetResults.next();
+				DigitalAsset asset = DigitalAssetController.getDigitalAssetWithId(smallAsset.getId(), db);
+				logger.info("Found a asset matching:" + asset.getId());
+				Collection versions = asset.getContentVersions();
+				Iterator versionsIterator = versions.iterator();
+				while(versionsIterator.hasNext())
+				{
+					ContentVersion contentVersion = (ContentVersion)versionsIterator.next();
+					if(contentVersion.getOwningContent().getId().intValue() != previousContentId.intValue() || contentVersion.getLanguage().getId().intValue() != previousLanguageId.intValue())
+					{
+					    ContentVersion latestContentVersion = ContentVersionController.getContentVersionController().getLatestActiveContentVersion(contentVersion.getOwningContent().getId(), contentVersion.getLanguage().getId(), db);
+						if(latestContentVersion.getId().intValue() == contentVersion.getId().intValue())
+						{
+							matchingAssets.add(asset.getValueObject());
+						    previousContentId = contentVersion.getOwningContent().getId();
+						    previousLanguageId = contentVersion.getLanguage().getId();
+						    currentCount++;
+						}
+					}						
+				}
+			}
+
+			assetResults.close();
+			assetOQL.close();
+			
+			commitTransaction(db);
+		}
+		catch ( Exception e )
+		{
+			rollbackTransaction(db);
+			throw new SystemException("An error occurred when we tried to search. Reason:" + e.getMessage(), e);			
+		}
+		
+		return matchingAssets;
+		
+   	}
+
    	public static int replaceString(String searchString, String replaceString, String[] contentVersionIds, InfoGluePrincipal infoGluePrincipal)throws SystemException, Bug
    	{
 		int replacements = 0;
