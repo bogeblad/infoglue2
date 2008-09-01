@@ -112,6 +112,7 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 	private String assetKey 		= null;
 	private boolean treatAsLink    = false;
 	private boolean isAssetBinding = false;
+	private String assetTypeFilter = ".*";
 	
 	private Map WYSIWYGProperties = null;
 	
@@ -398,6 +399,22 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 		return "viewAssetsDialogForFCKEditorV3";
 	}
 
+	public String doViewAssetBrowserForFCKEditorV3() throws Exception
+	{
+	    if(this.oldContentId != null)
+		{
+	        this.contentVO = ContentControllerProxy.getController().getACContentVOWithId(this.getInfoGluePrincipal(), getOldContentId());
+		}
+		else
+		{
+		    if(getContentId() != null && getContentId().intValue() != -1)
+		        this.contentVO = ContentControllerProxy.getController().getACContentVOWithId(this.getInfoGluePrincipal(), getContentId());
+		}
+		
+		this.repositories = RepositoryController.getController().getAuthorizedRepositoryVOList(this.getInfoGluePrincipal(), true);
+
+		return "viewAssetBrowserForFCKEditorV3";
+	}
 	
 	public String doViewAssetsForComponentBinding() throws Exception
 	{
@@ -451,6 +468,38 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 		}
 		
 		return "viewAssetsForFCKEditor";
+	}
+
+	public String doViewAssetsForFCKEditorV3() throws Exception
+	{
+		if(getContentId() != null && getContentId().intValue() != -1)
+		{
+		    this.initialize(getContentVersionId(), getContentId(), this.languageId, true, false);
+		}
+
+		this.repositories = RepositoryController.getController().getAuthorizedRepositoryVOList(this.getInfoGluePrincipal(), true);
+		
+		if(this.assetKey != null)
+		{
+			String fromEncoding = CmsPropertyHandler.getAssetKeyFromEncoding();
+			if(fromEncoding == null)
+				fromEncoding = "iso-8859-1";
+			
+			String toEncoding = CmsPropertyHandler.getAssetKeyToEncoding();
+			if(toEncoding == null)
+				toEncoding = "utf-8";
+			
+			this.assetKey = new String(assetKey.getBytes(fromEncoding), toEncoding);
+		}
+		
+		return "viewAssetsForFCKEditorV3";
+	}
+
+	public String doViewAssetsForFCKEditorSmallV3() throws Exception
+	{
+		doViewAssetsForFCKEditorV3();
+		
+		return "viewAssetsForFCKEditorSmallV3";
 	}
 
 	public String doViewContentAssetsForFCKEditorV3() throws Exception
@@ -686,13 +735,29 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 	
 	public List getInheritedDigitalAssets()
 	{
-		List digitalAssets = null;
+		List filteredDigitalAssets = new ArrayList();
 		
 		try
 		{
 			if(this.contentVO != null && this.contentVO.getContentId() != null && this.contentVO.getContentId().intValue() != -1)
 	       	{
-	       		digitalAssets = DigitalAssetController.getDigitalAssetVOList(this.contentVO.getContentId(), this.languageId, true);
+				List digitalAssets = DigitalAssetController.getDigitalAssetVOList(this.contentVO.getContentId(), this.languageId, true);
+
+				filteredDigitalAssets.addAll(digitalAssets);
+	    		
+	       		if(filteredDigitalAssets != null && filteredDigitalAssets.size() > 0)
+	       		{
+	       			Iterator digitalAssetsIterator = filteredDigitalAssets.iterator();
+	       			while(digitalAssetsIterator.hasNext())
+	       			{
+	       				DigitalAssetVO assetVO = (DigitalAssetVO)digitalAssetsIterator.next();
+	       				if(!assetVO.getAssetContentType().matches(this.assetTypeFilter))
+	       				{
+	       					digitalAssetsIterator.remove();
+	       					//System.out.println("Removed file from asset list:" + this.assetTypeFilter);
+	       				}
+	       			}
+	       		}
 	       	}
 			/*
 			if(this.contentVersionVO != null && this.contentVersionVO.getContentVersionId() != null)
@@ -703,10 +768,11 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 		}
 		catch(Exception e)
 		{
+			e.printStackTrace();
 			logger.warn("We could not fetch the list of digitalAssets: " + e.getMessage(), e);
 		}
 		
-		return digitalAssets;
+		return filteredDigitalAssets;
 	}	
 
 
@@ -1559,6 +1625,16 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
     public void setReturnAddress(String returnAddress) 
 	{
 		this.returnAddress = returnAddress;
+	}
+
+	public String getAssetTypeFilter()
+	{
+		return assetTypeFilter;
+	}
+
+	public void setAssetTypeFilter(String assetTypeFilter)
+	{
+		this.assetTypeFilter = assetTypeFilter;
 	}
 
 }

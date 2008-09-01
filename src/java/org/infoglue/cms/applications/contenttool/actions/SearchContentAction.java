@@ -102,6 +102,9 @@ public class SearchContentAction extends InfoGlueAbstractAction
 	private String replaceString		= null;
 	//private String[] contentVersionId  	= null;
 	
+	private String assetTypeFilter = ".*";
+
+	
 	public void setSearchString(String s)
 	{
 	    this.searchString = s;
@@ -385,7 +388,7 @@ public class SearchContentAction extends InfoGlueAbstractAction
 		catch(Exception e)
 		{
 		}
-
+		
 		String[] repositoryIdToSearch = this.getRequest().getParameterValues("repositoryIdToSearch");
 		if(repositoryIdToSearch != null)
 		{
@@ -396,11 +399,11 @@ public class SearchContentAction extends InfoGlueAbstractAction
 				selectedRepositoryIdList.add(repositoryIdToSearch[i]);
 			}
 			
-			digitalAssetVOList = SearchController.getDigitalAssets(repositoryIdAsIntegerToSearch, this.getSearchString(), maxRows);
+			digitalAssetVOList = SearchController.getDigitalAssets(repositoryIdAsIntegerToSearch, this.getSearchString(), assetTypeFilter, maxRows);
 		}
 		else 
 		{
-			digitalAssetVOList = SearchController.getDigitalAssets(new Integer[]{this.repositoryId}, this.getSearchString(), maxRows);
+			digitalAssetVOList = SearchController.getDigitalAssets(new Integer[]{this.repositoryId}, this.getSearchString(), assetTypeFilter, maxRows);
 			selectedRepositoryIdList.add("" + this.repositoryId);
 		}
 
@@ -421,7 +424,7 @@ public class SearchContentAction extends InfoGlueAbstractAction
 		{
 		}
 		*/
-
+		
 		String[] repositoryIdToSearch = this.getRequest().getParameterValues("repositoryIdToSearch");
 		if(repositoryIdToSearch != null)
 		{
@@ -432,11 +435,11 @@ public class SearchContentAction extends InfoGlueAbstractAction
 				selectedRepositoryIdList.add(repositoryIdToSearch[i]);
 			}
 			
-			digitalAssetVOList = SearchController.getLatestDigitalAssets(repositoryIdAsIntegerToSearch, maxRows);
+			digitalAssetVOList = SearchController.getLatestDigitalAssets(repositoryIdAsIntegerToSearch, assetTypeFilter, maxRows);
 		}
 		else 
 		{
-			digitalAssetVOList = SearchController.getLatestDigitalAssets(new Integer[]{this.repositoryId}, maxRows);
+			digitalAssetVOList = SearchController.getLatestDigitalAssets(new Integer[]{this.repositoryId}, assetTypeFilter, maxRows);
 			selectedRepositoryIdList.add("" + this.repositoryId);
 		}
 
@@ -709,6 +712,16 @@ public class SearchContentAction extends InfoGlueAbstractAction
 	public void setIncludeAssets(boolean includeAssets)
 	{
 		this.includeAssets = includeAssets;
+	}
+	
+	public String getAssetTypeFilter()
+	{
+		return assetTypeFilter;
+	}
+
+	public void setAssetTypeFilter(String assetTypeFilter)
+	{
+		this.assetTypeFilter = assetTypeFilter;
 	}
 	
 	public List<DigitalAssetVO> getDigitalAssetVOList()

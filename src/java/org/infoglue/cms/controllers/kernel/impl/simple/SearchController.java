@@ -471,7 +471,7 @@ public class SearchController extends BaseController
    	}
    	
    	
-   	public static List<DigitalAssetVO> getDigitalAssets(Integer[] repositoryId, String searchString, int maxRows) throws SystemException, Bug
+   	public static List<DigitalAssetVO> getDigitalAssets(Integer[] repositoryId, String searchString, String assetTypeFilter, int maxRows) throws SystemException, Bug
    	{
    		List<DigitalAssetVO> matchingAssets = new ArrayList<DigitalAssetVO>();
 
@@ -497,24 +497,27 @@ public class SearchController extends BaseController
 			while(assetResults.hasMore() && currentCount < maxRows) 
 			{
 				SmallDigitalAssetImpl smallAsset = (SmallDigitalAssetImpl)assetResults.next();
-				DigitalAsset asset = DigitalAssetController.getDigitalAssetWithId(smallAsset.getId(), db);
-				logger.info("Found a asset matching " + searchString + ":" + asset.getId());
-				Collection versions = asset.getContentVersions();
-				Iterator versionsIterator = versions.iterator();
-				while(versionsIterator.hasNext())
+				if(smallAsset.getAssetContentType().matches(assetTypeFilter))
 				{
-					ContentVersion contentVersion = (ContentVersion)versionsIterator.next();
-					if(contentVersion.getOwningContent().getId().intValue() != previousContentId.intValue() || contentVersion.getLanguage().getId().intValue() != previousLanguageId.intValue())
+					DigitalAsset asset = DigitalAssetController.getDigitalAssetWithId(smallAsset.getId(), db);
+					logger.info("Found a asset matching " + searchString + ":" + asset.getId());
+					Collection versions = asset.getContentVersions();
+					Iterator versionsIterator = versions.iterator();
+					while(versionsIterator.hasNext())
 					{
-					    ContentVersion latestContentVersion = ContentVersionController.getContentVersionController().getLatestActiveContentVersion(contentVersion.getOwningContent().getId(), contentVersion.getLanguage().getId(), db);
-						if(latestContentVersion.getId().intValue() == contentVersion.getId().intValue())
+						ContentVersion contentVersion = (ContentVersion)versionsIterator.next();
+						if(contentVersion.getOwningContent().getId().intValue() != previousContentId.intValue() || contentVersion.getLanguage().getId().intValue() != previousLanguageId.intValue())
 						{
-							matchingAssets.add(asset.getValueObject());
-						    previousContentId = contentVersion.getOwningContent().getId();
-						    previousLanguageId = contentVersion.getLanguage().getId();
-						    currentCount++;
-						}
-					}						
+						    ContentVersion latestContentVersion = ContentVersionController.getContentVersionController().getLatestActiveContentVersion(contentVersion.getOwningContent().getId(), contentVersion.getLanguage().getId(), db);
+							if(latestContentVersion.getId().intValue() == contentVersion.getId().intValue())
+							{
+								matchingAssets.add(asset.getValueObject());
+							    previousContentId = contentVersion.getOwningContent().getId();
+							    previousLanguageId = contentVersion.getLanguage().getId();
+							    currentCount++;
+							}
+						}						
+					}
 				}
 			}
 
@@ -533,7 +536,7 @@ public class SearchController extends BaseController
 		
    	}
 
-   	public static List<DigitalAssetVO> getLatestDigitalAssets(Integer[] repositoryId, int maxRows) throws SystemException, Bug
+   	public static List<DigitalAssetVO> getLatestDigitalAssets(Integer[] repositoryId, String assetTypeFilter, int maxRows) throws SystemException, Bug
    	{
    		List<DigitalAssetVO> matchingAssets = new ArrayList<DigitalAssetVO>();
 
@@ -557,24 +560,28 @@ public class SearchController extends BaseController
 			while(assetResults.hasMore() && currentCount < maxRows) 
 			{
 				SmallDigitalAssetImpl smallAsset = (SmallDigitalAssetImpl)assetResults.next();
-				DigitalAsset asset = DigitalAssetController.getDigitalAssetWithId(smallAsset.getId(), db);
-				logger.info("Found a asset matching:" + asset.getId());
-				Collection versions = asset.getContentVersions();
-				Iterator versionsIterator = versions.iterator();
-				while(versionsIterator.hasNext())
+				//System.out.println("assetKey:" + smallAsset.getAssetContentType() + " - " + assetTypeFilter);
+				if(smallAsset.getAssetContentType().matches(assetTypeFilter))
 				{
-					ContentVersion contentVersion = (ContentVersion)versionsIterator.next();
-					if(contentVersion.getOwningContent().getId().intValue() != previousContentId.intValue() || contentVersion.getLanguage().getId().intValue() != previousLanguageId.intValue())
+					DigitalAsset asset = DigitalAssetController.getDigitalAssetWithId(smallAsset.getId(), db);
+					logger.info("Found a asset matching:" + asset.getId());
+					Collection versions = asset.getContentVersions();
+					Iterator versionsIterator = versions.iterator();
+					while(versionsIterator.hasNext())
 					{
-					    ContentVersion latestContentVersion = ContentVersionController.getContentVersionController().getLatestActiveContentVersion(contentVersion.getOwningContent().getId(), contentVersion.getLanguage().getId(), db);
-						if(latestContentVersion.getId().intValue() == contentVersion.getId().intValue())
+						ContentVersion contentVersion = (ContentVersion)versionsIterator.next();
+						if(contentVersion.getOwningContent().getId().intValue() != previousContentId.intValue() || contentVersion.getLanguage().getId().intValue() != previousLanguageId.intValue())
 						{
-							matchingAssets.add(asset.getValueObject());
-						    previousContentId = contentVersion.getOwningContent().getId();
-						    previousLanguageId = contentVersion.getLanguage().getId();
-						    currentCount++;
-						}
-					}						
+						    ContentVersion latestContentVersion = ContentVersionController.getContentVersionController().getLatestActiveContentVersion(contentVersion.getOwningContent().getId(), contentVersion.getLanguage().getId(), db);
+							if(latestContentVersion.getId().intValue() == contentVersion.getId().intValue())
+							{
+								matchingAssets.add(asset.getValueObject());
+							    previousContentId = contentVersion.getOwningContent().getId();
+							    previousLanguageId = contentVersion.getLanguage().getId();
+							    currentCount++;
+							}
+						}						
+					}
 				}
 			}
 

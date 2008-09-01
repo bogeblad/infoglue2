@@ -47,7 +47,7 @@
 		//document.getElementById("entityId").value = contentId;
 		 	
 		//document.getElementById("itreeFrame").src = "ViewContentHtmlTree.action?repositoryId=$!repositoryId&exp=$exp&akey=/" + contentId + "/&select=" + contentId;
-		document.getElementById("contentVersionAssetsFrame").src = "ViewContentVersion!viewContentAssetsForFCKEditorV3.action?contentId=" + contentId + "&languageId=$languageId&assetKey=" + assetKey + "&treatAsLink=$treatAsLink";
+		document.getElementById("contentVersionAssetsFrame").src = "ViewContentVersion!viewContentAssetsForFCKEditorV3.action?contentId=" + contentId + "&languageId=$languageId&assetKey=" + assetKey + "&treatAsLink=$treatAsLink&assetTypeFilter=$assetTypeFilter";
 	};
 	
 	function onOk(contentId, assetKey)
@@ -86,15 +86,15 @@
 		</div>
 
 		<div id="latestUploadedTab" class="inlineTabDiv">
-			<IFRAME frameborder="0" name="latestAssetsFrame" id="latestAssetsFrame" src="SearchContent!latestInlineAssetsV3.action?repositoryId=${contentVO.repositoryId}" width="670" height="410" align="baseline"></IFRAME>
+			<IFRAME frameborder="0" name="latestAssetsFrame" id="latestAssetsFrame" src="SearchContent!latestInlineAssetsV3.action?repositoryId=${contentVO.repositoryId}&assetTypeFilter=$assetTypeFilter" width="670" height="410" align="baseline"></IFRAME>
 		</div>
 
 		<div id="repositoryBrowserTab" class="inlineTabDiv">
-			<IFRAME frameborder="0" name="repositoryBrowserFrame" id="repositoryBrowserFrame" src="ViewContentVersion!viewAssetsDialogForFCKEditor.action?repositoryId=$contentVO.repositoryId&contentId=$contentId&languageId=$languageId" width="670" height="410" align="baseline"></IFRAME>
+			<IFRAME frameborder="0" name="repositoryBrowserFrame" id="repositoryBrowserFrame" src="ViewContentVersion!viewAssetsDialogForFCKEditorV3.action?repositoryId=$contentVO.repositoryId&contentId=$contentId&languageId=$languageId&assetTypeFilter=$assetTypeFilter" width="670" height="410" align="baseline"></IFRAME>
 		</div>
 			
 		<div id="searchTab" class="inlineTabDiv">
-			<IFRAME frameborder="0" name="contentVersionAssetSearchFrame" id="contentVersionAssetSearchFrame" src="SearchContent!inputInlineAssetV3.action?repositoryId=${contentVO.repositoryId}" width="670" height="410" align="baseline"></IFRAME>
+			<IFRAME frameborder="0" name="contentVersionAssetSearchFrame" id="contentVersionAssetSearchFrame" src="SearchContent!inputInlineAssetV3.action?repositoryId=${contentVO.repositoryId}&assetTypeFilter=$assetTypeFilter" width="670" height="410" align="baseline"></IFRAME>
 		</div>
 
 	</div>
