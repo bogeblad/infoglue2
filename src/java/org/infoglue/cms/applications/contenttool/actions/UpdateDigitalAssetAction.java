@@ -39,10 +39,22 @@ import org.infoglue.cms.controllers.kernel.impl.simple.ContentStateController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.DigitalAssetController;
+import org.infoglue.cms.controllers.kernel.impl.simple.GroupPropertiesController;
+import org.infoglue.cms.controllers.kernel.impl.simple.RolePropertiesController;
+import org.infoglue.cms.controllers.kernel.impl.simple.UserPropertiesController;
 import org.infoglue.cms.entities.content.ContentVersion;
 import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.entities.content.DigitalAssetVO;
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
+import org.infoglue.cms.entities.management.GroupProperties;
+import org.infoglue.cms.entities.management.GroupPropertiesVO;
+import org.infoglue.cms.entities.management.RoleProperties;
+import org.infoglue.cms.entities.management.RolePropertiesVO;
+import org.infoglue.cms.entities.management.UserProperties;
+import org.infoglue.cms.entities.management.UserPropertiesVO;
+import org.infoglue.cms.exception.Bug;
+import org.infoglue.cms.exception.ConstraintException;
+import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
 
@@ -73,6 +85,13 @@ public class UpdateDigitalAssetAction extends ViewDigitalAssetAction
 	private String closeOnLoad;
 	private Integer contentTypeDefinitionId;
 
+	private String entity;
+	private Integer entityId;
+	private UserPropertiesVO userPropertiesVO;
+	private UserPropertiesVO rolePropertiesVO;
+	private ContentVersionVO contentVersionVO;
+	protected ContentTypeDefinitionVO contentTypeDefinitionVO;
+
 	private VisualFormatter formatter = new VisualFormatter();
 	
 	private ConstraintExceptionBuffer ceb;
@@ -90,6 +109,8 @@ public class UpdateDigitalAssetAction extends ViewDigitalAssetAction
 		   
     public String doExecute() throws Exception
     {
+    	initialize();
+
     	ceb.throwIfNotEmpty();
 		
     	InputStream is = null;
@@ -259,9 +280,45 @@ public class UpdateDigitalAssetAction extends ViewDigitalAssetAction
 			}
 			catch(Exception e){}
 		}
-					    
+		
         return "success";
-    }    
+    }
+
+	private void initialize() throws SystemException, Bug, ConstraintException
+	{
+		try
+		{
+			this.digitalAssetVO = DigitalAssetController.getDigitalAssetVOWithId(this.digitalAssetId);
+	
+	    	if(this.contentVersionId != null)
+	        {
+	        	this.contentVersionVO = ContentVersionController.getContentVersionController().getContentVersionVOWithId(this.contentVersionId);
+	            this.contentTypeDefinitionVO = ContentController.getContentController().getContentTypeDefinition(contentVersionVO.getContentId());
+	        }
+	        else
+	        {
+	            if(this.entity.equalsIgnoreCase(UserProperties.class.getName()))
+	            {
+	                UserPropertiesVO userPropertiesVO = UserPropertiesController.getController().getUserPropertiesVOWithId(this.entityId);
+	                this.contentTypeDefinitionVO = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithId(userPropertiesVO.getContentTypeDefinitionId());            
+	            }
+	            else if(this.entity.equalsIgnoreCase(RoleProperties.class.getName()))
+	            {
+	                RolePropertiesVO rolePropertiesVO = RolePropertiesController.getController().getRolePropertiesVOWithId(this.entityId);
+	                this.contentTypeDefinitionVO = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithId(rolePropertiesVO.getContentTypeDefinitionId());            
+	            }
+	            else if(this.entity.equalsIgnoreCase(GroupProperties.class.getName()))
+	            {
+	                GroupPropertiesVO groupPropertiesVO = GroupPropertiesController.getController().getGroupPropertiesVOWithId(this.entityId);
+	                this.contentTypeDefinitionVO = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithId(groupPropertiesVO.getContentTypeDefinitionId());            
+	            }
+	        }
+		}
+		catch (Exception e) 
+		{
+			e.printStackTrace();
+		}
+	}    
 
 	/**
 	 * This method fetches the blob from the database and saves it on the disk.
@@ -351,6 +408,31 @@ public class UpdateDigitalAssetAction extends ViewDigitalAssetAction
     public String getUploadErrorMaxSize()
 	{
 		return uploadMaxSize;
+	}
+    
+	public Integer getContentTypeDefinitionId()
+	{
+		return contentTypeDefinitionId;
+	}
+
+	public String getEntity()
+	{
+		return entity;
+	}
+
+	public Integer getEntityId()
+	{
+		return entityId;
+	}
+
+	public ContentTypeDefinitionVO getContentTypeDefinitionVO()
+	{
+		return contentTypeDefinitionVO;
+	}
+
+	public List getDefinedAssetKeys()
+	{
+		return ContentTypeDefinitionController.getController().getDefinedAssetKeys(this.contentTypeDefinitionVO.getSchemaValue());
 	}
     
 }

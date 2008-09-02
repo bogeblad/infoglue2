@@ -317,6 +317,9 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 			this.currentLanguageVO = LanguageController.getController().getLanguageVOWithId(toLanguageId);
         else if(this.languageId != null)
         	this.currentLanguageVO = LanguageController.getController().getLanguageVOWithId(languageId);
+
+        if(this.anchor == null && getRequest().getParameter("anchor") != null)
+        	this.anchor = getRequest().getParameter("anchor");
     } 
 
     public String doExecute() throws Exception
@@ -565,7 +568,7 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
     	
         if(returnAddress != null && !returnAddress.equals(""))
 		{
-			this.getResponse().sendRedirect(returnAddress + "#" + anchor);	    
+			this.getResponse().sendRedirect(returnAddress + (returnAddress.indexOf("?") == -1 ? "?anchor=" : "&anchor=") + anchor + "#" + anchor);	    
 			return NONE;
 		}
         
@@ -574,13 +577,14 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
     
     public String doDeleteDigitalAssetStandalone() throws Exception
     {
-    	ContentVersionController.getContentVersionController().deleteDigitalAssetRelation(getContentVersionId(), this.digitalAssetId, this.getInfoGluePrincipal());
-
+    	ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().deleteDigitalAssetRelation(getContentVersionId(), this.digitalAssetId, this.getInfoGluePrincipal());
+    	this.setContentVersionId(contentVersionVO.getId());
+    	
     	anchor = "digitalAssetsBlock";
     	
     	if(returnAddress != null && !returnAddress.equals(""))
 		{
-			this.getResponse().sendRedirect(returnAddress + "#" + anchor);	    
+			this.getResponse().sendRedirect(returnAddress + (returnAddress.indexOf("?") == -1 ? "?anchor=" : "&anchor=") + anchor + "#" + anchor);	    
 			return NONE;
 		}
     	
@@ -1549,12 +1553,10 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 		return anchor;
 	}
 
-
 	public void setAnchor(String anchor)
 	{
 		this.anchor = anchor;
 	}
-
 
 	public boolean getShowActionButtons()
 	{
