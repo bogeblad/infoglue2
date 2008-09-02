@@ -2187,21 +2187,21 @@ public class ContentVersionController extends BaseController
 			}
     	    
     	    boolean duplicateAssetsBetweenVersions = CmsPropertyHandler.getDuplicateAssetsBetweenVersions();
-        	System.out.println("duplicateAssetsBetweenVersions:" + duplicateAssetsBetweenVersions);
+        	logger.info("duplicateAssetsBetweenVersions:" + duplicateAssetsBetweenVersions);
     	    if(!duplicateAssetsBetweenVersions)
     	    {
     	    	DigitalAsset oldDigitalAsset = DigitalAssetController.getController().getDigitalAssetWithId(digitalAssetId, db);
-    	    	System.out.println("oldDigitalAsset:" + oldDigitalAsset.getContentVersions().size());
+    	    	logger.info("oldDigitalAsset:" + oldDigitalAsset.getContentVersions().size());
         	    if(oldDigitalAsset.getContentVersions().size() > 1)
     	    	{
-	    	    	System.out.println("Creating new duplicate of this asset as there are other assets using this one:" + oldDigitalAsset.getId());
-	    	    	System.out.println("contentVersion:" + contentVersion);
-	    	    	System.out.println("oldDigitalAsset:" + oldDigitalAsset.getId());
+        	    	logger.info("Creating new duplicate of this asset as there are other assets using this one:" + oldDigitalAsset.getId());
+        	    	logger.info("contentVersion:" + contentVersion);
+        	    	logger.info("oldDigitalAsset:" + oldDigitalAsset.getId());
 	            	if(contentVersion == null)
 	            		contentVersion = ContentVersionController.getContentVersionController().getContentVersionWithId(contentVersionId, db);
 	            	
 	    	    	digitalAssetVO = copyDigitalAssetAndRemoveOldReference(contentVersion, oldDigitalAsset, false, db);
-	    	    	System.out.println("new digitalAssetVO:" + digitalAssetVO.getId());
+	    	    	logger.info("new digitalAssetVO:" + digitalAssetVO.getId());
     	    	}
     	    }
         		
@@ -2216,7 +2216,7 @@ public class ContentVersionController extends BaseController
             throw new SystemException(e.getMessage());
         }
 
-        System.out.println("resultingDigitalAssetVO:" + resultingDigitalAssetVO.getId());
+        logger.info("resultingDigitalAssetVO:" + resultingDigitalAssetVO.getId());
         
         return resultingDigitalAssetVO;
     }
