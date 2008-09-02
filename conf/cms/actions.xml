@@ -1,4 +1,4 @@
-<!-- $Id: actions.xml,v 1.72 2008/09/01 21:13:49 mattias Exp $ -->
+<!-- $Id: actions.xml,v 1.73 2008/09/02 16:12:15 mattias Exp $ -->
 <actions>
 
 	<!-- MySettings -->
@@ -208,6 +208,7 @@
 	<action name="org.infoglue.cms.applications.contenttool.actions.ViewContentToolMenuHtmlAction" alias="ViewContentHtmlTree">
 		<view name="success">/cms/contenttool/viewHtmlTree.vm</view>
 		<view name="bindingView">/cms/contenttool/viewHtmlTreeForBinding.vm</view>
+		<view name="bindingViewV3">/cms/contenttool/v3/viewHtmlTreeForBinding.vm</view>
 		<view name="error">/cms/contenttool/error.vm</view>
 	</action>
 	<action name="org.infoglue.cms.applications.contenttool.actions.ContentTreeXMLAction" alias="ViewXContentTree">
@@ -254,6 +255,7 @@
 	<action name="org.infoglue.cms.applications.structuretool.actions.ViewStructureToolMenuHtmlAction" alias="ViewStructureToolMenuHtml">
 		<view name="success">/cms/structuretool/viewStructureToolMenuHTML.vm</view>
 		<view name="bindingView">/cms/structuretool/viewHtmlTreeForBinding.vm</view>
+		<view name="bindingViewV3">/cms/structuretool/v3/viewHtmlTreeForBinding.vm</view>
 		<view name="error">/cms/structuretool/error.vm</view>
 	</action>
 	<action name="org.infoglue.cms.applications.structuretool.actions.ViewStructureToolMenuHtmlAction" alias="ViewStructureHtmlTree">
@@ -888,6 +890,7 @@
 		<view name="viewAssetsDialogForFCKEditor">/cms/contenttool/viewContentAssetsForFCKEditor.vm</view>
 		<view name="viewAssetsDialogForFCKEditorV3">/cms/contenttool/v3/viewContentAssetsForFCKEditor.vm</view>
 		<view name="viewAssetBrowserForFCKEditorV3">/cms/contenttool/v3/viewAssetBrowserForFCKEditor.vm</view>
+		<view name="viewSmallAssetBrowserForFCKEditorV3">/cms/contenttool/v3/viewSmallAssetBrowserForFCKEditor.vm</view>
 		<view name="viewAssets">/cms/contenttool/viewContentVersionAssets.vm</view>
 		<view name="viewAssetsForFCKEditor">/cms/contenttool/viewContentVersionAssetsForFCKEditor.vm</view>
 		<view name="viewAssetsForFCKEditorV3">/cms/contenttool/v3/viewContentVersionAssetsForFCKEditor.vm</view>
@@ -976,6 +979,7 @@
 	<action name="org.infoglue.cms.applications.contenttool.actions.ViewLinkDialogAction" alias="ViewLinkDialog">
 		<view name="success">/cms/contenttool/viewLinkDialog.vm</view>
 		<view name="viewLinkDialogForFCKEditor">/cms/contenttool/viewLinkDialogForFCKEditor.vm</view>
+		<view name="viewLinkDialogForFCKEditorV3">/cms/contenttool/v3/viewLinkDialogForFCKEditor.vm</view>
 		<view name="error">/cms/contenttool/error.vm</view>
 	</action>
 
@@ -1208,6 +1212,7 @@
 	<action name="org.infoglue.cms.applications.structuretool.actions.ViewStructureTreeForInlineLinkAction" alias="ViewStructureTreeForInlineLink">
 		<view name="success">/cms/structuretool/viewStructureTreeForInlineLink.vm</view>
 		<view name="successFCKEditor">/cms/structuretool/viewStructureTreeForInlineLinkForFCKEditor.vm</view>
+		<view name="successFCKEditorV3">/cms/structuretool/v3/viewStructureTreeForInlineLinkForFCKEditor.vm</view>
 		<view name="error">/cms/structuretool/error.vm</view>
 	</action>
 	<!-- Experimenting with direct editing -->

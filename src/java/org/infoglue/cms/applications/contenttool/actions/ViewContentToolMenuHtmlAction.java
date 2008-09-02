@@ -68,7 +68,14 @@ public class ViewContentToolMenuHtmlAction extends TreeViewAbstractAction
         
 		return "bindingView";
 	}
-	
+
+	public String doBindingViewV3() throws Exception
+	{
+		super.doExecute();
+        
+		return "bindingViewV3";
+	}
+
 	/**
 	 * @see org.infoglue.cms.applications.common.actions.TreeViewAbstractAction#getNodeSupplier()
 	 */

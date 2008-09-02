@@ -1,5 +1,5 @@
 .imgBoxContainer {
-	width: 100%;
+	width: 640px;
 	height: 370px;
 	display: block;
 	float: left;
@@ -74,3 +74,8 @@
 	background:url(../../images/v3/insert_img.gif) no-repeat center;
 	background-position: 0px 0px;
 	}
+.linkCancel {
+	background:url(../../images/v3/cancelIcon.gif) no-repeat center;
+	background-position: 0px 0px;
+	}
+	

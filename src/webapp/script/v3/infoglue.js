@@ -59,11 +59,28 @@ function resizeInlineTabDivs()
   	if(dimensionsWidth != 0)
   	{
 		$(".inlineTabDiv").css("height", dimensionsHeight - 160);
-		$(".inlineTabDiv").css("width", dimensionsWidth - 30);
+  		$(".inlineTabDiv").css("width", dimensionsWidth - 30);
 	}
 	else
 	{
 		setTimeout("resizeInlineTabDivs()", 100);
+	}
+}
+
+function resizeInlineTabDivsWithAmount(height, width)
+{
+	var dimensionsWidth = $(window).width();
+	var dimensionsHeight = $(window).height();
+  	//alert("dimensionsWidth:" + dimensionsWidth);
+	//alert("height:" + height);
+  	if(dimensionsWidth != 0)
+  	{
+		//$(".inlineTabDiv").css("height", dimensionsHeight - height);
+  		//$(".inlineTabDiv").css("width", dimensionsWidth - width);
+	}
+	else
+	{
+		setTimeout("resizeInlineTabDivsWithAmount(" + height + "," + width + ")", 500);
 	}
 }
 

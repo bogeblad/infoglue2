@@ -104,6 +104,13 @@ public class ViewStructureTreeForInlineLinkAction extends InfoGlueAbstractAction
 		return "successFCKEditor";					
     }
 
+    public String doUseFCKEditorV3() throws Exception
+    {
+        doExecute();
+        
+		return "successFCKEditorV3";					
+    }
+
 	public List getRepositories()
 	{
 		return repositories;

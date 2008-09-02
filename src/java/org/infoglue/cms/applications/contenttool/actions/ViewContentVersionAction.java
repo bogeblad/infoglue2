@@ -415,7 +415,24 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 
 		return "viewAssetBrowserForFCKEditorV3";
 	}
-	
+
+	public String doViewSmallAssetBrowserForFCKEditorV3() throws Exception
+	{
+	    if(this.oldContentId != null)
+		{
+	        this.contentVO = ContentControllerProxy.getController().getACContentVOWithId(this.getInfoGluePrincipal(), getOldContentId());
+		}
+		else
+		{
+		    if(getContentId() != null && getContentId().intValue() != -1)
+		        this.contentVO = ContentControllerProxy.getController().getACContentVOWithId(this.getInfoGluePrincipal(), getContentId());
+		}
+		
+		this.repositories = RepositoryController.getController().getAuthorizedRepositoryVOList(this.getInfoGluePrincipal(), true);
+
+		return "viewSmallAssetBrowserForFCKEditorV3";
+	}
+
 	public String doViewAssetsForComponentBinding() throws Exception
 	{
 	    if(this.oldContentId != null)

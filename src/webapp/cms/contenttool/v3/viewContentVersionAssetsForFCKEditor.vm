@@ -141,13 +141,12 @@
 
 </div>
 
-<div style="display: block; float: left; width: 100%; height: 20px; padding-top: 10px;">
+<div style="display: block; float: left; width: 100%; height: 20px; margin-top: 6px; padding-top: 0px;"">
 
 	<a class='igButton' href="#" onclick="onOk();"><span class='igButtonOuterSpan'><span class='linkInsert'>$ui.getString("tool.contenttool.assetDialog.chooseAttachment")</span></span></a>
-
-#if($contentVersionVO.id)
-	<a class='igButton' href="#" onclick="openPopup('ViewDigitalAsset.action?contentVersionId=$contentVersionVO.id', 'DigitalAsset', 'width=400,height=200,resizable=no');"><span class='igButtonOuterSpan'><span class='linkUpload'>$ui.getString("tool.contenttool.uploadNewAttachment")</span></span></a>
-#end
+	#if($contentVersionVO.id)
+		<a class='igButton' href="#" onclick="openPopup('ViewDigitalAsset.action?contentVersionId=$contentVersionVO.id', 'DigitalAsset', 'width=400,height=200,resizable=no');"><span class='igButtonOuterSpan'><span class='linkUpload'>$ui.getString("tool.contenttool.uploadNewAttachment")</span></span></a>
+	#end
 
 </div>
 

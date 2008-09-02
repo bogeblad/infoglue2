@@ -509,7 +509,7 @@ public class SearchController extends BaseController
 						if(contentVersion.getOwningContent().getId().intValue() != previousContentId.intValue() || contentVersion.getLanguage().getId().intValue() != previousLanguageId.intValue())
 						{
 						    ContentVersion latestContentVersion = ContentVersionController.getContentVersionController().getLatestActiveContentVersion(contentVersion.getOwningContent().getId(), contentVersion.getLanguage().getId(), db);
-							if(latestContentVersion.getId().intValue() == contentVersion.getId().intValue())
+							if(latestContentVersion != null && latestContentVersion.getId().intValue() == contentVersion.getId().intValue())
 							{
 								matchingAssets.add(asset.getValueObject());
 							    previousContentId = contentVersion.getOwningContent().getId();
@@ -573,7 +573,7 @@ public class SearchController extends BaseController
 						if(contentVersion.getOwningContent().getId().intValue() != previousContentId.intValue() || contentVersion.getLanguage().getId().intValue() != previousLanguageId.intValue())
 						{
 						    ContentVersion latestContentVersion = ContentVersionController.getContentVersionController().getLatestActiveContentVersion(contentVersion.getOwningContent().getId(), contentVersion.getLanguage().getId(), db);
-							if(latestContentVersion.getId().intValue() == contentVersion.getId().intValue())
+							if(latestContentVersion != null && latestContentVersion.getId().intValue() == contentVersion.getId().intValue())
 							{
 								matchingAssets.add(asset.getValueObject());
 							    previousContentId = contentVersion.getOwningContent().getId();

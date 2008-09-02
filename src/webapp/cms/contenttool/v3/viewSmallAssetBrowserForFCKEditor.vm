@@ -1,0 +1,98 @@
+#beginCommonToolV3("tool.contenttool.assetDialog.assetDialogHeader" "" "" false true $!disableCloseButton)
+
+<script language="JavaScript">
+<!--
+	$(document).ready(function(){
+		$("#tabsContainer > ul").tabs({ show:function() { resizeInlineTabDivsWithAmount(20,20);} });
+		setTimeout("resizeInlineTabDivsWithAmount(20,20)", 100);
+		init();
+	});
+		
+	function getRequestParameter(url, parameterName)
+	{
+		value = "";
+		valueIndex = url.indexOf(parameterName + "=");
+		if(valueIndex > -1)
+		{
+			//alert("valueIndex:" + valueIndex);
+			endIndex = url.indexOf("&", valueIndex);
+			if(endIndex != -1)
+				value = url.substring(valueIndex + parameterName.length + 1, endIndex);
+			else
+				value = url.substring(valueIndex + parameterName.length + 1);
+			//alert("value:" + value);
+		}
+		return value;
+	}
+	
+	function init() 
+	{
+		//alert(top.opener.document.title);
+		if(top.opener.document.title == "Image Properties")
+			var txtUrl = top.opener.document.getElementById("txtLnkUrl").value;
+			if(txtUrl == null || txtUrl == "")
+				txtUrl = top.opener.document.getElementById("txtUrl").value;
+		else
+			var txtUrl = top.opener.document.getElementById("txtUrl").value;
+		
+		//alert(txtUrl);
+		contentId 		= getRequestParameter(txtUrl, "contentId");
+		//alert("contentId:" + contentId);
+		if(!contentId || contentId == "")
+			contentId = "$!contentId";
+		languageId 		= getRequestParameter(txtUrl, "languageId");
+		assetKey 		= getRequestParameter(txtUrl, "assetKey");
+			
+		//alert("assetKey:" + assetKey);
+		//document.getElementById("entityId").value = contentId;
+		 	
+		//document.getElementById("itreeFrame").src = "ViewContentHtmlTree.action?repositoryId=$!repositoryId&exp=$exp&akey=/" + contentId + "/&select=" + contentId;
+		document.getElementById("contentVersionAssetsFrame").src = "ViewContentVersion!viewContentAssetsForFCKEditorV3.action?contentId=" + contentId + "&languageId=$languageId&assetKey=" + assetKey + "&treatAsLink=$treatAsLink&assetTypeFilter=$assetTypeFilter";
+	};
+	
+	function onOk(contentId, assetKey)
+	{
+		var url = "DownloadAsset.action?contentId=" + contentId + "&languageId=$languageId&assetKey=" + assetKey;
+		window.top.opener.SetUrl( url );
+		window.top.close();
+		window.top.opener.focus();
+	}
+-->
+</script>		
+
+<div onfocus="this.blur();">
+    
+	<div id="tabsContainer" class="flora" style="background-color: #f7f7f7;">      
+
+		<ul>
+	        <li><a href="#currentContentAssetsTab"><span>$ui.getString("tool.contenttool.assetDialog.currentContentAssetsTabLabel")#* #if($contentVO.name.length() > 10)$contentVO.name.substring(0,10)...#else$contentVO.name#end*#</span></a></li>
+	        <li><a href="#latestUploadedTab"><span>$ui.getString("tool.contenttool.assetDialog.latestAssetsTabLabel")</span></a></li>	        
+	        <li><a href="#repositoryBrowserTab"><span>$ui.getString("tool.contenttool.assetDialog.repositoryBrowserTabLabel")</span></a></li>	        
+	        <li><a href="#searchTab"><span>$ui.getString("tool.contenttool.assetDialog.searchAssetsTabLabel")</span></a></li>	        
+	    </ul>
+	
+		<div id="currentContentAssetsTab" class="inlineTabDiv" style="border-bottom: 0px solid red;">
+			#if($oldContentId > 0)
+				<IFRAME frameborder="0" name="contentVersionAssetsFrame" id="contentVersionAssetsFrame" src="" width="660" height="410" align="baseline"></IFRAME>
+			#else
+				<IFRAME frameborder="0" name="contentVersionAssetsFrame" id="contentVersionAssetsFrame" src="" width="660" height="410" align="baseline"></IFRAME>
+			#end
+		</div>
+
+		<div id="latestUploadedTab" class="inlineTabDiv" style="border-bottom: 0px solid red;">
+			<IFRAME frameborder="0" name="latestAssetsFrame" id="latestAssetsFrame" src="SearchContent!latestInlineAssetsV3.action?repositoryId=${contentVO.repositoryId}&assetTypeFilter=$assetTypeFilter" width="660" height="410" align="baseline"></IFRAME>
+		</div>
+
+		<div id="repositoryBrowserTab" class="inlineTabDiv" style="border-bottom: 0px solid red;">
+			<IFRAME frameborder="0" name="repositoryBrowserFrame" id="repositoryBrowserFrame" src="ViewContentVersion!viewAssetsDialogForFCKEditorV3.action?repositoryId=$contentVO.repositoryId&contentId=$contentId&languageId=$languageId&assetTypeFilter=$assetTypeFilter" width="660" height="410" align="baseline"></IFRAME>
+		</div>
+			
+		<div id="searchTab" class="inlineTabDiv" style="border-bottom: 0px solid red;">
+			<IFRAME frameborder="0" name="contentVersionAssetSearchFrame" id="contentVersionAssetSearchFrame" src="SearchContent!inputInlineAssetV3.action?repositoryId=${contentVO.repositoryId}&assetTypeFilter=$assetTypeFilter" width="660" height="410" align="baseline"></IFRAME>
+		</div>
+
+	</div>
+
+</div>
+
+#endCommonToolV3()
