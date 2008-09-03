@@ -70,6 +70,8 @@ public class LoginAction extends InfoGlueAbstractAction
 	
 	public String doExecute() throws Exception 
 	{
+		this.getResponse().setStatus(this.getResponse().SC_FORBIDDEN);
+		
 		if(this.getRequest().getRemoteUser() != null)
 			return "redirect";
 		else
@@ -125,7 +127,8 @@ public class LoginAction extends InfoGlueAbstractAction
 		else
 			return "logout";
 	}
-	
+
+
 	public String getPrincipal()
 	{ 
 		java.security.Principal principal = getRequest().getUserPrincipal();

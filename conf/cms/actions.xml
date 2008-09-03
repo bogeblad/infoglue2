@@ -1,4 +1,4 @@
-<!-- $Id: actions.xml,v 1.73 2008/09/02 16:12:15 mattias Exp $ -->
+<!-- $Id: actions.xml,v 1.74 2008/09/03 12:53:30 mattias Exp $ -->
 <actions>
 
 	<!-- MySettings -->
@@ -80,6 +80,12 @@
 		<view name="error">/cms/managementtool/error.vm</view>
 	</action>
 
+	<!-- Loading frames -->
+	<action name="org.infoglue.cms.applications.structuretool.actions.LoadingAction" alias="Loading">
+		<view name="successStructure">/cms/structuretool/loading.vm</view>
+		<view name="successContent">/cms/contenttool/loading.vm</view>
+	</action>
+
 	<!-- CMS LOGIN -->
 	<action name="org.infoglue.cms.applications.common.actions.LoginAction" alias="Login">
 		<view name="logout">ViewCMSTool.action</view>
@@ -100,6 +106,7 @@
 	<!-- CMS TOOL FRAMES -->
 	<action name="org.infoglue.cms.applications.cmstool.actions.ViewCMSToolAction" alias="ViewCMSTool">
 		<view name="success">/cms/cmstool/viewCMSTool.vm</view>
+		<view name="loginComplete">/cms/common/loginComplete.vm</view>
 	</action>
 	<action name="org.infoglue.cms.applications.cmstool.actions.ViewCMSToolHeaderAction" alias="ViewCMSToolHeader">
 		<view name="success">/cms/cmstool/viewCMSToolHeader.vm</view>
@@ -1077,8 +1084,8 @@
 		<view name="error">/cms/contenttool/error.vm</view>
 	</action>
 	<action name="org.infoglue.cms.applications.contenttool.actions.DeleteDigitalAssetAction" alias="DeleteDigitalAsset">
- 			<view name="success">$returnAddress</view>
-            <view name="error">/cms/contenttool/error.vm</view>
+		<view name="success">$returnAddress</view>
+        <view name="error">/cms/contenttool/error.vm</view>
     </action>
 
 	<!-- SiteNode -->

@@ -21,29 +21,33 @@
  * ===============================================================================
  */
 
-package org.infoglue.cms.applications.cmstool.actions;
+package org.infoglue.cms.applications.structuretool.actions;
 
-import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
+import org.infoglue.cms.applications.cmstool.actions.ViewCMSAbstractToolAction;
 
 /**
- * This class implements the action class for the base fram for the entire tool.
+ * This class implements the loading frame action.
  * 
  * @author Mattias Bogeblad  
  */
 
-public class ViewCMSToolAction extends InfoGlueAbstractAction
-{
-	private static final long serialVersionUID = -2904286525405758091L;
+public class LoadingAction extends ViewCMSAbstractToolAction
+{ 
+	private static final long serialVersionUID = 1L;
 
-	
-	public String doExecute() throws Exception
+    public String doExecute() throws Exception
     {
         return "success";
     }
-	
-	public String doLoginStandalone() throws Exception 
-	{
-		return "loginComplete";
-	}	
+
+    public String doExecuteStructure() throws Exception
+    {
+        return "successStructure";
+    }
+
+    public String doExecuteContent() throws Exception
+    {
+        return "successContent";
+    }
 
 }
