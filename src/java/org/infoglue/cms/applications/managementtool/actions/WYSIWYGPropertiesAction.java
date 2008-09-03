@@ -128,6 +128,9 @@ public class WYSIWYGPropertiesAction extends InfoGlueAbstractAction
 		{
 			parameters.put("contentVersionId", this.getRequest().getParameter("contentVersionId"));
 		}
+
+		String languageCode = CmsPropertyHandler.getPreferredLanguageCode(getInfoGluePrincipal().getName());
+		parameters.put("principalLanguageCode", languageCode);
 		
 		StringWriter tempString = new StringWriter();
 		PrintWriter pw = new PrintWriter(tempString);

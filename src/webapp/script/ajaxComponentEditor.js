@@ -1033,6 +1033,7 @@ function editInline(selectedRepositoryId, selectedContentId, selectedLanguageId,
 							 	var oFCKeditor = new FCKeditor($this.get(0).id);
 							 	oFCKeditor.BasePath = "" + componentEditorUrl + "applications/FCKEditor/" ;
 							 	oFCKeditor.Config["CustomConfigurationsPath"] = "" + componentEditorUrl + "WYSIWYGProperties.action?" + parameterString;
+							 	oFCKeditor.Config["AutoDetectLanguage"] = false ;
 							 	oFCKeditor.ToolbarSet = WYSIWYGToolbar;
 							 	if(WYSIWYGExtraConfig && WYSIWYGExtraConfig != '')
 							 		eval(WYSIWYGExtraConfig);
@@ -1065,7 +1066,15 @@ function editInline(selectedRepositoryId, selectedContentId, selectedLanguageId,
 						 	}
 					   },
 					   error: function (XMLHttpRequest, textStatus, errorThrown) {
-						  alert("You are not allowed to edit this text!");
+						   if(XMLHttpRequest.status == 403)
+						   {
+							   alert("You are not logged in properly to the administrative tools - please log in again.");
+							   window.open("" + componentEditorUrl + "ViewCMSTool!loginStandalone.action", "Login", "width=400,height=420");
+						   }
+						   else
+						   {
+							   alert("You are not allowed to edit this text!");
+						   }
 					   }
 					});
 				}
