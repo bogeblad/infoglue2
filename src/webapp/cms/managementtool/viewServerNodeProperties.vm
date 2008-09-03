@@ -391,6 +391,7 @@
 	<div class="tab" id="cmsGUI">
 		<fieldset>
 			<legend>$ui.getString("entity.ServerNode.property.cmsGUI.label")</legend>
+			#editPropertyFieldCSS("ServerNode.property.helpUrl" "helpUrl" "$this.getPropertyValue('helpUrl')" "51" "$!serverNodeId")
 			#editPropertyFieldCSS("ServerNode.property.workingStyleInformation" "workingStyleInformation" "$this.getPropertyValue('workingStyleInformation')" "51" "$!serverNodeId")
 			#editPropertyFieldCSS("ServerNode.property.finalStyleInformation" "finalStyleInformation" "$this.getPropertyValue('finalStyleInformation')" "51" "$!serverNodeId")
 			#editPropertyFieldCSS("ServerNode.property.publishStyleInformation" "publishStyleInformation" "$this.getPropertyValue('publishStyleInformation')" "51" "$!serverNodeId")
