@@ -60,6 +60,8 @@ function resizeInlineTabDivs()
   	{
 		$(".inlineTabDiv").css("height", dimensionsHeight - 160);
   		$(".inlineTabDiv").css("width", dimensionsWidth - 30);
+		$(".inlineSubTabDiv").css("height", dimensionsHeight - 220);
+		$(".inlineSubTabDiv").css("width", dimensionsHeight - 40);
 	}
 	else
 	{

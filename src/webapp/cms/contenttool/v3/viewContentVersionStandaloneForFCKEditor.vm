@@ -1039,6 +1039,8 @@
 		
 		<div id="contentVersionAssetsDiv" class="inlineTabDiv">
 			
+			<div id="assetsContainer" class="inlineSubTabDiv">
+			
 			<table border="0" width="100%" cellspacing="0">
 			<tr>
 				#set($totalCounter = 0)
@@ -1081,8 +1083,9 @@
 				#end	
 			</tr>
 			</table>
-			<br>
-			<a href="javascript:openPopup('ViewDigitalAsset.action?contentVersionId=$contentVersionId', 'DigitalAsset', 'width=400,height=200,resizable=no')">Upload new asset</a>
+			</div>
+			<div style="clear:both;"></div>
+			<a class='igButton' href="#" onclick="openPopup('ViewDigitalAsset.action?contentVersionId=$contentVersionId', 'DigitalAsset', 'width=400,height=200,resizable=no');"><span class='igButtonOuterSpan'><span class='linkUpload'>$ui.getString("tool.contenttool.uploadNewAttachment")</span></span></a>
 			
 		</div>
 		

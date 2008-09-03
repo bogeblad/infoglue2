@@ -111,6 +111,12 @@
 	padding-left: 20px;
 	overflow: auto;
 }
+.inlineSubTabDiv {
+	padding-left: 0px;
+	display: block;
+	float: left;
+	overflow: auto;
+}
 
 #contentVersionDiv {
 	height: 550px; 

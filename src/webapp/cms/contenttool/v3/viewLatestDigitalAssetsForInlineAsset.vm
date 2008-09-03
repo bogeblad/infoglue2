@@ -37,7 +37,7 @@
 	
 		function onOk()
 		{
-			if(assetKey == "")
+			if((!contentId || contentId == "") ||assetKey == "")
 				alert("$ui.getString("tool.contenttool.assetDialog.mustChooseAttachment")");
 			else
 			{
@@ -54,14 +54,16 @@
 		    parent.onCancel(null);
 			return false;
 		}	
-	
-		function initSub(contentId) 
+
+		/*
+		function initSub() 
 		{
 			if(document.referrer != null && document.referrer != '')
-				markAsset(this, firstAssetId, '$!contentId', firstAssetKey, firstAssetKey, '');
+				markAsset(this, firstAssetId, firstContentId, firstAssetKey, firstAssetKey, '');
 			else
-				markAsset(this, firstAssetId, '$!contentId', lastAssetKey, lastAssetKey, '');
+				markAsset(this, firstAssetId, firstContentId, lastAssetKey, lastAssetKey, '');
 		};
+		*/
 	
 		function deleteAsset(url, assetKey)
 		{
@@ -73,7 +75,7 @@
 		}
 	
 		$(document).ready(function(){
-			setTimeout("initSub()", 500);
+			//setTimeout("initSub()", 500);
 		});
 	-->
 	</script>
@@ -106,6 +108,7 @@
 					<script type="text/javascript">
 					<!--
 						var firstAssetId = $digitalAsset.id;
+						var firstContentId = $contentId;
 					-->
 					</script>	
 				#else
@@ -113,6 +116,7 @@
 						<script type="text/javascript">
 						<!--
 							var firstAssetId = $digitalAsset.id;
+							var firstContentId = $contentId;
 						-->
 						</script>
 					#end
