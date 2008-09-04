@@ -518,7 +518,7 @@ function showComponentMenu(event, element, compId, anInsertUrl, anDeleteUrl, anC
 	if (rightedge < menuDiv.offsetWidth)
 		clientX = (clientX - menuDiv.offsetWidth);
 	
-	if (bottomedge < menuDiv.offsetHeight)
+	if (bottomedge < menuDiv.offsetHeight && (clientY - menuDiv.offsetHeight > 0))
 		clientY = (clientY - menuDiv.offsetHeight);
 		
 	menuDiv.style.left 	= clientX + "px";
@@ -608,7 +608,7 @@ function showComponentInTreeMenu(event, element, compId, anInsertUrl, anDeleteUr
 	if (rightedge < menuDiv.offsetWidth)
 		clientX = (clientX - menuDiv.offsetWidth);
 	
-	if (bottomedge < menuDiv.offsetHeight)
+	if (bottomedge < menuDiv.offsetHeight && (clientY - menuDiv.offsetHeight > 0))
 		clientY = (clientY - menuDiv.offsetHeight);
 	
 	menuDiv.style.left 	= clientX + "px";
@@ -745,7 +745,7 @@ function showEmptySlotMenu(slotId, event, compId, anInsertUrl, slotContentIdVar)
 	if (rightedge < menuDiv.offsetWidth)
 		clientX = (clientX - menuDiv.offsetWidth);
 	
-	if (bottomedge < menuDiv.offsetHeight)
+	if (bottomedge < menuDiv.offsetHeight && (clientY - menuDiv.offsetHeight > 0))
 		clientY = (clientY - menuDiv.offsetHeight);
 	
 	menuDiv.style.left 	= clientX + "px";

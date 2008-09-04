@@ -1615,7 +1615,7 @@ function showComponentTasksInDiv(targetDivId, parameterString, skipFloat, event)
 		if (rightedge < menuDiv.offsetWidth)
 			clientX = (clientX - menuDiv.offsetWidth);
 			
-		if (bottomedge < menuDiv.offsetHeight)
+		if (bottomedge < menuDiv.offsetHeight && (clientY - menuDiv.offsetHeight > 0))
 			clientY = (clientY - menuDiv.offsetHeight);
 			
 		var editDivElement = document.getElementById("editDiv");

@@ -417,7 +417,20 @@ Properties classes
 	border: 0px solid red;
 }
 */
+
 .componentEditorLink {
+	font-family: Tahoma, verdana, arial, sans-serif;
+	font-size: 8pt;
+	color: #333333;
+	text-decoration: underline;
+}
+.componentEditorLink:visited {
+	font-family: Tahoma, verdana, arial, sans-serif;
+	font-size: 8pt;
+	color: #333333;
+	text-decoration: underline;
+}
+.componentEditorLink:hover {
 	font-family: Tahoma, verdana, arial, sans-serif;
 	font-size: 8pt;
 	color: #333333;

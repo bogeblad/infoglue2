@@ -450,6 +450,19 @@ Properties classes
 	font-family	     : verdana, arial, sans-serif;
 	font-size        : 8pt;
 	color		 	 : #333333;
+	text-decoration  : underline;
+}
+.componentEditorLink:visited {
+	font-family	     : verdana, arial, sans-serif;
+	font-size	     : 8pt;
+	color 			 : #333333;
+	text-decoration  : underline;
+}
+.componentEditorLink:hover {
+	font-family	     : verdana, arial, sans-serif;
+	font-size        : 8pt;
+	color            : #333333;
+	text-decoration  : underline;
 }
 .igpropertylabel {
 	text-align 	 	 : left;
