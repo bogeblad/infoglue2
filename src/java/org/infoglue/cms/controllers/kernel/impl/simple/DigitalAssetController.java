@@ -443,19 +443,21 @@ public class DigitalAssetController extends BaseController
         }
    	}
    	
-   	public static File[] getCachedFiles() throws SystemException, Exception
+   	public static File[] getCachedFiles(Integer digitalAssetId) throws SystemException, Exception
    	{
-   		File[] cachedAssets = (File[])CacheController.getCachedObjectFromAdvancedCache("cachedAssetFileList", "allAssets", 300);
+		String folderName = "" + (digitalAssetId.intValue() / 1000);
+
+   		File[] cachedAssets = (File[])CacheController.getCachedObjectFromAdvancedCache("cachedAssetFileList", "allAssets_" + folderName, 300);
    		if(cachedAssets == null)
    		{
-   			String assetPath = CmsPropertyHandler.getDigitalAssetPath();
+   			String assetPath = CmsPropertyHandler.getDigitalAssetPath() + File.separator + folderName;
    			if(assetPath != null && !assetPath.equals(""))
    			{
 	   			File assetDirectory = new File(assetPath);
 	   			if(assetDirectory.exists())
 	   				cachedAssets = assetDirectory.listFiles(); 
 				
-	   			CacheController.cacheObjectInAdvancedCache("cachedAssetFileList", "allAssets", cachedAssets);
+	   			CacheController.cacheObjectInAdvancedCache("cachedAssetFileList", "allAssets_" + folderName, cachedAssets);
    			}
    		}   			
    		
@@ -470,14 +472,16 @@ public class DigitalAssetController extends BaseController
 	{ 
 		try
 		{
-			File[] cachedFiles = getCachedFiles();
+			File[] cachedFiles = getCachedFiles(digitalAssetId);
 			if(cachedFiles != null)
 			{
 				for(int i=0; i<cachedFiles.length; i++)
 				{
 					File cachedFile = cachedFiles[i];
+					//System.out.println("cachedFile:" + cachedFile.getName());
 					if(cachedFile.getName().startsWith("" + digitalAssetId))
 					{
+						//System.out.println("Deleting:" + cachedFile.getName());
 						//File file = files[i];
 						cachedFile.delete();
 					}
