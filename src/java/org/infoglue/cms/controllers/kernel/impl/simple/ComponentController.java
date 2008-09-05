@@ -502,7 +502,9 @@ public class ComponentController extends BaseController
 					ContentTypeAttribute contentTypeAttribute = (ContentTypeAttribute)contentTypeAttributesIterator.next();
 					String initialValue = null;
 					if(contentTypeAttribute.getContentTypeAttribute("initialData") != null && contentTypeAttribute.getContentTypeAttribute("initialData").getContentTypeAttributeParameterValue() != null)
-						contentTypeAttribute.getContentTypeAttribute("initialData").getContentTypeAttributeParameterValue().getValue("label");
+					{
+						initialValue = contentTypeAttribute.getContentTypeAttribute("initialData").getContentTypeAttributeParameterValue().getValue("label");
+					}
 					
 					if(initialValue == null || initialValue.trim().equals(""))
 						initialValue = "State " + contentTypeAttribute.getName();
