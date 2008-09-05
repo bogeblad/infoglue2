@@ -2,6 +2,7 @@
 	var componentEditorUrl = "${componentEditorUrl}";
 	var currentContext = "${contextName}";
 	var currentUrl = "${currentUrl}";
+	var userPrefferredLanguageCode = "${userPrefferredLanguageCode}";
 	var editOnSightAttributeNames = new Array();
 	
 	${limitedUserWarning}
@@ -9,8 +10,17 @@
 	try { document.execCommand('BackgroundImageCache', false, true); } catch(e) {}
 	try 
 	{ 
-		if(parent && parent.frames["toolbar"] && parent.frames["toolbar"].refreshStructureToolBar) 
-			parent.frames["toolbar"].refreshStructureToolBar('tool.structuretool.siteNodeComponentsHeader', 'tool.structuretool.siteNodeComponentsHeader', 'siteNodeId=${siteNodeId}&repositoryId=${repositoryId}&isBranch=true', '${repositoryId}', '${siteNodeId}', '${path}'); 
+		var agt=navigator.userAgent.toLowerCase();
+   	    if(agt.indexOf("safari")!=-1)
+   	    {
+   	 		if(parent && parent.frames[2] && parent.frames[2].refreshStructureToolBar) 
+   	 			parent.frames[2].refreshStructureToolBar('tool.structuretool.siteNodeComponentsHeader', 'tool.structuretool.siteNodeComponentsHeader', 'siteNodeId=${siteNodeId}&repositoryId=${repositoryId}&isBranch=true', '${repositoryId}', '${siteNodeId}', '${path}'); 
+   		}
+   	    else	
+   	    {
+			if(parent && parent.frames["toolbar"] && parent.frames["toolbar"].refreshStructureToolBar) 
+				parent.frames["toolbar"].refreshStructureToolBar('tool.structuretool.siteNodeComponentsHeader', 'tool.structuretool.siteNodeComponentsHeader', 'siteNodeId=${siteNodeId}&repositoryId=${repositoryId}&isBranch=true', '${repositoryId}', '${siteNodeId}', '${path}'); 
+		}
 	} 
 	catch(e) {alert("e:" + e);}
 	

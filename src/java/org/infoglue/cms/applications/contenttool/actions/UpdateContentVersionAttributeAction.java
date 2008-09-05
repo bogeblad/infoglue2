@@ -231,9 +231,16 @@ public class UpdateContentVersionAttributeAction extends ViewContentVersionActio
 			this.getResponse().setContentType("text/plain");
 	        this.getResponse().getWriter().println(attributeValue);
 		}
+		catch (ConstraintException ce) 
+		{
+			logger.warn("Error saving attribute - not allowed by validation: " + ce.getMessage());
+			this.getResponse().setStatus(this.getResponse().SC_NOT_ACCEPTABLE);
+			return ERROR;
+		}
 		catch (Throwable t) 
 		{
-			t.printStackTrace();
+			logger.error("Error saving attribute: " + t.getMessage(), t);
+			this.getResponse().setStatus(this.getResponse().SC_INTERNAL_SERVER_ERROR);
 			return ERROR;
 		}
 		finally

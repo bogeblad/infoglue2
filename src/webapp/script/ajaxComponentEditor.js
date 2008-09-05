@@ -1108,7 +1108,15 @@ function editInline(selectedRepositoryId, selectedContentId, selectedLanguageId,
 			//	alert("Attribute:" + this.id + " was allready processed");		
 	    });
 				
-		$lastThis.after("<div id=\"saveButtons" + selectedContentId + "\"><a class='igButton' onclick='saveAttributes(" + selectedContentId + ", " + selectedLanguageId + ");'' title='Save'><span class='igButtonOuterSpan'><span class='linkSave'>Save</span></span></a><a class='igButton' onclick='cancelSaveAttributes(" + selectedContentId + ", " + selectedLanguageId + ");' title='Cancel edit'><span class='igButtonOuterSpan'><span class='linkCancel'>Cancel</span></span></a></div><div style='clear:both;'></div>");
+		var saveLabel = "Save";
+		var cancelLabel = "Cancel";
+		if(userPrefferredLanguageCode == "sv")
+		{
+			saveLabel = "Spara";
+			cancelLabel = "Avbryt";
+		}
+		
+		$lastThis.after("<div id=\"saveButtons" + selectedContentId + "\"><a class='igButton' onclick='saveAttributes(" + selectedContentId + ", " + selectedLanguageId + ");'' title='" + saveLabel + "'><span class='igButtonOuterSpan'><span class='linkSave'>" + saveLabel + "</span></span></a><a class='igButton' onclick='cancelSaveAttributes(" + selectedContentId + ", " + selectedLanguageId + ");' title='" + cancelLabel + "'><span class='igButtonOuterSpan'><span class='linkCancel'>" + cancelLabel + "</span></span></a></div><div style='clear:both;'></div>");
 		isInInlineEditingMode["" + selectedContentId] = "true"
 	//}
 }
@@ -1189,6 +1197,21 @@ function saveAttribute(selectedContentId, selectedLanguageId, selectedAttributeN
 		     {
 		     	$("#inputattribute" + selectedContentId + selectedAttributeName).replaceWith(msg);
 		     }
+		   },
+		   error: function (XMLHttpRequest, textStatus, errorThrown) {
+			   if(XMLHttpRequest.status == 403)
+			   {
+				   alert("You are not logged in properly to the administrative tools - please log in again.");
+				   window.open("" + componentEditorUrl + "ViewCMSTool!loginStandalone.action", "Login", "width=400,height=420");
+			   }
+			   else if(XMLHttpRequest.status == 406)
+			   {
+				   alert("The value must not be empty - update failed");
+			   }
+			   else
+			   {
+				   alert("Update failed!");
+			   }
 		   }
 		 });
 	}
@@ -1208,7 +1231,22 @@ function saveAttribute(selectedContentId, selectedLanguageId, selectedAttributeN
 		   	success: function(msg){
 		   		//alert( "Data Saved: " + msg );
 		     	$("#spanInput" + key).replaceWith(msg);
-		   	}
+		   	},
+		   error: function (XMLHttpRequest, textStatus, errorThrown) {
+			   if(XMLHttpRequest.status == 403)
+			   {
+				   alert("You are not logged in properly to the administrative tools - please log in again.");
+				   window.open("" + componentEditorUrl + "ViewCMSTool!loginStandalone.action", "Login", "width=400,height=420");
+			   }
+			   else if(XMLHttpRequest.status == 406)
+			   {
+				   alert("The value must not be empty - update failed");
+			   }
+			   else
+			   {
+				   alert("Update failed!");
+			   }
+		   }
 		});
 	}
 }
