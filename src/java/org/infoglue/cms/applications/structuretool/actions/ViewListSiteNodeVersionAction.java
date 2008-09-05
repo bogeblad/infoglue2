@@ -70,6 +70,7 @@ public class ViewListSiteNodeVersionAction extends InfoGlueAbstractAction
 	private boolean recurseSiteNodes = true;
     private String originalAddress;
    	private String userSessionKey;
+   	private String attemptDirectPublishing;
 
 	protected String doExecute() throws Exception 
 	{
@@ -115,8 +116,17 @@ public class ViewListSiteNodeVersionAction extends InfoGlueAbstractAction
         logger.debug("context:" + context);
         String liveAddress = liveAddressBaseUrl + "/" + context + "/ViewPage.action" + "?siteNodeId=" + this.getSiteNodeId() + "&languageId=" + this.languageId;
         
-        setActionMessage(userSessionKey, getLocalizedString(getLocale(), "tool.common.publishing.publishingInlineOperationDoneHeader"));
-        addActionLink(userSessionKey, new LinkBean("publishedPageUrl", getLocalizedString(getLocale(), "tool.common.publishing.publishingInlineOperationViewPublishedPageLinkText"), getLocalizedString(getLocale(), "tool.common.publishing.publishingInlineOperationViewPublishedPageTitleText"), getLocalizedString(getLocale(), "tool.common.publishing.publishingInlineOperationViewPublishedPageTitleText"), liveAddress, false, "", "_blank"));
+        if(attemptDirectPublishing != null && attemptDirectPublishing.equalsIgnoreCase("true"))
+        {
+            setActionMessage(userSessionKey, getLocalizedString(getLocale(), "tool.common.publishing.publishingInlineOperationDoneHeader"));
+        	addActionLink(userSessionKey, new LinkBean("publishedPageUrl", getLocalizedString(getLocale(), "tool.common.publishing.publishingInlineOperationViewPublishedPageLinkText"), getLocalizedString(getLocale(), "tool.common.publishing.publishingInlineOperationViewPublishedPageTitleText"), getLocalizedString(getLocale(), "tool.common.publishing.publishingInlineOperationViewPublishedPageTitleText"), liveAddress, false, "", "_blank"));
+        }
+        else
+        {
+            setActionMessage(userSessionKey, getLocalizedString(getLocale(), "tool.common.publishing.submitToPublishingInlineOperationDoneHeader"));
+        	//addActionLink(userSessionKey, new LinkBean("publishedPageUrl", getLocalizedString(getLocale(), "tool.common.publishing.publishingInlineOperationViewSubmittedPageLinkText"), getLocalizedString(getLocale(), "tool.common.publishing.publishingInlineOperationViewSubmittedPageTitleText"), getLocalizedString(getLocale(), "tool.common.publishing.publishingInlineOperationViewSubmittedPageTitleText"), liveAddress, false, "", "_blank"));
+        }
+        
         addActionLink(userSessionKey, new LinkBean("currentPageUrl", getLocalizedString(getLocale(), "tool.common.publishing.publishingInlineOperationBackToCurrentPageLinkText"), getLocalizedString(getLocale(), "tool.common.publishing.publishingInlineOperationBackToCurrentPageTitleText"), getLocalizedString(getLocale(), "tool.common.publishing.publishingInlineOperationBackToCurrentPageTitleText"), this.originalAddress, false, ""));
         setActionExtraData(userSessionKey, "disableCloseLink", "true");
         
@@ -219,4 +229,15 @@ public class ViewListSiteNodeVersionAction extends InfoGlueAbstractAction
 	{
 		this.originalAddress = originalAddress;
 	}
+	
+	public String getAttemptDirectPublishing()
+	{
+		return attemptDirectPublishing;
+	}
+
+	public void setAttemptDirectPublishing(String attemptDirectPublishing)
+	{
+		this.attemptDirectPublishing = attemptDirectPublishing;
+	}
+
 }
