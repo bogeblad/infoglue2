@@ -257,7 +257,7 @@ public class SiteNodeController extends BaseController
 		boolean isDeletable = true;
 		
 		SiteNodeVersion latestSiteNodeVersion = SiteNodeVersionController.getController().getLatestActiveSiteNodeVersion(db, siteNode.getId());
-		if(latestSiteNodeVersion.getIsProtected().equals(SiteNodeVersionVO.YES))
+		if(latestSiteNodeVersion != null && latestSiteNodeVersion.getIsProtected().equals(SiteNodeVersionVO.YES))
 		{
 			boolean hasAccess = AccessRightController.getController().getIsPrincipalAuthorized(db, infogluePrincipal, "SiteNodeVersion.DeleteSiteNode", "" + latestSiteNodeVersion.getId());
 			if(!hasAccess)
@@ -265,18 +265,21 @@ public class SiteNodeController extends BaseController
 		}
 		
         Collection siteNodeVersions = siteNode.getSiteNodeVersions();
-    	Iterator versionIterator = siteNodeVersions.iterator();
-		while (versionIterator.hasNext()) 
-        {
-        	SiteNodeVersion siteNodeVersion = (SiteNodeVersion)versionIterator.next();
-        	if(siteNodeVersion.getStateId().intValue() == SiteNodeVersionVO.PUBLISHED_STATE.intValue() && siteNodeVersion.getIsActive().booleanValue() == true)
-        	{
-        		logger.warn("The siteNode had a published version so we cannot delete it..");
-				isDeletable = false;
-        		break;
-        	}
-	    }		
-			
+    	if(siteNodeVersions != null)
+    	{
+	        Iterator versionIterator = siteNodeVersions.iterator();
+			while (versionIterator.hasNext()) 
+	        {
+	        	SiteNodeVersion siteNodeVersion = (SiteNodeVersion)versionIterator.next();
+	        	if(siteNodeVersion.getStateId().intValue() == SiteNodeVersionVO.PUBLISHED_STATE.intValue() && siteNodeVersion.getIsActive().booleanValue() == true)
+	        	{
+	        		logger.warn("The siteNode had a published version so we cannot delete it..");
+					isDeletable = false;
+	        		break;
+	        	}
+		    }		
+    	}
+    	
 		return isDeletable;	
 	}
 
