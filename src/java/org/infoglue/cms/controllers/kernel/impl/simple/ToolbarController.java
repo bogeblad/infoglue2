@@ -669,7 +669,7 @@ public class ToolbarController
 			buttons.add(new ToolbarButton("",
 					  getLocalizedString(locale, "tool.common.publishing.submitToPublishButtonLabel"), 
 					  getLocalizedString(locale, "tool.common.publishing.submitToPublishButtonLabel"),
-					  "submitToPublish('true');",
+					  "submitToPublish('false');",
 					  "images/v3/publishPageIcon.gif",
 					  "left",
 					  true));
