@@ -1,4 +1,50 @@
 -------------------------------------------------------------------------------------
+- InfoGlue 2.9.1 Final
+-------------------------------------------------------------------------------------
+
+Release notes
+---------------------------------------
+Version 2.9.2 is a bugfix and improvment release. As 2.9.0 contained so much
+new functionality a few bugs were to be expected and most of them are now found and fixed.
+We strongly recommend an upgrade to this version.
+    
+Thanx for all reports and proposals for bugfixes.
+The InfoGlue Team
+
+
+Abbreviated Changelog from 2.9.0 Final 
+---------------------------------------
+- Fixed bugs in common:mail-tag. Now it's ok to leave empty strings on cc, bcc and recipients.
+- Fixed so file upload in imports actually end up in /uploads-dir and not in digitalAssets-dir.
+- Localized inline dialog and made it possible to include extraData-parameter disableCloseLink and not have the default close-link in the end-view.
+- Added possibility to state target on Linkbean - which is used in inline operations messages.
+- Made personal settings changes in cms transfer to deliver. Also implemented so the deliver-dialogs all depends on the personal preferences in the cms. So if the user selects english as wanted tool-language all labels in delivers edit on sight etc is in english no matter what the site language is.
+- Improved inline publish wizard to include a link to the live version of the published page. Very convinient for the users. 
+- Added new footer buttons for mysettings and publish wizard.
+- Added create subpage, edit page meta info and my setting to the edit on sight menu.
+- Added so if a td in a table-header has class skipSortHeader it does not get's handled by the sorttable-routine.
+- Included better file upload integration with FCKEditor. Now the image dialog's upload tab works.
+- Added display: block to inline textarea editing - before FF 2 had some problems otherwise.
+- Fixed bug in page:htmlHeadItem-handling - was not ok with cached pages.
+- Fixed bug which ended in a error if you tried to add a component on a newly created page.
+- Removed language drop from standard tools - now you choose language under my settings only.
+- Worked on a completely new asset dialog for integration with FCKEditor. The new asset dialog has the new V3-look and feel, it works more like a file-bank/imagebank as well.
+- Fixed bug in application settings where an error occurred if you choose cancel directly when you entered the application settings screen.
+- Added background image directive for IE - no flickering in some situations.
+- Fixed inline editing bug with ' and "-characters in textfields.
+- Fixed filtering of assets so only images are shown in asset browser when you are inserting an image in FCKEditor.
+- Fixed bug in update asset key
+- Worked on supplying the user prefferred languageCode to WYSIWYG-config.
+- Added helpUrl to application settings
+- Fixed small positioning issues with edit on sight and also link look&feel for visited and hover properties links.
+- Fixed translations on more buttons and labels in edit on sight. Also fixed so constraints get's treated better.
+- Fixed bug which made auto-created content not use the default text in the content type.
+- Fixed bug in how assets were deleted when updated with another file with the same name. Made the updated file not appear as the cache file were still active.
+- Fixed bug - both publish and submit to publish from edit on sight did the same thing before.
+- Improved safari and chrome-compability a great deal
+- Improved the FCKEditor-integration dialogs. New default dialogs in the standard WYSIWYGConfig.js.
+
+-------------------------------------------------------------------------------------
 - InfoGlue 2.9.0 Final
 -------------------------------------------------------------------------------------
 
