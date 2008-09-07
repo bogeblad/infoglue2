@@ -10,10 +10,10 @@
 
 	function closeAndReload()
 	{
-		if(!window.opener)
-		{
+		if(!window.opener && parent)
 			parent.location.reload();
-		}
+		else
+			window.close();
 	}
 	
 	$(document).ready(function(){
