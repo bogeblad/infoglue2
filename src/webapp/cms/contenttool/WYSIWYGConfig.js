@@ -57,8 +57,12 @@ FCKConfig.PluginsPath = FCKConfig.BasePath + 'plugins/' ;
 // FCKConfig.ProtectedSource.Add( /<\?[\s\S]*?\?>/g ) ;	// PHP style server side code
 // FCKConfig.ProtectedSource.Add( /(<asp:[^\>]+>[\s|\S]*?<\/asp:[^\>]+>)|(<asp:[^\>]+\/>)/gi ) ;	// ASP.Net style tags <asp:control>
 
-FCKConfig.AutoDetectLanguage	= true ;
-FCKConfig.DefaultLanguage		= 'en' ;
+FCKConfig.AutoDetectLanguage = false;
+#if($principalLanguageCode)
+  FCKConfig.DefaultLanguage = '$principalLanguageCode' ;
+#else
+  FCKConfig.DefaultLanguage = 'en' ;
+#end
 FCKConfig.ContentLangDirection	= 'ltr' ;
 
 FCKConfig.ProcessHTMLEntities	= true ;
@@ -272,41 +276,12 @@ var _QuickUploadLanguage	= 'php' ;	// asp | aspx | cfm | lasso | perl | php | py
 var _FileBrowserExtension = _FileBrowserLanguage == 'perl' ? 'cgi' : _FileBrowserLanguage ;
 var _QuickUploadExtension = _QuickUploadLanguage == 'perl' ? 'cgi' : _QuickUploadLanguage ;
 
-FCKConfig.LinkBrowser = true ;
-FCKConfig.LinkBrowserURL = "$request.contextPath/ViewLinkDialog!viewLinkDialogForFCKEditor.action?repositoryId=$request.getParameter("repositoryId")&contentId=$request.getParameter("contentId")&languageId=$request.getParameter("languageId")" ;
-//FCKConfig.LinkBrowserWindowWidth	= FCKConfig.ScreenWidth * 0.7 ;		// 70%
-//FCKConfig.LinkBrowserWindowHeight	= FCKConfig.ScreenHeight * 0.7 ;	// 70%
-FCKConfig.LinkBrowserWindowWidth	= "770" ;
-FCKConfig.LinkBrowserWindowHeight	= "660" ;
-
-FCKConfig.ImageBrowser = true ;
-FCKConfig.ImageBrowserURL = "$request.contextPath/ViewContentVersion!viewAssetsDialogForFCKEditor.action?repositoryId=$request.getParameter("repositoryId")&contentId=$request.getParameter("contentId")&languageId=$request.getParameter("languageId")" ;
-//FCKConfig.ImageBrowserWindowWidth  = FCKConfig.ScreenWidth * 0.7 ;	// 70% ;
-//FCKConfig.ImageBrowserWindowHeight = FCKConfig.ScreenHeight * 0.7 ;	// 70% ;
-FCKConfig.ImageBrowserWindowWidth  = "880" ;
-FCKConfig.ImageBrowserWindowHeight = "600" ;
-
 FCKConfig.FlashBrowser = true ;
 FCKConfig.FlashBrowserURL = "$request.contextPath/ViewContentVersion!viewAssetsDialogForFCKEditor.action?repositoryId=$request.getParameter("repositoryId")&contentId=$request.getParameter("contentId")&languageId=$request.getParameter("languageId")" ;
-//FCKConfig.FlashBrowserWindowWidth  = FCKConfig.ScreenWidth * 0.7 ;	//70% ;
-//FCKConfig.FlashBrowserWindowHeight = FCKConfig.ScreenHeight * 0.7 ;	//70% ;
 FCKConfig.ImageBrowserWindowWidth  = "880" ;
 FCKConfig.ImageBrowserWindowHeight = "600" ;
 
-FCKConfig.LinkUpload = false ;
-//FCKConfig.LinkUploadURL = "$request.contextPath/ViewLinkDialog!viewLinkDialogForFCKEditor.action?repositoryId=$request.getParameter("repositoryId")&contentId=$request.getParameter("contentId")&languageId=$request.getParameter("languageId")" ;
-//FCKConfig.LinkUploadAllowedExtensions	= ".(7z|aiff|asf|avi|bmp|csv|doc|fla|flv|gif|gz|gzip|jpeg|jpg|mid|mov|mp3|mp4|mpc|mpeg|mpg|ods|odt|pdf|png|ppt|pxd|qt|ram|rar|rm|rmi|rmvb|rtf|sdc|sitd|swf|sxc|sxw|tar|tgz|tif|tiff|txt|vsd|wav|wma|wmv|xls|xml|zip)$" ;			// empty for all
-//FCKConfig.LinkUploadDeniedExtensions	= "" ;	// empty for no one
-
-FCKConfig.ImageUpload = false ;
-//FCKConfig.ImageUploadURL = FCKConfig.BasePath + 'filemanager/connectors/' + _QuickUploadLanguage + '/upload.' + _QuickUploadExtension + '?Type=Image' ;
-//FCKConfig.ImageUploadAllowedExtensions	= ".(jpg|gif|jpeg|png|bmp)$" ;		// empty for all
-//FCKConfig.ImageUploadDeniedExtensions	= "" ;							// empty for no one
-
 FCKConfig.FlashUpload = false ;
-//FCKConfig.FlashUploadURL = FCKConfig.BasePath + 'filemanager/connectors/' + _QuickUploadLanguage + '/upload.' + _QuickUploadExtension + '?Type=Flash' ;
-//FCKConfig.FlashUploadAllowedExtensions	= ".(swf|flv)$" ;		// empty for all
-//FCKConfig.FlashUploadDeniedExtensions	= "" ;					// empty for no one
 
 FCKConfig.SmileyPath	= FCKConfig.BasePath + 'images/smiley/msn/' ;
 FCKConfig.SmileyImages	= ['regular_smile.gif','sad_smile.gif','wink_smile.gif','teeth_smile.gif','confused_smile.gif','tounge_smile.gif','embaressed_smile.gif','omg_smile.gif','whatchutalkingabout_smile.gif','angry_smile.gif','angel_smile.gif','shades_smile.gif','devil_smile.gif','cry_smile.gif','lightbulb.gif','thumbs_down.gif','thumbs_up.gif','heart.gif','broken_heart.gif','kiss.gif','envelope.gif'] ;
@@ -321,3 +296,38 @@ FCKConfig.ImageClassesNames = 'Fullbredd (Bredd 370px),V&auml; - Liten (Bredd 11
 
 FCKConfig.FontFormats	= 'h2;h4;h3;h5;p' ;
 FCKConfig.FontFormatNames = 'Br&#246dtext;Formaterad;Adress;Rubrik niv&#229 1;Underrubrik;Styckesrubrik;Ingress;Stort citat;Rubrik 6;Div' ;
+
+FCKConfig.LinkBrowser = true ;
+FCKConfig.LinkBrowserURL = "$request.contextPath/ViewLinkDialog!viewLinkDialogForFCKEditorV3.action?repositoryId=$!request.getParameter("repositoryId")&contentId=$!request.getParameter("contentId")&languageId=$!request.getParameter("languageId")" ;
+FCKConfig.LinkBrowserWindowWidth = "770" ;
+FCKConfig.LinkBrowserWindowHeight = "640" ;
+FCKConfig.LinkUpload = true ;
+FCKConfig.LinkUploadURL = '$request.contextPath/CreateDigitalAsset.action?contentVersionId=$!contentVersionId&useFckUploadMessages=true';
+FCKConfig.ImageBrowser = true ;
+FCKConfig.ImageBrowserURL = "$request.contextPath/ViewContentVersion!viewAssetBrowserForFCKEditorV3.action?repositoryId=$!request.getParameter("repositoryId")&contentId=$!request.getParameter("contentId")&languageId=$!request.getParameter("languageId")&assetTypeFilter=.*(jpeg|jpg|gif|png).*";	
+FCKConfig.ImageUploadURL = '$request.contextPath/CreateDigitalAsset.action?contentVersionId=$!contentVersionId&useFckUploadMessages=true';
+FCKConfig.ImageBrowserWindowWidth = "750" ;
+FCKConfig.ImageBrowserWindowHeight = "600" ;
+
+function overrideLabels()
+{
+	//alert("Lang:" + FCKConfig.DefaultLanguage);
+	if(FCKConfig.DefaultLanguage == "sv")
+	{
+		FCKLang.DlgBtnBrowseServer = "Välj från InfoGlue...";
+		FCKLang.DlgImgBtnUpload = "Ladda upp till InfoGlue";
+		FCKLang.DlgLnkBtnUpload = "Ladda upp till InfoGlue";
+	    FCKLang.DlgImgURL = "URL (glöm ej http:// om du anger extern URL)";
+	    FCKLang.DlgLnkURL = "URL (glöm ej http:// om du anger extern URL)";
+	}
+	else
+	{
+		FCKLang.DlgBtnBrowseServer = "Choose from InfoGlue...";
+		FCKLang.DlgImgBtnUpload = "Send to InfoGlue";
+		FCKLang.DlgLnkBtnUpload = "Send to InfoGlue";
+	    FCKLang.DlgImgURL = "URL (don't forget http:// if you state an external url)";
+	    FCKLang.DlgLnkURL = "URL (glöm ej http:// om du anger extern URL)";
+	}
+}
+
+setTimeout("overrideLabels()", 3000);
