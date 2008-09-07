@@ -18,7 +18,7 @@
 		
 			#foreach($link in $actionLinks)			
 			<p>
-				<a id="$link.id" href="$link.actionURL" #if(!$link.isJavascript)#if($link.target)target="$link.target"#else target="_top"#end#end style="display:block; #if($link.backgroundImageURL != '') background-image: url('$link.backgroundImageURL'); background-repeat: no-repeat; padding-left: 26px;#end padding-top: 8px; height: 20px;"><strong>$link.text</strong></a>
+				<a id="$link.id" href="$link.actionURL" #if(!$link.isJavascript)#if($link.target)target="$link.target"#else target="_parent"#end#end style="display:block; #if($link.backgroundImageURL != '') background-image: url('$link.backgroundImageURL'); background-repeat: no-repeat; padding-left: 26px;#end padding-top: 8px; height: 20px;"><strong>$link.text</strong></a>
 				$link.description
 			</p>
 			#end
