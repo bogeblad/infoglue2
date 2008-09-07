@@ -220,10 +220,14 @@ function uncheckAllBoxes(element)
 
 function refreshManagementToolBar(toolbarKey, arguments)
 {
-	//alert('toolbarKey:' + toolbarKey);
-	//toolbarKey 	= escape(toolbarKey);	
 	toolbarKey 	= hexcode(toolbarKey);	
-	parent.frames["toolbar"].location.href = 'ViewManagementToolToolBar.action?title=' + toolbarKey + '&toolbarKey=' + toolbarKey + '&' + arguments;
+	var agt=navigator.userAgent.toLowerCase();
+	if(agt.indexOf("safari")!=-1)
+	{
+		parent.frames[2].location = 'ViewManagementToolToolBar.action?title=' + toolbarKey + '&toolbarKey=' + toolbarKey + '&' + arguments;
+	}
+	else
+		parent.frames["toolbar"].location.href = 'ViewManagementToolToolBar.action?title=' + toolbarKey + '&toolbarKey=' + toolbarKey + '&' + arguments;
 }
 
 
@@ -235,14 +239,20 @@ function refreshManagementToolBar(toolbarKey, arguments)
 
 function refreshContentToolBar(title, toolbarKey, arguments, unrefreshedContentId, changeTypeId, newContentId)
 {
-	//alert('toolbarKey:' + toolbarKey);
-	//title		  = escape(title);
 	title		= hexcode(title);
-	//toolbarKey 	= escape(toolbarKey);	
 	toolbarKey 	= hexcode(toolbarKey);	
-	if(parent.frames["toolbar"] && parent.frames["toolbar"].location)
-		parent.frames["toolbar"].location.href = 'ViewContentToolToolBar.action?title=' + title + '&toolbarKey=' + toolbarKey + '&' + arguments;
-	
+	var agt=navigator.userAgent.toLowerCase();
+    if(agt.indexOf("safari")!=-1)
+    {
+ 		if(parent && parent.frames[2]) 
+ 			parent.frames[2].location.href = 'ViewContentToolToolBar.action?title=' + title + '&toolbarKey=' + toolbarKey + '&' + arguments;
+	}
+    else	
+    {
+		if(parent.frames["toolbar"] && parent.frames["toolbar"].location)
+			parent.frames["toolbar"].location.href = 'ViewContentToolToolBar.action?title=' + title + '&toolbarKey=' + toolbarKey + '&' + arguments;
+    }
+    
 	if(unrefreshedContentId > 0)
 	{
 		//alert("About to call refresh on menu:" + unrefreshedContentId + ":" + changeTypeId + ":" + newContentId);
@@ -265,26 +275,46 @@ function setCMSContext(context)
 
 function refreshStructureToolBar(title, toolbarKey, arguments, unrefreshedNodeId, changeTypeId, newNodeId)
 {
-	if(parent.frames["toolbar"].document)
-	{
-		//alert('toolbarKey:' + toolbarKey);
-		//toolbarKey 	= escape(toolbarKey);	
+	var agt=navigator.userAgent.toLowerCase();
+    if(agt.indexOf("safari")!=-1)
+    {
 		toolbarKey 	= hexcode(toolbarKey);	
-		if(parent.frames["toolbar"].document.getElementById("lockLayer"))
-			parent.frames["toolbar"].document.getElementById("lockLayer").style.display="block";
+		if(parent && parent.frames[2] && parent.frames[2].document.getElementById("lockLayer"))
+			parent.frames[2].document.getElementById("lockLayer").style.display="block";
 		
 		if(cmsContext != "")
-			parent.frames["toolbar"].location.href = cmsContext + '/ViewStructureToolToolBar.action?title=' + title + '&toolbarKey=' + toolbarKey + '&' + arguments;
+			parent.frames[2].location = cmsContext + '/ViewStructureToolToolBar.action?title=' + title + '&toolbarKey=' + toolbarKey + '&' + arguments;
 		else
-			parent.frames["toolbar"].location.href = 'ViewStructureToolToolBar.action?title=' + title + '&toolbarKey=' + toolbarKey + '&' + arguments;
+			parent.frames[2].location = 'ViewStructureToolToolBar.action?title=' + title + '&toolbarKey=' + toolbarKey + '&' + arguments;
 		
-		//alert("unrefreshedNodeId:" + unrefreshedNodeId);
 		if(unrefreshedNodeId > 0)
 		{
-			//alert("About to call refresh on applet...");
-			parent.frames["menu"].refreshNode(unrefreshedNodeId, changeTypeId, newNodeId);
+			parent.frames[1].refreshNode(unrefreshedNodeId, changeTypeId, newNodeId);
 		}
-	}
+    }
+    else	
+    {
+		if(parent.frames["toolbar"].document)
+		{
+			//alert('toolbarKey:' + toolbarKey);
+			//toolbarKey 	= escape(toolbarKey);	
+			toolbarKey 	= hexcode(toolbarKey);	
+			if(parent.frames["toolbar"].document.getElementById("lockLayer"))
+				parent.frames["toolbar"].document.getElementById("lockLayer").style.display="block";
+			
+			if(cmsContext != "")
+				parent.frames["toolbar"].location.href = cmsContext + '/ViewStructureToolToolBar.action?title=' + title + '&toolbarKey=' + toolbarKey + '&' + arguments;
+			else
+				parent.frames["toolbar"].location.href = 'ViewStructureToolToolBar.action?title=' + title + '&toolbarKey=' + toolbarKey + '&' + arguments;
+			
+			//alert("unrefreshedNodeId:" + unrefreshedNodeId);
+			if(unrefreshedNodeId > 0)
+			{
+				//alert("About to call refresh on applet...");
+				parent.frames["menu"].refreshNode(unrefreshedNodeId, changeTypeId, newNodeId);
+			}
+		}
+    }
 }
 
 //-----------------------------------------------
@@ -295,10 +325,18 @@ function refreshStructureToolBar(title, toolbarKey, arguments, unrefreshedNodeId
 
 function refreshPublishingToolBar(title, toolbarKey, arguments)
 {
-	//alert('toolbarKey:' + toolbarKey);
-	//toolbarKey 	= escape(toolbarKey);	
+	title		= hexcode(title);
 	toolbarKey 	= hexcode(toolbarKey);	
-	parent.frames["toolbar"].location.href = 'ViewPublishingToolToolBar.action?title=' + title + '&toolbarKey=' + toolbarKey + '&' + arguments;
+	var agt=navigator.userAgent.toLowerCase();
+    if(agt.indexOf("safari")!=-1)
+    {
+ 		if(parent && parent.frames[2]) 
+ 			parent.frames[1].location = 'ViewPublishingToolToolBar.action?title=' + title + '&toolbarKey=' + toolbarKey + '&' + arguments;
+	}
+    else	
+    {
+    	parent.frames["toolbar"].location.href = 'ViewPublishingToolToolBar.action?title=' + title + '&toolbarKey=' + toolbarKey + '&' + arguments;
+    }
 }
 
 //-----------------------------------------------
