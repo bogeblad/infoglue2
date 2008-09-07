@@ -62,16 +62,12 @@
 </head>
 
 <frameset rows="40,*" FRAMESPACING="0" FRAMEBORDER="NO" BORDER="0" style="border:none; margin: 0px; padding: 0px;" >
-  <frame name="header" marginwidth="0" marginheight="0" scrolling="no" noresize="noresize" target="menu" src="ViewContentToolHeader.action?repositoryId=$!repositoryId" />
-  <frameset id="mainarea" cols="225,*">
-    <frame name="menu" marginwidth="0" marginheight="0" scrolling="no" target="main" src="" />
-	  <frameset rows="57,*" onload="setInitialPosition();">
-		<!--
-		<frame name="toolbar" marginwidth="0" marginheight="0" scrolling="no" target="none" src="ViewContentToolToolBar.action">
-		<frame name="main" marginwidth="0" marginheight="0" scrolling="auto" target="none" src="ViewContentToolStartPage.action">
-		-->
-		<frame name="toolbar" marginwidth="0" marginheight="0" scrolling="no" target="none" src="cms/contenttool/loading.html" />
-		<frame name="main" marginwidth="0" marginheight="0" scrolling="auto" target="none" src="cms/contenttool/loading.html" />
+  <frame name="header" id="header" marginwidth="0" marginheight="0" scrolling="no" noresize="noresize" target="menu" src="ViewContentToolHeader.action?repositoryId=$!repositoryId" />
+  <frameset id="mainarea" cols="225,*" FRAMESPACING="0" FRAMEBORDER="NO" BORDER="0">
+    <frame name="menu" id="menu" marginwidth="0" marginheight="0" scrolling="no" target="main" src="" />
+	  <frameset rows="57,*" onload="setInitialPosition();" FRAMESPACING="0" FRAMEBORDER="NO" BORDER="0">
+		<frame name="toolbar" id="toolbar" marginwidth="0" marginheight="0" scrolling="no" target="none" src="Loading!executeContent.action" />
+		<frame name="main" id="main" marginwidth="0" marginheight="0" scrolling="auto" target="none" src="Loading!executeContent.action" />
 	  </frameset>
   </frameset>
 </frameset>

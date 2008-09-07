@@ -40,15 +40,17 @@
 			//alert("path:" + path);
 			//alert("top:" + top);
 		    repositoryId = selectBox.value;
-		    
-			var agt=navigator.userAgent.toLowerCase();
-	   	    if(agt.indexOf("safari")!=-1)
-		    	parent.frames[1].location = "${preferedTree}repositoryId=" + repositoryId + "&path=" + path;
-			else
-			    parent.frames[1].location.href = "${preferedTree}repositoryId=" + repositoryId + "&path=" + path;
-	
-			top.document.title = "Structure - " + selectBox.options[selectBox.selectedIndex].text + " - InfoGlue CMS";
-			selectBox.selectedIndex = 0;
+		    if(repositoryId != "")
+		    {
+				var agt=navigator.userAgent.toLowerCase();
+		   	    if(agt.indexOf("safari")!=-1)
+			    	parent.frames[1].location = "${preferedTree}repositoryId=" + repositoryId + "&path=" + path;
+				else
+				    parent.frames[1].location.href = "${preferedTree}repositoryId=" + repositoryId + "&path=" + path;
+		
+				top.document.title = "Structure - " + selectBox.options[selectBox.selectedIndex].text + " - InfoGlue CMS";
+				selectBox.selectedIndex = 0;
+		    }
 		}
 		
 		function loadMenu()

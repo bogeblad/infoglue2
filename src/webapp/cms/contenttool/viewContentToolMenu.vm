@@ -51,14 +51,16 @@
 		
 		function htmlTreeItemClick(itemId, repoId, path)
 		{
-			##parent.frames['main'].location.href="ViewContent.action?contentId=" + itemId + "&repositoryId=" + repoId;
-			##if($showComponentsFirst == "true")
-			##	parent.frames['main'].location.href="ViewContentVersion.action?contentId=" + itemId + "&languageId=" + $masterLanguageVO.getId();
-			###else
+			//alert("htmlTreeItemClick:" + itemId + repoId);
+			var agt=navigator.userAgent.toLowerCase();
+    		if(agt.indexOf("safari")!=-1)
+    		{
+    			parent.frames['main'].location = "ViewContent.action?contentId=" + itemId + "&repositoryId=" + repoId;
+			}
+    		else	
+    		{
 				parent.frames['main'].location.href="ViewContent.action?contentId=" + itemId + "&repositoryId=" + repoId;
-			###end
-		
-			//refreshStructureToolBar('tool.structuretool.siteNodeComponentsHeader', 'tool.structuretool.siteNodeComponentsHeader', 'siteNodeId=' + itemId + '&repositoryId=' + repoId + '&isBranch=true', '$unrefreshedNodeId', '$changeTypeId', '$siteNodeId');
+			}
 		}
 		   
 		function reloadMain()
@@ -231,7 +233,7 @@
 </div>
 
 <!-- This div is the tree before its loaded.... -->
-<div id="loadingDiv" style="left:2px; right:2px; position:absolute; top:1px; bottom:6px; height:100%; visibility:visible; z-index:0">
+<div id="loadingDiv" style="left:2px; right:2px; position:absolute; top:1px; bottom:6px; height:100%; visibility:visible; z-index:0;">
 <table class="contenttool" cellpadding="0" cellspacing="0" border="0" width="100%" height="100%">
 <tr>
 	<td height="1" colspan="3" bgcolor="#FFFFFF"><img src="images/trans.gif" width="1" height="1"/></td>

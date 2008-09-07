@@ -16,10 +16,17 @@
 	<script type="text/javascript" src="script/ig_hscroll.js"></script>
 	<script type="text/javascript">
 	<!-- 
-		function openMainArea(url)
+		function openMainArea(url, title)
 		{
-			//alert('url:' + url);
-			parent.frames["main"].location.href = '' + url;
+			var agt=navigator.userAgent.toLowerCase();
+			if(agt.indexOf("safari")!=-1)
+			{
+				parent.frames['main'].location = '' + url + '&title=' + title;
+			}
+			else	
+			{
+				parent.frames["main"].location.href = '' + url + '&title=' + title;
+			}
 		}
 
 		function reload(url, title)

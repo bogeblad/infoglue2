@@ -62,18 +62,12 @@
 
 <frameset rows="40,*" FRAMESPACING="0" FRAMEBORDER="NO" BORDER="0">
   <frame name="header" marginwidth="0" marginheight="0" scrolling="no" noresize target="menu" src="ViewStructureToolHeader.action?repositoryId=$repositoryId">
-  <frameset id="mainarea" cols="225,*">
+  <frameset id="mainarea" cols="225,*" FRAMESPACING="0" FRAMEBORDER="NO" BORDER="0">
     <frame name="menu" marginwidth="0" marginheight="0" scrolling="no" target="main" src="">
-
-	  <frameset rows="57,*" onload="setInitialPosition();">
-		<!--
-		<frame name="toolbar" marginwidth="0" marginheight="0" scrolling="no" target="none" src="ViewStructureToolToolBar.action">
-		<frame name="main" marginwidth="0" marginheight="0" scrolling="yes" target="none" src="ViewStructureToolStartPage.action">
-		-->
-		<frame name="toolbar" marginwidth="0" marginheight="0" scrolling="no" target="none" src="cms/structuretool/loading.html">
-		<frame name="main" marginwidth="0" marginheight="0" scrolling="auto" target="none" src="cms/structuretool/loading.html">
+	  <frameset rows="57,*" onload="setInitialPosition();" FRAMESPACING="0" FRAMEBORDER="NO" BORDER="0">
+		<frame name="toolbar" marginwidth="0" marginheight="0" scrolling="no" target="none" src="Loading!executeStructure.action">
+		<frame name="main" marginwidth="0" marginheight="0" scrolling="auto" target="none" src="Loading!executeStructure.action">
 	  </frameset>
-
   </frameset>
 </frameset>
 

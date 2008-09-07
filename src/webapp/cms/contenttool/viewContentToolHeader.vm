@@ -16,25 +16,30 @@
 	<meta http-equiv="Cache-Control" content="no-cache" />
 	<meta http-equiv="Pragma" content="no-cache" />
 
-	<script type="text/javascript" language="Javascript">
+	<script type="text/javascript" src="script/jquery/jquery-1.2.6.min.js"></script>
+
+	<script type="text/javascript">
 
 		function reloadMenu(selectBox)
 		{
 			//alert("top:" + top);
 		    repositoryId = selectBox.value;
-		    document.searchForm.repositoryId.value = repositoryId;
-			
-			var agt=navigator.userAgent.toLowerCase();
-		    if(agt.indexOf("safari")!=-1)
-		    	parent.frames[1].location = "${preferedTree}repositoryId=" + repositoryId;
-			else
-			    parent.frames[1].location.href = "${preferedTree}repositoryId=" + repositoryId;
-	
-			top.document.title = "Content - " + selectBox.options[selectBox.selectedIndex].text + " - InfoGlue CMS";	
-			selectBox.selectedIndex = 0;
+		    if(repositoryId != "")
+		    {
+			    document.searchForm.repositoryId.value = repositoryId;
+
+				var agt=navigator.userAgent.toLowerCase();
+			    if(agt.indexOf("safari")!=-1)
+			    	parent.frames[1].location = "${preferedTree}repositoryId=" + repositoryId;
+				else
+				    parent.frames[1].location.href = "${preferedTree}repositoryId=" + repositoryId;
+				
+				top.document.title = "Content - " + selectBox.options[selectBox.selectedIndex].text + " - InfoGlue CMS";	
+				selectBox.selectedIndex = 0;
+		    }
 		}
 
-		function reloadMenu(selectBox, path)
+		function reloadMenuWithPath(selectBox, path)
 		{
 			//alert("top:" + top);
 		    repositoryId = selectBox.value;
@@ -63,7 +68,7 @@
 					listForm.repositoryId.options[i].selected = true;
 				}
 			}
-			reloadMenu(listForm.repositoryId, path);
+			reloadMenuWithPath(listForm.repositoryId, path);
 		}
 		
 		function loadMenu()
@@ -81,13 +86,31 @@
 				
 			parent.frames["main"].location = "SearchContent!input.action?repositoryId=" + repositoryId;
 		}
+
+		function postSearchForm()
+		{	
+			var repositoryId = document.searchForm.repositoryId.value;
+			var searchString = document.searchForm.searchString.value;
+
+			var agt=navigator.userAgent.toLowerCase();
+    		if(agt.indexOf("safari")!=-1)
+    		{
+				parent.frames[3].document.location = "SearchContent.action?repositoryId=" + repositoryId + "&searchString=" + escape(searchString);
+    		}
+    		else
+    		{
+				parent.frames["main"].document.location.href = "SearchContent.action?repositoryId=" + repositoryId + "&searchString=" + escape(searchString);
+    		}
+    		
+    		return false;
+    	}
 		
 	</script>
 	
 	<link rel="stylesheet" type="text/css" href="css/cms.css" /> 
 </head>
 
-<body class="contenttool" onload="javascript:loadMenu();">
+<body class="contenttool" onload="loadMenu();">
 
 <table border="0" class="contenttool" cellspacing="0" cellpadding="0">
 <tr>
@@ -100,7 +123,7 @@
 	<td class="toolheader"><img src="images/$ui.getString("images.contenttool.repositoryLabel")" width="70" height="19" /></td> 
 	<td>
 		<form name="selectbox" method="post" action="">
-		<select size="1" name="repositoryId" class="sitedropbox" onchange="javascript:reloadMenu(this);" >
+		<select size="1" name="repositoryId" class="sitedropbox" onchange="reloadMenu(this);" >
 		    #if ($repositories.size() > 1)
 		    	<option value="">$ui.getString("tool.contenttool.chooseRepositoryLabel")</option>
 		    #end
@@ -116,15 +139,13 @@
 	<td class="toolheader"><img src="images/$ui.getString("images.contenttool.searchLabel")" width="48" height="19" /></td>
 	<td class="toolheader"></td>
 	<td class="toolheader" style="white-space:nowrap">
-		<form name="searchForm" method="post" action="SearchContent.action" target="main">
+		<form name="searchForm" method="post" action="#" target="main" onsubmit="return postSearchForm();">
 			<input type="hidden" name="repositoryId" value="$!repositoryId" />	
 			<input type="text" class="searchfield" name="searchString" value="" style="vertical-align:top"  />
 			<img src="images/trans.gif" width="5" height="19" />
-			<input type="image" src="$ui.getString("images.contenttool.ok")" style="width: 31px; height: 19px;" />
+			<img onclick="return postSearchForm();" src="$ui.getString("images.contenttool.ok")" width="31px" height="19px" border="0"/>
 			<img src="images/trans.gif" width="5" height="19"/>
-			<a href="javascript:openSearchForm();">
-				<img src="$ui.getString("images.contenttool.advanced")" width="62" height="19" border="0"/>
-			</a> 
+			<img onclick="return openSearchForm();" src="$ui.getString("images.contenttool.advanced")" width="62" height="19" border="0"/>
 		</form>
 	</td>
 	<td class="toolheader" width="70%"><img src="images/trans.gif" width="1" height="1" /></td>
