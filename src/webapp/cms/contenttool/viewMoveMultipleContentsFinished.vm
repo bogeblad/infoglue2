@@ -41,7 +41,7 @@
 	</script>
 		
 	<script language="JavaScript"> 
-		window.resizeTo(370,600);
+		window.resizeTo(370,640);
 	</script> 
 
 </head>

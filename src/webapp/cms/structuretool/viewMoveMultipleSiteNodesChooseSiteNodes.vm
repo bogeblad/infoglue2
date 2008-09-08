@@ -13,7 +13,7 @@
 	<script type="text/javascript" src="script/infogluecommons.js"></script>
 	
 	<script language="JavaScript"> 
-		window.resizeTo(660,600);
+		window.resizeTo(660,640);
 	</script> 
 		
 	<script type="text/javascript" language="JavaScript">

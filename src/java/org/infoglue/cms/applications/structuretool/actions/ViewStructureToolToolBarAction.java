@@ -398,7 +398,7 @@ public class ViewStructureToolToolBarAction extends InfoGlueAbstractAction
 	
 	private ImageButton getMoveMultipleButton()
 	{
-		return new ImageButton(true, "javascript:openPopup('MoveMultipleSiteNodes!input.action?siteNodeId=" + this.siteNodeId + "&repositoryId=" + this.repositoryId + "', 'MoveMultipleSiteNodes', 'width=400,height=600,resizable=no');", getLocalizedString(getSession().getLocale(), "images.structuretool.buttons.moveMultipleSiteNodes"), "tool.structuretool.moveMultipleSiteNodes.header");	
+		return new ImageButton(true, "javascript:openPopup('MoveMultipleSiteNodes!input.action?siteNodeId=" + this.siteNodeId + "&repositoryId=" + this.repositoryId + "', 'MoveMultipleSiteNodes', 'width=400,height=640,resizable=no');", getLocalizedString(getSession().getLocale(), "images.structuretool.buttons.moveMultipleSiteNodes"), "tool.structuretool.moveMultipleSiteNodes.header");	
 	}
 
 	private ImageButton getViewPageComponentsButton() throws Exception
