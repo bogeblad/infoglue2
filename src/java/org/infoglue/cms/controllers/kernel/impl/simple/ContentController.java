@@ -1188,7 +1188,7 @@ public class ContentController extends BaseController
 
         try
         {
-            Content content = getContentWithId(parentContentId, db);
+            Content content = getReadOnlyContentWithId(parentContentId, db);
             Collection children = content.getChildren();
         	childrenVOList = ContentController.toVOList(children);
         	
