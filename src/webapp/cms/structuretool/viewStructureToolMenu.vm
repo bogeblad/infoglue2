@@ -6,7 +6,7 @@
 <head>
 	<title>Menus</title>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-	<script language="JavaScript" src="script/listview.js"></script>
+	<script type="text/javascript" src="script/listview.js"></script>
 	<script type="text/javascript" src="script/jquery/jquery-1.2.6.min.js"></script>
 	
 	<script type="text/javascript" language="JavaScript">
@@ -73,7 +73,7 @@
 		{
 			parent.frames['main'].location.href="$this.getCMSBaseUrl()/ViewSiteNode.action?siteNodeId=" + itemId + "&repositoryId=" + repoId;
 			
-			refreshStructureToolBar('tool.structuretool.siteNodeComponentsHeader', 'tool.structuretool.siteNodeComponentsHeader', 'siteNodeId=' + itemId + '&repositoryId=' + repoId + '&isBranch=true', '$unrefreshedNodeId', '$changeTypeId', '$siteNodeId');
+			//refreshStructureToolBar('$this.getCMSBaseUrl()', 'tool.structuretool.siteNodeComponentsHeader', 'tool.structuretool.siteNodeComponentsHeader', 'siteNodeId=' + itemId + '&repositoryId=' + repoId + '&isBranch=true', '$unrefreshedNodeId', '$changeTypeId', '$siteNodeId');
 		}
 	
 		function reloadMain()

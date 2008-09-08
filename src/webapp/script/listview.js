@@ -23,7 +23,8 @@ function showWorking()
 {
 	//alert("parent: " + parent.frames["main"].document.title);
 	var p = parent.frames["main"].document.getElementById("working");
-	p.style.visibility = "visible";
+	if(p)
+		p.style.visibility = "visible";
 	// alert("saving");
 }
 
@@ -273,22 +274,18 @@ function setCMSContext(context)
 // can be shown and a suitable headline be written.
 //-----------------------------------------------
 
-function refreshStructureToolBar(title, toolbarKey, arguments, unrefreshedNodeId, changeTypeId, newNodeId)
+function refreshStructureToolBar(context, title, toolbarKey, arguments, unrefreshedNodeId, changeTypeId, newNodeId)
 {
 	var agt=navigator.userAgent.toLowerCase();
     if(agt.indexOf("safari")!=-1)
     {
 		toolbarKey 	= hexcode(toolbarKey);	
-		if(parent && parent.frames[2] && parent.frames[2].document.getElementById("lockLayer"))
-			parent.frames[2].document.getElementById("lockLayer").style.display="block";
 		
-		if(cmsContext != "")
-			parent.frames[2].location = cmsContext + '/ViewStructureToolToolBar.action?title=' + title + '&toolbarKey=' + toolbarKey + '&' + arguments;
-		else
-			parent.frames[2].location = 'ViewStructureToolToolBar.action?title=' + title + '&toolbarKey=' + toolbarKey + '&' + arguments;
+		parent.frames[2].location = context + '/ViewStructureToolToolBar.action?title=' + title + '&toolbarKey=' + toolbarKey + '&' + arguments;
 		
 		if(unrefreshedNodeId > 0)
 		{
+			//alert("unrefreshedNodeId:"+ unrefreshedNodeId);
 			parent.frames[1].refreshNode(unrefreshedNodeId, changeTypeId, newNodeId);
 		}
     }
@@ -299,18 +296,12 @@ function refreshStructureToolBar(title, toolbarKey, arguments, unrefreshedNodeId
 			//alert('toolbarKey:' + toolbarKey);
 			//toolbarKey 	= escape(toolbarKey);	
 			toolbarKey 	= hexcode(toolbarKey);	
-			if(parent.frames["toolbar"].document.getElementById("lockLayer"))
-				parent.frames["toolbar"].document.getElementById("lockLayer").style.display="block";
 			
-			if(cmsContext != "")
-				parent.frames["toolbar"].location.href = cmsContext + '/ViewStructureToolToolBar.action?title=' + title + '&toolbarKey=' + toolbarKey + '&' + arguments;
-			else
-				parent.frames["toolbar"].location.href = 'ViewStructureToolToolBar.action?title=' + title + '&toolbarKey=' + toolbarKey + '&' + arguments;
+			parent.frames["toolbar"].location.href = context + '/ViewStructureToolToolBar.action?title=' + title + '&toolbarKey=' + toolbarKey + '&' + arguments;
 			
-			//alert("unrefreshedNodeId:" + unrefreshedNodeId);
 			if(unrefreshedNodeId > 0)
 			{
-				//alert("About to call refresh on applet...");
+				//alert("unrefreshedNodeId:" + unrefreshedNodeId);
 				parent.frames["menu"].refreshNode(unrefreshedNodeId, changeTypeId, newNodeId);
 			}
 		}

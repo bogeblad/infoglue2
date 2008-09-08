@@ -15,6 +15,8 @@
 	<script type="text/javascript" src="script/ig_hscroll.js"></script>
 	<script type="text/javascript">
 	<!-- 
+		setCMSContext('$this.getCMSBaseUrl()');
+	
 		function openMainArea(url)
 		{
 			//alert('url:' + url);
@@ -132,22 +134,20 @@
 			document.getElementById("scroll").style.zIndex = "1";
 		}
 
-		function refreshStructureToolBar(title, toolbarKey, arguments, repositoryId, siteNodeId, path)
+		function refreshStructureToolBar(context, title, toolbarKey, arguments, repositoryId, siteNodeId, path)
 		{
+			toolbarKey 	= hexcode(toolbarKey);	
+
 			var agt=navigator.userAgent.toLowerCase();
 	   	    if(agt.indexOf("safari")!=-1)
 	   	    {
-	   	    	document.location.href = '$this.getCMSBaseUrl()/ViewStructureToolToolBar.action?title=' + title + '&toolbarKey=' + toolbarKey + '&' + arguments;
+	   	    	document.location.href = context + '/ViewStructureToolToolBar.action?title=' + title + '&toolbarKey=' + toolbarKey + '&' + arguments;
 	   		}
 	   	    else	
 	   	    {
 				if(parent.frames["toolbar"].document)
 				{
-					toolbarKey 	= hexcode(toolbarKey);	
-					if(parent.frames["toolbar"].document.getElementById("lockLayer"))
-						parent.frames["toolbar"].document.getElementById("lockLayer").style.display="block";
-	
-					parent.frames["toolbar"].location.href = '$this.getCMSBaseUrl()/ViewStructureToolToolBar.action?title=' + title + '&toolbarKey=' + toolbarKey + '&' + arguments;
+					parent.frames["toolbar"].location.href = context + '/ViewStructureToolToolBar.action?title=' + title + '&toolbarKey=' + toolbarKey + '&' + arguments;
 			   	    	
 					parent.frames["menu"].syncWithTree(path, repositoryId);
 				}

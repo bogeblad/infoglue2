@@ -33,12 +33,12 @@
 		   return result;
 		}
 
-		function refreshStructureToolBar(title, toolbarKey, arguments, repositoryId, siteNodeId, path)
+		function refreshStructureToolBar(context, title, toolbarKey, arguments, repositoryId, siteNodeId, path)
 		{
 			//alert('toolbarKey:' + toolbarKey);
 			var toolbarKey = hexcode(toolbarKey);	
 			
-			document.location.href = '$this.getCMSBaseUrl()/ViewStructureToolToolBar.action?title=' + title + '&toolbarKey=' + toolbarKey + '&' + arguments;
+			document.location.href = context + '/ViewStructureToolToolBar.action?title=' + title + '&toolbarKey=' + toolbarKey + '&' + arguments;
 			
 			parent.frames["menu"].syncWithTree(path, repositoryId);
 		}
