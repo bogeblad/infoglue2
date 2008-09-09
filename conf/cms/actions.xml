@@ -1,4 +1,4 @@
-<!-- $Id: actions.xml,v 1.74 2008/09/03 12:53:30 mattias Exp $ -->
+<!-- $Id: actions.xml,v 1.75 2008/09/09 11:12:43 mattias Exp $ -->
 <actions>
 
 	<!-- MySettings -->
@@ -1150,7 +1150,7 @@
 	
 	<action name="org.infoglue.cms.applications.structuretool.actions.CreateSiteNodeAction" alias="CreateSiteNode">
 		<view name="input">/cms/structuretool/createSiteNode.vm</view>
-		<view name="success">ViewSiteNode.action?stay=true</view>
+		<view name="success">ExtendedRedirect.action?url=ViewSiteNode.action#siteNodeId</view>
 		<view name="inputV3">/cms/structuretool/v3/createSiteNode.vm</view>
 		<view name="successV3">ExtendedRedirect.action?url=ViewSiteNode.action#siteNodeId</view>
 		<view name="error">/cms/structuretool/error.vm</view>
