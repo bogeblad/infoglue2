@@ -1,5 +1,5 @@
 -------------------------------------------------------------------------------------
-- InfoGlue 2.9.1 Final
+- InfoGlue 2.9.2 Final
 -------------------------------------------------------------------------------------
 
 Release notes
@@ -42,7 +42,12 @@ Abbreviated Changelog from 2.9.0 Final
 - Fixed bug in how assets were deleted when updated with another file with the same name. Made the updated file not appear as the cache file were still active.
 - Fixed bug - both publish and submit to publish from edit on sight did the same thing before.
 - Improved safari and chrome-compability a great deal
-- Improved the FCKEditor-integration dialogs. New default dialogs in the standard WYSIWYGConfig.js.
+- Improved the FCKEditor-integration dialogs. New default dialogs in the standard WYSIWYGConfig.js. 
+	* New improved dialogs for image (latest uploaded, search etc)
+	* New improved dialogs for link
+	* Possibility to use image upload and link upload directly in FCKEditor-tab "Upload".
+- When a new site node is created in structure tool - you now are shown the new page directly. 
+
 
 -------------------------------------------------------------------------------------
 - InfoGlue 2.9.0 Final
