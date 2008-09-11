@@ -149,6 +149,7 @@ public class ContentVersionControllerProxy extends ContentVersionController
 		{
 			Map hashMap = new HashMap();
 			hashMap.put("contentVersionId", contentVersionVO.getId());
+			hashMap.put("contentVersionVO", contentVersionVO);
     	
 			intercept(hashMap, "ContentVersion.Write", infogluePrincipal);
 		}
@@ -156,7 +157,8 @@ public class ContentVersionControllerProxy extends ContentVersionController
 		{
 			Map hashMap = new HashMap();
 			hashMap.put("contentId", contentId);
-
+			hashMap.put("contentVersionVO", contentVersionVO);
+			
 			intercept(hashMap, "Content.CreateVersion", infogluePrincipal);
 		}
 		

@@ -25,5 +25,8 @@
 	<p class="systemImageLink passwordImage">
 		<a href="ViewPasswordTool!input.action?title=Password+generation" class="systemLinkLabel">$ui.getString("tool.managementtool.password.title")</a>
 	</p>
+	<p class="systemImageLink luceneImage">
+		<a href="ViewLuceneOverview.action?title=Lucene+maintanance" class="systemLinkLabel">$ui.getString("tool.managementtool.luceneoverview.title")</a>
+	</p>
 	
 #endManagementTool()

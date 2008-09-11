@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
+import org.infoglue.cms.controllers.kernel.impl.simple.LuceneController;
 
 public class ChangeNotificationController
 {
@@ -170,6 +171,10 @@ public class ChangeNotificationController
 			String logTransactions = CmsPropertyHandler.getLogTransactions();
 			if(logTransactions == null || !logTransactions.equalsIgnoreCase("false"))
 			    instance.registerListener(new TransactionHistoryWriter());
+			
+			String internalSearchEngine = CmsPropertyHandler.getInternalSearchEngine();
+			if(internalSearchEngine.equalsIgnoreCase("lucene"))
+			    instance.registerListener(LuceneController.getController());
 			
 			//instance.registerListener(new RemoteCacheUpdater());
 			instance.registerListener(list);

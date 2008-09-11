@@ -677,6 +677,11 @@ h2 {
 	background-repeat: no-repeat;
 }
 
+.luceneImage {
+	background-image: url('../images/luceneIcon.png');
+	background-repeat: no-repeat;
+}
+
 ul {
 	margin-left: 2px;
 	padding-left: 2px;

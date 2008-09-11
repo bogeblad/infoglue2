@@ -22,10 +22,12 @@
 		<p>
 			#selectBox("tool.contenttool.contentTypeFilter.label" "contentTypeDefinitionId" $contentTypeDefinitionId $contentTypeDefinitions "tool.contenttool.filterShowAll.label")
 		</p>
+		#if($allowCaseSensitive)
 		<p>
 			$ui.getString("tool.contenttool.caseSensitive.label")<br>
 			<input type="checkbox" name="caseSensitive" value="1" #checkChecked("1" "$caseSensitive")> Yes 
 		</p>
+		#end
 		<p>
 			$ui.getString("tool.contenttool.includeAssets.label")<br>
 			<input type="checkbox" name="includeAssets" value="true" #checkChecked("true" "$includeAssets")> Yes 

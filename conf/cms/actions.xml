@@ -1,4 +1,4 @@
-<!-- $Id: actions.xml,v 1.75 2008/09/09 11:12:43 mattias Exp $ -->
+<!-- $Id: actions.xml,v 1.76 2008/09/11 20:05:00 mattias Exp $ -->
 <actions>
 
 	<!-- MySettings -->
@@ -1617,6 +1617,12 @@
 	<action name="org.infoglue.cms.applications.managementtool.actions.ViewPasswordToolAction" alias="ViewPasswordTool">
 		<view name="input">/cms/managementtool/viewPasswordToolInput.vm</view>
 		<view name="success">/cms/managementtool/viewPasswordToolResult.vm</view>
+		<view name="error">/cms/managementtool/error.vm</view>
+	</action>
+
+	<!-- InfoGlue Lucene overview service -->
+	<action name="org.infoglue.cms.applications.managementtool.actions.ViewLuceneOverviewAction" alias="ViewLuceneOverview">
+		<view name="success">/cms/managementtool/viewLuceneOverview.vm</view>
 		<view name="error">/cms/managementtool/error.vm</view>
 	</action>
 

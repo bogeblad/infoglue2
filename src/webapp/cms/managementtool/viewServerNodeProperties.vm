@@ -392,6 +392,14 @@
 		<fieldset>
 			<legend>$ui.getString("entity.ServerNode.property.cmsGUI.label")</legend>
 			#editPropertyFieldCSS("ServerNode.property.helpUrl" "helpUrl" "$this.getPropertyValue('helpUrl')" "51" "$!serverNodeId")
+
+			#set($SQLSearch = ["$ui.getString('entity.ServerNode.property.sqlSearch.value')", "$ui.getString('entity.ServerNode.property.sqlSearch.label')"])
+			#set($luceneSearch = ["$ui.getString('entity.ServerNode.property.luceneSearch.value')", "$ui.getString('entity.ServerNode.property.luceneSearch.label')"])
+			#set($searchEngineOptions = [$SQLSearch, $luceneSearch]) 
+
+			#selectFieldCSS("ServerNode.property.internalSearchEngine" "internalSearchEngine" $this.getPropertyValue('internalSearchEngine') $searchEngineOptions)
+			#editPropertyFieldCSS("ServerNode.property.maxRows" "maxRows" "$this.getPropertyValue('maxRows')" "51" "$!serverNodeId")
+
 			#editPropertyFieldCSS("ServerNode.property.workingStyleInformation" "workingStyleInformation" "$this.getPropertyValue('workingStyleInformation')" "51" "$!serverNodeId")
 			#editPropertyFieldCSS("ServerNode.property.finalStyleInformation" "finalStyleInformation" "$this.getPropertyValue('finalStyleInformation')" "51" "$!serverNodeId")
 			#editPropertyFieldCSS("ServerNode.property.publishStyleInformation" "publishStyleInformation" "$this.getPropertyValue('publishStyleInformation')" "51" "$!serverNodeId")
@@ -444,7 +452,6 @@
 			#yesNoDropDownWithInheritCSS("ServerNode.property.enforceRigidContentAccess" "enforceRigidContentAccess" "$this.getPropertyValue('enforceRigidContentAccess')")
 			#yesNoDropDownWithInheritCSS("ServerNode.property.allowCrossSiteSubmitToPublish" "allowCrossSiteSubmitToPublish" "$this.getPropertyValue('allowCrossSiteSubmitToPublish')")
 
-			#editPropertyFieldCSS("ServerNode.property.maxRows" "maxRows" "$this.getPropertyValue('maxRows')" "51" "$!serverNodeId")
 			#editPropertyFieldCSS("ServerNode.property.defaultNumberOfYearsBeforeExpire" "defaultNumberOfYearsBeforeExpire" "$this.getPropertyValue('defaultNumberOfYearsBeforeExpire')" "51" "$!serverNodeId")
 			#yesNoDropDownWithInheritCSS("ServerNode.property.enableDateTimeDirectEditing" "enableDateTimeDirectEditing" "$this.getPropertyValue('enableDateTimeDirectEditing')")
 			#yesNoDropDownWithInheritCSS("ServerNode.property.showContentVersionFirst" "showContentVersionFirst" "$this.getPropertyValue('showContentVersionFirst')")

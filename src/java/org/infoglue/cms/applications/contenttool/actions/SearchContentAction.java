@@ -70,6 +70,8 @@ import webwork.action.Action;
 
 public class SearchContentAction extends InfoGlueAbstractAction 
 {
+	private SearchController searchController = new SearchController();
+	
     private final static Logger logger = Logger.getLogger(SearchContentAction.class.getName());
 
 	private static final long serialVersionUID = 1L;
@@ -103,8 +105,13 @@ public class SearchContentAction extends InfoGlueAbstractAction
 	//private String[] contentVersionId  	= null;
 	
 	private String assetTypeFilter = ".*";
-
+	private boolean allowCaseSensitive = true;
 	
+	public boolean getAllowCaseSensitive()
+	{
+		return allowCaseSensitive;
+	}
+
 	public void setSearchString(String s)
 	{
 	    this.searchString = s;
@@ -136,95 +143,6 @@ public class SearchContentAction extends InfoGlueAbstractAction
 	
 	public String doExecute() throws Exception 
 	{
-		/*
-		try 
-	    {
-			String index = "c:/temp/LuceneIndex/index";
-		    String field = "contents";
-		    String queries = null;
-		    int repeat = 0;
-		    boolean raw = false;
-		    String normsField = null;
-		    		    
-		    IndexReader reader = IndexReader.open(index);
-
-		    Searcher searcher = new IndexSearcher(reader);
-		    Analyzer analyzer = new StandardAnalyzer();
-
-		    QueryParser parser = new QueryParser(field, analyzer);
-
-		   
-			Query query = parser.parse(this.getSearchString());
-			System.out.println("Searching for: " + query.toString(field));
-
-			Hits hits = searcher.search(query);
-
-			if (repeat > 0)
-			{ 
-				Date start = new Date();
-				for (int i = 0; i < repeat; i++)
-				{
-					hits = searcher.search(query);
-				}
-				Date end = new Date();
-				System.out.println("Time: " + (end.getTime() - start.getTime()) + "ms");
-			}
-
-			System.out.println(hits.length() + " total matching documents");
-
-			final int HITS_PER_PAGE = 10;
-			for (int start = 0; start < hits.length(); start += HITS_PER_PAGE)
-			{
-				int end = Math.min(hits.length(), start + HITS_PER_PAGE);
-				for (int i = start; i < end; i++)
-				{
-
-					if (raw)
-					{ // output raw format
-						System.out.println("doc=" + hits.id(i) + " score=" + hits.score(i));
-						continue;
-					}
-
-					Document doc = hits.doc(i);
-					String contentVersionId = doc.get("contentVersionId");
-					String contentId = doc.get("contentId");
-					System.out.println("doc:" + doc);
-					System.out.println("contentVersionId:" + contentVersionId);
-					System.out.println("contentId:" + contentId);
-					//ContentVersionVO cvvo = ContentVersionControllerProxy.getController().getACContentVersionVOWithId(getInfoGluePrincipal(), new Integer(contentVersionId));
-					ContentVersionVO cvvo = ContentVersionController.getContentVersionController().getFullContentVersionVOWithId(new Integer(contentVersionId));
-					System.out.println("cvvo:" + cvvo);
-					contentVersionVOList.add(cvvo);
-					
-					String path = doc.get("path");
-					//contentVersionVOList
-					if (path != null)
-					{
-						System.out.println((i + 1) + ". " + path);
-						String title = doc.get("title");
-						if (title != null)
-						{
-							System.out.println("   Title: " + doc.get("title"));
-						}
-					} else
-					{
-						System.out.println((i + 1) + ". " + "No path for this document");
-					}
-					
-				}
-
-				if (queries != null) // non-interactive
-					break;
-			}
-			
-			reader.close();	
-	    } 
-	    catch (Exception e) 
-	    {
-	    	System.out.println(" caught a " + e.getClass() + "\n with message: " + e.getMessage());
-	    }
-	    */
-
 	    int maxRows = 100;
 		try
 		{
@@ -244,14 +162,19 @@ public class SearchContentAction extends InfoGlueAbstractAction
 				selectedRepositoryIdList.add(repositoryIdToSearch[i]);
 			}
 			
-			contentVersionVOList = SearchController.getContentVersions(repositoryIdAsIntegerToSearch, this.getSearchString(), maxRows, name, languageId, new Integer[]{contentTypeDefinitionId}, caseSensitive, stateId, includeAssets);
+			contentVersionVOList = searchController.getContentVersionVOList(repositoryIdAsIntegerToSearch, this.getSearchString(), maxRows, name, languageId, new Integer[]{contentTypeDefinitionId}, caseSensitive, stateId, includeAssets);
 		}
 		else
 		{
-			contentVersionVOList = SearchController.getContentVersions(this.repositoryId, this.getSearchString(), maxRows, name, languageId, new Integer[]{contentTypeDefinitionId}, caseSensitive, stateId, includeAssets);
+			contentVersionVOList = searchController.getContentVersionVOList(this.repositoryId, this.getSearchString(), maxRows, name, languageId, new Integer[]{contentTypeDefinitionId}, caseSensitive, stateId, includeAssets);
 			selectedRepositoryIdList.add("" + this.repositoryId);
 		}
 	    
+		if(CmsPropertyHandler.getInternalSearchEngine().equalsIgnoreCase("lucene"))
+		{
+			allowCaseSensitive = false;
+		}
+
 	    this.principals = UserControllerProxy.getController().getAllUsers();
 	    this.availableLanguages = LanguageController.getController().getLanguageVOList(this.repositoryId);
 	    this.contentTypeDefinitions = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOList();
@@ -260,42 +183,6 @@ public class SearchContentAction extends InfoGlueAbstractAction
 		return "success";
 	}
 
-	public String doAAAExecute() throws Exception 
-	{
-	    int maxRows = 100;
-		try
-		{
-			maxRows = Integer.parseInt(CmsPropertyHandler.getMaxRows());
-		}
-		catch(Exception e)
-		{
-		}
-
-		String[] repositoryIdToSearch = this.getRequest().getParameterValues("repositoryIdToSearch");
-		if(repositoryIdToSearch != null)
-		{
-			Integer[] repositoryIdAsIntegerToSearch = new Integer[repositoryIdToSearch.length];
-			for(int i=0; i < repositoryIdToSearch.length; i++)
-			{
-				repositoryIdAsIntegerToSearch[i] = new Integer(repositoryIdToSearch[i]);
-				selectedRepositoryIdList.add(repositoryIdToSearch[i]);
-			}
-			
-			contentVersionVOList = SearchController.getContentVersions(repositoryIdAsIntegerToSearch, this.getSearchString(), maxRows, name, languageId, new Integer[]{contentTypeDefinitionId}, caseSensitive, stateId, includeAssets);
-		}
-		else
-		{
-			contentVersionVOList = SearchController.getContentVersions(this.repositoryId, this.getSearchString(), maxRows, name, languageId, new Integer[]{contentTypeDefinitionId}, caseSensitive, stateId, includeAssets);
-			selectedRepositoryIdList.add("" + this.repositoryId);
-		}
-		
-	    this.principals = UserControllerProxy.getController().getAllUsers();
-	    this.availableLanguages = LanguageController.getController().getLanguageVOList(this.repositoryId);
-	    this.contentTypeDefinitions = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOList();
-		this.repositories = RepositoryController.getController().getAuthorizedRepositoryVOList(this.getInfoGluePrincipal(), false);
-
-		return "success";
-	}
 
 	public String doBindingResult() throws Exception 
 	{
@@ -326,12 +213,11 @@ public class SearchContentAction extends InfoGlueAbstractAction
 				selectedRepositoryIdList.add(repositoryIdToSearch[i]);
 			}
 			
-			//contentVersionVOList = SearchController.getContentVersions(repositoryIdAsIntegerToSearch, this.getSearchString(), maxRows, name, languageId, contentTypeDefinitionId, caseSensitive, stateId);
-			contentVOSet = SearchController.getContents(repositoryIdAsIntegerToSearch, this.getSearchString(), maxRows, name, languageId, allowedContentTypeId, caseSensitive, stateId);
+			contentVOSet = searchController.getContents(repositoryIdAsIntegerToSearch, this.getSearchString(), maxRows, name, languageId, allowedContentTypeId, caseSensitive, stateId);
 		}
 		else
 		{
-			contentVOSet = SearchController.getContents(this.repositoryId, this.getSearchString(), maxRows, name, languageId, allowedContentTypeId, caseSensitive, stateId);
+			contentVOSet = searchController.getContents(this.repositoryId, this.getSearchString(), maxRows, name, languageId, allowedContentTypeId, caseSensitive, stateId);
 			selectedRepositoryIdList.add("" + this.repositoryId);
 		}
 
@@ -367,11 +253,11 @@ public class SearchContentAction extends InfoGlueAbstractAction
 				selectedRepositoryIdList.add(repositoryIdToSearch[i]);
 			}
 			
-			contentVOSet = SearchController.getContents(repositoryIdAsIntegerToSearch, this.getSearchString(), maxRows, name, languageId, allowedContentTypeId, caseSensitive, stateId, true);
+			contentVOSet = searchController.getContents(repositoryIdAsIntegerToSearch, this.getSearchString(), maxRows, name, languageId, allowedContentTypeId, caseSensitive, stateId, true);
 		}
 		else 
 		{
-			contentVOSet = SearchController.getContents(this.repositoryId, this.getSearchString(), maxRows, name, languageId, allowedContentTypeId, caseSensitive, stateId, true);
+			contentVOSet = searchController.getContents(this.repositoryId, this.getSearchString(), maxRows, name, languageId, allowedContentTypeId, caseSensitive, stateId, true);
 			selectedRepositoryIdList.add("" + this.repositoryId);
 		}
 
@@ -452,6 +338,12 @@ public class SearchContentAction extends InfoGlueAbstractAction
 
 	public String doInput() throws Exception 
 	{
+		if(CmsPropertyHandler.getInternalSearchEngine().equalsIgnoreCase("lucene"))
+		{
+			includeAssets = true;
+			allowCaseSensitive = false;
+		}
+
 	    this.principals = UserControllerProxy.getController().getAllUsers();
 	    this.availableLanguages = LanguageController.getController().getLanguageVOList(this.repositoryId);
 	    this.contentTypeDefinitions = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOList();

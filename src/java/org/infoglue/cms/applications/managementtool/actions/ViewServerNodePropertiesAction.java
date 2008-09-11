@@ -234,6 +234,8 @@ public class ViewServerNodePropertiesAction extends InfoGluePropertiesAbstractAc
 	    populate(ps, "protectWorkflows");
 	    populate(ps, "protectCategories");
 
+	    populate(ps, "internalSearchEngine");
+
 	    populate(ps, "maxRows");
 	    populate(ps, "defaultNumberOfYearsBeforeExpire");
 	    populate(ps, "enableDateTimeDirectEditing");

@@ -841,6 +841,11 @@ public class CmsPropertyHandler
 		return getServerNodeProperty("hideProtectedProperties", true, "true");
 	}
 
+	public static String getInternalSearchEngine()
+	{
+		return getServerNodeProperty("internalSearchEngine", true, "sqlSearch");
+	}
+
 	public static String getMaxRows()
 	{
 		return getServerNodeProperty("maxRows", true, "100");
