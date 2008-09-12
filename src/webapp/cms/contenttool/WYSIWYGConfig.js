@@ -23,6 +23,7 @@
  * Follow this link for more information:
  * http://wiki.fckeditor.net/Developer%27s_Guide/Configuration/Configurations_Settings
  */
+//Hepp 
 
 FCKConfig.CustomConfigurationsPath = '' ;
 
@@ -157,7 +158,7 @@ FCKConfig.FontFormats	= 'h2;h4;h3;h5;p' ;
 FCKConfig.FontNames		= 'Arial;Comic Sans MS;Courier New;Tahoma;Times New Roman;Verdana' ;
 FCKConfig.FontSizes		= 'smaller;larger;xx-small;x-small;small;medium;large;x-large;xx-large' ;
 
-FCKConfig.StylesXmlPath		= '$request.contextPath/WYSIWYGProperties!viewStylesXML.action?repositoryId=$request.getParameter("repositoryId")&contentId=$request.getParameter("contentId")&languageId=$request.getParameter("languageId")' ;
+FCKConfig.StylesXmlPath		= '$request.contextPath/WYSIWYGProperties!viewStylesXML.action?repositoryId=$!request.getParameter("repositoryId")&contentId=$!request.getParameter("contentId")&languageId=$request.getParameter("languageId")' ;
 FCKConfig.TemplatesXmlPath	= FCKConfig.EditorPath + 'fcktemplates.xml' ;
 
 FCKConfig.SpellChecker			= 'ieSpell' ;	// 'ieSpell' | 'SpellerPages'
@@ -277,7 +278,7 @@ var _FileBrowserExtension = _FileBrowserLanguage == 'perl' ? 'cgi' : _FileBrowse
 var _QuickUploadExtension = _QuickUploadLanguage == 'perl' ? 'cgi' : _QuickUploadLanguage ;
 
 FCKConfig.FlashBrowser = true ;
-FCKConfig.FlashBrowserURL = "$request.contextPath/ViewContentVersion!viewAssetsDialogForFCKEditor.action?repositoryId=$request.getParameter("repositoryId")&contentId=$request.getParameter("contentId")&languageId=$request.getParameter("languageId")" ;
+FCKConfig.FlashBrowserURL = "$request.contextPath/ViewContentVersion!viewAssetsDialogForFCKEditor.action?repositoryId=$!request.getParameter("repositoryId")&contentId=$!request.getParameter("contentId")&languageId=$!request.getParameter("languageId")" ;
 FCKConfig.ImageBrowserWindowWidth  = "880" ;
 FCKConfig.ImageBrowserWindowHeight = "600" ;
 

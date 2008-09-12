@@ -34,7 +34,7 @@
 		{
 			//alert("selectBox:" + selectBox);
 			var repositoryId = selectBox.value;
-			var url = "ViewContentVersion!viewAssetsDialogForFCKEditor.action?repositoryId=" + repositoryId + "&contentId=-1&languageId=$languageId&treatAsLink=$treatAsLink&assetTypeFilter=$assetTypeFilter";
+			var url = "ViewContentVersion!viewAssetsDialogForFCKEditorV3.action?repositoryId=" + repositoryId + "&contentId=-1&languageId=$languageId&treatAsLink=$treatAsLink&assetTypeFilter=$assetTypeFilter";
 			document.location.href = url;
 		}
 		
