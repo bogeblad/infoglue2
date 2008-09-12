@@ -103,7 +103,9 @@ public class WYSIWYGPropertiesAction extends InfoGlueAbstractAction
 	        try
             {
                 if(this.WYSIWYGProperties == null || this.WYSIWYGProperties.equals(""))
+                {
                     this.WYSIWYGProperties = FileHelper.getFileAsString(new File(CmsPropertyHandler.getContextRootPath() + "cms/contenttool/WYSIWYGConfig.js"));
+                }
             }
             catch (Exception e1)
             {
@@ -112,32 +114,42 @@ public class WYSIWYGPropertiesAction extends InfoGlueAbstractAction
 	        
 	    }
 
-	    Map parameters = new HashMap();
-	    parameters.put("request", this.getRequest());
-		if(this.getRequest().getParameter("contentVersionId") == null)
-		{
-			logger.info("No content version sent in.. we fetch latest instead");
-			String contentId = this.getRequest().getParameter("contentId");
-			String languageId = this.getRequest().getParameter("languageId");
-			logger.info("contentId:" + contentId);
-			logger.info("languageId:" + languageId);
-			ContentVersionVO cvo = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(new Integer(contentId), new Integer(languageId));
-			parameters.put("contentVersionId", cvo.getId());
-		}
-		else
-		{
-			parameters.put("contentVersionId", this.getRequest().getParameter("contentVersionId"));
-		}
-
-		String languageCode = CmsPropertyHandler.getPreferredLanguageCode(getInfoGluePrincipal().getName());
-		parameters.put("principalLanguageCode", languageCode);
-		
-		StringWriter tempString = new StringWriter();
-		PrintWriter pw = new PrintWriter(tempString);
-		new VelocityTemplateProcessor().renderTemplate(parameters, pw, this.WYSIWYGProperties, true);
-		this.WYSIWYGProperties = tempString.toString();
-				
-	    this.getResponse().setContentType("text/javascript");
+	    try
+	    {
+		    Map parameters = new HashMap();
+		    parameters.put("request", this.getRequest());
+			if(this.getRequest().getParameter("contentVersionId") == null)
+			{
+				logger.info("No content version sent in.. we fetch latest instead");
+				String contentId = this.getRequest().getParameter("contentId");
+				String languageId = this.getRequest().getParameter("languageId");
+				logger.info("contentId:" + contentId);
+				logger.info("languageId:" + languageId);
+				if(contentId != null && languageId != null)
+				{
+					ContentVersionVO cvo = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(new Integer(contentId), new Integer(languageId));
+					parameters.put("contentVersionId", cvo.getId());
+				}
+			}
+			else
+			{
+				parameters.put("contentVersionId", this.getRequest().getParameter("contentVersionId"));
+			}
+	
+			String languageCode = CmsPropertyHandler.getPreferredLanguageCode(getInfoGluePrincipal().getName());
+			parameters.put("principalLanguageCode", languageCode);
+			
+			StringWriter tempString = new StringWriter();
+			PrintWriter pw = new PrintWriter(tempString);
+			new VelocityTemplateProcessor().renderTemplate(parameters, pw, this.WYSIWYGProperties, true);
+			this.WYSIWYGProperties = tempString.toString();
+					
+		    this.getResponse().setContentType("text/javascript");
+	    }
+	    catch (Exception e1)
+        {
+            e1.printStackTrace();
+        }
 	    
 	    return this.WYSIWYGProperties;
 	}
