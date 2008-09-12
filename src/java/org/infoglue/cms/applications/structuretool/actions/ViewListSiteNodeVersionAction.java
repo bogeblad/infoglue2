@@ -105,28 +105,6 @@ public class ViewListSiteNodeVersionAction extends InfoGlueAbstractAction
 		
         userSessionKey = "" + System.currentTimeMillis();
         
-        RepositoryVO repositoryVO = RepositoryController.getController().getRepositoryVOWithId(repositoryId);
-        String liveAddressBaseUrl = repositoryVO.getLiveBaseUrl() + "";
-        
-        String firstPublicDeliveryUrl = (String)CmsPropertyHandler.getPublicDeliveryUrls().get(0);
-        logger.debug("firstPublicDeliveryUrl:" + firstPublicDeliveryUrl);
-        String[] firstPublicDeliveryUrlSplit = firstPublicDeliveryUrl.split("/");
-        
-        String context = firstPublicDeliveryUrlSplit[firstPublicDeliveryUrlSplit.length - 1];
-        logger.debug("context:" + context);
-        String liveAddress = liveAddressBaseUrl + "/" + context + "/ViewPage.action" + "?siteNodeId=" + this.getSiteNodeId() + "&languageId=" + this.languageId;
-        
-        if(attemptDirectPublishing != null && attemptDirectPublishing.equalsIgnoreCase("true"))
-        {
-            setActionMessage(userSessionKey, getLocalizedString(getLocale(), "tool.common.publishing.publishingInlineOperationDoneHeader"));
-        	addActionLink(userSessionKey, new LinkBean("publishedPageUrl", getLocalizedString(getLocale(), "tool.common.publishing.publishingInlineOperationViewPublishedPageLinkText"), getLocalizedString(getLocale(), "tool.common.publishing.publishingInlineOperationViewPublishedPageTitleText"), getLocalizedString(getLocale(), "tool.common.publishing.publishingInlineOperationViewPublishedPageTitleText"), liveAddress, false, "", "_blank"));
-        }
-        else
-        {
-            setActionMessage(userSessionKey, getLocalizedString(getLocale(), "tool.common.publishing.submitToPublishingInlineOperationDoneHeader"));
-        	//addActionLink(userSessionKey, new LinkBean("publishedPageUrl", getLocalizedString(getLocale(), "tool.common.publishing.publishingInlineOperationViewSubmittedPageLinkText"), getLocalizedString(getLocale(), "tool.common.publishing.publishingInlineOperationViewSubmittedPageTitleText"), getLocalizedString(getLocale(), "tool.common.publishing.publishingInlineOperationViewSubmittedPageTitleText"), liveAddress, false, "", "_blank"));
-        }
-        
         addActionLink(userSessionKey, new LinkBean("currentPageUrl", getLocalizedString(getLocale(), "tool.common.publishing.publishingInlineOperationBackToCurrentPageLinkText"), getLocalizedString(getLocale(), "tool.common.publishing.publishingInlineOperationBackToCurrentPageTitleText"), getLocalizedString(getLocale(), "tool.common.publishing.publishingInlineOperationBackToCurrentPageTitleText"), this.originalAddress, false, ""));
         setActionExtraData(userSessionKey, "disableCloseLink", "true");
         

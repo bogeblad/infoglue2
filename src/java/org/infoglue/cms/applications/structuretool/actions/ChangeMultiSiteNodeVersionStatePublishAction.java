@@ -29,15 +29,19 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
+import org.infoglue.cms.applications.databeans.LinkBean;
 import org.infoglue.cms.applications.mydesktoptool.actions.ViewMyDesktopToolStartPageAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentStateController;
 import org.infoglue.cms.controllers.kernel.impl.simple.PublicationController;
+import org.infoglue.cms.controllers.kernel.impl.simple.RepositoryController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeStateController;
 import org.infoglue.cms.entities.content.ContentVersion;
 import org.infoglue.cms.entities.content.ContentVersionVO;
+import org.infoglue.cms.entities.management.RepositoryVO;
 import org.infoglue.cms.entities.publishing.PublicationVO;
 import org.infoglue.cms.entities.structure.SiteNodeVersion;
 import org.infoglue.cms.entities.structure.SiteNodeVersionVO;
+import org.infoglue.cms.util.CmsPropertyHandler;
 
 /**
  * This class implements submit to publish on many sitenode versions at once.
@@ -50,6 +54,7 @@ public class ChangeMultiSiteNodeVersionStatePublishAction extends InfoGlueAbstra
     private final static Logger logger = Logger.getLogger(ChangeMultiSiteNodeVersionStatePublishAction.class.getName());
 
 	private Integer siteNodeId;
+	private Integer languageId;
 	private List siteNodeVersionId = new ArrayList();
 	private List contentVersionId = new ArrayList();
 	private Integer stateId;
@@ -60,7 +65,7 @@ public class ChangeMultiSiteNodeVersionStatePublishAction extends InfoGlueAbstra
 	private String attemptDirectPublishing = "false";
 	private String returnAddress;
    	private String userSessionKey;
-
+   	
 			    
 	/**
 	 * This method gets called when calling this action. 
@@ -91,16 +96,41 @@ public class ChangeMultiSiteNodeVersionStatePublishAction extends InfoGlueAbstra
 			ContentVersion contentVersion = ContentStateController.changeState(contentVersionId, ContentVersionVO.PUBLISH_STATE, getVersionComment(), this.overrideVersionModifyer, this.recipientFilter, this.getInfoGluePrincipal(), null, events);
 		}
 
+        RepositoryVO repositoryVO = RepositoryController.getController().getRepositoryVOWithId(repositoryId);
+        String liveAddressBaseUrl = repositoryVO.getLiveBaseUrl() + "";
+
+        String liveAddress = null;
+        if(CmsPropertyHandler.getPublicDeliveryUrls().size() > 0)
+        {
+	        String firstPublicDeliveryUrl = (String)CmsPropertyHandler.getPublicDeliveryUrls().get(0);
+	        logger.debug("firstPublicDeliveryUrl:" + firstPublicDeliveryUrl);
+	        String[] firstPublicDeliveryUrlSplit = firstPublicDeliveryUrl.split("/");
+	        
+	        String context = firstPublicDeliveryUrlSplit[firstPublicDeliveryUrlSplit.length - 1];
+	        logger.debug("context:" + context);
+	        liveAddress = liveAddressBaseUrl + "/" + context + "/ViewPage.action" + "?siteNodeId=" + this.getSiteNodeId() + "&languageId=" + this.languageId;
+        }
+        
 		if(attemptDirectPublishing.equalsIgnoreCase("true"))
 		{
-		    PublicationVO publicationVO = new PublicationVO();
+            setActionMessage(userSessionKey, getLocalizedString(getLocale(), "tool.common.publishing.publishingInlineOperationDoneHeader"));
+        	if(liveAddress != null)
+        		addActionLink(userSessionKey, new LinkBean("publishedPageUrl", getLocalizedString(getLocale(), "tool.common.publishing.publishingInlineOperationViewPublishedPageLinkText"), getLocalizedString(getLocale(), "tool.common.publishing.publishingInlineOperationViewPublishedPageTitleText"), getLocalizedString(getLocale(), "tool.common.publishing.publishingInlineOperationViewPublishedPageTitleText"), liveAddress, false, "", "_blank"));
+        	else
+        		addActionLink(userSessionKey, new LinkBean("publishedPageUrl", "No public servers stated in cms", "No public servers stated in cms", "No public servers stated in cms", "#", false, "", "_blank"));
+        		
+			PublicationVO publicationVO = new PublicationVO();
 		    publicationVO.setName("Direct publication by " + this.getInfoGluePrincipal().getName());
 		    publicationVO.setDescription(getVersionComment());
 		    publicationVO.setRepositoryId(repositoryId);
 		    publicationVO = PublicationController.getController().createAndPublish(publicationVO, events, overrideVersionModifyer, this.getInfoGluePrincipal());
 		}
+		else
+		{
+            setActionMessage(userSessionKey, getLocalizedString(getLocale(), "tool.common.publishing.submitToPublishingInlineOperationDoneHeader"));
+		}
 
-        if(this.returnAddress != null && !this.returnAddress.equals(""))
+		if(this.returnAddress != null && !this.returnAddress.equals(""))
         {
 	        String arguments 	= "userSessionKey=" + userSessionKey + "&attemptDirectPublishing=" + attemptDirectPublishing + "&isAutomaticRedirect=false";
 	        String messageUrl 	= returnAddress + (returnAddress.indexOf("?") > -1 ? "&" : "?") + arguments;
@@ -189,6 +219,16 @@ public class ChangeMultiSiteNodeVersionStatePublishAction extends InfoGlueAbstra
     {
         this.repositoryId = repositoryId;
     }
+    
+	public Integer getLanguageId()
+	{
+		return languageId;
+	}
+
+	public void setLanguageId(Integer languageId)
+	{
+		this.languageId = languageId;
+	}
     
     public void setAttemptDirectPublishing(String attemptDirectPublishing)
     {
