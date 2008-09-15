@@ -69,11 +69,12 @@
 			#end
 		}
 
+		
 		function htmlTreeItemClick(itemId, repoId, path)
 		{
+			refreshStructureToolBar('$this.getCMSBaseUrl()', 'tool.structuretool.siteNodeComponentsHeader', 'tool.structuretool.siteNodeComponentsHeader', 'siteNodeId=' + itemId + '&repositoryId=' + repoId + '&isBranch=true', '$unrefreshedNodeId', '$changeTypeId', '$siteNodeId');
+
 			parent.frames['main'].location.href="$this.getCMSBaseUrl()/ViewSiteNode.action?siteNodeId=" + itemId + "&repositoryId=" + repoId;
-			
-			//refreshStructureToolBar('$this.getCMSBaseUrl()', 'tool.structuretool.siteNodeComponentsHeader', 'tool.structuretool.siteNodeComponentsHeader', 'siteNodeId=' + itemId + '&repositoryId=' + repoId + '&isBranch=true', '$unrefreshedNodeId', '$changeTypeId', '$siteNodeId');
 		}
 	
 		function reloadMain()
