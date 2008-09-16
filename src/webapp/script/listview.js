@@ -276,6 +276,10 @@ function setCMSContext(context)
 
 function refreshStructureToolBar(context, title, toolbarKey, arguments, unrefreshedNodeId, changeTypeId, newNodeId)
 {
+	//alert("unrefreshedNodeId:" + unrefreshedNodeId);
+	//alert("changeTypeId:" + changeTypeId);
+	//alert("newNodeId:" + newNodeId);
+
 	var agt=navigator.userAgent.toLowerCase();
     if(agt.indexOf("safari")!=-1)
     {
@@ -285,7 +289,6 @@ function refreshStructureToolBar(context, title, toolbarKey, arguments, unrefres
 		
 		if(unrefreshedNodeId > 0)
 		{
-			//alert("unrefreshedNodeId:"+ unrefreshedNodeId);
 			parent.frames[1].refreshNode(unrefreshedNodeId, changeTypeId, newNodeId);
 		}
     }
@@ -293,15 +296,12 @@ function refreshStructureToolBar(context, title, toolbarKey, arguments, unrefres
     {
 		if(parent.frames["toolbar"].document)
 		{
-			//alert('toolbarKey:' + toolbarKey);
-			//toolbarKey 	= escape(toolbarKey);	
 			toolbarKey 	= hexcode(toolbarKey);	
 			
 			parent.frames["toolbar"].location.href = context + '/ViewStructureToolToolBar.action?title=' + title + '&toolbarKey=' + toolbarKey + '&' + arguments;
 			
 			if(unrefreshedNodeId > 0)
 			{
-				//alert("unrefreshedNodeId:" + unrefreshedNodeId);
 				parent.frames["menu"].refreshNode(unrefreshedNodeId, changeTypeId, newNodeId);
 			}
 		}
