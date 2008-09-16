@@ -151,7 +151,12 @@ public class ViewInlineOperationMessagesAction extends InfoGlueAbstractAction
     {
     	this.message = message;
     }
-    
+
+    public String getActionExtraData(String extraDataKey)
+	{				
+		return this.getActionExtraData(getUserSessionKey(), extraDataKey);
+	}
+
 	public List<LinkBean> getActionLinks()
 	{				
 		return actionLinks;

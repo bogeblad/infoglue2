@@ -1,4 +1,4 @@
-<!-- $Id: actions.xml,v 1.76 2008/09/11 20:05:00 mattias Exp $ -->
+<!-- $Id: actions.xml,v 1.77 2008/09/16 13:14:26 mattias Exp $ -->
 <actions>
 
 	<!-- MySettings -->
@@ -1091,6 +1091,7 @@
 	<!-- SiteNode -->
 	<action name="org.infoglue.cms.applications.structuretool.actions.ViewSiteNodeAction" alias="ViewSiteNode">
 		<view name="success">/cms/structuretool/viewSiteNode.vm</view>
+		<view name="successRefreshAndRedirect">/cms/structuretool/refreshTreeAndRedirect.vm</view>
 		<!--<view name="viewVersion">${dest}</view>-->
 		<view name="blank">/cms/structuretool/blank.vm</view>
 		<view name="error">/cms/structuretool/error.vm</view>
@@ -1150,9 +1151,11 @@
 	
 	<action name="org.infoglue.cms.applications.structuretool.actions.CreateSiteNodeAction" alias="CreateSiteNode">
 		<view name="input">/cms/structuretool/createSiteNode.vm</view>
-		<view name="success">ExtendedRedirect.action?url=ViewSiteNode.action#siteNodeId</view>
+		<view name="success">ViewSiteNode!refreshAndRedirect.action</view>
+		<!-- <view name="success">ExtendedRedirect.action?url=ViewSiteNode!refreshAndRedirect.action#siteNodeId</view> -->
 		<view name="inputV3">/cms/structuretool/v3/createSiteNode.vm</view>
-		<view name="successV3">ExtendedRedirect.action?url=ViewSiteNode.action#siteNodeId</view>
+		<!-- <view name="successV3">ExtendedRedirect.action?url=ViewSiteNode!refreshAndRedirect.action#siteNodeId</view> -->
+		<view name="successV3">ViewSiteNode!refreshAndRedirect.action</view>
 		<view name="error">/cms/structuretool/error.vm</view>
 		<view name="accessDenied">/cms/structuretool/viewConstraintException.vm</view>
 	</action>

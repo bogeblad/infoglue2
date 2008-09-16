@@ -153,6 +153,47 @@
 				}
 	   	    }
 		}
+
+		//-----------------------------------------------
+		// This function reloads the toolbar above the current 
+		// active action so that buttons related to the view 
+		// can be shown and a suitable headline be written.
+		//-----------------------------------------------
+
+		function refreshStructureToolBarAndMenu(context, title, toolbarKey, arguments, unrefreshedNodeId, changeTypeId, newNodeId)
+		{
+			//alert("unrefreshedNodeId:" + unrefreshedNodeId);
+			//alert("changeTypeId:" + changeTypeId);
+			//alert("newNodeId:" + newNodeId);
+
+			var agt=navigator.userAgent.toLowerCase();
+		    if(agt.indexOf("safari")!=-1)
+		    {
+				toolbarKey 	= hexcode(toolbarKey);	
+				
+				parent.frames[2].location = context + '/ViewStructureToolToolBar.action?title=' + title + '&toolbarKey=' + toolbarKey + '&' + arguments;
+				
+				if(unrefreshedNodeId > 0)
+				{
+					parent.frames[1].refreshNode(unrefreshedNodeId, changeTypeId, newNodeId);
+				}
+		    }
+		    else	
+		    {
+				if(parent.frames["toolbar"].document)
+				{
+					toolbarKey 	= hexcode(toolbarKey);	
+					
+					parent.frames["toolbar"].location.href = context + '/ViewStructureToolToolBar.action?title=' + title + '&toolbarKey=' + toolbarKey + '&' + arguments;
+					
+					if(unrefreshedNodeId > 0)
+					{
+						parent.frames["menu"].refreshNode(unrefreshedNodeId, changeTypeId, newNodeId);
+					}
+				}
+		    }
+		}
+				
 	-->
 	</script>
 	
