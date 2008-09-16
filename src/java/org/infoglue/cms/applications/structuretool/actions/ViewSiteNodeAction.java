@@ -439,6 +439,47 @@ public class ViewSiteNodeAction extends InfoGlueAbstractAction
 		return result;
     }
     
+    public String doRefreshAndRedirect() throws Exception
+    {
+    	String result = "successRefreshAndRedirect";
+    	
+        Database db = CastorDatabaseService.getDatabase();
+		
+		beginTransaction(db);
+
+		try
+		{
+			if(getSiteNodeId() != null)
+			{	
+	        	this.initialize(getSiteNodeId(), db);
+
+	            this.initializeSiteNodeCover(getSiteNodeId(), db);
+	            
+            	result = "successRefreshAndRedirect";
+			}
+			else
+			{
+				result = "blank";
+			}
+	        
+	        commitTransaction(db);
+	    }
+		catch(ConstraintException ce)
+		{
+			logger.info("An error occurred so we should not complete the transaction:" + ce, ce);
+			rollbackTransaction(db);
+			throw ce;
+		}
+		catch(Exception e)
+		{
+			logger.error("An error occurred so we should not complete the transaction:" + e, e);
+			rollbackTransaction(db);
+			throw new SystemException(e.getMessage());
+		}
+
+		return result;
+    }
+
     public String doChangeState() throws Exception
     {
     	logger.info("Gonna change state with comment:" + this.siteNodeVersionVO.getVersionComment());

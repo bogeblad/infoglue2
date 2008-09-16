@@ -80,8 +80,9 @@ public class CreateSiteNodeAction extends InfoGlueAbstractAction
    	private SiteNodeVO parentSiteNodeVO;
    	private String sortProperty = "name";
    	private String userSessionKey;
+   	private Integer changeTypeId = new Integer(0);
    	
-  	public CreateSiteNodeAction()
+	public CreateSiteNodeAction()
 	{
 		this(new SiteNodeVO());
 	}
@@ -305,6 +306,11 @@ public class CreateSiteNodeAction extends InfoGlueAbstractAction
             commitTransaction(db);
 
             addActionLink(userSessionKey, new LinkBean("newPageUrl", "Direkt till sidan du skapade","Klicka här om du vill komma direkt till sidan du just startat.", "Klicka här om du vill komma direkt till sidan du just startat.", getDecoratedPageUrl(newSiteNodeVO.getId()), false, ""));
+            setActionExtraData(userSessionKey, "refreshToolbarAndMenu", "" + true);
+            setActionExtraData(userSessionKey, "repositoryId", "" + newSiteNodeVO.getRepositoryId());
+            setActionExtraData(userSessionKey, "siteNodeId", "" + newSiteNodeVO.getId());
+            setActionExtraData(userSessionKey, "unrefreshedSiteNodeId", "" + parentSiteNodeId);
+            setActionExtraData(userSessionKey, "changeTypeId", "" + this.changeTypeId);
         }
         catch(Exception e)
         {
@@ -420,5 +426,15 @@ public class CreateSiteNodeAction extends InfoGlueAbstractAction
 	public void setOriginalAddress(String originalAddress)
 	{
 		this.originalAddress = originalAddress;
+	}
+	
+  	public Integer getChangeTypeId()
+	{
+		return changeTypeId;
+	}
+
+	public void setChangeTypeId(Integer changeTypeId)
+	{
+		this.changeTypeId = changeTypeId;
 	}
 }
