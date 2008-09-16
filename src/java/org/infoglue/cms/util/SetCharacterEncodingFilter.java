@@ -102,12 +102,15 @@ public class SetCharacterEncodingFilter implements Filter
 	                if(endIndex != -1)
 	                	languageId = referer.substring(startIndex + 12, endIndex);
 		            
-	                LanguageVO languageVO = LanguageController.getController().getLanguageVOWithId(new Integer(languageId));
-
-		            if(logger.isInfoEnabled())
-		            	logger.info("encoding decorated:" + languageVO.getCharset());
-
-		            request.setCharacterEncoding(languageVO.getCharset());
+	                if(languageId != null && !languageId.equals(""))
+	                {
+		                LanguageVO languageVO = LanguageController.getController().getLanguageVOWithId(new Integer(languageId));
+	
+			            if(logger.isInfoEnabled())
+			            	logger.info("encoding decorated:" + languageVO.getCharset());
+	
+			            request.setCharacterEncoding(languageVO.getCharset());
+	                }
 	            }
             }
             catch(Exception e)
