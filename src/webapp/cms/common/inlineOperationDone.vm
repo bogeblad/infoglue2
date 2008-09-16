@@ -28,7 +28,49 @@
 		#footerToolbar($footerButtons)
 			
 	</div>
-	
+
+	#set($refreshToolbarAndMenu = $this.getActionExtraData("refreshToolbarAndMenu"))
+	#if($refreshToolbarAndMenu == "true")
+		<script type="text/javascript">
+		<!--
+			$(document).ready(function(){
+				
+				try 
+				{ 
+					#set($repositoryId = $this.getActionExtraData("repositoryId"))
+					#set($newSiteNodeId = $this.getActionExtraData("siteNodeId"))
+					#set($unrefreshedSiteNodeId = $this.getActionExtraData("unrefreshedSiteNodeId"))
+					#set($changeTypeId = $this.getActionExtraData("changeTypeId"))
+		
+					var agt=navigator.userAgent.toLowerCase();
+			   	    if(agt.indexOf("safari")!=-1)
+			   	    {
+			   	   	    if(parent && parent.parent && parent.parent.frames[2] && parent.parent.frames[2].refreshStructureToolBar) 
+						{
+			   	   	  		var position = parent.parent.frames[2].document.location.href.indexOf("siteNodeId=${newSiteNodeId}&");
+			   	   	  		if(position == -1)
+								parent.parent.frames[2].refreshStructureToolBarAndMenu('$this.getCMSBaseUrl()', 'tool.structuretool.siteNodeComponentsHeader', 'tool.structuretool.siteNodeComponentsHeader', 'siteNodeId=$newSiteNodeId&repositoryId=$repositoryId&isBranch=true', '$unrefreshedSiteNodeId', '$changeTypeId', '$newSiteNodeId'); 
+						}
+			   		}
+			   	    else	
+			   	    {
+				   	    if(parent && parent.parent && parent.parent.frames["toolbar"] && parent.parent.frames["toolbar"].refreshStructureToolBar)
+						{
+							var position = parent.parent.frames["toolbar"].document.location.href.indexOf("siteNodeId=${newSiteNodeId}&");
+							if(position == -1) 
+							{
+								parent.parent.frames["toolbar"].refreshStructureToolBarAndMenu('$this.getCMSBaseUrl()', 'tool.structuretool.siteNodeComponentsHeader', 'tool.structuretool.siteNodeComponentsHeader', 'siteNodeId=$newSiteNodeId&repositoryId=$repositoryId&isBranch=true', '$unrefreshedSiteNodeId', '$changeTypeId', '$newSiteNodeId'); 
+							}
+						}
+					}
+				} 
+				catch(e) {alert("e:" + e);}
+
+			});
+	 	-->
+		</script>	
+	#end
+		
 	#endCommonToolV3()
 
 #end
