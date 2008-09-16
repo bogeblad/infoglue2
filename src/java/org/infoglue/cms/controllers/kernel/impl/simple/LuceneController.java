@@ -26,7 +26,6 @@ package org.infoglue.cms.controllers.kernel.impl.simple;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.StringReader;
 import java.io.Writer;
@@ -34,13 +33,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
-import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.DateTools;
 import org.apache.lucene.document.Document;
@@ -48,23 +45,15 @@ import org.apache.lucene.document.Field;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.Term;
-import org.apache.lucene.index.TermEnum;
-import org.apache.lucene.queryParser.QueryParser;
-import org.apache.lucene.search.Hits;
-import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.search.Query;
-import org.apache.lucene.search.Searcher;
 import org.apache.poi.hwpf.HWPFDocument;
 import org.apache.poi.hwpf.extractor.WordExtractor;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
-import org.apache.tools.ant.taskdefs.Sleep;
 import org.exolab.castor.jdo.Database;
 import org.exolab.castor.jdo.OQLQuery;
 import org.exolab.castor.jdo.QueryResults;
 import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.content.ContentVersion;
 import org.infoglue.cms.entities.content.ContentVersionVO;
-import org.infoglue.cms.entities.content.DigitalAsset;
 import org.infoglue.cms.entities.content.DigitalAssetVO;
 import org.infoglue.cms.entities.content.impl.simple.ContentImpl;
 import org.infoglue.cms.entities.content.impl.simple.ContentVersionImpl;
@@ -72,15 +61,11 @@ import org.infoglue.cms.entities.content.impl.simple.DigitalAssetImpl;
 import org.infoglue.cms.entities.content.impl.simple.MediumDigitalAssetImpl;
 import org.infoglue.cms.entities.content.impl.simple.SmallestContentVersionImpl;
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
-import org.infoglue.cms.entities.kernel.IBaseEntity;
-import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
 import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.NotificationListener;
 import org.infoglue.cms.util.NotificationMessage;
-import org.infoglue.cms.util.RemoteCacheUpdater;
-import org.infoglue.deliver.util.Timer;
 import org.pdfbox.pdmodel.PDDocument;
 import org.pdfbox.util.PDFTextStripper;
 
@@ -367,8 +352,6 @@ public class LuceneController extends BaseController implements NotificationList
 		// get tokenized and indexed.
 		doc.add(new Field("contents", new StringReader(digitalAssetVO.getAssetKey() + " " + digitalAssetVO.getAssetFileName() + " " + digitalAssetVO.getAssetContentType())));
 
-		Timer t = new Timer();
-		
 		String url = DigitalAssetController.getDigitalAssetUrl(digitalAssetVO.getId());
 		if(logger.isInfoEnabled())
 			logger.info("url if we should index file:" + url);
@@ -376,10 +359,8 @@ public class LuceneController extends BaseController implements NotificationList
 		if(logger.isInfoEnabled())
 			logger.info("filePath if we should index file:" + filePath);
 		String text = extractTextToIndex(digitalAssetVO, new File(filePath));
-		t.printElapsedTime("Method extractTextToIndex took");
-
+	
 		doc.add(new Field("contents", new StringReader(text)));
-		t.printElapsedTime("Adding text field took");
 		
 		return doc;
 	}
