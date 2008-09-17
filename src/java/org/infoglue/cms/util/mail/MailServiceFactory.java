@@ -78,7 +78,17 @@ public class MailServiceFactory
 	private static Session initializeSession() throws Exception 
 	{
 		Properties properties = CmsPropertyHandler.getProperties();
-		
+		if(CmsPropertyHandler.getMailSmtpHost() != null)
+			properties.setProperty("mail.smtp.host", CmsPropertyHandler.getMailSmtpHost());
+		if(CmsPropertyHandler.getMailSmtpPort() != null)
+			properties.setProperty("mail.smtp.port", CmsPropertyHandler.getMailSmtpPort());
+		if(CmsPropertyHandler.getMailSmtpAuth() != null)
+			properties.setProperty("mail.smtp.auth", CmsPropertyHandler.getMailSmtpAuth());
+		if(CmsPropertyHandler.getMailSmtpUser() != null)
+			properties.setProperty("mail.smtp.user", CmsPropertyHandler.getMailSmtpUser());
+		if(CmsPropertyHandler.getMailSmtpPassword() != null)
+			properties.setProperty("mail.smtp.password", CmsPropertyHandler.getMailSmtpPassword());
+
 		Properties props = new Properties();
 
 	  	boolean needsAuthentication = false;
