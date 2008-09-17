@@ -37,6 +37,7 @@ import org.exolab.castor.jdo.QueryResults;
 import org.infoglue.cms.entities.content.Content;
 import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.content.ContentVersion;
+import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.entities.management.AvailableServiceBinding;
 import org.infoglue.cms.entities.management.AvailableServiceBindingVO;
@@ -1081,6 +1082,8 @@ public class SiteNodeVersionController extends BaseController
 				            if(relatedContentVersion != null && allowedContent)
 			                {
 			                    contentVersionVOList.add(relatedContentVersion.getValueObject());
+			                    logger.info("relatedContentVersion:" + relatedContentVersion.getOwningContent().getName());
+			                    ContentVersionController.getContentVersionController().getContentAndAffectedItemsRecursive((Content)relatedContentVersion.getOwningContent(), ContentVersionVO.WORKING_STATE, checkedSiteNodes, checkedContents, db, siteNodeVersionVOList, contentVersionVOList, true, false, 3, 0);
 			                }
 		                }
 	                }
