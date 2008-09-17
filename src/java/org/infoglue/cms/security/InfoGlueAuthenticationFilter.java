@@ -319,6 +319,7 @@ public class InfoGlueAuthenticationFilter implements Filter
 					    }
 					    else
 					    {
+					    	logger.info("Added encryptedName:" + encryptedName + " = " + user.getName() + " to deliver context");
 					    	servletContext.setAttribute(encryptedName, user.getName());
 					    }
 					   

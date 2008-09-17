@@ -27,6 +27,7 @@ import java.io.ByteArrayInputStream;
 import java.net.URLEncoder;
 import java.security.Principal;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -1456,7 +1457,17 @@ public class ViewPageAction extends InfoGlueAbstractAction
 	    {
 	    	HttpHelper httpHelper = new HttpHelper();
 			String encodedUserNameCookie = httpHelper.getCookie(this.getRequest(), "iguserid");
-			//System.out.println("encodedUserNameCookie:" + encodedUserNameCookie);
+			logger.info("encodedUserNameCookie:" + encodedUserNameCookie);
+			if(logger.isInfoEnabled())
+			{
+				Enumeration attributeNames = ActionContext.getServletContext().getAttributeNames();
+				while(attributeNames.hasMoreElements())
+				{
+					String attribute = (String)attributeNames.nextElement();
+					Object value = ActionContext.getServletContext().getAttribute(attribute);
+					logger.info("" + attribute + " = " + value);
+				}
+			}
 			if(encodedUserNameCookie != null && !encodedUserNameCookie.equals(""))
 			{
 				String servletContextUserName = (String)ActionContext.getServletContext().getAttribute(encodedUserNameCookie);
