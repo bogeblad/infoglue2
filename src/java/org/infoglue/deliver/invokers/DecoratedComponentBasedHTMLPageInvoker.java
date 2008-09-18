@@ -1025,6 +1025,12 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 									assignUrl = componentEditorUrl + "ViewSiteNodePageComponents!showContentTreeForMultipleAssetBinding.action?repositoryId=" + repositoryId + "&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&propertyName=" + componentProperty.getName() + allowedContentTypeIdParameters + "&showSimple=" + getTemplateController().getDeliveryContext().getShowSimple();
 								else
 									assignUrl = componentEditorUrl + "ViewSiteNodePageComponents!showContentTreeForMultipleBinding.action?repositoryId=" + repositoryId + "&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&propertyName=" + componentProperty.getName() + allowedContentTypeIdParameters + "&showSimple=" + getTemplateController().getDeliveryContext().getShowSimple();
+							
+								if(componentProperty.getBindings().size() > 0)
+								{
+									ComponentBinding firstBinding = componentProperty.getBindings().get(0);
+									title = templateController.getContentPath(firstBinding.getEntityId(), true, true);
+								}
 							}
 							else
 							{
@@ -1060,7 +1066,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 							if(componentProperty.getBindings().size() > 0)
 							{
 								ComponentBinding firstBinding = componentProperty.getBindings().get(0);
-								title = templateController.getContentPath(firstBinding.getEntityId(), true, true);
+								title = templateController.getPagePath(firstBinding.getEntityId(), languageId); // .getContentPath(firstBinding.getEntityId(), true, true);
 							}
 						}
 						else if(componentProperty.getEntityClass().equalsIgnoreCase("Category"))
