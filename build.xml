@@ -127,13 +127,27 @@
 		<delete dir="${build}" quiet="true"/>
 	</target>
 
-    <!-- =================================================================== -->
-    <!--Fetches the latest code from cvs before building it                  -->
-    <!-- =================================================================== -->
-    <target name="fetchInfoGlue">
-        <cvs command="update -P -d" cvsRoot=":pserver:anonymous@www.infoglue.org:2401/home/cvsroot"/>
-    </target>    
+    	<!-- =================================================================== -->
+    	<!--Fetches the latest code from cvs before building it                  -->
+    	<!-- =================================================================== -->
+    	<target name="fetchInfoGlue">
+        	<cvs command="update -P -d" cvsRoot=":pserver:anonymous@www.infoglue.org:2401/home/cvsroot"/>
+    	</target>    
 
+    	<!-- =================================================================== -->
+        <!--Fetches the latest code up until a date from cvs before building it  -->
+	<!-- =================================================================== -->
+	<target name="fetchInfoGlueOnDate">
+		<cvs command="update -P -d -D '${checkoutDate}'" cvsRoot=":pserver:anonymous@www.infoglue.org:2401/home/cvsroot"/>
+	</target>    
+			    
+    	<!-- =================================================================== -->
+	<!--Fetches the latest code up until a date from cvs before building it  -->
+	<!-- =================================================================== -->
+	<target name="fetchInfoGlueOnTag">
+		<cvs command="update -P -r '${tagName}'" cvsRoot=":pserver:anonymous@www.infoglue.org:2401/home/cvsroot"/>
+	</target>
+			    
 	<!--
 	* Compiles Java source files and copies resources to the build output directory
 	* that need to be on the classpath.  Also copies the Velocity templates required by
