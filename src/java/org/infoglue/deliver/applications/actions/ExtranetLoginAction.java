@@ -304,12 +304,12 @@ public final class ExtranetLoginAction extends InfoGlueAbstractAction
 	        catch(Exception e) {}
 		}
 	
-		Cookie cookie_iguserid = new Cookie("iguserid", encryptedName);
+		Cookie cookie_iguserid = new Cookie("iguserid", encryptedName.replaceAll("=", "IGEQ"));
 		cookie_iguserid.setPath("/");
 		cookie_iguserid.setMaxAge(cmsCookieTimeout); 
 	    this.getResponse().addCookie(cookie_iguserid);
 	    
-	    Cookie cookie_igpassword = new Cookie ("igpassword", encryptedPassword);
+	    Cookie cookie_igpassword = new Cookie ("igpassword", encryptedPassword.replaceAll("=", "IGEQ"));
 	    cookie_igpassword.setPath("/");
 	    cookie_igpassword.setMaxAge(cmsCookieTimeout);
 	    this.getResponse().addCookie(cookie_igpassword);

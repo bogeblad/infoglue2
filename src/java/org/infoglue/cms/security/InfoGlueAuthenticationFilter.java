@@ -234,6 +234,9 @@ public class InfoGlueAuthenticationFilter implements Filter
 			if(!isAdministrator)
 			{
 				String encodedUserNameCookie = httpHelper.getCookie(httpServletRequest, "iguserid");
+				logger.info("encodedUserNameCookie:" + encodedUserNameCookie);
+				encodedUserNameCookie = encodedUserNameCookie.replaceAll("IGEQ", "=");
+				logger.info("encodedUserNameCookie2:" + encodedUserNameCookie);
 				if(encodedUserNameCookie != null && !encodedUserNameCookie.equals(""))
 				{
 					String servletContextUserName = (String)filterConfig.getServletContext().getAttribute(encodedUserNameCookie);
@@ -334,12 +337,12 @@ public class InfoGlueAuthenticationFilter implements Filter
 					        catch(Exception e) {}
 						}
 					
-						Cookie cookie_iguserid = new Cookie("iguserid", encryptedName);
+						Cookie cookie_iguserid = new Cookie("iguserid", encryptedName.replaceAll("=", "IGEQ"));
 						cookie_iguserid.setPath("/");
 						cookie_iguserid.setMaxAge(cmsCookieTimeout); 
 						httpServletResponse.addCookie(cookie_iguserid);
 					    
-					    Cookie cookie_igpassword = new Cookie ("igpassword", encryptedPassword);
+					    Cookie cookie_igpassword = new Cookie ("igpassword", encryptedPassword.replaceAll("=", "IGEQ"));
 					    cookie_igpassword.setPath("/");
 					    cookie_igpassword.setMaxAge(cmsCookieTimeout);
 					    httpServletResponse.addCookie(cookie_igpassword);
