@@ -25,6 +25,9 @@ package org.infoglue.cms.treeservice.ss;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.infoglue.cms.controllers.kernel.impl.simple.AccessRightController;
 import org.infoglue.cms.exception.SystemException;
@@ -51,9 +54,9 @@ public class ManagementToolNodeSupplier extends BaseNodeSupplier
 		this.infogluePrincipal = infogluePrincipal;
 		
 		if (repositoryId.intValue() == 0)
-			setRootNode(new ManagementNodeImpl(repositoryId,"root", "ViewManagementToolStartPage.action"));
+			setRootNode(new ManagementNodeImpl(repositoryId,"root", "ViewManagementToolStartPage.action", Collections.EMPTY_MAP));
 		else
-			setRootNode(new ManagementNodeImpl(repositoryId,"root", "ViewRepository.action?repositoryId=" + repositoryId));
+			setRootNode(new ManagementNodeImpl(repositoryId,"root", "ViewRepository.action?repositoryId=" + repositoryId, Collections.EMPTY_MAP));
 	}
 	
 	/**
@@ -79,23 +82,61 @@ public class ManagementToolNodeSupplier extends BaseNodeSupplier
 				
 		if (parentNode.intValue() == 0)	
 		{	
+			Map parameters = new HashMap();
+			//parameters.put("extraMarkup", "style='padding-top: 10px; border-top: 1px solid #999;'");
+
+			parameters.put("extraMarkup", "Basic");
+
 			if(hasAccessTo("ManagementToolMenu.Repositories", infogluePrincipal, true))
-				r.add(new ManagementNodeImpl(cnt++, "Repositories", "ViewListRepository.action?title=Repositories"));
+				r.add(new ManagementNodeImpl(cnt++, "Repositories", "ViewListRepository.action?title=Repositories", parameters));
+
+			if(hasAccessTo("ManagementToolMenu.Languages", infogluePrincipal, true))
+				r.add(new ManagementNodeImpl(cnt++, "Languages", "ViewListLanguage.action?title=Languages"));
+
+			if(hasAccessTo("ManagementToolMenu.Categories", infogluePrincipal, true))
+				r.add(new ManagementNodeImpl(cnt++, "Categories", "CategoryManagement!list.action?title=ContentCategories"));
+			
+			if(hasAccessTo("ManagementToolMenu.ContentTypeDefinitions", infogluePrincipal, true))
+				r.add(new ManagementNodeImpl(cnt++, "ContentTypeDefinitions", "ViewListContentTypeDefinition.action?title=ContentTypeDefinitions"));
+
+			if(hasAccessTo("ManagementToolMenu.Workflows", infogluePrincipal, true))
+				r.add(new ManagementNodeImpl(cnt++, "Workflows", "ViewListWorkflowDefinition.action"));
+			
+			if(hasAccessTo("ManagementToolMenu.Portlets", infogluePrincipal, true))
+				r.add(new ManagementNodeImpl(cnt++, "Portlets", "ViewListPortlet.action"));
+			
+			if(hasAccessTo("ManagementToolMenu.Redirects", infogluePrincipal, true))
+				r.add(new ManagementNodeImpl(cnt++, "Redirects", "ViewListRedirect.action"));
+
+			parameters.put("extraMarkup", "Authorization");
 
 			if(hasAccessTo("ManagementToolMenu.SystemUsers", infogluePrincipal, true))
-				r.add(new ManagementNodeImpl(cnt++, "SystemUsers", "ViewListSystemUser.action?title=SystemUsers"));
+				r.add(new ManagementNodeImpl(cnt++, "SystemUsers", "ViewListSystemUser.action?title=SystemUsers", parameters));
 			
 			if(hasAccessTo("ManagementToolMenu.Roles", infogluePrincipal, true))
 				r.add(new ManagementNodeImpl(cnt++, "Roles", "ViewListRole.action?title=Roles"));
 			
 			if(hasAccessTo("ManagementToolMenu.Groups", infogluePrincipal, true))
 				r.add(new ManagementNodeImpl(cnt++, "Groups", "ViewListGroup.action?title=Groups"));
+						
+			parameters.put("extraMarkup", "Settings and tools");
+
+			if(hasAccessTo("ManagementToolMenu.ApplicationSettings", infogluePrincipal, true))
+				r.add(new ManagementNodeImpl(cnt++, "Application settings", "ViewListServerNode.action", parameters));
+						
+			if(hasAccessTo("ManagementToolMenu.Diagnostics", infogluePrincipal, true))
+				r.add(new ManagementNodeImpl(cnt++, "Diagnostics and status", "ViewDiagnosticCenter.action"));
 			
-			if(hasAccessTo("ManagementToolMenu.Languages", infogluePrincipal, true))
-				r.add(new ManagementNodeImpl(cnt++, "Languages", "ViewListLanguage.action?title=Languages"));
+			if(hasAccessTo("ManagementToolMenu.SystemTools", infogluePrincipal, true))
+				r.add(new ManagementNodeImpl(cnt++, "System tools", "ViewSystemTools.action"));
+
+			if(hasAccessTo("ManagementToolMenu.MessageCenter", infogluePrincipal, true))
+				r.add(new ManagementNodeImpl(cnt++, "Message center", "ViewMessageCenter.action"));
+
+			parameters.put("extraMarkup", "Extra");
 
 			if(hasAccessTo("ManagementToolMenu.InterceptionPoints", infogluePrincipal, true))
-				r.add(new ManagementNodeImpl(cnt++, "InterceptionPoints", "ViewListInterceptionPoint.action?title=InterceptionPoints"));
+				r.add(new ManagementNodeImpl(cnt++, "InterceptionPoints", "ViewListInterceptionPoint.action?title=InterceptionPoints", parameters));
 
 			if(hasAccessTo("ManagementToolMenu.Interceptors", infogluePrincipal, true))
 				r.add(new ManagementNodeImpl(cnt++, "Interceptors", "ViewListInterceptor.action?title=Interceptors"));
@@ -108,40 +149,12 @@ public class ManagementToolNodeSupplier extends BaseNodeSupplier
 			
 			if(hasAccessTo("ManagementToolMenu.SiteNodeTypeDefinitions", infogluePrincipal, true))
 				r.add(new ManagementNodeImpl(cnt++, "SiteNodeTypeDefinitions", "ViewListSiteNodeTypeDefinition.action?title=SiteNodeTypeDefinitions"));
-			
-			if(hasAccessTo("ManagementToolMenu.Categories", infogluePrincipal, true))
-				r.add(new ManagementNodeImpl(cnt++, "Categories", "CategoryManagement!list.action?title=ContentCategories"));
-			
-			if(hasAccessTo("ManagementToolMenu.ContentTypeDefinitions", infogluePrincipal, true))
-				r.add(new ManagementNodeImpl(cnt++, "ContentTypeDefinitions", "ViewListContentTypeDefinition.action?title=ContentTypeDefinitions"));
-			
-			//if(hasAccessTo("ManagementToolMenu.Languages", infogluePrincipal, true))
+						
 			if(hasAccessTo("ManagementToolMenu.TransactionHistory", infogluePrincipal, true))
 				r.add(new ManagementNodeImpl(cnt++, "TransactionHistory", "ViewListTransactionHistory.action?title=TransactionHistory"));
 			
 			if(hasAccessTo("ManagementToolMenu.Up2Date", infogluePrincipal, true))
 				r.add(new ManagementNodeImpl(cnt++, "Up2Date", "ViewListUp2Date.action?title=InfoGlue Up2Date"));
-			
-			if(hasAccessTo("ManagementToolMenu.Workflows", infogluePrincipal, true))
-				r.add(new ManagementNodeImpl(cnt++, "Workflows", "ViewListWorkflowDefinition.action"));
-			
-			if(hasAccessTo("ManagementToolMenu.Portlets", infogluePrincipal, true))
-				r.add(new ManagementNodeImpl(cnt++, "Portlets", "ViewListPortlet.action"));
-			
-			if(hasAccessTo("ManagementToolMenu.Redirects", infogluePrincipal, true))
-				r.add(new ManagementNodeImpl(cnt++, "Redirects", "ViewListRedirect.action"));
-			
-			if(hasAccessTo("ManagementToolMenu.ApplicationSettings", infogluePrincipal, true))
-				r.add(new ManagementNodeImpl(cnt++, "Application settings", "ViewListServerNode.action"));
-			
-			if(hasAccessTo("ManagementToolMenu.MessageCenter", infogluePrincipal, true))
-				r.add(new ManagementNodeImpl(cnt++, "Message center", "ViewMessageCenter.action"));
-			
-			if(hasAccessTo("ManagementToolMenu.Diagnostics", infogluePrincipal, true))
-				r.add(new ManagementNodeImpl(cnt++, "Diagnostics and status", "ViewDiagnosticCenter.action"));
-			
-			if(hasAccessTo("ManagementToolMenu.SystemTools", infogluePrincipal, true))
-				r.add(new ManagementNodeImpl(cnt++, "System tools", "ViewSystemTools.action"));
 		}
 		/*else if(parentNode.intValue() > 100 || parentNode.intValue() < 0)
 		{

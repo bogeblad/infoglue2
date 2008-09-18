@@ -22,6 +22,12 @@
  */
 
 package org.infoglue.cms.treeservice.ss;
+
+import java.util.Collections;
+import java.util.Map;
+
+import org.apache.velocity.runtime.parser.node.SetExecutor;
+
 /**
  * @author ss
  *
@@ -30,16 +36,24 @@ public class ManagementNodeImpl extends com.frovi.ss.Tree.BaseNode
 {
 	// This is a test, rely heavy on base for now
 	
-	public ManagementNodeImpl(Integer id, String title, String action)
+	public ManagementNodeImpl(Integer id, String title, String action, Map extraData)
 	{
 		setId(id);
 		setTitle(title);
 		setAction(action);
 		setChildren(false);
+		getParameters().putAll(extraData);
 	}
-	public ManagementNodeImpl(int id, String title, String action)
+
+	
+	public ManagementNodeImpl(Integer id, String title, String action)
 	{
-		this(new Integer(id), title, action);
+		this(id, title, action, Collections.EMPTY_MAP);
+	}
+	
+	public ManagementNodeImpl(int id, String title, String action, Map extraData)
+	{
+		this(new Integer(id), title, action, extraData);
 	}
 	
 	private String action;
