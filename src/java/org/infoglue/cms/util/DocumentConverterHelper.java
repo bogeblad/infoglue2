@@ -43,6 +43,8 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.log4j.Logger;
 import org.infoglue.deliver.applications.databeans.ConvertedDocumentBean;
 import org.jdom.Document;
@@ -59,7 +61,7 @@ public class DocumentConverterHelper
 {
 	private final static Logger logger = Logger.getLogger(DocumentConverterHelper.class.getName());
 
-	public ConvertedDocumentBean convert(File aDocFile, String aTitle, String aMenuTextLength, List aCssList, String rewrite) 
+	public ConvertedDocumentBean convert(HttpServletRequest request, File aDocFile, String aTitle, String aMenuTextLength, List aCssList, String rewrite) 
 	{
 		ConvertedDocumentBean convertedDocument = new ConvertedDocumentBean();
 		int menuMaxLength						= 20;
@@ -105,7 +107,11 @@ public class DocumentConverterHelper
 				folderName 	= "" + (fileId / 1000);
 				digitalAssetPath	= digitalAssetPath + File.separator + folderName;
 			}
-						
+								
+			//----------------------------------------
+			// Add the name of the folder to the path
+			//----------------------------------------
+			
 			digitalAssetPath 		= digitalAssetPath + File.separator + fileName;
 			
 			logger.info("Directory to write files to: " + digitalAssetPath);			
@@ -186,6 +192,18 @@ public class DocumentConverterHelper
 			logger.info("Extracting URL:s to resources.");
 			
 			String digitalAssetUrl = CmsPropertyHandler.getDigitalAssetBaseUrl();
+			
+			//----------------------------------------------------------------
+			// Add the contextPath to the URL to avoid problems with niceURIs.
+			//-----------------------------------------------------------------
+			
+			String contextPath = request.getContextPath();
+			
+			digitalAssetUrl = contextPath + "/" + digitalAssetUrl;
+			
+			//--------------------------------
+			// Add the folder name to the URL
+			//--------------------------------
 			
 			if (!folderName.equals(""))
 			{

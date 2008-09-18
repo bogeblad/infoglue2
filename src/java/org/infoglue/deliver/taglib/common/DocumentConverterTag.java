@@ -53,7 +53,7 @@ public class DocumentConverterTag extends TemplateControllerTag
         {			
 			File docFile = createFileObject();
 			
-            setResultAttribute(this.getController().getDocumentTransformerHelper().convert(docFile, title, menuTextLength, cssList, rewrite));
+            setResultAttribute(this.getController().getDocumentTransformerHelper().convert(this.getController().getHttpServletRequest(), docFile, title, menuTextLength, cssList, rewrite));
         } 
 		catch (Exception e)
         {
