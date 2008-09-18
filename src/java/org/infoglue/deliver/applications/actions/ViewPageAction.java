@@ -1458,8 +1458,6 @@ public class ViewPageAction extends InfoGlueAbstractAction
 	    	HttpHelper httpHelper = new HttpHelper();
 			String encodedUserNameCookie = httpHelper.getCookie(this.getRequest(), "iguserid");
 			logger.info("encodedUserNameCookie:" + encodedUserNameCookie);
-			encodedUserNameCookie = encodedUserNameCookie.replaceAll("IGEQ", "=");
-			logger.info("encodedUserNameCookie2:" + encodedUserNameCookie);
 			/*
 			if(logger.isInfoEnabled())
 			{
@@ -1474,6 +1472,8 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			*/
 			if(encodedUserNameCookie != null && !encodedUserNameCookie.equals(""))
 			{
+				encodedUserNameCookie = encodedUserNameCookie.replaceAll("IGEQ", "=");
+				logger.info("encodedUserNameCookie2:" + encodedUserNameCookie);
 				String servletContextUserName = (String)ActionContext.getServletContext().getAttribute(encodedUserNameCookie);
 				logger.info("servletContextUserName:" + servletContextUserName);
 				if(servletContextUserName != null && !servletContextUserName.equals(""))

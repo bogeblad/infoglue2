@@ -235,10 +235,10 @@ public class InfoGlueAuthenticationFilter implements Filter
 			{
 				String encodedUserNameCookie = httpHelper.getCookie(httpServletRequest, "iguserid");
 				logger.info("encodedUserNameCookie:" + encodedUserNameCookie);
-				encodedUserNameCookie = encodedUserNameCookie.replaceAll("IGEQ", "=");
-				logger.info("encodedUserNameCookie2:" + encodedUserNameCookie);
 				if(encodedUserNameCookie != null && !encodedUserNameCookie.equals(""))
 				{
+					encodedUserNameCookie = encodedUserNameCookie.replaceAll("IGEQ", "=");
+					logger.info("encodedUserNameCookie2:" + encodedUserNameCookie);
 					String servletContextUserName = (String)filterConfig.getServletContext().getAttribute(encodedUserNameCookie);
 					logger.info("servletContextUserName:" + servletContextUserName);
 					if(servletContextUserName != null && !servletContextUserName.equals(""))
