@@ -107,6 +107,7 @@ import org.infoglue.cms.util.DesEncryptionHelper;
 import org.infoglue.cms.util.DocumentConverterHelper;
 import org.infoglue.cms.util.dom.DOMBuilder;
 import org.infoglue.cms.util.sorters.SiteNodeComparator;
+import org.infoglue.deliver.applications.databeans.ComponentBinding;
 import org.infoglue.deliver.applications.databeans.ComponentProperty;
 import org.infoglue.deliver.applications.databeans.DatabaseWrapper;
 import org.infoglue.deliver.applications.databeans.DeliveryContext;
@@ -143,6 +144,7 @@ import com.opensymphony.module.propertyset.PropertySetManager;
 public class BasicTemplateController implements TemplateController
 {
 	private final static DOMBuilder domBuilder = new DOMBuilder();
+	
     private final static Logger logger = Logger.getLogger(BasicTemplateController.class.getName());
 
 	private URLComposer urlComposer = null; 
@@ -6899,7 +6901,22 @@ public class BasicTemplateController implements TemplateController
 					}
 					else
 					{
-						assignUrl = componentEditorUrl + "ViewSiteNodePageComponents!showContentTree.action?repositoryId=" + repositoryId + "&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&propertyName=" + property.getName() + allowedContentTypeIdParameters + "&showSimple=" + getDeliveryContext().getShowSimple() + "&showDecorated=" + showDecorated + "&isAssetBinding=" + property.getIsAssetBinding();
+						if(property.getIsAssetBinding())
+						{
+							String assignedParameters = "";
+							Iterator<ComponentBinding> bindingsIterator = property.getBindings().iterator();
+							while(bindingsIterator.hasNext())
+							{
+								ComponentBinding componentBinding = bindingsIterator.next();
+								assignedParameters = "&assignedContentId=" + componentBinding.getEntityId() + "&assignedAssetKey=" + componentBinding.getAssetKey() + "&assignedPath=" + getVisualFormatter().encodeURI(property.getValue());
+							}
+							
+							assignUrl = componentEditorUrl + "ViewContentVersion!viewAssetsForComponentBinding.action?repositoryId=" + repositoryId + "&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&propertyName=" + property.getName() + allowedContentTypeIdParameters + "&showSimple=" + getDeliveryContext().getShowSimple() + "&showDecorated=" + showDecorated + assignedParameters;
+						}
+						else
+							assignUrl = componentEditorUrl + "ViewSiteNodePageComponents!showContentTree.action?repositoryId=" + repositoryId + "&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&propertyName=" + property.getName() + allowedContentTypeIdParameters + "&showSimple=" + getDeliveryContext().getShowSimple() + "&showDecorated=" + showDecorated;
+
+						//	assignUrl = componentEditorUrl + "ViewSiteNodePageComponents!showContentTree.action?repositoryId=" + repositoryId + "&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&propertyName=" + property.getName() + allowedContentTypeIdParameters + "&showSimple=" + getDeliveryContext().getShowSimple() + "&showDecorated=" + showDecorated + "&isAssetBinding=" + property.getIsAssetBinding();
 					}
 				}
 				else if(property.getEntityClass().equalsIgnoreCase("SiteNode"))
