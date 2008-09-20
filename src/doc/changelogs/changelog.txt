@@ -1,4 +1,30 @@
 -------------------------------------------------------------------------------------
+- InfoGlue 2.9.3 Final
+-------------------------------------------------------------------------------------
+
+Release notes
+---------------------------------------
+Version 2.9.3 is a bugfix and improvement release. We have included experimental optional lucene support
+for the internal search but most of all we have fixed a few important bugs.
+    
+Thanx for all reports and proposals for bugfixes.
+The InfoGlue Team
+
+
+Abbreviated Changelog from 2.9.2 Final 
+---------------------------------------
+- Added lucene as a internal content search engine - experimental so far and it must be enabled in application settings.
+- Fixed bug in structure tool which affected how non-html pages were not getting a toolbar.
+- Fixed bug with how tree is not refreshed after creation of new nodes. Also added so creation from edit on sight refreshes the tree.
+- Fixed bug in save and exit on content properties
+- Improved publishing so it finds more unpublished related content to a page than before. Before it only looked one relation away - it now looks a couple more.
+- Fixed a bug in default mail-service. It did not regard the properties in application settings at all times.
+- Fixed a bug in open office document generator with regards to how paths are created for the html documents.
+- Fixed bug with sso and cms and working if iguserid-cookie contained an equal-sign.
+- Added sectioning of menu in management tool so it's easier to overview.
+- Fixed asset binding functionality in AssignPropertyBindingTag
+
+-------------------------------------------------------------------------------------
 - InfoGlue 2.9.2 Final
 -------------------------------------------------------------------------------------
 
