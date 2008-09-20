@@ -22,7 +22,7 @@
 		if(selectedAssetElement)
 		{
 			selectedAssetElement.style.margin 	= "3px";
-			selectedAssetElement.style.border 	= "1px solid black;";
+			selectedAssetElement.style.border 	= "1px solid black";
 		}
 
 		contentId = aContentId;
