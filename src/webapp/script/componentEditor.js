@@ -1021,10 +1021,14 @@ function editInline(selectedRepositoryId, selectedContentId, selectedLanguageId,
 	*/
 		var $lastThis;
 		var processedIds = new Array();
+		var firstElement;
 		$(".attribute" + selectedContentId).each(function (i) {
-	    	if(processedIds["" + this.id] != "true")
+			if(processedIds["" + this.id] != "true")
 	    	{
 		    	var $this = $(this);
+		    	if(!firstElement)
+		    		firstElement = $(this);
+		    	
 		    	$lastThis = $this;
 		    	//alert("this:" + this.id);
 		    	var type = jQuery.trim($this.attr("class"));
@@ -1043,22 +1047,22 @@ function editInline(selectedRepositoryId, selectedContentId, selectedLanguageId,
 					var element = $(this).get(0);
 		
 					var totalWidth = $(this).parent().width();
-					//alert("width for " + $(this).get(0).id + " - " + totalWidth);
-					//alert("width for " + $(this).width());
-					//alert("width for " + $(this).parent().get(0).id + " - " + totalWidth);
-					//alert("width for " + $(this).parent().width());
-					//alert("width for " + $(this).width());
-					//alert("totalWidth " + totalWidth);
 					
 					var totalHeight = 100;
 					$("#attribute" + selectedContentId + attributeName + " > *").each(function(i){
-						totalHeight = totalHeight + getElementHeight( $(this).get(0) );
+						totalHeight = totalHeight + $(this).outerHeight();
 					});
 					totalHeight = totalHeight * 1.3;
+					
+					var windowHeight = $(window).height();
+					
 					if(totalHeight < 300)
 						totalHeight = 300;
-					//alert("totalHeight: " + totalHeight);
-					
+					if(windowHeight < totalHeight + 150)
+						totalHeight = windowHeight - 150;
+					if(totalHeight > 800)
+						totalHeight = 800;
+
 					var span = $(this).get(0);
 						
 					var data = "contentId=" + selectedContentId + "&languageId=" + selectedLanguageId + "&attributeName=" + attributeName + "&deliverContext=" + currentContext;
@@ -1149,11 +1153,16 @@ function editInline(selectedRepositoryId, selectedContentId, selectedLanguageId,
 				}
 	
 		    	processedIds["" + this.id] = "true";
-			}
+			}		
 			//else
 			//	alert("Attribute:" + this.id + " was allready processed");		
 	    });
 				
+		var topOffset = firstElement.offset().top - 10;
+		//alert("topOffset:" + topOffset);
+		window.scroll(0, topOffset);
+		firstElement = null;
+
 		var saveLabel = "Save";
 		var cancelLabel = "Cancel";
 		if(userPrefferredLanguageCode == "sv")
