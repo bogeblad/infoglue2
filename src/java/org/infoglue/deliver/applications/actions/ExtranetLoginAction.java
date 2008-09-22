@@ -143,6 +143,16 @@ public final class ExtranetLoginAction extends InfoGlueAbstractAction
 	{
 		getHttpSession().invalidate();
 		
+		Cookie cookie_iguserid = new Cookie("iguserid", "none");
+		cookie_iguserid.setPath("/");
+		cookie_iguserid.setMaxAge(0); 
+		getResponse().addCookie(cookie_iguserid);
+	    
+	    Cookie cookie_igpassword = new Cookie ("igpassword", "none");
+	    cookie_igpassword.setPath("/");
+	    cookie_igpassword.setMaxAge(0);
+	    getResponse().addCookie(cookie_igpassword);
+
 		AuthenticationModule authenticationModule = AuthenticationModule.getAuthenticationModule(null, null);
 		boolean redirected = authenticationModule.logoutUser(getRequest(), getResponse());
 		

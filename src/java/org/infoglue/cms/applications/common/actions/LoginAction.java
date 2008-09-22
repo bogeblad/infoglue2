@@ -24,6 +24,7 @@
 package org.infoglue.cms.applications.common.actions;
 
 import javax.servlet.ServletContext;
+import javax.servlet.http.Cookie;
 
 import org.infoglue.cms.controllers.usecases.common.LoginUCC;
 import org.infoglue.cms.controllers.usecases.common.LoginUCCFactory;
@@ -118,6 +119,16 @@ public class LoginAction extends InfoGlueAbstractAction
 		String encodedUserNameCookie = httpHelper.getCookie(this.getRequest(), "iguserid");
 		if(encodedUserNameCookie != null)
 			ActionContext.getServletContext().removeAttribute(encodedUserNameCookie);
+		
+		Cookie cookie_iguserid = new Cookie("iguserid", "none");
+		cookie_iguserid.setPath("/");
+		cookie_iguserid.setMaxAge(0); 
+		getResponse().addCookie(cookie_iguserid);
+	    
+	    Cookie cookie_igpassword = new Cookie ("igpassword", "none");
+	    cookie_igpassword.setPath("/");
+	    cookie_igpassword.setMaxAge(0);
+	    getResponse().addCookie(cookie_igpassword);
 		
 		AuthenticationModule authenticationModule = AuthenticationModule.getAuthenticationModule(null, null);
 		boolean redirected = authenticationModule.logoutUser(getRequest(), getResponse());
