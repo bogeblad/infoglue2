@@ -66,7 +66,8 @@ public class InterceptionPointController extends BaseController
 	{
 		systemInterceptionPoints.put("ContentTool.Read", new InterceptionPointVO("ContentTool", "ContentTool.Read", "Gives a user access to the content tool", false));
 	    systemInterceptionPoints.put("ContentTool.ImportExport", new InterceptionPointVO("ContentTool", "ContentTool.ImportExport", "Intercepts exporting and importing of contents", false));
-		systemInterceptionPoints.put("ManagementTool.Read", new InterceptionPointVO("ManagementTool", "ManagementTool.Read", "Gives a user access to the management tool", false));
+	    systemInterceptionPoints.put("ContentTool.ShowMetaInfoFolders", new InterceptionPointVO("ContentTool", "ContentTool.ShowMetaInfoFolders", "Allows the user to see the meta info folders in the content tree", false));
+	    systemInterceptionPoints.put("ManagementTool.Read", new InterceptionPointVO("ManagementTool", "ManagementTool.Read", "Gives a user access to the management tool", false));
 	    systemInterceptionPoints.put("MyDesktopTool.Read", new InterceptionPointVO("MyDesktopTool", "MyDesktopTool.Read", "Gives the user access to the mydesktop tool", false));
 	    systemInterceptionPoints.put("PublishingTool.Read", new InterceptionPointVO("PublishingTool", "PublishingTool.Read", "Gives the user access to the publishing tool", false));
 	    systemInterceptionPoints.put("StructureTool.Read", new InterceptionPointVO("StructureTool", "StructureTool.Read", "Gives a user access to the structure tool", false));

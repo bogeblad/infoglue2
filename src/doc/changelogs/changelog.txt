@@ -23,6 +23,8 @@ Abbreviated Changelog from 2.9.2 Final
 - Fixed bug with sso and cms and working if iguserid-cookie contained an equal-sign.
 - Added sectioning of menu in management tool so it's easier to overview.
 - Fixed asset binding functionality in AssignPropertyBindingTag
+- Added new interception point which controls which ones sees meta info folders in the content tree.
+- Fixed so meta info contents get's moved to new repository if the site node it belongs to is moved.
 
 -------------------------------------------------------------------------------------
 - InfoGlue 2.9.2 Final

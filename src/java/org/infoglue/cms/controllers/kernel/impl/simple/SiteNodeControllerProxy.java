@@ -194,7 +194,7 @@ public class SiteNodeControllerProxy extends SiteNodeController
 
 		intercept(hashMap, "SiteNodeVersion.CreateSiteNode", infogluePrincipal);
 
-		moveSiteNode(siteNodeVO, newParentSiteNodeId);
+		moveSiteNode(siteNodeVO, newParentSiteNodeId, infogluePrincipal);
 	}   
 	
 

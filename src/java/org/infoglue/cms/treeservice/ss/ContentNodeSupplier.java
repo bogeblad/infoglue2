@@ -202,7 +202,19 @@ public class ContentNodeSupplier extends BaseNodeSupplier
 			if(useAccessRightsOnContentTreeString != null && useAccessRightsOnContentTreeString.equalsIgnoreCase("true"))
 				hasUserContentAccess = getHasUserContentAccess(this.infogluePrincipal, vo.getId());
 
-			if((!vo.getName().equals("Meta info folder") || this.infogluePrincipal.getIsAdministrator()) && hasUserContentAccess)
+			if(vo.getName().equals("Meta info folder"))
+			{
+				try
+				{
+					hasUserContentAccess = AccessRightController.getController().getIsPrincipalAuthorized(this.infogluePrincipal, "ContentTool.ShowMetaInfoFolders", false, true);
+				}
+				catch (Exception e) 
+				{
+					logger.warn("Problem getting access to meta info:" + e.getMessage(), e);
+				}
+			}
+			
+			if(hasUserContentAccess)
 			{
 				BaseNode node =  new ContentNodeImpl();
 				node.setId(vo.getId());

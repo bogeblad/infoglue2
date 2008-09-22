@@ -40,6 +40,7 @@ import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.entities.content.Content;
 import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.content.ContentVersionVO;
+import org.infoglue.cms.entities.content.impl.simple.ContentImpl;
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.entities.management.Language;
 import org.infoglue.cms.entities.management.LanguageVO;
@@ -60,6 +61,7 @@ import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
+import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
 import org.infoglue.cms.util.DateHelper;
 import org.infoglue.cms.util.XMLHelper;
@@ -653,7 +655,7 @@ public class SiteNodeController extends BaseController
 	 * This method moves a siteNode after first making a couple of controls that the move is valid.
 	 */
 	
-    public void moveSiteNode(SiteNodeVO siteNodeVO, Integer newParentSiteNodeId) throws ConstraintException, SystemException
+    public void moveSiteNode(SiteNodeVO siteNodeVO, Integer newParentSiteNodeId, InfoGluePrincipal principal) throws ConstraintException, SystemException
     {
         Database db = CastorDatabaseService.getDatabase();
         ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
@@ -705,6 +707,24 @@ public class SiteNodeController extends BaseController
             logger.info("Setting the new Parent siteNode:" + siteNode.getSiteNodeId() + " " + newParentSiteNode.getSiteNodeId());
             siteNode.setParentSiteNode((SiteNodeImpl)newParentSiteNode);
             
+            Integer metaInfoContentId = siteNode.getMetaInfoContentId();
+            //System.out.println("metaInfoContentId:" + metaInfoContentId);
+            if(metaInfoContentId != null)
+            {
+            	Content metaInfoContent = ContentController.getContentController().getContentWithId(metaInfoContentId, db);
+            	Content newParentContent = ContentController.getContentController().getContentWithPath(newParentSiteNode.getRepository().getId(), "Meta information", true, principal, db);
+            	if(metaInfoContent != null && newParentContent != null)
+            	{
+            		//System.out.println("Moving:" + metaInfoContent.getName() + " to " + newParentContent.getName());
+            		newParentContent.getChildren().add(metaInfoContent);
+            		Content previousParentContent = metaInfoContent.getParentContent();
+            		metaInfoContent.setParentContent((ContentImpl)newParentContent);
+            		previousParentContent.getChildren().remove(metaInfoContent);
+
+            		changeRepositoryRecursiveForContent(metaInfoContent, newParentContent.getRepository());
+				}
+            }
+            
             changeRepositoryRecursive(siteNode, newParentSiteNode.getRepository());
             //siteNode.setRepository(newParentSiteNode.getRepository());
 			newParentSiteNode.getChildSiteNodes().add(siteNode);
@@ -750,6 +770,25 @@ public class SiteNodeController extends BaseController
 	    }
 	}
 	
+	/**
+	 * Recursively sets the sitenodes repositoryId.
+	 * @param sitenode
+	 * @param newRepository
+	 */
+
+	private void changeRepositoryRecursiveForContent(Content content, Repository newRepository)
+	{
+	    if(content.getRepository().getId().intValue() != newRepository.getId().intValue())
+	    {
+	    	content.setRepository((RepositoryImpl)newRepository);
+		    Iterator childContentsIterator = content.getChildren().iterator();
+		    while(childContentsIterator.hasNext())
+		    {
+		    	Content childContent = (Content)childContentsIterator.next();
+		    	changeRepositoryRecursiveForContent(childContent, newRepository);
+		    }
+	    }
+	}
 	
 	/**
 	 * This is a method that gives the user back an newly initialized ValueObject for this entity that the controller
