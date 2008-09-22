@@ -1651,6 +1651,37 @@ public class ContentController extends BaseController
 		}
 		return content;
 	}
+	
+
+	public Content getContentWithPath(Integer repositoryId, String path, boolean forceFolders, InfoGluePrincipal creator, Database db) throws SystemException, Exception 
+	{
+		Content content = getRootContent(repositoryId, db);
+		final String paths[] = path.split("/");
+		if(path.equals(""))
+			return content;
+		
+		for(int i=0; i<paths.length; ++i) 
+		{
+			final String name = paths[i];
+			final Content childContent = getChildWithName(content.getContentId(), name, db);
+			if(childContent != null)
+				content = childContent;
+			else if(childContent == null && !forceFolders)
+				throw new SystemException("There exists no content with the path [" + path + "].");
+			else 
+			{
+			    logger.info("   CREATE " + name);
+				ContentVO contentVO = new ContentVO();
+				contentVO.setIsBranch(Boolean.TRUE);
+				contentVO.setCreatorName(creator.getName());
+				contentVO.setName(name);
+				Content newContent = create(db, content.getId(), null, repositoryId, contentVO);
+				if(newContent != null)
+					content = newContent;
+			}
+		}
+		return content;
+	}
 
 	/**
 	 * 
@@ -1675,6 +1706,30 @@ public class ContentController extends BaseController
 		oql.close();
 		
 		return contentVO;
+	}
+
+	/**
+	 * 
+	 */
+	private Content getChildWithName(Integer parentContentId, String name, Database db) throws Exception
+	{
+		Content content = null;
+		
+		OQLQuery oql = db.getOQLQuery("SELECT c FROM org.infoglue.cms.entities.content.impl.simple.MediumContentImpl c WHERE c.parentContentId = $1 AND c.name = $2");
+    	oql.bind(parentContentId);
+    	oql.bind(name);
+    	
+    	QueryResults results = oql.execute(Database.ReadOnly);
+		
+		if(results.hasMore()) 
+        {
+        	content = (MediumContentImpl)results.next();
+        }
+
+		results.close();
+		oql.close();
+		
+		return content;
 	}
 
 	/**
