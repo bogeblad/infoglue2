@@ -709,10 +709,10 @@ public class SiteNodeController extends BaseController
             
             Integer metaInfoContentId = siteNode.getMetaInfoContentId();
             //System.out.println("metaInfoContentId:" + metaInfoContentId);
-            if(metaInfoContentId != null)
+            if(!siteNode.getRepository().getId().equals(newParentSiteNode.getRepository().getId()) && metaInfoContentId != null)
             {
             	Content metaInfoContent = ContentController.getContentController().getContentWithId(metaInfoContentId, db);
-            	Content newParentContent = ContentController.getContentController().getContentWithPath(newParentSiteNode.getRepository().getId(), "Meta information", true, principal, db);
+            	Content newParentContent = ContentController.getContentController().getContentWithPath(newParentSiteNode.getRepository().getId(), "Meta info folder", true, principal, db);
             	if(metaInfoContent != null && newParentContent != null)
             	{
             		//System.out.println("Moving:" + metaInfoContent.getName() + " to " + newParentContent.getName());
@@ -721,7 +721,7 @@ public class SiteNodeController extends BaseController
             		metaInfoContent.setParentContent((ContentImpl)newParentContent);
             		previousParentContent.getChildren().remove(metaInfoContent);
 
-            		changeRepositoryRecursiveForContent(metaInfoContent, newParentContent.getRepository());
+            		changeRepositoryRecursiveForContent(metaInfoContent, newParentSiteNode.getRepository());
 				}
             }
             
@@ -778,15 +778,18 @@ public class SiteNodeController extends BaseController
 
 	private void changeRepositoryRecursiveForContent(Content content, Repository newRepository)
 	{
-	    if(content.getRepository().getId().intValue() != newRepository.getId().intValue())
+	    if(content.getRepository() == null || content.getRepository().getId().intValue() != newRepository.getId().intValue())
 	    {
 	    	content.setRepository((RepositoryImpl)newRepository);
-		    Iterator childContentsIterator = content.getChildren().iterator();
-		    while(childContentsIterator.hasNext())
-		    {
-		    	Content childContent = (Content)childContentsIterator.next();
-		    	changeRepositoryRecursiveForContent(childContent, newRepository);
-		    }
+	    	if(content.getChildren() != null)
+	    	{
+			    Iterator childContentsIterator = content.getChildren().iterator();
+			    while(childContentsIterator.hasNext())
+			    {
+			    	Content childContent = (Content)childContentsIterator.next();
+			    	changeRepositoryRecursiveForContent(childContent, newRepository);
+			    }
+			}
 	    }
 	}
 	

@@ -1663,7 +1663,7 @@ public class ContentController extends BaseController
 		for(int i=0; i<paths.length; ++i) 
 		{
 			final String name = paths[i];
-			final Content childContent = getChildWithName(content.getContentId(), name, db);
+			final Content childContent = getChildWithName(content.getId(), name, db);
 			if(childContent != null)
 				content = childContent;
 			else if(childContent == null && !forceFolders)
@@ -1715,15 +1715,15 @@ public class ContentController extends BaseController
 	{
 		Content content = null;
 		
-		OQLQuery oql = db.getOQLQuery("SELECT c FROM org.infoglue.cms.entities.content.impl.simple.MediumContentImpl c WHERE c.parentContentId = $1 AND c.name = $2");
+		OQLQuery oql = db.getOQLQuery("SELECT c FROM org.infoglue.cms.entities.content.impl.simple.ContentImpl c WHERE c.parentContent.contentId = $1 AND c.name = $2");
     	oql.bind(parentContentId);
     	oql.bind(name);
     	
-    	QueryResults results = oql.execute(Database.ReadOnly);
+    	QueryResults results = oql.execute();
 		
 		if(results.hasMore()) 
         {
-        	content = (MediumContentImpl)results.next();
+        	content = (ContentImpl)results.next();
         }
 
 		results.close();
