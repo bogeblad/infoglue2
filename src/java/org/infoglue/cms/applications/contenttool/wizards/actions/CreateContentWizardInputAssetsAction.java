@@ -163,30 +163,30 @@ public class CreateContentWizardInputAssetsAction extends CreateContentWizardAbs
 					String tempFileName = "tmp_" + fileName;
 					tempFileName = new VisualFormatter().replaceNonAscii(fileName, '_');
 					
-					//String filePath = file.getParentFile().getPath();
 					String filePath = CmsPropertyHandler.getDigitalAssetPath();
-					fileSystemName = filePath + File.separator + tempFileName;
+					//fileSystemName = filePath + File.separator + tempFileName;
 	            	
+					/*
 					renamedFile = new File(fileSystemName);
 					if(renamedFile != null && file != null)
 					{
 						boolean isRenamed = file.renameTo(renamedFile);
-		            	
+		            */	
 						DigitalAssetVO newAsset = new DigitalAssetVO();
 						newAsset.setAssetContentType(contentType);
 						newAsset.setAssetKey(digitalAssetKey);
 						newAsset.setAssetFileName(fileName);
 						newAsset.setAssetFilePath(filePath);
-						newAsset.setAssetFileSize(new Integer(new Long(renamedFile.length()).intValue()));
+						newAsset.setAssetFileSize(new Integer(new Long(file.length()).intValue()));
 						//is = new FileInputStream(renamedFile);
-						is = new FileInputStream(renamedFile);
+						is = new FileInputStream(file);
 						//DigitalAssetController.create(newAsset, is, this.contentVersionId);
 						//CreateContentWizardInfoBean createContentWizardInfoBean = this.getCreateContentWizardInfoBean();
 						//createContentWizardInfoBean.getDigitalAssets().put(digitalAssetKey + "_" + this.languageId, newAsset);
 					    digitalAssetVO = DigitalAssetController.create(newAsset, is, this.contentVersionId, this.getInfoGluePrincipal());
 						
 						this.uploadedFilesCounter = new Integer(this.uploadedFilesCounter.intValue() + 1);
-					}
+					//}
 				}
 			}
 			else
