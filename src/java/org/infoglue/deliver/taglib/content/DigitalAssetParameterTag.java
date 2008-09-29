@@ -99,6 +99,15 @@ public class DigitalAssetParameterTag extends AbstractTag
 	public int doEndTag() throws JspException
     {
 		addDigitalAsset();
+		
+		this.assetKey = null;
+		this.bytes = null;
+		this.contentType = null;
+		this.file = null;
+		this.fileItem = null;
+		this.fileName = null;
+		this.filePath = null;
+
 		return EVAL_PAGE;
     }
 	
