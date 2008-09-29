@@ -738,8 +738,39 @@ public class BasicTemplateController implements TemplateController
         
         return infoGluePrincipal;
     }
-    
-	
+
+    /**
+     * Getting all assets for a certain user
+     */
+    public List<DigitalAssetVO> getPrincipalAssets(InfoGluePrincipal infoGluePrincipal) throws Exception
+    {
+    	return InfoGluePrincipalControllerProxy.getController().getPrincipalAssets(this.getDatabase(), infoGluePrincipal, this.languageId);
+    }
+
+    /**
+     * Getting all assets for a certain user
+     */
+    public List<DigitalAssetVO> getPrincipalAssets(InfoGluePrincipal infoGluePrincipal, Integer languageId) throws Exception
+    {
+    	return InfoGluePrincipalControllerProxy.getController().getPrincipalAssets(this.getDatabase(), infoGluePrincipal, languageId);
+    }
+
+    /**
+     * Getting all assets for a certain user
+     */
+    public DigitalAssetVO getPrincipalAsset(InfoGluePrincipal infoGluePrincipal, String assetKey) throws Exception
+    {
+    	return InfoGluePrincipalControllerProxy.getController().getPrincipalAsset(this.getDatabase(), infoGluePrincipal, this.languageId, assetKey);
+    }
+
+    /**
+     * Getting all assets for a certain user in a certain language
+     */
+    public DigitalAssetVO getPrincipalAsset(InfoGluePrincipal infoGluePrincipal, String assetKey, Integer languageId) throws Exception
+    {
+    	return InfoGluePrincipalControllerProxy.getController().getPrincipalAsset(this.getDatabase(), infoGluePrincipal, languageId, assetKey);
+    }
+
 	/**
 	 * Getting a property for the current Principal - used for personalisation. 
 	 * This method starts with getting the property on the user and if it does not exist we check out the
@@ -749,6 +780,11 @@ public class BasicTemplateController implements TemplateController
 	public String getPrincipalPropertyValue(String propertyName)
 	{
 		return getPrincipalPropertyValue(propertyName, true);
+	}
+
+	public String getPrincipalPropertyValue(String propertyName, Integer languageId)
+	{
+		return getPrincipalPropertyValue(propertyName, true, languageId);
 	}
 
 	/**
@@ -762,6 +798,11 @@ public class BasicTemplateController implements TemplateController
 		return getPrincipalPropertyHashValues(propertyName, true);
 	}
 
+	public Map getPrincipalPropertyHashValues(String propertyName, Integer languageId)
+	{
+		return getPrincipalPropertyHashValues(propertyName, true, languageId);
+	}
+
 	/**
 	 * Getting a property for the current Principal - used for personalisation. 
 	 * This method starts with getting the property on the user and if it does not exist we check out the
@@ -771,6 +812,11 @@ public class BasicTemplateController implements TemplateController
 	public String getPrincipalPropertyValue(InfoGluePrincipal infoGluePrincipal, String propertyName)
 	{
 		return getPrincipalPropertyValue(infoGluePrincipal, propertyName, true);
+	}
+
+	public String getPrincipalPropertyValue(InfoGluePrincipal infoGluePrincipal, String propertyName, Integer languageId)
+	{
+		return getPrincipalPropertyValue(infoGluePrincipal, propertyName, true, languageId);
 	}
 
 	/**
@@ -784,6 +830,10 @@ public class BasicTemplateController implements TemplateController
 		return getPrincipalPropertyHashValues(infoGluePrincipal, propertyName, true);
 	}
 
+	public Map getPrincipalPropertyHashValues(InfoGluePrincipal infoGluePrincipal, String propertyName, Integer languageId)
+	{
+		return getPrincipalPropertyHashValues(infoGluePrincipal, propertyName, true, languageId);
+	}
 	
 	/**
 	 * Getting a property for a Principal - used for personalisation. 
@@ -797,8 +847,29 @@ public class BasicTemplateController implements TemplateController
 		
 		try
 		{
-			//value = ExtranetController.getController().getPrincipalPropertyValue(getDatabase(), infoGluePrincipal, propertyName, this.languageId, this.siteNodeId, USE_LANGUAGE_FALLBACK, escapeSpecialCharacters);
 			value = getPrincipalPropertyValue(infoGluePrincipal, propertyName, escapeSpecialCharacters, false);
+		}
+		catch(Exception e)
+		{
+			logger.warn("An error occurred trying to get property " + propertyName + " from infoGluePrincipal:" + e.getMessage(), e);
+		}
+		
+		return value;
+	}	
+
+	/**
+	 * Getting a property for a Principal - used for personalisation. 
+	 * This method starts with getting the property on the user and if it does not exist we check out the
+	 * group-properties as well.
+	 */
+	
+	public String getPrincipalPropertyValue(InfoGluePrincipal infoGluePrincipal, String propertyName, boolean escapeSpecialCharacters, Integer languageId)
+	{
+		String value = "";
+		
+		try
+		{
+			value = getPrincipalPropertyValue(infoGluePrincipal, propertyName, escapeSpecialCharacters, false, languageId);
 		}
 		catch(Exception e)
 		{
@@ -820,8 +891,23 @@ public class BasicTemplateController implements TemplateController
 		
 		try
 		{
-			//value = ExtranetController.getController().getPrincipalPropertyValue(getDatabase(), infoGluePrincipal, propertyName, this.languageId, this.siteNodeId, USE_LANGUAGE_FALLBACK, escapeSpecialCharacters);
 			value = InfoGluePrincipalControllerProxy.getController().getPrincipalPropertyValue(this.getDatabase(), infoGluePrincipal, propertyName, this.languageId, this.siteNodeId, USE_LANGUAGE_FALLBACK, escapeSpecialCharacters, findLargestValue);
+		}
+		catch(Exception e)
+		{
+			logger.warn("An error occurred trying to get property " + propertyName + " from infoGluePrincipal:" + e.getMessage(), e);
+		}
+		
+		return value;
+	}	
+
+	public String getPrincipalPropertyValue(InfoGluePrincipal infoGluePrincipal, String propertyName, boolean escapeSpecialCharacters, boolean findLargestValue, Integer languageId)
+	{
+		String value = "";
+		
+		try
+		{
+			value = InfoGluePrincipalControllerProxy.getController().getPrincipalPropertyValue(this.getDatabase(), infoGluePrincipal, propertyName, languageId, this.siteNodeId, USE_LANGUAGE_FALLBACK, escapeSpecialCharacters, findLargestValue);
 		}
 		catch(Exception e)
 		{
@@ -845,7 +931,6 @@ public class BasicTemplateController implements TemplateController
 		try
 		{
 		    InfoGluePrincipal infoGluePrincipal = this.getPrincipal();
-		    //value = ExtranetController.getController().getPrincipalPropertyValue(this.getDatabase(), infoGluePrincipal, propertyName, this.languageId, this.siteNodeId, USE_LANGUAGE_FALLBACK, escapeSpecialCharacters);
 		    value = getPrincipalPropertyValue(propertyName, escapeSpecialCharacters, false);
 		}
 		catch(Exception e)
@@ -855,7 +940,24 @@ public class BasicTemplateController implements TemplateController
 		
 		return value;
 	}
-	
+
+	public String getPrincipalPropertyValue(String propertyName, boolean escapeSpecialCharacters, Integer languageId)
+	{
+		String value = "";
+		
+		try
+		{
+		    InfoGluePrincipal infoGluePrincipal = this.getPrincipal();
+		    value = getPrincipalPropertyValue(propertyName, escapeSpecialCharacters, false, languageId);
+		}
+		catch(Exception e)
+		{
+			logger.warn("An error occurred trying to get property " + propertyName + " from infoGluePrincipal:" + e.getMessage(), e);
+		}
+		
+		return value;
+	}
+
 
 	/**
 	 * Getting a property for the current Principal - used for personalisation. 
@@ -870,8 +972,24 @@ public class BasicTemplateController implements TemplateController
 		try
 		{
 		    InfoGluePrincipal infoGluePrincipal = this.getPrincipal();
-		    //value = ExtranetController.getController().getPrincipalPropertyValue(this.getDatabase(), infoGluePrincipal, propertyName, this.languageId, this.siteNodeId, USE_LANGUAGE_FALLBACK, escapeSpecialCharacters);
 		    value = InfoGluePrincipalControllerProxy.getController().getPrincipalPropertyValue(this.getDatabase(), infoGluePrincipal, propertyName, this.languageId, this.siteNodeId, USE_LANGUAGE_FALLBACK, escapeSpecialCharacters, findLargestValue);
+		}
+		catch(Exception e)
+		{
+			logger.warn("An error occurred trying to get property " + propertyName + " from infoGluePrincipal:" + e.getMessage(), e);
+		}
+		
+		return value;
+	}
+
+	public String getPrincipalPropertyValue(String propertyName, boolean escapeSpecialCharacters, boolean findLargestValue, Integer languageId)
+	{
+		String value = "";
+		
+		try
+		{
+		    InfoGluePrincipal infoGluePrincipal = this.getPrincipal();
+		    value = InfoGluePrincipalControllerProxy.getController().getPrincipalPropertyValue(this.getDatabase(), infoGluePrincipal, propertyName, languageId, this.siteNodeId, USE_LANGUAGE_FALLBACK, escapeSpecialCharacters, findLargestValue);
 		}
 		catch(Exception e)
 		{
@@ -894,7 +1012,6 @@ public class BasicTemplateController implements TemplateController
 		
 		try
 		{
-			//value = ExtranetController.getController().getPrincipalPropertyHashValues(this.getDatabase(), infoGluePrincipal, propertyName, this.languageId, this.siteNodeId, USE_LANGUAGE_FALLBACK, escapeSpecialCharacters);
 		    value = InfoGluePrincipalControllerProxy.getController().getPrincipalPropertyHashValues(this.getDatabase(), infoGluePrincipal, propertyName, this.languageId, this.siteNodeId, USE_LANGUAGE_FALLBACK, escapeSpecialCharacters);
 		}
 		catch(Exception e)
@@ -904,7 +1021,23 @@ public class BasicTemplateController implements TemplateController
 		
 		return value;
 	}	
-	
+
+	public Map getPrincipalPropertyHashValues(InfoGluePrincipal infoGluePrincipal, String propertyName, boolean escapeSpecialCharacters, Integer languageId)
+	{
+		Map value = new HashMap();
+		
+		try
+		{
+		    value = InfoGluePrincipalControllerProxy.getController().getPrincipalPropertyHashValues(this.getDatabase(), infoGluePrincipal, propertyName, languageId, this.siteNodeId, USE_LANGUAGE_FALLBACK, escapeSpecialCharacters);
+		}
+		catch(Exception e)
+		{
+			logger.warn("An error occurred trying to get property " + propertyName + " from infoGluePrincipal:" + e.getMessage(), e);
+		}
+		
+		return value;
+	}	
+
 	
 	/**
 	 * Getting a property for the current Principal - used for personalisation. 
@@ -919,8 +1052,24 @@ public class BasicTemplateController implements TemplateController
 		try
 		{
 			InfoGluePrincipal infoGluePrincipal = this.getPrincipal();
-			//value = ExtranetController.getController().getPrincipalPropertyHashValues(this.getDatabase(), infoGluePrincipal, propertyName, this.languageId, this.siteNodeId, USE_LANGUAGE_FALLBACK, escapeSpecialCharacters);
 			value = getPrincipalPropertyHashValues(this.infoGluePrincipal, propertyName, escapeSpecialCharacters);
+		}
+		catch(Exception e)
+		{
+			logger.warn("An error occurred trying to get property " + propertyName + " from infoGluePrincipal:" + e.getMessage(), e);
+		}
+		
+		return value;
+	}	
+
+	public Map getPrincipalPropertyHashValues(String propertyName, boolean escapeSpecialCharacters, Integer languageId)
+	{
+		Map value = new HashMap();
+		
+		try
+		{
+			InfoGluePrincipal infoGluePrincipal = this.getPrincipal();
+			value = getPrincipalPropertyHashValues(this.infoGluePrincipal, propertyName, escapeSpecialCharacters, languageId);
 		}
 		catch(Exception e)
 		{
@@ -4904,6 +5053,8 @@ public class BasicTemplateController implements TemplateController
 		
 		try
 		{
+			pageCacheTimeout = this.nodeDeliveryController.getInheritedPageCacheTimeout(getDatabase(), this.siteNodeId);
+			/*
 			SiteNodeVersionVO latestSiteNodeVersionVO = this.nodeDeliveryController.getLatestActiveSiteNodeVersionVO(getDatabase(), this.siteNodeId);
 			if(latestSiteNodeVersionVO != null && latestSiteNodeVersionVO.getContentType() != null && latestSiteNodeVersionVO.getContentType().length() > 0)
 			{
@@ -4911,12 +5062,13 @@ public class BasicTemplateController implements TemplateController
 				if(pageCacheTimeoutString != null && !pageCacheTimeoutString.equals(""))
 					pageCacheTimeout = new Integer(pageCacheTimeoutString);
 			}
+			*/
 		}
 		catch(Exception e)
 		{
 			logger.warn("An error occurred trying to get the pageCacheTimeout of the page " + siteNodeId + ":" + e.getMessage(), e);
 		}
-				
+		
 		return pageCacheTimeout;
 	}
 
