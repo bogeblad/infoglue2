@@ -775,6 +775,43 @@ public class NodeDeliveryController extends BaseDeliveryController
 		return isPageProtected;
 	}
 	
+	/**
+	 * This method returns true if the if the page in question (ie sitenode) is protected byt the exctranet fnctionality.
+	 * This is essential to turn off when you have a dynamic page like an external application or searchresult.
+	 */
+	
+	public Integer getInheritedPageCacheTimeout(Database db, Integer siteNodeId)
+	{
+		Integer pageCacheTimeout = null;
+		
+		try
+		{
+			SiteNodeVersionVO latestSiteNodeVersionVO = getLatestActiveSiteNodeVersionVO(db, siteNodeId);
+			if(latestSiteNodeVersionVO != null && latestSiteNodeVersionVO.getPageCacheTimeout() != null && !latestSiteNodeVersionVO.getPageCacheTimeout().equals(""))
+			{	
+				try
+				{
+					pageCacheTimeout = new Integer(latestSiteNodeVersionVO.getPageCacheTimeout());
+				}
+				catch (Exception e) 
+				{
+					logger.warn("Wrong format on pageCacheTimeout on siteNode:" + latestSiteNodeVersionVO.getSiteNodeName(), e);
+				}
+			}
+			if(pageCacheTimeout == null)
+			{
+				SiteNodeVO parentSiteNode = this.getParentSiteNode(db, siteNodeId);
+				if(parentSiteNode != null)
+					pageCacheTimeout = getInheritedPageCacheTimeout(db, parentSiteNode.getSiteNodeId()); 
+			}
+		}
+		catch(Exception e)
+		{
+			logger.warn("An error occurred trying to get page cache timeout:" + e.getMessage(), e);
+		}
+				
+		return pageCacheTimeout;
+	}
 	
 	/**
 	 * This method returns the id of the siteNodeVersion that is protected if any.
