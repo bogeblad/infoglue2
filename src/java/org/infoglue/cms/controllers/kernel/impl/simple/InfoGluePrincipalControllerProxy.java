@@ -43,6 +43,8 @@ import org.infoglue.cms.entities.management.GroupProperties;
 import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.entities.management.RoleProperties;
 import org.infoglue.cms.entities.management.UserProperties;
+import org.infoglue.cms.entities.management.UserPropertiesVO;
+import org.infoglue.cms.entities.content.DigitalAssetVO;
 import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.jobs.SubscriptionsJob;
@@ -294,6 +296,106 @@ public class InfoGluePrincipalControllerProxy extends BaseController
 	}	
 	
 	
+	/**
+	 * Getting all assets for a Principal - used for personalisation. 
+	 */
+	
+	public List getPrincipalAssets(Database db, InfoGluePrincipal infoGluePrincipal, Integer languageId) throws Exception
+	{
+		/*
+		String key = "" + infoGluePrincipal.getName() + "_" + languageId;
+		logger.info("key:" + key);
+		Object object = (String)CacheController.getCachedObject("principalPropertyValueCache", key);
+
+	    if(object instanceof NullObject)
+		{
+			logger.info("There was an cached property but it was null:" + object);
+			return null;
+		}
+		else if(object != null)
+		{
+			logger.info("There was an cached principalPropertyValue:" + object);
+			return (String)object;
+		}
+		*/
+		
+		List digitalAssets = new ArrayList();
+		
+		if(infoGluePrincipal == null)
+			return null;
+	
+		try
+		{
+			List userPropertiesVOList = UserPropertiesController.getController().getUserPropertiesVOList(infoGluePrincipal.getName(), languageId);
+			if(userPropertiesVOList != null && userPropertiesVOList.size() > 0)
+			{
+				UserPropertiesVO userPropertiesVO = (UserPropertiesVO)userPropertiesVOList.get(0);
+				if(userPropertiesVO != null && userPropertiesVO.getId() != null)
+		       	{
+		       		digitalAssets = UserPropertiesController.getController().getDigitalAssetVOList(userPropertiesVO.getId());
+		       	}
+			}
+		}
+		catch(Exception e)
+		{
+			logger.warn("We could not fetch the list of digitalAssets: " + e.getMessage(), e);
+		}
+		/*
+		if(value != null)
+		    CacheController.getCachedObject("principalPropertyValueCache", key);
+		
+		if(value != null)
+	        CacheController.cacheObject("principalPropertyValueCache", key, value);
+	    else
+	        CacheController.cacheObject("principalPropertyValueCache", key, new NullObject());
+		*/
+		
+		return digitalAssets;
+	}	
+
+	/**
+	 * Getting all assets for a Principal - used for personalisation. 
+	 */
+	
+	public DigitalAssetVO getPrincipalAsset(Database db, InfoGluePrincipal infoGluePrincipal, Integer languageId, String assetKey) throws Exception
+	{
+		DigitalAssetVO asset = null;
+		
+		if(infoGluePrincipal == null)
+			return null;
+	
+		try
+		{
+			List<DigitalAssetVO> assetList = getPrincipalAssets(db, infoGluePrincipal, languageId);
+			Iterator<DigitalAssetVO> assetListIterator = assetList.iterator();
+			while(assetListIterator.hasNext())
+			{
+				DigitalAssetVO currentAsset = (DigitalAssetVO)assetListIterator.next();
+				System.out.println(currentAsset.getAssetKey() + "=" + assetKey);
+				if(currentAsset.getAssetKey().equals(assetKey))
+				{
+					asset = currentAsset;
+					break;
+				}
+			}
+		}
+		catch(Exception e)
+		{
+			logger.warn("We could not fetch the list of digitalAssets: " + e.getMessage(), e);
+		}
+		/*
+		if(value != null)
+		    CacheController.getCachedObject("principalPropertyValueCache", key);
+		
+		if(value != null)
+	        CacheController.cacheObject("principalPropertyValueCache", key, value);
+	    else
+	        CacheController.cacheObject("principalPropertyValueCache", key, new NullObject());
+		*/
+		
+		return asset;
+	}	
+
 	
 	/**
 	 * Getting a property for a Principal - used for personalisation. 
