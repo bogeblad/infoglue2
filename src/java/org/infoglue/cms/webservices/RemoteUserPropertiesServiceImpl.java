@@ -23,20 +23,27 @@
 
 package org.infoglue.cms.webservices;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
+import org.infoglue.cms.controllers.kernel.impl.simple.DigitalAssetController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ServerNodeController;
 import org.infoglue.cms.controllers.kernel.impl.simple.UserControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.UserPropertiesController;
+import org.infoglue.cms.entities.content.DigitalAssetVO;
+import org.infoglue.cms.entities.management.UserProperties;
 import org.infoglue.cms.entities.management.UserPropertiesVO;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.dom.DOMBuilder;
+import org.infoglue.cms.webservices.elements.RemoteAttachment;
 import org.infoglue.deliver.util.webservices.DynamicWebserviceSerializer;
 
 
@@ -97,7 +104,7 @@ public class RemoteUserPropertiesServiceImpl extends RemoteInfoGlueService
      * Inserts a new UserProperty.
      */
     
-    public Boolean updateUserProperties(final String principalName, int languageId, int contentTypeDefinitionId, final Object[] inputsArray) 
+    public Boolean updateUserProperties(final String principalName, int languageId, int contentTypeDefinitionId, final Object[] inputsArray, final Object[] assetsArray) 
     {
         if(!ServerNodeController.getController().getIsIPAllowed(getRequest()))
         {
@@ -117,6 +124,8 @@ public class RemoteUserPropertiesServiceImpl extends RemoteInfoGlueService
         {
 			final DynamicWebserviceSerializer serializer = new DynamicWebserviceSerializer();
             Map userPropertiesAttributesMap = (Map)serializer.deserialize(inputsArray);
+            
+            List assets = (List)serializer.deserialize(assetsArray);
             
             initializePrincipal(principalName);
             logger.info("principalName:" + principalName);
@@ -148,10 +157,50 @@ public class RemoteUserPropertiesServiceImpl extends RemoteInfoGlueService
             }	                
 
             userPropertiesVO.setValue(document.asXML());
-
             
             UserPropertiesVO newUserPropertiesVO = userPropertiesController.update(new Integer(languageId), new Integer(contentTypeDefinitionId), userPropertiesVO);
             newUserPropertiesId = newUserPropertiesVO.getId().intValue();
+            
+			List existingDigitalAssetVOList = userPropertiesController.getDigitalAssetVOList(newUserPropertiesId);
+            
+	        List digitalAssets = assets;
+	        
+	        logger.info("digitalAssets:" + digitalAssets);
+	        //System.out.println("digitalAssets:" + digitalAssets.size());
+	        if(digitalAssets != null)
+	        {
+    	        Iterator digitalAssetIterator = digitalAssets.iterator();
+    	        while(digitalAssetIterator.hasNext())
+    	        {
+    	            RemoteAttachment remoteAttachment = (RemoteAttachment)digitalAssetIterator.next();
+	    	        logger.info("digitalAssets in ws:" + remoteAttachment);
+	    	        //System.out.println("remoteAttachment:" + remoteAttachment.getName() + ":" + remoteAttachment.getSize() + ":" + remoteAttachment.getFilePath());
+	    	        
+	            	DigitalAssetVO newAsset = new DigitalAssetVO();
+					newAsset.setAssetContentType(remoteAttachment.getContentType());
+					newAsset.setAssetKey(remoteAttachment.getName());
+					newAsset.setAssetFileName(remoteAttachment.getFileName());
+					newAsset.setAssetFilePath(remoteAttachment.getFilePath());
+					newAsset.setAssetFileSize(new Integer(new Long(remoteAttachment.getBytes().length).intValue()));
+					//is = new FileInputStream(renamedFile);
+					InputStream is = new ByteArrayInputStream(remoteAttachment.getBytes());
+
+					Iterator existingDigitalAssetVOListIterator = existingDigitalAssetVOList.iterator();
+					while(existingDigitalAssetVOListIterator.hasNext())
+					{
+						DigitalAssetVO assetVO = (DigitalAssetVO)existingDigitalAssetVOListIterator.next();
+						//System.out.println("assetVO:" + assetVO.getAssetKey());
+						if(assetVO.getAssetKey().equals(newAsset.getAssetKey()))
+						{
+							//System.out.println("Removing:" + assetVO.getAssetKey() + ":" + assetVO.getAssetFileName());
+							DigitalAssetController.getController().delete(assetVO.getId(), UserProperties.class.getName(), newUserPropertiesId);
+						}
+					}
+					
+	    	        DigitalAssetController.create(newAsset, is, UserProperties.class.getName(), newUserPropertiesVO.getId());
+	    	    }	 
+	        }
+
         }
         catch(Throwable e)
         {
