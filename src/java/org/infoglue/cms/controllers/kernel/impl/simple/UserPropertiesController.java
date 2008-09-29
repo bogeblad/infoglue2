@@ -223,6 +223,21 @@ public class UserPropertiesController extends BaseController
 	 * The result is a list of propertiesblobs - each propertyblob is a list of actual properties.
 	 */
 
+	public List getUserPropertiesVOList(Database db, String userName, Integer languageId) throws ConstraintException, SystemException, Exception
+	{
+		List userPropertiesVOList = new ArrayList();
+
+		List userProperties = getUserPropertiesList(userName, languageId, db, true);
+		userPropertiesVOList = toVOList(userProperties);
+			
+		return userPropertiesVOList;
+	}
+
+	/**
+	 * This method gets a list of roleProperties for a role
+	 * The result is a list of propertiesblobs - each propertyblob is a list of actual properties.
+	 */
+
 	public List getUserPropertiesVOList(String userName, Integer languageId) throws ConstraintException, SystemException
 	{
 		Database db = CastorDatabaseService.getDatabase();
