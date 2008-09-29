@@ -24,63 +24,65 @@
 package org.infoglue.deliver.taglib.management;
 
 import javax.servlet.jsp.JspException;
+import javax.servlet.jsp.JspTagException;
 
-import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.security.InfoGluePrincipal;
-import org.infoglue.deliver.taglib.TemplateControllerTag;
+import org.infoglue.deliver.taglib.component.ComponentLogicTag;
 
-public class PrincipalPropertyTag extends TemplateControllerTag 
+/**
+ * Returns a list of assets connected to a user
+ * 
+ * @author Mattias Bogeblad
+ */
+
+public class PrincipalAssetsTag extends ComponentLogicTag
 {
-	private static final long serialVersionUID = 4050206323348354355L;
+	private static final long serialVersionUID = 3546080250652931383L;
 
 	private String userName;
 	private InfoGluePrincipal principal;
-	private String attributeName;
 	private Integer languageId = null;
-	
-    public PrincipalPropertyTag()
+
+    public PrincipalAssetsTag()
     {
         super();
     }
-
-	public int doEndTag() throws JspException
+    
+    public int doEndTag() throws JspException
     {
-		if(languageId == null)
-    		languageId = getController().getLanguageId();
-    	
-	    if(userName != null && !userName.equals(""))
-	    {
-	        setResultAttribute(this.getController().getPrincipalPropertyValue(getController().getPrincipal(userName), attributeName, languageId));
-	    }
-	    else if(principal != null)
-	    {
-            setResultAttribute(getController().getPrincipalPropertyValue(principal, attributeName, languageId));
-	    }
-	    else
-	    {
-	    	setResultAttribute(getController().getPrincipalPropertyValue(attributeName, languageId));
-	    }
-	    	
+        try
+        {
+        	if(languageId == null)
+        		languageId = getController().getLanguageId();
+        	
+			if(principal != null)
+            {
+	            produceResult(getController().getPrincipalAssets(principal, languageId));    
+            }
+            else if(userName != null)
+            {
+            	produceResult(getController().getPrincipalAssets(getController().getPrincipal(userName), languageId));
+            }
+            else
+            {
+            	produceResult(getController().getPrincipalAssets(getController().getPrincipal(), languageId));
+            }
+        }
+        catch(Exception e)
+        {
+            throw new JspTagException("ComponentLogic.getAssetUrl Error: " + e.getMessage());
+        }
+        
         languageId = null;
         userName = null;
         principal = null;
-
+        
         return EVAL_PAGE;
     }
 
-    public void setUserName(final String userName) throws JspException
+    public void setUserName(String userName) throws JspException
     {
-        this.userName = evaluateString("principal", "userName", userName);
-    }
-
-    public void setPrincipal(final String principalString) throws JspException
-    {
-        this.principal = (InfoGluePrincipal)evaluate("principal", "principal", principalString, InfoGluePrincipal.class);
-    }
-
-    public void setAttributeName(final String attributeName) throws JspException
-    {
-        this.attributeName = evaluateString("principal", "attributeName", attributeName);
+        this.userName = evaluateString("principalAssets", "userName", userName);
     }
 
     public void setLanguageId(final String languageIdString) throws JspException

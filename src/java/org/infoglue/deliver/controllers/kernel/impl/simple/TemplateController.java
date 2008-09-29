@@ -213,11 +213,28 @@ public interface TemplateController
     public abstract InfoGluePrincipal getPrincipal(String userName);
     
     /**
+     * Getting all assets for a certain user
+     */
+    public abstract List<DigitalAssetVO> getPrincipalAssets(InfoGluePrincipal infoGluePrincipal) throws Exception;
+
+    public abstract List<DigitalAssetVO> getPrincipalAssets(InfoGluePrincipal infoGluePrincipal, Integer languageId) throws Exception;
+
+    /**
+     * Getting asset for a certain user
+     */
+    public abstract DigitalAssetVO getPrincipalAsset(InfoGluePrincipal infoGluePrincipal, String assetKey) throws Exception;
+
+    public abstract DigitalAssetVO getPrincipalAsset(InfoGluePrincipal infoGluePrincipal, String assetKey, Integer languageId) throws Exception;
+
+
+    /**
      * Getting a property for the current Principal - used for personalisation. 
      * This method starts with getting the property on the user and if it does not exist we check out the
      * group-properties as well.
      */
     public abstract String getPrincipalPropertyValue(String propertyName);
+
+    public abstract String getPrincipalPropertyValue(String propertyName, Integer languageId);
 
     /**
      * Getting a property for the current Principal - used for personalisation. 
@@ -225,6 +242,8 @@ public interface TemplateController
      * group-properties as well.
      */
     public abstract Map getPrincipalPropertyHashValues(String propertyName);
+
+    public abstract Map getPrincipalPropertyHashValues(String propertyName, Integer languageId);
 
     /**
      * Getting a property for the current Principal - used for personalisation. 
@@ -234,6 +253,9 @@ public interface TemplateController
     public abstract String getPrincipalPropertyValue(
             InfoGluePrincipal infoGluePrincipal, String propertyName);
 
+    public abstract String getPrincipalPropertyValue(
+            InfoGluePrincipal infoGluePrincipal, String propertyName, Integer languageId);
+    
     /**
      * Getting a property for a Principal - used for personalisation. 
      * This method starts with getting the property on the user and if it does not exist we check out the
@@ -241,6 +263,9 @@ public interface TemplateController
      */
     public abstract Map getPrincipalPropertyHashValues(
             InfoGluePrincipal infoGluePrincipal, String propertyName);
+
+    public abstract Map getPrincipalPropertyHashValues(
+            InfoGluePrincipal infoGluePrincipal, String propertyName, Integer languageId);
 
     /**
      * Getting a property for a Principal - used for personalisation. 
@@ -250,6 +275,10 @@ public interface TemplateController
     public abstract String getPrincipalPropertyValue(
             InfoGluePrincipal infoGluePrincipal, String propertyName,
             boolean escapeSpecialCharacters);
+
+    public abstract String getPrincipalPropertyValue(
+            InfoGluePrincipal infoGluePrincipal, String propertyName,
+            boolean escapeSpecialCharacters, Integer languageId);
 
     /**
      * Getting a property for the current Principal - used for personalisation. 
@@ -259,6 +288,9 @@ public interface TemplateController
     public abstract String getPrincipalPropertyValue(String propertyName,
             boolean escapeSpecialCharacters);
 
+    public abstract String getPrincipalPropertyValue(String propertyName,
+            boolean escapeSpecialCharacters, Integer languageId);
+
     /**
      * Getting a property for a Principal - used for personalisation. 
      * This method starts with getting the property on the user and if it does not exist we check out the
@@ -268,6 +300,10 @@ public interface TemplateController
             InfoGluePrincipal infoGluePrincipal, String propertyName,
             boolean escapeSpecialCharacters);
 
+    public abstract Map getPrincipalPropertyHashValues(
+            InfoGluePrincipal infoGluePrincipal, String propertyName,
+            boolean escapeSpecialCharacters, Integer languageId);
+
     /**
      * Getting a property for the current Principal - used for personalisation. 
      * This method starts with getting the property on the user and if it does not exist we check out the
@@ -275,6 +311,9 @@ public interface TemplateController
      */
     public abstract Map getPrincipalPropertyHashValues(String propertyName,
             boolean escapeSpecialCharacters);
+    
+    public abstract Map getPrincipalPropertyHashValues(String propertyName,
+            boolean escapeSpecialCharacters, Integer languageId);
 
     /**
      * Getter for request-object

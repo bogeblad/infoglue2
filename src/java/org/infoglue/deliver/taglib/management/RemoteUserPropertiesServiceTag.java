@@ -11,7 +11,9 @@ import javax.servlet.jsp.JspTagException;
 import org.infoglue.cms.entities.management.UserPropertiesVO;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.CmsPropertyHandler;
+import org.infoglue.cms.webservices.elements.RemoteAttachment;
 import org.infoglue.deliver.taglib.TemplateControllerTag;
+import org.infoglue.deliver.taglib.content.ContentVersionParameterInterface;
 import org.infoglue.deliver.util.webservices.DynamicWebservice;
 
 
@@ -19,13 +21,13 @@ import org.infoglue.deliver.util.webservices.DynamicWebservice;
  * This tag helps create a content in the cms from the delivery application.
  */
 
-public class RemoteUserPropertiesServiceTag extends TemplateControllerTag 
+public class RemoteUserPropertiesServiceTag extends TemplateControllerTag implements ContentVersionParameterInterface
 {
 	/**
 	 * The universal version identifier.
 	 */
 	private static final long serialVersionUID = -1904980538720103871L;
-
+	
 	/**
 	 * 
 	 */
@@ -47,6 +49,7 @@ public class RemoteUserPropertiesServiceTag extends TemplateControllerTag
 	private Integer languageId;
 	private Integer contentTypeDefinitionId;
 	private Map userPropertiesAttributesMap = new HashMap();
+	private List digitalAssets = new ArrayList();
 	
 	/**
 	 * 
@@ -90,6 +93,7 @@ public class RemoteUserPropertiesServiceTag extends TemplateControllerTag
 				   
 		   ws.addArgument("contentTypeDefinitionId", this.contentTypeDefinitionId);
 		   ws.addArgument("userPropertiesAttributesMap", userPropertiesAttributesMap);
+		   ws.addArgument("digitalAssets", digitalAssets);
 		   
 		   ws.callService();
 		   setResultAttribute(ws.getResult());
@@ -100,6 +104,11 @@ public class RemoteUserPropertiesServiceTag extends TemplateControllerTag
 		   throw new JspTagException(e.getMessage());
 	   }
 	   
+	   this.contentTypeDefinitionId = null;
+	   this.languageId = null;
+	   this.userPropertiesAttributesMap = new HashMap();
+	   this.digitalAssets = new ArrayList();
+		
        return EVAL_PAGE;
    }
    
@@ -152,5 +161,45 @@ public class RemoteUserPropertiesServiceTag extends TemplateControllerTag
 	{
 		this.userPropertiesAttributesMap.put(name, value);
 	}
+
+	/**
+	 * Adds the content version attribute to the contentVersion Value.
+	 * 
+	 * @throws JspException if the ancestor tag isn't a url tag.
+	 */
+	public void addDigitalAsset(RemoteAttachment remoteAttachment) throws JspException
+	{
+		System.out.println("Adding:" + remoteAttachment.getSize());
+	    digitalAssets.add(remoteAttachment);
+	}
+
+	public void addContentCategory(String contentCategory) throws JspException
+	{
+		// TODO Auto-generated method stub
+	}
+
+	public void addContentVersionAttribute(String name, String value) throws JspException
+	{
+		this.userPropertiesAttributesMap.put(name, value);
+	}
+
+	/**
+	 * Adds the content category to the contentVersion Value.
+	 * 
+	 * @throws JspException if the ancestor tag isn't a url tag.
+	 */
+	/*
+	public void addContentCategory(String contentCategory) throws JspException
+	{
+	    List contentCategories = (List)this.contentVersion.get("contentCategories");
+	    if(contentCategories == null)
+	    {
+	    	contentCategories = new ArrayList();
+	        this.contentVersion.put("contentCategories", contentCategories);
+	    }
+
+	    contentCategories.add(contentCategory);
+	}
+	*/
 
 }
