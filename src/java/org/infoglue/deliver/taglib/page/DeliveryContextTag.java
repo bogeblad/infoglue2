@@ -80,4 +80,20 @@ public class DeliveryContextTag extends TemplateControllerTag
 	{
 	    getController().getDeliveryContext().setContentType(contentType);
 	}
+
+	public void setPageCacheTimeout(String pageCacheTimeout) throws JspException
+	{
+		String evaluatedPageCacheTimeout = evaluateString("DeliverContextTag", "pageCacheTimeout", pageCacheTimeout);
+	    if(evaluatedPageCacheTimeout != null && !evaluatedPageCacheTimeout.equals(""))
+	    {
+	    	try
+	    	{
+		    	getController().getDeliveryContext().setPageCacheTimeout(new Integer(evaluatedPageCacheTimeout));	    		
+	    	}
+	    	catch (Exception e) 
+	    	{
+	    		throw new JspException("Wrong format on pageCacheTimeout:" + pageCacheTimeout + " should be an integer value");
+			}
+	    }
+	}
 }

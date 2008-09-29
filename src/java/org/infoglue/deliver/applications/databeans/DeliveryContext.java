@@ -125,7 +125,9 @@ public class DeliveryContext implements UsageListener
 
 	//This variable controls if digitalAssetUrl:s generated are directed to the DownloadAsset.action
 	private boolean useDownloadAction = false;
-	
+
+	private Integer pageCacheTimeout = null;
+
 	private Map pageAttributes = new HashMap();
 	private List htmlHeadItems = new ArrayList();
 	private Map httpHeaders = new HashMap();
@@ -468,6 +470,7 @@ public class DeliveryContext implements UsageListener
 		extraData.put("headers", this.getHttpHeaders());
 		//extraData.put("pageAttributes", this.getPageAttributes());
 		extraData.put("lastModifiedDateTime", this.lastModifiedDateTime);
+		extraData.put("pageCacheTimeout", this.pageCacheTimeout);
 		
 		return extraData;
 	}
@@ -491,6 +494,10 @@ public class DeliveryContext implements UsageListener
 		Date lastModifiedDateTime = (Date)extraData.get("lastModifiedDateTime");
 		if(lastModifiedDateTime != null)
 			this.lastModifiedDateTime = lastModifiedDateTime;
+
+		Integer pageCacheTimeout = (Integer)extraData.get("pageCacheTimeout");
+		if(pageCacheTimeout != null)
+			this.pageCacheTimeout = pageCacheTimeout;
 	}
 
 	public Date getLastModifiedDateTime()
@@ -501,6 +508,16 @@ public class DeliveryContext implements UsageListener
 	public void setLastModifiedDateTime(Date lastModifiedDateTime)
 	{
 		this.lastModifiedDateTime = lastModifiedDateTime;
+	}
+
+	public Integer getPageCacheTimeout()
+	{
+		return pageCacheTimeout;
+	}
+
+	public void setPageCacheTimeout(Integer pageCacheTimeout)
+	{
+		this.pageCacheTimeout = pageCacheTimeout;
 	}
 
 	public Set getUsedContentVersions()

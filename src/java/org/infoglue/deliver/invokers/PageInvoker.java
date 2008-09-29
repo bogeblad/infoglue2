@@ -183,7 +183,11 @@ public abstract class PageInvoker
 		{
 			String compressPageCache = CmsPropertyHandler.getCompressPageCache();
 			Map cachedExtraData = null;
-			Integer pageCacheTimeout = this.getTemplateController().getPageCacheTimeout();
+
+			Integer pageCacheTimeout = (Integer)CacheController.getCachedObjectFromAdvancedCache("pageCacheExtra", this.getDeliveryContext().getPageKey() + "_pageCacheTimeout");;
+			if(pageCacheTimeout == null)
+				pageCacheTimeout = this.getTemplateController().getPageCacheTimeout();
+			
 			if(compressPageCache != null && compressPageCache.equalsIgnoreCase("true"))
 			{
 				byte[] cachedCompressedData = null;
@@ -232,6 +236,10 @@ public abstract class PageInvoker
 
 				if(!this.getTemplateController().getIsPageCacheDisabled() && !this.getDeliveryContext().getDisablePageCache()) //Caching page if not disabled
 				{
+					Integer newPageCacheTimeout = getDeliveryContext().getPageCacheTimeout();
+					if(newPageCacheTimeout == null)
+						newPageCacheTimeout = this.getTemplateController().getPageCacheTimeout();
+					
 				    if(compressPageCache != null && compressPageCache.equalsIgnoreCase("true"))
 					{
 						long startCompression = System.currentTimeMillis();
@@ -241,11 +249,13 @@ public abstract class PageInvoker
 						{
 							CacheController.cacheObjectInAdvancedCache("pageCache", this.getDeliveryContext().getPageKey(), compressedData, this.getDeliveryContext().getAllUsedEntities(), false);
 							CacheController.cacheObjectInAdvancedCache("pageCacheExtra", this.getDeliveryContext().getPageKey(), this.getDeliveryContext().getExtraData(), this.getDeliveryContext().getAllUsedEntities(), false);
+				    		CacheController.cacheObjectInAdvancedCache("pageCacheExtra", this.getDeliveryContext().getPageKey() + "_pageCacheTimeout", newPageCacheTimeout, this.getDeliveryContext().getAllUsedEntities(), false);    
 						}
 						else
 						{
 						    CacheController.cacheObjectInAdvancedCache("pageCache", this.getDeliveryContext().getPageKey(), compressedData, this.getDeliveryContext().getAllUsedEntities(), true);
 						    CacheController.cacheObjectInAdvancedCache("pageCacheExtra", this.getDeliveryContext().getPageKey(), this.getDeliveryContext().getExtraData(), this.getDeliveryContext().getAllUsedEntities(), true);
+				    		CacheController.cacheObjectInAdvancedCache("pageCacheExtra", this.getDeliveryContext().getPageKey() + "_pageCacheTimeout", newPageCacheTimeout, this.getDeliveryContext().getAllUsedEntities(), true);    
 						}
 					}
 				    else
@@ -254,14 +264,15 @@ public abstract class PageInvoker
 				        {
 				        	CacheController.cacheObjectInAdvancedCache("pageCache", this.getDeliveryContext().getPageKey(), pageString, this.getDeliveryContext().getAllUsedEntities(), false);
 				        	CacheController.cacheObjectInAdvancedCache("pageCacheExtra", this.getDeliveryContext().getPageKey(), this.getDeliveryContext().getExtraData(), this.getDeliveryContext().getAllUsedEntities(), false);
+				    		CacheController.cacheObjectInAdvancedCache("pageCacheExtra", this.getDeliveryContext().getPageKey() + "_pageCacheTimeout", newPageCacheTimeout, this.getDeliveryContext().getAllUsedEntities(), false);    
 				        }
 				    	else
 				    	{
 				    		CacheController.cacheObjectInAdvancedCache("pageCache", this.getDeliveryContext().getPageKey(), pageString, this.getDeliveryContext().getAllUsedEntities(), true);    
-				    		CacheController.cacheObjectInAdvancedCache("pageCacheExtra", this.getDeliveryContext().getPageKey(), this.getDeliveryContext().getExtraData(), this.getDeliveryContext().getAllUsedEntities(), true);    
+				    		CacheController.cacheObjectInAdvancedCache("pageCacheExtra", this.getDeliveryContext().getPageKey(), this.getDeliveryContext().getExtraData(), this.getDeliveryContext().getAllUsedEntities(), true);
+				    		CacheController.cacheObjectInAdvancedCache("pageCacheExtra", this.getDeliveryContext().getPageKey() + "_pageCacheTimeout", newPageCacheTimeout, this.getDeliveryContext().getAllUsedEntities(), true);    
 				    	}
 				    }
-				    
 				}
 				else
 				{
