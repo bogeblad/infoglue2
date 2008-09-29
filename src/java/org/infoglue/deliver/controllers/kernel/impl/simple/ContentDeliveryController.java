@@ -914,7 +914,6 @@ public class ContentDeliveryController extends BaseDeliveryController
 				ContentVersion contentVersion = getContentVersion(siteNodeId, contentId, langVO.getLanguageId(), db, false, deliveryContext, infoGluePrincipal);
 				if (contentVersion != null) 
 				{
-					//DigitalAsset digitalAsset = (assetKey == null) ? getLatestDigitalAssetVO(contentVersion) :getDigitalAssetWithKey(contentVersion, assetKey); 
 					DigitalAssetVO digitalAsset = (assetKey == null) ? DigitalAssetController.getLatestDigitalAssetVO(contentVersion.getId(), db) : DigitalAssetController.getLatestDigitalAssetVO(contentVersion.getId(), assetKey, db);
 					
 					if(digitalAsset != null)
@@ -925,6 +924,40 @@ public class ContentDeliveryController extends BaseDeliveryController
 				}									
 			}
 		}
+
+		if(asset == null)
+		{
+			ContentVO contentVO = getContentVO(db, contentId, deliveryContext);
+			SiteNodeVO siteNodeVO = SiteNodeController.getSiteNodeVOWithId(siteNodeId, db);
+			//System.out.println("contentVO:" + contentVO.getRepositoryId());
+			//System.out.println("siteNodeVO:" + siteNodeVO.getRepositoryId());
+			if(!contentVO.getRepositoryId().equals(siteNodeVO.getRepositoryId()))
+			{
+				//System.out.println("Not same repository.. fetching the contents languages...");
+				
+				List contentRepositoryLangs = LanguageDeliveryController.getLanguageDeliveryController().getAvailableLanguagesForRepository(db, contentVO.getRepositoryId());
+				Iterator contentRepositoryLangsIterator = contentRepositoryLangs.iterator();
+				while (contentRepositoryLangsIterator.hasNext())
+				{
+					LanguageVO langVO = (LanguageVO) contentRepositoryLangsIterator.next();
+					if (langVO.getLanguageId().compareTo(languageId)!=0)
+					{
+						ContentVersion contentVersion = getContentVersion(siteNodeId, contentId, langVO.getLanguageId(), db, false, deliveryContext, infoGluePrincipal);
+						if (contentVersion != null) 
+						{
+							DigitalAssetVO digitalAsset = (assetKey == null) ? DigitalAssetController.getLatestDigitalAssetVO(contentVersion.getId(), db) : DigitalAssetController.getLatestDigitalAssetVO(contentVersion.getId(), assetKey, db);
+							
+							if(digitalAsset != null)
+							{
+								asset = digitalAsset;
+								break;
+							}
+						}									
+					}
+				}
+			}
+		}
+		
 		return asset;			
 	}
 
