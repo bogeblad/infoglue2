@@ -243,7 +243,7 @@ public class XSLTransformTag extends TemplateControllerTag
     		this.xmlString = null;
     		this.styleFile = null;
     		this.styleString = null;
-    		this.outputFormat = null;
+    		this.outputFormat = "string";
     		this.cacheStyle = true;
     		
     		java.lang.System.clearProperty("javax.xml.transform.TransformerFactory");
