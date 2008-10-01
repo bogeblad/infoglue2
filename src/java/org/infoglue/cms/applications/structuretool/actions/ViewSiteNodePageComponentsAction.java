@@ -1139,23 +1139,33 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 			Element component = (Element)anl.item(0);
 			
 			ContentVersionVO newComponentContentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(this.newComponentContentId, this.masterLanguageVO.getId());
-			String template = ContentVersionController.getContentVersionController().getAttributeValue(newComponentContentVersionVO, "Template", false);
-			logger.info("template:" + template);
+			if(newComponentContentVersionVO == null)
+			{			
+				ContentVO contentVO = ContentController.getContentController().getContentVOWithId(this.newComponentContentId);
+				LanguageVO contentMasterLanguageVO = LanguageController.getController().getMasterLanguage(contentVO.getRepositoryId());
+				newComponentContentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(this.newComponentContentId, contentMasterLanguageVO.getId());
+			}
 			
-			String subComponentsXPath = "//component[@id=" + this.componentId + "]//component";
-			NodeList subComponents = org.apache.xpath.XPathAPI.selectNodeList(component, subComponentsXPath);
-			logger.info("subComponents:" + subComponents.getLength());
-			for(int i=0; i<subComponents.getLength(); i++)
+			if(newComponentContentVersionVO != null)
 			{
-				Element subComponent = (Element)subComponents.item(i);
-				String slotId = subComponent.getAttribute("name");
-				logger.info("subComponent slotId:" + slotId);	
-				if(template.indexOf("id=\"" + slotId + "\"") == -1)
+				String template = ContentVersionController.getContentVersionController().getAttributeValue(newComponentContentVersionVO, "Template", false);
+				logger.info("template:" + template);
+				
+				String subComponentsXPath = "//component[@id=" + this.componentId + "]//component";
+				NodeList subComponents = org.apache.xpath.XPathAPI.selectNodeList(component, subComponentsXPath);
+				logger.info("subComponents:" + subComponents.getLength());
+				for(int i=0; i<subComponents.getLength(); i++)
 				{
-					logger.info("deleting subComponent as it was not part of the new template");
-					Node parentNode = subComponent.getParentNode();
-					parentNode.removeChild(subComponent);
-				}	
+					Element subComponent = (Element)subComponents.item(i);
+					String slotId = subComponent.getAttribute("name");
+					logger.info("subComponent slotId:" + slotId);	
+					if(template.indexOf("id=\"" + slotId + "\"") == -1)
+					{
+						logger.info("deleting subComponent as it was not part of the new template");
+						Node parentNode = subComponent.getParentNode();
+						parentNode.removeChild(subComponent);
+					}	
+				}
 			}
 			
 			component.setAttribute("contentId", "" + this.newComponentContentId);
