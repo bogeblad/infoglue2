@@ -218,7 +218,7 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 			if(baseComponent != null)
 			{
 				ContentVO metaInfoContentVO = nodeDeliveryController.getBoundContent(getDatabase(), this.getTemplateController().getPrincipal(), this.getDeliveryContext().getSiteNodeId(), this.getDeliveryContext().getLanguageId(), true, "Meta information", this.getDeliveryContext());
-				pageContent = renderComponent(baseComponent, this.getTemplateController(), repositoryId, this.getDeliveryContext().getSiteNodeId(), this.getDeliveryContext().getLanguageId(), this.getDeliveryContext().getContentId(), metaInfoContentVO.getId());
+				pageContent = renderComponent(baseComponent, this.getTemplateController(), repositoryId, this.getDeliveryContext().getSiteNodeId(), this.getDeliveryContext().getLanguageId(), this.getDeliveryContext().getContentId(), metaInfoContentVO.getId(), 15, 0);
 			}
 		}
 
@@ -914,8 +914,14 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 	 * This method renders the base component and all it's children.
 	 */
 
-	private String renderComponent(InfoGlueComponent component, TemplateController templateController, Integer repositoryId, Integer siteNodeId, Integer languageId, Integer contentId, Integer metainfoContentId) throws Exception
+	private String renderComponent(InfoGlueComponent component, TemplateController templateController, Integer repositoryId, Integer siteNodeId, Integer languageId, Integer contentId, Integer metainfoContentId, int maxDepth, int currentDepth) throws Exception
 	{
+		if(currentDepth > maxDepth)
+		{
+			logger.error("A page with to many levels (possibly infinite loop) was found on " + templateController.getOriginalFullURL());
+			return "";
+		}
+
 		if(logger.isDebugEnabled())
 		{
 			logger.debug("\n\n**** Rendering component ****");
@@ -1079,7 +1085,7 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 						String subComponentString = "";
 						if(subComponent != null)
 						{
-							subComponentString = renderComponent(subComponent, templateController, repositoryId, siteNodeId, languageId, contentId, metainfoContentId);
+							subComponentString = renderComponent(subComponent, templateController, repositoryId, siteNodeId, languageId, contentId, metainfoContentId, maxDepth, currentDepth + 1);
 						}
 						
 						decoratedComponent.append(subComponentString.trim());
