@@ -72,6 +72,7 @@
 	var currentEditorIdHash = new Array();
 	var attributesStatus = new Array();
 	var plainEditors = new Array();
+	var plainEditorsToolbars = new Array();
 	var htmlEditors = new Array();
 	var attributeNames = new Array();
 	var attributeTypes = new Array();
@@ -164,6 +165,7 @@
 			for (var i in plainEditors) 
 			{
 				var plainTextAreaName = plainEditors[i];
+				var WYSIWYGToolbar = plainEditorsToolbars[plainTextAreaName];
 				//alert("Creating a textarea for " + plainTextAreaName + " = " + i);
 				document.getElementById(plainTextAreaName).value = transformAttribute(document.getElementById(plainTextAreaName).value);
 				
@@ -174,6 +176,7 @@
 				oFCKeditor.Config["CustomConfigurationsPath"] = "${root}/WYSIWYGProperties.action?repositoryId=$repositoryId&contentId=$contentId&languageId=$languageId&contentVersionId=$!contentVersionId";
 				oFCKeditor.Config["AutoDetectLanguage"] = false ;
 				oFCKeditor.Config["DefaultLanguage"]    = '$languageCode' ;
+				oFCKeditor.ToolbarSet = WYSIWYGToolbar ;
 				oFCKeditor.ReplaceTextarea();
 				
 				htmlEditors[plainTextAreaName + "WYSIWYGEditor"] = oFCKeditor;
@@ -324,6 +327,12 @@
 			#set($enableWYSIWYG = "false")
 		#end
 
+		#set($WYSIWYGToolbar = "")
+		#set($WYSIWYGToolbar = $!attribute.getContentTypeAttribute("WYSIWYGToolbar").getContentTypeAttributeParameterValue().getLocalizedValue("label", $session.locale))
+		#if($WYSIWYGToolbar == "")
+			#set($WYSIWYGToolbar = "Default")
+		#end
+
 		#set($enableTemplateEditor = "")
 		#set($enableTemplateEditor = $!attribute.getContentTypeAttribute("enableTemplateEditor").getContentTypeAttributeParameterValue().getLocalizedValue("label", $session.locale))
 		#if($enableTemplateEditor == "")
@@ -453,6 +462,7 @@
 						<script type="text/javascript">
 							// Replace an existing textarea with an HTMLArea object having the above config.
 							plainEditors["${attribute.name}"] = "${attribute.name}";
+							plainEditorsToolbars["${attribute.name}"] = "${WYSIWYGToolbar}";
 							
 							currentEditorIdHash["${attribute.name}CurrentEditorId"] = 1;
 							#set($currentEditorId = 1)
