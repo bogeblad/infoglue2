@@ -298,7 +298,7 @@ public class SearchContentAction extends InfoGlueAbstractAction
 
 	public String doLatestInlineAssetsV3() throws Exception 
 	{
-		int maxRows = 30;
+		int maxRows = 20;
 		/*
 		try
 		{
@@ -310,7 +310,6 @@ public class SearchContentAction extends InfoGlueAbstractAction
 		{
 		}
 		*/
-		
 		String[] repositoryIdToSearch = this.getRequest().getParameterValues("repositoryIdToSearch");
 		if(repositoryIdToSearch != null)
 		{
