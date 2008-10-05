@@ -55,6 +55,7 @@ import org.infoglue.cms.entities.content.impl.simple.ContentImpl;
 import org.infoglue.cms.entities.content.impl.simple.ContentVersionImpl;
 import org.infoglue.cms.entities.content.impl.simple.MediumContentImpl;
 import org.infoglue.cms.entities.content.impl.simple.SmallContentImpl;
+import org.infoglue.cms.entities.content.impl.simple.SmallDigitalAssetImpl;
 import org.infoglue.cms.entities.content.impl.simple.SmallishContentImpl;
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
 import org.infoglue.cms.entities.management.LanguageVO;
@@ -759,11 +760,11 @@ public class ContentDeliveryController extends BaseDeliveryController
 		ContentVersion contentVersion = getContentVersion(siteNodeId, contentId, languageId, db, useLanguageFallback, deliveryContext, infoGluePrincipal);
 		if (contentVersion != null) 
         {
-        	Collection assets = contentVersion.getDigitalAssets();
+			Collection assets = getDigitalAssetVOList(contentVersion.getId(), db);
         	Iterator keysIterator = assets.iterator();
         	while(keysIterator.hasNext())
         	{
-        		DigitalAsset asset = (DigitalAsset)keysIterator.next();
+        		DigitalAssetVO asset = (DigitalAssetVO)keysIterator.next();
         		String assetKey = asset.getAssetKey();
             	assetKeys.add(assetKey); 		
         	}
@@ -783,11 +784,11 @@ public class ContentDeliveryController extends BaseDeliveryController
 		ContentVersion contentVersion = getContentVersion(siteNodeId, contentId, languageId, db, useLanguageFallback, deliveryContext, infoGluePrincipal);
 		if (contentVersion != null) 
         {
-        	Collection assets = contentVersion.getDigitalAssets();
+			Collection assets = getDigitalAssetVOList(contentVersion.getId(), db);
         	Iterator keysIterator = assets.iterator();
         	while(keysIterator.hasNext())
         	{
-        		DigitalAsset asset = (DigitalAsset)keysIterator.next();
+        		DigitalAssetVO asset = (DigitalAssetVO)keysIterator.next();
         		assetIds.add(asset.getId()); 		
         	}
         }
@@ -801,21 +802,15 @@ public class ContentDeliveryController extends BaseDeliveryController
 
 	public List getAssets(Database db, Integer contentId, Integer languageId, Integer siteNodeId, boolean useLanguageFallback, DeliveryContext deliveryContext, InfoGluePrincipal infoGluePrincipal) throws SystemException, Exception
 	{
-		List digitalAssetVOLIst = new ArrayList();
+		List digitalAssetVOList = new ArrayList();
 		
 		ContentVersion contentVersion = getContentVersion(siteNodeId, contentId, languageId, db, useLanguageFallback, deliveryContext, infoGluePrincipal);
 		if (contentVersion != null) 
         {
-        	Collection assets = contentVersion.getDigitalAssets();
-        	Iterator keysIterator = assets.iterator();
-        	while(keysIterator.hasNext())
-        	{
-        		DigitalAsset asset = (DigitalAsset)keysIterator.next();
-        		digitalAssetVOLIst.add(asset.getVO()); 		
-        	}
+			digitalAssetVOList = getDigitalAssetVOList(contentVersion.getId(), db);
         }
 		
-		return digitalAssetVOLIst;
+		return digitalAssetVOList;
 	}
 
 	/**
@@ -829,14 +824,14 @@ public class ContentDeliveryController extends BaseDeliveryController
 		ContentVersion contentVersion = getContentVersion(siteNodeId, contentId, languageId, db, useLanguageFallback, deliveryContext, infoGluePrincipal);
 		if (contentVersion != null) 
         {
-        	Collection assets = contentVersion.getDigitalAssets();
+			Collection assets = getDigitalAssetVOList(contentVersion.getId(), db);
         	Iterator keysIterator = assets.iterator();
         	while(keysIterator.hasNext())
         	{
-        		DigitalAsset asset = (DigitalAsset)keysIterator.next();
+        		DigitalAssetVO asset = (DigitalAssetVO)keysIterator.next();
         		if(asset.getAssetKey().equalsIgnoreCase(assetKey))
         		{
-        			digitalAssetVO = asset.getValueObject();
+        			digitalAssetVO = asset;
         			break;
         		}
         	}
@@ -844,6 +839,52 @@ public class ContentDeliveryController extends BaseDeliveryController
 		
 		return digitalAssetVO;
 	}
+
+	
+	/**
+	 * This method should return a list of those digital assets the contentVersion has.
+	 */
+	   	
+	public List getDigitalAssetVOList(Integer contentVersionId, Database db) throws Exception
+    {
+		String key = "" + contentVersionId;
+		String cacheName = "digitalAssetCache";
+		List digitalAssetVOList = (List)CacheController.getCachedObject(cacheName, key);
+		if(digitalAssetVOList != null)
+		{
+			if(logger.isInfoEnabled())
+				logger.info("There was an cached digitalAssetVOList:" + digitalAssetVOList);
+			
+			return digitalAssetVOList;
+		}
+
+		digitalAssetVOList = new ArrayList();
+    	
+		if(logger.isInfoEnabled())
+			logger.info("Making a sql call for assets on " + contentVersionId);
+
+    	OQLQuery oql = db.getOQLQuery("CALL SQL SELECT c.digitalAssetId, c.assetFileName, c.assetKey, c.assetFilePath, c.assetContentType, c.assetFileSize FROM cmDigitalAsset c, cmContentVersionDigitalAsset cvda where cvda.digitalAssetId = c.digitalAssetId AND cvda.contentVersionId = $1 ORDER BY c.digitalAssetId AS org.infoglue.cms.entities.content.impl.simple.SmallDigitalAssetImpl");
+    	if(CmsPropertyHandler.getUseShortTableNames() != null && CmsPropertyHandler.getUseShortTableNames().equalsIgnoreCase("true"))
+    		oql = db.getOQLQuery("CALL SQL SELECT c.DigAssetId, c.assetFileName, c.assetKey, c.assetFilePath, c.assetContentType, c.assetFileSize FROM cmDigAsset c, cmContVerDigAsset cvda where cvda.DigAssetId = c.DigAssetId AND cvda.ContVerId = $1 ORDER BY c.DigAssetId AS org.infoglue.cms.entities.content.impl.simple.SmallDigitalAssetImpl");
+
+    	oql.bind(contentVersionId);
+    	
+    	QueryResults results = oql.execute(Database.ReadOnly);
+		
+		while(results.hasMore()) 
+        {
+        	SmallDigitalAssetImpl digitalAsset = (SmallDigitalAssetImpl)results.next();
+        	digitalAssetVOList.add(digitalAsset.getValueObject());
+        }
+		
+		results.close();
+		oql.close();
+    	
+		if(digitalAssetVOList != null)
+			CacheController.cacheObject(cacheName, key, digitalAssetVOList);
+		
+		return digitalAssetVOList;
+    }
 
 	/**
 	 * This method is used by the getAssetUrl methods, to locate a digital asset in another
