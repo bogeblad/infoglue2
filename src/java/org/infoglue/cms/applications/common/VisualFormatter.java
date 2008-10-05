@@ -446,7 +446,7 @@ public class VisualFormatter
 	 * @return
 	 */
 	
-	public final String replaceNiceURINonAsciiWithSpecifiedChars(String s, char defaultCharacter)
+	public final String replaceNiceURINonAsciiWithSpecifiedChars(String s, String defaultCharacter)
 	{
 		if(s == null)
 			return null;
@@ -468,7 +468,7 @@ public class VisualFormatter
 			    	String replaceChar = properties.getProperty("" + c);
 			        if(replaceChar != null && !replaceChar.equals(""))
 			        	sb.append(replaceChar);
-			        else
+			        else if(defaultCharacter != null && !defaultCharacter.equalsIgnoreCase("none"))
 			        	sb.append(defaultCharacter);
 			    }
 			}
@@ -477,7 +477,7 @@ public class VisualFormatter
 		    	String replaceChar = properties.getProperty("" + c);
 		        if(replaceChar != null && !replaceChar.equals(""))
 		        	sb.append(replaceChar);
-		        else
+		        else if(defaultCharacter != null && !defaultCharacter.equalsIgnoreCase("none"))
 		        	sb.append(defaultCharacter);
 			}
 		}

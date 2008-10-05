@@ -1622,4 +1622,9 @@ public class CmsPropertyHandler
 		return Boolean.parseBoolean(niceURIUseLowerCase);
 	}
 
+	public static String getNiceURIDefaultReplacementCharacter()
+	{
+		return getServerNodeProperty("niceURIDefaultReplacementCharacter", true, "_");
+	}
+
 }
