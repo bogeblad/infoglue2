@@ -591,13 +591,25 @@ public class SearchController extends BaseController
 				if(smallAsset.getAssetContentType().matches(assetTypeFilter))
 				{
 					DigitalAsset asset = DigitalAssetController.getDigitalAssetWithId(smallAsset.getId(), db);
-					logger.info("Found a asset matching:" + asset.getId());
+					//logger.info("Found a asset matching:" + asset.getId());
 					Collection versions = asset.getContentVersions();
 					Iterator versionsIterator = versions.iterator();
 					while(versionsIterator.hasNext())
 					{
 						ContentVersion contentVersion = (ContentVersion)versionsIterator.next();
-						if(contentVersion.getOwningContent().getId().intValue() != previousContentId.intValue() || contentVersion.getLanguage().getId().intValue() != previousLanguageId.intValue())
+						boolean correctRepository = false;
+						for(int i=0; i < repositoryId.length; i++)
+						{
+							//System.out.println("repositoryId[" + i + "]:" + repositoryId[i] + " - " + contentVersion.getOwningContent().getRepositoryId());
+							if(contentVersion.getOwningContent().getRepositoryId().equals(repositoryId[i])) 
+							{
+								correctRepository = true;
+								break;
+							}
+						}
+						//System.out.println("correctRepository:" + correctRepository);
+						
+						if(correctRepository && (contentVersion.getOwningContent().getId().intValue() != previousContentId.intValue() || contentVersion.getLanguage().getId().intValue() != previousLanguageId.intValue()))
 						{
 						    ContentVersion latestContentVersion = ContentVersionController.getContentVersionController().getLatestActiveContentVersion(contentVersion.getOwningContent().getId(), contentVersion.getLanguage().getId(), db);
 							if(latestContentVersion != null && latestContentVersion.getId().intValue() == contentVersion.getId().intValue())
