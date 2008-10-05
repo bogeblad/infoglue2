@@ -1003,4 +1003,21 @@
 		</attribute>
 	</tag>
 
+	<tag>
+	    <name>forward</name>
+	    <tagclass>org.infoglue.deliver.taglib.common.ForwardTag</tagclass>
+	    <bodycontent>JSP</bodycontent>
+	    <info></info>
+	    <attribute>
+		    <name>id</name>
+	    	<required>false</required>
+	        <rtexprvalue>true</rtexprvalue>
+		</attribute>
+	    <attribute>
+		    <name>url</name>
+	    	<required>true</required>
+	        <rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
 </taglib>

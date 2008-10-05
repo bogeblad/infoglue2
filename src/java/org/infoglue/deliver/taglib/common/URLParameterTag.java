@@ -88,13 +88,17 @@ public class URLParameterTag extends AbstractTag
 		if(urlParent == null)
 			importParent = (ImportTag) findAncestorWithClass(this, ImportTag.class);
 		XSLTransformTag transformParent = null;
-		if(urlParent == null)
+		if(urlParent == null && importParent == null)
 			transformParent = (XSLTransformTag) findAncestorWithClass(this, XSLTransformTag.class);
-		
+		ForwardTag forwardParent = null;
 		if(urlParent == null && importParent == null && transformParent == null)
+			forwardParent = (ForwardTag) findAncestorWithClass(this, ForwardTag.class);
+
+		if(urlParent == null && importParent == null && transformParent == null && forwardParent == null)
 		{
-			throw new JspTagException("URLParameterTag must either have a URLTag ancestor, a ImportTag ancestor or an XSLTransformTag ancestor.");
+			throw new JspTagException("URLParameterTag must either have a URLTag ancestor, a ImportTag ancestor, a ForwardTag ancestor or an XSLTransformTag ancestor.");
 		}
+		
 		if(urlParent != null)
 			((URLTag) urlParent).addParameter(name, value);
 		if(importParent != null)
@@ -106,6 +110,8 @@ public class URLParameterTag extends AbstractTag
 		}
 		if(transformParent != null)
 			((XSLTransformTag) transformParent).addParameter(name, value);
+		if(forwardParent != null)
+			((ForwardTag) forwardParent).addParameter(name, value);
 	}
 	
 	/**
