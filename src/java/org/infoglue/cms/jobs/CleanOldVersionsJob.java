@@ -84,7 +84,9 @@ public class CleanOldVersionsJob implements Job
 	    	String keepOnlyOldPublishedVersionsString = CmsPropertyHandler.getKeepOnlyOldPublishedVersionsDuringClean();
 	    	logger.info("keepOnlyOldPublishedVersionsString:" + keepOnlyOldPublishedVersionsString);
 			boolean keepOnlyOldPublishedVersions = Boolean.parseBoolean(keepOnlyOldPublishedVersionsString);
-	    	if(numberOfVersionsToKeepDuringCleanInteger.intValue() > -1)
+			if(numberOfVersionsToKeepDuringCleanInteger.intValue() < 3)
+				numberOfVersionsToKeepDuringCleanInteger = new Integer(3);
+			if(numberOfVersionsToKeepDuringCleanInteger.intValue() > -1)
 				ContentVersionController.getContentVersionController().cleanContentVersions(numberOfVersionsToKeepDuringCleanInteger.intValue(), keepOnlyOldPublishedVersions);
 		}
 		catch(Exception e)
