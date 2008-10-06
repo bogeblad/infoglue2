@@ -23,6 +23,7 @@
 			<tr>
 				<td>
 					<select name="interceptionPointVOName" class="dropbox">
+						<option value="">$ui.getString("entity.InterceptionPoint.chooseInterceptionPoint.label")</option>
 						#foreach($inactiveInterceptionPointVO in $inactiveInterceptionPointVOList)
 							<option value="$inactiveInterceptionPointVO.name" #if("$inactiveInterceptionPointVO.name" == "$!interceptionPointVOName") selected #end>$inactiveInterceptionPointVO.name - $inactiveInterceptionPointVO.description</option>
 						#end
