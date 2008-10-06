@@ -953,7 +953,7 @@ public class ComponentLogic
 	public WebPage getBoundPage(String propertyName, boolean useInheritance, boolean useRepositoryInheritance, boolean useStructureInheritance)
 	{
 		WebPage webPage = null;
-
+		
 		Map property = getInheritedComponentProperty(this.infoGlueComponent, propertyName, useInheritance, useRepositoryInheritance, useStructureInheritance);
 		webPage = getBoundPage(property);
 

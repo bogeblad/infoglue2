@@ -4186,7 +4186,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			logger.warn("An error occurred trying to get the current content:" + e.getMessage(), e);
+			logger.warn("An error occurred trying to get the current siteNode with id " + this.siteNodeId + " on URL: " + getOriginalFullURL() + "\nMessage: " + e.getMessage() + "");
 		}
 
 		return siteNodeVO;
@@ -4207,7 +4207,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			logger.warn("An error occurred trying to get the siteNode with id " + siteNodeId + ":" + e.getMessage(), e);
+			logger.warn("An error occurred trying to get the siteNode with id " + siteNodeId + " on URL: " + getOriginalFullURL() + "\nMessage: " + e.getMessage() + "");
 		}
 
 		return siteNodeVO;
@@ -4763,7 +4763,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			logger.error("An error occurred trying to get current page url:" + e.getMessage(), e);
+			logger.warn("An error occurred trying to get current page path:" + e.getMessage());
 		}
 				
 		return pagePath;
