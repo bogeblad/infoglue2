@@ -29,6 +29,7 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.Properties;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.log4j.Logger;
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.deliver.util.CacheController;
@@ -483,6 +484,50 @@ public class VisualFormatter
 		}
 		
 		return (toLowerCase ? sb.toString().toLowerCase() : sb.toString());
+	}
+
+	/**
+	 * This method replaces all non-ascii-characters with a corresponding one defined in the system properties-object. 
+	 * If not defined there it replaces the char with the default character.
+	 * @param s
+	 * @param defaultCharacter
+	 * @return
+	 */
+	
+	public final String replaceNonAsciiWithNumericEntity(String s)
+	{
+		if(s == null)
+			return null;
+		
+		return StringEscapeUtils.escapeHtml(s);
+		
+		/*
+		StringBuffer sb = new StringBuffer();
+		int n = s.length();
+		for (int i = 0; i < n; i++) 
+		{
+			char c = s.charAt(i);
+			if(c < 128 && c > 32)
+			{
+				//System.out.println(c + "=" + (int)c);
+			    if(Character.isLetterOrDigit(c) ||  c == '-' || c == '_' || c == '.')
+			        sb.append(c);
+			    else
+			    {
+					sb.append(c);
+					//sb.append("\\u" + c);
+			    }
+			}
+			else
+			{
+				//System.out.println(c + "=" + (int)c);
+	        	sb.append("&#" + (int)c + ";");
+			}
+		}
+		
+		System.out.println("3:\n" + sb.toString() + "\n\n");
+		return sb.toString();
+		*/
 	}
 
 	/**
