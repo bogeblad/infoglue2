@@ -388,71 +388,78 @@ public abstract class PageInvoker
 		//pageString = decorateHeadAndPageWithVarsFromComponents(pageString);
 		//System.out.println("pageString after:" + pageString);
 		
-		//logger.info("ContentType:" + contentType);
-		if(contentType.indexOf("charset=") > -1)
-			this.getResponse().setContentType(contentType);
-		else
-			this.getResponse().setContentType(contentType + "; charset=" + languageVO.getCharset());
-
-		Iterator headersIterator = this.getDeliveryContext().getHttpHeaders().keySet().iterator();
-		while(headersIterator.hasNext())
+		try
 		{
-			String key = (String)headersIterator.next();
-			Object valueObject = this.getDeliveryContext().getHttpHeaders().get(key);
-			if(valueObject instanceof Date)
+			//logger.info("ContentType:" + contentType);
+			if(contentType.indexOf("charset=") > -1)
+				this.getResponse().setContentType(contentType);
+			else
+				this.getResponse().setContentType(contentType + "; charset=" + languageVO.getCharset());
+	
+			Iterator headersIterator = this.getDeliveryContext().getHttpHeaders().keySet().iterator();
+			while(headersIterator.hasNext())
 			{
-				Date value = (Date)valueObject;
-				this.getResponse().setDateHeader(key, value.getTime());
+				String key = (String)headersIterator.next();
+				Object valueObject = this.getDeliveryContext().getHttpHeaders().get(key);
+				if(valueObject instanceof Date)
+				{
+					Date value = (Date)valueObject;
+					this.getResponse().setDateHeader(key, value.getTime());
+				}
+				else
+				{
+					String value = (String)valueObject;
+					this.getResponse().setHeader(key, value);				
+				}
+			}
+			
+			if(logger.isInfoEnabled())
+				logger.info("contentType:" + contentType + "; charset=" + languageVO.getCharset());
+			
+			String compressPageResponse = CmsPropertyHandler.getCompressPageResponse();
+			if(logger.isInfoEnabled())
+				logger.info("compressPageResponse:" + compressPageResponse);
+		
+			if(compressPageResponse != null && compressPageResponse.equalsIgnoreCase("true"))
+			{
+				OutputStream out = null;
+				
+				String encodings = this.getRequest().getHeader("Accept-Encoding");
+			    if (encodings != null && encodings.indexOf("gzip") != -1) 
+			    {
+			    	this.getResponse().setHeader("Content-Encoding", "gzip");
+			    	out = new GZIPOutputStream(this.getResponse().getOutputStream());
+			    }
+			    else if (encodings != null && encodings.indexOf("compress") != -1) 
+			    {
+			    	this.getResponse().setHeader("Content-Encoding", "x-compress");
+			    	out = new ZipOutputStream(this.getResponse().getOutputStream());
+			    	((ZipOutputStream)out).putNextEntry(new ZipEntry("dummy name"));
+			    }
+			    else 
+			    {
+			    	out = this.getResponse().getOutputStream();
+			    }
+			    
+			    out.write(pageString.getBytes(languageVO.getCharset()));
+				out.flush();
+				out.close();
 			}
 			else
-			{
-				String value = (String)valueObject;
-				this.getResponse().setHeader(key, value);				
-			}
-		}
-		
-		if(logger.isInfoEnabled())
-			logger.info("contentType:" + contentType + "; charset=" + languageVO.getCharset());
-		
-		String compressPageResponse = CmsPropertyHandler.getCompressPageResponse();
-		if(logger.isInfoEnabled())
-			logger.info("compressPageResponse:" + compressPageResponse);
-	
-		if(compressPageResponse != null && compressPageResponse.equalsIgnoreCase("true"))
-		{
-			OutputStream out = null;
+			{			
+				PrintWriter out = this.getResponse().getWriter();
+				out.println(pageString);
+				out.flush();
+				out.close();
+	    	}	    
 			
-			String encodings = this.getRequest().getHeader("Accept-Encoding");
-		    if (encodings != null && encodings.indexOf("gzip") != -1) 
-		    {
-		    	this.getResponse().setHeader("Content-Encoding", "gzip");
-		    	out = new GZIPOutputStream(this.getResponse().getOutputStream());
-		    }
-		    else if (encodings != null && encodings.indexOf("compress") != -1) 
-		    {
-		    	this.getResponse().setHeader("Content-Encoding", "x-compress");
-		    	out = new ZipOutputStream(this.getResponse().getOutputStream());
-		    	((ZipOutputStream)out).putNextEntry(new ZipEntry("dummy name"));
-		    }
-		    else 
-		    {
-		    	out = this.getResponse().getOutputStream();
-		    }
-		    
-		    out.write(pageString.getBytes(languageVO.getCharset()));
-			out.flush();
-			out.close();
-		}
-		else
+			if(logger.isInfoEnabled())
+				logger.info("sent all data to client:" + pageString.length());
+    	}
+		catch(IllegalStateException e)
 		{
-			PrintWriter out = this.getResponse().getWriter();
-			out.println(pageString);
-			out.flush();
-			out.close();
-		}	    
-		
-		if(logger.isInfoEnabled())
-			logger.info("sent all data to client:" + pageString.length());
+			logger.error("There was an IllegalStateException when trying to write output for URL: " + this.getTemplateController().getOriginalFullURL() + "\nMessage: " + e.getMessage());
+		}
 	}
 
 	private void getLastModifiedDateTime() throws Bug

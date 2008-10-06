@@ -269,22 +269,44 @@ public class ViewPageFilter implements Filter
 	        } 
 	        else 
 	        {
-	            filterChain.doFilter(httpRequest, httpResponse);
+	        	//filterChain.doFilter(httpRequest, httpResponse);
+	        	
+	        	if(!httpResponse.isCommitted())
+	        	{
+	        		try
+		        	{
+		        		filterChain.doFilter(httpRequest, httpResponse);
+		        	}
+		        	catch (Exception e) 
+		        	{
+		        		logger.error("Response was committed - could not continue filter chains:" + e.getMessage());
+		        	}
+	        	}
+	        	
 	        }    
         }
         catch (SystemException se) 
         {
-            httpRequest.setAttribute("responseCode", "500");
-            httpRequest.setAttribute("error", se);
-            httpRequest.getRequestDispatcher("/ErrorPage.action").forward(httpRequest, httpResponse);
+        	if(!httpResponse.isCommitted())
+        	{
+	            httpRequest.setAttribute("responseCode", "500");
+	            httpRequest.setAttribute("error", se);
+	            httpRequest.getRequestDispatcher("/ErrorPage.action").forward(httpRequest, httpResponse);
+        	}
+        	else
+        		logger.error("Error and response was committed:" + se.getMessage(), se);
         }
         catch (Exception e) 
         {
-            httpRequest.setAttribute("responseCode", "404");
-            httpRequest.setAttribute("error", e);
-            httpRequest.getRequestDispatcher("/ErrorPage.action").forward(httpRequest, httpResponse);
-        }
-
+        	if(!httpResponse.isCommitted())
+        	{
+		    	httpRequest.setAttribute("responseCode", "404");
+	            httpRequest.setAttribute("error", e);
+	            httpRequest.getRequestDispatcher("/ErrorPage.action").forward(httpRequest, httpResponse);
+	        }
+	        else
+	            logger.error("Error and response was committed:" + e.getMessage(), e);
+	    }
     }
 
     public void destroy() 
