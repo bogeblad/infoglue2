@@ -307,7 +307,8 @@ Edit on sight classes
 	font-family: Tahoma, Arial, Helvetica, sans-serif;
 	line-height: 20px;
 	cursor: default;
-	visibility: hidden;
+	display: none;
+	/*visibility: hidden;*/
 	border: 0px solid red;
 }
 

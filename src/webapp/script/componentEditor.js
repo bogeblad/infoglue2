@@ -527,6 +527,7 @@ function showComponentMenu(event, element, compId, anInsertUrl, anDeleteUrl, anC
 	//menuDiv.style.top 	= newTop + "px";
 	
 	menuDiv.style.visibility = "visible";
+	menuDiv.style.display = "block";
 	
 	editUrl = "";
 	
@@ -618,6 +619,7 @@ function showComponentInTreeMenu(event, element, compId, anInsertUrl, anDeleteUr
 	//menuDiv.style.top 	= newTop + "px";
 	
 	menuDiv.style.visibility = "visible";
+	menuDiv.style.display = "block";
 	
 	return false;
 }
@@ -755,6 +757,7 @@ function showEmptySlotMenu(slotId, event, compId, anInsertUrl, slotContentIdVar)
 	//menuDiv.style.top 	= newTop + "px";
 
 	menuDiv.style.visibility = "visible";
+	menuDiv.style.display = "block";
 
 	return false;
 }
@@ -855,6 +858,7 @@ function showDiv(id)
 {
 	//alert("id:" + id)
 	document.getElementById(id).style.visibility = 'visible';
+	document.getElementById(id).style.display = 'block';
 	if(id == "pageComponents")
 	{
 		document.getElementById(id).style.display = 'block';
@@ -865,6 +869,7 @@ function showDiv(id)
 function hideDiv(id)
 {
 	document.getElementById(id).style.visibility = 'hidden';
+	document.getElementById(id).style.display = 'none';
 	if(id == "pageComponents")
 	{
 		document.getElementById(id).style.display = 'none';
@@ -2329,7 +2334,7 @@ function viewSource()
 		//alert("rightedge:" + rightedge);
 		//alert("bottomedge:" + bottomedge);
 	
-		currentMenuDiv.style.display = 'block';
+		currentMenuDiv.style.display = 'none';
 		currentMenuDiv.style.visibility = 'hidden';
 	
 		//alert("currentMenuDiv.offsetWidth:" + currentMenuDiv.offsetWidth);
@@ -2345,7 +2350,8 @@ function viewSource()
 		currentMenuDiv.style.top 	= clientY + "px";
 	
 		currentMenuDiv.style.visibility = 'visible';
-		
+		currentMenuDiv.style.display = "block";
+
 		previousIGMenuId = id;
 		
 		return false;

@@ -894,7 +894,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		
 		List languages = LanguageDeliveryController.getLanguageDeliveryController().getLanguagesForSiteNode(getDatabase(), siteNodeId, templateController.getPrincipal());
 		
-		sb.append("<div id=\"component" + componentId + "Properties\" class=\"componentProperties\" style=\"right:5px; top:5px; visibility:hidden;\">");
+		sb.append("<div id=\"component" + componentId + "Properties\" class=\"componentProperties\" style=\"right:5px; top:5px; visibility:hidden; display: none;\">");
 		sb.append("	<div id=\"component" + componentId + "PropertiesHandle\" class=\"componentPropertiesHandle\"><div id=\"leftPaletteHandleCompProps\">Properties - " + componentName + " in slot " + slotName + "</div><div id=\"rightPaletteHandle\"><a href=\"javascript:hideDiv('component" + componentId + "Properties');\" class=\"white\"><img src=\"" + componentEditorUrl + "/images/closeIcon.gif\" border=\"0\"/></a></div></div>");
 		sb.append("	<div id=\"component" + componentId + "PropertiesBody\" class=\"componentPropertiesBody\">");
 		
@@ -1452,17 +1452,6 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 			sb.append("		</tr>");
 		}
 		
-		/*
-		sb.append("		<tr class=\"igtr\">");
-		sb.append("			<td colspan=\"4\"><img src=\"" + this.getRequest().getContextPath() + "/images/trans.gif\" height=\"5\" width=\"1\"></td>");
-		sb.append("		</tr>");
-		sb.append("		<tr class=\"igtr\">");
-		sb.append("			<td colspan=\"4\" style=\"padding: 6px 0px 6px 2px;\">");
-		sb.append("				<a href=\"javascript:submitForm('component" + componentId + "PropertiesForm');\"><img src=\"" + componentEditorUrl + "" + this.getDeliveryContext().getInfoGlueAbstractAction().getLocalizedString(this.getDeliveryContext().getSession().getLocale(), "images.contenttool.buttons.save") + "\" width=\"50\" height=\"25\" border=\"0\"></a>");
-		sb.append("				<a href=\"javascript:hideDiv('component" + componentId + "Properties');\"><img src=\"" + componentEditorUrl + "" + this.getDeliveryContext().getInfoGlueAbstractAction().getLocalizedString(this.getDeliveryContext().getSession().getLocale(), "images.contenttool.buttons.close") + "\" width=\"50\" height=\"25\" border=\"0\"></a>");
-		sb.append("			</td>");
-		sb.append("		</tr>");
-		*/
 		sb.append("		</table>");
 		sb.append("	</div>");
 		sb.append("	<div id=\"component" + componentId + "PropertiesFooter\" class=\"componentPropertiesFooter\">");
@@ -1485,7 +1474,8 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		sb.append("		componentId = \"" + componentId + "\";\n");
 		sb.append("		activatedComponentId = QueryString(\"activatedComponentId\");\n");
 		sb.append("		if(activatedComponentId && activatedComponentId == componentId)\n"); 
-		sb.append("			//showDiv(\"component\" + componentId + \"Properties\");\n"); 
+		if(propertyIndex > 4)
+			sb.append("			showDiv(\"component\" + componentId + \"Properties\");\n"); 
 
 		sb.append("		$(theHandle).css('cursor', 'move');\n");
 		sb.append("		$(theRoot).draggable({handle: theHandle, cursor: 'move', distance: 10});\n");
