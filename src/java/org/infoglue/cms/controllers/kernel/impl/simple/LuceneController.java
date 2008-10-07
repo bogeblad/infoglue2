@@ -127,6 +127,7 @@ public class LuceneController extends BaseController implements NotificationList
 	
 		    	File INDEX_DIR = new File(index);
 		    	writer = new IndexWriter(INDEX_DIR, new StandardAnalyzer(new String[]{}));
+		    	writer.setMaxMergeDocs(500000);
 		    	if(logger.isInfoEnabled())
 					logger.info("Indexing to directory '" + INDEX_DIR + "'...");
 	
