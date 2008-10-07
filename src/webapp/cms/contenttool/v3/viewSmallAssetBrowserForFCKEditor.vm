@@ -3,11 +3,38 @@
 <script language="JavaScript">
 <!--
 	$(document).ready(function(){
-		$("#tabsContainer > ul").tabs({ show:function() { resizeInlineTabDivsWithAmount(20,20);} });
+		$("#tabsContainer > ul").tabs( { 
+				show:function() { resizeInlineTabDivsWithAmount(20,20); },
+			  	select:function(e, ui) { 
+			  		//alert("ui: " + ui.index);
+			  		if(ui.index == 1)
+			  		{
+			  			if($("#latestAssetsFrame").attr("src") == "")
+			  			{
+			  				#if($contentVO.id)
+					  			$("#latestAssetsFrame").attr("src", "SearchContent!latestInlineAssetsV3.action?repositoryId=${contentVO.repositoryId}&assetTypeFilter=$assetTypeFilter"); 
+							#else
+					  			$("#latestAssetsFrame").attr("src", "SearchContent!latestInlineAssetsV3.action?assetTypeFilter=$assetTypeFilter"); 
+							#end
+			  			}
+			  		}
+			  		else if(ui.index == 2)
+			  		{
+			  			if($("#repositoryBrowserFrame").attr("src") == "")
+			  			{
+			  				#if($contentVO.id)
+					  			$("#repositoryBrowserFrame").attr("src", "ViewContentVersion!viewAssetsDialogForFCKEditorV3.action?repositoryId=$contentVO.repositoryId&contentId=$contentId&languageId=$languageId&assetTypeFilter=$assetTypeFilter"); 
+							#else
+					  			$("#repositoryBrowserFrame").attr("src", "ViewContentVersion!viewAssetsDialogForFCKEditorV3.action?languageId=$languageId&assetTypeFilter=$assetTypeFilter"); 
+							#end
+						}	
+			  		}
+			  	} 
+		});
 		setTimeout("resizeInlineTabDivsWithAmount(20,20)", 100);
-		init();
+		setTimeout("init()", 10);
 	});
-		
+	
 	function getRequestParameter(url, parameterName)
 	{
 		value = "";
@@ -30,9 +57,11 @@
 		#if($contentVO.id)
 			//alert(top.opener.document.title);
 			if(top.opener.document.title == "Image Properties")
+			{
 				var txtUrl = top.opener.document.getElementById("txtLnkUrl").value;
 				if(txtUrl == null || txtUrl == "")
 					txtUrl = top.opener.document.getElementById("txtUrl").value;
+			}
 			else
 				var txtUrl = top.opener.document.getElementById("txtUrl").value;
 		
@@ -84,22 +113,14 @@
 		</div>
 		#end
 		
-		<div id="latestUploadedTab" class="inlineTabDiv" style="border-bottom: 0px solid red;">
-			#if($contentVO.id)
-			<IFRAME frameborder="0" name="latestAssetsFrame" id="latestAssetsFrame" src="SearchContent!latestInlineAssetsV3.action?repositoryId=${contentVO.repositoryId}&assetTypeFilter=$assetTypeFilter" width="660" height="410" align="baseline"></IFRAME>
-			#else
-			<IFRAME frameborder="0" name="latestAssetsFrame" id="latestAssetsFrame" src="SearchContent!latestInlineAssetsV3.action?assetTypeFilter=$assetTypeFilter" width="660" height="410" align="baseline"></IFRAME>
-			#end
+		<div id="latestUploadedTab" class="inlineTabDiv">
+			<IFRAME frameborder="0" name="latestAssetsFrame" id="latestAssetsFrame" src="" width="660" height="410" align="baseline"></IFRAME>
 		</div>
-
-		<div id="repositoryBrowserTab" class="inlineTabDiv" style="border-bottom: 0px solid red;">
-			#if($contentVO.id)
-			<IFRAME frameborder="0" name="repositoryBrowserFrame" id="repositoryBrowserFrame" src="ViewContentVersion!viewAssetsDialogForFCKEditorV3.action?repositoryId=$contentVO.repositoryId&contentId=$contentId&languageId=$languageId&assetTypeFilter=$assetTypeFilter" width="660" height="410" align="baseline"></IFRAME>
-			#else
-			<IFRAME frameborder="0" name="repositoryBrowserFrame" id="repositoryBrowserFrame" src="ViewContentVersion!viewAssetsDialogForFCKEditorV3.action?languageId=$languageId&assetTypeFilter=$assetTypeFilter" width="660" height="410" align="baseline"></IFRAME>
-			#end
+		
+		<div id="repositoryBrowserTab" class="inlineTabDiv">
+			<IFRAME frameborder="0" name="repositoryBrowserFrame" id="repositoryBrowserFrame" src="" width="660" height="410" align="baseline"></IFRAME>
 		</div>
-			
+					
 		<div id="searchTab" class="inlineTabDiv" style="border-bottom: 0px solid red;">
 			#if($contentVO.id)
 			<IFRAME frameborder="0" name="contentVersionAssetSearchFrame" id="contentVersionAssetSearchFrame" src="SearchContent!inputInlineAssetV3.action?repositoryId=${contentVO.repositoryId}&assetTypeFilter=$assetTypeFilter" width="660" height="410" align="baseline"></IFRAME>
