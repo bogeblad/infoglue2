@@ -12,7 +12,7 @@
  * Read the entire license text here: http://www.gnu.org/licenses/lgpl.html
  */
 
-// $Id: calendar.js,v 1.1 2006/08/23 12:21:01 mattias Exp $
+// $Id: calendar.js,v 1.2 2008/10/07 06:48:35 mattias Exp $
 
 /** The Calendar object constructor. */
 Calendar = function (firstDayOfWeek, dateStr, onSelected, onClose) {
@@ -739,7 +739,7 @@ Calendar.prototype.create = function (_par) {
 
 	var div = Calendar.createElement("div");
 	this.element = div;
-	div.className = "calendar";
+	div.className = "jscalendar";
 	if (this.isPopup) {
 		div.style.position = "absolute";
 		div.style.display = "none";
