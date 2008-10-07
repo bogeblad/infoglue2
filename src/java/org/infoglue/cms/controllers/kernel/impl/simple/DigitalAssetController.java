@@ -1806,7 +1806,9 @@ public class DigitalAssetController extends BaseController
 		}
 		catch (Exception e) 
 		{
-			e.printStackTrace();
+			logger.error("Error dumping asset:" + e.getMessage());
+			if(logger.isInfoEnabled())
+				logger.info("Extra information on error dumping asset:" + e.getMessage(), e);				
 		}
 		
 		return outputFile.exists();

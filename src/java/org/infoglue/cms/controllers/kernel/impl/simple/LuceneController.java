@@ -548,62 +548,20 @@ public class LuceneController extends BaseController implements NotificationList
 		}
 	}
 
-
+	
 	public void indexAll() throws Exception
 	{
 		List notificationMessages = new ArrayList();
 		
-		Database db = CastorDatabaseService.getDatabase();
-		try
+		List languageVOList = LanguageController.getController().getLanguageVOList();
+		Iterator languageVOListIterator = languageVOList.iterator();
+		while(languageVOListIterator.hasNext())
 		{
-			beginTransaction(db);
-
-			List languageVOList = LanguageController.getController().getLanguageVOList(db);
-			Iterator languageVOListIterator = languageVOList.iterator();
-			while(languageVOListIterator.hasNext())
-			{
-				LanguageVO languageVO = (LanguageVO)languageVOListIterator.next();
-				
-				OQLQuery oql = db.getOQLQuery( "SELECT cv FROM " + SmallestContentVersionImpl.class.getName() + " cv WHERE cv.languageId = $1 AND cv.isActive = $2 ORDER BY cv.contentVersionId");
-				oql.bind(languageVO.getId());
-				oql.bind(true);
-				
-				QueryResults results = oql.execute(Database.ReadOnly);
-				
-				Integer previousContentId = null;
-				while (results.hasMore()) 
-				{
-					SmallestContentVersionImpl smallestContentVersionImpl = (SmallestContentVersionImpl)results.next();
-					if(previousContentId == null || !previousContentId.equals(smallestContentVersionImpl.getContentId()))
-					{
-						List digitalAssetVOList = DigitalAssetController.getDigitalAssetVOList(smallestContentVersionImpl.getId(), db);
-						if(digitalAssetVOList.size() > 0)
-						{
-							logger.info("digitalAssetVOList:" + digitalAssetVOList.size());
-							Iterator digitalAssetVOListIterator = digitalAssetVOList.iterator();
-							while(digitalAssetVOListIterator.hasNext())
-							{
-								DigitalAssetVO assetVO = (DigitalAssetVO)digitalAssetVOListIterator.next();
-								NotificationMessage assetNotificationMessage = new NotificationMessage("LuceneController", DigitalAssetImpl.class.getName(), "SYSTEM", NotificationMessage.TRANS_UPDATE, assetVO.getId(), "dummy");
-								notificationMessages.add(assetNotificationMessage);							
-							}
-						}
-						
-						NotificationMessage notificationMessage = new NotificationMessage("LuceneController", ContentVersionImpl.class.getName(), "SYSTEM", NotificationMessage.TRANS_UPDATE, smallestContentVersionImpl.getId(), "dummy");
-						notificationMessages.add(notificationMessage);
-						previousContentId = smallestContentVersionImpl.getContentId();
-					}
-				}
-				
-				results.close();
-			}
+			LanguageVO languageVO = (LanguageVO)languageVOListIterator.next();
 			
-			commitTransaction(db);
-		}
-		catch ( Exception e )
-		{
-			rollbackTransaction(db);
-			throw new SystemException("An error occurred when we tried to fetch a list of users in this role. Reason:" + e.getMessage(), e);			
+			int newLastContentVersionId = getNotificationMessages(notificationMessages, languageVO, 0);
+			while(newLastContentVersionId != -1)
+				newLastContentVersionId = getNotificationMessages(notificationMessages, languageVO, newLastContentVersionId);
 		}
 		
 		logger.info("notificationMessages:" + notificationMessages.size());
@@ -624,7 +582,66 @@ public class LuceneController extends BaseController implements NotificationList
 			notify(notificationMessage);
 			i++;
 		}
+	}
 
+	private int getNotificationMessages(List notificationMessages, LanguageVO languageVO, int lastContentVersionId) throws Exception
+	{
+		logger.info("getNotificationMessages:" + languageVO.getName() + " : " + lastContentVersionId);
+
+		int newLastContentVersionId = -1;
+		
+		Database db = CastorDatabaseService.getDatabase();
+		try
+		{
+			beginTransaction(db);
+			
+			OQLQuery oql = db.getOQLQuery( "SELECT cv FROM " + SmallestContentVersionImpl.class.getName() + " cv WHERE cv.languageId = $1 AND cv.isActive = $2 AND cv.contentVersionId > $3 ORDER BY cv.contentVersionId");
+			oql.bind(languageVO.getId());
+			oql.bind(true);
+			oql.bind(lastContentVersionId);
+			
+			QueryResults results = oql.execute(Database.ReadOnly);
+			
+			int processedItems = 0;
+			Integer previousContentId = null;
+			while (results.hasMore() && processedItems < 100) 
+			{
+				SmallestContentVersionImpl smallestContentVersionImpl = (SmallestContentVersionImpl)results.next();
+				if(previousContentId == null || !previousContentId.equals(smallestContentVersionImpl.getContentId()))
+				{
+					List digitalAssetVOList = DigitalAssetController.getDigitalAssetVOList(smallestContentVersionImpl.getId(), db);
+					if(digitalAssetVOList.size() > 0)
+					{
+						logger.info("digitalAssetVOList:" + digitalAssetVOList.size());
+						Iterator digitalAssetVOListIterator = digitalAssetVOList.iterator();
+						while(digitalAssetVOListIterator.hasNext())
+						{
+							DigitalAssetVO assetVO = (DigitalAssetVO)digitalAssetVOListIterator.next();
+							NotificationMessage assetNotificationMessage = new NotificationMessage("LuceneController", DigitalAssetImpl.class.getName(), "SYSTEM", NotificationMessage.TRANS_UPDATE, assetVO.getId(), "dummy");
+							notificationMessages.add(assetNotificationMessage);							
+						}
+					}
+					
+					NotificationMessage notificationMessage = new NotificationMessage("LuceneController", ContentVersionImpl.class.getName(), "SYSTEM", NotificationMessage.TRANS_UPDATE, smallestContentVersionImpl.getId(), "dummy");
+					notificationMessages.add(notificationMessage);
+					previousContentId = smallestContentVersionImpl.getContentId();
+				}
+				newLastContentVersionId = smallestContentVersionImpl.getId().intValue();
+				processedItems++;
+			}
+						
+			results.close();
+			logger.info("Finished round:" + processedItems + ":" + newLastContentVersionId);
+		}
+		catch ( Exception e )
+		{
+			rollbackTransaction(db);
+			throw new SystemException("An error occurred when we tried to fetch a list of users in this role. Reason:" + e.getMessage(), e);			
+		}
+		
+		commitTransaction(db);
+		
+		return newLastContentVersionId;
 	}
 
 	/**
