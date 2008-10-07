@@ -388,12 +388,12 @@ public class LuceneController extends BaseController implements NotificationList
 		try
 		{
 			if(logger.isInfoEnabled())
-				logger.info("Index for fuck sake:" + notificationMessage.getName() + ":" + notificationMessage.getType() + ":" + notificationMessage.getObjectId() + ":" + notificationMessage.getObjectName());
+				logger.info("Indexing:" + notificationMessage.getName() + ":" + notificationMessage.getType() + ":" + notificationMessage.getObjectId() + ":" + notificationMessage.getObjectName());
 			addNotificationMessage(notificationMessage);
 		}
 		catch(Exception e)
 		{
-			e.printStackTrace();
+			logger.error("Error notifying: " + e.getMessage());
 		}
 	}
 
@@ -432,7 +432,7 @@ public class LuceneController extends BaseController implements NotificationList
 	            }
 	            catch (Exception e) 
 	            {
-	            	e.printStackTrace();
+	            	logger.warn("Error indexing file: " + file + "\nMessage: " + e.getMessage());
 				}
 	            finally
 	            {
@@ -448,7 +448,7 @@ public class LuceneController extends BaseController implements NotificationList
             }
 			catch (Exception e) 
 			{
-				e.printStackTrace();
+            	logger.warn("Error indexing:" + e.getMessage());
 			}
 		}
 		else if(digitalAssetVO.getAssetContentType().equalsIgnoreCase("application/msword"))
@@ -472,7 +472,7 @@ public class LuceneController extends BaseController implements NotificationList
 			} 
 			catch (Exception e)
 			{
-				e.printStackTrace();
+				logger.warn("Error indexing file: " + file + "\nMessage: " + e.getMessage());
 			}
 		}
 		
