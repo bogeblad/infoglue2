@@ -40,7 +40,10 @@
 	<script type="text/javascript" src="script/yui/build/menu/menu-min.js"></script>
 	
 	<script type="text/javascript" src="script/jquery/jquery-1.2.6.min.js"></script>
+	<script type="text/javascript" src="script/jqueryplugins/ui/jquery-ui-dragDropTabs-1.6rc2.min.js"></script>
+	<!-- 
 	<script type="text/javascript" src="script/jqueryplugins/ui/jquery-ui-igcommon15.min.js"></script>
+	-->
 	
 	#if($hasDataTable)
 		<link rel="stylesheet" type="text/css" href="script/yui/build/fonts/fonts-min.css" />
