@@ -407,6 +407,7 @@ public class ToolbarController
 									  "validateAndSubmitContentForm();",
 									  "images/v3/saveInlineIcon.gif",
 									  "left",
+									  "save",
 									  true));
 
 		buttons.add(new ToolbarButton("",
@@ -415,6 +416,7 @@ public class ToolbarController
 									  "validateAndSubmitContentFormThenExit();",
 									  "images/v3/saveAndExitInlineIcon.gif",
 									  "left",
+									  "saveAndExit",
 									  true));
 		
 		buttons.add(new ToolbarButton("",
@@ -423,6 +425,7 @@ public class ToolbarController
 				  					  "cancel();",
 				  					  "images/v3/cancelIcon.gif",
 				  					  "left",
+				  					  "cancel",
 				  					  true));
 		
 		return buttons;
@@ -436,32 +439,6 @@ public class ToolbarController
 	{
 		Timer t = new Timer();
 		List<ToolbarButton> buttons = new ArrayList<ToolbarButton>();
-
-		/*
-		buttons.add(new ToolbarButton("",
-									  getLocalizedString(locale, "tool.contenttool.save.label"), 
-									  getLocalizedString(locale, "tool.contenttool.save.label"),
-									  "javascript:validateAndSubmitContentForm();",
-									  "images/v3/saveInlineIcon.gif"));
-
-		buttons.add(new ToolbarButton("",
-									  getLocalizedString(locale, "tool.contenttool.saveAndExit.label"), 
-									  getLocalizedString(locale, "tool.contenttool.saveAndExit.label"),
-									  "javascript:validateAndSubmitContentFormThenClose();",
-									  "images/v3/saveAndExitInlineIcon.gif"));
-
-		buttons.add(new ToolbarButton("",
-									  getLocalizedString(locale, "tool.contenttool.publish.label"), 
-									  getLocalizedString(locale, "tool.contenttool.publish.label"),
-									  "javascript:validateAndSubmitContentFormThenSubmitToPublish();",
-				  					  "images/v3/publishIcon.gif"));
-
-		buttons.add(new ToolbarButton("",
-				  					  getLocalizedString(locale, "tool.contenttool.cancel.label"), 
-				  					  getLocalizedString(locale, "tool.contenttool.cancel.label"),
-				  					  "javascript:refreshCaller();",
-				  					  "images/v3/cancelIcon.gif"));
-		*/
 		
 		LanguageVO currentLanguageVO = null;
 		ContentVO contentVO = null;
@@ -485,6 +462,7 @@ public class ToolbarController
 				  											 "",
 					  										 "images/v3/menu-button-arrow.png",
 					  										 "right",
+					  										 "dropArrow",
 					  										 false);
 		
 		Iterator repositoryLanguagesIterator = LanguageController.getController().getLanguageVOList(contentVO.getRepositoryId()).iterator();
@@ -497,12 +475,12 @@ public class ToolbarController
 						 StringUtils.capitalize(languageVO.getDisplayLanguage()), 
 						 StringUtils.capitalize(languageVO.getDisplayLanguage()),
 						 "changeLanguage(" + contentVO.getId() + ", " + languageVO.getId() + ");",
+						 "",
 						 ""));
 			}
 		}
 		
 		buttons.add(languageDropButton);
-
 		
 		return buttons;
 	}
@@ -517,13 +495,15 @@ public class ToolbarController
 									  getLocalizedString(locale, "tool.contenttool.save.label"), 
 									  getLocalizedString(locale, "tool.contenttool.save.label"),
 									  "javascript:validateAndSubmitContentForm();",
-									  "images/v3/saveInlineIcon.gif"));
+									  "images/v3/saveInlineIcon.gif",
+									  "save"));
 
 		buttons.add(new ToolbarButton("",
 									  getLocalizedString(locale, "tool.contenttool.saveAndExit.label"), 
 									  getLocalizedString(locale, "tool.contenttool.saveAndExit.label"),
 									  "javascript:validateAndSubmitContentFormThenClose();",
-									  "images/v3/saveAndExitInlineIcon.gif"));
+									  "images/v3/saveAndExitInlineIcon.gif",
+									  "saveAndExit"));
 		
 		/*
 		buttons.add(new ToolbarButton("",
@@ -539,6 +519,7 @@ public class ToolbarController
 				  					  "if(parent && parent.closeDialog) parent.closeDialog(); else window.close();",
 				  					  "images/v3/cancelIcon.gif",
 				  					  "left",
+									  "cancel",
 				  					  true));
 		
 		return buttons;
@@ -552,7 +533,8 @@ public class ToolbarController
 				  getLocalizedString(locale, "tool.contenttool.save.label"), 
 				  getLocalizedString(locale, "tool.contenttool.save.label"),
 				  "javascript:validateAndSubmitContentForm();",
-				  "images/v3/saveInlineIcon.gif"));
+				  "images/v3/saveInlineIcon.gif",
+				  "save"));
 	
 		return buttons;
 	}
@@ -567,6 +549,7 @@ public class ToolbarController
 									  "save();",
 									  "images/v3/createBackgroundPenPaper.gif",
 				  					  "left",
+									  "save",
 									  true));
 
 		buttons.add(new ToolbarButton("",
@@ -575,6 +558,7 @@ public class ToolbarController
 				  					  "if(parent && parent.closeDialog) parent.closeDialog(); else window.close();",
 				  					  "images/v3/cancelIcon.gif",
 				  					  "left",
+				  					  "cancel",
 				  					  true));
 
 		return buttons;
@@ -588,13 +572,15 @@ public class ToolbarController
 									  getLocalizedString(locale, "tool.contenttool.save.label"), 
 									  getLocalizedString(locale, "tool.contenttool.save.label"),
 									  "javascript:save();",
-									  "images/v3/saveInlineIcon.gif"));
+									  "images/v3/saveInlineIcon.gif",
+									  "save"));
 
 		buttons.add(new ToolbarButton("",
 									  getLocalizedString(locale, "tool.common.closeWindowButton.label"), 
 									  getLocalizedString(locale, "tool.common.closeWindowButton.label"),
 									  "javascript:closeAndReload();",
-									  "images/v3/closeWindowIcon.gif"));
+									  "images/v3/closeWindowIcon.gif",
+									  "close"));
 						
 		return buttons;
 	}
@@ -609,6 +595,7 @@ public class ToolbarController
 									  "submitForm();",
 									  "images/v3/nextBackground.gif",
 				  					  "left",
+									  "next",
 									  true));
 
 		buttons.add(new ToolbarButton("",
@@ -617,6 +604,7 @@ public class ToolbarController
 				  					  "if(parent && parent.closeDialog) parent.closeDialog(); else window.close();",
 				  					  "images/v3/cancelIcon.gif",
 				  					  "left",
+				  					  "cancel",
 				  					  true));
 
 		return buttons;
@@ -632,6 +620,7 @@ public class ToolbarController
 									  "submitForm();",
 									  "images/v3/createBackgroundPenPaper.gif",
 				  					  "left",
+				  					  "save",
 									  true));
 
 		buttons.add(new ToolbarButton("",
@@ -640,6 +629,7 @@ public class ToolbarController
 				  					  "if(parent && parent.closeDialog) parent.closeDialog(); else window.close();",
 				  					  "images/v3/cancelIcon.gif",
 				  					  "left",
+				  					  "cancel",
 				  					  true));
 
 		return buttons;
@@ -661,6 +651,7 @@ public class ToolbarController
 					  "submitToPublish('true');",
 					  "images/v3/publishPageIcon.gif",
 					  "left",
+					  "publish",
 					  true));
 		}
 		
@@ -672,6 +663,7 @@ public class ToolbarController
 					  "submitToPublish('false');",
 					  "images/v3/publishPageIcon.gif",
 					  "left",
+					  "submitToPublish",
 					  true));
 		}
 		
@@ -681,26 +673,9 @@ public class ToolbarController
 				  "if(parent && parent.closeDialog) parent.closeDialog(); else window.close();",
 				  "images/v3/cancelIcon.gif",
 				  "left",
+				  "cancel",
 				  true));
 		
-		/*
-		buttons.add(new ToolbarButton("",
-				  getLocalizedString(locale, "tool.common.checkAll.label"), 
-				  getLocalizedString(locale, "tool.common.checkAll.label"),
-				  "checkAll();",
-				  "images/trans.gif",
-				  "left",
-				  true));
-
-		buttons.add(new ToolbarButton("",
-				  getLocalizedString(locale, "tool.common.uncheckAll.label"), 
-				  getLocalizedString(locale, "tool.common.uncheckAll.label"),
-				  "uncheckAll();",
-				  "images/trans.gif",
-				  "left",
-				  true));
-		*/
-
 		return buttons;
 	}
 
@@ -749,6 +724,7 @@ public class ToolbarController
 				  "showDiv('newSubscriptionForm')",
 				  "images/v3/createBackgroundPenPaper.gif",
 				  "left",
+				  "create",
 				  true));
 		
 		return buttons;
@@ -767,7 +743,8 @@ public class ToolbarController
 											  getLocalizedString(locale, "tool.managementtool.createSystemUser.header"), 
 											  getLocalizedString(locale, "tool.managementtool.createSystemUser.header"),
 											  "CreateSystemUser!inputV3.action",
-											  "images/v3/createBackgroundPenPaper.gif"));
+											  "images/v3/createBackgroundPenPaper.gif",
+											  "create"));
 			}
 		}
 		
@@ -795,7 +772,8 @@ public class ToolbarController
 						  getLocalizedString(locale, "tool.managementtool.deleteSystemUser.header"), 
 						  getLocalizedString(locale, "tool.managementtool.deleteSystemUser.header"),
 						  "Confirm.action?header=tool.managementtool.deleteSystemUser.header&yesDestination=" + yesDestination + "&noDestination=" + noDestination + "&message=tool.managementtool.deleteSystemUser.text&extraParameters=" + URLEncoder.encode(primaryKey, URIEncoding),
-						  "images/v3/createBackgroundPenPaper.gif"));
+						  "images/v3/createBackgroundPenPaper.gif",
+						  "delete"));
 
 				//buttons.add(new ToolbarButton("Confirm.action?header=tool.managementtool.deleteSystemUser.header&yesDestination=" + URLEncoder.encode("DeleteSystemUser.action?userName=" + URLEncoder.encode(primaryKey, URIEncoding), URIEncoding) + "&noDestination=" + URLEncoder.encode("ViewListSystemUser.action?title=SystemUsers", URIEncoding) + "&message=tool.managementtool.deleteSystemUser.text&extraParameters=" + URLEncoder.encode(primaryKey, URIEncoding), getLocalizedString(locale, "images.managementtool.buttons.deleteSystemUser"), "tool.managementtool.deleteSystemUser.header"));
 			}
@@ -806,7 +784,8 @@ public class ToolbarController
 						  getLocalizedString(locale, "tool.managementtool.viewSystemUserPasswordDialog.header"), 
 						  getLocalizedString(locale, "tool.managementtool.viewSystemUserPasswordDialog.header"),
 						  "UpdateSystemUserPassword!inputV3.action?userName=" + URLEncoder.encode(URLEncoder.encode(primaryKey, URIEncoding), URIEncoding),
-						  "images/v3/passwordIcon.gif"));
+						  "images/v3/passwordIcon.gif",
+						  "password"));
 
 				//buttons.add(new ToolbarButton("UpdateSystemUserPassword!input.action?userName=" + URLEncoder.encode(URLEncoder.encode(primaryKey, URIEncoding), URIEncoding), getLocalizedString(locale, "images.managementtool.buttons.updateSystemUserPassword"), "Update user password"));
 			}
@@ -819,7 +798,8 @@ public class ToolbarController
 					  getLocalizedString(locale, "tool.managementtool.viewUserProperties.header"), 
 					  getLocalizedString(locale, "tool.managementtool.viewUserProperties.header"),
 					  "ViewUserProperties!v3.action?userName=" + URLEncoder.encode(URLEncoder.encode(primaryKey, URIEncoding), URIEncoding),
-					  "images/v3/advancedSettingsIcon.gif"));
+					  "images/v3/advancedSettingsIcon.gif",
+					  "advancedSettings"));
 
 			//buttons.add(new ToolbarButton("ViewUserProperties.action?userName=" + URLEncoder.encode(URLEncoder.encode(primaryKey, URIEncoding), URIEncoding), getLocalizedString(locale, "images.managementtool.buttons.viewSystemUserProperties"), "View User Properties"));
 		}
@@ -830,7 +810,8 @@ public class ToolbarController
 					  getLocalizedString(locale, "tool.managementtool.transferAccessRights.header"), 
 					  getLocalizedString(locale, "tool.managementtool.transferAccessRights.header"),
 					  "AuthorizationSwitchManagement!inputUser.action?userName=" + URLEncoder.encode(URLEncoder.encode(primaryKey, URIEncoding)),
-					  "images/v3/createBackgroundPenPaper.gif"));
+					  "images/v3/createBackgroundPenPaper.gif",
+					  "create"));
 
 			//buttons.add(new ToolbarButton("AuthorizationSwitchManagement!inputUser.action?userName=" + URLEncoder.encode(URLEncoder.encode(primaryKey, URIEncoding)), getLocalizedString(locale, "images.managementtool.buttons.transferUserAccessRights"), "Transfer Users Access Rights"));
 		}
@@ -850,7 +831,8 @@ public class ToolbarController
 											  getLocalizedString(locale, "tool.managementtool.createRole.header"), 
 											  getLocalizedString(locale, "tool.managementtool.createRole.header"),
 											  "CreateRole!inputV3.action",
-											  "images/v3/createBackgroundPenPaper.gif"));
+											  "images/v3/createBackgroundPenPaper.gif",
+											  "create"));
 			}
 		}
 		
@@ -875,7 +857,8 @@ public class ToolbarController
 						  getLocalizedString(locale, "tool.managementtool.deleteRole.header"), 
 						  getLocalizedString(locale, "tool.managementtool.deleteRole.header"),
 						  "Confirm.action?header=tool.managementtool.deleteRole.header&yesDestination=" + yesDestination + "&noDestination=" + noDestination + "&message=tool.managementtool.deleteRole.text&extraParameters=" + URLEncoder.encode(primaryKey, URIEncoding),
-						  "images/v3/deleteBackgroundWasteBasket.gif"));
+						  "images/v3/deleteBackgroundWasteBasket.gif",
+						  "delete"));
 			}
 		}
 		
@@ -889,7 +872,8 @@ public class ToolbarController
 					  getLocalizedString(locale, "tool.managementtool.viewRoleProperties.header"), 
 					  getLocalizedString(locale, "tool.managementtool.viewRoleProperties.header"),
 					  "ViewRoleProperties!v3.action?roleName=" + URLEncoder.encode(URLEncoder.encode(this.primaryKey, URIEncoding)),
-					  "images/v3/advancedSettingsIcon.gif"));
+					  "images/v3/advancedSettingsIcon.gif",
+					  "advancedSettings"));
 			}
 		}
 
@@ -901,7 +885,8 @@ public class ToolbarController
 				  getLocalizedString(locale, "tool.contenttool.accessRights.header"), 
 				  getLocalizedString(locale, "tool.contenttool.accessRights.header"),
 				  "ViewAccessRights.action?interceptionPointCategory=Role&extraParameters=" + URLEncoder.encode(this.primaryKey, URIEncoding) + "&returnAddress=ViewRole!v3.action?roleName=" + URLEncoder.encode(primaryKey, URIEncoding) + "&colorScheme=ManagementTool",
-				  "images/v3/accessRightsIcon.gif"));
+				  "images/v3/accessRightsIcon.gif",
+				  "accessRights"));
 		}
 		/*
 		if(principal.getIsAdministrator())
@@ -924,7 +909,8 @@ public class ToolbarController
 											  getLocalizedString(locale, "tool.managementtool.createGroup.header"), 
 											  getLocalizedString(locale, "tool.managementtool.createGroup.header"),
 											  "CreateGroup!inputV3.action",
-											  "images/v3/createBackgroundPenPaper.gif"));
+											  "images/v3/createBackgroundPenPaper.gif",
+											  "create"));
 			}
 		}
 		
@@ -949,7 +935,8 @@ public class ToolbarController
 						  getLocalizedString(locale, "tool.managementtool.deleteGroup.header"), 
 						  getLocalizedString(locale, "tool.managementtool.deleteGroup.header"),
 						  "Confirm.action?header=tool.managementtool.deleteGroup.header&yesDestination=" + yesDestination + "&noDestination=" + noDestination + "&message=tool.managementtool.deleteGroup.text&extraParameters=" + URLEncoder.encode(primaryKey, URIEncoding),
-						  "images/v3/deleteBackgroundWasteBasket.gif"));
+						  "images/v3/deleteBackgroundWasteBasket.gif",
+						  "delete"));
 			}
 		}
 		
@@ -963,7 +950,8 @@ public class ToolbarController
 					  getLocalizedString(locale, "tool.managementtool.viewGroupProperties.header"), 
 					  getLocalizedString(locale, "tool.managementtool.viewGroupProperties.header"),
 					  "ViewGroupProperties!v3.action?groupName=" + URLEncoder.encode(URLEncoder.encode(this.primaryKey, URIEncoding)),
-					  "images/v3/advancedSettingsIcon.gif"));
+					  "images/v3/advancedSettingsIcon.gif",
+					  "advancedSettings"));
 			}
 		}
 
@@ -975,7 +963,8 @@ public class ToolbarController
 				  getLocalizedString(locale, "tool.contenttool.accessRights.header"), 
 				  getLocalizedString(locale, "tool.contenttool.accessRights.header"),
 				  "ViewAccessRights.action?interceptionPointCategory=Group&extraParameters=" + URLEncoder.encode(this.primaryKey, URIEncoding) + "&returnAddress=ViewGroup!v3.action?groupName=" + URLEncoder.encode(primaryKey, URIEncoding) + "&colorScheme=ManagementTool",
-				  "images/v3/accessRightsIcon.gif"));
+				  "images/v3/accessRightsIcon.gif",
+				  "accessRights"));
 		}
 		/*
 		if(principal.getIsAdministrator())
@@ -995,6 +984,7 @@ public class ToolbarController
 									  "openWindow('ViewDigitalAsset.action?entity=org.infoglue.cms.entities.management.GroupProperties&entityId=" + this.primaryKey + "', 'DigitalAsset', 'width=400,height=200,resizable=no');",
 									  "images/v3/attachAssetBackgroundIcon.gif",
 									  "left",
+									  "attachAsset",
 									  true));
 		
 		return buttons;
@@ -1010,6 +1000,7 @@ public class ToolbarController
 									  "openWindow('ViewDigitalAsset.action?entity=org.infoglue.cms.entities.management.RoleProperties&entityId=" + this.primaryKey + "', 'DigitalAsset', 'width=400,height=200,resizable=no');",
 									  "images/v3/attachAssetBackgroundIcon.gif",
 									  "left",
+									  "attachAsset",
 									  true));
 		
 		return buttons;
@@ -1025,6 +1016,7 @@ public class ToolbarController
 									  "openWindow('ViewDigitalAsset.action?entity=org.infoglue.cms.entities.management.UserProperties&entityId=" + this.primaryKey + "', 'DigitalAsset', 'width=400,height=200,resizable=no');",
 									  "images/v3/attachAssetBackgroundIcon.gif",
 									  "left",
+									  "attachAsset",
 									  true));
 		
 		return buttons;
@@ -1328,7 +1320,8 @@ public class ToolbarController
 									  getLocalizedString(locale, "tool.common.helpButton.label"), 
 									  getLocalizedString(locale, "tool.common.helpButton.title"),
 									  helpPageUrl,
-									  "images/v3/helpIcon.gif"));
+									  "images/v3/helpIcon.gif",
+									  "help"));
 		return buttons;
 	}
 
@@ -1342,6 +1335,7 @@ public class ToolbarController
 									  "if(parent && parent.closeDialog) parent.closeDialog(); else window.close();",
 				  					  "images/v3/closeWindowIcon.gif",
 				  					  "right",
+									  "close",
 				  					  true));
 		return buttons;
 	}
@@ -1356,6 +1350,7 @@ public class ToolbarController
 									  "if(parent && parent.closeDialog) parent.closeDialog(); else window.close();",
 				  					  "images/v3/closeWindowIcon.gif",
 				  					  "right",
+									  "close",
 				  					  true));
 		return buttons;
 	}
@@ -1368,6 +1363,7 @@ public class ToolbarController
 				  "save(document.inputForm);",
 				  "images/v3/saveInlineIcon.gif",
 				  "left",
+				  "save",
 				  true);
 	}
 
@@ -1379,6 +1375,7 @@ public class ToolbarController
 				  "saveAndExit(document.inputForm, \"" + exitUrl + "\");",
 				  "images/v3/saveAndExitInlineIcon.gif",
 				  "left",
+				  "saveAndExit",
 				  true);
 	}
 	
@@ -1390,6 +1387,7 @@ public class ToolbarController
 				  "" + cancelUrl + "",
 				  "images/v3/cancelIcon.gif",
 				  "left",
+				  "cancel",
 				  false);
 	}
 

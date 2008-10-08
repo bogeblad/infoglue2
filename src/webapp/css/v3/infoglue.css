@@ -120,7 +120,7 @@ h4 {
 	display: block;
 }
 .ig-label-nl {
-	aoverflow: hidden;
+	/*aoverflow: hidden;*/
 	float: left;
 	text-align: left;
 	margin-right: 0.5em;
@@ -231,7 +231,7 @@ img.scaledbordered {
     padding-top:2px;
 	padding-bottom:2px;
 	width:100%;
-	aheight:450px;
+	/*height:450px;*/
 	background-color: white;
 	font-family:verdana, sans-serif;
 	font-size:10pt;
@@ -256,7 +256,7 @@ img.scaledbordered {
 	}
 
 .dialogDivBody .submit, .dialogDivBody  input, .dialogDivBody  select {
-	amargin-left: 4.5em;
+	/*margin-left: 4.5em;*/
 	margin-bottom: 5px;
 	vertical-align: top;
 	display: block;
@@ -317,35 +317,36 @@ img.scaledbordered {
 
 
 
-/* Button in IG */
+/* Toolbar Button in IG */
 .igToolbarButton
 {
-	abackground-image: url("../../images/v3/igToolbarButtonBackground.png");
-	abackground-position: 100% -26px;
-	abackground-repeat: no-repeat;
+	background-image: url("../../images/v3/igToolbarButtonBackground.png");
+	background-position: 100% -26px;
+	background-repeat: no-repeat;
+	/*background-color: red;*/
 	line-height: 26px;
 	height: 26px;
-	padding-right: 6px;
+	padding-right: 10px;
 	color: #555;
 	display: block;
 	float: left;
 	margin: 4px;
 	margin-left: 0px;
-	margin-right: 10px;
+	margin-right: 4px;
+	margin-top: 2px;
 	cursor: pointer;
-	border: 1px solid transparent;
-	-moz-border-radius: 3px;
-	-webkit-border-radius: 3px;
+	text-decoration: none;
 }
 
 .igToolbarButtonOuterSpan
 {
-	abackground-image: url("../../images/v3/igToolbarButtonBackground.png");
+	background-image: url("../../images/v3/igToolbarButtonBackground.png");
 	background-position: 0px 0px;
 	background-repeat: no-repeat;
+	/*background-color: blue;*/
 	font-family: Tahoma;
 	font-size: 10pt;
-	padding-left: 6px;
+	padding-left: 10px;
 	line-height: 26px;
 	text-decoration: none;
 	height: 26px;
@@ -355,21 +356,54 @@ img.scaledbordered {
 
 .igToolbarButtonOuterSpan span {
 	padding-left: 24px;
-	}
+	/*background-color: yellow;*/
+	display: block;
+	float: left;
+	line-height: 22px;
+	margin-top: 2px;
+	height: 22px;
+}
+
+.igToolbarHeaderButton
+{
+	background-image: none;
+}
+
+.igToolbarSubButton
+{
+	background-image: none;
+}
+
+.igToolbarSubButtonOuterSpan
+{
+	background-image: none;
+}
 
 .igToolbarButton:hover
 {
-	abackground-position: 100% -78px;
-	acolor: white;
-	text-decoration: none;
-	border: 1px solid #808080;
-	-moz-border-radius: 3px;
-	-webkit-border-radius: 3px;
+	/*background-position: 100% -78px;*/
+	/*color: white;*/
+	text-decoration: underline;
 }
 
 .igToolbarButtonOuterSpan:hover
 {
-	abackground-position: 0px -52px;
+	/*background-position: 0px -52px;*/
+}
+
+.save { background:url(../../images/v3/saveInlineIcon.gif) no-repeat left center; background-position: 0px 0px;}
+.saveAndExit {background:url(../../images/v3/saveAndExitInlineIcon.gif) no-repeat left center; background-position: 0px 0px;}
+.cancel {background:url(../../images/v3/cancelIcon.gif) no-repeat left center; background-position: 0px 3px;}
+.close {background:url(../../images/v3/closeWindowIcon.gif) no-repeat left center; background-position: 0px 4px;}
+.help {background:url(../../images/v3/helpIcon.gif) no-repeat left center; background-position: 0px 2px;}
+.dropArrow {background:url(../../images/v3/dropArrowIcon.gif) no-repeat left center; background-position: 0px 2px;}
+.publish {background:url(../../images/v3/publishPageIcon.gif) no-repeat left center; background-position: 0px 2px;}
+.submitToPublish {background:url(../../images/v3/publishPageIcon.gif) no-repeat left center; background-position: 0px 2px;}
+.create {background:url(../../images/v3/createBackgroundPenPaper.gif) no-repeat left center; background-position: 0px 2px;}
+.next {background:url(../../images/v3/nextBackground.gif) no-repeat left center; background-position: 0px 2px;}
+
+.save, .saveAndExit, .cancelIcon, .close, .help {
+	padding-left:28px;
 }
 
 
@@ -385,8 +419,8 @@ img.scaledbordered {
 	border-width: 0 1px;
 	border-style: solid;
 	border-color: #808080;
-	margin: 0 -1px; *
-	position: relative; *
+	margin: 0 -1px;
+	position: relative;
 	left: -1px;
 }
 .yui-skin-sam .yui-button-hover {
@@ -476,19 +510,19 @@ img.scaledbordered {
 }
 
 .yui-button .first-child {
-	display: block; *
+	display: block;
 	display: inline-block;
 }
 
 .yui-button button,.yui-button a {
-	display: block; *
+	display: block;
 	display: inline-block;
 	border: none;
 	margin: 0;
 }
 
 .yui-button button {
-	background-color: transparent; *
+	background-color: transparent;
 	overflow: visible;
 	cursor: pointer;
 }
@@ -500,14 +534,14 @@ img.scaledbordered {
 .yui-skin-sam .yui-button button,.yui-skin-sam .yui-button a {
 	padding: 0 10px;
 	font-size: 93%;
-	line-height: 2; *
+	line-height: 2;
 	line-height: 1.7;
-	min-height: 2em; *
-	min-height: auto;
+	min-height: 2em;
+	/*min-height: auto;*/
 	color: #000;
 }
 
-.yui-skin-sam .yui-button a { *
+.yui-skin-sam .yui-button a {
 	line-height: 2;
 }
 
