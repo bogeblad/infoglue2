@@ -50,6 +50,9 @@ import javax.imageio.ImageIO;
 import org.apache.log4j.Logger;
 import org.infoglue.cms.util.CmsPropertyHandler;
 
+import com.jhlabs.image.MarbleFilter;
+import com.jhlabs.image.TwirlFilter;
+
 /**
  * Renders images and saves them.
  * @author Per Jonsson - per.jonsson@it-huset.se
@@ -455,6 +458,22 @@ public class AdvancedImageRenderer
         return renderedImage.getSubimage( leftPos, 0, rightPos - leftPos, imgHeight - 1 );
     }
 
+	public void distortImage() {
+		// twirl filter
+		TwirlFilter tf = new TwirlFilter();
+		float angle = (float) 1.1;
+		tf.setAngle( angle );
+		tf.filter(renderedImage, renderedImage);
+		
+		// Marble Filter
+		MarbleFilter mf = new MarbleFilter();
+		mf.setXScale( 2.0f );
+		mf.setYScale( 2.0f );
+		mf.setTurbulence( 0.9f );
+		mf.setAmount( 0.9f );
+		mf.filter(renderedImage, renderedImage);		
+	}
+    
     /**
      * Check if this class has a specific attribute, name of attribute is case
      * insensitive. ie. "fontname", "fontsize", "bgcolor"

@@ -1629,6 +1629,8 @@ public interface TemplateController
      * @author Per Jonsson - per.jonsson@it-huset.se
      */
     public String getRenderedTextUrl( String text, Map renderAttributes );
+
+    public String getRenderedTextUrl( String text, Map renderAttributes, boolean distort );
     
     /**
      * A method to check if the current pagenode is decorated with EditOnSight

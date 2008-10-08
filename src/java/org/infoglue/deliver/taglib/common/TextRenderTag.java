@@ -39,15 +39,15 @@ public class TextRenderTag extends ComponentLogicTag
 {
     private static final long serialVersionUID = 523722286871322906L;
 
-    private Object result;
+    protected Object result;
 
-    private String text = null;
+    protected String text = null;
 
     private String propertyName = null;
 
     private Integer contentId = null;
 
-    private Map renderAttributes = null;
+    protected Map renderAttributes = null;
 
     public TextRenderTag()
     {

@@ -3608,6 +3608,11 @@ public class BasicTemplateController implements TemplateController
      */
     public String getRenderedTextUrl( String text, Map renderAttributes )
     {
+    	return getRenderedTextUrl( text, renderAttributes, false);
+	}
+	
+    public String getRenderedTextUrl( String text, Map renderAttributes, boolean distort )
+    {
         String assetUrl = "";
         if ( text == null || text.length() == 0 )
         {
@@ -3625,6 +3630,13 @@ public class BasicTemplateController implements TemplateController
             AdvancedImageRenderer imageRenderer = new AdvancedImageRenderer();
             // render the image
             imageRenderer.renderImage( text, renderAttributes );
+            if( distort ) 
+            {
+            	uniqueId = new StringBuffer( "igcaptcha" );
+                uniqueId.append( "_" + Math.abs( text.hashCode() ) );
+                uniqueId.append( "_" + ( renderAttributes != null ? Math.abs( renderAttributes.hashCode() ) : 4711 ) );
+            	imageRenderer.distortImage();
+            }
 
             String fileName = uniqueId + "." + imageRenderer.getImageFormatName();	// default is png
 
