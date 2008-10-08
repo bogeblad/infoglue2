@@ -37,6 +37,7 @@ public class ToolbarButton
 	private String title            		= "";
 	private String backgroundImageURL   	= "";
 	private String backgroundImageAlignment	= "left";
+	private String cssClass   				= "";
 	private String actionURL  	    		= "";
 	private boolean isJavascript			= false;
 	//private Integer height				= new Integer(22);
@@ -44,18 +45,19 @@ public class ToolbarButton
 	private List<ToolbarButton> subButtons 	= new ArrayList<ToolbarButton>();
 	//private boolean isSelfContained		= false;
 
-	public ToolbarButton(String id, String text, String title, String actionURL, String backgroundImageURL)
+	public ToolbarButton(String id, String text, String title, String actionURL, String backgroundImageURL, String cssClass)
 	{
-		this(id, text, title, actionURL, backgroundImageURL, "left", false);
+		this(id, text, title, actionURL, backgroundImageURL, "left", cssClass, false);
 	}
 
-	public ToolbarButton(String id, String text, String title, String actionURL, String backgroundImageURL, String backgroundImageAlignment, boolean isJavascript)
+	public ToolbarButton(String id, String text, String title, String actionURL, String backgroundImageURL, String backgroundImageAlignment, String cssClass, boolean isJavascript)
 	{
 		this.id 						= id;
 		this.text 						= text;
 		this.title     					= title;
 		this.backgroundImageURL 		= backgroundImageURL;
 		this.backgroundImageAlignment 	= backgroundImageAlignment;
+		this.cssClass					= cssClass;
 		this.actionURL 					= actionURL;
 		this.isJavascript 				= isJavascript;
 	}
@@ -98,6 +100,11 @@ public class ToolbarButton
 	public String getBackgroundImageAlignment()
 	{
 		return backgroundImageAlignment;
+	}
+
+	public String getCssClass()
+	{
+		return cssClass;
 	}
 	
 }
