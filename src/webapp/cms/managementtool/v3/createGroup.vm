@@ -7,26 +7,8 @@
 
         YAHOO.util.Event.onContentReady("buttons", function () 
         {
-			/*
-			var oSaveButton = new YAHOO.widget.Button("saveButton");
-			var oSaveAndExitButton = new YAHOO.widget.Button("saveAndExitButton");
-			var oCancelButton = new YAHOO.widget.Button("cancelButton");
-			*/
-			
 			var oRightButton = new YAHOO.widget.Button("transferRightButton");
 			var oLeftButton = new YAHOO.widget.Button("transferLeftButton");
-
-			/*
-        	oSaveButton.on("click", function (p_oEvent){
-        		save(document.inputForm);
-        	});
-        	oSaveAndExitButton.on("click", function (p_oEvent){
-        		saveAndExit(document.inputForm, "CreateGroup!saveAndExitV3.action");
-        	});
-        	oCancelButton.on("click", function (p_oEvent){
-        		document.location.href = 'ViewListGroup!listManagableGroups.action';
-        	});
-        	*/
 			
         	oRightButton.on("click", function (p_oEvent){
 	   			!$('#unassignedUserNameList option:selected').remove().appendTo('#userName');  
