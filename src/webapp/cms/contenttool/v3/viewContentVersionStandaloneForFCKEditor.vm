@@ -49,7 +49,7 @@
 #else
 
 
-#beginCommonToolV3("tool.contenttool.contentVersionHeader" "$!contentVersionId" "contentId=$!contentId&languageId=$languageId" false false $!disableCloseButton)
+#beginLightCommonToolV3("tool.contenttool.contentVersionHeader" "$!contentVersionId" "contentId=$!contentId&languageId=$languageId" false false $!disableCloseButton)
 
 	<script type="text/javascript" src="${root}/applications/FCKEditor/fckeditor.js"></script>
 
@@ -310,11 +310,11 @@
 </script>
 
 <link rel="stylesheet" href="${root}/css/v3/tabs.css" type="text/css" media="screen" title="IG (Default)">
-<script type="text/javascript" src="${root}/script/jqueryplugins/ui/jquery-ui-igcommon15.min.js"></script>
+<link rel="stylesheet" href="${root}/css/cms.css" type="text/css" media="screen" title="IG (Default)">
 
-<div>
+<div style="z-index: 3;">
     
-	#menuToolbar("" $buttons $rightButtons) 
+	#lightMenuToolbar("" $buttons $rightButtons) 
 
 	<div style="clear: both;"></div>
 	
@@ -1091,7 +1091,7 @@
 		
 		
 		<div id="contentCoverDiv" class="inlineTabDiv">
-			<iframe src="${root}/ViewContent!v3.action?contentId=$contentId&stay=true" border="0" width="100%" height="500px" style="border: 0px;"></iframe>
+			<iframe src="${root}/ViewContent!v3.action?contentId=$contentId&stay=true" border="0" width="100%" height="500px" frameborder="0"></iframe>
 		</div>
 		
 	</div><!-- End first tabs collection -->
@@ -1224,7 +1224,7 @@
 	
 </div>	
 
-#footerToolbar($footerButtons)
+#lightFooterToolbar($footerButtons)
 
 #endCommonToolV3()
 

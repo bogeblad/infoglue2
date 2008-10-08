@@ -1,4 +1,4 @@
-#beginCommonToolV3("tool.contenttool.assetDialog.assetDialogHeader" "" "" false true $!disableCloseButton)
+#beginLightCommonToolV3("tool.contenttool.assetDialog.assetDialogHeader" "" "" false false $!disableCloseButton)
 
 <script language="JavaScript">
 <!--
@@ -26,6 +26,17 @@
 					  			$("#repositoryBrowserFrame").attr("src", "ViewContentVersion!viewAssetsDialogForFCKEditorV3.action?repositoryId=$contentVO.repositoryId&contentId=$contentId&languageId=$languageId&assetTypeFilter=$assetTypeFilter"); 
 							#else
 					  			$("#repositoryBrowserFrame").attr("src", "ViewContentVersion!viewAssetsDialogForFCKEditorV3.action?languageId=$languageId&assetTypeFilter=$assetTypeFilter"); 
+							#end
+						}	
+			  		}
+			  		else if(ui.index == 3)
+			  		{
+			  			if($("#contentVersionAssetSearchFrame").attr("src") == "")
+			  			{
+			  				#if($contentVO.id)
+					  			$("#contentVersionAssetSearchFrame").attr("src", "SearchContent!inputInlineAssetV3.action?repositoryId=${contentVO.repositoryId}&assetTypeFilter=$assetTypeFilter"); 
+							#else
+					  			$("#contentVersionAssetSearchFrame").attr("src", "SearchContent!inputInlineAssetV3.action?assetTypeFilter=$assetTypeFilter"); 
 							#end
 						}	
 			  		}
@@ -105,11 +116,7 @@
 	
 		#if($contentVO.id)
 		<div id="currentContentAssetsTab" class="inlineTabDiv" style="border-bottom: 0px solid red;">
-			#if($oldContentId > 0)
-				<IFRAME frameborder="0" name="contentVersionAssetsFrame" id="contentVersionAssetsFrame" src="" width="660" height="410" align="baseline"></IFRAME>
-			#else
-				<IFRAME frameborder="0" name="contentVersionAssetsFrame" id="contentVersionAssetsFrame" src="" width="660" height="410" align="baseline"></IFRAME>
-			#end
+			<IFRAME frameborder="0" name="contentVersionAssetsFrame" id="contentVersionAssetsFrame" src="" width="660" height="410" align="baseline"></IFRAME>
 		</div>
 		#end
 		
@@ -122,11 +129,7 @@
 		</div>
 					
 		<div id="searchTab" class="inlineTabDiv" style="border-bottom: 0px solid red;">
-			#if($contentVO.id)
-			<IFRAME frameborder="0" name="contentVersionAssetSearchFrame" id="contentVersionAssetSearchFrame" src="SearchContent!inputInlineAssetV3.action?repositoryId=${contentVO.repositoryId}&assetTypeFilter=$assetTypeFilter" width="660" height="410" align="baseline"></IFRAME>
-			#else
-			<IFRAME frameborder="0" name="contentVersionAssetSearchFrame" id="contentVersionAssetSearchFrame" src="SearchContent!inputInlineAssetV3.action?assetTypeFilter=$assetTypeFilter" width="660" height="410" align="baseline"></IFRAME>
-			#end
+			<IFRAME frameborder="0" name="contentVersionAssetSearchFrame" id="contentVersionAssetSearchFrame" src="" width="660" height="410" align="baseline"></IFRAME>
 		</div>
 
 	</div>

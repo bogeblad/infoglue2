@@ -1,4 +1,4 @@
-#beginCommonToolV3("tool.contenttool.linkDialog.linkDialogHeader" "" "" false false $!disableCloseButton)
+#beginLightCommonToolV3("tool.contenttool.linkDialog.linkDialogHeader" "" "" false false $!disableCloseButton)
 
 	<script type="text/javascript">
 	<!--
@@ -127,7 +127,7 @@
 
 <div onfocus="this.blur();">
     
-	#menuToolbar("" $buttons $rightButtons) 
+	#lightMenuToolbar("" $buttons $rightButtons) 
 
 	<div style="clear: both;"></div>
 	
@@ -150,7 +150,7 @@
 
 	</div>
 				
-	#footerToolbar($footerButtons)
+	#lightFooterToolbar($footerButtons)
 
 </div>
 

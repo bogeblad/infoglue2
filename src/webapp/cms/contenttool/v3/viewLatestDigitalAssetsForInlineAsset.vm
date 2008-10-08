@@ -1,4 +1,4 @@
-#beginCommonToolV3("tool.contenttool.assetDialog.assetDialogHeader" "" "" false false $!disableCloseButton)
+#beginLightCommonToolV3("tool.contenttool.assetDialog.assetDialogHeader" "" "" false false $!disableCloseButton)
 
 	<script type="text/javascript">
 	<!--
@@ -68,8 +68,6 @@
 	</script>
 	<link rel="stylesheet" type="text/css" href="css/v3/assets.css" />
 	
-	<META HTTP-EQUIV="pragma" CONTENT="no-cache" />
-	<META HTTP-EQUIV="expires" CONTENT="-1" />	
 </head>
 
 <body class="generaltooledit">
