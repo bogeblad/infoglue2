@@ -63,7 +63,12 @@ public class UpdateSystemUserPasswordAction extends InfoGlueAbstractAction
     {
     	return "inputStandalone";
     }
-    
+
+    public String doInputStandaloneV3() throws Exception
+    {
+    	return "inputStandaloneV3";
+    }
+
 	protected String doExecute() throws Exception 
 	{
 	    if(userName.equals(CmsPropertyHandler.getAnonymousUser()))

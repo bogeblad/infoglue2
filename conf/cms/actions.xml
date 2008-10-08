@@ -1,4 +1,4 @@
-<!-- $Id: actions.xml,v 1.78 2008/10/03 13:31:20 mattias Exp $ -->
+<!-- $Id: actions.xml,v 1.79 2008/10/08 18:14:28 mattias Exp $ -->
 <actions>
 
 	<!-- MySettings -->
@@ -542,6 +542,7 @@
 		<view name="input">/cms/managementtool/viewSystemUserPasswordDialog.vm</view>
 		<view name="inputV3">/cms/managementtool/v3/viewSystemUserPasswordDialog.vm</view>
 		<view name="inputStandalone">/cms/managementtool/viewMySettingsPasswordDialog.vm</view>
+		<view name="inputStandaloneV3">/cms/managementtool/v3/viewSystemUserPasswordDialog.vm</view>
 		<view name="success">ViewSystemUser.action</view>
 		<view name="successV3">ViewSystemUser!v3.action</view>
 		<view name="error">/cms/managementtool/error.vm</view>
@@ -1632,9 +1633,9 @@
 	<!--  InfoGlue Subscriptions -->
 	<action name="org.infoglue.cms.applications.common.actions.SubscriptionsAction" alias="Subscriptions">
 		<view name="input">/cms/common/viewSubscriptions.vm</view>
-		<view name="success">ExtendedRedirect.action?url=Subscriptions!inputGlobalSubscriptions.action</view>
+		<view name="success">ExtendedRedirect.action?url=Subscriptions!inputGlobalSubscriptions.action#standalone</view>
 		<view name="inputGlobalSubscriptions">/cms/common/viewGlobalSubscriptions.vm</view>
-		<view name="successGlobalSubscriptions">ExtendedRedirect.action?url=Subscriptions!inputGlobalSubscriptions.action</view>
+		<view name="successGlobalSubscriptions">ExtendedRedirect.action?url=Subscriptions!inputGlobalSubscriptions.action#standalone</view>
 		<view name="error">/cms/common/error.vm</view>
 	</action>
 

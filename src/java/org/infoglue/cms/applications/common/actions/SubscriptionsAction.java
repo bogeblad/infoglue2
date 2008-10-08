@@ -72,6 +72,7 @@ public class SubscriptionsAction extends InfoGlueAbstractAction
 	private Collection subscriptionVOList = null;
 	private String name;
 	private Integer subscriptionId;
+	private String standalone = "true";
 	
 	private List interceptionPointVOList;
 	private List contentTypeDefintionVOList;
@@ -363,7 +364,7 @@ public class SubscriptionsAction extends InfoGlueAbstractAction
 	    	sb.append("		</select>");
 			
 	   		sb.append("		<label for=\"filterCondition_" + i + "\">" + getLocalizedString(getLocale(), "tool.common.subscriptionFilterCondition.label") + "</label>");
-	   		sb.append("		<select id=\"filterCondition_" + i + "\" name=\"filterCondition_" + i + "\" multiple=\"multiple\" size=\"3\">");
+	   		sb.append("		<select id=\"filterCondition_" + i + "\" name=\"filterCondition_" + i + "\" multiple=\"multiple\" size=\"3\" style=\"width: 130px;\">");
 	   		
 	   		if(subscriptionFilterVO.getFilterType().equals("0"))
 	   		{
@@ -584,4 +585,16 @@ public class SubscriptionsAction extends InfoGlueAbstractAction
 	{
 		return interceptionPointVOList;
 	}
+	
+	public String getStandalone()
+	{
+		return standalone;
+	}
+
+	public void setStandalone(String standalone)
+	{
+		this.standalone = standalone;
+	}
+
+
 }
