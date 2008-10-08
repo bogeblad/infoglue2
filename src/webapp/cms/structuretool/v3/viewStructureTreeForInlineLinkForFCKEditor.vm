@@ -1,4 +1,4 @@
-#beginCommonToolV3("tool.contenttool.linkDialog.internalPageTabLabel" "" "" false false $!disableCloseButton)
+#beginLightCommonToolV3("tool.contenttool.linkDialog.internalPageTabLabel" "" "" false false $!disableCloseButton)
 
 	<script type="text/javascript">
 	<!--

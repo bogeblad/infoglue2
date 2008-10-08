@@ -1,6 +1,8 @@
-#beginCommonToolV3("tool.structuretool.publishSiteNode.header" "$!siteNodeId" "" false true $!disableCloseButton)
+#beginLightCommonToolV3("tool.structuretool.publishSiteNode.header" "$!siteNodeId" "" false true $!disableCloseButton)
 
-<script language="JavaScript">
+<link rel="stylesheet" type="text/css" media="all" href="css/cms.css" title="cms" />
+
+<script type="text/javascript">
 <!--
 		function checkMarkedVersions()
 		{
@@ -132,7 +134,7 @@
 
 <div>
     
-	#menuToolbar("" $buttons $rightButtons) 
+	#lightMenuToolbar("" $buttons $rightButtons) 
 
 	<div style="clear: both;"></div>
 
@@ -256,7 +258,7 @@
 
 	</div>
 		
-	#footerToolbar($footerButtons)
+	#lightFooterToolbar($footerButtons)
 	
 </div>
 

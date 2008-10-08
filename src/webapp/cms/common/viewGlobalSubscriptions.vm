@@ -1,4 +1,34 @@
-#beginCommonToolV3("tool.common.globalSubscriptions.header" "" "" false true false)
+#if($standalone != "false")
+	#beginLightCommonToolV3("tool.common.globalSubscriptions.header" "" "" false true false)
+#else
+
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<title>$ui.getString("tool.common.globalSubscriptions.header")</title>
+	
+	<script type="text/javascript" src="script/jquery/jquery-1.2.6.min.js"></script>
+	<script type="text/javascript" src="script/jqueryplugins/ui/jquery-ui-dragDropTabs-1.6rc2.min.js"></script>
+	
+	<script type="text/javascript" src="script/v3/infoglue.js"></script>
+
+	<link rel="stylesheet" type="text/css" href="css/v3/infoglue.css" />
+	<link rel="stylesheet" type="text/css" href="css/v3/tabs.css" media="screen">
+
+	<meta http-equiv="Expires" content="Tue, 01 Jan 1980 1:00:00 GMT" />
+	<meta http-equiv="Cache-Control" content="no-cache" />
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+</head>
+
+<body class="generaltooledit">
+	
+#end
+
+<link rel="stylesheet" type="text/css" media="all" href="css/cms.css" title="cms" />
 
 <script type="text/javascript">
 <!--
@@ -31,7 +61,7 @@
 		addition += ' </select>';
 
 		addition += ' <label id="filterCondition_' + i + 'Label" for="filterCondition_' + i + '">$ui.getString("tool.common.subscriptionFilterCondition.label")</label>';
-		addition += ' <select id="filterCondition_' + i + '" name="filterCondition_' + i + '" multiple="multiple" size="3" style="width: 150px;">';
+		addition += ' <select id="filterCondition_' + i + '" name="filterCondition_' + i + '" multiple="multiple" size="3" style="width: 130px;">';
 		addition += '	<option value="-1">$ui.getString("tool.common.chooseFilterType.label")</option>';
 		addition += ' </select>';
 
@@ -117,34 +147,42 @@
 //-->
 </script>
 
-#menuToolbar("" $buttons $rightButtons)
+#if($standalone != "false")
+	#lightMenuToolbar("" $buttons $rightButtons)
+#end
 
 <div style="clear: both;" onfocus="this.blur();"></div>
 
 <h3 style="text-indent: 16px;">
-	$ui.getString("tool.common.globalSubscriptions.title")
+	$ui.getString("tool.common.globalSubscriptions.title") #if($standalone == "false") - <a href="Subscriptions!inputGlobalSubscriptions.action" target="_blank">$ui.getString("tool.managementtool.openSubscriptionsInNewWindow.label")</a>#end
 	#if($errorMessage != "")<span style="color:red">$errorMessage</span>#end
 </h3>
-
+ 
 <div onfocus="this.blur();">
 
 	<div class="inlineTabDiv" onfocus="this.blur();">
 	#foreach($subscriptionVO in $subscriptionVOList)
 	
 		<a href="javascript:loadExistingSubscription($subscriptionVO.id);">$subscriptionVO.name</a> - 
-		<a href="Subscriptions!deleteGlobalSubscription.action?subscriptionId=$subscriptionVO.id">Delete</a><br/>
+		<a href="Subscriptions!deleteGlobalSubscription.action?subscriptionId=$subscriptionVO.id&standalone=$standalone">Delete</a><br/>
 	
 	#end
 		
 	#if($subscriptionVOList.size() == 0)
 		$ui.getString("tool.common.noSubscriptionsFount.label")
 	#end
+	
+	#if($standalone == "false")
+	<div style="height: 10px; clear: both;"></div>
+	<a class='igButton' href="#" onclick="showDiv('newSubscriptionForm');"><span class='igButtonOuterSpan'><span class='create'>$ui.getString("tool.common.createSubscription.header")</span></span></a>
+	#end
+	
 	</div>
 </div>
 	
-<div id="newSubscriptionForm" style="display: none; position: absolute; top: 100px; left: 50px; width: 700px; border: 1px solid black;">
+<div id="newSubscriptionForm" style="display: none; position: absolute; z-index: 100; top: 20px; left: 20px; width: 650px; background-color: white; border: 1px solid black;">
 	<div id="dialogHandle" class="dialogDivHandle"><div id="dialogDivLeftHandle" class="dialogDivLeftHandle">$ui.getString("tool.common.createChangeSubscriptions.label")</div><div id="dialogDivRightHandle" class="dialogDivRightHandle"><a href="javascript:hideDiv('newSubscriptionForm');">$ui.getString("tool.common.closeWindowButton.label")</a></div></div>
-	<div id="dialogDivBody" class="dialogDivBody">
+	<div id="dialogDivBody" class="dialogDivBody" #if($standalone == "false")style="height: 380px; overflow: auto;"#end>
 		<form action="Subscriptions!globalSubscriptions.action" name="inputForm" method="post">
 			<fieldset style="width: 90%; border: 0px solid red; margin: 0px; padding-left: 10px;">
 	
@@ -176,11 +214,11 @@
 					</select>
 			
 					<label for="filterCondition_0">$ui.getString("tool.common.subscriptionFilterCondition.label")</label>
-					<select id="filterCondition_0" name="filterCondition_0" multiple="multiple" size="3" style="width: 150px;">
+					<select id="filterCondition_0" name="filterCondition_0" multiple="multiple" size="3" style="width: 130px;">
 						<option value="">$ui.getString("tool.common.chooseFilterType.label")</option>
 					</select>
 					
-					&nbsp; <a href="javascript:removeFilterRow(0);">Remove filter</a>
+					&nbsp; <a href="javascript:removeFilterRow(0);">$ui.getString("tool.common.deleteFilter.label")</a>
 					
 					<p id="andParagraph_0" style="padding-left: 300px; display: none; float: left; text-align: center;">
 						<!-- <label for="isAndCondition_0">tool.common.subscriptionFilterIsAndCondition.label</label> -->
@@ -193,11 +231,11 @@
 									
 				<div id="break_0" style="clear:both"></div>
 				
-				<br/>
 				<a href="javascript:addFilterRow();">Add filter</a>
 				<br/>
 				<br/>
 				
+				<input type="hidden" name="standalone" value="$standalone"/>
 				<input type="submit" value="Save"/>
 	
 			</fieldset>
@@ -205,6 +243,8 @@
 	</div>
 </div>
 
-#footerToolbar($footerButtons)
+#if($standalone != "false")
+	#lightFooterToolbar($footerButtons)
+#end
 
 #endCommonToolV3()

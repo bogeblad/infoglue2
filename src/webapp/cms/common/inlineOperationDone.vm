@@ -4,11 +4,13 @@
 	</script>	
 #else
 
-	#beginCommonToolV3("tool.common.inlineOperationDoneHeader" "" "" false true true)
+	#beginLightCommonToolV3("tool.common.inlineOperationDoneHeader" "" "" false true true)
+	
+	<link rel="stylesheet" type="text/css" media="all" href="css/cms.css" title="cms" />
 		
 	<div onfocus="this.blur();">
 	    
-		#menuToolbar("" $buttons $rightButtons) 
+		#lightMenuToolbar("" $buttons $rightButtons) 
 	
 		<div style="clear: both;"></div>
 		
@@ -25,7 +27,7 @@
 		
 		</div>
 	
-		#footerToolbar($footerButtons)
+		#lightFooterToolbar($footerButtons)
 			
 	</div>
 

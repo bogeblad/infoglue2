@@ -1,4 +1,6 @@
-#beginCommonToolV3("tool.managementtool.viewMessageCenter.header" "" "" false true $!disableCloseButton)
+#beginLightCommonToolV3("tool.managementtool.viewMessageCenter.header" "" "" false true $!disableCloseButton)
+
+<link rel="stylesheet" type="text/css" media="all" href="css/cms.css" title="cms" />
 
 <script type="text/javascript">
 <!--
@@ -11,7 +13,7 @@
 
 <div onfocus="this.blur();">
     
-	#menuToolbar("" $buttons $rightButtons)
+	#lightMenuToolbar("" $buttons $rightButtons)
 
 	<form name="editForm" method="POST" action="CreateEmail!executeV3.action">
 		<input type="hidden" name="recipients" value="$usersAddresses"/>
@@ -42,7 +44,7 @@
 			
   	</form>
 	
-	#footerToolbar($footerButtons)
+	#lightFooterToolbar($footerButtons)
 		
 </div>
 

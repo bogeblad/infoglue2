@@ -1,5 +1,6 @@
-#beginCommonToolV3("tool.managementtool.viewMessageCenter.header" "" "" false true $!disableCloseButton)
+#beginLightCommonToolV3("tool.managementtool.viewMessageCenter.header" "" "" false true $!disableCloseButton)
 
+<link rel="stylesheet" type="text/css" media="all" href="css/cms.css" title="cms" />
 
 <style type="text/css">
 	
@@ -171,7 +172,7 @@
 
 <div onfocus="this.blur();">
     
-	#menuToolbar("" $buttons $rightButtons) 
+	#lightMenuToolbar("" $buttons $rightButtons) 
 
 	<div style="clear: both;"></div>
 	
@@ -249,7 +250,7 @@
 			
 		</div>
 		
-		#footerToolbar($footerButtons)
+		#lightFooterToolbar($footerButtons)
 	
 	</form>
 

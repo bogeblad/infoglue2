@@ -1,4 +1,6 @@
-#beginCommonToolV3("tool.managementtool.mysettings.header" "" "" false true $!disableCloseButton)
+#beginLightCommonToolV3("tool.managementtool.mysettings.header" "" "" false true $!disableCloseButton)
+
+<link rel="stylesheet" type="text/css" media="all" href="css/cms.css" title="cms" />
 
 <script type="text/javascript">
 	<!--
@@ -17,14 +19,31 @@
 	}
 	
 	$(document).ready(function(){
-		$("#tabsContainer > ul").tabs({ show:function() { resizeInlineTabDivs();} });
+		$("#tabsContainer > ul").tabs( { 
+			show:function() { resizeInlineTabDivs(); },
+			select:function(e, ui) { 
+				//alert("ui: " + ui.index);
+				if(ui.index == 0)
+				{
+			  		$("#footertoolbar > div").css("visibility","visible");
+			  	}
+				else if(ui.index == 1)
+		  		{
+			  		$("#footertoolbar > div").css("visibility","hidden");
+		  		}
+		  		else if(ui.index == 2)
+		  		{
+			  		$("#footertoolbar > div").css("visibility","hidden");
+			  	}
+			  } 
+		});
 	});
 	-->
 </script>
 
 <div>
     
-	#menuToolbar("" $buttons $rightButtons) 
+	#lightMenuToolbar("" $buttons $rightButtons) 
 
 	<div style="clear: both;"></div>
 	
@@ -40,7 +59,8 @@
 	<div id="tabsContainer" class="flora">      
 		<ul>
 	        <li><a href="#generalSettingsTab"><span>General</span></a></li>
-	        #*<li><a href="#subscriptionsTab"><span>Subscriptions</span></a></li>*#
+	        <li><a href="#subscriptionsTab"><span>Subscriptions</span></a></li>
+	        <li><a href="#passwordTab"><span>Change password</span></a></li>
 	    </ul>
 
 		<div id="generalSettingsTab" class="recipientTab inlineTabDiv">
@@ -87,24 +107,20 @@
 					</select>	
 				</p>
 
-				<p style="clear: both;">
-					<a href="Subscriptions!inputGlobalSubscriptions.action" target="_blank">$ui.getString("tool.managementtool.openSubscriptionsInNewWindow.label")</a>
-				</p>
-				
-				<p style="clear: both;">
-					<a href="UpdateSystemUserPassword!inputStandalone.action?userName=$infoGluePrincipal.name&returnAddress=ViewMySettings.action">$ui.getString("tool.managementtool.changePassword.label")</a>
-				</p>
 			</form>
 		</div>
 		
-		#*
 		<div id="subscriptionsTab" class="recipientTab inlineTabDiv" style="display: none;">
-			<a href="Subscriptions!inputGlobalSubscriptions.action">Open up subsriptions in a new window</a>
+			<iframe frameborder="0" marginwidth="0" marginheight="0" scrolling="no" name="subscriptionsFrame" id="subscriptionsFrame" src="Subscriptions!inputGlobalSubscriptions.action?standalone=false" width="690" height="450" align="baseline"></iframe>
 		</div>
-		*#
+
+		<div id="passwordTab" class="recipientTab inlineTabDiv" style="display: none;">
+			<iframe frameborder="0" marginwidth="0" marginheight="0" scrolling="no" name="passwordFrame" id="passwordFrame" src="UpdateSystemUserPassword!inputStandaloneV3.action?userName=$infoGluePrincipal.name&returnAddress=ViewMySettings.action" width="690" height="450" align="baseline"></iframe>
+		</div>
+
 	</div>		
 	
-	#footerToolbar($footerButtons)
+	#lightFooterToolbar($footerButtons)
 	
 	</form>
 

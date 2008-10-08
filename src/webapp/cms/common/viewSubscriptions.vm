@@ -1,4 +1,6 @@
-#beginCommonToolV3("tool.common.subscriptions.header" "" "" false true $!disableCloseButton)
+#beginLightCommonToolV3("tool.common.subscriptions.header" "" "" false true $!disableCloseButton)
+
+<link rel="stylesheet" type="text/css" media="all" href="css/cms.css" title="cms" />
 
 <script type="text/javascript">
 <!--
@@ -9,7 +11,7 @@
 //-->
 </script>
 
-#menuToolbar("" $buttons $rightButtons)
+#lightMenuToolbar("" $buttons $rightButtons)
 
 <div style="clear: both;"></div>
 
@@ -45,6 +47,6 @@
 		
 </div>
 
-#footerToolbar($footerButtons)
+#lightFooterToolbar($footerButtons)
 
 #endCommonToolV3()

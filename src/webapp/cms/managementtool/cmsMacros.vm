@@ -16,22 +16,6 @@
 #end
 
 
-#macro(viewFieldsHead $fieldNameKeys $counter) 
-<tr>
-  #foreach($fieldNameKey in $fieldNameKeys)
-  <td class="data-head-center">
-    #localizedFieldName($fieldNameKey)
-  </td>
-  #end
-  #if($counter > 0) 
-    #foreach($dummy in [1..$counter])
-      <td class="data-head-center">&nbsp;</td>
-    #end
-  #end
-</tr>
-#end
-
-
 #macro(textarea $fieldNameLabel $errorKey $fieldName $fieldValue $rows $cols)
   $fieldNameLabel 
   #if($errors.hasErrors($errorKey))
@@ -102,19 +86,6 @@
   <td class="data-cell-left-error">&nbsp;</td>
   #end
 </tr>
-#end
-
-
-#macro(viewField2 $fieldName $fieldValue)
-<tr>
-  <td class="data-head-left">$fieldName</td>
-  <td class="data-cell-right">$fieldValue</td>
-</tr>
-#end
-
-
-#macro(viewField $fieldNameKey $fieldValue)
-  #viewField2($ui.getString("entity.${fieldNameKey}.label") $fieldValue)
 #end
 
 
