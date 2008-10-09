@@ -974,7 +974,33 @@ public class AccessRightController extends BaseController
 			while(i.hasNext())
 			{
 				AccessRight accessRight = (AccessRight)i.next();
-				db.remove(accessRight);
+				
+				Iterator accessRightRolesIterator = accessRight.getRoles().iterator();
+				while(accessRightRolesIterator.hasNext())
+				{
+					AccessRightRole accessRightRole = (AccessRightRole)accessRightRolesIterator.next();
+					if(roleName.equals(accessRightRole.getRoleName()))
+					{
+						accessRightRolesIterator.remove();
+						db.remove(accessRightRole);
+					}
+				}
+				/*
+				Iterator accessRightGroupsIterator = accessRight.getGroups().iterator();
+				while(accessRightGroupsIterator.hasNext())
+				{
+					AccessRightGroup accessRightGroup = (AccessRightGroup)accessRightGroupsIterator.next();
+					db.remove(accessRightGroup);
+				}
+				Iterator accessRightUsersIterator = accessRight.getUsers().iterator();
+				while(accessRightRolesIterator.hasNext())
+				{
+					AccessRightUser accessRightUser = (AccessRightUser)accessRightUsersIterator.next();
+					db.remove(accessRightUser);
+				}
+				*/
+				//System.out.println("Removing:" + accessRight.getId());
+				//db.remove(accessRight);
 			}
 			
 			commitTransaction(db);
@@ -986,7 +1012,7 @@ public class AccessRightController extends BaseController
 			throw new SystemException(e.getMessage());
 		}
 	}        
-	
+
 	/**
 	 * This method deletes all occurrencies of AccessRight which has the interceptionPointId.
 	 * 
