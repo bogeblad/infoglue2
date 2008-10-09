@@ -118,6 +118,20 @@
 	var attributeNames = new Array();
 	var attributeTypes = new Array();
 	
+	function checkWYSIWYGDirty()
+	{
+		var isDirty = false;
+		for (var i in plainEditors) 
+		{
+			var plainTextAreaName = plainEditors[i];
+			oEditor = FCKeditorAPI.GetInstance(plainTextAreaName);
+			if(oEditor.IsDirty())
+				isDirty = true;
+		}
+		
+		return isDirty;
+	}
+	
 	//*******************************************
 	// This function changes language version
 	//*******************************************
@@ -142,18 +156,24 @@
 	
 	function openFormEditor(url)
 	{
-		allowSave = false;
-		openPopup(url, "FormEditor", "width=700,height=600,left=" + (document.body.clientWidth / 4) + ",top=50,toolbar=no,status=yes,scrollbars=yes,location=no,menubar=no,directories=no,resizable=yes");
+		if ((!getDirty() && !checkWYSIWYGDirty()) || confirm('$ui.getString("tool.contenttool.formIsDirtyWarning")'))
+		{
+			allowSave = false;
+			openPopup(url, "FormEditor", "width=700,height=600,left=" + (document.body.clientWidth / 4) + ",top=50,toolbar=no,status=yes,scrollbars=yes,location=no,menubar=no,directories=no,resizable=yes");
+		}
 	}
-
+	
 	//*******************************************
 	// This function opens up the form editor
 	//*******************************************
 	
 	function openRelationEditor(url)
 	{
-		allowSave = false;
-		openPopup(url, "RelationEditor", "width=700,height=600,left=" + (document.body.clientWidth / 4) + ",top=50,toolbar=no,status=yes,scrollbars=yes,location=no,menubar=no,directories=no,resizable=yes");
+		if ((!getDirty() && !checkWYSIWYGDirty()) || confirm('$ui.getString("tool.contenttool.formIsDirtyWarning")'))
+		{
+			allowSave = false;
+			openPopup(url, "RelationEditor", "width=700,height=600,left=" + (document.body.clientWidth / 4) + ",top=50,toolbar=no,status=yes,scrollbars=yes,location=no,menubar=no,directories=no,resizable=yes");
+		}
 	}
 
 	//*******************************************
@@ -229,19 +249,24 @@
 	
 	function addCategory(attributeName, selectName)
 	{
-		var categoryId = document.getElementById(selectName).value;
-		document.getElementById("model/attributeName").value = attributeName;
-		document.getElementById("model/category/categoryId").value = categoryId;
-		document.catForm.submit();
+		if ((!getDirty() && !checkWYSIWYGDirty()) || confirm('$ui.getString("tool.contenttool.formIsDirtyWarning")'))
+		{
+			var categoryId = document.getElementById(selectName).value;
+			document.getElementById("model/attributeName").value = attributeName;
+			document.getElementById("model/category/categoryId").value = categoryId;
+			document.catForm.submit();
+		}
 	}
 
 	function deleteCategory(contentCategoryId)
 	{
-		var url = "ContentCategory!delete.action?contentCategoryId=" + contentCategoryId;
-		url += "&contentId=$contentId";
-		url += "&languageId=$languageId";
-		alert("url:" + url);
-		window.location.href = url;
+		if ((!getDirty() && !checkWYSIWYGDirty()) || confirm('$ui.getString("tool.contenttool.formIsDirtyWarning")'))
+		{
+			var url = "ContentCategory!delete.action?contentCategoryId=" + contentCategoryId;
+			url += "&contentId=$contentId";
+			url += "&languageId=$languageId";
+			window.location.href = url;
+		}
 	}
 
 
@@ -284,13 +309,13 @@
 	
 	//doTimer();
 	//setTimeout("warnForTimeout()", timeout);
-		
+	
 -->
 </script>
 
 <div class="fullymarginalized">
 
-<form method="POST" name="editForm" action="UpdateContentVersion.action">
+<form method="POST" name="editForm" id="editForm" action="UpdateContentVersion.action">
 <table border="0" width="500">
 
 	#set($event = $this.getEvent($contentVersionId) )					
@@ -434,7 +459,7 @@
 	
 </table>	
  
-<table border="0" width="500">	
+<table border="0" width="500" id="contentTypeAttributesTable">	
 	<!-- here goes the field generation -->
 		
 	## Need to figure out how to tell if the HTMLArea contents have changed
@@ -1307,6 +1332,12 @@
 	#if($anchor)
 		location.hash = "$anchor";
 	#end
+	
+	$("#contentTypeAttributesTable :input").change(function () {
+          setDirty();
+        });
+				
+	$("#editForm").submit(function () { return false; });
 	
 </script>
 

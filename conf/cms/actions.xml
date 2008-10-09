@@ -1,4 +1,4 @@
-<!-- $Id: actions.xml,v 1.79 2008/10/08 18:14:28 mattias Exp $ -->
+<!-- $Id: actions.xml,v 1.80 2008/10/09 15:45:31 mattias Exp $ -->
 <actions>
 
 	<!-- MySettings -->
@@ -926,7 +926,8 @@
 		<view name="success">ExtendedRedirect.action?url=ViewContentVersion.action#contentId#languageId#currentEditorId#concurrentModification#oldModifiedDateTime</view>
 		<!--<view name="success">ViewContentVersion.action</view>-->
 		<view name="background">ViewContentVersion!background.action</view>
-		<view name="standalone">ViewContentVersion!standalone.action</view>
+		<view name="standalone">ExtendedRedirect.action?url=ViewContentVersion!standalone.action#contentVersionId#contentId#languageId#attributeName#currentEditorId#concurrentModification#oldModifiedDateTime#closeOnLoad#publishOnLoad</view>
+		<!--<view name="standalone">ViewContentVersion!standalone.action</view>-->
 		<view name="saveAndExit">ViewContent.action?stay=true</view>
 		<view name="saveAndExitStandalone">ViewContent!standalone.action</view>
 		<view name="error">/cms/contenttool/error.vm</view>
