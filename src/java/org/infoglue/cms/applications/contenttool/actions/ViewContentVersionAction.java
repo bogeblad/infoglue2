@@ -780,12 +780,10 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 	       			}
 	       		}
 	       	}
-			/*
-			if(this.contentVersionVO != null && this.contentVersionVO.getContentVersionId() != null)
+			else if(this.contentVersionVO != null && this.contentVersionVO.getContentVersionId() != null)
 	       	{
-	       		digitalAssets = DigitalAssetController.getDigitalAssetVOList(this.contentVersionVO.getContentVersionId());
+				filteredDigitalAssets = DigitalAssetController.getDigitalAssetVOList(this.contentVersionVO.getContentVersionId());
 	       	}
-	       	*/
 		}
 		catch(Exception e)
 		{
