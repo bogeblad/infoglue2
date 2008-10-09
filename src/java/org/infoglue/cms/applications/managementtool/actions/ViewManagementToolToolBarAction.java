@@ -449,23 +449,25 @@ public class ViewManagementToolToolBarAction extends InfoGlueAbstractAction
 
 	private List getSystemUserDetailsButtons() throws Exception
 	{
+		String encodedUserName  = URLEncoder.encode(URLEncoder.encode(this.userName, URIEncoding), URIEncoding);
+
 		List buttons = new ArrayList();
 		if(!this.userName.equals(CmsPropertyHandler.getAnonymousUser()))
 		{
 			InfoGluePrincipal user = UserControllerProxy.getController().getUser(this.userName);
 			if(user.getAutorizationModule().getSupportDelete())
-				buttons.add(new ImageButton("Confirm.action?header=tool.managementtool.deleteSystemUser.header&yesDestination=" + URLEncoder.encode("DeleteSystemUser.action?userName=" + URLEncoder.encode(this.userName, URIEncoding), URIEncoding) + "&noDestination=" + URLEncoder.encode("ViewListSystemUser.action?title=SystemUsers", URIEncoding) + "&message=tool.managementtool.deleteSystemUser.text&extraParameters=" + URLEncoder.encode(this.userName, URIEncoding), getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.deleteSystemUser"), "tool.managementtool.deleteSystemUser.header"));
+				buttons.add(new ImageButton("Confirm.action?header=tool.managementtool.deleteSystemUser.header&yesDestination=" + URLEncoder.encode("DeleteSystemUser.action?userName=" + URLEncoder.encode(this.userName, URIEncoding), URIEncoding) + "&noDestination=" + URLEncoder.encode("ViewListSystemUser.action?title=SystemUsers", URIEncoding) + "&message=tool.managementtool.deleteSystemUser.text&extraParameters=" + encodedUserName, getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.deleteSystemUser"), "tool.managementtool.deleteSystemUser.header"));
 		
 			if(user.getAutorizationModule().getSupportUpdate())
-				buttons.add(new ImageButton("UpdateSystemUserPassword!input.action?userName=" + URLEncoder.encode(URLEncoder.encode(this.userName, URIEncoding), URIEncoding), getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.updateSystemUserPassword"), "Update user password"));
+				buttons.add(new ImageButton("UpdateSystemUserPassword!input.action?userName=" + encodedUserName, getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.updateSystemUserPassword"), "Update user password"));
 		}
 		
 		List contentTypeDefinitionVOList = UserPropertiesController.getController().getContentTypeDefinitionVOList(this.userName);
 		if(contentTypeDefinitionVOList.size() > 0)
-			buttons.add(new ImageButton("ViewUserProperties.action?userName=" + URLEncoder.encode(URLEncoder.encode(this.userName, URIEncoding), URIEncoding), getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.viewSystemUserProperties"), "View User Properties"));
+			buttons.add(new ImageButton("ViewUserProperties.action?userName=" + encodedUserName, getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.viewSystemUserProperties"), "View User Properties"));
 		
 		if(this.getInfoGluePrincipal().getIsAdministrator())
-			buttons.add(new ImageButton("AuthorizationSwitchManagement!inputUser.action?userName=" + URLEncoder.encode(URLEncoder.encode(this.userName, URIEncoding)), getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.transferUserAccessRights"), "Transfer Users Access Rights"));
+			buttons.add(new ImageButton("AuthorizationSwitchManagement!inputUser.action?userName=" + encodedUserName, getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.transferUserAccessRights"), "Transfer Users Access Rights"));
 
 		return buttons;				
 	}
@@ -488,22 +490,23 @@ public class ViewManagementToolToolBarAction extends InfoGlueAbstractAction
 		String yesDestination 	= URLEncoder.encode("DeleteRole.action?roleName=" + URLEncoder.encode(this.roleName, URIEncoding), URIEncoding);
 		String noDestination  	= URLEncoder.encode("ViewListRole.action?title=Roles", URIEncoding);
 		String message 		 	= URLEncoder.encode("Do you really want to delete the role " + URLEncoder.encode(this.roleName, URIEncoding), URIEncoding);
-		
+		String encodedRoleName  = URLEncoder.encode(URLEncoder.encode(this.roleName, URIEncoding), URIEncoding);
+			
 		InfoGlueRole role = RoleControllerProxy.getController().getRole(this.roleName);
 		if(role.getAutorizationModule().getSupportDelete())
-			buttons.add(new ImageButton("Confirm.action?header=tool.managementtool.deleteRole.header&yesDestination=" + yesDestination + "&noDestination=" + noDestination + "&message=tool.managementtool.deleteRole.text&extraParameters=" + URLEncoder.encode(this.roleName, URIEncoding), getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.deleteRole"), "tool.managementtool.deleteRole.header"));
+			buttons.add(new ImageButton("Confirm.action?header=tool.managementtool.deleteRole.header&yesDestination=" + yesDestination + "&noDestination=" + noDestination + "&message=tool.managementtool.deleteRole.text&extraParameters=" + encodedRoleName, getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.deleteRole"), "tool.managementtool.deleteRole.header"));
 		
 		List contentTypeDefinitionVOList = RolePropertiesController.getController().getContentTypeDefinitionVOList(this.roleName);
 		if(contentTypeDefinitionVOList.size() > 0)
-			buttons.add(new ImageButton("ViewRoleProperties.action?roleName=" + URLEncoder.encode(URLEncoder.encode(this.roleName, URIEncoding)), getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.viewRoleProperties"), "View Role Properties"));
+			buttons.add(new ImageButton("ViewRoleProperties.action?roleName=" + encodedRoleName, getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.viewRoleProperties"), "View Role Properties"));
 		
 		if(this.getInfoGluePrincipal().getIsAdministrator())
-			buttons.add(new ImageButton("AuthorizationSwitchManagement!inputRole.action?roleName=" + URLEncoder.encode(URLEncoder.encode(this.roleName, URIEncoding)), getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.transferRoleAccessRights"), "Transfer Roles Access Rights"));
+			buttons.add(new ImageButton("AuthorizationSwitchManagement!inputRole.action?roleName=" + encodedRoleName, getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.transferRoleAccessRights"), "Transfer Roles Access Rights"));
 		
 		boolean hasAccessToManageAllAccessRights = this.hasAccessTo("Role.ManageAllAccessRights", true);
 		boolean hasAccessToManageAccessRights = this.hasAccessTo("Role.ManageAccessRights", "" + this.groupName);
 		if(hasAccessToManageAllAccessRights || hasAccessToManageAccessRights)
-			buttons.add(new ImageButton("ViewAccessRights.action?interceptionPointCategory=Role&extraParameters=" + URLEncoder.encode(this.roleName, URIEncoding) + "&returnAddress=ViewRole.action?roleName=" + URLEncoder.encode(this.roleName, URIEncoding) + "&colorScheme=ManagementTool", getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.accessRights"), "Role Access Rights"));
+			buttons.add(new ImageButton("ViewAccessRights.action?interceptionPointCategory=Role&extraParameters=" + encodedRoleName + "&returnAddress=ViewRole.action?roleName=" + encodedRoleName + "&colorScheme=ManagementTool", getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.accessRights"), "Role Access Rights"));
 
 		return buttons;				
 	}
@@ -526,22 +529,23 @@ public class ViewManagementToolToolBarAction extends InfoGlueAbstractAction
 		String yesDestination 	= URLEncoder.encode("DeleteGroup.action?groupName=" + URLEncoder.encode(this.groupName, URIEncoding), URIEncoding);
 		String noDestination  	= URLEncoder.encode("ViewListGroup.action?title=Groups", URIEncoding);
 		String message 		 	= URLEncoder.encode("Do you really want to delete the group " + URLEncoder.encode(this.groupName, URIEncoding), URIEncoding);
-		
+		String encodedGroupName = URLEncoder.encode(URLEncoder.encode(this.groupName, URIEncoding), URIEncoding);
+
 		InfoGlueGroup group = GroupControllerProxy.getController().getGroup(this.groupName);
 		if(group.getAutorizationModule().getSupportDelete())
-			buttons.add(new ImageButton("Confirm.action?header=tool.managementtool.deleteGroup.header&yesDestination=" + yesDestination + "&noDestination=" + noDestination + "&message=tool.managementtool.deleteGroup.text&extraParameters=" + URLEncoder.encode(this.groupName, URIEncoding), getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.deleteGroup"), "tool.managementtool.deleteGroup.header"));
+			buttons.add(new ImageButton("Confirm.action?header=tool.managementtool.deleteGroup.header&yesDestination=" + yesDestination + "&noDestination=" + noDestination + "&message=tool.managementtool.deleteGroup.text&extraParameters=" + encodedGroupName, getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.deleteGroup"), "tool.managementtool.deleteGroup.header"));
 		
 		List contentTypeDefinitionVOList = GroupPropertiesController.getController().getContentTypeDefinitionVOList(this.groupName);
 		if(contentTypeDefinitionVOList.size() > 0)
-			buttons.add(new ImageButton("ViewGroupProperties.action?groupName=" + URLEncoder.encode(URLEncoder.encode(this.groupName, URIEncoding)), getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.viewGroupProperties"), "View Group Properties"));
+			buttons.add(new ImageButton("ViewGroupProperties.action?groupName=" + encodedGroupName, getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.viewGroupProperties"), "View Group Properties"));
 		
 		if(this.getInfoGluePrincipal().getIsAdministrator())
-			buttons.add(new ImageButton("AuthorizationSwitchManagement!inputGroup.action?groupName=" + URLEncoder.encode(URLEncoder.encode(this.groupName, URIEncoding)), getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.transferGroupAccessRights"), "Transfer Groups Access Rights"));
+			buttons.add(new ImageButton("AuthorizationSwitchManagement!inputGroup.action?groupName=" + encodedGroupName, getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.transferGroupAccessRights"), "Transfer Groups Access Rights"));
 				
 		boolean hasAccessToManageAllAccessRights = this.hasAccessTo("Group.ManageAllAccessRights", true);
 		boolean hasAccessToManageAccessRights = this.hasAccessTo("Group.ManageAccessRights", "" + this.groupName);
 		if(hasAccessToManageAllAccessRights || hasAccessToManageAccessRights)
-			buttons.add(new ImageButton("ViewAccessRights.action?interceptionPointCategory=Group&extraParameters=" + URLEncoder.encode(this.groupName, URIEncoding) + "&returnAddress=ViewGroup.action?groupName=" + URLEncoder.encode(this.groupName, URIEncoding) + "&colorScheme=ManagementTool", getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.accessRights"), "Group Access Rights"));
+			buttons.add(new ImageButton("ViewAccessRights.action?interceptionPointCategory=Group&extraParameters=" + encodedGroupName + "&returnAddress=ViewGroup.action?groupName=" + encodedGroupName + "&colorScheme=ManagementTool", getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.accessRights"), "Group Access Rights"));
 
 		return buttons;				
 	}

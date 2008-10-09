@@ -26,16 +26,21 @@ package org.infoglue.cms.applications.managementtool.actions;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
+import org.infoglue.cms.controllers.kernel.impl.simple.AccessRightController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.GroupControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.GroupPropertiesController;
 import org.infoglue.cms.controllers.kernel.impl.simple.UserControllerProxy;
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
 import org.infoglue.cms.security.InfoGlueGroup;
+import org.infoglue.cms.util.CmsPropertyHandler;
 
 public class ViewGroupAction extends InfoGlueAbstractAction
 {
+    private final static Logger logger = Logger.getLogger(ViewGroupAction.class.getName());
+
 	private static final long serialVersionUID = 1L;
 
 	private String groupName;
@@ -78,8 +83,26 @@ public class ViewGroupAction extends InfoGlueAbstractAction
         return groupName;
     }
 
-	public void setGroupName(String groupName)
+	public void setGroupName(String groupName) throws Exception
 	{
+		if(groupName != null)
+		{
+			String fromEncoding = CmsPropertyHandler.getURIEncoding();
+			String toEncoding = "utf-8";
+			
+			logger.info("groupName:" + groupName);
+			String testGroupName = new String(groupName.getBytes(fromEncoding), toEncoding);
+			if(logger.isInfoEnabled())
+			{
+				for(int i=0; i<groupName.length(); i++)
+					logger.info("c:" + groupName.charAt(i) + "=" + (int)groupName.charAt(i));
+			}
+			if(testGroupName.indexOf((char)65533) == -1)
+				groupName = testGroupName;
+			
+			logger.info("groupName after:" + groupName);
+		}
+		
 		this.groupName = groupName;
 	}
             

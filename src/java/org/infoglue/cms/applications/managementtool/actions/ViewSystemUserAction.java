@@ -26,6 +26,7 @@ package org.infoglue.cms.applications.managementtool.actions;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.GroupControllerProxy;
@@ -35,9 +36,12 @@ import org.infoglue.cms.controllers.kernel.impl.simple.UserPropertiesController;
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
+import org.infoglue.cms.util.CmsPropertyHandler;
 
 public class ViewSystemUserAction extends InfoGlueAbstractAction
 {
+    private final static Logger logger = Logger.getLogger(ViewRoleAction.class.getName());
+
 	private static final long serialVersionUID = 1L;
 
 	private String userName;
@@ -116,8 +120,26 @@ public class ViewSystemUserAction extends InfoGlueAbstractAction
 		return this.userName;
 	}
 
-	public void setUserName(String userName)
+	public void setUserName(String userName) throws Exception
 	{
+		if(userName != null)
+		{
+			String fromEncoding = CmsPropertyHandler.getURIEncoding();
+			String toEncoding = "utf-8";
+			
+			logger.info("userName:" + userName);
+			String testUserName = new String(userName.getBytes(fromEncoding), toEncoding);
+			if(logger.isInfoEnabled())
+			{
+				for(int i=0; i<userName.length(); i++)
+					logger.info("c:" + userName.charAt(i) + "=" + (int)userName.charAt(i));
+			}
+			if(testUserName.indexOf((char)65533) == -1)
+				userName = testUserName;
+			
+			logger.info("userName after:" + userName);
+		}
+		
 		this.userName = userName;
 	}
 

@@ -23,9 +23,11 @@
 
 package org.infoglue.cms.applications.managementtool.actions;
 
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.RoleControllerProxy;
@@ -33,9 +35,12 @@ import org.infoglue.cms.controllers.kernel.impl.simple.RolePropertiesController;
 import org.infoglue.cms.controllers.kernel.impl.simple.UserControllerProxy;
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
 import org.infoglue.cms.security.InfoGlueRole;
+import org.infoglue.cms.util.CmsPropertyHandler;
 
 public class ViewRoleAction extends InfoGlueAbstractAction
 {
+    private final static Logger logger = Logger.getLogger(ViewRoleAction.class.getName());
+
 	private static final long serialVersionUID = 1L;
 
 	private String roleName;
@@ -78,8 +83,26 @@ public class ViewRoleAction extends InfoGlueAbstractAction
         return roleName;
     }
 
-	public void setRoleName(String roleName)
-	{
+	public void setRoleName(String roleName) throws Exception
+	{	
+		if(roleName != null)
+		{
+			String fromEncoding = CmsPropertyHandler.getURIEncoding();
+			String toEncoding = "utf-8";
+			
+			logger.info("roleName:" + roleName);
+			String testRoleName = new String(roleName.getBytes(fromEncoding), toEncoding);
+			if(logger.isInfoEnabled())
+			{
+				for(int i=0; i<roleName.length(); i++)
+					logger.info("c:" + roleName.charAt(i) + "=" + (int)roleName.charAt(i));
+			}
+			if(testRoleName.indexOf((char)65533) == -1)
+				roleName = testRoleName;
+			
+			logger.info("roleName after:" + roleName);
+		}
+		
 		this.roleName = roleName;
 	}
             
