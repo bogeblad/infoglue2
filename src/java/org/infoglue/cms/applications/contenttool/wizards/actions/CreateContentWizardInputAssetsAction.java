@@ -166,12 +166,8 @@ public class CreateContentWizardInputAssetsAction extends CreateContentWizardAbs
 					String filePath = CmsPropertyHandler.getDigitalAssetPath();
 					//fileSystemName = filePath + File.separator + tempFileName;
 	            	
-					/*
-					renamedFile = new File(fileSystemName);
-					if(renamedFile != null && file != null)
+					if(file != null)
 					{
-						boolean isRenamed = file.renameTo(renamedFile);
-		            */	
 						DigitalAssetVO newAsset = new DigitalAssetVO();
 						newAsset.setAssetContentType(contentType);
 						newAsset.setAssetKey(digitalAssetKey);
@@ -186,7 +182,7 @@ public class CreateContentWizardInputAssetsAction extends CreateContentWizardAbs
 					    digitalAssetVO = DigitalAssetController.create(newAsset, is, this.contentVersionId, this.getInfoGluePrincipal());
 						
 						this.uploadedFilesCounter = new Integer(this.uploadedFilesCounter.intValue() + 1);
-					//}
+					}
 				}
 			}
 			else

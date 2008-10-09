@@ -203,23 +203,26 @@ public class CreatePageTemplateAction extends InfoGlueAbstractAction implements 
 					logger.info("fileSystemName:" + fileSystemName);
 	            	
 	            	file = mpr.getFile(name);
-					String fileName = fileSystemName;
-					fileName = new VisualFormatter().replaceNonAscii(fileName, '_');
-					
-					String tempFileName = "tmp_" + System.currentTimeMillis() + "_" + fileName;
-	            	String filePath = CmsPropertyHandler.getDigitalAssetPath();
-	            	fileSystemName = filePath + File.separator + tempFileName;
-	            	
-	            	DigitalAssetVO newAsset = new DigitalAssetVO();
-					newAsset.setAssetContentType(contentType);
-					newAsset.setAssetKey("thumbnail");
-					newAsset.setAssetFileName(fileName);
-					newAsset.setAssetFilePath(filePath);
-					newAsset.setAssetFileSize(new Integer(new Long(file.length()).intValue()));
-					is = new FileInputStream(file);
-					
-				    DigitalAssetController.create(newAsset, is, newContentVersion.getContentVersionId(), this.getInfoGluePrincipal());	         		    
-	         	}
+	            	if(file != null)
+	            	{
+						String fileName = fileSystemName;
+						fileName = new VisualFormatter().replaceNonAscii(fileName, '_');
+						
+						String tempFileName = "tmp_" + System.currentTimeMillis() + "_" + fileName;
+		            	String filePath = CmsPropertyHandler.getDigitalAssetPath();
+		            	fileSystemName = filePath + File.separator + tempFileName;
+		            	
+		            	DigitalAssetVO newAsset = new DigitalAssetVO();
+						newAsset.setAssetContentType(contentType);
+						newAsset.setAssetKey("thumbnail");
+						newAsset.setAssetFileName(fileName);
+						newAsset.setAssetFilePath(filePath);
+						newAsset.setAssetFileSize(new Integer(new Long(file.length()).intValue()));
+						is = new FileInputStream(file);
+						
+					    DigitalAssetController.create(newAsset, is, newContentVersion.getContentVersionId(), this.getInfoGluePrincipal());	         		    
+	            	}
+	            }
     		}
     		else
     		{
