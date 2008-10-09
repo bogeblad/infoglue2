@@ -7,13 +7,20 @@
 	<title>Toolbar</title>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 	
-	<script language="JavaScript" src="script/listview.js"></script>
+	<script language="text/javascript" src="script/listview.js"></script>
 	<script type="text/javascript" language="JavaScript">
 	<!-- 
 		function openMainArea(url)
 		{
-			//alert('url:' + url);
-			parent.frames["main"].location.href = '' + url;
+			var agt=navigator.userAgent.toLowerCase();
+			if(agt.indexOf("safari")!=-1)
+			{
+				parent.frames['main'].location = '' + url;
+			}
+			else	
+			{
+				parent.frames["main"].location.href = '' + url;
+			}
 		}
 
 		function reload(url, title)
@@ -187,7 +194,7 @@
 			#if($button.isSelfContained)
 				<a href="$button.getActionUrl()"><img src="$button.getImageUrl()" height="$button.getHeight()" width="$button.getWidth()" border="0"></a><img src="images/splitter.gif">						 
 			#else
-				<a href="javascript:openMainArea('$button.getActionUrl()', '$button.getTitle()');"><img src="$button.getImageUrl()" height="$button.getHeight()" width="$button.getWidth()" border="0"></a><img src="images/splitter.gif">		
+				<a href="javascript:openMainArea('$button.getActionUrl()');"><img src="$button.getImageUrl()" height="$button.getHeight()" width="$button.getWidth()" border="0"></a><img src="images/splitter.gif">		
 			#end
 		#end
 		<!-- SS, 2002-09-15 Modification for progress information -->			
