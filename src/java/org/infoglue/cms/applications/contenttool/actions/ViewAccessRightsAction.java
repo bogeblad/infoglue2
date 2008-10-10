@@ -25,6 +25,7 @@ package org.infoglue.cms.applications.contenttool.actions;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -135,7 +136,21 @@ public class ViewAccessRightsAction extends InfoGlueAbstractAction
 		List accessRights = AccessRightController.getController().getAccessRightVOListOnly(interceptionPointId, extraParameters);
 		return accessRights.size() > 0 ? ((AccessRightVO)accessRights.get(0)).getAccessRightId() : null;
 	}
-	
+
+	public Integer[] getAccessRightIds(Integer interceptionPointId, String extraParameters) throws SystemException, Bug
+	{
+		List accessRights = AccessRightController.getController().getAccessRightVOListOnly(interceptionPointId, extraParameters);
+		Integer[] accessRightIds = new Integer[accessRights.size()];
+		Iterator accessRightsIterator = accessRights.iterator();
+		int i=0;
+		while(accessRightsIterator.hasNext())
+		{
+			accessRightIds[i] = ((AccessRightVO)accessRightsIterator.next()).getId();
+            i++;
+		}
+		return accessRightIds;
+	}
+
 	public Collection getAccessRightGroups(Integer accessRightId) throws SystemException, Bug
 	{
 	    Collection accessRightGroups = AccessRightController.getController().getAccessRightGroupVOList(accessRightId);
