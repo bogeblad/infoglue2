@@ -13,5 +13,13 @@
 	<p>
 		<a href="ViewArchiveTool!inputRestoreAssetArchive.action">$ui.getString("tool.managementtool.restoreAssetArchive.title") - $ui.getString("tool.managementtool.restoreAssetArchive.leadin")</a>
 	</p>
+	#if($numberOfCleanedVersions)
+	<p style="color:red;">
+		Number of versions cleaned: $numberOfCleanedVersions
+	</p>
+	#end
+	<p>
+		<a href="ViewArchiveTool!cleanOldVersions.action">$ui.getString("tool.managementtool.cleanOldVersions.title") - $ui.getString("tool.managementtool.cleanOldVersions.leadin")</a>
+	</p>
 	
 #endManagementTool()

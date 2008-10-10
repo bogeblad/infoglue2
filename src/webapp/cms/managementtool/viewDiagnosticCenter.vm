@@ -20,4 +20,13 @@
 		<a href="$url/ViewApplicationState.action">$url</a><br/>
 	#end
 	
+	<h3>Statistics</h3>
+	<p>
+		Number of siteNodes: $numberOfSiteNodes<br />
+		Number of siteNodeVersions: $numberOfSiteNodeVersions<br />
+		Number of contents: $numberOfContents<br />
+		Number of content versions: $numberOfContentVersions<br />
+		Number of digitalAssets: $numberOfDigitalAssets<br />
+	</p>
+		
 #endManagementTool()
