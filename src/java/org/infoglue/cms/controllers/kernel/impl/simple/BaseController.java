@@ -44,11 +44,13 @@ import org.infoglue.cms.entities.kernel.IBaseEntity;
 import org.infoglue.cms.entities.kernel.ValidatableEntityVO;
 import org.infoglue.cms.entities.management.InterceptionPointVO;
 import org.infoglue.cms.entities.management.InterceptorVO;
+import org.infoglue.cms.entities.management.TableCount;
 import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.security.interceptors.InfoGlueInterceptor;
+import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
 import org.infoglue.cms.util.StringManager;
 import org.infoglue.cms.util.StringManagerFactory;
@@ -1302,6 +1304,39 @@ public abstract class BaseController
 		}
 		
 		return locale; 
+	}
+
+	public static TableCount getTableCount(String tableName) throws Exception
+	{
+		TableCount tableCount = null;
+		
+		Database db = CastorDatabaseService.getDatabase();
+
+        beginTransaction(db);
+
+        try
+        {
+        	OQLQuery oql = db.getOQLQuery("CALL SQL SELECT count(*) FROM " + tableName + " AS org.infoglue.cms.entities.management.TableCount");
+
+        	QueryResults results = oql.execute();
+    		if(results.hasMore()) 
+            {
+    			tableCount = (TableCount)results.next();
+    		}
+
+    		results.close();
+    		oql.close();
+        	
+            commitTransaction(db);
+        }
+        catch(Exception e)
+        {
+            logger.error("An error occurred so we should not complete the transaction:" + e, e);
+            rollbackTransaction(db);
+            throw new SystemException(e.getMessage());
+        }
+
+        return tableCount;
 	}
 
 
