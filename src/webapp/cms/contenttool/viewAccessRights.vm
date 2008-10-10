@@ -39,8 +39,8 @@
 	#set($anonymousPrincipal = $anonymousPrincipal)
 	//alert("anonymousPrincipal: + $anonymousPrincipal.roles");
 	//alert("anonymousPrincipal: + $anonymousPrincipal.groups");
-	var roles = new Array($anonymousPrincipal.roles.size());
-	var groups = new Array($anonymousPrincipal.groups.size());
+	var roles = new Array($!anonymousPrincipal.roles.size());
+	var groups = new Array($!anonymousPrincipal.groups.size());
 	
 	var hasGroupLimitation = false;
 	
@@ -113,7 +113,14 @@
 #foreach($interceptionPointVO in $interceptionPointVOList)
 	#set($accessRightId = -1)
 	#set($accessRightId = $this.getAccessRightId($interceptionPointVO.id, $extraParameters))
-	
+	#set($accessRightIds = $this.getAccessRightIds($interceptionPointVO.id, $extraParameters))
+	#foreach($currentAccessRightId in $accessRightIds)
+		#set($accessRightGroups = $this.getAccessRightGroups($currentAccessRightId))
+		#if($accessRightGroups.size() > 0)
+			#set($accessRightId = $currentAccessRightId)
+		#end
+	#end
+
 	#if($accessRightId > -1)
 		#set($accessRightGroupIndex = 0)
 		#foreach($accessRightGroup in $this.getAccessRightGroups($accessRightId))
@@ -138,11 +145,19 @@
 			#if(($interceptionPointVO.getUsesExtraDataForAccessControl() && $extraParameters && $extraParameters != "") || (!$interceptionPointVO.getUsesExtraDataForAccessControl() && (!$extraParameters || $extraParameters == "")))
 				#set($accessRightId = -1)
 				#set($accessRightId = $this.getAccessRightId($interceptionPointVO.id, $extraParameters))
+				#set($accessRightIds = $this.getAccessRightIds($interceptionPointVO.id, $extraParameters))
+				#set($hasGroupLimitations = false)
+				#foreach($currentAccessRightId in $accessRightIds)
+					#set($accessRightGroups = $this.getAccessRightGroups($currentAccessRightId))
+					#if($accessRightGroups.size() > 0)
+						#set($hasGroupLimitations = true)
+						#set($accessRightId = $currentAccessRightId)
+					#end
+				#end
 				#set($dotIndex = $interceptionPointVO.name.indexOf(".") + 1)
 				<td align="center" class="smalllabel">$interceptionPointVO.name.substring($dotIndex)
 				#if($accessRightId > -1)
-					#set($accessRightGroups = $this.getAccessRightGroups($accessRightId))
-					#if($accessRightGroups.size() > 0)
+					#if($hasGroupLimitations)
 						<script type="text/javascript">hasGroupLimitation = true;</script>
 						<br/><a href="javascript:showDiv('groups$accessRightId');" title="Limited by groups also - click to view."><img src="images/groups.gif" border="0"/></a>
 					#else
@@ -348,8 +363,17 @@
 #foreach($interceptionPointVO in $interceptionPointVOList)
 	#set($accessRightId = -1)
 	#set($accessRightId = $this.getAccessRightId($interceptionPointVO.id, $extraParameters))
+	#set($accessRightIds = $this.getAccessRightIds($interceptionPointVO.id, $extraParameters))
+	
 	#if($accessRightId > -1)
 		#set($accessRightGroups = $this.getAccessRightGroups($accessRightId))
+		#foreach($currentAccessRightId in $accessRightIds)
+			#set($accessRightGroupsCandidate = $this.getAccessRightGroups($currentAccessRightId))
+			#if($accessRightGroupsCandidate.size() > 0)
+				#set($accessRightGroups = $accessRightGroupsCandidate)
+				#set($accessRightId = $currentAccessRightId)
+			#end
+		#end						
 		
 		<script type="text/javascript">
 		
