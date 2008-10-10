@@ -28,6 +28,7 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -1857,8 +1858,10 @@ public class ContentVersionController extends BaseController
 	 * @throws SystemException 
 	 */
 	
-	public void cleanContentVersions(int numberOfVersionsToKeep, boolean keepOnlyOldPublishedVersions) throws SystemException 
+	public int cleanContentVersions(int numberOfVersionsToKeep, boolean keepOnlyOldPublishedVersions) throws SystemException 
 	{
+		int cleanedVersions = 0;
+		
 		int batchLimit = 200;
 		List languageVOList = LanguageController.getController().getLanguageVOList();
 		
@@ -1867,18 +1870,20 @@ public class ContentVersionController extends BaseController
 		{
 			LanguageVO languageVO = languageVOListIterator.next();
 			List<ContentVersionVO> contentVersionVOList = getContentVersionVOList(languageVO.getId(), numberOfVersionsToKeep, keepOnlyOldPublishedVersions);
-		
+			
 			logger.info("Deleting " + contentVersionVOList.size() + " versions for language " + languageVO.getName());
 			int maxIndex = (contentVersionVOList.size() > batchLimit ? batchLimit : contentVersionVOList.size());
 			List partList = contentVersionVOList.subList(0, maxIndex);
 			while(partList.size() > 0)
 			{
 				cleanVersions(numberOfVersionsToKeep, partList);
+				cleanedVersions = cleanedVersions + partList.size();
 				partList.clear();
 				maxIndex = (contentVersionVOList.size() > batchLimit ? batchLimit : contentVersionVOList.size());
 				partList = contentVersionVOList.subList(0, maxIndex);
 			}
 		}
+		return cleanedVersions;
 	}
 	
 	/**
@@ -1949,19 +1954,78 @@ public class ContentVersionController extends BaseController
 			
         	int numberOfLaterVersions = 0;
         	Integer previousContentId = null;
-			while (results.hasMore())
+        	Date previousDate = null;
+        	long difference = -1;
+        	List potentialContentVersionVOList = new ArrayList();
+        	List versionInitialSuggestions = new ArrayList();
+        	while (results.hasMore())
             {
 				SmallestContentVersionImpl version = (SmallestContentVersionImpl)results.next();
 				if(previousContentId != null && previousContentId.intValue() != version.getContentId().intValue())
 				{
+					if(versionInitialSuggestions.size() > numberOfVersionsToKeep)
+					{
+						Iterator potentialContentVersionVOListIterator = potentialContentVersionVOList.iterator();
+						while(potentialContentVersionVOListIterator.hasNext())
+						{
+							ContentVersionVO potentialContentVersionVO = (ContentVersionVO)potentialContentVersionVOListIterator.next();
+							
+							ContentVersionVO firstInitialSuggestedContentVersionVO = null;
+							Iterator versionInitialSuggestionsIterator = versionInitialSuggestions.iterator();
+							while(versionInitialSuggestionsIterator.hasNext())
+							{
+								ContentVersionVO initialSuggestedContentVersionVO = (ContentVersionVO)versionInitialSuggestionsIterator.next();
+								if(initialSuggestedContentVersionVO.getStateId().equals(ContentVersionVO.PUBLISHED_STATE))
+								{
+									firstInitialSuggestedContentVersionVO = initialSuggestedContentVersionVO;
+									break;
+								}
+							}
+							
+							if(firstInitialSuggestedContentVersionVO != null)
+							{
+								versionInitialSuggestions.remove(firstInitialSuggestedContentVersionVO);
+								versionInitialSuggestions.add(potentialContentVersionVO);
+							}
+						}
+					}
+					
+					Iterator versionInitialSuggestionsIterator = versionInitialSuggestions.iterator();
+					while(versionInitialSuggestionsIterator.hasNext())
+					{
+						ContentVersionVO contentVersionVO = (ContentVersionVO)versionInitialSuggestionsIterator.next();
+					}
+					
+					contentVersionsIdList.addAll(versionInitialSuggestions);
+					potentialContentVersionVOList.clear();
+					versionInitialSuggestions.clear();
+					
 					numberOfLaterVersions = 0;
+					previousDate = null;
+					difference = -1;
+					potentialContentVersionVOList = new ArrayList();
 				}
-				
+				else if(previousDate != null)
+				{
+					difference = previousDate.getTime() - version.getModifiedDateTime().getTime();
+				}
+								
 				if(numberOfLaterVersions > numberOfVersionsToKeep || (keepOnlyOldPublishedVersions && numberOfLaterVersions > 0 && !version.getStateId().equals(ContentVersionVO.PUBLISHED_STATE)))
             	{
-					contentVersionsIdList.add(version.getValueObject());
+					versionInitialSuggestions.add(version.getValueObject());
+					//contentVersionsIdList.add(version.getValueObject());
+					//previousDate = version.getModifiedDateTime();
             	}
-            	
+				else if(previousDate != null && difference != -1 && difference < (1000*60*60*12))
+				{
+					potentialContentVersionVOList.add(version.getValueObject());		
+					//previousDate = version.getModifiedDateTime();
+				}
+				else
+				{
+					previousDate = version.getModifiedDateTime();
+				}
+
 				previousContentId = version.getContentId();
 				numberOfLaterVersions++;
             }
