@@ -27,8 +27,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
+import org.infoglue.cms.controllers.kernel.impl.simple.BaseController;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
+import org.infoglue.cms.controllers.kernel.impl.simple.DigitalAssetController;
+import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeController;
 import org.infoglue.cms.entities.management.Chat;
 import org.infoglue.cms.entities.management.Message;
+import org.infoglue.cms.entities.management.TableCount;
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.CmsSessionContextListener;
 
@@ -44,12 +50,57 @@ public class ViewDiagnosticCenterAction extends InfoGlueAbstractAction
 
 	private List internalDeliverUrls = null;
 	private List publicDeliverUrls = null;
+	private int numberOfSiteNodes = 0;
+	private int numberOfSiteNodeVersions = 0;
+	private int numberOfContents = 0;
+	private int numberOfContentVersions = 0;
+	private int numberOfDigitalAssets = 0;
 		
-    public String doExecute() throws Exception
+	public String doExecute() throws Exception
     {
     	this.internalDeliverUrls = CmsPropertyHandler.getInternalDeliveryUrls();
     	this.publicDeliverUrls = CmsPropertyHandler.getPublicDeliveryUrls();
     	
+    	String tableName = "cmSiteNode";
+    	if(CmsPropertyHandler.getUseShortTableNames().equalsIgnoreCase("true"))
+    		tableName = "cmSiNo";
+
+    	TableCount tableCount = BaseController.getTableCount(tableName);
+    	if(tableCount != null)
+    		numberOfSiteNodes = tableCount.getCount();
+
+    	tableName = "cmSiteNodeVersion";
+    	if(CmsPropertyHandler.getUseShortTableNames().equalsIgnoreCase("true"))
+    		tableName = "cmSiNoVer";
+
+    	tableCount = BaseController.getTableCount(tableName);
+    	if(tableCount != null)
+    		numberOfSiteNodeVersions = tableCount.getCount();
+
+    	tableName = "cmContent";
+    	if(CmsPropertyHandler.getUseShortTableNames().equalsIgnoreCase("true"))
+    		tableName = "cmCont";
+
+    	tableCount = BaseController.getTableCount(tableName);
+    	if(tableCount != null)
+    		numberOfContents = tableCount.getCount();
+
+    	tableName = "cmContentVersion";
+    	if(CmsPropertyHandler.getUseShortTableNames().equalsIgnoreCase("true"))
+    		tableName = "cmContVer";
+
+    	tableCount = BaseController.getTableCount(tableName);
+    	if(tableCount != null)
+    		numberOfContentVersions = tableCount.getCount();
+
+    	tableName = "cmDigitalAsset";
+    	if(CmsPropertyHandler.getUseShortTableNames().equalsIgnoreCase("true"))
+    		tableName = "cmDigAsset";
+    	
+    	tableCount = BaseController.getTableCount(tableName);
+    	if(tableCount != null)
+    		numberOfDigitalAssets = tableCount.getCount();
+
         return "success";
     }
 
@@ -61,6 +112,31 @@ public class ViewDiagnosticCenterAction extends InfoGlueAbstractAction
 	public List getPublicDeliverUrls()
 	{
 		return publicDeliverUrls;
+	}
+
+	public int getNumberOfSiteNodes()
+	{
+		return numberOfSiteNodes;
+	}
+
+	public int getNumberOfSiteNodeVersions()
+	{
+		return numberOfSiteNodeVersions;
+	}
+
+	public int getNumberOfContents()
+	{
+		return numberOfContents;
+	}
+
+	public int getNumberOfContentVersions()
+	{
+		return numberOfContentVersions;
+	}
+
+	public int getNumberOfDigitalAssets()
+	{
+		return numberOfDigitalAssets;
 	}
 
 }

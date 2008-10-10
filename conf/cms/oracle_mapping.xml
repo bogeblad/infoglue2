@@ -1609,5 +1609,15 @@
 	    </field>    
   	</class>
 
+	<!--  Mapping for TableCount  -->
+  	<class name="org.infoglue.cms.entities.management.TableCount" identity="count" key-generator="SEQUENCE">
+	    <description>TableCount</description>
+	    <cache-type type="none"/>
+	    <map-to table="dummy"/>
+		<field name="count" type="java.lang.Integer">
+	    	<sql name="count" type="integer"/>
+	    </field>
+    </class>
+
 </mapping>
 
