@@ -31,7 +31,15 @@ import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.DigitalAssetController;
 import org.infoglue.cms.exception.SystemException;
+import org.infoglue.cms.jobs.CleanOldVersionsJob;
 import org.infoglue.cms.util.FileUploadHelper;
+import org.quartz.Job;
+import org.quartz.JobDetail;
+import org.quartz.JobExecutionContext;
+import org.quartz.Scheduler;
+import org.quartz.SimpleTrigger;
+import org.quartz.jobs.NoOpJob;
+import org.quartz.spi.TriggerFiredBundle;
 
 import webwork.action.ActionContext;
 
@@ -56,7 +64,9 @@ public class ViewArchiveToolAction extends InfoGlueAbstractAction
 	private StringBuffer archiveFileSize = new StringBuffer();
 	private boolean nullAssets = false;
 	
-    public String doInput() throws Exception
+	private Integer numberOfCleanedVersions = null;
+	
+	public String doInput() throws Exception
     {
     	return "input";
     }
@@ -89,6 +99,19 @@ public class ViewArchiveToolAction extends InfoGlueAbstractAction
 		DigitalAssetController.getController().restoreAssetArchive(file);
 		
         return "successRestoreArchive";
+    }
+
+	public String doCleanOldVersions() throws Exception
+    {
+		JobDetail jobDetail = new JobDetail();
+
+		SimpleTrigger trig = new SimpleTrigger();
+
+		JobExecutionContext jec = new JobExecutionContext(null, new TriggerFiredBundle(jobDetail, trig, null, false, null, null, null, null), new NoOpJob());
+		new CleanOldVersionsJob().execute(jec);
+		this.numberOfCleanedVersions = (Integer)jec.getResult();
+		
+        return "input";
     }
 
     public String doExecute() throws Exception
@@ -154,6 +177,11 @@ public class ViewArchiveToolAction extends InfoGlueAbstractAction
 	public void setNullAssets(boolean nullAssets)
 	{
 		this.nullAssets = nullAssets;
+	}
+
+    public Integer getNumberOfCleanedVersions()
+	{
+		return numberOfCleanedVersions;
 	}
 
 }
