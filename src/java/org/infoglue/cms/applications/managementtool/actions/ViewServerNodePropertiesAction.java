@@ -302,6 +302,7 @@ public class ViewServerNodePropertiesAction extends InfoGluePropertiesAbstractAc
 	    
 	    populate(ps, "numberOfVersionsToKeepDuringClean");
 	    populate(ps, "keepOnlyOldPublishedVersionsDuringClean");
+	    populate(ps, "minimumTimeBetweenVersionsDuringClean");
 	    populateData(ps, "assetUploadTransformationsSettings");
 
 

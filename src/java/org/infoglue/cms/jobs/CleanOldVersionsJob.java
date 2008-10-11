@@ -22,31 +22,12 @@
 */
 package org.infoglue.cms.jobs;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.log4j.Logger;
-import org.exolab.castor.jdo.Database;
-import org.exolab.castor.jdo.PersistenceException;
-import org.exolab.castor.jdo.TransactionNotInProgressException;
-import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
-import org.infoglue.cms.controllers.kernel.impl.simple.CategoryController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
-import org.infoglue.cms.controllers.kernel.impl.simple.RedirectController;
-import org.infoglue.cms.controllers.kernel.impl.simple.TransactionHistoryController;
-import org.infoglue.cms.exception.Bug;
-import org.infoglue.cms.util.ChangeNotificationController;
 import org.infoglue.cms.util.CmsPropertyHandler;
-import org.infoglue.cms.util.NotificationMessage;
-import org.infoglue.cms.util.RemoteCacheUpdater;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
-
-import com.opensymphony.module.propertyset.PropertySet;
-import com.opensymphony.module.propertyset.PropertySetManager;
 
 /**
  * @author mattias
@@ -77,17 +58,21 @@ public class CleanOldVersionsJob implements Job
     	
     	try
 		{
-
 	    	String numberOfVersionsToKeepDuringClean = CmsPropertyHandler.getNumberOfVersionsToKeepDuringClean();
 	    	logger.info("numberOfVersionsToKeepDuringClean:" + numberOfVersionsToKeepDuringClean);
 			Integer numberOfVersionsToKeepDuringCleanInteger = new Integer(numberOfVersionsToKeepDuringClean);
 	    	String keepOnlyOldPublishedVersionsString = CmsPropertyHandler.getKeepOnlyOldPublishedVersionsDuringClean();
 	    	logger.info("keepOnlyOldPublishedVersionsString:" + keepOnlyOldPublishedVersionsString);
-			boolean keepOnlyOldPublishedVersions = Boolean.parseBoolean(keepOnlyOldPublishedVersionsString);
+	    	long minimumTimeBetweenVersionsDuringClean = CmsPropertyHandler.getMinimumTimeBetweenVersionsDuringClean();
+	    	logger.info("minimumTimeBetweenVersionsDuringClean:" + minimumTimeBetweenVersionsDuringClean);
+	    	boolean keepOnlyOldPublishedVersions = Boolean.parseBoolean(keepOnlyOldPublishedVersionsString);
 			if(numberOfVersionsToKeepDuringCleanInteger.intValue() < 3)
 				numberOfVersionsToKeepDuringCleanInteger = new Integer(3);
 			if(numberOfVersionsToKeepDuringCleanInteger.intValue() > -1)
-				ContentVersionController.getContentVersionController().cleanContentVersions(numberOfVersionsToKeepDuringCleanInteger.intValue(), keepOnlyOldPublishedVersions);
+			{
+				int cleanedVersions = ContentVersionController.getContentVersionController().cleanContentVersions(numberOfVersionsToKeepDuringCleanInteger.intValue(), keepOnlyOldPublishedVersions, minimumTimeBetweenVersionsDuringClean);
+				context.setResult(new Integer(cleanedVersions));
+			}
 		}
 		catch(Exception e)
 	    {

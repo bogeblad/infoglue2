@@ -1858,7 +1858,7 @@ public class ContentVersionController extends BaseController
 	 * @throws SystemException 
 	 */
 	
-	public int cleanContentVersions(int numberOfVersionsToKeep, boolean keepOnlyOldPublishedVersions) throws SystemException 
+	public int cleanContentVersions(int numberOfVersionsToKeep, boolean keepOnlyOldPublishedVersions, long minimumTimeBetweenVersionsDuringClean) throws SystemException 
 	{
 		int cleanedVersions = 0;
 		
@@ -1869,7 +1869,7 @@ public class ContentVersionController extends BaseController
 		while(languageVOListIterator.hasNext())
 		{
 			LanguageVO languageVO = languageVOListIterator.next();
-			List<ContentVersionVO> contentVersionVOList = getContentVersionVOList(languageVO.getId(), numberOfVersionsToKeep, keepOnlyOldPublishedVersions);
+			List<ContentVersionVO> contentVersionVOList = getContentVersionVOList(languageVO.getId(), numberOfVersionsToKeep, keepOnlyOldPublishedVersions, minimumTimeBetweenVersionsDuringClean);
 			
 			logger.info("Deleting " + contentVersionVOList.size() + " versions for language " + languageVO.getName());
 			int maxIndex = (contentVersionVOList.size() > batchLimit ? batchLimit : contentVersionVOList.size());
@@ -1935,7 +1935,7 @@ public class ContentVersionController extends BaseController
 	 * @throws SystemException 
 	 */
 	
-	public List<ContentVersionVO> getContentVersionVOList(Integer languageId, int numberOfVersionsToKeep, boolean keepOnlyOldPublishedVersions) throws SystemException 
+	public List<ContentVersionVO> getContentVersionVOList(Integer languageId, int numberOfVersionsToKeep, boolean keepOnlyOldPublishedVersions, long minimumTimeBetweenVersionsDuringClean) throws SystemException 
 	{
 		logger.info("numberOfVersionsToKeep:" + numberOfVersionsToKeep);
 
@@ -1963,7 +1963,7 @@ public class ContentVersionController extends BaseController
 				SmallestContentVersionImpl version = (SmallestContentVersionImpl)results.next();
 				if(previousContentId != null && previousContentId.intValue() != version.getContentId().intValue())
 				{
-					if(versionInitialSuggestions.size() > numberOfVersionsToKeep)
+					if(minimumTimeBetweenVersionsDuringClean != -1 && versionInitialSuggestions.size() > numberOfVersionsToKeep)
 					{
 						Iterator potentialContentVersionVOListIterator = potentialContentVersionVOList.iterator();
 						while(potentialContentVersionVOListIterator.hasNext())
@@ -2016,7 +2016,7 @@ public class ContentVersionController extends BaseController
 					//contentVersionsIdList.add(version.getValueObject());
 					//previousDate = version.getModifiedDateTime();
             	}
-				else if(previousDate != null && difference != -1 && difference < (1000*60*60*12))
+				else if(previousDate != null && difference != -1 && difference < minimumTimeBetweenVersionsDuringClean)
 				{
 					potentialContentVersionVOList.add(version.getValueObject());		
 					//previousDate = version.getModifiedDateTime();

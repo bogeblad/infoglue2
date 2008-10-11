@@ -1262,6 +1262,23 @@ public class CmsPropertyHandler
 		return getServerNodeProperty("keepOnlyOldPublishedVersionsDuringClean", true, "true");
 	}
 
+	public static Long getMinimumTimeBetweenVersionsDuringClean()
+	{
+		long value = -1;
+		
+		String minimumTimeBetweenVersionsDuringClean = getServerNodeProperty("minimumTimeBetweenVersionsDuringClean", true, "-1");
+		try
+		{
+			value = new Long(minimumTimeBetweenVersionsDuringClean).longValue();
+		}
+		catch (Exception e) 
+		{
+			logger.warn("Problem getting minimumTimeBetweenVersionsDuringClean:" + e.getMessage());
+		}
+		
+		return value;
+	}
+
 	public static String getAssetUploadTransformationsSettings()
 	{
 		return getServerNodeDataProperty(null, "assetUploadTransformationsSettings", true, "");

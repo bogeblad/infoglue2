@@ -171,8 +171,6 @@
 			previousLiTabId = tabId + "Tab";
 		}
 		
-		//$activeDivId
-		//window.onload = activateTab("$activeDivId");
 	</script>
 	
 <div class="fullymarginalized">
@@ -223,8 +221,18 @@
 			#editPropertyFieldCSS("ServerNode.property.errorUrl" "errorUrl" "$this.getPropertyValue('errorUrl')" "51" "$!serverNodeId")	
 			#yesNoDropDownWithInheritCSS("ServerNode.property.useShortTableNames" "useShortTableNames" "$this.getPropertyValue('useShortTableNames')")
 			#editPropertyFieldCSS("ServerNode.property.numberOfVersionsToKeepDuringClean" "numberOfVersionsToKeepDuringClean" "$this.getPropertyValue('numberOfVersionsToKeepDuringClean')" "51" "$!serverNodeId")
-			#editPropertyTextAreaCSS("ServerNode.property.assetUploadTransformationsSettings" "assetUploadTransformationsSettings" "$this.getDataPropertyValue('assetUploadTransformationsSettings')" "40" "6" "righttextarea" "$!serverNodeId")
+			
+			#set($option1 = ["-1", "Choose difference"])
+			#set($option2 = ["28800000", "8 hours"])
+			#set($option3 = ["86400000", "24 hours"])
+			#set($option4 = ["172800000", "2 days"])
+			#set($option5 = ["604800000", "7 days"])
+			#set($option6 = ["2678400000", "1 month"])
+			#set($minimumTimeBetweenVersionsDuringCleanOptions = [$option1, $option2, $option3, $option4, $option5, $option6]) 
+			
+			#selectFieldCSS("ServerNode.property.minimumTimeBetweenVersionsDuringClean" "minimumTimeBetweenVersionsDuringClean" $this.getPropertyValue('minimumTimeBetweenVersionsDuringClean') $minimumTimeBetweenVersionsDuringCleanOptions)
 			#yesNoDropDownWithInheritCSS("ServerNode.property.duplicateAssetsBetweenVersions" "duplicateAssetsBetweenVersions" "$this.getPropertyValue('duplicateAssetsBetweenVersions')")
+			#editPropertyTextAreaCSS("ServerNode.property.assetUploadTransformationsSettings" "assetUploadTransformationsSettings" "$this.getDataPropertyValue('assetUploadTransformationsSettings')" "40" "6" "righttextarea" "$!serverNodeId")
 			
 			<div class="buttonRow">
 				<input type="image" src="$ui.getString("images.managementtool.buttons.save")" width="50" height="25" style="width: 50px;">
