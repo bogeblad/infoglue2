@@ -1,4 +1,60 @@
 -------------------------------------------------------------------------------------
+- InfoGlue 2.9.4 Final
+-------------------------------------------------------------------------------------
+
+Release notes
+---------------------------------------
+Version 2.9.4 a minor release with some small improvements and small bugfixes. The installer has been improved
+as well as many other small items.
+    
+Thanx for all reports and proposals for bugfixes.
+The InfoGlue Team
+
+
+Abbreviated Changelog from 2.9.3 Final 
+---------------------------------------
+- Added so pageCacheTimeout on a page is inherited from parent pages if not set on individual pages.
+- Added attribute pageCacheTimeout to the <page:deliveryContext-tag so one can specify it from the code also. This overrides the page setting.
+- Added a few new tags concerning personal images etc
+	- <management:principalAssets id="assets"/>
+	- <management:principalAssetUrl id="personaImageUrl" assetKey="personalImage"/>
+	- added so you can add <content:digitalAssetParameter...> inside a remoteUserPropertiesTag.
+- Fixed even better fallback on image retrieval between sites with no common languages.
+- Added languageId option to all principalProperty-related tags.
+- Fixed bug in XSLTransform-tag where if you not stated outputFormat the rendering only worked once - after that a null pointer occurred.
+- Fixed bug where in how change component handles language differences between repositories.
+- Added limitation on depth of a page component structure. Now only hierarchies of max 15 levels of subcomponents are allowed. This is to solve problems with recursive loops which previously could happen if you put slot-components with inheritance recursively. Made the whole system instable.
+- Fixed so toolbar is correct on create content wizard if custom
+- Fixed so validation errors in edit content version in standalone view is not shown in the old version of the edit view.
+- Added new property to control what character to use as default in nice uri names. Default non-ascii chars was converted to '_' but now you can state your own and if you write "none" in that field the non-ascii chars gets removed and not substituted.
+- Optimized most assetKey-related operations. Increased speed up to 10 times or more on some pages which used the assetKey-methods.
+- Added new common:forward-tag which somewhat replaces jsp:forward which does not work in infoglue
+- Added filtering in assets browser's "Latest assets" to only include assets from the currect repository
+- Fixed bug in custom interception point creation.
+- Added new interception point called "StructureTool.PageTemplateIsOptional" which allows you to control which users has to supply a page template when creating a page. Developers may not allways want to.
+- Added check to ViewPageFilter and PageInvoker so they do not throw errors if the response was taken over by the components etc.
+- Used display:none instead of visibility for tasks and properties on components and also put back the behaviour to show the inserted components properties directly if there are more than the standard properties available to be filled.
+- Modified jscalendar a bit to use div id jscalendar instead of calendar. Was to easy to interfer with websites classes.
+- Made tabs gets loaded upon click in asset browser to save performance.
+- Fixed bug in mapping of version comment in oracle
+- New version of jquery ui
+- Fixed better transaction handling in lucene controller when reindexing the entire installation
+- Removed some cache defeat code in new v3 interfaces
+- Fixed a bug in new v3 interfaces concerning unicode names in assets keys.
+- Updated the new interface for improved speed and decreased complexity.
+- Fixed so subscriptions can be specified inline - not standalone
+- Added common:captcha-tag for use to defeat robots in forms etc. 
+- Fixed better handling of i18n-chars in roles, groups and systemuser-names.
+- Used the common asset methods to show content version assets
+- Added better dirty-warning for content version editor screens.
+- Made content editor forms not be posted by mistake by pressing enter key in textfields for example.
+- Added interface to start version cleanup from management tool
+- Fixed visual bug in access rights view which did not show group access dependencies in some situations.
+- Added some simple database statistics to diagnostics and status screen in management. 
+- Improved the version cleanup strategy to prioritize versions not to close together. If two versions are less then 8 hours apart they are considered less important than older versions.
+- Fixed so file names are converted with the same logic as the new nice uri conversion logic.
+
+-------------------------------------------------------------------------------------
 - InfoGlue 2.9.3 Final
 -------------------------------------------------------------------------------------
 
@@ -25,6 +81,8 @@ Abbreviated Changelog from 2.9.2 Final
 - Fixed asset binding functionality in AssignPropertyBindingTag
 - Added new interception point which controls which ones sees meta info folders in the content tree.
 - Fixed so meta info contents get's moved to new repository if the site node it belongs to is moved.
+- Fixed so preview is default window size
+- Improved the inline edit - so textareas does not get to big.
 
 -------------------------------------------------------------------------------------
 - InfoGlue 2.9.2 Final
