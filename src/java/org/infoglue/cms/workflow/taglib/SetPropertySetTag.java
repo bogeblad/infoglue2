@@ -89,8 +89,8 @@ public class SetPropertySetTag extends WorkflowTag
 	 * 
 	 * @param key the value to use.
 	 */
-    public void setValue(final String value) 
+    public void setValue(final String value) throws JspException
 	{
-        this.value = value;
+        this.value = evaluateString("SetPropertySetTag", "value", value);
     }
 }
