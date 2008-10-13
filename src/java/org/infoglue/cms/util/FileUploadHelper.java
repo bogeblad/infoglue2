@@ -75,7 +75,8 @@ public class FileUploadHelper
 						String fileSystemName = mpr.getFilesystemName(name);
 						
 						String fileName = "Import_" + System.currentTimeMillis() + fileSystemName;
-						fileName = new VisualFormatter().replaceNonAscii(fileName, '_');
+						//fileName = new VisualFormatter().replaceNonAscii(fileName, '_');
+						fileName = new VisualFormatter().replaceNiceURINonAsciiWithSpecifiedChars(fileName, CmsPropertyHandler.getNiceURIDefaultReplacementCharacter());
 						
 						String filePath = CmsPropertyHandler.getDigitalAssetUploadPath();
 						fileSystemName =  filePath + File.separator + fileName;

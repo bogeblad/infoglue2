@@ -154,7 +154,8 @@ public class UpdateDigitalAssetAction extends ViewDigitalAssetAction
 						String fileSystemName = mpr.getFilesystemName(name);
 					
 						String fileName = fileSystemName;
-						fileName = new VisualFormatter().replaceNonAscii(fileName, '_');
+		            	fileName = formatter.replaceNiceURINonAsciiWithSpecifiedChars(fileName, CmsPropertyHandler.getNiceURIDefaultReplacementCharacter());
+						//fileName = new VisualFormatter().replaceNonAscii(fileName, '_');
 
 						String tempFileName = "tmp_" + System.currentTimeMillis() + "_" + fileName;
 						//String filePath = file.getParentFile().getPath();

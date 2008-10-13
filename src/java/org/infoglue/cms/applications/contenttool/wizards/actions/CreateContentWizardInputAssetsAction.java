@@ -61,6 +61,8 @@ public class CreateContentWizardInputAssetsAction extends CreateContentWizardAbs
 	private Integer contentVersionId 						= null;
 	private String inputMoreAssets							= null;
 	
+	private VisualFormatter formatter = new VisualFormatter();
+
     public CreateContentWizardInputAssetsAction()
     {
     }
@@ -159,13 +161,15 @@ public class CreateContentWizardInputAssetsAction extends CreateContentWizardAbs
 					String fileSystemName = mpr.getFilesystemName(name);
 					
 					File file = mpr.getFile(name);
-					String fileName = digitalAssetKey + "_" + System.currentTimeMillis() + "_" + fileSystemName;
-					String tempFileName = "tmp_" + fileName;
-					tempFileName = new VisualFormatter().replaceNonAscii(fileName, '_');
+					String fileName = fileSystemName;
+					//String fileName = digitalAssetKey + "_" + System.currentTimeMillis() + "_" + fileSystemName;
+					//String tempFileName = "tmp_" + fileName;
+					//tempFileName = new VisualFormatter().replaceNonAscii(fileName, '_');
 					
 					String filePath = CmsPropertyHandler.getDigitalAssetPath();
 					//fileSystemName = filePath + File.separator + tempFileName;
-	            	
+	            	fileName = formatter.replaceNiceURINonAsciiWithSpecifiedChars(fileName, CmsPropertyHandler.getNiceURIDefaultReplacementCharacter());
+
 					if(file != null)
 					{
 						DigitalAssetVO newAsset = new DigitalAssetVO();

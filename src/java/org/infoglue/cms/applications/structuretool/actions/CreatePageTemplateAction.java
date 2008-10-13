@@ -206,8 +206,9 @@ public class CreatePageTemplateAction extends InfoGlueAbstractAction implements 
 	            	if(file != null)
 	            	{
 						String fileName = fileSystemName;
-						fileName = new VisualFormatter().replaceNonAscii(fileName, '_');
-						
+						//fileName = new VisualFormatter().replaceNonAscii(fileName, '_');
+		            	fileName = new VisualFormatter().replaceNiceURINonAsciiWithSpecifiedChars(fileName, CmsPropertyHandler.getNiceURIDefaultReplacementCharacter());
+
 						String tempFileName = "tmp_" + System.currentTimeMillis() + "_" + fileName;
 		            	String filePath = CmsPropertyHandler.getDigitalAssetPath();
 		            	fileSystemName = filePath + File.separator + tempFileName;

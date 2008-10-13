@@ -263,7 +263,9 @@ public class CreateDigitalAssetAction extends ViewDigitalAssetAction
 		            	{
 		            		if(fileSystemName.lastIndexOf(".") > -1)
 		            			digitalAssetKey = fileSystemName.substring(0, fileSystemName.lastIndexOf("."));
-		            		digitalAssetKey = formatter.replaceNonAscii(digitalAssetKey, '_');
+		            		
+		            		digitalAssetKey = formatter.replaceNiceURINonAsciiWithSpecifiedChars(digitalAssetKey, CmsPropertyHandler.getNiceURIDefaultReplacementCharacter());
+		            		//digitalAssetKey = formatter.replaceNonAscii(digitalAssetKey, '_');
 		            	}
 		            	logger.info("digitalAssetKey:" + digitalAssetKey);
 		            	
@@ -298,12 +300,12 @@ public class CreateDigitalAssetAction extends ViewDigitalAssetAction
 		            	logger.info("contentType:" + contentType);
 		            	
 		            	file = mpr.getFile(name);
-		            	//String fileName = this.contentVersionId + "_" + System.currentTimeMillis() + "_" + fileSystemName;
 						String fileName = fileSystemName;
 
 		            	logger.info("fileSystemName:" + fileSystemName);
 
-						fileName = new VisualFormatter().replaceNonAscii(fileName, '_');
+		            	fileName = formatter.replaceNiceURINonAsciiWithSpecifiedChars(fileName, CmsPropertyHandler.getNiceURIDefaultReplacementCharacter());
+	            		//fileName = formatter.replaceNonAscii(fileName, '_');
 						
 						String tempFileName = "tmp_" + System.currentTimeMillis() + "_" + fileName;
 		            	//String filePath = file.getParentFile().getPath();
