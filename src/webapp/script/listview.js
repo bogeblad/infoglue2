@@ -431,6 +431,7 @@ function confirmAction(text, url)
 	}
 }
 
+var dirty = false;
 function setDirty()
 {
 	dirty=true;
