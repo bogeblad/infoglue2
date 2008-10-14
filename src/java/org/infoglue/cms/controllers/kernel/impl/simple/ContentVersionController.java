@@ -871,7 +871,8 @@ public class ContentVersionController extends BaseController
 		}
 		
 		contentCategoryController.deleteByContentVersion(contentVersion, db);
-
+		DigitalAssetController.getController().deleteByContentVersion(contentVersion, db);
+		
 		Content content = contentVersion.getOwningContent();
 
 		if(content != null)
@@ -1862,7 +1863,7 @@ public class ContentVersionController extends BaseController
 	{
 		int cleanedVersions = 0;
 		
-		int batchLimit = 200;
+		int batchLimit = 20;
 		List languageVOList = LanguageController.getController().getLanguageVOList();
 		
 		Iterator<LanguageVO> languageVOListIterator = languageVOList.iterator();

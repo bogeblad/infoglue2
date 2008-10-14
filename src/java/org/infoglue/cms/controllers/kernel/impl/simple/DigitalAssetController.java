@@ -53,6 +53,7 @@ import org.exolab.castor.jdo.Database;
 import org.exolab.castor.jdo.OQLQuery;
 import org.exolab.castor.jdo.QueryResults;
 import org.infoglue.cms.applications.common.VisualFormatter;
+import org.infoglue.cms.applications.databeans.OptimizationBeanList;
 import org.infoglue.cms.entities.content.Content;
 import org.infoglue.cms.entities.content.ContentVersion;
 import org.infoglue.cms.entities.content.ContentVersionVO;
@@ -753,6 +754,40 @@ public class DigitalAssetController extends BaseController
     }
 	
 	
+	/**
+	 * This method are here to return all content versions that have somewhat heavy digitalAssets
+	 * and are x number of versions behind the current active version. This is for archiving purposes.
+	 * 
+	 * @param numberOfVersionsToKeep
+	 * @param assetSizeLimit
+	 * @return
+	 * @throws SystemException 
+	 */
+	
+	public void deleteByContentVersion(ContentVersion contentVersion, Database db) throws Exception 
+	{
+		Collection digitalAssets = contentVersion.getDigitalAssets();
+		Iterator digitalAssetsIterator = digitalAssets.iterator();
+		while(digitalAssetsIterator.hasNext())
+		{
+			DigitalAsset currentDigitalAsset = (DigitalAsset)digitalAssetsIterator.next();
+			logger.info("CurrentDigitalAsset:" + currentDigitalAsset.getId() + " - " + currentDigitalAsset.getAssetKey() + " size:" + currentDigitalAsset.getContentVersions().size());
+			if(currentDigitalAsset.getContentVersions().size() > 1)
+			{
+				logger.info("Size was " + currentDigitalAsset.getContentVersions().size() + " so we just delete the relationship");
+				currentDigitalAsset.getContentVersions().remove(contentVersion);
+				digitalAssetsIterator.remove();
+			}
+			else
+			{
+				logger.info("Size was " + currentDigitalAsset.getContentVersions().size() + " so we delete the asset completely");
+				currentDigitalAsset.getContentVersions().remove(contentVersion);
+				digitalAssetsIterator.remove();
+				db.remove(currentDigitalAsset);
+			}
+		}
+	}
+
 	
 	/**
 	 * This method should return a String containing the URL for this digital asset.
