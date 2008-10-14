@@ -953,6 +953,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		int numberOfHiddenProperties = 0;
 		
 		int propertyIndex = 0;
+		int accessablePropertyIndex = 0;
 		boolean isAdvancedProperties = false;
 		Iterator componentPropertiesIterator = componentProperties.iterator();
 		while(componentPropertiesIterator.hasNext())
@@ -1222,6 +1223,9 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 									sb.append("			<option value='" + siteNodeVO.getSiteNodeId() + "' title='" + path + "'>" + siteNodeVO.getName() + "(" + siteNodeVO.getSiteNodeId() + ")" + "</option>");								
 							}
 							sb.append("			</select>");	
+
+							if(hasAccessToProperty)
+							    propertyIndex++;
 						}
 						sb.append("			</td>");
 						sb.append("			<td class=\"igpropertylabel igpropertyDivider\"></td>");
@@ -1230,7 +1234,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 					}
 
 					if(hasAccessToProperty)
-					    propertyIndex++;
+					    accessablePropertyIndex++;
 				}
 				else if(componentProperty.getType().equalsIgnoreCase(ComponentProperty.TEXTFIELD))
 				{
@@ -1255,7 +1259,10 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 					sb.append("		</tr>");
 					
 					if(hasAccessToProperty)
+					{
 					    propertyIndex++;
+					    accessablePropertyIndex++;
+					}
 				}
 				else if(componentProperty.getType().equalsIgnoreCase(ComponentProperty.DATEFIELD))
 				{
@@ -1295,7 +1302,10 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 					sb.append("		</tr>");
 					
 					if(hasAccessToProperty)
+					{
 					    propertyIndex++;
+					    accessablePropertyIndex++;
+					}
 				}
 				else if(componentProperty.getType().equalsIgnoreCase(ComponentProperty.CUSTOMFIELD))
 				{
@@ -1326,7 +1336,10 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 					sb.append("		</tr>");
 					
 					if(hasAccessToProperty)
+					{
 					    propertyIndex++;
+					    accessablePropertyIndex++;
+					}
 				}
 				else if(componentProperty.getType().equalsIgnoreCase(ComponentProperty.TEXTAREA))
 				{
@@ -1351,7 +1364,10 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 					sb.append("		</tr>");
 					
 					if(hasAccessToProperty)
+					{
 					    propertyIndex++;
+					    accessablePropertyIndex++;
+					}
 				}
 				else if(componentProperty.getType().equalsIgnoreCase(ComponentProperty.SELECTFIELD))
 				{
@@ -1390,7 +1406,10 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 					sb.append("		</tr>");
 					
 					if(hasAccessToProperty)
+					{
 					    propertyIndex++;
+					    accessablePropertyIndex++;
+					}
 				}
 				else if(componentProperty.getType().equalsIgnoreCase(ComponentProperty.CHECKBOXFIELD))
 				{
@@ -1438,7 +1457,10 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 					sb.append("		</tr>");
 					
 					if(hasAccessToProperty)
+					{
 					    propertyIndex++;
+					    accessablePropertyIndex++;
+					}
 				}
 			}
 		}
@@ -1475,7 +1497,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		sb.append("		activatedComponentId = QueryString(\"activatedComponentId\");\n");
 		sb.append("		if(activatedComponentId && activatedComponentId == componentId)\n"); 
 		//System.out.println("propertyIndex:"+ propertyIndex + " for " + componentName);
-		if(propertyIndex > 4)
+		if(accessablePropertyIndex > 4)
 			sb.append("			showDiv(\"component\" + componentId + \"Properties\");\n"); 
 
 		sb.append("		$(theHandle).css('cursor', 'move');\n");
