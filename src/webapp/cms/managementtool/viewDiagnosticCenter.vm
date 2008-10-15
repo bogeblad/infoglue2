@@ -33,7 +33,7 @@
 		MySQL and SQLServer: 
 		<p style="background-color: white; width: 600px; border: 1px solid black; padding: 4px; color: blue;">delete from cmDigitalAsset da where da.assetKey NOT LIKE '%portletentityregistry.xml%' AND da.assetContentType NOT LIKE '%application%' AND da.digitalAssetId not in (select digitalAssetId from cmContentVersionDigitalAsset) AND da.digitalAssetId not in (select digitalAssetId from cmGroupPropertiesDigitalAsset) AND da.digitalAssetId not in (select digitalAssetId from cmRolePropertiesDigitalAsset) AND da.digitalAssetId not in (select digitalAssetId from cmUserPropertiesDigitalAsset)</p><br/>
 		Oracle: 
-		<p style="background-color: white; width: 600px; border: 1px solid black; padding: 4px; color: blue;">delete from from cmDigAsset da where da.assetKey NOT LIKE '%portletentityregistry.xml%' AND da.assetContentType NOT LIKE '%application%' AND da.digAssetId not in (select digAssetId from cmContVerDigAsset) AND da.digAssetId not in (select digAssetId from cmGroupPropDigAsset) AND da.digAssetId not in (select digAssetId from cmRolePropDigAsset) AND da.digAssetId not in (select digAssetId from cmUserPropDigAsset)</p><br/>
+		<p style="background-color: white; width: 600px; border: 1px solid black; padding: 4px; color: blue;">delete from cmDigAsset da where da.assetKey NOT LIKE '%portletentityregistry.xml%' AND da.assetContentType NOT LIKE '%application%' AND da.digAssetId not in (select digAssetId from cmContVerDigAsset) AND da.digAssetId not in (select digAssetId from cmGroupPropDigAsset) AND da.digAssetId not in (select digAssetId from cmRolePropDigAsset) AND da.digAssetId not in (select digAssetId from cmUserPropDigAsset)</p><br/>
 	</p>
 		
 #endManagementTool()
