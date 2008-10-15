@@ -124,6 +124,11 @@ public class DigitalAssetController extends BaseController
 
     public static DigitalAsset getMediumDigitalAssetWithId(Integer digitalAssetId, Database db) throws SystemException, Bug
     {
+		return (DigitalAsset) getObjectWithId(MediumDigitalAssetImpl.class, digitalAssetId, db);
+    }
+
+    public static DigitalAsset getMediumDigitalAssetWithIdReadOnly(Integer digitalAssetId, Database db) throws SystemException, Bug
+    {
 		return (DigitalAsset) getObjectWithIdAsReadOnly(MediumDigitalAssetImpl.class, digitalAssetId, db);
     }
 
@@ -519,12 +524,25 @@ public class DigitalAssetController extends BaseController
 
 		try
 		{
+			if(is == null)
+			{
+				digitalAsset = getMediumDigitalAssetWithId(digitalAssetVO.getId(), db);
+				digitalAsset.setValueObject(digitalAssetVO);
+			}
+			else
+			{
+				digitalAsset = getDigitalAssetWithId(digitalAssetVO.getId(), db);
+				digitalAsset.setValueObject(digitalAssetVO);
+			    digitalAsset.setAssetBlob(is);
+			}
+			/*
 			digitalAsset = getDigitalAssetWithId(digitalAssetVO.getId(), db);
 			
 			digitalAsset.setValueObject(digitalAssetVO);
 			if(is != null)
 			    digitalAsset.setAssetBlob(is);
-
+			*/
+			
 			commitTransaction(db);
 		}
 		catch(Exception e)
@@ -1577,7 +1595,7 @@ public class DigitalAssetController extends BaseController
 
         try
         {
-			DigitalAsset mediumDigitalAsset = getMediumDigitalAssetWithId(digitalAssetId, db);
+			DigitalAsset mediumDigitalAsset = getMediumDigitalAssetWithIdReadOnly(digitalAssetId, db);
 			if(mediumDigitalAsset.getContentVersions() != null && mediumDigitalAsset.getContentVersions().size() > 0)
 			{
 				ContentVersion cv = (ContentVersion)mediumDigitalAsset.getContentVersions().iterator().next();

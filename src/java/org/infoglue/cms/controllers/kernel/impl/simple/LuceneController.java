@@ -225,7 +225,7 @@ public class LuceneController extends BaseController implements NotificationList
 			
 			try
 			{			
-				MediumDigitalAssetImpl asset = (MediumDigitalAssetImpl)DigitalAssetController.getMediumDigitalAssetWithId((Integer)notificationMessage.getObjectId(), db);
+				MediumDigitalAssetImpl asset = (MediumDigitalAssetImpl)DigitalAssetController.getMediumDigitalAssetWithIdReadOnly((Integer)notificationMessage.getObjectId(), db);
 				Collection contentVersions = asset.getContentVersions();
 				if(logger.isInfoEnabled())
 					logger.info("contentVersions:" + contentVersions.size());
