@@ -67,6 +67,7 @@ import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.entities.management.GroupProperties;
 import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.entities.management.RoleProperties;
+import org.infoglue.cms.entities.management.TableCount;
 import org.infoglue.cms.entities.management.UserProperties;
 import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.ConstraintException;
@@ -1722,6 +1723,44 @@ public class DigitalAssetController extends BaseController
 		return digitalAssetVO;
 	}
 	
+	/**
+	 * Returns the latest digital asset for a contentversion.
+	 */
+	
+	public static TableCount getNumberOfUnusedAssets() throws Exception
+	{
+		TableCount numberOfUnusedAssetsCount = null;
+		
+		Database db = CastorDatabaseService.getDatabase();
+
+        beginTransaction(db);
+
+        try
+        {
+			OQLQuery oql = db.getOQLQuery("CALL SQL select count(*) from cmDigitalAsset da where da.assetKey NOT LIKE '%portletentityregistry.xml%' AND da.assetContentType NOT LIKE '%application%' AND da.digitalAssetId not in (select digitalAssetId from cmContentVersionDigitalAsset) AND da.digitalAssetId not in (select digitalAssetId from cmGroupPropertiesDigitalAsset) AND da.digitalAssetId not in (select digitalAssetId from cmRolePropertiesDigitalAsset) AND da.digitalAssetId not in (select digitalAssetId from cmUserPropertiesDigitalAsset) ORDER BY assetContentType AS org.infoglue.cms.entities.management.TableCount");
+	    	if(CmsPropertyHandler.getUseShortTableNames() != null && CmsPropertyHandler.getUseShortTableNames().equalsIgnoreCase("true"))
+	    		oql = db.getOQLQuery("CALL SQL select count(*) from cmDigAsset da where da.assetKey NOT LIKE '%portletentityregistry.xml%' AND da.assetContentType NOT LIKE '%application%' AND da.digAssetId not in (select digAssetId from cmContVerDigAsset) AND da.digAssetId not in (select digAssetId from cmGroupPropDigAsset) AND da.digAssetId not in (select digAssetId from cmRolePropDigAsset) AND da.digAssetId not in (select digAssetId from cmUserPropDigAsset) ORDER BY assetContentType AS org.infoglue.cms.entities.management.TableCount");
+	 
+	    	QueryResults results = oql.execute(Database.ReadOnly);
+			if(results.hasMore()) 
+	        {
+				numberOfUnusedAssetsCount = (TableCount)results.next();
+			}
+	
+			results.close();
+			oql.close();
+			
+            commitTransaction(db);
+        }
+        catch(Exception e)
+        {
+            logger.error("An error occurred so we should not complete the transaction:" + e, e);
+            rollbackTransaction(db);
+            throw new SystemException(e.getMessage());
+        }
+
+		return numberOfUnusedAssetsCount;
+	}
 	
 	/**
 	 * This method checks if the given file exists on disk. If it does it's ignored because

@@ -27,6 +27,13 @@
 		Number of contents: $numberOfContents<br />
 		Number of content versions: $numberOfContentVersions<br />
 		Number of digitalAssets: $numberOfDigitalAssets<br />
+		<br>
+		Number of unused digitalAssets (could potentially be removed): $numberOfUnusedDigitalAssets<br />
+		SQL to remove unused assets: <br><br>
+		MySQL and SQLServer: 
+		<p style="background-color: white; width: 600px; border: 1px solid black; padding: 4px; color: blue;">delete from cmDigitalAsset da where da.assetKey NOT LIKE '%portletentityregistry.xml%' AND da.assetContentType NOT LIKE '%application%' AND da.digitalAssetId not in (select digitalAssetId from cmContentVersionDigitalAsset) AND da.digitalAssetId not in (select digitalAssetId from cmGroupPropertiesDigitalAsset) AND da.digitalAssetId not in (select digitalAssetId from cmRolePropertiesDigitalAsset) AND da.digitalAssetId not in (select digitalAssetId from cmUserPropertiesDigitalAsset)</p><br/>
+		Oracle: 
+		<p style="background-color: white; width: 600px; border: 1px solid black; padding: 4px; color: blue;">delete from from cmDigAsset da where da.assetKey NOT LIKE '%portletentityregistry.xml%' AND da.assetContentType NOT LIKE '%application%' AND da.digAssetId not in (select digAssetId from cmContVerDigAsset) AND da.digAssetId not in (select digAssetId from cmGroupPropDigAsset) AND da.digAssetId not in (select digAssetId from cmRolePropDigAsset) AND da.digAssetId not in (select digAssetId from cmUserPropDigAsset)</p><br/>
 	</p>
 		
 #endManagementTool()

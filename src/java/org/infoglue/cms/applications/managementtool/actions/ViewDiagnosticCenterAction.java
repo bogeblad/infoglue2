@@ -55,6 +55,7 @@ public class ViewDiagnosticCenterAction extends InfoGlueAbstractAction
 	private int numberOfContents = 0;
 	private int numberOfContentVersions = 0;
 	private int numberOfDigitalAssets = 0;
+	private int numberOfUnusedDigitalAssets = 0;
 		
 	public String doExecute() throws Exception
     {
@@ -101,6 +102,10 @@ public class ViewDiagnosticCenterAction extends InfoGlueAbstractAction
     	if(tableCount != null)
     		numberOfDigitalAssets = tableCount.getCount();
 
+    	tableCount = DigitalAssetController.getNumberOfUnusedAssets();
+    	if(tableCount != null)
+    		numberOfUnusedDigitalAssets = tableCount.getCount();
+    	
         return "success";
     }
 
@@ -137,6 +142,11 @@ public class ViewDiagnosticCenterAction extends InfoGlueAbstractAction
 	public int getNumberOfDigitalAssets()
 	{
 		return numberOfDigitalAssets;
+	}
+
+	public int getNumberOfUnusedDigitalAssets()
+	{
+		return numberOfUnusedDigitalAssets;
 	}
 
 }
