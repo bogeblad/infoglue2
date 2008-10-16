@@ -54,6 +54,9 @@ Abbreviated Changelog from 2.9.3 Final
 - Improved the version cleanup strategy to prioritize versions not to close together. If two versions are less then 8 hours apart they are considered less important than older versions.
 - Fixed so file names are converted with the same logic as the new nice uri conversion logic.
 - Added statistics on how many unused assets were in the system and sql instructions to delete them.
+- Fixed bug in asset update in oracle - blobs became null.
+- Fixed bug in how languages are treated between repositories when using page templates.
+- Added possibility to get a prediction (in archive tool) on how many versions will get deleted with the new cleanup function.
 
 -------------------------------------------------------------------------------------
 - InfoGlue 2.9.3 Final
