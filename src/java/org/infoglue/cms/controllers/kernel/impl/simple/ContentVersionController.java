@@ -1859,7 +1859,7 @@ public class ContentVersionController extends BaseController
 	 * @throws SystemException 
 	 */
 	
-	public int cleanContentVersions(int numberOfVersionsToKeep, boolean keepOnlyOldPublishedVersions, long minimumTimeBetweenVersionsDuringClean) throws SystemException 
+	public int cleanContentVersions(int numberOfVersionsToKeep, boolean keepOnlyOldPublishedVersions, long minimumTimeBetweenVersionsDuringClean, boolean deleteVersions) throws SystemException 
 	{
 		int cleanedVersions = 0;
 		
@@ -1877,7 +1877,8 @@ public class ContentVersionController extends BaseController
 			List partList = contentVersionVOList.subList(0, maxIndex);
 			while(partList.size() > 0)
 			{
-				cleanVersions(numberOfVersionsToKeep, partList);
+				if(deleteVersions)
+					cleanVersions(numberOfVersionsToKeep, partList);
 				cleanedVersions = cleanedVersions + partList.size();
 				partList.clear();
 				maxIndex = (contentVersionVOList.size() > batchLimit ? batchLimit : contentVersionVOList.size());

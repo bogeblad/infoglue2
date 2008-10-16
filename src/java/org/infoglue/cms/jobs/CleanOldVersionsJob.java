@@ -58,6 +58,10 @@ public class CleanOldVersionsJob implements Job
     	
     	try
 		{
+    		Boolean deleteVersions = (Boolean)context.get("deleteVersions");
+    		if(deleteVersions == null)
+    			deleteVersions = new Boolean(true);
+	    	logger.info("deleteVersions:" + deleteVersions);
 	    	String numberOfVersionsToKeepDuringClean = CmsPropertyHandler.getNumberOfVersionsToKeepDuringClean();
 	    	logger.info("numberOfVersionsToKeepDuringClean:" + numberOfVersionsToKeepDuringClean);
 			Integer numberOfVersionsToKeepDuringCleanInteger = new Integer(numberOfVersionsToKeepDuringClean);
@@ -70,7 +74,7 @@ public class CleanOldVersionsJob implements Job
 				numberOfVersionsToKeepDuringCleanInteger = new Integer(3);
 			if(numberOfVersionsToKeepDuringCleanInteger.intValue() > -1)
 			{
-				int cleanedVersions = ContentVersionController.getContentVersionController().cleanContentVersions(numberOfVersionsToKeepDuringCleanInteger.intValue(), keepOnlyOldPublishedVersions, minimumTimeBetweenVersionsDuringClean);
+				int cleanedVersions = ContentVersionController.getContentVersionController().cleanContentVersions(numberOfVersionsToKeepDuringCleanInteger.intValue(), keepOnlyOldPublishedVersions, minimumTimeBetweenVersionsDuringClean, deleteVersions);
 				context.setResult(new Integer(cleanedVersions));
 			}
 		}

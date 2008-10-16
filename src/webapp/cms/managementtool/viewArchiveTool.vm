@@ -15,11 +15,18 @@
 	</p>
 	#if($numberOfCleanedVersions)
 	<p style="color:red;">
-		Number of versions cleaned: $numberOfCleanedVersions
+		#if($deleteVersions)
+			Number of versions cleaned: $numberOfCleanedVersions
+		#else
+			Number of versions that will be cleaned: $numberOfCleanedVersions
+		#end
 	</p>
 	#end
 	<p>
-		<a href="ViewArchiveTool!cleanOldVersions.action">$ui.getString("tool.managementtool.cleanOldVersions.title") - $ui.getString("tool.managementtool.cleanOldVersions.leadin")</a>
+		<a href="ViewArchiveTool!cleanOldVersions.action">$ui.getString("tool.managementtool.cleanOldVersionsDiagnose.title") - $ui.getString("tool.managementtool.cleanOldVersionsDiagnose.leadin")</a>
+	</p>
+	<p>
+		<a href="javascript:if(confirm('Make sure you take a backup of the database first. The versions will be completely deleted and not possible to restore again. Do you want to continue?')) document.location.href = 'ViewArchiveTool!cleanOldVersions.action?deleteVersions=true';">$ui.getString("tool.managementtool.cleanOldVersions.title") - $ui.getString("tool.managementtool.cleanOldVersions.leadin")</a>
 	</p>
 	
 #endManagementTool()
