@@ -1863,7 +1863,7 @@ public class ContentVersionController extends BaseController
 	{
 		int cleanedVersions = 0;
 		
-		int batchLimit = 20;
+		int batchLimit = 50;
 		List languageVOList = LanguageController.getController().getLanguageVOList();
 		
 		Iterator<LanguageVO> languageVOListIterator = languageVOList.iterator();
@@ -1915,7 +1915,7 @@ public class ContentVersionController extends BaseController
 
 			commitTransaction(db);
 
-			Thread.sleep(10000);
+			Thread.sleep(5000);
         }
         catch(Exception e)
         {
@@ -1968,24 +1968,8 @@ public class ContentVersionController extends BaseController
 				SmallestContentVersionImpl version = (SmallestContentVersionImpl)results.next();
 				if(previousContentId != null && previousContentId.intValue() != version.getContentId().intValue())
 				{
-					/*
-					if(previousContentId == 7310)
-					{
-						System.out.println("versionInitialSuggestions:" + versionInitialSuggestions.size());
-						System.out.println("versionNonPublishedSuggestions:" + versionNonPublishedSuggestions.size());
-						System.out.println("numberOfVersionsToKeep:" + numberOfVersionsToKeep);
-						System.out.println("potentialContentVersionVOList:" + potentialContentVersionVOList.size());
-						System.out.println("keptContentVersionVOList:" + keptContentVersionVOList.size());
-					}
-					*/
-					
 					if(minimumTimeBetweenVersionsDuringClean != -1 && versionInitialSuggestions.size() > numberOfVersionsToKeep)
 					{
-						/*
-						if(previousContentId == 7310)
-							System.out.println("Changing list");
-						*/
-						
 						Iterator potentialContentVersionVOListIterator = potentialContentVersionVOList.iterator();
 						while(potentialContentVersionVOListIterator.hasNext())
 						{
@@ -2006,40 +1990,14 @@ public class ContentVersionController extends BaseController
 							//System.out.println("keptContentVersionVOList " + keptContentVersionVOList.size() + " in loop");
 							if(firstInitialSuggestedContentVersionVO != null)
 							{
-								/*
-								if(previousContentId == 7310)
-								{
-									System.out.println("Removing " + firstInitialSuggestedContentVersionVO.getId() + " - replacing with " + potentialContentVersionVO.getId() + "");
-									System.out.println("keptContentVersionVOList:" + keptContentVersionVOList.size() + " - " + versionInitialSuggestions.size());
-								}
-								*/
 								keptContentVersionVOList.remove(potentialContentVersionVO);
 								keptContentVersionVOList.add(firstInitialSuggestedContentVersionVO);
 								versionInitialSuggestions.remove(firstInitialSuggestedContentVersionVO);
 								versionInitialSuggestions.add(potentialContentVersionVO);
-
-								/*
-								if(previousContentId == 7310)
-									System.out.println("After keptContentVersionVOList:" + keptContentVersionVOList.size() + " - " + versionInitialSuggestions.size());
-								*/
 							}
 						}
 					}
-					
-					Iterator versionInitialSuggestionsIterator = versionInitialSuggestions.iterator();
-					while(versionInitialSuggestionsIterator.hasNext())
-					{
-						ContentVersionVO contentVersionVO = (ContentVersionVO)versionInitialSuggestionsIterator.next();
-					}
-					
-					/*
-					if(previousContentId == 7310)
-					{
-						System.out.println("Adding " + versionNonPublishedSuggestions.size() + " non published versions");
-						System.out.println("Adding " + versionInitialSuggestions.size() + " published versions");
-					}
-					*/
-					
+										
 					contentVersionsIdList.addAll(versionNonPublishedSuggestions);
 					contentVersionsIdList.addAll(versionInitialSuggestions);
 					potentialContentVersionVOList.clear();
