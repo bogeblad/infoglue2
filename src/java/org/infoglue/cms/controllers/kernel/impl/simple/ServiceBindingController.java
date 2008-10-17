@@ -404,7 +404,7 @@ public class ServiceBindingController extends BaseController
 			{	
 				Qualifyer qualifyer = (Qualifyer)qualifyersIterator.next();
 				//logger.info("qualifyer:" + qualifyer.getName() + ":" + qualifyer.getValue() + " == " + qualifyer.getValue().equals(content.getContentId().toString()));
-				if(qualifyer.getName().equalsIgnoreCase("siteNodeId") && qualifyer.getValue().equals(siteNode.getSiteNodeId().toString()))
+				if(qualifyer.getName().equalsIgnoreCase("siteNodeId") && qualifyer.getValue().equals(siteNodeVersion.getValueObject().getSiteNodeId().toString()))
 				{
 					//db.remove(qualifyer);
 					qualifyersIterator.remove();
