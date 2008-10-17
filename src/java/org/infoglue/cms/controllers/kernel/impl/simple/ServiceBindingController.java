@@ -381,7 +381,50 @@ public class ServiceBindingController extends BaseController
 		results.close();
 		oql.close();
 	}       
-	
+
+	/**
+	 * This method deletes all service bindings pointing to a site node version.
+	 */
+
+	public static void deleteServiceBindingsReferencingSiteNodeVersion(SiteNodeVersion siteNodeVersion, Database db) throws ConstraintException, SystemException, Exception
+	{		
+		OQLQuery oql = db.getOQLQuery( "SELECT sb FROM org.infoglue.cms.entities.structure.impl.simple.ServiceBindingImpl sb WHERE sb.siteNodeVersionId = $1 ORDER BY sb.serviceBindingId");
+		oql.bind(siteNodeVersion);
+		
+		QueryResults results = oql.execute();
+		logger.info("Fetching entity in read/write mode");
+
+		while(results.hasMore()) 
+		{
+			ServiceBinding serviceBinding = (ServiceBindingImpl)results.next();
+			//logger.info("serviceBinding:" + serviceBinding.getServiceBindingId());
+			Collection qualifyers = serviceBinding.getBindingQualifyers();
+			Iterator qualifyersIterator = qualifyers.iterator();
+			while(qualifyersIterator.hasNext())
+			{	
+				Qualifyer qualifyer = (Qualifyer)qualifyersIterator.next();
+				//logger.info("qualifyer:" + qualifyer.getName() + ":" + qualifyer.getValue() + " == " + qualifyer.getValue().equals(content.getContentId().toString()));
+				if(qualifyer.getName().equalsIgnoreCase("siteNodeId") && qualifyer.getValue().equals(siteNode.getSiteNodeId().toString()))
+				{
+					//db.remove(qualifyer);
+					qualifyersIterator.remove();
+					//logger.info("Qualifyers:" + serviceBinding.getBindingQualifyers().size());
+					serviceBinding.getBindingQualifyers().remove(qualifyer);
+
+					//logger.info("Qualifyers2:" + serviceBinding.getBindingQualifyers().size());
+					if(serviceBinding.getBindingQualifyers() == null || serviceBinding.getBindingQualifyers().size() == 0)
+					{
+						//logger.info("Removing service binding...");
+						db.remove(serviceBinding);
+					}
+				}
+			}
+		}
+		
+		results.close();
+		oql.close();
+	}       
+
 	/**
 	 * This method deletes a service binding an all associated qualifyers.
 	 */

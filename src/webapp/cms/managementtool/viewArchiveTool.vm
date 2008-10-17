@@ -16,9 +16,9 @@
 	#if($numberOfCleanedVersions)
 	<p style="color:red;">
 		#if($deleteVersions)
-			Number of versions cleaned: $numberOfCleanedVersions
+			Number of versions cleaned: $numberOfCleanedContentVersions content versions and $numberOfCleanedSiteNodeVersions site node versions
 		#else
-			Number of versions that will be cleaned: $numberOfCleanedVersions
+			Number of versions that will be cleaned:  $numberOfCleanedContentVersions content versions and $numberOfCleanedSiteNodeVersions site node versions
 		#end
 	</p>
 	#end

@@ -24,6 +24,7 @@ package org.infoglue.cms.jobs;
 
 import org.apache.log4j.Logger;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
+import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeController;
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
@@ -74,8 +75,10 @@ public class CleanOldVersionsJob implements Job
 				numberOfVersionsToKeepDuringCleanInteger = new Integer(3);
 			if(numberOfVersionsToKeepDuringCleanInteger.intValue() > -1)
 			{
-				int cleanedVersions = ContentVersionController.getContentVersionController().cleanContentVersions(numberOfVersionsToKeepDuringCleanInteger.intValue(), keepOnlyOldPublishedVersions, minimumTimeBetweenVersionsDuringClean, deleteVersions);
-				context.setResult(new Integer(cleanedVersions));
+				int cleanedContentVersions = ContentVersionController.getContentVersionController().cleanContentVersions(numberOfVersionsToKeepDuringCleanInteger.intValue(), keepOnlyOldPublishedVersions, minimumTimeBetweenVersionsDuringClean, deleteVersions);
+				
+				int cleanedSiteNodeVersions = SiteNodeController.getController().cleanSiteNodeVersions(numberOfVersionsToKeepDuringCleanInteger.intValue(), keepOnlyOldPublishedVersions, minimumTimeBetweenVersionsDuringClean, deleteVersions);
+				context.setResult(new Integer[]{cleanedContentVersions, cleanedSiteNodeVersions});
 			}
 		}
 		catch(Exception e)

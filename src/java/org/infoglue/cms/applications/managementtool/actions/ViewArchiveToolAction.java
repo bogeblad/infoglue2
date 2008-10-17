@@ -65,7 +65,8 @@ public class ViewArchiveToolAction extends InfoGlueAbstractAction
 	private boolean nullAssets = false;
 	
 	private boolean deleteVersions = false;
-	private Integer numberOfCleanedVersions = null;
+	private Integer numberOfCleanedSiteNodeVersions = null;
+	private Integer numberOfCleanedContentVersions = null;
 	
 	public String doInput() throws Exception
     {
@@ -111,7 +112,9 @@ public class ViewArchiveToolAction extends InfoGlueAbstractAction
 		JobExecutionContext jec = new JobExecutionContext(null, new TriggerFiredBundle(jobDetail, trig, null, false, null, null, null, null), new NoOpJob());
 		jec.put("deleteVersions", new Boolean(deleteVersions));
 		new CleanOldVersionsJob().execute(jec);
-		this.numberOfCleanedVersions = (Integer)jec.getResult();
+		Integer[] result = (Integer[])jec.getResult();
+		this.numberOfCleanedContentVersions = result[0];
+		this.numberOfCleanedSiteNodeVersions = result[1];
 		
         return "input";
     }
@@ -181,9 +184,14 @@ public class ViewArchiveToolAction extends InfoGlueAbstractAction
 		this.nullAssets = nullAssets;
 	}
 
-    public Integer getNumberOfCleanedVersions()
+    public Integer getNumberOfCleanedContentVersions()
 	{
-		return numberOfCleanedVersions;
+		return numberOfCleanedContentVersions;
+	}
+
+    public Integer getNumberOfCleanedSiteNodeVersions()
+	{
+		return numberOfCleanedSiteNodeVersions;
 	}
 
 	public boolean getDeleteVersions()

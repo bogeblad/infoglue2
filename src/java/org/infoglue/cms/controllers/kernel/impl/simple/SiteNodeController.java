@@ -39,8 +39,10 @@ import org.exolab.castor.jdo.QueryResults;
 import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.entities.content.Content;
 import org.infoglue.cms.entities.content.ContentVO;
+import org.infoglue.cms.entities.content.ContentVersion;
 import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.entities.content.impl.simple.ContentImpl;
+import org.infoglue.cms.entities.content.impl.simple.SmallestContentVersionImpl;
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.entities.management.Language;
 import org.infoglue.cms.entities.management.LanguageVO;
@@ -57,6 +59,8 @@ import org.infoglue.cms.entities.structure.SiteNodeVersion;
 import org.infoglue.cms.entities.structure.SiteNodeVersionVO;
 import org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl;
 import org.infoglue.cms.entities.structure.impl.simple.SmallSiteNodeImpl;
+import org.infoglue.cms.entities.structure.impl.simple.SiteNodeVersionImpl;
+import org.infoglue.cms.entities.structure.impl.simple.SmallSiteNodeVersionImpl;
 import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
@@ -120,6 +124,11 @@ public class SiteNodeController extends BaseController
     public SiteNode getSiteNodeWithId(Integer siteNodeId, Database db) throws SystemException, Bug
     {
         return getSiteNodeWithId(siteNodeId, db, false);
+    }
+
+    public SiteNodeVersion getSiteNodeVersionWithId(Integer siteNodeVersionId, Database db) throws SystemException, Bug
+    {
+		return (SiteNodeVersion) getObjectWithId(SiteNodeVersionImpl.class, siteNodeVersionId, db);
     }
 
     public static SiteNode getSiteNodeWithId(Integer siteNodeId, Database db, boolean readOnly) throws SystemException, Bug
@@ -1212,8 +1221,227 @@ public class SiteNodeController extends BaseController
         
         return siteNodeVOList;
 	}
-	
-	
 
+	/**
+	 * This method are here to return all content versions that are x number of versions behind the current active version. This is for cleanup purposes.
+	 * 
+	 * @param numberOfVersionsToKeep
+	 * @return
+	 * @throws SystemException 
+	 */
+	
+	public int cleanSiteNodeVersions(int numberOfVersionsToKeep, boolean keepOnlyOldPublishedVersions, long minimumTimeBetweenVersionsDuringClean, boolean deleteVersions) throws SystemException 
+	{
+		int cleanedVersions = 0;
+		
+		int batchLimit = 20;
+
+		List<SiteNodeVersionVO> siteNodeVersionVOList = getSiteNodeVersionVOList(numberOfVersionsToKeep, keepOnlyOldPublishedVersions, minimumTimeBetweenVersionsDuringClean);
+			
+		logger.info("Deleting " + siteNodeVersionVOList.size() + " versions");
+		int maxIndex = (siteNodeVersionVOList.size() > batchLimit ? batchLimit : siteNodeVersionVOList.size());
+		List partList = siteNodeVersionVOList.subList(0, maxIndex);
+		while(partList.size() > 0)
+		{
+			if(deleteVersions)
+				cleanVersions(numberOfVersionsToKeep, partList);
+			cleanedVersions = cleanedVersions + partList.size();
+			partList.clear();
+			maxIndex = (siteNodeVersionVOList.size() > batchLimit ? batchLimit : siteNodeVersionVOList.size());
+			partList = siteNodeVersionVOList.subList(0, maxIndex);
+		}
+
+		return cleanedVersions;
+	}
+	
+	
+	/**
+	 * This method are here to return all content versions that are x number of versions behind the current active version. This is for cleanup purposes.
+	 * 
+	 * @param numberOfVersionsToKeep
+	 * @return
+	 * @throws SystemException 
+	 */
+	
+	public List<SiteNodeVersionVO> getSiteNodeVersionVOList(int numberOfVersionsToKeep, boolean keepOnlyOldPublishedVersions, long minimumTimeBetweenVersionsDuringClean) throws SystemException 
+	{
+		logger.info("numberOfVersionsToKeep:" + numberOfVersionsToKeep);
+
+		Database db = CastorDatabaseService.getDatabase();
+    	
+    	List<SiteNodeVersionVO> siteNodeVersionsIdList = new ArrayList();
+
+        beginTransaction(db);
+
+        try
+        {
+            OQLQuery oql = db.getOQLQuery("SELECT cv FROM org.infoglue.cms.entities.structure.impl.simple.SmallSiteNodeVersionImpl snv WHERE snv ORDER BY snv.siteNodeId, snv.siteNodeVersionId desc");
+        	
+        	QueryResults results = oql.execute(Database.ReadOnly);
+			
+        	int numberOfLaterVersions = 0;
+        	Integer previousSiteNodeId = null;
+        	Date previousDate = null;
+        	long difference = -1;
+        	List keptSiteNodeVersionVOList = new ArrayList();
+        	List potentialSiteNodeVersionVOList = new ArrayList();
+        	List versionInitialSuggestions = new ArrayList();
+        	List versionNonPublishedSuggestions = new ArrayList();
+
+        	while (results.hasMore())
+            {
+        		SmallSiteNodeVersionImpl version = (SmallSiteNodeVersionImpl)results.next();
+				if(previousSiteNodeId != null && previousSiteNodeId.intValue() != version.getSiteNodeId().intValue())
+				{
+					logger.info("previousSiteNodeId:" + previousSiteNodeId);
+					if(minimumTimeBetweenVersionsDuringClean != -1 && versionInitialSuggestions.size() > numberOfVersionsToKeep)
+					{						
+						Iterator potentialSiteNodeVersionVOListIterator = potentialSiteNodeVersionVOList.iterator();
+						while(potentialSiteNodeVersionVOListIterator.hasNext())
+						{
+							SiteNodeVersionVO potentialSiteNodeVersionVO = (SiteNodeVersionVO)potentialSiteNodeVersionVOListIterator.next();
+							
+							SiteNodeVersionVO firstInitialSuggestedSiteNodeVersionVO = null;
+							Iterator versionInitialSuggestionsIterator = versionInitialSuggestions.iterator();
+							while(versionInitialSuggestionsIterator.hasNext())
+							{
+								SiteNodeVersionVO initialSuggestedSiteNodeVersionVO = (SiteNodeVersionVO)versionInitialSuggestionsIterator.next();
+								if(initialSuggestedSiteNodeVersionVO.getStateId().equals(ContentVersionVO.PUBLISHED_STATE))
+								{
+									firstInitialSuggestedSiteNodeVersionVO = initialSuggestedSiteNodeVersionVO;
+									break;
+								}
+							}
+							
+							if(firstInitialSuggestedSiteNodeVersionVO != null)
+							{
+								keptSiteNodeVersionVOList.remove(potentialSiteNodeVersionVO);
+								keptSiteNodeVersionVOList.add(firstInitialSuggestedSiteNodeVersionVO);
+								versionInitialSuggestions.remove(firstInitialSuggestedSiteNodeVersionVO);
+								versionInitialSuggestions.add(potentialSiteNodeVersionVO);
+							}
+						}
+					}
+					
+					siteNodeVersionsIdList.addAll(versionNonPublishedSuggestions);
+					siteNodeVersionsIdList.addAll(versionInitialSuggestions);
+					potentialSiteNodeVersionVOList.clear();
+					versionInitialSuggestions.clear();
+					versionNonPublishedSuggestions.clear();
+					keptSiteNodeVersionVOList.clear();
+					
+					numberOfLaterVersions = 0;
+					previousDate = null;
+					difference = -1;
+					potentialSiteNodeVersionVOList = new ArrayList();
+				}
+				else if(previousDate != null)
+				{
+					difference = previousDate.getTime() - version.getModifiedDateTime().getTime();
+				}
+				
+				if(numberOfLaterVersions > numberOfVersionsToKeep || (keepOnlyOldPublishedVersions && numberOfLaterVersions > 0 && !version.getStateId().equals(ContentVersionVO.PUBLISHED_STATE)))
+            	{
+					if(version.getStateId().equals(ContentVersionVO.PUBLISHED_STATE))
+					{
+						versionInitialSuggestions.add(version.getValueObject());
+					}
+					else
+					{
+						versionNonPublishedSuggestions.add(version.getValueObject());
+					}
+            	}
+				else if(previousDate != null && difference != -1 && difference < minimumTimeBetweenVersionsDuringClean)
+				{
+					keptSiteNodeVersionVOList.add(version.getValueObject());
+					potentialSiteNodeVersionVOList.add(version.getValueObject());		
+					numberOfLaterVersions++;
+				}
+				else
+				{
+					keptSiteNodeVersionVOList.add(version.getValueObject());
+					previousDate = version.getModifiedDateTime();
+					numberOfLaterVersions++;
+				}
+
+				previousSiteNodeId = version.getSiteNodeId();
+            }
+            
+			results.close();
+			oql.close();
+
+			commitTransaction(db);
+        }
+        catch(Exception e)
+        {
+            logger.error("An error occurred so we should not completes the transaction:" + e, e);
+            rollbackTransaction(db);
+            throw new SystemException(e.getMessage());
+        }
+        
+		return siteNodeVersionsIdList;
+	}
+
+	/**
+	 * Cleans the list of versions - even published ones. Use with care only for cleanup purposes.
+	 * 
+	 * @param numberOfVersionsToKeep
+	 * @param contentVersionVOList
+	 * @throws SystemException
+	 */
+	
+	private void cleanVersions(int numberOfVersionsToKeep, List siteNodeVersionVOList) throws SystemException
+	{
+		Database db = CastorDatabaseService.getDatabase();
+    	
+        beginTransaction(db);
+
+        try
+        {
+			Iterator<SiteNodeVersionVO> siteNodeVersionVOListIterator = siteNodeVersionVOList.iterator();
+			while(siteNodeVersionVOListIterator.hasNext())
+			{
+				SiteNodeVersionVO siteNodeVersionVO = siteNodeVersionVOListIterator.next();
+				SiteNodeVersion siteNodeVersion = getSiteNodeVersionWithId(siteNodeVersionVO.getId(), db);
+				logger.info("Deleting the siteNodeVersion " + siteNodeVersion.getId() + " on siteNode " + siteNodeVersion.getOwningSiteNode().getName());
+				delete(siteNodeVersion, db, true);
+			}
+
+			commitTransaction(db);
+
+			Thread.sleep(5000);
+        }
+        catch(Exception e)
+        {
+            logger.error("An error occurred so we should not completes the transaction:" + e, e);
+            rollbackTransaction(db);
+            throw new SystemException(e.getMessage());
+        }
+        finally
+        {
+        	closeDatabase(db);
+        }
+	}
+
+	/**
+	 * This method deletes an contentversion and notifies the owning content.
+	 */
+	
+ 	public void delete(SiteNodeVersion siteNodeVersion, Database db, boolean forceDelete) throws ConstraintException, SystemException, Exception
+	{
+		if (!forceDelete && siteNodeVersion.getStateId().intValue() == ContentVersionVO.PUBLISHED_STATE.intValue() && siteNodeVersion.getIsActive().booleanValue() == true)
+		{
+			throw new ConstraintException("SiteNodeVersion.stateId", "3300", siteNodeVersion.getOwningSiteNode().getName());
+		}
+		
+		ServiceBindingController.deleteServiceBindingsReferencingSiteNodeVersion(siteNodeVersion, db);
+
+		SiteNode siteNode = siteNodeVersion.getOwningSiteNode();
+
+		if(siteNode != null)
+			siteNode.getSiteNodeVersions().remove(siteNodeVersion);
+
+		db.remove(siteNodeVersion);
+	}
 }
  
