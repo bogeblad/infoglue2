@@ -72,6 +72,7 @@ import org.infoglue.deliver.controllers.kernel.URLComposer;
 import org.infoglue.deliver.util.CacheController;
 import org.infoglue.deliver.util.HttpHelper;
 import org.infoglue.deliver.util.NullObject;
+import org.infoglue.deliver.util.Timer;
 
 
 public class NodeDeliveryController extends BaseDeliveryController
@@ -460,7 +461,7 @@ public class NodeDeliveryController extends BaseDeliveryController
 	
 	public SiteNodeVersion getLatestActiveSiteNodeVersion(Integer siteNodeId, Database db) throws SystemException, Exception
 	{
-	    SiteNodeVersion siteNodeVersion = null;
+		SiteNodeVersion siteNodeVersion = null;
 		
 	    String versionKey = "" + siteNodeId + "_" + getOperatingMode() + "_siteNodeVersionId";		
 	    
@@ -472,7 +473,7 @@ public class NodeDeliveryController extends BaseDeliveryController
 		}
 		else
 		{
-		    OQLQuery oql = db.getOQLQuery( "SELECT cv FROM org.infoglue.cms.entities.structure.impl.simple.SiteNodeVersionImpl cv WHERE cv.owningSiteNode.siteNodeId = $1 AND cv.stateId >= $2 AND cv.isActive = $3 ORDER BY cv.siteNodeVersionId desc");
+			OQLQuery oql = db.getOQLQuery( "SELECT cv FROM org.infoglue.cms.entities.structure.impl.simple.SiteNodeVersionImpl cv WHERE cv.owningSiteNode.siteNodeId = $1 AND cv.stateId >= $2 AND cv.isActive = $3 ORDER BY cv.siteNodeVersionId desc");
 			oql.bind(siteNodeId);
 			oql.bind(getOperatingMode());
 			oql.bind(true);
@@ -495,6 +496,45 @@ public class NodeDeliveryController extends BaseDeliveryController
 		return siteNodeVersion;
 	}
 	
+	/**
+	 * This method returns the latest sitenodeVersion there is for the given siteNode.
+	 */
+	
+	public SiteNodeVersionVO getLatestActiveSiteNodeVersionVO(Integer siteNodeId, Database db) throws SystemException, Exception
+	{
+	    String versionKey = "" + siteNodeId + "_" + getOperatingMode() + "_siteNodeVersionVO";		
+	    
+	    SiteNodeVersionVO siteNodeVersionVO = (SiteNodeVersionVO)CacheController.getCachedObject("latestSiteNodeVersionCache", versionKey);
+		if(siteNodeVersionVO != null)
+	    {
+		    if(logger.isInfoEnabled())
+		    	logger.info("There was a cached siteNodeVersionVO:" + siteNodeVersionVO);
+		}
+		else
+		{
+			OQLQuery oql = db.getOQLQuery( "SELECT cv FROM org.infoglue.cms.entities.structure.impl.simple.SmallSiteNodeVersionImpl cv WHERE cv.siteNodeId = $1 AND cv.stateId >= $2 AND cv.isActive = $3 ORDER BY cv.siteNodeVersionId desc");
+			oql.bind(siteNodeId);
+			oql.bind(getOperatingMode());
+			oql.bind(true);
+			
+			QueryResults results = oql.execute(Database.ReadOnly);
+			
+			if (results.hasMore()) 
+		    {
+		    	SiteNodeVersion siteNodeVersion = (SiteNodeVersion)results.next();
+		    	siteNodeVersionVO = siteNodeVersion.getValueObject();
+			    CacheController.cacheObject("latestSiteNodeVersionCache", versionKey, siteNodeVersionVO);
+	        }	
+		
+			results.close();
+			oql.close();
+		}
+		
+		//if(contentVersion != null)
+		//    deliveryContext.addUsedContentVersion("contentVersion_" + contentVersion.getId());
+	
+		return siteNodeVersionVO;
+	}
 
 	/**
 	 * This method returns the SiteNodeVO that is the parent to the one sent in.
@@ -2062,18 +2102,9 @@ public class NodeDeliveryController extends BaseDeliveryController
 		
 		if(isValidOnDates(siteNode.getPublishDateTime(), siteNode.getExpireDateTime()))
 		{
-		    if(this.getLatestActiveSiteNodeVersion(siteNode.getId(), db) != null)
+			//if(this.getLatestActiveSiteNodeVersion(siteNode.getId(), db) != null)
+		    if(this.getLatestActiveSiteNodeVersionVO(siteNode.getId(), db) != null)
 		        isValidContent = true;
-			/*
-		    Collection versions = siteNode.getSiteNodeVersions();
-			Iterator versionsIterator = versions.iterator();
-			while(versionsIterator.hasNext())
-			{
-				SiteNodeVersion siteNodeVersion = (SiteNodeVersion)versionsIterator.next();
-				if(siteNodeVersion.getIsActive().booleanValue() && siteNodeVersion.getStateId().intValue() >= getOperatingMode().intValue())
-					isValidContent = true;
-			}
-			*/
 		}
 		
 		if(isValidContent && !siteNode.getExpireDateTime().before(new Date()))
