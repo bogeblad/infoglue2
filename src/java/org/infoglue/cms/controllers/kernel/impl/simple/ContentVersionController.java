@@ -1915,7 +1915,7 @@ public class ContentVersionController extends BaseController
 
 			commitTransaction(db);
 
-			Thread.sleep(5000);
+			Thread.sleep(1000);
         }
         catch(Exception e)
         {

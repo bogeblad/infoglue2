@@ -113,8 +113,10 @@ public class ViewArchiveToolAction extends InfoGlueAbstractAction
 		jec.put("deleteVersions", new Boolean(deleteVersions));
 		new CleanOldVersionsJob().execute(jec);
 		Integer[] result = (Integer[])jec.getResult();
-		this.numberOfCleanedContentVersions = result[0];
-		this.numberOfCleanedSiteNodeVersions = result[1];
+		if(result != null && result.length > 0)
+			this.numberOfCleanedContentVersions = result[0];
+		if(result != null && result.length > 1)
+			this.numberOfCleanedSiteNodeVersions = result[1];
 		
         return "input";
     }
