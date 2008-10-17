@@ -1275,7 +1275,7 @@ public class SiteNodeController extends BaseController
 
         try
         {
-            OQLQuery oql = db.getOQLQuery("SELECT snv FROM org.infoglue.cms.entities.structure.impl.simple.SmallSiteNodeVersionImpl snv WHERE snv ORDER BY snv.siteNodeId, snv.siteNodeVersionId desc");
+            OQLQuery oql = db.getOQLQuery("SELECT snv FROM org.infoglue.cms.entities.structure.impl.simple.SmallSiteNodeVersionImpl snv ORDER BY snv.siteNodeId, snv.siteNodeVersionId desc");
         	
         	QueryResults results = oql.execute(Database.ReadOnly);
 			
