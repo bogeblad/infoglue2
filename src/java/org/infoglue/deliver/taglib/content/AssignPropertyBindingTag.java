@@ -45,7 +45,8 @@ public class AssignPropertyBindingTag extends ComponentLogicTag
     private String showDecoratedString = null;
     private boolean showDecorated = true;
     private String extraParameters = null;
-
+    private boolean hideComponentPropertiesOnLoad = true;
+    
     public AssignPropertyBindingTag()
     {
         super();
@@ -57,7 +58,7 @@ public class AssignPropertyBindingTag extends ComponentLogicTag
     		showDecoratedString = "" + this.getController().getIsDecorated();
     	showDecorated = new Boolean(showDecoratedString).booleanValue();
     	
-        produceResult(this.getController().getAssignPropertyBindingTag(propertyName, createNew, html, showInPublishedMode, showDecorated, extraParameters));
+        produceResult(this.getController().getAssignPropertyBindingTag(propertyName, createNew, html, showInPublishedMode, showDecorated, extraParameters, hideComponentPropertiesOnLoad));
         
         showDecoratedString = null;
         
@@ -92,5 +93,10 @@ public class AssignPropertyBindingTag extends ComponentLogicTag
     public void setExtraParameters(final String extraParameters) throws JspException
     {
         this.extraParameters = evaluateString("AssignPropertyBindingTag", "extraParameters", extraParameters);
+    }
+    
+    public void setHideComponentPropertiesOnLoad(final boolean hideComponentPropertiesOnLoad) throws JspException
+    {
+        this.hideComponentPropertiesOnLoad = hideComponentPropertiesOnLoad;
     }
 }

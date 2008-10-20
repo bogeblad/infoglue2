@@ -980,6 +980,11 @@
             <rtexprvalue>false</rtexprvalue>
         </attribute>
         <attribute>
+            <name>hideComponentPropertiesOnLoad</name>
+            <required>false</required>
+            <rtexprvalue>false</rtexprvalue>
+        </attribute>
+        <attribute>
             <name>extraParameters</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>

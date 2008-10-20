@@ -106,6 +106,7 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 	private String showDecorated = "true";
 	private String slotPositionComponentId = null;
 	private Integer pagePartContentId = null;
+	private boolean hideComponentPropertiesOnLoad = false;
 	
 	LanguageVO masterLanguageVO = null;
 	
@@ -222,6 +223,9 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 	{
 		initialize();
 		initializeTreeView("ViewSiteNodePageComponents!showContentTree.action");
+
+		getHttpSession().setAttribute("" + siteNodeId + "_hideComponentPropertiesOnLoad", new Boolean(hideComponentPropertiesOnLoad));
+		
 		return "showContentTree";
 	}
 
@@ -233,6 +237,9 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 	{
 		initialize();
 		initializeTreeView("ViewSiteNodePageComponents!showContentTreeForMultipleBinding.action");
+		
+		getHttpSession().setAttribute("" + siteNodeId + "_hideComponentPropertiesOnLoad", new Boolean(hideComponentPropertiesOnLoad));
+
 		return "showContentTreeForMultipleBinding";
 	}
 
@@ -244,6 +251,9 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 	{
 		initialize();
 		initializeTreeView("ViewSiteNodePageComponents!showContentTreeForMultipleAssetBinding.action");
+		
+		getHttpSession().setAttribute("" + siteNodeId + "_hideComponentPropertiesOnLoad", new Boolean(hideComponentPropertiesOnLoad));
+
 		return "showContentTreeForMultipleAssetBinding";
 	}
 
@@ -255,6 +265,9 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 	{
 		initialize();
 		initializeTreeView("ViewSiteNodePageComponents!showStructureTree.action");
+
+		getHttpSession().setAttribute("" + siteNodeId + "_hideComponentPropertiesOnLoad", new Boolean(hideComponentPropertiesOnLoad));
+		
 		return "showStructureTree";
 	}
 	
@@ -266,6 +279,9 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 	{
 		initialize();
 		initializeTreeView("ViewSiteNodePageComponents!showStructureTreeForMultipleBinding.action");
+	
+		getHttpSession().setAttribute("" + siteNodeId + "_hideComponentPropertiesOnLoad", new Boolean(hideComponentPropertiesOnLoad));
+		
 		return "showStructureTreeForMultipleBinding";
 	}
 	
@@ -1050,8 +1066,7 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 			
 		logger.info("contentVersionVO:" + contentVersionVO.getContentVersionId());
 		ContentVersionController.getContentVersionController().updateAttributeValue(contentVersionVO.getContentVersionId(), "ComponentStructure", modifiedXML, this.getInfoGluePrincipal());
-		
-		this.url = getComponentRendererUrl() + getComponentRendererAction() + "?siteNodeId=" + this.siteNodeId + "&languageId=" + this.languageId + "&contentId=" + this.contentId + "&focusElementId=" + this.componentId + "&activatedComponentId=" + this.componentId + "&componentContentId=" + componentContentId + "&showSimple=" + this.showSimple;
+		this.url = getComponentRendererUrl() + getComponentRendererAction() + "?siteNodeId=" + this.siteNodeId + "&languageId=" + this.languageId + "&contentId=" + this.contentId + "&focusElementId=" + this.componentId + (!hideComponentPropertiesOnLoad ? "&activatedComponentId=" + this.componentId : "") + "&componentContentId=" + componentContentId + "&showSimple=" + this.showSimple;
 		//this.getResponse().sendRedirect(url);		
 		
 		this.url = this.getResponse().encodeURL(url);
@@ -1288,10 +1303,16 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 			ContentVersionController.getContentVersionController().updateAttributeValue(contentVersionVO.getContentVersionId(), "ComponentStructure", modifiedXML, this.getInfoGluePrincipal());
 		}
 					
-		if(showDecorated == null || !showDecorated.equalsIgnoreCase("false"))
-			this.url = getComponentRendererUrl() + getComponentRendererAction() + "?siteNodeId=" + this.siteNodeId + "&languageId=" + this.languageId + "&contentId=" + this.contentId + "&focusElementId=" + this.componentId + "&activatedComponentId=" + this.componentId + "&showSimple=" + this.showSimple;
+		Boolean hideComponentPropertiesOnLoad = (Boolean)getHttpSession().getAttribute("" + siteNodeId + "_hideComponentPropertiesOnLoad");
+		if(hideComponentPropertiesOnLoad == null) 
+			hideComponentPropertiesOnLoad = false;
 		else
-			this.url = getComponentRendererUrl() + "ViewPage.action?siteNodeId=" + this.siteNodeId + "&languageId=" + this.languageId + "&contentId=" + this.contentId + "&focusElementId=" + this.componentId + "&activatedComponentId=" + this.componentId + "&showSimple=" + this.showSimple;
+			getHttpSession().removeAttribute("" + siteNodeId + "_hideComponentPropertiesOnLoad");
+			
+		if(showDecorated == null || !showDecorated.equalsIgnoreCase("false"))
+			this.url = getComponentRendererUrl() + getComponentRendererAction() + "?siteNodeId=" + this.siteNodeId + "&languageId=" + this.languageId + "&contentId=" + this.contentId + "&focusElementId=" + this.componentId + (!hideComponentPropertiesOnLoad ? "&activatedComponentId=" + this.componentId : "") + "&showSimple=" + this.showSimple;
+		else
+			this.url = getComponentRendererUrl() + "ViewPage.action?siteNodeId=" + this.siteNodeId + "&languageId=" + this.languageId + "&contentId=" + this.contentId + "&focusElementId=" + this.componentId + (!hideComponentPropertiesOnLoad ? "&activatedComponentId=" + this.componentId : "") + "&showSimple=" + this.showSimple;
 		
 		this.url = this.getResponse().encodeURL(url);
 		this.getResponse().sendRedirect(url);
@@ -2106,4 +2127,13 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 		this.pagePartContentId = pagePartContentId;
 	}
 
+	public boolean getHideComponentPropertiesOnLoad()
+	{
+		return hideComponentPropertiesOnLoad;
+	}
+
+	public void setHideComponentPropertiesOnLoad(boolean hideComponentPropertiesOnLoad)
+	{
+		this.hideComponentPropertiesOnLoad = hideComponentPropertiesOnLoad;
+	}
 }

@@ -1599,7 +1599,7 @@ public interface TemplateController
 	 * @param showInPublishedMode
 	 * @return
 	 */
-	public String getAssignPropertyBindingTag(String propertyName, boolean createNew, String html, boolean showInPublishedMode, boolean showDecorated, String extraParameters);
+	public String getAssignPropertyBindingTag(String propertyName, boolean createNew, String html, boolean showInPublishedMode, boolean showDecorated, String extraParameters, boolean hideComponentPropertiesOnLoad);
 
 	
     public boolean getThreatFoldersAsContents();
