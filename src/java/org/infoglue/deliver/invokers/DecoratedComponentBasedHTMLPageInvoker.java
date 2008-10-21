@@ -172,7 +172,6 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		
 		timer.printElapsedTime("After main decoration");
 
-		System.out.println("Debug:" + this.getDeliveryContext().getEvaluateFullPage() + "-" + CmsPropertyHandler.getDisableDecoratedFinalRendering());
 		if(this.getDeliveryContext().getEvaluateFullPage() || !CmsPropertyHandler.getDisableDecoratedFinalRendering())
 		{	
 			if(decoratePageTemplate.length() > 300000)
