@@ -37,6 +37,8 @@
 
 <script type="text/javascript" src="${contextName}/script/jquery/jquery-1.2.6.min.js"></script>
 <script type="text/javascript" src="${contextName}/script/jqueryplugins/ui/jquery.dimensions.js"></script>
+<script type="text/javascript" src="${contextName}/script/jqueryplugins/ui/jquery-ui-dragDropTabs-1.6rc2.min.js"></script>
+<!--
 <script type="text/javascript" src="${contextName}/script/jqueryplugins/ui/ui.mouse.js"></script>
 <script type="text/javascript" src="${contextName}/script/jqueryplugins/ui/ui.draggable.js"></script>
 <script type="text/javascript" src="${contextName}/script/jqueryplugins/ui/ui.draggable.ext.js"></script>
@@ -44,6 +46,7 @@
 <script type="text/javascript" src="${contextName}/script/jqueryplugins/ui/ui.droppable.ext.js"></script>
 <script type="text/javascript" src="${contextName}/script/jqueryplugins/ui/ui.sortable.js"></script>
 <script type="text/javascript" src="${contextName}/script/jqueryplugins/ui/ui.sortable.ext.js"></script>
+-->
 
 <script type="text/javascript" src="${contextName}/script/jqueryplugins/thickbox/thickbox-compressed.js"></script>
 <style type="text/css" media="all">@import "${contextName}/script/jqueryplugins/thickbox/thickbox.css";</style>
