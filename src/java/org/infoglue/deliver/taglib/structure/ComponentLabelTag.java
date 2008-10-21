@@ -54,13 +54,8 @@ public class ComponentLabelTag extends ContentAttributeTag
     
 	private String getContentAttributeValue(Integer languageId) throws JspException
 	{
-		System.out.println("attributeName:" + attributeName);
-		System.out.println("componentContentId:" + getController().getComponentLogic().getInfoGlueComponent().getContentId());
-		System.out.println("languageId:" + languageId);
-		System.out.println("disableEditOnSight:" + disableEditOnSight);
 		String result = getController().getContentAttribute(getController().getComponentLogic().getInfoGlueComponent().getContentId(), languageId, attributeName, disableEditOnSight);
-		System.out.println("result:" + result);
-
+		
 		return result;
 	}
 	
@@ -81,7 +76,6 @@ public class ComponentLabelTag extends ContentAttributeTag
             }
         }
         
-        System.out.println("result2:" + result);
         if((result == null || result.trim().equals("")) && useAttributeLanguageFallback)
 		{
 			try
@@ -94,7 +88,6 @@ public class ComponentLabelTag extends ContentAttributeTag
 		            if ( map != null && !map.isEmpty() )
 		            {
 		                result = (String)map.get( mapKeyName );
-		                System.out.println("result3:" + result);
 		            }
 		        }
 			}
@@ -107,8 +100,7 @@ public class ComponentLabelTag extends ContentAttributeTag
         produceResult( result );
 
 	    attributeName = "ComponentLabels";
-	    mapKeyName = null;;
-	    disableEditOnSight = false;
+	    mapKeyName = null;
 	    useAttributeLanguageFallback = true;
 	    languageId = null;
 
