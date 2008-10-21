@@ -820,4 +820,36 @@
     	</attribute>
 	</tag>
     
+    <tag>
+        <name>componentLabel</name>
+        <tagclass>org.infoglue.deliver.taglib.structure.ComponentLabelTag</tagclass>
+        <bodycontent>empty</bodycontent>
+        <info>ComponentLogic.getContentAttribute(String, String, boolean, boolean)</info>
+        <attribute>
+    	    <name>id</name>
+        	<required>false</required>
+	        <rtexprvalue>false</rtexprvalue>
+    	</attribute>
+        <attribute>
+            <name>languageId</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>attributeName</name>
+            <required>false</required>
+            <rtexprvalue>false</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>useAttributeLanguageFallback</name>
+            <required>false</required>
+            <rtexprvalue>false</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>mapKeyName</name>
+            <required>true</required>
+            <rtexprvalue>false</rtexprvalue>
+        </attribute>
+    </tag>
+    
 </taglib>
