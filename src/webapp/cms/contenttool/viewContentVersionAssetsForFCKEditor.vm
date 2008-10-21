@@ -12,30 +12,36 @@
 	
 	<script language="JavaScript">
 	<!--
-		
+		var selectedDigitalAssetKey;
 		var selectedAssetElement;
 		var contentId;
+		var firstDigitalAssetId;
 		var assetKey;
 		var firstAssetKey;
 		var assetUrl;
 			
-		function markAsset(object, aContentId, anAssetKey, actualAssetKey, anAssetUrl)
+		function markAsset(object, aContentId, digitalAssetId, anAssetKey, actualAssetKey, anAssetUrl)
 		{
 			if(selectedAssetElement)
 				selectedAssetElement.style.background = "";
-			
+
 			contentId = aContentId;	
-			//assetKey = anAssetKey;	
 			assetKey = actualAssetKey;
 			assetUrl = anAssetUrl;
-			//alert("assetUrl: " + assetUrl);
+
+			#if($disableAssetKeyEncoding)
+				try
+				{
+					selectedDigitalAssetKey = document.getElementById("digitalAsset" + digitalAssetId + "_assetKey").value;
+					assetKey = selectedDigitalAssetKey;
+				}
+				catch(err) 
+				{
+					alert("error: digitalAssetId:" + digitalAssetId);
+				}
+			#end
 			
-			//alert("object:" + object);
-			//alert("contentId" + contentId);
-			//alert("assetKey" + assetKey);
-			//alert("Getting element: " + "digitalAsset" + anAssetKey);
 			selectedAssetElement = document.getElementById("digitalAsset" + anAssetKey);
-			//alert("selectedAssetElement found:" + selectedAssetElement);
 			if(selectedAssetElement)
 				selectedAssetElement.style.background = "#C2D0E2";
 		}
@@ -58,9 +64,8 @@
 		
 		function initSub() 
 		{
-			//alert("firstAssetKey: " + firstAssetKey);
-			markAsset(this, '$!contentId', firstAssetKey, firstAssetKey, '');
-		};
+			markAsset(this, '$!contentId', firstDigitalAssetId, firstAssetKey, firstAssetKey, '');
+		}
 		
 		-->
 	</script>
@@ -96,27 +101,28 @@
 <tr>
 	<td id="digitalAsset$formatter.encodeURI($digitalAsset.assetKey, 'utf-8')" valign="bottom" align="center" class="bordered" #if($assetKey == "$digitalAsset.assetKey") style="background-color: #C2D0E2;" #else style="background-color: white;" #end>
 		<input type="hidden" id="digitalAsset$formatter.encodeURI($formatter.encodeURI($digitalAsset.assetKey, 'utf-8'), 'utf-8')" value="$this.getDigitalAssetUrl($digitalAsset.digitalAssetId)">
-		#set($trippleEncodedAssetKey = "$formatter.encodeURI($formatter.encodeURI($formatter.encodeURI($digitalAsset.assetKey, 'utf-8'), 'utf-8'), 'utf-8')")
+		<input type="hidden" id="digitalAsset${digitalAsset.id}_assetKey" value="$digitalAsset.assetKey">
+		#set($singleEncodedAssetKey = "$formatter.encodeURI($digitalAsset.assetKey, 'utf-8')")
 		#set($doubleEncodedAssetKey = "$formatter.encodeURI($formatter.encodeURI($digitalAsset.assetKey, 'utf-8'), 'utf-8')")
-		<a ondblclick="onOk();" href="javascript:markAsset(this, $!contentId, '$doubleEncodedAssetKey', '$doubleEncodedAssetKey', '$this.getDigitalAssetThumbnailUrl($digitalAsset.digitalAssetId)');"><img class="scaledbordered" src="$this.getDigitalAssetThumbnailUrl($digitalAsset.digitalAssetId)">
+		<a ondblclick="onOk();" href="javascript:markAsset(this, $!contentId, '${digitalAsset.id}', '$doubleEncodedAssetKey', '$doubleEncodedAssetKey', '$this.getDigitalAssetThumbnailUrl($digitalAsset.digitalAssetId)');"><img class="scaledbordered" src="$this.getDigitalAssetThumbnailUrl($digitalAsset.digitalAssetId)">
 		<br/>AssetKey: $digitalAsset.assetKey</a><br/>
-		#if($showSelectButtonByEachImage)<a href="javascript:markAsset(this, $!contentId, '$doubleEncodedAssetKey', '$doubleEncodedAssetKey', '$this.getDigitalAssetThumbnailUrl($digitalAsset.digitalAssetId)');onOk();"><b>Add asset to selection</b></a>#end
+		#if($showSelectButtonByEachImage)<a href="javascript:markAsset(this, $!contentId, '${digitalAsset.id}', '$doubleEncodedAssetKey', '$doubleEncodedAssetKey', '$this.getDigitalAssetThumbnailUrl($digitalAsset.digitalAssetId)');onOk();"><b>Add asset to selection</b></a>#end
+		
+		$assetKey == $digitalAsset.assetKey
 	</td>
 	#if($assetKey == $digitalAsset.assetKey)
 		<script type="text/javascript">
 		<!--
-			//markAsset(this, $!contentId, '$digitalAsset.assetKey');
 			firstAssetKey = '$formatter.encodeURI($digitalAsset.assetKey, 'utf-8')';
-			//alert("firstAssetKey1:" + firstAssetKey);
+			firstDigitalAssetId = '$digitalAsset.id';
 		-->
 		</script>	
 	#else
 		#if($counter == 0 && (!$assetKey || $!assetKey == ''))
 			<script type="text/javascript">
 			<!--
-				//markAsset(this, $!contentId, '$digitalAsset.assetKey');
 				firstAssetKey = '$formatter.encodeURI($digitalAsset.assetKey, 'utf-8')';
-				//alert("firstAssetKey2:" + firstAssetKey);
+				firstDigitalAssetId = '$digitalAsset.id';
 			-->
 			</script>
 		#end
@@ -155,7 +161,9 @@
 </table>
 
 <script type="text/javascript">
+<!--
 	setTimeout("initSub()", 500);
+-->
 </script>
 </body>
 </html>
