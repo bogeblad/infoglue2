@@ -135,6 +135,7 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 	
 	private boolean showActionButtons = true;
 	private boolean showSelectButtonByEachImage = false;
+	private boolean disableAssetKeyEncoding = false;
 	
 	//New translation parameters
 	private boolean translate = false;
@@ -1667,6 +1668,18 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 	public void setAssetTypeFilter(String assetTypeFilter)
 	{
 		this.assetTypeFilter = assetTypeFilter;
+	}
+
+
+	public boolean getDisableAssetKeyEncoding()
+	{
+		return disableAssetKeyEncoding;
+	}
+
+
+	public void setDisableAssetKeyEncoding(boolean disableAssetKeyEncoding)
+	{
+		this.disableAssetKeyEncoding = disableAssetKeyEncoding;
 	}
 
 }
