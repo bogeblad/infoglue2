@@ -1520,6 +1520,21 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 
 	public void setAssignedAssetKey(String assignedAssetKey)
 	{
+		try
+		{
+			String fromEncoding = CmsPropertyHandler.getURIEncoding();
+			String toEncoding = "utf-8";
+	
+			String testAssignedAssetKey = new String(assignedAssetKey.getBytes(fromEncoding), toEncoding);
+			
+			if(testAssignedAssetKey.indexOf((char)65533) == -1)
+				assignedAssetKey = testAssignedAssetKey;
+		}
+		catch(Exception e)
+		{
+			logger.error("Problem converting asset key encoding");
+		}
+		
 		this.assignedAssetKey = assignedAssetKey;
 	}
 

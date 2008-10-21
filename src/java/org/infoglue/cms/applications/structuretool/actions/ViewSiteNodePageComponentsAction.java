@@ -1708,8 +1708,7 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 	
 	private void addBindingElement(Element parent, String qualifyerXML) throws Exception
 	{
-	//logger.info("qualifyerXML:" + qualifyerXML);
-		Document document = XMLHelper.readDocumentFromByteArray(qualifyerXML.getBytes());
+		Document document = XMLHelper.readDocumentFromByteArray(qualifyerXML.getBytes("utf-8"));
 		NodeList nl = document.getChildNodes().item(0).getChildNodes();
 		for(int i=0; i<nl.getLength(); i++)
 		{
