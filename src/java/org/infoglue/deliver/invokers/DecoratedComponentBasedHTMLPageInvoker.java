@@ -2375,9 +2375,13 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 					{		
 						String value = getComponentPropertyValue(componentId, name);
 						String customMarkup = binding.attributeValue("customMarkup");
-						String processedMarkup =  customMarkup.replaceAll("propertyName", name);
-						processedMarkup = processedMarkup.replaceAll("propertyValue", value);
-
+						String processedMarkup = "";
+						if(customMarkup != null)
+						{
+							processedMarkup = customMarkup.replaceAll("propertyName", name);
+							processedMarkup = processedMarkup.replaceAll("propertyValue", value);
+						}
+						
 						property.setCustomMarkup(processedMarkup);
 						property.setValue(value);
 					}
