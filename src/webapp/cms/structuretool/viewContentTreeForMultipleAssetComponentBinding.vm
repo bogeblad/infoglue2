@@ -118,7 +118,7 @@
 		{
 			//alert("path:" + path);
 			document.inputForm.path.value = path;
-			var url = "ViewContentVersion!viewAssetsForFCKEditor.action?contentId=" + entityId + "&languageId=$languageId&treatAsLink=$treatAsLink&showActionButtons=false&showSelectButtonByEachImage=true";
+			var url = "ViewContentVersion!viewAssetsForFCKEditor.action?contentId=" + entityId + "&languageId=$languageId&treatAsLink=$treatAsLink&showActionButtons=false&showSelectButtonByEachImage=true&disableAssetKeyEncoding=true";
 			document.getElementById("contentVersionAssetsFrame").src = url;
 		}
 	    
