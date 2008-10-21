@@ -171,6 +171,25 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		}
 		
 		timer.printElapsedTime("After main decoration");
+
+		if(this.getDeliveryContext().getEvaluateFullPage() || !CmsPropertyHandler.getDisableDecoratedFinalRendering())
+		{	
+			if(decoratePageTemplate.length() > 300000)
+				logger.warn("The page at " + this.getTemplateController().getOriginalFullURL() + " was huge and the extra rendering of decorated pages takes some time and memory. If possible please make sure the components handles all rendering they need themselves and disable this step.");
+			logger.info("Running extra decoration");
+			Map context = getDefaultContext();
+			String componentEditorUrl = CmsPropertyHandler.getComponentEditorUrl();
+			context.put("componentEditorUrl", componentEditorUrl);
+			boolean oldUseFullUrl = this.getTemplateController().getDeliveryContext().getUseFullUrl();
+			this.getTemplateController().getDeliveryContext().setUseFullUrl(true);
+			context.put("currentUrl", URLEncoder.encode(this.getTemplateController().getCurrentPageUrl(), "UTF-8"));
+			context.put("contextName", this.getRequest().getContextPath());
+			this.getTemplateController().getDeliveryContext().setUseFullUrl(oldUseFullUrl);
+			StringWriter cacheString = new StringWriter();
+			PrintWriter cachedStream = new PrintWriter(cacheString);
+			new VelocityTemplateProcessor().renderTemplate(context, cachedStream, decoratePageTemplate, false, baseComponent);
+			decoratePageTemplate = cacheString.toString();
+		}
 		
 		//TODO - TEST
 		decoratePageTemplate += propertiesDivs + tasksDivs;
@@ -355,6 +374,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 			}
 			
 			extraBody = extraBody.replaceAll("\\$siteNodeId", "" + templateController.getSiteNodeId());
+			extraBody = extraBody.replaceAll("\\$languageId", "" + templateController.getLanguageId());
 			extraBody = extraBody.replaceAll("\\$repositoryId", "" + templateController.getSiteNode().getRepositoryId());
 			extraBody = extraBody.replaceAll("\\$originalFullURL", URLEncoder.encode(templateController.getOriginalFullURL(), "UTF-8"));
 			
