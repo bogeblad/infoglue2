@@ -490,10 +490,13 @@ public class ViewPageAction extends InfoGlueAbstractAction
         	Thread.sleep(10);
         }
 		
-		logger.info("************************************************");
-		logger.info("* ViewPageAction was called....                *");
-		logger.info("************************************************");
-
+		if(logger.isInfoEnabled())
+		{
+	        logger.info("************************************************");
+			logger.info("* ViewPageAction was called....                *");
+			logger.info("************************************************");
+		}
+		
         HttpServletRequest request = getRequest();
 
     	if(!CmsPropertyHandler.getOperatingMode().equals("3"))
@@ -553,12 +556,22 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			
 	    	String pageKey = this.nodeDeliveryController.getPageCacheKey(dbWrapper.getDatabase(), this.getHttpSession(), this.getRequest(), this.siteNodeId, this.languageId, this.contentId, browserBean.getUseragent(), this.getRequest().getQueryString(), "_" + this.showSimple + "_pagecomponentDecorated");
 
+			this.templateController = getTemplateController(dbWrapper, getSiteNodeId(), getLanguageId(), getContentId(), getRequest(), (InfoGluePrincipal)this.principal, true);
+
+	    	InfoGluePrincipal principal = templateController.getPrincipal();
+		    String cmsUserName = (String)templateController.getHttpServletRequest().getSession().getAttribute("cmsUserName");
+		    if(cmsUserName != null && !CmsPropertyHandler.getAnonymousUser().equalsIgnoreCase(cmsUserName))
+			    principal = templateController.getPrincipal(cmsUserName);
+
+		    //As this is the decorated view we need to cache personalized results due to access rights etc.
+	    	if(pageKey.indexOf(principal.getName()) == -1)
+	    		pageKey = pageKey + "_" + principal.getName();
+
 	    	if(logger.isInfoEnabled())
 	    		logger.info("A pageKey:" + pageKey);
 
-			this.templateController = getTemplateController(dbWrapper, getSiteNodeId(), getLanguageId(), getContentId(), getRequest(), (InfoGluePrincipal)this.principal, true);
-
-			logger.info("handled extranet users");
+			if(logger.isInfoEnabled())
+				logger.info("handled extranet users");
 
 			// ----
 			// -- portlet
@@ -584,7 +597,8 @@ public class ViewPageAction extends InfoGlueAbstractAction
 	            }
 	        }
 	
-	        logger.info("handled portal action");
+	        if(logger.isInfoEnabled())
+	        	logger.info("handled portal action");
 
 			if(!isUserRedirected)
 			{	
@@ -603,7 +617,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 				deliveryContext.setHttpServletResponse(this.getResponse());
 				deliveryContext.setUseFullUrl(Boolean.parseBoolean(CmsPropertyHandler.getUseDNSNameInURI()));
 
-				deliveryContext.setDisablePageCache(true);
+				//deliveryContext.setDisablePageCache(true);
 				
 				SiteNode siteNode = nodeDeliveryController.getSiteNode(dbWrapper.getDatabase(), this.siteNodeId);
 				if(siteNode == null)
