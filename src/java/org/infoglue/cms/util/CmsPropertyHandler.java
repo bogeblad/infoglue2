@@ -959,7 +959,7 @@ public class CmsPropertyHandler
 
 	public static String getCompressPageResponse()
 	{
-	    return getServerNodeProperty("compressPageResponse", true, "false");
+	    return getServerNodeProperty("compressPageResponse", true, "true");
 	}
 
 	public static String getSiteNodesToRecacheOnPublishing()
