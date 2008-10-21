@@ -257,6 +257,7 @@
 			#editPropertyFieldCSS("ServerNode.property.maxRequestTime" "maxRequestTime" "$this.getPropertyValue('maxRequestTime')" "51" "$!serverNodeId")
 			#yesNoDropDownWithInheritCSS("ServerNode.property.compressPageCache" "compressPageCache" "$this.getPropertyValue('compressPageCache')")
 			#yesNoDropDownWithInheritCSS("ServerNode.property.compressPageResponse" "compressPageResponse" "$this.getPropertyValue('compressPageResponse')")
+			#yesNoDropDownWithInheritCSS("ServerNode.property.disableDecoratedFinalRendering" "disableDecoratedFinalRendering" "$this.getPropertyValue('disableDecoratedFinalRendering')")
 			#yesNoDropDownWithInheritCSS("ServerNode.property.useUpdateSecurity" "useUpdateSecurity" "$this.getPropertyValue('useUpdateSecurity')")
 			#editPropertyFieldCSS("ServerNode.allowedAdminIP" "allowedAdminIP" "$this.getPropertyValue('allowedAdminIP')" "51" "$!serverNodeId")
 			#editPropertyFieldCSS("ServerNode.property.pageKey" "pageKey" "$this.getPropertyValue('pageKey')" "51" "$!serverNodeId")

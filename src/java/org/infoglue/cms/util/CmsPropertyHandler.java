@@ -1644,4 +1644,11 @@ public class CmsPropertyHandler
 		return getServerNodeProperty("niceURIDefaultReplacementCharacter", true, "_");
 	}
 
+	public static boolean getDisableDecoratedFinalRendering()
+	{
+		String disableDecoratedFinalRendering = getServerNodeProperty("disableDecoratedFinalRendering", true, "false");
+		
+		return Boolean.parseBoolean(disableDecoratedFinalRendering);
+	}
+
 }
