@@ -591,8 +591,6 @@ public class ComponentLogic
 				propertyValue = (String)property.get("path");
 			}
 		}
-		if(propertyName.equalsIgnoreCase("MenuBasePage"))
-				System.out.println("propertyValue:" + propertyValue);
 		
 		if(propertyValue == null || propertyValue.equals(""))
 		{
@@ -610,10 +608,7 @@ public class ComponentLogic
 				e.printStackTrace();
 			}
 		}
-		
-		if(propertyName.equalsIgnoreCase("MenuBasePage"))
-			System.out.println("propertyValue:" + propertyValue);
-		
+				
 		if(propertyValue != null)
 			propertyValue = propertyValue.replaceAll("igbr", separator);
 
@@ -651,7 +646,7 @@ public class ComponentLogic
 				LanguageVO masterLanguage = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForRepository(templateController.getDatabase(), contentVO.getRepositoryId());
 	
 				ComponentPropertyDefinition propertyDefinition = getComponentPropertyDefinition(component.getContentId(), propertyName, templateController.getSiteNodeId(), masterLanguage.getId(), templateController.getContentId(), templateController.getDatabase(), templateController.getPrincipal());
-				if(propertyDefinition != null)
+				if(propertyDefinition != null && propertyDefinition.getDefaultValue() != null)
 					propertyValue = propertyDefinition.getDefaultValue();
 			}
 			catch (Exception e) 
@@ -697,7 +692,7 @@ public class ComponentLogic
 				LanguageVO masterLanguage = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForRepository(templateController.getDatabase(), contentVO.getRepositoryId());
 	
 				ComponentPropertyDefinition propertyDefinition = getComponentPropertyDefinition(this.infoGlueComponent.getContentId(), propertyName, templateController.getSiteNodeId(), masterLanguage.getId(), templateController.getContentId(), templateController.getDatabase(), templateController.getPrincipal());
-				if(propertyDefinition != null)
+				if(propertyDefinition != null && propertyDefinition.getDefaultValue() != null)
 					propertyValue = propertyDefinition.getDefaultValue();
 			}
 			catch (Exception e) 
@@ -743,7 +738,7 @@ public class ComponentLogic
 				LanguageVO masterLanguage = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForRepository(templateController.getDatabase(), contentVO.getRepositoryId());
 	
 				ComponentPropertyDefinition propertyDefinition = getComponentPropertyDefinition(component.getContentId(), propertyName, templateController.getSiteNodeId(), masterLanguage.getId(), templateController.getContentId(), templateController.getDatabase(), templateController.getPrincipal());
-				if(propertyDefinition != null)
+				if(propertyDefinition != null && propertyDefinition.getDefaultValue() != null)
 					propertyValue = propertyDefinition.getDefaultValue();
 			}
 			catch (Exception e) 
