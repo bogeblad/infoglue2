@@ -2657,7 +2657,6 @@ public class BasicTemplateController implements TemplateController
 		try
 		{	
 		    Integer inlineContentId = contentId;
-			logger.info("getInlineAssetUrl:" + inlineContentId + ":" + this.languageId + ":" + assetKey + ":" + this.siteNodeId);
 			assetUrl = ContentDeliveryController.getContentDeliveryController().getAssetUrl(getDatabase(), inlineContentId, this.languageId, assetKey, this.siteNodeId, USE_LANGUAGE_FALLBACK, this.deliveryContext, this.infoGluePrincipal);
 		}
 		catch(Exception e)
