@@ -1293,18 +1293,21 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 				component.removeChild(node);
 			}
 			
-			logger.debug("assetKey:" + assetKey);
-			String fromEncoding = CmsPropertyHandler.getUploadFromEncoding();
-			if(fromEncoding == null)
-				fromEncoding = "iso-8859-1";
+			if(assetKey != null)
+			{
+				logger.debug("assetKey:" + assetKey);
+				String fromEncoding = CmsPropertyHandler.getUploadFromEncoding();
+				if(fromEncoding == null)
+					fromEncoding = "iso-8859-1";
+				
+				String toEncoding = CmsPropertyHandler.getUploadToEncoding();
+				if(toEncoding == null)
+					toEncoding = "utf-8";
+				
+				this.assetKey = new String(this.assetKey.getBytes(fromEncoding), toEncoding);
+				logger.debug("assetKey:" + assetKey);
+			}
 			
-			String toEncoding = CmsPropertyHandler.getUploadToEncoding();
-			if(toEncoding == null)
-				toEncoding = "utf-8";
-			
-			this.assetKey = new String(this.assetKey.getBytes(fromEncoding), toEncoding);
-			logger.debug("assetKey:" + assetKey);
-
 			Element newComponent = addBindingElement(component, entity, entityId, assetKey);
 			String modifiedXML = XMLHelper.serializeDom(document, new StringBuffer()).toString(); 
 			//logger.info("modifiedXML:" + modifiedXML);
