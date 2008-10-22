@@ -89,8 +89,8 @@
     <td colspan="3" class="label">Release date</td>
   </tr>
   <tr>
-    <td colspan="1" class="text">2.9.4 Final</td>
-    <td colspan="3" class="text">2008-10-17</td>
+    <td colspan="1" class="text">2.9.5 Final</td>
+    <td colspan="3" class="text">2008-10-22</td>
   </tr>
   <tr>
     <td colspan="4" class="text">&nbsp;</td>
@@ -140,10 +140,37 @@
   <tr><td colspan="4">&nbsp;</td></tr>
   
   <tr class="label">
+    <td colspan="4">Log settings</td>
+  </tr>
+  <tr>
+    <td colspan="4" class="text" align="left">
+    	<form action="ViewApplicationState!setLogLevel.action"> 
+	    	ClassName:
+	    	<input type="textfield" name="className">
+	    	Log level:
+	    	<select name="logLevel">
+	    		<option value="debug">Debug</option>
+	    		<option value="info">Information</option>
+	    		<option value="warn">Warning</option>
+	    		<option value="error">Error</option>
+	    	</select>
+	    	<input type="submit" value="Submit"/>
+	    </form>
+    </td>
+  </tr>
+  <tr>
+    <td colspan="4" class="text" align="left">
+	    <a href="ViewLogging.action">Logfiles viewer</a>
+    </td>
+  </tr>
+
+  <tr><td colspan="4">&nbsp;</td></tr>
+
+  <tr class="label">
     <td>InfoGlue cache name</td>
     <td>Cached items</td>
     <td>Statistics</td>
-    <td>Actions</td>
+    <td>Actions <a href="ViewApplicationState!clearCaches.action">Clear All</a></td>
   </tr>
   #foreach($cacheName in $caches.keySet())
       #set($cache = $caches.get($cacheName))
@@ -289,30 +316,6 @@
   
   <tr><td colspan="4">&nbsp;</td></tr>
   
-  <tr class="label">
-    <td colspan="4">Log settings</td>
-  </tr>
-  <tr>
-    <td colspan="4" class="text" align="left">
-    	<form action="ViewApplicationState!setLogLevel.action"> 
-	    	ClassName:
-	    	<input type="textfield" name="className">
-	    	Log level:
-	    	<select name="logLevel">
-	    		<option value="debug">Debug</option>
-	    		<option value="info">Information</option>
-	    		<option value="warn">Warning</option>
-	    		<option value="error">Error</option>
-	    	</select>
-	    	<input type="submit" value="Submit"/>
-	    </form>
-    </td>
-  </tr>
-  <tr>
-    <td colspan="4" class="text" align="left">
-	    <a href="ViewLogging.action">Logfiles viewer</a>
-    </td>
-  </tr>
   <tr>
     <td colspan="4" class="text" align="left">
 	    <a href="ViewApplicationState!restoreWorkflows.action">Restore workflows</a>
