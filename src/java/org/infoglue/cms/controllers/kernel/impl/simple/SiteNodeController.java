@@ -1403,7 +1403,7 @@ public class SiteNodeController extends BaseController
 			{
 				SiteNodeVersionVO siteNodeVersionVO = siteNodeVersionVOListIterator.next();
 				SiteNodeVersion siteNodeVersion = getSiteNodeVersionWithId(siteNodeVersionVO.getId(), db);
-				logger.info("Deleting the siteNodeVersion " + siteNodeVersion.getId() + " on siteNode " + siteNodeVersion.getOwningSiteNode().getName());
+				logger.info("Deleting the siteNodeVersion " + siteNodeVersion.getId() + " on siteNode " + siteNodeVersion.getOwningSiteNode());
 				delete(siteNodeVersion, db, true);
 			}
 
