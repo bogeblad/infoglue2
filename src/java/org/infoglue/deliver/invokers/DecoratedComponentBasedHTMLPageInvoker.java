@@ -1008,10 +1008,14 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 					sb.append("			<td class=\"igpropertyvalue\" valign=\"top\" align=\"left\" colspan=\"4\" style=\"padding: 6px 0px 6px 2px;\">" + getLocalizedString(locale, "deliver.editOnSight.noPropertiesVisible") + " </td>");
 					sb.append("		</tr>");
 				}
-
-				sb.append("		<tr class=\"igtr\">");
-				sb.append("			<td class=\"igpropertylabel\" valign=\"top\" align=\"left\" colspan=\"4\" style=\"padding: 6px 0px 6px 2px; font-weight: bold;\">" + getLocalizedString(locale, "deliver.editOnSight.advancedProperties") + " <img src='images/downArrow.gif' onclick=\"$('.advancedProperty" + componentId + "').toggle();\"/></td>");
-				sb.append("		</tr>");
+				
+				boolean hasAccessToAdvancedProperties = AccessRightController.getController().getIsPrincipalAuthorized(templateController.getDatabase(), principal, "ComponentPropertyEditor.EditAdvancedProperties", true, false);
+				if(hasAccessToAdvancedProperties)
+				{
+					sb.append("		<tr class=\"igtr\">");
+					sb.append("			<td class=\"igpropertylabel\" valign=\"top\" align=\"left\" colspan=\"4\" style=\"padding: 6px 0px 6px 2px; font-weight: bold;\">" + getLocalizedString(locale, "deliver.editOnSight.advancedProperties") + " <img src='images/downArrow.gif' onclick=\"$('.advancedProperty" + componentId + "').toggle();\"/></td>");
+					sb.append("		</tr>");
+				}
 			}
 			
 			if(!hasAccessToProperty && hideProtectedProperties.equalsIgnoreCase("true"))

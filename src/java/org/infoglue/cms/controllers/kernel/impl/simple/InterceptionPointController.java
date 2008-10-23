@@ -121,6 +121,7 @@ public class InterceptionPointController extends BaseController
 		systemInterceptionPoints.put("ComponentEditor.EditPageMetadata", new InterceptionPointVO("ComponentEditor", "ComponentEditor.EditPageMetadata", "This interception point limits who can see the edit page meta info menu in edit on sight", false));
 		
 	    systemInterceptionPoints.put("ComponentPropertyEditor.EditProperty", new InterceptionPointVO("ComponentPropertyEditor", "ComponentPropertyEditor.EditProperty", "This interception point limits who can edit a specific component property", true));
+	    systemInterceptionPoints.put("ComponentPropertyEditor.EditAdvancedProperties", new InterceptionPointVO("ComponentPropertyEditor", "ComponentPropertyEditor.EditAdvancedProperties", "This interception point limits who can edit advanced properties on a component", false));
 	    
 	    systemInterceptionPoints.put("Publication.Write", new InterceptionPointVO("Publication", "Publication.Write", "This interception point intercepts publications", true));
 	    systemInterceptionPoints.put("Common.SubmitToPublishButton", new InterceptionPointVO("Common", "Common.SubmitToPublishButton", "Intercepts the submit to publish button", false));
