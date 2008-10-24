@@ -1909,7 +1909,7 @@ public class ContentVersionController extends BaseController
 			{
 				ContentVersionVO contentVersionVO = contentVersionVOIdListIterator.next();
 				ContentVersion contentVersion = getContentVersionWithId(contentVersionVO.getContentVersionId(), db);
-				logger.info("Deleting the contentVersion " + contentVersion.getId() + " on content " + contentVersion.getOwningContent().getName());
+				logger.info("Deleting the contentVersion " + contentVersion.getId() + " on content " + contentVersion.getOwningContent());
 				delete(contentVersion, db, true);
 			}
 
