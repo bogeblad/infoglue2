@@ -23,6 +23,8 @@
 
 package org.infoglue.cms.workflow.taglib;
 
+import javax.servlet.jsp.JspException;
+
 /**
  * This class implements the &lt;iw:checkbox&gt; tag, which presents an &lt;input type="checkbox" ... /&gt; 
  * form element representing a content/content version attribute. 
@@ -54,8 +56,8 @@ public class ContentCheckboxFieldTag extends ContentBooleanFieldTag
 		return new Element("input").addAttribute("type", "checkbox");
 	}
 	
-	public void setChecked(final String checked) 
+	public void setChecked(final String checked) throws JspException
 	{
-		getElement().addAttribute("checked", checked);
+		getElement().addAttribute("checked", evaluateString("ContentCheckboxFieldTag", "checked", checked));		
 	}
 }

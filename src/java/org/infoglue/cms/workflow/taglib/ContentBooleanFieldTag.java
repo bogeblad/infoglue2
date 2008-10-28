@@ -98,8 +98,10 @@ public abstract class ContentBooleanFieldTag extends ElementTag
 	 * 
 	 * @param name the name to use.
 	 */
-	public void setName(final String name) 
+	public void setName(String name) throws JspException
 	{
+		name = evaluateString("ContentBooleanFieldTag", "name", name);
+		
 		if(languageDependent)
 		{
 			try
