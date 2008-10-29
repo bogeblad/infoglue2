@@ -72,7 +72,9 @@ import org.infoglue.deliver.controllers.kernel.impl.simple.IntegrationDeliveryCo
 import org.infoglue.deliver.controllers.kernel.impl.simple.LanguageDeliveryController;
 import org.infoglue.deliver.controllers.kernel.impl.simple.NodeDeliveryController;
 import org.infoglue.deliver.controllers.kernel.impl.simple.TemplateController;
+import org.infoglue.deliver.integration.dataproviders.PropertyOptionsDataProvider;
 import org.infoglue.deliver.util.CacheController;
+import org.infoglue.deliver.util.HttpHelper;
 import org.infoglue.deliver.util.Timer;
 import org.infoglue.deliver.util.VelocityTemplateProcessor;
 
@@ -87,6 +89,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 {
 	private final static DOMBuilder domBuilder = new DOMBuilder();
 	private final static VisualFormatter formatter = new VisualFormatter();
+	private final static HttpHelper httpHelper = new HttpHelper();
 	
     private final static Logger logger = Logger.getLogger(DecoratedComponentBasedHTMLPageInvoker.class.getName());
 
@@ -1404,15 +1407,46 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 					
 					if(hasAccessToProperty)
 					{
-						sb.append("			<td class=\"igpropertyvalue igpropertyDivider\" align=\"left\"><input type=\"hidden\" name=\"" + propertyIndex + "_propertyName\" value=\"" + componentProperty.getName() + "\"><select class=\"propertyselect\" name=\"" + componentProperty.getName() + "\" onchange=\"setDirty();\">");
+						sb.append("			<td class=\"igpropertyvalue igpropertyDivider\" align=\"left\"><input type=\"hidden\" name=\"" + propertyIndex + "_propertyName\" value=\"" + componentProperty.getName() + "\"><select class=\"propertyselect\" name=\"" + componentProperty.getName() + "\" onchange=\"setDirty();\"" + (componentProperty.getAllowMultipleSelections() ? " multiple=\"1\" size=\"3\"" : "") + ">");
 						
 						Iterator optionsIterator = componentProperty.getOptions().iterator();
+						
+						if(componentProperty.getDataProvider() != null && !componentProperty.getDataProvider().equals(""))
+						{
+							try
+							{
+								PropertyOptionsDataProvider provider = (PropertyOptionsDataProvider)Class.forName(componentProperty.getDataProvider()).newInstance();
+								logger.info("componentProperty.getDataProviderParameters():" + componentProperty.getDataProviderParameters());
+								Map parameters = httpHelper.toMap(componentProperty.getDataProviderParameters(), "UTF-8", ";");
+								optionsIterator = provider.getPropertyOptions(parameters, principal, templateController.getDatabase()).iterator();
+							}
+							catch (Exception e) 
+							{
+								logger.warn("A problem loading the data provider for property " + componentProperty.getName() + ":" + e.getMessage(), e);
+								List<ComponentPropertyOption> errorOptions = new ArrayList<ComponentPropertyOption>();
+								ComponentPropertyOption componentPropertyOption = new ComponentPropertyOption();
+								componentPropertyOption.setName("Error:" + e.getMessage());
+								componentPropertyOption.setValue("");
+								errorOptions.add(componentPropertyOption);
+								optionsIterator = errorOptions.iterator();
+							}
+						}
+
 						while(optionsIterator.hasNext())
 						{
 						    ComponentPropertyOption option = (ComponentPropertyOption)optionsIterator.next();
 						    boolean isSame = false;
 						    if(componentProperty != null && componentProperty.getValue() != null && option != null && option.getValue() != null)
-						    	isSame = componentProperty.getValue().equals(option.getValue());
+						    {
+						    	String[] values = componentProperty.getValue().split(",");
+						    	for(int i=0; i<values.length; i++)
+						    	{
+						    		isSame = values[i].equals(option.getValue());
+						    		if(isSame)
+						    			break;
+						    	}
+						    }
+						    
 						    sb.append("<option value=\"" + option.getValue() + "\"" + (isSame ? " selected=\"1\"" : "") + ">" + option.getName() + "</option>");
 						}
 						
@@ -1449,6 +1483,28 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 						sb.append("			<td class=\"igpropertyvalue igpropertyDivider\" align=\"left\"><input type=\"hidden\" name=\"" + propertyIndex + "_propertyName\" value=\"" + componentProperty.getName() + "\">");
 						
 						Iterator optionsIterator = componentProperty.getOptions().iterator();
+						
+						if(componentProperty.getDataProvider() != null && !componentProperty.getDataProvider().equals(""))
+						{
+							try
+							{
+								PropertyOptionsDataProvider provider = (PropertyOptionsDataProvider)Class.forName(componentProperty.getDataProvider()).newInstance();
+								logger.info("componentProperty.getDataProviderParameters():" + componentProperty.getDataProviderParameters());
+								Map parameters = httpHelper.toMap(componentProperty.getDataProviderParameters(), "UTF-8", ";");
+								optionsIterator = provider.getPropertyOptions(parameters, principal, templateController.getDatabase()).iterator();
+							}
+							catch (Exception e) 
+							{
+								logger.warn("A problem loading the data provider for property " + componentProperty.getName() + ":" + e.getMessage(), e);
+								List<ComponentPropertyOption> errorOptions = new ArrayList<ComponentPropertyOption>();
+								ComponentPropertyOption componentPropertyOption = new ComponentPropertyOption();
+								componentPropertyOption.setName("Error:" + e.getMessage());
+								componentPropertyOption.setValue("");
+								errorOptions.add(componentPropertyOption);
+								optionsIterator = errorOptions.iterator();
+							}
+						}
+
 						while(optionsIterator.hasNext())
 						{
 						    ComponentPropertyOption option = (ComponentPropertyOption)optionsIterator.next();
@@ -2335,6 +2391,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 					String description					 = binding.attributeValue("description");
 					String defaultValue					 = binding.attributeValue("defaultValue");
 					String dataProvider					 = binding.attributeValue("dataProvider");
+					String dataProviderParameters		 = binding.attributeValue("dataProviderParameters");
 					String type							 = binding.attributeValue("type");
 					String allowedContentTypeNamesString = binding.attributeValue("allowedContentTypeDefinitionNames");
 					String visualizingAction 			 = binding.attributeValue("visualizingAction");
@@ -2349,6 +2406,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 					property.setDescription(description);
 					property.setDefaultValue(defaultValue);
 					property.setDataProvider(dataProvider);
+					property.setDataProviderParameters(dataProviderParameters);
 					property.setType(type);
 					property.setVisualizingAction(visualizingAction);
 					property.setCreateAction(createAction);
@@ -2424,7 +2482,9 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 					else if(type.equalsIgnoreCase(ComponentProperty.SELECTFIELD))	
 					{		
 						String value = getComponentPropertyValue(componentId, name);
-						timer.printElapsedTime("Set property2");
+						String allowMultipleSelections = binding.attributeValue("allowMultipleSelections");
+						if(allowMultipleSelections != null && allowMultipleSelections.equalsIgnoreCase("true"))
+							property.setAllowMultipleSelections(true);
 						
 						List optionList = binding.elements("option");
 						Iterator optionListIterator = optionList.iterator();
@@ -2443,7 +2503,9 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 					else if(type.equalsIgnoreCase(ComponentProperty.CHECKBOXFIELD))	
 					{		
 						String value = getComponentPropertyValue(componentId, name);
-						timer.printElapsedTime("Set property3");
+						String allowMultipleSelections = binding.attributeValue("allowMultipleSelections");
+						if(allowMultipleSelections != null && allowMultipleSelections.equalsIgnoreCase("true"))
+							property.setAllowMultipleSelections(true);
 						
 						List optionList = binding.elements("option");
 						Iterator optionListIterator = optionList.iterator();
@@ -2609,6 +2671,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 					String description					 = binding.attributeValue("description");
 					String defaultValue					 = binding.attributeValue("defaultValue");
 					String dataProvider					 = binding.attributeValue("dataProvider");
+					String dataProviderParameters		 = binding.attributeValue("dataProviderParameters");
 					String type							 = binding.attributeValue("type");
 					String allowedContentTypeNamesString = binding.attributeValue("allowedContentTypeDefinitionNames");
 					String visualizingAction 			 = binding.attributeValue("visualizingAction");
@@ -2623,6 +2686,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 					property.setDescription(description);
 					property.setDefaultValue(defaultValue);
 					property.setDataProvider(dataProvider);
+					property.setDataProviderParameters(dataProviderParameters);
 					property.setType(type);
 					property.setVisualizingAction(visualizingAction);
 					property.setCreateAction(createAction);
@@ -2687,7 +2751,30 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 					else if(type.equalsIgnoreCase(ComponentProperty.SELECTFIELD))	
 					{		
 						String value = getComponentPropertyValue(componentId, name, templateController);
-						timer.printElapsedTime("Set property2");
+						String allowMultipleSelections = binding.attributeValue("allowMultipleSelections");
+						if(allowMultipleSelections != null && allowMultipleSelections.equalsIgnoreCase("true"))
+							property.setAllowMultipleSelections(true);
+						
+						List optionList = binding.elements("option");
+						Iterator optionListIterator = optionList.iterator();
+						while(optionListIterator.hasNext())
+						{
+							Element option = (Element)optionListIterator.next();
+							String optionName	= option.attributeValue("name");
+							String optionValue	= option.attributeValue("value");
+							ComponentPropertyOption cpo = new ComponentPropertyOption(optionName, optionValue);
+							property.getOptions().add(cpo);
+						}
+						
+						//logger.info("value:" + value);
+						property.setValue(value);
+					}
+					else if(type.equalsIgnoreCase(ComponentProperty.CHECKBOXFIELD))	
+					{		
+						String value = getComponentPropertyValue(componentId, name);
+						String allowMultipleSelections = binding.attributeValue("allowMultipleSelections");
+						if(allowMultipleSelections != null && allowMultipleSelections.equalsIgnoreCase("true"))
+							property.setAllowMultipleSelections(true);
 						
 						List optionList = binding.elements("option");
 						Iterator optionListIterator = optionList.iterator();
