@@ -60,11 +60,12 @@ public class ComponentPropertyDefinition
 	private String autoCreateContentMethod	= "";
 	private String autoCreateContentPath	= "";
 	private String customMarkup 			= "";
+	private Boolean allowMultipleSelections	= new Boolean(false);
 	
     private List options = new ArrayList();
 
     
-    public ComponentPropertyDefinition(String name, String displayName, String type, String entity, Boolean multiple, Boolean assetBinding, Boolean isPuffContentForPage, String allowedContentTypeNames, String description, String defaultValue, Boolean WYSIWYGEnabled, String WYSIWYGToolbar, String dataProvider, String dataProviderParameters, Boolean autoCreateContent, String autoCreateContentMethod, String autoCreateContentPath, String customMarkup)
+    public ComponentPropertyDefinition(String name, String displayName, String type, String entity, Boolean multiple, Boolean assetBinding, Boolean isPuffContentForPage, String allowedContentTypeNames, String description, String defaultValue, Boolean WYSIWYGEnabled, String WYSIWYGToolbar, String dataProvider, String dataProviderParameters, Boolean autoCreateContent, String autoCreateContentMethod, String autoCreateContentPath, String customMarkup, boolean allowMultipleSelections)
     {
         this.name 						= name;
         this.displayName				= displayName;
@@ -84,6 +85,7 @@ public class ComponentPropertyDefinition
         this.autoCreateContentMethod 	= autoCreateContentMethod;
         this.autoCreateContentPath		= autoCreateContentPath;
         this.customMarkup 				= customMarkup;
+        this.allowMultipleSelections 	= allowMultipleSelections;
     }
         
     public String getEntity()
@@ -189,6 +191,11 @@ public class ComponentPropertyDefinition
 		VisualFormatter vf = new VisualFormatter();
 		
 		return vf.escapeExtendedHTML(customMarkup);
+	}
+
+	public Boolean getAllowMultipleSelections()
+	{
+		return allowMultipleSelections;
 	}
 
 }

@@ -73,7 +73,8 @@ public class ComponentProperty
 	private String dataProvider 			= null;
 	private String dataProviderParameters 	= null;
 	private String customMarkup				= "";
-
+	private boolean allowMultipleSelections = false;
+	
 	private List options = new ArrayList();
 	
 	private List contentBindings = new ArrayList();
@@ -430,5 +431,15 @@ public class ComponentProperty
 	public void setCustomMarkup(String customMarkup)
 	{
 		this.customMarkup = customMarkup;
+	}
+
+	public boolean getAllowMultipleSelections()
+	{
+		return allowMultipleSelections;
+	}
+
+	public void setAllowMultipleSelections(boolean allowMultipleSelections)
+	{
+		this.allowMultipleSelections = allowMultipleSelections;
 	}
 }

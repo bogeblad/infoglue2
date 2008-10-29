@@ -113,6 +113,7 @@
 				propertyAllowedContentTypeNames = property.getAllowedContentTypeNames();
 				propertyDataProvider 			= property.getDataProvider();
 				propertyDataProviderParameters 	= property.getDataProviderParameters();
+				propertyAllowMultipleSelections	= property.getAllowMultipleSelections();
 				
 				propertyAutoCreateContent	 	= property.getAutoCreateContent();
 				propertyAutoCreateContentMethod	= property.getAutoCreateContentMethod();
@@ -128,7 +129,7 @@
 				
 				if(propertyType == "select" || propertyType == "checkbox")
 				{
-					propertiesXML += "<property name='" + propertyName + "' displayName='" + propertyDisplayName + "' type='" + propertyType + "' multiple='" + propertyMultiple + "' assetBinding='" + propertyAssetBinding + "' isPuffContentForPage='" + isPuffContentForPage + "' description='" + propertyDescription + "' defaultValue='" + propertyDefaultValue + "' dataProvider='" + propertyDataProvider + "' dataProviderParameters='" + propertyDataProviderParameters + "'>";
+					propertiesXML += "<property name='" + propertyName + "' displayName='" + propertyDisplayName + "' type='" + propertyType + "' multiple='" + propertyMultiple + "' assetBinding='" + propertyAssetBinding + "' isPuffContentForPage='" + isPuffContentForPage + "' description='" + propertyDescription + "' defaultValue='" + propertyDefaultValue + "' dataProvider='" + propertyDataProvider + "' dataProviderParameters='" + propertyDataProviderParameters + "' allowMultipleSelections='" + propertyAllowMultipleSelections + "'>";
 
 					for (var j=0; j<property.getOptions().getSize(); j++)
 					{
@@ -315,6 +316,7 @@
 			document.componentPropertyDefinitionForm.componentPropertyDefinition_defaultValue.value 	= componentPropertyDefinition.defaultValue;
 			document.componentPropertyDefinitionForm.componentPropertyDefinition_dataProvider.value 	= componentPropertyDefinition.dataProvider;
 			document.componentPropertyDefinitionForm.componentPropertyDefinition_dataProviderParameters.value = componentPropertyDefinition.dataProviderParameters;
+			document.componentPropertyDefinitionForm.componentPropertyDefinition_allowMultipleSelections.value = componentPropertyDefinition.allowMultipleSelections;
 			document.componentPropertyDefinitionForm.componentPropertyDefinition_WYSIWYGEnabled.value 	= componentPropertyDefinition.WYSIWYGEnabled;
 			document.componentPropertyDefinitionForm.componentPropertyDefinition_WYSIWYGToolbar.value 	= componentPropertyDefinition.WYSIWYGToolbar;
 
@@ -451,6 +453,7 @@
 				componentPropertyDefinition.setWYSIWYGToolbar(document.getElementById("componentPropertyDefinition_WYSIWYGToolbar").value);
 				componentPropertyDefinition.setDataProvider(document.getElementById("componentPropertyDefinition_dataProvider").value);
 				componentPropertyDefinition.setDataProviderParameters(document.getElementById("componentPropertyDefinition_dataProviderParameters").value);
+				componentPropertyDefinition.setAllowMultipleSelections(document.getElementById("componentPropertyDefinition_allowMultipleSelections").value);
 				componentPropertyDefinition.setCustomMarkup(document.getElementById("componentPropertyDefinition_customMarkup").value + "<!--igescaped-->");
 			}
 			
@@ -607,7 +610,7 @@
 
 		function addProperty()
 		{
-			property = new ComponentPropertyDefinition("NewProperty", "NewProperty", "binding", "Content", "false", "false", "false", "", "No description yet", "", "false", "Basic", "", "");
+			property = new ComponentPropertyDefinition("NewProperty", "NewProperty", "binding", "Content", "false", "false", "false", "", "No description yet", "", "false", "Basic", "", "", "false", "", "", "", "false");
 			propertyVector.addElement(property);
 				
 			drawList();
@@ -639,6 +642,7 @@
 				WYSIWYGToolbar 			= property.getWYSIWYGToolbar();
 				dataProvider 			= property.getDataProvider();
 				dataProviderParameters 	= property.getDataProviderParameters();
+				allowMultipleSelections = property.getAllowMultipleSelections();
 				customMarkup 			= property.getCustomMarkup();
 				
 				property.setName(previousProperty.getName());
@@ -676,6 +680,7 @@
 				previousProperty.setWYSIWYGToolbar(WYSIWYGToolbar);
 				previousProperty.setDataProvider(dataProvider);
 				previousProperty.setDataProviderParameters(dataProviderParameters);
+				previousProperty.setAllowMultipleSelections(allowMultipleSelections);
 				previousProperty.setAutoCreateContent(property.getAutoCreateContent());
 				previousProperty.setAutoCreateContentMethod(property.getAutoCreateContentMethod());
 				previousProperty.setAutoCreateContentPath(property.getAutoCreateContentPath());
@@ -710,6 +715,7 @@
 				WYSIWYGToolbar 			= property.getWYSIWYGToolbar();
 				dataProvider 			= property.getDataProvider();
 				dataProviderParameters 	= property.getDataProviderParameters();
+				allowMultipleSelections = property.getAllowMultipleSelections();
 				customMarkup 			= property.getCustomMarkup();
 				
 				property.setName(previousProperty.getName())
@@ -747,6 +753,7 @@
 				previousProperty.setWYSIWYGToolbar(WYSIWYGToolbar);
 				previousProperty.setDataProvider(dataProvider);
 				previousProperty.setDataProviderParameters(dataProviderParameters);
+				previousProperty.setAllowMultipleSelections(allowMultipleSelections);
 				previousProperty.setAutoCreateContent(property.getAutoCreateContent());
 				previousProperty.setAutoCreateContentMethod(property.getAutoCreateContentMethod());
 				previousProperty.setAutoCreateContentPath(property.getAutoCreateContentPath());
@@ -837,6 +844,7 @@
 			selectBox = document.componentPropertyDefinitionForm.componentPropertyDefinition_type;
 			if(selectBox.value == "textfield")
 			{
+				document.getElementById("allowMultipleSelections").style.display = "none";
 				document.getElementById("dataProviderParagraph").style.display = "none";
 				document.getElementById("customMarkupParagraph").style.display = "none";
 				document.getElementById("optionsParagraph").style.display = "none";
@@ -850,6 +858,7 @@
 			}
 			else if(selectBox.value == "textarea")
 			{							 
+				document.getElementById("allowMultipleSelections").style.display = "none";
 				document.getElementById("dataProviderParagraph").style.display = "none";
 				document.getElementById("customMarkupParagraph").style.display = "none";
 				document.getElementById("wysiwygParagraph").style.display = "block";
@@ -871,6 +880,7 @@
 				else
 					document.getElementById("optionsParagraph").style.display = "none";
 				
+				document.getElementById("allowMultipleSelections").style.display = "block";
 				document.getElementById("customMarkupParagraph").style.display = "none";
 				document.getElementById("entityParagraph").style.display = "none";
 				document.getElementById("multipleParagraph").style.display = "none";
@@ -882,6 +892,7 @@
 			}
 			else if(selectBox.value == "datefield")
 			{							 
+				document.getElementById("allowMultipleSelections").style.display = "none";
 				document.getElementById("customMarkupParagraph").style.display = "none";
 				document.getElementById("optionsParagraph").style.display = "none";
 				document.getElementById("entityParagraph").style.display = "none";
@@ -895,6 +906,7 @@
 			}
 			else if(selectBox.value == "customfield")
 			{							 
+				document.getElementById("allowMultipleSelections").style.display = "none";
 				document.getElementById("customMarkupParagraph").style.display = "block";
 				document.getElementById("optionsParagraph").style.display = "none";
 				document.getElementById("entityParagraph").style.display = "none";
@@ -908,6 +920,7 @@
 			}
 			else
 			{
+				document.getElementById("allowMultipleSelections").style.display = "none";
 				document.getElementById("optionsParagraph").style.display = "none";
 				document.getElementById("entityParagraph").style.display = "block";
 				document.getElementById("multipleParagraph").style.display = "block";
@@ -941,7 +954,7 @@
 		function init()
 		{
 			#foreach($propertyDefinition in $componentPropertyDefinitions)
-				property = new ComponentPropertyDefinition("$propertyDefinition.name", "$!propertyDefinition.displayName", "$propertyDefinition.type", "$propertyDefinition.entity", "$propertyDefinition.multiple", "$propertyDefinition.assetBinding", "$propertyDefinition.isPuffContentForPage", "$propertyDefinition.allowedContentTypeNames", "$propertyDefinition.description", "$!propertyDefinition.defaultValue", "$!propertyDefinition.WYSIWYGEnabled", "$!propertyDefinition.WYSIWYGToolbar", "$!propertyDefinition.dataProvider", "$!propertyDefinition.dataProviderParameters", "$!propertyDefinition.autoCreateContent", "$!propertyDefinition.autoCreateContentMethod", "$!propertyDefinition.autoCreateContentPath", "$!propertyDefinition.encodedCustomMarkup");
+				property = new ComponentPropertyDefinition("$propertyDefinition.name", "$!propertyDefinition.displayName", "$propertyDefinition.type", "$propertyDefinition.entity", "$propertyDefinition.multiple", "$propertyDefinition.assetBinding", "$propertyDefinition.isPuffContentForPage", "$propertyDefinition.allowedContentTypeNames", "$propertyDefinition.description", "$!propertyDefinition.defaultValue", "$!propertyDefinition.WYSIWYGEnabled", "$!propertyDefinition.WYSIWYGToolbar", "$!propertyDefinition.dataProvider", "$!propertyDefinition.dataProviderParameters", "$!propertyDefinition.autoCreateContent", "$!propertyDefinition.autoCreateContentMethod", "$!propertyDefinition.autoCreateContentPath", "$!propertyDefinition.encodedCustomMarkup", "$!propertyDefinition.allowMultipleSelections");
 
 				#foreach($propertyOptionDefinition in $propertyDefinition.options)
 					propertyOption = new ComponentPropertyOptionDefinition("$propertyOptionDefinition.name", "$propertyOptionDefinition.value");
@@ -1004,6 +1017,10 @@
 <div id="dataProviderParagraph" style="display: none;">
 	<p><label for="componentPropertyDefinition_dataProvider">Data provider class:</label><input type="textfield" name="componentPropertyDefinition_dataProvider" id="componentPropertyDefinition_dataProvider" value=""/></p>
 	<p><label for="componentPropertyDefinition_dataProviderParameters">Data provider parameters:</label><input type="textfield" name="componentPropertyDefinition_dataProviderParameters" id="componentPropertyDefinition_dataProviderParameters" value=""/></p>
+</div>
+
+<div id="allowMultipleSelections" style="display: none;">
+	<p><label for="componentPropertyDefinition_allowMultipleSelections">Allow multiple selections:</label><input type="textfield" name="componentPropertyDefinition_allowMultipleSelections" id="componentPropertyDefinition_allowMultipleSelections" value=""/></p>
 </div>
 
 <div id="customMarkupParagraph" style="display: none;">

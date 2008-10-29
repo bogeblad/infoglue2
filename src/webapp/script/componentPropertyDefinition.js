@@ -12,7 +12,7 @@
  * ComponentPropertyDefinition object
  */
 
-function ComponentPropertyDefinition(name, displayName, type, entity, multiple, assetBinding, isPuffContentForPage, allowedContentTypeNames, description, defaultValue, WYSIWYGEnabled, WYSIWYGToolbar, dataProvider, dataProviderParameters, autoCreateContent, autoCreateContentMethod, autoCreateContentPath, customMarkup)
+function ComponentPropertyDefinition(name, displayName, type, entity, multiple, assetBinding, isPuffContentForPage, allowedContentTypeNames, description, defaultValue, WYSIWYGEnabled, WYSIWYGToolbar, dataProvider, dataProviderParameters, autoCreateContent, autoCreateContentMethod, autoCreateContentPath, customMarkup, allowMultipleSelections)
 {
 	this.name 						= name;
 	this.displayName				= displayName;
@@ -28,6 +28,7 @@ function ComponentPropertyDefinition(name, displayName, type, entity, multiple, 
 	this.WYSIWYGToolbar				= WYSIWYGToolbar;
 	this.dataProvider 				= dataProvider;
 	this.dataProviderParameters		= dataProviderParameters;
+	this.allowMultipleSelections    = allowMultipleSelections;
 	this.autoCreateContent			= autoCreateContent;
 	this.autoCreateContentMethod	= autoCreateContentMethod;
 	this.autoCreateContentPath		= autoCreateContentPath;
@@ -49,6 +50,7 @@ function ComponentPropertyDefinition(name, displayName, type, entity, multiple, 
 	this.getWYSIWYGToolbar			= getWYSIWYGToolbar;
 	this.getDataProvider			= getDataProvider;
 	this.getDataProviderParameters	= getDataProviderParameters;
+	this.getAllowMultipleSelections	= getAllowMultipleSelections;
 	this.getAutoCreateContent		= getAutoCreateContent;
 	this.getAutoCreateContentMethod	= getAutoCreateContentMethod;
 	this.getAutoCreateContentPath	= getAutoCreateContentPath;
@@ -68,6 +70,7 @@ function ComponentPropertyDefinition(name, displayName, type, entity, multiple, 
 	this.setWYSIWYGToolbar			= setWYSIWYGToolbar;
 	this.setDataProvider			= setDataProvider;
 	this.setDataProviderParameters	= setDataProviderParameters;
+	this.setAllowMultipleSelections	= setAllowMultipleSelections;
 	this.setAutoCreateContent		= setAutoCreateContent;
 	this.setAutoCreateContentMethod	= setAutoCreateContentMethod;
 	this.setAutoCreateContentPath	= setAutoCreateContentPath;
@@ -217,6 +220,16 @@ function getDataProviderParameters()
 function setDataProviderParameters(dataProviderParameters)
 {
 	this.dataProviderParameters = dataProviderParameters;
+}
+
+function getAllowMultipleSelections()
+{
+	return this.allowMultipleSelections;
+}
+
+function setAllowMultipleSelections(allowMultipleSelections)
+{
+	this.allowMultipleSelections = allowMultipleSelections;
 }
 
 function getAutoCreateContent()

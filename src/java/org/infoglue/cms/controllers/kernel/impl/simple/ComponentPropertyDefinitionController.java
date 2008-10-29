@@ -113,6 +113,7 @@ public class ComponentPropertyDefinitionController extends BaseController
 				    String defaultValue				= propertyElement.getAttribute("defaultValue");
 				    String dataProvider				= propertyElement.getAttribute("dataProvider");
 				    String dataProviderParameters	= propertyElement.getAttribute("dataProviderParameters");
+				    String allowMultipleSelections	= propertyElement.getAttribute("allowMultipleSelections");
 				    String WYSIWYGEnabled			= propertyElement.getAttribute("WYSIWYGEnabled");
 				    String WYSIWYGToolbar			= propertyElement.getAttribute("WYSIWYGToolbar");
 				    String autoCreateContent		= propertyElement.getAttribute("autoCreateContent");
@@ -120,7 +121,7 @@ public class ComponentPropertyDefinitionController extends BaseController
 				    String autoCreateContentPath	= propertyElement.getAttribute("autoCreateContentPath");
 				    String customMarkup				= propertyElement.getAttribute("customMarkup");
 				    				    
-				    ComponentPropertyDefinition cpd = new ComponentPropertyDefinition(name, displayName, type, entity, new Boolean(multiple), new Boolean(assetBinding), new Boolean(isPuffContentForPage), allowedContentTypeNames, description, defaultValue, new Boolean(WYSIWYGEnabled), WYSIWYGToolbar, dataProvider, dataProviderParameters, new Boolean(autoCreateContent), autoCreateContentMethod, autoCreateContentPath, customMarkup);
+				    ComponentPropertyDefinition cpd = new ComponentPropertyDefinition(name, displayName, type, entity, new Boolean(multiple), new Boolean(assetBinding), new Boolean(isPuffContentForPage), allowedContentTypeNames, description, defaultValue, new Boolean(WYSIWYGEnabled), WYSIWYGToolbar, dataProvider, dataProviderParameters, new Boolean(autoCreateContent), autoCreateContentMethod, autoCreateContentPath, customMarkup, new Boolean(allowMultipleSelections));
 				    
 					NodeList optionsNodeList = propertyElement.getElementsByTagName("option");
 					for(int k=0; k<optionsNodeList.getLength(); k++)
