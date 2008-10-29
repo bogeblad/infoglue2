@@ -652,4 +652,33 @@ public class HttpHelper
 	    return map;
 	}
 
+	/**
+	 * Parses a http-encoded string into a Map.
+	 * 
+	 * @param parameters The parameter string to parse
+	 * @return The url encoding to expects
+	 */
+		
+	public Map toMap(String parameters, String encoding, String argumentSplitter) throws Exception
+	{
+		Map map = new HashMap();
+		
+		if(parameters != null && parameters.length() > 0)
+		{
+		    String[] parametersArray = parameters.split(argumentSplitter);
+		    for(int i=0; i<parametersArray.length; i++)
+		    {
+		    	String parameterNameValueString = parametersArray[i];
+		    	String[] nameValueArray = parameterNameValueString.split("=");
+		    	String name = URLDecoder.decode(nameValueArray[0], encoding);
+		    	String value = "";
+		    	if(nameValueArray.length > 1)
+		    		value = URLDecoder.decode(nameValueArray[1], encoding);
+		    	map.put(name, value);
+		    }
+		}
+		
+	    return map;
+	}
+
 }
