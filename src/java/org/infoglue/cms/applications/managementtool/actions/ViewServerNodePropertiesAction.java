@@ -150,6 +150,7 @@ public class ViewServerNodePropertiesAction extends InfoGluePropertiesAbstractAc
 	    populate(ps, "digitalAssetPath");
 	    populate(ps, "urlFormatting");
 	    populate(ps, "enableNiceURI");
+	    populate(ps, "enableNiceURIInWorking");
 	    populate(ps, "enableDiskAssets");
 	    populate(ps, "disableAssetDeletionInWorkThread");
 	    populate(ps, "disableAssetDeletionInLiveThread");

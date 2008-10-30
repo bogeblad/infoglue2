@@ -1069,7 +1069,13 @@ public class CmsPropertyHandler
 	
 	public static String getEnableNiceURI()
 	{
-	    return getServerNodeProperty("enableNiceURI", true, "true");
+		String value = null;
+		if(!getOperatingMode().equals("3"))
+			value = getServerNodeProperty("enableNiceURIInWorking", true, "true");
+		else
+			value = getServerNodeProperty("enableNiceURI", true, "true");
+
+		return value;
 	}
 
 	public static String getNiceURIEncoding()

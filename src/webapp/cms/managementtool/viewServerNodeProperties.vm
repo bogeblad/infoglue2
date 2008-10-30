@@ -209,6 +209,7 @@
 			#editPropertyFieldCSS("ServerNode.property.recachePublishingMethod" "recachePublishingMethod" "$this.getPropertyValue('recachePublishingMethod')" "51" "$!serverNodeId")
 			#editPropertyFieldCSS("ServerNode.property.recacheUrl" "recacheUrl" "$this.getPropertyValue('recacheUrl')" "51" "$!serverNodeId")
 
+			#yesNoDropDownWithInheritCSS("ServerNode.property.enableNiceURIInWorking" "enableNiceURIInWorking" "$this.getPropertyValue('enableNiceURIInWorking')")
 			#yesNoDropDownWithInheritCSS("ServerNode.property.enableNiceURI" "enableNiceURI" "$this.getPropertyValue('enableNiceURI')")
 			#editPropertyFieldCSS("ServerNode.property.niceURIEncoding" "niceURIEncoding" "$this.getPropertyValue('niceURIEncoding')" "51" "$!serverNodeId")
 			#editPropertyFieldCSS("ServerNode.property.niceURIAttributeName" "niceURIAttributeName" "$this.getPropertyValue('niceURIAttributeName')" "51" "$!serverNodeId")
