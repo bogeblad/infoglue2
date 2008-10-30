@@ -45,7 +45,7 @@ public class ViewRepositoryAction extends InfoGlueAbstractAction
 
     private RepositoryVO repositoryVO;
 
-    private List repositoryLanguageVOList;
+	private List repositoryLanguageVOList;
 	private List allRemainingLanguageVOList;
 
     //private List availableLanguageVOList;
@@ -149,6 +149,11 @@ public class ViewRepositoryAction extends InfoGlueAbstractAction
 	public LanguageVO getLanguage(Integer repositoryLanguageId) throws Exception
 	{
 		return LanguageController.getController().getLanguageVOWithRepositoryLanguageId(repositoryLanguageId);
+	}
+
+	public RepositoryVO getRepositoryVO()
+	{
+		return repositoryVO;
 	}
 
 }

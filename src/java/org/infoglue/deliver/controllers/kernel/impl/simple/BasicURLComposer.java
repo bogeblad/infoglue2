@@ -305,11 +305,33 @@ public class BasicURLComposer extends URLComposer
     		        keyword = "live=";
 
     		    String repositoryPath = null;
-    	    	int pathStartIndex = dnsName.indexOf("path=");
-    	    	if(pathStartIndex != -1)
+    	    	if(!CmsPropertyHandler.getOperatingMode().equals("3"))
     	    	{
-    	    		repositoryPath = dnsName.substring(pathStartIndex + 5);
+    		    	int workingPathStartIndex = dnsName.indexOf("workingPath=");
+    		    	if(workingPathStartIndex != -1)
+    		    	{
+    		    		int workingPathEndIndex = dnsName.indexOf(",", workingPathStartIndex);
+    		    		if(workingPathEndIndex > -1)
+        		    		repositoryPath = dnsName.substring(workingPathStartIndex + 12, workingPathEndIndex);
+    		    		else
+    		    			repositoryPath = dnsName.substring(workingPathStartIndex + 12);
+    		    	}
     	    	}
+
+    	    	if(repositoryPath == null)
+    	    	{
+        	    	int pathStartIndex = dnsName.indexOf("path=");
+        	    	if(pathStartIndex != -1)
+        	    	{
+    		    		int pathEndIndex = dnsName.indexOf(",", pathStartIndex);
+    		    		if(pathEndIndex > -1)
+        		    		repositoryPath = dnsName.substring(pathStartIndex + 5, pathEndIndex);
+    		    		else
+    		    			repositoryPath = dnsName.substring(pathStartIndex + 5);
+        	    	}
+    	    	}
+
+
     	    	logger.info("repositoryPath in constructing new url:" + repositoryPath);    	
 
     		    if(dnsName != null)
@@ -356,11 +378,32 @@ public class BasicURLComposer extends URLComposer
     		    String dnsName = siteNode.getRepository().getDnsName();
 
     		    String repositoryPath = null;
-    	    	int pathStartIndex = dnsName.indexOf("path=");
-    	    	if(pathStartIndex != -1)
+    	    	if(!CmsPropertyHandler.getOperatingMode().equals("3"))
     	    	{
-    	    		repositoryPath = dnsName.substring(pathStartIndex + 5);
+    		    	int workingPathStartIndex = dnsName.indexOf("workingPath=");
+    		    	if(workingPathStartIndex != -1)
+    		    	{
+    		    		int workingPathEndIndex = dnsName.indexOf(",", workingPathStartIndex);
+    		    		if(workingPathEndIndex > -1)
+        		    		repositoryPath = dnsName.substring(workingPathStartIndex + 12, workingPathEndIndex);
+    		    		else
+    		    			repositoryPath = dnsName.substring(workingPathStartIndex + 12);
+    		    	}
     	    	}
+
+    	    	if(repositoryPath == null)
+    	    	{
+        	    	int pathStartIndex = dnsName.indexOf("path=");
+        	    	if(pathStartIndex != -1)
+        	    	{
+    		    		int pathEndIndex = dnsName.indexOf(",", pathStartIndex);
+    		    		if(pathEndIndex > -1)
+        		    		repositoryPath = dnsName.substring(pathStartIndex + 5, pathEndIndex);
+    		    		else
+    		    			repositoryPath = dnsName.substring(pathStartIndex + 5);
+        	    	}
+    	    	}
+    		    
     	    	logger.info("repositoryPath in constructing new url:" + repositoryPath);    	
     	    	
     		    if(repositoryPath != null)

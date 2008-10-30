@@ -106,27 +106,71 @@ public class RepositoryVO implements BaseEntityVO
     	return ceb;
 	}
 
-	public String getLiveBaseUrl()
+	public String getValueFromDNSNameByKey(String keyword)
 	{
-		String liveBaseUrl = "";
+		String value = "";
 		
-		String keyword = "live=";
 		int startIndex = dnsName.indexOf(keyword);
 	    if(startIndex != -1)
 	    {
 	        int endIndex = dnsName.indexOf(",", startIndex);
-		    if(endIndex > -1)
-	            dnsName = dnsName.substring(startIndex, endIndex);
+		    String part = null;
+	        if(endIndex > -1)
+	        	part = dnsName.substring(startIndex, endIndex);
 	        else
-	            dnsName = dnsName.substring(startIndex);
+	        	part = dnsName.substring(startIndex);
 	        
-	        dnsName = dnsName.split("=")[1];
+	        part = part.split("=")[1];
 	        
-	        liveBaseUrl = dnsName;
+	        value = part;
 	    }
 	    
-	    return liveBaseUrl;
+	    return value;
 	}
-        
+	
+	public String getWorkingBaseUrl()
+	{
+		return getValueFromDNSNameByKey("working=");
+	}
+
+	public String getPreviewBaseUrl()
+	{
+		return getValueFromDNSNameByKey("preview=");
+	}
+
+	public String getLiveBaseUrl()
+	{
+		return getValueFromDNSNameByKey("live=");
+	}
+
+	public String getExtraUrls()
+	{
+		String extraUrls = "";
+		
+		String[] strings = dnsName.split(",");
+		for(int i=0; i<strings.length; i++)
+		{
+			String string = strings[i];
+			if(string.indexOf("=") == -1)
+			{
+				if(!extraUrls.equals(""))
+					extraUrls = extraUrls + ",";
+				extraUrls = extraUrls + string;
+			}
+		}
+	    
+	    return extraUrls;
+	}
+
+	public String getWorkingPath()
+	{
+		return getValueFromDNSNameByKey("workingPath=");
+	}
+
+	public String getPath()
+	{
+		return getValueFromDNSNameByKey("path=");
+	}
+
 }
         

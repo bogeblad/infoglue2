@@ -1692,12 +1692,32 @@ public class NodeDeliveryController extends BaseDeliveryController
         }
         
         String repositoryPath = null;
-    	int pathStartIndex = repositoryVO.getDnsName().indexOf("path=");
-    	if(pathStartIndex != -1)
+    	if(!CmsPropertyHandler.getOperatingMode().equals("3"))
     	{
-    		repositoryPath = repositoryVO.getDnsName().substring(pathStartIndex + 5);
+	    	int workingPathStartIndex = repositoryVO.getDnsName().indexOf("workingPath=");
+	    	if(workingPathStartIndex != -1)
+	    	{
+	    		int workingPathEndIndex = repositoryVO.getDnsName().indexOf(",", workingPathStartIndex);
+	    		if(workingPathEndIndex > -1)
+		    		repositoryPath = repositoryVO.getDnsName().substring(workingPathStartIndex + 12, workingPathEndIndex);
+	    		else
+	    			repositoryPath = repositoryVO.getDnsName().substring(workingPathStartIndex + 12);
+	    	}
     	}
 
+    	if(repositoryPath == null)
+    	{
+        	int pathStartIndex = repositoryVO.getDnsName().indexOf("path=");
+        	if(pathStartIndex != -1)
+        	{
+        		int pathEndIndex = repositoryVO.getDnsName().indexOf(",", pathStartIndex);
+	    		if(pathEndIndex > -1)
+		    		repositoryPath = repositoryVO.getDnsName().substring(pathStartIndex + 5, pathEndIndex);
+	    		else
+	    			repositoryPath = repositoryVO.getDnsName().substring(pathStartIndex + 5);
+        	}
+    	}
+    	
     	logger.info("repositoryPath:" + repositoryPath);    	
     	logger.info("path:" + path.length);    	
     	
@@ -1774,12 +1794,33 @@ public class NodeDeliveryController extends BaseDeliveryController
 	        }
 	        
 	        String repositoryPath = null;
-	    	int pathStartIndex = repositoryVO.getDnsName().indexOf("path=");
-	    	if(pathStartIndex != -1)
+	    	
+	    	if(!CmsPropertyHandler.getOperatingMode().equals("3"))
 	    	{
-	    		repositoryPath = repositoryVO.getDnsName().substring(pathStartIndex + 5);
+		    	int workingPathStartIndex = repositoryVO.getDnsName().indexOf("workingPath=");
+		    	if(workingPathStartIndex != -1)
+		    	{
+		    		int workingPathEndIndex = repositoryVO.getDnsName().indexOf(",", workingPathStartIndex);
+		    		if(workingPathEndIndex > -1)
+			    		repositoryPath = repositoryVO.getDnsName().substring(workingPathStartIndex + 12, workingPathEndIndex);
+		    		else
+		    			repositoryPath = repositoryVO.getDnsName().substring(workingPathStartIndex + 12);
+		    	}
 	    	}
 
+	    	if(repositoryPath == null)
+	    	{
+	        	int pathStartIndex = repositoryVO.getDnsName().indexOf("path=");
+	        	if(pathStartIndex != -1)
+	        	{
+	        		int pathEndIndex = repositoryVO.getDnsName().indexOf(",", pathStartIndex);
+		    		if(pathEndIndex > -1)
+			    		repositoryPath = repositoryVO.getDnsName().substring(pathStartIndex + 5, pathEndIndex);
+		    		else
+		    			repositoryPath = repositoryVO.getDnsName().substring(pathStartIndex + 5);
+	        	}
+	    	}
+	    	
 	    	logger.info("repositoryPath:" + repositoryPath);    	
 	    	logger.info("path:" + path.length);    	
 	    	
