@@ -9,12 +9,11 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 import org.dom4j.Document;
 import org.dom4j.Element;
-import org.dom4j.Node;
 import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.security.InfoGluePrincipal;
-import org.infoglue.common.util.dom.DOMBuilder;
 import org.infoglue.deliver.applications.databeans.ComponentPropertyOption;
 import org.infoglue.deliver.util.CacheController;
+import org.infoglue.cms.util.dom.DOMBuilder;
 
 public class RemoteXMLPropertyOptionsDataProvider implements PropertyOptionsDataProvider
 {
@@ -64,8 +63,8 @@ public class RemoteXMLPropertyOptionsDataProvider implements PropertyOptionsData
 				option.setValue(propertyElement.attributeValue("value"));
 				options.add(option);
 			}
-			
-	        if(options != null)
+
+			if(options != null)
 	        	CacheController.cacheObjectInAdvancedCache("propertyOptionsCache", "properties_" + serviceUrl + "_" + charset, options);
 		}
 		catch (Exception e) 
