@@ -39,8 +39,8 @@
 			if(livePath != "")
 				dnsString = dnsString + ",path=" + livePath;
 			
-			document.editForm.dnsName.value = dnsString;
-			$("#warningParagraph").html("<span style='color: red'>Remember to clear especially live deliver caches by hand.br/>NiceURI settings are not immediately enforced automatically.</span>");
+			$("#dnsName").val(dnsString);
+			$("#warningParagraph").html("<span style='color: red'>Remember to clear especially live deliver caches by hand.<br/>NiceURI settings are not immediately enforced automatically.</span>");
 			$("#warning").show("slow");
 			
 			return true;
@@ -81,9 +81,10 @@
 	}
 	
 	$(document).ready(function(){
-		
-		document.editForm.dnsName.style.color = "grey";
-		$(document.editForm.dnsName).click(function () {
+
+		$("#dnsName").css("color","#999999");
+
+		$("#dnsName").click(function () {
 			alert("Use the form below - it assists you with the syntax");
 			$("#dnsFields").show("slow");
 	    });
@@ -91,7 +92,6 @@
 		$(":input").change(function () {
 			composeDNSString();
 	    });
-	        
 	});
 	
 //-->
@@ -119,7 +119,7 @@
 			<p>#editField("Repository.description" "description" $!description "51")</p>
 			<p>#editReadOnlyField("Repository.dnsName" "dnsName" $!dnsName "51" "READONLY") <a href="javascript:explainNiceURI();">Explain</a></p>
 			
-			<fieldset id="dnsFields" style="display:none;">
+			<fieldset id="dnsFields" style="display:none; padding: 4px; width: 100%;">
 				<legend>Domain/Host/Nice URI settings</legend>
 				<p>
 					Working URL (used for site lookup when using nice uri in working deliver):<br/> <input class="longtextfield" style="width: 600px;" type="textfield" id="workingUrl" name="workingUrl" value="$!repositoryVO.workingBaseUrl"/><br/><br/>

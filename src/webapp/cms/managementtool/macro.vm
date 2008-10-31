@@ -1965,7 +1965,7 @@ $ui.getString("entity.${fieldNameKey}.label")<br/>
 
   #end
   <br/>
-  <input type="text" class="text" name="$fieldName" value="$!fieldValue" size="$length"/>
+  <input type="text" class="text" id="$fieldName" name="$fieldName" value="$!fieldValue" size="$length"/>
 #end
 
 
@@ -2088,7 +2088,7 @@ $ui.getString("entity.${fieldNameKey}.label")<br/>
 #macro(editReadOnlyField $fieldNameKey $fieldName $fieldValue $length $readonly)
   $ui.getString("entity.${fieldNameKey}.label")
   <br/>
-  <input type="text" class="text" name="$fieldName" value="$!fieldValue" size="$length" $readonly/>
+  <input type="text" class="text" id="$fieldName" name="$fieldName" value="$!fieldValue" size="$length" $readonly/>
 #end
 
 #macro(editReadOnlyPasswordField $fieldNameKey $fieldName $fieldValue $length $readonly)
