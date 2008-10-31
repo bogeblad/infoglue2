@@ -40,7 +40,7 @@
 				dnsString = dnsString + ",path=" + livePath;
 			
 			document.editForm.dnsName.value = dnsString;
-			$("#warningParagraph").html("<span style='color: red'>Remember to clear deliver caches by hand</span>");
+			$("#warningParagraph").html("<span style='color: red'>Remember to clear especially live deliver caches by hand.br/>NiceURI settings are not immediately enforced automatically.</span>");
 			$("#warning").show("slow");
 			
 			return true;
