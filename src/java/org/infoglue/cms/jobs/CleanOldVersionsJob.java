@@ -76,8 +76,9 @@ public class CleanOldVersionsJob implements Job
 			if(numberOfVersionsToKeepDuringCleanInteger.intValue() > -1)
 			{
 				int cleanedContentVersions = ContentVersionController.getContentVersionController().cleanContentVersions(numberOfVersionsToKeepDuringCleanInteger.intValue(), keepOnlyOldPublishedVersions, minimumTimeBetweenVersionsDuringClean, deleteVersions);
-				
 				int cleanedSiteNodeVersions = SiteNodeController.getController().cleanSiteNodeVersions(numberOfVersionsToKeepDuringCleanInteger.intValue(), keepOnlyOldPublishedVersions, minimumTimeBetweenVersionsDuringClean, deleteVersions);
+				logger.info("cleanedContentVersions:" + cleanedContentVersions);
+				logger.info("cleanedSiteNodeVersions:" + cleanedSiteNodeVersions);
 				context.setResult(new Integer[]{cleanedContentVersions, cleanedSiteNodeVersions});
 			}
 		}
