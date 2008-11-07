@@ -360,10 +360,10 @@ public class BasicURLComposer extends URLComposer
     		    
     		    if(repositoryPath != null)
     		    {
-        		    if(context.startsWith("/"))
+    		    	if(context.startsWith("/"))
         		    	context = dnsName + context + "/" + repositoryPath;
         		    else
-        		     	context = dnsName + "/" + context + "/" + repositoryPath;
+        		     	context = dnsName + "/" + (context.equals("") ? "" : context + "/") + repositoryPath;
     		    }
     		    else
     		    {
