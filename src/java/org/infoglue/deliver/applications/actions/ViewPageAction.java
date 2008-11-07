@@ -250,7 +250,13 @@ public class ViewPageAction extends InfoGlueAbstractAction
 				protectDeliver = true;
 			else if(protectPreview.equals("true") && CmsPropertyHandler.getOperatingMode().equals("2"))
 				protectDeliver = true;
-				
+			
+			if(logger.isInfoEnabled())
+				logger.info("RemoteAddress:" + getRequest().getRemoteAddr());
+			
+			if(getRequest().getRemoteAddr().equals("127.0.0.1") || getRequest().getRemoteAddr().equals("192.168.0.1"))
+				protectDeliver = false;
+	
 			if(protectedSiteNodeVersionId != null || protectDeliver)
 			{
 				if(logger.isInfoEnabled())
@@ -533,6 +539,12 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			String protectWorking = CmsPropertyHandler.getProtectDeliverWorking();
 			String protectPreview = CmsPropertyHandler.getProtectDeliverPreview();
 			boolean protectDeliver = true;
+
+			if(logger.isInfoEnabled())
+				logger.info("RemoteAddress:" + getRequest().getRemoteAddr());
+			
+			if(getRequest().getRemoteAddr().equals("127.0.0.1") || getRequest().getRemoteAddr().equals("192.168.0.1"))
+				protectDeliver = false;
 			
 			/*
 			boolean protectDeliver = false;
