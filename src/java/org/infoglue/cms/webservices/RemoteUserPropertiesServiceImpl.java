@@ -38,10 +38,14 @@ import org.infoglue.cms.controllers.kernel.impl.simple.ServerNodeController;
 import org.infoglue.cms.controllers.kernel.impl.simple.UserControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.UserPropertiesController;
 import org.infoglue.cms.entities.content.DigitalAssetVO;
-import org.infoglue.cms.entities.management.UserProperties;
 import org.infoglue.cms.entities.management.UserPropertiesVO;
+import org.infoglue.cms.entities.management.UserProperties;
+import org.infoglue.cms.entities.management.impl.simple.UserPropertiesImpl;
+import org.infoglue.cms.entities.management.impl.simple.SystemUserImpl;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
+import org.infoglue.cms.util.ChangeNotificationController;
+import org.infoglue.cms.util.NotificationMessage;
 import org.infoglue.cms.util.dom.DOMBuilder;
 import org.infoglue.cms.webservices.elements.RemoteAttachment;
 import org.infoglue.deliver.util.webservices.DynamicWebserviceSerializer;
@@ -89,7 +93,10 @@ public class RemoteUserPropertiesServiceImpl extends RemoteInfoGlueService
             initializePrincipal(principalName);
             UserPropertiesVO newUserPropertiesVO = userPropertiesController.update(userPropertiesVO.getLanguageId(), userPropertiesVO.getContentTypeDefinitionId(), userPropertiesVO);
             newUserPropertiesId = newUserPropertiesVO.getId().intValue();
-        }
+            
+			NotificationMessage notificationMessage = new NotificationMessage("RemoteUserProperties.updateUserProperties", UserPropertiesImpl.class.getName(), principalName, NotificationMessage.PUBLISHING, newUserPropertiesVO.getId(), newUserPropertiesVO.getUserName());
+			ChangeNotificationController.getInstance().addNotificationMessage(notificationMessage);
+        } 
         catch(Exception e)
         {
             logger.error("En error occurred when we tried to create a new userProperty:" + e.getMessage(), e);
@@ -104,7 +111,7 @@ public class RemoteUserPropertiesServiceImpl extends RemoteInfoGlueService
      * Inserts a new UserProperty.
      */
     
-    public Boolean updateUserProperties(final String principalName, int languageId, int contentTypeDefinitionId, final Object[] inputsArray, final Object[] assetsArray) 
+    public Boolean updateUserProperties(final String principalName, int languageId, int contentTypeDefinitionId, boolean forcePublication, final Object[] inputsArray, final Object[] assetsArray) 
     {
         if(!ServerNodeController.getController().getIsIPAllowed(getRequest()))
         {
@@ -201,6 +208,11 @@ public class RemoteUserPropertiesServiceImpl extends RemoteInfoGlueService
 	    	    }	 
 	        }
 
+	        if(forcePublication)
+	        {
+				NotificationMessage notificationMessage = new NotificationMessage("RemoteUserProperties.updateUserProperties", UserPropertiesImpl.class.getName(), principalName, NotificationMessage.PUBLISHING, newUserPropertiesVO.getId(), newUserPropertiesVO.getUserName());
+				ChangeNotificationController.getInstance().addNotificationMessage(notificationMessage);
+	        }
         }
         catch(Throwable e)
         {
@@ -258,6 +270,8 @@ public class RemoteUserPropertiesServiceImpl extends RemoteInfoGlueService
                
 	        logger.info("Done with contents..");
 
+			NotificationMessage notificationMessage = new NotificationMessage("RemoteUserProperties.deleteDigitalAsset", SystemUserImpl.class.getName(), principalName, NotificationMessage.PUBLISHING, principalName, principalName);
+			ChangeNotificationController.getInstance().addNotificationMessage(notificationMessage);
         }
         catch(Throwable e)
         {

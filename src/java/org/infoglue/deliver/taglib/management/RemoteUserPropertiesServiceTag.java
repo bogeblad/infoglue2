@@ -48,6 +48,7 @@ public class RemoteUserPropertiesServiceTag extends TemplateControllerTag implem
 	 */
 	private Integer languageId;
 	private Integer contentTypeDefinitionId;
+	private boolean forcePublication = true;
 	private Map userPropertiesAttributesMap = new HashMap();
 	private List digitalAssets = new ArrayList();
 	
@@ -92,6 +93,7 @@ public class RemoteUserPropertiesServiceTag extends TemplateControllerTag implem
 			   ws.addArgument("languageId", this.languageId);
 				   
 		   ws.addArgument("contentTypeDefinitionId", this.contentTypeDefinitionId);
+		   ws.addArgument("forcePublication", this.forcePublication);
 		   ws.addArgument("userPropertiesAttributesMap", userPropertiesAttributesMap);
 		   ws.addArgument("digitalAssets", digitalAssets);
 		   
@@ -106,6 +108,7 @@ public class RemoteUserPropertiesServiceTag extends TemplateControllerTag implem
 	   
 	   this.contentTypeDefinitionId = null;
 	   this.languageId = null;
+	   this.forcePublication = true;
 	   this.userPropertiesAttributesMap = new HashMap();
 	   this.digitalAssets = new ArrayList();
 		
@@ -150,6 +153,14 @@ public class RemoteUserPropertiesServiceTag extends TemplateControllerTag implem
    public void setContentTypeDefinitionId(final String contentTypeDefinitionIdString) throws JspException
    {
 	   this.contentTypeDefinitionId = this.evaluateInteger("remoteUserPropertiesService", "contentTypeDefinitionId", contentTypeDefinitionIdString);
+   }
+
+   /**
+    * 
+    */
+   public void setForcePublication(final String forcePublication) throws JspException
+   {
+	   this.forcePublication = (Boolean)this.evaluate("remoteUserPropertiesService", "forcePublication", forcePublication, Boolean.class);
    }
 
 	/**
