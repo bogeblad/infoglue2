@@ -578,6 +578,11 @@
 	        <rtexprvalue>true</rtexprvalue>
 		</attribute>
 	    <attribute>
+		    <name>correctDoubleAmpEncoding</name>
+	    	<required>false</required>
+	        <rtexprvalue>true</rtexprvalue>
+		</attribute>
+	    <attribute>
 		    <name>description</name>
 	    	<required>true</required>
 	        <rtexprvalue>true</rtexprvalue>

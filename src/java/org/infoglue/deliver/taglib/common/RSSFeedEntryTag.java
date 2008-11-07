@@ -57,6 +57,7 @@ public class RSSFeedEntryTag extends TemplateControllerTag
 	private String description	= null;
 	private List categories		= new ArrayList();
 	private String descriptionContentType = "text/html";
+	private boolean correctDoubleAmpEncoding	= true;
 	
 	/**
 	 * Default constructor.
@@ -87,6 +88,9 @@ public class RSSFeedEntryTag extends TemplateControllerTag
     {
 	    try
 	    {		    	
+	    	if(correctDoubleAmpEncoding)
+	    		link = link.replaceAll("&amp;", "&");
+	    	
 	        SyndEntry entry = new SyndEntryImpl();
 	        entry.setTitle(title);
 	        entry.setLink(link);
@@ -137,6 +141,11 @@ public class RSSFeedEntryTag extends TemplateControllerTag
         this.link = evaluateString("RssFeedEntry", "link", link);
     }
     
+    public void setCorrectDoubleAmpEncoding(boolean correctDoubleAmpEncoding) throws JspException
+    {
+        this.correctDoubleAmpEncoding = correctDoubleAmpEncoding;
+    }
+
     public void setTitle(String title) throws JspException
     {
     	this.title = evaluateString("RssFeedEntry", "title", title);
@@ -151,7 +160,7 @@ public class RSSFeedEntryTag extends TemplateControllerTag
     {
         this.publishedDate = (Date)evaluate("RssFeedEntry", "publishedDate", publishedDate, Date.class);
     }
-    
+        
     public void addEntryCategory(SyndCategory category)
     {    	
     	this.categories.add(category);
