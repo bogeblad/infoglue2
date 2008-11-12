@@ -578,6 +578,7 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
     
     public String doDeleteDigitalAssetStandalone() throws Exception
     {
+    	Integer oldContentVersionId = this.getContentVersionId();
     	ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().deleteDigitalAssetRelation(getContentVersionId(), this.digitalAssetId, this.getInfoGluePrincipal());
     	this.setContentVersionId(contentVersionVO.getId());
     	
@@ -585,6 +586,18 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
     	
     	if(returnAddress != null && !returnAddress.equals(""))
 		{
+        	logger.info("returnAddress:" + returnAddress);
+    		if(!oldContentVersionId.equals(contentVersionVO.getId()) && returnAddress.indexOf("contentVersionId") > -1)
+    		{
+    			int index = returnAddress.indexOf("contentVersionId=");
+    			int endIndex = returnAddress.indexOf("&", index);
+    			if(index > 0 && endIndex > index)
+    				returnAddress = returnAddress.substring(0, index) + "contentVersionId=" + contentVersionVO.getId() + returnAddress.substring(endIndex);
+    			else if(index > 0)
+    				returnAddress = returnAddress.substring(0, index) + "contentVersionId=" + contentVersionVO.getId();
+    		}
+        	logger.info("returnAddress:" + returnAddress);
+    			
 			this.getResponse().sendRedirect(returnAddress + (returnAddress.indexOf("?") == -1 ? "?anchor=" : "&anchor=") + anchor + "#" + anchor);	    
 			return NONE;
 		}
