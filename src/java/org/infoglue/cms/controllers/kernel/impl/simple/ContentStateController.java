@@ -113,15 +113,19 @@ public class ContentStateController extends BaseController
 	 * This method handles versioning and state-control of content.
 	 * Se inline documentation for further explainations.
 	 */
-	
 	public static ContentVersion changeState(Integer oldContentVersionId, Integer stateId, String versionComment, boolean overrideVersionModifyer, String recipientFilter, InfoGluePrincipal infoGluePrincipal, Integer contentId, Database db, List resultingEvents) throws SystemException, ConstraintException
+	{
+		return changeState(oldContentVersionId, stateId, versionComment, overrideVersionModifyer, recipientFilter, infoGluePrincipal, contentId, db, resultingEvents, null);
+	}
+	
+	public static ContentVersion changeState(Integer oldContentVersionId, Integer stateId, String versionComment, boolean overrideVersionModifyer, String recipientFilter, InfoGluePrincipal infoGluePrincipal, Integer contentId, Database db, List resultingEvents, Integer excludedAssetId) throws SystemException, ConstraintException
 	{
 		ContentVersion newContentVersion = null;
 
 		try
 		{
 			ContentVersion oldContentVersion = ContentVersionController.getContentVersionController().getContentVersionWithId(oldContentVersionId, db);
-
+			
 			if (contentId == null)
 				contentId = new Integer(oldContentVersion.getOwningContent().getContentId().intValue());
 
@@ -131,7 +135,6 @@ public class ContentStateController extends BaseController
 			if (stateId.intValue() == ContentVersionVO.WORKING_STATE.intValue())
 			{
 				logger.info("About to create a new working version");
-
 				ContentVersionVO newContentVersionVO = new ContentVersionVO();
 				newContentVersionVO.setStateId(stateId);
 				if(versionComment != null && !versionComment.equals(""))
@@ -145,7 +148,7 @@ public class ContentStateController extends BaseController
 			        newContentVersionVO.setVersionModifier(oldContentVersion.getVersionModifier());
 
 				newContentVersionVO.setVersionValue(oldContentVersion.getVersionValue());
-				newContentVersion = ContentVersionController.getContentVersionController().create(contentId, oldContentVersion.getLanguage().getLanguageId(), newContentVersionVO, oldContentVersion.getContentVersionId(), true, duplicateAssets, db);
+				newContentVersion = ContentVersionController.getContentVersionController().create(contentId, oldContentVersion.getLanguage().getLanguageId(), newContentVersionVO, oldContentVersion.getContentVersionId(), true, duplicateAssets, excludedAssetId, db);
 				
 				//ContentVersionController.getContentVersionController().copyDigitalAssets(oldContentVersion, newContentVersion, db);
 				copyAccessRights(oldContentVersion, newContentVersion, db);

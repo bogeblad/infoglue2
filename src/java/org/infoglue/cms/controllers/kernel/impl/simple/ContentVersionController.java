@@ -780,12 +780,16 @@ public class ContentVersionController extends BaseController
 	 * This method created a new contentVersion in the database. It also updates the owning content
 	 * so it recognises the change. 
 	 */
-	
     public ContentVersion create(Integer contentId, Integer languageId, ContentVersionVO contentVersionVO, Integer oldContentVersionId, boolean allowBrokenAssets, boolean duplicateAssets, Database db) throws ConstraintException, SystemException, Exception
+    {
+    	return create(contentId, languageId, contentVersionVO, oldContentVersionId, allowBrokenAssets, duplicateAssets, null, db);
+    }
+    
+    public ContentVersion create(Integer contentId, Integer languageId, ContentVersionVO contentVersionVO, Integer oldContentVersionId, boolean allowBrokenAssets, boolean duplicateAssets, Integer excludedAssetId, Database db) throws ConstraintException, SystemException, Exception
     {
 		Content content   = ContentController.getContentController().getContentWithId(contentId, db);
     	Language language = LanguageController.getController().getLanguageWithId(languageId, db);
-		return create(content, language, contentVersionVO, oldContentVersionId, allowBrokenAssets, duplicateAssets, db);
+		return create(content, language, contentVersionVO, oldContentVersionId, allowBrokenAssets, duplicateAssets, excludedAssetId, db);
     }     
     
 	/**
@@ -799,8 +803,13 @@ public class ContentVersionController extends BaseController
     	return create(content, language, contentVersionVO, oldContentVersionId, true, db);
     }
     */
-    
     public ContentVersion create(Content content, Language language, ContentVersionVO contentVersionVO, Integer oldContentVersionId, boolean allowBrokenAssets, boolean duplicateAssets, Database db) throws ConstraintException, SystemException, Exception
+    {
+    	return create(content, language, contentVersionVO, oldContentVersionId, allowBrokenAssets, duplicateAssets, null, db);
+      
+    }
+    
+    public ContentVersion create(Content content, Language language, ContentVersionVO contentVersionVO, Integer oldContentVersionId, boolean allowBrokenAssets, boolean duplicateAssets, Integer excludedAssetId, Database db) throws ConstraintException, SystemException, Exception
     {
     	ContentVersion contentVersion = new ContentVersionImpl();
 		contentVersion.setValueObject(contentVersionVO);
@@ -813,7 +822,7 @@ public class ContentVersionController extends BaseController
         content.getContentVersions().add(contentVersion);
 
         if(oldContentVersionId != null && oldContentVersionId.intValue() != -1)
-		    copyDigitalAssets(getContentVersionWithId(oldContentVersionId, db), contentVersion, allowBrokenAssets, duplicateAssets, db);
+		    copyDigitalAssets(getContentVersionWithId(oldContentVersionId, db), contentVersion, allowBrokenAssets, duplicateAssets, excludedAssetId, db);
 		    //contentVersion.setDigitalAssets(getContentVersionWithId(oldContentVersionId, db).getDigitalAssets());
 
         return contentVersion;
@@ -1002,6 +1011,7 @@ public class ContentVersionController extends BaseController
 	
     public ContentVersionVO update(Integer contentId, Integer languageId, ContentVersionVO contentVersionVO, InfoGluePrincipal principal) throws ConstraintException, SystemException
     {
+		System.out.println("update:" + contentId + " - " + languageId);
         ContentVersionVO updatedContentVersionVO;
 		
         Database db = CastorDatabaseService.getDatabase();
@@ -1024,9 +1034,9 @@ public class ContentVersionController extends BaseController
 	    	}
 	    	else
 	    	{
-	    	    if(!contentVersionVO.getStateId().equals(ContentVersionVO.WORKING_STATE))
+				ContentVersionVO oldContentVersionVO = ContentVersionController.getContentVersionController().getContentVersionVOWithId(contentVersionVO.getId(), db);
+	    	    if(!oldContentVersionVO.getStateId().equals(ContentVersionVO.WORKING_STATE))
 				{
-					ContentVersionVO oldContentVersionVO = ContentVersionController.getContentVersionController().getContentVersionVOWithId(contentVersionVO.getId(), db);
 					List events = new ArrayList();
 					contentVersion = ContentStateController.changeState(oldContentVersionVO.getId(), ContentVersionVO.WORKING_STATE, "new working version", false, null, principal, oldContentVersionVO.getContentId(), db, events);
 					contentVersion.setVersionValue(contentVersionVO.getVersionValue());
@@ -1377,21 +1387,28 @@ public class ContentVersionController extends BaseController
         	ContentVersion contentVersion = null;
         	ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getContentVersionVOWithId(contentVersionId, db);
         	DigitalAssetVO digitalAssetVO = DigitalAssetController.getController().getDigitalAssetVOWithId(digitalAssetId, db);
-    	    if(!contentVersionVO.getStateId().equals(ContentVersionVO.WORKING_STATE))
+        	if(!contentVersionVO.getStateId().equals(ContentVersionVO.WORKING_STATE))
 			{
 		    	List events = new ArrayList();
-				contentVersion = ContentStateController.changeState(contentVersionVO.getId(), ContentVersionVO.WORKING_STATE, "new working version", false, null, principal, contentVersionVO.getContentId(), db, events);
-				digitalAssetVO = DigitalAssetController.getController().getLatestDigitalAssetVO(contentVersion.getId(), digitalAssetVO.getAssetKey(), db);
+		    	contentVersion = ContentStateController.changeState(contentVersionVO.getId(), ContentVersionVO.WORKING_STATE, "new working version", false, null, principal, contentVersionVO.getContentId(), db, events, digitalAssetId);
+				//digitalAssetVO = DigitalAssetController.getController().getLatestDigitalAssetVO(contentVersion.getId(), digitalAssetVO.getAssetKey(), db);
 			}
 			else
 			{
 				contentVersion = ContentVersionController.getContentVersionController().getContentVersionWithId(contentVersionVO.getId(), db);
+
+				DigitalAsset digitalAsset = DigitalAssetController.getDigitalAssetWithId(digitalAssetVO.getId(), db);			
+		    	contentVersion.getDigitalAssets().remove(digitalAsset);
+		    	digitalAsset.getContentVersions().remove(contentVersion);
+	        
+	            logger.info("digitalAsset size after:" + digitalAsset.getContentVersions().size());
+	            if(digitalAsset.getContentVersions().size() == 0)
+	            	db.remove(digitalAsset);
 			}
     	    
     	    editedContentVersionVO = contentVersion.getValueObject();
     	    
-        	//ContentVersion contentVersion = getContentVersionWithId(contentVersionId, db);
-        	
+    	    /*
 	    	DigitalAsset digitalAsset = DigitalAssetController.getDigitalAssetWithId(digitalAssetVO.getId(), db);			
 	    	contentVersion.getDigitalAssets().remove(digitalAsset);
 	    	digitalAsset.getContentVersions().remove(contentVersion);
@@ -1399,7 +1416,7 @@ public class ContentVersionController extends BaseController
             logger.info("digitalAsset size after:" + digitalAsset.getContentVersions().size());
             if(digitalAsset.getContentVersions().size() == 0)
             	db.remove(digitalAsset);
-	        
+	        */
     	    commitTransaction(db);
         }
 	    catch(Exception e)
@@ -1434,7 +1451,7 @@ public class ContentVersionController extends BaseController
 		copyDigitalAssets(originalContentVersion, newContentVersion, true, db);
 	}
 	*/
-	public void copyDigitalAssets(ContentVersion originalContentVersion, ContentVersion newContentVersion, boolean allowBrokenAssets, boolean duplicateAssets, Database db) throws ConstraintException, SystemException, Exception
+	public void copyDigitalAssets(ContentVersion originalContentVersion, ContentVersion newContentVersion, boolean allowBrokenAssets, boolean duplicateAssets, Integer excludedAssetId, Database db) throws ConstraintException, SystemException, Exception
 	{
 	    Collection digitalAssets = originalContentVersion.getDigitalAssets();	
 
@@ -1445,8 +1462,16 @@ public class ContentVersionController extends BaseController
 			{
 			    DigitalAsset digitalAsset = (DigitalAsset)digitalAssetsIterator.next();
 			    logger.info("Make copy of reference to digitalAssets " + digitalAsset.getAssetKey());
-				newContentVersion.getDigitalAssets().add(digitalAsset);
-				digitalAsset.getContentVersions().add(newContentVersion);
+			    //System.out.println("Make copy of reference to digitalAssets " + digitalAsset.getAssetKey());
+			    if(excludedAssetId == null || !digitalAsset.getId().equals(excludedAssetId))
+			    {
+			    	newContentVersion.getDigitalAssets().add(digitalAsset);
+			    	digitalAsset.getContentVersions().add(newContentVersion);
+			    }
+			    else
+			    {
+			    	logger.info("Not copying the excluded asset:" + digitalAsset.getId());
+			    }
 			}
 	    }
 	    else
@@ -1455,29 +1480,36 @@ public class ContentVersionController extends BaseController
 			while(digitalAssetsIterator.hasNext())
 			{
 			    DigitalAsset digitalAsset = (DigitalAsset)digitalAssetsIterator.next();
-			    logger.info("Copying digitalAssets " + digitalAsset.getAssetKey());
-			    DigitalAssetVO digitalAssetVO = digitalAsset.getValueObject();
-			    
-			    InputStream is = DigitalAssetController.getController().getAssetInputStream(digitalAsset, true);
-		
-			    if(is == null && !allowBrokenAssets)
-			    	throw new ConstraintException("DigitalAsset.assetBlob", "3308", "Broken asset found on content '" + originalContentVersion.getValueObject().getContentName() + "' with id " + originalContentVersion.getValueObject().getContentId());
-			    
-		        try
+			    if(excludedAssetId == null || !digitalAsset.getId().equals(excludedAssetId))
 			    {
-		        	synchronized (is)
+				    logger.info("Copying digitalAssets " + digitalAsset.getAssetKey());
+				    DigitalAssetVO digitalAssetVO = digitalAsset.getValueObject();
+				    
+				    InputStream is = DigitalAssetController.getController().getAssetInputStream(digitalAsset, true);
+			
+				    if(is == null && !allowBrokenAssets)
+				    	throw new ConstraintException("DigitalAsset.assetBlob", "3308", "Broken asset found on content '" + originalContentVersion.getValueObject().getContentName() + "' with id " + originalContentVersion.getValueObject().getContentId());
+				    
+			        try
 				    {
-					    DigitalAssetController.create(digitalAssetVO, is, newContentVersion, db);
+			        	synchronized (is)
+					    {
+						    DigitalAssetController.create(digitalAssetVO, is, newContentVersion, db);
+						}
+				    }
+			        catch (Exception e) 
+			        {
+						e.printStackTrace();
 					}
+				    finally
+				    {
+				    	if(is != null)
+				    		is.close();
+				    }
 			    }
-		        catch (Exception e) 
-		        {
-					e.printStackTrace();
-				}
-			    finally
+			    else
 			    {
-			    	if(is != null)
-			    		is.close();
+			    	logger.info("Not copying the excluded asset:" + digitalAsset.getId());
 			    }
 				logger.info("digitalAssets:" + digitalAssets.size());
 			}
