@@ -140,6 +140,12 @@ public class ContentSort
 		addElements(elements);
 	}
 	
+	public void clear()
+	{
+		this.controller = null;
+		this.elements.clear();
+	}
+	
 	/**
 	 * Sets the elements to sort.
 	 * 

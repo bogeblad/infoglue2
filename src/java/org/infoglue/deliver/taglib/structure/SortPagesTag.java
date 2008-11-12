@@ -69,6 +69,10 @@ public class SortPagesTag extends TemplateControllerTag
 	        
 	    Collections.sort(input, comparator);
 		produceResult(input);
+		
+		comparator = null;
+		input = new ArrayList();
+		
         return EVAL_PAGE;
     }
 	

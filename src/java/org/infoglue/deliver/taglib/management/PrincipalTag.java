@@ -42,18 +42,26 @@ public class PrincipalTag extends TemplateControllerTag
 
 	public int doEndTag() throws JspException
     {
-	    if(userName != null && !userName.equals(""))
-	        setResultAttribute(getController().getPrincipal(userName));
-	    else if(contentVersion != null)
-	    {
-	        String versionUserName = contentVersion.getVersionModifier();
-	        if(versionUserName != null && !versionUserName.equals(""))
-	            setResultAttribute(getController().getPrincipal(versionUserName));
+		try
+		{
+		    if(userName != null && !userName.equals(""))
+		        setResultAttribute(getController().getPrincipal(userName));
+		    else if(contentVersion != null)
+		    {
+		        String versionUserName = contentVersion.getVersionModifier();
+		        if(versionUserName != null && !versionUserName.equals(""))
+		            setResultAttribute(getController().getPrincipal(versionUserName));
+			    else
+			        throw new JspException("ContentVersion had no valid user:" + versionUserName);
+		    }
 		    else
-		        throw new JspException("ContentVersion had no valid user:" + versionUserName);
-	    }
-	    else
-	        throw new JspException("Must state either userName or contentVersion");
+		        throw new JspException("Must state either userName or contentVersion");
+		}
+		finally
+		{
+			this.userName = null;
+			this.contentVersion = null;
+		}
 	    
 	    return EVAL_PAGE;
     }

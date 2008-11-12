@@ -45,6 +45,8 @@ public class SiteNodesFromWebPagesTag extends ComponentLogicTag
     {
 		produceResult(getSiteNodes());
 
+		webPages = null;
+		
 		return EVAL_PAGE;
     }
 

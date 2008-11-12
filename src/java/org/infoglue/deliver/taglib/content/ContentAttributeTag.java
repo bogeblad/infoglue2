@@ -173,6 +173,7 @@ public class ContentAttributeTag extends ComponentLogicTag
         //Resetting the full url to the previous state
         getController().getDeliveryContext().setUseFullUrl(previousSetting);
 
+        contentVersionVO = null;
 	    contentId = null;
 		propertyName = null;
 	    attributeName = null;;

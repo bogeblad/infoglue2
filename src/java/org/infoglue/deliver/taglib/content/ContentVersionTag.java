@@ -55,8 +55,9 @@ public class ContentVersionTag extends TemplateControllerTag
     {
 		produceResult(getContentVersion());
         
-        languageId = null;
-        useLanguageFallback = true;
+        this.languageId = null;
+        this.useLanguageFallback = true;
+        this.content = null;
 
 		return EVAL_PAGE;
     }

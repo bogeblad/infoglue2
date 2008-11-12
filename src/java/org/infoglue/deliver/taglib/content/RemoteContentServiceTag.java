@@ -95,7 +95,7 @@ public class RemoteContentServiceTag extends TemplateControllerTag
 		   throw new JspTagException(e.getMessage());
 	   }
 	   
-	   contents.clear();
+	   this.contents = new ArrayList();
 	   this.principal = null;
 	   this.name = null;
 	   this.operationName = null;

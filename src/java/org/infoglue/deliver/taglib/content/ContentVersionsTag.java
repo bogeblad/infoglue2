@@ -58,6 +58,8 @@ public class ContentVersionsTag extends TemplateControllerTag
     {
 		produceResult(getContentVersions());
         
+		content = null;
+		
 		return EVAL_PAGE;
     }
 

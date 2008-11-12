@@ -95,7 +95,12 @@ public class ContentSortTag extends TemplateControllerTag {
 		{
 			produceResult(sorter.getContentResult());	
 		}
-
+		
+		this.sorter.clear();
+		this.sorter = null;
+		this.input = new ArrayList();
+		this.comparatorClass = null;
+		
         return EVAL_PAGE;
     }
 	
