@@ -38,7 +38,7 @@ import org.infoglue.deliver.applications.actions.InfoGlueComponent;
 public class ComponentDeliveryContext implements UsageListener
 {
 	private String componentKey = null;
-	private InfoGlueComponent infoGlueComponent;
+	//private InfoGlueComponent infoGlueComponent;
 	    
 	//This section has control over what contents and sitenodes are used where so the pagecache can be selectively updated.
 	private List usedContents = new ArrayList();
@@ -46,7 +46,8 @@ public class ComponentDeliveryContext implements UsageListener
 	private List usedSiteNodes = new ArrayList();
 	private List usedSiteNodeVersions = new ArrayList();
 	
-	private DeliveryContext deliveryContext;
+	//private DeliveryContext deliveryContext;
+	private String pageKey = null;
 	
 	public static ComponentDeliveryContext getComponentDeliveryContext(DeliveryContext deliveryContext, InfoGlueComponent infoGlueComponent)
 	{
@@ -55,9 +56,10 @@ public class ComponentDeliveryContext implements UsageListener
 	
 	private ComponentDeliveryContext(DeliveryContext deliveryContext, InfoGlueComponent infoGlueComponent)
 	{
-	    this.deliveryContext = deliveryContext;
-	    this.infoGlueComponent = infoGlueComponent;
- 		this.componentKey = this.deliveryContext.getPageKey() + "_" + infoGlueComponent.getId();
+		this.pageKey = deliveryContext.getPageKey();
+	    //this.deliveryContext = deliveryContext;
+	    //this.infoGlueComponent = infoGlueComponent;
+ 		this.componentKey = pageKey + "_" + infoGlueComponent.getId();
 	}
 	
     public void addUsedContent(String usedContent)
@@ -130,6 +132,6 @@ public class ComponentDeliveryContext implements UsageListener
 
     public String getPageKey()
     {
-        return this.deliveryContext.getPageKey();
+        return pageKey; //this.deliveryContext.getPageKey();
     }
 }

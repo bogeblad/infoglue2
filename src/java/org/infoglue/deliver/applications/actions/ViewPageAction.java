@@ -335,8 +335,8 @@ public class ViewPageAction extends InfoGlueAbstractAction
 				deliveryContext.setContentId(this.contentId);
 				deliveryContext.setLanguageId(this.languageId);
 				deliveryContext.setPageKey(pageKey);
-				deliveryContext.setSession(this.getSession());
-				deliveryContext.setInfoGlueAbstractAction(this);
+				//deliveryContext.setSession(this.getSession());
+				//deliveryContext.setInfoGlueAbstractAction(this);
 				deliveryContext.setHttpServletRequest(this.getRequest());
 				deliveryContext.setHttpServletResponse(this.getResponse());
 				deliveryContext.setUseFullUrl(Boolean.parseBoolean(CmsPropertyHandler.getUseDNSNameInURI()));
@@ -623,8 +623,8 @@ public class ViewPageAction extends InfoGlueAbstractAction
 				deliveryContext.setContentId(this.contentId);
 				deliveryContext.setShowSimple(this.showSimple);
 				deliveryContext.setPageKey(pageKey);
-				deliveryContext.setSession(this.getSession());
-				deliveryContext.setInfoGlueAbstractAction(this);
+				//deliveryContext.setSession(this.getSession());
+				//deliveryContext.setInfoGlueAbstractAction(this);
 				deliveryContext.setHttpServletRequest(this.getRequest());
 				deliveryContext.setHttpServletResponse(this.getResponse());
 				deliveryContext.setUseFullUrl(Boolean.parseBoolean(CmsPropertyHandler.getUseDNSNameInURI()));

@@ -90,8 +90,8 @@ public class DeliveryContext implements UsageListener
 	
 	private HttpServletResponse httpServletResponse = null;
 	private HttpServletRequest httpServletRequest = null;
-	private Session session = null;
-	private InfoGlueAbstractAction infoglueAbstractAction = null;
+	//private Session session = null;
+	//private InfoGlueAbstractAction infoglueAbstractAction = null;
 	
 	//This section has control over what contents and sitenodes are used where so the pagecache can be selectively updated.
 	private List usageListeners = new ArrayList();
@@ -243,6 +243,7 @@ public class DeliveryContext implements UsageListener
 		return sb.toString();
 	}
 
+	/*
 	public Session getSession()
 	{
 		return this.session;
@@ -262,7 +263,7 @@ public class DeliveryContext implements UsageListener
 	{
 	    infoglueAbstractAction = action;
 	}
-
+	*/
 
 	public HttpServletRequest getHttpServletRequest() 
 	{

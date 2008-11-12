@@ -144,8 +144,8 @@ public class RequestAndMetaInfoCentricCachePopulator
 		deliveryContext.setContentId(contentId);
 		deliveryContext.setLanguageId(languageId);
 		deliveryContext.setPageKey("" + System.currentTimeMillis());
-		deliveryContext.setSession(new Session(fakeHttpServletSession));
-		deliveryContext.setInfoGlueAbstractAction(null);
+		//deliveryContext.setSession(new Session(fakeHttpServletSession));
+		//deliveryContext.setInfoGlueAbstractAction(null);
 		deliveryContext.setHttpServletRequest(fakeHttpServletRequest);
 		deliveryContext.setHttpServletResponse(fakeHttpServletResponse);
 
@@ -261,8 +261,8 @@ public class RequestAndMetaInfoCentricCachePopulator
 		deliveryContext.setContentId(contentId);
 		deliveryContext.setLanguageId(languageId);
 		deliveryContext.setPageKey("" + System.currentTimeMillis());
-		deliveryContext.setSession(new Session(fakeHttpServletSession));
-		deliveryContext.setInfoGlueAbstractAction(null);
+		//deliveryContext.setSession(new Session(fakeHttpServletSession));
+		//deliveryContext.setInfoGlueAbstractAction(null);
 		deliveryContext.setHttpServletRequest(fakeHttpServletRequest);
 		deliveryContext.setHttpServletResponse(fakeHttpServletResponse);
 
