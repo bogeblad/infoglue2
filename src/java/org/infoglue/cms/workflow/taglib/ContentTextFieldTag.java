@@ -98,10 +98,19 @@ public class ContentTextFieldTag extends ElementTag
 		}
 		
 		getElement().addAttribute("name", name);
+		
 		if(languageCode == null || languageCode.equals(""))
-			getElement().addAttribute("value", getPropertySet().getDataString(name));
+		{
+			String value = getPropertySet().getDataString(name);
+			value = value.replaceAll("\"", "&quot;");
+			getElement().addAttribute("value", value);
+		}
 		else
-			getElement().addAttribute("value", getPropertySet().getDataString(languageCode + "_" + name));
+		{
+			String value = getPropertySet().getDataString(languageCode + "_" + name);
+			value = value.replaceAll("\"", "&quot;");
+			getElement().addAttribute("value", value);
+		}
 	}
 
 	/**
