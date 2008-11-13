@@ -63,11 +63,34 @@
 	
 		function refreshCaller()
 		{
-			if(window.opener && window.opener.parent && window.opener.parent.frames['main'])
-				window.opener.parent.frames['main'].location.reload();
+			var parentLocation = "";
+			try
+			{
+				parentLocation = "" + window.opener.parent.document.location.href;
+			}
+			catch(err)
+			{
+				alert("err:" + err.description);
+			}
+			
+			if(parentLocation.indexOf("ViewContentVersion!standalone.action") > -1)
+			{
+				var stopWordIndex = parentLocation.indexOf("#");
+				if(stopWordIndex > -1)
+					var newLocation = parentLocation.substring(0, stopWordIndex) + "&anchor=digitalAssetsBlock" + parentLocation.substring(stopWordIndex);
+				else
+					var newLocation = parentLocation + "&anchor=digitalAssetsBlock";
+				
+				window.opener.parent.document.location.replace(newLocation);
+			}
 			else
-				window.opener.location.reload();	
-	
+			{
+				if(window.opener && window.opener.parent && window.opener.parent.frames['main'])
+					window.opener.parent.frames['main'].location.reload();
+				else
+					window.opener.location.reload();	
+			}
+			
 			window.close();
 		}
 	

@@ -29,6 +29,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
@@ -437,7 +438,15 @@ public class CreateDigitalAssetAction extends ViewDigitalAssetAction
 							
 							keepOriginal = handleTransformations(newAsset, file, contentType, assetKeyDefinition);
 						    if(keepOriginal)
-						    	digitalAssetVO = DigitalAssetController.create(newAsset, is, this.contentVersionId, this.getInfoGluePrincipal());
+						    {
+						    	List<Integer> newContentVersionIdList = new ArrayList<Integer>();
+						    	digitalAssetVO = DigitalAssetController.create(newAsset, is, this.contentVersionId, this.getInfoGluePrincipal(), newContentVersionIdList);
+						    	if(newContentVersionIdList.size() > 0)
+						    	{
+						    		Integer newContentVersionId = newContentVersionIdList.get(0);
+						    		setContentVersionId(newContentVersionId);
+						    	}
+						    }
 						}
 						else
 						{
@@ -494,6 +503,18 @@ public class CreateDigitalAssetAction extends ViewDigitalAssetAction
                 
         if(returnAddress != null && !returnAddress.equals(""))
 		{
+        	Integer oldContentVersionId = this.getContentVersionId();
+        	
+    		if(!oldContentVersionId.equals(contentVersionVO.getId()) && returnAddress.indexOf("contentVersionId") > -1)
+    		{
+    			int index = returnAddress.indexOf("contentVersionId=");
+    			int endIndex = returnAddress.indexOf("&", index);
+    			if(index > 0 && endIndex > index)
+    				returnAddress = returnAddress.substring(0, index) + "contentVersionId=" + contentVersionVO.getId() + returnAddress.substring(endIndex);
+    			else if(index > 0)
+    				returnAddress = returnAddress.substring(0, index) + "contentVersionId=" + contentVersionVO.getId();
+    		}
+        	
 			this.getResponse().sendRedirect(returnAddress);	    
 			return NONE;
 		}
@@ -637,8 +658,16 @@ public class CreateDigitalAssetAction extends ViewDigitalAssetAction
 		digitalAssetVO.setAssetKey(originalAssetVO.getAssetKey() + "_" + assetSuffix);
 		
 		InputStream is = new FileInputStream(outputFile);
-		this.digitalAssetVO = DigitalAssetController.create(digitalAssetVO, is, this.contentVersionId, this.getInfoGluePrincipal());
-		is.close();
+		
+    	List<Integer> newContentVersionIdList = new ArrayList<Integer>();
+    	this.digitalAssetVO = DigitalAssetController.create(digitalAssetVO, is, this.contentVersionId, this.getInfoGluePrincipal(), newContentVersionIdList);
+    	if(newContentVersionIdList.size() > 0)
+    	{
+    		Integer newContentVersionId = newContentVersionIdList.get(0);
+    		setContentVersionId(newContentVersionId);
+    	}
+
+    	is.close();
 		
 		//logger.info("this.digitalAssetVO in scale:" + this.digitalAssetVO.getId());
     	String folderName = "" + (this.digitalAssetVO.getId().intValue() / 1000);

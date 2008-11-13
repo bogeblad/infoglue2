@@ -28,6 +28,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FilenameFilter;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -311,10 +312,16 @@ public class ImageEditorAction extends InfoGlueAbstractAction
 		}
 		
 		if(this.contentVersionId != null)
-		    digitalAssetVO = DigitalAssetController.create(newAsset, is, this.contentVersionId, this.getInfoGluePrincipal());
- 		//else
-		//    digitalAssetVO = DigitalAssetController.create(newAsset, is, this.entity, this.entityId);
-		
+		{
+	    	List<Integer> newContentVersionIdList = new ArrayList<Integer>();
+		    digitalAssetVO = DigitalAssetController.create(newAsset, is, this.contentVersionId, this.getInfoGluePrincipal(), newContentVersionIdList);
+	    	if(newContentVersionIdList.size() > 0)
+	    	{
+	    		Integer newContentVersionId = newContentVersionIdList.get(0);
+	    		setContentVersionId(newContentVersionId);
+	    	}
+		}
+
 		if(is != null)
 			is.close();
 		
