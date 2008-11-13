@@ -155,8 +155,12 @@ public class DigitalAssetController extends BaseController
    	 * This method creates a new digital asset in the database and connects it to the contentVersion it belongs to.
    	 * The asset is send in as an InputStream which castor inserts automatically.
    	 */
-
    	public static DigitalAssetVO create(DigitalAssetVO digitalAssetVO, InputStream is, Integer contentVersionId, InfoGluePrincipal principal) throws SystemException
+   	{
+   		return create(digitalAssetVO, is, contentVersionId, principal, new ArrayList());
+   	}
+   	
+   	public static DigitalAssetVO create(DigitalAssetVO digitalAssetVO, InputStream is, Integer contentVersionId, InfoGluePrincipal principal, List returningContentVersionId) throws SystemException
    	{
 		Database db = CastorDatabaseService.getDatabase();
 
@@ -166,7 +170,8 @@ public class DigitalAssetController extends BaseController
 		{			
         	ContentVersion contentVersion = ContentVersionController.getContentVersionController().checkStateAndChangeIfNeeded(contentVersionId, principal, db);
 			//ContentVersion contentVersion = ContentVersionController.getContentVersionController().getContentVersionWithId(contentVersionId, db);
-			
+        	returningContentVersionId.add(contentVersion.getId());
+        	
 			digitalAssetVO = create(digitalAssetVO, is, contentVersion, db);
 		    
 			commitTransaction(db);
