@@ -146,7 +146,7 @@ public class ThreadMonitor implements Runnable
 			if(kill)
 			{
 				logger.error("Trying to kill thread with id:" + threadId);
-				targetThread.stop();
+				//targetThread.stop();
 			}
 		}
 	}
