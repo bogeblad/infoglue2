@@ -365,7 +365,7 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
     {
         if(!ServerNodeController.getController().getIsIPAllowed(this.getRequest()))
         {
-        	logger.error("A user from an IP(" + this.getRequest().getRemoteAddr() + ") which is not allowed tried to call doReCache.");
+        	logger.error("A user from an IP(" + this.getRequest().getRemoteAddr() + ") which is not allowed tried to call doClearCaches.");
 
             this.getResponse().setContentType("text/plain");
             this.getResponse().setStatus(HttpServletResponse.SC_FORBIDDEN);
@@ -377,6 +377,27 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
         CacheController.clearServerNodeProperty(true);
         CacheController.clearCastorCaches();
         CacheController.clearCaches(null, null, null);
+        
+        return "cleared";
+    }
+
+    /**
+     * This action allows clearing of the castor caches manually.
+     */
+    public String doClearCastorCaches() throws Exception
+    {
+        if(!ServerNodeController.getController().getIsIPAllowed(this.getRequest()))
+        {
+        	logger.error("A user from an IP(" + this.getRequest().getRemoteAddr() + ") which is not allowed tried to call doClearCastorCaches.");
+
+            this.getResponse().setContentType("text/plain");
+            this.getResponse().setStatus(HttpServletResponse.SC_FORBIDDEN);
+            this.getResponse().getWriter().println("You have no access to this view - talk to your administrator if you should.");
+            
+            return NONE;
+        }
+        
+        CacheController.clearCastorCaches();
         
         return "cleared";
     }
