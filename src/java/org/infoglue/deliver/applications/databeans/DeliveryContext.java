@@ -152,6 +152,28 @@ public class DeliveryContext implements UsageListener
 		this.registerLastModifiedDate = registerLastModifiedDate;
 	}
 	
+	public void clear()
+	{
+		try
+		{
+			this.htmlHeadItems.clear();
+			this.httpHeaders.clear();
+			this.httpServletRequest = null;
+			this.httpServletResponse = null;
+			this.pageAttributes.clear();
+			this.usageListeners.clear();
+			this.usedContents.clear();
+			this.usedContentVersions.clear();
+			this.usedPageMetaInfoContentVersionIdSet.clear();
+			this.usedSiteNodes.clear();
+			this.usedSiteNodeVersions.clear();
+		}
+		catch (Exception e) 
+		{
+			e.printStackTrace();
+		}
+	}
+	
 	/*
 	public static DeliveryContext getDeliveryContext(InfoGluePrincipal infoGluePrincipal)
 	{

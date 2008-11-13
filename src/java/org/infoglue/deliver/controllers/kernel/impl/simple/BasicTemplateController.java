@@ -197,11 +197,34 @@ public class BasicTemplateController implements TemplateController
 	
 	public BasicTemplateController(DatabaseWrapper databaseWrapper, InfoGluePrincipal infoGluePrincipal)
 	{
+		//System.out.println("Instantiated templatecontroller");
 	    this.databaseWrapper = databaseWrapper;
 	    this.infoGluePrincipal = infoGluePrincipal;
 	    this.urlComposer = URLComposer.getURLComposer(); 
 	}
 
+	public void clear()
+	{
+		try
+		{
+			this.databaseWrapper = null;
+		    this.infoGluePrincipal = null;
+		    this.urlComposer = null; 
+		    templateLogicContext = null;
+		    componentLogic = null;
+		    browserBean = null;
+		    nodeDeliveryController = null;
+			contentDeliveryController = null;
+			integrationDeliveryController = null;
+			request = null;
+			deliveryContext = null;
+			//System.out.println("Cleared templatecontroller");
+		}
+		catch (Exception e) 
+		{
+			e.printStackTrace();
+		}
+	}
 	
 	/**
      * Gets the transaction the controller should work within. This is to limit the number of connections we use. 

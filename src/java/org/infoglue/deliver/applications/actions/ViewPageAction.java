@@ -289,7 +289,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 	    	if(logger.isInfoEnabled())
 	    		logger.info("pageKey:" + pageKey);
 
-			this.templateController = getTemplateController(dbWrapper, getSiteNodeId(), getLanguageId(), getContentId(), getRequest(), (InfoGluePrincipal)this.principal, false);
+	    	templateController = getTemplateController(dbWrapper, getSiteNodeId(), getLanguageId(), getContentId(), getRequest(), (InfoGluePrincipal)this.principal, false);
 			
 			if(logger.isInfoEnabled())
 				logger.info("handled extranet users: " + isUserRedirected);
@@ -327,7 +327,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			if(!isUserRedirected)
 			{	
 				if(logger.isInfoEnabled())
-					logger.info("this.templateController.getPrincipal():" + this.templateController.getPrincipal());
+					logger.info("this.templateController.getPrincipal():" + templateController.getPrincipal());
 				
 				DeliveryContext deliveryContext = DeliveryContext.getDeliveryContext(true);
 				deliveryContext.setRepositoryName(this.repositoryName);
@@ -347,7 +347,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			    {
 			        String invokerClassName = siteNodeTypeDefinitionVO.getInvokerClassName();
 			        PageInvoker pageInvoker = (PageInvoker)Class.forName(invokerClassName).newInstance();
-			        pageInvoker.setParameters(dbWrapper, this.getRequest(), this.getResponse(), this.templateController, deliveryContext);
+			        pageInvoker.setParameters(dbWrapper, this.getRequest(), this.getResponse(), templateController, deliveryContext);
 			        pageInvoker.deliverPage();
 
 			        request.setAttribute("progress", "after pageInvoker was called");
@@ -356,6 +356,11 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			    {
 			        throw new SystemException("An error was thrown when trying to use the page invoker class assigned to this page type:" + e.getMessage(), e);
 				}
+			    finally
+			    {
+			    	deliveryContext.clear();
+			    	deliveryContext = null;
+			    }
 			}
 			
 	        //StatisticsService.getStatisticsService().registerRequest(getRequest(), getResponse(), pagePath, elapsedTime);
@@ -421,6 +426,16 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			catch(Exception e) 
 			{ 
 				e.printStackTrace(); 
+			}
+			
+			try
+			{
+		    	templateController.clear();
+		    	templateController = null;
+			}
+			catch (Exception e) 
+			{
+				e.printStackTrace();
 			}
 			
 			if(logger.isInfoEnabled())
@@ -568,7 +583,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			
 	    	String pageKey = this.nodeDeliveryController.getPageCacheKey(dbWrapper.getDatabase(), this.getHttpSession(), this.getRequest(), this.siteNodeId, this.languageId, this.contentId, browserBean.getUseragent(), this.getRequest().getQueryString(), "_" + this.showSimple + "_pagecomponentDecorated");
 
-			this.templateController = getTemplateController(dbWrapper, getSiteNodeId(), getLanguageId(), getContentId(), getRequest(), (InfoGluePrincipal)this.principal, true);
+			templateController = getTemplateController(dbWrapper, getSiteNodeId(), getLanguageId(), getContentId(), getRequest(), (InfoGluePrincipal)this.principal, true);
 
 	    	InfoGluePrincipal principal = templateController.getPrincipal();
 		    String cmsUserName = (String)templateController.getHttpServletRequest().getSession().getAttribute("cmsUserName");
@@ -614,7 +629,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 
 			if(!isUserRedirected)
 			{	
-				logger.info("this.templateController.getPrincipal():" + this.templateController.getPrincipal());
+				logger.info("this.templateController.getPrincipal():" + templateController.getPrincipal());
 		
 				DeliveryContext deliveryContext = DeliveryContext.getDeliveryContext(true);
 				deliveryContext.setRepositoryName(this.repositoryName);
@@ -650,12 +665,17 @@ public class ViewPageAction extends InfoGlueAbstractAction
 				    {
 				        PageInvoker pageInvoker = (PageInvoker)Class.forName(invokerClassName).newInstance();
 				        pageInvoker = pageInvoker.getDecoratedPageInvoker(templateController);
-				        pageInvoker.setParameters(dbWrapper, this.getRequest(), this.getResponse(), this.templateController, deliveryContext);
+				        pageInvoker.setParameters(dbWrapper, this.getRequest(), this.getResponse(), templateController, deliveryContext);
 				        pageInvoker.deliverPage();
 				    }
 				    catch(ClassNotFoundException e)
 				    {
 				        throw new SystemException("An error was thrown when trying to use the page invoker class assigned to this page type:" + e.getMessage(), e);
+				    }
+				    finally
+				    {
+				    	deliveryContext.clear();
+				    	deliveryContext = null;
 				    }
 				}
 			}
@@ -717,6 +737,17 @@ public class ViewPageAction extends InfoGlueAbstractAction
 				e.printStackTrace();
 			}
 			
+			try
+			{
+		    	templateController.clear();
+		    	templateController = null;
+			}
+			catch (Exception e) 
+			{
+				e.printStackTrace();
+			}
+
+
 			elapsedTime = Math.abs(System.currentTimeMillis() - start);
 		    	
 		    RequestAnalyser.getRequestAnalyser().decNumberOfCurrentRequests(elapsedTime);

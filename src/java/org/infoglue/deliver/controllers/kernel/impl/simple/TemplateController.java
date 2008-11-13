@@ -80,6 +80,8 @@ public interface TemplateController
     
 	public abstract DatabaseWrapper getDatabaseWrapper();
 
+	public abstract void clear();
+	
 	/**
      * Commits and reopens a database object so we don't have to long transaction. 
      */
