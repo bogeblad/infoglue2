@@ -102,13 +102,15 @@ public class ContentTextFieldTag extends ElementTag
 		if(languageCode == null || languageCode.equals(""))
 		{
 			String value = getPropertySet().getDataString(name);
-			value = value.replaceAll("\"", "&quot;");
+			if(value != null)
+				value = value.replaceAll("\"", "&quot;");
 			getElement().addAttribute("value", value);
 		}
 		else
 		{
 			String value = getPropertySet().getDataString(languageCode + "_" + name);
-			value = value.replaceAll("\"", "&quot;");
+			if(value != null)
+				value = value.replaceAll("\"", "&quot;");
 			getElement().addAttribute("value", value);
 		}
 	}
