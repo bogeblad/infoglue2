@@ -80,7 +80,7 @@ import org.infoglue.deliver.util.NullObject;
 
 public class ContentDeliveryController extends BaseDeliveryController
 {
-    private final static Logger logger = Logger.getLogger(CopyOfContentDeliveryController.class.getName());
+    private final static Logger logger = Logger.getLogger(ContentDeliveryController.class.getName());
 
 	private URLComposer urlComposer = null; 
 	private VisualFormatter formatter = new VisualFormatter();
