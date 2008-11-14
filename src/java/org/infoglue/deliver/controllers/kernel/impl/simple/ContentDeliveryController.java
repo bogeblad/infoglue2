@@ -2486,8 +2486,8 @@ public class ContentDeliveryController extends BaseDeliveryController
 		{
 		    //ContentVersion contentVersion = getContentVersion(content, languageId, getOperatingMode(), deliveryContext, db);
 			//TODO
-		    ContentVersionVO contentVersion = getContentVersionVO(content.getId(), languageId, getOperatingMode(), deliveryContext, db);
-		    //SmallestContentVersionVO contentVersion = getSmallestContentVersionVO(content.getId(), languageId, getOperatingMode(), deliveryContext, db);
+		    //ContentVersionVO contentVersion = getContentVersionVO(content.getId(), languageId, getOperatingMode(), deliveryContext, db);
+		    SmallestContentVersionVO contentVersion = getSmallestContentVersionVO(content.getId(), languageId, getOperatingMode(), deliveryContext, db);
 
 		    Integer repositoryId = null;
 			Repository repository = content.getRepository();
@@ -2510,8 +2510,8 @@ public class ContentDeliveryController extends BaseDeliveryController
 				LanguageVO masterLanguage = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForRepository(repositoryId, db);
 				//TODO
 				if(masterLanguage != null && !masterLanguage.getId().equals(languageId))
-					contentVersion = getContentVersionVO(content.getId(), masterLanguage.getId(), getOperatingMode(), deliveryContext, db);
-					//contentVersion = getSmallestContentVersionVO(content.getId(), masterLanguage.getId(), getOperatingMode(), deliveryContext, db);
+					contentVersion = getSmallestContentVersionVO(content.getId(), masterLanguage.getId(), getOperatingMode(), deliveryContext, db);
+					//contentVersion = getContentVersionVO(content.getId(), masterLanguage.getId(), getOperatingMode(), deliveryContext, db);
 					//contentVersion = getContentVersion(content, masterLanguage.getId(), getOperatingMode(), deliveryContext, db);
 			}
 
