@@ -49,6 +49,7 @@ import org.infoglue.cms.entities.content.ContentVersion;
 import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.entities.content.DigitalAsset;
 import org.infoglue.cms.entities.content.DigitalAssetVO;
+import org.infoglue.cms.entities.content.SmallestContentVersion;
 import org.infoglue.cms.entities.content.SmallestContentVersionVO;
 import org.infoglue.cms.entities.content.impl.simple.ContentImpl;
 import org.infoglue.cms.entities.content.impl.simple.ContentVersionImpl;
@@ -161,6 +162,11 @@ public class ContentVersionController extends BaseController
     public ContentVersion getReadOnlyContentVersionWithId(Integer contentVersionId, Database db) throws SystemException, Bug
     {
 		return (ContentVersion) getObjectWithIdAsReadOnly(ContentVersionImpl.class, contentVersionId, db);
+    }
+
+    public SmallestContentVersionVO getSmallestContentVersionVOWithId(Integer contentVersionId, Database db) throws SystemException, Bug
+    {
+		return (SmallestContentVersionVO) getVOWithId(SmallestContentVersionImpl.class, contentVersionId, db);
     }
 
     public List getContentVersionVOList() throws SystemException, Bug
