@@ -27,11 +27,13 @@ import java.util.ArrayList;
 
 import org.infoglue.cms.entities.content.ContentVersion;
 import org.infoglue.cms.entities.content.ContentVersionVO;
+import org.infoglue.cms.entities.content.SmallestContentVersion;
+import org.infoglue.cms.entities.content.SmallestContentVersionVO;
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
 
-public class SmallestContentVersionImpl extends ContentVersionImpl
+public class SmallestContentVersionImpl implements SmallestContentVersion
 {
-    private ContentVersionVO valueObject = new ContentVersionVO();
+    private SmallestContentVersionVO valueObject = new SmallestContentVersionVO();
      
      
     /**
@@ -47,7 +49,7 @@ public class SmallestContentVersionImpl extends ContentVersionImpl
 	 */
 	public void setVO(BaseEntityVO valueObject) 
 	{
-		setValueObject((ContentVersionVO) valueObject);
+		setValueObject((SmallestContentVersionVO) valueObject);
 	}
  
     /**
@@ -63,13 +65,13 @@ public class SmallestContentVersionImpl extends ContentVersionImpl
 		return getId();
 	}
 
-    public ContentVersionVO getValueObject()
+    public SmallestContentVersionVO getValueObject()
     {
         return this.valueObject;
     }
 
         
-    public void setValueObject(ContentVersionVO valueObject)
+    public void setValueObject(SmallestContentVersionVO valueObject)
     {
         this.valueObject = valueObject;
     }   
@@ -174,27 +176,5 @@ public class SmallestContentVersionImpl extends ContentVersionImpl
     {
         this.valueObject.setVersionModifier(versionModifier);
     }
-    
-    public java.lang.String getVersionValue()
-    {
-        return this.valueObject.getVersionValue();
-    }
-            
-    public void setVersionValue(java.lang.String versionValue)
-    {
-        this.valueObject.setVersionValue(versionValue);
-    }
-
-	public java.lang.String getEscapedVersionValue()
-	{
-		String versionValue = this.valueObject.getVersionValue();
-		return versionValue.replaceAll("]]>", "cdataEnd"); 
-	}
-    
-	public void setEscapedVersionValue(java.lang.String escapedVersionValue)
-	{
-		String versionValue = escapedVersionValue.replaceAll("cdataEnd", "]]>");
-		this.valueObject.setVersionValue(versionValue);
-	}
-
+    	
 }        

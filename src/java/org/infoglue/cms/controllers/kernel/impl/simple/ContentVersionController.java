@@ -49,6 +49,7 @@ import org.infoglue.cms.entities.content.ContentVersion;
 import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.entities.content.DigitalAsset;
 import org.infoglue.cms.entities.content.DigitalAssetVO;
+import org.infoglue.cms.entities.content.SmallestContentVersionVO;
 import org.infoglue.cms.entities.content.impl.simple.ContentImpl;
 import org.infoglue.cms.entities.content.impl.simple.ContentVersionImpl;
 import org.infoglue.cms.entities.content.impl.simple.MediumDigitalAssetImpl;
@@ -1902,7 +1903,7 @@ public class ContentVersionController extends BaseController
 		while(languageVOListIterator.hasNext())
 		{
 			LanguageVO languageVO = languageVOListIterator.next();
-			List<ContentVersionVO> contentVersionVOList = getContentVersionVOList(languageVO.getId(), numberOfVersionsToKeep, keepOnlyOldPublishedVersions, minimumTimeBetweenVersionsDuringClean);
+			List<SmallestContentVersionVO> contentVersionVOList = getSmallestContentVersionVOList(languageVO.getId(), numberOfVersionsToKeep, keepOnlyOldPublishedVersions, minimumTimeBetweenVersionsDuringClean);
 			
 			logger.info("Deleting " + contentVersionVOList.size() + " versions for language " + languageVO.getName());
 			int maxIndex = (contentVersionVOList.size() > batchLimit ? batchLimit : contentVersionVOList.size());
@@ -1928,7 +1929,7 @@ public class ContentVersionController extends BaseController
 	 * @throws SystemException
 	 */
 	
-	private void cleanVersions(int numberOfVersionsToKeep, List contentVersionVOList) throws SystemException
+	private void cleanVersions(int numberOfVersionsToKeep, List<SmallestContentVersionVO> contentVersionVOList) throws SystemException
 	{
 		Database db = CastorDatabaseService.getDatabase();
     	
@@ -1936,10 +1937,10 @@ public class ContentVersionController extends BaseController
 
         try
         {
-			Iterator<ContentVersionVO> contentVersionVOIdListIterator = contentVersionVOList.iterator();
+			Iterator<SmallestContentVersionVO> contentVersionVOIdListIterator = contentVersionVOList.iterator();
 			while(contentVersionVOIdListIterator.hasNext())
 			{
-				ContentVersionVO contentVersionVO = contentVersionVOIdListIterator.next();
+				SmallestContentVersionVO contentVersionVO = contentVersionVOIdListIterator.next();
 				ContentVersion contentVersion = getContentVersionWithId(contentVersionVO.getContentVersionId(), db);
 				logger.info("Deleting the contentVersion " + contentVersion.getId() + " on content " + contentVersion.getOwningContent());
 				delete(contentVersion, db, true);
@@ -1969,13 +1970,13 @@ public class ContentVersionController extends BaseController
 	 * @throws SystemException 
 	 */
 	
-	public List<ContentVersionVO> getContentVersionVOList(Integer languageId, int numberOfVersionsToKeep, boolean keepOnlyOldPublishedVersions, long minimumTimeBetweenVersionsDuringClean) throws SystemException 
+	public List<SmallestContentVersionVO> getSmallestContentVersionVOList(Integer languageId, int numberOfVersionsToKeep, boolean keepOnlyOldPublishedVersions, long minimumTimeBetweenVersionsDuringClean) throws SystemException 
 	{
 		logger.info("numberOfVersionsToKeep:" + numberOfVersionsToKeep);
 
 		Database db = CastorDatabaseService.getDatabase();
     	
-    	List<ContentVersionVO> contentVersionsIdList = new ArrayList();
+    	List<SmallestContentVersionVO> contentVersionsIdList = new ArrayList();
 
         beginTransaction(db);
 
