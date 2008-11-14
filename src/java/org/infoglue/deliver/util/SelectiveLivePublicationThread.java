@@ -43,6 +43,7 @@ import org.infoglue.cms.entities.content.impl.simple.DigitalAssetImpl;
 import org.infoglue.cms.entities.content.impl.simple.MediumContentImpl;
 import org.infoglue.cms.entities.content.impl.simple.MediumDigitalAssetImpl;
 import org.infoglue.cms.entities.content.impl.simple.SmallContentImpl;
+import org.infoglue.cms.entities.content.impl.simple.SmallContentVersionImpl;
 import org.infoglue.cms.entities.content.impl.simple.SmallDigitalAssetImpl;
 import org.infoglue.cms.entities.content.impl.simple.SmallishContentImpl;
 import org.infoglue.cms.entities.management.impl.simple.AvailableServiceBindingImpl;
@@ -163,6 +164,13 @@ public class SelectiveLivePublicationThread extends PublicationThread
 							Class typesExtraMedium = MediumContentImpl.class;
 							Object[] idsExtraMedium = {new Integer(objectId)};
 							CacheController.clearCache(typesExtraMedium, idsExtraMedium);
+						}
+						if(Class.forName(className).getName().equals(ContentVersionImpl.class.getName()))
+						{
+						    logger.info("We clear all small contents as well " + objectId);
+							Class typesExtra = SmallContentVersionImpl.class;
+							Object[] idsExtra = {new Integer(objectId)};
+							CacheController.clearCache(typesExtra, idsExtra);
 						}
 						else if(Class.forName(className).getName().equals(AvailableServiceBindingImpl.class.getName()))
 						{
@@ -293,6 +301,39 @@ public class SelectiveLivePublicationThread extends PublicationThread
 							}
 						}
 					}	
+					else
+					{
+						/*
+						System.out.println("Was notification message in selective live publication...");
+						System.out.println("className:" + className);
+						System.out.println("objectId:" + objectId);
+						System.out.println("objectName:" + objectName);
+						System.out.println("typeId:" + typeId);
+						*/
+						if(className.equals("ServerNodeProperties"))
+						{
+						    logger.info("\n\n\nUpdating all caches as this was a publishing-update\n\n\n");
+						    CacheController.clearCastorCaches();
+
+							logger.info("\n\n\nclearing all except page cache as we are in publish mode..\n\n\n");											
+							CacheController.clearCaches(null, null, new String[] {"ServerNodeProperties", "serverNodePropertiesCache", "pageCache", "pageCacheExtra", "componentCache", "NavigationCache", "pagePathCache", "userCache", "pageCacheParentSiteNodeCache", "pageCacheLatestSiteNodeVersions", "pageCacheSiteNodeTypeDefinition", "JNDIAuthorizationCache", "WebServiceAuthorizationCache"});
+						    
+							logger.info("\n\n\nRecaching all caches as this was a publishing-update\n\n\n");
+							CacheController.cacheCentralCastorCaches();
+
+							logger.info("\n\n\nFinally clearing page cache and other caches as this was a publishing-update\n\n\n");
+							CacheController.clearCache("ServerNodeProperties");
+							CacheController.clearCache("serverNodePropertiesCache");
+							CacheController.clearCache("pageCache");
+							CacheController.clearCache("pageCacheExtra");
+						    CacheController.clearCache("componentCache");
+						    CacheController.clearCache("NavigationCache");
+						    CacheController.clearCache("pagePathCache");
+						    CacheController.clearCache("pageCacheParentSiteNodeCache");
+						    CacheController.clearCache("pageCacheLatestSiteNodeVersions");
+						    CacheController.clearCache("pageCacheSiteNodeTypeDefinition");
+						}
+					}
 				}
 			} 
 			catch (Exception e)

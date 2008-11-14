@@ -36,6 +36,8 @@ import org.infoglue.cms.entities.content.impl.simple.MediumDigitalAssetImpl;
 import org.infoglue.cms.entities.content.impl.simple.SmallContentImpl;
 import org.infoglue.cms.entities.content.impl.simple.SmallDigitalAssetImpl;
 import org.infoglue.cms.entities.content.impl.simple.SmallishContentImpl;
+import org.infoglue.cms.entities.content.impl.simple.ContentVersionImpl;
+import org.infoglue.cms.entities.content.impl.simple.SmallContentVersionImpl;
 import org.infoglue.cms.entities.management.impl.simple.AvailableServiceBindingImpl;
 import org.infoglue.cms.entities.management.impl.simple.GroupImpl;
 import org.infoglue.cms.entities.management.impl.simple.RoleImpl;
@@ -151,6 +153,13 @@ public class WorkingPublicationThread extends Thread
 							Class typesExtraMedium = MediumContentImpl.class;
 							Object[] idsExtraMedium = {new Integer(objectId)};
 							CacheController.clearCache(typesExtraMedium, idsExtraMedium);
+						}
+						if(Class.forName(className).getName().equals(ContentVersionImpl.class.getName()))
+						{
+						    logger.info("We clear all small contents as well " + objectId);
+							Class typesExtra = SmallContentVersionImpl.class;
+							Object[] idsExtra = {new Integer(objectId)};
+							CacheController.clearCache(typesExtra, idsExtra);
 						}
 						else if(Class.forName(className).getName().equals(AvailableServiceBindingImpl.class.getName()))
 						{
