@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
+import org.apache.velocity.runtime.parser.node.GetExecutor;
 import org.exolab.castor.jdo.Database;
 import org.exolab.castor.jdo.OQLQuery;
 import org.exolab.castor.jdo.PersistenceException;
@@ -164,6 +165,7 @@ public class ExtendedSearchController extends BaseController
 			final SqlBuilder sqlBuilder = new SqlBuilder(criterias);
 		    if(logger.isDebugEnabled())
 		    	logger.debug("sql:" + sqlBuilder.getSQL());
+		    System.out.println("sql:" + sqlBuilder.getSQL());
 		    
 			final OQLQuery oql = db.getOQLQuery(sqlBuilder.getSQL());
 			for(Iterator i=sqlBuilder.getBindings().iterator(); i.hasNext(); )
@@ -303,6 +305,11 @@ class SqlBuilder
 
 	private static final String FROM_DATE_CLAUSE              = CONTENT_ALIAS + ".publishDateTime>={0}";
 	private static final String TO_DATE_CLAUSE                = CONTENT_ALIAS + ".publishDateTime<={0}";
+
+	private static final String EXPIRE_FROM_DATE_CLAUSE       = CONTENT_ALIAS + ".expireDateTime>={0}";
+	private static final String EXPIRE_TO_DATE_CLAUSE         = CONTENT_ALIAS + ".expireDateTime<={0}";
+
+	private static final String VERSION_MODIFIER_CLAUSE 	  = CONTENT_VERSION_ALIAS + ".versionModifier={0}";
 	// BETWEEN DOESN'T SEEMS TO WORK : use FROM_DATE_CLAUSE + TO_DATE_CLAUSE instead
 	//private static final String BETWEEN_DATE_CLAUSE           = CONTENT_ALIAS + ".publishDateTime between {0} and {1}";
 	
@@ -425,6 +432,11 @@ class SqlBuilder
 		}
 		clauses.addAll(getCategoriesWhereClauses());
 		clauses.addAll(getDateWhereClauses());
+		clauses.addAll(getExpireDateWhereClauses());
+		if(criterias.hasVersionModifierCritera())
+		{
+			clauses.addAll(getVersionModifierWhereClause());
+		}
 		return WHERE_KEYWORD + SPACE + joinCollection(clauses, SPACE + AND + SPACE);
 	}
 
@@ -534,27 +546,57 @@ class SqlBuilder
 		final List clauses = new ArrayList();
 		switch(criterias.getDateCriteriaType()) 
 		{
-		case ExtendedSearchCriterias.FROM_DATE_CRITERIA_TYPE:
-			logger.debug(" CRITERA[date : from]");
-			clauses.add(MessageFormat.format(FROM_DATE_CLAUSE, new Object[] { getBindingVariable() }));
-			bindings.add(criterias.getFromDate());
-			break;
-		case ExtendedSearchCriterias.TO_DATE_CRITERIA_TYPE:
-			logger.debug(" CRITERA[date : to]");
-			clauses.add(MessageFormat.format(TO_DATE_CLAUSE, new Object[] { getBindingVariable() }));
-			bindings.add(criterias.getToDate());
-			break;
-		case ExtendedSearchCriterias.BOTH_DATE_CRITERIA_TYPE:
-			logger.debug(" CRITERA[date : between]");
-			clauses.add(MessageFormat.format(FROM_DATE_CLAUSE, new Object[] { getBindingVariable() }));
-			bindings.add(criterias.getFromDate());
-			clauses.add(MessageFormat.format(TO_DATE_CLAUSE, new Object[] { getBindingVariable() }));
-			bindings.add(criterias.getToDate());
-			break;
+			case ExtendedSearchCriterias.FROM_DATE_CRITERIA_TYPE:
+				logger.debug(" CRITERA[date : from]");
+				clauses.add(MessageFormat.format(FROM_DATE_CLAUSE, new Object[] { getBindingVariable() }));
+				bindings.add(criterias.getFromDate());
+				break;
+			case ExtendedSearchCriterias.TO_DATE_CRITERIA_TYPE:
+				logger.debug(" CRITERA[date : to]");
+				clauses.add(MessageFormat.format(TO_DATE_CLAUSE, new Object[] { getBindingVariable() }));
+				bindings.add(criterias.getToDate());
+				break;
+			case ExtendedSearchCriterias.BOTH_DATE_CRITERIA_TYPE:
+				logger.debug(" CRITERA[date : between]");
+				clauses.add(MessageFormat.format(FROM_DATE_CLAUSE, new Object[] { getBindingVariable() }));
+				bindings.add(criterias.getFromDate());
+				clauses.add(MessageFormat.format(TO_DATE_CLAUSE, new Object[] { getBindingVariable() }));
+				bindings.add(criterias.getToDate());
+				break;
 		}
 		return clauses;
 	}
-	
+
+	/**
+	 * 
+	 */
+	private List getExpireDateWhereClauses()
+	{
+		System.out.println("getExpireDateWhereClauses...");
+		final List clauses = new ArrayList();
+		switch(criterias.getExpireDateCriteriaType()) 
+		{
+			case ExtendedSearchCriterias.EXPIRE_FROM_DATE_CRITERIA_TYPE:
+				logger.debug(" CRITERA[expire date : from]");
+				clauses.add(MessageFormat.format(EXPIRE_FROM_DATE_CLAUSE, new Object[] { getBindingVariable() }));
+				bindings.add(criterias.getExpireFromDate());
+				break;
+			case ExtendedSearchCriterias.EXPIRE_TO_DATE_CRITERIA_TYPE:
+				logger.debug(" CRITERA[expire date : to]");
+				clauses.add(MessageFormat.format(EXPIRE_TO_DATE_CLAUSE, new Object[] { getBindingVariable() }));
+				bindings.add(criterias.getExpireToDate());
+				break;
+			case ExtendedSearchCriterias.EXPIRE_BOTH_DATE_CRITERIA_TYPE:
+				logger.debug(" CRITERA[expire date : between]");
+				clauses.add(MessageFormat.format(EXPIRE_FROM_DATE_CLAUSE, new Object[] { getBindingVariable() }));
+				bindings.add(criterias.getExpireFromDate());
+				clauses.add(MessageFormat.format(EXPIRE_TO_DATE_CLAUSE, new Object[] { getBindingVariable() }));
+				bindings.add(criterias.getExpireToDate());
+				break;
+		}
+		return clauses;
+	}
+
 	/**
 	 * 
 	 */
@@ -575,6 +617,22 @@ class SqlBuilder
 			}
 		}
 		return "(" + joinCollection(expressions, SPACE + OR + SPACE) + ")";
+	}
+	
+	/**
+	 * 
+	 */
+	private List getVersionModifierWhereClause() 
+	{
+		final List clauses = new ArrayList();
+		logger.debug(" CRITERA[versionModifier]");
+		if(criterias.hasVersionModifierCritera())
+		{
+			clauses.add(MessageFormat.format(VERSION_MODIFIER_CLAUSE, new Object[] { getBindingVariable() }));
+			bindings.add(criterias.getVersionModifier());
+		}
+		
+		return clauses;
 	}
 		
 	/**

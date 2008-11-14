@@ -44,6 +44,9 @@ public class MatchingContentsTag extends TemplateControllerTag {
 	private String freeTextAttributeNames;
 	private Date fromDate = null;
 	private Date toDate = null;
+	private String versionModifier;
+	private Date expireFromDate = null;
+	private Date expireToDate = null;
 	
 	private boolean cacheResult = true;
 	private int cacheInterval = 1800;
@@ -80,7 +83,7 @@ public class MatchingContentsTag extends TemplateControllerTag {
 			}
 		}
 
-	    setResultAttribute(getController().getMatchingContents(contentTypeDefinitionNames, categoryCondition, freeText, freeTextAttributeNamesList, fromDate, toDate, true, cacheResult, cacheInterval, cacheName, cacheKey, repositoryIdList));
+	    setResultAttribute(getController().getMatchingContents(contentTypeDefinitionNames, categoryCondition, freeText, freeTextAttributeNamesList, fromDate, toDate, expireFromDate, expireToDate, versionModifier, true, cacheResult, cacheInterval, cacheName, cacheKey, repositoryIdList));
 	    
 	    repositoryIds = null;
 	    
@@ -115,6 +118,21 @@ public class MatchingContentsTag extends TemplateControllerTag {
 	public void setToDate(String toDate) throws JspException
 	{
 		this.toDate = (Date)evaluate("matchingContentsTag", "toDate", toDate, Date.class);
+	}
+
+	public void setExpireFromDate(String expireFromDate) throws JspException
+	{
+		this.expireFromDate = (Date)evaluate("matchingContentsTag", "expireFromDate", expireFromDate, Date.class);
+	}
+
+	public void setExpireToDate(String expireToDate) throws JspException
+	{
+		this.expireToDate = (Date)evaluate("matchingContentsTag", "expireToDate", expireToDate, Date.class);
+	}
+
+	public void setVersionModifier(String versionModifier) throws JspException
+	{
+		this.versionModifier = evaluateString("matchingContentsTag", "versionModifier", versionModifier);
 	}
 
 	public void setRepositoryIds(String repositoryIds) throws JspException

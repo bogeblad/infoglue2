@@ -747,6 +747,21 @@
 	        <rtexprvalue>true</rtexprvalue>
     	</attribute>
         <attribute>
+    	    <name>expireFromDate</name>
+        	<required>false</required>
+	        <rtexprvalue>true</rtexprvalue>
+    	</attribute>
+        <attribute>
+    	    <name>expireToDate</name>
+        	<required>false</required>
+	        <rtexprvalue>true</rtexprvalue>
+    	</attribute>
+        <attribute>
+    	    <name>versionModifier</name>
+        	<required>false</required>
+	        <rtexprvalue>true</rtexprvalue>
+    	</attribute>
+        <attribute>
     	    <name>cacheResult</name>
         	<required>false</required>
 	        <rtexprvalue>true</rtexprvalue>

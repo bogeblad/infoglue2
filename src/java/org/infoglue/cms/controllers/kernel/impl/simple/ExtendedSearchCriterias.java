@@ -57,6 +57,26 @@ public class ExtendedSearchCriterias
 	public static final int BOTH_DATE_CRITERIA_TYPE = 3;
 
 	/**
+	 * Indicates that no date criteria should be used.
+	 */
+	public static final int NO_EXPIRE_DATE_CRITERIA_TYPE   = 4;
+
+	/**
+	 * Indicates that the from date criteria should be used. 
+	 */
+	public static final int EXPIRE_FROM_DATE_CRITERIA_TYPE = 5;
+
+	/**
+	 * Indicates that the to date criteria should be used. 
+	 */
+	public static final int EXPIRE_TO_DATE_CRITERIA_TYPE   = 6;
+
+	/**
+	 * Indicates that the between date criteria should be used. 
+	 */
+	public static final int EXPIRE_BOTH_DATE_CRITERIA_TYPE = 7;
+
+	/**
 	 * Only fetch content versions having at least the present state.
 	 */
 	private Integer stateId;
@@ -103,6 +123,22 @@ public class ExtendedSearchCriterias
 	 */
 	private Timestamp toDate;
 
+	/**
+	 * If present, only fetch contents expiring after this date.
+	 */
+	private Timestamp expireFromDate;
+	
+	/**
+	 * If present, only fetch contents expiring before this date.
+	 */
+	private Timestamp expireToDate;
+
+	/**
+	 * If present, only fetch content version last modified by this author.
+	 */
+	private String versionModifier;
+	
+	
 	private List<Integer> repositoryIdList;
 	
 	/**
@@ -147,7 +183,7 @@ public class ExtendedSearchCriterias
 			this.xmlAttributes = new ArrayList(xmlAttributes);
 		}
 	}
-	
+
 	/**
 	 * Sets the language criteria.
 	 * 
@@ -206,7 +242,27 @@ public class ExtendedSearchCriterias
 		this.fromDate = (from == null) ? null : new Timestamp(from.getTime());
 		this.toDate   = (to == null)   ? null : new Timestamp(to.getTime());
 	}
-	
+
+	/**
+	 * Sets the expire date critiera. 
+	 * 
+	 * @param from the expire from date to use (null is used to indicate an open end).
+	 * @param to the to expire date to use (null is used to indicate an open end).
+	 */
+	public void setExpireDates(final Date expireFrom, final Date expireTo)
+	{
+		this.expireFromDate = (expireFrom == null) ? null : new Timestamp(expireFrom.getTime());
+		this.expireToDate   = (expireTo == null)   ? null : new Timestamp(expireTo.getTime());
+	}
+
+	/**
+	 * Sets the version modifier critiera. 
+	 */
+	public void setVersionModifier(final String versionModifier)
+	{
+		this.versionModifier = versionModifier;
+	}
+
 	/**
 	 * Sets the repository criteria. 
 	 * 
@@ -271,7 +327,7 @@ public class ExtendedSearchCriterias
 		}
 		if(toDate != null && fromDate == null)
 		{
-			return NO_DATE_CRITERIA_TYPE;
+			return TO_DATE_CRITERIA_TYPE;
 		}
 		if(toDate == null && fromDate != null)
 		{
@@ -279,7 +335,39 @@ public class ExtendedSearchCriterias
 		}
 		return BOTH_DATE_CRITERIA_TYPE;
 	}
-	
+
+	/**
+	 * Returns the type of date critiera to use.
+	 * 
+	 * @return the type of date criteria to use.
+	 */
+	public int getExpireDateCriteriaType()
+	{
+		if(expireToDate == null && expireFromDate == null)
+		{
+			return NO_EXPIRE_DATE_CRITERIA_TYPE;
+		}
+		if(expireToDate != null && expireFromDate == null)
+		{
+			return EXPIRE_TO_DATE_CRITERIA_TYPE;
+		}
+		if(expireToDate == null && expireFromDate != null)
+		{
+			return EXPIRE_FROM_DATE_CRITERIA_TYPE;
+		}
+		return EXPIRE_BOTH_DATE_CRITERIA_TYPE;
+	}
+
+	/**
+	 * Returns true if the version modifier criteria should be used; false otherwise.
+	 * 
+	 * @return true if the criteria should be used; false otherwise.
+	 */
+	public boolean hasVersionModifierCritera() 
+	{
+		return versionModifier != null;
+	}
+
 	/**
 	 * Returns the state to use in the state criteria. 
 	 * 
@@ -364,7 +452,35 @@ public class ExtendedSearchCriterias
 	{
 		return this.toDate;
 	}
-	
+
+	/**
+	 * Returns the from date to use in the date criteria. 
+	 * 
+	 * @return the from date.
+	 */
+	public Timestamp getExpireFromDate()
+	{
+		return this.expireFromDate;
+	}
+
+	/**
+	 * Returns the to date to use in the date criteria. 
+	 * 
+	 * @return the to date.
+	 */
+	public Timestamp getExpireToDate()
+	{
+		return this.expireToDate;
+	}
+
+	/**
+	 * Returns the to versionModifier to use in the date criteria. 
+	 */
+	public String getVersionModifier()
+	{
+		return this.versionModifier;
+	}
+
 	public List<Integer> getRepositoryIdList()
 	{
 		return this.repositoryIdList;

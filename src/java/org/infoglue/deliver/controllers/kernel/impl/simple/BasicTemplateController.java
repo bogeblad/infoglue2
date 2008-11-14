@@ -4465,7 +4465,16 @@ public class BasicTemplateController implements TemplateController
 	
 	public List getMatchingContents(String contentTypeDefinitionNamesString, String categoryConditionString, String freeText, List freeTextAttributeNames, Date fromDate, Date toDate, boolean useLanguageFallback, boolean cacheResult, int cacheInterval, String cacheName, String cacheKey, List<Integer> repositoryIdList)
 	{
-		if((freeText != null && !freeText.equals("")) || (freeTextAttributeNames != null && freeTextAttributeNames.size() > 0) || fromDate != null || toDate != null)
+		return getMatchingContents(contentTypeDefinitionNamesString, categoryConditionString, freeText, freeTextAttributeNames, fromDate, toDate, null, null, null, useLanguageFallback, cacheResult, cacheInterval, cacheName, cacheKey, repositoryIdList);
+	}
+	
+	/**
+	 * This method searches for all contents matching
+	 */
+	
+	public List getMatchingContents(String contentTypeDefinitionNamesString, String categoryConditionString, String freeText, List freeTextAttributeNames, Date fromDate, Date toDate, Date expireFromDate, Date expireToDate, String versionModifier, boolean useLanguageFallback, boolean cacheResult, int cacheInterval, String cacheName, String cacheKey, List<Integer> repositoryIdList)
+	{
+		if((freeText != null && !freeText.equals("")) || (freeTextAttributeNames != null && freeTextAttributeNames.size() > 0) || fromDate != null || toDate != null || expireFromDate != null || expireToDate != null || (versionModifier != null && !versionModifier.equals("")))
 			cacheResult = false;
 			
 		//TODO - add cache here
@@ -4509,6 +4518,9 @@ public class BasicTemplateController implements TemplateController
 					criterias.setFreetext(freeText, freeTextAttributeNames);
 				criterias.setContentTypeDefinitions(contentTypeDefinitionVOList);
 				criterias.setDates(fromDate, toDate);
+				criterias.setExpireDates(expireFromDate, expireToDate);
+				if(versionModifier != null)
+					criterias.setVersionModifier(versionModifier);
 				if(repositoryIdList != null && repositoryIdList.size() > 0)
 					criterias.setRepositoryIdList(repositoryIdList);
 				
