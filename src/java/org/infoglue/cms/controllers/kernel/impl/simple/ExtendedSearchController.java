@@ -165,7 +165,6 @@ public class ExtendedSearchController extends BaseController
 			final SqlBuilder sqlBuilder = new SqlBuilder(criterias);
 		    if(logger.isDebugEnabled())
 		    	logger.debug("sql:" + sqlBuilder.getSQL());
-		    System.out.println("sql:" + sqlBuilder.getSQL());
 		    
 			final OQLQuery oql = db.getOQLQuery(sqlBuilder.getSQL());
 			for(Iterator i=sqlBuilder.getBindings().iterator(); i.hasNext(); )
