@@ -469,7 +469,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 		//Integer contentVersionId = (Integer)CacheController.getCachedObjectFromAdvancedCache("contentVersionCache", versionKey);
 		if(object instanceof NullObject)
 		{
-			logger.info("There was an cached parentSiteNodeVO but it was null:" + object);
+			logger.info("There was an cached contentVersionVO but it was null:" + object);
 		}
 		else if(object != null)
 		{
@@ -484,32 +484,52 @@ public class ContentDeliveryController extends BaseDeliveryController
 		}
 		else
 		{
-			//logger.info("Querying for verson: " + versionKey); 
-			OQLQuery oql = db.getOQLQuery( "SELECT cv FROM org.infoglue.cms.entities.content.impl.simple.SmallContentVersionImpl cv WHERE cv.contentId = $1 AND cv.languageId = $2 AND cv.stateId >= $3 AND cv.isActive = $4 ORDER BY cv.contentVersionId desc");
-	    	oql.bind(contentId);
-	    	oql.bind(languageId);
-	    	oql.bind(operatingMode);
-	    	oql.bind(true);
-	
-	    	QueryResults results = oql.execute(Database.ReadOnly);
-	    	
-			if (results.hasMore()) 
-	        {
-				ContentVersion contentVersion = (ContentVersion)results.next();
-	        	//logger.info("found one:" + contentVersion.getId());
-	        	contentVersionVO = contentVersion.getValueObject();
-
+		    String smallVersionKey = "" + contentId + "_" + languageId + "_" + operatingMode + "_smallestContentVersionVO";
+			Object smallestContentVersionVOCandidate = CacheController.getCachedObjectFromAdvancedCache("contentVersionCache", smallVersionKey);
+			if(smallestContentVersionVOCandidate instanceof NullObject)
+			{
+				//logger.info("There was an cached content version but it was null:" + smallestContentVersionVOCandidate);
+			}
+			else if(smallestContentVersionVOCandidate != null)
+			{
+				//System.out.println("Getting content by id...");
+				contentVersionVO = (ContentVersionVO)getVOWithId(SmallContentVersionImpl.class, ((SmallestContentVersionVO)smallestContentVersionVOCandidate).getId(), db);
+	        	
 	        	//logger.info("Caching content version for key:" + versionKey);
 				//CacheController.cacheObjectInAdvancedCache("contentVersionCache", versionKey, contentVersionVO.getId(), new String[]{"contentVersion_" + contentVersionVO.getId(), "content_" + contentVersionVO.getContentId()}, true);
 				CacheController.cacheObjectInAdvancedCache("contentVersionCache", versionKey, contentVersionVO, new String[]{"contentVersion_" + contentVersionVO.getId(), "content_" + contentVersionVO.getContentId()}, true);
-	        }
+			}
 			else
 			{
-				CacheController.cacheObjectInAdvancedCache("contentVersionCache", versionKey, new NullObject(), new String[]{"content_" + contentId}, true);
+				//System.out.println("Querying full version:" + versionKey);
+					
+				//logger.info("Querying for verson: " + versionKey); 
+				OQLQuery oql = db.getOQLQuery( "SELECT cv FROM org.infoglue.cms.entities.content.impl.simple.SmallContentVersionImpl cv WHERE cv.contentId = $1 AND cv.languageId = $2 AND cv.stateId >= $3 AND cv.isActive = $4 ORDER BY cv.contentVersionId desc");
+		    	oql.bind(contentId);
+		    	oql.bind(languageId);
+		    	oql.bind(operatingMode);
+		    	oql.bind(true);
+		
+		    	QueryResults results = oql.execute(Database.ReadOnly);
+		    	
+				if (results.hasMore()) 
+		        {
+					ContentVersion contentVersion = (ContentVersion)results.next();
+		        	//logger.info("found one:" + contentVersion.getId());
+		        	contentVersionVO = contentVersion.getValueObject();
+	
+		        	//logger.info("Caching content version for key:" + versionKey);
+					//CacheController.cacheObjectInAdvancedCache("contentVersionCache", versionKey, contentVersionVO.getId(), new String[]{"contentVersion_" + contentVersionVO.getId(), "content_" + contentVersionVO.getContentId()}, true);
+					CacheController.cacheObjectInAdvancedCache("contentVersionCache", versionKey, contentVersionVO, new String[]{"contentVersion_" + contentVersionVO.getId(), "content_" + contentVersionVO.getContentId()}, true);
+		        }
+				else
+				{
+					CacheController.cacheObjectInAdvancedCache("contentVersionCache", versionKey, new NullObject(), new String[]{"content_" + contentId}, true);
+				}
+				
+				results.close();
+				oql.close();
 			}
-			
-			results.close();
-			oql.close();
 		}
 		
 		if(contentVersionVO != null)
