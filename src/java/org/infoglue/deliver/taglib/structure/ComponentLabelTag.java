@@ -23,10 +23,13 @@
 
 package org.infoglue.deliver.taglib.structure;
 
+import java.util.Locale;
 import java.util.Map;
 
 import javax.servlet.jsp.JspException;
 
+import org.apache.log4j.Logger;
+import org.infoglue.cms.controllers.kernel.impl.simple.ExtendedSearchController;
 import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.deliver.controllers.kernel.impl.simple.LanguageDeliveryController;
 import org.infoglue.deliver.util.Support;
@@ -39,6 +42,8 @@ import org.infoglue.deliver.taglib.content.ContentAttributeTag;
 
 public class ComponentLabelTag extends ContentAttributeTag
 {
+    private final static Logger logger = Logger.getLogger(ComponentLabelTag.class.getName());
+
 	private static final long serialVersionUID = 3257850991142318897L;
 	
 	private String attributeName 					= "ComponentLabels";
@@ -64,7 +69,17 @@ public class ComponentLabelTag extends ContentAttributeTag
 	    if(this.languageId == null)
 	        this.languageId = getController().getLanguageId();
 
-        String result = null;
+    	Locale locale = null;
+	    try
+	    {
+	    	locale = getController().getLanguageCode(languageId);
+	    }
+	    catch (Exception e) 
+	    {
+	    	logger.warn("Error getting locale:" + e.getMessage());
+	    }
+	    
+	    String result = null;
 
         result = getContentAttributeValue(this.languageId);
         if ( mapKeyName != null && result != null )
@@ -72,7 +87,9 @@ public class ComponentLabelTag extends ContentAttributeTag
             Map map = Support.convertTextToProperties( result.toString() );
             if ( map != null && !map.isEmpty() )
             {
-                result = (String)map.get( mapKeyName );
+            	result = (String)map.get( mapKeyName + "_" + locale.getLanguage() );
+            	if(result == null)
+            		result = (String)map.get( mapKeyName );
             }
         }
         
@@ -87,7 +104,12 @@ public class ComponentLabelTag extends ContentAttributeTag
 		            Map map = Support.convertTextToProperties( result.toString() );
 		            if ( map != null && !map.isEmpty() )
 		            {
-		                result = (String)map.get( mapKeyName );
+		            	result = (String)map.get( mapKeyName + "_" + locale.getLanguage() );
+		            	if(result == null)
+			            	result = (String)map.get( mapKeyName + "_" + masteLanguageVO.getLanguageCode() );
+
+		            	if(result == null)
+		            		result = (String)map.get( mapKeyName );
 		            }
 		        }
 			}
