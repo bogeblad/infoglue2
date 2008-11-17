@@ -1821,9 +1821,12 @@ public class NodeDeliveryController extends BaseDeliveryController
 	        	}
 	    	}
 	    	
-	    	logger.info("repositoryPath:" + repositoryPath);    	
-	    	logger.info("path:" + path.length);    	
-	    	
+			if(logger.isInfoEnabled())
+			{
+		    	logger.info("repositoryPath:" + repositoryPath);    	
+		    	logger.info("path:" + path.length);    	
+			}
+			
 	    	if(repositoryPath != null && path.length <= 0)
 	    	{
 	    		if(logger.isInfoEnabled())
@@ -1906,11 +1909,11 @@ public class NodeDeliveryController extends BaseDeliveryController
 		    	        logger.info("Getting normal");
 	                siteNodeId = NodeDeliveryController.getNodeDeliveryController(null, null, null).getSiteNodeId(db, infogluePrincipal, repositoryVO.getId(), path[i], attributeName, siteNodeId, languageId, deliveryContext);
 	            }
-	            
+
 	            if (siteNodeId != null)
 	                uriCache.addCachedSiteNodeId(repositoryVO.getId(), path, i+1, siteNodeId);
 	        }
-	     
+
 	        commitTransaction(db);
 	    }
 		catch(Exception e)
