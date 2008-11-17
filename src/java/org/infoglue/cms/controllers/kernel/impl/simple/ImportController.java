@@ -758,7 +758,13 @@ public class ImportController extends BaseController
 					List initialContentVersions = new ArrayList();
 					initialContentVersions.add(contentVersion);
 					digitalAsset.setContentVersions(initialContentVersions);
-	
+					
+					if(digitalAsset.getAssetFileSize() == -1)
+					{
+						System.out.println("digitalAsset:" + digitalAsset.getId() + "-" + digitalAsset.getAssetKey() + " was archived - let's fake it..");
+						digitalAsset.setAssetBytes("archived".getBytes());						
+					}
+					
 					db.create(digitalAsset);
 					
 					initialDigitalAssets.add(digitalAsset);
