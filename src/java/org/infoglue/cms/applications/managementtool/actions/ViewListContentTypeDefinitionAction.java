@@ -23,11 +23,13 @@
 
 package org.infoglue.cms.applications.managementtool.actions;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
+import org.infoglue.cms.util.sorters.ReflectionComparator;
 
 /**
  * 	Action class for usecase ViewListContentTypeDefinitionUCC 
@@ -48,6 +50,7 @@ public class ViewListContentTypeDefinitionAction extends InfoGlueAbstractAction
 	{
 		this.contentTypeDefinitions = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOList();
     	logger.info("contentTypeDefinitions:" + contentTypeDefinitions.size());
+		Collections.sort(contentTypeDefinitions, new ReflectionComparator("name"));
     	return "success";
 	}
 	
