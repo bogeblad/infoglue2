@@ -1997,10 +1997,10 @@ public class ContentVersionController extends BaseController
         	Integer previousContentId = null;
         	Date previousDate = null;
         	long difference = -1;
-        	List keptContentVersionVOList = new ArrayList();
-        	List potentialContentVersionVOList = new ArrayList();
-        	List versionInitialSuggestions = new ArrayList();
-        	List versionNonPublishedSuggestions = new ArrayList();
+        	List<SmallestContentVersionVO> keptContentVersionVOList = new ArrayList<SmallestContentVersionVO>();
+        	List<SmallestContentVersionVO> potentialContentVersionVOList = new ArrayList<SmallestContentVersionVO>();
+        	List<SmallestContentVersionVO> versionInitialSuggestions = new ArrayList<SmallestContentVersionVO>();
+        	List<SmallestContentVersionVO> versionNonPublishedSuggestions = new ArrayList<SmallestContentVersionVO>();
 
         	while (results.hasMore())
             {
@@ -2012,13 +2012,13 @@ public class ContentVersionController extends BaseController
 						Iterator potentialContentVersionVOListIterator = potentialContentVersionVOList.iterator();
 						while(potentialContentVersionVOListIterator.hasNext())
 						{
-							ContentVersionVO potentialContentVersionVO = (ContentVersionVO)potentialContentVersionVOListIterator.next();
+							SmallestContentVersionVO potentialContentVersionVO = (SmallestContentVersionVO)potentialContentVersionVOListIterator.next();
 							
-							ContentVersionVO firstInitialSuggestedContentVersionVO = null;
+							SmallestContentVersionVO firstInitialSuggestedContentVersionVO = null;
 							Iterator versionInitialSuggestionsIterator = versionInitialSuggestions.iterator();
 							while(versionInitialSuggestionsIterator.hasNext())
 							{
-								ContentVersionVO initialSuggestedContentVersionVO = (ContentVersionVO)versionInitialSuggestionsIterator.next();
+								SmallestContentVersionVO initialSuggestedContentVersionVO = (SmallestContentVersionVO)versionInitialSuggestionsIterator.next();
 								if(initialSuggestedContentVersionVO.getStateId().equals(ContentVersionVO.PUBLISHED_STATE))
 								{
 									firstInitialSuggestedContentVersionVO = initialSuggestedContentVersionVO;
