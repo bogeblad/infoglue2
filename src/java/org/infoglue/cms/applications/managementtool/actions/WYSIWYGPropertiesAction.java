@@ -75,7 +75,7 @@ public class WYSIWYGPropertiesAction extends InfoGlueAbstractAction
 	{
 	    try
 	    {
-		    this.WYSIWYGProperties = getPrincipalPropertyValue("WYSIWYGConfig", false);
+		    this.WYSIWYGProperties = getPrincipalPropertyValue("WYSIWYGConfig", false, false, true);
 		    logger.info("WYSIWYGProperties:" + WYSIWYGProperties);
 		    if(this.WYSIWYGProperties == null || this.WYSIWYGProperties.equalsIgnoreCase("") && this.repositoryId != null)
 		    {

@@ -98,7 +98,6 @@ public class InfoGluePrincipalControllerProxy extends BaseController
     	return infoGluePrincipal;
     }
  	*/
-    
 	/**
 	 * Getting a property for a Principal - used for personalisation. 
 	 * This method starts with getting the property on the user and if it does not exist we check out the
@@ -106,6 +105,17 @@ public class InfoGluePrincipalControllerProxy extends BaseController
 	 */
 	
 	public String getPrincipalPropertyValue(InfoGluePrincipal infoGluePrincipal, String propertyName, Integer languageId, Integer siteNodeId, boolean useLanguageFallback, boolean escapeSpecialCharacters, boolean findLargestValue) throws Exception
+	{
+		return getPrincipalPropertyValue(infoGluePrincipal, propertyName, languageId, siteNodeId, useLanguageFallback, escapeSpecialCharacters, findLargestValue, false);
+	}
+	
+	/**
+	 * Getting a property for a Principal - used for personalisation. 
+	 * This method starts with getting the property on the user and if it does not exist we check out the
+	 * group-properties as well.
+	 */
+	
+	public String getPrincipalPropertyValue(InfoGluePrincipal infoGluePrincipal, String propertyName, Integer languageId, Integer siteNodeId, boolean useLanguageFallback, boolean escapeSpecialCharacters, boolean findLargestValue, boolean findPrioValue) throws Exception
 	{
 		String value = "";
 		
@@ -118,7 +128,7 @@ public class InfoGluePrincipalControllerProxy extends BaseController
 		
 		try
         {
-		    value = getPrincipalPropertyValue(db, infoGluePrincipal, propertyName, languageId, siteNodeId, useLanguageFallback, escapeSpecialCharacters, findLargestValue);
+		    value = getPrincipalPropertyValue(db, infoGluePrincipal, propertyName, languageId, siteNodeId, useLanguageFallback, escapeSpecialCharacters, findLargestValue, findPrioValue);
 		    commitTransaction(db);
         }
         catch(Exception e)
@@ -131,7 +141,7 @@ public class InfoGluePrincipalControllerProxy extends BaseController
 		return value;
 	}	
 	
-    
+
 	/**
 	 * Getting a property for a Principal - used for personalisation. 
 	 * This method starts with getting the property on the user and if it does not exist we check out the
@@ -140,7 +150,18 @@ public class InfoGluePrincipalControllerProxy extends BaseController
 	
 	public String getPrincipalPropertyValue(Database db, InfoGluePrincipal infoGluePrincipal, String propertyName, Integer languageId, Integer siteNodeId, boolean useLanguageFallback, boolean escapeSpecialCharacters, boolean findLargestValue) throws Exception
 	{
-		String key = "" + infoGluePrincipal.getName() + "_" + propertyName + "_" + languageId + "_" + siteNodeId + "_" + useLanguageFallback + "_" + escapeSpecialCharacters + "_" + findLargestValue;
+		return getPrincipalPropertyValue(db, infoGluePrincipal, propertyName, languageId, siteNodeId, useLanguageFallback, escapeSpecialCharacters, findLargestValue, false);
+	}
+	
+	/**
+	 * Getting a property for a Principal - used for personalisation. 
+	 * This method starts with getting the property on the user and if it does not exist we check out the
+	 * group-properties as well.
+	 */
+	
+	public String getPrincipalPropertyValue(Database db, InfoGluePrincipal infoGluePrincipal, String propertyName, Integer languageId, Integer siteNodeId, boolean useLanguageFallback, boolean escapeSpecialCharacters, boolean findLargestValue, boolean findPrioValue) throws Exception
+	{
+		String key = "" + infoGluePrincipal.getName() + "_" + propertyName + "_" + languageId + "_" + siteNodeId + "_" + useLanguageFallback + "_" + escapeSpecialCharacters + "_" + findLargestValue + "_" + findPrioValue;
 		logger.info("key:" + key);
 		Object object = (String)CacheController.getCachedObject("principalPropertyValueCache", key);
 
@@ -188,6 +209,8 @@ public class InfoGluePrincipalControllerProxy extends BaseController
 		{	
 			List roles = infoGluePrincipal.getRoles();
 			String largestValue = "-1";
+			String prioValue = null;
+			int latestPriority = 0;
 			Iterator rolesIterator = roles.iterator();
 			while(rolesIterator.hasNext())
 			{
@@ -206,6 +229,24 @@ public class InfoGluePrincipalControllerProxy extends BaseController
 						DOMBuilder domBuilder = new DOMBuilder();
 						Document document = domBuilder.getDocument(propertyXML);
 						
+						Node propertyPriorityNode = document.getRootElement().selectSingleNode("attributes/PropertyPriority");
+						int currentPriority = 0;
+						if(propertyPriorityNode != null)
+						{
+							try
+							{
+								String propertyPriorityValue = propertyPriorityNode.getStringValue();
+								logger.info("propertyPriorityValue:" + propertyPriorityValue);
+
+								if(propertyPriorityValue != null && !propertyPriorityValue.equals(""))
+									currentPriority = new Integer(propertyPriorityValue);
+							}
+							catch (Exception e) 
+							{
+								e.printStackTrace();
+							}
+						}
+						
 						Node node = document.getRootElement().selectSingleNode("attributes/" + propertyName);
 						if(node != null)
 						{
@@ -216,7 +257,15 @@ public class InfoGluePrincipalControllerProxy extends BaseController
 							
 							if(value != null && !value.equals("") && findLargestValue && new Integer(largestValue).intValue() < new Integer(value).intValue())
 							    largestValue = value;
-							
+
+							logger.info("" + findLargestValue + ":" + findPrioValue + ":" + currentPriority + "=" + latestPriority);
+							if(value != null && !value.equals("") && !findLargestValue && findPrioValue && currentPriority > latestPriority)
+							{
+								logger.info("Using other value..");
+								prioValue = value;
+								latestPriority = currentPriority;
+							}
+
 							break;
 						}
 					}
@@ -225,6 +274,12 @@ public class InfoGluePrincipalControllerProxy extends BaseController
 			
 			if(findLargestValue)
 			    value = largestValue;
+			
+			if(findPrioValue && prioValue != null)
+			{
+			    value = prioValue;
+			    logger.info("Using prio value");
+			}
 			
 			if(value.equals("") && useLanguageFallback)
 			{
@@ -238,6 +293,8 @@ public class InfoGluePrincipalControllerProxy extends BaseController
 		{	
 			List groups = infoGluePrincipal.getGroups();
 			String largestValue = "-1";
+			String prioValue = null;
+			int latestPriority = 0;
 			Iterator groupsIterator = groups.iterator();
 			while(groupsIterator.hasNext())
 			{
@@ -256,6 +313,24 @@ public class InfoGluePrincipalControllerProxy extends BaseController
 						DOMBuilder domBuilder = new DOMBuilder();
 						Document document = domBuilder.getDocument(propertyXML);
 						
+						Node propertyPriorityNode = document.getRootElement().selectSingleNode("attributes/PropertyPriority");
+						int currentPriority = 0;
+						if(propertyPriorityNode != null)
+						{
+							try
+							{
+								String propertyPriorityValue = propertyPriorityNode.getStringValue();
+								logger.info("propertyPriorityValue:" + propertyPriorityValue);
+
+								if(propertyPriorityValue != null && !propertyPriorityValue.equals(""))
+									currentPriority = new Integer(propertyPriorityValue);
+							}
+							catch (Exception e) 
+							{
+								e.printStackTrace();
+							}
+						}
+
 						Node node = document.getRootElement().selectSingleNode("attributes/" + propertyName);
 						if(node != null)
 						{
@@ -267,6 +342,14 @@ public class InfoGluePrincipalControllerProxy extends BaseController
 							if(value != null && !value.equals("") && findLargestValue && new Integer(largestValue).intValue() < new Integer(value).intValue())
 							    largestValue = value;
 							
+							logger.info("" + findLargestValue + ":" + findPrioValue + ":" + currentPriority + "=" + latestPriority);
+							if(value != null && !value.equals("") && !findLargestValue && findPrioValue && currentPriority > latestPriority)
+							{
+								logger.info("Using other value..");
+								prioValue = value;
+								latestPriority = currentPriority;
+							}
+							
 							break;
 						}
 					}
@@ -276,6 +359,12 @@ public class InfoGluePrincipalControllerProxy extends BaseController
 			if(findLargestValue)
 			    value = largestValue;
 			
+			if(findPrioValue && prioValue != null)
+			{
+			    value = prioValue;
+			    logger.info("Using prio value");
+			}
+
 			if(value.equals("") && useLanguageFallback)
 			{
 				LanguageVO masterLanguageVO = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForSiteNode(db, siteNodeId);

@@ -78,7 +78,7 @@ public class ViewRolePropertiesAction extends ViewEntityPropertiesAction
 		
 		logger.info("this.rolePropertiesVO:" + this.rolePropertiesVO);
 		
-		this.setAttributes(ContentTypeDefinitionController.getController().getContentTypeAttributes(this.getContentTypeDefinitionVO().getSchemaValue()));	
+		this.setAttributes(ContentTypeDefinitionController.getController().getContentTypeAttributes(this.getContentTypeDefinitionVO().getSchemaValue(), true));	
 	
 		logger.info("attributes:" + this.getContentTypeAttributes().size());		
 		logger.info("availableLanguages:" + this.getAvailableLanguages().size());		

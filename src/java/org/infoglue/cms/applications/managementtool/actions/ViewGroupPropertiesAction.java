@@ -78,7 +78,7 @@ public class ViewGroupPropertiesAction extends ViewEntityPropertiesAction
 		
 		logger.info("this.groupPropertiesVO:" + this.groupPropertiesVO);
 		
-		this.setAttributes(ContentTypeDefinitionController.getController().getContentTypeAttributes(this.getContentTypeDefinitionVO().getSchemaValue()));	
+		this.setAttributes(ContentTypeDefinitionController.getController().getContentTypeAttributes(this.getContentTypeDefinitionVO().getSchemaValue(), true));	
 	
 		logger.info("attributes:" + this.getContentTypeAttributes().size());		
 		logger.info("availableLanguages:" + this.getAvailableLanguages().size());		

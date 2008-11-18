@@ -630,6 +630,15 @@ public class ContentTypeDefinitionController extends BaseController
 
 	public List getContentTypeAttributes(String schemaValue)
 	{
+		return getContentTypeAttributes(schemaValue, false);
+	}
+	
+	/**
+	 * This method returns the attributes in the content type definition for generation.
+	 */
+
+	public List getContentTypeAttributes(String schemaValue, boolean addPriorityAttribute)
+	{
 		//List attributes = new ArrayList();
 
 	    String key = "schemaValue_" + schemaValue.hashCode();
@@ -647,6 +656,7 @@ public class ContentTypeDefinitionController extends BaseController
 		}
 		else
 		{
+			int i = 0;
 			try
 			{
 				InputSource xmlSource = new InputSource(new StringReader(schemaValue));
@@ -657,7 +667,7 @@ public class ContentTypeDefinitionController extends BaseController
 	
 				String attributesXPath = "/xs:schema/xs:complexType/xs:all/xs:element/xs:complexType/xs:all/xs:element";
 				NodeList anl = org.apache.xpath.XPathAPI.selectNodeList(document.getDocumentElement(), attributesXPath);
-				for(int i=0; i < anl.getLength(); i++)
+				for(i = 0; i < anl.getLength(); i++)
 				{
 					Element child = (Element)anl.item(i);
 					String attributeName = child.getAttribute("name");
@@ -754,12 +764,96 @@ public class ContentTypeDefinitionController extends BaseController
 	
 					attributes.add(contentTypeAttribute);
 				}
-	
 			}
 			catch(Exception e)
 			{
 				logger.error("An error occurred when we tried to get the attributes of the content type: " + e.getMessage(), e);
 			}
+			
+			if(addPriorityAttribute)
+			{
+				System.out.println("Adding static property...");
+				
+				ContentTypeAttribute contentTypeAttribute = new ContentTypeAttribute();
+				contentTypeAttribute.setPosition(i);
+				contentTypeAttribute.setName("PropertyPriority");
+				contentTypeAttribute.setInputType("select");
+
+				ContentTypeAttributeParameter contentTypeAttributeParameter = new ContentTypeAttributeParameter();
+				contentTypeAttributeParameter.setId("title");
+				contentTypeAttributeParameter.setType(0);
+				contentTypeAttribute.putContentTypeAttributeParameter("title", contentTypeAttributeParameter);
+				ContentTypeAttributeParameterValue contentTypeAttributeParameterValue = new ContentTypeAttributeParameterValue();
+				contentTypeAttributeParameterValue.setId("title");
+				contentTypeAttributeParameterValue.addAttribute("title", "PropertyPriority");
+				contentTypeAttributeParameter.addContentTypeAttributeParameterValue("title", contentTypeAttributeParameterValue);
+
+				contentTypeAttributeParameter = new ContentTypeAttributeParameter();
+				contentTypeAttributeParameter.setId("description");
+				contentTypeAttributeParameter.setType(0);
+				contentTypeAttribute.putContentTypeAttributeParameter("description", contentTypeAttributeParameter);
+				contentTypeAttributeParameterValue = new ContentTypeAttributeParameterValue();
+				contentTypeAttributeParameterValue.setId("description");
+				contentTypeAttributeParameterValue.addAttribute("description", "What prio should this have");
+				contentTypeAttributeParameter.addContentTypeAttributeParameterValue("description", contentTypeAttributeParameterValue);
+
+				contentTypeAttributeParameter = new ContentTypeAttributeParameter();
+				contentTypeAttributeParameter.setId("initialData");
+				contentTypeAttributeParameter.setType(0);
+				contentTypeAttribute.putContentTypeAttributeParameter("initialData", contentTypeAttributeParameter);
+				contentTypeAttributeParameterValue = new ContentTypeAttributeParameterValue();
+				contentTypeAttributeParameterValue.setId("initialData");
+				contentTypeAttributeParameterValue.addAttribute("initialData", "");
+				contentTypeAttributeParameter.addContentTypeAttributeParameterValue("initialData", contentTypeAttributeParameterValue);
+
+				contentTypeAttributeParameter = new ContentTypeAttributeParameter();
+				contentTypeAttributeParameter.setId("class");
+				contentTypeAttributeParameter.setType(0);
+				contentTypeAttribute.putContentTypeAttributeParameter("class", contentTypeAttributeParameter);
+				contentTypeAttributeParameterValue = new ContentTypeAttributeParameterValue();
+				contentTypeAttributeParameterValue.setId("class");
+				contentTypeAttributeParameterValue.addAttribute("class", "longtextfield");
+				contentTypeAttributeParameter.addContentTypeAttributeParameterValue("class", contentTypeAttributeParameterValue);
+
+				contentTypeAttributeParameter = new ContentTypeAttributeParameter();
+				contentTypeAttributeParameter.setId("values");
+				contentTypeAttributeParameter.setType(1);
+				contentTypeAttribute.putContentTypeAttributeParameter("values", contentTypeAttributeParameter);
+
+				contentTypeAttributeParameterValue = new ContentTypeAttributeParameterValue();
+				contentTypeAttributeParameterValue.setId("1");
+				contentTypeAttributeParameterValue.addAttribute("id", "1");
+				contentTypeAttributeParameterValue.addAttribute("label", "Lowest");
+				contentTypeAttributeParameter.addContentTypeAttributeParameterValue("1", contentTypeAttributeParameterValue);
+
+				contentTypeAttributeParameterValue = new ContentTypeAttributeParameterValue();
+				contentTypeAttributeParameterValue.setId("2");
+				contentTypeAttributeParameterValue.addAttribute("id", "2");
+				contentTypeAttributeParameterValue.addAttribute("label", "Low");
+				contentTypeAttributeParameter.addContentTypeAttributeParameterValue("2", contentTypeAttributeParameterValue);
+
+				contentTypeAttributeParameterValue = new ContentTypeAttributeParameterValue();
+				contentTypeAttributeParameterValue.setId("3");
+				contentTypeAttributeParameterValue.addAttribute("id", "3");
+				contentTypeAttributeParameterValue.addAttribute("label", "Medium");
+				contentTypeAttributeParameter.addContentTypeAttributeParameterValue("3", contentTypeAttributeParameterValue);
+
+				contentTypeAttributeParameterValue = new ContentTypeAttributeParameterValue();
+				contentTypeAttributeParameterValue.setId("4");
+				contentTypeAttributeParameterValue.addAttribute("id", "4");
+				contentTypeAttributeParameterValue.addAttribute("label", "High");
+				contentTypeAttributeParameter.addContentTypeAttributeParameterValue("4", contentTypeAttributeParameterValue);
+
+				contentTypeAttributeParameterValue = new ContentTypeAttributeParameterValue();
+				contentTypeAttributeParameterValue.setId("5");
+				contentTypeAttributeParameterValue.addAttribute("id", "5");
+				contentTypeAttributeParameterValue.addAttribute("label", "Highest");
+				contentTypeAttributeParameter.addContentTypeAttributeParameterValue("5", contentTypeAttributeParameterValue);
+				// End extra parameters
+
+				attributes.add(contentTypeAttribute);
+			}
+
 		}
 
 		if(attributes != null)
