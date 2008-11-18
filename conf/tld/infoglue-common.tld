@@ -1131,4 +1131,31 @@
             <rtexprvalue>true</rtexprvalue>
         </attribute>
 	</tag>
+	<tag>
+		<name>authorizeRemoteAddress</name>
+		<tagclass>org.infoglue.deliver.taglib.common.AuthorizeRemoteAddressTag</tagclass>
+		<bodycontent>empty</bodycontent>
+		<info></info>
+		<attribute>
+			<name>id</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<name>trustedIPs</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<name>allowDnsLookupForIPs</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<name>trustedDomains</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
 </taglib>
