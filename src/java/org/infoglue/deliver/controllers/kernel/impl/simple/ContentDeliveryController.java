@@ -696,7 +696,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 		} 
 		catch(Exception e)
 		{
-			logger.error("An error occurred trying to get determine if content:" + contentId + " has a localized version:" + e.getMessage(), e);
+			logger.warn("An error occurred trying to get determine if content:" + contentId + " has a localized version:" + e.getMessage());
 		}
 		
 		return hasUserContentAccess;
