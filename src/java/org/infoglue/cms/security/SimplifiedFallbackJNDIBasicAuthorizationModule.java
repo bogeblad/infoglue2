@@ -49,6 +49,7 @@ import org.infoglue.cms.entities.management.GroupVO;
 import org.infoglue.cms.entities.management.RoleVO;
 import org.infoglue.cms.entities.management.SystemUserVO;
 import org.infoglue.cms.exception.Bug;
+import org.infoglue.cms.exception.PrincipalNotFoundException;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.deliver.util.CacheController;
@@ -537,7 +538,7 @@ public class SimplifiedFallbackJNDIBasicAuthorizationModule extends Thread imple
 		}
 
 		if(distinguishedUserName == null)
-			throw new Exception("No user called " + userName + " was found.");
+			throw new PrincipalNotFoundException("No user called " + userName + " was found.");
 			
 		return distinguishedUserName;
 	}
