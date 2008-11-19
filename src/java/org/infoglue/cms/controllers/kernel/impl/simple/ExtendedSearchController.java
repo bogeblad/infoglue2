@@ -571,7 +571,6 @@ class SqlBuilder
 	 */
 	private List getExpireDateWhereClauses()
 	{
-		System.out.println("getExpireDateWhereClauses...");
 		final List clauses = new ArrayList();
 		switch(criterias.getExpireDateCriteriaType()) 
 		{

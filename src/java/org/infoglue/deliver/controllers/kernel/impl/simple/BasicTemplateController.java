@@ -197,7 +197,6 @@ public class BasicTemplateController implements TemplateController
 	
 	public BasicTemplateController(DatabaseWrapper databaseWrapper, InfoGluePrincipal infoGluePrincipal)
 	{
-		//System.out.println("Instantiated templatecontroller");
 	    this.databaseWrapper = databaseWrapper;
 	    this.infoGluePrincipal = infoGluePrincipal;
 	    this.urlComposer = URLComposer.getURLComposer(); 
@@ -218,7 +217,6 @@ public class BasicTemplateController implements TemplateController
 			integrationDeliveryController = null;
 			request = null;
 			deliveryContext = null;
-			//System.out.println("Cleared templatecontroller");
 		}
 		catch (Exception e) 
 		{

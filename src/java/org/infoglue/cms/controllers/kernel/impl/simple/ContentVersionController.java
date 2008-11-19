@@ -1018,7 +1018,7 @@ public class ContentVersionController extends BaseController
 	
     public ContentVersionVO update(Integer contentId, Integer languageId, ContentVersionVO contentVersionVO, InfoGluePrincipal principal) throws ConstraintException, SystemException
     {
-		System.out.println("update:" + contentId + " - " + languageId);
+		//System.out.println("update:" + contentId + " - " + languageId);
         ContentVersionVO updatedContentVersionVO;
 		
         Database db = CastorDatabaseService.getDatabase();

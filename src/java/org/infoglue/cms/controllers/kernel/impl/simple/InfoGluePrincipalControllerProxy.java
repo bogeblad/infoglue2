@@ -460,7 +460,7 @@ public class InfoGluePrincipalControllerProxy extends BaseController
 			while(assetListIterator.hasNext())
 			{
 				DigitalAssetVO currentAsset = (DigitalAssetVO)assetListIterator.next();
-				System.out.println(currentAsset.getAssetKey() + "=" + assetKey);
+				logger.info("" + currentAsset.getAssetKey() + "=" + assetKey);
 				if(currentAsset.getAssetKey().equals(assetKey))
 				{
 					asset = currentAsset;

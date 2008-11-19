@@ -772,8 +772,6 @@ public class ContentTypeDefinitionController extends BaseController
 			
 			if(addPriorityAttribute)
 			{
-				System.out.println("Adding static property...");
-				
 				ContentTypeAttribute contentTypeAttribute = new ContentTypeAttribute();
 				contentTypeAttribute.setPosition(i);
 				contentTypeAttribute.setName("PropertyPriority");

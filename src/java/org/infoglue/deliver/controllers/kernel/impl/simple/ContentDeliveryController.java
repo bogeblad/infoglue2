@@ -492,7 +492,6 @@ public class ContentDeliveryController extends BaseDeliveryController
 			}
 			else if(smallestContentVersionVOCandidate != null)
 			{
-				//System.out.println("Getting content by id...");
 				contentVersionVO = (ContentVersionVO)getVOWithId(SmallContentVersionImpl.class, ((SmallestContentVersionVO)smallestContentVersionVOCandidate).getId(), db);
 	        	
 	        	//logger.info("Caching content version for key:" + versionKey);
@@ -501,8 +500,6 @@ public class ContentDeliveryController extends BaseDeliveryController
 			}
 			else
 			{
-				//System.out.println("Querying full version:" + versionKey);
-					
 				//logger.info("Querying for verson: " + versionKey); 
 				OQLQuery oql = db.getOQLQuery( "SELECT cv FROM org.infoglue.cms.entities.content.impl.simple.SmallContentVersionImpl cv WHERE cv.contentId = $1 AND cv.languageId = $2 AND cv.stateId >= $3 AND cv.isActive = $4 ORDER BY cv.contentVersionId desc");
 		    	oql.bind(contentId);
@@ -1256,8 +1253,6 @@ public class ContentDeliveryController extends BaseDeliveryController
 
 			if(!contentVO.getRepositoryId().equals(siteNodeVO.getRepositoryId()))
 			{
-				//System.out.println("Not same repository.. fetching the contents languages...");
-				
 				List contentRepositoryLangs = LanguageDeliveryController.getLanguageDeliveryController().getAvailableLanguagesForRepository(db, contentVO.getRepositoryId());
 				Iterator contentRepositoryLangsIterator = contentRepositoryLangs.iterator();
 				while (contentRepositoryLangsIterator.hasNext())

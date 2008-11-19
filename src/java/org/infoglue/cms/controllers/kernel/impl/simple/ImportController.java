@@ -157,29 +157,6 @@ public class ImportController extends BaseController
 
 			readContent = (Content)repositoryContentMap.get("" + repositoryRead.getId());
 			//System.out.println("readContent:" + readContent.getName() + ":" + readContent.getId());
-			/*
-			System.out.println("Read contents size:" + readContents.size());
-			if(readContents != null && readContents.size() > 1)
-			{
-				Iterator readContentsIterator = readContents.iterator();
-				while(readContentsIterator.hasNext())
-				{
-					Content readContentCandidate = (Content)readContentsIterator.next();
-					System.out.println("readContentCandidate:" + readContentCandidate.getName() + ":" + readContentCandidate.getId());
-					System.out.println("readContentCandidate.getRepositoryId():" + readContentCandidate.getRepositoryId());
-					System.out.println("repositoryRead:" + repositoryRead.getId());
-					if(readContentCandidate.getRepositoryId().equals(repositoryRead.getId()))
-					{
-						readContent = readContentCandidate;
-						break;
-					}
-				}
-			}
-			else
-			{
-				readContent = (Content)readContents.get(0);
-			}
-			*/
 			
 			readContent.setRepository((RepositoryImpl)repositoryRead);
 
@@ -214,7 +191,7 @@ public class ImportController extends BaseController
 			
 			readSiteNode.setRepository((RepositoryImpl)repositoryRead);
 			
-			System.out.println("***************************************\nreadContent:" + readContent.getName());
+			logger.info("***************************************\nreadContent:" + readContent.getName());
 			createContents(readContent, contentIdMap, contentTypeIdMap, allContents, Collections.unmodifiableCollection(contentTypeDefinitions), categoryIdMap, version, db, onlyLatestVersions);
 			createStructure(readSiteNode, contentIdMap, siteNodeIdMap, siteNodeVersionIdMap, readAvailableServiceBindings, allSiteNodes, db, onlyLatestVersions);
 		}
@@ -761,7 +738,7 @@ public class ImportController extends BaseController
 					
 					if(digitalAsset.getAssetFileSize() == -1)
 					{
-						System.out.println("digitalAsset:" + digitalAsset.getId() + "-" + digitalAsset.getAssetKey() + " was archived - let's fake it..");
+						logger.info("digitalAsset:" + digitalAsset.getId() + "-" + digitalAsset.getAssetKey() + " was archived - let's fake it..");
 						digitalAsset.setAssetBytes("archived".getBytes());						
 					}
 					
