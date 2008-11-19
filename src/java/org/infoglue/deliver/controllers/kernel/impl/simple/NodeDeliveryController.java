@@ -1591,8 +1591,17 @@ public class NodeDeliveryController extends BaseDeliveryController
 	        
 	        if(siteNodeVO.getMetaInfoContentId() == null)
 	        	throw new SystemException("The site node " + siteNodeVO.getName() + "(" + siteNodeVO.getId() + ") had no meta info. Fix this by editing the site node. Should never happen.");
-	        	 
-	        ContentVO content = ContentDeliveryController.getContentDeliveryController().getContentVO(db, siteNodeVO.getMetaInfoContentId(), deliveryContext);
+	        
+	        ContentVO content = null;
+	        try
+	        {
+	        	content = ContentDeliveryController.getContentDeliveryController().getContentVO(db, siteNodeVO.getMetaInfoContentId(), deliveryContext);
+	        }
+	        catch (Exception e) 
+	        {
+				logger.error("The site node " + siteNodeVO.getName() + "(" + siteNodeVO.getId() + ") had no valid meta info. Fix this by editing the site node. Should never happen.");
+			}
+	        
 	        if(content != null) 
 	        {
 	            //logger.info("Content "+content.getContentId());
@@ -1623,7 +1632,7 @@ public class NodeDeliveryController extends BaseDeliveryController
 	        {
 	            throw new SystemException("You must run validation service in the management tool against this db - it needs to become up2date with the new model.");
 	        }
-        }
+	    }
         
         return null;
     }
