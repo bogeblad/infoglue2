@@ -32,6 +32,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import javax.naming.Context;
+import javax.naming.NameNotFoundException;
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
 import javax.naming.directory.Attribute;
@@ -286,7 +287,7 @@ public class SimplifiedJNDIBasicAuthorizationModule implements AuthorizationModu
 			}
 			catch(Exception e)
 			{
-				logger.error("Error:" + e.getMessage());
+				logger.error("Error:" + e.getMessage(), e);
 			    CacheController.cacheObjectInAdvancedCache("JNDIAuthorizationCache", key, new NullObject(), null, false);
 			}
 			finally
@@ -879,10 +880,14 @@ public class SimplifiedJNDIBasicAuthorizationModule implements AuthorizationModu
 			}
 
 		}
+		catch (NameNotFoundException nnfe) 
+		{
+			logger.warn("No user called " + userName + " was found.");
+			throw new PrincipalNotFoundException("No user called " + userName + " was found.");
+		}
 		catch (Exception e) 
 		{
 			logger.warn(e);
-			e.printStackTrace();
 			throw e;
 		}
 
