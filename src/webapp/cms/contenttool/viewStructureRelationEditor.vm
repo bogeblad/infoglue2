@@ -200,7 +200,7 @@
 				addImageLink(actionTD, "javascript:deleteQualifyer(" + i + ");", "images/delete.gif");
 				var qualifyerTD = document.createElement("TD");
 				qualifyerTD.setAttribute("align", "left");
-				var qualifyerText = document.createTextNode(qualifyer.getPath());
+				var qualifyerText = document.createTextNode(qualifyer.getPath().replace(/&quot;/,"\""));
 				myTR.appendChild(actionTD);
 				qualifyerTD.appendChild(qualifyerText);
 				myTR.appendChild(qualifyerTD);
@@ -284,7 +284,7 @@
 		{
 			#foreach($qualifyer in $qualifyers)
 				//alert("$qualifyer");
-				qualifyer = new Qualifyer("$currentEntity", "$qualifyer.value", "$qualifyer.path");
+				qualifyer = new Qualifyer("$currentEntity", "$qualifyer.value", "$formatter.escapeForAdvancedJavascripts($qualifyer.path)");
 				qualifyersVector.addElement(qualifyer);
 			#end
 	
