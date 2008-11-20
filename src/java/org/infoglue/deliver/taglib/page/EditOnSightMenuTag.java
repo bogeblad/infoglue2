@@ -30,7 +30,6 @@ import java.util.Locale;
 
 import javax.servlet.jsp.JspException;
 
-import org.infoglue.cms.controllers.kernel.impl.simple.AccessRightController;
 import org.infoglue.cms.entities.content.Content;
 import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.entities.management.LanguageVO;
@@ -38,8 +37,6 @@ import org.infoglue.cms.entities.structure.SiteNode;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.deliver.taglib.component.ComponentLogicTag;
-
-import sun.security.action.GetLongAction;
 
 /**
  * This taglib creates the nice InfoGlue functions-icon with it's menu.
