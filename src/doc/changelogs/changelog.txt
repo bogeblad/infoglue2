@@ -1,11 +1,86 @@
 -------------------------------------------------------------------------------------
-- InfoGlue 2.9.4 Final
+- InfoGlue 2.9.6 Final
 -------------------------------------------------------------------------------------
 
 Release notes
 ---------------------------------------
-Version 2.9.4 a minor release with some small improvements and small bugfixes. The installer has been improved
-as well as many other small items.
+Version 2.9.6.2
+    
+Thanx for all reports and proposals for bugfixes.
+The InfoGlue Team
+
+
+Abbreviated Changelog from 2.9.5 Final 
+---------------------------------------
+- Made ContentBooleanFieldTag and ContentCheckboxFieldTag evaluate jstl-expressions on name and checked attributes.
+- Added possibility to set allowMultipleSelections on select-boxes properties.
+- New remote properties data provider - nice if you want checkbox/selectbox properties populated by a remote service.
+- Added possibility to enable nice uri different in working and live by new setting in application settings.
+- Added help form in repository view - much easier to understand how to configure nice uri:s. Also possible to have path in working and not in live.
+- Added correctDoubleAmpEncoding in common:rssFeedEntry to allow developer to fix problems with the normal urls being double encoded.
+- Added logic so deliver working is not protected automatically if the user comes from localhost. This is to make sure internal rss/http-requests are not blocked. In live you can make such a page unprotected but working is more strict which was a problem internally.
+- Added forcePublication attribute to RemoteUserProperties-tag so that personal info can allways be directly published. 
+- Fixed so double // should not occur even with empty contexts and nice uri
+- Fixed bug in asset deletion in edit-on-sight. Refactored so version change does work a bit different - fixed a bug with asset references on delete.
+- Added escapeing of content:textfield value tag
+- Worked on some memory leaks. Null more jsp-tags values - before they seemed to keep references wrong in some situations.
+- Fixed many bugs concerning how published versions get's handled when edited. Before they got state working which was wrong.
+- Removed stop/kill-call in ThreadMonitor on long threads - causes memory problems.
+- Fixed many memory leaks - clears some objects after view page is done.
+- Added clear castor caches method in ViewApplicationState. For debug purposes.
+- Added expireFromDate, expireToDate and versionModifier as possible arguments to matchingContents-tag.
+- Improved structure:componentLabel so you can state labelKey_languageCode as keys in the master language version of the component. So you don't have to have two language versions of the component just to have several labels.
+- Added new common:authorizedRemoteAddressTag which lets you control access to content based on users IP-address/range/hostname.
+- Made role/group properties form be populated with PropertyPriority automatically. This is so you can define which property takes presedence if a user has multiple roles / groups.
+- Made management-tool --> content type definitions be sorted by name as default.
+- Changed logging strategy to set more messages to warn on content attribute fetches in delivery. 
+- Improved diagnostics screen with direct access to clear caches and log viewer.   
+- Improved log-viewer 
+
+
+-------------------------------------------------------------------------------------
+- InfoGlue 2.9.5 Final
+-------------------------------------------------------------------------------------
+
+Release notes
+---------------------------------------
+Version 2.9.5 is a bugfix release but it also has some small new features.
+It improves performance and also increases backwards compability.
+    
+Thanx for all reports and proposals for bugfixes.
+The InfoGlue Team
+
+
+Abbreviated Changelog from 2.9.4 Final 
+---------------------------------------
+- Fixed bug in script reference - made all popups from management tool not work.
+- Added save and exit button to component property dialog. 
+- Also fixed so component properties are not shown after you use a content:assignPropertyBinding. New attribute on that tag as well so you can force the palette to show.
+- Made compress page response default true - makes page delivery much faster.
+- Reinstated page cache on decorated views. Most important for the related css/javascript pages. To many uncached hits otherwise.
+- Bundled some jquery plugins into one file instead of many in decorated view.
+- Fixed small bug with custom markup
+- Added new structure:componentLabel tag which works similar as contentAttribute but is meant only to get mapped labels from the component itself.
+- Fixed SQL so SQLServer does accept the diagnostic screen.
+- Added setting possibility to turn off final rendering in decorated view.
+- Fixed so the old behaviour with decorated mode being finally rendered is back. To many was forced to rewrite components otherwise.
+- Fixed so component property value does not return null due but empty string as it used to if not available.
+- Fixed encoding bug in asset bindings
+- Worked on better asset key encoding handling - before there was issues with i18n asset keys on multiple asset bindings.
+- Added new interception point "ComponentPropertyEditor.EditAdvancedProperties" which controls who sees the Advanced properties - arrow on component properties palette.
+
+
+-------------------------------------------------------------------------------------
+- InfoGlue 2.9.4 Final
+-------------------------------------------------------------------------------------
+
+
+Release notes
+---------------------------------------
+Version 2.9.4 a medium release with some medium and small improvements and many small bugfixes. 
+The installer has been improved as well as many other items. 
+One big new feature is the new content/sitenode version cleanup functionality and we have improved the 
+performance/loadtime for the new V3-interfaces in edit on sight.
     
 Thanx for all reports and proposals for bugfixes.
 The InfoGlue Team
