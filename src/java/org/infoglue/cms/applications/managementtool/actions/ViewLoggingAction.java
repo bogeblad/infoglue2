@@ -103,6 +103,9 @@ public class ViewLoggingAction extends InfoGlueAbstractAction
 			logFiles.add(velocityLogFile);
 		}
 
+		if(logFiles != null && logFiles.size() > 0)
+			Collections.sort(logFiles, Collections.reverseOrder(new FileComparator("lastModified")));
+
 		String fileName = "";
 		if(logFileName == null || logFileName.equals(""))
 		{
@@ -135,10 +138,7 @@ public class ViewLoggingAction extends InfoGlueAbstractAction
 				}
 			}			
 		}
-		
-		if(logFiles != null && logFiles.size() > 0)
-			Collections.sort(logFiles, Collections.reverseOrder(new FileComparator("lastModified")));
-			
+					
 		File file = new File(fileName);
 		
     	logFragment = FileHelper.tail(file, logLines);

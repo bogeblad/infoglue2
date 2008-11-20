@@ -7,27 +7,67 @@
 <div class="fullymarginalized" style="color: black;">
 
 	<h3>$ui.getString("tool.managementtool.deliverApplicationState.header"):</h3>
-	<h4>CMS:</h4>
-	<a href="ViewApplicationState.action">infoglueCMS</a><br/>
-	
-	<h4>Working/Preview:</h4>
-	#foreach($url in $internalDeliverUrls)
-		<a href="$url/ViewApplicationState.action">$url</a><br/>
-	#end
-	
-	<h4>Live:</h4>
-	#foreach($url in $publicDeliverUrls)
-		<a href="$url/ViewApplicationState.action">$url</a><br/>
-	#end
-	
-	<h3>Statistics</h3>
+	<table width="500px" border="0">
+		<tr>
+			<th style="border-bottom: 1px solid #CCC;" align="left" width="70%">CMS Context/URL</th>
+			<th style="border-bottom: 1px solid #CCC;" align="left">Actions</th>
+		</tr>
+		<tr>
+			<td>
+				<a href="ViewApplicationState.action">infoglueCMS</a>
+			</td>
+			<td>
+				<a href="ViewApplicationState!clearCaches.action?returnAddress=%2FinfoglueCMS%2FViewDiagnosticCenter.action">Clear caches</a> | <a href="ViewLogging.action" target="_blank">Logs</a>
+			</td>
+		</tr>
+		<tr>
+			<td colspan="2">&nbsp;</td>
+		</tr>		
+		<tr>
+			<th style="border-bottom: 1px solid #CCC;" align="left" width="70%">Working/Preview Context/URL</th>
+			<th style="border-bottom: 1px solid #CCC;" align="left">Actions</th>
+		</tr>
+		#foreach($url in $internalDeliverUrls)
+		<tr>
+			<td>
+				<a href="$url/ViewApplicationState.action">$url</a>
+			</td>
+			<td>
+				<a href="$url/ViewApplicationState!clearCaches.action?returnAddress=%2FinfoglueCMS%2FViewDiagnosticCenter.action">Clear caches</a> | <a href="$url/ViewLogging.action" target="_blank">Logs</a>
+			</td>
+		</tr>
+		#end
+		<tr>
+			<td colspan="2">&nbsp;</td>
+		</tr>		
+		<tr>
+			<th style="border-bottom: 1px solid #CCC;" align="left" width="70%">Live Context/URL</th>
+			<th style="border-bottom: 1px solid #CCC;" align="left">Actions</th>
+		</tr>
+		#foreach($url in $publicDeliverUrls)
+		<tr>
+			<td>
+				<a href="$url/ViewApplicationState.action">$url</a>
+			</td>
+			<td>
+				<a href="$url/ViewApplicationState!clearCaches.action?returnAddress=%2FinfoglueCMS%2FViewDiagnosticCenter.action">Clear caches</a> | <a href="$url/ViewLogging.action" target="_blank">Logs</a>
+			</td>
+		</tr>
+		#end
+		<tr>
+			<td colspan="2">&nbsp;</td>
+		</tr>		
+		<tr>
+			<th style="border-bottom: 1px solid #CCC;" align="left" width="70%">Statistics</th>
+			<th style="border-bottom: 1px solid #CCC;" align="left">&nbsp;</th>
+		</tr>
+		<tr><td width="70%">Number of siteNodes</td><td>$numberOfSiteNodes</td></tr>
+		<tr><td>Number of siteNodeVersions</td><td>$numberOfSiteNodeVersions</td></tr>
+		<tr><td>Number of contents</td><td>$numberOfContents</td></tr>
+		<tr><td>Number of content versions</td><td>$numberOfContentVersions</td></tr>
+		<tr><td>Number of digitalAssets</td><td>$numberOfDigitalAssets</td></tr>
+	</table>
 	<p>
-		Number of siteNodes: $numberOfSiteNodes<br />
-		Number of siteNodeVersions: $numberOfSiteNodeVersions<br />
-		Number of contents: $numberOfContents<br />
-		Number of content versions: $numberOfContentVersions<br />
-		Number of digitalAssets: $numberOfDigitalAssets<br />
-		<br>
 		Number of unused digitalAssets (could potentially be removed): $numberOfUnusedDigitalAssets<br />
 		SQL to remove unused assets: <br><br>
 		MySQL and SQLServer: 

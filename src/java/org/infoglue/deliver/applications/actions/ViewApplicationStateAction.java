@@ -93,6 +93,7 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
 	private String logLevel					= "";
 
 	private String attributeName			= "";
+	private String returnAddress			= null;
 
 	private static VisualFormatter formatter = new VisualFormatter();
 	
@@ -378,6 +379,13 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
         CacheController.clearCastorCaches();
         CacheController.clearCaches(null, null, null);
         
+        if(this.returnAddress != null && !this.returnAddress.equals(""))
+        {
+            this.getResponse().sendRedirect(this.returnAddress);
+            
+            return NONE;
+        }
+        	
         return "cleared";
     }
 
@@ -762,4 +770,15 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
 	{
 		this.attributeName = attributeName;
 	}
+	
+	public String getReturnAddress()
+	{
+		return returnAddress;
+	}
+
+	public void setReturnAddress(String returnAddress)
+	{
+		this.returnAddress = returnAddress;
+	}
+
 }
