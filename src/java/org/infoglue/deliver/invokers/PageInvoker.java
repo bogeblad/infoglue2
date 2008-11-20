@@ -241,6 +241,10 @@ public abstract class PageInvoker
 					if(newPageCacheTimeout == null)
 						newPageCacheTimeout = this.getTemplateController().getPageCacheTimeout();
 					
+					String pageKey = this.getDeliveryContext().getPageKey();
+					String[] allUsedEntitiesCopy = this.getDeliveryContext().getAllUsedEntities().clone();
+					Object extraData = this.getDeliveryContext().getExtraData();
+					
 				    if(compressPageCache != null && compressPageCache.equalsIgnoreCase("true"))
 					{
 						long startCompression = System.currentTimeMillis();
@@ -248,30 +252,30 @@ public abstract class PageInvoker
 					    logger.info("Compressing page for pageCache took " + (System.currentTimeMillis() - startCompression) + " with a compressionFactor of " + (this.pageString.length() / compressedData.length));
 						if(this.getTemplateController().getOperatingMode().intValue() == 3 && !CmsPropertyHandler.getLivePublicationThreadClass().equalsIgnoreCase("org.infoglue.deliver.util.SelectiveLivePublicationThread"))
 						{
-							CacheController.cacheObjectInAdvancedCache("pageCache", this.getDeliveryContext().getPageKey(), compressedData, this.getDeliveryContext().getAllUsedEntities(), false);
-							CacheController.cacheObjectInAdvancedCache("pageCacheExtra", this.getDeliveryContext().getPageKey(), this.getDeliveryContext().getExtraData(), this.getDeliveryContext().getAllUsedEntities(), false);
-				    		CacheController.cacheObjectInAdvancedCache("pageCacheExtra", this.getDeliveryContext().getPageKey() + "_pageCacheTimeout", newPageCacheTimeout, this.getDeliveryContext().getAllUsedEntities(), false);    
+							CacheController.cacheObjectInAdvancedCache("pageCache", pageKey, compressedData, allUsedEntitiesCopy, false);
+							CacheController.cacheObjectInAdvancedCache("pageCacheExtra", pageKey, extraData, allUsedEntitiesCopy, false);
+				    		CacheController.cacheObjectInAdvancedCache("pageCacheExtra", pageKey + "_pageCacheTimeout", newPageCacheTimeout, allUsedEntitiesCopy, false);    
 						}
 						else
 						{
-						    CacheController.cacheObjectInAdvancedCache("pageCache", this.getDeliveryContext().getPageKey(), compressedData, this.getDeliveryContext().getAllUsedEntities(), true);
-						    CacheController.cacheObjectInAdvancedCache("pageCacheExtra", this.getDeliveryContext().getPageKey(), this.getDeliveryContext().getExtraData(), this.getDeliveryContext().getAllUsedEntities(), true);
-				    		CacheController.cacheObjectInAdvancedCache("pageCacheExtra", this.getDeliveryContext().getPageKey() + "_pageCacheTimeout", newPageCacheTimeout, this.getDeliveryContext().getAllUsedEntities(), true);    
+						    CacheController.cacheObjectInAdvancedCache("pageCache", pageKey, compressedData, allUsedEntitiesCopy, true);
+						    CacheController.cacheObjectInAdvancedCache("pageCacheExtra", pageKey, extraData, allUsedEntitiesCopy, true);
+				    		CacheController.cacheObjectInAdvancedCache("pageCacheExtra", pageKey + "_pageCacheTimeout", newPageCacheTimeout, allUsedEntitiesCopy, true);    
 						}
 					}
 				    else
 				    {
 				        if(this.getTemplateController().getOperatingMode().intValue() == 3 && !CmsPropertyHandler.getLivePublicationThreadClass().equalsIgnoreCase("org.infoglue.deliver.util.SelectiveLivePublicationThread"))
 				        {
-				        	CacheController.cacheObjectInAdvancedCache("pageCache", this.getDeliveryContext().getPageKey(), pageString, this.getDeliveryContext().getAllUsedEntities(), false);
-				        	CacheController.cacheObjectInAdvancedCache("pageCacheExtra", this.getDeliveryContext().getPageKey(), this.getDeliveryContext().getExtraData(), this.getDeliveryContext().getAllUsedEntities(), false);
-				    		CacheController.cacheObjectInAdvancedCache("pageCacheExtra", this.getDeliveryContext().getPageKey() + "_pageCacheTimeout", newPageCacheTimeout, this.getDeliveryContext().getAllUsedEntities(), false);    
+				        	CacheController.cacheObjectInAdvancedCache("pageCache", pageKey, pageString, allUsedEntitiesCopy, false);
+				        	CacheController.cacheObjectInAdvancedCache("pageCacheExtra", pageKey, extraData, allUsedEntitiesCopy, false);
+				    		CacheController.cacheObjectInAdvancedCache("pageCacheExtra", pageKey + "_pageCacheTimeout", newPageCacheTimeout, allUsedEntitiesCopy, false);    
 				        }
 				    	else
 				    	{
-				    		CacheController.cacheObjectInAdvancedCache("pageCache", this.getDeliveryContext().getPageKey(), pageString, this.getDeliveryContext().getAllUsedEntities(), true);    
-				    		CacheController.cacheObjectInAdvancedCache("pageCacheExtra", this.getDeliveryContext().getPageKey(), this.getDeliveryContext().getExtraData(), this.getDeliveryContext().getAllUsedEntities(), true);
-				    		CacheController.cacheObjectInAdvancedCache("pageCacheExtra", this.getDeliveryContext().getPageKey() + "_pageCacheTimeout", newPageCacheTimeout, this.getDeliveryContext().getAllUsedEntities(), true);    
+				    		CacheController.cacheObjectInAdvancedCache("pageCache", pageKey, pageString, allUsedEntitiesCopy, true);    
+				    		CacheController.cacheObjectInAdvancedCache("pageCacheExtra", pageKey, extraData, allUsedEntitiesCopy, true);
+				    		CacheController.cacheObjectInAdvancedCache("pageCacheExtra", pageKey + "_pageCacheTimeout", newPageCacheTimeout, allUsedEntitiesCopy, true);    
 				    	}
 				    }
 				}

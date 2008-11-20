@@ -489,8 +489,11 @@ public class DeliveryContext implements UsageListener
 	{
 		Map extraData = new HashMap();
 		
+		Map newHeaders = new HashMap(); 
+		newHeaders.putAll(getHttpHeaders());
+		
 		extraData.put("contentType", this.getContentType());
-		extraData.put("headers", this.getHttpHeaders());
+		extraData.put("headers", newHeaders);
 		//extraData.put("pageAttributes", this.getPageAttributes());
 		extraData.put("lastModifiedDateTime", this.lastModifiedDateTime);
 		extraData.put("pageCacheTimeout", this.pageCacheTimeout);
