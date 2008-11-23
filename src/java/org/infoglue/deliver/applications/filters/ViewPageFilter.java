@@ -152,6 +152,13 @@ public class ViewPageFilter implements Filter
 	        	    RequestAnalyser.getCurrentRequests().add(httpRequest);
 	        	}
 	        	*/
+	        	
+	            while(!CmsPropertyHandler.getOperatingMode().equals("3") && RequestAnalyser.getRequestAnalyser().getBlockRequests())
+	            {
+	            	System.out.println("Queing up requests as cache eviction are taking place..");
+	            	try { Thread.sleep(10); } catch (Exception e) {}
+	            }
+
 	            RequestAnalyser.getRequestAnalyser().incNumberOfCurrentRequests(null);
 
 	            HttpSession httpSession = httpRequest.getSession(true);
