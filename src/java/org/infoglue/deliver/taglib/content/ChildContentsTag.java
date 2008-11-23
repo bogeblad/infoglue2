@@ -37,7 +37,7 @@ public class ChildContentsTag extends ComponentLogicTag
 	private boolean useRepositoryInheritance = true;
     private boolean useStructureInheritance = true;
     private boolean searchRecursive = false;
-	private String sortAttribute 	= "id";
+	private String sortAttribute 	= "contentId";
 	private String sortOrder		= "asc";
     private boolean includeFolders 	= false;
 	
