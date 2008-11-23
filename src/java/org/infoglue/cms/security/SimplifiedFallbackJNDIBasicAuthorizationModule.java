@@ -95,6 +95,8 @@ public class SimplifiedFallbackJNDIBasicAuthorizationModule extends Thread imple
 		{
 			logger.info("Running SimplifiedFallbackJNDIBasicAuthorizationModule thread which updates the auth cache:" + CmsPropertyHandler.getContextRootPath());
 			Timer t = new Timer();
+			if(!logger.isInfoEnabled())
+				t.setActive(false);
 			
 			try
 			{
@@ -1654,6 +1656,8 @@ public class SimplifiedFallbackJNDIBasicAuthorizationModule extends Thread imple
 	public List getUsers(boolean skipCaches) throws Exception
 	{
 		Timer t = new Timer();
+		if(!logger.isInfoEnabled())
+			t.setActive(false);
 		
 		logger.info("*******************");
 	    logger.info("* getUsers start  *");

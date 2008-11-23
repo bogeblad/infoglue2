@@ -1281,6 +1281,8 @@ public class SimplifiedJNDIBasicAuthorizationModule implements AuthorizationModu
 	public List getUsers() throws Exception
 	{
 		Timer t = new Timer();
+		if(!logger.isInfoEnabled())
+			t.setActive(false);
 		
 		logger.info("*******************");
 	    logger.info("* getUsers start  *");
