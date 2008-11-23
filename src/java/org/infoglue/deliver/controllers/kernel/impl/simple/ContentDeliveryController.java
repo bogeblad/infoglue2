@@ -674,8 +674,8 @@ public class ContentDeliveryController extends BaseDeliveryController
 	/**
 	 * This method return true if the user logged in has access to the content sent in.
 	 */
-	
-	public boolean getHasUserContentAccess(Database db, InfoGluePrincipal infoGluePrincipal, Integer contentId)
+/*
+ 	public boolean getHasUserContentAccess(Database db, InfoGluePrincipal infoGluePrincipal, Integer contentId)
 	{
 		boolean hasUserContentAccess = true;
 		
@@ -698,6 +698,44 @@ public class ContentDeliveryController extends BaseDeliveryController
 		
 		return hasUserContentAccess;
 	}
+*/
+
+	public boolean getHasUserContentAccess(Database db, InfoGluePrincipal infoGluePrincipal, Integer contentId)
+	{
+		String key = "" + infoGluePrincipal.getName() + "_" + contentId + "_HasUserContentAccess";
+		logger.info("key:" + key);
+		Boolean hasUserContentAccess = (Boolean)CacheController.getCachedObjectFromAdvancedCache("personalAuthorizationCache", key);
+		if(hasUserContentAccess != null)
+		{
+			//System.out.println("Cached");
+			return hasUserContentAccess.booleanValue();
+		}
+		else
+		{
+			hasUserContentAccess = true;
+			//System.out.println("----- not Cached");
+			try 
+			{
+			    if(contentId != null)
+			    {
+					Integer protectedContentId = ContentDeliveryController.getContentDeliveryController().getProtectedContentId(db, contentId);
+					logger.info("IsProtected:" + protectedContentId);
+					if(protectedContentId != null && !AccessRightController.getController().getIsPrincipalAuthorized(infoGluePrincipal, "Content.Read", protectedContentId.toString()))
+					{
+					    hasUserContentAccess = false;
+					}
+			    }
+			} 
+			catch(Exception e)
+			{
+				logger.warn("An error occurred trying to get determine if user was allowed read access to:" + contentId + ":" + e.getMessage());
+			}
+
+			CacheController.cacheObjectInAdvancedCache("personalAuthorizationCache", key, new Boolean(hasUserContentAccess));
+		}
+		
+		return hasUserContentAccess;
+	}
 
 	/**
 	 * This is the most common way of getting attributes from a content. 
@@ -711,8 +749,9 @@ public class ContentDeliveryController extends BaseDeliveryController
 		
 		//logger.info("usedContentVersionId:" + usedContentVersionId);
 		String enforceRigidContentAccess = CmsPropertyHandler.getEnforceRigidContentAccess();
-		if(enforceRigidContentAccess != null && enforceRigidContentAccess.equalsIgnoreCase("true"))
+		if(enforceRigidContentAccess != null && enforceRigidContentAccess.equalsIgnoreCase("true") && !isMetaInfoQuery)
 		{
+			//System.out.println("Enforcing getHasUserContentAccess for attributeName:" + contentId + ":" + languageId + ":" + attributeName);
 			boolean hasUserContentAccess = getHasUserContentAccess(db, infogluePrincipal, contentId);
 			if(!hasUserContentAccess)
 			{
@@ -2559,14 +2598,21 @@ public class ContentDeliveryController extends BaseDeliveryController
 	/**
 	 * This method returns the id of the content that is protected if any. Looks recursive upwards.
 	 */
+	//static long totalLoadTime = 0;
 	
 	public Integer getProtectedContentId(Database db, Integer contentId) throws SystemException, Exception
 	{
-	    Integer protectedContentId = null;
+		Integer protectedContentId = null;
 		
-	    Content content = (Content)getObjectWithId(ContentImpl.class, contentId, db);
+		//org.infoglue.deliver.util.Timer t = new org.infoglue.deliver.util.Timer();
+	    Content content = (Content)getObjectWithId(SmallContentImpl.class, contentId, db);
+	    //Content content = (Content)getObjectWithId(ContentImpl.class, contentId, db);
+	    	    
     	protectedContentId = getProtectedContentId(db, content);
-        		
+
+    	//totalLoadTime = totalLoadTime + t.getElapsedTimeNanos();
+    	//System.out.println("totalLoadTime:" + totalLoadTime / 1000000);
+		
 		return protectedContentId;
 	}
 
@@ -2649,7 +2695,20 @@ public class ContentDeliveryController extends BaseDeliveryController
 						Content sortedContent = (Content)sortedListIterator.next();
 						
 						//Here we sort on name if the name on a container is wanted 
-						if(sortAttributeName.equalsIgnoreCase("name"))
+						if(sortAttributeName.equalsIgnoreCase("contentId"))
+						{
+							Integer id       = content.getContentId();
+							Integer sortedId = sortedContent.getContentId();
+							if(id != null && sortedId != null && sortOrder.equalsIgnoreCase("asc") && id.compareTo(sortedId) < 0)
+					    	{
+					    		break;
+					    	}
+					    	else if(id != null && sortedId != null && sortOrder.equalsIgnoreCase("desc") && id.compareTo(sortedId) > 0)
+					    	{
+					    		break;
+					    	}
+						}
+						else if(sortAttributeName.equalsIgnoreCase("name"))
 						{
 							String name       = content.getName();
 							String sortedName = sortedContent.getName();
