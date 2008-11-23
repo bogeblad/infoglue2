@@ -61,6 +61,7 @@ import org.infoglue.cms.entities.structure.impl.simple.SmallSiteNodeImpl;
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.NotificationMessage;
 import org.infoglue.deliver.applications.databeans.CacheEvictionBean;
+import org.infoglue.deliver.controllers.kernel.impl.simple.ContentDeliveryController;
 import org.infoglue.deliver.controllers.kernel.impl.simple.DigitalAssetDeliveryController;
 
 /**
@@ -84,7 +85,7 @@ public class SelectiveLivePublicationThread extends PublicationThread
 		return cacheEvictionBeans;
 	}
 
-	public void run()
+	public synchronized void run()
 	{
 		logger.info("Run in SelectiveLivePublicationThread....");
 		
@@ -268,7 +269,8 @@ public class SelectiveLivePublicationThread extends PublicationThread
 									Database db = CastorDatabaseService.getDatabase();
 									db.begin();
 									
-									Content content = ContentController.getContentController().getContentWithId(siteNodeVO.getMetaInfoContentId(), db);
+									Content content = ContentController.getContentController().getReadOnlyContentWithId(siteNodeVO.getMetaInfoContentId(), db);
+									//Content content = ContentController.getContentController().getContentWithId(siteNodeVO.getMetaInfoContentId(), db);
 									List contentVersionIds = new ArrayList();
 									Iterator contentVersionIterator = content.getContentVersions().iterator();
 									logger.info("Versions:" + content.getContentVersions().size());
@@ -343,9 +345,12 @@ public class SelectiveLivePublicationThread extends PublicationThread
 			{
 			    logger.error("An error occurred in the SelectiveLivePublicationThread:" + e.getMessage(), e);
 			}
+			finally
+			{
+		        logger.info("released block \n\n DONE---");
+				RequestAnalyser.getRequestAnalyser().setBlockRequests(false);
+			}
 		}
 
-        logger.info("released block \n\n DONE---");
-		RequestAnalyser.getRequestAnalyser().setBlockRequests(false);
 	}
 }
