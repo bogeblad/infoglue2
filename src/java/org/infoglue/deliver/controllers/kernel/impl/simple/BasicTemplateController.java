@@ -2155,7 +2155,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			logger.error("An error occurred trying to get assetKeys on content with id: " + contentId + ":" + e.getMessage(), e);
+			logger.warn("An error occurred trying to get assetKeys on content with id: " + contentId + ":" + e.getMessage());
 		}
 				
 		return assetKeys;
@@ -2175,7 +2175,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			logger.error("An error occurred trying to get assetKeys on content with id: " + contentId + ":" + e.getMessage(), e);
+			logger.warn("An error occurred trying to get assetKeys on content with id: " + contentId + ":" + e.getMessage());
 		}
 				
 		return assetKeys;
@@ -2195,7 +2195,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			logger.error("An error occurred trying to get assetKeys on content with id: " + contentId + ":" + e.getMessage(), e);
+			logger.warn("An error occurred trying to get assetKeys on content with id: " + contentId + ":" + e.getMessage());
 		}
 				
 		return assetKeys;
@@ -2215,12 +2215,12 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			logger.error("An error occurred trying to get asset on content with id: " + contentId + " and assetKey:" + assetKey + ":" + e.getMessage(), e);
+			logger.warn("An error occurred trying to get asset on content with id: " + contentId + " and assetKey:" + assetKey + ":" + e.getMessage());
 		}
 				
 		return digitalAssetVO;
 	}
-
+	
 	/**
 	 * This method deliveres a list of DigitalAssetVO-objects which represents all assets for a content.
 	 */
@@ -2235,7 +2235,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			logger.error("An error occurred trying to get assetKeys on content with id: " + contentId + ":" + e.getMessage(), e);
+			logger.warn("An error occurred trying to get assetKeys on content with id: " + contentId + ":" + e.getMessage());
 		}
 				
 		return assets;
