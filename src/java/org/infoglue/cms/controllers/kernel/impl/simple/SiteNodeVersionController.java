@@ -245,7 +245,44 @@ public class SiteNodeVersionController extends BaseController
 		return siteNodeVersion;		
 	}
 
+	public SiteNodeVersionVO getAndRepairLatestSiteNodeVersionVO(Integer siteNodeId) throws SystemException, Bug
+    {
+		Database db = CastorDatabaseService.getDatabase();
+        ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
 
+    	SiteNodeVersionVO siteNodeVersionVO = null;
+
+        beginTransaction(db);
+
+        try
+        {
+        	SiteNodeVersion siteNodeVersion = getAndRepairLatestSiteNodeVersion(db, siteNodeId);
+        	
+            commitTransaction(db);
+        }
+        catch(Exception e)
+        {
+            logger.error("An error occurred so we should not completes the transaction:" + e, e);
+            rollbackTransaction(db);
+            throw new SystemException(e.getMessage());
+        }
+        
+		return siteNodeVersionVO;
+    }
+
+	public SiteNodeVersion getAndRepairLatestSiteNodeVersion(Database db, Integer siteNodeId) throws SystemException, Bug
+    {
+    	SiteNodeVersion siteNodeVersion = getLatestSiteNodeVersion(db, siteNodeId, false);
+    	if(siteNodeVersion != null)
+    	{
+    		siteNodeVersion.setIsActive(true);
+    		siteNodeVersion.setStateId(SiteNodeVersionVO.WORKING_STATE);
+        }
+        
+		return siteNodeVersion;
+    }
+
+	
 	public SiteNodeVersionVO getLatestActiveSiteNodeVersionVO(Integer siteNodeId) throws SystemException, Bug
     {
 		Database db = CastorDatabaseService.getDatabase();

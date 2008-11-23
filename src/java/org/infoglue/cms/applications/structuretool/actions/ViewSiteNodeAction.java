@@ -118,6 +118,14 @@ public class ViewSiteNodeAction extends InfoGlueAbstractAction
 	{
 		this.siteNodeVersionVO = SiteNodeVersionControllerProxy.getSiteNodeVersionControllerProxy().getACLatestActiveSiteNodeVersionVO(this.getInfoGluePrincipal(), siteNodeId);
 		logger.info("siteNodeVersionVO:" + siteNodeVersionVO);
+		if(this.siteNodeVersionVO == null)
+		{
+			SiteNodeVersionVO latestSiteNodeVersion = SiteNodeVersionControllerProxy.getSiteNodeVersionControllerProxy().getLatestActiveSiteNodeVersionVO(siteNodeId);
+			logger.info("latestSiteNodeVersion:" + latestSiteNodeVersion);
+			if(latestSiteNodeVersion == null)
+				this.siteNodeVersionVO = SiteNodeVersionController.getController().getAndRepairLatestSiteNodeVersionVO(siteNodeId);
+		}
+		logger.info("siteNodeVersionVO:" + siteNodeVersionVO);
 		this.siteNodeVO = SiteNodeController.getController().getSiteNodeVOWithId(siteNodeId);
 		this.repositoryId = this.siteNodeVO.getRepositoryId();
 		//SiteNodeControllerProxy.getController().getACSiteNodeVOWithId(this.getInfoGluePrincipal(), siteNodeId);
@@ -134,6 +142,14 @@ public class ViewSiteNodeAction extends InfoGlueAbstractAction
 	{
 		this.siteNodeVersionVO = SiteNodeVersionControllerProxy.getSiteNodeVersionControllerProxy().getACLatestActiveSiteNodeVersionVO(this.getInfoGluePrincipal(), siteNodeId, db);
 		logger.info("siteNodeVersionVO:" + siteNodeVersionVO);
+		if(this.siteNodeVersionVO == null)
+		{
+			SiteNodeVersionVO latestSiteNodeVersion = SiteNodeVersionControllerProxy.getSiteNodeVersionControllerProxy().getLatestActiveSiteNodeVersionVO(db, siteNodeId);
+			logger.info("latestSiteNodeVersion:" + latestSiteNodeVersion);
+			if(latestSiteNodeVersion == null)
+				this.siteNodeVersionVO = SiteNodeVersionController.getController().getAndRepairLatestSiteNodeVersion(db, siteNodeId).getValueObject();
+		}
+				
 		this.siteNodeVO = SiteNodeController.getSiteNodeVOWithId(siteNodeId, db);
 		
 	    if(this.siteNodeVO.getMetaInfoContentId() == null || this.siteNodeVO.getMetaInfoContentId().intValue() == -1)
