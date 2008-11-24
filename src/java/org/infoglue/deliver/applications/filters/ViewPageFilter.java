@@ -155,7 +155,7 @@ public class ViewPageFilter implements Filter
 	        	
 	            while(!CmsPropertyHandler.getOperatingMode().equals("3") && RequestAnalyser.getRequestAnalyser().getBlockRequests())
 	            {
-	            	System.out.println("Queing up requests as cache eviction are taking place..");
+	            	logger.warn("Queing up requests as cache eviction are taking place..");
 	            	try { Thread.sleep(10); } catch (Exception e) {}
 	            }
 
