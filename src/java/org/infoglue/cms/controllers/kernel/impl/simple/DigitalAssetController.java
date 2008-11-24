@@ -1266,7 +1266,7 @@ public class DigitalAssetController extends BaseController
 
         try
         {
-			ContentVersion contentVersion = ContentVersionController.getContentVersionController().getLatestContentVersion(contentId, languageId, db); 
+			ContentVersionVO contentVersion = ContentVersionController.getContentVersionController().getLatestContentVersionVO(contentId, languageId, db); 
 			if(contentVersion != null)
 			{
 				DigitalAssetVO digitalAssetVO = getLatestDigitalAssetVO(contentVersion.getId(), db);
@@ -1505,7 +1505,7 @@ public class DigitalAssetController extends BaseController
 
         try
         {
-			ContentVersion contentVersion = ContentVersionController.getContentVersionController().getLatestContentVersion(contentId, languageId, db); 
+			ContentVersionVO contentVersion = ContentVersionController.getContentVersionController().getLatestContentVersionVO(contentId, languageId, db); 
 			if(contentVersion != null)
 			{
 				DigitalAsset digitalAsset = getSmallDigitalAssetWithId(contentVersion.getId(), db);
