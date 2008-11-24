@@ -1986,7 +1986,7 @@ public class ComponentLogic
 		//If not found on the same component id - let's check them all and use the first we find.
 		if(anl == null || anl.getLength() == 0)
 		{
-			String globalPropertyXPath = "//component/properties/property[@name='" + propertyName + "'][1]";
+			String globalPropertyXPath = "(//component/properties/property[@name='" + propertyName + "'])[1]";
 			anl = org.apache.xpath.XPathAPI.selectNodeList(document.getDocumentElement(), globalPropertyXPath);
 		}			
 		
@@ -2086,7 +2086,7 @@ public class ComponentLogic
 		//If not found on the same component id - let's check them all and use the first we find.
 		if(anl == null || anl.size() == 0)
 		{
-			String globalPropertyXPath = "//component/properties/property[@name='" + propertyName + "'][1]";
+			String globalPropertyXPath = "(//component/properties/property[@name='" + propertyName + "'])[1]";
 			anl = document.getRootElement().selectNodes(globalPropertyXPath);
 		}			
 		
@@ -2216,12 +2216,12 @@ public class ComponentLogic
 		//If not found on the same component id - let's check them all and use the first we find.
 		if(anl == null || anl.size() == 0)
 		{
-			String globalPropertyXPath = "//component/properties/property[@name='" + propertyName + "'][1]";
+			String globalPropertyXPath = "(//component/properties/property[@name='" + propertyName + "'])[1]";
 			
 			Xb1XPath globalXpathObject = new Xb1XPath( globalPropertyXPath );
 	        anl = globalXpathObject.selectNodes( doc );
 		}			
-		
+				
 		Iterator anlIterator = anl.iterator();
 		while(anlIterator.hasNext())
 		{
@@ -2283,7 +2283,7 @@ public class ComponentLogic
 			//property.put("path", "Inherited");
 			property.put("path", value);
 			property.put("type", type);
-			
+
 			List bindings = new ArrayList();
 			
 			Iterator bindingNodeListIterator = infosetItem.elements(infosetItem.getNamespace(), "binding").iterator();
