@@ -116,17 +116,26 @@ public class ViewSiteNodeAction extends InfoGlueAbstractAction
 
 	protected void initialize(Integer siteNodeId) throws Exception
 	{
+		this.siteNodeVO = SiteNodeController.getController().getSiteNodeVOWithId(siteNodeId);
+		LanguageVO masterLanguageVO = LanguageController.getController().getMasterLanguage(this.siteNodeVO.getRepositoryId());
 		this.siteNodeVersionVO = SiteNodeVersionControllerProxy.getSiteNodeVersionControllerProxy().getACLatestActiveSiteNodeVersionVO(this.getInfoGluePrincipal(), siteNodeId);
+		ContentVersionVO latestActiveMetaInfoContentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(siteNodeVO.getMetaInfoContentId(), masterLanguageVO.getId());
+		
 		logger.info("siteNodeVersionVO:" + siteNodeVersionVO);
-		if(this.siteNodeVersionVO == null)
+		logger.info("latestActiveMetaInfoContentVersionVO:" + latestActiveMetaInfoContentVersionVO);
+		if(this.siteNodeVersionVO == null || latestActiveMetaInfoContentVersionVO == null)
 		{
 			SiteNodeVersionVO latestSiteNodeVersion = SiteNodeVersionControllerProxy.getSiteNodeVersionControllerProxy().getLatestActiveSiteNodeVersionVO(siteNodeId);
 			logger.info("latestSiteNodeVersion:" + latestSiteNodeVersion);
 			if(latestSiteNodeVersion == null)
 				this.siteNodeVersionVO = SiteNodeVersionController.getController().getAndRepairLatestSiteNodeVersionVO(siteNodeId);
+			
+			ContentVersionVO latestMetaInfoContentVersionVO = ContentVersionController.getContentVersionController().getLatestContentVersionVO(siteNodeVO.getMetaInfoContentId(), masterLanguageVO.getId());
+			logger.info("latestMetaInfoContentVersionVO:" + latestMetaInfoContentVersionVO);
+			if(latestMetaInfoContentVersionVO == null)
+				SiteNodeVersionController.getController().getAndRepairLatestContentVersionVO(siteNodeVO.getMetaInfoContentId(), masterLanguageVO.getId());
 		}
 		logger.info("siteNodeVersionVO:" + siteNodeVersionVO);
-		this.siteNodeVO = SiteNodeController.getController().getSiteNodeVOWithId(siteNodeId);
 		this.repositoryId = this.siteNodeVO.getRepositoryId();
 		//SiteNodeControllerProxy.getController().getACSiteNodeVOWithId(this.getInfoGluePrincipal(), siteNodeId);
 		
@@ -140,18 +149,26 @@ public class ViewSiteNodeAction extends InfoGlueAbstractAction
 
 	protected void initialize(Integer siteNodeId, Database db) throws Exception
 	{
+		this.siteNodeVO = SiteNodeController.getSiteNodeVOWithId(siteNodeId, db);
+		LanguageVO masterLanguageVO = LanguageController.getController().getMasterLanguage(this.siteNodeVO.getRepositoryId());
 		this.siteNodeVersionVO = SiteNodeVersionControllerProxy.getSiteNodeVersionControllerProxy().getACLatestActiveSiteNodeVersionVO(this.getInfoGluePrincipal(), siteNodeId, db);
+		ContentVersionVO latestActiveMetaInfoContentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(siteNodeVO.getMetaInfoContentId(), masterLanguageVO.getId());
+		
 		logger.info("siteNodeVersionVO:" + siteNodeVersionVO);
-		if(this.siteNodeVersionVO == null)
+		logger.info("latestActiveMetaInfoContentVersionVO:" + latestActiveMetaInfoContentVersionVO);
+		if(this.siteNodeVersionVO == null || latestActiveMetaInfoContentVersionVO == null)
 		{
 			SiteNodeVersionVO latestSiteNodeVersion = SiteNodeVersionControllerProxy.getSiteNodeVersionControllerProxy().getLatestActiveSiteNodeVersionVO(db, siteNodeId);
 			logger.info("latestSiteNodeVersion:" + latestSiteNodeVersion);
 			if(latestSiteNodeVersion == null)
 				this.siteNodeVersionVO = SiteNodeVersionController.getController().getAndRepairLatestSiteNodeVersion(db, siteNodeId).getValueObject();
+
+			ContentVersionVO latestMetaInfoContentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(siteNodeVO.getMetaInfoContentId(), masterLanguageVO.getId());
+			logger.info("latestMetaInfoContentVersionVO:" + latestMetaInfoContentVersionVO);
+			if(latestMetaInfoContentVersionVO == null)
+				SiteNodeVersionController.getController().getAndRepairLatestContentVersionVO(siteNodeVO.getMetaInfoContentId(), masterLanguageVO.getId());
 		}
-				
-		this.siteNodeVO = SiteNodeController.getSiteNodeVOWithId(siteNodeId, db);
-		
+						
 	    if(this.siteNodeVO.getMetaInfoContentId() == null || this.siteNodeVO.getMetaInfoContentId().intValue() == -1)
 	    {
 	        boolean hadMetaInfo = false;
