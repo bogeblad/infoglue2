@@ -257,6 +257,8 @@ public class SiteNodeVersionController extends BaseController
         try
         {
         	SiteNodeVersion siteNodeVersion = getAndRepairLatestSiteNodeVersion(db, siteNodeId);
+        	if(siteNodeVersion != null)
+        		siteNodeVersionVO = siteNodeVersion.getValueObject();
         	
             commitTransaction(db);
         }
@@ -280,6 +282,46 @@ public class SiteNodeVersionController extends BaseController
         }
         
 		return siteNodeVersion;
+    }
+
+	
+	public ContentVersionVO getAndRepairLatestContentVersionVO(Integer contentId, Integer languageId) throws SystemException, Bug
+    {
+		Database db = CastorDatabaseService.getDatabase();
+        ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
+
+    	ContentVersionVO contentVersionVO = null;
+
+        beginTransaction(db);
+
+        try
+        {
+        	ContentVersion contentVersion = getAndRepairLatestContentVersion(db, contentId, languageId);
+        	if(contentVersion != null)
+        		contentVersionVO = contentVersion.getValueObject();
+        			
+            commitTransaction(db);
+        }
+        catch(Exception e)
+        {
+            logger.error("An error occurred so we should not completes the transaction:" + e, e);
+            rollbackTransaction(db);
+            throw new SystemException(e.getMessage());
+        }
+        
+		return contentVersionVO;
+    }
+
+	public ContentVersion getAndRepairLatestContentVersion(Database db, Integer contentId, Integer languageId) throws SystemException, Bug, Exception
+    {
+    	ContentVersion contentVersion = ContentVersionController.getContentVersionController().getLatestContentVersion(contentId, languageId, db);
+    	if(contentVersion != null)
+    	{
+    		contentVersion.setIsActive(true);
+    		contentVersion.setStateId(ContentVersionVO.WORKING_STATE);
+        }
+        
+		return contentVersion;
     }
 
 	
