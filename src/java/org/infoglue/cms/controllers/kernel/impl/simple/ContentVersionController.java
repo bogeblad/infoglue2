@@ -723,7 +723,7 @@ public class ContentVersionController extends BaseController
     	oql.bind(contentId);
     	oql.bind(languageId);
     	
-    	QueryResults results = oql.execute(Database.ReadOnly);
+    	QueryResults results = oql.execute();
 		
 		if (results.hasMore()) 
         {
