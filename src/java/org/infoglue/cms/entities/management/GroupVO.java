@@ -74,7 +74,7 @@ public class GroupVO  implements BaseEntityVO
 	public ConstraintExceptionBuffer validate() 
 	{
     	ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
-    	if (groupName != null) ValidatorFactory.createStringValidator("Group.groupName", true, 3, 50, true, GroupImpl.class, this.getId(), this.getGroupName()).validate(groupName, ceb);
+    	if (groupName != null) ValidatorFactory.createStringValidator("Group.groupName", true, 3, 100, true, GroupImpl.class, this.getId(), this.getGroupName()).validate(groupName, ceb);
 		if (description != null) ValidatorFactory.createStringValidator("Group.description", true, 1, 100).validate(description, ceb); 
 
 		return ceb;

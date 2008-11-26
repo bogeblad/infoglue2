@@ -74,7 +74,7 @@ public class RoleVO  implements BaseEntityVO
 	public ConstraintExceptionBuffer validate() 
 	{
     	ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
-    	if (roleName != null) ValidatorFactory.createStringValidator("Role.roleName", true, 3, 50, true, RoleImpl.class, this.getId(), this.getRoleName()).validate(roleName, ceb);
+    	if (roleName != null) ValidatorFactory.createStringValidator("Role.roleName", true, 3, 100, true, RoleImpl.class, this.getId(), this.getRoleName()).validate(roleName, ceb);
 		if (description != null) ValidatorFactory.createStringValidator("Role.description", true, 1, 100).validate(description, ceb); 
 
 		return ceb;
