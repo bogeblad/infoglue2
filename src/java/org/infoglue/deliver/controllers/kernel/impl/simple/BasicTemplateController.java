@@ -4486,6 +4486,8 @@ public class BasicTemplateController implements TemplateController
 	
 	public List getMatchingContents(String contentTypeDefinitionNamesString, String categoryConditionString, String freeText, List freeTextAttributeNames, Date fromDate, Date toDate, Date expireFromDate, Date expireToDate, String versionModifier, boolean useLanguageFallback, boolean cacheResult, int cacheInterval, String cacheName, String cacheKey, List<Integer> repositoryIdList)
 	{
+	    deliveryContext.addUsedContent("selectiveCacheUpdateNonApplicable");
+
 		if((freeText != null && !freeText.equals("")) || (freeTextAttributeNames != null && freeTextAttributeNames.size() > 0) || fromDate != null || toDate != null || expireFromDate != null || expireToDate != null || (versionModifier != null && !versionModifier.equals("")))
 			cacheResult = false;
 			
