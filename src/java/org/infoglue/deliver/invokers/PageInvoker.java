@@ -396,11 +396,34 @@ public abstract class PageInvoker
 		try
 		{
 			//logger.info("ContentType:" + contentType);
+			String charSet = languageVO.getCharset();
 			if(contentType.indexOf("charset=") > -1)
+			{
+				try
+				{
+					int startIndex = contentType.indexOf("charset=");
+					int endIndex = contentType.indexOf(";", startIndex + 1);
+				
+					if(endIndex != -1)
+						charSet = contentType.substring(startIndex + "charset=".length(), endIndex).trim();
+					else
+						charSet = contentType.substring( + "charset=".length()).trim();
+				
+					if(logger.isInfoEnabled())
+						logger.info("Found a user defined charset: " + charSet);
+				}
+				catch(Exception e)
+				{
+					logger.warn("Error parsing charset:" + e.getMessage());
+				}
 				this.getResponse().setContentType(contentType);
+			}
 			else
 				this.getResponse().setContentType(contentType + "; charset=" + languageVO.getCharset());
-	
+			
+			if(logger.isInfoEnabled())
+				logger.info("Using charset: " + charSet);
+			
 			Iterator headersIterator = this.getDeliveryContext().getHttpHeaders().keySet().iterator();
 			while(headersIterator.hasNext())
 			{
@@ -445,8 +468,9 @@ public abstract class PageInvoker
 			    {
 			    	out = this.getResponse().getOutputStream();
 			    }
-			    
-			    out.write(pageString.getBytes(languageVO.getCharset()));
+			   
+			    out.write(pageString.getBytes(charSet));
+			    //out.write(pageString.getBytes(languageVO.getCharset()));
 				out.flush();
 				out.close();
 			}
