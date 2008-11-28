@@ -407,7 +407,7 @@ public abstract class PageInvoker
 					if(endIndex != -1)
 						charSet = contentType.substring(startIndex + "charset=".length(), endIndex).trim();
 					else
-						charSet = contentType.substring( + "charset=".length()).trim();
+						charSet = contentType.substring(startIndex + "charset=".length()).trim();
 				
 					if(logger.isInfoEnabled())
 						logger.info("Found a user defined charset: " + charSet);
