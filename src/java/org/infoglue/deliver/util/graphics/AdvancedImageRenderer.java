@@ -129,6 +129,13 @@ public class AdvancedImageRenderer
     // 0 = no, 1 = horizontal, 2 = vertical, 3 = both
     private int tileBackgroundImage = 0;
 
+    //Capctha-params
+	private float twirlAspect = 1.1f;
+	private float marbleXScale = 2.0f;
+	private float marbleYScale = 2.0f;
+	private float marbleTurbulence = 0.9f;
+	private float marbleAmount = 0.9f;
+
     
     private static Map renderHints = null;
 
@@ -458,21 +465,23 @@ public class AdvancedImageRenderer
         return renderedImage.getSubimage( leftPos, 0, rightPos - leftPos, imgHeight - 1 );
     }
 
-	public void distortImage() {
+	public void distortImage() 
+	{
 		// twirl filter
 		TwirlFilter tf = new TwirlFilter();
-		float angle = (float) 1.1;
+		float angle = this.twirlAspect;
 		tf.setAngle( angle );
 		tf.filter(renderedImage, renderedImage);
 		
 		// Marble Filter
 		MarbleFilter mf = new MarbleFilter();
-		mf.setXScale( 2.0f );
-		mf.setYScale( 2.0f );
-		mf.setTurbulence( 0.9f );
-		mf.setAmount( 0.9f );
+		mf.setXScale( this.marbleXScale );
+		mf.setYScale( this.marbleYScale );
+		mf.setTurbulence( this.marbleTurbulence );
+		mf.setAmount( this.marbleAmount );
 		mf.filter(renderedImage, renderedImage);		
 	}
+
     
     /**
      * Check if this class has a specific attribute, name of attribute is case
@@ -737,4 +746,30 @@ public class AdvancedImageRenderer
     {
     	return this.imageFormatName;
     }
+    
+	public void setTwirlAspect(float twirlAspect)
+	{
+		this.twirlAspect = twirlAspect;
+	}
+
+	public void setMarbleXScale(float marbleXScale)
+	{
+		this.marbleXScale = marbleXScale;
+	}
+
+	public void setMarbleYScale(float marbleYScale)
+	{
+		this.marbleYScale = marbleYScale;
+	}
+
+	public void setMarbleTurbulence(float marbleTurbulence)
+	{
+		this.marbleTurbulence = marbleTurbulence;
+	}
+
+	public void setMarbleAmount(float marbleAmount)
+	{
+		this.marbleAmount = marbleAmount;
+	}
+
 }

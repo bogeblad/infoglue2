@@ -171,4 +171,28 @@ public class GapchaTag extends TextRenderTag
 		return sb.toString();	
 	}
 	
+	public void setTwirlAngle(String twirlAspect) throws JspException
+	{
+		this.setAttribute("twirlAspect", ((Float)evaluate("gapcha", "twirlAspect", twirlAspect, Float.class)).floatValue());
+	}
+
+	public void setMarbleXScale(String marbleXScale) throws JspException
+	{
+		this.setAttribute("marbleXScale", ((Float)evaluate("gapcha", "marbleXScale", marbleXScale, Float.class)).floatValue());
+	}
+
+	public void setMarbleYScale(String marbleYScale) throws JspException
+	{
+		this.setAttribute("marbleYScale", ((Float)evaluate("gapcha", "marbleYScale", marbleYScale, Float.class)).floatValue());
+	}
+
+	public void setMarbleTurbulence(String marbleTurbulence) throws JspException
+	{
+		this.setAttribute("marbleTurbulence", ((Float)evaluate("gapcha", "marbleTurbulence", marbleTurbulence, Float.class)).floatValue());
+	}
+
+	public void setMarbleAmount(String marbleAmount) throws JspException
+	{
+		this.setAttribute("marbleAmount", ((Float)evaluate("gapcha", "marbleAmount", marbleAmount, Float.class)).floatValue());
+	}
 }

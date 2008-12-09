@@ -74,7 +74,7 @@ public class TextRenderTag extends ComponentLogicTag
         return EVAL_PAGE;
     }
 
-    private void setAttribute( String key, Object value )
+    protected void setAttribute( String key, Object value )
     {
         if ( renderAttributes == null )
         {
