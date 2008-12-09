@@ -43,7 +43,7 @@ public class SubscriptionVO implements BaseEntityVO
     private String userEmail;
     private String name;
     private Boolean isGlobal = new Boolean(false);
-    private Date lastNotifiedDateTime;
+    private Date lastNotifiedDateTime = new Date();
     private Collection<SubscriptionFilterVO> subscriptionFilterVO = new ArrayList();
     
 	/**
