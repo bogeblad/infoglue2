@@ -36,9 +36,11 @@ import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.applications.databeans.LinkBean;
 import org.infoglue.cms.controllers.kernel.impl.simple.AccessRightController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.DigitalAssetController;
 import org.infoglue.cms.controllers.kernel.impl.simple.InfoGluePrincipalControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
+import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeVersionControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.ToolbarController;
 import org.infoglue.cms.controllers.kernel.impl.simple.UserControllerProxy;
 import org.infoglue.cms.entities.content.ContentVO;
@@ -376,6 +378,24 @@ public abstract class InfoGlueAbstractAction extends WebworkAbstractAction
 		}
 	}
 		
+	/**
+	 * Gets a protected content id (if any).
+	 */
+	
+	public Integer getProtectedContentId(Integer parentContentId)
+	{
+		return ContentControllerProxy.getController().getProtectedContentId(parentContentId);
+	}
+
+	/**
+	 * Gets a protected content id (if any).
+	 */
+	
+	public Integer getProtectedSiteNodeVersionId(Integer parentSiteNodeVersionId)
+	{
+		return SiteNodeVersionControllerProxy.getSiteNodeVersionControllerProxy().getProtectedSiteNodeVersionId(parentSiteNodeVersionId);
+	}
+	
 	/**
 	 * Get the username for the currently logged in user
 	 */
