@@ -25,6 +25,7 @@ package org.infoglue.cms.controllers.usecases.structuretool.impl.simple;
 
 import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
+import org.infoglue.cms.controllers.kernel.impl.simple.AccessRightController;
 import org.infoglue.cms.controllers.kernel.impl.simple.BaseUCCController;
 import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeController;
@@ -69,9 +70,15 @@ public class UpdateSiteNodeUCCImpl extends BaseUCCController implements UpdateSi
 			latestSiteNodeVersionVO.setDisableEditOnSight(updatedSiteNodeVersionVO.getDisableEditOnSight());
 			latestSiteNodeVersionVO.setDisablePageCache(updatedSiteNodeVersionVO.getDisablePageCache());
 			latestSiteNodeVersionVO.setDisableLanguages(updatedSiteNodeVersionVO.getDisableLanguages());
-			latestSiteNodeVersionVO.setIsProtected(updatedSiteNodeVersionVO.getIsProtected());
+			
+			Integer protectecSiteNodeVersionId = SiteNodeVersionControllerProxy.getSiteNodeVersionControllerProxy().getProtectedSiteNodeVersionId(latestSiteNodeVersionVO.getId(), db);
+			if(protectecSiteNodeVersionId == null || AccessRightController.getController().getIsPrincipalAuthorized(infoGluePrincipal, "SiteNodeVersion.ChangeAccessRights", "" + protectecSiteNodeVersionId))
+			{
+				latestSiteNodeVersionVO.setIsProtected(updatedSiteNodeVersionVO.getIsProtected());
+				latestSiteNodeVersionVO.setVersionModifier(updatedSiteNodeVersionVO.getVersionModifier());
+			}
+
 			latestSiteNodeVersionVO.setDisableForceIdentityCheck(updatedSiteNodeVersionVO.getDisableForceIdentityCheck());
-			latestSiteNodeVersionVO.setVersionModifier(updatedSiteNodeVersionVO.getVersionModifier());
 			latestSiteNodeVersionVO.setModifiedDateTime(DateHelper.getSecondPreciseDate());
 			
 			SiteNodeVersionControllerProxy.getSiteNodeVersionControllerProxy().acUpdate(infoGluePrincipal, latestSiteNodeVersionVO, db);
@@ -125,9 +132,15 @@ public class UpdateSiteNodeUCCImpl extends BaseUCCController implements UpdateSi
 			latestSiteNodeVersionVO.setDisableEditOnSight(updatedSiteNodeVersionVO.getDisableEditOnSight());
 			latestSiteNodeVersionVO.setDisableLanguages(updatedSiteNodeVersionVO.getDisableLanguages());
 			latestSiteNodeVersionVO.setDisablePageCache(updatedSiteNodeVersionVO.getDisablePageCache());
-			latestSiteNodeVersionVO.setIsProtected(updatedSiteNodeVersionVO.getIsProtected());
+
+			Integer protectecSiteNodeVersionId = SiteNodeVersionControllerProxy.getSiteNodeVersionControllerProxy().getProtectedSiteNodeVersionId(latestSiteNodeVersionVO.getId(), db);
+			if(protectecSiteNodeVersionId == null || AccessRightController.getController().getIsPrincipalAuthorized(infoGluePrincipal, "SiteNodeVersion.ChangeAccessRights", "" + protectecSiteNodeVersionId))
+			{
+				latestSiteNodeVersionVO.setIsProtected(updatedSiteNodeVersionVO.getIsProtected());
+				latestSiteNodeVersionVO.setVersionModifier(infoGluePrincipal.getName());
+			}
+			
 			latestSiteNodeVersionVO.setDisableForceIdentityCheck(updatedSiteNodeVersionVO.getDisableForceIdentityCheck());
-			latestSiteNodeVersionVO.setVersionModifier(infoGluePrincipal.getName());
 			latestSiteNodeVersionVO.setModifiedDateTime(DateHelper.getSecondPreciseDate());
 
 			SiteNodeVersionControllerProxy.getSiteNodeVersionControllerProxy().acUpdate(infoGluePrincipal, latestSiteNodeVersionVO, db);

@@ -165,10 +165,17 @@ function changeSiteNodeState(siteNodeVersionId)
 		<td>#editDateField("SiteNode.publishDateTime" "publishDateTime" $!publishDateTime "30" "date"  "ViewCalendar.action?date=$!publishDateTimeAsLong&formPath=document.editForm.publishDateTime" "$dateReadonly")</td>
 		<td><img src="images/trans.gif" width="20" height="1"></td>
 		<td>
+			#set($isProtectedReadonly = "")
+			#set($protectedSiteNodeVersionId = $!this.getProtectedSiteNodeVersionId($siteNodeVersionId))
+			#set($isModifier = ($siteNodeVersionVO.versionModifier == $infoGluePrincipal.name))
+			#if($protectedSiteNodeVersionId && !$isModifier && !$this.hasAccessTo("SiteNodeVersion.ChangeAccessRights", "$protectedSiteNodeVersionId"))
+				#set($isProtectedReadonly = "disabled")
+				<input type="hidden" name="isProtected" value="$!isProtected"/> 
+			#end
 			$ui.getString("entity.SiteNode.isProtected.label")<br>
-			<input type="radio" name="isProtected" value="0" #if($!isProtected == 0) checked="1" #end $readonly> $ui.getString("tool.common.no") 
-			<input type="radio" name="isProtected" value="1" #if($!isProtected == 1) checked="1" #end $readonly> $ui.getString("tool.common.yes")
-			<input type="radio" name="isProtected" value="2" #if($!isProtected == 2) checked="1" #end $readonly> $ui.getString("tool.common.inherit")
+			<input type="radio" name="isProtected" value="0" #if($!isProtected == 0) checked="1" #end $readonly $isProtectedReadonly> $ui.getString("tool.common.no") 
+			<input type="radio" name="isProtected" value="1" #if($!isProtected == 1) checked="1" #end $readonly $isProtectedReadonly> $ui.getString("tool.common.yes")
+			<input type="radio" name="isProtected" value="2" #if($!isProtected == 2) checked="1" #end $readonly $isProtectedReadonly> $ui.getString("tool.common.inherit")
 		</td>
 		<td></td>
 	</tr>		

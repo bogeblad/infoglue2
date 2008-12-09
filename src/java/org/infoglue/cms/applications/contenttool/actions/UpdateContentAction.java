@@ -27,6 +27,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.infoglue.cms.applications.common.VisualFormatter;
+import org.infoglue.cms.controllers.kernel.impl.simple.AccessRightController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
@@ -95,6 +96,12 @@ public class UpdateContentAction extends ViewContentAction //WebworkAbstractActi
 		//this.contentVO.setCreatorName(oldContentVO.getCreatorName());
 		this.contentVO.setIsBranch(oldContentVO.getIsBranch());
 		
+		if(oldContentVO.getIsProtected() == 1 && !AccessRightController.getController().getIsPrincipalAuthorized(this.getInfoGluePrincipal(), "Content.ChangeAccessRights", "" + getContentId()))
+		{
+			this.contentVO.setIsProtected(oldContentVO.getIsProtected());
+			this.contentVO.setCreatorName(oldContentVO.getCreatorName());
+		}
+
 		ceb = this.contentVO.validate();
 		
 		ceb.throwIfNotEmpty();
@@ -113,6 +120,12 @@ public class UpdateContentAction extends ViewContentAction //WebworkAbstractActi
 		this.contentVO.setCreatorName(this.getInfoGluePrincipal().getName());
 		this.contentVO.setIsBranch(oldContentVO.getIsBranch());
 		
+		if(oldContentVO.getIsProtected() == 1 && !AccessRightController.getController().getIsPrincipalAuthorized(this.getInfoGluePrincipal(), "Content.ChangeAccessRights", "" + getContentId()))
+		{
+			this.contentVO.setIsProtected(oldContentVO.getIsProtected());
+			this.contentVO.setCreatorName(oldContentVO.getCreatorName());
+		}
+
 		ceb = this.contentVO.validate();
 		
 		ceb.throwIfNotEmpty();
