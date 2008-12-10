@@ -1380,20 +1380,32 @@ public class ContentDeliveryController extends BaseDeliveryController
 		DigitalAssetVO digitalAsset = getLanguageIndependentAssetVO(contentId, languageId, siteNodeId, db, assetKey, deliveryContext, infoGluePrincipal);
 		if(digitalAsset != null)
 		{
-			String fileName = digitalAsset.getAssetFileName();
+			String fileName = digitalAsset.getDigitalAssetId() + "_" + digitalAsset.getAssetFileName();
 			String thumbnailFileName = "thumbnail_" + width + "_" + height + "_" + fileName;
 
 			int i = 0;
 			File masterFile = null;
+			File masterThumbFile = null;
 			String folderName = "" + (digitalAsset.getDigitalAssetId().intValue() / 1000);
 			logger.info("folderName:" + folderName);
 			String filePath = CmsPropertyHandler.getDigitalAssetPath0() + File.separator + folderName;
 			while(filePath != null)
 			{
 			    if(masterFile == null)
-			        masterFile = DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpDigitalAssetThumbnail(fileName, thumbnailFileName, filePath, width, height);
+			        masterFile = DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpDigitalAsset(digitalAsset, fileName, filePath, db);
+				else
+				    DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpDigitalAsset(masterFile, fileName, filePath);
+
+			    if(masterThumbFile == null)
+			        masterThumbFile = DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpDigitalAssetThumbnail(fileName, thumbnailFileName, filePath, width, height);
+			    else
+			        DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpDigitalAssetThumbnail(fileName, thumbnailFileName, filePath, width, height);
+			    /*
+			    if(masterFile == null)
+			        masterThumbFile = DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpDigitalAssetThumbnail(fileName, thumbnailFileName, filePath, width, height);
 				else
 				    DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpDigitalAssetThumbnail(fileName, thumbnailFileName, filePath, width, height);
+			    */
 			    
 			    i++;
 				filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i);
