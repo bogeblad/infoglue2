@@ -105,7 +105,7 @@ public class GapchaTag extends TextRenderTag
                 	logger.info("file.getName():" + file.getName() + " - " + (System.currentTimeMillis() - file.lastModified()));
                     if(System.currentTimeMillis() - file.lastModified() > 60000)
                     {
-                    	System.out.println("Deleting:" + file.getName());
+                    	logger.info("Deleting:" + file.getName());
                         file.delete();
                     }
                 }
