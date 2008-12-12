@@ -35,6 +35,9 @@ public final class BrowserBean implements Serializable
 	private boolean netEnabled        = false;
 
 	private boolean ie  	= false;
+	private boolean ie6  	= false;
+	private boolean ie7  	= false;
+	private boolean ie8  	= false;
 	private boolean ns7 	= false;
 	private boolean ns6 	= false;
 	private boolean ns4 	= false;
@@ -76,6 +79,12 @@ public final class BrowserBean implements Serializable
 		else if(user.indexOf("msie") != -1) 
 		{
 			this.ie = true;
+			if(user.indexOf("msie 6") != -1)
+				this.ie6 = true;
+			else if(user.indexOf("msie 7") != -1)
+				this.ie7 = true;
+			else if(user.indexOf("msie 8") != -1)
+				this.ie8 = true;
 		}
 		else if(user.indexOf("safari") != -1)
 		{
@@ -122,6 +131,10 @@ public final class BrowserBean implements Serializable
             else if (user.indexOf("windows nt 5.1") > -1 || user.indexOf("winnt") > -1)
             {
                 this.os = "Windows XP";
+            } 
+            else if (user.indexOf("windows nt 6.0") > -1)
+            {
+                this.os = "Windows Vista";
             } 
             else if (user.indexOf("windows nt") > -1 || user.indexOf("winnt") > -1)
             {
@@ -181,6 +194,21 @@ public final class BrowserBean implements Serializable
 	public boolean isIE()
 	{
 		return ie;
+	}
+
+	public boolean isIE6()
+	{
+		return ie6;
+	}
+
+	public boolean isIE7()
+	{
+		return ie7;
+	}
+
+	public boolean isIE8()
+	{
+		return ie8;
 	}
 
 	public boolean isNS7()
@@ -261,6 +289,9 @@ public final class BrowserBean implements Serializable
     	sb.append("languages=" + languages + "\n");
     	sb.append("netEnabled=" + netEnabled + "\n");
     	sb.append("ie=" + ie + "\n");
+    	sb.append("ie6=" + ie6 + "\n");
+    	sb.append("ie7=" + ie7 + "\n");
+    	sb.append("ie8=" + ie8 + "\n");
     	sb.append("ns7=" + ns7 + "\n");
     	sb.append("ns6=" + ns6 + "\n");
     	sb.append("ns4=" + ns4 + "\n");
