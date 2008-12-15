@@ -617,7 +617,7 @@ public class PageEditorHelper extends BaseDeliveryController
 							try
 							{
 								PropertyOptionsDataProvider provider = (PropertyOptionsDataProvider)Class.forName(componentProperty.getDataProvider()).newInstance();
-								Map parameters = httpHelper.toMap(componentProperty.getDataProviderParameters(), "UTF-8");
+								Map parameters = httpHelper.toMap(componentProperty.getDataProviderParameters(), "UTF-8", ";");
 								optionsIterator = provider.getPropertyOptions(parameters, principal, db).iterator();
 							}
 							catch (Exception e) 
@@ -679,6 +679,27 @@ public class PageEditorHelper extends BaseDeliveryController
 						sb.append("		<input type=\"hidden\" name=\"" + propertyIndex + "_propertyName\" value=\"" + componentProperty.getName() + "\">");
 						int numberOfCheckboxes = 0;
 						Iterator optionsIterator = componentProperty.getOptions().iterator();
+						
+						if(componentProperty.getDataProvider() != null && !componentProperty.getDataProvider().equals(""))
+						{
+							try
+							{
+								PropertyOptionsDataProvider provider = (PropertyOptionsDataProvider)Class.forName(componentProperty.getDataProvider()).newInstance();
+								Map parameters = httpHelper.toMap(componentProperty.getDataProviderParameters(), "UTF-8", ";");
+								optionsIterator = provider.getPropertyOptions(parameters, principal, db).iterator();
+							}
+							catch (Exception e) 
+							{
+								logger.warn("A problem loading the data provider for property " + componentProperty.getName() + ":" + e.getMessage(), e);
+								List<ComponentPropertyOption> errorOptions = new ArrayList<ComponentPropertyOption>();
+								ComponentPropertyOption componentPropertyOption = new ComponentPropertyOption();
+								componentPropertyOption.setName("Error:" + e.getMessage());
+								componentPropertyOption.setValue("");
+								errorOptions.add(componentPropertyOption);
+								optionsIterator = errorOptions.iterator();
+							}
+						}
+
 						while(optionsIterator.hasNext())
 						{
 						    ComponentPropertyOption option = (ComponentPropertyOption)optionsIterator.next();
@@ -780,7 +801,7 @@ public class PageEditorHelper extends BaseDeliveryController
 		
 		sb.append("		<div class=\"buttonRow\">");
 		sb.append("			<input type=\"image\" style=\"width: 50px; height: 25px; border: 0px;\" src=\"" + componentEditorUrl + "" + getLocalizedString(locale, "images.contenttool.buttons.save") + "\" width=\"50\" height=\"25\" border=\"0\"/>");
-		sb.append("			<a href=\"javascript:clearComponentPropertiesInDiv('" + targetDiv + "');\"><img src=\"" + componentEditorUrl + "" + getLocalizedString(locale, "images.contenttool.buttons.close") + "\" width=\"50\" height=\"25\" border=\"0\"/></a>");
+		sb.append("			<a href=\"javascript:closeDiv('" + targetDiv + "');\"><img src=\"" + componentEditorUrl + "" + getLocalizedString(locale, "images.contenttool.buttons.close") + "\" width=\"50\" height=\"25\" border=\"0\"/></a>");
 		sb.append("		</div>");
 		sb.append("		</fieldset>");
 		sb.append("		<input type=\"hidden\" name=\"repositoryId\" value=\"" + repositoryId + "\"/>");
@@ -1346,8 +1367,10 @@ public class PageEditorHelper extends BaseDeliveryController
 					else if(type.equalsIgnoreCase(ComponentProperty.SELECTFIELD))	
 					{		
 						String value = getComponentPropertyValue(componentId, name, siteNodeId, languageId, contentId, locale, db, principal, property);
-						timer.printElapsedTime("Set property2");
-						
+						String allowMultipleSelections = binding.attributeValue("allowMultipleSelections");
+						if(allowMultipleSelections != null && allowMultipleSelections.equalsIgnoreCase("true"))
+							property.setAllowMultipleSelections(true);
+							
 						List optionList = binding.elements("option");
 						Iterator optionListIterator = optionList.iterator();
 						while(optionListIterator.hasNext())
@@ -1367,7 +1390,9 @@ public class PageEditorHelper extends BaseDeliveryController
 					else if(type.equalsIgnoreCase(ComponentProperty.CHECKBOXFIELD))	
 					{		
 						String value = getComponentPropertyValue(componentId, name, siteNodeId, languageId, contentId, locale, db, principal, property);
-						timer.printElapsedTime("Set property3");
+						String allowMultipleSelections = binding.attributeValue("allowMultipleSelections");
+						if(allowMultipleSelections != null && allowMultipleSelections.equalsIgnoreCase("true"))
+							property.setAllowMultipleSelections(true);
 						
 						List optionList = binding.elements("option");
 						Iterator optionListIterator = optionList.iterator();
@@ -1665,7 +1690,7 @@ public class PageEditorHelper extends BaseDeliveryController
 	
 	
 	
-	public String getAvailableComponentsDiv(Database db, InfoGluePrincipal principal, Locale locale, Integer repositoryId, Integer languageId, Integer componentContentId, String slotName, String showLegend, String targetDiv)
+	public String getAvailableComponentsDiv(Database db, InfoGluePrincipal principal, Locale locale, Integer repositoryId, Integer languageId, Integer componentContentId, String slotName, String showLegend, String showNames, String targetDiv)
 	{
 		StringBuffer sb = new StringBuffer();
 		
@@ -1682,9 +1707,11 @@ public class PageEditorHelper extends BaseDeliveryController
 	    	        List componentVOList = ComponentController.getController().getComponentVOList("name", direction, slot.getAllowedComponentsArray(), slot.getDisallowedComponentsArray(), db, principal);
 	    	        Iterator componentVOListIterator = componentVOList.iterator();
 
-    	        	sb.append("<fieldset>");
-    	        	sb.append("<legend>Drag component to slot</legend>");
-    	        	
+    	        	if(showLegend != null && !showLegend.equalsIgnoreCase("false"))
+    	        	{
+		    	        sb.append("<fieldset>");
+	    	        	sb.append("<legend>Drag component to slot</legend>");
+    	        	}    	        	
     	        	sb.append("<div id=\"availableComponents\">");
     	        	
     	        	int i = 0;
@@ -1702,34 +1729,18 @@ public class PageEditorHelper extends BaseDeliveryController
 	    	    		
 	    				i++;
 	    				
-	    	        	sb.append("	<div id=\"componentName\" style=\"padding-left: 22px; background-image: url('" + imageUrl + "'); background-repeat: no-repeat;\">" + componentContentVO.getName() + "</div>");
-
-	    	        	/*
-    					<td valign="middle" rowspan="2" style="border-bottom: 1px solid #666666;">
-    						#if($content.extraProperties.get("Description") != "Unknown" && $content.extraProperties.get("Description") != "")
-    						<img src="images/questionMarkGrad.gif" onclick="toggleDiv('descLayer$content.id');" aonMouseOver="showDiv('descLayer$content.id');" aonMouseOut="hideDiv('descLayer$content.id');">
-    						#else
-    						&nbsp;
-    						#end
-    					</td>
-
-    					<td colspan="3" style="height: 0px; border-bottom: 1px solid #666666;">
-    						<span id="descLayer$content.id" style="display:none; padding-bottom: 4px;"><b>Description:</b><br/>
-    						#if($content.extraProperties.get("Description"))
-    							$content.extraProperties.get("Description")
-    						#else
-    							No description
-    						#end
-    						</span>
-    					</td>
-	    				#set($imageUrl = "")
-	    	    		*/
+	    				if(showNames == null || !showNames.equalsIgnoreCase("false"))
+	    					sb.append("	<div id=\"componentName\" style=\"padding-left: 22px; background-image: url('" + imageUrl + "'); background-repeat: no-repeat;\">" + componentContentVO.getName() + "</div>");
+	    				else
+	    					sb.append("	<img src='" + imageUrl + "' width='20' height='20' title='" + componentContentVO.getName() + "'/>");
 
 	    	        	sb.append("</div>");
 	    	        }
 	    	        
-		        	sb.append("</fieldset>");
-	    	        break;
+    	        	if(showLegend != null && !showLegend.equalsIgnoreCase("false"))
+    	        		sb.append("</fieldset>");
+	    	        
+    	        	break;
 	    		}
 	    	}
 	        

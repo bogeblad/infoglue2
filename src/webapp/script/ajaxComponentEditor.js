@@ -254,6 +254,7 @@ var activeMenuId = "";
 var menuskin = "skin1"; // skin0, or skin1
 var display_url = 0; // Show URLs in status bar?
 var editUrl = "";
+var assignComponentCatched = false;
 
 if (navigator.appName == "Netscape") {
   document.captureEvents(Event.CLICK);
@@ -715,21 +716,27 @@ function checkV(e)
 function showDiv(id)
 {
 	//alert("id:" + id)
-	document.getElementById(id).style.visibility = 'visible';
-	if(id == "pageComponents")
+	if(document.getElementById(id))
 	{
-		document.getElementById(id).style.display = 'block';
-		setCookie(pageStructureDivVisibleCookieName, "visible");
+		document.getElementById(id).style.visibility = 'visible';
+		if(id == "pageComponents")
+		{
+			document.getElementById(id).style.display = 'block';
+			setCookie(pageStructureDivVisibleCookieName, "visible");
+		}
 	}
 }
 
 function hideDiv(id)
 {
-	document.getElementById(id).style.visibility = 'hidden';
-	if(id == "pageComponents")
+	if(document.getElementById(id))
 	{
-		document.getElementById(id).style.display = 'none';
-		setCookie(pageStructureDivVisibleCookieName, "hidden");
+		document.getElementById(id).style.visibility = 'hidden';
+		if(id == "pageComponents")
+		{
+			document.getElementById(id).style.display = 'none';
+			setCookie(pageStructureDivVisibleCookieName, "hidden");
+		}
 	}
 }
 
@@ -740,7 +747,6 @@ function openDiv(id)
 
 function closeDiv(id)
 {
-	//alert("closeDiv div:" + id)
 	document.getElementById(id).style.display = 'none';
 }
 
@@ -812,6 +818,7 @@ var clearMovedComponent = false;
 function assignComponent(e, siteNodeId, languageId, contentId, parentComponentId, slotId, specifyBaseTemplate, allowedComponentNamesUrlEncodedString, disallowedComponentNamesUrlEncodedString, slotPositionComponentId) 
 {	
 	//alert("slotPositionComponentId:" + slotPositionComponentId);
+	//alert("parentComponentId:" + parentComponentId);
 	//alert("slotId:" + slotId);
 	//alert("draggedComponentId:" + draggedComponentId);
 	//alert("movedComponentId:" + movedComponentId);
@@ -978,10 +985,14 @@ function editInline(selectedRepositoryId, selectedContentId, selectedLanguageId,
 	*/
 		var $lastThis;
 		var processedIds = new Array();
+		var firstElement;
 		$(".attribute" + selectedContentId).each(function (i) {
 	    	if(processedIds["" + this.id] != "true")
 	    	{
 		    	var $this = $(this);
+		    	if(!firstElement)
+		    		firstElement = $(this);
+		    	
 		    	$lastThis = $this;
 		    	//alert("this:" + this.id);
 		    	var type = jQuery.trim($this.attr("class"));
@@ -1000,21 +1011,21 @@ function editInline(selectedRepositoryId, selectedContentId, selectedLanguageId,
 					var element = $(this).get(0);
 		
 					var totalWidth = $(this).parent().width();
-					//alert("width for " + $(this).get(0).id + " - " + totalWidth);
-					//alert("width for " + $(this).width());
-					//alert("width for " + $(this).parent().get(0).id + " - " + totalWidth);
-					//alert("width for " + $(this).parent().width());
-					//alert("width for " + $(this).width());
-					//alert("totalWidth " + totalWidth);
 					
 					var totalHeight = 100;
 					$("#attribute" + selectedContentId + attributeName + " > *").each(function(i){
-						totalHeight = totalHeight + getElementHeight( $(this).get(0) );
+						totalHeight = totalHeight + $(this).outerHeight();
 					});
 					totalHeight = totalHeight * 1.3;
+					
+					var windowHeight = $(window).height();
+					
 					if(totalHeight < 300)
 						totalHeight = 300;
-					//alert("totalHeight: " + totalHeight);
+					if(windowHeight < totalHeight + 150)
+						totalHeight = windowHeight - 150;
+					if(totalHeight > 800)
+						totalHeight = 800;
 					
 					var span = $(this).get(0);
 						
@@ -1108,6 +1119,11 @@ function editInline(selectedRepositoryId, selectedContentId, selectedLanguageId,
 			//	alert("Attribute:" + this.id + " was allready processed");		
 	    });
 				
+		var topOffset = firstElement.offset().top - 10;
+		//alert("topOffset:" + topOffset);
+		window.scroll(0, topOffset);
+		firstElement = null;
+
 		var saveLabel = "Save";
 		var cancelLabel = "Cancel";
 		if(userPrefferredLanguageCode == "sv")
@@ -1540,75 +1556,103 @@ function clearComponentPropertiesInDiv(targetDivId)
 
 function showComponentPropertiesInDiv(targetDivId, parameterString, skipFloat, event) 
 {
+	hideIGMenu();
 	try
 	{
-	//alert("targetDivId:" + targetDivId);
+	//alert("skipFloat:" + skipFloat + " - targetDivId:" + targetDivId);
 	//alert("parameterString:" + parameterString);
 
 	targetDiv = document.getElementById(targetDivId);
 
 	if(skipFloat && targetDiv)
 	{
-		$(targetDiv).load("AjaxComponentDeliveryService!getComponentPropertyDiv.action?" + parameterString + "&targetDivId=" + targetDivId + " #componentPropertiesForm",{}, function(event)
+		//alert("AjaxComponentDeliveryService!getComponentPropertyDiv.action?" + parameterString);
+		/*
+		if(parameterString.indexOf("componentContentId=null") == -1)
+			openInlineDiv("AjaxComponentDeliveryService!getComponentPropertyDiv.action?" + parameterString + "&fullHtml=true", "340", "620", true);
+		*/
+
+		//$(targetDiv).load("AjaxComponentDeliveryService!getComponentPropertyDiv.action?" + parameterString + "&targetDivId=" + targetDivId + " #componentPropertiesForm",{}, function(event)
+		$(targetDiv).load("AjaxComponentDeliveryService!getComponentPropertyDiv.action?" + parameterString + "&targetDivId=" + targetDivId + "",{}, function(event)
 		{	
-			$(targetDiv).find(".wysiwygeditor").each(function(){
-					var fck = new FCKeditor("myFCKeditor");
-					var id = $(this).attr("id");
-					var toolbarName = $(this).attr("toolbarName");
-					if(!toolbarName || toolbarName == "")
-						toolbarName = "Basic";
-						
-					var oFCKeditor = new FCKeditor( id ) ;
-					oFCKeditor.BasePath = "" + componentEditorUrl + "applications/FCKEditor/" ;
-					oFCKeditor.Config["CustomConfigurationsPath"] = "" + componentEditorUrl + "WYSIWYGProperties.action?" + parameterString;
-					oFCKeditor.ToolbarSet = toolbarName;
-					oFCKeditor.ReplaceTextarea() ;
-				});
+			try
+			{
+				$(targetDiv).find(".wysiwygeditor").each(function(){
+						var fck = new FCKeditor("myFCKeditor");
+						var id = $(this).attr("id");
+						var toolbarName = $(this).attr("toolbarName");
+						if(!toolbarName || toolbarName == "")
+							toolbarName = "Basic";
+							
+						var oFCKeditor = new FCKeditor( id ) ;
+						oFCKeditor.BasePath = "" + componentEditorUrl + "applications/FCKEditor/" ;
+						oFCKeditor.Config["CustomConfigurationsPath"] = "" + componentEditorUrl + "WYSIWYGProperties.action?" + parameterString;
+						oFCKeditor.ToolbarSet = toolbarName;
+						oFCKeditor.ReplaceTextarea() ;
+					});
+				
+				var theRoot   = document.getElementById("componentProperties");
+				if(theRoot)
+				{
+					var theHandle = document.getElementById("componentPropertiesHandle");
+	
+					$(theRoot).css('top', $(window).height() / 2 + $(window).scrollTop() - ($(theRoot).height() / 2));
+					$(theRoot).css('left', $(window).width() / 2 - $(theRoot).width() / 2); 
+							                        
+					$(theHandle).css("cursor", "move");
+					$(theRoot).draggable({handle: theHandle});
+				}
+			}
+			catch(err)
+			{
+				alert("Error 5:" + err);
+			}
 		});
 	}
 	else
 	{
 		if(!targetDiv)
 			targetDiv = document.getElementById("componentPropertiesDiv");
-	
-		clientX = getEventPositionX(event);
-		clientY = getEventPositionY(event);
 		
-		var rightedge = document.body.clientWidth - clientX;
-		var bottomedge = getWindowHeight() - clientY;
-
-		if (rightedge < targetDiv.offsetWidth)
-			clientX = (clientX - 300);
-		
-		if (bottomedge < targetDiv.offsetHeight)
-			clientY = (clientY - 200);
+		$(document.getElementById("componentProperties")).remove();
 		
 		$(targetDiv).load("AjaxComponentDeliveryService!getComponentPropertyDiv.action?" + parameterString + "&targetDivId=" + targetDivId + "",{}, function(event)
 		{	
-			$(targetDiv).find(".wysiwygeditor").each(function(){
-					var fck = new FCKeditor("myFCKeditor");
-					var id = $(this).attr("id");
-					var toolbarName = $(this).attr("toolbarName");
-					if(!toolbarName || toolbarName == "")
-						toolbarName = "Basic";
-						
-					var oFCKeditor = new FCKeditor( id ) ;
-					oFCKeditor.BasePath = "" + componentEditorUrl + "applications/FCKEditor/" ;
-					oFCKeditor.Config["CustomConfigurationsPath"] = "" + componentEditorUrl + "WYSIWYGProperties.action?" + parameterString;
-					oFCKeditor.ToolbarSet = toolbarName;
-					oFCKeditor.ReplaceTextarea() ;
-				});
+			try
+			{
+				$(targetDiv).find(".wysiwygeditor").each(function(){
+						var fck = new FCKeditor("myFCKeditor");
+						var id = $(this).attr("id");
+						var toolbarName = $(this).attr("toolbarName");
+						if(!toolbarName || toolbarName == "")
+							toolbarName = "Basic";
+							
+						var oFCKeditor = new FCKeditor( id ) ;
+						oFCKeditor.BasePath = "" + componentEditorUrl + "applications/FCKEditor/" ;
+						oFCKeditor.Config["CustomConfigurationsPath"] = "" + componentEditorUrl + "WYSIWYGProperties.action?" + parameterString;
+						oFCKeditor.ToolbarSet = toolbarName;
+						oFCKeditor.ReplaceTextarea() ;
+					});
 
-			var theHandle = document.getElementById("componentPropertiesHandle");
-			var theRoot   = document.getElementById("componentProperties");
-
-			$(theHandle).css("cursor", "move");
-			$(theRoot).draggable({handle: theHandle});
-		});
+				
+				var theHandle = document.getElementById("componentPropertiesHandle");
+				var theRoot   = document.getElementById("componentProperties");
+				
+				$(theRoot).css('top', $(window).height() / 2 + $(window).scrollTop() - ($(theRoot).height() / 2));
+				$(theRoot).css('left', $(window).width() / 2 - $(theRoot).width() / 2); 
+						                        
+				$(theHandle).css("cursor", "move");
+				$(theRoot).draggable({handle: theHandle});
+			}
+			catch(err)
+			{
+				alert("Error 4:" + err);
+			}
+		});		
 	}	
 
 	if(targetDiv)
-	{
+	{		
 		targetDiv.style.display = "block";
 		menuDiv = targetDiv;
 	}
@@ -1692,6 +1736,7 @@ function showComponentTasksInDiv(targetDivId, parameterString, skipFloat, event)
 		//alert("Error:" + e);
 	}
 
+	//alert("3");
     if (event && event.stopPropagation) {event.stopPropagation();}
     else if (window.event) {window.event.cancelBubble = true;}	
     return false;
@@ -2007,22 +2052,29 @@ function viewSource()
 		                                    // to our myObject4 'this'.
 		ele.onclick = function(e)         // onclick is a method of ele not myObject4
 		{   
-		  	//alert("onclick");                              // so 'this' will point to event.currentTarget.
 		    this.thisObj.onClick(e, this);
 		}
 		  
 		ele.oncontextmenu = function(e)         	// onclick is a method of ele not myObject4
 		{ 
-		  	//alert("oncontextmenu");           		// so 'this' will point to event.currentTarget.
-		    this.thisObj.onContextMenu(e, this);
+		  	this.thisObj.onContextMenu(e, this);
 		    return false;
 		}
+		
+		ele.onmouseup = function(e)         	// onclick is a method of ele not myObject4
+		{ 
+		  	this.thisObj.onMouseUp(e, this);
+		    return false;
+		}
+		
 		
 		this.onClick = function(evt, ele) // onClick is a method of myObject4
 		{
 			//alert('emptySlotEventHandler.onClick()\nthis.objName = ' + this.objName + '\nele = ' + xName(ele));
 		    hidepreviousmenues();
 		    // cancel event bubbling
+   			//alert("5");
+
 		    if (evt && evt.stopPropagation) {evt.stopPropagation();}
 		    else if (window.event) {window.event.cancelBubble = true;}
 		}
@@ -2035,8 +2087,41 @@ function viewSource()
 		    showComponentTasks('componentTasks', 'repositoryId=' + repositoryId + '&siteNodeId=' + siteNodeId + '&languageId=' + languageId + '&contentId=' + contentId + '&componentId=' + componentId + '&componentContentId=' + componentContentId + '&slotId=' + slotId + '&showSimple=false&showLegend=false&slotClicked=true&originalUrl=' + this.originalUrl, false, evt);
 			
 		    // cancel event bubbling
+   			//alert("6");
+
 		    if (evt && evt.stopPropagation) {evt.stopPropagation();}
 		    else if (window.event) {window.event.cancelBubble = true;}
+		}
+
+		this.onMouseUp = function(evt, ele) // onContextMenu is a method of myObject4
+		{
+			//alert("onMouseUp...:" + eleId + " - " + assignComponentCatched);
+			if(assignComponentCatched)
+				return false;
+			
+			//alert("onMouseUp...:" + eleId);
+			
+			var hasClassSlotPosition = $(ele).hasClass("slotPosition");
+			var hasClassDropArea = $(ele).hasClass("dropArea");
+    		$("#debugDiv").html("Testing debug:" + eleId + " - " + hasClassSlotPosition + " " + hasClassDropArea);
+    		if(!hasClassSlotPosition)
+    		{
+    			//alert("Not allowed:" + eleId);
+    			return;
+    		}
+    		//alert("Allowed:" + eleId);
+    		assignComponentCatched = true;
+			
+			//assignComponent(e, siteNodeId, languageId, contentId, parentComponentId, slotId, specifyBaseTemplate, allowedComponentNamesUrlEncodedString, disallowedComponentNamesUrlEncodedString, slotPositionComponentId) 
+
+			$("#debugDiv").html("Assigning to:" + componentId + " with " + slotId + ":" + ":" + eleId);
+    		assignComponent(evt, siteNodeId, languageId, contentId, componentId, slotId, false, '', '', '');
+
+		    // cancel event bubbling
+   			//alert("7");
+
+		    if (evt && evt.stopPropagation) {evt.stopPropagation();}
+   			else if (window.event) {window.event.cancelBubble = true;}
 		}
 	}
 	
@@ -2080,9 +2165,15 @@ function viewSource()
 		
 		this.onClick = function(evt, ele) // onClick is a method of myObject4
 		{
+			var hasClass = $(ele).hasClass("disablePropertyDialogOnClick");
+    		$("#debugDiv").html("Onclick:" + ele.id + " - " + hasClass);
+    		if(hasClass)
+    			return;
+
 			//alert('componentEventHandler.onClick()\nthis.objName = ' + this.objName + '\nele = ' + xName(ele));
 		    hidepreviousmenues();
-
+		    
+		    /*
 		    var alternateComponentPropertiesDiv = document.getElementById("alternateComponentPropertiesDiv");
 			//alert("alternateComponentPropertiesDiv:" + alternateComponentPropertiesDiv);
 			
@@ -2093,12 +2184,15 @@ function viewSource()
 				//alert("parameters:" + parameters);
 				showComponentInDiv('alternateComponentPropertiesDiv', parameters, true);
 			}
+			*/
 			skipComponentPropertiesLoad = false;
 			//alert("skipComponentPropertiesLoad:" + skipComponentPropertiesLoad);
 
 		    // cancel event bubbling
-		    if (evt && evt.stopPropagation) {evt.stopPropagation();}
-		    else if (window.event) {window.event.cancelBubble = true;}
+   			//alert("8");
+
+			if (evt && evt.stopPropagation) {evt.stopPropagation();}
+			else if (window.event) {window.event.cancelBubble = true;}
 		}
 		  
 		this.onContextMenu = function(evt, ele) // onContextMenu is a method of myObject4
@@ -2107,6 +2201,8 @@ function viewSource()
 		    showComponentTasks('componentTasks', 'repositoryId=' + repositoryId + '&siteNodeId=' + siteNodeId + '&languageId=' + languageId + '&contentId=' + contentId + '&componentId=' + componentId + '&componentContentId=' + componentContentId + '&slotId=' + slotId + '&showSimple=false&showLegend=false&slotClicked=false&originalUrl=' + this.originalUrl, false, evt);
 		    
 		    // cancel event bubbling
+   			//alert("9");
+
 		    if (evt && evt.stopPropagation) {evt.stopPropagation();}
 		    else if (window.event) {window.event.cancelBubble = true;}
 		}
@@ -2152,6 +2248,8 @@ function viewSource()
 		{
 			//alert('componentEventHandler.onClick()\nthis.objName = ' + this.objName + '\nele = ' + xName(ele));
 		    // cancel event bubbling
+   			//alert("10");
+
 		    if (evt && evt.stopPropagation) {evt.stopPropagation();}
 		    else if (window.event) {window.event.cancelBubble = true;}
 		}
@@ -2161,7 +2259,8 @@ function viewSource()
 			//alert('componentEventHandler.oncontextmenu()\nthis.objName = ' + this.objName + '\nele = ' + xName(ele));
 		    showComponentInTreeMenu(evt, ele.id, this.objId, insertUrl, deleteUrl, changeUrl, slotId, slotContentIdVar);
 		    // cancel event bubbling
-		    if (evt && evt.stopPropagation) {evt.stopPropagation();}
+   			
+			if (evt && evt.stopPropagation) {evt.stopPropagation();}
 		    else if (window.event) {window.event.cancelBubble = true;}
 		}
 	}
@@ -2469,12 +2568,19 @@ function viewSource()
 	
 	function hideIGMenu()
 	{
+		//alert("previousIGMenuId:" + previousIGMenuId);
 		if(previousIGMenuId && previousIGMenuId != '')
 		{
 			var element = document.getElementById(previousIGMenuId);
 			if(element)
 				element.style.display = 'none';
 		}   
+		else if(activeMenuId && activeMenuId != '')
+		{
+			var element = document.getElementById(activeMenuId);
+			if(element)
+				element.style.display = 'none';
+		}
 	}
 	
 	var previousEditOnSightMenuDivId = ''; 
@@ -2499,12 +2605,19 @@ function viewSource()
 		alert("disallowedComponentsArrayAsUrlEncodedString:" + disallowedComponentsArrayAsUrlEncodedString);
 		*/
 		var element = document.getElementById(elementId);
-		
+		var insertMarker = "<span id='ghost' style='background-color: #0070da; display: table; clear: both; height: 2px; width: 100%;'></span>";
+
 	   	if (document.addEventListener != null)
 	   	{
 	   		element.addEventListener("mouseover", function(event) { 
 	   		
-	   			//alert("clearMovedComponent:" + clearMovedComponent);
+	    		//$("#debugDiv").html("Testing debug:" + elementId + " - " + draggedComponentId + " - " + movedComponentId + " - " + movedElementId);
+
+    			var hasClass = $(element).hasClass("slotPosition");
+	    		$("#debugDiv").html("Testing debug:" + elementId + " - " + hasClass);
+	    		if(!hasClass)
+	    			return;
+	    		
 	   			if(clearMovedComponent)
 	   			{
 	   				draggedComponentId = -1;
@@ -2512,9 +2625,9 @@ function viewSource()
 					movedElementId = "";
 					clearMovedComponent = false;
 				}
-				
-	    		//$("#debugDiv").html("Testing debug:" + draggedComponentId + " - " + movedComponentId + " - " + movedElementId);
-				
+								
+				$("#debugDiv").html("AAAA:" + draggedComponentId);
+
 	   			if(movedComponentId && movedComponentId != "") 
 	   			{
 		   			var draggedElement = document.getElementById(movedElementId);
@@ -2534,7 +2647,7 @@ function viewSource()
 			   		if(targ.id != movedElementId)
 			   		{
 		   				$("#ghost").remove();
-		   				$(element).prepend("<span id='ghost' style='padding: 2px; border: 1px dotted #ccc; background-color:#ff8a18; display: table; clear: both; height: 1px;'><b>Move here</b></span>");
+		   				$(element).prepend(insertMarker);
 		   			}
 	   			}
 	   			else if(draggedComponentId && draggedComponentId != "" && draggedComponentId != '-1') 
@@ -2553,30 +2666,31 @@ function viewSource()
 					if (targ.nodeType == 3) // defeat Safari bug
 						targ = targ.parentNode;
 			   		
-		    		//$("#debugDiv").html("Testing debug:" + draggedComponentId + " - " + movedComponentId + " - " + movedElementId + " - " + targ.id);
-
+					$("#debugDiv").html("AAAA:" + targ.id + " - " + movedElementId);
 			   		if(targ.id != draggedComponentId)
 			   		{
 		   				$("#ghost").remove();
-		   				$(element).prepend("<span id='ghost' style='padding: 2px; border: 1px dotted #ccc; background-color:#ff8a18; display: table; clear: both; height: 1px;'><b>Move here</b></span>");
+		   				$(element).prepend(insertMarker);
 		   			}
 	   			} 
-	   		    if (event && event.stopPropagation) {event.stopPropagation();}
+
+	   			if (event && event.stopPropagation) {event.stopPropagation();}
     			else if (window.event) {window.event.cancelBubble = true;}	
 	   		}, false);
-			/*	
-	   		element.addEventListener("mouseout", function(event) { 
-	   			if(movedComponentId && movedComponentId != "") 
-	   			{
-	   				//$("#ghost").remove();
-	   				//element.style.borderTop = '2px solid white';
-	   				//element.style.paddingTop = '0px';
-	   			} 
-	   		    if (event && event.stopPropagation) {event.stopPropagation();}
-    			else if (window.event) {window.event.cancelBubble = true;}	
-	   		}, false);
-	   		*/	
 	    	element.addEventListener("mouseup", function (event){ 
+	    		
+				//alert("mouseup...:" + element + " - " + assignComponentCatched);
+
+	    		var hasClass = $(element).hasClass("slotPosition");
+	    		$("#debugDiv").html("Testing debug:" + elementId + " - " + hasClass);
+	    		if(!hasClass /*|| assignComponentCatched*/)
+	    		{
+	    			//alert("Not allowed:" + elementId + hasClass + assignComponentCatched);
+	    			return;
+	    		}
+
+	    		assignComponentCatched = true;
+				$("#debugDiv").html("Assigning to:" + componentId + " with " + siteNodeId + ":" + languageId + ":" +contentId + ":" + componentId + ":" + id);
 	    		assignComponent(event, siteNodeId, languageId, contentId, componentId, id, skipFloatDiv, allowedComponentsArrayAsUrlEncodedString, disallowedComponentsArrayAsUrlEncodedString, slotPositionComponentId);
 	    	}, false);
 	    }
@@ -2584,6 +2698,13 @@ function viewSource()
 	    {
 	    	element.attachEvent("onmouseover", function (evt) { 
 	    	
+	    		$("#debugDiv").html("Testing debug:" + draggedComponentId + " - " + movedComponentId + " - " + movedElementId);
+
+    			var hasClass = $(element).hasClass("slotPosition");
+	    		$("#debugDiv").html("Testing debug:" + elementId + " - " + hasClass);
+	    		if(!hasClass)
+	    			return;
+	    		
 	   			//alert("clearMovedComponent:" + clearMovedComponent);
 	   			if(clearMovedComponent)
 	   			{
@@ -2615,7 +2736,7 @@ function viewSource()
 			   		if(targ.id != movedElementId)
 			   		{
 		   				$("#ghost").remove();
-		   				$(element).prepend("<span id='ghost' style='padding: 2px; border: 1px dotted #ccc; background-color:#ff8a18; display: table; clear: both; height: 1px;'><b>Move here</b></span>");
+		   				$(element).prepend(insertMarker);
 		   			}
 	   			} 
 	   			else if(draggedComponentId && draggedComponentId != "" && draggedComponentId != '-1') 
@@ -2632,22 +2753,28 @@ function viewSource()
 						targ = evt.srcElement;
 					if (targ.nodeType == 3) // defeat Safari bug
 						targ = targ.parentNode;
-
-		    		//$("#debugDiv").html("<p>Mouse over: " + element.id + "<br/>Event:" + evt + "<br/>Target.id: " + targ.id + "<br/>draggedComponentId:" + draggedComponentId + "</p>");
-
-		    		//$("#debugDiv").html("Testing debug:" + draggedComponentId + " - " + movedComponentId + " - " + movedElementId + " - " + evt + ":" + targ.id + ":" + evt.target + ":" + evt.srcElement.id);
 			   		
 			   		if(targ.id != draggedComponentId)
 			   		{
 		   				$("#ghost").remove();
-		   				$(element).prepend("<span id='ghost' style='padding: 2px; border: 1px dotted #ccc; background-color:#ff8a18; display: table; clear: both; height: 1px;'><b>Move here</b></span>");
+		   				$(element).prepend(insertMarker);
 		   			}
 	   			} 
+
 	   		    if (event && event.stopPropagation) {event.stopPropagation();}
     			else if (window.event) {window.event.cancelBubble = true;}	
 	   		});
 	    	
 	    	element.attachEvent("onmouseup", function (evt) {
+	    		
+				var hasClass = $(element).hasClass("slotPosition");
+	    		$("#debugDiv").html("Testing debug:" + elementId + " - " + hasClass);
+	    		if(!hasClass)
+	    		{
+	    			//alert("Not allowed:" + elementId);
+	    			return;
+	    		}
+	    		
 	    		assignComponent(evt, siteNodeId, languageId, contentId, componentId, id, skipFloatDiv, allowedComponentsArrayAsUrlEncodedString, disallowedComponentsArrayAsUrlEncodedString, slotPositionComponentId);
 	   		})
 	    }

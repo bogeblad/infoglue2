@@ -1,9 +1,17 @@
+<head>
+
 <script type="text/javascript">
 	var componentEditorUrl = "${componentEditorUrl}";
 	var currentContext = "${contextName}";
 	var currentUrl = "${currentUrl}";
 	var userPrefferredLanguageCode = "${userPrefferredLanguageCode}";
 	var editOnSightAttributeNames = new Array();
+
+	var repositoryId = ${repositoryId};
+	var siteNodeId = ${siteNodeId};
+	var languageId = ${languageId};
+	var contentId = ${contentId};
+	var stopDragAndDrop = false;
 	
 	${limitedUserWarning}
 	
@@ -37,6 +45,7 @@
 
 <script type="text/javascript" src="${contextName}/script/jquery/jquery-1.2.6.min.js"></script>
 <script type="text/javascript" src="${contextName}/script/jqueryplugins/ui/jquery.dimensions.js"></script>
+<!--
 <script type="text/javascript" src="${contextName}/script/jqueryplugins/ui/ui.mouse.js"></script>
 <script type="text/javascript" src="${contextName}/script/jqueryplugins/ui/ui.draggable.js"></script>
 <script type="text/javascript" src="${contextName}/script/jqueryplugins/ui/ui.draggable.ext.js"></script>
@@ -44,6 +53,9 @@
 <script type="text/javascript" src="${contextName}/script/jqueryplugins/ui/ui.droppable.ext.js"></script>
 <script type="text/javascript" src="${contextName}/script/jqueryplugins/ui/ui.sortable.js"></script>
 <script type="text/javascript" src="${contextName}/script/jqueryplugins/ui/ui.sortable.ext.js"></script>
+-->
+<script type="text/javascript" src="${contextName}/script/jqueryplugins/ui/jquery-ui-dragDropTabs-1.6rc2.min.js"></script>
+
 
 <script type="text/javascript" src="${contextName}/script/jqueryplugins/thickbox/thickbox-compressed.js"></script>
 <style type="text/css" media="all">@import "${contextName}/script/jqueryplugins/thickbox/thickbox.css";</style>
@@ -61,25 +73,46 @@
 	{
 		try
 		{
-			$(".dragableComponent").draggable({cursorAt: {left: -10 }, cursor: 'move', distance: 10, helper: 'clone', stop: function(ev, ui) {
-					$("#ghost").remove();
+			//$(".dragableComponent").draggable();
+				
+			$(".dragableComponent").draggable({cursorAt: {left: -10 }, distance: 5, cursor: 'move', helper: 'clone', stop: function(ev, ui) {
 					clearMovedComponent = true;
 				}, start: function(ev, ui) {
-			    	$(ui.helper).css('border', '1px solid #ccc');
-			    	$(ui.helper).css('background-color', 'white');
-			    	var currentMovedComponentId = $(ui.helper).attr("id");
-			    	if(currentMovedComponentId != '-1' && currentMovedComponentId != movedComponentId)
-					{
-						movedElementId = currentMovedComponentId;
-						currentMovedComponentId = currentMovedComponentId.substring(currentMovedComponentId.indexOf("_") + 1, currentMovedComponentId.indexOf("Comp"));
-						movedComponentId = currentMovedComponentId;
-					}
+					//if(!stopDragAndDrop)
+					//{
+						$(ui.helper).css('border', '1px solid #ccc');
+				    	$(ui.helper).css('background-color', 'white');
+				    	var currentMovedComponentId = $(ui.helper).attr("id");
+				    	if(currentMovedComponentId != '-1' && currentMovedComponentId != movedComponentId)
+						{
+							movedElementId = currentMovedComponentId;
+							currentMovedComponentId = currentMovedComponentId.substring(currentMovedComponentId.indexOf("_") + 1, currentMovedComponentId.indexOf("Comp"));
+							movedComponentId = currentMovedComponentId;
+						}
+				    //}
 				}
+			}).draggable('disable'); //.hover(function(e){$(this).draggable('enable');},function(e){$(this).draggable('disable');}); ;
+			
+		}
+		catch(e)
+		{
+			alert("Error 3:" + e);
+		}
+
+		try
+		{
+			$(".dropArea").droppable({ 
+			    accept: ".dragableComponent, .ui-draggable", 
+			    hoverClass: "droppable-hover",
+			    tolerance: "touch",
+			    over: function(ev, ui) { 
+					$("#ghost").remove(); 
+			    }
 			});
 		}
 		catch(e)
 		{
-			//alert("Error:" + e);
+			alert("Error 3:" + e);
 		}
 				
         var $activeElement = $('#${focusElementId}Comp');
@@ -91,7 +124,7 @@
 
         if(activatedComponentId > 0)
         {
-        	var alternateComponentPropertiesDiv = $("#alternateComponentPropertiesDiv");
+            var alternateComponentPropertiesDiv = $("#alternateComponentPropertiesDiv");
 			//alert("alternateComponentPropertiesDiv:" + alternateComponentPropertiesDiv);
 			if(alternateComponentPropertiesDiv)
 				showComponentInDiv('alternateComponentPropertiesDiv', '${parameters}', true);
@@ -124,5 +157,3 @@
 </script>
 
 <link rel="stylesheet" type="text/css" href="${contextName}/css/ajaxComponentEditor.css" />
-
-</head>

@@ -310,6 +310,7 @@ public class AjaxDecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHT
 			extraHeader = extraHeader.replaceAll("\\$\\{parameters\\}", parameters);
 			extraHeader = extraHeader.replaceAll("\\$\\{siteNodeId\\}", "" + templateController.getSiteNodeId());
 			extraHeader = extraHeader.replaceAll("\\$\\{languageId\\}", "" + templateController.getLanguageId());
+			extraHeader = extraHeader.replaceAll("\\$\\{contentId\\}", "" + templateController.getContentId());
 			extraHeader = extraHeader.replaceAll("\\$\\{parentSiteNodeId\\}", "" + templateController.getSiteNode().getParentSiteNodeId());
 			extraHeader = extraHeader.replaceAll("\\$\\{repositoryId\\}", "" + templateController.getSiteNode().getRepositoryId());
 			extraHeader = extraHeader.replaceAll("\\$\\{userPrefferredLanguageCode\\}", "" + CmsPropertyHandler.getPreferredLanguageCode(principal.getName()));
@@ -389,9 +390,9 @@ public class AjaxDecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHT
 			StringBuffer modifiedTemplate = new StringBuffer(template);
 			
 			//Adding stuff in the header
-			int indexOfHeadEndTag = modifiedTemplate.indexOf("</head");
+			int indexOfHeadEndTag = modifiedTemplate.indexOf("<head");
 			if(indexOfHeadEndTag == -1)
-				indexOfHeadEndTag = modifiedTemplate.indexOf("</HEAD");
+				indexOfHeadEndTag = modifiedTemplate.indexOf("<HEAD");
 			
 			if(indexOfHeadEndTag > -1)
 			{
@@ -405,7 +406,7 @@ public class AjaxDecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHT
 		
 				if(indexOfHTMLStartTag > -1)
 				{
-					modifiedTemplate = modifiedTemplate.insert(modifiedTemplate.indexOf(">", indexOfHTMLStartTag) + 1, "<head>" + extraHeader);
+					modifiedTemplate = modifiedTemplate.insert(modifiedTemplate.indexOf(">", indexOfHTMLStartTag) + 1, "" + extraHeader + "</head>");
 				}
 				else
 				{
@@ -565,7 +566,17 @@ public class AjaxDecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHT
 				{    
 				    addComponentLinkHTML = slot.substring(addComponentLinkHTMLIndex + "addComponentLinkHTML".length() + 2, slot.indexOf("\"", addComponentLinkHTMLIndex + "addComponentLinkHTML".length() + 2));
 				}
-
+				
+				if(addComponentLinkHTML == null || addComponentLinkHTML.equals(""))
+				{
+					Locale locale = templateController.getLocaleAvailableInTool(templateController.getPrincipal());
+					addComponentLinkHTML = getLocalizedString(locale, "deliver.editOnSight.slotInstructionHTML");
+				}
+				
+				//System.out.println("id:" + id);
+				//System.out.println("addComponentTextIndex:" + addComponentTextIndex);
+				//System.out.println("addComponentLinkHTML:" + addComponentLinkHTML);
+				
 				int allowedNumberOfComponentsInt = -1;
 				int allowedNumberOfComponentsIndex = slot.indexOf("allowedNumberOfComponents");
 				if(allowedNumberOfComponentsIndex > -1)
@@ -593,7 +604,7 @@ public class AjaxDecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHT
 				    subComponentString += "<div id=\"" + component.getId() + "_" + id + "\" class=\"inheritedComponentDiv\");\">";
 				else
 				{
-				    subComponentString += "<div id=\"" + component.getId() + "_" + id + "\" class=\"componentDiv\">";
+				    subComponentString += "<div id=\"" + component.getId() + "_" + id + "\" class=\"componentDiv slotPosition\">";
 				    
 				    subComponentString += "\n<script type=\"text/javascript\">\n";
 				    subComponentString += "    $(document).ready(function() {";
@@ -613,11 +624,12 @@ public class AjaxDecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHT
 				    subComponentString += "	   });";
 				   */
 				    
+				    //subComponentString += "    alert('element:' + element); if(!$(element).hasClass(\"slotPosition\")) return;\n";
+
 				    subComponentString += "    if (document.addEventListener != null)\n";
-				    subComponentString += "		 element.addEventListener('mouseup', function (event){assignComponent(event, '" + siteNodeId + "', '" + languageId + "', '" + contentId + "', '" + component.getId() + "', '" + id + "', '" + false + "', '" + slotBean.getAllowedComponentsArrayAsUrlEncodedString() + "', '" + slotBean.getDisallowedComponentsArrayAsUrlEncodedString() + "', '');}, false);\n";
+					subComponentString += "		 element.addEventListener('mouseup', function (event){if(!$('#" + component.getId() + "_" + id + "').hasClass(\"slotPosition\")) return; assignComponent(event, '" + siteNodeId + "', '" + languageId + "', '" + contentId + "', '" + component.getId() + "', '" + id + "', '" + false + "', '" + slotBean.getAllowedComponentsArrayAsUrlEncodedString() + "', '" + slotBean.getDisallowedComponentsArrayAsUrlEncodedString() + "', '');}, false);\n";
 				    subComponentString += "    else{\n";
-				    subComponentString += "		 element.attachEvent(\"onmouseup\", function (evt){\n";
-				    subComponentString += "			assignComponent(evt, '" + siteNodeId + "', '" + languageId + "', '" + contentId + "', '" + component.getId() + "', '" + id + "', '" + false + "', '" + slotBean.getAllowedComponentsArrayAsUrlEncodedString() + "', '" + slotBean.getDisallowedComponentsArrayAsUrlEncodedString() + "', '');\n";
+				    subComponentString += "		 element.attachEvent(\"onmouseup\", function (evt){if(!$('#" + component.getId() + "_" + id + "').hasClass(\"slotPosition\")) return; assignComponent(evt, '" + siteNodeId + "', '" + languageId + "', '" + contentId + "', '" + component.getId() + "', '" + id + "', '" + false + "', '" + slotBean.getAllowedComponentsArrayAsUrlEncodedString() + "', '" + slotBean.getDisallowedComponentsArrayAsUrlEncodedString() + "', '');\n";
 				    subComponentString += "		 });";
 				    subComponentString += "    }\n";
 				    subComponentString += " });\n";
@@ -637,6 +649,7 @@ public class AjaxDecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHT
 					hasAccessToAddComponent = true;
 				
 			    boolean hasMaxComponents = false;
+			    //System.out.println("Checking for max components on: " + id);
 				if(component.getSlotList() != null)
 				{
 					Iterator slotListIterator = component.getSlotList().iterator();
@@ -645,6 +658,8 @@ public class AjaxDecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHT
 						Slot parentSlot = (Slot)slotListIterator.next();
 						if(parentSlot.getId().equalsIgnoreCase(id))
 						{
+							//System.out.println("parentSlot.getAllowedNumberOfComponents(): " + parentSlot.getAllowedNumberOfComponents());
+							//System.out.println("parentSlot.getComponents().size(): " + parentSlot.getComponents().size());
 							if(parentSlot.getAllowedNumberOfComponents() != -1 && parentSlot.getComponents().size() >= parentSlot.getAllowedNumberOfComponents())
 								hasMaxComponents = true;
 						}
@@ -656,13 +671,23 @@ public class AjaxDecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHT
 					if(slotBean.getAddComponentText() != null)
 					{
 						clickToAddHTML = slotBean.getAddComponentText();
+						//System.out.println("Fick:" + clickToAddHTML);
 					}
 					else
 					{
 						Locale locale = templateController.getLocaleAvailableInTool(principal);
 						clickToAddHTML = getLocalizedString(locale, "deliver.editOnSight.slotInstructionHTML");
+						//System.out.println("Fack:" + clickToAddHTML + locale);
 					}
 				}
+				else
+				{
+					addComponentLinkHTML = "";
+					clickToAddHTML = "";
+				}
+				//System.out.println("addComponentLinkHTML:" + addComponentLinkHTML);
+				//System.out.println("clickToAddHTML:" + clickToAddHTML);
+				//System.out.println("hasMaxComponents:" + hasMaxComponents);
 				
 				//logger.info("subComponents for " + id + ":" + subComponents);
 				if(subComponents != null && subComponents.size() > 0)
@@ -716,10 +741,12 @@ public class AjaxDecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHT
 
 								    if(subComponent.getPagePartTemplateComponent() != null)
 								    {
+								    	subComponent.setComponentDivId("" + id + index + "_" + subComponent.getPagePartTemplateComponent().getId() + "Comp");
 									    subComponentString += "<a id=\"" + subComponent.getPagePartTemplateComponent().getId() + "Comp\" name=\"" + subComponent.getPagePartTemplateComponent().getId() + "Comp\"></a><span class=\"dragableComponent slotPosition\" id=\"" + id + index + "_" + subComponent.getPagePartTemplateComponent().getId() + "Comp\">" + childComponentsString + "<script type=\"text/javascript\">initializeComponentEventHandler('" + id + index + "_" + subComponent.getPagePartTemplateComponent().getId() + "Comp', '" + subComponent.getPagePartTemplateComponent().getId() + "', '" + id + "', " + templateController.getSiteNode().getRepositoryId() + ", " + templateController.getSiteNodeId() + ", " + templateController.getLanguageId() + ", " + templateController.getContentId() + ", " + subComponent.getPagePartTemplateComponent().getId() + ", " + subComponent.getPagePartTemplateComponent().getContentId() + ", '" + URLEncoder.encode(templateController.getOriginalFullURL(), "UTF-8") + "');</script></span>";
 								    }
 								    else
 								    {
+								    	subComponent.setComponentDivId("" + id + index + "_" + subComponent.getId() + "Comp");
 									    subComponentString += "<a id=\"" + subComponent.getId() + "Comp\" name=\"" + subComponent.getId() + "Comp\"></a><span class=\"dragableComponent slotPosition\" id=\"" + id + index + "_" + subComponent.getId() + "Comp\">" + childComponentsString + "<script type=\"text/javascript\">initializeComponentEventHandler('" + id + index + "_" + subComponent.getId() + "Comp', '" + subComponent.getId() + "', '" + id + "', " + templateController.getSiteNode().getRepositoryId() + ", " + templateController.getSiteNodeId() + ", " + templateController.getLanguageId() + ", " + templateController.getContentId() + ", " + subComponent.getId() + ", " + subComponent.getContentId() + ", '" + URLEncoder.encode(templateController.getOriginalFullURL(), "UTF-8") + "'); " + "registerOnMouseUp('" + id + index + "_" + subComponent.getId() + "Comp', " + templateController.getSiteNodeId() + ", " + templateController.getLanguageId() + ", " + templateController.getContentId() + ", '" + component.getId() + "', '" + id + "', false, '" + allowedComponentNamesAsEncodedString + "', '" + disallowedComponentNamesAsEncodedString + "', " + subComponent.getId() + ");</script></span>";
 								    }
 								}
@@ -749,7 +776,7 @@ public class AjaxDecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHT
 						index++;
 					}
 					
-					if(component.getContainerSlot().getAddComponentLinkHTML() != null && !component.getIsInherited())
+					if(component.getContainerSlot().getAddComponentLinkHTML() != null && !component.getIsInherited() && !hasMaxComponents)
 					{
 					    String allowedComponentNamesAsEncodedString = null;
 					    String disallowedComponentNamesAsEncodedString = null;
@@ -765,16 +792,18 @@ public class AjaxDecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHT
 					    }
 
 						String linkUrl = componentEditorUrl + "ViewSiteNodePageComponents!listComponents.action?BBB=1&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + (contentId == null ? "-1" : contentId) + "&parentComponentId=" + component.getId() + "&slotId=" + id + "&showSimple=" + this.getTemplateController().getDeliveryContext().getShowSimple() + ((allowedComponentNamesAsEncodedString != null) ? "&" + allowedComponentNamesAsEncodedString : "&BBBB=1") + ((disallowedComponentNamesAsEncodedString != null) ? "&" + disallowedComponentNamesAsEncodedString : "&BBBB=1");
+						//System.out.println("clickToAddHTML 1:" + component.getContainerSlot().getAddComponentLinkHTML().replaceAll("\\$linkUrl", linkUrl));
 						subComponentString += "" + component.getContainerSlot().getAddComponentLinkHTML().replaceAll("\\$linkUrl", linkUrl);
 					}
-					else if(!component.getIsInherited())
+					else if(!component.getIsInherited() && !hasMaxComponents)
 					{
+						//System.out.println("clickToAddHTML 2:" + clickToAddHTML);
 						subComponentString += "" + clickToAddHTML;
 					}
 				}
 				else
 				{
-					if(component.getContainerSlot().getAddComponentLinkHTML() != null && !component.getIsInherited())
+					if(component.getContainerSlot().getAddComponentLinkHTML() != null && !component.getIsInherited() && !hasMaxComponents)
 					{
 					    String allowedComponentNamesAsEncodedString = null;
 					    String disallowedComponentNamesAsEncodedString = null;
@@ -790,10 +819,12 @@ public class AjaxDecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHT
 					    }
 
 						String linkUrl = componentEditorUrl + "ViewSiteNodePageComponents!listComponents.action?BBB=1&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + (contentId == null ? "-1" : contentId) + "&parentComponentId=" + component.getId() + "&slotId=" + id + "&showSimple=" + this.getTemplateController().getDeliveryContext().getShowSimple() + ((allowedComponentNamesAsEncodedString != null) ? "&" + allowedComponentNamesAsEncodedString : "&BBBB=1") + ((disallowedComponentNamesAsEncodedString != null) ? "&" + disallowedComponentNamesAsEncodedString : "&BBBB=1");
+						//System.out.println("clickToAddHTML 3:" + component.getContainerSlot().getAddComponentLinkHTML().replaceAll("\\$linkUrl", linkUrl));
 						subComponentString += "" + component.getContainerSlot().getAddComponentLinkHTML().replaceAll("\\$linkUrl", linkUrl);
 					}
-					else if(!component.getIsInherited())
+					else if(!component.getIsInherited() && !hasMaxComponents)
 					{
+						//System.out.println("clickToAddHTML 4:" + clickToAddHTML);
 						subComponentString += "" + clickToAddHTML;
 					}
 				}

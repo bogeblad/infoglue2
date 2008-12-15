@@ -24,6 +24,7 @@
 
 package org.infoglue.deliver.applications.actions;
 
+import java.io.File;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
@@ -40,6 +41,7 @@ import org.infoglue.cms.controllers.kernel.impl.simple.ComponentController;
 import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ServerNodeController;
 import org.infoglue.cms.controllers.kernel.impl.simple.UserControllerProxy;
+import org.infoglue.cms.io.FileHelper;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.deliver.applications.databeans.CacheEvictionBean;
@@ -66,6 +68,8 @@ public class AjaxComponentDeliveryServiceAction extends InfoGlueAbstractAction
          
     public String doGetComponentPropertyDiv() throws Exception
     {
+    	try
+    	{
     	StringBuffer propertiesDiv = new StringBuffer();
 
     	String repositoryIdString 		= this.getRequest().getParameter("repositoryId");
@@ -79,7 +83,13 @@ public class AjaxComponentDeliveryServiceAction extends InfoGlueAbstractAction
     	String showLegend 				= this.getRequest().getParameter("showLegend");
     	String targetDiv 				= this.getRequest().getParameter("targetDivId");
     	String originalUrl				= this.getRequest().getParameter("originalUrl");
+    	String fullHtml 				= this.getRequest().getParameter("fullHtml");
 
+    	//System.out.println("componentIdString..." + componentIdString);
+    	//System.out.println("componentContentIdString..." + componentContentIdString);
+    	if(componentContentIdString == null || componentContentIdString.equals("") || componentContentIdString.equals("null"))
+    		componentContentIdString = "-1";
+    		
     	Integer repositoryId = new Integer(repositoryIdString);
     	Integer siteNodeId = new Integer(siteNodeIdString);
     	Integer languageId = new Integer(languageIdString);
@@ -126,12 +136,37 @@ public class AjaxComponentDeliveryServiceAction extends InfoGlueAbstractAction
     		e.printStackTrace();
 		}
      	    	
-        this.getResponse().setContentType("text/plain");
-        this.getResponse().getWriter().println(propertiesDiv.toString());
+    	logger.info("Returning:" + propertiesDiv.toString());
+    	
+    	if(fullHtml == null || !fullHtml.equals("true"))
+    	{
+            if(logger.isInfoEnabled())
+                logger.info("Returning:" + propertiesDiv.toString());
 
-        if(logger.isInfoEnabled())
-            logger.info("Returning:" + propertiesDiv.toString());
+            this.getResponse().setContentType("text/plain");
+    		this.getResponse().getWriter().println(propertiesDiv.toString());
+    	}
+    	else
+    	{
+            if(logger.isInfoEnabled())
+                logger.info("Returning:" + propertiesDiv.toString());
+    		
+		    String template = FileHelper.getFileAsString(new File(CmsPropertyHandler.getContextRootPath() + "preview/ajax/componentPropertiesTemplate.vm"));
+		    //System.out.println("replacing in " + template + "\n with " + propertiesDiv.toString());
+		    String firstPart = template.substring(0,template.indexOf("$propertiesDiv"));
+		    String secondPart = template.substring(template.indexOf("$propertiesDiv") + 14);
+		    template = firstPart + "" + propertiesDiv.toString() + secondPart;
+            this.getResponse().setContentType("text/html");
+    		this.getResponse().getWriter().println(template);
+    	}
+    	
         
+    	}
+    	catch (Throwable e) 
+    	{
+    		e.printStackTrace();
+		}
+    	
         return NONE;
     }
     
@@ -158,6 +193,11 @@ public class AjaxComponentDeliveryServiceAction extends InfoGlueAbstractAction
     	String treeItemString			= this.getRequest().getParameter("treeItem");
     	String originalFullURL			= this.getRequest().getParameter("originalUrl");
     	
+    	if(contentIdString == null || contentIdString.equals("") || contentIdString.equals("null"))
+    		contentIdString = "-1";
+    	if(languageIdString == null || languageIdString.equals("") || languageIdString.equals("null"))
+    		languageIdString = "-1";
+    		
     	Integer repositoryId 			= new Integer(repositoryIdString);
     	Integer siteNodeId 				= new Integer(siteNodeIdString);
     	Integer languageId 				= new Integer(languageIdString);
@@ -225,6 +265,7 @@ public class AjaxComponentDeliveryServiceAction extends InfoGlueAbstractAction
     	String componentContentIdString = this.getRequest().getParameter("componentContentId");
     	String slotName 				= this.getRequest().getParameter("slotName");
     	String showLegend 				= this.getRequest().getParameter("showLegend");
+    	String showComponentNames 		= this.getRequest().getParameter("showComponentNames");
     	String targetDiv 				= this.getRequest().getParameter("targetDivId");
 
     	Integer repositoryId = null;
@@ -263,7 +304,7 @@ public class AjaxComponentDeliveryServiceAction extends InfoGlueAbstractAction
         		slotName = "";
         	
         	PageEditorHelper peh = new PageEditorHelper();
-	    	availableComponentDiv = peh.getAvailableComponentsDiv(db, principal, locale, repositoryId, languageId, componentContentId, slotName, showLegend, targetDiv);
+	    	availableComponentDiv = peh.getAvailableComponentsDiv(db, principal, locale, repositoryId, languageId, componentContentId, slotName, showLegend, showComponentNames, targetDiv);
         	
 	    	commitTransaction(db);
     	}

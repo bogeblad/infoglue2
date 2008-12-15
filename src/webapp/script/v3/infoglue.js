@@ -102,6 +102,22 @@ function resizeScrollArea()
 	}
 }
 
+function resizeScrollAreaWithAmount(height)
+{
+	var dimensionsWidth = $(window).width();
+	var dimensionsHeight = $(window).height();
+  	//alert("dimensionsHeight:" + (dimensionsHeight - height));
+  	if(dimensionsWidth != 0)
+  	{
+		$(".igScrollArea").css("height", dimensionsHeight - height);
+		//$(".igScrollArea").css("width", dimensionsWidth);
+	}
+	else
+	{
+		setTimeout("resizeScrollAreaWithAmount(" + height + ")", 100);
+	}
+}
+
 function checkAllBoxes(element)
 {
 	if(element)

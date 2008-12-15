@@ -42,6 +42,7 @@ public class InfoGlueComponent
 	private Integer contentId 					= null;
 	private String name 	 					= null;
 	private String slotName						= null;
+	private String componentDivId				= null;
 	private Slot containerSlot					= null;
 	private boolean isInherited 				= false;
 	private Integer pagePartTemplateContentId	= null;
@@ -276,6 +277,16 @@ public class InfoGlueComponent
 	public void setCacheKey(String cacheKey)
 	{
 		this.cacheKey = cacheKey;
+	}
+	
+	public String getComponentDivId()
+	{
+		return componentDivId;
+	}
+
+	public void setComponentDivId(String componentDivId)
+	{
+		this.componentDivId = componentDivId;
 	}
 
 }
