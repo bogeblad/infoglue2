@@ -45,6 +45,15 @@ Abbreviated Changelog from 2.9.5 Final
 - Fixed bug in how compressed response handles encoding - it did not seem to do it right before as it always took the language charset and disregarded the page / component set charsets.
 - Added more options to common:gapcha-tag.
 - Added more logic to handle protection handling on pages and contents. Before one could get around setting access rights in the cms to easy if one had write access to the item in question (not affecting deliver).
+- Fixed bug in assetThumbnailUrl with language fallback
+- Added more browser detection.. IE6, IE7, IE8, Windows Vista.
+- Upgraded the mass upload flash (SWFUpload)  to support newer browsers.
+- Upgraded the file upload dialog to the new design
+- Added jquery.media plugin
+- Added jquery Syntax Hightlighter plugin
+- Added jquery.metadata plugin
+- Added swfobject plugin
+- Improved the file upload dialog and upgraded the multi file upload feature.
 
 
 -------------------------------------------------------------------------------------
