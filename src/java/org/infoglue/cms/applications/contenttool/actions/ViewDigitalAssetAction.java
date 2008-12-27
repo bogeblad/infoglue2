@@ -23,10 +23,12 @@
 
 package org.infoglue.cms.applications.contenttool.actions;
 
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
+import org.infoglue.cms.applications.databeans.SessionInfoBean;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
@@ -43,6 +45,7 @@ import org.infoglue.cms.entities.management.RoleProperties;
 import org.infoglue.cms.entities.management.RolePropertiesVO;
 import org.infoglue.cms.entities.management.UserProperties;
 import org.infoglue.cms.entities.management.UserPropertiesVO;
+import org.infoglue.cms.util.CmsSessionContextListener;
 
 
 /**
@@ -172,6 +175,27 @@ public class ViewDigitalAssetAction extends InfoGlueAbstractAction
 	{
 		return ContentTypeDefinitionController.getController().getDefinedAssetKeys(this.contentTypeDefinitionVO.getSchemaValue());
 	}
+
+    public boolean getAllowedSessionId(String requestSessionId)
+    {
+		boolean allowedSessionId = false;
+		List activeSessionBeanList = CmsSessionContextListener.getSessionInfoBeanList();
+		Iterator activeSessionsIterator = activeSessionBeanList.iterator();
+		//System.out.println("activeSessionBeanList:" + activeSessionBeanList.size());
+		while(activeSessionsIterator.hasNext())
+		{
+			SessionInfoBean sessionBean = (SessionInfoBean)activeSessionsIterator.next();
+			//System.out.println("sessionBean:" + sessionBean.getId() + "=" + sessionBean.getPrincipal().getName());
+			if(sessionBean.getId().equals(requestSessionId))
+			{
+				//System.out.println("Found a matching sessionId");
+				allowedSessionId = true;
+		    	
+				break;
+			}
+		}
+		return allowedSessionId;
+    }
 
 	public Integer getDigitalAssetId()
 	{
