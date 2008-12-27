@@ -8,15 +8,12 @@
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 	
 	<link rel="stylesheet" type="text/css" href="css/cms.css" /> 
-	<!-- 	
-	<link rel="stylesheet" type="text/css" href="css/infogluecommons.css" /> 
-	-->
 	 
 	#if($useFckUploadMessages)
 	<script type='text/javascript'>window.parent.OnUploadCompleted(0, 'DownloadAsset.action?contentId=$!contentVersionVO.contentId&languageId=$!contentVersionVO.languageId&assetKey=$!digitalAssetKey', 'DownloadAsset.action?contentId=$!contentVersionVO.contentId&languageId=$!contentVersionVO.languageId&assetKey=$!digitalAssetKey', 'Upload was successful');</script>
 	#end
 
-	<script language="JavaScript" src="script/listview.js"></script>
+	<script type="text/javascript" src="script/listview.js"></script>
 	<script type="text/javascript" src="script/infogluecommons.js"></script>
 
 	<script type="text/javascript" src="script/jquery/jquery-1.2.6.min.js"></script>
@@ -361,11 +358,11 @@
 	</div>
 </div>
  
-<div onfocus="this.blur();" aclass="fullymarginalized">
+<div onfocus="this.blur();">
 
 <div style="clear: both;"></div>
 	
-<h3 style="text-indent: 16px; margin-top: 20px;">Filuppladdning</h3>
+<h3 style="text-indent: 16px; margin-top: 20px;">$ui.getString("tool.contenttool.uploadDigitalAsset.header")</h3>
 
 <div id="tabsContainer" class="flora">
 
@@ -385,7 +382,7 @@
 		<input type="hidden" name="closeOnLoad" value="false">
 		<table width="350" border="0">
 			<tr>
-				<td class="biglabel" width="250">
+				<td class="biglabel" width="250" height="30">
 					<strong>#if($uploadedFilesCounter == 0)
 						$ui.getString("tool.contenttool.fileUpload.fileUploadHeader")
 					#else
@@ -461,6 +458,9 @@
 	</div>
 
 	<div id="bulkUpload">
+		#if(!$this.getAllowedSessionId($this.getSessionId()))
+			<span style="color: red;">Please restart your session by logging out from the administrative tools and the log in again. Your session ID is out of sync and until you log restart it you cannot use the multi upload.</span>
+		#else
 		<form>
 			<div id="intro">
 				<strong>$ui.getString("tool.contenttool.fileUpload.fileUploadHeader") <span id="maxSize"> (Max $formatter.formatFileSize($this.userUploadMaxSize))</span></strong> - <span id="divStatus">0 Files Uploaded</span><br/><br/>
@@ -479,6 +479,7 @@
 				<a href="javascript:refreshCaller();"><img border="0" src="$ui.getString("images.contenttool.buttons.close")" width="50" height="25"></a>
 			</div>
 		</form>
+		#end
 	</div>
 </div>
  

@@ -8,13 +8,19 @@
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 	
 	<link rel="stylesheet" type="text/css" href="css/cms.css" /> 
-	<link rel="stylesheet" type="text/css" href="css/infogluecommons.css" /> 
 	
-	<script language="JavaScript" src="script/listview.js"></script>
+	<script type="text/javascript" src="script/listview.js"></script>
 	<script type="text/javascript" src="script/infogluecommons.js"></script>
 	
-	<script language="JavaScript">
-		<!--
+	<script type="text/javascript" src="script/jquery/jquery-1.2.6.min.js"></script>
+	<script type="text/javascript" src="script/jqueryplugins/ui/jquery-ui-dragDropTabs-1.6rc2.min.js"></script>
+	<script type="text/javascript" src="script/v3/infoglue.js"></script>
+
+	<link rel="stylesheet" type="text/css" href="css/v3/infoglue.css" />
+	<link rel="stylesheet" type="text/css" href="css/v3/tabs.css" media="screen">
+	
+	<script type="text/javascript">
+	<!--
 		
 		/**
 		 * This method submits the form and shows a uploading-dialog.
@@ -163,7 +169,8 @@
 		#foreach($assetKeyDefinition in $definedAssetKeys)
 			assetSizeArray["$assetKeyDefinition.assetKey"] = "$formatter.formatFileSize($assetKeyDefinition.maximumSize)";
 		#end
-		-->
+	
+	-->
 	</script>
 	
 	<META HTTP-EQUIV="pragma" CONTENT="no-cache" />
@@ -171,17 +178,30 @@
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 </head>
 
-<body class="contenttooledit" #if($closeOnLoad == "true")onload="refreshCaller();"#end>
+<body class="generaltooledit" #if($closeOnLoad == "true")onload="refreshCaller();"#end>
 
-<div class="fullymarginalized">
-
-<div id="savingLayer" class="infobackground">
+<div id="savingLayer" class="infobackground" style="display: none;">
 	<div class="infoheader">Saving changes</div>
 	<div class="infobody">
 		<br>Uploading file - please wait!<br><br>
 		<img src="images/progressbar.gif">
 	</div>
 </div>
+
+<div onfocus="this.blur();">
+
+<div style="clear: both;"></div>
+#*
+<h3 style="text-indent: 16px; margin-top: 20px;">
+	#if($isUpdated)
+		$ui.getString("tool.contenttool.fileUpload.fileUploadedConfirmationHeader")
+	#else
+		$ui.getString("tool.contenttool.fileUpload.fileUploadUpdateHeader")
+	#end
+	<span id="maxSize">(Max $formatter.formatFileSize($this.userUploadMaxSize))</span>
+</h3>
+*#
+<div class="inlineTabDiv" style="margin-top: 10px;">
 
 <form enctype="multipart/form-data" name="editForm" method="POST" action="UpdateDigitalAsset.action">
 <input type="hidden" name="contentTypeDefinitionId" value="$contentTypeDefinitionVO.id">
@@ -192,13 +212,13 @@
 <input type="hidden" name="closeOnLoad" value="false">
 <table width="350">
 	<tr>
-		<td class="biglabel" width="250">
-			#if($isUpdated)
-				$ui.getString("tool.contenttool.fileUpload.fileUploadedConfirmationHeader")
-			#else
-				$ui.getString("tool.contenttool.fileUpload.fileUploadUpdateHeader")
-			#end
-			<span id="maxSize">(Max $formatter.formatFileSize($this.userUploadMaxSize))</span>
+		<td class="biglabel" width="250" height="30">
+	#if($isUpdated)
+		$ui.getString("tool.contenttool.fileUpload.fileUploadedConfirmationHeader")
+	#else
+		$ui.getString("tool.contenttool.fileUpload.fileUploadUpdateHeader")
+	#end
+	<span id="maxSize">(Max $formatter.formatFileSize($this.userUploadMaxSize))</span>			
 		</td>
 		<td rowspan="2" width="100" style="border: 1px solid black; background-color: white;" align="center" valign="middle">
 			#if($isUpdated)
@@ -263,6 +283,7 @@
 
 	</form>	
 </table>
+</div>
 </div>
 
 </body>
