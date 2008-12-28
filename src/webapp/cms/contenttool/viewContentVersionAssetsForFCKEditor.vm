@@ -30,6 +30,8 @@
 			assetUrl = anAssetUrl;
 
 			#if($disableAssetKeyEncoding)
+			if(digitalAssetId)
+			{
 				try
 				{
 					selectedDigitalAssetKey = document.getElementById("digitalAsset" + digitalAssetId + "_assetKey").value;
@@ -39,6 +41,7 @@
 				{
 					alert("error: digitalAssetId:" + digitalAssetId);
 				}
+			}
 			#end
 			
 			selectedAssetElement = document.getElementById("digitalAsset" + anAssetKey);
