@@ -1771,10 +1771,12 @@ public class ComponentLogic
 				if(property == null)
 				{
 				    NodeDeliveryController nodeDeliveryController = NodeDeliveryController.getNodeDeliveryController(this.templateController.getSiteNodeId(), this.templateController.getLanguageId(), this.templateController.getContentId());
-							    
+					
+				    List usedRepositoryIds = new ArrayList();
 					SiteNodeVO parentSiteNodeVO = nodeDeliveryController.getSiteNode(templateController.getDatabase(), this.templateController.getSiteNodeId()).getValueObject();
 				    while(property == null && parentSiteNodeVO != null)
 					{				    	
+				    	usedRepositoryIds.add(parentSiteNodeVO.getRepositoryId());
 				    	property = getInheritedComponentProperty(this.templateController, parentSiteNodeVO.getId(), this.templateController.getLanguageId(), this.templateController.getContentId(), this.infoGlueComponent.getId(), propertyName, contentVersionIdList);
 				    	if(!useStructureInheritance)
 				    		break;
@@ -1784,10 +1786,16 @@ public class ComponentLogic
 					    if(newParentSiteNodeVO == null && useRepositoryInheritance)
 						{
 						    Integer parentRepositoryId = this.templateController.getParentRepositoryId(parentSiteNodeVO.getRepositoryId());
-						    logger.info("parentRepositoryId:" + parentRepositoryId);
-						    if(parentRepositoryId != null)
+						    if(logger.isInfoEnabled())
+						    {
+							    logger.info("parentRepositoryId:" + parentRepositoryId);
+							    logger.info("allready used:" + usedRepositoryIds.contains(parentRepositoryId) + ":" + parentRepositoryId);
+						    }
+						    
+						    if(parentRepositoryId != null && !usedRepositoryIds.contains(parentRepositoryId))
 						    {
 						        newParentSiteNodeVO = this.templateController.getRepositoryRootSiteNode(parentRepositoryId);
+						        usedRepositoryIds.add(newParentSiteNodeVO.getRepositoryId());
 							}
 						}
 						
