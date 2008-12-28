@@ -45,6 +45,9 @@ public final class BrowserBean implements Serializable
 	private boolean mozilla = false;
 	private boolean safari  = false;
 	private boolean firefox = false;
+	private boolean camino  = false;
+	private boolean seaMonkey = false;
+	private boolean chrome    = false;
 	
 	private String os;
 	private boolean isWindows = false;
@@ -72,7 +75,19 @@ public final class BrowserBean implements Serializable
 	{
 		String user = useragent.toLowerCase();
 		
-		if(user.indexOf("opera") != -1)
+		if(user.indexOf("seamonkey") != -1)
+		{
+			this.seaMonkey = true;
+		}
+		else if(user.indexOf("camino") != -1)
+		{
+			this.camino = true;
+		}
+		else if(user.indexOf("chrome") != -1)
+		{
+			this.chrome = true;
+		}
+		else if(user.indexOf("opera") != -1)
 		{
 			this.opera = true;
 		}
@@ -255,7 +270,22 @@ public final class BrowserBean implements Serializable
     {
         return opera;
     }
-    
+
+    public boolean isCamino()
+    {
+        return camino;
+    }
+
+    public boolean isChrome()
+    {
+        return chrome;
+    }
+
+    public boolean isSeaMonkey()
+    {
+        return seaMonkey;
+    }
+
     public boolean isSafari()
     {
         return safari;
@@ -295,6 +325,9 @@ public final class BrowserBean implements Serializable
     	sb.append("ns7=" + ns7 + "\n");
     	sb.append("ns6=" + ns6 + "\n");
     	sb.append("ns4=" + ns4 + "\n");
+    	sb.append("seamonkey=" + seaMonkey + "\n");
+    	sb.append("chrome=" + chrome + "\n");
+    	sb.append("camino=" + camino + "\n");
     	sb.append("opera=" + opera + "\n");
     	sb.append("mozilla=" + mozilla + "\n");
     	sb.append("safari=" + safari + "\n");
