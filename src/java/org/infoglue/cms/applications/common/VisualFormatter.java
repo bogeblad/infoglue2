@@ -592,17 +592,21 @@ public class VisualFormatter
             return "";
         
     	String fileSizeString = "";
-    	Integer fileSize = null;
+    	Long fileSize = null;
         if(fileSizeObject instanceof String)
-        	fileSize = new Integer((String)fileSizeObject);
+        	fileSize = new Long((String)fileSizeObject);
         else if(fileSizeObject instanceof Integer)
-        	fileSize = (Integer)fileSizeObject;
+        	fileSize = new Long((Integer)fileSizeObject);
+        else if(fileSizeObject instanceof Long)
+        	fileSize = (Long)fileSizeObject;
         
-        if(fileSize.intValue() >= 1000000000)
+        if(fileSize.longValue() >= 1000000000000L)
+        	fileSizeString = "" + fileSize / (1000 * 1000 * 1000 * 1000) + " TB";
+        if(fileSize.longValue() >= 1000000000)
         	fileSizeString = "" + fileSize / (1000 * 1000 * 1000) + " GB";
-        else if(fileSize.intValue() >= 1000000)
+        else if(fileSize.longValue() >= 1000000)
         	fileSizeString = "" + fileSize / (1000 * 1000) + " MB";
-        else if(fileSize.intValue() >= 1000)
+        else if(fileSize.longValue() >= 1000)
         	fileSizeString = "" + fileSize / 1000 + " KB";
         else
         	fileSizeString = "" + fileSize + " Bytes";
