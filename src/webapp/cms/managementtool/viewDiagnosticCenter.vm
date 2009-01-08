@@ -17,7 +17,7 @@
 				<a href="ViewApplicationState.action">infoglueCMS</a>
 			</td>
 			<td>
-				<a href="ViewApplicationState!clearCaches.action?returnAddress=%2FinfoglueCMS%2FViewDiagnosticCenter.action">Clear caches</a> | <a href="ViewLogging.action" target="_blank">Logs</a>
+				<a href="ViewApplicationState!clearCaches.action?returnAddress=$formatter.encodeURI($originalFullURL)">Clear caches</a> | <a href="ViewLogging.action" target="_blank">Logs</a>
 			</td>
 		</tr>
 		<tr>
@@ -33,7 +33,7 @@
 				<a href="$url/ViewApplicationState.action">$url</a>
 			</td>
 			<td>
-				<a href="$url/ViewApplicationState!clearCaches.action?returnAddress=%2FinfoglueCMS%2FViewDiagnosticCenter.action">Clear caches</a> | <a href="$url/ViewLogging.action" target="_blank">Logs</a>
+				<a href="$url/ViewApplicationState!clearCaches.action?returnAddress=$formatter.encodeURI($originalFullURL)">Clear caches</a> | <a href="$url/ViewLogging.action" target="_blank">Logs</a>
 			</td>
 		</tr>
 		#end
@@ -50,7 +50,7 @@
 				<a href="$url/ViewApplicationState.action">$url</a>
 			</td>
 			<td>
-				<a href="$url/ViewApplicationState!clearCaches.action?returnAddress=%2FinfoglueCMS%2FViewDiagnosticCenter.action">Clear caches</a> | <a href="$url/ViewLogging.action" target="_blank">Logs</a>
+				<a href="$url/ViewApplicationState!clearCaches.action?returnAddress=$formatter.encodeURI($originalFullURL)">Clear caches</a> | <a href="$url/ViewLogging.action" target="_blank">Logs</a>
 			</td>
 		</tr>
 		#end
