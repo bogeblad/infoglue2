@@ -56,7 +56,8 @@ Abbreviated Changelog from 2.9.5 Final
 - Improved the file upload dialog and upgraded the multi file upload feature.
 - Added check so infinite loops in property fetching because of circular parent site references cannot occur any more.
 - Added camino, seamonkey and chrome to the list of browsers especially detected by the infoglue browser-bean.
-
+- Added new common:formatter tag which allows for easy and locale safe formatting of dates, calendars, numbers and file sizes.
+- Added forgotten thickbox (jquery plugin) image which fixes issue on FF Mac.
 
 -------------------------------------------------------------------------------------
 - InfoGlue 2.9.5 Final
