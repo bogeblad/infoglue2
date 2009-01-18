@@ -325,7 +325,10 @@ public abstract class PageInvoker
 				sb.append(usedEntities[i]).append(",");
 			sb.append("</usedEntities>");
 			
-			this.pageString = this.pageString + sb.toString();
+			if(this.getTemplateController().getPageContentType() != null && (this.getTemplateController().getPageContentType().equalsIgnoreCase("text/css") || this.getTemplateController().getPageContentType().equalsIgnoreCase("text/javascript")))
+				this.pageString = this.pageString + "/*" + sb.toString() + "*/";
+			else
+				this.pageString = this.pageString + "<!--" + sb.toString() + "-->";
 		}
 		
 		String contentType = this.getTemplateController().getPageContentType();
