@@ -1064,8 +1064,23 @@ public class PageEditorHelper extends BaseDeliveryController
 			    sb.append("<div class=\"igmenuitems linkMoveComponentDown\" onClick=\"invokeAddress('" + downUrl + "');\"><a href='#'>" + moveComponentDownHTML + "</a></div>");
 
 			if(hasAccessToAccessRights)
-				sb.append("<div class=\"igmenuitems linkAccessRights\" onClick=\"setAccessRights('" + slotId + "', " + componentContentId + ");\"><a href='#'>" + accessRightsHTML + "</a></div>");
-
+			{
+				/*
+				System.out.println("component.getContentId():" + component.getContentId());
+				System.out.println("Parent component.getContentId():" + (component.getParentComponent() != null ? component.getParentComponent().getContentId() : "null"));
+				System.out.println("Parent slot:" + component.getContainerSlot().getName());
+				System.out.println("component:" + component.getSlotName());
+				System.out.println("Slots:" + component.getSlotList());
+				System.out.println("Slots:" + component.getSlots());
+				System.out.println("slotId:" + slotId);
+				System.out.println("componentContentId:" + componentContentId);
+				*/
+				Integer accessRightComponentContentId = componentContentId;
+				if(slotId.equals(component.getSlotName()) && component.getParentComponent() != null)
+					accessRightComponentContentId = component.getParentComponent().getContentId();
+				sb.append("<div class=\"igmenuitems linkAccessRights\" onClick=\"setAccessRights('" + slotId + "', " + accessRightComponentContentId + ");\"><a href='#'>" + accessRightsHTML + "</a></div>");
+			}
+			
 			sb.append("<div style='border-top: 1px solid #bbb; height: 1px; margin: 0px; padding: 0px; line-height: 1px;'></div>");
 			sb.append("<div class=\"igmenuitems linkComponentProperties\" onClick=\"showComponentInDiv('componentPropertiesDiv', 'repositoryId=" + repositoryId + "&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&componentContentId=" + componentContentId + "&slotName=" + component.getSlotName() + "&showSimple=" + showSimple + "&showLegend=false&originalUrl=" + URLEncoder.encode(originalFullURL, "UTF-8") + "', false);\"><a href='#'>" + propertiesHTML + "</a></div>");
 			//sb.append("<div class=\"igmenuitems linkComponentProperties\" onClick=\"showComponent(event);\"><a href='#'>" + propertiesHTML + "</a></div>");
@@ -1169,7 +1184,7 @@ public class PageEditorHelper extends BaseDeliveryController
 				tasks = "showComponentTasks('componentTasks', 'repositoryId=" + repositoryId + "&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + component.getId() + "&componentContentId=" + component.getContentId() + "&slotId=-1&showSimple=false&showLegend=false&slotClicked=false&treeItem=true&originalUrl=" + URLEncoder.encode(originalUrl, "UTF-8") + "', false, event);";
 		}
 
-		sb.append("<td class=\"igtd\" width=\"19\"><img src=\"" + contextPath + "/images/tcross.png\" width=\"19\" height=\"16\"></td><td class=\"igtd\"><img src=\"" + contextPath + "/images/componentIcon.gif\" width=\"16\" height=\"16\"></td><td class=\"igtd\" colspan=\"" + (colspan - 2) + "\"><span id=\"" + component.getId() + "\" onclick=\"" + tasks + "\" oncontextmenu=\"hideDiv('pageComponents');\">" + componentContentVO.getName() + "</span>");
+		sb.append("<td class=\"igtd\" width=\"19\"><img src=\"" + contextPath + "/images/tcross.png\" width=\"19\" height=\"16\"></td><td class=\"igtd\"><img src=\"" + contextPath + "/images/componentIcon.gif\" width=\"16\" height=\"16\"></td><td class=\"igtd\" colspan=\"" + (colspan - 2) + "\"><span id=\"" + component.getId() + "\" oncontextmenu=\"" + tasks + "\" aoncontextmenu=\"hideDiv('pageComponents');\">" + componentContentVO.getName() + "</span>");
 		String upUrl = componentEditorUrl + "ViewSiteNodePageComponents!moveComponent.action?siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + component.getId() + "&direction=0&showSimple=" + showSimple + "";
 		String downUrl = componentEditorUrl + "ViewSiteNodePageComponents!moveComponent.action?siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + component.getId() + "&direction=1&showSimple=" + showSimple + "";
 		
@@ -1203,7 +1218,7 @@ public class PageEditorHelper extends BaseDeliveryController
 		    
 		    String slotTasks = "showComponentTasks('componentTasks', 'repositoryId=" + repositoryId + "&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + component.getId() + "&componentContentId=" + component.getContentId() + "&slotId=" + slot.getId() + "&showSimple=false&showLegend=false&slotClicked=true&treeItem=true&originalUrl=" + URLEncoder.encode(originalUrl, "UTF-8") + "', false, event);";
 		    
-		    sb.append("<td class=\"igtd\" colspan=\"" + (colspan - 4) + "\"><span id=\"" + slot.getId() + "ClickableDiv\" class=\"iglabel\" onclick=\"" + slotTasks + "\" oncontextmenu=\"hideDiv('pageComponents');\">" + slot.getId() + "</span></td>");
+		    sb.append("<td class=\"igtd\" colspan=\"" + (colspan - 4) + "\"><span id=\"" + slot.getId() + "ClickableDiv\" class=\"iglabel\" oncontextmenu=\"" + slotTasks + "\" aoncontextmenu=\"hideDiv('pageComponents');\">" + slot.getId() + "</span></td>");
 			
 			sb.append("		</tr>");
 
