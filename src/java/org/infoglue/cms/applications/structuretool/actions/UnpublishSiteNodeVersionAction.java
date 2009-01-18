@@ -27,11 +27,15 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.AccessRightController;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentStateController;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.EventController;
 import org.infoglue.cms.controllers.kernel.impl.simple.PublicationController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeController;
+import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeStateController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeVersionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeVersionControllerProxy;
 import org.infoglue.cms.entities.content.ContentVersion;
@@ -54,6 +58,7 @@ import org.infoglue.cms.util.AccessConstraintExceptionBuffer;
 
 public class UnpublishSiteNodeVersionAction extends InfoGlueAbstractAction 
 {
+    private final static Logger logger = Logger.getLogger(UnpublishSiteNodeVersionAction.class.getName());
 
 	private List siteNodeVersionVOList = new ArrayList();
 	private List siteNodeVOList = new ArrayList();
@@ -126,9 +131,15 @@ public class UnpublishSiteNodeVersionAction extends InfoGlueAbstractAction
 		while(it.hasNext())
 		{
 			Integer siteNodeVersionId = (Integer)it.next();
-		    //SiteNodeVersion siteNodeVersion = SiteNodeStateController.changeState((Integer) it.next(), SiteNodeVersionVO.PUBLISH_STATE, getVersionComment(), this.getInfoGluePrincipal(), null, events);
 			SiteNodeVersionVO siteNodeVersionVO = SiteNodeVersionController.getController().getFullSiteNodeVersionVOWithId(siteNodeVersionId);
-			
+
+			SiteNodeVersionVO latestSiteNodeVersionVO = SiteNodeVersionController.getController().getLatestActiveSiteNodeVersionVO(siteNodeVersionVO.getSiteNodeId());
+			if(siteNodeVersionVO.getId().equals(latestSiteNodeVersionVO.getId()))
+			{
+				logger.info("Creating a new working version as there was no active working version left...");
+				SiteNodeStateController.getController().changeState(siteNodeVersionVO.getId(), SiteNodeVersionVO.WORKING_STATE, "new working version", false, this.getInfoGluePrincipal(), siteNodeVersionVO.getSiteNodeId(), events);
+			}
+
 			EventVO eventVO = new EventVO();
 			eventVO.setDescription(this.versionComment);
 			eventVO.setEntityClass(SiteNodeVersion.class.getName());
@@ -143,6 +154,14 @@ public class UnpublishSiteNodeVersionAction extends InfoGlueAbstractAction
 			while(contentVersionVOListIterator.hasNext())
 			{
 			    ContentVersionVO currentContentVersionVO = (ContentVersionVO)contentVersionVOListIterator.next();
+			    
+				ContentVersionVO latestContentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(currentContentVersionVO.getContentId(), currentContentVersionVO.getLanguageId());
+				if(currentContentVersionVO.getId().equals(latestContentVersionVO.getId()))
+				{
+					logger.info("Creating a new working version as there was no active working version left...:" + currentContentVersionVO.getLanguageName());
+					ContentStateController.changeState(currentContentVersionVO.getId(), ContentVersionVO.WORKING_STATE, "new working version", false, null, this.getInfoGluePrincipal(), currentContentVersionVO.getContentId(), events);
+				}
+
 				EventVO versionEventVO = new EventVO();
 				versionEventVO.setDescription(this.versionComment);
 				versionEventVO.setEntityClass(ContentVersion.class.getName());
@@ -188,6 +207,13 @@ public class UnpublishSiteNodeVersionAction extends InfoGlueAbstractAction
 			{
 				SiteNodeVersionVO siteNodeVersionVO = (SiteNodeVersionVO)it.next();
 				
+				SiteNodeVersionVO latestSiteNodeVersionVO = SiteNodeVersionController.getController().getLatestActiveSiteNodeVersionVO(siteNodeVersionVO.getSiteNodeId());
+				if(siteNodeVersionVO.getId().equals(latestSiteNodeVersionVO.getId()))
+				{
+					logger.info("Creating a new working version as there was no active working version left...");
+					SiteNodeStateController.getController().changeState(siteNodeVersionVO.getId(), SiteNodeVersionVO.WORKING_STATE, "new working version", false, this.getInfoGluePrincipal(), siteNodeVersionVO.getSiteNodeId(), events);
+				}
+
 				EventVO eventVO = new EventVO();
 				eventVO.setDescription(this.versionComment);
 				eventVO.setEntityClass(SiteNodeVersion.class.getName());
@@ -202,6 +228,14 @@ public class UnpublishSiteNodeVersionAction extends InfoGlueAbstractAction
 				while(contentVersionVOListIterator.hasNext())
 				{
 				    ContentVersionVO currentContentVersionVO = (ContentVersionVO)contentVersionVOListIterator.next();
+				    
+					ContentVersionVO latestContentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(currentContentVersionVO.getContentId(), currentContentVersionVO.getLanguageId());
+					if(currentContentVersionVO.getId().equals(latestContentVersionVO.getId()))
+					{
+						logger.info("Creating a new working version as there was no active working version left...:" + currentContentVersionVO.getLanguageName());
+						ContentStateController.changeState(currentContentVersionVO.getId(), ContentVersionVO.WORKING_STATE, "new working version", false, null, this.getInfoGluePrincipal(), currentContentVersionVO.getContentId(), events);
+					}
+
 					EventVO versionEventVO = new EventVO();
 					versionEventVO.setDescription(this.versionComment);
 					versionEventVO.setEntityClass(ContentVersion.class.getName());

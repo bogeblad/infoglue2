@@ -24,13 +24,17 @@
 package org.infoglue.cms.applications.contenttool.actions;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.AccessRightController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentControllerProxy;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentStateController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.EventController;
 import org.infoglue.cms.controllers.kernel.impl.simple.PublicationController;
@@ -53,7 +57,9 @@ import org.infoglue.cms.util.AccessConstraintExceptionBuffer;
 public class UnpublishContentVersionAction extends InfoGlueAbstractAction 
 {
 	private static final long serialVersionUID = 1L;
-	
+
+    private final static Logger logger = Logger.getLogger(UnpublishContentVersionAction.class.getName());
+
 	private List contentVersionVOList = new ArrayList();
 	private List contentVOList		  = new ArrayList();
 	private Integer contentId;
@@ -124,9 +130,15 @@ public class UnpublishContentVersionAction extends InfoGlueAbstractAction
 		while(it.hasNext())
 		{
 			Integer contentVersionId = (Integer)it.next();
-		    //ContentVersion contentVersion = ContentStateController.changeState((Integer) it.next(), ContentVersionVO.PUBLISH_STATE, getVersionComment(), this.getInfoGluePrincipal(), null, events);
 			ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getFullContentVersionVOWithId(contentVersionId);
-
+			
+			ContentVersionVO latestContentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentVersionVO.getContentId(), contentVersionVO.getLanguageId());
+			if(contentVersionVO.getId().equals(latestContentVersionVO.getId()))
+			{
+				logger.info("Creating a new working version as there was no active working version left...:" + contentVersionVO.getLanguageName());
+				ContentStateController.changeState(contentVersionVO.getId(), ContentVersionVO.WORKING_STATE, "new working version", false, null, this.getInfoGluePrincipal(), contentVersionVO.getContentId(), events);
+			}
+			
 			EventVO eventVO = new EventVO();
 			eventVO.setDescription(this.versionComment);
 			eventVO.setEntityClass(ContentVersion.class.getName());
@@ -158,19 +170,30 @@ public class UnpublishContentVersionAction extends InfoGlueAbstractAction
     public String doUnpublishAll() throws Exception
     {   
 		String[] contentIds = getRequest().getParameterValues("sel");
-
+		
 		List events = new ArrayList();
 
         for(int i=0; i < contentIds.length; i++)
 		{
             String contentIdString = contentIds[i];
-	        List contentVersionsVOList = ContentVersionController.getContentVersionController().getPublishedActiveContentVersionVOList(new Integer(contentIdString));
 	        
+            List contentVersionsVOList = ContentVersionController.getContentVersionController().getPublishedActiveContentVersionVOList(new Integer(contentIdString));
+	        Map checkedLanguages = new HashMap();
 			Iterator it = contentVersionsVOList.iterator();
-			
 			while(it.hasNext())
 			{
 				ContentVersionVO contentVersionVO = (ContentVersionVO)it.next();
+				
+				if(checkedLanguages.get(contentVersionVO.getLanguageId()) == null)
+				{
+					checkedLanguages.put(contentVersionVO.getLanguageId(), new Boolean(true));
+					ContentVersionVO latestContentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentVersionVO.getContentId(), contentVersionVO.getLanguageId());
+					if(contentVersionVO.getId().equals(latestContentVersionVO.getId()))
+					{
+						logger.info("Creating a new working version as there was no active working version left...:" + contentVersionVO.getLanguageName());
+						ContentStateController.changeState(contentVersionVO.getId(), ContentVersionVO.WORKING_STATE, "new working version", false, null, this.getInfoGluePrincipal(), contentVersionVO.getContentId(), events);
+					}
+				}
 				
 				EventVO eventVO = new EventVO();
 				eventVO.setDescription(this.versionComment);
