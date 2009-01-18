@@ -717,6 +717,11 @@
 	        <rtexprvalue>false</rtexprvalue>
     	</attribute>
         <attribute>
+    	    <name>languageId</name>
+        	<required>false</required>
+	        <rtexprvalue>false</rtexprvalue>
+    	</attribute>
+        <attribute>
     	    <name>repositoryIds</name>
         	<required>false</required>
 	        <rtexprvalue>false</rtexprvalue>

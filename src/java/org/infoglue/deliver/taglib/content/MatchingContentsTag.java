@@ -53,6 +53,7 @@ public class MatchingContentsTag extends TemplateControllerTag {
 	private String cacheName = null;
 	private String cacheKey = null;
 	private String repositoryIds = null;
+	private Integer languageId = null;
 	
     public MatchingContentsTag()
     {
@@ -83,11 +84,20 @@ public class MatchingContentsTag extends TemplateControllerTag {
 			}
 		}
 
+		if(languageId == null)
+			this.languageId = getController().getLanguageId();
+		
 	    setResultAttribute(getController().getMatchingContents(contentTypeDefinitionNames, categoryCondition, freeText, freeTextAttributeNamesList, fromDate, toDate, expireFromDate, expireToDate, versionModifier, true, cacheResult, cacheInterval, cacheName, cacheKey, repositoryIdList));
 	    
-	    repositoryIds = null;
+	    this.repositoryIds = null;
+	    this.languageId = null;
 	    
 	    return EVAL_PAGE;
+    }
+
+    public void setLanguageId(String languageId) throws JspException
+    {
+        this.languageId = evaluateInteger("matchingContentsTag", "languageId", languageId);
     }
 
     public void setContentTypeDefinitionNames(String contentTypeDefinitionNames) throws JspException
