@@ -421,7 +421,7 @@ public class ViewContentToolToolBarAction extends InfoGlueAbstractAction
 		    {
 		        ContentVersionVO currentContentVersionVO = ContentVersionController.getContentVersionController().getContentVersionVOWithId(this.contentVersionId);
 		        ContentVersionVO latestContentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(currentContentVersionVO.getContentId(), currentContentVersionVO.getLanguageId());
-		        if(currentContentVersionVO.getId().intValue() != latestContentVersionVO.getId().intValue())
+		        if(currentContentVersionVO != null && latestContentVersionVO != null && currentContentVersionVO.getId().intValue() != latestContentVersionVO.getId().intValue())
 		            latest = false;
 		        
 		        extraInformation = "" + getStateDescription(currentContentVersionVO);
