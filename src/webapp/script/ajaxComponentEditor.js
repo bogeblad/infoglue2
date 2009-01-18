@@ -460,13 +460,17 @@ function showComponentMenu(event, element, compId, anInsertUrl, anDeleteUrl, anC
 	var editInlineDivElement = document.getElementById("editInlineDiv" + compId);
 	if(!editUrl || editUrl == "")
 	{
-		editDivElement.style.display = "none";
-		editInlineDivElement.style.display = "none";
+		if(editDivElement)
+			editDivElement.style.display = "none";
+		if(editInlineDivElement)
+			editInlineDivElement.style.display = "none";
 	}
 	else
 	{
-		editDivElement.style.display = "block";
-		editInlineDivElement.style.display = "block";
+		if(editDivElement)
+			editDivElement.style.display = "block";
+		if(editInlineDivElement)
+			editInlineDivElement.style.display = "block";
 		//alert("Registering click to:" + editUrl);
 		var anEditUrl = editUrl;
 		$(editDivElement).click(function () { edit(anEditUrl); });
@@ -1704,8 +1708,10 @@ function showComponentTasksInDiv(targetDivId, parameterString, skipFloat, event)
 		var editInlineDivElement = document.getElementById("editInlineDiv");
 		if(!editUrl || editUrl == "")
 		{
-			editDivElement.style.display = "none";
-			editInlineDivElement.style.display = "none";
+			if(editDivElement)
+				editDivElement.style.display = "none";
+			if(editInlineDivElement)
+				editInlineDivElement.style.display = "none";
 		}
 		else
 		{
