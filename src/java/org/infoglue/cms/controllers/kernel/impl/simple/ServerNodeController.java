@@ -252,6 +252,43 @@ public class ServerNodeController extends BaseController
 	        return new ArrayList();
 	}
 	
+	public boolean getIsIPAllowed(HttpServletRequest request, String ip)
+	{
+		boolean allowXForwardedIPCheck = CmsPropertyHandler.getAllowXForwardedIPCheck();
+		if(!allowXForwardedIPCheck)
+			return false;
+		
+		boolean isIPAllowed = false;              
+		String ipRemote = null;
+	    String ipRequest = null;
+	    
+	    if (request != null) 
+	    {
+	    	ipRequest = request.getRemoteAddr();
+	        ipRemote = request.getHeader("X-Forwarded-For");
+	        //System.out.println("Request: "+ipRequest+", Remote: "+ipRemote+", Ip:"+ip);
+	        if (ip.equals(ipRequest))
+	        {
+	        	isIPAllowed=true;
+	        }
+	        else if (ipRemote.indexOf(",") > 0)
+	        {
+	        	String[] ips = ipRemote.split(",");
+	            //The first IP is the origin, other IPs added by forward                              
+	        	if ((ips.length>0) && (ip.equals(ips[0].trim())))
+	        	{
+	        		isIPAllowed=true;                       
+	            }                                            
+	        }
+	        else
+	        {
+	        	if (ip.equals(ipRemote)) 
+	        		isIPAllowed=true;
+	        }
+	    }
+	    return isIPAllowed;
+	}
+
 	/**
 	 * This method return if the caller has access to the semi admin services.
 	 * @param request
@@ -282,7 +319,7 @@ public class ServerNodeController extends BaseController
 			            if(index > -1)
 			                allowedIP = allowedIP.substring(0, index);
 				            
-			            if(remoteIP.startsWith(allowedIP))
+			            if(remoteIP.startsWith(allowedIP) || getIsIPAllowed(request,allowedIP))
 			            {
 			                isIPAllowed = true;
 			                break;

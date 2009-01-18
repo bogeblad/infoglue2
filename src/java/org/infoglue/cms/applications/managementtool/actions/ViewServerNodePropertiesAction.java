@@ -132,6 +132,7 @@ public class ViewServerNodePropertiesAction extends InfoGluePropertiesAbstractAc
 	    populate(ps, "recachePublishingMethod");
 	    populate(ps, "recacheUrl");
 	    populate(ps, "useUpdateSecurity");
+	    populate(ps, "allowXForwardedIPCheck");
 	    populate(ps, "allowedAdminIP");
 	    populate(ps, "pageKey");
 	    populate(ps, "componentKey");

@@ -260,6 +260,7 @@
 			#yesNoDropDownWithInheritCSS("ServerNode.property.compressPageResponse" "compressPageResponse" "$this.getPropertyValue('compressPageResponse')")
 			#yesNoDropDownWithInheritCSS("ServerNode.property.disableDecoratedFinalRendering" "disableDecoratedFinalRendering" "$this.getPropertyValue('disableDecoratedFinalRendering')")
 			#yesNoDropDownWithInheritCSS("ServerNode.property.useUpdateSecurity" "useUpdateSecurity" "$this.getPropertyValue('useUpdateSecurity')")
+			#yesNoDropDownWithInheritCSS("ServerNode.property.allowXForwardedIPCheck" "allowXForwardedIPCheck" "$this.getPropertyValue('allowXForwardedIPCheck')")
 			#editPropertyFieldCSS("ServerNode.allowedAdminIP" "allowedAdminIP" "$this.getPropertyValue('allowedAdminIP')" "51" "$!serverNodeId")
 			#editPropertyFieldCSS("ServerNode.property.pageKey" "pageKey" "$this.getPropertyValue('pageKey')" "51" "$!serverNodeId")
 			#editPropertyFieldCSS("ServerNode.property.componentKey" "componentKey" "$this.getPropertyValue('componentKey')" "51" "$!serverNodeId")
@@ -281,6 +282,7 @@
 			#editPropertyFieldCSS("ServerNode.property.componentRendererUrl" "componentRendererUrl" "$this.getPropertyValue('componentRendererUrl')" "51" "$!serverNodeId")
 			#editPropertyFieldCSS("ServerNode.property.componentRendererAction" "componentRendererAction" "$this.getPropertyValue('componentRendererAction')" "51" "$!serverNodeId")
 			#editPropertyFieldCSS("ServerNode.property.editOnSiteUrl" "editOnSiteUrl" "$this.getPropertyValue('editOnSiteUrl')" "51" "$!serverNodeId")
+			#editPropertyFieldCSS("ServerNode.property.webServicesBaseUrl" "webServicesBaseUrl" "$this.getPropertyValue('webServicesBaseUrl')" "51" "$!serverNodeId")
 			<div class="buttonRow">
 				<input type="image" src="$ui.getString("images.managementtool.buttons.save")" width="50" height="25" style="width: 50px;">
 				<a href="javascript:saveAndExit(document.editForm, 'ViewServerNodeProperties!saveAndExit.action');"><img src="$ui.getString("images.managementtool.buttons.saveAndExit")" width="80" height="25" border="0"></a>
@@ -494,7 +496,6 @@
 			#yesNoDropDownWithInheritCSS("ServerNode.property.caseSensitiveRedirects" "caseSensitiveRedirects" "$this.getPropertyValue('caseSensitiveRedirects')")
 			#yesNoDropDownWithInheritCSS("ServerNode.property.useDNSNameInURI" "useDNSNameInURI" "$this.getPropertyValue('useDNSNameInURI')")
 			#editPropertyFieldCSS("ServerNode.property.extranetCookieTimeout" "extranetCookieTimeout" "$this.getPropertyValue('extranetCookieTimeout')" "51" "$!serverNodeId")
-			#editPropertyFieldCSS("ServerNode.property.webServicesBaseUrl" "webServicesBaseUrl" "$this.getPropertyValue('webServicesBaseUrl')" "51" "$!serverNodeId")
 			#editPropertyFieldCSS("ServerNode.property.livePublicationThreadClass" "livePublicationThreadClass" "$this.getPropertyValue('livePublicationThreadClass')" "51" "$!serverNodeId")
 			#editPropertyFieldCSS("ServerNode.property.publicationThreadDelay" "publicationThreadDelay" "$this.getPropertyValue('publicationThreadDelay')" "51" "$!serverNodeId")
 			#editPropertyFieldCSS("ServerNode.property.pathsToRecacheOnPublishing" "pathsToRecacheOnPublishing" "$this.getPropertyValue('pathsToRecacheOnPublishing')" "51" "$!serverNodeId")

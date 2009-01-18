@@ -668,7 +668,7 @@ public class CmsPropertyHandler
 	
 	public static String getWebServicesBaseUrl()
 	{
-	    return getServerNodeProperty("webServicesBaseUrl", true);
+		return getServerNodeProperty("webServicesBaseUrl", true, "" + getCmsFullBaseUrl() + "/services/");
 	}
 	
 	public static String getLivePublicationThreadClass() 
@@ -987,6 +987,14 @@ public class CmsPropertyHandler
 	    return getServerNodeProperty("allowedAdminIP", true);
 	}
 
+	public static boolean getAllowXForwardedIPCheck()
+	{
+	    String allowXForwardedIPCheck = getServerNodeProperty("allowXForwardedIPCheck", true, "false");
+
+	    return Boolean.parseBoolean(allowXForwardedIPCheck);
+	}
+	
+	
 	public static String getPageKey()
 	{
 	    return getServerNodeProperty("pageKey", true);
