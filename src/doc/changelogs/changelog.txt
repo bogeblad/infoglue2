@@ -58,6 +58,10 @@ Abbreviated Changelog from 2.9.5 Final
 - Added camino, seamonkey and chrome to the list of browsers especially detected by the infoglue browser-bean.
 - Added new common:formatter tag which allows for easy and locale safe formatting of dates, calendars, numbers and file sizes.
 - Added forgotten thickbox (jquery plugin) image which fixes issue on FF Mac.
+- Added property allowXForwardedIPCheck in application settings so one can allow Apache X-forwarded IP-addresses in IP-protected actions like ViewApplicationState.action.
+- Fixed so if all active versions are unpublished or inactivated a new working version is created so the page / content is not broken/empty.
+- Added languageId as possible attribute to content:matchingContents-tag
+- Fixed null check in workflows - mostly when a workflowdef was removed even if instances existed.
 
 -------------------------------------------------------------------------------------
 - InfoGlue 2.9.5 Final
