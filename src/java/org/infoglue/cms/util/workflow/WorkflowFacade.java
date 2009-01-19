@@ -73,7 +73,7 @@ import com.opensymphony.workflow.spi.WorkflowEntry;
  * the Workflow interface.  The idea is to encapsulate the interactions with OSWorkflow and eliminate the
  * need to pass a Workflow reference and the workflow ID all over the place when extracting data from OSWorkflow
  * @author <a href="mailto:jedprentice@gmail.com">Jed Prentice</a>
- * @version $Revision: 1.40 $ $Date: 2008/07/03 11:49:55 $
+ * @version $Revision: 1.41 $ $Date: 2009/01/19 11:59:50 $
  */
 public class WorkflowFacade
 {
@@ -860,7 +860,10 @@ public class WorkflowFacade
 	 */
 	private List getInitialActions()
 	{
-		return createActionVOs(workflowDescriptor.getInitialActions());
+		if(workflowDescriptor != null)
+			return createActionVOs(workflowDescriptor.getInitialActions());
+		else
+			return null;
 	}
 
 	/**
@@ -869,7 +872,10 @@ public class WorkflowFacade
 	 */
 	private List getGlobalActions()
 	{
-		return createActionVOs(workflowDescriptor.getGlobalActions());
+		if(workflowDescriptor != null)
+			return createActionVOs(workflowDescriptor.getGlobalActions());
+		else
+			return null;
 	}
 
 	/**
