@@ -79,6 +79,16 @@
 	
 		$(document).ready(function(){
 			setTimeout("initSub()", 500);
+			if(parent)
+			{
+				var parentContentVersionId = parent.getContentVersionId();
+				var contentVersionId = "$!contentVersionId";
+				if(contentVersionId != parentContentVersionId)
+				{
+					alert("You have switched to a working version - we must reload the dialog.");
+					parent.location.reload();
+				}
+			}
 		});
 	-->
 	</script>

@@ -87,7 +87,7 @@
 			var returnAddress = "$formatter.encodeURI("ViewContentVersion!standalone.action?contentId=$contentId&languageId=$languageId&closeOnLoad=true", 'UTF-8')";
 			document.location.href = "ViewListContentVersion.action?contentId=$contentId&returnAddress=" + returnAddress;
 		}
-						
+				
 		var inlineImageDefaultRepositoryId = null;
 		#set($inlineImageDefaultRepositoryId = $map.get("inlineImageDefaultRepositoryId"))
 		#if($inlineImageDefaultRepositoryId && $inlineImageDefaultRepositoryId != "")
@@ -130,6 +130,12 @@
 	var plainEditorsToolbars = new Array();
 	var plainEditorsExtraConfig = new Array();
 	var htmlEditors = new Array();
+
+
+	function getContentVersionId()
+	{
+		return "$!contentVersionId";
+	}
 
 	function checkWYSIWYGDirty()
 	{
