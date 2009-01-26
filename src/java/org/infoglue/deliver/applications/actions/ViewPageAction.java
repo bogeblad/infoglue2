@@ -430,8 +430,11 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			
 			try
 			{
-		    	templateController.clear();
-		    	templateController = null;
+				if(templateController != null)
+				{
+					templateController.clear();
+			    	templateController = null;
+				}
 			}
 			catch (Exception e) 
 			{
@@ -473,7 +476,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 				}
 			}
 			
-			if(elapsedTime > 10000)
+		    if(elapsedTime > 10000)
 			{
 			    logger.warn("The page delivery took " + elapsedTime + "ms for request " + this.getRequest().getRequestURL() + "?" + this.getRequest().getQueryString());
 			    logger.warn("The memory consumption was " + (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) + "(" + Runtime.getRuntime().totalMemory() + "/" + Runtime.getRuntime().maxMemory() + ") bytes");
@@ -739,8 +742,11 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			
 			try
 			{
-		    	templateController.clear();
-		    	templateController = null;
+				if(templateController != null)
+				{
+					templateController.clear();
+			    	templateController = null;
+				}
 			}
 			catch (Exception e) 
 			{
