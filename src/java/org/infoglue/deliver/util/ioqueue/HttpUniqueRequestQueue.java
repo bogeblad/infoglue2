@@ -59,41 +59,45 @@ public class HttpUniqueRequestQueue implements Runnable
 
 	public void addHttpUniqueRequestQueueBean(HttpUniqueRequestQueueBean bean)
 	{
-		System.out.println("Adding url..");
+		logger.info("Adding url..");
 		synchronized(urls)
 		{
 			urls.add(bean);
 		}
-		System.out.println("Done...");
+		logger.info("Done...");
 	}
 	
 	public synchronized void run()
 	{
-		System.out.println("Running HttpUniqueRequestQueue...");
+		logger.info("Running HttpUniqueRequestQueue...");
 		while(keepRunning)
 		{
-			System.out.println("Again..");
+			logger.info("Running..");
 			Set<HttpUniqueRequestQueueBean> localUrls = new HashSet<HttpUniqueRequestQueueBean>();
 			synchronized (urls)
 			{
 				localUrls.addAll(urls);
 				urls.clear();
 			}
-			System.out.println("Released lock..");
+			if(logger.isInfoEnabled())
+				logger.info("Released lock - got " + localUrls.size() + " urls.");
 			
 			Iterator<HttpUniqueRequestQueueBean> localUrlsIterator = localUrls.iterator();
 			while(localUrlsIterator.hasNext())
 			{
 				HttpUniqueRequestQueueBean localUrlBean = localUrlsIterator.next();
-				System.out.println("localUrl:" + localUrlBean.getUrlAddress());
+				if(logger.isInfoEnabled())
+					logger.info("localUrl:" + localUrlBean.getUrlAddress());
 				try
 				{
 					String result = localUrlBean.getFetcher().fetchData(localUrlBean);
-					System.out.println("result:" + result);
+					if(logger.isInfoEnabled())
+						logger.info("result:" + result.length());
 					if(result != null && !result.trim().equals(""))
 					{
 						localUrlBean.getHandler().handleResult(result);
-						System.out.println("handled... - throwing away!");
+						if(logger.isInfoEnabled())
+							logger.info("handled... - throwing away!");
 					}
 				}
 				catch (Exception e) 
@@ -112,7 +116,7 @@ public class HttpUniqueRequestQueue implements Runnable
 		    } 
 			catch( InterruptedException e ) 
 			{
-		        System.out.println("Interrupted Exception caught");
+				logger.error("Interrupted Exception caught");
 		    }
 		}
 	}

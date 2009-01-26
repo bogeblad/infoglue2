@@ -24,6 +24,7 @@
 package org.infoglue.deliver.util;
 
 //import org.exolab.castor.jdo.CacheManager;
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -103,6 +104,7 @@ import org.infoglue.cms.entities.workflow.impl.simple.EventImpl;
 import org.infoglue.cms.entities.workflow.impl.simple.WorkflowDefinitionImpl;
 import org.infoglue.cms.entities.workflow.impl.simple.WorkflowImpl;
 import org.infoglue.cms.exception.SystemException;
+import org.infoglue.cms.io.FileHelper;
 import org.infoglue.cms.security.InfoGlueAuthenticationFilter;
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.workflow.InfoGlueJDBCPropertySet;
@@ -245,8 +247,18 @@ public class CacheController extends Thread
 	{
 		cacheObjectInAdvancedCache(cacheName, key, value, null, false);
 	}
-	
+
+	public static void cacheObjectInAdvancedCache(String cacheName, Object key, Object value, boolean useFileCacheFallback)
+	{
+		cacheObjectInAdvancedCache(cacheName, key, value, null, false, useFileCacheFallback);
+	}
+
 	public static void cacheObjectInAdvancedCache(String cacheName, Object key, Object value, String[] groups, boolean useGroups)
+	{
+		cacheObjectInAdvancedCache(cacheName, key, value, groups, useGroups, false);
+	}
+	
+	public static void cacheObjectInAdvancedCache(String cacheName, Object key, Object value, String[] groups, boolean useGroups, boolean useFileCacheFallback)
 	{
 		if(cacheName == null || key == null || value == null || key.toString().length() == 0)
 			return;
@@ -305,31 +317,30 @@ public class CacheController extends Thread
 			{
 				if(useGroups)
 				{
-					if(logger.isDebugEnabled())
-					{
-						if(cacheName.equalsIgnoreCase("componentPropertyCache") && key.toString().indexOf("Article") > 0)
-						{
-							logger.debug("Caching objects in " + cacheName + "-->\n[" + key.toString() + "]");
-				    		for(int i=0; i<groups.length; i++)
-				    			logger.debug("group:" + groups[i]);
-				    		if(groups.length == 0)
-				    			logger.debug("No group....");
-						}
-					}
-
-				    cacheAdministrator.putInCache(key.toString(), value, groups);
+					cacheAdministrator.putInCache(key.toString(), value, groups);
 				}
 				else
 				{
 				    cacheAdministrator.putInCache(key.toString(), value);
+				    if(useFileCacheFallback)
+				    {
+				    	if(logger.isInfoEnabled())
+			    			logger.info("Caching value to disk also");
+				    	putCachedContentInFile(cacheName, key.toString(), value.toString());				    	
+				    }
 				}
 			}
 		//}
 		
 		//logger.info("Done cacheObjectInAdvancedCache");
 	}	
-	
+
 	public static Object getCachedObjectFromAdvancedCache(String cacheName, String key)
+	{
+		return getCachedObjectFromAdvancedCache(cacheName, key, false);
+	}
+
+	public static Object getCachedObjectFromAdvancedCache(String cacheName, String key, boolean useFileCacheFallback)
 	{
 		if(cacheName == null || key == null || key.length() == 0)
 			return null;
@@ -337,6 +348,7 @@ public class CacheController extends Thread
 	    //logger.info("getCachedObjectFromAdvancedCache start:" + cacheName + ":" + key);
 
 	    Object value = null;
+	    boolean stopUseFileCacheFallback = false;
 	    
 	    //synchronized(caches) 
 	    //{
@@ -351,16 +363,38 @@ public class CacheController extends Thread
 					} 
 				    catch (NeedsRefreshException nre) 
 				    {
+				    	if(useFileCacheFallback && nre.getCacheContent() != null)
+				    	{
+				    		stopUseFileCacheFallback = true;
+				    	}
+				    	
 				    	cacheAdministrator.cancelUpdate(key);
 					}
 				}
 		    }
+	    	if(useFileCacheFallback && !stopUseFileCacheFallback)
+	    	{				    		
+	    		if(logger.isInfoEnabled())
+	    			logger.info("Getting cache content from file..");
+	    		value = getCachedContentFromFile(cacheName, key);
+	    		if(value != null)
+	    		{
+	    			if(logger.isInfoEnabled())
+	        			logger.info("Got cached content from file as it did not exist in memory...:" + value.toString().length());
+	    			cacheObjectInAdvancedCache(cacheName, key, value);
+	    		}
+	    	}
 		//}
 	    
 		return value;
 	}
 
 	public static Object getCachedObjectFromAdvancedCache(String cacheName, String key, int updateInterval)
+	{
+		return getCachedObjectFromAdvancedCache(cacheName, key, updateInterval, false);
+	}
+	
+	public static Object getCachedObjectFromAdvancedCache(String cacheName, String key, int updateInterval, boolean useFileCacheFallback)
 	{
 		if(cacheName == null || key == null)
 			return null;
@@ -369,7 +403,8 @@ public class CacheController extends Thread
 
 	    //return getCachedObject(cacheName, key);
 	    Object value = null;
-	    
+	    boolean stopUseFileCacheFallback = false;
+
 	    //synchronized(caches) 
 	    //{
 		    GeneralCacheAdministrator cacheAdministrator = (GeneralCacheAdministrator)caches.get(cacheName);
@@ -383,9 +418,26 @@ public class CacheController extends Thread
 					} 
 				    catch (NeedsRefreshException nre) 
 				    {
+				    	if(useFileCacheFallback && nre.getCacheContent() != null)
+				    	{
+				    		stopUseFileCacheFallback = true;
+				    	}
+				    	
 				        cacheAdministrator.cancelUpdate(key);
 					}
 				}
+		    	if(useFileCacheFallback && !stopUseFileCacheFallback)
+		    	{				    		
+		    		if(logger.isInfoEnabled())
+		    			logger.info("Getting cache content from file..");
+		    		value = getCachedContentFromFile(cacheName, key, updateInterval);
+		    		if(value != null)
+		    		{
+		    			if(logger.isInfoEnabled())
+		        			logger.info("Got cached content from file as it did not exist in memory...:" + value.toString().length());
+		    			cacheObjectInAdvancedCache(cacheName, key, value);
+		    		}
+		    	}
 		    }
 		//}
 	    
@@ -1643,7 +1695,83 @@ public class CacheController extends Thread
     	
     	return componentKey;
     }
+
+    private static String getCachedContentFromFile(String cacheName, String key)
+    {
+    	return getCachedContentFromFile(cacheName, key, null);
+    }
     
+    private static String getCachedContentFromFile(String cacheName, String key, Integer updateInterval)
+    {
+    	String contents = null;
+    	try
+    	{
+            String filePath = CmsPropertyHandler.getDigitalAssetPath() + File.separator + "caches" + File.separator + cacheName + File.separator + key.hashCode();
+            File file = new File(filePath);
+            if(updateInterval != null)
+            {
+	            long updateDateTime = file.lastModified();
+	            long now = System.currentTimeMillis();
+	            if((now - updateDateTime) / 1000 < updateInterval)
+	            	contents = FileHelper.getFileAsString(file);
+	            else
+	            	if(logger.isInfoEnabled())
+	        			logger.info("Old file - skipping:" + ((now - updateDateTime) / 1000));
+            }
+            else
+            {
+            	contents = FileHelper.getFileAsString(file);
+            }
+    	}
+    	catch (Exception e) 
+    	{
+    		logger.warn("Problem loading data from file:" + e.getMessage());
+    	}
+    	
+    	return contents;
+    }
+    
+    private static void putCachedContentInFile(String cacheName, String key, String value)
+    {
+    	try
+    	{
+            String dir = CmsPropertyHandler.getDigitalAssetPath() + File.separator + "caches" + File.separator + cacheName;
+            File dirFile = new File(dir);
+            dirFile.mkdirs();
+            File file = new File(dir + File.separator + key.hashCode());
+            File file2 = new File(dir + File.separator + key.hashCode() + ".txt");
+    		File tmpOutputFile = new File(dir + File.separator + Thread.currentThread().getId() + "_tmp_" + key.hashCode());
+
+    		FileHelper.writeToFile(tmpOutputFile, value, false);
+			
+    		if(logger.isInfoEnabled())
+    			logger.info("Wrote file..");
+            if(tmpOutputFile.exists())
+			{
+				if(tmpOutputFile.length() == 0)
+				{
+					tmpOutputFile.delete();
+				}
+				else
+				{
+					if(logger.isInfoEnabled())
+		    			logger.info("Renaming file " + tmpOutputFile.getAbsolutePath() + " to " + file.getAbsolutePath());
+					if(logger.isInfoEnabled())
+		    			logger.info("file:" + file.exists() + ":" + file.length());
+					if(file.exists())
+						file.delete();
+					boolean renamed = tmpOutputFile.renameTo(file);
+					if(logger.isInfoEnabled())
+		    			logger.info("renamed:" + renamed);
+				}	
+			}
+    	}
+    	catch (Exception e) 
+    	{
+    		logger.warn("Problem storing data to file:" + e.getMessage());
+		}
+    }
+
 	/**
 	 * Rollbacks a transaction on the named database
 	 */

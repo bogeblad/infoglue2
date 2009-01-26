@@ -51,7 +51,7 @@ public class CachingIOResultHandler implements IOResultHandler
 	public void handleResult(String resultData)
 	{
 		System.out.println("Caching data in " + cacheName + " - " + cacheKey);
-		CacheController.cacheObjectInAdvancedCache(cacheName, cacheKey, resultData);
+		CacheController.cacheObjectInAdvancedCache(cacheName, cacheKey, resultData, true);
 	}
 	
 }

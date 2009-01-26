@@ -48,6 +48,8 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
+import org.infoglue.deliver.util.ioqueue.HttpUniqueRequestQueueBean;
+import org.infoglue.deliver.util.ioqueue.IOFetcher;
 
 
 
@@ -57,7 +59,7 @@ import org.apache.log4j.Logger;
  * Various methods to fetch url-contents
  */
 
-public class HttpHelper 
+public class HttpHelper implements IOFetcher
 {
     private final static Logger logger = Logger.getLogger(HttpHelper.class.getName());
 
@@ -565,7 +567,7 @@ public class HttpHelper
 	 * @return A URL encoded string.
 	 */
 		
-	private String toEncodedString(Map inMap, String encoding) throws Exception
+	public String toEncodedString(Map inMap, String encoding) throws Exception
 	{
 	    StringBuffer buffer = new StringBuffer();
 	    Iterator inMapKeyIterator = inMap.keySet().iterator();
@@ -679,6 +681,12 @@ public class HttpHelper
 		}
 		
 	    return map;
+	}
+
+	public String fetchData(HttpUniqueRequestQueueBean localUrlBean) throws Exception
+	{
+		String result = getUrlContent(localUrlBean.getUrlAddress(), localUrlBean.getRequestProperties(), localUrlBean.getRequestParameters(), localUrlBean.getEncoding(), localUrlBean.getTimeout());
+		return result;
 	}
 
 }

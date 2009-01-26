@@ -30,7 +30,12 @@ import javax.servlet.jsp.JspException;
 
 import org.apache.log4j.Logger;
 import org.infoglue.deliver.taglib.TemplateControllerTag;
+import org.infoglue.deliver.util.CacheController;
 import org.infoglue.deliver.util.HttpHelper;
+import org.infoglue.deliver.util.Timer;
+import org.infoglue.deliver.util.ioqueue.CachingIOResultHandler;
+import org.infoglue.deliver.util.ioqueue.HttpUniqueRequestQueue;
+import org.infoglue.deliver.util.ioqueue.HttpUniqueRequestQueueBean;
 
 public class ImportTag extends TemplateControllerTag 
 {
@@ -43,6 +48,11 @@ public class ImportTag extends TemplateControllerTag
 	private Map requestProperties = new HashMap();
 	private Map requestParameters = new HashMap();
 	private Integer timeout = new Integer(30000);
+	
+	private Boolean useCache = false;
+	private String cacheName = "importTagResultCache";
+	private String cacheKey = null;
+	private Integer cacheTimeout = new Integer(30000);
 	
 	private HttpHelper helper = new HttpHelper();
 	
@@ -74,8 +84,57 @@ public class ImportTag extends TemplateControllerTag
     {
 		try
         {
-			String result = helper.getUrlContent(url, requestParameters, charEncoding, timeout.intValue());
-		    produceResult(result);
+			Timer t = new Timer();
+			if(!useCache)
+			{
+				if(logger.isInfoEnabled())
+					logger.info("Calling url directly...");
+				String result = helper.getUrlContent(url, requestParameters, charEncoding, timeout.intValue());
+				produceResult(result);
+			}
+			else
+			{
+				String completeUrl = url + "_" + helper.toEncodedString(requestParameters, charEncoding) + "_" + charEncoding;
+				
+				String localCacheKey = "result_" + completeUrl.hashCode();
+				if(cacheKey != null && !cacheKey.equals(""))
+					localCacheKey = cacheKey;
+				
+				CachingIOResultHandler resultHandler = new CachingIOResultHandler();
+				resultHandler.setCacheKey(localCacheKey);
+				resultHandler.setCacheName(cacheName);
+
+				if(logger.isInfoEnabled())
+					t.printElapsedTime("1 took..");
+				String cachedResult = (String)CacheController.getCachedObjectFromAdvancedCache(cacheName, localCacheKey, cacheTimeout.intValue(), false);
+				if(logger.isInfoEnabled())
+					t.printElapsedTime("2 took..");
+				if(cachedResult == null || cachedResult.equals(""))
+				{
+					cachedResult = (String)CacheController.getCachedObjectFromAdvancedCache(cacheName, localCacheKey, true);
+					if(logger.isInfoEnabled())
+						t.printElapsedTime("3 took..");
+					queueBean(resultHandler);
+					if(logger.isInfoEnabled())
+						t.printElapsedTime("4 took..");
+				}
+				if(cachedResult == null || cachedResult.equals(""))
+				{
+					cachedResult = helper.getUrlContent(url, requestParameters, charEncoding, timeout.intValue());
+					if(logger.isInfoEnabled())
+						t.printElapsedTime("5 took..");
+					resultHandler.handleResult(cachedResult);
+					if(logger.isInfoEnabled())
+						t.printElapsedTime("6 took..");
+				}
+				
+				if(logger.isInfoEnabled())
+					logger.info("Sending out the cached result...");
+				
+				produceResult(cachedResult);
+			}
+			if(logger.isInfoEnabled())
+				t.printElapsedTime("Import took..");
         } 
 		catch (Exception e)
         {
@@ -83,8 +142,36 @@ public class ImportTag extends TemplateControllerTag
 		    produceResult("");
         }
 		
+		this.useCache = false;
+		this.cacheKey = null;
+		this.cacheTimeout = new Integer(30000);
+		
         return EVAL_PAGE;
     }
+
+	private void queueBean(CachingIOResultHandler resultHandler)
+	{
+		if(logger.isInfoEnabled())
+			logger.info("Calling url in background...");
+		HttpUniqueRequestQueueBean bean = new HttpUniqueRequestQueueBean();
+		bean.setEncoding(this.charEncoding);
+		bean.setFetcher(helper);
+		bean.setHandler(resultHandler);
+		bean.setRequestParameters(requestParameters);
+		bean.setRequestProperties(requestProperties);
+		bean.setTimeout(timeout);
+		bean.setUrlAddress(url);
+		try
+		{
+			bean.setSerializedParameters(helper.toEncodedString(requestParameters, this.charEncoding));			
+		}
+		catch (Exception e) 
+		{
+			e.printStackTrace();
+		}
+		
+		HttpUniqueRequestQueue.getHttpUniqueRequestQueue().addHttpUniqueRequestQueueBean(bean);
+	}
 
     public void setUrl(String url) throws JspException
     {
@@ -99,6 +186,21 @@ public class ImportTag extends TemplateControllerTag
     public void setTimeout(String timeout) throws JspException
     {
         this.timeout = evaluateInteger("importTag", "timeout", timeout);
+    }
+
+    public void setUseCache(String useCache) throws JspException
+    {
+        this.useCache = (Boolean)evaluate("importTag", "useCache", useCache, Boolean.class);
+    }
+
+    public void setCacheKey(String cacheKey) throws JspException
+    {
+        this.cacheKey = evaluateString("importTag", "cacheKey", cacheKey);
+    }
+
+    public void setCacheTimeout(String cacheTimeout) throws JspException
+    {
+        this.cacheTimeout = evaluateInteger("importTag", "cacheTimeout", cacheTimeout);
     }
 
     protected final void addProperty(final String name, final String value)

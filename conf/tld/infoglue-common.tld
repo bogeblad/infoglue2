@@ -366,6 +366,26 @@
 	    	<required>false</required>
 	        <rtexprvalue>true</rtexprvalue>
 		</attribute>
+	    <attribute>
+		    <name>useCache</name>
+	    	<required>false</required>
+	        <rtexprvalue>true</rtexprvalue>
+		</attribute>
+	    <attribute>
+		    <name>cacheName</name>
+	    	<required>false</required>
+	        <rtexprvalue>true</rtexprvalue>
+		</attribute>
+	    <attribute>
+		    <name>cacheKey</name>
+	    	<required>false</required>
+	        <rtexprvalue>true</rtexprvalue>
+		</attribute>
+	    <attribute>
+		    <name>cacheTimeout</name>
+	    	<required>false</required>
+	        <rtexprvalue>true</rtexprvalue>
+		</attribute>
 	</tag>
     <tag>
 	    <name>proxy</name>
