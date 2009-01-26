@@ -598,21 +598,24 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 					property.put("path", path);
 					property.put("type", type);
 					
-					if(propertyName.equals(InfoGlueComponent.CACHE_RESULT_PROPERTYNAME) && (path.equalsIgnoreCase("true") || path.equalsIgnoreCase("yes")))
+					if(path != null)
 					{
-						component.setCacheResult(true);
-					}
-					if(propertyName.equals(InfoGlueComponent.UPDATE_INTERVAL_PROPERTYNAME) && !path.equals(""))
-					{
-						try { component.setUpdateInterval(Integer.parseInt(path)); } catch (Exception e) { logger.warn("The component " + component.getName() + " " + InfoGlueComponent.UPDATE_INTERVAL_PROPERTYNAME + " with a faulty value on page " + this.getTemplateController().getOriginalFullURL() + ":" + e.getMessage()); }
-					}
-					if(propertyName.equals(InfoGlueComponent.CACHE_KEY_PROPERTYNAME) && !path.equals(""))
-					{
-						component.setCacheKey(path);
-					}
-					if(propertyName.equals(InfoGlueComponent.PREPROCESSING_ORDER_PROPERTYNAME) && !path.equals(""))
-					{
-						component.setPreProcessingOrder(path);
+						if(propertyName.equals(InfoGlueComponent.CACHE_RESULT_PROPERTYNAME) && (path.equalsIgnoreCase("true") || path.equalsIgnoreCase("yes")))
+						{
+							component.setCacheResult(true);
+						}
+						if(propertyName.equals(InfoGlueComponent.UPDATE_INTERVAL_PROPERTYNAME) && !path.equals(""))
+						{
+							try { component.setUpdateInterval(Integer.parseInt(path)); } catch (Exception e) { logger.warn("The component " + component.getName() + " " + InfoGlueComponent.UPDATE_INTERVAL_PROPERTYNAME + " with a faulty value on page " + this.getTemplateController().getOriginalFullURL() + ":" + e.getMessage()); }
+						}
+						if(propertyName.equals(InfoGlueComponent.CACHE_KEY_PROPERTYNAME) && !path.equals(""))
+						{
+							component.setCacheKey(path);
+						}
+						if(propertyName.equals(InfoGlueComponent.PREPROCESSING_ORDER_PROPERTYNAME) && !path.equals(""))
+						{
+							component.setPreProcessingOrder(path);
+						}
 					}
 					
 					List bindings = new ArrayList();
@@ -841,23 +844,26 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 					property.put("path", path);
 					property.put("type", type);
 					
-					if(propertyName.equals(InfoGlueComponent.CACHE_RESULT_PROPERTYNAME) && (path.equalsIgnoreCase("true") || path.equalsIgnoreCase("yes")))
+					if(path != null)
 					{
-						component.setCacheResult(true);
+						if(propertyName.equals(InfoGlueComponent.CACHE_RESULT_PROPERTYNAME) && (path.equalsIgnoreCase("true") || path.equalsIgnoreCase("yes")))
+						{
+							component.setCacheResult(true);
+						}
+						if(propertyName.equals(InfoGlueComponent.UPDATE_INTERVAL_PROPERTYNAME) && !path.equals(""))
+						{
+							try { component.setUpdateInterval(Integer.parseInt(path)); } catch (Exception e) { logger.warn("The component " + component.getName() + " " + InfoGlueComponent.UPDATE_INTERVAL_PROPERTYNAME + " with a faulty value on page " + this.getTemplateController().getOriginalFullURL() + ":" + e.getMessage()); }
+						}
+						if(propertyName.equals(InfoGlueComponent.CACHE_KEY_PROPERTYNAME) && !path.equals(""))
+						{
+							component.setCacheKey(path);
+						}
+						if(propertyName.equals(InfoGlueComponent.PREPROCESSING_ORDER_PROPERTYNAME) && !path.equals(""))
+						{
+							component.setPreProcessingOrder(path);
+						}
 					}
-					if(propertyName.equals(InfoGlueComponent.UPDATE_INTERVAL_PROPERTYNAME) && !path.equals(""))
-					{
-						try { component.setUpdateInterval(Integer.parseInt(path)); } catch (Exception e) { logger.warn("The component " + component.getName() + " " + InfoGlueComponent.UPDATE_INTERVAL_PROPERTYNAME + " with a faulty value on page " + this.getTemplateController().getOriginalFullURL() + ":" + e.getMessage()); }
-					}
-					if(propertyName.equals(InfoGlueComponent.CACHE_KEY_PROPERTYNAME) && !path.equals(""))
-					{
-						component.setCacheKey(path);
-					}
-					if(propertyName.equals(InfoGlueComponent.PREPROCESSING_ORDER_PROPERTYNAME) && !path.equals(""))
-					{
-						component.setPreProcessingOrder(path);
-					}
-
+					
 					List bindings = new ArrayList();
 					List bindingNodeList = propertyElement.selectNodes("binding");
 					////logger.info("bindingNodeList:" + bindingNodeList.getLength());
@@ -1632,29 +1638,32 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 								if(propertyElement.attributeValue("path_" + contentMasterLangaugeVO.getLanguageCode()) != null)
 									path = propertyElement.attributeValue("path_" + contentMasterLangaugeVO.getLanguageCode());	
 							}
-
+							
 							Map property = new HashMap();
 							property.put("name", propertyName);
 							property.put("path", path);
 							property.put("type", type);
 							
-							if(propertyName.equals(InfoGlueComponent.CACHE_RESULT_PROPERTYNAME) && (path.equalsIgnoreCase("true") || path.equalsIgnoreCase("yes")))
+							if(path != null)
 							{
-								component.setCacheResult(true);
+								if(propertyName.equals(InfoGlueComponent.CACHE_RESULT_PROPERTYNAME) && (path.equalsIgnoreCase("true") || path.equalsIgnoreCase("yes")))
+								{
+									component.setCacheResult(true);
+								}
+								if(propertyName.equals(InfoGlueComponent.UPDATE_INTERVAL_PROPERTYNAME) && !path.equals(""))
+								{
+									try { component.setUpdateInterval(Integer.parseInt(path)); } catch (Exception e) { logger.warn("The component " + component.getName() + " " + InfoGlueComponent.UPDATE_INTERVAL_PROPERTYNAME + " with a faulty value on page " + this.getTemplateController().getOriginalFullURL() + ":" + e.getMessage()); }
+								}
+								if(propertyName.equals(InfoGlueComponent.CACHE_KEY_PROPERTYNAME) && !path.equals(""))
+								{
+									component.setCacheKey(path);
+								}
+								if(propertyName.equals(InfoGlueComponent.PREPROCESSING_ORDER_PROPERTYNAME) && !path.equals(""))
+								{
+									component.setPreProcessingOrder(path);
+								}
 							}
-							if(propertyName.equals(InfoGlueComponent.UPDATE_INTERVAL_PROPERTYNAME) && !path.equals(""))
-							{
-								try { component.setUpdateInterval(Integer.parseInt(path)); } catch (Exception e) { logger.warn("The component " + component.getName() + " " + InfoGlueComponent.UPDATE_INTERVAL_PROPERTYNAME + " with a faulty value on page " + this.getTemplateController().getOriginalFullURL() + ":" + e.getMessage()); }
-							}
-							if(propertyName.equals(InfoGlueComponent.CACHE_KEY_PROPERTYNAME) && !path.equals(""))
-							{
-								component.setCacheKey(path);
-							}
-							if(propertyName.equals(InfoGlueComponent.PREPROCESSING_ORDER_PROPERTYNAME) && !path.equals(""))
-							{
-								component.setPreProcessingOrder(path);
-							}
-
+							
 							List<ComponentBinding> bindings = new ArrayList<ComponentBinding>();
 							List bindingNodeList = propertyElement.selectNodes("binding");
 							Iterator bindingNodeListIterator = bindingNodeList.iterator();
