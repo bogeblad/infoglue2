@@ -58,7 +58,7 @@ public class FileHelper
  
 	public synchronized static void writeToFile(File file, String text, boolean isAppend) throws Exception
 	{
-		PrintWriter pout = new PrintWriter(new FileWriter(file), isAppend);
+		PrintWriter pout = new PrintWriter(new FileWriter(file, isAppend));
 		pout.println(text);    
 		pout.close();
 	}   
