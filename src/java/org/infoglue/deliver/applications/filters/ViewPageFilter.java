@@ -138,6 +138,21 @@ public class ViewPageFilter implements Filter
 
         try
         {
+        	//System.out.println("requestURI:" + requestURI);
+			String fromEncoding = CmsPropertyHandler.getURIEncoding();
+			String toEncoding = "utf-8";
+			String testRequestURI = new String(requestURI.getBytes(fromEncoding), toEncoding);
+			if(testRequestURI.indexOf((char)65533) == -1)
+				requestURI = testRequestURI;
+			//System.out.println("requestURI:" + requestURI);
+        }
+        catch (Exception e) 
+        {
+        	logger.warn("Error checking for unicode chars:" + e.getMessage());
+		}
+        
+        try
+        {
         	if(requestURI.indexOf(CmsPropertyHandler.getDigitalAssetBaseUrl() + "/protected") > -1)
         	{
             	throw new Exception("Not allowed to view protected assets...");

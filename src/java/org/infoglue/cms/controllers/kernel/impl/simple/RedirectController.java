@@ -23,6 +23,7 @@
 
 package org.infoglue.cms.controllers.kernel.impl.simple;
 
+import java.net.URLEncoder;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -39,6 +40,7 @@ import org.infoglue.cms.entities.management.impl.simple.RedirectImpl;
 import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
+import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.deliver.util.CacheController;
 
 
@@ -129,10 +131,21 @@ public class RedirectController extends BaseController
                 CacheController.cacheObject("redirectCache", "allRedirects", cachedRedirects);
             }
             
+            //System.out.println("requestURI:" + requestURI);
+            
+			String fromEncoding = CmsPropertyHandler.getURIEncoding();
+			String toEncoding = "utf-8";
+			String testRequestURI = new String(requestURI.getBytes(fromEncoding), toEncoding);
+			if(testRequestURI.indexOf((char)65533) == -1)
+				requestURI = testRequestURI;
+
+			//System.out.println("requestURI:" + requestURI);
+                        
             Iterator redirectsIterator = cachedRedirects.iterator();
             while(redirectsIterator.hasNext())
             {
                 RedirectVO redirect = (RedirectVO)redirectsIterator.next(); 
+                //System.out.println("url:" + redirect.getUrl());
                 logger.info("url:" + redirect.getUrl());
                 boolean matches = false;
                 if(redirect.getUrl().startsWith(".*"))
