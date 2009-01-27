@@ -131,7 +131,7 @@
     	<!--Fetches the latest code from cvs before building it                  -->
     	<!-- =================================================================== -->
     	<target name="fetchInfoGlue">
-        	<cvs command="update -P -d" cvsRoot=":pserver:anonymous@www.infoglue.org:2401/home/cvsroot"/>
+        	<cvs command="update -P -d -A" cvsRoot=":pserver:anonymous@www.infoglue.org:2401/home/cvsroot"/>
     	</target>    
 
     	<!-- =================================================================== -->
@@ -278,12 +278,15 @@
 			<zipfileset dir="${conf}/tld"
                         prefix="WEB-INF/tld"
                         includes="**/*"/>
-            <zipfileset dir="${conf}/config"
+            		<zipfileset dir="${conf}/config"
                         prefix="WEB-INF/config"
                         includes="**/*"/>
 			<zipfileset dir="${conf}"
                         prefix="WEB-INF"
                         includes="server-config.wsdd"/>
+			<zipfileset dir="${conf}"
+			prefix="META-INF" 
+			includes="context.xml"/>
 		</war>
 	</target>
 
@@ -320,9 +323,12 @@
 			<zipfileset dir="${conf}/tld"
                         prefix="WEB-INF/tld"
                         includes="**/*"/>
-            <zipfileset dir="${conf}/config"
+            		<zipfileset dir="${conf}/config"
                         prefix="WEB-INF/config"
                         includes="**/*"/>
+			<zipfileset dir="${conf}"
+			prefix="META-INF"
+			includes="context.xml"/>
 		</war>
 	</target>
 
@@ -643,7 +649,10 @@
 				<include name="**/*.*"/>
 			</fileset>
 		</copy>
-		
+		<copy todir="${deploy.dir.working}/META-INF">
+			<fileset dir="${conf}" includes="context.xml"/>
+		</copy>
+							
 		<echo message="Copying confs to cms"/>
 		<copy todir="${deploy.dir.cms}/WEB-INF/classes">
 			<fileset dir="${conf}">
@@ -679,6 +688,9 @@
 		<copy todir="${deploy.dir.cms}/WEB-INF/classes">
 			<fileset dir="${src}" includes="workflows/*.xml"/>
 		</copy>
+		<copy todir="${deploy.dir.cms}/META-INF">
+			<fileset dir="${conf}" includes="context.xml"/>
+		</copy>					
 </target>
 
 
