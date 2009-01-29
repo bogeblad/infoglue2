@@ -22,6 +22,7 @@
 */
 package org.infoglue.deliver.jobs;
 
+import java.io.File;
 import java.util.Date;
 
 import org.apache.log4j.Logger;
@@ -41,7 +42,8 @@ import org.quartz.JobExecutionException;
 public class ExpireCacheJob implements Job
 {
     private final static Logger logger = Logger.getLogger(ExpireCacheJob.class.getName());
-
+    private static Integer intervalCount = 0;
+    
     public synchronized void execute(JobExecutionContext context) throws JobExecutionException
     {
         try
@@ -163,7 +165,47 @@ public class ExpireCacheJob implements Job
                 logger.info("releasing block");
                 RequestAnalyser.getRequestAnalyser().setBlockRequests(false);
             }
-
+            
+            synchronized (intervalCount)
+			{
+                intervalCount++;
+                logger.info("intervalCount:" + intervalCount);
+	            if(intervalCount > 2)
+	            {
+	                String dir = CmsPropertyHandler.getDigitalAssetPath() + File.separator + "caches";
+	                File dirFile = new File(dir);
+	                if(dirFile.exists())
+	                {
+		                File[] subCaches = dirFile.listFiles();
+		                for(int i=0; i<subCaches.length; i++)
+		                {
+		                	File subCacheDir = subCaches[i];
+		                	logger.info("subCacheDir:" + subCacheDir.getName());
+		                	if(subCacheDir.isDirectory())
+		                	{
+			                	File[] cacheFiles = subCacheDir.listFiles();
+			                	for(int j=0; j<cacheFiles.length; j++)
+			                	{
+			                		File cacheFile = cacheFiles[j];
+				                	logger.info("cacheFile:" + cacheFile.getName());
+			                		long lastModified = cacheFile.lastModified();
+			                		long differensInHours = (System.currentTimeMillis() - lastModified) / (60 * 60 * 1000);
+			                		if(differensInHours > (24 * 7))
+			                		{
+			                			logger.info("Deleting cached file as it was to old:" + differensInHours);
+			                			cacheFile.delete();
+			                		}
+			                		else
+			                		{
+			                			logger.info("Keeping cached file as it was new:" + differensInHours);
+			                		}
+			                	}
+		                	}			                
+		                }
+	                }
+	                intervalCount = 0;
+	            }
+			}
         }
         catch (Exception e)
         {
