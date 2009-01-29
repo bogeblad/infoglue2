@@ -71,8 +71,10 @@ public class CleanOldVersionsJob implements Job
 	    	long minimumTimeBetweenVersionsDuringClean = CmsPropertyHandler.getMinimumTimeBetweenVersionsDuringClean();
 	    	logger.info("minimumTimeBetweenVersionsDuringClean:" + minimumTimeBetweenVersionsDuringClean);
 	    	boolean keepOnlyOldPublishedVersions = Boolean.parseBoolean(keepOnlyOldPublishedVersionsString);
-			if(numberOfVersionsToKeepDuringCleanInteger.intValue() < 3)
+			
+	    	if(numberOfVersionsToKeepDuringCleanInteger.intValue() < 3 && numberOfVersionsToKeepDuringCleanInteger.intValue() > -1)
 				numberOfVersionsToKeepDuringCleanInteger = new Integer(3);
+	    	
 			if(numberOfVersionsToKeepDuringCleanInteger.intValue() > -1)
 			{
 				int cleanedContentVersions = ContentVersionController.getContentVersionController().cleanContentVersions(numberOfVersionsToKeepDuringCleanInteger.intValue(), keepOnlyOldPublishedVersions, minimumTimeBetweenVersionsDuringClean, deleteVersions);
