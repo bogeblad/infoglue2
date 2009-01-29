@@ -78,6 +78,7 @@ public class ComponentLogic
 
 	private TemplateController templateController = null;
 	private InfoGlueComponent infoGlueComponent = null;
+	private Integer includedComponentContentId = null;
 	private boolean useInheritance = true;
 	private boolean useRepositoryInheritance = true;
 	private boolean useStructureInheritance = true;
@@ -2863,6 +2864,11 @@ public class ComponentLogic
 		return infoGlueComponent;
 	}
 
+	public Integer getIncludedComponentContentId()
+	{
+		return this.includedComponentContentId;
+	}
+	
     public boolean getUseInheritance()
     {
         return useInheritance;
@@ -2893,7 +2899,12 @@ public class ComponentLogic
         this.threatFoldersAsContents = threatFoldersAsContents;
         this.templateController.setThreatFoldersAsContents(threatFoldersAsContents);
     }
-    
+
+    public void setIncludedComponentContentId(Integer includedComponentContentId)
+    {
+        this.includedComponentContentId = includedComponentContentId;
+    }
+
     /**
      * Returns ComponentDeliveryContext
      * @return the ComponentDeliveryContext

@@ -59,7 +59,11 @@ public class ComponentLabelTag extends ContentAttributeTag
     
 	private String getContentAttributeValue(Integer languageId) throws JspException
 	{
-		String result = getController().getContentAttribute(getController().getComponentLogic().getInfoGlueComponent().getContentId(), languageId, attributeName, disableEditOnSight);
+		Integer componentContentId = getController().getComponentLogic().getIncludedComponentContentId();
+		if(componentContentId == null)
+			componentContentId = getController().getComponentLogic().getInfoGlueComponent().getContentId();
+		
+		String result = getController().getContentAttribute(componentContentId, languageId, attributeName, disableEditOnSight);
 		
 		return result;
 	}

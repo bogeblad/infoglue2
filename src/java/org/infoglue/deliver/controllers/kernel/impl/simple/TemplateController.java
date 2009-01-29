@@ -1392,6 +1392,11 @@ public interface TemplateController
     public abstract String renderString(String template, boolean useSubContext);
 
     /**
+     * This method allows a user to get any string rendered as a template.
+     */
+    public abstract String renderString(String template, Integer includedComponentContentId, boolean useSubContext);
+
+    /**
      * This method allows the current template to include another template which is also rendered 
      * in the current context as if it were a part. The method assumes that the result can be cached.
      * Use the other include method if you wish to be able to control if the result is cached or not.

@@ -74,7 +74,7 @@ public class IncludeTag extends TemplateControllerTag
 		        template = this.getController().getContentAttributeUsingLanguageFallback(contentId, "Template", true);
 		    }
 		    
-		    String result = this.getController().renderString(template, false);
+		    String result = this.getController().renderString(template, contentId, false);
 		    produceResult(result);
         } 
 		catch (Exception e)
