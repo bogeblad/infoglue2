@@ -180,6 +180,19 @@ public abstract class WebworkAbstractAction implements Action, ServletRequestAwa
 		return URLEncoder.encode(urlBase + "?" + urlParameters, "UTF-8");
 	}
 
+	/**
+	 * This method returns the url to the current page.
+	 * Could be used in case of reload for example or for logging reasons.
+	 */
+	
+	public String getUnencodedCurrentUrl() throws Exception
+	{
+		String urlBase = getRequest().getRequestURL().toString();
+		String urlParameters = getRequest().getQueryString();
+		
+		return urlBase + (urlParameters != null ? "?" + urlParameters : "");
+	}
+
     /**
      *
      */

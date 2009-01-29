@@ -90,6 +90,8 @@ public class UpdateAccessRightsAction extends InfoGlueAbstractAction
 		AccessRightController.getController().update(this.parameters, this.getRequest());
 	
 		this.url = getResponse().encodeRedirectURL(this.returnAddress);
+		if(this.url.indexOf("ViewAccessRights.action") > -1)
+			this.url = this.url + "&saved=true";
 		
 		if(this.returnAddress.indexOf("http") == 0)
 		{

@@ -32,12 +32,14 @@ import org.infoglue.cms.applications.common.ImageButton;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.AccessRightController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.RepositoryController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeController;
 import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.content.ContentVersion;
 import org.infoglue.cms.entities.content.ContentVersionVO;
+import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
 import org.infoglue.cms.entities.management.RepositoryVO;
 import org.infoglue.cms.entities.structure.SiteNodeVO;
 import org.infoglue.cms.entities.structure.SiteNodeVersionVO;
@@ -337,6 +339,10 @@ public class ViewContentToolToolBarAction extends InfoGlueAbstractAction
 			if(this.contentVO.getIsProtected().intValue() == ContentVO.YES.intValue())
 				buttons.add(getAccessRightsButton());
 
+			ContentTypeDefinitionVO contentTypeDefinitionVO = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithId(this.contentVO.getContentTypeDefinitionId());
+			if(contentTypeDefinitionVO != null && (contentTypeDefinitionVO.getName().equalsIgnoreCase("HTMLTemplate") || contentTypeDefinitionVO.getName().equalsIgnoreCase("PageTemplate")))
+				buttons.add(getComponentAccessRightsButton());
+			
 			buttons.add(new ImageButton("ViewContentVersionHistory.action?contentId=" + this.contentId, getLocalizedString(getSession().getLocale(), "images.contenttool.buttons.viewHistory"), "History", new Integer(22), new Integer(80)));
 
 			buttons.add(getSyncTreeButton());
@@ -386,6 +392,10 @@ public class ViewContentToolToolBarAction extends InfoGlueAbstractAction
 			if(this.contentVO.getIsProtected().intValue() == ContentVO.YES.intValue())
 				buttons.add(getAccessRightsButton());
 
+			ContentTypeDefinitionVO contentTypeDefinitionVO = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithId(this.contentVO.getContentTypeDefinitionId());
+			if(contentTypeDefinitionVO != null && (contentTypeDefinitionVO.getName().equalsIgnoreCase("HTMLTemplate") || contentTypeDefinitionVO.getName().equalsIgnoreCase("PageTemplate")))
+				buttons.add(getComponentAccessRightsButton());
+			
 			buttons.add(new ImageButton("ViewContentVersionHistory.action?contentId=" + this.contentId, getLocalizedString(getSession().getLocale(), "images.contenttool.buttons.viewHistory"), "History", new Integer(22), new Integer(80)));
 			
 			buttons.add(getSyncTreeButton());
@@ -482,6 +492,10 @@ public class ViewContentToolToolBarAction extends InfoGlueAbstractAction
 					if(this.contentVO.getIsProtected().intValue() == ContentVO.YES.intValue())
 						buttons.add(getContentVersionAccessRightsButton());
 	
+					ContentTypeDefinitionVO contentTypeDefinitionVO = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithId(this.contentVO.getContentTypeDefinitionId());
+					if(contentTypeDefinitionVO != null && (contentTypeDefinitionVO.getName().equalsIgnoreCase("HTMLTemplate") || contentTypeDefinitionVO.getName().equalsIgnoreCase("PageTemplate")))
+						buttons.add(getComponentAccessRightsButton());
+
 					if(!isReadOnly())
 						buttons.add(getPublishButton());
 				}
@@ -649,6 +663,12 @@ public class ViewContentToolToolBarAction extends InfoGlueAbstractAction
 	{
 		String returnAddress = URLEncoder.encode(URLEncoder.encode("ViewContentVersion.action?contentVersionId=" + this.contentVersionId + "&contentId=" + contentId + "&languageId=" + languageId, "UTF-8"), "UTF-8");
 		return new ImageButton("ViewAccessRights.action?interceptionPointCategory=ContentVersion&extraParameters=" + this.contentVersionId +"&colorScheme=ContentTool&returnAddress=" + returnAddress, getLocalizedString(getSession().getLocale(), "images.contenttool.buttons.contentAccessRights"), "tool.contenttool.contentVersionAccessRights.header");
+	}
+
+	private ImageButton getComponentAccessRightsButton() throws Exception
+	{
+		String returnAddress = URLEncoder.encode(URLEncoder.encode("ViewContent.action?contentId=" + this.contentId + "&repositoryId=" + this.repositoryId + "&stay=true", "UTF-8"), "UTF-8");
+		return new ImageButton("ViewAccessRights.action?interceptionPointCategory=Component&extraParameters=" + this.contentId +"&colorScheme=ContentTool&returnAddress=" + returnAddress, getLocalizedString(getSession().getLocale(), "images.contenttool.buttons.componentAccessRights"), "tool.contenttool.componentAccessRights.header");
 	}
 
 	public String getStateDescription(ContentVersionVO contentVersionVO)

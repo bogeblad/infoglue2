@@ -62,6 +62,7 @@ public class ViewAccessRightsAction extends InfoGlueAbstractAction
 	private String extraParameters = "";
 	private String returnAddress;
 	private String colorScheme;
+	private String saved = "false";
 
 	private List interceptionPointVOList = new ArrayList();
 	private List roleList = null;
@@ -236,4 +237,14 @@ public class ViewAccessRightsAction extends InfoGlueAbstractAction
     {
         return accessRightsUserRows;
     }
+
+	public String getSaved()
+	{
+		return saved;
+	}
+
+	public void setSaved(String saved)
+	{
+		this.saved = saved;
+	}
 }
