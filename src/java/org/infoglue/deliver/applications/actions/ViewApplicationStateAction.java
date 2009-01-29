@@ -164,6 +164,7 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
         }
         
         CacheController.clearCache(cacheName);
+        CacheController.clearFileCaches(cacheName);
         
         //this.getHttpSession().invalidate();
         
@@ -378,6 +379,7 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
         CacheController.clearServerNodeProperty(true);
         CacheController.clearCastorCaches();
         CacheController.clearCaches(null, null, null);
+        CacheController.clearFileCaches();
         
         if(this.returnAddress != null && !this.returnAddress.equals(""))
         {

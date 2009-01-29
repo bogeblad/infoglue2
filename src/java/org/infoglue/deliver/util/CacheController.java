@@ -1772,6 +1772,62 @@ public class CacheController extends Thread
 		}
     }
 
+	public static void clearFileCaches()
+	{
+        String dir = CmsPropertyHandler.getDigitalAssetPath() + File.separator + "caches";
+        File dirFile = new File(dir);
+        //System.out.println("dirFile:" + dirFile.exists());
+        if(dirFile.exists())
+        {
+            File[] subCaches = dirFile.listFiles();
+            for(int i=0; i<subCaches.length; i++)
+            {
+            	File subCacheDir = subCaches[i];
+            	//System.out.println("subCacheDir:" + subCacheDir.getName());
+            	if(subCacheDir.isDirectory())
+            	{
+                	File[] cacheFiles = subCacheDir.listFiles();
+                	for(int j=0; j<cacheFiles.length; j++)
+                	{
+                		File cacheFile = cacheFiles[j];
+                		//System.out.println("cacheFile:" + cacheFile.getName());
+            			cacheFile.delete();
+                	}
+
+            		subCacheDir.delete();
+               }			                
+            }
+        }
+	}
+
+	public static void clearFileCaches(String cacheName)
+	{
+        String dir = CmsPropertyHandler.getDigitalAssetPath() + File.separator + "caches";
+        File dirFile = new File(dir);
+        //System.out.println("dirFile:" + dirFile.exists());
+        if(dirFile.exists())
+        {
+            File[] subCaches = dirFile.listFiles();
+            for(int i=0; i<subCaches.length; i++)
+            {
+            	File subCacheDir = subCaches[i];
+            	//System.out.println("subCacheDir:" + subCacheDir.getName());
+            	if(subCacheDir.isDirectory() && subCacheDir.getName().equals(cacheName))
+            	{
+                	File[] cacheFiles = subCacheDir.listFiles();
+                	for(int j=0; j<cacheFiles.length; j++)
+                	{
+                		File cacheFile = cacheFiles[j];
+                		//System.out.println("cacheFile:" + cacheFile.getName());
+            			cacheFile.delete();
+                	}
+
+            		subCacheDir.delete();
+               }			                
+            }
+        }
+	}
+
 	/**
 	 * Rollbacks a transaction on the named database
 	 */
@@ -1855,5 +1911,7 @@ public class CacheController extends Thread
 			logger.error("An error occurred when we tried to close a database. Reason:" + e.getMessage(), e);    
 		}
 	}
+
+
 }
 
