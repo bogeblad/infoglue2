@@ -33,6 +33,7 @@ import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.applications.contenttool.wizards.actions.CreateContentWizardInfoBean;
 import org.infoglue.cms.entities.content.ContentVO;
+import org.infoglue.cms.entities.management.InterceptionPointVO;
 import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
@@ -112,12 +113,21 @@ public class ContentControllerProxy extends ContentController
 				
 		return getContentVOWithId(contentId);
     } 
-    
+
 	/**
 	 * This method returns a list of content-objects after checking that it is accessable by the given user
 	 */
 		
     public List getACContentVOList(InfoGluePrincipal infoGluePrincipal, HashMap argumentHashMap, Database db) throws SystemException, Bug, Exception
+    {
+    	return getACContentVOList(infoGluePrincipal, argumentHashMap, "Content.Read", db);
+    }
+   
+	/**
+	 * This method returns a list of content-objects after checking that it is accessable by the given user
+	 */
+		
+    public List getACContentVOList(InfoGluePrincipal infoGluePrincipal, HashMap argumentHashMap, String interceptionPointName, Database db) throws SystemException, Bug, Exception
     {
     	List contents = null;
     	
@@ -161,7 +171,14 @@ public class ContentControllerProxy extends ContentController
 		    	
 		    	try
 		    	{
-		    	    intercept(hashMap, "Content.Read", infoGluePrincipal, false, db);
+		    		if(interceptionPointName.equals("Component.Select"))
+		    		{
+		    			InterceptionPointVO interceptionPointVO = InterceptionPointController.getController().getInterceptionPointVOWithName(interceptionPointName, db);
+		    			if(interceptionPointVO != null)
+		    				intercept(hashMap, interceptionPointName, infoGluePrincipal, false, db);
+		    		}
+		    		else
+		    			intercept(hashMap, interceptionPointName, infoGluePrincipal, false, db);
 		    	}
 		    	catch(Exception e)
 		    	{

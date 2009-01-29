@@ -84,6 +84,8 @@ public class InterceptionPointController extends BaseController
 	    systemInterceptionPoints.put("Content.CreateVersion", new InterceptionPointVO("Content", "Content.CreateVersion", "Intercepts the creation of a new contentversion", true));
 	    systemInterceptionPoints.put("Content.ExpireDateComingUp", new InterceptionPointVO("Content", "Content.ExpireDateComingUp", "Intercepts the event of a content coming close to it's expire date", true));
 	    
+	    systemInterceptionPoints.put("Component.Select", new InterceptionPointVO("Component", "Component.Select", "Intercepts the read of a content when user want to list components to add in a slot", true));
+
 	    systemInterceptionPoints.put("ContentTypeDefinition.Read", new InterceptionPointVO("ContentTypeDefinition", "ContentTypeDefinition.Read", "This point checks access to read/use a content type definition", true));
 	    systemInterceptionPoints.put("ContentVersion.Delete", new InterceptionPointVO("ContentVersion", "ContentVersion.Delete", "Intercepts the deletion of a contentversion", true));
 	    systemInterceptionPoints.put("ContentVersion.Write", new InterceptionPointVO("ContentVersion", "ContentVersion.Write", "Intercepts the editing of a contentversion", true));

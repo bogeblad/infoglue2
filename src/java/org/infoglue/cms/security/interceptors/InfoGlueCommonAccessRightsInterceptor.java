@@ -86,6 +86,17 @@ public class InfoGlueCommonAccessRightsInterceptor implements InfoGlueIntercepto
 					ceb.add(new AccessConstraintException("Content.contentId", "1000"));
 			}
 		}
+		else if(interceptionPointVO.getName().equalsIgnoreCase("Component.Select"))
+		{
+			Integer contentId = (Integer)extradata.get("contentId");
+			ContentVO contentVO = ContentControllerProxy.getController().getContentVOWithId(contentId);
+			if(!allowCreatorAccess || !contentVO.getCreatorName().equalsIgnoreCase(infoGluePrincipal.getName()))
+			{
+				Integer protectedContentId = contentId; //ContentControllerProxy.getController().getProtectedContentId(contentId);
+				if(protectedContentId != null && !AccessRightController.getController().getIsPrincipalAuthorized(infoGluePrincipal, "Component.Select", protectedContentId.toString()))
+					ceb.add(new AccessConstraintException("Content.contentId", "1000"));
+			}
+		}
 		else if(interceptionPointVO.getName().equalsIgnoreCase("Content.Write"))
 		{
 			Integer contentId = (Integer)extradata.get("contentId");
@@ -328,6 +339,17 @@ public class InfoGlueCommonAccessRightsInterceptor implements InfoGlueIntercepto
 			{
 				Integer protectedContentId = ContentControllerProxy.getController().getProtectedContentId(contentId, db);
 				if(protectedContentId != null && !AccessRightController.getController().getIsPrincipalAuthorized(db, infoGluePrincipal, "Content.Read", protectedContentId.toString()))
+					ceb.add(new AccessConstraintException("Content.contentId", "1000"));
+			}
+		}
+		else if(interceptionPointVO.getName().equalsIgnoreCase("Component.Select"))
+		{
+			Integer contentId = (Integer)extradata.get("contentId");
+			ContentVO contentVO = ContentControllerProxy.getController().getContentVOWithId(contentId, db);
+			if(!allowCreatorAccess || !contentVO.getCreatorName().equalsIgnoreCase(infoGluePrincipal.getName()))
+			{
+				Integer protectedContentId = contentId; //ContentControllerProxy.getController().getProtectedContentId(contentId, db);
+				if(protectedContentId != null && !AccessRightController.getController().getIsPrincipalAuthorized(db, infoGluePrincipal, "Component.Select", protectedContentId.toString()))
 					ceb.add(new AccessConstraintException("Content.contentId", "1000"));
 			}
 		}

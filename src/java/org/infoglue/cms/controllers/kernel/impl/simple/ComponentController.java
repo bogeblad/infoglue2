@@ -391,7 +391,7 @@ public class ComponentController extends BaseController
 		argumentList.add(argument2);
 		arguments.put("arguments", argumentList);
 		
-		List results = ContentControllerProxy.getController().getACContentVOList(principal, arguments, db);
+		List results = ContentControllerProxy.getController().getACContentVOList(principal, arguments, "Component.Select", db);
 		
 		if(allowedComponentNames != null && allowedComponentNames.length > 0)
 		{
