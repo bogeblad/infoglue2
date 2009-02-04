@@ -248,17 +248,17 @@ public class CacheController extends Thread
 		cacheObjectInAdvancedCache(cacheName, key, value, null, false);
 	}
 
-	public static void cacheObjectInAdvancedCache(String cacheName, Object key, Object value, boolean useFileCacheFallback)
+	public static void cacheObjectInAdvancedCache(String cacheName, Object key, Object value, boolean useFileCacheFallback, String fileCacheCharEncoding)
 	{
-		cacheObjectInAdvancedCache(cacheName, key, value, null, false, useFileCacheFallback);
+		cacheObjectInAdvancedCache(cacheName, key, value, null, false, useFileCacheFallback, fileCacheCharEncoding);
 	}
 
 	public static void cacheObjectInAdvancedCache(String cacheName, Object key, Object value, String[] groups, boolean useGroups)
 	{
-		cacheObjectInAdvancedCache(cacheName, key, value, groups, useGroups, false);
+		cacheObjectInAdvancedCache(cacheName, key, value, groups, useGroups, false, null);
 	}
 	
-	public static void cacheObjectInAdvancedCache(String cacheName, Object key, Object value, String[] groups, boolean useGroups, boolean useFileCacheFallback)
+	public static void cacheObjectInAdvancedCache(String cacheName, Object key, Object value, String[] groups, boolean useGroups, boolean useFileCacheFallback, String fileCacheCharEncoding)
 	{
 		if(cacheName == null || key == null || value == null || key.toString().length() == 0)
 			return;
@@ -326,7 +326,7 @@ public class CacheController extends Thread
 				    {
 				    	if(logger.isInfoEnabled())
 			    			logger.info("Caching value to disk also");
-				    	putCachedContentInFile(cacheName, key.toString(), value.toString());				    	
+				    	putCachedContentInFile(cacheName, key.toString(), value.toString(), fileCacheCharEncoding);				    	
 				    }
 				}
 			}
@@ -337,10 +337,10 @@ public class CacheController extends Thread
 
 	public static Object getCachedObjectFromAdvancedCache(String cacheName, String key)
 	{
-		return getCachedObjectFromAdvancedCache(cacheName, key, false);
+		return getCachedObjectFromAdvancedCache(cacheName, key, false, "UTF-8");
 	}
 
-	public static Object getCachedObjectFromAdvancedCache(String cacheName, String key, boolean useFileCacheFallback)
+	public static Object getCachedObjectFromAdvancedCache(String cacheName, String key, boolean useFileCacheFallback, String fileCacheCharEncoding)
 	{
 		if(cacheName == null || key == null || key.length() == 0)
 			return null;
@@ -376,7 +376,7 @@ public class CacheController extends Thread
 	    	{				    		
 	    		if(logger.isInfoEnabled())
 	    			logger.info("Getting cache content from file..");
-	    		value = getCachedContentFromFile(cacheName, key);
+	    		value = getCachedContentFromFile(cacheName, key, fileCacheCharEncoding);
 	    		if(value != null)
 	    		{
 	    			if(logger.isInfoEnabled())
@@ -391,10 +391,10 @@ public class CacheController extends Thread
 
 	public static Object getCachedObjectFromAdvancedCache(String cacheName, String key, int updateInterval)
 	{
-		return getCachedObjectFromAdvancedCache(cacheName, key, updateInterval, false);
+		return getCachedObjectFromAdvancedCache(cacheName, key, updateInterval, false, "UTF-8");
 	}
 	
-	public static Object getCachedObjectFromAdvancedCache(String cacheName, String key, int updateInterval, boolean useFileCacheFallback)
+	public static Object getCachedObjectFromAdvancedCache(String cacheName, String key, int updateInterval, boolean useFileCacheFallback, String fileCacheCharEncoding)
 	{
 		if(cacheName == null || key == null)
 			return null;
@@ -430,7 +430,7 @@ public class CacheController extends Thread
 		    	{				    		
 		    		if(logger.isInfoEnabled())
 		    			logger.info("Getting cache content from file..");
-		    		value = getCachedContentFromFile(cacheName, key, updateInterval);
+		    		value = getCachedContentFromFile(cacheName, key, updateInterval, fileCacheCharEncoding);
 		    		if(value != null)
 		    		{
 		    			if(logger.isInfoEnabled())
@@ -1696,12 +1696,12 @@ public class CacheController extends Thread
     	return componentKey;
     }
 
-    private static String getCachedContentFromFile(String cacheName, String key)
+    private static String getCachedContentFromFile(String cacheName, String key, String charEncoding)
     {
-    	return getCachedContentFromFile(cacheName, key, null);
+    	return getCachedContentFromFile(cacheName, key, null, charEncoding);
     }
     
-    private static String getCachedContentFromFile(String cacheName, String key, Integer updateInterval)
+    private static String getCachedContentFromFile(String cacheName, String key, Integer updateInterval, String charEncoding)
     {
     	String contents = null;
     	try
@@ -1713,7 +1713,7 @@ public class CacheController extends Thread
 	            long updateDateTime = file.lastModified();
 	            long now = System.currentTimeMillis();
 	            if((now - updateDateTime) / 1000 < updateInterval)
-	            	contents = FileHelper.getFileAsString(file);
+	            	contents = FileHelper.getFileAsString(file, charEncoding);
 	            else
 	            	if(logger.isInfoEnabled())
 	        			logger.info("Old file - skipping:" + ((now - updateDateTime) / 1000));
@@ -1731,7 +1731,7 @@ public class CacheController extends Thread
     	return contents;
     }
     
-    private static void putCachedContentInFile(String cacheName, String key, String value)
+    private static void putCachedContentInFile(String cacheName, String key, String value, String fileCacheCharEncoding)
     {
     	try
     	{
@@ -1739,10 +1739,9 @@ public class CacheController extends Thread
             File dirFile = new File(dir);
             dirFile.mkdirs();
             File file = new File(dir + File.separator + key.hashCode());
-            File file2 = new File(dir + File.separator + key.hashCode() + ".txt");
-    		File tmpOutputFile = new File(dir + File.separator + Thread.currentThread().getId() + "_tmp_" + key.hashCode());
+            File tmpOutputFile = new File(dir + File.separator + Thread.currentThread().getId() + "_tmp_" + key.hashCode());
 
-    		FileHelper.writeToFile(tmpOutputFile, value, false);
+    		FileHelper.write(tmpOutputFile, value, false, fileCacheCharEncoding);
 			
     		if(logger.isInfoEnabled())
     			logger.info("Wrote file..");

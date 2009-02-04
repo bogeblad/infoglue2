@@ -386,6 +386,16 @@
 	    	<required>false</required>
 	        <rtexprvalue>true</rtexprvalue>
 		</attribute>
+	    <attribute>
+		    <name>useFileCacheFallback</name>
+	    	<required>false</required>
+	        <rtexprvalue>true</rtexprvalue>
+		</attribute>
+	    <attribute>
+		    <name>fileCacheCharEncoding</name>
+	    	<required>false</required>
+	        <rtexprvalue>true</rtexprvalue>
+		</attribute>
 	</tag>
     <tag>
 	    <name>proxy</name>

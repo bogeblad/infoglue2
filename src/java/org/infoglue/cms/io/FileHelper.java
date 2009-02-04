@@ -62,7 +62,7 @@ public class FileHelper
 		pout.println(text);    
 		pout.close();
 	}   
-	
+
 	/**
 	 * Writes the file to the hard disk. If the file doesn't exist a new file is created.
 	 * @author Mattias Bogeblad
@@ -104,7 +104,15 @@ public class FileHelper
 		out.close();
 	}   
 	
-	
+	public synchronized static void write(File file, String text, boolean isAppend, String charSet) throws Exception
+	{
+		FileOutputStream fos = new FileOutputStream(file, isAppend);
+		Writer out = new OutputStreamWriter(fos, charSet);
+		out.write(text);
+		out.flush();
+		out.close();
+		fos.close();
+	}   
 	public synchronized static void writeUTF8ToFile(File file, String text, boolean isAppend) throws Exception
 	{
         Writer out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), "UTF8"));
@@ -184,6 +192,30 @@ public class FileHelper
 	    
 		fis.close();
     	
+		return sb.toString();
+	}
+
+	/**
+	 * This method reads a file from the disk into a string.
+	 * @author Mattias Bogeblad
+	 * @param file The file reads from
+	 *
+	 * @exception java.lang.Exception
+	 * @since 2002-12-12
+	 */
+	
+	public static String getFileAsString(File file, String charEncoding) throws Exception
+	{
+	    BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(file), charEncoding));
+	    
+		StringBuffer sb = new StringBuffer();
+		
+		int ch;
+		while ((ch = in.read()) > -1) {
+			sb.append((char)ch);
+		}
+		in.close();
+		
 		return sb.toString();
 	}
 

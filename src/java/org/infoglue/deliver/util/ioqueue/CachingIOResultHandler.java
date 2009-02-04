@@ -29,6 +29,8 @@ public class CachingIOResultHandler implements IOResultHandler
 {
 	private String cacheName;
 	private String cacheKey;
+	private String fileCacheCharEncoding;
+	private Boolean useFileCacheFallback;
 	private Object value;
 
 	public String getCacheName()
@@ -47,11 +49,27 @@ public class CachingIOResultHandler implements IOResultHandler
 	{
 		this.cacheKey = cacheKey;
 	}
-	
+	public String getFileCacheCharEncoding()
+	{
+		return fileCacheCharEncoding;
+	}
+	public void setFileCacheCharEncoding(String fileCacheCharEncoding)
+	{
+		this.fileCacheCharEncoding = fileCacheCharEncoding;
+	}
+	public Boolean getUseFileCacheFallback()
+	{
+		return useFileCacheFallback;
+	}
+	public void setUseFileCacheFallback(Boolean useFileCacheFallback)
+	{
+		this.useFileCacheFallback = useFileCacheFallback;
+	}
+
 	public void handleResult(String resultData)
 	{
 		//System.out.println("Caching data in " + cacheName + " - " + cacheKey);
-		CacheController.cacheObjectInAdvancedCache(cacheName, cacheKey, resultData, true);
+		CacheController.cacheObjectInAdvancedCache(cacheName, cacheKey, resultData, useFileCacheFallback, fileCacheCharEncoding);
 	}
-	
+
 }

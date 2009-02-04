@@ -52,6 +52,8 @@ public class ImportTag extends TemplateControllerTag
 	private Boolean useCache = false;
 	private String cacheName = "importTagResultCache";
 	private String cacheKey = null;
+	private Boolean useFileCacheFallback = false;
+	private String fileCacheCharEncoding = null;
 	private Integer cacheTimeout = new Integer(30000);
 	
 	private HttpHelper helper = new HttpHelper();
@@ -94,7 +96,10 @@ public class ImportTag extends TemplateControllerTag
 			}
 			else
 			{
-				String completeUrl = url + "_" + helper.toEncodedString(requestParameters, charEncoding) + "_" + charEncoding;
+				if(fileCacheCharEncoding == null)
+					fileCacheCharEncoding = charEncoding;
+
+				String completeUrl = url + "_" + helper.toEncodedString(requestParameters, charEncoding) + "_" + charEncoding + "_" + fileCacheCharEncoding;
 				
 				String localCacheKey = "result_" + completeUrl.hashCode();
 				if(cacheKey != null && !cacheKey.equals(""))
@@ -103,15 +108,17 @@ public class ImportTag extends TemplateControllerTag
 				CachingIOResultHandler resultHandler = new CachingIOResultHandler();
 				resultHandler.setCacheKey(localCacheKey);
 				resultHandler.setCacheName(cacheName);
+				resultHandler.setUseFileCacheFallback(useFileCacheFallback);
+				resultHandler.setFileCacheCharEncoding(fileCacheCharEncoding);
 
 				if(logger.isInfoEnabled())
 					t.printElapsedTime("1 took..");
-				String cachedResult = (String)CacheController.getCachedObjectFromAdvancedCache(cacheName, localCacheKey, cacheTimeout.intValue(), false);
+				String cachedResult = (String)CacheController.getCachedObjectFromAdvancedCache(cacheName, localCacheKey, cacheTimeout.intValue(), false, fileCacheCharEncoding);
 				if(logger.isInfoEnabled())
 					t.printElapsedTime("2 took..");
-				if(cachedResult == null || cachedResult.equals(""))
+				if((cachedResult == null || cachedResult.equals("")) && useFileCacheFallback)
 				{
-					cachedResult = (String)CacheController.getCachedObjectFromAdvancedCache(cacheName, localCacheKey, true);
+					cachedResult = (String)CacheController.getCachedObjectFromAdvancedCache(cacheName, localCacheKey, true, fileCacheCharEncoding);
 					if(logger.isInfoEnabled())
 						t.printElapsedTime("3 took..");
 					queueBean(resultHandler);
@@ -145,6 +152,8 @@ public class ImportTag extends TemplateControllerTag
 		this.useCache = false;
 		this.cacheKey = null;
 		this.cacheTimeout = new Integer(30000);
+		this.useFileCacheFallback = false;
+		this.fileCacheCharEncoding = null;
 		
         return EVAL_PAGE;
     }
@@ -191,6 +200,16 @@ public class ImportTag extends TemplateControllerTag
     public void setUseCache(String useCache) throws JspException
     {
         this.useCache = (Boolean)evaluate("importTag", "useCache", useCache, Boolean.class);
+    }
+
+    public void setUseFileCacheFallback(String useFileCacheFallback) throws JspException
+    {
+        this.useFileCacheFallback = (Boolean)evaluate("importTag", "useFileCacheFallback", useFileCacheFallback, Boolean.class);
+    }
+
+    public void setFileCacheCharEncoding(String fileCacheCharEncoding) throws JspException
+    {
+        this.fileCacheCharEncoding = evaluateString("importTag", "fileCacheCharEncoding", fileCacheCharEncoding);
     }
 
     public void setCacheKey(String cacheKey) throws JspException
