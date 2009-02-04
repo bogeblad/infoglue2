@@ -97,7 +97,7 @@ public class AjaxComponentDeliveryServiceAction extends InfoGlueAbstractAction
     	Integer contentId = new Integer(contentIdString);
 
     	Integer componentContentId = null;
-    	if(componentContentIdString != null && !componentContentIdString.equals("null"))
+    	if(componentContentIdString != null && !componentContentIdString.equals("null") && !componentContentIdString.equals("-1"))
     		componentContentId = new Integer(componentContentIdString);
     	else
     		return NONE;
