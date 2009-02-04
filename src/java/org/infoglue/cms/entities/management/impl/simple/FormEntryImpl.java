@@ -37,6 +37,7 @@ public class FormEntryImpl implements FormEntry
 {
     private FormEntryVO valueObject = new FormEntryVO();
 	private Collection formEntryValues = new ArrayList();
+	private Collection formEntryAssets = new ArrayList();
 	
 	public Integer getId()
 	{
@@ -136,6 +137,16 @@ public class FormEntryImpl implements FormEntry
 	public void setFormEntryValues(Collection formEntryValues)
 	{
 		this.formEntryValues = formEntryValues;
+	}  
+
+	public Collection getFormEntryAssets()
+	{
+		return formEntryAssets;
+	}
+
+	public void setFormEntryAssets(Collection formEntryAssets)
+	{
+		this.formEntryAssets = formEntryAssets;
 	}  
 
 }        

@@ -1554,6 +1554,9 @@
 		<field name="formEntryValues" type="org.infoglue.cms.entities.management.impl.simple.FormEntryValueImpl" collection="collection">
 		  <sql many-key="formEntryId"/>
 		</field>
+		<field name="formEntryAssets" type="org.infoglue.cms.entities.management.impl.simple.FormEntryAssetImpl" collection="collection">
+		  <sql many-key="formEntryId"/>
+		</field>
   	</class>
 
 	<!--  Mapping for FormEntryValue  -->
@@ -1574,6 +1577,33 @@
 		  <sql name="formEntryId"/>
 		</field>
   	</class>
+
+  	<class name="org.infoglue.cms.entities.management.impl.simple.FormEntryAssetImpl" identity="formEntryAssetId" key-generator="IDENTITY">
+	    <description>FormEntryAsset</description>
+	    <cache-type type="none"/>
+	    <map-to table="cmFormEntryAsset"/>
+	    <field name="formEntryAssetId" type="java.lang.Integer">
+	      	<sql name="id" type="integer" dirty="check" />
+	    </field>
+	    <field name="fileName" type="java.lang.String">
+	      <sql name="fileName" type="varchar" dirty="check" />
+	    </field>
+	    <field name="assetKey" type="java.lang.String">
+	      <sql name="assetKey" type="varchar" dirty="check" />
+	    </field>
+	    <field name="contentType" type="java.lang.String">
+	      <sql name="contentType" type="varchar" dirty="check" />
+	    </field>
+	    <field name="fileSize" type="java.lang.Integer">
+	      <sql name="fileSize" type="integer" dirty="check" />
+	    </field>
+		<field name="formEntry" type="org.infoglue.cms.entities.management.impl.simple.FormEntryImpl">
+		  <sql name="formEntryId"/>
+		</field>
+	    <field name="assetBlob" type="stream" >
+	      <sql name="assetBlob" type="blob" dirty="ignore" />
+	    </field>
+	</class>
 
   	<!--  Mapping for Subscription entity  -->
   	<class name="org.infoglue.cms.entities.management.impl.simple.SubscriptionImpl" identity="subscriptionId" key-generator="IDENTITY">

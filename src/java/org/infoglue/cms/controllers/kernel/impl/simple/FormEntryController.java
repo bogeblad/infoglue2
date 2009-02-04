@@ -23,6 +23,12 @@
 
 package org.infoglue.cms.controllers.kernel.impl.simple;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -35,24 +41,34 @@ import org.exolab.castor.jdo.Database;
 import org.exolab.castor.jdo.OQLQuery;
 import org.exolab.castor.jdo.QueryResults;
 import org.infoglue.cms.entities.content.ContentVO;
+import org.infoglue.cms.entities.content.DigitalAsset;
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
 import org.infoglue.cms.entities.management.FormEntry;
+import org.infoglue.cms.entities.management.FormEntryAsset;
+import org.infoglue.cms.entities.management.FormEntryAssetVO;
 import org.infoglue.cms.entities.management.FormEntryVO;
 import org.infoglue.cms.entities.management.FormEntryValue;
 import org.infoglue.cms.entities.management.FormEntryValueVO;
 import org.infoglue.cms.entities.management.Repository;
 import org.infoglue.cms.entities.management.RepositoryVO;
+import org.infoglue.cms.entities.management.impl.simple.FormEntryAssetImpl;
 import org.infoglue.cms.entities.management.impl.simple.FormEntryImpl;
 import org.infoglue.cms.entities.management.impl.simple.FormEntryValueImpl;
 import org.infoglue.cms.entities.management.impl.simple.RepositoryImpl;
+import org.infoglue.cms.entities.structure.SiteNode;
 import org.infoglue.cms.entities.structure.SiteNodeVO;
 import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
+import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
+import org.infoglue.deliver.applications.databeans.DeliveryContext;
+import org.infoglue.deliver.controllers.kernel.URLComposer;
+import org.infoglue.deliver.controllers.kernel.impl.simple.NodeDeliveryController;
 import org.infoglue.deliver.util.CacheController;
+import org.infoglue.deliver.util.Timer;
 
 
 /**
@@ -80,6 +96,11 @@ public class FormEntryController extends BaseController
     public FormEntry getFormEntryWithId(Integer formEntryId, Database db) throws SystemException, Bug
     {
 		return (FormEntry) getObjectWithId(FormEntryImpl.class, formEntryId, db);
+    }
+
+    public FormEntryAsset getFormEntryAssetWithId(Integer formEntryAssetId, Database db) throws SystemException, Bug
+    {
+		return (FormEntryAsset) getObjectWithId(FormEntryAssetImpl.class, formEntryAssetId, db);
     }
 
     public List getFormEntryVOList() throws SystemException, Bug
@@ -165,6 +186,154 @@ public class FormEntryController extends BaseController
 	}
 
 	/**
+	 * Returns a list of entry assets for a given entry.
+	 * 
+	 * @param name
+	 * @return
+	 * @throws SystemException
+	 * @throws Bug
+	 */
+	
+	public List getFormEntryAssetVOList(Integer formEntryId) throws SystemException, Bug
+	{
+		List formEntryAssetVOList = null;
+		
+		Database db = CastorDatabaseService.getDatabase();
+
+		try 
+		{
+			beginTransaction(db);
+
+			FormEntry formEntry = getFormEntryWithId(formEntryId, db);
+			formEntryAssetVOList = toVOList(formEntry.getFormEntryAssets());
+				
+			commitTransaction(db);
+		} 
+		catch (Exception e) 
+		{
+			logger.info("An error occurred so we should not complete the transaction:" + e);
+			rollbackTransaction(db);
+			throw new SystemException(e.getMessage());
+		}
+		
+		return formEntryAssetVOList;	
+	}
+
+	/**
+	 * Returns a list of entry assets for a given entry.
+	 * 
+	 * @param name
+	 * @return
+	 * @throws SystemException
+	 * @throws Bug
+	 */
+	
+	public String getFormEntryAssetUrl(Integer formEntryAssetId, DeliveryContext deliveryContext) throws SystemException, Bug
+	{
+		String assetUrl = "";
+		assetUrl = URLComposer.getURLComposer().composeDigitalAssetUrl("", null, "", deliveryContext); 
+		
+		Database db = CastorDatabaseService.getDatabase();
+
+		try 
+		{
+			beginTransaction(db);
+
+			FormEntryAsset formEntryAsset = getFormEntryAssetWithId(formEntryAssetId, db);
+			
+			String fileName = formEntryAsset.getId() + "_" + formEntryAsset.getFileName();
+			String filePath = CmsPropertyHandler.getDigitalAssetPath();
+			
+			dumpDigitalAsset(formEntryAsset, fileName, filePath);
+			
+			SiteNode siteNode = NodeDeliveryController.getNodeDeliveryController(deliveryContext.getSiteNodeId(), deliveryContext.getLanguageId(), deliveryContext.getContentId()).getSiteNode(db, deliveryContext.getSiteNodeId());
+			String dnsName = CmsPropertyHandler.getWebServerAddress();
+			if(siteNode != null && siteNode.getRepository().getDnsName() != null && !siteNode.getRepository().getDnsName().equals(""))
+				dnsName = siteNode.getRepository().getDnsName();
+			
+			assetUrl = URLComposer.getURLComposer().composeDigitalAssetUrl(dnsName, null, fileName, deliveryContext); 
+			//System.out.println("assetUrl:" + assetUrl);
+			
+			commitTransaction(db);
+		} 
+		catch (Exception e) 
+		{
+			logger.error("An error occurred so we should not complete the transaction:" + e);
+			rollbackTransaction(db);
+			throw new SystemException(e.getMessage());
+		}
+		
+		return assetUrl;	
+	}
+
+	public File dumpDigitalAsset(FormEntryAsset formEntryAsset, String fileName, String filePath) throws Exception
+	{
+		Timer timer = new Timer();
+		File tmpOutputFile = new File(filePath + File.separator + Thread.currentThread().getId() + "_tmp_" + fileName);
+		File outputFile = new File(filePath + File.separator + fileName);
+		//logger.warn("outputFile:" + filePath + File.separator + fileName + ":" + outputFile.length());
+		if(outputFile.exists())
+		{
+			//logger.warn("The file allready exists so we don't need to dump it again..");
+			return outputFile;
+		}
+
+		try 
+		{
+			InputStream inputStream = formEntryAsset.getAssetBlob();
+			logger.info("inputStream:" + inputStream + ":" + inputStream.getClass().getName() + ":" + formEntryAsset);
+			synchronized(inputStream)
+			{
+				logger.info("reading inputStream and writing to disk....");
+				
+				FileOutputStream fos = new FileOutputStream(tmpOutputFile);
+				BufferedOutputStream bos = new BufferedOutputStream(fos);
+				BufferedInputStream bis = new BufferedInputStream(inputStream);
+				
+				int character;
+				int i=0;
+		        while ((character = bis.read()) != -1)
+		        {
+					bos.write(character);
+					i++;
+		        }
+		        
+		        if(i == 0)
+		        	logger.info("Wrote " + i + " chars to " + fileName);
+		        
+				bos.flush();
+			    fos.close();
+				bos.close();
+					
+		        bis.close();
+
+		        logger.info("done reading inputStream and writing to disk....");
+			}
+			
+			logger.info("Time for dumping file " + fileName + ":" + timer.getElapsedTime());
+
+			if(tmpOutputFile.length() == 0 || outputFile.exists())
+			{
+				logger.info("written file:" + tmpOutputFile.length() + " - removing temp and not renaming it...");	
+				tmpOutputFile.delete();
+				logger.info("Time for deleting file " + timer.getElapsedTime());
+			}
+			else
+			{
+				logger.info("written file:" + tmpOutputFile.length() + " - renaming it to " + outputFile.getAbsolutePath());	
+				tmpOutputFile.renameTo(outputFile);
+				logger.info("Time for renaming file " + timer.getElapsedTime());
+			}	
+		}
+		catch (IOException e) 
+		{
+			throw new Exception("Could not write file " + outputFile.getAbsolutePath() + " - error reported:" + e.getMessage(), e);
+	    }
+		
+        return outputFile;
+	}
+	
+	/**
 	 * Returns the Repository with the given name fetched within a given transaction.
 	 * 
 	 * @param name
@@ -230,10 +399,58 @@ public class FormEntryController extends BaseController
         return formEntry;
     }
 
+	public void createAsset(FormEntryAssetVO newAsset, FormEntry formEntry, InputStream is, Integer id, InfoGluePrincipal principal, Database db) throws Exception
+	{
+    	FormEntryAsset formEntryAsset = new FormEntryAssetImpl();
+    	formEntryAsset.setFormEntry(formEntry);
+    	formEntry.getFormEntryAssets().add(formEntryAsset);
+    	formEntryAsset.setValueObject(newAsset);
+    	formEntryAsset.setAssetBlob(is);
+
+    	formEntryAsset = (FormEntryAsset) createEntity(formEntryAsset, db);
+	}
+
     public void delete(FormEntryVO formEntryVO) throws ConstraintException, SystemException
     {
-    	deleteEntity(FormEntryImpl.class, formEntryVO.getFormEntryId());
+    	Database db = CastorDatabaseService.getDatabase();
+        
+    	beginTransaction(db);
+ 		try
+        {		
+ 			FormEntry formEntry = getFormEntryWithId(formEntryVO.getId(), db);
+ 			
+ 			Collection formEntryValues = formEntry.getFormEntryValues();
+ 			Iterator formEntryValuesIterator = formEntryValues.iterator();
+ 			while(formEntryValuesIterator.hasNext())
+ 			{
+ 				FormEntryValue value = (FormEntryValue)formEntryValuesIterator.next();
+ 				//value.getFormEntry().getFormEntryValues().remove(value);
+ 				formEntryValuesIterator.remove();
+ 				db.remove(value);
+ 			}
+ 			
+ 			Collection formEntryAssets = formEntry.getFormEntryAssets();
+ 			Iterator formEntryAssetsIterator = formEntryAssets.iterator();
+ 			while(formEntryAssetsIterator.hasNext())
+ 			{
+ 				FormEntryAsset asset = (FormEntryAsset)formEntryAssetsIterator.next();
+ 				//asset.getFormEntry().getFormEntryAssets().remove(asset);
+ 				formEntryAssetsIterator.remove();
+ 				db.remove(asset);
+ 			}
+ 	    	
+ 	        db.remove(formEntry);
+
+ 	        commitTransaction(db);
+        }
+        catch(Exception e)
+        {
+            logger.error("An error occurred so we should not complete the transaction:" + e, e);
+            rollbackTransaction(db);
+            throw new SystemException(e.getMessage());
+        }
     }
+    
 
     public FormEntryVO update(FormEntryVO formEntryVO) throws ConstraintException, SystemException
     {
@@ -243,38 +460,24 @@ public class FormEntryController extends BaseController
 	/**
 	 * This method removes a Repository from the system and also cleans out all depending repositoryLanguages.
 	 */
-	/*
-    public void delete(RepositoryVO repositoryVO, String userName, boolean forceDelete, InfoGluePrincipal infoGluePrincipal) throws ConstraintException, SystemException
+    /*
+    public void delete(FormEntryVO formEntryVO, boolean forceDelete, InfoGluePrincipal infoGluePrincipal) throws ConstraintException, SystemException
     {
 		Database db = CastorDatabaseService.getDatabase();
 		ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
 
-		Repository repository = null;
-	
 		beginTransaction(db);
 
 		try
 		{
-			repository = getRepositoryWithId(repositoryVO.getRepositoryId(), db);
+			FormEntry formEntry = getFormEntryWithId(formEntryVO.getId(), db);
 			
-			RepositoryLanguageController.getController().deleteRepositoryLanguages(repository, db);
-			
-			ContentVO contentVO = ContentControllerProxy.getController().getRootContentVO(repositoryVO.getRepositoryId(), userName, false);
-			if(contentVO != null)
+			Collection entryValues = formEntry.getFormEntryValues();
+			Iterator entryValuesIterator = entryValues.iterator();
+			while(entryValuesIterator.hasNext())
 			{
-				if(forceDelete)
-					ContentController.getContentController().delete(contentVO, db, true, true, true, infoGluePrincipal);
-				else
-					ContentController.getContentController().delete(contentVO, infoGluePrincipal, db);
-			}
-			
-			SiteNodeVO siteNodeVO = SiteNodeController.getController().getRootSiteNodeVO(repositoryVO.getRepositoryId());
-			if(siteNodeVO != null)
-			{
-				if(forceDelete)
-					SiteNodeController.getController().delete(siteNodeVO, db, true, infoGluePrincipal);
-				else
-					SiteNodeController.getController().delete(siteNodeVO, db, infoGluePrincipal);
+				deleteEntity(
+				entryValuesIterator.remove();
 			}
 			
 			deleteEntity(RepositoryImpl.class, repositoryVO.getRepositoryId(), db);
@@ -308,4 +511,5 @@ public class FormEntryController extends BaseController
 	{
 		return new ContentTypeDefinitionVO();
 	}
+
 }

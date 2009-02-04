@@ -23,50 +23,48 @@
 
 package org.infoglue.cms.entities.management;
 
-import java.util.Collection;
-
 import org.infoglue.cms.entities.kernel.IBaseEntity;
 import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
 
-public interface FormEntry extends IBaseEntity
-{
+public interface FormEntryAsset extends IBaseEntity
+{	  
   	public Integer getId();
        
-    public FormEntryVO getValueObject();
+    public FormEntryAssetVO getValueObject();
     
-    public void setValueObject(FormEntryVO valueObject);
+    public void setValueObject(FormEntryAssetVO valueObject);
     
-    public java.lang.Integer getFormEntryId();
+    public java.lang.Integer getFormEntryAssetId();
     
-    public void setFormEntryId(java.lang.Integer formEntryId) throws SystemException;
+    public void setFormEntryAssetId(java.lang.Integer formEntryAssetId);
     
-    public java.lang.Integer getFormContentId();
+    public java.lang.String getFileName();
     
-    public void setFormContentId(java.lang.Integer formContentId) throws SystemException;
+    public void setFileName(java.lang.String fileName);
+    
+    public java.lang.String getAssetKey();
+    
+    public void setAssetKey(java.lang.String assetKey);
 
-    public java.lang.String getOriginAddress();
+    public java.lang.String getContentType();
     
-    public void setOriginAddress(java.lang.String originAddress) throws ConstraintException;
-    
-    public java.lang.String getFormName();
-    
-    public void setFormName(java.lang.String formName) throws ConstraintException;
+    public void setContentType(java.lang.String contentType);
 
-    public java.lang.String getUserIP();
+    public java.lang.Integer getFileSize();
     
-    public void setUserIP(java.lang.String userIP) throws ConstraintException;
+    public void setFileSize(java.lang.Integer fileSize);
 
-    public java.lang.String getUserAgent();
+    public FormEntry getFormEntry();
     
-    public void setUserAgent(java.lang.String userAgent) throws ConstraintException;
+    public void setFormEntry(FormEntry formEntry);
 
-    public Collection getFormEntryValues();
-    
-    public void setFormEntryValues(Collection formEntryValues) throws SystemException;
+    public void setAssetBlob(java.io.InputStream blob);
 
-    public Collection getFormEntryAssets();
+    public java.io.InputStream getAssetBlob();
 
-    public void setFormEntryAssets(Collection formEntryAssets) throws SystemException;
+	public void setBytes(byte[] bytes);
+
+	public byte[] getBytes();
 
 }

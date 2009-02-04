@@ -66,6 +66,7 @@ import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.entities.content.DigitalAssetVO;
 import org.infoglue.cms.entities.management.CategoryVO;
 import org.infoglue.cms.entities.management.FormEntry;
+import org.infoglue.cms.entities.management.FormEntryAssetVO;
 import org.infoglue.cms.entities.management.FormEntryVO;
 import org.infoglue.cms.entities.management.FormEntryValueVO;
 import org.infoglue.cms.entities.publishing.PublicationVO;
@@ -168,15 +169,16 @@ public class RemoteFormServiceImpl extends RemoteInfoGlueService
 	            formEntryVO.setOriginAddress(originAddress);
 	            formEntryVO.setUserAgent(userAgent);
 	            formEntryVO.setUserIP(userIP);
+
+	            FormEntry newFormEntry = null;
 	            
 	            Database db = CastorDatabaseService.getDatabase();
 	            ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
 
 	            beginTransaction(db);
-
 	            try
 	            {
-	            	FormEntry newFormEntry = formEntryController.create(formEntryVO, formEntryValueVOList, db);
+	            	newFormEntry = formEntryController.create(formEntryVO, formEntryValueVOList, db);
 	            			            
 	                commitTransaction(db);
 	            }
@@ -185,7 +187,49 @@ public class RemoteFormServiceImpl extends RemoteInfoGlueService
 	                logger.error("An error occurred so we should not completes the transaction:" + e, e);
 	                rollbackTransaction(db);
 	                throw new SystemException(e.getMessage());
-	            }	            
+	            }
+	            
+	            
+	            Database db2 = CastorDatabaseService.getDatabase();
+
+	            beginTransaction(db2);
+	            try
+	            {
+	            	newFormEntry = formEntryController.getFormEntryWithId(newFormEntry.getFormEntryId(), db2);
+
+	    	        List digitalAssets = (List)formEntry.get("digitalAssets");
+	    	        System.out.println("digitalAssets:" + digitalAssets);
+	    	        if(digitalAssets != null)
+	    	        {
+		    	        Iterator digitalAssetIterator = digitalAssets.iterator();
+		    	        while(digitalAssetIterator.hasNext())
+		    	        {
+		    	            RemoteAttachment remoteAttachment = (RemoteAttachment)digitalAssetIterator.next();
+			    	        logger.info("digitalAssets in ws:" + remoteAttachment);
+			    	        
+			    	        FormEntryAssetVO newAsset = new FormEntryAssetVO();
+							newAsset.setContentType(remoteAttachment.getContentType());
+							newAsset.setAssetKey(remoteAttachment.getName());
+							newAsset.setFileName(remoteAttachment.getFileName());
+							newAsset.setFileSize(new Integer(new Long(remoteAttachment.getBytes().length).intValue()));
+							byte[] bytes = remoteAttachment.getBytes();
+							for(int i=0; i<bytes.length; i++)
+								System.out.print(bytes[i]);
+							InputStream is = new ByteArrayInputStream(bytes);
+		
+							formEntryController.createAsset(newAsset, newFormEntry, is, newFormEntry.getId(), principal, db2);
+			    	    }	 
+	    	        }
+
+	                commitTransaction(db2);
+	            }
+	            catch(Exception e)
+	            {
+	                logger.error("An error occurred so we should not completes the transaction:" + e, e);
+	                rollbackTransaction(db2);
+	                throw new SystemException(e.getMessage());
+	            }
+
 	        }
 	        logger.info("Done with site nodes..");
         }
@@ -193,6 +237,62 @@ public class RemoteFormServiceImpl extends RemoteInfoGlueService
         {
         	status = new Boolean(false);
             logger.error("En error occurred when we tried to create a new siteNode:" + e.getMessage(), e);
+        }
+        
+        updateCaches();
+
+        return status;
+    }
+
+    /**
+     * Deletes a form entry.
+     */
+    
+    public Boolean deleteFormEntry(final String principalName, final Object[] inputsArray) 
+    {
+        if(!ServerNodeController.getController().getIsIPAllowed(getRequest()))
+        {
+            logger.error("A client with IP " + getRequest().getRemoteAddr() + " was denied access to the webservice. Could be a hack attempt or you have just not configured the allowed IP-addresses correct.");
+            return new Boolean(false);
+        }
+
+    	Boolean status = new Boolean(true);
+    	
+        logger.info("******************************************");
+        logger.info("Deleting form entry through webservice....");
+        logger.info("******************************************");
+        
+        logger.info("principalName:" + principalName);
+        logger.info("inputsArray:" + inputsArray);
+        //logger.warn("contents:" + contents);
+        
+        try
+        {
+			final DynamicWebserviceSerializer serializer = new DynamicWebserviceSerializer();
+            Map content = (Map) serializer.deserialize(inputsArray);
+	        logger.info("content:" + content);
+
+            initializePrincipal(principalName);
+            
+            Integer formEntryId = (Integer)content.get("formEntryId");
+            Boolean forceDelete = (Boolean)content.get("forceDelete");
+            if(forceDelete == null)
+            	forceDelete = new Boolean(false);
+                        
+            logger.info("formEntryId:" + formEntryId);
+            
+            FormEntryVO formEntryVO = new FormEntryVO();
+            formEntryVO.setFormEntryId(formEntryId);
+
+            FormEntryController.getController().delete(formEntryVO);
+                           
+	        logger.info("Done with contents..");
+
+        }
+        catch(Throwable e)
+        {
+        	status = new Boolean(false);
+            logger.error("En error occurred when we tried to delete a digitalAsset:" + e.getMessage(), e);
         }
         
         updateCaches();

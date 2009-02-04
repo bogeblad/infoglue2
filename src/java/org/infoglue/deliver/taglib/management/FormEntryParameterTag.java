@@ -30,9 +30,11 @@ import java.util.Map;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspTagException;
 
+import org.infoglue.cms.webservices.elements.RemoteAttachment;
 import org.infoglue.deliver.taglib.AbstractTag;
+import org.infoglue.deliver.taglib.content.ContentVersionParameterInterface;
 
-public class FormEntryParameterTag extends AbstractTag 
+public class FormEntryParameterTag extends AbstractTag implements ContentVersionParameterInterface
 {
 	/**
 	 * The universal version identifier.
@@ -109,6 +111,32 @@ public class FormEntryParameterTag extends AbstractTag
 			formEntryMap.put("formEntryValues", formEntryValueMap);
 		}
 		formEntryValueMap.put(name, value);
+	}
+
+	/**
+	 * Adds the content version attribute to the contentVersion Value.
+	 * 
+	 * @throws JspException if the ancestor tag isn't a url tag.
+	 */
+	public void addDigitalAsset(RemoteAttachment remoteAttachment) throws JspException
+	{
+	    List digitalAssets = (List)this.formEntryMap.get("digitalAssets");
+	    if(digitalAssets == null)
+	    {
+	        digitalAssets = new ArrayList();
+	        this.formEntryMap.put("digitalAssets", digitalAssets);
+	    }
+
+	    digitalAssets.add(remoteAttachment);
+	}
+	
+	public void addContentCategory(String contentCategory) throws JspException
+	{
+		// TODO Auto-generated method stub
+	}
+
+	public void addContentVersionAttribute(String name, String value) throws JspException
+	{
 	}
 
 	/**
