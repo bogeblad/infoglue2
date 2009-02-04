@@ -917,7 +917,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		
 		List languages = LanguageDeliveryController.getLanguageDeliveryController().getLanguagesForSiteNode(getDatabase(), siteNodeId, templateController.getPrincipal());
 		
-		sb.append("<div id=\"component" + componentId + "Properties\" class=\"componentProperties\" style=\"right:5px; top:5px; visibility:hidden; display: none;\">");
+		sb.append("<div id=\"component" + componentId + "Properties\" class=\"componentProperties\" style=\"right:5px; top:5px; visibility:hidden; display: none;\" oncontextmenu=\"if (event && event.stopPropagation) {event.stopPropagation();}else if (window.event) {window.event.cancelBubble = true;}return false;\">");
 		sb.append("	<div id=\"component" + componentId + "PropertiesHandle\" class=\"componentPropertiesHandle\"><div id=\"leftPaletteHandleCompProps\">Properties - " + componentName + " in slot " + slotName + "</div><div id=\"rightPaletteHandle\"><a href=\"javascript:hideDiv('component" + componentId + "Properties');\" class=\"white\"><img src=\"" + componentEditorUrl + "/images/closeIcon.gif\" border=\"0\"/></a></div></div>");
 		sb.append("	<div id=\"component" + componentId + "PropertiesBody\" class=\"componentPropertiesBody\">");
 		
@@ -1209,7 +1209,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 						if(hasAccessToProperty)
 							sb.append("			<td class=\"igtd " + dividerClass + "\" width=\"16\"><a class=\"componentEditorLink\" href=\"" + componentEditorUrl + "ViewSiteNodePageComponents!deleteComponentPropertyValue.action?siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&propertyName=" + componentProperty.getName() + "&showSimple=" + this.getTemplateController().getDeliveryContext().getShowSimple() + "\"><img src=\"" + componentEditorUrl + "/images/delete.gif\" border=\"0\" style='padding-top: 2px;'></a></td>");
 					}
-					sb.append("			<td class=\"igtd " + dividerClass + "\" width=\"16\"><img src=\"" + componentEditorUrl + "/images/questionMarkGrad.gif\" onMouseOver=\"javascript:showDiv('helpLayer" + componentProperty.getComponentId() + "_" + componentProperty.getName() + "');\" onMouseOut=\"javascript:hideDiv('helpLayer" + componentProperty.getComponentId() + "_" + componentProperty.getName() + "');\">" + helpSB + "</td>");
+					sb.append("			<td class=\"igtd " + dividerClass + "\" width=\"16\"><img class=\"questionMark\" src=\"" + componentEditorUrl + "/images/questionMarkGrad.gif\" onMouseOver=\"javascript:showDiv('helpLayer" + componentProperty.getComponentId() + "_" + componentProperty.getName() + "');\" onMouseOut=\"javascript:hideDiv('helpLayer" + componentProperty.getComponentId() + "_" + componentProperty.getName() + "');\">" + helpSB + "</td>");
 					
 					sb.append("		</tr>");
 					
@@ -1282,7 +1282,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 					else
 						sb.append("			<td class=\"igtd igpropertyDivider\" width=\"16\"></td>");
 					
-					sb.append("			<td class=\"igtd igpropertyDivider\" width=\"16\"><img src=\"" + componentEditorUrl + "/images/questionMarkGrad.gif\" onMouseOver=\"showDiv('helpLayer" + componentProperty.getComponentId() + "_" + componentProperty.getName() + "');\" onMouseOut=\"javascript:hideDiv('helpLayer" + componentProperty.getComponentId() + "_" + componentProperty.getName() + "');\">" + helpSB + "</td>");
+					sb.append("			<td class=\"igtd igpropertyDivider\" width=\"16\"><img class=\"questionMark\" src=\"" + componentEditorUrl + "/images/questionMarkGrad.gif\" onMouseOver=\"showDiv('helpLayer" + componentProperty.getComponentId() + "_" + componentProperty.getName() + "');\" onMouseOut=\"javascript:hideDiv('helpLayer" + componentProperty.getComponentId() + "_" + componentProperty.getName() + "');\">" + helpSB + "</td>");
 					sb.append("		</tr>");
 					
 					if(hasAccessToProperty)
@@ -1325,7 +1325,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 					else
 						sb.append("			<td class=\"igtd igpropertyDivider\" width=\"16\"></td>");
 					
-					sb.append("			<td class=\"igtd igpropertyDivider\" width=\"16\"><img src=\"" + componentEditorUrl + "/images/questionMarkGrad.gif\" onMouseOver=\"showDiv('helpLayer" + componentProperty.getComponentId() + "_" + componentProperty.getName() + "');\" onMouseOut=\"javascript:hideDiv('helpLayer" + componentProperty.getComponentId() + "_" + componentProperty.getName() + "');\">" + helpSB + "</td>");
+					sb.append("			<td class=\"igtd igpropertyDivider\" width=\"16\"><img class=\"questionMark\" src=\"" + componentEditorUrl + "/images/questionMarkGrad.gif\" onMouseOver=\"showDiv('helpLayer" + componentProperty.getComponentId() + "_" + componentProperty.getName() + "');\" onMouseOut=\"javascript:hideDiv('helpLayer" + componentProperty.getComponentId() + "_" + componentProperty.getName() + "');\">" + helpSB + "</td>");
 					sb.append("		</tr>");
 					
 					if(hasAccessToProperty)
@@ -1359,7 +1359,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 					else
 						sb.append("			<td class=\"igtd igpropertyDivider\" width=\"16\"></td>");
 					
-					sb.append("			<td class=\"igtd igpropertyDivider\" width=\"16\"><img src=\"" + componentEditorUrl + "/images/questionMarkGrad.gif\" onMouseOver=\"showDiv('helpLayer" + componentProperty.getComponentId() + "_" + componentProperty.getName() + "');\" onMouseOut=\"javascript:hideDiv('helpLayer" + componentProperty.getComponentId() + "_" + componentProperty.getName() + "');\">" + helpSB + "</td>");
+					sb.append("			<td class=\"igtd igpropertyDivider\" width=\"16\"><img class=\"questionMark\" src=\"" + componentEditorUrl + "/images/questionMarkGrad.gif\" onMouseOver=\"showDiv('helpLayer" + componentProperty.getComponentId() + "_" + componentProperty.getName() + "');\" onMouseOut=\"javascript:hideDiv('helpLayer" + componentProperty.getComponentId() + "_" + componentProperty.getName() + "');\">" + helpSB + "</td>");
 					sb.append("		</tr>");
 					
 					if(hasAccessToProperty)
@@ -1387,7 +1387,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 					else
 						sb.append("			<td class=\"igtd igpropertyDivider\" width=\"16\"></td>");
 					
-					sb.append("			<td class=\"igtd igpropertyDivider\" width=\"16\"><img src=\"" + componentEditorUrl + "/images/questionMarkGrad.gif\" onMouseOver=\"showDiv('helpLayer" + componentProperty.getComponentId() + "_" + componentProperty.getName() + "');\" onMouseOut=\"javascript:hideDiv('helpLayer" + componentProperty.getComponentId() + "_" + componentProperty.getName() + "');\">" + helpSB + "</td>");
+					sb.append("			<td class=\"igtd igpropertyDivider\" width=\"16\"><img class=\"questionMark\" src=\"" + componentEditorUrl + "/images/questionMarkGrad.gif\" onMouseOver=\"showDiv('helpLayer" + componentProperty.getComponentId() + "_" + componentProperty.getName() + "');\" onMouseOut=\"javascript:hideDiv('helpLayer" + componentProperty.getComponentId() + "_" + componentProperty.getName() + "');\">" + helpSB + "</td>");
 					sb.append("		</tr>");
 					
 					if(hasAccessToProperty)
@@ -1460,7 +1460,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 					else
 						sb.append("			<td class=\"igtd igpropertyDivider\" width=\"16\"></td>");
 					
-					sb.append("			<td class=\"igtd igpropertyDivider\" width=\"16\"><img src=\"" + componentEditorUrl + "/images/questionMarkGrad.gif\" onMouseOver=\"showDiv('helpLayer" + componentProperty.getComponentId() + "_" + componentProperty.getName() + "');\" onMouseOut=\"javascript:hideDiv('helpLayer" + componentProperty.getComponentId() + "_" + componentProperty.getName() + "');\">" + helpSB + "</td>");
+					sb.append("			<td class=\"igtd igpropertyDivider\" width=\"16\"><img class=\"questionMark\" src=\"" + componentEditorUrl + "/images/questionMarkGrad.gif\" onMouseOver=\"showDiv('helpLayer" + componentProperty.getComponentId() + "_" + componentProperty.getName() + "');\" onMouseOut=\"javascript:hideDiv('helpLayer" + componentProperty.getComponentId() + "_" + componentProperty.getName() + "');\">" + helpSB + "</td>");
 					sb.append("		</tr>");
 					
 					if(hasAccessToProperty)
@@ -1533,7 +1533,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 					else
 						sb.append("			<td class=\"igtd igpropertyDivider\" width=\"16\"></td>");
 					
-					sb.append("			<td class=\"igtd igpropertyDivider\" width=\"16\"><img src=\"" + componentEditorUrl + "/images/questionMarkGrad.gif\" onMouseOver=\"showDiv('helpLayer" + componentProperty.getComponentId() + "_" + componentProperty.getName() + "');\" onMouseOut=\"javascript:hideDiv('helpLayer" + componentProperty.getComponentId() + "_" + componentProperty.getName() + "');\">" + helpSB + "</td>");
+					sb.append("			<td class=\"igtd igpropertyDivider\" width=\"16\"><img class=\"questionMark\" src=\"" + componentEditorUrl + "/images/questionMarkGrad.gif\" onMouseOver=\"showDiv('helpLayer" + componentProperty.getComponentId() + "_" + componentProperty.getName() + "');\" onMouseOut=\"javascript:hideDiv('helpLayer" + componentProperty.getComponentId() + "_" + componentProperty.getName() + "');\">" + helpSB + "</td>");
 					sb.append("		</tr>");
 					
 					if(hasAccessToProperty)
@@ -1787,7 +1787,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		
 		String componentEditorUrl = CmsPropertyHandler.getComponentEditorUrl();
 
-		sb.append("<div id=\"pageComponents\" style=\"right:5px; top:5px; visibility:hidden; display: none;\">");
+		sb.append("<div id=\"pageComponents\" style=\"right:5px; top:5px; visibility:hidden; display: none;\" oncontextmenu=\"if (event && event.stopPropagation) {event.stopPropagation();}else if (window.event) {window.event.cancelBubble = true;}return false;\">");
 
 		sb.append("	<div id=\"dragCorner\" style=\"position: absolute; width: 16px; height: 16px; background-color: white; bottom: 0px; right: 0px;\"><a href=\"javascript:expandWindow('pageComponents');\"><img src=\"" + this.getRequest().getContextPath() + "/images/enlarge.gif\" border=\"0\" width=\"16\" height=\"16\"></a></div>");
 			

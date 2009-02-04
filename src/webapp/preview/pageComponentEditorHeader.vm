@@ -82,4 +82,20 @@
    	}
 -->
 </script>
+
+<!--[if lte IE 6]>
+<style type="text/css">
+<!--
+.questionMark {	
+    display: none;
+}
+.tooltipDiv {	
+    width: 1px;
+    height: 1px;
+    display: none;
+}
+-->
+</style>
+<![endif]-->
+
 </head>

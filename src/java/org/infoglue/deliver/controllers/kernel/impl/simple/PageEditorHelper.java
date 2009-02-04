@@ -137,7 +137,7 @@ public class PageEditorHelper extends BaseDeliveryController
 
 		List languages = LanguageDeliveryController.getLanguageDeliveryController().getLanguagesForSiteNode(db, siteNodeId, principal);
 
-		sb.append("<div id=\"componentProperties\">");
+		sb.append("<div id=\"componentProperties\" oncontextmenu=\"if (event && event.stopPropagation) {event.stopPropagation();}else if (window.event) {window.event.cancelBubble = true;}return false;\">");
 		sb.append("	<div id=\"componentPropertiesHandle\"><div id=\"leftComponentPropertiesHandle\">Properties - " + componentName + " - " + slotName + "</div><div id=\"rightComponentPropertiesHandle\"><a href=\"javascript:closeDiv('componentProperties');\" class=\"white\"><img src=\"" + componentEditorUrl + "/images/closeIcon.gif\" border=\"0\"/></a></div></div>");
 		sb.append("	<div id=\"componentPropertiesBody\">");
 		
@@ -801,16 +801,18 @@ public class PageEditorHelper extends BaseDeliveryController
 		
 		sb.append("		<div class=\"buttonRow\">");
 		sb.append("			<input type=\"image\" style=\"width: 50px; height: 25px; border: 0px;\" src=\"" + componentEditorUrl + "" + getLocalizedString(locale, "images.contenttool.buttons.save") + "\" width=\"50\" height=\"25\" border=\"0\"/>");
+		sb.append("			<a href=\"javascript:submitFormAndExit('componentPropertiesForm');\"><img src=\"" + componentEditorUrl + "" + getLocalizedString(locale, "images.contenttool.buttons.saveAndExit") + "\" width=\"80\" height=\"25\" border=\"0\"></a>");
 		sb.append("			<a href=\"javascript:closeDiv('" + targetDiv + "');\"><img src=\"" + componentEditorUrl + "" + getLocalizedString(locale, "images.contenttool.buttons.close") + "\" width=\"50\" height=\"25\" border=\"0\"/></a>");
 		sb.append("		</div>");
 		sb.append("		</fieldset>");
+		sb.append("		<input type=\"hidden\" name=\"hideComponentPropertiesOnLoad\" value=\"false\">");
 		sb.append("		<input type=\"hidden\" name=\"repositoryId\" value=\"" + repositoryId + "\"/>");
 		sb.append("		<input type=\"hidden\" name=\"siteNodeId\" value=\"" + siteNodeId + "\"/>");
 		sb.append("		<input type=\"hidden\" name=\"languageId\" value=\"" + languageId + "\"/>");
 		sb.append("		<input type=\"hidden\" name=\"contentId\" value=\"" + contentId + "\"/>");
 		sb.append("		<input type=\"hidden\" name=\"componentId\" value=\"" + componentId + "\"/>");
 		sb.append("		<input type=\"hidden\" name=\"showSimple\" value=\"" + showSimple + "\"/>");
-
+		
 		sb.append("		</form>");
 		sb.append("	</div>");
 
@@ -1123,7 +1125,7 @@ public class PageEditorHelper extends BaseDeliveryController
 			List pageComponents = getPageComponents(db, pageComponentsString, document.getRootElement(), "base", null, null, siteNodeId, languageId, principal);
 			InfoGlueComponent component = (InfoGlueComponent)pageComponents.get(0);
 			
-			sb.append("<div id=\"pageComponents\" style=\"left:0px; top:0px; width: 450px; height: 500px;\">");
+			sb.append("<div id=\"pageComponents\" style=\"left:0px; top:0px; width: 450px; height: 500px;\" oncontextmenu=\"if (event && event.stopPropagation) {event.stopPropagation();}else if (window.event) {window.event.cancelBubble = true;}return false;\">");
 	
 			sb.append("	 <div id=\"dragCorner\" style=\"position: absolute; width: 16px; height: 16px; background-color: white; bottom: 0px; right: 0px;\"><a href=\"javascript:expandWindow('pageComponents');\"><img src=\"" + contextPath + "/images/enlarge.gif\" border=\"0\" width=\"16\" height=\"16\"></a></div>");
 				
