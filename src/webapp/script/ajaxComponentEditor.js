@@ -784,6 +784,12 @@ function submitForm(id)
 	document.getElementById(id).submit();
 }
 
+function submitFormAndExit(id)
+{
+	try{document.getElementById(id).hideComponentPropertiesOnLoad.value = "true";}catch(err){alert("Err:" + err);}
+	document.getElementById(id).submit();
+}
+
 var lastRow = null;
 var lastRowOriginalBgColor = null;
 var selectedRow = null;
