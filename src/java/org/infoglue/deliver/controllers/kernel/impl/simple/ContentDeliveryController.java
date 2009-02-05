@@ -2515,8 +2515,11 @@ public class ContentDeliveryController extends BaseDeliveryController
 	{
 	    boolean isValidContent = false;
 		
+		Timer t = new Timer();
 		Content content = (Content)getObjectWithId(ContentImpl.class, contentId, db); 
+		RequestAnalyser.getRequestAnalyser().registerComponentStatistics("isValidContent content", t.getElapsedTimeNanos() / 1000);
 		isValidContent = isValidContent(infoGluePrincipal, content, languageId, useLanguageFallback, includeFolders, db, deliveryContext);
+	    RequestAnalyser.getRequestAnalyser().registerComponentStatistics("isValidContent", t.getElapsedTimeNanos() / 1000);
 		
 		return isValidContent;					
 	}
