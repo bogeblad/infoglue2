@@ -545,19 +545,20 @@ public class ContentDeliveryController extends BaseDeliveryController
 
 	private SmallestContentVersionVO getSmallestContentVersionVO(Integer contentId, Integer languageId, Integer operatingMode, DeliveryContext deliveryContext, Database db) throws Exception
     {
+		Timer t = new Timer();
+
 		SmallestContentVersionVO contentVersionVO = null;
 		
-	    logger.info("contentId:" + contentId);
-	    logger.info("operatingMode:" + operatingMode);
-	    logger.info("languageId:" + languageId);
-
 	    String versionKey = "" + contentId + "_" + languageId + "_" + operatingMode + "_smallestContentVersionVO";
 	    //String versionKey = "" + contentId + "_" + languageId + "_" + operatingMode + "_contentVersionId";
+
+	    RequestAnalyser.getRequestAnalyser().registerComponentStatistics("getSmallestContentVersionVO key", t.getElapsedTimeNanos() / 1000);
 
 		//logger.info("versionKey:" + versionKey);
 		
 		Object object = CacheController.getCachedObjectFromAdvancedCache("contentVersionCache", versionKey);
 		//Integer contentVersionId = (Integer)CacheController.getCachedObjectFromAdvancedCache("contentVersionCache", versionKey);
+	    RequestAnalyser.getRequestAnalyser().registerComponentStatistics("getSmallestContentVersionVO 1", t.getElapsedTimeNanos() / 1000);
 		if(object instanceof NullObject)
 		{
 			logger.info("There was an cached SmallestContentVersionVO but it was null:" + object);
@@ -569,7 +570,6 @@ public class ContentDeliveryController extends BaseDeliveryController
 		else
 		{
 			//logger.info("Querying for verson: " + versionKey); 
-			
 		    OQLQuery oql = db.getOQLQuery( "SELECT cv FROM org.infoglue.cms.entities.content.impl.simple.SmallestContentVersionImpl cv WHERE cv.contentId = $1 AND cv.languageId = $2 AND cv.stateId >= $3 AND cv.isActive = $4 ORDER BY cv.contentVersionId desc");
 	    	oql.bind(contentId);
 	    	oql.bind(languageId);
@@ -595,6 +595,8 @@ public class ContentDeliveryController extends BaseDeliveryController
 
 			results.close();
 			oql.close();
+
+			RequestAnalyser.getRequestAnalyser().registerComponentStatistics("getSmallestContentVersionVO query", t.getElapsedTimeNanos() / 1000);
 		}
 
 		if(contentVersionVO != null)
@@ -2556,8 +2558,8 @@ public class ContentDeliveryController extends BaseDeliveryController
 
 			//ContentVersion contentVersion = getContentVersion(content, languageId, getOperatingMode(), deliveryContext, db);
 			//TODO
-		    ContentVersionVO contentVersion = getContentVersionVO(content.getId(), languageId, getOperatingMode(), deliveryContext, db);
-		    //SmallestContentVersionVO contentVersion = getSmallestContentVersionVO(content.getId(), languageId, getOperatingMode(), deliveryContext, db);
+		    //ContentVersionVO contentVersion = getContentVersionVO(content.getId(), languageId, getOperatingMode(), deliveryContext, db);
+		    SmallestContentVersionVO contentVersion = getSmallestContentVersionVO(content.getId(), languageId, getOperatingMode(), deliveryContext, db);
 		    
 		    RequestAnalyser.getRequestAnalyser().registerComponentStatistics("isValidContentPart4", t.getElapsedTimeNanos() / 1000);
 
@@ -2582,8 +2584,8 @@ public class ContentDeliveryController extends BaseDeliveryController
 				LanguageVO masterLanguage = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForRepository(repositoryId, db);
 				//TODO
 				if(masterLanguage != null && !masterLanguage.getId().equals(languageId))
-					contentVersion = getContentVersionVO(content.getId(), masterLanguage.getId(), getOperatingMode(), deliveryContext, db);
-					//contentVersion = getSmallestContentVersionVO(content.getId(), masterLanguage.getId(), getOperatingMode(), deliveryContext, db);
+					contentVersion = getSmallestContentVersionVO(content.getId(), masterLanguage.getId(), getOperatingMode(), deliveryContext, db);
+					//contentVersion = getContentVersionVO(content.getId(), masterLanguage.getId(), getOperatingMode(), deliveryContext, db);
 					//contentVersion = getContentVersion(content, masterLanguage.getId(), getOperatingMode(), deliveryContext, db);
 			}
 
