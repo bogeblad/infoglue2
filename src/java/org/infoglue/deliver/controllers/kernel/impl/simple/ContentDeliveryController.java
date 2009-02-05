@@ -76,6 +76,8 @@ import org.infoglue.deliver.applications.databeans.DeliveryContext;
 import org.infoglue.deliver.controllers.kernel.URLComposer;
 import org.infoglue.deliver.util.CacheController;
 import org.infoglue.deliver.util.NullObject;
+import org.infoglue.deliver.util.RequestAnalyser;
+import org.infoglue.deliver.util.Timer;
 
 
 public class ContentDeliveryController extends BaseDeliveryController
@@ -2513,9 +2515,11 @@ public class ContentDeliveryController extends BaseDeliveryController
 	 * Returns if a content is between dates and has a content version suitable for this delivery mode.
 	 * @throws Exception
 	 */
-
+	
 	public boolean isValidContent(InfoGluePrincipal infoGluePrincipal, Content content, Integer languageId, boolean useLanguageFallBack, boolean includeFolders, Database db, DeliveryContext deliveryContext) throws Exception
 	{
+		Timer t = new Timer();
+		
 		boolean isValidContent = false;
 		if(infoGluePrincipal == null)
 		    throw new SystemException("There was no anonymous user found in the system. There must be - add the user anonymous/anonymous and try again.");
@@ -2529,31 +2533,33 @@ public class ContentDeliveryController extends BaseDeliveryController
 		{
 			validateOnDates = deliveryContext.getValidateOnDates();
 		}
-		
-		
+
+	    RequestAnalyser.getRequestAnalyser().registerComponentStatistics("isValidContentPart1", t.getElapsedTimeNanos() / 1000);
+
 		Integer protectedContentId = getProtectedContentId(db, content);
-		
 		if(logger.isInfoEnabled())
-		{
-			logger.info("content:" + content.getName());
-			logger.info("IsProtected:" + protectedContentId);
-		}
-		
+			logger.info("content:" + content.getName() + ":" + protectedContentId);
 		if(protectedContentId != null && !AccessRightController.getController().getIsPrincipalAuthorized(db, infoGluePrincipal, "Content.Read", protectedContentId.toString()))
 		{
 		    return false;
 		}
 			    
+	    RequestAnalyser.getRequestAnalyser().registerComponentStatistics("isValidContentPart protectedContentId", t.getElapsedTimeNanos() / 1000);
+
 		if(includeFolders && content.getIsBranch().booleanValue() && isValidOnDates(content.getPublishDateTime(), content.getExpireDateTime(), validateOnDates))
 		{
 			isValidContent = true; 
 		}
 		else if(isValidOnDates(content.getPublishDateTime(), content.getExpireDateTime(), validateOnDates))
 		{
-		    //ContentVersion contentVersion = getContentVersion(content, languageId, getOperatingMode(), deliveryContext, db);
+		    RequestAnalyser.getRequestAnalyser().registerComponentStatistics("isValidContentPart3", t.getElapsedTimeNanos() / 1000);
+
+			//ContentVersion contentVersion = getContentVersion(content, languageId, getOperatingMode(), deliveryContext, db);
 			//TODO
 		    //ContentVersionVO contentVersion = getContentVersionVO(content.getId(), languageId, getOperatingMode(), deliveryContext, db);
 		    SmallestContentVersionVO contentVersion = getSmallestContentVersionVO(content.getId(), languageId, getOperatingMode(), deliveryContext, db);
+		    
+		    RequestAnalyser.getRequestAnalyser().registerComponentStatistics("isValidContentPart4", t.getElapsedTimeNanos() / 1000);
 
 		    Integer repositoryId = null;
 			Repository repository = content.getRepository();
@@ -2581,6 +2587,8 @@ public class ContentDeliveryController extends BaseDeliveryController
 					//contentVersion = getContentVersion(content, masterLanguage.getId(), getOperatingMode(), deliveryContext, db);
 			}
 
+		    RequestAnalyser.getRequestAnalyser().registerComponentStatistics("isValidContentPart5", t.getElapsedTimeNanos() / 1000);
+
 			if(contentVersion != null)
 				isValidContent = true;			
 		}
@@ -2602,6 +2610,8 @@ public class ContentDeliveryController extends BaseDeliveryController
 			}
 		}
 	    
+	    RequestAnalyser.getRequestAnalyser().registerComponentStatistics("isValidContentPart end", t.getElapsedTimeNanos() / 1000);
+		
 		return isValidContent;					
 	}
 
