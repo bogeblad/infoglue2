@@ -530,6 +530,24 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
         return doExecute();
     }
 
+    public String doResetAverageResponseTimeStatistics() throws Exception
+    {
+    	logger.error("A user from an IP(" + this.getRequest().getRemoteAddr() + ") which is not allowed tried to call doReCache.");
+
+        if(!ServerNodeController.getController().getIsIPAllowed(this.getRequest()))
+        {
+            this.getResponse().setContentType("text/plain");
+            this.getResponse().setStatus(HttpServletResponse.SC_FORBIDDEN);
+            this.getResponse().getWriter().println("You have no access to this view - talk to your administrator if you should.");
+            
+            return NONE;
+        }
+        
+        RequestAnalyser.resetAverageResponseTimeStatistics();
+        
+        return "cleared";
+    }
+
     public String doResetComponentStatistics() throws Exception
     {
     	logger.error("A user from an IP(" + this.getRequest().getRemoteAddr() + ") which is not allowed tried to call doReCache.");

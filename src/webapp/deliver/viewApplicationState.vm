@@ -109,6 +109,9 @@
     <td class="text" colspan="4"><a href="ViewApplicationState!resetComponentStatistics.action">Reset component stats</a></td>
   </tr>
   <tr>
+    <td class="text" colspan="4"><a href="ViewApplicationState!resetAverageResponseTimeStatistics.action">Reset average response time</a></td>
+  </tr>
+  <tr>
     <td class="text" colspan="4"><a href="ViewApplicationState!decreaseActiveCount.action">Decrease active user count (only in special situations)</a></td>
   </tr>
   
@@ -234,6 +237,7 @@
 				<option value="org.infoglue.cms.entities.content.impl.simple.ContentImpl">ContentImpl</option>
 				<option value="org.infoglue.cms.entities.content.impl.simple.ContentRelationImpl">ContentRelationImpl</option>
 				<option value="org.infoglue.cms.entities.content.impl.simple.SmallContentVersionImpl">SmallContentVersionImpl</option>
+				<option value="org.infoglue.cms.entities.content.impl.simple.SmallestContentVersionImpl">SmallestContentVersionImpl</option>
 				<option value="org.infoglue.cms.entities.content.impl.simple.ContentVersionImpl">ContentVersionImpl</option>
 				<option value="org.infoglue.cms.entities.content.impl.simple.DigitalAssetImpl">DigitalAssetImpl</option>
 				<option value="org.infoglue.cms.entities.content.impl.simple.SmallDigitalAssetImpl">SmallDigitalAssetImpl</option>

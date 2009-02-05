@@ -193,4 +193,9 @@ public class Counter
     	}
    	}
 
+    static void resetAverageResponseTimeStatistics()
+    {
+    	totalElapsedTime = new Long(0);
+    	totalCount = new Integer(0);
+   	}
 }

@@ -186,6 +186,11 @@ public class RequestAnalyser
     {
     	Counter.resetComponentStatistics();
     }
+
+    public static void resetAverageResponseTimeStatistics()
+    {
+    	Counter.resetAverageResponseTimeStatistics();
+    }
     
 	/*
     public static int getNumberOfCurrentRequests()
