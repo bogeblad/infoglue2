@@ -498,6 +498,62 @@ public class SearchController extends BaseController
 		
    	}
    	
+   	public List<BaseEntityVO> getBaseEntityVOListFromCastor(Integer entityId) throws SystemException, Bug
+   	{
+   		List<BaseEntityVO> matchingEntities = new ArrayList<BaseEntityVO>();
+
+		ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
+		Database db = CastorDatabaseService.getDatabase();
+		try
+		{
+			beginTransaction(db);
+			
+			try
+			{
+				BaseEntityVO entityVO = ContentController.getContentController().getContentVOWithId(entityId, db);
+				matchingEntities.add(entityVO);
+			}
+			catch (Exception e) { System.out.println("No entity found.."); }
+
+			try
+			{
+				BaseEntityVO entityVO = ContentVersionController.getContentVersionController().getContentVersionVOWithId(entityId, db);
+				matchingEntities.add(entityVO);
+			}
+			catch (Exception e) { System.out.println("No entity found.."); }
+
+			try
+			{
+				BaseEntityVO entityVO = DigitalAssetController.getController().getDigitalAssetVOWithId(entityId, db);
+				matchingEntities.add(entityVO);
+			}
+			catch (Exception e) { System.out.println("No entity found.."); }
+
+			try
+			{
+				BaseEntityVO entityVO = SiteNodeController.getController().getSiteNodeVOWithId(entityId, db);
+				matchingEntities.add(entityVO);
+			}
+			catch (Exception e) { System.out.println("No entity found.."); }
+
+			try
+			{
+				BaseEntityVO entityVO = SiteNodeVersionController.getController().getSiteNodeVersionVOWithId(entityId, db);
+				matchingEntities.add(entityVO);
+			}
+			catch (Exception e) { System.out.println("No entity found.."); }
+			
+			commitTransaction(db);
+		}
+		catch ( Exception e )
+		{
+			rollbackTransaction(db);
+			throw new SystemException("An error occurred when we tried to search. Reason:" + e.getMessage(), e);			
+		}
+		
+		return matchingEntities;
+		
+   	}
    	
    	public static List<DigitalAssetVO> getDigitalAssets(Integer[] repositoryId, String searchString, String assetTypeFilter, int maxRows) throws SystemException, Bug
    	{

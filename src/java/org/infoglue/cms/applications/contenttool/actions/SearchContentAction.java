@@ -23,8 +23,6 @@
 
 package org.infoglue.cms.applications.contenttool.actions;
 
-import java.io.BufferedReader;
-import java.io.File;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Date;
@@ -32,28 +30,16 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
-import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.standard.StandardAnalyzer;
-import org.apache.lucene.document.Document;
-import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.index.IndexWriter;
-import org.apache.lucene.queryParser.QueryParser;
-import org.apache.lucene.search.Hits;
-import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.search.Query;
-import org.apache.lucene.search.Searcher;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
-import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
-import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
 import org.infoglue.cms.controllers.kernel.impl.simple.RepositoryController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SearchController;
 import org.infoglue.cms.controllers.kernel.impl.simple.UserControllerProxy;
 import org.infoglue.cms.entities.content.ContentVO;
-import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.entities.content.DigitalAssetVO;
+import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.util.CmsPropertyHandler;
 
@@ -77,6 +63,7 @@ public class SearchContentAction extends InfoGlueAbstractAction
 	private static final long serialVersionUID = 1L;
 	
 	private List contentVersionVOList = new ArrayList();
+	private List<BaseEntityVO> baseEntityVOList = new ArrayList<BaseEntityVO>();
 	private Set contentVOSet;
 	private List<DigitalAssetVO> digitalAssetVOList = null;
 	private Integer repositoryId;
@@ -86,6 +73,7 @@ public class SearchContentAction extends InfoGlueAbstractAction
 	private Integer contentTypeDefinitionId;
 	private Integer caseSensitive;
 	private boolean includeAssets = false;
+	private boolean onlyIDSearch = false;
 	private Integer inverseSearch;
 	private Integer stateId;
 	private boolean advancedEnabled = false;
@@ -153,23 +141,37 @@ public class SearchContentAction extends InfoGlueAbstractAction
 		}
 
 		String[] repositoryIdToSearch = this.getRequest().getParameterValues("repositoryIdToSearch");
-		if(repositoryIdToSearch != null)
+		if(onlyIDSearch)
 		{
-			Integer[] repositoryIdAsIntegerToSearch = new Integer[repositoryIdToSearch.length];
-			for(int i=0; i < repositoryIdToSearch.length; i++)
+			try
 			{
-				repositoryIdAsIntegerToSearch[i] = new Integer(repositoryIdToSearch[i]);
-				selectedRepositoryIdList.add(repositoryIdToSearch[i]);
+				this.baseEntityVOList = searchController.getBaseEntityVOListFromCastor(new Integer(this.getSearchString()));				
 			}
-			
-			contentVersionVOList = searchController.getContentVersionVOList(repositoryIdAsIntegerToSearch, this.getSearchString(), maxRows, name, languageId, new Integer[]{contentTypeDefinitionId}, caseSensitive, stateId, includeAssets);
+			catch (Exception e) 
+			{
+				logger.warn("Not a valid id:" + e.getMessage());
+			}
 		}
 		else
 		{
-			contentVersionVOList = searchController.getContentVersionVOList(this.repositoryId, this.getSearchString(), maxRows, name, languageId, new Integer[]{contentTypeDefinitionId}, caseSensitive, stateId, includeAssets);
-			selectedRepositoryIdList.add("" + this.repositoryId);
+			if(repositoryIdToSearch != null)
+			{
+				Integer[] repositoryIdAsIntegerToSearch = new Integer[repositoryIdToSearch.length];
+				for(int i=0; i < repositoryIdToSearch.length; i++)
+				{
+					repositoryIdAsIntegerToSearch[i] = new Integer(repositoryIdToSearch[i]);
+					selectedRepositoryIdList.add(repositoryIdToSearch[i]);
+				}
+				
+				contentVersionVOList = searchController.getContentVersionVOList(repositoryIdAsIntegerToSearch, this.getSearchString(), maxRows, name, languageId, new Integer[]{contentTypeDefinitionId}, caseSensitive, stateId, includeAssets);
+			}
+			else
+			{
+				contentVersionVOList = searchController.getContentVersionVOList(this.repositoryId, this.getSearchString(), maxRows, name, languageId, new Integer[]{contentTypeDefinitionId}, caseSensitive, stateId, includeAssets);
+				selectedRepositoryIdList.add("" + this.repositoryId);
+			}
 		}
-	    
+		
 		if(CmsPropertyHandler.getInternalSearchEngine().equalsIgnoreCase("lucene"))
 		{
 			allowCaseSensitive = false;
@@ -404,22 +406,6 @@ public class SearchContentAction extends InfoGlueAbstractAction
 		return contentVO;
 	}
 
-	public String getContentPath(Integer contentId) throws Exception
-	{
-		StringBuffer sb = new StringBuffer();
-		
-		ContentVO contentVO = ContentController.getContentController().getContentVOWithId(contentId);
-		sb.insert(0, contentVO.getName());
-		while(contentVO.getParentContentId() != null)
-		{
-			contentVO = ContentController.getContentController().getContentVOWithId(contentVO.getParentContentId());
-			sb.insert(0, contentVO.getName() + "/");
-		}
-		sb.insert(0, "/");
-		
-		return sb.toString();
-	}
-
 	public LanguageVO getLanguageVO(Integer languageId)
 	{
 		LanguageVO languageVO = null;
@@ -604,7 +590,17 @@ public class SearchContentAction extends InfoGlueAbstractAction
 	{
 		this.includeAssets = includeAssets;
 	}
-	
+
+	public boolean getOnlyIDSearch()
+	{
+		return onlyIDSearch;
+	}
+
+	public void setOnlyIDSearch(boolean onlyIDSearch)
+	{
+		this.onlyIDSearch = onlyIDSearch;
+	}
+
 	public String getAssetTypeFilter()
 	{
 		return assetTypeFilter;
@@ -618,6 +614,11 @@ public class SearchContentAction extends InfoGlueAbstractAction
 	public List<DigitalAssetVO> getDigitalAssetVOList()
 	{
 		return digitalAssetVOList;
+	}
+
+	public List<BaseEntityVO> getBaseEntityVOList()
+	{
+		return baseEntityVOList;
 	}
 
 }

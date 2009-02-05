@@ -33,6 +33,10 @@
 			<input type="checkbox" name="includeAssets" value="true" #checkChecked("true" "$includeAssets")> Yes 
 		</p>
 		<p>
+			$ui.getString("tool.contenttool.onlyIDSearch.label")<br>
+			<input type="checkbox" name="onlyIDSearch" value="true" #checkChecked("true" "$onlyIDSearch")> Yes 
+		</p>
+		<p>
 			$ui.getString("tool.contenttool.stateSearch.label")<br>
 			<select class="dropbox" name="stateId">
 				<option value="">$ui.getString("tool.contenttool.filterShowAll.label")</option>

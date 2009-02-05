@@ -40,11 +40,13 @@ import org.infoglue.cms.controllers.kernel.impl.simple.ContentControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.DigitalAssetController;
 import org.infoglue.cms.controllers.kernel.impl.simple.InfoGluePrincipalControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
+import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeVersionControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.ToolbarController;
 import org.infoglue.cms.controllers.kernel.impl.simple.UserControllerProxy;
 import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.management.LanguageVO;
+import org.infoglue.cms.entities.structure.SiteNodeVO;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.AuthenticationModule;
 import org.infoglue.cms.security.InfoGluePrincipal;
@@ -844,6 +846,23 @@ public abstract class InfoGlueAbstractAction extends WebworkAbstractAction
 			sb.insert(0, contentVO.getName() + "/");
 		}
 		sb.insert(0, "/");
+		
+		return sb.toString();
+	}
+
+	public String getSiteNodePath(Integer siteNodeId) throws Exception
+	{
+		StringBuffer sb = new StringBuffer();
+		
+		SiteNodeVO siteNodeVO = SiteNodeController.getController().getSiteNodeVOWithId(siteNodeId);
+		while(siteNodeVO != null)
+		{
+			sb.insert(0, "/" + siteNodeVO.getName());
+			if(siteNodeVO.getParentSiteNodeId() != null)
+				siteNodeVO = SiteNodeController.getController().getSiteNodeVOWithId(siteNodeVO.getParentSiteNodeId());
+			else
+				siteNodeVO = null;
+		}
 		
 		return sb.toString();
 	}

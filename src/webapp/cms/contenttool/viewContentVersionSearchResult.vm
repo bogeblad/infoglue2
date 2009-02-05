@@ -138,7 +138,7 @@
 				{
 					var resultDiv = document.getElementById("resultsLayer");
 					document.getElementById("advancedEnabled").value = "true";
-					resultDiv.style.top = "540px";
+					resultDiv.style.top = "580px";
 				}
 					
 			}
@@ -236,6 +236,10 @@
 				<input type="checkbox" name="includeAssets" value="true" #checkChecked("true" "$includeAssets")> Yes 
 			</p>
 			<p>
+				$ui.getString("tool.contenttool.onlyIDSearch.label")<br>
+				<input type="checkbox" name="onlyIDSearch" value="true" #checkChecked("true" "$onlyIDSearch")> Yes 
+			</p>
+			<p>
 				$ui.getString("tool.contenttool.stateSearch.label")<br>
 				<select class="dropbox" name="stateId">
 					<option value="">$ui.getString("tool.contenttool.filterShowAll.label")</option>
@@ -311,25 +315,65 @@
 </form>
 </div>
 
-<div id="resultsLayer" class="fullymarginalized" style="position: absolute; top: #if($advanced == false) 80px; #else 540px; #end">
+<div id="resultsLayer" class="fullymarginalized" style="position: absolute; top: #if($advanced == false) 80px; #else 580px; #end">
 
 <table tableborder=0 border=0 bgcolor=#C7D1B3 width=100% cellpadding="1" cellspacing="0"><tr><td>
-#set($lvConstraint = -1) 
-<!--lvHead(["Content Version Title","Type","Content Title","Repository Name","Score"] "" "" "" "") -->
 
-#lvHead([$ui.getString("tool.contenttool.searchResultContentHeader"), $ui.getString("tool.contenttool.searchResultLanguageHeader"), $ui.getString("tool.contenttool.searchResultStateHeader"), $ui.getString("tool.contenttool.searchResultLastModifiedHeader")] "tool.contenttool.replace.header" "ReplaceContent.action" "SearchContent.action" "tool.contenttool.replaceStringInContentVersions.text")
+#if($onlyIDSearch == "false")
 
-#set($cnt = 0)
-#foreach ($contentVersionVO in $contentVersionVOList)
-	#set( $contentVersionId = $contentVersionVO.id ) 
+	#set($lvConstraint = -1) 
+	#lvHead([$ui.getString("tool.contenttool.searchResultContentHeader"), $ui.getString("tool.contenttool.searchResultLanguageHeader"), $ui.getString("tool.contenttool.searchResultStateHeader"), $ui.getString("tool.contenttool.searchResultLastModifiedHeader")] "tool.contenttool.replace.header" "ReplaceContent.action" "SearchContent.action" "tool.contenttool.replaceStringInContentVersions.text")
 	
-	#set( $rowUrl = "ViewContentVersion.action?contentId=$contentVersionVO.contentId&languageId=$contentVersionVO.languageId")
-	#set( $title = "$this.getContentPath($contentVersionVO.contentId).replaceAll(' ', '&nbsp;')")
-	#set( $row = ["<input type='hidden' name='rowtitle' value='$contentVersionVO.id'/> <a href=$rowUrl title=$title>$contentVersionVO.contentName</a>", "$this.getLanguageVO($contentVersionVO.languageId).name", "$contentVersionVO.stateId", "$formatter.formatDate($contentVersionVO.modifiedDateTime, 'yyyy-MM-dd HH:ss')"] )
-	#set($cnt = $cnt + 1)
+	#set($cnt = 0)
+	#foreach ($contentVersionVO in $contentVersionVOList)
+		#set( $contentVersionId = $contentVersionVO.id ) 
+		
+		#set( $rowUrl = "ViewContentVersion.action?contentId=$contentVersionVO.contentId&languageId=$contentVersionVO.languageId")
+		#set( $title = "$this.getContentPath($contentVersionVO.contentId).replaceAll(' ', '&nbsp;')")
+		#set( $row = ["<input type='hidden' name='rowtitle' value='$contentVersionVO.id'/> <a href=$rowUrl title=$title>$contentVersionVO.contentName</a>", "$this.getLanguageVO($contentVersionVO.languageId).name", "$contentVersionVO.stateId", "$formatter.formatDate($contentVersionVO.modifiedDateTime, 'yyyy-MM-dd HH:ss')"] )
+		#set($cnt = $cnt + 1)
+		
+		#lvAddRow($row $cnt $contentVersionId)
+	#end
+
+#else
+	#set($lvConstraint = 0) 
+	#lvHead(["Found entity", "Type (class)"] "tool.contenttool.replace.header" "ReplaceContent.action" "SearchContent.action" "tool.contenttool.replaceStringInContentVersions.text")
 	
-	#lvAddRow($row $cnt $contentVersionId)
+	#set($cnt = 0)
+	#foreach ($baseEntityVO in $baseEntityVOList)
+		#set( $baseEntityId = $baseEntityVO.id ) 
+		
+		#set( $entityName = "$baseEntityVO.name")
+		#if($baseEntityVO.class.name == "org.infoglue.cms.entities.content.ContentVO")
+			#set( $rowUrl = "ViewContent.action?contentId=$baseEntityId")
+			#set( $title = "$this.getContentPath($baseEntityId).replaceAll(' ', '&nbsp;')")
+		#elseif($baseEntityVO.class.name == "org.infoglue.cms.entities.content.ContentVersionVO")
+			#set( $rowUrl = "ViewContentVersion.action?contentId=$baseEntityVO.contentId&languageId=$baseEntityVO.languageId")
+			#set( $title = "$this.getContentPath($baseEntityVO.contentId).replaceAll(' ', '&nbsp;')")
+			#set( $entityName = "$baseEntityVO.contentName - $baseEntityVO.languageName")
+		#elseif($baseEntityVO.class.name == "org.infoglue.cms.entities.content.DigitalAssetVO")
+			#set( $contentId = $this.getDigitalAssetContentId($baseEntityVO.id))
+			#set( $rowUrl = "ViewContent.action?contentId=$contentId")
+			#set( $title = "$this.getContentPath($contentId).replaceAll(' ', '&nbsp;')")
+			#set( $entityName = "$baseEntityVO.assetKey")
+		#elseif($baseEntityVO.class.name == "org.infoglue.cms.entities.structure.SiteNodeVO")
+			#set( $rowUrl = "ViewSiteNode.action?siteNodeId=$baseEntityVO.siteNodeId")
+			#set( $title = "$this.getSiteNodePath($baseEntityVO.siteNodeId).replaceAll(' ', '&nbsp;')")		
+		#elseif($baseEntityVO.class.name == "org.infoglue.cms.entities.structure.SiteNodeVersionVO")
+			#set( $rowUrl = "ViewSiteNode.action?siteNodeId=$baseEntityVO.siteNodeId")
+			#set( $title = "$this.getSiteNodePath($baseEntityVO.siteNodeId).replaceAll(' ', '&nbsp;')")		
+			#set( $entityName = "$baseEntityVO.id of siteNodeId $baseEntityVO.siteNodeId")
+		#end
+		
+		#set( $row = ["<input type='hidden' name='rowtitle' value='$baseEntityId'/> <a href=$rowUrl title=$title>$entityName</a>", "$baseEntityVO.class.name"] )
+		
+		#set($cnt = $cnt + 1)
+		
+		#lvAddRow($row $cnt $contentVersionId)
+	#end
 #end
+
 #if($cnt == 0)
 ##	<tr><td>No matches found!</td></tr>
 	#lvAddRow([$ui.getString("tool.contenttool.searchResultNoMatchesText"), "", "", ""] 1 0)
