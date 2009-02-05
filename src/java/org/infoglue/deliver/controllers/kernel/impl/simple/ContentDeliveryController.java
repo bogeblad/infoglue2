@@ -550,6 +550,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 		SmallestContentVersionVO contentVersionVO = null;
 		
 	    String versionKey = "" + contentId + "_" + languageId + "_" + operatingMode + "_smallestContentVersionVO";
+	    String versionVOKey = "" + contentId + "_" + languageId + "_" + operatingMode + "_contentVersionVO";
 	    //String versionKey = "" + contentId + "_" + languageId + "_" + operatingMode + "_contentVersionId";
 
 	    RequestAnalyser.getRequestAnalyser().registerComponentStatistics("getSmallestContentVersionVO key", t.getElapsedTimeNanos() / 1000);
@@ -569,6 +570,13 @@ public class ContentDeliveryController extends BaseDeliveryController
 		}
 		else
 		{
+			ContentVersionVO cachedContentVersionVO = (ContentVersionVO)CacheController.getCachedObjectFromAdvancedCache("contentVersionCache", versionVOKey);
+			if(cachedContentVersionVO != null)
+			{
+				System.out.print(".");
+			    RequestAnalyser.getRequestAnalyser().registerComponentStatistics("getSmallestContentVersionVO contentVersionVO found", 1);
+			}
+			
 			//logger.info("Querying for verson: " + versionKey); 
 		    OQLQuery oql = db.getOQLQuery( "SELECT cv FROM org.infoglue.cms.entities.content.impl.simple.SmallestContentVersionImpl cv WHERE cv.contentId = $1 AND cv.languageId = $2 AND cv.stateId >= $3 AND cv.isActive = $4 ORDER BY cv.contentVersionId desc");
 	    	oql.bind(contentId);
