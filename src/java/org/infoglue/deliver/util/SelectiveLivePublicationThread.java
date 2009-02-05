@@ -45,6 +45,7 @@ import org.infoglue.cms.entities.content.impl.simple.MediumDigitalAssetImpl;
 import org.infoglue.cms.entities.content.impl.simple.SmallContentImpl;
 import org.infoglue.cms.entities.content.impl.simple.SmallContentVersionImpl;
 import org.infoglue.cms.entities.content.impl.simple.SmallDigitalAssetImpl;
+import org.infoglue.cms.entities.content.impl.simple.SmallestContentVersionImpl;
 import org.infoglue.cms.entities.content.impl.simple.SmallishContentImpl;
 import org.infoglue.cms.entities.management.impl.simple.AvailableServiceBindingImpl;
 import org.infoglue.cms.entities.management.impl.simple.GroupImpl;
@@ -173,6 +174,11 @@ public class SelectiveLivePublicationThread extends PublicationThread
 							Class typesExtra = SmallContentVersionImpl.class;
 							Object[] idsExtra = {new Integer(objectId)};
 							CacheController.clearCache(typesExtra, idsExtra);
+
+						    logger.info("We clear all small contents as well " + objectId);
+							Class typesExtraSmallest = SmallestContentVersionImpl.class;
+							Object[] idsExtraSmallest = {new Integer(objectId)};
+							CacheController.clearCache(typesExtraSmallest, idsExtraSmallest);
 						}
 						else if(Class.forName(className).getName().equals(AvailableServiceBindingImpl.class.getName()))
 						{

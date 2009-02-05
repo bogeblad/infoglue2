@@ -1050,7 +1050,7 @@
 
   <class name="org.infoglue.cms.entities.content.impl.simple.SmallestContentVersionImpl" identity="contentVersionId" key-generator="SEQUENCE">
     <description>SmallestContentVersion</description>
-    <cache-type type="none"/>
+    <cache-type type="count-limited" capacity="20000"/>
     <map-to table="cmContVer"/>
     <field name="contentVersionId" type="java.lang.Integer">
       <sql name="contVerId" type="integer" dirty="check" />

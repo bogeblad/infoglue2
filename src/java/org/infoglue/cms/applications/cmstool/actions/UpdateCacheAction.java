@@ -32,6 +32,7 @@ import org.infoglue.cms.entities.content.impl.simple.ContentVersionImpl;
 import org.infoglue.cms.entities.content.impl.simple.MediumContentImpl;
 import org.infoglue.cms.entities.content.impl.simple.SmallContentImpl;
 import org.infoglue.cms.entities.content.impl.simple.SmallContentVersionImpl;
+import org.infoglue.cms.entities.content.impl.simple.SmallestContentVersionImpl;
 import org.infoglue.cms.entities.content.impl.simple.SmallishContentImpl;
 import org.infoglue.cms.entities.management.impl.simple.ContentTypeDefinitionImpl;
 import org.infoglue.cms.entities.management.impl.simple.InterceptionPointImpl;
@@ -125,6 +126,7 @@ public class UpdateCacheAction extends InfoGlueAbstractAction
 				if(Class.forName(className).getName().equals(ContentVersionImpl.class.getName()))
 				{
 					CacheController.clearCache(SmallContentVersionImpl.class, new Object[]{new Integer(objectId)});
+					CacheController.clearCache(SmallestContentVersionImpl.class, new Object[]{new Integer(objectId)});
 				}
 				
 				if(Class.forName(className).getClass().getName().equals(RepositoryImpl.class.getName()))
