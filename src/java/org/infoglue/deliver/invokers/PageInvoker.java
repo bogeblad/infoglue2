@@ -58,6 +58,7 @@ import org.infoglue.deliver.controllers.kernel.impl.simple.TemplateController;
 import org.infoglue.deliver.portal.PortalController;
 import org.infoglue.deliver.util.CacheController;
 import org.infoglue.deliver.util.CompressionHelper;
+import org.infoglue.deliver.util.RequestAnalyser;
 import org.infoglue.deliver.util.Timer;
 
 /**
@@ -499,6 +500,7 @@ public abstract class PageInvoker
 		Date lastModifiedDateTime = null;
 		//logger.info("this.deliveryContext.getUsedContentVersions().size():" + this.deliveryContext.getUsedContentVersions().size());
 		System.out.println("UsedContentVersions:" + this.deliveryContext.getUsedContentVersions().size());
+		Timer t = new Timer();
 		if(this.deliveryContext.getUsedContentVersions().size() > 0)
 		{
 			Iterator userContentVersionIterator = this.deliveryContext.getUsedContentVersions().iterator();
@@ -533,6 +535,7 @@ public abstract class PageInvoker
 			}
 			this.deliveryContext.setLastModifiedDateTime(lastModifiedDateTime);
 		}
+		RequestAnalyser.getRequestAnalyser().registerComponentStatistics("getLastModifiedDateTime", t.getElapsedTimeNanos() / 1000);
 	}
 
 	protected String decorateHeadAndPageWithVarsFromComponents(String pageString)
