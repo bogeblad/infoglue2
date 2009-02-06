@@ -120,6 +120,8 @@ import org.infoglue.deliver.util.CacheController;
 import org.infoglue.deliver.util.HttpHelper;
 import org.infoglue.deliver.util.MathHelper;
 import org.infoglue.deliver.util.ObjectConverter;
+import org.infoglue.deliver.util.RequestAnalyser;
+import org.infoglue.deliver.util.Timer;
 import org.infoglue.deliver.util.VelocityTemplateProcessor;
 import org.infoglue.deliver.util.charts.ChartHelper;
 import org.infoglue.deliver.util.forms.FormHelper;
@@ -2957,8 +2959,10 @@ public class BasicTemplateController implements TemplateController
 		{
 			if(qualifyerXML != null && !qualifyerXML.equals(""))
 			{
+				Timer t = new Timer();
 				Document document = domBuilder.getDocument(qualifyerXML);
-								
+				RequestAnalyser.getRequestAnalyser().registerComponentStatistics("getRelatedContentsFromXML domload", t.getElapsedTimeNanos() / 1000);
+				
 				List children = document.getRootElement().elements();
 				Iterator i = children.iterator();
 				while(i.hasNext())
@@ -4544,7 +4548,8 @@ public class BasicTemplateController implements TemplateController
 				for(Iterator i = set.iterator(); i.hasNext(); ) 
 				{
 					final Content content = (Content) i.next();
-					if(ContentDeliveryController.getContentDeliveryController().isValidContent(this.getDatabase(), content.getId(), this.languageId, USE_LANGUAGE_FALLBACK, true, getPrincipal(), this.deliveryContext))
+					if(ContentDeliveryController.getContentDeliveryController().isValidContent(this.getDatabase(), content, this.languageId, USE_LANGUAGE_FALLBACK, true, getPrincipal(), this.deliveryContext, false, false))
+					//if(ContentDeliveryController.getContentDeliveryController().isValidContent(this.getDatabase(), content.getId(), this.languageId, USE_LANGUAGE_FALLBACK, true, getPrincipal(), this.deliveryContext))
 						result.add(content.getValueObject());
 				}
 

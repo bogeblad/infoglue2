@@ -44,6 +44,7 @@ import org.exolab.castor.jdo.QueryResults;
 import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.controllers.kernel.impl.simple.AccessRightController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentCategoryController;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.DigitalAssetController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeController;
 import org.infoglue.cms.entities.content.Content;
@@ -2510,7 +2511,6 @@ public class ContentDeliveryController extends BaseDeliveryController
 	 * Returns if a content is between dates and has a content version suitable for this delivery mode.
 	 * @throws Exception
 	 */
-
 	public boolean isValidContent(Database db, Integer contentId, Integer languageId, boolean useLanguageFallback, boolean includeFolders, InfoGluePrincipal infoGluePrincipal, DeliveryContext deliveryContext) throws Exception
 	{
 	    boolean isValidContent = false;
@@ -2518,12 +2518,38 @@ public class ContentDeliveryController extends BaseDeliveryController
 		Timer t = new Timer();
 		Content content = (Content)getObjectWithId(ContentImpl.class, contentId, db); 
 		RequestAnalyser.getRequestAnalyser().registerComponentStatistics("isValidContent content", t.getElapsedTimeNanos() / 1000);
-		isValidContent = isValidContent(infoGluePrincipal, content, languageId, useLanguageFallback, includeFolders, db, deliveryContext);
+		isValidContent = isValidContent(infoGluePrincipal, content, languageId, useLanguageFallback, includeFolders, db, deliveryContext, true, true);
 	    RequestAnalyser.getRequestAnalyser().registerComponentStatistics("isValidContent", t.getElapsedTimeNanos() / 1000);
 		
 		return isValidContent;					
 	}
 	
+	/**
+	 * Returns if a content is between dates and has a content version suitable for this delivery mode.
+	 * @throws Exception
+	 */
+
+	public boolean isValidContent(Database db, Content content, Integer languageId, boolean useLanguageFallback, boolean includeFolders, InfoGluePrincipal infoGluePrincipal, DeliveryContext deliveryContext, boolean checkIfVersionExists, boolean checkAuthorization) throws Exception
+	{
+	    boolean isValidContent = false;
+		
+	    Timer t = new Timer();
+		//Content content = (Content)getObjectWithId(ContentImpl.class, contentId, db); 
+		RequestAnalyser.getRequestAnalyser().registerComponentStatistics("isValidContent2 content", t.getElapsedTimeNanos() / 1000);
+		isValidContent = isValidContent(infoGluePrincipal, content, languageId, useLanguageFallback, includeFolders, db, deliveryContext, checkIfVersionExists, checkAuthorization);
+	    RequestAnalyser.getRequestAnalyser().registerComponentStatistics("isValidContent2", t.getElapsedTimeNanos() / 1000);
+		
+	    /*
+	    Timer t = new Timer();
+		Content content = (Content)getObjectWithId(ContentImpl.class, contentId, db); 
+		RequestAnalyser.getRequestAnalyser().registerComponentStatistics("isValidContent2 content", t.getElapsedTimeNanos() / 1000);
+		isValidContent = isValidContent(infoGluePrincipal, content, languageId, useLanguageFallback, includeFolders, db, deliveryContext);
+	    RequestAnalyser.getRequestAnalyser().registerComponentStatistics("isValidContent2", t.getElapsedTimeNanos() / 1000);
+		*/
+	    
+		return isValidContent;					
+	}
+
 	/**
 	 * Returns if a content is between dates and has a content version suitable for this delivery mode.
 	 * @throws Exception
@@ -2628,6 +2654,122 @@ public class ContentDeliveryController extends BaseDeliveryController
 		return isValidContent;					
 	}
 
+	private static Integer metaInfoContentTypeId = null;
+	
+	public boolean isValidContent(InfoGluePrincipal infoGluePrincipal, Content content, Integer languageId, boolean useLanguageFallBack, boolean includeFolders, Database db, DeliveryContext deliveryContext, boolean checkVersionExists, boolean checkAccessRights) throws Exception
+	{
+		Timer t = new Timer();
+		
+		boolean isValidContent = false;
+		if(infoGluePrincipal == null)
+		    throw new SystemException("There was no anonymous user found in the system. There must be - add the user anonymous/anonymous and try again.");
+		
+		if(metaInfoContentTypeId == null)
+		{
+			ContentTypeDefinitionVO ctdVO = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithName("Meta info", db);
+			if(ctdVO != null)
+				metaInfoContentTypeId = ctdVO.getId();
+		}
+		
+		if(content.getContentTypeDefinitionId() != null && content.getContentTypeDefinitionId().equals(metaInfoContentTypeId))
+			return true;
+
+		boolean validateOnDates = true;
+		String operatingMode = CmsPropertyHandler.getOperatingMode();
+		if(operatingMode.equals("0"))
+		{
+			validateOnDates = deliveryContext.getValidateOnDates();
+		}
+
+	    RequestAnalyser.getRequestAnalyser().registerComponentStatistics("isValidContentPart1", t.getElapsedTimeNanos() / 1000);
+
+	    if(checkAccessRights)
+	    {
+			Integer protectedContentId = getProtectedContentId(db, content);
+			if(protectedContentId != null && !AccessRightController.getController().getIsPrincipalAuthorized(db, infoGluePrincipal, "Content.Read", protectedContentId.toString()))
+			{
+			    return false;
+			}
+	    }
+	    
+	    RequestAnalyser.getRequestAnalyser().registerComponentStatistics("isValidContentPart protectedContentId", t.getElapsedTimeNanos() / 1000);
+
+		if(includeFolders && content.getIsBranch().booleanValue() && isValidOnDates(content.getPublishDateTime(), content.getExpireDateTime(), validateOnDates))
+		{
+			isValidContent = true; 
+		}
+		else if(isValidOnDates(content.getPublishDateTime(), content.getExpireDateTime(), validateOnDates))
+		{
+		    RequestAnalyser.getRequestAnalyser().registerComponentStatistics("isValidContentPart3", t.getElapsedTimeNanos() / 1000);
+		    
+			if(checkVersionExists)
+		    {
+				//ContentVersion contentVersion = getContentVersion(content, languageId, getOperatingMode(), deliveryContext, db);
+				//TODO
+			    //ContentVersionVO contentVersion = getContentVersionVO(content.getId(), languageId, getOperatingMode(), deliveryContext, db);
+			    SmallestContentVersionVO contentVersion = getSmallestContentVersionVO(content.getId(), languageId, getOperatingMode(), deliveryContext, db);
+			    
+			    RequestAnalyser.getRequestAnalyser().registerComponentStatistics("isValidContentPart4", t.getElapsedTimeNanos() / 1000);
+	
+			    Integer repositoryId = null;
+				Repository repository = content.getRepository();
+				if(repository == null)
+				{
+				    if(content instanceof MediumContentImpl)
+				        repositoryId = ((MediumContentImpl)content).getRepositoryId();
+				    if(content instanceof SmallishContentImpl)
+				        repositoryId = ((SmallishContentImpl)content).getRepositoryId();
+				    else if(content instanceof SmallContentImpl)
+				        repositoryId = ((SmallContentImpl)content).getRepositoryId();
+				}
+				else
+				{
+				    repositoryId = repository.getId();
+				}
+				
+				if(contentVersion == null && useLanguageFallBack && repositoryId != null)
+				{
+					LanguageVO masterLanguage = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForRepository(repositoryId, db);
+					//TODO
+					if(masterLanguage != null && !masterLanguage.getId().equals(languageId))
+						contentVersion = getSmallestContentVersionVO(content.getId(), masterLanguage.getId(), getOperatingMode(), deliveryContext, db);
+						//contentVersion = getContentVersionVO(content.getId(), masterLanguage.getId(), getOperatingMode(), deliveryContext, db);
+						//contentVersion = getContentVersion(content, masterLanguage.getId(), getOperatingMode(), deliveryContext, db);
+				}
+	
+			    RequestAnalyser.getRequestAnalyser().registerComponentStatistics("isValidContentPart5", t.getElapsedTimeNanos() / 1000);
+			
+			    if(contentVersion != null)
+					isValidContent = true;			
+		    }
+		    else
+		    {
+		    	isValidContent = true;
+		    }
+		    
+		}
+    	
+		if(isValidContent && !content.getExpireDateTime().before(new Date()))
+		{
+		    Date expireDateTimeCandidate = content.getExpireDateTime();
+		    if(CacheController.expireDateTime == null || expireDateTimeCandidate.before(CacheController.expireDateTime))
+			{
+			    CacheController.expireDateTime = expireDateTimeCandidate;
+			}
+		}
+		else if(content.getPublishDateTime().after(new Date())) //If it's a publish date to come we consider it
+		{
+		    Date publishDateTimeCandidate = content.getPublishDateTime();
+		    if(CacheController.publishDateTime == null || publishDateTimeCandidate.after(CacheController.publishDateTime))
+			{
+			    CacheController.publishDateTime = publishDateTimeCandidate;
+			}
+		}
+	    
+	    RequestAnalyser.getRequestAnalyser().registerComponentStatistics("isValidContentPart end", t.getElapsedTimeNanos() / 1000);
+		
+		return isValidContent;					
+	}
 	
 	
 	/**
