@@ -2983,7 +2983,7 @@ public class BasicTemplateController implements TemplateController
 			logger.error("An error occurred trying to get related contents from qualifyerXML " + qualifyerXML + ":" + e.getMessage(), e);
 		}
 
-		RequestAnalyser.getRequestAnalyser().registerComponentStatistics("getRelatedContentsFromXML", t.getElapsedTimeNanos() / 1000);
+		RequestAnalyser.getRequestAnalyser().registerComponentStatistics("getRelatedContentsFromXML", t.getElapsedTime());
 
 		return relatedContentVOList;
 	}

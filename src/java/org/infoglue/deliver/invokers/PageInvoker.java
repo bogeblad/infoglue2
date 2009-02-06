@@ -498,8 +498,7 @@ public abstract class PageInvoker
 	private void getLastModifiedDateTime() throws Bug
 	{
 		Date lastModifiedDateTime = null;
-		//logger.info("this.deliveryContext.getUsedContentVersions().size():" + this.deliveryContext.getUsedContentVersions().size());
-		System.out.println("UsedContentVersions:" + this.deliveryContext.getUsedContentVersions().size());
+		//System.out.println("UsedContentVersions:" + this.deliveryContext.getUsedContentVersions().size());
 		Timer t = new Timer();
 		if(this.deliveryContext.getUsedContentVersions().size() > 0)
 		{
@@ -512,17 +511,12 @@ public abstract class PageInvoker
 		    		try
 		            {
 		    			String versionId = usedContentVersion.substring(15);
-		    			//logger.info("versionId:" + versionId);
 		    			if(!versionId.equals("null") && !versionId.equals(""))
 		    			{
 			    			Integer contentVersionId = new Integer(versionId);
 			    			SmallestContentVersionVO contentVersion = ContentVersionController.getContentVersionController().getSmallestContentVersionVOWithId(contentVersionId, getDatabase());
-			    			//ContentVersionVO contentVersion = ContentVersionController.getContentVersionController().getContentVersionVOWithId(contentVersionId, getDatabase());
 			    			if(lastModifiedDateTime == null || contentVersion.getModifiedDateTime().after(lastModifiedDateTime))
 			    			{
-			    				//logger.info("this:" + this.hashCode());
-			    				//logger.info("lastModifiedDateTime:" + lastModifiedDateTime);
-			    				//logger.info("contentVersionVO:" + contentVersion.getModifiedDateTime());
 			    				lastModifiedDateTime = contentVersion.getModifiedDateTime();
 			    			}
 		    			}
@@ -535,7 +529,8 @@ public abstract class PageInvoker
 			}
 			this.deliveryContext.setLastModifiedDateTime(lastModifiedDateTime);
 		}
-		RequestAnalyser.getRequestAnalyser().registerComponentStatistics("getLastModifiedDateTime", t.getElapsedTimeNanos() / 1000);
+		
+		RequestAnalyser.getRequestAnalyser().registerComponentStatistics("getLastModifiedDateTime", t.getElapsedTime());
 	}
 
 	protected String decorateHeadAndPageWithVarsFromComponents(String pageString)
