@@ -4548,8 +4548,8 @@ public class BasicTemplateController implements TemplateController
 				for(Iterator i = set.iterator(); i.hasNext(); ) 
 				{
 					final Content content = (Content) i.next();
-					if(ContentDeliveryController.getContentDeliveryController().isValidContent(this.getDatabase(), content, this.languageId, USE_LANGUAGE_FALLBACK, true, getPrincipal(), this.deliveryContext, false, false))
 					//if(ContentDeliveryController.getContentDeliveryController().isValidContent(this.getDatabase(), content.getId(), this.languageId, USE_LANGUAGE_FALLBACK, true, getPrincipal(), this.deliveryContext))
+					if(ContentDeliveryController.getContentDeliveryController().isValidContent(this.getDatabase(), content, this.languageId, USE_LANGUAGE_FALLBACK, true, getPrincipal(), this.deliveryContext, false, false))
 						result.add(content.getValueObject());
 				}
 

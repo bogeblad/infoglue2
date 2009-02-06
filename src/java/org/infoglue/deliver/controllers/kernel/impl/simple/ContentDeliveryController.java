@@ -2598,7 +2598,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 		    //ContentVersionVO contentVersion = getContentVersionVO(content.getId(), languageId, getOperatingMode(), deliveryContext, db);
 		    SmallestContentVersionVO contentVersion = getSmallestContentVersionVO(content.getId(), languageId, getOperatingMode(), deliveryContext, db);
 		    
-		    RequestAnalyser.getRequestAnalyser().registerComponentStatistics("isValidContentPart4", t.getElapsedTimeNanos() / 1000);
+		    RequestAnalyser.getRequestAnalyser().registerComponentStatistics("isValidContentPart4.1", t.getElapsedTimeNanos() / 1000);
 
 		    Integer repositoryId = null;
 			Repository repository = content.getRepository();
@@ -2709,7 +2709,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 			    //ContentVersionVO contentVersion = getContentVersionVO(content.getId(), languageId, getOperatingMode(), deliveryContext, db);
 			    SmallestContentVersionVO contentVersion = getSmallestContentVersionVO(content.getId(), languageId, getOperatingMode(), deliveryContext, db);
 			    
-			    RequestAnalyser.getRequestAnalyser().registerComponentStatistics("isValidContentPart4", t.getElapsedTimeNanos() / 1000);
+			    RequestAnalyser.getRequestAnalyser().registerComponentStatistics("isValidContentPart4.2", t.getElapsedTimeNanos() / 1000);
 	
 			    Integer repositoryId = null;
 				Repository repository = content.getRepository();
