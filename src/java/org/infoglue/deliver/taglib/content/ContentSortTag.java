@@ -89,8 +89,6 @@ public class ContentSortTag extends TemplateControllerTag {
 	 */
 	public int doEndTag() throws JspException
     {
-		Timer t = new Timer();
-
 		if(comparatorClass!=null && !comparatorClass.equals("")) 
 		{
 			produceResult(sorter.getContentResult(comparatorClass));
@@ -99,8 +97,6 @@ public class ContentSortTag extends TemplateControllerTag {
 		{
 			produceResult(sorter.getContentResult());	
 		}
-		
-		RequestAnalyser.getRequestAnalyser().registerComponentStatistics("ContentSort", t.getElapsedTime());
 
 		this.sorter.clear();
 		this.sorter = null;

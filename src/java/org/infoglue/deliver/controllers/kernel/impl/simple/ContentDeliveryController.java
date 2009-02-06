@@ -546,7 +546,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 
 	private SmallestContentVersionVO getSmallestContentVersionVO(Integer contentId, Integer languageId, Integer operatingMode, DeliveryContext deliveryContext, Database db) throws Exception
     {
-		Timer t = new Timer();
+		//Timer t = new Timer();
 
 		SmallestContentVersionVO contentVersionVO = null;
 		
@@ -554,13 +554,13 @@ public class ContentDeliveryController extends BaseDeliveryController
 	    String versionVOKey = "" + contentId + "_" + languageId + "_" + operatingMode + "_contentVersionVO";
 	    //String versionKey = "" + contentId + "_" + languageId + "_" + operatingMode + "_contentVersionId";
 
-	    RequestAnalyser.getRequestAnalyser().registerComponentStatistics("getSmallestContentVersionVO key", t.getElapsedTimeNanos() / 1000);
+	    //RequestAnalyser.getRequestAnalyser().registerComponentStatistics("getSmallestContentVersionVO key", t.getElapsedTimeNanos() / 1000);
 
 		//logger.info("versionKey:" + versionKey);
 		
 		Object object = CacheController.getCachedObjectFromAdvancedCache("contentVersionCache", versionKey);
 		//Integer contentVersionId = (Integer)CacheController.getCachedObjectFromAdvancedCache("contentVersionCache", versionKey);
-	    RequestAnalyser.getRequestAnalyser().registerComponentStatistics("getSmallestContentVersionVO 1", t.getElapsedTimeNanos() / 1000);
+		//RequestAnalyser.getRequestAnalyser().registerComponentStatistics("getSmallestContentVersionVO 1", t.getElapsedTimeNanos() / 1000);
 		if(object instanceof NullObject)
 		{
 			logger.info("There was an cached SmallestContentVersionVO but it was null:" + object);
@@ -575,7 +575,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 			if(cachedContentVersionVO != null)
 			{
 				System.out.print(".");
-			    RequestAnalyser.getRequestAnalyser().registerComponentStatistics("getSmallestContentVersionVO contentVersionVO found", 1);
+				//RequestAnalyser.getRequestAnalyser().registerComponentStatistics("getSmallestContentVersionVO contentVersionVO found", 1);
 			}
 			
 			//logger.info("Querying for verson: " + versionKey); 
@@ -605,7 +605,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 			results.close();
 			oql.close();
 
-			RequestAnalyser.getRequestAnalyser().registerComponentStatistics("getSmallestContentVersionVO query", t.getElapsedTimeNanos() / 1000);
+			//RequestAnalyser.getRequestAnalyser().registerComponentStatistics("getSmallestContentVersionVO query", t.getElapsedTimeNanos() / 1000);
 		}
 
 		if(contentVersionVO != null)
@@ -2557,7 +2557,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 	
 	public boolean isValidContent(InfoGluePrincipal infoGluePrincipal, Content content, Integer languageId, boolean useLanguageFallBack, boolean includeFolders, Database db, DeliveryContext deliveryContext) throws Exception
 	{
-		Timer t = new Timer();
+		//Timer t = new Timer();
 		
 		boolean isValidContent = false;
 		if(infoGluePrincipal == null)
@@ -2573,7 +2573,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 			validateOnDates = deliveryContext.getValidateOnDates();
 		}
 
-	    RequestAnalyser.getRequestAnalyser().registerComponentStatistics("isValidContentPart1", t.getElapsedTimeNanos() / 1000);
+		//RequestAnalyser.getRequestAnalyser().registerComponentStatistics("isValidContentPart1", t.getElapsedTimeNanos() / 1000);
 
 		Integer protectedContentId = getProtectedContentId(db, content);
 		if(logger.isInfoEnabled())
@@ -2583,7 +2583,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 		    return false;
 		}
 			    
-	    RequestAnalyser.getRequestAnalyser().registerComponentStatistics("isValidContentPart protectedContentId", t.getElapsedTimeNanos() / 1000);
+		//RequestAnalyser.getRequestAnalyser().registerComponentStatistics("isValidContentPart protectedContentId", t.getElapsedTimeNanos() / 1000);
 
 		if(includeFolders && content.getIsBranch().booleanValue() && isValidOnDates(content.getPublishDateTime(), content.getExpireDateTime(), validateOnDates))
 		{
@@ -2591,14 +2591,14 @@ public class ContentDeliveryController extends BaseDeliveryController
 		}
 		else if(isValidOnDates(content.getPublishDateTime(), content.getExpireDateTime(), validateOnDates))
 		{
-		    RequestAnalyser.getRequestAnalyser().registerComponentStatistics("isValidContentPart3", t.getElapsedTimeNanos() / 1000);
+			//RequestAnalyser.getRequestAnalyser().registerComponentStatistics("isValidContentPart3", t.getElapsedTimeNanos() / 1000);
 
 			//ContentVersion contentVersion = getContentVersion(content, languageId, getOperatingMode(), deliveryContext, db);
 			//TODO
 		    //ContentVersionVO contentVersion = getContentVersionVO(content.getId(), languageId, getOperatingMode(), deliveryContext, db);
 		    SmallestContentVersionVO contentVersion = getSmallestContentVersionVO(content.getId(), languageId, getOperatingMode(), deliveryContext, db);
 		    
-		    RequestAnalyser.getRequestAnalyser().registerComponentStatistics("isValidContentPart4.1", t.getElapsedTimeNanos() / 1000);
+		    //RequestAnalyser.getRequestAnalyser().registerComponentStatistics("isValidContentPart4.1", t.getElapsedTimeNanos() / 1000);
 
 		    Integer repositoryId = null;
 			Repository repository = content.getRepository();
@@ -2626,7 +2626,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 					//contentVersion = getContentVersion(content, masterLanguage.getId(), getOperatingMode(), deliveryContext, db);
 			}
 
-		    RequestAnalyser.getRequestAnalyser().registerComponentStatistics("isValidContentPart5", t.getElapsedTimeNanos() / 1000);
+			//RequestAnalyser.getRequestAnalyser().registerComponentStatistics("isValidContentPart5", t.getElapsedTimeNanos() / 1000);
 
 			if(contentVersion != null)
 				isValidContent = true;			
@@ -2649,7 +2649,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 			}
 		}
 	    
-	    RequestAnalyser.getRequestAnalyser().registerComponentStatistics("isValidContentPart end", t.getElapsedTimeNanos() / 1000);
+		//RequestAnalyser.getRequestAnalyser().registerComponentStatistics("isValidContentPart end", t.getElapsedTimeNanos() / 1000);
 		
 		return isValidContent;					
 	}
@@ -2658,7 +2658,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 	
 	public boolean isValidContent(InfoGluePrincipal infoGluePrincipal, Content content, Integer languageId, boolean useLanguageFallBack, boolean includeFolders, Database db, DeliveryContext deliveryContext, boolean checkVersionExists, boolean checkAccessRights) throws Exception
 	{
-		Timer t = new Timer();
+		//Timer t = new Timer();
 		
 		boolean isValidContent = false;
 		if(infoGluePrincipal == null)
@@ -2681,7 +2681,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 			validateOnDates = deliveryContext.getValidateOnDates();
 		}
 
-	    RequestAnalyser.getRequestAnalyser().registerComponentStatistics("isValidContentPart1", t.getElapsedTimeNanos() / 1000);
+		//RequestAnalyser.getRequestAnalyser().registerComponentStatistics("isValidContentPart1", t.getElapsedTimeNanos() / 1000);
 
 	    if(checkAccessRights)
 	    {
@@ -2692,7 +2692,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 			}
 	    }
 	    
-	    RequestAnalyser.getRequestAnalyser().registerComponentStatistics("isValidContentPart protectedContentId", t.getElapsedTimeNanos() / 1000);
+	    //RequestAnalyser.getRequestAnalyser().registerComponentStatistics("isValidContentPart protectedContentId", t.getElapsedTimeNanos() / 1000);
 
 		if(includeFolders && content.getIsBranch().booleanValue() && isValidOnDates(content.getPublishDateTime(), content.getExpireDateTime(), validateOnDates))
 		{
@@ -2700,7 +2700,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 		}
 		else if(isValidOnDates(content.getPublishDateTime(), content.getExpireDateTime(), validateOnDates))
 		{
-		    RequestAnalyser.getRequestAnalyser().registerComponentStatistics("isValidContentPart3", t.getElapsedTimeNanos() / 1000);
+			//RequestAnalyser.getRequestAnalyser().registerComponentStatistics("isValidContentPart3", t.getElapsedTimeNanos() / 1000);
 		    
 			if(checkVersionExists)
 		    {
@@ -2709,7 +2709,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 			    //ContentVersionVO contentVersion = getContentVersionVO(content.getId(), languageId, getOperatingMode(), deliveryContext, db);
 			    SmallestContentVersionVO contentVersion = getSmallestContentVersionVO(content.getId(), languageId, getOperatingMode(), deliveryContext, db);
 			    
-			    RequestAnalyser.getRequestAnalyser().registerComponentStatistics("isValidContentPart4.2", t.getElapsedTimeNanos() / 1000);
+			    //RequestAnalyser.getRequestAnalyser().registerComponentStatistics("isValidContentPart4.2", t.getElapsedTimeNanos() / 1000);
 	
 			    Integer repositoryId = null;
 				Repository repository = content.getRepository();
@@ -2737,7 +2737,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 						//contentVersion = getContentVersion(content, masterLanguage.getId(), getOperatingMode(), deliveryContext, db);
 				}
 	
-			    RequestAnalyser.getRequestAnalyser().registerComponentStatistics("isValidContentPart5", t.getElapsedTimeNanos() / 1000);
+				//RequestAnalyser.getRequestAnalyser().registerComponentStatistics("isValidContentPart5", t.getElapsedTimeNanos() / 1000);
 			
 			    if(contentVersion != null)
 					isValidContent = true;			
@@ -2766,7 +2766,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 			}
 		}
 	    
-	    RequestAnalyser.getRequestAnalyser().registerComponentStatistics("isValidContentPart end", t.getElapsedTimeNanos() / 1000);
+		//RequestAnalyser.getRequestAnalyser().registerComponentStatistics("isValidContentPart end", t.getElapsedTimeNanos() / 1000);
 		
 		return isValidContent;					
 	}
