@@ -621,7 +621,7 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
         	long componentAverageElapsedTime = RequestAnalyser.getComponentAverageElapsedTime(componentName);
         	int componentNumberOfHits = RequestAnalyser.getComponentNumberOfHits(componentName);
         	//states.add(getList("" + componentName + " - " + componentNumberOfHits + " hits", "" + componentAverageElapsedTime));
-        	unsortedComponents.add(getList("" + componentName + " - " + componentNumberOfHits + " hits", new Long(componentAverageElapsedTime) + " - total " + (componentNumberOfHits * componentAverageElapsedTime)));
+        	unsortedComponents.add(getList("" + componentName + " - " + componentNumberOfHits + " hits - total " + (componentNumberOfHits * componentAverageElapsedTime), new Long(componentAverageElapsedTime)));
         }
 
         Collections.sort(unsortedComponents, new AverageInvokingTimeComparator());
