@@ -498,6 +498,7 @@ public abstract class PageInvoker
 	{
 		Date lastModifiedDateTime = null;
 		//logger.info("this.deliveryContext.getUsedContentVersions().size():" + this.deliveryContext.getUsedContentVersions().size());
+		System.out.println("UsedContentVersions:" + this.deliveryContext.getUsedContentVersions().size());
 		if(this.deliveryContext.getUsedContentVersions().size() > 0)
 		{
 			Iterator userContentVersionIterator = this.deliveryContext.getUsedContentVersions().iterator();
