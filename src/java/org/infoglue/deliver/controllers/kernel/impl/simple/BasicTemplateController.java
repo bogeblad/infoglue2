@@ -2953,15 +2953,14 @@ public class BasicTemplateController implements TemplateController
 	
 	private List getRelatedContentsFromXML(String qualifyerXML)
 	{
+		Timer t = new Timer();
 		List relatedContentVOList = new ArrayList();
 
 		try
 		{
 			if(qualifyerXML != null && !qualifyerXML.equals(""))
 			{
-				Timer t = new Timer();
 				Document document = domBuilder.getDocument(qualifyerXML);
-				RequestAnalyser.getRequestAnalyser().registerComponentStatistics("getRelatedContentsFromXML domload", t.getElapsedTimeNanos() / 1000);
 				
 				List children = document.getRootElement().elements();
 				Iterator i = children.iterator();
@@ -2983,6 +2982,8 @@ public class BasicTemplateController implements TemplateController
 		{
 			logger.error("An error occurred trying to get related contents from qualifyerXML " + qualifyerXML + ":" + e.getMessage(), e);
 		}
+
+		RequestAnalyser.getRequestAnalyser().registerComponentStatistics("getRelatedContentsFromXML", t.getElapsedTimeNanos() / 1000);
 
 		return relatedContentVOList;
 	}
@@ -4490,6 +4491,8 @@ public class BasicTemplateController implements TemplateController
 	
 	public List getMatchingContents(String contentTypeDefinitionNamesString, String categoryConditionString, String freeText, List freeTextAttributeNames, Date fromDate, Date toDate, Date expireFromDate, Date expireToDate, String versionModifier, boolean useLanguageFallback, boolean cacheResult, int cacheInterval, String cacheName, String cacheKey, List<Integer> repositoryIdList)
 	{
+		Timer t = new Timer();
+		
 	    deliveryContext.addUsedContent("selectiveCacheUpdateNonApplicable");
 
 		if((freeText != null && !freeText.equals("")) || (freeTextAttributeNames != null && freeTextAttributeNames.size() > 0) || fromDate != null || toDate != null || expireFromDate != null || expireToDate != null || (versionModifier != null && !versionModifier.equals("")))
@@ -4569,6 +4572,8 @@ public class BasicTemplateController implements TemplateController
 			return cachedMatchingContents;
 		}
 		
+		RequestAnalyser.getRequestAnalyser().registerComponentStatistics("getMatchingContents", t.getElapsedTime());
+
 		return Collections.EMPTY_LIST;
 	}
 

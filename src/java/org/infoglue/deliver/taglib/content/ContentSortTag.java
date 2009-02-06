@@ -30,6 +30,8 @@ import javax.servlet.jsp.JspException;
 
 import org.infoglue.cms.util.sorters.ContentSort;
 import org.infoglue.deliver.taglib.TemplateControllerTag;
+import org.infoglue.deliver.util.RequestAnalyser;
+import org.infoglue.deliver.util.Timer;
 
 public class ContentSortTag extends TemplateControllerTag {
 	/**
@@ -87,6 +89,8 @@ public class ContentSortTag extends TemplateControllerTag {
 	 */
 	public int doEndTag() throws JspException
     {
+		Timer t = new Timer();
+
 		if(comparatorClass!=null && !comparatorClass.equals("")) 
 		{
 			produceResult(sorter.getContentResult(comparatorClass));
@@ -96,6 +100,8 @@ public class ContentSortTag extends TemplateControllerTag {
 			produceResult(sorter.getContentResult());	
 		}
 		
+		RequestAnalyser.getRequestAnalyser().registerComponentStatistics("ContentSort", t.getElapsedTime());
+
 		this.sorter.clear();
 		this.sorter = null;
 		this.input = new ArrayList();
