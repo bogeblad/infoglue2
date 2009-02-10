@@ -1434,7 +1434,6 @@ public class ComponentLogic
 					//}
 			    }
 			    
-			    System.out.println("groups1:" + groups.size());
 			    CacheController.cacheObjectInAdvancedCacheWithGroupsAsSet("componentPropertyCache", key, property, groups, true);
 			    CacheController.cacheObjectInAdvancedCacheWithGroupsAsSet("componentPropertyCache", versionKey, contentVersionIdList, groups, true);
 			}
@@ -1684,7 +1683,6 @@ public class ComponentLogic
 							//}
 					    }
 					    
-					    System.out.println("groups2:" + groups.size());
 					    CacheController.cacheObjectInAdvancedCacheWithGroupsAsSet("componentPropertyCache", key, property, groups, true);
 					    CacheController.cacheObjectInAdvancedCacheWithGroupsAsSet("componentPropertyCache", versionKey, contentVersionIdList, groups, true);
 			        }
@@ -2503,7 +2501,6 @@ public class ComponentLogic
 				    groups.add("content_" + contentVersion.getValueObject().getContentId());
 				}
 				
-			    System.out.println("groups3:" + groups.size());
 			    CacheController.cacheObjectInAdvancedCacheWithGroupsAsSet("componentPropertyCache", key, properties, groups, true);
 			    CacheController.cacheObjectInAdvancedCacheWithGroupsAsSet("componentPropertyCache", versionKey, contentVersionIdList, groups, true);
 	        }
