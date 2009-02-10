@@ -25,14 +25,12 @@ package org.infoglue.deliver.applications.databeans;
 
 import java.net.URLEncoder;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
-import org.infoglue.deliver.util.CacheController;
 
 /**
  * 
