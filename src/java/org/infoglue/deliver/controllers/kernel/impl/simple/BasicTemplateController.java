@@ -2950,16 +2950,62 @@ public class BasicTemplateController implements TemplateController
 	/**
 	 * This method gets the related contents from an XML.
 	 */
+
+	private String idElementStart = "<id>";
+	private String idElementEnd = "</id>";
+	private String idAttribute1Start = "id=\"";
+	private String idAttribute1End = "\"";
+	private String idAttribute2Start = "id='";
+	private String idAttribute2End = "'";
 	
 	private List getRelatedContentsFromXML(String qualifyerXML)
 	{
+		if(logger.isInfoEnabled())
+			logger.info("qualifyerXML:" + qualifyerXML);
+		
 		Timer t = new Timer();
+		
 		List relatedContentVOList = new ArrayList();
 
 		try
 		{
 			if(qualifyerXML != null && !qualifyerXML.equals(""))
 			{
+				String startExpression = idElementStart;
+				String endExpression = idElementEnd;
+
+				int idIndex = qualifyerXML.indexOf(startExpression);
+				if(idIndex == -1)
+				{
+					startExpression = idAttribute1Start;
+					idIndex = qualifyerXML.indexOf(startExpression);
+					if(idIndex == -1)
+					{
+						startExpression = idAttribute2Start;
+						endExpression = idAttribute2End;
+						idIndex = qualifyerXML.indexOf(startExpression);						
+					}
+					else
+					{
+						endExpression = idAttribute1End;
+					}
+				}
+				
+				while(idIndex > -1)
+				{
+					int endIndex = qualifyerXML.indexOf(endExpression, idIndex + 4);
+						
+					String id = qualifyerXML.substring(idIndex + 4, endIndex);
+					//System.out.println("id:" + id);
+					
+					Integer contentId = new Integer(id);
+					if(ContentDeliveryController.getContentDeliveryController().isValidContent(this.getDatabase(), contentId, this.languageId, USE_LANGUAGE_FALLBACK, true, getPrincipal(), this.deliveryContext))
+						relatedContentVOList.add(this.getContent(contentId));
+
+					idIndex = qualifyerXML.indexOf(startExpression, idIndex + 5);
+				}
+
+				/*
 				Document document = domBuilder.getDocument(qualifyerXML);
 				
 				List children = document.getRootElement().elements();
@@ -2972,18 +3018,20 @@ public class BasicTemplateController implements TemplateController
 					if(id == null || id.equals(""))
 						id = child.getText();
 		
-					ContentVO contentVO = this.getContent(new Integer(id));
-					if(contentVO != null && ContentDeliveryController.getContentDeliveryController().isValidContent(this.getDatabase(), contentVO.getId(), this.languageId, USE_LANGUAGE_FALLBACK, true, getPrincipal(), this.deliveryContext))
-						relatedContentVOList.add(contentVO);
-				}				
+					Integer contentId = new Integer(id);
+					if(ContentDeliveryController.getContentDeliveryController().isValidContent(this.getDatabase(), contentId, this.languageId, USE_LANGUAGE_FALLBACK, true, getPrincipal(), this.deliveryContext))
+						relatedContentVOList.add(this.getContent(contentId));
+				}
+				*/
 			}
 		}
 		catch(Exception e)
 		{
 			logger.error("An error occurred trying to get related contents from qualifyerXML " + qualifyerXML + ":" + e.getMessage(), e);
 		}
-
-		RequestAnalyser.getRequestAnalyser().registerComponentStatistics("getRelatedContentsFromXML", t.getElapsedTime());
+		
+		long elapsedTime = t.getElapsedTimeNanos() / (1000 * 1000);
+		RequestAnalyser.getRequestAnalyser().registerComponentStatistics("getRelatedContentsFromXML", elapsedTime);
 
 		return relatedContentVOList;
 	}
@@ -2994,12 +3042,68 @@ public class BasicTemplateController implements TemplateController
 	
 	private List getRelatedPagesFromXML(String qualifyerXML, boolean escapeHTML)
 	{
+		if(logger.isInfoEnabled())
+			logger.info("qualifyerXML:" + qualifyerXML);
+
+		Timer t = new Timer();
+
 		List relatedPages = new ArrayList();
 		
 		try
 		{
 			if(qualifyerXML != null && !qualifyerXML.equals(""))
 			{
+				String startExpression = idElementStart;
+				String endExpression = idElementEnd;
+
+				int idIndex = qualifyerXML.indexOf(startExpression);
+				if(idIndex == -1)
+				{
+					startExpression = idAttribute1Start;
+					idIndex = qualifyerXML.indexOf(startExpression);
+					if(idIndex == -1)
+					{
+						startExpression = idAttribute2Start;
+						endExpression = idAttribute2End;
+						idIndex = qualifyerXML.indexOf(startExpression);						
+					}
+					else
+					{
+						endExpression = idAttribute1End;
+					}
+				}
+				
+				while(idIndex > -1)
+				{
+					int endIndex = qualifyerXML.indexOf(endExpression, idIndex + 4);
+						
+					String id = qualifyerXML.substring(idIndex + 4, endIndex);
+					System.out.println("id:" + id);
+					
+					try
+					{
+						SiteNodeVO siteNodeVO = this.nodeDeliveryController.getSiteNode(getDatabase(), new Integer(id)).getValueObject();
+						if(this.nodeDeliveryController.isValidSiteNode(getDatabase(), siteNodeVO.getId()))
+						{
+							WebPage webPage = new WebPage();						
+							webPage.setSiteNodeId(siteNodeVO.getSiteNodeId());
+							webPage.setLanguageId(this.languageId);
+							webPage.setContentId(null);
+							webPage.setNavigationTitle(this.nodeDeliveryController.getPageNavigationTitle(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), this.languageId, null, META_INFO_BINDING_NAME, NAV_TITLE_ATTRIBUTE_NAME, USE_LANGUAGE_FALLBACK, this.deliveryContext, escapeHTML));
+							webPage.setMetaInfoContentId(this.nodeDeliveryController.getMetaInfoContentId(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), META_INFO_BINDING_NAME, USE_INHERITANCE, this.deliveryContext));
+							webPage.setUrl(this.nodeDeliveryController.getPageUrl(getDatabase(), this.getPrincipal(), siteNodeVO.getSiteNodeId(), this.languageId, null, this.deliveryContext));
+							relatedPages.add(webPage);
+						}
+					}
+					catch(Exception e)
+					{
+					    logger.info("An error occurred when looking up one of the related Pages FromXML:" + e.getMessage(), e);
+					}
+
+					idIndex = qualifyerXML.indexOf(startExpression, idIndex + 5);
+				}
+					
+				/*
 				Document document = domBuilder.getDocument(qualifyerXML);
 								
 				List children = document.getRootElement().elements();
@@ -3032,12 +3136,16 @@ public class BasicTemplateController implements TemplateController
 					    logger.info("An error occurred when looking up one of the related Pages FromXML:" + e.getMessage(), e);
 					}
 				}	
+				*/
 			}
 		}
 		catch(Exception e)
 		{
 			logger.error("An error occurred trying to get related contents from qualifyerXML " + qualifyerXML + ":" + e.getMessage(), e);
 		}
+
+		long elapsedTime = t.getElapsedTimeNanos() / (1000 * 1000);
+		RequestAnalyser.getRequestAnalyser().registerComponentStatistics("getRelatedPagesFromXML", elapsedTime);
 
 		return relatedPages;
 	}
