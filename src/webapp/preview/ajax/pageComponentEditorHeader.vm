@@ -45,15 +45,6 @@
 
 <script type="text/javascript" src="${contextName}/script/jquery/jquery-1.2.6.min.js"></script>
 <script type="text/javascript" src="${contextName}/script/jqueryplugins/ui/jquery.dimensions.js"></script>
-<!--
-<script type="text/javascript" src="${contextName}/script/jqueryplugins/ui/ui.mouse.js"></script>
-<script type="text/javascript" src="${contextName}/script/jqueryplugins/ui/ui.draggable.js"></script>
-<script type="text/javascript" src="${contextName}/script/jqueryplugins/ui/ui.draggable.ext.js"></script>
-<script type="text/javascript" src="${contextName}/script/jqueryplugins/ui/ui.droppable.js"></script>
-<script type="text/javascript" src="${contextName}/script/jqueryplugins/ui/ui.droppable.ext.js"></script>
-<script type="text/javascript" src="${contextName}/script/jqueryplugins/ui/ui.sortable.js"></script>
-<script type="text/javascript" src="${contextName}/script/jqueryplugins/ui/ui.sortable.ext.js"></script>
--->
 <script type="text/javascript" src="${contextName}/script/jqueryplugins/ui/jquery-ui-dragDropTabs-1.6rc2.min.js"></script>
 
 
@@ -83,7 +74,7 @@
 						$(ui.helper).css('border', '1px solid #ccc');
 				    	$(ui.helper).css('background-color', 'white');
 				    	var currentMovedComponentId = $(ui.helper).attr("id");
-				    	if(currentMovedComponentId != '-1' && currentMovedComponentId != movedComponentId)
+						if(currentMovedComponentId != '-1' && currentMovedComponentId != movedComponentId)
 						{
 							movedElementId = currentMovedComponentId;
 							currentMovedComponentId = currentMovedComponentId.substring(currentMovedComponentId.indexOf("_") + 1, currentMovedComponentId.indexOf("Comp"));

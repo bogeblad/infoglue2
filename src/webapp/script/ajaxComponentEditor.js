@@ -2127,13 +2127,16 @@ function viewSource()
 			//assignComponent(e, siteNodeId, languageId, contentId, parentComponentId, slotId, specifyBaseTemplate, allowedComponentNamesUrlEncodedString, disallowedComponentNamesUrlEncodedString, slotPositionComponentId) 
 
 			$("#debugDiv").html("Assigning to:" + componentId + " with " + slotId + ":" + ":" + eleId);
-    		assignComponent(evt, siteNodeId, languageId, contentId, componentId, slotId, false, '', '', '');
 
-		    // cancel event bubbling
-   			//alert("7");
-
-		    if (evt && evt.stopPropagation) {evt.stopPropagation();}
-   			else if (window.event) {window.event.cancelBubble = true;}
+			//alert("draggedComponentId:"+ draggedComponentId + " - " + movedElementId + " - " + movedComponentId);
+			if(draggedComponentId != '-1' || movedElementId != '' || movedComponentId != '')
+			{
+				assignComponent(evt, siteNodeId, languageId, contentId, componentId, slotId, false, '', '', '');
+	
+			    // cancel event bubbling
+			    if (evt && evt.stopPropagation) {evt.stopPropagation();}
+	   			else if (window.event) {window.event.cancelBubble = true;}
+			}
 		}
 	}
 	
@@ -2638,7 +2641,7 @@ function viewSource()
 					clearMovedComponent = false;
 				}
 								
-				$("#debugDiv").html("AAAA:" + draggedComponentId);
+				$("#debugDiv").html("draggedComponentId:" + draggedComponentId);
 
 	   			if(movedComponentId && movedComponentId != "") 
 	   			{
@@ -2691,8 +2694,6 @@ function viewSource()
 	   		}, false);
 	    	element.addEventListener("mouseup", function (event){ 
 	    		
-				//alert("mouseup...:" + element + " - " + assignComponentCatched);
-
 	    		var hasClass = $(element).hasClass("slotPosition");
 	    		$("#debugDiv").html("Testing debug:" + elementId + " - " + hasClass);
 	    		if(!hasClass /*|| assignComponentCatched*/)
@@ -2703,7 +2704,8 @@ function viewSource()
 
 	    		assignComponentCatched = true;
 				$("#debugDiv").html("Assigning to:" + componentId + " with " + siteNodeId + ":" + languageId + ":" +contentId + ":" + componentId + ":" + id);
-	    		assignComponent(event, siteNodeId, languageId, contentId, componentId, id, skipFloatDiv, allowedComponentsArrayAsUrlEncodedString, disallowedComponentsArrayAsUrlEncodedString, slotPositionComponentId);
+				if(draggedComponentId != '-1' || movedElementId != '' || movedComponentId != '')
+					assignComponent(event, siteNodeId, languageId, contentId, componentId, id, skipFloatDiv, allowedComponentsArrayAsUrlEncodedString, disallowedComponentsArrayAsUrlEncodedString, slotPositionComponentId);
 	    	}, false);
 	    }
 	    else
@@ -2787,7 +2789,8 @@ function viewSource()
 	    			return;
 	    		}
 	    		
-	    		assignComponent(evt, siteNodeId, languageId, contentId, componentId, id, skipFloatDiv, allowedComponentsArrayAsUrlEncodedString, disallowedComponentsArrayAsUrlEncodedString, slotPositionComponentId);
+	    		if(draggedComponentId != '-1' || movedElementId != '' || movedComponentId != '')
+					assignComponent(evt, siteNodeId, languageId, contentId, componentId, id, skipFloatDiv, allowedComponentsArrayAsUrlEncodedString, disallowedComponentsArrayAsUrlEncodedString, slotPositionComponentId);
 	   		})
 	    }
 	}	
