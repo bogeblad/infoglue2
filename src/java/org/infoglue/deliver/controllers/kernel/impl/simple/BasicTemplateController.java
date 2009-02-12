@@ -2996,11 +2996,17 @@ public class BasicTemplateController implements TemplateController
 					int endIndex = qualifyerXML.indexOf(endExpression, idIndex + 4);
 						
 					String id = qualifyerXML.substring(idIndex + 4, endIndex);
-					//System.out.println("id:" + id);
 					
-					Integer contentId = new Integer(id);
-					if(ContentDeliveryController.getContentDeliveryController().isValidContent(this.getDatabase(), contentId, this.languageId, USE_LANGUAGE_FALLBACK, true, getPrincipal(), this.deliveryContext))
-						relatedContentVOList.add(this.getContent(contentId));
+					try
+					{
+						Integer contentId = new Integer(id);
+						if(ContentDeliveryController.getContentDeliveryController().isValidContent(this.getDatabase(), contentId, this.languageId, USE_LANGUAGE_FALLBACK, true, getPrincipal(), this.deliveryContext))
+							relatedContentVOList.add(this.getContent(contentId));
+					}
+					catch(Exception e)
+					{
+					    logger.info("An error occurred when looking up one of the related contents FromXML:" + e.getMessage(), e);
+					}
 
 					idIndex = qualifyerXML.indexOf(startExpression, idIndex + 5);
 				}
