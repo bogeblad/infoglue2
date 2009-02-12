@@ -23,6 +23,7 @@
 
 package org.infoglue.cms.controllers.kernel.impl.simple;
 
+import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.Collection;
 import java.util.Iterator;
@@ -131,14 +132,21 @@ public class RedirectController extends BaseController
                 CacheController.cacheObject("redirectCache", "allRedirects", cachedRedirects);
             }
             
-            //System.out.println("requestURI:" + requestURI);
+			if(logger.isInfoEnabled())
+	        	logger.info("requestURI before decoding:" + requestURI);
             
+			requestURI = URLDecoder.decode(requestURI, CmsPropertyHandler.getURIEncoding());
+			if(logger.isInfoEnabled())
+	        	logger.info("requestURI after decoding:" + requestURI);
+			
 			String fromEncoding = CmsPropertyHandler.getURIEncoding();
 			String toEncoding = "utf-8";
 			String testRequestURI = new String(requestURI.getBytes(fromEncoding), toEncoding);
 			if(testRequestURI.indexOf((char)65533) == -1)
 				requestURI = testRequestURI;
 
+			if(logger.isInfoEnabled())
+	        	logger.info("requestURI after redecoding:" + requestURI);
 			//System.out.println("requestURI:" + requestURI);
                         
             Iterator redirectsIterator = cachedRedirects.iterator();
@@ -146,7 +154,8 @@ public class RedirectController extends BaseController
             {
                 RedirectVO redirect = (RedirectVO)redirectsIterator.next(); 
                 //System.out.println("url:" + redirect.getUrl());
-                logger.info("url:" + redirect.getUrl());
+                if(logger.isInfoEnabled())
+                	logger.info("url:" + redirect.getUrl());
                 boolean matches = false;
                 if(redirect.getUrl().startsWith(".*"))
                 {
