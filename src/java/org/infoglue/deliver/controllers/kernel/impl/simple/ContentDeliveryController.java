@@ -67,6 +67,7 @@ import org.infoglue.cms.entities.content.impl.simple.SmallishContentImpl;
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
 import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.entities.management.Repository;
+import org.infoglue.cms.entities.management.impl.simple.ContentTypeDefinitionImpl;
 import org.infoglue.cms.entities.structure.SiteNode;
 import org.infoglue.cms.entities.structure.SiteNodeVO;
 import org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl;
@@ -2349,12 +2350,19 @@ public class ContentDeliveryController extends BaseDeliveryController
 	
 	public ContentTypeDefinitionVO getContentTypeDefinitionVO(Database db, Integer contentId) throws SystemException, Exception
 	{
+		//Timer t = new Timer();
 		ContentTypeDefinitionVO contentTypeDefinitionVO = null;
 		
 		if(contentId != null && contentId.intValue() > 0)
 		{
-			Content content = (Content)getObjectWithId(ContentImpl.class, contentId, db); 
-			contentTypeDefinitionVO = content.getContentTypeDefinition().getValueObject();       
+			SmallContentImpl smallContent = (SmallContentImpl)getObjectWithId(SmallContentImpl.class, contentId, db);
+			contentTypeDefinitionVO = (ContentTypeDefinitionVO) getVOWithId(ContentTypeDefinitionImpl.class, smallContent.getContentTypeDefinitionId(), db);
+			//RequestAnalyser.getRequestAnalyser().registerComponentStatistics("getContentTypeDefinitionVO 1", t.getElapsedTimeNanos() / 1000);
+			/*
+			Content content = (Content)getObjectWithId(ContentImpl.class, contentId, db);
+			contentTypeDefinitionVO = content.getContentTypeDefinition().getValueObject();
+			RequestAnalyser.getRequestAnalyser().registerComponentStatistics("getContentTypeDefinitionVO 2", t.getElapsedTimeNanos() / 1000);
+			*/
 		}
 		
 		return contentTypeDefinitionVO;
