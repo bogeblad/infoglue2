@@ -125,7 +125,7 @@ public class WYSIWYGPropertiesAction extends InfoGlueAbstractAction
 				String languageId = this.getRequest().getParameter("languageId");
 				logger.info("contentId:" + contentId);
 				logger.info("languageId:" + languageId);
-				if(contentId != null && languageId != null)
+				if(contentId != null && !contentId.equals("-1") && languageId != null && !languageId.equals("-1"))
 				{
 					ContentVersionVO cvo = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(new Integer(contentId), new Integer(languageId));
 					parameters.put("contentVersionId", cvo.getId());
