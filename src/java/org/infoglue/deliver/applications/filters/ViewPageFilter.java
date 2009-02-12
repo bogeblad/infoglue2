@@ -134,12 +134,20 @@ public class ViewPageFilter implements Filter
 
         validateCmsProperties(httpRequest);
         String requestURI = URLDecoder.decode(getContextRelativeURI(httpRequest), "UTF-8");
-        logger.info("requestURI:" + requestURI);
+        if(logger.isInfoEnabled())
+        	logger.info("requestURI:" + requestURI);
 
         try
         {
         	//System.out.println("requestURI:" + requestURI);
-			String fromEncoding = CmsPropertyHandler.getURIEncoding();
+			if(logger.isInfoEnabled())
+	        	logger.info("requestURI before decoding:" + requestURI);
+            
+			requestURI = URLDecoder.decode(requestURI, CmsPropertyHandler.getURIEncoding());
+			if(logger.isInfoEnabled())
+	        	logger.info("requestURI after decoding:" + requestURI);
+
+        	String fromEncoding = CmsPropertyHandler.getURIEncoding();
 			String toEncoding = "utf-8";
 			String testRequestURI = new String(requestURI.getBytes(fromEncoding), toEncoding);
 			if(testRequestURI.indexOf((char)65533) == -1)
@@ -150,7 +158,10 @@ public class ViewPageFilter implements Filter
         {
         	logger.warn("Error checking for unicode chars:" + e.getMessage());
 		}
-        
+
+        if(logger.isInfoEnabled())
+        	logger.info("requestURI after encoding check:" + requestURI);
+
         try
         {
         	if(requestURI.indexOf(CmsPropertyHandler.getDigitalAssetBaseUrl() + "/protected") > -1)
