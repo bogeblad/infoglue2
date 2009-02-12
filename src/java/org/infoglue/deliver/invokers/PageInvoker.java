@@ -497,12 +497,18 @@ public abstract class PageInvoker
 
 	private void getLastModifiedDateTime() throws Bug
 	{
+		if(CmsPropertyHandler.getSetDerivedLastModifiedInLive().equalsIgnoreCase("false"))
+			return;
+		
+		Integer maxNumberOfVersionsForDerivedLastModifiedInLive = CmsPropertyHandler.getMaxNumberOfVersionsForDerivedLastModifiedInLive();
+		
 		Date lastModifiedDateTime = null;
 		//System.out.println("UsedContentVersions:" + this.deliveryContext.getUsedContentVersions().size());
 		Timer t = new Timer();
 		if(this.deliveryContext.getUsedContentVersions().size() > 0)
 		{
 			Iterator userContentVersionIterator = this.deliveryContext.getUsedContentVersions().iterator();
+			int processed = 0;
 			while(userContentVersionIterator.hasNext())
 			{
 				String usedContentVersion = (String)userContentVersionIterator.next();	
@@ -513,7 +519,8 @@ public abstract class PageInvoker
 		    			String versionId = usedContentVersion.substring(15);
 		    			if(!versionId.equals("null") && !versionId.equals(""))
 		    			{
-			    			Integer contentVersionId = new Integer(versionId);
+		    				processed++;
+		    				Integer contentVersionId = new Integer(versionId);
 			    			SmallestContentVersionVO contentVersion = ContentVersionController.getContentVersionController().getSmallestContentVersionVOWithId(contentVersionId, getDatabase());
 			    			if(lastModifiedDateTime == null || contentVersion.getModifiedDateTime().after(lastModifiedDateTime))
 			    			{
@@ -526,11 +533,15 @@ public abstract class PageInvoker
 		    			e.printStackTrace();
 					}
 		    	}
+				long current = System.currentTimeMillis() - lastModifiedDateTime.getTime();
+				if(processed > maxNumberOfVersionsForDerivedLastModifiedInLive || current < (1000 * 60 * 10))
+					break;
 			}
 			this.deliveryContext.setLastModifiedDateTime(lastModifiedDateTime);
 		}
 		
-		RequestAnalyser.getRequestAnalyser().registerComponentStatistics("getLastModifiedDateTime", t.getElapsedTime());
+		long elapsedTime = t.getElapsedTime();
+		RequestAnalyser.getRequestAnalyser().registerComponentStatistics("getLastModifiedDateTime", elapsedTime);
 	}
 
 	protected String decorateHeadAndPageWithVarsFromComponents(String pageString)

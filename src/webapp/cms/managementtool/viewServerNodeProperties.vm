@@ -303,6 +303,17 @@
 			#editPropertyFieldCSS("ServerNode.property.disableAssetDeletionInWorkThread" "disableAssetDeletionInWorkThread" "$this.getPropertyValue('disableAssetDeletionInWorkThread')" "51" "$!serverNodeId")
 			#editPropertyFieldCSS("ServerNode.property.disableAssetDeletionInLiveThread" "disableAssetDeletionInLiveThread" "$this.getPropertyValue('disableAssetDeletionInLiveThread')" "51" "$!serverNodeId")
 			
+			#yesNoDropDownWithInheritCSS("ServerNode.property.setDerivedLastModifiedInLive" "setDerivedLastModifiedInLive" "$this.getPropertyValue('setDerivedLastModifiedInLive')")
+			#set($option2 = ["25", "25"])
+			#set($option1 = ["50", "Inherit"])
+			#set($option4 = ["100", "100"])
+			#set($option5 = ["150", "150"])
+			#set($option6 = ["200", "200"])
+			#set($option7 = ["300", "300"])
+			#set($option8 = ["1000", "1000"])
+			#set($maxNumberOfVersionsForDerivedLastModifiedInLiveOptions = [$option1, $option2, $option3, $option4, $option5, $option6, $option7, $option8]) 
+			#selectFieldCSS("ServerNode.property.maxNumberOfVersionsForDerivedLastModifiedInLive" "maxNumberOfVersionsForDerivedLastModifiedInLive" $this.getPropertyValue('maxNumberOfVersionsForDerivedLastModifiedInLive') $maxNumberOfVersionsForDerivedLastModifiedInLiveOptions)
+			
 			<div class="buttonRow">
 				<input type="image" src="$ui.getString("images.managementtool.buttons.save")" width="50" height="25" style="width: 50px;">
 				<a href="javascript:saveAndExit(document.editForm, 'ViewServerNodeProperties!saveAndExit.action');"><img src="$ui.getString("images.managementtool.buttons.saveAndExit")" width="80" height="25" border="0"></a>

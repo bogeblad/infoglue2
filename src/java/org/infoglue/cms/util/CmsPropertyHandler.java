@@ -1342,7 +1342,26 @@ public class CmsPropertyHandler
 	{
         return getServerNodeProperty("encodeCasServiceUrl", true, "true");
 	}
-	
+
+	public static String getSetDerivedLastModifiedInLive()
+	{
+        return getServerNodeProperty("setDerivedLastModifiedInLive", true, "true");
+	}
+
+	public static Integer getMaxNumberOfVersionsForDerivedLastModifiedInLive()
+	{
+		Integer max = 50;
+		try
+		{
+			max = new Integer(getServerNodeProperty("maxNumberOfVersionsForDerivedLastModifiedInLive", true, "50"));
+		}
+		catch (Exception e) 
+		{
+			logger.error("Problem parsing maxNumberOfVersionsForDerivedLastModifiedInLive:" + e.getMessage());
+		}
+		return max;
+	}
+
 	public static boolean getDuplicateAssetsBetweenVersions()
 	{
 		String duplicateAssetsBetweenVersions = getServerNodeProperty("duplicateAssetsBetweenVersions", true, "false");

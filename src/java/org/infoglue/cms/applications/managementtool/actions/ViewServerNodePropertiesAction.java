@@ -308,6 +308,8 @@ public class ViewServerNodePropertiesAction extends InfoGluePropertiesAbstractAc
 	    populate(ps, "minimumTimeBetweenVersionsDuringClean");
 	    populateData(ps, "assetUploadTransformationsSettings");
 
+	    populate(ps, "setDerivedLastModifiedInLive");
+	    populate(ps, "maxNumberOfVersionsForDerivedLastModifiedInLive");
 
 	    try
 	    {
