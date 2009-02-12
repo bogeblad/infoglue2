@@ -43,7 +43,9 @@ import org.apache.commons.dbcp.PoolingDriver;
 import org.apache.commons.pool.ObjectPool;
 import org.apache.commons.pool.impl.GenericObjectPool;
 import org.apache.log4j.Logger;
+import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.deliver.util.NullObject;
+import org.infoglue.deliver.util.Timer;
 
 import com.opensymphony.module.propertyset.InvalidPropertyTypeException;
 import com.opensymphony.module.propertyset.PropertyException;
@@ -117,7 +119,35 @@ public class InfoGlueJDBCPropertySet extends JDBCPropertySet
 
             PreparedStatement ps = null;
             String sql = "SELECT " + colItemKey + "," + colItemType + ", " + colString + ", " + colDate + ", " + colData + ", " + colFloat + ", " + colNumber + " FROM " + tableName + " WHERE " + colItemKey + " LIKE ? AND " + colGlobalKey + " = ?";
-
+            
+            if(logger.isInfoEnabled())
+            {
+            	logger.info("app:" + CmsPropertyHandler.getApplicationName());
+            	logger.info("operating mode:" + CmsPropertyHandler.getOperatingMode());
+            }
+            
+            if(CmsPropertyHandler.getApplicationName().equalsIgnoreCase("deliver") && CmsPropertyHandler.getOperatingMode().equalsIgnoreCase("3"))
+            {
+	            sql = "SELECT " + colItemKey + "," + colItemType + ", " + colString + ", " + colDate + ", " + colData + ", " + colFloat + ", " + colNumber + " FROM " + tableName;
+	            sql += " WHERE ";
+	            sql += "" + colItemKey + " LIKE ? AND ";
+	            sql += "" + colItemKey + " NOT LIKE 'principal_%_languageCode' AND ";
+	        	sql += "" + colItemKey + " NOT LIKE 'principal_%_defaultToolId' AND  ";
+	    		sql += "" + colItemKey + " NOT LIKE 'content_%_allowedContentTypeNames' AND  ";
+	    		sql += "" + colItemKey + " NOT LIKE 'content_%_defaultContentTypeName' AND  ";
+	    		sql += "" + colItemKey + " NOT LIKE 'content_%_initialLanguageId' AND  ";
+	    		sql += "" + colItemKey + " NOT LIKE 'repository_%_defaultFolderContentTypeName' AND  ";
+	    		sql += "" + colItemKey + " NOT LIKE 'repository_%_defaultTemplateRepository' AND  ";
+	    		sql += "" + colItemKey + " NOT LIKE 'repository_%_parentRepository' AND  ";
+	    		sql += "" + colItemKey + " NOT LIKE 'repository_%_WYSIWYGConfig' AND  ";
+	    		sql += "" + colItemKey + " NOT LIKE 'repository_%_StylesXML' AND  ";
+	    		sql += "" + colItemKey + " NOT LIKE 'repository_%_extraProperties' AND  ";
+	    		sql += "" + colGlobalKey + " = ? ";
+            }
+            
+            if(logger.isInfoEnabled())
+            	logger.info("sql:" + sql);
+            
             if (type == 0) 
             {
                 ps = conn.prepareStatement(sql);
@@ -133,13 +163,21 @@ public class InfoGlueJDBCPropertySet extends JDBCPropertySet
                 ps.setInt(3, type);
             }
 
+            Timer t = new Timer();
+            
             ArrayList list = new ArrayList();
             ResultSet rs = ps.executeQuery();
-
+            
+            int rows = 0;
             while (rs.next()) 
             {
+            	rows++;
             	String key = rs.getString(colItemKey);
                 int typeId = rs.getInt(colItemType);
+            	
+            	if(logger.isInfoEnabled())
+            		logger.info("key[" + typeId + "]:" + key);
+                
                 list.add(key);
                 
                 if(typeMap == null)
@@ -203,6 +241,9 @@ public class InfoGlueJDBCPropertySet extends JDBCPropertySet
             		valueMap.put(key, o);					            		
             	}
             }
+            if(logger.isInfoEnabled())
+	            t.printElapsedTime("All rows in InfoGlueJDBCPropertySet [" + rows + "] took");
+
             allKeysCached = true;
             
             rs.close();
