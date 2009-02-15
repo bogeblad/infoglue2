@@ -515,7 +515,7 @@
       <sql name="repositoryId" type="integer" dirty="check" />
     </field>
     <field name="siteNodeTypeDefinitionId" type="java.lang.Integer">
-      <sql name="siteNodeTypeDefinitionId" type="integer" dirty="check" />
+      <sql name="SiNoTypeDefId" type="integer" dirty="check" />
     </field>
     
   </class>
