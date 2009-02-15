@@ -1638,9 +1638,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			Integer siteNodeTypeDefinitionId = siteNodeVO.getSiteNodeTypeDefinitionId();
 			try
 			{
-				Timer t = new Timer();
 				siteNodeTypeDefinitionVO = SiteNodeTypeDefinitionController.getController().getSiteNodeTypeDefinitionVOWithId(siteNodeTypeDefinitionId, db);
-				t.printElapsedTimeMicro("Loading siteNodeTypeDefinitionVO took");
 			}
 			catch (Exception e) 
 			{
