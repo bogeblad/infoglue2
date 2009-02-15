@@ -476,12 +476,13 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			        }
 				}
 			}
-			
-		    System.out.println("The page delivery took " + elapsedTime + "ms for request " + this.getRequest().getRequestURL() + (this.getRequest().getQueryString() == null ? "" : "?" + this.getRequest().getQueryString()));
-		    RequestAnalyser.getRequestAnalyser().registerPageStatistics("" + this.getRequest().getRequestURL() + (this.getRequest().getQueryString() == null ? "" : "?" + this.getRequest().getQueryString()), elapsedTime);
+
+			String originalFullUrl = getOriginalFullURL();
+		    System.out.println("The page delivery took " + elapsedTime + "ms for request " + originalFullUrl);
+		    RequestAnalyser.getRequestAnalyser().registerPageStatistics("" + originalFullUrl, elapsedTime);
 		    if(elapsedTime > 10000)
 			{
-			    logger.warn("The page delivery took " + elapsedTime + "ms for request " + this.getRequest().getRequestURL() + "?" + this.getRequest().getQueryString());
+			    logger.warn("The page delivery took " + elapsedTime + "ms for request " + originalFullUrl);
 			    logger.warn("The memory consumption was " + (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) + "(" + Runtime.getRuntime().totalMemory() + "/" + Runtime.getRuntime().maxMemory() + ") bytes");
 			}
 			else
@@ -794,9 +795,11 @@ public class ViewPageAction extends InfoGlueAbstractAction
 				}
 			}
 
+			String originalFullUrl = getOriginalFullURL();
+		    System.out.println("The page delivery took " + elapsedTime + "ms for request " + originalFullUrl);
 			if(elapsedTime > 20000)
 			{
-			    logger.warn("The page delivery took " + elapsedTime + "ms for request " + this.getRequest().getRequestURL() + "?" + this.getRequest().getQueryString());
+			    logger.warn("The page delivery took " + elapsedTime + "ms for request " + originalFullUrl);
 			    logger.warn("The memory consumption was " + (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) + "(" + Runtime.getRuntime().totalMemory() + "/" + Runtime.getRuntime().maxMemory() + ") bytes");
 			}
 			else
@@ -1690,6 +1693,47 @@ public class ViewPageAction extends InfoGlueAbstractAction
 		
 		return errorUrl;
   	}
+
+	/**
+	 * This method returns the exact full url excluding query string from the original request - not modified
+	 * @return
+	 */
+	
+	public String getOriginalURL()
+	{
+    	String originalRequestURL = this.getRequest().getParameter("originalRequestURL");
+    	if(originalRequestURL == null || originalRequestURL.length() == 0)
+    		originalRequestURL = this.getRequest().getRequestURL().toString();
+
+    	return originalRequestURL;
+	}
+
+	/**
+	 * This method returns the exact querystring from the original request - not modified
+	 * @return
+	 */
+	
+	public String getOriginalQueryString()
+	{
+    	String originalQueryString = this.getRequest().getParameter("originalQueryString");
+    	if(originalQueryString == null || originalQueryString.length() == 0)
+    		originalQueryString = this.getRequest().getQueryString();
+
+    	return originalQueryString;
+	}
+
+	/**
+	 * This method returns the exact full url from the original request - not modified
+	 * @return
+	 */
+	
+	public String getOriginalFullURL()
+	{
+    	String originalRequestURL = getOriginalURL();
+    	String originalQueryString = getOriginalQueryString();
+
+    	return originalRequestURL + (originalQueryString == null ? "" : "?" + originalQueryString);
+	}
 
   	/**
   	 * This method fetches the roles and other stuff for the user by invoking the autorizer-module.
