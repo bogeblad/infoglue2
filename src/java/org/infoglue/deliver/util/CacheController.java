@@ -48,6 +48,7 @@ import org.exolab.castor.jdo.CacheManager;
 import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
+import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeVersionController;
 import org.infoglue.cms.entities.content.impl.simple.ContentCategoryImpl;
 import org.infoglue.cms.entities.content.impl.simple.ContentImpl;
 import org.infoglue.cms.entities.content.impl.simple.ContentRelationImpl;
@@ -658,6 +659,7 @@ public class CacheController extends Thread
 					if((cacheName.equalsIgnoreCase("latestSiteNodeVersionCache") || cacheName.equalsIgnoreCase("pageCacheLatestSiteNodeVersions") || cacheName.equalsIgnoreCase("pageCacheSiteNodeTypeDefinition")) && entity.indexOf("SiteNode") > 0)
 					{	
 						clear = true;
+						selectiveCacheUpdate = true;
 					}
 					if((cacheName.equalsIgnoreCase("parentSiteNodeCache") || cacheName.equalsIgnoreCase("pageCacheParentSiteNodeCache")) && entity.indexOf("SiteNode") > 0)
 					{	
@@ -825,6 +827,7 @@ public class CacheController extends Thread
 					if(cacheName.equalsIgnoreCase("siteNodeLanguageCache") && (entity.indexOf("Repository") > 0 || entity.indexOf("Language") > 0 || entity.indexOf("SiteNode") > 0))
 					{
 						clear = true;
+						selectiveCacheUpdate = true;
 					}
 					if(cacheName.equalsIgnoreCase("contentTypeDefinitionCache") && entity.indexOf("ContentTypeDefinition") > 0)
 					{
@@ -844,11 +847,20 @@ public class CacheController extends Thread
 						clear = true;						
 					}
 					
-					logger.info("clear:" + clear);
-					
+					if(logger.isInfoEnabled())
+						logger.info("clear:" + clear);
+
+					if(cacheName.equalsIgnoreCase("pageCache"))
+						System.out.println("clear:" + clear);
+
 					if(clear)
 					{	
-					    logger.info("clearing:" + e.getKey());
+						if(logger.isInfoEnabled())
+						    logger.info("clearing:" + e.getKey());
+					    
+						if(cacheName.equalsIgnoreCase("pageCache"))
+							System.out.println("clearing:" + e.getKey());
+
 						Object object = e.getValue();
 						
 						if(object instanceof Map)
@@ -871,6 +883,8 @@ public class CacheController extends Thread
 						    GeneralCacheAdministrator cacheInstance = (GeneralCacheAdministrator)e.getValue();
 						    synchronized(cacheInstance)
 						    {
+						    	//ADD logic to flush correct on sitenode and sitenodeversion
+						    	/*
 						    	if(selectiveCacheUpdate && entity.indexOf("SiteNode") > 0)
 							    {
 							    	cacheInstance.flushAll();
@@ -878,6 +892,47 @@ public class CacheController extends Thread
 								    eventListeners.remove(cacheName + "_cacheMapAccessEventListener");
 							    	logger.info("clearing:" + e.getKey());
 							    }
+							    */
+							    if(selectiveCacheUpdate && entity.indexOf("Repository") > 0 && useSelectivePageCacheUpdate)
+							    {
+							    	cacheInstance.flushGroup("repository_" + entityId);
+							    	cacheInstance.flushGroup("selectiveCacheUpdateNonApplicable");
+							    	logger.info("clearing " + e.getKey() + " with group " + "repository_" + entityId);
+								}
+							    else if(selectiveCacheUpdate && entity.indexOf("SiteNodeVersion") > 0)
+							    {
+							    	logger.info("Getting eventListeners...");
+							        Object cacheEntryEventListener = eventListeners.get(e.getKey() + "_cacheEntryEventListener");
+						    		Object cacheMapAccessEventListener = eventListeners.get(e.getKey() + "_cacheMapAccessEventListener");
+
+							    	logger.info("Before flushGroup...");
+
+						    		cacheInstance.flushGroup("siteNodeVersion_" + entityId);
+						    		cacheInstance.flushGroup("selectiveCacheUpdateNonApplicable");
+							    	logger.warn("clearing " + e.getKey() + " with group " + "siteNodeVersion_" + entityId);
+							    	
+							    	try
+							    	{
+								    	logger.info("BeforesiteNodeVersionVO...");
+								    	Integer siteNodeId = SiteNodeVersionController.getController().getSiteNodeVersionVOWithId(new Integer(entityId)).getSiteNodeId();
+								    	if(siteNodeId != null)
+							    		{
+									    	logger.info("Before flushGroup2...");
+							    			cacheInstance.flushGroup("siteNode_" + siteNodeId);
+									    	logger.info("After flushGroup2...");
+							    		}
+							    	}
+							    	catch(SystemException se)
+							    	{
+							    		logger.info("Missing content version: " + se.getMessage());
+							    	}
+							    }
+							    else if(selectiveCacheUpdate && (entity.indexOf("SiteNode") > 0 && entity.indexOf("SiteNodeTypeDefinition") == -1) && useSelectivePageCacheUpdate)
+							    {
+							    	cacheInstance.flushGroup("siteNode_" + entityId);
+							    	cacheInstance.flushGroup("selectiveCacheUpdateNonApplicable");
+							    	logger.info("clearing " + e.getKey() + " with group " + "siteNode_" + entityId);
+								}
 							    else if(selectiveCacheUpdate && entity.indexOf("ContentVersion") > 0 && useSelectivePageCacheUpdate)
 							    {
 							    	logger.info("Getting eventListeners...");
@@ -900,17 +955,6 @@ public class CacheController extends Thread
 							    			cacheInstance.flushGroup("content_" + contentId);
 									    	logger.info("After flushGroup2...");
 							    		}
-								    	/*
-								    	ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getContentVersionVOWithId(new Integer(entityId));
-								    	logger.warn("After contentVersionVO...");
-									    if(contentVersionVO != null)
-							    		{
-									    	logger.warn("Before flushGroup2...");
-							    			cacheInstance.flushGroup("content_" + contentVersionVO.getContentId());
-									    	logger.warn("After flushGroup2...");
-							    			//System.out.println("also clearing " + e.getKey() + " with group " + "content_" + contentVersionVO.getContentId());
-							    		}
-							    		*/
 							    	}
 							    	catch(SystemException se)
 							    	{

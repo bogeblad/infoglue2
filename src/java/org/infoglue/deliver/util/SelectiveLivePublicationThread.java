@@ -23,6 +23,7 @@
 package org.infoglue.deliver.util;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
@@ -47,6 +48,9 @@ import org.infoglue.cms.entities.content.impl.simple.SmallContentVersionImpl;
 import org.infoglue.cms.entities.content.impl.simple.SmallDigitalAssetImpl;
 import org.infoglue.cms.entities.content.impl.simple.SmallestContentVersionImpl;
 import org.infoglue.cms.entities.content.impl.simple.SmallishContentImpl;
+import org.infoglue.cms.entities.management.Language;
+import org.infoglue.cms.entities.management.Repository;
+import org.infoglue.cms.entities.management.RepositoryLanguage;
 import org.infoglue.cms.entities.management.impl.simple.AvailableServiceBindingImpl;
 import org.infoglue.cms.entities.management.impl.simple.GroupImpl;
 import org.infoglue.cms.entities.management.impl.simple.RoleImpl;
@@ -58,12 +62,18 @@ import org.infoglue.cms.entities.publishing.impl.simple.PublicationImpl;
 import org.infoglue.cms.entities.structure.SiteNodeVO;
 import org.infoglue.cms.entities.structure.SiteNodeVersion;
 import org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl;
+import org.infoglue.cms.entities.structure.impl.simple.SiteNodeVersionImpl;
 import org.infoglue.cms.entities.structure.impl.simple.SmallSiteNodeImpl;
+import org.infoglue.cms.entities.structure.impl.simple.SmallSiteNodeVersionImpl;
+import org.infoglue.cms.exception.Bug;
+import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.NotificationMessage;
 import org.infoglue.deliver.applications.databeans.CacheEvictionBean;
 import org.infoglue.deliver.controllers.kernel.impl.simple.ContentDeliveryController;
 import org.infoglue.deliver.controllers.kernel.impl.simple.DigitalAssetDeliveryController;
+import org.infoglue.deliver.controllers.kernel.impl.simple.LanguageDeliveryController;
+import org.infoglue.deliver.controllers.kernel.impl.simple.NodeDeliveryController;
 
 /**
  * @author mattias
@@ -122,10 +132,7 @@ public class SelectiveLivePublicationThread extends PublicationThread
 				    String objectName = cacheEvictionBean.getObjectName();
 					String typeId = cacheEvictionBean.getTypeId();
 					
-				    logger.info("className:" + className);
-					logger.info("objectId:" + objectId);
-					logger.info("objectName:" + objectName);
-					logger.info("typeId:" + typeId);
+				    logger.warn("className:" + className + " objectId:" + objectId + " objectName: " + objectName + " typeId: " + typeId);
 	
 			        boolean isDependsClass = false;
 				    if(className != null && className.equalsIgnoreCase(PublicationDetailImpl.class.getName()))
@@ -276,7 +283,6 @@ public class SelectiveLivePublicationThread extends PublicationThread
 									db.begin();
 									
 									Content content = ContentController.getContentController().getReadOnlyContentWithId(siteNodeVO.getMetaInfoContentId(), db);
-									//Content content = ContentController.getContentController().getContentWithId(siteNodeVO.getMetaInfoContentId(), db);
 									List contentVersionIds = new ArrayList();
 									Iterator contentVersionIterator = content.getContentVersions().iterator();
 									logger.info("Versions:" + content.getContentVersions().size());
@@ -321,7 +327,7 @@ public class SelectiveLivePublicationThread extends PublicationThread
 						*/
 						if(className.equals("ServerNodeProperties"))
 						{
-						    logger.info("\n\n\nUpdating all caches as this was a publishing-update\n\n\n");
+						    logger.warn("\n\n\nUpdating all caches as this was a publishing-update\n\n\n");
 						    //CacheController.clearCastorCaches();
 
 							logger.info("\n\n\nclearing all except page cache as we are in publish mode..\n\n\n");											
@@ -345,6 +351,8 @@ public class SelectiveLivePublicationThread extends PublicationThread
 							CacheController.clearCache("pageCacheSiteNodeTypeDefinition");
 						}
 					}
+
+					recacheEntities(cacheEvictionBean);
 				}
 			} 
 			catch (Exception e)
@@ -357,6 +365,198 @@ public class SelectiveLivePublicationThread extends PublicationThread
 				RequestAnalyser.getRequestAnalyser().setBlockRequests(false);
 			}
 		}
+	}
+	
+	private void recacheEntities(CacheEvictionBean cacheEvictionBean) throws Exception
+	{
+		Timer t = new Timer();
+		
+	    String className = cacheEvictionBean.getClassName();
+	    String objectId = cacheEvictionBean.getObjectId();
+	    System.out.println("*********************************");
+	    System.out.println("recacheEntities for " + className);
+	    System.out.println("*********************************");
+	    
+		Database db = CastorDatabaseService.getDatabase();
+		db.begin();
+		
+		try
+		{
+			if(Class.forName(className).getName().equals(ContentImpl.class.getName()))
+			{
+				getObjectWithId(ContentImpl.class, new Integer(objectId), db);
+				getObjectWithId(SmallContentImpl.class, new Integer(objectId), db);
+				getObjectWithId(SmallishContentImpl.class, new Integer(objectId), db);
+				getObjectWithId(MediumContentImpl.class, new Integer(objectId), db);
+			}
+			if(Class.forName(className).getName().equals(ContentVersionImpl.class.getName()))
+			{
+				getObjectWithId(ContentVersionImpl.class, new Integer(objectId), db);
+				getObjectWithId(SmallContentVersionImpl.class, new Integer(objectId), db);
+				getObjectWithId(SmallestContentVersionImpl.class, new Integer(objectId), db);
+			}
+			else if(Class.forName(className).getName().equals(AvailableServiceBindingImpl.class.getName()))
+			{
+				getObjectWithId(AvailableServiceBindingImpl.class, new Integer(objectId), db);
+				getObjectWithId(SmallAvailableServiceBindingImpl.class, new Integer(objectId), db);
+			}
+			else if(Class.forName(className).getName().equals(SiteNodeImpl.class.getName()))
+			{
+				SiteNodeImpl siteNode = (SiteNodeImpl)getObjectWithId(SiteNodeImpl.class, new Integer(objectId), db);
+				getObjectWithId(SmallSiteNodeImpl.class, new Integer(objectId), db);
+				
+				NodeDeliveryController ndc = NodeDeliveryController.getNodeDeliveryController(new Integer(objectId), new Integer(-1), new Integer(-1));
+				Repository repository = siteNode.getRepository();
+		    	if(repository != null)
+				{
+					Collection languages = repository.getRepositoryLanguages();
+					Iterator languageIterator = languages.iterator();
+					while(languageIterator.hasNext())
+					{
+						RepositoryLanguage repositoryLanguage = (RepositoryLanguage)languageIterator.next();
+						Language currentLanguage = repositoryLanguage.getLanguage();
+						LanguageDeliveryController.getLanguageDeliveryController().getLanguageIfSiteNodeSupportsIt(db, currentLanguage.getId(), siteNode.getId());
+					}
+				}
+				
+			}
+			else if(Class.forName(className).getName().equals(SiteNodeVersionImpl.class.getName()))
+			{
+				getObjectWithId(SiteNodeVersionImpl.class, new Integer(objectId), db);
+				getObjectWithId(SmallSiteNodeVersionImpl.class, new Integer(objectId), db);
+			}
+			else if(Class.forName(className).getName().equals(DigitalAssetImpl.class.getName()))
+			{
+				getObjectWithId(SmallDigitalAssetImpl.class, new Integer(objectId), db);
+				getObjectWithId(MediumDigitalAssetImpl.class, new Integer(objectId), db);
+			}
+			else if(Class.forName(className).getName().equals(PublicationImpl.class.getName()))
+			{
+				List publicationDetailVOList = PublicationController.getController().getPublicationDetailVOList(new Integer(objectId));
+				Iterator publicationDetailVOListIterator = publicationDetailVOList.iterator();
+				while(publicationDetailVOListIterator.hasNext())
+				{
+					PublicationDetailVO publicationDetailVO = (PublicationDetailVO)publicationDetailVOListIterator.next();
+					logger.info("publicationDetailVO.getEntityClass():" + publicationDetailVO.getEntityClass());
+					logger.info("publicationDetailVO.getEntityId():" + publicationDetailVO.getEntityId());
+					if(Class.forName(publicationDetailVO.getEntityClass()).getName().equals(ContentVersion.class.getName()))
+					{
+						logger.info("We cache all content having references to contentVersion: " + publicationDetailVO.getEntityId());
+						Integer contentId = ContentVersionController.getContentVersionController().getContentIdForContentVersion(publicationDetailVO.getEntityId());
+						getObjectWithId(ContentVersionImpl.class, new Integer(publicationDetailVO.getEntityId()), db);
+						getObjectWithId(SmallContentVersionImpl.class, new Integer(publicationDetailVO.getEntityId()), db);
+						getObjectWithId(SmallestContentVersionImpl.class, new Integer(publicationDetailVO.getEntityId()), db);
 
+						getObjectWithId(ContentImpl.class, new Integer(contentId), db);
+						getObjectWithId(SmallContentImpl.class, new Integer(contentId), db);
+						getObjectWithId(SmallishContentImpl.class, new Integer(contentId), db);
+						getObjectWithId(MediumContentImpl.class, new Integer(contentId), db);
+					}
+					else if(Class.forName(publicationDetailVO.getEntityClass()).getName().equals(SiteNodeImpl.class.getName()))
+					{
+						SiteNodeImpl siteNode = (SiteNodeImpl)getObjectWithId(SiteNodeImpl.class, new Integer(objectId), db);
+						getObjectWithId(SmallSiteNodeImpl.class, new Integer(objectId), db);
+												
+						NodeDeliveryController ndc = NodeDeliveryController.getNodeDeliveryController(new Integer(objectId), new Integer(-1), new Integer(-1));
+						Repository repository = siteNode.getRepository();
+				    	if(repository != null)
+						{
+							Collection languages = repository.getRepositoryLanguages();
+							Iterator languageIterator = languages.iterator();
+							while(languageIterator.hasNext())
+							{
+								RepositoryLanguage repositoryLanguage = (RepositoryLanguage)languageIterator.next();
+								Language currentLanguage = repositoryLanguage.getLanguage();
+								LanguageDeliveryController.getLanguageDeliveryController().getLanguageIfSiteNodeSupportsIt(db, currentLanguage.getId(), siteNode.getId());
+							}
+						}
+					}
+					else if(Class.forName(publicationDetailVO.getEntityClass()).getName().equals(SiteNodeVersion.class.getName()))
+					{
+						Integer siteNodeId = SiteNodeVersionController.getController().getSiteNodeVersionVOWithId(publicationDetailVO.getEntityId()).getSiteNodeId();
+					    
+						getObjectWithId(SiteNodeVersionImpl.class, new Integer(publicationDetailVO.getEntityId()), db);
+						getObjectWithId(SmallSiteNodeVersionImpl.class, new Integer(publicationDetailVO.getEntityId()), db);
+
+						SiteNodeImpl siteNode = (SiteNodeImpl)getObjectWithId(SiteNodeImpl.class, new Integer(siteNodeId), db);
+						getObjectWithId(SmallSiteNodeImpl.class, new Integer(siteNodeId), db);
+
+						NodeDeliveryController ndc = NodeDeliveryController.getNodeDeliveryController(new Integer(objectId), new Integer(-1), new Integer(-1));
+						Repository repository = siteNode.getRepository();
+				    	if(repository != null)
+						{
+							Collection languages = repository.getRepositoryLanguages();
+							Iterator languageIterator = languages.iterator();
+							while(languageIterator.hasNext())
+							{
+								RepositoryLanguage repositoryLanguage = (RepositoryLanguage)languageIterator.next();
+								Language currentLanguage = repositoryLanguage.getLanguage();
+								LanguageDeliveryController.getLanguageDeliveryController().getLanguageIfSiteNodeSupportsIt(db, currentLanguage.getId(), siteNode.getId());
+							}
+						}
+
+						SiteNodeVO siteNodeVO = SiteNodeController.getController().getSiteNodeVOWithId(siteNodeId, db);
+						if(siteNodeVO.getMetaInfoContentId() != null)
+						{
+							getObjectWithId(ContentImpl.class, new Integer(siteNodeVO.getMetaInfoContentId()), db);
+							getObjectWithId(SmallContentImpl.class, new Integer(siteNodeVO.getMetaInfoContentId()), db);
+							getObjectWithId(SmallishContentImpl.class, new Integer(siteNodeVO.getMetaInfoContentId()), db);
+							getObjectWithId(MediumContentImpl.class, new Integer(siteNodeVO.getMetaInfoContentId()), db);
+
+							Content content = ContentController.getContentController().getReadOnlyContentWithId(siteNodeVO.getMetaInfoContentId(), db);
+							Iterator contentVersionIterator = content.getContentVersions().iterator();
+							logger.info("Versions:" + content.getContentVersions().size());
+							while(contentVersionIterator.hasNext())
+							{
+								ContentVersion contentVersion = (ContentVersion)contentVersionIterator.next();
+								getObjectWithId(ContentVersionImpl.class, new Integer(contentVersion.getId()), db);
+								getObjectWithId(SmallContentVersionImpl.class, new Integer(contentVersion.getId()), db);
+								getObjectWithId(SmallestContentVersionImpl.class, new Integer(contentVersion.getId()), db);
+							}
+						}
+					}
+					
+				}
+			}
+			
+			db.rollback();
+		}
+		catch (Exception e) 
+		{
+			logger.error("Problem recaching");
+			e.printStackTrace();
+		}
+		finally
+		{
+			try
+			{
+				db.close();
+			}
+			catch (Exception e) 
+			{
+				logger.error("Problem closing db");
+			}
+		}
+		t.printElapsedTime("Recaching entities in SelectiveLivePublicationThread took:");
+		
+	}
+	
+	protected Object getObjectWithId(Class arg, Integer id, Database db) throws SystemException, Bug
+	{
+		Object object = null;
+		try
+		{
+			object = db.load(arg, id, Database.ReadOnly);
+		}
+		catch(Exception e)
+		{
+			throw new SystemException("An error occurred when we tried to fetch the object " + arg.getName() + ". Reason:" + e.getMessage(), e);    
+		}
+    
+		if(object == null)
+		{
+			throw new Bug("The object with id [" + id + "] was not found. This should never happen.");
+		}
+		return object;
 	}
 }
