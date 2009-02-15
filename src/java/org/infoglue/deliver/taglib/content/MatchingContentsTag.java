@@ -111,7 +111,9 @@ public class MatchingContentsTag extends TemplateControllerTag
 	    this.repositoryIds = null;
 	    this.languageId = null;
 	    
-	    t.printElapsedTimeMicro("***************************** Running matching contents took:");
+	    long runningTime = t.getElapsedTime();
+	    if(runningTime > 500)
+	    	logger.warn("Running matching contents took:" + runningTime + " ms");
 	    
 	    return EVAL_PAGE;
     }

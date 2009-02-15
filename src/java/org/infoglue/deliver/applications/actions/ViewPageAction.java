@@ -478,9 +478,8 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			}
 
 			String originalFullUrl = getOriginalFullURL();
-		    if(elapsedTime > 2000)
-		    	System.out.println("The page delivery took " + elapsedTime + "ms for request " + originalFullUrl + " [" + browserBean.getUseragent() + "]");
 		    RequestAnalyser.getRequestAnalyser().registerPageStatistics("" + originalFullUrl, elapsedTime);
+		    
 		    if(elapsedTime > 10000)
 			{
 			    logger.warn("The page delivery took " + elapsedTime + "ms for request " + originalFullUrl);
