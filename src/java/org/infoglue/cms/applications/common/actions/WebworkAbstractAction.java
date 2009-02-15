@@ -127,7 +127,10 @@ public abstract class WebworkAbstractAction implements Action, ServletRequestAwa
         {
         	logger.info("ConstraintException " + e, e);
             setErrors(e);
-			result = INPUT;
+			if(e.getResult() != null)
+				result = e.getResult();
+			else
+				result = INPUT;
         } 
         catch(Bug e) 
         {

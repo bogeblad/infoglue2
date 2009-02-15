@@ -51,6 +51,7 @@ import org.infoglue.cms.entities.management.RepositoryVO;
 import org.infoglue.cms.entities.structure.SiteNode;
 import org.infoglue.cms.entities.structure.SiteNodeVO;
 import org.infoglue.cms.exception.AccessConstraintException;
+import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.util.AccessConstraintExceptionBuffer;
 import org.infoglue.cms.util.CmsPropertyHandler;
@@ -283,9 +284,6 @@ public class CreateSiteNodeAction extends InfoGlueAbstractAction
     
     public String doExecuteV3() throws Exception
     {
-        ceb = this.siteNodeVO.validate();
-    	ceb.throwIfNotEmpty();
-    	
     	logger.info("name:" + this.siteNodeVO.getName());
     	logger.info("publishDateTime:" + this.siteNodeVO.getPublishDateTime());
     	logger.info("expireDateTime:" + this.siteNodeVO.getExpireDateTime());
@@ -298,7 +296,10 @@ public class CreateSiteNodeAction extends InfoGlueAbstractAction
 
         try
         {
-            SiteNode newSiteNode = SiteNodeControllerProxy.getSiteNodeControllerProxy().acCreate(this.getInfoGluePrincipal(), this.parentSiteNodeId, this.siteNodeTypeDefinitionId, this.repositoryId, this.siteNodeVO, db);            
+        	ceb = this.siteNodeVO.validate();
+        	ceb.throwIfNotEmpty();
+
+        	SiteNode newSiteNode = SiteNodeControllerProxy.getSiteNodeControllerProxy().acCreate(this.getInfoGluePrincipal(), this.parentSiteNodeId, this.siteNodeTypeDefinitionId, this.repositoryId, this.siteNodeVO, db);            
             newSiteNodeVO = newSiteNode.getValueObject();
             
             SiteNodeController.getController().createSiteNodeMetaInfoContent(db, newSiteNode, this.repositoryId, this.getInfoGluePrincipal(), this.pageTemplateContentId);
@@ -312,9 +313,16 @@ public class CreateSiteNodeAction extends InfoGlueAbstractAction
             setActionExtraData(userSessionKey, "unrefreshedSiteNodeId", "" + parentSiteNodeId);
             setActionExtraData(userSessionKey, "changeTypeId", "" + this.changeTypeId);
         }
+        catch(ConstraintException ce)
+        {
+        	logger.warn("An error occurred so we should not complete the transaction:" + ce);
+            rollbackTransaction(db);
+			ce.setResult(INPUT + "V3");
+			throw ce;
+        }
         catch(Exception e)
         {
-            logger.error("An error occurred so we should not complete the transaction:" + e, e);
+            logger.warn("An error occurred so we should not complete the transaction:" + e);
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
