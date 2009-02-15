@@ -366,6 +366,18 @@ public class NodeDeliveryController extends BaseDeliveryController
 
 		return siteNode;
 	}
+	
+	/**
+	 * This method returns the SiteNodeVO that is sent in.
+	 */
+	
+	public SiteNodeVO getSiteNodeVO(Database db, Integer siteNodeId) throws SystemException
+	{
+		if(siteNodeId == null || siteNodeId.intValue() < 1)
+			return null;
+		
+		return (SiteNodeVO)getVOWithId(SmallSiteNodeImpl.class, siteNodeId, db);
+	}
 
 	/**
 	 * This method returns the latest sitenodeVersion there is for the given siteNode.
@@ -375,7 +387,8 @@ public class NodeDeliveryController extends BaseDeliveryController
 	{
 		String key = "" + siteNodeId;
 		logger.info("key:" + key);
-		SiteNodeVersionVO siteNodeVersionVO = (SiteNodeVersionVO)CacheController.getCachedObject("latestSiteNodeVersionCache", key);
+		//SiteNodeVersionVO siteNodeVersionVO = (SiteNodeVersionVO)CacheController.getCachedObject("latestSiteNodeVersionCache", key);
+		SiteNodeVersionVO siteNodeVersionVO = (SiteNodeVersionVO)CacheController.getCachedObjectFromAdvancedCache("latestSiteNodeVersionCache", key);
 		if(siteNodeVersionVO != null)
 		{
 			if(logger.isInfoEnabled())
@@ -387,7 +400,11 @@ public class NodeDeliveryController extends BaseDeliveryController
 			if(siteNodeVersion != null)
 				siteNodeVersionVO = siteNodeVersion.getValueObject();
 			
-			CacheController.cacheObject("latestSiteNodeVersionCache", key, siteNodeVersionVO);
+			//CacheController.cacheObject("latestSiteNodeVersionCache", key, siteNodeVersionVO);
+        	StringBuilder groupKey1 = new StringBuilder("siteNodeVersion_").append(siteNodeVersion.getId());
+        	StringBuilder groupKey2 = new StringBuilder("siteNode_").append(siteNodeId);
+
+        	CacheController.cacheObjectInAdvancedCache("latestSiteNodeVersionCache", key, siteNodeVersionVO, new String[]{groupKey1.toString(), groupKey2.toString()}, true);
 		}
 				
 		return siteNodeVersionVO;
@@ -409,9 +426,12 @@ public class NodeDeliveryController extends BaseDeliveryController
 		}
 		else
 		{
+			siteNodeVersionVO = getLatestActiveSiteNodeVersionVO(siteNodeId, db);
+			/*
 			SiteNodeVersion siteNodeVersion = getLatestActiveSiteNodeVersion(siteNodeId, db);
 			if(siteNodeVersion != null)
 				siteNodeVersionVO = siteNodeVersion.getValueObject();
+			*/
 			
 			CacheController.cacheObject("pageCacheLatestSiteNodeVersions", key, siteNodeVersionVO);
 		}
@@ -465,7 +485,8 @@ public class NodeDeliveryController extends BaseDeliveryController
 		
 	    String versionKey = "" + siteNodeId + "_" + getOperatingMode() + "_siteNodeVersionId";		
 	    
-		Integer siteNodeVersionId = (Integer)CacheController.getCachedObject("latestSiteNodeVersionCache", versionKey);
+		//Integer siteNodeVersionId = (Integer)CacheController.getCachedObject("latestSiteNodeVersionCache", versionKey);
+		Integer siteNodeVersionId = (Integer)CacheController.getCachedObjectFromAdvancedCache("latestSiteNodeVersionCache", versionKey);
 		if(siteNodeVersionId != null)
 		{
 		    logger.info("There was a cached sitenode version id:" + siteNodeVersionId);
@@ -483,7 +504,11 @@ public class NodeDeliveryController extends BaseDeliveryController
 			if (results.hasMore()) 
 		    {
 		    	siteNodeVersion = (SiteNodeVersion)results.next();
-			    CacheController.cacheObject("latestSiteNodeVersionCache", versionKey, siteNodeVersion.getId());
+			    //CacheController.cacheObject("latestSiteNodeVersionCache", versionKey, siteNodeVersion.getId());
+	        	StringBuilder groupKey1 = new StringBuilder("siteNodeVersion_").append(siteNodeVersion.getId());
+	        	StringBuilder groupKey2 = new StringBuilder("siteNode_").append(siteNodeId);
+
+	        	CacheController.cacheObjectInAdvancedCache("latestSiteNodeVersionCache", versionKey, siteNodeVersion.getId(), new String[]{groupKey1.toString(), groupKey2.toString()}, true);
 	        }	
 		
 			results.close();
@@ -504,7 +529,8 @@ public class NodeDeliveryController extends BaseDeliveryController
 	{
 	    String versionKey = "" + siteNodeId + "_" + getOperatingMode() + "_siteNodeVersionVO";		
 	    
-	    SiteNodeVersionVO siteNodeVersionVO = (SiteNodeVersionVO)CacheController.getCachedObject("latestSiteNodeVersionCache", versionKey);
+	    //SiteNodeVersionVO siteNodeVersionVO = (SiteNodeVersionVO)CacheController.getCachedObject("latestSiteNodeVersionCache", versionKey);
+	    SiteNodeVersionVO siteNodeVersionVO = (SiteNodeVersionVO)CacheController.getCachedObjectFromAdvancedCache("latestSiteNodeVersionCache", versionKey);
 		if(siteNodeVersionVO != null)
 	    {
 		    if(logger.isInfoEnabled())
@@ -523,7 +549,12 @@ public class NodeDeliveryController extends BaseDeliveryController
 		    {
 		    	SiteNodeVersion siteNodeVersion = (SiteNodeVersion)results.next();
 		    	siteNodeVersionVO = siteNodeVersion.getValueObject();
-			    CacheController.cacheObject("latestSiteNodeVersionCache", versionKey, siteNodeVersionVO);
+		    	
+			    //CacheController.cacheObject("latestSiteNodeVersionCache", versionKey, siteNodeVersionVO);
+	        	StringBuilder groupKey1 = new StringBuilder("siteNodeVersion_").append(siteNodeVersion.getId());
+	        	StringBuilder groupKey2 = new StringBuilder("siteNode_").append(siteNodeId);
+
+	        	CacheController.cacheObjectInAdvancedCache("latestSiteNodeVersionCache", versionKey, siteNodeVersionVO, new String[]{groupKey1.toString(), groupKey2.toString()}, true);
 	        }	
 		
 			results.close();
@@ -901,10 +932,10 @@ public class NodeDeliveryController extends BaseDeliveryController
 		try
 		{
 			SiteNodeVersionVO siteNodeVersionVO = this.getLatestActiveSiteNodeVersionVOForPageCache(db, siteNodeId);
-			logger.info("siteNodeId:" + siteNodeId);
 			if(siteNodeVersionVO != null && siteNodeVersionVO.getIsProtected() != null)
 			{	
-				logger.info("siteNodeVersionVO:" + siteNodeVersionVO.getId() + ":" + siteNodeVersionVO.getIsProtected());
+				if(logger.isInfoEnabled())
+					logger.info("siteNodeVersionVO:" + siteNodeVersionVO.getId() + ":" + siteNodeVersionVO.getIsProtected());
 				if(siteNodeVersionVO.getIsProtected().intValue() == NO.intValue())
 					protectedSiteNodeVersionId = null;
 				else if(siteNodeVersionVO.getIsProtected().intValue() == YES.intValue())
@@ -916,7 +947,6 @@ public class NodeDeliveryController extends BaseDeliveryController
 						protectedSiteNodeVersionId = getProtectedSiteNodeVersionIdForPageCache(db, parentSiteNode.getSiteNodeId()); 
 				}
 			}
-
 		}
 		catch(Exception e)
 		{
@@ -1062,8 +1092,6 @@ public class NodeDeliveryController extends BaseDeliveryController
 	
 	public ContentVO getBoundContent(Database db, InfoGluePrincipal infoGluePrincipal, Integer siteNodeId, Integer languageId, boolean useLanguageFallback, String availableServiceBindingName, DeliveryContext deliveryContext) throws SystemException, Exception
 	{
-		logger.info("siteNodeId:" + siteNodeId);
-		logger.info("availableServiceBindingName:" + availableServiceBindingName);
 		List contents = getBoundContents(db, infoGluePrincipal, siteNodeId, languageId, useLanguageFallback, availableServiceBindingName, USE_INHERITANCE, true, deliveryContext);
 		return (contents != null && contents.size() > 0) ? (ContentVO)contents.get(0) : null;
 	}
@@ -1129,13 +1157,13 @@ public class NodeDeliveryController extends BaseDeliveryController
 			Integer metaInfoContentId = null;
 			if(availableServiceBindingName.equalsIgnoreCase("Meta information"))
 			{
-				SiteNode siteNode = getSiteNode(db, siteNodeId);
-				if(siteNode != null)
-					metaInfoContentId = siteNode.getMetaInfoContentId();
+				SiteNodeVO siteNodeVO = getSiteNodeVO(db, siteNodeId);
+				if(siteNodeVO != null)
+					metaInfoContentId = siteNodeVO.getMetaInfoContentId();
 
 				if(logger.isDebugEnabled())
 				{
-					logger.debug("siteNode for id: " + siteNodeId + "=" + siteNode);
+					logger.debug("siteNode for id: " + siteNodeId + "=" + siteNodeVO);
 					logger.debug("metaInfoContentId: " + metaInfoContentId);
 				}
 			}
@@ -1490,7 +1518,7 @@ public class NodeDeliveryController extends BaseDeliveryController
 	{
 		String pagePath = "/";
 		
-		SiteNodeVO parentSiteNode = this.getParentSiteNode(db, siteNodeId);
+		SiteNodeVO parentSiteNode = this.getParentSiteNode(db, siteNodeId);		
 		if(parentSiteNode != null)
 		{
 			pagePath = getPagePath(db, infoGluePrincipal, parentSiteNode.getId(), languageId, null, bindingName, attributeName, useLanguageFallBack, deliveryContext) + "/"; 

@@ -335,63 +335,13 @@ public abstract class PageInvoker
 		String contentType = this.getTemplateController().getPageContentType();
 		if(this.deliveryContext.getContentType() != null && !contentType.equalsIgnoreCase(this.deliveryContext.getContentType()))
 		    contentType = this.deliveryContext.getContentType();
-		
-		//TEST
-		//if(!this.getTemplateController().getIsDecorated())
-		//{
-		/*
-			Date lastModifiedDateTime = null;
-			logger.info("this.deliveryContext.getUsedContentVersions().size():" + this.deliveryContext.getUsedContentVersions().size());
-			if(this.deliveryContext.getUsedContentVersions().size() > 0)
-			{
-				Iterator userContentVersionIterator = this.deliveryContext.getUsedContentVersions().iterator();
-				while(userContentVersionIterator.hasNext())
-				{
-					String usedContentVersion = (String)userContentVersionIterator.next();	
-					if(usedContentVersion != null && usedContentVersion.startsWith("contentVersion_"))
-			    	{
-			    		try
-			            {
-			    			String versionId = usedContentVersion.substring(15);
-			    			//logger.info("versionId:" + versionId);
-			    			if(!versionId.equals("null") && !versionId.equals(""))
-			    			{
-				    			Integer contentVersionId = new Integer(versionId);
-				    			ContentVersion contentVersion = ContentVersionController.getContentVersionController().getContentVersionWithId(contentVersionId, getDatabase());
-				    			//ContentVersionVO contentVersion = ContentVersionController.getContentVersionController().getContentVersionVOWithId(contentVersionId, getDatabase());
-				    			if(lastModifiedDateTime == null || contentVersion.getModifiedDateTime().after(lastModifiedDateTime))
-				    			{
-				    				//logger.info("this:" + this.hashCode());
-				    				//logger.info("lastModifiedDateTime:" + lastModifiedDateTime);
-				    				//logger.info("contentVersionVO:" + contentVersion.getModifiedDateTime());
-				    				lastModifiedDateTime = contentVersion.getModifiedDateTime();
-				    			}
-			    			}
-			            }
-			    		catch (Exception e) 
-			    		{
-			    			e.printStackTrace();
-						}
-			    	}
-				}
-			}
-			*/
-			if(this.deliveryContext.getLastModifiedDateTime() != null)
-			{
-				//this.deliveryContext.setLastModifiedDateTime(this.deliveryContext.getLastModifiedDateTime());
-				this.deliveryContext.getHttpHeaders().put("Last-Modified", this.deliveryContext.getLastModifiedDateTime());
-				//this.deliveryContext.getHttpHeaders().put("Cache-Control", "max-age=600");
-				//this.deliveryContext.getHttpHeaders().put("Expires", new Date(new Date().getTime() + (600 * 1000)));
-			}
-		//}
-		//else	
+
 		if(!this.getTemplateController().getOperatingMode().equals("3"))
 		{
 			getResponse().setHeader("Cache-Control","no-cache"); 
 	    	getResponse().setHeader("Pragma","no-cache");
 	    	getResponse().setDateHeader ("Expires", 0);
 		}
-		//END
 			
 		//System.out.println("pageString before:" + pageString);
 		//pageString = decorateHeadAndPageWithVarsFromComponents(pageString);

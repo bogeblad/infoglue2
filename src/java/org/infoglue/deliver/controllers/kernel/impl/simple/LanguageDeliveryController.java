@@ -45,6 +45,7 @@ import org.infoglue.cms.entities.management.impl.simple.RepositoryImpl;
 import org.infoglue.cms.entities.structure.SiteNode;
 import org.infoglue.cms.entities.structure.SiteNodeVersion;
 import org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl;
+import org.infoglue.cms.entities.structure.impl.simple.SmallSiteNodeImpl;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.CmsPropertyHandler;
@@ -534,7 +535,8 @@ public class LanguageDeliveryController extends BaseDeliveryController
 	    	return null;
 		
 		String key = "" + siteNodeId + "_" + languageCodes;		
-		Object languageVOCandidate = CacheController.getCachedObject("siteNodeLanguageCache", key);
+		Object languageVOCandidate = CacheController.getCachedObjectFromAdvancedCache("siteNodeLanguageCache", key);
+		//Object languageVOCandidate = CacheController.getCachedObject("siteNodeLanguageCache", key);
 		if(languageVOCandidate != null)
 		{
 			if(languageVOCandidate instanceof NullObject)
@@ -587,10 +589,15 @@ public class LanguageDeliveryController extends BaseDeliveryController
 			}
 		}
 
+    	StringBuilder groupKey1 = new StringBuilder("repository_").append(repository.getId());
+    	StringBuilder groupKey2 = new StringBuilder("siteNode_").append(siteNodeId);
+    	
 		if(language != null)
-			CacheController.cacheObject("siteNodeLanguageCache", key, language.getValueObject());
+			//CacheController.cacheObject("siteNodeLanguageCache", key, language.getValueObject());
+			CacheController.cacheObjectInAdvancedCache("siteNodeLanguageCache", key, language.getValueObject(), new String[]{groupKey1.toString(), groupKey2.toString()}, true);
 		else
-			CacheController.cacheObject("siteNodeLanguageCache", key, new NullObject());
+			//CacheController.cacheObject("siteNodeLanguageCache", key, new NullObject());
+			CacheController.cacheObjectInAdvancedCache("siteNodeLanguageCache", key, new NullObject(), new String[]{groupKey1.toString(), groupKey2.toString()}, true);
 			
 		
 		logger.info("Returning language: " + language);
@@ -609,7 +616,8 @@ public class LanguageDeliveryController extends BaseDeliveryController
 		    return null;
 
 		String key = "" + siteNodeId + "_" + languageId;		
-		Object languageVOCandidate = CacheController.getCachedObject("siteNodeLanguageCache", key);
+		Object languageVOCandidate = CacheController.getCachedObjectFromAdvancedCache("siteNodeLanguageCache", key);
+		//Object languageVOCandidate = CacheController.getCachedObject("siteNodeLanguageCache", key);
 		if(languageVOCandidate != null)
 		{
 			if(languageVOCandidate instanceof NullObject)
@@ -620,7 +628,8 @@ public class LanguageDeliveryController extends BaseDeliveryController
 		
 		NodeDeliveryController ndc = NodeDeliveryController.getNodeDeliveryController(siteNodeId, languageId, new Integer(-1));
 
-		logger.info("Coming in with languageId:" + languageId);
+		if(logger.isInfoEnabled())
+			logger.info("Coming in with languageId:" + languageId);
 		
         Language language = null;
 
@@ -630,7 +639,7 @@ public class LanguageDeliveryController extends BaseDeliveryController
 		    return null;		
     	
     	Repository repository = siteNode.getRepository();
-		if(repository != null)
+    	if(repository != null)
 		{
 			Collection languages = repository.getRepositoryLanguages();
 	    	
@@ -652,10 +661,15 @@ public class LanguageDeliveryController extends BaseDeliveryController
 			}
 		}
 		
+    	StringBuilder groupKey1 = new StringBuilder("repository_").append(repository.getId());
+    	StringBuilder groupKey2 = new StringBuilder("siteNode_").append(siteNodeId);
+    	
 		if(language != null)
-			CacheController.cacheObject("siteNodeLanguageCache", key, language.getValueObject());
+			CacheController.cacheObjectInAdvancedCache("siteNodeLanguageCache", key, language.getValueObject(), new String[]{groupKey1.toString(), groupKey2.toString()}, true);
+			//CacheController.cacheObject("siteNodeLanguageCache", key, language.getValueObject());
 		else
-			CacheController.cacheObject("siteNodeLanguageCache", key, new NullObject());
+			CacheController.cacheObjectInAdvancedCache("siteNodeLanguageCache", key, new NullObject(), new String[]{groupKey1.toString(), groupKey2.toString()}, true);
+			//CacheController.cacheObject("siteNodeLanguageCache", key, new NullObject());
 
 		logger.info("Returning language: " + language);
 
@@ -669,7 +683,8 @@ public class LanguageDeliveryController extends BaseDeliveryController
 	public List getLanguagesForSiteNode(Database db, Integer siteNodeId, InfoGluePrincipal principal) throws SystemException, Exception
 	{
 		String key = "" + siteNodeId;		
-		List languageVOList = (List)CacheController.getCachedObject("siteNodeLanguageCache", key);
+		List languageVOList = (List)CacheController.getCachedObjectFromAdvancedCache("siteNodeLanguageCache", key);
+		//List languageVOList = (List)CacheController.getCachedObject("siteNodeLanguageCache", key);
 		if(languageVOList != null)
 			return languageVOList;
 		
@@ -701,23 +716,30 @@ public class LanguageDeliveryController extends BaseDeliveryController
 		}
 
 		if(languageVOList != null)
-			CacheController.cacheObject("siteNodeLanguageCache", key, languageVOList);
+		{
+	    	StringBuilder groupKey1 = new StringBuilder("repository_").append(repository.getId());
+	    	StringBuilder groupKey2 = new StringBuilder("siteNode_").append(siteNodeId);
 
+			CacheController.cacheObjectInAdvancedCache("siteNodeLanguageCache", key, languageVOList, new String[]{groupKey1.toString(), groupKey2.toString()}, true);
+			//CacheController.cacheObject("siteNodeLanguageCache", key, languageVOList);
+		}
+		
 		logger.info("Returning languageVOList: " + languageVOList.size());
 		
 		return languageVOList;	
 	}
 
 	
-	public boolean getIsValidLanguage(Database db, NodeDeliveryController ndc, SiteNode siteNode, Integer languageId) throws Exception
+	public boolean getIsValidLanguage(Database db, NodeDeliveryController ndc, /*Integer siteNodeId, */SiteNode siteNode, Integer languageId) throws Exception
 	{
 	    boolean isValidLanguage = true;
 	    									
-	    SiteNodeVersion siteNodeVersion = ndc.getLatestActiveSiteNodeVersion(siteNode.getId(), db);
-	    //SiteNodeVersion siteNodeVersion = ndc.getActiveSiteNodeVersion(siteNode.getId(), db);
-	    Integer disabledLanguagesSiteNodeVersionId = ndc.getDisabledLanguagesSiteNodeVersionId(db, siteNode.getId());
+	    //SiteNodeVersion siteNodeVersion = ndc.getLatestActiveSiteNodeVersion(siteNodeId, db);
+    	SiteNodeVersion siteNodeVersion = ndc.getActiveSiteNodeVersion(siteNode.getId(), db);
+    	Integer siteNodeId = siteNode.getId();
+	    Integer disabledLanguagesSiteNodeVersionId = ndc.getDisabledLanguagesSiteNodeVersionId(db, siteNodeId);
 	    logger.info("disabledLanguagesSiteNodeVersionId:" + disabledLanguagesSiteNodeVersionId);
-	    
+
 	    if(disabledLanguagesSiteNodeVersionId != null)
 	    {
 	        SiteNodeVersion disabledLanguagesSiteNodeVersion = SiteNodeVersionController.getController().getSiteNodeVersionWithId(disabledLanguagesSiteNodeVersionId, db);
