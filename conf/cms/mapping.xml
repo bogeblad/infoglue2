@@ -502,11 +502,17 @@
     <field name="isBranch" type="java.lang.Boolean">
       <sql name="isBranch" type="integer" dirty="check" />
     </field>
-    <field name="parentSiteNode" type="org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl">
+    <field name="parentSiteNode" type="org.infoglue.cms.entities.structure.impl.simple.SmallSiteNodeImpl">
       <sql name="parentSiteNodeId"/>
     </field>
     <field name="metaInfoContentId" type="java.lang.Integer">
       <sql name="metaInfoContentId" type="integer" dirty="check" />
+    </field>
+    <field name="repositoryId" type="java.lang.Integer">
+      <sql name="repositoryId" type="integer" dirty="check" />
+    </field>
+    <field name="siteNodeTypeDefinitionId" type="java.lang.Integer">
+      <sql name="siteNodeTypeDefinitionId" type="integer" dirty="check" />
     </field>
     
     <!--

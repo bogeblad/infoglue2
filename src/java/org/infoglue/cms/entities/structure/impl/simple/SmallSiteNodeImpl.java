@@ -134,6 +134,26 @@ public class SmallSiteNodeImpl extends SiteNodeImpl
         this.valueObject.setMetaInfoContentId(metaInfoContentId);
     }
 
+    public Integer getRepositoryId()
+    {
+        return this.valueObject.getRepositoryId();
+    }
+    
+    public void setRepositoryId(Integer repositoryId)
+    {
+        this.valueObject.setRepositoryId(repositoryId);
+    }
+
+    public Integer getSiteNodeTypeDefinitionId()
+    {
+        return this.valueObject.getSiteNodeTypeDefinitionId();
+    }
+    
+    public void setSiteNodeTypeDefinitionId(Integer siteNodeTypeDefinitionId)
+    {
+        this.valueObject.setSiteNodeTypeDefinitionId(siteNodeTypeDefinitionId);
+    }
+
     /*
     public org.infoglue.cms.entities.structure.impl.simple.SmallSiteNodeImpl getParentSiteNode()
     {
