@@ -850,16 +850,10 @@ public class CacheController extends Thread
 					if(logger.isInfoEnabled())
 						logger.info("clear:" + clear);
 
-					if(cacheName.equalsIgnoreCase("pageCache"))
-						System.out.println("clear:" + clear);
-
 					if(clear)
 					{	
 						if(logger.isInfoEnabled())
 						    logger.info("clearing:" + e.getKey());
-					    
-						if(cacheName.equalsIgnoreCase("pageCache"))
-							System.out.println("clearing:" + e.getKey());
 
 						Object object = e.getValue();
 						
@@ -909,7 +903,7 @@ public class CacheController extends Thread
 
 						    		cacheInstance.flushGroup("siteNodeVersion_" + entityId);
 						    		cacheInstance.flushGroup("selectiveCacheUpdateNonApplicable");
-							    	logger.warn("clearing " + e.getKey() + " with group " + "siteNodeVersion_" + entityId);
+							    	logger.info("clearing " + e.getKey() + " with group " + "siteNodeVersion_" + entityId);
 							    	
 							    	try
 							    	{
