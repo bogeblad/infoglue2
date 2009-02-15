@@ -7,40 +7,48 @@
 	
 	<style>
 	<!--
+		table 
+		{
+			width : 900px;
+			margin-right: auto;
+			margin-left: auto;
+			border: 1px solid #ccc;
+			background-color: #f1f1f1;
+		}
 		.header 
 		{
-			font-family : Arial;
-			font-size 	: 18pt;
+			font-family : Tahoma, Arial;
+			font-size 	: 14pt;
 			font-weight : bold;
 		}
 		.label
 		{
-			font-family		 : Arial;
-			font-size		 : 10pt;
+			font-family		 : Tahoma, Arial;
+			font-size		 : 8pt;
 			font-weight 	 : bold;
 			background-color : #CCCCCC;
 		}
 		.labelsub
 		{
-			font-family		 : Arial;
+			font-family		 : Tahoma, Arial;
 			font-size		 : 8pt;
 			font-weight 	 : bold;
 			background-color : #FFFFFF;
 		}
 		.text 
 		{
-			font-family	:Arial;
-			font-size	:10pt;
+			font-family	:Tahoma, Arial;
+			font-size	:8pt;
 		}
 		.texttrue 
 		{
-			font-family	:Arial;
-			font-size	:10pt;
+			font-family	:Tahoma, Arial;
+			font-size	:8pt;
 		}
 		.textfalse 
 		{
-			font-family	:Arial;
-			font-size	:10pt;
+			font-family	:Tahoma, Arial;
+			font-size	:8pt;
 			color  		:red;
 		}
 		.fullymarginalized 
@@ -78,9 +86,7 @@
 
 <body>
 
-<center>
-
-<table border="0" cellpadding="2" cellspacing="0">
+<table cellpadding="4" cellspacing="0">
   <tr>
     <td colspan="4" class="header">InfoGlue Status Page ($serverName)</td>
   </tr>
@@ -89,8 +95,8 @@
     <td colspan="3" class="label">Release date</td>
   </tr>
   <tr>
-    <td colspan="1" class="text">2.9.6.4 Final</td>
-    <td colspan="3" class="text">2009-01-29</td>
+    <td colspan="1" class="text">2.9.7 Final</td>
+    <td colspan="3" class="text">2009-02-15</td>
   </tr>
   <tr>
     <td colspan="4" class="text">&nbsp;</td>
@@ -101,8 +107,8 @@
   </tr>
   #foreach($state in $states)
   <tr>
-    <td class="text">$state.get(0)</td>
-    <td class="text" colspan="3">$state.get(1)</td>
+    <td style="border-bottom: 1px solid #999999;" class="text">$state.get(0)</td>
+    <td  style="border-bottom: 1px solid #999999;" class="text" colspan="3">$state.get(1)</td>
   </tr>
   #end
   <tr>
@@ -373,7 +379,6 @@
   #end
 -->
 </table>
-</center>
 
 </body>
 
