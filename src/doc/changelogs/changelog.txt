@@ -1,11 +1,47 @@
 -------------------------------------------------------------------------------------
-- InfoGlue 2.9.6 Final
+- InfoGlue 2.9.7 Final
 -------------------------------------------------------------------------------------
 
-Release notes
+Release notes 2.9.7 Final
 ---------------------------------------
-Version 2.9.6.3
-    
+This release is a performance update and improves the new form-editor infrastructure.
+We also added better support for i18n in nice URI and a few bugfixes and UI-improvements.
+
+Thanx for all reports and proposals for bugfixes.
+The InfoGlue Team
+
+
+Abbreviated Changelog from 2.9.7 Final 
+---------------------------------------
+- Adding new ioqueue to the platform so we can use the feature in many non blocking situations. 
+  Together with, for example the common:import-tag, you can get cached results all the time and the system updates the result in that background.
+- useCache, cacheName, cacheKey, cacheTimeout
+- Implemented background-caching on import-tag. Also now possible to have fallback file cache for special caches.
+- Fixed better support for i18n-chars in niceuri and redirects
+- Added context.xml into webapps - so we don't have to add them into catalina special folders
+- Added a bit more user friendly handling in access rights screen with for example save and save and exit and visual notification of successful save.
+- Added new interception point "Component.Select" so one can set access to individual components which controls who can select the component when adding component in structure tool.
+  Before this was controlled by the normal "Content.Read" point but that had the negative effect that you had to protect all templates which had many pitfalls.
+- Fixed bug in cleanup job which before forced the system to only keep 3 versions of each language.
+- Made it possible to work with structure:componentLabel even from inside an included component.
+- Added useFileCacheFallback and fileCacheCharEncoding attributes to common:import and changed the cache-methods etc to utilize it.
+- Made rightclick not possible through page structure or component-properties divs. Could before result in wrong actions. Also removed questionmark and associated layer next to property in IE6 as it broke it's layout.
+- Added Entity ID as search option in content search. Very nice if you just want to find a page or content with a certain id.
+- Added possibility to reset average page load time in ViewApplicationState.action
+- Separated ViewApplicationState into two statistics-screen for component and page statistics. The original could slow the delivery if called to often.
+- Added maximumNumberOfItems to the content:matchingContents-tag. Uses the limit feature in SQL.
+- Added better selective cache update in live
+
+
+-------------------------------------------------------------------------------------
+- InfoGlue 2.9.6.3 Final
+-------------------------------------------------------------------------------------
+
+Release notes 2.9.6.3 Final
+---------------------------------------
+This is a maintenance release with many small bug-fixes, memory leak fixes and several new improvements.
+We strongly recommend an upgrade. 
+
 Thanx for all reports and proposals for bugfixes.
 The InfoGlue Team
 
@@ -59,6 +95,7 @@ Abbreviated Changelog from 2.9.5 Final
 - Added new common:formatter tag which allows for easy and locale safe formatting of dates, calendars, numbers and file sizes.
 - Added forgotten thickbox (jquery plugin) image which fixes issue on FF Mac.
 - Added property allowXForwardedIPCheck in application settings so one can allow Apache X-forwarded IP-addresses in IP-protected actions like ViewApplicationState.action.
+- Fixed so pages validated even if some tags which uses usedEntities-references are used.
 - Fixed so if all active versions are unpublished or inactivated a new working version is created so the page / content is not broken/empty.
 - Added languageId as possible attribute to content:matchingContents-tag
 - Fixed null check in workflows - mostly when a workflowdef was removed even if instances existed.
