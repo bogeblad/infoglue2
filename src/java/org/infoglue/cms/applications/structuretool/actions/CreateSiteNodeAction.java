@@ -317,6 +317,9 @@ public class CreateSiteNodeAction extends InfoGlueAbstractAction
         {
         	logger.warn("An error occurred so we should not complete the transaction:" + ce);
             rollbackTransaction(db);
+
+            parentSiteNodeVO = SiteNodeControllerProxy.getController().getSiteNodeVOWithId(parentSiteNodeId);
+
 			ce.setResult(INPUT + "V3");
 			throw ce;
         }
