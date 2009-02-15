@@ -30,13 +30,18 @@ import java.util.List;
 
 import javax.servlet.jsp.JspException;
 
+import org.apache.log4j.Logger;
+import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.deliver.taglib.TemplateControllerTag;
+import org.infoglue.deliver.util.SelectiveLivePublicationThread;
+import org.infoglue.deliver.util.Timer;
 
-public class MatchingContentsTag extends TemplateControllerTag {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 3833470599837135666L;
+public class MatchingContentsTag extends TemplateControllerTag 
+{
+
+    public final static Logger logger = Logger.getLogger(MatchingContentsTag.class.getName());
+
+    private static final long serialVersionUID = 3833470599837135666L;
 	
 	private String contentTypeDefinitionNames;
 	private String categoryCondition;
@@ -45,6 +50,7 @@ public class MatchingContentsTag extends TemplateControllerTag {
 	private Date fromDate = null;
 	private Date toDate = null;
 	private String versionModifier;
+	private Integer maximumNumberOfItems;
 	private Date expireFromDate = null;
 	private Date expireToDate = null;
 	
@@ -62,6 +68,8 @@ public class MatchingContentsTag extends TemplateControllerTag {
 
 	public int doEndTag() throws JspException
     {
+		Timer t = new Timer();
+		
 		List freeTextAttributeNamesList = null;
 		if(freeTextAttributeNames != null && !freeTextAttributeNames.equals(""))
 		{
@@ -86,11 +94,24 @@ public class MatchingContentsTag extends TemplateControllerTag {
 
 		if(languageId == null)
 			this.languageId = getController().getLanguageId();
+
+		try
+		{
+			String maximumNumberOfItemsInMatchingContentsSearch = CmsPropertyHandler.getServerNodeProperty("maximumNumberOfItemsInMatchingContentsSearch", true, null);
+			if(maximumNumberOfItemsInMatchingContentsSearch != null && !maximumNumberOfItemsInMatchingContentsSearch.equals("") && !maximumNumberOfItemsInMatchingContentsSearch.equals("-1"))
+				this.maximumNumberOfItems = new Integer(maximumNumberOfItemsInMatchingContentsSearch);
+		}
+		catch (Exception e) 
+		{
+			logger.warn("Problem setting maximumNumberOfItemsInMatchingContentsSearch:" + e.getMessage());
+		}
 		
-	    setResultAttribute(getController().getMatchingContents(contentTypeDefinitionNames, categoryCondition, freeText, freeTextAttributeNamesList, fromDate, toDate, expireFromDate, expireToDate, versionModifier, true, cacheResult, cacheInterval, cacheName, cacheKey, repositoryIdList));
+	    setResultAttribute(getController().getMatchingContents(contentTypeDefinitionNames, categoryCondition, freeText, freeTextAttributeNamesList, fromDate, toDate, expireFromDate, expireToDate, versionModifier, maximumNumberOfItems, true, cacheResult, cacheInterval, cacheName, cacheKey, repositoryIdList));
 	    
 	    this.repositoryIds = null;
 	    this.languageId = null;
+	    
+	    t.printElapsedTimeMicro("***************************** Running matching contents took:");
 	    
 	    return EVAL_PAGE;
     }
@@ -143,6 +164,11 @@ public class MatchingContentsTag extends TemplateControllerTag {
 	public void setVersionModifier(String versionModifier) throws JspException
 	{
 		this.versionModifier = evaluateString("matchingContentsTag", "versionModifier", versionModifier);
+	}
+
+	public void setMaximumNumberOfItems(String maximumNumberOfItems) throws JspException
+	{
+		this.maximumNumberOfItems = evaluateInteger("matchingContentsTag", "maximumNumberOfItems", maximumNumberOfItems);
 	}
 
 	public void setRepositoryIds(String repositoryIds) throws JspException

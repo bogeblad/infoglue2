@@ -165,6 +165,7 @@ public class ExtendedSearchController extends BaseController
 			final SqlBuilder sqlBuilder = new SqlBuilder(criterias);
 		    if(logger.isDebugEnabled())
 		    	logger.debug("sql:" + sqlBuilder.getSQL());
+		    //System.out.println("sql:" + sqlBuilder.getSQL());
 		    
 			final OQLQuery oql = db.getOQLQuery(sqlBuilder.getSQL());
 			for(Iterator i=sqlBuilder.getBindings().iterator(); i.hasNext(); )
@@ -172,6 +173,7 @@ public class ExtendedSearchController extends BaseController
 			    Object o = i.next();
 			    if(logger.isDebugEnabled())
 			    	logger.debug("o:" + o.toString());
+		    	//System.out.println("o:" + o.toString());
 			    oql.bind(o);
 			}
 			
@@ -359,7 +361,7 @@ class SqlBuilder
 	 */
 	private String generate() 
 	{
-		return "CALL SQL" + SPACE + (ExtendedSearchController.useFull() ? generateSelectClause() : generateSelectClauseShort()) + SPACE + generateFromClause() + SPACE + generateWhereClause() + SPACE + (ExtendedSearchController.useFull() ? generateOrderByClause() : generateOrderByClauseShort()) + SPACE + "AS " + SmallContentImpl.class.getName();
+		return "CALL SQL" + SPACE + (ExtendedSearchController.useFull() ? generateSelectClause() : generateSelectClauseShort()) + SPACE + generateFromClause() + SPACE + generateWhereClause() + SPACE + (ExtendedSearchController.useFull() ? generateOrderByClause() : generateOrderByClauseShort()) + generateLimitClause() + SPACE + "AS " + SmallContentImpl.class.getName();
 	}
 	
 	/**
@@ -474,6 +476,21 @@ class SqlBuilder
 		return "ORDER BY " + CONTENT_ALIAS + ".ContId";
 	}
 
+	/**
+	 * 
+	 */
+	private String generateLimitClause() 
+	{
+		if(criterias.getMaximumNumberOfItems() != null)
+		{
+			String result = SPACE + " LIMIT " + getBindingVariable();
+			bindings.add(criterias.getMaximumNumberOfItems());
+			return result;
+		}
+		else 
+			return "";
+	}
+	 
 	/**
 	 * 
 	 */

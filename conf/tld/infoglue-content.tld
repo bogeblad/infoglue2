@@ -767,6 +767,11 @@
 	        <rtexprvalue>true</rtexprvalue>
     	</attribute>
         <attribute>
+    	    <name>maximumNumberOfItems</name>
+        	<required>false</required>
+	        <rtexprvalue>true</rtexprvalue>
+    	</attribute>
+        <attribute>
     	    <name>cacheResult</name>
         	<required>false</required>
 	        <rtexprvalue>true</rtexprvalue>

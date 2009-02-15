@@ -3036,9 +3036,6 @@ public class BasicTemplateController implements TemplateController
 			logger.error("An error occurred trying to get related contents from qualifyerXML " + qualifyerXML + ":" + e.getMessage(), e);
 		}
 		
-		long elapsedTime = t.getElapsedTimeNanos() / (1000 * 1000);
-		RequestAnalyser.getRequestAnalyser().registerComponentStatistics("getRelatedContentsFromXML", elapsedTime);
-
 		return relatedContentVOList;
 	}
 
@@ -3149,9 +3146,6 @@ public class BasicTemplateController implements TemplateController
 		{
 			logger.error("An error occurred trying to get related contents from qualifyerXML " + qualifyerXML + ":" + e.getMessage(), e);
 		}
-
-		long elapsedTime = t.getElapsedTimeNanos() / (1000 * 1000);
-		RequestAnalyser.getRequestAnalyser().registerComponentStatistics("getRelatedPagesFromXML", elapsedTime);
 
 		return relatedPages;
 	}
@@ -4596,22 +4590,31 @@ public class BasicTemplateController implements TemplateController
 	
 	public List getMatchingContents(String contentTypeDefinitionNamesString, String categoryConditionString, String freeText, List freeTextAttributeNames, Date fromDate, Date toDate, boolean useLanguageFallback, boolean cacheResult, int cacheInterval, String cacheName, String cacheKey, List<Integer> repositoryIdList)
 	{
-		return getMatchingContents(contentTypeDefinitionNamesString, categoryConditionString, freeText, freeTextAttributeNames, fromDate, toDate, null, null, null, useLanguageFallback, cacheResult, cacheInterval, cacheName, cacheKey, repositoryIdList);
+		return getMatchingContents(contentTypeDefinitionNamesString, categoryConditionString, freeText, freeTextAttributeNames, fromDate, toDate, null, null, null, null, useLanguageFallback, cacheResult, cacheInterval, cacheName, cacheKey, repositoryIdList);
 	}
-	
+
 	/**
 	 * This method searches for all contents matching
 	 */
 	
 	public List getMatchingContents(String contentTypeDefinitionNamesString, String categoryConditionString, String freeText, List freeTextAttributeNames, Date fromDate, Date toDate, Date expireFromDate, Date expireToDate, String versionModifier, boolean useLanguageFallback, boolean cacheResult, int cacheInterval, String cacheName, String cacheKey, List<Integer> repositoryIdList)
 	{
+		return getMatchingContents(contentTypeDefinitionNamesString, categoryConditionString, freeText, freeTextAttributeNames, fromDate, toDate, expireFromDate, expireToDate, versionModifier, null, useLanguageFallback, cacheResult, cacheInterval, cacheName, cacheKey, repositoryIdList);
+	}
+	
+	/**
+	 * This method searches for all contents matching
+	 */
+	
+	public List getMatchingContents(String contentTypeDefinitionNamesString, String categoryConditionString, String freeText, List freeTextAttributeNames, Date fromDate, Date toDate, Date expireFromDate, Date expireToDate, String versionModifier, Integer maximumNumberOfItems, boolean useLanguageFallback, boolean cacheResult, int cacheInterval, String cacheName, String cacheKey, List<Integer> repositoryIdList)
+	{
 		Timer t = new Timer();
-		
-	    deliveryContext.addUsedContent("selectiveCacheUpdateNonApplicable");
 
+		deliveryContext.addUsedContent("selectiveCacheUpdateNonApplicable");
+		
 		if((freeText != null && !freeText.equals("")) || (freeTextAttributeNames != null && freeTextAttributeNames.size() > 0) || fromDate != null || toDate != null || expireFromDate != null || expireToDate != null || (versionModifier != null && !versionModifier.equals("")))
 			cacheResult = false;
-			
+
 		//TODO - add cache here
 		if(cacheName == null || cacheName.equals(""))
 			cacheName = "matchingContentsCache";
@@ -4627,7 +4630,7 @@ public class BasicTemplateController implements TemplateController
 				repositoryIdString.append("," + repositoryIdListIterator.next());
 		}
 		
-		String key = "sortedMatchingContents" + contentTypeDefinitionNamesString + "_" + categoryConditionString + "_publishDateTime_languageId_" + this.languageId + "_" + useLanguageFallback + repositoryIdString;
+		String key = "sortedMatchingContents" + contentTypeDefinitionNamesString + "_" + categoryConditionString + "_publishDateTime_languageId_" + this.languageId + "_" + useLanguageFallback + "_" + maximumNumberOfItems + "_" + repositoryIdString;
 		List cachedMatchingContents = (List)CacheController.getCachedObjectFromAdvancedCache(cacheName, key, cacheInterval);
 		if(cachedMatchingContents == null || !cacheResult)
 		{
@@ -4654,6 +4657,7 @@ public class BasicTemplateController implements TemplateController
 				criterias.setContentTypeDefinitions(contentTypeDefinitionVOList);
 				criterias.setDates(fromDate, toDate);
 				criterias.setExpireDates(expireFromDate, expireToDate);
+				criterias.setMaximumNumberOfItems(maximumNumberOfItems);
 				if(versionModifier != null)
 					criterias.setVersionModifier(versionModifier);
 				if(repositoryIdList != null && repositoryIdList.size() > 0)

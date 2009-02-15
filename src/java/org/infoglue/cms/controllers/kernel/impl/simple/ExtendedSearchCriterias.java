@@ -138,6 +138,10 @@ public class ExtendedSearchCriterias
 	 */
 	private String versionModifier;
 	
+	/**
+	 * If present limit the number of results.
+	 */
+	private Integer maximumNumberOfItems;
 	
 	private List<Integer> repositoryIdList;
 	
@@ -264,6 +268,16 @@ public class ExtendedSearchCriterias
 	}
 
 	/**
+	 * Sets the maxNumberOfItems criteria.
+	 * 
+	 * @param languageVO the language to use.
+	 */
+	public void setMaximumNumberOfItems(final Integer maximumNumberOfItems)
+	{
+		this.maximumNumberOfItems = maximumNumberOfItems;
+	}
+
+	/**
 	 * Sets the repository criteria. 
 	 * 
 	 * @param repositoryIdList limits the search to the repositories listed.
@@ -368,6 +382,16 @@ public class ExtendedSearchCriterias
 		return versionModifier != null;
 	}
 
+	/**
+	 * Returns true if the limit criteria should be used; false otherwise.
+	 * 
+	 * @return true if the criteria should be used; false otherwise.
+	 */
+	public boolean hasMaximumNumberOfItemsCritera() 
+	{
+		return maximumNumberOfItems != null;
+	}
+	
 	/**
 	 * Returns the state to use in the state criteria. 
 	 * 
@@ -479,6 +503,14 @@ public class ExtendedSearchCriterias
 	public String getVersionModifier()
 	{
 		return this.versionModifier;
+	}
+
+	/**
+	 * Returns the to maximumNumberOfItems to use in the date criteria. 
+	 */
+	public Integer getMaximumNumberOfItems()
+	{
+		return this.maximumNumberOfItems;
 	}
 
 	public List<Integer> getRepositoryIdList()
