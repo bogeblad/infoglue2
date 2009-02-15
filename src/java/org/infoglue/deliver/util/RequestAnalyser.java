@@ -166,7 +166,12 @@ public class RequestAnalyser
     {
         Counter.registerComponentStatistics(componentName, elapsedTime);
     }
-    
+
+    public synchronized void registerPageStatistics(String pageUrl, long elapsedTime)
+    {
+        Counter.registerPageStatistics(pageUrl, elapsedTime);
+    }
+
     public static Set getAllComponentNames()
     {
     	return Counter.getAllComponentNames();
@@ -182,9 +187,29 @@ public class RequestAnalyser
         return Counter.getNumberOfHits(componentName);
     }
 
+    public static Set getAllPageUrls()
+    {
+    	return Counter.getAllPageUrls();
+    }
+
+    public static long getPageAverageElapsedTime(String pageUrl)
+    {
+        return Counter.getPageAverageElapsedTime(pageUrl);
+    }
+
+    public static int getPageNumberOfHits(String pageUrl)
+    {
+        return Counter.getPageNumberOfHits(pageUrl);
+    }
+    
     public static void resetComponentStatistics()
     {
     	Counter.resetComponentStatistics();
+    }
+
+    public static void resetPageStatistics()
+    {
+    	Counter.resetPageStatistics();
     }
 
     public static void resetAverageResponseTimeStatistics()

@@ -566,6 +566,95 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
         return "cleared";
     }
 
+    public String doResetPageStatistics() throws Exception
+    {
+    	logger.error("A user from an IP(" + this.getRequest().getRemoteAddr() + ") which is not allowed tried to call doReCache.");
+
+        if(!ServerNodeController.getController().getIsIPAllowed(this.getRequest()))
+        {
+            this.getResponse().setContentType("text/plain");
+            this.getResponse().setStatus(HttpServletResponse.SC_FORBIDDEN);
+            this.getResponse().getWriter().println("You have no access to this view - talk to your administrator if you should.");
+            
+            return NONE;
+        }
+        
+        RequestAnalyser.resetPageStatistics();
+        
+        return "cleared";
+    }
+
+    public String doComponentStatistics() throws Exception
+    {
+        if(!ServerNodeController.getController().getIsIPAllowed(this.getRequest()))
+        {
+        	logger.error("A user from an IP(" + this.getRequest().getRemoteAddr() + ") which is not allowed tried to call doReCache.");
+
+            this.getResponse().setContentType("text/plain");
+            this.getResponse().setStatus(HttpServletResponse.SC_FORBIDDEN);
+            this.getResponse().getWriter().println("You have no access to this view - talk to your administrator if you should.");
+            
+            return NONE;
+        }
+        
+        states.add(getList("Average processing time per request (ms)", "" + RequestAnalyser.getRequestAnalyser().getAverageElapsedTime()));
+		
+        states.add(getList("<br/><strong>Individual components (in milliseconds)</strong>", "&nbsp;"));
+        
+        List unsortedComponents = new ArrayList();
+        Set componentNames = RequestAnalyser.getAllComponentNames();
+        Iterator componentNamesIterator = componentNames.iterator();
+        while(componentNamesIterator.hasNext())
+        {
+        	String componentName = (String)componentNamesIterator.next();
+        	long componentAverageElapsedTime = RequestAnalyser.getComponentAverageElapsedTime(componentName);
+        	int componentNumberOfHits = RequestAnalyser.getComponentNumberOfHits(componentName);
+        	//states.add(getList("" + componentName + " - " + componentNumberOfHits + " hits", "" + componentAverageElapsedTime));
+        	unsortedComponents.add(getList("" + componentName + " - " + componentNumberOfHits + " hits - total " + (componentNumberOfHits * componentAverageElapsedTime), new Long(componentAverageElapsedTime)));
+        }
+
+        Collections.sort(unsortedComponents, new AverageInvokingTimeComparator());
+        
+    	states.addAll(unsortedComponents);
+    	
+        return "successComponentStatistics";
+    }
+
+    public String doPageStatistics() throws Exception
+    {
+        if(!ServerNodeController.getController().getIsIPAllowed(this.getRequest()))
+        {
+        	logger.error("A user from an IP(" + this.getRequest().getRemoteAddr() + ") which is not allowed tried to call doReCache.");
+
+            this.getResponse().setContentType("text/plain");
+            this.getResponse().setStatus(HttpServletResponse.SC_FORBIDDEN);
+            this.getResponse().getWriter().println("You have no access to this view - talk to your administrator if you should.");
+            
+            return NONE;
+        }
+        
+        states.add(getList("Average processing time per request (ms)", "" + RequestAnalyser.getRequestAnalyser().getAverageElapsedTime()));
+		
+        states.add(getList("<br/><strong>Individual pages (in milliseconds)</strong>", "&nbsp;"));
+        
+        List unsortedPageUrls = new ArrayList();
+        Set pageUrls = RequestAnalyser.getAllPageUrls();
+        Iterator pageUrlsIterator = pageUrls.iterator();
+        while(pageUrlsIterator.hasNext())
+        {
+        	String pageUrl = (String)pageUrlsIterator.next();
+        	long pageAverageElapsedTime = RequestAnalyser.getPageAverageElapsedTime(pageUrl);
+        	int pageNumberOfHits = RequestAnalyser.getPageNumberOfHits(pageUrl);
+        	unsortedPageUrls.add(getList("" + pageUrl + " - " + pageNumberOfHits + " hits - total " + (pageNumberOfHits * pageAverageElapsedTime), new Long(pageAverageElapsedTime)));
+        }
+
+        Collections.sort(unsortedPageUrls, new AverageInvokingTimeComparator());
+        
+    	states.addAll(unsortedPageUrls);
+
+        return "successPageStatistics";
+    }
+
     /**
      * This method is the application entry-point. The method does a lot of checks to see if infoglue
      * is installed correctly and if all resources needed are available.
@@ -610,70 +699,9 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
         	states.add(getList("Date:", "" + formatter.formatDate(publicationDate, "yyyy-MM-dd HH:mm:ss")));
         }
 		
-        states.add(getList("<br/><strong>Individual components (in milliseconds)</strong>", "&nbsp;"));
         
-        List unsortedComponents = new ArrayList();
-        Set componentNames = RequestAnalyser.getAllComponentNames();
-        Iterator componentNamesIterator = componentNames.iterator();
-        while(componentNamesIterator.hasNext())
-        {
-        	String componentName = (String)componentNamesIterator.next();
-        	long componentAverageElapsedTime = RequestAnalyser.getComponentAverageElapsedTime(componentName);
-        	int componentNumberOfHits = RequestAnalyser.getComponentNumberOfHits(componentName);
-        	//states.add(getList("" + componentName + " - " + componentNumberOfHits + " hits", "" + componentAverageElapsedTime));
-        	unsortedComponents.add(getList("" + componentName + " - " + componentNumberOfHits + " hits - total " + (componentNumberOfHits * componentAverageElapsedTime), new Long(componentAverageElapsedTime)));
-        }
-
-        Collections.sort(unsortedComponents, new AverageInvokingTimeComparator());
-        
-    	states.addAll(unsortedComponents);
-
     	getApplicationAttributes();
     	
-        //states.add(getList("Number of request being handled now", "" + RequestAnalyser.getNumberOfCurrentRequests() + "(average request take " + (RequestAnalyser.getAverageTimeSpentOnOngoingRequests()) + " ms, max now is " + RequestAnalyser.getMaxTimeSpentOnOngoingRequests() + ")"));
-        //states.add(getList("The slowest request handled now is", "" + ((RequestAnalyser.getLongestRequests() != null) ? RequestAnalyser.getLongestRequests().getAttribute("progress") : "")));
-        
-        /*
-        Database db = CastorDatabaseService.getDatabase();
-		
-		beginTransaction(db);
-
-		try
-		{
-			List repositoryVOList = RepositoryDeliveryController.getRepositoryDeliveryController().getRepositoryVOList(db);
-			getLogger().info("Number of repositories:" + repositoryVOList.size());
-			this.databaseConnectionOk = true;
-
-	        closeTransaction(db);
-		}
-		catch(Exception e)
-		{
-			getLogger().error("An error occurred so we should not complete the transaction:" + e, e);
-			rollbackTransaction(db);
-			throw new SystemException(e.getMessage());
-		}
-		
-		this.applicationSettingsOk 	= true;
-		this.testQueriesOk 			= true;
-		
-		try
-		{
-			File testAsset = new File(CmsPropertyHandler.getDigitalAssetPath() + File.separator + "test.txt");
-			FileHelper.writeToFile(testAsset, "ViewApplicationState checking file permissions in asset directory", false);
-			testAsset.delete();
-			
-			File testLog = new File(new File(CmsPropertyHandler.getLogPath()).getParent() + File.separator + "test.txt");
-			FileHelper.writeToFile(testLog, "ViewApplicationState checking file permissions in logs directory", false);
-			testLog.delete();
-
-			this.diskPermissionOk = true;
-		}
-		catch(Exception e)
-		{
-			getLogger().error(e.getMessage(), e);            
-		}
-		*/
-				
 		//this.getHttpSession().invalidate();
 
         return "success";

@@ -45,6 +45,7 @@ public class Counter
     private static Long totalElapsedTime = new Long(0);
     private static Long maxElapsedTime = new Long(0);
     private static Map allComponentsStatistics = new HashMap();
+    private static Map allPageStatistics = new HashMap();
     private static LinkedBlockingQueue latestPublications = new LinkedBlockingQueue(5);
     
     private Counter(){}
@@ -135,6 +136,14 @@ public class Counter
 		}
     }
 
+    synchronized static Set getAllPageUrls()
+    {
+    	synchronized (allPageStatistics) 
+    	{
+    		return allPageStatistics.keySet();
+		}
+    }
+
     synchronized private static Map getComponentStatistics(String componentName)
     {
     	Map componentStatistics = (Map)allComponentsStatistics.get(componentName);
@@ -149,6 +158,20 @@ public class Counter
     	return componentStatistics;
     }
 
+    synchronized private static Map getPageStatistics(String pageUrl)
+    {
+    	Map pageStatistics = (Map)allPageStatistics.get(pageUrl);
+    	if(pageStatistics == null)
+    	{
+    		pageStatistics = new HashMap();
+    		pageStatistics.put("totalElapsedTime", new Long(0));
+    		pageStatistics.put("totalNumberOfInvokations", new Integer(0));
+    		allPageStatistics.put(pageUrl, pageStatistics);
+        }
+    	
+    	return pageStatistics;
+    }
+
     synchronized static void registerComponentStatistics(String componentName, long elapsedTime)
     {
     	Map componentStatistics = getComponentStatistics(componentName);   
@@ -161,6 +184,21 @@ public class Counter
         	Integer oldTotalNumberOfInvokations = (Integer)componentStatistics.get("totalNumberOfInvokations");
         	Integer totalNumberOfInvokations = new Integer(oldTotalNumberOfInvokations.intValue() + 1);			
         	componentStatistics.put("totalNumberOfInvokations", totalNumberOfInvokations);
+    	}    	
+    }
+
+    synchronized static void registerPageStatistics(String pageUrl, long elapsedTime)
+    {
+    	Map pageStatistics = getPageStatistics(pageUrl);   
+    	synchronized (pageStatistics) 
+    	{
+        	Long oldTotalElapsedTime = (Long)pageStatistics.get("totalElapsedTime");
+           	Long totalElapsedTime = new Long(oldTotalElapsedTime.longValue() + elapsedTime);			
+        	pageStatistics.put("totalElapsedTime", totalElapsedTime);
+
+        	Integer oldTotalNumberOfInvokations = (Integer)pageStatistics.get("totalNumberOfInvokations");
+        	Integer totalNumberOfInvokations = new Integer(oldTotalNumberOfInvokations.intValue() + 1);			
+        	pageStatistics.put("totalNumberOfInvokations", totalNumberOfInvokations);
     	}    	
     }
 
@@ -184,12 +222,41 @@ public class Counter
         	return ((Integer)componentStatistics.get("totalNumberOfInvokations")).intValue();
  		}
     }
+    
+    static long getPageAverageElapsedTime(String pageUrl)
+    {
+    	Map pageStatistics = getPageStatistics(pageUrl);
+    	synchronized (pageStatistics) 
+    	{
+        	Long totalElapsedTime = (Long)pageStatistics.get("totalElapsedTime");
+        	Integer oldTotalNumberOfInvokations = (Integer)pageStatistics.get("totalNumberOfInvokations");
+ 
+        	return totalElapsedTime.longValue() / oldTotalNumberOfInvokations.intValue();			
+		}
+    }
+
+    static int getPageNumberOfHits(String pageUrl)
+    {
+    	Map pageStatistics = getPageStatistics(pageUrl);
+    	synchronized (pageStatistics) 
+    	{
+        	return ((Integer)pageStatistics.get("totalNumberOfInvokations")).intValue();
+ 		}
+    }
 
     static void resetComponentStatistics()
     {
     	synchronized (allComponentsStatistics) 
     	{
     		allComponentsStatistics.clear();
+    	}
+   	}
+
+    static void resetPageStatistics()
+    {
+    	synchronized (allPageStatistics) 
+    	{
+    		allPageStatistics.clear();
     	}
    	}
 
