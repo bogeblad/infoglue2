@@ -48,6 +48,7 @@ import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.AccessRightController;
 import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeController;
+import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeTypeDefinitionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.UserControllerProxy;
 import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.entities.management.SiteNodeTypeDefinitionVO;
@@ -476,6 +477,8 @@ public class ViewPageAction extends InfoGlueAbstractAction
 				}
 			}
 			
+		    System.out.println("The page delivery took " + elapsedTime + "ms for request " + this.getRequest().getRequestURL() + (this.getRequest().getQueryString() == null ? "" : "?" + this.getRequest().getQueryString()));
+		    RequestAnalyser.getRequestAnalyser().registerPageStatistics("" + this.getRequest().getRequestURL() + (this.getRequest().getQueryString() == null ? "" : "?" + this.getRequest().getQueryString()), elapsedTime);
 		    if(elapsedTime > 10000)
 			{
 			    logger.warn("The page delivery took " + elapsedTime + "ms for request " + this.getRequest().getRequestURL() + "?" + this.getRequest().getQueryString());
@@ -912,7 +915,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 		{
 			if(getSiteNodeId() != null)
 			{
-				SiteNodeVO siteNodeVO = SiteNodeController.getSiteNodeVOWithId(getSiteNodeId(), db);
+				SiteNodeVO siteNodeVO = SiteNodeController.getSmallSiteNodeVOWithId(getSiteNodeId(), db);
 				repositoryId = siteNodeVO.getRepositoryId();
 			}
 		}
@@ -1615,6 +1618,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 	{
 	    String key = "" + siteNodeId;
 		logger.info("key:" + key);
+		//SiteNodeTypeDefinitionVO siteNodeTypeDefinitionVO = (SiteNodeTypeDefinitionVO)CacheController.getCachedObjectFromAdvancedCache("pageCacheSiteNodeTypeDefinition", key);
 		SiteNodeTypeDefinitionVO siteNodeTypeDefinitionVO = (SiteNodeTypeDefinitionVO)CacheController.getCachedObject("pageCacheSiteNodeTypeDefinition", key);
 		if(siteNodeTypeDefinitionVO != null)
 		{
@@ -1622,7 +1626,24 @@ public class ViewPageAction extends InfoGlueAbstractAction
 		}
 		else
 		{
-		    
+			SiteNodeVO siteNodeVO = SiteNodeController.getSmallSiteNodeVOWithId(getSiteNodeId(), db);
+
+			if(siteNodeVO == null)
+			    throw new SystemException("There was no page with this id.");
+				
+			Integer siteNodeTypeDefinitionId = siteNodeVO.getSiteNodeTypeDefinitionId();
+			try
+			{
+				Timer t = new Timer();
+				siteNodeTypeDefinitionVO = SiteNodeTypeDefinitionController.getController().getSiteNodeTypeDefinitionVOWithId(siteNodeTypeDefinitionId, db);
+				t.printElapsedTimeMicro("Loading siteNodeTypeDefinitionVO took");
+			}
+			catch (Exception e) 
+			{
+			    throw new SystemException("There was no valid page invoker class assigned to the site node " + siteNodeVO.getName() + " - was (" + siteNodeTypeDefinitionId + ")");
+			}
+			
+			/*
 		    SiteNode siteNode = nodeDeliveryController.getSiteNode(db, this.siteNodeId);
 			if(siteNode == null)
 			    throw new SystemException("There was no page with this id.");
@@ -1633,8 +1654,10 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			}
 			
 			siteNodeTypeDefinitionVO = siteNode.getSiteNodeTypeDefinition().getValueObject();
+			*/
 			
 			CacheController.cacheObject("pageCacheSiteNodeTypeDefinition", key, siteNodeTypeDefinitionVO);
+			//CacheController.cacheObjectInAdvancedCache("pageCacheSiteNodeTypeDefinition", key, siteNodeTypeDefinitionVO);
 		}
 		
 		return siteNodeTypeDefinitionVO;
