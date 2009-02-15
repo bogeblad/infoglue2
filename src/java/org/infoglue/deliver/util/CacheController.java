@@ -284,7 +284,7 @@ public class CacheController extends Thread
 				if(cacheName != null && cacheName.equalsIgnoreCase("encodedStringsCache"))
 					cacheCapacity = "2000";
 				if(cacheName != null && cacheName.equalsIgnoreCase("componentPropertyCache"))
-					cacheCapacity = "500";
+					cacheCapacity = "2000";
 		    	
 		    	if(cacheCapacity != null && !cacheCapacity.equals(""))
 		    	{
