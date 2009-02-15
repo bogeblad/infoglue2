@@ -315,6 +315,7 @@ public class SelectiveLivePublicationThread extends PublicationThread
 								
 							}
 						}
+						recacheEntities(cacheEvictionBean);
 					}	
 					else
 					{
@@ -351,8 +352,6 @@ public class SelectiveLivePublicationThread extends PublicationThread
 							CacheController.clearCache("pageCacheSiteNodeTypeDefinition");
 						}
 					}
-
-					recacheEntities(cacheEvictionBean);
 				}
 			} 
 			catch (Exception e)
