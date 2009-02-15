@@ -2525,9 +2525,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 		
 		Timer t = new Timer();
 		Content content = (Content)getObjectWithId(ContentImpl.class, contentId, db); 
-		RequestAnalyser.getRequestAnalyser().registerComponentStatistics("isValidContent content", t.getElapsedTimeNanos() / 1000);
 		isValidContent = isValidContent(infoGluePrincipal, content, languageId, useLanguageFallback, includeFolders, db, deliveryContext, true, true);
-	    RequestAnalyser.getRequestAnalyser().registerComponentStatistics("isValidContent", t.getElapsedTimeNanos() / 1000);
 		
 		return isValidContent;					
 	}
@@ -2543,9 +2541,9 @@ public class ContentDeliveryController extends BaseDeliveryController
 		
 	    Timer t = new Timer();
 		//Content content = (Content)getObjectWithId(ContentImpl.class, contentId, db); 
-		RequestAnalyser.getRequestAnalyser().registerComponentStatistics("isValidContent2 content", t.getElapsedTimeNanos() / 1000);
+	    //RequestAnalyser.getRequestAnalyser().registerComponentStatistics("isValidContent2 content", t.getElapsedTimeNanos() / 1000);
 		isValidContent = isValidContent(infoGluePrincipal, content, languageId, useLanguageFallback, includeFolders, db, deliveryContext, checkIfVersionExists, checkAuthorization);
-	    RequestAnalyser.getRequestAnalyser().registerComponentStatistics("isValidContent2", t.getElapsedTimeNanos() / 1000);
+		//RequestAnalyser.getRequestAnalyser().registerComponentStatistics("isValidContent2", t.getElapsedTimeNanos() / 1000);
 		
 	    /*
 	    Timer t = new Timer();
@@ -2689,8 +2687,6 @@ public class ContentDeliveryController extends BaseDeliveryController
 			validateOnDates = deliveryContext.getValidateOnDates();
 		}
 
-		//RequestAnalyser.getRequestAnalyser().registerComponentStatistics("isValidContentPart1", t.getElapsedTimeNanos() / 1000);
-
 	    if(checkAccessRights)
 	    {
 			Integer protectedContentId = getProtectedContentId(db, content);
@@ -2699,8 +2695,6 @@ public class ContentDeliveryController extends BaseDeliveryController
 			    return false;
 			}
 	    }
-	    
-	    //RequestAnalyser.getRequestAnalyser().registerComponentStatistics("isValidContentPart protectedContentId", t.getElapsedTimeNanos() / 1000);
 
 		if(includeFolders && content.getIsBranch().booleanValue() && isValidOnDates(content.getPublishDateTime(), content.getExpireDateTime(), validateOnDates))
 		{
@@ -2708,8 +2702,6 @@ public class ContentDeliveryController extends BaseDeliveryController
 		}
 		else if(isValidOnDates(content.getPublishDateTime(), content.getExpireDateTime(), validateOnDates))
 		{
-			//RequestAnalyser.getRequestAnalyser().registerComponentStatistics("isValidContentPart3", t.getElapsedTimeNanos() / 1000);
-		    
 			if(checkVersionExists)
 		    {
 				//ContentVersion contentVersion = getContentVersion(content, languageId, getOperatingMode(), deliveryContext, db);
@@ -2745,8 +2737,6 @@ public class ContentDeliveryController extends BaseDeliveryController
 						//contentVersion = getContentVersion(content, masterLanguage.getId(), getOperatingMode(), deliveryContext, db);
 				}
 	
-				//RequestAnalyser.getRequestAnalyser().registerComponentStatistics("isValidContentPart5", t.getElapsedTimeNanos() / 1000);
-			
 			    if(contentVersion != null)
 					isValidContent = true;			
 		    }
