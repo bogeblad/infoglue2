@@ -372,9 +372,9 @@ public class SelectiveLivePublicationThread extends PublicationThread
 		
 	    String className = cacheEvictionBean.getClassName();
 	    String objectId = cacheEvictionBean.getObjectId();
-	    System.out.println("*********************************");
-	    System.out.println("recacheEntities for " + className);
-	    System.out.println("*********************************");
+	    logger.info("*********************************");
+	    logger.info("recacheEntities for " + className);
+	    logger.info("*********************************");
 	    
 		Database db = CastorDatabaseService.getDatabase();
 		db.begin();
@@ -522,8 +522,7 @@ public class SelectiveLivePublicationThread extends PublicationThread
 		}
 		catch (Exception e) 
 		{
-			logger.error("Problem recaching");
-			e.printStackTrace();
+			logger.error("Problem recaching:" + e.getMessage(), e);
 		}
 		finally
 		{
@@ -536,7 +535,8 @@ public class SelectiveLivePublicationThread extends PublicationThread
 				logger.error("Problem closing db");
 			}
 		}
-		t.printElapsedTime("Recaching entities in SelectiveLivePublicationThread took:");
+		if(logger.isInfoEnabled())
+			t.printElapsedTime("Recaching entities in SelectiveLivePublicationThread took:");
 		
 	}
 	

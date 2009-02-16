@@ -3081,7 +3081,6 @@ public class BasicTemplateController implements TemplateController
 					int endIndex = qualifyerXML.indexOf(endExpression, idIndex + 4);
 						
 					String id = qualifyerXML.substring(idIndex + 4, endIndex);
-					System.out.println("id:" + id);
 					
 					try
 					{
