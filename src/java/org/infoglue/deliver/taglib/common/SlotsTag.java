@@ -27,13 +27,18 @@ import java.util.List;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspTagException;
 
+import org.apache.log4j.Logger;
+import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.deliver.taglib.AbstractTag;
 import org.infoglue.deliver.util.Slots;
 
 /**
  * 
  */
-public class SlotsTag extends AbstractTag {
+public class SlotsTag extends AbstractTag 
+{
+    private final static Logger logger = Logger.getLogger(SlotsTag.class.getName());
+
 	/**
 	 * 
 	 */
@@ -114,7 +119,7 @@ public class SlotsTag extends AbstractTag {
 		} 
 		catch(Exception e)
 		{
-			e.printStackTrace();
+			logger.error("Error in common:slots component:" + e.getMessage());
 			throw new JspTagException(e.getMessage());
 		}
 	}

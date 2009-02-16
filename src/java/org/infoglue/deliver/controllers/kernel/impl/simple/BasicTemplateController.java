@@ -6100,7 +6100,8 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			logger.error("An error occurred trying to do an include:" + e.getMessage(), e);
+			logger.error("An error occurred trying to do an include:" + e.getMessage());
+			logger.error("Problem URL:" + getOriginalFullURL());
 		}
 			
 		return result;
