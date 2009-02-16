@@ -289,41 +289,55 @@ public class RemoteUserServiceImpl extends RemoteInfoGlueService
         try
         {
             InfoGluePrincipal principal = UserControllerProxy.getController().getUser(userName);
-
-        	bean = new InfoGluePrincipalBean();
-        	bean.setName(principal.getName());
-        	bean.setDisplayName(principal.getDisplayName());
-        	bean.setEmail(principal.getEmail());
-        	bean.setFirstName(principal.getFirstName());
-        	bean.setLastName(principal.getLastName());
-        	bean.setAdministrator(false);
-        	bean.setMetaInformation(principal.getMetaInformation());
-        	
-        	List groups = new ArrayList();
-        	Iterator groupsListIterator = principal.getGroups().iterator();
-            while(groupsListIterator.hasNext())
+            
+            if(principal != null)
             {
-            	InfoGlueGroup group = (InfoGlueGroup)groupsListIterator.next();
-            	InfoGlueGroupBean groupBean = new InfoGlueGroupBean();
-            	groupBean.setName(group.getName());
-            	groupBean.setDisplayName(group.getDisplayName());
-            	groupBean.setDescription(group.getDescription());
-            	groups.add(groupBean);	
+	        	bean = new InfoGluePrincipalBean();
+	        	bean.setName(principal.getName());
+	        	bean.setDisplayName(principal.getDisplayName());
+	        	bean.setEmail(principal.getEmail());
+	        	bean.setFirstName(principal.getFirstName());
+	        	bean.setLastName(principal.getLastName());
+	        	bean.setAdministrator(false);
+	        	bean.setMetaInformation(principal.getMetaInformation());
+	        	
+	        	List groups = new ArrayList();
+	        	Iterator groupsListIterator = principal.getGroups().iterator();
+	            while(groupsListIterator.hasNext())
+	            {
+	            	InfoGlueGroup group = (InfoGlueGroup)groupsListIterator.next();
+	            	InfoGlueGroupBean groupBean = new InfoGlueGroupBean();
+	            	groupBean.setName(group.getName());
+	            	groupBean.setDisplayName(group.getDisplayName());
+	            	groupBean.setDescription(group.getDescription());
+	            	groups.add(groupBean);	
+	            }
+	            bean.setGroups(groups);
+	
+	        	List roles = new ArrayList();
+	        	Iterator rolesListIterator = principal.getRoles().iterator();
+	            while(rolesListIterator.hasNext())
+	            {
+	            	InfoGlueRole role = (InfoGlueRole)rolesListIterator.next();
+	            	InfoGlueRoleBean roleBean = new InfoGlueRoleBean();
+	            	roleBean.setName(role.getName());
+	            	roleBean.setDisplayName(role.getDisplayName());
+	            	roleBean.setDescription(role.getDescription());
+	            	roles.add(roleBean);	
+	            }
+	            bean.setRoles(roles);
             }
-            bean.setGroups(groups);
-
-        	List roles = new ArrayList();
-        	Iterator rolesListIterator = principal.getRoles().iterator();
-            while(rolesListIterator.hasNext())
+            else
             {
-            	InfoGlueRole role = (InfoGlueRole)rolesListIterator.next();
-            	InfoGlueRoleBean roleBean = new InfoGlueRoleBean();
-            	roleBean.setName(role.getName());
-            	roleBean.setDisplayName(role.getDisplayName());
-            	roleBean.setDescription(role.getDescription());
-            	roles.add(roleBean);	
+            	logger.error("User asked for was not in the system:" + userName);
+            	bean = new InfoGluePrincipalBean();
+	        	bean.setName(userName);
+	        	bean.setDisplayName(userName);
+	        	bean.setEmail("mattias.bogeblad@modul1.se");
+	        	bean.setFirstName("Not valid user");
+	        	bean.setLastName("");
+	        	bean.setAdministrator(false);
             }
-            bean.setRoles(roles);
         }
         catch(Exception e)
         {
