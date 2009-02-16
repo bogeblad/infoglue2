@@ -534,6 +534,7 @@ public class DeliveryContext implements UsageListener
 	public void setLastModifiedDateTime(Date lastModifiedDateTime)
 	{
 		this.lastModifiedDateTime = lastModifiedDateTime;
+		getHttpHeaders().put("Last-Modified", lastModifiedDateTime);
 	}
 
 	public Integer getPageCacheTimeout()

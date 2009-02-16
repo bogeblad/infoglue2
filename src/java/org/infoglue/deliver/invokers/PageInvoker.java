@@ -336,7 +336,7 @@ public abstract class PageInvoker
 		if(this.deliveryContext.getContentType() != null && !contentType.equalsIgnoreCase(this.deliveryContext.getContentType()))
 		    contentType = this.deliveryContext.getContentType();
 
-		if(!this.getTemplateController().getOperatingMode().equals("3"))
+		if(!CmsPropertyHandler.getOperatingMode().equals("3"))
 		{
 			getResponse().setHeader("Cache-Control","no-cache"); 
 	    	getResponse().setHeader("Pragma","no-cache");
