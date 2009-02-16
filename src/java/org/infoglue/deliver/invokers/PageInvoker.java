@@ -483,11 +483,15 @@ public abstract class PageInvoker
 		    			e.printStackTrace();
 					}
 		    	}
-				long current = System.currentTimeMillis() - lastModifiedDateTime.getTime();
-				if(processed > maxNumberOfVersionsForDerivedLastModifiedInLive || current < (1000 * 60 * 10))
-					break;
+				if(lastModifiedDateTime != null)
+				{
+					long current = System.currentTimeMillis() - lastModifiedDateTime.getTime();
+					if(processed > maxNumberOfVersionsForDerivedLastModifiedInLive || current < (1000 * 60 * 10))
+						break;
+				}
 			}
-			this.deliveryContext.setLastModifiedDateTime(lastModifiedDateTime);
+			if(lastModifiedDateTime != null)
+				this.deliveryContext.setLastModifiedDateTime(lastModifiedDateTime);
 		}
 		
 		long elapsedTime = t.getElapsedTime();
