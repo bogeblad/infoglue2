@@ -328,17 +328,19 @@ public class SelectiveLivePublicationThread extends PublicationThread
 						*/
 						if(className.equals("ServerNodeProperties"))
 						{
-						    logger.warn("\n\n\nUpdating all caches as this was a publishing-update\n\n\n");
+						    logger.warn("Updating all caches from SelectiveLivePublicationThread as this was a publishing-update\n\n\n");
 						    //CacheController.clearCastorCaches();
 
-							logger.info("\n\n\nclearing all except page cache as we are in publish mode..\n\n\n");											
-							CacheController.clearCaches(null, null, new String[] {"ServerNodeProperties", "serverNodePropertiesCache", "pageCache", "pageCacheExtra", "componentCache", "NavigationCache", "pagePathCache", "userCache", "pageCacheParentSiteNodeCache", "pageCacheLatestSiteNodeVersions", "pageCacheSiteNodeTypeDefinition", "JNDIAuthorizationCache", "WebServiceAuthorizationCache"});
+							logger.info("clearing all except page cache as we are in publish mode..\n\n\n");											
+							CacheController.clearCaches(null, null, new String[] {"ServerNodeProperties", "serverNodePropertiesCache", "pageCache", "pageCacheExtra", "componentCache", "NavigationCache", "pagePathCache", "userCache", "pageCacheParentSiteNodeCache", "pageCacheLatestSiteNodeVersions", "pageCacheSiteNodeTypeDefinition", "JNDIAuthorizationCache", "WebServiceAuthorizationCache", "importTagResultCache"});
 						    
-							//logger.info("\n\n\nRecaching all caches as this was a publishing-update\n\n\n");
+							//logger.info("Recaching all caches as this was a publishing-update\n\n\n");
 							//CacheController.cacheCentralCastorCaches();
-
-							//logger.info("\n\n\nFinally clearing page cache and other caches as this was a publishing-update\n\n\n");
-							logger.info("\n\n\nFinally clearing page cache and some other caches as this was a publishing-update\n\n\n");
+							CacheController.clearCastorCaches();
+							logger.info("Cleared all castor caches...");
+							
+							//logger.info("Finally clearing page cache and other caches as this was a publishing-update\n\n\n");
+							logger.info("Finally clearing page cache and some other caches as this was a publishing-update\n\n\n");
 							//CacheController.clearCache("ServerNodeProperties");
 							//CacheController.clearCache("serverNodePropertiesCache");
 						    CacheController.clearCache("boundContentCache");
@@ -350,6 +352,14 @@ public class SelectiveLivePublicationThread extends PublicationThread
 							CacheController.clearCache("pageCacheParentSiteNodeCache");
 							CacheController.clearCache("pageCacheLatestSiteNodeVersions");
 							CacheController.clearCache("pageCacheSiteNodeTypeDefinition");
+						}
+						else
+						{
+							Class type = Class.forName(className);
+					        Object[] ids = {objectId};
+					        CacheController.clearCache(type, ids);
+					        CacheController.clearCache(type);
+					    	CacheController.clearCaches(className, objectId, null);
 						}
 					}
 				}

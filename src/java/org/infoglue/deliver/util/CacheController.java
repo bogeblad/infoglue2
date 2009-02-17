@@ -278,13 +278,13 @@ public class CacheController extends Thread
 		    	
 		    	String cacheCapacity = (String)cacheSettings.get("CACHE_CAPACITY_" + cacheName);
 		    	if(cacheName != null && cacheName.equalsIgnoreCase("pageCache"))
-		    		cacheCapacity = "10000";
+		    		cacheCapacity = "8000";
 		    	if(cacheName != null && cacheName.equalsIgnoreCase("pageCacheExtra"))
-		    		cacheCapacity = "20000";
+		    		cacheCapacity = "16000";
 				if(cacheName != null && cacheName.equalsIgnoreCase("encodedStringsCache"))
 					cacheCapacity = "2000";
 				if(cacheName != null && cacheName.equalsIgnoreCase("componentPropertyCache"))
-					cacheCapacity = "2000";
+					cacheCapacity = "1500";
 		    	
 		    	if(cacheCapacity != null && !cacheCapacity.equals(""))
 		    	{
@@ -363,7 +363,7 @@ public class CacheController extends Thread
 				    try 
 				    {
 				        value = (cacheAdministrator == null) ? null : cacheAdministrator.getFromCache(key, CacheEntry.INDEFINITE_EXPIRY);
-					} 
+				    } 
 				    catch (NeedsRefreshException nre) 
 				    {
 				    	if(useFileCacheFallback && nre.getCacheContent() != null)
@@ -375,7 +375,7 @@ public class CacheController extends Thread
 					}
 				}
 		    }
-	    	if(useFileCacheFallback && !stopUseFileCacheFallback)
+	    	if(value == null && useFileCacheFallback && !stopUseFileCacheFallback)
 	    	{				    		
 	    		if(logger.isInfoEnabled())
 	    			logger.info("Getting cache content from file..");

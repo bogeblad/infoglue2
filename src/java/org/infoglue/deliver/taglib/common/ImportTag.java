@@ -28,6 +28,7 @@ import java.util.Map;
 
 import javax.servlet.jsp.JspException;
 
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.infoglue.deliver.taglib.TemplateControllerTag;
 import org.infoglue.deliver.util.CacheController;
@@ -96,6 +97,9 @@ public class ImportTag extends TemplateControllerTag
 			}
 			else
 			{
+				if(logger.isInfoEnabled())
+					logger.info("Using cache...");
+
 				if(fileCacheCharEncoding == null)
 					fileCacheCharEncoding = charEncoding;
 
@@ -111,30 +115,49 @@ public class ImportTag extends TemplateControllerTag
 				resultHandler.setUseFileCacheFallback(useFileCacheFallback);
 				resultHandler.setFileCacheCharEncoding(fileCacheCharEncoding);
 
-				if(logger.isInfoEnabled())
-					t.printElapsedTime("1 took..");
 				String cachedResult = (String)CacheController.getCachedObjectFromAdvancedCache(cacheName, localCacheKey, cacheTimeout.intValue(), false, fileCacheCharEncoding);
 				if(logger.isInfoEnabled())
-					t.printElapsedTime("2 took..");
-				if((cachedResult == null || cachedResult.equals("")) && useFileCacheFallback)
+					t.printElapsedTime("Getting timed cache result:" + cachedResult);
+				
+				boolean callInBackground = false;
+				
+				if((cachedResult == null || cachedResult.equals("")))
 				{
-					cachedResult = (String)CacheController.getCachedObjectFromAdvancedCache(cacheName, localCacheKey, true, fileCacheCharEncoding);
+					callInBackground = true;
+					
 					if(logger.isInfoEnabled())
-						t.printElapsedTime("3 took..");
-					queueBean(resultHandler);
-					if(logger.isInfoEnabled())
-						t.printElapsedTime("4 took..");
+						logger.info("Not valid...");
+					
+					if(useFileCacheFallback)
+					{
+						cachedResult = (String)CacheController.getCachedObjectFromAdvancedCache(cacheName, localCacheKey, true, fileCacheCharEncoding);						
+					}
+					else
+					{
+						cachedResult = (String)CacheController.getCachedObjectFromAdvancedCache(cacheName, localCacheKey);
+					}
 				}
 				if(cachedResult == null || cachedResult.equals(""))
 				{
+					if(logger.isInfoEnabled())
+						logger.info("Calling url directly as last resort...");
+					
 					cachedResult = helper.getUrlContent(url, requestParameters, charEncoding, timeout.intValue());
+					
 					if(logger.isInfoEnabled())
 						t.printElapsedTime("5 took..");
 					resultHandler.handleResult(cachedResult);
+					
 					if(logger.isInfoEnabled())
 						t.printElapsedTime("6 took..");
 				}
-				
+				else if(callInBackground)
+				{
+					if(logger.isInfoEnabled())
+						t.printElapsedTime("Getting cache result without timeout");
+					queueBean(resultHandler);
+				}
+
 				if(logger.isInfoEnabled())
 					logger.info("Sending out the cached result...");
 				
