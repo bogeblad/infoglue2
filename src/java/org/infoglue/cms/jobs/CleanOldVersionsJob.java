@@ -25,7 +25,9 @@ package org.infoglue.cms.jobs;
 import org.apache.log4j.Logger;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeController;
+import org.infoglue.cms.util.ChangeNotificationController;
 import org.infoglue.cms.util.CmsPropertyHandler;
+import org.infoglue.cms.util.NotificationMessage;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -82,6 +84,10 @@ public class CleanOldVersionsJob implements Job
 				logger.info("cleanedContentVersions:" + cleanedContentVersions);
 				logger.info("cleanedSiteNodeVersions:" + cleanedSiteNodeVersions);
 				context.setResult(new Integer[]{cleanedContentVersions, cleanedSiteNodeVersions});
+			
+				NotificationMessage notificationMessage = new NotificationMessage("CleanOldVersionsJob.execute():", "ServerNodeProperties", "administrator", NotificationMessage.SYSTEM, "0", "ServerNodeProperties");
+			    ChangeNotificationController.getInstance().addNotificationMessage(notificationMessage);
+	        	ChangeNotificationController.notifyListeners();
 			}
 		}
 		catch(Exception e)
