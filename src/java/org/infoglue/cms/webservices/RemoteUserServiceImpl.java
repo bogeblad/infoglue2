@@ -337,6 +337,12 @@ public class RemoteUserServiceImpl extends RemoteInfoGlueService
 	        	bean.setFirstName("Not valid user");
 	        	bean.setLastName("");
 	        	bean.setAdministrator(false);
+	        	
+	        	List groups = new ArrayList();
+	            bean.setGroups(groups);
+	
+	        	List roles = new ArrayList();
+	            bean.setRoles(roles);
             }
         }
         catch(Exception e)
