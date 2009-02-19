@@ -1752,28 +1752,31 @@ public class CacheController extends Thread
     		String firstPart = ("" + key.hashCode()).substring(0, 3);
             String filePath = CmsPropertyHandler.getDigitalAssetPath() + File.separator + "caches" + File.separator + cacheName + File.separator + firstPart + File.separator + key.hashCode();
             File file = new File(filePath);
-            file.mkdirs();
-        	//System.out.println("updateInterval:" + updateInterval);
-            if(updateInterval != null)
+            if(file.exists())
             {
-	            long updateDateTime = file.lastModified();
-	            long now = System.currentTimeMillis();
-	            //System.out.println("diff:" + (now - updateDateTime) / 1000);
-	            if((now - updateDateTime) / 1000 < updateInterval)
+	        	//System.out.println("updateInterval:" + updateInterval);
+	            if(updateInterval != null)
 	            {
-	            	//System.out.println("getting file anyway:" + updateInterval);
-	            	contents = FileHelper.getFileAsString(file, charEncoding);
-	            }
+		            long updateDateTime = file.lastModified();
+		            long now = System.currentTimeMillis();
+		            //System.out.println("diff:" + (now - updateDateTime) / 1000);
+		            if((now - updateDateTime) / 1000 < updateInterval)
+		            {
+		            	//System.out.println("getting file anyway:" + updateInterval);
+		            	contents = FileHelper.getFileAsString(file, charEncoding);
+		            }
+		            else
+		            {
+		            	//System.out.println("Old file - skipping:" + ((now - updateDateTime) / 1000));
+		            	if(logger.isInfoEnabled())
+		        			logger.info("Old file - skipping:" + ((now - updateDateTime) / 1000));
+		            }
+		        }
 	            else
 	            {
-	            	//System.out.println("Old file - skipping:" + ((now - updateDateTime) / 1000));
-	            	if(logger.isInfoEnabled())
-	        			logger.info("Old file - skipping:" + ((now - updateDateTime) / 1000));
+	            	//System.out.println("getting file:" + file);
+	            	contents = FileHelper.getFileAsString(file);
 	            }
-	        }
-            else
-            {
-            	contents = FileHelper.getFileAsString(file);
             }
     	}
     	catch (Exception e) 

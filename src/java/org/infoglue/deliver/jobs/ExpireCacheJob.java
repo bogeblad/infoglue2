@@ -192,10 +192,11 @@ public class ExpireCacheJob implements Job
 		                            	File[] cacheFiles = subSubCacheDir.listFiles();
 		                            	for(int k=0; k<cacheFiles.length; k++)
 		                            	{
-					                		File cacheFile = cacheFiles[j];
+					                		File cacheFile = cacheFiles[k];
 						                	logger.info("cacheFile:" + cacheFile.getName());
-					                		long lastModified = cacheFile.lastModified();
+						                	long lastModified = cacheFile.lastModified();
 					                		long differensInHours = (System.currentTimeMillis() - lastModified) / (60 * 60 * 1000);
+					                		//System.out.println("differensInHours:" + differensInHours);
 					                		if(differensInHours > (24 * 2))
 					                		{
 					                			logger.info("Deleting cached file as it was to old:" + differensInHours);
