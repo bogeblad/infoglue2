@@ -169,9 +169,9 @@ public class ExpireCacheJob implements Job
             synchronized (intervalCount)
 			{
                 intervalCount++;
-                logger.info("intervalCount:" + intervalCount);
 	            if(intervalCount > 50)
 	            {
+	                logger.warn("Cleaning cache directory as intervalCount:" + intervalCount);
 	                String dir = CmsPropertyHandler.getDigitalAssetPath() + File.separator + "caches";
 	                File dirFile = new File(dir);
 	                if(dirFile.exists())
@@ -183,23 +183,31 @@ public class ExpireCacheJob implements Job
 		                	logger.info("subCacheDir:" + subCacheDir.getName());
 		                	if(subCacheDir.isDirectory())
 		                	{
-			                	File[] cacheFiles = subCacheDir.listFiles();
-			                	for(int j=0; j<cacheFiles.length; j++)
-			                	{
-			                		File cacheFile = cacheFiles[j];
-				                	logger.info("cacheFile:" + cacheFile.getName());
-			                		long lastModified = cacheFile.lastModified();
-			                		long differensInHours = (System.currentTimeMillis() - lastModified) / (60 * 60 * 1000);
-			                		if(differensInHours > (24 * 2))
-			                		{
-			                			logger.info("Deleting cached file as it was to old:" + differensInHours);
-			                			cacheFile.delete();
-			                		}
-			                		else
-			                		{
-			                			logger.info("Keeping cached file as it was new:" + differensInHours);
-			                		}
-			                	}
+		                    	File[] subSubCacheFiles = subCacheDir.listFiles();
+		                    	for(int j=0; j<subSubCacheFiles.length; j++)
+		                    	{
+		                    		File subSubCacheDir = subSubCacheFiles[j];
+		                        	if(subSubCacheDir.isDirectory())
+		                        	{
+		                            	File[] cacheFiles = subSubCacheDir.listFiles();
+		                            	for(int k=0; k<cacheFiles.length; k++)
+		                            	{
+					                		File cacheFile = cacheFiles[j];
+						                	logger.info("cacheFile:" + cacheFile.getName());
+					                		long lastModified = cacheFile.lastModified();
+					                		long differensInHours = (System.currentTimeMillis() - lastModified) / (60 * 60 * 1000);
+					                		if(differensInHours > (24 * 2))
+					                		{
+					                			logger.info("Deleting cached file as it was to old:" + differensInHours);
+					                			cacheFile.delete();
+					                		}
+					                		else
+					                		{
+					                			logger.info("Keeping cached file as it was new:" + differensInHours);
+					                		}
+		                            	}
+		                        	}			                
+		                    	}
 		                	}			                
 		                }
 	                }
