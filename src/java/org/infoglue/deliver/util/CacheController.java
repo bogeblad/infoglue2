@@ -178,13 +178,13 @@ public class CacheController extends Thread
 	
 	public static void clearServerNodeProperty(boolean reCache)
 	{
-		clearCache("serverNodePropertiesCache");
-		clearCache("encodedStringsCache");
-		clearCache("principalToolPropertiesCache");
 		if(reCache)
 			InfoGlueJDBCPropertySet.reCache();
    		else
    			InfoGlueJDBCPropertySet.clearCaches();
+		clearCache("serverNodePropertiesCache");
+		clearCache("encodedStringsCache");
+		clearCache("principalToolPropertiesCache");
    	}
 
 	public static void cacheObject(String cacheName, Object key, Object value)
