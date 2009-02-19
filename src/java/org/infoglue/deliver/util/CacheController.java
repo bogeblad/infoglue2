@@ -325,14 +325,15 @@ public class CacheController extends Thread
 				else
 				{
 				    cacheAdministrator.putInCache(key.toString(), value);
-				    if(useFileCacheFallback)
-				    {
-				    	if(logger.isInfoEnabled())
-			    			logger.info("Caching value to disk also");
-				    	putCachedContentInFile(cacheName, key.toString(), value.toString(), fileCacheCharEncoding);				    	
-				    }
 				}
 			}
+		    if(useFileCacheFallback && !useGroups)
+		    {
+		    	if(logger.isInfoEnabled())
+	    			logger.info("Caching value to disk also");
+		    	putCachedContentInFile(cacheName, key.toString(), value.toString(), fileCacheCharEncoding);				    	
+		    }
+
 		//}
 		
 		//logger.info("Done cacheObjectInAdvancedCache");
@@ -1471,6 +1472,8 @@ public class CacheController extends Thread
 						logger.info("cleared InfoGlueAuthenticationFilter");
 						InfoGlueAuthenticationFilter.initializeProperties();
 						logger.info("initialized InfoGlueAuthenticationFilter");
+						logger.info("Shortening page stats");
+						RequestAnalyser.shortenPageStatistics();
 					} 
 					catch (Exception e1) 
 					{

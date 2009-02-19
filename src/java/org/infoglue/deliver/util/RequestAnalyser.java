@@ -212,6 +212,11 @@ public class RequestAnalyser
     	Counter.resetPageStatistics();
     }
 
+    public static void shortenPageStatistics()
+    {
+    	Counter.shortenPageStatistics();
+    }
+
     public static void resetAverageResponseTimeStatistics()
     {
     	Counter.resetAverageResponseTimeStatistics();

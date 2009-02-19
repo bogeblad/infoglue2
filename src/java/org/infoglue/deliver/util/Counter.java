@@ -23,6 +23,7 @@
 package org.infoglue.deliver.util;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -30,6 +31,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.LinkedBlockingQueue;
+
+import org.infoglue.cms.util.sorters.AverageInvokingTimeComparator;
 
 /**
  * @author mattias
@@ -230,8 +233,10 @@ public class Counter
     	{
         	Long totalElapsedTime = (Long)pageStatistics.get("totalElapsedTime");
         	Integer oldTotalNumberOfInvokations = (Integer)pageStatistics.get("totalNumberOfInvokations");
- 
-        	return totalElapsedTime.longValue() / oldTotalNumberOfInvokations.intValue();			
+        	if(totalElapsedTime != null && totalElapsedTime != 0 && oldTotalNumberOfInvokations != null && oldTotalNumberOfInvokations != 0)
+        		return totalElapsedTime.longValue() / oldTotalNumberOfInvokations.intValue();		
+        	else
+        		return -1;
 		}
     }
 
@@ -260,6 +265,69 @@ public class Counter
     	}
    	}
 
+    static void shortenPageStatistics()
+    {
+    	try
+    	{
+	    	synchronized (allPageStatistics) 
+	    	{
+	    		if(allPageStatistics.size() < 50)
+	    		{
+	    			return;
+	    		}
+	
+	    		Map shortPageStatistics = new HashMap();
+	
+	            List unsortedPageUrls = new ArrayList();
+	            Set pageUrls = allPageStatistics.keySet();
+	            Iterator pageUrlsIterator = pageUrls.iterator();
+	            while(pageUrlsIterator.hasNext())
+	            {
+	            	String pageUrl = (String)pageUrlsIterator.next();
+	            	Map pageStatistics = (Map)allPageStatistics.get(pageUrl);
+	            	synchronized (pageStatistics) 
+	            	{
+	                	Long totalElapsedTime = (Long)pageStatistics.get("totalElapsedTime");
+	                	Integer pageNumberOfHits = (Integer)pageStatistics.get("totalNumberOfInvokations");
+	                	long pageAverageElapsedTime = totalElapsedTime / pageNumberOfHits;
+	                	unsortedPageUrls.add(getList("" + pageUrl, new Long(pageAverageElapsedTime)));
+	            	}
+	            }
+	
+	            Collections.sort(unsortedPageUrls, new AverageInvokingTimeComparator());
+	            
+	            if(unsortedPageUrls.size() > 5)
+	            	unsortedPageUrls = unsortedPageUrls.subList(0, 5);
+	            
+	            Iterator unsortedPageUrlsIterator = unsortedPageUrls.iterator();
+	            while(unsortedPageUrlsIterator.hasNext())
+	            {
+	            	List item = (List)unsortedPageUrlsIterator.next();
+	            	if(item.size() > 1)
+	            	{
+	            		String pageUrl = (String)item.get(0);
+	            		shortPageStatistics.put(pageUrl, allPageStatistics.get(pageUrl));
+	            	}
+	            }
+	            
+	            allPageStatistics = shortPageStatistics;
+	    	}
+    	}
+    	catch (Exception e) 
+    	{
+    		System.out.println("Error in shortenPageStatistics:" + e.getMessage());
+		}
+   	}
+
+    static List getList(String key, Object value)
+    {
+        List list = new ArrayList();
+        list.add(key);
+        list.add(value);
+
+        return list;
+    }
+    
     static void resetAverageResponseTimeStatistics()
     {
     	totalElapsedTime = new Long(0);
