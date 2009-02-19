@@ -1749,18 +1749,28 @@ public class CacheController extends Thread
     	String contents = null;
     	try
     	{
-            String filePath = CmsPropertyHandler.getDigitalAssetPath() + File.separator + "caches" + File.separator + cacheName + File.separator + key.hashCode();
+    		String firstPart = ("" + key.hashCode()).substring(0, 3);
+            String filePath = CmsPropertyHandler.getDigitalAssetPath() + File.separator + "caches" + File.separator + cacheName + File.separator + firstPart + File.separator + key.hashCode();
             File file = new File(filePath);
+            file.mkdirs();
+        	//System.out.println("updateInterval:" + updateInterval);
             if(updateInterval != null)
             {
 	            long updateDateTime = file.lastModified();
 	            long now = System.currentTimeMillis();
+	            //System.out.println("diff:" + (now - updateDateTime) / 1000);
 	            if((now - updateDateTime) / 1000 < updateInterval)
+	            {
+	            	//System.out.println("getting file anyway:" + updateInterval);
 	            	contents = FileHelper.getFileAsString(file, charEncoding);
+	            }
 	            else
+	            {
+	            	//System.out.println("Old file - skipping:" + ((now - updateDateTime) / 1000));
 	            	if(logger.isInfoEnabled())
 	        			logger.info("Old file - skipping:" + ((now - updateDateTime) / 1000));
-            }
+	            }
+	        }
             else
             {
             	contents = FileHelper.getFileAsString(file);
@@ -1778,7 +1788,8 @@ public class CacheController extends Thread
     {
     	try
     	{
-            String dir = CmsPropertyHandler.getDigitalAssetPath() + File.separator + "caches" + File.separator + cacheName;
+    		String firstPart = ("" + key.hashCode()).substring(0, 3);
+            String dir = CmsPropertyHandler.getDigitalAssetPath() + File.separator + "caches" + File.separator + cacheName + File.separator + firstPart;
             File dirFile = new File(dir);
             dirFile.mkdirs();
             File file = new File(dir + File.separator + key.hashCode());
@@ -1828,12 +1839,25 @@ public class CacheController extends Thread
             	//System.out.println("subCacheDir:" + subCacheDir.getName());
             	if(subCacheDir.isDirectory())
             	{
-                	File[] cacheFiles = subCacheDir.listFiles();
-                	for(int j=0; j<cacheFiles.length; j++)
+                	File[] subSubCacheFiles = subCacheDir.listFiles();
+                	for(int j=0; j<subSubCacheFiles.length; j++)
                 	{
-                		File cacheFile = cacheFiles[j];
+                		File subSubCacheDir = subSubCacheFiles[j];
+                    	if(subSubCacheDir.isDirectory())
+                    	{
+                        	File[] cacheFiles = subSubCacheDir.listFiles();
+                        	for(int k=0; k<cacheFiles.length; k++)
+                        	{
+                        		File cacheFile = cacheFiles[k];
+                        		//System.out.println("cacheFile:" + cacheFile.getName());
+                    			cacheFile.delete();
+                        	}
+
+                    		subCacheDir.delete();
+                    	}			                
+
                 		//System.out.println("cacheFile:" + cacheFile.getName());
-            			cacheFile.delete();
+                    	subSubCacheDir.delete();
                 	}
 
             		subCacheDir.delete();
@@ -1856,12 +1880,25 @@ public class CacheController extends Thread
             	//System.out.println("subCacheDir:" + subCacheDir.getName());
             	if(subCacheDir.isDirectory() && subCacheDir.getName().equals(cacheName))
             	{
-                	File[] cacheFiles = subCacheDir.listFiles();
-                	for(int j=0; j<cacheFiles.length; j++)
+                	File[] subSubCacheFiles = subCacheDir.listFiles();
+                	for(int j=0; j<subSubCacheFiles.length; j++)
                 	{
-                		File cacheFile = cacheFiles[j];
+                		File subSubCacheDir = subSubCacheFiles[j];
+                    	if(subSubCacheDir.isDirectory())
+                    	{
+                        	File[] cacheFiles = subSubCacheDir.listFiles();
+                        	for(int k=0; k<cacheFiles.length; k++)
+                        	{
+                        		File cacheFile = cacheFiles[k];
+                        		//System.out.println("cacheFile:" + cacheFile.getName());
+                    			cacheFile.delete();
+                        	}
+
+                    		subCacheDir.delete();
+                    	}			                
+
                 		//System.out.println("cacheFile:" + cacheFile.getName());
-            			cacheFile.delete();
+                    	subSubCacheDir.delete();
                 	}
 
             		subCacheDir.delete();
