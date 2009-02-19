@@ -170,7 +170,7 @@ public class ExpireCacheJob implements Job
 			{
                 intervalCount++;
                 logger.info("intervalCount:" + intervalCount);
-	            if(intervalCount > 2)
+	            if(intervalCount > 50)
 	            {
 	                String dir = CmsPropertyHandler.getDigitalAssetPath() + File.separator + "caches";
 	                File dirFile = new File(dir);
@@ -190,7 +190,7 @@ public class ExpireCacheJob implements Job
 				                	logger.info("cacheFile:" + cacheFile.getName());
 			                		long lastModified = cacheFile.lastModified();
 			                		long differensInHours = (System.currentTimeMillis() - lastModified) / (60 * 60 * 1000);
-			                		if(differensInHours > (24 * 7))
+			                		if(differensInHours > (24 * 2))
 			                		{
 			                			logger.info("Deleting cached file as it was to old:" + differensInHours);
 			                			cacheFile.delete();
