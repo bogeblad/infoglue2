@@ -50,12 +50,12 @@ public class ImportTag extends TemplateControllerTag
 	private Map requestParameters = new HashMap();
 	private Integer timeout = new Integer(30000);
 	
-	private Boolean useCache = false;
+	private Boolean useCache = true; //TODO
 	private String cacheName = "importTagResultCache";
 	private String cacheKey = null;
-	private Boolean useFileCacheFallback = false;
-	private String fileCacheCharEncoding = null;
-	private Integer cacheTimeout = new Integer(30000);
+	private Boolean useFileCacheFallback = true; //TODO
+	private String fileCacheCharEncoding = "iso-8859-1"; //TODO
+	private Integer cacheTimeout = new Integer(3600); //TODO
 	
 	private HttpHelper helper = new HttpHelper();
 	

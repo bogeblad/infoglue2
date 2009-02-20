@@ -88,6 +88,7 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
 	private boolean diskPermissionOk 		= false;
 	
 	private String cacheName				= "";
+	private boolean clearFileCache			= false;
 
 	private String className				= "";
 	private String logLevel					= "";
@@ -164,7 +165,8 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
         }
         
         CacheController.clearCache(cacheName);
-        CacheController.clearFileCaches(cacheName);
+        if(clearFileCache)
+        	CacheController.clearFileCaches(cacheName);
         
         //this.getHttpSession().invalidate();
         
@@ -379,7 +381,8 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
         CacheController.clearServerNodeProperty(true);
         CacheController.clearCastorCaches();
         CacheController.clearCaches(null, null, null);
-        CacheController.clearFileCaches();
+        if(clearFileCache)
+        	CacheController.clearFileCaches();
         
         if(this.returnAddress != null && !this.returnAddress.equals(""))
         {
@@ -775,6 +778,11 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
     public void setCacheName(String cacheName)
     {
         this.cacheName = cacheName;
+    }
+
+    public void setClearFileCache(boolean clearFileCache)
+    {
+        this.clearFileCache = clearFileCache;
     }
 
     public List getSessionInfoBeanList()
