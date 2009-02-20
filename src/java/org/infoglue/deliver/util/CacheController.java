@@ -1788,7 +1788,8 @@ public class CacheController extends Thread
             }
             else
             {
-            	System.out.println("No filecache existed:" + filePath);
+            	if(logger.isInfoEnabled())
+        			logger.info("No filecache existed:" + filePath);
             }
     	}
     	catch (Exception e) 
