@@ -378,13 +378,11 @@ public class CacheController extends Thread
 		    }
 	    	if(value == null && useFileCacheFallback && !stopUseFileCacheFallback)
 	    	{				    		
-	    		System.out.println("Getting cache content from file..");
 	    		if(logger.isInfoEnabled())
 	    			logger.info("Getting cache content from file..");
 	    		value = getCachedContentFromFile(cacheName, key, fileCacheCharEncoding);
 	    		if(value != null)
 	    		{
-	    			System.out.println("Got cached content from file as it did not exist in memory...:" + value.toString().length());
 	    			if(logger.isInfoEnabled())
 	        			logger.info("Got cached content from file as it did not exist in memory...:" + value.toString().length());
 	    			cacheObjectInAdvancedCache(cacheName, key, value);
