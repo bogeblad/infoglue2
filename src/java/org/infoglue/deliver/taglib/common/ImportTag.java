@@ -50,20 +50,11 @@ public class ImportTag extends TemplateControllerTag
 	private Map requestParameters = new HashMap();
 	private Integer timeout = new Integer(30000);
 	
-	/*
 	private Boolean useCache = false;
 	private String cacheName = "importTagResultCache";
 	private String cacheKey = null;
 	private Boolean useFileCacheFallback = false;
 	private String fileCacheCharEncoding = null;
-	private Integer cacheTimeout = new Integer(3600); 
-	*/
-	
-	private Boolean useCache = true;
-	private String cacheName = "importTagResultCache";
-	private String cacheKey = null;
-	private Boolean useFileCacheFallback = true;
-	private String fileCacheCharEncoding = "iso-8859-1";
 	private Integer cacheTimeout = new Integer(3600); 
 	
 	private HttpHelper helper = new HttpHelper();
@@ -94,6 +85,11 @@ public class ImportTag extends TemplateControllerTag
 
 	public int doEndTag() throws JspException
     {
+		useCache = true;
+		useFileCacheFallback = true;
+		fileCacheCharEncoding = "iso-8859-1";
+		cacheTimeout = new Integer(3600); 
+		
 		try
         {
 			Timer t = new Timer();
