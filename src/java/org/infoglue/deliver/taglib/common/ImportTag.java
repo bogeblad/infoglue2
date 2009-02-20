@@ -58,13 +58,14 @@ public class ImportTag extends TemplateControllerTag
 	private String fileCacheCharEncoding = null;
 	private Integer cacheTimeout = new Integer(3600); 
 	*/
+	
 	private Boolean useCache = true;
 	private String cacheName = "importTagResultCache";
 	private String cacheKey = null;
 	private Boolean useFileCacheFallback = true;
 	private String fileCacheCharEncoding = "iso-8859-1";
 	private Integer cacheTimeout = new Integer(3600); 
-
+	
 	private HttpHelper helper = new HttpHelper();
 	
     public ImportTag()
@@ -96,6 +97,14 @@ public class ImportTag extends TemplateControllerTag
 		try
         {
 			Timer t = new Timer();
+			if(logger.isInfoEnabled())
+			{
+				logger.info("useCache:" + useCache);
+				logger.info("cacheKey:" + cacheKey);
+				logger.info("useFileCacheFallback:" + useFileCacheFallback);
+				logger.info("cacheTimeout:" + cacheTimeout);
+			}
+			
 			if(!useCache)
 			{
 				if(logger.isInfoEnabled())
@@ -139,8 +148,6 @@ public class ImportTag extends TemplateControllerTag
 					if(useFileCacheFallback)
 					{
 						cachedResult = (String)CacheController.getCachedObjectFromAdvancedCache(cacheName, localCacheKey, true, fileCacheCharEncoding);						
-						if(cachedResult != null && !cachedResult.equals(""))
-							resultHandler.handleResult(cachedResult);
 					}
 					else
 					{
