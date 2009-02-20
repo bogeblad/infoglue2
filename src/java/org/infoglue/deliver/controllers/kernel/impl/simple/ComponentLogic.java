@@ -1796,7 +1796,8 @@ public class ComponentLogic
 						    if(parentRepositoryId != null && !usedRepositoryIds.contains(parentRepositoryId))
 						    {
 						        newParentSiteNodeVO = this.templateController.getRepositoryRootSiteNode(parentRepositoryId);
-						        usedRepositoryIds.add(newParentSiteNodeVO.getRepositoryId());
+						        if(newParentSiteNodeVO != null)
+						        	usedRepositoryIds.add(newParentSiteNodeVO.getRepositoryId());
 							}
 						}
 						
