@@ -1747,6 +1747,8 @@ public class CacheController extends Thread
     private static String getCachedContentFromFile(String cacheName, String key, Integer updateInterval, String charEncoding)
     {
     	Timer t = new Timer();
+    	if(!logger.isInfoEnabled())
+    		t.setActive(false);
     	
     	String contents = null;
     	try
