@@ -30,6 +30,7 @@ import javax.servlet.jsp.JspException;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.deliver.taglib.TemplateControllerTag;
 import org.infoglue.deliver.util.CacheController;
 import org.infoglue.deliver.util.HttpHelper;
@@ -85,10 +86,14 @@ public class ImportTag extends TemplateControllerTag
 
 	public int doEndTag() throws JspException
     {
-		useCache = true;
-		useFileCacheFallback = true;
-		fileCacheCharEncoding = "iso-8859-1";
-		cacheTimeout = new Integer(3600); 
+		String forceImportTagFileCaching = CmsPropertyHandler.getProperty("forceImportTagFileCaching");
+		if(forceImportTagFileCaching != null && forceImportTagFileCaching.equals("true"))
+		{
+			useCache = true;
+			useFileCacheFallback = true;
+			fileCacheCharEncoding = "iso-8859-1";
+			cacheTimeout = new Integer(3600); 
+		}
 		
 		try
         {
