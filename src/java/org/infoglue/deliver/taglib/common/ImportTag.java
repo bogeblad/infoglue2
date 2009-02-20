@@ -144,12 +144,17 @@ public class ImportTag extends TemplateControllerTag
 					if(useFileCacheFallback)
 					{
 						cachedResult = (String)CacheController.getCachedObjectFromAdvancedCache(cacheName, localCacheKey, true, fileCacheCharEncoding);						
+						if(logger.isInfoEnabled())
+							logger.info("getting cachedResult with useFileCacheFallback");
 					}
 					else
 					{
 						cachedResult = (String)CacheController.getCachedObjectFromAdvancedCache(cacheName, localCacheKey);
+						if(logger.isInfoEnabled())
+							logger.info("getting cachedResult without useFileCacheFallback");
 					}
 				}
+				
 				if(cachedResult == null || cachedResult.equals(""))
 				{
 					if(logger.isInfoEnabled())
@@ -167,7 +172,7 @@ public class ImportTag extends TemplateControllerTag
 				else if(callInBackground)
 				{
 					if(logger.isInfoEnabled())
-						t.printElapsedTime("Getting cache result without timeout");
+						logger.info("Adding url to queue...");
 					queueBean(resultHandler);
 				}
 

@@ -350,7 +350,7 @@ public class CacheController extends Thread
 			return null;
 		
 	    //logger.info("getCachedObjectFromAdvancedCache start:" + cacheName + ":" + key);
-
+		
 	    Object value = null;
 	    boolean stopUseFileCacheFallback = false;
 	    
@@ -378,11 +378,13 @@ public class CacheController extends Thread
 		    }
 	    	if(value == null && useFileCacheFallback && !stopUseFileCacheFallback)
 	    	{				    		
+	    		System.out.println("Getting cache content from file..");
 	    		if(logger.isInfoEnabled())
 	    			logger.info("Getting cache content from file..");
 	    		value = getCachedContentFromFile(cacheName, key, fileCacheCharEncoding);
 	    		if(value != null)
 	    		{
+	    			System.out.println("Got cached content from file as it did not exist in memory...:" + value.toString().length());
 	    			if(logger.isInfoEnabled())
 	        			logger.info("Got cached content from file as it did not exist in memory...:" + value.toString().length());
 	    			cacheObjectInAdvancedCache(cacheName, key, value);
@@ -1777,6 +1779,10 @@ public class CacheController extends Thread
 	            	//System.out.println("getting file:" + file);
 	            	contents = FileHelper.getFileAsString(file);
 	            }
+            }
+            else
+            {
+            	System.out.println("No filecache existed:" + filePath);
             }
     	}
     	catch (Exception e) 
