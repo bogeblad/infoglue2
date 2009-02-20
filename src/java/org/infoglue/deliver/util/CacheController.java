@@ -1782,7 +1782,7 @@ public class CacheController extends Thread
 	            else
 	            {
 	            	//System.out.println("getting file:" + file);
-	            	contents = FileHelper.getFileAsString(file);
+	            	contents = FileHelper.getFileAsString(file, charEncoding);
 	            	t.printElapsedTime("getFileAsString took");
 	            }
             }
