@@ -1748,14 +1748,18 @@ public class CacheController extends Thread
     
     private static String getCachedContentFromFile(String cacheName, String key, Integer updateInterval, String charEncoding)
     {
+    	Timer t = new Timer();
+    	
     	String contents = null;
     	try
     	{
     		String firstPart = ("" + key.hashCode()).substring(0, 3);
             String filePath = CmsPropertyHandler.getDigitalAssetPath() + File.separator + "caches" + File.separator + cacheName + File.separator + firstPart + File.separator + key.hashCode();
             File file = new File(filePath);
+        	t.printElapsedTime("Creating file");
             if(file.exists())
             {
+            	t.printElapsedTime("In if");
 	        	//System.out.println("updateInterval:" + updateInterval);
 	            if(updateInterval != null)
 	            {
@@ -1766,6 +1770,7 @@ public class CacheController extends Thread
 		            {
 		            	//System.out.println("getting file anyway:" + updateInterval);
 		            	contents = FileHelper.getFileAsString(file, charEncoding);
+		            	t.printElapsedTime("getFileAsString took");
 		            }
 		            else
 		            {
@@ -1778,6 +1783,7 @@ public class CacheController extends Thread
 	            {
 	            	//System.out.println("getting file:" + file);
 	            	contents = FileHelper.getFileAsString(file);
+	            	t.printElapsedTime("getFileAsString took");
 	            }
             }
             else
@@ -1789,6 +1795,8 @@ public class CacheController extends Thread
     	{
     		logger.warn("Problem loading data from file:" + e.getMessage());
     	}
+    	
+    	t.printElapsedTime("Reading file from disk took");
     	
     	return contents;
     }
