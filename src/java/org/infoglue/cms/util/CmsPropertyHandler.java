@@ -497,7 +497,7 @@ public class CmsPropertyHandler
 		
 		try
 		{
-			byte[] valueBytes = propertySet.getData(fullKey);
+			byte[] valueBytes = getPropertySet().getData(fullKey);
 	    
 			result = (valueBytes != null ? new String(valueBytes, "utf-8") : "");
 		}
@@ -507,6 +507,25 @@ public class CmsPropertyHandler
 		}
 		
 		return result;
+	}
+	
+	private static void restorePropertySet()
+	{
+		Map args = new HashMap();
+	    args.put("globalKey", "infoglue");
+	    try
+	    {
+	    	propertySet = PropertySetManager.getInstance("jdbc", args);
+	    	if(propertySet != null)
+	    		logger.error("Restored propertyset ");
+	    	else
+	    		logger.error("Could not restore propertyset ");	
+	    }
+	    catch(Exception e)
+	    {
+	    	propertySet = null;
+	    	logger.error("Could not get property set: " + e.getMessage(), e);
+	    }
 	}
 	
 	public static String getContextRootPath()
@@ -1310,17 +1329,17 @@ public class CmsPropertyHandler
 
 	public static String getPreferredLanguageCode(String userName)
 	{
-        return propertySet.getString("principal_" + userName + "_languageCode");
+        return getPropertySet().getString("principal_" + userName + "_languageCode");
 	}
 
 	public static String getPreferredToolId(String userName)
 	{
-	    return propertySet.getString("principal_" + userName + "_defaultToolId");
+	    return getPropertySet().getString("principal_" + userName + "_defaultToolId");
 	}
 
 	public static String getPreferredRepositoryId(String userName)
 	{
-	    return propertySet.getString("principal_" + userName + "_defaultRepositoryId");
+	    return getPropertySet().getString("principal_" + userName + "_defaultRepositoryId");
 	}
 
 	public static String getPropertiesParser()
@@ -1591,6 +1610,14 @@ public class CmsPropertyHandler
 	    return cacheSettings;
 	}
 
+	private static PropertySet getPropertySet()
+	{
+		if(propertySet == null)
+			restorePropertySet();
+		
+		return propertySet;
+	}
+	
 	public static String getPropertySetValue(String key)
 	{
 	    String value = null;
@@ -1605,7 +1632,7 @@ public class CmsPropertyHandler
 			return value;
 		}
 	    
-		value = propertySet.getString(key);
+		value = getPropertySet().getString(key);
 		logger.info("propertySetCache did not have value... refetched:" + value);
 	    
 	    CacheController.cacheObject(cacheName, cacheKey, value);
