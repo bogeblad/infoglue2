@@ -55,6 +55,7 @@ import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.CmsPropertyHandler;
+import org.infoglue.cms.util.dom.DOMBuilder;
 import org.infoglue.cms.util.sorters.ReflectionComparator;
 import org.infoglue.deliver.util.NullObject;
 import org.infoglue.deliver.util.CacheController;
@@ -77,6 +78,8 @@ import org.xml.sax.SAXException;
 public class ContentTypeDefinitionController extends BaseController
 {
     private final static Logger logger = Logger.getLogger(ContentTypeDefinitionController.class.getName());
+
+	private final static DOMBuilder domBuilder = new DOMBuilder();
 
 	public static final String ASSET_KEYS = "assetKeys";
 	public static final String CATEGORY_KEYS = "categoryKeys";
@@ -614,16 +617,38 @@ public class ContentTypeDefinitionController extends BaseController
 	 */
 	protected String getElementValue(Element root, String tagName)
 	{
+		String value = null;
+		
 		NodeList nodes = root.getElementsByTagName(tagName);
 		if(nodes.getLength() > 0)
 		{
 			Node cdata = nodes.item(0).getFirstChild();
-			return (cdata != null)? cdata.getNodeValue() : null;
+			value = (cdata != null)? cdata.getNodeValue() : null;
 		}
 
-		return null;
+		return value;
 	}
 
+	/**
+	 * Get the CDATA value from the provided elements child tag
+	 * @param root The root element to find the child tag
+	 * @param tagName The tag name of the child to get the CDATA value
+	 * @return The String CDATA or null if the tag does not exist or no value is set.
+	 */
+	protected String getElementValue(org.dom4j.Element root, String tagName)
+	{
+		String value = null;
+		
+		org.dom4j.Element node = root.element(tagName);
+		if(node != null)
+		{
+			String cdataText = node.getText();
+			value = cdataText;
+		}
+
+		return value;
+	}
+	
 	/**
 	 * This method returns the attributes in the content type definition for generation.
 	 */
@@ -656,118 +681,140 @@ public class ContentTypeDefinitionController extends BaseController
 		}
 		else
 		{
-			int i = 0;
-			try
+			//attributes = getAttributesWithXalan(schemaValue, addPriorityAttribute);
+			//t.printElapsedTime("getAttributesWithXalan took:");
+			attributes = getAttributesWithDOM4J(schemaValue, addPriorityAttribute);
+		}
+	
+
+		if(attributes != null)
+		    CacheController.cacheObject("contentTypeDefinitionCache", key, attributes);
+		else
+			CacheController.cacheObject("contentTypeDefinitionCache", key, new NullObject());
+				
+		return attributes;
+	}
+
+	private List getAttributesWithDOM4J(String schemaValue, boolean addPriorityAttribute)
+	{
+		List attributes = new ArrayList();
+		
+		int i = 0;
+		try
+		{
+			org.dom4j.Document document = domBuilder.getDocument(schemaValue);
+
+			String attributesXPath = "/xs:schema/xs:complexType/xs:all/xs:element/xs:complexType/xs:all/xs:element";
+			List anl = document.getRootElement().selectNodes(attributesXPath);
+
+			Iterator anlIterator = anl.iterator();
+			while(anlIterator.hasNext())
 			{
-				InputSource xmlSource = new InputSource(new StringReader(schemaValue));
-	
-				DOMParser parser = new DOMParser();
-				parser.parse(xmlSource);
-				Document document = parser.getDocument();
-	
-				String attributesXPath = "/xs:schema/xs:complexType/xs:all/xs:element/xs:complexType/xs:all/xs:element";
-				NodeList anl = org.apache.xpath.XPathAPI.selectNodeList(document.getDocumentElement(), attributesXPath);
-				for(i = 0; i < anl.getLength(); i++)
+				org.dom4j.Element child = (org.dom4j.Element)anlIterator.next();
+				
+				String attributeName = child.attributeValue("name");
+				String attributeType = child.attributeValue("type");
+
+				ContentTypeAttribute contentTypeAttribute = new ContentTypeAttribute();
+				contentTypeAttribute.setPosition(i);
+				contentTypeAttribute.setName(attributeName);
+				contentTypeAttribute.setInputType(attributeType);
+
+				String validatorsXPath = "/xs:schema/xs:complexType[@name = 'Validation']/xs:annotation/xs:appinfo/form-validation/formset/form/field[@property = '"+ attributeName +"']";
+
+				// Get validators
+				List validatorNodeList = document.getRootElement().selectNodes(validatorsXPath);
+				Iterator validatorNodeListIterator = validatorNodeList.iterator();
+				while(validatorNodeListIterator.hasNext())
 				{
-					Element child = (Element)anl.item(i);
-					String attributeName = child.getAttribute("name");
-					String attributeType = child.getAttribute("type");
-	
-					ContentTypeAttribute contentTypeAttribute = new ContentTypeAttribute();
-					contentTypeAttribute.setPosition(i);
-					contentTypeAttribute.setName(attributeName);
-					contentTypeAttribute.setInputType(attributeType);
-	
-					String validatorsXPath = "/xs:schema/xs:complexType[@name = 'Validation']/xs:annotation/xs:appinfo/form-validation/formset/form/field[@property = '"+ attributeName +"']";
-	
-					// Get validators
-					NodeList validatorNodeList = org.apache.xpath.XPathAPI.selectNodeList(document.getDocumentElement(), validatorsXPath);
-					for(int j=0; j < validatorNodeList.getLength(); j++)
+					org.dom4j.Element validatorNode = (org.dom4j.Element)validatorNodeListIterator.next();
+
+					if (validatorNode != null)
 					{
-						Element validatorNode = (Element)validatorNodeList.item(j);
-						if (validatorNode != null)
+					    Map arguments = new HashMap();
+					    
+					    List varNodeList = validatorNode.elements("var");
+						Iterator varNodeListIterator = varNodeList.iterator();
+						while(varNodeListIterator.hasNext())
 						{
-						    Map arguments = new HashMap();
-						    
-						    NodeList varNodeList = validatorNode.getElementsByTagName("var");
-						    for(int k=0; k < varNodeList.getLength(); k++)
-							{
-								Element varNode = (Element)varNodeList.item(k);
-								
-								String varName = getElementValue(varNode, "var-name");
-								String varValue = getElementValue(varNode, "var-value");
-	
-								arguments.put(varName, varValue);
-							}	    
-						    
-						    String attribute = ((Element)validatorNode).getAttribute("depends");
-						    String[] depends = attribute.split(",");
-						    for(int dependsIndex=0; dependsIndex < depends.length; dependsIndex++)
-						    {
-						        String name = depends[dependsIndex];
-	
-						        ContentTypeAttributeValidator contentTypeAttributeValidator = new ContentTypeAttributeValidator();
-						        contentTypeAttributeValidator.setName(name);
-						        contentTypeAttributeValidator.setArguments(arguments);
-						        contentTypeAttribute.getValidators().add(contentTypeAttributeValidator);					        
-						    }
-						    
-						    
-						}
+							org.dom4j.Element varNode = (org.dom4j.Element)varNodeListIterator.next();
+
+							String varName = getElementValue(varNode, "var-name");
+							String varValue = getElementValue(varNode, "var-value");
+
+							arguments.put(varName, varValue);
+						}	    
+					    
+					    String attribute = validatorNode.attributeValue("depends");
+					    String[] depends = attribute.split(",");
+					    for(int dependsIndex=0; dependsIndex < depends.length; dependsIndex++)
+					    {
+					        String name = depends[dependsIndex];
+
+					        ContentTypeAttributeValidator contentTypeAttributeValidator = new ContentTypeAttributeValidator();
+					        contentTypeAttributeValidator.setName(name);
+					        contentTypeAttributeValidator.setArguments(arguments);
+					        contentTypeAttribute.getValidators().add(contentTypeAttributeValidator);					        
+					    }
 					}
-					
-					// Get extra parameters
-					Node paramsNode = org.apache.xpath.XPathAPI.selectSingleNode(child, "xs:annotation/xs:appinfo/params");
-					if (paramsNode != null)
+				}
+
+				// Get extra parameters
+				org.dom4j.Element paramsNode = (org.dom4j.Element)child.selectSingleNode("xs:annotation/xs:appinfo/params");
+				if (paramsNode != null)
+				{
+					List childnl = paramsNode.elements("param");
+					Iterator childnlIterator = childnl.iterator();
+					while(childnlIterator.hasNext())
 					{
-						NodeList childnl = ((Element)paramsNode).getElementsByTagName("param");
-						for(int ci=0; ci < childnl.getLength(); ci++)
+						org.dom4j.Element param = (org.dom4j.Element)childnlIterator.next();
+
+						String paramId = param.attributeValue("id");
+						String paramInputTypeId = param.attributeValue("inputTypeId");
+
+						ContentTypeAttributeParameter contentTypeAttributeParameter = new ContentTypeAttributeParameter();
+						contentTypeAttributeParameter.setId(paramId);
+						if(paramInputTypeId != null && paramInputTypeId.length() > 0)
+							contentTypeAttributeParameter.setType(Integer.parseInt(paramInputTypeId));
+
+						contentTypeAttribute.putContentTypeAttributeParameter(paramId, contentTypeAttributeParameter);
+
+						List valuesNodeList = param.elements("values");
+						Iterator valuesNodeListIterator = valuesNodeList.iterator();
+						while(valuesNodeListIterator.hasNext())
 						{
-							Element param = (Element)childnl.item(ci);
-							String paramId = param.getAttribute("id");
-							String paramInputTypeId = param.getAttribute("inputTypeId");
-	
-							ContentTypeAttributeParameter contentTypeAttributeParameter = new ContentTypeAttributeParameter();
-							contentTypeAttributeParameter.setId(paramId);
-							if(paramInputTypeId != null && paramInputTypeId.length() > 0)
-								contentTypeAttributeParameter.setType(Integer.parseInt(paramInputTypeId));
-	
-							contentTypeAttribute.putContentTypeAttributeParameter(paramId, contentTypeAttributeParameter);
-	
-							NodeList valuesNodeList = param.getElementsByTagName("values");
-							for(int vsnli=0; vsnli < valuesNodeList.getLength(); vsnli++)
+							org.dom4j.Element vsnli = (org.dom4j.Element)valuesNodeListIterator.next();
+							
+							List valueNodeList = vsnli.elements("value");
+							Iterator valueNodeListIterator = valueNodeList.iterator();
+							while(valueNodeListIterator.hasNext())
 							{
-								NodeList valueNodeList = param.getElementsByTagName("value");
-								for(int vnli=0; vnli < valueNodeList.getLength(); vnli++)
+								org.dom4j.Element value = (org.dom4j.Element)valueNodeListIterator.next();
+
+								String valueId = value.attributeValue("id");
+
+								ContentTypeAttributeParameterValue contentTypeAttributeParameterValue = new ContentTypeAttributeParameterValue();
+								contentTypeAttributeParameterValue.setId(valueId);
+
+								List attributesList = value.attributes();
+								Iterator attributesListIterator = attributesList.iterator();
+								while(attributesListIterator.hasNext())
 								{
-									Element value = (Element)valueNodeList.item(vnli);
-									String valueId = value.getAttribute("id");
-	
-									ContentTypeAttributeParameterValue contentTypeAttributeParameterValue = new ContentTypeAttributeParameterValue();
-									contentTypeAttributeParameterValue.setId(valueId);
-	
-									NamedNodeMap nodeMap = value.getAttributes();
-									for(int nmi =0; nmi < nodeMap.getLength(); nmi++)
-									{
-										Node attribute = (Node)nodeMap.item(nmi);
-										String valueAttributeName = attribute.getNodeName();
-										String valueAttributeValue = attribute.getNodeValue();
-										contentTypeAttributeParameterValue.addAttribute(valueAttributeName, valueAttributeValue);
-									}
-	
-									contentTypeAttributeParameter.addContentTypeAttributeParameterValue(valueId, contentTypeAttributeParameterValue);
+									org.dom4j.Attribute attribute = (org.dom4j.Attribute)attributesListIterator.next();
+									
+									String valueAttributeName = attribute.getName();
+									String valueAttributeValue = attribute.getStringValue();
+									contentTypeAttributeParameterValue.addAttribute(valueAttributeName, valueAttributeValue);
 								}
+
+								contentTypeAttributeParameter.addContentTypeAttributeParameterValue(valueId, contentTypeAttributeParameterValue);
 							}
 						}
 					}
-					// End extra parameters
-	
-					attributes.add(contentTypeAttribute);
 				}
-			}
-			catch(Exception e)
-			{
-				logger.error("An error occurred when we tried to get the attributes of the content type: " + e.getMessage(), e);
+
+				// End extra parameters
+				attributes.add(contentTypeAttribute);
 			}
 			
 			if(addPriorityAttribute)
@@ -851,14 +898,219 @@ public class ContentTypeDefinitionController extends BaseController
 
 				attributes.add(contentTypeAttribute);
 			}
-
 		}
+		catch(Exception e)
+		{
+			logger.error("An error occurred when we tried to get the attributes of the content type: " + e.getMessage(), e);
+		}
+		
+		return attributes;
+	}
 
-		if(attributes != null)
-		    CacheController.cacheObject("contentTypeDefinitionCache", key, attributes);
-		else
-			CacheController.cacheObject("contentTypeDefinitionCache", key, new NullObject());
+	private List getAttributesWithXalan(String schemaValue, boolean addPriorityAttribute)
+	{
+		List attributes = new ArrayList();
+		
+		int i = 0;
+		try
+		{
+			InputSource xmlSource = new InputSource(new StringReader(schemaValue));
+
+			DOMParser parser = new DOMParser();
+			parser.parse(xmlSource);
+			Document document = parser.getDocument();
+
+			String attributesXPath = "/xs:schema/xs:complexType/xs:all/xs:element/xs:complexType/xs:all/xs:element";
+			NodeList anl = org.apache.xpath.XPathAPI.selectNodeList(document.getDocumentElement(), attributesXPath);
+
+			for(i = 0; i < anl.getLength(); i++)
+			{
+				Element child = (Element)anl.item(i);
+				String attributeName = child.getAttribute("name");
+				String attributeType = child.getAttribute("type");
+
+				ContentTypeAttribute contentTypeAttribute = new ContentTypeAttribute();
+				contentTypeAttribute.setPosition(i);
+				contentTypeAttribute.setName(attributeName);
+				contentTypeAttribute.setInputType(attributeType);
+
+				String validatorsXPath = "/xs:schema/xs:complexType[@name = 'Validation']/xs:annotation/xs:appinfo/form-validation/formset/form/field[@property = '"+ attributeName +"']";
+
+				// Get validators
+				NodeList validatorNodeList = org.apache.xpath.XPathAPI.selectNodeList(document.getDocumentElement(), validatorsXPath);
+				for(int j=0; j < validatorNodeList.getLength(); j++)
+				{
+					Element validatorNode = (Element)validatorNodeList.item(j);
+					if (validatorNode != null)
+					{
+					    Map arguments = new HashMap();
+					    
+					    NodeList varNodeList = validatorNode.getElementsByTagName("var");
+					    for(int k=0; k < varNodeList.getLength(); k++)
+						{
+							Element varNode = (Element)varNodeList.item(k);
 				
+							String varName = getElementValue(varNode, "var-name");
+							String varValue = getElementValue(varNode, "var-value");
+
+							arguments.put(varName, varValue);
+						}	    
+					    
+					    String attribute = ((Element)validatorNode).getAttribute("depends");
+					    String[] depends = attribute.split(",");
+					    for(int dependsIndex=0; dependsIndex < depends.length; dependsIndex++)
+					    {
+					        String name = depends[dependsIndex];
+
+					        ContentTypeAttributeValidator contentTypeAttributeValidator = new ContentTypeAttributeValidator();
+					        contentTypeAttributeValidator.setName(name);
+					        contentTypeAttributeValidator.setArguments(arguments);
+					        contentTypeAttribute.getValidators().add(contentTypeAttributeValidator);					        
+					    }
+					    
+					    
+					}
+				}
+				
+				// Get extra parameters
+				Node paramsNode = org.apache.xpath.XPathAPI.selectSingleNode(child, "xs:annotation/xs:appinfo/params");
+				if (paramsNode != null)
+				{
+					NodeList childnl = ((Element)paramsNode).getElementsByTagName("param");
+					for(int ci=0; ci < childnl.getLength(); ci++)
+					{
+						Element param = (Element)childnl.item(ci);
+						String paramId = param.getAttribute("id");
+						String paramInputTypeId = param.getAttribute("inputTypeId");
+
+						ContentTypeAttributeParameter contentTypeAttributeParameter = new ContentTypeAttributeParameter();
+						contentTypeAttributeParameter.setId(paramId);
+						if(paramInputTypeId != null && paramInputTypeId.length() > 0)
+							contentTypeAttributeParameter.setType(Integer.parseInt(paramInputTypeId));
+
+						contentTypeAttribute.putContentTypeAttributeParameter(paramId, contentTypeAttributeParameter);
+
+						NodeList valuesNodeList = param.getElementsByTagName("values");
+						for(int vsnli=0; vsnli < valuesNodeList.getLength(); vsnli++)
+						{
+							NodeList valueNodeList = param.getElementsByTagName("value");
+							for(int vnli=0; vnli < valueNodeList.getLength(); vnli++)
+							{
+								Element value = (Element)valueNodeList.item(vnli);
+								String valueId = value.getAttribute("id");
+
+								ContentTypeAttributeParameterValue contentTypeAttributeParameterValue = new ContentTypeAttributeParameterValue();
+								contentTypeAttributeParameterValue.setId(valueId);
+
+								NamedNodeMap nodeMap = value.getAttributes();
+								for(int nmi =0; nmi < nodeMap.getLength(); nmi++)
+								{
+									Node attribute = (Node)nodeMap.item(nmi);
+									String valueAttributeName = attribute.getNodeName();
+									String valueAttributeValue = attribute.getNodeValue();
+									contentTypeAttributeParameterValue.addAttribute(valueAttributeName, valueAttributeValue);
+								}
+
+								contentTypeAttributeParameter.addContentTypeAttributeParameterValue(valueId, contentTypeAttributeParameterValue);
+							}
+						}
+					}
+				}
+				/*
+				if(contentTypeAttribute.getName().equals("Title"))
+					System.out.println("contentTypeAttribute XALAN:" + contentTypeAttribute);
+				*/
+				// End extra parameters
+				attributes.add(contentTypeAttribute);
+			}
+			
+			if(addPriorityAttribute)
+			{
+				ContentTypeAttribute contentTypeAttribute = new ContentTypeAttribute();
+				contentTypeAttribute.setPosition(i);
+				contentTypeAttribute.setName("PropertyPriority");
+				contentTypeAttribute.setInputType("select");
+
+				ContentTypeAttributeParameter contentTypeAttributeParameter = new ContentTypeAttributeParameter();
+				contentTypeAttributeParameter.setId("title");
+				contentTypeAttributeParameter.setType(0);
+				contentTypeAttribute.putContentTypeAttributeParameter("title", contentTypeAttributeParameter);
+				ContentTypeAttributeParameterValue contentTypeAttributeParameterValue = new ContentTypeAttributeParameterValue();
+				contentTypeAttributeParameterValue.setId("title");
+				contentTypeAttributeParameterValue.addAttribute("title", "PropertyPriority");
+				contentTypeAttributeParameter.addContentTypeAttributeParameterValue("title", contentTypeAttributeParameterValue);
+
+				contentTypeAttributeParameter = new ContentTypeAttributeParameter();
+				contentTypeAttributeParameter.setId("description");
+				contentTypeAttributeParameter.setType(0);
+				contentTypeAttribute.putContentTypeAttributeParameter("description", contentTypeAttributeParameter);
+				contentTypeAttributeParameterValue = new ContentTypeAttributeParameterValue();
+				contentTypeAttributeParameterValue.setId("description");
+				contentTypeAttributeParameterValue.addAttribute("description", "What prio should this have");
+				contentTypeAttributeParameter.addContentTypeAttributeParameterValue("description", contentTypeAttributeParameterValue);
+
+				contentTypeAttributeParameter = new ContentTypeAttributeParameter();
+				contentTypeAttributeParameter.setId("initialData");
+				contentTypeAttributeParameter.setType(0);
+				contentTypeAttribute.putContentTypeAttributeParameter("initialData", contentTypeAttributeParameter);
+				contentTypeAttributeParameterValue = new ContentTypeAttributeParameterValue();
+				contentTypeAttributeParameterValue.setId("initialData");
+				contentTypeAttributeParameterValue.addAttribute("initialData", "");
+				contentTypeAttributeParameter.addContentTypeAttributeParameterValue("initialData", contentTypeAttributeParameterValue);
+
+				contentTypeAttributeParameter = new ContentTypeAttributeParameter();
+				contentTypeAttributeParameter.setId("class");
+				contentTypeAttributeParameter.setType(0);
+				contentTypeAttribute.putContentTypeAttributeParameter("class", contentTypeAttributeParameter);
+				contentTypeAttributeParameterValue = new ContentTypeAttributeParameterValue();
+				contentTypeAttributeParameterValue.setId("class");
+				contentTypeAttributeParameterValue.addAttribute("class", "longtextfield");
+				contentTypeAttributeParameter.addContentTypeAttributeParameterValue("class", contentTypeAttributeParameterValue);
+
+				contentTypeAttributeParameter = new ContentTypeAttributeParameter();
+				contentTypeAttributeParameter.setId("values");
+				contentTypeAttributeParameter.setType(1);
+				contentTypeAttribute.putContentTypeAttributeParameter("values", contentTypeAttributeParameter);
+
+				contentTypeAttributeParameterValue = new ContentTypeAttributeParameterValue();
+				contentTypeAttributeParameterValue.setId("1");
+				contentTypeAttributeParameterValue.addAttribute("id", "1");
+				contentTypeAttributeParameterValue.addAttribute("label", "Lowest");
+				contentTypeAttributeParameter.addContentTypeAttributeParameterValue("1", contentTypeAttributeParameterValue);
+
+				contentTypeAttributeParameterValue = new ContentTypeAttributeParameterValue();
+				contentTypeAttributeParameterValue.setId("2");
+				contentTypeAttributeParameterValue.addAttribute("id", "2");
+				contentTypeAttributeParameterValue.addAttribute("label", "Low");
+				contentTypeAttributeParameter.addContentTypeAttributeParameterValue("2", contentTypeAttributeParameterValue);
+
+				contentTypeAttributeParameterValue = new ContentTypeAttributeParameterValue();
+				contentTypeAttributeParameterValue.setId("3");
+				contentTypeAttributeParameterValue.addAttribute("id", "3");
+				contentTypeAttributeParameterValue.addAttribute("label", "Medium");
+				contentTypeAttributeParameter.addContentTypeAttributeParameterValue("3", contentTypeAttributeParameterValue);
+
+				contentTypeAttributeParameterValue = new ContentTypeAttributeParameterValue();
+				contentTypeAttributeParameterValue.setId("4");
+				contentTypeAttributeParameterValue.addAttribute("id", "4");
+				contentTypeAttributeParameterValue.addAttribute("label", "High");
+				contentTypeAttributeParameter.addContentTypeAttributeParameterValue("4", contentTypeAttributeParameterValue);
+
+				contentTypeAttributeParameterValue = new ContentTypeAttributeParameterValue();
+				contentTypeAttributeParameterValue.setId("5");
+				contentTypeAttributeParameterValue.addAttribute("id", "5");
+				contentTypeAttributeParameterValue.addAttribute("label", "Highest");
+				contentTypeAttributeParameter.addContentTypeAttributeParameterValue("5", contentTypeAttributeParameterValue);
+				// End extra parameters
+
+				attributes.add(contentTypeAttribute);
+			}
+		}
+		catch(Exception e)
+		{
+			logger.error("An error occurred when we tried to get the attributes of the content type: " + e.getMessage(), e);
+		}
+		
 		return attributes;
 	}
 
