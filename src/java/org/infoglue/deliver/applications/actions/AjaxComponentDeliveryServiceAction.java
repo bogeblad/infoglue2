@@ -151,7 +151,7 @@ public class AjaxComponentDeliveryServiceAction extends InfoGlueAbstractAction
             if(logger.isInfoEnabled())
                 logger.info("Returning:" + propertiesDiv.toString());
     		
-		    String template = FileHelper.getFileAsString(new File(CmsPropertyHandler.getContextRootPath() + "preview/ajax/componentPropertiesTemplate.vm"));
+		    String template = FileHelper.getFileAsString(new File(CmsPropertyHandler.getContextRootPath() + "preview/ajax/componentPropertiesTemplate.vm"), "iso-8859-1");
 		    //System.out.println("replacing in " + template + "\n with " + propertiesDiv.toString());
 		    String firstPart = template.substring(0,template.indexOf("$propertiesDiv"));
 		    String secondPart = template.substring(template.indexOf("$propertiesDiv") + 14);

@@ -289,8 +289,8 @@ public class AjaxDecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHT
 		    boolean hasOpenInNewWindowAccess = AccessRightController.getController().getIsPrincipalAuthorized(templateController.getDatabase(), principal, "ComponentEditor.OpenInNewWindow", "");
 		    boolean hasViewSourceAccess = AccessRightController.getController().getIsPrincipalAuthorized(templateController.getDatabase(), principal, "ComponentEditor.ViewSource", "");
 
-		    String extraHeader 	= FileHelper.getFileAsString(new File(CmsPropertyHandler.getContextRootPath() + "preview/ajax/pageComponentEditorHeader.vm"));
-		    //String extraBody 	= FileHelper.getFileAsString(new File(CmsPropertyHandler.getContextRootPath() + "preview/ajax/pageComponentEditorBody.vm"));
+		    String extraHeader 	= FileHelper.getFileAsString(new File(CmsPropertyHandler.getContextRootPath() + "preview/ajax/pageComponentEditorHeader.vm"), "iso-8859-1");
+		    //String extraBody 	= FileHelper.getFileAsString(new File(CmsPropertyHandler.getContextRootPath() + "preview/ajax/pageComponentEditorBody.vm"), "iso-8859-1");
 		    String extraBody 	= "";
 			
 			boolean oldUseFullUrl = this.getTemplateController().getDeliveryContext().getUseFullUrl();
