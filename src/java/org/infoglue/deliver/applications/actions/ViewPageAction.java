@@ -426,7 +426,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			}
 			catch(Exception e) 
 			{ 
-				e.printStackTrace(); 
+				logger.error("Problem closing connection:" + e.getMessage(), e);
 			}
 			
 			try
@@ -439,7 +439,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			}
 			catch (Exception e) 
 			{
-				e.printStackTrace();
+				logger.error("Problem clearing:" + e.getMessage(), e);
 			}
 			
 			if(logger.isInfoEnabled())
@@ -741,7 +741,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			}
 			catch (Exception e) 
 			{
-				e.printStackTrace();
+				logger.error("Problem closing connection:" + e.getMessage(), e);
 			}
 			
 			try
@@ -754,7 +754,8 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			}
 			catch (Exception e) 
 			{
-				e.printStackTrace();
+				logger.error("Problem clearing:" + e.getMessage(), e);
+
 			}
 
 
