@@ -244,10 +244,12 @@
 		<error-code>400</error-code>
 		<location>/ErrorPage.action?responseCode=400</location>
 	</error-page>
+	<!--
 	<error-page>
 		<error-code>403</error-code>
-		<location>/jsp/unauthorized.jsp</location>
+		<location>/jsp/protected/unauthorized.jsp</location>
 	</error-page>
+	-->
 	<error-page>
 		<error-code>404</error-code>
 		<location>/ErrorPage.action?responseCode=404</location>
