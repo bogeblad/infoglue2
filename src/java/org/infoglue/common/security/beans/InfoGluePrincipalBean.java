@@ -48,7 +48,7 @@ public class InfoGluePrincipalBean implements Principal, Serializable
 	private String email;
 	private List roles;
 	private List groups;
-	private Map metaInformation;
+	private Map metaInformation = Collections.emptyMap();
 	private boolean isAdministrator;
 
 	public InfoGluePrincipalBean()
