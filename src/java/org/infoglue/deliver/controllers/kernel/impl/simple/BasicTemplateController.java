@@ -2464,7 +2464,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			logger.error("An error occurred trying to get assetUrl on content with id: " + contentId + ":" + e.getMessage(), e);
+			logger.error("An error occurred trying to get assetUrl on content with id: " + contentId + ":" + e.getMessage());
 		}
 				
 		return assetUrl;
@@ -2511,7 +2511,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			logger.error("An error occurred trying to get assetUrl on content with id: " + contentId + " and assetKey:" + assetKey + " : " + e.getMessage(), e);
+			logger.error("An error occurred trying to get assetUrl on content with id: " + contentId + " and assetKey:" + assetKey + " : " + e.getMessage());
 		}
 				
 		return assetUrl;
@@ -2531,7 +2531,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			logger.error("An error occurred trying to get assetUrl on content with id: " + contentId + " and assetKey:" + assetKey + " : " + e.getMessage(), e);
+			logger.error("An error occurred trying to get assetUrl on content with id: " + contentId + " and assetKey:" + assetKey + " : " + e.getMessage());
 		}
 				
 		return assetUrl;
@@ -2674,7 +2674,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			logger.error("An error occurred trying to get assetUrl on content with id: " + this.contentId + ":" + e.getMessage(), e);
+			logger.error("An error occurred trying to get assetUrl on content with id: " + this.contentId + ":" + e.getMessage());
 		}
 				
 		return assetUrl;
@@ -3383,7 +3383,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			logger.error("An error occurred trying to get assetUrl on content with id " + contentId + " with assetKey " + assetKey + ":" + e.getMessage(), e);
+			logger.error("An error occurred trying to get assetUrl on content with id " + contentId + " with assetKey " + assetKey + ":" + e.getMessage());
 		}
 				
 		return assetUrl;
@@ -3399,7 +3399,7 @@ public class BasicTemplateController implements TemplateController
 		}
 		catch(Exception e)
 		{
-			logger.error("An error occurred trying to get assetUrl on content with id " + contentId + " with assetKey " + assetKey + ":" + e.getMessage(), e);
+			logger.error("An error occurred trying to get assetUrl on content with id " + contentId + " with assetKey " + assetKey + ":" + e.getMessage());
 		}
 				
 		return entries;
