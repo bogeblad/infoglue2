@@ -380,7 +380,7 @@ public class InfoGlueAuthenticationFilter implements Filter
 			}
 			else
 			{
-				if(userName != null)
+				if(userName != null && !userName.equals(""))
 				{
 					NotificationMessage notificationMessage = new NotificationMessage("Login failed:", "Authentication", userName, NotificationMessage.AUTHENTICATION_FAILED, "" + userName, "name");
 					TransactionHistoryController.getController().create(notificationMessage);

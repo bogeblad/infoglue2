@@ -1090,92 +1090,94 @@ public class SiteNodeVersionController extends BaseController
 		    siteNodeVersionVOList.add(siteNodeVersion.getValueObject());
 		}
 		
-        List relatedEntities = RegistryController.getController().getMatchingRegistryVOListForReferencingEntity(SiteNodeVersion.class.getName(), siteNodeVersion.getId().toString(), db);
-        Iterator relatedEntitiesIterator = relatedEntities.iterator();
-        
-        while(relatedEntitiesIterator.hasNext())
-        {
-            RegistryVO registryVO = (RegistryVO)relatedEntitiesIterator.next();
-            if(registryVO.getEntityName().equals(SiteNode.class.getName()) && !checkedSiteNodes.contains(new Integer(registryVO.getEntityId())))
-            {
-                try
-                {
-                    SiteNodeVO relatedSiteNodeVO = SiteNodeController.getController().getSiteNodeVOWithId(new Integer(registryVO.getEntityId()), db);
-
-                    //SiteNodeVersion relatedSiteNodeVersion = getLatestActiveSiteNodeVersionIfInState(relatedSiteNode, stateId, db);
-	                SiteNodeVersion relatedSiteNodeVersion = getLatestActiveSiteNodeVersion(db, new Integer(registryVO.getEntityId()));
-	                
-	                Integer repositoryId = relatedSiteNodeVO.getRepositoryId();
-	                Integer siteNodeRepositoryId = siteNode.getRepository().getId();
-	                boolean allowedSiteNodeVersion = repositoryId.intValue() == siteNodeRepositoryId.intValue();
-	                if(CmsPropertyHandler.getAllowCrossSiteSubmitToPublish().equalsIgnoreCase("true"))
+		if(siteNodeVersion != null)
+		{			
+			List relatedEntities = RegistryController.getController().getMatchingRegistryVOListForReferencingEntity(SiteNodeVersion.class.getName(), siteNodeVersion.getId().toString(), db);
+	        Iterator relatedEntitiesIterator = relatedEntities.iterator();
+	        
+	        while(relatedEntitiesIterator.hasNext())
+	        {
+	            RegistryVO registryVO = (RegistryVO)relatedEntitiesIterator.next();
+	            if(registryVO.getEntityName().equals(SiteNode.class.getName()) && !checkedSiteNodes.contains(new Integer(registryVO.getEntityId())))
+	            {
+	                try
 	                {
-	                	if(AccessRightController.getController().getIsPrincipalAuthorized(db, principal, "Repository.Read", "" + repositoryId))
-	                	{
-	            			Integer protectedSiteNodeVersionId = SiteNodeVersionControllerProxy.getSiteNodeVersionControllerProxy().getProtectedSiteNodeVersionId(relatedSiteNodeVersion.getId(), db);
-	            			if(protectedSiteNodeVersionId == null || AccessRightController.getController().getIsPrincipalAuthorized(principal, "SiteNodeVersion.SubmitToPublish", protectedSiteNodeVersionId.toString()))
-		        				allowedSiteNodeVersion = true;
-	                	}
-	                }
-
-	                //if(relatedSiteNodeVersion != null && relatedSiteNodeVersion.getStateId().intValue() == stateId.intValue() && siteNode.getRepository().getId().intValue() == relatedSiteNodeVersion.getOwningSiteNode().getRepository().getId().intValue())
-	                if(relatedSiteNodeVersion != null && allowedSiteNodeVersion && relatedSiteNodeVersion.getStateId().intValue() == stateId.intValue())
-	    	        {
-	                    siteNodeVersionVOList.add(relatedSiteNodeVersion.getValueObject());
-	                }
-                }
-                catch(Exception e)
-                {
-                    logger.warn("A siteNode referenced by ID:" + registryVO.getEntityId() + " was not found - must be a invalid reference from " + siteNode.getName() + "[" + siteNode.getId() + "].", e);
-                }
-
-    		    checkedSiteNodes.add(new Integer(registryVO.getEntityId()));
-            }
-            else if(registryVO.getEntityName().equals(Content.class.getName()) && !checkedContents.contains(new Integer(registryVO.getEntityId())))
-            {
-                try
-                {
-	                Content relatedContent = ContentController.getContentController().getContentWithId(new Integer(registryVO.getEntityId()), db);
-	                if(includeMetaInfo || (!includeMetaInfo && (relatedContent.getContentTypeDefinition() == null || !relatedContent.getContentTypeDefinition().getName().equalsIgnoreCase("Meta info"))))
-	                {
-		                Integer repositoryId = relatedContent.getRepository().getId();
+	                    SiteNodeVO relatedSiteNodeVO = SiteNodeController.getController().getSiteNodeVOWithId(new Integer(registryVO.getEntityId()), db);
+	
+	                    //SiteNodeVersion relatedSiteNodeVersion = getLatestActiveSiteNodeVersionIfInState(relatedSiteNode, stateId, db);
+		                SiteNodeVersion relatedSiteNodeVersion = getLatestActiveSiteNodeVersion(db, new Integer(registryVO.getEntityId()));
+		                
+		                Integer repositoryId = relatedSiteNodeVO.getRepositoryId();
 		                Integer siteNodeRepositoryId = siteNode.getRepository().getId();
-		                boolean allowedContent = repositoryId.intValue() == siteNodeRepositoryId.intValue();
+		                boolean allowedSiteNodeVersion = repositoryId.intValue() == siteNodeRepositoryId.intValue();
 		                if(CmsPropertyHandler.getAllowCrossSiteSubmitToPublish().equalsIgnoreCase("true"))
 		                {
 		                	if(AccessRightController.getController().getIsPrincipalAuthorized(db, principal, "Repository.Read", "" + repositoryId))
 		                	{
-			                	Integer protectedContentId = ContentControllerProxy.getController().getProtectedContentId(relatedContent.getId(), db);
-			        			if(protectedContentId == null || AccessRightController.getController().getIsPrincipalAuthorized(db, principal, "Content.SubmitToPublish", protectedContentId.toString()))
-			        				allowedContent = true;
+		            			Integer protectedSiteNodeVersionId = SiteNodeVersionControllerProxy.getSiteNodeVersionControllerProxy().getProtectedSiteNodeVersionId(relatedSiteNodeVersion.getId(), db);
+		            			if(protectedSiteNodeVersionId == null || AccessRightController.getController().getIsPrincipalAuthorized(principal, "SiteNodeVersion.SubmitToPublish", protectedSiteNodeVersionId.toString()))
+			        				allowedSiteNodeVersion = true;
 		                	}
 		                }
-		                
-	                	List relatedContentVersions = ContentVersionController.getContentVersionController().getLatestActiveContentVersionIfInState(relatedContent, stateId, db);
-
-		                Iterator relatedContentVersionsIterator = relatedContentVersions.iterator();
-		                while(relatedContentVersionsIterator.hasNext())
+	
+		                //if(relatedSiteNodeVersion != null && relatedSiteNodeVersion.getStateId().intValue() == stateId.intValue() && siteNode.getRepository().getId().intValue() == relatedSiteNodeVersion.getOwningSiteNode().getRepository().getId().intValue())
+		                if(relatedSiteNodeVersion != null && allowedSiteNodeVersion && relatedSiteNodeVersion.getStateId().intValue() == stateId.intValue())
+		    	        {
+		                    siteNodeVersionVOList.add(relatedSiteNodeVersion.getValueObject());
+		                }
+	                }
+	                catch(Exception e)
+	                {
+	                    logger.warn("A siteNode referenced by ID:" + registryVO.getEntityId() + " was not found - must be a invalid reference from " + siteNode.getName() + "[" + siteNode.getId() + "].", e);
+	                }
+	
+	    		    checkedSiteNodes.add(new Integer(registryVO.getEntityId()));
+	            }
+	            else if(registryVO.getEntityName().equals(Content.class.getName()) && !checkedContents.contains(new Integer(registryVO.getEntityId())))
+	            {
+	                try
+	                {
+		                Content relatedContent = ContentController.getContentController().getContentWithId(new Integer(registryVO.getEntityId()), db);
+		                if(includeMetaInfo || (!includeMetaInfo && (relatedContent.getContentTypeDefinition() == null || !relatedContent.getContentTypeDefinition().getName().equalsIgnoreCase("Meta info"))))
 		                {
-		                    ContentVersion relatedContentVersion = (ContentVersion)relatedContentVersionsIterator.next();
-			                //if(relatedContentVersion != null && siteNode.getRepository().getId().intValue() == relatedContentVersion.getOwningContent().getRepository().getId().intValue())
-				            if(relatedContentVersion != null && allowedContent)
+			                Integer repositoryId = relatedContent.getRepository().getId();
+			                Integer siteNodeRepositoryId = siteNode.getRepository().getId();
+			                boolean allowedContent = repositoryId.intValue() == siteNodeRepositoryId.intValue();
+			                if(CmsPropertyHandler.getAllowCrossSiteSubmitToPublish().equalsIgnoreCase("true"))
 			                {
-			                    contentVersionVOList.add(relatedContentVersion.getValueObject());
-			                    logger.info("relatedContentVersion:" + relatedContentVersion.getOwningContent().getName());
-			                    ContentVersionController.getContentVersionController().getContentAndAffectedItemsRecursive((Content)relatedContentVersion.getOwningContent(), ContentVersionVO.WORKING_STATE, checkedSiteNodes, checkedContents, db, siteNodeVersionVOList, contentVersionVOList, true, false, 3, 0);
+			                	if(AccessRightController.getController().getIsPrincipalAuthorized(db, principal, "Repository.Read", "" + repositoryId))
+			                	{
+				                	Integer protectedContentId = ContentControllerProxy.getController().getProtectedContentId(relatedContent.getId(), db);
+				        			if(protectedContentId == null || AccessRightController.getController().getIsPrincipalAuthorized(db, principal, "Content.SubmitToPublish", protectedContentId.toString()))
+				        				allowedContent = true;
+			                	}
+			                }
+			                
+		                	List relatedContentVersions = ContentVersionController.getContentVersionController().getLatestActiveContentVersionIfInState(relatedContent, stateId, db);
+	
+			                Iterator relatedContentVersionsIterator = relatedContentVersions.iterator();
+			                while(relatedContentVersionsIterator.hasNext())
+			                {
+			                    ContentVersion relatedContentVersion = (ContentVersion)relatedContentVersionsIterator.next();
+				                //if(relatedContentVersion != null && siteNode.getRepository().getId().intValue() == relatedContentVersion.getOwningContent().getRepository().getId().intValue())
+					            if(relatedContentVersion != null && allowedContent)
+				                {
+				                    contentVersionVOList.add(relatedContentVersion.getValueObject());
+				                    logger.info("relatedContentVersion:" + relatedContentVersion.getOwningContent().getName());
+				                    ContentVersionController.getContentVersionController().getContentAndAffectedItemsRecursive((Content)relatedContentVersion.getOwningContent(), ContentVersionVO.WORKING_STATE, checkedSiteNodes, checkedContents, db, siteNodeVersionVOList, contentVersionVOList, true, false, 3, 0);
+				                }
 			                }
 		                }
 	                }
-                }
-                catch(Exception e)
-                {
-                    logger.warn("A content referenced by ID:" + registryVO.getEntityId() + " was not found - must be a invalid reference from " + siteNode.getName() + "[" + siteNode.getId() + "].", e);
-                }
-                
-    		    checkedContents.add(new Integer(registryVO.getEntityId()));
-            }
-        //}	    
-
+	                catch(Exception e)
+	                {
+	                    logger.warn("A content referenced by ID:" + registryVO.getEntityId() + " was not found - must be a invalid reference from " + siteNode.getName() + "[" + siteNode.getId() + "].", e);
+	                }
+	                
+	    		    checkedContents.add(new Integer(registryVO.getEntityId()));
+	            }
+	        //}	    
+			}
 		}
 		
         if(recurseSiteNodes)

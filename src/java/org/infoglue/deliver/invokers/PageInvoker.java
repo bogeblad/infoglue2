@@ -480,7 +480,7 @@ public abstract class PageInvoker
 		            }
 		    		catch (Exception e) 
 		    		{
-		    			e.printStackTrace();
+		    			logger.warn("Could not use the versionId:" + usedContentVersion + " - reason:" + e.getMessage());
 					}
 		    	}
 				if(lastModifiedDateTime != null)

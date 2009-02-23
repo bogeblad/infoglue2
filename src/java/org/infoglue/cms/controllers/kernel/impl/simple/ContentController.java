@@ -1291,10 +1291,16 @@ public class ContentController extends BaseController
 
         try
         {
+        	ContentVO smallContentVO = getSmallContentVOWithId(contentId, db);
+        	if(smallContentVO != null && smallContentVO.getContentTypeDefinitionId() != null)
+	        	contentTypeDefinitionVO = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithId(smallContentVO.getContentTypeDefinitionId(), db);
+
+        	/*
 	        Content content = getReadOnlyMediumContentWithId(contentId, db);
         	if(content != null && content.getContentTypeDefinition() != null)
 	        	contentTypeDefinitionVO = content.getContentTypeDefinition().getValueObject();
-    
+    		*/
+        	
             //If any of the validations or setMethods reported an error, we throw them up now before create.
             ceb.throwIfNotEmpty();
             
