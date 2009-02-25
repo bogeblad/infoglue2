@@ -61,6 +61,7 @@ import org.infoglue.cms.util.XMLHelper;
 import org.infoglue.deliver.applications.databeans.DeliveryContext;
 import org.infoglue.deliver.controllers.kernel.impl.simple.BasicURLComposer;
 import org.infoglue.deliver.controllers.kernel.impl.simple.DigitalAssetDeliveryController;
+import org.w3c.dom.CDATASection;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -492,16 +493,29 @@ public class UpdateContentVersionAttributeAction extends ViewContentVersionActio
 					if(n.getNodeName().equalsIgnoreCase(attributeName))
 					{
 					    logger.info("Setting attributeValue: " + attributeValue);
+					    if(n.getFirstChild() != null && n.getFirstChild().getNodeValue() != null)
+						{
+							n.getFirstChild().setNodeValue(attributeValue);
+							break;
+						}
+						else
+						{
+							CDATASection cdata = document.createCDATASection(attributeValue);
+							n.appendChild(cdata);
+							break;
+						}
+						/*
 						Node valueNode = n.getFirstChild();
 						n.getFirstChild().setNodeValue(attributeValue);
 						break;
+						*/
 					}
 				}
 				contentVersionVO.setVersionValue(XMLHelper.serializeDom(document, new StringBuffer()).toString());		        	
 	        }
 	        catch(Exception e)
 	        {
-	        	e.printStackTrace();
+	        	logger.error("Problem updating version value:" + attributeName + "=" + attributeValue + " reason:" + e.getMessage(), e);
 	        }
 		}
 	}
