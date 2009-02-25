@@ -968,6 +968,8 @@ function edit(editUrl)
 }
 
 var isInInlineEditingMode = new Array();
+var savingAttributes = new Array();
+var savedAttributes = new Array();
 
 function editInlineSimple(selectedRepositoryId) 
 {
@@ -1153,17 +1155,32 @@ function saveAttributes(selectedContentId, selectedLanguageId)
 	for (key in editOnSightAttributeNames)
 	{
 		//alert("Key:" + key);
-		if(key.indexOf("attribute" + selectedContentId) > -1 && key.indexOf("_type") == -1)
+		if(key.indexOf("attribute" + selectedContentId) > -1 && key.indexOf("_type") == -1 && 
+																key.indexOf("_enableWYSIWYG") == -1 && 
+																key.indexOf("_WYSIWYGToolbar") == -1 &&
+																key.indexOf("_WYSIWYGExtraConfig") == -1)
 		{
 			var attributeName = editOnSightAttributeNames[key];
 			var attributeType = editOnSightAttributeNames[key + "_type"];
-			//alert("Saving:" + attributeName + " - " + attributeType);
-			saveAttribute(selectedContentId, selectedLanguageId, attributeName, attributeType, key);
+
+			if(!savingAttributes["" + selectedContentId])
+				savingAttributes["" + selectedContentId] = new Array();
+			
+			if(!savedAttributes["" + selectedContentId])
+				savedAttributes["" + selectedContentId] = new Array();
+
+			if(!savedAttributes["" + selectedContentId]["" +attributeName])
+			{
+				savingAttributes["" + selectedContentId]["" + attributeName] = "true";
+				var size = 0;
+				for (var i in savingAttributes["" + selectedContentId])
+					size++;
+				//alert("Added:" + attributeName + " to " + "" + selectedContentId + " - size now:" + size);
+				//alert("savingAttributes:" + savingAttributes["" + selectedContentId]["" + attributeName]);
+				saveAttribute(selectedContentId, selectedLanguageId, attributeName, attributeType, key);
+			}
 		}
 	}
-	
-	$("#saveButtons" + selectedContentId).remove();
-	isInInlineEditingMode["" + selectedContentId] = "false"
 }
 
 function cancelSaveAttributes(selectedContentId, selectedLanguageId) 
@@ -1172,7 +1189,10 @@ function cancelSaveAttributes(selectedContentId, selectedLanguageId)
 	for (key in editOnSightAttributeNames)
 	{
 		//alert("Key:" + key);
-		if(key.indexOf("attribute" + selectedContentId) > -1 && key.indexOf("_type") == -1)
+		if(key.indexOf("attribute" + selectedContentId) > -1 && key.indexOf("_type") == -1 && 
+																key.indexOf("_enableWYSIWYG") == -1 && 
+																key.indexOf("_WYSIWYGToolbar") == -1 &&
+																key.indexOf("_WYSIWYGExtraConfig") == -1)
 		{
 			var attributeName = editOnSightAttributeNames[key];
 			var attributeType = editOnSightAttributeNames[key + "_type"];
@@ -1182,7 +1202,27 @@ function cancelSaveAttributes(selectedContentId, selectedLanguageId)
 	}
 	
 	$("#saveButtons" + selectedContentId).remove();
+	delete savingAttributes["" + selectedContentId];
 	isInInlineEditingMode["" + selectedContentId] = "false"
+}
+
+function completeEditInlineSave(selectedContentId, selectedAttributeName)
+{
+    delete savingAttributes["" + selectedContentId]["" + selectedAttributeName];
+    savedAttributes["" + selectedContentId]["" + selectedAttributeName] = "true";
+    
+	var size = 0;
+	for (var i in savingAttributes["" + selectedContentId])
+		size++;
+	
+	alert("savingAttributes:" + savingAttributes["" + selectedContentId].length + " - " + size);
+	if(size == 0)
+	{
+		$("#saveButtons" + selectedContentId).remove();
+		//alert("selectedContentId:" + selectedContentId + " setting to false");
+		isInInlineEditingMode["" + selectedContentId] = "false"
+		savedAttributes = new Array();
+	}
 }
 
 
@@ -1223,6 +1263,7 @@ function saveAttribute(selectedContentId, selectedLanguageId, selectedAttributeN
 		     {
 		     	$("#inputattribute" + selectedContentId + selectedAttributeName).replaceWith(msg);
 		     }
+		     completeEditInlineSave(selectedContentId, selectedAttributeName);
 		   },
 		   error: function (XMLHttpRequest, textStatus, errorThrown) {
 			   if(XMLHttpRequest.status == 403)
@@ -1257,6 +1298,7 @@ function saveAttribute(selectedContentId, selectedLanguageId, selectedAttributeN
 		   	success: function(msg){
 		   		//alert( "Data Saved: " + msg );
 		     	$("#spanInput" + key).replaceWith(msg);
+			    completeEditInlineSave(selectedContentId, selectedAttributeName);
 		   	},
 		   error: function (XMLHttpRequest, textStatus, errorThrown) {
 			   if(XMLHttpRequest.status == 403)
