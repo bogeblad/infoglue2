@@ -325,7 +325,7 @@ public class CreateSiteNodeAction extends InfoGlueAbstractAction
         }
         catch(Exception e)
         {
-            logger.warn("An error occurred so we should not complete the transaction:" + e, e);
+            logger.error("An error occurred so we should not complete the transaction:" + e, e);
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
