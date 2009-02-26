@@ -1517,6 +1517,7 @@ public class AccessRightController extends BaseController
 		{
 			logger.warn("An error occurred so we should not complete the transaction:" + e, e);
 			rollbackTransaction(db);
+			//TODO - lägg kanske en koll på rader som inte har en valid user??
 			throw new SystemException(e.getMessage());
 		}
 		
@@ -1529,7 +1530,7 @@ public class AccessRightController extends BaseController
 		
 		try
 		{
-		    List accessRightUsers = getAccessRightsUsers(interceptionPointCategory, parameters, db);
+		    List accessRightUsers = getAccessRightsUsers(interceptionPointCategory, parameters, db, true);
 
 		    Iterator accessRightUsersIterator = accessRightUsers.iterator();
 			while (accessRightUsersIterator.hasNext()) 
@@ -1541,8 +1542,8 @@ public class AccessRightController extends BaseController
 					AccessRightsUserRow accessRightsUserRow = (AccessRightsUserRow)accessRightsUserRows.get(accessRightUser.getUserName());
 					if(accessRightsUserRow == null)
 					{
-					    InfoGluePrincipal infoGluePrincipal = UserControllerProxy.getController(db).getUser(accessRightUser.getUserName());
-					    if(infoGluePrincipal != null)
+						InfoGluePrincipal infoGluePrincipal = UserControllerProxy.getController(db).getUser(accessRightUser.getUserName());
+						if(infoGluePrincipal != null)
 					    {
 					        AccessRightsUserRow newAccessRightsUserRow = new AccessRightsUserRow();
 					        newAccessRightsUserRow.setUserName(infoGluePrincipal.getName());
@@ -1557,7 +1558,7 @@ public class AccessRightController extends BaseController
 			    }
 			    catch(Exception e)
 			    {
-			        logger.info("An user did not exist although given access rights:" + e.getMessage());
+			        logger.warn("An user did not exist although given access rights:" + e.getMessage());
 			    }
 			}
 		}
@@ -1569,7 +1570,7 @@ public class AccessRightController extends BaseController
 		return accessRightsUserRows.values();		
 	}
 
-	public List getAccessRightsUsers(String interceptionPointCategory, String parameters, Database db) throws SystemException, Bug
+	public List getAccessRightsUsers(String interceptionPointCategory, String parameters, Database db, boolean readOnly) throws SystemException, Bug
 	{
 	    List accessRightsUsers = new ArrayList();
 		
@@ -1590,8 +1591,13 @@ public class AccessRightController extends BaseController
 				oql.bind(parameters);
 			}
 			
-			QueryResults results = oql.execute();
-
+			QueryResults results = null;
+			
+			if(readOnly)
+				results = oql.execute(Database.ReadOnly);
+			else
+				results = oql.execute();
+				
 			while (results.hasMore()) 
 			{
 				AccessRightUser accessRightUser = (AccessRightUser)results.next();
