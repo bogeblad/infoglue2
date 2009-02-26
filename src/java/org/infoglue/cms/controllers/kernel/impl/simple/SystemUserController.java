@@ -127,6 +127,8 @@ public class SystemUserController extends BaseController
             	systemUser = (SystemUser)results.next();
             	logger.info("found one:" + systemUser.getFirstName());
             }
+			results.close();
+			oql.close();
         }
         catch(Exception e)
         {
@@ -158,6 +160,9 @@ public class SystemUserController extends BaseController
             	systemUser = (SystemUser)results.next();
             	logger.info("found one:" + systemUser.getFirstName());
             }
+			
+			results.close();
+			oql.close();
         }
         catch(Exception e)
         {
