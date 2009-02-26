@@ -116,7 +116,7 @@ public class EditOnSiteBasicTemplateController extends BasicTemplateController
             setContentItemParametersJavascript.append( "#" + attributeName + "Anchor');" );
             
             StringBuffer decoratedAttributeValue = new StringBuffer();
-            decoratedAttributeValue.append("<span class=\"" + className + " attribute" + contentId + "\" id=\"attribute" + contentId + attributeName + "\" oncontextmenu=\"" + setContentItemParametersJavascript + "\");\">" + attributeValue + "</span>");
+            decoratedAttributeValue.append("<span class=\"" + className + " attribute" + contentId + "\" id=\"attribute" + contentId + attributeName + "\" oncontextmenu=\"" + setContentItemParametersJavascript + "\">" + attributeValue + "</span>");
             decoratedAttributeValue.append("<script type=\"text/javascript\">" +
             		"editOnSightAttributeNames[\"attribute" + contentId + attributeName + "\"]=\"" + attributeName + "\";" +
             		"editOnSightAttributeNames[\"attribute" + contentId + attributeName + "_type\"]=\"" + className + "\";" +
