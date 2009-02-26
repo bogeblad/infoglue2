@@ -97,6 +97,7 @@ public class InfoGlueRole implements Serializable
 
 	public AuthorizationModule getAutorizationModule()
 	{
+		this.autorizationModule.setTransactionObject(null);
 		return autorizationModule;
 	}
 }

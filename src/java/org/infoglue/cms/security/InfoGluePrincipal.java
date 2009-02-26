@@ -171,6 +171,7 @@ public class InfoGluePrincipal implements Principal, Serializable
 
 	public AuthorizationModule getAutorizationModule()
 	{
+		autorizationModule.setTransactionObject(null);
 		return autorizationModule;
 	}
 

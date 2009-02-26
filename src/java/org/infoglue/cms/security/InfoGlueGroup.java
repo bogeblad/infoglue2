@@ -97,6 +97,7 @@ public class InfoGlueGroup implements Serializable
 
 	public AuthorizationModule getAutorizationModule()
 	{
+		this.autorizationModule.setTransactionObject(null);
 		return autorizationModule;
 	}
 
