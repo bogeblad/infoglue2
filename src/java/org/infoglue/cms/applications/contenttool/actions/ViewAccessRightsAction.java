@@ -105,14 +105,10 @@ public class ViewAccessRightsAction extends InfoGlueAbstractAction
 		ceb.throwIfNotEmpty();
 		
 		this.interceptionPointVOList = InterceptionPointController.getController().getInterceptionPointVOList(interceptionPointCategory);
-		//this.roleVOList = RoleController.getController().getRoleVOList();
 		this.roleList = RoleControllerProxy.getController().getAllRoles();
 		this.groupList = GroupControllerProxy.getController().getAllGroups();
-		//this.accessRightVOList = AccessRightController.getController().getAccessRightVOList(this.interceptionPointId, extraParameters);
-				
-		//this.extranetRoleVOList = ExtranetRoleController.getController().getExtranetRoleVOList();
-		//this.extranetAccessVOList = ExtranetAccessController.getController().getExtranetAccessVOList(this.name, this.value);
-        this.accessRightsUserRows = AccessRightController.getController().getAccessRightsUserRows(interceptionPointCategory, extraParameters);
+		
+		this.accessRightsUserRows = AccessRightController.getController().getAccessRightsUserRows(interceptionPointCategory, extraParameters);
 		
     	return "success";
     }
