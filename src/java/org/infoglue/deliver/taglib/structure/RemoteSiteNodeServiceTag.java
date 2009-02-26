@@ -6,9 +6,12 @@ import java.util.Map;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspTagException;
+import javax.xml.namespace.QName;
 
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.CmsPropertyHandler;
+import org.infoglue.cms.webservices.elements.CreatedEntityBean;
+import org.infoglue.cms.webservices.elements.StatusBean;
 import org.infoglue.deliver.taglib.TemplateControllerTag;
 import org.infoglue.deliver.util.webservices.DynamicWebservice;
 
@@ -82,7 +85,9 @@ public class RemoteSiteNodeServiceTag extends TemplateControllerTag
 		  
 		   ws.setTargetEndpointAddress(targetEndpointAddress);
 		   ws.setOperationName(operationName);
-		   ws.setReturnType(Boolean.class);
+		   ws.setReturnType(StatusBean.class, new QName("infoglue", "StatusBean"));
+		   ws.setReturnType(CreatedEntityBean.class, new QName("infoglue", "CreatedEntityBean"));
+		   //ws.setReturnType(Boolean.class);
 		   
 		   ws.addArgument("siteNodes", siteNodes);
 		   

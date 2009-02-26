@@ -66,7 +66,9 @@ import org.infoglue.cms.entities.workflow.EventVO;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.dom.DOMBuilder;
+import org.infoglue.cms.webservices.elements.CreatedEntityBean;
 import org.infoglue.cms.webservices.elements.RemoteAttachment;
+import org.infoglue.cms.webservices.elements.StatusBean;
 import org.infoglue.deliver.util.webservices.DynamicWebserviceSerializer;
 
 
@@ -214,16 +216,16 @@ public class RemoteContentServiceImpl extends RemoteInfoGlueService
      * Inserts a new Content including versions etc.
      */
     
-    public Boolean createContents(final String principalName, final Object[] inputsArray/*List contents*/) 
+    public StatusBean createContents(final String principalName, final Object[] inputsArray/*List contents*/) 
     {
         if(!ServerNodeController.getController().getIsIPAllowed(getRequest()))
         {
             logger.error("A client with IP " + getRequest().getRemoteAddr() + " was denied access to the webservice. Could be a hack attempt or you have just not configured the allowed IP-addresses correct.");
-            return new Boolean(false);
+            return new StatusBean(false, "You are not allowed to talk to this service");
         }
 
-    	Boolean status = new Boolean(true);
-
+    	StatusBean statusBean = new StatusBean(true, "ok");
+    	
         List newContentIdList = new ArrayList();
         
         logger.info("****************************************");
@@ -307,6 +309,8 @@ public class RemoteContentServiceImpl extends RemoteInfoGlueService
 	                contentVO.setCreatorName(this.principal.getName());
 	            
 	            ContentVO newContentVO = contentControllerProxy.acCreate(this.principal, contentVO.getParentContentId(), contentVO.getContentTypeDefinitionId(), contentVO.getRepositoryId(), contentVO);
+	            if(newContentVO != null)
+	            	statusBean.getCreatedBeans().add(new CreatedEntityBean(ContentVO.class.getName(), new Long(newContentVO.getId())));
 	            
 	            List contentVersions = (List)content.get("contentVersions");
 	            Iterator contentVersionIterator = contentVersions.iterator();
@@ -360,7 +364,8 @@ public class RemoteContentServiceImpl extends RemoteInfoGlueService
 	                
 	    	        ContentVersionVO newContentVersionVO = contentVersionControllerProxy.acCreate(this.principal, newContentVO.getId(), languageId, contentVersionVO);
 	    	        Integer newContentVersionId = newContentVersionVO.getId();
-	    	        
+	            	statusBean.getCreatedBeans().add(new CreatedEntityBean(ContentVersionVO.class.getName(), new Long(newContentVersionId)));
+
 	    	        List digitalAssets = (List)contentVersion.get("digitalAssets");
 	    	        
 	    	        logger.info("digitalAssets:" + digitalAssets);
@@ -381,7 +386,9 @@ public class RemoteContentServiceImpl extends RemoteInfoGlueService
 							//is = new FileInputStream(renamedFile);
 							InputStream is = new ByteArrayInputStream(remoteAttachment.getBytes());
 		
-			    	        DigitalAssetController.create(newAsset, is, newContentVersionId, principal);
+			    	        DigitalAssetVO newDigitalAssetVO = DigitalAssetController.create(newAsset, is, newContentVersionId, principal);
+			    	        if(newDigitalAssetVO != null)
+			    	        	statusBean.getCreatedBeans().add(new CreatedEntityBean(DigitalAssetVO.class.getName(), new Long(newDigitalAssetVO.getId())));
 			    	    }	 
 	    	        }
 	    	        
@@ -455,13 +462,14 @@ public class RemoteContentServiceImpl extends RemoteInfoGlueService
         }
         catch(Throwable e)
         {
-        	status = new Boolean(false);
+        	statusBean.setStatus(false);
+        	statusBean.setMessage("En error occurred when we tried to create a new content:" + e.getMessage());
             logger.error("En error occurred when we tried to create a new content:" + e.getMessage(), e);
         }
         
         updateCaches();
 
-        return status;
+        return statusBean;
     }
 
 	/**

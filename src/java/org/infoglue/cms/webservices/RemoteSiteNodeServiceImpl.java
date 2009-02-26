@@ -72,7 +72,9 @@ import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
 import org.infoglue.cms.util.dom.DOMBuilder;
+import org.infoglue.cms.webservices.elements.CreatedEntityBean;
 import org.infoglue.cms.webservices.elements.RemoteAttachment;
+import org.infoglue.cms.webservices.elements.StatusBean;
 import org.infoglue.deliver.util.webservices.DynamicWebserviceSerializer;
 
 
@@ -226,15 +228,15 @@ public class RemoteSiteNodeServiceImpl extends RemoteInfoGlueService
      * Inserts one or many new SiteNode including versions etc.
      */
     
-    public Boolean createSiteNodes(final String principalName, final Object[] inputsArray) 
+    public StatusBean createSiteNodes(final String principalName, final Object[] inputsArray) 
     {
         if(!ServerNodeController.getController().getIsIPAllowed(getRequest()))
         {
             logger.error("A client with IP " + getRequest().getRemoteAddr() + " was denied access to the webservice. Could be a hack attempt or you have just not configured the allowed IP-addresses correct.");
-            return new Boolean(false);
+            return new StatusBean(false, "You are not allowed to talk to this service");
         }
 
-    	Boolean status = new Boolean(true);
+    	StatusBean statusBean = new StatusBean(true, "ok");
 
         List newSiteNodeIdList = new ArrayList();
         
@@ -327,8 +329,12 @@ public class RemoteSiteNodeServiceImpl extends RemoteInfoGlueService
 	            {
 		            SiteNode newSiteNode = siteNodeControllerProxy.acCreate(this.principal, siteNodeVO.getParentSiteNodeId(), siteNodeVO.getSiteNodeTypeDefinitionId(), siteNodeVO.getRepositoryId(), siteNodeVO, db);
 		            SiteNodeVO newSiteNodeVO = newSiteNode.getValueObject();
+	            	if(newSiteNode != null)
+	            		statusBean.getCreatedBeans().add(new CreatedEntityBean(SiteNodeVO.class.getName(), new Long(newSiteNodeVO.getId())));
 	    	        
-		            SiteNodeController.getController().createSiteNodeMetaInfoContent(db, newSiteNode, siteNodeVO.getRepositoryId(), this.principal, pageTemplateContentId);
+		            Content newMetaInfoContent = SiteNodeController.getController().createSiteNodeMetaInfoContent(db, newSiteNode, siteNodeVO.getRepositoryId(), this.principal, pageTemplateContentId);
+	            	if(newMetaInfoContent != null)
+	            		statusBean.getCreatedBeans().add(new CreatedEntityBean(ContentVO.class.getName(), new Long(newMetaInfoContent.getId())));
 	                
 	    	        //Should we also change state on newly created content version?
 		            /*
@@ -361,13 +367,13 @@ public class RemoteSiteNodeServiceImpl extends RemoteInfoGlueService
         }
         catch(Throwable e)
         {
-        	status = new Boolean(false);
+        	statusBean.setStatus(false);
             logger.error("En error occurred when we tried to create a new siteNode:" + e.getMessage(), e);
         }
         
         updateCaches();
 
-        return status;
+        return statusBean;
     }
 
     
