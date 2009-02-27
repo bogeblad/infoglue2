@@ -37,6 +37,7 @@ import org.infoglue.cms.controllers.kernel.impl.simple.RedirectController;
 import org.infoglue.cms.controllers.kernel.impl.simple.TransactionHistoryController;
 import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.util.ChangeNotificationController;
+import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.NotificationMessage;
 import org.infoglue.cms.util.RemoteCacheUpdater;
 import org.quartz.Job;
@@ -69,7 +70,7 @@ public class RefreshJob implements Job
 			NotificationMessage notificationMessage = new NotificationMessage("NightlyRefreshJob.execute():", "ServerNodeProperties", "administrator", NotificationMessage.SYSTEM, "0", "ServerNodeProperties");
 		    ChangeNotificationController.getInstance().addNotificationMessage(notificationMessage);
         	ChangeNotificationController.notifyListeners();
-	        RemoteCacheUpdater.clearSystemNotificationMessages();
+	        //RemoteCacheUpdater.clearSystemNotificationMessages();
 		}
 		catch(Exception e)
 	    {

@@ -513,7 +513,8 @@ public class PublicationController extends BaseController
 			NotificationMessage notificationMessage = new NotificationMessage("PublicationController.createAndPublish():", PublicationImpl.class.getName(), infoGluePrincipal.getName(), NotificationMessage.PUBLISHING, publicationVO.getId(), publicationVO.getName());
 			//NotificationMessage notificationMessage = new NotificationMessage("PublicationController.createAndPublish():", NotificationMessage.PUBLISHING_TEXT, infoGluePrincipal.getName(), NotificationMessage.PUBLISHING, publicationVO.getId(), "org.infoglue.cms.entities.publishing.impl.simple.PublicationImpl");
 			ChangeNotificationController.getInstance().addNotificationMessage(notificationMessage);
-			RemoteCacheUpdater.clearSystemNotificationMessages();
+	      	RemoteCacheUpdater.pushAndClearSystemNotificationMessages(infoGluePrincipal);
+			//RemoteCacheUpdater.clearSystemNotificationMessages();
 			logger.info("Finished Notifying...");
 		}
 		catch (Exception e)
@@ -777,7 +778,8 @@ public class PublicationController extends BaseController
 			logger.info("Notifying the entire system about an unpublishing...");
 			NotificationMessage notificationMessage = new NotificationMessage("PublicationController.unPublish():", PublicationImpl.class.getName(), infoGluePrincipal.getName(), NotificationMessage.UNPUBLISHING, publication.getId(), publication.getName());
 	      	ChangeNotificationController.getInstance().addNotificationMessage(notificationMessage);
-	      	RemoteCacheUpdater.clearSystemNotificationMessages();
+	      	RemoteCacheUpdater.pushAndClearSystemNotificationMessages(infoGluePrincipal);
+	      	//RemoteCacheUpdater.clearSystemNotificationMessages();
 	      	logger.info("Finished Notifying...");
 		}
 		catch (Exception e)

@@ -39,6 +39,7 @@ import java.util.Map;
 import java.util.StringTokenizer;
 
 import org.apache.log4j.Logger;
+import org.infoglue.cms.security.InfoGluePrincipal;
 
 
 /**
@@ -365,6 +366,23 @@ public class RemoteCacheUpdater implements NotificationListener
         return anropin;
     }
 
-	
+	public static synchronized void pushAndClearSystemNotificationMessages(InfoGluePrincipal principal)
+	{
+		List localMessages = new ArrayList();
+        List messages = RemoteCacheUpdater.getSystemNotificationMessages();
+        synchronized(messages)
+        {
+        	localMessages.addAll(messages);
+        	messages.clear();
+        }
+
+        Iterator localMessagesIterator = localMessages.iterator(); 
+        while(localMessagesIterator.hasNext())
+        {
+			NotificationMessage notificationMessage = (NotificationMessage)localMessagesIterator.next();
+			notificationMessage = new NotificationMessage("PushAndClearSystemNotificationMessages", "" + notificationMessage.getClassName(), principal.getName(), NotificationMessage.SYSTEM, notificationMessage.getObjectId(), notificationMessage.getObjectName());
+	        ChangeNotificationController.getInstance().addNotificationMessage(notificationMessage);
+        }
+	}
 
 }
