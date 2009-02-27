@@ -1255,7 +1255,6 @@ function completeEditInlineSave(selectedContentId, selectedAttributeName)
 	for (var i in savingAttributes["" + selectedContentId])
 		size++;
 	
-	alert("savingAttributes:" + savingAttributes["" + selectedContentId].length + " - " + size);
 	if(size == 0)
 	{
 		$("#saveButtons" + selectedContentId).remove();
