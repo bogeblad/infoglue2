@@ -31,7 +31,14 @@ Abbreviated Changelog from 2.9.7 Final
 - Separated ViewApplicationState into two statistics-screen for component and page statistics. The original could slow the delivery if called to often.
 - Added maximumNumberOfItems to the content:matchingContents-tag. Uses the limit feature in SQL.
 - Added better selective cache update in live
-
+- Improved recaching of server settings so the system should not ever fallback to file settings if database exists. A bug in concurrency handling could end up in that situation.
+- Added better failover on propertyset handling
+- Fixed issue with attribute updates from edit on sight
+- Fixed so validation errors in inline editing is handled better.
+- Fixed bug which was caused by a cached transaction object in associated auth module.
+- Removed extra "); which was in edit on sight decoration
+- Added so remoteContentService.createContents and remoteSiteNodeService.createSiteNodes returns a more wich status object which includes a list of ID:s of the entities created.
+- Fixed better push of system entities
 
 -------------------------------------------------------------------------------------
 - InfoGlue 2.9.6.3 Final
