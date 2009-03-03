@@ -127,7 +127,7 @@ public abstract class WebworkAbstractAction implements Action, ServletRequestAwa
         {
         	logger.info("ConstraintException " + e, e);
             setErrors(e);
-			if(e.getResult() != null)
+			if(e.getResult() != null && !e.getResult().equals(""))
 				result = e.getResult();
 			else
 				result = INPUT;
@@ -330,7 +330,7 @@ public abstract class WebworkAbstractAction implements Action, ServletRequestAwa
 			{
 				logger.info("ConstraintException " + e, e);
 				setErrors(e);
-				if(e.getResult() != null)
+				if(e.getResult() != null && !e.getResult().equals(""))
 					result = e.getResult();
 				else
 					result = INPUT;
