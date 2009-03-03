@@ -339,9 +339,12 @@ public class ViewContentToolToolBarAction extends InfoGlueAbstractAction
 			if(this.contentVO.getIsProtected().intValue() == ContentVO.YES.intValue())
 				buttons.add(getAccessRightsButton());
 
-			ContentTypeDefinitionVO contentTypeDefinitionVO = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithId(this.contentVO.getContentTypeDefinitionId());
-			if(contentTypeDefinitionVO != null && (contentTypeDefinitionVO.getName().equalsIgnoreCase("HTMLTemplate") || contentTypeDefinitionVO.getName().equalsIgnoreCase("PageTemplate")))
-				buttons.add(getComponentAccessRightsButton());
+			if(this.contentVO.getContentTypeDefinitionId() != null)
+			{
+				ContentTypeDefinitionVO contentTypeDefinitionVO = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithId(this.contentVO.getContentTypeDefinitionId());
+				if(contentTypeDefinitionVO != null && (contentTypeDefinitionVO.getName().equalsIgnoreCase("HTMLTemplate") || contentTypeDefinitionVO.getName().equalsIgnoreCase("PageTemplate")))
+					buttons.add(getComponentAccessRightsButton());
+			}
 			
 			buttons.add(new ImageButton("ViewContentVersionHistory.action?contentId=" + this.contentId, getLocalizedString(getSession().getLocale(), "images.contenttool.buttons.viewHistory"), "History", new Integer(22), new Integer(80)));
 
@@ -392,9 +395,12 @@ public class ViewContentToolToolBarAction extends InfoGlueAbstractAction
 			if(this.contentVO.getIsProtected().intValue() == ContentVO.YES.intValue())
 				buttons.add(getAccessRightsButton());
 
-			ContentTypeDefinitionVO contentTypeDefinitionVO = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithId(this.contentVO.getContentTypeDefinitionId());
-			if(contentTypeDefinitionVO != null && (contentTypeDefinitionVO.getName().equalsIgnoreCase("HTMLTemplate") || contentTypeDefinitionVO.getName().equalsIgnoreCase("PageTemplate")))
-				buttons.add(getComponentAccessRightsButton());
+			if(this.contentVO.getContentTypeDefinitionId() != null)
+			{
+				ContentTypeDefinitionVO contentTypeDefinitionVO = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithId(this.contentVO.getContentTypeDefinitionId());
+				if(contentTypeDefinitionVO != null && (contentTypeDefinitionVO.getName().equalsIgnoreCase("HTMLTemplate") || contentTypeDefinitionVO.getName().equalsIgnoreCase("PageTemplate")))
+					buttons.add(getComponentAccessRightsButton());
+			}
 			
 			buttons.add(new ImageButton("ViewContentVersionHistory.action?contentId=" + this.contentId, getLocalizedString(getSession().getLocale(), "images.contenttool.buttons.viewHistory"), "History", new Integer(22), new Integer(80)));
 			
@@ -492,10 +498,13 @@ public class ViewContentToolToolBarAction extends InfoGlueAbstractAction
 					if(this.contentVO.getIsProtected().intValue() == ContentVO.YES.intValue())
 						buttons.add(getContentVersionAccessRightsButton());
 	
-					ContentTypeDefinitionVO contentTypeDefinitionVO = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithId(this.contentVO.getContentTypeDefinitionId());
-					if(contentTypeDefinitionVO != null && (contentTypeDefinitionVO.getName().equalsIgnoreCase("HTMLTemplate") || contentTypeDefinitionVO.getName().equalsIgnoreCase("PageTemplate")))
-						buttons.add(getComponentAccessRightsButton());
-
+					if(this.contentVO.getContentTypeDefinitionId() != null)
+					{
+						ContentTypeDefinitionVO contentTypeDefinitionVO = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithId(this.contentVO.getContentTypeDefinitionId());
+						if(contentTypeDefinitionVO != null && (contentTypeDefinitionVO.getName().equalsIgnoreCase("HTMLTemplate") || contentTypeDefinitionVO.getName().equalsIgnoreCase("PageTemplate")))
+							buttons.add(getComponentAccessRightsButton());
+					}
+					
 					if(!isReadOnly())
 						buttons.add(getPublishButton());
 				}
