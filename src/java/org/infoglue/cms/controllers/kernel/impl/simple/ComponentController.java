@@ -506,9 +506,27 @@ public class ComponentController extends BaseController
 						initialValue = contentTypeAttribute.getContentTypeAttribute("initialData").getContentTypeAttributeParameterValue().getValue("label");
 					}
 					
-					if(initialValue == null || initialValue.trim().equals(""))
-						initialValue = "State " + contentTypeAttribute.getName();
-					sb.append("<" + contentTypeAttribute.getName() + "><![CDATA[" + initialValue + "]]></" + contentTypeAttribute.getName() + ">");
+					boolean skip = false;
+					if(contentTypeAttribute.getContentTypeAttribute("enableRelationEditor") != null && contentTypeAttribute.getContentTypeAttribute("enableRelationEditor").getContentTypeAttributeParameterValue() != null && contentTypeAttribute.getContentTypeAttribute("enableRelationEditor").getContentTypeAttributeParameterValue().getValue("label").equals("true"))
+					{
+						skip = true;
+					}
+					if(contentTypeAttribute.getContentTypeAttribute("enableContentRelationEditor") != null && contentTypeAttribute.getContentTypeAttribute("enableContentRelationEditor").getContentTypeAttributeParameterValue() != null && contentTypeAttribute.getContentTypeAttribute("enableContentRelationEditor").getContentTypeAttributeParameterValue().getValue("label").equals("true"))
+					{
+						skip = true;
+					}
+					if(contentTypeAttribute.getContentTypeAttribute("enableStructureRelationEditor") != null && contentTypeAttribute.getContentTypeAttribute("enableStructureRelationEditor").getContentTypeAttributeParameterValue() != null && contentTypeAttribute.getContentTypeAttribute("enableStructureRelationEditor").getContentTypeAttributeParameterValue().getValue("label").equals("true"))
+					{
+						skip = true;
+					}
+					if(!skip)
+					{
+						if(initialValue == null || initialValue.trim().equals(""))
+							initialValue = "State " + contentTypeAttribute.getName();
+						sb.append("<" + contentTypeAttribute.getName() + "><![CDATA[" + initialValue + "]]></" + contentTypeAttribute.getName() + ">");
+					}
+					else
+						logger.info("Skipping:" + contentTypeAttribute.getName());
 				}
 				sb.append("</attributes></article>");
 				
