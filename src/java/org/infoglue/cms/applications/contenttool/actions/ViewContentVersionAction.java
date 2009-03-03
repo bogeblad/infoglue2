@@ -226,7 +226,8 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 		}
 		catch(Exception e)
 		{
-			e.printStackTrace();
+			logger.error("Error in parseQualifyersFromXML:" + e.getMessage());
+			logger.error("qualifyerXML:\n" + qualifyerXML);
 		}
 		
 		return qualifyers;
