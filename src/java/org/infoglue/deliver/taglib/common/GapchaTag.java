@@ -45,7 +45,7 @@ public class GapchaTag extends TextRenderTag
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private static String allowedCharacters = "abcdefghijklmonpqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+	private String allowedCharacters = "abcdefghijklmonpqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 
 	private String textVariableName = "CAPTHCA_TEXT";
 	private int numberOfCharacters = 5;
@@ -194,5 +194,10 @@ public class GapchaTag extends TextRenderTag
 	public void setMarbleAmount(String marbleAmount) throws JspException
 	{
 		this.setAttribute("marbleAmount", ((Float)evaluate("gapcha", "marbleAmount", marbleAmount, Float.class)).floatValue());
+	}
+
+	public void setAllowedCharacters(String allowedCharacters) throws JspException
+	{
+		this.allowedCharacters = evaluateString("gapcha", "allowedCharacters", allowedCharacters);
 	}
 }
