@@ -135,17 +135,17 @@ public class ComponentLabelTag extends ContentAttributeTag
 
     public void setAttributeName(String attributeName) throws JspException
     {
-        this.attributeName = evaluateString("contentAttribute", "attributeName", attributeName);
+        this.attributeName = evaluateString("ComponentLabelTag", "attributeName", attributeName);
     }
     
     public void setLanguageId(final String languageId) throws JspException
     {
-        this.languageId = evaluateInteger("contentAttribute", "languageId", languageId);
+        this.languageId = evaluateInteger("ComponentLabelTag", "languageId", languageId);
     }
 
-    public void setMapKeyName( String mapKeyName )
+    public void setMapKeyName(String mapKeyName) throws JspException
     {
-        this.mapKeyName = mapKeyName;
+        this.mapKeyName = evaluateString("ComponentLabelTag", "mapKeyName", mapKeyName);
     }
     
     public void setUseAttributeLanguageFallback(boolean useAttributeLanguageFallback)

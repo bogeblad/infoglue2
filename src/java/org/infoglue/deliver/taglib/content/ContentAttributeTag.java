@@ -243,9 +243,9 @@ public class ContentAttributeTag extends ComponentLogicTag
         this.fullBaseUrl = fullBaseUrl;
     }
 
-    public void setMapKeyName( String mapKeyName )
+    public void setMapKeyName(String mapKeyName) throws JspException
     {
-        this.mapKeyName = mapKeyName;
+        this.mapKeyName = evaluateString("contentAttribute", "mapKeyName", mapKeyName);
     }
     
     public void setUseAttributeLanguageFallback(boolean useAttributeLanguageFallback)
