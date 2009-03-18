@@ -1711,4 +1711,22 @@ public class CmsPropertyHandler
 		return Boolean.parseBoolean(disableDecoratedFinalRendering);
 	}
 
+	private static Boolean useSQLServerDialect = null;
+	public static boolean getUseSQLServerDialect()
+	{
+        if(useSQLServerDialect == null)
+        {
+            String databaseEngine = CmsPropertyHandler.getDatabaseEngine();
+            if(databaseEngine == null || (!databaseEngine.equalsIgnoreCase("mssql") && !databaseEngine.equalsIgnoreCase("sql-server") && !databaseEngine.equalsIgnoreCase("SQL Server")))
+            {
+            	useSQLServerDialect = new Boolean(false);
+            }
+            else
+            {
+            	useSQLServerDialect = new Boolean(true);
+            }
+        }
+        
+        return useSQLServerDialect.booleanValue();
+	}
 }
