@@ -26,21 +26,16 @@ package org.infoglue.cms.webservices;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.apache.axis.MessageContext;
-import org.apache.axis.transport.http.HTTPConstants;
 import org.apache.log4j.Logger;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.exolab.castor.jdo.Database;
+import org.infoglue.cms.controllers.kernel.impl.simple.AccessRightController;
 import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
 import org.infoglue.cms.controllers.kernel.impl.simple.CategoryController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentCategoryController;
@@ -51,16 +46,25 @@ import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.DigitalAssetController;
 import org.infoglue.cms.controllers.kernel.impl.simple.EventController;
+import org.infoglue.cms.controllers.kernel.impl.simple.InterceptionPointController;
 import org.infoglue.cms.controllers.kernel.impl.simple.PublicationController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ServerNodeController;
 import org.infoglue.cms.controllers.kernel.impl.simple.UserControllerProxy;
 import org.infoglue.cms.entities.content.Content;
-import org.infoglue.cms.entities.content.ContentCategoryVO;
 import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.content.ContentVersion;
 import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.entities.content.DigitalAssetVO;
+import org.infoglue.cms.entities.management.AccessRight;
+import org.infoglue.cms.entities.management.AccessRightGroup;
+import org.infoglue.cms.entities.management.AccessRightGroupVO;
+import org.infoglue.cms.entities.management.AccessRightRole;
+import org.infoglue.cms.entities.management.AccessRightRoleVO;
+import org.infoglue.cms.entities.management.AccessRightUser;
+import org.infoglue.cms.entities.management.AccessRightUserVO;
+import org.infoglue.cms.entities.management.AccessRightVO;
 import org.infoglue.cms.entities.management.CategoryVO;
+import org.infoglue.cms.entities.management.InterceptionPoint;
 import org.infoglue.cms.entities.publishing.PublicationVO;
 import org.infoglue.cms.entities.workflow.EventVO;
 import org.infoglue.cms.exception.SystemException;
@@ -256,6 +260,12 @@ public class RemoteContentServiceImpl extends RemoteInfoGlueService
 	            Integer repositoryId 			= (Integer)content.get("repositoryId");
 	            Integer parentContentId 		= (Integer)content.get("parentContentId");
 	            String contentPath 				= (String)content.get("contentPath");
+
+	            String creatorName 				= (String)content.get("creatorName");
+	            Boolean isBranch 				= (Boolean)content.get("isBranch");
+	            Integer isProtected 			= (Integer)content.get("isProtected");
+	            Date expireDateTime 			= (Date)content.get("expireDateTime");
+	            Date publishDateTime 			= (Date)content.get("publishDateTime");
 	            
 	            logger.info("name:" + name);
 	            logger.info("contentTypeDefinitionId:" + contentTypeDefinitionId);
@@ -305,7 +315,18 @@ public class RemoteContentServiceImpl extends RemoteInfoGlueService
 	            contentVO.setRepositoryId(repositoryId);
 	            contentVO.setParentContentId(parentContentId);
 	            
-	            if(contentVO.getCreatorName() == null)
+	            if(expireDateTime != null)
+	            	contentVO.setExpireDateTime(expireDateTime);
+	            if(isBranch != null)
+	            	contentVO.setIsBranch(isBranch);
+	            if(isProtected != null)
+	                contentVO.setIsProtected(isProtected);
+	            if(publishDateTime != null)
+	            	contentVO.setPublishDateTime(publishDateTime);
+	            
+	            if(creatorName != null)
+	            	contentVO.setCreatorName(creatorName);
+	            else if(contentVO.getCreatorName() == null)
 	                contentVO.setCreatorName(this.principal.getName());
 	            
 	            ContentVO newContentVO = contentControllerProxy.acCreate(this.principal, contentVO.getParentContentId(), contentVO.getContentTypeDefinitionId(), contentVO.getRepositoryId(), contentVO);
@@ -452,6 +473,90 @@ public class RemoteContentServiceImpl extends RemoteInfoGlueService
 	    	    		}
 
 	    	        }
+	            }
+	            
+	            List accessRights = (List)content.get("accessRights");
+	            if(accessRights != null)
+	            {
+		            Iterator accessRightsIterator = accessRights.iterator();
+		            while(accessRightsIterator.hasNext())
+		            {
+		                Map accessRightMap = (Map)accessRightsIterator.next();
+		                
+		                String interceptionPointName = (String)accessRightMap.get("interceptionPointName");
+		                String parameters = (String)accessRightMap.get("parameters");
+		                
+		                Database db = CastorDatabaseService.getDatabase();
+			    		beginTransaction(db);
+			    		
+			    		try
+			    		{
+			                InterceptionPoint interceptionPoint = InterceptionPointController.getController().getInterceptionPointWithName(interceptionPointName, db);
+			                
+			                logger.info("interceptionPointName:" + interceptionPointName);
+			    	        logger.info("parameters:" + parameters);
+		
+			    	        AccessRightVO accessRightVO = new AccessRightVO();
+			    	        accessRightVO.setParameters("" + newContentVO.getId());
+			    	        
+			    	        AccessRight accessRight = AccessRightController.getController().create(accessRightVO, interceptionPoint, db);
+			    	        
+			    	        List accessRightRoles = (List)accessRightMap.get("accessRightRoles");
+			    	        if(accessRightRoles != null)
+				            {
+			    	        	Iterator accessRightRolesIterator = accessRightRoles.iterator();
+					            while(accessRightRolesIterator.hasNext())
+					            {
+					                //Map accessRightRoleMap = (Map)accessRightRolesIterator.next();
+					                
+					                String roleName = (String)accessRightRolesIterator.next();
+					                
+								    AccessRightRoleVO accessRightRoleVO = new AccessRightRoleVO();
+								    accessRightRoleVO.setRoleName(roleName);
+								    AccessRightRole accessRightRole = AccessRightController.getController().createAccessRightRole(db, accessRightRoleVO, accessRight);
+								    accessRight.getRoles().add(accessRightRole);
+					            }
+				            }
+			    	        
+			    	        List accessRightGroups = (List)accessRightMap.get("accessRightGroups");
+			    	        if(accessRightGroups != null)
+				            {
+					            Iterator accessRightGroupsIterator = accessRightGroups.iterator();
+					            while(accessRightGroupsIterator.hasNext())
+					            {
+					                String groupName = (String)accessRightGroupsIterator.next();
+					                
+								    AccessRightGroupVO accessRightGroupVO = new AccessRightGroupVO();
+								    accessRightGroupVO.setGroupName(groupName);
+								    AccessRightGroup accessRightGroup = AccessRightController.getController().createAccessRightGroup(db, accessRightGroupVO, accessRight);
+								    accessRight.getGroups().add(accessRightGroup);
+					            }
+				            }
+
+			    	        List accessRightUsers = (List)accessRightMap.get("accessRightUsers");
+			    	        if(accessRightUsers != null)
+				            {
+					            Iterator accessRightUsersIterator = accessRightUsers.iterator();
+					            while(accessRightUsersIterator.hasNext())
+					            {
+					                String userName = (String)accessRightUsersIterator.next();
+					                
+								    AccessRightUserVO accessRightUserVO = new AccessRightUserVO();
+								    accessRightUserVO.setUserName(userName);
+								    AccessRightUser accessRightUser = AccessRightController.getController().createAccessRightUser(db, accessRightUserVO, accessRight);
+								    accessRight.getUsers().add(accessRightUser);
+					            }
+				            }
+
+							commitTransaction(db);
+			    		} 
+			    		catch (Exception e) 
+			    		{
+			    			logger.warn("An error occurred so we should not complete the transaction:" + e);
+			    			rollbackTransaction(db);
+			    			throw new SystemException(e.getMessage());
+			    		}
+		            }
 	            }
 	            
 	            newContentIdList.add(newContentVO.getId());
