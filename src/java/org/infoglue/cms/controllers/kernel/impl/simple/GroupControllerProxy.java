@@ -144,7 +144,7 @@ public class GroupControllerProxy extends BaseController
     	
 		return infoGlueGroup;
 	}
-
+	
 	/**
 	 * This method returns a list of InfoGlue Principals which are part of this group
 	 */

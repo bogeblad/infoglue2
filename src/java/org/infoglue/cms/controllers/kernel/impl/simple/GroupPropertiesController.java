@@ -26,8 +26,10 @@ package org.infoglue.cms.controllers.kernel.impl.simple;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.apache.xerces.parsers.DOMParser;
@@ -53,6 +55,8 @@ import org.infoglue.cms.entities.structure.SiteNode;
 import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
+import org.infoglue.cms.security.InfoGlueGroup;
+import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
 import org.infoglue.cms.util.dom.DOMBuilder;
 import org.infoglue.deliver.util.CacheController;
@@ -267,7 +271,7 @@ public class GroupPropertiesController extends BaseController
 	{
 		List groupPropertiesList = new ArrayList();
 
-		OQLQuery oql = db.getOQLQuery("SELECT f FROM org.infoglue.cms.entities.management.impl.simple.GroupPropertiesImpl f WHERE f.groupName = $1 AND f.language = $2");
+		OQLQuery oql = db.getOQLQuery("SELECT f FROM org.infoglue.cms.entities.management.impl.simple.GroupPropertiesImpl f WHERE f.groupName = $1 AND f.language = $2 ORDER BY f.groupPropertiesId");
 		oql.bind(groupName);
 		oql.bind(languageId);
 
@@ -302,6 +306,74 @@ public class GroupPropertiesController extends BaseController
 		oql.close();
 
 		return groupPropertiesList;
+	}
+
+	public Set<InfoGlueGroup> getGroupsByMatchingProperty(String propertyName, String value, Integer languageId, boolean useLanguageFallback, Database db) throws ConstraintException, SystemException, Exception
+	{
+		Set<InfoGlueGroup> groups = new HashSet<InfoGlueGroup>();
+		
+		try
+		{
+			List<GroupPropertiesVO> groupProperties = GroupPropertiesController.getController().getGroupPropertiesVOList(propertyName, value, db);
+			Iterator<GroupPropertiesVO> groupPropertiesIterator = groupProperties.iterator();
+			while(groupPropertiesIterator.hasNext())
+			{
+				GroupPropertiesVO groupPropertiesVO = groupPropertiesIterator.next();
+				if(useLanguageFallback || (!useLanguageFallback && languageId != null && groupPropertiesVO.getLanguageId().equals(languageId)))
+				{
+					if(groupPropertiesVO.getGroupName() != null)
+					{
+						try
+						{
+							InfoGlueGroup group = GroupControllerProxy.getController(db).getGroup(groupPropertiesVO.getGroupName());
+							if(group != null)
+								groups.add(group);
+						}
+						catch (Exception e) 
+						{
+							logger.warn("No such group or problem getting group " + groupPropertiesVO.getGroupName() + ":" + e.getMessage());
+						}
+					}
+				}
+			}
+		}
+		catch (Exception e) 
+		{
+			logger.warn("Problem in getGroupByMatchingProperty:" + e.getMessage(), e);
+		}
+		
+		return groups;
+	}
+
+	/**
+	 * This method gets a list of groupProperties where the group property matches a search made
+	 */
+
+	public List<GroupPropertiesVO> getGroupPropertiesVOList(String propertyName, String propertyValue, Database db) throws ConstraintException, SystemException, Exception
+	{
+		List<GroupPropertiesVO> groupPropertiesVOList = new ArrayList<GroupPropertiesVO>();
+
+		String FREETEXT_EXPRESSION_VARIABLE  					= "%<" + propertyName + "><![CDATA[%" + propertyValue + "%]]></" + propertyName + ">%";
+		String FREETEXT_EXPRESSION_VARIABLE_SQL_SERVER_ESCAPED  = "%<" + propertyName + "><![[]CDATA[[]%{" + propertyValue + "}%]]></" + propertyName + ">%";
+
+		OQLQuery oql = db.getOQLQuery("SELECT f FROM org.infoglue.cms.entities.management.impl.simple.GroupPropertiesImpl f WHERE f.value like $1 ORDER BY f.groupPropertiesId");
+		if(CmsPropertyHandler.getUseSQLServerDialect())
+			oql.bind(FREETEXT_EXPRESSION_VARIABLE_SQL_SERVER_ESCAPED);
+		else
+			oql.bind(FREETEXT_EXPRESSION_VARIABLE);
+
+		QueryResults results = oql.execute(Database.ReadOnly);
+
+		while (results.hasMore()) 
+		{
+			GroupProperties groupProperties = (GroupProperties)results.next();
+			groupPropertiesVOList.add(groupProperties.getValueObject());
+		}
+		
+		results.close();
+		oql.close();
+
+		return groupPropertiesVOList;
 	}
 
     public void delete(GroupPropertiesVO groupPropertiesVO) throws ConstraintException, SystemException

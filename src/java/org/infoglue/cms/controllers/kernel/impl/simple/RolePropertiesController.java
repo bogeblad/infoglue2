@@ -26,8 +26,10 @@ package org.infoglue.cms.controllers.kernel.impl.simple;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.apache.xerces.parsers.DOMParser;
@@ -40,6 +42,8 @@ import org.infoglue.cms.entities.content.Content;
 import org.infoglue.cms.entities.content.DigitalAsset;
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.entities.management.ContentTypeDefinition;
+import org.infoglue.cms.entities.management.GroupProperties;
+import org.infoglue.cms.entities.management.GroupPropertiesVO;
 import org.infoglue.cms.entities.management.Language;
 import org.infoglue.cms.entities.management.PropertiesCategoryVO;
 import org.infoglue.cms.entities.management.RoleContentTypeDefinition;
@@ -52,6 +56,9 @@ import org.infoglue.cms.entities.structure.SiteNode;
 import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
+import org.infoglue.cms.security.InfoGlueGroup;
+import org.infoglue.cms.security.InfoGlueRole;
+import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
 import org.infoglue.cms.util.dom.DOMBuilder;
 import org.w3c.dom.CDATASection;
@@ -270,6 +277,74 @@ public class RolePropertiesController extends BaseController
 		return rolePropertiesList;
 	}
 	
+	public Set<InfoGlueRole> getRolesByMatchingProperty(String propertyName, String value, Integer languageId, boolean useLanguageFallback, Database db) throws ConstraintException, SystemException, Exception
+	{
+		Set<InfoGlueRole> roles = new HashSet<InfoGlueRole>();
+		
+		try
+		{
+			List<RolePropertiesVO> roleProperties = RolePropertiesController.getController().getRolePropertiesVOList(propertyName, value, db);
+			Iterator<RolePropertiesVO> rolePropertiesIterator = roleProperties.iterator();
+			while(rolePropertiesIterator.hasNext())
+			{
+				RolePropertiesVO rolePropertiesVO = rolePropertiesIterator.next();
+				if(useLanguageFallback || (!useLanguageFallback && languageId != null && rolePropertiesVO.getLanguageId().equals(languageId)))
+				{
+					if(rolePropertiesVO.getRoleName() != null)
+					{
+						try
+						{
+							InfoGlueRole role = RoleControllerProxy.getController(db).getRole(rolePropertiesVO.getRoleName());
+							if(role != null)
+								roles.add(role);
+						}
+						catch (Exception e) 
+						{
+							logger.warn("No such role or problem getting role " + rolePropertiesVO.getRoleName() + ":" + e.getMessage());
+						}
+					}
+				}
+			}
+		}
+		catch (Exception e) 
+		{
+			logger.warn("Problem in getRoleByMatchingProperty:" + e.getMessage(), e);
+		}
+		
+		return roles;
+	}
+
+	/**
+	 * This method gets a list of groupProperties where the group property matches a search made
+	 */
+
+	public List<RolePropertiesVO> getRolePropertiesVOList(String propertyName, String propertyValue, Database db) throws ConstraintException, SystemException, Exception
+	{
+		List<RolePropertiesVO> rolePropertiesVOList = new ArrayList<RolePropertiesVO>();
+
+		String FREETEXT_EXPRESSION_VARIABLE  					= "%<" + propertyName + "><![CDATA[%" + propertyValue + "%]]></" + propertyName + ">%";
+		String FREETEXT_EXPRESSION_VARIABLE_SQL_SERVER_ESCAPED  = "%<" + propertyName + "><![[]CDATA[[]%{" + propertyValue + "}%]]></" + propertyName + ">%";
+
+		OQLQuery oql = db.getOQLQuery("SELECT f FROM org.infoglue.cms.entities.management.impl.simple.RolePropertiesImpl f WHERE f.value like $1 ORDER BY f.rolePropertiesId");
+		if(CmsPropertyHandler.getUseSQLServerDialect())
+			oql.bind(FREETEXT_EXPRESSION_VARIABLE_SQL_SERVER_ESCAPED);
+		else
+			oql.bind(FREETEXT_EXPRESSION_VARIABLE);
+
+		QueryResults results = oql.execute(Database.ReadOnly);
+
+		while (results.hasMore()) 
+		{
+			RoleProperties roleProperties = (RoleProperties)results.next();
+			rolePropertiesVOList.add(roleProperties.getValueObject());
+		}
+		
+		results.close();
+		oql.close();
+
+		return rolePropertiesVOList;
+	}
+
     public void delete(RolePropertiesVO rolePropertiesVO) throws ConstraintException, SystemException
     {
     	deleteEntity(RolePropertiesImpl.class, rolePropertiesVO.getRolePropertiesId());
@@ -528,18 +603,8 @@ public class RolePropertiesController extends BaseController
 
 		try
 		{
-		    List roleProperties = this.getRolePropertiesList(roleName, languageId, db, true);
-		    Iterator iterator = roleProperties.iterator();
-		    RoleProperties roleProperty = null;
-		    while(iterator.hasNext())
-		    {
-		        roleProperty = (RoleProperties)iterator.next();
-		        break;
-		    }
+		    value = getAttributeValue(roleName, languageId, attributeName, db);
 		    
-		    value = this.getAttributeValue(roleProperty.getValue(), attributeName, false);
-		    
-			
 			commitTransaction(db);
 		}
 		catch(Exception e)
@@ -549,6 +614,28 @@ public class RolePropertiesController extends BaseController
 			throw new SystemException(e.getMessage());
 		}
 		
+		return value;
+	}
+
+	/**
+	 * Returns the value of a Role Property
+	 */
+
+	public String getAttributeValue(String roleName, Integer languageId, String attributeName, Database db) throws SystemException, Exception
+	{
+		String value = "";
+		
+	    List roleProperties = this.getRolePropertiesList(roleName, languageId, db, true);
+	    Iterator iterator = roleProperties.iterator();
+	    RoleProperties roleProperty = null;
+	    while(iterator.hasNext())
+	    {
+	        roleProperty = (RoleProperties)iterator.next();
+	        break;
+	    }
+	    
+	    value = this.getAttributeValue(roleProperty.getValue(), attributeName, false);
+		    		
 		return value;
 	}
 
