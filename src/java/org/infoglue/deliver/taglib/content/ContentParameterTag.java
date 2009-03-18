@@ -23,6 +23,7 @@
 package org.infoglue.deliver.taglib.content;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -157,6 +158,46 @@ public class ContentParameterTag extends AbstractTag
 	}
 
 	/**
+	 * Sets the creatorName attribute.
+	 */
+	public void setCreatorName(final String creatorName) throws JspException
+	{
+	    this.contentMap.put("creatorName", evaluateString("parameter", "creatorName", creatorName));
+	}
+
+	/**
+	 * Sets the isBranch attribute.
+	 */
+	public void setIsBranch(final String isBranch) throws JspException
+	{
+	    this.contentMap.put("isBranch", (Boolean)evaluate("parameter", "isBranch", isBranch, Boolean.class));
+	}
+
+	/**
+	 * Sets the isProtected attribute.
+	 */
+	public void setIsProtected(final String isProtected) throws JspException
+	{
+	    this.contentMap.put("isProtected", evaluateInteger("parameter", "isProtected", isProtected));
+	}
+
+	/**
+	 * Sets the contentTypeDefinitionId attribute.
+	 */
+	public void setExpireDateTime(final String expireDateTime) throws JspException
+	{
+	    this.contentMap.put("expireDateTime", (Date)evaluate("parameter", "expireDateTime", expireDateTime, Date.class));
+	}
+
+	/**
+	 * Sets the contentTypeDefinitionId attribute.
+	 */
+	public void setPublishDateTime(final String publishDateTime) throws JspException
+	{
+	    this.contentMap.put("publishDateTime", (Date)evaluate("parameter", "publishDateTime", publishDateTime, Date.class));
+	}
+
+	/**
 	 * Add the contentVersion the child tag generated to the list of contentVersions that are to be persisted.
 	 */
 	public void addContentVersion(final Map contentVersion) 
@@ -169,6 +210,21 @@ public class ContentParameterTag extends AbstractTag
 	    }
 
 	    contentVersions.add(contentVersion);
+	}
+
+	/**
+	 * Add the accessRight the child tag generated to the list of accessRights that are to be persisted.
+	 */
+	public void addAccessRight(final Map accessRight) 
+	{
+	    List accessRights = (List)this.contentMap.get("accessRights");
+	    if(accessRights == null)
+	    {
+	    	accessRights = new ArrayList();
+	        this.contentMap.put("accessRights", accessRights);
+	    }
+
+	    accessRights.add(accessRight);
 	}
 
 	public void clear()
