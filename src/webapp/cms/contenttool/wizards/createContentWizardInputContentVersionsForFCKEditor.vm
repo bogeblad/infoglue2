@@ -1160,8 +1160,11 @@
 	generateWYSIWYGS();
 
 	$("#contentTypeAttributesTable :input").change(function () {
-        setDirty();
-      });
+		if($(this).attr("id").indexOf("categoryId") == -1)
+		{		  
+			setDirty();
+		}
+    });
 				
 	$("#editForm").submit(function () { return false; });
 	
