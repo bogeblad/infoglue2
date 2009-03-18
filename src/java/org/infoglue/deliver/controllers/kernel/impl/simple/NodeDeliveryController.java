@@ -95,6 +95,13 @@ public class NodeDeliveryController extends BaseDeliveryController
 	private Integer languageId = null;
 	private Integer contentId 	= null;
 	
+	protected DeliveryContext deliveryContext = null;
+	
+	public void setDeliveryContext(DeliveryContext deliveryContext)
+	{
+		this.deliveryContext = deliveryContext;
+	}
+	
 	/**
 	 * Private constructor to enforce factory-use
 	 */
@@ -363,7 +370,10 @@ public class NodeDeliveryController extends BaseDeliveryController
 		SiteNode siteNode = null;
 		
 		siteNode = (SiteNode)getObjectWithId(SiteNodeImpl.class, siteNodeId, db);
-
+		
+		if(siteNode != null && deliveryContext != null)
+			deliveryContext.addUsedSiteNode("siteNode_" + siteNode.getId());
+			
 		return siteNode;
 	}
 	
@@ -376,6 +386,9 @@ public class NodeDeliveryController extends BaseDeliveryController
 		if(siteNodeId == null || siteNodeId.intValue() < 1)
 			return null;
 		
+		if(deliveryContext != null)
+			deliveryContext.addUsedSiteNode("siteNode_" + siteNodeId);
+
 		return (SiteNodeVO)getVOWithId(SmallSiteNodeImpl.class, siteNodeId, db);
 	}
 
@@ -574,7 +587,10 @@ public class NodeDeliveryController extends BaseDeliveryController
 	public SiteNodeVO getParentSiteNode(Database db, Integer siteNodeId) throws SystemException
 	{
 		String key = "" + siteNodeId;
-
+		
+		if(siteNodeId != null && this.deliveryContext != null)
+			this.deliveryContext.addUsedSiteNode("siteNode_" + siteNodeId);
+		
 		Object object = CacheController.getCachedObject("parentSiteNodeCache", key);
 		SiteNodeVO parentSiteNodeVO = null;
 
@@ -611,6 +627,9 @@ public class NodeDeliveryController extends BaseDeliveryController
 	
 	public SiteNodeVO getParentSiteNodeForPageCache(Database db, Integer siteNodeId) throws SystemException
 	{
+		if(siteNodeId != null && this.deliveryContext != null)
+			this.deliveryContext.addUsedSiteNode("siteNode_" + siteNodeId);
+
 		String key = "" + siteNodeId;
 		logger.info("key getParentSiteNode:" + key);
 		Object object = CacheController.getCachedObject("pageCacheParentSiteNodeCache", key);
@@ -650,6 +669,9 @@ public class NodeDeliveryController extends BaseDeliveryController
 	
 	public boolean getIsPageCacheDisabled(Database db, Integer siteNodeId)
 	{
+		if(siteNodeId != null && this.deliveryContext != null)
+			this.deliveryContext.addUsedSiteNode("siteNode_" + siteNodeId);
+
 		boolean isPageCacheDisabled = false;
 		
 		try
@@ -693,6 +715,9 @@ public class NodeDeliveryController extends BaseDeliveryController
 	
 	public String getPageCacheKey(Database db, HttpSession session, HttpServletRequest request, Integer siteNodeId, Integer languageId, Integer contentId, String userAgent, String queryString, String extra, boolean includeOriginalRequestURL)
 	{
+		if(siteNodeId != null && this.deliveryContext != null)
+			this.deliveryContext.addUsedSiteNode("siteNode_" + siteNodeId);
+
 	    String pageKey = CacheController.getPageCacheKey(session, request, siteNodeId, languageId, contentId, userAgent, queryString, extra);
 	    try
 		{
@@ -779,8 +804,9 @@ public class NodeDeliveryController extends BaseDeliveryController
 	
 	public boolean getIsEditOnSightDisabled(Database db, Integer siteNodeId)
 	{
-		logger.info("getIsEditOnSightDisabled:" + siteNodeId);
-		
+		if(siteNodeId != null && this.deliveryContext != null)
+			this.deliveryContext.addUsedSiteNode("siteNode_" + siteNodeId);
+
 		boolean isEditOnSightDisabled = false;
 		
 		try
@@ -818,6 +844,9 @@ public class NodeDeliveryController extends BaseDeliveryController
 	
 	public boolean getIsPageProtected(Database db, Integer siteNodeId)
 	{
+		if(siteNodeId != null && this.deliveryContext != null)
+			this.deliveryContext.addUsedSiteNode("siteNode_" + siteNodeId);
+
 		boolean isPageProtected = false;
 		
 		try
@@ -853,6 +882,9 @@ public class NodeDeliveryController extends BaseDeliveryController
 	
 	public Integer getInheritedPageCacheTimeout(Database db, Integer siteNodeId)
 	{
+		if(siteNodeId != null && this.deliveryContext != null)
+			this.deliveryContext.addUsedSiteNode("siteNode_" + siteNodeId);
+
 		Integer pageCacheTimeout = null;
 		
 		try
@@ -890,6 +922,9 @@ public class NodeDeliveryController extends BaseDeliveryController
 	
 	public Integer getProtectedSiteNodeVersionId(Database db, Integer siteNodeId)
 	{
+		if(siteNodeId != null && this.deliveryContext != null)
+			this.deliveryContext.addUsedSiteNode("siteNode_" + siteNodeId);
+
 		Integer protectedSiteNodeVersionId = null;
 		
 		try
@@ -927,6 +962,9 @@ public class NodeDeliveryController extends BaseDeliveryController
 	
 	public Integer getProtectedSiteNodeVersionIdForPageCache(Database db, Integer siteNodeId)
 	{
+		if(siteNodeId != null && this.deliveryContext != null)
+			this.deliveryContext.addUsedSiteNode("siteNode_" + siteNodeId);
+
 		Integer protectedSiteNodeVersionId = null;
 		
 		try
@@ -963,6 +1001,9 @@ public class NodeDeliveryController extends BaseDeliveryController
 	
 	public Integer getDisabledLanguagesSiteNodeVersionId(Database db, Integer siteNodeId)
 	{
+		if(siteNodeId != null && this.deliveryContext != null)
+			this.deliveryContext.addUsedSiteNode("siteNode_" + siteNodeId);
+
 		Integer disabledLanguagesSiteNodeVersionId = null;
 		
 		try
@@ -999,6 +1040,9 @@ public class NodeDeliveryController extends BaseDeliveryController
 	
 	public Integer getDisableForceIdentityCheckSiteNodeVersionId(Database db, Integer siteNodeId)
 	{
+		if(siteNodeId != null && this.deliveryContext != null)
+			this.deliveryContext.addUsedSiteNode("siteNode_" + siteNodeId);
+
 		Integer disableForceIdentityCheckSiteNodeVersionId = null;
 		
 		try
@@ -1035,6 +1079,9 @@ public class NodeDeliveryController extends BaseDeliveryController
 	
 	public boolean getIsForcedIdentityCheckDisabled(Database db, Integer siteNodeId)
 	{
+		if(siteNodeId != null && this.deliveryContext != null)
+			this.deliveryContext.addUsedSiteNode("siteNode_" + siteNodeId);
+
 		boolean isForcedIdentityCheckDisabled = false;
 		
 		try
@@ -1132,6 +1179,9 @@ public class NodeDeliveryController extends BaseDeliveryController
 	
 	public List getBoundContents(Database db, InfoGluePrincipal infoGluePrincipal, Integer siteNodeId, Integer languageId, boolean useLanguageFallback, String availableServiceBindingName, boolean inheritParentBindings, boolean includeFolders, DeliveryContext deliveryContext) throws SystemException, Exception
 	{
+		if(siteNodeId != null && this.deliveryContext != null)
+			this.deliveryContext.addUsedSiteNode("siteNode_" + siteNodeId);
+
 		StringBuilder boundContentsKey = new StringBuilder();
 		boundContentsKey.append("")
 		.append("").append(infoGluePrincipal.getName())
@@ -1299,6 +1349,9 @@ public class NodeDeliveryController extends BaseDeliveryController
 	
 	public List getBoundSiteNodes(Database db, Integer siteNodeId, String availableServiceBindingName) throws SystemException, Exception
 	{
+		if(siteNodeId != null && this.deliveryContext != null)
+			this.deliveryContext.addUsedSiteNode("siteNode_" + siteNodeId);
+
 		String boundSiteNodesKey = "" + siteNodeId + "_" + availableServiceBindingName + "_" + USE_INHERITANCE;
 		logger.info("boundSiteNodesKey:" + boundSiteNodesKey);
 		List boundSiteNodeVOList = (List)CacheController.getCachedObject("boundSiteNodeCache", boundSiteNodesKey);

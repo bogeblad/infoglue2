@@ -50,7 +50,9 @@ import org.infoglue.cms.entities.structure.SiteNodeVO;
 import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
+import org.infoglue.cms.security.InfoGlueGroup;
 import org.infoglue.cms.security.InfoGluePrincipal;
+import org.infoglue.cms.security.InfoGlueRole;
 import org.infoglue.cms.util.DesEncryptionHelper;
 import org.infoglue.cms.util.DocumentConverterHelper;
 import org.infoglue.deliver.applications.databeans.DatabaseWrapper;
@@ -257,7 +259,7 @@ public interface TemplateController
 
     public abstract String getPrincipalPropertyValue(
             InfoGluePrincipal infoGluePrincipal, String propertyName, Integer languageId);
-    
+
     /**
      * Getting a property for a Principal - used for personalisation. 
      * This method starts with getting the property on the user and if it does not exist we check out the
@@ -316,6 +318,20 @@ public interface TemplateController
     
     public abstract Map getPrincipalPropertyHashValues(String propertyName,
             boolean escapeSpecialCharacters, Integer languageId);
+
+    public abstract InfoGlueGroup getGroup(
+    		String groupName);
+
+	public abstract Set<InfoGlueGroup> getGroupsByMatchingProperty(String propertyName, String value, Integer languageId, Boolean useLanguageFallback);
+
+    public abstract InfoGlueRole getRole(
+    		String roleName);
+
+	public abstract Set<InfoGlueRole> getRolesByMatchingProperty(String propertyName, String value, Integer languageId, Boolean useLanguageFallback);
+
+    public abstract String getGroupPropertyValue(InfoGlueGroup group, String propertyName, Integer languageId, Boolean useLanguageFallback);
+
+    public abstract String getRolePropertyValue(InfoGlueRole role, String propertyName, Integer languageId, Boolean useLanguageFallback);
 
     /**
      * Getter for request-object
@@ -1346,6 +1362,13 @@ public interface TemplateController
 	 */
 	
 	public List getMatchingContents(String contentTypeDefinitionNamesString, String categoryConditionString, String freeText, List freeTextAttributeNames, Date fromDate, Date toDate, Date expireFromDate, Date expireToDate, String versionModifier, Integer maximumNumberOfItems, boolean useLanguageFallback, boolean cacheResult, int cacheInterval, String cacheName, String cacheKey, List<Integer> repositoryIdList);
+
+	/**
+	 * This method searches for all contents matching
+	 */
+	
+	public List getMatchingContents(String contentTypeDefinitionNamesString, String categoryConditionString, String freeText, List freeTextAttributeNames, Date fromDate, Date toDate, Date expireFromDate, Date expireToDate, String versionModifier, Integer maximumNumberOfItems, boolean useLanguageFallback, boolean cacheResult, int cacheInterval, String cacheName, String cacheKey, List<Integer> repositoryIdList, Integer languageId);
+
 
 	/**
 	 * This method returns which mode the delivery-engine is running in.

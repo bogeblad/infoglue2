@@ -38,6 +38,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
@@ -73,6 +74,7 @@ import org.infoglue.cms.controllers.kernel.impl.simple.DigitalAssetController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ExportImportController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ExtendedSearchController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ExtendedSearchCriterias;
+import org.infoglue.cms.controllers.kernel.impl.simple.GroupController;
 import org.infoglue.cms.controllers.kernel.impl.simple.GroupControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.GroupPropertiesController;
 import org.infoglue.cms.controllers.kernel.impl.simple.InfoGluePrincipalControllerProxy;
@@ -1397,6 +1399,112 @@ public class BasicTemplateController implements TemplateController
 		}
 		
 		return categories;
+	}	
+		
+	public InfoGlueGroup getGroup(String groupName)
+	{
+		InfoGlueGroup group = null;
+		
+		try
+		{
+			group = GroupControllerProxy.getController().getGroup(groupName);
+		}
+		catch(Exception e)
+		{
+			logger.warn("An error occurred trying to get group " + groupName + ":" + e.getMessage(), e);
+		}
+		
+		return group;
+	}	
+
+	public Set<InfoGlueGroup> getGroupsByMatchingProperty(String propertyName, String value, Integer languageId, Boolean useLanguageFallback)
+	{
+		Set<InfoGlueGroup> groups = new HashSet<InfoGlueGroup>();
+		
+		try
+		{
+			groups = GroupPropertiesController.getController().getGroupsByMatchingProperty(propertyName, value, languageId, useLanguageFallback, getDatabase());
+		}
+		catch(Exception e)
+		{
+			logger.warn("An error occurred trying to get groups based on propertysearch" + propertyName + ":" + value + ":" + languageId + ":" + useLanguageFallback + ":" + e.getMessage(), e);
+		}
+		
+		return groups;
+	}	
+
+	public InfoGlueRole getRole(String roleName)
+	{
+		InfoGlueRole role = null;
+		
+		try
+		{
+			role = RoleControllerProxy.getController().getRole(roleName);
+		}
+		catch(Exception e)
+		{
+			logger.warn("An error occurred trying to get role " + roleName + ":" + e.getMessage(), e);
+		}
+		
+		return role;
+	}	
+
+	public Set<InfoGlueRole> getRolesByMatchingProperty(String propertyName, String value, Integer languageId, Boolean useLanguageFallback)
+	{
+		Set<InfoGlueRole> roles = new HashSet<InfoGlueRole>();
+		
+		try
+		{
+			roles = RolePropertiesController.getController().getRolesByMatchingProperty(propertyName, value, languageId, useLanguageFallback, getDatabase());
+		}
+		catch(Exception e)
+		{
+			logger.warn("An error occurred trying to get roles based on propertysearch" + propertyName + ":" + value + ":" + languageId + ":" + useLanguageFallback + ":" + e.getMessage(), e);
+		}
+		
+		return roles;
+	}	
+
+	public String getGroupPropertyValue(InfoGlueGroup group, String propertyName, Integer languageId, Boolean useLanguageFallback)
+	{
+		String value = "";
+		
+		try
+		{
+			value = GroupPropertiesController.getController().getAttributeValue(group.getName(), languageId, propertyName, this.getDatabase());
+			if(useLanguageFallback && (value == null || value.equalsIgnoreCase("")))
+			{
+				LanguageVO masterLanguageVO = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForSiteNode(this.getDatabase(), getSiteNodeId());
+				value = GroupPropertiesController.getController().getAttributeValue(group.getName(), masterLanguageVO.getId(), propertyName, this.getDatabase());
+			}
+		}
+		catch(Exception e)
+		{
+			logger.warn("An error occurred trying to get property " + propertyName + " from InfoGlueGroup:" + e.getMessage(), e);
+		}
+		
+		return value;
+	}	
+
+	public String getRolePropertyValue(InfoGlueRole role, String propertyName, Integer languageId, Boolean useLanguageFallback)
+	{
+		String value = "";
+		
+		try
+		{
+			value = RolePropertiesController.getController().getAttributeValue(role.getName(), languageId, propertyName, this.getDatabase());
+			if(useLanguageFallback && (value == null || value.equalsIgnoreCase("")))
+			{
+				LanguageVO masterLanguageVO = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForSiteNode(this.getDatabase(), getSiteNodeId());
+				value = RolePropertiesController.getController().getAttributeValue(role.getName(), masterLanguageVO.getId(), propertyName, this.getDatabase());
+			}
+		}
+		catch(Exception e)
+		{
+			logger.warn("An error occurred trying to get property " + propertyName + " from infoGluePrincipal:" + e.getMessage(), e);
+		}
+		
+		return value;
 	}	
 	
 	/**
@@ -4600,12 +4708,21 @@ public class BasicTemplateController implements TemplateController
 	{
 		return getMatchingContents(contentTypeDefinitionNamesString, categoryConditionString, freeText, freeTextAttributeNames, fromDate, toDate, expireFromDate, expireToDate, versionModifier, null, useLanguageFallback, cacheResult, cacheInterval, cacheName, cacheKey, repositoryIdList);
 	}
-	
+
 	/**
 	 * This method searches for all contents matching
 	 */
 	
 	public List getMatchingContents(String contentTypeDefinitionNamesString, String categoryConditionString, String freeText, List freeTextAttributeNames, Date fromDate, Date toDate, Date expireFromDate, Date expireToDate, String versionModifier, Integer maximumNumberOfItems, boolean useLanguageFallback, boolean cacheResult, int cacheInterval, String cacheName, String cacheKey, List<Integer> repositoryIdList)
+	{
+		return getMatchingContents(contentTypeDefinitionNamesString, categoryConditionString, freeText, freeTextAttributeNames, fromDate, toDate, expireFromDate, expireToDate, versionModifier, maximumNumberOfItems, useLanguageFallback, cacheResult, cacheInterval, cacheName, cacheKey, repositoryIdList, null);
+	}
+
+	/**
+	 * This method searches for all contents matching
+	 */
+	
+	public List getMatchingContents(String contentTypeDefinitionNamesString, String categoryConditionString, String freeText, List freeTextAttributeNames, Date fromDate, Date toDate, Date expireFromDate, Date expireToDate, String versionModifier, Integer maximumNumberOfItems, boolean useLanguageFallback, boolean cacheResult, int cacheInterval, String cacheName, String cacheKey, List<Integer> repositoryIdList, Integer languageId)
 	{
 		Timer t = new Timer();
 
@@ -4621,6 +4738,10 @@ public class BasicTemplateController implements TemplateController
 		if(cacheKey == null || cacheKey.equals(""))
 			cacheKey = "matchingContentsCache";
 
+		Integer localLanguageId = this.getLanguageId();
+		if(languageId != null)
+			localLanguageId = languageId;
+		
 		StringBuffer repositoryIdString = new StringBuffer();
 		if(repositoryIdList != null)
 		{
@@ -4629,7 +4750,7 @@ public class BasicTemplateController implements TemplateController
 				repositoryIdString.append("," + repositoryIdListIterator.next());
 		}
 		
-		String key = "sortedMatchingContents" + contentTypeDefinitionNamesString + "_" + categoryConditionString + "_publishDateTime_languageId_" + this.languageId + "_" + useLanguageFallback + "_" + maximumNumberOfItems + "_" + repositoryIdString;
+		String key = "sortedMatchingContents" + contentTypeDefinitionNamesString + "_" + categoryConditionString + "_publishDateTime_languageId_" + localLanguageId + "_" + useLanguageFallback + "_" + maximumNumberOfItems + "_" + repositoryIdString;
 		List cachedMatchingContents = (List)CacheController.getCachedObjectFromAdvancedCache(cacheName, key, cacheInterval);
 		if(cachedMatchingContents == null || !cacheResult)
 		{
@@ -4650,7 +4771,7 @@ public class BasicTemplateController implements TemplateController
 			    
 				final ExtendedSearchCriterias criterias = new ExtendedSearchCriterias(this.getOperatingMode().intValue());
 				criterias.setCategoryConditions(categoryConditions);
-				criterias.setLanguage(this.getLanguage(this.getLanguageId()));
+				criterias.setLanguage(this.getLanguage(localLanguageId));
 				if(freeText != null && freeTextAttributeNames != null)
 					criterias.setFreetext(freeText, freeTextAttributeNames);
 				criterias.setContentTypeDefinitions(contentTypeDefinitionVOList);
@@ -4668,8 +4789,8 @@ public class BasicTemplateController implements TemplateController
 				for(Iterator i = set.iterator(); i.hasNext(); ) 
 				{
 					final Content content = (Content) i.next();
-					//if(ContentDeliveryController.getContentDeliveryController().isValidContent(this.getDatabase(), content.getId(), this.languageId, USE_LANGUAGE_FALLBACK, true, getPrincipal(), this.deliveryContext))
-					if(ContentDeliveryController.getContentDeliveryController().isValidContent(this.getDatabase(), content, this.languageId, USE_LANGUAGE_FALLBACK, true, getPrincipal(), this.deliveryContext, false, false))
+					//if(ContentDeliveryController.getContentDeliveryController().isValidContent(this.getDatabase(), content.getId(), localLanguageId, USE_LANGUAGE_FALLBACK, true, getPrincipal(), this.deliveryContext))
+					if(ContentDeliveryController.getContentDeliveryController().isValidContent(this.getDatabase(), content, localLanguageId, USE_LANGUAGE_FALLBACK, true, getPrincipal(), this.deliveryContext, false, false))
 						result.add(content.getValueObject());
 				}
 
@@ -5578,6 +5699,9 @@ public class BasicTemplateController implements TemplateController
 		while(i.hasNext())
 		{
 			SiteNodeVO siteNodeVO = (SiteNodeVO)i.next();
+			
+			this.getDeliveryContext().addUsedSiteNode("siteNode_" + siteNodeVO.getId());
+			
 			if(!hideUnauthorizedPages || getHasUserPageAccess(siteNodeVO.getId()))
 			{
 				try
@@ -7416,6 +7540,7 @@ public class BasicTemplateController implements TemplateController
 	public void setDeliveryContext(DeliveryContext deliveryContext) 
 	{
 		this.deliveryContext = deliveryContext;
+		this.nodeDeliveryController.setDeliveryContext(deliveryContext);
 	}
 	
 	/**
