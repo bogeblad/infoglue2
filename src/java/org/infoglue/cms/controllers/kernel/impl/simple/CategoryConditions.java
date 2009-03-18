@@ -7,6 +7,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
 
+import javax.transaction.NotSupportedException;
+
 import org.infoglue.cms.entities.management.CategoryVO;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.util.CmsPropertyHandler;
@@ -45,7 +47,7 @@ interface ICategoryContainerCondition extends ICategoryCondition {
 	/**
 	 * 
 	 */
-	void addCategory(final String attributeName, final CategoryVO categoryVO);
+	void addCategory(final String attributeName, final CategoryVO categoryVO, final Boolean notSetArgument, final Boolean isSetArgument);
 	
 	/**
 	 * 
@@ -84,7 +86,13 @@ abstract class AbstractCategoryCondition implements ICategoryCondition {
 	//NEW WAY						
 	protected static final String CATEGORY_CLAUSE_GENERAL   	= "(" + CONTENT_VERSION_ALIAS + ".contentVersionId IN (SELECT contentVersionId from " + CONTENT_CATEGORY_TABLE + " WHERE categoryId={0} AND attributeName={1}))";
 	protected static final String CATEGORY_CLAUSE_GENERAL_SHORT = "(" + CONTENT_VERSION_ALIAS + ".contVerId IN (SELECT contVerId from " + CONTENT_CATEGORY_TABLE + " WHERE categoryId={0} AND attributeName={1}))";
-	
+
+	protected static final String CATEGORY_NOT_SET_CLAUSE_GENERAL   	= "(" + CONTENT_VERSION_ALIAS + ".contentVersionId NOT IN (SELECT contentVersionId from " + CONTENT_CATEGORY_TABLE + " WHERE attributeName={0}))";
+	protected static final String CATEGORY_NOT_SET_CLAUSE_GENERAL_SHORT = "(" + CONTENT_VERSION_ALIAS + ".contVerId NOT IN (SELECT contVerId from " + CONTENT_CATEGORY_TABLE + " WHERE attributeName={0}))";
+
+	protected static final String CATEGORY_IS_SET_CLAUSE_GENERAL   	= "(" + CONTENT_VERSION_ALIAS + ".contentVersionId IN (SELECT contentVersionId from " + CONTENT_CATEGORY_TABLE + " WHERE attributeName={0}))";
+	protected static final String CATEGORY_IS_SET_CLAUSE_GENERAL_SHORT = "(" + CONTENT_VERSION_ALIAS + ".contVerId IN (SELECT contVerId from " + CONTENT_CATEGORY_TABLE + " WHERE attributeName={0}))";
+
 	/**
 	 * 
 	 */
@@ -144,7 +152,8 @@ abstract class AbstractCategoryCondition implements ICategoryCondition {
 	/**
 	 * 
 	 */
-	protected String getOneCategoryClause(final String attributeName, final CategoryVO categoryVO, final List bindings) {
+	protected String getOneCategoryClause(final String attributeName, final CategoryVO categoryVO, final List bindings) 
+	{
 		final String categoryVariable = getBindingVariable(bindings);
 		bindings.add(categoryVO.getId());
 		final String nameVariable = getBindingVariable(bindings);
@@ -161,7 +170,27 @@ abstract class AbstractCategoryCondition implements ICategoryCondition {
 			return MessageFormat.format(categoryClause, new Object[] { categoryVariable, nameVariable });
 		}
 	}
-	
+
+	/**
+	 * 
+	 */
+	protected String getOneExcludingCategoryClause(final String attributeName, final List bindings) throws NotSupportedException
+	{
+		final String nameVariable = getBindingVariable(bindings);
+		bindings.add(attributeName);
+		
+		String useImprovedContentCategorySearch = CmsPropertyHandler.getUseImprovedContentCategorySearch();
+		if(useImprovedContentCategorySearch != null && useImprovedContentCategorySearch.equalsIgnoreCase("false"))
+		{
+			throw new NotSupportedException("Not in searches are not supported in the old category search - use the new one (application settings).");
+		}
+		else
+		{
+			String categoryClause = ExtendedSearchController.useFull() ? CATEGORY_NOT_SET_CLAUSE_GENERAL : CATEGORY_NOT_SET_CLAUSE_GENERAL_SHORT;
+			return MessageFormat.format(categoryClause, new Object[] { nameVariable });
+		}
+	}
+
 	/**
 	 * 
 	 */
@@ -171,7 +200,8 @@ abstract class AbstractCategoryCondition implements ICategoryCondition {
 /**
  * 
  */
-class CategoryAndCondition extends AbstractCategoryCondition {
+class CategoryAndCondition extends AbstractCategoryCondition 
+{
 	/**
 	 * 
 	 */
@@ -182,21 +212,25 @@ class CategoryAndCondition extends AbstractCategoryCondition {
 	 */
 	private CategoryVO categoryVO;
 	
-
+	private Boolean notSetArgument = false;
+	private Boolean isSetArgument = false;
 	
 	/**
 	 * 
 	 */
-	CategoryAndCondition(final String attributeName, final CategoryVO categoryVO) {
-		this.attributeName = attributeName;
-		this.categoryVO    = categoryVO;
+	CategoryAndCondition(final String attributeName, final CategoryVO categoryVO, Boolean notSetArgument, Boolean isSetArgument) 
+	{
+		this.attributeName 	= attributeName;
+		this.categoryVO    	= categoryVO;
+		this.notSetArgument = notSetArgument;
+		this.isSetArgument 	= isSetArgument;
 	}
 	
 	/**
 	 * 
 	 */
-	public String getWhereClauseOQL(final List bindings) {
-
+	public String getWhereClauseOQL(final List bindings) 
+	{
 		String useImprovedContentCategorySearch = CmsPropertyHandler.getUseImprovedContentCategorySearch();
 		if(useImprovedContentCategorySearch != null && useImprovedContentCategorySearch.equalsIgnoreCase("false"))
 		{
@@ -205,14 +239,29 @@ class CategoryAndCondition extends AbstractCategoryCondition {
 		}
 		else
 		{
-			final String categoryVariable = getBindingVariable(bindings);
-			bindings.add(categoryVO.getId());
-			final String nameVariable = getBindingVariable(bindings);
-			bindings.add(attributeName);
-		
-			//final String categoryClause = getOneCategoryClause(attributeName, categoryVO, bindings);
-			String apa = MessageFormat.format(getCATEGORY_CLAUSE(), new Object[] { categoryVariable, nameVariable });
-			return MessageFormat.format(getCATEGORY_CLAUSE(), new Object[] { categoryVariable, nameVariable });
+			if(notSetArgument)
+			{
+				final String nameVariable = getBindingVariable(bindings);
+				bindings.add(attributeName);
+			
+				return MessageFormat.format(getCATEGORY_NOT_SET_CLAUSE(), new Object[] { nameVariable });				
+			}
+			else if(isSetArgument)
+			{
+				final String nameVariable = getBindingVariable(bindings);
+				bindings.add(attributeName);
+			
+				return MessageFormat.format(getCATEGORY_IS_SET_CLAUSE(), new Object[] { nameVariable });								
+			}
+			else
+			{
+				final String categoryVariable = getBindingVariable(bindings);
+				bindings.add(categoryVO.getId());
+				final String nameVariable = getBindingVariable(bindings);
+				bindings.add(attributeName);
+			
+				return MessageFormat.format(getCATEGORY_CLAUSE(), new Object[] { categoryVariable, nameVariable });
+			}
 		}
 	}
 	
@@ -223,6 +272,24 @@ class CategoryAndCondition extends AbstractCategoryCondition {
         	return (ExtendedSearchController.useFull()) ? CATEGORY_CLAUSE : CATEGORY_CLAUSE_SHORT;
         else
 			return ExtendedSearchController.useFull() ? CATEGORY_CLAUSE_GENERAL : CATEGORY_CLAUSE_GENERAL_SHORT;
+    }
+
+    public static String getCATEGORY_NOT_SET_CLAUSE() throws RuntimeException
+    {
+		String useImprovedContentCategorySearch = CmsPropertyHandler.getUseImprovedContentCategorySearch();
+		if(useImprovedContentCategorySearch != null && useImprovedContentCategorySearch.equalsIgnoreCase("false"))
+			throw new RuntimeException("Not in searches are not supported in the old category search - use the new one (application settings).");
+        else
+			return ExtendedSearchController.useFull() ? CATEGORY_NOT_SET_CLAUSE_GENERAL : CATEGORY_NOT_SET_CLAUSE_GENERAL_SHORT;
+    }
+
+    public static String getCATEGORY_IS_SET_CLAUSE() throws RuntimeException
+    {
+		String useImprovedContentCategorySearch = CmsPropertyHandler.getUseImprovedContentCategorySearch();
+		if(useImprovedContentCategorySearch != null && useImprovedContentCategorySearch.equalsIgnoreCase("false"))
+			throw new RuntimeException("In searches are not supported in the old category search - use the new one (application settings).");
+        else
+			return ExtendedSearchController.useFull() ? CATEGORY_IS_SET_CLAUSE_GENERAL : CATEGORY_IS_SET_CLAUSE_GENERAL_SHORT;
     }
 
 }
@@ -324,8 +391,8 @@ public class CategoryConditions implements ICategoryContainerCondition {
 	/**
 	 * 
 	 */
-	public void addCategory(final String attributeName, final CategoryVO categoryVO) {
-		children.add(new CategoryAndCondition(attributeName, categoryVO));
+	public void addCategory(final String attributeName, final CategoryVO categoryVO, final Boolean notSetArgument, final Boolean isSetArgument) {
+		children.add(new CategoryAndCondition(attributeName, categoryVO, notSetArgument, isSetArgument));
 	}
 	
 	/**
@@ -523,16 +590,25 @@ class ConditionsParser {
 		if(terms.size() != 3)
 			throw new IllegalArgumentException("ConditionsParser.parseCategory() - illegal category syntax.");
 		
-		final String attributeName  = (String) terms.get(0);
-		final String path           = (String) terms.get(2);
+		final String attributeName  	= (String) terms.get(0);
+		final String path           	= (String) terms.get(2);
+		final Boolean isNotSetArgument 	= (path.equalsIgnoreCase("UNDEFINED") ? true : false);
+		final Boolean isSetArgument 	= (path.equalsIgnoreCase("*") ? true : false);
 		
-		try {
-			final CategoryVO categoryVO = CategoryController.getController().findByPath(path); 
-			if(categoryVO == null)
-				throw new IllegalArgumentException("ConditionsParser.parseCategory() - no such category [" + path + "].");
-			conditions.addCategory(attributeName, categoryVO);
-		} catch(SystemException e) {
-			e.printStackTrace();
+		try 
+		{
+			CategoryVO categoryVO = null;
+			if(!isNotSetArgument && !isSetArgument)
+			{
+				categoryVO = CategoryController.getController().findByPath(path); 
+				if(categoryVO == null)
+					throw new IllegalArgumentException("ConditionsParser.parseCategory() - no such category [" + path + "].");
+			}
+			conditions.addCategory(attributeName, categoryVO, isNotSetArgument, isSetArgument);
+		} 
+		catch(SystemException e) 
+		{
+			//e.printStackTrace();
 			throw new IllegalArgumentException("ConditionsParser.parseCategory() - unknown category path [" + path + "].");
 		}
 	}
