@@ -56,6 +56,12 @@
   <parameter name="allowedMethods" value="*"/>
   <parameter name="className" value="org.infoglue.cms.webservices.RemoteUserPropertiesServiceImpl"/>
  </service>
+ <service name="RemoteManagementService" provider="java:RPC">
+  <parameter name="allowedMethods" value="*"/>
+  <parameter name="className" value="org.infoglue.cms.webservices.RemoteManagementServiceImpl"/>
+  <beanMapping languageSpecificType="java:org.infoglue.cms.webservices.elements.StatusBean" qname="ns1:StatusBean" xmlns:ns1="infoglue"/>
+  <beanMapping languageSpecificType="java:org.infoglue.cms.webservices.elements.CreatedEntityBean" qname="ns1:CreatedEntityBean" xmlns:ns1="infoglue"/>
+ </service>
  <service name="RemoteWorkflowService" provider="java:RPC">
   <parameter name="allowedMethods" value="*"/>
   <parameter name="className" value="org.infoglue.cms.webservices.RemoteWorkflowServiceImpl"/>
