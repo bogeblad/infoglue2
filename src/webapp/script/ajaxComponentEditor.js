@@ -1112,7 +1112,18 @@ function editInline(selectedRepositoryId, selectedContentId, selectedLanguageId,
 					var fontFamily = elementObject.parent().css("font-family");
 					var fontSize = elementObject.parent().css("font-size");
 					var color = elementObject.parent().css("color");
-					//alert("fontSize:" + fontSize);
+					var tagName = elementObject.parent()[0].tagName.toLowerCase();
+					
+					//This is a hack to fix the fact that IE returns a font-size of over 200px if the font-size on the element is not set.
+					if(fontSize.length > 4)
+					{
+						if(tagName == "h1")
+							fontSize = "22px";
+						else if(tagName == "h2")
+							fontSize = "18px";
+						else
+							fontSize = "12px";
+					}
 					
 					elementObject.html("<span id='spanInput" + $this.get(0).id + "'><input class='edit' style='width: 80%' ondblclick='if (event && event.stopPropagation) {event.stopPropagation();}else if (window.event) {window.event.cancelBubble = true;}return false;' id='input" + $this.get(0).id + "' type='text' value='" + escapeAmpsAndQuotes(text) + "' /> </span>");
 					$(".edit").css("font-family", fontFamily);
