@@ -92,7 +92,8 @@ public class ImportTag extends TemplateControllerTag
 			useCache = true;
 			useFileCacheFallback = true;
 			fileCacheCharEncoding = "iso-8859-1";
-			cacheTimeout = new Integer(3600); 
+			if(cacheTimeout != null)
+				cacheTimeout = new Integer(3600); 
 		}
 		
 		try
@@ -191,7 +192,7 @@ public class ImportTag extends TemplateControllerTag
         } 
 		catch (Exception e)
         {
-            logger.error("An error occurred when we tried during (" + timeout + " ms) to import the url:" + this.url + ":" + e.getMessage());
+            logger.error("An error occurred when we tried during (" + timeout + " ms) to import the url:" + this.url + ":" + e.getMessage(), e);
 		    produceResult("");
         }
 		
