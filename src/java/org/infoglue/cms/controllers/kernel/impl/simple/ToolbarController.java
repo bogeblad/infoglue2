@@ -104,7 +104,10 @@ public class ToolbarController
 		{
 			if(toolbarKey.equalsIgnoreCase("tool.contenttool.contentVersionHeader"))
 				return getContentVersionButtons();
-			
+
+			if(toolbarKey.equalsIgnoreCase("tool.contenttool.contentVersionWizardHeader"))
+				return getContentVersionButtons();
+
 			if(toolbarKey.equalsIgnoreCase("tool.common.globalSubscriptions.header"))
 				return getGlobalSubscriptionsButtons();
 			
@@ -223,6 +226,9 @@ public class ToolbarController
 		{
 			if(toolbarKey.equalsIgnoreCase("tool.contenttool.contentVersionHeader"))
 				return getContentVersionFooterButtons();
+
+			if(toolbarKey.equalsIgnoreCase("tool.contenttool.contentVersionWizardHeader"))
+				return getContentVersionWizardFooterButtons();
 			
 			if(toolbarKey.equalsIgnoreCase("tool.structuretool.createSiteNodeHeader"))
 				return getCreateSiteNodeFooterButtons();
@@ -512,6 +518,29 @@ public class ToolbarController
 									  "javascript:validateAndSubmitContentFormThenSubmitToPublish();",
 				  					  "images/v3/publishIcon.gif"));
 		*/
+		
+		buttons.add(new ToolbarButton("",
+				  					  getLocalizedString(locale, "tool.contenttool.cancel.label"), 
+				  					  getLocalizedString(locale, "tool.contenttool.cancel.label"),
+				  					  "if(parent && parent.closeDialog) parent.closeDialog(); else window.close();",
+				  					  "images/v3/cancelIcon.gif",
+				  					  "left",
+									  "cancel",
+				  					  true));
+		
+		return buttons;
+	}
+
+	private List<ToolbarButton> getContentVersionWizardFooterButtons() throws Exception
+	{
+		List<ToolbarButton> buttons = new ArrayList<ToolbarButton>();
+
+		buttons.add(new ToolbarButton("",
+									  getLocalizedString(locale, "tool.common.nextButton.label"), 
+									  getLocalizedString(locale, "tool.common.nextButton.label"),
+									  "javascript:validateAndSubmitContentForm();",
+									  "images/v3/saveInlineIcon.gif",
+									  "save"));
 		
 		buttons.add(new ToolbarButton("",
 				  					  getLocalizedString(locale, "tool.contenttool.cancel.label"), 
