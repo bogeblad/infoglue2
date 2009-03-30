@@ -1458,11 +1458,9 @@ var Url = {
 // Function submitting the page to publishing
 //--------------------------------------------
 
-function submitToPublish(siteNodeId, languageId, repositoryId, returnAddress) 
+function submitToPublish(siteNodeId, contentId, languageId, repositoryId, returnAddress) 
 {
-	var url = componentEditorUrl + "ViewListSiteNodeVersion!v3.action?siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&repositoryId=" + repositoryId + "&recurseSiteNodes=false&returnAddress=" + returnAddress + "&originalAddress=" + currentUrl;
-	//var url = componentEditorUrl + "ViewListSiteNodeVersion.action?siteNodeId=" + siteNodeId + "&repositoryId=" + repositoryId + "&returnAddress=" + returnAddress;	
-	//document.location.href = url;
+	var url = componentEditorUrl + "ViewListSiteNodeVersion!v3.action?siteNodeId=" + siteNodeId + "&contentId=" + contentId + "&languageId=" + languageId + "&repositoryId=" + repositoryId + "&recurseSiteNodes=false&returnAddress=" + returnAddress + "&originalAddress=" + currentUrl;
 	openInlineDiv(editUrl, 700, 750, true);
 
 }

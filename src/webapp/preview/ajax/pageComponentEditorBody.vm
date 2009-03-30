@@ -1,5 +1,5 @@
 <div id="emptySlotMenu" class="skin0">
-<div class="igmenuitems" onMouseover="javascript:highlightie5(event);" onMouseout="javascript:lowlightie5(event);" onClick="submitToPublish($siteNodeId, $languageId, $repositoryId, '$originalFullURL');">$submitToPublishHTML</div>
+<div class="igmenuitems" onMouseover="javascript:highlightie5(event);" onMouseout="javascript:lowlightie5(event);" onClick="submitToPublish($siteNodeId, $contentId, $languageId, $repositoryId, '$originalFullURL');">$submitToPublishHTML</div>
 <div id="addComponentMenuItem" class="igmenuitems" onMouseover="javascript:highlightie5(event);" onMouseout="javascript:lowlightie5(event);" onClick="insertComponent();">$addComponentHTML</div>
 <div class="igmenuitems" onMouseover="javascript:highlightie5(event);" onMouseout="javascript:lowlightie5(event);" onClick="$saveTemplateUrl">$savePageTemplateHTML</div>
 <hr id="emptySlotMenuTopSeparator"/>
