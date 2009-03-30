@@ -87,6 +87,11 @@ public class ExtendedSearchCriterias
 	private Integer forcedOperatingMode = null;
 	
 	/**
+	 * If set to true the language parameter is not used at all during the search.
+	 */
+	private Boolean skipLanguageCheck = false;
+	
+	/**
 	 * If present, only fetch content version that has at least one attribute fulfilling:
 	 * (a) the attribute is present in the <code>xmlAttributes</code> list.
 	 * (b) the value of the attribute contains the freetext value.
@@ -511,6 +516,16 @@ public class ExtendedSearchCriterias
 	public Integer getMaximumNumberOfItems()
 	{
 		return this.maximumNumberOfItems;
+	}
+
+	public Boolean getSkipLanguageCheck()
+	{
+		return skipLanguageCheck;
+	}
+
+	public void setSkipLanguageCheck(Boolean skipLanguageCheck)
+	{
+		this.skipLanguageCheck = skipLanguageCheck;
 	}
 
 	public List<Integer> getRepositoryIdList()

@@ -60,6 +60,7 @@ public class MatchingContentsTag extends TemplateControllerTag
 	private String cacheKey = null;
 	private String repositoryIds = null;
 	private Integer languageId = null;
+	private Boolean skipLanguageCheck = false;
 	
     public MatchingContentsTag()
     {
@@ -106,11 +107,12 @@ public class MatchingContentsTag extends TemplateControllerTag
 			logger.warn("Problem setting maximumNumberOfItemsInMatchingContentsSearch:" + e.getMessage());
 		}
 		
-	    setResultAttribute(getController().getMatchingContents(contentTypeDefinitionNames, categoryCondition, freeText, freeTextAttributeNamesList, fromDate, toDate, expireFromDate, expireToDate, versionModifier, maximumNumberOfItems, true, cacheResult, cacheInterval, cacheName, cacheKey, repositoryIdList, this.languageId));
+	    setResultAttribute(getController().getMatchingContents(contentTypeDefinitionNames, categoryCondition, freeText, freeTextAttributeNamesList, fromDate, toDate, expireFromDate, expireToDate, versionModifier, maximumNumberOfItems, true, cacheResult, cacheInterval, cacheName, cacheKey, repositoryIdList, this.languageId, skipLanguageCheck));
 	    
 	    this.repositoryIds = null;
 	    this.languageId = null;
-	    
+	    this.skipLanguageCheck = false;
+	    	
 	    long runningTime = t.getElapsedTime();
 	    if(runningTime > 500)
 	    	logger.warn("Running matching contents took:" + runningTime + " ms");
@@ -121,6 +123,11 @@ public class MatchingContentsTag extends TemplateControllerTag
     public void setLanguageId(String languageId) throws JspException
     {
         this.languageId = evaluateInteger("matchingContentsTag", "languageId", languageId);
+    }
+
+    public void setSkipLanguageCheck(String skipLanguageCheck) throws JspException
+    {
+        this.skipLanguageCheck = (Boolean)evaluate("matchingContentsTag", "skipLanguageCheck", skipLanguageCheck, Boolean.class);
     }
 
     public void setContentTypeDefinitionNames(String contentTypeDefinitionNames) throws JspException
