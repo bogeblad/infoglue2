@@ -160,7 +160,91 @@ public class ContentDeliveryController extends BaseDeliveryController
 		return contentVO;
 	}
 	
+	public ContentVO getContentWithPath(Integer repositoryId, String path, InfoGluePrincipal principal, Database db) throws SystemException, Exception 
+	{
+		ContentVO content = getRootContentVO(repositoryId, db);
+		logger.info("content:" + content);
+		final String paths[] = path.split("/");
+		if(path.equals(""))
+			return content;
+		
+		for(int i=0; i<paths.length; ++i) 
+		{
+			final String name = paths[i];
+			final ContentVO childContent = getChildWithName(content.getId(), name, db);
+			if(childContent != null)
+				content = childContent;
+			else if(childContent == null)
+				throw new SystemException("There exists no content with the path [" + path + "].");
+		}
+		return content;
+	}
 	
+	/**
+	 * This method returns the root contentVO for the specified repository.
+	 * If the repositoryName is null we fetch the name of the master repository.
+	 */
+	
+	public ContentVO getRootContentVO(Integer repositoryId, Database db) throws SystemException, Exception
+	{
+		ContentVO contentVO = null;
+
+        String key = "" + repositoryId;
+		logger.info("key in getRootContentVO:" + key);
+		contentVO = (ContentVO)CacheController.getCachedObject("rootContentCache", key);
+		if(contentVO != null)
+		{
+		    logger.info("There was an cached master root contentVO:" + contentVO.getName());
+		}
+		else
+		{
+	        logger.info("Fetching the root contentVO for the repository " + repositoryId);
+			OQLQuery oql = db.getOQLQuery( "SELECT c FROM org.infoglue.cms.entities.content.impl.simple.ContentImpl c WHERE is_undefined(c.parentContent) AND c.repository = $1");
+			oql.bind(repositoryId);
+			
+	    	QueryResults results = oql.execute(Database.ReadOnly);
+			
+	    	if (results.hasMore()) 
+	        {
+	    		contentVO = ((Content)results.next()).getValueObject();
+				logger.info("The root contentVO was found:" + contentVO.getName());
+	        }
+
+	    	results.close();
+			oql.close();
+
+			logger.info("contentVO:" + contentVO);
+
+			CacheController.cacheObject("rootContentCache", key, contentVO);
+		}
+
+        return contentVO;	
+	}
+
+	/**
+	 * 
+	 */
+	private ContentVO getChildWithName(Integer parentContentId, String name, Database db) throws Exception
+	{
+		ContentVO contentVO = null;
+		
+		OQLQuery oql = db.getOQLQuery("SELECT c FROM org.infoglue.cms.entities.content.impl.simple.SmallContentImpl c WHERE c.parentContentId = $1 AND c.name = $2");
+    	oql.bind(parentContentId);
+    	oql.bind(name);
+    	
+    	QueryResults results = oql.execute(Database.ReadOnly);
+		
+		if(results.hasMore()) 
+        {
+			contentVO = ((Content)results.next()).getValueObject();
+        }
+
+		results.close();
+		oql.close();
+		
+		return contentVO;
+	}
+
 	/**
 	 * This method returns that contentVersionVO which matches the parameters sent in and which 
 	 * also has the correct state for this delivery-instance.

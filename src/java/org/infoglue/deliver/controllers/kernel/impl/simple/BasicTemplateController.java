@@ -419,6 +419,14 @@ public class BasicTemplateController implements TemplateController
 		return this.componentLogic;
 	}
 	
+    /**
+     * This method gets the contentId of the component.
+     */
+    public Integer getComponentContentId()
+    {
+    	return getComponentLogic().getInfoGlueComponent().getContentId();
+    }
+
 	/**
 	 * This method gets a component logic helper object.
 	 */
@@ -633,6 +641,25 @@ public class BasicTemplateController implements TemplateController
 
 		return content;
 	}
+
+    /**
+     * Getter content with a certain path in a repository
+     */
+    public ContentVO getContentWithPath(Integer repositoryId, String path)
+    {
+    	ContentVO content = null;
+
+		try
+		{
+			content = ContentDeliveryController.getContentDeliveryController().getContentWithPath(repositoryId, path, getPrincipal(), getDatabase());
+		}
+		catch(Exception e)
+		{
+			logger.warn("An error occurred trying to get the content with path " + path + " on repository " + repositoryId + ":" + e.getMessage());
+		}
+
+		return content;    	
+    }
 
 	/**
 	 * Getter for the most recent contentVersion based on a contentVersionId
@@ -4306,6 +4333,15 @@ public class BasicTemplateController implements TemplateController
 	 * This method returns the root node for the current repository.
 	 */
 	
+	public Integer getRepositoryId()
+	{
+	    return this.getSiteNode().getRepositoryId();
+	}
+
+	/**
+	 * This method returns the root node for the current repository.
+	 */
+	
 	public SiteNodeVO getRepositoryRootSiteNode() throws Exception
 	{
 	    Integer repositoryId = this.getSiteNode(this.siteNodeId).getRepositoryId();
@@ -4715,7 +4751,7 @@ public class BasicTemplateController implements TemplateController
 	
 	public List getMatchingContents(String contentTypeDefinitionNamesString, String categoryConditionString, String freeText, List freeTextAttributeNames, Date fromDate, Date toDate, Date expireFromDate, Date expireToDate, String versionModifier, Integer maximumNumberOfItems, boolean useLanguageFallback, boolean cacheResult, int cacheInterval, String cacheName, String cacheKey, List<Integer> repositoryIdList)
 	{
-		return getMatchingContents(contentTypeDefinitionNamesString, categoryConditionString, freeText, freeTextAttributeNames, fromDate, toDate, expireFromDate, expireToDate, versionModifier, maximumNumberOfItems, useLanguageFallback, cacheResult, cacheInterval, cacheName, cacheKey, repositoryIdList, null);
+		return getMatchingContents(contentTypeDefinitionNamesString, categoryConditionString, freeText, freeTextAttributeNames, fromDate, toDate, expireFromDate, expireToDate, versionModifier, maximumNumberOfItems, useLanguageFallback, cacheResult, cacheInterval, cacheName, cacheKey, repositoryIdList, null, null);
 	}
 
 	/**
@@ -4723,6 +4759,15 @@ public class BasicTemplateController implements TemplateController
 	 */
 	
 	public List getMatchingContents(String contentTypeDefinitionNamesString, String categoryConditionString, String freeText, List freeTextAttributeNames, Date fromDate, Date toDate, Date expireFromDate, Date expireToDate, String versionModifier, Integer maximumNumberOfItems, boolean useLanguageFallback, boolean cacheResult, int cacheInterval, String cacheName, String cacheKey, List<Integer> repositoryIdList, Integer languageId)
+	{
+		return getMatchingContents(contentTypeDefinitionNamesString, categoryConditionString, freeText, freeTextAttributeNames, fromDate, toDate, expireFromDate, expireToDate, versionModifier, maximumNumberOfItems, useLanguageFallback, cacheResult, cacheInterval, cacheName, cacheKey, repositoryIdList, languageId, null);
+	}
+
+	/**
+	 * This method searches for all contents matching
+	 */
+	
+	public List getMatchingContents(String contentTypeDefinitionNamesString, String categoryConditionString, String freeText, List freeTextAttributeNames, Date fromDate, Date toDate, Date expireFromDate, Date expireToDate, String versionModifier, Integer maximumNumberOfItems, boolean useLanguageFallback, boolean cacheResult, int cacheInterval, String cacheName, String cacheKey, List<Integer> repositoryIdList, Integer languageId, Boolean skipLanguageCheck)
 	{
 		Timer t = new Timer();
 
@@ -4750,7 +4795,10 @@ public class BasicTemplateController implements TemplateController
 				repositoryIdString.append("," + repositoryIdListIterator.next());
 		}
 		
-		String key = "sortedMatchingContents" + contentTypeDefinitionNamesString + "_" + categoryConditionString + "_publishDateTime_languageId_" + localLanguageId + "_" + useLanguageFallback + "_" + maximumNumberOfItems + "_" + repositoryIdString;
+		String key = "sortedMatchingContents" + contentTypeDefinitionNamesString + "_" + categoryConditionString + "_publishDateTime_languageId_" + localLanguageId + "_" + useLanguageFallback + "_" + maximumNumberOfItems + "_" + repositoryIdString + "_" + skipLanguageCheck;
+		if(cacheKey != null && !cacheKey.equals(""))
+			key = cacheKey;
+		
 		List cachedMatchingContents = (List)CacheController.getCachedObjectFromAdvancedCache(cacheName, key, cacheInterval);
 		if(cachedMatchingContents == null || !cacheResult)
 		{
@@ -4772,6 +4820,9 @@ public class BasicTemplateController implements TemplateController
 				final ExtendedSearchCriterias criterias = new ExtendedSearchCriterias(this.getOperatingMode().intValue());
 				criterias.setCategoryConditions(categoryConditions);
 				criterias.setLanguage(this.getLanguage(localLanguageId));
+				if(skipLanguageCheck != null)
+					criterias.setSkipLanguageCheck(skipLanguageCheck);
+				System.out.println("skipLanguageCheck1:" + skipLanguageCheck);
 				if(freeText != null && freeTextAttributeNames != null)
 					criterias.setFreetext(freeText, freeTextAttributeNames);
 				criterias.setContentTypeDefinitions(contentTypeDefinitionVOList);
@@ -4791,7 +4842,9 @@ public class BasicTemplateController implements TemplateController
 					final Content content = (Content) i.next();
 					//if(ContentDeliveryController.getContentDeliveryController().isValidContent(this.getDatabase(), content.getId(), localLanguageId, USE_LANGUAGE_FALLBACK, true, getPrincipal(), this.deliveryContext))
 					if(ContentDeliveryController.getContentDeliveryController().isValidContent(this.getDatabase(), content, localLanguageId, USE_LANGUAGE_FALLBACK, true, getPrincipal(), this.deliveryContext, false, false))
+					{
 						result.add(content.getValueObject());
+					}
 				}
 
 				if(cacheResult)
@@ -6812,6 +6865,28 @@ public class BasicTemplateController implements TemplateController
 		return hasUserPageWriteAccess;
 	}
 	
+    /**
+     * This method return true if the user has access to the interception point.
+     */
+    public boolean getHasUserAccess(String interceptionPointName, String extraParameters)
+    {
+		boolean hasUserContentAccess = true;
+		
+		try 
+		{
+			if(!AccessRightController.getController().getIsPrincipalAuthorized(infoGluePrincipal, interceptionPointName, extraParameters))
+			{
+			    hasUserContentAccess = false;
+			}
+		} 
+		catch(Exception e)
+		{
+			logger.error("An error occurred trying to get determine if content:" + contentId + " has a localized version:" + e.getMessage(), e);
+		}
+		
+		return hasUserContentAccess;
+    }
+
 	/**
 	 * This method returns a list of form elements/attributes based on the schema sent in. 
 	 * These consitutes the entire form and a template can then be used to render it in the appropriate technique.

@@ -137,6 +137,11 @@ public interface TemplateController
     public abstract ComponentLogic getComponentLogic();
 
     /**
+     * This method gets the contentId of the component.
+     */
+    public abstract Integer getComponentContentId();
+
+    /**
      * This method gets a component logic helper object.
      */
     public abstract void setComponentLogic(ComponentLogic componentLogic);
@@ -206,6 +211,11 @@ public interface TemplateController
      */
     public abstract ContentVO getContent(Integer contentId);
 
+    /**
+     * Getter for the current content
+     */
+    public abstract ContentVO getContentWithPath(Integer repositoryId, String path);
+    
     public abstract InfoGluePrincipal getPrincipal();
 
     /**
@@ -965,6 +975,12 @@ public interface TemplateController
 	public abstract SiteNodeVO getSiteNode();
 
 	/**
+	 * This method returns the root node for the current repository.
+	 */
+	
+	public abstract Integer getRepositoryId();
+
+	/**
 	 * Gets a corresponding list of siteNodeVO:s from a list of webpages.
 	 */
 	
@@ -1369,6 +1385,12 @@ public interface TemplateController
 	
 	public List getMatchingContents(String contentTypeDefinitionNamesString, String categoryConditionString, String freeText, List freeTextAttributeNames, Date fromDate, Date toDate, Date expireFromDate, Date expireToDate, String versionModifier, Integer maximumNumberOfItems, boolean useLanguageFallback, boolean cacheResult, int cacheInterval, String cacheName, String cacheKey, List<Integer> repositoryIdList, Integer languageId);
 
+	/**
+	 * This method searches for all contents matching
+	 */
+	
+	public List getMatchingContents(String contentTypeDefinitionNamesString, String categoryConditionString, String freeText, List freeTextAttributeNames, Date fromDate, Date toDate, Date expireFromDate, Date expireToDate, String versionModifier, Integer maximumNumberOfItems, boolean useLanguageFallback, boolean cacheResult, int cacheInterval, String cacheName, String cacheKey, List<Integer> repositoryIdList, Integer languageId, Boolean skipLanguageCheck);
+
 
 	/**
 	 * This method returns which mode the delivery-engine is running in.
@@ -1538,18 +1560,26 @@ public interface TemplateController
 	public boolean getHasUserContentAccess(Integer contentId);
 
     /**
-     * This method returns a list of form elements/attributes based on the schema sent in. 
-     * These consitutes the entire form and a template can then be used to render it in the appropriate technique.
+     * This method return true if the user has access to the interception point.
      */
-    public abstract List getFormAttributes(String contentBindningName,
-            String attributeName);
+    public boolean getHasUserContentAccess(Integer contentId, String interceptionPointName);
+
+    /**
+     * This method return true if the user has access to the interception point.
+     */
+    public abstract boolean getHasUserAccess(String interceptionPointName, String extraParameters);
 
     /**
      * This method returns a list of form elements/attributes based on the schema sent in. 
      * These consitutes the entire form and a template can then be used to render it in the appropriate technique.
      */
-    public abstract List getFormAttributes(Integer contentId,
-            String attributeName);
+    public abstract List getFormAttributes(String contentBindningName, String attributeName);
+
+    /**
+     * This method returns a list of form elements/attributes based on the schema sent in. 
+     * These consitutes the entire form and a template can then be used to render it in the appropriate technique.
+     */
+    public abstract List getFormAttributes(Integer contentId, String attributeName);
 
     /**
 	 * This method supplies a method to get the locale of the language currently in use.
