@@ -306,7 +306,10 @@ public class CreateSiteNodeAction extends InfoGlueAbstractAction
             
             commitTransaction(db);
 
-            addActionLink(userSessionKey, new LinkBean("newPageUrl", "Direkt till sidan du skapade","Klicka här om du vill komma direkt till sidan du just startat.", "Klicka här om du vill komma direkt till sidan du just startat.", getDecoratedPageUrl(newSiteNodeVO.getId()), false, ""));
+    		String createSiteNodeInlineOperationViewCreatedPageLinkText = getLocalizedString(getLocale(), "tool.structuretool.createSiteNodeInlineOperationViewCreatedPageLinkText");
+    		String createSiteNodeInlineOperationViewCreatedPageTitleText = getLocalizedString(getLocale(), "tool.structuretool.createSiteNodeInlineOperationViewCreatedPageTitleText");
+
+            addActionLink(userSessionKey, new LinkBean("newPageUrl", createSiteNodeInlineOperationViewCreatedPageLinkText, createSiteNodeInlineOperationViewCreatedPageTitleText, createSiteNodeInlineOperationViewCreatedPageTitleText, getDecoratedPageUrl(newSiteNodeVO.getId()), false, ""));
             setActionExtraData(userSessionKey, "refreshToolbarAndMenu", "" + true);
             setActionExtraData(userSessionKey, "repositoryId", "" + newSiteNodeVO.getRepositoryId());
             setActionExtraData(userSessionKey, "siteNodeId", "" + newSiteNodeVO.getId());
@@ -359,8 +362,12 @@ public class CreateSiteNodeAction extends InfoGlueAbstractAction
 
 		parentSiteNodeVO = SiteNodeControllerProxy.getController().getSiteNodeVOWithId(parentSiteNodeId);
 
-        setActionMessage(userSessionKey, "Sidan skapades korrekt under &quot;" + parentSiteNodeVO.getName() + "&quot;. Fortsätt genom att välja något av alternativen nedan.");
-        addActionLink(userSessionKey, new LinkBean("currentPageUrl", "Tillbaka till sidan du utgick från", "Klicka här om du vill komma tillbaka till sidan där du startade flödet.", "Klicka här om du vill komma tillbaka till sidan där du startade flödet.", this.originalAddress, false, ""));
+		String createSiteNodeInlineOperationDoneHeader = getLocalizedString(getLocale(), "tool.structuretool.createSiteNodeInlineOperationDoneHeader", parentSiteNodeVO.getName());
+		String createSiteNodeInlineOperationBackToCurrentPageLinkText = getLocalizedString(getLocale(), "tool.structuretool.createSiteNodeInlineOperationBackToCurrentPageLinkText");
+		String createSiteNodeInlineOperationBackToCurrentPageTitleText = getLocalizedString(getLocale(), "tool.structuretool.createSiteNodeInlineOperationBackToCurrentPageTitleText");
+
+	    setActionMessage(userSessionKey, createSiteNodeInlineOperationDoneHeader);
+	    addActionLink(userSessionKey, new LinkBean("currentPageUrl", createSiteNodeInlineOperationBackToCurrentPageLinkText, createSiteNodeInlineOperationBackToCurrentPageTitleText, createSiteNodeInlineOperationBackToCurrentPageTitleText, this.originalAddress, false, ""));
 
 		return "inputV3";
     }
