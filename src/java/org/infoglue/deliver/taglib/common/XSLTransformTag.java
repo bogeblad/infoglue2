@@ -26,6 +26,7 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.Reader;
 import java.io.StringReader;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -41,7 +42,13 @@ import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
+import net.sf.saxon.Configuration;
+import net.sf.saxon.Controller;
+import net.sf.saxon.FeatureKeys;
+import net.sf.saxon.TransformerFactoryImpl;
+import net.sf.saxon.om.DocumentInfo;
 import net.sf.saxon.om.NodeInfo;
+import net.sf.saxon.query.StaticQueryContext;
 import net.sf.saxon.tinytree.TinyBuilder;
 import net.sf.saxon.tinytree.TinyDocumentImpl;
 
@@ -73,8 +80,9 @@ public class XSLTransformTag extends TemplateControllerTag
 	private String styleFile;
 	private String styleString;
 	private String outputFormat = "string";
-
+	
 	private Map parameters = new HashMap();
+	private Map outputParameters = new HashMap();
 
 	/**
 	 * Default constructor.
@@ -155,15 +163,15 @@ public class XSLTransformTag extends TemplateControllerTag
 		{
             pss = tryCache(this.styleFile, this.styleString, cacheStyle);
             transformer = pss.newTransformer();
-        
-			if(logger.isDebugEnabled())	
+            
+            if(logger.isDebugEnabled())	
 				logger.info("outputFormat:" + this.outputFormat);
 
 			if(this.outputFormat.equalsIgnoreCase("string"))
             {
 	            java.io.ByteArrayOutputStream outputXmlResult = new java.io.ByteArrayOutputStream();
 	            BufferedOutputStream bos = new BufferedOutputStream(outputXmlResult);
-
+	            
 	            Iterator parametersIterator = parameters.keySet().iterator();
 	            while(parametersIterator.hasNext())
 	            {
@@ -171,7 +179,13 @@ public class XSLTransformTag extends TemplateControllerTag
 	            	Object value = parameters.get(name);
 	            	transformer.setParameter(name, value);
 	            }
-	            
+	            Iterator outputParametersIterator = outputParameters.keySet().iterator();
+	            while(parametersIterator.hasNext())
+	            {
+	            	String name = (String)parametersIterator.next();
+	            	String value = (String)parameters.get(name);
+		            transformer.setOutputProperty(name, value);
+	            }
 	            transformer.transform(xmlSource, new StreamResult(bos));
 	            bos.close();
 	            
@@ -181,7 +195,7 @@ public class XSLTransformTag extends TemplateControllerTag
             else if(this.outputFormat.equalsIgnoreCase("document"))
             {
             	DOMResult domResult = new DOMResult();
-	            
+                
 	            Iterator parametersIterator = parameters.keySet().iterator();
 	            while(parametersIterator.hasNext())
 	            {
@@ -189,10 +203,17 @@ public class XSLTransformTag extends TemplateControllerTag
 	            	Object value = parameters.get(name);
 	            	transformer.setParameter(name, value);
 	            }
-	            
+	            Iterator outputParametersIterator = outputParameters.keySet().iterator();
+	            while(parametersIterator.hasNext())
+	            {
+	            	String name = (String)parametersIterator.next();
+	            	String value = (String)parameters.get(name);
+		            transformer.setOutputProperty(name, value);
+	            }
+
 	            transformer.transform(xmlSource, domResult);
 	            setResultAttribute(domResult.getNode());
-            }
+	        }
             else if(this.outputFormat.equalsIgnoreCase("tinyDocument"))
             {
 	            Iterator parametersIterator = parameters.keySet().iterator();
@@ -202,7 +223,14 @@ public class XSLTransformTag extends TemplateControllerTag
 	            	Object value = parameters.get(name);
 	            	transformer.setParameter(name, value);
 	            }
-	            
+	            Iterator outputParametersIterator = outputParameters.keySet().iterator();
+	            while(parametersIterator.hasNext())
+	            {
+	            	String name = (String)parametersIterator.next();
+	            	String value = (String)parameters.get(name);
+		            transformer.setOutputProperty(name, value);
+	            }
+
 	            TinyBuilder builder = new TinyBuilder();
 
 	            transformer.transform(xmlSource, builder);
@@ -223,6 +251,7 @@ public class XSLTransformTag extends TemplateControllerTag
 	            transformer.clearParameters();
 	            transformer.reset();
 	            parameters.clear();
+	            outputParameters.clear();
         	}
         	catch (NoSuchMethodError e) 
         	{
@@ -334,9 +363,12 @@ public class XSLTransformTag extends TemplateControllerTag
         this.outputFormat = evaluateString("XSLTransform", "outputFormat", outputFormat);
     }    
 
-    protected final void addParameter(final String name, final Object value)
+    protected final void addParameter(final String name, final Object value, final String scope)
 	{
-		parameters.put(name, value);
+    	if(scope != null && scope.equalsIgnoreCase("outputProperty"))
+    		outputParameters.put(name, value);
+    	else
+    		parameters.put(name, value);
 	}
 
 }

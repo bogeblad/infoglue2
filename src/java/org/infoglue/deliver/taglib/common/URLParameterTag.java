@@ -109,7 +109,7 @@ public class URLParameterTag extends AbstractTag
 				((ImportTag) importParent).addProperty(name, value);
 		}
 		if(transformParent != null)
-			((XSLTransformTag) transformParent).addParameter(name, value);
+			((XSLTransformTag) transformParent).addParameter(name, value, scope);
 		if(forwardParent != null)
 			((ForwardTag) forwardParent).addParameter(name, value);
 	}

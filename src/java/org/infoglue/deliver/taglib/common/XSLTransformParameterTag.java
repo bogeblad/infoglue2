@@ -50,6 +50,8 @@ public class XSLTransformParameterTag extends AbstractTag
 	 */
 	private Object value;
 	
+	private String scope = "parameter";
+	
 	/**
 	 * Default constructor. 
 	 */
@@ -68,6 +70,11 @@ public class XSLTransformParameterTag extends AbstractTag
 	public int doEndTag() throws JspException
     {
 		addParameter();
+		
+		name = null;
+		value = null;
+		scope = "parameter";
+		
 		return EVAL_PAGE;
     }
 	
@@ -85,7 +92,7 @@ public class XSLTransformParameterTag extends AbstractTag
 		}
 		
 		if(transformParent != null)
-			((XSLTransformTag) transformParent).addParameter(name, value);
+			((XSLTransformTag) transformParent).addParameter(name, value, scope);
 	}
 	
 	/**
@@ -108,5 +115,16 @@ public class XSLTransformParameterTag extends AbstractTag
 	public void setValue(final String value) throws JspException
 	{
 		this.value = evaluate("parameter", "value", value, Object.class);
+	}
+
+	/**
+	 * Sets the value attribute.
+	 * 
+	 * @param value the value to use.
+	 * @throws JspException if an error occurs while evaluating value parameter.
+	 */
+	public void setScope(final String scope) throws JspException
+	{
+		this.scope = evaluateString("parameter", "scope", scope);
 	}
 }
