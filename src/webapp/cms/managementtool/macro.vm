@@ -1762,7 +1762,7 @@ $ui.getString("entity.${fieldNameKey}.label")<br/>
 				<script type="text/javascript">
 				<!--
 				$("#button$velocityCount").click(function(){
-	            	#if($button.actionURL.indexOf("javascript") == -1 && $button.isJavascript == false)
+	            	#if($button.actionURL.indexOf("javascript") == -1 && $button.isJavascript == false && $button.actionURL != '')
 		           		document.location.href = '$button.actionURL';
 		           	#else
 		           		$button.actionURL
