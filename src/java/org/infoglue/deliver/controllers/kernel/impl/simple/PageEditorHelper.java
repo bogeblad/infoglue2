@@ -1045,7 +1045,7 @@ public class PageEditorHelper extends BaseDeliveryController
 		    	sb.append("<div class=\"igmenuitems linkCreatePage\" onClick=\"openInlineDiv('" + createSiteNodeUrl + "', 700, 750, true);\"><a href='#'>" + createSubPageToCurrentLabel + "</a></div>");
 
 		    if(treeItem != true && hasSubmitToPublishAccess)
-		    	sb.append("<div class=\"igmenuitems linkPublish\" onClick=\"submitToPublish(" + siteNodeId + ", " + languageId + ", " + repositoryId + ", '" + URLEncoder.encode("" + componentEditorUrl + "ViewInlineOperationMessages.action", "UTF-8") + "');\"><a href='#'>" + submitToPublishHTML + "</a></div>");
+		    	sb.append("<div class=\"igmenuitems linkPublish\" onClick=\"submitToPublish(" + siteNodeId + ", " + contentId + ", " + languageId + ", " + repositoryId + ", '" + URLEncoder.encode("" + componentEditorUrl + "ViewInlineOperationMessages.action", "UTF-8") + "');\"><a href='#'>" + submitToPublishHTML + "</a></div>");
 			if(hasAccessToAddComponent)
 				sb.append("<div class=\"igmenuitems linkAddComponent\" onClick=\"insertComponentByUrl('" + addComponentUrl + "');\"><a href='#'>" + addComponentHTML + "</a></div>");
 			if(hasAccessToDeleteComponent)

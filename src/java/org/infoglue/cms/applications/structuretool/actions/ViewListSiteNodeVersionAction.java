@@ -26,6 +26,7 @@ package org.infoglue.cms.applications.structuretool.actions;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -34,9 +35,15 @@ import org.apache.log4j.Logger;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.applications.databeans.LinkBean;
 import org.infoglue.cms.controllers.kernel.impl.simple.AccessRightController;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentControllerProxy;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
+import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
 import org.infoglue.cms.controllers.kernel.impl.simple.RepositoryController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeVersionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeVersionControllerProxy;
+import org.infoglue.cms.entities.content.ContentVO;
+import org.infoglue.cms.entities.content.ContentVersionVO;
+import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.entities.management.RepositoryVO;
 import org.infoglue.cms.entities.structure.SiteNodeVersionVO;
 import org.infoglue.cms.exception.AccessConstraintException;
@@ -64,6 +71,7 @@ public class ViewListSiteNodeVersionAction extends InfoGlueAbstractAction
 	private Integer siteNodeVersionId;
 	private Integer siteNodeId;
 	private Integer languageId;
+	private Integer contentId;
 
 	private Integer repositoryId;
 	private String returnAddress;
@@ -93,6 +101,26 @@ public class ViewListSiteNodeVersionAction extends InfoGlueAbstractAction
 		
 			ceb.throwIfNotEmpty();
 
+			if(contentId != null && contentId > -1)
+			{
+				Integer protectedContentId = ContentControllerProxy.getController().getProtectedContentId(contentId);
+				if(protectedContentId == null || AccessRightController.getController().getIsPrincipalAuthorized(this.getInfoGluePrincipal(), "Content.SubmitToPublish", protectedContentId.toString()))
+				{
+					ContentVO contentVO = ContentControllerProxy.getController().getACContentVOWithId(getInfoGluePrincipal(), contentId);
+					List languageVOList = LanguageController.getController().getLanguageVOList(contentVO.getRepositoryId());
+					Iterator languageVOListIterator = languageVOList.iterator();
+					while(languageVOListIterator.hasNext())
+					{
+						LanguageVO language = (LanguageVO)languageVOListIterator.next();
+						ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentId, language.getId());
+						if(contentVersionVO.getStateId().equals(ContentVersionVO.WORKING_STATE))
+						{
+							this.contentVersionVOList.add(contentVersionVO);
+						}
+					}
+				}
+			}
+			
 			SiteNodeVersionController.getController().getSiteNodeAndAffectedItemsRecursive(this.siteNodeId, SiteNodeVersionVO.WORKING_STATE, this.siteNodeVersionVOList, this.contentVersionVOList, false, recurseSiteNodes, this.getInfoGluePrincipal());
 		}
 
@@ -136,6 +164,11 @@ public class ViewListSiteNodeVersionAction extends InfoGlueAbstractAction
 	public void setLanguageId(Integer languageId)
 	{
 		this.languageId = languageId;
+	}
+
+	public void setContentId(Integer contentId)
+	{
+		this.contentId = contentId;
 	}
 
 	public Integer getSiteNodeVersionId()
