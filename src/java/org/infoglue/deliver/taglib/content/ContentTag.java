@@ -25,7 +25,9 @@ package org.infoglue.deliver.taglib.content;
 
 import javax.servlet.jsp.JspException;
 
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
 import org.infoglue.cms.entities.content.ContentVO;
+import org.infoglue.deliver.controllers.kernel.impl.simple.ContentDeliveryController;
 import org.infoglue.deliver.taglib.component.ComponentLogicTag;
 
 /**
@@ -42,6 +44,10 @@ public class ContentTag extends ComponentLogicTag
 	private boolean useRepositoryInheritance = true;
     private boolean useStructureInheritance = true;
 
+    //Section is for if you search for content by path
+    private String path = null;
+    private Integer repositoryId = null;
+    
     public ContentTag()
     {
         super();
@@ -50,7 +56,17 @@ public class ContentTag extends ComponentLogicTag
     public int doEndTag() throws JspException
     {
 		produceResult(getContent());
-        return EVAL_PAGE;
+    
+		this.siteNodeId = null;
+		this.contentId = null;
+		this.propertyName = null;
+		this.useInheritance = true;
+		this.useRepositoryInheritance = true;
+		this.useStructureInheritance = true;
+		this.path = null;
+		this.repositoryId = null;
+	    
+		return EVAL_PAGE;
     }
 
 	private ContentVO getContent() throws JspException
@@ -68,6 +84,13 @@ public class ContentTag extends ComponentLogicTag
 	            return this.getComponentLogic().getBoundContent(siteNodeId, propertyName, useInheritance);
 	        else
 	            return this.getComponentLogic().getBoundContent(propertyName, useInheritance, useRepositoryInheritance, useStructureInheritance);
+	    }
+	    else if(path != null)
+	    {
+	    	if(repositoryId == null)
+	    		repositoryId = this.getController().getRepositoryId();
+	    	
+	    	return getController().getContentWithPath(repositoryId, path);
 	    }
 	    else if(this.getController().getContentId() != null && this.getController().getContentId().intValue() > -1)
 	    {
@@ -108,4 +131,15 @@ public class ContentTag extends ComponentLogicTag
     {
         this.siteNodeId = evaluateInteger("content", "siteNodeId", siteNodeId);
     }
+
+    public void setRepositoryId(String repositoryId) throws JspException
+    {
+        this.repositoryId = evaluateInteger("content", "repositoryId", repositoryId);
+    }
+
+    public void setPath(String path) throws JspException
+    {
+        this.path = evaluateString("content", "path", path);
+    }
+
 }
