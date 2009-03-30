@@ -56,5 +56,16 @@ public class ContentCategoryAction extends ModelAction
 		return SUCCESS;
 	}
 
+	public String doAddWizard() throws SystemException
+	{
+		setModel(controller.save(getContentCategory(), this.getInfoGluePrincipal()));
+		return SUCCESS;
+	}
+
+	public String doDeleteWizard() throws SystemException
+	{
+		controller.delete(getContentCategoryId(), this.getInfoGluePrincipal());
+		return SUCCESS;
+	}
 
 }
