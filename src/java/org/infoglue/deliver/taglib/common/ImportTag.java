@@ -111,7 +111,7 @@ public class ImportTag extends TemplateControllerTag
 			{
 				if(logger.isInfoEnabled())
 					logger.info("Calling url directly...");
-				String result = helper.getUrlContent(url, requestParameters, charEncoding, timeout.intValue());
+				String result = helper.getUrlContent(url, requestProperties, requestParameters, charEncoding, timeout.intValue());
 				produceResult(result);
 			}
 			else
@@ -166,7 +166,7 @@ public class ImportTag extends TemplateControllerTag
 					if(logger.isInfoEnabled())
 						logger.info("Calling url directly as last resort...");
 					
-					cachedResult = helper.getUrlContent(url, requestParameters, charEncoding, timeout.intValue());
+					cachedResult = helper.getUrlContent(url, requestProperties, requestParameters, charEncoding, timeout.intValue());
 					
 					if(logger.isInfoEnabled())
 						t.printElapsedTime("5 took..");
