@@ -47,6 +47,11 @@ interface ICategoryContainerCondition extends ICategoryCondition {
 	/**
 	 * 
 	 */
+	void addCategory(final String attributeName, final CategoryVO categoryVO);
+
+	/**
+	 * 
+	 */
 	void addCategory(final String attributeName, final CategoryVO categoryVO, final Boolean notSetArgument, final Boolean isSetArgument);
 	
 	/**
@@ -387,7 +392,14 @@ public class CategoryConditions implements ICategoryContainerCondition {
 		if(condition != null)
 			children.add(condition);
 	}
-	
+
+	/**
+	 * 
+	 */
+	public void addCategory(final String attributeName, final CategoryVO categoryVO) {
+		children.add(new CategoryAndCondition(attributeName, categoryVO, false, false));
+	}
+
 	/**
 	 * 
 	 */
