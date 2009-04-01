@@ -26,7 +26,9 @@ package org.infoglue.deliver.taglib.content;
 import javax.servlet.jsp.JspException;
 
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
+import org.infoglue.cms.controllers.kernel.impl.simple.RepositoryController;
 import org.infoglue.cms.entities.content.ContentVO;
+import org.infoglue.cms.entities.management.RepositoryVO;
 import org.infoglue.deliver.controllers.kernel.impl.simple.ContentDeliveryController;
 import org.infoglue.deliver.taglib.component.ComponentLogicTag;
 
@@ -47,6 +49,7 @@ public class ContentTag extends ComponentLogicTag
     //Section is for if you search for content by path
     private String path = null;
     private Integer repositoryId = null;
+    private String repositoryName = null;
     
     public ContentTag()
     {
@@ -65,6 +68,7 @@ public class ContentTag extends ComponentLogicTag
 		this.useStructureInheritance = true;
 		this.path = null;
 		this.repositoryId = null;
+		this.repositoryName = null;
 	    
 		return EVAL_PAGE;
     }
@@ -87,6 +91,13 @@ public class ContentTag extends ComponentLogicTag
 	    }
 	    else if(path != null)
 	    {
+	    	if(this.repositoryName != null && repositoryId == null)
+	    	{
+	    		RepositoryVO repositoryVO = getController().getRepositoryWithName(repositoryName);
+	    		if(repositoryVO != null)
+	    			this.repositoryId = repositoryVO.getId();
+	    	}
+	    	
 	    	if(repositoryId == null)
 	    		repositoryId = this.getController().getRepositoryId();
 	    	
@@ -135,6 +146,11 @@ public class ContentTag extends ComponentLogicTag
     public void setRepositoryId(String repositoryId) throws JspException
     {
         this.repositoryId = evaluateInteger("content", "repositoryId", repositoryId);
+    }
+
+    public void setRepositoryName(String repositoryName) throws JspException
+    {
+        this.repositoryName = evaluateString("content", "repositoryName", repositoryName);
     }
 
     public void setPath(String path) throws JspException
