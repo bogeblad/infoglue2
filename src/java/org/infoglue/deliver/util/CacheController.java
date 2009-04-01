@@ -622,6 +622,15 @@ public class CacheController extends Thread
 				}
 			}
 		}
+	    else if(entity.equalsIgnoreCase("CacheNames"))
+	    {
+	    	String[] cacheNames = entityId.split(",");
+	    	for(int i=0; i<cacheNames.length; i++)
+	    	{
+	    		String cacheName = cacheNames[i];
+	    		CacheController.clearCache(cacheName);
+	    	}
+	    }
 		else
 		{
 			logger.info("Clearing some caches");
