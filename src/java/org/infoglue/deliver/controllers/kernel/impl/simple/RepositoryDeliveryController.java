@@ -39,6 +39,7 @@ import org.exolab.castor.jdo.QueryResults;
 import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
 import org.infoglue.cms.entities.management.Repository;
 import org.infoglue.cms.entities.management.RepositoryVO;
+import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.deliver.util.CacheController;
 import org.infoglue.deliver.util.NullObject;
@@ -272,6 +273,33 @@ public class RepositoryDeliveryController extends BaseDeliveryController
 		oql.close();
 
 		return repositoryVOList;	
+	}
+
+	public RepositoryVO getRepositoryVOWithName(String name, Database db)
+	{
+		RepositoryVO repository = null;
+		
+		try
+		{
+			OQLQuery oql = db.getOQLQuery("SELECT f FROM org.infoglue.cms.entities.management.impl.simple.RepositoryImpl f WHERE f.name = $1");
+			oql.bind(name);
+			
+			QueryResults results = oql.execute(Database.ReadOnly);
+
+			if (results.hasMore()) 
+			{
+				repository = ((Repository)results.next()).getValueObject();
+			}
+			
+			results.close();
+			oql.close();
+		}
+		catch(Exception e)
+		{
+			logger.error("An error occurred when we tried to fetch a named repository. Reason:" + e.getMessage(), e);
+		}
+		
+		return repository;		
 	}
 
 	/**

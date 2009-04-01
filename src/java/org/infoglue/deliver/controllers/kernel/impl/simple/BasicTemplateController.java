@@ -4263,6 +4263,22 @@ public class BasicTemplateController implements TemplateController
 	}
 
 	
+    /**
+     * This method returns the first repository with name.
+     */
+    public RepositoryVO getRepositoryWithName(String name)
+    {
+    	try
+    	{
+    		return RepositoryDeliveryController.getRepositoryDeliveryController().getRepositoryVOWithName(name, getDatabase());
+    	}
+    	catch (Exception e) 
+    	{
+    		logger.error("Problem getting repository with name:" + name + " - reason:" + e.getMessage());
+    		return null;
+		}
+    }
+
 	/**
 	 * This method returns the base url for the digital assets.
 	 */

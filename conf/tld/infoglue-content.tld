@@ -601,6 +601,11 @@
             <rtexprvalue>true</rtexprvalue>
         </attribute>
         <attribute>
+            <name>repositoryName</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
             <name>path</name>
             <required>false</required>
             <rtexprvalue>false</rtexprvalue>
@@ -706,6 +711,16 @@
     	</attribute>
         <attribute>
     	    <name>includeFolders</name>
+        	<required>false</required>
+	        <rtexprvalue>false</rtexprvalue>
+    	</attribute>
+        <attribute>
+    	    <name>matchingName</name>
+        	<required>false</required>
+	        <rtexprvalue>false</rtexprvalue>
+    	</attribute>
+        <attribute>
+    	    <name>returnOnlyFirst</name>
         	<required>false</required>
 	        <rtexprvalue>false</rtexprvalue>
     	</attribute>

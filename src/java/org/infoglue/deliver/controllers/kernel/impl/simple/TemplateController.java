@@ -932,6 +932,11 @@ public interface TemplateController
     public abstract String getRepositoryBaseUrl() throws Exception;
 
     /**
+     * This method returns the first repository with name.
+     */
+    public abstract RepositoryVO getRepositoryWithName(String name);
+
+    /**
      * This method deliveres a String with the URL to the page asked for.
      * As the siteNode can have multiple bindings the method requires a bindingName 
      * which refers to the AvailableServiceBinding.name-attribute. 
