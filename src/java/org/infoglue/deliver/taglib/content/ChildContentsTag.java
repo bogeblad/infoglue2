@@ -23,8 +23,12 @@
 
 package org.infoglue.deliver.taglib.content;
 
+import java.util.Iterator;
+import java.util.List;
+
 import javax.servlet.jsp.JspException;
 
+import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.deliver.taglib.component.ComponentLogicTag;
 
 public class ChildContentsTag extends ComponentLogicTag 
@@ -40,6 +44,8 @@ public class ChildContentsTag extends ComponentLogicTag
 	private String sortAttribute 	= "contentId";
 	private String sortOrder		= "asc";
     private boolean includeFolders 	= false;
+    private String matchingName		= null;
+    private boolean returnOnlyFirst = false;
 	
     public ChildContentsTag()
     {
@@ -48,12 +54,42 @@ public class ChildContentsTag extends ComponentLogicTag
 
 	public int doEndTag() throws JspException
     {
+		List contents = null;
+		
 	    if(this.contentId != null)
-	        setResultAttribute(this.getController().getChildContents(this.contentId, this.searchRecursive, this.sortAttribute, this.sortOrder, this.includeFolders));
+	    	contents = this.getController().getChildContents(this.contentId, this.searchRecursive, this.sortAttribute, this.sortOrder, this.includeFolders);
         else if(this.propertyName != null)
-            setResultAttribute(getComponentLogic().getChildContents(this.propertyName, this.useInheritance, this.searchRecursive, this.sortAttribute, this.sortOrder, this.includeFolders, useRepositoryInheritance, useStructureInheritance));
+        	contents = getComponentLogic().getChildContents(this.propertyName, this.useInheritance, this.searchRecursive, this.sortAttribute, this.sortOrder, this.includeFolders, useRepositoryInheritance, useStructureInheritance);
         else
             throw new JspException("You must state either propertyName or siteNodeId");
+	    
+	    if(contents != null && contents.size() > 0 && matchingName != null)
+	    {
+	    	Iterator contentsIterator = contents.iterator();
+	    	while(contentsIterator.hasNext())
+	    	{
+	    		ContentVO contentVO = (ContentVO)contentsIterator.next();
+	    		if(!contentVO.getName().matches(matchingName))
+	    			contentsIterator.remove();
+	    	}
+	    }
+	    
+	    if(returnOnlyFirst && contents != null && contents.size() > 0)
+	    	setResultAttribute(contents.get(0));
+	    else
+	    	setResultAttribute(contents);
+        
+	    contentId 				= null;
+	    propertyName 			= null;
+	    useInheritance 			= true;
+	    useRepositoryInheritance = true;
+	    useStructureInheritance = true;
+	    searchRecursive 		= false;
+		sortAttribute 			= "contentId";
+		sortOrder				= "asc";
+	    includeFolders 			= false;
+	    matchingName 			= null;
+	    returnOnlyFirst 		= false;
 	    
 	    return EVAL_PAGE;
     }
@@ -78,14 +114,14 @@ public class ChildContentsTag extends ComponentLogicTag
         this.searchRecursive = searchRecursive;
     }
     
-    public void setSortAttribute(String sortAttribute)
+    public void setSortAttribute(String sortAttribute) throws JspException
     {
-        this.sortAttribute = sortAttribute;
+        this.sortAttribute = evaluateString("childContents", "sortAttribute", sortAttribute);
     }
     
-    public void setSortOrder(String sortOrder)
+    public void setSortOrder(String sortOrder) throws JspException
     {
-        this.sortOrder = sortOrder;
+        this.sortOrder = evaluateString("childContents", "sortOrder", sortOrder);;
     }
     
     public void setUseInheritance(boolean useInheritance)
@@ -101,6 +137,16 @@ public class ChildContentsTag extends ComponentLogicTag
     public void setUseStructureInheritance(boolean useStructureInheritance)
     {
         this.useStructureInheritance = useStructureInheritance;
+    }
+
+    public void setMatchingName(String matchingName) throws JspException
+    {
+        this.matchingName = evaluateString("childContents", "matchingName", matchingName);;
+    }
+    
+    public void setReturnOnlyFirst(boolean returnOnlyFirst)
+    {
+        this.returnOnlyFirst = returnOnlyFirst;
     }
 
 }
