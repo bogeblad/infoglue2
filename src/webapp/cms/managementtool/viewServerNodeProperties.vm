@@ -216,6 +216,8 @@
 			#editPropertyTextAreaCSS("ServerNode.property.niceURICharacterReplacingMapping" "niceURICharacterReplacingMapping" "$this.getDataPropertyValue('niceURICharacterReplacingMapping')" "40" "6" "righttextarea" "$!serverNodeId")
 			#editPropertyFieldCSS("ServerNode.property.niceURIDefaultReplacementCharacter" "niceURIDefaultReplacementCharacter" "$this.getPropertyValue('niceURIDefaultReplacementCharacter')" "51" "$!serverNodeId")
 			#yesNoDropDownWithInheritCSS("ServerNode.property.niceURIUseLowerCase" "niceURIUseLowerCase" "$this.getPropertyValue('niceURIUseLowerCase')")
+			#yesNoDropDownWithInheritCSS("ServerNode.property.niceURIDisableNiceURIForContent" "niceURIDisableNiceURIForContent" "$this.getPropertyValue('niceURIDisableNiceURIForContent')")
+			#editPropertyFieldCSS("ServerNode.property.niceURIDefaultReplacementCharacterForContent" "niceURIDefaultReplacementCharacterForContent" "$this.getPropertyValue('niceURIDefaultReplacementCharacterForContent')" "51" "$!serverNodeId")
 			#set($requestArgumentDelimiter = $this.getPropertyValue('requestArgumentDelimiter'))
 			#set($requestArgumentDelimiter = $requestArgumentDelimiter.replaceAll("&amp;", "&amp;amp;"))
 			#editPropertyFieldCSS("ServerNode.property.requestArgumentDelimiter" "requestArgumentDelimiter" "$requestArgumentDelimiter" "51" "$!serverNodeId")

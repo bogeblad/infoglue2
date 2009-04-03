@@ -1105,6 +1105,11 @@ public class CmsPropertyHandler
 		return value;
 	}
 
+	public static String getNiceURIDisableNiceURIForContent()
+	{
+		return getServerNodeProperty("niceURIDisableNiceURIForContent", true, "false");
+	}
+
 	public static String getNiceURIEncoding()
 	{
 	    return getServerNodeProperty("niceURIEncoding", true, "UTF-8");
@@ -1702,6 +1707,11 @@ public class CmsPropertyHandler
 	public static String getNiceURIDefaultReplacementCharacter()
 	{
 		return getServerNodeProperty("niceURIDefaultReplacementCharacter", true, "_");
+	}
+
+	public static String getNiceURIDefaultReplacementCharacterForContent()
+	{
+		return getServerNodeProperty("niceURIDefaultReplacementCharacterForContent", true, getNiceURIDefaultReplacementCharacter());
 	}
 
 	public static boolean getDisableDecoratedFinalRendering()

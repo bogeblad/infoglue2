@@ -25,6 +25,7 @@ package org.infoglue.deliver.controllers.kernel.impl.simple;
 
 import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
+import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeController;
 import org.infoglue.cms.entities.structure.SiteNode;
 import org.infoglue.cms.exception.SystemException;
@@ -435,10 +436,44 @@ public class BasicURLComposer extends URLComposer
 	                sb.append("/");
 
 	            boolean addedContent = false;
-	            if (contentId != null && contentId.intValue() != -1)
+	            /*
+	            if(contentId != null && contentId.intValue() != -1)
 	            {
 	                sb.append("?contentId=").append(String.valueOf(contentId));
 	                addedContent = true;
+	            }
+	            */
+	            
+	            if(contentId != null && contentId.intValue() != -1)
+	            {
+	            	if(!CmsPropertyHandler.getNiceURIDisableNiceURIForContent().equals("true"))
+	            	{
+		            	String navigationTitle = ContentDeliveryController.getContentDeliveryController().getContentAttribute(db, contentId, languageId, "NavigationTitle", siteNodeId, true, deliveryContext, infoGluePrincipal, false, false);
+		            	if(navigationTitle == null || navigationTitle.equals(""))
+		            		navigationTitle = ContentDeliveryController.getContentDeliveryController().getContentAttribute(db, contentId, languageId, "Title", siteNodeId, true, deliveryContext, infoGluePrincipal, false, false);
+		            	if(navigationTitle != null && !navigationTitle.equals(""))
+		            	{
+			            	navigationTitle = new VisualFormatter().replaceNiceURINonAsciiWithSpecifiedChars(navigationTitle, CmsPropertyHandler.getNiceURIDefaultReplacementCharacterForContent());
+			            	sb.append("/" + navigationTitle + ".cid").append(String.valueOf(contentId));
+			                addedContent = true;
+		            	}
+		            	else
+		            	{
+		    	            if(contentId != null && contentId.intValue() != -1)
+		    	            {
+		    	                sb.append("?contentId=").append(String.valueOf(contentId));
+		    	                addedContent = true;
+		    	            }	            		
+		            	}
+	            	}
+	            	else
+	            	{
+	    	            if(contentId != null && contentId.intValue() != -1)
+	    	            {
+	    	                sb.append("?contentId=").append(String.valueOf(contentId));
+	    	                addedContent = true;
+	    	            }	            			            		
+	            	}
 	            }
 
 	            if (languageId != null && languageId.intValue() != -1 && deliveryContext.getLanguageId().intValue() != languageId.intValue())

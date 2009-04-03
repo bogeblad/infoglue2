@@ -208,7 +208,21 @@ public class ViewPageFilter implements Filter
 	                {
 			            String[] nodeNames = splitString(requestURI, "/");
 			            logger.info("nodeNames:" + nodeNames.length);
-			            //logger.info("RepositoryId.: "+repositoryId);
+			            
+			            List<String> nodeNameList = new ArrayList<String>();
+			            for(int i=0; i<nodeNames.length; i++)
+			            {
+			            	String nodeName = nodeNames[i];
+			            	if(nodeName.indexOf(".cid") == -1)
+			            	{
+			            		nodeNameList.add(nodeName);
+			            	}
+			            }
+
+	            		nodeNames = new String[nodeNameList.size()];
+	            		nodeNames = nodeNameList.toArray(nodeNames);
+			            
+	            		//logger.info("RepositoryId.: "+repositoryId);
 			            //logger.info("LanguageId...: "+languageId);
 			            //logger.info("RequestURI...: "+requestURI);
 			
@@ -272,7 +286,9 @@ public class ViewPageFilter implements Filter
 	                else
 	                    logger.info("Mapped URI " + requestURI + " --> " + siteNodeId + " in " + (end - start) + "ms");
 	                
-	                HttpServletRequest wrappedHttpRequest = prepareRequest(httpRequest, siteNodeId, languageId);
+	                Integer contentId = getContentId(httpRequest);
+	                
+	                HttpServletRequest wrappedHttpRequest = prepareRequest(httpRequest, siteNodeId, languageId, contentId);
 	                wrappedHttpRequest.getRequestDispatcher("/ViewPage.action").forward(wrappedHttpRequest, httpResponse);
 	            } 
 	            catch (SystemException e) 
@@ -480,6 +496,41 @@ public class ViewPageFilter implements Filter
         return languageId;
     }
 
+    private Integer getContentId(HttpServletRequest request) throws ServletException, Exception 
+    {
+        Integer contentId = null;
+        
+    	String contentIdString = null;
+        if (request.getParameter("contentId") != null) 
+        {
+            contentIdString = request.getParameter("contentId");
+        }
+        else
+        {
+        	int cidIndex = request.getRequestURL().indexOf(".cid");
+        	int cidIndexEnd = request.getRequestURL().indexOf("?", cidIndex);
+        	if(cidIndexEnd == -1)
+        		cidIndexEnd = request.getRequestURL().indexOf("/", cidIndex);
+
+        	if(cidIndex > -1)
+        	{
+        		if(cidIndexEnd == -1)
+        			contentIdString = request.getRequestURL().substring(cidIndex + 4);
+        		else
+        			contentIdString = request.getRequestURL().substring(cidIndex + 4, cidIndexEnd);
+        	}
+        }
+
+        try 
+        {
+        	contentId = Integer.valueOf(contentIdString);
+        } 
+        catch (NumberFormatException e) {}
+
+        return contentId;
+    }
+
+    
     // @TODO should I URLDecode the strings first? (incl. context path)
     private String getContextRelativeURI(HttpServletRequest request) {
         String requestURI = request.getRequestURI();
@@ -508,9 +559,9 @@ public class ViewPageFilter implements Filter
         return (String[]) list.toArray(new String[list.size()]);
     }
 
-    private HttpServletRequest prepareRequest(HttpServletRequest request, Integer siteNodeId, Integer languageId) 
+    private HttpServletRequest prepareRequest(HttpServletRequest request, Integer siteNodeId, Integer languageId, Integer contentId) 
     {
-        HttpServletRequest wrappedRequest = new IGHttpServletRequest(request, siteNodeId, languageId);
+        HttpServletRequest wrappedRequest = new IGHttpServletRequest(request, siteNodeId, languageId, contentId);
 
         return wrappedRequest;
     }
@@ -520,17 +571,22 @@ public class ViewPageFilter implements Filter
     {
         Map requestParameters = new HashMap();
         
-        public IGHttpServletRequest(HttpServletRequest httpServletRequest, Integer siteNodeId, Integer languageId) 
+        public IGHttpServletRequest(HttpServletRequest httpServletRequest, Integer siteNodeId, Integer languageId, Integer contentId) 
         {
     		super(httpServletRequest);
     		
     		requestParameters.putAll(httpServletRequest.getParameterMap());
             requestParameters.put("siteNodeId", new String[] { String.valueOf(siteNodeId)});
             requestParameters.put("languageId", new String[] { String.valueOf(languageId)});
-        
-            if (requestParameters.get("contentId") == null)
-                requestParameters.put("contentId", new String[] { String.valueOf(-1)});
 
+            if(contentId != null)
+            	requestParameters.put("contentId", new String[] { String.valueOf(contentId)});
+            else
+            {
+	            if (requestParameters.get("contentId") == null)
+	                requestParameters.put("contentId", new String[] { String.valueOf(-1)});
+            }
+            
             String originalServletPath = ((HttpServletRequest)httpServletRequest).getServletPath();
             String originalRequestURL = ((HttpServletRequest)httpServletRequest).getRequestURL().toString();
             String originalQueryString = ((HttpServletRequest)httpServletRequest).getQueryString();

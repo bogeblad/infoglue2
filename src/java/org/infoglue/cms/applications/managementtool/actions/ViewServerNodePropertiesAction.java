@@ -160,6 +160,8 @@ public class ViewServerNodePropertiesAction extends InfoGluePropertiesAbstractAc
 	    populateData(ps, "niceURICharacterReplacingMapping");
 	    populate(ps, "niceURIUseLowerCase");
 	    populate(ps, "niceURIDefaultReplacementCharacter");
+	    populate(ps, "niceURIDisableNiceURIForContent");
+	    populate(ps, "niceURIDefaultReplacementCharacterForContent");
 	    populate(ps, "duplicateAssetsBetweenVersions");
 	    populate(ps, "requestArgumentDelimiter");
 	    populate(ps, "errorHandling");
