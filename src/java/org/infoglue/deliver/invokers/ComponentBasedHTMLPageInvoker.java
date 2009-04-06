@@ -152,6 +152,8 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 		    if(contentTypeDefinitionVO != null && contentTypeDefinitionVO.getName().equals("PagePartTemplate"))
 		    {
 		    	//logger.info("This was a pagePart reference..");
+		    	this.getTemplateController().getDeliveryContext().addUsedContent("selectiveCacheUpdateNonApplicable");
+
 		    	String pagePartString = this.getTemplateController().getContentAttribute(contentId, "ComponentStructure", true);
 		    	logger.info("pagePartString: " + pagePartString);
 		    	if(pagePartString == null || pagePartString.equals(""))

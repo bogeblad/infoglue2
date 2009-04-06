@@ -1433,6 +1433,9 @@ public class ComponentLogic
 					    groups.add("content_" + contentVersion.getValueObject().getContentId());
 					//}
 			    }
+
+			    if(templateController.getDeliveryContext().getUsedContents().contains("selectiveCacheUpdateNonApplicable"))
+			    	groups.add("selectiveCacheUpdateNonApplicable");
 			    
 			    CacheController.cacheObjectInAdvancedCacheWithGroupsAsSet("componentPropertyCache", key, property, groups, true);
 			    CacheController.cacheObjectInAdvancedCacheWithGroupsAsSet("componentPropertyCache", versionKey, contentVersionIdList, groups, true);
@@ -1683,6 +1686,9 @@ public class ComponentLogic
 							//}
 					    }
 					    
+					    if(templateController.getDeliveryContext().getUsedContents().contains("selectiveCacheUpdateNonApplicable"))
+					    	groups.add("selectiveCacheUpdateNonApplicable");
+
 					    CacheController.cacheObjectInAdvancedCacheWithGroupsAsSet("componentPropertyCache", key, property, groups, true);
 					    CacheController.cacheObjectInAdvancedCacheWithGroupsAsSet("componentPropertyCache", versionKey, contentVersionIdList, groups, true);
 			        }
@@ -1705,6 +1711,9 @@ public class ComponentLogic
 								//}
 							}
 						    
+							if(templateController.getDeliveryContext().getUsedContents().contains("selectiveCacheUpdateNonApplicable"))
+			    				groups.add("selectiveCacheUpdateNonApplicable");
+
 //						  	TODO - TEST - NOT SAFE							
 						    CacheController.cacheObjectInAdvancedCacheWithGroupsAsSet("componentPropertyCache", key, new NullObject(), groups, true);
 						    CacheController.cacheObjectInAdvancedCacheWithGroupsAsSet("componentPropertyCache", versionKey, contentVersionIdList, groups, true);
@@ -1952,6 +1961,9 @@ public class ComponentLogic
 						//}
 					}
 				    
+				    if(templateController.getDeliveryContext().getUsedContents().contains("selectiveCacheUpdateNonApplicable"))
+				    	groups.add("selectiveCacheUpdateNonApplicable");
+
 //				  	TODO - TEST - NOT SAFE
 				    //CacheController.cacheObjectInAdvancedCacheWithGroupsAsSet("componentPropertyCache", key, new NullObject(), groups, true);
 				    //CacheController.cacheObjectInAdvancedCacheWithGroupsAsSet("componentPropertyCache", versionKey, contentVersionIdList, groups, true);
@@ -2502,6 +2514,9 @@ public class ComponentLogic
 				    groups.add("content_" + contentVersion.getValueObject().getContentId());
 				}
 				
+			    if(templateController.getDeliveryContext().getUsedContents().contains("selectiveCacheUpdateNonApplicable"))
+			    	groups.add("selectiveCacheUpdateNonApplicable");
+
 			    CacheController.cacheObjectInAdvancedCacheWithGroupsAsSet("componentPropertyCache", key, properties, groups, true);
 			    CacheController.cacheObjectInAdvancedCacheWithGroupsAsSet("componentPropertyCache", versionKey, contentVersionIdList, groups, true);
 	        }
