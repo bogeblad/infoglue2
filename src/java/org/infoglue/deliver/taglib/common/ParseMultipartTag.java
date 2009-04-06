@@ -134,7 +134,24 @@ public class ParseMultipartTag extends TemplateControllerTag
 				        String oldValue = (String)parameters.get(name);
 				        if(oldValue != null)
 				            value = oldValue + "," + value; 
-				            
+				        
+				        if(value != null)
+						{
+							try
+							{
+								String fromEncoding = "iso-8859-1";
+								String toEncoding = "utf-8";
+						
+								String testValue = new String(value.getBytes(fromEncoding), toEncoding);
+								
+								if(testValue.indexOf((char)65533) == -1)
+									value = testValue;
+							}
+							catch(Exception e)
+							{
+								e.printStackTrace();
+							}
+						}
 				        parameters.put(name, value);
 				    }
 				        
