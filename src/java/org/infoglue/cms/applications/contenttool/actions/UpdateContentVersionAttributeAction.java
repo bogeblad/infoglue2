@@ -194,9 +194,51 @@ public class UpdateContentVersionAttributeAction extends ViewContentVersionActio
 			logger.info("** SAVING **");
 			logger.info("*************************************************");
 			logger.info("attributeValue real:" + attributeValue);
-			logger.info("attributeValue comp: Mattias testar åäö ÅÄÖ:");
+			
+			/*
+			for(int i=0; i<attributeValue.length(); i++)
+				System.out.println("c:" + (int)attributeValue.charAt(i) + "-" + Integer.toHexString((int)attributeValue.charAt(i)));
+				
+			System.out.println("attributeValue real:" + attributeValue);
+			*/
+			
 			if(attributeValue != null)
 			{
+				boolean isUTF8 = false;
+				boolean hasUnicodeChars = false;
+				if(attributeValue.indexOf((char)65533) > -1)
+					isUTF8 = true;
+				
+				for(int i=0; i<attributeValue.length(); i++)
+				{
+					int c = (int)attributeValue.charAt(i);
+					//System.out.println("c2:" + c + "-" + Integer.toHexString(c));
+					if(c > 255 && c < 65533)
+						hasUnicodeChars = true;
+				}
+
+				if(!isUTF8 && !hasUnicodeChars)
+				{
+					String fromEncoding = CmsPropertyHandler.getUploadFromEncoding();
+					if(fromEncoding == null)
+						fromEncoding = "iso-8859-1";
+					
+					String toEncoding = CmsPropertyHandler.getUploadToEncoding();
+					if(toEncoding == null)
+						toEncoding = "utf-8";
+					
+					if(attributeValue.indexOf("å") == -1 && 
+					   attributeValue.indexOf("ä") == -1 && 
+					   attributeValue.indexOf("ö") == -1 && 
+					   attributeValue.indexOf("Å") == -1 && 
+					   attributeValue.indexOf("Ä") == -1 && 
+					   attributeValue.indexOf("Ö") == -1)
+					{
+						//System.out.println("Converting...");
+						attributeValue = new String(attributeValue.getBytes(fromEncoding), toEncoding);
+					}
+				}
+				/*
 				String fromEncoding = CmsPropertyHandler.getUploadFromEncoding();
 				if(fromEncoding == null)
 					fromEncoding = "iso-8859-1";
@@ -204,16 +246,18 @@ public class UpdateContentVersionAttributeAction extends ViewContentVersionActio
 				String toEncoding = CmsPropertyHandler.getUploadToEncoding();
 				if(toEncoding == null)
 					toEncoding = "utf-8";
+
+				String testattributeValue = new String(attributeValue.getBytes(fromEncoding), toEncoding);
+				if(testattributeValue.indexOf((char)65533) == -1)
+					attributeValue = testattributeValue;
+				*/
 				
-				if(attributeValue.indexOf("å") == -1 && 
-				   attributeValue.indexOf("ä") == -1 && 
-				   attributeValue.indexOf("ö") == -1 && 
-				   attributeValue.indexOf("Å") == -1 && 
-				   attributeValue.indexOf("Ä") == -1 && 
-				   attributeValue.indexOf("Ö") == -1)
-				{
-					attributeValue = new String(attributeValue.getBytes(fromEncoding), toEncoding);
-				}
+				/*
+				for(int i=0; i<attributeValue.length(); i++)
+					System.out.println("c2:" + (int)attributeValue.charAt(i) + "-" + Integer.toHexString((int)attributeValue.charAt(i)));
+
+				System.out.println("attributeValue after:" + attributeValue);
+				*/
 				
 				logger.info("\n\nattributeValue original:" + attributeValue);
 				attributeValue = parseInlineAssetReferences(attributeValue);
@@ -229,8 +273,10 @@ public class UpdateContentVersionAttributeAction extends ViewContentVersionActio
 	    		attributeValue = parseAttributeForInlineEditing(attributeValue, true);
 			}
 	
-			this.getResponse().setContentType("text/plain");
-	        this.getResponse().getWriter().println(attributeValue);
+			this.getResponse().setContentType("text/plain; charset=utf-8");
+			this.getResponse().setCharacterEncoding("utf-8");
+			//this.getResponse().setContentType("text/plain");
+			this.getResponse().getWriter().println(attributeValue);
 		}
 		catch (ConstraintException ce) 
 		{
@@ -314,8 +360,15 @@ public class UpdateContentVersionAttributeAction extends ViewContentVersionActio
 			attributeValue = parseAttributeForInlineEditing(attributeValue, false);		
 			
 			logger.info("attributeValue:" +attributeValue);
+			/*
+			System.out.println("attributeValue:" +attributeValue);
+			for(int i=0; i<attributeValue.length(); i++)
+				System.out.println("c3:" + (int)attributeValue.charAt(i) + "-" + Integer.toHexString((int)attributeValue.charAt(i)));
+			*/
 			
-			this.getResponse().setContentType("text/plain");
+			this.getResponse().setContentType("text/plain; charset=utf-8");
+			this.getResponse().setCharacterEncoding("utf-8");
+			//this.getResponse().setContentType("text/plain");
 	        this.getResponse().getWriter().println(attributeValue);			
 		}
 		catch (Exception e) 
