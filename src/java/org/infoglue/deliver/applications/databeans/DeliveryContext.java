@@ -552,4 +552,8 @@ public class DeliveryContext implements UsageListener
 		return Collections.unmodifiableSet(usedContentVersions);
 	}
 
+	public Set getUsedContents()
+	{
+		return Collections.unmodifiableSet(usedContents);
+	}
 }
