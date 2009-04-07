@@ -126,6 +126,51 @@ public class FormEntryController extends BaseController
 	 * @throws Bug
 	 */
 	
+	public List getFormEntryValueVOList(Integer formContentId, String fieldName) throws SystemException, Bug
+	{
+		List formEntryValueVOList = new ArrayList();
+		
+		Database db = CastorDatabaseService.getDatabase();
+
+		try 
+		{
+			beginTransaction(db);
+
+			OQLQuery oql = db.getOQLQuery("SELECT f FROM org.infoglue.cms.entities.management.impl.simple.FormEntryValueImpl f WHERE f.formEntry.formContentId = $1 AND f.name = $2 order by formEntryValueId");
+			oql.bind(formContentId);
+			oql.bind(fieldName);
+			
+			QueryResults results = oql.execute(Database.ReadOnly);
+
+			while (results.hasMore()) 
+			{
+				formEntryValueVOList.add(((FormEntryValue)results.next()).getValueObject());
+			}
+			
+			results.close();
+			oql.close();
+			
+			commitTransaction(db);
+		} 
+		catch (Exception e) 
+		{
+			logger.info("An error occurred so we should not complete the transaction:" + e);
+			rollbackTransaction(db);
+			throw new SystemException(e);
+		}
+		
+		return formEntryValueVOList;	
+	}
+
+	/**
+	 * Returns the RepositoryVO with the given name.
+	 * 
+	 * @param name
+	 * @return
+	 * @throws SystemException
+	 * @throws Bug
+	 */
+	
 	public List getFormEntryVOList(Integer formContentId) throws SystemException, Bug
 	{
 		List formEntryVOList = null;

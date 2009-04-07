@@ -453,7 +453,34 @@
             <rtexprvalue>false</rtexprvalue>
         </attribute>
 	</tag>
-	
+
+	<tag>
+		<name>formStatistics</name>
+		<tagclass>org.infoglue.deliver.taglib.management.FormStatisticsTag</tagclass>
+		<bodycontent>empty</bodycontent>
+        <info>None</info>
+        <attribute>
+    	    <name>id</name>
+        	<required>true</required>
+	        <rtexprvalue>false</rtexprvalue>
+    	</attribute>
+        <attribute>
+            <name>formContentId</name>
+            <required>false</required>
+            <rtexprvalue>false</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>type</name>
+            <required>false</required>
+            <rtexprvalue>false</rtexprvalue>
+        </attribute>
+    	<attribute>
+            <name>fieldName</name>
+            <required>true</required>
+            <rtexprvalue>false</rtexprvalue>
+        </attribute>
+	</tag>
+			
 	<tag>
 	    <name>remoteFormService</name>
 	    <tagclass>org.infoglue.deliver.taglib.management.RemoteFormServiceTag</tagclass>
