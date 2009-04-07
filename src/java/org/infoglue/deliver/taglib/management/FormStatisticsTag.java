@@ -112,13 +112,10 @@ public class FormStatisticsTag extends TemplateControllerTag
 					{
 						String name = nameValuePair[0];
 						String value = nameValuePair[1];
-						System.out.println("Adding default " + name + "=" + value);
 						FormStatisticsOptionBean formStatisticsOptionBean = new FormStatisticsOptionBean(name, value, 0, 0F);
 						defaultOptionBeans.put(name, formStatisticsOptionBean);
 					}
 				}
-
-				System.out.println("path:" + path);
 			}
 
 			formStatisticsBean.getFormEntryValueVOList().addAll(formEntryValueVOList);
@@ -179,7 +176,6 @@ public class FormStatisticsTag extends TemplateControllerTag
 							String value = nameValuePair[1];
 							if(name.equalsIgnoreCase(key))
 							{
-								System.out.println("Adding " + name + "=" + value);
 								FormStatisticsOptionBean formStatisticsOptionBean = new FormStatisticsOptionBean(name, value, totalCount, ((float)totalCount / totalEntries) * 100);
 								formStatisticsBean.getFormStatisticsOptionBeanList().add(formStatisticsOptionBean);
 								defaultOptionBeans.remove(name);
@@ -194,8 +190,6 @@ public class FormStatisticsTag extends TemplateControllerTag
 			}
 			else if(type.equals("average"))
 			{
-				System.out.println("totalValue:" + totalValue);
-				System.out.println("totalEntries:" + totalEntries);
 				if(totalValue > 0 && totalEntries > 0)
 					statisticsResultMap.put("percentage", (totalValue / totalEntries) * 100);
 					
