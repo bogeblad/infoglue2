@@ -26,6 +26,7 @@ package org.infoglue.cms.applications.structuretool.actions;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Locale;
@@ -36,16 +37,20 @@ import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.applications.contenttool.actions.ViewContentTreeActionInterface;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentControllerProxy;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentStateController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.DigitalAssetController;
 import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
+import org.infoglue.cms.controllers.kernel.impl.simple.PublicationController;
 import org.infoglue.cms.controllers.kernel.impl.simple.RepositoryController;
 import org.infoglue.cms.entities.content.ContentVO;
+import org.infoglue.cms.entities.content.ContentVersion;
 import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.entities.content.DigitalAssetVO;
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
 import org.infoglue.cms.entities.management.RepositoryVO;
+import org.infoglue.cms.entities.publishing.PublicationVO;
 import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
@@ -80,6 +85,7 @@ public class CreatePageTemplateAction extends InfoGlueAbstractAction implements 
 	private Integer repositoryId;
 	private Integer componentId;
 	private Integer pagePartContentId;
+	private Boolean attemptDirectPublication;
 	private ConstraintExceptionBuffer ceb;
 
 	private Integer siteNodeId;
@@ -302,6 +308,19 @@ public class CreatePageTemplateAction extends InfoGlueAbstractAction implements 
 		contentVersionVO.setVersionModifier(this.getInfoGluePrincipal().getName());
 		contentVersionVO.setVersionValue(versionValue);
 		ContentVersionController.getContentVersionController().update(pagePartContentVO.getId(), pagePartMasterLanguageId, contentVersionVO, this.getInfoGluePrincipal());
+
+		if(this.attemptDirectPublication)
+		{
+			List events = new ArrayList();
+
+			ContentVersion contentVersion = ContentStateController.changeState(contentVersionVO.getId(), ContentVersionVO.PUBLISH_STATE, "Auto publish", false, null, this.getInfoGluePrincipal(), null, events);
+
+		    PublicationVO publicationVO = new PublicationVO();
+		    publicationVO.setName("Direct publication by " + this.getInfoGluePrincipal().getName());
+		    publicationVO.setDescription("Direct publication");
+		    publicationVO.setRepositoryId(pagePartContentVO.getRepositoryId());
+		    publicationVO = PublicationController.getController().createAndPublish(publicationVO, events, false, this.getInfoGluePrincipal());
+		}
 		
         return Action.SUCCESS;
     }
@@ -444,6 +463,12 @@ public class CreatePageTemplateAction extends InfoGlueAbstractAction implements 
 		this.pagePartContentId = pagePartContentId;
 	}
 
+	public void setAttemptDirectPublication(Boolean attemptDirectPublication)
+	{
+		this.attemptDirectPublication = attemptDirectPublication;
+	}
+	
+	
 	/**
 	 * This method creates a parameter for the given input type.
 	 * This is to support form steering information later.
