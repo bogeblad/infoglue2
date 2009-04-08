@@ -46,7 +46,7 @@ public class GroupsWithMatchingPropertyTag extends TemplateControllerTag
 
 		this.propertyName = null;
 		this.propertyValue = null;
-		this.useLanguageFallback = false;
+		this.useLanguageFallback = true;
 		this.languageId = null;
 		
 	    return EVAL_PAGE;
