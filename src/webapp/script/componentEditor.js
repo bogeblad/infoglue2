@@ -1587,6 +1587,19 @@ function showComponentProperties(id, event)
 
 	showDiv(id);
 
+	var element = $("#" + id);
+	
+	var scrollTop = $(window).scrollTop();
+	var scrollLeft = $(window).scrollLeft();
+	
+	var newTop = $(window).height()/2-element.height()/2 + scrollTop;
+	var newLeft = $(window).width()/2-element.width()/2 + scrollLeft;
+
+	element.css('top', newTop + "px");
+	element.css('left', newLeft + "px");
+
+
+	/*
 	propertiesDiv = document.getElementById(id);
 
 	clientX = getEventPositionX(event);
@@ -1596,6 +1609,7 @@ function showComponentProperties(id, event)
 	var bottomedge = document.body.clientHeight - clientY;
 
 	menuDiv = propertiesDiv;
+	alert(clientY);
 	
 	if (rightedge < menuDiv.offsetWidth)
 		newLeft = (document.body.scrollLeft + clientX - menuDiv.offsetWidth);
@@ -1604,13 +1618,20 @@ function showComponentProperties(id, event)
 	
 	newTop = (document.body.scrollTop + clientY);
 
+	alert(newTop);
+	alert(newLeft);
+
 	if(newTop - $(menuDiv).height() > 0)
 		newTop = newTop - $(menuDiv).height();
 	if(newLeft - $(menuDiv).width() > 0)
 		newLeft = newLeft - $(menuDiv).width();
 	
+	alert(newTop);
+	alert(newLeft);
+
 	menuDiv.style.left 	= newLeft + "px";
 	menuDiv.style.top 	= newTop + "px";
+	*/
 }
 
 function invokeAction() 
