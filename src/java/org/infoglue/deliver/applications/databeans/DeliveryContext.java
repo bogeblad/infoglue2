@@ -128,6 +128,9 @@ public class DeliveryContext implements UsageListener
 
 	private Integer pageCacheTimeout = null;
 
+	//This variable controls if tags and logic should consider the logged in editor principal even if the ordinary principal is anonymous when checking for access rights etc.
+	private boolean considerEditorInDecoratedMode = true;
+	
 	private Map pageAttributes = new HashMap();
 	private List htmlHeadItems = new ArrayList();
 	private Map httpHeaders = new HashMap();
@@ -454,6 +457,16 @@ public class DeliveryContext implements UsageListener
 	{
 		this.validateOnDates = validateOnDates;
 	}
+
+    public void setConsiderEditorInDecoratedMode(boolean considerEditorInDecoratedMode)
+    {
+        this.considerEditorInDecoratedMode = considerEditorInDecoratedMode;
+    }
+
+    public boolean getConsiderEditorInDecoratedMode()
+    {
+        return this.considerEditorInDecoratedMode;
+    }
 
 	public Set getUsedPageMetaInfoContentVersionIdSet() 
 	{

@@ -68,6 +68,11 @@
         	<required>false</required>
 	        <rtexprvalue>false</rtexprvalue>
     	</attribute>
+        <attribute>
+    	    <name>considerEditorInDecoratedMode</name>
+        	<required>false</required>
+	        <rtexprvalue>false</rtexprvalue>
+    	</attribute>
     </tag>
 
 	<tag>
