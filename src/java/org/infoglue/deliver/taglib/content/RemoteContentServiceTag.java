@@ -8,6 +8,7 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspTagException;
 import javax.xml.namespace.QName;
 
+import org.infoglue.cms.controllers.kernel.impl.simple.AccessRightController;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.webservices.elements.CreatedEntityBean;
@@ -81,7 +82,14 @@ public class RemoteContentServiceTag extends TemplateControllerTag
 	       if(this.principal == null)
 	           this.principal = this.getController().getPrincipal();
 	       
-		   final DynamicWebservice ws = new DynamicWebservice(principal);
+	       if(getController().getIsDecorated() && getController().getDeliveryContext().getConsiderEditorInDecoratedMode())
+	       {
+			    String cmsUserName = (String)getController().getHttpServletRequest().getSession().getAttribute("cmsUserName");
+			    if(cmsUserName != null)
+			    	this.principal = getController().getPrincipal(cmsUserName);
+	       }
+	    		   
+		   final DynamicWebservice ws = new DynamicWebservice(this.principal);
 		  
 		   ws.setTargetEndpointAddress(targetEndpointAddress);
 		   ws.setOperationName(operationName);
