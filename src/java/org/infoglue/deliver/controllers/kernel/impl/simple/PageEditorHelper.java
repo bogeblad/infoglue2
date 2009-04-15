@@ -989,10 +989,12 @@ public class PageEditorHelper extends BaseDeliveryController
 		    
 		    String allowedComponentNamesAsEncodedString = "";
 		    String disallowedComponentNamesAsEncodedString = "";
+		    String allowedComponentGroupNamesAsEncodedString = "";
 		    if(slot != null)
 		    {
 			    allowedComponentNamesAsEncodedString = slot.getAllowedComponentsArrayAsUrlEncodedString();
-			    disallowedComponentNamesAsEncodedString = slot.getDisallowedComponentsArrayAsUrlEncodedString();		    	
+			    disallowedComponentNamesAsEncodedString = slot.getDisallowedComponentsArrayAsUrlEncodedString();	
+			    allowedComponentGroupNamesAsEncodedString = slot.getAllowedComponentGroupsArrayAsUrlEncodedString();
 		    }
 		    
 		    String addComponentUrl = "";
@@ -1006,10 +1008,11 @@ public class PageEditorHelper extends BaseDeliveryController
 		    	//logger.info("parentComponent:" + parentComponent.getId());
 		    	//logger.info("allowedComponentNamesAsEncodedString:" + allowedComponentNamesAsEncodedString);
 		    	//logger.info("disallowedComponentNamesAsEncodedString:" + disallowedComponentNamesAsEncodedString);
+		    	//logger.info("allowedComponentGroupNamesAsEncodedString:" + allowedComponentGroupNamesAsEncodedString);
 		    
-			    addComponentUrl = "" + componentEditorUrl + "ViewSiteNodePageComponents!listComponents.action?siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + (contentId == null ? "-1" : contentId) + "&parentComponentId=" + parentComponent.getId() + "&slotId=" + slotId + "&showSimple=" + showSimple + ((allowedComponentNamesAsEncodedString != null) ? "&" + allowedComponentNamesAsEncodedString : "") + ((disallowedComponentNamesAsEncodedString != null) ? "&" + disallowedComponentNamesAsEncodedString : "");
+			    addComponentUrl = "" + componentEditorUrl + "ViewSiteNodePageComponents!listComponents.action?siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + (contentId == null ? "-1" : contentId) + "&parentComponentId=" + parentComponent.getId() + "&slotId=" + slotId + "&showSimple=" + showSimple + ((allowedComponentNamesAsEncodedString != null) ? "&" + allowedComponentNamesAsEncodedString : "") + ((disallowedComponentNamesAsEncodedString != null) ? "&" + disallowedComponentNamesAsEncodedString : "") + ((allowedComponentGroupNamesAsEncodedString != null) ? "&" + allowedComponentGroupNamesAsEncodedString : "");
 			    deleteComponentUrl = "" + componentEditorUrl + "ViewSiteNodePageComponents!deleteComponent.action?siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + (contentId == null ? "-1" : contentId) + "&componentId=" + component.getId() + "&slotId=" + slotId + "&showSimple=" + showSimple;
-			    changeComponentUrl = "" + componentEditorUrl + "ViewSiteNodePageComponents!listComponentsForChange.action?siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + (contentId == null ? "-1" : contentId) + "&componentId=" + component.getId() + "&slotId=" + slotId + "&showSimple=" + showSimple + ((allowedComponentNamesAsEncodedString != null) ? "&" + allowedComponentNamesAsEncodedString : "") + ((disallowedComponentNamesAsEncodedString != null) ? "&" + disallowedComponentNamesAsEncodedString : "");
+			    changeComponentUrl = "" + componentEditorUrl + "ViewSiteNodePageComponents!listComponentsForChange.action?siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + (contentId == null ? "-1" : contentId) + "&componentId=" + component.getId() + "&slotId=" + slotId + "&showSimple=" + showSimple + ((allowedComponentNamesAsEncodedString != null) ? "&" + allowedComponentNamesAsEncodedString : "") + ((disallowedComponentNamesAsEncodedString != null) ? "&" + disallowedComponentNamesAsEncodedString : "") + ((allowedComponentGroupNamesAsEncodedString != null) ? "&" + allowedComponentGroupNamesAsEncodedString : "");
 			    savePartTemplateUrl = "savePartComponentStructure('" + componentEditorUrl + "CreatePageTemplate!input.action?contentId=" + metaInfoContentVO.getId() + "', '" + component.getId() + "');";
 
 			    //logger.info("addComponentUrl:" + addComponentUrl);
@@ -1021,7 +1024,7 @@ public class PageEditorHelper extends BaseDeliveryController
 		    {
 			    addComponentUrl = "";
 			    deleteComponentUrl = "" + componentEditorUrl + "ViewSiteNodePageComponents!deleteComponent.action?siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + component.getId() + "&slotId=" + slotId + "&showSimple=" + showSimple;
-			    changeComponentUrl = "" + componentEditorUrl + "ViewSiteNodePageComponents!listComponentsForChange.action?siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + component.getId() + "&slotId=" + slotId + "&showSimple=" + showSimple + ((allowedComponentNamesAsEncodedString != null) ? "&" + allowedComponentNamesAsEncodedString : "") + ((disallowedComponentNamesAsEncodedString != null) ? "&" + disallowedComponentNamesAsEncodedString : "");
+			    changeComponentUrl = "" + componentEditorUrl + "ViewSiteNodePageComponents!listComponentsForChange.action?siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + component.getId() + "&slotId=" + slotId + "&showSimple=" + showSimple + ((allowedComponentNamesAsEncodedString != null) ? "&" + allowedComponentNamesAsEncodedString : "") + ((disallowedComponentNamesAsEncodedString != null) ? "&" + disallowedComponentNamesAsEncodedString : "") + ((allowedComponentGroupNamesAsEncodedString != null) ? "&" + allowedComponentGroupNamesAsEncodedString : "");
 			    savePartTemplateUrl = "";
 
 			    hasAccessToAddComponent = false;
@@ -1721,7 +1724,7 @@ public class PageEditorHelper extends BaseDeliveryController
 	    		if(slot.getId().equals(slotName));
 	    		{
 	    	        String direction = "asc";
-	    	        List componentVOList = ComponentController.getController().getComponentVOList("name", direction, slot.getAllowedComponentsArray(), slot.getDisallowedComponentsArray(), db, principal);
+	    	        List componentVOList = ComponentController.getController().getComponentVOList("name", direction, slot.getAllowedComponentsArray(), slot.getDisallowedComponentsArray(), slot.getAllowedComponentGroupsArray(), db, principal);
 	    	        Iterator componentVOListIterator = componentVOList.iterator();
 
     	        	if(showLegend != null && !showLegend.equalsIgnoreCase("false"))
@@ -1829,6 +1832,15 @@ public class PageEditorHelper extends BaseDeliveryController
 			    String disallowedComponentNames = slot.substring(disallowedComponentNamesIndex + 27, slot.indexOf("\"", disallowedComponentNamesIndex + 27));
 			    disallowedComponentNamesArray = disallowedComponentNames.split(",");
 			    slotBean.setDisallowedComponentsArray(disallowedComponentNamesArray);
+			}
+
+			String[] allowedComponentGroupNamesArray = null;
+			int allowedComponentGroupNamesIndex = slot.indexOf(" allowedComponentGroupNames");
+			if(allowedComponentGroupNamesIndex > -1)
+			{    
+			    String allowedComponentGroupNames = slot.substring(allowedComponentGroupNamesIndex + 29, slot.indexOf("\"", allowedComponentGroupNamesIndex + 29));
+			    allowedComponentGroupNamesArray = allowedComponentGroupNames.split(",");
+			    slotBean.setAllowedComponentGroupsArray(allowedComponentGroupNamesArray);
 			}
 
 			boolean inherit = true;
@@ -2157,7 +2169,15 @@ public class PageEditorHelper extends BaseDeliveryController
 							    String disallowedComponentNames = slotString.substring(disallowedComponentNamesIndex + 27, slotString.indexOf("\"", disallowedComponentNamesIndex + 27));
 							    disallowedComponentNamesArray = disallowedComponentNames.split(",");
 							}
-							
+
+							String[] allowedComponentGroupNamesArray = null;
+							int allowedComponentGroupNamesIndex = slotString.indexOf(" allowedComponentGroupNames");
+							if(allowedComponentGroupNamesIndex > -1)
+							{    
+							    String allowedComponentGroupNames = slotString.substring(allowedComponentGroupNamesIndex + 29, slotString.indexOf("\"", allowedComponentGroupNamesIndex + 29));
+							    allowedComponentGroupNamesArray = allowedComponentGroupNames.split(",");
+							}
+
 							String addComponentText = null;
 							int addComponentTextIndex = slotString.indexOf("addComponentText");
 							if(addComponentTextIndex > -1)
@@ -2193,6 +2213,7 @@ public class PageEditorHelper extends BaseDeliveryController
 							slot.setDisableAccessControl(disableAccessControl);
 							slot.setAllowedComponentsArray(allowedComponentNamesArray);
 							slot.setDisallowedComponentsArray(disallowedComponentNamesArray);
+							slot.setAllowedComponentGroupsArray(allowedComponentGroupNamesArray);
 						    slot.setAddComponentLinkHTML(addComponentLinkHTML);
 						    slot.setAddComponentText(addComponentText);
 						    slot.setAllowedNumberOfComponents(new Integer(allowedNumberOfComponentsInt));

@@ -701,6 +701,14 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 				    disallowedComponentNamesArray = disallowedComponentNames.split(",");
 				}
 
+				String[] allowedComponentGroupNamesArray = null;
+				int allowedComponentGroupNamesIndex = slotString.indexOf(" allowedComponentGroupNames");
+				if(allowedComponentGroupNamesIndex > -1)
+				{    
+				    String allowedComponentGroupNames = slotString.substring(allowedComponentGroupNamesIndex + 29, slotString.indexOf("\"", allowedComponentGroupNamesIndex + 29));
+				    allowedComponentGroupNamesArray = allowedComponentGroupNames.split(",");
+				}
+
 				String addComponentText = null;
 				int addComponentTextIndex = slotString.indexOf("addComponentText");
 				if(addComponentTextIndex > -1)
@@ -736,6 +744,7 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 			    slot.setDisableAccessControl(disableAccessControl);
 			  	slot.setAllowedComponentsArray(allowedComponentNamesArray);
 			  	slot.setDisallowedComponentsArray(disallowedComponentNamesArray);
+			  	slot.setAllowedComponentGroupsArray(allowedComponentGroupNamesArray);
 			    slot.setAddComponentLinkHTML(addComponentLinkHTML);
 			    slot.setAddComponentText(addComponentText);
 			    slot.setAllowedNumberOfComponents(new Integer(allowedNumberOfComponentsInt));
@@ -1740,6 +1749,14 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 							    disallowedComponentNamesArray = disallowedComponentNames.split(",");
 							}
 							
+							String[] allowedComponentGroupNamesArray = null;
+							int allowedComponentGroupNamesIndex = slotString.indexOf(" allowedComponentGroupNames");
+							if(allowedComponentGroupNamesIndex > -1)
+							{    
+							    String allowedComponentGroupNames = slotString.substring(allowedComponentGroupNamesIndex + 29, slotString.indexOf("\"", allowedComponentGroupNamesIndex + 29));
+							    allowedComponentGroupNamesArray = allowedComponentGroupNames.split(",");
+							}
+
 							String addComponentText = null;
 							int addComponentTextIndex = slotString.indexOf("addComponentText");
 							if(addComponentTextIndex > -1)
@@ -1775,6 +1792,7 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 							slot.setDisableAccessControl(disableAccessControl);
 							slot.setAllowedComponentsArray(allowedComponentNamesArray);
 							slot.setDisallowedComponentsArray(disallowedComponentNamesArray);
+							slot.setAllowedComponentGroupsArray(allowedComponentGroupNamesArray);
 						    slot.setAddComponentLinkHTML(addComponentLinkHTML);
 						    slot.setAddComponentText(addComponentText);
 						    slot.setAllowedNumberOfComponents(new Integer(allowedNumberOfComponentsInt));

@@ -942,9 +942,10 @@ function listRowOff()
 
 
 
-function assignComponent(siteNodeId, languageId, contentId, parentComponentId, slotId, specifyBaseTemplate, allowedComponentNamesUrlEncodedString, disallowedComponentNamesUrlEncodedString, slotPositionComponentId) 
+function assignComponent(siteNodeId, languageId, contentId, parentComponentId, slotId, specifyBaseTemplate, allowedComponentNamesUrlEncodedString, disallowedComponentNamesUrlEncodedString, allowedComponentGroupNamesAsUrlEncodedString, slotPositionComponentId) 
 {
 	//alert("AssignComponent:" + allowedComponentNamesUrlEncodedString);
+	//alert("allowedComponentGroupNamesAsUrlEncodedString:" + allowedComponentGroupNamesAsUrlEncodedString);
 	//alert("draggedComponentId:" + draggedComponentId);
 	if(draggedComponentId > 0)
 	{
@@ -955,7 +956,7 @@ function assignComponent(siteNodeId, languageId, contentId, parentComponentId, s
 		//alert("slotId" + slotId);
 		//alert("specifyBaseTemplate" + specifyBaseTemplate);
 		
-		insertUrl = componentEditorUrl + "ViewSiteNodePageComponents!addComponent.action?siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&parentComponentId=" + parentComponentId + "&componentId=" + draggedComponentId + "&slotId=" + slotId + "&slotPositionComponentId=" + slotPositionComponentId + "&specifyBaseTemplate=" + specifyBaseTemplate + "&" + allowedComponentNamesUrlEncodedString + "&" + disallowedComponentNamesUrlEncodedString;
+		insertUrl = componentEditorUrl + "ViewSiteNodePageComponents!addComponent.action?siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&parentComponentId=" + parentComponentId + "&componentId=" + draggedComponentId + "&slotId=" + slotId + "&slotPositionComponentId=" + slotPositionComponentId + "&specifyBaseTemplate=" + specifyBaseTemplate + "&" + allowedComponentNamesUrlEncodedString + "&" + disallowedComponentNamesUrlEncodedString + "&" + allowedComponentGroupNamesAsUrlEncodedString;
 		//alert("insertUrl:" + insertUrl);
 		document.location.href = insertUrl;
 		draggedComponentId = -1;

@@ -536,6 +536,15 @@ public class AjaxDecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHT
 				    slotBean.setDisallowedComponentsArray(disallowedComponentNamesArray);
 				}
 
+				String[] allowedComponentGroupNamesArray = null;
+				int allowedComponentGroupNamesIndex = slot.indexOf(" allowedComponentGroupNames");
+				if(allowedComponentGroupNamesIndex > -1)
+				{    
+				    String allowedComponentGroupNames = slot.substring(allowedComponentGroupNamesIndex + 29, slot.indexOf("\"", allowedComponentGroupNamesIndex + 29));
+				    allowedComponentGroupNamesArray = allowedComponentGroupNames.split(",");
+				    slotBean.setAllowedComponentGroupsArray(allowedComponentGroupNamesArray);
+				}
+
 				boolean inherit = true;
 				int inheritIndex = slot.indexOf("inherit");
 				if(inheritIndex > -1)
@@ -726,6 +735,7 @@ public class AjaxDecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHT
 								{    
 								    String allowedComponentNamesAsEncodedString = null;
 								    String disallowedComponentNamesAsEncodedString = null;
+								    String allowedComponentGroupNamesAsEncodedString = null;
 
 								    for(int i=0; i < subComponent.getParentComponent().getSlotList().size(); i++)
 								    {
@@ -735,6 +745,7 @@ public class AjaxDecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHT
 								        {
 								            allowedComponentNamesAsEncodedString = subSlotBean.getAllowedComponentsArrayAsUrlEncodedString();
 								            disallowedComponentNamesAsEncodedString = subSlotBean.getDisallowedComponentsArrayAsUrlEncodedString();
+								            allowedComponentGroupNamesAsEncodedString = subSlotBean.getAllowedComponentGroupsArrayAsUrlEncodedString();
 								            subComponent.setContainerSlot(subSlotBean);
 								        }
 								    }
@@ -747,7 +758,7 @@ public class AjaxDecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHT
 								    else
 								    {
 								    	subComponent.setComponentDivId("" + id + index + "_" + subComponent.getId() + "Comp");
-									    subComponentString += "<a id=\"" + subComponent.getId() + "Comp\" name=\"" + subComponent.getId() + "Comp\"></a><span class=\"dragableComponent slotPosition\" id=\"" + id + index + "_" + subComponent.getId() + "Comp\">" + childComponentsString + "<script type=\"text/javascript\">initializeComponentEventHandler('" + id + index + "_" + subComponent.getId() + "Comp', '" + subComponent.getId() + "', '" + id + "', " + templateController.getSiteNode().getRepositoryId() + ", " + templateController.getSiteNodeId() + ", " + templateController.getLanguageId() + ", " + templateController.getContentId() + ", " + subComponent.getId() + ", " + subComponent.getContentId() + ", '" + URLEncoder.encode(templateController.getOriginalFullURL(), "UTF-8") + "'); " + "registerOnMouseUp('" + id + index + "_" + subComponent.getId() + "Comp', " + templateController.getSiteNodeId() + ", " + templateController.getLanguageId() + ", " + templateController.getContentId() + ", '" + component.getId() + "', '" + id + "', false, '" + allowedComponentNamesAsEncodedString + "', '" + disallowedComponentNamesAsEncodedString + "', " + subComponent.getId() + ");</script></span>";
+									    subComponentString += "<a id=\"" + subComponent.getId() + "Comp\" name=\"" + subComponent.getId() + "Comp\"></a><span class=\"dragableComponent slotPosition\" id=\"" + id + index + "_" + subComponent.getId() + "Comp\">" + childComponentsString + "<script type=\"text/javascript\">initializeComponentEventHandler('" + id + index + "_" + subComponent.getId() + "Comp', '" + subComponent.getId() + "', '" + id + "', " + templateController.getSiteNode().getRepositoryId() + ", " + templateController.getSiteNodeId() + ", " + templateController.getLanguageId() + ", " + templateController.getContentId() + ", " + subComponent.getId() + ", " + subComponent.getContentId() + ", '" + URLEncoder.encode(templateController.getOriginalFullURL(), "UTF-8") + "'); " + "registerOnMouseUp('" + id + index + "_" + subComponent.getId() + "Comp', " + templateController.getSiteNodeId() + ", " + templateController.getLanguageId() + ", " + templateController.getContentId() + ", '" + component.getId() + "', '" + id + "', false, '" + allowedComponentNamesAsEncodedString + "', '" + disallowedComponentNamesAsEncodedString + "','" + allowedComponentGroupNamesAsEncodedString + "', " + subComponent.getId() + ");</script></span>";
 								    }
 								}
 								else
@@ -780,6 +791,7 @@ public class AjaxDecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHT
 					{
 					    String allowedComponentNamesAsEncodedString = null;
 					    String disallowedComponentNamesAsEncodedString = null;
+					    String allowedComponentGroupNamesAsEncodedString = null;
 					    
 					    for(int i=0; i < component.getSlotList().size(); i++)
 					    {
@@ -788,10 +800,11 @@ public class AjaxDecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHT
 					        {
 					            allowedComponentNamesAsEncodedString = subSlotBean.getAllowedComponentsArrayAsUrlEncodedString();
 					            disallowedComponentNamesAsEncodedString = subSlotBean.getDisallowedComponentsArrayAsUrlEncodedString();
+					            allowedComponentGroupNamesAsEncodedString = subSlotBean.getAllowedComponentGroupsArrayAsUrlEncodedString();
 					        }
 					    }
 
-						String linkUrl = componentEditorUrl + "ViewSiteNodePageComponents!listComponents.action?BBB=1&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + (contentId == null ? "-1" : contentId) + "&parentComponentId=" + component.getId() + "&slotId=" + id + "&showSimple=" + this.getTemplateController().getDeliveryContext().getShowSimple() + ((allowedComponentNamesAsEncodedString != null) ? "&" + allowedComponentNamesAsEncodedString : "&BBBB=1") + ((disallowedComponentNamesAsEncodedString != null) ? "&" + disallowedComponentNamesAsEncodedString : "&BBBB=1");
+						String linkUrl = componentEditorUrl + "ViewSiteNodePageComponents!listComponents.action?siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + (contentId == null ? "-1" : contentId) + "&parentComponentId=" + component.getId() + "&slotId=" + id + "&showSimple=" + this.getTemplateController().getDeliveryContext().getShowSimple() + ((allowedComponentNamesAsEncodedString != null) ? "&" + allowedComponentNamesAsEncodedString : "") + ((disallowedComponentNamesAsEncodedString != null) ? "&" + disallowedComponentNamesAsEncodedString : "") + ((allowedComponentGroupNamesAsEncodedString != null) ? "&" + allowedComponentGroupNamesAsEncodedString : "");
 						//System.out.println("clickToAddHTML 1:" + component.getContainerSlot().getAddComponentLinkHTML().replaceAll("\\$linkUrl", linkUrl));
 						subComponentString += "" + component.getContainerSlot().getAddComponentLinkHTML().replaceAll("\\$linkUrl", linkUrl);
 					}
@@ -807,6 +820,7 @@ public class AjaxDecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHT
 					{
 					    String allowedComponentNamesAsEncodedString = null;
 					    String disallowedComponentNamesAsEncodedString = null;
+					    String allowedComponentGroupNamesAsEncodedString = null;
 					    
 					    for(int i=0; i < component.getSlotList().size(); i++)
 					    {
@@ -815,10 +829,11 @@ public class AjaxDecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHT
 					        {
 					            allowedComponentNamesAsEncodedString = subSlotBean.getAllowedComponentsArrayAsUrlEncodedString();
 					            disallowedComponentNamesAsEncodedString = subSlotBean.getDisallowedComponentsArrayAsUrlEncodedString();
+					            allowedComponentGroupNamesAsEncodedString = subSlotBean.getAllowedComponentGroupsArrayAsUrlEncodedString();
 					        }
 					    }
 
-						String linkUrl = componentEditorUrl + "ViewSiteNodePageComponents!listComponents.action?BBB=1&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + (contentId == null ? "-1" : contentId) + "&parentComponentId=" + component.getId() + "&slotId=" + id + "&showSimple=" + this.getTemplateController().getDeliveryContext().getShowSimple() + ((allowedComponentNamesAsEncodedString != null) ? "&" + allowedComponentNamesAsEncodedString : "&BBBB=1") + ((disallowedComponentNamesAsEncodedString != null) ? "&" + disallowedComponentNamesAsEncodedString : "&BBBB=1");
+						String linkUrl = componentEditorUrl + "ViewSiteNodePageComponents!listComponents.action?BBB=1&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + (contentId == null ? "-1" : contentId) + "&parentComponentId=" + component.getId() + "&slotId=" + id + "&showSimple=" + this.getTemplateController().getDeliveryContext().getShowSimple() + ((allowedComponentNamesAsEncodedString != null) ? "&" + allowedComponentNamesAsEncodedString : "") + ((disallowedComponentNamesAsEncodedString != null) ? "&" + disallowedComponentNamesAsEncodedString : "") + ((allowedComponentGroupNamesAsEncodedString != null) ? "&" + allowedComponentGroupNamesAsEncodedString : "");
 						//System.out.println("clickToAddHTML 3:" + component.getContainerSlot().getAddComponentLinkHTML().replaceAll("\\$linkUrl", linkUrl));
 						subComponentString += "" + component.getContainerSlot().getAddComponentLinkHTML().replaceAll("\\$linkUrl", linkUrl);
 					}
@@ -833,6 +848,7 @@ public class AjaxDecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHT
 				{
 				    String allowedComponentNamesAsEncodedString = null;
 				    String disallowedComponentNamesAsEncodedString = null;
+				    String allowedComponentGroupNamesAsEncodedString = null;
 				    
 				    for(int i=0; i < component.getSlotList().size(); i++)
 				    {
@@ -841,6 +857,7 @@ public class AjaxDecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHT
 				        {
 				            allowedComponentNamesAsEncodedString = subSlotBean.getAllowedComponentsArrayAsUrlEncodedString();
 				            disallowedComponentNamesAsEncodedString = subSlotBean.getDisallowedComponentsArrayAsUrlEncodedString();
+				            allowedComponentGroupNamesAsEncodedString = subSlotBean.getAllowedComponentGroupsArrayAsUrlEncodedString();
 				        }
 				    }
 

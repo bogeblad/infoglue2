@@ -825,7 +825,7 @@ var movedElementId = "";
 var skipComponentPropertiesLoad = false;
 var clearMovedComponent = false;
 
-function assignComponent(e, siteNodeId, languageId, contentId, parentComponentId, slotId, specifyBaseTemplate, allowedComponentNamesUrlEncodedString, disallowedComponentNamesUrlEncodedString, slotPositionComponentId) 
+function assignComponent(e, siteNodeId, languageId, contentId, parentComponentId, slotId, specifyBaseTemplate, allowedComponentNamesUrlEncodedString, disallowedComponentNamesUrlEncodedString, allowedComponentGroupNamesAsUrlEncodedString, slotPositionComponentId) 
 {	
 	//alert("slotPositionComponentId:" + slotPositionComponentId);
 	//alert("parentComponentId:" + parentComponentId);
@@ -855,14 +855,14 @@ function assignComponent(e, siteNodeId, languageId, contentId, parentComponentId
 			slotId = targ.id.substring(targ.id.indexOf("_") + 1);
 			*/
 			
-			moveUrl = componentEditorUrl + "ViewSiteNodePageComponents!moveComponentToSlot.action?siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&parentComponentId=" + parentComponentId + "&componentId=" + movedComponentId + "&slotId=" + slotId + "&slotPositionComponentId=" + slotPositionComponentId + "&specifyBaseTemplate=" + specifyBaseTemplate + "&" + allowedComponentNamesUrlEncodedString + "&" + disallowedComponentNamesUrlEncodedString;
+			moveUrl = componentEditorUrl + "ViewSiteNodePageComponents!moveComponentToSlot.action?siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&parentComponentId=" + parentComponentId + "&componentId=" + movedComponentId + "&slotId=" + slotId + "&slotPositionComponentId=" + slotPositionComponentId + "&specifyBaseTemplate=" + specifyBaseTemplate + "&" + allowedComponentNamesUrlEncodedString + "&" + disallowedComponentNamesUrlEncodedString + "&" + allowedComponentGroupNamesAsUrlEncodedString;
 			//alert("moveUrl:" + moveUrl);
 			document.location.href = moveUrl;
 			window.event.cancelBubble = true;
 		}
 		else
 		{
-			moveUrl = componentEditorUrl + "ViewSiteNodePageComponents!moveComponentToSlot.action?siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&parentComponentId=" + parentComponentId + "&componentId=" + movedComponentId + "&slotId=" + slotId + "&slotPositionComponentId=" + slotPositionComponentId + "&specifyBaseTemplate=" + specifyBaseTemplate + "&" + allowedComponentNamesUrlEncodedString + "&" + disallowedComponentNamesUrlEncodedString;
+			moveUrl = componentEditorUrl + "ViewSiteNodePageComponents!moveComponentToSlot.action?siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&parentComponentId=" + parentComponentId + "&componentId=" + movedComponentId + "&slotId=" + slotId + "&slotPositionComponentId=" + slotPositionComponentId + "&specifyBaseTemplate=" + specifyBaseTemplate + "&" + allowedComponentNamesUrlEncodedString + "&" + disallowedComponentNamesUrlEncodedString + "&" + allowedComponentGroupNamesAsUrlEncodedString;
 			//alert("moveUrl:" + moveUrl);
 			document.location.href = moveUrl;
 		}
@@ -891,14 +891,14 @@ function assignComponent(e, siteNodeId, languageId, contentId, parentComponentId
 			slotId = targ.id.substring(targ.id.indexOf("_") + 1);
 			*/
 			
-			insertUrl = componentEditorUrl + "ViewSiteNodePageComponents!addComponent.action?siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&parentComponentId=" + parentComponentId + "&componentId=" + draggedComponentId + "&slotId=" + slotId + "&slotPositionComponentId=" + slotPositionComponentId + "&specifyBaseTemplate=" + specifyBaseTemplate + "&" + allowedComponentNamesUrlEncodedString + "&" + disallowedComponentNamesUrlEncodedString;
+			insertUrl = componentEditorUrl + "ViewSiteNodePageComponents!addComponent.action?siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&parentComponentId=" + parentComponentId + "&componentId=" + draggedComponentId + "&slotId=" + slotId + "&slotPositionComponentId=" + slotPositionComponentId + "&specifyBaseTemplate=" + specifyBaseTemplate + "&" + allowedComponentNamesUrlEncodedString + "&" + disallowedComponentNamesUrlEncodedString + "&" + allowedComponentGroupNamesAsUrlEncodedString;
 			//alert("insertUrl:" + insertUrl);
 			document.location.href = insertUrl;
 			window.event.cancelBubble = true;
 		}
 		else
 		{
-			insertUrl = componentEditorUrl + "ViewSiteNodePageComponents!addComponent.action?siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&parentComponentId=" + parentComponentId + "&componentId=" + draggedComponentId + "&slotId=" + slotId + "&slotPositionComponentId=" + slotPositionComponentId + "&specifyBaseTemplate=" + specifyBaseTemplate + "&" + allowedComponentNamesUrlEncodedString + "&" + disallowedComponentNamesUrlEncodedString;
+			insertUrl = componentEditorUrl + "ViewSiteNodePageComponents!addComponent.action?siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&parentComponentId=" + parentComponentId + "&componentId=" + draggedComponentId + "&slotId=" + slotId + "&slotPositionComponentId=" + slotPositionComponentId + "&specifyBaseTemplate=" + specifyBaseTemplate + "&" + allowedComponentNamesUrlEncodedString + "&" + disallowedComponentNamesUrlEncodedString + "&" + allowedComponentGroupNamesAsUrlEncodedString;
 			//alert("insertUrl:" + insertUrl);
 			document.location.href = insertUrl;
 		}
@@ -2175,7 +2175,7 @@ function viewSource()
     		//alert("Allowed:" + eleId);
     		assignComponentCatched = true;
 			
-			//assignComponent(e, siteNodeId, languageId, contentId, parentComponentId, slotId, specifyBaseTemplate, allowedComponentNamesUrlEncodedString, disallowedComponentNamesUrlEncodedString, slotPositionComponentId) 
+			//assignComponent(e, siteNodeId, languageId, contentId, parentComponentId, slotId, specifyBaseTemplate, allowedComponentNamesUrlEncodedString, disallowedComponentNamesUrlEncodedString, allowedComponentGroupNamesAsUrlEncodedString, slotPositionComponentId) 
 
 			$("#debugDiv").html("Assigning to:" + componentId + " with " + slotId + ":" + ":" + eleId);
 
