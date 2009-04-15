@@ -19,14 +19,15 @@ import com.thoughtworks.xstream.XStream;
  * @author Stefan Sik
  * 
  */
-public class XMLNotificationWriter implements NotificationListener
+public class XMLNotificationWriter implements NotificationListener, Runnable
 {
     private String boundary = "";
     private Writer out = null;
     private Thread workingThread = null;
     private XMLWriter xmlWriter = null;
     private XStream xStream = null;
-
+    private boolean stopThread = false;
+    
     public XMLNotificationWriter(Writer out, String encoding, String boundary, Thread workingThread, boolean compact, boolean supressDecl)
     {
         this.out = out;
@@ -65,6 +66,25 @@ public class XMLNotificationWriter implements NotificationListener
         catch (IOException e)
         {
             if(workingThread != null) workingThread.interrupt();
+            stopThread = true;
+        }
+    }
+    
+    public void run()                       
+    {                              
+        while(!stopThread)
+        {
+        	try
+        	{
+	        	NotificationMessage message = new NotificationMessage("XMLNotificationWriter.ping", "Ping", CmsPropertyHandler.getAdministratorUserName(), NotificationMessage.SYSTEM, "0", "Ping");
+	        	notify(message);   
+	        	
+	        	Thread.sleep(30000);
+        	}
+        	catch (Exception e) 
+        	{
+        		e.printStackTrace();
+			}
         }
     }
 }

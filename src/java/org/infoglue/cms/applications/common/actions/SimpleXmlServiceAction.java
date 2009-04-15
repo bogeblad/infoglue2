@@ -79,7 +79,7 @@ public abstract class SimpleXmlServiceAction extends InfoGlueAbstractAction
 
     private static final String protectedPropertyFragments = "password,administrator,authorizer,authenticator,masterserver,slaveserver,log";
     
-    protected static final String SERVICEREVISION = "$Revision: 1.23 $"; 
+    protected static final String SERVICEREVISION = "$Revision: 1.24 $"; 
 	protected static String ENCODING = "UTF-8";
     protected static String TYPE_FOLDER = "Folder";
     protected static String TYPE_ITEM = "Item";
@@ -229,8 +229,8 @@ public abstract class SimpleXmlServiceAction extends InfoGlueAbstractAction
 	    		root.add(definition);
     		}
     	}
-		return out(getFormattedDocument(doc));
-    	
+		
+    	return out(getFormattedDocument(doc));
 	}
 
     public String doGetChangeNotifications() throws IOException
@@ -276,10 +276,13 @@ public abstract class SimpleXmlServiceAction extends InfoGlueAbstractAction
 		InputStream in = getRequest().getInputStream();
 		
 		XMLNotificationWriter streamWriter = new XMLNotificationWriter(new OutputStreamWriter(out), ENCODING, boundary, thread, true, false);
-		
+		   
 		logger.info("Notification stream listen started from:"  + remoteId);
         ChangeNotificationController.getInstance().registerListener(streamWriter);
         
+        Thread streamWriterThread = new Thread(streamWriter);
+		streamWriterThread.start();    
+	    
 		while(open)
 		{
             try
