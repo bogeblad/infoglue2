@@ -110,13 +110,14 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 	
 	LanguageVO masterLanguageVO = null;
 	
-	private List repositories 				 = null;
-	private String currentAction 		 	 = null;
-	private Integer filterRepositoryId 		 = null; 
-	private String sortProperty 			 = "name";
-	private String[] allowedContentTypeIds	 = null;
-	private String[] allowedComponentNames 	 = null;
-	private String[] disallowedComponentNames= null;
+	private List repositories 				 	= null;
+	private String currentAction 		 	 	= null;
+	private Integer filterRepositoryId 		 	= null; 
+	private String sortProperty 			 	= "name";
+	private String[] allowedContentTypeIds	 	= null;
+	private String[] allowedComponentNames 	 	= null;
+	private String[] disallowedComponentNames	= null;
+	private String[] allowedComponentGroupNames = null;
 	
 	public ViewSiteNodePageComponentsAction()
 	{
@@ -1743,7 +1744,7 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 	    try
 	    {
 	        String direction = "asc";
-	        componentVOList = ComponentController.getController().getComponentVOList(sortProperty, direction, allowedComponentNames, disallowedComponentNames, this.getInfoGluePrincipal());
+	        componentVOList = ComponentController.getController().getComponentVOList(sortProperty, direction, allowedComponentNames, disallowedComponentNames, allowedComponentGroupNames, this.getInfoGluePrincipal());
 	    }
 	    catch(Exception e)
 	    {
@@ -2068,14 +2069,17 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 
     public String getAllowedComponentNamesAsUrlEncodedString() throws Exception
     {
-        StringBuffer sb = new StringBuffer();
+        StringBuffer sb = new StringBuffer("");
         
-        for(int i=0; i<allowedComponentNames.length; i++)
+        if(allowedComponentNames != null)
         {
-            if(i > 0)
-                sb.append("&");
-            
-            sb.append("allowedComponentNames=" + URLEncoder.encode(allowedComponentNames[i], "UTF-8"));
+	        for(int i=0; i<allowedComponentNames.length; i++)
+	        {
+	            if(i > 0)
+	                sb.append("&");
+	            
+	            sb.append("allowedComponentNames=" + URLEncoder.encode(allowedComponentNames[i], "UTF-8"));
+	        }
         }
         
         return sb.toString();
@@ -2083,14 +2087,45 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 
     public String getDisallowedComponentNamesAsUrlEncodedString() throws Exception
     {
-        StringBuffer sb = new StringBuffer();
+        StringBuffer sb = new StringBuffer("");
         
-        for(int i=0; i<disallowedComponentNames.length; i++)
+        if(disallowedComponentNames != null)
         {
-            if(i > 0)
-                sb.append("&");
-            
-            sb.append("disallowedComponentNames=" + URLEncoder.encode(disallowedComponentNames[i], "UTF-8"));
+		    for(int i=0; i<disallowedComponentNames.length; i++)
+	        {
+	            if(i > 0)
+	                sb.append("&");
+	            
+	            sb.append("disallowedComponentNames=" + URLEncoder.encode(disallowedComponentNames[i], "UTF-8"));
+	        }
+        }
+        
+        return sb.toString();
+    }
+
+    public String[] getAllowedComponentGroupNames()
+    {
+        return allowedComponentNames;
+    }
+    
+    public void setAllowedComponentGroupNames(String[] allowedComponentGroupNames)
+    {
+        this.allowedComponentGroupNames = allowedComponentGroupNames;
+    }
+
+    public String getAllowedComponentGroupNamesAsUrlEncodedString() throws Exception
+    {
+        StringBuffer sb = new StringBuffer("");
+        
+        if(allowedComponentGroupNames != null)
+        {
+	        for(int i=0; i<allowedComponentGroupNames.length; i++)
+	        {
+	            if(i > 0)
+	                sb.append("&");
+	            
+	            sb.append("allowedComponentGroupNames=" + URLEncoder.encode(allowedComponentGroupNames[i], "UTF-8"));
+	        }
         }
         
         return sb.toString();

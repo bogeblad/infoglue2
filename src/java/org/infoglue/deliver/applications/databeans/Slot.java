@@ -45,6 +45,7 @@ public class Slot
 	private List components = new ArrayList();
 	private String[] allowedComponentsArray = null;
 	private String[] disallowedComponentsArray = null;
+	private String[] allowedComponentGroupsArray = null;
 	private String addComponentText;
 	private String addComponentLinkHTML;
 	private int allowedNumberOfComponents = new Integer(-1);
@@ -166,6 +167,37 @@ public class Slot
 	            String encoding = CmsPropertyHandler.getURIEncoding();
 	            
 	            sb.append("disallowedComponentNames=" + URLEncoder.encode(disallowedComponentsArray[i], encoding));
+	        }
+        }
+        else
+            return null;
+        
+        return sb.toString();
+    }
+
+    public String[] getAllowedComponentGroupsArray()
+    {
+        return allowedComponentGroupsArray;
+    }
+    
+    public void setAllowedComponentGroupsArray(String[] allowedComponentGroupsArray)
+    {
+        this.allowedComponentGroupsArray = allowedComponentGroupsArray;
+    }
+
+    public String getAllowedComponentGroupsArrayAsUrlEncodedString() throws Exception
+    {
+        StringBuffer sb = new StringBuffer();
+        
+        if(allowedComponentGroupsArray != null)
+        {
+	        for(int i=0; i<allowedComponentGroupsArray.length; i++)
+	        {
+	            if(i > 0)
+	                sb.append("&");
+	            
+	            String encoding = CmsPropertyHandler.getURIEncoding();
+	            sb.append("allowedComponentGroupNames=" + URLEncoder.encode(allowedComponentGroupsArray[i], encoding));
 	        }
         }
         else
