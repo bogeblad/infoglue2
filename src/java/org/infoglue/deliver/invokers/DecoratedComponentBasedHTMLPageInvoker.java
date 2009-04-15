@@ -1681,13 +1681,18 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		    boolean openInPopup = componentTask.getOpenInPopup();
 		    String icon = componentTask.getIcon();
 		    
+		    String orginalQuery = "" + templateController.getOriginalQueryString();
+		    
 		    view = view.replaceAll("\\$componentEditorUrl", componentEditorUrl);
-			view = view.replaceAll("\\$originalFullURL", originalFullURL);
+			view = view.replaceAll("\\$originalFullURL", URLEncoder.encode(originalFullURL, CmsPropertyHandler.getURIEncoding()));
 			view = view.replaceAll("\\$componentRendererUrl", componentRendererUrl);
 		    view = view.replaceAll("\\$repositoryId", repositoryId.toString());
 		    view = view.replaceAll("\\$siteNodeId", siteNodeId.toString());
 		    view = view.replaceAll("\\$languageId", languageId.toString());
+		    view = view.replaceAll("\\$contentId", contentId.toString());
 		    view = view.replaceAll("\\$componentId", component.getId().toString());
+		    view = view.replaceAll("\\$orginalQuery",orginalQuery);
+
 		    sb.append("<div class=\"igmenuitems linkComponentTask\" " + ((icon != null && !icon.equals("")) ? "style=\"background-image:url(" + icon + ")\"" : "") + " onclick=\"executeTask('" + view + "', " + openInPopup + ");\"><a href='#'>" + componentTask.getName() + "</a></div>");
 		}
 
