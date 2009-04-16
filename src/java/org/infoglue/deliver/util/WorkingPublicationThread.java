@@ -46,7 +46,9 @@ import org.infoglue.cms.entities.management.impl.simple.SmallAvailableServiceBin
 import org.infoglue.cms.entities.management.impl.simple.SystemUserImpl;
 import org.infoglue.cms.entities.publishing.impl.simple.PublicationDetailImpl;
 import org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl;
+import org.infoglue.cms.entities.structure.impl.simple.SiteNodeVersionImpl;
 import org.infoglue.cms.entities.structure.impl.simple.SmallSiteNodeImpl;
+import org.infoglue.cms.entities.structure.impl.simple.SmallSiteNodeVersionImpl;
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.NotificationMessage;
 import org.infoglue.deliver.applications.databeans.CacheEvictionBean;
@@ -176,6 +178,12 @@ public class WorkingPublicationThread extends Thread
 						else if(Class.forName(className).getName().equals(SiteNodeImpl.class.getName()))
 						{
 						    Class typesExtra = SmallSiteNodeImpl.class;
+							Object[] idsExtra = {new Integer(objectId)};
+							CacheController.clearCache(typesExtra, idsExtra);
+						}
+						else if(Class.forName(className).getName().equals(SiteNodeVersionImpl.class.getName()))
+						{
+						    Class typesExtra = SmallSiteNodeVersionImpl.class;
 							Object[] idsExtra = {new Integer(objectId)};
 							CacheController.clearCache(typesExtra, idsExtra);
 						}

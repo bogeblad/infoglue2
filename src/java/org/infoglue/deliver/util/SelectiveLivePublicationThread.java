@@ -199,6 +199,12 @@ public class SelectiveLivePublicationThread extends PublicationThread
 							Object[] idsExtra = {new Integer(objectId)};
 							CacheController.clearCache(typesExtra, idsExtra);
 						}
+						else if(Class.forName(className).getName().equals(SiteNodeVersionImpl.class.getName()))
+						{
+						    Class typesExtra = SmallSiteNodeVersionImpl.class;
+							Object[] idsExtra = {new Integer(objectId)};
+							CacheController.clearCache(typesExtra, idsExtra);
+						}
 						else if(Class.forName(className).getName().equals(DigitalAssetImpl.class.getName()))
 						{
 							CacheController.clearCache("digitalAssetCache");
@@ -257,6 +263,10 @@ public class SelectiveLivePublicationThread extends PublicationThread
 									Object[] idsExtra = {siteNodeId};
 									CacheController.clearCache(typesExtra, idsExtra);
 									
+								    Class typesExtra2 = SmallSiteNodeVersionImpl.class;
+									Object[] idsExtra2 = {new Integer(objectId)};
+									CacheController.clearCache(typesExtra2, idsExtra2);
+
 								    logger.info("We also clear the meta info content..");
 									SiteNodeVO siteNodeVO = SiteNodeController.getController().getSiteNodeVOWithId(siteNodeId);
 
