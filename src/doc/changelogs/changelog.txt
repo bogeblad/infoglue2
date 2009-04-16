@@ -72,6 +72,8 @@ Abbreviated Changelog from 2.9.7.1 Final
 - Worked on new feature "allowedComponentGroupNames" in ig:slot-tag.
 - Improved cacheing of components in add/change component operations.
 - Made it possible to add toolId as parameter to ViewCMSTool.action so you can bookmark alll tabls
+- Fixed bug in siteNodeVersion-cache-update
+- Added so you can minimize/reactivate the menu in structure tool to get a large work area for wide sites
 
 -------------------------------------------------------------------------------------
 - InfoGlue 2.9.6.3 Final

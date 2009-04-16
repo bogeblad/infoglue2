@@ -32,6 +32,20 @@
 			//alert("defaultMenuSize" + defaultMenuSize)
 			this.document.getElementById('mainarea').cols=defaultMenuSize;
 		}
+
+		function minimizeMenu()
+		{
+			var size = "20,*";
+			this.document.getElementById('mainarea').cols=size;
+			
+			if(document.cookie != document.cookie)
+				index = document.cookie.indexOf(cookie_name);
+			else
+				index = -1;
+			
+			if (index == -1)
+				document.cookie=cookie_name+"="+size+"; expires=Monday, 04-Apr-2010 05:00:00 GMT";
+		}
 		
 		function increaseSize()
 		{
