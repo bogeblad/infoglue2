@@ -106,10 +106,22 @@
 		<tr>
 			<td colspan="5" height="1" bgcolor="#F0E1B4"><img src="images/trans.gif" width="1" height="1"></td>
 		</tr>
+		#set($prevId = -1)
 		#set($isOdd = true)
 		#set($sortedComponents = $this.getSortedComponents($sortProperty))
 		#foreach ($content in $sortedComponents)
-			#if($filterRepositoryId == -1 || $content.repositoryId == $filterRepositoryId)
+			#set($duplicate = false)
+			#if($prevId == $content.id)
+				#set($duplicate = true)
+			#end
+			#set($prevId = $content.id)
+			
+			#set($hasAccessToContent = true)
+			#if($content.isProtected == 1)
+				#set($hasAccessToContent = $this.hasAccessTo("Component.Select", "$content.id"))
+			#end
+			
+			#if($hasAccessToContent && !$duplicate && ($filterRepositoryId == -1 || $content.repositoryId == $filterRepositoryId || $this.getIsPagePartTemplate($content.contentTypeDefinitionId)))
 
 				#if($isOdd)
 					#set($class = "class='lightapricot'")
