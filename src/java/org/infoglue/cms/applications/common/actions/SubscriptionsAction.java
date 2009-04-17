@@ -149,18 +149,25 @@ public class SubscriptionsAction extends InfoGlueAbstractAction
     		}
     	}
     	
-	    for(int i=0; i<subscribedInterceptionPointId.length; i++)
+    	if(subscribedInterceptionPointId != null)
     	{
-    		Integer interceptionPointId = subscribedInterceptionPointId[i];
-    		SubscriptionVO subscriptionVO = new SubscriptionVO();
-    		subscriptionVO.setInterceptionPointId(interceptionPointId);
-        	subscriptionVO.setName(name);
-        	subscriptionVO.setIsGlobal(false);
-    		subscriptionVO.setEntityName(entityName);
-    		subscriptionVO.setEntityId(entityId);
-    		subscriptionVO.setUserName(this.getInfoGluePrincipal().getName());
-    		
-    		subscriptionsController.create(subscriptionVO);
+		    for(int i=0; i<subscribedInterceptionPointId.length; i++)
+	    	{
+	    		Integer interceptionPointId = subscribedInterceptionPointId[i];
+	    		SubscriptionVO subscriptionVO = new SubscriptionVO();
+	    		subscriptionVO.setInterceptionPointId(interceptionPointId);
+	        	subscriptionVO.setName(name);
+	        	subscriptionVO.setIsGlobal(false);
+	    		subscriptionVO.setEntityName(entityName);
+	    		subscriptionVO.setEntityId(entityId);
+	    		subscriptionVO.setUserName(this.getInfoGluePrincipal().getName());
+	    		
+	    		subscriptionsController.create(subscriptionVO);
+	    	}
+    	}
+    	else
+    	{
+    		//Skipping as it was an empty choice
     	}
     	
         if(this.returnAddress != null && !this.returnAddress.equals(""))
