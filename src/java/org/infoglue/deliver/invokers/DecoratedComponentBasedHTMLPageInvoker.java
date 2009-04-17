@@ -44,10 +44,12 @@ import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
 import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
 import org.infoglue.cms.controllers.kernel.impl.simple.PageTemplateController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeController;
+import org.infoglue.cms.entities.content.Content;
 import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
 import org.infoglue.cms.entities.management.LanguageVO;
+import org.infoglue.cms.entities.structure.SiteNode;
 import org.infoglue.cms.entities.structure.SiteNodeVO;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.io.FileHelper;
@@ -320,6 +322,10 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		    boolean hasOpenInNewWindowAccess = AccessRightController.getController().getIsPrincipalAuthorized(templateController.getDatabase(), principal, "ComponentEditor.OpenInNewWindow", "");
 		    boolean hasViewSourceAccess = AccessRightController.getController().getIsPrincipalAuthorized(templateController.getDatabase(), principal, "ComponentEditor.ViewSource", "");
 
+		    boolean showNotifyUserOfPage 		= AccessRightController.getController().getIsPrincipalAuthorized(templateController.getDatabase(), principal, "ComponentEditor.NotifyUserOfPage", "");
+		    boolean showContentNotifications 	= AccessRightController.getController().getIsPrincipalAuthorized(templateController.getDatabase(), principal, "ComponentEditor.ContentNotifications", "");
+		    boolean showPageNotifications 		= AccessRightController.getController().getIsPrincipalAuthorized(templateController.getDatabase(), principal, "ComponentEditor.PageNotifications", "");
+
 		    String extraHeader 	= FileHelper.getFileAsString(new File(CmsPropertyHandler.getContextRootPath() + "preview/pageComponentEditorHeader.vm"), "iso-8859-1");
 		    String extraBody 	= FileHelper.getFileAsString(new File(CmsPropertyHandler.getContextRootPath() + "preview/pageComponentEditorBody.vm"), "iso-8859-1");
 		    
@@ -354,19 +360,24 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 
 		    Locale locale = templateController.getLocaleAvailableInTool(principal);
 		    
-			String submitToPublishHTML = getLocalizedString(locale, "deliver.editOnSight.submitToPublish");
-		    String addComponentHTML = getLocalizedString(locale, "deliver.editOnSight.addComponentHTML");
-			String deleteComponentHTML = getLocalizedString(locale, "deliver.editOnSight.deleteComponentHTML");
-			String changeComponentHTML = getLocalizedString(locale, "deliver.editOnSight.changeComponentHTML");
-			String accessRightsHTML = getLocalizedString(locale, "deliver.editOnSight.accessRightsHTML");
-			String pageComponentsHTML = getLocalizedString(locale, "deliver.editOnSight.pageComponentsHTML");
-			String viewSourceHTML = getLocalizedString(locale, "deliver.editOnSight.viewSourceHTML");
-			String componentEditorInNewWindowHTML = getLocalizedString(locale, "deliver.editOnSight.componentEditorInNewWindowHTML");
-			String savePageTemplateHTML = getLocalizedString(locale, "deliver.editOnSight.savePageTemplateHTML");
-			String savePagePartTemplateHTML = getLocalizedString(locale, "deliver.editOnSight.savePagePartTemplateHTML");
-			String editHTML = getLocalizedString(locale, "deliver.editOnSight.editHTML");
-			String editInlineHTML = getLocalizedString(locale, "deliver.editOnSight.editContentInlineLabel");
-			String propertiesHTML = getLocalizedString(locale, "deliver.editOnSight.propertiesHTML");
+			String submitToPublishHTML 				= getLocalizedString(locale, "deliver.editOnSight.submitToPublish");
+		    String addComponentHTML 				= getLocalizedString(locale, "deliver.editOnSight.addComponentHTML");
+			String deleteComponentHTML 				= getLocalizedString(locale, "deliver.editOnSight.deleteComponentHTML");
+			String changeComponentHTML 				= getLocalizedString(locale, "deliver.editOnSight.changeComponentHTML");
+			String accessRightsHTML 				= getLocalizedString(locale, "deliver.editOnSight.accessRightsHTML");
+			String pageComponentsHTML 				= getLocalizedString(locale, "deliver.editOnSight.pageComponentsHTML");
+			String viewSourceHTML 					= getLocalizedString(locale, "deliver.editOnSight.viewSourceHTML");
+			String componentEditorInNewWindowHTML 	= getLocalizedString(locale, "deliver.editOnSight.componentEditorInNewWindowHTML");
+			String savePageTemplateHTML 			= getLocalizedString(locale, "deliver.editOnSight.savePageTemplateHTML");
+			String savePagePartTemplateHTML 		= getLocalizedString(locale, "deliver.editOnSight.savePagePartTemplateHTML");
+			String editHTML 						= getLocalizedString(locale, "deliver.editOnSight.editHTML");
+			String editInlineHTML 					= getLocalizedString(locale, "deliver.editOnSight.editContentInlineLabel");
+			String propertiesHTML 					= getLocalizedString(locale, "deliver.editOnSight.propertiesHTML");
+
+	    	String notifyLabel 						= getLocalizedString(locale, "deliver.editOnSight.notifyLabel");
+	    	String subscribeToContentLabel 			= getLocalizedString(locale, "deliver.editOnSight.subscribeToContentLabel");
+	    	String subscribeToPageLabel 			= getLocalizedString(locale, "deliver.editOnSight.subscribeToPageLabel");
+	    	String translateContentLabel 			= getLocalizedString(locale, "deliver.editOnSight.translateContentLabel");
 
 			String saveTemplateUrl = "saveComponentStructure('" + componentEditorUrl + "CreatePageTemplate!input.action?contentId=" + templateController.getSiteNode(deliveryContext.getSiteNodeId()).getMetaInfoContentId() + "');";
 			String savePartTemplateUrl = "savePartComponentStructure('" + componentEditorUrl + "CreatePageTemplate!input.action?contentId=" + templateController.getSiteNode(deliveryContext.getSiteNodeId()).getMetaInfoContentId() + "');";
@@ -376,13 +387,25 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 				savePartTemplateUrl = "alert('Not authorized to save part template');";
 			}
 			
+			String returnAddress = "" + componentEditorUrl + "ViewInlineOperationMessages.action";
+
+	    	String notifyUrl 			= componentEditorUrl + "CreateEmail!inputChooseRecipientsV3.action?originalUrl=" + URLEncoder.encode(templateController.getOriginalFullURL().replaceFirst("cmsUserName=.*?", ""), "utf-8") + "&returnAddress=" + URLEncoder.encode(returnAddress, "utf-8") + "&extraTextProperty=tool.managementtool.createEmailNotificationPageExtraText.text"; 
+	    	String pageSubscriptionUrl 	= componentEditorUrl + "Subscriptions!input.action?interceptionPointCategory=SiteNodeVersion&entityName=" + SiteNode.class.getName() + "&entityId=" + templateController.getSiteNodeId() + "&returnAddress=" + URLEncoder.encode(returnAddress, "utf-8");
+
 			extraBody = extraBody.replaceAll("\\$siteNodeId", "" + templateController.getSiteNodeId());
 			extraBody = extraBody.replaceAll("\\$languageId", "" + templateController.getLanguageId());
 			extraBody = extraBody.replaceAll("\\$repositoryId", "" + templateController.getSiteNode().getRepositoryId());
 			extraBody = extraBody.replaceAll("\\$originalFullURL", URLEncoder.encode(templateController.getOriginalFullURL(), "UTF-8"));
+			extraBody = extraBody.replaceAll("\\$notifyUrl", notifyUrl);
+			extraBody = extraBody.replaceAll("\\$pageSubscriptionUrl", pageSubscriptionUrl);
 			
 			extraBody = extraBody.replaceAll("\\$editHTML", editHTML);
 			extraBody = extraBody.replaceAll("\\$submitToPublishHTML", submitToPublishHTML);
+			
+			extraBody = extraBody.replaceAll("\\$notifyHTML", notifyLabel);
+			extraBody = extraBody.replaceAll("\\$subscribeToContentHTML", subscribeToContentLabel);
+			extraBody = extraBody.replaceAll("\\$subscribeToPageHTML", subscribeToPageLabel);
+			
 			extraBody = extraBody.replaceAll("\\$addComponentHTML", addComponentHTML);
 			extraBody = extraBody.replaceAll("\\$deleteComponentHTML", deleteComponentHTML);
 			extraBody = extraBody.replaceAll("\\$changeComponentHTML", changeComponentHTML);
@@ -406,6 +429,10 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		    extraBody = extraBody.replaceAll("\\$pageStructureJavascript", "var hasPageStructureAccess = " + hasPageStructureAccess + ";");
 		    extraBody = extraBody.replaceAll("\\$openInNewWindowJavascript", "var hasOpenInNewWindowAccess = " + hasOpenInNewWindowAccess + ";");
 		    extraBody = extraBody.replaceAll("\\$allowViewSourceJavascript", "var hasAccessToViewSource = " + hasViewSourceAccess + ";");
+
+		    extraBody = extraBody.replaceAll("\\$submitToNotifyJavascript", "var hasAccessToNotifyUserOfPage = " + showNotifyUserOfPage + ";");
+		    extraBody = extraBody.replaceAll("\\$contentNotificationsJavascript", "var hasAccessToContentNotifications = " + showContentNotifications + ";");
+		    extraBody = extraBody.replaceAll("\\$pageNotificationsJavascript", "var hasAccessToPageNotifications = " + showPageNotifications + ";");
 
 		    //List tasks = getTasks();
 			//component.setTasks(tasks);
@@ -1622,14 +1649,10 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		boolean hasAccessToAccessRights 	= AccessRightController.getController().getIsPrincipalAuthorized(templateController.getDatabase(), principal, "ComponentEditor.ChangeSlotAccess", "");
 		boolean hasAccessToAddComponent 	= AccessRightController.getController().getIsPrincipalAuthorized(templateController.getDatabase(), principal, "ComponentEditor.AddComponent", "" + (component.getParentComponent() == null ? component.getContentId() : component.getParentComponent().getContentId()) + "_" + component.getSlotName());
 		boolean hasAccessToDeleteComponent 	= AccessRightController.getController().getIsPrincipalAuthorized(templateController.getDatabase(), principal, "ComponentEditor.DeleteComponent", "" + (component.getParentComponent() == null ? component.getContentId() : component.getParentComponent().getContentId()) + "_" + component.getSlotName());
-		
-		
 		boolean hasMoveComponentUpAccess 	= AccessRightController.getController().getIsPrincipalAuthorized(templateController.getDatabase(), principal, "ComponentEditor.hasMoveComponentUpAccess", "" + (component.getParentComponent() == null ? component.getContentId() : component.getParentComponent().getContentId()) + "_" + component.getSlotName());
 		boolean hasMoveComponentDownAccess 	= AccessRightController.getController().getIsPrincipalAuthorized(templateController.getDatabase(), principal, "ComponentEditor.hasMoveComponentDownAccess", "" + (component.getParentComponent() == null ? component.getContentId() : component.getParentComponent().getContentId()) + "_" + component.getSlotName());
-		
 		boolean hasAccessToChangeComponent 	= AccessRightController.getController().getIsPrincipalAuthorized(templateController.getDatabase(), principal, "ComponentEditor.ChangeComponent", "" + (component.getParentComponent() == null ? component.getContentId() : component.getParentComponent().getContentId()) + "_" + component.getSlotName());
 	    boolean hasSaveTemplateAccess 		= AccessRightController.getController().getIsPrincipalAuthorized(templateController.getDatabase(), principal, "StructureTool.SaveTemplate", "");
-	   
 	    boolean hasSubmitToPublishAccess 	= AccessRightController.getController().getIsPrincipalAuthorized(templateController.getDatabase(), principal, "ComponentEditor.SubmitToPublish", "");
 	    boolean hasPageStructureAccess 		= AccessRightController.getController().getIsPrincipalAuthorized(templateController.getDatabase(), principal, "ComponentEditor.PageStructure", "");
 	    boolean hasOpenInNewWindowAccess 	= AccessRightController.getController().getIsPrincipalAuthorized(templateController.getDatabase(), principal, "ComponentEditor.OpenInNewWindow", "");
@@ -1638,6 +1661,11 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 	    boolean hasCreateSubpageAccess 		= AccessRightController.getController().getIsPrincipalAuthorized(templateController.getDatabase(), principal, "ComponentEditor.CreateSubpage", "");
 	    boolean hasEditPageMetadataAccess 	= AccessRightController.getController().getIsPrincipalAuthorized(templateController.getDatabase(), principal, "ComponentEditor.EditPageMetadata", "");
 
+	    boolean showNotifyUserOfPage 		= AccessRightController.getController().getIsPrincipalAuthorized(templateController.getDatabase(), principal, "ComponentEditor.NotifyUserOfPage", "");
+	    boolean showContentNotifications 	= AccessRightController.getController().getIsPrincipalAuthorized(templateController.getDatabase(), principal, "ComponentEditor.ContentNotifications", "");
+	    boolean showPageNotifications 		= AccessRightController.getController().getIsPrincipalAuthorized(templateController.getDatabase(), principal, "ComponentEditor.PageNotifications", "");
+
+	    
 	    boolean hasMaxComponents = false;
 		if(component.getParentComponent() != null && component.getParentComponent().getSlotList() != null)
 		{
@@ -1734,11 +1762,19 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
     	String createSubPageToCurrentLabel 		= getLocalizedString(locale, "deliver.editOnSight.createSubPageToCurrentLabel");
     	String mySettingsLabel 					= getLocalizedString(locale, "deliver.editOnSight.mySettingsLabel");
 
+    	String notifyLabel 						= getLocalizedString(locale, "deliver.editOnSight.notifyLabel");
+    	String subscribeToContentLabel 			= getLocalizedString(locale, "deliver.editOnSight.subscribeToContentLabel");
+    	String subscribeToPageLabel 			= getLocalizedString(locale, "deliver.editOnSight.subscribeToPageLabel");
+    	String translateContentLabel 			= getLocalizedString(locale, "deliver.editOnSight.translateContentLabel");
+    	
 		String returnAddress = "" + componentEditorUrl + "ViewInlineOperationMessages.action";
 		
 		String metaDataUrl 			= componentEditorUrl + "ViewAndCreateContentForServiceBinding.action?siteNodeId=" + siteNodeId + "&repositoryId=" + repositoryId + "&changeStateToWorking=true";
     	String createSiteNodeUrl 	= componentEditorUrl + "CreateSiteNode!inputV3.action?isBranch=true&repositoryId=" + repositoryId + "&parentSiteNodeId=" + siteNodeId + "&languageId=" + languageId + "&returnAddress=" + URLEncoder.encode(returnAddress, "utf-8") + "&originalAddress=" + URLEncoder.encode(templateController.getCurrentPageUrl(), "utf-8");
     	String mySettingsUrl 		= componentEditorUrl + "ViewMySettings.action"; 
+
+    	String notifyUrl 			= componentEditorUrl + "CreateEmail!inputChooseRecipientsV3.action?originalUrl=" + URLEncoder.encode(templateController.getOriginalFullURL().replaceFirst("cmsUserName=.*?", ""), "utf-8") + "&returnAddress=" + URLEncoder.encode(returnAddress, "utf-8") + "&extraTextProperty=tool.managementtool.createEmailNotificationPageExtraText.text"; 
+    	String pageSubscriptionUrl 	= componentEditorUrl + "Subscriptions!input.action?interceptionPointCategory=SiteNodeVersion&entityName=" + SiteNode.class.getName() + "&entityId=" + siteNodeId + "&returnAddress=" + URLEncoder.encode(returnAddress, "utf-8");
 
 	    sb.append("<div id=\"editInlineDiv" + component.getId() + "\" class=\"igmenuitems linkEditArticle\"><a href='#'>" + editInlineHTML + "</a></div>");
 		sb.append("<div id=\"editDiv" + component.getId() + "\" class=\"igmenuitems linkEditArticle\"><a href='#'>" + editHTML + "</a></div>");
@@ -1750,7 +1786,15 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		
 	    if(hasSubmitToPublishAccess)
 	    	sb.append("<div class=\"igmenuitems linkPublish\" onclick=\"submitToPublish(" + siteNodeId + ", " + contentId + ", " + languageId + ", " + repositoryId + ", '" + URLEncoder.encode("" + componentEditorUrl + "ViewInlineOperationMessages.action", "UTF-8") + "');\"><a href='#'>" + submitToPublishHTML + "</a></div>");
-		if(hasAccessToAddComponent)
+
+	    if(showNotifyUserOfPage)
+	    	sb.append("<div class=\"igmenuitems linkNotify\" onclick=\"openInlineDiv('" + notifyUrl + "', 700, 750, true);\"><a name='notify'>" + notifyLabel + "</a></div>");
+	    if(showContentNotifications)
+	    	sb.append("<div id=\"subscribeContent" + component.getId() + "\" class=\"igmenuitems linkTakeContent\"><a name='subscribeContent'>" + subscribeToContentLabel + "</a></div>");
+	    if(showNotifyUserOfPage)
+	    	sb.append("<div class=\"igmenuitems linkTakePage\" onclick=\"openInlineDiv('" + pageSubscriptionUrl + "', 700, 750, true);\"><a name='subscribePage'>" + subscribeToPageLabel + "</a></div>");
+	    
+	    if(hasAccessToAddComponent)
 			sb.append("<div class=\"igmenuitems linkAddComponent\" onclick=\"insertComponent();\"><a href='#'>" + addComponentHTML + "</a></div>");
 		if(hasAccessToDeleteComponent)
 		    sb.append("<div class=\"igmenuitems linkDeleteComponent\" onclick=\"deleteComponent();\"><a href='#'>" + deleteComponentHTML + "</a></div>");

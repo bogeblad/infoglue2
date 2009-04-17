@@ -122,6 +122,10 @@ public class InterceptionPointController extends BaseController
 		systemInterceptionPoints.put("ComponentEditor.CreateSubpage", new InterceptionPointVO("ComponentEditor", "ComponentEditor.CreateSubpage", "This interception point limits who can see the create subpage menu in edit on sight", false));
 		systemInterceptionPoints.put("ComponentEditor.EditPageMetadata", new InterceptionPointVO("ComponentEditor", "ComponentEditor.EditPageMetadata", "This interception point limits who can see the edit page meta info menu in edit on sight", false));
 		
+		systemInterceptionPoints.put("ComponentEditor.NotifyUserOfPage", new InterceptionPointVO("ComponentEditor", "ComponentEditor.NotifyUserOfPage", "This interception point limits who can see the notify user menu in edit on sight", false));
+		systemInterceptionPoints.put("ComponentEditor.ContentNotifications", new InterceptionPointVO("ComponentEditor", "ComponentEditor.ContentNotifications", "This interception point limits who can see the content notification info menu in edit on sight", false));
+		systemInterceptionPoints.put("ComponentEditor.PageNotifications", new InterceptionPointVO("ComponentEditor", "ComponentEditor.PageNotifications", "This interception point limits who can see the page notification menu in edit on sight", false));
+				
 	    systemInterceptionPoints.put("ComponentPropertyEditor.EditProperty", new InterceptionPointVO("ComponentPropertyEditor", "ComponentPropertyEditor.EditProperty", "This interception point limits who can edit a specific component property", true));
 	    systemInterceptionPoints.put("ComponentPropertyEditor.EditAdvancedProperties", new InterceptionPointVO("ComponentPropertyEditor", "ComponentPropertyEditor.EditAdvancedProperties", "This interception point limits who can edit advanced properties on a component", false));
 	    

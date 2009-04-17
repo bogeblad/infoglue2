@@ -128,7 +128,7 @@
 		var windowHeight = getWindowHeight();
    		//alert("windowHeight:" + windowHeight);
    		if(windowHeight < height)
-   			height = windowHeight - 40;
+   			height = windowHeight - 60;
 
 		var windowWidth = getWindowWidth();
    		//alert("windowWidth:" + windowWidth);

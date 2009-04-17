@@ -60,6 +60,7 @@ import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
 import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.entities.management.Repository;
 import org.infoglue.cms.entities.management.impl.simple.RepositoryImpl;
+import org.infoglue.cms.entities.structure.SiteNode;
 import org.infoglue.cms.entities.structure.SiteNodeVO;
 import org.infoglue.cms.entities.workflow.impl.simple.EventImpl;
 import org.infoglue.cms.exception.SystemException;
@@ -898,6 +899,10 @@ public class PageEditorHelper extends BaseDeliveryController
 		    boolean hasViewSourceAccess 		= AccessRightController.getController().getIsPrincipalAuthorized(db, principal, "ComponentEditor.ViewSource", "");
 		    boolean hasMySettingsAccess 		= AccessRightController.getController().getIsPrincipalAuthorized(db, principal, "ComponentEditor.MySettings", "");
 
+		    boolean showNotifyUserOfPage 		= AccessRightController.getController().getIsPrincipalAuthorized(db, principal, "ComponentEditor.NotifyUserOfPage", "");
+		    boolean showContentNotifications 	= AccessRightController.getController().getIsPrincipalAuthorized(db, principal, "ComponentEditor.ContentNotifications", "");
+		    boolean showPageNotifications 		= AccessRightController.getController().getIsPrincipalAuthorized(db, principal, "ComponentEditor.PageNotifications", "");
+
 		    boolean hasMaxComponents = false;
 			if(component.getParentComponent() != null && component.getParentComponent().getSlotList() != null)
 			{
@@ -974,6 +979,11 @@ public class PageEditorHelper extends BaseDeliveryController
 	    	String createSubPageToCurrentLabel 		= getLocalizedString(locale, "deliver.editOnSight.createSubPageToCurrentLabel");
 	    	String mySettingsLabel 					= getLocalizedString(locale, "deliver.editOnSight.mySettingsLabel");
 
+	    	String notifyLabel 						= getLocalizedString(locale, "deliver.editOnSight.notifyLabel");
+	    	String subscribeToContentLabel 			= getLocalizedString(locale, "deliver.editOnSight.subscribeToContentLabel");
+	    	String subscribeToPageLabel 			= getLocalizedString(locale, "deliver.editOnSight.subscribeToPageLabel");
+	    	String translateContentLabel 			= getLocalizedString(locale, "deliver.editOnSight.translateContentLabel");
+
 		    Slot slot = null;
 		    InfoGlueComponent parentComponent = null;
 		    if(slotClicked == null || slotClicked.equalsIgnoreCase("true"))
@@ -1037,6 +1047,9 @@ public class PageEditorHelper extends BaseDeliveryController
 	    	String createSiteNodeUrl 	= componentEditorUrl + "CreateSiteNode!inputV3.action?isBranch=true&repositoryId=" + repositoryId + "&parentSiteNodeId=" + siteNodeId + "&languageId=" + languageId + "&returnAddress=" + URLEncoder.encode(returnAddress, "utf-8") + "&originalAddress=" + URLEncoder.encode(originalFullURL, "utf-8");
 	    	String mySettingsUrl 		= componentEditorUrl + "ViewMySettings.action"; 
 	    	
+	    	String notifyUrl 			= componentEditorUrl + "CreateEmail!inputChooseRecipientsV3.action?originalUrl=" + URLEncoder.encode(originalFullURL.replaceFirst("cmsUserName=.*?", ""), "utf-8") + "&returnAddress=" + URLEncoder.encode(returnAddress, "utf-8") + "&extraTextProperty=tool.managementtool.createEmailNotificationPageExtraText.text"; 
+	    	String pageSubscriptionUrl 	= componentEditorUrl + "Subscriptions!input.action?interceptionPointCategory=SiteNodeVersion&entityName=" + SiteNode.class.getName() + "&entityId=" + siteNodeId + "&returnAddress=" + URLEncoder.encode(returnAddress, "utf-8");
+
 		    if(treeItem != true)
 			    sb.append("<div id=\"editInlineDiv\" class=\"igmenuitems linkEditArticle\"><a href='#'>" + editInlineHTML + "</a></div>");
 		    if(treeItem != true)
@@ -1049,7 +1062,15 @@ public class PageEditorHelper extends BaseDeliveryController
 
 		    if(treeItem != true && hasSubmitToPublishAccess)
 		    	sb.append("<div class=\"igmenuitems linkPublish\" onClick=\"submitToPublish(" + siteNodeId + ", " + contentId + ", " + languageId + ", " + repositoryId + ", '" + URLEncoder.encode("" + componentEditorUrl + "ViewInlineOperationMessages.action", "UTF-8") + "');\"><a href='#'>" + submitToPublishHTML + "</a></div>");
-			if(hasAccessToAddComponent)
+
+		    if(showNotifyUserOfPage)
+		    	sb.append("<div class=\"igmenuitems linkNotify\" onclick=\"openInlineDiv('" + notifyUrl + "', 700, 750, true);\"><a name='notify'>" + notifyLabel + "</a></div>");
+		    if(showContentNotifications)
+		    	sb.append("<div id=\"subscribeContent\" class=\"igmenuitems linkTakeContent\"><a name='subscribeContent'>" + subscribeToContentLabel + "</a></div>");
+		    if(showPageNotifications)
+		    	sb.append("<div class=\"igmenuitems linkTakePage\" onclick=\"openInlineDiv('" + pageSubscriptionUrl + "', 700, 750, true);\"><a name='subscribePage'>" + subscribeToPageLabel + "</a></div>");
+
+		    if(hasAccessToAddComponent)
 				sb.append("<div class=\"igmenuitems linkAddComponent\" onClick=\"insertComponentByUrl('" + addComponentUrl + "');\"><a href='#'>" + addComponentHTML + "</a></div>");
 			if(hasAccessToDeleteComponent)
 			    sb.append("<div class=\"igmenuitems linkDeleteComponent\" onClick=\"deleteComponentByUrl('" + deleteComponentUrl + "');\"><a href='#'>" + deleteComponentHTML + "</a></div>");
