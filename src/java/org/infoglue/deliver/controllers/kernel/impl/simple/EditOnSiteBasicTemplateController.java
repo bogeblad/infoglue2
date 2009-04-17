@@ -125,7 +125,6 @@ public class EditOnSiteBasicTemplateController extends BasicTemplateController
             		"editOnSightAttributeNames[\"attribute" + contentId + attributeName + "_WYSIWYGExtraConfig\"]=\"" + WYSIWYGExtraConfig + "\";" +
             		"var element=$(\"#attribute" + contentId + attributeName + "\");" +
             		"element.dblclick(function(){editInline(" + this.getSiteNode().getRepositoryId() + "," + contentId + "," + languageId + ",true);" +
-            		//"element.dblclick(function (){/*" + setContentItemParametersJavascript + "*/editInline(" + this.getSiteNode().getRepositoryId() + ", " + contentId + "," + languageId + ", true);" +
             		"});" +
             		"</script>");
             
