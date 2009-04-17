@@ -291,6 +291,23 @@ public class ComponentController extends BaseController
 	}
 
 
+	public boolean getIsPagePartTemplate(ContentVO contentVO)
+	{
+		try
+		{
+			ContentTypeDefinitionVO ctdVO = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithId(contentVO.getContentTypeDefinitionId());
+			if(ctdVO != null && ctdVO.getName().equalsIgnoreCase("PagePartTemplate"))
+				return true;
+			else 
+				return false;			
+		}
+		catch (Exception e) 
+		{
+			logger.warn("Error looking up content type:" + e.getMessage());
+			return false;
+		}
+	}
+	
 	/**
 	 * This method returns the contents that are of contentTypeDefinition "HTMLTemplate"
 	 */
@@ -317,6 +334,9 @@ public class ComponentController extends BaseController
 		    while(resultsIterator.hasNext())
 		    {
 		        ContentVO contentVO = (ContentVO)resultsIterator.next();
+		        if(getIsPagePartTemplate(contentVO))
+		        	continue;
+		        
 		        boolean isAllowed = false;
 		        for(int i=0; i<allowedComponentNames.length; i++)
 		        {
@@ -335,6 +355,9 @@ public class ComponentController extends BaseController
 		    while(resultsIterator.hasNext())
 		    {
 		        ContentVO contentVO = (ContentVO)resultsIterator.next();
+		        if(getIsPagePartTemplate(contentVO))
+		        	continue;
+
 		        boolean isAllowed = true;
 		        for(int i=0; i<disallowedComponentNames.length; i++)
 		        {
@@ -353,8 +376,10 @@ public class ComponentController extends BaseController
 		    while(resultsIterator.hasNext())
 		    {
 		        ContentVO contentVO = (ContentVO)resultsIterator.next();
-			    LanguageVO masterLanguageVO = LanguageController.getController().getMasterLanguage(contentVO.getRepositoryId(), db);		
+		        if(getIsPagePartTemplate(contentVO))
+		        	continue;
 
+		        LanguageVO masterLanguageVO = LanguageController.getController().getMasterLanguage(contentVO.getRepositoryId(), db);		
 	        	ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getLatestContentVersionVO(contentVO.getContentId(), masterLanguageVO.getId(), db);
 
 	        	String groupName = null;
@@ -382,20 +407,22 @@ public class ComponentController extends BaseController
 		    while(resultsIterator.hasNext())
 		    {
 		        ContentVO contentVO = (ContentVO)resultsIterator.next();
+		        if(getIsPagePartTemplate(contentVO))
+		        	continue;
+
 				LanguageVO masterLanguageVO = LanguageController.getController().getMasterLanguage(contentVO.getRepositoryId(), db);		
+        		ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getLatestContentVersionVO(contentVO.getContentId(), masterLanguageVO.getId(), db);
+				String groupName = null;
+	        	if(contentVersionVO != null)
+			        groupName = ContentVersionController.getContentVersionController().getAttributeValue(contentVersionVO, "GroupName", false);
 
 		        boolean isAllowed = true;
 		        for(int i=0; i<allowedComponentGroups.length; i++)
 		        {
 		        	String allowedComponentGroup = allowedComponentGroups[i];
 		        	
-		        	ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getLatestContentVersionVO(contentVO.getContentId(), masterLanguageVO.getId(), db);
-		        	if(contentVersionVO != null)
-		        	{
-			        	String groupName = ContentVersionController.getContentVersionController().getAttributeValue(contentVersionVO, "GroupName", false);
-			        	if(groupName == null || groupName.equals(disallowedComponentGroups[i]))
-			                isAllowed = false;
-		        	}
+		        	if(groupName == null || groupName.equals(disallowedComponentGroups[i]))
+		                isAllowed = false;
 		        }
 		        
 		        if(!isAllowed)
