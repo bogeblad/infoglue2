@@ -34,7 +34,7 @@
 		<div class="inlineTabDiv" onfocus="this.blur();">	
 	
 			$ui.getString("tool.managementtool.from.label"):<br/>
-		  	<input type="textfield" id="from" name="from" class="longtextfield"/><br/>
+		  	<input type="textfield" id="from" name="from" class="longtextfield" value="$infoGluePrincipal.email"/><br/>
 		  	$ui.getString("tool.managementtool.subject.label"):<br/>
 		  	<input type="textfield" id="subject" name="subject" class="longtextfield"/><br/>
 			$ui.getString("tool.managementtool.yourMessage.label"):<br/>

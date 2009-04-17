@@ -195,23 +195,23 @@
 			
 			<div id="tabsContainer" class="flora">      
 				<ul>
-			        <li><a href="#usersTab"><span>Users</span></a></li>
-			        <li><a href="#rolesTab"><span>Roles</span></a></li>
-			        <li><a href="#groupsTab"><span>Groups</span></a></li>
+			        <li><a href="#usersTab"><span>$ui.getString("tool.managementtool.createEmailChooseRecipients.usersTabLabel")</span></a></li>
+			        <li><a href="#rolesTab"><span>$ui.getString("tool.managementtool.createEmailChooseRecipients.rolesTabLabel")</span></a></li>
+			        <li><a href="#groupsTab"><span>$ui.getString("tool.managementtool.createEmailChooseRecipients.groupsTabLabel")</span></a></li>
 			    </ul>
 	
 				<div id="usersTab" class="recipientTab inlineTabDiv">	
 					<table>
 						<tr>
 							<td colspan="3">
-								<span style="font-weight: bold;">Filter</span><br/>
+								<span style="font-weight: bold;">$ui.getString("tool.managementtool.createEmailChooseRecipients.filterLabel")</span><br/>
 								<input type="text" name="query" onkeyup="performAjaxSearch();" onchange="performAjaxSearch();"/>
 								<input type="button" value="Clear" onclick="document.editForm.elements['query'].value = ''; performAjaxSearch();"/>
 							</td>
 						</tr>
 						<tr>
 							<td valign="top">
-								<span style="font-weight: bold;">Available users</span><br/>					
+								<span style="font-weight: bold;">$ui.getString("tool.managementtool.createEmailChooseRecipients.availableUsersLabel")</span><br/>					
 								<div id="searchResultDiv" style="margin: 0px; float: left;">			
 									<select name="searchResult" size="10" class="userSelectBox" multiple="true">
 										#foreach ($userVO in $users)
@@ -227,7 +227,7 @@
 								<input type="button" class="moveButton" onclick="removeAll()" value="<<"/><br/>
 							</td>
 							<td valign="top">	
-								<span style="font-weight: bold;">Selected users</span><br/>							
+								<span style="font-weight: bold;">$ui.getString("tool.managementtool.createEmailChooseRecipients.selectedUsersLabel")</span><br/>							
 								<select name="userName" size="10" class="userSelectBox" multiple="true">
 								</select>	
 							</td>
