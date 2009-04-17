@@ -1156,10 +1156,15 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 		{
 			Element component = (Element)anl.item(0);
 			
+			ContentVO contentVO = ContentController.getContentController().getContentVOWithId(this.newComponentContentId);
+			ContentTypeDefinitionVO contentTypeDefinitionVO = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithId(contentVO.getContentTypeDefinitionId());
+			boolean isPagePartReference = false;
+			if(contentTypeDefinitionVO.getName().equals("PagePartTemplate"))
+				isPagePartReference = true;
+
 			ContentVersionVO newComponentContentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(this.newComponentContentId, this.masterLanguageVO.getId());
 			if(newComponentContentVersionVO == null)
 			{			
-				ContentVO contentVO = ContentController.getContentController().getContentVOWithId(this.newComponentContentId);
 				LanguageVO contentMasterLanguageVO = LanguageController.getController().getMasterLanguage(contentVO.getRepositoryId());
 				newComponentContentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(this.newComponentContentId, contentMasterLanguageVO.getId());
 			}
@@ -1175,24 +1180,48 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 				for(int i=0; i<subComponents.getLength(); i++)
 				{
 					Element subComponent = (Element)subComponents.item(i);
-					String slotId = subComponent.getAttribute("name");
-					logger.info("subComponent slotId:" + slotId);	
-					if(template.indexOf("id=\"" + slotId + "\"") == -1)
+					if(isPagePartReference)
 					{
-						logger.info("deleting subComponent as it was not part of the new template");
+						//Removing children if it was a pagePartReference
+						NodeList propertiesNodeList = subComponent.getElementsByTagName("properties");
+						if(propertiesNodeList.getLength() > 0)
+						{
+							Element propertiesElement = (Element)propertiesNodeList.item(0);
+							NodeList propertyNodeList = propertiesElement.getElementsByTagName("property");
+							for(int j=0; j<propertyNodeList.getLength(); j++)
+							{
+								Element property = (Element)propertyNodeList.item(j);
+								Node parentNode = property.getParentNode();
+								parentNode.removeChild(property);
+							}
+						}
+						
 						Node parentNode = subComponent.getParentNode();
 						parentNode.removeChild(subComponent);
-					}	
+					}
+					else
+					{
+						String slotId = subComponent.getAttribute("name");
+						logger.info("subComponent slotId:" + slotId);	
+						if(template.indexOf("id=\"" + slotId + "\"") == -1)
+						{
+							logger.info("deleting subComponent as it was not part of the new template");
+							Node parentNode = subComponent.getParentNode();
+							parentNode.removeChild(subComponent);
+						}	
+					}
 				}
 			}
 			
 			component.setAttribute("contentId", "" + this.newComponentContentId);
-			
+			if(isPagePartReference)
+				component.setAttribute("isPagePartReference", "true");
+				
 			String modifiedXML = XMLHelper.serializeDom(document, new StringBuffer()).toString(); 
 			logger.info("modifiedXML:" + modifiedXML);
 			
-			ContentVO contentVO = NodeDeliveryController.getNodeDeliveryController(siteNodeId, this.masterLanguageVO.getId(), contentId).getBoundContent(this.getInfoGluePrincipal(), siteNodeId, this.masterLanguageVO.getId(), true, "Meta information", DeliveryContext.getDeliveryContext());
-			ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentVO.getId(), this.masterLanguageVO.getId());
+			ContentVO boundContentVO = NodeDeliveryController.getNodeDeliveryController(siteNodeId, this.masterLanguageVO.getId(), contentId).getBoundContent(this.getInfoGluePrincipal(), siteNodeId, this.masterLanguageVO.getId(), true, "Meta information", DeliveryContext.getDeliveryContext());
+			ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(boundContentVO.getId(), this.masterLanguageVO.getId());
 			
 			ContentVersionController.getContentVersionController().updateAttributeValue(contentVersionVO.getContentVersionId(), "ComponentStructure", modifiedXML, this.getInfoGluePrincipal());
 		}
@@ -2184,5 +2213,22 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 	public void setHideComponentPropertiesOnLoad(boolean hideComponentPropertiesOnLoad)
 	{
 		this.hideComponentPropertiesOnLoad = hideComponentPropertiesOnLoad;
+	}
+	
+	public boolean getIsPagePartTemplate(Integer contentTypeDefinitionId)
+	{
+		try
+		{
+			ContentTypeDefinitionVO ctdVO = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithId(contentTypeDefinitionId);
+			if(ctdVO != null && ctdVO.getName().equalsIgnoreCase("PagePartTemplate"))
+				return true;
+			else 
+				return false;			
+		}
+		catch (Exception e) 
+		{
+			logger.warn("Error looking up content type:" + e.getMessage());
+			return false;
+		}
 	}
 }
