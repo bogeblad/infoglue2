@@ -342,7 +342,7 @@ public class ViewContentToolToolBarAction extends InfoGlueAbstractAction
 			if(this.contentVO.getContentTypeDefinitionId() != null)
 			{
 				ContentTypeDefinitionVO contentTypeDefinitionVO = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithId(this.contentVO.getContentTypeDefinitionId());
-				if(contentTypeDefinitionVO != null && (contentTypeDefinitionVO.getName().equalsIgnoreCase("HTMLTemplate") || contentTypeDefinitionVO.getName().equalsIgnoreCase("PageTemplate")))
+				if(contentTypeDefinitionVO != null && (contentTypeDefinitionVO.getName().equalsIgnoreCase("HTMLTemplate") || contentTypeDefinitionVO.getName().equalsIgnoreCase("PageTemplate") || contentTypeDefinitionVO.getName().equalsIgnoreCase("PagePartTemplate")))
 					buttons.add(getComponentAccessRightsButton());
 			}
 			
@@ -398,7 +398,7 @@ public class ViewContentToolToolBarAction extends InfoGlueAbstractAction
 			if(this.contentVO.getContentTypeDefinitionId() != null)
 			{
 				ContentTypeDefinitionVO contentTypeDefinitionVO = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithId(this.contentVO.getContentTypeDefinitionId());
-				if(contentTypeDefinitionVO != null && (contentTypeDefinitionVO.getName().equalsIgnoreCase("HTMLTemplate") || contentTypeDefinitionVO.getName().equalsIgnoreCase("PageTemplate")))
+				if(contentTypeDefinitionVO != null && (contentTypeDefinitionVO.getName().equalsIgnoreCase("HTMLTemplate") || contentTypeDefinitionVO.getName().equalsIgnoreCase("PageTemplate") || contentTypeDefinitionVO.getName().equalsIgnoreCase("PagePartTemplate")))
 					buttons.add(getComponentAccessRightsButton());
 			}
 			
@@ -501,7 +501,7 @@ public class ViewContentToolToolBarAction extends InfoGlueAbstractAction
 					if(this.contentVO.getContentTypeDefinitionId() != null)
 					{
 						ContentTypeDefinitionVO contentTypeDefinitionVO = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithId(this.contentVO.getContentTypeDefinitionId());
-						if(contentTypeDefinitionVO != null && (contentTypeDefinitionVO.getName().equalsIgnoreCase("HTMLTemplate") || contentTypeDefinitionVO.getName().equalsIgnoreCase("PageTemplate")))
+						if(contentTypeDefinitionVO != null && (contentTypeDefinitionVO.getName().equalsIgnoreCase("HTMLTemplate") || contentTypeDefinitionVO.getName().equalsIgnoreCase("PageTemplate") || contentTypeDefinitionVO.getName().equalsIgnoreCase("PagePartTemplate")))
 							buttons.add(getComponentAccessRightsButton());
 					}
 					
