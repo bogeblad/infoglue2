@@ -199,12 +199,6 @@ public class ExportRepositoryAction extends InfoGlueAbstractAction
 			infoGlueExportImpl.getRootContent().addAll(contents);
 			infoGlueExportImpl.getRootSiteNode().addAll(siteNodes);
 			
-			//infoGlueExportImpl.getRootContents().add((ContentImpl)content);
-			//infoGlueExportImpl.getRootSiteNodes().add((SiteNodeImpl)siteNode);
-			/*
-			infoGlueExportImpl.setRootContent((ContentImpl)content);
-			infoGlueExportImpl.setRootSiteNode((SiteNodeImpl)siteNode);
-			*/
 			infoGlueExportImpl.setContentTypeDefinitions(contentTypeDefinitions);
 			infoGlueExportImpl.setCategories(categories);
 			
@@ -217,9 +211,6 @@ public class ExportRepositoryAction extends InfoGlueAbstractAction
 			
 			osw.flush();
 			osw.close();
-			
-			//fos.flush();
-			//fos.close();
 			
 			db.rollback();
 			db.close();
@@ -235,7 +226,7 @@ public class ExportRepositoryAction extends InfoGlueAbstractAction
 	}
 
 
-	private void getContentPropertiesAndAccessRights(PropertySet ps, Hashtable<String, String> allContentProperties, List<AccessRight> allAccessRights, Content content, Database db) throws SystemException
+	public static void getContentPropertiesAndAccessRights(PropertySet ps, Hashtable<String, String> allContentProperties, List<AccessRight> allAccessRights, Content content, Database db) throws SystemException
 	{
 		String allowedContentTypeNames = ps.getString("content_" + content.getId() + "_allowedContentTypeNames");
 		if ( allowedContentTypeNames != null && !allowedContentTypeNames.equals(""))
@@ -304,7 +295,7 @@ public class ExportRepositoryAction extends InfoGlueAbstractAction
         }
 	}
 
-	private void getSiteNodePropertiesAndAccessRights(PropertySet ps, Hashtable<String, String> allSiteNodeProperties, List<AccessRight> allAccessRights, SiteNode siteNode, Database db) throws SystemException, Exception
+	public static void getSiteNodePropertiesAndAccessRights(PropertySet ps, Hashtable<String, String> allSiteNodeProperties, List<AccessRight> allAccessRights, SiteNode siteNode, Database db) throws SystemException, Exception
 	{
 	    String disabledLanguagesString = "" + ps.getString("siteNode_" + siteNode.getId() + "_disabledLanguages");
 	    String enabledLanguagesString = "" + ps.getString("siteNode_" + siteNode.getId() + "_enabledLanguages");
@@ -359,7 +350,7 @@ public class ExportRepositoryAction extends InfoGlueAbstractAction
         }
 	}
 
-	private Hashtable<String,String> getRepositoryProperties(PropertySet ps, Integer repositoryId) throws Exception
+	public static Hashtable<String,String> getRepositoryProperties(PropertySet ps, Integer repositoryId) throws Exception
 	{
 		Hashtable<String,String> properties = new Hashtable<String,String>();
 			    
