@@ -74,6 +74,17 @@ Abbreviated Changelog from 2.9.7.1 Final
 - Made it possible to add toolId as parameter to ViewCMSTool.action so you can bookmark alll tabls
 - Fixed bug in siteNodeVersion-cache-update
 - Added so you can minimize/reactivate the menu in structure tool to get a large work area for wide sites
+- Fixed access handling on Component.Select on PagePartTemplates as well
+- Fixed better localization support for notification and subscriptions
+- Made change component special treat pagePartTemplates. Now no subcomponents or properties are kept when changing to a pagePartTemplate.
+- Allways allow PagePartTemplates in component select no matter what slot limitations are made. 
+- Added 3 new options to the edit on sight menu:
+	- NotifyUserOfPage - lets you directly send a notification to a fellow user by mail about a page.
+	- ContentNotifications - Let's you subscribe (mail) to events on the particualar content (if right clicked on text).
+	- PageNotifications - Let's you subscribe (mail) to events on the current page.
+- Improved cms UpdateCache.action so it clears caches better. Mostly for a dual admin-tool setup.
+- Added a repository copy feature and enhanced the import repository feature so you can substitute words in the copy.
+
 
 -------------------------------------------------------------------------------------
 - InfoGlue 2.9.6.3 Final
