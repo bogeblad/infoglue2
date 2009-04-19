@@ -29,15 +29,26 @@ import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.applications.common.actions.SimpleXmlServiceAction;
 import org.infoglue.cms.entities.content.impl.simple.ContentImpl;
 import org.infoglue.cms.entities.content.impl.simple.ContentVersionImpl;
+import org.infoglue.cms.entities.content.impl.simple.DigitalAssetImpl;
 import org.infoglue.cms.entities.content.impl.simple.MediumContentImpl;
+import org.infoglue.cms.entities.content.impl.simple.MediumDigitalAssetImpl;
 import org.infoglue.cms.entities.content.impl.simple.SmallContentImpl;
 import org.infoglue.cms.entities.content.impl.simple.SmallContentVersionImpl;
+import org.infoglue.cms.entities.content.impl.simple.SmallDigitalAssetImpl;
 import org.infoglue.cms.entities.content.impl.simple.SmallestContentVersionImpl;
 import org.infoglue.cms.entities.content.impl.simple.SmallishContentImpl;
+import org.infoglue.cms.entities.management.impl.simple.AvailableServiceBindingImpl;
 import org.infoglue.cms.entities.management.impl.simple.ContentTypeDefinitionImpl;
 import org.infoglue.cms.entities.management.impl.simple.InterceptionPointImpl;
 import org.infoglue.cms.entities.management.impl.simple.InterceptorImpl;
 import org.infoglue.cms.entities.management.impl.simple.RepositoryImpl;
+import org.infoglue.cms.entities.management.impl.simple.SmallAvailableServiceBindingImpl;
+import org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl;
+import org.infoglue.cms.entities.structure.impl.simple.SiteNodeVersionImpl;
+import org.infoglue.cms.entities.structure.impl.simple.SmallSiteNodeImpl;
+import org.infoglue.cms.entities.structure.impl.simple.SmallSiteNodeVersionImpl;
+import org.infoglue.cms.util.CmsPropertyHandler;
+import org.infoglue.deliver.controllers.kernel.impl.simple.DigitalAssetDeliveryController;
 import org.infoglue.deliver.util.CacheController;
 
 
@@ -104,59 +115,130 @@ public class UpdateCacheAction extends InfoGlueAbstractAction
 				Object[] ids = {new Integer(objectId)};
 				
 				CacheController.clearCache(types, ids);
-									 
-				//If it's an contentVersion we should delete all images it might have generated from attributes.
-				/*
-				if(Class.forName(className).getName().equals(ContentVersionImpl.class.getName()))
-				{
-					logger.info("We should delete all images with contentVersionId " + objectId);
-					DigitalAssetDeliveryController.getDigitalAssetDeliveryController().deleteContentVersionAssets(new Integer(objectId));
-				}		
-				*/
 				
-				//If it's an ContentImpl we update SmallContentImpl as well.
 				if(Class.forName(className).getName().equals(ContentImpl.class.getName()))
 				{
-					CacheController.clearCache(SmallContentImpl.class, new Object[]{new Integer(objectId)});
-					CacheController.clearCache(SmallishContentImpl.class, new Object[]{new Integer(objectId)});
-					CacheController.clearCache(MediumContentImpl.class, new Object[]{new Integer(objectId)});
+				    logger.info("We clear all small contents as well " + objectId);
+					Class typesExtra = SmallContentImpl.class;
+					Object[] idsExtra = {new Integer(objectId)};
+					CacheController.clearCache(typesExtra, idsExtra);
+
+				    logger.info("We clear all smallish contents as well " + objectId);
+					Class typesExtraSmallish = SmallishContentImpl.class;
+					Object[] idsExtraSmallish = {new Integer(objectId)};
+					CacheController.clearCache(typesExtraSmallish, idsExtraSmallish);
+
+					logger.info("We clear all medium contents as well " + objectId);
+					Class typesExtraMedium = MediumContentImpl.class;
+					Object[] idsExtraMedium = {new Integer(objectId)};
+					CacheController.clearCache(typesExtraMedium, idsExtraMedium);
 				}
-				
-				//If it's an ContentImpl we update SmallContentImpl as well.
 				if(Class.forName(className).getName().equals(ContentVersionImpl.class.getName()))
 				{
-					CacheController.clearCache(SmallContentVersionImpl.class, new Object[]{new Integer(objectId)});
-					CacheController.clearCache(SmallestContentVersionImpl.class, new Object[]{new Integer(objectId)});
+				    logger.info("We clear all small contents as well " + objectId);
+					Class typesExtra = SmallContentVersionImpl.class;
+					Object[] idsExtra = {new Integer(objectId)};
+					CacheController.clearCache(typesExtra, idsExtra);
+
+					logger.info("We clear all small contents as well " + objectId);
+					Class typesExtraSmallest = SmallestContentVersionImpl.class;
+					Object[] idsExtraSmallest = {new Integer(objectId)};
+					CacheController.clearCache(typesExtraSmallest, idsExtraSmallest);
 				}
+				else if(Class.forName(className).getName().equals(AvailableServiceBindingImpl.class.getName()))
+				{
+				    Class typesExtra = SmallAvailableServiceBindingImpl.class;
+					Object[] idsExtra = {new Integer(objectId)};
+					CacheController.clearCache(typesExtra, idsExtra);
+				}
+				else if(Class.forName(className).getName().equals(SiteNodeImpl.class.getName()))
+				{
+				    Class typesExtra = SmallSiteNodeImpl.class;
+					Object[] idsExtra = {new Integer(objectId)};
+					CacheController.clearCache(typesExtra, idsExtra);
+				}
+				else if(Class.forName(className).getName().equals(SiteNodeVersionImpl.class.getName()))
+				{
+				    Class typesExtra = SmallSiteNodeVersionImpl.class;
+					Object[] idsExtra = {new Integer(objectId)};
+					CacheController.clearCache(typesExtra, idsExtra);
+				}
+				else if(Class.forName(className).getName().equals(DigitalAssetImpl.class.getName()))
+				{
+					CacheController.clearCache("digitalAssetCache");
+					Class typesExtra = SmallDigitalAssetImpl.class;
+					Object[] idsExtra = {new Integer(objectId)};
+					CacheController.clearCache(typesExtra, idsExtra);
+
+					Class typesExtraMedium = MediumDigitalAssetImpl.class;
+					Object[] idsExtraMedium = {new Integer(objectId)};
+					CacheController.clearCache(typesExtraMedium, idsExtraMedium);
+				}
+
+				CacheController.clearCache("workflowCache");
+				CacheController.clearCache("myActiveWorkflows");
+				CacheController.clearCache("workflowNameCache");
 				
-				if(Class.forName(className).getClass().getName().equals(RepositoryImpl.class.getName()))
+				if(className.equals("ServerNodeProperties"))
 				{
-					CacheController.clearCache("repositoryCache");
+			        CacheController.clearServerNodeProperty(true);
+			        CacheController.clearCastorCaches();
+			        CacheController.clearCaches(null, null, null);
 				}
-				else if(Class.forName(className).getClass().getName().equals(InterceptionPointImpl.class.getName()))
+				if(className.indexOf("AccessRight") > 0 || className.indexOf("SystemUser") > 0 || className.indexOf("Role") > 0  || className.indexOf("Group") > 0 || className.indexOf("Intercept") > 0)
 				{
-					CacheController.clearCache("interceptionPointCache");
-					CacheController.clearCache("interceptorsCache");
+					CacheController.clearCache("personalAuthorizationCache");
 				}
-				else if(Class.forName(className).getClass().getName().equals(InterceptorImpl.class.getName()))
-				{
-					CacheController.clearCache("interceptionPointCache");
-					CacheController.clearCache("interceptorsCache");
-				}
-				else if(Class.forName(className).getClass().getName().equals(ContentTypeDefinitionImpl.class.getName()))
+				if(className.indexOf("ContentTypeDefinition") > 0)
 				{
 					CacheController.clearCache("contentTypeDefinitionCache");
 				}
-				else if(Class.forName(className).getClass().getName().equals(ContentImpl.class.getName()))
+				if(className.indexOf("ServiceBinding") > 0 || className.indexOf("Qualifyer") > 0 || className.indexOf("SiteNodeVersion") > 0 || className.indexOf("ContentVersion") > 0 || className.indexOf("Content") > 0 || className.indexOf("AccessRight") > 0 || className.indexOf("SystemUser") > 0 || className.indexOf("Role") > 0  || className.indexOf("Group") > 0)
 				{
-					CacheController.clearCache("childContentCache");
+					CacheController.clearCache("boundContentCache");
 				}
-				/*
-				else if(Class.forName(className).getClass().getName().equals(ContentImpl.class.getName()))
+				if(className.indexOf("SystemUser") > 0 || className.indexOf("Role") > 0  || className.indexOf("Group") > 0)
 				{
-					CacheController.clearCache("childContentCache");
+					CacheController.clearCache("principalCache");
+					CacheController.clearCache("principalPropertyValueCache");
+					CacheController.clearCache("userCache");
 				}
-				*/
+				if(className.indexOf("Intercept") > 0)
+				{
+					CacheController.clearCache("interceptorsCache");
+					CacheController.clearCache("interceptionPointCache");
+				}
+				if(className.indexOf("AvailableServiceBinding") > 0)
+				{
+					CacheController.clearCache("availableServiceBindingCache");					
+				}
+				if(className.indexOf("Content") > 0)
+				{
+					CacheController.clearCache("childContentCache");					
+				}
+				if(className.indexOf("SiteNode") > 0 || className.indexOf("Content") > 0)
+				{
+					CacheController.clearCache("NavigationCache");					
+				}
+				if(className.indexOf("DigitalAsset") > 0 || className.indexOf("ContentVersion") > 0)
+				{
+					CacheController.clearCache("digitalAssetCache");					
+				}
+				if(className.indexOf("Language") > -1)
+				{
+					CacheController.clearCache("languageCache");
+				}
+				if(className.indexOf("Repository") > -1 || className.indexOf("Language") > -1)
+				{
+					CacheController.clearCache("repositoryLanguageListCache");
+					CacheController.clearCache("masterLanguageCache");
+				}
+				if(className.indexOf("Repository") > -1)
+				{
+					CacheController.clearCache("repositoryCache");
+					CacheController.clearCache("parentRepository");
+					CacheController.clearCache("masterRepository");
+				}
 			}
 		}
 		catch(Exception e)
