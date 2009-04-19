@@ -39,7 +39,7 @@ import java.lang.reflect.Array;
  * A  FieldHandler for the XML Schema Collection type.
  * TODO : support all kind of XSList
  * @author <a href="blandin@intalio.com">Arnaud Blandin</a>
- * @version $Revision: 1.2 $ $Date: 2008/07/03 11:49:56 $
+ * @version $Revision: 1.3 $ $Date: 2009/04/19 11:09:35 $
 **/
 public class DigitalAssetBytesHandler implements FieldHandler 
 {	
@@ -84,7 +84,7 @@ public class DigitalAssetBytesHandler implements FieldHandler
     public Object getValue( Object object ) throws IllegalStateException
     {
     	DigitalAssetImpl asset = (DigitalAssetImpl)object;
-    	if(getMaxSize() != -1 && asset.getAssetFileSize() > getMaxSize())
+    	if((getMaxSize() != -1 && asset.getAssetFileSize() > getMaxSize()) || asset.getAssetFileSize() == 0)
     	{
         	return "archived".getBytes();
     	}
