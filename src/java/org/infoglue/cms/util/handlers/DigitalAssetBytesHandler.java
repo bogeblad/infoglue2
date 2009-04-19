@@ -23,12 +23,14 @@
 
 package org.infoglue.cms.util.handlers;
 
+import org.apache.log4j.Logger;
 import org.exolab.castor.xml.TypeValidator;
 import org.exolab.castor.xml.ValidationException;
 import org.exolab.castor.mapping.FieldHandler;
 import org.exolab.castor.mapping.ValidityException;
 import org.exolab.castor.xml.XMLFieldHandler;
 import org.exolab.castor.xml.handlers.CollectionFieldHandler;
+import org.infoglue.cms.applications.managementtool.actions.ImportRepositoryAction;
 import org.infoglue.cms.entities.content.impl.simple.DigitalAssetImpl;
 
 import java.util.StringTokenizer;
@@ -39,10 +41,12 @@ import java.lang.reflect.Array;
  * A  FieldHandler for the XML Schema Collection type.
  * TODO : support all kind of XSList
  * @author <a href="blandin@intalio.com">Arnaud Blandin</a>
- * @version $Revision: 1.6 $ $Date: 2009/04/19 18:47:06 $
+ * @version $Revision: 1.7 $ $Date: 2009/04/19 19:06:15 $
 **/
 public class DigitalAssetBytesHandler implements FieldHandler 
 {	
+    public final static Logger logger = Logger.getLogger(DigitalAssetBytesHandler.class.getName());
+
 	private static int maxSize = -1;
 
     private static ThreadLocal maxSizeTL = new ThreadLocal() 
@@ -95,9 +99,9 @@ public class DigitalAssetBytesHandler implements FieldHandler
     	
     	if(returnArray == null)
     	{
-    		System.out.println("returnArray:" + returnArray + " for " + asset.getId() + "-" + asset.getAssetKey());
+    		logger.warn("returnArray:" + returnArray + " for " + asset.getId() + "-" + asset.getAssetKey());
         	returnArray = "archived".getBytes();
-        	System.out.println("fixed returnArray:" + returnArray + " for " + asset.getId() + "-" + asset.getAssetKey());
+        	logger.warn("fixed returnArray:" + returnArray + " for " + asset.getId() + "-" + asset.getAssetKey());
     	}
     	
     	return returnArray;
@@ -121,7 +125,7 @@ public class DigitalAssetBytesHandler implements FieldHandler
     	if(value != null)
     		asset.setAssetBytes((byte[])value);
     	else
-    		asset.setAssetBytes(null);
+    		asset.setAssetBytes("archived".getBytes());
     }
 
 
