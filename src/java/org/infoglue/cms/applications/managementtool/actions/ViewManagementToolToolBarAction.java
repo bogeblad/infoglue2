@@ -407,7 +407,7 @@ public class ViewManagementToolToolBarAction extends InfoGlueAbstractAction
 		List buttons = new ArrayList();
 		buttons.add(new ImageButton("CreateRepository!input.action", getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.newRepository"), "tool.managementtool.createRepository.header"));	
 		buttons.add(new ImageButton(true, "javascript:submitListForm('repository');", getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.deleteRepository"), "tool.managementtool.deleteRepositories.header"));
-		buttons.add(new ImageButton(true, "javascript:openPopup('ImportRepository!input.action', 'Import', 'width=400,height=250,resizable=no');", getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.importRepository"), getLocalizedString(getSession().getLocale(), "tool.managementtool.importRepository.header")));	
+		buttons.add(new ImageButton(true, "javascript:openPopup('ImportRepository!input.action', 'Import', 'width=600,height=500,resizable=no');", getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.importRepository"), getLocalizedString(getSession().getLocale(), "tool.managementtool.importRepository.header")));	
 		
 		return buttons;
 	}
@@ -417,6 +417,7 @@ public class ViewManagementToolToolBarAction extends InfoGlueAbstractAction
 		List buttons = new ArrayList();
 		buttons.add(new ImageButton("Confirm.action?header=tool.managementtool.deleteRepository.header&yesDestination=" + URLEncoder.encode("DeleteRepository.action?repositoryId=" + this.repositoryId, "UTF-8") + "&noDestination=" + URLEncoder.encode("ViewListRepository.action?title=Repositories", "UTF-8") + "&message=tool.managementtool.deleteRepository.text&extraParameters=" + this.name, getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.deleteRepository"), "tool.managementtool.deleteRepository.header"));
 		buttons.add(new ImageButton(true, "javascript:openPopup('ExportRepository!input.action?repositoryId=" + this.repositoryId + "', 'Export', 'width=600,height=500,resizable=no,scrollbars=yes');", getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.exportRepository"), getLocalizedString(getSession().getLocale(), "tool.managementtool.exportRepository.header")));	
+		buttons.add(new ImageButton(true, "javascript:openPopup('ImportRepository!inputCopy.action?repositoryId=" + this.repositoryId + "', 'Export', 'width=600,height=500,resizable=no,scrollbars=yes');", getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.copyRepository"), getLocalizedString(getSession().getLocale(), "tool.managementtool.importRepositoryCopy.header")));	
 		buttons.add(new ImageButton("ViewRepositoryProperties.action?repositoryId=" + this.repositoryId, getLocalizedString(getSession().getLocale(), "images.global.buttons.editProperties"), "Edit Properties", new Integer(22), new Integer(80)));
 		
 		String returnAddress = URLEncoder.encode(URLEncoder.encode("ViewRepository.action?repositoryId=" + this.repositoryId, "UTF-8"), "UTF-8");

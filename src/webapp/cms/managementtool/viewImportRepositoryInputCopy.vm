@@ -4,7 +4,7 @@
 
 <html>
 <head>
-	<title>$ui.getString("tool.managementtool.importRepository.header")</title>
+	<title>$ui.getString("tool.managementtool.importRepositoryCopy.header")</title>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 	
 	<link rel="stylesheet" type="text/css" href="css/cms.css" /> 
@@ -39,33 +39,28 @@
 <body class="managementtooledit">
 
 <div id="savingLayer" class="infobackground">
-	<div class="infoheader">Exporting repository</div>
+	<div class="infoheader">Copying repository</div>
 	<div class="infobody">
-		<br>Exporting repository - please wait!<br><br>
+		<br>Copying repository - please wait!<br><br>
 		<img src="images/progressbar.gif">
 	</div>
 </div>
 
 <div class="fullymarginalized">
 
-<form enctype="multipart/form-data" name="editForm" method="POST" action="ImportRepository.action">
+<form name="editForm" method="POST" action="ImportRepository!copy.action">
+<input type="hidden" name="repositoryId" value="$repositoryId"/>
 <table width="300" border="0">
 	<tr>
 		<td class="biglabel">
-			$ui.getString("tool.managementtool.importRepository.header")
+			$ui.getString("tool.managementtool.importRepositoryCopy.header")
 		</td>
 	</tr>		
 	<tr>
 		<td>
-			$ui.getString("tool.managementtool.importRepository.introduction")<br/><br/>
+			$ui.getString("tool.managementtool.importRepositoryCopy.introduction")<br/><br/>
 		</td>
 	</tr>	
-	<tr>
-		<td>
-			$ui.getString("tool.managementtool.importRepository.fileUploadFileLabel")<br/>
-			<input size=30 type="FILE" name="file1">
-		</td>
-	</tr>
 	<tr>
 		<td>
 			$ui.getString("tool.managementtool.importRepository.replacementsLabel")<br/>
@@ -74,7 +69,7 @@
 	</tr>
 	<tr>
 		<td>
-			$ui.getString("tool.managementtool.importRepository.onlyLatestVersionsLabel")<br/>
+			$ui.getString("tool.managementtool.importRepositoryCopy.onlyLatestVersionsLabel")<br/>
 			<input type="checkbox" name="onlyLatestVersions" value="true" checked="checked">
 		</td>
 	</tr>

@@ -23,24 +23,34 @@
 
 package org.infoglue.cms.applications.managementtool.actions;
 
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
 import org.exolab.castor.jdo.TransactionNotInProgressException;
 import org.exolab.castor.mapping.Mapping;
+import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.Unmarshaller;
+import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
+import org.infoglue.cms.controllers.kernel.impl.simple.AccessRightController;
 import org.infoglue.cms.controllers.kernel.impl.simple.AvailableServiceBindingController;
 import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
 import org.infoglue.cms.controllers.kernel.impl.simple.CategoryController;
@@ -49,7 +59,9 @@ import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionCont
 import org.infoglue.cms.controllers.kernel.impl.simple.ImportController;
 import org.infoglue.cms.controllers.kernel.impl.simple.InterceptionPointController;
 import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
+import org.infoglue.cms.controllers.kernel.impl.simple.RepositoryController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ServiceDefinitionController;
+import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeTypeDefinitionController;
 import org.infoglue.cms.entities.content.Content;
 import org.infoglue.cms.entities.content.ContentCategory;
@@ -67,9 +79,11 @@ import org.infoglue.cms.entities.management.CategoryVO;
 import org.infoglue.cms.entities.management.ContentTypeDefinition;
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
 import org.infoglue.cms.entities.management.InterceptionPoint;
+import org.infoglue.cms.entities.management.InterceptionPointVO;
 import org.infoglue.cms.entities.management.Language;
 import org.infoglue.cms.entities.management.Repository;
 import org.infoglue.cms.entities.management.RepositoryLanguage;
+import org.infoglue.cms.entities.management.RepositoryVO;
 import org.infoglue.cms.entities.management.ServiceDefinition;
 import org.infoglue.cms.entities.management.SiteNodeTypeDefinition;
 import org.infoglue.cms.entities.management.impl.simple.AvailableServiceBindingImpl;
@@ -90,6 +104,8 @@ import org.infoglue.cms.entities.structure.impl.simple.SiteNodeVersionImpl;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.FileUploadHelper;
+import org.infoglue.cms.util.handlers.DigitalAssetBytesHandler;
+import org.infoglue.deliver.util.Timer;
 
 import com.opensymphony.module.propertyset.PropertySet;
 import com.opensymphony.module.propertyset.PropertySetManager;
@@ -107,6 +123,10 @@ public class ImportRepositoryAction extends InfoGlueAbstractAction
     public final static Logger logger = Logger.getLogger(ImportRepositoryAction.class.getName());
 
 	private String onlyLatestVersions = "true";
+	private Integer repositoryId = null;
+	
+	private String standardReplacement = null;
+	private String replacements = null;
 	
 	/**
 	 * This shows the dialog before export.
@@ -116,9 +136,20 @@ public class ImportRepositoryAction extends InfoGlueAbstractAction
 
 	public String doInput() throws Exception
 	{
+		standardReplacement = "stateYourOldSiteName=stateYourNewSiteName";
+
 		return "input";
 	}
-	
+
+	public String doInputCopy() throws Exception
+	{
+		RepositoryVO repositoryVO = RepositoryController.getController().getRepositoryVOWithId(repositoryId);
+		
+		standardReplacement = repositoryVO.getName() + "=" + repositoryVO.getName() + " copy";
+		
+		return "inputCopy";
+	}
+
 	/**
 	 * This handles the actual importing.
 	 */
@@ -131,7 +162,6 @@ public class ImportRepositoryAction extends InfoGlueAbstractAction
 		{
 			//now restore the value and list what we get
 			File file = FileUploadHelper.getUploadedFile(ActionContext.getContext().getMultiPartRequest());
-			//File file = new File("C:\\Program Files\\Apache Software Foundation\\Tomcat 5.5\\webapps\\infoglueCMS\\digitalAssets\\Export__genus.gu.se_2_2007-02-15.xml");
 			if(file == null || !file.exists())
 				throw new SystemException("The file upload must have gone bad as no file reached the import utility.");
 			
@@ -181,212 +211,67 @@ public class ImportRepositoryAction extends InfoGlueAbstractAction
 			Map siteNodeIdMap = new HashMap();
 			List allContentIds = new ArrayList();
 
-			ImportController.getController().importRepository(db, map, file, encoding, version, onlyLatestVersions, contentIdMap, siteNodeIdMap, allContentIds);
-			
-			/*
-			//String encoding = "ISO-8859-1";
-	        FileInputStream fis = new FileInputStream(file);
-            InputStreamReader reader = new InputStreamReader(fis, encoding);
-			//Reader reader = new FileReader(file);
-
-			Unmarshaller unmarshaller = new Unmarshaller(map);
-			unmarshaller.setWhitespacePreserve(true);
-			InfoGlueExportImpl infoGlueExportImplRead = (InfoGlueExportImpl)unmarshaller.unmarshal(reader);
-			Collection contentTypeDefinitions = infoGlueExportImplRead.getContentTypeDefinitions();
-			logger.info("Found " + contentTypeDefinitions.size() + " content type definitions");
-			Collection categories = infoGlueExportImplRead.getCategories();
-			logger.info("Found " + categories.size() + " categories");
-
-			Map categoryIdMap = new HashMap();
-			Map contentTypeIdMap = new HashMap();
-
-			importCategories(categories, null, categoryIdMap, db);
-			updateContentTypeDefinitions(contentTypeDefinitions, categoryIdMap);
-			
-			List readSiteNodes = infoGlueExportImplRead.getRootSiteNode();
-			//SiteNode readSiteNode = infoGlueExportImplRead.getRootSiteNode();
-			//logger.info(readSiteNode.getName());
-			List readContents = infoGlueExportImplRead.getRootContent();
-			//Content readContent = infoGlueExportImplRead.getRootContent();
-			//logger.info(readContent.getName());
-
-			Map repositoryIdMap = new HashMap();
-			Map contentIdMap = new HashMap();
-			Map siteNodeVersionIdMap = new HashMap();
-			Map siteNodeIdMap = new HashMap();
-			
-			List allContents = new ArrayList();
-			List allSiteNodes = new ArrayList();
-			
-			Map<String, AvailableServiceBinding> readAvailableServiceBindings = new HashMap<String, AvailableServiceBinding>();
-
-			Iterator readSiteNodesIterator = readSiteNodes.iterator();
-			while(readSiteNodesIterator.hasNext())
+			Map<String,String> replaceMap = new HashMap<String,String>();
+			try
 			{
-				SiteNode readSiteNode = (SiteNode)readSiteNodesIterator.next();
-
-				Repository repositoryRead = readSiteNode.getRepository();
-				logger.info(repositoryRead.getName());
-
-				Content readContent = null;
-				if(readContents != null && readContents.size() > 1)
-				{
-					Iterator readContentsIterator = readContents.iterator();
-					while(readContentsIterator.hasNext())
-					{
-						Content readContentCandidate = (Content)readContentsIterator.next();
-						if(readContentCandidate.getRepositoryId().equals(repositoryRead.getId()))
-						{
-							readContent = readContentCandidate;
-							break;
-						}
-					}
-				}
-				else
-				{
-					readContent = (Content)readContents.get(0);
-				}
+				boolean isUTF8 = false;
+				boolean hasUnicodeChars = false;
+				if(replacements.indexOf((char)65533) > -1)
+					isUTF8 = true;
 				
-				readContent.setRepository((RepositoryImpl)repositoryRead);
-
-				Integer repositoryIdBefore = repositoryRead.getId();
-				db.create(repositoryRead);
-				Integer repositoryIdAfter = repositoryRead.getId();
-				repositoryIdMap.put("" + repositoryIdBefore, "" + repositoryIdAfter);
-
-				Collection repositoryLanguages = repositoryRead.getRepositoryLanguages();
-				Iterator repositoryLanguagesIterator = repositoryLanguages.iterator();
-				while(repositoryLanguagesIterator.hasNext())
+				for(int i=0; i<replacements.length(); i++)
 				{
-					RepositoryLanguage repositoryLanguage = (RepositoryLanguage)repositoryLanguagesIterator.next();
-					Language originalLanguage = repositoryLanguage.getLanguage();
-					
-					Language language = LanguageController.getController().getLanguageWithCode(originalLanguage.getLanguageCode(), db);
-					if(language == null)
-					{
-					    db.create(originalLanguage);
-					    language = originalLanguage;
-					}
-					
-					repositoryLanguage.setLanguage(language);
-					repositoryLanguage.setRepository(repositoryRead);
-
-					db.create(repositoryLanguage);
-					
-					logger.info("language:" + language);
-					logger.info("language.getRepositoryLanguages():" + language.getRepositoryLanguages());
-					language.getRepositoryLanguages().add(repositoryLanguage);
+					int c = (int)replacements.charAt(i);
+					if(c > 255 && c < 65533)
+						hasUnicodeChars = true;
 				}
-				
-				readSiteNode.setRepository((RepositoryImpl)repositoryRead);
-				
-				createContents(readContent, contentIdMap, contentTypeIdMap, allContents, Collections.unmodifiableCollection(contentTypeDefinitions), categoryIdMap, version, db);
-				createStructure(readSiteNode, contentIdMap, siteNodeIdMap, siteNodeVersionIdMap, readAvailableServiceBindings, allSiteNodes, db);
-			}
-						
-			List allContentIds = new ArrayList();
-			Iterator allContentsIterator = allContents.iterator();
-			while(allContentsIterator.hasNext())
-			{
-				Content content = (Content)allContentsIterator.next();
-				allContentIds.add(content.getContentId());
-			}
 
-			//TEST
-			Map args = new HashMap();
-		    args.put("globalKey", "infoglue");
-		    PropertySet ps = PropertySetManager.getInstance("jdbc", args);
-
-			Map<String,String> repositoryProperties = infoGlueExportImplRead.getRepositoryProperties();
-			Iterator<String> repositoryPropertiesIterator = repositoryProperties.keySet().iterator();
-			while(repositoryPropertiesIterator.hasNext())
-			{
-				String key = repositoryPropertiesIterator.next();
-				String value = repositoryProperties.get(key);
-				String[] splittedString = key.split("_");
-				if(splittedString.length == 3)
+				if(!isUTF8 && !hasUnicodeChars)
 				{
-					String oldRepId = splittedString[1];
-					key = key.replaceAll(oldRepId, (String)repositoryIdMap.get(oldRepId));
+					String fromEncoding = CmsPropertyHandler.getUploadFromEncoding();
+					if(fromEncoding == null)
+						fromEncoding = "iso-8859-1";
 					
-					if(value != null && !value.equals("null"))
+					String toEncoding = CmsPropertyHandler.getUploadToEncoding();
+					if(toEncoding == null)
+						toEncoding = "utf-8";
+					
+					if(replacements.indexOf("å") == -1 && 
+					   replacements.indexOf("ä") == -1 && 
+					   replacements.indexOf("ö") == -1 && 
+					   replacements.indexOf("Å") == -1 && 
+					   replacements.indexOf("Ä") == -1 && 
+					   replacements.indexOf("Ö") == -1)
 					{
-						if(key.indexOf("_WYSIWYGConfig") > -1 || key.indexOf("_StylesXML") > -1 || key.indexOf("_extraProperties") > -1)
-							ps.setData(key, value.getBytes("utf-8"));
-						else
-							ps.setString(key, value);
+						replacements = new String(replacements.getBytes(fromEncoding), toEncoding);
 					}
 				}
 			}
-
-			Map<String,String> contentProperties = infoGlueExportImplRead.getContentProperties();
-			Iterator<String> contentPropertiesIterator = contentProperties.keySet().iterator();
-			while(contentPropertiesIterator.hasNext())
+			catch(Exception e)
 			{
-				String key = contentPropertiesIterator.next();
-				String value = contentProperties.get(key);
-				String[] splittedString = key.split("_");
-				if(splittedString.length == 3)
+				e.printStackTrace();
+			}
+			
+			Properties properties = new Properties();
+			try
+			{
+				properties.load(new ByteArrayInputStream(replacements.getBytes("ISO-8859-1")));
+				
+				Iterator propertySetIterator = properties.keySet().iterator();
+				while(propertySetIterator.hasNext())
 				{
-					String oldContentId = splittedString[1];
-					key = key.replaceAll(oldContentId, (String)contentIdMap.get(oldContentId));
-					if(value != null && !value.equals("null"))
-						ps.setString(key, value);
+					String key = (String)propertySetIterator.next();
+					String value = properties.getProperty(key);
+					replaceMap.put(key, value);
 				}
+			}	
+			catch(Exception e)
+			{
+			    logger.error("Error loading properties from string. Reason:" + e.getMessage());
+				e.printStackTrace();
 			}
 
-			Map<String,String> siteNodeProperties = infoGlueExportImplRead.getSiteNodeProperties();
-			Iterator<String> siteNodePropertiesIterator = siteNodeProperties.keySet().iterator();
-			while(siteNodePropertiesIterator.hasNext())
-			{
-				String key = siteNodePropertiesIterator.next();
-				String value = siteNodeProperties.get(key);
-				String[] splittedString = key.split("_");
-				if(splittedString.length == 3)
-				{
-					String oldSiteNodeId = splittedString[1];
-					key = key.replaceAll(oldSiteNodeId, (String)siteNodeIdMap.get(oldSiteNodeId));
-					if(value != null && !value.equals("null"))
-						ps.setString(key, value);
-				}
-			}
-
-			Collection<AccessRight> accessRights = infoGlueExportImplRead.getAccessRights();
-			Iterator<AccessRight> accessRightsIterator = accessRights.iterator();
-			while(accessRightsIterator.hasNext())
-			{
-				AccessRight accessRight = accessRightsIterator.next();
-
-				InterceptionPoint interceptionPoint = InterceptionPointController.getController().getInterceptionPointWithName(accessRight.getInterceptionPointName(), db);
-				accessRight.setInterceptionPoint(interceptionPoint);
-				if(interceptionPoint.getName().indexOf("Content") > -1)
-					accessRight.setParameters((String)contentIdMap.get(accessRight.getParameters()));
-				else if(interceptionPoint.getName().indexOf("SiteNodeVersion") > -1)
-					accessRight.setParameters((String)siteNodeVersionIdMap.get(accessRight.getParameters()));
-				else if(interceptionPoint.getName().indexOf("SiteNode") > -1)
-					accessRight.setParameters((String)siteNodeIdMap.get(accessRight.getParameters()));
-				else if(interceptionPoint.getName().indexOf("Repository") > -1)
-					accessRight.setParameters((String)repositoryIdMap.get(accessRight.getParameters()));
-
-				db.create(accessRight);
-
-				Iterator accessRightRoleIterator = accessRight.getRoles().iterator();
-				while(accessRightRoleIterator.hasNext())
-				{
-					AccessRightRole accessRightRole = (AccessRightRole)accessRightRoleIterator.next();
-					accessRightRole.setAccessRight(accessRight);
-					db.create(accessRightRole);
-				}
-
-				Iterator accessRightGroupIterator = accessRight.getGroups().iterator();
-				while(accessRightGroupIterator.hasNext())
-				{
-					AccessRightGroup accessRightGroup = (AccessRightGroup)accessRightGroupIterator.next();
-					accessRightGroup.setAccessRight(accessRight);
-					db.create(accessRightGroup);
-				}
-			}
-			*/
+			ImportController.getController().importRepository(db, map, file, encoding, version, onlyLatestVersions, false, contentIdMap, siteNodeIdMap, allContentIds, replaceMap);
 			
 			db.commit();
 			db.close();
@@ -401,7 +286,7 @@ public class ImportRepositoryAction extends InfoGlueAbstractAction
 					db.begin();
 	
 					Content content = ContentController.getContentController().getContentWithId(contentId, db);
-					ImportController.getController().updateContentVersions(content, contentIdMap, siteNodeIdMap, onlyLatestVersions);
+					ImportController.getController().updateContentVersions(content, contentIdMap, siteNodeIdMap, onlyLatestVersions, new HashMap());
 					//updateContentVersions(content, contentIdMap, siteNodeIdMap);
 	
 					db.commit();
@@ -420,14 +305,6 @@ public class ImportRepositoryAction extends InfoGlueAbstractAction
 					db.close();					
 				}
 			}
-
-			//updateContentVersions(allContents, contentIdMap, siteNodeIdMap);
-			
-			//reader.close();
-			
-			//db.commit();
-			//db.close();
-
 		} 
 		catch ( Exception e) 
 		{
@@ -449,722 +326,216 @@ public class ImportRepositoryAction extends InfoGlueAbstractAction
 		return "success";
 	}
 
-	/*
-	private void updateContentTypeDefinitions(Collection contentTypeDefinitions, Map categoryIdMap) 
-	{
-		Iterator contentTypeDefinitionsIterator = contentTypeDefinitions.iterator();
-		while(contentTypeDefinitionsIterator.hasNext())
-		{
-			ContentTypeDefinition contentTypeDefinition = (ContentTypeDefinition)contentTypeDefinitionsIterator.next();
-			String schema = contentTypeDefinition.getSchemaValue();
-			Iterator categoryIdMapIterator = categoryIdMap.keySet().iterator();
-			while(categoryIdMapIterator.hasNext())
-			{
-				Integer oldId = (Integer)categoryIdMapIterator.next();
-				Integer newId = (Integer)categoryIdMap.get(oldId);
-				schema = schema.replaceAll("<categoryId>" + oldId + "</categoryId>", "<categoryId>new_" + newId + "</categoryId>");
-			}
-			schema = schema.replaceAll("<categoryId>new_", "<categoryId>");
-			contentTypeDefinition.setSchemaValue(schema);
-		}
-	}
-
-	private void importCategories(Collection categories, Category parentCategory, Map categoryIdMap, Database db) throws SystemException
-	{
-		logger.info("We want to create a list of categories if not existing under the parent category " + parentCategory);
-		Iterator categoryIterator = categories.iterator();
-		while(categoryIterator.hasNext())
-		{
-			CategoryVO categoryVO = (CategoryVO)categoryIterator.next();
-			Category newParentCategory = null;
-			
-			List existingCategories = null;
-			if(parentCategory != null)
-				existingCategories = CategoryController.getController().findByParent(parentCategory.getCategoryId(), db);
-			else
-				existingCategories = CategoryController.getController().findRootCategories(db);
-				
-			Iterator existingCategoriesIterator = existingCategories.iterator();
-			while(existingCategoriesIterator.hasNext())
-			{
-				Category existingCategory = (Category)existingCategoriesIterator.next();
-				logger.info("existingCategory:" + existingCategory.getName());
-				if(existingCategory.getName().equals(categoryVO.getName()))
-				{
-					logger.info("Existed... setting " + existingCategory.getName() + " to new parent category.");
-					newParentCategory = existingCategory;
-					break;
-				}
-			}
-
-			if(newParentCategory == null)
-			{
-				logger.info("No existing category - we create it: " + categoryVO);
-				Integer oldId = categoryVO.getId();
-				categoryVO.setCategoryId(null);
-				if(parentCategory != null)	
-					categoryVO.setParentId(parentCategory.getCategoryId());
-				else
-					categoryVO.setParentId(null);
-					
-				Category newCategory = CategoryController.getController().save(categoryVO, db);
-				categoryIdMap.put(oldId, newCategory.getCategoryId());
-				newParentCategory = newCategory;
-			}
-			else
-			{
-				categoryIdMap.put(categoryVO.getId(), newParentCategory.getCategoryId());
-			}
-				
-			importCategories(categoryVO.getChildren(), newParentCategory, categoryIdMap, db);
-		}
-	}
 	
-	private void createStructure(SiteNode siteNode, Map contentIdMap, Map siteNodeIdMap, Map siteNodeVersionIdMap, Map readAvailableServiceBindings, List allSiteNodes, Database db) throws Exception
-	{
-		logger.info("siteNode:" + siteNode.getName());
-
-		Integer originalSiteNodeId = siteNode.getSiteNodeId();
-
-		logger.info("originalSiteNodeId:" + originalSiteNodeId);
-
-		SiteNodeTypeDefinition originalSiteNodeTypeDefinition = siteNode.getSiteNodeTypeDefinition();
-		SiteNodeTypeDefinition siteNodeTypeDefinition = null;
-		if(originalSiteNodeTypeDefinition != null)
-		{
-			logger.info("originalSiteNodeTypeDefinition:" + originalSiteNodeTypeDefinition);
-			siteNodeTypeDefinition = SiteNodeTypeDefinitionController.getController().getSiteNodeTypeDefinitionWithName(siteNode.getSiteNodeTypeDefinition().getName(), db, false);
-			logger.info("siteNodeTypeDefinition:" + siteNodeTypeDefinition);
-			if(siteNodeTypeDefinition == null)
-			{
-			    db.create(originalSiteNodeTypeDefinition);
-			    siteNodeTypeDefinition = originalSiteNodeTypeDefinition;
-			}
-			
-			siteNode.setSiteNodeTypeDefinition((SiteNodeTypeDefinitionImpl)siteNodeTypeDefinition);
-		}
-		
-		String mappedMetaInfoContentId = "-1";
-		if(siteNode.getMetaInfoContentId() != null)
-		{
-			if(contentIdMap.containsKey(siteNode.getMetaInfoContentId().toString()))
-				mappedMetaInfoContentId = (String)contentIdMap.get(siteNode.getMetaInfoContentId().toString());
-		}
-		siteNode.setMetaInfoContentId(new Integer(mappedMetaInfoContentId));
-		
-		db.create(siteNode);
-		
-		allSiteNodes.add(siteNode);
-		    
-		Integer newSiteNodeId = siteNode.getSiteNodeId();
-		logger.info(originalSiteNodeId + ":" + newSiteNodeId);
-		siteNodeIdMap.put(originalSiteNodeId.toString(), newSiteNodeId.toString());
-		
-		Collection childSiteNodes = siteNode.getChildSiteNodes();
-		if(childSiteNodes != null)
-		{
-			Iterator childSiteNodesIterator = childSiteNodes.iterator();
-			while(childSiteNodesIterator.hasNext())
-			{
-				SiteNode childSiteNode = (SiteNode)childSiteNodesIterator.next();
-				childSiteNode.setRepository(siteNode.getRepository());
-				childSiteNode.setParentSiteNode((SiteNodeImpl)siteNode);
-				createStructure(childSiteNode, contentIdMap, siteNodeIdMap, siteNodeVersionIdMap, readAvailableServiceBindings, allSiteNodes, db);
-			}
-		}
-
-		Collection siteNodeVersions = siteNode.getSiteNodeVersions();
-		
-		if(onlyLatestVersions.equalsIgnoreCase("true"))
-		{
-		    logger.info("org siteNodeVersions:" + siteNodeVersions.size());
-			List selectedSiteNodeVersions = new ArrayList();
-			Iterator realSiteNodeVersionsIterator = siteNodeVersions.iterator();
-			while(realSiteNodeVersionsIterator.hasNext())
-			{
-				SiteNodeVersion siteNodeVersion = (SiteNodeVersion)realSiteNodeVersionsIterator.next();			
-				Iterator selectedSiteNodeVersionsIterator = selectedSiteNodeVersions.iterator();
-				boolean addVersion = true;
-				while(selectedSiteNodeVersionsIterator.hasNext())
-				{
-					SiteNodeVersion currentSiteNodeVersion = (SiteNodeVersion)selectedSiteNodeVersionsIterator.next();
-					if(siteNodeVersion.getIsActive().booleanValue() && siteNodeVersion.getSiteNodeVersionId().intValue() > currentSiteNodeVersion.getSiteNodeVersionId().intValue())
-					{
-						logger.info("A later version was found... removing this one..");
-						selectedSiteNodeVersionsIterator.remove();
-						addVersion = true;
-					}						
-				}
+	/**
+	 * This handles copying of a repository.
+	 */
 	
-				if(addVersion)
-					selectedSiteNodeVersions.add(siteNodeVersion);
+	public String doCopy() throws SystemException 
+	{
+		Database db = CastorDatabaseService.getDatabase();
+		
+		File file = null;
+		
+		try 
+		{
+			Mapping map = new Mapping();
+			String exportFormat = CmsPropertyHandler.getExportFormat();
+
+			logger.info("MappingFile:" + CastorDatabaseService.class.getResource("/xml_mapping_site_2.5.xml").toString());
+			map.loadMapping(CastorDatabaseService.class.getResource("/xml_mapping_site_2.5.xml").toString());
+			
+			// All ODMG database access requires a transaction
+			db.begin();
+
+			List<SiteNode> siteNodes = new ArrayList<SiteNode>();
+			List<Content> contents = new ArrayList<Content>();
+			Hashtable<String,String> allRepositoryProperties = new Hashtable<String,String>();
+			Hashtable<String,String> allSiteNodeProperties = new Hashtable<String,String>();
+			Hashtable<String,String> allContentProperties = new Hashtable<String,String>();
+			List<AccessRight> allAccessRights = new ArrayList<AccessRight>();
+			//List<AccessRight> allAccessRights = AccessRightController.getController().getAllAccessRightListForExportReadOnly(db);
+			
+			//TEST
+			Map args = new HashMap();
+		    args.put("globalKey", "infoglue");
+		    PropertySet ps = PropertySetManager.getInstance("jdbc", args);
+		    //END TEST
+			
+			String names = "";
+			Repository repository 	= RepositoryController.getController().getRepositoryWithId(repositoryId, db);
+			SiteNode siteNode 		= SiteNodeController.getController().getRootSiteNode(repositoryId, db);
+			Content content 		= ContentController.getContentController().getRootContent(repositoryId, db);
+
+		    InterceptionPointVO interceptionPointVO = InterceptionPointController.getController().getInterceptionPointVOWithName("Repository.Read", db);
+		    if(interceptionPointVO != null)
+		    	allAccessRights.addAll(AccessRightController.getController().getAccessRightListOnlyReadOnly(interceptionPointVO.getId(), repository.getId().toString(), db));
+
+		    interceptionPointVO = InterceptionPointController.getController().getInterceptionPointVOWithName("Repository.ReadForBinding", db);
+		    if(interceptionPointVO != null)
+		    	allAccessRights.addAll(AccessRightController.getController().getAccessRightListOnlyReadOnly(interceptionPointVO.getId(), repository.getId().toString(), db));
+
+		    ExportRepositoryAction.getContentPropertiesAndAccessRights(ps, allContentProperties, allAccessRights, content, db);
+		    ExportRepositoryAction.getSiteNodePropertiesAndAccessRights(ps, allSiteNodeProperties, allAccessRights, siteNode, db);
+			
+			siteNodes.add(siteNode);
+			contents.add(content);
+			names = names + "_" + repository.getName();
+			allRepositoryProperties.putAll(ExportRepositoryAction.getRepositoryProperties(ps, repositoryId));
+			
+			List contentTypeDefinitions = ContentTypeDefinitionController.getController().getContentTypeDefinitionList(db);
+			List categories = CategoryController.getController().findAllActiveCategories();
+			
+			InfoGlueExportImpl infoGlueExportImpl = new InfoGlueExportImpl();
+			
+			VisualFormatter visualFormatter = new VisualFormatter();
+			names = new VisualFormatter().replaceNonAscii(names, '_');
+
+			String fileName = "RepositoryCopy_" + names + "_" + visualFormatter.formatDate(new Date(), "yyyy-MM-dd_HHmm") + ".xml";
+			
+			String filePath = CmsPropertyHandler.getDigitalAssetPath();
+			String fileSystemName =  filePath + File.separator + fileName;
+			
+			String encoding = "UTF-8";
+			file = new File(fileSystemName);
+            FileOutputStream fos = new FileOutputStream(file);
+            BufferedOutputStream bos = new BufferedOutputStream(fos);
+            OutputStreamWriter osw = new OutputStreamWriter(bos, encoding);
+            Marshaller marshaller = new Marshaller(osw);
+            marshaller.setMapping(map);
+			marshaller.setEncoding(encoding);
+			DigitalAssetBytesHandler.setMaxSize(-1);
+
+			infoGlueExportImpl.getRootContent().addAll(contents);
+			infoGlueExportImpl.getRootSiteNode().addAll(siteNodes);
+			
+			infoGlueExportImpl.setContentTypeDefinitions(new ArrayList());
+			infoGlueExportImpl.setCategories(new ArrayList());
+			
+			infoGlueExportImpl.setRepositoryProperties(allRepositoryProperties);
+			infoGlueExportImpl.setContentProperties(allContentProperties);
+			infoGlueExportImpl.setSiteNodeProperties(allSiteNodeProperties);
+			infoGlueExportImpl.setAccessRights(allAccessRights);
+			
+			marshaller.marshal(infoGlueExportImpl);
+			
+			osw.flush();
+			osw.close();
+			
+			db.commit();
+			db.close();
+			
+			db = CastorDatabaseService.getDatabase();
+			db.begin();
+			
+			Map contentIdMap = new HashMap();
+			Map siteNodeIdMap = new HashMap();
+			List allContentIds = new ArrayList();
+
+			Map<String,String> replaceMap = new HashMap<String,String>();
+			Properties properties = new Properties();
+			try
+			{
+				properties.load(new ByteArrayInputStream(replacements.getBytes("ISO-8859-1")));
+				Iterator propertySetIterator = properties.keySet().iterator();
+				while(propertySetIterator.hasNext())
+				{
+					String key = (String)propertySetIterator.next();
+					String value = properties.getProperty(key);
+					replaceMap.put(key, value);
+				}
 			}	
-			
-			siteNodeVersions = selectedSiteNodeVersions;
-		}
-
-		Iterator siteNodeVersionsIterator = siteNodeVersions.iterator();
-		while(siteNodeVersionsIterator.hasNext())
-		{
-			SiteNodeVersion siteNodeVersion = (SiteNodeVersion)siteNodeVersionsIterator.next();
-			
-			Collection serviceBindings = siteNodeVersion.getServiceBindings();
-
-			siteNodeVersion.setOwningSiteNode((SiteNodeImpl)siteNode);
-			
-			Integer oldSiteNodeVersionId = siteNodeVersion.getId();
-
-			db.create(siteNodeVersion);
-
-			Integer newSiteNodeVersionId = siteNodeVersion.getId();
-			siteNodeVersionIdMap.put(oldSiteNodeVersionId.toString(), newSiteNodeVersionId.toString());
-
-			Iterator serviceBindingsIterator = serviceBindings.iterator();
-			while(serviceBindingsIterator.hasNext())
+			catch(Exception e)
 			{
-				ServiceBinding serviceBinding = (ServiceBinding)serviceBindingsIterator.next();
-				logger.info("serviceBinding:" + serviceBinding.getName());
-				ServiceDefinition originalServiceDefinition = serviceBinding.getServiceDefinition();
-				if(originalServiceDefinition == null)
-				{
-					logger.error("Skipping serviceBinding:" + serviceBinding.getName() + ":" + "serviceBinding:" + serviceBinding.getId() + " " + serviceBinding.getServiceDefinition());
-					continue;
-				}
-				
-				String serviceDefinitionName = originalServiceDefinition.getName();
-				ServiceDefinition serviceDefinition = ServiceDefinitionController.getController().getServiceDefinitionWithName(serviceDefinitionName, db, false);
-				if(serviceDefinition == null)
-				{
-				    db.create(originalServiceDefinition);
-				    serviceDefinition = originalServiceDefinition;
-				    //availableServiceBinding.getServiceDefinitions().add(serviceDefinition);
-				}
-				
-				serviceBinding.setServiceDefinition((ServiceDefinitionImpl)serviceDefinition);
-
-				AvailableServiceBinding originalAvailableServiceBinding = serviceBinding.getAvailableServiceBinding();
-				String availableServiceBindingName = originalAvailableServiceBinding.getName();
-				logger.info("availableServiceBindingName:" + availableServiceBindingName);
-				logger.info("readAvailableServiceBindings:" + readAvailableServiceBindings.size() + ":" + readAvailableServiceBindings.containsKey(availableServiceBindingName));
-				AvailableServiceBinding availableServiceBinding = (AvailableServiceBinding)readAvailableServiceBindings.get(availableServiceBindingName);
-				logger.info("availableServiceBinding:" + availableServiceBinding);
-				if(availableServiceBinding == null)
-				{
-					availableServiceBinding = AvailableServiceBindingController.getController().getAvailableServiceBindingWithName(availableServiceBindingName, db, false);
-					logger.info("Read availableServiceBinding from database:" + availableServiceBindingName + "=" + availableServiceBinding);
-					readAvailableServiceBindings.put(availableServiceBindingName, availableServiceBinding);
-					logger.info("readAvailableServiceBindings:" + readAvailableServiceBindings.size() + ":" + readAvailableServiceBindings.containsKey(availableServiceBindingName));
-				}
-				
-				if(availableServiceBinding == null)
-				{
-				    logger.info("There was no availableServiceBinding registered under:" + availableServiceBindingName);
-				    logger.info("originalAvailableServiceBinding:" + originalAvailableServiceBinding.getName() + ":" + originalAvailableServiceBinding.getIsInheritable());
-				    db.create(originalAvailableServiceBinding);
-				    availableServiceBinding = originalAvailableServiceBinding;
-				    readAvailableServiceBindings.put(availableServiceBindingName, availableServiceBinding);
-				    
-				    logger.info("Notifying:" + siteNodeTypeDefinition.getName() + " about the new availableServiceBinding " + availableServiceBinding.getName());
-				    if(siteNodeTypeDefinition != null)
-				    {
-					    siteNodeTypeDefinition.getAvailableServiceBindings().add((AvailableServiceBindingImpl)availableServiceBinding);
-					    serviceDefinition.getAvailableServiceBindings().add((AvailableServiceBindingImpl)availableServiceBinding);
-					    availableServiceBinding.getSiteNodeTypeDefinitions().add((SiteNodeTypeDefinitionImpl)siteNodeTypeDefinition);
-					    availableServiceBinding.getServiceDefinitions().add((ServiceDefinitionImpl)serviceDefinition);
-				    }
-				}
-				else
-				{
-					if(siteNodeTypeDefinition != null && !siteNodeTypeDefinition.getAvailableServiceBindings().contains(availableServiceBinding))
-					{
-						siteNodeTypeDefinition.getAvailableServiceBindings().add((AvailableServiceBindingImpl)availableServiceBinding);
-						availableServiceBinding.getSiteNodeTypeDefinitions().add(siteNodeTypeDefinition);
-					}
-				}
-				
-				serviceBinding.setAvailableServiceBinding((AvailableServiceBindingImpl)availableServiceBinding);
-				
-				
-				Collection qualifyers = serviceBinding.getBindingQualifyers();
-				Iterator qualifyersIterator = qualifyers.iterator();
-				while(qualifyersIterator.hasNext())
-				{
-					Qualifyer qualifyer = (Qualifyer)qualifyersIterator.next();
-					qualifyer.setServiceBinding((ServiceBindingImpl)serviceBinding);
-					
-					String entityName 	= qualifyer.getName();
-					String entityId		= qualifyer.getValue();
-					
-					if(entityName.equalsIgnoreCase("contentId"))
-					{
-						String mappedContentId = (String)contentIdMap.get(entityId);
-						qualifyer.setValue((mappedContentId == null) ? entityId : mappedContentId);
-					}
-					else if(entityName.equalsIgnoreCase("siteNodeId"))
-					{
-						String mappedSiteNodeId = (String)siteNodeIdMap.get(entityId);
-						qualifyer.setValue((mappedSiteNodeId == null) ? entityId : mappedSiteNodeId);						
-					}
-				}
-
-				serviceBinding.setSiteNodeVersion((SiteNodeVersionImpl)siteNodeVersion);				
-
-				db.create(serviceBinding);
-
+			    logger.error("Error loading properties from string. Reason:" + e.getMessage());
+				e.printStackTrace();
 			}
-		}		
-		
-	}
+			
+			ImportController.getController().importRepository(db, map, file, encoding, 2, onlyLatestVersions, true, contentIdMap, siteNodeIdMap, allContentIds, replaceMap);
 
+			db.commit();
+			db.close();
 
-	private List createContents(Content content, Map idMap, Map contentTypeDefinitionIdMap, List allContents, Collection contentTypeDefinitions, Map categoryIdMap, int version, Database db) throws Exception
-	{
-		ContentTypeDefinition contentTypeDefinition = null;
-		
-	    Integer originalContentId = content.getContentId();
-	    if(version == 2)
-	    {
-		    Integer contentTypeDefinitionId = ((ContentImpl)content).getContentTypeDefinitionId();
-		    
-    		if(contentTypeDefinitionId != null)
+			Iterator allContentIdsIterator = allContentIds.iterator();
+			while(allContentIdsIterator.hasNext())
 			{
-    			if(contentTypeDefinitionIdMap.containsKey(contentTypeDefinitionId))
-    				contentTypeDefinitionId = (Integer)contentTypeDefinitionIdMap.get(contentTypeDefinitionId);
-    				
-		    	ContentTypeDefinition originalContentTypeDefinition = null;
-		    	Iterator contentTypeDefinitionsIterator = contentTypeDefinitions.iterator();
-		    	while(contentTypeDefinitionsIterator.hasNext())
-		    	{
-		    		ContentTypeDefinition contentTypeDefinitionCandidate = (ContentTypeDefinition)contentTypeDefinitionsIterator.next();		    		
-		    		if(contentTypeDefinitionCandidate.getId().intValue() == contentTypeDefinitionId.intValue())
-		    		{
-		    			originalContentTypeDefinition = contentTypeDefinitionCandidate;
-		    			break;
-		    		}
-		    	}
-
-		    	if(originalContentTypeDefinition != null)
-		    	{
-			    	contentTypeDefinition = ContentTypeDefinitionController.getController().getContentTypeDefinitionWithName(originalContentTypeDefinition.getName(), db);
-
-			    	if(contentTypeDefinition == null)
-					{
-			    		Integer before = originalContentTypeDefinition.getId();
-			    		db.create(originalContentTypeDefinition);
-			    		contentTypeDefinition = originalContentTypeDefinition;
-			    		Integer after = originalContentTypeDefinition.getId();
-			    		contentTypeDefinitionIdMap.put(before, after);
-			    	}
-				
-		    		content.setContentTypeDefinition((ContentTypeDefinitionImpl)contentTypeDefinition);
-
-		    	}
-			    else
-			    	logger.error("The content " + content.getName() + " had a content type not found amongst the listed ones:" + contentTypeDefinitionId);
-			}
-		    else
-		    	logger.error("The content " + content.getName() + " had no content type at all");
-	    }
-	    else if(version == 1)
-	    {
-			ContentTypeDefinition originalContentTypeDefinition = content.getContentTypeDefinition();
-			if(originalContentTypeDefinition != null)
-			{
-			    contentTypeDefinition = ContentTypeDefinitionController.getController().getContentTypeDefinitionWithName(originalContentTypeDefinition.getName(), db);
-				if(contentTypeDefinition == null)
+				Integer contentId = (Integer)allContentIdsIterator.next();
+				try
 				{
-		    		//contentTypeDefinition = ContentTypeDefinitionController.getController().create(originalContentTypeDefinition.getValueObject(), db);
-		    		//contentTypeDefinitions.add(contentTypeDefinition);
-		    		
-				    db.create(originalContentTypeDefinition);
-				    contentTypeDefinition = originalContentTypeDefinition;
-				}
-
-	    		content.setContentTypeDefinition((ContentTypeDefinitionImpl)contentTypeDefinition);
-			}
-	    }
-	    
-	    if(content.getContentTypeDefinition() == null)
-	    	logger.error("No content type definition for content:" + content.getId());
-	    	
-	    logger.info("Creating content:" + content.getName());
-
-	    db.create(content);
-		
-		allContents.add(content);
-		
-		Integer newContentId = content.getContentId();
-		idMap.put(originalContentId.toString(), newContentId.toString());
-		
-		Collection contentVersions = content.getContentVersions();
-	    
-		if(onlyLatestVersions.equalsIgnoreCase("true"))
-		{
-			logger.info("org contentVersions:" + contentVersions.size());
-			List selectedContentVersions = new ArrayList();
-			Iterator realContentVersionsIterator = contentVersions.iterator();
-			while(realContentVersionsIterator.hasNext())
-			{
-				ContentVersion contentVersion = (ContentVersion)realContentVersionsIterator.next();			
-				Iterator selectedContentVersionsIterator = selectedContentVersions.iterator();
-				boolean addLanguageVersion = true;
-				boolean noLanguageVersionFound = true;
-				while(selectedContentVersionsIterator.hasNext())
-				{
-					ContentVersion currentContentVersion = (ContentVersion)selectedContentVersionsIterator.next();
-					logger.info("" + currentContentVersion.getLanguage().getLanguageCode() + "=" + contentVersion.getLanguage().getLanguageCode());
-					if(currentContentVersion.getLanguage().getLanguageCode().equals(contentVersion.getLanguage().getLanguageCode()))
-					{
-						noLanguageVersionFound = false;
-						
-						logger.info("" + contentVersion.getIsActive() + "=" + contentVersion.getLanguage().getLanguageCode());
-						if(contentVersion.getIsActive().booleanValue() && contentVersion.getContentVersionId().intValue() > currentContentVersion.getContentVersionId().intValue())
-						{
-							logger.info("A later version was found... removing this one..");
-							selectedContentVersionsIterator.remove();
-							addLanguageVersion = true;
-						}						
-					}
-				}
+					db = CastorDatabaseService.getDatabase();
+					db.begin();
 	
-				if(addLanguageVersion || noLanguageVersionFound)
-					selectedContentVersions.add(contentVersion);
-			}	
-			
-			contentVersions = selectedContentVersions;
-		}
-		
-		logger.info("new contentVersions:" + contentVersions.size());
-		//Collection contentVersions = content.getContentVersions();
-		Iterator contentVersionsIterator = contentVersions.iterator();
-		while(contentVersionsIterator.hasNext())
-		{
-			ContentVersion contentVersion = (ContentVersion)contentVersionsIterator.next();
-			Language language = LanguageController.getController().getLanguageWithCode(contentVersion.getLanguage().getLanguageCode(), db);
-			logger.info("Creating contentVersion for language:" + contentVersion.getLanguage().getLanguageCode() + " on content " + content.getName());
-
-			contentVersion.setOwningContent((ContentImpl)content);
-			contentVersion.setLanguage((LanguageImpl)language);
-			
-			Collection digitalAssets = contentVersion.getDigitalAssets();
-			if(digitalAssets != null)
-			{
-				List initialDigitalAssets = new ArrayList();
-					
-				Iterator digitalAssetsIterator = digitalAssets.iterator();
-				while(digitalAssetsIterator.hasNext())
-				{
-					DigitalAsset digitalAsset = (DigitalAsset)digitalAssetsIterator.next();
-					
-					List initialContentVersions = new ArrayList();
-					initialContentVersions.add(contentVersion);
-					digitalAsset.setContentVersions(initialContentVersions);
+					Content createdContent = ContentController.getContentController().getContentWithId(contentId, db);
+					ImportController.getController().updateContentVersions(createdContent, contentIdMap, siteNodeIdMap, onlyLatestVersions, replaceMap);
 	
-					db.create(digitalAsset);
-					
-					initialDigitalAssets.add(digitalAsset);
+					db.commit();
 				}
-				
-				contentVersion.setDigitalAssets(initialDigitalAssets);
-			}
-
-			Collection contentCategories = contentVersion.getContentCategories();
-			logger.info("contentCategories:" + contentCategories.size());
-			
-			db.create(contentVersion);
-
-			if(contentCategories != null)
-			{
-				List initialContentCategories = new ArrayList();
-					
-				Iterator contentCategoriesIterator = contentCategories.iterator();
-				while(contentCategoriesIterator.hasNext())
+				catch(Exception e)
 				{
-					ContentCategory contentCategory = (ContentCategory)contentCategoriesIterator.next();
-					logger.info("contentCategory:" + contentCategory);
-					contentCategory.setContentVersion((ContentVersionImpl)contentVersion);
-					
-					Integer oldCategoryId = contentCategory.getCategoryId();
-					logger.info("oldCategoryId:" + oldCategoryId);
-					Integer newCategoryId = (Integer)categoryIdMap.get(oldCategoryId);
-					logger.info("newCategoryId:" + newCategoryId);
-					if(newCategoryId == null)
-						newCategoryId = oldCategoryId;
-					
-					if(newCategoryId != null)
+					try
 					{
-						Category category = CategoryController.getController().findById(newCategoryId, db);
-						logger.info("Got category:" + category);
-						if(category != null)
-						{
-							contentCategory.setCategory((CategoryImpl)category);
-							logger.info("Creating content category:" + contentCategory);
-							
-							db.create(contentCategory);
-						
-							initialContentCategories.add(contentCategory);
-						}
+						db.rollback();
 					}
+					catch(Exception e2) { e2.printStackTrace(); }
+	                logger.error("An error occurred when updating content version for content: " + e.getMessage(), e);					
 				}
-				
-				contentVersion.setContentCategories(initialContentCategories);
-			}
-
-		}		
-		
-		Collection childContents = content.getChildren();
-		if(childContents != null)
-		{
-			Iterator childContentsIterator = childContents.iterator();
-			while(childContentsIterator.hasNext())
-			{
-				Content childContent = (Content)childContentsIterator.next();
-				childContent.setRepository(content.getRepository());
-				childContent.setParentContent((ContentImpl)content);
-				createContents(childContent, idMap, contentTypeDefinitionIdMap, allContents, contentTypeDefinitions, categoryIdMap, version, db);
-			}
-		}
-		
-		return allContents;
-	}
-
-	private void updateContentVersions(Content content, Map contentIdMap, Map siteNodeIdMap) throws Exception
-	{
-	    logger.info("content:" + content.getName());
-
-	    Collection contentVersions = content.getContentVersions();
-	        
-		if(onlyLatestVersions.equalsIgnoreCase("true"))
-		{
-			logger.info("org contentVersions:" + contentVersions.size());
-			List selectedContentVersions = new ArrayList();
-			Iterator realContentVersionsIterator = contentVersions.iterator();
-			while(realContentVersionsIterator.hasNext())
-			{
-				ContentVersion contentVersion = (ContentVersion)realContentVersionsIterator.next();			
-				Iterator selectedContentVersionsIterator = selectedContentVersions.iterator();
-				boolean addLanguageVersion = true;
-				boolean noLanguageVersionFound = true;
-				while(selectedContentVersionsIterator.hasNext())
+				finally
 				{
-					ContentVersion currentContentVersion = (ContentVersion)selectedContentVersionsIterator.next();
-					logger.info("" + currentContentVersion.getLanguage().getLanguageCode() + "=" + contentVersion.getLanguage().getLanguageCode());
-					if(currentContentVersion.getLanguage().getLanguageCode().equals(contentVersion.getLanguage().getLanguageCode()))
-					{
-						noLanguageVersionFound = false;
-						
-						logger.info("" + contentVersion.getIsActive() + "=" + contentVersion.getLanguage().getLanguageCode());
-						if(contentVersion.getIsActive().booleanValue() && contentVersion.getContentVersionId().intValue() > currentContentVersion.getContentVersionId().intValue())
-						{
-							logger.info("A later version was found... removing this one..");
-							selectedContentVersionsIterator.remove();
-							addLanguageVersion = true;
-						}						
-					}
+					db.close();					
 				}
-	
-				if(addLanguageVersion || noLanguageVersionFound)
-					selectedContentVersions.add(contentVersion);
-			}	
-			
-			contentVersions = selectedContentVersions;
-		}
-
-        
-        Iterator contentVersionIterator = contentVersions.iterator();
-        while(contentVersionIterator.hasNext())
-        {
-            ContentVersion contentVersion = (ContentVersion)contentVersionIterator.next();
-            String contentVersionValue = contentVersion.getVersionValue();
-
-            contentVersionValue = contentVersionValue.replaceAll("contentId=\"", "contentId=\"oldContentId_");
-            contentVersionValue = contentVersionValue.replaceAll("\\?contentId=", "\\?contentId=oldContentId_");
-            contentVersionValue = contentVersionValue.replaceAll("getInlineAssetUrl\\(", "getInlineAssetUrl\\(oldContentId_");
-            contentVersionValue = contentVersionValue.replaceAll("languageId,", "languageId,oldContentId_");
-            contentVersionValue = contentVersionValue.replaceAll("entity=\"Content\" entityId=\"", "entity=\"Content\" entityId=\"oldContentId_");
-            //contentVersionValue = contentVersionValue.replaceAll("entity='Content'><id>", "entity='Content'><id>oldContentId_");
-            contentVersionValue = contentVersionValue.replaceAll("siteNodeId=\"", "siteNodeId=\"oldSiteNodeId_");
-            contentVersionValue = contentVersionValue.replaceAll("detailSiteNodeId=\"", "detailSiteNodeId=\"oldSiteNodeId_");
-            contentVersionValue = contentVersionValue.replaceAll("getPageUrl\\((\\d)", "getPageUrl\\(oldSiteNodeId_$1");
-            contentVersionValue = contentVersionValue.replaceAll("entity=\"SiteNode\" entityId=\"", "entity=\"SiteNode\" entityId=\"oldSiteNodeId_");
-            //contentVersionValue = contentVersionValue.replaceAll("entity='SiteNode'><id>", "entity='SiteNode'><id>old_");
-
-            contentVersionValue = this.prepareAllRelations(contentVersionValue);
-            	            
-            
-            //logger.info("contentVersionValue before:" + contentVersionValue);
-            
-            Iterator contentIdMapIterator = contentIdMap.keySet().iterator();
-            while (contentIdMapIterator.hasNext()) 
+			}
+		} 
+		catch ( Exception e) 
+		{
+			try
             {
-                String oldContentId = (String)contentIdMapIterator.next();
-                String newContentId = (String)contentIdMap.get(oldContentId);
-                
-                //logger.info("Replacing all:" + oldContentId + " with " + newContentId);
-                
-                contentVersionValue = contentVersionValue.replaceAll("contentId=\"oldContentId_" + oldContentId + "\"", "contentId=\"" + newContentId + "\"");
-                contentVersionValue = contentVersionValue.replaceAll("\\?contentId=oldContentId_" + oldContentId + "&", "\\?contentId=" + newContentId + "&");
-                contentVersionValue = contentVersionValue.replaceAll("getInlineAssetUrl\\(oldContentId_" + oldContentId + ",", "getInlineAssetUrl\\(" + newContentId + ",");
-                contentVersionValue = contentVersionValue.replaceAll("languageId,oldContentId_" + oldContentId + "\\)", "languageId," + newContentId + "\\)");
-                contentVersionValue = contentVersionValue.replaceAll("entity=\"Content\" entityId=\"oldContentId_" + oldContentId + "\"", "entity=\"Content\" entityId=\"" + newContentId + "\"");
-                contentVersionValue = contentVersionValue.replaceAll("<id>oldContentId_" + oldContentId + "</id>", "<id>" + newContentId + "</id>");
-                //contentVersionValue = contentVersionValue.replaceAll("entity='Content'><id>old_" + oldContentId + "</id>", "entity='Content'><id>" + newContentId + "</id>");
-                //contentVersionValue = contentVersionValue.replaceAll("<id>" + oldContentId + "</id>", "<id>" + newContentId + "</id>");
-            }
-            
-            Iterator siteNodeIdMapIterator = siteNodeIdMap.keySet().iterator();
-            while (siteNodeIdMapIterator.hasNext()) 
+                db.rollback();
+                db.close();
+            } 
+			catch (Exception e1)
             {
-                String oldSiteNodeId = (String)siteNodeIdMapIterator.next();
-                String newSiteNodeId = (String)siteNodeIdMap.get(oldSiteNodeId);
-                
-                //logger.info("Replacing all:" + oldSiteNodeId + " with " + newSiteNodeId);
-                
-                contentVersionValue = contentVersionValue.replaceAll("siteNodeId=\"oldSiteNodeId_" + oldSiteNodeId + "\"", "siteNodeId=\"" + newSiteNodeId + "\"");
-                contentVersionValue = contentVersionValue.replaceAll("detailSiteNodeId=\"oldSiteNodeId_" + oldSiteNodeId + "\"", "detailSiteNodeId=\"" + newSiteNodeId + "\"");
-                contentVersionValue = contentVersionValue.replaceAll("getPageUrl\\(oldSiteNodeId_" + oldSiteNodeId + ",", "getPageUrl\\(" + newSiteNodeId + ",");
-                contentVersionValue = contentVersionValue.replaceAll("entity=\"SiteNode\" entityId=\"oldSiteNodeId_" + oldSiteNodeId + "\"", "entity=\"SiteNode\" entityId=\"" + newSiteNodeId + "\"");
-                //contentVersionValue = contentVersionValue.replaceAll("entity='SiteNode'><id>old_" + oldSiteNodeId + "</id>", "entity='SiteNode'><id>" + newSiteNodeId + "</id>");
-                contentVersionValue = contentVersionValue.replaceAll("<id>oldSiteNodeId_" + oldSiteNodeId + "</id>", "<id>" + newSiteNodeId + "</id>");
+                logger.error("An error occurred when importing a repository: " + e.getMessage(), e);
+    			throw new SystemException("An error occurred when importing a repository: " + e.getMessage(), e);
             }
-            
-            //logger.info("contentVersionValue after:" + contentVersionValue);
-            
-            //Now replace all occurrances of old as they should never be there.
-            contentVersionValue = contentVersionValue.replaceAll("oldContentId_", "");
-            contentVersionValue = contentVersionValue.replaceAll("oldSiteNodeId_", "");
-
-            logger.info("new contentVersionValue:" + contentVersionValue);
-            contentVersion.setVersionValue(contentVersionValue);
-        }
+			
+			logger.error("An error occurred when importing a repository: " + e.getMessage(), e);
+			throw new SystemException("An error occurred when importing a repository: " + e.getMessage(), e);
+		}
+		finally
+		{
+			file.delete();
+		}
+		
+		return "success";
 	}
 
-	private String prepareAllRelations(String xml) throws Exception
+	public String getOnlyLatestVersions() 
 	{
-		StringBuffer newXML = new StringBuffer();
-		
-		logger.info("xml: " + xml);
-		
-    	String after = xml;
-    	String before = "";
-    	String qualifyer = "";
-    	boolean changed = false; 
-    	
-    	int startIndex = xml.indexOf("<qualifyer");
-    	while(startIndex > -1)
-    	{
-    		int stopIndex = xml.indexOf("</qualifyer>", startIndex);
-    		if(stopIndex > -1)
-    		{
-    			changed = true;
-	    		before = xml.substring(0, startIndex);
-	    		after = xml.substring(stopIndex + 12);
-	    		qualifyer = xml.substring(startIndex, stopIndex + 12);
-	    		
-	    		String newQualifyer = qualifyer;
-	    		
-	    		if(qualifyer.indexOf("entity='Content'") > 0)
-	    			newQualifyer = qualifyer.replaceAll("<id>", "<id>oldContentId_");
-	    		else if(qualifyer.indexOf("entity='SiteNode'") > 0)
-	    			newQualifyer = qualifyer.replaceAll("<id>", "<id>oldSiteNodeId_");
-	    			
-	    		newXML.append(before);
-	    		newXML.append(newQualifyer);
-	    		xml = after;
-    		}
-    		else
-    		{
-    			throw new Exception("Error in xml - qualifyer tag broken in " + xml);
-    		}
-    		
-    		startIndex = xml.indexOf("<qualifyer");
-    	}
-
-		newXML.append(after);
-		
-		if(changed)
-			logger.info("newXML:" + newXML);
-		
-		return newXML.toString();
-	}
-	*/
-	
-	public String getOnlyLatestVersions() {
 		return onlyLatestVersions;
 	}
 
-	public void setOnlyLatestVersions(String onlyLatestVersions) {
+	public void setOnlyLatestVersions(String onlyLatestVersions) 
+	{
 		this.onlyLatestVersions = onlyLatestVersions;
 	}
 
-	/*
-		private void updateContentVersions(List allContents, Map contentIdMap, Map siteNodeIdMap)
+	public Integer getRepositoryId()
 	{
-	    logger.info("allContents:" + allContents.size());
-	    Iterator allContentsIterator = allContents.iterator();
-	    while(allContentsIterator.hasNext())
-	    {
-	        Content content = (Content)allContentsIterator.next();
-	        
-	        logger.info("content:" + content);
-	        
-	        Iterator contentVersionIterator = content.getContentVersions().iterator();
-	        while(contentVersionIterator.hasNext())
-	        {
-	            ContentVersion contentVersion = (ContentVersion)contentVersionIterator.next();
-	            String contentVersionValue = contentVersion.getVersionValue();
-
-                contentVersionValue = contentVersionValue.replaceAll("contentId=\"" + oldContentId + "\"", "contentId=\"" + newContentId + "\"");
-                contentVersionValue = contentVersionValue.replaceAll("contentId=" + oldContentId + "&", "contentId=" + newContentId + "&");
-                contentVersionValue = contentVersionValue.replaceAll("getInlineAssetUrl\\(" + oldContentId + ",", "getInlineAssetUrl\\(" + newContentId + ",");
-                contentVersionValue = contentVersionValue.replaceAll("languageId," + oldContentId + "\\)", "languageId," + newContentId + "\\)");
-                contentVersionValue = contentVersionValue.replaceAll("entity=\"Content\" entityId=\"" + oldContentId + "\"", "entity=\"Content\" entityId=\"" + newContentId + "\"");
-                contentVersionValue = contentVersionValue.replaceAll("entity='Content'><id>" + oldContentId + "</id>", "entity='Content'><id>" + newContentId + "</id>");
-
-                contentVersionValue = contentVersionValue.replaceAll("siteNodeId=\"" + oldSiteNodeId + "\"", "siteNodeId=\"" + newSiteNodeId + "\"");
-                contentVersionValue = contentVersionValue.replaceAll("getPageUrl\\(" + oldSiteNodeId + ",", "getPageUrl\\(" + newSiteNodeId + ",");
-                contentVersionValue = contentVersionValue.replaceAll("entity=\"SiteNode\" entityId=\"" + oldSiteNodeId + "\"", "entity=\"SiteNode\" entityId=\"" + newSiteNodeId + "\"");
-                contentVersionValue = contentVersionValue.replaceAll("entity='SiteNode'><id>" + oldSiteNodeId + "</id>", "entity='SiteNode'><id>" + newSiteNodeId + "</id>");
-	            
-	            logger.info("contentVersionValue before:" + contentVersionValue);
-                
-	            Iterator contentIdMapIterator = contentIdMap.keySet().iterator();
-	            while (contentIdMapIterator.hasNext()) 
-	            {
-	                String oldContentId = (String)contentIdMapIterator.next();
-	                String newContentId = (String)contentIdMap.get(oldContentId);
-	                
-	                logger.info("Replacing all:" + oldContentId + " with " + newContentId);
-	                
-	                contentVersionValue = contentVersionValue.replaceAll("contentId=\"" + oldContentId + "\"", "contentId=\"" + newContentId + "\"");
-	                contentVersionValue = contentVersionValue.replaceAll("contentId=" + oldContentId + "&", "contentId=" + newContentId + "&");
-	                contentVersionValue = contentVersionValue.replaceAll("getInlineAssetUrl\\(" + oldContentId + ",", "getInlineAssetUrl\\(" + newContentId + ",");
-	                contentVersionValue = contentVersionValue.replaceAll("languageId," + oldContentId + "\\)", "languageId," + newContentId + "\\)");
-	                contentVersionValue = contentVersionValue.replaceAll("entity=\"Content\" entityId=\"" + oldContentId + "\"", "entity=\"Content\" entityId=\"" + newContentId + "\"");
-	                contentVersionValue = contentVersionValue.replaceAll("entity='Content'><id>" + oldContentId + "</id>", "entity='Content'><id>" + newContentId + "</id>");
-	                //contentVersionValue = contentVersionValue.replaceAll("<id>" + oldContentId + "</id>", "<id>" + newContentId + "</id>");
-	            }
-	            
-	            Iterator siteNodeIdMapIterator = siteNodeIdMap.keySet().iterator();
-	            while (siteNodeIdMapIterator.hasNext()) 
-	            {
-	                String oldSiteNodeId = (String)siteNodeIdMapIterator.next();
-	                String newSiteNodeId = (String)siteNodeIdMap.get(oldSiteNodeId);
-	                
-	                logger.info("Replacing all:" + oldSiteNodeId + " with " + newSiteNodeId);
-	                
-	                contentVersionValue = contentVersionValue.replaceAll("siteNodeId=\"" + oldSiteNodeId + "\"", "siteNodeId=\"" + newSiteNodeId + "\"");
-	                contentVersionValue = contentVersionValue.replaceAll("getPageUrl\\(" + oldSiteNodeId + ",", "getPageUrl\\(" + newSiteNodeId + ",");
-	                contentVersionValue = contentVersionValue.replaceAll("entity=\"SiteNode\" entityId=\"" + oldSiteNodeId + "\"", "entity=\"SiteNode\" entityId=\"" + newSiteNodeId + "\"");
-	                contentVersionValue = contentVersionValue.replaceAll("entity='SiteNode'><id>" + oldSiteNodeId + "</id>", "entity='SiteNode'><id>" + newSiteNodeId + "</id>");
-	            }
-	            
-	            logger.info("contentVersionValue after:" + contentVersionValue);
-
-	            logger.info("new contentVersionValue:" + contentVersionValue);
-	            contentVersion.setVersionValue(contentVersionValue);
-	        }
-	    }
+		return repositoryId;
 	}
-	*/
+
+	public void setRepositoryId(Integer repositoryId)
+	{
+		this.repositoryId = repositoryId;
+	}
+
+	public String getStandardReplacement()
+	{
+		return this.standardReplacement;
+	}
+	
+	public void setReplacements(String replacements)
+	{
+		this.replacements = replacements;
+	}
 }

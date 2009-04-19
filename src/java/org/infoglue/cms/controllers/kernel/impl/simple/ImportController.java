@@ -23,6 +23,8 @@
 
 package org.infoglue.cms.controllers.kernel.impl.simple;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
@@ -75,6 +77,7 @@ import org.infoglue.cms.entities.structure.impl.simple.ServiceBindingImpl;
 import org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl;
 import org.infoglue.cms.entities.structure.impl.simple.SiteNodeVersionImpl;
 import org.infoglue.cms.exception.SystemException;
+import org.infoglue.deliver.util.Timer;
 
 import com.opensymphony.module.propertyset.PropertySet;
 import com.opensymphony.module.propertyset.PropertySetManager;
@@ -97,17 +100,24 @@ public class ImportController extends BaseController
 	{
 		return new ImportController();
 	}
-		
-	public void importRepository(Database db, Mapping map, File file, String encoding, int version, String onlyLatestVersions, Map contentIdMap, Map siteNodeIdMap, List allContentIds) throws Exception
+
+	public void importRepository(Database db, Mapping map, File file, String encoding, int version, String onlyLatestVersions, boolean isCopyAction, Map contentIdMap, Map siteNodeIdMap, List allContentIds, Map replaceMap) throws Exception
 	{
-		//String encoding = "ISO-8859-1";
         FileInputStream fis = new FileInputStream(file);
-        InputStreamReader reader = new InputStreamReader(fis, encoding);
-		//Reader reader = new FileReader(file);
+        BufferedInputStream bis = new BufferedInputStream(fis);
+        InputStreamReader reader = new InputStreamReader(bis, encoding);
 
 		Unmarshaller unmarshaller = new Unmarshaller(map);
 		unmarshaller.setWhitespacePreserve(true);
 		InfoGlueExportImpl infoGlueExportImplRead = (InfoGlueExportImpl)unmarshaller.unmarshal(reader);
+
+		copyRepository(db, infoGlueExportImplRead, version, onlyLatestVersions, isCopyAction, contentIdMap, siteNodeIdMap, allContentIds, replaceMap);
+		
+		reader.close();
+	}
+	
+	public void copyRepository(Database db, InfoGlueExportImpl infoGlueExportImplRead, int version, String onlyLatestVersions, boolean isCopyAction, Map contentIdMap, Map siteNodeIdMap, List allContentIds, Map replaceMap) throws Exception
+	{
 		Collection contentTypeDefinitions = infoGlueExportImplRead.getContentTypeDefinitions();
 		logger.info("Found " + contentTypeDefinitions.size() + " content type definitions");
 		Collection categories = infoGlueExportImplRead.getCategories();
@@ -116,8 +126,11 @@ public class ImportController extends BaseController
 		Map categoryIdMap = new HashMap();
 		Map contentTypeIdMap = new HashMap();
 
-		importCategories(categories, null, categoryIdMap, db);
-		updateContentTypeDefinitions(contentTypeDefinitions, categoryIdMap);
+		if(!isCopyAction)
+		{
+			importCategories(categories, null, categoryIdMap, db);
+			updateContentTypeDefinitions(contentTypeDefinitions, categoryIdMap);
+		}
 		
 		List readSiteNodes = infoGlueExportImplRead.getRootSiteNode();
 		//SiteNode readSiteNode = infoGlueExportImplRead.getRootSiteNode();
@@ -152,7 +165,11 @@ public class ImportController extends BaseController
 
 			Repository repositoryRead = readSiteNode.getRepository();
 			logger.info(repositoryRead.getName());
-
+			
+			repositoryRead.setName(substituteStrings(repositoryRead.getName(), replaceMap));
+			repositoryRead.setDescription(substituteStrings(repositoryRead.getDescription(), replaceMap));
+			repositoryRead.setDnsName(substituteStrings(repositoryRead.getDnsName(), replaceMap));
+			
 			Content readContent = null;
 
 			readContent = (Content)repositoryContentMap.get("" + repositoryRead.getId());
@@ -192,8 +209,8 @@ public class ImportController extends BaseController
 			readSiteNode.setRepository((RepositoryImpl)repositoryRead);
 			
 			logger.info("***************************************\nreadContent:" + readContent.getName());
-			createContents(readContent, contentIdMap, contentTypeIdMap, allContents, Collections.unmodifiableCollection(contentTypeDefinitions), categoryIdMap, version, db, onlyLatestVersions);
-			createStructure(readSiteNode, contentIdMap, siteNodeIdMap, siteNodeVersionIdMap, readAvailableServiceBindings, allSiteNodes, db, onlyLatestVersions);
+			createContents(readContent, contentIdMap, contentTypeIdMap, allContents, Collections.unmodifiableCollection(contentTypeDefinitions), categoryIdMap, version, db, onlyLatestVersions, isCopyAction, replaceMap);
+			createStructure(readSiteNode, contentIdMap, siteNodeIdMap, siteNodeVersionIdMap, readAvailableServiceBindings, allSiteNodes, db, onlyLatestVersions, replaceMap);
 		}
 					
 		//List allContentIds = new ArrayList();
@@ -298,8 +315,19 @@ public class ImportController extends BaseController
 				db.create(accessRightGroup);
 			}
 		}
-		
-		reader.close();
+	}
+
+	private String substituteStrings(String originalValue, Map<String,String> replaceMap)
+	{
+		String newValue = originalValue;
+		Iterator<String> replaceMapIterator = replaceMap.keySet().iterator();
+		while(replaceMapIterator.hasNext())
+		{
+			String key = replaceMapIterator.next();
+			String value = replaceMap.get(key);
+			newValue = newValue.replaceAll(key, value);
+		}
+		return newValue;
 	}
 
 	
@@ -380,7 +408,7 @@ public class ImportController extends BaseController
 	 * @param db
 	 * @throws Exception
 	 */
-	private void createStructure(SiteNode siteNode, Map contentIdMap, Map siteNodeIdMap, Map siteNodeVersionIdMap, Map readAvailableServiceBindings, List allSiteNodes, Database db, String onlyLatestVersions) throws Exception
+	private void createStructure(SiteNode siteNode, Map contentIdMap, Map siteNodeIdMap, Map siteNodeVersionIdMap, Map readAvailableServiceBindings, List allSiteNodes, Database db, String onlyLatestVersions, Map<String,String> replaceMap) throws Exception
 	{
 		logger.info("siteNode:" + siteNode.getName());
 
@@ -412,6 +440,8 @@ public class ImportController extends BaseController
 		}
 		siteNode.setMetaInfoContentId(new Integer(mappedMetaInfoContentId));
 		
+		siteNode.setName(substituteStrings(siteNode.getName(), replaceMap));
+
 		db.create(siteNode);
 		
 		allSiteNodes.add(siteNode);
@@ -429,7 +459,7 @@ public class ImportController extends BaseController
 				SiteNode childSiteNode = (SiteNode)childSiteNodesIterator.next();
 				childSiteNode.setRepository(siteNode.getRepository());
 				childSiteNode.setParentSiteNode((SiteNodeImpl)siteNode);
-				createStructure(childSiteNode, contentIdMap, siteNodeIdMap, siteNodeVersionIdMap, readAvailableServiceBindings, allSiteNodes, db, onlyLatestVersions);
+				createStructure(childSiteNode, contentIdMap, siteNodeIdMap, siteNodeVersionIdMap, readAvailableServiceBindings, allSiteNodes, db, onlyLatestVersions, replaceMap);
 			}
 		}
 
@@ -585,7 +615,7 @@ public class ImportController extends BaseController
 	 * @throws Exception
 	 */
 	
-	private List createContents(Content content, Map idMap, Map contentTypeDefinitionIdMap, List allContents, Collection contentTypeDefinitions, Map categoryIdMap, int version, Database db, String onlyLatestVersions) throws Exception
+	private List createContents(Content content, Map idMap, Map contentTypeDefinitionIdMap, List allContents, Collection contentTypeDefinitions, Map categoryIdMap, int version, Database db, String onlyLatestVersions, boolean isCopyAction, Map<String,String> replaceMap) throws Exception
 	{
     	//System.out.println("createContents:" + content.getName() + ":" + content.getId());
 
@@ -598,42 +628,52 @@ public class ImportController extends BaseController
 		    
     		if(contentTypeDefinitionId != null)
 			{
-    			if(contentTypeDefinitionIdMap.containsKey(contentTypeDefinitionId))
-    				contentTypeDefinitionId = (Integer)contentTypeDefinitionIdMap.get(contentTypeDefinitionId);
+    			if(!isCopyAction)
+    			{
+	    			if(contentTypeDefinitionIdMap.containsKey(contentTypeDefinitionId))
+	    				contentTypeDefinitionId = (Integer)contentTypeDefinitionIdMap.get(contentTypeDefinitionId);
     				
-		    	ContentTypeDefinition originalContentTypeDefinition = null;
-		    	Iterator contentTypeDefinitionsIterator = contentTypeDefinitions.iterator();
-		    	while(contentTypeDefinitionsIterator.hasNext())
-		    	{
-		    		ContentTypeDefinition contentTypeDefinitionCandidate = (ContentTypeDefinition)contentTypeDefinitionsIterator.next();		    		
-		    		if(contentTypeDefinitionCandidate.getId().intValue() == contentTypeDefinitionId.intValue())
-		    		{
-		    			originalContentTypeDefinition = contentTypeDefinitionCandidate;
-		    			break;
-		    		}
-		    	}
-
-		    	if(originalContentTypeDefinition != null)
-		    	{
-			    	contentTypeDefinition = ContentTypeDefinitionController.getController().getContentTypeDefinitionWithName(originalContentTypeDefinition.getName(), db);
-
-			    	if(contentTypeDefinition == null)
-					{
-			    		Integer before = originalContentTypeDefinition.getId();
-			    		db.create(originalContentTypeDefinition);
-			    		contentTypeDefinition = originalContentTypeDefinition;
-			    		Integer after = originalContentTypeDefinition.getId();
-			    		contentTypeDefinitionIdMap.put(before, after);
+			    	ContentTypeDefinition originalContentTypeDefinition = null;
+			    	Iterator contentTypeDefinitionsIterator = contentTypeDefinitions.iterator();
+			    	while(contentTypeDefinitionsIterator.hasNext())
+			    	{
+			    		ContentTypeDefinition contentTypeDefinitionCandidate = (ContentTypeDefinition)contentTypeDefinitionsIterator.next();		    		
+			    		if(contentTypeDefinitionCandidate.getId().intValue() == contentTypeDefinitionId.intValue())
+			    		{
+			    			originalContentTypeDefinition = contentTypeDefinitionCandidate;
+			    			break;
+			    		}
 			    	}
-				
-		    		content.setContentTypeDefinition((ContentTypeDefinitionImpl)contentTypeDefinition);
-
-		    	}
-			    else
-			    	logger.error("The content " + content.getName() + " had a content type not found amongst the listed ones:" + contentTypeDefinitionId);
-			}
+	
+			    	if(originalContentTypeDefinition != null)
+			    	{
+				    	contentTypeDefinition = ContentTypeDefinitionController.getController().getContentTypeDefinitionWithName(originalContentTypeDefinition.getName(), db);
+	
+				    	if(contentTypeDefinition == null)
+						{
+				    		Integer before = originalContentTypeDefinition.getId();
+				    		db.create(originalContentTypeDefinition);
+				    		contentTypeDefinition = originalContentTypeDefinition;
+				    		Integer after = originalContentTypeDefinition.getId();
+				    		contentTypeDefinitionIdMap.put(before, after);
+				    	}
+					
+			    		content.setContentTypeDefinition((ContentTypeDefinitionImpl)contentTypeDefinition);
+	
+			    	}
+				    else
+				    {
+				    	logger.error("The content " + content.getName() + " had a content type not found amongst the listed ones:" + contentTypeDefinitionId);
+				    }
+    			}
+    			else
+    			{
+			    	contentTypeDefinition = ContentTypeDefinitionController.getController().getContentTypeDefinitionWithId(contentTypeDefinitionId, db);
+			    	content.setContentTypeDefinition((ContentTypeDefinitionImpl)contentTypeDefinition);
+    			}
+		    }
 		    else
-		    	logger.error("The content " + content.getName() + " had no content type at all");
+		    	logger.warn("The content " + content.getName() + " had no content type at all");
 	    }
 	    else if(version == 1)
 	    {
@@ -643,9 +683,6 @@ public class ImportController extends BaseController
 			    contentTypeDefinition = ContentTypeDefinitionController.getController().getContentTypeDefinitionWithName(originalContentTypeDefinition.getName(), db);
 				if(contentTypeDefinition == null)
 				{
-		    		//contentTypeDefinition = ContentTypeDefinitionController.getController().create(originalContentTypeDefinition.getValueObject(), db);
-		    		//contentTypeDefinitions.add(contentTypeDefinition);
-		    		
 				    db.create(originalContentTypeDefinition);
 				    contentTypeDefinition = originalContentTypeDefinition;
 				}
@@ -655,16 +692,12 @@ public class ImportController extends BaseController
 	    }
 	    
 	    if(content.getContentTypeDefinition() == null)
-	    	logger.error("No content type definition for content:" + content.getId());
+	    	logger.warn("No content type definition for content:" + content.getId());
 	    	
 	    logger.info("Creating content:" + content.getName());
 
-	    //if(content.getId().intValue() == 53)
-	    //{
-	    //	System.out.println("Creating content:" + content.getName());
-	    //	System.out.println(" Parent:" + content.getParentContent());
-	    //}
-	    
+	    content.setName(substituteStrings(content.getName(), replaceMap));
+
 	    db.create(content);
 		
 		allContents.add(content);
@@ -768,14 +801,31 @@ public class ImportController extends BaseController
 					
 					Integer oldCategoryId = contentCategory.getCategoryId();
 					logger.info("oldCategoryId:" + oldCategoryId);
-					Integer newCategoryId = (Integer)categoryIdMap.get(oldCategoryId);
-					logger.info("newCategoryId:" + newCategoryId);
-					if(newCategoryId == null)
-						newCategoryId = oldCategoryId;
-					
-					if(newCategoryId != null)
+					if(!isCopyAction)
 					{
-						Category category = CategoryController.getController().findById(newCategoryId, db);
+						Integer newCategoryId = (Integer)categoryIdMap.get(oldCategoryId);
+						logger.info("newCategoryId:" + newCategoryId);
+						if(newCategoryId == null)
+							newCategoryId = oldCategoryId;
+						
+						if(newCategoryId != null)
+						{
+							Category category = CategoryController.getController().findById(newCategoryId, db);
+							logger.info("Got category:" + category);
+							if(category != null)
+							{
+								contentCategory.setCategory((CategoryImpl)category);
+								logger.info("Creating content category:" + contentCategory);
+								
+								db.create(contentCategory);
+							
+								initialContentCategories.add(contentCategory);
+							}
+						}
+					}
+					else
+					{
+						Category category = CategoryController.getController().findById(oldCategoryId, db);
 						logger.info("Got category:" + category);
 						if(category != null)
 						{
@@ -803,7 +853,7 @@ public class ImportController extends BaseController
 				Content childContent = (Content)childContentsIterator.next();
 				childContent.setRepository(content.getRepository());
 				childContent.setParentContent((ContentImpl)content);
-				createContents(childContent, idMap, contentTypeDefinitionIdMap, allContents, contentTypeDefinitions, categoryIdMap, version, db, onlyLatestVersions);
+				createContents(childContent, idMap, contentTypeDefinitionIdMap, allContents, contentTypeDefinitions, categoryIdMap, version, db, onlyLatestVersions, isCopyAction, replaceMap);
 			}
 		}
 		
@@ -814,7 +864,7 @@ public class ImportController extends BaseController
 	/**
 	 * This method updates all the bindings in content-versions to reflect the move. 
 	 */
-	public void updateContentVersions(Content content, Map contentIdMap, Map siteNodeIdMap, String onlyLatestVersions) throws Exception
+	public void updateContentVersions(Content content, Map contentIdMap, Map siteNodeIdMap, String onlyLatestVersions, Map replaceMap) throws Exception
 	{
 	    logger.info("content:" + content.getName());
 
@@ -874,7 +924,15 @@ public class ImportController extends BaseController
             contentVersionValue = contentVersionValue.replaceAll("getPageUrl\\((\\d)", "getPageUrl\\(oldSiteNodeId_$1");
             contentVersionValue = contentVersionValue.replaceAll("entity=\"SiteNode\" entityId=\"", "entity=\"SiteNode\" entityId=\"oldSiteNodeId_");
             //contentVersionValue = contentVersionValue.replaceAll("entity='SiteNode'><id>", "entity='SiteNode'><id>old_");
-
+            
+            Iterator<String> replaceMapIterator = replaceMap.keySet().iterator();
+            while(replaceMapIterator.hasNext())
+            {
+            	String key = replaceMapIterator.next();
+            	String value = (String)replaceMap.get(key);
+            	contentVersionValue = contentVersionValue.replaceAll(key, value);
+            }
+            
             contentVersionValue = this.prepareAllRelations(contentVersionValue);
             	            
             
