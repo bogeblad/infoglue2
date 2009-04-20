@@ -113,7 +113,7 @@ public class ViewListSiteNodeVersionAction extends InfoGlueAbstractAction
 					{
 						LanguageVO language = (LanguageVO)languageVOListIterator.next();
 						ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentId, language.getId());
-						if(contentVersionVO.getStateId().equals(ContentVersionVO.WORKING_STATE))
+						if(contentVersionVO != null && contentVersionVO.getStateId().equals(ContentVersionVO.WORKING_STATE))
 						{
 							this.contentVersionVOList.add(contentVersionVO);
 						}
