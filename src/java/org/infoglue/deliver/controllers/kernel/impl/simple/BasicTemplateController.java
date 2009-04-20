@@ -6703,6 +6703,9 @@ public class BasicTemplateController implements TemplateController
 	
 	public boolean getHasUserPageAccess(Integer siteNodeId)
 	{
+		if(siteNodeId == null || siteNodeId < 1)
+			return false;
+		
 		boolean hasUserPageAccess = false;
 		
 		try 
@@ -6738,7 +6741,7 @@ public class BasicTemplateController implements TemplateController
 		} 
 		catch(Exception e)
 		{
-			logger.error("An error occurred trying to get determine if content:" + contentId + " has a localized version:" + e.getMessage(), e);
+			logger.error("An error occurred trying to determine if the user had access to page:" + siteNodeId + ":" + e.getMessage(), e);
 		}
 		
 		return hasUserPageAccess;
@@ -6750,6 +6753,9 @@ public class BasicTemplateController implements TemplateController
 	
 	public boolean getHasUserPageAccess(Integer siteNodeId, String interceptionPointName)
 	{
+		if(siteNodeId == null || siteNodeId < 1)
+			return false;
+
 		boolean hasUserPageAccess = false;
 		
 		try 
@@ -6787,7 +6793,7 @@ public class BasicTemplateController implements TemplateController
 		} 
 		catch(Exception e)
 		{
-			logger.error("An error occurred trying to get determine if content:" + contentId + " has a localized version:" + e.getMessage(), e);
+			logger.error("An error occurred trying to determine if the user had access to page:" + siteNodeId + "-" + interceptionPointName + ":" + e.getMessage(), e);
 		}
 		
 		return hasUserPageAccess;
@@ -6800,6 +6806,9 @@ public class BasicTemplateController implements TemplateController
 	
 	public boolean getHasUserContentAccess(Integer contentId)
 	{
+		if(contentId == null || contentId < 1)
+			return false;
+
 		boolean hasUserContentAccess = true;
 		
 		try 
@@ -6827,7 +6836,7 @@ public class BasicTemplateController implements TemplateController
 		} 
 		catch(Exception e)
 		{
-			logger.error("An error occurred trying to get determine if content:" + contentId + " has a localized version:" + e.getMessage(), e);
+			logger.error("An error occurred trying to determine if the user had access to content:" + contentId + ":" + e.getMessage(), e);
 		}
 		
 		return hasUserContentAccess;
@@ -6840,6 +6849,9 @@ public class BasicTemplateController implements TemplateController
 	
 	public boolean getHasUserContentAccess(Integer contentId, String action)
 	{
+		if(contentId == null || contentId < 1)
+			return false;
+
 		boolean hasUserContentAccess = true;
 		
 		try 
@@ -6864,7 +6876,7 @@ public class BasicTemplateController implements TemplateController
 		} 
 		catch(Exception e)
 		{
-			logger.error("An error occurred trying to get determine if content:" + contentId + " has a localized version:" + e.getMessage(), e);
+			logger.error("An error occurred trying to determine if the user had access to content:" + contentId + "-" + action + ":" + e.getMessage(), e);
 		}
 		
 		return hasUserContentAccess;
@@ -6876,6 +6888,9 @@ public class BasicTemplateController implements TemplateController
 	
 	public boolean getHasUserPageWriteAccess(Integer siteNodeId)
 	{
+		if(siteNodeId == null || siteNodeId < 1)
+			return false;
+
 		boolean hasUserPageWriteAccess = false;
 		
 		try 
@@ -6944,7 +6959,7 @@ public class BasicTemplateController implements TemplateController
 		} 
 		catch(Exception e)
 		{
-			logger.error("An error occurred trying to get determine if content:" + contentId + " has a localized version:" + e.getMessage(), e);
+			logger.error("An error occurred trying to determine if the user had access to interceptionPointName:" + interceptionPointName + "-" + extraParameters + ":" + e.getMessage(), e);
 		}
 		
 		return hasUserContentAccess;
