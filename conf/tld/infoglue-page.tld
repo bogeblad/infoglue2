@@ -25,7 +25,7 @@
         <info>Setters for DeliverContext parameters</info>
         <attribute>
     	    <name>id</name>
-        	<required>false</required>
+        	<required>true</required>
 	        <rtexprvalue>false</rtexprvalue>
     	</attribute>
         <attribute>
@@ -70,6 +70,11 @@
     	</attribute>
         <attribute>
     	    <name>considerEditorInDecoratedMode</name>
+        	<required>false</required>
+	        <rtexprvalue>false</rtexprvalue>
+    	</attribute>
+    	<attribute>
+    	    <name>selectiveCacheUpdateNonApplicable</name>
         	<required>false</required>
 	        <rtexprvalue>false</rtexprvalue>
     	</attribute>
