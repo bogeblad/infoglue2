@@ -30,6 +30,7 @@ import javax.servlet.jsp.JspTagException;
 import org.infoglue.cms.util.StringManager;
 import org.infoglue.cms.util.StringManagerFactory;
 import org.infoglue.deliver.controllers.kernel.impl.simple.TemplateController;
+import org.infoglue.deliver.portal.PortalController;
 
 /**
  * Base class for all tags using the TemplateController object.
@@ -66,13 +67,40 @@ public abstract class TemplateControllerTag extends AbstractTag
 		} 
 		catch(Exception e) 
 		{
-			e.printStackTrace();
 			throw new JspTagException(e.getMessage());
 		}
 			
 		return controller;
 	}
-	
+
+	/**
+	 * Returns the portal controller.
+	 * 
+	 * Note! Do not called this function before the PageContext is initialized.
+	 * 
+	 * @return the portal controller.
+	 * @throws JspTagException if the portlet controller wasn't found.
+	 */
+	protected PortalController getPortalController() throws JspTagException
+	{
+		PortalController portletController;
+    	
+	    try 
+		{
+	    	portletController = (PortalController) this.pageContext.getRequest().getAttribute("org.infoglue.cms.deliver.portalLogic");
+			if(portletController == null)
+			{
+				throw new NullPointerException("No portletController found in context.");
+			}
+		} 
+		catch(Exception e) 
+		{
+			throw new JspTagException(e.getMessage());
+		}
+			
+		return portletController;
+	}
+
 	protected String getLocalizedString(Locale locale, String key) 
   	{
     	StringManager stringManager = StringManagerFactory.getPresentationStringManager("org.infoglue.cms.applications", locale);
