@@ -464,6 +464,7 @@ Properties classes
 	padding: 2px;
 }
 .igpropertyDivider {
+	border: 0px solid #ccc;	
 	border-bottom: 1px solid #CCC;
 }
 
