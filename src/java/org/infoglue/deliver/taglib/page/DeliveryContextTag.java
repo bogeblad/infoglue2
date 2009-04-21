@@ -96,4 +96,11 @@ public class DeliveryContextTag extends TemplateControllerTag
 			}
 	    }
 	}
+	
+	public void setSelectiveCacheUpdateNonApplicable(String selectiveCacheUpdateNonApplicable) throws JspException
+	{
+		if(selectiveCacheUpdateNonApplicable != null && selectiveCacheUpdateNonApplicable.equalsIgnoreCase("true"))
+			getController().getDeliveryContext().addUsedContent("selectiveCacheUpdateNonApplicable");
+	}
+	
 }
