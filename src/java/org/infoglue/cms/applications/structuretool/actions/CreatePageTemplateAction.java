@@ -90,6 +90,7 @@ public class CreatePageTemplateAction extends InfoGlueAbstractAction implements 
 
 	private Integer siteNodeId;
 	private String name;
+	private String groupName = "";
 	
 	private String returnAddress;
 
@@ -179,7 +180,7 @@ public class CreatePageTemplateAction extends InfoGlueAbstractAction implements 
 		}
 	    
 		//Create initial content version also... in masterlanguage
-		String versionValue = "<?xml version='1.0' encoding='UTF-8'?><article xmlns=\"x-schema:ArticleSchema.xml\"><attributes><Name><![CDATA[" + this.name + "]]></Name><ComponentStructure><![CDATA[" + componentStructure + "]]></ComponentStructure></attributes></article>";
+		String versionValue = "<?xml version='1.0' encoding='UTF-8'?><article xmlns=\"x-schema:ArticleSchema.xml\"><attributes><Name><![CDATA[" + this.name + "]]></Name><GroupName><![CDATA[" + this.groupName + "]]></GroupName><ComponentStructure><![CDATA[" + componentStructure + "]]></ComponentStructure></attributes></article>";
 	
 		ContentVersionVO contentVersionVO = new ContentVersionVO();
 		contentVersionVO.setVersionComment("Saved page template");
@@ -301,7 +302,7 @@ public class CreatePageTemplateAction extends InfoGlueAbstractAction implements 
 			}
 		}
 	    
-		String versionValue = "<?xml version='1.0' encoding='UTF-8'?><article xmlns=\"x-schema:ArticleSchema.xml\"><attributes><Name><![CDATA[" + this.name + "]]></Name><ComponentStructure><![CDATA[" + componentStructure + "]]></ComponentStructure></attributes></article>";
+		String versionValue = "<?xml version='1.0' encoding='UTF-8'?><article xmlns=\"x-schema:ArticleSchema.xml\"><attributes><Name><![CDATA[" + this.name + "]]></Name><GroupName><![CDATA[" + this.groupName + "]]></GroupName><ComponentStructure><![CDATA[" + componentStructure + "]]></ComponentStructure></attributes></article>";
 	
 		ContentVersionVO contentVersionVO = pagePartContentVersionVO;
 		contentVersionVO.setVersionComment("Saved page template");
@@ -441,6 +442,15 @@ public class CreatePageTemplateAction extends InfoGlueAbstractAction implements 
     public void setName(String name)
     {
         this.name = name;
+    }
+
+    public String getGroupName()
+    {
+        return groupName;
+    }
+    public void setGroupName(String groupName)
+    {
+        this.groupName = groupName;
     }
 
 	public Integer getComponentId()
