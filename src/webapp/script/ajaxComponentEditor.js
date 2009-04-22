@@ -2195,7 +2195,7 @@ function viewSource()
 			//alert("draggedComponentId:"+ draggedComponentId + " - " + movedElementId + " - " + movedComponentId);
 			if(draggedComponentId != '-1' || movedElementId != '' || movedComponentId != '')
 			{
-				assignComponent(evt, siteNodeId, languageId, contentId, componentId, slotId, false, '', '', '');
+				assignComponent(evt, siteNodeId, languageId, contentId, componentId, slotId, false, '', '', '', '');
 	
 			    // cancel event bubbling
 			    if (evt && evt.stopPropagation) {evt.stopPropagation();}
@@ -2670,7 +2670,7 @@ function viewSource()
 			openCloseDiv(previousEditOnSightMenuDivId);
 	}
 	
-	function registerOnMouseUp(elementId, siteNodeId, languageId, contentId, componentId, id, skipFloatDiv, allowedComponentsArrayAsUrlEncodedString, disallowedComponentsArrayAsUrlEncodedString, slotPositionComponentId)
+	function registerOnMouseUp(elementId, siteNodeId, languageId, contentId, componentId, id, skipFloatDiv, allowedComponentsArrayAsUrlEncodedString, disallowedComponentsArrayAsUrlEncodedString, allowedComponentGroupNamesAsUrlEncodedString, slotPositionComponentId)
 	{
 		/*
 		alert("elementId:" + elementId);
@@ -2769,7 +2769,7 @@ function viewSource()
 	    		assignComponentCatched = true;
 				$("#debugDiv").html("Assigning to:" + componentId + " with " + siteNodeId + ":" + languageId + ":" +contentId + ":" + componentId + ":" + id);
 				if(draggedComponentId != '-1' || movedElementId != '' || movedComponentId != '')
-					assignComponent(event, siteNodeId, languageId, contentId, componentId, id, skipFloatDiv, allowedComponentsArrayAsUrlEncodedString, disallowedComponentsArrayAsUrlEncodedString, slotPositionComponentId);
+					assignComponent(event, siteNodeId, languageId, contentId, componentId, id, skipFloatDiv, allowedComponentsArrayAsUrlEncodedString, disallowedComponentsArrayAsUrlEncodedString, allowedComponentGroupNamesAsUrlEncodedString, slotPositionComponentId);
 	    	}, false);
 	    }
 	    else
@@ -2854,7 +2854,7 @@ function viewSource()
 	    		}
 	    		
 	    		if(draggedComponentId != '-1' || movedElementId != '' || movedComponentId != '')
-					assignComponent(evt, siteNodeId, languageId, contentId, componentId, id, skipFloatDiv, allowedComponentsArrayAsUrlEncodedString, disallowedComponentsArrayAsUrlEncodedString, slotPositionComponentId);
+					assignComponent(evt, siteNodeId, languageId, contentId, componentId, id, skipFloatDiv, allowedComponentsArrayAsUrlEncodedString, disallowedComponentsArrayAsUrlEncodedString, allowedComponentGroupNamesAsUrlEncodedString, slotPositionComponentId);
 	   		})
 	    }
 	}	
