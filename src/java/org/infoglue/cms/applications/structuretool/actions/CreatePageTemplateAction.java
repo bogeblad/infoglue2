@@ -308,13 +308,13 @@ public class CreatePageTemplateAction extends InfoGlueAbstractAction implements 
 		contentVersionVO.setVersionComment("Saved page template");
 		contentVersionVO.setVersionModifier(this.getInfoGluePrincipal().getName());
 		contentVersionVO.setVersionValue(versionValue);
-		ContentVersionController.getContentVersionController().update(pagePartContentVO.getId(), pagePartMasterLanguageId, contentVersionVO, this.getInfoGluePrincipal());
+		ContentVersionVO updateContentVersionVO = ContentVersionController.getContentVersionController().update(pagePartContentVO.getId(), pagePartMasterLanguageId, contentVersionVO, this.getInfoGluePrincipal());
 
 		if(this.attemptDirectPublication)
 		{
 			List events = new ArrayList();
 
-			ContentVersion contentVersion = ContentStateController.changeState(contentVersionVO.getId(), ContentVersionVO.PUBLISH_STATE, "Auto publish", false, null, this.getInfoGluePrincipal(), null, events);
+			ContentVersion contentVersion = ContentStateController.changeState(updateContentVersionVO.getId(), ContentVersionVO.PUBLISH_STATE, "Auto publish", false, null, this.getInfoGluePrincipal(), null, events);
 
 		    PublicationVO publicationVO = new PublicationVO();
 		    publicationVO.setName("Direct publication by " + this.getInfoGluePrincipal().getName());
