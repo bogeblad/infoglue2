@@ -199,49 +199,25 @@ public class ComponentController extends BaseController
 		arguments.put("arguments", argumentList);
 		
 		List results = ContentControllerProxy.getController().getACContentVOList(principal, arguments);
-		
-		if(allowedComponentNames != null && allowedComponentNames.length > 0)
-		{
-		    Iterator resultsIterator = results.iterator();
-		    while(resultsIterator.hasNext())
-		    {
-		        ContentVO contentVO = (ContentVO)resultsIterator.next();
-		        boolean isAllowed = false;
-		        for(int i=0; i<allowedComponentNames.length; i++)
+
+	    Iterator resultsIterator = results.iterator();
+	    while(resultsIterator.hasNext())
+	    {
+	        ContentVO contentVO = (ContentVO)resultsIterator.next();
+
+			boolean isPartOfAllowedComponentNames = false;
+			if(allowedComponentNames != null && allowedComponentNames.length > 0)
+			{
+				for(int i=0; i<allowedComponentNames.length; i++)
 		        {
 		            if(contentVO.getName().equals(allowedComponentNames[i]))
-		                isAllowed = true;
+		            	isPartOfAllowedComponentNames = true;
 		        }
-		        
-		        if(!isAllowed)
-		            resultsIterator.remove();
-		    }
-		}
-
-		if(disallowedComponentNames != null && disallowedComponentNames.length > 0)
-		{
-		    Iterator resultsIterator = results.iterator();
-		    while(resultsIterator.hasNext())
-		    {
-		        ContentVO contentVO = (ContentVO)resultsIterator.next();
-		        boolean isAllowed = true;
-		        for(int i=0; i<disallowedComponentNames.length; i++)
-		        {
-		            if(contentVO.getName().equals(disallowedComponentNames[i]))
-		                isAllowed = false;
-		        }
-		        
-		        if(!isAllowed)
-		            resultsIterator.remove();
-		    }
-		}
-
-		if(allowedComponentGroups != null && allowedComponentGroups.length > 0)
-		{
-		    Iterator resultsIterator = results.iterator();
-		    while(resultsIterator.hasNext())
-		    {
-		        ContentVO contentVO = (ContentVO)resultsIterator.next();
+			}
+			
+			boolean isPartOfAllowedComponentGroupNames = false;
+			if(allowedComponentGroups != null && allowedComponentGroups.length > 0)
+			{
 				LanguageVO masterLanguageVO = LanguageController.getController().getMasterLanguage(contentVO.getRepositoryId());		
 
 	        	ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getLatestContentVersionVO(contentVO.getContentId(), masterLanguageVO.getId());
@@ -249,43 +225,46 @@ public class ComponentController extends BaseController
 	        	if(contentVersionVO != null)
 	        		groupName = ContentVersionController.getContentVersionController().getAttributeValue(contentVersionVO, "GroupName", false);
 
-		        boolean isAllowed = false;
 		        for(int i=0; i<allowedComponentGroups.length; i++)
 		        {
 		        	String allowedComponentGroup = allowedComponentGroups[i];
-		        	if(groupName != null && groupName.equals(disallowedComponentNames[i]))
-		                isAllowed = true;
+		        	if(groupName != null && groupName.equals(allowedComponentGroup))
+		        		isPartOfAllowedComponentGroupNames = true;
 		        }
-		        
-		        if(!isAllowed)
-		            resultsIterator.remove();
-		    }
-		}
-		/*
-		if(disallowedComponentGroups != null && disallowedComponentGroups.length > 0)
-		{
-		    Iterator resultsIterator = results.iterator();
-		    while(resultsIterator.hasNext())
-		    {
-		        ContentVO contentVO = (ContentVO)resultsIterator.next();
-				LanguageVO masterLanguageVO = LanguageController.getController().getMasterLanguage(contentVO.getRepositoryId());		
+			}
 
-		        boolean isAllowed = true;
-		        for(int i=0; i<allowedComponentGroups.length; i++)
+			boolean isPartOfDisallowedComponentNames = false;
+			if(disallowedComponentNames != null && disallowedComponentNames.length > 0)
+			{
+		        for(int i=0; i<disallowedComponentNames.length; i++)
 		        {
-		        	String allowedComponentGroup = allowedComponentGroups[i];
-		        	
-		        	ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getLatestContentVersionVO(contentVO.getContentId(), masterLanguageVO.getId());
-		        	String groupName = ContentVersionController.getContentVersionController().getAttributeValue(contentVersionVO, "GroupName", false);
-		        	if(groupName.equals(disallowedComponentNames[i]))
-		                isAllowed = false;
+		            if(contentVO.getName().equals(disallowedComponentNames[i]))
+		            	isPartOfDisallowedComponentNames = true;
 		        }
-		        
-		        if(!isAllowed)
-		            resultsIterator.remove();
-		    }
+			}
+
+			if(disallowedComponentNames != null && disallowedComponentNames.length > 0 && isPartOfDisallowedComponentNames)
+			{
+				resultsIterator.remove();
+			}
+			else if((allowedComponentNames == null || allowedComponentNames.length == 0) && (allowedComponentGroups == null || allowedComponentGroups.length == 0))
+			{
+				//System.out.println("Was ok as no restrictions was defined");
+			}
+			else if(isPartOfAllowedComponentNames)
+			{
+				//System.out.println("Was ok as it was part of allowedComponentNames");
+			}
+			else if(isPartOfAllowedComponentGroupNames)
+			{
+				//System.out.println("Was ok as it was part of allowedComponentGroupNames");
+	    	}
+			else
+			{
+				//System.out.println("Removing from results:" + contentVO.getName());
+				resultsIterator.remove();				
+			}
 		}
-		*/
 		
 		return results;	
 	}
@@ -328,108 +307,72 @@ public class ComponentController extends BaseController
 		
 		List results = ContentControllerProxy.getController().getACContentVOList(principal, arguments, "Component.Select", db);
 
-		if(allowedComponentNames != null && allowedComponentNames.length > 0)
-		{
-		    Iterator resultsIterator = results.iterator();
-		    while(resultsIterator.hasNext())
-		    {
-		        ContentVO contentVO = (ContentVO)resultsIterator.next();
-		        if(getIsPagePartTemplate(contentVO))
-		        	continue;
-		        
-		        boolean isAllowed = false;
-		        for(int i=0; i<allowedComponentNames.length; i++)
+	    Iterator resultsIterator = results.iterator();
+	    while(resultsIterator.hasNext())
+	    {
+	        ContentVO contentVO = (ContentVO)resultsIterator.next();
+
+			boolean isPartOfAllowedComponentNames = false;
+			if(allowedComponentNames != null && allowedComponentNames.length > 0)
+			{
+				for(int i=0; i<allowedComponentNames.length; i++)
 		        {
 		            if(contentVO.getName().equals(allowedComponentNames[i]))
-		                isAllowed = true;
+		            	isPartOfAllowedComponentNames = true;
 		        }
-		        
-		        if(!isAllowed)
-		            resultsIterator.remove();
-		    }
-		}
+			}
+			
+			boolean isPartOfAllowedComponentGroupNames = false;
+			if(allowedComponentGroups != null && allowedComponentGroups.length > 0)
+			{
+				LanguageVO masterLanguageVO = LanguageController.getController().getMasterLanguage(contentVO.getRepositoryId());		
 
-		if(disallowedComponentNames != null && disallowedComponentNames.length > 0)
-		{
-		    Iterator resultsIterator = results.iterator();
-		    while(resultsIterator.hasNext())
-		    {
-		        ContentVO contentVO = (ContentVO)resultsIterator.next();
-		        if(getIsPagePartTemplate(contentVO))
-		        	continue;
+	        	ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getLatestContentVersionVO(contentVO.getContentId(), masterLanguageVO.getId());
+	        	String groupName = null;
+	        	if(contentVersionVO != null)
+	        		groupName = ContentVersionController.getContentVersionController().getAttributeValue(contentVersionVO, "GroupName", false);
 
-		        boolean isAllowed = true;
+		        for(int i=0; i<allowedComponentGroups.length; i++)
+		        {
+		        	String allowedComponentGroup = allowedComponentGroups[i];
+		        	if(groupName != null && groupName.equals(allowedComponentGroup))
+		        		isPartOfAllowedComponentGroupNames = true;
+		        }
+			}
+
+			boolean isPartOfDisallowedComponentNames = false;
+			if(disallowedComponentNames != null && disallowedComponentNames.length > 0)
+			{
 		        for(int i=0; i<disallowedComponentNames.length; i++)
 		        {
 		            if(contentVO.getName().equals(disallowedComponentNames[i]))
-		                isAllowed = false;
+		            	isPartOfDisallowedComponentNames = true;
 		        }
-		        
-		        if(!isAllowed)
-		            resultsIterator.remove();
-		    }
-		}
-	    
-		if(allowedComponentGroups != null && allowedComponentGroups.length > 0)
-		{
-		    Iterator resultsIterator = results.iterator();
-		    while(resultsIterator.hasNext())
-		    {
-		        ContentVO contentVO = (ContentVO)resultsIterator.next();
-		        if(getIsPagePartTemplate(contentVO))
-		        	continue;
+			}
 
-		        LanguageVO masterLanguageVO = LanguageController.getController().getMasterLanguage(contentVO.getRepositoryId(), db);		
-	        	ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getLatestContentVersionVO(contentVO.getContentId(), masterLanguageVO.getId(), db);
-
-	        	String groupName = null;
-	        	if(contentVersionVO != null)
-		        	groupName = ContentVersionController.getContentVersionController().getAttributeValue(contentVersionVO, "GroupName", false);
-
-		        boolean isAllowed = false;
-		        for(int i=0; i<allowedComponentGroups.length; i++)
-		        {
-		        	String allowedComponentGroup = allowedComponentGroups[i];
-		        	
-		        	if(groupName != null && groupName.equals(allowedComponentGroups[i]))
-		                isAllowed = true;
-		        }
-		        
-		        if(!isAllowed)
-		            resultsIterator.remove();
-		    }
-		}
-		
-		/*
-		if(disallowedComponentGroups != null && disallowedComponentGroups.length > 0)
-		{
-		    Iterator resultsIterator = results.iterator();
-		    while(resultsIterator.hasNext())
-		    {
-		        ContentVO contentVO = (ContentVO)resultsIterator.next();
-		        if(getIsPagePartTemplate(contentVO))
-		        	continue;
-
-				LanguageVO masterLanguageVO = LanguageController.getController().getMasterLanguage(contentVO.getRepositoryId(), db);		
-        		ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getLatestContentVersionVO(contentVO.getContentId(), masterLanguageVO.getId(), db);
-				String groupName = null;
-	        	if(contentVersionVO != null)
-			        groupName = ContentVersionController.getContentVersionController().getAttributeValue(contentVersionVO, "GroupName", false);
-
-		        boolean isAllowed = true;
-		        for(int i=0; i<allowedComponentGroups.length; i++)
-		        {
-		        	String allowedComponentGroup = allowedComponentGroups[i];
-		        	
-		        	if(groupName == null || groupName.equals(disallowedComponentGroups[i]))
-		                isAllowed = false;
-		        }
-		        
-		        if(!isAllowed)
-		            resultsIterator.remove();
-		    }
-		}
-		*/
+			if(disallowedComponentNames != null && disallowedComponentNames.length > 0 && isPartOfDisallowedComponentNames)
+			{
+				//System.out.println("Was not ok as it was part of disallowedComponentNames");
+				resultsIterator.remove();
+			}
+			else if((allowedComponentNames == null || allowedComponentNames.length == 0) && (allowedComponentGroups == null || allowedComponentGroups.length == 0))
+			{
+				//System.out.println("Was ok as no restrictions was defined");
+			}
+			else if(isPartOfAllowedComponentNames)
+			{
+				//System.out.println("Was ok as it was part of allowedComponentNames");
+			}
+			else if(isPartOfAllowedComponentGroupNames)
+			{
+				//System.out.println("Was ok as it was part of allowedComponentGroupNames");
+			}
+			else
+			{
+				//System.out.println("Removing from results:" + contentVO.getName());
+				resultsIterator.remove();				
+			}
+	    }
 		
 		return results;	
 	}
