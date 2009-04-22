@@ -116,12 +116,12 @@ public class RemoteFormServiceImpl extends RemoteInfoGlueService
 
         List newSiteNodeIdList = new ArrayList();
         
-        logger.error("****************************************");
-        logger.error("Creating gorm entry through webservice....");
-        logger.error("****************************************");
+        logger.info("****************************************");
+        logger.info("Creating gorm entry through webservice....");
+        logger.info("****************************************");
         
-        logger.error("principalName:" + principalName);
-        logger.error("inputsArray:" + inputsArray);
+        logger.info("principalName:" + principalName);
+        logger.info("inputsArray:" + inputsArray);
         
         try
         {
@@ -156,11 +156,18 @@ public class RemoteFormServiceImpl extends RemoteInfoGlueService
 	            while(formEntryValuesIterator.hasNext())
 	            {
 	            	String name = (String)formEntryValuesIterator.next();
-	            	String value = (String)formEntryValues.get(name);
-	            	FormEntryValueVO formEntryValueVO = new FormEntryValueVO();
-	            	formEntryValueVO.setName(name);
-	            	formEntryValueVO.setValue(value);
-	            	formEntryValueVOList.add(formEntryValueVO);
+	            	if(name != null && !name.equals(""))
+	            	{
+		            	String value = (String)formEntryValues.get(name);
+		            	FormEntryValueVO formEntryValueVO = new FormEntryValueVO();
+		            	formEntryValueVO.setName(name);
+		            	formEntryValueVO.setValue(value);
+		            	formEntryValueVOList.add(formEntryValueVO);
+	            	}
+	            	else
+	            	{
+	            		logger.warn("No name in variable - skipping");
+	            	}
 	            }
 	            
 	            FormEntryVO formEntryVO = new FormEntryVO();
