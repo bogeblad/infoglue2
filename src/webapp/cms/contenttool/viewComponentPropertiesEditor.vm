@@ -84,6 +84,19 @@
 			var APOS2 = new RegExp('&#146;', "g"); 
 			return string.replace(AMP,'&').replace(LT,'<').replace(GT,'>').replace(APOS,'\'').replace(APOS2,'\'').replace(QUOT,'"');
 		}
+
+		function clean(string) 
+		{
+			if(!string)
+				return "";
+
+			var LT = new RegExp('<', "g");  
+			var GT = new RegExp('>', "g");  
+			var AMP = new RegExp("&", "g");  
+			var APOS = new RegExp('\'', "g");  
+			var QUOT = new RegExp('"', "g");  
+			return string.replace(AMP,'&amp;').replace(LT,'&lt;').replace(GT,'&gt;').replace(APOS,'').replace(QUOT,'');
+		}
 		
 		/**
 		 * This method creates a XML from the list of properties.
@@ -129,7 +142,7 @@
 				
 				if(propertyType == "select" || propertyType == "checkbox")
 				{
-					propertiesXML += "<property name='" + propertyName + "' displayName='" + propertyDisplayName + "' type='" + propertyType + "' multiple='" + propertyMultiple + "' assetBinding='" + propertyAssetBinding + "' isPuffContentForPage='" + isPuffContentForPage + "' description='" + propertyDescription + "' defaultValue='" + propertyDefaultValue + "' dataProvider='" + propertyDataProvider + "' dataProviderParameters='" + propertyDataProviderParameters + "' allowMultipleSelections='" + propertyAllowMultipleSelections + "'>";
+					propertiesXML += "<property name='" + clean(propertyName) + "' displayName='" + clean(propertyDisplayName) + "' type='" + propertyType + "' multiple='" + propertyMultiple + "' assetBinding='" + propertyAssetBinding + "' isPuffContentForPage='" + isPuffContentForPage + "' description='" + clean(propertyDescription) + "' defaultValue='" + clean(propertyDefaultValue) + "' dataProvider='" + propertyDataProvider + "' dataProviderParameters='" + propertyDataProviderParameters + "' allowMultipleSelections='" + propertyAllowMultipleSelections + "'>";
 
 					for (var j=0; j<property.getOptions().getSize(); j++)
 					{
@@ -143,7 +156,7 @@
 					propertiesXML += "</property>";					
 				}
 				else
-					propertiesXML += "<property name='" + propertyName + "' displayName='" + propertyDisplayName + "' type='" + propertyType + "' entity='" + propertyEntity + "' multiple='" + propertyMultiple + "' assetBinding='" + propertyAssetBinding + "' isPuffContentForPage='" + isPuffContentForPage + "' allowedContentTypeDefinitionNames='" + propertyAllowedContentTypeNames + "' description='" + propertyDescription + "' defaultValue='" + propertyDefaultValue + "' WYSIWYGEnabled='" + propertyWYSIWYGEnabled + "' WYSIWYGToolbar='" + propertyWYSIWYGToolbar + "' dataProvider='" + propertyDataProvider + "' dataProviderParameters='" + propertyDataProviderParameters + "' autoCreateContent='" + propertyAutoCreateContent + "' autoCreateContentMethod='" + propertyAutoCreateContentMethod + "' autoCreateContentPath='" + propertyAutoCreateContentPath + "' customMarkup='" + encodeXML(propertyCustomMarkup) + "'/>";
+					propertiesXML += "<property name='" + clean(propertyName) + "' displayName='" + clean(propertyDisplayName) + "' type='" + propertyType + "' entity='" + propertyEntity + "' multiple='" + propertyMultiple + "' assetBinding='" + propertyAssetBinding + "' isPuffContentForPage='" + isPuffContentForPage + "' allowedContentTypeDefinitionNames='" + propertyAllowedContentTypeNames + "' description='" + clean(propertyDescription) + "' defaultValue='" + clean(propertyDefaultValue) + "' WYSIWYGEnabled='" + propertyWYSIWYGEnabled + "' WYSIWYGToolbar='" + propertyWYSIWYGToolbar + "' dataProvider='" + propertyDataProvider + "' dataProviderParameters='" + propertyDataProviderParameters + "' autoCreateContent='" + propertyAutoCreateContent + "' autoCreateContentMethod='" + propertyAutoCreateContentMethod + "' autoCreateContentPath='" + propertyAutoCreateContentPath + "' customMarkup='" + encodeXML(propertyCustomMarkup) + "'/>";
 			}
 		   	
 		   	propertiesXML += "</properties>";
