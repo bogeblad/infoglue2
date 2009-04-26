@@ -109,10 +109,25 @@ public class MatchingContentsTag extends TemplateControllerTag
 		
 	    setResultAttribute(getController().getMatchingContents(contentTypeDefinitionNames, categoryCondition, freeText, freeTextAttributeNamesList, fromDate, toDate, expireFromDate, expireToDate, versionModifier, maximumNumberOfItems, true, cacheResult, cacheInterval, cacheName, cacheKey, repositoryIdList, this.languageId, skipLanguageCheck));
 	    
-	    this.repositoryIds = null;
-	    this.languageId = null;
-	    this.skipLanguageCheck = false;
-	    	
+	    this.contentTypeDefinitionNames = null;
+	    this.categoryCondition = null;
+	    this.freeText = null;
+		this.freeTextAttributeNames = null;
+		this.fromDate = null;
+		this.toDate = null;
+		this.versionModifier = null;
+		this.maximumNumberOfItems = null;
+		this.expireFromDate = null;
+		this.expireToDate = null;
+		
+		this.cacheResult = true;
+		this.cacheInterval = 1800;
+		this.cacheName = null;
+		this.cacheKey = null;
+		this.repositoryIds = null;
+		this.languageId = null;
+		this.skipLanguageCheck = false;
+		
 	    long runningTime = t.getElapsedTime();
 	    if(runningTime > 500)
 	    	logger.warn("Running matching contents took:" + runningTime + " ms");
