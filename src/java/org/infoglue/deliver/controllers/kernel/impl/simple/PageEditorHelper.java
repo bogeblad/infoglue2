@@ -38,6 +38,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.log4j.Logger;
 import org.dom4j.Document;
 import org.dom4j.Element;
+import org.dom4j.tree.DefaultAttribute;
 import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.applications.databeans.ReferenceBean;
@@ -1326,6 +1327,7 @@ public class PageEditorHelper extends BaseDeliveryController
 					String displayName					 = binding.attributeValue("displayName");
 					String description					 = binding.attributeValue("description");
 					String defaultValue					 = binding.attributeValue("defaultValue");
+					String allowLanguageVariations		 = binding.attributeValue("allowLanguageVariations");
 					String dataProvider					 = binding.attributeValue("dataProvider");
 					String dataProviderParameters		 = binding.attributeValue("dataProviderParameters");
 					String type							 = binding.attributeValue("type");
@@ -1341,6 +1343,7 @@ public class PageEditorHelper extends BaseDeliveryController
 					property.setDisplayName(displayName);
 					property.setDescription(description);
 					property.setDefaultValue(defaultValue);
+					property.setAllowLanguageVariations(new Boolean(allowLanguageVariations));
 					property.setDataProvider(dataProvider);
 					property.setDataProviderParameters(dataProviderParameters);
 					property.setType(type);
@@ -1492,6 +1495,18 @@ public class PageEditorHelper extends BaseDeliveryController
 			
 			if(property.attribute("path_" + locale.getLanguage()) != null)
 				path = property.attributeValue("path_" + locale.getLanguage());
+			else if(!componentProperty.getAllowLanguageVariations())
+			{
+				Iterator attributesIterator = property.attributeIterator();
+				while(attributesIterator.hasNext())
+				{
+					DefaultAttribute attribute = (DefaultAttribute)attributesIterator.next();
+					if(attribute.getName().startsWith("path_"))
+					{
+						path = attribute.getValue();
+					}
+				}
+			}
 
 			value = path;
 		
@@ -2550,6 +2565,7 @@ public class PageEditorHelper extends BaseDeliveryController
 		cacheResultProperty.setDisplayName("Cache Result");
 		cacheResultProperty.setDescription("Do you want to cache the components rendered result.");
 		cacheResultProperty.setDefaultValue("false");
+		cacheResultProperty.setAllowLanguageVariations(false);
 		cacheResultProperty.setDataProvider("");
 		cacheResultProperty.setType("select");
 		cacheResultProperty.setVisualizingAction("");
@@ -2571,6 +2587,7 @@ public class PageEditorHelper extends BaseDeliveryController
 		cacheIntervalProperty.setDisplayName("Cache Update Interval");
 		cacheIntervalProperty.setDescription("Interval before the cache gets updated");
 		cacheIntervalProperty.setDefaultValue("-1");
+		cacheIntervalProperty.setAllowLanguageVariations(false);
 		cacheIntervalProperty.setDataProvider("");
 		cacheIntervalProperty.setType("select");
 		cacheIntervalProperty.setVisualizingAction("");
@@ -2607,6 +2624,7 @@ public class PageEditorHelper extends BaseDeliveryController
 		cacheKeyProperty.setDisplayName("Cache Key");
 		cacheKeyProperty.setDescription("Key for the component cache");
 		cacheKeyProperty.setDefaultValue("");
+		cacheKeyProperty.setAllowLanguageVariations(false);
 		cacheKeyProperty.setDataProvider("");
 		cacheKeyProperty.setType("textfield");
 		cacheKeyProperty.setVisualizingAction("");
@@ -2623,6 +2641,7 @@ public class PageEditorHelper extends BaseDeliveryController
 		priorityProperty.setDisplayName("Pre processing order");
 		priorityProperty.setDescription("State the order in which the component get's prerendered");
 		priorityProperty.setDefaultValue("99");
+		priorityProperty.setAllowLanguageVariations(false);
 		priorityProperty.setDataProvider("");
 		priorityProperty.setType("select");
 		priorityProperty.setVisualizingAction("");

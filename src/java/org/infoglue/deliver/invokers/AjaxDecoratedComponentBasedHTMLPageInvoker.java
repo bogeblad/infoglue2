@@ -38,6 +38,7 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 import org.dom4j.Document;
 import org.dom4j.Element;
+import org.dom4j.tree.DefaultAttribute;
 import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.controllers.kernel.impl.simple.AccessRightController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
@@ -1273,6 +1274,7 @@ public class AjaxDecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHT
 					String displayName					 = binding.attributeValue("displayName");
 					String description					 = binding.attributeValue("description");
 					String defaultValue					 = binding.attributeValue("defaultValue");
+					String allowLanguageVariations		 = binding.attributeValue("allowLanguageVariations");
 					String dataProvider					 = binding.attributeValue("dataProvider");
 					String type							 = binding.attributeValue("type");
 					String allowedContentTypeNamesString = binding.attributeValue("allowedContentTypeDefinitionNames");
@@ -1287,6 +1289,7 @@ public class AjaxDecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHT
 					property.setDisplayName(displayName);
 					property.setDescription(description);
 					property.setDefaultValue(defaultValue);
+					property.setAllowLanguageVariations(new Boolean(allowLanguageVariations));
 					property.setDataProvider(dataProvider);
 					property.setType(type);
 					property.setVisualizingAction(visualizingAction);
@@ -1305,7 +1308,7 @@ public class AjaxDecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHT
 						boolean isPuffContentForPage 	= new Boolean(binding.attributeValue("isPuffContentForPage")).booleanValue();
 
 						property.setEntityClass(entity);
-						String value = getComponentPropertyValue(componentId, name);
+						String value = getComponentPropertyValue(componentId, name, property.getAllowLanguageVariations());
 						timer.printElapsedTime("Set property1");
 
 						property.setValue(value);
@@ -1317,19 +1320,19 @@ public class AjaxDecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHT
 					}
 					else if(type.equalsIgnoreCase(ComponentProperty.TEXTFIELD))	
 					{		
-						String value = getComponentPropertyValue(componentId, name);
+						String value = getComponentPropertyValue(componentId, name, property.getAllowLanguageVariations());
 						timer.printElapsedTime("Set property2");
 						property.setValue(value);
 					}
 					else if(type.equalsIgnoreCase(ComponentProperty.DATEFIELD))	
 					{		
-						String value = getComponentPropertyValue(componentId, name);
+						String value = getComponentPropertyValue(componentId, name, property.getAllowLanguageVariations());
 						timer.printElapsedTime("Set property2");
 						property.setValue(value);
 					}
 					else if(type.equalsIgnoreCase(ComponentProperty.CUSTOMFIELD))	
 					{		
-						String value = getComponentPropertyValue(componentId, name);
+						String value = getComponentPropertyValue(componentId, name, property.getAllowLanguageVariations());
 						String customMarkup = binding.attributeValue("customMarkup");
 						String processedMarkup =  customMarkup.replaceAll("propertyName", name);
 						processedMarkup = processedMarkup.replaceAll("propertyValue", value);
@@ -1344,13 +1347,13 @@ public class AjaxDecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHT
 						String WYSIWYGToolbar = binding.attributeValue("WYSIWYGToolbar");
 						property.setWYSIWYGToolbar(WYSIWYGToolbar);
 
-						String value = getComponentPropertyValue(componentId, name);
+						String value = getComponentPropertyValue(componentId, name, property.getAllowLanguageVariations());
 						timer.printElapsedTime("Set property2");
 						property.setValue(value);
 					}
 					else if(type.equalsIgnoreCase(ComponentProperty.SELECTFIELD))	
 					{		
-						String value = getComponentPropertyValue(componentId, name);
+						String value = getComponentPropertyValue(componentId, name, property.getAllowLanguageVariations());
 						timer.printElapsedTime("Set property2");
 						
 						List optionList = binding.elements("option");
@@ -1371,7 +1374,7 @@ public class AjaxDecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHT
 					}
 					else if(type.equalsIgnoreCase(ComponentProperty.CHECKBOXFIELD))	
 					{		
-						String value = getComponentPropertyValue(componentId, name);
+						String value = getComponentPropertyValue(componentId, name, property.getAllowLanguageVariations());
 						timer.printElapsedTime("Set property3");
 						
 						List optionList = binding.elements("option");
@@ -1441,6 +1444,7 @@ public class AjaxDecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHT
 					String displayName					 = binding.attributeValue("displayName");
 					String description					 = binding.attributeValue("description");
 					String defaultValue					 = binding.attributeValue("defaultValue");
+					String allowLanguageVariations		 = binding.attributeValue("allowLanguageVariations");
 					String dataProvider					 = binding.attributeValue("dataProvider");
 					String type							 = binding.attributeValue("type");
 					String allowedContentTypeNamesString = binding.attributeValue("allowedContentTypeDefinitionNames");
@@ -1455,6 +1459,7 @@ public class AjaxDecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHT
 					property.setDisplayName(displayName);
 					property.setDescription(description);
 					property.setDefaultValue(defaultValue);
+					property.setAllowLanguageVariations(new Boolean(allowLanguageVariations));
 					property.setDataProvider(dataProvider);
 					property.setType(type);
 					property.setVisualizingAction(visualizingAction);
@@ -1473,7 +1478,7 @@ public class AjaxDecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHT
 						boolean isPuffContentForPage 	= new Boolean(binding.attributeValue("isPuffContentForPage")).booleanValue();
 
 						property.setEntityClass(entity);
-						String value = getComponentPropertyValue(componentId, name, templateController);
+						String value = getComponentPropertyValue(componentId, name, templateController, property.getAllowLanguageVariations());
 						timer.printElapsedTime("Set property1");
 
 						property.setValue(value);
@@ -1485,20 +1490,20 @@ public class AjaxDecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHT
 					}
 					else if(type.equalsIgnoreCase(ComponentProperty.TEXTFIELD))	
 					{		
-						String value = getComponentPropertyValue(componentId, name, templateController);
+						String value = getComponentPropertyValue(componentId, name, templateController, property.getAllowLanguageVariations());
 						timer.printElapsedTime("Set property2");
 						//logger.info("value:" + value);
 						property.setValue(value);
 					}
 					else if(type.equalsIgnoreCase(ComponentProperty.DATEFIELD))	
 					{		
-						String value = getComponentPropertyValue(componentId, name);
+						String value = getComponentPropertyValue(componentId, name, property.getAllowLanguageVariations());
 						timer.printElapsedTime("Set property2");
 						property.setValue(value);
 					}
 					else if(type.equalsIgnoreCase(ComponentProperty.CUSTOMFIELD))	
 					{		
-						String value = getComponentPropertyValue(componentId, name);
+						String value = getComponentPropertyValue(componentId, name, property.getAllowLanguageVariations());
 						String customMarkup = binding.attributeValue("customMarkup");
 						String processedMarkup =  customMarkup.replaceAll("propertyName", name);
 						processedMarkup = processedMarkup.replaceAll("propertyValue", value);
@@ -1513,14 +1518,14 @@ public class AjaxDecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHT
 						String WYSIWYGToolbar = binding.attributeValue("WYSIWYGToolbar");
 						property.setWYSIWYGToolbar(WYSIWYGToolbar);
 
-						String value = getComponentPropertyValue(componentId, name, templateController);
+						String value = getComponentPropertyValue(componentId, name, templateController, property.getAllowLanguageVariations());
 						timer.printElapsedTime("Set property2");
 						//logger.info("value:" + value);
 						property.setValue(value);
 					}
 					else if(type.equalsIgnoreCase(ComponentProperty.SELECTFIELD))	
 					{		
-						String value = getComponentPropertyValue(componentId, name, templateController);
+						String value = getComponentPropertyValue(componentId, name, templateController, property.getAllowLanguageVariations());
 						timer.printElapsedTime("Set property2");
 						
 						List optionList = binding.elements("option");
@@ -1617,7 +1622,7 @@ public class AjaxDecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHT
 	 * properties for the page.
 	 */
 	
-	private String getComponentPropertyValue(Integer componentId, String name) throws Exception
+	private String getComponentPropertyValue(Integer componentId, String name, boolean allowLanguageVariations) throws Exception
 	{
 		String value = "Undefined";
 		
@@ -1670,6 +1675,18 @@ public class AjaxDecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHT
 			
 			if(property.attribute("path_" + locale.getLanguage()) != null)
 				path = property.attributeValue("path_" + locale.getLanguage());
+			else if(!allowLanguageVariations)
+			{
+				Iterator attributesIterator = property.attributeIterator();
+				while(attributesIterator.hasNext())
+				{
+					DefaultAttribute attribute = (DefaultAttribute)attributesIterator.next();
+					if(attribute.getName().startsWith("path_"))
+					{
+						path = attribute.getValue();
+					}
+				}
+			}
 
 			value 				= path;
 		}
@@ -1747,7 +1764,7 @@ public class AjaxDecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHT
 	 * properties for the page.
 	 */
 	
-	private String getComponentPropertyValue(Integer componentId, String name, TemplateController templateController) throws Exception
+	private String getComponentPropertyValue(Integer componentId, String name, TemplateController templateController, boolean allowLanguageVariations) throws Exception
 	{
 		String value = "Undefined";
 		
@@ -1783,29 +1800,21 @@ public class AjaxDecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHT
 			
 			if(property.attribute("path_" + locale.getLanguage()) != null)
 				path = property.attributeValue("path_" + locale.getLanguage());
+			else if(!allowLanguageVariations)
+			{
+				Iterator attributesIterator = property.attributeIterator();
+				while(attributesIterator.hasNext())
+				{
+					DefaultAttribute attribute = (DefaultAttribute)attributesIterator.next();
+					if(attribute.getName().startsWith("path_"))
+					{
+						path = attribute.getValue();
+					}
+				}
+			}
 
 			value 				= path;
 		}
-
-		/*
-		org.w3c.dom.Document document = getPageComponentsDocument(templateController.getDatabase(), templateController, templateController.getSiteNodeId(), languageId, contentId);
-		
-		String componentXPath = "//component[@id=" + componentId + "]/properties/property[@name='" + name + "']";
-		//logger.info("componentXPath:" + componentXPath);
-		NodeList anl = org.apache.xpath.XPathAPI.selectNodeList(document.getDocumentElement(), componentXPath);
-		for(int i=0; i < anl.getLength(); i++)
-		{
-			org.w3c.dom.Element property = (org.w3c.dom.Element)anl.item(i);
-			
-			String id 			= property.getAttribute("type");
-			String path 		= property.getAttribute("path");
-
-			if(property.hasAttribute("path_" + locale.getLanguage()))
-				path = property.getAttribute("path_" + locale.getLanguage());
-				
-			value 				= path;
-		}
-		*/
 
 		return value;
 	}

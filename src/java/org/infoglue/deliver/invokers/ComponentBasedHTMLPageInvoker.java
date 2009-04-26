@@ -585,7 +585,6 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 					//logger.info("path:" + "path_" + locale.getLanguage() + ":" + propertyElement.attributeValue("path_" + locale.getLanguage()));
 					if(propertyElement.attributeValue("path_" + locale.getLanguage()) != null)
 						path = propertyElement.attributeValue("path_" + locale.getLanguage());
-					//logger.info("path:" + path);
 
 					if(path == null || path.equals(""))
 					{
