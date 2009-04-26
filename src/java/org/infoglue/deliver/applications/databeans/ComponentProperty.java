@@ -53,6 +53,7 @@ public class ComponentProperty
 	private String displayName;
 	private String description 				= "";
 	private String defaultValue 			= null;
+	private Boolean allowLanguageVariations = true;
 	private String type;
 	private String[] allowedContentTypeNamesArray = null;
 	private Integer componentId;
@@ -389,6 +390,19 @@ public class ComponentProperty
 	public void setDefaultValue(String defaultValue)
 	{
 		this.defaultValue = defaultValue;
+	}
+
+	public Boolean getAllowLanguageVariations()
+	{
+		if(allowLanguageVariations != null)
+			return allowLanguageVariations;
+		else
+			return true;
+	}
+
+	public void setAllowLanguageVariations(Boolean allowLanguageVariations)
+	{
+		this.allowLanguageVariations = allowLanguageVariations;
 	}
 
 	public String getDataProvider()

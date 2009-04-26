@@ -3338,6 +3338,7 @@ public class ComponentLogic
 					String allowedContTypeDefNames	= element.attributeValue("allowedContentTypeDefinitionNames");
 					String description 				= element.attributeValue("description");
 					String defaultValue 			= element.attributeValue("defaultValue");
+					String allowLanguageVariations 	= element.attributeValue("allowLanguageVariations");
 					String dataProvider 			= element.attributeValue("dataProvider");
 					String dataProviderParameters 	= element.attributeValue("dataProviderParameters");
 					String allowMultipleSelections 	= element.attributeValue("allowMultipleSelections");
@@ -3347,8 +3348,10 @@ public class ComponentLogic
 					String autoCreatContentMethod 	= element.attributeValue("autoCreatContentMethod");
 					String autoCreatContentPath		= element.attributeValue("autoCreatContentPath");
 					String customMarkup 			= element.attributeValue("customMarkup");
+					if(allowLanguageVariations == null || allowLanguageVariations.equals(""))
+						allowLanguageVariations = "true";
 					
-					propertyDefinition = new ComponentPropertyDefinition(name, displayName, type, entity, new Boolean(multiple), new Boolean(assetBinding), new Boolean(isPuffContentForPage), allowedContTypeDefNames, description, defaultValue, new Boolean(WYSIWYGEnabled), WYSIWYGToolbar, dataProvider, dataProviderParameters, new Boolean(autoCreatContent), autoCreatContentMethod, autoCreatContentPath, customMarkup, new Boolean(allowMultipleSelections));
+					propertyDefinition = new ComponentPropertyDefinition(name, displayName, type, entity, new Boolean(multiple), new Boolean(assetBinding), new Boolean(isPuffContentForPage), allowedContTypeDefNames, description, defaultValue, new Boolean(allowLanguageVariations), new Boolean(WYSIWYGEnabled), WYSIWYGToolbar, dataProvider, dataProviderParameters, new Boolean(autoCreatContent), autoCreatContentMethod, autoCreatContentPath, customMarkup, new Boolean(allowMultipleSelections));
 				}
 			}
 		}

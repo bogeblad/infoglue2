@@ -121,6 +121,7 @@
 				isPuffContentForPage			= property.getIsPuffContentForPage();
 				propertyDescription				= property.getDescription();
 				propertyDefaultValue			= property.getDefaultValue();
+				propertyAllowLanguageVariations = property.getAllowLanguageVariations();
 				propertyWYSIWYGEnabled			= property.getWYSIWYGEnabled();
 				propertyWYSIWYGToolbar			= property.getWYSIWYGToolbar();
 				propertyAllowedContentTypeNames = property.getAllowedContentTypeNames();
@@ -142,7 +143,7 @@
 				
 				if(propertyType == "select" || propertyType == "checkbox")
 				{
-					propertiesXML += "<property name='" + clean(propertyName) + "' displayName='" + clean(propertyDisplayName) + "' type='" + propertyType + "' multiple='" + propertyMultiple + "' assetBinding='" + propertyAssetBinding + "' isPuffContentForPage='" + isPuffContentForPage + "' description='" + clean(propertyDescription) + "' defaultValue='" + clean(propertyDefaultValue) + "' dataProvider='" + propertyDataProvider + "' dataProviderParameters='" + propertyDataProviderParameters + "' allowMultipleSelections='" + propertyAllowMultipleSelections + "'>";
+					propertiesXML += "<property name='" + clean(propertyName) + "' displayName='" + clean(propertyDisplayName) + "' type='" + propertyType + "' multiple='" + propertyMultiple + "' assetBinding='" + propertyAssetBinding + "' isPuffContentForPage='" + isPuffContentForPage + "' description='" + clean(propertyDescription) + "' defaultValue='" + clean(propertyDefaultValue) + "' allowLanguageVariations='" + propertyAllowLanguageVariations + "' dataProvider='" + propertyDataProvider + "' dataProviderParameters='" + propertyDataProviderParameters + "' allowMultipleSelections='" + propertyAllowMultipleSelections + "'>";
 
 					for (var j=0; j<property.getOptions().getSize(); j++)
 					{
@@ -156,7 +157,7 @@
 					propertiesXML += "</property>";					
 				}
 				else
-					propertiesXML += "<property name='" + clean(propertyName) + "' displayName='" + clean(propertyDisplayName) + "' type='" + propertyType + "' entity='" + propertyEntity + "' multiple='" + propertyMultiple + "' assetBinding='" + propertyAssetBinding + "' isPuffContentForPage='" + isPuffContentForPage + "' allowedContentTypeDefinitionNames='" + propertyAllowedContentTypeNames + "' description='" + clean(propertyDescription) + "' defaultValue='" + clean(propertyDefaultValue) + "' WYSIWYGEnabled='" + propertyWYSIWYGEnabled + "' WYSIWYGToolbar='" + propertyWYSIWYGToolbar + "' dataProvider='" + propertyDataProvider + "' dataProviderParameters='" + propertyDataProviderParameters + "' autoCreateContent='" + propertyAutoCreateContent + "' autoCreateContentMethod='" + propertyAutoCreateContentMethod + "' autoCreateContentPath='" + propertyAutoCreateContentPath + "' customMarkup='" + encodeXML(propertyCustomMarkup) + "'/>";
+					propertiesXML += "<property name='" + clean(propertyName) + "' displayName='" + clean(propertyDisplayName) + "' type='" + propertyType + "' entity='" + propertyEntity + "' multiple='" + propertyMultiple + "' assetBinding='" + propertyAssetBinding + "' isPuffContentForPage='" + isPuffContentForPage + "' allowedContentTypeDefinitionNames='" + propertyAllowedContentTypeNames + "' description='" + clean(propertyDescription) + "' defaultValue='" + clean(propertyDefaultValue) + "' allowLanguageVariations='" + propertyAllowLanguageVariations + "' WYSIWYGEnabled='" + propertyWYSIWYGEnabled + "' WYSIWYGToolbar='" + propertyWYSIWYGToolbar + "' dataProvider='" + propertyDataProvider + "' dataProviderParameters='" + propertyDataProviderParameters + "' autoCreateContent='" + propertyAutoCreateContent + "' autoCreateContentMethod='" + propertyAutoCreateContentMethod + "' autoCreateContentPath='" + propertyAutoCreateContentPath + "' customMarkup='" + encodeXML(propertyCustomMarkup) + "'/>";
 			}
 		   	
 		   	propertiesXML += "</properties>";
@@ -327,6 +328,7 @@
 			document.componentPropertyDefinitionForm.componentPropertyDefinition_description.value = componentPropertyDefinition.description;
 			
 			document.componentPropertyDefinitionForm.componentPropertyDefinition_defaultValue.value 	= componentPropertyDefinition.defaultValue;
+			document.componentPropertyDefinitionForm.componentPropertyDefinition_allowLanguageVariations.value 	= componentPropertyDefinition.allowLanguageVariations;
 			document.componentPropertyDefinitionForm.componentPropertyDefinition_dataProvider.value 	= componentPropertyDefinition.dataProvider;
 			document.componentPropertyDefinitionForm.componentPropertyDefinition_dataProviderParameters.value = componentPropertyDefinition.dataProviderParameters;
 			document.componentPropertyDefinitionForm.componentPropertyDefinition_allowMultipleSelections.value = componentPropertyDefinition.allowMultipleSelections;
@@ -462,6 +464,7 @@
 				componentPropertyDefinition.setAllowedContentTypeNames("");
 		
 				componentPropertyDefinition.setDefaultValue(document.getElementById("componentPropertyDefinition_defaultValue").value);
+				componentPropertyDefinition.setAllowLanguageVariations(document.getElementById("componentPropertyDefinition_allowLanguageVariations").value);
 				componentPropertyDefinition.setWYSIWYGEnabled(document.getElementById("componentPropertyDefinition_WYSIWYGEnabled").value);
 				componentPropertyDefinition.setWYSIWYGToolbar(document.getElementById("componentPropertyDefinition_WYSIWYGToolbar").value);
 				componentPropertyDefinition.setDataProvider(document.getElementById("componentPropertyDefinition_dataProvider").value);
@@ -496,6 +499,11 @@
 			document.location.href = "ViewAccessRights.action?interceptionPointCategory=ComponentPropertyEditor&extraParameters=" + extraParameters + "&colorScheme=StructureTool&returnAddress=$formatter.encodeURI($this.currentURL, 'UTF-8')";
 		}
 
+		function showMultiAccessRights(extraParametersString)
+		{
+			document.location.href = "ViewAccessRights.action?interceptionPointCategory=ComponentPropertyEditor" + extraParametersString + "&colorScheme=StructureTool&returnAddress=$formatter.encodeURI($this.currentURL, 'UTF-8')";
+		}
+		
 		/**
 		 * This method draws the list of properties.
 		 */
@@ -651,6 +659,7 @@
 				assetBinding 			= property.getAssetBinding();
 				isPuffContentForPage 	= property.getIsPuffContentForPage();
 				defaultValue 			= property.getDefaultValue();
+				allowLanguageVariations = property.getAllowLanguageVariations();
 				WYSIWYGEnabled 			= property.getWYSIWYGEnabled();
 				WYSIWYGToolbar 			= property.getWYSIWYGToolbar();
 				dataProvider 			= property.getDataProvider();
@@ -669,6 +678,7 @@
 				property.setAllowedContentTypeNames(previousProperty.getAllowedContentTypeNames());
 				property.setDescription(previousProperty.getDescription());
 				property.setDefaultValue(previousProperty.getDefaultValue());
+				property.setAllowLanguageVariations(previousProperty.getAllowLanguageVariations());
 				property.setWYSIWYGEnabled(previousProperty.getWYSIWYGEnabled());
 				property.setWYSIWYGToolbar(previousProperty.getWYSIWYGToolbar());
 				property.setDataProvider(previousProperty.getDataProvider());
@@ -689,6 +699,7 @@
 				previousProperty.setAllowedContentTypeNames(allowedContentTypeNames);
 				previousProperty.setDescription(description);
 				previousProperty.setDefaultValue(defaultValue);
+				previousProperty.setAllowLanguageVariations(allowLanguageVariations);
 				previousProperty.setWYSIWYGEnabled(WYSIWYGEnabled);
 				previousProperty.setWYSIWYGToolbar(WYSIWYGToolbar);
 				previousProperty.setDataProvider(dataProvider);
@@ -724,6 +735,7 @@
 				assetBinding 			= property.getAssetBinding();
 				isPuffContentForPage 	= property.getIsPuffContentForPage();
 				defaultValue 			= property.getDefaultValue();
+				allowLanguageVariations = property.getAllowLanguageVariations();
 				WYSIWYGEnabled 			= property.getWYSIWYGEnabled();
 				WYSIWYGToolbar 			= property.getWYSIWYGToolbar();
 				dataProvider 			= property.getDataProvider();
@@ -742,6 +754,7 @@
 				property.setAllowedContentTypeNames(previousProperty.getAllowedContentTypeNames());
 				property.setDescription(previousProperty.getDescription());
 				property.setDefaultValue(previousProperty.getDefaultValue());
+				property.setAllowLanguageVariations(previousProperty.getAllowLanguageVariations());
 				property.setWYSIWYGEnabled(previousProperty.getWYSIWYGEnabled());
 				property.setWYSIWYGToolbar(previousProperty.getWYSIWYGToolbar());
 				property.setDataProvider(previousProperty.getDataProvider());
@@ -762,6 +775,7 @@
 				previousProperty.setAllowedContentTypeNames(allowedContentTypeNames);
 				previousProperty.setDescription(description);
 				previousProperty.setDefaultValue(defaultValue);
+				previousProperty.setAllowLanguageVariations(allowLanguageVariations);
 				previousProperty.setWYSIWYGEnabled(WYSIWYGEnabled);
 				previousProperty.setWYSIWYGToolbar(WYSIWYGToolbar);
 				previousProperty.setDataProvider(dataProvider);
@@ -967,7 +981,7 @@
 		function init()
 		{
 			#foreach($propertyDefinition in $componentPropertyDefinitions)
-				property = new ComponentPropertyDefinition("$propertyDefinition.name", "$!propertyDefinition.displayName", "$propertyDefinition.type", "$propertyDefinition.entity", "$propertyDefinition.multiple", "$propertyDefinition.assetBinding", "$propertyDefinition.isPuffContentForPage", "$propertyDefinition.allowedContentTypeNames", "$propertyDefinition.description", "$!propertyDefinition.defaultValue", "$!propertyDefinition.WYSIWYGEnabled", "$!propertyDefinition.WYSIWYGToolbar", "$!propertyDefinition.dataProvider", "$!propertyDefinition.dataProviderParameters", "$!propertyDefinition.autoCreateContent", "$!propertyDefinition.autoCreateContentMethod", "$!propertyDefinition.autoCreateContentPath", "$!propertyDefinition.encodedCustomMarkup", "$!propertyDefinition.allowMultipleSelections");
+				property = new ComponentPropertyDefinition("$propertyDefinition.name", "$!propertyDefinition.displayName", "$propertyDefinition.type", "$propertyDefinition.entity", "$propertyDefinition.multiple", "$propertyDefinition.assetBinding", "$propertyDefinition.isPuffContentForPage", "$propertyDefinition.allowedContentTypeNames", "$propertyDefinition.description", "$!propertyDefinition.defaultValue", "$!propertyDefinition.allowLanguageVariations", "$!propertyDefinition.WYSIWYGEnabled", "$!propertyDefinition.WYSIWYGToolbar", "$!propertyDefinition.dataProvider", "$!propertyDefinition.dataProviderParameters", "$!propertyDefinition.autoCreateContent", "$!propertyDefinition.autoCreateContentMethod", "$!propertyDefinition.autoCreateContentPath", "$!propertyDefinition.encodedCustomMarkup", "$!propertyDefinition.allowMultipleSelections");
 
 				#foreach($propertyOptionDefinition in $propertyDefinition.options)
 					propertyOption = new ComponentPropertyOptionDefinition("$propertyOptionDefinition.name", "$propertyOptionDefinition.value");
@@ -993,7 +1007,12 @@
 			
 			window.close();
 		}
-		
+
+		var propertiesString = "";
+		#foreach($propertyDefinition in $componentPropertyDefinitions)
+			propertiesString = propertiesString + "&extraMultiParameters=${contentId}_${propertyDefinition.name}";
+		#end
+
 	</script>
 	
 </head>
@@ -1016,6 +1035,13 @@
 <p><label for="componentPropertyDefinition_displayName">Display name:</label><input type="textfield" name="componentPropertyDefinition_displayName" id="componentPropertyDefinition_displayName" value=""/></p>
 <p><label for="componentPropertyDefinition_description">Description:</label><input type="textfield" name="componentPropertyDefinition_description" id="componentPropertyDefinition_description" value=""/></p>
 <p><label for="componentPropertyDefinition_defaultValue">Default value:</label><input type="textfield" name="componentPropertyDefinition_defaultValue" id="componentPropertyDefinition_defaultValue" value=""/></p>
+<p><label for="componentPropertyDefinition_allowLanguageVariations">Allow language variations:</label>
+	<select size="1" name="componentPropertyDefinition_allowLanguageVariations" id="componentPropertyDefinition_allowLanguageVariations" class="sitedropbox">
+		<option value="">Choose below</option>
+		<option value="true">Yes</option>
+		<option value="false">No</option>
+	</select>
+</p>
 <p><label for="componentPropertyDefinition_type">Property type:</label>
 	<select size="1" name="componentPropertyDefinition_type" id="componentPropertyDefinition_type" class="sitedropbox" onchange="validateTypeChoice();">
 		<option value="binding">binding</option>
@@ -1172,7 +1198,8 @@
 		
 		<table cellpadding="0" cellspacing="0" border="0" width="100%">
 		<tr class="darkgreen">
-			<td class="smalllabel">Component Properties</td>
+			<td class="smalllabel" colspan="3">Component Properties</td>
+			<td><img src="images/accessRights.gif" onclick="showMultiAccessRights(propertiesString);"/>&nbsp;</td>
 		</tr>
 		<tr>
 			<td bgcolor="#EEF7DC" colspan="4" height="1"><img src="images/trans.gif" width="1" height="1"></td>

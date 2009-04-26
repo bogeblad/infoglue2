@@ -533,8 +533,6 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
     
 	public String doAddOrReplaceComponent() throws Exception
 	{
-		try
-		{
 		logger.info("************************************************************");
 		logger.info("* ADDING OR REPLACING COMPONENT                            *");
 		logger.info("************************************************************");
@@ -548,86 +546,90 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 		logger.info("specifyBaseTemplate:" + this.specifyBaseTemplate);
 		logger.info("pagePartContentId:" + this.pagePartContentId);
 
-		initialize();
-
-		logger.info("masterLanguageId:" + this.masterLanguageVO.getId());
-
-		Integer newComponentId = new Integer(0);
-
-	    String componentXML   = getPageComponentsString(siteNodeId, this.masterLanguageVO.getId());			
-
-		Document document = XMLHelper.readDocumentFromByteArray(componentXML.getBytes("UTF-8"));
-		String componentXPath = "//component[@id=" + this.parentComponentId + "]";
-
-		Node componentNode = org.apache.xpath.XPathAPI.selectSingleNode(document.getDocumentElement(), componentXPath);
-		if(componentNode != null)
+		try
 		{
-			//Element componentElement = (Element)componentNode;
-			
-			String componentsXPath = "//component";
-			NodeList nodes = org.apache.xpath.XPathAPI.selectNodeList(document.getDocumentElement(), componentsXPath);
-			for(int i=0; i < nodes.getLength(); i++)
+			initialize();
+	
+			logger.info("masterLanguageId:" + this.masterLanguageVO.getId());
+	
+			Integer newComponentId = new Integer(0);
+	
+		    String componentXML   = getPageComponentsString(siteNodeId, this.masterLanguageVO.getId());			
+	
+			Document document = XMLHelper.readDocumentFromByteArray(componentXML.getBytes("UTF-8"));
+			String componentXPath = "//component[@id=" + this.parentComponentId + "]";
+	
+			Node componentNode = org.apache.xpath.XPathAPI.selectSingleNode(document.getDocumentElement(), componentXPath);
+			if(componentNode != null)
 			{
-				Element element = (Element)nodes.item(i);
-				if(new Integer(element.getAttribute("id")).intValue() > newComponentId.intValue())
-					newComponentId = new Integer(element.getAttribute("id"));
+				//Element componentElement = (Element)componentNode;
+				
+				String componentsXPath = "//component";
+				NodeList nodes = org.apache.xpath.XPathAPI.selectNodeList(document.getDocumentElement(), componentsXPath);
+				for(int i=0; i < nodes.getLength(); i++)
+				{
+					Element element = (Element)nodes.item(i);
+					if(new Integer(element.getAttribute("id")).intValue() > newComponentId.intValue())
+						newComponentId = new Integer(element.getAttribute("id"));
+				}
+				newComponentId = new Integer(newComponentId.intValue() + 1);
+				
+				NodeList childNodes = componentNode.getChildNodes();
+				logger.info("childNodes:" + childNodes.getLength());
+				
+				Node child = componentNode.getFirstChild();
+				while (child != null)
+				{
+					logger.info("Removing:" + child);
+		        	componentNode.removeChild(child);
+		        	child = componentNode.getFirstChild();
+				}
+	
+				logger.info("childNodes:" + childNodes.getLength());
+				//StringBuffer sb = new StringBuffer();
+				//XMLHelper.serializeDom(componentNode, sb);
+				//logger.info("SB:" + sb);
+				
+				if(this.pagePartContentId != null)
+				{
+					ContentVersionVO pagePartContentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(this.pagePartContentId, this.masterLanguageVO.getId());
+					String componentStructure = ContentVersionController.getContentVersionController().getAttributeValue(pagePartContentVersionVO.getId(), "ComponentStructure", false);
+					
+					componentStructure = componentStructure.replaceAll(" isInherited=\"true\"", "");
+					componentStructure = componentStructure.replaceAll(" pagePartTemplateContentId=\"-1\"", "");
+					componentStructure = componentStructure.replaceAll("<property name=\"pagePartContentId\" path=\".*?\"></property>", "");
+					componentStructure = componentStructure.replaceAll("<property name=\"pagePartContentId\" path=\".*?\"/>", "");
+					componentStructure = componentStructure.replaceAll("<properties>", "<properties><property name=\"pagePartContentId\" path=\"" + pagePartContentId + "\"/>");
+					logger.info("componentStructure:" + componentStructure);
+									
+					Document componentStructureDocument = XMLHelper.readDocumentFromByteArray(componentStructure.getBytes("UTF-8"));
+					Node rootNode = componentStructureDocument.getDocumentElement();
+					
+					componentNode.appendChild(document.importNode(rootNode, true));
+	
+					String modifiedXML = XMLHelper.serializeDom(document, new StringBuffer()).toString(); 
+	
+					ContentVO contentVO = NodeDeliveryController.getNodeDeliveryController(siteNodeId, this.masterLanguageVO.getId(), contentId).getBoundContent(this.getInfoGluePrincipal(), siteNodeId, this.masterLanguageVO.getId(), true, "Meta information", DeliveryContext.getDeliveryContext());
+					ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentVO.getId(), this.masterLanguageVO.getId());
+					
+					ContentVersionController.getContentVersionController().updateAttributeValue(contentVersionVO.getContentVersionId(), "ComponentStructure", modifiedXML, this.getInfoGluePrincipal());
+				}						
 			}
-			newComponentId = new Integer(newComponentId.intValue() + 1);
 			
-			NodeList childNodes = componentNode.getChildNodes();
-			logger.info("childNodes:" + childNodes.getLength());
+			logger.info("newComponentId:" + newComponentId);
 			
-			Node child = componentNode.getFirstChild();
-			while (child != null)
-			{
-				logger.info("Removing:" + child);
-	        	componentNode.removeChild(child);
-	        	child = componentNode.getFirstChild();
-			}
+			this.url = getComponentRendererUrl() + getComponentRendererAction() + "?siteNodeId=" + this.siteNodeId + "&languageId=" + this.languageId + "&contentId=" + this.contentId + "&focusElementId=" + newComponentId + "&activatedComponentId=" + newComponentId + "&componentContentId=" + this.componentId + "&showSimple=" + this.showSimple;
+			//this.getResponse().sendRedirect(url);		
 
-			logger.info("childNodes:" + childNodes.getLength());
-			//StringBuffer sb = new StringBuffer();
-			//XMLHelper.serializeDom(componentNode, sb);
-			//logger.info("SB:" + sb);
-			
-			if(this.pagePartContentId != null)
-			{
-				ContentVersionVO pagePartContentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(this.pagePartContentId, this.masterLanguageVO.getId());
-				String componentStructure = ContentVersionController.getContentVersionController().getAttributeValue(pagePartContentVersionVO.getId(), "ComponentStructure", false);
-				
-				componentStructure = componentStructure.replaceAll(" isInherited=\"true\"", "");
-				componentStructure = componentStructure.replaceAll(" pagePartTemplateContentId=\"-1\"", "");
-				componentStructure = componentStructure.replaceAll("<property name=\"pagePartContentId\" path=\".*?\"></property>", "");
-				componentStructure = componentStructure.replaceAll("<property name=\"pagePartContentId\" path=\".*?\"/>", "");
-				componentStructure = componentStructure.replaceAll("<properties>", "<properties><property name=\"pagePartContentId\" path=\"" + pagePartContentId + "\"/>");
-				logger.info("componentStructure:" + componentStructure);
-								
-				Document componentStructureDocument = XMLHelper.readDocumentFromByteArray(componentStructure.getBytes("UTF-8"));
-				Node rootNode = componentStructureDocument.getDocumentElement();
-				
-				componentNode.appendChild(document.importNode(rootNode, true));
-
-				String modifiedXML = XMLHelper.serializeDom(document, new StringBuffer()).toString(); 
-
-				ContentVO contentVO = NodeDeliveryController.getNodeDeliveryController(siteNodeId, this.masterLanguageVO.getId(), contentId).getBoundContent(this.getInfoGluePrincipal(), siteNodeId, this.masterLanguageVO.getId(), true, "Meta information", DeliveryContext.getDeliveryContext());
-				ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentVO.getId(), this.masterLanguageVO.getId());
-				
-				ContentVersionController.getContentVersionController().updateAttributeValue(contentVersionVO.getContentVersionId(), "ComponentStructure", modifiedXML, this.getInfoGluePrincipal());
-			}						
-		}
-		
-		logger.info("newComponentId:" + newComponentId);
-		
-		this.url = getComponentRendererUrl() + getComponentRendererAction() + "?siteNodeId=" + this.siteNodeId + "&languageId=" + this.languageId + "&contentId=" + this.contentId + "&focusElementId=" + newComponentId + "&activatedComponentId=" + newComponentId + "&componentContentId=" + this.componentId + "&showSimple=" + this.showSimple;
-		//this.getResponse().sendRedirect(url);		
+			this.url = this.getResponse().encodeURL(url);
+			this.getResponse().sendRedirect(url);
+		    return NONE; 
 		}
 		catch (Exception e) 
 		{
-			e.printStackTrace();
+			logger.error("Error adding/changing component:" + e.getMessage(), e);
+			return ERROR;
 		}
-		this.url = this.getResponse().encodeURL(url);
-		this.getResponse().sendRedirect(url);
-	    return NONE; 
 	}
 
 	/**
@@ -949,8 +951,6 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
     
 	public String doUpdateComponentProperties() throws Exception
 	{
-		initialize();
-
 		if(logger.isInfoEnabled())
 		{
 			logger.info("************************************************************");
@@ -963,116 +963,155 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 			logger.info("slotId:" + this.slotId);
 			logger.info("specifyBaseTemplate:" + this.specifyBaseTemplate);
 		}
-		
-		Iterator parameterNames = this.getRequest().getParameterMap().keySet().iterator();
-		while(parameterNames.hasNext())
+
+		try
 		{
-			String name = (String)parameterNames.next();
-			String value = (String)this.getRequest().getParameter(name);
-			logger.info(name + "=" + value);
-		}
-
-		Integer siteNodeId 	= new Integer(this.getRequest().getParameter("siteNodeId"));
-		Integer languageId 	= new Integer(this.getRequest().getParameter("languageId"));
-		
-		Locale locale = LanguageController.getController().getLocaleWithId(languageId);
-		
-		String entity  		= this.getRequest().getParameter("entity");
-		
-		String componentXML = getPageComponentsString(siteNodeId, this.masterLanguageVO.getId());			
-		//logger.info("componentXML:" + componentXML);
-		
-		ContentVO contentVO = NodeDeliveryController.getNodeDeliveryController(siteNodeId, languageId, contentId).getBoundContent(this.getInfoGluePrincipal(), siteNodeId, languageId, true, "Meta information", DeliveryContext.getDeliveryContext());
-		ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentVO.getId(), this.masterLanguageVO.getId());
-
-		Document document = XMLHelper.readDocumentFromByteArray(componentXML.getBytes("UTF-8"));
-		
-		String characterEncoding= this.getRequest().getCharacterEncoding();
-		characterEncoding= this.getResponse().getCharacterEncoding();
+			initialize();
 	
-		logger.info("siteNodeId:" + siteNodeId);
-		logger.info("languageId:" + languageId);
-		logger.info("entity:" + entity);
-
-		String componentContentId = null;
-
-		int propertyIndex = 0;	
-		String propertyName = this.getRequest().getParameter(propertyIndex + "_propertyName");
-		while(propertyName != null && !propertyName.equals(""))
-		{
-			String[] propertyValues = this.getRequest().getParameterValues(propertyName);
-			String propertyValue = "";
-			
-			if(propertyValues != null && propertyValues.length == 1)
-				propertyValue = propertyValues[0];
-			else if(propertyValues != null)
+			Iterator parameterNames = this.getRequest().getParameterMap().keySet().iterator();
+			while(parameterNames.hasNext())
 			{
-				StringBuffer sb = new StringBuffer();
-				for(int i=0; i<propertyValues.length;i++)
-				{
-					if(i > 0)
-						sb.append(",");
-					sb.append(propertyValues[i]);
-				}
-				propertyValue = sb.toString();
+				String name = (String)parameterNames.next();
+				String value = (String)this.getRequest().getParameter(name);
+				logger.info(name + "=" + value);
 			}
-
-			logger.info("propertyName:" + propertyName);
-			logger.info("propertyValue:" + propertyValue);
-			String separator = System.getProperty("line.separator");
-			propertyValue = propertyValue.replaceAll(separator, "igbr");
-			logger.info("propertyValue1:" + propertyValue);
-        	propertyValue = PageEditorHelper.untransformAttribute(propertyValue);
-			logger.info("propertyValue2:" + propertyValue);
- 			
-			if(propertyValue != null && !propertyValue.equals("") && !propertyValue.equalsIgnoreCase("undefined"))
+	
+			Integer siteNodeId 	= new Integer(this.getRequest().getParameter("siteNodeId"));
+			Integer languageId 	= new Integer(this.getRequest().getParameter("languageId"));
+			
+			Locale locale = LanguageController.getController().getLocaleWithId(languageId);
+			
+			String entity  		= this.getRequest().getParameter("entity");
+			
+			String componentXML = getPageComponentsString(siteNodeId, this.masterLanguageVO.getId());			
+			//logger.info("componentXML:" + componentXML);
+			
+			ContentVO contentVO = NodeDeliveryController.getNodeDeliveryController(siteNodeId, languageId, contentId).getBoundContent(this.getInfoGluePrincipal(), siteNodeId, languageId, true, "Meta information", DeliveryContext.getDeliveryContext());
+			ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentVO.getId(), this.masterLanguageVO.getId());
+	
+			Document document = XMLHelper.readDocumentFromByteArray(componentXML.getBytes("UTF-8"));
+			
+			String characterEncoding= this.getRequest().getCharacterEncoding();
+			characterEncoding= this.getResponse().getCharacterEncoding();
+		
+			logger.info("siteNodeId:" + siteNodeId);
+			logger.info("languageId:" + languageId);
+			logger.info("entity:" + entity);
+	
+			String componentContentId = null;
+	
+			int propertyIndex = 0;	
+			String propertyName = this.getRequest().getParameter(propertyIndex + "_propertyName");
+			while(propertyName != null && !propertyName.equals(""))
 			{
-				String componentPropertyXPath = "//component[@id=" + this.componentId + "]/properties/property[@name='" + propertyName + "']";
-				//logger.info("componentPropertyXPath:" + componentPropertyXPath);
-				NodeList anl = org.apache.xpath.XPathAPI.selectNodeList(document.getDocumentElement(), componentPropertyXPath);
-				if(anl.getLength() == 0)
+				String[] propertyValues = this.getRequest().getParameterValues(propertyName);
+				String propertyValue = "";
+				
+				if(propertyValues != null && propertyValues.length == 1)
+					propertyValue = propertyValues[0];
+				else if(propertyValues != null)
 				{
-					String componentXPath = "//component[@id=" + this.componentId + "]/properties";
-					//logger.info("componentXPath:" + componentXPath);
-					NodeList componentNodeList = org.apache.xpath.XPathAPI.selectNodeList(document.getDocumentElement(), componentXPath);
-					if(componentNodeList.getLength() > 0)
+					StringBuffer sb = new StringBuffer();
+					for(int i=0; i<propertyValues.length;i++)
 					{
-						Element componentProperties = (Element)componentNodeList.item(0);
-						addPropertyElement(componentProperties, propertyName, propertyValue, "textfield", locale);
-						anl = org.apache.xpath.XPathAPI.selectNodeList(document.getDocumentElement(), componentPropertyXPath);
+						if(i > 0)
+							sb.append(",");
+						sb.append(propertyValues[i]);
+					}
+					propertyValue = sb.toString();
+				}
+	
+				logger.info("propertyName:" + propertyName);
+				logger.info("propertyValue:" + propertyValue);
+				String separator = System.getProperty("line.separator");
+				propertyValue = propertyValue.replaceAll(separator, "igbr");
+				logger.info("propertyValue1:" + propertyValue);
+	        	propertyValue = PageEditorHelper.untransformAttribute(propertyValue);
+				logger.info("propertyValue2:" + propertyValue);
+	 			
+				if(propertyValue != null && !propertyValue.equals("") && !propertyValue.equalsIgnoreCase("undefined"))
+				{
+					String componentPropertyXPath = "//component[@id=" + this.componentId + "]/properties/property[@name='" + propertyName + "']";
+					//logger.info("componentPropertyXPath:" + componentPropertyXPath);
+					NodeList anl = org.apache.xpath.XPathAPI.selectNodeList(document.getDocumentElement(), componentPropertyXPath);
+					if(anl.getLength() == 0)
+					{
+						String componentXPath = "//component[@id=" + this.componentId + "]/properties";
+						//logger.info("componentXPath:" + componentXPath);
+						NodeList componentNodeList = org.apache.xpath.XPathAPI.selectNodeList(document.getDocumentElement(), componentXPath);
+						if(componentNodeList.getLength() > 0)
+						{
+							Element componentProperties = (Element)componentNodeList.item(0);
+							addPropertyElement(componentProperties, propertyName, propertyValue, "textfield", locale);
+							anl = org.apache.xpath.XPathAPI.selectNodeList(document.getDocumentElement(), componentPropertyXPath);
+						}
+					}
+			
+					logger.info("anl:" + anl);
+					if(anl.getLength() > 0)
+					{
+						Element component = (Element)anl.item(0);
+						componentContentId = ((Element)component.getParentNode().getParentNode()).getAttribute("contentId");
+						
+						//System.out.println("componentContentId:" + componentContentId);
+						ContentVO componentContentVO = ContentController.getContentController().getContentVOWithId(new Integer(componentContentId));
+						LanguageVO componentMasterLanguageVO = LanguageController.getController().getMasterLanguage(componentContentVO.getRepositoryId());
+						ContentVersionVO cv = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(new Integer(componentContentId), componentMasterLanguageVO.getId());
+						String componentProperties = ContentVersionController.getContentVersionController().getAttributeValue(cv, "ComponentProperties", false);
+						List componentPropertiesList = ComponentPropertyDefinitionController.getController().parseComponentPropertyDefinitions(componentProperties);
+						Iterator componentPropertiesListIterator = componentPropertiesList.iterator();
+						boolean allowLanguageVariations = true;
+						while(componentPropertiesListIterator.hasNext())
+						{
+							ComponentPropertyDefinition componentPropertyDefinition = (ComponentPropertyDefinition)componentPropertiesListIterator.next();
+							if(componentPropertyDefinition.getName().equalsIgnoreCase(propertyName))
+							{
+								allowLanguageVariations = componentPropertyDefinition.getAllowLanguageVariations();
+								break;
+							}
+						}
+						
+						if(allowLanguageVariations)
+						{
+							//System.out.println("Setting a propertyValue to path_" + locale.getLanguage() + ":" + path);
+							component.setAttribute("path_" + locale.getLanguage(), propertyValue);
+						    logger.info("Setting 'path_" + locale.getLanguage() + ":" + propertyValue);
+						}
+						else
+						{
+							//System.out.println("Setting a propertyValue to path:" + path);
+							component.setAttribute("path", propertyValue);
+						    logger.info("Setting 'path:" + propertyValue);
+						    component.removeAttribute("path_" + locale.getLanguage());
+						}
+					}
+					else
+					{
+					    logger.warn("No property could be updated... must be wrong.");
 					}
 				}
 				
-				logger.info("anl:" + anl);
-				if(anl.getLength() > 0)
-				{
-					Element component = (Element)anl.item(0);
-					componentContentId = ((Element)component.getParentNode().getParentNode()).getAttribute("contentId");
-					
-					component.setAttribute("path_" + locale.getLanguage(), propertyValue);
-				    logger.info("Setting 'path_" + locale.getLanguage() + ":" + propertyValue);
-				}
-				else
-				{
-				    logger.warn("No property could be updated... must be wrong.");
-				}
+				propertyIndex++;
+				
+				propertyName = this.getRequest().getParameter(propertyIndex + "_propertyName");
 			}
-			
-			propertyIndex++;
-			
-			propertyName = this.getRequest().getParameter(propertyIndex + "_propertyName");
-		}
+	
+			String modifiedXML = XMLHelper.serializeDom(document, new StringBuffer()).toString(); 
+				
+			logger.info("contentVersionVO:" + contentVersionVO.getContentVersionId());
+			ContentVersionController.getContentVersionController().updateAttributeValue(contentVersionVO.getContentVersionId(), "ComponentStructure", modifiedXML, this.getInfoGluePrincipal());
+			this.url = getComponentRendererUrl() + getComponentRendererAction() + "?siteNodeId=" + this.siteNodeId + "&languageId=" + this.languageId + "&contentId=" + this.contentId + "&focusElementId=" + this.componentId + (!hideComponentPropertiesOnLoad ? "&activatedComponentId=" + this.componentId : "") + "&componentContentId=" + componentContentId + "&showSimple=" + this.showSimple;
+			//this.getResponse().sendRedirect(url);		
 
-		String modifiedXML = XMLHelper.serializeDom(document, new StringBuffer()).toString(); 
-			
-		logger.info("contentVersionVO:" + contentVersionVO.getContentVersionId());
-		ContentVersionController.getContentVersionController().updateAttributeValue(contentVersionVO.getContentVersionId(), "ComponentStructure", modifiedXML, this.getInfoGluePrincipal());
-		this.url = getComponentRendererUrl() + getComponentRendererAction() + "?siteNodeId=" + this.siteNodeId + "&languageId=" + this.languageId + "&contentId=" + this.contentId + "&focusElementId=" + this.componentId + (!hideComponentPropertiesOnLoad ? "&activatedComponentId=" + this.componentId : "") + "&componentContentId=" + componentContentId + "&showSimple=" + this.showSimple;
-		//this.getResponse().sendRedirect(url);		
-		
-		this.url = this.getResponse().encodeURL(url);
-		this.getResponse().sendRedirect(url);
-	    return NONE; 
+			this.url = this.getResponse().encodeURL(url);
+			this.getResponse().sendRedirect(url);
+		    return NONE; 
+		}
+		catch(Exception e)
+		{
+			logger.error("Error setting property:" + e.getMessage(), e);
+			return ERROR;
+		}
 	}
 
 
@@ -1293,7 +1332,6 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 		{
 			Element component = (Element)anl.item(0);
 			component.setAttribute("path", path);
-			//component.setAttribute("path_" + locale.getLanguage(), path);
 			NamedNodeMap attributes = component.getAttributes();
 			logger.debug("NumberOfAttributes:" + attributes.getLength() + ":" + attributes);
 						
@@ -1610,6 +1648,7 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 			Node propertyNode = anl.item(0);
 			Element propertyElement = (Element)propertyNode;
 			
+			propertyElement.removeAttribute("path");
 			propertyElement.removeAttribute("path_" + locale.getLanguage());
 			if(propertyElement.getAttributes().getLength() == 0);
 			{
@@ -1625,6 +1664,7 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 			Node propertyNode = anl2.item(0);
 			Element propertyElement = (Element)propertyNode;
 			
+			propertyElement.removeAttribute("path");
 			propertyElement.removeAttribute("path_" + locale.getLanguage());
 			if(propertyElement.getAttributes().getLength() == 0);
 			{
@@ -1665,6 +1705,7 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 		}
 		else
 		{
+			System.out.println("Setting......................... why");
 			element.setAttribute("path_" + locale.getLanguage(), path);
 		}
 		

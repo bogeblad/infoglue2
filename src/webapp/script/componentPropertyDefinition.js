@@ -12,7 +12,7 @@
  * ComponentPropertyDefinition object
  */
 
-function ComponentPropertyDefinition(name, displayName, type, entity, multiple, assetBinding, isPuffContentForPage, allowedContentTypeNames, description, defaultValue, WYSIWYGEnabled, WYSIWYGToolbar, dataProvider, dataProviderParameters, autoCreateContent, autoCreateContentMethod, autoCreateContentPath, customMarkup, allowMultipleSelections)
+function ComponentPropertyDefinition(name, displayName, type, entity, multiple, assetBinding, isPuffContentForPage, allowedContentTypeNames, description, defaultValue, allowLanguageVariations, WYSIWYGEnabled, WYSIWYGToolbar, dataProvider, dataProviderParameters, autoCreateContent, autoCreateContentMethod, autoCreateContentPath, customMarkup, allowMultipleSelections)
 {
 	this.name 						= name;
 	this.displayName				= displayName;
@@ -24,6 +24,7 @@ function ComponentPropertyDefinition(name, displayName, type, entity, multiple, 
 	this.allowedContentTypeNames 	= allowedContentTypeNames;
 	this.description				= description;
 	this.defaultValue				= defaultValue;
+	this.allowLanguageVariations	= allowLanguageVariations;
 	this.WYSIWYGEnabled				= WYSIWYGEnabled;
 	this.WYSIWYGToolbar				= WYSIWYGToolbar;
 	this.dataProvider 				= dataProvider;
@@ -46,6 +47,7 @@ function ComponentPropertyDefinition(name, displayName, type, entity, multiple, 
 	this.getDescription				= getDescription;
 	this.getOptions					= getOptions;
 	this.getDefaultValue			= getDefaultValue;
+	this.getAllowLanguageVariations	= getAllowLanguageVariations;
 	this.getWYSIWYGEnabled			= getWYSIWYGEnabled;
 	this.getWYSIWYGToolbar			= getWYSIWYGToolbar;
 	this.getDataProvider			= getDataProvider;
@@ -66,6 +68,7 @@ function ComponentPropertyDefinition(name, displayName, type, entity, multiple, 
   	this.setAllowedContentTypeNames = setAllowedContentTypeNames;
 	this.setDescription				= setDescription;
 	this.setDefaultValue			= setDefaultValue;
+	this.setAllowLanguageVariations	= setAllowLanguageVariations;
 	this.setWYSIWYGEnabled			= setWYSIWYGEnabled;
 	this.setWYSIWYGToolbar			= setWYSIWYGToolbar;
 	this.setDataProvider			= setDataProvider;
@@ -172,6 +175,16 @@ function setDescription(description)
 	this.description = description;
 }
 
+function getAllowLanguageVariations()
+{
+	return this.allowLanguageVariations;
+}
+
+function setAllowLanguageVariations(allowLanguageVariations)
+{
+	this.allowLanguageVariations = allowLanguageVariations;
+}
+
 function getDefaultValue()
 {
 	return this.defaultValue;
@@ -181,7 +194,7 @@ function setDefaultValue(defaultValue)
 {
 	this.defaultValue = defaultValue;
 }
-	
+
 function getWYSIWYGEnabled()
 {
 	return this.WYSIWYGEnabled;

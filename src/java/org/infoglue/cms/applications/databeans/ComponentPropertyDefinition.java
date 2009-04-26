@@ -52,6 +52,7 @@ public class ComponentPropertyDefinition
     private String allowedContentTypeNames;
     private String description;
 	private String defaultValue 			= "";
+	private Boolean allowLanguageVariations = new Boolean(true);
 	private String dataProvider 			= "";
 	private String dataProviderParameters 	= "";
 	private Boolean WYSIWYGEnabled 			= new Boolean(false);
@@ -65,7 +66,7 @@ public class ComponentPropertyDefinition
     private List options = new ArrayList();
 
     
-    public ComponentPropertyDefinition(String name, String displayName, String type, String entity, Boolean multiple, Boolean assetBinding, Boolean isPuffContentForPage, String allowedContentTypeNames, String description, String defaultValue, Boolean WYSIWYGEnabled, String WYSIWYGToolbar, String dataProvider, String dataProviderParameters, Boolean autoCreateContent, String autoCreateContentMethod, String autoCreateContentPath, String customMarkup, boolean allowMultipleSelections)
+    public ComponentPropertyDefinition(String name, String displayName, String type, String entity, Boolean multiple, Boolean assetBinding, Boolean isPuffContentForPage, String allowedContentTypeNames, String description, String defaultValue, Boolean allowLanguageVariations, Boolean WYSIWYGEnabled, String WYSIWYGToolbar, String dataProvider, String dataProviderParameters, Boolean autoCreateContent, String autoCreateContentMethod, String autoCreateContentPath, String customMarkup, boolean allowMultipleSelections)
     {
         this.name 						= name;
         this.displayName				= displayName;
@@ -77,6 +78,7 @@ public class ComponentPropertyDefinition
         this.allowedContentTypeNames 	= allowedContentTypeNames;
         this.description				= description;
         this.defaultValue				= defaultValue;
+        this.allowLanguageVariations	= allowLanguageVariations;
         this.WYSIWYGEnabled				= WYSIWYGEnabled;
         this.WYSIWYGToolbar				= WYSIWYGToolbar;
         this.dataProvider 				= dataProvider;
@@ -144,6 +146,11 @@ public class ComponentPropertyDefinition
 	public String getDefaultValue()
 	{
 		return defaultValue;
+	}
+
+	public Boolean getAllowLanguageVariations()
+	{
+		return allowLanguageVariations;
 	}
 
 	public Boolean getWYSIWYGEnabled()
