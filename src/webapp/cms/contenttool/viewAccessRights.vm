@@ -170,6 +170,9 @@
 <form method="POST" name="editForm" action="UpdateAccessRights.action">
 <input type="hidden" name="interceptionPointCategory" value="$interceptionPointCategory">
 <input type="hidden" name="parameters" value="$extraParameters">
+#foreach($extraMultiParameter in $extraMultiParameters)
+<input type="hidden" name="extraMultiParameter" value="$extraMultiParameter">
+#end
 <input type="hidden" name="returnAddress" value="$unencodedCurrentUrl">
 
 #set($interceptionPointIndex = 0)
@@ -211,7 +214,14 @@ Rights saved...
 			#if($interceptionPointVO.name == "Content.Read" || $interceptionPointVO.name == "SiteNodeVersion.Read")
 				<script type="text/javascript">useAnonymousWarningCheck = true;</script>	
 			#end
-			#if(($interceptionPointVO.getUsesExtraDataForAccessControl() && $extraParameters && $extraParameters != "") || (!$interceptionPointVO.getUsesExtraDataForAccessControl() && (!$extraParameters || $extraParameters == "")))
+			#*
+			$interceptionPointVO.name<br/>
+			getUsesExtraDataForAccessControl: $interceptionPointVO.getUsesExtraDataForAccessControl()<br/>
+			extraParameters: $extraParameters<br/>
+			extraMultiParameters: $extraMultiParameters<br/>
+			*#
+			##if(($interceptionPointVO.getUsesExtraDataForAccessControl() && $extraParameters && $extraParameters != "") || (!$interceptionPointVO.getUsesExtraDataForAccessControl() && (!$extraParameters || $extraParameters == "")))
+			#if(($interceptionPointVO.getUsesExtraDataForAccessControl() && (($extraParameters && $extraParameters != "") || $extraMultiParameters)) || (!$interceptionPointVO.getUsesExtraDataForAccessControl() && (!$extraParameters || $extraParameters == "") && !$extraMultiParameters))
 				#set($accessRightId = -1)
 				#set($accessRightId = $this.getAccessRightId($interceptionPointVO.id, $extraParameters))
 				#set($accessRightIds = $this.getAccessRightIds($interceptionPointVO.id, $extraParameters))
@@ -266,7 +276,8 @@ Rights saved...
 			<td $class></td>
 			#set($interceptionPointIndex = 0)
 			#foreach($interceptionPointVO in $interceptionPointVOList)
-				#if(($interceptionPointVO.getUsesExtraDataForAccessControl() && $extraParameters && $extraParameters != "") || (!$interceptionPointVO.getUsesExtraDataForAccessControl() && (!$extraParameters || $extraParameters == "")))
+				##if(($interceptionPointVO.getUsesExtraDataForAccessControl() && $extraParameters && $extraParameters != "") || (!$interceptionPointVO.getUsesExtraDataForAccessControl() && (!$extraParameters || $extraParameters == "")))
+				#if(($interceptionPointVO.getUsesExtraDataForAccessControl() && (($extraParameters && $extraParameters != "") || $extraMultiParameters)) || (!$interceptionPointVO.getUsesExtraDataForAccessControl() && (!$extraParameters || $extraParameters == "") && !$extraMultiParameters))
 					<td $class align="center" nowrap>
 						#set($checked = "")
 						#if($this.getHasAccessRight($interceptionPointVO.id, $extraParameters, $role.name))
@@ -319,6 +330,9 @@ Rights saved...
 <form method="POST" name="addUserForm" action="UpdateAccessRights!addUser.action">
 <input type="hidden" name="interceptionPointCategory" value="$interceptionPointCategory">
 <input type="hidden" name="parameters" value="$extraParameters">
+#foreach($extraMultiParameter in $extraMultiParameters)
+<input type="hidden" name="extraMultiParameter" value="$extraMultiParameter">
+#end
 <input type="hidden" name="returnAddress" value="$returnAddress">
 
 	<tr class="darkgreen">
@@ -326,7 +340,8 @@ Rights saved...
 		<td><img src="images/trans.gif" width="20" height="1"></td>
 		#set($colspan = 1)
 		#foreach($interceptionPointVO in $interceptionPointVOList)
-			#if(($interceptionPointVO.getUsesExtraDataForAccessControl() && $extraParameters && $extraParameters != "") || (!$interceptionPointVO.getUsesExtraDataForAccessControl() && (!$extraParameters || $extraParameters == "")))
+			##if(($interceptionPointVO.getUsesExtraDataForAccessControl() && $extraParameters && $extraParameters != "") || (!$interceptionPointVO.getUsesExtraDataForAccessControl() && (!$extraParameters || $extraParameters == "")))
+			#if(($interceptionPointVO.getUsesExtraDataForAccessControl() && (($extraParameters && $extraParameters != "") || $extraMultiParameters)) || (!$interceptionPointVO.getUsesExtraDataForAccessControl() && (!$extraParameters || $extraParameters == "") && !$extraMultiParameters))
 				#set($accessRightId = -1)
 				#set($accessRightId = $this.getAccessRightId($interceptionPointVO.id, $extraParameters))
 				#set($dotIndex = $interceptionPointVO.name.indexOf(".") + 1)
@@ -352,7 +367,8 @@ Rights saved...
 		<td></td>
 		#set($interceptionPointIndex = 0)
 		#foreach($interceptionPointVO in $interceptionPointVOList)
-			#if(($interceptionPointVO.getUsesExtraDataForAccessControl() && $extraParameters && $extraParameters != "") || (!$interceptionPointVO.getUsesExtraDataForAccessControl() && (!$extraParameters || $extraParameters == "")))
+			##if(($interceptionPointVO.getUsesExtraDataForAccessControl() && $extraParameters && $extraParameters != "") || (!$interceptionPointVO.getUsesExtraDataForAccessControl() && (!$extraParameters || $extraParameters == "")))
+			#if(($interceptionPointVO.getUsesExtraDataForAccessControl() && (($extraParameters && $extraParameters != "") || $extraMultiParameters)) || (!$interceptionPointVO.getUsesExtraDataForAccessControl() && (!$extraParameters || $extraParameters == "") && !$extraMultiParameters))
 				<td align="center" nowrap>
 					#set($checked = "")
 					#if($accessRightsUserRow.accessRights.get($interceptionPointVO.id) == true)
@@ -381,7 +397,8 @@ Rights saved...
 		<td></td>
 		#set($interceptionPointIndex = 0)
 		#foreach($interceptionPointVO in $interceptionPointVOList)
-			#if(($interceptionPointVO.getUsesExtraDataForAccessControl() && $extraParameters && $extraParameters != "") || (!$interceptionPointVO.getUsesExtraDataForAccessControl() && (!$extraParameters || $extraParameters == "")))
+			##if(($interceptionPointVO.getUsesExtraDataForAccessControl() && $extraParameters && $extraParameters != "") || (!$interceptionPointVO.getUsesExtraDataForAccessControl() && (!$extraParameters || $extraParameters == "")))
+			#if(($interceptionPointVO.getUsesExtraDataForAccessControl() && (($extraParameters && $extraParameters != "") || $extraMultiParameters)) || (!$interceptionPointVO.getUsesExtraDataForAccessControl() && (!$extraParameters || $extraParameters == "") && !$extraMultiParameters))
 				<td align="center" nowrap>
 					#set($checked = "")
 					##if($this.getHasAccessRight($interceptionPointVO.id, $extraParameters, $role.name))

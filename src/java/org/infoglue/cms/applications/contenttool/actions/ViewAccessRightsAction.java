@@ -60,6 +60,7 @@ public class ViewAccessRightsAction extends InfoGlueAbstractAction
 	private String interceptionPointName = null;
 	private String interceptionPointCategory = null;
 	private String extraParameters = "";
+	private String[] extraMultiParameters;
 	private String returnAddress;
 	private String colorScheme;
 	private String saved = "false";
@@ -194,19 +195,29 @@ public class ViewAccessRightsAction extends InfoGlueAbstractAction
 		this.interceptionPointId = interceptionPointId;
 	}
 
-	public String getExtraParameters()
-	{
-		return this.extraParameters;
-	}
-
 	public String getInterceptionPointName()
 	{
 		return this.interceptionPointName;
 	}
 
+	public String getExtraParameters()
+	{
+		return this.extraParameters;
+	}
+
 	public void setExtraParameters(String extraParameters)
 	{
 		this.extraParameters = extraParameters;
+	}
+
+	public String[] getExtraMultiParameters()
+	{
+		return this.extraMultiParameters;
+	}
+
+	public void setExtraMultiParameters(String[] extraMultiParameters)
+	{
+		this.extraMultiParameters = extraMultiParameters;
 	}
 
 	public void setInterceptionPointName(String interceptionPointName)

@@ -50,6 +50,7 @@ public class UpdateAccessRightsAction extends InfoGlueAbstractAction
 	private Integer interceptionPointId;
 	private Integer accessRightId;
 	private String parameters = "";
+	private String[] extraMultiParameter;
 	private String roleName;
 	private String returnAddress;
 	private String url;
@@ -62,32 +63,48 @@ public class UpdateAccessRightsAction extends InfoGlueAbstractAction
     {   
 		AccessConstraintExceptionBuffer ceb = new AccessConstraintExceptionBuffer();
 		
-		if(interceptionPointCategory.equalsIgnoreCase("Content"))
-		{	
-			Integer contentId = new Integer(parameters);
-			ContentVO contentVO = ContentControllerProxy.getController().getContentVOWithId(contentId);
-			if(!contentVO.getCreatorName().equalsIgnoreCase(this.getInfoGluePrincipal().getName()))
-			{
-				Integer protectedContentId = ContentControllerProxy.getController().getProtectedContentId(contentId);
-				if(ContentControllerProxy.getController().getIsContentProtected(contentId) && !AccessRightController.getController().getIsPrincipalAuthorized(this.getInfoGluePrincipal(), "Content.ChangeAccessRights", protectedContentId.toString()))
-					ceb.add(new AccessConstraintException("Content.contentId", "1006"));
+		if(this.extraMultiParameter == null || this.extraMultiParameter.length == 0)
+		{
+			if(interceptionPointCategory.equalsIgnoreCase("Content"))
+			{	
+				Integer contentId = new Integer(parameters);
+				ContentVO contentVO = ContentControllerProxy.getController().getContentVOWithId(contentId);
+				if(!contentVO.getCreatorName().equalsIgnoreCase(this.getInfoGluePrincipal().getName()))
+				{
+					Integer protectedContentId = ContentControllerProxy.getController().getProtectedContentId(contentId);
+					if(ContentControllerProxy.getController().getIsContentProtected(contentId) && !AccessRightController.getController().getIsPrincipalAuthorized(this.getInfoGluePrincipal(), "Content.ChangeAccessRights", protectedContentId.toString()))
+						ceb.add(new AccessConstraintException("Content.contentId", "1006"));
+				}
 			}
-		}
-		else if(interceptionPointCategory.equalsIgnoreCase("SiteNodeVersion"))
-		{	
-			Integer siteNodeVersionId = new Integer(parameters);
-			SiteNodeVersionVO siteNodeVersionVO = SiteNodeVersionController.getController().getSiteNodeVersionVOWithId(siteNodeVersionId);
-			if(!siteNodeVersionVO.getVersionModifier().equalsIgnoreCase(this.getInfoGluePrincipal().getName()))
-			{
-				Integer protectedSiteNodeVersionId = SiteNodeVersionControllerProxy.getSiteNodeVersionControllerProxy().getProtectedSiteNodeVersionId(siteNodeVersionId);
-				if(protectedSiteNodeVersionId != null && !AccessRightController.getController().getIsPrincipalAuthorized(this.getInfoGluePrincipal(), "SiteNodeVersion.ChangeAccessRights", siteNodeVersionId.toString()))
-					ceb.add(new AccessConstraintException("SiteNodeVersion.siteNodeId", "1006"));
+			else if(interceptionPointCategory.equalsIgnoreCase("SiteNodeVersion"))
+			{	
+				Integer siteNodeVersionId = new Integer(parameters);
+				SiteNodeVersionVO siteNodeVersionVO = SiteNodeVersionController.getController().getSiteNodeVersionVOWithId(siteNodeVersionId);
+				if(!siteNodeVersionVO.getVersionModifier().equalsIgnoreCase(this.getInfoGluePrincipal().getName()))
+				{
+					Integer protectedSiteNodeVersionId = SiteNodeVersionControllerProxy.getSiteNodeVersionControllerProxy().getProtectedSiteNodeVersionId(siteNodeVersionId);
+					if(protectedSiteNodeVersionId != null && !AccessRightController.getController().getIsPrincipalAuthorized(this.getInfoGluePrincipal(), "SiteNodeVersion.ChangeAccessRights", siteNodeVersionId.toString()))
+						ceb.add(new AccessConstraintException("SiteNodeVersion.siteNodeId", "1006"));
+				}
 			}
+			
+			ceb.throwIfNotEmpty();
 		}
 		
-		ceb.throwIfNotEmpty();
-		
-		AccessRightController.getController().update(this.parameters, this.getRequest());
+		//System.out.println("this.extraMultiParameters[i]:" + this.extraMultiParameter);
+		if(this.extraMultiParameter != null && this.extraMultiParameter.length > 0)
+		{
+			for(int i=0; i<this.extraMultiParameter.length; i++)
+			{
+				//System.out.println("this.extraMultiParameters[i]:" + this.extraMultiParameter[i]);
+				AccessRightController.getController().update(this.extraMultiParameter[i], this.getRequest());			
+			}
+		}
+		else
+		{
+			//System.out.println("this.parameters:" + this.parameters);
+			AccessRightController.getController().update(this.parameters, this.getRequest());			
+		}
 	
 		this.url = getResponse().encodeRedirectURL(this.returnAddress);
 		if(this.url.indexOf("ViewAccessRights.action") > -1)
@@ -149,33 +166,44 @@ public class UpdateAccessRightsAction extends InfoGlueAbstractAction
     {   
 		AccessConstraintExceptionBuffer ceb = new AccessConstraintExceptionBuffer();
 		
-		if(interceptionPointCategory.equalsIgnoreCase("Content"))
-		{	
-			Integer contentId = new Integer(parameters);
-			ContentVO contentVO = ContentControllerProxy.getController().getContentVOWithId(contentId);
-			if(!contentVO.getCreatorName().equalsIgnoreCase(this.getInfoGluePrincipal().getName()))
-			{
-				Integer protectedContentId = ContentControllerProxy.getController().getProtectedContentId(contentId);
-				if(ContentControllerProxy.getController().getIsContentProtected(contentId) && !AccessRightController.getController().getIsPrincipalAuthorized(this.getInfoGluePrincipal(), "Content.ChangeAccessRights", protectedContentId.toString()))
-					ceb.add(new AccessConstraintException("Content.contentId", "1006"));
+		if(this.extraMultiParameter == null || this.extraMultiParameter.length == 0)
+		{
+			if(interceptionPointCategory.equalsIgnoreCase("Content"))
+			{	
+				Integer contentId = new Integer(parameters);
+				ContentVO contentVO = ContentControllerProxy.getController().getContentVOWithId(contentId);
+				if(!contentVO.getCreatorName().equalsIgnoreCase(this.getInfoGluePrincipal().getName()))
+				{
+					Integer protectedContentId = ContentControllerProxy.getController().getProtectedContentId(contentId);
+					if(ContentControllerProxy.getController().getIsContentProtected(contentId) && !AccessRightController.getController().getIsPrincipalAuthorized(this.getInfoGluePrincipal(), "Content.ChangeAccessRights", protectedContentId.toString()))
+						ceb.add(new AccessConstraintException("Content.contentId", "1006"));
+				}
 			}
-		}
-		else if(interceptionPointCategory.equalsIgnoreCase("SiteNodeVersion"))
-		{	
-			Integer siteNodeVersionId = new Integer(parameters);
-			SiteNodeVersionVO siteNodeVersionVO = SiteNodeVersionController.getController().getSiteNodeVersionVOWithId(siteNodeVersionId);
-			if(!siteNodeVersionVO.getVersionModifier().equalsIgnoreCase(this.getInfoGluePrincipal().getName()))
-			{
-				Integer protectedSiteNodeVersionId = SiteNodeVersionControllerProxy.getSiteNodeVersionControllerProxy().getProtectedSiteNodeVersionId(siteNodeVersionId);
-				if(protectedSiteNodeVersionId != null && !AccessRightController.getController().getIsPrincipalAuthorized(this.getInfoGluePrincipal(), "SiteNodeVersion.ChangeAccessRights", siteNodeVersionId.toString()))
-					ceb.add(new AccessConstraintException("SiteNodeVersion.siteNodeId", "1006"));
+			else if(interceptionPointCategory.equalsIgnoreCase("SiteNodeVersion"))
+			{	
+				Integer siteNodeVersionId = new Integer(parameters);
+				SiteNodeVersionVO siteNodeVersionVO = SiteNodeVersionController.getController().getSiteNodeVersionVOWithId(siteNodeVersionId);
+				if(!siteNodeVersionVO.getVersionModifier().equalsIgnoreCase(this.getInfoGluePrincipal().getName()))
+				{
+					Integer protectedSiteNodeVersionId = SiteNodeVersionControllerProxy.getSiteNodeVersionControllerProxy().getProtectedSiteNodeVersionId(siteNodeVersionId);
+					if(protectedSiteNodeVersionId != null && !AccessRightController.getController().getIsPrincipalAuthorized(this.getInfoGluePrincipal(), "SiteNodeVersion.ChangeAccessRights", siteNodeVersionId.toString()))
+						ceb.add(new AccessConstraintException("SiteNodeVersion.siteNodeId", "1006"));
+				}
 			}
+			
+			ceb.throwIfNotEmpty();
 		}
-		
-		ceb.throwIfNotEmpty();
 		
 		String userName = this.getRequest().getParameter("userName");
-		AccessRightController.getController().addUser(interceptionPointCategory, this.parameters, userName, this.getRequest());
+		if(this.extraMultiParameter != null && this.extraMultiParameter.length > 0)
+		{
+			for(int i=0; i<this.extraMultiParameter.length; i++)
+				AccessRightController.getController().addUser(interceptionPointCategory, this.extraMultiParameter[i], userName, this.getRequest());
+		}
+		else
+		{
+			AccessRightController.getController().addUser(interceptionPointCategory, this.parameters, userName, this.getRequest());
+		}
 		
 		this.url = getResponse().encodeRedirectURL(this.returnAddress);
 		
@@ -192,33 +220,44 @@ public class UpdateAccessRightsAction extends InfoGlueAbstractAction
     {   
 		AccessConstraintExceptionBuffer ceb = new AccessConstraintExceptionBuffer();
 		
-		if(interceptionPointCategory.equalsIgnoreCase("Content"))
-		{	
-			Integer contentId = new Integer(parameters);
-			ContentVO contentVO = ContentControllerProxy.getController().getContentVOWithId(contentId);
-			if(!contentVO.getCreatorName().equalsIgnoreCase(this.getInfoGluePrincipal().getName()))
-			{
-				Integer protectedContentId = ContentControllerProxy.getController().getProtectedContentId(contentId);
-				if(ContentControllerProxy.getController().getIsContentProtected(contentId) && !AccessRightController.getController().getIsPrincipalAuthorized(this.getInfoGluePrincipal(), "Content.ChangeAccessRights", protectedContentId.toString()))
-					ceb.add(new AccessConstraintException("Content.contentId", "1006"));
+		if(this.extraMultiParameter == null || this.extraMultiParameter.length == 0)
+		{
+			if(interceptionPointCategory.equalsIgnoreCase("Content"))
+			{	
+				Integer contentId = new Integer(parameters);
+				ContentVO contentVO = ContentControllerProxy.getController().getContentVOWithId(contentId);
+				if(!contentVO.getCreatorName().equalsIgnoreCase(this.getInfoGluePrincipal().getName()))
+				{
+					Integer protectedContentId = ContentControllerProxy.getController().getProtectedContentId(contentId);
+					if(ContentControllerProxy.getController().getIsContentProtected(contentId) && !AccessRightController.getController().getIsPrincipalAuthorized(this.getInfoGluePrincipal(), "Content.ChangeAccessRights", protectedContentId.toString()))
+						ceb.add(new AccessConstraintException("Content.contentId", "1006"));
+				}
 			}
-		}
-		else if(interceptionPointCategory.equalsIgnoreCase("SiteNodeVersion"))
-		{	
-			Integer siteNodeVersionId = new Integer(parameters);
-			SiteNodeVersionVO siteNodeVersionVO = SiteNodeVersionController.getController().getSiteNodeVersionVOWithId(siteNodeVersionId);
-			if(!siteNodeVersionVO.getVersionModifier().equalsIgnoreCase(this.getInfoGluePrincipal().getName()))
-			{
-				Integer protectedSiteNodeVersionId = SiteNodeVersionControllerProxy.getSiteNodeVersionControllerProxy().getProtectedSiteNodeVersionId(siteNodeVersionId);
-				if(protectedSiteNodeVersionId != null && !AccessRightController.getController().getIsPrincipalAuthorized(this.getInfoGluePrincipal(), "SiteNodeVersion.ChangeAccessRights", siteNodeVersionId.toString()))
-					ceb.add(new AccessConstraintException("SiteNodeVersion.siteNodeId", "1006"));
+			else if(interceptionPointCategory.equalsIgnoreCase("SiteNodeVersion"))
+			{	
+				Integer siteNodeVersionId = new Integer(parameters);
+				SiteNodeVersionVO siteNodeVersionVO = SiteNodeVersionController.getController().getSiteNodeVersionVOWithId(siteNodeVersionId);
+				if(!siteNodeVersionVO.getVersionModifier().equalsIgnoreCase(this.getInfoGluePrincipal().getName()))
+				{
+					Integer protectedSiteNodeVersionId = SiteNodeVersionControllerProxy.getSiteNodeVersionControllerProxy().getProtectedSiteNodeVersionId(siteNodeVersionId);
+					if(protectedSiteNodeVersionId != null && !AccessRightController.getController().getIsPrincipalAuthorized(this.getInfoGluePrincipal(), "SiteNodeVersion.ChangeAccessRights", siteNodeVersionId.toString()))
+						ceb.add(new AccessConstraintException("SiteNodeVersion.siteNodeId", "1006"));
+				}
 			}
+			
+			ceb.throwIfNotEmpty();
 		}
-		
-		ceb.throwIfNotEmpty();
 		
 		String userName = this.getRequest().getParameter("userName");
-		AccessRightController.getController().deleteUser(interceptionPointCategory, this.parameters, userName, this.getRequest());
+		if(this.extraMultiParameter != null && this.extraMultiParameter.length > 0)
+		{
+			for(int i=0; i<this.extraMultiParameter.length; i++)
+				AccessRightController.getController().deleteUser(interceptionPointCategory, this.extraMultiParameter[i], userName, this.getRequest());
+		}
+		else
+		{
+			AccessRightController.getController().deleteUser(interceptionPointCategory, this.parameters, userName, this.getRequest());
+		}
 		
 		this.url = getResponse().encodeRedirectURL(this.returnAddress);
 		
@@ -277,6 +316,16 @@ public class UpdateAccessRightsAction extends InfoGlueAbstractAction
 	public void setParameters(String parameters)
 	{
 		this.parameters = parameters;
+	}
+
+	public String[] getExtraMultiParameter()
+	{
+		return this.extraMultiParameter;
+	}
+
+	public void setExtraMultiParameter(String[] extraMultiParameter)
+	{
+		this.extraMultiParameter = extraMultiParameter;
 	}
 
 	public String getInterceptionPointCategory()
