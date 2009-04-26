@@ -96,7 +96,8 @@ public class RemoteFormServiceTag extends TemplateControllerTag
 	   }
 	   
 	   formEntries.clear();
-
+	   principal = null;
+	   
        return EVAL_PAGE;
    }
    

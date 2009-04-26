@@ -100,7 +100,7 @@ public class RemoteAccessRightsServiceTag extends TemplateControllerTag
 	   }
 	   
 	   this.accessRights = new ArrayList();
-	   //this.principal = null;
+	   this.principal = null;
 	   //this.name = null;
 	   //this.operationName = null;
 	   

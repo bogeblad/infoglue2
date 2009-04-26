@@ -83,6 +83,7 @@ public class RemoteContentVersionTag extends InfoGlueWebServiceTag
         content.clear();
         this.contentId = null;
         this.languageId = null;
+        this.principal = null;
         
         return EVAL_PAGE;
     }

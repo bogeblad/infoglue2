@@ -101,7 +101,8 @@ public class RemoteSiteNodeServiceTag extends TemplateControllerTag
 	   }
 	   
 	   siteNodes.clear();
-
+	   this.principal = null;
+	   
        return EVAL_PAGE;
    }
    

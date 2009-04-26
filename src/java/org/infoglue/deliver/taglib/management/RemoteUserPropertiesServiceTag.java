@@ -111,7 +111,8 @@ public class RemoteUserPropertiesServiceTag extends TemplateControllerTag implem
 	   this.forcePublication = true;
 	   this.userPropertiesAttributesMap = new HashMap();
 	   this.digitalAssets = new ArrayList();
-		
+	   this.principal = null;
+	   
        return EVAL_PAGE;
    }
    
