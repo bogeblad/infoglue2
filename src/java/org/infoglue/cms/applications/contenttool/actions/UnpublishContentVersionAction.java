@@ -31,6 +31,7 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
+import org.infoglue.cms.applications.databeans.LinkBean;
 import org.infoglue.cms.controllers.kernel.impl.simple.AccessRightController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentControllerProxy;
@@ -71,6 +72,11 @@ public class UnpublishContentVersionAction extends InfoGlueAbstractAction
 	private String versionComment;
 	private boolean overrideVersionModifyer = false;
 	private String attemptDirectPublishing = "false";
+	
+	private String returnAddress;
+   	private String userSessionKey;
+    private String originalAddress;
+
 
 	
 	public String doInput() throws Exception 
@@ -113,6 +119,27 @@ public class UnpublishContentVersionAction extends InfoGlueAbstractAction
 		}
 
 	    return "inputChooseContents";
+	}
+
+	public String doInputChooseContentsV3() throws Exception 
+	{
+		try
+		{
+			doInputChooseContents();
+			
+	        userSessionKey = "" + System.currentTimeMillis();
+	        
+	        addActionLink(userSessionKey, new LinkBean("currentPageUrl", getLocalizedString(getLocale(), "tool.common.publishing.publishingInlineOperationBackToCurrentPageLinkText"), getLocalizedString(getLocale(), "tool.common.publishing.publishingInlineOperationBackToCurrentPageTitleText"), getLocalizedString(getLocale(), "tool.common.publishing.publishingInlineOperationBackToCurrentPageTitleText"), this.originalAddress, false, ""));
+	        setActionExtraData(userSessionKey, "disableCloseLink", "true");
+        
+		}
+		catch (Exception e) 
+		{
+			logger.error("Error in doInputChooseContentsV3:" + e.getMessage(), e);
+			return ERROR;
+		}
+		
+	    return "inputChooseContentsV3";
 	}
 
 	/**
@@ -219,6 +246,45 @@ public class UnpublishContentVersionAction extends InfoGlueAbstractAction
        	return "success";
     }
 
+	/**
+	 * This method will try to unpublish all liver versions of this content. 
+	 */
+	   
+    public String doUnpublishAllV3() throws Exception
+    {   
+    	try
+    	{
+	    	doUnpublishAll();
+	    	
+			if(attemptDirectPublishing.equalsIgnoreCase("true"))
+			{
+	            setActionMessage(userSessionKey, getLocalizedString(getLocale(), "tool.common.unpublishing.unpublishingInlineOperationDoneHeader"));
+			}
+			else
+			{
+				setActionMessage(userSessionKey, getLocalizedString(getLocale(), "tool.common.unpublishing.submitToUnPublishingInlineOperationDoneHeader"));
+			}
+			
+			if(this.returnAddress != null && !this.returnAddress.equals(""))
+		    {
+		        String arguments 	= "userSessionKey=" + userSessionKey + "&attemptDirectPublishing=" + attemptDirectPublishing + "&isAutomaticRedirect=false";
+		        String messageUrl 	= returnAddress + (returnAddress.indexOf("?") > -1 ? "&" : "?") + arguments;
+		        
+		        this.getResponse().sendRedirect(messageUrl);
+		        return NONE;
+		    }
+		    else
+		    {
+		    	return SUCCESS;
+		    }
+    	}
+    	catch (Exception e) 
+    	{
+    		logger.error("Error unpublishing:" + e.getMessage(), e);
+    		return ERROR;
+		}
+    }
+
 	public List getContentVersions()
 	{
 		return this.contentVersionVOList;		
@@ -313,4 +379,35 @@ public class UnpublishContentVersionAction extends InfoGlueAbstractAction
     {
         this.overrideVersionModifyer = overrideVersionModifyer;
     }
+    
+	public String getReturnAddress() 
+	{
+		return returnAddress;
+	}
+
+	public void setReturnAddress(String returnAddress) 
+	{
+		this.returnAddress = returnAddress;
+	}
+
+	public String getUserSessionKey()
+	{
+		return userSessionKey;
+	}
+
+	public void setUserSessionKey(String userSessionKey)
+	{
+		this.userSessionKey = userSessionKey;
+	}
+
+	public String getOriginalAddress()
+	{
+		return originalAddress;
+	}
+
+	public void setOriginalAddress(String originalAddress)
+	{
+		this.originalAddress = originalAddress;
+	}
+
 }

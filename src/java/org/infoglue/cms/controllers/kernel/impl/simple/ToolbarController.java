@@ -242,6 +242,9 @@ public class ToolbarController
 			if(toolbarKey.equalsIgnoreCase("tool.structuretool.publishSiteNode.header"))
 				return getPublishPageFooterButtons();
 
+			if(toolbarKey.equalsIgnoreCase("tool.common.unpublishing.unpublishContentsHeader"))
+				return getUnPublishContentsFooterButtons();
+
 			if(toolbarKey.equalsIgnoreCase("tool.managementtool.mysettings.header"))
 				return getMySettingsFooterButtons();
 			
@@ -689,6 +692,50 @@ public class ToolbarController
 			buttons.add(new ToolbarButton("",
 					  getLocalizedString(locale, "tool.common.publishing.submitToPublishButtonLabel"), 
 					  getLocalizedString(locale, "tool.common.publishing.submitToPublishButtonLabel"),
+					  "submitToPublish('false');",
+					  "images/v3/publishPageIcon.gif",
+					  "left",
+					  "submitToPublish",
+					  true));
+		}
+		
+		buttons.add(new ToolbarButton("",
+				  getLocalizedString(locale, "tool.common.cancelButton.label"), 
+				  getLocalizedString(locale, "tool.common.cancelButton.label"),
+				  "if(parent && parent.closeDialog) parent.closeDialog(); else window.close();",
+				  "images/v3/cancelIcon.gif",
+				  "left",
+				  "cancel",
+				  true));
+		
+		return buttons;
+	}
+
+	private List<ToolbarButton> getUnPublishContentsFooterButtons() throws Exception
+	{
+		List<ToolbarButton> buttons = new ArrayList<ToolbarButton>();
+
+		ContentVO contentVO = null;
+		if(primaryKeyAsInteger != null)
+			contentVO = ContentController.getContentController().getContentVOWithId(primaryKeyAsInteger);
+			
+		if(contentVO != null && hasAccessTo(principal, "PublishingTool.Read", true) && hasAccessTo(principal, "Repository.Read", "" + contentVO.getRepositoryId()))
+		{
+			buttons.add(new ToolbarButton("",
+					  getLocalizedString(locale, "tool.common.unpublishing.unpublishButtonLabel"), 
+					  getLocalizedString(locale, "tool.common.unpublishing.unpublishButtonLabel"),
+					  "submitToPublish('true');",
+					  "images/v3/publishPageIcon.gif",
+					  "left",
+					  "publish",
+					  true));
+		}
+		
+		if(contentVO != null && hasAccessTo(principal, "Common.SubmitToPublishButton", true))
+		{
+			buttons.add(new ToolbarButton("",
+					  getLocalizedString(locale, "tool.common.unpublishing.submitToUnpublishButtonLabel"), 
+					  getLocalizedString(locale, "tool.common.unpublishing.submitToUnpublishButtonLabel"),
 					  "submitToPublish('false');",
 					  "images/v3/publishPageIcon.gif",
 					  "left",

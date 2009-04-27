@@ -1,4 +1,4 @@
-<!-- $Id: actions.xml,v 1.82 2009/04/19 10:38:04 mattias Exp $ -->
+<!-- $Id: actions.xml,v 1.83 2009/04/27 12:34:21 mattias Exp $ -->
 <actions>
 
 	<!-- MySettings -->
@@ -942,6 +942,7 @@
 	<action name="org.infoglue.cms.applications.contenttool.actions.UnpublishContentVersionAction" alias="UnpublishContentVersion">
 		<view name="input">/cms/contenttool/viewListContentVersionToUnpublish.vm</view>
 		<view name="inputChooseContents">/cms/contenttool/viewListContentToUnpublish.vm</view>
+		<view name="inputChooseContentsV3">/cms/contenttool/v3/viewListContentToUnpublish.vm</view>
 		<view name="success">ViewContent.action?stay=true</view>
 		<view name="error">/cms/contenttool/error.vm</view>
 		<view name="accessDenied">/cms/contenttool/viewConstraintException.vm</view>
