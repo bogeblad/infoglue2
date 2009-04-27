@@ -1509,6 +1509,12 @@ function submitToPublish(siteNodeId, contentId, languageId, repositoryId, return
 	openInlineDiv(url, 700, 750, true);
 }
 
+function unpublishContent(contentId, returnAddress)
+{
+	var url = componentEditorUrl + "UnpublishContentVersion!inputChooseContentsV3.action?contentId=" + contentId + "&title=tool.contenttool.unpublishAllVersion.header&returnAddress=" + returnAddress + "&originalAddress=" + currentUrl;
+	openInlineDiv(url, 700, 750, true);
+}
+
 function executeTask(url, openInPopup) 
 {
 	if(openInPopup)
