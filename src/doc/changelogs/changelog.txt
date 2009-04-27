@@ -84,7 +84,15 @@ Abbreviated Changelog from 2.9.7.1 Final
 	- PageNotifications - Let's you subscribe (mail) to events on the current page.
 - Improved cms UpdateCache.action so it clears caches better. Mostly for a dual admin-tool setup.
 - Added a repository copy feature and enhanced the import repository feature so you can substitute words in the copy.
-
+- Added new common:portlet-tag so you can easily write such components that calls and interacts with portlets.
+- Added selectiveCacheUpdateNonApplicable to page:deliverContext tag so you can state when a page should not be considered when doing selective cache updates but rather allways be updated on any change.
+- Added cleaup logic in component property editor. " and ' are not allowed in most fields now.
+- Fixed clear of principal after most remote-ws-calls so that tags don't cache wrong user.
+- Made it possible to state that some component properties are not possible to have in language variations. Great for non-gui-properties.
+- Added possibility to set access to many component properties at the same time.
+- Fixed more handling of when allowLanguageVariations are set to false.
+- Fixed an inline unpublish content feature in version 3 design
+- Added new tag hasContentVersionInState
 
 -------------------------------------------------------------------------------------
 - InfoGlue 2.9.6.3 Final
