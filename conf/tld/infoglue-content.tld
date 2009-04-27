@@ -1478,5 +1478,32 @@
             <rtexprvalue>false</rtexprvalue>
         </attribute>
 	</tag>
+
+	<tag>
+		<name>hasContentVersionInState</name>
+		<tagclass>org.infoglue.deliver.taglib.content.HasContentVersionInStateTag</tagclass>
+		<bodycontent>empty</bodycontent>
+        <info>None</info>
+        <attribute>
+    	    <name>id</name>
+        	<required>true</required>
+	        <rtexprvalue>false</rtexprvalue>
+    	</attribute>
+    	<attribute>
+            <name>contentId</name>
+            <required>true</required>
+            <rtexprvalue>false</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>languageId</name>
+            <required>false</required>
+            <rtexprvalue>false</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>stateId</name>
+            <required>true</required>
+            <rtexprvalue>false</rtexprvalue>
+        </attribute>
+	</tag>
 	
 </taglib>

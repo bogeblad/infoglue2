@@ -661,6 +661,26 @@ public class BasicTemplateController implements TemplateController
 		return content;    	
     }
 
+    /**
+     * Getter content with a certain path in a repository
+     */
+    public Boolean getHasContentVersionInState(Integer contentId, Integer languageId, Integer stateId)
+    {
+    	Boolean hasContentVersionInState = null;
+
+		try
+		{
+			ContentVersionVO cvo = ContentDeliveryController.getContentDeliveryController().getContentVersionVOInState(contentId, languageId, stateId, getDatabase(), deliveryContext, infoGluePrincipal);
+			hasContentVersionInState = (cvo == null ? false : true);
+		}
+		catch(Exception e)
+		{
+			logger.warn("An error occurred trying to execute getHasContentVersionInState with " + contentId + ":" + languageId + ":" + stateId + ":" + e.getMessage());
+		}
+
+		return hasContentVersionInState;    	
+    }
+
 	/**
 	 * Getter for the most recent contentVersion based on a contentVersionId
 	 */

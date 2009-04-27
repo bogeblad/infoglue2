@@ -216,6 +216,8 @@ public interface TemplateController
      */
     public abstract ContentVO getContentWithPath(Integer repositoryId, String path);
     
+	public abstract Boolean getHasContentVersionInState(Integer contentId, Integer languageId, Integer stateId);
+
     public abstract InfoGluePrincipal getPrincipal();
 
     /**

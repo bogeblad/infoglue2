@@ -448,6 +448,29 @@ public class ContentDeliveryController extends BaseDeliveryController
 	 * also has the correct state for this delivery-instance.
 	 */
 	
+	public ContentVersionVO getContentVersionVOInState(Integer contentId, Integer languageId, Integer stateId, Database db, DeliveryContext deliveryContext, InfoGluePrincipal infoGluePrincipal) throws SystemException, Exception
+	{
+		if(contentId == null || contentId.intValue() < 1)
+			return null;
+		
+		ContentVersionVO contentVersion = null;
+		
+		MediumContentImpl content = (MediumContentImpl)getObjectWithId(MediumContentImpl.class, contentId, db);
+		boolean isValidContent = isValidContent(infoGluePrincipal, content, languageId, false, false, db, deliveryContext);
+		if(isValidContent)
+		{
+			contentVersion = getContentVersionVO(contentId, languageId, stateId, deliveryContext, db);
+			System.out.println("contentVersion: " + contentVersion);			
+		}
+		
+		return contentVersion;
+	}
+
+	/**
+	 * This method returns that contentVersion which matches the parameters sent in and which 
+	 * also has the correct state for this delivery-instance.
+	 */
+	
 	public List getContentVersionVOList(Database db, Integer siteNodeId, Integer contentId, Integer languageId, DeliveryContext deliveryContext, InfoGluePrincipal infoGluePrincipal) throws SystemException, Exception
 	{
 		if(contentId == null || contentId.intValue() < 1)
