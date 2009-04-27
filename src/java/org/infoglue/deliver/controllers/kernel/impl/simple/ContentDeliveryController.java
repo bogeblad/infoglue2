@@ -460,7 +460,6 @@ public class ContentDeliveryController extends BaseDeliveryController
 		if(isValidContent)
 		{
 			contentVersion = getContentVersionVO(contentId, languageId, stateId, deliveryContext, db);
-			System.out.println("contentVersion: " + contentVersion);			
 		}
 		
 		return contentVersion;
