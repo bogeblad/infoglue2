@@ -69,9 +69,16 @@ public class ComponentPropertyDefinitionController extends BaseController
 			contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentId, masterLanguageVO.getId(), db);
 		}
 		
-		String propertyXML = ContentVersionController.getContentVersionController().getAttributeValue(contentVersionVO, "ComponentProperties", false);
-		
-		return parseComponentPropertyDefinitions(propertyXML);
+		if(contentVersionVO != null)
+		{
+			String propertyXML = ContentVersionController.getContentVersionController().getAttributeValue(contentVersionVO, "ComponentProperties", false);
+			
+			return parseComponentPropertyDefinitions(propertyXML);
+		}
+		else
+		{
+			return new ArrayList();
+		}
 	}
 	
 	public List parseComponentPropertyDefinitions(String xml)
