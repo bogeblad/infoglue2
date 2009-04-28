@@ -188,7 +188,8 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 			context.put("componentEditorUrl", componentEditorUrl);
 			boolean oldUseFullUrl = this.getTemplateController().getDeliveryContext().getUseFullUrl();
 			this.getTemplateController().getDeliveryContext().setUseFullUrl(true);
-			context.put("currentUrl", URLEncoder.encode(this.getTemplateController().getCurrentPageUrl(), "UTF-8"));
+			//context.put("currentUrl", URLEncoder.encode(this.getTemplateController().getCurrentPageUrl(), "UTF-8"));
+			context.put("currentUrl", URLEncoder.encode(this.getTemplateController().getOriginalFullURL(), "UTF-8"));
 			context.put("contextName", this.getRequest().getContextPath());
 			this.getTemplateController().getDeliveryContext().setUseFullUrl(oldUseFullUrl);
 			StringWriter cacheString = new StringWriter();
@@ -200,24 +201,6 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		//TODO - TEST
 		decoratePageTemplate += propertiesDivs + tasksDivs;
 		
-		/*
-		Map context = getDefaultContext();
-
-		String componentEditorUrl = CmsPropertyHandler.getComponentEditorUrl();
-		context.put("componentEditorUrl", componentEditorUrl);
-		boolean oldUseFullUrl = this.getTemplateController().getDeliveryContext().getUseFullUrl();
-		this.getTemplateController().getDeliveryContext().setUseFullUrl(true);
-		context.put("currentUrl", URLEncoder.encode(this.getTemplateController().getCurrentPageUrl(), "UTF-8"));
-		context.put("contextName", this.getRequest().getContextPath());
-		
-		this.getTemplateController().getDeliveryContext().setUseFullUrl(oldUseFullUrl);
-		StringWriter cacheString = new StringWriter();
-		PrintWriter cachedStream = new PrintWriter(cacheString);
-		
-		new VelocityTemplateProcessor().renderTemplate(context, cachedStream, decoratePageTemplate, false, baseComponent);
-
-		String pageString = cacheString.toString();
-		*/
 		String pageString = decoratePageTemplate;
 		//pageString = decorateHeadAndPageWithVarsFromComponents(pageString);
 
@@ -344,7 +327,8 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 				extraHeader = extraHeader.replaceAll("\\$\\{limitedUserWarning\\}", "alert('User was " + principal.getName() + "');");
 			else
 				extraHeader = extraHeader.replaceAll("\\$\\{limitedUserWarning\\}", "");
-			extraHeader = extraHeader.replaceAll("\\$\\{currentUrl\\}", URLEncoder.encode(this.getTemplateController().getCurrentPageUrl(), "UTF-8"));
+			//extraHeader = extraHeader.replaceAll("\\$\\{currentUrl\\}", URLEncoder.encode(this.getTemplateController().getCurrentPageUrl(), "UTF-8"));
+			extraHeader = extraHeader.replaceAll("\\$\\{currentUrl\\}", URLEncoder.encode(this.getTemplateController().getOriginalFullURL(), "UTF-8"));
 			extraHeader = extraHeader.replaceAll("\\$\\{activatedComponentId\\}", "" + this.getRequest().getParameter("activatedComponentId"));
 			extraHeader = extraHeader.replaceAll("\\$\\{parameters\\}", parameters);
 			extraHeader = extraHeader.replaceAll("\\$\\{siteNodeId\\}", "" + templateController.getSiteNodeId());
