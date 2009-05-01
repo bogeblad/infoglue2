@@ -85,7 +85,7 @@ public class SimpleStringManager implements StringManager
         catch(MissingResourceException e) 
         {
         	logger.warn("Error trying to find a string for key " + key, e);
-            throw new ConfigurationError("Key not found.", e);
+            throw new ConfigurationError("Key not found: " + key, e);
         } 
         catch(Throwable t) 
         {
