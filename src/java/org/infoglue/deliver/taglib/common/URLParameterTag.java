@@ -22,9 +22,14 @@
 */
 package org.infoglue.deliver.taglib.common;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspTagException;
 
+import org.apache.log4j.Logger;
+import org.infoglue.deliver.invokers.DecoratedComponentBasedHTMLPageInvoker;
 import org.infoglue.deliver.taglib.AbstractTag;
 
 /**
@@ -35,6 +40,8 @@ import org.infoglue.deliver.taglib.AbstractTag;
  */
 public class URLParameterTag extends AbstractTag 
 {
+    private final static Logger logger = Logger.getLogger(URLParameterTag.class.getName());
+
 	/**
 	 * The universal version identifier.
 	 */
@@ -55,6 +62,8 @@ public class URLParameterTag extends AbstractTag
 	 */
 	private String scope = "requestParameter";
 
+	private String encodeWithEncoding = null;
+	
 	/**
 	 * Default constructor. 
 	 */
@@ -75,6 +84,12 @@ public class URLParameterTag extends AbstractTag
 		addParameter();
 		return EVAL_PAGE;
     }
+	
+	public void release()
+	{
+		this.scope = "requestParameter";
+		this.encodeWithEncoding = null;
+	}
 	
 	/**
 	 * Adds the parameter to the ancestor tag.
@@ -100,18 +115,59 @@ public class URLParameterTag extends AbstractTag
 		}
 		
 		if(urlParent != null)
-			((URLTag) urlParent).addParameter(name, value);
+		{
+			try
+			{
+				if(encodeWithEncoding != null && !encodeWithEncoding.equals(""))
+					((URLTag) urlParent).addParameter(name, URLEncoder.encode(value, encodeWithEncoding));
+				else
+					((URLTag) urlParent).addParameter(name, value);
+			}
+			catch (UnsupportedEncodingException e) 
+			{
+				logger.warn("Unsupported encoding: [" + encodeWithEncoding + "]: " + e.getMessage());
+				((URLTag) urlParent).addParameter(name, value);
+			}
+		}
 		if(importParent != null)
 		{
 			if(this.scope.equalsIgnoreCase("requestParameter"))
-				((ImportTag) importParent).addParameter(name, value);
+			{
+				try
+				{
+					if(encodeWithEncoding != null && !encodeWithEncoding.equals(""))
+						((ImportTag) importParent).addParameter(name, URLEncoder.encode(value, encodeWithEncoding));
+					else
+						((ImportTag) importParent).addParameter(name, value);
+				}
+				catch (UnsupportedEncodingException e) 
+				{
+					logger.warn("Unsupported encoding: [" + encodeWithEncoding + "]: " + e.getMessage());
+					((ImportTag) importParent).addParameter(name, value);
+				}
+			}
 			else
 				((ImportTag) importParent).addProperty(name, value);
 		}
 		if(transformParent != null)
+		{
 			((XSLTransformTag) transformParent).addParameter(name, value, scope);
+		}
 		if(forwardParent != null)
-			((ForwardTag) forwardParent).addParameter(name, value);
+		{
+			try
+			{
+				if(encodeWithEncoding != null && !encodeWithEncoding.equals(""))
+					((ForwardTag) forwardParent).addParameter(name, URLEncoder.encode(value, encodeWithEncoding));
+				else
+					((ForwardTag) forwardParent).addParameter(name, value);
+			}
+			catch (UnsupportedEncodingException e) 
+			{
+				logger.warn("Unsupported encoding: [" + encodeWithEncoding + "]: " + e.getMessage());
+				((ForwardTag) forwardParent).addParameter(name, value);
+			}
+		}
 	}
 	
 	/**
