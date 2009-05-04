@@ -115,9 +115,8 @@
 
         if(activatedComponentId > 0)
         {
-            var alternateComponentPropertiesDiv = $("#alternateComponentPropertiesDiv");
-			//alert("alternateComponentPropertiesDiv:" + alternateComponentPropertiesDiv);
-			if(alternateComponentPropertiesDiv)
+            var alternateComponentPropertiesDivSize = $("#alternateComponentPropertiesDiv").size();
+			if(alternateComponentPropertiesDivSize == 1)
 				showComponentInDiv('alternateComponentPropertiesDiv', '${parameters}', true);
 			else
 				showComponentInDiv('componentPropertiesDiv', '${parameters}', false);
