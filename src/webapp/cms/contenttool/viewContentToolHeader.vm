@@ -124,11 +124,15 @@
 	<td>
 		<form name="selectbox" method="post" action="">
 		<select size="1" name="repositoryId" class="sitedropbox" onchange="reloadMenu(this);" >
-		    #if ($repositories.size() > 1)
+		    #if($repositories.size() > 1)
 		    	<option value="">$ui.getString("tool.contenttool.chooseRepositoryLabel")</option>
-		    #end
-		    #foreach ($repositoryVO in $repositories)
-		    <option value="$repositoryVO.getRepositoryId()">$repositoryVO.getName()</option>
+			    #foreach ($repositoryVO in $repositories)
+				    <option value="$repositoryVO.getRepositoryId()" #if($repositoryVO.id == $repositoryId)selected="selected"#end>$repositoryVO.getName()</option>
+			    #end
+			#else
+			    #foreach ($repositoryVO in $repositories)
+				    <option value="$repositoryVO.getRepositoryId()" #if($repositoryVO.id == $repositoryId)selected="selected"#end>$repositoryVO.getName()</option>
+			    #end
 		    #end
 		</select>
 		</form>
