@@ -120,7 +120,9 @@ public class RepositoryVO implements BaseEntityVO
 	        else
 	        	part = dnsName.substring(startIndex);
 	        
-	        part = part.split("=")[1];
+	        String[] partArr = part.split("=");
+	        part = (partArr.length > 1)?partArr[1]:"";
+	        //part = part.split("=")[1];
 	        
 	        value = part;
 	    }
