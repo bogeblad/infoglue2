@@ -68,7 +68,7 @@ public class AssetsTag extends ComponentLogicTag
             }
             else
             {
-                throw new JspException("You must supply either contentId or propertyName");
+	            produceResult(getController().getAssets(getController().getComponentContentId()));    
             }
         }
         catch(Exception e)

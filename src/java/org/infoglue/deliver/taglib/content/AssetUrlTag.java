@@ -84,7 +84,10 @@ public class AssetUrlTag extends ComponentLogicTag
             }
             else
             {
-                throw new JspException("You must supply either contentId or propertyName");
+	            if(assetKey != null)
+	                produceResult(getController().getAssetUrl(getController().getComponentContentId(), assetKey));
+	            else
+	                produceResult(getController().getAssetUrl(getController().getComponentContentId()));    
             }
         }
         catch(Exception e)

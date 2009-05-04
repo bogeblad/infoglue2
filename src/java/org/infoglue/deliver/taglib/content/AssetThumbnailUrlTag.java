@@ -82,7 +82,10 @@ public class AssetThumbnailUrlTag extends ComponentLogicTag
             }
             else
             {
-                throw new JspException("You must supply either digitalAssetId, contentId or propertyName");
+	            if(assetKey != null)
+	                produceResult(getController().getAssetThumbnailUrl(getController().getComponentContentId(), assetKey, width, height));
+	            else
+	                produceResult(getController().getAssetThumbnailUrl(getController().getComponentContentId(), width, height));    
             }
 		} 
 		catch(Exception e)
