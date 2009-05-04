@@ -1233,7 +1233,7 @@ function completeEditInlineSave(selectedContentId, selectedAttributeName)
 	for (var i in savingAttributes["" + selectedContentId])
 		size++;
 	
-	alert("savingAttributes:" + savingAttributes["" + selectedContentId].length + " - " + size);
+	//alert("savingAttributes:" + savingAttributes["" + selectedContentId].length + " - " + size);
 	if(size == 0)
 	{
 		$("#saveButtons" + selectedContentId).remove();
@@ -1492,7 +1492,8 @@ function executeTask(url, openInPopup)
 	}
 	else
 	{
-		document.location.href = url;
+		$(document.body).append("<div id='dialogDiv' style='border: 1px solid black; position: absolute; top: 100px; left: 200px; width: 600px; height: 500px; background-color: white;'><iframe id='dialogFrame' name='dialogFrame' src='' width='100%' height='100%' border='0'></iframe></div>");
+		$("#dialogFrame").attr('src', url);
 	}
 }
 
@@ -1598,6 +1599,18 @@ function showComponentProperties(id, event)
 
 	showDiv(id);
 
+	var element = $("#" + id);
+	
+	var scrollTop = $(window).scrollTop();
+	var scrollLeft = $(window).scrollLeft();
+	
+	var newTop = $(window).height()/2-element.height()/2 + scrollTop;
+	var newLeft = $(window).width()/2-element.width()/2 + scrollLeft;
+
+	element.css('top', newTop + "px");
+	element.css('left', newLeft + "px");
+	
+	/*
 	propertiesDiv = document.getElementById(id);
 
 	clientX = getEventPositionX(event);
@@ -1617,6 +1630,7 @@ function showComponentProperties(id, event)
 	
 	menuDiv.style.left 	= newLeft + "px";
 	menuDiv.style.top 	= newTop + "px";	
+	*/
 }
 
 function clearComponentPropertiesInDiv(targetDivId) 
@@ -1640,13 +1654,6 @@ function showComponentPropertiesInDiv(targetDivId, parameterString, skipFloat, e
 
 	if(skipFloat && targetDiv)
 	{
-		//alert("AjaxComponentDeliveryService!getComponentPropertyDiv.action?" + parameterString);
-		/*
-		if(parameterString.indexOf("componentContentId=null") == -1)
-			openInlineDiv("AjaxComponentDeliveryService!getComponentPropertyDiv.action?" + parameterString + "&fullHtml=true", "340", "620", true);
-		*/
-
-		//$(targetDiv).load("AjaxComponentDeliveryService!getComponentPropertyDiv.action?" + parameterString + "&targetDivId=" + targetDivId + " #componentPropertiesForm",{}, function(event)
 		$(targetDiv).load("AjaxComponentDeliveryService!getComponentPropertyDiv.action?" + parameterString + "&targetDivId=" + targetDivId + "",{}, function(event)
 		{	
 			try
@@ -1760,20 +1767,15 @@ function showComponentTasksInDiv(targetDivId, parameterString, skipFloat, event)
 	//alert("eventYPosition:" + eventYPosition);
 		
 	$(targetDiv).load("AjaxComponentDeliveryService!getComponentTasksDiv.action?" + parameterString + "&targetDivId=" + targetDivId + "",{}, function(event){
-		menuDiv = document.getElementById("componentMenu");
 
+		menuDiv = document.getElementById("componentMenu");
+		
 		clientX = eventXPosition;
 		clientY = eventYPosition;
 			
 		var rightedge = document.body.clientWidth - clientX;
 		var bottomedge = getWindowHeight() - clientY;
-		
-		if (rightedge < menuDiv.offsetWidth)
-			clientX = (clientX - menuDiv.offsetWidth);
-			
-		if (bottomedge < menuDiv.offsetHeight && (clientY - menuDiv.offsetHeight > 0))
-			clientY = (clientY - menuDiv.offsetHeight);
-			
+					
 		var editDivElement = document.getElementById("editDiv");
 		var editInlineDivElement = document.getElementById("editInlineDiv");
 		var subscribeContentDivElement = document.getElementById("subscribeContent");
@@ -1801,7 +1803,13 @@ function showComponentTasksInDiv(targetDivId, parameterString, skipFloat, event)
 				
 		if(window.parent.name == "PageEditor")
 			$(menuDiv).find("#componentEditorInNewWindowDiv").css("display", "none");
-					
+		
+		if (rightedge < menuDiv.offsetWidth)
+			clientX = (clientX - menuDiv.offsetWidth);
+		
+		if (bottomedge < menuDiv.offsetHeight && (clientY - menuDiv.offsetHeight > 0))
+			clientY = (clientY - menuDiv.offsetHeight);
+
 		menuDiv.style.left 	= clientX + "px";
 		menuDiv.style.top 	= clientY + "px";
 		
