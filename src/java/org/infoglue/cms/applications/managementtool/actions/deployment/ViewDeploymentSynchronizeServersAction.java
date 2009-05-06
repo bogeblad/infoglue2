@@ -723,7 +723,7 @@ public class ViewDeploymentSynchronizeServersAction extends InfoGlueAbstractActi
 
     	if(this.synchronizationMethod == null || this.synchronizationMethod.equalsIgnoreCase("pull"))
     	{
-    		Object[] contentVOArray = (Object[])invokeOperation(targetEndpointAddress, "getComponents", "content", null, new Class[]{ContentVO.class}, "infoglue");
+    		Object[] contentVOArray = (Object[])invokeOperation(targetEndpointAddress, "getComponents", "content", null, new Class[]{ContentVO.class, ContentVersionVO.class}, "infoglue");
 	    	List remoteContentVOList = Arrays.asList(contentVOArray);
 		    Collections.sort(remoteContentVOList, new ReflectionComparator("name"));
 	
@@ -768,6 +768,18 @@ public class ViewDeploymentSynchronizeServersAction extends InfoGlueAbstractActi
 		    				{
 		    					RepositoryVO repositoryVO = RepositoryController.getController().getRepositoryVOWithName(repositoryString);
 		    					logger.info("repositoryVO:" + repositoryVO);
+		    					if(repositoryVO == null)
+		    					{
+			    					logger.warn("No repository found by name " + repositoryString + ". Looking for a default repository where other templates are located.");
+		    						List templates = ContentController.getContentController().getContentVOWithContentTypeDefinition("HTMLTemplate");
+		    						if(templates != null && templates.size() > 0)
+		    						{
+		    							ContentVO contentVO = (ContentVO)templates.get(0);
+		    							repositoryVO = RepositoryController.getController().getRepositoryVOWithId(contentVO.getRepositoryId());
+				    					logger.info("repositoryVO:" + repositoryVO);
+		    						}
+		    					}
+		    					
 		    					if(repositoryVO != null)
 		    					{
 			    					LanguageVO languageVO = LanguageController.getController().getMasterLanguage(repositoryVO.getRepositoryId());
