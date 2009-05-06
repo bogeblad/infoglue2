@@ -47,6 +47,7 @@ import org.infoglue.cms.controllers.kernel.impl.simple.UserControllerProxy;
 import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.entities.structure.SiteNodeVO;
+import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.AuthenticationModule;
 import org.infoglue.cms.security.InfoGluePrincipal;
@@ -556,7 +557,12 @@ public abstract class InfoGlueAbstractAction extends WebworkAbstractAction
     {
         return this.getSession().getLocale();
     }
-    
+
+    public List<LanguageVO> getLanguages() throws SystemException, Bug
+    {
+    	return LanguageController.getController().getLanguageVOList();
+    }
+
     public Integer getToolId()
     {
         return this.getSession().getToolId();
