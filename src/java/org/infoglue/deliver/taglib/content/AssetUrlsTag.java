@@ -43,6 +43,7 @@ public class AssetUrlsTag extends ComponentLogicTag
 {
 	private static final long serialVersionUID = 3546080250652931383L;
 
+	private Integer contentId;
 	private String propertyName;
     private boolean useInheritance = true;
     private boolean useRepositoryInheritance = true;
@@ -57,14 +58,28 @@ public class AssetUrlsTag extends ComponentLogicTag
     {
         try
         {
-           	produceResult(getComponentLogic().getAssetUrls(propertyName, useInheritance, useRepositoryInheritance, useStructureInheritance));                    
+        	if(contentId != null)
+               	produceResult(getController().getAssetUrls(contentId));                    
+        	else
+        		produceResult(getComponentLogic().getAssetUrls(propertyName, useInheritance, useRepositoryInheritance, useStructureInheritance));                    
         }
         catch(Exception e)
         {
             throw new JspTagException("ComponentLogic.getAssetUrls Error: " + e.getMessage());
         }
         
+        this.contentId = null;
+        this.propertyName = null;
+        this.useInheritance = true;
+        this.useRepositoryInheritance = true;
+        this.useStructureInheritance = true;
+        
         return EVAL_PAGE;
+    }
+
+    public void setContentId(String contentId) throws JspException
+    {
+        this.contentId = evaluateInteger("assets", "contentId", contentId);
     }
 
     public void setPropertyName(String propertyName) throws JspException

@@ -76,6 +76,12 @@ public class AssetsTag extends ComponentLogicTag
             throw new JspTagException("ComponentLogic.getAssetUrl Error: " + e.getMessage());
         }
         
+        this.contentId = null;
+        this.propertyName = null;
+        this.useInheritance = true;
+        this.useRepositoryInheritance = true;
+        this.useStructureInheritance = true;
+
         return EVAL_PAGE;
     }
 
