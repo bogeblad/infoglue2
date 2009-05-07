@@ -266,7 +266,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 					logger.info("protectDeliver:" + protectDeliver);
 				}
 				
-				isUserRedirected = handleExtranetLogic(dbWrapper.getDatabase(), this.repositoryId, protectedSiteNodeVersionId, protectDeliver);
+				isUserRedirected = handleExtranetLogic(dbWrapper.getDatabase(), this.repositoryId, protectedSiteNodeVersionId, protectDeliver, false);
 			}
 			else
 			{
@@ -558,27 +558,16 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			Integer protectedSiteNodeVersionId = this.nodeDeliveryController.getProtectedSiteNodeVersionId(dbWrapper.getDatabase(), siteNodeId);
 			logger.info("protectedSiteNodeVersionId:" + protectedSiteNodeVersionId);
 
-			String protectWorking = CmsPropertyHandler.getProtectDeliverWorking();
-			String protectPreview = CmsPropertyHandler.getProtectDeliverPreview();
 			boolean protectDeliver = true;
 
 			if(logger.isInfoEnabled())
 				logger.info("RemoteAddress:" + getRequest().getRemoteAddr());
 			
-			if(getRequest().getRemoteAddr().equals("127.0.0.1") || getRequest().getRemoteAddr().equals("192.168.0.1"))
-				protectDeliver = false;
-			
-			/*
-			boolean protectDeliver = false;
-			
-			if(protectWorking.equals("true") && CmsPropertyHandler.getOperatingMode().equals("0"))
-				protectDeliver = true;
-			else if(protectPreview.equals("true") && CmsPropertyHandler.getOperatingMode().equals("2"))
-				protectDeliver = true;
-			*/
-			
+			//if(getRequest().getRemoteAddr().equals("127.0.0.1") || getRequest().getRemoteAddr().equals("192.168.0.1"))
+			//	protectDeliver = false;
+						
 			if(protectedSiteNodeVersionId != null || protectDeliver)
-				isUserRedirected = handleExtranetLogic(dbWrapper.getDatabase(), this.repositoryId, protectedSiteNodeVersionId, protectDeliver);
+				isUserRedirected = handleExtranetLogic(dbWrapper.getDatabase(), this.repositoryId, protectedSiteNodeVersionId, protectDeliver, true);
 			/*
 			else
 			{
@@ -598,7 +587,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			    principal = templateController.getPrincipal(cmsUserName);
 
 		    //As this is the decorated view we need to cache personalized results due to access rights etc.
-	    	if(pageKey.indexOf(principal.getName()) == -1)
+	    	if(principal != null && pageKey.indexOf(principal.getName()) == -1)
 	    		pageKey = pageKey + "_" + principal.getName();
 
 	    	if(logger.isInfoEnabled())
@@ -1027,7 +1016,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 	 * validates the users credentials against the extranet database,
 	 */
 	
-	public boolean handleExtranetLogic(Database db, Integer repositoryId, Integer protectedSiteNodeVersionId, boolean protectDeliver) throws SystemException, Exception
+	public boolean handleExtranetLogic(Database db, Integer repositoryId, Integer protectedSiteNodeVersionId, boolean protectDeliver, boolean forceCmsUser) throws SystemException, Exception
 	{
 		boolean isRedirected = false;
 		
@@ -1041,7 +1030,18 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			
 			Principal principal = (Principal)this.getHttpSession().getAttribute("infogluePrincipal");
 			logger.info("principal:" + principal);
-		
+
+			if(principal != null && forceCmsUser && CmsPropertyHandler.getAnonymousUser().equalsIgnoreCase(principal.getName()))
+			{
+				if(logger.isInfoEnabled())
+					logger.info("Principal in session was:" + principal + " - we clear it as only cms-users are allowed.");
+				
+				principal = null;
+				this.getHttpSession().removeAttribute("infogluePrincipal");
+			    this.getHttpSession().removeAttribute("infoglueRemoteUser");
+			    this.getHttpSession().removeAttribute("cmsUserName");
+			}
+							
 			//First we check if the user is logged in to the container context
 			if(principal == null)
 			{
@@ -1114,28 +1114,41 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			    {	
 			    	try
 					{
-						principal = getAnonymousPrincipal();
-						
-						if(principal != null)
-						{
-							this.getHttpSession().setAttribute("infogluePrincipal", principal);
-							this.getHttpSession().setAttribute("infoglueRemoteUser", principal.getName());
-							this.getHttpSession().setAttribute("cmsUserName", principal.getName());
+			    		if(!forceCmsUser)
+			    		{
+							principal = getAnonymousPrincipal();
 							
-							boolean isAuthorized = false;
-							if(!protectDeliver)
-								isAuthorized = AccessRightController.getController().getIsPrincipalAuthorized(db, (InfoGluePrincipal)principal, "SiteNodeVersion.Read", protectedSiteNodeVersionId.toString());
-							
-							if(!isAuthorized)
-							{	
-								this.getHttpSession().removeAttribute("infogluePrincipal");
-								logger.info("SiteNode is protected and anonymous user was not allowed - sending him to login page.");
-								String redirectUrl = getRedirectUrl(getRequest(), getResponse());								
-								//System.out.println("redirectUrl:" + redirectUrl);
-								getResponse().sendRedirect(redirectUrl);
-								isRedirected = true;
+							if(principal != null)
+							{
+								this.getHttpSession().setAttribute("infogluePrincipal", principal);
+								this.getHttpSession().setAttribute("infoglueRemoteUser", principal.getName());
+								this.getHttpSession().setAttribute("cmsUserName", principal.getName());
+								
+								boolean isAuthorized = false;
+								if(!protectDeliver)
+									isAuthorized = AccessRightController.getController().getIsPrincipalAuthorized(db, (InfoGluePrincipal)principal, "SiteNodeVersion.Read", protectedSiteNodeVersionId.toString());
+								
+								if(!isAuthorized)
+								{	
+									this.getHttpSession().removeAttribute("infogluePrincipal");
+									logger.info("SiteNode is protected and anonymous user was not allowed - sending him to login page.");
+									String redirectUrl = getRedirectUrl(getRequest(), getResponse());								
+									//System.out.println("redirectUrl:" + redirectUrl);
+									getResponse().sendRedirect(redirectUrl);
+									isRedirected = true;
+								}
 							}
-						}
+			    		}
+			    		else
+			    		{
+							this.getHttpSession().removeAttribute("infogluePrincipal");
+							this.getHttpSession().removeAttribute("infoglueRemoteUser");
+							this.getHttpSession().removeAttribute("cmsUserName");
+							logger.info("SiteNode is protected and anonymous user was not allowed - sending him to login page.");
+							String redirectUrl = getRedirectUrl(getRequest(), getResponse());								
+							getResponse().sendRedirect(redirectUrl);
+							isRedirected = true;
+			    		}
 					}
 					catch(Exception e) 
 					{
@@ -1287,7 +1300,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 						isRedirected = true;
 					}
 				}
-				else if(protectedSiteNodeVersionId == null && protectDeliver)
+				else if(protectedSiteNodeVersionId == null && protectDeliver && !forceCmsUser)
 				{
 					logger.info("Setting user to anonymous... as this is a protected deliver but not a extranet...");
 					Principal anonymousPrincipal = getAnonymousPrincipal();
