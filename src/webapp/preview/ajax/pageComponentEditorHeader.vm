@@ -39,7 +39,8 @@
 		}
 	} 
 	catch(e) {/*alert("e:" + e);*/}
-	
+
+	setTimeout("keepSession()", 60000);}
 </script>
 <script type="text/javascript" src="${contextName}/script/ajaxComponentEditor.js"></script>
 
@@ -123,6 +124,12 @@
 		}
 	});	
 
+	function keepSession() 
+	{ 
+		jQuery.get("UpdateCache!test.action"); 
+		setTimeout("keepSession()", 60000); 
+	}
+	
    	function openInlineDiv(url, height, width, modal) {
 		var windowHeight = getWindowHeight();
    		//alert("windowHeight:" + windowHeight);
