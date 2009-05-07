@@ -38,7 +38,6 @@ public class EditOnSightTag extends ComponentLogicTag
 {
 	private static final long serialVersionUID = 3257850991142318897L;
 	
-	//private String propertyName;
 	private Integer contentId;
 	private Integer languageId;
     private String attributeName;
@@ -57,21 +56,14 @@ public class EditOnSightTag extends ComponentLogicTag
         
         produceResult(this.getController().getEditOnSightTag(contentId, languageId, attributeName, html, showInPublishedMode));
         
+        this.contentId = null;
+        this.languageId = null;
+        this.attributeName = null;
+        this.html = null;
+        this.showInPublishedMode = false;
+        
         return EVAL_PAGE;
-    }
-
-    /*
-	public void setPropertyName(String propertyName)
-    {
-        this.propertyName = propertyName;
-    }
-    
-    public void setAttributeName(String attributeName)
-    {
-        this.attributeName = attributeName;
-    }
-    */
-    
+    }    
    
     public void setContentId(final String contentId) throws JspException
     {
