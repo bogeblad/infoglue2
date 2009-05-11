@@ -20,7 +20,7 @@
  *
  * ===============================================================================
  *
- * $Id: CategoryVO.java,v 1.4 2007/10/28 16:55:24 mattias Exp $
+ * $Id: CategoryVO.java,v 1.5 2009/05/11 19:08:20 mattias Exp $
  */
 package org.infoglue.cms.entities.management;
 
@@ -41,6 +41,7 @@ public class CategoryVO extends Persistent
 {
 	private Integer categoryId;
 	private String name;
+	private String displayName;
 	private String description;
 	private boolean active = true;
 	private Integer parentId;
@@ -85,6 +86,57 @@ public class CategoryVO extends Persistent
 	public void setName(String s)
 	{
 		name = s;
+	}
+
+	public String getDisplayName()
+	{
+		return (displayName == null ? name : displayName);
+	}
+
+	public String getLocalizedDisplayName(String languageCode, String fallbackLanguageCode)
+	{
+    	String localizedName = getDisplayName();
+    	
+    	if(localizedName == null)
+    		return "";
+    		
+    	int startIndex = localizedName.indexOf(languageCode + "=");
+    	if(startIndex > -1)
+    	{
+    		int stopIndex = getDisplayName().indexOf(",", startIndex + languageCode.length() + 1);
+    		if(stopIndex > -1)
+    			localizedName = getDisplayName().substring(startIndex + languageCode.length() + 1, stopIndex);
+    		else
+    			localizedName = getDisplayName().substring(startIndex + languageCode.length() + 1);    			
+    	}
+    	else
+    	{
+    		startIndex = getDisplayName().indexOf(fallbackLanguageCode + "=");
+        	if(startIndex > -1)
+        	{
+        		int stopIndex = getDisplayName().indexOf(",", startIndex + fallbackLanguageCode.length() + 1);
+        		if(stopIndex > -1)
+        			localizedName = getDisplayName().substring(startIndex + fallbackLanguageCode.length() + 1, stopIndex);
+        		else
+        			localizedName = getDisplayName().substring(startIndex + fallbackLanguageCode.length() + 1);    			
+        	}
+    	}
+    	
+    	if(localizedName.indexOf(",") > -1)
+    	{
+    		localizedName = localizedName.substring(0, localizedName.indexOf(","));
+    	}
+		if(localizedName.indexOf("=") > -1)
+		{
+			localizedName = localizedName.substring(localizedName.indexOf("=") + 1);
+		}
+    	
+    	return localizedName;
+	}
+
+	public void setDisplayName(String s)
+	{
+		displayName = s;
 	}
 
 	public String getDescription()

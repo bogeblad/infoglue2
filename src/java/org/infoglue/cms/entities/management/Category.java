@@ -20,7 +20,7 @@
  *
  * ===============================================================================
  *
- * $Id: Category.java,v 1.3 2006/03/06 17:19:50 mattias Exp $
+ * $Id: Category.java,v 1.4 2009/05/11 19:08:20 mattias Exp $
  */
 
 package org.infoglue.cms.entities.management;
@@ -40,6 +40,11 @@ public interface Category extends IBaseEntity
 	public String getName();
 	public void setName(String s);
 
+	public String getDisplayName();
+	public void setDisplayName(String s);
+
+	public String getLocalizedDisplayName(String languageCode, String fallbackLanguageCode);
+	
 	public String getDescription();
 	public void setDescription(String s);
 

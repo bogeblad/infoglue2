@@ -20,7 +20,7 @@
  *
  * ===============================================================================
  *
- * $Id: CategoryImpl.java,v 1.2 2005/01/04 15:29:26 mattias Exp $
+ * $Id: CategoryImpl.java,v 1.3 2009/05/11 19:08:20 mattias Exp $
  */
 
 package org.infoglue.cms.entities.management.impl.simple;
@@ -54,6 +54,11 @@ public class CategoryImpl implements Category
 
 	public String getName()				{ return valueObject.getName(); }
 	public void setName(String s)		{ valueObject.setName(s); }
+
+	public String getDisplayName()		{ return valueObject.getDisplayName(); }
+	public void setDisplayName(String s){ valueObject.setDisplayName(s); }
+
+	public String getLocalizedDisplayName(String languageCode, String fallbackLanguageCode) { return valueObject.getLocalizedDisplayName(languageCode, fallbackLanguageCode); }
 
 	public String getDescription()		{ return valueObject.getDescription(); }
 	public void setDescription(String s){ valueObject.setDescription(s); }
