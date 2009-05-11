@@ -5,7 +5,7 @@
 	#set($noURL = "CategoryManagement!edit.action?categoryId=$categoryId&title=Category%20Details")
 #end
 
-#lvHead(["Name", "Status"] "tool.managementtool.deleteCategories.header" $yesURL $noURL "tool.managementtool.deleteCategories.text")
+#lvHead(["Name", "DisplayName", "Status"] "tool.managementtool.deleteCategories.header" $yesURL $noURL "tool.managementtool.deleteCategories.text")
 #set($cnt = 0)
 #foreach($category in $categories)
 	#set($categoryId = $category.getId() )
@@ -15,7 +15,7 @@
 	#end
 
 	#set($rowUrl = "CategoryManagement!edit.action?categoryId=$categoryId&title=Category%20Details")
-	#set($row = ["<input type='hidden' name='rowtitle' value='$category.getName()'/> <a href=$rowUrl>$category.getName()</a>", "$categoryStatus"])
+	#set($row = ["<input type='hidden' name='rowtitle' value='$category.getName()'/> <a href=$rowUrl>$category.name</a>", $category.displayName, "$categoryStatus"])
 	#set($cnt = $cnt + 1)
 
 	#lvAddRow($row $cnt $categoryId)

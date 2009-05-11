@@ -69,7 +69,7 @@
 		<tr>
 			<td>
 			#foreach($relation in $relatedCategories)
-				$relation.category.name#if($velocityCount < $relatedCategories.size()), #end
+				$relation.category.getLocalizedDisplayName($this.languageCode, "none") ($relation.category.name)#if($velocityCount < $relatedCategories.size()), #end
 			#end
 			</td>
 		</tr>

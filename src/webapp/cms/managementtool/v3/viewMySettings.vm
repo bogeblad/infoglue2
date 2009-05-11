@@ -58,9 +58,9 @@
 
 	<div id="tabsContainer" class="flora">      
 		<ul>
-	        <li><a href="#generalSettingsTab"><span>General</span></a></li>
-	        <li><a href="#subscriptionsTab"><span>Subscriptions</span></a></li>
-	        <li><a href="#passwordTab"><span>Change password</span></a></li>
+	        <li><a href="#generalSettingsTab"><span>$ui.getString("tool.managementtool.mysettings.generalTabLabel")</span></a></li>
+	        <li><a href="#subscriptionsTab"><span>$ui.getString("tool.managementtool.mysettings.subscriptionsTabLabel")</span></a></li>
+	        <li><a href="#passwordTab"><span>$ui.getString("tool.managementtool.mysettings.changePasswordTabLabel")</span></a></li>
 	    </ul>
 
 		<div id="generalSettingsTab" class="recipientTab inlineTabDiv">

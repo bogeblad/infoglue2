@@ -1701,7 +1701,7 @@ $ui.getString("entity.${fieldNameKey}.label")<br/>
 #end
 
 #macro(addCategoryOption $categoryOption $selectedValue $prefix)
-	<option value="$categoryOption.categoryId" #if($selectedValue == $categoryOption.categoryId)selected="true"#end><b>$!prefix $categoryOption.name</b></option>
+	<option value="$categoryOption.categoryId" #if($selectedValue == $categoryOption.categoryId)selected="true"#end><b>$!prefix $categoryOption.getLocalizedDisplayName($this.languageCode, "none")</b></option>
 	#foreach($child in $categoryOption.children)
 		#addCategoryOption($child $selectedValue "$!{prefix}-")
 	#end
