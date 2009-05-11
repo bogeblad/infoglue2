@@ -75,9 +75,8 @@
 		addition += ' </div>';
 		
 		addition += ' <div id="break_' + i + '" style="clear:both"></div>';
-	
-		$("#break_" + (i-1)).after(addition);
 		
+		$("#break_" + (i-1)).after(addition);
 		$("#andParagraph_" + (i-1)).css("display", "block"); 
 		
 		i++;
@@ -113,7 +112,7 @@
 
 	var categories = '<option value="">Choose filter type</option>';
 	#foreach($categoryVO in $categoryVOList)
-		categories += '<option value="$categoryVO.id">$categoryVO.name</option>';
+		categories += '<option value="$categoryVO.id">$categoryVO.getLocalizedDisplayName($this.languageCode, "none")</option>';
 	#end
 	
 	function updateConditionInput(filterIndex)
@@ -204,6 +203,8 @@
 				<div style="clear: both;"></div>
 				
 				<h4 style="border-bottom: 1px solid #bbb;">$ui.getString("tool.common.subscriptionsFilters.label")</h4>
+				
+				<div id="break_-1" style="clear:both"></div>
 				
 				<div id="filterRow_0" class="formRow" style="min-height: 50px; border: 0px solid red; border-bottom: 1px solid #bbb;">
 					<label for="filterType_0">$ui.getString("tool.common.subscriptionFilterType.label")</label>
