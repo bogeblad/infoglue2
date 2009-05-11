@@ -919,6 +919,9 @@
 		<field name="name" type="java.lang.String">
 			<sql name="name" type="varchar" dirty="check" />
 		</field>
+		<field name="displayName" type="java.lang.String">
+			<sql name="displayName" type="varchar" dirty="check" />
+		</field>
 		<field name="description" type="java.lang.String">
 			<sql name="description" type="varchar" dirty="check" />
 		</field>
