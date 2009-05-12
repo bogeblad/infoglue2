@@ -6298,8 +6298,10 @@ public class BasicTemplateController implements TemplateController
 			}
 			else
 			{
-			    context.put("inheritedTemplateLogic", this);
-				context.put("templateLogic", getTemplateController(this.siteNodeId, this.languageId, this.contentId, this.request, this.infoGluePrincipal, this.deliveryContext));
+				TemplateController tc = getTemplateController(this.siteNodeId, this.languageId, this.contentId, this.request, this.infoGluePrincipal, this.deliveryContext);
+				tc.getComponentLogic().setIncludedComponentContentId(contentId);
+				context.put("inheritedTemplateLogic", this);
+				context.put("templateLogic", tc);
 			    context.put("includedComponentContentId", contentId);
 			}
 			
