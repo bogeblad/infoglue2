@@ -1313,8 +1313,9 @@ function saveAttribute(selectedContentId, selectedLanguageId, selectedAttributeN
 		     if(enableWYSIWYG == "true")
 			 {	
 			     var oEditor = FCKeditorAPI.GetInstance("attribute" + selectedContentId + selectedAttributeName) ;
-				 $(oEditor.LinkedField.parentNode.parentNode).html(msg);
-		     }
+				 //$(oEditor.LinkedField.parentNode.parentNode).html(msg);
+				 $(oEditor.LinkedField.parentNode).html(msg);
+			 }
 		     else
 		     {
 		     	$("#inputattribute" + selectedContentId + selectedAttributeName).replaceWith(msg);
@@ -1391,7 +1392,8 @@ function cancelSaveAttribute(selectedContentId, selectedLanguageId, selectedAttr
 		   		if(enableWYSIWYG == "true")
 				{
 		     		var oEditor = FCKeditorAPI.GetInstance("attribute" + selectedContentId + selectedAttributeName) ;
-		     		$(oEditor.LinkedField.parentNode.parentNode).html(msg);
+		     		//$(oEditor.LinkedField.parentNode.parentNode).html(msg);
+		     		$(oEditor.LinkedField.parentNode).html(msg);
 		     	}
 		     	else
 		     	{
