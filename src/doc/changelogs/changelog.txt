@@ -96,6 +96,7 @@ Abbreviated Changelog from 2.9.7.1 Final
 - Made so one must be logged in as a real cmsUser when using decoratedMode.
 - Added localization of categories and a new tag management:localizedCategoryName which helps using it.
 - Fixed translations and bug in global subscriptions ui. Also category localizations
+- Upgraded to FCKEditor 2.6.4
 
 
 -------------------------------------------------------------------------------------
