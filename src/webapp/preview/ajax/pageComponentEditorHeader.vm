@@ -40,7 +40,7 @@
 	} 
 	catch(e) {/*alert("e:" + e);*/}
 
-	setTimeout("keepSession()", 60000);}
+	setTimeout("keepSession()", 60000);
 </script>
 <script type="text/javascript" src="${contextName}/script/ajaxComponentEditor.js"></script>
 
