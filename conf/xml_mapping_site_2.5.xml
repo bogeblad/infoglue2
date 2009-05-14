@@ -449,6 +449,9 @@
 		<field name="name" type="java.lang.String">
 			<bind-xml name="name" node="element"/>
 		</field>
+		<field name="displayName" type="java.lang.String">
+			<bind-xml name="displayName" node="element"/>
+		</field>
 		<field name="description" type="java.lang.String">
 		    <bind-xml name="description" node="element"/>
 		</field>
