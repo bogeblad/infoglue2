@@ -1411,6 +1411,17 @@ public class CmsPropertyHandler
 	{
 		List urls = new ArrayList();
 		
+		InetAddress localAddress = null;
+		try
+		{
+			localAddress = InetAddress.getLocalHost();
+			logger.info("localAddress2:" + localAddress.getHostAddress());
+		}
+		catch (Exception e) 
+		{
+			e.printStackTrace();
+		}
+		
 	    String internalDeliverUrlsString = CmsPropertyHandler.getServerNodeDataProperty(null, "internalDeliveryUrls", true, null);
 	    if(internalDeliverUrlsString != null && !internalDeliverUrlsString.equals(""))
 		{
@@ -1423,7 +1434,24 @@ public class CmsPropertyHandler
 				String deliverUrl = null;
 				while((deliverUrl = properties.getProperty("" + i)) != null)
 				{ 
-					urls.add(deliverUrl);
+					logger.info("deliverUrl:" + deliverUrl);
+					if(deliverUrl.startsWith("unless["))
+					{
+						String unlessIP = deliverUrl.substring(7, deliverUrl.indexOf("]"));
+						logger.info("unlessIP:" + unlessIP);
+						if(localAddress == null || !localAddress.getHostAddress().equals(unlessIP))
+						{
+							urls.add(deliverUrl.substring(deliverUrl.indexOf("=") + 1));
+							logger.info("Adding url:" + deliverUrl.substring(deliverUrl.indexOf("=") + 1));							
+						}
+						else
+							logger.info("Not adding url:" + deliverUrl + " as it was ruled not to..");
+					}
+					else
+					{
+						urls.add(deliverUrl);
+					}
+					
 					i++;
 				}	
 
@@ -1738,5 +1766,15 @@ public class CmsPropertyHandler
         }
         
         return useSQLServerDialect.booleanValue();
+	}
+
+	public static String getTrashcanFolderName()
+	{
+		return getServerNodeProperty("trashcanFolderName", true, "TRASHCAN");		
+	}
+
+	public static String getTrashcanator()
+	{
+		return getServerNodeProperty("trashcanator", true, "cmsUser");	
 	}
 }
