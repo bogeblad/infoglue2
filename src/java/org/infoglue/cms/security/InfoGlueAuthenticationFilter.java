@@ -167,8 +167,14 @@ public class InfoGlueAuthenticationFilter implements Filter
 			}
 	
 			String requestURI = URLDecoder.decode(getContextRelativeURI(httpServletRequest), "UTF-8");
-	
-			if(URI.indexOf(loginUrl) > -1 || URL.indexOf(loginUrl) > -1 || URI.indexOf(invalidLoginUrl) > -1 || URL.indexOf(invalidLoginUrl) > -1 || URI.indexOf(logoutUrl) > -1 || URI.indexOf("Login!logout.action") > -1 || URL.indexOf(logoutUrl) > -1 || URI.indexOf("UpdateCache") > -1 || URI.indexOf("protectedRedirect.jsp") > -1 || uriMatcher.matches(requestURI))
+			if(URI == null)
+				logger.error("URI was null - requestURI:" + requestURI);
+			if(URL == null)
+				logger.error("URL was null - requestURI:" + requestURI);
+			if(requestURI == null)
+				logger.error("requestURI was null");
+			
+			if(URI != null && URL != null && (URI.indexOf(loginUrl) > -1 || URL.indexOf(loginUrl) > -1 || URI.indexOf(invalidLoginUrl) > -1 || URL.indexOf(invalidLoginUrl) > -1 || URI.indexOf(logoutUrl) > -1 || URI.indexOf("Login!logout.action") > -1 || URL.indexOf(logoutUrl) > -1 || URI.indexOf("UpdateCache") > -1 || URI.indexOf("protectedRedirect.jsp") > -1 || uriMatcher.matches(requestURI)))
 			{
 				fc.doFilter(request, response); 
 				return;
