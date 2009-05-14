@@ -1209,7 +1209,7 @@ public class CacheController extends Thread
 		}
 		catch(Exception e)
 		{
-			e.printStackTrace();
+			logger.error("Error clearing cache:" + e.getMessage() + " for type:" + type, e);
 		}
 		finally
 		{
