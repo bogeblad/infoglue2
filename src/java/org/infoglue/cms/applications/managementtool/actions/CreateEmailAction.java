@@ -221,7 +221,7 @@ public class CreateEmailAction extends InfoGlueAbstractAction
 		    if(extraTextProperty != null && !extraTextProperty.equals(""))
 		    	message += getLocalizedString(getLocale(), extraTextProperty, originalUrl);
 
-			MailServiceFactory.getService().sendEmail(contentType, from, recipients, null, null, subject, message, "utf-8");
+			MailServiceFactory.getService().sendEmail(contentType, from, from, recipients, null, subject, message, "utf-8");
     	}
     	
         if(this.returnAddress != null && !this.returnAddress.equals(""))
