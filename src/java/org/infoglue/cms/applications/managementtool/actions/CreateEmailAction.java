@@ -123,7 +123,7 @@ public class CreateEmailAction extends InfoGlueAbstractAction
 	    		if(usersAddresses.indexOf(principal.getEmail()) == -1)
 	    		{
 		    		if(usersAddresses.length() > 0)
-		    			usersAddresses += ",";
+		    			usersAddresses += ";";
 		    		
 		    		usersAddresses += principal.getEmail();
 	    		}
@@ -144,7 +144,7 @@ public class CreateEmailAction extends InfoGlueAbstractAction
 		    		if(usersAddresses.indexOf(principal.getEmail()) == -1)
 		    		{
 			    		if(usersAddresses.length() > 0)
-			    			usersAddresses += ",";
+			    			usersAddresses += ";";
 			    		
 			    		usersAddresses += principal.getEmail();
 		    		}
@@ -166,7 +166,7 @@ public class CreateEmailAction extends InfoGlueAbstractAction
 		    		if(usersAddresses.indexOf(principal.getEmail()) == -1)
 		    		{
 			    		if(usersAddresses.length() > 0)
-			    			usersAddresses += ",";
+			    			usersAddresses += ";";
 			    		
 			    		usersAddresses += principal.getEmail();
 		    		}
@@ -279,7 +279,7 @@ public class CreateEmailAction extends InfoGlueAbstractAction
 	    		if(usersAddresses.indexOf(principal.getEmail()) == -1)
 	    		{
 		    		if(usersAddresses.length() > 0)
-		    			usersAddresses += ",";
+		    			usersAddresses += ";";
 		    		
 		    		usersAddresses += principal.getEmail();
 	    		}
@@ -300,7 +300,7 @@ public class CreateEmailAction extends InfoGlueAbstractAction
 		    		if(usersAddresses.indexOf(principal.getEmail()) == -1)
 		    		{
 			    		if(usersAddresses.length() > 0)
-			    			usersAddresses += ",";
+			    			usersAddresses += ";";
 			    		
 			    		usersAddresses += principal.getEmail();
 		    		}
@@ -322,7 +322,7 @@ public class CreateEmailAction extends InfoGlueAbstractAction
 		    		if(usersAddresses.indexOf(principal.getEmail()) == -1)
 		    		{
 			    		if(usersAddresses.length() > 0)
-			    			usersAddresses += ",";
+			    			usersAddresses += ";";
 			    		
 			    		usersAddresses += principal.getEmail();
 		    		}
