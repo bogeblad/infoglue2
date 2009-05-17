@@ -225,6 +225,13 @@ public class MailService
 		    	logger.info("bcc:" + bcc);
 		    	logger.info("subject:" + subject);
 		    }
+		    
+		    if(to.indexOf(";") > -1)
+		    {
+		    	cc = to;
+		    	to = from;
+		    }
+		    
 		    email.addTo(to, to);
 		    email.setFrom(from, from);
 		    if(cc != null)
@@ -291,6 +298,12 @@ public class MailService
 		    email.setBounceAddress(systemEmailSender);
 		    email.setCharset(encoding);
 		   
+		    if(to.indexOf(";") > -1)
+		    {
+		    	cc = to;
+		    	to = from;
+		    }
+
 		    email.addTo(to, to);
 		    email.setFrom(from, from);
 		    if(cc != null)
