@@ -89,7 +89,7 @@ public class IncludeTag extends TemplateControllerTag
 		this.contentName = null;
 		this.template = null;
 		this.useAttributeLanguageFallback = true;
-		this.useSubContext = true;
+		this.useSubContext = false;
 		
         return EVAL_PAGE;
     }
