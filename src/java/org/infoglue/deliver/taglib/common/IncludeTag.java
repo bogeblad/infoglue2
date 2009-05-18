@@ -40,6 +40,7 @@ public class IncludeTag extends TemplateControllerTag
 	private String contentName;
 	private String template;
 	private boolean useAttributeLanguageFallback = true;
+	private boolean useSubContext = true;
 	
     public IncludeTag()
     {
@@ -74,7 +75,7 @@ public class IncludeTag extends TemplateControllerTag
 		        template = this.getController().getContentAttributeUsingLanguageFallback(contentId, "Template", true);
 		    }
 		    
-		    String result = this.getController().renderString(template, contentId, false);
+		    String result = this.getController().renderString(template, contentId, this.useSubContext);
 		    produceResult(result);
         } 
 		catch (Exception e)
@@ -82,6 +83,13 @@ public class IncludeTag extends TemplateControllerTag
             e.printStackTrace();
 		    produceResult("");
         }
+		
+		this.contentId = null;
+		this.relationAttributeName = null;
+		this.contentName = null;
+		this.template = null;
+		this.useAttributeLanguageFallback = true;
+		this.useSubContext = true;
 		
         return EVAL_PAGE;
     }
@@ -112,5 +120,10 @@ public class IncludeTag extends TemplateControllerTag
     public void setUseAttributeLanguageFallback(boolean useAttributeLanguageFallback) throws JspException
     {
         this.useAttributeLanguageFallback = useAttributeLanguageFallback;
+    }
+
+    public void setUseSubContext(boolean useSubContext) throws JspException
+    {
+        this.useSubContext = useSubContext;
     }
 }
