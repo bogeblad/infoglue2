@@ -6299,6 +6299,8 @@ public class BasicTemplateController implements TemplateController
 			else
 			{
 				TemplateController tc = getTemplateController(this.siteNodeId, this.languageId, this.contentId, this.request, this.infoGluePrincipal, this.deliveryContext);
+				tc.setComponentLogic(this.getComponentLogic());
+				tc.getDeliveryContext().getUsageListeners().add(this.getComponentLogic().getComponentDeliveryContext());
 				tc.getComponentLogic().setIncludedComponentContentId(contentId);
 				context.put("inheritedTemplateLogic", this);
 				context.put("templateLogic", tc);
