@@ -177,21 +177,25 @@ public class InfoGlueAuthenticationFilter implements Filter
 			if(loginUrl == null)
 			{
 				System.out.println("loginUrl was null - fix this.");
+				logger.error("loginUrl was null - fix this.");
 				loginUrl = "Login.action";
 			}
 			if(invalidLoginUrl == null)
 			{
 				System.out.println("invalidLoginUrl was null - fix this.");
+				logger.error("invalidLoginUrl was null - fix this.");
 				invalidLoginUrl = "Login!invalidLogin.action";
 			}
 			if(logoutUrl == null)
 			{
 				System.out.println("logoutUrl was null - fix this.");
+				logger.error("logoutUrl was null - fix this.");
 				logoutUrl = "ExtranetLogin!logout.action";
 			}
 			if(uriMatcher == null)
 			{
 				System.out.println("uriMatcher was null - fix this.");
+				logger.error("uriMatcher was null - fix this.");
 		        String filterURIs = filterConfig.getInitParameter(FILTER_URIS_PARAMETER);
 		        uriMatcher = URIMatcher.compilePatterns(splitString(filterURIs, ","), false);
 			}
