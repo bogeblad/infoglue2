@@ -40,7 +40,7 @@ public class IncludeTag extends TemplateControllerTag
 	private String contentName;
 	private String template;
 	private boolean useAttributeLanguageFallback = true;
-	private boolean useSubContext = true;
+	private boolean useSubContext = false;
 	
     public IncludeTag()
     {
