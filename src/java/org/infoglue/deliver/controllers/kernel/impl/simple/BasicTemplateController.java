@@ -6288,6 +6288,8 @@ public class BasicTemplateController implements TemplateController
 	{
 		String result = "";
 		
+		Integer includedComponentContentId = null;
+		
 		try
 		{
 			Map context = new HashMap();
@@ -6301,6 +6303,7 @@ public class BasicTemplateController implements TemplateController
 				TemplateController tc = getTemplateController(this.siteNodeId, this.languageId, this.contentId, this.request, this.infoGluePrincipal, this.deliveryContext);
 				tc.setComponentLogic(this.getComponentLogic());
 				tc.getDeliveryContext().getUsageListeners().add(this.getComponentLogic().getComponentDeliveryContext());
+				includedComponentContentId = this.getComponentLogic().getIncludedComponentContentId();
 				tc.getComponentLogic().setIncludedComponentContentId(contentId);
 				context.put("inheritedTemplateLogic", this);
 				context.put("templateLogic", tc);
@@ -6320,7 +6323,10 @@ public class BasicTemplateController implements TemplateController
 			logger.error("An error occurred trying to do an include:" + e.getMessage(), e);
 			logger.error("Problem URL:" + getOriginalFullURL());
 		}
-			
+		finally
+		{
+			this.getComponentLogic().setIncludedComponentContentId(includedComponentContentId);
+		}
 		return result;
 	}	
 
