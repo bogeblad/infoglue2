@@ -168,11 +168,33 @@ public class InfoGlueAuthenticationFilter implements Filter
 	
 			String requestURI = URLDecoder.decode(getContextRelativeURI(httpServletRequest), "UTF-8");
 			if(URI == null)
-				logger.error("URI was null - requestURI:" + requestURI);
+				System.out.println("URI was null - requestURI:" + requestURI);
 			if(URL == null)
-				logger.error("URL was null - requestURI:" + requestURI);
+				System.out.println("URL was null - requestURI:" + requestURI);
 			if(requestURI == null)
-				logger.error("requestURI was null");
+				System.out.println("requestURI was null");
+			
+			if(loginUrl == null)
+			{
+				System.out.println("loginUrl was null - fix this.");
+				loginUrl = "Login.action";
+			}
+			if(invalidLoginUrl == null)
+			{
+				System.out.println("invalidLoginUrl was null - fix this.");
+				invalidLoginUrl = "Login!invalidLogin.action";
+			}
+			if(logoutUrl == null)
+			{
+				System.out.println("logoutUrl was null - fix this.");
+				logoutUrl = "ExtranetLogin!logout.action";
+			}
+			if(uriMatcher == null)
+			{
+				System.out.println("uriMatcher was null - fix this.");
+		        String filterURIs = filterConfig.getInitParameter(FILTER_URIS_PARAMETER);
+		        uriMatcher = URIMatcher.compilePatterns(splitString(filterURIs, ","), false);
+			}
 			
 			if(URI != null && URL != null && (URI.indexOf(loginUrl) > -1 || URL.indexOf(loginUrl) > -1 || URI.indexOf(invalidLoginUrl) > -1 || URL.indexOf(invalidLoginUrl) > -1 || URI.indexOf(logoutUrl) > -1 || URI.indexOf("Login!logout.action") > -1 || URL.indexOf(logoutUrl) > -1 || URI.indexOf("UpdateCache") > -1 || URI.indexOf("protectedRedirect.jsp") > -1 || uriMatcher.matches(requestURI)))
 			{
