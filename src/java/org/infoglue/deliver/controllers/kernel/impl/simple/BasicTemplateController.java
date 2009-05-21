@@ -4816,8 +4816,8 @@ public class BasicTemplateController implements TemplateController
 		if(cacheName == null || cacheName.equals(""))
 			cacheName = "matchingContentsCache";
 
-		if(cacheKey == null || cacheKey.equals(""))
-			cacheKey = "matchingContentsCache";
+		//if(cacheKey == null || cacheKey.equals(""))
+		//	cacheKey = "matchingContentsCache";
 
 		Integer localLanguageId = this.getLanguageId();
 		if(languageId != null)
