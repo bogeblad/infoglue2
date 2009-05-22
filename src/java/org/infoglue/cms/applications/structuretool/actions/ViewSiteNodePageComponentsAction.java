@@ -1705,7 +1705,7 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 		}
 		else
 		{
-			System.out.println("Setting......................... why");
+			//System.out.println("Setting......................... why");
 			element.setAttribute("path_" + locale.getLanguage(), path);
 		}
 		
