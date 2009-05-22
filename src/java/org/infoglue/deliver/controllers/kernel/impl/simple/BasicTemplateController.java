@@ -4858,7 +4858,6 @@ public class BasicTemplateController implements TemplateController
 				criterias.setLanguage(this.getLanguage(localLanguageId));
 				if(skipLanguageCheck != null)
 					criterias.setSkipLanguageCheck(skipLanguageCheck);
-				System.out.println("skipLanguageCheck1:" + skipLanguageCheck);
 				if(freeText != null && freeTextAttributeNames != null)
 					criterias.setFreetext(freeText, freeTextAttributeNames);
 				criterias.setContentTypeDefinitions(contentTypeDefinitionVOList);
