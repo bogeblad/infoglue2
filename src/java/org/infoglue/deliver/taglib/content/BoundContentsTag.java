@@ -62,6 +62,11 @@ public class BoundContentsTag extends ComponentLogicTag
 		return EVAL_PAGE;
     }
 
+	public void setSiteNodeId(String siteNodeId) throws JspException
+	{
+        this.siteNodeId = evaluateInteger("boundContents", "siteNodeId", siteNodeId);
+	}
+
 	public void setPropertyName(String propertyName) throws JspException
 	{
         this.propertyName = evaluateString("boundContents", "propertyName", propertyName);
