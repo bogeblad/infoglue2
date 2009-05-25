@@ -228,7 +228,7 @@ public class ComponentController extends BaseController
 		        for(int i=0; i<allowedComponentGroups.length; i++)
 		        {
 		        	String allowedComponentGroup = allowedComponentGroups[i];
-		        	if(groupName != null && groupName.equals(allowedComponentGroup))
+		        	if(groupName != null && groupName.indexOf(allowedComponentGroup) > -1)
 		        		isPartOfAllowedComponentGroupNames = true;
 		        }
 			}
@@ -335,7 +335,7 @@ public class ComponentController extends BaseController
 		        for(int i=0; i<allowedComponentGroups.length; i++)
 		        {
 		        	String allowedComponentGroup = allowedComponentGroups[i];
-		        	if(groupName != null && groupName.equals(allowedComponentGroup))
+		        	if(groupName != null && groupName.indexOf(allowedComponentGroup) > -1)
 		        		isPartOfAllowedComponentGroupNames = true;
 		        }
 			}
