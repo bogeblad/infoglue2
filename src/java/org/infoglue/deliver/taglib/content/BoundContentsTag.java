@@ -32,6 +32,7 @@ public class BoundContentsTag extends ComponentLogicTag
 	private static final long serialVersionUID = 4050206323348354355L;
 
 	private String propertyName;
+	private Integer siteNodeId;
 	private boolean useInheritance = true;
 	private boolean useRepositoryInheritance = true;
     private boolean useStructureInheritance = true;
@@ -43,8 +44,22 @@ public class BoundContentsTag extends ComponentLogicTag
 
 	public int doEndTag() throws JspException
     {
-		setResultAttribute(getComponentLogic().getBoundContents(propertyName, useInheritance, useRepositoryInheritance, useStructureInheritance));
-        return EVAL_PAGE;
+        if(siteNodeId == null)
+        {
+        	setResultAttribute(getComponentLogic().getBoundContents(propertyName, useInheritance, useRepositoryInheritance, useStructureInheritance));
+        }
+        else
+        {
+        	setResultAttribute(getComponentLogic().getBoundContents(siteNodeId, propertyName, useInheritance));        	
+        }
+        
+		propertyName = null;
+		siteNodeId = null;
+		useInheritance = true;
+		useRepositoryInheritance = true;
+	    useStructureInheritance = true;
+	    
+		return EVAL_PAGE;
     }
 
 	public void setPropertyName(String propertyName) throws JspException
