@@ -202,4 +202,16 @@ public class URLParameterTag extends AbstractTag
 	{
 		this.scope = evaluateString("parameter", "scope", scope);
 	}
+	
+	/**
+	 * Sets the encodeWithEncoding attribute.
+	 * 
+	 * @param encodeWithEncoding the encodeWithEncoding to use.
+	 * @throws JspException if an error occurs while evaluating encodeWithEncoding parameter.
+	 */
+	public void setEncodeWithEncoding(final String encodeWithEncoding) throws JspException
+	{
+		this.encodeWithEncoding = evaluateString("parameter", "encodeWithEncoding", encodeWithEncoding);
+	}
+
 }
