@@ -52,6 +52,16 @@ public class PageUrlTag extends ComponentLogicTag
     public int doEndTag() throws JspException
     {
         produceResult(getPageUrl());
+        
+        this.propertyName = null;
+        this.useInheritance = true;
+        this.useRepositoryInheritance = true;
+        this.useStructureInheritance = true;
+        this.languageId = null;
+        this.siteNodeId = null;
+        this.contentId = null;
+        this.extraParameters = null;
+        
         return EVAL_PAGE;
     }
 
