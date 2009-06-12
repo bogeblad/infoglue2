@@ -38,6 +38,8 @@ public class UpdateContentVersionTag extends InfoGlueWebServiceTag implements Co
 	private Integer languageId;
    	private Integer contentId;
 	private String versionValue;
+	private Boolean allowHTMLContent = false;
+	private Boolean allowExternalLinks = false;
 
     /**
      *  
@@ -77,6 +79,10 @@ public class UpdateContentVersionTag extends InfoGlueWebServiceTag implements Co
                 contentVersion.put("stateId", this.stateId);
             if(this.versionComment != null)
                 contentVersion.put("versionComment", this.versionComment);
+            if(this.allowHTMLContent != null)
+                contentVersion.put("allowHTMLContent", this.allowHTMLContent);
+            if(this.allowExternalLinks != null)
+                contentVersion.put("allowExternalLinks", this.allowExternalLinks);
             if(this.versionValue != null)
                 contentVersion.put("versionValue", this.versionValue);
                 
@@ -95,6 +101,8 @@ public class UpdateContentVersionTag extends InfoGlueWebServiceTag implements Co
         this.versionComment = null;
         this.versionValue = null;
         this.stateId = null;
+        this.allowHTMLContent = false;
+        this.allowExternalLinks = false;
         
         return EVAL_PAGE;
     }
@@ -187,6 +195,16 @@ public class UpdateContentVersionTag extends InfoGlueWebServiceTag implements Co
     {
         this.versionValue = evaluateString("updateContentVersion", "versionValue", versionValue);
     }
+
+	public void setAllowHTMLContent(final String allowHTMLContent) throws JspException
+	{
+		this.allowHTMLContent = (Boolean)evaluate("updateContentVersion", "allowHTMLContent", allowHTMLContent, Boolean.class);
+	}
+
+	public void setAllowExternalLinks(final String allowExternalLinks) throws JspException
+	{
+		this.allowExternalLinks = (Boolean)evaluate("updateContentVersion", "allowExternalLinks", allowExternalLinks, Boolean.class);
+	}
 
     public String getOperationName()
     {
