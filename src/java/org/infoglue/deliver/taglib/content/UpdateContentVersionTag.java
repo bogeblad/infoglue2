@@ -40,7 +40,8 @@ public class UpdateContentVersionTag extends InfoGlueWebServiceTag implements Co
 	private String versionValue;
 	private Boolean allowHTMLContent = false;
 	private Boolean allowExternalLinks = false;
-
+	private Boolean keepExistingAttributes = false;
+	
     /**
      *  
      */
@@ -83,6 +84,8 @@ public class UpdateContentVersionTag extends InfoGlueWebServiceTag implements Co
                 contentVersion.put("allowHTMLContent", this.allowHTMLContent);
             if(this.allowExternalLinks != null)
                 contentVersion.put("allowExternalLinks", this.allowExternalLinks);
+            if(this.keepExistingAttributes != null)
+                contentVersion.put("keepExistingAttributes", this.keepExistingAttributes);
             if(this.versionValue != null)
                 contentVersion.put("versionValue", this.versionValue);
                 
@@ -103,6 +106,7 @@ public class UpdateContentVersionTag extends InfoGlueWebServiceTag implements Co
         this.stateId = null;
         this.allowHTMLContent = false;
         this.allowExternalLinks = false;
+        this.keepExistingAttributes = false;
         
         return EVAL_PAGE;
     }
@@ -206,6 +210,11 @@ public class UpdateContentVersionTag extends InfoGlueWebServiceTag implements Co
 		this.allowExternalLinks = (Boolean)evaluate("updateContentVersion", "allowExternalLinks", allowExternalLinks, Boolean.class);
 	}
 
+	public void setKeepExistingAttributes(final String keepExistingAttributes) throws JspException
+	{
+		this.keepExistingAttributes = (Boolean)evaluate("updateContentVersion", "keepExistingAttributes", keepExistingAttributes, Boolean.class);
+	}
+	
     public String getOperationName()
     {
         return this.operationName;

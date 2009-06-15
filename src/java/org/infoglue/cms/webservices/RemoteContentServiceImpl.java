@@ -697,7 +697,8 @@ public class RemoteContentServiceImpl extends RemoteInfoGlueService
             Integer stateId			 = (Integer)contentVersion.get("stateId");
             String versionComment 	 = (String)contentVersion.get("versionComment");
             Boolean allowHTMLContent = (Boolean)contentVersion.get("allowHTMLContent");
-            Boolean allowExternalLinks = (Boolean)contentVersion.get("allowExternalLinks");
+            Boolean allowExternalLinks 		= (Boolean)contentVersion.get("allowExternalLinks");
+            Boolean keepExistingAttributes 	= (Boolean)contentVersion.get("keepExistingAttributes");
 
             if(allowHTMLContent == null)
             	allowHTMLContent = new Boolean(false);
@@ -709,6 +710,7 @@ public class RemoteContentServiceImpl extends RemoteInfoGlueService
             logger.info("contentId:" + contentId);
             logger.info("languageId:" + languageId);
             logger.info("stateId:" + stateId);
+            logger.info("keepExistingAttributes:" + keepExistingAttributes);
             logger.info("versionComment:" + versionComment);
             logger.info("allowHTMLContent:" + allowHTMLContent);
             logger.info("allowExternalLinks:" + allowExternalLinks);
@@ -728,13 +730,28 @@ public class RemoteContentServiceImpl extends RemoteInfoGlueService
             
             if(attributes != null && attributes.size() > 0)
             {
-	            DOMBuilder domBuilder = new DOMBuilder();
-	            Document document = domBuilder.createDocument();
-	            
-	            Element rootElement = domBuilder.addElement(document, "root");
-	            domBuilder.addAttribute(rootElement, "xmlns", "x-schema:Schema.xml");
-	            Element attributesRoot = domBuilder.addElement(rootElement, "attributes");
-	            
+            	DOMBuilder domBuilder = new DOMBuilder();
+
+            	Element attributesRoot = null;
+        		Document document = null;
+        		
+            	if(keepExistingAttributes)
+            	{
+            		String existingXML = contentVersionVO.getVersionValue();
+            		document = domBuilder.getDocument(existingXML);
+            		attributesRoot = (Element)document.getRootElement().element("attributes");
+            	}
+            	else
+            	{
+		            document = domBuilder.createDocument();
+		            Element rootElement = domBuilder.addElement(document, "root");
+		            domBuilder.addAttribute(rootElement, "xmlns", "x-schema:Schema.xml");
+		            attributesRoot = domBuilder.addElement(rootElement, "attributes");
+            	}
+
+            	if(logger.isDebugEnabled())
+            		logger.info("attributesRoot:" + attributesRoot);
+            	
 	            Iterator attributesIterator = attributes.keySet().iterator();
 	            while(attributesIterator.hasNext())
 	            {
@@ -742,9 +759,18 @@ public class RemoteContentServiceImpl extends RemoteInfoGlueService
 	                String attributeValue = (String)attributes.get(attributeName);
 	                
                     attributeValue = cleanAttributeValue(attributeValue, allowHTMLContent.booleanValue(), allowExternalLinks.booleanValue());
-
-	                Element attribute = domBuilder.addElement(attributesRoot, attributeName);
-	                domBuilder.addCDATAElement(attribute, attributeValue);
+                    
+                    if(keepExistingAttributes)
+	                {
+                    	Element attribute = attributesRoot.element(attributeName);
+                    	attribute.clearContent();
+                    	domBuilder.addCDATAElement(attribute, attributeValue);
+	                }
+	                else
+	                {
+                    	Element attribute = domBuilder.addElement(attributesRoot, attributeName);
+    	                domBuilder.addCDATAElement(attribute, attributeValue);
+	                }
 	            }	                
 
 	            contentVersionVO.setVersionValue(document.asXML());
