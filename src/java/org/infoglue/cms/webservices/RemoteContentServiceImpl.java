@@ -699,18 +699,22 @@ public class RemoteContentServiceImpl extends RemoteInfoGlueService
             Boolean allowHTMLContent = (Boolean)contentVersion.get("allowHTMLContent");
             Boolean allowExternalLinks 		= (Boolean)contentVersion.get("allowExternalLinks");
             Boolean keepExistingAttributes 	= (Boolean)contentVersion.get("keepExistingAttributes");
-
+            Boolean keepExistingCategories 	= (Boolean)contentVersion.get("keepExistingCategories");
             if(allowHTMLContent == null)
             	allowHTMLContent = new Boolean(false);
 
             if(allowExternalLinks == null)
             	allowExternalLinks = new Boolean(false);
 
+            if(keepExistingCategories == null)
+            	keepExistingCategories = new Boolean(true);
+            		
             logger.info("contentVersionId:" + contentVersionId);
             logger.info("contentId:" + contentId);
             logger.info("languageId:" + languageId);
             logger.info("stateId:" + stateId);
             logger.info("keepExistingAttributes:" + keepExistingAttributes);
+            logger.info("keepExistingCategories:" + keepExistingCategories);
             logger.info("versionComment:" + versionComment);
             logger.info("allowHTMLContent:" + allowHTMLContent);
             logger.info("allowExternalLinks:" + allowExternalLinks);
@@ -802,7 +806,12 @@ public class RemoteContentServiceImpl extends RemoteInfoGlueService
 	    	        DigitalAssetController.create(newAsset, is, contentVersionVO.getContentVersionId(), principal);
 	    	    }
             }
-            
+            			
+			if(!keepExistingCategories)
+			{
+				ContentCategoryController.getController().deleteByContentVersion(contentVersionVO.getId()); // .deleteByContentVersion(contentVersionVO.getId(), db);
+			}
+
             List contentCategories = (List)contentVersion.get("contentCategories");
 	        
 	        logger.info("contentCategories:" + contentCategories);
@@ -829,9 +838,10 @@ public class RemoteContentServiceImpl extends RemoteInfoGlueService
 	    			try
 	    			{
 	    				ContentVersion latestContentVersion = ContentVersionController.getContentVersionController().getContentVersionWithId(contentVersionVO.getId(), db);
+
 	    				logger.info("Adding categoryKey:" + categoryKey + " to " + contentVersionVO.getId() + ":" + categoryVO);
 		    	        //ContentCategoryController.getController().create(categoryVOList, newContentVersionVO, categoryKey);
-		    			final List categories = categoryVOListToCategoryList(categoryVOList, db);
+		    			final List categories = categoryVOListToCategoryList(categoryVOList, db);		    			
 		    			ContentCategoryController.getController().create(categories, latestContentVersion, categoryKey, db);
 		    			
 		    			commitTransaction(db);
