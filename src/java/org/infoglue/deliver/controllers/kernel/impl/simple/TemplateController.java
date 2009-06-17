@@ -933,6 +933,12 @@ public interface TemplateController
      */
     public abstract String getRepositoryBaseUrl() throws Exception;
 
+	/**
+	 * This method gets a property from the extra properties in the repository currently active
+	 */
+	
+	public abstract String getRepositoryExtraProperty(String propertyName);
+
     /**
      * This method returns the first repository with name.
      */
