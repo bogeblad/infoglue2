@@ -1140,7 +1140,7 @@ function editInline(selectedRepositoryId, selectedContentId, selectedLanguageId,
 				}
 				else
 				{
-					alert("Nope: " + type);
+					alert("The type: " + type + " in your content type is not supported yet in inline edit.");
 				}
 	
 		    	processedIds["" + this.id] = "true";
