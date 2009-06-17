@@ -20,7 +20,7 @@
  *
  * ===============================================================================
  *
- * $Id: ContentCategoryController.java,v 1.21 2008/07/03 11:49:05 mattias Exp $
+ * $Id: ContentCategoryController.java,v 1.22 2009/06/17 13:55:47 mattias Exp $
  */
 package org.infoglue.cms.controllers.kernel.impl.simple;
 
@@ -29,6 +29,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
 import org.exolab.castor.jdo.PersistenceException;
 import org.infoglue.cms.entities.content.ContentCategory;
@@ -54,8 +55,11 @@ import org.infoglue.cms.util.ConstraintExceptionBuffer;
  *
  * @author Frank Febbraro (frank@phase2technology.com)
  */
+
 public class ContentCategoryController extends BaseController
 {
+    private final static Logger logger = Logger.getLogger(ContentCategoryController.class.getName());
+
 	private static final ContentCategoryController instance = new ContentCategoryController();
 
 	private static final String findByContentVersion = new StringBuffer("SELECT c ")
@@ -279,12 +283,38 @@ public class ContentCategoryController extends BaseController
 		Category category = (Category)getObjectWithId(CategoryImpl.class, c.getCategory().getId(), db);
 		ContentVersion contentVersion = (ContentVersion)getObjectWithId(ContentVersionImpl.class, c.getContentVersionId(), db);
 
-		ContentCategory contentCategory = new ContentCategoryImpl();
-		contentCategory.setValueObject(c);
-		contentCategory.setCategory((CategoryImpl)category);
-		contentCategory.setContentVersion((ContentVersionImpl)contentVersion);
-		db.create(contentCategory);
-		contentVersion.getContentCategories().add(contentCategory);
+		ContentCategory contentCategory = null;
+		
+		List existingContentCategories = ContentCategoryController.getController().findByContentVersionAttribute(c.getAttributeName(), contentVersion.getContentVersionId(), db, true);
+		boolean exists = false;
+		Iterator existingContentCategoriesIterator = existingContentCategories.iterator();
+		while(existingContentCategoriesIterator.hasNext())
+		{
+			ContentCategory contentCategoryCandidate = (ContentCategory)existingContentCategoriesIterator.next();
+			if(contentCategoryCandidate.getCategoryId().equals(category.getId()))
+			{
+				exists = true;
+				contentCategory = contentCategoryCandidate;
+				logger.info("The category " + category.getName() + " was allready set on this version");
+				break;
+			}
+		}
+		
+		if(!exists)
+		{
+			logger.info("Creating the category " + category.getName() + " as it was not set on this version");
+	
+			contentCategory = new ContentCategoryImpl();
+			contentCategory.setValueObject(c);
+			contentCategory.setCategory((CategoryImpl)category);
+			contentCategory.setContentVersion((ContentVersionImpl)contentVersion);
+			db.create(contentCategory);
+			contentVersion.getContentCategories().add(contentCategory);
+		}
+		else
+		{
+			logger.info("Skipping the category " + category.getName() + " as it was allready set on this version");
+		}
 		
 		return contentCategory;
 	}
@@ -307,12 +337,35 @@ public class ContentCategoryController extends BaseController
 				Category category = (Category)getObjectWithId(CategoryImpl.class, categoryVO.getId(), db);
 				ContentVersion contentVersion = (ContentVersion)getObjectWithId(ContentVersionImpl.class, contentVersionVO.getId(), db);
 				
-			    ContentCategoryVO contentCategoryVO = new ContentCategoryVO();
-			    contentCategoryVO.setAttributeName(attributeName);
-			    contentCategoryVO.setContentVersionId(contentVersionVO.getId());
-			    ContentCategory contentCategory = createWithDatabase(contentCategoryVO, category, contentVersion, db);
-					    
-			    contentCategoryVOList.add(contentCategory.getValueObject());
+				List existingContentCategories = ContentCategoryController.getController().findByContentVersionAttribute(attributeName, contentVersion.getContentVersionId(), db, true);
+				boolean exists = false;
+				Iterator existingContentCategoriesIterator = existingContentCategories.iterator();
+				while(existingContentCategoriesIterator.hasNext())
+				{
+					ContentCategory contentCategory = (ContentCategory)existingContentCategoriesIterator.next();
+					if(contentCategory.getCategoryId().equals(category.getId()))
+					{
+						exists = true;
+						logger.info("The category " + category.getName() + " was allready set on this version");
+						break;
+					}
+				}
+				
+				if(!exists)
+				{
+					logger.info("Creating the category " + category.getName() + " as it was not set on this version");
+
+				    ContentCategoryVO contentCategoryVO = new ContentCategoryVO();
+				    contentCategoryVO.setAttributeName(attributeName);
+				    contentCategoryVO.setContentVersionId(contentVersionVO.getId());
+				    ContentCategory contentCategory = createWithDatabase(contentCategoryVO, category, contentVersion, db);
+						    
+				    contentCategoryVOList.add(contentCategory.getValueObject());
+				}
+				else
+				{
+					logger.info("Skipping the category " + category.getName() + " as it was allready set on this version");
+				}
 			}
 		    
 			commitTransaction(db);
@@ -333,19 +386,42 @@ public class ContentCategoryController extends BaseController
 	public List create(List categoryList, ContentVersion contentVersion, String attributeName, Database db) throws SystemException, Exception
 	{
 		List contentCategoryList = new ArrayList();
-		
+
 		Iterator categoryListIterator = categoryList.iterator();
 		while(categoryListIterator.hasNext())
 		{
 		    Category category = (Category)categoryListIterator.next();
+		    
+			List existingContentCategories = ContentCategoryController.getController().findByContentVersionAttribute(attributeName, contentVersion.getContentVersionId(), db, true);
+			boolean exists = false;
+			Iterator existingContentCategoriesIterator = existingContentCategories.iterator();
+			while(existingContentCategoriesIterator.hasNext())
+			{
+				ContentCategory contentCategory = (ContentCategory)existingContentCategoriesIterator.next();
+				if(contentCategory.getCategoryId().equals(category.getId()))
+				{
+					exists = true;
+					logger.info("The category " + category.getName() + " was allready set on this version");
+					break;
+				}
+			}
 			
-		    ContentCategoryVO contentCategoryVO = new ContentCategoryVO();
-		    contentCategoryVO.setAttributeName(attributeName);
-		    contentCategoryVO.setContentVersionId(contentVersion.getId());
-		    ContentCategory contentCategory = createWithDatabase(contentCategoryVO, category, contentVersion, db);
-			contentVersion.getContentCategories().add(contentCategory);
+			if(!exists)
+			{
+				logger.info("Creating the category " + category.getName() + " as it was not set on this version");
+
+				ContentCategoryVO contentCategoryVO = new ContentCategoryVO();
+			    contentCategoryVO.setAttributeName(attributeName);
+			    contentCategoryVO.setContentVersionId(contentVersion.getId());
+			    ContentCategory contentCategory = createWithDatabase(contentCategoryVO, category, contentVersion, db);
+				contentVersion.getContentCategories().add(contentCategory);
 				    
-		    contentCategoryList.add(contentCategory);
+				contentCategoryList.add(contentCategory);
+			}
+			else
+			{
+				logger.info("Skipping the category " + category.getName() + " as it was allready set on this version");
+			}
 		}
 		
 		return contentCategoryList;
