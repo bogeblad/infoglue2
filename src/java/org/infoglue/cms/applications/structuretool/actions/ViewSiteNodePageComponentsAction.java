@@ -1932,6 +1932,39 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 		return imageHref;
 	}
 
+	/**
+	 * This method fetches the blob from the database and saves it on the disk.
+	 * Then it returnes a url for it
+	 */
+	
+	public String getDigitalAssetThumbnailUrl(Integer contentId) throws Exception
+	{
+		String imageHref = null;
+		try
+		{
+			LanguageVO masterLanguage = LanguageController.getController().getMasterLanguage(ContentController.getContentController().getContentVOWithId(contentId).getRepositoryId());
+			ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentId, masterLanguage.getId());
+			if(contentVersionVO != null)
+			{
+				List digitalAssets = DigitalAssetController.getDigitalAssetVOList(contentVersionVO.getId());
+				Iterator i = digitalAssets.iterator();
+				while(i.hasNext())
+				{
+					DigitalAssetVO digitalAssetVO = (DigitalAssetVO)i.next();
+					imageHref = DigitalAssetController.getDigitalAssetThumbnailUrl(digitalAssetVO.getId()); 
+					break;
+				}
+			}
+		}
+		catch(Exception e)
+		{
+			logger.warn("We could not get the thumbnail url of the digitalAsset: " + e.getMessage(), e);
+			imageHref = e.getMessage();
+		}
+		
+		return imageHref;
+	}
+	
 	public Integer getContentId()
 	{
 		return contentId;
