@@ -474,6 +474,7 @@
 			#selectFieldCSS("ServerNode.property.defaultPublicationEventFilter" "defaultPublicationEventFilter" $this.getPropertyValue('defaultPublicationEventFilter') $publicationEventFilterOptions)
 			#yesNoDropDownWithInheritCSS("ServerNode.property.protectDeliverWorking" "protectDeliverWorking" "$this.getPropertyValue('protectDeliverWorking')")
 			#yesNoDropDownWithInheritCSS("ServerNode.property.protectDeliverPreview" "protectDeliverPreview" "$this.getPropertyValue('protectDeliverPreview')")
+			#yesNoDropDownWithInheritCSS("ServerNode.property.allowInternalCallsBasedOnIP" "allowInternalCallsBasedOnIP" "$this.getPropertyValue('allowInternalCallsBasedOnIP')")
 			#yesNoDropDownWithInheritCSS("ServerNode.property.forceIdentityCheck" "forceIdentityCheck" "$this.getPropertyValue('forceIdentityCheck')")
 			#yesNoDropDownWithInheritCSS("ServerNode.property.enforceRigidContentAccess" "enforceRigidContentAccess" "$this.getPropertyValue('enforceRigidContentAccess')")
 			#yesNoDropDownWithInheritCSS("ServerNode.property.allowCrossSiteSubmitToPublish" "allowCrossSiteSubmitToPublish" "$this.getPropertyValue('allowCrossSiteSubmitToPublish')")

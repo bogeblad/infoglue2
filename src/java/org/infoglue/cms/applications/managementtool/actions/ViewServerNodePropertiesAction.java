@@ -312,6 +312,7 @@ public class ViewServerNodePropertiesAction extends InfoGluePropertiesAbstractAc
 
 	    populate(ps, "setDerivedLastModifiedInLive");
 	    populate(ps, "maxNumberOfVersionsForDerivedLastModifiedInLive");
+	    populate(ps, "allowInternalCallsBasedOnIP");
 
 	    try
 	    {
