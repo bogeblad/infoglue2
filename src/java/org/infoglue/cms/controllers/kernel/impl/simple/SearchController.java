@@ -68,6 +68,7 @@ import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
+import org.infoglue.deliver.util.Timer;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -319,10 +320,11 @@ public class SearchController extends BaseController
 				previousContentId  = new Integer(-1);
 				previousLanguageId = new Integer(-1);  	
 				currentCount = 0;
+				
 				while(assetResults.hasMore() && currentCount < maxRows) 
 				{
 					SmallDigitalAssetImpl smallAsset = (SmallDigitalAssetImpl)assetResults.next();
-					DigitalAsset asset = DigitalAssetController.getDigitalAssetWithId(smallAsset.getId(), db);
+					DigitalAsset asset = DigitalAssetController.getMediumDigitalAssetWithId(smallAsset.getId(), db);
 					logger.info("Found a asset matching " + searchString + ":" + asset.getId());
 					Collection versions = asset.getContentVersions();
 					Iterator versionsIterator = versions.iterator();
@@ -342,7 +344,7 @@ public class SearchController extends BaseController
 						}						
 					}
 				}
-
+				
 				assetResults.close();
 				assetOQL.close();
 			}
@@ -578,12 +580,13 @@ public class SearchController extends BaseController
 			Integer previousContentId  = new Integer(-1);
 			Integer previousLanguageId = new Integer(-1);  	
 			int currentCount = 0;
+
 			while(assetResults.hasMore() && currentCount < maxRows) 
 			{
 				SmallDigitalAssetImpl smallAsset = (SmallDigitalAssetImpl)assetResults.next();
 				if(smallAsset.getAssetContentType().matches(assetTypeFilter))
 				{
-					DigitalAsset asset = DigitalAssetController.getDigitalAssetWithId(smallAsset.getId(), db);
+					DigitalAsset asset = DigitalAssetController.getMediumDigitalAssetWithId(smallAsset.getId(), db);
 					logger.info("Found a asset matching " + searchString + ":" + asset.getId());
 					Collection versions = asset.getContentVersions();
 					Iterator versionsIterator = versions.iterator();
@@ -604,7 +607,7 @@ public class SearchController extends BaseController
 					}
 				}
 			}
-
+			
 			assetResults.close();
 			assetOQL.close();
 			
@@ -641,12 +644,14 @@ public class SearchController extends BaseController
 			Integer previousContentId  = new Integer(-1);
 			Integer previousLanguageId = new Integer(-1);  	
 			int currentCount = 0;
-			while(assetResults.hasMore() && currentCount < maxRows) 
+
+			while(assetResults.hasMore() && currentCount < maxRows)
 			{
 				SmallDigitalAssetImpl smallAsset = (SmallDigitalAssetImpl)assetResults.next();
 				if(smallAsset.getAssetContentType().matches(assetTypeFilter))
 				{
-					DigitalAsset asset = DigitalAssetController.getDigitalAssetWithId(smallAsset.getId(), db);
+					//DigitalAsset asset = DigitalAssetController.getDigitalAssetWithId(smallAsset.getId(), db);
+					DigitalAsset asset = DigitalAssetController.getMediumDigitalAssetWithId(smallAsset.getId(), db);
 					//logger.info("Found a asset matching:" + asset.getId());
 					Collection versions = asset.getContentVersions();
 					Iterator versionsIterator = versions.iterator();
