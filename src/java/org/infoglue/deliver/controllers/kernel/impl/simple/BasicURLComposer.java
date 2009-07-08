@@ -271,6 +271,10 @@ public class BasicURLComposer extends URLComposer
     		logger.warn("composePageUrl was called with siteNodeId:" + siteNodeId + " from the page with key: " + deliveryContext.getPageKey() + " (siteNodeId=" + deliveryContext.getSiteNodeId() + ")");
     		return "";
     	}
+    	
+    	if(contentId == null || contentId == 0)
+    		contentId = -1;
+    	
         /*
         String disableEmptyUrls = CmsPropertyHandler.getDisableEmptyUrls();
         if(filename == null || filename.equals("") && disableEmptyUrls == null || disableEmptyUrls.equalsIgnoreCase("no"))
