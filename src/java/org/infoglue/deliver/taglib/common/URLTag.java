@@ -96,7 +96,12 @@ public class URLTag extends TemplateControllerTag
 	 * Tells if parameter should be allowed even though there are parameters with that name
 	 */
 	private boolean allowMultipleArguments = false;
-	
+
+	/**
+	 * Tells if parameter should be allowed even though there are parameters with that name
+	 */
+	private boolean includeCurrentQueryString = true;
+
 	/**
 	 * Default constructor.
 	 */
@@ -127,8 +132,17 @@ public class URLTag extends TemplateControllerTag
     {
 		addQueryParameters();
 		produceResult(generateURL());
-		parameters = null;
-		parameterNames = null;
+		
+		this.baseURL = null;
+		this.query = null;
+		this.excludedQueryStringParameters = null;
+		this.fullBaseUrl = false;
+		this.parameters = null;
+		this.parameterNames = null;
+		this.disableNiceURI = false;
+		this.allowMultipleArguments = false;
+		this.includeCurrentQueryString = true;
+		
 		return EVAL_PAGE;
     }
 
@@ -241,7 +255,12 @@ public class URLTag extends TemplateControllerTag
 	 */
 	private String getQuery()
 	{
-		String q = (query == null) ? getRequest().getQueryString() : query;
+		String q = null;
+		if(includeCurrentQueryString)
+			q = (query == null) ? getRequest().getQueryString() : query;
+		else
+			q = query;
+		
 		if(q != null && (q.startsWith("?") || q.startsWith("&")))
 		{
 			return q.substring(1);
@@ -353,4 +372,10 @@ public class URLTag extends TemplateControllerTag
     {
         this.allowMultipleArguments = allowMultipleArguments;
     }
+    
+    public void setIncludeCurrentQueryString(boolean includeCurrentQueryString)
+    {
+        this.includeCurrentQueryString = includeCurrentQueryString;
+    }
+    
 }
