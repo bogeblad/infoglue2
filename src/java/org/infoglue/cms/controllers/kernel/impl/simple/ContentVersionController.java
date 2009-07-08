@@ -392,11 +392,14 @@ public class ContentVersionController extends BaseController
 		while (results.hasMore()) 
 		{
 			ContentVersion contentVersion = (ContentVersion)results.next();
+			System.out.println("contentVersion found: " + contentVersion.getId());
+
 			if(contentVersion.getIsActive().booleanValue())
 			{
-			    if ( (contentVersion.getStateId().compareTo(stateId)==0) && (!langCheck.contains(contentVersion.getLanguage().getLanguageId())))
+			    if((contentVersion.getStateId().compareTo(stateId)==0) && (!langCheck.contains(contentVersion.getLanguage().getLanguageId())))
 				{
 					resultList.add(contentVersion);
+					System.out.println("contentVersion added: " + contentVersion.getId());
 					langCheck.add(contentVersion.getLanguage().getLanguageId());
 				}
 				

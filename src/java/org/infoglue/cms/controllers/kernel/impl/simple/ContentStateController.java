@@ -125,6 +125,7 @@ public class ContentStateController extends BaseController
 		try
 		{
 			ContentVersion oldContentVersion = ContentVersionController.getContentVersionController().getContentVersionWithId(oldContentVersionId, db);
+			System.out.println("oldContentVersion:" + oldContentVersion.getId());
 			
 			if (contentId == null)
 				contentId = new Integer(oldContentVersion.getOwningContent().getContentId().intValue());
@@ -158,9 +159,10 @@ public class ContentStateController extends BaseController
 			//If the user changes the state to publish we create a copy and set that copy to publish.
 			if (stateId.intValue() == ContentVersionVO.PUBLISH_STATE.intValue())
 			{
-				logger.info("About to copy the working copy to a publish-one");
+				System.out.println("About to copy the working copy to a publish-one");
 
 				//First we update the old working-version so it gets a comment
+				System.out.println("Setting comment " + versionComment + " on " + oldContentVersion.getId());
 				oldContentVersion.setVersionComment(versionComment);
 
 				//Now we create a new version which is basically just a copy of the working-version
@@ -174,6 +176,7 @@ public class ContentStateController extends BaseController
 			        newContentVersionVO.setVersionModifier(oldContentVersion.getVersionModifier());
 				newContentVersionVO.setVersionValue(oldContentVersion.getVersionValue());
 				newContentVersion = ContentVersionController.getContentVersionController().create(contentId, oldContentVersion.getLanguage().getLanguageId(), newContentVersionVO, oldContentVersion.getContentVersionId(), false, duplicateAssets, db);
+				System.out.println("Creating " + newContentVersion.getId());
 				
 				//ContentVersionController.getContentVersionController().copyDigitalAssets(oldContentVersion, newContentVersion, db);
 				copyAccessRights(oldContentVersion, newContentVersion, db);
