@@ -23,16 +23,10 @@
 
 package org.infoglue.cms.controllers.kernel.impl.simple;
 
-import java.io.File;
-import java.util.Map;
-
 import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
 import org.exolab.castor.jdo.JDO;
-import org.exolab.castor.jdo.conf.JdoConf;
-import org.exolab.castor.util.JdoConfFactory;
 import org.infoglue.cms.exception.SystemException;
-import org.infoglue.cms.util.CmsPropertyHandler;
 
 public class CastorDatabaseService //extends DatabaseService
 {
