@@ -1748,6 +1748,13 @@ public class CmsPropertyHandler
 		
 		return Boolean.parseBoolean(disableDecoratedFinalRendering);
 	}
+	
+	public static boolean getAllowInternalCallsBasedOnIP() 
+	{
+		String allowInternalCallsBasedOnIP = getServerNodeProperty("allowInternalCallsBasedOnIP", true, "true");
+		
+		return Boolean.parseBoolean(allowInternalCallsBasedOnIP);
+	}
 
 	private static Boolean useSQLServerDialect = null;
 	public static boolean getUseSQLServerDialect()
