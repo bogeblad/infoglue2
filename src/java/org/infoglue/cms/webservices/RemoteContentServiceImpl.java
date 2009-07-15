@@ -26,6 +26,7 @@ package org.infoglue.cms.webservices;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -264,9 +265,19 @@ public class RemoteContentServiceImpl extends RemoteInfoGlueService
 	            String creatorName 				= (String)content.get("creatorName");
 	            Boolean isBranch 				= (Boolean)content.get("isBranch");
 	            Integer isProtected 			= (Integer)content.get("isProtected");
-	            Date expireDateTime 			= (Date)content.get("expireDateTime");
-	            Date publishDateTime 			= (Date)content.get("publishDateTime");
-	            
+
+	            Date expireDateTime = null;
+	            if(content.get("expireDateTime") instanceof Date)
+	            	expireDateTime = (Date)content.get("expireDateTime");
+	            else
+	            	expireDateTime = ((Calendar)content.get("expireDateTime")).getTime();
+
+	            Date publishDateTime = null;
+	            if(content.get("publishDateTime") instanceof Date)
+	            	publishDateTime = (Date)content.get("publishDateTime");
+	            else
+	            	publishDateTime = ((Calendar)content.get("publishDateTime")).getTime();
+
 	            logger.info("name:" + name);
 	            logger.info("contentTypeDefinitionId:" + contentTypeDefinitionId);
 	            logger.info("repositoryId:" + repositoryId);
@@ -626,8 +637,18 @@ public class RemoteContentServiceImpl extends RemoteInfoGlueService
             
             Integer contentId 				= (Integer)content.get("contentId");
             String name 					= (String)content.get("name");
-            Date publishDateTime 			= (Date)content.get("publishDateTime");
-            Date expireDateTime 			= (Date)content.get("expireDateTime");
+
+            Date expireDateTime = null;
+            if(content.get("expireDateTime") instanceof Date)
+            	expireDateTime = (Date)content.get("expireDateTime");
+            else
+            	expireDateTime = ((Calendar)content.get("expireDateTime")).getTime();
+
+            Date publishDateTime = null;
+            if(content.get("publishDateTime") instanceof Date)
+            	publishDateTime = (Date)content.get("publishDateTime");
+            else
+            	publishDateTime = ((Calendar)content.get("publishDateTime")).getTime();
             
             logger.info("contentId:" + contentId);
             logger.info("name:" + name);
