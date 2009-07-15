@@ -29,6 +29,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -126,9 +127,19 @@ public final class ExtranetLoginAction extends InfoGlueAbstractAction
 		}
 		else
 		{
-			//getLogger().info("No - we try to send the back to the lofin screen.");		
+			String invalidLoginUrl = getInvalidLoginUrl();
+			logger.info("invalidLoginUrl:" + invalidLoginUrl);
 			errorMessage = "The logon information given was incorrect, please verify and try again.";
-			return "invalidLogin";
+			if(invalidLoginUrl == null || invalidLoginUrl.equals("") || invalidLoginUrl.equals("default") || invalidLoginUrl.equals("Login!invalidLogin.action"))
+			{
+				return "invalidLogin";
+			}
+			else
+			{
+				String fullRedirect = invalidLoginUrl + (invalidLoginUrl.indexOf("?") > -1 ? "&" : "?") + "returnAddress=" + URLEncoder.encode(returnAddress, "UTF-8");
+				logger.info("fullRedirect:" + fullRedirect);
+				this.getResponse().sendRedirect(fullRedirect);
+			}
 		}
 		
 		return NONE;
@@ -358,6 +369,13 @@ public final class ExtranetLoginAction extends InfoGlueAbstractAction
 	    }
 	}
 	
+  	private String getInvalidLoginUrl() throws ServletException, Exception 
+  	{
+		String url = AuthenticationModule.getAuthenticationModule(null, null).getInvalidLoginUrl();
+		
+		return url;
+  	}
+
     public void setStoreUserInfoCookie(String storeUserInfoCookie)
     {
         this.storeUserInfoCookie = storeUserInfoCookie;
