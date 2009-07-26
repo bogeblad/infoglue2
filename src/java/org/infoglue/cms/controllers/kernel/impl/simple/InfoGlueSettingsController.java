@@ -32,7 +32,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import org.apache.commons.collections.comparators.NullComparator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Document;
@@ -311,8 +310,6 @@ public class InfoGlueSettingsController extends BaseController implements Castor
     
     public String getPropertyFromInfoGlue(String key, String name, String variationId, boolean skipInfoGlueProperty, boolean fallbackToDefault, boolean fallbackToKey, boolean useDerivedValue, Database database)
     {
-		NullComparator nullComparator = new NullComparator();
-
 	    String value = null;
 	    String newValue = null;
 		
