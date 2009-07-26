@@ -7,7 +7,18 @@ public class DeploymentCompareBean
 {
 	private Object localVersion;
 	private Object remoteVersion;
+	private boolean repositoryMissing;
 	
+	public boolean isRepositoryMissing() 
+	{
+		return repositoryMissing;
+	}
+
+	public void setRepositoryMissing(boolean repositoryMissing) 
+	{
+		this.repositoryMissing = repositoryMissing;
+	}
+
 	public Object getLocalVersion()
 	{
 		return localVersion;
