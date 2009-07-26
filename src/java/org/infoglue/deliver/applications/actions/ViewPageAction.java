@@ -1757,18 +1757,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 	{
 	    String authenticatorClass = CmsPropertyHandler.getServerNodeProperty("deliver", "authenticatorClass", true, null);
 	    String authorizerClass 	= CmsPropertyHandler.getServerNodeProperty("deliver", "authorizerClass", true, null);
-	    /*
-	    invalidLoginUrl 	= CmsPropertyHandler.getServerNodeProperty("deliver", "invalidLoginUrl", true, null);
-	    successLoginBaseUrl = CmsPropertyHandler.getServerNodeProperty("deliver", "successLoginBaseUrl", true, null);
-	    loginUrl 			= CmsPropertyHandler.getServerNodeProperty("deliver", "loginUrl", true, null);
-	    logoutUrl 			= CmsPropertyHandler.getServerNodeProperty("deliver", "logoutUrl", true, null);
-	    serverName 			= CmsPropertyHandler.getServerNodeProperty("deliver", "serverName", true, null);
-	    casRenew 			= CmsPropertyHandler.getServerNodeProperty("deliver", "casRenew", true, null);
-	    casServiceUrl 		= CmsPropertyHandler.getServerNodeProperty("deliver", "casServiceUrl", true, null);
-	    casValidateUrl 		= CmsPropertyHandler.getServerNodeProperty("deliver", "casValidateUrl", true, null);
-	    casProxyValidateUrl = CmsPropertyHandler.getServerNodeProperty("deliver", "casProxyValidateUrl", true, null);
-	    casLogoutUrl 		= CmsPropertyHandler.getServerNodeProperty("deliver", "casLogoutUrl", true, null);
-	    */
+
 	    Properties extraProperties	= null;
 	    
 	    String extraPropertiesString = CmsPropertyHandler.getServerNodeDataProperty("deliver", "extraSecurityParameters", true, null);
