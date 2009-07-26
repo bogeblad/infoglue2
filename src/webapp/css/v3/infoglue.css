@@ -49,6 +49,10 @@ body.generaltooledit {
 	display: inline;
 	/*background-color: #d6e7f7;*/
 }
+#igEditArea h1,h2,h3,h4,p {
+	margin-left: 16px;
+}
+
 .igScrollArea {
 	overflow: auto;
 }
@@ -80,6 +84,7 @@ h4 {
 	font-size        : 10pt;
 	font-weight		 : bold;
 	color			 : black;
+	margin-bottom	 : 6px;
 }
 
 

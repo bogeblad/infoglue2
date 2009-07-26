@@ -325,6 +325,8 @@ public class ToolbarController
 			if(toolbarKey.equalsIgnoreCase("tool.managementtool.viewMessageCenter.header"))
 				return getMessageCenterButtons();
 			*/
+			if(toolbarKey.equalsIgnoreCase("tool.managementtool.deploymentQuick.header"))
+				return getQuickDeployFooterButtons();
 		}
 		catch(Exception e) {e.printStackTrace();}			
 					
@@ -525,7 +527,7 @@ public class ToolbarController
 		buttons.add(new ToolbarButton("",
 				  					  getLocalizedString(locale, "tool.contenttool.cancel.label"), 
 				  					  getLocalizedString(locale, "tool.contenttool.cancel.label"),
-				  					  "if(parent && parent.closeDialog) parent.closeDialog(); else window.close();",
+				  					  "if(parent && parent.closeInlineDiv) parent.closeInlineDiv(); else if(parent && parent.closeDialog) parent.closeDialog(); else window.close();",
 				  					  "images/v3/cancelIcon.gif",
 				  					  "left",
 									  "cancel",
@@ -548,7 +550,7 @@ public class ToolbarController
 		buttons.add(new ToolbarButton("",
 				  					  getLocalizedString(locale, "tool.contenttool.cancel.label"), 
 				  					  getLocalizedString(locale, "tool.contenttool.cancel.label"),
-				  					  "if(parent && parent.closeDialog) parent.closeDialog(); else window.close();",
+				  					  "if(parent && parent.closeInlineDiv) parent.parent.closeInlineDiv(); else if(parent && parent.closeDialog) parent.closeDialog(); else window.close();",
 				  					  "images/v3/cancelIcon.gif",
 				  					  "left",
 									  "cancel",
@@ -587,7 +589,7 @@ public class ToolbarController
 		buttons.add(new ToolbarButton("",
 				  					  getLocalizedString(locale, "tool.common.cancelButton.label"), 
 				  					  getLocalizedString(locale, "tool.common.cancelButton.label"),
-				  					  "if(parent && parent.closeDialog) parent.closeDialog(); else window.close();",
+				  					  "if(parent && parent.closeInlineDiv) parent.closeInlineDiv(); else if(parent && parent.closeDialog) parent.closeDialog(); else window.close();",
 				  					  "images/v3/cancelIcon.gif",
 				  					  "left",
 				  					  "cancel",
@@ -633,7 +635,7 @@ public class ToolbarController
 		buttons.add(new ToolbarButton("",
 				  					  getLocalizedString(locale, "tool.common.cancelButton.label"), 
 				  					  getLocalizedString(locale, "tool.common.cancelButton.label"),
-				  					  "if(parent && parent.closeDialog) parent.closeDialog(); else window.close();",
+				  					  "if(parent && parent.closeInlineDiv) parent.closeInlineDiv(); else if(parent && parent.closeDialog) parent.closeDialog(); else window.close();",
 				  					  "images/v3/cancelIcon.gif",
 				  					  "left",
 				  					  "cancel",
@@ -658,7 +660,7 @@ public class ToolbarController
 		buttons.add(new ToolbarButton("",
 				  					  getLocalizedString(locale, "tool.common.cancelButton.label"), 
 				  					  getLocalizedString(locale, "tool.common.cancelButton.label"),
-				  					  "if(parent && parent.closeDialog) parent.closeDialog(); else window.close();",
+				  					  "if(parent && parent.closeInlineDiv) parent.closeInlineDiv(); else if(parent && parent.closeDialog) parent.closeDialog(); else window.close();",
 				  					  "images/v3/cancelIcon.gif",
 				  					  "left",
 				  					  "cancel",
@@ -702,7 +704,7 @@ public class ToolbarController
 		buttons.add(new ToolbarButton("",
 				  getLocalizedString(locale, "tool.common.cancelButton.label"), 
 				  getLocalizedString(locale, "tool.common.cancelButton.label"),
-				  "if(parent && parent.closeDialog) parent.closeDialog(); else window.close();",
+				  "if(parent && parent.closeInlineDiv) parent.closeInlineDiv(); else if(parent && parent.closeDialog) parent.closeDialog(); else window.close();",
 				  "images/v3/cancelIcon.gif",
 				  "left",
 				  "cancel",
@@ -746,7 +748,7 @@ public class ToolbarController
 		buttons.add(new ToolbarButton("",
 				  getLocalizedString(locale, "tool.common.cancelButton.label"), 
 				  getLocalizedString(locale, "tool.common.cancelButton.label"),
-				  "if(parent && parent.closeDialog) parent.closeDialog(); else window.close();",
+				  "if(parent && parent.closeInlineDiv) parent.closeInlineDiv(); else if(parent && parent.closeDialog) parent.closeDialog(); else window.close();",
 				  "images/v3/cancelIcon.gif",
 				  "left",
 				  "cancel",
@@ -1367,7 +1369,32 @@ public class ToolbarController
 		return buttons;
 	}
 	*/
-	
+
+	private List<ToolbarButton> getQuickDeployFooterButtons() throws Exception
+	{
+		List<ToolbarButton> buttons = new ArrayList<ToolbarButton>();
+
+		buttons.add(new ToolbarButton("",
+				  getLocalizedString(locale, "tool.common.nextButton.label"), 
+				  getLocalizedString(locale, "tool.common.nextButton.label"),
+				  "submitForm();",
+				  "images/v3/nextBackground.gif",
+				  "left",
+				  "next",
+				  true));
+
+		buttons.add(new ToolbarButton("",
+				  getLocalizedString(locale, "tool.common.cancelButton.label"), 
+				  getLocalizedString(locale, "tool.common.cancelButton.label"),
+				  "if(parent && parent.closeInlineDiv) parent.closeInlineDiv(); else if(parent && parent.closeDialog) parent.closeDialog(); else window.close();",
+				  "images/v3/cancelIcon.gif",
+				  "left",
+				  "cancel",
+				  true));
+		
+		return buttons;
+	}
+
 	private List<ToolbarButton> getHelpButton() throws Exception
 	{
 		String helpPageBaseUrl = "http://www.infoglue.org";
@@ -1408,7 +1435,7 @@ public class ToolbarController
 		buttons.add(new ToolbarButton("exitButton",
 									  getLocalizedString(locale, "tool.common.closeWindowButton.label"), 
 									  getLocalizedString(locale, "tool.common.closeWindowButton.title"),
-									  "if(parent && parent.closeDialog) parent.closeDialog(); else window.close();",
+									  "if(parent && parent.closeInlineDiv) parent.closeInlineDiv(); else if(parent && parent.closeDialog) parent.closeDialog(); else window.close();",
 				  					  "images/v3/closeWindowIcon.gif",
 				  					  "right",
 									  "close",
@@ -1423,7 +1450,7 @@ public class ToolbarController
 		buttons.add(new ToolbarButton("exitButton",
 									  getLocalizedString(locale, "tool.common.closeWindowButton.label"), 
 									  getLocalizedString(locale, "tool.common.closeWindowButton.title"),
-									  "if(parent && parent.closeDialog) parent.closeDialog(); else window.close();",
+									  "if(parent && parent.closeInlineDiv) parent.closeInlineDiv(); else if(parent && parent.closeDialog) parent.closeDialog(); else window.close();",
 				  					  "images/v3/closeWindowIcon.gif",
 				  					  "right",
 									  "close",

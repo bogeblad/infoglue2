@@ -1,4 +1,4 @@
-<!-- $Id: actions.xml,v 1.83 2009/04/27 12:34:21 mattias Exp $ -->
+<!-- $Id: actions.xml,v 1.84 2009/07/26 22:38:08 mattias Exp $ -->
 <actions>
 
 	<!-- MySettings -->
@@ -113,6 +113,11 @@
 	</action>
 	<action name="org.infoglue.cms.applications.cmstool.actions.ViewCMSToolFooterAction" alias="ViewCMSToolFooter">
 		<view name="success">/cms/cmstool/viewCMSToolFooter.vm</view>
+	</action>
+
+	<!-- CMS VERSION 3 TOOL FRAMES -->
+	<action name="org.infoglue.cms.applications.cmstool.actions.ViewCMSAction" alias="ViewCMS">
+		<view name="success">/cms/cmstool/viewCMS.vm</view>
 	</action>
 
 	<!-- CMS MY DESKTOP TOOL FRAMES -->
@@ -871,6 +876,7 @@
 	<!-- ContentAccessRights -->
 	<action name="org.infoglue.cms.applications.contenttool.actions.ViewAccessRightsAction" alias="ViewAccessRights">
 		<view name="success">/cms/contenttool/viewAccessRights.vm</view>
+		<view name="successV3">/cms/common/viewAccessRights.vm</view>
 		<view name="error">/cms/contenttool/error.vm</view>
 		<view name="accessDenied">/cms/contenttool/viewConstraintException.vm</view>
 	</action>
@@ -1373,11 +1379,22 @@
 		<view name="error">/cms/managementtool/error.vm</view>
 	</action>
 
+	<!-- AJAX API -->
+	<action name="org.infoglue.deliver.applications.actions.AjaxComponentDeliveryServiceAction" alias="AjaxComponentDeliveryService">
+		<view name="error">/deliver/error.vm</view>
+	</action>
+
 	<!-- Site Delivery -->
 	<action name="org.infoglue.deliver.applications.actions.ViewPageAction" alias="ViewPage">
 		<view name="error">/deliver/error.vm</view>
 	</action>
 
+	<!-- Inline operations results -->
+	<action name="org.infoglue.cms.applications.common.actions.ViewInlineOperationMessagesAction" alias="ViewInlineOperationMessages">
+		<view name="success">/cms/common/inlineOperationDone.vm</view>
+		<view name="error">/deliver/error.vm</view>
+	</action>
+	
 	<!-- Application state action - used to monitor the delivery engine -->
 	<action name="org.infoglue.deliver.applications.actions.ViewApplicationStateAction" alias="ViewApplicationState">
 		<view name="cleared">ExtendedRedirect.action?url=ViewApplicationState.action</view>
@@ -1654,6 +1671,7 @@
 
 	<!-- InfoGlue Deployment Service -->
 	<action name="org.infoglue.cms.applications.managementtool.actions.deployment.ViewDeploymentChooseServerAction" alias="ViewDeploymentChooseServer">
+		<view name="inputQuickV3">/cms/managementtool/deployment/v3/viewQuickDeploymentChooseServer.vm</view>
 		<view name="input">/cms/managementtool/deployment/viewDeploymentChooseServer.vm</view>
 		<view name="success">ViewDeploymentSynchronizeServers!input.action?deploymentServerIndex=${deploymentServerIndex}</view>
 		<view name="error">/cms/managementtool/error.vm</view>
@@ -1661,6 +1679,12 @@
 	<action name="org.infoglue.cms.applications.managementtool.actions.deployment.ViewDeploymentSynchronizeServersAction" alias="ViewDeploymentSynchronizeServers">
 		<view name="input">/cms/managementtool/deployment/viewDeploymentChooseEntities.vm</view>
 		<view name="success">/cms/managementtool/deployment/viewDeploymentSynchronizeServersComplete.vm</view>
+		<view name="error">/cms/managementtool/error.vm</view>
+	</action>
+	<!-- Quick deployment -->
+	<action name="org.infoglue.cms.applications.managementtool.actions.deployment.ViewQuickDeploymentSynchronizeContentsAction" alias="ViewQuickDeploymentSynchronizeContents">
+		<view name="input">/cms/managementtool/deployment/v3/viewQuickDeploymentChooseContents.vm</view>
+		<view name="success">/cms/managementtool/deployment/v3/viewQuickDeploymentComplete.vm</view>
 		<view name="error">/cms/managementtool/error.vm</view>
 	</action>
 

@@ -69,6 +69,12 @@ public class ViewAccessRightsAction extends InfoGlueAbstractAction
 	private List roleList = null;
 	private List groupList = null;
 	private Collection accessRightsUserRows = null;
+
+    public String doV3() throws Exception
+    {
+    	doExecute();
+    	return "successV3";
+    }
     
     public String doExecute() throws Exception
     {
