@@ -4751,7 +4751,7 @@ public class BasicTemplateController implements TemplateController
 
 	public List getMatchingContents(String contentTypeDefinitionNamesString, String categoryConditionString, String freeText, List freeTextAttributeNames, Date fromDate, Date toDate, boolean useLanguageFallback)
 	{
-		return getMatchingContents(contentTypeDefinitionNamesString, categoryConditionString, null, null, null, null, useLanguageFallback, false, -1, null, null);
+		return getMatchingContents(contentTypeDefinitionNamesString, categoryConditionString, freeText, freeTextAttributeNames, fromDate, toDate, useLanguageFallback, false, -1, null, null);
 	}
 
 	/**
@@ -4760,7 +4760,7 @@ public class BasicTemplateController implements TemplateController
 
 	public List getMatchingContents(String contentTypeDefinitionNamesString, String categoryConditionString, String freeText, List freeTextAttributeNames, Date fromDate, Date toDate, boolean useLanguageFallback, boolean cacheResult, int cacheInterval, String cacheName, String cacheKey)
 	{
-		return getMatchingContents(contentTypeDefinitionNamesString, categoryConditionString, null, null, null, null, useLanguageFallback, false, -1, null, null, null);
+		return getMatchingContents(contentTypeDefinitionNamesString, categoryConditionString, freeText, freeTextAttributeNames, fromDate, toDate, useLanguageFallback, cacheResult, cacheInterval, cacheName, cacheKey, null);
 	}
 
 	/**
