@@ -1,0 +1,38 @@
+#define( $headerMarkup )
+	<link rel="stylesheet" type="text/css" media="all" href="css/cms.css" title="cms" />
+	
+	<script type="text/javascript">
+	<!--
+		function submitForm()
+		{
+			document.editForm.submit();
+		}
+	-->
+	</script>
+#end
+
+################################
+##BEGIN REAL CODE
+################################
+#beginLightCommonToolV3Impl("tool.managementtool.deploymentQuick.finishedHeader" "" "" false true $!disableCloseButton $headerMarkup)
+
+	#lightMenuToolbar("" $buttons $rightButtons) 
+
+	<div style="clear: both;"></div>
+	
+	<form name="editForm" method="post" action="ViewQuickDeploymentSynchronizeContents!input.action">
+		<input type="hidden" name="contentId" value="$contentId"/>	
+
+		<h3>$ui.getString("tool.managementtool.deploymentQuick.finishedHeader") 
+			#if($errorMessage && $errorMessage != "")
+				<span style="color:red">$errorMessage</span><br/>
+			#end
+		</h3>
+
+		<p>$ui.getString("tool.managementtool.deploymentQuick.finishedText")</p>
+		
+		#lightFooterToolbar($footerButtons)
+		
+	</form>
+
+#endLightCommonToolV3()
