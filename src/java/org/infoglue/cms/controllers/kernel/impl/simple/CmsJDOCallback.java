@@ -26,6 +26,7 @@ package org.infoglue.cms.controllers.kernel.impl.simple;
 import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.CacheManager;
 import org.exolab.castor.jdo.Database;
+import org.exolab.castor.mapping.AccessMode;
 import org.exolab.castor.persist.spi.CallbackInterceptor;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.entities.content.Content;
@@ -102,6 +103,13 @@ public class CmsJDOCallback implements CallbackInterceptor
     	// return ( (Persistent) object ).jdoLoad(accessMode);
         return null;
     }
+
+	@Override
+	public Class loaded(Object arg0, AccessMode arg1) throws Exception 
+	{
+		//System.out.println("Loaded " + object.getClass().getName() + " accessMode:" + accessMode);
+		return null;
+	}
 
 
     public void storing(Object object, boolean modified) throws Exception
