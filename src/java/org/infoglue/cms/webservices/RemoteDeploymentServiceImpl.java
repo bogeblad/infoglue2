@@ -73,6 +73,7 @@ public class RemoteDeploymentServiceImpl extends RemoteInfoGlueService
 	private static WorkflowDefinitionController workflowDefinitionController = WorkflowDefinitionController.getController();
 	private static CategoryController categoryController = CategoryController.getController();
     private static ContentControllerProxy contentControllerProxy = ContentControllerProxy.getController();
+    private static RepositoryController repositoryController = RepositoryController.getController();
     //private static ContentVersionControllerProxy contentVersionControllerProxy = ContentVersionControllerProxy.getController();
     
 
@@ -453,6 +454,14 @@ public class RemoteDeploymentServiceImpl extends RemoteInfoGlueService
 				{
 					RepositoryVO repositoryVO = RepositoryController.getController().getRepositoryVOWithName(repositoryString);
 					logger.info("repositoryVO:" + repositoryVO);
+					
+					if(repositoryVO == null && components != null && components.size() > 0)
+					{
+						ContentVO contentVO = (ContentVO)components.get(0);
+						repositoryVO = RepositoryController.getController().getRepositoryVOWithId(contentVO.getRepositoryId());
+						logger.info("repositoryVO:" + repositoryVO);
+					}
+					
 					if(repositoryVO != null)
 					{
 						LanguageVO languageVO = LanguageController.getController().getMasterLanguage(repositoryVO.getRepositoryId());
@@ -470,6 +479,7 @@ public class RemoteDeploymentServiceImpl extends RemoteInfoGlueService
 							ContentVersionController.getContentVersionController().create(newContentVO.getId(), languageVO.getId(), contentVersionVO, null);
 						}
 					}
+					
 				}
 				catch (Exception e) 
 				{
@@ -487,27 +497,48 @@ public class RemoteDeploymentServiceImpl extends RemoteInfoGlueService
 				ContentVO remoteContentVO = (ContentVO)remoteComponentsIterator.next();
 				logger.info("remoteContentVO:" + remoteContentVO + ":" + remoteContentVO.getFullPath());
 
-				Iterator componentsIterator = components.iterator();
-		    	while(componentsIterator.hasNext())
-		    	{
-		    		ContentVO contentVO = (ContentVO)componentsIterator.next();
-		    		String fullPath = ContentController.getContentController().getContentPath(contentVO.getId(), true, true);					
-		    		logger.info("fullPath:" + fullPath);
-		    		if(fullPath.equalsIgnoreCase(remoteContentVO.getFullPath()))
-		    		{
-						LanguageVO languageVO = LanguageController.getController().getMasterLanguage(contentVO.getRepositoryId());
-						ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentVO.getId(), languageVO.getId());
-						if(contentVersionVO != null)
+				if(remoteContentVO.getFullPath() != null && remoteContentVO.getFullPath().startsWith("deviatingRemoteVersionId="))
+				{
+					String remoteVersionId = remoteContentVO.getFullPath().substring(remoteContentVO.getFullPath().indexOf("=") + 1);
+					logger.info("Looking for version in remoteVersionId:" + remoteVersionId);
+					
+		    		ContentVO contentVO = ContentControllerProxy.getController().getACContentVOWithId(principal, new Integer(remoteVersionId));
+					LanguageVO languageVO = LanguageController.getController().getMasterLanguage(contentVO.getRepositoryId());
+					ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentVO.getId(), languageVO.getId());
+					if(contentVersionVO != null)
+					{
+						if(remoteContentVO.getVersions() != null && remoteContentVO.getVersions().length > 0)
 						{
-							if(remoteContentVO.getVersions() != null && remoteContentVO.getVersions().length > 0)
+							contentVersionVO.setVersionValue(remoteContentVO.getVersions()[0]);
+							logger.info("Updating :" + contentVersionVO.getContentName() + " with new latest versionValue:" + remoteContentVO.getVersions()[0].length());
+							ContentVersionController.getContentVersionController().update(contentVersionVO.getId(), contentVersionVO);								
+						}
+					}
+				}
+				else
+				{
+					Iterator componentsIterator = components.iterator();
+			    	while(componentsIterator.hasNext())
+			    	{
+			    		ContentVO contentVO = (ContentVO)componentsIterator.next();
+			    		String fullPath = ContentController.getContentController().getContentPath(contentVO.getId(), true, true);					
+			    		logger.info("fullPath:" + fullPath);
+			    		if(fullPath.equalsIgnoreCase(remoteContentVO.getFullPath()))
+			    		{
+							LanguageVO languageVO = LanguageController.getController().getMasterLanguage(contentVO.getRepositoryId());
+							ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentVO.getId(), languageVO.getId());
+							if(contentVersionVO != null)
 							{
-								contentVersionVO.setVersionValue(remoteContentVO.getVersions()[0]);
-								logger.info("Updating :" + contentVersionVO.getContentName() + " with new latest versionValue:" + remoteContentVO.getVersions()[0].length());
-								ContentVersionController.getContentVersionController().update(contentVersionVO.getId(), contentVersionVO);								
-							}
-						}		
-		    		}
-		    	}		    	
+								if(remoteContentVO.getVersions() != null && remoteContentVO.getVersions().length > 0)
+								{
+									contentVersionVO.setVersionValue(remoteContentVO.getVersions()[0]);
+									logger.info("Updating :" + contentVersionVO.getContentName() + " with new latest versionValue:" + remoteContentVO.getVersions()[0].length());
+									ContentVersionController.getContentVersionController().update(contentVersionVO.getId(), contentVersionVO);								
+								}
+							}		
+			    		}
+			    	}		    	
+				}
 			}
         }
         catch(Throwable t)
@@ -601,6 +632,45 @@ public class RemoteDeploymentServiceImpl extends RemoteInfoGlueService
         return categoryVOList;
     }
 
+	/**
+     * Gets all repository names.
+     */
+    
+    public List<RepositoryVO> getAllRepositories(final String principalName) 
+    {
+        if(!ServerNodeController.getController().getIsIPAllowed(getRequest()))
+        {
+            logger.error("A client with IP " + getRequest().getRemoteAddr() + " was denied access to the webservice. Could be a hack attempt or you have just not configured the allowed IP-addresses correct.");
+            return null;
+        }
+        
+        if(logger.isInfoEnabled())
+        {
+	        logger.info("*******************************************");
+	        logger.info("* Getting repositories through webservice *");
+	        logger.info("*******************************************");
+        }
+	        
+        List<RepositoryVO> repositoryVOList = new ArrayList<RepositoryVO>();
+        
+        try
+        {
+			final DynamicWebserviceSerializer serializer = new DynamicWebserviceSerializer();
+	        
+			if(logger.isInfoEnabled())
+	        {
+		        logger.info("principalName:" + principalName);
+	        }
+	        
+			repositoryVOList = repositoryController.getRepositoryVOList();
+        }
+        catch(Throwable t)
+        {
+            logger.error("En error occurred when we tried to get the contentVersionVO:" + t.getMessage(), t);
+        }
+        
+        return repositoryVOList;
+    }
     
 	/**
      * Gets all component contents from the cms.

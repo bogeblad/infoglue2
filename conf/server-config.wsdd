@@ -76,6 +76,7 @@
   <beanMapping languageSpecificType="java:org.infoglue.cms.entities.management.CategoryVO" qname="ns1:CategoryVO" xmlns:ns1="infoglue"/>
   <beanMapping languageSpecificType="java:org.infoglue.cms.entities.workflow.WorkflowDefinitionVO" qname="ns1:WorkflowDefinitionVO" xmlns:ns1="infoglue"/>
   <beanMapping languageSpecificType="java:org.infoglue.cms.entities.management.ContentTypeDefinitionVO" qname="ns1:ContentTypeDefinitionVO" xmlns:ns1="infoglue"/>
+  <beanMapping languageSpecificType="java:org.infoglue.cms.entities.management.RepositoryVO" qname="ns1:RepositoryVO" xmlns:ns1="infoglue"/>
   <beanMapping languageSpecificType="java:org.infoglue.cms.entities.content.ContentVO" qname="ns1:ContentVO" xmlns:ns1="infoglue"/>
   <beanMapping languageSpecificType="java:org.infoglue.cms.entities.content.ContentVersionVO" qname="ns1:ContentVersionVO" xmlns:ns1="infoglue"/>
  </service>
