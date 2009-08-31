@@ -399,16 +399,6 @@ function saveValue(attributeName, text)
 	validateAndSubmitContentForm();
 }
 
-/**
- * This method is used by editors to get the value of the attribute they should work with.
- */
- 
-function getValue(attributeName)
-{
-	//alert("Getting " + attributeName);
-	//alert("Found " + document.getElementById(attributeName).value);
-	return document.getElementById(attributeName).value;
-}
 
 /**
  * This method is used by editors to get the value of the attribute they should work with.
