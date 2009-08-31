@@ -40,6 +40,8 @@ public class UpdateContentVersionTag extends InfoGlueWebServiceTag implements Co
 	private String versionValue;
 	private Boolean allowHTMLContent = false;
 	private Boolean allowExternalLinks = false;
+	private Boolean allowDollarSigns = false;
+	private Boolean allowAnchorSigns = true;
 	private Boolean keepExistingAttributes = false;
 	private Boolean keepExistingCategories = true;
 	
@@ -211,6 +213,16 @@ public class UpdateContentVersionTag extends InfoGlueWebServiceTag implements Co
 	public void setAllowExternalLinks(final String allowExternalLinks) throws JspException
 	{
 		this.allowExternalLinks = (Boolean)evaluate("updateContentVersion", "allowExternalLinks", allowExternalLinks, Boolean.class);
+	}
+
+	public void setAllowDollarSigns(final String allowDollarSigns) throws JspException
+	{
+		this.allowDollarSigns = (Boolean)evaluate("updateContentVersion", "allowDollarSigns", allowDollarSigns, Boolean.class);
+	}
+
+	public void setAllowAnchorSigns(final String allowAnchorSigns) throws JspException
+	{
+		this.allowAnchorSigns = (Boolean)evaluate("updateContentVersion", "allowAnchorSigns", allowAnchorSigns, Boolean.class);
 	}
 
 	public void setKeepExistingAttributes(final String keepExistingAttributes) throws JspException
