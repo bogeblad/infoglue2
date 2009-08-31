@@ -6,7 +6,13 @@
 <head>
 	<title>$ui.getString("tool.contenttool.contentVersionHeader")</title>
 	
+	<script type="text/javascript" src="${root}/script/jquery/jquery-1.2.6.min.js"></script>
+	<script type="text/javascript" src="${root}/script/jqueryplugins/ui/jquery-ui-dragDropTabs-1.6rc2.min.js"></script>
+
 	<script type="text/javascript" src="${root}/applications/FCKEditor/fckeditor.js"></script>
+	<script type="text/javascript" src="${root}/script/v3/infoglueWidgets.js"></script>
+	<script type="text/javascript" src="${root}/script/v3/infoglueFormUtilities.js"></script>
+	<link rel="stylesheet" type="text/css" href="${root}/css/v3/infoglueWidgets.css" /> 
 	
 	<script type="text/javascript">
 		
@@ -828,29 +834,18 @@
 				#elseif($attribute.inputType == "select")
 				<!-- Handles the input type select = dropbox -->
 					$attributeTitle ("$attribute.name") $attributeDescription <br/>
-					#printError("ContentVersion.$attribute.name")
-					<select $readonly size="1" id="$attribute.name" name="$attribute.name" class="$class">
-		    			#foreach($value in $attribute.getContentTypeAttribute("values").getContentTypeAttributeParameterValues())
-		    				<option value="$value.id" #checkSelected("$value.id" "$this.getAttributeValue($attribute.name)")>$value.getLocalizedValue("label", $session.locale)</option>
-		    			#end
-		    		</select>
-
+					#printErrorV3("ContentVersion.$attribute.name" false)
+					#selectAttribute($attribute)
 				#elseif($attribute.inputType == "checkbox")
 				<!-- Handles the input type checkbox -->
 					$attributeTitle ("$attribute.name") $attributeDescription <br/>
-	    			#printError("ContentVersion.$attribute.name")
-					#foreach($value in $attribute.getContentTypeAttribute("values").getContentTypeAttributeParameterValues())
-						<input $readonly type="checkbox" id="$attribute.name" name="$attribute.name" value="$value.id" #checkChecked("$value.id" "$this.getAttributeValue($attribute.name)")>$value.getLocalizedValue("label", $session.locale)
-	    			#end
-
+	    			#printErrorV3("ContentVersion.$attribute.name" false)
+					#checkboxAttribute($attribute)
 				#elseif($attribute.inputType == "radiobutton")
 				<!-- Handles the input type radiobutton -->
 					$attributeTitle ("$attribute.name") $attributeDescription <br/>
-					#printError("ContentVersion.$attribute.name")
-	    			#foreach($value in $attribute.getContentTypeAttribute("values").getContentTypeAttributeParameterValues())
-						<input $readonly type="radio" id="$attribute.name" name="$attribute.name" value="$value.id" #checkChecked("$value.id" "$this.getAttributeValue($attribute.name)")>$value.getLocalizedValue("label", $session.locale)
-	    			#end
-
+	    			#printErrorV3("ContentVersion.$attribute.name" false)
+					#radiobuttonAttribute($attribute)
 				#elseif($attribute.inputType == "customfield")
 				<!-- Handles the input type customfield -->
 					#set($attributeMarkup = $!attribute.getContentTypeAttribute("Markup").getContentTypeAttributeParameterValue().getValue("label"))
@@ -859,7 +854,6 @@
 					#set($processedMarkup = $attributeMarkup.replaceAll("attributeName", "$attribute.name"))
 					#set($processedMarkup = $processedMarkup.replaceAll("attributeValue", "$value"))
 	    			$processedMarkup
-
 				#end
 				
 			</td>
@@ -1031,6 +1025,7 @@
 				
 				if(isValid)
 				{
+					$(".optionListWidget option").attr('selected', 'selected');
 					buildVersionValue(); 
 					document.editForm.submit();
 				}
@@ -1091,54 +1086,6 @@
 			document.editForm.versionValue.value = versionValue;
 		}
 				
-		function getValue(elementId)
-		{
-			var value = "";
-			//alert(elementId);
-			
-			var allElem = document.editForm.elements;
-			//alert("allElem:" + allElem.length);
-		  	for(i=0;i<allElem.length;i++)
-			{
-			    var element = allElem[i];
-			    //alert("element.name:" + element.name);
-			    //alert("element.type:" + element.type);
-			    
-			    if(element.name == elementId)
-			    {
-			    	if(element.type=='checkbox' || element.type=='radio')
-			        {
-			        	//alert("element.checked:" + element.checked);
-			        	if(element.checked == true)
-			          	{
-			          		if(value == "")
-				          		value += element.value;
-							else
-								value += ',' + element.value;				
-			          	}
-			        }
-					else
-					{
-						var hiddenField = document.getElementById(elementId + "Hidden");
-						if(hiddenField)
-							fieldName = "document.editForm." + elementId + "Hidden";
-						else
-							fieldName = "document.editForm." + elementId;
-							
-						//alert("elementId:" + elementId);
-						//alert(document.getElementById(elementId).value);
-						//alert(fieldName);
-						//alert(eval(fieldName).value);
-						value = eval(fieldName).value;
-						//value = document.getElementById(elementId).value;		
-					}
-			    }      
-			}	
-										
-			//alert("value:" + value);
-			return value;
-		}
-		
 		</script>
 		<input type="hidden" id="versionValue" name="versionValue" value=""/>
 		<input type="hidden" id="currentEditorId" name="currentEditorId" value=""/>
