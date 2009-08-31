@@ -96,14 +96,41 @@ public class UpdateCacheAction extends InfoGlueAbstractAction
 	            return NONE;
 	        }
         }
-        
+    
+    	this.getResponse().setContentType("text/plain");
         this.getResponse().getWriter().println("test ok - cache action available");
-        
-        //this.getHttpSession().invalidate();
         
         return NONE;
     }
-    
+
+    /**
+     * This method will just reply to a testcall. 
+     */
+         
+    public String doTestV3() throws Exception
+    {
+        String operatingMode = CmsPropertyHandler.getOperatingMode();
+		
+        if(operatingMode != null && operatingMode.equalsIgnoreCase("3"))
+        {
+	        if(!ServerNodeController.getController().getIsIPAllowed(this.getRequest()))
+	        {
+	        	logger.error("A user from an IP(" + this.getRequest().getRemoteAddr() + ") which is not allowed tried to call doReCache.");
+
+	            this.getResponse().setContentType("text/plain");
+	            this.getResponse().setStatus(HttpServletResponse.SC_FORBIDDEN);
+	            this.getResponse().getWriter().println("You have no access to this view - talk to your administrator if you should.");
+	            
+	            return NONE;
+	        }
+        }
+        
+        this.getResponse().setContentType("text/html");
+        this.getResponse().getWriter().println("<html><body>test ok - cache action available</body></html>");
+        
+        return NONE;
+    }
+
     /**
      * This method is the application entry-point. The parameters has been set through the setters
      * and now we just have to render the appropriate output. 
