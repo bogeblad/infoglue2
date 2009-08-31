@@ -65,7 +65,7 @@
 <!--
 	function keepSession() 
 	{ 
-		jQuery.get("UpdateCache!test.action"); 
+		jQuery.get("UpdateCache!testV3.action"); 
 		setTimeout("keepSession()", 60000); 
 	}
 		
