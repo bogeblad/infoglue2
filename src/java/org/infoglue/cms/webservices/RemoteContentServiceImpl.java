@@ -26,6 +26,7 @@ package org.infoglue.cms.webservices;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -264,8 +265,26 @@ public class RemoteContentServiceImpl extends RemoteInfoGlueService
 	            String creatorName 				= (String)content.get("creatorName");
 	            Boolean isBranch 				= (Boolean)content.get("isBranch");
 	            Integer isProtected 			= (Integer)content.get("isProtected");
-	            Date expireDateTime 			= (Date)content.get("expireDateTime");
-	            Date publishDateTime 			= (Date)content.get("publishDateTime");
+
+	            Date expireDateTime = null;
+	            Object expireDateTimeObject = content.get("expireDateTime");
+	            if(expireDateTimeObject != null)
+	            {
+		            if(expireDateTimeObject instanceof Date)
+		            	expireDateTime = (Date)expireDateTimeObject;
+		            else if(expireDateTimeObject instanceof Calendar)
+		            	expireDateTime = ((Calendar)expireDateTimeObject).getTime();
+		        }	            	
+
+	            Date publishDateTime = null;
+	            Object publishDateTimeObject = content.get("publishDateTime");
+	            if(publishDateTimeObject != null)
+	            {
+		            if(publishDateTimeObject instanceof Date)
+		            	publishDateTime = (Date)publishDateTimeObject;
+		            else if(publishDateTimeObject instanceof Calendar)
+		            	publishDateTime = ((Calendar)publishDateTimeObject).getTime();
+	        	}
 	            
 	            logger.info("name:" + name);
 	            logger.info("contentTypeDefinitionId:" + contentTypeDefinitionId);
@@ -343,16 +362,24 @@ public class RemoteContentServiceImpl extends RemoteInfoGlueService
 	                Integer stateId = (Integer)contentVersion.get("stateId");
 	                Boolean allowHTMLContent = (Boolean)contentVersion.get("allowHTMLContent");
 	                Boolean allowExternalLinks = (Boolean)contentVersion.get("allowExternalLinks");
+	                Boolean allowDollarSigns = (Boolean)contentVersion.get("allowDollarSigns");
+	                Boolean allowAnchorSigns = (Boolean)contentVersion.get("allowAnchorSigns");
 
 	                if(allowHTMLContent == null)
 	                	allowHTMLContent = new Boolean(false);
 	                if(allowExternalLinks == null)
 	                	allowExternalLinks = new Boolean(false);
+	                if(allowDollarSigns == null)
+	                	allowDollarSigns = new Boolean(false);
+	                if(allowAnchorSigns == null)
+	                	allowAnchorSigns = new Boolean(true);
 	                
 	    	        logger.info("languageId:" + languageId);
 	    	        logger.info("stateId:" + stateId);
 	    	        logger.info("allowHTMLContent:" + allowHTMLContent);
 	    	        logger.info("allowExternalLinks:" + allowExternalLinks);
+	    	        logger.info("allowDollarSigns:" + allowDollarSigns);
+	    	        logger.info("allowAnchorSigns:" + allowAnchorSigns);
 
 	                ContentVersionVO contentVersionVO = new ContentVersionVO();
 	                contentVersionVO.setLanguageId(languageId);
@@ -375,7 +402,7 @@ public class RemoteContentServiceImpl extends RemoteInfoGlueService
 	                    String attributeName  = (String)attributesIterator.next();
 	                    String attributeValue = (String)attributes.get(attributeName);
 		                
-	                    attributeValue = cleanAttributeValue(attributeValue, allowHTMLContent.booleanValue(), allowExternalLinks.booleanValue());
+	                    attributeValue = cleanAttributeValue(attributeValue, allowHTMLContent, allowExternalLinks, allowDollarSigns, allowAnchorSigns);
 	                    
 	                    Element attribute = domBuilder.addElement(attributesRoot, attributeName);
 	                    domBuilder.addCDATAElement(attribute, attributeValue);
@@ -626,8 +653,26 @@ public class RemoteContentServiceImpl extends RemoteInfoGlueService
             
             Integer contentId 				= (Integer)content.get("contentId");
             String name 					= (String)content.get("name");
-            Date publishDateTime 			= (Date)content.get("publishDateTime");
-            Date expireDateTime 			= (Date)content.get("expireDateTime");
+
+            Date expireDateTime = null;
+            Object expireDateTimeObject = content.get("expireDateTime");
+            if(expireDateTimeObject != null)
+            {
+	            if(expireDateTimeObject instanceof Date)
+	            	expireDateTime = (Date)expireDateTimeObject;
+	            else if(expireDateTimeObject instanceof Calendar)
+	            	expireDateTime = ((Calendar)expireDateTimeObject).getTime();
+	        }	            	
+
+            Date publishDateTime = null;
+            Object publishDateTimeObject = content.get("publishDateTime");
+            if(publishDateTimeObject != null)
+            {
+	            if(publishDateTimeObject instanceof Date)
+	            	publishDateTime = (Date)publishDateTimeObject;
+	            else if(publishDateTimeObject instanceof Calendar)
+	            	publishDateTime = ((Calendar)publishDateTimeObject).getTime();
+        	}
             
             logger.info("contentId:" + contentId);
             logger.info("name:" + name);
@@ -698,8 +743,11 @@ public class RemoteContentServiceImpl extends RemoteInfoGlueService
             String versionComment 	 = (String)contentVersion.get("versionComment");
             Boolean allowHTMLContent = (Boolean)contentVersion.get("allowHTMLContent");
             Boolean allowExternalLinks 		= (Boolean)contentVersion.get("allowExternalLinks");
+            Boolean allowDollarSigns = (Boolean)contentVersion.get("allowDollarSigns");
+            Boolean allowAnchorSigns = (Boolean)contentVersion.get("allowAnchorSigns");
             Boolean keepExistingAttributes 	= (Boolean)contentVersion.get("keepExistingAttributes");
             Boolean keepExistingCategories 	= (Boolean)contentVersion.get("keepExistingCategories");
+
             if(allowHTMLContent == null)
             	allowHTMLContent = new Boolean(false);
 
@@ -708,7 +756,12 @@ public class RemoteContentServiceImpl extends RemoteInfoGlueService
 
             if(keepExistingCategories == null)
             	keepExistingCategories = new Boolean(true);
-            		
+
+            if(allowDollarSigns == null)
+            	allowDollarSigns = new Boolean(false);
+            if(allowAnchorSigns == null)
+            	allowAnchorSigns = new Boolean(true);
+            
             logger.info("contentVersionId:" + contentVersionId);
             logger.info("contentId:" + contentId);
             logger.info("languageId:" + languageId);
@@ -718,6 +771,8 @@ public class RemoteContentServiceImpl extends RemoteInfoGlueService
             logger.info("versionComment:" + versionComment);
             logger.info("allowHTMLContent:" + allowHTMLContent);
             logger.info("allowExternalLinks:" + allowExternalLinks);
+	        logger.info("allowDollarSigns:" + allowDollarSigns);
+	        logger.info("allowAnchorSigns:" + allowAnchorSigns);
 
             ContentVersionVO contentVersionVO = null;
             if(contentVersionId != null)
@@ -762,7 +817,7 @@ public class RemoteContentServiceImpl extends RemoteInfoGlueService
 	                String attributeName  = (String)attributesIterator.next();
 	                String attributeValue = (String)attributes.get(attributeName);
 	                
-                    attributeValue = cleanAttributeValue(attributeValue, allowHTMLContent.booleanValue(), allowExternalLinks.booleanValue());
+                    attributeValue = cleanAttributeValue(attributeValue, allowHTMLContent, allowExternalLinks, allowDollarSigns, allowAnchorSigns);
                     
                     if(keepExistingAttributes)
 	                {
