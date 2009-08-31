@@ -23,12 +23,14 @@
 
 package org.infoglue.deliver.applications.databeans;
 
+import org.infoglue.cms.applications.databeans.GenericOptionDefinition;
+
 
 /**
  * 
  */
 
-public class ComponentPropertyOption
+public class ComponentPropertyOption implements GenericOptionDefinition
 {
 	private String name;
 	private String value;
