@@ -1460,7 +1460,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 								PropertyOptionsDataProvider provider = (PropertyOptionsDataProvider)Class.forName(componentProperty.getDataProvider()).newInstance();
 								logger.info("componentProperty.getDataProviderParameters():" + componentProperty.getDataProviderParameters());
 								Map parameters = httpHelper.toMap(componentProperty.getDataProviderParameters(), "UTF-8", ";");
-								optionsIterator = provider.getPropertyOptions(parameters, principal, templateController.getDatabase()).iterator();
+								optionsIterator = provider.getOptions(parameters, locale.getLanguage(), principal, templateController.getDatabase()).iterator();
 							}
 							catch (Exception e) 
 							{
@@ -1533,7 +1533,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 								PropertyOptionsDataProvider provider = (PropertyOptionsDataProvider)Class.forName(componentProperty.getDataProvider()).newInstance();
 								logger.info("componentProperty.getDataProviderParameters():" + componentProperty.getDataProviderParameters());
 								Map parameters = httpHelper.toMap(componentProperty.getDataProviderParameters(), "UTF-8", ";");
-								optionsIterator = provider.getPropertyOptions(parameters, principal, templateController.getDatabase()).iterator();
+								optionsIterator = provider.getOptions(parameters, locale.getLanguage(), principal, templateController.getDatabase()).iterator();
 							}
 							catch (Exception e) 
 							{
@@ -2799,13 +2799,13 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 					}
 					else if(type.equalsIgnoreCase(ComponentProperty.DATEFIELD))	
 					{		
-						String value = getComponentPropertyValue(componentId, name, property.getAllowLanguageVariations());
+						String value = getComponentPropertyValue(componentId, name, templateController, property.getAllowLanguageVariations());
 						timer.printElapsedTime("Set property2");
 						property.setValue(value);
 					}
 					else if(type.equalsIgnoreCase(ComponentProperty.CUSTOMFIELD))	
 					{		
-						String value = getComponentPropertyValue(componentId, name, property.getAllowLanguageVariations());
+						String value = getComponentPropertyValue(componentId, name, templateController, property.getAllowLanguageVariations());
 						String customMarkup = binding.attributeValue("customMarkup");
 						String processedMarkup =  customMarkup.replaceAll("propertyName", name);
 						processedMarkup = processedMarkup.replaceAll("propertyValue", value);
@@ -2848,7 +2848,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 					}
 					else if(type.equalsIgnoreCase(ComponentProperty.CHECKBOXFIELD))	
 					{		
-						String value = getComponentPropertyValue(componentId, name, property.getAllowLanguageVariations());
+						String value = getComponentPropertyValue(componentId, name, templateController, property.getAllowLanguageVariations());
 						String allowMultipleSelections = binding.attributeValue("allowMultipleSelections");
 						if(allowMultipleSelections != null && allowMultipleSelections.equalsIgnoreCase("true"))
 							property.setAllowMultipleSelections(true);
@@ -2955,7 +2955,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		Integer siteNodeId = null;
 		Integer languageId = null;
 		
-		if(this.getRequest().getParameter("siteNodeId") != null && this.getRequest().getParameter("siteNodeId").length() > 0)
+		if(this.getRequest() != null && this.getRequest().getParameter("siteNodeId") != null && this.getRequest().getParameter("siteNodeId").length() > 0)
 			siteNodeId = new Integer(this.getRequest().getParameter("siteNodeId"));
 		else
 		{

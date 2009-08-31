@@ -10,6 +10,8 @@ import org.apache.log4j.Logger;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.exolab.castor.jdo.Database;
+import org.infoglue.cms.applications.databeans.GenericOptionDefinition;
+import org.infoglue.cms.entities.management.ContentTypeAttributeOptionDefinition;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.deliver.applications.databeans.ComponentPropertyOption;
 import org.infoglue.deliver.util.CacheController;
@@ -18,8 +20,8 @@ import org.infoglue.cms.util.dom.DOMBuilder;
 public class RemoteXMLPropertyOptionsDataProvider implements PropertyOptionsDataProvider
 {
     private final static Logger logger = Logger.getLogger(RemoteXMLPropertyOptionsDataProvider.class.getName());
-
-	public List<ComponentPropertyOption> getPropertyOptions(Map parameters, InfoGluePrincipal principal, Database db) throws Exception
+	
+	public List<GenericOptionDefinition> getOptions(Map parameters, String languageCode, InfoGluePrincipal principal, Database db) throws Exception
 	{
 		String serviceUrl = (String)parameters.get("serviceUrl");
 		if(serviceUrl == null)
@@ -32,7 +34,7 @@ public class RemoteXMLPropertyOptionsDataProvider implements PropertyOptionsData
 		logger.info("RemoteXMLPropertyOptionsDataProvider");
 		logger.info("serviceUrl:" + serviceUrl);
 		logger.info("charset:" + charset);
-		List<ComponentPropertyOption> options = (List<ComponentPropertyOption>)CacheController.getCachedObjectFromAdvancedCache("propertyOptionsCache", "properties_" + serviceUrl + "_" + charset, 300);
+		List<GenericOptionDefinition> options = (List<GenericOptionDefinition>)CacheController.getCachedObjectFromAdvancedCache("propertyOptionsCache", "properties_" + serviceUrl + "_" + charset + "_" + languageCode, 300);
 		if(options != null)
 		{
 			logger.info("Using cached options...");
@@ -43,7 +45,7 @@ public class RemoteXMLPropertyOptionsDataProvider implements PropertyOptionsData
 		{
 			logger.info("Getting options from remote service...");
 
-			options = new ArrayList<ComponentPropertyOption>();
+			options = new ArrayList<GenericOptionDefinition>();
 			
 			org.infoglue.deliver.util.HttpHelper httpHelper = new org.infoglue.deliver.util.HttpHelper();
 			String xml = httpHelper.getUrlContent(serviceUrl, Collections.EMPTY_MAP, parameters, charset, 10000);
@@ -59,7 +61,11 @@ public class RemoteXMLPropertyOptionsDataProvider implements PropertyOptionsData
 				Element propertyElement = (Element)propertiesIterator.next();
 				logger.info("propertyElement:" + propertyElement);
 				ComponentPropertyOption option = new ComponentPropertyOption();
-				option.setName(propertyElement.attributeValue("name"));
+				if(propertyElement.attributeValue("name_" + languageCode) != null && !propertyElement.attributeValue("name_" + languageCode).equals(""))
+					option.setName(propertyElement.attributeValue("name_" + languageCode));
+				else
+					option.setName(propertyElement.attributeValue("name"));
+				
 				option.setValue(propertyElement.attributeValue("value"));
 				options.add(option);
 			}
@@ -70,7 +76,7 @@ public class RemoteXMLPropertyOptionsDataProvider implements PropertyOptionsData
 		catch (Exception e) 
 		{
 			e.printStackTrace();
-			options = (List<ComponentPropertyOption>)CacheController.getCachedObjectFromAdvancedCache("propertyOptionsCache", "properties_" + serviceUrl + "_" + charset);
+			options = (List<GenericOptionDefinition>)CacheController.getCachedObjectFromAdvancedCache("propertyOptionsCache", "properties_" + serviceUrl + "_" + charset);
 		}
 		
 		return options;

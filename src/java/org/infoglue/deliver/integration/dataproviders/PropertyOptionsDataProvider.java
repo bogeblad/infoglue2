@@ -27,10 +27,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.exolab.castor.jdo.Database;
+import org.infoglue.cms.applications.databeans.GenericOptionDefinition;
 import org.infoglue.cms.security.InfoGluePrincipal;
-import org.infoglue.deliver.applications.databeans.ComponentPropertyOption;
 
 public interface PropertyOptionsDataProvider extends PropertyDataProvider
 {
-	public List<ComponentPropertyOption> getPropertyOptions(Map parameters, InfoGluePrincipal principal, Database db) throws Exception;
+	public List<GenericOptionDefinition> getOptions(Map parameters, String languageCode, InfoGluePrincipal principal, Database db) throws Exception;
 }

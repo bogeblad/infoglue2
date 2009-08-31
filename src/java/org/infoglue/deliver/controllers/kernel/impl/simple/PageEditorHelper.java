@@ -41,6 +41,7 @@ import org.dom4j.Element;
 import org.dom4j.tree.DefaultAttribute;
 import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.applications.common.VisualFormatter;
+import org.infoglue.cms.applications.databeans.GenericOptionDefinition;
 import org.infoglue.cms.applications.databeans.ReferenceBean;
 import org.infoglue.cms.controllers.kernel.impl.simple.AccessRightController;
 import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
@@ -612,7 +613,7 @@ public class PageEditorHelper extends BaseDeliveryController
 						sb.append("	<input type=\"hidden\" name=\"" + propertyIndex + "_propertyName\" value=\"" + componentProperty.getName() + "\">");
 						sb.append("	<select class=\"propertyselect\" name=\"" + componentProperty.getName() + "\" onchange=\"setDirty();\">");
 						
-						Iterator<ComponentPropertyOption> optionsIterator = componentProperty.getOptions().iterator();
+						Iterator<GenericOptionDefinition> optionsIterator = componentProperty.getOptions().iterator();
 	
 						if(componentProperty.getDataProvider() != null && !componentProperty.getDataProvider().equals(""))
 						{
@@ -620,12 +621,12 @@ public class PageEditorHelper extends BaseDeliveryController
 							{
 								PropertyOptionsDataProvider provider = (PropertyOptionsDataProvider)Class.forName(componentProperty.getDataProvider()).newInstance();
 								Map parameters = httpHelper.toMap(componentProperty.getDataProviderParameters(), "UTF-8", ";");
-								optionsIterator = provider.getPropertyOptions(parameters, principal, db).iterator();
+								optionsIterator = provider.getOptions(parameters, locale.getLanguage(), principal, db).iterator();
 							}
 							catch (Exception e) 
 							{
 								logger.warn("A problem loading the data provider for property " + componentProperty.getName() + ":" + e.getMessage(), e);
-								List<ComponentPropertyOption> errorOptions = new ArrayList<ComponentPropertyOption>();
+								List<GenericOptionDefinition> errorOptions = new ArrayList<GenericOptionDefinition>();
 								ComponentPropertyOption componentPropertyOption = new ComponentPropertyOption();
 								componentPropertyOption.setName("Error:" + e.getMessage());
 								componentPropertyOption.setValue("");
@@ -688,7 +689,7 @@ public class PageEditorHelper extends BaseDeliveryController
 							{
 								PropertyOptionsDataProvider provider = (PropertyOptionsDataProvider)Class.forName(componentProperty.getDataProvider()).newInstance();
 								Map parameters = httpHelper.toMap(componentProperty.getDataProviderParameters(), "UTF-8", ";");
-								optionsIterator = provider.getPropertyOptions(parameters, principal, db).iterator();
+								optionsIterator = provider.getOptions(parameters, locale.getLanguage(), principal, db).iterator();
 							}
 							catch (Exception e) 
 							{
