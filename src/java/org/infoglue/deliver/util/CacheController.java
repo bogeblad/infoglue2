@@ -29,6 +29,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -1641,6 +1642,9 @@ public class CacheController extends Thread
     	    pageKey = pageKey.replaceAll("\\$useragent", "" + userAgent);
     	    pageKey = pageKey.replaceAll("\\$queryString", "" + queryString);
     	    
+    	    if(logger.isInfoEnabled())
+    			logger.info("Raw pageKey:" + pageKey);
+    			
     	    int sessionAttributeStartIndex = pageKey.indexOf("$session.");
     	    while(sessionAttributeStartIndex > -1)
     	    {
@@ -1651,11 +1655,21 @@ public class CacheController extends Thread
         	    else
         	        sessionAttribute = pageKey.substring(sessionAttributeStartIndex + 9);
 
-        	    pageKey = pageKey.replaceAll("\\$session." + sessionAttribute, "" + session.getAttribute(sessionAttribute));    	    
+        	    Object sessionAttributeValue = session.getAttribute(sessionAttribute);
+        	    if(sessionAttributeValue == null && sessionAttribute.equalsIgnoreCase("principal"))
+        	    	sessionAttributeValue = session.getAttribute("infogluePrincipal");
+        	    
+        	    if(logger.isInfoEnabled())
+        	    	logger.info("sessionAttribute:" + sessionAttribute);
+
+        	    pageKey = pageKey.replaceAll("\\$session." + sessionAttribute, "" + sessionAttributeValue);    	    
     	    
         	    sessionAttributeStartIndex = pageKey.indexOf("$session.");
     	    }
-    	    
+    	   
+    	    if(logger.isInfoEnabled())
+    			logger.info("after session pageKey:" + pageKey);
+
     	    int cookieAttributeStartIndex = pageKey.indexOf("$cookie.");
     	    while(cookieAttributeStartIndex > -1)
     	    {
@@ -1722,7 +1736,11 @@ public class CacheController extends Thread
         	    else
         	        sessionAttribute = componentKey.substring(sessionAttributeStartIndex + 9);
 
-        	    componentKey = componentKey.replaceAll("\\$session." + sessionAttribute, "" + session.getAttribute(sessionAttribute));    	    
+        	    Object sessionAttributeValue = session.getAttribute(sessionAttribute);
+        	    if(sessionAttributeValue == null && sessionAttribute.equalsIgnoreCase("principal"))
+        	    	sessionAttributeValue = session.getAttribute("infogluePrincipal");
+
+        	    componentKey = componentKey.replaceAll("\\$session." + sessionAttribute, "" + sessionAttributeValue);    	    
     	    
         	    sessionAttributeStartIndex = componentKey.indexOf("$session.");
     	    }
