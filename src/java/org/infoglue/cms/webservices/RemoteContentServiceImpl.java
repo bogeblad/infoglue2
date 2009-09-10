@@ -784,6 +784,8 @@ public class RemoteContentServiceImpl extends RemoteInfoGlueService
                 return new Boolean(false);
                 
             contentVersionVO.setVersionComment(versionComment);
+            contentVersionVO.setModifiedDateTime(new Date());
+            contentVersionVO.setVersionModifier("" + principalName);
             
             Map attributes = (Map)contentVersion.get("contentVersionAttributes");
             
