@@ -303,7 +303,7 @@ public abstract class InfoGlueAbstractAction extends WebworkAbstractAction
 				principal = UserControllerProxy.getController().getUser(userName);
 				
 				if(principal != null)
-					CacheController.cacheObject("userCache", "anonymous", principal);
+					CacheController.cacheObject("userCache", userName, principal);
 			}			
 		}
 		catch(Exception e) 
