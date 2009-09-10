@@ -21,7 +21,7 @@
 		$(".displayNameLanguageVariation").each(function (i) {
 			//alert("Adding:" + $(this).attr("id") + "-" + $(this).val());
 			if($(this).val() != "")
-				displayNameString = displayNameString + "," + $(this).attr("id") + "=" + $(this).val();
+				displayNameString = displayNameString + "," + $(this).attr("id") + "=[" + $(this).val() + "]";
 	    });
 
 		$("input[@id='model/displayName']").val(displayNameString.substring(1));
