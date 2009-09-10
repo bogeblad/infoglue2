@@ -35,6 +35,8 @@ import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSessionEvent;
 import javax.servlet.http.HttpSessionListener;
 
+import org.apache.log4j.Logger;
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.applications.databeans.SessionInfoBean;
 import org.infoglue.cms.security.InfoGlueAuthenticationFilter;
 import org.infoglue.cms.security.InfoGluePrincipal;
@@ -48,6 +50,8 @@ import org.infoglue.cms.security.InfoGluePrincipal;
 
 public class CmsSessionContextListener implements HttpSessionListener 
 {	
+    private final static Logger logger = Logger.getLogger(CmsSessionContextListener.class.getName());
+
 	public static final Map sessions = Collections.synchronizedMap(new HashMap());
 	
 	private	static int activeSessions =	0;
@@ -88,19 +92,26 @@ public class CmsSessionContextListener implements HttpSessionListener
 			{
 				String s = (String) iter.next();
 				HttpSession sess = (HttpSession) sessions.get(s);
-			
-				SessionInfoBean sib = new SessionInfoBean(sess.getId());
 				
-				InfoGluePrincipal principal = (InfoGluePrincipal)sess.getAttribute(InfoGlueAuthenticationFilter.INFOGLUE_FILTER_USER);
-				if(principal == null)
-					principal = (InfoGluePrincipal)sess.getAttribute("infogluePrincipal");
-				
-				if(principal != null)
+				try
 				{
-					sib.setPrincipal(principal);
-					sib.setLastAccessedDate(new Date(sess.getLastAccessedTime()));
+					SessionInfoBean sib = new SessionInfoBean(sess.getId());
 					
-					stiList.add(sib);
+					InfoGluePrincipal principal = (InfoGluePrincipal)sess.getAttribute(InfoGlueAuthenticationFilter.INFOGLUE_FILTER_USER);
+					if(principal == null)
+						principal = (InfoGluePrincipal)sess.getAttribute("infogluePrincipal");
+					
+					if(principal != null)
+					{
+						sib.setPrincipal(principal);
+						sib.setLastAccessedDate(new Date(sess.getLastAccessedTime()));
+						
+						stiList.add(sib);
+					}
+				}
+				catch (Exception e) 
+				{
+					logger.info("A session was invalid allready:" + e.getMessage(), e);
 				}
 			}
 		}
