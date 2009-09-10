@@ -20,7 +20,7 @@
  *
  * ===============================================================================
  *
- * $Id: CategoryVO.java,v 1.5.2.1 2009/09/10 12:17:06 mattias Exp $
+ * $Id: CategoryVO.java,v 1.5.2.2 2009/09/10 13:21:50 mattias Exp $
  */
 package org.infoglue.cms.entities.management;
 
@@ -144,9 +144,7 @@ public class CategoryVO extends Persistent
 			localizedName = localizedName.substring(localizedName.indexOf(startSeparator) + startSeparator.length());
 		}
     	
-		System.out.println("localizedName:" + localizedName);
-    	
-    	return localizedName;
+		return localizedName;
 	}
 
 	public void setDisplayName(String s)
