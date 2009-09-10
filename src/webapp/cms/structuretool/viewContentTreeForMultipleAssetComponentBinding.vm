@@ -503,9 +503,12 @@
 		function init()
 		{
 			#foreach($binding in $componentBindings)
-				#set($url = $!this.getDigitalAssetThumbnailUrl($converter.toNonNegativeInteger($binding.entityId), "$binding.assetKey"))
+				#if("$!binding.assetKey" == "")
+					#set($url = $!this.getDigitalAssetThumbnailUrl($converter.toNonNegativeInteger($binding.entityId)))
+				#else
+					#set($url = $!this.getDigitalAssetThumbnailUrl($converter.toNonNegativeInteger($binding.entityId), "$binding.assetKey"))
+				#end
 				binding = new AssetBinding("Content", "$binding.entityId", "$binding.assetKey", "$url", "$formatter.cleanForJavascriptStrings($binding.path)");
-				//alert("binding:" + binding.getAssetUrl() + " for $binding.entityId $binding.assetKey");
 				siteNodesVector.addElement(binding);
 			#end
 	
