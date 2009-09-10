@@ -20,7 +20,7 @@
  *
  * ===============================================================================
  *
- * $Id: CategoryVO.java,v 1.5 2009/05/11 19:08:20 mattias Exp $
+ * $Id: CategoryVO.java,v 1.5.2.1 2009/09/10 12:17:06 mattias Exp $
  */
 package org.infoglue.cms.entities.management;
 
@@ -85,6 +85,7 @@ public class CategoryVO extends Persistent
 
 	public void setName(String s)
 	{
+		s = s.replaceAll(",", "");
 		name = s;
 	}
 
@@ -99,37 +100,51 @@ public class CategoryVO extends Persistent
     	
     	if(localizedName == null)
     		return "";
+    	
+    	String startSeparator = "=[";
+    	String endSeparator = "],";
+    	if(localizedName.indexOf("[") == -1)
+    	{
+    		startSeparator = "=";
+    		endSeparator = ",";
+    	}
     		
-    	int startIndex = localizedName.indexOf(languageCode + "=");
+    	int startIndex = localizedName.indexOf(languageCode + startSeparator);
     	if(startIndex > -1)
     	{
-    		int stopIndex = getDisplayName().indexOf(",", startIndex + languageCode.length() + 1);
+    		int stopIndex = getDisplayName().indexOf(endSeparator, startIndex + languageCode.length() + startSeparator.length());
     		if(stopIndex > -1)
-    			localizedName = getDisplayName().substring(startIndex + languageCode.length() + 1, stopIndex);
+    			localizedName = getDisplayName().substring(startIndex + languageCode.length() + startSeparator.length(), stopIndex);
     		else
-    			localizedName = getDisplayName().substring(startIndex + languageCode.length() + 1);    			
+    			localizedName = getDisplayName().substring(startIndex + languageCode.length() +  + startSeparator.length());    			
     	}
     	else
     	{
-    		startIndex = getDisplayName().indexOf(fallbackLanguageCode + "=");
+    		startIndex = getDisplayName().indexOf(fallbackLanguageCode + startSeparator);
         	if(startIndex > -1)
         	{
-        		int stopIndex = getDisplayName().indexOf(",", startIndex + fallbackLanguageCode.length() + 1);
+        		int stopIndex = getDisplayName().indexOf(endSeparator, startIndex + fallbackLanguageCode.length() + startSeparator.length());
         		if(stopIndex > -1)
-        			localizedName = getDisplayName().substring(startIndex + fallbackLanguageCode.length() + 1, stopIndex);
+        			localizedName = getDisplayName().substring(startIndex + fallbackLanguageCode.length() + startSeparator.length(), stopIndex);
         		else
-        			localizedName = getDisplayName().substring(startIndex + fallbackLanguageCode.length() + 1);    			
+        			localizedName = getDisplayName().substring(startIndex + fallbackLanguageCode.length() + startSeparator.length());    			
         	}
     	}
     	
-    	if(localizedName.indexOf(",") > -1)
+    	if(localizedName.indexOf(endSeparator) > -1)
     	{
-    		localizedName = localizedName.substring(0, localizedName.indexOf(","));
+    		localizedName = localizedName.substring(0, localizedName.indexOf(endSeparator));
     	}
-		if(localizedName.indexOf("=") > -1)
+    	else if(localizedName.indexOf("]") > -1)
+    	{
+    		localizedName = localizedName.substring(0, localizedName.indexOf("]"));
+    	}
+    	if(localizedName.indexOf(startSeparator) > -1)
 		{
-			localizedName = localizedName.substring(localizedName.indexOf("=") + 1);
+			localizedName = localizedName.substring(localizedName.indexOf(startSeparator) + startSeparator.length());
 		}
+    	
+		System.out.println("localizedName:" + localizedName);
     	
     	return localizedName;
 	}
