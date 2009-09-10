@@ -1612,7 +1612,35 @@ public class CacheController extends Thread
 		}
 
 	}
+	
+	public static String[] getPublicationPersistentCacheNames()
+	{
+		List<String> caches = new ArrayList<String>();
 
+		caches.add("ServerNodeProperties");
+		caches.add("serverNodePropertiesCache");
+		caches.add("pageCache");
+		caches.add("pageCacheExtra");
+		caches.add("componentCache");
+		caches.add("NavigationCache");
+		caches.add("pagePathCache");
+		caches.add("userCache");
+		caches.add("pageCacheParentSiteNodeCache");
+		caches.add("pageCacheLatestSiteNodeVersions");
+		caches.add("pageCacheSiteNodeTypeDefinition");
+		caches.add("JNDIAuthorizationCache");
+		caches.add("WebServiceAuthorizationCache");
+		caches.add("importTagResultCache");
+
+		List<String> userCaches = CmsPropertyHandler.getExtraPublicationPersistentCacheNames();
+		logger.info("Adding ExtraPublicationPersistentCacheNames:" + userCaches);
+		caches.addAll(userCaches);
+		
+		String[] cachesArr = caches.toArray(new String[caches.size()]);  
+		
+		return cachesArr;
+	}
+	
 	
     /**
      * Composer of the pageCacheKey.

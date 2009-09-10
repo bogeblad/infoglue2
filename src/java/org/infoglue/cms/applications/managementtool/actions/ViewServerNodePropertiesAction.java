@@ -137,6 +137,7 @@ public class ViewServerNodePropertiesAction extends InfoGluePropertiesAbstractAc
 	    populate(ps, "pageKey");
 	    populate(ps, "componentKey");
 	    populateData(ps, "cacheSettings");
+	    populateData(ps, "extraPublicationPersistentCacheNames");
 	    populate(ps, "cmsBaseUrl");
 	    populate(ps, "cmsFullBaseUrl");
 	    populate(ps, "componentEditorUrl");
@@ -258,6 +259,7 @@ public class ViewServerNodePropertiesAction extends InfoGluePropertiesAbstractAc
 	    populateData(ps, "publicDeliveryUrls");
 	    populateData(ps, "toolLanguages");
 	    populateData(ps, "deploymentServers");
+	    populateData(ps, "vcServers");
 	    populate(ps, "decoratedPageInvoker");
 	    
 	    populate(ps, "edition.pageSize");
