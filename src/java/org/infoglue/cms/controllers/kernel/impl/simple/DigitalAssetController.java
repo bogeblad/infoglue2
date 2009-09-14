@@ -1069,6 +1069,14 @@ public class DigitalAssetController extends BaseController
 					File originalFile = new File(filePath + File.separator + fileName);
 					if(!originalFile.exists())
 					{
+						logger.info("No file there - let's try getting it again.");
+						String originalUrl = DigitalAssetController.getController().getDigitalAssetUrl(digitalAsset.getValueObject(), db);
+						logger.info("originalUrl:" + originalUrl);
+						originalFile = new File(filePath + File.separator + fileName);
+					}
+					
+					if(!originalFile.exists())
+					{
 						logger.warn("The original file " + filePath + File.separator + fileName + " was not found - missing from system.");
 						assetUrl = "images" + File.separator + BROKENFILENAME;
 					}
