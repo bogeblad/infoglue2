@@ -87,8 +87,8 @@ public class UpdateUserServiceTag extends TemplateControllerTag
 		   ws.setOperationName(operationName);
 		   ws.setReturnType(Boolean.class);
 		   	       
-		   ConstraintExceptionBuffer ceb = this.systemUserVO.validate();
-		   ceb.throwIfNotEmpty();
+		   //ConstraintExceptionBuffer ceb = this.systemUserVO.validate();
+		   //ceb.throwIfNotEmpty();
 		   
 		   ws.addArgument("firstName", this.systemUserVO.getFirstName());
 		   ws.addArgument("lastName", this.systemUserVO.getLastName());
