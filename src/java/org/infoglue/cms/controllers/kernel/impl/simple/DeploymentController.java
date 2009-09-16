@@ -44,7 +44,7 @@ import org.infoglue.cms.io.FileHelper;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
-import org.infoglue.common.util.cvs.connectors.NetBeansConnector;
+import org.infoglue.common.util.cvsclient.connectors.NetBeansConnector;
 import org.infoglue.common.util.vc.connectors.VCConnector;
 
 public class DeploymentController 

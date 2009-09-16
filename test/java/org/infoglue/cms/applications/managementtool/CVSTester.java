@@ -20,14 +20,14 @@
  *
  * ===============================================================================
  *
- * $Id: CVSTester.java,v 1.1.2.1 2009/09/16 12:46:23 mattias Exp $
+ * $Id: CVSTester.java,v 1.1.2.2 2009/09/16 12:58:10 mattias Exp $
  */
 
 package org.infoglue.cms.applications.managementtool;
 
 import java.io.File;
 
-import org.infoglue.common.util.cvs.connectors.NetBeansConnector;
+import org.infoglue.common.util.cvsclient.connectors.NetBeansConnector;
 import org.infoglue.common.util.vc.connectors.VCConnector;
 
 public class CVSTester
