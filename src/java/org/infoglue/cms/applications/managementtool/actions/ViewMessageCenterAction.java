@@ -113,7 +113,7 @@ public class ViewMessageCenterAction extends InfoGlueAbstractAction
         return "successMessageSent";
     }
 
-    public List getSessionInfoBeanList()
+    public List getSessionInfoBeanList() throws Exception
     {
     	return CmsSessionContextListener.getSessionInfoBeanList();
     }
