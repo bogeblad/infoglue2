@@ -36,7 +36,17 @@ public class ViewDeploymentChooseServerAction extends InfoGlueAbstractAction
 	private List deploymentServers = new ArrayList();
 	private Integer deploymentServerIndex = null;
 	private String synchronizationMethod = "pull";
+
+	//Variables used by the quick deploy feature
+	private Integer contentId;
 	
+	public String doInputQuickV3() throws Exception
+    {
+    	this.deploymentServers = CmsPropertyHandler.getDeploymentServers();
+    	
+    	return "inputQuickV3";
+    }
+
     public String doInput() throws Exception
     {
     	this.deploymentServers = CmsPropertyHandler.getDeploymentServers();
@@ -74,4 +84,14 @@ public class ViewDeploymentChooseServerAction extends InfoGlueAbstractAction
 		this.synchronizationMethod = synchronizationMethod;
 	}
         
+	public Integer getContentId() 
+    {
+		return contentId;
+	}
+
+	public void setContentId(Integer contentId) 
+	{
+		this.contentId = contentId;
+	}
+
 }

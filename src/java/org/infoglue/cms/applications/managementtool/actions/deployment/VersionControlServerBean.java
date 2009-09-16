@@ -49,7 +49,7 @@ public class VersionControlServerBean
 	public String getCVSROOT()
 	{
 		//":pserver:mattias@dev1.sprawlsolutions.se:/home/cvsroot";
-		return ":" + type + ":" + user + "@" + host + ":" + port + path;
+		return ":" + type + ":" + user + "@" + host + ":" + (port == null ? "" : port) + path;
 	}
 	
 	public String getName() 
@@ -81,7 +81,12 @@ public class VersionControlServerBean
 	{
 		return password;
 	}
-	
+
+	public void setPassword(String password) 
+	{
+		this.password = password;
+	}
+
 	public String getType() 
 	{
 		return type;

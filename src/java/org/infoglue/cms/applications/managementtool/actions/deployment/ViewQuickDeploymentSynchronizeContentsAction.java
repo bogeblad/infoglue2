@@ -150,7 +150,6 @@ public class ViewQuickDeploymentSynchronizeContentsAction extends InfoGlueAbstra
     	}
     	catch (Exception e)
     	{
-    		logger.info("Error in sync tool:" + e.getMessage());
     		logger.error("Error in sync tool:" + e.getMessage(), e);
 		}
 
