@@ -1815,6 +1815,36 @@ public class CmsPropertyHandler
 		return getServerNodeProperty("niceURIDefaultReplacementCharacterForContent", true, getNiceURIDefaultReplacementCharacter());
 	}
 
+	public static String getUseAccessBasedProtocolRedirects()
+	{
+		return getServerNodeProperty("useAccessBasedProtocolRedirects", true, "false");
+	}
+
+	public static String getUnprotectedProtocolName()
+	{
+		return getServerNodeProperty("unprotectedProtocolName", true, "http");
+	}
+
+	public static String getProtectedProtocolName()
+	{
+		return getServerNodeProperty("protectedProtocolName", true, "https");
+	}
+
+	public static String getUnprotectedProtocolPort()
+	{
+		return getServerNodeProperty("unprotectedProtocolPort", true, "8080");
+	}
+
+	public static String getProtectedProtocolPort()
+	{
+		return getServerNodeProperty("protectedProtocolPort", true, "8443");
+	}
+
+	public static String getAccessBasedProtocolRedirectHTTPCode()
+	{
+		return getServerNodeProperty("accessBasedProtocolRedirectHTTPCode", true, "301");
+	}
+
 	public static boolean getDisableDecoratedFinalRendering()
 	{
 		String disableDecoratedFinalRendering = getServerNodeProperty("disableDecoratedFinalRendering", true, "false");
