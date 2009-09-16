@@ -24,8 +24,8 @@
 ################################
 ##BEGIN REAL CODE
 ################################
-##beginLightCommonToolV3Impl("tool.managementtool.deploymentQuick.finishedHeader" "" "" false true $!disableCloseButton $headerMarkup)
-#beginLightCommonToolV3("tool.managementtool.deploymentQuick.finishedHeader" "" "" false true $!disableCloseButton)
+##beginLightCommonToolV3Impl("tool.managementtool.deploymentVC.header" "" "" false true $!disableCloseButton $headerMarkup)
+#beginLightCommonToolV3("tool.managementtool.deploymentVC.header" "" "" false true $!disableCloseButton)
 
 	<link rel="stylesheet" type="text/css" media="all" href="css/cms.css" title="cms" />
 	
@@ -45,25 +45,32 @@
 		});
 	-->
 	</script>
-
+	
 	#lightMenuToolbar("" $buttons $rightButtons) 
 
 	<div style="clear: both;"></div>
 	
-	<form name="editForm" method="post" action="ViewQuickDeploymentSynchronizeContents!input.action">
-		<input type="hidden" name="contentId" value="$contentId"/>	
-
-		<h3>$ui.getString("tool.managementtool.deploymentQuick.finishedHeader") 
-			#if($errorMessage && $errorMessage != "")
-				<span style="color:red">$errorMessage</span><br/>
-			#end
-		</h3>
-
-		<p>$ui.getString("tool.managementtool.deploymentQuick.finishedText")</p>
+	<form name="editForm" method="post" action="ViewVCDeployment!inputChooseTag.action">
 		
+		<div id="igEditArea" class="igScrollArea" onfocus="this.blur();">
+		
+		<h3>$ui.getString("tool.managementtool.deploymentVC.header")</h3>
+
+		<p>$ui.getString("tool.managementtool.deploymentVC.chooseVCSystemIntroduction")</p>	
+		
+		#fieldErrorMessage("vcCommunication" false)
+		 
 		<p>
-			<a id="closeDialog" href="javascript:parent.closeDialog();" style="display:block;  padding-top: 8px; height: 20px;"><strong>$ui.getString("tool.common.closeDialogLinkText")</strong></a> 
-			$ui.getString("tool.common.closeDialogLinkTitle")
+			<label for="vcServerName">$ui.getString("tool.managementtool.deploymentVC.vcServerLabel")</label>
+			<select name="vcServerName" id="vcServerName">
+				#foreach($vcServer in $vcServers)
+				<option value="$vcServer.name">$vcServer.name</option>
+				#end
+			</select>
+		</p>
+		<p>
+			<label for="vcPassword">$ui.getString("tool.managementtool.deploymentVC.vcServerPassword")</label>
+			<input type="password" name="vcPassword" id="vcPassword"/>
 		</p>
 		
 		#lightFooterToolbar($footerButtons)

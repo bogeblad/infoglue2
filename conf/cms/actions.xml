@@ -1,4 +1,4 @@
-<!-- $Id: actions.xml,v 1.83 2009/04/27 12:34:21 mattias Exp $ -->
+<!-- $Id: actions.xml,v 1.83.2.1 2009/09/16 12:50:50 mattias Exp $ -->
 <actions>
 
 	<!-- MySettings -->
@@ -1654,6 +1654,7 @@
 
 	<!-- InfoGlue Deployment Service -->
 	<action name="org.infoglue.cms.applications.managementtool.actions.deployment.ViewDeploymentChooseServerAction" alias="ViewDeploymentChooseServer">
+		<view name="inputQuickV3">/cms/managementtool/deployment/v3/viewQuickDeploymentChooseServer.vm</view>
 		<view name="input">/cms/managementtool/deployment/viewDeploymentChooseServer.vm</view>
 		<view name="success">ViewDeploymentSynchronizeServers!input.action?deploymentServerIndex=${deploymentServerIndex}</view>
 		<view name="error">/cms/managementtool/error.vm</view>
@@ -1663,7 +1664,22 @@
 		<view name="success">/cms/managementtool/deployment/viewDeploymentSynchronizeServersComplete.vm</view>
 		<view name="error">/cms/managementtool/error.vm</view>
 	</action>
-
+	<!-- Quick deployment -->
+	<action name="org.infoglue.cms.applications.managementtool.actions.deployment.ViewQuickDeploymentSynchronizeContentsAction" alias="ViewQuickDeploymentSynchronizeContents">
+		<view name="input">/cms/managementtool/deployment/v3/viewQuickDeploymentChooseContents.vm</view>
+		<view name="success">/cms/managementtool/deployment/v3/viewQuickDeploymentComplete.vm</view>
+		<view name="error">/cms/managementtool/error.vm</view>
+	</action>
+	<!-- InfoGlue Version Control Synchronize -->
+	<action name="org.infoglue.cms.applications.managementtool.actions.deployment.ViewVCDeploymentAction" alias="ViewVCDeployment">
+		<view name="input">/cms/managementtool/deployment/v3/viewDeploymentChooseVCServer.vm</view>
+		<view name="inputChooseTag">/cms/managementtool/deployment/v3/viewDeploymentChooseTag.vm</view>
+		<view name="inputVerifyCheckout">/cms/managementtool/deployment/v3/viewDeploymentVerifyAndCheckout.vm</view>
+		<view name="success">/cms/managementtool/deployment/v3/viewDeploymentComplete.vm</view>
+		<view name="error">/cms/managementtool/error.vm</view>
+	</action>
+	
+	
 	<!-- InfoGlue Password generation service -->
 	<action name="org.infoglue.cms.applications.managementtool.actions.ViewPasswordToolAction" alias="ViewPasswordTool">
 		<view name="input">/cms/managementtool/viewPasswordToolInput.vm</view>

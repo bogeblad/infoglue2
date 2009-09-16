@@ -24,8 +24,8 @@
 ################################
 ##BEGIN REAL CODE
 ################################
-##beginLightCommonToolV3Impl("tool.managementtool.deploymentQuick.finishedHeader" "" "" false true $!disableCloseButton $headerMarkup)
-#beginLightCommonToolV3("tool.managementtool.deploymentQuick.finishedHeader" "" "" false true $!disableCloseButton)
+##beginLightCommonToolV3Impl("tool.managementtool.deploymentVC.finishedHeader" "" "" false true $!disableCloseButton $headerMarkup)
+#beginLightCommonToolV3("tool.managementtool.deploymentVC.finishedHeader" "" "" false true $!disableCloseButton)
 
 	<link rel="stylesheet" type="text/css" media="all" href="css/cms.css" title="cms" />
 	
@@ -50,24 +50,19 @@
 
 	<div style="clear: both;"></div>
 	
-	<form name="editForm" method="post" action="ViewQuickDeploymentSynchronizeContents!input.action">
-		<input type="hidden" name="contentId" value="$contentId"/>	
+	<h3>$ui.getString("tool.managementtool.deploymentVC.finishedHeader")
+		#if($errorMessage && $errorMessage != "")
+			<span style="color:red">$errorMessage</span><br/>
+		#end
+	</h3>
 
-		<h3>$ui.getString("tool.managementtool.deploymentQuick.finishedHeader") 
-			#if($errorMessage && $errorMessage != "")
-				<span style="color:red">$errorMessage</span><br/>
-			#end
-		</h3>
-
-		<p>$ui.getString("tool.managementtool.deploymentQuick.finishedText")</p>
-		
-		<p>
-			<a id="closeDialog" href="javascript:parent.closeDialog();" style="display:block;  padding-top: 8px; height: 20px;"><strong>$ui.getString("tool.common.closeDialogLinkText")</strong></a> 
-			$ui.getString("tool.common.closeDialogLinkTitle")
-		</p>
-		
-		#lightFooterToolbar($footerButtons)
-		
-	</form>
+	<p>$ui.getString("tool.managementtool.deploymentVC.finishedIntroduction")</p>
+	
+	<p>
+		<a id="closeDialog" href="javascript:parent.closeDialog();" style="display:block;  padding-top: 8px; height: 20px;"><strong>$ui.getString("tool.common.closeDialogLinkText")</strong></a> 
+		$ui.getString("tool.common.closeDialogLinkTitle")
+	</p>
+	
+	#lightFooterToolbar($footerButtons)
 
 #endLightCommonToolV3()

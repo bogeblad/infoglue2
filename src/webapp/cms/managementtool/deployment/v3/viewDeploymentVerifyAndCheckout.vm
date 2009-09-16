@@ -164,7 +164,8 @@
 ##beginLightCommonToolV3Impl("tool.managementtool.deploymentQuick.header" "" "" false true $!disableCloseButton $headerMarkup)
 #beginLightCommonToolV3("tool.managementtool.deploymentQuick.header" "" "" false true $!disableCloseButton)
 
-	<script type="text/javascript" src="script/jqueryplugins/thickbox/thickbox-compressed.js"></script>
+	<script type="text/javascript" src="script/jqueryplugins/thickbox/thickbox.js"></script>
+	##<script type="text/javascript" src="script/jqueryplugins/thickbox/thickbox-compressed.js"></script>
 	<link rel="stylesheet" type="text/css" href="script/jqueryplugins/thickbox/thickbox-ig.css" media="all" />
 	
 	<link rel="stylesheet" type="text/css" media="all" href="css/cms.css" title="cms" />
@@ -224,7 +225,7 @@
 	<script type="text/javascript">
 	<!--
 		var dmp = new diff_match_patch();
-	
+		
 		function calculateDiffSummary(compId)
 		{
 		  	var element = document.getElementById("summaryDiv" + compId);
@@ -342,15 +343,14 @@
 		});
 	-->
 	</script>
-
+	
 	#lightMenuToolbar("" $buttons $rightButtons) 
 
 	<div style="clear: both;"></div>
 
-	<form name="editForm" action="ViewQuickDeploymentSynchronizeContents.action" method="post">
-		<input type="hidden" name="deploymentServerIndex" value="$!deploymentServerIndex"/>
-		<input type="hidden" name="synchronizationMethod" value="$!synchronizationMethod"/>		
-
+	<form name="editForm" action="ViewVCDeployment.action" method="post">
+		<input type="hidden" name="tagName" value="$tagName"/>
+		
 		<div id="igEditArea" class="igScrollArea" onfocus="this.blur();">
 
 			<h3>$ui.getString("tool.managementtool.deployment.chooseEntitiesHeader") 
@@ -404,7 +404,7 @@
 					#if("$oneLineValue1Clean" != "$oneLineValue2Clean")
 				      <tr $class>
 						<td style="padding-left: 16px">
-							<input type="hidden" name="deviatingRemoteVersionId_${deviatingContent.localVersion.id}" value="$deviatingContent.remoteVersion.id"/>
+							<input type="hidden" name="deviatingRemoteVersionId_${deviatingContent.localVersion.id}" value="$deviatingContent.remoteVersion.fullPath"/>
 							<input type="checkbox" id="deviatingContentId" name="deviatingContentId" value="$deviatingContent.localVersion.id"/> 
 							$deviatingContent.localVersion.name
 						</td>

@@ -469,7 +469,7 @@
 				newWin.focus();
 			else
 				alert("Could not open in new window - if you have a popup blocker this is most likely the cause.");
-		}
+		}		
 		
 		function callUrlWithAlternative(url, alternateUrl)
 		{
@@ -971,6 +971,13 @@
 
 #macro(endCommonToolV3)
 </div>
+<div id="systemMessages"></div>
+<div id="systemMessagesDialog"></div>
+</body>
+</html>
+#end
+
+#macro(endLightCommonToolV3)
 <div id="systemMessages"></div>
 <div id="systemMessagesDialog"></div>
 </body>
@@ -2312,4 +2319,20 @@ $ui.getString("entity.${fieldNameKey}.label")<br/>
 		#end
 	</select>
 	
+#end
+
+#macro(fieldErrorMessage $fieldName $inline)
+	#set($errorMessageText = "")
+	#foreach($errorMessage in $errors.getErrors($fieldName))
+		#if($velocityCount > 1)
+			#set($errorMessageText = "$errorMessageText, $errorMessage")
+		#else
+			#set($errorMessageText = "$errorMessage")
+		#end
+	#end
+	#if($inline)
+		<span class="error">$errorMessageText</span>
+	#else
+		<p class="error">$errorMessageText</p>
+	#end
 #end

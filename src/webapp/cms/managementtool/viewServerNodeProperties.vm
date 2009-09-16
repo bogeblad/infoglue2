@@ -475,6 +475,14 @@
 			#selectFieldCSS("ServerNode.property.defaultPublicationEventFilter" "defaultPublicationEventFilter" $this.getPropertyValue('defaultPublicationEventFilter') $publicationEventFilterOptions)
 			#yesNoDropDownWithInheritCSS("ServerNode.property.protectDeliverWorking" "protectDeliverWorking" "$this.getPropertyValue('protectDeliverWorking')")
 			#yesNoDropDownWithInheritCSS("ServerNode.property.protectDeliverPreview" "protectDeliverPreview" "$this.getPropertyValue('protectDeliverPreview')")
+			
+			#yesNoDropDownWithInheritCSS("ServerNode.property.useAccessBasedProtocolRedirects" "useAccessBasedProtocolRedirects" "$this.getPropertyValue('useAccessBasedProtocolRedirects')")
+			#editPropertyFieldCSS("ServerNode.property.unprotectedProtocolName" "unprotectedProtocolName" "$this.getPropertyValue('unprotectedProtocolName')" "51" "$!serverNodeId")
+			#editPropertyFieldCSS("ServerNode.property.protectedProtocolName" "protectedProtocolName" "$this.getPropertyValue('protectedProtocolName')" "51" "$!serverNodeId")
+			#editPropertyFieldCSS("ServerNode.property.unprotectedProtocolPort" "unprotectedProtocolPort" "$this.getPropertyValue('unprotectedProtocolPort')" "51" "$!serverNodeId")
+			#editPropertyFieldCSS("ServerNode.property.protectedProtocolPort" "protectedProtocolPort" "$this.getPropertyValue('protectedProtocolPort')" "51" "$!serverNodeId")
+			#editPropertyFieldCSS("ServerNode.property.accessBasedProtocolRedirectHTTPCode" "accessBasedProtocolRedirectHTTPCode" "$this.getPropertyValue('accessBasedProtocolRedirectHTTPCode')" "51" "$!serverNodeId")
+			
 			#yesNoDropDownWithInheritCSS("ServerNode.property.allowInternalCallsBasedOnIP" "allowInternalCallsBasedOnIP" "$this.getPropertyValue('allowInternalCallsBasedOnIP')")
 			#yesNoDropDownWithInheritCSS("ServerNode.property.forceIdentityCheck" "forceIdentityCheck" "$this.getPropertyValue('forceIdentityCheck')")
 			#yesNoDropDownWithInheritCSS("ServerNode.property.enforceRigidContentAccess" "enforceRigidContentAccess" "$this.getPropertyValue('enforceRigidContentAccess')")

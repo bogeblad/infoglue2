@@ -1,3 +1,4 @@
+#*
 #define( $headerMarkup )
 	<link rel="stylesheet" type="text/css" media="all" href="css/cms.css" title="cms" />
 	
@@ -10,8 +11,24 @@
 	-->
 	</script>
 #end
+*#
 
-#beginLightCommonToolV3Impl("tool.managementtool.deploymentQuick.header" "" "" false true $!disableCloseButton $headerMarkup)
+################################
+##BEGIN REAL CODE
+################################
+##beginLightCommonToolV3Impl("tool.managementtool.deploymentQuick.header" "" "" false true $!disableCloseButton $headerMarkup)
+#beginLightCommonToolV3("tool.managementtool.deploymentQuick.header" "" "" false true $!disableCloseButton)
+
+	<link rel="stylesheet" type="text/css" media="all" href="css/cms.css" title="cms" />
+	
+	<script type="text/javascript">
+	<!--
+		function submitForm()
+		{
+			document.editForm.submit();
+		}
+	-->
+	</script>
 
 	#lightMenuToolbar("" $buttons $rightButtons) 
 
@@ -37,7 +54,7 @@
 			#else
 				<p>$ui.getString("tool.managementtool.deploymentQuick.introduction")</p>
 				<p>
-					<select name="deploymentServerIndex" class="dropbox">
+					<select name="deploymentServerIndex" class="dropbox" style="width: 300px;">
 						#set($count = 0)
 						#foreach($deploymentServer in $deploymentServers)
 							<option value="$count">$deploymentServer</option>

@@ -672,6 +672,11 @@ h2 {
 	background-repeat: no-repeat;
 }
 
+.deploymentVCImage {
+	background-image: url('../images/deploymentVCIcon.png');
+	background-repeat: no-repeat;
+}
+
 .passwordImage {
 	background-image: url('../images/passwordIcon.gif');
 	background-repeat: no-repeat;
