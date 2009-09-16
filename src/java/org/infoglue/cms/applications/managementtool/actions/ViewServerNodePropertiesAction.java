@@ -316,6 +316,13 @@ public class ViewServerNodePropertiesAction extends InfoGluePropertiesAbstractAc
 	    populate(ps, "maxNumberOfVersionsForDerivedLastModifiedInLive");
 	    populate(ps, "allowInternalCallsBasedOnIP");
 
+	    populate(ps, "useAccessBasedProtocolRedirects");
+	    populate(ps, "unprotectedProtocolName");
+	    populate(ps, "protectedProtocolName");
+	    populate(ps, "unprotectedProtocolPort");
+	    populate(ps, "protectedProtocolPort");
+	    populate(ps, "accessBasedProtocolRedirectHTTPCode");
+
 	    try
 	    {
 	    	UserControllerProxy.getController().updateAnonymousUserPassword();
