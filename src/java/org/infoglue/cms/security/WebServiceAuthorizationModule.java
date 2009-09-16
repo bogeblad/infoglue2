@@ -771,6 +771,10 @@ public class WebServiceAuthorizationModule implements AuthorizationModule, Seria
     {
     }
 
+	public void updateInfoGluePrincipal(SystemUserVO systemUserVO, String oldPassword, String[] roleNames, String[] groupNames) throws Exception
+	{
+	}
+
     public void createInfoGlueGroup(GroupVO groupVO) throws Exception
     {
 		throw new SystemException("The WebService Authorization module does not support creation of groups yet...");        

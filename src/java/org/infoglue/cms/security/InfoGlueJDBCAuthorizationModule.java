@@ -704,6 +704,11 @@ public class InfoGlueJDBCAuthorizationModule extends BaseController implements A
 		throw new SystemException("The JDBC BASIC Authorization module does not support updating of users yet...");
 	}
 
+	public void updateInfoGluePrincipal(SystemUserVO systemUserVO, String oldPassword, String[] roleNames, String[] groupNames) throws Exception
+	{
+		throw new SystemException("The JDBC BASIC Authorization module does not support updating of users yet...");
+	}
+
 	public void updateInfoGluePrincipalPassword(String userName) throws Exception 
 	{
 		throw new SystemException("The JDBC BASIC Authorization module does not support updates of users yet...");

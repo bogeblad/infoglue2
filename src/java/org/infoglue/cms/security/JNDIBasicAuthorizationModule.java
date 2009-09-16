@@ -1801,6 +1801,11 @@ public class JNDIBasicAuthorizationModule implements AuthorizationModule, Serial
     {
     }
 
+	public void updateInfoGluePrincipal(SystemUserVO systemUserVO, String oldPassword, String[] roleNames, String[] groupNames) throws Exception
+	{
+		throw new SystemException("The JDBC BASIC Authorization module does not support updating of users yet...");
+	}
+
     public void createInfoGlueGroup(GroupVO groupVO) throws Exception
     {
 		throw new SystemException("The JNDI BASIC Authorization module does not support creation of groups yet...");        

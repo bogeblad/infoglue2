@@ -2395,6 +2395,10 @@ public class SimplifiedFallbackJNDIBasicAuthorizationModule extends Thread imple
     {
     }
 
+	public void updateInfoGluePrincipal(SystemUserVO systemUserVO, String oldPassword, String[] roleNames, String[] groupNames) throws Exception
+	{
+	}
+
     public void createInfoGlueGroup(GroupVO groupVO) throws Exception
     {
 		throw new SystemException("The JNDI BASIC Authorization module does not support creation of groups yet...");        

@@ -651,6 +651,18 @@ public class InfoGlueBasicAuthorizationModule extends BaseController implements 
 	    }
 	}
 
+	public void updateInfoGluePrincipal(SystemUserVO systemUserVO, String oldPassword, String[] roleNames, String[] groupNames) throws Exception
+	{
+	    if(transactionObject == null)
+		{
+			SystemUserController.getController().update(systemUserVO, oldPassword, roleNames, groupNames);
+		}
+	    else
+	    {
+			SystemUserController.getController().update(systemUserVO, oldPassword, roleNames, groupNames, transactionObject);
+	    }
+	}
+
 	/**
 	 * This method is used to send out a newpassword to an existing users.  
 	 */

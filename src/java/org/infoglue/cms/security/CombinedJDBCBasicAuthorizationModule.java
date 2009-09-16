@@ -339,6 +339,14 @@ public class CombinedJDBCBasicAuthorizationModule implements AuthorizationModule
 		principal.getAutorizationModule().updateInfoGluePrincipal(systemUserVO, roleNames, groupNames);
 	}
 
+	@Override
+	public void updateInfoGluePrincipal(SystemUserVO systemUserVO, String oldPassword, String[] roleNames, String[] groupNames) throws Exception
+	{
+		InfoGluePrincipal principal = getAuthorizedInfoGluePrincipal(systemUserVO.getUserName());
+		
+		principal.getAutorizationModule().updateInfoGluePrincipal(systemUserVO, oldPassword, roleNames, groupNames);
+	}
+
 	/**
 	 * This method is used to send out a newpassword to an existing users.  
 	 */
@@ -456,5 +464,6 @@ public class CombinedJDBCBasicAuthorizationModule implements AuthorizationModule
     {
         return this.transactionObject;
     }
+
 
 }
