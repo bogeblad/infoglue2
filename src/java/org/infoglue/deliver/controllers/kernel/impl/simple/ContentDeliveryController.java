@@ -47,6 +47,7 @@ import org.infoglue.cms.controllers.kernel.impl.simple.ContentCategoryController
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.DigitalAssetController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeController;
+import org.infoglue.cms.controllers.kernel.impl.simple.UserControllerProxy;
 import org.infoglue.cms.entities.content.Content;
 import org.infoglue.cms.entities.content.ContentCategory;
 import org.infoglue.cms.entities.content.ContentCategoryVO;
@@ -803,7 +804,6 @@ public class ContentDeliveryController extends BaseDeliveryController
 		{
 		    if(contentId != null)
 		    {
-				Integer protectedContentId = ContentDeliveryController.getContentDeliveryController().getProtectedContentId(db, contentId);
 				logger.info("IsProtected:" + protectedContentId);
 				if(protectedContentId != null && !AccessRightController.getController().getIsPrincipalAuthorized(infoGluePrincipal, "Content.Read", protectedContentId.toString()))
 				{
@@ -1484,7 +1484,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 				
 			//assetUrl = dnsName + "/" + CmsPropertyHandler.getDigitalAssetBaseUrl() + "/" + fileName;
 			if(deliveryContext.getUseDownloadAction())
-				assetUrl = urlComposer.composeDigitalAssetUrl(dnsName, siteNodeId, contentId, languageId, assetKey, deliveryContext);
+				assetUrl = urlComposer.composeDigitalAssetUrl(dnsName, siteNodeId, contentId, languageId, assetKey, deliveryContext, db);
 			else
 				assetUrl = urlComposer.composeDigitalAssetUrl(dnsName, folderName, fileName, deliveryContext); 
 		}
@@ -1723,6 +1723,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 			return "";
 
 	    SiteNodeVO siteNodeVO = SiteNodeController.getController().getSiteNodeVOWithId(siteNodeId, db);
+
 	    String assetCacheKey = "" + languageId + "_" + contentId + "_" + siteNodeVO.getRepositoryId() + "_" + assetKey + "_" + useLanguageFallback + "_" + deliveryContext.getUseFullUrl() + "_" + deliveryContext.getUseDownloadAction();
 	    
 	    if(logger.isInfoEnabled())
@@ -1762,7 +1763,19 @@ public class ContentDeliveryController extends BaseDeliveryController
 			return urlComposer.composeDigitalAssetUrl(dnsName, siteNodeId, contentId, languageId, assetKey, deliveryContext);
 		}
 		*/
-		if (contentVersion != null) 
+		
+		boolean isUnprotectedAsset = getHasUserContentAccess(db, UserControllerProxy.getController().getUser(CmsPropertyHandler.getAnonymousUser()), contentId);
+		
+		if(!isUnprotectedAsset)
+		{
+			SiteNode siteNode = NodeDeliveryController.getNodeDeliveryController(siteNodeId, languageId, contentId).getSiteNode(db, siteNodeId);
+			String dnsName = CmsPropertyHandler.getWebServerAddress();
+			if(siteNode != null && siteNode.getRepository().getDnsName() != null && !siteNode.getRepository().getDnsName().equals(""))
+				dnsName = siteNode.getRepository().getDnsName();
+
+			return urlComposer.composeDigitalAssetUrl(dnsName, siteNodeId, contentId, languageId, assetKey, deliveryContext, db);
+		}
+		else if(contentVersion != null) 
         {
         	DigitalAssetVO digitalAsset = DigitalAssetController.getLatestDigitalAssetVO(contentVersion.getId(), assetKey, db);
 			
@@ -1801,7 +1814,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 					dnsName = siteNode.getRepository().getDnsName();
 					
 				if(deliveryContext.getUseDownloadAction())
-					assetUrl = urlComposer.composeDigitalAssetUrl(dnsName, siteNodeId, contentId, languageId, assetKey, deliveryContext);
+					assetUrl = urlComposer.composeDigitalAssetUrl(dnsName, siteNodeId, contentId, languageId, assetKey, deliveryContext, db);
 				else
 					assetUrl = urlComposer.composeDigitalAssetUrl(dnsName, folderName, fileName, deliveryContext); 
 			}
@@ -1854,7 +1867,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 						dnsName = siteNode.getRepository().getDnsName();
 						
 					if(deliveryContext.getUseDownloadAction())
-						assetUrl = urlComposer.composeDigitalAssetUrl(dnsName, siteNodeId, contentId, languageId, assetKey, deliveryContext);
+						assetUrl = urlComposer.composeDigitalAssetUrl(dnsName, siteNodeId, contentId, languageId, assetKey, deliveryContext, db);
 					else
 						assetUrl = urlComposer.composeDigitalAssetUrl(dnsName, folderName, fileName, deliveryContext); 
 				}

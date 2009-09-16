@@ -540,7 +540,7 @@ public class ViewPageAction extends InfoGlueAbstractAction
 			}
 			
 			boolean useAccessBasedProtocolRedirects = false;
-			if(repositoryUseAccessBasedProtocolRedirects.equals("true")/* && CmsPropertyHandler.getOperatingMode().equals("3")*/)
+			if(repositoryUseAccessBasedProtocolRedirects.equals("true") && CmsPropertyHandler.getOperatingMode().equals("3"))
 				useAccessBasedProtocolRedirects = true;
 			
 			if(useAccessBasedProtocolRedirects)
