@@ -34,6 +34,7 @@ import org.infoglue.cms.controllers.kernel.impl.simple.AccessRightController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
+import org.infoglue.cms.controllers.kernel.impl.simple.InterceptionPointController;
 import org.infoglue.cms.controllers.kernel.impl.simple.RepositoryController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeController;
 import org.infoglue.cms.entities.content.ContentVO;
@@ -42,7 +43,6 @@ import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
 import org.infoglue.cms.entities.management.RepositoryVO;
 import org.infoglue.cms.entities.structure.SiteNodeVO;
-import org.infoglue.cms.entities.structure.SiteNodeVersionVO;
 import org.infoglue.cms.util.CmsPropertyHandler;
 
 /**
@@ -337,13 +337,19 @@ public class ViewContentToolToolBarAction extends InfoGlueAbstractAction
 			buttons.add(new ImageButton("ViewContentProperties.action?contentId=" + this.contentId, getLocalizedString(getSession().getLocale(), "images.global.buttons.editProperties"), "Edit Properties", new Integer(22), new Integer(80)));
 
 			if(this.contentVO.getIsProtected().intValue() == ContentVO.YES.intValue())
-				buttons.add(getAccessRightsButton());
+			{
+			    ImageButton accessRightsButton = getAccessRightsButton();
+				buttons.add(accessRightsButton);
+			}
 
 			if(this.contentVO.getContentTypeDefinitionId() != null)
 			{
 				ContentTypeDefinitionVO contentTypeDefinitionVO = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithId(this.contentVO.getContentTypeDefinitionId());
 				if(contentTypeDefinitionVO != null && (contentTypeDefinitionVO.getName().equalsIgnoreCase("HTMLTemplate") || contentTypeDefinitionVO.getName().equalsIgnoreCase("PageTemplate") || contentTypeDefinitionVO.getName().equalsIgnoreCase("PagePartTemplate")))
+				{
 					buttons.add(getComponentAccessRightsButton());
+					buttons.add(getDeployComponentButton());
+				}
 			}
 			
 			buttons.add(new ImageButton("ViewContentVersionHistory.action?contentId=" + this.contentId, getLocalizedString(getSession().getLocale(), "images.contenttool.buttons.viewHistory"), "History", new Integer(22), new Integer(80)));
@@ -393,13 +399,19 @@ public class ViewContentToolToolBarAction extends InfoGlueAbstractAction
 			}
 			
 			if(this.contentVO.getIsProtected().intValue() == ContentVO.YES.intValue())
-				buttons.add(getAccessRightsButton());
+			{
+			    ImageButton accessRightsButton = getAccessRightsButton();
+				buttons.add(accessRightsButton);
+			}
 
 			if(this.contentVO.getContentTypeDefinitionId() != null)
 			{
 				ContentTypeDefinitionVO contentTypeDefinitionVO = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithId(this.contentVO.getContentTypeDefinitionId());
 				if(contentTypeDefinitionVO != null && (contentTypeDefinitionVO.getName().equalsIgnoreCase("HTMLTemplate") || contentTypeDefinitionVO.getName().equalsIgnoreCase("PageTemplate") || contentTypeDefinitionVO.getName().equalsIgnoreCase("PagePartTemplate")))
+				{
 					buttons.add(getComponentAccessRightsButton());
+					buttons.add(getDeployComponentButton());
+				}
 			}
 			
 			buttons.add(new ImageButton("ViewContentVersionHistory.action?contentId=" + this.contentId, getLocalizedString(getSession().getLocale(), "images.contenttool.buttons.viewHistory"), "History", new Integer(22), new Integer(80)));
@@ -453,7 +465,40 @@ public class ViewContentToolToolBarAction extends InfoGlueAbstractAction
 				{
 			        if(!isReadOnly())
 						buttons.add(new ImageButton(true, "javascript:openPopup('ViewDigitalAsset.action?contentVersionId=" + this.contentVersionId + "', 'FileUpload', 'width=400,height=200,resizable=no');", getLocalizedString(getSession().getLocale(), "images.contenttool.buttons.newAsset"), "tool.contenttool.uploadDigitalAsset.header"));	
-				
+									
+					if(hasPublishedVersion())
+					{
+					    ImageButton unpublishButton = getUnpublishButton();
+					    ImageButton unpublishAllButton = getUnpublishAllButton();
+					    unpublishButton.getSubButtons().add(unpublishAllButton);
+
+					    buttons.add(unpublishButton);
+					}
+						
+					if(!isReadOnly())
+						buttons.add(getPublishButton());
+					
+					if(this.contentVO.getIsProtected().intValue() == ContentVO.YES.intValue())
+					{
+					    ImageButton accessRightsButton = getAccessRightsButton();
+					    accessRightsButton.getSubButtons().add(getContentVersionAccessRightsButton());
+					    
+						buttons.add(accessRightsButton);
+					}
+	
+					if(this.contentVO.getContentTypeDefinitionId() != null)
+					{
+						ContentTypeDefinitionVO contentTypeDefinitionVO = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithId(this.contentVO.getContentTypeDefinitionId());
+						if(contentTypeDefinitionVO != null && (contentTypeDefinitionVO.getName().equalsIgnoreCase("HTMLTemplate") || contentTypeDefinitionVO.getName().equalsIgnoreCase("PageTemplate") || contentTypeDefinitionVO.getName().equalsIgnoreCase("PagePartTemplate")))
+						{
+							List interceptionPointVOList = InterceptionPointController.getController().getInterceptionPointVOList("Component");
+							if(interceptionPointVOList != null && interceptionPointVOList.size() > 0)
+								buttons.add(getComponentAccessRightsButton());
+							
+							buttons.add(getDeployComponentButton());
+						}
+					}
+
 					if(this.siteNodeId != null)
 					{
 						RepositoryVO repositoryVO = RepositoryController.getController().getRepositoryVOWithId(this.repositoryId);
@@ -485,28 +530,7 @@ public class ViewContentToolToolBarAction extends InfoGlueAbstractAction
 	
 						buttons.add(previewSiteButton);			
 					}
-					
-					if(hasPublishedVersion())
-					{
-					    ImageButton unpublishButton = getUnpublishButton();
-					    ImageButton unpublishAllButton = getUnpublishAllButton();
-					    unpublishButton.getSubButtons().add(unpublishAllButton);
 
-					    buttons.add(unpublishButton);
-					}
-						
-					if(this.contentVO.getIsProtected().intValue() == ContentVO.YES.intValue())
-						buttons.add(getContentVersionAccessRightsButton());
-	
-					if(this.contentVO.getContentTypeDefinitionId() != null)
-					{
-						ContentTypeDefinitionVO contentTypeDefinitionVO = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithId(this.contentVO.getContentTypeDefinitionId());
-						if(contentTypeDefinitionVO != null && (contentTypeDefinitionVO.getName().equalsIgnoreCase("HTMLTemplate") || contentTypeDefinitionVO.getName().equalsIgnoreCase("PageTemplate") || contentTypeDefinitionVO.getName().equalsIgnoreCase("PagePartTemplate")))
-							buttons.add(getComponentAccessRightsButton());
-					}
-					
-					if(!isReadOnly())
-						buttons.add(getPublishButton());
 				}
 				buttons.add(getSyncTreeButton());
 				
@@ -525,7 +549,7 @@ public class ViewContentToolToolBarAction extends InfoGlueAbstractAction
 		{
 			logger.warn("Exception when generating buttons:" + e.getMessage(), e);
 		}
-
+		
 		return buttons;				
 	}
 
@@ -678,6 +702,12 @@ public class ViewContentToolToolBarAction extends InfoGlueAbstractAction
 	{
 		String returnAddress = URLEncoder.encode(URLEncoder.encode("ViewContent.action?contentId=" + this.contentId + "&repositoryId=" + this.repositoryId + "&stay=true", "UTF-8"), "UTF-8");
 		return new ImageButton("ViewAccessRights.action?interceptionPointCategory=Component&extraParameters=" + this.contentId +"&colorScheme=ContentTool&returnAddress=" + returnAddress, getLocalizedString(getSession().getLocale(), "images.contenttool.buttons.componentAccessRights"), "tool.contenttool.componentAccessRights.header");
+	}
+
+	private ImageButton getDeployComponentButton()
+	{
+		return new ImageButton(true, "javascript:if(top.openInlineDiv) top.openInlineDiv('ViewDeploymentChooseServer!inputQuickV3.action?contentId=" + this.contentId + "', 600, 800, true, true, 'Deploy local component'); else openPopup('ViewDeploymentChooseServer!inputQuickV3.action?contentId=" + this.contentId + "', 'Deploy', 'width=800,height=600,resizable=yes,scrollbars=yes');", getLocalizedString(getSession().getLocale(), "images.global.buttons.deployComponent"), "tool.common.deployComponent.header");	
+		//return new ImageButton(true, "javascript:openPopup('ViewDeploymentChooseServer!inputQuickV3.action?contentId=" + this.contentId + "', 'Deploy', 'width=800,height=600,resizable=yes,scrollbars=yes');", getLocalizedString(getSession().getLocale(), "images.global.buttons.deployComponent"), "tool.common.deployComponent.header");	
 	}
 
 	public String getStateDescription(ContentVersionVO contentVersionVO)

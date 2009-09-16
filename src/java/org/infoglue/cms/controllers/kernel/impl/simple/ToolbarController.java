@@ -325,6 +325,12 @@ public class ToolbarController
 			if(toolbarKey.equalsIgnoreCase("tool.managementtool.viewMessageCenter.header"))
 				return getMessageCenterButtons();
 			*/
+			if(toolbarKey.equalsIgnoreCase("tool.managementtool.deploymentQuick.header"))
+				return getQuickDeployFooterButtons();
+			if(toolbarKey.equalsIgnoreCase("tool.managementtool.deploymentVC.header"))
+				return getVCDeployFooterButtons();
+			if(toolbarKey.equalsIgnoreCase("tool.managementtool.deploymentVC.chooseTagHeader"))
+				return getVCDeployFooterButtons();
 		}
 		catch(Exception e) {e.printStackTrace();}			
 					
@@ -1367,6 +1373,57 @@ public class ToolbarController
 		return buttons;
 	}
 	*/
+
+	private List<ToolbarButton> getQuickDeployFooterButtons() throws Exception
+	{
+		List<ToolbarButton> buttons = new ArrayList<ToolbarButton>();
+
+		buttons.add(new ToolbarButton("",
+				  getLocalizedString(locale, "tool.common.nextButton.label"), 
+				  getLocalizedString(locale, "tool.common.nextButton.label"),
+				  "submitForm();",
+				  "images/v3/nextBackground.gif",
+				  "left",
+				  "next",
+				  true));
+
+		buttons.add(new ToolbarButton("",
+				  getLocalizedString(locale, "tool.common.cancelButton.label"), 
+				  getLocalizedString(locale, "tool.common.cancelButton.label"),
+				  "if(parent && parent.closeInlineDiv) parent.closeInlineDiv(); else if(parent && parent.closeDialog) parent.closeDialog(); else window.close();",
+				  "images/v3/cancelIcon.gif",
+				  "left",
+				  "cancel",
+				  true));
+		
+		return buttons;
+	}
+
+	private List<ToolbarButton> getVCDeployFooterButtons() throws Exception
+	{
+		List<ToolbarButton> buttons = new ArrayList<ToolbarButton>();
+
+		buttons.add(new ToolbarButton("",
+				  getLocalizedString(locale, "tool.common.nextButton.label"), 
+				  getLocalizedString(locale, "tool.common.nextButton.label"),
+				  "submitForm();",
+				  "images/v3/nextBackground.gif",
+				  "left",
+				  "next",
+				  true));
+
+		buttons.add(new ToolbarButton("",
+				  getLocalizedString(locale, "tool.common.cancelButton.label"), 
+				  getLocalizedString(locale, "tool.common.cancelButton.label"),
+				  "if(parent && parent.closeInlineDiv) parent.closeInlineDiv(); else if(parent && parent.closeDialog) parent.closeDialog(); else window.close();",
+				  "images/v3/cancelIcon.gif",
+				  "left",
+				  "cancel",
+				  true));
+		
+		return buttons;
+	}
+
 	
 	private List<ToolbarButton> getHelpButton() throws Exception
 	{
