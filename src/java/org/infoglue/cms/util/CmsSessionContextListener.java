@@ -25,6 +25,7 @@ package org.infoglue.cms.util;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.ConcurrentModificationException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -37,6 +38,7 @@ import javax.servlet.http.HttpSessionListener;
 
 import org.apache.log4j.Logger;
 import org.infoglue.cms.applications.databeans.SessionInfoBean;
+import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGlueAuthenticationFilter;
 import org.infoglue.cms.security.InfoGluePrincipal;
 
@@ -80,41 +82,63 @@ public class CmsSessionContextListener implements HttpSessionListener
 		return activeSessions;
 	}
 
-	static public List getSessionInfoBeanList()
+	static public List getSessionInfoBeanList() throws Exception
 	{
 		List stiList = new ArrayList();
 
-		synchronized(sessions)
+		//A little strange solution to solve the fact that we get a lot of ConcurrentModificationExceptions - possible due to many session death.
+		int numberOfIterations = 0;
+		boolean isOk = false;
+		while(!isOk && numberOfIterations < 20)
 		{
-			Iterator iter = sessions.keySet().iterator();
-			while (iter.hasNext())
+			Thread.sleep(50);
+			try
 			{
-				String s = (String) iter.next();
-				HttpSession sess = (HttpSession) sessions.get(s);
-				
-				try
+				synchronized(sessions)
 				{
-					SessionInfoBean sib = new SessionInfoBean(sess.getId());
-					
-					InfoGluePrincipal principal = (InfoGluePrincipal)sess.getAttribute(InfoGlueAuthenticationFilter.INFOGLUE_FILTER_USER);
-					if(principal == null)
-						principal = (InfoGluePrincipal)sess.getAttribute("infogluePrincipal");
-					
-					if(principal != null)
+					Iterator iter = sessions.keySet().iterator();
+					while (iter.hasNext())
 					{
-						sib.setPrincipal(principal);
-						sib.setLastAccessedDate(new Date(sess.getLastAccessedTime()));
+						String s = (String) iter.next();
+						HttpSession sess = (HttpSession) sessions.get(s);
 						
-						stiList.add(sib);
+						try
+						{
+							SessionInfoBean sib = new SessionInfoBean(sess.getId());
+							
+							InfoGluePrincipal principal = (InfoGluePrincipal)sess.getAttribute(InfoGlueAuthenticationFilter.INFOGLUE_FILTER_USER);
+							if(principal == null)
+								principal = (InfoGluePrincipal)sess.getAttribute("infogluePrincipal");
+							
+							if(principal != null)
+							{
+								sib.setPrincipal(principal);
+								sib.setLastAccessedDate(new Date(sess.getLastAccessedTime()));
+								
+								stiList.add(sib);
+							}
+						}
+						catch (Exception e) 
+						{
+							logger.info("A session was invalid allready:" + e.getMessage(), e);
+						}
 					}
 				}
-				catch (Exception e) 
-				{
-					logger.info("A session was invalid allready:" + e.getMessage(), e);
-				}
+				isOk = true;
 			}
+			catch (ConcurrentModificationException e) 
+			{
+				logger.warn("Concurrency problem looking at session list:" + e.getMessage());
+			}
+			numberOfIterations++;
 		}
-	
+		
+		if(!isOk && numberOfIterations == 20)
+		{
+			logger.warn("We could not finish the operation as to many concurrency errors occurred.");
+			throw new SystemException("We could not finish the operation as to many concurrency errors occurred.");
+		}
+		
 		return stiList;
 	}
 
