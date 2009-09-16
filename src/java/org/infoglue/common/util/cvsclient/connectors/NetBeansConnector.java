@@ -295,7 +295,7 @@ public class NetBeansConnector implements VCConnector
 		logger.info("TAG COMPLETED");
 	}
 	
-	@Override
+
 	public List<String> getTags(String moduleName) throws Exception 
 	{
 		List<String> tags = new ArrayList<String>();

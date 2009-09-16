@@ -24,52 +24,52 @@ public class HistoryCommandWithCVSListener extends HistoryCommand
 		return messageEvents;
 	}
 
-	@Override
+
 	public void commandTerminated(TerminationEvent arg0) 
 	{
 	}
 
-	@Override
+	
 	public void fileAdded(FileAddedEvent arg0) 
 	{
 	}
 
-	@Override
+	
 	public void fileInfoGenerated(FileInfoEvent arg0) 
 	{
 	}
 
-	@Override
+	
 	public void fileRemoved(FileRemovedEvent arg0) 
 	{
 	}
 
-	@Override
+	
 	public void fileToRemove(FileToRemoveEvent arg0) 
 	{
 		//System.out.println("arg0:" + arg0);	
 	}
 
-	@Override
+	
 	public void fileUpdated(FileUpdatedEvent arg0) 
 	{
 		//System.out.println("arg0:" + arg0);	
 	}
 
-	@Override
+	
 	public void messageSent(MessageEvent messageEvent) 
 	{
 		//System.out.println("messageEvent:" + messageEvent + "\n" + messageEvent.getMessage());
 		this.messageEvents.add(messageEvent);
 	}
 
-	@Override
+	
 	public void messageSent(BinaryMessageEvent arg0) 
 	{
 		//System.out.println("arg0:" + arg0 + "\n" + arg0.getMessage());
 	}
 
-	@Override
+	
 	public void moduleExpanded(ModuleExpansionEvent arg0) 
 	{
 		//System.out.println("arg0:" + arg0);

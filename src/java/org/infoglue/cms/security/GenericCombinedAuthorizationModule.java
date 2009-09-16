@@ -422,7 +422,6 @@ public class GenericCombinedAuthorizationModule implements AuthorizationModule, 
 		principal.getAutorizationModule().updateInfoGluePrincipal(systemUserVO, roleNames, groupNames);
 	}
 
-	@Override
 	public void updateInfoGluePrincipal(SystemUserVO systemUserVO, String oldPassword, String[] roleNames, String[] groupNames) throws Exception
 	{
 		InfoGluePrincipal principal = getAuthorizedInfoGluePrincipal(systemUserVO.getUserName());

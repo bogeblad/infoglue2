@@ -504,7 +504,6 @@ public class SubscriptionsInterceptor extends BaseController implements InfoGlue
 		return handledSubscription;
 	}
 
-	@Override
 	public BaseEntityVO getNewVO()
 	{
 		// TODO Auto-generated method stub
