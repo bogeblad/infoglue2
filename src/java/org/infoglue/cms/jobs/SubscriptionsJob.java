@@ -88,7 +88,6 @@ public class SubscriptionsJob implements Job
 		try
 		{
 			logger.info("SubscriptionsJob...");
-		    logger.info("SubscriptionsJob...");
 		    
 			Map args = new HashMap();
 		    args.put("globalKey", "infoglueSubscriptions");
