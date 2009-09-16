@@ -569,4 +569,46 @@ public class DeliveryContext implements UsageListener
 	{
 		return Collections.unmodifiableSet(usedContents);
 	}
+
+	/**
+	 * This method returns the exact full url excluding query string from the original request - not modified
+	 * @return
+	 */
+	
+	public String getOriginalURL()
+	{
+    	String originalRequestURL = this.getHttpServletRequest().getParameter("originalRequestURL");
+    	if(originalRequestURL == null || originalRequestURL.length() == 0)
+    		originalRequestURL = this.getHttpServletRequest().getRequestURL().toString();
+
+    	return originalRequestURL;
+	}
+
+	/**
+	 * This method returns the exact querystring from the original request - not modified
+	 * @return
+	 */
+	
+	public String getOriginalQueryString()
+	{
+    	String originalQueryString = this.getHttpServletRequest().getParameter("originalQueryString");
+    	if(originalQueryString == null || originalQueryString.length() == 0)
+    		originalQueryString = this.getHttpServletRequest().getQueryString();
+
+    	return originalQueryString;
+	}
+
+	/**
+	 * This method returns the exact full url from the original request - not modified
+	 * @return
+	 */
+	
+	public String getOriginalFullURL()
+	{
+    	String originalRequestURL = getOriginalURL();
+    	String originalQueryString = getOriginalQueryString();
+
+    	return originalRequestURL + (originalQueryString == null ? "" : "?" + originalQueryString);
+	}
+
 }
