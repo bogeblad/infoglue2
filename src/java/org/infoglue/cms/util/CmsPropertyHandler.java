@@ -871,6 +871,27 @@ public class CmsPropertyHandler
 		return getServerNodeProperty("maxRows", true, "100");
 	}
 
+	public static Integer getMaxNumberOfAssetInSearches()
+	{
+		Integer maxNumberOfAssetInSearches = 50;
+		String maxNumberOfAssetInSearchesString = getServerNodeProperty("maxNumberOfAssetInSearches", true, "50");
+		try
+		{
+			maxNumberOfAssetInSearches = new Integer(maxNumberOfAssetInSearchesString);
+		}
+		catch (Exception e) 
+		{
+			logger.warn("Problem parsing maxNumberOfAssetInSearches:" + e.getMessage());
+		}
+		
+		return maxNumberOfAssetInSearches;
+	}
+
+	public static String getComponentBindningAssetBrowser()
+	{
+		return getServerNodeProperty("componentBindningAssetBrowser", true, "default");
+	}
+
 	public static String getDefaultNumberOfYearsBeforeExpire()
 	{
 		return getServerNodeProperty("defaultNumberOfYearsBeforeExpire", true, "50");

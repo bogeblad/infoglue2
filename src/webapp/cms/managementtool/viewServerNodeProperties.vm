@@ -427,6 +427,13 @@
 			#selectFieldCSS("ServerNode.property.internalSearchEngine" "internalSearchEngine" $this.getPropertyValue('internalSearchEngine') $searchEngineOptions)
 			#editPropertyFieldCSS("ServerNode.property.maxRows" "maxRows" "$this.getPropertyValue('maxRows')" "51" "$!serverNodeId")
 
+			#editPropertyFieldCSS("ServerNode.property.maxNumberOfAssetInSearches" "maxNumberOfAssetInSearches" "$this.getPropertyValue('maxNumberOfAssetInSearches')" "51" "$!serverNodeId")
+
+			#set($option1 = ["default", "Inherit"])
+			#set($option2 = ["classic", "Classic"])
+			#set($componentBindningAssetBrowserOptions = [$option1, $option2]) 
+			#selectFieldCSS("ServerNode.property.componentBindningAssetBrowser" "componentBindningAssetBrowser" $this.getPropertyValue('componentBindningAssetBrowser') $componentBindningAssetBrowserOptions)
+			
 			#editPropertyFieldCSS("ServerNode.property.workingStyleInformation" "workingStyleInformation" "$this.getPropertyValue('workingStyleInformation')" "51" "$!serverNodeId")
 			#editPropertyFieldCSS("ServerNode.property.finalStyleInformation" "finalStyleInformation" "$this.getPropertyValue('finalStyleInformation')" "51" "$!serverNodeId")
 			#editPropertyFieldCSS("ServerNode.property.publishStyleInformation" "publishStyleInformation" "$this.getPropertyValue('publishStyleInformation')" "51" "$!serverNodeId")

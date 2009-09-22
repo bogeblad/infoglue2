@@ -7598,7 +7598,10 @@ public class BasicTemplateController implements TemplateController
 								assignedParameters = "&assignedContentId=" + componentBinding.getEntityId() + "&assignedAssetKey=" + componentBinding.getAssetKey() + "&assignedPath=" + getVisualFormatter().encodeURI(property.getValue());
 							}
 							
-							assignUrl = componentEditorUrl + "ViewContentVersion!viewAssetsForComponentBinding.action?repositoryId=" + repositoryId + "&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&propertyName=" + property.getName() + allowedContentTypeIdParameters + "&showSimple=" + getDeliveryContext().getShowSimple() + "&showDecorated=" + showDecorated + assignedParameters + "&hideComponentPropertiesOnLoad=" +hideComponentPropertiesOnLoad;
+							if(CmsPropertyHandler.getComponentBindningAssetBrowser().equalsIgnoreCase("classic"))
+								assignUrl = componentEditorUrl + "ViewContentVersion!viewAssetsForComponentBinding.action?repositoryId=" + repositoryId + "&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&propertyName=" + property.getName() + allowedContentTypeIdParameters + "&showSimple=" + getDeliveryContext().getShowSimple() + "&showDecorated=" + showDecorated + assignedParameters + "&hideComponentPropertiesOnLoad=" +hideComponentPropertiesOnLoad;
+							else
+								assignUrl = componentEditorUrl + "ViewContentVersion!viewAssetBrowserForComponentBindingV3.action?repositoryId=" + repositoryId + "&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&propertyName=" + property.getName() + allowedContentTypeIdParameters + "&showSimple=" + getDeliveryContext().getShowSimple() + "&showDecorated=" + showDecorated + assignedParameters + "&hideComponentPropertiesOnLoad=" +hideComponentPropertiesOnLoad;
 						}
 						else
 							assignUrl = componentEditorUrl + "ViewSiteNodePageComponents!showContentTree.action?repositoryId=" + repositoryId + "&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&propertyName=" + property.getName() + allowedContentTypeIdParameters + "&showSimple=" + getDeliveryContext().getShowSimple() + "&showDecorated=" + showDecorated + "&hideComponentPropertiesOnLoad=" +hideComponentPropertiesOnLoad;
@@ -7699,7 +7702,7 @@ public class BasicTemplateController implements TemplateController
 
 			    String url = assignUrl;
 			    if(!createNew)
-			    	result = "<a href=\"#\" onClick=\"window.open('" + assignUrl + "', 'Edit', 'width=500,height=600,left=' + (document.body.clientWidth / 4) + ',top=50,toolbar=no,status=no,scrollbars=yes,location=no,menubar=no,directories=no,resizable=no');\">" + html + "</a>";
+			    	result = "<a href=\"#\" onClick=\"window.open('" + assignUrl + "', 'Edit', 'width=800,height=600,left=' + (document.body.clientWidth / 4) + ',top=50,toolbar=no,status=no,scrollbars=yes,location=no,menubar=no,directories=no,resizable=no');\">" + html + "</a>";
 			    else
 			    	result = "<a href=\"" + createUrl + "\">" + html + "</a>";
 		    }

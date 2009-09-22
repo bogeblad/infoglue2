@@ -835,8 +835,6 @@ public abstract class InfoGlueAbstractAction extends WebworkAbstractAction
 
 	public Integer getDigitalAssetContentId(Integer digitalAssetId) throws Exception
 	{
-		StringBuffer sb = new StringBuffer();
-		
 		return DigitalAssetController.getController().getContentId(digitalAssetId);
 	}
 

@@ -1,0 +1,110 @@
+#beginLightCommonToolV3("tool.contenttool.assetDialog.assetDialogHeader" "" "" false false $!disableCloseButton)
+
+<script type="text/javascript">
+<!--
+	$(document).ready(function(){
+		$("#tabsContainer > ul").tabs( { 
+			show:function() { resizeInlineTabDivs(); },
+			select:function(e, ui) { 
+				//alert("ui: " + ui.index);
+				if(ui.index == 1)
+		  		{
+		  			if($("#latestAssetsFrame").attr("src") == "")
+		  			{
+			  			#if($contentVO.id > -1)
+					  		$("#latestAssetsFrame").attr("src", "SearchContent!latestInlineAssetsV3.action?repositoryId=${contentVO.repositoryId}&assetTypeFilter=$assetTypeFilter"); 
+						#else
+				  			$("#latestAssetsFrame").attr("src", "SearchContent!latestInlineAssetsV3.action?assetTypeFilter=$assetTypeFilter"); 
+						#end
+					}	
+		  		}
+		  		else if(ui.index == 2)
+		  		{
+			  		if($("#contentVersionAssetSearchFrame").attr("src") == "")
+			  		{
+			  			#if($contentVO.id > -1)
+				  			$("#contentVersionAssetSearchFrame").attr("src", "SearchContent!inputInlineAssetV3.action?repositoryId=${contentVO.repositoryId}&assetTypeFilter=$assetTypeFilter"); 
+						#else
+				  			$("#contentVersionAssetSearchFrame").attr("src", "SearchContent!inputInlineAssetV3.action?assetTypeFilter=$assetTypeFilter"); 
+						#end
+					}	
+			  	}
+			  } 
+		});
+		setTimeout("init();", 50);
+		setTimeout("resizeInlineTabDivs()", 100);
+	});
+
+	function getRequestParameter(url, parameterName)
+	{
+		var value = "";
+		var valueIndex = url.indexOf(parameterName + "=");
+		if(valueIndex > -1)
+		{
+			var endIndex = url.indexOf("&", valueIndex);
+			if(endIndex != -1)
+				value = url.substring(valueIndex + parameterName.length + 1, endIndex);
+			else
+				value = url.substring(valueIndex + parameterName.length + 1);
+		}
+		return value;
+	}
+	
+	function init() 
+	{
+		//alert("contentVO: $contentVO.id");
+		#if($contentVO.id > -1)
+			document.getElementById("repositoryBrowserFrame").src = "ViewContentVersion!viewAssetsDialogForFCKEditorV3.action?repositoryId=$contentVO.repositoryId&contentId=$contentId&languageId=$languageId&assetTypeFilter=$assetTypeFilter";
+		#else
+			document.getElementById("repositoryBrowserFrame").src = "ViewContentVersion!viewAssetsDialogForFCKEditorV3.action?languageId=$languageId&assetTypeFilter=$assetTypeFilter";
+		#end
+	}
+	
+	function onOk(contentId, assetKey)
+	{
+		var url = "ViewSiteNodePageComponents!addComponentPropertyBinding.action?siteNodeId=$siteNodeId&languageId=$languageId&contentId=-1&entity=Content&entityId=" + contentId + "&assetKey=" + assetKey + "&componentId=$componentId&propertyName=$propertyName&showSimple=$showSimple&showDecorated=$!showDecorated&path=temp";
+		//var url = "DownloadAsset.action?contentId=" + contentId + "&languageId=$languageId&assetKey=" + assetKey;
+	    self.opener.location.href = url;
+	    window.close();
+	}
+-->
+</script>		
+</head>
+
+<body class="generaltooledit yui-skin-sam">
+
+<div onfocus="this.blur();">
+    
+	#lightMenuToolbar("" $buttons $rightButtons) 
+
+	<div style="clear: both;"></div>
+	
+	<h3 style="text-indent: 16px;">$ui.getString("tool.contenttool.assetDialog.assetDialogHeader")</h3>
+
+	<div id="tabsContainer" class="flora">      
+
+		<ul>
+	        <li><a href="#repositoryBrowserTab"><span>$ui.getString("tool.contenttool.assetDialog.repositoryBrowserTabLabel")</span></a></li>	        
+	        <li><a href="#latestUploadedTab"><span>$ui.getString("tool.contenttool.assetDialog.latestAssetsTabLabel")</span></a></li>	        
+	        <li><a href="#searchTab"><span>$ui.getString("tool.contenttool.assetDialog.searchAssetsTabLabel")</span></a></li>	        
+	    </ul>
+
+		<div id="repositoryBrowserTab" class="inlineTabDiv">
+			<iframe frameborder="0" name="repositoryBrowserFrame" id="repositoryBrowserFrame" src="" width="670" height="410" align="baseline"></iframe>
+		</div>
+				
+		<div id="latestUploadedTab" class="inlineTabDiv">
+			<iframe frameborder="0" name="latestAssetsFrame" id="latestAssetsFrame" src="" width="670" height="410" align="baseline"></iframe>
+		</div>
+		
+		<div id="searchTab" class="inlineTabDiv">
+			<iframe frameborder="0" name="contentVersionAssetSearchFrame" id="contentVersionAssetSearchFrame" src="" width="670" height="410" align="baseline"></iframe>
+		</div>
+
+	</div>
+				
+	#lightFooterToolbar($footerButtons)
+
+</div>
+
+#endCommonToolV3()

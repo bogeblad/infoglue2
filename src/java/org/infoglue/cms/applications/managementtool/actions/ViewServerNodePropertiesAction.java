@@ -244,6 +244,9 @@ public class ViewServerNodePropertiesAction extends InfoGluePropertiesAbstractAc
 	    populate(ps, "internalSearchEngine");
 
 	    populate(ps, "maxRows");
+	    populate(ps, "maxNumberOfAssetInSearches");
+	    populate(ps, "componentBindningAssetBrowser");
+
 	    populate(ps, "defaultNumberOfYearsBeforeExpire");
 	    populate(ps, "enableDateTimeDirectEditing");
 	    populate(ps, "showContentVersionFirst");

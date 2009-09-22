@@ -160,7 +160,7 @@
 <div id="assets" class="imgBoxContainer" style="height: 310px;">
 
 #set($counter = 0)
-#foreach($digitalAsset in $inheritedDigitalAssets)
+#foreach($digitalAsset in $inheritedDigitalAssetsRecursive)
 	#set($digitalAssetUrl = $this.getDigitalAssetUrl($digitalAsset.digitalAssetId))
 	<div class="imgBox">
     	<div class="imgBoxTop" id="digitalAsset$formatter.encodeURI($digitalAsset.assetKey, 'utf-8')" #if($assetKey == "$digitalAsset.assetKey") style="background:url(images/v3/imgboxselected_bg.gif) repeat;" #else style="background:url(images/v3/imgbox_bg.gif) repeat;" #end>
@@ -170,8 +170,10 @@
 				#set($singleEncodedAssetKey = "$formatter.encodeURI($digitalAsset.assetKey, 'utf-8')")
 				#set($doubleEncodedAssetKey = "$formatter.encodeURI($formatter.encodeURI($digitalAsset.assetKey, 'utf-8'), 'utf-8')")
 				#set($thumbnailImageUrl = "$this.getDigitalAssetThumbnailUrl($digitalAsset.digitalAssetId, 50, 30, 'ffffff', 'center', 'middle', 50, 30, 75)")
-				<img ondblclick="onOk();" onclick="markAsset(this, $!contentId, '$singleEncodedAssetKey', '$singleEncodedAssetKey', '$thumbnailImageUrl');" src="$thumbnailImageUrl" alt="$digitalAsset.assetKey ($digitalAsset.assetContentType - $formatter.formatFileSize($digitalAsset.assetFileSize))" />
-             	<p title="$digitalAsset.assetKey ($digitalAsset.assetContentType - $formatter.formatFileSize($digitalAsset.assetFileSize))" class="assetKeyP"><a class="assetKeyHref" ondblclick="onOk();" href="javascript:markAsset(this, $!contentId, '$doubleEncodedAssetKey', '$doubleEncodedAssetKey', '$thumbnailImageUrl');">#if($digitalAsset.assetKey.length() > 10)$digitalAsset.assetKey.substring(0,10)..#else$digitalAsset.assetKey#end</a></p>
+				#set($contentId = $this.getDigitalAssetContentId($digitalAsset.digitalAssetId))
+				#set($path = "$this.getContentPath($contentId)")
+				<img ondblclick="onOk();" onclick="markAsset(this, $!contentId, '$singleEncodedAssetKey', '$singleEncodedAssetKey', '$thumbnailImageUrl');" src="$thumbnailImageUrl" alt="$digitalAsset.assetKey ($digitalAsset.assetContentType - $path - $formatter.formatFileSize($digitalAsset.assetFileSize))" />
+             	<p title="$digitalAsset.assetKey - $path - ($digitalAsset.assetContentType - $formatter.formatFileSize($digitalAsset.assetFileSize))" class="assetKeyP"><a class="assetKeyHref" ondblclick="onOk();" href="javascript:markAsset(this, $!contentId, '$doubleEncodedAssetKey', '$doubleEncodedAssetKey', '$thumbnailImageUrl');">#if($digitalAsset.assetKey.length() > 10)$digitalAsset.assetKey.substring(0,10)..#else$digitalAsset.assetKey#end</a></p>
                 #if($showSelectButtonByEachImage)<a href="javascript:markAsset(this, $!contentId, '$doubleEncodedAssetKey', '$doubleEncodedAssetKey', '$thumbnailImageUrl');onOk();"><b>Add asset to selection</b></a>#end
 				#if($assetKey == $digitalAsset.assetKey)
 					<script type="text/javascript">

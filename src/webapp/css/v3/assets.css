@@ -6,8 +6,8 @@
 	overflow: auto;
 }
 .imgBox {
-	width:144px;
-	height:134px;
+	width:134px;
+	height:124px;
 	background:url(../../images/v3/imgbox_bg.gif) repeat;
 	border:solid 1px #d8d8d8;
 	display:block;

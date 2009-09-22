@@ -454,7 +454,19 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 
 		return "showContentAssetsForComponentBinding";
 	}
-	
+
+	public String doViewAssetBrowserForComponentBindingV3() throws Exception
+	{
+	    if(this.assignedContentId != null)
+		{
+	        this.contentVO = ContentControllerProxy.getController().getACContentVOWithId(this.getInfoGluePrincipal(), this.assignedContentId);
+		}
+		
+		this.repositories = RepositoryController.getController().getAuthorizedRepositoryVOList(this.getInfoGluePrincipal(), true);
+
+		return "viewAssetBrowserForComponentBindingV3";
+	}
+
 	public String doViewAssets() throws Exception
 	{
 		if(getContentId() != null && getContentId().intValue() != -1)
@@ -820,6 +832,67 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 		}
 		
 		return filteredDigitalAssets;
+	}	
+
+	/**
+	 * Returns a list of digital assets available for this content version.
+	 */
+	
+	public List getInheritedDigitalAssetsRecursive()
+	{
+		List filteredDigitalAssets = new ArrayList();
+		
+		if(this.contentVO != null && this.contentVO.getContentId() != null && this.contentVO.getContentId().intValue() != -1)
+    		getInheritedDigitalAssetsRecursive(filteredDigitalAssets, this.contentVO.getId(), this.languageId, CmsPropertyHandler.getMaxNumberOfAssetInSearches());
+		else if(this.contentVersionVO != null && this.contentVersionVO.getContentVersionId() != null)
+			getInheritedDigitalAssetsRecursive(filteredDigitalAssets, this.contentVersionVO.getContentId(), this.languageId, CmsPropertyHandler.getMaxNumberOfAssetInSearches());
+			
+		return filteredDigitalAssets;
+	}	
+
+	/**
+	 * Returns a list of digital assets available for this content version.
+	 */
+	
+	private void getInheritedDigitalAssetsRecursive(List filteredDigitalAssets, Integer contentId, Integer languageId, Integer maxNumberOfAssets)
+	{
+		if(filteredDigitalAssets.size() > maxNumberOfAssets)
+			return;
+		
+		try
+		{
+			List digitalAssets = DigitalAssetController.getDigitalAssetVOList(contentId, languageId, true);
+
+       		if(digitalAssets != null && digitalAssets.size() > 0)
+       		{
+       			Iterator digitalAssetsIterator = digitalAssets.iterator();
+       			while(digitalAssetsIterator.hasNext())
+       			{
+       				DigitalAssetVO assetVO = (DigitalAssetVO)digitalAssetsIterator.next();
+       				if(!assetVO.getAssetContentType().matches(this.assetTypeFilter))
+       				{
+       					digitalAssetsIterator.remove();
+       				}
+       			}
+       		}
+       		
+			filteredDigitalAssets.addAll(digitalAssets);
+			
+			if(filteredDigitalAssets.size() < maxNumberOfAssets)
+			{
+				List children = ContentControllerProxy.getContentController().getContentChildrenVOList(contentId);
+				Iterator childrenIterator = children.iterator();
+				while(childrenIterator.hasNext())
+				{
+					ContentVO child = (ContentVO)childrenIterator.next();
+					getInheritedDigitalAssetsRecursive(filteredDigitalAssets, child.getId(), languageId, maxNumberOfAssets);
+				}
+			}
+		}
+		catch(Exception e)
+		{
+			logger.error("We could not fetch the list of digitalAssets: " + e.getMessage(), e);
+		}
 	}	
 
 
