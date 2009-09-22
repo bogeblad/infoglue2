@@ -36,6 +36,7 @@ import org.apache.log4j.Logger;
 import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.applications.databeans.ComponentPropertyDefinition;
+import org.infoglue.cms.controllers.kernel.impl.simple.CategoryController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ComponentController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ComponentPropertyDefinitionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
@@ -50,6 +51,7 @@ import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeVersionController
 import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.entities.content.DigitalAssetVO;
+import org.infoglue.cms.entities.management.CategoryVO;
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
 import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.entities.structure.SiteNodeVO;
@@ -1320,8 +1322,10 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 				Element componentProperties = (Element)componentNodeList.item(0);
 				if(entity.equalsIgnoreCase("SiteNode"))
 				    addPropertyElement(componentProperties, propertyName, path, "siteNodeBinding", locale);
-				else
-				    addPropertyElement(componentProperties, propertyName, path, "contentBinding", locale);
+				else if(entity.equalsIgnoreCase("Content"))
+					addPropertyElement(componentProperties, propertyName, path, "contentBinding", locale);
+				else if(entity.equalsIgnoreCase("Category"))
+					addPropertyElement(componentProperties, propertyName, path, "categoryBinding", locale);
 				
 				anl = org.apache.xpath.XPathAPI.selectNodeList(document.getDocumentElement(), componentPropertyXPath);
 			}
@@ -1331,6 +1335,22 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 		if(anl.getLength() > 0)
 		{
 			Element component = (Element)anl.item(0);
+			if(entity.equalsIgnoreCase("SiteNode"))
+			{
+				SiteNodeVO siteNodeVO = SiteNodeController.getController().getSiteNodeVOWithId(entityId);
+				path = siteNodeVO.getName();
+			}
+			else if(entity.equalsIgnoreCase("Content"))
+			{
+				ContentVO contentVO = ContentController.getContentController().getContentVOWithId(entityId);
+				path = contentVO.getName();
+			}
+			else if(entity.equalsIgnoreCase("Category"))
+			{
+				CategoryVO categoryVO = CategoryController.getController().findById(entityId);
+				path = categoryVO.getDisplayName();
+			}
+
 			component.setAttribute("path", path);
 			NamedNodeMap attributes = component.getAttributes();
 			logger.debug("NumberOfAttributes:" + attributes.getLength() + ":" + attributes);
