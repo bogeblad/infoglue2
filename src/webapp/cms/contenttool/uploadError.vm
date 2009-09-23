@@ -26,7 +26,7 @@
 <table width="300">
 	<tr>
 		<td class="biglabel">
-			$ui.getString("tool.contenttool.fileUpload.fileUploadFailedHeader") $this.uploadErrorMaxSize
+			$ui.getString("tool.contenttool.fileUpload.fileUploadFailedHeader") $!this.uploadErrorMaxSize
 		</td>
 	</tr>		
 	<tr>
@@ -36,7 +36,7 @@
 	</tr>		
 	<tr>
 		<td>
-			<a href="javascript:history.back();">Back</a>
+			<a href="javascript:history.back();">$ui.getString("tool.contenttool.fileUpload.backLabel")</a>
 		</td>
 	</tr>
 </table>
