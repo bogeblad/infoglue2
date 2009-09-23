@@ -26,6 +26,7 @@ package org.infoglue.cms.webservices;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.infoglue.cms.controllers.kernel.impl.simple.GroupControllerProxy;
@@ -37,9 +38,11 @@ import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGlueGroup;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.security.InfoGlueRole;
+import org.infoglue.cms.webservices.elements.StatusBean;
 import org.infoglue.common.security.beans.InfoGlueGroupBean;
 import org.infoglue.common.security.beans.InfoGluePrincipalBean;
 import org.infoglue.common.security.beans.InfoGlueRoleBean;
+import org.infoglue.deliver.util.webservices.DynamicWebserviceSerializer;
 
 
 /**
@@ -119,7 +122,7 @@ public class RemoteUserServiceImpl extends RemoteInfoGlueService
      * Updates a system user.
      */
     
-    public Boolean updateUser(final String principalName, SystemUserVO systemUserVO, String[] roleNames, String[] groupNames) 
+    public Boolean updateUser(final String principalName, String firstName, String lastName, String userName, String password, String email, String[] roleNames, String[] groupNames) 
     {
         if(!ServerNodeController.getController().getIsIPAllowed(getRequest()))
         {
@@ -137,6 +140,18 @@ public class RemoteUserServiceImpl extends RemoteInfoGlueService
         {
             initializePrincipal(principalName);
             
+            SystemUserVO systemUserVO = new SystemUserVO();
+            systemUserVO.setUserName(userName);
+            systemUserVO.setEmail(email);
+            systemUserVO.setFirstName(firstName);
+            systemUserVO.setLastName(lastName);
+            systemUserVO.setPassword(password);
+            
+            if(roleNames != null && roleNames.length > 0)
+            	roleNames = null;
+            if(groupNames != null && groupNames.length > 0)
+            	groupNames = null;
+
             userControllerProxy.updateUser(systemUserVO, roleNames, groupNames);
         }
         catch(Exception e)
@@ -148,6 +163,91 @@ public class RemoteUserServiceImpl extends RemoteInfoGlueService
         updateCaches();
 
         return status;    
+    }
+
+    /**
+     * Updates a system user.
+     */
+    
+    public StatusBean updateUser(final String principalName, final Object[] inputsArray, String[] roleNames, String[] groupNames) 
+    {
+        if(!ServerNodeController.getController().getIsIPAllowed(getRequest()))
+        {
+            logger.error("A client with IP " + getRequest().getRemoteAddr() + " was denied access to the webservice. Could be a hack attempt or you have just not configured the allowed IP-addresses correct.");
+            return new StatusBean(false, "You are not allowed to talk to this service");
+        }
+
+        StatusBean statusBean = new StatusBean(true, "ok");
+    	
+        logger.info("***************************************");
+        logger.info("Updating user through webservice.......");
+        logger.info("***************************************");
+        
+        try
+        {
+			final DynamicWebserviceSerializer serializer = new DynamicWebserviceSerializer();
+            List users = (List) serializer.deserialize(inputsArray);
+	        logger.info("users:" + users);
+
+            initializePrincipal(principalName);
+            
+	        Iterator usersIterator = users.iterator();
+	        while(usersIterator.hasNext())
+	        {
+	            Map userMap = (Map)usersIterator.next();
+	            
+	            Boolean isPasswordChangeOperation 	= (Boolean)userMap.get("isPasswordChangeOperation");
+	            Boolean isPasswordResetOperation	= (Boolean)userMap.get("isPasswordResetOperation");
+	            
+	            String firstName 					= (String)userMap.get("firstName");
+	            String lastName 					= (String)userMap.get("lastName");
+	            String email 						= (String)userMap.get("email");
+	            String userName 					= (String)userMap.get("userName");
+	            String password 					= (String)userMap.get("password");
+	            String oldPassword 					= (String)userMap.get("oldPassword");
+
+	            if(isPasswordChangeOperation)
+	            {
+	            	System.out.println("isPasswordChangeOperation");
+	            	System.out.println("userName:" + userName);
+	            	System.out.println("oldPassword:" + oldPassword);
+	            	System.out.println("password:" + password);
+	            	userControllerProxy.updateUserPassword(userName, oldPassword, password);
+	            }
+	            else if(isPasswordResetOperation)
+	            {
+	            	System.out.println("isPasswordResetOperation");
+	            	userControllerProxy.updateUserPassword(userName);
+	            }
+	            else
+	            {
+	            	System.out.println("isUserUpdateOperation");
+		            SystemUserVO systemUserVO = new SystemUserVO();
+		            systemUserVO.setEmail(email);
+		            systemUserVO.setFirstName(firstName);
+		            systemUserVO.setLastName(lastName);
+		            systemUserVO.setPassword(password);
+		            systemUserVO.setUserName(userName);
+		            
+		            if(roleNames != null && roleNames.length == 0)
+		            	roleNames = null;
+		            if(groupNames != null && groupNames.length == 0)
+		            	groupNames = null;
+		            
+		            userControllerProxy.updateUser(systemUserVO, oldPassword, roleNames, groupNames);
+	            }
+	        }
+        }
+        catch(Throwable e)
+        {
+        	statusBean.setStatus(false);
+        	statusBean.setMessage("En error occurred when we tried to update one or more users:" + e.getMessage());
+            logger.error("En error occurred when we tried to update one or more users:" + e.getMessage(), e);
+        }
+        
+        updateCaches();
+
+        return statusBean;    
     }
 
     /**

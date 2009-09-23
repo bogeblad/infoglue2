@@ -63,7 +63,7 @@ public class RemoteInfoGlueService
     	return request;
 	}
 
-    public String cleanAttributeValue(String attributeValue, boolean allowHTML, boolean allowExternalLinks) 
+    public String cleanAttributeValue(String attributeValue, boolean allowHTML, boolean allowExternalLinks, boolean allowDollarSign, boolean allowAnchorSigns) 
     {
     	if(!allowExternalLinks)
         {
@@ -71,9 +71,13 @@ public class RemoteInfoGlueService
     		attributeValue = attributeValue.replaceAll("https://", "");
     		attributeValue = attributeValue.replaceAll("ftp://", "");
         }
-    	
-        attributeValue = attributeValue.replaceAll("\\$", "");
-        attributeValue = attributeValue.replaceAll("#", "");
+
+    	if(!allowDollarSign)
+    		attributeValue = attributeValue.replaceAll("\\$", "");
+        
+        if(!allowAnchorSigns)
+        	attributeValue = attributeValue.replaceAll("#", "");
+        
         if(!allowHTML)
         {
         	attributeValue = attributeValue.replaceAll("</*[^>]+>", "");
