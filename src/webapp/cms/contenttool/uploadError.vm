@@ -36,7 +36,7 @@
 	</tr>		
 	<tr>
 		<td>
-			<a href="javascript:history.back();">$ui.getString("tool.contenttool.fileUpload.backLabel")</a>
+			<a href="javascript:history.back();">$ui.getString("tool.contenttool.fileUpload.fileUploadFailedBackLabel")</a>
 		</td>
 	</tr>
 </table>
