@@ -1304,10 +1304,10 @@ public class BasicTemplateController implements TemplateController
 	public boolean getHasPrincipalRole(InfoGluePrincipal infoGluePrincipal, String roleName)
 	{
 	    boolean isValid = false;
-	    Iterator groupsIterator = infoGluePrincipal.getRoles().iterator();
-	    while(groupsIterator.hasNext())
+	    Iterator rolesIterator = infoGluePrincipal.getRoles().iterator();
+	    while(rolesIterator.hasNext())
 	    {
-	        InfoGlueRole infoglueRole = (InfoGlueRole)groupsIterator.next();
+	        InfoGlueRole infoglueRole = (InfoGlueRole)rolesIterator.next();
 	        if(infoglueRole.getName().equalsIgnoreCase(roleName))
 	        {
 	            isValid = true;
@@ -1316,7 +1316,7 @@ public class BasicTemplateController implements TemplateController
 	    
 	    return isValid;
 	}
-	
+
 	/**
 	 * Getting all related contents for the current Principals role - used for personalisation. 
 	 */

@@ -331,6 +331,10 @@ public interface TemplateController
     public abstract Map getPrincipalPropertyHashValues(String propertyName,
             boolean escapeSpecialCharacters, Integer languageId);
 
+	public abstract boolean getHasPrincipalGroup(InfoGluePrincipal infoGluePrincipal, String groupName);
+
+	public abstract boolean getHasPrincipalRole(InfoGluePrincipal infoGluePrincipal, String roleName);
+
     public abstract InfoGlueGroup getGroup(
     		String groupName);
 
