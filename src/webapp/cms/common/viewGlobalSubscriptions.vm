@@ -152,7 +152,7 @@
 
 <div style="clear: both;" onfocus="this.blur();"></div>
 
-<h3 style="text-indent: 16px;">
+<h3>
 	$ui.getString("tool.common.globalSubscriptions.title") #if($standalone == "false") - <a href="Subscriptions!inputGlobalSubscriptions.action" target="_blank">$ui.getString("tool.managementtool.openSubscriptionsInNewWindow.label")</a>#end
 	#if($errorMessage != "")<span style="color:red">$errorMessage</span>#end
 </h3>
@@ -175,6 +175,21 @@
 	<div style="height: 10px; clear: both;"></div>
 	<a class='igButton' href="#" onclick="showDiv('newSubscriptionForm');"><span class='igButtonOuterSpan'><span class='create'>$ui.getString("tool.common.createSubscription.header")</span></span></a>
 	#end
+
+	<div style="clear: both;" onfocus="this.blur();"></div>
+	
+	<h3 style="margin-left: 0px;">$ui.getString("tool.common.detailedSubscriptions.label")</h3>
+	<ul>
+	#foreach($detailedSubscriptionVO in $detailedSubscriptionVOList)
+	    
+		<li>
+			$this.getSubscriptionPresentationString($detailedSubscriptionVO)
+		 	- 
+		 	<a href="Subscriptions!deleteGlobalSubscription.action?subscriptionId=$detailedSubscriptionVO.id&standalone=$standalone">Delete</a>
+		</li>
+	
+	#end
+	</ul>
 	
 	</div>
 </div>
