@@ -493,7 +493,7 @@ function showComponentMenu(event, element, compId, anInsertUrl, anDeleteUrl, anC
 	//alert("bottomedge:" + bottomedge);
 	//alert("document.body.clientHeight:" + document.body.clientHeight);
 	//alert("menuDiv.offsetWidth:" + menuDiv.offsetWidth);
-
+	
 	var editDivElement = document.getElementById("editDiv" + compId);
 	var editInlineDivElement = document.getElementById("editInlineDiv" + compId);
 	var subscribeContentDivElement = document.getElementById("subscribeContent" + compId);
@@ -528,8 +528,6 @@ function showComponentMenu(event, element, compId, anInsertUrl, anDeleteUrl, anC
 		
 	menuDiv.style.left 	= clientX + "px";
 	menuDiv.style.top 	= clientY + "px";
-	//menuDiv.style.left 	= newLeft + "px";
-	//menuDiv.style.top 	= newTop + "px";
 	
 	menuDiv.style.visibility = "visible";
 	menuDiv.style.display = "block";
@@ -1928,7 +1926,7 @@ function viewSource()
 		//alert("eleId:" + eleId);
 		//alert("this.insertUrl:" + this.insertUrl);
 		var ele = xGetElementById(eleId); // ele points to our related Element
-		//alert("ele:" + ele);
+		//alert("ele:" + ele + " for " + eleId);
 		ele.thisObj = this;              // Add a property to ele which points
 		                                    // to our myObject4 'this'.
 		ele.onclick = function(e)         // onclick is a method of ele not myObject4

@@ -118,6 +118,7 @@
 				propertyEntity 					= property.getEntity();
 				propertyMultiple				= property.getMultiple();
 				propertyAssetBinding			= property.getAssetBinding();
+				propertyAssetMask				= property.getAssetMask();
 				isPuffContentForPage			= property.getIsPuffContentForPage();
 				propertyDescription				= property.getDescription();
 				propertyDefaultValue			= property.getDefaultValue();
@@ -143,7 +144,7 @@
 				
 				if(propertyType == "select" || propertyType == "checkbox")
 				{
-					propertiesXML += "<property name='" + clean(propertyName) + "' displayName='" + clean(propertyDisplayName) + "' type='" + propertyType + "' multiple='" + propertyMultiple + "' assetBinding='" + propertyAssetBinding + "' isPuffContentForPage='" + isPuffContentForPage + "' description='" + clean(propertyDescription) + "' defaultValue='" + clean(propertyDefaultValue) + "' allowLanguageVariations='" + propertyAllowLanguageVariations + "' dataProvider='" + propertyDataProvider + "' dataProviderParameters='" + propertyDataProviderParameters + "' allowMultipleSelections='" + propertyAllowMultipleSelections + "'>";
+					propertiesXML += "<property name='" + clean(propertyName) + "' displayName='" + clean(propertyDisplayName) + "' type='" + propertyType + "' multiple='" + propertyMultiple + "' assetBinding='" + propertyAssetBinding + "' assetMask='" + propertyAssetMask + "' isPuffContentForPage='" + isPuffContentForPage + "' description='" + clean(propertyDescription) + "' defaultValue='" + clean(propertyDefaultValue) + "' allowLanguageVariations='" + propertyAllowLanguageVariations + "' dataProvider='" + propertyDataProvider + "' dataProviderParameters='" + propertyDataProviderParameters + "' allowMultipleSelections='" + propertyAllowMultipleSelections + "'>";
 
 					for (var j=0; j<property.getOptions().getSize(); j++)
 					{
@@ -157,7 +158,7 @@
 					propertiesXML += "</property>";					
 				}
 				else
-					propertiesXML += "<property name='" + clean(propertyName) + "' displayName='" + clean(propertyDisplayName) + "' type='" + propertyType + "' entity='" + propertyEntity + "' multiple='" + propertyMultiple + "' assetBinding='" + propertyAssetBinding + "' isPuffContentForPage='" + isPuffContentForPage + "' allowedContentTypeDefinitionNames='" + propertyAllowedContentTypeNames + "' description='" + clean(propertyDescription) + "' defaultValue='" + clean(propertyDefaultValue) + "' allowLanguageVariations='" + propertyAllowLanguageVariations + "' WYSIWYGEnabled='" + propertyWYSIWYGEnabled + "' WYSIWYGToolbar='" + propertyWYSIWYGToolbar + "' dataProvider='" + propertyDataProvider + "' dataProviderParameters='" + propertyDataProviderParameters + "' autoCreateContent='" + propertyAutoCreateContent + "' autoCreateContentMethod='" + propertyAutoCreateContentMethod + "' autoCreateContentPath='" + propertyAutoCreateContentPath + "' customMarkup='" + encodeXML(propertyCustomMarkup) + "'/>";
+					propertiesXML += "<property name='" + clean(propertyName) + "' displayName='" + clean(propertyDisplayName) + "' type='" + propertyType + "' entity='" + propertyEntity + "' multiple='" + propertyMultiple + "' assetBinding='" + propertyAssetBinding + "' assetMask='" + propertyAssetMask + "' isPuffContentForPage='" + isPuffContentForPage + "' allowedContentTypeDefinitionNames='" + propertyAllowedContentTypeNames + "' description='" + clean(propertyDescription) + "' defaultValue='" + clean(propertyDefaultValue) + "' allowLanguageVariations='" + propertyAllowLanguageVariations + "' WYSIWYGEnabled='" + propertyWYSIWYGEnabled + "' WYSIWYGToolbar='" + propertyWYSIWYGToolbar + "' dataProvider='" + propertyDataProvider + "' dataProviderParameters='" + propertyDataProviderParameters + "' autoCreateContent='" + propertyAutoCreateContent + "' autoCreateContentMethod='" + propertyAutoCreateContentMethod + "' autoCreateContentPath='" + propertyAutoCreateContentPath + "' customMarkup='" + encodeXML(propertyCustomMarkup) + "'/>";
 			}
 		   	
 		   	propertiesXML += "</properties>";
@@ -320,6 +321,8 @@
 			else
 				document.componentPropertyDefinitionForm.componentPropertyDefinition_assetBinding.options[1].selected = 1;
 
+			document.componentPropertyDefinitionForm.componentPropertyDefinition_assetMask.value = componentPropertyDefinition.assetMask;
+
 			if(componentPropertyDefinition.isPuffContentForPage == "false")
 				document.componentPropertyDefinitionForm.componentPropertyDefinition_isPuffContentForPage.options[0].selected = 1;
 			else
@@ -433,6 +436,7 @@
 				componentPropertyDefinition.setEntity(document.getElementById("componentPropertyDefinition_entity").value);
 				componentPropertyDefinition.setMultiple(document.getElementById("componentPropertyDefinition_multiple").value);
 				componentPropertyDefinition.setAssetBinding(document.getElementById("componentPropertyDefinition_assetBinding").value);
+				componentPropertyDefinition.setAssetMask(document.getElementById("componentPropertyDefinition_assetMask").value);
 				componentPropertyDefinition.setIsPuffContentForPage(document.getElementById("componentPropertyDefinition_isPuffContentForPage").value);
 				
 				componentPropertyDefinition.setAutoCreateContent(document.getElementById("componentPropertyDefinition_autoCreateContent").value);
@@ -460,6 +464,7 @@
 				componentPropertyDefinition.setEntity("");
 				componentPropertyDefinition.setMultiple("");
 				componentPropertyDefinition.setAssetBinding("");
+				componentPropertyDefinition.setAssetMask("");
 				componentPropertyDefinition.setIsPuffContentForPage("");
 				componentPropertyDefinition.setAllowedContentTypeNames("");
 		
@@ -631,7 +636,7 @@
 
 		function addProperty()
 		{
-			property = new ComponentPropertyDefinition("NewProperty", "NewProperty", "binding", "Content", "false", "false", "false", "", "No description yet", "", "false", "Basic", "", "", "false", "", "", "", "false");
+			property = new ComponentPropertyDefinition("NewProperty", "NewProperty", "binding", "Content", "false", "false", "", "false", "", "No description yet", "", "false", "Basic", "", "", "false", "", "", "", "false");
 			propertyVector.addElement(property);
 				
 			drawList();
@@ -657,6 +662,7 @@
 				allowedContentTypeNames = property.getAllowedContentTypeNames();
 				description  			= property.getDescription();
 				assetBinding 			= property.getAssetBinding();
+				assetMask 				= property.getAssetMask();
 				isPuffContentForPage 	= property.getIsPuffContentForPage();
 				defaultValue 			= property.getDefaultValue();
 				allowLanguageVariations = property.getAllowLanguageVariations();
@@ -674,6 +680,8 @@
 				property.setMultiple(previousProperty.getMultiple());
 				if(previousProperty.getAssetBinding())
 					property.setAssetBinding(previousProperty.getAssetBinding());
+				if(previousProperty.getAssetMask())
+					property.setAssetMask(previousProperty.getAssetMask());
 				property.setIsPuffContentForPage(previousProperty.getIsPuffContentForPage());
 				property.setAllowedContentTypeNames(previousProperty.getAllowedContentTypeNames());
 				property.setDescription(previousProperty.getDescription());
@@ -695,6 +703,8 @@
 				previousProperty.setMultiple(multiple);
 				if(assetBinding)
 					previousProperty.setAssetBinding(assetBinding);
+				if(assetMask)
+					previousProperty.setAssetMask(assetMask);
 				previousProperty.setIsPuffContentForPage(isPuffContentForPage);
 				previousProperty.setAllowedContentTypeNames(allowedContentTypeNames);
 				previousProperty.setDescription(description);
@@ -733,6 +743,7 @@
 				allowedContentTypeNames = property.getAllowedContentTypeNames();
 				description 			= property.getDescription();
 				assetBinding 			= property.getAssetBinding();
+				assetMask 				= property.getAssetMask();
 				isPuffContentForPage 	= property.getIsPuffContentForPage();
 				defaultValue 			= property.getDefaultValue();
 				allowLanguageVariations = property.getAllowLanguageVariations();
@@ -750,6 +761,8 @@
 				property.setMultiple(previousProperty.getMultiple())
 				if(previousProperty.getAssetBinding())
 					property.setAssetBinding(previousProperty.getAssetBinding());
+				if(previousProperty.getAssetMask())
+					property.setAssetMask(previousProperty.getAssetMask());
 				property.setIsPuffContentForPage(previousProperty.getIsPuffContentForPage());
 				property.setAllowedContentTypeNames(previousProperty.getAllowedContentTypeNames());
 				property.setDescription(previousProperty.getDescription());
@@ -771,6 +784,8 @@
 				previousProperty.setMultiple(multiple);
 				if(assetBinding)
 					previousProperty.setAssetBinding(assetBinding);
+				if(assetMask)
+					previousProperty.setAssetMask(assetMask);
 				previousProperty.setIsPuffContentForPage(isPuffContentForPage);
 				previousProperty.setAllowedContentTypeNames(allowedContentTypeNames);
 				previousProperty.setDescription(description);
@@ -981,7 +996,7 @@
 		function init()
 		{
 			#foreach($propertyDefinition in $componentPropertyDefinitions)
-				property = new ComponentPropertyDefinition("$propertyDefinition.name", "$!propertyDefinition.displayName", "$propertyDefinition.type", "$propertyDefinition.entity", "$propertyDefinition.multiple", "$propertyDefinition.assetBinding", "$propertyDefinition.isPuffContentForPage", "$propertyDefinition.allowedContentTypeNames", "$propertyDefinition.description", "$!propertyDefinition.defaultValue", "$!propertyDefinition.allowLanguageVariations", "$!propertyDefinition.WYSIWYGEnabled", "$!propertyDefinition.WYSIWYGToolbar", "$!propertyDefinition.dataProvider", "$!propertyDefinition.dataProviderParameters", "$!propertyDefinition.autoCreateContent", "$!propertyDefinition.autoCreateContentMethod", "$!propertyDefinition.autoCreateContentPath", "$!propertyDefinition.encodedCustomMarkup", "$!propertyDefinition.allowMultipleSelections");
+				property = new ComponentPropertyDefinition("$propertyDefinition.name", "$!propertyDefinition.displayName", "$propertyDefinition.type", "$propertyDefinition.entity", "$propertyDefinition.multiple", "$propertyDefinition.assetBinding", "$propertyDefinition.assetMask", "$propertyDefinition.isPuffContentForPage", "$propertyDefinition.allowedContentTypeNames", "$propertyDefinition.description", "$!propertyDefinition.defaultValue", "$!propertyDefinition.allowLanguageVariations", "$!propertyDefinition.WYSIWYGEnabled", "$!propertyDefinition.WYSIWYGToolbar", "$!propertyDefinition.dataProvider", "$!propertyDefinition.dataProviderParameters", "$!propertyDefinition.autoCreateContent", "$!propertyDefinition.autoCreateContentMethod", "$!propertyDefinition.autoCreateContentPath", "$!propertyDefinition.encodedCustomMarkup", "$!propertyDefinition.allowMultipleSelections");
 
 				#foreach($propertyOptionDefinition in $propertyDefinition.options)
 					propertyOption = new ComponentPropertyOptionDefinition("$propertyOptionDefinition.name", "$propertyOptionDefinition.value");
@@ -1117,13 +1132,21 @@
 	    <option value="true">Yes</option>
 	</select>
 </p>
-<p id="assetParagraph" style="display: block;"><label for="name">AssetBinding:</label>
-	<select size="1" name="componentPropertyDefinition_assetBinding" id="componentPropertyDefinition_assetBinding" class="sitedropbox">
-	    <option value="false">No</option>
-	    <option value="true">Yes</option>
-	</select>
-</p>
-<p id="isPuffContentForPageParagraph" style="display: block;"><label for="componentPropertyDefinition_isPuffContentForPage">Puff for page:</label>
+<div id="assetParagraph" style="display: block;">
+	<p>
+		<label for="componentPropertyDefinition_assetBinding">AssetBinding:</label>
+		<select size="1" name="componentPropertyDefinition_assetBinding" id="componentPropertyDefinition_assetBinding" class="sitedropbox">
+		    <option value="false">No</option>
+		    <option value="true">Yes</option>
+		</select>
+	</p>
+	<p>
+		<label for="componentPropertyDefinition_AssetMask">AssetMask (suffix regexp):</label>
+		<input type="textfield" name="componentPropertyDefinition_AssetMask" id="componentPropertyDefinition_assetMask" value=""/>
+	</p>
+</div>
+<p id="isPuffContentForPageParagraph" style="display: block;">
+	<label for="componentPropertyDefinition_isPuffContentForPage">Puff for page:</label>
 	<select size="1" name="componentPropertyDefinition_isPuffContentForPage" id="componentPropertyDefinition_isPuffContentForPage" class="sitedropbox">
 	    <option value="false">No</option>
 	    <option value="true">Yes</option>

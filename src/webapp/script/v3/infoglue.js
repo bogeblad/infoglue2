@@ -62,6 +62,8 @@ function resizeInlineTabDivs()
   		$(".inlineTabDiv").css("width", dimensionsWidth - 30);
 		$(".inlineSubTabDiv").css("height", dimensionsHeight - 220);
 		$(".inlineSubTabDiv").css("width", dimensionsHeight - 40);
+		$(".inlineTabDiv > iframe").css("width", dimensionsWidth - 50);
+		$(".inlineSubTabDiv > iframe").css("width", dimensionsWidth - 60);
 	}
 	else
 	{

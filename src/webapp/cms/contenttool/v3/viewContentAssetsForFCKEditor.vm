@@ -148,7 +148,7 @@
 	<META HTTP-EQUIV="expires" CONTENT="-1" />	
 </head>
 
-<body class="contenttooledit" onload="init();" style="background-color: #f7f7f7; margin: 0px; padding: 0px;">
+<body class="generaltooledit" onload="init();" style="background-color: #f7f7f7; margin: 0px; padding: 0px;">
 
 <form name="inputForm" action="CreateServiceBinding.action">
 	<input type="hidden" id="entityId" name="entityId" value="">
@@ -159,22 +159,9 @@
 
 <table border="0" width="100%" cellpadding="2" cellspacing="0">
 <tr>
-	<td valign="top">
+	<td valign="top" width="290">
 
 		<table cellpadding="0" cellspacing="0" border="0" width="280">
-		<tr class="darkgreen">
-			<td class="smalllabel">$ui.getString("tool.contenttool.chooseContentLabel")</td>
-			<td class="smalllabel"><img src="images/spyglassIcon.gif" width="16" height="16" onclick="toggleDiv('searchDiv', 'treeDiv');"></td>
-		</tr>
-		<tr>
-			<td bgcolor="#EEF7DC" colspan="4" height="1"><img src="images/trans.gif" width="1" height="1"></td>
-		</tr>
-		<tr>
-			<td bgcolor="#C7D1B3" colspan="4" height="1"><img src="images/trans.gif" width="1" height="1"></td>
-		</tr>
-		<tr>
-			<td height="1"><img src="images/trans.gif" width="1" height="5"></td>
-		</tr>		
 		<!-- 
 		HERE IS THE REPOSITORY-LIST FOR LATER 
 		-->
@@ -194,7 +181,7 @@
 		<tr>
 			<td class="menu">  
 				<div id="treeDiv" style="display:block;">
-					<IFRAME frameborder="0" name="itreeFrame" id="itreeFrame" src="" width="280" height="340" align="baseline"></IFRAME>
+					<iframe frameborder="0" name="itreeFrame" id="itreeFrame" src="" width="280" height="340" align="baseline"></iframe>
 				</div>
 			</td>
 		</tr>	
@@ -203,25 +190,22 @@
 	</td>
 	
 	<td valign="top">
-		<table cellpadding="0" cellspacing="0" border="0" width="340">
-		<tr class="darkgreen">
-			<td class="smalllabel">$ui.getString("tool.contenttool.associatedAttachments")</td>
-		</tr>
-		<tr>
-			<td bgcolor="#EEF7DC" colspan="4" height="1"><img src="images/trans.gif" width="1" height="1"></td>
-		</tr>
-		<tr>
-			<td bgcolor="#C7D1B3" colspan="4" height="1"><img src="images/trans.gif" width="1" height="1"></td>
-		</tr>
+		<table cellpadding="0" cellspacing="0" border="0" width="100%">
 		<tr>
 			<td height="1"><img src="images/trans.gif" width="1" height="5"></td>
 		</tr>		
 		<tr>
+			<td class="smalllabel">$ui.getString("tool.contenttool.associatedAttachments")</td>
+		</tr>
+		<tr>
+			<td height="1"><img src="images/trans.gif" width="1" height="4"></td>
+		</tr>		
+		<tr>
 			<td>
 				#if($oldContentId > 0)
-					<IFRAME frameborder="0" name="contentVersionAssetsFrame" id="contentVersionAssetsFrame" src="" width="340" height="365" align="baseline"></IFRAME>
+					<IFRAME frameborder="0" name="contentVersionAssetsFrame" id="contentVersionAssetsFrame" src="" width="95%" height="365" align="baseline"></IFRAME>
 				#else
-					<IFRAME frameborder="0" name="contentVersionAssetsFrame" id="contentVersionAssetsFrame" src="" width="340" height="365" align="baseline"></IFRAME>
+					<IFRAME frameborder="0" name="contentVersionAssetsFrame" id="contentVersionAssetsFrame" src="" width="95%" height="365" align="baseline"></IFRAME>
 				#end
 			</td>
 		</tr>

@@ -79,7 +79,7 @@
 
 	<div style="clear: both;"></div>
 	
-	<h3 style="text-indent: 16px;">$ui.getString("tool.contenttool.assetDialog.assetDialogHeader")</h3>
+	<h3>$ui.getString("tool.contenttool.assetDialog.assetDialogHeader") - filtered on: "$assetTypeFilter"</h3>
 
 	<div id="tabsContainer" class="flora">      
 
