@@ -63,6 +63,7 @@ public class ComponentProperty
 	private String value;
 	private boolean isMultipleBinding 		= false;
 	private boolean isAssetBinding 			= false;
+	private String assetMask 				= ".*";
 	private boolean isPuffContentForPage	= false;
 	private Integer detailSiteNodeId		= null;
 	private boolean WYSIWYGEnabled 			= false;
@@ -239,6 +240,17 @@ public class ComponentProperty
 	public void setIsAssetBinding(boolean isAssetBinding)
 	{
 		this.isAssetBinding = isAssetBinding;
+	}
+
+	public String getAssetMask()
+	{
+		return this.assetMask;
+	}
+
+	public void setAssetMask(String assetMask)
+	{
+		if(assetMask != null)
+			this.assetMask = assetMask;
 	}
 
 	public boolean getIsPuffContentForPage()

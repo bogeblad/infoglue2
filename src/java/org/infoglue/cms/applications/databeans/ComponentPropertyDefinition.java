@@ -48,6 +48,7 @@ public class ComponentPropertyDefinition
     private String entity;
     private Boolean multiple;
     private Boolean assetBinding;
+    private String assetMask				= ".*";
     private Boolean isPuffContentForPage;
     private String allowedContentTypeNames;
     private String description;
@@ -66,7 +67,7 @@ public class ComponentPropertyDefinition
     private List options = new ArrayList();
 
     
-    public ComponentPropertyDefinition(String name, String displayName, String type, String entity, Boolean multiple, Boolean assetBinding, Boolean isPuffContentForPage, String allowedContentTypeNames, String description, String defaultValue, Boolean allowLanguageVariations, Boolean WYSIWYGEnabled, String WYSIWYGToolbar, String dataProvider, String dataProviderParameters, Boolean autoCreateContent, String autoCreateContentMethod, String autoCreateContentPath, String customMarkup, boolean allowMultipleSelections)
+    public ComponentPropertyDefinition(String name, String displayName, String type, String entity, Boolean multiple, Boolean assetBinding, String assetMask, Boolean isPuffContentForPage, String allowedContentTypeNames, String description, String defaultValue, Boolean allowLanguageVariations, Boolean WYSIWYGEnabled, String WYSIWYGToolbar, String dataProvider, String dataProviderParameters, Boolean autoCreateContent, String autoCreateContentMethod, String autoCreateContentPath, String customMarkup, boolean allowMultipleSelections)
     {
         this.name 						= name;
         this.displayName				= displayName;
@@ -74,6 +75,7 @@ public class ComponentPropertyDefinition
         this.entity 					= entity;
         this.multiple 					= multiple;
         this.assetBinding 				= assetBinding;
+        this.assetMask 					= assetMask;
         this.isPuffContentForPage		= isPuffContentForPage;
         this.allowedContentTypeNames 	= allowedContentTypeNames;
         this.description				= description;
@@ -103,6 +105,11 @@ public class ComponentPropertyDefinition
     public Boolean getAssetBinding()
 	{
 		return assetBinding;
+	}
+
+    public String getAssetMask()
+	{
+		return assetMask;
 	}
 
 	public Boolean getIsPuffContentForPage()

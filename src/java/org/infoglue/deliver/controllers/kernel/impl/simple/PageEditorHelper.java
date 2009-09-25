@@ -144,7 +144,7 @@ public class PageEditorHelper extends BaseDeliveryController
 		sb.append("	<div id=\"componentPropertiesHandle\"><div id=\"leftComponentPropertiesHandle\">Properties - " + componentName + " - " + slotName + "</div><div id=\"rightComponentPropertiesHandle\"><a href=\"javascript:closeDiv('componentProperties');\" class=\"white\"><img src=\"" + componentEditorUrl + "/images/closeIcon.gif\" border=\"0\"/></a></div></div>");
 		sb.append("	<div id=\"componentPropertiesBody\">");
 		
-		sb.append("	<form id=\"componentPropertiesForm\" name=\"component" + componentId + "PropertiesForm\" action=\"" + componentEditorUrl + "ViewSiteNodePageComponents!updateComponentProperties.action\" method=\"POST\">");
+		sb.append("	<form id=\"componentPropertiesForm\" name=\"component" + componentId + "PropertiesForm\" action=\"" + componentEditorUrl + "ViewSiteNodePageComponents!updateComponentProperties.action\" method=\"post\">");
 		if(showLegend != null && showLegend.equals("true"))
 		{
 			sb.append("		<fieldset>");
@@ -293,7 +293,7 @@ public class PageEditorHelper extends BaseDeliveryController
 									if(CmsPropertyHandler.getComponentBindningAssetBrowser().equalsIgnoreCase("classic"))
 										assignUrl = componentEditorUrl + "ViewContentVersion!viewAssetsForComponentBinding.action?repositoryId=" + repositoryId + "&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&propertyName=" + componentProperty.getName() + allowedContentTypeIdParameters + "&showSimple=" + showSimple + assignedParameters;
 									else
-										assignUrl = componentEditorUrl + "ViewContentVersion!viewAssetBrowserForComponentBindingV3.action?repositoryId=" + repositoryId + "&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&propertyName=" + componentProperty.getName() + allowedContentTypeIdParameters + "&showSimple=" + showSimple + assignedParameters;
+										assignUrl = componentEditorUrl + "ViewContentVersion!viewAssetBrowserForComponentBindingV3.action?repositoryId=" + repositoryId + "&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&propertyName=" + componentProperty.getName() + allowedContentTypeIdParameters + "&assetTypeFilter=" + componentProperty.getAssetMask() + "&showSimple=" + showSimple + assignedParameters;
 								}
 								else
 									assignUrl = componentEditorUrl + "ViewSiteNodePageComponents!showContentTree.action?repositoryId=" + repositoryId + "&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&propertyName=" + componentProperty.getName() + allowedContentTypeIdParameters + "&showSimple=" + showSimple;
@@ -479,7 +479,7 @@ public class PageEditorHelper extends BaseDeliveryController
 					
 					//sb.append("	<div class=\"propertyRow\">");
 					sb.append("		<div class=\"propertyRowLeft\">");
-					sb.append("			<label for=\"" + componentProperty.getName() + "\" onMouseOver=\"showDiv('helpLayer" + componentProperty.getComponentId() + "_" + componentProperty.getName() + "');\" onMouseOut=\"javascript:hideDiv('helpLayer" + componentProperty.getComponentId() + "_" + componentProperty.getName() + "');\">" + componentProperty.getDisplayName() + "</label>");
+					sb.append("			<label for=\"" + componentProperty.getName() + "\" onmouseover=\"showDiv('helpLayer" + componentProperty.getComponentId() + "_" + componentProperty.getName() + "');\" onMouseOut=\"javascript:hideDiv('helpLayer" + componentProperty.getComponentId() + "_" + componentProperty.getName() + "');\">" + componentProperty.getDisplayName() + "</label>");
 					sb.append("		</div>");
 	
 					sb.append("		<div class=\"propertyRowRight\">");
@@ -962,7 +962,7 @@ public class PageEditorHelper extends BaseDeliveryController
 			    view = view.replaceAll("\\$siteNodeId", siteNodeId.toString());
 			    view = view.replaceAll("\\$languageId", languageId.toString());
 			    view = view.replaceAll("\\$componentId", componentId.toString());
-			    sb.append("<div class=\"igmenuitems linkComponentTask\" " + ((icon != null && !icon.equals("")) ? "style=\"background-image:url(" + icon + ")\"" : "") + " onClick=\"executeTask('" + view + "', " + openInPopup + ");\"><a href='#'>" + componentTask.getName() + "</a></div>");
+			    sb.append("<div class=\"igmenuitems linkComponentTask\" " + ((icon != null && !icon.equals("")) ? "style=\"background-image:url(" + icon + ")\"" : "") + " onclick=\"executeTask('" + view + "', " + openInPopup + ");\"><a href='#'>" + componentTask.getName() + "</a></div>");
 			}
 	
 			String editHTML 						= getLocalizedString(locale, "deliver.editOnSight.editHTML");
@@ -1364,6 +1364,7 @@ public class PageEditorHelper extends BaseDeliveryController
 						String entity 					= binding.attributeValue("entity");
 						boolean isMultipleBinding 		= new Boolean(binding.attributeValue("multiple")).booleanValue();
 						boolean isAssetBinding			= new Boolean(binding.attributeValue("assetBinding")).booleanValue();
+						String assetMask				= binding.attributeValue("assetMask");
 						boolean isPuffContentForPage	= new Boolean(binding.attributeValue("isPuffContentForPage")).booleanValue();
 						
 						property.setEntityClass(entity);
@@ -1372,6 +1373,7 @@ public class PageEditorHelper extends BaseDeliveryController
 						property.setValue(value);
 						property.setIsMultipleBinding(isMultipleBinding);
 						property.setIsAssetBinding(isAssetBinding);
+						property.setAssetMask(assetMask);
 						property.setIsPuffContentForPage(isPuffContentForPage);
 						List<ComponentBinding> bindings = getComponentPropertyBindings(componentId, name, siteNodeId, languageId, contentId, locale, db, principal);
 						property.setBindings(bindings);

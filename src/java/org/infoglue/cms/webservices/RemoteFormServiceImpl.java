@@ -205,7 +205,7 @@ public class RemoteFormServiceImpl extends RemoteInfoGlueService
 	            	newFormEntry = formEntryController.getFormEntryWithId(newFormEntry.getFormEntryId(), db2);
 
 	    	        List digitalAssets = (List)formEntry.get("digitalAssets");
-	    	        System.out.println("digitalAssets:" + digitalAssets);
+	    	        logger.info("digitalAssets:" + digitalAssets);
 	    	        if(digitalAssets != null)
 	    	        {
 		    	        Iterator digitalAssetIterator = digitalAssets.iterator();
