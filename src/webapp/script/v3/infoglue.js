@@ -67,7 +67,46 @@ function resizeInlineTabDivs()
 	}
 	else
 	{
-		setTimeout("resizeInlineTabDivs()", 100);
+		setTimeout("resizeInlineTabDivs()", 300);
+	}
+}
+
+function resizeResizableDiv(heightMinus, widthMinus)
+{
+	var dimensionsWidth = $(window).width();
+	var dimensionsHeight = $(window).height();
+  	//alert("dimensionsWidth:" + dimensionsWidth);
+	//alert("dimensionsHeight:" + dimensionsHeight);
+  	if(dimensionsWidth != 0)
+  	{
+		$(".resizableDiv").height(dimensionsHeight - heightMinus).width(dimensionsWidth - widthMinus);
+	}
+	else
+	{
+		setTimeout("resizeResizableDiv(" + heightMinus + "," + widthMinus + ")", 300);
+	}
+}
+
+function resizeInlineTabDivsWithMinus(yMinus, xMinus)
+{
+	var dimensionsWidth = $(window).width();
+	var dimensionsHeight = $(window).height();
+  	//alert("dimensionsWidth:" + dimensionsWidth);
+  	if(dimensionsWidth != 0)
+  	{
+		$(".inlineTabDiv").css("height", dimensionsHeight - (160 + yMinus));
+  		$(".inlineTabDiv").css("width", dimensionsWidth - (30 + xMinus));
+		$(".inlineSubTabDiv").css("height", dimensionsHeight - (220 + yMinus));
+		$(".inlineSubTabDiv").css("width", dimensionsHeight - (40 + xMinus));
+		//$(".inlineTabDiv > iframe").width(dimensionsWidth - (20 + xMinus));
+		$(".inlineTabDiv > iframe").width(dimensionsWidth - (50 + xMinus));
+		$(".inlineTabDiv > iframe").height(dimensionsHeight - (160 + yMinus));
+		$(".inlineSubTabDiv > iframe").width(dimensionsWidth - (60 + xMinus));
+		//$(".inlineSubTabDiv > iframe").width(dimensionsWidth - (30 + xMinus));
+	}
+	else
+	{
+		setTimeout("resizeInlineTabDivsWithMinus(" + yMinus + "," + xMinus + ")", 300);
 	}
 }
 

@@ -45,6 +45,7 @@ import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeVersionController
 import org.infoglue.cms.controllers.kernel.impl.simple.ToolbarController;
 import org.infoglue.cms.controllers.kernel.impl.simple.UserControllerProxy;
 import org.infoglue.cms.entities.content.ContentVO;
+import org.infoglue.cms.entities.content.DigitalAssetVO;
 import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.entities.structure.SiteNodeVO;
 import org.infoglue.cms.exception.Bug;
@@ -778,6 +779,31 @@ public abstract class InfoGlueAbstractAction extends WebworkAbstractAction
 			ColorHelper ch = new ColorHelper();
 			Color canvasColor = ch.getHexColor(canvasColorHexCode);
        		imageHref = DigitalAssetController.getDigitalAssetThumbnailUrl(digitalAssetId, canvasWidth, canvasHeight, canvasColor, alignment, valignment, width, height, quality);
+		}
+		catch(Exception e)
+		{
+			logger.warn("We could not get the url of the thumbnail: " + e.getMessage(), e);
+			imageHref = e.getMessage();
+		}
+		
+		return imageHref;
+	}
+
+	/**
+	 * This method fetches the blob from the database and saves it on the disk.
+	 * Then it returnes a url for it
+	 */
+	
+	public String getDigitalAssetThumbnailUrl(Integer contentId, Integer languageId, String assetKey, boolean useLanguageFallback, int canvasWidth, int canvasHeight, String canvasColorHexCode, String alignment, String valignment, int width, int height, int quality) throws Exception
+	{
+		String imageHref = null;
+		try
+		{
+			ColorHelper ch = new ColorHelper();
+			Color canvasColor = ch.getHexColor(canvasColorHexCode);
+			DigitalAssetVO assetVO = DigitalAssetController.getDigitalAssetVO(contentId, languageId, assetKey, useLanguageFallback);
+       		
+			imageHref = DigitalAssetController.getDigitalAssetThumbnailUrl(assetVO.getId(), canvasWidth, canvasHeight, canvasColor, alignment, valignment, width, height, quality);
 		}
 		catch(Exception e)
 		{

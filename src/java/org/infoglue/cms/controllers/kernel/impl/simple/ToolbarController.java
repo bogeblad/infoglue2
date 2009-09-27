@@ -273,6 +273,10 @@ public class ToolbarController
 			if(toolbarKey.equalsIgnoreCase("tool.managementtool.createGroup.header"))
 				return getCreateGroupFooterButtons();
 			
+			if(toolbarKey.equalsIgnoreCase("tool.contenttool.assetDialog.assetDialogForMultipleBindingsHeader"))
+				return getAssetDialogForMultipleBindingsFooterButtons();
+			
+			
 			/*
 			if(toolbarKey.equalsIgnoreCase("tool.managementtool.viewLanguageList.header"))
 				return getLanguagesButtons();
@@ -338,6 +342,16 @@ public class ToolbarController
 	}
 
 	
+	private List<ToolbarButton> getAssetDialogForMultipleBindingsFooterButtons() throws Exception
+	{
+		List<ToolbarButton> buttons = new ArrayList<ToolbarButton>();
+
+		buttons.add(getCommonFooterSaveButton());
+		//buttons.add(getCommonFooterCancelButton("ViewListGroup!listManagableGroups.action"));
+				
+		return buttons;
+	}
+
 	private List<ToolbarButton> getGroupDetailFooterButtons() throws Exception
 	{
 		List<ToolbarButton> buttons = new ArrayList<ToolbarButton>();

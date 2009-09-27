@@ -66,8 +66,12 @@ import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.util.AccessConstraintExceptionBuffer;
 import org.infoglue.cms.util.CmsPropertyHandler;
+import org.infoglue.cms.util.XMLHelper;
 import org.infoglue.cms.util.css.CSSHelper;
 import org.infoglue.cms.util.dom.DOMBuilder;
+import org.infoglue.deliver.applications.databeans.DeliveryContext;
+import org.infoglue.deliver.controllers.kernel.impl.simple.NodeDeliveryController;
+import org.w3c.dom.NodeList;
 
 import com.opensymphony.module.propertyset.PropertySet;
 import com.opensymphony.module.propertyset.PropertySetManager;
@@ -126,6 +130,7 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 	private String propertyName;
 	private Integer componentId;
 	private boolean showSimple = false;
+	private boolean showDecorated = true;
 	private String assignedPath;
 	private Integer assignedContentId;
 	private String assignedAssetKey;
@@ -465,6 +470,18 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 		this.repositories = RepositoryController.getController().getAuthorizedRepositoryVOList(this.getInfoGluePrincipal(), true);
 
 		return "viewAssetBrowserForComponentBindingV3";
+	}
+
+	public String doViewAssetBrowserForMultipleComponentBindingV3() throws Exception
+	{
+	    if(this.assignedContentId != null)
+		{
+	        this.contentVO = ContentControllerProxy.getController().getACContentVOWithId(this.getInfoGluePrincipal(), this.assignedContentId);
+		}
+		
+		this.repositories = RepositoryController.getController().getAuthorizedRepositoryVOList(this.getInfoGluePrincipal(), true);
+
+		return "viewAssetBrowserForMultipleComponentBindingV3";
 	}
 
 	public String doViewAssets() throws Exception
@@ -1416,6 +1433,109 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 	    return ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentId, languageId);
 	}
 
+	/**
+	 * This method shows the user a list of Components(HTML Templates). 
+	 */
+    
+	public List getComponentBindings() throws Exception
+	{
+		List bindings = new ArrayList();
+			
+		try
+		{
+			Integer repositoryId = new Integer(this.getRequest().getParameter("repositoryId"));
+			Integer siteNodeId = new Integer(this.getRequest().getParameter("siteNodeId"));
+			Integer languageId = new Integer(this.getRequest().getParameter("languageId"));
+			Integer contentId  = new Integer(this.getRequest().getParameter("contentId"));
+			String propertyName = this.getRequest().getParameter("propertyName");
+							
+			LanguageVO masterLanguageVO = LanguageController.getController().getMasterLanguage(repositoryId);		
+
+			String componentXML   = getPageComponentsString(siteNodeId, masterLanguageVO.getId(), contentId);			
+			//logger.info("componentXML:" + componentXML);
+	
+			org.w3c.dom.Document document = XMLHelper.readDocumentFromByteArray(componentXML.getBytes("UTF-8"));
+			String componentXPath = "//component[@id=" + this.componentId + "]/properties/property[@name='" + propertyName + "']/binding";
+			NodeList anl = org.apache.xpath.XPathAPI.selectNodeList(document.getDocumentElement(), componentXPath);
+			for(int i=0; i<anl.getLength(); i++)
+			{
+				org.w3c.dom.Element component = (org.w3c.dom.Element)anl.item(i);
+				String entityName = component.getAttribute("entity");
+				String entityId = component.getAttribute("entityId");
+				String assetKey = component.getAttribute("assetKey");
+				
+				try
+				{
+					String path = "Undefined";
+					if(entityName.equalsIgnoreCase("SiteNode"))
+					{
+						SiteNodeVO siteNodeVO = SiteNodeController.getController().getSiteNodeVOWithId(new Integer(entityId));
+						path = siteNodeVO.getName();
+					}
+					else if(entityName.equalsIgnoreCase("Content")) 
+					{
+						ContentVO contentVO = ContentController.getContentController().getContentVOWithId(new Integer(entityId));
+						path = contentVO.getName();
+					}
+					
+					Map binding = new HashMap();
+					binding.put("entityName", entityName);
+					binding.put("entityId", entityId);
+					binding.put("assetKey", assetKey);
+					binding.put("path", path);
+					bindings.add(binding);
+				}
+				catch(Exception e) 
+				{
+				    logger.warn("There was " + entityName + " bound to property '" + propertyName + "' on siteNode " + siteNodeId + " which appears to have been deleted.");
+				}
+			}
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+		
+		return bindings;
+	}
+
+	/**
+	 * This method fetches the template-string.
+	 */
+    
+	private String getPageComponentsString(Integer siteNodeId, Integer languageId, Integer contentId) throws SystemException, Exception
+	{
+		String template = null;
+    	
+		try
+		{
+			ContentVO contentVO = NodeDeliveryController.getNodeDeliveryController(siteNodeId, languageId, contentId).getBoundContent(this.getInfoGluePrincipal(), siteNodeId, languageId, true, "Meta information", DeliveryContext.getDeliveryContext());
+
+			if(contentVO == null)
+				throw new SystemException("There was no template bound to this page which makes it impossible to render.");	
+			
+			ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentVO.getId(), languageId);
+			if(contentVersionVO == null)
+			{
+				SiteNodeVO siteNodeVO = SiteNodeController.getController().getSiteNodeVOWithId(siteNodeId);
+				LanguageVO masterLanguage = LanguageController.getController().getMasterLanguage(siteNodeVO.getRepositoryId());
+				contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentVO.getId(), masterLanguage.getLanguageId());
+			}
+			
+			template = ContentVersionController.getContentVersionController().getAttributeValue(contentVersionVO.getId(), "ComponentStructure", false);
+			
+			if(template == null)
+				throw new SystemException("There was no template bound to this page which makes it impossible to render.");	
+		}
+		catch(Exception e)
+		{
+			logger.error(e.getMessage(), e);
+			throw e;
+		}
+
+		return template;
+	}
+	
 	public Integer getCurrentEditorId()
 	{
 		return currentEditorId;
@@ -1610,6 +1730,17 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 	public void setShowSimple(boolean showSimple)
 	{
 		this.showSimple = showSimple;
+	}
+
+	public boolean getShowDecorated()
+	{
+		return showDecorated;
+	}
+
+
+	public void setShowDecorated(boolean showDecorated)
+	{
+		this.showDecorated = showDecorated;
 	}
 
 

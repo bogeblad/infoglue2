@@ -54,15 +54,6 @@
 		    parent.onCancel(null);
 			return false;
 		}	
-		/*
-		function initSub() 
-		{
-			if(document.referrer != null && document.referrer != '')
-				markAsset(this, firstAssetId, firstContentId, firstAssetKey, firstAssetKey, '');
-			else
-				markAsset(this, firstAssetId, firstContentId, lastAssetKey, lastAssetKey, '');
-		};
-		*/
 	
 		function deleteAsset(url, assetKey)
 		{
@@ -72,6 +63,10 @@
 				window.location.href=url + "&returnAddress=" + escape(returnAddress);
 			}
 		}
+	
+		$(document).ready(function(){
+			setTimeout("resizeResizableDiv(95, 0)", 100);
+		});
 	
 	-->
 	</script>
@@ -110,7 +105,7 @@
 </table>
 </form>
 
-<div id="assets" class="imgBoxContainer" style="height: 310px;">
+<div id="assets" class="imgBoxContainer resizableDiv" style="height: 310px;">
 
 #set($counter = 0)
 #foreach($digitalAsset in $digitalAssetVOList)

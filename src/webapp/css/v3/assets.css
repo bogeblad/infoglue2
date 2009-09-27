@@ -17,7 +17,7 @@
 	}
 .imgBoxTop { 
 	position:relative; 
-	height:100px; 
+	height:90px; 
 	text-align:center;
 	margin: 10px 10px 0px 10px;
 	background:url(../../images/v3/imgbox_bg.gif) repeat;
@@ -42,12 +42,14 @@
 	font-family:Arial, Helvetica, sans-serif;
 	font-size:11px;
 	position:relative; 
-	width:38px;
+	width:36px;
 	height:16px;
 	display:block;
 	float:left;
 }
 .assetKeyP {
+	font-family:Arial, Helvetica, sans-serif;
+	font-size:11px;
 	margin: 0px; 
 	padding: 0px;
 	text-align: center;

@@ -9,6 +9,7 @@
 	
 	<link rel="stylesheet" type="text/css" href="css/cms.css" /> 
 	<script type="text/javascript" src="script/listview.js"></script>
+	<script type="text/javascript" src="script/jquery/jquery-1.2.6.min.js"></script>
 	
 	<script language="JavaScript">
 	<!--		
@@ -44,7 +45,7 @@
 			document.getElementById("contentVersionAssetsFrame").src = url;
 		}
 		
-		function onOk(contentId, assetKey)
+		function onOk(contentId, assetKey, assetUrl)
 		{
 			if(window.top.opener.SetUrl)
 			{
@@ -62,7 +63,7 @@
 				}
 				else
 				{
-				    window.top.onOk(contentId, assetKey);
+				    window.top.onOk(contentId, assetKey, assetUrl);
 				}
 			}
 		}
@@ -123,9 +124,15 @@
 			document.getElementById("entityId").value = contentId;
 		  	
 			document.getElementById("itreeFrame").src = "ViewContentHtmlTree.action?repositoryId=$!repositoryId&exp=$exp&akey=/" + contentId + "/&select=" + contentId;
-			
 			document.getElementById("contentVersionAssetsFrame").src = "ViewContentVersion!viewAssetsForFCKEditorSmallV3.action?contentId=" + contentId + "&languageId=$languageId&assetKey=" + assetKey + "&treatAsLink=$treatAsLink&assetTypeFilter=$assetTypeFilter";
 		};
+		
+		$(document).ready(function(){
+			var dimensionsHeight = $(window).height();
+			//alert("Height:" + dimensionsHeight);
+			$("#itreeFrame").height(dimensionsHeight - 30);
+			$("#contentVersionAssetsFrame").height(dimensionsHeight - 30);			
+		});
 		
 		function toggleDiv(id, id2)
 		{
