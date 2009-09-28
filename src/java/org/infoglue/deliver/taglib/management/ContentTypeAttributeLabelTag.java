@@ -22,6 +22,29 @@
  */
 package org.infoglue.deliver.taglib.management;
 
+/* ===============================================================================
+ *
+ * Part of the InfoGlue Content Management Platform (www.infoglue.org)
+ *
+ * ===============================================================================
+ *
+ *  Copyright (C)
+ * 
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License version 2, as published by the
+ * Free Software Foundation. See the file LICENSE.html for more information.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY, including the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License along with
+ * this program; if not, write to the Free Software Foundation, Inc. / 59 Temple
+ * Place, Suite 330 / Boston, MA 02111-1307 / USA.
+ *
+ * ===============================================================================
+ */
+
 import java.util.List;
 import java.util.Locale;
 
@@ -55,14 +78,9 @@ public class ContentTypeAttributeLabelTag extends TemplateControllerTag
 	private static final String PARAM_CONTENT_TYPE_DEFINITION_NAME = "contentTypeDefinitionName";
 
 	/* Exception messages */
-	private static final String EXCEPTION_MSG_AT_LEAST_ONE_PARAM = "At least one of "
-			+ PARAM_CONTENT_ID
-			+ " or "
-			+ PARAM_CONTENT_TYPE_DEFINITION_NAME
-			+ " must be specified.";
+	private static final String EXCEPTION_MSG_AT_LEAST_ONE_PARAM = "At least one of " + PARAM_CONTENT_ID + " or " + PARAM_CONTENT_TYPE_DEFINITION_NAME + " must be specified.";
 	private static final String EXCEPTION_MSG_COULD_NOT_FIND_CTD = "Could not find ContentTypeDefinition with name ";
-	private static final String EXCEPTION_MSG_OTHER_EXCEPTION = "Exception in "
-			+ TAG_NAME + ": ";
+	private static final String EXCEPTION_MSG_OTHER_EXCEPTION = "Exception in " + TAG_NAME + ": ";
 
 	private static final String CTD_VALUES_KEY = "values";
 	private static final String CTD_LABEL_KEY = "label";
@@ -157,12 +175,28 @@ public class ContentTypeAttributeLabelTag extends TemplateControllerTag
 
 	public void setContentTypeDefinitionName(final String contentTypeDefinitionName) throws JspException
 	{
+		ContentTypeDefinitionVO contentType;
+		String evaluatedName = evaluateString(TAG_NAME,	PARAM_CONTENT_TYPE_DEFINITION_NAME, contentTypeDefinitionName);
+
+		// Try to fetch the content type matching contentTypeDefinitionName
 		try
 		{
-			this.contentType = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithName(contentTypeDefinitionName);
+			contentType = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithName(evaluatedName);
 		}
 		catch (Exception e)
 		{
+			contentType = null;
+		}
+
+		if (contentType != null)
+		{
+			// If we got a content type, use it
+			this.contentType = contentType;
+		}
+		else
+		{
+			// Otherwise throw an exception that tells the caller that the
+			// contentTypeDefinitionName was wrong
 			throw new JspException(EXCEPTION_MSG_COULD_NOT_FIND_CTD + contentTypeDefinitionName);
 		}
 	}
