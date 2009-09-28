@@ -1190,6 +1190,14 @@ public class DigitalAssetController extends BaseController
 					File originalFile = new File(filePath + File.separator + fileName);
 					if(!originalFile.exists())
 					{
+						logger.info("No file there - let's try getting it again.");
+						String originalUrl = DigitalAssetController.getController().getDigitalAssetUrl(digitalAsset.getValueObject(), db);
+						logger.info("originalUrl:" + originalUrl);
+						originalFile = new File(filePath + File.separator + fileName);
+					}
+
+					if(!originalFile.exists())
+					{
 						logger.warn("The original file " + filePath + File.separator + fileName + " was not found - missing from system.");
 						assetUrl = "images" + File.separator + BROKENFILENAME;
 					}
@@ -1479,7 +1487,13 @@ public class DigitalAssetController extends BaseController
     	ContentVersion contentVersion = ContentVersionController.getContentVersionController().getLatestActiveContentVersion(contentId, languageId, db);
 		if(contentVersion != null)
 		{
-			DigitalAssetVO digitalAsset = getLatestDigitalAssetVO(contentVersion.getId(), assetKey, db);
+			DigitalAssetVO digitalAsset;
+			
+			if(assetKey == null || assetKey.equals(""))
+				digitalAsset = getLatestDigitalAssetVO(contentVersion.getId(), db);
+			else
+				digitalAsset = getLatestDigitalAssetVO(contentVersion.getId(), assetKey, db);
+			
 			if(digitalAsset != null)
 			{
 				digitalAssetVO = digitalAsset;

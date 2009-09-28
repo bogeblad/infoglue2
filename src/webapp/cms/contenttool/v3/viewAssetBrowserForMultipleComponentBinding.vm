@@ -197,11 +197,8 @@
 		document.getElementById("repositoryBrowserFrame").src = "ViewContentVersion!viewAssetsDialogForFCKEditorV3.action?repositoryId=$repositoryId&languageId=$languageId&assetTypeFilter=$assetTypeFilter";
 
 		#foreach($binding in $componentBindings)
-			#if("$!binding.assetKey" == "")
-				#set($url = $!this.getDigitalAssetThumbnailUrl($converter.toNonNegativeInteger($binding.entityId), $languageId))
-			#else
-				#set($url = "$this.getDigitalAssetThumbnailUrl($converter.toNonNegativeInteger($binding.entityId), $languageId, $binding.assetKey, true, 100, 60, 'ffffff', 'center', 'middle', 100, 60, 75)")
-			#end
+			#set($url = "$this.getDigitalAssetThumbnailUrl($converter.toNonNegativeInteger($binding.entityId), $languageId, $binding.assetKey, true, 100, 60, 'ffffff', 'center', 'middle', 100, 60, 75)")
+			
 			#if($url.indexOf("toNonNegativeInteger") > -1)
 				alert("Url: $url");
 				alert("binding.entityId: $binding.entityId");
