@@ -381,8 +381,13 @@ public class ContentDeliveryController extends BaseDeliveryController
 			contentVersion = getSmallestContentVersionVO(contentId, languageId, getOperatingMode(), deliveryContext, db);
 			if(contentVersion == null && useLanguageFallback)
 			{
-				Integer masterLanguageId = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForSiteNode(db, siteNodeId).getLanguageId();
-				if(languageId != null && !languageId.equals(masterLanguageId))
+				Integer masterLanguageId = null;
+				if(siteNodeId != null)
+					masterLanguageId = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForSiteNode(db, siteNodeId).getLanguageId();
+				else
+					masterLanguageId = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForRepository(db, content.getRepositoryId()).getLanguageId();
+				
+				if(languageId == null || (languageId != null && !languageId.equals(masterLanguageId)))
 				{
 					contentVersion = getSmallestContentVersionVO(contentId, masterLanguageId, getOperatingMode(), deliveryContext, db);
 				}
