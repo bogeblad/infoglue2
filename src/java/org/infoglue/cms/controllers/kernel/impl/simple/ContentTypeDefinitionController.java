@@ -937,6 +937,12 @@ public class ContentTypeDefinitionController extends BaseController
 				contentTypeAttributeParameter.setType(1);
 				contentTypeAttribute.putContentTypeAttributeParameter("values", contentTypeAttributeParameter);
 
+				contentTypeAttribute.getOptions().add(new ContentTypeAttributeOptionDefinition("Lowest", "1"));
+				contentTypeAttribute.getOptions().add(new ContentTypeAttributeOptionDefinition("Low", "2"));
+				contentTypeAttribute.getOptions().add(new ContentTypeAttributeOptionDefinition("Medium", "3"));
+				contentTypeAttribute.getOptions().add(new ContentTypeAttributeOptionDefinition("High", "4"));
+				contentTypeAttribute.getOptions().add(new ContentTypeAttributeOptionDefinition("Highest", "5"));
+
 				contentTypeAttributeParameterValue = new ContentTypeAttributeParameterValue();
 				contentTypeAttributeParameterValue.setId("1");
 				contentTypeAttributeParameterValue.addAttribute("id", "1");
@@ -1157,6 +1163,12 @@ public class ContentTypeDefinitionController extends BaseController
 				contentTypeAttributeParameter.setId("values");
 				contentTypeAttributeParameter.setType(1);
 				contentTypeAttribute.putContentTypeAttributeParameter("values", contentTypeAttributeParameter);
+
+				contentTypeAttribute.getOptions().add(new ContentTypeAttributeOptionDefinition("Lowest", "1"));
+				contentTypeAttribute.getOptions().add(new ContentTypeAttributeOptionDefinition("Low", "2"));
+				contentTypeAttribute.getOptions().add(new ContentTypeAttributeOptionDefinition("Medium", "3"));
+				contentTypeAttribute.getOptions().add(new ContentTypeAttributeOptionDefinition("High", "4"));
+				contentTypeAttribute.getOptions().add(new ContentTypeAttributeOptionDefinition("Highest", "5"));
 
 				contentTypeAttributeParameterValue = new ContentTypeAttributeParameterValue();
 				contentTypeAttributeParameterValue.setId("1");
