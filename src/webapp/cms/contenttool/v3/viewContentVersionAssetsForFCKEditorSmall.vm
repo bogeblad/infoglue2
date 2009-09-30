@@ -8,7 +8,7 @@
 		var firstAssetKey;
 		var assetUrl;
 			
-		function markAsset(object, aContentId, anAssetKey, actualAssetKey, anAssetUrl)
+		function markAsset(object, digitalAssetId, aContentId, anAssetKey, actualAssetKey, anAssetUrl)
 		{
 			if(selectedAssetElement)
 			{
@@ -24,7 +24,7 @@
 				assetKey = actualAssetKey;
 			assetUrl = anAssetUrl;
 			
-			selectedAssetElement = document.getElementById("digitalAsset" + anAssetKey);
+			selectedAssetElement = document.getElementById("digitalAsset" + digitalAssetId);
 			if(selectedAssetElement)
 			{
 				selectedAssetElement.parentNode.style.border = "1px solid orange";
@@ -156,19 +156,19 @@
 #set($counter = 0)
 #foreach($digitalAsset in $inheritedDigitalAssetsRecursive)
 	#set($digitalAssetUrl = $this.getDigitalAssetUrl($digitalAsset.digitalAssetId))
+	#set($contentId = $this.getDigitalAssetContentId($digitalAsset.digitalAssetId))
+	#set($path = "$this.getContentPath($contentId)")
 	<div class="imgBox">
-    	<div class="imgBoxTop" id="digitalAsset$formatter.encodeURI($digitalAsset.assetKey, 'utf-8')" #if($assetKey == "$digitalAsset.assetKey") style="background:url(images/v3/imgboxselected_bg.gif) repeat;" #else style="background:url(images/v3/imgbox_bg.gif) repeat;" #end>
+    	<div class="imgBoxTop" id="digitalAsset$digitalAsset.id" #if($assetKey == "$digitalAsset.assetKey") style="background:url(images/v3/imgboxselected_bg.gif) repeat;" #else style="background:url(images/v3/imgbox_bg.gif) repeat;" #end>
             <div id="imgBoxTopInner" class="imgBoxTopInner">
             	
-            	<input type="hidden" id="digitalAsset$formatter.encodeURI($formatter.encodeURI($digitalAsset.assetKey, 'utf-8'), 'utf-8')" value="$digitalAssetUrl">
+            	<input type="hidden" id="digitalAsset$digitalAsset.id" value="$digitalAssetUrl">
 				#set($singleEncodedAssetKey = "$formatter.encodeURI($digitalAsset.assetKey, 'utf-8')")
 				#set($doubleEncodedAssetKey = "$formatter.encodeURI($formatter.encodeURI($digitalAsset.assetKey, 'utf-8'), 'utf-8')")
 				#set($thumbnailImageUrl = "$this.getDigitalAssetThumbnailUrl($digitalAsset.digitalAssetId, 70, 50, 'ffffff', 'center', 'middle', 70, 50, 75)")
-				#set($contentId = $this.getDigitalAssetContentId($digitalAsset.digitalAssetId))
-				#set($path = "$this.getContentPath($contentId)")
-				<img ondblclick="onOk();" onclick="markAsset(this, $!contentId, '$singleEncodedAssetKey', '$singleEncodedAssetKey', '$thumbnailImageUrl');" src="$thumbnailImageUrl" alt="$digitalAsset.assetKey ($digitalAsset.assetContentType - $path - $formatter.formatFileSize($digitalAsset.assetFileSize))" />
+				<img ondblclick="onOk();" onclick="markAsset(this, $digitalAsset.id, $!contentId, '$singleEncodedAssetKey', '$singleEncodedAssetKey', '$thumbnailImageUrl');" src="$thumbnailImageUrl" alt="$digitalAsset.assetKey ($digitalAsset.assetContentType - $path - $formatter.formatFileSize($digitalAsset.assetFileSize))" />
              	<p title="$digitalAsset.assetKey - $path - ($digitalAsset.assetContentType - $formatter.formatFileSize($digitalAsset.assetFileSize))" class="assetKeyP"><a class="assetKeyHref" ondblclick="onOk();" href="javascript:markAsset(this, $!contentId, '$doubleEncodedAssetKey', '$doubleEncodedAssetKey', '$thumbnailImageUrl');">#if($digitalAsset.assetKey.length() > 14)$digitalAsset.assetKey.substring(0,14)..#else$digitalAsset.assetKey#end</a></p>
-                #if($showSelectButtonByEachImage)<a href="javascript:markAsset(this, $!contentId, '$doubleEncodedAssetKey', '$doubleEncodedAssetKey', '$thumbnailImageUrl');onOk();"><b>Add asset to selection</b></a>#end
+                #if($showSelectButtonByEachImage)<a href="javascript:markAsset(this, $digitalAsset.id, $!contentId, '$doubleEncodedAssetKey', '$doubleEncodedAssetKey', '$thumbnailImageUrl'); onOk();"><b>Add asset to selection</b></a>#end
 				#if($assetKey == $digitalAsset.assetKey)
 					<script type="text/javascript">
 					<!--
