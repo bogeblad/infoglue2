@@ -51,6 +51,7 @@ import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.Namespace;
 import org.jdom.input.SAXBuilder;
+import org.jdom.xpath.XPath;
 
 import com.artofsolving.jodconverter.DocumentConverter;
 import com.artofsolving.jodconverter.openoffice.connection.OpenOfficeConnection;
@@ -69,6 +70,14 @@ public class DocumentConverterHelper
 		int menuMaxLength						= 20;
 		
 		logger.info("START");
+		
+		logger.info("-----------------------------------------------");
+		logger.info("Doc file: " + aDocFile.getAbsolutePath());
+		logger.info("Title: " + aTitle);
+		logger.info("Menu text length: " + aMenuTextLength);
+		logger.info("CSS list: " + aCssList);
+		logger.info("Rewrite: " + rewrite);
+		logger.info("-----------------------------------------------");
 		
 		try
 		{			
@@ -259,16 +268,21 @@ public class DocumentConverterHelper
 		
 		try
 		{
-			Element rootElement 			= doc.getRootElement();			
-			Element bodyElement 			= rootElement.getChild("body", officeNs);
-			Element textElement 			= bodyElement.getChild("text", officeNs);		
-			Element tocElement 				= textElement.getChild("table-of-content", textNs);		 
-			Element textIndexBodyElement 	= tocElement.getChild("index-body", textNs);		
-			tocElements						= textIndexBodyElement.getChildren();					
+			XPath xpath 					= XPath.newInstance("/descendant::text:index-body[1]");
+			xpath.addNamespace(officeNs);
+			xpath.addNamespace(textNs);
+			
+			Object temp						= xpath.selectSingleNode(doc);
+			
+			if (temp != null)
+			{
+				Element textIndexBodyElement 	= (Element)temp;
+				tocElements						= textIndexBodyElement.getChildren();
+			}			
 		}
 		catch(Exception e)
 		{
-			throw new Exception("The document structure is incorrect. Please create a document containing a table of contents.");
+			throw new Exception("The document structure is incorrect. Please create a document containing a table of contents. " + e.getMessage());
 		}
 		
 		//------------------------------------
@@ -308,10 +322,13 @@ public class DocumentConverterHelper
 		aReturnSb.append("<div id=\"submenu\">");
 		aReturnSb.append("<div class=\"menuheader\">" + aTitle + "</div>");
 
-		logger.info("TOC generation start.");
+		logger.info("TOC generation start. Number of TOC elements: " + aTocElements.length);
 		
 		while (startPosition < aTocElements.length)
-		{				
+		{		
+			logger.info("");
+			logger.info("-------------- New TOC element (startPosition: " + startPosition + ") ------------");
+			
 			child 			= (Element)aTocElements[startPosition];
 			elementText 	= child.getText();	
 			
@@ -325,19 +342,29 @@ public class DocumentConverterHelper
 			
 			if (elementText == null || elementText.equals(""))
 			{
-				grandChild = child.getChild("a", textNs);
-				elementText = grandChild.getText();	
+				logger.info("No text found on child, looking for link child instead.");
 				
-				logger.info("No text found on child, looking for link child instead: " + elementText);
+				grandChild = child.getChild("a", textNs);
+				
+				if (grandChild != null)
+				{
+					elementText = grandChild.getText();	
+				
+					logger.info("Grandchild text: " + elementText);
+				}
+				else
+				{
+					logger.info("No grandchild was found...");
+				}
 			}
 			
 			if (elementText != null && !elementText.equals("") && elementText.indexOf(" ") != -1)
 			{
 				headingNumber 	= elementText.substring(0, elementText.indexOf(" "));				
 				st 				= new StringTokenizer(headingNumber, ".");
-				level 			= st.countTokens();
+				level 			= st.countTokens();				
 				
-				logger.info("Heading number: " + headingNumber + ", level: " + level);
+				logger.info("Heading number: " + headingNumber + ", level: " + level + ", text: " + elementText);
 				
 				if (level > previousLevel)
 				{						
@@ -370,13 +397,17 @@ public class DocumentConverterHelper
 				if (willCrop)
 				{
 					cropCounter ++;
-					
 					logger.info("Removing trailing line number.");
-					
 				}
 				
-				elementText = elementText.substring(0, cropCounter);
-				
+				if (cropCounter < elementText.length())
+				{
+					elementText = elementText.substring(0, cropCounter);
+				}
+				else
+				{
+					logger.info("The cropCounter ended up outside the string (cropCounter: " + cropCounter + ", elementText.length: " + elementText.length() + ")");
+				}
 				//------------------------------------------------------------------------
 				// Crop the text and add "..." if it's longer than the allowed max length
 				//------------------------------------------------------------------------
@@ -392,7 +423,7 @@ public class DocumentConverterHelper
 					croppedElementText = elementText;
 				}
 				
-				logger.info("Adding TOC <li> element");				
+				logger.info("Adding TOC <li> element on level " + level + ": " + croppedElementText + ", linkCounter: " + linkCounter);				
 								
 				aReturnSb.append("<li><p><a target=\"handbookFrame\" href=\"" + aHtmlFileUrl + "#link" + linkCounter + "\" title=\"" + elementText + "\">" + croppedElementText + "</a></p></li>");
 				previousHeadingNumber 	= headingNumber;				
@@ -424,26 +455,35 @@ public class DocumentConverterHelper
 	
 	private static String fixCss(String aHtmlContent, List aCssList)
 	{		
+		logger.info("About to add the CSS links to the page");
+		
 		StringBuffer sb 				= new StringBuffer();		
-		int cssStartIndex 				= aHtmlContent.indexOf("<STYLE TYPE=\"text/css\">");		
-		String start 					= aHtmlContent.substring(0, cssStartIndex);
-		String temp 					= aHtmlContent.substring(cssStartIndex + 1);
-		String end 						= temp.substring(temp.indexOf("</STYLE>") + 8);		
-		StringBuffer linkedCssString 	= new StringBuffer();
-		Iterator it 					= aCssList.iterator();
-		String cssString 				= "";
-		
-		while (it.hasNext())
+		int cssStartIndex 				= aHtmlContent.indexOf("<STYLE TYPE=\"text/css\">");	
+		if (cssStartIndex >= 0)
 		{
-			cssString = (String)it.next();
-			cssString = "<link href=\"" + cssString + "\" rel=\"stylesheet\" type=\"text/css\" />" + '\n';
-			linkedCssString.append(cssString);
+			String start 					= aHtmlContent.substring(0, cssStartIndex);
+			String temp 					= aHtmlContent.substring(cssStartIndex + 1);
+			String end 						= temp.substring(temp.indexOf("</STYLE>") + 8);		
+			StringBuffer linkedCssString 	= new StringBuffer();
+			Iterator it 					= aCssList.iterator();
+			String cssString 				= "";
+			
+			while (it.hasNext())
+			{
+				cssString = (String)it.next();
+				
+				logger.info("Adding CSS: " + cssString);
+				
+				cssString = "<link href=\"" + cssString + "\" rel=\"stylesheet\" type=\"text/css\" />" + '\n';
+				linkedCssString.append(cssString);
+			}
+			
+			sb.append(start);
+			sb.append(linkedCssString.toString());
+			sb.append(end);	
 		}
+		logger.info("Done adding CSS links.");
 		
-		sb.append(start);
-		sb.append(linkedCssString.toString());
-		sb.append(end);
-
 		return sb.toString();
 	}
 	
