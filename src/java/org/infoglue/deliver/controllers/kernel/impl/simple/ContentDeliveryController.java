@@ -1291,7 +1291,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 	   	
 	public List getDigitalAssetVOList(Integer contentVersionId, Database db) throws Exception
     {
-		String key = "" + contentVersionId;
+		String key = "all_" + contentVersionId;
 		String cacheName = "digitalAssetCache";
 		List digitalAssetVOList = (List)CacheController.getCachedObject(cacheName, key);
 		if(digitalAssetVOList != null)

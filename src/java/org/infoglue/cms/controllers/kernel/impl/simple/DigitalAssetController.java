@@ -640,7 +640,7 @@ public class DigitalAssetController extends BaseController
 	   	
 	public static List getDigitalAssetVOList(Integer contentVersionId, Database db) throws Exception
     {
-		String key = "" + contentVersionId;
+		String key = "all_" + contentVersionId;
 		String cacheName = "digitalAssetCache";
 		List digitalAssetVOList = (List)CacheController.getCachedObject(cacheName, key);
 		if(digitalAssetVOList != null)
@@ -715,7 +715,7 @@ public class DigitalAssetController extends BaseController
 	   	
 	public static List getDigitalAssetVOList(Integer contentId, Integer languageId, boolean useLanguageFallback, Database db) throws SystemException, Bug, Exception
     {
-		String key = "" + contentId + "_" + languageId + "_" + useLanguageFallback;
+		String key = "all_" + contentId + "_" + languageId + "_" + useLanguageFallback;
 		String cacheName = "digitalAssetCache";
 		List digitalAssetVOList = (List)CacheController.getCachedObject(cacheName, key);
 		if(digitalAssetVOList != null)
@@ -1687,7 +1687,7 @@ public class DigitalAssetController extends BaseController
 	
 	public static DigitalAssetVO getLatestDigitalAssetVO(Integer contentVersionId, Database db) throws Exception
 	{
-		String key = "" + contentVersionId;
+		String key = "latest_" + contentVersionId;
 		String cacheName = "digitalAssetCache";
 		DigitalAssetVO digitalAssetVO = (DigitalAssetVO)CacheController.getCachedObject(cacheName, key);
 		if(digitalAssetVO != null)
@@ -1730,7 +1730,7 @@ public class DigitalAssetController extends BaseController
 	
 	public static DigitalAssetVO getLatestDigitalAssetVO(Integer contentVersionId, String assetKey, Database db) throws Exception
 	{
-		String key = "" + contentVersionId + "_" + assetKey;
+		String key = "latest_" + contentVersionId + "_" + assetKey;
 		String cacheName = "digitalAssetCache";
 		DigitalAssetVO digitalAssetVO = (DigitalAssetVO)CacheController.getCachedObject(cacheName, key);
 		if(digitalAssetVO != null)
