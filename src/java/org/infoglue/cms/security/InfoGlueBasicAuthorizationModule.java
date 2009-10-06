@@ -795,6 +795,30 @@ public class InfoGlueBasicAuthorizationModule extends BaseController implements 
 	    }
 	}
 
+	public void addUserToGroup(String groupName, String userName) throws Exception
+	{
+	    if(transactionObject == null)
+		{
+		    GroupController.getController().addUser(groupName, userName);
+		}
+	    else
+	    {
+		    GroupController.getController().addUser(groupName, userName, transactionObject);
+	    }
+	}
+	
+	public void addUserToRole(String roleName, String userName) throws Exception
+	{
+	    if(transactionObject == null)
+		{
+		    RoleController.getController().addUser(roleName, userName);
+		}
+	    else
+	    {
+	    	RoleController.getController().addUser(roleName, userName, transactionObject);
+	    }
+	}
+	
 	public Properties getExtraProperties()
 	{
 		return extraProperties;

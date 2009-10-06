@@ -183,6 +183,15 @@ public class GroupControllerProxy extends BaseController
 	}
 
 	/**
+	 * This method updates an existing group
+	 */
+	
+	public void addUser(String groupName, String userName) throws ConstraintException, SystemException, Exception
+	{
+		getAuthorizationModule().addUserToGroup(groupName, userName);
+	}
+
+	/**
 	 * This method deletes an existing user
 	 */
 	

@@ -764,6 +764,16 @@ public class InfoGlueJDBCAuthorizationModule extends BaseController implements A
 		throw new SystemException("The JDBC BASIC Authorization module does not support deletion of roles yet...");
 	}
 
+	public void addUserToGroup(String groupName, String userName) throws Exception 
+	{
+		throw new SystemException("The JDBC BASIC Authorization module does not support adding of users to groups yet...");
+	}
+
+	public void addUserToRole(String roleName, String userName) throws Exception 
+	{
+		throw new SystemException("The JDBC BASIC Authorization module does not support adding of users to roles yet...");
+	}
+
 	public Properties getExtraProperties()
 	{
 		return extraProperties;

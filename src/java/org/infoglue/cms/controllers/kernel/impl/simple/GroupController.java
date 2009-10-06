@@ -270,7 +270,6 @@ public class GroupController extends BaseController
 
         return group;
     }        
-
 	
 	/**
 	 * This method gets a list of Groups for a particular systemUser.
@@ -321,6 +320,51 @@ public class GroupController extends BaseController
 		return groupList;
 	}
 
+    public void addUser(String groupName, String userName) throws ConstraintException, SystemException
+    {
+        Database db = CastorDatabaseService.getDatabase();
+        ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
+
+        Group group = null;
+
+        beginTransaction(db);
+
+        try
+        {
+            addUser(groupName, userName, db);
+
+            //If any of the validations or setMethods reported an error, we throw them up now before create.
+            ceb.throwIfNotEmpty();
+            
+            commitTransaction(db);
+        }
+        catch(ConstraintException ce)
+        {
+            logger.warn("An error occurred so we should not complete the transaction:" + ce, ce);
+            rollbackTransaction(db);
+            throw ce;
+        }
+        catch(Exception e)
+        {
+            logger.error("An error occurred so we should not complete the transaction:" + e, e);
+            rollbackTransaction(db);
+            throw new SystemException(e.getMessage());
+        }
+    }        
+
+    public void addUser(String groupName, String userName, Database db) throws ConstraintException, SystemException
+    {
+		Group group = getGroupWithName(groupName, db);
+		
+		if(userName != null)
+		{
+    		SystemUser systemUser = SystemUserController.getController().getSystemUserWithName(userName, db);
+    		
+        	group.getSystemUsers().add(systemUser);
+			systemUser.getGroups().add(group);
+		}
+    }
+    
 	/**
 	 * This is a method that gives the user back an newly initialized ValueObject for this entity that the controller
 	 * is handling.

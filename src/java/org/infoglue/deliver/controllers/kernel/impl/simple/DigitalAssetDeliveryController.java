@@ -641,7 +641,8 @@ public class DigitalAssetDeliveryController extends BaseDeliveryController
 			return outputFile;
 		}
 		
-		ThumbnailGenerator tg = new ThumbnailGenerator();
+		//ThumbnailGenerator tg = new ThumbnailGenerator();
+		ThumbnailGenerator tg = ThumbnailGenerator.getInstance();
 		tg.transform(filePath + File.separator + fileName, filePath + File.separator + thumbnailFile, width, height, 100);
 		
 		logger.info("Time for dumping file " + fileName + ":" + (System.currentTimeMillis() - timer));

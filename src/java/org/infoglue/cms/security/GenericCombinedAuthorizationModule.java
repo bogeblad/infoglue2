@@ -543,6 +543,20 @@ public class GenericCombinedAuthorizationModule implements AuthorizationModule, 
 		group.getAutorizationModule().updateInfoGlueGroup(groupVO, userNames);
 	}
 
+	public void addUserToGroup(String groupName, String userName) throws Exception
+	{
+		InfoGlueGroup group = getAuthorizedInfoGlueGroup(groupName);
+
+		group.getAutorizationModule().addUserToGroup(groupName, userName);
+	}
+	
+	public void addUserToRole(String roleName, String userName) throws Exception
+	{
+		InfoGlueRole role = getAuthorizedInfoGlueRole(roleName);
+		
+		role.getAutorizationModule().addUserToRole(roleName, userName);
+	}
+
 	public boolean getSupportUpdate()
 	{
 		return true;

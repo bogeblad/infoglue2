@@ -184,6 +184,15 @@ public class RoleControllerProxy extends BaseController
 	}
 
 	/**
+	 * This method updates an existing group
+	 */
+	
+	public void addUser(String roleName, String userName) throws ConstraintException, SystemException, Exception
+	{
+		getAuthorizationModule().addUserToRole(roleName, userName);
+	}
+
+	/**
 	 * This method deletes an existing user
 	 */
 	

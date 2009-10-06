@@ -208,6 +208,16 @@ public interface AuthorizationModule
 	public void updateInfoGlueGroup(GroupVO roleVO, String[] userNames) throws Exception;
 
 	/**
+	 * This method is used to add a user to an existing role.  
+	 */
+    public void addUserToRole(String roleName, String userName) throws Exception;
+
+	/**
+	 * This method is used to add a user to an existing group.  
+	 */
+    public void addUserToGroup(String groupName, String userName) throws Exception;
+
+	/**
 	 * This method is used to delete an existing group.  
 	 */
 

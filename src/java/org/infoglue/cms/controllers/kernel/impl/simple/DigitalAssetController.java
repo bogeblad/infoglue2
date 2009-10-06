@@ -1085,7 +1085,8 @@ public class DigitalAssetController extends BaseController
 						if(!thumbnailFile.exists() && originalFile.exists())
 						{
 							logger.info("transforming...");
-							ThumbnailGenerator tg = new ThumbnailGenerator();
+							//ThumbnailGenerator tg = new ThumbnailGenerator();
+							ThumbnailGenerator tg = ThumbnailGenerator.getInstance();
 							tg.transform(filePath + File.separator + fileName, filePath + File.separator + thumbnailFileName, 75, 75, 100);
 							logger.info("transform done...");
 						}
@@ -1206,7 +1207,8 @@ public class DigitalAssetController extends BaseController
 						if(!thumbnailFile.exists() && originalFile.exists())
 						{
 							logger.info("transforming...");
-							ThumbnailGenerator tg = new ThumbnailGenerator();
+							//ThumbnailGenerator tg = new ThumbnailGenerator();
+							ThumbnailGenerator tg = ThumbnailGenerator.getInstance();
 							tg.transform(filePath + File.separator + fileName, filePath + File.separator + thumbnailFileName, width, height, quality, canvasWidth, canvasHeight, canvasColor, alignment, valignment);
 							logger.info("transform done...");
 						}
@@ -1549,7 +1551,8 @@ public class DigitalAssetController extends BaseController
 						File thumbnailFile = new File(filePath + File.separator + thumbnailFileName);
 						if(!thumbnailFile.exists())
 						{
-							ThumbnailGenerator tg = new ThumbnailGenerator();
+							//ThumbnailGenerator tg = new ThumbnailGenerator();
+							ThumbnailGenerator tg = ThumbnailGenerator.getInstance();
 							tg.transform(filePath + File.separator + fileName, filePath + File.separator + thumbnailFileName, 150, 150, 100);
 						}
 						assetUrl = CmsPropertyHandler.getWebServerAddress() + "/" + CmsPropertyHandler.getDigitalAssetBaseUrl() + "/" + folderName + "/" + thumbnailFileName;
