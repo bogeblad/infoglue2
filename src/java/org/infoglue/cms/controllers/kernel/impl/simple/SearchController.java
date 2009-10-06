@@ -32,11 +32,14 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.log4j.Category;
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
@@ -61,6 +64,7 @@ import org.infoglue.cms.entities.content.ContentVersion;
 import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.entities.content.DigitalAsset;
 import org.infoglue.cms.entities.content.DigitalAssetVO;
+import org.infoglue.cms.entities.content.impl.simple.MediumDigitalAssetImpl;
 import org.infoglue.cms.entities.content.impl.simple.SmallDigitalAssetImpl;
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.exception.Bug;
@@ -624,6 +628,70 @@ public class SearchController extends BaseController
    	}
 
    	public static List<DigitalAssetVO> getLatestDigitalAssets(Integer[] repositoryId, String assetTypeFilter, int maxRows) throws SystemException, Bug
+   	{
+   		List<DigitalAssetVO> matchingAssets = new ArrayList<DigitalAssetVO>();
+
+		Database db = CastorDatabaseService.getDatabase();
+		
+		try
+		{
+			beginTransaction(db);
+			
+			String[] assetTypeFilterArray = assetTypeFilter.split(",");
+			StringBuffer contentTypeBindingMarkers = new StringBuffer();
+			for(int i=0; i<assetTypeFilterArray.length; i++)
+				contentTypeBindingMarkers.append((i>0 ? "," : "") + "$" + (i + 1));
+			
+			int bindIndex = assetTypeFilterArray.length;
+
+			StringBuffer repositoryIdBindingMarkers = new StringBuffer();
+			for(int i=0; i<repositoryId.length; i++)
+				repositoryIdBindingMarkers.append((i>0 ? "," : "") + "$" + (i + 1 + bindIndex));
+			
+			String assetSQL = "CALL SQL SELECT da.digitalAssetId,da.assetFileName,da.assetKey,da.assetFilePath,da.assetContentType,da.assetFileSize FROM cmDigitalAsset da, cmContentVersionDigitalAsset cvda, cmContentVersion cv, cmContent c WHERE cvda.digitalAssetId = da.digitalAssetId AND cvda.contentVersionId = cv.contentVersionId AND cv.contentId = c.contentId AND c.repositoryId IN (" + repositoryIdBindingMarkers + ") AND da.assetContentType IN (" + contentTypeBindingMarkers + ") ORDER BY da.digitalAssetId desc AS org.infoglue.cms.entities.content.impl.simple.SmallDigitalAssetImpl";
+			if(CmsPropertyHandler.getUseShortTableNames() != null && CmsPropertyHandler.getUseShortTableNames().equalsIgnoreCase("true"))
+				assetSQL = "CALL SQL SELECT da.DigAssetId,da.assetFileName,da.assetKey,da.assetFilePath,da.assetContentType,da.assetFileSize FROM cmDigAsset da, cmContVerDigAsset cvda, cmContVer cv, cmCont c WHERE cvda.DigAssetId = da.DigAssetId AND cvda.contVerId = cv.contVerId AND cv.contId = c.contId AND c.repositoryId IN (" + repositoryIdBindingMarkers + ") AND da.assetContentType IN (" + contentTypeBindingMarkers + ") ORDER BY da.DigAssetId desc AS org.infoglue.cms.entities.content.impl.simple.SmallDigitalAssetImpl";
+			
+			logger.info("assetSQL:" + assetSQL);
+			
+			OQLQuery assetOQL = db.getOQLQuery(assetSQL);
+			
+			for(int i=0; i<assetTypeFilterArray.length; i++)
+				assetOQL.bind(assetTypeFilterArray[i]);
+			
+			for(int i=0; i<repositoryId.length; i++)
+				assetOQL.bind(repositoryId[i]);
+
+			QueryResults assetResults = assetOQL.execute(Database.ReadOnly);
+
+			int currentCount = 0;
+			while(assetResults.hasMore() && currentCount < maxRows)
+			{
+				SmallDigitalAssetImpl smallAsset = (SmallDigitalAssetImpl)assetResults.next();
+				if(logger.isInfoEnabled())
+					logger.info("asset found:" + smallAsset.getDigitalAssetId() + ":" + smallAsset.getAssetKey() + ":" + smallAsset.getAssetContentType());
+				
+				matchingAssets.add(smallAsset.getValueObject());
+			    currentCount++;
+			}
+
+			assetResults.close();
+			assetOQL.close();
+			
+			commitTransaction(db);
+		}
+		catch ( Exception e )
+		{
+			rollbackTransaction(db);
+			throw new SystemException("An error occurred when we tried to search. Reason:" + e.getMessage(), e);			
+		}
+		
+		return matchingAssets;
+   	}
+
+   	
+   	
+   	public static List<DigitalAssetVO> getLatestDigitalAssetsOLD(Integer[] repositoryId, String assetTypeFilter, int maxRows) throws SystemException, Bug
    	{
    		List<DigitalAssetVO> matchingAssets = new ArrayList<DigitalAssetVO>();
 
