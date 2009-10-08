@@ -138,7 +138,7 @@
 	<META HTTP-EQUIV="expires" CONTENT="-1" />	
 </head>
 
-<body class="contenttooledit" onload="init();">
+<body class="generaltooledit" onload="init();">
 
 <form name="inputForm" action="CreateServiceBinding.action">
 	<input type="hidden" id="entityId" name="entityId" value="">
@@ -153,10 +153,6 @@
 <tr>
 	<td valign="top">
 		<table cellpadding="0" cellspacing="0" border="0" width="350">
-		<tr class="darkgreen">
-			<td class="smalllabel">$ui.getString("tool.contenttool.chooseContentLabel")</td>
-			<td class="smalllabel"><img src="images/spyglassIcon.gif" width="16" height="16" onclick="toggleDiv('searchDiv', 'treeDiv');"></td>
-		</tr>
 		<tr>
 			<td bgcolor="#EEF7DC" colspan="4" height="1"><img src="images/trans.gif" width="1" height="1"></td>
 		</tr>
@@ -184,15 +180,8 @@
 		</tr>		
 		<tr>
 			<td class="menu">  
-				<div id="searchDiv" style="display:none;">
-					<IFRAME frameborder="0" name="resultFrame" id="resultFrame" src="SearchContent!inputInlineAsset.action?repositoryId=${repositoryId}" width="350" height="400" align="baseline"></IFRAME>
-				</div>
 				<div id="treeDiv" style="display:block;">
-				#if($tree == "applet")
-					#showJavaTree("350" "400" "254" "248" "208" "Content" $repositoryId "false")
-				#else
 					<IFRAME frameborder="0" name="itreeFrame" id="itreeFrame" src="" width="350" height="510" align="baseline"></IFRAME>
-				#end
 				</div>
 			</td>
 		</tr>	
@@ -202,7 +191,7 @@
 	
 	<td valign="top">
 		<table cellpadding="0" cellspacing="0" border="0" width="350">
-		<tr class="darkgreen">
+		<tr class="adarkgreen">
 			<td class="smalllabel">$ui.getString("tool.contenttool.associatedAttachments")</td>
 		</tr>
 		<tr>

@@ -105,9 +105,10 @@
 		   	qualifyerXML += "</qualifyer>";
 			
 			document.submitForm.target = self.opener.name;
-		    document.submitForm.path.value = path;
+			document.submitForm.path.value = path;
 		    document.submitForm.qualifyerXML.value = qualifyerXML;
 		    document.submitForm.submit();
+		    self.opener.location.href = self.opener.location.href + "&refresh=true";
 		    window.close();
 		}
 

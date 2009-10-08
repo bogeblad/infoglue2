@@ -12,7 +12,7 @@
 <script type="text/javascript">
 <!--
 	$(document).ready(function(){
-		$("#tabsContainer > ul").tabs({ show:function() { resizeInlineTabDivs();} });
+		$("#tabsContainer").tabs({ show:function() { resizeInlineTabDivs();} });
 		setTimeout("resizeInlineTabDivs()", 100);
 	});
 		
@@ -116,7 +116,7 @@
 											</td>
 											<td valign="top">
 												<span style="font-weight: bold;"><a href="javascript:markPageTemplate(this, $content.id);">$content.getName()</a></span><br/>
-												#if($content.extraProperties.get("Description") != "Unknown" && $content.extraProperties.get("Description") != "")
+												#if($content.extraProperties.get("Description") && $content.extraProperties.get("Description") != "Unknown" && $content.extraProperties.get("Description") != "")
 													$content.extraProperties.get("Description")
 												#end
 											</td>

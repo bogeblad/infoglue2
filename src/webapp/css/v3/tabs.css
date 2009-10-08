@@ -1,18 +1,7 @@
-/* Caution! Ensure accessibility in print and other media types... */
-@media projection, screen { /* Use class for showing/hiding tab content, so that visibility can be better controlled in different media types... */
-    .ui-tabs-hide {
-        display: none;
-    }
+.ui-tabs .ui-tabs-hide {
+     display: none;
 }
-
-/* Hide useless elements in print layouts... */
-@media print {
-    .ui-tabs-nav {
-        display: none;
-    }
-}
-
-/* Skin */
+/*
 .ui-tabs-nav, .ui-tabs-panel {
     font-family: "Trebuchet MS", Trebuchet, Verdana, Helvetica, Arial, sans-serif;
     font-size: 12px;
@@ -23,7 +12,7 @@
     margin: 0px;
     padding: 0px 0px 0px 11px;
 }
-.ui-tabs-nav:after { /* clearing without presentational markup, IE gets extra treatment */
+.ui-tabs-nav:after { 
     display: block;
     clear: both;
     content: " ";
@@ -36,17 +25,17 @@
     padding-bottom: 0px;
 }
 .ui-tabs-nav a, .ui-tabs-nav a span {
-    float: left; /* fixes dir=ltr problem and other quirks IE */
+    float: left; 
     padding: 0 12px;
     background: url(../../images/v3/tabs.png) no-repeat;
 }
 .ui-tabs-nav a {
-    margin: 0px; /* position: relative makes opacity fail for disabled tab in IE */
+    margin: 0px; 
     padding-left: 0;
     background-position: 100% 0;
     text-decoration: none;
-    white-space: nowrap; /* @ IE 6 */
-    outline: 0; /* @ Firefox, prevent dotted border after click */ 
+    white-space: nowrap; 
+    outline: 0; 
 }
 .ui-tabs-nav a:link, .ui-tabs-nav a:visited {
     color: rgb(85, 85, 85);
@@ -73,11 +62,11 @@
     line-height: 22px;
 }
 .ui-tabs-nav .ui-tabs-selected a:link, .ui-tabs-nav .ui-tabs-selected a:visited,
-.ui-tabs-nav .ui-tabs-disabled a:link, .ui-tabs-nav .ui-tabs-disabled a:visited { /* @ Opera, use pseudo classes otherwise it confuses cursor... */
+.ui-tabs-nav .ui-tabs-disabled a:link, .ui-tabs-nav .ui-tabs-disabled a:visited { 
     cursor: text;
 }
 .ui-tabs-nav a:hover, .ui-tabs-nav a:focus, .ui-tabs-nav a:active,
-.ui-tabs-nav .ui-tabs-unselect a:hover, .ui-tabs-nav .ui-tabs-unselect a:focus, .ui-tabs-nav .ui-tabs-unselect a:active { /* @ Opera, we need to be explicit again here now... */
+.ui-tabs-nav .ui-tabs-unselect a:hover, .ui-tabs-nav .ui-tabs-unselect a:focus, .ui-tabs-nav .ui-tabs-unselect a:active {
     cursor: pointer;
 }
 .ui-tabs-disabled {
@@ -91,20 +80,20 @@
     border-top: 1px solid rgb(209, 209, 209);
     border-bottom: 1px solid rgb(209, 209, 209);
     padding: 10px;
-    background-color: rgb(246, 246, 246); /* declare background color for container to avoid distorted fonts in IE while fading */
+    background-color: rgb(246, 246, 246); 
     outline: 0;
 }
-/*.ui-tabs-loading em {
-    padding: 0 0 0 20px;
-    background: url(loading.gif) no-repeat 0 50%;
-}*/
 
-/* Additional IE specific bug fixes... */
-* html .ui-tabs-nav { /* auto clear @ IE 6 & IE 7 Quirks Mode */
+* html .ui-tabs-nav {
     display: inline-block;
 }
-*:first-child+html .ui-tabs-nav  { /* auto clear @ IE 7 Standards Mode - do not group selectors, otherwise IE 6 will ignore complete rule (because of the unknown + combinator)... */
+*:first-child+html .ui-tabs-nav  { 
     display: inline-block;
+}
+*/
+
+.ui-helper-reset {
+	font-size:10pt;
 }
 
 .inlineTabDiv {
@@ -133,4 +122,77 @@
 #contentCoverDiv {
 	height: 550px; 
 	overflow: auto;
+}
+
+/* TEST TAB ISSUES */
+.ui-widget-header 
+{
+	background-image:none;
+	background-repeat:repeat-x;
+	border-top: 1px solid white;
+	border-bottom: 1px solid #d0d1d0;
+	aheight: 20px;
+   }
+.ui-tabs 
+{
+	border: 0px;
+}
+.ui-tabs .ui-tabs-nav 
+{
+	border-left: 0px;
+	border-right: 0px;
+    padding:2px 2px 0px 8px;
+    position:relative;
+    background-color: #f6f6f6;
+}
+.ui-tabs .ui-tabs-nav li a 
+{
+   	font-size:8pt;
+	padding: 4px 10px 4px 10px;
+    text-decoration:none;
+}
+.ui-corner-all 
+{
+	-moz-border-radius-bottomleft:0px;
+    -moz-border-radius-bottomright:0px;
+    -moz-border-radius-topleft:0px;
+    -moz-border-radius-topright:0px;
+}
+.ui-tabs
+{
+	padding:0px;
+}
+.ui-tabs .ui-tabs-panel 
+{
+	padding: 8px;
+}
+.ui-state-default, .ui-widget-content .ui-state-default 
+{ 
+	border: 1px solid #d0d1d0; 
+	background: #dfeffc url(../../images/v3/tabs.png) repeat-x; 
+	font-weight: bold; 
+	color: white; 
+	outline: none; 
+}
+.ui-state-active a, .ui-state-active a:link, .ui-state-active a:visited 
+{
+	color: #555555;
+}
+.ui-state-default a, .ui-state-default a:link, .ui-state-default a:visited 
+{
+	color: #555555;
+}
+.ui-tabs-nav .ui-tabs-selected a
+{
+	abackground: #dfeffc url(../../images/v3/tabs.png) repeat-x; 
+	background-color: #dfeffc; 
+	background-position: 100% -28px;
+}
+.ui-tabs-nav .ui-tabs-selected a span 
+{
+    background-position: 0 -28px;
+}
+.ui-state-active, .ui-widget-content .ui-state-active 
+{ 
+	border: 1px solid #d0d1d0;
 }

@@ -27,6 +27,7 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.util.CmsPropertyHandler;
 
 /**
@@ -37,6 +38,8 @@ import org.infoglue.cms.util.CmsPropertyHandler;
 
 public class Slot
 {
+	VisualFormatter vf = new VisualFormatter();
+	
 	private String id;
 	private String number;
 	private String name;
@@ -110,6 +113,38 @@ public class Slot
         return this.disableAccessControl;
     }
 
+    public String getLimitationClasses()
+    {
+    	StringBuilder sb = new StringBuilder();
+	    
+    	try
+    	{
+    		System.out.println("allowedComponentsArray:" + allowedComponentsArray);
+    		System.out.println("disallowedComponentsArray:" + disallowedComponentsArray);
+    		System.out.println("allowedComponentGroupsArray:" + allowedComponentGroupsArray);
+    		if(allowedComponentsArray != null)
+		    	for(int i=0; i<allowedComponentsArray.length; i++)
+		    		sb.append("okName" + vf.replaceNonAscii(vf.escapeForAdvancedJavascripts(allowedComponentsArray[i]), '_') + " ");
+	    	if(disallowedComponentsArray != null)
+		    	for(int i=0; i<disallowedComponentsArray.length; i++)
+		    		sb.append("nokName" + vf.replaceNonAscii(vf.escapeForAdvancedJavascripts(disallowedComponentsArray[i]), '_') + " ");
+	    	if(allowedComponentGroupsArray != null)
+		    	for(int i=0; i<allowedComponentGroupsArray.length; i++)
+		    		sb.append("okGroupName" + vf.replaceNonAscii(vf.escapeForAdvancedJavascripts(allowedComponentGroupsArray[i]), '_') + " ");
+	    	
+	    	if(sb.toString().trim().equals(""))
+	    		sb = new StringBuilder("okAny");
+	    	
+	    	System.out.println("limitationClasses:" + sb.toString());
+	    	return sb.toString();
+    	}
+    	catch (Exception e) 
+    	{
+    		e.printStackTrace();
+		}
+    	return "";
+    }
+    
     public String[] getAllowedComponentsArray()
     {
         return allowedComponentsArray;

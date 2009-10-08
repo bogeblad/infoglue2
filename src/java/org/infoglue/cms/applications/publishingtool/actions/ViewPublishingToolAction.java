@@ -51,5 +51,5 @@ public class ViewPublishingToolAction extends InfoGlueAbstractAction
     {
         return "success";
     }
-               
+
 }

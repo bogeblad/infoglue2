@@ -34,40 +34,28 @@ import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 import org.apache.xerces.parsers.DOMParser;
-import org.exolab.castor.jdo.Database;
-import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.controllers.kernel.impl.simple.AccessRightController;
-import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentStateController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
-import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionControllerProxy;
-import org.infoglue.cms.entities.content.Content;
 import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.content.ContentVersion;
 import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.entities.management.ContentTypeAttribute;
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
-import org.infoglue.cms.entities.management.RegistryVO;
-import org.infoglue.cms.entities.structure.SiteNode;
 import org.infoglue.cms.exception.AccessConstraintException;
 import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.util.AccessConstraintExceptionBuffer;
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
 import org.infoglue.cms.util.XMLHelper;
-import org.infoglue.deliver.applications.databeans.DeliveryContext;
-import org.infoglue.deliver.controllers.kernel.impl.simple.BasicURLComposer;
-import org.infoglue.deliver.controllers.kernel.impl.simple.DigitalAssetDeliveryController;
 import org.w3c.dom.CDATASection;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
-
-import com.sun.star.embed.StateChangeInProgressException;
 
 /**
   * This is the action-class for UpdateContentVersionVersion

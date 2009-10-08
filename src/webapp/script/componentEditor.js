@@ -472,7 +472,9 @@ function showComponentMenu(event, element, compId, anInsertUrl, anDeleteUrl, anC
 	//alert("changeUrl:" + changeUrl);
     
     document.body.onclick = hidemenuie5;
-	getActiveMenuDiv().className = menuskin;
+	var currentActiveMenuDiv = getActiveMenuDiv();
+    if(currentActiveMenuDiv)
+    	currentActiveMenuDiv.className = menuskin;
 	
 	clientX = getEventPositionX(event);
 	clientY = getEventPositionY(event);
@@ -493,7 +495,7 @@ function showComponentMenu(event, element, compId, anInsertUrl, anDeleteUrl, anC
 	//alert("bottomedge:" + bottomedge);
 	//alert("document.body.clientHeight:" + document.body.clientHeight);
 	//alert("menuDiv.offsetWidth:" + menuDiv.offsetWidth);
-
+	
 	var editDivElement = document.getElementById("editDiv" + compId);
 	var editInlineDivElement = document.getElementById("editInlineDiv" + compId);
 	var subscribeContentDivElement = document.getElementById("subscribeContent" + compId);
@@ -528,8 +530,6 @@ function showComponentMenu(event, element, compId, anInsertUrl, anDeleteUrl, anC
 		
 	menuDiv.style.left 	= clientX + "px";
 	menuDiv.style.top 	= clientY + "px";
-	//menuDiv.style.left 	= newLeft + "px";
-	//menuDiv.style.top 	= newTop + "px";
 	
 	menuDiv.style.visibility = "visible";
 	menuDiv.style.display = "block";
@@ -650,13 +650,17 @@ function showEmptySlotMenu(slotId, event, compId, anInsertUrl, slotContentIdVar)
 	    //alert("access:" + access);
 	    if(access) 
 	    {
-	    	document.getElementById("addComponentMenuItem").style.display = "block";
-	    	document.getElementById("emptySlotMenuTopSeparator").style.display = "block";
+	    	$(".linkAddComponent").css("display", "block");
+	    	$("#emptySlotMenuTopSeparator").css("display", "block");
+	    	//document.getElementById("addComponentMenuItem").style.display = "block";
+	    	//document.getElementById("emptySlotMenuTopSeparator").style.display = "block";
 		}
 		else
 		{
-	    	document.getElementById("addComponentMenuItem").style.display = "none";
-	    	document.getElementById("emptySlotMenuTopSeparator").style.display = "none";
+			$(".linkAddComponent").css("display", "none");
+	    	$("#emptySlotMenuTopSeparator").css("display", "none");
+	    	//document.getElementById("addComponentMenuItem").style.display = "none";
+	    	//document.getElementById("emptySlotMenuTopSeparator").style.display = "none";
 	    }
 
 		var accessToAccessRights = eval("hasAccessToAccessRights"); 
@@ -693,23 +697,29 @@ function showEmptySlotMenu(slotId, event, compId, anInsertUrl, slotContentIdVar)
 		var hasAccessToSubmitToPageComponents = eval("hasPageStructureAccess"); 
 	    //alert("hasAccessToPageComponents:" + hasAccessToSubmitToPageComponents);
 	    if(hasAccessToSubmitToPageComponents) 
-	    	document.getElementById("pageComponentsMenuItem").style.display = "block";
+	    	$(".linkPageComponents").css("display", "block");
+	    	//document.getElementById("pageComponentsMenuItem").style.display = "block";
 		else
-	    	document.getElementById("pageComponentsMenuItem").style.display = "none";
+	    	$(".linkPageComponents").css("display", "none");
+	    //document.getElementById("pageComponentsMenuItem").style.display = "none";
 
 		var hasAccessToOpenInNewWindow = eval("hasOpenInNewWindowAccess"); 
 	    //alert("hasAccessToOpenInNewWindow:" + hasAccessToOpenInNewWindow);
 	    if(hasAccessToOpenInNewWindow) 
-	    	document.getElementById("openInNewWindowMenuItem").style.display = "block";
+	    	$(".linkOpenInNewWindow").css("display","block");
+	    	//document.getElementById("openInNewWindowMenuItem").style.display = "block";
 		else
-	    	document.getElementById("openInNewWindowMenuItem").style.display = "none";
+	    	$(".linkOpenInNewWindow").css("display","none");
+	    	//document.getElementById("openInNewWindowMenuItem").style.display = "none";
 
 		var hasAccessToViewSource = eval("hasAccessToViewSource"); 
 	    //alert("hasAccessToViewSource:" + hasAccessToViewSource);
 	    if(hasAccessToViewSource) 
-	    	document.getElementById("viewSourceMenuItem").style.display = "block";
+	    	$(".linkViewSource").css("display","block");
+	    	//document.getElementById("viewSourceMenuItem").style.display = "block";
 		else
-	    	document.getElementById("viewSourceMenuItem").style.display = "none";
+	    	$(".linkViewSource").css("display","none");
+	    	//document.getElementById("viewSourceMenuItem").style.display = "none";
 
 	}
 	catch(e)
@@ -1928,7 +1938,7 @@ function viewSource()
 		//alert("eleId:" + eleId);
 		//alert("this.insertUrl:" + this.insertUrl);
 		var ele = xGetElementById(eleId); // ele points to our related Element
-		//alert("ele:" + ele);
+		//alert("ele:" + ele + " for " + eleId);
 		ele.thisObj = this;              // Add a property to ele which points
 		                                    // to our myObject4 'this'.
 		ele.onclick = function(e)         // onclick is a method of ele not myObject4

@@ -503,7 +503,6 @@
 		function init()
 		{
 			#foreach($binding in $componentBindings)
-				//alert("$!binding.assetKey");
 				#if("$!binding.assetKey" == "")
 					#set($url = $!this.getDigitalAssetThumbnailUrl($converter.toNonNegativeInteger($binding.entityId)))
 				#else

@@ -341,8 +341,10 @@ public class SelectiveLivePublicationThread extends PublicationThread
 						    logger.warn("Updating all caches from SelectiveLivePublicationThread as this was a publishing-update\n\n\n");
 						    //CacheController.clearCastorCaches();
 
-							logger.info("clearing all except page cache as we are in publish mode..\n\n\n");											
-							CacheController.clearCaches(null, null, new String[] {"ServerNodeProperties", "serverNodePropertiesCache", "pageCache", "pageCacheExtra", "componentCache", "NavigationCache", "pagePathCache", "userCache", "pageCacheParentSiteNodeCache", "pageCacheLatestSiteNodeVersions", "pageCacheSiteNodeTypeDefinition", "JNDIAuthorizationCache", "WebServiceAuthorizationCache", "importTagResultCache"});
+						    String[] excludedCaches = CacheController.getPublicationPersistentCacheNames();
+							logger.info("clearing all except " + excludedCaches + " as we are in publish mode..\n\n\n");											
+							//CacheController.clearCaches(null, null, new String[] {"ServerNodeProperties", "serverNodePropertiesCache", "pageCache", "pageCacheExtra", "componentCache", "NavigationCache", "pagePathCache", "userCache", "pageCacheParentSiteNodeCache", "pageCacheLatestSiteNodeVersions", "pageCacheSiteNodeTypeDefinition", "JNDIAuthorizationCache", "WebServiceAuthorizationCache", "importTagResultCache"});
+							CacheController.clearCaches(null, null, excludedCaches);
 						    
 							//logger.info("Recaching all caches as this was a publishing-update\n\n\n");
 							//CacheController.cacheCentralCastorCaches();

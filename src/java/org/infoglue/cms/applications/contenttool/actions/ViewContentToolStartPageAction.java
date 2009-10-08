@@ -36,30 +36,13 @@ public class ViewContentToolStartPageAction extends InfoGlueAbstractAction
 {
 	private static final long serialVersionUID = 1L;
 	
-    private Integer repositoryId; 
-    
     public String doExecute() throws Exception
     {
     	return "success";
     }
-    
-    public void setRepositoryId(Integer repositoryId)
+
+    public String doV3() throws Exception
     {
-    	this.repositoryId = repositoryId;
+    	return "successV3";
     }
-    
-    public Integer getRootContentId()
-    {
-    	try
-    	{
-    		if(this.repositoryId != null && this.repositoryId.intValue() != -1)
-	    		return ContentController.getContentController().getRootContentVO(this.repositoryId, this.getInfoGluePrincipal().getName()).getContentId();
-    	}
-    	catch(Exception e)
-    	{
-    		e.printStackTrace();
-    	}
-    	
-    	return null;
-    }       
 }

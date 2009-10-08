@@ -1,0 +1,435 @@
+
+#*
+	<style type="text/css">
+	
+		#header
+		{
+			position: absolute; 
+			top:0px; 
+			left: 0px; 
+			width: 100%; 
+			height: 58px;
+			background-color: white;
+		}
+		#headerLeft 
+		{
+			float: left;
+			background-color: #ccc;
+		}
+		#headerRight 
+		{
+			float: right;
+			background-color: #ddd;
+		}
+		#tools
+		{
+			float: left;
+			width: 250px; 
+			aheight: 700px;
+			background-color: magenta;
+			margin: 4px 4px 4px 4px;
+			border: 1px solid #6593cf;
+		}
+		#activeTool
+		{
+			display: block;
+			width: 100%; 
+			height: 500px;
+			background-color: white;
+		}
+		#activeToolHeader
+		{
+			float: left;
+			width: 100%; 
+			height: 25px;
+			background-image:url(images/v3/redmondGradBackground.gif);
+			background-repeat:repeat-x;
+			border-top: 1px solid white;
+			border-bottom: 1px solid #808280;
+		}
+		#activeToolHeader h3
+		{
+			font-family: Lucida Grande, Lucida Sans, Arial, sans-serif;
+			font-size: 12pt;
+			font-weight: bold;
+			margin: 4px 4px 4px 6px;
+			color: #15428b;
+		}
+		
+		#availableTools
+		{
+			float: left;
+			width: 100%; 
+			margin: 0px;
+			padding: 0px;
+		}
+		#availableTools h3
+		{
+			font-family: Lucida Grande, Lucida Sans, Arial, sans-serif;
+			font-size: 10pt;
+			font-weight: normal;
+			margin: 4px;
+			margin-left: 6px;
+			color: black;
+		}
+		#availableTools ul
+		{
+			margin: 0px;
+			padding: 0px;
+		}
+		#availableTools ul li
+		{
+			margin: 0px;
+		}
+		#availableTools ul li
+		{
+			float: left;
+			width: 100%; 
+			height: 26px;
+			background-image:url(images/v3/redmondBarBackground.gif);
+			background-repeat:repeat-x;
+			border-top: 1px solid #6593cf;
+			list-style-type: none;
+		}
+		#availableTools .active
+		{
+			background-image:url(images/v3/redmondActiveBarBackground.gif);
+		}
+		#availableTools ul li a
+		{
+			display: block;
+			font-family: Lucida Grande, Lucida Sans, Arial, sans-serif;
+			font-size: 8pt;
+			font-weight: bold;
+			text-decoration: none;
+			text-indent: 26px;
+			color: #204d89;
+            margin-top: 4px;
+			line-height: 20px;
+        }
+
+		#structureRepositoriesDiv, #contentRepositoriesDiv
+		{
+			border-top: 1px solid #ADD1FF;
+			float: left;
+			width: 100%; 
+			margin: 0px;
+			padding: 0px;
+			padding-top: 4px;
+		}
+		.shadow 
+		{
+			background-image: url(images/v3/bottomShadow.png);
+			abackground-position: bottom left;
+			background-repeat: repeat-x;			
+		}
+		#structureRepositoriesDiv ul, #contentRepositoriesDiv ul
+		{
+			max-height: 200px; 
+			overflow: auto;
+			margin: 0px;
+			padding: 0px;
+			background-color: white;
+		}
+		#structureRepositoriesDiv ul li, #contentRepositoriesDiv ul li
+		{
+			margin: 0px;
+			float: left;
+			width: 100%; 
+			height: 18px;
+			list-style-type: none;
+			background-color: #eef5ff;
+		}
+		#structureRepositoriesDiv ul li a, #contentRepositoriesDiv ul li a
+		{
+			display: block;
+			font-family: Lucida Grande, Lucida Sans, Arial, sans-serif;
+			font-size: 8pt;
+			font-weight: bold;
+			text-decoration: none;
+			text-indent: 8px;
+			color: black;
+			line-height: 16px;
+        }
+		#structureRepositoriesDiv ul li a.current, #contentRepositoriesDiv ul li a.current
+		{
+			font-weight: bold;
+			text-decoration: none;
+			text-indent: 8px;
+			color: #d27600;
+			background-image: url(images/v3/rightarrow.png);
+			background-position: 0px 5px;
+			background-repeat: no-repeat;			
+		}	
+		
+		#work
+		{
+			float: left;
+			left: 200px;
+			width: 700px; 
+			height: 600px;
+			background-color: lightyellow;
+			overflow: hidden;
+			border: 1px solid #6593cf; 
+			margin: 4px 4px 4px 0px;
+		}
+		#tabsContainer
+		{
+			float: left;
+		}
+		#singleTabDiv
+		{
+			height: 800px;
+		}
+		.inlineTabDiv
+		{
+			aheight: 700px;
+		}
+		#structureTabLabel
+		{
+			background-image: url(images/v3/pageIcon.gif);
+			background-position: 6px 3px;
+			background-repeat: no-repeat;
+			text-indent: 16px;
+		}
+		.structure
+		{
+			background-image: url(images/v3/pageIcon.gif);
+			background-position: 6px 2px;
+			background-repeat: no-repeat;
+		}
+		#contentTabLabel
+		{
+			background-image: url(images/v3/contentIcon.gif);
+			background-position: 6px 3px;
+			background-repeat: no-repeat;
+			text-indent: 16px;
+		}
+		.content
+		{
+			background-image: url(images/v3/contentIcon.gif);
+			background-position: 6px 2px;
+			background-repeat: no-repeat;
+		}
+		#managementTabLabel
+		{
+			background-image: url(images/v3/metadataIcon.gif);
+			background-position: 6px 3px;
+			background-repeat: no-repeat;
+			text-indent: 16px;
+		}
+		.management
+		{
+			background-image: url(images/v3/metadataIcon.gif);
+			background-position: 6px 2px;
+			background-repeat: no-repeat;
+		}
+		#publishingTabLabel
+		{
+			background-image: url(images/v3/publishPageIcon.gif);
+			background-position: 6px 3px;
+			background-repeat: no-repeat;
+			text-indent: 16px;
+		}
+		.publishing
+		{
+			background-image: url(images/v3/publishPageIcon.gif);
+			background-position: 6px 2px;
+			background-repeat: no-repeat;
+		}
+		#mydesktopTabLabel
+		{
+			background-image: url(images/v3/myDesktopIcon.png);
+			background-position: 6px 3px;
+			background-repeat: no-repeat;
+			text-indent: 16px;
+		}
+		.mydesktop
+		{
+			background-image: url(images/v3/myDesktopIcon.png);
+			background-position: 6px 2px;
+			background-repeat: no-repeat;
+		}
+		#formeditorTabLabel
+		{
+			background-image: url(images/v3/formEditorIcon.png);
+			background-position: 6px 3px;
+			background-repeat: no-repeat;
+			text-indent: 16px;
+		}
+		.formeditor
+		{
+			background-image: url(images/v3/formEditorIcon.png);
+			background-position: 6px 2px;
+			background-repeat: no-repeat;
+		}
+		#searchTabLabel
+		{
+			background-image: url(images/v3/searchButtonIcon.png);
+			background-position: 6px 3px;
+			background-repeat: no-repeat;
+			text-indent: 16px;
+		}
+		.search
+		{
+			background-image: url(images/v3/searchButtonIcon.png);
+			background-position: 6px 2px;
+			background-repeat: no-repeat;
+		}
+		
+		.ui-widget-header 
+		{
+			background-image:url(images/v3/redmondGradBackground.gif);
+			background-repeat:repeat-x;
+			border-top: 1px solid white;
+			border-bottom: 1px solid #808280;
+			aheight: 20px;
+        }
+		.ui-tabs 
+		{
+			border: 0px;
+		}
+		.ui-tabs .ui-tabs-nav 
+		{
+			border-left: 0px;
+			border-right: 0px;
+            padding:2px 2px 0;
+            position:relative;
+	        background-color: white;
+        }
+        .ui-tabs .ui-tabs-nav li a  
+		{
+	        font-size:8pt;
+			padding: 4px 10px 4px 10px;
+    	    text-decoration:none;
+        }
+        /*
+        .ui-tabs .ui-tabs-nav li img
+        {
+			margin: 4px 10px 4px 10px;
+        }
+        */
+		.ui-corner-all {
+            -moz-border-radius-bottomleft:0px;
+            -moz-border-radius-bottomright:0px;
+            -moz-border-radius-topleft:0px;
+            -moz-border-radius-topright:0px;
+        }
+		.ui-tabs
+		{
+			padding:0px;
+		}
+		.ui-tabs .ui-tabs-panel 
+		{
+			padding:0px;
+		}
+		
+		body.generaltooledit {
+        	color:#000000;	
+			background-color: #bedafe;
+		}
+		
+		#menutoolbar {
+            background-color: #bedafe;
+            background-image:url(images/v3/toolbarRedmondBackground.gif);
+            background-repeat:repeat-x;
+            border-bottom:1px solid #9CAABD;
+        }
+		#footertoolbar {
+	        background-color: #bedafe;
+    	    background-image:url(images/v3/footerRedmondBackground.gif);
+        	background-repeat:repeat-x;
+            border-top:1px solid #9CAABD;
+        }
+    </style>
+	
+	<style type="text/css">
+
+		#contextMenuDiv 
+		{
+		    background-color:#F9F8F7;
+            background-image:url(images/v3/tileGradient.gif);
+            background-position:left center;
+            background-repeat:repeat-y;
+            border:1px solid #6593cf;
+            cursor:pointer;
+            font-family:Tahoma,Arial,Helvetica,sans-serif;
+            font-size:10pt;
+            //overflow:hidden;
+            position:absolute;
+            text-align:left;
+            //visibility:hidden;
+			display: none;
+            awidth:200px;
+			z-index: 1;
+        }
+		#contextMenuDiv ul
+		{
+            margin: 0px;
+			margin-right: 20px;
+			padding: 0px;
+			list-style-image: none;
+			list-style-type: none;
+        }
+		#contextMenuDiv ul li a
+		{
+            text-indent: 32px;
+			line-height: 24px;
+			display: block;
+			color: black;
+			background-position: 4px 2px;
+			text-decoration: none;
+        }
+		#contextMenuDiv ul li a.movePage
+		{
+			background-position: 6px 2px;
+        }
+		#contextMenuDiv ul li a:hover
+		{
+			text-decoration: underline;
+        }
+
+    </style>
+	
+	<style type="text/css">
+		#paletteDiv
+		{
+			height: 120px;
+			border-top: 1px solid #6593cf;
+		}
+		#structureRepositoryChoiceDiv, #contentRepositoryChoiceDiv
+		{
+			background-color: #deecff;
+			height: 25px;
+			width: 100%;
+			border-top: 1px solid #add1ff;
+			border-bottom: 1px solid #add1ff;
+		}
+		#structureRepositoryChoiceDiv > a, #contentRepositoryChoiceDiv > a
+		{
+			background-image: url(images/downArrow.gif);
+			background-position: center right;
+			background-repeat: no-repeat;
+		}
+		#componentPaletteHeader
+		{
+			float: left;
+			width: 100%; 
+			height: 18px;
+			background-color: #ddebff;
+			abackground-image:url(images/v3/redmondGradBackground.gif);
+			background-repeat:repeat-x;
+			border-top: 1px solid white;
+			border-bottom: 1px solid #add1ff;
+		}
+		#componentPaletteHeader h3
+		{
+			font-family: Lucida Grande, Lucida Sans, Arial, sans-serif;
+			font-size: 8pt;
+			font-weight: bold;
+			margin: 2px 4px 2px 6px;
+			color: #15428b;
+		}
+
+	</style>
+*#

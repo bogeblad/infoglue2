@@ -101,7 +101,7 @@ public class ImportController extends BaseController
 		return new ImportController();
 	}
 
-	public void importRepository(Database db, Mapping map, File file, String encoding, int version, String onlyLatestVersions, boolean isCopyAction, Map contentIdMap, Map siteNodeIdMap, List allContentIds, Map replaceMap) throws Exception
+	public void importRepository(Database db, Mapping map, File file, String encoding, int version, String onlyLatestVersions, boolean isCopyAction, Map contentIdMap, Map siteNodeIdMap, List allContentIds, Map replaceMap, Boolean mergeExistingRepositories) throws Exception
 	{
         FileInputStream fis = new FileInputStream(file);
         BufferedInputStream bis = new BufferedInputStream(fis);
@@ -111,9 +111,208 @@ public class ImportController extends BaseController
 		unmarshaller.setWhitespacePreserve(true);
 		InfoGlueExportImpl infoGlueExportImplRead = (InfoGlueExportImpl)unmarshaller.unmarshal(reader);
 
-		copyRepository(db, infoGlueExportImplRead, version, onlyLatestVersions, isCopyAction, contentIdMap, siteNodeIdMap, allContentIds, replaceMap);
-		
+		//if(mergeExistingRepositories && !isCopyAction)
+		//	mergeCopyRepository(db, infoGlueExportImplRead, version, onlyLatestVersions, isCopyAction, contentIdMap, siteNodeIdMap, allContentIds, replaceMap, mergeExistingRepositories);
+		//else
+			copyRepository(db, infoGlueExportImplRead, version, onlyLatestVersions, isCopyAction, contentIdMap, siteNodeIdMap, allContentIds, replaceMap);
+
 		reader.close();
+	}
+	
+	public void mergeCopyRepository(Database db, InfoGlueExportImpl infoGlueExportImplRead, int version, String onlyLatestVersions, boolean isCopyAction, Map contentIdMap, Map siteNodeIdMap, List allContentIds, Map replaceMap) throws Exception
+	{
+		Collection contentTypeDefinitions = infoGlueExportImplRead.getContentTypeDefinitions();
+		logger.info("Found " + contentTypeDefinitions.size() + " content type definitions");
+		Collection categories = infoGlueExportImplRead.getCategories();
+		logger.info("Found " + categories.size() + " categories");
+
+		Map categoryIdMap = new HashMap();
+		Map contentTypeIdMap = new HashMap();
+
+		if(!isCopyAction)
+		{
+			importCategories(categories, null, categoryIdMap, db);
+			updateContentTypeDefinitions(contentTypeDefinitions, categoryIdMap);
+		}
+		
+		List readSiteNodes = infoGlueExportImplRead.getRootSiteNode();
+		List readContents = infoGlueExportImplRead.getRootContent();
+		
+		Map repositoryIdMap = new HashMap();
+		Map siteNodeVersionIdMap = new HashMap();
+		
+		List allContents = new ArrayList();
+		List allSiteNodes = new ArrayList();
+		
+		Map<String, AvailableServiceBinding> readAvailableServiceBindings = new HashMap<String, AvailableServiceBinding>();
+
+		Map repositoryContentMap = new HashMap();
+		Iterator readContentsIteratorDebug = readContents.iterator();
+		while(readContentsIteratorDebug.hasNext())
+		{
+			Content readContentCandidate = (Content)readContentsIteratorDebug.next();
+			repositoryContentMap.put("" + readContentCandidate.getRepositoryId(), readContentCandidate);
+			//readContentCandidate.getR
+			//System.out.println("readContentCandidate debug...:" + readContentCandidate.getName() + ":" + readContentCandidate.getId() + ":" + readContentCandidate.getRepositoryId());
+		}
+
+		Iterator readSiteNodesIterator = readSiteNodes.iterator();
+		while(readSiteNodesIterator.hasNext())
+		{
+			SiteNode readSiteNode = (SiteNode)readSiteNodesIterator.next();
+
+			Repository repositoryRead = readSiteNode.getRepository();
+			logger.info(repositoryRead.getName());
+			
+			repositoryRead.setName(substituteStrings(repositoryRead.getName(), replaceMap));
+			repositoryRead.setDescription(substituteStrings(repositoryRead.getDescription(), replaceMap));
+			repositoryRead.setDnsName(substituteStrings(repositoryRead.getDnsName(), replaceMap));
+			
+			Content readContent = null;
+
+			readContent = (Content)repositoryContentMap.get("" + repositoryRead.getId());
+			//System.out.println("readContent:" + readContent.getName() + ":" + readContent.getId());
+			
+			readContent.setRepository((RepositoryImpl)repositoryRead);
+
+			Integer repositoryIdBefore = repositoryRead.getId();
+			db.create(repositoryRead);
+			Integer repositoryIdAfter = repositoryRead.getId();
+			repositoryIdMap.put("" + repositoryIdBefore, "" + repositoryIdAfter);
+
+			Collection repositoryLanguages = repositoryRead.getRepositoryLanguages();
+			Iterator repositoryLanguagesIterator = repositoryLanguages.iterator();
+			while(repositoryLanguagesIterator.hasNext())
+			{
+				RepositoryLanguage repositoryLanguage = (RepositoryLanguage)repositoryLanguagesIterator.next();
+				Language originalLanguage = repositoryLanguage.getLanguage();
+				
+				Language language = LanguageController.getController().getLanguageWithCode(originalLanguage.getLanguageCode(), db);
+				if(language == null)
+				{
+				    db.create(originalLanguage);
+				    language = originalLanguage;
+				}
+				
+				repositoryLanguage.setLanguage(language);
+				repositoryLanguage.setRepository(repositoryRead);
+
+				db.create(repositoryLanguage);
+				
+				logger.info("language:" + language);
+				logger.info("language.getRepositoryLanguages():" + language.getRepositoryLanguages());
+				language.getRepositoryLanguages().add(repositoryLanguage);
+			}
+			
+			readSiteNode.setRepository((RepositoryImpl)repositoryRead);
+			
+			logger.info("***************************************\nreadContent:" + readContent.getName());
+			createContents(readContent, contentIdMap, contentTypeIdMap, allContents, Collections.unmodifiableCollection(contentTypeDefinitions), categoryIdMap, version, db, onlyLatestVersions, isCopyAction, replaceMap);
+			createStructure(readSiteNode, contentIdMap, siteNodeIdMap, siteNodeVersionIdMap, readAvailableServiceBindings, allSiteNodes, db, onlyLatestVersions, replaceMap);
+		}
+					
+		//List allContentIds = new ArrayList();
+		Iterator allContentsIterator = allContents.iterator();
+		while(allContentsIterator.hasNext())
+		{
+			Content content = (Content)allContentsIterator.next();
+			allContentIds.add(content.getContentId());
+		}
+
+		//TEST
+		Map args = new HashMap();
+	    args.put("globalKey", "infoglue");
+	    PropertySet ps = PropertySetManager.getInstance("jdbc", args);
+
+		Map<String,String> repositoryProperties = infoGlueExportImplRead.getRepositoryProperties();
+		Iterator<String> repositoryPropertiesIterator = repositoryProperties.keySet().iterator();
+		while(repositoryPropertiesIterator.hasNext())
+		{
+			String key = repositoryPropertiesIterator.next();
+			String value = repositoryProperties.get(key);
+			String[] splittedString = key.split("_");
+			if(splittedString.length == 3)
+			{
+				String oldRepId = splittedString[1];
+				key = key.replaceAll(oldRepId, (String)repositoryIdMap.get(oldRepId));
+				
+				if(value != null && !value.equals("null"))
+				{
+					if(key.indexOf("_WYSIWYGConfig") > -1 || key.indexOf("_StylesXML") > -1 || key.indexOf("_extraProperties") > -1)
+						ps.setData(key, value.getBytes("utf-8"));
+					else
+						ps.setString(key, value);
+				}
+			}
+		}
+
+		Map<String,String> contentProperties = infoGlueExportImplRead.getContentProperties();
+		Iterator<String> contentPropertiesIterator = contentProperties.keySet().iterator();
+		while(contentPropertiesIterator.hasNext())
+		{
+			String key = contentPropertiesIterator.next();
+			String value = contentProperties.get(key);
+			String[] splittedString = key.split("_");
+			if(splittedString.length == 3)
+			{
+				String oldContentId = splittedString[1];
+				key = key.replaceAll(oldContentId, (String)contentIdMap.get(oldContentId));
+				if(value != null && !value.equals("null"))
+					ps.setString(key, value);
+			}
+		}
+
+		Map<String,String> siteNodeProperties = infoGlueExportImplRead.getSiteNodeProperties();
+		Iterator<String> siteNodePropertiesIterator = siteNodeProperties.keySet().iterator();
+		while(siteNodePropertiesIterator.hasNext())
+		{
+			String key = siteNodePropertiesIterator.next();
+			String value = siteNodeProperties.get(key);
+			String[] splittedString = key.split("_");
+			if(splittedString.length == 3)
+			{
+				String oldSiteNodeId = splittedString[1];
+				key = key.replaceAll(oldSiteNodeId, (String)siteNodeIdMap.get(oldSiteNodeId));
+				if(value != null && !value.equals("null"))
+					ps.setString(key, value);
+			}
+		}
+
+		Collection<AccessRight> accessRights = infoGlueExportImplRead.getAccessRights();
+		Iterator<AccessRight> accessRightsIterator = accessRights.iterator();
+		while(accessRightsIterator.hasNext())
+		{
+			AccessRight accessRight = accessRightsIterator.next();
+
+			InterceptionPoint interceptionPoint = InterceptionPointController.getController().getInterceptionPointWithName(accessRight.getInterceptionPointName(), db);
+			accessRight.setInterceptionPoint(interceptionPoint);
+			if(interceptionPoint.getName().indexOf("Content") > -1)
+				accessRight.setParameters((String)contentIdMap.get(accessRight.getParameters()));
+			else if(interceptionPoint.getName().indexOf("SiteNodeVersion") > -1)
+				accessRight.setParameters((String)siteNodeVersionIdMap.get(accessRight.getParameters()));
+			else if(interceptionPoint.getName().indexOf("SiteNode") > -1)
+				accessRight.setParameters((String)siteNodeIdMap.get(accessRight.getParameters()));
+			else if(interceptionPoint.getName().indexOf("Repository") > -1)
+				accessRight.setParameters((String)repositoryIdMap.get(accessRight.getParameters()));
+
+			db.create(accessRight);
+
+			Iterator accessRightRoleIterator = accessRight.getRoles().iterator();
+			while(accessRightRoleIterator.hasNext())
+			{
+				AccessRightRole accessRightRole = (AccessRightRole)accessRightRoleIterator.next();
+				accessRightRole.setAccessRight(accessRight);
+				db.create(accessRightRole);
+			}
+
+			Iterator accessRightGroupIterator = accessRight.getGroups().iterator();
+			while(accessRightGroupIterator.hasNext())
+			{
+				AccessRightGroup accessRightGroup = (AccessRightGroup)accessRightGroupIterator.next();
+				accessRightGroup.setAccessRight(accessRight);
+				db.create(accessRightGroup);
+			}
+		}
 	}
 	
 	public void copyRepository(Database db, InfoGlueExportImpl infoGlueExportImplRead, int version, String onlyLatestVersions, boolean isCopyAction, Map contentIdMap, Map siteNodeIdMap, List allContentIds, Map replaceMap) throws Exception

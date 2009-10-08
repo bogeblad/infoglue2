@@ -42,6 +42,7 @@ import java.util.Properties;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.log4j.Logger;
+import org.infoglue.cms.applications.managementtool.actions.deployment.VersionControlServerBean;
 import org.infoglue.cms.controllers.kernel.impl.simple.ServerNodeController;
 import org.infoglue.cms.entities.management.ServerNodeVO;
 import org.infoglue.deliver.util.CacheController;
@@ -870,6 +871,32 @@ public class CmsPropertyHandler
 		return getServerNodeProperty("maxRows", true, "100");
 	}
 
+	public static Integer getMaxNumberOfAssetInSearches()
+	{
+		Integer maxNumberOfAssetInSearches = 50;
+		String maxNumberOfAssetInSearchesString = getServerNodeProperty("maxNumberOfAssetInSearches", true, "50");
+		try
+		{
+			maxNumberOfAssetInSearches = new Integer(maxNumberOfAssetInSearchesString);
+		}
+		catch (Exception e) 
+		{
+			logger.warn("Problem parsing maxNumberOfAssetInSearches:" + e.getMessage());
+		}
+		
+		return maxNumberOfAssetInSearches;
+	}
+
+	public static String getComponentBindningAssetBrowser()
+	{
+		return getServerNodeProperty("componentBindningAssetBrowser", true, "default");
+	}
+
+	public static String getPrefferedWYSIWYG()
+	{
+		return getServerNodeProperty("prefferedWYSIWYG", true, "fckeditor2");
+	}
+
 	public static String getDefaultNumberOfYearsBeforeExpire()
 	{
 		return getServerNodeProperty("defaultNumberOfYearsBeforeExpire", true, "50");
@@ -1189,6 +1216,16 @@ public class CmsPropertyHandler
 	{
 	    return getServerNodeProperty("databaseEngine", true, null);
 	}
+	
+	public static String getInfoGlueVersion()
+	{
+	    return getServerNodeProperty("infoGlueVersion", true, "3.0.0 A1");
+	}
+
+	public static String getInfoGlueVersionReleaseDate()
+	{
+	    return getServerNodeProperty("infoGlueVersionReleaseDate", true, "2009-10-04");
+	}
 
 	public static String getLogDatabaseMessages()
 	{
@@ -1339,7 +1376,25 @@ public class CmsPropertyHandler
 
 	public static String getPreferredToolId(String userName)
 	{
-	    return getPropertySet().getString("principal_" + userName + "_defaultToolId");
+		String preferredToolId = getPropertySet().getString("principal_" + userName + "_defaultToolId");
+	    if(preferredToolId == null || preferredToolId.equals(""))
+	    	preferredToolId = "1";
+
+	    return preferredToolId;
+	}
+
+	public static String getDefaultGUI(String userName)
+	{
+		String defaultGUI = getPropertySet().getString("principal_" + userName + "_defaultGUI");
+	    
+		return (defaultGUI == null ? "default" : defaultGUI);
+	}
+
+	public static String getTheme(String userName)
+	{
+		String theme = getPropertySet().getString("principal_" + userName + "_theme");
+
+		return (theme == null ? "outlook2007" : theme);
 	}
 
 	public static String getPreferredRepositoryId(String userName)
@@ -1548,6 +1603,58 @@ public class CmsPropertyHandler
 	    return urls;
 	}
 
+	public static Map<String,VersionControlServerBean> getVCServers()
+	{
+		Map<String,VersionControlServerBean> servers = new HashMap<String,VersionControlServerBean>();
+		
+	    String vcServersString = CmsPropertyHandler.getServerNodeDataProperty(null, "vcServers", true, null);
+	    if(vcServersString != null && !vcServersString.equals(""))
+		{
+	    	try
+			{
+	    		Properties properties = new Properties();
+				properties.load(new ByteArrayInputStream(vcServersString.getBytes("UTF-8")));
+
+				int i = 0;
+				String vcServerName = null;
+				while((vcServerName = properties.getProperty("" + i)) != null)
+				{
+					String host = properties.getProperty("" + i + ".host");
+					String path = properties.getProperty("" + i + ".path");
+					String module = properties.getProperty("" + i + ".module");
+					String user = properties.getProperty("" + i + ".user");
+					String password = properties.getProperty("" + i + ".password");
+					String type = properties.getProperty("" + i + ".type");
+					String port = properties.getProperty("" + i + ".port");
+					
+					if(host == null)
+						throw new Exception("Missing host-property for " + vcServerName + " (index: " + i + ")");
+					if(path == null)
+						throw new Exception("Missing path-property for " + vcServerName + " (index: " + i + ")");
+					if(module == null)
+						throw new Exception("Missing module-property for " + vcServerName + " (index: " + i + ")");
+					if(user == null)
+						throw new Exception("Missing user-property for " + vcServerName + " (index: " + i + ")");
+					if(password == null)
+						throw new Exception("Missing password-property for " + vcServerName + " (index: " + i + ")");
+					if(type == null)
+						throw new Exception("Missing type-property for " + vcServerName + " (index: " + i + ")");
+					
+					VersionControlServerBean vcb = new VersionControlServerBean(vcServerName, host, path, module, user, password, type, port);
+					servers.put(vcServerName, vcb);
+					i++;
+				}	
+
+			}	
+			catch(Exception e)
+			{
+			    logger.error("Error loading properties from string. Reason:" + e.getMessage());
+			}
+		}
+	    
+	    return servers;
+	}
+
 	public static List getToolLocales()
 	{
 		List toolLocales = new ArrayList();
@@ -1641,6 +1748,26 @@ public class CmsPropertyHandler
 		}
 	    
 	    return cacheSettings;
+	}
+
+	
+	public static List<String> getExtraPublicationPersistentCacheNames() 
+	{
+		List<String> cacheNames = new ArrayList<String>();
+		
+	    String extraPublicationPersistentCacheNamesString = CmsPropertyHandler.getServerNodeDataProperty(null, "extraPublicationPersistentCacheNames", true, null, true);
+	    if(extraPublicationPersistentCacheNamesString != null && !extraPublicationPersistentCacheNamesString.equals(""))
+		{
+	    	String[] names = extraPublicationPersistentCacheNamesString.split("(\n|\r|\r\n)");
+	    	for(int i=0; i<names.length; i++)
+	    	{
+	    		String name = names[i].trim();
+	    		if(!name.equals(""))
+	    			cacheNames.add(name);
+	    	}
+		}
+	    
+	    return cacheNames;
 	}
 
 	private static PropertySet getPropertySet()
@@ -1742,6 +1869,36 @@ public class CmsPropertyHandler
 		return getServerNodeProperty("niceURIDefaultReplacementCharacterForContent", true, getNiceURIDefaultReplacementCharacter());
 	}
 
+	public static String getUseAccessBasedProtocolRedirects()
+	{
+		return getServerNodeProperty("useAccessBasedProtocolRedirects", true, "false");
+	}
+
+	public static String getUnprotectedProtocolName()
+	{
+		return getServerNodeProperty("unprotectedProtocolName", true, "http");
+	}
+
+	public static String getProtectedProtocolName()
+	{
+		return getServerNodeProperty("protectedProtocolName", true, "https");
+	}
+
+	public static String getUnprotectedProtocolPort()
+	{
+		return getServerNodeProperty("unprotectedProtocolPort", true, "8080");
+	}
+
+	public static String getProtectedProtocolPort()
+	{
+		return getServerNodeProperty("protectedProtocolPort", true, "8443");
+	}
+
+	public static String getAccessBasedProtocolRedirectHTTPCode()
+	{
+		return getServerNodeProperty("accessBasedProtocolRedirectHTTPCode", true, "301");
+	}
+
 	public static boolean getDisableDecoratedFinalRendering()
 	{
 		String disableDecoratedFinalRendering = getServerNodeProperty("disableDecoratedFinalRendering", true, "false");
@@ -1784,4 +1941,5 @@ public class CmsPropertyHandler
 	{
 		return getServerNodeProperty("trashcanator", true, "cmsUser");	
 	}
+
 }

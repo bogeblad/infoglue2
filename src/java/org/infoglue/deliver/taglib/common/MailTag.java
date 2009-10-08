@@ -48,6 +48,7 @@ public class MailTag extends TemplateControllerTag
 	private String cc;
 	private String bcc;
 	private String recipients;
+	private String replyTo;
 	private String subject;
 	private String type;
 	private String charset;
@@ -135,15 +136,43 @@ public class MailTag extends TemplateControllerTag
 			    	bcc = null;
 			}
 			
+			if(replyTo != null && !replyTo.equals(""))
+			{
+				StringBuffer sb = new StringBuffer();
+				String[] emailAddresses = replyTo.split(";");
+			    for(int i=0; i<emailAddresses.length; i++)
+			    {
+			        String email = emailAddresses[i].trim().toLowerCase();
+		        	boolean emailOk = email.matches(emailRegexp);
+	    			if(!emailOk && emailAddresses.length == 1)
+		        	{
+		        		throw new AddressException("Invalid replyTo address:" + email);
+		        	}
+		        	else if(emailOk)
+		        	{
+		        		if(sb.length() > 0)
+		        			sb.append(";");
+		        		sb.append(email);
+		        	}
+			    }
+			    
+			    replyTo = sb.toString();
+			    if(replyTo.equals(""))
+			    	replyTo = null;
+			}
+			
 		    if(bcc != null && bcc.equals(""))
 		    	bcc = null;
+
+		    if(replyTo != null && replyTo.equals(""))
+		    	replyTo = null;
 
 			if(type == null)
 				type = "text/html";
 			if(charset == null)
 				charset = "utf-8";
 						
-			MailServiceFactory.getService().sendEmail(type, from, to, cc, bcc, subject, message, charset);
+			MailServiceFactory.getService().sendEmail(type, from, to, cc, bcc, replyTo, subject, message, charset);
 			setResultAttribute(true);
         } 
 		catch (AddressException e)
@@ -210,6 +239,11 @@ public class MailTag extends TemplateControllerTag
 	public void setBcc(String bcc) throws JspException
 	{
 		this.bcc = evaluateString("MailTag", "bcc", bcc);
+	}
+
+	public void setReplyTo(String replyTo) throws JspException
+	{
+		this.replyTo = evaluateString("MailTag", "replyTo", replyTo);
 	}
 
 	public void setSubject(String subject) throws JspException

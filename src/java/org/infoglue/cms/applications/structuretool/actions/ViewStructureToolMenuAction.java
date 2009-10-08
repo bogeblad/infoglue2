@@ -61,7 +61,12 @@ public class ViewStructureToolMenuAction extends InfoGlueAbstractAction
     {
         return "success";
     }
-               
+
+    public String doV3() throws Exception
+    {
+        return "successV3";
+    }
+
 	/**
 	 * Returns the tree.
 	 * @return String

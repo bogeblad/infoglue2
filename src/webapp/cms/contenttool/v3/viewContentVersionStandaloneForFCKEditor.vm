@@ -49,7 +49,7 @@
 #else
 
 
-#beginLightCommonToolV3("tool.contenttool.contentVersionHeader" "$!contentVersionId" "contentId=$!contentId&languageId=$languageId" false false $!disableCloseButton)
+#beginLightCommonToolV3("tool.contenttool.contentVersionStandaloneHeader" "$!contentVersionId" "contentId=$!contentId&languageId=$languageId" false false $!disableCloseButton)
 
 	<script type="text/javascript" src="${root}/applications/FCKEditor/fckeditor.js"></script>
 
@@ -311,24 +311,25 @@
 <!--
 	$(document).ready(function(){
 		var assetSrcUrl = "${root}/ViewContentVersion!viewContentAssetsForFCKEditorV3.action?contentVersionId=$!contentVersionId&assetTypeFilter=.*";
-    	#if($anchor)
+		
+		#if($anchor)
 	    	#if($!anchor == "contentVersionBlock")
-		    	$("#tabsContainer > ul").tabs({ selected: 0, cache: false, show:function() { resizeInlineTabDivs();}, select: function(e, ui) { if (ui.index == 2) { $("#contentVersionAssetsFrame").attr("src", assetSrcUrl); }}  });
+		    	$("#tabsContainer").tabs({ selected: 0, cache: false, show:function() { alert("aaaa"); resizeInlineTabDivs();}, select: function(e, ui) { if (ui.index == 2) { $("#contentVersionAssetsFrame").attr("src", assetSrcUrl); }}  });
 		    #elseif($!anchor == "categoriesBlock")
-		    	$("#tabsContainer > ul").tabs({ selected: 1, cache: false, show:function() { resizeInlineTabDivs();}, select: function(e, ui) { if (ui.index == 2) { $("#contentVersionAssetsFrame").attr("src", assetSrcUrl); }}  });
+		    	$("#tabsContainer").tabs({ selected: 1, cache: false, show:function() { resizeInlineTabDivs();}, select: function(e, ui) { if (ui.index == 2) { $("#contentVersionAssetsFrame").attr("src", assetSrcUrl); }}  });
 		    #elseif($!anchor == "digitalAssetsBlock")
-		    	$("#tabsContainer > ul").tabs({ selected: 2, cache: false, show:function() { resizeInlineTabDivs();}, select: function(e, ui) { if (ui.index == 2) { $("#contentVersionAssetsFrame").attr("src", assetSrcUrl); }}  });
+		    	$("#tabsContainer").tabs({ selected: 2, cache: false, show:function() { resizeInlineTabDivs();}, select: function(e, ui) { if (ui.index == 2) { $("#contentVersionAssetsFrame").attr("src", assetSrcUrl); }}  });
 		    	$("#contentVersionAssetsFrame").attr("src", assetSrcUrl);
 		    #else 
-	  			$("#tabsContainer > ul").tabs({ cache: false, show:function() { resizeInlineTabDivs();}, select: function(e, ui) { if (ui.index == 2) { $("#contentVersionAssetsFrame").attr("src", assetSrcUrl); }}  });
+	  			$("#tabsContainer").tabs({ cache: false, show:function() { resizeInlineTabDivs();}, select: function(e, ui) { if (ui.index == 2) { $("#contentVersionAssetsFrame").attr("src", assetSrcUrl); }}  });
 		    	alert("Anchor: $anchor");
 	  		#end
 	  	#else
-	  		$("#tabsContainer > ul").tabs({ cache: false, show:function() { resizeInlineTabDivs();}, select: function(e, ui) { if (ui.index == 2) { $("#contentVersionAssetsFrame").attr("src", assetSrcUrl); }} });
+	  		$("#tabsContainer").tabs({ cache: false, show:function() { resizeInlineTabDivs();}, select: function(e, ui) { if (ui.index == 2) { $("#contentVersionAssetsFrame").attr("src", assetSrcUrl); }} });
 		#end	
-
+		
 		#if($translate)
-		  	$("#otherLanguageTabsContainer > ul").tabs({ cache: false, show:function() { resizeInlineTabDivs();}, select: function(e, ui) { if (ui.index == 2) { $("#contentVersionAssetsFrame").attr("src", assetSrcUrl); }}  });
+		  	$("#otherLanguageTabsContainer").tabs({ cache: false, show:function() { resizeInlineTabDivs();}, select: function(e, ui) { if (ui.index == 2) { $("#contentVersionAssetsFrame").attr("src", assetSrcUrl); }}  });
 		#end
 		
 		$(window).resize( function() {
@@ -365,7 +366,7 @@
 	
 	<div id="allDivs">
 	
-	<div id="tabsContainer" class="flora" style="#if($translate == false)width: 95%;#else width: 550px; #end float:left; aborder: 1px solid red;">
+	<div id="tabsContainer" aclass="flora" style="#if($translate == false)width: 95%;#else width: 550px; #end float:left;">
 	
 	<ul>
         <li><a href="#contentVersionDiv"><span>$ui.getString('tool.contenttool.textContentTab')</span></a></li>
@@ -432,6 +433,12 @@
 						#set($class = "longtextfield")
 					#end
 			
+					#set($widget = "")
+            		#set($widget = $!attribute.getContentTypeAttribute("widget").getContentTypeAttributeParameterValue().getValue("label"))
+            		#if($widget == "")
+            			#set($widget = "default")
+            		#end
+
 					#set($rows = "")
 					#set($rows = $!attribute.getContentTypeAttribute("rows").getContentTypeAttributeParameterValue().getValue("label"))
 					#if($rows == "")
@@ -770,29 +777,70 @@
 							#elseif($attribute.inputType == "select")
 							<!-- Handles the input type select = dropbox -->
 								$attributeTitle ("$attribute.name") $attributeDescription <br/>
-								#printError("ContentVersion.$attribute.name")
+								#printErrorV3("ContentVersion.$attribute.name" false)
 								<select $readonly size="1" id="$attribute.name" name="$attribute.name" class="$class">
-					    			#foreach($value in $attribute.getContentTypeAttribute("values").getContentTypeAttributeParameterValues())
-					    				<option value="$value.id" #checkSelected("$value.id" "$this.getAttributeValue($attribute.name)")>$value.getLocalizedValue("label", $session.locale)</option>
-					    			#end
+									#foreach($option in $attribute.options)
+    				    				<option value="$option.value" #checkSelected("$option.value" "$this.getAttributeValue($attribute.name)")>$option.getName()</option>
+									#end
 					    		</select>
 			
 							#elseif($attribute.inputType == "checkbox")
 							<!-- Handles the input type checkbox -->
 								$attributeTitle ("$attribute.name") $attributeDescription <br/>
-				    			#printError("ContentVersion.$attribute.name")
-								#foreach($value in $attribute.getContentTypeAttribute("values").getContentTypeAttributeParameterValues())
-									<input $readonly type="checkbox" id="$attribute.name" name="$attribute.name" value="$value.id" #checkChecked("$value.id" "$this.getAttributeValue($attribute.name)")>$value.getLocalizedValue("label", $session.locale)
-				    			#end
-			
+				    			#printErrorV3("ContentVersion.$attribute.name" false)
+								#if($widget == "transfer")
+            
+            						<div id="transferListsWidget">
+                                    	<div class="optionsDiv">
+                                    		<div class="label"><p>$ui.getString("tool.contenttool.availableOptions")</p></div>
+                                    		<select id="leftSelect$attribute.name" name="none" multiple="multiple" size="7">
+                                    		#renderOptions($attribute.options "$this.getAttributeValue($attribute.name)" false)
+                                            </select>
+                                    	</div>
+                                        <div class="actionDiv">
+                                        	<p style="afloat: left; margin-top: 36px;">
+                                       			<a href="javascript:moveAllMarked('${attribute.name}', 'rightSelect$attribute.name', 'leftSelect$attribute.name');" style="float: left; margin-left: 8px; background: url(images/backwardBlue.gif) no-repeat center center;">&nbsp;</a>
+                                       			<a href="javascript:moveAllMarked('${attribute.name}', 'leftSelect$attribute.name', 'rightSelect$attribute.name');" style="float: right; margin-right: 8px; background: url(images/forwardBlue.gif) no-repeat center center;">&nbsp;</a>
+                                       		</p>
+                                    		<p style="afloat: left; margin-top: 5px;">
+                                    			<a href="javascript:moveAll('${attribute.name}', 'rightSelect$attribute.name', 'leftSelect$attribute.name');" style="float: left; margin-left: 8px; background: url(images/rewindBlue.gif) no-repeat center center;">&nbsp;</a>
+                                    			<a href="javascript:moveAll('${attribute.name}', 'leftSelect$attribute.name', 'rightSelect$attribute.name');" style="float: right; margin-right: 8px; background: url(images/fastForwardBlue.gif) no-repeat center center;">&nbsp;</a>
+                                    		</p>
+                                    	</div>
+                                    	<div class="optionsDiv">
+                                    		<div class="label"><p>$ui.getString("tool.contenttool.selectedOptions")</p></div>
+                                    		<select name="$attribute.name" class="optionListWidget" id="rightSelect$attribute.name" multiple="multiple" size="7">
+                                    		#renderOptions($attribute.options "$this.getAttributeValue($attribute.name)" true)
+                                            </select>
+                                    	</div>
+                                    </div>	
+            						<script type="text/javascript">
+                						$(document).ready(function(){
+                							refreshEvents("${attribute.name}");
+                						});
+                					</script>
+            						
+            					#elseif($widget == "3col")
+                					<ul id="checkboxListsWidget">
+                                  		#foreach($option in $attribute.options)
+                							<li><input $readonly type="checkbox" id="$attribute.name" name="$attribute.name" value="$option.value" #checkCheckedBySplit("$option.value" "$this.getAttributeValue($attribute.name)")>$option.getName()</li>
+                						#end
+                					</ul>
+            					#else
+                              		#foreach($option in $attribute.options)
+            							<input $readonly type="checkbox" id="$attribute.name" name="$attribute.name" value="$option.value" #checkCheckedBySplit("$option.value" "$this.getAttributeValue($attribute.name)")>$option.getName()
+            						#end
+            					#end
+
 							#elseif($attribute.inputType == "radiobutton")
 							<!-- Handles the input type radiobutton -->
 								$attributeTitle ("$attribute.name") $attributeDescription <br/>
-								#printError("ContentVersion.$attribute.name")
-				    			#foreach($value in $attribute.getContentTypeAttribute("values").getContentTypeAttributeParameterValues())
-									<input $readonly type="radio" id="$attribute.name" name="$attribute.name" value="$value.id" #checkChecked("$value.id" "$this.getAttributeValue($attribute.name)")>$value.getLocalizedValue("label", $session.locale)
-				    			#end
-			
+								#printErrorV3("ContentVersion.$attribute.name" false)
+                                <ul class="optionList">
+                                	#foreach($option in $attribute.options)
+										<li><input $readonly type="radio" id="$attribute.name" name="$attribute.name" value="$option.value" #checkCheckedBySplit("$option.value" "$this.getAttributeValue($attribute.name)")>$option.getName()</li>
+									#end
+								</ul>
 							#elseif($attribute.inputType == "customfield")
 							<!-- Handles the input type customfield -->
 								#set($attributeMarkup = $!attribute.getContentTypeAttribute("Markup").getContentTypeAttributeParameterValue().getValue("label"))
@@ -866,6 +914,7 @@
 							
 							if(isValid)
 							{
+								$(".optionListWidget option").attr('selected', 'selected');
 								buildVersionValue(); 
 								document.editForm.submit();
 							}
@@ -952,7 +1001,14 @@
 											value += ',' + element.value;				
 						          	}
 						        }
-								else
+            					else if(element.type=='select-multiple')
+            			        {
+            			        	//alert("element.selected:" + element.selected + ":" + element.value);
+            			        	var arr = jQuery.map($("#" + element.id + " :selected"), function(e) { return $(e).val(); })
+            						//alert("Val:" + arr.join(","));
+            						value = arr.join(",");
+            			        }
+            					else
 								{
 									var hiddenField = document.getElementById(elementId + "Hidden");
 									if(hiddenField)
@@ -1189,14 +1245,14 @@
 								<!-- Handles the input type checkbox -->
 									$attributeTitle ("$attribute.name") $attributeDescription <br/>
 					    			#foreach($value in $attribute.getContentTypeAttribute("values").getContentTypeAttributeParameterValues())
-										<input readonly="readonly" style="max-width: 400px;" type="checkbox" id="${attribute.name}Comp" name="${attribute.name}Comp" value="$value.id" #checkChecked("$value.id" "$this.getAttributeValue($attribute.name)")>$value.getLocalizedValue("label", $session.locale)
+										<input readonly="readonly" style="max-width: 400px;" type="checkbox" id="${attribute.name}Comp" name="${attribute.name}Comp" value="$value.id" #checkCheckedBySplit("$value.id" "$this.getAttributeValue($attribute.name)")>$value.getLocalizedValue("label", $session.locale)
 					    			#end
 				
 								#elseif($attribute.inputType == "radiobutton")
 								<!-- Handles the input type radiobutton -->
 									$attributeTitle ("$attribute.name") $attributeDescription <br/>
 									#foreach($value in $attribute.getContentTypeAttribute("values").getContentTypeAttributeParameterValues())
-										<input readonly="readonly" style="max-width: 400px;" type="radio" id="${attribute.name}Comp" name="${attribute.name}Comp" value="$value.id" #checkChecked("$value.id" "$this.getAttributeValue($attribute.name)")>$value.getLocalizedValue("label", $session.locale)
+										<input readonly="readonly" style="max-width: 400px;" type="radio" id="${attribute.name}Comp" name="${attribute.name}Comp" value="$value.id" #checkCheckedBySplit("$value.id" "$this.getAttributeValue($attribute.name)")>$value.getLocalizedValue("label", $session.locale)
 					    			#end
 				
 								#elseif($attribute.inputType == "customfield")

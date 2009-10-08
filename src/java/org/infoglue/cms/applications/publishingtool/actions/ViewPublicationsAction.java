@@ -80,6 +80,13 @@ public class ViewPublicationsAction extends InfoGlueAbstractAction
 		}
 	}
 	
+    public String doV3() throws Exception
+    {
+    	doExecute();
+    	
+        return "successV3";
+    }
+
 	public String doExecute() throws Exception
 	{
 		if(filter == null)

@@ -421,6 +421,26 @@ textarea.greedytextarea {
 	height           : 600px;
 }
 
+/******************
+ Controls checkbox lists and radiobuttons list in content editor mode
+******************/ 
+.optionList {
+	border: 1px solid #C2D0E2;
+	max-height: 100px;
+	overflow: auto;
+	background-color: white;
+	float: left;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+.optionList li {
+	float: left;
+	width: 33%;
+	margin: 0;
+	padding: 0;
+}
+
 /**************
  other elements
 ***************/
@@ -669,6 +689,11 @@ h2 {
 
 .deploymentImage {
 	background-image: url('../images/deploymentIcon.gif');
+	background-repeat: no-repeat;
+}
+
+.deploymentVCImage {
+	background-image: url('../images/deploymentVCIcon.png');
 	background-repeat: no-repeat;
 }
 

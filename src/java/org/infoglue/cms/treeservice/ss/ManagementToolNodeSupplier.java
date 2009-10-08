@@ -53,7 +53,7 @@ public class ManagementToolNodeSupplier extends BaseNodeSupplier
 	{
 		this.infogluePrincipal = infogluePrincipal;
 		
-		if (repositoryId.intValue() == 0)
+		if (repositoryId == null || repositoryId.intValue() == 0)
 			setRootNode(new ManagementNodeImpl(repositoryId,"root", "ViewManagementToolStartPage.action", Collections.EMPTY_MAP));
 		else
 			setRootNode(new ManagementNodeImpl(repositoryId,"root", "ViewRepository.action?repositoryId=" + repositoryId, Collections.EMPTY_MAP));
@@ -80,7 +80,7 @@ public class ManagementToolNodeSupplier extends BaseNodeSupplier
 		ArrayList r = new ArrayList();
 		ManagementNodeImpl node;
 				
-		if (parentNode.intValue() == 0)	
+		if (parentNode == null || parentNode.intValue() == 0)	
 		{	
 			Map parameters = new HashMap();
 			//parameters.put("extraMarkup", "style='padding-top: 10px; border-top: 1px solid #999;'");
@@ -133,6 +133,12 @@ public class ManagementToolNodeSupplier extends BaseNodeSupplier
 			if(hasAccessTo("ManagementToolMenu.MessageCenter", infogluePrincipal, true))
 				r.add(new ManagementNodeImpl(cnt++, "Message center", "ViewMessageCenter.action"));
 
+			if(hasAccessTo("ManagementToolMenu.Themes", infogluePrincipal, true))
+				r.add(new ManagementNodeImpl(cnt++, "Themes", "ViewThemes.action"));
+
+			if(hasAccessTo("ManagementToolMenu.MessageCenter", infogluePrincipal, true))
+				r.add(new ManagementNodeImpl(cnt++, "Labels", "ViewLabels.action"));
+
 			parameters.put("extraMarkup", "Extra");
 
 			if(hasAccessTo("ManagementToolMenu.InterceptionPoints", infogluePrincipal, true))
@@ -169,6 +175,8 @@ public class ManagementToolNodeSupplier extends BaseNodeSupplier
 			r.add(new ManagementNodeImpl(cnt++, "Permissions", "ViewAccessRights.action?interceptionPointCategory=Repository&extraParameters=" + parentNode +"&colorScheme=ManagementTool&returnAddress=ViewRepositoryOverview.action?repositoryId=" + parentNode));
 			r.add(new ManagementNodeImpl(cnt++, "Languages", "ViewListRepositoryLanguage.action?repositoryId=" + parentNode + "&title=Languages"));			
 		}
+		
+		System.out.println("r:" + r.size());
 		
 		return r;
 	}

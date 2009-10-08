@@ -640,7 +640,7 @@ public class DigitalAssetController extends BaseController
 	   	
 	public static List getDigitalAssetVOList(Integer contentVersionId, Database db) throws Exception
     {
-		String key = "" + contentVersionId;
+		String key = "all_" + contentVersionId;
 		String cacheName = "digitalAssetCache";
 		List digitalAssetVOList = (List)CacheController.getCachedObject(cacheName, key);
 		if(digitalAssetVOList != null)
@@ -715,7 +715,7 @@ public class DigitalAssetController extends BaseController
 	   	
 	public static List getDigitalAssetVOList(Integer contentId, Integer languageId, boolean useLanguageFallback, Database db) throws SystemException, Bug, Exception
     {
-		String key = "" + contentId + "_" + languageId + "_" + useLanguageFallback;
+		String key = "all_" + contentId + "_" + languageId + "_" + useLanguageFallback;
 		String cacheName = "digitalAssetCache";
 		List digitalAssetVOList = (List)CacheController.getCachedObject(cacheName, key);
 		if(digitalAssetVOList != null)
@@ -1069,6 +1069,14 @@ public class DigitalAssetController extends BaseController
 					File originalFile = new File(filePath + File.separator + fileName);
 					if(!originalFile.exists())
 					{
+						logger.info("No file there - let's try getting it again.");
+						String originalUrl = DigitalAssetController.getController().getDigitalAssetUrl(digitalAsset.getValueObject(), db);
+						logger.info("originalUrl:" + originalUrl);
+						originalFile = new File(filePath + File.separator + fileName);
+					}
+					
+					if(!originalFile.exists())
+					{
 						logger.warn("The original file " + filePath + File.separator + fileName + " was not found - missing from system.");
 						assetUrl = "images" + File.separator + BROKENFILENAME;
 					}
@@ -1180,6 +1188,14 @@ public class DigitalAssetController extends BaseController
 					//String thumbnailFileName = "thumbnail_" + fileName;
 					File thumbnailFile = new File(filePath + File.separator + thumbnailFileName);
 					File originalFile = new File(filePath + File.separator + fileName);
+					if(!originalFile.exists())
+					{
+						logger.info("No file there - let's try getting it again.");
+						String originalUrl = DigitalAssetController.getController().getDigitalAssetUrl(digitalAsset.getValueObject(), db);
+						logger.info("originalUrl:" + originalUrl);
+						originalFile = new File(filePath + File.separator + fileName);
+					}
+
 					if(!originalFile.exists())
 					{
 						logger.warn("The original file " + filePath + File.separator + fileName + " was not found - missing from system.");
@@ -1471,7 +1487,13 @@ public class DigitalAssetController extends BaseController
     	ContentVersion contentVersion = ContentVersionController.getContentVersionController().getLatestActiveContentVersion(contentId, languageId, db);
 		if(contentVersion != null)
 		{
-			DigitalAssetVO digitalAsset = getLatestDigitalAssetVO(contentVersion.getId(), assetKey, db);
+			DigitalAssetVO digitalAsset;
+			
+			if(assetKey == null || assetKey.equals(""))
+				digitalAsset = getLatestDigitalAssetVO(contentVersion.getId(), db);
+			else
+				digitalAsset = getLatestDigitalAssetVO(contentVersion.getId(), assetKey, db);
+			
 			if(digitalAsset != null)
 			{
 				digitalAssetVO = digitalAsset;
@@ -1665,7 +1687,7 @@ public class DigitalAssetController extends BaseController
 	
 	public static DigitalAssetVO getLatestDigitalAssetVO(Integer contentVersionId, Database db) throws Exception
 	{
-		String key = "" + contentVersionId;
+		String key = "latest_" + contentVersionId;
 		String cacheName = "digitalAssetCache";
 		DigitalAssetVO digitalAssetVO = (DigitalAssetVO)CacheController.getCachedObject(cacheName, key);
 		if(digitalAssetVO != null)
@@ -1708,7 +1730,7 @@ public class DigitalAssetController extends BaseController
 	
 	public static DigitalAssetVO getLatestDigitalAssetVO(Integer contentVersionId, String assetKey, Database db) throws Exception
 	{
-		String key = "" + contentVersionId + "_" + assetKey;
+		String key = "latest_" + contentVersionId + "_" + assetKey;
 		String cacheName = "digitalAssetCache";
 		DigitalAssetVO digitalAssetVO = (DigitalAssetVO)CacheController.getCachedObject(cacheName, key);
 		if(digitalAssetVO != null)

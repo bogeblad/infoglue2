@@ -240,7 +240,7 @@ public class ThreadMonitor implements Runnable
 	        {
 				try
 				{
-					MailServiceFactory.getService().sendEmail(warningEmailReceiver, warningEmailReceiver, null, message, stackString.toString().replaceAll("\n", "<br/>"), "utf-8");
+					MailServiceFactory.getService().sendEmail("text/html", warningEmailReceiver, warningEmailReceiver, null, null, null, message, stackString.toString().replaceAll("\n", "<br/>"), "utf-8");
 				} 
 				catch (Exception e)
 				{

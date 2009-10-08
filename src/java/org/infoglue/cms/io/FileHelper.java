@@ -34,10 +34,14 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.RandomAccessFile;
 import java.io.Writer;
+import java.util.Enumeration;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 
 public class FileHelper
@@ -303,5 +307,72 @@ public class FileHelper
         
         return result.toString();
 	}
+
+	public static boolean deleteDirectory(File path) 
+	{
+	    if( path.exists() ) 
+	    {
+	    	File[] files = path.listFiles();
+	    	for(int i=0; i<files.length; i++) 
+	    	{
+	    		if(files[i].isDirectory()) 
+	    		{
+	    			deleteDirectory(files[i]);
+	    		}
+	    		else 
+	    		{
+	    			files[i].delete();
+	    		}
+	    	}
+	    }
+
+	    return( path.delete() );
+	}
+
+	/**
+	 * This method unzips the cms war-file.
+	 */
+	
+	public static void unzipFile(File file, String targetFolder) throws Exception
+	{
+    	Enumeration entries;
+    	
+    	ZipFile zipFile = new ZipFile(file);
+    	
+      	entries = zipFile.entries();
+
+      	while(entries.hasMoreElements()) 
+      	{
+        	ZipEntry entry = (ZipEntry)entries.nextElement();
+
+	        if(entry.isDirectory()) 
+	        {
+	          	(new File(targetFolder + File.separator + entry.getName())).mkdir();
+	          	continue;
+	        }
+	
+	        //System.err.println("Extracting file: " + this.cmsTargetFolder + File.separator + entry.getName());
+	        copyInputStream(zipFile.getInputStream(entry), new BufferedOutputStream(new FileOutputStream(targetFolder + File.separator + entry.getName())));
+	    }
+	
+	    zipFile.close();
+	}
+	
+
+	/**
+	 * Just copies the files...
+	 */
+	
+	private static void copyInputStream(InputStream in, OutputStream out) throws IOException
+	{
+	    byte[] buffer = new byte[1024];
+    	int len;
+
+    	while((len = in.read(buffer)) >= 0)
+      		out.write(buffer, 0, len);
+
+    	in.close();
+    	out.close();    	
+  	}
 
 }

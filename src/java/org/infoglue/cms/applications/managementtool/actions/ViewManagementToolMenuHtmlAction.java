@@ -53,7 +53,8 @@ public class ViewManagementToolMenuHtmlAction extends TreeViewAbstractAction
 	 */
 	protected INodeSupplier getNodeSupplier() throws Exception
 	{
-    	if(this.getRepositoryId().intValue() > 0){
+    	if(this.repositoryId != null && this.repositoryId.intValue() > 0)
+    	{
 	    	this.repositoryVO = RepositoryController.getController().getRepositoryVOWithId(this.repositoryId);
 	    	this.setName(this.repositoryVO.getName());
     	}

@@ -208,20 +208,20 @@ public class RemoteUserServiceImpl extends RemoteInfoGlueService
 
 	            if(isPasswordChangeOperation)
 	            {
-	            	System.out.println("isPasswordChangeOperation");
-	            	System.out.println("userName:" + userName);
-	            	System.out.println("oldPassword:" + oldPassword);
-	            	System.out.println("password:" + password);
+	            	logger.info("isPasswordChangeOperation");
+	            	logger.info("userName:" + userName);
+	            	logger.info("oldPassword:" + oldPassword);
+	            	logger.info("password:" + password);
 	            	userControllerProxy.updateUserPassword(userName, oldPassword, password);
 	            }
 	            else if(isPasswordResetOperation)
 	            {
-	            	System.out.println("isPasswordResetOperation");
+	            	logger.info("isPasswordResetOperation");
 	            	userControllerProxy.updateUserPassword(userName);
 	            }
 	            else
 	            {
-	            	System.out.println("isUserUpdateOperation");
+	            	logger.info("isUserUpdateOperation");
 		            SystemUserVO systemUserVO = new SystemUserVO();
 		            systemUserVO.setEmail(email);
 		            systemUserVO.setFirstName(firstName);

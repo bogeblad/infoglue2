@@ -785,7 +785,7 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
         this.clearFileCache = clearFileCache;
     }
 
-    public List getSessionInfoBeanList()
+    public List getSessionInfoBeanList() throws Exception
     {
     	return CmsSessionContextListener.getSessionInfoBeanList();
     }

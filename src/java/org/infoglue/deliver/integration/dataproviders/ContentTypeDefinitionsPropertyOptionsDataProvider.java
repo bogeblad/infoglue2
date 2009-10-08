@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.exolab.castor.jdo.Database;
+import org.infoglue.cms.applications.databeans.GenericOptionDefinition;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
 import org.infoglue.cms.security.InfoGluePrincipal;
@@ -36,9 +37,9 @@ import org.infoglue.deliver.applications.databeans.ComponentPropertyOption;
 
 public class ContentTypeDefinitionsPropertyOptionsDataProvider implements PropertyOptionsDataProvider
 {
-	public List<ComponentPropertyOption> getPropertyOptions(Map parameters, InfoGluePrincipal principal, Database db) throws Exception
+	public List<GenericOptionDefinition> getOptions(Map parameters, String languageCode, InfoGluePrincipal principal, Database db) throws Exception
 	{
-		List<ComponentPropertyOption> options = new ArrayList<ComponentPropertyOption>();
+		List<GenericOptionDefinition> options = new ArrayList<GenericOptionDefinition>();
 		
 		List authorizedContentTypeDefinitionVOList = ContentTypeDefinitionController.getController().getSortedAuthorizedContentTypeDefinitionVOList(principal, db);
 		Iterator authorizedContentTypeDefinitionVOListIterator = authorizedContentTypeDefinitionVOList.iterator();

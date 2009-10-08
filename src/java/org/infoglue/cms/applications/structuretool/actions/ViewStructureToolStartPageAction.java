@@ -38,35 +38,13 @@ public class ViewStructureToolStartPageAction extends InfoGlueAbstractAction
 {
 	private static final long serialVersionUID = 1L;
 
-    private Integer repositoryId;
-    
     public String doExecute() throws Exception
     {
     	return "success";
     }
-          
-    public void setRepositoryId(Integer repositoryId)
+
+    public String doV3() throws Exception
     {
-    	this.repositoryId = repositoryId;
-    }
-    
-    public Integer getRootSiteNodeId()
-    {
-    	try
-    	{
-    		if(this.repositoryId != null && this.repositoryId.intValue() > -1)
-    		{
-    			SiteNodeVO siteNodeVO = SiteNodeController.getController().getRootSiteNodeVO(this.repositoryId);
-	    		if(siteNodeVO != null)
-	    			return siteNodeVO.getSiteNodeId();
-    		}
-    	}
-    	catch(Exception e)
-    	{
-    		e.printStackTrace();
-    	}
-    	
-    	return null;
-    }       
-         
+    	return "successV3";
+    }         
 }

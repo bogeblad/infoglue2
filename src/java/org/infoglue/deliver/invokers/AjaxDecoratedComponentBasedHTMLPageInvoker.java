@@ -1306,6 +1306,7 @@ public class AjaxDecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHT
 						String entity 	= binding.attributeValue("entity");
 						boolean isMultipleBinding 		= new Boolean(binding.attributeValue("multiple")).booleanValue();
 						boolean isAssetBinding 	  		= new Boolean(binding.attributeValue("assetBinding")).booleanValue();
+						String assetMask				= binding.attributeValue("assetMask");
 						boolean isPuffContentForPage 	= new Boolean(binding.attributeValue("isPuffContentForPage")).booleanValue();
 
 						property.setEntityClass(entity);
@@ -1315,6 +1316,7 @@ public class AjaxDecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHT
 						property.setValue(value);
 						property.setIsMultipleBinding(isMultipleBinding);
 						property.setIsAssetBinding(isAssetBinding);
+						property.setAssetMask(assetMask);
 						property.setIsPuffContentForPage(isPuffContentForPage);
 						List<ComponentBinding> bindings = getComponentPropertyBindings(componentId, name, this.getTemplateController());
 						property.setBindings(bindings);
@@ -1476,6 +1478,7 @@ public class AjaxDecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHT
 						String entity 					= binding.attributeValue("entity");
 						boolean isMultipleBinding 		= new Boolean(binding.attributeValue("multiple")).booleanValue();
 						boolean isAssetBinding 			= new Boolean(binding.attributeValue("assetBinding")).booleanValue();
+						String assetMask				= binding.attributeValue("assetMask");
 						boolean isPuffContentForPage 	= new Boolean(binding.attributeValue("isPuffContentForPage")).booleanValue();
 
 						property.setEntityClass(entity);
@@ -1485,6 +1488,7 @@ public class AjaxDecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHT
 						property.setValue(value);
 						property.setIsMultipleBinding(isMultipleBinding);
 						property.setIsAssetBinding(isAssetBinding);
+						property.setAssetMask(assetMask);
 						property.setIsPuffContentForPage(isPuffContentForPage);
 						List<ComponentBinding> bindings = getComponentPropertyBindings(componentId, name, templateController);
 						property.setBindings(bindings);

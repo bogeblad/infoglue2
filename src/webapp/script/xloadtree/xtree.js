@@ -58,142 +58,6 @@
 var IE  = (document.all)? true: false;
 var Mac = (navigator.cpuClass && navigator.cpuClass.match(/PPC/))? true: false;
   
-	//-----------------------------------------------------------------
-	// onmousedown handler.  Start drag op
-	//-----------------------------------------------------------------
-	function grabIt(e) 
-	{
-      	if(parent.document.inputForm && parent.document.inputForm.draggedComponentId)
-      	{
-			// -- event and target element references are browser-specific.  UGH
-	        var e      = e? e: window.event;
-	        var field  = IE? e.srcElement: e.target;   
-	        var target = getRect(field);	// target element position offsets
-			
-			modifiedId = field.toString().substring(16);
-	        if(modifiedId.indexOf(")") > -1)
-		        modifiedId = modifiedId.substring(0, modifiedId.indexOf(")"));
-	    
-	        parent.document.inputForm.draggedComponentId.value = modifiedId;
-	        
-	        var node = tree.getNodeWithMyId(modifiedId);
-	        if(modifiedId && modifiedId != "" && node.text && parent.document.inputForm)
-	        {
-		        parent.document.inputForm.entityId.value = modifiedId;
-		        parent.document.inputForm.path.value = node.text;
-	        }
-	        
-			drag = parent.document.getElementById("buffer");
-	        drag.style.visibility = "visible";
-	        var x = getX(e);
-	        var y = getY(e);
-	        newXPos = x; // - target.left - 16;
-	        newYPos = y; // - target.top;
-	        drag.style.left = newXPos + "px";
-	        drag.style.top = newYPos + "px";
-	        
-	        with (drag) 
-	        {
-	          style.visibility = "visible";
-	        }
-	
-	        document.onmousemove = dragIt;
-	        parent.document.onmousemove = parent.dragIt;
-	
-	        if (IE) {
-	          e.cancelBubble = true;
-	          e.returnValue  = false;
-	        } else {
-	          e.preventDefault();
-	        }
-			
-	        return false;
-      	}
-    }
-
-	function clearDrag(event)
-	{
-		//alert("Clearing drag...");
-		drag = parent.document.getElementById("buffer");
-		if(drag)
-		{
-	        drag.style.visibility = "hidden";
-	        document.onmousemove = null;
-	    	parent.clearDrag(event);
-    	}
-    }
-    
-    //-----------------------------------------------------------------
-    // onmousemove handler
-    //-----------------------------------------------------------------
-    function dragIt(e) 
-    {
-    	drag = parent.document.getElementById("buffer");
-    	if(drag && drag.style.visibility == "visible")
-    	{
-	    	//alert("e: " + e);
-	    	
-			var e = e? e: window.event;
-		    with (drag) 
-	        {
-		       	style.left = getX(e) + 1 + "px"; //- dx;
-		        style.top  = getY(e) + 1 + "px"; //- dy;
-	        }
-		}
-		
-        return false;
-    }
-
-	function getRect(obj) {
-        var rect = new Object();
-        rect.top = rect.left = 0;
-        var parentObj = obj;
-        while (parentObj != null) {
-          rect.top  += parentObj.offsetTop;
-          rect.left += parentObj.offsetLeft;
-          parentObj = parentObj.offsetParent;
-        }
-        rect.bottom = rect.top  + obj.offsetHeight;
-        rect.right  = rect.left + obj.offsetWidth;
-
-		//if()
-        return rect;
-      }
-
-	  //-----------------------------------------------------------------
-      // browser-independent routines for determining event position
-      //-----------------------------------------------------------------
-      function getX(e) {
-      	var x = 0;
-        if (IE) {
-          x = e.clientX;
-          if (!Mac) {
-            x += parent.document.documentElement.scrollLeft;
-            x += parent.document.body.scrollLeft + 5;
-		  }
-        } else {
-          x = e.pageX + parent.window.scrollX + 5;
-        }
-        return x
-      }
-
-      function getY(e) {
-        var y = 0;
-        if (IE) {
-          y = e.clientY;
-          if (!Mac) {
-            y += document.documentElement.scrollTop;
-            y += document.body.scrollTop;
-            y += 40;
-		  }
-        } else {
-          y = e.pageY + window.scrollY + 65;
-        }
-        return y;
-      }
-
-
-
 
 
 var webFXTreeConfig = {
@@ -832,10 +696,10 @@ WebFXTreeItem.prototype.toString = function (nItem, nItemCount) {
 	}
 		
 	var label = this.text.replace(/</g, '&lt;').replace(/>/g, '&gt;');
-	var str = "<div id=\"" + this.id + "\" ondblclick=\"webFXTreeHandler.toggle(this);\" class=\"webfx-tree-item\" onmousedown=\"grabIt(event);\" onkeydown=\"return webFXTreeHandler.keydown(this, event)\">";
+	var str = "<div id=\"" + this.id + "\" ondblclick=\"webFXTreeHandler.toggle(this);\" class=\"webfx-tree-item\" onkeydown=\"return webFXTreeHandler.keydown(this, event)\">";
 	str += indent;
 	str += "<img id=\"" + this.id + "-plus\" src=\"" + ((this.folder)?((this.open)?((this.parentNode._last)?webFXTreeConfig.lMinusIcon:webFXTreeConfig.tMinusIcon):((this.parentNode._last)?webFXTreeConfig.lPlusIcon:webFXTreeConfig.tPlusIcon)):((this.parentNode._last)?webFXTreeConfig.lIcon:webFXTreeConfig.tIcon)) + "\" onclick=\"webFXTreeHandler.toggle(this);\">"
-	str += "<img id=\"" + this.id + "-icon\" class=\"webfx-tree-icon\" src=\"" + ((webFXTreeHandler.behavior == 'classic' && this.open)?this.openIcon:this.icon) + "\" onclick=\"javascript:onTreeItemSelect('" + this.id + "');" + this.action + "\"><a isContainer=\"" + isContainer + "\" entityId=\"" + this.myId + "\" href=\"javascript:void(" + this.myId + ");\" id=\"" + this.id + "-anchor\" onclick=\"javascript:onTreeItemSelect('" + this.id + "');" + this.action + "\" onfocus=\"webFXTreeHandler.focus(this);\" style=\"" + styleInfo + "\">" + label + stateInfo + "</a></div>";
+	str += "<img id=\"" + this.id + "-icon\" class=\"webfx-tree-icon\" src=\"" + ((webFXTreeHandler.behavior == 'classic' && this.open)?this.openIcon:this.icon) + "\" onclick=\"javascript:onTreeItemSelect('" + this.id + "');" + this.action + "\"><a isContainer=\"" + isContainer + "\" entityId=\"" + this.myId + "\" href=\"javascript:void(" + this.myId + ");\" id=\"" + this.id + "-anchor\" oncontextmenu=\"return showContextMenu(" + this.myId + ", event)\" onclick=\"javascript:onTreeItemSelect('" + this.id + "');" + this.action + "\" onfocus=\"webFXTreeHandler.focus(this);\" style=\"" + styleInfo + "\">" + label + stateInfo + "</a></div>";
 	str += "<div id=\"" + this.id + "-cont\" class=\"webfx-tree-container\" style=\"display: " + ((this.open)?'block':'none') + ";\">";
 	for (var i = 0; i < this.childNodes.length; i++) {
 		str += this.childNodes[i].toString(i,this.childNodes.length);

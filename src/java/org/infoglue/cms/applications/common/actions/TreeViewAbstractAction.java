@@ -2,6 +2,8 @@ package org.infoglue.cms.applications.common.actions;
 
 import java.util.Collection;
 
+import org.infoglue.cms.controllers.kernel.impl.simple.RepositoryController;
+
 import com.frovi.ss.Tree.INodeSupplier;
 import com.frovi.ss.Tree.MakeTree;
 
@@ -32,20 +34,34 @@ public abstract class TreeViewAbstractAction extends InfoGlueAbstractAction
 
     public String doExecute() throws Exception
     {
-    	// Fix key
-		setExp(getExp().replaceAll(getRkey(), "") + getAkey());
-		
-		// Set nodes
-        setNodes(this.initialize(getExp()));
-    	getResponse().setBufferSize(0);
-        
-    	getResponse().setHeader("Cache-Control","no-cache"); 
-    	getResponse().setHeader("Pragma","no-cache");
-    	getResponse().setDateHeader ("Expires", 0);
-	   
-        // return
+    	try
+    	{
+	    	// Fix key
+			setExp(getExp().replaceAll(getRkey(), "") + getAkey());
+			
+			// Set nodes
+	        setNodes(this.initialize(getExp()));
+	    	getResponse().setBufferSize(0);
+	        
+	    	getResponse().setHeader("Cache-Control","no-cache"); 
+	    	getResponse().setHeader("Pragma","no-cache");
+	    	getResponse().setDateHeader ("Expires", 0);
+    	}
+    	catch (Exception e) 
+    	{
+    		e.printStackTrace();
+		}
+
         return "success";
     }
+    
+    public String doV3() throws Exception
+    {
+    	doExecute();
+    	
+        return "successV3";
+    }
+
 
 	/**
 	 * Sets the nodes.

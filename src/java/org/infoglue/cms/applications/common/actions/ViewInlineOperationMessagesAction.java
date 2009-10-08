@@ -95,7 +95,7 @@ public class ViewInlineOperationMessagesAction extends InfoGlueAbstractAction
 
 		String disableCloseLink = getActionExtraData(userSessionKey, "disableCloseLink");
 		if(disableCloseLink == null || !disableCloseLink.equals("true"))
-			actionLinks.add(new LinkBean("closeDialog", getLocalizedString(getLocale(), "tool.common.closeDialogLinkText"), getLocalizedString(getLocale(), "tool.common.closeDialogLinkTitle"), getLocalizedString(getLocale(), "tool.common.closeDialogLinkTitle"), "javascript:parent.closeDialog();", true, ""));
+			actionLinks.add(new LinkBean("closeDialog", getLocalizedString(getLocale(), "tool.common.closeDialogLinkText"), getLocalizedString(getLocale(), "tool.common.closeDialogLinkTitle"), getLocalizedString(getLocale(), "tool.common.closeDialogLinkTitle"), "javascript:closeDialog();", true, ""));
 
 		//-----------------------------------------------------------
 		// Add any actionLinks submitted in the request

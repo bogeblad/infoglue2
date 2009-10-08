@@ -26,7 +26,9 @@ package org.infoglue.deliver.controllers.kernel.impl.simple;
 import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.applications.common.VisualFormatter;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeController;
+import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.structure.SiteNode;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
@@ -53,8 +55,17 @@ public class BasicURLComposer extends URLComposer
     {
     }
     
-    public String composeDigitalAssetUrl(String dnsName, Integer siteNodeId, Integer contentId, Integer languageId, String assetKey, DeliveryContext deliveryContext)
+    public String composeDigitalAssetUrl(String dnsName, Integer siteNodeId, Integer contentId, Integer languageId, String assetKey, DeliveryContext deliveryContext, Database db) throws Exception
     {
+    	ContentVO contentVO = ContentController.getContentController().getContentVOWithId(contentId, db);
+    	String repositoryUseAccessBasedProtocolRedirects = RepositoryDeliveryController.getRepositoryDeliveryController().getExtraPropertyValue(contentVO.getRepositoryId(), "useAccessBasedProtocolRedirects");
+		if(repositoryUseAccessBasedProtocolRedirects == null || repositoryUseAccessBasedProtocolRedirects.equals("") || !repositoryUseAccessBasedProtocolRedirects.equals("true") || !repositoryUseAccessBasedProtocolRedirects.equals("false"))
+			repositoryUseAccessBasedProtocolRedirects = CmsPropertyHandler.getUseAccessBasedProtocolRedirects();
+    	
+		String protectedProtocolName = CmsPropertyHandler.getProtectedProtocolName();
+		String protectedProtocolPort = CmsPropertyHandler.getProtectedProtocolPort();
+		String unprotectedProtocolPort = CmsPropertyHandler.getUnprotectedProtocolPort();
+
         String disableEmptyUrls = CmsPropertyHandler.getDisableEmptyUrls();
         if(siteNodeId == null || contentId == null || languageId == null || assetKey == null)
             return "";
@@ -69,7 +80,31 @@ public class BasicURLComposer extends URLComposer
         if(useDNSNameInUrls == null || useDNSNameInUrls.equalsIgnoreCase(""))
             useDNSNameInUrls = "false";
 
-        if(enableNiceURI.equalsIgnoreCase("true") || useDNSNameInUrls.equalsIgnoreCase("false"))
+        if(repositoryUseAccessBasedProtocolRedirects.equalsIgnoreCase("true"))
+        {
+	        StringBuffer sb = new StringBuffer(256);
+	        
+	        String originalUrl = deliveryContext.getHttpServletRequest().getRequestURL().toString();
+            int indexOfProtocol = originalUrl.indexOf("://");
+            int indexFirstSlash = originalUrl.indexOf("/", indexOfProtocol + 3);
+            String base = protectedProtocolName + originalUrl.substring(indexOfProtocol, indexFirstSlash);
+            if(protectedProtocolPort.length() > 0)
+            	base = base.replaceFirst(unprotectedProtocolPort, protectedProtocolPort);
+            
+            sb.append(base);
+	        
+	        String servletContext = CmsPropertyHandler.getServletContext();
+	        
+	        sb.append(servletContext);
+	        
+	        if(!sb.toString().endsWith("/"))
+	        	sb.append("/");
+	        
+	        sb.append("DownloadProtectedAsset.action?siteNodeId=" + siteNodeId + "&contentId=" + contentId + "&languageId=" + languageId + "&assetKey=" + assetKey);
+	        
+	        assetUrl = sb.toString();    
+        }
+        else if(enableNiceURI.equalsIgnoreCase("true") || useDNSNameInUrls.equalsIgnoreCase("false"))
         {
 	        StringBuffer sb = new StringBuffer(256);
 	        
@@ -266,6 +301,8 @@ public class BasicURLComposer extends URLComposer
     
     public String composePageUrl(Database db, InfoGluePrincipal infoGluePrincipal, Integer siteNodeId, Integer languageId, Integer contentId, DeliveryContext deliveryContext) throws SystemException
     {
+    	String url = null;
+    	
     	if(siteNodeId == null || siteNodeId.intValue() == -1)
     	{
     		logger.warn("composePageUrl was called with siteNodeId:" + siteNodeId + " from the page with key: " + deliveryContext.getPageKey() + " (siteNodeId=" + deliveryContext.getSiteNodeId() + ")");
@@ -289,6 +326,62 @@ public class BasicURLComposer extends URLComposer
         if(useDNSNameInUrls == null || useDNSNameInUrls.equalsIgnoreCase(""))
             useDNSNameInUrls = "false";
 
+        boolean makeAccessBasedProtocolAdjustments = false;
+        boolean makeAccessBasedProtocolAdjustmentsIntoProtected = false;
+
+		String unprotectedProtocolName = CmsPropertyHandler.getUnprotectedProtocolName();
+		String unprotectedProtocolPort = CmsPropertyHandler.getUnprotectedProtocolPort();
+		String protectedProtocolName = CmsPropertyHandler.getProtectedProtocolName();
+		String protectedProtocolPort = CmsPropertyHandler.getProtectedProtocolPort();
+		if(logger.isInfoEnabled())
+		{
+			logger.info("unprotectedProtocolName:" + unprotectedProtocolName);
+			logger.info("protectedProtocolName:" + protectedProtocolName);
+			logger.info("unprotectedProtocolPort:" + unprotectedProtocolPort);
+			logger.info("protectedProtocolPort:" + protectedProtocolPort);
+		}
+
+        try
+		{
+	        SiteNode siteNode = SiteNodeController.getSiteNodeWithId(siteNodeId, db, true);
+	
+	        String repositoryUseAccessBasedProtocolRedirects = RepositoryDeliveryController.getRepositoryDeliveryController().getExtraPropertyValue(siteNode.getValueObject().getRepositoryId(), "useAccessBasedProtocolRedirects");
+			if(repositoryUseAccessBasedProtocolRedirects == null || repositoryUseAccessBasedProtocolRedirects.equals("") || !repositoryUseAccessBasedProtocolRedirects.equals("true") || !repositoryUseAccessBasedProtocolRedirects.equals("false"))
+				repositoryUseAccessBasedProtocolRedirects = CmsPropertyHandler.getUseAccessBasedProtocolRedirects();
+			
+			if(repositoryUseAccessBasedProtocolRedirects.equalsIgnoreCase("true") && CmsPropertyHandler.getOperatingMode().equals("3"))
+			{
+				NodeDeliveryController nodeDeliveryController = NodeDeliveryController.getNodeDeliveryController(siteNodeId, languageId, contentId);
+		    	Integer protectedSiteNodeVersionId = nodeDeliveryController.getProtectedSiteNodeVersionId(db, siteNodeId);
+		    	String originalFullURL = deliveryContext.getOriginalFullURL();
+		    	
+		    	if(protectedSiteNodeVersionId != null)
+				{
+					if(originalFullURL.indexOf(unprotectedProtocolName + "://") > -1)
+					{	
+						useDNSNameInUrls = "true";
+						//deliveryContext.setUseFullUrl(true);
+						makeAccessBasedProtocolAdjustments = true;	
+						makeAccessBasedProtocolAdjustmentsIntoProtected = true;
+					}
+				}
+				else
+				{
+					if(originalFullURL.indexOf(protectedProtocolName + "://") > -1)
+					{	
+						useDNSNameInUrls = "true";
+						//deliveryContext.setUseFullUrl(true);
+						makeAccessBasedProtocolAdjustments = true;	
+						makeAccessBasedProtocolAdjustmentsIntoProtected = false;
+					}
+				}
+			}
+		}
+		catch (Exception e) 
+		{
+			logger.error("Error checking up if we should switch protocol:" + e.getMessage(), e);
+		}
+        
         if(enableNiceURI.equalsIgnoreCase("true") && deliveryContext.getHttpServletRequest().getRequestURI().indexOf("!renderDecoratedPage") == -1 && !deliveryContext.getDisableNiceUri())
         {
             String context = CmsPropertyHandler.getServletContext();
@@ -417,7 +510,7 @@ public class BasicURLComposer extends URLComposer
 
             StringBuffer sb = new StringBuffer(256);
 
-            if(deliveryContext.getUseFullUrl())
+            if(deliveryContext.getUseFullUrl() || makeAccessBasedProtocolAdjustments)
 	        {
 		        String originalUrl = deliveryContext.getHttpServletRequest().getRequestURL().toString();
 	            int indexOfProtocol = originalUrl.indexOf("://");
@@ -490,13 +583,12 @@ public class BasicURLComposer extends URLComposer
 	                sb.append("languageId=").append(String.valueOf(languageId));
 	            }
 
-	            return (!sb.toString().equals("") ? sb.toString() : "/");
+	            url = (!sb.toString().equals("") ? sb.toString() : "/");
 	        } 
 	        catch (Exception e) 
 			{
 	            e.printStackTrace();
 	        }
-	        return null;
         }
         else
         {           
@@ -553,7 +645,7 @@ public class BasicURLComposer extends URLComposer
 
 	            String context = CmsPropertyHandler.getServletContext();
 
-	            String url = dnsName + context + "/" + CmsPropertyHandler.getApplicationBaseAction() + "?" + arguments;
+	            url = dnsName + context + "/" + CmsPropertyHandler.getApplicationBaseAction() + "?" + arguments;
 
 				if(deliveryContext.getHttpServletRequest().getRequestURI().indexOf("!renderDecoratedPage") > -1)
 				{
@@ -563,15 +655,11 @@ public class BasicURLComposer extends URLComposer
 					
 					url = componentRendererUrl + CmsPropertyHandler.getComponentRendererAction() + "?" + arguments;
 				}
-				
-	            //getLogger().info("url:" + url);
-	            
-	            return url;
             }
             else
             {
                 StringBuffer sb = new StringBuffer(256);
-                if(deliveryContext.getUseFullUrl())
+                if(deliveryContext.getUseFullUrl() || makeAccessBasedProtocolAdjustments)
     	        {
     		        String originalUrl = deliveryContext.getHttpServletRequest().getRequestURL().toString();
     	            int indexOfProtocol = originalUrl.indexOf("://");
@@ -601,11 +689,29 @@ public class BasicURLComposer extends URLComposer
 				{
 				    sb.append(servletContext + "/" + CmsPropertyHandler.getApplicationBaseAction() + "?" + arguments);
 		        }
-	            //getLogger().info("url:" + url);
-
-	            return sb.toString();            
+				
+	            url = sb.toString();            
             }
         }
+        
+        logger.info("url:" + url);
+        if(makeAccessBasedProtocolAdjustments)
+        {
+        	if(logger.isInfoEnabled())
+        	{
+        		logger.info("unprotectedProtocolName:" + unprotectedProtocolName);
+        		logger.info("protectedProtocolName:" + protectedProtocolName);
+        		logger.info("unprotectedProtocolPort:" + unprotectedProtocolPort);
+        		logger.info("protectedProtocolPort:" + protectedProtocolPort);
+			}
+			if(makeAccessBasedProtocolAdjustmentsIntoProtected)
+				url = url.replaceFirst(unprotectedProtocolName + "://", protectedProtocolName + "://").replaceFirst(unprotectedProtocolPort, protectedProtocolPort);
+			else
+				url = url.replaceFirst(protectedProtocolName + "://", unprotectedProtocolName + "://").replaceFirst(protectedProtocolPort, unprotectedProtocolPort);
+			logger.info("Adjusted url:" + url);
+        }
+        
+        return url;
     }
 
     public String composePageUrlAfterLanguageChange(Database db, InfoGluePrincipal infoGluePrincipal, Integer siteNodeId, Integer languageId, Integer contentId, DeliveryContext deliveryContext) throws SystemException

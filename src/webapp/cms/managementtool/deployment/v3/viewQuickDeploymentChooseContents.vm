@@ -88,7 +88,7 @@
 
 			diffDivElement.innerHTML = "<p style='background-color: #CCEEff; margin: 0px; padding: 0px; font-family: courier new, courier, serif; font-size: 8pt;'>" + ds + "</p>";
 		  	
-			element.innerHTML = "<ins>" + diffConclusionArray[0] + " additions</ins>, <del>" + diffConclusionArray[1] + " removals</del>";
+			element.innerHTML = "<ins>" + diffConclusionArray[0] + " $ui.getString("tool.managementtool.deploymentQuick.additionsLabel")</ins>, <del>" + diffConclusionArray[1] + " $ui.getString("tool.managementtool.deploymentQuick.removalsLabel")</del>";
 		} 
 				
 		function countChanges(a)
@@ -117,7 +117,11 @@
 	
 		function submitForm()
 		{
-			document.editForm.submit();
+			var $boxes = $('input[type=checkbox]'); 
+			if($boxes.filter(':checked').length < 1)
+				alert("$ui.getString("tool.managementtool.deploymentQuick.mustMarkAtLeastOneLabel")");
+			else
+				document.editForm.submit();
 		}
 		
 		$(document).ready(function(){
@@ -176,7 +180,6 @@
 	
 			<p>$ui.getString("tool.managementtool.deployment.chooseEntitiesIntroduction")</p>
 	
-			##<h4 style="background-color: ">Compared components</h4>
 			<table cellpadding="0" cellspacing="0" border="0" width="100%">
 			
 			#set($indexMissingContents = 0)
@@ -192,8 +195,8 @@
 				
 				#if(!$deviatingContent.remoteVersion)
 				  <tr $class>
-					<td colspan="3">
-						<input type="checkbox" name="missingContentId" value="$deviatingContent.localVersion.id"/> 
+					<td style="padding-left: 16px" colspan="3">
+						<input type="checkbox" id="missingContentId" name="missingContentId" value="$deviatingContent.localVersion.id"/> 
 						Missing remote version of $deviatingContent.localVersion.name <br/> ($deviatingContent.localVersion.fullPath)
 					<td width="20">&nbsp;</td>
 				  </tr>
@@ -221,14 +224,14 @@
 				      <tr $class>
 						<td style="padding-left: 16px">
 							<input type="hidden" name="deviatingRemoteVersionId_${deviatingContent.localVersion.id}" value="$deviatingContent.remoteVersion.id"/>
-							<input type="checkbox" name="deviatingContentId" value="$deviatingContent.localVersion.id"/> 
-							$deviatingContent.localVersion.name	
+							<input type="checkbox" id="deviatingContentId" name="deviatingContentId" value="$deviatingContent.localVersion.id"/> 
+							$deviatingContent.localVersion.name
 						</td>
 						<td>
 							<div style="width: 300px; display: inline;" id="summaryDiv${deviatingContent.localVersion.id}"></div>
 						</td>
 						<td style="padding-right: 16px" width="20">
-							<a href="#" onclick="openInlineDiv('#TB_inline?inlineId=diffDiv${deviatingContent.localVersion.id}', 768, 980, false, false, 'Diff view of remote and local component');"><img src="images/diff.gif" alt="Compare" border="0"/></a>
+							<a href="#" title="$ui.getString("tool.managementtool.deploymentQuick.compareLabel")" onclick="openInlineDiv('#TB_inline?inlineId=diffDiv${deviatingContent.localVersion.id}', 768, 980, false, false, '$ui.getString("tool.managementtool.deploymentQuick.diffViewHeaderLabel")');"><img src="images/diff.gif" alt="$ui.getString("tool.managementtool.deploymentQuick.compareLabel")" border="0"/></a>
 
 							<textarea style="display: none;" id="text1$deviatingContent.localVersion.id">$value1Clean</textarea>
 							<textarea style="display: none;" id="text2$deviatingContent.localVersion.id">$value2Clean</textarea>
@@ -242,7 +245,7 @@
 							$deviatingContent.localVersion.name	
 						</td>
 						<td>
-							Local and remote versions match
+							$ui.getString("tool.managementtool.deploymentQuick.localRemoteMatchLabel")
 						</td>
 						<td style="padding-right: 16px" width="20">
 							&nbsp;
@@ -254,7 +257,7 @@
 				#set($indexMissingContents = $indexMissingContents + 1)
 			#end
 			#if($deviatingContents.size() == 0)
-				<tr><td colspan="3">No missing contents</td></tr>
+				<tr><td colspan="3">$ui.getString("tool.managementtool.deploymentQuick.noMissingComponentsLabel")</td></tr>
 			#end
 			</table>
 

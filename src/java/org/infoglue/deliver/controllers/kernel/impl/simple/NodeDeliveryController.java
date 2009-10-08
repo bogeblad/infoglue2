@@ -765,8 +765,12 @@ public class NodeDeliveryController extends BaseDeliveryController
 	        	        sessionAttribute = pageKey.substring(sessionAttributeStartIndex + 9, sessionAttributeEndIndex);
 	        	    else
 	        	        sessionAttribute = pageKey.substring(sessionAttributeStartIndex + 9);
-
-	        	    pageKey = pageKey.replaceAll("\\$session." + sessionAttribute, "" + session.getAttribute(sessionAttribute));    	    
+	        	    
+	        	    Object sessionAttributeValue = session.getAttribute(sessionAttribute);
+	        	    if(sessionAttributeValue == null && sessionAttribute.equalsIgnoreCase("principal"))
+	        	    	sessionAttributeValue = session.getAttribute("infogluePrincipal");
+	        	    
+	        	    pageKey = pageKey.replaceAll("\\$session." + sessionAttribute, "" + sessionAttributeValue);    	    
 	    	    
 	        	    sessionAttributeStartIndex = pageKey.indexOf("$session.");
 	    	    }

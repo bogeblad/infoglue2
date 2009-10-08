@@ -1,4 +1,4 @@
-<!-- $Id: actions.xml,v 1.84 2009/07/26 22:38:08 mattias Exp $ -->
+<!-- $Id: actions.xml,v 1.85 2009/10/08 21:40:26 mattias Exp $ -->
 <actions>
 
 	<!-- MySettings -->
@@ -106,6 +106,7 @@
 	<!-- CMS TOOL FRAMES -->
 	<action name="org.infoglue.cms.applications.cmstool.actions.ViewCMSToolAction" alias="ViewCMSTool">
 		<view name="success">/cms/cmstool/viewCMSTool.vm</view>
+		<view name="successDefault">org.infoglue.cms.applications.common.actions.ExtendedRedirect.action?url=Admin.action</view>
 		<view name="loginComplete">/cms/common/loginComplete.vm</view>
 	</action>
 	<action name="org.infoglue.cms.applications.cmstool.actions.ViewCMSToolHeaderAction" alias="ViewCMSToolHeader">
@@ -115,12 +116,26 @@
 		<view name="success">/cms/cmstool/viewCMSToolFooter.vm</view>
 	</action>
 
-	<!-- CMS VERSION 3 TOOL FRAMES -->
+	<!-- CMS VERSION 3 TOOL IFRAMES CLASSIC -->
 	<action name="org.infoglue.cms.applications.cmstool.actions.ViewCMSAction" alias="ViewCMS">
 		<view name="success">/cms/cmstool/viewCMS.vm</view>
+		<view name="successDefault">org.infoglue.cms.applications.common.actions.ExtendedRedirect.action?url=Admin.action</view>
+	</action>
+	<!-- CMS VERSION 3 TOOL IFRAMES MODERN-->
+	<action name="org.infoglue.cms.applications.cmstool.actions.AdminAction" alias="Admin">
+		<view name="success">/cms/cmstool/admin.vm</view>
+		<view name="successClassic">org.infoglue.cms.applications.common.actions.ExtendedRedirect.action?url=ViewCMS.action</view>
+	</action>
+	<action name="org.infoglue.cms.applications.common.actions.ViewToolbarButtonsAction" alias="ViewToolbarButtons">
+		<view name="success">/cms/common/viewToolbarButtons.vm</view>
 	</action>
 
 	<!-- CMS MY DESKTOP TOOL FRAMES -->
+	<action name="org.infoglue.cms.applications.mydesktoptool.actions.ViewMyDesktopAction" alias="ViewMyDesktop">
+		<view name="success">/cms/mydesktoptool/v3/viewMyDesktop.vm</view>
+		<view name="ongoing">/cms/mydesktoptool/v3/viewOngoingWorkflows.vm</view>
+		<view name="error">/cms/mydesktoptool/error.vm</view>
+	</action>
 	<action name="org.infoglue.cms.applications.mydesktoptool.actions.ViewMyDesktopToolAction" alias="ViewMyDesktopTool">
 		<view name="success">/cms/mydesktoptool/viewMyDesktopTool.vm</view>
 		<view name="error">/cms/mydesktoptool/error.vm</view>
@@ -130,7 +145,7 @@
 		<view name="error">/cms/mydesktoptool/error.vm</view>
 	</action>
     <action name="org.infoglue.cms.applications.mydesktoptool.actions.ViewMyDesktopToolMenuAction" alias="ViewMyDesktopToolMenu">
-    	<view name="success">/cms/mydesktoptool/viewMyDesktopToolMenu.vm</view>
+    	<view name="success">/cms/mydesktoptool/v3/viewMyDesktopToolMenu.vm</view>
         <view name="error">/cms/mydesktoptool/error.vm</view>
     </action>
 	<action name="org.infoglue.cms.applications.mydesktoptool.actions.ViewMyDesktopToolToolBarAction" alias="ViewMyDesktopToolToolBar">
@@ -166,6 +181,7 @@
 	</action>
 	<action name="org.infoglue.cms.applications.managementtool.actions.ViewManagementToolMenuHtmlAction" alias="ViewManagementToolMenu">
 		<view name="success">/cms/managementtool/viewManagementToolMenuHTML.vm</view>
+		<view name="successV3">/cms/managementtool/v3/viewManagementToolMenuHTML.vm</view>
 		<view name="error">/cms/managementtool/error.vm</view>
 	</action>
 	<action name="org.infoglue.cms.applications.managementtool.actions.ViewManagementToolToolBarAction" alias="ViewManagementToolToolBar">
@@ -174,6 +190,7 @@
 	</action>
 	<action name="org.infoglue.cms.applications.managementtool.actions.ViewManagementToolStartPageAction" alias="ViewManagementToolStartPage">
 		<view name="success">/cms/managementtool/viewManagementToolStartPage.vm</view>
+		<view name="successV3">/cms/managementtool/v3/viewManagementToolStartPage.vm</view>
 		<view name="error">/cms/managementtool/error.vm</view>
 	</action>
 
@@ -197,6 +214,7 @@
 	</action>
 	<action name="org.infoglue.cms.applications.publishingtool.actions.ViewPublishingToolStartPageAction" alias="ViewPublishingToolStartPage">
 		<view name="success">/cms/publishingtool/viewPublishingToolStartPage.vm</view>
+		<view name="successV3">/cms/publishingtool/v3/viewPublishingToolStartPage.vm</view>
 		<view name="error">/cms/publishingtool/error.vm</view>
 	</action>
 
@@ -212,6 +230,7 @@
 	</action>
 	<action name="org.infoglue.cms.applications.contenttool.actions.ViewContentToolMenuAction" alias="ViewContentToolMenu">
 		<view name="success">/cms/contenttool/viewContentToolMenu.vm</view>
+		<view name="successV3">/cms/contenttool/v3/viewContentToolMenu.vm</view>
 		<view name="error">/cms/contenttool/error.vm</view>
 	</action>
 	<action name="org.infoglue.cms.applications.contenttool.actions.ViewContentToolMenuHtmlAction" alias="ViewContentToolMenuHtml">
@@ -220,6 +239,7 @@
 	</action>
 	<action name="org.infoglue.cms.applications.contenttool.actions.ViewContentToolMenuHtmlAction" alias="ViewContentHtmlTree">
 		<view name="success">/cms/contenttool/viewHtmlTree.vm</view>
+		<view name="successV3">/cms/contenttool/v3/viewHtmlTree.vm</view>
 		<view name="bindingView">/cms/contenttool/viewHtmlTreeForBinding.vm</view>
 		<view name="bindingViewV3">/cms/contenttool/v3/viewHtmlTreeForBinding.vm</view>
 		<view name="error">/cms/contenttool/error.vm</view>
@@ -241,6 +261,7 @@
 	</action>
 	<action name="org.infoglue.cms.applications.contenttool.actions.ViewContentToolStartPageAction" alias="ViewContentToolStartPage">
 		<view name="success">/cms/contenttool/viewContentToolStartPage.vm</view>
+		<view name="successV3">/cms/contenttool/v3/viewContentToolStartPage.vm</view>
 		<view name="error">/cms/contenttool/error.vm</view>
 	</action>
 
@@ -263,16 +284,19 @@
 	</action>
 	<action name="org.infoglue.cms.applications.structuretool.actions.ViewStructureToolMenuAction" alias="ViewStructureToolMenu">
 		<view name="success">/cms/structuretool/viewStructureToolMenu.vm</view>
+		<view name="successV3">/cms/structuretool/v3/viewStructureToolMenu.vm</view>
 		<view name="error">/cms/structuretool/error.vm</view>
 	</action>
 	<action name="org.infoglue.cms.applications.structuretool.actions.ViewStructureToolMenuHtmlAction" alias="ViewStructureToolMenuHtml">
 		<view name="success">/cms/structuretool/viewStructureToolMenuHTML.vm</view>
+		<view name="successV3">/cms/structuretool/v3/viewStructureToolMenuHTML.vm</view>
 		<view name="bindingView">/cms/structuretool/viewHtmlTreeForBinding.vm</view>
 		<view name="bindingViewV3">/cms/structuretool/v3/viewHtmlTreeForBinding.vm</view>
 		<view name="error">/cms/structuretool/error.vm</view>
 	</action>
 	<action name="org.infoglue.cms.applications.structuretool.actions.ViewStructureToolMenuHtmlAction" alias="ViewStructureHtmlTree">
 		<view name="success">/cms/structuretool/viewHtmlTree.vm</view>
+		<view name="successV3">/cms/structuretool/v3/viewHtmlTree.vm</view>
 		<view name="bindingView">/cms/structuretool/viewHtmlTreeForBinding.vm</view>
 		<view name="error">/cms/structuretool/error.vm</view>
 	</action>
@@ -282,10 +306,19 @@
 	</action>
 	<action name="org.infoglue.cms.applications.structuretool.actions.ViewStructureToolStartPageAction" alias="ViewStructureToolStartPage">
 		<view name="success">/cms/structuretool/viewStructureToolStartPage.vm</view>
+		<view name="successV3">/cms/structuretool/v3/viewStructureToolStartPage.vm</view>
 		<view name="error">/cms/structuretool/error.vm</view>
 	</action>
 	<action name="org.infoglue.cms.applications.structuretool.actions.SimpleStructureXmlAction" alias="SimpleStructureXml">
 		<view name="error">/cms/contenttool/error.vm</view>
+	</action>
+	<action name="org.infoglue.cms.applications.structuretool.actions.ViewStructureToolAjaxServicesAction" alias="ViewStructureToolAjaxServices">
+		<view name="successTreeContextMenu">/cms/structuretool/v3/viewStructureToolContextMenu.vm</view>
+		<view name="error">/cms/structuretool/error.vm</view>
+	</action>
+	<action name="org.infoglue.cms.applications.structuretool.actions.ViewComponentPaletteAction" alias="ViewComponentPalette">
+		<view name="success">/cms/structuretool/v3/viewComponentPalette.vm</view>
+		<view name="error">/cms/structuretool/error.vm</view>
 	</action>
 
 
@@ -323,6 +356,7 @@
 	</action>
 	<action name="org.infoglue.cms.applications.managementtool.actions.CreateRepositoryAction" alias="CreateRepository">
 		<view name="input">/cms/managementtool/createRepository.vm</view>
+		<view name="inputV3">/cms/managementtool/v3/createRepository.vm</view>
 		<view name="success">ViewRepository.action</view>
 		<view name="error">/cms/managementtool/error.vm</view>
 	</action>
@@ -862,7 +896,9 @@
 	</action>
 	<action name="org.infoglue.cms.applications.contenttool.actions.MoveContentAction" alias="MoveContent">
 		<view name="input">/cms/contenttool/showConstraintException.vm</view>
+		<view name="inputV3">/cms/contenttool/v3/viewContentTreeForMove.vm</view>
 		<view name="success">ViewContent.action?stay=true</view>
+		<view name="successV3">ViewInlineOperationMessages</view>
 		<view name="error">/cms/contenttool/error.vm</view>
 		<view name="accessDenied">/cms/contenttool/viewConstraintException.vm</view>
 	</action>
@@ -894,12 +930,13 @@
 		<view name="browser">/cms/contenttool/viewAssetBrowser.vm</view>
 		<view name="error">/cms/contenttool/error.vm</view>
 	</action>	
-	
+
 	<!-- ContentVersion -->
 	<action name="org.infoglue.cms.applications.contenttool.actions.ViewContentVersionAction" alias="ViewContentVersion">
 		<view name="success">/cms/contenttool/viewContentVersion.vm</view>
 		<view name="standalone">/cms/contenttool/viewContentVersionStandalone.vm</view>
 		<view name="successForFCKEditor">/cms/contenttool/viewContentVersionForFCKEditor.vm</view>
+		<view name="successForFCKEditorV3">/cms/contenttool/v3/viewContentVersionForFCKEditor.vm</view>
 		<view name="standaloneForFCKEditor">/cms/contenttool/v3/viewContentVersionStandaloneForFCKEditor.vm</view>
 		<view name="background">/cms/contenttool/viewContentVersionBackground.vm</view>
 		<view name="viewAssetsDialog">/cms/contenttool/viewContentAssets.vm</view>
@@ -907,6 +944,8 @@
 		<view name="viewAssetsDialogForFCKEditorV3">/cms/contenttool/v3/viewContentAssetsForFCKEditor.vm</view>
 		<view name="viewAssetBrowserForFCKEditorV3">/cms/contenttool/v3/viewAssetBrowserForFCKEditor.vm</view>
 		<view name="viewSmallAssetBrowserForFCKEditorV3">/cms/contenttool/v3/viewSmallAssetBrowserForFCKEditor.vm</view>
+		<view name="viewAssetBrowserForComponentBindingV3">/cms/contenttool/v3/viewAssetBrowserForComponentBinding.vm</view>
+		<view name="viewAssetBrowserForMultipleComponentBindingV3">/cms/contenttool/v3/viewAssetBrowserForMultipleComponentBinding.vm</view>
 		<view name="viewAssets">/cms/contenttool/viewContentVersionAssets.vm</view>
 		<view name="viewAssetsForFCKEditor">/cms/contenttool/viewContentVersionAssetsForFCKEditor.vm</view>
 		<view name="viewAssetsForFCKEditorV3">/cms/contenttool/v3/viewContentVersionAssetsForFCKEditor.vm</view>
@@ -932,6 +971,7 @@
 		<view name="input">/cms/contenttool/viewContentVersionForFCKEditor.vm</view>
 		<view name="inputStandalone">/cms/contenttool/v3/viewContentVersionStandaloneForFCKEditor.vm</view>
 		<view name="success">ExtendedRedirect.action?url=ViewContentVersion.action#contentId#languageId#currentEditorId#concurrentModification#oldModifiedDateTime</view>
+		<view name="successV3">ExtendedRedirect.action?url=ViewContentVersion!V3.action#contentVersionId#contentId#languageId#attributeName#currentEditorId#concurrentModification#oldModifiedDateTime#closeOnLoad#publishOnLoad</view>
 		<!--<view name="success">ViewContentVersion.action</view>-->
 		<view name="background">ViewContentVersion!background.action</view>
 		<view name="standalone">ExtendedRedirect.action?url=ViewContentVersion!standalone.action#contentVersionId#contentId#languageId#attributeName#currentEditorId#concurrentModification#oldModifiedDateTime#closeOnLoad#publishOnLoad</view>
@@ -1162,7 +1202,9 @@
 	</action>
 	<action name="org.infoglue.cms.applications.structuretool.actions.MoveSiteNodeAction" alias="MoveSiteNode">
 		<view name="input">/cms/structuretool/showConstraintException.vm</view>
+		<view name="inputV3">/cms/structuretool/v3/viewSiteNodeTreeForMove.vm</view>
 		<view name="success">ViewSiteNode.action</view>
+		<view name="successV3">ViewInlineOperationMessages</view>
 		<view name="error">/cms/structuretool/error.vm</view>
 		<view name="accessDenied">/cms/structuretool/viewConstraintException.vm</view>
 	</action>
@@ -1172,6 +1214,7 @@
 		<view name="fixPage">/cms/structuretool/fixPage.vm</view>
 		<view name="fixPageHeader">/cms/structuretool/fixPageHeader.vm</view>
 		<view name="success">ViewSiteNode.action?stay=true</view>
+		<view name="successV3">ViewSiteNode!refreshAndRedirect.action</view>
 		<view name="error">/cms/structuretool/error.vm</view>
 		<view name="accessDenied">/cms/structuretool/viewConstraintException.vm</view>
 	</action>
@@ -1320,6 +1363,7 @@
 
 	<action name="org.infoglue.cms.applications.publishingtool.actions.ViewPublicationsAction" alias="ViewPublications">
 		<view name="success">/cms/publishingtool/viewPublications.vm</view>
+		<view name="successV3">/cms/publishingtool/v3/viewPublications.vm</view>
 		<view name="showPublicationDetails">/cms/publishingtool/viewPublicationDetails.vm</view>
 		<view name="error">/cms/publishingtool/error.vm</view>
 	</action>
@@ -1647,6 +1691,18 @@
 		<view name="error">/cms/managementtool/error.vm</view>
 	</action>
 
+	<action name="org.infoglue.cms.applications.managementtool.actions.ViewThemesAction" alias="ViewThemes">
+		<view name="success">/cms/managementtool/v3/viewThemes.vm</view>
+		<view name="input">/cms/managementtool/v3/viewThemeUpload.vm</view>
+		<view name="error">/cms/managementtool/error.vm</view>
+	</action>
+
+	<action name="org.infoglue.cms.applications.managementtool.actions.ViewLabelsAction" alias="ViewLabels">
+		<view name="success">/cms/managementtool/v3/viewLabels.vm</view>
+		<view name="input">/cms/managementtool/v3/viewLabelUpload.vm</view>
+		<view name="error">/cms/managementtool/error.vm</view>
+	</action>
+
 	<!-- Authorization Switch Management -->
 	<action name="org.infoglue.cms.applications.managementtool.actions.AuthorizationSwitchManagementAction" alias="AuthorizationSwitchManagement">
 		<view name="inputUser">/cms/managementtool/viewAuthorizationSwitchManagementUser.vm</view>
@@ -1687,7 +1743,16 @@
 		<view name="success">/cms/managementtool/deployment/v3/viewQuickDeploymentComplete.vm</view>
 		<view name="error">/cms/managementtool/error.vm</view>
 	</action>
-
+	<!-- InfoGlue Version Control Synchronize -->
+	<action name="org.infoglue.cms.applications.managementtool.actions.deployment.ViewVCDeploymentAction" alias="ViewVCDeployment">
+		<view name="input">/cms/managementtool/deployment/v3/viewDeploymentChooseVCServer.vm</view>
+		<view name="inputChooseTag">/cms/managementtool/deployment/v3/viewDeploymentChooseTag.vm</view>
+		<view name="inputVerifyCheckout">/cms/managementtool/deployment/v3/viewDeploymentVerifyAndCheckout.vm</view>
+		<view name="success">/cms/managementtool/deployment/v3/viewDeploymentComplete.vm</view>
+		<view name="error">/cms/managementtool/error.vm</view>
+	</action>
+	
+	
 	<!-- InfoGlue Password generation service -->
 	<action name="org.infoglue.cms.applications.managementtool.actions.ViewPasswordToolAction" alias="ViewPasswordTool">
 		<view name="input">/cms/managementtool/viewPasswordToolInput.vm</view>
@@ -1708,6 +1773,11 @@
 		<view name="inputGlobalSubscriptions">/cms/common/viewGlobalSubscriptions.vm</view>
 		<view name="successGlobalSubscriptions">ExtendedRedirect.action?url=Subscriptions!inputGlobalSubscriptions.action#standalone</view>
 		<view name="error">/cms/common/error.vm</view>
+	</action>
+
+	<action name="org.infoglue.cms.applications.common.actions.SearchAction" alias="Search">
+		<view name="success">/cms/common/viewSearchResult.vm</view>
+		<view name="error">/cms/contenttool/error.vm</view>
 	</action>
 
 	<!-- Inline operations results -->

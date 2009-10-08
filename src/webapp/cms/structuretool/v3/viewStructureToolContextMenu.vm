@@ -1,0 +1,93 @@
+<ul>
+    <li><a id="create" href="javascript:void(0);" class="create">Create new page</a></li>
+    <li><a id="delete" href="javascript:void(0);" class="delete">Delete page</a></li>
+    <li><a id="move" href="javascript:void(0);" class="movePage">Move page</a></li>
+    <li><a id="properties" href="javascript:void(0);" class="properties">Edit page metadata</a></li>
+    <li><a id="publish" href="javascript:void(0);" class="publish">Publish page</a></li>
+    <li><a id="publishTree" href="javascript:void(0);" class="publish">Publish structure</a></li>
+</ul>
+
+<div id="deleteDialog" title="Delete page?" style="display: none">
+	<p><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>Do you really want to delete $siteNodeVO.name. Are you sure?</p>
+</div>
+
+<div id="moveDialog" title="Move page?" style="display: none">
+	<p><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>Do you really want to move $siteNodeVO.name. Are you sure?</p>
+</div>
+
+<script type="text/javascript">
+<!--
+	//Event listener for document click
+	$(document).click(function () { 
+    	$("#contextMenuDiv").hide();
+		});
+
+	//Event listener for create option
+	$("#contextMenuDiv #create").click(function () { 
+    	openInlineDiv("CreateSiteNode!inputV3.action?isBranch=true&repositoryId=$repositoryId&parentSiteNodeId=$siteNodeId&returnAddress=ViewInlineOperationMessages.action&originalAddress=refreshParent", 600, 800, true, true, "New page"); 
+		});
+
+	//Event listener for properties option
+	$("#contextMenuDiv #properties").click(function () { 
+    	openInlineDiv("ViewAndCreateContentForServiceBinding.action?siteNodeId=$siteNodeId&repositoryId=$repositoryId&changeStateToWorking=true", 600, 800, true, true, "New page"); 
+		});
+
+	//Event listener for publish option
+	$("#contextMenuDiv #publish").click(function () { 
+    	openInlineDiv("ViewListSiteNodeVersion!v3.action?siteNodeId=$siteNodeId&contentId=-1&repositoryId=$repositoryId&recurseSiteNodes=false&returnAddress=ViewInlineOperationMessages.action&originalAddress=refreshParent", 600, 800, true, true, "New page"); 
+		});
+
+	//Event listener for publish option
+	$("#contextMenuDiv #publishTree").click(function () { 
+    	openInlineDiv("ViewListSiteNodeVersion!v3.action?siteNodeId=$siteNodeId&contentId=-1&repositoryId=$repositoryId&recurseSiteNodes=true&returnAddress=ViewInlineOperationMessages.action&originalAddress=refreshParent", 600, 800, true, true, "New page"); 
+		});
+
+	//Event listener for delete option
+	$("#contextMenuDiv #delete").click(function () {
+		$("#deleteDialog").dialog({
+			bgiframe: true,
+			resizable: false,
+			height:140,
+			modal: true,
+			overlay: {
+				backgroundColor: '#000',
+				opacity: 0.5
+			},
+			buttons: {
+				'Delete all items in recycle bin': function() {
+					$(this).dialog('close');
+					openInlineDiv("DeleteSiteNode!V3.action?siteNodeId=$siteNodeId&repositoryId=$repositoryId&changeTypeId=4&returnAddress=ViewInlineOperationMessages.action&originalAddress=refreshParent", 600, 800, true, true, "Delete page"); 
+				},
+				Cancel: function() {
+					$(this).dialog('close');
+				}
+			}
+		});
+	});
+
+	//Event listener for move option
+	$("#contextMenuDiv #move").click(function () {
+		
+		$("#moveDialog").dialog({
+			bgiframe: true,
+			resizable: false,
+			height:140,
+			modal: true,
+			overlay: {
+				backgroundColor: '#000',
+				opacity: 0.5
+			},
+			buttons: {
+				'Move page': function() {
+					$(this).dialog('close');
+					openInlineDiv("MoveSiteNode!input.action?siteNodeId=$siteNodeId&repositoryId=$repositoryId&changeTypeId=4", 600, 800, true, true, "New page"); 
+				},
+				Cancel: function() {
+					$(this).dialog('close');
+				}
+			}
+		});
+	});
+
+-->
+</script>

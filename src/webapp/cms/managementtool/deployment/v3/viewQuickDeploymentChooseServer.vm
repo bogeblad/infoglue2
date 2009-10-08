@@ -37,7 +37,7 @@
 			#else
 				<p>$ui.getString("tool.managementtool.deploymentQuick.introduction")</p>
 				<p>
-					<select name="deploymentServerIndex" class="dropbox">
+					<select name="deploymentServerIndex" class="dropbox" style="width: 300px;">
 						#set($count = 0)
 						#foreach($deploymentServer in $deploymentServers)
 							<option value="$count">$deploymentServer</option>

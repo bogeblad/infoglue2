@@ -202,6 +202,15 @@ public class UserControllerProxy extends BaseController
 	}
 
 	/**
+	 * This method updates an existing user
+	 */
+	
+	public void updateUser(SystemUserVO systemUserVO, String oldPassword, String[] roleNames, String[] groupNames) throws ConstraintException, SystemException, Exception
+	{
+		getAuthorizationModule().updateInfoGluePrincipal(systemUserVO, oldPassword, roleNames, groupNames);
+	}
+
+	/**
 	 * This method makes a new password and sends it to the user
 	 */
 	

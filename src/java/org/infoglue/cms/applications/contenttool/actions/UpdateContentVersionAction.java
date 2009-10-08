@@ -127,6 +127,13 @@ public class UpdateContentVersionAction extends ViewContentVersionAction
 		return "success";
 	}
 
+	public String doV3() throws Exception
+	{
+		doExecute();
+		
+		return "successV3";
+	}
+
 	public String doUpdateVersionValue() throws Exception
 	{
 		super.initialize(this.contentVersionId, this.contentId, this.languageId);

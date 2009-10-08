@@ -127,6 +127,7 @@ public class ImportRepositoryAction extends InfoGlueAbstractAction
 	
 	private String standardReplacement = null;
 	private String replacements = null;
+	private Boolean mergeExistingRepositories = false;
 	
 	/**
 	 * This shows the dialog before export.
@@ -271,7 +272,7 @@ public class ImportRepositoryAction extends InfoGlueAbstractAction
 				e.printStackTrace();
 			}
 
-			ImportController.getController().importRepository(db, map, file, encoding, version, onlyLatestVersions, false, contentIdMap, siteNodeIdMap, allContentIds, replaceMap);
+			ImportController.getController().importRepository(db, map, file, encoding, version, onlyLatestVersions, false, contentIdMap, siteNodeIdMap, allContentIds, replaceMap, mergeExistingRepositories);
 			
 			db.commit();
 			db.close();
@@ -451,7 +452,7 @@ public class ImportRepositoryAction extends InfoGlueAbstractAction
 				e.printStackTrace();
 			}
 			
-			ImportController.getController().importRepository(db, map, file, encoding, 2, onlyLatestVersions, true, contentIdMap, siteNodeIdMap, allContentIds, replaceMap);
+			ImportController.getController().importRepository(db, map, file, encoding, 2, onlyLatestVersions, true, contentIdMap, siteNodeIdMap, allContentIds, replaceMap, false);
 
 			db.commit();
 			db.close();
@@ -538,4 +539,10 @@ public class ImportRepositoryAction extends InfoGlueAbstractAction
 	{
 		this.replacements = replacements;
 	}
+	
+	public void setMergeExistingRepositories(Boolean mergeExistingRepositories) 
+	{
+		this.mergeExistingRepositories = mergeExistingRepositories;
+	}
+
 }

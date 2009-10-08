@@ -1,4 +1,5 @@
 <script type="text/javascript">
+<!--
 	var componentEditorUrl = "${componentEditorUrl}";
 	var currentContext = "${contextName}";
 	var currentUrl = "${currentUrl}";
@@ -10,46 +11,50 @@
 	try { document.execCommand('BackgroundImageCache', false, true); } catch(e) {}
 	try 
 	{ 
-		var agt=navigator.userAgent.toLowerCase();
-   	    if(agt.indexOf("safari")!=-1)
-   	    {
-   	   	    if(parent && parent.frames[2] && parent.frames[2].refreshStructureToolBar) 
-			{
-   	   	  		var position = parent.frames[2].document.location.href.indexOf("siteNodeId=${siteNodeId}&");
-   	   	  		if(position == -1)
- 	   	    		parent.frames[2].refreshStructureToolBar('${componentEditorUrl}', 'tool.structuretool.siteNodeComponentsHeader', 'tool.structuretool.siteNodeComponentsHeader', 'siteNodeId=${siteNodeId}&repositoryId=${repositoryId}&isBranch=true', '${repositoryId}', '${siteNodeId}', '${path}'); 
-			}
-   		}
-   	    else	
-   	    {
-			if(parent && parent.frames["toolbar"] && parent.frames["toolbar"].refreshStructureToolBar)
-			{
-				var position = parent.frames["toolbar"].document.location.href.indexOf("siteNodeId=${siteNodeId}&");
-				if(position == -1) 
-					parent.frames["toolbar"].refreshStructureToolBar('${componentEditorUrl}', 'tool.structuretool.siteNodeComponentsHeader', 'tool.structuretool.siteNodeComponentsHeader', 'siteNodeId=${siteNodeId}&repositoryId=${repositoryId}&isBranch=true', '${repositoryId}', '${siteNodeId}', '${path}'); 
-			}
+		if(parent.refreshTopToolBar)
+		{
+			parent.refreshTopToolBar('tool.structuretool.siteNodeComponentsHeader', 'tool.structuretool.siteNodeComponentsHeader', 'siteNodeId=${siteNodeId}&repositoryId=${repositoryId}&isBranch=true', -1, -1, -1);
+		}
+		else
+		{
+    		var agt=navigator.userAgent.toLowerCase();
+       	    if(agt.indexOf("safari")!=-1)
+       	    {
+       	   	    if(parent && parent.frames[2] && parent.frames[2].refreshStructureToolBar) 
+    			{
+       	   	  		var position = parent.frames[2].document.location.href.indexOf("siteNodeId=${siteNodeId}&");
+       	   	  		if(position == -1)
+     	   	    		parent.frames[2].refreshStructureToolBar('${componentEditorUrl}', 'tool.structuretool.siteNodeComponentsHeader', 'tool.structuretool.siteNodeComponentsHeader', 'siteNodeId=${siteNodeId}&repositoryId=${repositoryId}&isBranch=true', '${repositoryId}', '${siteNodeId}', '${path}'); 
+    			}
+       		}
+       	    else	
+       	    {
+    			if(parent && parent.frames["toolbar"] && parent.frames["toolbar"].refreshStructureToolBar)
+    			{
+    				var position = parent.frames["toolbar"].document.location.href.indexOf("siteNodeId=${siteNodeId}&");
+    				if(position == -1) 
+    					parent.frames["toolbar"].refreshStructureToolBar('${componentEditorUrl}', 'tool.structuretool.siteNodeComponentsHeader', 'tool.structuretool.siteNodeComponentsHeader', 'siteNodeId=${siteNodeId}&repositoryId=${repositoryId}&isBranch=true', '${repositoryId}', '${siteNodeId}', '${path}'); 
+    			}
+    		}
 		}
 	} 
 	catch(e) {/*alert("e:" + e);*/}
 
 	setTimeout("keepSession()", 60000);
-</script>
+-->	
 </script>
 <script type="text/javascript" src="${contextName}/script/componentEditor.js"></script>
 <link rel="stylesheet" type="text/css" href="${contextName}/css/componentEditor.css" />
 
+<!--
 <script type="text/javascript" src="${contextName}/script/jquery/jquery-1.2.6.min.js"></script>
 <script type="text/javascript" src="${contextName}/script/jqueryplugins/ui/jquery.dimensions.js"></script>
 <script type="text/javascript" src="${contextName}/script/jqueryplugins/ui/jquery-ui-dragDropTabs-1.6rc2.min.js"></script>
-<!--
-<script type="text/javascript" src="${contextName}/script/jqueryplugins/ui/ui.mouse.js"></script>
-<script type="text/javascript" src="${contextName}/script/jqueryplugins/ui/ui.draggable.js"></script>
-<script type="text/javascript" src="${contextName}/script/jqueryplugins/ui/ui.draggable.ext.js"></script>
-<script type="text/javascript" src="${contextName}/script/jqueryplugins/ui/ui.droppable.js"></script>
-<script type="text/javascript" src="${contextName}/script/jqueryplugins/ui/ui.droppable.ext.js"></script>
-<script type="text/javascript" src="${contextName}/script/jqueryplugins/ui/ui.sortable.js"></script>
-<script type="text/javascript" src="${contextName}/script/jqueryplugins/ui/ui.sortable.ext.js"></script>
 -->
+
+<script type="text/javascript" src="${contextName}/script/jquery/jquery-1.3.2.min.js"></script>
+<link type="text/css" href="${contextName}/script/jqueryplugins/ui/jquery-ui-1.7.2.full.redmond/css/redmond/jquery-ui-1.7.2.custom.css" rel="stylesheet" />	
+<script type="text/javascript" src="${contextName}/script/jqueryplugins/ui/jquery-ui-1.7.2.full.redmond/js/jquery-ui-1.7.2.custom.min.js"></script>
 
 <script type="text/javascript" src="${contextName}/script/jqueryplugins/thickbox/thickbox-compressed.js"></script>
 <style type="text/css" media="all">@import "${contextName}/script/jqueryplugins/thickbox/thickbox.css";</style>
@@ -65,7 +70,7 @@
 <!--
 	function keepSession() 
 	{ 
-		jQuery.get("UpdateCache!test.action"); 
+		jQuery.get("UpdateCache!testV3.action"); 
 		setTimeout("keepSession()", 60000); 
 	}
 		
@@ -88,13 +93,97 @@
    		
    		tb_show('Redigera', url + addition, 'Redigera');
    		hideIGMenu();
+   		
+   		return false;
    	}
+
+	$(function() {
+		var isDragActive = false;
+        $(document).mouseenter(function(e){
+			//alert("dragHTML:" + parent.getDragHTML());
+			if(!isDragActive && parent.getIsDragCompleted && !parent.getIsDragCompleted() && parent.getDragHTML() != "")
+			{
+				isDragActive = true;
+				$("#tempDraggable").remove();
+				$("body").append("<div id=\"tempDraggable\" style=\"background-color: white; position: absolute; top: 0px; left: 0px;\">" + parent.getDragHTML() + "</div>");
+				//alert("Size:" + $("#tempDraggable").size());
+				parent.disableDrag();
+				
+				//$("#tempDraggable").draggable();
+				/*
+				$(".igAddComponent").mouseover(function(){
+			      	$(this).addClass("drophover");
+			    }).mouseleave(function(){
+			      	$(this).removeClass("drophover");
+			    });
+			    */
+			    
+			    //alert("encodedComponentName:" + $("#tempDraggable input[name='encodedComponentName']").val());
+			    //alert("encodedGroupNames:" + $("#tempDraggable input[name='encodedGroupNames']").val());
+			    
+			    $(".igAddComponent").addClass("blockedDropzone");
+			    
+			    var draggedComponentName = $("#tempDraggable input[name='encodedComponentName']").val();
+			    var draggedComponentGroupNames = $("#tempDraggable input[name='encodedGroupNames']").val();
+			    var draggedComponentGroupNameArray = draggedComponentGroupNames.split(",");
+			    
+			    $(".okAny").each(function (i) {
+			    	$(".igAddComponent:first", this).removeClass("blockedDropzone").addClass("dropzone");
+			    });
+			    $(".okName" + draggedComponentName).each(function (i) {
+			    	$(".igAddComponent:first", this).removeClass("blockedDropzone").addClass("dropzone");
+			    });
+			    
+			    var classes = "";
+			    for(draggedComponentGroupName in draggedComponentGroupNameArray)
+				{
+					if(classes == "")
+						classes = classes + ".okGroupName" + draggedComponentGroupNameArray[draggedComponentGroupName];
+					else
+						classes = classes + ",.okGroupName" + draggedComponentGroupNameArray[draggedComponentGroupName];
+				}			    
+				
+				$("" + classes).each(function (i) {
+			    	$(".igAddComponent:first", this).removeClass("blockedDropzone").addClass("dropzone");
+			    });
+			    			    
+			    draggedComponentId = $("#tempDraggable img").attr("id");
+			}
+        });
+
+		$(document).mousemove(function(e){
+			if(isDragActive)
+			{
+				var pageCoords = "( " + e.pageX + ", " + e.pageY + " )";
+			    var clientCoords = "( " + e.clientX + ", " + e.clientY + " )";
+				$("#tempDraggable").css("top", (e.pageY + 5) + "px").css("left", (e.pageX + 5) + "px");
+			}
+		});
+		$(document).mouseup(function(e){
+			if(isDragActive)
+			{
+				isDragActive = false;
+				$("#tempDraggable").remove();
+				parent.disableDrag();
+				parent.dragCompleted();
+			}
+		});
+
+		$(document).mouseleave(function(){
+			//alert("out");
+			isDragActive = false;
+			if(top.getIsDragCompleted && !top.getIsDragCompleted())
+				top.enableDrag();
+			
+          	$("#tempDraggable").remove();
+        });
+	});
+
 -->
 </script>
 
 <!--[if lte IE 6]>
 <style type="text/css">
-<!--
 .questionMark {	
     display: none;
 }
@@ -103,8 +192,26 @@
     height: 1px;
     display: none;
 }
--->
 </style>
 <![endif]-->
+
+<style type="text/css">
+.igAddComponent {
+	border: 1px dotted #ccc;
+	background-color: #ffff9d;
+	font-size: 8pt;
+	padding: 2px;
+}
+.blockedDropzone {
+	background-color: #c0c0c0;
+}
+.dropzone {
+	background-color: #ffff9d;
+}
+.dropzone:hover {
+	background-color: #ffff00;
+	border: 1px solid blue;
+}
+</style>
 
 </head>

@@ -42,6 +42,7 @@ import org.infoglue.cms.entities.content.DigitalAssetVO;
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.util.CmsPropertyHandler;
+import org.infoglue.deliver.util.Timer;
 
 import webwork.action.Action;
 
@@ -92,7 +93,7 @@ public class SearchContentAction extends InfoGlueAbstractAction
 	private String replaceString		= null;
 	//private String[] contentVersionId  	= null;
 	
-	private String assetTypeFilter = ".*";
+	private String assetTypeFilter = "*";
 	private boolean allowCaseSensitive = true;
 	
 	public boolean getAllowCaseSensitive()
@@ -326,7 +327,12 @@ public class SearchContentAction extends InfoGlueAbstractAction
 		}
 		else 
 		{
+			Timer t = new Timer();
 			digitalAssetVOList = SearchController.getLatestDigitalAssets(new Integer[]{this.repositoryId}, assetTypeFilter, maxRows);
+			if(logger.isInfoEnabled())
+				t.printElapsedTime("New search took:");
+			//digitalAssetVOList = SearchController.getLatestDigitalAssetsOLD(new Integer[]{this.repositoryId}, assetTypeFilter, maxRows);
+			//t.printElapsedTime("OLD search took:");
 			selectedRepositoryIdList.add("" + this.repositoryId);
 		}
 

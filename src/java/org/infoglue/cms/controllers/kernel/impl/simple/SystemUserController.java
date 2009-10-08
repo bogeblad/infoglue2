@@ -514,11 +514,13 @@ public class SystemUserController extends BaseController
 
     public SystemUser update(SystemUserVO systemUserVO, String[] roleNames, String[] groupNames, Database db) throws ConstraintException, SystemException
     {
-        SystemUser systemUser = systemUser = getSystemUserWithName(systemUserVO.getUserName(), db);
-		systemUser.getRoles().clear();
-		
+        SystemUser systemUser = getSystemUserWithName(systemUserVO.getUserName(), db);
+        
+        systemUserVO.setUserName(systemUser.getUserName());
+        
 		if(roleNames != null)
 		{
+			systemUser.getRoles().clear();
 			for (int i=0; i < roleNames.length; i++)
             {
             	Role role = RoleController.getController().getRoleWithName(roleNames[i], db);
@@ -527,10 +529,9 @@ public class SystemUserController extends BaseController
             }
 		}
 		
-		systemUser.getGroups().clear();
-		
 		if(groupNames != null)
 		{
+			systemUser.getGroups().clear();
 			for (int i=0; i < groupNames.length; i++)
             {
 			    Group group = GroupController.getController().getGroupWithName(groupNames[i], db);
@@ -544,7 +545,100 @@ public class SystemUserController extends BaseController
 
         return systemUser;
     }     
-    
+
+    public SystemUserVO update(SystemUserVO systemUserVO, String oldPassword, String[] roleNames, String[] groupNames) throws ConstraintException, SystemException
+    {
+        Database db = CastorDatabaseService.getDatabase();
+        ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
+
+        SystemUser systemUser = null;
+
+        beginTransaction(db);
+
+        try
+        {
+            systemUser = update(systemUserVO, oldPassword, roleNames, groupNames, db);
+            
+            commitTransaction(db);
+        }
+        catch(ConstraintException ce)
+        {
+            logger.warn("An error occurred so we should not completes the transaction:" + ce, ce);
+            rollbackTransaction(db);
+            throw ce;
+        }
+        catch(Exception e)
+        {
+            logger.error("An error occurred so we should not completes the transaction:" + e, e);
+            rollbackTransaction(db);
+            throw new SystemException(e.getMessage());
+        }
+
+        return systemUser.getValueObject();
+    }        
+
+    public SystemUser update(SystemUserVO systemUserVO, String oldPassword, String[] roleNames, String[] groupNames, Database db) throws ConstraintException, SystemException, Exception
+    {
+    	System.out.println("systemUserVO:" + systemUserVO.getUserName());
+    	System.out.println("oldPassword:" + oldPassword);
+    	System.out.println("newPassword:" + systemUserVO.getPassword());
+    	System.out.println("roleNames:" + roleNames);
+    	System.out.println("groupNames:" + groupNames);
+    	if(CmsPropertyHandler.getUsePasswordEncryption())
+		{
+    		String password = systemUserVO.getPassword();
+			try
+			{
+				byte[] encryptedPassRaw = DigestUtils.sha(password);
+				String encryptedPass = new String(new Base64().encode(encryptedPassRaw), "ASCII");
+				password = encryptedPass;
+				systemUserVO.setPassword(password);
+			
+				byte[] encryptedOldPasswordRaw = DigestUtils.sha(oldPassword);
+				String encryptedOldPassword = new String(new Base64().encode(encryptedOldPasswordRaw), "ASCII");
+				oldPassword = encryptedOldPassword;
+			}
+			catch (Exception e) 
+			{
+				System.out.println("Error generating password:" + e.getMessage());
+			}
+		}
+    	System.out.println("oldPassword:" + oldPassword);
+    	
+    	SystemUser systemUser = getSystemUser(db, systemUserVO.getUserName(), oldPassword);
+        if(systemUser == null)
+        	throw new SystemException("Wrong user or password.");
+        
+        systemUserVO.setUserName(systemUser.getUserName());
+        
+		if(roleNames != null)
+		{
+	        systemUser.getRoles().clear();
+			for (int i=0; i < roleNames.length; i++)
+            {
+            	Role role = RoleController.getController().getRoleWithName(roleNames[i], db);
+            	systemUser.getRoles().add(role);
+				role.getSystemUsers().add(systemUser);
+            }
+		}
+		
+		if(groupNames != null)
+		{
+			systemUser.getGroups().clear();
+			for (int i=0; i < groupNames.length; i++)
+            {
+			    Group group = GroupController.getController().getGroupWithName(groupNames[i], db);
+            	systemUser.getGroups().add(group);
+            	group.getSystemUsers().add(systemUser);
+            }
+		}
+		
+		//systemUserVO.setPassword(systemUser.getPassword());
+		systemUser.setValueObject(systemUserVO);
+
+        return systemUser;
+    }     
+
     public void updatePassword(String userName) throws ConstraintException, SystemException
     {
         Database db = CastorDatabaseService.getDatabase();

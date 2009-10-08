@@ -40,8 +40,8 @@ public class LinkBean implements Serializable
 	private String backgroundImageURL   	= "";
 	private String backgroundImageAlignment	= "left";
 	private String actionURL  	    		= "";	
-	private boolean isJavascript  	    	= false;	
-	private String target  	    			= null;	
+	private boolean isJavascript  	    	= false;
+	private String target  	    			= null;
 
 	public LinkBean(String id, String text, String title, String description, String actionURL, boolean isJavascript, String backgroundImageURL)
 	{

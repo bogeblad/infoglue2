@@ -1247,6 +1247,13 @@ public abstract class BaseController
     	return stringManager.getString(key, arg1, arg2);
   	}
 
+	public String getLocalizedString(Locale locale, String key, Object arg1, Object arg2, Object arg3) 
+  	{
+    	StringManager stringManager = StringManagerFactory.getPresentationStringManager("org.infoglue.cms.applications", locale);
+
+    	return stringManager.getString(key, arg1, arg2, arg3);
+  	}
+
 	public Locale getUserPrefferedLocale(String userName)
 	{
 		Locale locale = Locale.ENGLISH;

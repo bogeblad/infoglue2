@@ -323,14 +323,7 @@ public class ViewStructureToolToolBarAction extends InfoGlueAbstractAction
 		ImageButton publishButton = getPublishCurrentNodeButton();
 	    publishButton.getSubButtons().add(getPublishButton());
 	    buttons.add(publishButton);	
-	    
-		/*
-	    ImageButton publishButton = getPublishButton();
-	    publishButton.getSubButtons().add(getPublishCurrentNodeButton());
-	    buttons.add(publishButton);	
-	    */
-	    //buttons.add(getPublishButton());
-		
+	    		
 		buttons.add(getExecuteTaskButton());
 
 		if(this.siteNodeVersionVO != null && this.siteNodeVersionVO.getIsProtected().intValue() == SiteNodeVersionVO.YES.intValue())

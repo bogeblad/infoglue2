@@ -3,7 +3,7 @@
 	<script type="text/javascript">
 	<!--
 	$(document).ready(function(){
-		$("#tabsContainer > ul").tabs({ show:function() { resizeInlineTabDivs();} });
+		$("#tabsContainer").tabs({ show:function() { resizeInlineTabDivs();} });
 		setTimeout("resizeInlineTabDivs()", 100);
 		init();
 	});

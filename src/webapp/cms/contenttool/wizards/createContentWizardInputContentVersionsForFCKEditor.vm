@@ -757,29 +757,31 @@
 				#elseif($attribute.inputType == "select")
 				<!-- Handles the input type select = dropbox -->
 					$attributeTitle ("$attribute.name") $attributeDescription <br/>
-					#printError("ContentVersion.$attribute.name")
+					#printErrorV3("ContentVersion.$attribute.name" false)
 					<select $readonly size="1" id="$attribute.name" name="$attribute.name" class="$class" $onchange>
-		    			#foreach($value in $attribute.getContentTypeAttribute("values").getContentTypeAttributeParameterValues())
-		    				<option value="$value.id" #checkSelected("$value.id" "$!this.getAttributeValue($attribute.name)")>$value.getLocalizedValue("label", $session.locale)</option>
-		    			#end
+						#foreach($option in $attribute.options)
+		    				<option value="$option.value" #checkSelected("$option.value" "$this.getAttributeValue($attribute.name)")>$option.getName()</option>
+						#end
 		    		</select>
 
 				#elseif($attribute.inputType == "checkbox")
 				<!-- Handles the input type checkbox -->
 					$attributeTitle ("$attribute.name") $attributeDescription <br/>
-	    			#printError("ContentVersion.$attribute.name")
-					#foreach($value in $attribute.getContentTypeAttribute("values").getContentTypeAttributeParameterValues())
-						<input $readonly type="checkbox" id="$attribute.name" name="$attribute.name" value="$value.id" #checkChecked("$value.id" "$!this.getAttributeValue($attribute.name)") $onchange>$value.getLocalizedValue("label", $session.locale)
-	    			#end
-
+	    			#printErrorV3("ContentVersion.$attribute.name" false)
+					<ul class="optionList">
+						#foreach($option in $attribute.options)
+							<li><input $readonly type="checkbox" id="$attribute.name" name="$attribute.name" value="$option.value" #checkCheckedBySplit("$option.value" "$this.getAttributeValue($attribute.name)")>$option.getName()</li>
+						#end
+					</ul>
 				#elseif($attribute.inputType == "radiobutton")
 				<!-- Handles the input type radiobutton -->
 					$attributeTitle ("$attribute.name") $attributeDescription <br/>
-	    			#printError("ContentVersion.$attribute.name")
-					#foreach($value in $attribute.getContentTypeAttribute("values").getContentTypeAttributeParameterValues())
-						<input $readonly type="radio" id="$attribute.name" name="$attribute.name" value="$value.id" #checkChecked("$value.id" "$!this.getAttributeValue($attribute.name)") $onchange>$value.getLocalizedValue("label", $session.locale)
-	    			#end
-
+	    			#printErrorV3("ContentVersion.$attribute.name" false)
+					<ul class="optionList">
+						#foreach($option in $attribute.options)
+							<input $readonly type="radio" id="$attribute.name" name="$attribute.name" value="$option.value" #checkCheckedBySplit("$option.value" "$this.getAttributeValue($attribute.name)")>$option.getName()</li>
+						#end
+					</ul>
 				#elseif($attribute.inputType == "customfield")
 				<!-- Handles the input type customfield -->
 					#set($attributeMarkup = $!attribute.getContentTypeAttribute("Markup").getContentTypeAttributeParameterValue().getValue("label"))

@@ -34,14 +34,20 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.CategoryController;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.InterceptionPointController;
+import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SubscriptionController;
+import org.infoglue.cms.entities.content.Content;
+import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.management.CategoryVO;
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
 import org.infoglue.cms.entities.management.InterceptionPointVO;
 import org.infoglue.cms.entities.management.SubscriptionFilterVO;
 import org.infoglue.cms.entities.management.SubscriptionVO;
+import org.infoglue.cms.entities.structure.SiteNode;
+import org.infoglue.cms.entities.structure.SiteNodeVO;
 
 
 /** 
@@ -70,6 +76,7 @@ public class SubscriptionsAction extends InfoGlueAbstractAction
 	
 	//Global subscriptions
 	private Collection subscriptionVOList = null;
+	private Collection detailedSubscriptionVOList = null;
 	private String name;
 	private Integer subscriptionId;
 	private String standalone = "true";
@@ -188,6 +195,7 @@ public class SubscriptionsAction extends InfoGlueAbstractAction
 	public String doInputGlobalSubscriptions() throws Exception
     {
 		this.subscriptionVOList = subscriptionsController.getSubscriptionVOList(null, null, new Boolean(true), null, null, this.getInfoGluePrincipal().getName(), null);
+		this.detailedSubscriptionVOList = subscriptionsController.getSubscriptionVOList(null, null, new Boolean(false), null, null, this.getInfoGluePrincipal().getName(), null);
 		this.contentTypeDefintionVOList = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOList();
 		this.categoryVOList = CategoryController.getController().findAllActiveCategories();
 
@@ -206,6 +214,7 @@ public class SubscriptionsAction extends InfoGlueAbstractAction
 				this.interceptionPointVOList.add(interceptionPointVO);	
 			}
 		}
+
 		
 		/*
 		Content.Write
@@ -443,6 +452,34 @@ public class SubscriptionsAction extends InfoGlueAbstractAction
     	return false;
     }
     
+    public String getSubscriptionPresentationString(SubscriptionVO subscriptionVO)
+    {
+    	StringBuffer sb = new StringBuffer();
+    	
+    	try
+    	{
+	    	if(subscriptionVO.getEntityName().equalsIgnoreCase(SiteNode.class.getName()))
+	    	{
+	    		SiteNodeVO siteNodeVO = SiteNodeController.getController().getSiteNodeVOWithId(new Integer(subscriptionVO.getEntityId()));
+	    		sb.append(getLocalizedString(getLocale(), "tool.common.detailedSubscriptions.onPageLabel") + " <strong>" + siteNodeVO.getName() + "</strong> ");
+	    	}
+	    	if(subscriptionVO.getEntityName().equalsIgnoreCase(Content.class.getName()))
+	    	{
+	    		ContentVO contentVO = ContentController.getContentController().getContentVOWithId(new Integer(subscriptionVO.getEntityId()));
+	    		sb.append(getLocalizedString(getLocale(), "tool.common.detailedSubscriptions.onContentLabel") + " <strong>" + contentVO.getName() + "</strong> ");
+	    	}
+	    	
+	    	InterceptionPointVO interceptionPointVO = InterceptionPointController.getController().getInterceptionPointVOWithId(subscriptionVO.getInterceptionPointId());
+	    	sb.append(getLocalizedString(getLocale(), "tool.common.detailedSubscriptions.subscribedToEventLabel") + " <strong>" + interceptionPointVO.getName().replaceAll(".*?\\.", "") + "</strong>");
+    	}
+    	catch (Exception e) 
+    	{
+    		sb.append("" + getLocalizedString(getLocale(), "tool.common.detailedSubscriptions.brokenReferenceLabel") + ":" + e.getMessage());
+		}
+
+    	return sb.toString();
+    }
+    
 	public String getReturnAddress()
 	{
 		return returnAddress;
@@ -556,6 +593,11 @@ public class SubscriptionsAction extends InfoGlueAbstractAction
 	public Collection getSubscriptionVOList()
 	{
 		return subscriptionVOList;
+	}
+
+	public Collection getDetailedSubscriptionVOList()
+	{
+		return detailedSubscriptionVOList;
 	}
 
 	public String getName()

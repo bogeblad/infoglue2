@@ -7,9 +7,11 @@
 	<meta http-equiv="Pragma" content="no-cache" />
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 
-	<script language="JavaScript" type="text/javascript" src="script/listview.js"></script>
-	<script language="JavaScript" type="text/javascript">
+	<script type="text/javascript" src="script/listview.js"></script>
+	<script type="text/javascript">
+	<!--
 		window.onload = refreshManagementToolBar('tool.managementtool.repositoryList.header', '');
+	-->
 	</script>
 
 	<style type="text/css">

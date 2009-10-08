@@ -104,13 +104,11 @@ public class CmsJDOCallback implements CallbackInterceptor
         return null;
     }
 
-	@Override
 	public Class loaded(Object arg0, AccessMode arg1) throws Exception 
 	{
 		//System.out.println("Loaded " + object.getClass().getName() + " accessMode:" + accessMode);
 		return null;
 	}
-
 
     public void storing(Object object, boolean modified) throws Exception
     {

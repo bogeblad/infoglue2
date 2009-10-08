@@ -57,6 +57,14 @@ public interface SiteNode extends IBaseEntity
     
     public void setMetaInfoContentId(Integer metaInfoContentId);
 
+    public Integer getSortOrder();
+    
+    public void setSortOrder(Integer sortOrder);
+
+    public Boolean getIsHidden();
+    
+    public void setIsHidden(Boolean isHidden);
+
     public org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl getParentSiteNode();
     
     public void setParentSiteNode(org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl parentSiteNode);

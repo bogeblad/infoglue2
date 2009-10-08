@@ -37,7 +37,7 @@ Component palette classes
 	line-height: 10px;
 }
 
-#leftPaletteHandleCompProps {
+#leftPaletteHandleCompProps,.leftPaletteHandleCompProps {
 	width: 350px;
 	float: left;
 	color: white;
@@ -45,7 +45,7 @@ Component palette classes
 	line-height: 10px;
 }
 
-#rightPaletteHandle {
+#rightPaletteHandle,.rightPaletteHandleCompProps {
 	color: white;
 	text-align: right;
 	line-height: 10px;
@@ -197,7 +197,7 @@ when explorer get better support for hover.
 
 .component {
 	text-align: center;
-	background: #CCCCCC;
+	background-color: white;
 	cursor: pointer;
 	white-space: nowrap;
 	padding: 0px 4px 0px 4px;

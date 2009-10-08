@@ -41,9 +41,11 @@ import org.exolab.castor.jdo.Database;
 import org.exolab.castor.jdo.OQLQuery;
 import org.exolab.castor.jdo.QueryResults;
 import org.infoglue.cms.applications.databeans.AssetKeyDefinition;
+import org.infoglue.cms.applications.databeans.GenericOptionDefinition;
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.entities.management.CategoryAttribute;
 import org.infoglue.cms.entities.management.ContentTypeAttribute;
+import org.infoglue.cms.entities.management.ContentTypeAttributeOptionDefinition;
 import org.infoglue.cms.entities.management.ContentTypeAttributeParameter;
 import org.infoglue.cms.entities.management.ContentTypeAttributeParameterValue;
 import org.infoglue.cms.entities.management.ContentTypeAttributeValidator;
@@ -57,6 +59,9 @@ import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.dom.DOMBuilder;
 import org.infoglue.cms.util.sorters.ReflectionComparator;
+import org.infoglue.deliver.applications.databeans.ComponentPropertyOption;
+import org.infoglue.deliver.integration.dataproviders.PropertyOptionsDataProvider;
+import org.infoglue.deliver.util.HttpHelper;
 import org.infoglue.deliver.util.NullObject;
 import org.infoglue.deliver.util.CacheController;
 import org.w3c.dom.Document;
@@ -80,7 +85,8 @@ public class ContentTypeDefinitionController extends BaseController
     private final static Logger logger = Logger.getLogger(ContentTypeDefinitionController.class.getName());
 
 	private final static DOMBuilder domBuilder = new DOMBuilder();
-
+	private final static HttpHelper httpHelper = new HttpHelper();
+	
 	public static final String ASSET_KEYS = "assetKeys";
 	public static final String CATEGORY_KEYS = "categoryKeys";
 
@@ -660,14 +666,14 @@ public class ContentTypeDefinitionController extends BaseController
 
 	public List getContentTypeAttributes(String schemaValue)
 	{
-		return getContentTypeAttributes(schemaValue, false);
+		return getContentTypeAttributes(schemaValue, false, null, null, null);
 	}
 	
 	/**
 	 * This method returns the attributes in the content type definition for generation.
 	 */
 
-	public List getContentTypeAttributes(String schemaValue, boolean addPriorityAttribute)
+	public List getContentTypeAttributes(String schemaValue, boolean addPriorityAttribute, String languageCode, InfoGluePrincipal principal, Database db)
 	{
 		//List attributes = new ArrayList();
 
@@ -688,7 +694,7 @@ public class ContentTypeDefinitionController extends BaseController
 		{
 			//attributes = getAttributesWithXalan(schemaValue, addPriorityAttribute);
 			//t.printElapsedTime("getAttributesWithXalan took:");
-			attributes = getAttributesWithDOM4J(schemaValue, addPriorityAttribute);
+			attributes = getAttributesWithDOM4J(schemaValue, addPriorityAttribute, languageCode, principal, db);
 		}
 	
 
@@ -700,7 +706,7 @@ public class ContentTypeDefinitionController extends BaseController
 		return attributes;
 	}
 
-	private List getAttributesWithDOM4J(String schemaValue, boolean addPriorityAttribute)
+	private List getAttributesWithDOM4J(String schemaValue, boolean addPriorityAttribute, String languageCode, InfoGluePrincipal principal, Database db)
 	{
 		List attributes = new ArrayList();
 		
@@ -727,6 +733,9 @@ public class ContentTypeDefinitionController extends BaseController
 
 				String validatorsXPath = "/xs:schema/xs:complexType[@name = 'Validation']/xs:annotation/xs:appinfo/form-validation/formset/form/field[@property = '"+ attributeName +"']";
 
+				String dataProviderClass = null;
+				String dataProviderParameters = null;
+				
 				// Get validators
 				List validatorNodeList = document.getRootElement().selectNodes(validatorsXPath);
 				Iterator validatorNodeListIterator = validatorNodeList.iterator();
@@ -765,6 +774,8 @@ public class ContentTypeDefinitionController extends BaseController
 				}
 
 				// Get extra parameters
+				Map existingParams = new HashMap();
+
 				org.dom4j.Element paramsNode = (org.dom4j.Element)child.selectSingleNode("xs:annotation/xs:appinfo/params");
 				if (paramsNode != null)
 				{
@@ -776,13 +787,26 @@ public class ContentTypeDefinitionController extends BaseController
 
 						String paramId = param.attributeValue("id");
 						String paramInputTypeId = param.attributeValue("inputTypeId");
-
+												
 						ContentTypeAttributeParameter contentTypeAttributeParameter = new ContentTypeAttributeParameter();
 						contentTypeAttributeParameter.setId(paramId);
 						if(paramInputTypeId != null && paramInputTypeId.length() > 0)
 							contentTypeAttributeParameter.setType(Integer.parseInt(paramInputTypeId));
 
 						contentTypeAttribute.putContentTypeAttributeParameter(paramId, contentTypeAttributeParameter);
+						
+						existingParams.put(paramId, contentTypeAttributeParameter);
+
+						if(paramId.equalsIgnoreCase("dataProviderClass"))
+						{
+							org.dom4j.Element valueElement = (org.dom4j.Element)param.selectSingleNode("values/value");
+							dataProviderClass = valueElement.attributeValue("label");
+						}
+						else if(paramId.equalsIgnoreCase("dataProviderParameters"))
+						{
+							org.dom4j.Element valueElement = (org.dom4j.Element)param.selectSingleNode("values/value");
+							dataProviderParameters = valueElement.attributeValue("label");
+						}
 
 						List valuesNodeList = param.elements("values");
 						Iterator valuesNodeListIterator = valuesNodeList.iterator();
@@ -803,19 +827,62 @@ public class ContentTypeDefinitionController extends BaseController
 
 								List attributesList = value.attributes();
 								Iterator attributesListIterator = attributesList.iterator();
+								String optionName = null;
+								String optionValue = null;
 								while(attributesListIterator.hasNext())
 								{
 									org.dom4j.Attribute attribute = (org.dom4j.Attribute)attributesListIterator.next();
 									
 									String valueAttributeName = attribute.getName();
 									String valueAttributeValue = attribute.getStringValue();
+																		
+									if(valueAttributeName.equals("label"))
+										optionName = valueAttributeValue;
+									if(valueAttributeName.equals("id"))
+										optionValue = valueAttributeValue;
+									
 									contentTypeAttributeParameterValue.addAttribute(valueAttributeName, valueAttributeValue);
 								}
+								
+								if(paramInputTypeId.equals("1"))
+									contentTypeAttribute.getOptions().add(new ContentTypeAttributeOptionDefinition(optionName, optionValue));
 
 								contentTypeAttributeParameter.addContentTypeAttributeParameterValue(valueId, contentTypeAttributeParameterValue);
 							}
 						}
 					}
+				}
+
+				if(dataProviderClass != null && !dataProviderClass.equals(""))
+				{
+					try
+					{
+						PropertyOptionsDataProvider provider = (PropertyOptionsDataProvider)Class.forName(dataProviderClass).newInstance();
+						Map parameters = httpHelper.toMap(dataProviderParameters, "UTF-8", ";");
+						List<GenericOptionDefinition> options = provider.getOptions(parameters, languageCode, principal, db);
+						contentTypeAttribute.getOptions().addAll(options);
+					}
+					catch (Exception e) 
+					{
+						if(logger.isDebugEnabled())
+							logger.error("Unable to fetch data from custom class [" + dataProviderClass + "]:" + e.getMessage(), e);
+						else
+							logger.error("Unable to fetch data from custom class [" + dataProviderClass + "]:" + e.getMessage());
+					}
+				}
+				
+				if((attributeType.equals("select") || attributeType.equals("radiobutton") || attributeType.equals("checkbox")) && !existingParams.containsKey("widget"))
+				{
+					ContentTypeAttributeParameter contentTypeAttributeParameter = new ContentTypeAttributeParameter();
+					contentTypeAttributeParameter.setId("widget");
+					contentTypeAttributeParameter.setType(0);
+					contentTypeAttribute.putContentTypeAttributeParameter("widget", contentTypeAttributeParameter);
+
+					ContentTypeAttributeParameterValue contentTypeAttributeParameterValue = new ContentTypeAttributeParameterValue();
+					contentTypeAttributeParameterValue.setId("0");
+					contentTypeAttributeParameterValue.addAttribute("id", "default");
+					contentTypeAttributeParameterValue.addAttribute("label", "Default");
+					contentTypeAttributeParameter.addContentTypeAttributeParameterValue("0", contentTypeAttributeParameterValue);
 				}
 
 				// End extra parameters
@@ -869,6 +936,12 @@ public class ContentTypeDefinitionController extends BaseController
 				contentTypeAttributeParameter.setId("values");
 				contentTypeAttributeParameter.setType(1);
 				contentTypeAttribute.putContentTypeAttributeParameter("values", contentTypeAttributeParameter);
+
+				contentTypeAttribute.getOptions().add(new ContentTypeAttributeOptionDefinition("Lowest", "1"));
+				contentTypeAttribute.getOptions().add(new ContentTypeAttributeOptionDefinition("Low", "2"));
+				contentTypeAttribute.getOptions().add(new ContentTypeAttributeOptionDefinition("Medium", "3"));
+				contentTypeAttribute.getOptions().add(new ContentTypeAttributeOptionDefinition("High", "4"));
+				contentTypeAttribute.getOptions().add(new ContentTypeAttributeOptionDefinition("Highest", "5"));
 
 				contentTypeAttributeParameterValue = new ContentTypeAttributeParameterValue();
 				contentTypeAttributeParameterValue.setId("1");
@@ -982,6 +1055,7 @@ public class ContentTypeDefinitionController extends BaseController
 				if (paramsNode != null)
 				{
 					NodeList childnl = ((Element)paramsNode).getElementsByTagName("param");
+					Map existingParams = new HashMap();
 					for(int ci=0; ci < childnl.getLength(); ci++)
 					{
 						Element param = (Element)childnl.item(ci);
@@ -994,7 +1068,8 @@ public class ContentTypeDefinitionController extends BaseController
 							contentTypeAttributeParameter.setType(Integer.parseInt(paramInputTypeId));
 
 						contentTypeAttribute.putContentTypeAttributeParameter(paramId, contentTypeAttributeParameter);
-
+						existingParams.put(paramId, contentTypeAttributeParameter);
+						
 						NodeList valuesNodeList = param.getElementsByTagName("values");
 						for(int vsnli=0; vsnli < valuesNodeList.getLength(); vsnli++)
 						{
@@ -1020,11 +1095,23 @@ public class ContentTypeDefinitionController extends BaseController
 							}
 						}
 					}
+					
+					//
+					if((attributeType.equals("select") || attributeType.equals("radiobutton") || attributeType.equals("checkbox")) && !existingParams.containsKey("widget"))
+					{
+						ContentTypeAttributeParameter contentTypeAttributeParameter = new ContentTypeAttributeParameter();
+						contentTypeAttributeParameter.setId("widget");
+						contentTypeAttributeParameter.setType(0);
+						contentTypeAttribute.putContentTypeAttributeParameter("widget", contentTypeAttributeParameter);
+
+						ContentTypeAttributeParameterValue contentTypeAttributeParameterValue = new ContentTypeAttributeParameterValue();
+						contentTypeAttributeParameterValue.setId("0");
+						contentTypeAttributeParameterValue.addAttribute("id", "default");
+						contentTypeAttributeParameterValue.addAttribute("label", "Default");
+						contentTypeAttributeParameter.addContentTypeAttributeParameterValue("0", contentTypeAttributeParameterValue);
+					}
 				}
-				/*
-				if(contentTypeAttribute.getName().equals("Title"))
-					System.out.println("contentTypeAttribute XALAN:" + contentTypeAttribute);
-				*/
+				
 				// End extra parameters
 				attributes.add(contentTypeAttribute);
 			}
@@ -1076,6 +1163,12 @@ public class ContentTypeDefinitionController extends BaseController
 				contentTypeAttributeParameter.setId("values");
 				contentTypeAttributeParameter.setType(1);
 				contentTypeAttribute.putContentTypeAttributeParameter("values", contentTypeAttributeParameter);
+
+				contentTypeAttribute.getOptions().add(new ContentTypeAttributeOptionDefinition("Lowest", "1"));
+				contentTypeAttribute.getOptions().add(new ContentTypeAttributeOptionDefinition("Low", "2"));
+				contentTypeAttribute.getOptions().add(new ContentTypeAttributeOptionDefinition("Medium", "3"));
+				contentTypeAttribute.getOptions().add(new ContentTypeAttributeOptionDefinition("High", "4"));
+				contentTypeAttribute.getOptions().add(new ContentTypeAttributeOptionDefinition("Highest", "5"));
 
 				contentTypeAttributeParameterValue = new ContentTypeAttributeParameterValue();
 				contentTypeAttributeParameterValue.setId("1");
@@ -1158,13 +1251,19 @@ public class ContentTypeDefinitionController extends BaseController
 				addParameterElement(params, "description", "0");
 				addParameterElement(params, "initialData", "");
 				addParameterElement(params, "class", "0");
+				addParameterElement(params, "widget", "0");
 
 				newAttribute.appendChild(annotation);
 				annotation.appendChild(appInfo);
 				appInfo.appendChild(params);
 
+				if(inputTypeId.equalsIgnoreCase("checkbox"))
+					addParameterElement(params, "widget", "0");
+
 				if(inputTypeId.equalsIgnoreCase("checkbox") || inputTypeId.equalsIgnoreCase("select") || inputTypeId.equalsIgnoreCase("radiobutton"))
 				{
+					addParameterElement(params, "dataProviderClass", "");
+					addParameterElement(params, "dataProviderParameters", "");
 					addParameterElement(params, "values", "1");
 				}
 
@@ -1401,8 +1500,13 @@ public class ContentTypeDefinitionController extends BaseController
 									addParameterElement(paramsElement, "description", "0");
 									addParameterElement(paramsElement, "class", "0");
 
+									if(inputTypeId.equalsIgnoreCase("checkbox"))
+										addParameterElement(paramsElement, "widget", "0");
+
 									if(inputTypeId.equalsIgnoreCase("checkbox") || inputTypeId.equalsIgnoreCase("select") || inputTypeId.equalsIgnoreCase("radiobutton"))
 									{
+										addParameterElement(paramsElement, "dataProviderClass", "");
+										addParameterElement(paramsElement, "dataProviderParameters", "");
 										addParameterElement(paramsElement, "values", "1");
 									}
 
@@ -1428,8 +1532,13 @@ public class ContentTypeDefinitionController extends BaseController
 									addParameterElement(paramsElement, "description", "0");
 									addParameterElement(paramsElement, "class", "0");
 
+									if(inputTypeId.equalsIgnoreCase("checkbox"))
+										addParameterElement(paramsElement, "widget", "0");
+
 									if(inputTypeId.equalsIgnoreCase("checkbox") || inputTypeId.equalsIgnoreCase("select") || inputTypeId.equalsIgnoreCase("radiobutton"))
 									{
+										addParameterElement(paramsElement, "dataProviderClass", "");
+										addParameterElement(paramsElement, "dataProviderParameters", "");
 										addParameterElement(paramsElement, "values", "1");
 									}
 
@@ -1460,8 +1569,13 @@ public class ContentTypeDefinitionController extends BaseController
 								addParameterElement(paramsElement, "description", "0");
 								addParameterElement(paramsElement, "class", "0");
 
+								if(inputTypeId.equalsIgnoreCase("checkbox"))
+									addParameterElement(paramsElement, "widget", "0");
+
 								if(inputTypeId.equalsIgnoreCase("checkbox") || inputTypeId.equalsIgnoreCase("select") || inputTypeId.equalsIgnoreCase("radiobutton"))
 								{
+									addParameterElement(paramsElement, "dataProviderClass", "");
+									addParameterElement(paramsElement, "dataProviderParameters", "");
 									addParameterElement(paramsElement, "values", "1");
 								}
 
@@ -1494,8 +1608,13 @@ public class ContentTypeDefinitionController extends BaseController
 							addParameterElement(paramsElement, "description", "0");
 							addParameterElement(paramsElement, "class", "0");
 
+							if(inputTypeId.equalsIgnoreCase("checkbox"))
+								addParameterElement(paramsElement, "widget", "0");
+
 							if(inputTypeId.equalsIgnoreCase("checkbox") || inputTypeId.equalsIgnoreCase("select") || inputTypeId.equalsIgnoreCase("radiobutton"))
 							{
+								addParameterElement(paramsElement, "dataProviderClass", "");
+								addParameterElement(paramsElement, "dataProviderParameters", "");
 								addParameterElement(paramsElement, "values", "1");
 							}
 
@@ -1546,6 +1665,15 @@ public class ContentTypeDefinitionController extends BaseController
 								{
 									Element paramsElement = (Element)paramsNodeList.item(0);
 
+									if(inputTypeId.equalsIgnoreCase("checkbox"))
+										addParameterElementIfNotExists(paramsElement, "widget", "0", "default");
+
+									if(inputTypeId.equalsIgnoreCase("checkbox") || inputTypeId.equalsIgnoreCase("select") || inputTypeId.equalsIgnoreCase("radiobutton"))
+									{
+										addParameterElementIfNotExists(paramsElement, "dataProviderClass", "", "");
+										addParameterElementIfNotExists(paramsElement, "dataProviderParameters", "", "");
+									}
+									
 									if(inputTypeId.equalsIgnoreCase("textarea"))
 									{
 										addParameterElementIfNotExists(paramsElement, "width", "0", "700");
@@ -1570,6 +1698,39 @@ public class ContentTypeDefinitionController extends BaseController
 				{
 					isModified = true;
 					schemaElement.setAttribute("version", "2.2");
+
+					//Now we deal with the individual attributes and parameters
+					String attributesXPath = "/xs:schema/xs:complexType/xs:all/xs:element/xs:complexType/xs:all/xs:element";
+					NodeList anl = org.apache.xpath.XPathAPI.selectNodeList(document.getDocumentElement(), attributesXPath);
+					for(int k=0; k < anl.getLength(); k++)
+					{
+						Element childElement = (Element)anl.item(k);
+
+						String inputTypeId = childElement.getAttribute("type");
+
+						NodeList annotationNodeList = childElement.getElementsByTagName("xs:annotation");
+						if(annotationNodeList != null && annotationNodeList.getLength() > 0)
+						{
+							NodeList appinfoNodeList = childElement.getElementsByTagName("xs:appinfo");
+							if(appinfoNodeList != null && appinfoNodeList.getLength() > 0)
+							{
+								NodeList paramsNodeList = childElement.getElementsByTagName("params");
+								if(paramsNodeList != null && paramsNodeList.getLength() > 0)
+								{
+									Element paramsElement = (Element)paramsNodeList.item(0);
+
+									if(inputTypeId.equalsIgnoreCase("checkbox"))
+										addParameterElementIfNotExists(paramsElement, "widget", "0", "default");
+
+									if(inputTypeId.equalsIgnoreCase("checkbox") || inputTypeId.equalsIgnoreCase("select") || inputTypeId.equalsIgnoreCase("radiobutton"))
+									{
+										addParameterElementIfNotExists(paramsElement, "dataProviderClass", "", "");
+										addParameterElementIfNotExists(paramsElement, "dataProviderParameters", "", "");
+									}
+								}
+							}
+						}
+					}
 
 					//Now we deal with adding the validation part if not existent
 					String validatorsXPath = "/xs:schema/xs:complexType[@name = 'Validation']";
@@ -1617,6 +1778,15 @@ public class ContentTypeDefinitionController extends BaseController
 								{
 									Element paramsElement = (Element)paramsNodeList.item(0);
 
+									if(inputTypeId.equalsIgnoreCase("checkbox"))
+										addParameterElementIfNotExists(paramsElement, "widget", "0", "default");
+
+									if(inputTypeId.equalsIgnoreCase("checkbox") || inputTypeId.equalsIgnoreCase("select") || inputTypeId.equalsIgnoreCase("radiobutton"))
+									{
+										addParameterElementIfNotExists(paramsElement, "dataProviderClass", "", "");
+										addParameterElementIfNotExists(paramsElement, "dataProviderParameters", "", "");
+									}
+
 									addParameterElementIfNotExists(paramsElement, "initialData", "0", "");
 									isModified = true;
 								}
@@ -1649,6 +1819,15 @@ public class ContentTypeDefinitionController extends BaseController
 								if(paramsNodeList != null && paramsNodeList.getLength() > 0)
 								{
 									Element paramsElement = (Element)paramsNodeList.item(0);
+
+									if(inputTypeId.equalsIgnoreCase("checkbox"))
+										addParameterElementIfNotExists(paramsElement, "widget", "0", "default");
+
+									if(inputTypeId.equalsIgnoreCase("checkbox") || inputTypeId.equalsIgnoreCase("select") || inputTypeId.equalsIgnoreCase("radiobutton"))
+									{
+										addParameterElementIfNotExists(paramsElement, "dataProviderClass", "", "");
+										addParameterElementIfNotExists(paramsElement, "dataProviderParameters", "", "");
+									}
 
 									addParameterElementIfNotExists(paramsElement, "enableComponentPropertiesEditor", "0", "false");
 
@@ -1684,6 +1863,15 @@ public class ContentTypeDefinitionController extends BaseController
 								{
 									Element paramsElement = (Element)paramsNodeList.item(0);
 
+									if(inputTypeId.equalsIgnoreCase("checkbox"))
+										addParameterElementIfNotExists(paramsElement, "widget", "0", "default");
+
+									if(inputTypeId.equalsIgnoreCase("checkbox") || inputTypeId.equalsIgnoreCase("select") || inputTypeId.equalsIgnoreCase("radiobutton"))
+									{
+										addParameterElementIfNotExists(paramsElement, "dataProviderClass", "", "");
+										addParameterElementIfNotExists(paramsElement, "dataProviderParameters", "", "");
+									}
+
 									addParameterElementIfNotExists(paramsElement, "WYSIWYGToolbar", "0", "Default");
 									addParameterElementIfNotExists(paramsElement, "WYSIWYGExtraConfig", "0", "");
 
@@ -1718,7 +1906,56 @@ public class ContentTypeDefinitionController extends BaseController
 								{
 									Element paramsElement = (Element)paramsNodeList.item(0);
 
+									if(inputTypeId.equalsIgnoreCase("checkbox"))
+										addParameterElementIfNotExists(paramsElement, "widget", "0", "default");
+
+									if(inputTypeId.equalsIgnoreCase("checkbox") || inputTypeId.equalsIgnoreCase("select") || inputTypeId.equalsIgnoreCase("radiobutton"))
+									{
+										addParameterElementIfNotExists(paramsElement, "dataProviderClass", "", "");
+										addParameterElementIfNotExists(paramsElement, "dataProviderParameters", "", "");
+									}
+
 									addParameterElementIfNotExists(paramsElement, "WYSIWYGExtraConfig", "0", "");
+
+									isModified = true;
+								}
+							}
+						}
+					}
+				}
+				else if(schemaElement.getAttribute("version") != null && schemaElement.getAttribute("version").equalsIgnoreCase("2.5.1"))
+				{
+					isModified = true;
+					schemaElement.setAttribute("version", "2.5.2");
+
+					//Now we deal with the individual attributes and parameters
+					String attributesXPath = "/xs:schema/xs:complexType/xs:all/xs:element/xs:complexType/xs:all/xs:element";
+					NodeList anl = org.apache.xpath.XPathAPI.selectNodeList(document.getDocumentElement(), attributesXPath);
+					for(int k=0; k < anl.getLength(); k++)
+					{
+						Element childElement = (Element)anl.item(k);
+
+						String inputTypeId = childElement.getAttribute("type");
+
+						NodeList annotationNodeList = childElement.getElementsByTagName("xs:annotation");
+						if(annotationNodeList != null && annotationNodeList.getLength() > 0)
+						{
+							NodeList appinfoNodeList = childElement.getElementsByTagName("xs:appinfo");
+							if(appinfoNodeList != null && appinfoNodeList.getLength() > 0)
+							{
+								NodeList paramsNodeList = childElement.getElementsByTagName("params");
+								if(paramsNodeList != null && paramsNodeList.getLength() > 0)
+								{
+									Element paramsElement = (Element)paramsNodeList.item(0);
+
+									if(inputTypeId.equalsIgnoreCase("checkbox"))
+										addParameterElementIfNotExists(paramsElement, "widget", "0", "default");
+
+									if(inputTypeId.equalsIgnoreCase("checkbox") || inputTypeId.equalsIgnoreCase("select") || inputTypeId.equalsIgnoreCase("radiobutton"))
+									{
+										addParameterElementIfNotExists(paramsElement, "dataProviderClass", "", "");
+										addParameterElementIfNotExists(paramsElement, "dataProviderParameters", "", "");
+									}
 
 									isModified = true;
 								}

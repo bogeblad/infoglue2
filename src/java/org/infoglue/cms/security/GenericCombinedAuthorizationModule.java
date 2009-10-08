@@ -422,6 +422,13 @@ public class GenericCombinedAuthorizationModule implements AuthorizationModule, 
 		principal.getAutorizationModule().updateInfoGluePrincipal(systemUserVO, roleNames, groupNames);
 	}
 
+	public void updateInfoGluePrincipal(SystemUserVO systemUserVO, String oldPassword, String[] roleNames, String[] groupNames) throws Exception
+	{
+		InfoGluePrincipal principal = getAuthorizedInfoGluePrincipal(systemUserVO.getUserName());
+		
+		principal.getAutorizationModule().updateInfoGluePrincipal(systemUserVO, oldPassword, roleNames, groupNames);
+	}
+
 	/**
 	 * This method is used to send out a newpassword to an existing users.  
 	 */
@@ -534,6 +541,20 @@ public class GenericCombinedAuthorizationModule implements AuthorizationModule, 
 		InfoGlueGroup group = getAuthorizedInfoGlueGroup(groupVO.getGroupName());
 		
 		group.getAutorizationModule().updateInfoGlueGroup(groupVO, userNames);
+	}
+
+	public void addUserToGroup(String groupName, String userName) throws Exception
+	{
+		InfoGlueGroup group = getAuthorizedInfoGlueGroup(groupName);
+
+		group.getAutorizationModule().addUserToGroup(groupName, userName);
+	}
+	
+	public void addUserToRole(String roleName, String userName) throws Exception
+	{
+		InfoGlueRole role = getAuthorizedInfoGlueRole(roleName);
+		
+		role.getAutorizationModule().addUserToRole(roleName, userName);
 	}
 
 	public boolean getSupportUpdate()

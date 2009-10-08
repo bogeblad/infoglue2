@@ -267,6 +267,7 @@
 			#editPropertyFieldCSS("ServerNode.property.pageKey" "pageKey" "$this.getPropertyValue('pageKey')" "51" "$!serverNodeId")
 			#editPropertyFieldCSS("ServerNode.property.componentKey" "componentKey" "$this.getPropertyValue('componentKey')" "51" "$!serverNodeId")
 			#editPropertyTextAreaCSS("ServerNode.property.cacheSettings" "cacheSettings" "$this.getDataPropertyValue('cacheSettings')" "40" "6" "righttextarea" "$!serverNodeId")
+			#editPropertyTextAreaCSS("ServerNode.property.extraPublicationPersistentCacheNames" "extraPublicationPersistentCacheNames" "$this.getDataPropertyValue('extraPublicationPersistentCacheNames')" "40" "6" "righttextarea" "$!serverNodeId")
 			<div class="buttonRow">
 				<input type="image" src="$ui.getString("images.managementtool.buttons.save")" width="50" height="25" style="width: 50px;">
 				<a href="javascript:saveAndExit(document.editForm, 'ViewServerNodeProperties!saveAndExit.action');"><img src="$ui.getString("images.managementtool.buttons.saveAndExit")" width="80" height="25" border="0"></a>
@@ -426,6 +427,18 @@
 			#selectFieldCSS("ServerNode.property.internalSearchEngine" "internalSearchEngine" $this.getPropertyValue('internalSearchEngine') $searchEngineOptions)
 			#editPropertyFieldCSS("ServerNode.property.maxRows" "maxRows" "$this.getPropertyValue('maxRows')" "51" "$!serverNodeId")
 
+			#editPropertyFieldCSS("ServerNode.property.maxNumberOfAssetInSearches" "maxNumberOfAssetInSearches" "$this.getPropertyValue('maxNumberOfAssetInSearches')" "51" "$!serverNodeId")
+
+			#set($option1 = ["fckeditor2", "FCKEditor 2.x"])
+			#set($option2 = ["ckeditor3", "CKEditor 3.x"])
+			#set($editorOptions = [$option1, $option2]) 
+			#selectFieldCSS("ServerNode.property.prefferedWYSIWYG" "prefferedWYSIWYG" $this.getPropertyValue('prefferedWYSIWYG') $editorOptions)
+
+			#set($option1 = ["default", "Inherit"])
+			#set($option2 = ["classic", "Classic"])
+			#set($componentBindningAssetBrowserOptions = [$option1, $option2]) 
+			#selectFieldCSS("ServerNode.property.componentBindningAssetBrowser" "componentBindningAssetBrowser" $this.getPropertyValue('componentBindningAssetBrowser') $componentBindningAssetBrowserOptions)
+			
 			#editPropertyFieldCSS("ServerNode.property.workingStyleInformation" "workingStyleInformation" "$this.getPropertyValue('workingStyleInformation')" "51" "$!serverNodeId")
 			#editPropertyFieldCSS("ServerNode.property.finalStyleInformation" "finalStyleInformation" "$this.getPropertyValue('finalStyleInformation')" "51" "$!serverNodeId")
 			#editPropertyFieldCSS("ServerNode.property.publishStyleInformation" "publishStyleInformation" "$this.getPropertyValue('publishStyleInformation')" "51" "$!serverNodeId")
@@ -474,6 +487,14 @@
 			#selectFieldCSS("ServerNode.property.defaultPublicationEventFilter" "defaultPublicationEventFilter" $this.getPropertyValue('defaultPublicationEventFilter') $publicationEventFilterOptions)
 			#yesNoDropDownWithInheritCSS("ServerNode.property.protectDeliverWorking" "protectDeliverWorking" "$this.getPropertyValue('protectDeliverWorking')")
 			#yesNoDropDownWithInheritCSS("ServerNode.property.protectDeliverPreview" "protectDeliverPreview" "$this.getPropertyValue('protectDeliverPreview')")
+			
+			#yesNoDropDownWithInheritCSS("ServerNode.property.useAccessBasedProtocolRedirects" "useAccessBasedProtocolRedirects" "$this.getPropertyValue('useAccessBasedProtocolRedirects')")
+			#editPropertyFieldCSS("ServerNode.property.unprotectedProtocolName" "unprotectedProtocolName" "$this.getPropertyValue('unprotectedProtocolName')" "51" "$!serverNodeId")
+			#editPropertyFieldCSS("ServerNode.property.protectedProtocolName" "protectedProtocolName" "$this.getPropertyValue('protectedProtocolName')" "51" "$!serverNodeId")
+			#editPropertyFieldCSS("ServerNode.property.unprotectedProtocolPort" "unprotectedProtocolPort" "$this.getPropertyValue('unprotectedProtocolPort')" "51" "$!serverNodeId")
+			#editPropertyFieldCSS("ServerNode.property.protectedProtocolPort" "protectedProtocolPort" "$this.getPropertyValue('protectedProtocolPort')" "51" "$!serverNodeId")
+			#editPropertyFieldCSS("ServerNode.property.accessBasedProtocolRedirectHTTPCode" "accessBasedProtocolRedirectHTTPCode" "$this.getPropertyValue('accessBasedProtocolRedirectHTTPCode')" "51" "$!serverNodeId")
+			
 			#yesNoDropDownWithInheritCSS("ServerNode.property.allowInternalCallsBasedOnIP" "allowInternalCallsBasedOnIP" "$this.getPropertyValue('allowInternalCallsBasedOnIP')")
 			#yesNoDropDownWithInheritCSS("ServerNode.property.forceIdentityCheck" "forceIdentityCheck" "$this.getPropertyValue('forceIdentityCheck')")
 			#yesNoDropDownWithInheritCSS("ServerNode.property.enforceRigidContentAccess" "enforceRigidContentAccess" "$this.getPropertyValue('enforceRigidContentAccess')")
@@ -493,6 +514,7 @@
 			#editPropertyTextAreaCSS("ServerNode.property.internalDeliveryUrls" "internalDeliveryUrls" "$this.getDataPropertyValue('internalDeliveryUrls')" "50" "5" "normaltextarea" "$!serverNodeId")
 			#editPropertyTextAreaCSS("ServerNode.property.publicDeliveryUrls" "publicDeliveryUrls" "$this.getDataPropertyValue('publicDeliveryUrls')" "50" "5" "normaltextarea" "$!serverNodeId")
 			#editPropertyTextAreaCSS("ServerNode.property.deploymentServers" "deploymentServers" "$this.getDataPropertyValue('deploymentServers')" "50" "5" "normaltextarea" "$!serverNodeId")
+			#editPropertyTextAreaCSS("ServerNode.property.vcServers" "vcServers" "$this.getDataPropertyValue('vcServers')" "50" "5" "normaltextarea" "$!serverNodeId")
 			#editPropertyTextAreaCSS("ServerNode.property.toolLanguages" "toolLanguages" "$this.getDataPropertyValue('toolLanguages')" "50" "3" "normaltextarea" "$!serverNodeId")
 
 			#editPropertyFieldCSS("ServerNode.property.edition.pageSize" "edition.pageSize" "$this.getPropertyValue('edition.pageSize')" "51" "$!serverNodeId")

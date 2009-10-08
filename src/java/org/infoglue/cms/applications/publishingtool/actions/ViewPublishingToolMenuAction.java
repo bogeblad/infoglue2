@@ -23,9 +23,11 @@
 
 package org.infoglue.cms.applications.publishingtool.actions;
 
-import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
-import org.infoglue.cms.controllers.kernel.impl.simple.RepositoryController;
-import org.infoglue.cms.entities.management.RepositoryVO;
+import org.infoglue.cms.applications.common.actions.TreeViewAbstractAction;
+import org.infoglue.cms.treeservice.ss.ManagementToolNodeSupplier;
+import org.infoglue.cms.treeservice.ss.PublishingToolNodeSupplier;
+
+import com.frovi.ss.Tree.INodeSupplier;
 
 /**
  * This class implements the action class for the menu in the management tool.
@@ -33,37 +35,16 @@ import org.infoglue.cms.entities.management.RepositoryVO;
  * @author Mattias Bogeblad  
  */
 
-public class ViewPublishingToolMenuAction extends InfoGlueAbstractAction
+public class ViewPublishingToolMenuAction extends TreeViewAbstractAction
 {
 	private static final long serialVersionUID = 1L;
 
-    private RepositoryVO repositoryVO;
-    private Integer repositoryId;
-	private String name;
-    
-    public void setRepositoryId(Integer repositoryId)
-    {
-    	this.repositoryId = repositoryId;
-    }
-    public Integer getRepositoryId()
-    {
-    	return this.repositoryId;
-    }
-    private void setName(String name)
-    {
-    	this.name = name;	
-    }
-    public String getName()
-    {
-    	return this.name;	
-    }
-    public String doExecute() throws Exception
-    {
-    	if(this.getRepositoryId().intValue() > 0){
-	    	this.repositoryVO = RepositoryController.getController().getRepositoryVOWithId(this.repositoryId);
-	    	this.setName(this.repositoryVO.getName());
-    	}
-        return "success";
-    }
-               
+	/**
+	 * @see org.infoglue.cms.applications.common.actions.TreeViewAbstractAction#getNodeSupplier()
+	 */
+	protected INodeSupplier getNodeSupplier() throws Exception
+	{
+		return new PublishingToolNodeSupplier(this.getInfoGluePrincipal());
+	}
+	               
 }

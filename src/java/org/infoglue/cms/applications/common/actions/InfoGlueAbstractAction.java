@@ -31,6 +31,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.applications.databeans.LinkBean;
@@ -40,11 +42,13 @@ import org.infoglue.cms.controllers.kernel.impl.simple.ContentControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.DigitalAssetController;
 import org.infoglue.cms.controllers.kernel.impl.simple.InfoGluePrincipalControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
+import org.infoglue.cms.controllers.kernel.impl.simple.RepositoryController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeVersionControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.ToolbarController;
 import org.infoglue.cms.controllers.kernel.impl.simple.UserControllerProxy;
 import org.infoglue.cms.entities.content.ContentVO;
+import org.infoglue.cms.entities.content.DigitalAssetVO;
 import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.entities.structure.SiteNodeVO;
 import org.infoglue.cms.exception.Bug;
@@ -68,6 +72,8 @@ import webwork.config.Configuration;
 public abstract class InfoGlueAbstractAction extends WebworkAbstractAction
 {
     private final static Logger logger = Logger.getLogger(InfoGlueAbstractAction.class.getName());
+
+	private final static ToolbarController toolbarController = new ToolbarController();
 
     protected String colorScheme = null; 
     
@@ -136,6 +142,29 @@ public abstract class InfoGlueAbstractAction extends WebworkAbstractAction
 	    return this.getHttpSession().getMaxInactiveInterval();
 	}
 
+	public List getAuthorizedRepositoryVOList() throws Exception
+	{
+		return RepositoryController.getController().getAuthorizedRepositoryVOList(this.getInfoGluePrincipal(), false);
+	}
+	
+	public Integer getRepositoryId()
+	{
+		Integer repositoryId = (Integer)this.getHttpSession().getAttribute("repositoryId");
+		if(repositoryId == null)
+		{
+    		String prefferedRepositoryId = CmsPropertyHandler.getPreferredRepositoryId(this.getInfoGluePrincipal().getName());
+    		if(prefferedRepositoryId != null && prefferedRepositoryId.length() > 0)
+    		{
+    			repositoryId = new Integer(prefferedRepositoryId);
+    			getHttpSession().setAttribute("repositoryId", repositoryId);		
+    		}
+
+			//getAuthorizedRepositoryVOList();
+		}
+		
+		return repositoryId;
+	}
+
 	/**
 	 * Gets a list of tool languages
 	 */
@@ -145,23 +174,47 @@ public abstract class InfoGlueAbstractAction extends WebworkAbstractAction
 		return CmsPropertyHandler.getToolLocales();
 	}
 
+	public List getToolbarButtons(String toolbarKey, HttpServletRequest request)
+	{
+		return toolbarController.getToolbarButtons(toolbarKey, getInfoGluePrincipal(), getLocale(), request, false);
+	}
+
+	public List getToolbarButtons(String toolbarKey, HttpServletRequest request, boolean disableCloseButton)
+	{
+		return toolbarController.getToolbarButtons(toolbarKey, getInfoGluePrincipal(), getLocale(), request, disableCloseButton);
+	}
+
 	public List getToolbarButtons(String toolbarKey, String primaryKey, String extraParameters)
 	{
-		ToolbarController toolbarController = new ToolbarController();
+		return toolbarController.getToolbarButtons(toolbarKey, getInfoGluePrincipal(), getLocale(), getRequest(), false);
+	}
+
+	public List getRightToolbarButtons(String toolbarKey, String primaryKey, String extraParameters, boolean disableCloseButton)
+	{
+		return toolbarController.getRightToolbarButtons(toolbarKey, getInfoGluePrincipal(), getLocale(), getRequest(), disableCloseButton);
+	}
+	
+	public List getFooterToolbarButtons(String toolbarKey, String primaryKey, String extraParameters, boolean disableCloseButton)
+	{
+		return toolbarController.getFooterToolbarButtons(toolbarKey, getInfoGluePrincipal(), getLocale(), getRequest(), disableCloseButton);
+	}
+
+/*
+	public List getToolbarButtons(String toolbarKey, String primaryKey, String extraParameters)
+	{
 		return toolbarController.getToolbarButtons(toolbarKey, getInfoGluePrincipal(), getLocale(), primaryKey, extraParameters);
 	}
 
 	public List getRightToolbarButtons(String toolbarKey, String primaryKey, String extraParameters, boolean disableCloseButton)
 	{
-		ToolbarController toolbarController = new ToolbarController();
 		return toolbarController.getRightToolbarButtons(toolbarKey, getInfoGluePrincipal(), getLocale(), primaryKey, extraParameters, disableCloseButton);
 	}
-
+	
 	public List getFooterToolbarButtons(String toolbarKey, String primaryKey, String extraParameters, boolean disableCloseButton)
 	{
-		ToolbarController toolbarController = new ToolbarController();
 		return toolbarController.getFooterToolbarButtons(toolbarKey, getInfoGluePrincipal(), getLocale(), primaryKey, extraParameters, disableCloseButton);
 	}
+*/
 
 	/**
 	 * This method returns a propertyValue for the logged in user.
@@ -303,7 +356,7 @@ public abstract class InfoGlueAbstractAction extends WebworkAbstractAction
 				principal = UserControllerProxy.getController().getUser(userName);
 				
 				if(principal != null)
-					CacheController.cacheObject("userCache", "anonymous", principal);
+					CacheController.cacheObject("userCache", userName, principal);
 			}			
 		}
 		catch(Exception e) 
@@ -407,6 +460,16 @@ public abstract class InfoGlueAbstractAction extends WebworkAbstractAction
 		return getInfoGluePrincipal().getName();
 	}
 
+	public String getInfoGlueVersion()
+	{
+		return CmsPropertyHandler.getInfoGlueVersion();
+	}
+
+	public String getInfoGlueVersionReleaseDate()
+	{
+		return CmsPropertyHandler.getInfoGlueVersionReleaseDate();
+	}
+
 	/**
 	 * Get a single parameter from the ActionContext (hides Servlet implementation)
 	 */
@@ -476,6 +539,11 @@ public abstract class InfoGlueAbstractAction extends WebworkAbstractAction
 		}
 		
 		return maxSize;
+	}
+	
+	public String getPrefferedWYSIWYG()
+	{
+		return CmsPropertyHandler.getPrefferedWYSIWYG();
 	}
 	
     public String getColorScheme()
@@ -788,6 +856,30 @@ public abstract class InfoGlueAbstractAction extends WebworkAbstractAction
 		return imageHref;
 	}
 
+	/**
+	 * This method fetches the blob from the database and saves it on the disk.
+	 * Then it returnes a url for it
+	 */
+	
+	public String getDigitalAssetThumbnailUrl(Integer contentId, Integer languageId, String assetKey, boolean useLanguageFallback, int canvasWidth, int canvasHeight, String canvasColorHexCode, String alignment, String valignment, int width, int height, int quality) throws Exception
+	{
+		String imageHref = null;
+		try
+		{
+			ColorHelper ch = new ColorHelper();
+			Color canvasColor = ch.getHexColor(canvasColorHexCode);
+			DigitalAssetVO assetVO = DigitalAssetController.getDigitalAssetVO(contentId, languageId, assetKey, useLanguageFallback);
+       		
+			imageHref = DigitalAssetController.getDigitalAssetThumbnailUrl(assetVO.getId(), canvasWidth, canvasHeight, canvasColor, alignment, valignment, width, height, quality);
+		}
+		catch(Exception e)
+		{
+			logger.warn("We could not get the url of the thumbnail: " + e.getMessage(), e);
+			imageHref = e.getMessage();
+		}
+		
+		return imageHref;
+	}
 	
 	/**
 	 * This method fetches the blob from the database and saves it on the disk.
@@ -809,7 +901,28 @@ public abstract class InfoGlueAbstractAction extends WebworkAbstractAction
 		
 		return imageHref;
 	}
+
+	/**
+	 * This method fetches the blob from the database and saves it on the disk.
+	 * Then it returnes a url for it
+	 */
 	
+	public String getDigitalAssetUrl(Integer contentId, Integer languageId, String assetKey) throws Exception
+	{
+		String imageHref = null;
+		try
+		{
+			imageHref = DigitalAssetController.getDigitalAssetUrl(contentId, languageId, assetKey, true);
+		}
+		catch(Exception e)
+		{
+			logger.warn("We could not get the url of the digitalAsset: " + e.getMessage(), e);
+			imageHref = e.getMessage();
+		}
+		
+		return imageHref;
+	}
+
 	
 	/**
 	 * This method fetches the blob from the database and saves it on the disk.
@@ -835,8 +948,6 @@ public abstract class InfoGlueAbstractAction extends WebworkAbstractAction
 
 	public Integer getDigitalAssetContentId(Integer digitalAssetId) throws Exception
 	{
-		StringBuffer sb = new StringBuffer();
-		
 		return DigitalAssetController.getController().getContentId(digitalAssetId);
 	}
 
@@ -873,5 +984,9 @@ public abstract class InfoGlueAbstractAction extends WebworkAbstractAction
 		return sb.toString();
 	}
 
+	public SiteNodeVO getRepositoryRootSiteNode(Integer repositoryId) throws Exception
+	{
+		return SiteNodeController.getController().getRootSiteNodeVO(repositoryId);
+	}
 }
 

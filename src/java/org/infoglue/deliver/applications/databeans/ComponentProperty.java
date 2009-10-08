@@ -63,6 +63,7 @@ public class ComponentProperty
 	private String value;
 	private boolean isMultipleBinding 		= false;
 	private boolean isAssetBinding 			= false;
+	private String assetMask 				= ".*";
 	private boolean isPuffContentForPage	= false;
 	private Integer detailSiteNodeId		= null;
 	private boolean WYSIWYGEnabled 			= false;
@@ -241,6 +242,17 @@ public class ComponentProperty
 		this.isAssetBinding = isAssetBinding;
 	}
 
+	public String getAssetMask()
+	{
+		return this.assetMask;
+	}
+
+	public void setAssetMask(String assetMask)
+	{
+		if(assetMask != null)
+			this.assetMask = assetMask;
+	}
+
 	public boolean getIsPuffContentForPage()
 	{
 		return isPuffContentForPage;
@@ -288,7 +300,7 @@ public class ComponentProperty
         {
             if (i > 0)
             {
-                sb.append("&");
+                sb.append("&amp;");
             }
 
             sb.append("allowedContentTypeNames=" + URLEncoder.encode(allowedContentTypeNamesArray[i], "UTF-8"));
@@ -305,7 +317,7 @@ public class ComponentProperty
         {
             if (i > 0)
             {
-                sb.append("&");
+                sb.append("&amp;");
             }
 
             allowedContentTypeName = allowedContentTypeNamesArray[i];

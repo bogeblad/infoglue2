@@ -1,13 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?> 
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<SCRIPT LANGUAGE="JavaScript">
-function reloadMenu()
-		{
-			var menuFrame = parent.header;
-			menuFrame.location.reload();
-		}
-</SCRIPT>
 
 #beginManagementTool("tool.managementtool.repositoryList.header" "tool.managementtool.repositoryList.header" "")
 
@@ -25,5 +18,5 @@ function reloadMenu()
 	#lvAddRow($row $cnt $repositoryId)
 #end
 #lvEnd()
-<script>reloadMenu()</script>
+
 #endManagementTool()

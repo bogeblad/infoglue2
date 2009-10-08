@@ -3,7 +3,7 @@
 <script language="JavaScript">
 <!--
 	$(document).ready(function(){
-		$("#tabsContainer > ul").tabs( { 
+		$("#tabsContainer").tabs( { 
 				show:function() { resizeInlineTabDivsWithAmount(20,20); },
 			  	select:function(e, ui) { 
 			  		//alert("ui: " + ui.index);
@@ -42,7 +42,8 @@
 			  		}
 			  	} 
 		});
-		setTimeout("resizeInlineTabDivsWithAmount(20,20)", 100);
+		setTimeout("resizeResizableDiv(195, 0)", 100);
+		//setTimeout("resizeInlineTabDivsWithAmount(20,20)", 100);
 		setTimeout("init()", 10);
 	});
 	
@@ -103,7 +104,7 @@
 
 <div onfocus="this.blur();">
     
-	<div id="tabsContainer" class="flora" style="background-color: #f7f7f7;">      
+	<div id="tabsContainer" class="resizableDiv" style="background-color: #f7f7f7;">      
 
 		<ul>
 			#if($contentVO.id)

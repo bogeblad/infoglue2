@@ -959,14 +959,14 @@
 				<!-- Handles the input type checkbox -->
 					$attributeTitle ("$attribute.name") $attributeDescription <br/>
 	    			#foreach($value in $attribute.getContentTypeAttribute("values").getContentTypeAttributeParameterValues())
-						<input $readonly type="checkbox" id="$attribute.name" name="$attribute.name" value="$value.id" #checkChecked("$value.id" "$this.getAttributeValue($attribute.name)") $onchange>$value.getLocalizedValue("label", $session.locale)
+						<input $readonly type="checkbox" id="$attribute.name" name="$attribute.name" value="$value.id" #checkCheckedBySplit("$value.id" "$this.getAttributeValue($attribute.name)") $onchange>$value.getLocalizedValue("label", $session.locale)
 	    			#end
 
 				#elseif($attribute.inputType == "radiobutton")
 				<!-- Handles the input type radiobutton -->
 					$attributeTitle ("$attribute.name") $attributeDescription <br/>
 	    			#foreach($value in $attribute.getContentTypeAttribute("values").getContentTypeAttributeParameterValues())
-						<input $readonly type="radio" id="$attribute.name" name="$attribute.name" value="$value.id" #checkChecked("$value.id" "$this.getAttributeValue($attribute.name)") $onchange>$value.getLocalizedValue("label", $session.locale)
+						<input $readonly type="radio" id="$attribute.name" name="$attribute.name" value="$value.id" #checkCheckedBySplit("$value.id" "$this.getAttributeValue($attribute.name)") $onchange>$value.getLocalizedValue("label", $session.locale)
 	    			#end
 
 				#end

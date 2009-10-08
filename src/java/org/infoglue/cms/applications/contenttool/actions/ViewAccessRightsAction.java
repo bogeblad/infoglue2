@@ -39,6 +39,7 @@ import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeVersionController
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeVersionControllerProxy;
 import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.management.AccessRightVO;
+import org.infoglue.cms.entities.management.InterceptionPointVO;
 import org.infoglue.cms.entities.structure.SiteNodeVersionVO;
 import org.infoglue.cms.exception.AccessConstraintException;
 import org.infoglue.cms.exception.Bug;
@@ -89,9 +90,17 @@ public class ViewAccessRightsAction extends InfoGlueAbstractAction
 			ContentVO contentVO = ContentControllerProxy.getController().getContentVOWithId(contentId);
 			if(!contentVO.getCreatorName().equalsIgnoreCase(this.getInfoGluePrincipal().getName()))
 			{
-				Integer protectedContentId = ContentControllerProxy.getController().getProtectedContentId(contentId);
 				if(ContentControllerProxy.getController().getIsContentProtected(contentId) && !AccessRightController.getController().getIsPrincipalAuthorized(this.getInfoGluePrincipal(), "Content.ChangeAccessRights", contentId.toString()))
-					ceb.add(new AccessConstraintException("Content.contentId", "1006"));
+				{
+					InterceptionPointVO changeInterceptionPointVO = InterceptionPointController.getController().getInterceptionPointVOWithName("Content.ChangeAccessRights");
+					InterceptionPointVO readInterceptionPointVO = InterceptionPointController.getController().getInterceptionPointVOWithName("Content.Read");
+					List changeAccessRightVOList = AccessRightController.getController().getAccessRightVOListOnly(changeInterceptionPointVO.getId(), "" + contentId);
+					List readAccessRightVOList = AccessRightController.getController().getAccessRightVOListOnly(readInterceptionPointVO.getId(), "" + contentId);
+					System.out.println("changeAccessRightVOList:" + changeAccessRightVOList.size());
+					System.out.println("readAccessRightVOList:" + readAccessRightVOList.size());
+					if(changeAccessRightVOList.size() > 0 && readAccessRightVOList.size() > 0)
+						ceb.add(new AccessConstraintException("Content.contentId", "1006"));
+				}
 			}
 		}
 		else if(interceptionPointCategory.equalsIgnoreCase("SiteNodeVersion"))
@@ -103,9 +112,20 @@ public class ViewAccessRightsAction extends InfoGlueAbstractAction
 			SiteNodeVersionVO siteNodeVersionVO = SiteNodeVersionController.getController().getSiteNodeVersionVOWithId(siteNodeVersionId);
 			if(!siteNodeVersionVO.getVersionModifier().equalsIgnoreCase(this.getInfoGluePrincipal().getName()))
 			{
+				boolean isSiteNodeVersionProtected = SiteNodeVersionControllerProxy.getSiteNodeVersionControllerProxy().getIsSiteNodeVersionProtected(siteNodeVersionVO.getId());
+				System.out.println("isSiteNodeVersionProtected:" + isSiteNodeVersionProtected);
 				Integer protectedSiteNodeVersionId = SiteNodeVersionControllerProxy.getSiteNodeVersionControllerProxy().getProtectedSiteNodeVersionId(siteNodeVersionId);
 				if(protectedSiteNodeVersionId != null && !AccessRightController.getController().getIsPrincipalAuthorized(this.getInfoGluePrincipal(), "SiteNodeVersion.ChangeAccessRights", siteNodeVersionId.toString()))
-					ceb.add(new AccessConstraintException("SiteNodeVersion.siteNodeId", "1006"));
+				{
+					InterceptionPointVO changeInterceptionPointVO = InterceptionPointController.getController().getInterceptionPointVOWithName("SiteNodeVersion.ChangeAccessRights");
+					InterceptionPointVO readInterceptionPointVO = InterceptionPointController.getController().getInterceptionPointVOWithName("SiteNodeVersion.Read");
+					List changeAccessRightVOList = AccessRightController.getController().getAccessRightVOListOnly(changeInterceptionPointVO.getId(), "" + siteNodeVersionVO.getId());
+					List readAccessRightVOList = AccessRightController.getController().getAccessRightVOListOnly(readInterceptionPointVO.getId(), "" + siteNodeVersionVO.getId());
+					System.out.println("changeAccessRightVOList:" + changeAccessRightVOList.size());
+					System.out.println("readAccessRightVOList:" + readAccessRightVOList.size());
+					if(changeAccessRightVOList.size() > 0 && readAccessRightVOList.size() > 0)
+						ceb.add(new AccessConstraintException("SiteNodeVersion.siteNodeId", "1006"));
+				}
 			}
 		}
 		

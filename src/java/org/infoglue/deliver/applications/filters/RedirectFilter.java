@@ -67,14 +67,11 @@ public class RedirectFilter implements Filter
 
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException 
     {       
-        long end, start = System.currentTimeMillis();
         HttpServletRequest httpRequest = (HttpServletRequest) servletRequest;
         HttpServletResponse httpResponse = (HttpServletResponse) servletResponse;
-        //String requestURI = URLDecoder.decode(getContextRelativeURI(httpRequest), "UTF-8");
         String requestURL = httpRequest.getRequestURL().toString();
 
         logger.info("Redirect filter requestURL:" + requestURL);
-        
         
         try
         {
@@ -123,30 +120,40 @@ public class RedirectFilter implements Filter
 
 
     // @TODO should I URLDecode the strings first? (incl. context path)
-    private String getContextRelativeURI(HttpServletRequest request) {
+    private String getContextRelativeURI(HttpServletRequest request) 
+    {
         String requestURI = request.getRequestURI();
         String contextPath = request.getContextPath();
-        if (contextPath != null && requestURI.length() > 0) {
+        if (contextPath != null && requestURI.length() > 0) 
+        {
             requestURI = requestURI.substring(contextPath.length(), requestURI.length());
         }
+        
         if (requestURI.length() == 0)
             return "/";
+        
         return requestURI;
     }
     
-    private String[] splitString(String str, String delimiter) {
-        List list = new ArrayList();
+    private String[] splitString(String str, String delimiter) 
+    {
+        List<String> list = new ArrayList<String>();
         StringTokenizer st = new StringTokenizer(str, delimiter);
-        while (st.hasMoreTokens()) {
+        while (st.hasMoreTokens()) 
+        {
             // Updated to handle portal-url:s
             String t = st.nextToken();
-            if (t.startsWith("_")) {
+            if (t.startsWith("_")) 
+            {
                 break;
-            } else {
+            } 
+            else 
+            {
                 // Not related to portal - add
                 list.add(t.trim());
             }
         }
+        
         return (String[]) list.toArray(new String[list.size()]);
     }
 

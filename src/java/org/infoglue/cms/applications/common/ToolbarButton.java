@@ -39,18 +39,29 @@ public class ToolbarButton
 	private String backgroundImageAlignment	= "left";
 	private String cssClass   				= "";
 	private String actionURL  	    		= "";
+	private String target					= "inlineDiv";
 	private boolean isJavascript			= false;
-	//private Integer height				= new Integer(22);
-	//private Integer width					= new Integer(76);
+	private boolean useConfirmation			= false;
+	private String confirmationTitle		= null;
+	private String confirmationText			= null;
 	private List<ToolbarButton> subButtons 	= new ArrayList<ToolbarButton>();
-	//private boolean isSelfContained		= false;
 
 	public ToolbarButton(String id, String text, String title, String actionURL, String backgroundImageURL, String cssClass)
 	{
-		this(id, text, title, actionURL, backgroundImageURL, "left", cssClass, false);
+		this(id, text, title, actionURL, backgroundImageURL, "left", cssClass, false, false, "", "", "inlineDiv");
+	}
+
+	public ToolbarButton(String id, String text, String title, String actionURL, String backgroundImageURL, String cssClass, String target)
+	{
+		this(id, text, title, actionURL, backgroundImageURL, "left", cssClass, false, false, "", "", target);
 	}
 
 	public ToolbarButton(String id, String text, String title, String actionURL, String backgroundImageURL, String backgroundImageAlignment, String cssClass, boolean isJavascript)
+	{
+		this(id, text, title, actionURL, backgroundImageURL, backgroundImageAlignment, cssClass, isJavascript, false, "", "", "inlineDiv");
+	}
+	
+	public ToolbarButton(String id, String text, String title, String actionURL, String backgroundImageURL, String backgroundImageAlignment, String cssClass, boolean isJavascript, boolean useConfirmation, String confirmationTitle, String confirmationText, String target)
 	{
 		this.id 						= id;
 		this.text 						= text;
@@ -60,6 +71,10 @@ public class ToolbarButton
 		this.cssClass					= cssClass;
 		this.actionURL 					= actionURL;
 		this.isJavascript 				= isJavascript;
+		this.useConfirmation			= useConfirmation;
+		this.confirmationTitle			= confirmationTitle;
+		this.confirmationText			= confirmationText;
+		this.target 					= target;
 	}
 
 	public String getId()
@@ -87,6 +102,11 @@ public class ToolbarButton
 		return actionURL;
 	}
 
+	public String getTarget()
+	{
+		return target;
+	}
+
 	public boolean getIsJavascript()
 	{
 		return isJavascript;
@@ -107,4 +127,19 @@ public class ToolbarButton
 		return cssClass;
 	}
 	
+	public boolean useConfirmation() 
+	{
+		return useConfirmation;
+	}
+
+	public String getConfirmationTitle() 
+	{
+		return confirmationTitle;
+	}
+
+	public String getConfirmationText() 
+	{
+		return confirmationText;
+	}
+
 }

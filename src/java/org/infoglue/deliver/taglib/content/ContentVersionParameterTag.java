@@ -184,5 +184,21 @@ public class ContentVersionParameterTag extends AbstractTag implements ContentVe
 	{
 	    this.contentVersion.put("allowExternalLinks", evaluate("remoteContentService", "allowExternalLinks", allowExternalLinks, Boolean.class));
 	}
-	
+
+	/**
+	 * 
+	 */
+	public void setAllowDollarSigns(final String allowDollarSigns) throws JspException
+	{
+	    this.contentVersion.put("allowDollarSigns", evaluate("remoteContentService", "allowDollarSigns", allowDollarSigns, Boolean.class));
+	}
+
+	/**
+	 * 
+	 */
+	public void setAllowAnchorSigns(final String allowAnchorSigns) throws JspException
+	{
+	    this.contentVersion.put("allowAnchorSigns", evaluate("remoteContentService", "allowAnchorSigns", allowAnchorSigns, Boolean.class));
+	}
+
 }

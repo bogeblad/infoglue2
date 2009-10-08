@@ -56,6 +56,7 @@ public class SimpleStringManager implements StringManager
         { 
             logger.info("Created a SimpleStringManager for package bundleName" + bundleName + ":" + locale);
             this.bundle = ResourceBundle.getBundle(bundleName, locale);
+            //ResourceBundle.getBundle(baseName, control)
         } 
         catch(MissingResourceException e) 
         {

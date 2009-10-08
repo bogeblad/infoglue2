@@ -71,6 +71,8 @@ public class DownloadAssetAction extends InfoGlueAbstractAction
 	private Integer languageId;
 	private String assetKey;
 	
+	private Principal principal = null;
+	
 	private DigitalAssetVO digitalAssetVO;
 	private String assetFilePath = "";
     
@@ -83,11 +85,13 @@ public class DownloadAssetAction extends InfoGlueAbstractAction
     {
     	HttpServletResponse response = this.getResponse();
     	
-        if(digitalAssetId != null && !ServerNodeController.getController().getIsIPAllowed(getRequest()))
+        if(digitalAssetId != null/* && !ServerNodeController.getController().getIsIPAllowed(getRequest())*/)
         {
             logger.error("A client with IP " + getRequest().getRemoteAddr() + " was denied access to the download action. Could be a hack attempt or you have just not configured the allowed IP-addresses correct.");
             return null;
         }
+
+        principal = (Principal)this.getHttpSession().getAttribute("infogluePrincipal");
 
     	getAssetInformation();
     	//logger.info("assetFilePath:" + assetFilePath);
@@ -164,18 +168,25 @@ public class DownloadAssetAction extends InfoGlueAbstractAction
 		    		db.begin();
 		    		DeliveryContext deliveryContext = DeliveryContext.getDeliveryContext();
 		        	//assetUrl = cdc.getAssetUrl(db, contentId, languageId, assetKey, siteNodeId, true, deliveryContext, this.getInfoGluePrincipal());
-		    		logger.info("principal:" + this.getInfoGluePrincipal());
-		        	Principal principal = this.getInfoGluePrincipal();
-		        	if(principal == null)
-		        		principal = getAnonymousPrincipal();
-		        		
+		    		logger.info("principal:" + this.principal);
+		    		if(this.principal == null)
+		    		{
+			        	this.principal = this.getInfoGluePrincipal();
+			        	if(this.principal == null)
+			        		this.principal = getAnonymousPrincipal();
+		    		}
+			        //System.out.println("principal:" + principal);
 		    		Integer digitalAssetId = cdc.getDigitalAssetId(db, contentId, languageId, assetKey, siteNodeId, true, deliveryContext, (InfoGluePrincipal)principal);
+		        	//System.out.println("digitalAssetId:" + digitalAssetId);
 		        	if(digitalAssetId != null)
 		        	{
 		        		this.digitalAssetVO = DigitalAssetController.getSmallDigitalAssetVOWithId(digitalAssetId, db);
+		        		logger.info("digitalAssetVO:" + digitalAssetVO);
+
 		        		if(this.digitalAssetVO != null)
 		        		{
 		        			this.assetFilePath = DigitalAssetController.getDigitalAssetProtectedFilePath(digitalAssetId);
+		        			logger.info("assetFilePath:" + assetFilePath);
 		        		}
 		        	}
 		        	commitTransaction(db);

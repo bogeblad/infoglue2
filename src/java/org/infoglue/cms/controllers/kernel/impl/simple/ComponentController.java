@@ -414,9 +414,14 @@ public class ComponentController extends BaseController
 				String allowedContentTypeNames = componentPropertyDefinition.getAllowedContentTypeNames();
 				String allowedContentTypeName = allowedContentTypeNames.split(",")[0];
 				ContentTypeDefinitionVO createContentTypeDefinitionVO = ContentTypeDefinitionController.getController().getContentTypeDefinitionVOWithName(allowedContentTypeName, db);
+				
 				logger.info("method:" + method);
 				logger.info("path:" + path);
-				logger.info("createContentTypeDefinitionVO:" + createContentTypeDefinitionVO.getName());
+				logger.info("createContentTypeDefinitionVO:" + createContentTypeDefinitionVO);
+				
+				if(createContentTypeDefinitionVO == null || method == null)
+					continue;
+					
 				if(path.indexOf("/") == 0)
 					path = path.substring(1);
 				

@@ -41,6 +41,7 @@ import org.dom4j.Element;
 import org.dom4j.tree.DefaultAttribute;
 import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.applications.common.VisualFormatter;
+import org.infoglue.cms.applications.databeans.GenericOptionDefinition;
 import org.infoglue.cms.applications.databeans.ReferenceBean;
 import org.infoglue.cms.controllers.kernel.impl.simple.AccessRightController;
 import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
@@ -143,7 +144,7 @@ public class PageEditorHelper extends BaseDeliveryController
 		sb.append("	<div id=\"componentPropertiesHandle\"><div id=\"leftComponentPropertiesHandle\">Properties - " + componentName + " - " + slotName + "</div><div id=\"rightComponentPropertiesHandle\"><a href=\"javascript:closeDiv('componentProperties');\" class=\"white\"><img src=\"" + componentEditorUrl + "/images/closeIcon.gif\" border=\"0\"/></a></div></div>");
 		sb.append("	<div id=\"componentPropertiesBody\">");
 		
-		sb.append("	<form id=\"componentPropertiesForm\" name=\"component" + componentId + "PropertiesForm\" action=\"" + componentEditorUrl + "ViewSiteNodePageComponents!updateComponentProperties.action\" method=\"POST\">");
+		sb.append("	<form id=\"componentPropertiesForm\" name=\"component" + componentId + "PropertiesForm\" action=\"" + componentEditorUrl + "ViewSiteNodePageComponents!updateComponentProperties.action\" method=\"post\">");
 		if(showLegend != null && showLegend.equals("true"))
 		{
 			sb.append("		<fieldset>");
@@ -273,7 +274,12 @@ public class PageEditorHelper extends BaseDeliveryController
 							if(componentProperty.getIsMultipleBinding())
 							{
 								if(componentProperty.getIsAssetBinding())
-									assignUrl = componentEditorUrl + "ViewSiteNodePageComponents!showContentTreeForMultipleAssetBinding.action?repositoryId=" + repositoryId + "&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&propertyName=" + componentProperty.getName() + allowedContentTypeIdParameters + "&showSimple=" + showSimple;
+								{
+									if(CmsPropertyHandler.getComponentBindningAssetBrowser().equalsIgnoreCase("classic"))
+										assignUrl = componentEditorUrl + "ViewSiteNodePageComponents!showContentTreeForMultipleAssetBinding.action?repositoryId=" + repositoryId + "&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&propertyName=" + componentProperty.getName() + allowedContentTypeIdParameters + "&showSimple=" + showSimple;
+									else
+										assignUrl = componentEditorUrl + "ViewContentVersion!viewAssetBrowserForMultipleComponentBindingV3.action?repositoryId=" + repositoryId + "&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&propertyName=" + componentProperty.getName() + allowedContentTypeIdParameters + "&assetTypeFilter=" + componentProperty.getAssetMask() + "&showSimple=" + showSimple;
+								}
 								else
 									assignUrl = componentEditorUrl + "ViewSiteNodePageComponents!showContentTreeForMultipleBinding.action?repositoryId=" + repositoryId + "&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&propertyName=" + componentProperty.getName() + allowedContentTypeIdParameters + "&showSimple=" + showSimple;
 							}
@@ -289,7 +295,10 @@ public class PageEditorHelper extends BaseDeliveryController
 										assignedParameters = "&assignedContentId=" + componentBinding.getEntityId() + "&assignedAssetKey=" + componentBinding.getAssetKey() + "&assignedPath=" + formatter.encodeURI(componentProperty.getValue());
 									}
 									
-									assignUrl = componentEditorUrl + "ViewContentVersion!viewAssetsForComponentBinding.action?repositoryId=" + repositoryId + "&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&propertyName=" + componentProperty.getName() + allowedContentTypeIdParameters + "&showSimple=" + showSimple + assignedParameters;
+									if(CmsPropertyHandler.getComponentBindningAssetBrowser().equalsIgnoreCase("classic"))
+										assignUrl = componentEditorUrl + "ViewContentVersion!viewAssetsForComponentBinding.action?repositoryId=" + repositoryId + "&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&propertyName=" + componentProperty.getName() + allowedContentTypeIdParameters + "&showSimple=" + showSimple + assignedParameters;
+									else
+										assignUrl = componentEditorUrl + "ViewContentVersion!viewAssetBrowserForComponentBindingV3.action?repositoryId=" + repositoryId + "&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&propertyName=" + componentProperty.getName() + allowedContentTypeIdParameters + "&assetTypeFilter=" + componentProperty.getAssetMask() + "&showSimple=" + showSimple + assignedParameters;
 								}
 								else
 									assignUrl = componentEditorUrl + "ViewSiteNodePageComponents!showContentTree.action?repositoryId=" + repositoryId + "&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&propertyName=" + componentProperty.getName() + allowedContentTypeIdParameters + "&showSimple=" + showSimple;
@@ -475,7 +484,7 @@ public class PageEditorHelper extends BaseDeliveryController
 					
 					//sb.append("	<div class=\"propertyRow\">");
 					sb.append("		<div class=\"propertyRowLeft\">");
-					sb.append("			<label for=\"" + componentProperty.getName() + "\" onMouseOver=\"showDiv('helpLayer" + componentProperty.getComponentId() + "_" + componentProperty.getName() + "');\" onMouseOut=\"javascript:hideDiv('helpLayer" + componentProperty.getComponentId() + "_" + componentProperty.getName() + "');\">" + componentProperty.getDisplayName() + "</label>");
+					sb.append("			<label for=\"" + componentProperty.getName() + "\" onmouseover=\"showDiv('helpLayer" + componentProperty.getComponentId() + "_" + componentProperty.getName() + "');\" onMouseOut=\"javascript:hideDiv('helpLayer" + componentProperty.getComponentId() + "_" + componentProperty.getName() + "');\">" + componentProperty.getDisplayName() + "</label>");
 					sb.append("		</div>");
 	
 					sb.append("		<div class=\"propertyRowRight\">");
@@ -612,7 +621,7 @@ public class PageEditorHelper extends BaseDeliveryController
 						sb.append("	<input type=\"hidden\" name=\"" + propertyIndex + "_propertyName\" value=\"" + componentProperty.getName() + "\">");
 						sb.append("	<select class=\"propertyselect\" name=\"" + componentProperty.getName() + "\" onchange=\"setDirty();\">");
 						
-						Iterator<ComponentPropertyOption> optionsIterator = componentProperty.getOptions().iterator();
+						Iterator<GenericOptionDefinition> optionsIterator = componentProperty.getOptions().iterator();
 	
 						if(componentProperty.getDataProvider() != null && !componentProperty.getDataProvider().equals(""))
 						{
@@ -620,12 +629,12 @@ public class PageEditorHelper extends BaseDeliveryController
 							{
 								PropertyOptionsDataProvider provider = (PropertyOptionsDataProvider)Class.forName(componentProperty.getDataProvider()).newInstance();
 								Map parameters = httpHelper.toMap(componentProperty.getDataProviderParameters(), "UTF-8", ";");
-								optionsIterator = provider.getPropertyOptions(parameters, principal, db).iterator();
+								optionsIterator = provider.getOptions(parameters, locale.getLanguage(), principal, db).iterator();
 							}
 							catch (Exception e) 
 							{
 								logger.warn("A problem loading the data provider for property " + componentProperty.getName() + ":" + e.getMessage(), e);
-								List<ComponentPropertyOption> errorOptions = new ArrayList<ComponentPropertyOption>();
+								List<GenericOptionDefinition> errorOptions = new ArrayList<GenericOptionDefinition>();
 								ComponentPropertyOption componentPropertyOption = new ComponentPropertyOption();
 								componentPropertyOption.setName("Error:" + e.getMessage());
 								componentPropertyOption.setValue("");
@@ -688,7 +697,7 @@ public class PageEditorHelper extends BaseDeliveryController
 							{
 								PropertyOptionsDataProvider provider = (PropertyOptionsDataProvider)Class.forName(componentProperty.getDataProvider()).newInstance();
 								Map parameters = httpHelper.toMap(componentProperty.getDataProviderParameters(), "UTF-8", ";");
-								optionsIterator = provider.getPropertyOptions(parameters, principal, db).iterator();
+								optionsIterator = provider.getOptions(parameters, locale.getLanguage(), principal, db).iterator();
 							}
 							catch (Exception e) 
 							{
@@ -958,7 +967,7 @@ public class PageEditorHelper extends BaseDeliveryController
 			    view = view.replaceAll("\\$siteNodeId", siteNodeId.toString());
 			    view = view.replaceAll("\\$languageId", languageId.toString());
 			    view = view.replaceAll("\\$componentId", componentId.toString());
-			    sb.append("<div class=\"igmenuitems linkComponentTask\" " + ((icon != null && !icon.equals("")) ? "style=\"background-image:url(" + icon + ")\"" : "") + " onClick=\"executeTask('" + view + "', " + openInPopup + ");\"><a href='#'>" + componentTask.getName() + "</a></div>");
+			    sb.append("<div class=\"igmenuitems linkComponentTask\" " + ((icon != null && !icon.equals("")) ? "style=\"background-image:url(" + icon + ")\"" : "") + " onclick=\"executeTask('" + view + "', " + openInPopup + ");\"><a href='#'>" + componentTask.getName() + "</a></div>");
 			}
 	
 			String editHTML 						= getLocalizedString(locale, "deliver.editOnSight.editHTML");
@@ -1048,8 +1057,8 @@ public class PageEditorHelper extends BaseDeliveryController
 	    	String createSiteNodeUrl 	= componentEditorUrl + "CreateSiteNode!inputV3.action?isBranch=true&repositoryId=" + repositoryId + "&parentSiteNodeId=" + siteNodeId + "&languageId=" + languageId + "&returnAddress=" + URLEncoder.encode(returnAddress, "utf-8") + "&originalAddress=" + URLEncoder.encode(originalFullURL, "utf-8");
 	    	String mySettingsUrl 		= componentEditorUrl + "ViewMySettings.action"; 
 	    	
-	    	String notifyUrl 			= componentEditorUrl + "CreateEmail!inputChooseRecipientsV3.action?originalUrl=" + URLEncoder.encode(originalFullURL.replaceFirst("cmsUserName=.*?", ""), "utf-8") + "&returnAddress=" + URLEncoder.encode(returnAddress, "utf-8") + "&extraTextProperty=tool.managementtool.createEmailNotificationPageExtraText.text"; 
-	    	String pageSubscriptionUrl 	= componentEditorUrl + "Subscriptions!input.action?interceptionPointCategory=SiteNodeVersion&entityName=" + SiteNode.class.getName() + "&entityId=" + siteNodeId + "&returnAddress=" + URLEncoder.encode(returnAddress, "utf-8");
+	    	String notifyUrl 			= componentEditorUrl + "CreateEmail!inputChooseRecipientsV3.action?originalUrl=" + URLEncoder.encode(originalFullURL.replaceFirst("cmsUserName=.*?", ""), "utf-8") + "&amp;returnAddress=" + URLEncoder.encode(returnAddress, "utf-8") + "&amp;extraTextProperty=tool.managementtool.createEmailNotificationPageExtraText.text"; 
+	    	String pageSubscriptionUrl 	= componentEditorUrl + "Subscriptions!input.action?interceptionPointCategory=SiteNodeVersion&amp;entityName=" + SiteNode.class.getName() + "&amp;entityId=" + siteNodeId + "&amp;returnAddress=" + URLEncoder.encode(returnAddress, "utf-8");
 
 		    if(treeItem != true)
 			    sb.append("<div id=\"editInlineDiv\" class=\"igmenuitems linkEditArticle\"><a href='#'>" + editInlineHTML + "</a></div>");
@@ -1057,12 +1066,12 @@ public class PageEditorHelper extends BaseDeliveryController
 				sb.append("<div id=\"editDiv\" class=\"igmenuitems linkEditArticle\"><a href='#'>" + editHTML + "</a></div>");
 
 		    if(treeItem != true)
-		    	sb.append("<div class=\"igmenuitems linkMetadata\" onClick=\"openInlineDiv('" + metaDataUrl + "', 700, 750, true);\"><a href='#'>" + changePageMetaDataLabel + "</a></div>");
+		    	sb.append("<div class=\"igmenuitems linkMetadata\" onclick=\"openInlineDiv('" + metaDataUrl + "', 700, 750, true);\"><a href='#'>" + changePageMetaDataLabel + "</a></div>");
 		    if(treeItem != true)
-		    	sb.append("<div class=\"igmenuitems linkCreatePage\" onClick=\"openInlineDiv('" + createSiteNodeUrl + "', 700, 750, true);\"><a href='#'>" + createSubPageToCurrentLabel + "</a></div>");
+		    	sb.append("<div class=\"igmenuitems linkCreatePage\" onclick=\"openInlineDiv('" + createSiteNodeUrl + "', 700, 750, true);\"><a href='#'>" + createSubPageToCurrentLabel + "</a></div>");
 
 		    if(treeItem != true && hasSubmitToPublishAccess)
-		    	sb.append("<div class=\"igmenuitems linkPublish\" onClick=\"submitToPublish(" + siteNodeId + ", " + contentId + ", " + languageId + ", " + repositoryId + ", '" + URLEncoder.encode("" + componentEditorUrl + "ViewInlineOperationMessages.action", "UTF-8") + "');\"><a href='#'>" + submitToPublishHTML + "</a></div>");
+		    	sb.append("<div class=\"igmenuitems linkPublish\" onclick=\"submitToPublish(" + siteNodeId + ", " + contentId + ", " + languageId + ", " + repositoryId + ", '" + URLEncoder.encode("" + componentEditorUrl + "ViewInlineOperationMessages.action", "UTF-8") + "');\"><a href='#'>" + submitToPublishHTML + "</a></div>");
 
 		    if(showNotifyUserOfPage)
 		    	sb.append("<div class=\"igmenuitems linkNotify\" onclick=\"openInlineDiv('" + notifyUrl + "', 700, 750, true);\"><a name='notify'>" + notifyLabel + "</a></div>");
@@ -1072,23 +1081,23 @@ public class PageEditorHelper extends BaseDeliveryController
 		    	sb.append("<div class=\"igmenuitems linkTakePage\" onclick=\"openInlineDiv('" + pageSubscriptionUrl + "', 700, 750, true);\"><a name='subscribePage'>" + subscribeToPageLabel + "</a></div>");
 
 		    if(hasAccessToAddComponent)
-				sb.append("<div class=\"igmenuitems linkAddComponent\" onClick=\"insertComponentByUrl('" + addComponentUrl + "');\"><a href='#'>" + addComponentHTML + "</a></div>");
+				sb.append("<div class=\"igmenuitems linkAddComponent\" onclick=\"insertComponentByUrl('" + addComponentUrl + "');\"><a href='#'>" + addComponentHTML + "</a></div>");
 			if(hasAccessToDeleteComponent)
-			    sb.append("<div class=\"igmenuitems linkDeleteComponent\" onClick=\"deleteComponentByUrl('" + deleteComponentUrl + "');\"><a href='#'>" + deleteComponentHTML + "</a></div>");
+			    sb.append("<div class=\"igmenuitems linkDeleteComponent\" onclick=\"deleteComponentByUrl('" + deleteComponentUrl + "');\"><a href='#'>" + deleteComponentHTML + "</a></div>");
 			if(hasAccessToChangeComponent)
-			    sb.append("<div class=\"igmenuitems linkChangeComponent\" onClick=\"changeComponentByUrl('" + changeComponentUrl + "');\"><a href='#'>" + changeComponentHTML + "</a></div>");
+			    sb.append("<div class=\"igmenuitems linkChangeComponent\" onclick=\"changeComponentByUrl('" + changeComponentUrl + "');\"><a href='#'>" + changeComponentHTML + "</a></div>");
 			if(hasSaveTemplateAccess)
-			    sb.append("<div class=\"igmenuitems linkCreatePageTemplate\" onClick=\"saveComponentStructure('" + componentEditorUrl + "CreatePageTemplate!input.action?contentId=" + metaInfoContentVO.getId() + "');\"><a href='#'>" + savePageTemplateHTML + "</a></div>");
+			    sb.append("<div class=\"igmenuitems linkCreatePageTemplate\" onclick=\"saveComponentStructure('" + componentEditorUrl + "CreatePageTemplate!input.action?contentId=" + metaInfoContentVO.getId() + "');\"><a href='#'>" + savePageTemplateHTML + "</a></div>");
 			if(hasSavePagePartTemplateAccess)
-			    sb.append("<div class=\"igmenuitems linkCreatePageTemplate\" onClick=\"" + savePartTemplateUrl + "\"><a href='#'>" + savePagePartTemplateHTML + "</a></div>");
+			    sb.append("<div class=\"igmenuitems linkCreatePageTemplate\" onclick=\"" + savePartTemplateUrl + "\"><a href='#'>" + savePagePartTemplateHTML + "</a></div>");
 			
 			String upUrl = componentEditorUrl + "ViewSiteNodePageComponents!moveComponent.action?siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&direction=0&showSimple=" + showSimple + "";
 			String downUrl = componentEditorUrl + "ViewSiteNodePageComponents!moveComponent.action?siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&direction=1&showSimple=" + showSimple + "";
 
 			if(component.getPositionInSlot() > 0)
-			    sb.append("<div class=\"igmenuitems linkMoveComponentUp\" onClick=\"invokeAddress('" + upUrl + "');\"><a href='#'>" + moveComponentUpHTML + "</a></div>");
+			    sb.append("<div class=\"igmenuitems linkMoveComponentUp\" onclick=\"invokeAddress('" + upUrl + "');\"><a href='#'>" + moveComponentUpHTML + "</a></div>");
 			if(component.getContainerSlot() != null && component.getContainerSlot().getComponents().size() - 1 > component.getPositionInSlot())
-			    sb.append("<div class=\"igmenuitems linkMoveComponentDown\" onClick=\"invokeAddress('" + downUrl + "');\"><a href='#'>" + moveComponentDownHTML + "</a></div>");
+			    sb.append("<div class=\"igmenuitems linkMoveComponentDown\" onclick=\"invokeAddress('" + downUrl + "');\"><a href='#'>" + moveComponentDownHTML + "</a></div>");
 
 			if(hasAccessToAccessRights)
 			{
@@ -1105,24 +1114,24 @@ public class PageEditorHelper extends BaseDeliveryController
 				Integer accessRightComponentContentId = componentContentId;
 				if(slotId.equals(component.getSlotName()) && component.getParentComponent() != null)
 					accessRightComponentContentId = component.getParentComponent().getContentId();
-				sb.append("<div class=\"igmenuitems linkAccessRights\" onClick=\"setAccessRights('" + slotId + "', " + accessRightComponentContentId + ");\"><a href='#'>" + accessRightsHTML + "</a></div>");
+				sb.append("<div class=\"igmenuitems linkAccessRights\" onclick=\"setAccessRights('" + slotId + "', " + accessRightComponentContentId + ");\"><a href='#'>" + accessRightsHTML + "</a></div>");
 			}
 			
 			sb.append("<div style='border-top: 1px solid #bbb; height: 1px; margin: 0px; padding: 0px; line-height: 1px;'></div>");
-			sb.append("<div class=\"igmenuitems linkComponentProperties\" onClick=\"showComponentInDiv('componentPropertiesDiv', 'repositoryId=" + repositoryId + "&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&componentContentId=" + componentContentId + "&slotName=" + component.getSlotName() + "&showSimple=" + showSimple + "&showLegend=false&originalUrl=" + URLEncoder.encode(originalFullURL, "UTF-8") + "', false);\"><a href='#'>" + propertiesHTML + "</a></div>");
-			//sb.append("<div class=\"igmenuitems linkComponentProperties\" onClick=\"showComponent(event);\"><a href='#'>" + propertiesHTML + "</a></div>");
+			sb.append("<div class=\"igmenuitems linkComponentProperties\" onclick=\"showComponentInDiv('componentPropertiesDiv', 'repositoryId=" + repositoryId + "&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&componentId=" + componentId + "&componentContentId=" + componentContentId + "&slotName=" + component.getSlotName() + "&showSimple=" + showSimple + "&showLegend=false&originalUrl=" + URLEncoder.encode(originalFullURL, "UTF-8") + "', false);\"><a href='#'>" + propertiesHTML + "</a></div>");
+			//sb.append("<div class=\"igmenuitems linkComponentProperties\" onclick=\"showComponent(event);\"><a href='#'>" + propertiesHTML + "</a></div>");
 			if(hasPageStructureAccess || hasOpenInNewWindowAccess || hasViewSourceAccess)
 				sb.append("<div style='border-top: 1px solid #bbb; height: 1px; margin:0px; padding: 0px; line-height: 1px;'></div>");
 			if(treeItem != true && hasPageStructureAccess)
-				sb.append("<div class=\"igmenuitems linkPageComponents\" onClick=\"showComponentStructure('componentStructure', 'repositoryId=" + repositoryId + "&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&originalUrl=" + URLEncoder.encode(originalFullURL, "UTF-8") + "', event);\"><a href='#'>" + pageComponentsHTML + "</a></div>");
+				sb.append("<div class=\"igmenuitems linkPageComponents\" onclick=\"showComponentStructure('componentStructure', 'repositoryId=" + repositoryId + "&siteNodeId=" + siteNodeId + "&languageId=" + languageId + "&contentId=" + contentId + "&originalUrl=" + URLEncoder.encode(originalFullURL, "UTF-8") + "', event);\"><a href='#'>" + pageComponentsHTML + "</a></div>");
 				
 			if(hasOpenInNewWindowAccess)
-				sb.append("<div id=\"componentEditorInNewWindowDiv\" class=\"igmenuitems linkOpenInNewWindow\"  onClick=\"window.open(document.location.href,'PageComponents','');\"><a href='#'>" + componentEditorInNewWindowHTML + "</a></div>");
+				sb.append("<div id=\"componentEditorInNewWindowDiv\" class=\"igmenuitems linkOpenInNewWindow\"  onclick=\"window.open(document.location.href,'PageComponents','');\"><a href='#'>" + componentEditorInNewWindowHTML + "</a></div>");
 			if(hasViewSourceAccess)
-				sb.append("<div class=\"igmenuitems linkViewSource\" onClick=\"javascript:viewSource();\"><a href='javascript:viewSource();'>" + viewSourceHTML + "</a></div>");
+				sb.append("<div class=\"igmenuitems linkViewSource\" onclick=\"javascript:viewSource();\"><a href='javascript:viewSource();'>" + viewSourceHTML + "</a></div>");
 
 			if(hasMySettingsAccess)
-				sb.append("<div class=\"igmenuitems linkMySettings\" onClick=\"javascript:openInlineDiv('" + mySettingsUrl + "', 700, 750, true);\"><a href='#'>" + mySettingsLabel + "</a></div>");
+				sb.append("<div class=\"igmenuitems linkMySettings\" onclick=\"javascript:openInlineDiv('" + mySettingsUrl + "', 700, 750, true);\"><a href='#'>" + mySettingsLabel + "</a></div>");
 
 			sb.append("</div>");
 		}
@@ -1152,7 +1161,7 @@ public class PageEditorHelper extends BaseDeliveryController
 			
 			sb.append("<div id=\"pageComponents\" style=\"left:0px; top:0px; width: 450px; height: 500px;\" oncontextmenu=\"if (event && event.stopPropagation) {event.stopPropagation();}else if (window.event) {window.event.cancelBubble = true;}return false;\">");
 	
-			sb.append("	 <div id=\"dragCorner\" style=\"position: absolute; width: 16px; height: 16px; background-color: white; bottom: 0px; right: 0px;\"><a href=\"javascript:expandWindow('pageComponents');\"><img src=\"" + contextPath + "/images/enlarge.gif\" border=\"0\" width=\"16\" height=\"16\"></a></div>");
+			sb.append("	 <div id=\"dragCorner\" style=\"position: absolute; width: 16px; height: 16px; background-color: white; bottom: 0px; right: 0px;\"><a href=\"javascript:expandWindow('pageComponents');\"><img src=\"" + contextPath + "/images/enlarge.gif\" border=\"0\" width=\"16\" height=\"16\"/></a></div>");
 				
 			sb.append("	 <div id=\"pageComponentsHandle\" class=\"componentPropertiesHandle\"><div id=\"leftHandleNarrow\">Page components</div><div id=\"rightPaletteHandle\"><a href=\"javascript:hideDiv('pageComponents');\" class=\"white\"><img src=\"" + contextPath + "/images/closeIcon.gif\" border=\"0\"/></a></div></div>");
 			sb.append("	 <div id=\"pageComponentsBody\" class=\"componentPropertiesBody\" style=\"height: 480px;\"><table class=\"igtable\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\">");
@@ -1360,6 +1369,7 @@ public class PageEditorHelper extends BaseDeliveryController
 						String entity 					= binding.attributeValue("entity");
 						boolean isMultipleBinding 		= new Boolean(binding.attributeValue("multiple")).booleanValue();
 						boolean isAssetBinding			= new Boolean(binding.attributeValue("assetBinding")).booleanValue();
+						String assetMask				= binding.attributeValue("assetMask");
 						boolean isPuffContentForPage	= new Boolean(binding.attributeValue("isPuffContentForPage")).booleanValue();
 						
 						property.setEntityClass(entity);
@@ -1368,6 +1378,7 @@ public class PageEditorHelper extends BaseDeliveryController
 						property.setValue(value);
 						property.setIsMultipleBinding(isMultipleBinding);
 						property.setIsAssetBinding(isAssetBinding);
+						property.setAssetMask(assetMask);
 						property.setIsPuffContentForPage(isPuffContentForPage);
 						List<ComponentBinding> bindings = getComponentPropertyBindings(componentId, name, siteNodeId, languageId, contentId, locale, db, principal);
 						property.setBindings(bindings);

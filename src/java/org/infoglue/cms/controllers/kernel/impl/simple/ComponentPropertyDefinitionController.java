@@ -114,6 +114,7 @@ public class ComponentPropertyDefinitionController extends BaseController
 				    String entity 					= propertyElement.getAttribute("entity");
 				    String multiple 				= propertyElement.getAttribute("multiple");
 				    String assetBinding 			= propertyElement.getAttribute("assetBinding");
+				    String assetMask 				= propertyElement.getAttribute("assetMask");
 				    String isPuffContentForPage 	= propertyElement.getAttribute("isPuffContentForPage");
 				    String allowedContentTypeNames 	= propertyElement.getAttribute("allowedContentTypeDefinitionNames");
 				    String description				= propertyElement.getAttribute("description");
@@ -131,7 +132,7 @@ public class ComponentPropertyDefinitionController extends BaseController
 				    if(allowLanguageVariations == null || allowLanguageVariations.equals(""))
 				    	allowLanguageVariations = "true";
 				    	
-				    ComponentPropertyDefinition cpd = new ComponentPropertyDefinition(name, displayName, type, entity, new Boolean(multiple), new Boolean(assetBinding), new Boolean(isPuffContentForPage), allowedContentTypeNames, description, defaultValue, new Boolean(allowLanguageVariations), new Boolean(WYSIWYGEnabled), WYSIWYGToolbar, dataProvider, dataProviderParameters, new Boolean(autoCreateContent), autoCreateContentMethod, autoCreateContentPath, customMarkup, new Boolean(allowMultipleSelections));
+				    ComponentPropertyDefinition cpd = new ComponentPropertyDefinition(name, displayName, type, entity, new Boolean(multiple), new Boolean(assetBinding), assetMask, new Boolean(isPuffContentForPage), allowedContentTypeNames, description, defaultValue, new Boolean(allowLanguageVariations), new Boolean(WYSIWYGEnabled), WYSIWYGToolbar, dataProvider, dataProviderParameters, new Boolean(autoCreateContent), autoCreateContentMethod, autoCreateContentPath, customMarkup, new Boolean(allowMultipleSelections));
 				    
 					NodeList optionsNodeList = propertyElement.getElementsByTagName("option");
 					for(int k=0; k<optionsNodeList.getLength(); k++)

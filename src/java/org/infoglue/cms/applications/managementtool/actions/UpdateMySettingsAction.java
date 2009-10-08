@@ -48,8 +48,9 @@ public class UpdateMySettingsAction extends InfoGlueAbstractAction
 	private String languageCode 				= null;
 	private String defaultToolId				= null;
 	private String defaultRepositoryId			= null;
-
-	    
+	private String defaultGUI					= null;
+	private String theme						= null;
+	
     /**
      * The main method that fetches the Value-objects for this use-case
      */
@@ -63,6 +64,8 @@ public class UpdateMySettingsAction extends InfoGlueAbstractAction
 	    ps.setString("principal_" + this.getInfoGluePrincipal().getName() + "_languageCode", languageCode);
 	    ps.setString("principal_" + this.getInfoGluePrincipal().getName() + "_defaultToolId", defaultToolId);
 	    ps.setString("principal_" + this.getInfoGluePrincipal().getName() + "_defaultRepositoryId", defaultRepositoryId);
+	    ps.setString("principal_" + this.getInfoGluePrincipal().getName() + "_defaultGUI", defaultGUI);
+	    ps.setString("principal_" + this.getInfoGluePrincipal().getName() + "_theme", theme);
 
 		NotificationMessage notificationMessage = new NotificationMessage("UpdateMySettingsAction.doExecute():", "ServerNodeProperties", this.getInfoGluePrincipal().getName(), NotificationMessage.SYSTEM, "0", "ServerNodeProperties");
 		ChangeNotificationController.getInstance().addNotificationMessage(notificationMessage);
@@ -84,5 +87,15 @@ public class UpdateMySettingsAction extends InfoGlueAbstractAction
     public void setDefaultRepositoryId(String defaultRepositoryId)
     {
         this.defaultRepositoryId = defaultRepositoryId;
+    }
+
+    public void setDefaultGUI(String defaultGUI)
+    {
+        this.defaultGUI = defaultGUI;
+    }
+
+    public void setTheme(String theme)
+    {
+        this.theme = theme;
     }
 }

@@ -29,6 +29,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.infoglue.cms.applications.databeans.GenericOptionDefinition;
+
 /**
  * This is a pure javabean carrying the information about one content type attribute.
  */ 
@@ -53,6 +55,7 @@ public class ContentTypeAttribute
 	private String inputType = "";
 	private Map contentTypeAttributeParameters = new LinkedHashMap();
 	private List validators  = new ArrayList();
+	private List<GenericOptionDefinition> options = new ArrayList<GenericOptionDefinition>();
 	
 	public ContentTypeAttribute()
 	{
@@ -109,9 +112,14 @@ public class ContentTypeAttribute
 				
 		return extraParameters;
 	}
-
+	
     public List getValidators()
     {
         return validators;
+    }
+
+    public List<GenericOptionDefinition> getOptions()
+    {
+    	return options;
     }
 }

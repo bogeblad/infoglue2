@@ -439,6 +439,31 @@ public class VisualFormatter
 		return sb.toString();
 	}
 
+	public final String replaceNonAscii(String s, String character)
+	{
+		if(s == null)
+			return null;
+			
+		StringBuffer sb = new StringBuffer();
+		int n = s.length();
+		for (int i = 0; i < n; i++) 
+		{
+			char c = s.charAt(i);
+			if(c < 128 && c > 32)
+			{
+			    if(Character.isLetterOrDigit(c) ||  c == '-' || c == '_' || c == '.')
+			        sb.append(c);
+			    else
+			        sb.append(character);
+			}
+			else
+			{
+			    sb.append(character);
+			}
+		}
+		return sb.toString();
+	}
+
 	/**
 	 * This method replaces all non-ascii-characters with a corresponding one defined in the system properties-object. 
 	 * If not defined there it replaces the char with the default character.

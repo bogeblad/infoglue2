@@ -45,25 +45,43 @@ public class ViewManagementToolMenuAction extends InfoGlueAbstractAction
     {
     	this.repositoryId = repositoryId;
     }
+    
     public Integer getRepositoryId()
-    {
+    { 
     	return this.repositoryId;
     }
+    
     private void setName(String name)
     {
     	this.name = name;	
     }
+    
     public String getName()
     {
     	return this.name;	
     }
+    
     public String doExecute() throws Exception
     {
-    	if(this.getRepositoryId().intValue() > 0){
+    	if(this.repositoryId != null && this.repositoryId.intValue() > 0)
+    	{
 	    	this.repositoryVO = RepositoryController.getController().getRepositoryVOWithId(this.repositoryId);
 	    	this.setName(this.repositoryVO.getName());
     	}
+    	
         return "success";
     }
-               
+
+    public String doV3() throws Exception
+    {
+    	System.out.println("AAAAAAAAAA");
+    	if(this.repositoryId != null && this.repositoryId.intValue() > 0)
+    	{
+	    	this.repositoryVO = RepositoryController.getController().getRepositoryVOWithId(this.repositoryId);
+	    	this.setName(this.repositoryVO.getName());
+    	}
+    	
+        return "successV3";
+    }
+
 }

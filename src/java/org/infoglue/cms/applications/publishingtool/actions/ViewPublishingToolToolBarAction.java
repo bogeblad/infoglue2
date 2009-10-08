@@ -226,7 +226,15 @@ public class ViewPublishingToolToolBarAction extends InfoGlueAbstractAction
 		        else
 		            dnsName = dnsName.substring(startIndex);
 
-			    previewUrl = dnsName.split("=")[1] + CmsPropertyHandler.getComponentRendererUrl().replaceAll("Working", "Preview") + "ViewPage.action";
+			    String[] dnsSplit = dnsName.split("=");
+			    if (dnsSplit != null && dnsSplit.length > 1) 
+			    {
+			    	previewUrl = dnsSplit[1] + CmsPropertyHandler.getComponentRendererUrl().replaceAll("Working", "Preview") + "ViewPage.action";
+			    } 
+			    else 
+			    {
+			    	previewUrl = CmsPropertyHandler.getStagingDeliveryUrl();
+			    }
 		    }
 		    else
 		    {

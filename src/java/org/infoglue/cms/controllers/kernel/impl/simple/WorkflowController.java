@@ -919,7 +919,7 @@ public class WorkflowController extends BaseController
 	        {
 				try
 				{
-					MailServiceFactory.getService().sendEmail(warningEmailReceiver, warningEmailReceiver, null, subject, message, "utf-8");
+					MailServiceFactory.getService().sendEmail("text/html", warningEmailReceiver, warningEmailReceiver, null, null, null, subject, message, "utf-8");
 				} 
 				catch (Exception e)
 				{

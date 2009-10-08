@@ -112,7 +112,7 @@
     <field name="description" type="java.lang.String">
       <sql name="description" type="varchar" dirty="check" />
     </field>
-    <field name="systemUsers" type="org.infoglue.cms.entities.management.impl.simple.SystemUserImpl" lazy="false" collection="collection">
+    <field name="systemUsers" type="org.infoglue.cms.entities.management.impl.simple.SystemUserImpl" lazy="true" collection="collection">
       <sql many-key="roleName" many-table="cmSystemUserRole"/>
     </field>
   </class>
@@ -128,7 +128,7 @@
     <field name="description" type="java.lang.String">
       <sql name="description" type="varchar" dirty="check" />
     </field>
-    <field name="systemUsers" type="org.infoglue.cms.entities.management.impl.simple.SystemUserImpl" lazy="false" collection="collection">
+    <field name="systemUsers" type="org.infoglue.cms.entities.management.impl.simple.SystemUserImpl" lazy="true" collection="collection">
       <sql many-key="groupName" many-table="cmSystemUserGroup"/>
     </field>
   </class>
@@ -293,7 +293,7 @@
     <description>SiteNodeVersion</description>
     <cache-type type="unlimited" capacity="10000"/>
     <map-to table="cmSiteNodeVersion"/>
-    <field name="siteNodeVersionId" type="java.lang.Integer">
+	<field name="siteNodeVersionId" type="java.lang.Integer">
       <sql name="siteNodeVersionId" type="integer" dirty="check" />
     </field>
     <field name="stateId" type="java.lang.Integer">
@@ -341,7 +341,7 @@
     <field name="owningSiteNode" type="org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl">
       <sql name="siteNodeId"/>
     </field>
-   <field name="versionModifier" type="java.lang.String">
+	<field name="versionModifier" type="java.lang.String">
       <sql name="versionModifier" type="varchar" dirty="check" />
     </field>
     <field name="serviceBindings" type="org.infoglue.cms.entities.structure.impl.simple.ServiceBindingImpl" lazy="false" collection="collection">
@@ -422,7 +422,7 @@
     <description>SiteNodeTypeDefinition</description>
     <cache-type type="unlimited" capacity="100"/>
     <map-to table="cmSiteNodeTypeDefinition"/>
-    <field name="siteNodeTypeDefinitionId" type="java.lang.Integer">
+	<field name="siteNodeTypeDefinitionId" type="java.lang.Integer">
       <sql name="siteNodeTypeDefinitionId" type="integer" dirty="check" />
     </field>
     <field name="invokerClassName" type="java.lang.String">
@@ -437,7 +437,7 @@
     <field name="availableServiceBindings" type="org.infoglue.cms.entities.management.impl.simple.AvailableServiceBindingImpl" lazy="true" collection="collection">
       <sql many-key="siteNodeTypeDefinitionId" many-table="cmAvailableServiceBindingSiteNodeTypeDefinition"/>
     </field>
-  </class>
+</class>
 
 <!--  Mapping for SiteNode  -->
   <class name="org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl" identity="siteNodeId" key-generator="IDENTITY">
@@ -474,6 +474,12 @@
     <field name="metaInfoContentId" type="java.lang.Integer">
       <sql name="metaInfoContentId" type="integer" dirty="check" />
     </field>
+    <field name="sortOrder" type="java.lang.Integer">
+      <sql name="sortOrder" type="integer" dirty="check" />
+    </field>
+    <field name="isHidden" type="java.lang.Boolean">
+      <sql name="isHidden" type="integer" dirty="check" />
+    </field>
     <field name="repository" type="org.infoglue.cms.entities.management.impl.simple.RepositoryImpl">
       <sql name="repositoryId"/>
     </field>
@@ -508,13 +514,18 @@
     <field name="metaInfoContentId" type="java.lang.Integer">
       <sql name="metaInfoContentId" type="integer" dirty="check" />
     </field>
+    <field name="sortOrder" type="java.lang.Integer">
+      <sql name="sortOrder" type="integer" dirty="check" />
+    </field>
+    <field name="isHidden" type="java.lang.Boolean">
+      <sql name="isHidden" type="integer" dirty="check" />
+    </field>
     <field name="repositoryId" type="java.lang.Integer">
       <sql name="repositoryId" type="integer" dirty="check" />
     </field>
     <field name="siteNodeTypeDefinitionId" type="java.lang.Integer">
       <sql name="siteNodeTypeDefinitionId" type="integer" dirty="check" />
     </field>
-    
     <!--
     <field name="childSiteNodes" type="org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl" lazy="true" collection="collection">
       <sql many-key="parentSiteNodeId"/>
@@ -542,31 +553,31 @@
     <description>ServiceBinding</description>
     <cache-type type="unlimited" capacity="10000"/>
     <map-to table="cmServiceBinding"/>
-      <field name="serviceBindingId" type="java.lang.Integer">
+    <field name="serviceBindingId" type="java.lang.Integer">
       <sql name="serviceBindingId" type="integer" dirty="check" />
     </field>
-        <field name="name" type="java.lang.String">
+    <field name="name" type="java.lang.String">
       <sql name="name" type="varchar" dirty="check" />
     </field>
-        <field name="path" type="java.lang.String">
+    <field name="path" type="java.lang.String">
       <sql name="path" type="varchar" dirty="check" />
     </field>
-        <field name="bindingTypeId" type="java.lang.Integer">
+    <field name="bindingTypeId" type="java.lang.Integer">
       <sql name="bindingTypeId" type="integer" dirty="check" />
     </field>
-        <field name="bindingQualifyers" type="org.infoglue.cms.entities.structure.impl.simple.QualifyerImpl" lazy="false" collection="collection">
+    <field name="bindingQualifyers" type="org.infoglue.cms.entities.structure.impl.simple.QualifyerImpl" lazy="false" collection="collection">
       <sql many-key="serviceBindingId"/>
     </field>
-        <field name="siteNodeVersion" type="org.infoglue.cms.entities.structure.impl.simple.SiteNodeVersionImpl">
+	<field name="siteNodeVersion" type="org.infoglue.cms.entities.structure.impl.simple.SiteNodeVersionImpl">
       <sql name="siteNodeVersionId"/>
     </field>
-        <field name="availableServiceBinding" type="org.infoglue.cms.entities.management.impl.simple.AvailableServiceBindingImpl">
+    <field name="availableServiceBinding" type="org.infoglue.cms.entities.management.impl.simple.AvailableServiceBindingImpl">
       <sql name="availableServiceBindingId"/>
     </field>
-        <field name="serviceDefinition" type="org.infoglue.cms.entities.management.impl.simple.ServiceDefinitionImpl">
+    <field name="serviceDefinition" type="org.infoglue.cms.entities.management.impl.simple.ServiceDefinitionImpl">
       <sql name="serviceDefinitionId"/>
     </field>
-    </class>
+  </class>
 
 
 <!--  Mapping for Qualifyer  -->
@@ -607,7 +618,7 @@
       	<sql name="description" type="varchar" dirty="check" />
     </field>
     <field name="dnsName" type="java.lang.String">
-	    <sql name="dnsName" type="varchar" dirty="check" />
+    	<sql name="dnsName" type="varchar" dirty="check" />
     </field>
     <!--
     <field name="availableContenTypeDefinition" type="org.infoglue.cms.entities.management.impl.simple.ContentTypeDefinitionImpl" lazy="true" collection="collection">
@@ -649,22 +660,22 @@
     <description>Language</description>
     <cache-type type="unlimited" capacity="1000"/>
     <map-to table="cmLanguage"/>
-      <field name="languageId" type="java.lang.Integer">
+    <field name="languageId" type="java.lang.Integer">
       <sql name="languageId" type="integer" dirty="check" />
     </field>
-        <field name="name" type="java.lang.String">
+    <field name="name" type="java.lang.String">
       <sql name="name" type="varchar" dirty="check" />
     </field>
-        <field name="languageCode" type="java.lang.String">
+    <field name="languageCode" type="java.lang.String">
       <sql name="languageCode" type="varchar" dirty="check" />
     </field>
-        <field name="charset" type="java.lang.String">
+    <field name="charset" type="java.lang.String">
       <sql name="charset" type="varchar" dirty="check" />
     </field>
-        <field name="repositoryLanguages" type="org.infoglue.cms.entities.management.impl.simple.RepositoryLanguageImpl" lazy="true" collection="collection">
+    <field name="repositoryLanguages" type="org.infoglue.cms.entities.management.impl.simple.RepositoryLanguageImpl" lazy="true" collection="collection">
       <sql many-key="languageId"/>
     </field>
-    </class>
+  </class>
 
 
 <!--  Mapping for ServiceDefinition  -->
@@ -692,7 +703,7 @@
       <sql many-key="availableServiceBindingId"/>
     </field>
     -->
-    </class>
+  </class>
 
 <!--  Mapping for AvailableServiceBinding  -->
   <class name="org.infoglue.cms.entities.management.impl.simple.AvailableServiceBindingImpl" identity="availableServiceBindingId" key-generator="IDENTITY">
@@ -868,7 +879,6 @@
 <!--  Mapping for SmallContent  -->
   <class name="org.infoglue.cms.entities.content.impl.simple.SmallContentImpl" identity="contentId" key-generator="IDENTITY">
     <description>SmallContent</description>
-    <!--<cache-type type="none"/>-->
     <cache-type type="unlimited" capacity="10000"/>
     <map-to table="cmContent"/>
     <field name="contentId" type="java.lang.Integer">
@@ -1026,7 +1036,7 @@
     <field name="isActive" type="java.lang.Boolean">
       <sql name="isActive" type="integer" dirty="check" />
     </field>
-    <field name="owningContent" type="org.infoglue.cms.entities.content.impl.simple.ContentImpl">
+	<field name="owningContent" type="org.infoglue.cms.entities.content.impl.simple.ContentImpl">
       <sql name="contentId"/>
     </field>
     <field name="language" type="org.infoglue.cms.entities.management.impl.simple.LanguageImpl">
@@ -1085,7 +1095,7 @@
   </class>
 
   <class name="org.infoglue.cms.entities.content.impl.simple.SmallestContentVersionImpl" identity="contentVersionId" key-generator="IDENTITY">
-    <description>SmallContentVersion</description>
+    <description>SmallestContentVersion</description>
     <cache-type type="count-limited" capacity="20000"/>
     <map-to table="cmContentVersion"/>
     <field name="contentVersionId" type="java.lang.Integer">
@@ -1200,9 +1210,9 @@
     <field name="groupProperties" type="org.infoglue.cms.entities.management.impl.simple.GroupPropertiesImpl" lazy="true" collection="collection">
       <sql many-key="digitalAssetId" many-table="cmGroupPropertiesDigitalAsset"/>
     </field>
-	-->
+    -->
   </class>
-
+	
 <!--  Mapping for MediumDigitalAsset  -->
   <class name="org.infoglue.cms.entities.content.impl.simple.MediumDigitalAssetImpl" identity="digitalAssetId" key-generator="IDENTITY">
     <description>MediumDigitalAsset</description>
@@ -1323,7 +1333,7 @@
 <!--  Mapping for Publication  -->
   <class name="org.infoglue.cms.entities.publishing.impl.simple.PublicationImpl" identity="publicationId" key-generator="IDENTITY">
     <description>Publication</description>
-    <cache-type type="unlimited" capacity="1000"/>
+    <cache-type type="unlimited" capacity="3000"/>
     <map-to table="cmPublication"/>
     <field name="publicationId" type="java.lang.Integer">
       <sql name="publicationId" type="integer" dirty="check" />
@@ -1347,7 +1357,6 @@
       <sql name="repositoryId" type="integer" dirty="check" />
     </field>
   </class>
-
 
 <!--  Mapping for PublicationDetail  -->
   <class name="org.infoglue.cms.entities.publishing.impl.simple.PublicationDetailImpl" depends="org.infoglue.cms.entities.publishing.impl.simple.PublicationImpl" identity="publicationDetailId" key-generator="IDENTITY">

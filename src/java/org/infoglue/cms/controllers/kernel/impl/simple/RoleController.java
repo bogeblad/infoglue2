@@ -31,6 +31,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
+import org.infoglue.cms.entities.management.Group;
 import org.infoglue.cms.entities.management.Role;
 import org.infoglue.cms.entities.management.RoleVO;
 import org.infoglue.cms.entities.management.SystemUser;
@@ -305,6 +306,49 @@ public class RoleController extends BaseController
 		return roleList;
 	}
 
+    public void addUser(String roleName, String userName) throws ConstraintException, SystemException
+    {
+        Database db = CastorDatabaseService.getDatabase();
+        ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
+
+        beginTransaction(db);
+
+        try
+        {
+            addUser(roleName, userName, db);
+
+            //If any of the validations or setMethods reported an error, we throw them up now before create.
+            ceb.throwIfNotEmpty();
+            
+            commitTransaction(db);
+        }
+        catch(ConstraintException ce)
+        {
+            logger.warn("An error occurred so we should not complete the transaction:" + ce, ce);
+            rollbackTransaction(db);
+            throw ce;
+        }
+        catch(Exception e)
+        {
+            logger.error("An error occurred so we should not complete the transaction:" + e, e);
+            rollbackTransaction(db);
+            throw new SystemException(e.getMessage());
+        }
+    }        
+
+    public void addUser(String roleName, String userName, Database db) throws ConstraintException, SystemException
+    {
+		Role role = getRoleWithName(roleName, db);
+		
+		if(userName != null)
+		{
+    		SystemUser systemUser = SystemUserController.getController().getSystemUserWithName(userName, db);
+    		
+        	role.getSystemUsers().add(systemUser);
+			systemUser.getRoles().add(role);
+		}
+    }
+    
 	/**
 	 * This is a method that gives the user back an newly initialized ValueObject for this entity that the controller
 	 * is handling.

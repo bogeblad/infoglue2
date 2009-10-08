@@ -32,11 +32,14 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.log4j.Category;
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
@@ -61,6 +64,7 @@ import org.infoglue.cms.entities.content.ContentVersion;
 import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.entities.content.DigitalAsset;
 import org.infoglue.cms.entities.content.DigitalAssetVO;
+import org.infoglue.cms.entities.content.impl.simple.MediumDigitalAssetImpl;
 import org.infoglue.cms.entities.content.impl.simple.SmallDigitalAssetImpl;
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.exception.Bug;
@@ -581,10 +585,13 @@ public class SearchController extends BaseController
 			Integer previousLanguageId = new Integer(-1);  	
 			int currentCount = 0;
 
+			System.out.println("assetTypeFilter:" + assetTypeFilter);
 			while(assetResults.hasMore() && currentCount < maxRows) 
 			{
 				SmallDigitalAssetImpl smallAsset = (SmallDigitalAssetImpl)assetResults.next();
-				if(smallAsset.getAssetContentType().matches(assetTypeFilter))
+				System.out.println("smallAsset.getAssetContentType():" + smallAsset.getAssetContentType());
+				//if(smallAsset.getAssetContentType().matches(assetTypeFilter))
+				if(assetTypeFilter.equals("*") || assetTypeFilter.indexOf(smallAsset.getAssetContentType()) > -1)
 				{
 					DigitalAsset asset = DigitalAssetController.getMediumDigitalAssetWithId(smallAsset.getId(), db);
 					logger.info("Found a asset matching " + searchString + ":" + asset.getId());
@@ -627,62 +634,48 @@ public class SearchController extends BaseController
    	{
    		List<DigitalAssetVO> matchingAssets = new ArrayList<DigitalAssetVO>();
 
-		ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
-		
 		Database db = CastorDatabaseService.getDatabase();
 		
 		try
 		{
 			beginTransaction(db);
-
-			String assetSQL = "SELECT da FROM org.infoglue.cms.entities.content.impl.simple.SmallDigitalAssetImpl da ORDER BY da.digitalAssetId desc";
-			logger.info("assetSQL:" + assetSQL);
-			OQLQuery assetOQL = db.getOQLQuery(assetSQL);
-	        
-			QueryResults assetResults = assetOQL.execute(Database.ReadOnly);
 			
-			Integer previousContentId  = new Integer(-1);
-			Integer previousLanguageId = new Integer(-1);  	
-			int currentCount = 0;
+			String[] assetTypeFilterArray = assetTypeFilter.split(",");
+			StringBuffer contentTypeBindingMarkers = new StringBuffer();
+			for(int i=0; i<assetTypeFilterArray.length; i++)
+				contentTypeBindingMarkers.append((i>0 ? "," : "") + "$" + (i + 1));
+			
+			int bindIndex = assetTypeFilterArray.length;
 
+			StringBuffer repositoryIdBindingMarkers = new StringBuffer();
+			for(int i=0; i<repositoryId.length; i++)
+				repositoryIdBindingMarkers.append((i>0 ? "," : "") + "$" + (i + 1 + bindIndex));
+			
+			String assetSQL = "CALL SQL SELECT da.digitalAssetId,da.assetFileName,da.assetKey,da.assetFilePath,da.assetContentType,da.assetFileSize FROM cmDigitalAsset da, cmContentVersionDigitalAsset cvda, cmContentVersion cv, cmContent c WHERE cvda.digitalAssetId = da.digitalAssetId AND cvda.contentVersionId = cv.contentVersionId AND cv.contentId = c.contentId AND da.assetContentType IN (" + contentTypeBindingMarkers + ") AND c.repositoryId IN (" + repositoryIdBindingMarkers + ") ORDER BY da.digitalAssetId desc AS org.infoglue.cms.entities.content.impl.simple.SmallDigitalAssetImpl";
+			if(CmsPropertyHandler.getUseShortTableNames() != null && CmsPropertyHandler.getUseShortTableNames().equalsIgnoreCase("true"))
+				assetSQL = "CALL SQL SELECT da.DigAssetId,da.assetFileName,da.assetKey,da.assetFilePath,da.assetContentType,da.assetFileSize FROM cmDigAsset da, cmContVerDigAsset cvda, cmContVer cv, cmCont c WHERE cvda.DigAssetId = da.DigAssetId AND cvda.contVerId = cv.contVerId AND cv.contId = c.contId AND da.assetContentType IN (" + contentTypeBindingMarkers + ") AND c.repositoryId IN (" + repositoryIdBindingMarkers + ") ORDER BY da.DigAssetId desc AS org.infoglue.cms.entities.content.impl.simple.SmallDigitalAssetImpl";
+			
+			logger.info("assetSQL:" + assetSQL);
+			
+			OQLQuery assetOQL = db.getOQLQuery(assetSQL);
+			
+			for(int i=0; i<assetTypeFilterArray.length; i++)
+				assetOQL.bind(assetTypeFilterArray[i]);
+			
+			for(int i=0; i<repositoryId.length; i++)
+				assetOQL.bind(repositoryId[i]);
+
+			QueryResults assetResults = assetOQL.execute(Database.ReadOnly);
+
+			int currentCount = 0;
 			while(assetResults.hasMore() && currentCount < maxRows)
 			{
 				SmallDigitalAssetImpl smallAsset = (SmallDigitalAssetImpl)assetResults.next();
-				if(smallAsset.getAssetContentType().matches(assetTypeFilter))
-				{
-					//DigitalAsset asset = DigitalAssetController.getDigitalAssetWithId(smallAsset.getId(), db);
-					DigitalAsset asset = DigitalAssetController.getMediumDigitalAssetWithId(smallAsset.getId(), db);
-					//logger.info("Found a asset matching:" + asset.getId());
-					Collection versions = asset.getContentVersions();
-					Iterator versionsIterator = versions.iterator();
-					while(versionsIterator.hasNext())
-					{
-						ContentVersion contentVersion = (ContentVersion)versionsIterator.next();
-						boolean correctRepository = false;
-						for(int i=0; i < repositoryId.length; i++)
-						{
-							//System.out.println("repositoryId[" + i + "]:" + repositoryId[i] + " - " + contentVersion.getOwningContent().getRepositoryId());
-							if(contentVersion.getOwningContent().getRepositoryId().equals(repositoryId[i])) 
-							{
-								correctRepository = true;
-								break;
-							}
-						}
-						//System.out.println("correctRepository:" + correctRepository);
-						
-						if(correctRepository && (contentVersion.getOwningContent().getId().intValue() != previousContentId.intValue() || contentVersion.getLanguage().getId().intValue() != previousLanguageId.intValue()))
-						{
-						    ContentVersion latestContentVersion = ContentVersionController.getContentVersionController().getLatestActiveContentVersion(contentVersion.getOwningContent().getId(), contentVersion.getLanguage().getId(), db);
-							if(latestContentVersion != null && latestContentVersion.getId().intValue() == contentVersion.getId().intValue())
-							{
-								matchingAssets.add(asset.getValueObject());
-							    previousContentId = contentVersion.getOwningContent().getId();
-							    previousLanguageId = contentVersion.getLanguage().getId();
-							    currentCount++;
-							}
-						}						
-					}
-				}
+				if(logger.isInfoEnabled())
+					logger.info("asset found:" + smallAsset.getDigitalAssetId() + ":" + smallAsset.getAssetKey() + ":" + smallAsset.getAssetContentType());
+				
+				matchingAssets.add(smallAsset.getValueObject());
+			    currentCount++;
 			}
 
 			assetResults.close();
@@ -697,9 +690,10 @@ public class SearchController extends BaseController
 		}
 		
 		return matchingAssets;
-		
    	}
 
+   	
+   	
    	public static int replaceString(String searchString, String replaceString, String[] contentVersionIds, InfoGluePrincipal infoGluePrincipal)throws SystemException, Bug
    	{
 		int replacements = 0;

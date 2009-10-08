@@ -1,0 +1,84 @@
+#lightLeftMenuToolbar("" $buttons)
+##lightMenuToolbar("" $buttons $rightButtons)
+
+<script type="text/javascript">
+<!--
+	//alert("Loading toolbar: $originalFullURL");
+	//alert("bbbb1::" + $("#genericDialog").size());
+	//alert("bbbb2::" + $("#menutoolbarLeft").size());
+	//alert("bbbb3::" + $("#menutoolbarLeft .delete").size());
+	//alert("bbbb4::" + $("#menutoolbarLeft .delete").parents("a").size());
+#*
+	//Event listener for create option
+	$("#menutoolbarLeft #create").click(function () { 
+    	openInlineDiv("CreateSiteNode!inputV3.action?isBranch=true&repositoryId=$repositoryId&parentSiteNodeId=$siteNodeId&returnAddress=ViewInlineOperationMessages.action&originalAddress=refreshTree", 600, 800, true, true, "New page"); 
+		});
+
+	//Event listener for properties option
+	$("#menutoolbarLeft #properties").click(function () { 
+    	openInlineDiv("ViewAndCreateContentForServiceBinding.action?siteNodeId=$siteNodeId&repositoryId=$repositoryId&changeStateToWorking=true", 600, 800, true, true, "New page"); 
+		});
+
+	//Event listener for publish option
+	$("#menutoolbarLeft #publish").click(function () { 
+    	openInlineDiv("ViewListSiteNodeVersion!v3.action?siteNodeId=$siteNodeId&contentId=-1&repositoryId=$repositoryId&recurseSiteNodes=false&returnAddress=ViewInlineOperationMessages.action&originalAddress=refreshTree", 600, 800, true, true, "New page"); 
+		});
+
+	//Event listener for publish option
+	$("#menutoolbarLeft #publishTree").click(function () { 
+    	openInlineDiv("ViewListSiteNodeVersion!v3.action?siteNodeId=$siteNodeId&contentId=-1&repositoryId=$repositoryId&recurseSiteNodes=true&returnAddress=ViewInlineOperationMessages.action&originalAddress=refreshTree", 600, 800, true, true, "New page"); 
+		});
+
+	//Event listener for delete option
+	//$("#menutoolbarLeft .delete").parents("a").attr("href", "#");
+	$("#menutoolbarLeft .delete").parents("a").click(function () {
+		//alert("aaa:" + $("#genericDialog"));
+		$("#genericDialog").attr("title", "Delete page???????");
+		$("#genericDialog p").text("Vill du verkligen ta bort sidan..");
+		$("#genericDialog").dialog({
+			bgiframe: true,
+			resizable: false,
+			height:140,
+			modal: true,
+			overlay: {
+				backgroundColor: '#000',
+				opacity: 0.5
+			},
+			buttons: {
+				'Delete page': function() {
+					$(this).dialog('close');
+					openInlineDiv("DeleteSiteNode!V3.action?siteNodeId=$siteNodeId&repositoryId=$repositoryId&changeTypeId=4&returnAddress=ViewInlineOperationMessages.action&originalAddress=refreshTree", 600, 800, true, true, "Delete page"); 
+				},
+				Cancel: function() {
+					$(this).dialog('close');
+				}
+			}
+		});
+	});
+
+	//Event listener for move option
+	$("#menutoolbarLeft #move").click(function () {
+		
+		$("#moveDialog").dialog({
+			bgiframe: true,
+			resizable: false,
+			height:140,
+			modal: true,
+			overlay: {
+				backgroundColor: '#000',
+				opacity: 0.5
+			},
+			buttons: {
+				'Move page': function() {
+					$(this).dialog('close');
+					openInlineDiv("MoveSiteNode!input.action?siteNodeId=$siteNodeId&repositoryId=$repositoryId&changeTypeId=4", 600, 800, true, true, "New page"); 
+				},
+				Cancel: function() {
+					$(this).dialog('close');
+				}
+			}
+		});
+	});
+*#
+-->
+</script>

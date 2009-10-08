@@ -309,11 +309,12 @@ public class CreateSiteNodeAction extends InfoGlueAbstractAction
     		String createSiteNodeInlineOperationViewCreatedPageLinkText = getLocalizedString(getLocale(), "tool.structuretool.createSiteNodeInlineOperationViewCreatedPageLinkText");
     		String createSiteNodeInlineOperationViewCreatedPageTitleText = getLocalizedString(getLocale(), "tool.structuretool.createSiteNodeInlineOperationViewCreatedPageTitleText");
 
-            addActionLink(userSessionKey, new LinkBean("newPageUrl", createSiteNodeInlineOperationViewCreatedPageLinkText, createSiteNodeInlineOperationViewCreatedPageTitleText, createSiteNodeInlineOperationViewCreatedPageTitleText, getDecoratedPageUrl(newSiteNodeVO.getId()), false, ""));
+    		addActionLink(userSessionKey, new LinkBean("newPageUrl", createSiteNodeInlineOperationViewCreatedPageLinkText, createSiteNodeInlineOperationViewCreatedPageTitleText, createSiteNodeInlineOperationViewCreatedPageTitleText, getDecoratedPageUrl(newSiteNodeVO.getId()), false, "", "structure"));
             setActionExtraData(userSessionKey, "refreshToolbarAndMenu", "" + true);
             setActionExtraData(userSessionKey, "repositoryId", "" + newSiteNodeVO.getRepositoryId());
             setActionExtraData(userSessionKey, "siteNodeId", "" + newSiteNodeVO.getId());
             setActionExtraData(userSessionKey, "unrefreshedSiteNodeId", "" + parentSiteNodeId);
+            setActionExtraData(userSessionKey, "unrefreshedNodeId", "" + parentSiteNodeId);
             setActionExtraData(userSessionKey, "changeTypeId", "" + this.changeTypeId);
         }
         catch(ConstraintException ce)

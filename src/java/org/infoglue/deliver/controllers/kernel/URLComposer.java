@@ -59,7 +59,7 @@ public abstract class URLComposer
     }
 
 
-    public abstract String composeDigitalAssetUrl(String dnsName, Integer siteNodeId, Integer contentId, Integer languageId, String assetKey, DeliveryContext deliveryContext);
+    public abstract String composeDigitalAssetUrl(String dnsName, Integer siteNodeId, Integer contentId, Integer languageId, String assetKey, DeliveryContext deliveryContext, Database db) throws Exception;
 
     public abstract String composeDigitalAssetUrl(String dnsName, String filename, DeliveryContext deliveryContext);
 

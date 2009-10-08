@@ -244,7 +244,7 @@
 <input type="hidden" name="contentTypeDefinitionId" value="$contentTypeDefinitionId">
 <input type="hidden" name="currentContentTypeEditorViewLanguageCode" value="$!currentContentTypeEditorViewLanguageCode">
 <input type="hidden" name="attributeName" value="$attribute.name">
-<input type="hidden" name="attributeToExpand" value="${attribute.name}">
+<input type="hidden" id="attributeToExpand${attribute.name}" name="attributeToExpand" value="$attribute.name">
 <div id="${attribute.name}PropertyHandle" class="propertiesDivHandle"><div id="propertiesDivLeftHandle" class="propertiesDivLeftHandle">Properties for attribute</div><div id="propertiesDivRightHandle" class="propertiesDivRightHandle"><a href="javascript:hidePropertyDiv('${attribute.name}PropertyLayer');" class="white">close</a></div></div>
 <div id="propertiesDivBody" class="propertiesDivBody">
 	<table border="0" cellpadding="2" cellspacing="0" width="100%">
@@ -315,10 +315,45 @@
 		<td>
 			<input type="hidden" name="parameterNames" value="$parameter.key">
 			#set($values = $parameter.value.getContentTypeAttributeParameterValues())
+			#set($value = $parameter.value.getContentTypeAttributeParameterValue().getLocalizedValue("label", "$!currentContentTypeEditorViewLanguageCode"))
 			#if($parameter.value.type == 0)
-				<input type="textfield" name="$parameter.key" value="$parameter.value.getContentTypeAttributeParameterValue().getLocalizedValue("label", "$!currentContentTypeEditorViewLanguageCode")" class="normaltextfield">
+				#if($parameter.key == "widget")
+					<select name="$parameter.key" class="normaltextfield">
+						#if($attribute.inputType == "select")
+							<option value="default" #checkSelected("$value" "default")>Default</option>
+    					#elseif($attribute.inputType == "radiobutton")
+							<option value="default" #checkSelected("$value" "default")>Default</option>
+    						<option value="3col" #checkSelected("$value" "3col")>3-column</option>
+						#elseif($attribute.inputType == "checkbox")
+    						<option value="default" #checkSelected("$value" "default")>Default</option>
+    						<option value="transfer" #checkSelected("$value" "transfer")>Transfer boxes</option>
+    						<option value="3col" #checkSelected("$value" "3col")>3-column checkboxes</option>
+						#else
+							<option value="default" #checkSelected("$value" "default")>Default</option>
+						#end
+                    </select>
+				#elseif($parameter.key == "class")
+					<select name="$parameter.key" class="normaltextfield">
+						#if($attribute.inputType == "textfield")
+    						<option value="longtextfield" #checkSelected("$value" "longtextfield")>Default (longtextfield)</option>
+    						<option value="smalltextfield" #checkSelected("$value" "smalltextfield")>Small textfield</option>
+    						<option value="normaltextfield" #checkSelected("$value" "normaltextfield")>Normal textfield</option>
+    						<option value="date" #checkSelected("$value" "date")>Datefield</option>
+    					#elseif($attribute.inputType == "textarea")	
+							<option value="normaltextarea" #checkSelected("$value" "normaltextarea")>Normal textarea</option>
+							<option value="smalltextarea" #checkSelected("$value" "smalltextarea")>Small textarea</option>
+							<option value="largetextarea" #checkSelected("$value" "largetextarea")>Large textarea</option>
+    					#elseif($attribute.inputType == "datefield")	
+							<option value="date" #checkSelected("$value" "date")>Normal date</option>
+						#else
+    						<option value="default" #checkSelected("$value" "default")>Default</option>
+                		#end
+				    </select>
+				#else
+    				<input type="textfield" name="$parameter.key" value="$value" class="normaltextfield">
+				#end
 			#elseif($parameter.value.type == 2)
-				<textarea name="$parameter.key" class="normaltextarea">$parameter.value.getContentTypeAttributeParameterValue().getLocalizedValue("label", "$!currentContentTypeEditorViewLanguageCode")</textarea>
+				<textarea name="$parameter.key" class="normaltextarea">$value</textarea>
 			#else
 				<table border="0" cellpadding="2" cellspacing="0">
 				<tr>
@@ -354,7 +389,8 @@
 	</table>
 </div>
 <div style="text-indent: 10px; background-color: white; float: left; position: absolute; bottom: 0px; border-top: 1px #ccc solid; padding-top: 2px; width: 100%;">
-	<input type="image" src="$ui.getString("images.managementtool.buttons.saveAndExit")" width="80" height="25" border="0"></a>
+	<input type="image" src="$ui.getString("images.managementtool.buttons.save")" width="50" height="25" border="0">
+	<img src="$ui.getString("images.managementtool.buttons.saveAndExit")" onclick="$('#attributeToExpand${attribute.name}').val(''); document.${attribute.name}PropertiesForm.submit();" border="0">
 	<a href="javascript:hideDiv('${attribute.name}PropertyLayer');"><img src="$ui.getString("images.managementtool.buttons.cancel")" width="50" height="25" border="0"></a>
 </div>
 </form>

@@ -28,11 +28,15 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
+import org.infoglue.cms.applications.databeans.LinkBean;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.InconsistenciesController;
 import org.infoglue.cms.controllers.kernel.impl.simple.RegistryController;
+import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeControllerProxy;
 import org.infoglue.cms.entities.content.ContentVO;
+import org.infoglue.cms.exception.ConstraintException;
+import org.infoglue.cms.exception.SystemException;
 
 /**
  * This action removes a content from the system.
@@ -54,6 +58,8 @@ public class DeleteContentAction extends InfoGlueAbstractAction
 	//Used for the relatedPages control
 	private Integer siteNodeId;
 	
+	private String returnAddress = null;
+	private String originalAddress = null;
 	private List referenceBeanList = new ArrayList();
 	
 	public DeleteContentAction()
@@ -90,6 +96,58 @@ public class DeleteContentAction extends InfoGlueAbstractAction
 	    }
 	}	
 	
+	public String doV3() throws Exception 
+	{
+		String userSessionKey = "" + System.currentTimeMillis();
+
+        try
+        {
+        	doExecute();
+        	
+    		String deleteSiteNodeInlineOperationDoneHeader = getLocalizedString(getLocale(), "tool.structuretool.deleteSiteNodeInlineOperationDoneHeader", this.contentVO.getName());
+    		String deleteSiteNodeInlineOperationViewDeletedPageParentLinkText = getLocalizedString(getLocale(), "tool.structuretool.deleteSiteNodeInlineOperationViewDeletedPageParentLinkText");
+    		String deleteSiteNodeInlineOperationViewCreatedPageParentTitleText = getLocalizedString(getLocale(), "tool.structuretool.deleteSiteNodeInlineOperationViewDeletedPageParentTitleText");
+    	
+    	    setActionMessage(userSessionKey, deleteSiteNodeInlineOperationDoneHeader);
+    										  																	
+    	    addActionLink(userSessionKey, new LinkBean("parentPageUrl", deleteSiteNodeInlineOperationViewDeletedPageParentLinkText, deleteSiteNodeInlineOperationViewCreatedPageParentTitleText, deleteSiteNodeInlineOperationViewCreatedPageParentTitleText, this.originalAddress, false, "", "", "structure"));
+            setActionExtraData(userSessionKey, "refreshToolbarAndMenu", "" + true);
+            setActionExtraData(userSessionKey, "repositoryId", "" + this.contentVO.getRepositoryId());
+            setActionExtraData(userSessionKey, "contentId", "" + this.contentVO.getId());
+            setActionExtraData(userSessionKey, "unrefreshedContentId", "" + parentContentId);
+            setActionExtraData(userSessionKey, "unrefreshedNodeId", "" + parentContentId);
+            setActionExtraData(userSessionKey, "changeTypeId", "" + this.changeTypeId);
+            setActionExtraData(userSessionKey, "disableCloseLink", "true");
+        }
+        catch(ConstraintException ce)
+        {
+        	logger.warn("An error occurred so we should not complete the transaction:" + ce);
+
+        	//parentContentVO = SiteNodeControllerProxy.getController().getSiteNodeVOWithId(parentSiteNodeId);
+
+			ce.setResult(INPUT + "V3");
+			throw ce;
+        }
+        catch(Exception e)
+        {
+            logger.error("An error occurred so we should not complete the transaction:" + e, e);
+            throw new SystemException(e.getMessage());
+        }
+    	        
+        if(this.returnAddress != null && !this.returnAddress.equals(""))
+        {
+	        String arguments 	= "userSessionKey=" + userSessionKey + "&isAutomaticRedirect=false";
+	        String messageUrl 	= returnAddress + (returnAddress.indexOf("?") > -1 ? "&" : "?") + arguments;
+	        
+	        this.getResponse().sendRedirect(messageUrl);
+	        return NONE;
+        }
+        else
+        {
+        	return "successV3";
+        }
+    }
+
 	public String doStandalone() throws Exception 
 	{
 		this.referenceBeanList = RegistryController.getController().getReferencingObjectsForContent(this.contentVO.getContentId());
@@ -190,9 +248,27 @@ public class DeleteContentAction extends InfoGlueAbstractAction
 		return "ContentVersion.stateId";
 	}
 	
+	public void setReturnAddress(String returnAddress)
+	{
+		this.returnAddress = returnAddress;
+	}
+
+	public void setOriginalAddress(String originalAddress)
+	{
+		this.originalAddress = originalAddress;
+	}
+
+	public String getOriginalAddress()
+	{
+		return this.originalAddress;
+	}
+
 	public String getReturnAddress()
 	{
-		return "ViewContent.action?contentId=" + this.contentVO.getId() + "&repositoryId=" + this.contentVO.getRepositoryId();
+		if(this.returnAddress != null && !this.returnAddress.equals(""))
+			return this.returnAddress;
+		else
+			return "ViewContent.action?contentId=" + this.contentVO.getId() + "&repositoryId=" + this.contentVO.getRepositoryId();
 	}
 
     public List getReferenceBeanList()
@@ -219,4 +295,5 @@ public class DeleteContentAction extends InfoGlueAbstractAction
     {
         this.registryId = registryId;
     }
+    
 }

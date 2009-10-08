@@ -1166,6 +1166,16 @@
         	<required>false</required>
 	        <rtexprvalue>false</rtexprvalue>
     	</attribute>
+        <attribute>
+    	    <name>allowDollarSigns</name>
+        	<required>false</required>
+	        <rtexprvalue>false</rtexprvalue>
+    	</attribute>
+        <attribute>
+    	    <name>allowAnchorSigns</name>
+        	<required>false</required>
+	        <rtexprvalue>false</rtexprvalue>
+    	</attribute>
 	</tag>
 	
 	<tag>
@@ -1387,6 +1397,16 @@
     	</attribute>
         <attribute>
     	    <name>allowExternalLinks</name>
+        	<required>false</required>
+	        <rtexprvalue>false</rtexprvalue>
+    	</attribute>
+        <attribute>
+    	    <name>allowDollarSigns</name>
+        	<required>false</required>
+	        <rtexprvalue>false</rtexprvalue>
+    	</attribute>
+        <attribute>
+    	    <name>allowAnchorSigns</name>
         	<required>false</required>
 	        <rtexprvalue>false</rtexprvalue>
     	</attribute>

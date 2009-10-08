@@ -1,6 +1,78 @@
 #beginLightCommonToolV3("tool.managementtool.mysettings.header" "" "" false true $!disableCloseButton)
 
 <link rel="stylesheet" type="text/css" media="all" href="css/cms.css" title="cms" />
+<style type="text/css">
+	.ui-widget-header 
+	{
+		background-image:none;
+		background-repeat:repeat-x;
+		border-top: 1px solid white;
+		border-bottom: 1px solid #d0d1d0;
+		aheight: 20px;
+    }
+	.ui-tabs 
+	{
+		border: 0px;
+	}
+	.ui-tabs .ui-tabs-nav 
+	{
+		border-left: 0px;
+		border-right: 0px;
+        padding:2px 2px 0px 8px;
+        position:relative;
+        background-color: #f6f6f6;
+    }
+    .ui-tabs .ui-tabs-nav li a 
+	{
+        font-size:8pt;
+		padding: 4px 10px 4px 10px;
+	    text-decoration:none;
+    }
+	.ui-corner-all {
+        -moz-border-radius-bottomleft:0px;
+        -moz-border-radius-bottomright:0px;
+        -moz-border-radius-topleft:0px;
+        -moz-border-radius-topright:0px;
+    }
+	.ui-tabs
+	{
+		padding:0px;
+	}
+	.ui-tabs .ui-tabs-panel 
+	{
+		padding: 8px;
+	}
+	.ui-state-default, .ui-widget-content .ui-state-default 
+	{ 
+		border: 1px solid #d0d1d0; 
+		background: #dfeffc url(images/v3/tabs.png) repeat-x; 
+		font-weight: bold; 
+		color: white; 
+		outline: none; 
+	}
+	.ui-state-active a, .ui-state-active a:link, .ui-state-active a:visited 
+	{
+		color: #555555;
+	}
+	.ui-state-default a, .ui-state-default a:link, .ui-state-default a:visited 
+	{
+		color: #555555;
+	}
+	.ui-tabs-nav .ui-tabs-selected a 
+	{
+		background: #dfeffc url(images/v3/tabs.png) repeat-x; 
+		background-position: 100% -28px;
+	}
+	.ui-tabs-nav .ui-tabs-selected a span 
+	{
+	    background-position: 0 -28px;
+	}
+	.ui-state-active, .ui-widget-content .ui-state-active 
+	{ 
+		border: 1px solid #d0d1d0;
+	}
+	
+</style>
 
 <script type="text/javascript">
 	<!--
@@ -19,7 +91,7 @@
 	}
 	
 	$(document).ready(function(){
-		$("#tabsContainer > ul").tabs( { 
+		$("#tabsContainer").tabs( { 
 			show:function() { resizeInlineTabDivs(); },
 			select:function(e, ui) { 
 				//alert("ui: " + ui.index);
@@ -48,7 +120,7 @@
 	<div style="clear: both;"></div>
 	
 	<h3 style="text-indent: 16px;">$ui.getString("tool.managementtool.mysettings.header") 
-		#if($errorMessage != "")
+		#if($errorMessage && $errorMessage != "")
 			<span style="color:red">$errorMessage</span><br/>
 		#end
 	</h3>
@@ -105,6 +177,24 @@
 						<option value="4" #if($defaultToolId == "4")selected="1"#end>$ui.getString("tool.common.myDesktopTool.name")</option>
 						#end
 					</select>	
+				</p>
+
+				<p style="clear: both;">	
+					<label for="defaultGUI">$ui.getString("tool.managementtool.mysettings.defaultGUI.label")</label>
+					<select class="sitedropbox" name="defaultGUI">
+						<option value="default" #if($defaultGUI == "default")selected="1"#end>$ui.getString("tool.common.default")</option>
+						<option value="classic" #if($defaultGUI == "classic")selected="1"#end>$ui.getString("tool.common.classic")</option>
+					</select>				
+				</p>
+				
+				<p style="clear: both;">		
+					<label for="theme">$ui.getString("tool.managementtool.mysettings.theme.label")</label>
+					<select class="sitedropbox" name="theme">
+						<option value="">Default (Outlook 2007)</option>
+						#foreach($availableTheme in $themes)
+							<option value="$availableTheme" #if($theme == "$availableTheme")selected="1"#end>$availableTheme</option>
+						#end
+					</select>				
 				</p>
 
 			</form>

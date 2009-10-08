@@ -74,6 +74,26 @@
 		</td>
 	</tr>
 	<tr>
+		<td>	
+			$ui.getString("tool.managementtool.mysettings.defaultGUI.label")<br/>
+			<select class="sitedropbox" name="defaultGUI">
+				<option value="default" #if($defaultGUI == "default")selected="1"#end>$ui.getString("tool.common.default")</option>
+				<option value="classic" #if($defaultGUI == "classic")selected="1"#end>$ui.getString("tool.common.classic")</option>
+			</select>				
+		</td>
+	</tr>
+	<tr>
+		<td>	
+			$ui.getString("tool.managementtool.mysettings.theme.label")<br/>
+			<select class="sitedropbox" name="theme">
+				<option value="">Default (Outlook 2007)</option>
+				#foreach($availableTheme in $themes)
+					<option value="$availableTheme" #if($theme == "$availableTheme")selected="1"#end>$availableTheme</option>
+				#end
+			</select>				
+		</td>
+	</tr>
+	<tr>
 		<td>
 			<a href="UpdateSystemUserPassword!inputStandalone.action?userName=$infoGluePrincipal.name&returnAddress=ViewMySettings.action">$ui.getString("tool.managementtool.changePassword.label")</a>
 		</td>

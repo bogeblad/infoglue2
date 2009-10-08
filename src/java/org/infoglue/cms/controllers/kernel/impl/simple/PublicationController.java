@@ -277,7 +277,12 @@ public class PublicationController extends BaseController
 
         	//InfoGluePrincipal infoGluePrincipal = InfoGluePrincipalControllerProxy.getController().getInfoGluePrincipal(event.getCreator());
         	InfoGluePrincipal infoGluePrincipal = UserControllerProxy.getController().getUser(event.getCreator());
-        	mailNotification(event, publisher.getName(), publisher.getEmail(), infoGluePrincipal.getEmail(), comment, referenceUrl);
+
+        	String email = (infoGluePrincipal!=null) ? infoGluePrincipal.getEmail() : publisher.getEmail();
+			if(infoGluePrincipal == null) 
+				comment += "\n\n\n(" +  event.getCreator() + " wasn't found.)"; 
+
+        	mailNotification(event, publisher.getName(), publisher.getEmail(), email, comment, referenceUrl);
 
 			commitTransaction(db);
         }
@@ -371,7 +376,11 @@ public class PublicationController extends BaseController
 					}
 				}
 
-				mailNotification(event, publisher.getName(), publisher.getEmail(), infoGluePrincipal.getEmail(), comment, referenceUrl);
+				String email = (infoGluePrincipal!=null) ? infoGluePrincipal.getEmail() : publisher.getEmail();
+				if(infoGluePrincipal == null) 
+					comment += "\n\n\n(" +  event.getCreator() + " wasn't found.)"; 
+				
+				mailNotification(event, publisher.getName(), publisher.getEmail(), email, comment, referenceUrl);
 			}
 
 			commitTransaction(db);
@@ -979,7 +988,7 @@ public class PublicationController extends BaseController
 			logger.info("email:" + email);
 			logger.info("recipients:" + recipients);
 
-			MailServiceFactory.getService().sendEmail(systemEmailSender, systemEmailSender, recipients, "CMS - " + principal.getFirstName() + " " + principal.getLastName() + " submitted " + resultingEvents.size() + " items for publishing", email, "utf-8");
+		    MailServiceFactory.getService().sendEmail(contentType, systemEmailSender, systemEmailSender, recipients, null, null, "CMS - " + principal.getFirstName() + " " + principal.getLastName() + " submitted " + resultingEvents.size() + " items for publishing", email, "utf-8");
 		}
 		catch(Exception e)
 		{

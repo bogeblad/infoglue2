@@ -29,6 +29,7 @@ import java.util.Map;
 
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.RepositoryController;
+import org.infoglue.cms.controllers.kernel.impl.simple.ThemeController;
 
 import com.opensymphony.module.propertyset.PropertySet;
 import com.opensymphony.module.propertyset.PropertySetManager;
@@ -49,10 +50,13 @@ public class ViewMySettingsAction extends InfoGlueAbstractAction
 	private String languageCode 				= null;
 	private String defaultToolId				= null;
 	private String defaultRepositoryId			= null;
+	private String defaultGUI					= null;
+	private String theme						= null;
 	
 	private List repositories = null;
+	private List themes = null;
 	
-    /**
+	/**
      * The main method that fetches the Value-objects for this use-case
      */
     
@@ -65,9 +69,12 @@ public class ViewMySettingsAction extends InfoGlueAbstractAction
 	    this.languageCode 			= ps.getString("principal_" + this.getInfoGluePrincipal().getName() + "_languageCode");
 	    this.defaultToolId 			= ps.getString("principal_" + this.getInfoGluePrincipal().getName() + "_defaultToolId");
 	    this.defaultRepositoryId 	= ps.getString("principal_" + this.getInfoGluePrincipal().getName() + "_defaultRepositoryId");
+	    this.defaultGUI 			= ps.getString("principal_" + this.getInfoGluePrincipal().getName() + "_defaultGUI");
+	    this.theme 					= ps.getString("principal_" + this.getInfoGluePrincipal().getName() + "_theme");
 
 		this.repositories = RepositoryController.getController().getAuthorizedRepositoryVOList(this.getInfoGluePrincipal(), false);
-
+		this.themes = ThemeController.getController().getAvailableThemes();
+		
         return "success";
     }
 
@@ -86,8 +93,25 @@ public class ViewMySettingsAction extends InfoGlueAbstractAction
 		return defaultRepositoryId;
 	}
 
+	public String getDefaultGUI()
+	{
+		return defaultGUI;
+	}
+	
+	public String getTheme()
+	{
+		return theme;
+	}
+	
 	public List getRepositories()
 	{
 		return repositories;
 	}
+	
+    public List getThemes()
+	{
+		return themes;
+	}
+
+	
 }

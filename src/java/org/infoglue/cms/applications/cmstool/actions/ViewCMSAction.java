@@ -24,6 +24,7 @@
 package org.infoglue.cms.applications.cmstool.actions;
 
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
+import org.infoglue.cms.util.CmsPropertyHandler;
 
 /**
  * This class implements the action class for the base fram for the entire tool.
@@ -37,7 +38,11 @@ public class ViewCMSAction extends InfoGlueAbstractAction
 	
 	public String doExecute() throws Exception
     {
-        return "success";
+		String preferredGUI = CmsPropertyHandler.getDefaultGUI(this.getUserName());
+		if(preferredGUI.equalsIgnoreCase("default"))
+			return "successDefault";
+		else
+			return "success";
     }
 
 }

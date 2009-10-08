@@ -28,11 +28,15 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
+import org.infoglue.cms.applications.databeans.LinkBean;
 import org.infoglue.cms.controllers.kernel.impl.simple.InconsistenciesController;
 import org.infoglue.cms.controllers.kernel.impl.simple.RegistryController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeControllerProxy;
+import org.infoglue.cms.entities.structure.SiteNode;
 import org.infoglue.cms.entities.structure.SiteNodeVO;
+import org.infoglue.cms.exception.ConstraintException;
+import org.infoglue.cms.exception.SystemException;
 
 
 /**
@@ -47,6 +51,7 @@ public class DeleteSiteNodeAction extends InfoGlueAbstractAction
 
 	private SiteNodeVO siteNodeVO;
 	private Integer siteNodeId;
+	private SiteNodeVO parentSiteNodeVO;
 	private Integer parentSiteNodeId;
 	private Integer changeTypeId;
 	private Integer repositoryId;
@@ -56,7 +61,8 @@ public class DeleteSiteNodeAction extends InfoGlueAbstractAction
 	private Integer contentId;
 	
 	private List referenceBeanList = new ArrayList();
-
+	private String returnAddress = null;
+	private String originalAddress = null;
 	
 	public DeleteSiteNodeAction()
 	{
@@ -79,7 +85,9 @@ public class DeleteSiteNodeAction extends InfoGlueAbstractAction
 	    {
 			try
 			{
-				this.parentSiteNodeId = SiteNodeController.getParentSiteNode(this.siteNodeVO.getSiteNodeId()).getSiteNodeId();
+				System.out.println("SiteNode:" + this.siteNodeVO);
+				this.parentSiteNodeVO = SiteNodeController.getParentSiteNode(this.siteNodeVO.getSiteNodeId());
+				this.parentSiteNodeId = this.parentSiteNodeVO.getSiteNodeId();
 			}
 			catch(Exception e)
 			{
@@ -91,6 +99,59 @@ public class DeleteSiteNodeAction extends InfoGlueAbstractAction
 			return "success";
 	    }
 	}
+	
+	public String doV3() throws Exception 
+	{
+		String userSessionKey = "" + System.currentTimeMillis();
+
+        try
+        {
+        	doExecute();
+        	
+    		String deleteSiteNodeInlineOperationDoneHeader = getLocalizedString(getLocale(), "tool.structuretool.deleteSiteNodeInlineOperationDoneHeader", this.siteNodeVO.getName());
+    		String deleteSiteNodeInlineOperationViewDeletedPageParentLinkText = getLocalizedString(getLocale(), "tool.structuretool.deleteSiteNodeInlineOperationViewDeletedPageParentLinkText");
+    		String deleteSiteNodeInlineOperationViewCreatedPageParentTitleText = getLocalizedString(getLocale(), "tool.structuretool.deleteSiteNodeInlineOperationViewDeletedPageParentTitleText");
+    	
+    	    setActionMessage(userSessionKey, deleteSiteNodeInlineOperationDoneHeader);
+    										  																	
+    	    addActionLink(userSessionKey, new LinkBean("parentPageUrl", deleteSiteNodeInlineOperationViewDeletedPageParentLinkText, deleteSiteNodeInlineOperationViewCreatedPageParentTitleText, deleteSiteNodeInlineOperationViewCreatedPageParentTitleText, this.originalAddress, false, "", "", "structure"));
+            setActionExtraData(userSessionKey, "refreshToolbarAndMenu", "" + true);
+            setActionExtraData(userSessionKey, "repositoryId", "" + this.siteNodeVO.getRepositoryId());
+            setActionExtraData(userSessionKey, "siteNodeId", "" + this.siteNodeVO.getSiteNodeId());
+            setActionExtraData(userSessionKey, "unrefreshedSiteNodeId", "" + parentSiteNodeId);
+            setActionExtraData(userSessionKey, "unrefreshedNodeId", "" + parentSiteNodeId);
+            setActionExtraData(userSessionKey, "changeTypeId", "" + this.changeTypeId);
+            setActionExtraData(userSessionKey, "disableCloseLink", "true");
+        }
+        catch(ConstraintException ce)
+        {
+        	logger.warn("An error occurred so we should not complete the transaction:" + ce);
+
+        	parentSiteNodeVO = SiteNodeControllerProxy.getController().getSiteNodeVOWithId(parentSiteNodeId);
+
+			ce.setResult(INPUT + "V3");
+			throw ce;
+        }
+        catch(Exception e)
+        {
+            logger.error("An error occurred so we should not complete the transaction:" + e, e);
+            throw new SystemException(e.getMessage());
+        }
+    	        
+        if(this.returnAddress != null && !this.returnAddress.equals(""))
+        {
+	        String arguments 	= "userSessionKey=" + userSessionKey + "&isAutomaticRedirect=false";
+	        String messageUrl 	= returnAddress + (returnAddress.indexOf("?") > -1 ? "&" : "?") + arguments;
+	        
+	        this.getResponse().sendRedirect(messageUrl);
+	        return NONE;
+        }
+        else
+        {
+        	return "successV3";
+        }
+    }
+
 	
 	public String doDeleteReference() throws Exception 
 	{
@@ -169,12 +230,30 @@ public class DeleteSiteNodeAction extends InfoGlueAbstractAction
 	{
 		return "SiteNodeVersion.stateId";
 	}
-	
+
+	public void setReturnAddress(String returnAddress)
+	{
+		this.returnAddress = returnAddress;
+	}
+
 	public String getReturnAddress()
 	{
-		return "ViewSiteNode.action?siteNodeId=" + this.siteNodeVO.getId() + "&repositoryId=" + this.siteNodeVO.getRepositoryId();
+		if(this.returnAddress != null && !this.returnAddress.equals(""))
+			return this.returnAddress;
+		else
+			return "ViewSiteNode.action?siteNodeId=" + this.siteNodeVO.getId() + "&repositoryId=" + this.siteNodeVO.getRepositoryId();
 	}
-	
+
+	public void setOriginalAddress(String originalAddress)
+	{
+		this.originalAddress = originalAddress;
+	}
+
+	public String getOriginalAddress()
+	{
+		return this.originalAddress;
+	}
+
     public Integer getRepositoryId()
     {
         return repositoryId;

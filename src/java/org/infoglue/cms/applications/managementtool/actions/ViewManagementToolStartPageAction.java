@@ -37,23 +37,16 @@ import org.infoglue.cms.controllers.kernel.impl.simple.RepositoryController;
 
 public class ViewManagementToolStartPageAction extends InfoGlueAbstractAction
 {
-    private final static Logger logger = Logger.getLogger(ViewManagementToolStartPageAction.class.getName());
-
 	private static final long serialVersionUID = 1L;
 
-    private List repositories;
-    
     public String doExecute() throws Exception
     {
-    	this.repositories = RepositoryController.getController().getRepositoryVOList();
-    	logger.info("ClassPath:" + System.getProperty("java.class.path","."));
-    	
         return "success";
     }
-    
-    public List getRepositories()
+
+    public String doV3() throws Exception
     {
-    	return this.repositories;
+        return "successV3";
     }
-               
+
 }

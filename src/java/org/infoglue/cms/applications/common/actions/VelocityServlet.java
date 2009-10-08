@@ -41,6 +41,7 @@ import org.apache.velocity.context.Context;
 import org.infoglue.cms.applications.common.Session;
 import org.infoglue.cms.applications.common.ValueConverter;
 import org.infoglue.cms.applications.common.VisualFormatter;
+import org.infoglue.cms.controllers.kernel.impl.simple.LabelController;
 import org.infoglue.cms.exception.ConfigurationError;
 import org.infoglue.cms.util.StringManager;
 import org.infoglue.cms.util.StringManagerFactory;
@@ -137,10 +138,16 @@ public class VelocityServlet extends WebWorkVelocityServlet
         //</todo>
 
         if(session.getLocale() == null || session.getLocale().getLanguage() == null || session.getLocale().getLanguage().equalsIgnoreCase(""))
-		    context.put("ui", getStringManagerChain(java.util.Locale.ENGLISH));
-		else
-		    context.put("ui", getStringManagerChain(session.getLocale()));
-		
+        {	
+        	context.put("ui", LabelController.getController(java.util.Locale.ENGLISH));
+        	//context.put("ui", getStringManagerChain(java.util.Locale.ENGLISH));
+        }
+        else
+        {
+        	context.put("ui", LabelController.getController(session.getLocale()));
+		    //context.put("ui", getStringManagerChain(session.getLocale()));
+        }
+        
 		context.put("formatter", new VisualFormatter());
 		context.put("converter", new ValueConverter());
 
@@ -165,6 +172,24 @@ public class VelocityServlet extends WebWorkVelocityServlet
 	    PropertySet ps = PropertySetManager.getInstance("jdbc", args);
 	    
 	    return ps.getString("principal_" + request.getRemoteUser() + "_defaultToolId");
+	}
+
+	private String getDefaultGUI(HttpServletRequest request)
+	{
+        Map args = new HashMap();
+	    args.put("globalKey", "infoglue");
+	    PropertySet ps = PropertySetManager.getInstance("jdbc", args);
+	    
+	    return ps.getString("principal_" + request.getRemoteUser() + "_defaultGUI");
+	}
+
+	private String getTheme(HttpServletRequest request)
+	{
+        Map args = new HashMap();
+	    args.put("globalKey", "infoglue");
+	    PropertySet ps = PropertySetManager.getInstance("jdbc", args);
+	    
+	    return ps.getString("principal_" + request.getRemoteUser() + "_theme");
 	}
 
 	private String getPreferredRepositoryId(HttpServletRequest request)

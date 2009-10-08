@@ -2,12 +2,13 @@
 
 body.generaltooledit {
 	color            : #000000;
-	/*background-color : #FFFFFF;*/
 	background-color: #f6f6f6;
 	padding			 : 0px;
 	margin			 : 0px;
 	width			 : 100%; 
 	float			 : left;
+	font-family      : verdana, arial, sans-serif;
+	font-size        : 8pt;
 }
 #menutoolbar {
 	padding-top: 2px;
@@ -331,7 +332,7 @@ img.scaledbordered {
 	/*background-color: red;*/
 	line-height: 26px;
 	height: 26px;
-	padding-right: 10px;
+	padding-right: 4px;
 	color: #555;
 	display: block;
 	float: left;
@@ -351,7 +352,7 @@ img.scaledbordered {
 	/*background-color: blue;*/
 	font-family: Tahoma;
 	font-size: 10pt;
-	padding-left: 10px;
+	padding-left: 6px;
 	line-height: 26px;
 	text-decoration: none;
 	height: 26px;
@@ -406,11 +407,92 @@ img.scaledbordered {
 .submitToPublish {background:url(../../images/v3/publishPageIcon.gif) no-repeat left center; background-position: 0px 2px;}
 .create {background:url(../../images/v3/createBackgroundPenPaper.gif) no-repeat left center; background-position: 0px 2px;}
 .next {background:url(../../images/v3/nextBackground.gif) no-repeat left center; background-position: 0px 2px;}
+.mySettings {background:url(../../images/v3/mySettingsIcon.gif) no-repeat left center; background-position: 0px 2px;}
+.properties { background:url(../../images/v3/metadataIcon.gif) no-repeat left center; background-position: 4px 2px;}
+.movePage { background:url(../../images/v3/movePageIcon.gif) no-repeat left center; background-position: 6px 2px;}
+.moveContent { background:url(../../images/v3/movePageIcon.gif) no-repeat left center; background-position: 6px 2px;}
+.delete { background:url(../../images/v3/deleteIcon.gif) no-repeat left center; background-position: 4px 2px;}
+.preview { background:url(../../images/v3/previewIcon.png) no-repeat left center; background-position: 4px 2px;}
+.publishPage {background:url(../../images/v3/publishPageIcon.gif) no-repeat left center; background-position: 0px 2px;}
+.publishPages {background:url(../../images/v3/publishPageIcon.gif) no-repeat left center; background-position: 0px 2px;}
+.pageCover {background:url(../../images/v3/pageCoverIcon.png) no-repeat left center; background-position: 0px 2px;}
+.logout {background:url(../../images/v3/exit.png) no-repeat left center; background-position: 0px 2px;}
 
 .save, .saveAndExit, .cancelIcon, .close, .help {
 	padding-left:28px;
 }
 
+/******************
+ Controls input fields in content version editor
+******************/ 
+#contentVersionDiv select, #contentVersionDiv input {
+	font-family      : arial, sans-serif;
+	font-size        : 8pt;
+	border			 : 1px solid #C2D0E2;
+}
+
+#contentVersionDiv .smalltextfield {
+	width            : 100px;
+}
+
+#contentVersionDiv .normaltextfield {
+	width            : 300px;
+}
+
+#contentVersionDiv .mediumtextfield {
+	width            : 400px;
+}
+
+#contentVersionDiv .longtextfield {
+	width            : 500px;
+}
+
+#contentVersionDiv .date {
+	width            : 115px;
+}
+
+#contentVersionDiv select.yesNoDropBox {
+	width            : 70px;
+}
+
+#contentVersionDiv textarea {
+	width            : 500px;
+	height			 : 100px;
+}
+
+#contentVersionDiv .smalltextarea {
+	width            : 500px;
+	height			 : 100px;
+}
+
+#contentVersionDiv .normaltextarea {
+	width            : 500px;
+	height			 : 200px;
+}
+
+#paletteContent .componentList {
+	width: 100%;
+	overflow: auto;
+	float: left;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+#paletteContent .componentList li {
+	background-color: white;
+	border: 1px solid #C2D0E2;
+	float: left;
+	width: 40px;
+	margin: 4px;
+	padding: 0;
+} 
+
+p.error {
+	color: red;
+}
+span.error {
+	color: red;
+}
 
 /* MY General button classes */
 .yui-skin-sam .yui-button {

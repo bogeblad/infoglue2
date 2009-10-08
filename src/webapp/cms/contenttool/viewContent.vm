@@ -216,7 +216,7 @@
 			<td>&nbsp;</td>
 			<td width="100%" nowrap="1">
 				#if($contentVersionVO.id > 0)
-					<a name="tooltip" title="$contentVersionVO.versionComment">$contentVersionVO.versionModifier ($formatter.formatDate($contentVersionVO.modifiedDateTime, "yyyy-MM-dd"))</a>
+					<a name="tooltip" title="$formatter.escapeHTML("$!contentVersionVO.versionComment")">$contentVersionVO.versionModifier ($formatter.formatDate($contentVersionVO.modifiedDateTime, "yyyy-MM-dd"))</a>
 				#end
 			</td>
 			<td>&nbsp;</td>

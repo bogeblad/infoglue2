@@ -80,6 +80,12 @@
 	</tr>
 	<tr>
 		<td>
+			$ui.getString("tool.managementtool.importRepository.mergeExistingRepositoriesLabel")<br/>
+			<input type="checkbox" name="mergeExistingRepositories" value="true">
+		</td>
+	</tr>
+	<tr>
+		<td>
 			<a href="javascript:submitForm();"><img src="$ui.getString("images.contenttool.buttons.save")" width="50" height="25" border="0"></a>
 			<a href="javascript:window.close();"><img border="0" src="$ui.getString("images.contenttool.buttons.close")" width="50" height="25"></a>
 		</td>

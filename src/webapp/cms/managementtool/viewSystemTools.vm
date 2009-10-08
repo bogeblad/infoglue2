@@ -22,6 +22,9 @@
 	<p class="systemImageLink deploymentImage">
 		<a href="ViewDeploymentChooseServer!input.action?title=Deployment" class="systemLinkLabel">$ui.getString("tool.managementtool.deployment.title")</a>
 	</p>
+	<p class="systemImageLink deploymentVCImage">
+		<a href="#" onclick="if(top.openInlineDiv) top.openInlineDiv('ViewVCDeployment!input.action', 600, 800, true, true, 'Version control sync'); else openPopup('ViewVCDeployment!input.action', 'Version control sync', 'width=800,height=600,resizable=yes,scrollbars=yes');" class="systemLinkLabel">$ui.getString("tool.managementtool.deploymentVC.title")</a>
+	</p>
 	<p class="systemImageLink passwordImage">
 		<a href="ViewPasswordTool!input.action?title=Password+generation" class="systemLinkLabel">$ui.getString("tool.managementtool.password.title")</a>
 	</p>

@@ -7,6 +7,14 @@
 		{
 			document.editForm.submit();
 		}
+
+		$(document).ready(function(){
+				
+			$("#closeDialog").click(function(){
+				if(parent && parent.closeInlineDiv) parent.closeInlineDiv(); else if(parent && parent.closeDialog) parent.closeDialog(); else window.close();
+		   	});
+		
+		});
 	-->
 	</script>
 #end
@@ -30,6 +38,11 @@
 		</h3>
 
 		<p>$ui.getString("tool.managementtool.deploymentQuick.finishedText")</p>
+		
+		<p>
+			<a id="closeDialog" href="javascript:parent.closeDialog();" style="display:block;  padding-top: 8px; height: 20px;"><strong>$ui.getString("tool.common.closeDialogLinkText")</strong></a> 
+			$ui.getString("tool.common.closeDialogLinkTitle")
+		</p>
 		
 		#lightFooterToolbar($footerButtons)
 		

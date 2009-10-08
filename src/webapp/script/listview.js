@@ -15,9 +15,12 @@ var selectedBgColor = "#DEDEDE"; // "#C2D0E2";
 var checkedBgColor = "#777777";
 var checkedBgColorHi = "#1478EB";
 
-if (navigator.appName == "Netscape") {
+/*
+if (navigator.appName == "Netscape") 
+{
   document.captureEvents(Event.CLICK);
 }
+*/
 
 function showWorking()
 {

@@ -176,7 +176,7 @@ public class ViewDigitalAssetAction extends InfoGlueAbstractAction
 		return ContentTypeDefinitionController.getController().getDefinedAssetKeys(this.contentTypeDefinitionVO.getSchemaValue());
 	}
 
-    public boolean getAllowedSessionId(String requestSessionId)
+    public boolean getAllowedSessionId(String requestSessionId) throws Exception
     {
 		boolean allowedSessionId = false;
 		List activeSessionBeanList = CmsSessionContextListener.getSessionInfoBeanList();

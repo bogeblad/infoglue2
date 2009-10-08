@@ -68,7 +68,16 @@ public class ViewContentToolMenuAction extends InfoGlueAbstractAction
 
     	return "success";
     }
-               
+
+    public String doV3() throws Exception
+    {
+    	getResponse().setHeader("Cache-Control","no-cache"); 
+    	getResponse().setHeader("Pragma","no-cache");
+    	getResponse().setDateHeader ("Expires", 0);
+
+    	return "successV3";
+    }
+
 	/**
 	 * Returns the tree.
 	 * @return String

@@ -1048,7 +1048,7 @@ public class ContentVersionController extends BaseController
 	    	    if(!oldContentVersionVO.getStateId().equals(ContentVersionVO.WORKING_STATE))
 				{
 					List events = new ArrayList();
-					contentVersion = ContentStateController.changeState(oldContentVersionVO.getId(), ContentVersionVO.WORKING_STATE, "new working version", false, null, principal, oldContentVersionVO.getContentId(), db, events);
+					contentVersion = ContentStateController.changeState(oldContentVersionVO.getId(), ContentVersionVO.WORKING_STATE, (contentVersionVO.getVersionComment().equals("No comment") ? "new working version" : contentVersionVO.getVersionComment()), false, null, principal, oldContentVersionVO.getContentId(), db, events);
 					contentVersion.setVersionValue(contentVersionVO.getVersionValue());
 				}
 				else

@@ -137,6 +137,7 @@ public class ViewServerNodePropertiesAction extends InfoGluePropertiesAbstractAc
 	    populate(ps, "pageKey");
 	    populate(ps, "componentKey");
 	    populateData(ps, "cacheSettings");
+	    populateData(ps, "extraPublicationPersistentCacheNames");
 	    populate(ps, "cmsBaseUrl");
 	    populate(ps, "cmsFullBaseUrl");
 	    populate(ps, "componentEditorUrl");
@@ -243,6 +244,10 @@ public class ViewServerNodePropertiesAction extends InfoGluePropertiesAbstractAc
 	    populate(ps, "internalSearchEngine");
 
 	    populate(ps, "maxRows");
+	    populate(ps, "maxNumberOfAssetInSearches");
+	    populate(ps, "componentBindningAssetBrowser");
+	    populate(ps, "prefferedWYSIWYG");
+	    
 	    populate(ps, "defaultNumberOfYearsBeforeExpire");
 	    populate(ps, "enableDateTimeDirectEditing");
 	    populate(ps, "showContentVersionFirst");
@@ -258,6 +263,7 @@ public class ViewServerNodePropertiesAction extends InfoGluePropertiesAbstractAc
 	    populateData(ps, "publicDeliveryUrls");
 	    populateData(ps, "toolLanguages");
 	    populateData(ps, "deploymentServers");
+	    populateData(ps, "vcServers");
 	    populate(ps, "decoratedPageInvoker");
 	    
 	    populate(ps, "edition.pageSize");
@@ -313,6 +319,13 @@ public class ViewServerNodePropertiesAction extends InfoGluePropertiesAbstractAc
 	    populate(ps, "setDerivedLastModifiedInLive");
 	    populate(ps, "maxNumberOfVersionsForDerivedLastModifiedInLive");
 	    populate(ps, "allowInternalCallsBasedOnIP");
+
+	    populate(ps, "useAccessBasedProtocolRedirects");
+	    populate(ps, "unprotectedProtocolName");
+	    populate(ps, "protectedProtocolName");
+	    populate(ps, "unprotectedProtocolPort");
+	    populate(ps, "protectedProtocolPort");
+	    populate(ps, "accessBasedProtocolRedirectHTTPCode");
 
 	    try
 	    {

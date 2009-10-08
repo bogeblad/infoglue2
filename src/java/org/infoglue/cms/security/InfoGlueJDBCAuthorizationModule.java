@@ -704,6 +704,11 @@ public class InfoGlueJDBCAuthorizationModule extends BaseController implements A
 		throw new SystemException("The JDBC BASIC Authorization module does not support updating of users yet...");
 	}
 
+	public void updateInfoGluePrincipal(SystemUserVO systemUserVO, String oldPassword, String[] roleNames, String[] groupNames) throws Exception
+	{
+		throw new SystemException("The JDBC BASIC Authorization module does not support updating of users yet...");
+	}
+
 	public void updateInfoGluePrincipalPassword(String userName) throws Exception 
 	{
 		throw new SystemException("The JDBC BASIC Authorization module does not support updates of users yet...");
@@ -757,6 +762,16 @@ public class InfoGlueJDBCAuthorizationModule extends BaseController implements A
 	public void deleteInfoGlueGroup(String groupName) throws Exception 
 	{
 		throw new SystemException("The JDBC BASIC Authorization module does not support deletion of roles yet...");
+	}
+
+	public void addUserToGroup(String groupName, String userName) throws Exception 
+	{
+		throw new SystemException("The JDBC BASIC Authorization module does not support adding of users to groups yet...");
+	}
+
+	public void addUserToRole(String roleName, String userName) throws Exception 
+	{
+		throw new SystemException("The JDBC BASIC Authorization module does not support adding of users to roles yet...");
 	}
 
 	public Properties getExtraProperties()

@@ -64,6 +64,10 @@
 			}
 		}
 	
+		$(document).ready(function(){
+			setTimeout("resizeResizableDiv(45, 0)", 100);
+		});
+	
 	-->
 	</script>
 	<link rel="stylesheet" type="text/css" href="css/v3/assets.css" />
@@ -72,7 +76,7 @@
 
 <body class="generaltooledit">
 
-<div id="assets" class="imgBoxContainer">
+<div id="assets" class="imgBoxContainer resizableDiv">
 
 #set($counter = 0)
 #foreach($digitalAsset in $digitalAssetVOList)

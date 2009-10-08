@@ -45,7 +45,14 @@ public class ViewPublishingToolStartPageAction extends InfoGlueAbstractAction
 	private static final long serialVersionUID = 1L;
 
     private List repositories;
-    
+
+    public String doV3() throws Exception
+    {
+    	doExecute();
+    	
+        return "success";
+    }
+
     public String doExecute() throws Exception
     {
     	this.repositories = RepositoryController.getController().getAuthorizedRepositoryVOList(this.getInfoGluePrincipal(), false);

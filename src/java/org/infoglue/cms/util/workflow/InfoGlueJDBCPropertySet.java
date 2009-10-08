@@ -141,6 +141,8 @@ public class InfoGlueJDBCPropertySet extends JDBCPropertySet
 	            sql += "" + colItemKey + " LIKE ? AND ";
 	            sql += "" + colItemKey + " NOT LIKE 'principal_%_languageCode' AND ";
 	        	sql += "" + colItemKey + " NOT LIKE 'principal_%_defaultToolId' AND  ";
+	        	sql += "" + colItemKey + " NOT LIKE 'principal_%_defaultGUI' AND  ";
+	        	sql += "" + colItemKey + " NOT LIKE 'principal_%_theme' AND  ";
 	    		sql += "" + colItemKey + " NOT LIKE 'content_%_allowedContentTypeNames' AND  ";
 	    		sql += "" + colItemKey + " NOT LIKE 'content_%_defaultContentTypeName' AND  ";
 	    		sql += "" + colItemKey + " NOT LIKE 'content_%_initialLanguageId' AND  ";
@@ -531,13 +533,6 @@ public class InfoGlueJDBCPropertySet extends JDBCPropertySet
             ps.setString(1, key);
             ps.setString(2, globalKey);
 
-            //if(key.indexOf("error") > -1)
-            //{
-	        //    System.out.println("sql:" + sql);
-	        //    System.out.println("key:" + key);
-	        //    System.out.println("globalKey:" + globalKey);
-            //}
-            
             int propertyType;
             ResultSet rs = ps.executeQuery();
 

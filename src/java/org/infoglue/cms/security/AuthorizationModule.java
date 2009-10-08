@@ -30,6 +30,7 @@ import org.infoglue.cms.entities.management.GroupVO;
 import org.infoglue.cms.entities.management.RoleVO;
 import org.infoglue.cms.entities.management.SystemUserVO;
 import org.infoglue.cms.exception.Bug;
+import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
 
 /**
@@ -146,6 +147,12 @@ public interface AuthorizationModule
 	public void updateInfoGluePrincipal(SystemUserVO systemUserVO, String[] roleNames, String[] groupNames) throws Exception;
 
 	/**
+	 * This method is used to update an existing user.  
+	 */
+
+	public void updateInfoGluePrincipal(SystemUserVO systemUserVO, String oldPassword, String[] roleNames, String[] groupNames) throws Exception;
+
+	/**
 	 * This method is used to send out a newpassword to an existing users.  
 	 */
 
@@ -200,6 +207,16 @@ public interface AuthorizationModule
 	 */
 
 	public void updateInfoGlueGroup(GroupVO roleVO, String[] userNames) throws Exception;
+
+	/**
+	 * This method is used to add a user to an existing role.  
+	 */
+    public void addUserToRole(String roleName, String userName) throws Exception;
+
+	/**
+	 * This method is used to add a user to an existing group.  
+	 */
+    public void addUserToGroup(String groupName, String userName) throws Exception;
 
 	/**
 	 * This method is used to delete an existing group.  
