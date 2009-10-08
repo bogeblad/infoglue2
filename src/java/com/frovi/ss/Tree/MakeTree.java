@@ -67,6 +67,9 @@ public class MakeTree
 
 	private String makeKey(Integer id)
 	{
+		if(id == null)
+			return "";
+		
 		return "/" + String.valueOf(id.intValue()).trim() + "/";
 	}
 
