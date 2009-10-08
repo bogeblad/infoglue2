@@ -1297,6 +1297,11 @@ public class CmsPropertyHandler
 	    return getServerNodeProperty("helpUrl", true);
 	}
 
+	public static String getHeaderHTML()
+	{
+	    return getServerNodeDataProperty(null, "headerHTML", true, "");
+	}
+
 	public static String getProtectDeliverWorking()
 	{
 	    return getServerNodeProperty("protectDeliverWorking", true, "false");

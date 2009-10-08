@@ -418,6 +418,7 @@
 	<div class="tab" id="cmsGUI">
 		<fieldset>
 			<legend>$ui.getString("entity.ServerNode.property.cmsGUI.label")</legend>
+
 			#editPropertyFieldCSS("ServerNode.property.helpUrl" "helpUrl" "$this.getPropertyValue('helpUrl')" "51" "$!serverNodeId")
 
 			#set($SQLSearch = ["$ui.getString('entity.ServerNode.property.sqlSearch.value')", "$ui.getString('entity.ServerNode.property.sqlSearch.label')"])
@@ -438,6 +439,8 @@
 			#editPropertyFieldCSS("ServerNode.property.finalStyleInformation" "finalStyleInformation" "$this.getPropertyValue('finalStyleInformation')" "51" "$!serverNodeId")
 			#editPropertyFieldCSS("ServerNode.property.publishStyleInformation" "publishStyleInformation" "$this.getPropertyValue('publishStyleInformation')" "51" "$!serverNodeId")
 			#editPropertyFieldCSS("ServerNode.property.publishedStyleInformation" "publishedStyleInformation" "$this.getPropertyValue('publishedStyleInformation')" "51" "$!serverNodeId")
+
+			#editPropertyTextAreaCSS("ServerNode.property.headerHTML" "headerHTML" "$this.getDataPropertyValue('headerHTML')" "50" "10" "normaltextarea" "$!serverNodeId")
 
 			#set($customContentTypeIcons = $this.getDataPropertyValue("customContentTypeIcons"))
 			#set($customContentTypeIcons = $customContentTypeIcons.replaceAll("&amp;", "&amp;amp;"))

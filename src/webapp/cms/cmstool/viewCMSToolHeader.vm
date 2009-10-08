@@ -83,7 +83,11 @@
 <body onload="javascript:changeToolArea($toolId);" class="cmstool">
 
 <div style="left:20px; position:absolute; top:10px; visibility:visible; z-index:0">
-	<img src="images/logotypeInfoGlue.gif" width="315" height="14"/>
+	#if($headerHTML == "")
+		<img src="images/logotypeInfoGlue.gif" width="315" height="14"/>
+	#else
+		$headerHTML
+	#end
 </div>
 
 
