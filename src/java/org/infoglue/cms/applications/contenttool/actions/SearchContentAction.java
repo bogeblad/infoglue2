@@ -26,9 +26,11 @@ package org.infoglue.cms.applications.contenttool.actions;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.log4j.Category;
 import org.apache.log4j.Logger;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
@@ -92,7 +94,7 @@ public class SearchContentAction extends InfoGlueAbstractAction
 	private String replaceString		= null;
 	//private String[] contentVersionId  	= null;
 	
-	private String assetTypeFilter = ".*";
+	private String assetTypeFilter = "*";
 	private boolean allowCaseSensitive = true;
 	
 	public boolean getAllowCaseSensitive()

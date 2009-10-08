@@ -116,7 +116,7 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 	private String assetKey 		= null;
 	private boolean treatAsLink    = false;
 	private boolean isAssetBinding = false;
-	private String assetTypeFilter = ".*";
+	private String assetTypeFilter = "*";
 	
 	private Map WYSIWYGProperties = null;
 	
@@ -829,7 +829,8 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
 	       			while(digitalAssetsIterator.hasNext())
 	       			{
 	       				DigitalAssetVO assetVO = (DigitalAssetVO)digitalAssetsIterator.next();
-	       				if(!assetVO.getAssetContentType().matches(this.assetTypeFilter))
+	       				//if(!assetVO.getAssetContentType().matches(this.assetTypeFilter))
+		       			if(!this.assetTypeFilter.equals("*") && this.assetTypeFilter.indexOf(assetVO.getAssetContentType()) == -1)
 	       				{
 	       					digitalAssetsIterator.remove();
 	       					//System.out.println("Removed file from asset list:" + this.assetTypeFilter);
@@ -886,7 +887,8 @@ public class ViewContentVersionAction extends InfoGlueAbstractAction
        			while(digitalAssetsIterator.hasNext())
        			{
        				DigitalAssetVO assetVO = (DigitalAssetVO)digitalAssetsIterator.next();
-       				if(!assetVO.getAssetContentType().matches(this.assetTypeFilter))
+       				//if(!assetVO.getAssetContentType().matches(this.assetTypeFilter))
+	     			if(!this.assetTypeFilter.equals("*") && this.assetTypeFilter.indexOf(assetVO.getAssetContentType()) == -1)
        				{
        					digitalAssetsIterator.remove();
        				}
