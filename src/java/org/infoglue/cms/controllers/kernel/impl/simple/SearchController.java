@@ -638,6 +638,7 @@ public class SearchController extends BaseController
 		{
 			beginTransaction(db);
 			
+			logger.info("assetTypeFilter:" + assetTypeFilter);
 			String[] assetTypeFilterArray = assetTypeFilter.split(",");
 			StringBuffer contentTypeBindingMarkers = new StringBuffer();
 			for(int i=0; i<assetTypeFilterArray.length; i++)
@@ -649,20 +650,26 @@ public class SearchController extends BaseController
 			for(int i=0; i<repositoryId.length; i++)
 				repositoryIdBindingMarkers.append((i>0 ? "," : "") + "$" + (i + 1 + bindIndex));
 			
-			String assetSQL = "CALL SQL SELECT da.digitalAssetId,da.assetFileName,da.assetKey,da.assetFilePath,da.assetContentType,da.assetFileSize FROM cmDigitalAsset da, cmContentVersionDigitalAsset cvda, cmContentVersion cv, cmContent c WHERE cvda.digitalAssetId = da.digitalAssetId AND cvda.contentVersionId = cv.contentVersionId AND cv.contentId = c.contentId AND c.repositoryId IN (" + repositoryIdBindingMarkers + ") AND da.assetContentType IN (" + contentTypeBindingMarkers + ") ORDER BY da.digitalAssetId desc AS org.infoglue.cms.entities.content.impl.simple.SmallDigitalAssetImpl";
+			String assetSQL = "CALL SQL SELECT da.digitalAssetId,da.assetFileName,da.assetKey,da.assetFilePath,da.assetContentType,da.assetFileSize FROM cmDigitalAsset da, cmContentVersionDigitalAsset cvda, cmContentVersion cv, cmContent c WHERE cvda.digitalAssetId = da.digitalAssetId AND cvda.contentVersionId = cv.contentVersionId AND cv.contentId = c.contentId AND da.assetContentType IN (" + contentTypeBindingMarkers + ") AND c.repositoryId IN (" + repositoryIdBindingMarkers + ") ORDER BY da.digitalAssetId desc AS org.infoglue.cms.entities.content.impl.simple.SmallDigitalAssetImpl";
 			if(CmsPropertyHandler.getUseShortTableNames() != null && CmsPropertyHandler.getUseShortTableNames().equalsIgnoreCase("true"))
-				assetSQL = "CALL SQL SELECT da.DigAssetId,da.assetFileName,da.assetKey,da.assetFilePath,da.assetContentType,da.assetFileSize FROM cmDigAsset da, cmContVerDigAsset cvda, cmContVer cv, cmCont c WHERE cvda.DigAssetId = da.DigAssetId AND cvda.contVerId = cv.contVerId AND cv.contId = c.contId AND c.repositoryId IN (" + repositoryIdBindingMarkers + ") AND da.assetContentType IN (" + contentTypeBindingMarkers + ") ORDER BY da.DigAssetId desc AS org.infoglue.cms.entities.content.impl.simple.SmallDigitalAssetImpl";
+				assetSQL = "CALL SQL SELECT da.DigAssetId,da.assetFileName,da.assetKey,da.assetFilePath,da.assetContentType,da.assetFileSize FROM cmDigAsset da, cmContVerDigAsset cvda, cmContVer cv, cmCont c WHERE cvda.DigAssetId = da.DigAssetId AND cvda.contVerId = cv.contVerId AND cv.contId = c.contId AND da.assetContentType IN (" + contentTypeBindingMarkers + ") AND c.repositoryId IN (" + repositoryIdBindingMarkers + ") ORDER BY da.DigAssetId desc AS org.infoglue.cms.entities.content.impl.simple.SmallDigitalAssetImpl";
 			
 			logger.info("assetSQL:" + assetSQL);
 			
 			OQLQuery assetOQL = db.getOQLQuery(assetSQL);
 			
 			for(int i=0; i<assetTypeFilterArray.length; i++)
+			{
+				//System.out.println("Binding assetType:" + assetTypeFilterArray[i]);
 				assetOQL.bind(assetTypeFilterArray[i]);
+			}
 			
 			for(int i=0; i<repositoryId.length; i++)
+			{
+				//System.out.println("Binding repId:" + repositoryId[i]);
 				assetOQL.bind(repositoryId[i]);
-
+			}
+			
 			QueryResults assetResults = assetOQL.execute(Database.ReadOnly);
 
 			int currentCount = 0;
