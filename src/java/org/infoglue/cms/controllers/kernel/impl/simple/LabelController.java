@@ -262,7 +262,7 @@ public class LabelController extends BaseController implements StringManager
 	{
 		ResourceBundle resourceBundle = null;
 		
-		String javaVersion = System.getProperty("java.version", "1.5");
+		//String javaVersion = System.getProperty("java.version", "1.5");
 		
 		File file = new File(CmsPropertyHandler.getContextRootPath() + File.separator + "translations" + File.separator + "PresentationStrings_" + locale.getLanguage() + ".properties");
 		
@@ -270,10 +270,10 @@ public class LabelController extends BaseController implements StringManager
 		{
 			try
 			{
-				if(javaVersion.equalsIgnoreCase("1.3") || javaVersion.equalsIgnoreCase("1.4") || javaVersion.equalsIgnoreCase("1.5"))
+				//if(javaVersion.equalsIgnoreCase("1.3") || javaVersion.equalsIgnoreCase("1.4") || javaVersion.equalsIgnoreCase("1.5"))
 					resourceBundle = new PropertyResourceBundle(new FileInputStream(file));
-				else
-					resourceBundle = new PropertyResourceBundle(new FileReader(file));
+				//else
+					//resourceBundle = new PropertyResourceBundle(new FileReader(file));
 			}
 			catch (Exception e) 
 			{
