@@ -1,4 +1,5 @@
-<!DOCTYPE databases PUBLIC "-//EXOLAB/Castor JDO Configuration DTD Version 1.0//EN" "http://www.castor.org/jdo-conf.dtd">
+<?xml version="1.0" ?>
+<!DOCTYPE databases PUBLIC "-//EXOLAB/Castor JDO Configuration DTD Version 1.0//EN" "http://castor.org/jdo-conf.dtd">
 <jdo-conf> 
 	<database name="INFOGLUE_CMS" engine="@database.driver.engine@">
 		<data-source class-name="org.apache.commons.dbcp.BasicDataSource">
@@ -8,7 +9,6 @@
 		  	<param name="url" value="@database.url@"/>
 		  	<param name="validation-query" value="SELECT 1 from cmSystemUser"/>
 		  	<param name="max-active" value="@database.maxConnections@"/>
-			<param name="connection-properties" value="useUnicode=@database.use.unicode@;characterEncoding=@database.encoding@;autoReconnect=true"/>
 		</data-source>
 		<mapping href="classes/@database.mapping@"/>
 	</database>
