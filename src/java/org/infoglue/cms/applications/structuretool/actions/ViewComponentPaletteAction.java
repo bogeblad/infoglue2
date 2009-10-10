@@ -82,16 +82,10 @@ public class ViewComponentPaletteAction extends InfoGlueAbstractAction
 	
     public String doExecute() throws Exception
     {
-    	this.siteNodeId = 5;
-    	
-		SiteNodeVersionVO siteNodeVersionVO = SiteNodeVersionControllerProxy.getSiteNodeVersionControllerProxy().getACLatestActiveSiteNodeVersionVO(this.getInfoGluePrincipal(), this.siteNodeId);
-		if(siteNodeVersionVO.getStateId().intValue() != SiteNodeVersionVO.WORKING_STATE.intValue())
-		{
-	    	List events = new ArrayList();
-			SiteNodeStateController.getController().changeState(siteNodeVersionVO.getId(), SiteNodeVersionVO.WORKING_STATE, "Edit on sight editing", true, this.getInfoGluePrincipal(), this.siteNodeId, events);
-		}
-		
-		Integer currentRepositoryId = SiteNodeController.getController().getSiteNodeVOWithId(this.siteNodeId).getRepositoryId();
+    	Integer currentRepositoryId = getRepositoryId();
+		this.masterLanguageVO = LanguageController.getController().getMasterLanguage(currentRepositoryId);		
+    	/*
+    	Integer currentRepositoryId = SiteNodeController.getController().getSiteNodeVOWithId(this.siteNodeId).getRepositoryId();
 		this.masterLanguageVO = LanguageController.getController().getMasterLanguage(currentRepositoryId);		
 		SiteNodeVO siteNodeVO = SiteNodeController.getController().getSiteNodeVOWithId(this.siteNodeId);
 		
@@ -107,7 +101,8 @@ public class ViewComponentPaletteAction extends InfoGlueAbstractAction
 		    else
 		        filterRepositoryId = currentRepositoryId;
 		}
-
+		*/
+    	
 		this.components = getSortedComponents("name");
 		
         return "success";

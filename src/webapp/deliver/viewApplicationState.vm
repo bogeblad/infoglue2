@@ -185,11 +185,9 @@
 	    <td style="border-bottom: 1px solid #999999;"  class="text" valign="top">#if($caches.get($cacheName).class.name == "com.opensymphony.oscache.general.GeneralCacheAdministrator") $cache.getCache().getSize() #else $cache.size() #end</td>
 	    <td style="border-bottom: 1px solid #999999;"  class="text" valign="top">
 	    	#if($cache.class.name == "com.opensymphony.oscache.general.GeneralCacheAdministrator") 
-	    		#set($cacheEntryEventListener =	$eventListeners.get("${cacheName}_cacheEntryEventListener"))
-	    		#set($cacheMapAccessEventListener =	$eventListeners.get("${cacheName}_cacheMapAccessEventListener"))
-	    		<span style="font-size: 8pt; font-style: italic;">$cacheEntryEventListener.toString()
+	    		<span style="font-size: 8pt; font-style: italic;">$eventListeners.get("${cacheName}_cacheEntryEventListener").toString()
 		        <br/>
-		        $cacheMapAccessEventListener.toString()</span>
+		        $eventListeners.get("${cacheName}_cacheMapAccessEventListener").toString()</span>
 	    	#else 
 	    		No additional statistics
 	    	#end
