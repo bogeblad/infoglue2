@@ -50,6 +50,7 @@ import org.infoglue.cms.controllers.kernel.impl.simple.UserControllerProxy;
 import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.content.DigitalAssetVO;
 import org.infoglue.cms.entities.management.LanguageVO;
+import org.infoglue.cms.entities.management.RepositoryVO;
 import org.infoglue.cms.entities.structure.SiteNodeVO;
 import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.SystemException;
@@ -150,16 +151,36 @@ public abstract class InfoGlueAbstractAction extends WebworkAbstractAction
 	public Integer getRepositoryId()
 	{
 		Integer repositoryId = (Integer)this.getHttpSession().getAttribute("repositoryId");
+		System.out.println("repositoryId:" + repositoryId);
 		if(repositoryId == null)
 		{
     		String prefferedRepositoryId = CmsPropertyHandler.getPreferredRepositoryId(this.getInfoGluePrincipal().getName());
+    		System.out.println("prefferedRepositoryId:" + prefferedRepositoryId);
     		if(prefferedRepositoryId != null && prefferedRepositoryId.length() > 0)
     		{
     			repositoryId = new Integer(prefferedRepositoryId);
+        		System.out.println("Setting session repositoryId:" + repositoryId);
     			getHttpSession().setAttribute("repositoryId", repositoryId);		
     		}
-
-			//getAuthorizedRepositoryVOList();
+    		else
+    		{
+    			
+    			try
+				{
+					List authorizedRepositoryVOList = getAuthorizedRepositoryVOList();
+					if(authorizedRepositoryVOList != null && authorizedRepositoryVOList.size() > 0)
+					{
+						RepositoryVO repositoryVO = (RepositoryVO)authorizedRepositoryVOList.get(0);
+						repositoryId = repositoryVO.getId();
+		        		System.out.println("Setting session repositoryId:" + repositoryId);
+		    			getHttpSession().setAttribute("repositoryId", repositoryId);	
+					}
+				}
+				catch (Exception e)
+				{
+					logger.warn("No repository found for the user: " + e.getMessage());
+				}
+    		}
 		}
 		
 		return repositoryId;
