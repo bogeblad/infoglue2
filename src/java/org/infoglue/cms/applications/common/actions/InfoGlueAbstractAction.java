@@ -151,15 +151,15 @@ public abstract class InfoGlueAbstractAction extends WebworkAbstractAction
 	public Integer getRepositoryId()
 	{
 		Integer repositoryId = (Integer)this.getHttpSession().getAttribute("repositoryId");
-		System.out.println("repositoryId:" + repositoryId);
+		//System.out.println("repositoryId:" + repositoryId);
 		if(repositoryId == null)
 		{
     		String prefferedRepositoryId = CmsPropertyHandler.getPreferredRepositoryId(this.getInfoGluePrincipal().getName());
-    		System.out.println("prefferedRepositoryId:" + prefferedRepositoryId);
+    		//System.out.println("prefferedRepositoryId:" + prefferedRepositoryId);
     		if(prefferedRepositoryId != null && prefferedRepositoryId.length() > 0)
     		{
     			repositoryId = new Integer(prefferedRepositoryId);
-        		System.out.println("Setting session repositoryId:" + repositoryId);
+    			//System.out.println("Setting session repositoryId:" + repositoryId);
     			getHttpSession().setAttribute("repositoryId", repositoryId);		
     		}
     		else
@@ -172,7 +172,7 @@ public abstract class InfoGlueAbstractAction extends WebworkAbstractAction
 					{
 						RepositoryVO repositoryVO = (RepositoryVO)authorizedRepositoryVOList.get(0);
 						repositoryId = repositoryVO.getId();
-		        		System.out.println("Setting session repositoryId:" + repositoryId);
+						//System.out.println("Setting session repositoryId:" + repositoryId);
 		    			getHttpSession().setAttribute("repositoryId", repositoryId);	
 					}
 				}
