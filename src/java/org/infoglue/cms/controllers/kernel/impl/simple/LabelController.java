@@ -94,6 +94,8 @@ public class LabelController extends BaseController implements StringManager
 
     private Locale locale = Locale.getDefault();
     
+    private static Map<String,LabelController> controllers = new HashMap<String,LabelController>();
+    
     private LabelController()
     {
     }
@@ -109,7 +111,14 @@ public class LabelController extends BaseController implements StringManager
 
 	public static LabelController getController(Locale locale)
 	{
-		return new LabelController(locale);
+		LabelController controller = controllers.get("" + locale.getLanguage());
+		if(controller == null)
+		{
+			controller = new LabelController(locale);
+			controllers.put("" + locale.getLanguage(), controller);
+		}
+		
+		return controller;
 	}
 
    	/**
@@ -161,31 +170,52 @@ public class LabelController extends BaseController implements StringManager
 		return translations;
 	}
     
-	Map<String,Object> cachedBundles = new HashMap<String,Object>();
+	private static Map<String,Object> cachedBundles = new HashMap<String,Object>();
+	private static Map<String,String> cachedLabels = new HashMap<String,String>();
 	
 	public String getLocalizedString(Locale locale, String key)
 	{
+		Timer t = new Timer();
+		
 		String value = null;
+
+		String valueCacheKey = "" + locale + "_" + key;
+		String cachedLabel = cachedLabels.get(valueCacheKey);
+		//System.out.println("valueCacheKey:" + valueCacheKey + " gave " + cachedLabel);
+		if(cachedLabel != null)
+		{
+			//t.printElapsedTime("Getting getLocalizedString...");
+			return cachedLabel;
+		}
 		
 		String cacheKey = "" + locale;
 		Object cachedBundle = cachedBundles.get(cacheKey);
-		System.out.println("cacheKey:" + cacheKey + " gave " + cachedBundle);
+		//System.out.println("cacheKey:" + cacheKey + " gave " + cachedBundle);
+		
 		ResourceBundle resourceBundle = null;
+
+		t.printElapsedTime("1");
 
 		if(!(cachedBundle instanceof NullObject))
 		{
+			//System.out.println("Not a NullObject.." + cachedBundle);
 			if(cachedBundle != null)
 			{
+				//System.out.println("Not null:" + cachedBundle.getClass().getName());
 				resourceBundle = (ResourceBundle)cachedBundle;
 			}
 			else
 			{
+				//System.out.println("A null:" + cachedBundle);
 				try
 				{
+					//t.printElapsedTime("1.1");
 					resourceBundle = getResourceBundle(locale);
+					//t.printElapsedTime("1.2");
 					if(resourceBundle == null)
 					{
 						resourceBundle = checkForResourceBundleAsset(locale);
+						//t.printElapsedTime("1.3");
 					}
 					if(resourceBundle == null)
 						cachedBundles.put(cacheKey, new NullObject());
@@ -198,15 +228,23 @@ public class LabelController extends BaseController implements StringManager
 				}
 			}
 		}			
+		//t.printElapsedTime("2");
 		
 		if(resourceBundle != null)
 		{
 			value = resourceBundle.getString(key);
 		}
 		
+		//t.printElapsedTime("3");
+
 		if(value == null || value.equals(""))
 			value = getLocalizedSystemString(locale, key);
 			
+		if(value != null)
+			cachedLabels.put(valueCacheKey, value);
+		
+		//t.printElapsedTime("Getting getLocalizedString...");
+		
 		return value;
 	}
 /*
