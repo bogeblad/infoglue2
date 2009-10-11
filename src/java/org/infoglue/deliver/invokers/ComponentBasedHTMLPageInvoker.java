@@ -242,7 +242,7 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
    		
    		String pageString = pageContent;
    		
-   		FileHelper.write(new File("c:/temp/base.html"), pageString, false, "utf-8");
+   		//FileHelper.write(new File("c:/temp/base.html"), pageString, false, "utf-8");
    		if(this.getDeliveryContext().getEvaluateFullPage())
 		{
    			Timer t = new Timer();
@@ -252,8 +252,8 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 			new VelocityTemplateProcessor().renderTemplate(context, cachedStream, pageContent, false, baseComponent);
 			
 			pageString = cacheString.toString();
-			t.printElapsedTime("Rendering full page took:");
-	   		FileHelper.write(new File("c:/temp/base2.html"), pageString, false, "utf-8");
+			//t.printElapsedTime("Rendering full page took:");
+	   		//FileHelper.write(new File("c:/temp/base2.html"), pageString, false, "utf-8");
 		}
 
 		//pageString = decorateHeadAndPageWithVarsFromComponents(pageString);
