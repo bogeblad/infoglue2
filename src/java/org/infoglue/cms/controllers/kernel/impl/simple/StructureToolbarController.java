@@ -161,7 +161,7 @@ public class StructureToolbarController
 			{
 				return new ToolbarButton("",
 						getLocalizedString(locale, "tool.structuretool.toolbarV3.pageCoverLabel"), 
-						getLocalizedString(locale, "tool.structuretool.toolbarV3.pageCoverTitel"),
+						getLocalizedString(locale, "tool.structuretool.toolbarV3.pageCoverTitle"),
 						"javascript:alert('Cannot edit this page. You must first set the meta info to working. Do this by entering node properties and changing the state to working.');",
 						"",
 						"pageCover");
@@ -171,7 +171,7 @@ public class StructureToolbarController
 		{
 			return new ToolbarButton("",
 					getLocalizedString(locale, "tool.structuretool.toolbarV3.pageCoverLabel"), 
-					getLocalizedString(locale, "tool.structuretool.toolbarV3.pageCoverTitel"),
+					getLocalizedString(locale, "tool.structuretool.toolbarV3.pageCoverTitle"),
 					"javascript:alert('Cannot edit this page. You must first set the meta info to working. Do this by entering node properties and changing the state to working.');",
 					"",
 					"pageCover");
