@@ -46,24 +46,4 @@ public class AdminAction extends InfoGlueAbstractAction
 			return "success";
     }
 
-	public String getTheme()
-	{
-		String theme = CmsPropertyHandler.getTheme(getUserName());
-		
-		try
-		{
-			theme = ThemeController.verifyThemeExistenceOtherwiseFallback(theme);
-		}
-		catch (Exception e) 
-		{
-		}
-		
-		return theme;
-	}
-
-	public String getInitialToolId()
-	{
-		return CmsPropertyHandler.getPreferredToolId(getUserName());
-	}
-
 }

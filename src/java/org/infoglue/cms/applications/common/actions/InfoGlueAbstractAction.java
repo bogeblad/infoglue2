@@ -45,6 +45,7 @@ import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
 import org.infoglue.cms.controllers.kernel.impl.simple.RepositoryController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeVersionControllerProxy;
+import org.infoglue.cms.controllers.kernel.impl.simple.ThemeController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ToolbarController;
 import org.infoglue.cms.controllers.kernel.impl.simple.UserControllerProxy;
 import org.infoglue.cms.entities.content.ContentVO;
@@ -652,6 +653,26 @@ public abstract class InfoGlueAbstractAction extends WebworkAbstractAction
     	return LanguageController.getController().getLanguageVOList();
     }
 
+	public String getTheme()
+	{
+		String theme = CmsPropertyHandler.getTheme(getUserName());
+		
+		try
+		{
+			theme = ThemeController.verifyThemeExistenceOtherwiseFallback(theme);
+		}
+		catch (Exception e) 
+		{
+		}
+		
+		return theme;
+	}
+
+	public String getInitialToolId()
+	{
+		return CmsPropertyHandler.getPreferredToolId(getUserName());
+	}
+
     public Integer getToolId()
     {
         return this.getSession().getToolId();
@@ -1009,5 +1030,11 @@ public abstract class InfoGlueAbstractAction extends WebworkAbstractAction
 	{
 		return SiteNodeController.getController().getRootSiteNodeVO(repositoryId);
 	}
+
+	public String getRepositoryName() throws Exception
+	{
+		return RepositoryController.getController().getRepositoryVOWithId(getRepositoryId()).getName();
+	}
+
 }
 
