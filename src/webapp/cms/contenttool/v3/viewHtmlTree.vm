@@ -277,11 +277,12 @@
 	#end
 	
 	
+	<link rel="stylesheet" type="text/css" href="css/cms.css" /> 
+	<link rel="stylesheet" type="text/css" href="css/skins/${theme}/menu.css" media="all" />
+
 </head>
 <body class="generaltooledit" onload="parent.notifyIsLoaded();parent.notifyExp('${exp}');loaded();">
 
-	<link rel="stylesheet" type="text/css" href="css/cms.css" /> 
-		
 	<!-- NEW DYNAMIC VERSION -->
 	<link type="text/css" rel="stylesheet" href="script/xloadtree/xtree.css" />
 	<script type="text/javascript">

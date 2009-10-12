@@ -57,6 +57,7 @@
 
 	<link rel="stylesheet" type="text/css" href="css/cms.css" /> 
 	<link rel="stylesheet" type="text/css" href="css/treeview.css" /> 
+	<link rel="stylesheet" type="text/css" href="css/skins/${theme}/menu.css" media="all" />
 
 	<script type="text/javascript">
 	<!-- 

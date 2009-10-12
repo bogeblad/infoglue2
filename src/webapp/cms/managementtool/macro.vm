@@ -2140,9 +2140,41 @@ $ui.getString("entity.${fieldNameKey}.label")<br/>
 					}).mouseleave(function(){
 						$("#buttons$velocityCount").css("height", "26px");
 					});
+
+    				$("#button$velocityCount").click(function(){
+						//alert("Click on link");
+    	            	#if($button.actionURL.indexOf("javascript") == -1 && $button.isJavascript == false && $button.actionURL != '')
+    		           		#if($button.target == "inlineDiv")
+	    		           		openInlineDiv("$button.actionURL", 600, 800, true, true, "");
+	    		           	#else
+	    		           		$("#$button.target").attr("src", "$button.actionURL");
+	    		           	#end
+    		           	#else
+			           		#if($button.target == "inlineDiv")
+	    		           		$button.actionURL
+	    		           	#else
+	    		           		window.frames["$button.target"].$button.actionURL;
+	    		           	#end
+    		           	#end
+    		           	return false;
+    	            });
+
 					#foreach($subButton in $button.subButtons)
 						$("#subButton$velocityCount").click(function(){
-							//$subButton.actionURL;
+							#if($subButton.actionURL.indexOf("javascript") == -1 && $subButton.isJavascript == false && $subButton.actionURL != '')
+	    		           		#if($subButton.target == "inlineDiv")
+		    		           		openInlineDiv("$subButton.actionURL", 600, 800, true, true, "");
+		    		           	#else
+		    		           		$("#$subButton.target").attr("src", "$subButton.actionURL");
+		    		           	#end
+	    		           	#else
+				           		#if($subButton.target == "inlineDiv")
+		    		           		$subButton.actionURL
+		    		           	#else
+		    		           		window.frames["$subButton.target"].$subButton.actionURL;
+		    		           	#end
+	    		           	#end
+	    		           	return false;
 			            });
 					#end
 					-->

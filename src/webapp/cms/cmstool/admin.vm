@@ -161,7 +161,7 @@
 			<div id="activeTool">
 				<div id="structureMarkup" style="display: none;">
 					<div class="onlyExpanded" id="structureRepositoryChoiceDiv" style="float: left;">
-                    	<a id="structureRepositoriesDivHandle" href="#" onclick="$('#structureRepositoriesDiv').toggle(); return false;" style="display: block; float: left; width: 95%; margin-top: 6px; margin-bottom: 6px; font-weight: bold; text-indent: 8px; text-decoration: none; color: #333; background-color: #deecff;">www.infoglue.org</a>
+                    	<a id="structureRepositoriesDivHandle" href="#" onclick="$('#structureRepositoriesDiv').toggle(); return false;" style="display: block; float: left; width: 95%; margin-top: 6px; margin-bottom: 6px; font-weight: bold; text-indent: 8px; text-decoration: none;">$repositoryName</a>
                     	<div id="structureRepositoriesDiv" style="position: absolute; margin-top: 25px; z-index: 10; display: none;">
                     		<ul>
                     			#foreach($repository in $authorizedRepositoryVOList)
@@ -183,7 +183,7 @@
 				</div>
 				<div id="contentMarkup" style="display: none;">
 					<div class="onlyExpanded" id="contentRepositoryChoiceDiv" style="float: left;">
-                    	<a id="contentRepositoriesDivHandle" href="#" onclick="$('#contentRepositoriesDiv').toggle(); return false;" style="display: block; float: left; width: 95%; margin-top: 6px; margin-bottom: 6px; font-weight: bold; text-indent: 8px; text-decoration: none; color: #333; background-color: #deecff;">www.infoglue.org</a>
+                    	<a id="contentRepositoriesDivHandle" href="#" onclick="$('#contentRepositoriesDiv').toggle(); return false;" style="display: block; float: left; width: 95%; margin-top: 6px; margin-bottom: 6px; font-weight: bold; text-indent: 8px; text-decoration: none;">$repositoryName</a>
                     	<div id="contentRepositoriesDiv" style="position: absolute; margin-top: 25px; z-index: 10; display: none;">
                     		<ul>
                     			#foreach($repository in $authorizedRepositoryVOList)
@@ -298,7 +298,7 @@
 				<div id="versionInfo">Version build: $infoGlueVersion ($infoGlueVersionReleaseDate)</div>
 			</div>
 			
-			<div style="float:left; margin-left: 50px; padding-top: 0px; width: 600px; height: 30px; overflow: hidden;">
+			<div style="float:left; margin-left: 50px; padding-top: 0px; width: 400px; height: 30px; overflow: hidden;">
 				Debug: <div id="debug" style="float: left; width: 100%"></div>
 			</div>
 		</div>

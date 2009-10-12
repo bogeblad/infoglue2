@@ -143,7 +143,19 @@ function openUrlInWorkArea(url, tabLabel, targetTab)
 	}
 
 	$("#" + targetTab + "WorkIframe").attr("src", url);
-	//$('#tabsContainer').tabs('select', tabIndex);
+	var tabSize = $("#tabsContainer li").size();
+	//alert("tabSize:" + tabSize)
+	var i=0;
+	for (i=0;i<=tabSize;i++)
+	{
+		var id = $("#tabsContainer li:eq(" + i + ") a").attr("id");
+		if(id)
+		{
+			//alert("id:" + id)
+			if(id.indexOf(targetTab) > -1)
+				$("#tabsContainer").tabs("select", i);
+		}
+	}
 	//alert("targetTab:" + targetTab);
 	if(tabLabel != null && tabLabel != '')
 		$("#" + targetTab + "TabLabel span").text(tabLabelPrefix + tabLabel);
@@ -213,15 +225,17 @@ function resize()
 	
 	$("#structureTreeIframe").attr("height", windowHeight - (activeToolHeaderHeight + availableToolsHeight + 118 + paletteDivHeight));
 	$("#contentTreeIframe").height(windowHeight - (activeToolHeaderHeight + availableToolsHeight + $("#contentRepositoryChoiceDiv").height() + 92));
-	$("#managementTreeIframe").height("height", windowHeight - (activeToolHeaderHeight + availableToolsHeight + 114));
-	$("#mydesktopTreeIframe").height("height", windowHeight - (activeToolHeaderHeight + availableToolsHeight + 114));
+	$("#managementTreeIframe").height(windowHeight - (activeToolHeaderHeight + availableToolsHeight + 90));
+	$("#publishingTreeIframe").height(windowHeight - (activeToolHeaderHeight + availableToolsHeight + 90));
+	$("#mydesktopTreeIframe").height(windowHeight - (activeToolHeaderHeight + availableToolsHeight + 90));
 	
 	if(activeToolId == "structureMarkup")
 		$("#activeTool").height(windowHeight - (activeToolHeaderHeight + availableToolsHeight + 102));
 	else
 		$("#activeTool").height(windowHeight - (activeToolHeaderHeight + availableToolsHeight + 90));
 					
-	$("#debug").text("Height: " + $("#contentTreeIframe").attr("height") + ", ContentTool:" + (windowHeight - (activeToolHeaderHeight + availableToolsHeight + 124)) + "minus:" + (activeToolHeaderHeight + availableToolsHeight + 90) + ", availableToolsHeight: " + availableToolsHeight + ", activeToolHeaderHeight=" + activeToolHeaderHeight);
+	$("#debug").text("Height: " + $("#managementTreeIframe").height() + ", availableToolsHeight: " + availableToolsHeight + ", activeToolHeaderHeight=" + activeToolHeaderHeight);
+	//$("#debug").text("Height: " + $("#contentTreeIframe").attr("height") + ", ContentTool:" + (windowHeight - (activeToolHeaderHeight + availableToolsHeight + 124)) + "minus:" + (activeToolHeaderHeight + availableToolsHeight + 90) + ", availableToolsHeight: " + availableToolsHeight + ", activeToolHeaderHeight=" + activeToolHeaderHeight);
 		
 	setTimeout("resize();", 1000);
 }

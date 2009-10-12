@@ -80,6 +80,11 @@
 	padding: 0px;
 	padding-top: 4px;
 }
+#structureRepositoriesDivHandle, #contentRepositoriesDivHandle, .generalToolRepositoriesDivHandle
+{
+	color: #333; 
+	background-color: #deecff;
+}
 #structureRepositoriesDiv ul, #contentRepositoriesDiv ul
 {
 	max-height: 200px; 
