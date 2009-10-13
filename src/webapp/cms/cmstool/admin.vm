@@ -293,18 +293,20 @@
         		</script>
 			</div>
 			
-			<div style="float: left; border: 1px solid #6593cf; background-color: white; padding: 2px">
+			<div id="versionBox">
 				You are logged in as: $infoGluePrincipal.displayName
 				<div id="versionInfo">Version build: $infoGlueVersion ($infoGlueVersionReleaseDate)</div>
 			</div>
 			
+			<!--
 			<div style="float:left; margin-left: 50px; padding-top: 0px; width: 400px; height: 30px; overflow: hidden;">
 				Debug: <div id="debug" style="float: left; width: 100%"></div>
 			</div>
+			-->
 		</div>
 
-		<div style="float:right; margin-right: 4px; padding-top: 8px;">
-			<img src="images/v3/infoglueLogo.png" style="border: 1px solid #6593cf"/>
+		<div id="logotypeBox">
+			<img src="images/v3/infoglueLogo.png"/>
 		</div>
 	</div>
 	

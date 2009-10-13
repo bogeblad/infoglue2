@@ -255,3 +255,29 @@ body.generaltooledit
 {
 	margin: 2px 4px 2px 6px;
 }
+
+img.divider
+{
+	background-image: url(images/v3/divider.gif);
+	float: left; 
+	display: block; 
+	margin-top: 6px;
+}
+
+#versionBox
+{
+	float: left; 
+	border: 1px solid #6593cf; 
+	background-color: white; 
+	padding: 2px;
+}
+#logotypeBox
+{
+	float: right; 
+	margin-right: 4px; 
+	padding-top: 8px;
+}
+#logotypeBox img
+{
+	border: 1px solid #6593cf
+}
