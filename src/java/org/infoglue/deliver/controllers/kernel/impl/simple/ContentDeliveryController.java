@@ -912,10 +912,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 		String versionKey = attributeKey + "_contentVersionId";
 		//logger.info("attributeKey:" + attributeKey);
 		
-		//String attribute = (String)CacheController.getCachedObject("contentAttributeCache", attributeKey);
-		//Integer contentVersionId = (Integer)CacheController.getCachedObject("contentAttributeCache", versionKey);
-		
-		String attribute = (String)CacheController.getCachedObjectFromAdvancedCache("contentAttributeCache", attributeKey.toString());
+		String attribute = (String)CacheController.getCachedObjectFromAdvancedCache("contentAttributeCache_" + attributeName, attributeKey.toString());
 		Integer contentVersionId = null;
 		
 	    try
@@ -942,18 +939,11 @@ public class ContentDeliveryController extends BaseDeliveryController
 	        	StringBuilder groupKey1 = new StringBuilder("contentVersion_").append(contentVersionId);
 	        	StringBuilder groupKey2 = new StringBuilder("content_").append(contentId);
 	        	
-	        	CacheController.cacheObjectInAdvancedCache("contentAttributeCache", attributeKey, attribute, new String[]{groupKey1.toString(), groupKey2.toString()}, true);
+	        	CacheController.cacheObjectInAdvancedCache("contentAttributeCache_" + attributeName, attributeKey, attribute, new String[]{groupKey1.toString(), groupKey2.toString()}, true);
 				if(contentVersionId != null)
 				{
 				    CacheController.cacheObjectInAdvancedCache("contentVersionCache", versionKey, contentVersionId, new String[]{groupKey1.toString(), groupKey2.toString()}, true);
 				}
-	        	/*
-	        	CacheController.cacheObjectInAdvancedCache("contentAttributeCache", attributeKey, attribute, new String[]{"contentVersion_" + contentVersionId, "content_" + contentId}, true);
-				if(contentVersionId != null)
-				{
-				    CacheController.cacheObjectInAdvancedCache("contentVersionCache", versionKey, contentVersionId, new String[]{"contentVersion_" + contentVersionId, "content_" + contentId}, true);
-				}
-				*/
 			}
 			
 			if(deliveryContext != null)

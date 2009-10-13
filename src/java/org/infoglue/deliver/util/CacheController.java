@@ -286,6 +286,8 @@ public class CacheController extends Thread
 					cacheCapacity = "2000";
 				if(cacheName != null && cacheName.equalsIgnoreCase("componentPropertyCache"))
 					cacheCapacity = "1500";
+				//if(cacheName != null && cacheName.equalsIgnoreCase("contentAttributeCache_"))
+				//	cacheCapacity = "5000";
 		    	
 		    	if(cacheCapacity != null && !cacheCapacity.equals(""))
 		    	{
@@ -696,7 +698,7 @@ public class CacheController extends Thread
 					{	
 						clear = true;
 					}
-					if(cacheName.equalsIgnoreCase("contentAttributeCache") && (entity.indexOf("Content") > -1 || entity.indexOf("AccessRight") > 0 || entity.indexOf("SystemUser") > 0 || entity.indexOf("Role") > 0  || entity.indexOf("Group") > 0))
+					if(cacheName.startsWith("contentAttributeCache") && (entity.indexOf("Content") > -1 || entity.indexOf("AccessRight") > 0 || entity.indexOf("SystemUser") > 0 || entity.indexOf("Role") > 0  || entity.indexOf("Group") > 0))
 					{	
 						clear = true;
 						selectiveCacheUpdate = true;
