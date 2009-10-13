@@ -112,7 +112,7 @@
     <field name="description" type="java.lang.String">
       <sql name="description" type="varchar" dirty="check" />
     </field>
-    <field name="systemUsers" type="org.infoglue.cms.entities.management.impl.simple.SystemUserImpl" lazy="false" collection="collection">
+    <field name="systemUsers" type="org.infoglue.cms.entities.management.impl.simple.SystemUserImpl" lazy="true" collection="collection">
       <sql many-key="roleName" many-table="cmSystemUserRole"/>
     </field>
   </class>
@@ -128,7 +128,7 @@
     <field name="description" type="java.lang.String">
       <sql name="description" type="varchar" dirty="check" />
     </field>
-    <field name="systemUsers" type="org.infoglue.cms.entities.management.impl.simple.SystemUserImpl" lazy="false" collection="collection">
+    <field name="systemUsers" type="org.infoglue.cms.entities.management.impl.simple.SystemUserImpl" lazy="true" collection="collection">
       <sql many-key="groupName" many-table="cmSystemUserGroup"/>
     </field>
   </class>
