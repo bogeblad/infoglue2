@@ -33,6 +33,7 @@ import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
 import org.exolab.castor.jdo.OQLQuery;
 import org.exolab.castor.jdo.QueryResults;
+import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeVersionController;
 import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.content.ContentVersionVO;
@@ -43,6 +44,7 @@ import org.infoglue.cms.entities.management.RepositoryLanguage;
 import org.infoglue.cms.entities.management.impl.simple.LanguageImpl;
 import org.infoglue.cms.entities.management.impl.simple.RepositoryImpl;
 import org.infoglue.cms.entities.structure.SiteNode;
+import org.infoglue.cms.entities.structure.SiteNodeVO;
 import org.infoglue.cms.entities.structure.SiteNodeVersion;
 import org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl;
 import org.infoglue.cms.entities.structure.impl.simple.SmallSiteNodeImpl;
@@ -52,6 +54,7 @@ import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.deliver.applications.databeans.DeliveryContext;
 import org.infoglue.deliver.util.CacheController;
 import org.infoglue.deliver.util.NullObject;
+import org.infoglue.deliver.util.Timer;
 
 
 public class LanguageDeliveryController extends BaseDeliveryController
@@ -225,11 +228,13 @@ public class LanguageDeliveryController extends BaseDeliveryController
 	public LanguageVO getMasterLanguageForRepository(Database db, Integer repositoryId) throws SystemException, Exception
 	{ 
 		String languageKey = "" + repositoryId;
-		logger.info("languageKey in getMasterLanguageForRepository:" + languageKey);
+		if(logger.isInfoEnabled())
+			logger.info("languageKey in getMasterLanguageForRepository:" + languageKey);
 		LanguageVO languageVO = (LanguageVO)CacheController.getCachedObject("masterLanguageCache", languageKey);
 		if(languageVO != null)
 		{
-			logger.info("There was an cached master language:" + languageVO.getName());
+			if(logger.isInfoEnabled())
+				logger.info("There was an cached master language:" + languageVO.getName());
 		}
 		else
 		{
@@ -291,12 +296,21 @@ public class LanguageDeliveryController extends BaseDeliveryController
 		return languageVO;	
 	}
 
-	
 	/**
 	 * This method returns the master language. 
 	 * todo - add attribute on repositoryLanguage to be able to sort them... and then fetch the first
 	 */
-	
+	public LanguageVO getMasterLanguageForSiteNode(Database db, Integer siteNodeId) throws SystemException, Exception
+	{ 
+		SiteNodeVO smallestSiteNodeVO = SiteNodeController.getSmallSiteNodeVOWithId(siteNodeId, db);
+		return getMasterLanguageForRepository(smallestSiteNodeVO.getRepositoryId(), db);
+	}
+
+	/**
+	 * This method returns the master language. 
+	 * todo - add attribute on repositoryLanguage to be able to sort them... and then fetch the first
+	 */
+	/*
 	public LanguageVO getMasterLanguageForSiteNode(Database db, Integer siteNodeId) throws SystemException, Exception
 	{ 
 	    String languageKey = "siteNodeId_" + siteNodeId;
@@ -324,13 +338,14 @@ public class LanguageDeliveryController extends BaseDeliveryController
 			
 			results.close();
 			oql.close();
-
+			
 			CacheController.cacheObject("masterLanguageCache", languageKey, languageVO);
 		}
 		
         return languageVO;	
 	}
-
+	*/
+	
 	/**
 	 * This method returns the master language. 
 	 * todo - add attribute on repositoryLanguage to be able to sort them... and then fetch the first

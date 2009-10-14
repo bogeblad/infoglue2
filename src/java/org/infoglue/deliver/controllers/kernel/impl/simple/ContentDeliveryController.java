@@ -72,6 +72,7 @@ import org.infoglue.cms.entities.management.impl.simple.ContentTypeDefinitionImp
 import org.infoglue.cms.entities.structure.SiteNode;
 import org.infoglue.cms.entities.structure.SiteNodeVO;
 import org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl;
+import org.infoglue.cms.entities.structure.impl.simple.SmallSiteNodeImpl;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.CmsPropertyHandler;
@@ -255,7 +256,8 @@ public class ContentDeliveryController extends BaseDeliveryController
 	{
 		ContentVersionVO contentVersionVO = null;
 		
-		SiteNodeVO siteNodeVO = (SiteNodeVO)getVOWithId(SiteNodeImpl.class, siteNodeId, db);
+		//SiteNodeVO siteNodeVO = (SiteNodeVO)getVOWithId(SiteNodeImpl.class, siteNodeId, db);
+		SiteNodeVO siteNodeVO = (SiteNodeVO)getVOWithId(SmallSiteNodeImpl.class, siteNodeId, db);
 		String contentVersionKey = "contentVersionVO_" + siteNodeVO.getRepositoryId() + "_" + contentId + "_" + languageId + "_" + useLanguageFallback;
 		logger.info("contentVersionKey:" + contentVersionKey);
 		contentVersionVO = (ContentVersionVO)CacheController.getCachedObjectFromAdvancedCache("contentVersionCache", contentVersionKey);
@@ -292,7 +294,8 @@ public class ContentDeliveryController extends BaseDeliveryController
 	{
 		SmallestContentVersionVO contentVersionVO = null;
 		
-		SiteNodeVO siteNodeVO = (SiteNodeVO)getVOWithId(SiteNodeImpl.class, siteNodeId, db);
+		//SiteNodeVO siteNodeVO = (SiteNodeVO)getVOWithId(SiteNodeImpl.class, siteNodeId, db);
+		SiteNodeVO siteNodeVO = (SiteNodeVO)getVOWithId(SmallSiteNodeImpl.class, siteNodeId, db);
 		String contentVersionKey = "smallestContentVersionVO_" + siteNodeVO.getRepositoryId() + "_" + contentId + "_" + languageId + "_" + useLanguageFallback;
 		logger.info("contentVersionKey:" + contentVersionKey);
 		contentVersionVO = (SmallestContentVersionVO)CacheController.getCachedObjectFromAdvancedCache("contentVersionCache", contentVersionKey);
@@ -2368,34 +2371,10 @@ public class ContentDeliveryController extends BaseDeliveryController
 	        	int endTagIndex   = xml.indexOf("]]></" + key + ">");
 	        	
 	        	if(startTagIndex > 0 && startTagIndex < xml.length() && endTagIndex > startTagIndex && endTagIndex <  xml.length())
-		        	value = xml.substring(startTagIndex + key.length() + 11, endTagIndex);
+	        		value = xml.substring(startTagIndex + key.length() + 11, endTagIndex);
 
-	        	if(escapeHTML)
+	    		if(escapeHTML)
 	        	    value = formatter.escapeHTML(value);
-	        	
-	        	/*
-		        InputSource inputSource = new InputSource(new StringReader(contentVersionVO.getVersionValue()));
-				
-				DOMParser parser = new DOMParser(); 
-				parser.parse(inputSource);
-				Document document = parser.getDocument();
-				
-				NodeList nl = document.getDocumentElement().getChildNodes();
-				Node n = nl.item(0);
-				
-				nl = n.getChildNodes();
-				for(int i=0; i<nl.getLength(); i++)
-				{
-					n = nl.item(i);
-					if(n.getNodeName().equalsIgnoreCase(key))
-					{
-						value = n.getFirstChild().getNodeValue();
-						logger.warn("Getting value: " + value);
-
-						break;
-					}
-				}		        	
-	        	*/
 	        } 
 	        catch(Exception e)
 	        {
