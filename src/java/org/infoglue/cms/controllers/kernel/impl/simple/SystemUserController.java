@@ -213,7 +213,7 @@ public class SystemUserController extends BaseController
 		{
 			SystemUser systemUser = (SystemUser)results.next();
 			systemUserVO = systemUser.getValueObject();
-			logger.info("found one:" + systemUserVO.getFirstName());
+			//logger.info("found one:" + systemUserVO.getFirstName());
 		}
 
 		results.close();
