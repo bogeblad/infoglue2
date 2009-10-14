@@ -691,7 +691,7 @@ public class BasicTemplateController implements TemplateController
 
 		try
 		{
-		    contentVersionVO = ContentVersionController.getContentVersionController().getContentVersionWithId(contentVersionId, getDatabase()).getValueObject();
+		    contentVersionVO = ContentVersionController.getContentVersionController().getContentVersionVOWithId(contentVersionId, getDatabase());
 		}
 		catch(Exception e)
 		{

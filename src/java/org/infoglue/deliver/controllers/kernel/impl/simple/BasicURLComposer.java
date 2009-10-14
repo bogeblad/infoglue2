@@ -27,9 +27,12 @@ import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
+import org.infoglue.cms.controllers.kernel.impl.simple.RepositoryController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeController;
 import org.infoglue.cms.entities.content.ContentVO;
+import org.infoglue.cms.entities.management.RepositoryVO;
 import org.infoglue.cms.entities.structure.SiteNode;
+import org.infoglue.cms.entities.structure.SiteNodeVO;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.CmsPropertyHandler;
@@ -299,7 +302,7 @@ public class BasicURLComposer extends URLComposer
         return assetUrl;
     }
     
-    public String composePageUrl(Database db, InfoGluePrincipal infoGluePrincipal, Integer siteNodeId, Integer languageId, Integer contentId, DeliveryContext deliveryContext) throws SystemException
+    public String composePageUrl(Database db, InfoGluePrincipal infoGluePrincipal, Integer siteNodeId, Integer languageId, Integer contentId, DeliveryContext deliveryContext) throws SystemException, Exception
     {
     	String url = null;
     	
@@ -343,9 +346,9 @@ public class BasicURLComposer extends URLComposer
 
         try
 		{
-	        SiteNode siteNode = SiteNodeController.getSiteNodeWithId(siteNodeId, db, true);
+	        SiteNodeVO siteNodeVO = SiteNodeController.getController().getSmallSiteNodeVOWithId(siteNodeId, db);
 	
-	        String repositoryUseAccessBasedProtocolRedirects = RepositoryDeliveryController.getRepositoryDeliveryController().getExtraPropertyValue(siteNode.getValueObject().getRepositoryId(), "useAccessBasedProtocolRedirects");
+	        String repositoryUseAccessBasedProtocolRedirects = RepositoryDeliveryController.getRepositoryDeliveryController().getExtraPropertyValue(siteNodeVO.getRepositoryId(), "useAccessBasedProtocolRedirects");
 			if(repositoryUseAccessBasedProtocolRedirects == null || repositoryUseAccessBasedProtocolRedirects.equals("") || !repositoryUseAccessBasedProtocolRedirects.equals("true") || !repositoryUseAccessBasedProtocolRedirects.equals("false"))
 				repositoryUseAccessBasedProtocolRedirects = CmsPropertyHandler.getUseAccessBasedProtocolRedirects();
 			
@@ -386,11 +389,12 @@ public class BasicURLComposer extends URLComposer
         {
             String context = CmsPropertyHandler.getServletContext();
             
-            SiteNode siteNode = SiteNodeController.getSiteNodeWithId(siteNodeId, db, true);
-            SiteNode currentSiteNode = SiteNodeController.getSiteNodeWithId(deliveryContext.getSiteNodeId(), db, true);
-    		if(!siteNode.getRepository().getId().equals(currentSiteNode.getRepository().getId()))
+            SiteNodeVO siteNode = SiteNodeController.getController().getSmallSiteNodeVOWithId(siteNodeId, db);
+            SiteNodeVO currentSiteNode = SiteNodeController.getController().getSmallSiteNodeVOWithId(deliveryContext.getSiteNodeId(), db);
+    		if(!siteNode.getRepositoryId().equals(currentSiteNode.getRepositoryId()))
     		{
-    		    String dnsName = siteNode.getRepository().getDnsName();
+    			RepositoryVO repositoryVO = RepositoryController.getController().getRepositoryVOWithId(siteNode.getRepositoryId(), db);
+                String dnsName = repositoryVO.getDnsName();
     		    logger.info("dnsName:" + dnsName + " for siteNode " + siteNode.getName());
     		    
     		    String operatingMode = CmsPropertyHandler.getOperatingMode();
@@ -473,7 +477,8 @@ public class BasicURLComposer extends URLComposer
     		}
     		else
     		{
-    		    String dnsName = siteNode.getRepository().getDnsName();
+    			RepositoryVO repositoryVO = RepositoryController.getController().getRepositoryVOWithId(siteNode.getRepositoryId(), db);
+    		    String dnsName = repositoryVO.getDnsName();
 
     		    String repositoryPath = null;
     	    	if(!CmsPropertyHandler.getOperatingMode().equals("3"))
@@ -714,7 +719,7 @@ public class BasicURLComposer extends URLComposer
         return url;
     }
 
-    public String composePageUrlAfterLanguageChange(Database db, InfoGluePrincipal infoGluePrincipal, Integer siteNodeId, Integer languageId, Integer contentId, DeliveryContext deliveryContext) throws SystemException
+    public String composePageUrlAfterLanguageChange(Database db, InfoGluePrincipal infoGluePrincipal, Integer siteNodeId, Integer languageId, Integer contentId, DeliveryContext deliveryContext) throws SystemException, Exception
     {
         String pageUrl = composePageUrl(db, infoGluePrincipal, siteNodeId, languageId, contentId, deliveryContext);
 
