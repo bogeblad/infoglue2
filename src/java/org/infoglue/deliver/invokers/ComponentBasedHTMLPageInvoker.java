@@ -46,6 +46,7 @@ import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
 import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.content.ContentVersion;
+import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
 import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.entities.structure.SiteNodeVO;
@@ -446,9 +447,9 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 		Set groups = new InfoGlueHashSet();
 		if(templateController.getDeliveryContext().getUsedPageMetaInfoContentVersionIdSet().size() > 0)
 		{
-			ContentVersion contentVersion = ContentVersionController.getContentVersionController().getContentVersionWithId((Integer)templateController.getDeliveryContext().getUsedPageMetaInfoContentVersionIdSet().toArray()[0], templateController.getDatabase());
-			groups.add("contentVersion_" + contentVersion.getId());
-			groups.add("content_" + contentVersion.getValueObject().getContentId());
+			ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getContentVersionVOWithId((Integer)templateController.getDeliveryContext().getUsedPageMetaInfoContentVersionIdSet().toArray()[0], templateController.getDatabase());
+			groups.add("contentVersion_" + contentVersionVO.getId());
+			groups.add("content_" + contentVersionVO.getContentId());
 		}
 		
 		if(groups.size() > 0)
