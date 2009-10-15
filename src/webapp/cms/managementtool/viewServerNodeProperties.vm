@@ -444,6 +444,8 @@
 			#editPropertyFieldCSS("ServerNode.property.publishStyleInformation" "publishStyleInformation" "$this.getPropertyValue('publishStyleInformation')" "51" "$!serverNodeId")
 			#editPropertyFieldCSS("ServerNode.property.publishedStyleInformation" "publishedStyleInformation" "$this.getPropertyValue('publishedStyleInformation')" "51" "$!serverNodeId")
 
+			#editPropertyTextAreaCSS("ServerNode.property.headerHTML" "headerHTML" "$this.getDataPropertyValue('headerHTML')" "50" "10" "normaltextarea" "$!serverNodeId")
+
 			#set($customContentTypeIcons = $this.getDataPropertyValue("customContentTypeIcons"))
 			#set($customContentTypeIcons = $customContentTypeIcons.replaceAll("&amp;", "&amp;amp;"))
 			#editPropertyTextAreaCSS("ServerNode.property.customContentTypeIcons" "customContentTypeIcons" "$customContentTypeIcons" "50" "10" "normaltextarea" "$!serverNodeId")
