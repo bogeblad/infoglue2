@@ -876,7 +876,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 			return "";
 		
 		boolean isTemplateQuery = false;
-		if(attributeName.equalsIgnoreCase("Template") || attributeName.equalsIgnoreCase("ComponentLabels"))
+		if(attributeName.equalsIgnoreCase("Template") || attributeName.equalsIgnoreCase("PreTemplate") || attributeName.equalsIgnoreCase("ComponentLabels"))
 			isTemplateQuery = true;
 		
 		//logger.info("usedContentVersionId:" + usedContentVersionId);
