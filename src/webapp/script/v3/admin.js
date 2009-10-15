@@ -164,10 +164,31 @@ function openUrlInWorkArea(url, tabLabel, targetTab)
 var currentMenutoolbarLeftUrl = "";
 function getCurrentMenutoolbarLeftUrl() { return currentMenutoolbarLeftUrl; }
 
+var currentUrls = new Array()
+currentUrls["content"] 		= "";
+currentUrls["structure"] 	= "";
+currentUrls["management"] 	= "";
+currentUrls["publishing"] 	= "";
+currentUrls["mydesktop"] 	= "";
+currentUrls["formeditor"] 	= "";
+
 function refreshTopToolBar(title, toolbarKey, arguments, unrefreshedContentId, changeTypeId, newContentId)
 {
 	var newUrl = 'ViewToolbarButtons.action?title=' + title + '&toolbarKey=' + toolbarKey + '&' + arguments;
 	//alert("newUrl:" + newUrl);
+	if(toolbarKey.indexOf("tool.contenttool") > -1)
+		currentUrls["content"] = newUrl;
+	else if(toolbarKey.indexOf("tool.structuretool") > -1)
+		currentUrls["structure"] = newUrl;
+	else if(toolbarKey.indexOf("tool.managementtool") > -1)
+		currentUrls["management"] = newUrl;
+	else if(toolbarKey.indexOf("tool.publishingtool") > -1)
+		currentUrls["publishing"] = newUrl;
+	else if(toolbarKey.indexOf("tool.mydesktoptool") > -1)
+		currentUrls["mydesktop"] = newUrl;
+	else if(toolbarKey.indexOf("tool.formeditortool") > -1)
+		currentUrls["formeditor"] = newUrl;
+	
 	currentMenutoolbarLeftUrl = newUrl;
 	
 	$("#menutoolbarLeft").empty();
@@ -185,6 +206,23 @@ function refreshTopToolBar(title, toolbarKey, arguments, unrefreshedContentId, c
 			parent.frames["menu"].refreshContent(unrefreshedContentId, changeTypeId, newContentId);
 	}
 	*/
+}
+
+function resetTopToolBar(toolName)
+{
+	var newUrl = currentUrls[toolName];
+	
+	currentMenutoolbarLeftUrl = newUrl;
+	
+	$("#menutoolbarLeft").empty();
+
+	if(newUrl != "")
+	{
+		jQuery.get(newUrl, function(data){
+	      	//alert("Data Loaded: " + data);
+			$("#menutoolbarLeft").replaceWith(data);
+	    });
+	}
 }
 
 function resize()
@@ -243,7 +281,7 @@ function resize()
 var activeToolId = "none";
 function getActiveToolId() { return activeToolId; }
 
-function activateTool(toolMarkupDivId, toolName, suffix)
+function activateTool(toolMarkupDivId, toolName, suffix, checkWorkArea)
 {
 	$("#" + activeToolId).hide();
 	$("#" + toolMarkupDivId).show();
@@ -256,6 +294,43 @@ function activateTool(toolMarkupDivId, toolName, suffix)
 	
 	document.title = "" + toolName + " - " + suffix;
 	$("#activeToolHeader h3").html(toolName);
+	
+	var toolName = toolMarkupDivId.replace("Markup", "");
+	if(checkWorkArea)
+	{
+		var tabSize = $("#tabsContainer li").size();
+		var i=0;
+		var exists = false;
+		for (i=0;i<=tabSize;i++)
+		{
+			var id = $("#tabsContainer li:eq(" + i + ") a").attr("id");
+			if(id)
+			{
+				//alert("id:" + id)
+				if(id.indexOf(toolName) > -1)
+					exists = true;
+			}
+		}
+		
+		//alert("exists:" + exists)
+		if(!exists)
+		{
+			if(toolName == "content")
+				openUrlInWorkArea("ViewContentToolStartPage!V3.action", toolName, "content");
+			if(toolName == "structure")
+				openUrlInWorkArea("ViewStructureToolStartPage!V3.action", toolName, "structure");
+			if(toolName == "management")
+				openUrlInWorkArea("ViewManagementToolStartPage!V3.action", toolName, "management");
+			if(toolName == "publishing")
+				openUrlInWorkArea("ViewPublishingToolStartPage!V3.action", toolName, "publishing");
+			if(toolName == "mydesktop")
+				openUrlInWorkArea("ViewMyDesktopToolStartPage!V3.action", toolName, "mydesktop");	
+			if(toolName == "formeditor")
+				openUrlInWorkArea("ViewFormEditorStartPage!V3.action", toolName, "formeditor");	
+		}
+	}
+	
+	resetTopToolBar(toolName);
 	
 	return false;
 }

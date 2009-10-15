@@ -22,15 +22,15 @@
 		                            select: function(event, ui) { 
 													var href = $(ui.tab).attr("href");
 													if(href.indexOf("structureTabDiv") > -1)
-														activateTool('structureMarkup', '$ui.getString('tool.common.structureTool.name')', '$ui.getString("tool.common.adminTool.header")'); 
+														activateTool('structureMarkup', '$ui.getString('tool.common.structureTool.name')', '$ui.getString("tool.common.adminTool.header")', false); 
 													else if(href.indexOf("contentTabDiv") > -1)
-														activateTool('contentMarkup', '$ui.getString('tool.common.contentTool.name')', '$ui.getString("tool.common.adminTool.header")'); 
+														activateTool('contentMarkup', '$ui.getString('tool.common.contentTool.name')', '$ui.getString("tool.common.adminTool.header")', false); 
 													else if(href.indexOf("managementTabDiv") > -1)
-														activateTool('managementMarkup', '$ui.getString('tool.common.managementTool.name')', '$ui.getString("tool.common.adminTool.header")'); 
+														activateTool('managementMarkup', '$ui.getString('tool.common.managementTool.name')', '$ui.getString("tool.common.adminTool.header")', false); 
 													else if(href.indexOf("publishingTabDiv") > -1)
-														activateTool('publishingMarkup', '$ui.getString('tool.common.publishingTool.name')', '$ui.getString("tool.common.adminTool.header")'); 
+														activateTool('publishingMarkup', '$ui.getString('tool.common.publishingTool.name')', '$ui.getString("tool.common.adminTool.header")', false); 
 													else if(href.indexOf("mydesktopTabDiv") > -1)
-														activateTool('mydesktopMarkup', '$ui.getString('tool.common.myDesktopTool.name')', '$ui.getString("tool.common.adminTool.header")'); 
+														activateTool('mydesktopMarkup', '$ui.getString('tool.common.myDesktopTool.name')', '$ui.getString("tool.common.adminTool.header")', false); 
 												},
 												panelTemplate: '<div id="newTabDiv" class="inlineTabDiv newTabDiv">Loading...</div>',
 												tabTemplate: '<li><a id="newTabLabel" href="#{href}"><span>#{label}</span></a> <a href="#" id="newTabLabelClose"><span style="display: inline; width: 14px; float: left; background: url(images/v3/closeTabIcon.gif); cursor: pointer;">&nbsp;</span></a></li>',
@@ -49,20 +49,20 @@
 			});
 		
 			#if($initialToolId == 0)
-				activateTool("contentMarkup", "$ui.getString('tool.common.contentTool.name')", "$ui.getString("tool.common.adminTool.header")");
+				activateTool("contentMarkup", "$ui.getString('tool.common.contentTool.name')", "$ui.getString("tool.common.adminTool.header")", false);
 				openUrlInWorkArea("ViewContentToolStartPage!V3.action", "$ui.getString('tool.common.contentTool.name')", "content");
 			#elseif($initialToolId == 1)
-				activateTool("structureMarkup", "$ui.getString('tool.common.structureTool.name')", "$ui.getString("tool.common.adminTool.header")");
+				activateTool("structureMarkup", "$ui.getString('tool.common.structureTool.name')", "$ui.getString("tool.common.adminTool.header")", false);
 				#set($rootSiteNode = $this.getRepositoryRootSiteNode($repositoryId))
 				openUrlInWorkArea("ViewSiteNode.action?siteNodeId=$rootSiteNode.id&repositoryId=$repositoryId", "$rootSiteNode.name", "structure");
 			#elseif($initialToolId == 2)
-				activateTool("managementMarkup", "$ui.getString('tool.common.managementTool.name')", "$ui.getString("tool.common.adminTool.header")");
+				activateTool("managementMarkup", "$ui.getString('tool.common.managementTool.name')", "$ui.getString("tool.common.adminTool.header")", false);
 				openUrlInWorkArea("ViewManagementToolStartPage!V3.action", "$ui.getString('tool.common.managementTool.name')", "management");
 			#elseif($initialToolId == 3)
-				activateTool("publishingMarkup", "$ui.getString('tool.common.publishingTool.name')", "$ui.getString("tool.common.adminTool.header")");
+				activateTool("publishingMarkup", "$ui.getString('tool.common.publishingTool.name')", "$ui.getString("tool.common.adminTool.header")", false);
 				openUrlInWorkArea("ViewPublishingToolStartPage!V3.action", "$ui.getString('tool.common.publishingTool.name')", "publishing");
 			#elseif($initialToolId == 4)
-				activateTool("mydesktopMarkup", "$ui.getString('tool.common.myDesktopTool.name')", "$ui.getString("tool.common.adminTool.header")");
+				activateTool("mydesktopMarkup", "$ui.getString('tool.common.myDesktopTool.name')", "$ui.getString("tool.common.adminTool.header")", false);
 				openUrlInWorkArea("ViewMyDesktopToolStartPage!V3.action", "$ui.getString('tool.common.myDesktopTool.name')", "mydesktop");
 			#end
 			
@@ -212,22 +212,22 @@
 			<div id="availableTools">
 				<ul>
 					#if($this.hasAccessTo("StructureTool.Read"))
-					<li id="structureMarkupLink"><a href="#" class="structure" onclick="return activateTool('structureMarkup', '$ui.getString('tool.common.structureTool.name')', '$ui.getString("tool.common.adminTool.header")');">$ui.getString('tool.common.structureTool.name')</a></li>
+					<li id="structureMarkupLink"><a href="#" class="structure" onclick="return activateTool('structureMarkup', '$ui.getString('tool.common.structureTool.name')', '$ui.getString("tool.common.adminTool.header")', true);">$ui.getString('tool.common.structureTool.name')</a></li>
 					#end
 					#if($this.hasAccessTo("ContentTool.Read"))
-    				<li id="contentMarkupLink"><a href="#" class="content" onclick="return activateTool('contentMarkup', '$ui.getString('tool.common.contentTool.name')', '$ui.getString("tool.common.adminTool.header")');">$ui.getString('tool.common.contentTool.name')</a></li>
+    				<li id="contentMarkupLink"><a href="#" class="content" onclick="return activateTool('contentMarkup', '$ui.getString('tool.common.contentTool.name')', '$ui.getString("tool.common.adminTool.header")', true);">$ui.getString('tool.common.contentTool.name')</a></li>
 					#end
 					#if($this.hasAccessTo("ManagementTool.Read"))
-    				<li id="managementMarkupLink"><a href="#" class="management" onclick="return activateTool('managementMarkup', '$ui.getString('tool.common.managementTool.name')', '$ui.getString("tool.common.adminTool.header")');">$ui.getString('tool.common.managementTool.name')</a></li>
+    				<li id="managementMarkupLink"><a href="#" class="management" onclick="return activateTool('managementMarkup', '$ui.getString('tool.common.managementTool.name')', '$ui.getString("tool.common.adminTool.header")', true);">$ui.getString('tool.common.managementTool.name')</a></li>
 					#end
 					#if($this.hasAccessTo("PublishingTool.Read"))
-    				<li id="publishingMarkupLink"><a href="#" class="publishing" onclick="return activateTool('publishingMarkup', '$ui.getString('tool.common.publishingTool.name')', '$ui.getString("tool.common.adminTool.header")');">$ui.getString('tool.common.publishingTool.name')</a></li>
+    				<li id="publishingMarkupLink"><a href="#" class="publishing" onclick="return activateTool('publishingMarkup', '$ui.getString('tool.common.publishingTool.name')', '$ui.getString("tool.common.adminTool.header")', true);">$ui.getString('tool.common.publishingTool.name')</a></li>
 					#end
 					#if($this.hasAccessTo("MyDesktopTool.Read"))
-    				<li id="mydesktopMarkupLink"><a href="#" class="mydesktop" onclick="return activateTool('mydesktopMarkup', '$ui.getString('tool.common.myDesktopTool.name')', '$ui.getString("tool.common.adminTool.header")');">$ui.getString('tool.common.myDesktopTool.name')</a></li>
+    				<li id="mydesktopMarkupLink"><a href="#" class="mydesktop" onclick="return activateTool('mydesktopMarkup', '$ui.getString('tool.common.myDesktopTool.name')', '$ui.getString("tool.common.adminTool.header")', true);">$ui.getString('tool.common.myDesktopTool.name')</a></li>
 					#end
 					#if($this.hasAccessTo("FormEditor.Read", true))
-    				<li id="formeditorMarkupLink"><a href="#" class="formeditor" onclick="return activateTool('formeditorMarkup', '$ui.getString('tool.common.formEditorTool.name')', '$ui.getString("tool.common.adminTool.header")');">$ui.getString('tool.common.formEditorTool.name')</a></li>
+    				<li id="formeditorMarkupLink"><a href="#" class="formeditor" onclick="return activateTool('formeditorMarkup', '$ui.getString('tool.common.formEditorTool.name')', '$ui.getString("tool.common.adminTool.header")', true);">$ui.getString('tool.common.formEditorTool.name')</a></li>
 					#end
 				</ul>
 			</div>
