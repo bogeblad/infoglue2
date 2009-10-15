@@ -65,9 +65,9 @@ public abstract class URLComposer
 
     public abstract String composeDigitalAssetUrl(String dnsName, String folderName, String filename, DeliveryContext deliveryContext);
 
-    public abstract String composePageUrl(Database db, InfoGluePrincipal infoGluePrincipal, Integer siteNodeId, Integer languageId, Integer contentId, DeliveryContext deliveryContext) throws SystemException;
+    public abstract String composePageUrl(Database db, InfoGluePrincipal infoGluePrincipal, Integer siteNodeId, Integer languageId, Integer contentId, DeliveryContext deliveryContext) throws SystemException, Exception;
 
-    public abstract String composePageUrlAfterLanguageChange(Database db, InfoGluePrincipal infoGluePrincipal, Integer siteNodeId, Integer languageId, Integer contentId, DeliveryContext deliveryContext) throws SystemException;
+    public abstract String composePageUrlAfterLanguageChange(Database db, InfoGluePrincipal infoGluePrincipal, Integer siteNodeId, Integer languageId, Integer contentId, DeliveryContext deliveryContext) throws SystemException, Exception;
 
     public abstract String composePageBaseUrl(String dnsName);
 
