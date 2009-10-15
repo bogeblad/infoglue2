@@ -23,7 +23,6 @@
 
 package org.infoglue.deliver.invokers;
 
-import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -47,11 +46,11 @@ import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
 import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.content.ContentVersion;
+import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
 import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.entities.structure.SiteNodeVO;
 import org.infoglue.cms.exception.SystemException;
-import org.infoglue.cms.io.FileHelper;
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.DateHelper;
 import org.infoglue.cms.util.XMLHelper;
@@ -242,18 +241,14 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
    		
    		String pageString = pageContent;
    		
-   		//FileHelper.write(new File("c:/temp/base.html"), pageString, false, "utf-8");
-   		if(this.getDeliveryContext().getEvaluateFullPage())
+		if(this.getDeliveryContext().getEvaluateFullPage())
 		{
-   			Timer t = new Timer();
-   			Map context = getDefaultContext();
+			Map context = getDefaultContext();
 			StringWriter cacheString = new StringWriter();
 			PrintWriter cachedStream = new PrintWriter(cacheString);
 			new VelocityTemplateProcessor().renderTemplate(context, cachedStream, pageContent, false, baseComponent);
 			
 			pageString = cacheString.toString();
-			//t.printElapsedTime("Rendering full page took:");
-	   		//FileHelper.write(new File("c:/temp/base2.html"), pageString, false, "utf-8");
 		}
 
 		//pageString = decorateHeadAndPageWithVarsFromComponents(pageString);
@@ -452,9 +447,9 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 		Set groups = new InfoGlueHashSet();
 		if(templateController.getDeliveryContext().getUsedPageMetaInfoContentVersionIdSet().size() > 0)
 		{
-			ContentVersion contentVersion = ContentVersionController.getContentVersionController().getContentVersionWithId((Integer)templateController.getDeliveryContext().getUsedPageMetaInfoContentVersionIdSet().toArray()[0], templateController.getDatabase());
-			groups.add("contentVersion_" + contentVersion.getId());
-			groups.add("content_" + contentVersion.getValueObject().getContentId());
+			ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getContentVersionVOWithId((Integer)templateController.getDeliveryContext().getUsedPageMetaInfoContentVersionIdSet().toArray()[0], templateController.getDatabase());
+			groups.add("contentVersion_" + contentVersionVO.getId());
+			groups.add("content_" + contentVersionVO.getContentId());
 		}
 		
 		if(groups.size() > 0)
