@@ -341,7 +341,6 @@ public class ContentCleanerController  extends BaseController
     /* (non-Javadoc)
      * @see org.infoglue.cms.controllers.kernel.impl.simple.BaseController#getNewVO()
      */
-    @Override
     public BaseEntityVO getNewVO() {
         return null;
     }
