@@ -88,8 +88,7 @@ public class DeploymentController
 			db.begin();
 			
 			String cvsRoot 		= versionControlServerBean.getCVSROOT();
-			//String cvsRoot		= ":pserver:mattias@dev1.sprawlsolutions.se:/home/cvsroot";
-			String password 	= "&freedom2go";
+			String password 	= versionControlServerBean.getPassword();
 			String localPath	= CmsPropertyHandler.getDigitalAssetUploadPath() + File.separator + "checkout";
 						
 		    VCConnector connector = new NetBeansConnector(cvsRoot, localPath, password);
