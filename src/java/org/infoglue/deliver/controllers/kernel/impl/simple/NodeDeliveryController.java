@@ -409,12 +409,16 @@ public class NodeDeliveryController extends BaseDeliveryController
 		}
 		else
 		{
+			siteNodeVersionVO = getLatestActiveSiteNodeVersionVO(siteNodeId, db);
+			/*
 			SiteNodeVersion siteNodeVersion = getLatestActiveSiteNodeVersion(siteNodeId, db);
 			if(siteNodeVersion != null)
 				siteNodeVersionVO = siteNodeVersion.getValueObject();
+			*/
 			
 			//CacheController.cacheObject("latestSiteNodeVersionCache", key, siteNodeVersionVO);
-        	StringBuilder groupKey1 = new StringBuilder("siteNodeVersion_").append(siteNodeVersion.getId());
+        	StringBuilder groupKey1 = new StringBuilder("siteNodeVersion_").append(siteNodeVersionVO.getId());
+        	//StringBuilder groupKey1 = new StringBuilder("siteNodeVersion_").append(siteNodeVersion.getId());
         	StringBuilder groupKey2 = new StringBuilder("siteNode_").append(siteNodeId);
 
         	CacheController.cacheObjectInAdvancedCache("latestSiteNodeVersionCache", key, siteNodeVersionVO, new String[]{groupKey1.toString(), groupKey2.toString()}, true);
@@ -1411,7 +1415,7 @@ public class NodeDeliveryController extends BaseDeliveryController
 	 * This method returns a url to the given page. The url is composed of siteNode, language and content
 	 */
 
-	public String getPageUrl(Database db, InfoGluePrincipal infoGluePrincipal, Integer siteNodeId, Integer languageId, Integer contentId, DeliveryContext deliveryContext) throws SystemException
+	public String getPageUrl(Database db, InfoGluePrincipal infoGluePrincipal, Integer siteNodeId, Integer languageId, Integer contentId, DeliveryContext deliveryContext) throws SystemException, Exception
 	{
 		String pageUrl = "";
 
@@ -1421,7 +1425,7 @@ public class NodeDeliveryController extends BaseDeliveryController
 	}
 
 
-	public String getPageUrlAfterLanguageChange(Database db, InfoGluePrincipal infoGluePrincipal, Integer siteNodeId, Integer languageId, Integer contentId, DeliveryContext deliveryContext) throws SystemException
+	public String getPageUrlAfterLanguageChange(Database db, InfoGluePrincipal infoGluePrincipal, Integer siteNodeId, Integer languageId, Integer contentId, DeliveryContext deliveryContext) throws SystemException, Exception
     {
 		/*
 	    SiteNode siteNode = getSiteNode(db, siteNodeId);

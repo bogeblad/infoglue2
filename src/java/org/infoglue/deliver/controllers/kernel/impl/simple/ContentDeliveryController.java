@@ -72,6 +72,7 @@ import org.infoglue.cms.entities.management.impl.simple.ContentTypeDefinitionImp
 import org.infoglue.cms.entities.structure.SiteNode;
 import org.infoglue.cms.entities.structure.SiteNodeVO;
 import org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl;
+import org.infoglue.cms.entities.structure.impl.simple.SmallSiteNodeImpl;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.security.InfoGluePrincipal;
 import org.infoglue.cms.util.CmsPropertyHandler;
@@ -255,7 +256,8 @@ public class ContentDeliveryController extends BaseDeliveryController
 	{
 		ContentVersionVO contentVersionVO = null;
 		
-		SiteNodeVO siteNodeVO = (SiteNodeVO)getVOWithId(SiteNodeImpl.class, siteNodeId, db);
+		//SiteNodeVO siteNodeVO = (SiteNodeVO)getVOWithId(SiteNodeImpl.class, siteNodeId, db);
+		SiteNodeVO siteNodeVO = (SiteNodeVO)getVOWithId(SmallSiteNodeImpl.class, siteNodeId, db);
 		String contentVersionKey = "contentVersionVO_" + siteNodeVO.getRepositoryId() + "_" + contentId + "_" + languageId + "_" + useLanguageFallback;
 		logger.info("contentVersionKey:" + contentVersionKey);
 		contentVersionVO = (ContentVersionVO)CacheController.getCachedObjectFromAdvancedCache("contentVersionCache", contentVersionKey);
@@ -872,6 +874,10 @@ public class ContentDeliveryController extends BaseDeliveryController
 		if(contentId == null || contentId.intValue() < 1)
 			return "";
 		
+		boolean isTemplateQuery = false;
+		if(attributeName.equalsIgnoreCase("Template") || attributeName.equalsIgnoreCase("PreTemplate") || attributeName.equalsIgnoreCase("ComponentLabels"))
+			isTemplateQuery = true;
+		
 		//logger.info("usedContentVersionId:" + usedContentVersionId);
 		String enforceRigidContentAccess = CmsPropertyHandler.getEnforceRigidContentAccess();
 		if(enforceRigidContentAccess != null && enforceRigidContentAccess.equalsIgnoreCase("true") && !isMetaInfoQuery)
@@ -886,7 +892,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 		
 		StringBuilder attributeKey = new StringBuilder();
 		
-		if(!isMetaInfoQuery)
+		if(!isMetaInfoQuery && !isTemplateQuery)
 			attributeKey.append("")
 			.append(contentId).append("_")
 			.append(languageId).append("_")
@@ -912,10 +918,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 		String versionKey = attributeKey + "_contentVersionId";
 		//logger.info("attributeKey:" + attributeKey);
 		
-		//String attribute = (String)CacheController.getCachedObject("contentAttributeCache", attributeKey);
-		//Integer contentVersionId = (Integer)CacheController.getCachedObject("contentAttributeCache", versionKey);
-		
-		String attribute = (String)CacheController.getCachedObjectFromAdvancedCache("contentAttributeCache", attributeKey.toString());
+		String attribute = (String)CacheController.getCachedObjectFromAdvancedCache("contentAttributeCache_" + attributeName, attributeKey.toString());
 		Integer contentVersionId = null;
 		
 	    try
@@ -942,18 +945,11 @@ public class ContentDeliveryController extends BaseDeliveryController
 	        	StringBuilder groupKey1 = new StringBuilder("contentVersion_").append(contentVersionId);
 	        	StringBuilder groupKey2 = new StringBuilder("content_").append(contentId);
 	        	
-	        	CacheController.cacheObjectInAdvancedCache("contentAttributeCache", attributeKey, attribute, new String[]{groupKey1.toString(), groupKey2.toString()}, true);
+	        	CacheController.cacheObjectInAdvancedCache("contentAttributeCache_" + attributeName, attributeKey, attribute, new String[]{groupKey1.toString(), groupKey2.toString()}, true);
 				if(contentVersionId != null)
 				{
 				    CacheController.cacheObjectInAdvancedCache("contentVersionCache", versionKey, contentVersionId, new String[]{groupKey1.toString(), groupKey2.toString()}, true);
 				}
-	        	/*
-	        	CacheController.cacheObjectInAdvancedCache("contentAttributeCache", attributeKey, attribute, new String[]{"contentVersion_" + contentVersionId, "content_" + contentId}, true);
-				if(contentVersionId != null)
-				{
-				    CacheController.cacheObjectInAdvancedCache("contentVersionCache", versionKey, contentVersionId, new String[]{"contentVersion_" + contentVersionId, "content_" + contentId}, true);
-				}
-				*/
 			}
 			
 			if(deliveryContext != null)
@@ -2378,34 +2374,10 @@ public class ContentDeliveryController extends BaseDeliveryController
 	        	int endTagIndex   = xml.indexOf("]]></" + key + ">");
 	        	
 	        	if(startTagIndex > 0 && startTagIndex < xml.length() && endTagIndex > startTagIndex && endTagIndex <  xml.length())
-		        	value = xml.substring(startTagIndex + key.length() + 11, endTagIndex);
+	        		value = xml.substring(startTagIndex + key.length() + 11, endTagIndex);
 
-	        	if(escapeHTML)
+	    		if(escapeHTML)
 	        	    value = formatter.escapeHTML(value);
-	        	
-	        	/*
-		        InputSource inputSource = new InputSource(new StringReader(contentVersionVO.getVersionValue()));
-				
-				DOMParser parser = new DOMParser(); 
-				parser.parse(inputSource);
-				Document document = parser.getDocument();
-				
-				NodeList nl = document.getDocumentElement().getChildNodes();
-				Node n = nl.item(0);
-				
-				nl = n.getChildNodes();
-				for(int i=0; i<nl.getLength(); i++)
-				{
-					n = nl.item(i);
-					if(n.getNodeName().equalsIgnoreCase(key))
-					{
-						value = n.getFirstChild().getNodeValue();
-						logger.warn("Getting value: " + value);
-
-						break;
-					}
-				}		        	
-	        	*/
 	        } 
 	        catch(Exception e)
 	        {

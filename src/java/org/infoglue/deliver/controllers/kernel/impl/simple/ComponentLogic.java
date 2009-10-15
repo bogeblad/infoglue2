@@ -41,6 +41,7 @@ import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.LanguageController;
 import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.content.ContentVersion;
+import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
 import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.entities.structure.SiteNodeVO;
@@ -1428,9 +1429,9 @@ public class ComponentLogic
 					Integer contentVersionId = (Integer)contentVersionIdListIterator.next();
 					//if(contentVersionId != null)
 					//{
-						ContentVersion contentVersion = ContentVersionController.getContentVersionController().getContentVersionWithId(contentVersionId, this.templateController.getDatabase());
+						ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getContentVersionVOWithId(contentVersionId, this.templateController.getDatabase());
 					    groups.add("contentVersion_" + contentVersionId);
-					    groups.add("content_" + contentVersion.getValueObject().getContentId());
+					    groups.add("content_" + contentVersionVO.getContentId());
 					//}
 			    }
 
@@ -1680,9 +1681,9 @@ public class ComponentLogic
 							Integer contentVersionId = (Integer)contentVersionIdListIterator.next();
 							//if(contentVersionId != null)
 							//{
-								ContentVersion contentVersion = ContentVersionController.getContentVersionController().getContentVersionWithId(contentVersionId, this.templateController.getDatabase());
+								ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getContentVersionVOWithId(contentVersionId, this.templateController.getDatabase());
 							    groups.add("contentVersion_" + contentVersionId);
-							    groups.add("content_" + contentVersion.getValueObject().getContentId());
+							    groups.add("content_" + contentVersionVO.getContentId());
 							//}
 					    }
 					    
@@ -1705,9 +1706,9 @@ public class ComponentLogic
 								Integer contentVersionId = (Integer)contentVersionIdListIterator.next();
 								//if(contentVersionId != null)
 								//{
-									ContentVersion contentVersion = ContentVersionController.getContentVersionController().getContentVersionWithId(contentVersionId, this.templateController.getDatabase());
+									ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getContentVersionVOWithId(contentVersionId, this.templateController.getDatabase());
 								    groups.add("contentVersion_" + contentVersionId);
-								    groups.add("content_" + contentVersion.getValueObject().getContentId());
+								    groups.add("content_" + contentVersionVO.getContentId());
 								//}
 							}
 						    
@@ -1934,9 +1935,9 @@ public class ComponentLogic
 					Integer contentVersionId = (Integer)contentVersionIdListIterator.next();
 					//if(contentVersionId != null)
 					//{
-				        ContentVersion contentVersion = ContentVersionController.getContentVersionController().getContentVersionWithId(contentVersionId, this.templateController.getDatabase());
+				        ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getContentVersionVOWithId(contentVersionId, this.templateController.getDatabase());
 					    groups.add("contentVersion_" + contentVersionId);
-					    groups.add("content_" + contentVersion.getValueObject().getContentId());
+					    groups.add("content_" + contentVersionVO.getContentId());
 					//}
 				}
 			    
@@ -1955,9 +1956,9 @@ public class ComponentLogic
 						Integer contentVersionId = (Integer)contentVersionIdListIterator.next();
 						//if(contentVersionId != null)
 						//{
-							ContentVersion contentVersion = ContentVersionController.getContentVersionController().getContentVersionWithId(contentVersionId, this.templateController.getDatabase());
+							ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getContentVersionVOWithId(contentVersionId, this.templateController.getDatabase());
 						    groups.add("contentVersion_" + contentVersionId);
-						    groups.add("content_" + contentVersion.getValueObject().getContentId());
+						    groups.add("content_" + contentVersionVO.getContentId());
 						//}
 					}
 				    
@@ -2508,10 +2509,10 @@ public class ComponentLogic
 			    while(contentVersionIdListIterator.hasNext())
 			    {
 					Integer contentVersionId = (Integer)contentVersionIdListIterator.next();
-					ContentVersion contentVersion = ContentVersionController.getContentVersionController().getContentVersionWithId(contentVersionId, this.templateController.getDatabase());
+					ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getContentVersionVOWithId(contentVersionId, this.templateController.getDatabase());
 
 				    groups.add("contentVersion_" + contentVersionId);
-				    groups.add("content_" + contentVersion.getValueObject().getContentId());
+				    groups.add("content_" + contentVersionVO.getContentId());
 				}
 				
 			    if(templateController.getDeliveryContext().getUsedContents().contains("selectiveCacheUpdateNonApplicable"))
@@ -2839,12 +2840,15 @@ public class ComponentLogic
 		
 		String pageComponentsString = null;
     	
-		ContentVO contentVO = NodeDeliveryController.getNodeDeliveryController(siteNodeId, languageId, contentId).getBoundContent(templateController.getDatabase(), templateController.getPrincipal(), siteNodeId, languageId, true, "Meta information", templateController.getDeliveryContext());
+		NodeDeliveryController ndc = NodeDeliveryController.getNodeDeliveryController(siteNodeId, languageId, contentId);
+		ContentVO contentVO = ndc.getBoundContent(templateController.getDatabase(), templateController.getPrincipal(), siteNodeId, languageId, true, "Meta information", templateController.getDeliveryContext());
 		
 		if(contentVO == null)
 			throw new SystemException("There was no Meta Information bound to this page [" + siteNodeId + "] which makes it impossible to render.");	
 		
-		Integer masterLanguageId = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForSiteNode(templateController.getDatabase(), siteNodeId).getId();
+		SiteNodeVO siteNodeVO = ndc.getSiteNodeVO(templateController.getDatabase(), siteNodeId);
+		Integer masterLanguageId = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForRepository(templateController.getDatabase(), siteNodeVO.getRepositoryId()).getId();
+		//Integer masterLanguageId = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForSiteNode(templateController.getDatabase(), siteNodeId).getId();
 		pageComponentsString = templateController.getContentAttributeWithReturningId(contentVO.getContentId(), masterLanguageId, "ComponentStructure", true, usedContentVersionId);
 		pageComponentsString = appendPagePartTemplates(pageComponentsString, templateController);
 

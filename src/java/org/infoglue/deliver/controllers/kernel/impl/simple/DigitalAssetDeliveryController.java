@@ -444,39 +444,45 @@ public class DigitalAssetDeliveryController extends BaseDeliveryController
 				}
 				else
 				{
-					logger.warn("There was no asset blob in the database - checking the cms-disk - could be a mistake");
+					logger.warn("There was no asset blob in the database - checking the cms-disk - could be a mistake:" + digitalAssetVO.getDigitalAssetId());
 					
-					HttpHelper httpHelper = new HttpHelper();
-					httpHelper.downloadFile("" + cmsBaseUrl + "/DownloadProtectedAsset.action?digitalAssetId=" + digitalAssetVO.getId(), tmpOutputFile);
-				
-					if(tmpOutputFile.exists())
+					try
 					{
-						if(logger.isInfoEnabled())
-						{
-							logger.info("Time for dumping file " + fileName + ":" + timer.getElapsedTime() + ":" + tmpOutputFile.exists() + ":" + tmpOutputFile.lastModified());
-							logger.info("tmpOutputFile:" + tmpOutputFile.length() + ":" + tmpOutputFile.exists());	
-						}
-						
-						if(tmpOutputFile.length() == 0 || outputFile.exists())
-						{
-							if(logger.isInfoEnabled())
-								logger.info("written file:" + tmpOutputFile.length() + " - removing temp and not renaming it...");	
-							
-							tmpOutputFile.delete();
-							
-							if(logger.isInfoEnabled())
-								logger.info("Time for deleting file " + timer.getElapsedTime());
-						}
-						else
-						{
-							logger.info("written file:" + tmpOutputFile.getAbsolutePath() + " - renaming it to " + outputFile.getAbsolutePath());	
-	
-							logger.info("written file:" + tmpOutputFile.length() + " - renaming it to " + outputFile.getAbsolutePath());	
-							tmpOutputFile.renameTo(outputFile);
-							logger.info("Time for renaming file " + timer.getElapsedTime());
-						}	
-					}
+						HttpHelper httpHelper = new HttpHelper();
+						httpHelper.downloadFile("" + cmsBaseUrl + "/DownloadProtectedAsset.action?digitalAssetId=" + digitalAssetVO.getId(), tmpOutputFile);
 					
+						if(tmpOutputFile.exists())
+						{
+							if(logger.isInfoEnabled())
+							{
+								logger.info("Time for dumping file " + fileName + ":" + timer.getElapsedTime() + ":" + tmpOutputFile.exists() + ":" + tmpOutputFile.lastModified());
+								logger.info("tmpOutputFile:" + tmpOutputFile.length() + ":" + tmpOutputFile.exists());	
+							}
+							
+							if(tmpOutputFile.length() == 0 || outputFile.exists())
+							{
+								if(logger.isInfoEnabled())
+									logger.info("written file:" + tmpOutputFile.length() + " - removing temp and not renaming it...");	
+								
+								tmpOutputFile.delete();
+								
+								if(logger.isInfoEnabled())
+									logger.info("Time for deleting file " + timer.getElapsedTime());
+							}
+							else
+							{
+								logger.info("written file:" + tmpOutputFile.getAbsolutePath() + " - renaming it to " + outputFile.getAbsolutePath());	
+		
+								logger.info("written file:" + tmpOutputFile.length() + " - renaming it to " + outputFile.getAbsolutePath());	
+								tmpOutputFile.renameTo(outputFile);
+								logger.info("Time for renaming file " + timer.getElapsedTime());
+							}	
+						}
+					}
+					catch (Exception e) 
+					{
+						logger.error("Error getting file from cms [" + cmsBaseUrl + "]:" + e.getMessage());
+					}
 				}
 	
 				logger.info("Time for dumping file " + fileName + ":" + timer.getElapsedTime());
@@ -641,7 +647,8 @@ public class DigitalAssetDeliveryController extends BaseDeliveryController
 			return outputFile;
 		}
 		
-		ThumbnailGenerator tg = new ThumbnailGenerator();
+		//ThumbnailGenerator tg = new ThumbnailGenerator();
+		ThumbnailGenerator tg = ThumbnailGenerator.getInstance();
 		tg.transform(filePath + File.separator + fileName, filePath + File.separator + thumbnailFile, width, height, 100);
 		
 		logger.info("Time for dumping file " + fileName + ":" + (System.currentTimeMillis() - timer));

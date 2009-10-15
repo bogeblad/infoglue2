@@ -23,6 +23,8 @@
 
 package org.infoglue.deliver.controllers.kernel.impl.simple;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -56,6 +58,7 @@ import org.infoglue.cms.controllers.kernel.impl.simple.RepositoryController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeController;
 import org.infoglue.cms.controllers.kernel.impl.simple.UserControllerProxy;
 import org.infoglue.cms.entities.content.ContentVO;
+import org.infoglue.cms.entities.content.ContentVersion;
 import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.entities.content.DigitalAssetVO;
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
@@ -80,11 +83,13 @@ import org.infoglue.deliver.applications.databeans.ComponentTask;
 import org.infoglue.deliver.applications.databeans.DeliveryContext;
 import org.infoglue.deliver.applications.databeans.Slot;
 import org.infoglue.deliver.integration.dataproviders.PropertyOptionsDataProvider;
+import org.infoglue.deliver.portal.PortalController;
 import org.infoglue.deliver.util.CacheController;
 import org.infoglue.deliver.util.HttpHelper;
 import org.infoglue.deliver.util.HttpUtilities;
 import org.infoglue.deliver.util.NullObject;
 import org.infoglue.deliver.util.Timer;
+import org.infoglue.deliver.util.VelocityTemplateProcessor;
 
 /**
  * This class is the new Helper class for generating all kind of PageEditor-divs etc.
