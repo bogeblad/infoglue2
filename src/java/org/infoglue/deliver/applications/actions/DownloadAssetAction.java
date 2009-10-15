@@ -85,7 +85,7 @@ public class DownloadAssetAction extends InfoGlueAbstractAction
     {
     	HttpServletResponse response = this.getResponse();
     	
-        if(digitalAssetId != null/* && !ServerNodeController.getController().getIsIPAllowed(getRequest())*/)
+        if(digitalAssetId != null && !ServerNodeController.getController().getIsIPAllowed(getRequest()))
         {
             logger.error("A client with IP " + getRequest().getRemoteAddr() + " was denied access to the download action. Could be a hack attempt or you have just not configured the allowed IP-addresses correct.");
             return null;

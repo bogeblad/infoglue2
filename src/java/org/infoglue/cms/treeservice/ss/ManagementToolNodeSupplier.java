@@ -175,9 +175,7 @@ public class ManagementToolNodeSupplier extends BaseNodeSupplier
 			r.add(new ManagementNodeImpl(cnt++, "Permissions", "ViewAccessRights.action?interceptionPointCategory=Repository&extraParameters=" + parentNode +"&colorScheme=ManagementTool&returnAddress=ViewRepositoryOverview.action?repositoryId=" + parentNode));
 			r.add(new ManagementNodeImpl(cnt++, "Languages", "ViewListRepositoryLanguage.action?repositoryId=" + parentNode + "&title=Languages"));			
 		}
-		
-		System.out.println("r:" + r.size());
-		
+				
 		return r;
 	}
 

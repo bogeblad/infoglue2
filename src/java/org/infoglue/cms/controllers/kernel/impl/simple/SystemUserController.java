@@ -213,7 +213,7 @@ public class SystemUserController extends BaseController
 		{
 			SystemUser systemUser = (SystemUser)results.next();
 			systemUserVO = systemUser.getValueObject();
-			logger.info("found one:" + systemUserVO.getFirstName());
+			//logger.info("found one:" + systemUserVO.getFirstName());
 		}
 
 		results.close();
@@ -579,11 +579,11 @@ public class SystemUserController extends BaseController
 
     public SystemUser update(SystemUserVO systemUserVO, String oldPassword, String[] roleNames, String[] groupNames, Database db) throws ConstraintException, SystemException, Exception
     {
-    	System.out.println("systemUserVO:" + systemUserVO.getUserName());
-    	System.out.println("oldPassword:" + oldPassword);
-    	System.out.println("newPassword:" + systemUserVO.getPassword());
-    	System.out.println("roleNames:" + roleNames);
-    	System.out.println("groupNames:" + groupNames);
+    	logger.info("systemUserVO:" + systemUserVO.getUserName());
+    	logger.info("oldPassword:" + oldPassword);
+    	logger.info("newPassword:" + systemUserVO.getPassword());
+    	logger.info("roleNames:" + roleNames);
+    	logger.info("groupNames:" + groupNames);
     	if(CmsPropertyHandler.getUsePasswordEncryption())
 		{
     		String password = systemUserVO.getPassword();
@@ -600,10 +600,9 @@ public class SystemUserController extends BaseController
 			}
 			catch (Exception e) 
 			{
-				System.out.println("Error generating password:" + e.getMessage());
+				logger.error("Error generating password:" + e.getMessage());
 			}
 		}
-    	System.out.println("oldPassword:" + oldPassword);
     	
     	SystemUser systemUser = getSystemUser(db, systemUserVO.getUserName(), oldPassword);
         if(systemUser == null)
