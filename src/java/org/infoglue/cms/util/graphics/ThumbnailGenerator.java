@@ -39,8 +39,18 @@ public class ThumbnailGenerator
 {
     private final static Logger logger = Logger.getLogger(ThumbnailGenerator.class.getName());
 
-    public ThumbnailGenerator()
+    private static ThumbnailGenerator generator = null;
+    
+    private ThumbnailGenerator()
     {
+    }
+    
+    public static ThumbnailGenerator getInstance()
+    {
+    	if(generator == null)
+    		generator = new ThumbnailGenerator();
+    	
+    	return generator;
     }
    
     private void execCmd(String command) throws Exception
@@ -117,7 +127,7 @@ public class ThumbnailGenerator
 		    graphics2D.setPaint(Color.WHITE);
 		    graphics2D.fillRect(0, 0, thumbWidth, thumbHeight);
 		    graphics2D.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-
+		    
 		    //graphics2D.drawImage(image, 0, 0, thumbWidth, thumbHeight, null);
 		    drawImage(graphics2D, image, 0, 0, thumbWidth, thumbHeight);
 		    
@@ -183,7 +193,7 @@ public class ThumbnailGenerator
 		    }		    
 		}
 		else
-		{
+		{	        
 		    BufferedImage thumbImage = new BufferedImage(canvasWidth, canvasHeight, BufferedImage.TYPE_INT_RGB);
 		    Graphics2D graphics2D = thumbImage.createGraphics();
 		    graphics2D.setBackground(canvasColor);
@@ -204,11 +214,11 @@ public class ThumbnailGenerator
 		    
 		    //graphics2D.drawImage(image, startX, startY, thumbWidth, thumbHeight, null);
 		    drawImage(graphics2D, image, startX, startY, thumbWidth, thumbHeight);
-
+		    
 		    javax.imageio.ImageIO.write(thumbImage, "JPG", new File(thumbnailFile));
 		}
 	}
-
+    
     private synchronized void drawImage(Graphics2D graphics2D, Image image, int startX, int startY, int thumbWidth, int thumbHeight)
     {
     	graphics2D.drawImage(image, startX, startY, thumbWidth, thumbHeight, null);
