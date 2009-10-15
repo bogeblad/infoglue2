@@ -299,7 +299,7 @@ public class NetBeansConnector implements VCConnector
 	public List<String> getTags(String moduleName) throws Exception 
 	{
 		List<String> tags = new ArrayList<String>();
-		logger.info("ABOUT TO GET ALL TAGS");
+		logger.info("ABOUT TO GET ALL TAGS on module [" + moduleName + "]");
 		
 	    Client client = getClient();
 	    	    
