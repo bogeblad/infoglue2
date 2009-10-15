@@ -696,7 +696,7 @@ public class CacheController extends Thread
 					{	
 						clear = true;
 					}
-					if(cacheName.equalsIgnoreCase("contentAttributeCache") && (entity.indexOf("Content") > -1 || entity.indexOf("AccessRight") > 0 || entity.indexOf("SystemUser") > 0 || entity.indexOf("Role") > 0  || entity.indexOf("Group") > 0))
+					if(cacheName.startsWith("contentAttributeCache") && (entity.indexOf("Content") > -1 || entity.indexOf("AccessRight") > 0 || entity.indexOf("SystemUser") > 0 || entity.indexOf("Role") > 0  || entity.indexOf("Group") > 0))
 					{	
 						clear = true;
 						selectiveCacheUpdate = true;
