@@ -875,6 +875,10 @@ public class ContentDeliveryController extends BaseDeliveryController
 		if(contentId == null || contentId.intValue() < 1)
 			return "";
 		
+		boolean isTemplateQuery = false;
+		if(attributeName.equalsIgnoreCase("Template") || attributeName.equalsIgnoreCase("ComponentLabels"))
+			isTemplateQuery = true;
+		
 		//logger.info("usedContentVersionId:" + usedContentVersionId);
 		String enforceRigidContentAccess = CmsPropertyHandler.getEnforceRigidContentAccess();
 		if(enforceRigidContentAccess != null && enforceRigidContentAccess.equalsIgnoreCase("true") && !isMetaInfoQuery)
@@ -889,7 +893,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 		
 		StringBuilder attributeKey = new StringBuilder();
 		
-		if(!isMetaInfoQuery)
+		if(!isMetaInfoQuery && !isTemplateQuery)
 			attributeKey.append("")
 			.append(contentId).append("_")
 			.append(languageId).append("_")
