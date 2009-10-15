@@ -67,6 +67,8 @@ public class HttpHelper implements IOFetcher
     {
 		URL url = new URL(urlAddress);
 		URLConnection conn = url.openConnection();
+		conn.setConnectTimeout(2000);
+		conn.setReadTimeout(10000);
 		InputStream in = conn.getInputStream();
 
 		BufferedInputStream bis = new BufferedInputStream(in);
