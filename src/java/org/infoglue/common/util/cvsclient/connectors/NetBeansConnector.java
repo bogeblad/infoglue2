@@ -305,6 +305,7 @@ public class NetBeansConnector implements VCConnector
 	    	    
 	    HistoryCommandWithCVSListener command = new HistoryCommandWithCVSListener();
 	    command.setReportTags(true);
+	    command.setForAllUsers(true);
 
 		logger.info("CVS COMMAND: " + command.getCVSCommand());
 		
