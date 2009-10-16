@@ -152,15 +152,15 @@ public abstract class InfoGlueAbstractAction extends WebworkAbstractAction
 	public Integer getRepositoryId()
 	{
 		Integer repositoryId = (Integer)this.getHttpSession().getAttribute("repositoryId");
-		//System.out.println("repositoryId:" + repositoryId);
+		logger.info("repositoryId:" + repositoryId);
 		if(repositoryId == null)
 		{
     		String prefferedRepositoryId = CmsPropertyHandler.getPreferredRepositoryId(this.getInfoGluePrincipal().getName());
-    		//System.out.println("prefferedRepositoryId:" + prefferedRepositoryId);
+    		logger.info("prefferedRepositoryId:" + prefferedRepositoryId);
     		if(prefferedRepositoryId != null && prefferedRepositoryId.length() > 0)
     		{
     			repositoryId = new Integer(prefferedRepositoryId);
-    			//System.out.println("Setting session repositoryId:" + repositoryId);
+    			logger.info("Setting session repositoryId:" + repositoryId);
     			getHttpSession().setAttribute("repositoryId", repositoryId);		
     		}
     		else
