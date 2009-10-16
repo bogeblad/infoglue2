@@ -42,6 +42,7 @@ import java.util.Properties;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.log4j.Logger;
+import org.infoglue.cms.applications.managementtool.actions.deployment.DeploymentServerBean;
 import org.infoglue.cms.applications.managementtool.actions.deployment.VersionControlServerBean;
 import org.infoglue.cms.controllers.kernel.impl.simple.ServerNodeController;
 import org.infoglue.cms.entities.management.ServerNodeVO;
@@ -1544,9 +1545,9 @@ public class CmsPropertyHandler
 	    return urls;
 	}
 
-	public static List<String> getDeploymentServers()
+	public static Map<String, DeploymentServerBean> getDeploymentServers()
 	{
-		List<String> urls = new ArrayList<String>();
+		Map<String, DeploymentServerBean> deploymentServers = new HashMap<String, DeploymentServerBean>();
 		
 	    String deploymentServersString = CmsPropertyHandler.getServerNodeDataProperty(null, "deploymentServers", true, null);
 	    if(deploymentServersString != null && !deploymentServersString.equals(""))
@@ -1557,13 +1558,22 @@ public class CmsPropertyHandler
 				properties.load(new ByteArrayInputStream(deploymentServersString.getBytes("UTF-8")));
 
 				int i = 0;
-				String serverUrl = null;
-				while((serverUrl = properties.getProperty("" + i)) != null)
-				{ 
-					urls.add(serverUrl);
+				String deploymentServerName = null;
+				while((deploymentServerName = properties.getProperty("" + i)) != null)
+				{
+					String url = properties.getProperty("" + i + ".url");
+					String user = properties.getProperty("" + i + ".user");
+					String password = properties.getProperty("" + i + ".password");
+					
+					if(url == null)
+						throw new Exception("Missing url-property for " + deploymentServerName + " (index: " + i + ")");
+					if(user == null)
+						throw new Exception("Missing user-property for " + deploymentServerName + " (index: " + i + ")");
+					
+					DeploymentServerBean dsb = new DeploymentServerBean(deploymentServerName, url, user, password);
+					deploymentServers.put(deploymentServerName, dsb);
 					i++;
 				}	
-
 			}	
 			catch(Exception e)
 			{
@@ -1572,7 +1582,7 @@ public class CmsPropertyHandler
 			}
 		}
 	    
-	    return urls;
+	    return deploymentServers;
 	}
 
 	public static Map<String,VersionControlServerBean> getVCServers()
@@ -1607,8 +1617,6 @@ public class CmsPropertyHandler
 						throw new Exception("Missing module-property for " + vcServerName + " (index: " + i + ")");
 					if(user == null)
 						throw new Exception("Missing user-property for " + vcServerName + " (index: " + i + ")");
-					if(password == null)
-						throw new Exception("Missing password-property for " + vcServerName + " (index: " + i + ")");
 					if(type == null)
 						throw new Exception("Missing type-property for " + vcServerName + " (index: " + i + ")");
 					
