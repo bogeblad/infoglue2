@@ -32,6 +32,7 @@ import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
 import org.infoglue.cms.controllers.kernel.impl.simple.DigitalAssetController;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.jobs.CleanOldVersionsJob;
+import org.infoglue.cms.jobs.SubscriptionsJob;
 import org.infoglue.cms.util.FileUploadHelper;
 import org.quartz.Job;
 import org.quartz.JobDetail;
@@ -117,6 +118,18 @@ public class ViewArchiveToolAction extends InfoGlueAbstractAction
 			this.numberOfCleanedContentVersions = result[0];
 		if(result != null && result.length > 1)
 			this.numberOfCleanedSiteNodeVersions = result[1];
+		
+        return "input";
+    }
+
+	public String doRunSubscriptionJob() throws Exception
+    {
+		JobDetail jobDetail = new JobDetail();
+
+		SimpleTrigger trig = new SimpleTrigger();
+
+		JobExecutionContext jec = new JobExecutionContext(null, new TriggerFiredBundle(jobDetail, trig, null, false, null, null, null, null), new NoOpJob());
+		new SubscriptionsJob().execute(jec);
 		
         return "input";
     }
