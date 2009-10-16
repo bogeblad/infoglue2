@@ -2864,9 +2864,9 @@ public class ComponentLogic
 		    while(contentVersionIdListIterator.hasNext())
 		    {
 				Integer contentVersionId = (Integer)contentVersionIdListIterator.next();
-			    ContentVersion contentVersion = ContentVersionController.getContentVersionController().getContentVersionWithId(contentVersionId, this.templateController.getDatabase());
+			    ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getContentVersionVOWithId(contentVersionId, this.templateController.getDatabase());
 			    groups.add("contentVersion_" + contentVersionId);
-			    groups.add("content_" + contentVersion.getValueObject().getContentId());
+			    groups.add("content_" + contentVersionVO.getContentId());
 			}
 
 		    CacheController.cacheObjectInAdvancedCacheWithGroupsAsSet("contentVersionCache", versionKey, usedContentVersionId, groups, true);

@@ -1187,7 +1187,7 @@ public class SiteNodeController extends BaseController
 
         try
         {
-    		OQLQuery oql = db.getOQLQuery("SELECT sn FROM org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl sn WHERE " +
+    		OQLQuery oql = db.getOQLQuery("SELECT sn FROM org.infoglue.cms.entities.structure.impl.simple.SmallSiteNodeImpl sn WHERE " +
     				"sn.expireDateTime > $1 AND sn.expireDateTime < $2 AND sn.publishDateTime < $3");
 
         	Calendar now = Calendar.getInstance();
@@ -1198,7 +1198,7 @@ public class SiteNodeController extends BaseController
            	oql.bind(futureDate);
            	oql.bind(currentDate);
 
-        	QueryResults results = oql.execute();
+        	QueryResults results = oql.execute(Database.ReadOnly);
     		while(results.hasMore()) 
             {
     			SiteNode siteNode = (SiteNodeImpl)results.next();

@@ -294,7 +294,8 @@ public class ContentDeliveryController extends BaseDeliveryController
 	{
 		SmallestContentVersionVO contentVersionVO = null;
 		
-		SiteNodeVO siteNodeVO = (SiteNodeVO)getVOWithId(SiteNodeImpl.class, siteNodeId, db);
+		//SiteNodeVO siteNodeVO = (SiteNodeVO)getVOWithId(SiteNodeImpl.class, siteNodeId, db);
+		SiteNodeVO siteNodeVO = (SiteNodeVO)getVOWithId(SmallSiteNodeImpl.class, siteNodeId, db);
 		String contentVersionKey = "smallestContentVersionVO_" + siteNodeVO.getRepositoryId() + "_" + contentId + "_" + languageId + "_" + useLanguageFallback;
 		logger.info("contentVersionKey:" + contentVersionKey);
 		contentVersionVO = (SmallestContentVersionVO)CacheController.getCachedObjectFromAdvancedCache("contentVersionCache", contentVersionKey);

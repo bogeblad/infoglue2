@@ -86,13 +86,13 @@
 				if(txtUrl == null || txtUrl == "")
 				{
 					//txtUrl = top.opener.document.getElementById("txtUrl").value;
-					if(window.top.opener.CKEDITOR.instances["Leadin"]._.filebrowserSe.getDialog().getSelectedElement())
+					if(typeof(window.top.opener.CKEDITOR) != 'undefined' && window.top.opener.CKEDITOR.instances["Leadin"]._.filebrowserSe.getDialog().getSelectedElement())
 						txtUrl = window.top.opener.CKEDITOR.instances["Leadin"]._.filebrowserSe.getDialog().getSelectedElement().getAttribute("src");
 				}
 			}
 			else
 			{
-				if(window.top.opener.CKEDITOR.instances["Leadin"]._.filebrowserSe.getDialog().getSelectedElement())
+				if(typeof(window.top.opener.CKEDITOR) != 'undefined' && window.top.opener.CKEDITOR.instances["Leadin"]._.filebrowserSe.getDialog().getSelectedElement())
 					txtUrl = window.top.opener.CKEDITOR.instances["Leadin"]._.filebrowserSe.getDialog().getSelectedElement().getAttribute("src");
 				//txtUrl = top.opener.document.getElementById("txtUrl").value;
 			}

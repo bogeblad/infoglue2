@@ -327,12 +327,7 @@ public class SearchContentAction extends InfoGlueAbstractAction
 		}
 		else 
 		{
-			Timer t = new Timer();
 			digitalAssetVOList = SearchController.getLatestDigitalAssets(new Integer[]{this.repositoryId}, assetTypeFilter, maxRows);
-			if(logger.isInfoEnabled())
-				t.printElapsedTime("New search took:");
-			//digitalAssetVOList = SearchController.getLatestDigitalAssetsOLD(new Integer[]{this.repositoryId}, assetTypeFilter, maxRows);
-			//t.printElapsedTime("OLD search took:");
 			selectedRepositoryIdList.add("" + this.repositoryId);
 		}
 

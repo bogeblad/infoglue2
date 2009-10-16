@@ -1898,7 +1898,7 @@ public class ContentController extends BaseController
 
         try
         {
-    		OQLQuery oql = db.getOQLQuery("SELECT c FROM org.infoglue.cms.entities.content.impl.simple.ContentImpl c WHERE " +
+    		OQLQuery oql = db.getOQLQuery("SELECT c FROM org.infoglue.cms.entities.content.impl.simple.SmallContentImpl c WHERE " +
     				"c.expireDateTime > $1 AND c.expireDateTime < $2 AND c.publishDateTime < $3");
 
         	Calendar now = Calendar.getInstance();
@@ -1909,7 +1909,7 @@ public class ContentController extends BaseController
            	oql.bind(futureDate);
            	oql.bind(currentDate);
 
-        	QueryResults results = oql.execute();
+        	QueryResults results = oql.execute(Database.ReadOnly);
     		while(results.hasMore()) 
             {
     			Content content = (ContentImpl)results.next();
