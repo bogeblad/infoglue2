@@ -48,17 +48,19 @@
 			#if($deploymentServers.size() == 0)
 				<p>$ui.getString("tool.managementtool.deployment.noServersText")</p>
 				<p>Example:<br>
-					0=http://mytestserver.com/infoglueCMS<br>
-					1=http://myliveserver.com/infoglueCMS<br>
+					0=testServer<br>
+					0.url=http://mytestserver.com/infoglueCMS<br>
+					0.user=xxxxx<br>
+					1=liveServer<br>
+					1.url=http://myliveserver.com/infoglueCMS<br>
+					1.user=xxxxx<br>
 				</p>
 			#else
 				<p>$ui.getString("tool.managementtool.deploymentQuick.introduction")</p>
 				<p>
-					<select name="deploymentServerIndex" class="dropbox" style="width: 300px;">
-						#set($count = 0)
+					<select name="deploymentServerName" class="dropbox" style="width: 300px;">
 						#foreach($deploymentServer in $deploymentServers)
-							<option value="$count">$deploymentServer</option>
-							#set($count = $count + 1)
+						<option value="$deploymentServer.name">$deploymentServer.name</option>
 						#end
 					</select>
 				</p>

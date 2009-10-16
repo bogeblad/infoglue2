@@ -1,4 +1,4 @@
-<!-- $Id: actions.xml,v 1.83.2.3 2009/09/27 20:25:21 mattias Exp $ -->
+<!-- $Id: actions.xml,v 1.83.2.4 2009/10/16 14:53:13 mattias Exp $ -->
 <actions>
 
 	<!-- MySettings -->
@@ -1658,7 +1658,7 @@
 	<action name="org.infoglue.cms.applications.managementtool.actions.deployment.ViewDeploymentChooseServerAction" alias="ViewDeploymentChooseServer">
 		<view name="inputQuickV3">/cms/managementtool/deployment/v3/viewQuickDeploymentChooseServer.vm</view>
 		<view name="input">/cms/managementtool/deployment/viewDeploymentChooseServer.vm</view>
-		<view name="success">ViewDeploymentSynchronizeServers!input.action?deploymentServerIndex=${deploymentServerIndex}</view>
+		<view name="success">ViewDeploymentSynchronizeServers!input.action?deploymentServerIndex=${deploymentServerName}</view>
 		<view name="error">/cms/managementtool/error.vm</view>
 	</action>
 	<action name="org.infoglue.cms.applications.managementtool.actions.deployment.ViewDeploymentSynchronizeServersAction" alias="ViewDeploymentSynchronizeServers">
