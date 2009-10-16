@@ -603,7 +603,6 @@ public class SystemUserController extends BaseController
 				logger.error("Error generating password:" + e.getMessage());
 			}
 		}
-    	logger.info("oldPassword:" + oldPassword);
     	
     	SystemUser systemUser = getSystemUser(db, systemUserVO.getUserName(), oldPassword);
         if(systemUser == null)
