@@ -409,6 +409,8 @@ public class RemoteDeploymentServiceImpl extends RemoteInfoGlueService
 	        
         try
         {
+        	initializePrincipal(principalName);
+        	
         	logger.info("input:" + input);
         	
         	final DynamicWebserviceSerializer serializer = new DynamicWebserviceSerializer();
