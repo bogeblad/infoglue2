@@ -659,6 +659,7 @@ public class LanguageDeliveryController extends BaseDeliveryController
 			Collection languages = repository.getRepositoryLanguages();
 	    	
 			Iterator languageIterator = languages.iterator();
+			logger.info("languages on :" + siteNode.getId() + ":" + repository.getId() + "=" + languages.size());
 			while(languageIterator.hasNext())
 			{
 				RepositoryLanguage repositoryLanguage = (RepositoryLanguage)languageIterator.next();
