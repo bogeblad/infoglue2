@@ -473,9 +473,11 @@ public class RemoteDeploymentServiceImpl extends RemoteInfoGlueService
 						ContentVersionVO contentVersionVO = new ContentVersionVO();
 						contentVersionVO.setVersionComment("deployment");
 						contentVersionVO.setVersionModifier(principal.getName());
+						logger.info("missingRemoteContentVO.getVersions():" + missingRemoteContentVO.getVersions());
 						if(missingRemoteContentVO.getVersions() != null && missingRemoteContentVO.getVersions().length > 0)
 						{
 							contentVersionVO.setVersionValue(missingRemoteContentVO.getVersions()[0]);
+							logger.info("Creating version on content: " + newContentVO.getId() + " in language: " + languageVO.getId());
 							ContentVersionController.getContentVersionController().create(newContentVO.getId(), languageVO.getId(), contentVersionVO, null);
 						}
 					}
