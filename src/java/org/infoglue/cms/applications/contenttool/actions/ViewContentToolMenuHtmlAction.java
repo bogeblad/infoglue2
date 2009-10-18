@@ -49,7 +49,7 @@ public class ViewContentToolMenuHtmlAction extends TreeViewAbstractAction
 	private String showVersions;
 	private String showLeafs = "yes";
 	private String treeMode = "classic";
-	private Integer select;
+	private Integer select = -1;
 	private BaseNode rootNode = null;
 	private String[] allowedContentTypeIds = null;
 	private String bodyClass;

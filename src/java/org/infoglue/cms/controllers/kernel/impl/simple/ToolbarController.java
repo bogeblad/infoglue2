@@ -199,6 +199,9 @@ public class ToolbarController
 			if(toolbarKey.equalsIgnoreCase("tool.contenttool.contentHeader"))
 				return asButtons(getCommonFooterSaveButton(toolbarKey, principal, locale, request, disableCloseButton));
 
+			if(toolbarKey.equalsIgnoreCase("tool.contenttool.createContentHeader") || toolbarKey.equalsIgnoreCase("tool.contenttool.createFolderHeader"))
+				return getCommonFooterSaveOrCloseButton(toolbarKey, principal, locale, request, disableCloseButton);
+			
 			if(toolbarKey.equalsIgnoreCase("tool.contenttool.contentVersionHeader"))
 				return getContentVersionFooterButtons(toolbarKey, principal, locale, request, disableCloseButton);
 
@@ -496,21 +499,24 @@ public class ToolbarController
 		Integer contentId = new Integer(request.getParameter("contentId"));
 		ContentVO contentVO = ContentController.getContentController().getContentVOWithId(contentId);
 		
+		System.out.println("***************************************");
 		ToolbarButton createButton = new ToolbarButton("",
 				  getLocalizedString(locale, "tool.contenttool.toolbarV3.createContentLabel"), 
 				  getLocalizedString(locale, "tool.contenttool.toolbarV3.createContentTitle"),
-				  "CreateContent!input.action?isBranch=false&parentContentId=" + contentId + "&repositoryId=" + contentVO.getRepositoryId(),
+				  //"CreateContent!inputV3.action?isBranch=false&parentContentId=" + contentId + "&repositoryId=" + contentVO.getRepositoryId(),
+				  "CreateContent!inputV3.action?isBranch=false&repositoryId=" + contentVO.getRepositoryId() + "&parentContentId=" + contentId + "&returnAddress=ViewInlineOperationMessages.action&originalAddress=refreshParent",
 				  "",
 				  "create",
-				  "contentWorkIframe");
+				  "inlineDiv");
 
 		ToolbarButton createFolderButton = new ToolbarButton("",
 				  getLocalizedString(locale, "tool.contenttool.toolbarV3.createContentFolderLabel"), 
 				  getLocalizedString(locale, "tool.contenttool.toolbarV3.createContentFolderTitle"),
-				  "CreateContent!input.action?isBranch=true&parentContentId=" + contentId + "&repositoryId=" + contentVO.getRepositoryId(),
+				  //"CreateContent!inputV3.action?isBranch=true&parentContentId=" + contentId + "&repositoryId=" + contentVO.getRepositoryId(),
+				  "CreateContent!inputV3.action?isBranch=true&repositoryId=" + contentVO.getRepositoryId() + "&parentContentId=" + contentId + "&returnAddress=ViewInlineOperationMessages.action&originalAddress=refreshParent",
 				  "",
 				  "create",
-				  "contentWorkIframe");
+				  "inlineDiv");
 
 		createButton.getSubButtons().add(createFolderButton);
 		
@@ -623,6 +629,9 @@ public class ToolbarController
 	{
 		List<ToolbarButton> buttons = new ArrayList<ToolbarButton>();
 		
+		Integer contentId = new Integer(request.getParameter("contentId"));
+		ContentVO contentVO = ContentController.getContentController().getContentVOWithId(contentId);
+
 		buttons.add(new ToolbarButton("",
 				  getLocalizedString(locale, "tool.contenttool.toolbarV3.createContentLabel"), 
 				  getLocalizedString(locale, "tool.contenttool.toolbarV3.createContentTitle"),
@@ -631,18 +640,24 @@ public class ToolbarController
 				  "create"));
 
 		buttons.add(new ToolbarButton("",
-				  getLocalizedString(locale, "tool.contenttool.toolbarV3.deleteContentLabel"), 
-				  getLocalizedString(locale, "tool.contenttool.toolbarV3.deleteContentTitle"),
-				  "" + "&returnAddress=ViewInlineOperationMessages.action&originalAddress=refreshParent",
-				  "",
-				  "delete"));
-
-		buttons.add(new ToolbarButton("",
 				  getLocalizedString(locale, "tool.contenttool.toolbarV3.moveContentLabel"), 
 				  getLocalizedString(locale, "tool.contenttool.toolbarV3.moveContentTitle"),
-				  "" + "&returnAddress=ViewInlineOperationMessages.action&originalAddress=refreshParent",
+				  "MoveContent!inputV3.action?contentId=" + contentId + "&repositoryId=" + contentVO.getRepositoryId() + "&hideLeafs=true&returnAddress=ViewInlineOperationMessages.action&originalAddress=refreshParent",
 				  "",
-				  "move"));
+				  "moveContent"));
+
+		buttons.add(new ToolbarButton("",
+				  getLocalizedString(locale, "tool.contenttool.toolbarV3.deleteContentLabel"), 
+				  getLocalizedString(locale, "tool.contenttool.toolbarV3.deleteContentTitle"),
+				  "DeleteContent!V3.action?contentId=" + contentId + "&repositoryId=" + contentVO.getRepositoryId() + "&changeTypeId=4&returnAddress=ViewInlineOperationMessages.action&originalAddress=refreshParent",
+				  "",
+				  "",
+				  "delete",
+				  true,
+				  true,
+				  getLocalizedString(locale, "tool.contenttool.toolbarV3.deleteContentLabel"), 
+				  getLocalizedString(locale, "tool.contenttool.toolbarV3.deleteContentConfirmationLabel"),
+				  "inlineDiv"));
 
 		buttons.add(new ToolbarButton("",
 				  getLocalizedString(locale, "tool.contenttool.toolbarV3.editContentMetaInfoLabel"), 
@@ -755,7 +770,7 @@ public class ToolbarController
 		buttons.add(new ToolbarButton("",
 				  getLocalizedString(locale, "tool.structuretool.toolbarV3.createPageLabel"), 
 				  getLocalizedString(locale, "tool.structuretool.toolbarV3.createPageTitle"),
-				  "CreateSiteNode!inputV3.action?isBranch=true&repositoryId=" + request.getParameter("repositoryId") + "&parentSiteNodeId=" + request.getParameter("siteNodeId") + "&languageId=1&returnAddress=ViewInlineOperationMessages.action&originalAddress=refreshParent",
+				  "CreateSiteNode!inputV3.action?isBranch=true&repositoryId=" + request.getParameter("repositoryId") + "&parentSiteNodeId=" + request.getParameter("siteNodeId") + "&returnAddress=ViewInlineOperationMessages.action&originalAddress=refreshParent",
 				  "",
 				  "create"));
 
@@ -2191,7 +2206,8 @@ public class ToolbarController
 				  getLocalizedString(locale, "tool.managementtool.editServerNodeProperties.header"),
 				  "ViewServerNodeProperties.action?serverNodeId=-1",
 				  "images/v3/deleteBackgroundWasteBasket.gif",
-				  "delete"));
+				  "delete",
+				  "managementWorkIframe"));
 
 		return buttons;
 	}

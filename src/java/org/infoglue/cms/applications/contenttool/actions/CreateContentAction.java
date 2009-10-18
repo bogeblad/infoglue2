@@ -28,13 +28,19 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
+import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
+import org.infoglue.cms.applications.databeans.LinkBean;
 import org.infoglue.cms.controllers.kernel.impl.simple.AccessRightController;
+import org.infoglue.cms.controllers.kernel.impl.simple.CastorDatabaseService;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentControllerProxy;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentTypeDefinitionController;
 import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.exception.AccessConstraintException;
+import org.infoglue.cms.exception.ConstraintException;
+import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.util.AccessConstraintExceptionBuffer;
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
@@ -50,17 +56,25 @@ import com.opensymphony.module.propertyset.PropertySetManager;
 public class CreateContentAction extends InfoGlueAbstractAction
 {
 	private static final long serialVersionUID = 1L;
-	
+
+    private final static Logger logger = Logger.getLogger(CreateContentAction.class.getName());
+
 	private Integer parentContentId;
     private Integer contentTypeDefinitionId;
     private Integer repositoryId;
    	private ConstraintExceptionBuffer ceb;
    	private ContentVO contentVO;
    	private ContentVO newContentVO;
+   	private ContentVO parentContentVO;
    	private String defaultFolderContentTypeName;
    	private String allowedContentTypeNames;
    	private String defaultContentTypeName;
   
+   	private String userSessionKey;
+   	private Integer changeTypeId = new Integer(0);
+    private String returnAddress;
+    private String originalAddress;
+
   	public CreateContentAction()
 	{
 		this(new ContentVO());
@@ -258,7 +272,134 @@ public class CreateContentAction extends InfoGlueAbstractAction
 		
 		return "input";
     }
+
+    public String doInputV3() throws Exception
+    {
+		AccessConstraintExceptionBuffer ceb = new AccessConstraintExceptionBuffer();
+		
+		Integer protectedContentId = ContentControllerProxy.getController().getProtectedContentId(parentContentId);
+		if(protectedContentId != null && !AccessRightController.getController().getIsPrincipalAuthorized(this.getInfoGluePrincipal(), "Content.Create", protectedContentId.toString()))
+			ceb.add(new AccessConstraintException("Content.contentId", "1002"));
+		
+		Map args = new HashMap();
+	    args.put("globalKey", "infoglue");
+	    PropertySet ps = PropertySetManager.getInstance("jdbc", args);
+
+		if(this.getIsBranch().booleanValue())
+		{
+		    this.defaultFolderContentTypeName = ps.getString("repository_" + this.getRepositoryId() + "_defaultFolderContentTypeName");
+		}
+		else
+		{
+		    this.defaultContentTypeName = ps.getString("content_" + this.parentContentId + "_defaultContentTypeName");
+		}
+
+		if (ps.exists("content_" + this.parentContentId + "_allowedContentTypeNames"))
+        {
+            this.allowedContentTypeNames = ps.getString("content_" + this.parentContentId + "_allowedContentTypeNames");
+        }
+		
+        userSessionKey = "" + System.currentTimeMillis();
+
+		parentContentVO = ContentControllerProxy.getController().getContentVOWithId(parentContentId);
+
+		String createContentInlineOperationDoneHeader = getLocalizedString(getLocale(), "tool.contenttool.createContentInlineOperationDoneHeader", parentContentVO.getName());
+		String createContentInlineOperationBackToCurrentContentLinkText = getLocalizedString(getLocale(), "tool.contenttool.createContentInlineOperationBackToCurrentContentText");
+		String createContentInlineOperationBackToCurrentContentTitleText = getLocalizedString(getLocale(), "tool.contenttool.createContentInlineOperationBackToCurrentContentTitleText");
+
+	    setActionMessage(userSessionKey, createContentInlineOperationDoneHeader);
+	    addActionLink(userSessionKey, new LinkBean("currentContentUrl", createContentInlineOperationBackToCurrentContentLinkText, createContentInlineOperationBackToCurrentContentTitleText, createContentInlineOperationBackToCurrentContentTitleText, this.originalAddress, false, ""));
+
+		ceb.throwIfNotEmpty();
+		
+		return "inputV3";
+    }
+    
+    public String doExecuteV3() throws Exception
+    {
+    	Database db = CastorDatabaseService.getDatabase();
+        ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
+
+        beginTransaction(db);
+
+        try
+        {
+    		this.contentVO.setCreatorName(this.getInfoGluePrincipal().getName());
+
+        	ceb = this.contentVO.validate();
+        	ceb.throwIfNotEmpty();
+        			
+        	newContentVO = ContentControllerProxy.getController().acCreate(this.getInfoGluePrincipal(), parentContentId, contentTypeDefinitionId, repositoryId, contentVO);
+        	
+            if ( newContentVO.getIsBranch().booleanValue() )
+            {
+                Map args = new HashMap();
+                args.put("globalKey", "infoglue");
+                PropertySet ps = PropertySetManager.getInstance("jdbc", args);
         
+                String allowedContentTypeNames  = ps.getString("content_" + this.getParentContentId() + "_allowedContentTypeNames");
+                String defaultContentTypeName = ps.getString("content_" + this.getParentContentId() + "_defaultContentTypeName");
+                String initialLanguageId  = ps.getString("content_" + this.getParentContentId() + "_initialLanguageId");
+                
+                if ( allowedContentTypeNames != null )
+                {
+                    ps.setString("content_" + this.getContentId() + "_allowedContentTypeNames", allowedContentTypeNames );
+                }
+                if ( defaultContentTypeName != null )
+                {
+                ps.setString("content_" + this.getContentId() + "_defaultContentTypeName", defaultContentTypeName );
+                }
+                if ( initialLanguageId != null )
+                {
+                    ps.setString("content_" + this.getContentId() + "_initialLanguageId", initialLanguageId );
+                }
+            }        
+            
+            commitTransaction(db);
+
+    		String createContentInlineOperationViewCreatedContentLinkText = getLocalizedString(getLocale(), "tool.contenttool.createContentInlineOperationViewCreatedContentLinkText");
+    		String createContentInlineOperationViewCreatedContentTitleText = getLocalizedString(getLocale(), "tool.contenttool.createContentInlineOperationViewCreatedContentTitleText");
+
+    		addActionLink(userSessionKey, new LinkBean("newPageUrl", createContentInlineOperationViewCreatedContentLinkText, createContentInlineOperationViewCreatedContentTitleText, createContentInlineOperationViewCreatedContentTitleText, "ViewContent!V3.action?contentId=" + newContentVO.getId(), false, "", "content"));
+            setActionExtraData(userSessionKey, "refreshToolbarAndMenu", "" + true);
+            setActionExtraData(userSessionKey, "repositoryId", "" + newContentVO.getRepositoryId());
+            setActionExtraData(userSessionKey, "contentId", "" + newContentVO.getId());
+            setActionExtraData(userSessionKey, "unrefreshedContentId", "" + parentContentId);
+            setActionExtraData(userSessionKey, "unrefreshedNodeId", "" + parentContentId);
+            setActionExtraData(userSessionKey, "changeTypeId", "" + this.changeTypeId);
+        }
+        catch(ConstraintException ce)
+        {
+        	logger.warn("An error occurred so we should not complete the transaction:" + ce);
+            rollbackTransaction(db);
+
+            parentContentVO = ContentControllerProxy.getController().getContentVOWithId(parentContentId);
+
+			ce.setResult(INPUT + "V3");
+			throw ce;
+        }
+        catch(Exception e)
+        {
+            logger.error("An error occurred so we should not complete the transaction:" + e, e);
+            rollbackTransaction(db);
+            throw new SystemException(e.getMessage());
+        }
+    	        
+        if(this.returnAddress != null && !this.returnAddress.equals(""))
+        {
+	        String arguments 	= "userSessionKey=" + userSessionKey + "&isAutomaticRedirect=false";
+	        String messageUrl 	= returnAddress + (returnAddress.indexOf("?") > -1 ? "&" : "?") + arguments;
+	        
+	        this.getResponse().sendRedirect(messageUrl);
+	        return NONE;
+        }
+        else
+        {
+        	return "successV3";
+        }
+    }
+
+
     public String getAllowedContentTypeNames()
     {
         return allowedContentTypeNames;
@@ -268,4 +409,44 @@ public class CreateContentAction extends InfoGlueAbstractAction
     {
         return defaultContentTypeName;
     }
+    
+	public void setReturnAddress(String returnAddress)
+	{
+		this.returnAddress = returnAddress;
+	}
+
+	public String getReturnAddress()
+	{
+		return returnAddress;
+	}
+
+	public String getUserSessionKey()
+	{
+		return userSessionKey;
+	}
+
+	public void setUserSessionKey(String userSessionKey)
+	{
+		this.userSessionKey = userSessionKey;
+	}
+
+	public String getOriginalAddress()
+	{
+		return originalAddress;
+	}
+
+	public void setOriginalAddress(String originalAddress)
+	{
+		this.originalAddress = originalAddress;
+	}
+	
+  	public Integer getChangeTypeId()
+	{
+		return changeTypeId;
+	}
+
+	public void setChangeTypeId(Integer changeTypeId)
+	{
+		this.changeTypeId = changeTypeId;
+	}
 }

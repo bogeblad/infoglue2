@@ -95,7 +95,7 @@ public class ViewDeploymentSynchronizeServersAction extends InfoGlueAbstractActi
 	private boolean synchronizeWorkflows;
 	private boolean synchronizeComponents;
 	
-	private Integer deploymentServerIndex = null;
+	private String deploymentServerName = null;
 	private String synchronizationMethod = "pull";
 	private List<DeploymentCompareBean> deviatingContentTypes = new ArrayList<DeploymentCompareBean>();
 	private List<DeploymentCompareBean> deviatingCategoryVOList = new ArrayList<DeploymentCompareBean>();
@@ -110,9 +110,10 @@ public class ViewDeploymentSynchronizeServersAction extends InfoGlueAbstractActi
     {
     	try
     	{
-	    	List<String> deploymentServers = CmsPropertyHandler.getDeploymentServers();
+    		Map<String, DeploymentServerBean> deploymentServers = CmsPropertyHandler.getDeploymentServers();
 	    	logger.info("deploymentServers:" + deploymentServers.size());
-	    	String deploymentServerUrl = deploymentServers.get(deploymentServerIndex);
+	    	DeploymentServerBean deploymentServerBean = deploymentServers.get(deploymentServerName);
+	    	String deploymentServerUrl = deploymentServerBean.getUrl();
 	    	logger.info("deploymentServerUrl:" + deploymentServerUrl);
 	    	
 	    	String targetEndpointAddress = deploymentServerUrl + "/services/RemoteDeploymentService";
@@ -122,7 +123,7 @@ public class ViewDeploymentSynchronizeServersAction extends InfoGlueAbstractActi
 	    	
 	    	if(synchronizeContentTypeDefinitions)
 	    	{
-		    	Object[] contentTypeDefinitionVOArray = (Object[])invokeOperation(targetEndpointAddress, "getContentTypeDefinitions", "contentTypeDefinition", null, new Class[]{ContentTypeDefinitionVO.class}, "infoglue");
+		    	Object[] contentTypeDefinitionVOArray = (Object[])invokeOperation(targetEndpointAddress, "getContentTypeDefinitions", "contentTypeDefinition", null, new Class[]{ContentTypeDefinitionVO.class}, "infoglue", deploymentServerBean.getUser());
 		    	List remoteContentTypeDefinitionVOList = Arrays.asList(contentTypeDefinitionVOArray);
 			    Collections.sort(remoteContentTypeDefinitionVOList, new ReflectionComparator("name"));
 		
@@ -178,7 +179,7 @@ public class ViewDeploymentSynchronizeServersAction extends InfoGlueAbstractActi
 	    	if(synchronizeCategories)
 	    	{
 		    	//Getting deviatingCategories
-		    	Object[] categoryVOArray = (Object[])invokeOperation(targetEndpointAddress, "getAllActiveCategories", "category", null, new Class[]{CategoryVO.class}, "infoglue");
+		    	Object[] categoryVOArray = (Object[])invokeOperation(targetEndpointAddress, "getAllActiveCategories", "category", null, new Class[]{CategoryVO.class}, "infoglue", deploymentServerBean.getUser());
 		    	List remoteCategoryVOList = Arrays.asList(categoryVOArray);
 			    Collections.sort(remoteCategoryVOList, new ReflectionComparator("name"));
 			    //logger.info("remoteCategoryVOList:" + remoteCategoryVOList.size());
@@ -198,7 +199,7 @@ public class ViewDeploymentSynchronizeServersAction extends InfoGlueAbstractActi
 	    	if(synchronizeWorkflows)
 	    	{
 		    	//Getting deviatingWorkflows
-		    	Object[] workflowVOArray = (Object[])invokeOperation(targetEndpointAddress, "getWorkflowDefinitions", "workflowDefinition", null, new Class[]{WorkflowDefinitionVO.class}, "infoglue");
+		    	Object[] workflowVOArray = (Object[])invokeOperation(targetEndpointAddress, "getWorkflowDefinitions", "workflowDefinition", null, new Class[]{WorkflowDefinitionVO.class}, "infoglue", deploymentServerBean.getUser());
 		    	List remoteWorkflowDefinitionVOList = Arrays.asList(workflowVOArray);
 			    Collections.sort(remoteWorkflowDefinitionVOList, new ReflectionComparator("name"));
 		
@@ -253,14 +254,16 @@ public class ViewDeploymentSynchronizeServersAction extends InfoGlueAbstractActi
 		    	}
 		    }
 	    	
-	    	//logger.info("synchronizeComponents:" + synchronizeComponents);
+	    	logger.info("synchronizeComponents:" + synchronizeComponents);
 	    	if(synchronizeComponents)
 	    	{
 		    	//Getting deviatingComponents
-		    	Object[] contentVOArray = (Object[])invokeOperation(targetEndpointAddress, "getComponents", "content", null, new Class[]{ContentVO.class, ContentVersionVO.class}, "infoglue", new Class[]{ContentVO.class, ContentVersionVO.class});
+		    	Object[] contentVOArray = (Object[])invokeOperation(targetEndpointAddress, "getComponents", "content", null, new Class[]{ContentVO.class, ContentVersionVO.class}, "infoglue", new Class[]{ContentVO.class, ContentVersionVO.class}, deploymentServerBean.getUser());
 		    	List remoteContentVOList = Arrays.asList(contentVOArray);
 		    	List components = ContentController.getContentController().getContentVOWithContentTypeDefinition("HTMLTemplate");
 	
+		    	logger.info("remoteContentVOList:" + remoteContentVOList.size());
+		    	logger.info("components:" + components.size());
 				Comparator comparator = new ComponentDeploymentComparator("modifiedDateTime", "desc");
 				Collections.sort(remoteContentVOList, comparator);
 	
@@ -398,8 +401,9 @@ public class ViewDeploymentSynchronizeServersAction extends InfoGlueAbstractActi
     
 	public String doUpdateContentTypes() throws Exception
     {
-    	List<String> deploymentServers = CmsPropertyHandler.getDeploymentServers();
-    	String deploymentServerUrl = deploymentServers.get(deploymentServerIndex);
+		Map<String, DeploymentServerBean> deploymentServers = CmsPropertyHandler.getDeploymentServers();
+    	DeploymentServerBean deploymentServerBean = deploymentServers.get(deploymentServerName);
+    	String deploymentServerUrl = deploymentServerBean.getUrl();
     	
     	logger.info("Synchronization method:" + this.synchronizationMethod);
     	//logger.info("Fetching sync info from deploymentServerUrl:" + deploymentServerUrl);
@@ -409,7 +413,7 @@ public class ViewDeploymentSynchronizeServersAction extends InfoGlueAbstractActi
     	
     	if(this.synchronizationMethod == null || this.synchronizationMethod.equalsIgnoreCase("pull"))
     	{
-	    	Object[] contentTypeDefinitionVOArray = (Object[])invokeOperation(targetEndpointAddress, "getContentTypeDefinitions", "contentTypeDefinition", null, new Class[]{ContentTypeDefinitionVO.class}, "infoglue");
+	    	Object[] contentTypeDefinitionVOArray = (Object[])invokeOperation(targetEndpointAddress, "getContentTypeDefinitions", "contentTypeDefinition", null, new Class[]{ContentTypeDefinitionVO.class}, "infoglue", deploymentServerBean.getUser());
 	    	List remoteContentTypeDefinitionVOList = Arrays.asList(contentTypeDefinitionVOArray);
 		    Collections.sort(remoteContentTypeDefinitionVOList, new ReflectionComparator("name"));
 	
@@ -602,7 +606,7 @@ public class ViewDeploymentSynchronizeServersAction extends InfoGlueAbstractActi
 	    		input.put("deviatingContentTypeNameArray", deviatingContentTypeNameList);
 	    	}
 	    	
-	    	Boolean success = (Boolean)invokeOperation(targetEndpointAddress, "updateContentTypeDefinitions", "contentTypeDefinition", input, new Class[]{Boolean.class}, "java", new Class[]{ContentTypeDefinitionVO.class});	    	
+	    	Boolean success = (Boolean)invokeOperation(targetEndpointAddress, "updateContentTypeDefinitions", "contentTypeDefinition", input, new Class[]{Boolean.class}, "java", new Class[]{ContentTypeDefinitionVO.class}, deploymentServerBean.getUser());	    	
 	    	//Boolean success = (Boolean)invokeOperation(targetEndpointAddress, "updateContentTypeDefinitions", "contentTypeDefinition", contentTypeDefinitionVOList, Boolean.class, "java", ContentTypeDefinitionVO.class);	    	
 	    	//Boolean success = (Boolean)invokeOperation(targetEndpointAddress, "updateContentTypeDefinitions", "contentTypeDefinition", contentTypeDefinitionVOList.get(0), Boolean.class, "java");	    	
     	}
@@ -616,8 +620,9 @@ public class ViewDeploymentSynchronizeServersAction extends InfoGlueAbstractActi
     	//logger.info("*    UPDATING CATEGORIES    *");
     	//logger.info("*****************************");
     	
-    	List<String> deploymentServers = CmsPropertyHandler.getDeploymentServers();
-    	String deploymentServerUrl = deploymentServers.get(deploymentServerIndex);
+    	Map<String, DeploymentServerBean> deploymentServers = CmsPropertyHandler.getDeploymentServers();
+    	DeploymentServerBean deploymentServerBean = deploymentServers.get(deploymentServerName);
+    	String deploymentServerUrl = deploymentServerBean.getUrl();
     	
     	//logger.info("Fetching sync info from deploymentServerUrl:" + deploymentServerUrl);
     	
@@ -626,7 +631,7 @@ public class ViewDeploymentSynchronizeServersAction extends InfoGlueAbstractActi
     	
     	if(this.synchronizationMethod == null || this.synchronizationMethod.equalsIgnoreCase("pull"))
     	{
-	    	Object[] categoryVOArray = (Object[])invokeOperation(targetEndpointAddress, "getAllActiveCategories", "category", null, new Class[]{CategoryVO.class}, "infoglue");
+	    	Object[] categoryVOArray = (Object[])invokeOperation(targetEndpointAddress, "getAllActiveCategories", "category", null, new Class[]{CategoryVO.class}, "infoglue", deploymentServerBean.getUser());
 	    	List remoteCategoryVOList = Arrays.asList(categoryVOArray);
 		    Collections.sort(remoteCategoryVOList, new ReflectionComparator("name"));
 		    //logger.info("remoteCategoryVOList:" + remoteCategoryVOList.size());
@@ -651,7 +656,7 @@ public class ViewDeploymentSynchronizeServersAction extends InfoGlueAbstractActi
 	    	input.put("categoryVOList", allLocalCategories);
 	    	input.put("requestMap", requestMap);
 	    	
-	    	Boolean success = (Boolean)invokeOperation(targetEndpointAddress, "updateCategories", "category", input, new Class[]{Boolean.class}, "java", new Class[]{CategoryVO.class});	    	    		
+	    	Boolean success = (Boolean)invokeOperation(targetEndpointAddress, "updateCategories", "category", input, new Class[]{Boolean.class}, "java", new Class[]{CategoryVO.class}, deploymentServerBean.getUser());	    	    		
     	}
     	
 	    return doInput();
@@ -659,14 +664,15 @@ public class ViewDeploymentSynchronizeServersAction extends InfoGlueAbstractActi
 
     public String doUpdateWorkflows() throws Exception
     {
-    	List<String> deploymentServers = CmsPropertyHandler.getDeploymentServers();
-    	String deploymentServerUrl = deploymentServers.get(deploymentServerIndex);
+    	Map<String, DeploymentServerBean> deploymentServers = CmsPropertyHandler.getDeploymentServers();
+    	DeploymentServerBean deploymentServerBean = deploymentServers.get(deploymentServerName);
+    	String deploymentServerUrl = deploymentServerBean.getUrl();
     	
     	String targetEndpointAddress = deploymentServerUrl + "/services/RemoteDeploymentService";
     	
     	if(this.synchronizationMethod == null || this.synchronizationMethod.equalsIgnoreCase("pull"))
     	{
-	    	Object[] workflowDefinitionVOArray = (Object[])invokeOperation(targetEndpointAddress, "getWorkflowDefinitions", "workflowDefinition", null, new Class[]{WorkflowDefinitionVO.class}, "infoglue");
+	    	Object[] workflowDefinitionVOArray = (Object[])invokeOperation(targetEndpointAddress, "getWorkflowDefinitions", "workflowDefinition", null, new Class[]{WorkflowDefinitionVO.class}, "infoglue", deploymentServerBean.getUser());
 	    	List remoteWorkflowDefinitionVOList = Arrays.asList(workflowDefinitionVOArray);
 		    Collections.sort(remoteWorkflowDefinitionVOList, new ReflectionComparator("name"));
 	
@@ -705,7 +711,7 @@ public class ViewDeploymentSynchronizeServersAction extends InfoGlueAbstractActi
 	    	input.put("workflowDefinitionVOList", workflowDefinitionVOList);
 	    	input.put("requestMap", requestMap);
 	    	
-	    	Boolean success = (Boolean)invokeOperation(targetEndpointAddress, "updateWorkflows", "workflow", input, new Class[]{Boolean.class}, "java", new Class[]{WorkflowDefinitionVO.class});	    	    		
+	    	Boolean success = (Boolean)invokeOperation(targetEndpointAddress, "updateWorkflows", "workflow", input, new Class[]{Boolean.class}, "java", new Class[]{WorkflowDefinitionVO.class}, deploymentServerBean.getUser());	    	    		
     	}
     	
     	return doInput();
@@ -713,8 +719,9 @@ public class ViewDeploymentSynchronizeServersAction extends InfoGlueAbstractActi
 
     public String doUpdateComponents() throws Exception
     {
-    	List<String> deploymentServers = CmsPropertyHandler.getDeploymentServers();
-    	String deploymentServerUrl = deploymentServers.get(deploymentServerIndex);
+    	Map<String, DeploymentServerBean> deploymentServers = CmsPropertyHandler.getDeploymentServers();
+    	DeploymentServerBean deploymentServerBean = deploymentServers.get(deploymentServerName);
+    	String deploymentServerUrl = deploymentServerBean.getUrl();
     	
     	String targetEndpointAddress = deploymentServerUrl + "/services/RemoteDeploymentService";
     	//logger.info("targetEndpointAddress:" + targetEndpointAddress);
@@ -723,7 +730,7 @@ public class ViewDeploymentSynchronizeServersAction extends InfoGlueAbstractActi
 
     	if(this.synchronizationMethod == null || this.synchronizationMethod.equalsIgnoreCase("pull"))
     	{
-    		Object[] contentVOArray = (Object[])invokeOperation(targetEndpointAddress, "getComponents", "content", null, new Class[]{ContentVO.class, ContentVersionVO.class}, "infoglue");
+    		Object[] contentVOArray = (Object[])invokeOperation(targetEndpointAddress, "getComponents", "content", null, new Class[]{ContentVO.class, ContentVersionVO.class}, "infoglue", deploymentServerBean.getUser());
 	    	List remoteContentVOList = Arrays.asList(contentVOArray);
 		    Collections.sort(remoteContentVOList, new ReflectionComparator("name"));
 	
@@ -942,7 +949,7 @@ public class ViewDeploymentSynchronizeServersAction extends InfoGlueAbstractActi
 	    	input.put("deviatingComponents", deviatingComponents);
 	    	//input.put("requestMap", requestMap);
 	    	
-	    	Boolean success = (Boolean)invokeOperation(targetEndpointAddress, "updateComponents", "content", input, new Class[]{Boolean.class}, "java", new Class[]{ContentVO.class, ContentVersionVO.class});	    	    		
+	    	Boolean success = (Boolean)invokeOperation(targetEndpointAddress, "updateComponents", "content", input, new Class[]{Boolean.class}, "java", new Class[]{ContentVO.class, ContentVersionVO.class}, deploymentServerBean.getUser());	    	    		
     	}
     	
     	return doInput();
@@ -950,17 +957,17 @@ public class ViewDeploymentSynchronizeServersAction extends InfoGlueAbstractActi
 
     public String doExecute() throws Exception
     {
-    	List<String> deploymentServers = CmsPropertyHandler.getDeploymentServers();
-    	String deploymentServerUrl = deploymentServers.get(deploymentServerIndex);
+    	Map<String, DeploymentServerBean> deploymentServers = CmsPropertyHandler.getDeploymentServers();
+    	String deploymentServerUrl = deploymentServers.get(deploymentServerName).getUrl();
 
     	//logger.info("Synchronizing with deploymentServerUrl:" + deploymentServerUrl);
 
     	return "success";
     }
 
-	public void setDeploymentServerIndex(Integer deploymentServerIndex)
+	public void setDeploymentServerName(String deploymentServerName)
 	{
-		this.deploymentServerIndex = deploymentServerIndex;
+		this.deploymentServerName = deploymentServerName;
 	}
 
 	/*
@@ -1120,19 +1127,21 @@ public class ViewDeploymentSynchronizeServersAction extends InfoGlueAbstractActi
 	}
 	
 
-	protected Object invokeOperation(String endpointAddress, String operationName, String name, Object argument, Class returnType[], String nameSpace) throws JspException
+	protected Object invokeOperation(String endpointAddress, String operationName, String name, Object argument, Class returnType[], String nameSpace, String userName) throws JspException
     {
-		return invokeOperation(endpointAddress, operationName, name, argument, returnType, nameSpace, null);
+		return invokeOperation(endpointAddress, operationName, name, argument, returnType, nameSpace, null, userName);
     }
 	
-	protected Object invokeOperation(String endpointAddress, String operationName, String name, Object argument, Class[] returnType, String nameSpace, Class[] extraClassInfo) throws JspException
+	protected Object invokeOperation(String endpointAddress, String operationName, String name, Object argument, Class[] returnType, String nameSpace, Class[] extraClassInfo, String userName) throws JspException
     {
 		Object result = null;
 		
         try
         {
         	InfoGluePrincipal principal = this.getInfoGluePrincipal();
-
+        	if(userName != null && !userName.equals(""))
+        		principal = new InfoGluePrincipal(userName, userName, userName, userName, "", null, null, null, false, null);
+            
             final DynamicWebservice ws = new DynamicWebservice(principal);
 
             ws.setTargetEndpointAddress(endpointAddress);

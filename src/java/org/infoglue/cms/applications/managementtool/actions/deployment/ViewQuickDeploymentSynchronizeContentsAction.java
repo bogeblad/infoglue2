@@ -61,7 +61,8 @@ public class ViewQuickDeploymentSynchronizeContentsAction extends InfoGlueAbstra
 	
 	private Integer contentId;
 
-	private Integer deploymentServerIndex = null;
+	private String deploymentServerName = null;
+	private String password = null;
 	private String synchronizationMethod = "push";
 
 	private List<DeploymentCompareBean> deviatingContents = new ArrayList<DeploymentCompareBean>();
@@ -75,9 +76,10 @@ public class ViewQuickDeploymentSynchronizeContentsAction extends InfoGlueAbstra
     {
     	try
     	{
-	    	List<String> deploymentServers = CmsPropertyHandler.getDeploymentServers();
+    		Map<String, DeploymentServerBean> deploymentServers = CmsPropertyHandler.getDeploymentServers();
 	    	logger.info("deploymentServers:" + deploymentServers.size());
-	    	String deploymentServerUrl = deploymentServers.get(deploymentServerIndex);
+	    	DeploymentServerBean deploymentServerBean = deploymentServers.get(deploymentServerName);
+	    	String deploymentServerUrl = deploymentServerBean.getUrl();
 	    	logger.info("deploymentServerUrl:" + deploymentServerUrl);
 	    	
 	    	String targetEndpointAddress = deploymentServerUrl + "/services/RemoteDeploymentService";
@@ -85,11 +87,11 @@ public class ViewQuickDeploymentSynchronizeContentsAction extends InfoGlueAbstra
 
 	    	localRepositories = RepositoryController.getController().getRepositoryVOList();
 	    	
-	    	Object[] repositoryVOArray = (Object[])invokeOperation(targetEndpointAddress, "getAllRepositories", "repository", null, new Class[]{RepositoryVO.class}, "infoglue", new Class[]{RepositoryVO.class});
+	    	Object[] repositoryVOArray = (Object[])invokeOperation(targetEndpointAddress, "getAllRepositories", "repository", null, new Class[]{RepositoryVO.class}, "infoglue", new Class[]{RepositoryVO.class}, deploymentServerBean.getUser());
 	    	remoteRepositories = Arrays.asList(repositoryVOArray);
 	    	
 	    	//Getting deviatingComponents
-	    	Object[] contentVOArray = (Object[])invokeOperation(targetEndpointAddress, "getComponents", "content", null, new Class[]{ContentVO.class, ContentVersionVO.class}, "infoglue", new Class[]{ContentVO.class, ContentVersionVO.class});
+	    	Object[] contentVOArray = (Object[])invokeOperation(targetEndpointAddress, "getComponents", "content", null, new Class[]{ContentVO.class, ContentVersionVO.class}, "infoglue", new Class[]{ContentVO.class, ContentVersionVO.class}, deploymentServerBean.getUser());
 	    	List remoteContentVOList = Arrays.asList(contentVOArray);
 	    	//List components = ContentController.getContentController().getContentVOWithContentTypeDefinition("HTMLTemplate");
 	    	ContentVO localComponentContent = ContentController.getContentController().getContentVOWithId(this.contentId);
@@ -163,8 +165,9 @@ public class ViewQuickDeploymentSynchronizeContentsAction extends InfoGlueAbstra
 		try
 		{
 			
-    	List<String> deploymentServers = CmsPropertyHandler.getDeploymentServers();
-    	String deploymentServerUrl = deploymentServers.get(deploymentServerIndex);
+		Map<String, DeploymentServerBean> deploymentServers = CmsPropertyHandler.getDeploymentServers();
+		DeploymentServerBean deploymentServerBean = deploymentServers.get(deploymentServerName);
+		String deploymentServerUrl = deploymentServerBean.getUrl();
     	
     	String targetEndpointAddress = deploymentServerUrl + "/services/RemoteDeploymentService";
     	//logger.info("targetEndpointAddress:" + targetEndpointAddress);
@@ -244,7 +247,7 @@ public class ViewQuickDeploymentSynchronizeContentsAction extends InfoGlueAbstra
     	input.put("deviatingComponents", deviatingComponents);
     	//input.put("requestMap", requestMap);
     	
-    	Boolean success = (Boolean)invokeOperation(targetEndpointAddress, "updateComponents", "content", input, new Class[]{Boolean.class}, "java", new Class[]{ContentVO.class, ContentVersionVO.class});	    	    		
+    	Boolean success = (Boolean)invokeOperation(targetEndpointAddress, "updateComponents", "content", input, new Class[]{Boolean.class}, "java", new Class[]{ContentVO.class, ContentVersionVO.class}, deploymentServerBean.getUser());
     	logger.info("success:" + success);
 		}
 		catch (Throwable e) 
@@ -271,14 +274,24 @@ public class ViewQuickDeploymentSynchronizeContentsAction extends InfoGlueAbstra
 		this.contentId = contentId;
 	}
 
-	public void setDeploymentServerIndex(Integer deploymentServerIndex)
+	public void setDeploymentServerName(String deploymentServerName)
 	{
-		this.deploymentServerIndex = deploymentServerIndex;
+		this.deploymentServerName = deploymentServerName;
 	}
 	
-	public Integer getDeploymentServerIndex()
+	public String getDeploymentServerName()
 	{
-		return this.deploymentServerIndex;
+		return this.deploymentServerName;
+	}
+
+	public void setPassword(String password)
+	{
+		this.password = password;
+	}
+	
+	public String getPassword()
+	{
+		return this.password;
 	}
 
 	public List<DeploymentCompareBean> getDeviatingContents()
@@ -293,18 +306,20 @@ public class ViewQuickDeploymentSynchronizeContentsAction extends InfoGlueAbstra
 
 	protected Object invokeOperation(String endpointAddress, String operationName, String name, Object argument, Class returnType[], String nameSpace) throws JspException
     {
-		return invokeOperation(endpointAddress, operationName, name, argument, returnType, nameSpace, null);
+		return invokeOperation(endpointAddress, operationName, name, argument, returnType, nameSpace, null, null);
     }
 	
-	protected Object invokeOperation(String endpointAddress, String operationName, String name, Object argument, Class[] returnType, String nameSpace, Class[] extraClassInfo) throws JspException
+	protected Object invokeOperation(String endpointAddress, String operationName, String name, Object argument, Class[] returnType, String nameSpace, Class[] extraClassInfo, String userName) throws JspException
     {
 		Object result = null;
 		
         try
         {
         	InfoGluePrincipal principal = this.getInfoGluePrincipal();
-
-            final DynamicWebservice ws = new DynamicWebservice(principal);
+        	if(userName != null && !userName.equals(""))
+        		principal = new InfoGluePrincipal(userName, userName, userName, userName, "", null, null, null, false, null);
+            
+        	final DynamicWebservice ws = new DynamicWebservice(principal);
 
             ws.setTargetEndpointAddress(endpointAddress);
             ws.setOperationName(operationName);

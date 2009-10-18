@@ -24,7 +24,9 @@
 package org.infoglue.cms.applications.managementtool.actions.deployment;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
 import org.infoglue.cms.util.CmsPropertyHandler;
@@ -33,8 +35,8 @@ public class ViewDeploymentChooseServerAction extends InfoGlueAbstractAction
 {
 	private static final long serialVersionUID = 1L;
 		
-	private List deploymentServers = new ArrayList();
-	private Integer deploymentServerIndex = null;
+	private Map<String, DeploymentServerBean> deploymentServers = new HashMap<String, DeploymentServerBean>();
+	private String deploymentServerName = null;
 	private String synchronizationMethod = "pull";
 
 	//Variables used by the quick deploy feature
@@ -59,19 +61,19 @@ public class ViewDeploymentChooseServerAction extends InfoGlueAbstractAction
     	return "success";
     }
 
-	public List getDeploymentServers()
+	public Map<String, DeploymentServerBean> getDeploymentServers()
 	{
 		return deploymentServers;
 	}
 
-	public Integer getDeploymentServerIndex()
+	public String getDeploymentServerName()
 	{
-		return deploymentServerIndex;
+		return deploymentServerName;
 	}
 
-	public void setDeploymentServerIndex(Integer deploymentServerIndex)
+	public void setDeploymentServerName(String deploymentServerName)
 	{
-		this.deploymentServerIndex = deploymentServerIndex;
+		this.deploymentServerName = deploymentServerName;
 	}
 
 	public String getSynchronizationMethod()

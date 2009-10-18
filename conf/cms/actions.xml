@@ -1,4 +1,4 @@
-<!-- $Id: actions.xml,v 1.85 2009/10/08 21:40:26 mattias Exp $ -->
+<!-- $Id: actions.xml,v 1.86 2009/10/18 21:55:40 mattias Exp $ -->
 <actions>
 
 	<!-- MySettings -->
@@ -880,7 +880,9 @@
 	</action>
 	<action name="org.infoglue.cms.applications.contenttool.actions.CreateContentAction" alias="CreateContent">
 		<view name="input">/cms/contenttool/createContent.vm</view>
+		<view name="inputV3">/cms/contenttool/v3/createContent.vm</view>
 		<view name="success">ViewContent.action</view>
+		<view name="successV3">ViewContent!refreshAndRedirect.action</view>
 		<view name="bindingView">ViewContentHtmlTree!bindingView.action</view>
 		<view name="treeView">ViewContentHtmlTree.action</view>
 		<view name="error">/cms/contenttool/error.vm</view>
