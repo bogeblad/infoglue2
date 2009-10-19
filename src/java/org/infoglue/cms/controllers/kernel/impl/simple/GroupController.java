@@ -281,17 +281,18 @@ public class GroupController extends BaseController
 	 * @throws Bug
 	 */
 	
-	public List getGroupVOList(String userName)  throws SystemException, Bug
+	public List<GroupVO> getGroupVOList(String userName)  throws SystemException, Bug
 	{
-		List groupVOList = null;
+		List<GroupVO> groupVOList = null;
 		
 		Database db = CastorDatabaseService.getDatabase();
 		try
 		{
 			beginTransaction(db);
 			
-			SystemUser systemUser = SystemUserController.getController().getSystemUserWithName(userName, db);
-			groupVOList = toVOList(systemUser.getGroups());
+			//SystemUser systemUser = SystemUserController.getController().getSystemUserWithName(userName, db);
+			//groupVOList = toVOList(systemUser.getGroups());
+			groupVOList = getGroupVOList(userName, db);
 			
 			commitTransaction(db);
 		}
@@ -326,9 +327,9 @@ public class GroupController extends BaseController
 	 * 	Get the the groups for a user (very light)
 	 */
 	 
-	public Collection<GroupVO> getGroupVOList(String userName, Database db)  throws SystemException, Bug
+	public List<GroupVO> getGroupVOList(String userName, Database db)  throws SystemException, Bug
 	{
-		Collection<GroupVO> groupVOList = new ArrayList<GroupVO>();
+		List<GroupVO> groupVOList = new ArrayList<GroupVO>();
 		
         OQLQuery oql;
         try

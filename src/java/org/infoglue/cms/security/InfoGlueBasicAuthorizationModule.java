@@ -192,7 +192,7 @@ public class InfoGlueBasicAuthorizationModule extends BaseController implements 
 						}
 						*/
 		
-				    	Collection<GroupVO> groupVOList = GroupController.getController().getGroupVOList(userName, transactionObject);
+				    	Collection<GroupVO> groupVOList = GroupController.getController().getGroupVOList(userName, db);
 				    	if(logger.isInfoEnabled())
 				    		t.printElapsedTime("groupVOList took:");
 
@@ -231,7 +231,7 @@ public class InfoGlueBasicAuthorizationModule extends BaseController implements 
 				} 
 				catch (Exception e) 
 				{
-					logger.info("An error occurred trying to get SystemUser for " + userName + ":" + e);
+					logger.info("An error occurred trying to get SystemUser for " + userName + ":" + e.getMessage());
 					rollbackTransaction(db);
 					throw new SystemException(e.getMessage());
 				}
@@ -366,8 +366,8 @@ public class InfoGlueBasicAuthorizationModule extends BaseController implements 
 	
 	public List authorizeUser(String userName) throws Exception
 	{
-		List roles = new ArrayList();
-		List groups = new ArrayList();
+		List<InfoGlueRole> roles = new ArrayList<InfoGlueRole>();
+		List<InfoGlueGroup> groups = new ArrayList<InfoGlueGroup>();
 		
 		String administratorUserName = CmsPropertyHandler.getAdministratorUserName();
 		
@@ -377,11 +377,11 @@ public class InfoGlueBasicAuthorizationModule extends BaseController implements 
 		
 		if(transactionObject == null)
 		{
-			List roleVOList = RoleController.getController().getRoleVOList(userName);
-			Iterator roleVOListIterator = roleVOList.iterator();
+			List<RoleVO> roleVOList = RoleController.getController().getRoleVOList(userName);
+			Iterator<RoleVO> roleVOListIterator = roleVOList.iterator();
 			while(roleVOListIterator.hasNext())
 			{
-				RoleVO roleVO = (RoleVO)roleVOListIterator.next();
+				RoleVO roleVO = roleVOListIterator.next();
 			    if(logger.isInfoEnabled())
 			    	logger.info("Adding role:" + roleVO.getRoleName());
 
@@ -389,11 +389,11 @@ public class InfoGlueBasicAuthorizationModule extends BaseController implements 
 				roles.add(infoGlueRole);
 			}
 	
-			List groupVOList = GroupController.getController().getGroupVOList(userName);
-			Iterator groupVOListIterator = groupVOList.iterator();
+			List<GroupVO> groupVOList = GroupController.getController().getGroupVOList(userName);
+			Iterator<GroupVO> groupVOListIterator = groupVOList.iterator();
 			while(groupVOListIterator.hasNext())
 			{
-			    GroupVO groupVO = (GroupVO)groupVOListIterator.next();
+			    GroupVO groupVO = groupVOListIterator.next();
 			    if(logger.isInfoEnabled())
 			    	logger.info("Adding group:" + groupVO.getGroupName());
 			    
@@ -403,6 +403,32 @@ public class InfoGlueBasicAuthorizationModule extends BaseController implements 
 		}
 		else
 		{
+			List<RoleVO> roleList = RoleController.getController().getRoleVOList(userName, transactionObject);
+			Iterator<RoleVO> roleListIterator = roleList.iterator();
+			while(roleListIterator.hasNext())
+			{
+				RoleVO role = roleListIterator.next();
+				if(logger.isInfoEnabled())
+			    	logger.info("Adding role:" + role.getRoleName());
+
+				InfoGlueRole infoGlueRole = new InfoGlueRole(role.getRoleName(), role.getDescription(), this);
+				roles.add(infoGlueRole);
+			}
+	
+			List<GroupVO> groupList = GroupController.getController().getGroupVOList(userName, transactionObject);
+			Iterator<GroupVO> groupListIterator = groupList.iterator();
+			while(groupListIterator.hasNext())
+			{
+				GroupVO group = groupListIterator.next();
+				if(logger.isInfoEnabled())
+			    	logger.info("Adding group:" + group.getGroupName());
+
+				InfoGlueGroup infoGlueGroup = new InfoGlueGroup(group.getGroupName(), group.getDescription(), this);
+				groups.add(infoGlueGroup);
+			}
+
+
+			/*
 			Collection roleList = RoleController.getController().getRoleList(userName, transactionObject);
 			Iterator roleListIterator = roleList.iterator();
 			while(roleListIterator.hasNext())
@@ -426,6 +452,7 @@ public class InfoGlueBasicAuthorizationModule extends BaseController implements 
 			    InfoGlueGroup infoGlueGroup = new InfoGlueGroup(group.getGroupName(), group.getDescription(), this);
 				groups.add(infoGlueGroup);
 			}
+			*/
 		}
 		
 		return groups;

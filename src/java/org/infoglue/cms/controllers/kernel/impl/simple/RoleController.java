@@ -269,18 +269,19 @@ public class RoleController extends BaseController
 	 * @throws Bug
 	 */
 	
-	public List getRoleVOList(String userName)  throws SystemException, Bug
+	public List<RoleVO> getRoleVOList(String userName) throws SystemException, Bug
 	{
-		List roleVOList = null;
+		List<RoleVO> roleVOList = null;
 		
 		Database db = CastorDatabaseService.getDatabase();
 		try
 		{
 			beginTransaction(db);
 			
-			SystemUser systemUser = SystemUserController.getController().getSystemUserWithName(userName, db);
-			roleVOList = toVOList(systemUser.getRoles());
-			
+			//SystemUser systemUser = SystemUserController.getController().getSystemUserWithName(userName, db);
+			//roleVOList = toVOList(systemUser.getRoles());
+			roleVOList = getRoleVOList(userName, db);
+				
 			commitTransaction(db);
 		}
 		catch(Exception e)
@@ -314,9 +315,9 @@ public class RoleController extends BaseController
 	 * 	Get the the roles for a 
 	 */
 	 
-	public Collection<RoleVO> getRoleVOList(String userName, Database db)  throws SystemException, Bug
+	public List<RoleVO> getRoleVOList(String userName, Database db)  throws SystemException, Bug
 	{
-		Collection<RoleVO> roleVOList = new ArrayList<RoleVO>();
+		List<RoleVO> roleVOList = new ArrayList<RoleVO>();
 		
         OQLQuery oql;
         try
