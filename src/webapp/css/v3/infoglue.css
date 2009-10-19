@@ -417,6 +417,7 @@ img.scaledbordered {
 .publishPages {background:url(../../images/v3/publishPageIcon.gif) no-repeat left center; background-position: 0px 2px;}
 .pageCover {background:url(../../images/v3/pageCoverIcon.png) no-repeat left center; background-position: 0px 2px;}
 .logout {background:url(../../images/v3/exit.png) no-repeat left center; background-position: 0px 2px;}
+.accessRights {background:url(../../images/v3/accessRightIcon.gif) no-repeat left center; background-position: 0px 2px;}
 
 .save, .saveAndExit, .cancelIcon, .close, .help {
 	padding-left:28px;

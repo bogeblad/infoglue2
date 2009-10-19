@@ -167,7 +167,7 @@
 		<div class="tab" id="contentTypeDefinitions" style="display: block;">
 
 		<form name="contentTypesForm" action="ViewDeploymentSynchronizeServers!updateContentTypes.action" method="post">
-			<input type="hidden" name="deploymentServerIndex" value="$deploymentServerIndex"/>
+			<input type="hidden" name="deploymentServerName" value="$deploymentServerName"/>
 			<input type="hidden" name="synchronizationMethod" value="$synchronizationMethod"/>		
 		
 			<h3>Content types that deviates</h3>
@@ -304,7 +304,7 @@
 		<div class="tab" id="categories">
 		
 			<form name="categoriesForm" action="ViewDeploymentSynchronizeServers!updateCategories.action" method="post">
-				<input type="hidden" name="deploymentServerIndex" value="$deploymentServerIndex"/>
+				<input type="hidden" name="deploymentServerName" value="$deploymentServerName"/>
 				<input type="hidden" name="synchronizationMethod" value="$synchronizationMethod"/>		
 			
 				<table cellpadding="0" cellspacing="0" border="0" width="100%">
@@ -355,7 +355,7 @@
 	#if($synchronizeWorkflows)	
 		<div class="tab" id="workflows">
 			<form name="workflowsForm" action="ViewDeploymentSynchronizeServers!updateWorkflows.action" method="post">
-				<input type="hidden" name="deploymentServerIndex" value="$deploymentServerIndex"/>
+				<input type="hidden" name="deploymentServerName" value="$deploymentServerName"/>
 				<input type="hidden" name="synchronizationMethod" value="$synchronizationMethod"/>		
 			
 				<table cellpadding="0" cellspacing="0" border="0" width="100%">
@@ -462,7 +462,7 @@
 	#if($synchronizeComponents)
 		<div class="tab" id="components">
 			<form name="contentsForm" action="ViewDeploymentSynchronizeServers!updateComponents.action" method="post">
-				<input type="hidden" name="deploymentServerIndex" value="$deploymentServerIndex"/>
+				<input type="hidden" name="deploymentServerName" value="$deploymentServerName"/>
 				<input type="hidden" name="synchronizationMethod" value="$synchronizationMethod"/>		
 			
 				<table cellpadding="0" cellspacing="0" border="0" width="100%">

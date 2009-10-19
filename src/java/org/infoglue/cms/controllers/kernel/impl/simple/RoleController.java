@@ -25,13 +25,17 @@ package org.infoglue.cms.controllers.kernel.impl.simple;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.log4j.Category;
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
+import org.exolab.castor.jdo.OQLQuery;
+import org.exolab.castor.jdo.QueryResults;
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
-import org.infoglue.cms.entities.management.Group;
 import org.infoglue.cms.entities.management.Role;
 import org.infoglue.cms.entities.management.RoleVO;
 import org.infoglue.cms.entities.management.SystemUser;
@@ -265,18 +269,19 @@ public class RoleController extends BaseController
 	 * @throws Bug
 	 */
 	
-	public List getRoleVOList(String userName)  throws SystemException, Bug
+	public List<RoleVO> getRoleVOList(String userName) throws SystemException, Bug
 	{
-		List roleVOList = null;
+		List<RoleVO> roleVOList = null;
 		
 		Database db = CastorDatabaseService.getDatabase();
 		try
 		{
 			beginTransaction(db);
 			
-			SystemUser systemUser = SystemUserController.getController().getSystemUserWithName(userName, db);
-			roleVOList = toVOList(systemUser.getRoles());
-			
+			//SystemUser systemUser = SystemUserController.getController().getSystemUserWithName(userName, db);
+			//roleVOList = toVOList(systemUser.getRoles());
+			roleVOList = getRoleVOList(userName, db);
+				
 			commitTransaction(db);
 		}
 		catch(Exception e)
@@ -306,6 +311,40 @@ public class RoleController extends BaseController
 		return roleList;
 	}
 
+	/**
+	 * 	Get the the roles for a 
+	 */
+	 
+	public List<RoleVO> getRoleVOList(String userName, Database db)  throws SystemException, Bug
+	{
+		List<RoleVO> roleVOList = new ArrayList<RoleVO>();
+		
+        OQLQuery oql;
+        try
+        {										
+        	oql = db.getOQLQuery( "CALL SQL SELECT r.roleName, r.description FROM cmRole r, cmSystemUserRole sur WHERE r.roleName = sur.roleName AND sur.userName = $1 AS org.infoglue.cms.entities.management.impl.simple.SmallRoleImpl");
+        	oql.bind(userName);
+        	
+        	QueryResults results = oql.execute(Database.ReadOnly);
+			
+			while(results.hasMore()) 
+            {
+            	Role role = (Role)results.next();
+            	roleVOList.add(role.getValueObject());
+            }
+			
+			results.close();
+			oql.close();
+        }
+        catch(Exception e)
+        {
+            throw new SystemException("An error occurred when we tried to fetch roleVOList for " + userName + " Reason:" + e.getMessage(), e);    
+        }    
+
+		return roleVOList;		
+	}
+
+	
     public void addUser(String roleName, String userName) throws ConstraintException, SystemException
     {
         Database db = CastorDatabaseService.getDatabase();

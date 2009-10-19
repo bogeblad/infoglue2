@@ -133,12 +133,26 @@ public class LanguageDeliveryController extends BaseDeliveryController
 		    list = new ArrayList();
 		    
 	        Repository repository = (Repository) getObjectWithId(RepositoryImpl.class, repositoryId, db);
+	        if(logger.isInfoEnabled())
+	        	logger.info("repository:" + repository);
+	        
 	        if (repository != null) 
 	        {
-	            for (Iterator i = repository.getRepositoryLanguages().iterator();i.hasNext();) 
+	        	if(logger.isInfoEnabled())
+		        	logger.info("repository:" + repository);
+		        
+	        	Collection repositoryLanguages = repository.getRepositoryLanguages();
+	        	if(logger.isInfoEnabled())
+		        	logger.info("repositoryLanguages:" + repositoryLanguages.size());
+	        	
+	        	Iterator repositoryLanguagesIterator = repositoryLanguages.iterator();
+	        	while (repositoryLanguagesIterator.hasNext()) 
 	            {
-	                RepositoryLanguage repositoryLanguage = (RepositoryLanguage) i.next();
-	                Language language = repositoryLanguage.getLanguage();
+	                RepositoryLanguage repositoryLanguage = (RepositoryLanguage) repositoryLanguagesIterator.next();
+		        	if(logger.isInfoEnabled())
+			        	logger.info("repositoryLanguage:" + repositoryLanguage);
+
+		        	Language language = repositoryLanguage.getLanguage();
 	                if (language != null)
 	                    list.add(language.getValueObject());
 	            }
@@ -659,6 +673,7 @@ public class LanguageDeliveryController extends BaseDeliveryController
 			Collection languages = repository.getRepositoryLanguages();
 	    	
 			Iterator languageIterator = languages.iterator();
+			logger.info("languages on :" + siteNode.getId() + ":" + repository.getId() + "=" + languages.size());
 			while(languageIterator.hasNext())
 			{
 				RepositoryLanguage repositoryLanguage = (RepositoryLanguage)languageIterator.next();

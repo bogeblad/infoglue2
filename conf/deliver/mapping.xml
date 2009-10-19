@@ -133,6 +133,32 @@
     </field>
   </class>
 
+<!--  Mapping for SmallRole  -->
+  <class name="org.infoglue.cms.entities.management.impl.simple.SmallRoleImpl" identity="roleName">
+    <description>SmallRole</description>
+    <cache-type type="none"/>
+    <map-to table="cmRole"/>
+    <field name="roleName" type="java.lang.String">
+      <sql name="roleName" type="varchar" dirty="check" />
+    </field>
+    <field name="description" type="java.lang.String">
+      <sql name="description" type="varchar" dirty="check" />
+    </field>
+  </class>
+
+  <!--  Mapping for SmallGroup  -->
+  <class name="org.infoglue.cms.entities.management.impl.simple.SmallGroupImpl" identity="groupName">
+    <description>SmallGroup</description>
+    <cache-type type="none"/>
+    <map-to table="cmGroup"/>
+    <field name="groupName" type="java.lang.String">
+      <sql name="groupName" type="varchar" dirty="check" />
+    </field>
+    <field name="description" type="java.lang.String">
+      <sql name="description" type="varchar" dirty="check" />
+    </field>
+  </class>
+
   <!--  Mapping for RoleProperties  -->
   <class name="org.infoglue.cms.entities.management.impl.simple.RolePropertiesImpl" identity="rolePropertiesId" key-generator="IDENTITY">
     <description>RoleProperties</description>

@@ -499,7 +499,6 @@ public class ToolbarController
 		Integer contentId = new Integer(request.getParameter("contentId"));
 		ContentVO contentVO = ContentController.getContentController().getContentVOWithId(contentId);
 		
-		System.out.println("***************************************");
 		ToolbarButton createButton = new ToolbarButton("",
 				  getLocalizedString(locale, "tool.contenttool.toolbarV3.createContentLabel"), 
 				  getLocalizedString(locale, "tool.contenttool.toolbarV3.createContentTitle"),
@@ -659,41 +658,23 @@ public class ToolbarController
 				  getLocalizedString(locale, "tool.contenttool.toolbarV3.deleteContentConfirmationLabel"),
 				  "inlineDiv"));
 
-		buttons.add(new ToolbarButton("",
-				  getLocalizedString(locale, "tool.contenttool.toolbarV3.editContentMetaInfoLabel"), 
-				  getLocalizedString(locale, "tool.contenttool.toolbarV3.editContentMetaInfoTitle"),
-				  "" + "&returnAddress=ViewInlineOperationMessages.action&originalAddress=refreshParent",
-				  "",
-				  "delete"));
-
-		buttons.add(new ToolbarButton("",
-				  getLocalizedString(locale, "tool.contenttool.toolbarV3.ContentCoverLabel"), 
-				  getLocalizedString(locale, "tool.contenttool.toolbarV3.ContentCoverTitle"),
-				  "" + "&returnAddress=ViewInlineOperationMessages.action&originalAddress=refreshParent",
-				  "",
-				  "pageCover"));
-
-		buttons.add(new ToolbarButton("",
-				  getLocalizedString(locale, "tool.contenttool.toolbarV3.previewContentLabel"), 
-				  getLocalizedString(locale, "tool.contenttool.toolbarV3.previewContentTitle"),
-				  "" + "&returnAddress=ViewInlineOperationMessages.action&originalAddress=refreshParent",
-				  "",
-				  "preview"));
-
-		buttons.add(new ToolbarButton("",
+		ToolbarButton publishButton = new ToolbarButton("",
 				  getLocalizedString(locale, "tool.contenttool.toolbarV3.publishContentLabel"), 
 				  getLocalizedString(locale, "tool.contenttool.toolbarV3.publishContentTitle"),
 				  "" + "&returnAddress=ViewInlineOperationMessages.action&originalAddress=refreshParent",
 				  "",
-				  "publish"));
+				  "publish");
 
-		buttons.add(new ToolbarButton("",
+		ToolbarButton submitToPublishButton = new ToolbarButton("",
 				  getLocalizedString(locale, "tool.contenttool.toolbarV3.publishContentsLabel"), 
 				  getLocalizedString(locale, "tool.contenttool.toolbarV3.publishContentsTitle"),
 				  "" + "&returnAddress=ViewInlineOperationMessages.action&originalAddress=refreshParent",
 				  "",
-				  "submitToPublish"));
+				  "submitToPublish");
 
+		publishButton.getSubButtons().add(submitToPublishButton);
+		buttons.add(publishButton);
+				
 		return buttons;
 	}
 	
@@ -1192,8 +1173,9 @@ public class ToolbarController
 				  getLocalizedString(locale, "tool.contenttool.accessRights.header"), 
 				  getLocalizedString(locale, "tool.contenttool.accessRights.header"),
 				  "ViewAccessRights.action?interceptionPointCategory=Repository&extraParameters=" + request.getParameter("repositoryId") + "&returnAddress=ViewRepository.action?repositoryId=" + request.getParameter("repositoryId"),
-				  "images/v3/accessRightsIcon.gif",
-				  "accessRights"));
+				  "images/v3/accessRightIcon.gif",
+				  "accessRights",
+				  "managementWorkIframe"));
 		/*
 		buttons.add(new ImageButton("Confirm.action?header=tool.managementtool.deleteRepository.header&yesDestination=" + URLEncoder.encode("DeleteRepository.action?repositoryId=" + this.repositoryId, "UTF-8") + "&noDestination=" + URLEncoder.encode("ViewListRepository.action?title=Repositories", "UTF-8") + "&message=tool.managementtool.deleteRepository.text&extraParameters=" + this.name, getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.deleteRepository"), "tool.managementtool.deleteRepository.header"));
 		buttons.add(new ImageButton(true, "javascript:openPopup('ExportRepository!input.action?repositoryId=" + this.repositoryId + "', 'Export', 'width=600,height=500,resizable=no,scrollbars=yes');", getLocalizedString(getSession().getLocale(), "images.managementtool.buttons.exportRepository"), getLocalizedString(getSession().getLocale(), "tool.managementtool.exportRepository.header")));	
