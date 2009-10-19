@@ -30,6 +30,8 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
+import org.exolab.castor.jdo.OQLQuery;
+import org.exolab.castor.jdo.QueryResults;
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.entities.management.Group;
 import org.infoglue.cms.entities.management.GroupVO;
@@ -318,6 +320,39 @@ public class GroupController extends BaseController
 		groupList = systemUser.getGroups();
 		
 		return groupList;
+	}
+
+	/**
+	 * 	Get the the groups for a user (very light)
+	 */
+	 
+	public Collection<GroupVO> getGroupVOList(String userName, Database db)  throws SystemException, Bug
+	{
+		Collection<GroupVO> groupVOList = new ArrayList<GroupVO>();
+		
+        OQLQuery oql;
+        try
+        {										
+        	oql = db.getOQLQuery( "CALL SQL SELECT r.groupName, r.description FROM cmGroup r, cmSystemUserGroup sur WHERE r.groupName = sur.groupName AND sur.userName = $1 AS org.infoglue.cms.entities.management.impl.simple.SmallGroupImpl");
+        	oql.bind(userName);
+        	
+        	QueryResults results = oql.execute(Database.ReadOnly);
+			
+			while(results.hasMore()) 
+            {
+            	Group group = (Group)results.next();
+            	groupVOList.add(group.getValueObject());
+            }
+			
+			results.close();
+			oql.close();
+        }
+        catch(Exception e)
+        {
+            throw new SystemException("An error occurred when we tried to fetch groupVOList for " + userName + " Reason:" + e.getMessage(), e);    
+        }    
+
+		return groupVOList;		
 	}
 
     public void addUser(String groupName, String userName) throws ConstraintException, SystemException

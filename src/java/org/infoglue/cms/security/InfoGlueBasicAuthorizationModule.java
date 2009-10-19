@@ -26,10 +26,13 @@ package org.infoglue.cms.security;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 
+import org.apache.log4j.Category;
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.controllers.kernel.impl.simple.BaseController;
@@ -46,6 +49,7 @@ import org.infoglue.cms.entities.management.SystemUser;
 import org.infoglue.cms.entities.management.SystemUserVO;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.util.CmsPropertyHandler;
+import org.infoglue.deliver.util.Timer;
 
 /**
  * @author Mattias Bogeblad
@@ -91,7 +95,29 @@ public class InfoGlueBasicAuthorizationModule extends BaseController implements 
 	 * Gets an authorized InfoGluePrincipal. If the user has logged in with the root-account
 	 * we immediately return - otherwise we populate it.
 	 */
-	
+	private Category getCategory(String className)
+    {
+        Enumeration enumeration = Logger.getCurrentCategories();
+        while(enumeration.hasMoreElements())
+        {
+            Category category = (Category)enumeration.nextElement();
+            if(category.getName().equalsIgnoreCase(className))
+                return category;
+        }
+        
+        Category category = Category.getInstance(className);
+       
+        return category;
+    }
+	private void setDebug(Level level, String className)
+	{
+		Category category = getCategory(className);
+		if(category != null)
+		{
+			category.setLevel(level);
+		}
+	}
+
 	public InfoGluePrincipal getAuthorizedInfoGluePrincipal(String userName) throws Exception
 	{
 	    if(userName == null || userName.equals(""))
@@ -111,6 +137,8 @@ public class InfoGlueBasicAuthorizationModule extends BaseController implements 
 	    
 		InfoGluePrincipal infogluePrincipal = null;
 		
+		Timer t = new Timer();
+		
 		String administratorUserName = CmsPropertyHandler.getAdministratorUserName();
 		String administratorEmail 	 = CmsPropertyHandler.getAdministratorEmail();
 		
@@ -121,8 +149,8 @@ public class InfoGlueBasicAuthorizationModule extends BaseController implements 
 		}
 		else
 		{	
-			List roles = new ArrayList();
-			List groups = new ArrayList();
+			List<InfoGlueRole> roles = new ArrayList<InfoGlueRole>();
+			List<InfoGlueGroup> groups = new ArrayList<InfoGlueGroup>();
 			
 			if(transactionObject == null)
 			{
@@ -133,8 +161,26 @@ public class InfoGlueBasicAuthorizationModule extends BaseController implements 
 					beginTransaction(db);
 					
 					SystemUser systemUser = SystemUserController.getController().getReadOnlySystemUserWithName(userName, db);
+					if(logger.isInfoEnabled())
+						t.printElapsedTime("systemUser AAA took:");
+					//setDebug(Level.DEBUG, "org.exolab.castor.jdo");
 					if(systemUser != null)
 					{
+						Collection<RoleVO> roleVOList = RoleController.getController().getRoleVOList(userName, db);
+				    	if(logger.isInfoEnabled())
+				    		t.printElapsedTime("getRoleVOList took:");
+
+						Iterator<RoleVO> roleVOListIterator = roleVOList.iterator();
+						while(roleVOListIterator.hasNext())
+						{
+							RoleVO roleVO = roleVOListIterator.next();
+							if(logger.isInfoEnabled())
+								logger.info("Adding role:" + roleVO.getRoleName());
+							InfoGlueRole infoGlueRole = new InfoGlueRole(roleVO.getRoleName(), roleVO.getDescription(), this);
+							roles.add(infoGlueRole);
+						}
+						
+						/*
 						Iterator roleListIterator = systemUser.getRoles().iterator();
 						while(roleListIterator.hasNext())
 						{
@@ -144,7 +190,23 @@ public class InfoGlueBasicAuthorizationModule extends BaseController implements 
 						    InfoGlueRole infoGlueRole = new InfoGlueRole(role.getRoleName(), role.getDescription(), this);
 							roles.add(infoGlueRole);
 						}
+						*/
 		
+				    	Collection<GroupVO> groupVOList = GroupController.getController().getGroupVOList(userName, transactionObject);
+				    	if(logger.isInfoEnabled())
+				    		t.printElapsedTime("groupVOList took:");
+
+						Iterator<GroupVO> groupVOListIterator = groupVOList.iterator();
+						while(groupVOListIterator.hasNext())
+						{
+							GroupVO groupVO = groupVOListIterator.next();
+							if(logger.isInfoEnabled())
+								logger.info("Adding group:" + groupVO.getGroupName());
+							InfoGlueGroup infoGlueGroup = new InfoGlueGroup(groupVO.getGroupName(), groupVO.getDescription(), this);
+							groups.add(infoGlueGroup);
+						}
+						
+						/*
 						Iterator groupListIterator = systemUser.getGroups().iterator();
 						while(groupListIterator.hasNext())
 						{
@@ -154,7 +216,8 @@ public class InfoGlueBasicAuthorizationModule extends BaseController implements 
 						    InfoGlueGroup infoGlueGroup = new InfoGlueGroup(group.getGroupName(), group.getDescription(), this);
 							groups.add(infoGlueGroup);
 						}
-		
+						*/
+						
 						infogluePrincipal = new InfoGluePrincipal(userName, systemUser.getFirstName(), systemUser.getLastName(), systemUser.getEmail(), roles, groups, isAdministrator, this);
 					}
 					else
@@ -162,6 +225,7 @@ public class InfoGlueBasicAuthorizationModule extends BaseController implements 
 					    logger.warn("Could not find user with userName '" + userName + "' - fix your template logic.");
 					    infogluePrincipal = null;
 					}
+					//setDebug(Level.ERROR, "org.exolab.castor.jdo");
 					
 					commitTransaction(db);
 				} 
@@ -175,9 +239,26 @@ public class InfoGlueBasicAuthorizationModule extends BaseController implements 
 			else
 			{
 			    SystemUser systemUser = SystemUserController.getController().getReadOnlySystemUserWithName(userName, transactionObject);
+			    if(logger.isInfoEnabled())
+			    	t.printElapsedTime("systemUser BBB took:");
 			    
 			    if(systemUser != null)
 			    {
+			    	Collection<RoleVO> roleVOList = RoleController.getController().getRoleVOList(userName, transactionObject);
+			    	if(logger.isInfoEnabled())
+			    		t.printElapsedTime("getRoleVOList took:");
+
+					Iterator<RoleVO> roleVOListIterator = roleVOList.iterator();
+					while(roleVOListIterator.hasNext())
+					{
+						RoleVO roleVO = roleVOListIterator.next();
+						if(logger.isInfoEnabled())
+							logger.info("Adding role:" + roleVO.getRoleName());
+						InfoGlueRole infoGlueRole = new InfoGlueRole(roleVO.getRoleName(), roleVO.getDescription(), this);
+						roles.add(infoGlueRole);
+					}
+					
+					/*
 				    Iterator roleListIterator = systemUser.getRoles().iterator();
 					while(roleListIterator.hasNext())
 					{
@@ -187,7 +268,23 @@ public class InfoGlueBasicAuthorizationModule extends BaseController implements 
 						InfoGlueRole infoGlueRole = new InfoGlueRole(role.getRoleName(), role.getDescription(), this);
 						roles.add(infoGlueRole);
 					}
-	
+			    	*/
+
+			    	Collection<GroupVO> groupVOList = GroupController.getController().getGroupVOList(userName, transactionObject);
+			    	if(logger.isInfoEnabled())
+			    		t.printElapsedTime("groupVOList took:");
+
+					Iterator<GroupVO> groupVOListIterator = groupVOList.iterator();
+					while(groupVOListIterator.hasNext())
+					{
+						GroupVO groupVO = (GroupVO)groupVOListIterator.next();
+						if(logger.isInfoEnabled())
+							logger.info("Adding group:" + groupVO.getGroupName());
+						InfoGlueGroup infoGlueGroup = new InfoGlueGroup(groupVO.getGroupName(), groupVO.getDescription(), this);
+						groups.add(infoGlueGroup);
+					}
+					
+					/*
 					Iterator groupListIterator = systemUser.getGroups().iterator();
 					while(groupListIterator.hasNext())
 					{
@@ -197,7 +294,8 @@ public class InfoGlueBasicAuthorizationModule extends BaseController implements 
 						InfoGlueGroup infoGlueGroup = new InfoGlueGroup(group.getGroupName(), group.getDescription(), this);
 						groups.add(infoGlueGroup);
 					}
-	
+					*/
+					
 					infogluePrincipal = new InfoGluePrincipal(userName, systemUser.getFirstName(), systemUser.getLastName(), systemUser.getEmail(), roles, groups, isAdministrator, this);
 			    }
 				else
@@ -205,8 +303,11 @@ public class InfoGlueBasicAuthorizationModule extends BaseController implements 
 				    logger.warn("Could not find user with userName '" + userName + "' - fix your template logic.");
 				    infogluePrincipal = null;
 				}
+			    //setDebug(Level.ERROR, "org.exolab.castor.jdo");
 			}
 		}
+		
+		t.printElapsedTime("systemUser total took:");
 		
 		return infogluePrincipal;
 	}
