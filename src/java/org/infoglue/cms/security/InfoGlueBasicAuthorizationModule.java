@@ -307,7 +307,8 @@ public class InfoGlueBasicAuthorizationModule extends BaseController implements 
 			}
 		}
 		
-		t.printElapsedTime("systemUser total took:");
+		if(logger.isInfoEnabled())
+			t.printElapsedTime("systemUser total took:");
 		
 		return infogluePrincipal;
 	}

@@ -1974,7 +1974,7 @@ $ui.getString("entity.${fieldNameKey}.label")<br/>
 			#else
 				<div id="buttons$velocityCount" style="height: 26px; overflow: hidden; display: block; float: left;">
 				<div id="initialButton" style="display: block; float: left;">
-				<a class="igToolbarButton igToolbarHeaderButton" style="margin-top: 0px; margin-bottom: 0px;" href="#" id="button$velocityCount" name="button$velocityCount" title="$button.title"><span class='igToolbarButtonOuterSpan igToolbarHeaderButton'><span class='$button.cssClass' title="$button.title">$button.text</span></span></a>
+				<a class="igToolbarButton igToolbarHeaderButton" style="amargin-top: 0px; margin-bottom: 0px;" href="#" id="button$velocityCount" name="button$velocityCount" title="$button.title"><span class='igToolbarButtonOuterSpan igToolbarHeaderButton'><span class='$button.cssClass' title="$button.title">$button.text</span></span></a>
 				</div>
 				<div style="clear:both;"></div>
 				#set($height = 26)
@@ -2118,9 +2118,12 @@ $ui.getString("entity.${fieldNameKey}.label")<br/>
 				-->
 				</script>
 			#else
+				#if($velocityCount > 1)
+					<img class="divider" src="images/trans.gif" width="2" height="20"/>
+				#end
 				<div id="buttons$velocityCount" style="height: 26px; overflow: hidden; display: block; float: left; border: 0px solid red;">
-					<div id="initialButton" style="display: block; float: left; background: transparent url(images/v3/menu-button-arrow.png) no-repeat; background-position: 0px 16px">
-						<a class="igToolbarButton igToolbarHeaderButton" style="margin-top: 0px; margin-bottom: 0px;" href="#" id="button$velocityCount" name="button$velocityCount" title="$button.title"><span class='igToolbarButtonOuterSpan igToolbarHeaderButton'><span class='$button.cssClass' title="$button.title">$button.text</span></span></a>
+					<div id="initialButton">
+						<a class="igToolbarButton igToolbarHeaderButton" style="amargin-top: 0px; margin-bottom: 0px;" href="#" id="button$velocityCount" name="button$velocityCount" title="$button.title"><span class='igToolbarButtonOuterSpan igToolbarHeaderButton'><span class='$button.cssClass' title="$button.title">$button.text</span></span></a>
 					</div>
 					<div style="clear:both;"></div>
 					<div style="float: left; display: block; background-color: #addaf9; border: 1px solid #607583; border-top: 0px;">

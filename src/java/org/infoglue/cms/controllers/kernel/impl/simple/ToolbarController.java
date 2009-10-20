@@ -518,18 +518,26 @@ public class ToolbarController
 				  "inlineDiv");
 
 		createButton.getSubButtons().add(createFolderButton);
-		
 		buttons.add(createButton);
 
-
-		buttons.add(new ToolbarButton("",
+		ToolbarButton moveButton = new ToolbarButton("",
 				  getLocalizedString(locale, "tool.contenttool.toolbarV3.moveContentLabel"), 
 				  getLocalizedString(locale, "tool.contenttool.toolbarV3.moveContentTitle"),
 				  "MoveContent!inputV3.action?contentId=" + contentId + "&repositoryId=" + contentVO.getRepositoryId() + "&hideLeafs=true&returnAddress=ViewInlineOperationMessages.action&originalAddress=refreshParent",
 				  "",
-				  "moveContent"));
+				  "moveContent");
 
-		buttons.add(new ToolbarButton("",
+		ToolbarButton moveMultipleButton = new ToolbarButton("",
+				  getLocalizedString(locale, "tool.contenttool.toolbarV3.moveMultipleContentLabel"), 
+				  getLocalizedString(locale, "tool.contenttool.toolbarV3.moveMultipleContentTitle"),
+				  "MoveMultipleContent!inputV3.action?contentId=" + contentId + "&repositoryId=" + contentVO.getRepositoryId() + "&returnAddress=ViewInlineOperationMessages.action&originalAddress=refreshParent",
+				  "",
+				  "moveContent");
+		
+		moveButton.getSubButtons().add(moveMultipleButton);
+		buttons.add(moveButton);
+
+		ToolbarButton deleteButton = new ToolbarButton("",
 				  getLocalizedString(locale, "tool.contenttool.toolbarV3.deleteContentLabel"), 
 				  getLocalizedString(locale, "tool.contenttool.toolbarV3.deleteContentTitle"),
 				  "DeleteContent!V3.action?contentId=" + contentId + "&repositoryId=" + contentVO.getRepositoryId() + "&changeTypeId=4&returnAddress=ViewInlineOperationMessages.action&originalAddress=refreshParent",
@@ -540,7 +548,23 @@ public class ToolbarController
 				  true,
 				  getLocalizedString(locale, "tool.contenttool.toolbarV3.deleteContentLabel"), 
 				  getLocalizedString(locale, "tool.contenttool.toolbarV3.deleteContentConfirmationLabel"),
-				  "inlineDiv"));
+				  "inlineDiv");
+		
+		ToolbarButton deleteChildrenButton = new ToolbarButton("",
+				  getLocalizedString(locale, "tool.contenttool.toolbarV3.deleteContentChildrenLabel"), 
+				  getLocalizedString(locale, "tool.contenttool.toolbarV3.deleteContentChildrenTitle"),
+				  "DeleteContentChildren.action?contentId=" + contentId + "&repositoryId=" + contentVO.getRepositoryId() + "&changeTypeId=4&returnAddress=ViewInlineOperationMessages.action&originalAddress=refreshParent",
+				  "",
+				  "",
+				  "delete",
+				  true,
+				  true,
+				  getLocalizedString(locale, "tool.contenttool.toolbarV3.deleteContentChildrenLabel"), 
+				  getLocalizedString(locale, "tool.contenttool.toolbarV3.deleteContentChildrenConfirmationLabel"),
+				  "inlineDiv");
+		
+		deleteButton.getSubButtons().add(deleteChildrenButton);
+		buttons.add(deleteButton);
 
 		buttons.add(new ToolbarButton("",
 				  getLocalizedString(locale, "tool.contenttool.toolbarV3.editContentMetaInfoLabel"), 
@@ -549,19 +573,39 @@ public class ToolbarController
 				  "",
 				  "properties"));
 
-		buttons.add(new ToolbarButton("",
+		ToolbarButton publishButton = new ToolbarButton("",
 				  getLocalizedString(locale, "tool.contenttool.toolbarV3.publishContentLabel"), 
 				  getLocalizedString(locale, "tool.contenttool.toolbarV3.publishContentTitle"),
-				  "" + "&returnAddress=ViewInlineOperationMessages.action&originalAddress=refreshParent",
+				  "ViewListContentVersion!v3.action?contentId=" + contentId + "&recurseContents=false&returnAddress=ViewInlineOperationMessages.action&originalAddress=refreshParent",
 				  "",
-				  "publish"));
+				  "publish");
 
-		buttons.add(new ToolbarButton("",
+		ToolbarButton submitToPublishButton = new ToolbarButton("",
 				  getLocalizedString(locale, "tool.contenttool.toolbarV3.publishContentsLabel"), 
 				  getLocalizedString(locale, "tool.contenttool.toolbarV3.publishContentsTitle"),
-				  "" + "&returnAddress=ViewInlineOperationMessages.action&originalAddress=refreshParent",
+				  "ViewListContentVersion!v3.action?contentId=" + contentId + "&recurseContents=false&returnAddress=ViewInlineOperationMessages.action&originalAddress=refreshParent",
 				  "",
-				  "submitToPublish"));
+				  "submitToPublish");
+
+		publishButton.getSubButtons().add(submitToPublishButton);
+		buttons.add(publishButton);
+
+		ToolbarButton unpublishButton = new ToolbarButton("",
+				  getLocalizedString(locale, "tool.contenttool.toolbarV3.unpublishContentsLabel"), 
+				  getLocalizedString(locale, "tool.contenttool.toolbarV3.unpublishContentsTitle"),
+				  "UnpublishContentVersion!inputV3.action?contentId=" + contentId + "&recurseContents=false&returnAddress=ViewInlineOperationMessages.action&originalAddress=refreshParent",
+				  "",
+				  "unpublish");
+
+		ToolbarButton unpublishAllButton = new ToolbarButton("",
+				  getLocalizedString(locale, "tool.contenttool.toolbarV3.unpublishContentsAllLabel"), 
+				  getLocalizedString(locale, "tool.contenttool.toolbarV3.unpublishContentsAllTitle"),
+				  "UnpublishContentVersion!inputChooseContents.action?contentId=" + contentId + "&recurseContents=false&returnAddress=ViewInlineOperationMessages.action&originalAddress=refreshParent",
+				  "",
+				  "unpublish");
+
+		unpublishButton.getSubButtons().add(unpublishAllButton);
+		buttons.add(unpublishButton);
 
 		return buttons;
 	}
@@ -661,14 +705,14 @@ public class ToolbarController
 		ToolbarButton publishButton = new ToolbarButton("",
 				  getLocalizedString(locale, "tool.contenttool.toolbarV3.publishContentLabel"), 
 				  getLocalizedString(locale, "tool.contenttool.toolbarV3.publishContentTitle"),
-				  "" + "&returnAddress=ViewInlineOperationMessages.action&originalAddress=refreshParent",
+				  "ViewListContentVersion!v3.action?contentId=" + contentId + "&recurseContents=false&returnAddress=ViewInlineOperationMessages.action&originalAddress=refreshParent",
 				  "",
 				  "publish");
 
 		ToolbarButton submitToPublishButton = new ToolbarButton("",
 				  getLocalizedString(locale, "tool.contenttool.toolbarV3.publishContentsLabel"), 
 				  getLocalizedString(locale, "tool.contenttool.toolbarV3.publishContentsTitle"),
-				  "" + "&returnAddress=ViewInlineOperationMessages.action&originalAddress=refreshParent",
+				  "ViewListContentVersion!v3.action?contentId=" + contentId + "&recurseContents=false&returnAddress=ViewInlineOperationMessages.action&originalAddress=refreshParent",
 				  "",
 				  "submitToPublish");
 

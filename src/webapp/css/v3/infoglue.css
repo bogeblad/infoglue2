@@ -326,13 +326,13 @@ img.scaledbordered {
 /* Toolbar Button in IG */
 .igToolbarButton
 {
+	/*background-color: red;*/
 	background-image: url("../../images/v3/igToolbarButtonBackground.png");
 	background-position: 100% -26px;
 	background-repeat: no-repeat;
-	/*background-color: red;*/
 	line-height: 26px;
 	height: 26px;
-	padding-right: 4px;
+	padding-right: 10px;
 	color: #555;
 	display: block;
 	float: left;
@@ -375,9 +375,21 @@ img.scaledbordered {
 	background-image: none;
 }
 
+#initialButton {
+	display: block; 
+	float: left; 
+	background: transparent url(../../images/v3/menu-button-arrow.png) no-repeat; 
+	background-position: 4px 15px;
+	padding-left: 8px;
+	margin-left: 4px;
+}
+
 .igToolbarSubButton
 {
 	background-image: none;
+	padding-left: 8px;
+	margin-left: 4px;
+	width: 100%;
 }
 
 .igToolbarSubButtonOuterSpan

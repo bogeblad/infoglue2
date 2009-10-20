@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
+import org.infoglue.cms.applications.databeans.LinkBean;
 import org.infoglue.cms.controllers.kernel.impl.simple.AccessRightController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentControllerProxy;
@@ -56,7 +57,10 @@ public class ViewListContentVersionAction extends InfoGlueAbstractAction
 	private List siteNodeVersionVOList = new ArrayList();
 	private Integer contentId;
 	private Integer repositoryId;
-	private String returnAddress = null;
+
+	private String returnAddress;
+    private String originalAddress;
+   	private String userSessionKey;
 
 	protected String doExecute() throws Exception 
 	{
@@ -92,7 +96,19 @@ public class ViewListContentVersionAction extends InfoGlueAbstractAction
 
 	    return "success";
 	}
+
+	public String doV3() throws Exception 
+	{
+		doExecute();
 		
+        userSessionKey = "" + System.currentTimeMillis();
+        
+        addActionLink(userSessionKey, new LinkBean("currentPageUrl", getLocalizedString(getLocale(), "tool.common.publishing.publishingInlineOperationBackToCurrentContentLinkText"), getLocalizedString(getLocale(), "tool.common.publishing.publishingInlineOperationBackToCurrentContentTitleText"), getLocalizedString(getLocale(), "tool.common.publishing.publishingInlineOperationBackToCurrentContentTitleText"), this.originalAddress, false, ""));
+        setActionExtraData(userSessionKey, "disableCloseLink", "true");
+        
+	    return "successV3";	
+	}
+
 	/**
 	 * @return
 	 */
@@ -133,4 +149,25 @@ public class ViewListContentVersionAction extends InfoGlueAbstractAction
 	{
 		this.returnAddress = returnAddress;
 	}
+	
+	public String getUserSessionKey()
+	{
+		return userSessionKey;
+	}
+
+	public void setUserSessionKey(String userSessionKey)
+	{
+		this.userSessionKey = userSessionKey;
+	}
+
+	public String getOriginalAddress()
+	{
+		return originalAddress;
+	}
+
+	public void setOriginalAddress(String originalAddress)
+	{
+		this.originalAddress = originalAddress;
+	}
+
 }

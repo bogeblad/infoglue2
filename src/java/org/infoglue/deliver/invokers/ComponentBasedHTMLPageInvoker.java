@@ -36,6 +36,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
+import org.dom4j.Attribute;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.dom4j.io.OutputFormat;
@@ -599,6 +600,15 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 					property.put("path", path);
 					property.put("type", type);
 					
+					List attributes = propertyElement.attributes();
+					Iterator attributesIterator = attributes.iterator();
+					while(attributesIterator.hasNext())
+					{
+						Attribute attribute = (Attribute)attributesIterator.next();
+						if(attribute.getName().startsWith("path_"))
+							property.put(attribute.getName(), attribute.getValue());
+					}
+					
 					if(path != null)
 					{
 						if(propertyName.equals(InfoGlueComponent.CACHE_RESULT_PROPERTYNAME) && (path.equalsIgnoreCase("true") || path.equalsIgnoreCase("yes")))
@@ -853,6 +863,15 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 					property.put("name", propertyName);
 					property.put("path", path);
 					property.put("type", type);
+					
+					List attributes = propertyElement.attributes();
+					Iterator attributesIterator = attributes.iterator();
+					while(attributesIterator.hasNext())
+					{
+						Attribute attribute = (Attribute)attributesIterator.next();
+						if(attribute.getName().startsWith("path_"))
+							property.put(attribute.getName(), attribute.getValue());
+					}
 					
 					if(path != null)
 					{
@@ -1695,6 +1714,15 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 							property.put("name", propertyName);
 							property.put("path", path);
 							property.put("type", type);
+							
+							List attributes = propertyElement.attributes();
+							Iterator attributesIterator = attributes.iterator();
+							while(attributesIterator.hasNext())
+							{
+								Attribute attribute = (Attribute)attributesIterator.next();
+								if(attribute.getName().startsWith("path_"))
+									property.put(attribute.getName(), attribute.getValue());
+							}
 							
 							if(path != null)
 							{

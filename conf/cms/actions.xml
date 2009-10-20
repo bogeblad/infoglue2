@@ -1,4 +1,4 @@
-<!-- $Id: actions.xml,v 1.86 2009/10/18 21:55:40 mattias Exp $ -->
+<!-- $Id: actions.xml,v 1.87 2009/10/20 21:55:47 mattias Exp $ -->
 <actions>
 
 	<!-- MySettings -->
@@ -966,6 +966,7 @@
 	</action>
 	<action name="org.infoglue.cms.applications.contenttool.actions.ViewListContentVersionAction" alias="ViewListContentVersion">
 		<view name="success">/cms/contenttool/viewListContentVersion.vm</view>
+		<view name="successV3">/cms/contenttool/v3/viewListContentVersion.vm</view>
 		<view name="error">/cms/contenttool/error.vm</view>
 		<view name="accessDenied">/cms/contenttool/viewConstraintException.vm</view>
 	</action>

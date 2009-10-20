@@ -74,8 +74,8 @@ public class ViewListSiteNodeVersionAction extends InfoGlueAbstractAction
 	private Integer contentId;
 
 	private Integer repositoryId;
-	private String returnAddress;
 	private boolean recurseSiteNodes = true;
+	private String returnAddress;
     private String originalAddress;
    	private String userSessionKey;
    	private String attemptDirectPublishing;
