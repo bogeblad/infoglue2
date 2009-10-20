@@ -35,6 +35,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
+import org.dom4j.Attribute;
 import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.applications.databeans.ComponentPropertyDefinition;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentVersionController;
@@ -63,7 +64,10 @@ import org.infoglue.deliver.util.Support;
 import org.infoglue.deliver.util.Timer;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.xmlpull.v1.builder.XmlAttribute;
 import org.xmlpull.v1.builder.XmlDocument;
 import org.xmlpull.v1.builder.XmlElement;
 import org.xmlpull.v1.builder.XmlInfosetBuilder;
@@ -588,7 +592,8 @@ public class ComponentLogic
 		Map property = getInheritedComponentProperty(this.infoGlueComponent, propertyName, useInheritance, useRepositoryInheritance, useStructureInheritance);
 		if(property != null)
 		{	
-			if(property != null)
+			propertyValue = (String)property.get("path_" + this.templateController.getLocale().getLanguage());
+			if(propertyValue == null)
 			{
 				propertyValue = (String)property.get("path");
 			}
@@ -626,17 +631,10 @@ public class ComponentLogic
 		Map property = getInheritedComponentProperty(component, propertyName, useInheritance, useRepositoryInheritance, useStructureInheritance, useComponentInheritance);
 		if(property != null)
 		{	
+			propertyValue = (String)property.get("path_" + locale.getLanguage());
 			if(property != null)
 			{
 				propertyValue = (String)property.get("path");
-				if(propertyValue == null)
-				{
-					Iterator keysIterator = property.keySet().iterator();
-					while(keysIterator.hasNext())
-					{
-						String key = (String)keysIterator.next();
-					}
-				}
 			}
 		}
 
@@ -1637,6 +1635,14 @@ public class ComponentLogic
 						property.put("path", value);
 						property.put("type", type);
 						
+						NamedNodeMap attributes = propertyElement.getAttributes();
+						for(int j=0; j<attributes.getLength(); j++)
+						{
+							Node attribute = attributes.item(j);
+							if(attribute.getNodeName().startsWith("path_"))
+								property.put(attribute.getNodeName(), attribute.getNodeValue());
+						}
+
 						List bindings = new ArrayList();
 						NodeList bindingNodeList = propertyElement.getElementsByTagName("binding");
 						//logger.info("bindingNodeList:" + bindingNodeList.getLength());
@@ -2057,6 +2063,14 @@ public class ComponentLogic
 			property.put("path", value);
 			property.put("type", type);
 			
+			NamedNodeMap attributes = propertyElement.getAttributes();
+			for(int j=0; j<attributes.getLength(); j++)
+			{
+				Node attribute = attributes.item(j);
+				if(attribute.getNodeName().startsWith("path_"))
+					property.put(attribute.getNodeName(), attribute.getNodeValue());
+			}
+
 			List bindings = new ArrayList();
 			NodeList bindingNodeList = propertyElement.getElementsByTagName("binding");
 			//logger.info("bindingNodeList:" + bindingNodeList.getLength());
@@ -2176,6 +2190,15 @@ public class ComponentLogic
 			property.put("path", value);
 			property.put("type", type);
 			
+			List attributes = propertyElement.attributes();
+			Iterator attributesIterator = attributes.iterator();
+			while(attributesIterator.hasNext())
+			{
+				Attribute attribute = (Attribute)attributesIterator.next();
+				if(attribute.getName().startsWith("path_"))
+					property.put(attribute.getName(), attribute.getValue());
+			}
+
 			List bindings = new ArrayList();
 			List bindingNodeList = propertyElement.elements("binding");
 			Iterator bindingNodeListIterator = bindingNodeList.iterator();
@@ -2306,6 +2329,14 @@ public class ComponentLogic
 			//property.put("path", "Inherited");
 			property.put("path", value);
 			property.put("type", type);
+
+			Iterator attributesIterator = infosetItem.attributes();
+			while(attributesIterator.hasNext())
+			{
+				XmlAttribute attribute = (XmlAttribute)attributesIterator.next();
+				if(attribute.getName().startsWith("path_"))
+					property.put(attribute.getName(), attribute.getValue());
+			}
 
 			List bindings = new ArrayList();
 			
@@ -2465,6 +2496,14 @@ public class ComponentLogic
 					property.put("path", value);
 					property.put("type", type);
 					
+					NamedNodeMap attributes = propertyElement.getAttributes();
+					for(int j=0; j<attributes.getLength(); j++)
+					{
+						Node attribute = attributes.item(j);
+						if(attribute.getNodeName().startsWith("path_"))
+							property.put(attribute.getNodeName(), attribute.getNodeValue());
+					}
+
 					List bindings = new ArrayList();
 					NodeList bindingNodeList = propertyElement.getElementsByTagName("binding");
 					for(int j=0; j < bindingNodeList.getLength(); j++)
