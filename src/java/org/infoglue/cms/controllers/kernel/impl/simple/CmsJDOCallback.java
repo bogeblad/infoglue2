@@ -60,6 +60,9 @@ import org.infoglue.cms.entities.management.impl.simple.RepositoryImpl;
 import org.infoglue.cms.entities.management.impl.simple.RepositoryLanguageImpl;
 import org.infoglue.cms.entities.management.impl.simple.RoleImpl;
 import org.infoglue.cms.entities.management.impl.simple.RolePropertiesImpl;
+import org.infoglue.cms.entities.management.impl.simple.SmallGroupImpl;
+import org.infoglue.cms.entities.management.impl.simple.SmallRoleImpl;
+import org.infoglue.cms.entities.management.impl.simple.SmallSystemUserImpl;
 import org.infoglue.cms.entities.management.impl.simple.SubscriptionFilterImpl;
 import org.infoglue.cms.entities.management.impl.simple.SystemUserImpl;
 import org.infoglue.cms.entities.management.impl.simple.TransactionHistoryImpl;
@@ -99,6 +102,21 @@ public class CmsJDOCallback implements CallbackInterceptor
     public Class loaded(Object object, short accessMode) throws Exception
     {
 		//System.out.println("Loaded " + object.getClass().getName() + " accessMode:" + accessMode);
+    	/*
+    	if(object.getClass().getName().indexOf(".SiteNodeImpl") > -1)
+    	{
+    		System.out.println("Loaded " + object.getClass().getName() + " accessMode:" + accessMode);
+    		Thread.dumpStack();
+    	}
+    	*/
+    	/*
+    	if(accessMode == 1)
+    	{
+    		System.out.println("Loaded " + object.getClass().getName() + " accessMode:" + accessMode);
+    		Thread.dumpStack();
+    	}
+    	*/
+    	
     	// return ( (Persistent) object ).jdoLoad(accessMode);
         return null;
     }
@@ -230,17 +248,20 @@ public class CmsJDOCallback implements CallbackInterceptor
 			}
 			else if(object.getClass().getName().equals(SystemUserImpl.class.getName()))
 			{
+				clearCache(SmallSystemUserImpl.class);
 				CacheController.clearCache("principalCache");
 				CacheController.clearCache("componentContentsCache");
 			}
 			else if(object.getClass().getName().equals(GroupImpl.class.getName()))
 			{
+				clearCache(SmallGroupImpl.class);
 				CacheController.clearCache("groupListCache");
 				CacheController.clearCache("groupVOListCache");
 				CacheController.clearCache("componentContentsCache");
 			}
 			else if(object.getClass().getName().equals(RoleImpl.class.getName()))
 			{
+				clearCache(SmallRoleImpl.class);
 				CacheController.clearCache("roleListCache");
 				CacheController.clearCache("roleVOListCache");
 				CacheController.clearCache("componentContentsCache");
@@ -386,16 +407,19 @@ public class CmsJDOCallback implements CallbackInterceptor
 			}
 			else if(object.getClass().getName().equals(SystemUserImpl.class.getName()))
 			{
+				clearCache(SmallSystemUserImpl.class);
 				CacheController.clearCache("principalCache");
 				CacheController.clearCache("componentContentsCache");
 			}
 			else if(object.getClass().getName().equals(GroupImpl.class.getName()))
 			{
+				clearCache(SmallGroupImpl.class);
 				CacheController.clearCache("groupListCache");
 				CacheController.clearCache("componentContentsCache");
 			}
 			else if(object.getClass().getName().equals(RoleImpl.class.getName()))
 			{
+				clearCache(SmallRoleImpl.class);
 				CacheController.clearCache("roleListCache");
 				CacheController.clearCache("componentContentsCache");
 			}
@@ -542,16 +566,19 @@ public class CmsJDOCallback implements CallbackInterceptor
 			}
 			else if(object.getClass().getName().equals(SystemUserImpl.class.getName()))
 			{
+				clearCache(SmallSystemUserImpl.class);
 				CacheController.clearCache("principalCache");
 				CacheController.clearCache("componentContentsCache");
 			}
 			else if(object.getClass().getName().equals(GroupImpl.class.getName()))
 			{
+				clearCache(SmallGroupImpl.class);
 				CacheController.clearCache("groupListCache");
 				CacheController.clearCache("componentContentsCache");
 			}
 			else if(object.getClass().getName().equals(RoleImpl.class.getName()))
 			{
+				clearCache(SmallRoleImpl.class);
 				CacheController.clearCache("roleListCache");
 				CacheController.clearCache("componentContentsCache");
 			}

@@ -40,6 +40,7 @@ import org.infoglue.cms.entities.management.Group;
 import org.infoglue.cms.entities.management.Role;
 import org.infoglue.cms.entities.management.SystemUser;
 import org.infoglue.cms.entities.management.SystemUserVO;
+import org.infoglue.cms.entities.management.impl.simple.SmallSystemUserImpl;
 import org.infoglue.cms.entities.management.impl.simple.SystemUserImpl;
 import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.ConstraintException;
@@ -91,7 +92,7 @@ public class SystemUserController extends BaseController
 		{
 			beginTransaction(db);
 
-			systemUserVO = getReadOnlySystemUserWithName(name, db).getValueObject();
+			systemUserVO = getReadOnlySystemUserVOWithName(name, db);
 
 			commitTransaction(db);
 		} 
@@ -106,6 +107,38 @@ public class SystemUserController extends BaseController
 	}	
 	
 	
+	/**
+	 * 	Get the SystemUser with the userName
+	 */
+	 
+	public SystemUserVO getReadOnlySystemUserVOWithName(String userName, Database db)  throws SystemException, Bug
+	{
+		SystemUserVO systemUserVO = null;
+		
+        try
+        {										
+        	OQLQuery oql = db.getOQLQuery("SELECT u FROM org.infoglue.cms.entities.management.impl.simple.SmallSystemUserImpl u WHERE u.userName = $1");
+        	oql.bind(userName);
+        	
+        	QueryResults results = oql.execute(Database.ReadOnly);
+			
+			if (results.hasMore()) 
+            {
+				SystemUser systemUser = (SystemUser)results.next();
+				systemUserVO = systemUser.getValueObject();
+            }
+			
+			results.close();
+			oql.close();
+        }
+        catch(Exception e)
+        {
+            throw new SystemException("An error occurred when we tried to fetch " + userName + " Reason:" + e.getMessage(), e);    
+        }    
+
+		return systemUserVO;		
+	}
+
 	
 	/**
 	 * 	Get the SystemUser with the userName
@@ -136,6 +169,37 @@ public class SystemUserController extends BaseController
         }    
 
 		return systemUser;		
+	}
+
+	/**
+	 * 	Get if the SystemUser with the userName exists
+	 */
+	 
+	public boolean systemUserExists(String userName, Database db) throws SystemException, Bug
+	{
+		boolean systemUserExists = false;
+		
+        try
+        {										
+        	OQLQuery oql = db.getOQLQuery( "SELECT u FROM org.infoglue.cms.entities.management.impl.simple.SmallSystemUserImpl u WHERE u.userName = $1");
+        	oql.bind(userName);
+        	
+        	QueryResults results = oql.execute(Database.ReadOnly);
+			
+			if (results.hasMore()) 
+            {
+				systemUserExists = true;
+            }
+			
+			results.close();
+			oql.close();
+        }
+        catch(Exception e)
+        {
+        	throw new SystemException("An error occurred when we tried to fetch " + userName + " Reason:" + e.getMessage(), e);  
+        }    
+        
+        return systemUserExists;		
 	}
 
 
@@ -203,7 +267,7 @@ public class SystemUserController extends BaseController
 	{
 		SystemUserVO systemUserVO = null;
 
-		OQLQuery oql = db.getOQLQuery( "SELECT u FROM org.infoglue.cms.entities.management.impl.simple.SystemUserImpl u WHERE u.userName = $1 AND u.password = $2");
+		OQLQuery oql = db.getOQLQuery( "SELECT u FROM org.infoglue.cms.entities.management.impl.simple.SmallSystemUserImpl u WHERE u.userName = $1 AND u.password = $2");
 		oql.bind(userName);
 		oql.bind(password);
     	
@@ -213,7 +277,6 @@ public class SystemUserController extends BaseController
 		{
 			SystemUser systemUser = (SystemUser)results.next();
 			systemUserVO = systemUser.getValueObject();
-			//logger.info("found one:" + systemUserVO.getFirstName());
 		}
 
 		results.close();
@@ -247,12 +310,12 @@ public class SystemUserController extends BaseController
 	
     public List getSystemUserVOList() throws SystemException, Bug
     {
-        return getAllVOObjects(SystemUserImpl.class, "userName");
+        return getAllVOObjects(SmallSystemUserImpl.class, "userName");
     }
 
     public List getSystemUserVOList(Database db) throws SystemException, Bug
     {
-        return getAllVOObjects(SystemUserImpl.class, "userName", db);
+        return getAllVOObjects(SmallSystemUserImpl.class, "userName", db);
     }
 
     public List getSystemUserList(Database db) throws SystemException, Bug

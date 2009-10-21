@@ -557,6 +557,31 @@ public class GenericCombinedAuthorizationModule implements AuthorizationModule, 
 		role.getAutorizationModule().addUserToRole(roleName, userName);
 	}
 
+	/**
+	 * This method is used find out if a user exists. Much quicker than getAuthorizedPrincipal 
+	 */
+	
+    public boolean userExists(String userName) throws Exception
+    {
+    	return (getAuthorizedInfoGluePrincipal(userName) == null ? false : true);
+    }
+
+	/**
+	 * This method is used find out if a role exists. Much quicker than getRole 
+	 */
+    public boolean roleExists(String roleName) throws Exception
+    {
+    	return (getAuthorizedInfoGlueRole(roleName) == null ? false : true);
+    }
+    
+	/**
+	 * This method is used find out if a group exists. Much quicker than getGroup 
+	 */
+    public boolean groupExists(String groupName) throws Exception
+    {
+    	return (getAuthorizedInfoGlueGroup(groupName) == null ? false : true);
+    }
+
 	public boolean getSupportUpdate()
 	{
 		return true;

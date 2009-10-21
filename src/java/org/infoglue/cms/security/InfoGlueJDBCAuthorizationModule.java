@@ -51,6 +51,7 @@ import org.infoglue.cms.entities.management.SystemUser;
 import org.infoglue.cms.entities.management.SystemUserVO;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.util.CmsPropertyHandler;
+import org.infoglue.deliver.util.Timer;
 
 /**
  * @author Mattias Bogeblad
@@ -773,6 +774,31 @@ public class InfoGlueJDBCAuthorizationModule extends BaseController implements A
 	{
 		throw new SystemException("The JDBC BASIC Authorization module does not support adding of users to roles yet...");
 	}
+
+	/**
+	 * This method is used find out if a user exists. Much quicker than getAuthorizedPrincipal 
+	 */
+	
+    public boolean userExists(String userName) throws Exception
+    {
+    	return (getAuthorizedInfoGluePrincipal(userName) == null ? false : true);
+    }
+
+	/**
+	 * This method is used find out if a role exists. Much quicker than getRole 
+	 */
+    public boolean roleExists(String roleName) throws Exception
+    {
+    	return (getAuthorizedInfoGlueRole(roleName) == null ? false : true);
+    }
+    
+	/**
+	 * This method is used find out if a group exists. Much quicker than getGroup 
+	 */
+    public boolean groupExists(String groupName) throws Exception
+    {
+    	return (getAuthorizedInfoGlueGroup(groupName) == null ? false : true);
+    }
 
 	public Properties getExtraProperties()
 	{

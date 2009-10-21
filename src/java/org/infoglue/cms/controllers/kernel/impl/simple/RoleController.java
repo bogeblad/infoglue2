@@ -40,6 +40,7 @@ import org.infoglue.cms.entities.management.Role;
 import org.infoglue.cms.entities.management.RoleVO;
 import org.infoglue.cms.entities.management.SystemUser;
 import org.infoglue.cms.entities.management.impl.simple.RoleImpl;
+import org.infoglue.cms.entities.management.impl.simple.SmallRoleImpl;
 import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
@@ -84,17 +85,17 @@ public class RoleController extends BaseController
 	
     public RoleVO getRoleVOWithId(Integer roleId) throws SystemException, Bug
     {
-		return (RoleVO) getVOWithId(RoleImpl.class, roleId);
+		return (RoleVO) getVOWithId(SmallRoleImpl.class, roleId);
     }
 
 	public RoleVO getRoleVOWithId(String roleName) throws SystemException, Bug
 	{
-		return (RoleVO) getVOWithId(RoleImpl.class, roleName);
+		return (RoleVO) getVOWithId(SmallRoleImpl.class, roleName);
 	}
 
 	public RoleVO getRoleVOWithId(String roleName, Database db) throws SystemException, Bug
 	{
-		return (RoleVO) getVOWithId(RoleImpl.class, roleName, db);
+		return (RoleVO) getVOWithId(SmallRoleImpl.class, roleName, db);
 	}
 
     // Simple, without db
@@ -107,12 +108,12 @@ public class RoleController extends BaseController
     
     public List getRoleVOList() throws SystemException, Bug
     {
-        return getAllVOObjects(RoleImpl.class, "roleName");
+        return getAllVOObjects(SmallRoleImpl.class, "roleName");
     }
 
     public List getRoleVOList(Database db) throws SystemException, Bug
     {
-        return getAllVOObjects(RoleImpl.class, "roleName", db);
+        return getAllVOObjects(SmallRoleImpl.class, "roleName", db);
     }
 
     public RoleVO create(RoleVO roleVO) throws ConstraintException, SystemException
@@ -388,6 +389,65 @@ public class RoleController extends BaseController
 		}
     }
     
+	/**
+	 * 	Get if the Role with the roleName exists
+	 */
+   
+    public boolean roleExists(String roleName) throws SystemException, Bug
+    {
+        Database db = CastorDatabaseService.getDatabase();
+
+        beginTransaction(db);
+
+        boolean roleExists = false;
+        
+        try
+        {
+        	roleExists = roleExists(roleName, db);
+
+            commitTransaction(db);
+        }
+        catch(Exception e)
+        {
+            logger.error("An error occurred so we should not complete the transaction:" + e, e);
+            rollbackTransaction(db);
+            throw new SystemException(e.getMessage());
+        }
+        
+        return roleExists;
+    }        
+    
+	/**
+	 * 	Get if the Role with the roleName exists
+	 */
+	 
+	public boolean roleExists(String roleName, Database db) throws SystemException, Bug
+	{
+		boolean roleExists = false;
+		
+        try
+        {										
+        	OQLQuery oql = db.getOQLQuery( "SELECT u FROM org.infoglue.cms.entities.management.impl.simple.SmallRoleImpl r WHERE r.roleName = $1");
+        	oql.bind(roleName);
+        	
+        	QueryResults results = oql.execute(Database.ReadOnly);
+			
+			if (results.hasMore()) 
+            {
+				roleExists = true;
+            }
+			
+			results.close();
+			oql.close();
+        }
+        catch(Exception e)
+        {
+        	throw new SystemException("An error occurred when we tried to fetch " + roleName + " Reason:" + e.getMessage(), e);  
+        }    
+        
+        return roleExists;		
+	}
+
 	/**
 	 * This is a method that gives the user back an newly initialized ValueObject for this entity that the controller
 	 * is handling.
