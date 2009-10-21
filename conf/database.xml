@@ -7,7 +7,7 @@
 		  	<param name="username" value="@database.user@"/>
 		  	<param name="password" value="@database.password@"/>
 		  	<param name="url" value="@database.url@"/>
-		  	<param name="validation-query" value="SELECT 1 from cmSystemUser"/>
+		  	<param name="validation-query" value="@database.validationQuery@"/>
 		  	<param name="max-active" value="@database.maxConnections@"/>
 		</data-source>
 		<mapping href="classes/@database.mapping@"/>

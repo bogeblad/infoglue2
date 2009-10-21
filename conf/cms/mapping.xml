@@ -59,6 +59,28 @@
     </field>
   </class>
 
+<!--  Mapping for SmallSystemUser  -->
+  <class name="org.infoglue.cms.entities.management.impl.simple.SmallSystemUserImpl" identity="userName">
+    <description>SystemUser</description>
+    <cache-type type="unlimited"/>
+    <map-to table="cmSystemUser"/>
+    <field name="userName" type="java.lang.String">
+      <sql name="userName" type="varchar" dirty="check" />
+    </field>
+    <field name="password" type="java.lang.String">
+      <sql name="password" type="varchar" dirty="check" />
+    </field>
+    <field name="firstName" type="java.lang.String">
+      <sql name="firstName" type="varchar" dirty="check" />
+    </field>
+    <field name="lastName" type="java.lang.String">
+      <sql name="lastName" type="varchar" dirty="check" />
+    </field>
+    <field name="email" type="java.lang.String">
+      <sql name="email" type="varchar" dirty="check" />
+    </field>
+  </class>
+
 <!--  Mapping for UserProperties  -->
   <class name="org.infoglue.cms.entities.management.impl.simple.UserPropertiesImpl" identity="userPropertiesId" key-generator="IDENTITY">
     <description>UserProperties</description>
@@ -136,7 +158,7 @@
   <!--  Mapping for SmallRole  -->
   <class name="org.infoglue.cms.entities.management.impl.simple.SmallRoleImpl" identity="roleName">
     <description>SmallRole</description>
-    <cache-type type="none"/>
+    <cache-type type="unlimited"/>
     <map-to table="cmRole"/>
     <field name="roleName" type="java.lang.String">
       <sql name="roleName" type="varchar" dirty="check" />
@@ -149,7 +171,7 @@
   <!--  Mapping for SmallGroup  -->
   <class name="org.infoglue.cms.entities.management.impl.simple.SmallGroupImpl" identity="groupName">
     <description>SmallGroup</description>
-    <cache-type type="none"/>
+    <cache-type type="unlimited"/>
     <map-to table="cmGroup"/>
     <field name="groupName" type="java.lang.String">
       <sql name="groupName" type="varchar" dirty="check" />
