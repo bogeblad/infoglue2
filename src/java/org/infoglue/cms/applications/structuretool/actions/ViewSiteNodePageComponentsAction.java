@@ -945,6 +945,164 @@ public class ViewSiteNodePageComponentsAction extends InfoGlueAbstractAction
 	    return NONE; 
 	}
 	
+	/**
+	 * This method updates the given property with new values. 
+	 */
+    
+	public String doUpdateComponentProperty() throws Exception
+	{
+		if(logger.isInfoEnabled())
+		{
+			logger.info("************************************************************");
+			logger.info("* doUpdateComponentProperty                           		*");
+			logger.info("************************************************************");
+			logger.info("siteNodeId:" + this.siteNodeId);
+			logger.info("languageId:" + this.languageId);
+			logger.info("contentId:" + this.contentId);
+			logger.info("componentId:" + this.componentId);
+			logger.info("slotId:" + this.slotId);
+			logger.info("specifyBaseTemplate:" + this.specifyBaseTemplate);
+		}
+
+		try
+		{
+			initialize();
+	
+			Locale locale = LanguageController.getController().getLocaleWithId(languageId);
+			
+			String componentXML = getPageComponentsString(siteNodeId, this.masterLanguageVO.getId());			
+			//logger.info("componentXML:" + componentXML);
+			
+			ContentVO contentVO = NodeDeliveryController.getNodeDeliveryController(siteNodeId, languageId, contentId).getBoundContent(this.getInfoGluePrincipal(), siteNodeId, languageId, true, "Meta information", DeliveryContext.getDeliveryContext());
+			ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentVO.getId(), this.masterLanguageVO.getId());
+	
+			Document document = XMLHelper.readDocumentFromByteArray(componentXML.getBytes("UTF-8"));
+			
+			String characterEncoding = this.getRequest().getCharacterEncoding();
+			characterEncoding= this.getResponse().getCharacterEncoding();
+		
+			String componentContentId = null;
+	
+			String propertyName = this.getRequest().getParameter("propertyName");
+			String propertyValue = "";
+			if(propertyName != null && !propertyName.equals(""))
+			{
+				String[] propertyValues = this.getRequest().getParameterValues(propertyName);
+				
+				if(propertyValues != null && propertyValues.length == 1)
+				{
+					propertyValue = propertyValues[0];
+				}
+				else if(propertyValues != null)
+				{
+					StringBuffer sb = new StringBuffer();
+					for(int i=0; i<propertyValues.length;i++)
+					{
+						if(i > 0)
+							sb.append(",");
+						sb.append(propertyValues[i]);
+					}
+					propertyValue = sb.toString();
+				}
+	
+				logger.info("propertyName:" + propertyName);
+				logger.info("propertyValue:" + propertyValue);
+				String separator = System.getProperty("line.separator");
+				propertyValue = propertyValue.replaceAll(separator, "igbr");
+				logger.info("propertyValue1:" + propertyValue);
+	        	propertyValue = PageEditorHelper.untransformAttribute(propertyValue);
+				logger.info("propertyValue2:" + propertyValue);
+	 			
+				if(propertyValue != null && !propertyValue.equals("") && !propertyValue.equalsIgnoreCase("undefined"))
+				{
+					String componentPropertyXPath = "//component[@id=" + this.componentId + "]/properties/property[@name='" + propertyName + "']";
+					//logger.info("componentPropertyXPath:" + componentPropertyXPath);
+					NodeList anl = org.apache.xpath.XPathAPI.selectNodeList(document.getDocumentElement(), componentPropertyXPath);
+					if(anl.getLength() == 0)
+					{
+						String componentXPath = "//component[@id=" + this.componentId + "]/properties";
+						//logger.info("componentXPath:" + componentXPath);
+						NodeList componentNodeList = org.apache.xpath.XPathAPI.selectNodeList(document.getDocumentElement(), componentXPath);
+						if(componentNodeList.getLength() > 0)
+						{
+							Element componentProperties = (Element)componentNodeList.item(0);
+							addPropertyElement(componentProperties, propertyName, propertyValue, "textfield", locale);
+							anl = org.apache.xpath.XPathAPI.selectNodeList(document.getDocumentElement(), componentPropertyXPath);
+						}
+					}
+			
+					logger.info("anl:" + anl);
+					if(anl.getLength() > 0)
+					{
+						Element component = (Element)anl.item(0);
+						componentContentId = ((Element)component.getParentNode().getParentNode()).getAttribute("contentId");
+						
+						//System.out.println("componentContentId:" + componentContentId);
+						ContentVO componentContentVO = ContentController.getContentController().getContentVOWithId(new Integer(componentContentId));
+						LanguageVO componentMasterLanguageVO = LanguageController.getController().getMasterLanguage(componentContentVO.getRepositoryId());
+						ContentVersionVO cv = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(new Integer(componentContentId), componentMasterLanguageVO.getId());
+						String componentProperties = ContentVersionController.getContentVersionController().getAttributeValue(cv, "ComponentProperties", false);
+						List componentPropertiesList = ComponentPropertyDefinitionController.getController().parseComponentPropertyDefinitions(componentProperties);
+						Iterator componentPropertiesListIterator = componentPropertiesList.iterator();
+						boolean allowLanguageVariations = true;
+						while(componentPropertiesListIterator.hasNext())
+						{
+							ComponentPropertyDefinition componentPropertyDefinition = (ComponentPropertyDefinition)componentPropertiesListIterator.next();
+							if(componentPropertyDefinition.getName().equalsIgnoreCase(propertyName))
+							{
+								allowLanguageVariations = componentPropertyDefinition.getAllowLanguageVariations();
+								break;
+							}
+						}
+						
+						if(allowLanguageVariations)
+						{
+							logger.info("Setting a propertyValue to path_" + locale.getLanguage() + ":" + path);
+							component.setAttribute("path_" + locale.getLanguage(), propertyValue);
+						    logger.info("Setting 'path_" + locale.getLanguage() + ":" + propertyValue);
+						}
+						else
+						{
+							logger.info("Setting a propertyValue to path:" + path);
+							component.setAttribute("path", propertyValue);
+						    logger.info("Setting 'path:" + propertyValue);
+						    component.removeAttribute("path_" + locale.getLanguage());
+						}
+					}
+					else
+					{
+					    logger.warn("No property could be updated... must be wrong.");
+					}
+				}
+			}
+	
+			String modifiedXML = XMLHelper.serializeDom(document, new StringBuffer()).toString(); 
+				
+			logger.info("contentVersionVO:" + contentVersionVO.getContentVersionId());
+			ContentVersionController.getContentVersionController().updateAttributeValue(contentVersionVO.getContentVersionId(), "ComponentStructure", modifiedXML, this.getInfoGluePrincipal());
+			
+			String returnStatus = this.getRequest().getParameter("returnStatus");
+			if(returnStatus != null && returnStatus.equalsIgnoreCase("true"))
+			{
+		        this.getResponse().setContentType("text/html");
+		        this.getResponse().getWriter().println("<html><body>Property " + propertyName + " was set to " + propertyValue + "</body></html>");
+			}
+			else
+			{
+				this.url = getComponentRendererUrl() + getComponentRendererAction() + "?siteNodeId=" + this.siteNodeId + "&languageId=" + this.languageId + "&contentId=" + this.contentId + "&focusElementId=" + this.componentId + (!hideComponentPropertiesOnLoad ? "&activatedComponentId=" + this.componentId : "") + "&componentContentId=" + componentContentId + "&showSimple=" + this.showSimple;
+				//this.getResponse().sendRedirect(url);		
+	
+				this.url = this.getResponse().encodeURL(url);
+				this.getResponse().sendRedirect(url);
+			}
+			return NONE; 
+		}
+		catch(Exception e)
+		{
+			logger.error("Error setting property:" + e.getMessage(), e);
+			return ERROR;
+		}
+	}
 
 	
 	/**
