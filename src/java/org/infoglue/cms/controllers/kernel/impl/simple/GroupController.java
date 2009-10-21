@@ -440,7 +440,7 @@ public class GroupController extends BaseController
 		
         try
         {										
-        	OQLQuery oql = db.getOQLQuery( "SELECT u FROM org.infoglue.cms.entities.management.impl.simple.SmallGroupImpl r WHERE r.groupName = $1");
+        	OQLQuery oql = db.getOQLQuery( "SELECT g FROM org.infoglue.cms.entities.management.impl.simple.SmallGroupImpl g WHERE g.groupName = $1");
         	oql.bind(groupName);
         	
         	QueryResults results = oql.execute(Database.ReadOnly);

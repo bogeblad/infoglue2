@@ -427,7 +427,7 @@ public class RoleController extends BaseController
 		
         try
         {										
-        	OQLQuery oql = db.getOQLQuery( "SELECT u FROM org.infoglue.cms.entities.management.impl.simple.SmallRoleImpl r WHERE r.roleName = $1");
+        	OQLQuery oql = db.getOQLQuery( "SELECT r FROM org.infoglue.cms.entities.management.impl.simple.SmallRoleImpl r WHERE r.roleName = $1");
         	oql.bind(roleName);
         	
         	QueryResults results = oql.execute(Database.ReadOnly);
