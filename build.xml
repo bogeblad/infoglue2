@@ -36,6 +36,7 @@
 	* The master filterset, created from build.properties
 	-->
 	<filterset id="project.filters">
+		<filter token="database.validationQuery" value="select 1 from cmInfoGlueProperties"/>
 		<filtersfile file="build.properties"/>
 	</filterset>
 
@@ -473,6 +474,144 @@
 	* Replaces the mapping.xml from the war with the deliver version.
 	-->
 	<target name="fast-build" depends="" description="Compiles the classes if class and moves configs to the right spot">
+				
+		<echo message="Looking up ${resourceName}"/>
+		<echo message="Looking up ${buildType}"/>
+		<echo message="Looking up ${editedFiles}"/>
+		<echo message="Looking up ${changedFiles}"/>
+		
+		<property name="changedFilesLocation" location="${changedFiles}"/>
+		<echo message="Looking up ${changedFilesLocation}"/>
+		
+		<script language="beanshell" manager="bsf">
+		<![CDATA[
+			import java.io.File; 
+			import org.apache.tools.ant.taskdefs.Copy; 
+			
+			System.out.println("Hepp:" + changedFilesLocation);
+			String[] files = changedFilesLocation.split(" ");
+			for(int i=0; i<files.length; i++)
+			{
+				String fileName = files[i];
+				System.out.println("file: " + fileName);
+				if(!fileName.endsWith(".java"))
+				{
+					System.out.println("Yep: " + fileName);
+					outputHelper = project.createTask("echo");
+					outputHelper.setMessage("File to copy: " + fileName);
+			        outputHelper.execute();
+
+					if(fileName.indexOf("classes") > -1)
+					{
+						System.out.println("deploy.dir.cms: " + project.getProperty("deploy.dir.cms"));
+						File ffrom = new File(fileName); 
+						String path = fileName.replaceAll(".*classes", "");
+						int fileNameIndex = path.lastIndexOf("\\");			
+						if(fileNameIndex == -1)
+							fileNameIndex = path.lastIndexOf("/");
+
+						path = path.substring(0, fileNameIndex);
+						System.out.println("path: " + path);
+						File cmsDir = new File(project.getProperty("deploy.dir.cms") + "/WEB-INF/classes" + path); 
+						Copy copyTask = project.createTask("copy");
+						copyTask.setVerbose(true);
+						copyTask.setTodir(cmsDir);
+						copyTask.setFile(ffrom);
+						copyTask.perform();
+
+						File deliverDir = new File(project.getProperty("deploy.dir.working") + "/WEB-INF/classes" + path); 
+						Copy copyTask = project.createTask("copy");
+						copyTask.setVerbose(true);
+						copyTask.setTodir(deliverDir);
+						copyTask.setFile(ffrom);
+						copyTask.perform();
+					}
+					else if(fileName.indexOf("webapp") > -1)
+					{
+						File ffrom = new File(fileName); 
+						String path = fileName.replaceAll(".*webapp", "");
+						int fileNameIndex = path.lastIndexOf("\\");			
+						if(fileNameIndex == -1)
+							fileNameIndex = path.lastIndexOf("/");
+		
+						path = path.substring(0, fileNameIndex);
+						System.out.println("path: " + path);
+						File cmsDir = new File(project.getProperty("deploy.dir.cms") + path); 
+						Copy copyTask = project.createTask("copy");
+						copyTask.setVerbose(true);
+						copyTask.setTodir(cmsDir);
+						copyTask.setFile(ffrom);
+						copyTask.perform();
+		
+						File deliverDir = new File(project.getProperty("deploy.dir.working") + path); 
+						Copy copyTask = project.createTask("copy");
+						copyTask.setVerbose(true);
+						copyTask.setTodir(deliverDir);
+						copyTask.setFile(ffrom);
+						copyTask.perform();
+					}
+					else if(fileName.indexOf("conf") > -1)
+					{
+						File ffrom = new File(fileName); 
+						String path = fileName.replaceAll(".*conf", "");
+						int fileNameIndex = path.lastIndexOf("\\");			
+						if(fileNameIndex == -1)
+							fileNameIndex = path.lastIndexOf("/");
+						
+						path = path.substring(0, fileNameIndex);
+						System.out.println("path: " + path);
+									
+						boolean onlyCMS = false;
+						boolean onlyDeliver = false;
+						boolean classes = true;
+						
+						onlyCMS = (path.indexOf("cms") > -1);
+						onlyDeliver = (path.indexOf("deliver") > -1);
+
+						classes = (path.indexOf("tld") == -1 && path.indexOf("config") == -1);
+						System.out.println("classes:" + classes);
+			
+						if(!onlyDeliver)
+						{
+							if(onlyCMS)
+								path = path.substring(0, path.lastIndexOf("\\"));
+							
+							File cmsDir = new File(project.getProperty("deploy.dir.cms") + "/WEB-INF/classes" + path); 
+							if(!classes)
+								cmsDir = new File(project.getProperty("deploy.dir.cms") + "/WEB-INF" + path); 
+		
+							Copy copyTask = project.createTask("copy");
+							copyTask.setVerbose(true);
+							copyTask.setTodir(cmsDir);
+							copyTask.setFile(ffrom);
+							copyTask.perform();
+						}
+			
+						if(!onlyCMS)
+						{
+							if(onlyDeliver)
+								path = path.substring(0, path.lastIndexOf("\\"));
+				
+							File deliverDir = new File(project.getProperty("deploy.dir.working") + "/WEB-INF/classes" + path); 
+							if(!classes)
+								deliverDir = new File(project.getProperty("deploy.dir.working") + "/WEB-INF" + path); 
+
+							Copy copyTask = project.createTask("copy");
+							copyTask.setVerbose(true);
+							copyTask.setTodir(deliverDir);
+							copyTask.setFile(ffrom);
+							copyTask.perform();
+						}
+					}
+				}
+			}			
+		]]>
+		</script>
+	
+	</target>
+		
+	<target name="fast-build-clean" depends="" description="Compiles the classes if class and moves configs to the right spot">
+
 		<echo message="Copying infoglueCMS/WEB-INF/lib"/>
 		<copy todir="${deploy.dir.cms}/WEB-INF/lib">
 			<fileset dir="${lib}/build">
@@ -481,12 +620,6 @@
 				<exclude name="pluto-1.0.1-rc4.jar"/>
 				<exclude name="pluto-1.0.1.jar"/>
 				<exclude name="portlet-api-1.0.jar"/>				
-
-				<!--
-				<exclude name="standard.jar"/>
-				<exclude name="jstl.jar"/>
-				-->
-						
 			</fileset>
 			<fileset dir="${lib}/core">
 				<include name="*.*"/>
@@ -494,12 +627,6 @@
 				<exclude name="pluto-1.0.1-rc4.jar"/>
 				<exclude name="pluto-1.0.1.jar"/>
 				<exclude name="portlet-api-1.0.jar"/>
-
-				<!--
-				<exclude name="standard.jar"/>
-				<exclude name="jstl.jar"/>
-				-->
-		
 			</fileset>
 			<fileset dir="${lib}/jdbc">
 				<include name="*.*"/>
@@ -514,12 +641,6 @@
 				<exclude name="pluto-1.0.1-rc4.jar"/>
 				<exclude name="pluto-1.0.1.jar"/>
 				<exclude name="portlet-api-1.0.jar"/>
-
-				<!--
-				<exclude name="standard.jar"/>
-				<exclude name="jstl.jar"/>
-				-->
-
 			</fileset>
 			<fileset dir="${lib}/core">
 				<include name="*.*"/>
@@ -527,12 +648,6 @@
 				<exclude name="pluto-1.0.1-rc4.jar"/>
 				<exclude name="pluto-1.0.1.jar"/>
 				<exclude name="portlet-api-1.0.jar"/>
-
-				<!--
-				<exclude name="standard.jar"/>
-				<exclude name="jstl.jar"/>
-				-->
-
 			</fileset>
 			<fileset dir="${lib}/jdbc">
 				<include name="*.*"/>
@@ -691,7 +806,8 @@
 		<copy todir="${deploy.dir.cms}/META-INF">
 			<fileset dir="${conf}" includes="context.xml"/>
 		</copy>					
-</target>
+
+	</target>
 
 
 	<!--
