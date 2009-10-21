@@ -2121,12 +2121,12 @@ $ui.getString("entity.${fieldNameKey}.label")<br/>
 				#if($velocityCount > 1)
 					<img class="divider" src="images/trans.gif" width="2" height="20"/>
 				#end
-				<div id="buttons$velocityCount" style="height: 26px; overflow: hidden; display: block; float: left; border: 0px solid red;">
+				<div id="buttons$velocityCount" style="height: 26px; overflow: visible; display: block; float: left; border: 0px solid red;">
 					<div id="initialButton">
 						<a class="igToolbarButton igToolbarHeaderButton" style="amargin-top: 0px; margin-bottom: 0px;" href="#" id="button$velocityCount" name="button$velocityCount" title="$button.title"><span class='igToolbarButtonOuterSpan igToolbarHeaderButton'><span class='$button.cssClass' title="$button.title">$button.text</span></span></a>
 					</div>
 					<div style="clear:both;"></div>
-					<div style="float: left; display: block; background-color: #addaf9; border: 1px solid #607583; border-top: 0px;">
+					<div class="subButtons" style="float: left; display: none; background-color: #addaf9; border: 1px solid #9caabd; border-top: 0px; width: 100%;">
 					#set($height = 26 + 20)
 					#foreach($subButton in $button.subButtons)
 						<a class="igToolbarButton igToolbarSubButton" style="margin-top: 0px; margin-bottom: 0px;" href="#" id="subButton$velocityCount" name="subButton$velocityCount" title="$subButton.title"><span class='igToolbarButtonOuterSpan igToolbarSubButtonOuterSpan'><span class='$subButton.cssClass' title="$subButton.title">$subButton.text</span></span></a>
@@ -2135,51 +2135,120 @@ $ui.getString("entity.${fieldNameKey}.label")<br/>
 					#end
 					</div>
 					<div style="clear: both;"></div>
-					<div style="width: 100%; height: 20px; float: left;" class="shadow"/>
+					<div style="width: 100%; height: 20px; float: left; display: none;" class="shadow"/>
 					
 					<script type="text/javascript">
 					<!--
 					$("#buttons$velocityCount").mouseenter(function(){
 						$("#buttons$velocityCount").css("height", "${height}px");
+						$("#buttons$velocityCount .subButtons").show("fast");
+						$("#buttons$velocityCount .shadow").css("display", "block");
 					}).mouseleave(function(){
 						$("#buttons$velocityCount").css("height", "26px");
+						$("#buttons$velocityCount .subButtons").hide("fast");
+						$("#buttons$velocityCount .shadow").css("display", "none");
 					});
 
-    				$("#button$velocityCount").click(function(){
-						//alert("Click on link");
-    	            	#if($button.actionURL.indexOf("javascript") == -1 && $button.isJavascript == false && $button.actionURL != '')
-    		           		#if($button.target == "inlineDiv")
-	    		           		openInlineDiv("$button.actionURL", 600, 800, true, true, "");
-	    		           	#else
-	    		           		$("#$button.target").attr("src", "$button.actionURL");
-	    		           	#end
-    		           	#else
-			           		#if($button.target == "inlineDiv")
-	    		           		$button.actionURL
-	    		           	#else
-	    		           		window.frames["$button.target"].$button.actionURL;
-	    		           	#end
-    		           	#end
-    		           	return false;
-    	            });
-
-					#foreach($subButton in $button.subButtons)
-						$("#subButton$velocityCount").click(function(){
-							#if($subButton.actionURL.indexOf("javascript") == -1 && $subButton.isJavascript == false && $subButton.actionURL != '')
-	    		           		#if($subButton.target == "inlineDiv")
-		    		           		openInlineDiv("$subButton.actionURL", 600, 800, true, true, "");
+					#if($button.useConfirmation())
+	    				//Event listener for delete option
+	                	$("#button$velocityCount").click(function () {
+	                		//alert("aaa:" + $("#genericDialog"));
+	                		$("#genericDialog").attr("title", "$button.confirmationTitle");
+	                		$("#genericDialog p").text("$button.confirmationText");
+	                		$("#genericDialog").dialog({
+	                			resizable: false,
+	                			height:140,
+	                			modal: true,
+	                			overlay: {
+	                				backgroundColor: '#000',
+	                				opacity: 0.5
+	                			},
+	                			buttons: {
+	                				'$button.confirmationTitle': function() {
+	                					$(this).dialog('close');
+	                					#if($button.target == "inlineDiv")
+	                						openInlineDiv("$button.actionURL", 600, 800, true, true, "$button.confirmationTitle"); 
+				    		           	#else
+				    		           		window.frames["$button.target"].$button.actionURL;
+				    		           	#end
+	                				},
+	                				Cancel: function() {
+	                					$(this).dialog('close');
+	                				}
+	                			}
+	                		});
+							$("#genericDialog").dialog('open');
+	                		return false;
+	                	});
+					#else
+	    				$("#button$velocityCount").click(function(){
+							//alert("Click on link");
+	    	            	#if($button.actionURL.indexOf("javascript") == -1 && $button.isJavascript == false && $button.actionURL != '')
+	    		           		#if($button.target == "inlineDiv")
+		    		           		openInlineDiv("$button.actionURL", 600, 800, true, true, "");
 		    		           	#else
-		    		           		$("#$subButton.target").attr("src", "$subButton.actionURL");
+		    		           		$("#$button.target").attr("src", "$button.actionURL");
 		    		           	#end
 	    		           	#else
-				           		#if($subButton.target == "inlineDiv")
-		    		           		$subButton.actionURL
+				           		#if($button.target == "inlineDiv")
+		    		           		$button.actionURL
 		    		           	#else
-		    		           		window.frames["$subButton.target"].$subButton.actionURL;
+		    		           		window.frames["$button.target"].$button.actionURL;
 		    		           	#end
 	    		           	#end
 	    		           	return false;
-			            });
+	    	            });
+					#end
+					
+					#foreach($subButton in $button.subButtons)
+						#if($subButton.useConfirmation())
+		    				//Event listener for delete option
+		                	$("#subButton$velocityCount").click(function () {
+		                		$("#genericDialog").attr("title", "$subButton.confirmationTitle");
+		                		$("#genericDialog p").text("$subButton.confirmationText");
+		                		$("#genericDialog").dialog({
+		                			resizable: false,
+		                			height:140,
+		                			modal: true,
+		                			overlay: {
+		                				backgroundColor: '#000',
+		                				opacity: 0.5
+		                			},
+		                			buttons: {
+		                				'$subButton.confirmationTitle': function() {
+		                					$(this).dialog('close');
+		                					#if($subButton.target == "inlineDiv")
+		                						openInlineDiv("$subButton.actionURL", 600, 800, true, true, "$subButton.confirmationTitle"); 
+					    		           	#else
+					    		           		window.frames["$subButton.target"].$subButton.actionURL;
+					    		           	#end
+		                				},
+		                				Cancel: function() {
+		                					$(this).dialog('close');
+		                				}
+		                			}
+		                		});
+								$("#genericDialog").dialog('open');
+		                		return false;
+		                	});
+						#else
+							$("#subButton$velocityCount").click(function(){
+				            	#if($subButton.actionURL.indexOf("javascript") == -1 && $subButton.isJavascript == false && $subButton.actionURL != '')
+		    		           		#if($subButton.target == "inlineDiv")
+			    		           		openInlineDiv("$subButton.actionURL", 600, 800, true, true, "");
+			    		           	#else
+			    		           		$("#$subButton.target").attr("src", "$subButton.actionURL");
+			    		           	#end
+		    		           	#else
+					           		#if($subButton.target == "inlineDiv")
+			    		           		$subButton.actionURL
+			    		           	#else
+			    		           		window.frames["$subButton.target"].$subButton.actionURL;
+			    		           	#end
+		    		           	#end
+		    		           	return false;
+				            });
+				    	#end
 					#end
 					-->
 					</script>

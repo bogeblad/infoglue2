@@ -431,6 +431,17 @@ img.scaledbordered {
 .logout {background:url(../../images/v3/exit.png) no-repeat left center; background-position: 0px 2px;}
 .accessRights {background:url(../../images/v3/accessRightIcon.gif) no-repeat left center; background-position: 0px 2px;}
 
+.unpublish {background:url(../../images/v3/publishPageIcon.gif) no-repeat left center; background-position: 0px 2px;}
+.syncTree {background:url(../../images/v3/accessRightIcon.gif) no-repeat left center; background-position: 0px 2px;}
+.runTask {background:url(../../images/v3/accessRightIcon.gif) no-repeat left center; background-position: 0px 2px;}
+.changeContentType {background:url(../../images/v3/accessRightIcon.gif) no-repeat left center; background-position: 0px 2px;}
+.exportContent {background:url(../../images/v3/accessRightIcon.gif) no-repeat left center; background-position: 0px 2px;}
+.importContent {background:url(../../images/v3/accessRightIcon.gif) no-repeat left center; background-position: 0px 2px;}
+.changeLanguage {background:url(../../images/v3/accessRightIcon.gif) no-repeat left center; background-position: 0px 2px;}
+.showDataAsXML {background:url(../../images/v3/accessRightIcon.gif) no-repeat left center; background-position: 0px 2px;}
+
+
+
 .save, .saveAndExit, .cancelIcon, .close, .help {
 	padding-left:28px;
 }
