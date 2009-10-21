@@ -99,7 +99,7 @@ public class CmsJDOCallback implements CallbackInterceptor
 
     public Class loaded(Object object, short accessMode) throws Exception
     {
-		//System.out.println("Loaded " + object.getClass().getName() + " accessMode:" + accessMode);
+		System.out.println("Loaded " + object.getClass().getName() + " accessMode:" + accessMode);
     	// return ( (Persistent) object ).jdoLoad(accessMode);
         return null;
     }

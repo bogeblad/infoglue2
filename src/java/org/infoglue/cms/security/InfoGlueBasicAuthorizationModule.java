@@ -130,8 +130,7 @@ public class InfoGlueBasicAuthorizationModule extends BaseController implements 
 	    	{
 	    		logger.warn(e.getMessage(), e);
 	    	}
-	    	//logger.warn("userName was null or empty - fix your templates:" + userName);
-	        
+
 	    	return null;
 	    }
 	    
@@ -948,6 +947,111 @@ public class InfoGlueBasicAuthorizationModule extends BaseController implements 
 	    }
 	}
 	
+	/**
+	 * This method is used find out if a user exists. Much quicker than getAuthorizedPrincipal 
+	 */
+	
+    public boolean userExists(String userName) throws Exception
+    {
+    	if(userName == null || userName.equals(""))
+	    {
+	    	try
+	    	{
+	    		throw new Exception("userName was null or empty - fix your templates:" + userName);
+	    	}
+	    	catch(Exception e)
+	    	{
+	    		logger.warn(e.getMessage(), e);
+	    	}
+
+	    	return false;
+	    }
+	    
+		boolean userExists = false;
+		
+		Timer t = new Timer();
+		
+		String administratorUserName = CmsPropertyHandler.getAdministratorUserName();
+		String administratorEmail 	 = CmsPropertyHandler.getAdministratorEmail();
+		
+		final boolean isAdministrator = (userName != null && userName.equalsIgnoreCase(administratorUserName)) ? true : false;
+		if(isAdministrator)
+		{
+			userExists = true;
+		}
+		else
+		{	
+			if(transactionObject == null)
+			{
+				Database db = CastorDatabaseService.getDatabase();
+	
+				try 
+				{
+					beginTransaction(db);
+					
+					userExists = SystemUserController.getController().systemUserExists(userName, db);
+					t.printElapsedTime("Getting if user exists took:");
+					
+					commitTransaction(db);
+				} 
+				catch (Exception e) 
+				{
+					logger.info("An error occurred trying to get if a systemUser exists for " + userName + ":" + e.getMessage());
+					rollbackTransaction(db);
+					throw new SystemException(e.getMessage());
+				}
+			}
+			else
+			{
+		    	userExists = SystemUserController.getController().systemUserExists(userName, transactionObject);
+		    	t.printElapsedTime("systemUser BBB took:");
+			}
+		}
+		
+		if(logger.isInfoEnabled())
+			t.printElapsedTime("Finding out if a user exists took:");
+		
+		return userExists;
+    }
+
+	/**
+	 * This method is used find out if a role exists. Much quicker than getRole 
+	 */
+    public boolean roleExists(String roleName) throws Exception
+    {
+    	boolean roleExists = false;
+
+		if(transactionObject == null)
+		{
+			roleExists = RoleController.getController().roleExists(roleName);
+		}
+		else
+		{
+			roleExists = RoleController.getController().roleExists(roleName, transactionObject);
+		}
+		
+		return roleExists;
+    }
+    
+	/**
+	 * This method is used find out if a group exists. Much quicker than getGroup 
+	 */
+    public boolean groupExists(String groupName) throws Exception
+    {
+    	boolean groupExists = false;
+
+		if(transactionObject == null)
+		{
+			groupExists = GroupController.getController().groupExists(groupName);
+		}
+		else
+		{
+			groupExists = GroupController.getController().groupExists(groupName, transactionObject);
+		}
+		
+		return groupExists;
+    }
+
 	public Properties getExtraProperties()
 	{
 		return extraProperties;

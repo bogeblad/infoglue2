@@ -37,6 +37,7 @@ import org.infoglue.cms.entities.management.Group;
 import org.infoglue.cms.entities.management.GroupVO;
 import org.infoglue.cms.entities.management.SystemUser;
 import org.infoglue.cms.entities.management.impl.simple.GroupImpl;
+import org.infoglue.cms.entities.management.impl.simple.SmallGroupImpl;
 import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
@@ -82,17 +83,17 @@ public class GroupController extends BaseController
 	
     public GroupVO getGroupVOWithId(Integer groupId) throws SystemException, Bug
     {
-		return (GroupVO) getVOWithId(GroupImpl.class, groupId);
+		return (GroupVO) getVOWithId(SmallGroupImpl.class, groupId);
     }
 
 	public GroupVO getGroupVOWithId(String groupName) throws SystemException, Bug
 	{
-		return (GroupVO) getVOWithId(GroupImpl.class, groupName);
+		return (GroupVO) getVOWithId(SmallGroupImpl.class, groupName);
 	}
 
 	public GroupVO getGroupVOWithId(String groupName, Database db) throws SystemException, Bug
 	{
-		return (GroupVO) getVOWithId(GroupImpl.class, groupName, db);
+		return (GroupVO) getVOWithId(SmallGroupImpl.class, groupName, db);
 	}
 
     // Simple, without db
@@ -105,7 +106,7 @@ public class GroupController extends BaseController
     
     public List getGroupVOList() throws SystemException, Bug
     {
-        return getAllVOObjects(GroupImpl.class, "groupName");
+        return getAllVOObjects(SmallGroupImpl.class, "groupName");
     }
 
     public List getGroupVOList(Database db) throws SystemException, Bug
@@ -119,7 +120,7 @@ public class GroupController extends BaseController
 		}
 		else
 		{
-		    groupVOList = getAllVOObjects(GroupImpl.class, "groupName", db);
+		    groupVOList = getAllVOObjects(SmallGroupImpl.class, "groupName", db);
 			if(groupVOList != null)
 			    CacheController.cacheObject("groupVOListCache", cacheKey, groupVOList);
 		}
@@ -401,6 +402,65 @@ public class GroupController extends BaseController
 		}
     }
     
+	/**
+	 * 	Get if the Group with the groupName exists
+	 */
+
+    public boolean groupExists(String groupName) throws SystemException, Bug
+    {
+        Database db = CastorDatabaseService.getDatabase();
+
+        beginTransaction(db);
+
+        boolean groupExists = false;
+        
+        try
+        {
+        	groupExists = groupExists(groupName, db);
+
+            commitTransaction(db);
+        }
+        catch(Exception e)
+        {
+            logger.error("An error occurred so we should not complete the transaction:" + e, e);
+            rollbackTransaction(db);
+            throw new SystemException(e.getMessage());
+        }
+        
+        return groupExists;
+    }        
+
+	/**
+	 * 	Get if the Group with the groupName exists
+	 */
+	 
+	public boolean groupExists(String groupName, Database db) throws SystemException, Bug
+	{
+		boolean groupExists = false;
+		
+        try
+        {										
+        	OQLQuery oql = db.getOQLQuery( "SELECT g FROM org.infoglue.cms.entities.management.impl.simple.SmallGroupImpl g WHERE g.groupName = $1");
+        	oql.bind(groupName);
+        	
+        	QueryResults results = oql.execute(Database.ReadOnly);
+			
+			if (results.hasMore()) 
+            {
+				groupExists = true;
+            }
+			
+			results.close();
+			oql.close();
+        }
+        catch(Exception e)
+        {
+        	throw new SystemException("An error occurred when we tried to fetch " + groupExists + " Reason:" + e.getMessage(), e);  
+        }    
+        
+        return groupExists;		
+	}
+
 	/**
 	 * This is a method that gives the user back an newly initialized ValueObject for this entity that the controller
 	 * is handling.

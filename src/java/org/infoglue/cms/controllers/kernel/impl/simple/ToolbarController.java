@@ -607,6 +607,47 @@ public class ToolbarController
 		unpublishButton.getSubButtons().add(unpublishAllButton);
 		buttons.add(unpublishButton);
 
+		ToolbarButton syncTreeButton = new ToolbarButton("",
+				  getLocalizedString(locale, "tool.contenttool.toolbarV3.showContentInTreeLabel"), 
+				  getLocalizedString(locale, "tool.contenttool.toolbarV3.showContentInTreeTitle"),
+				  "syncWithTree();",
+				  "",
+				  "syncTree");
+
+		ToolbarButton runTaskButton = new ToolbarButton("",
+				  getLocalizedString(locale, "tool.contenttool.toolbarV3.runTaskLabel"), 
+				  getLocalizedString(locale, "tool.contenttool.toolbarV3.runTaskTitle"),
+				  "ViewExecuteTask.action?contentId=" + contentId + "",
+				  "",
+				  "runTask");
+
+		ToolbarButton changeContentTypeButton = new ToolbarButton("",
+				  getLocalizedString(locale, "tool.contenttool.toolbarV3.changeContentTypeDefinitionLabel"), 
+				  getLocalizedString(locale, "tool.contenttool.toolbarV3.changeContentTypeDefinitionTitle"),
+				  "UpdateContent!inputContentType.action?contentId=" + contentId + "&repositoryId=" + contentVO.getRepositoryId(),
+				  "",
+				  "changeContentType");
+
+		ToolbarButton exportContentButton = new ToolbarButton("",
+				  getLocalizedString(locale, "tool.contenttool.toolbarV3.exportContentLabel"), 
+				  getLocalizedString(locale, "tool.contenttool.toolbarV3.exportContentTitle"),
+				  "ExportContent!input.action?contentId=" + contentId + "&repositoryId=" + contentVO.getRepositoryId(),
+				  "",
+				  "exportContent");
+
+		ToolbarButton importContentButton = new ToolbarButton("",
+				  getLocalizedString(locale, "tool.contenttool.toolbarV3.importContentLabel"), 
+				  getLocalizedString(locale, "tool.contenttool.toolbarV3.importContentTitle"),
+				  "ImportContent!input.action?parentContentId=" + contentId + "&repositoryId=" + contentVO.getRepositoryId(),
+				  "",
+				  "importContent");
+
+		syncTreeButton.getSubButtons().add(runTaskButton);
+		syncTreeButton.getSubButtons().add(changeContentTypeButton);
+		syncTreeButton.getSubButtons().add(exportContentButton);
+		syncTreeButton.getSubButtons().add(importContentButton);
+		buttons.add(syncTreeButton);
+
 		return buttons;
 	}
 
@@ -673,6 +714,7 @@ public class ToolbarController
 		List<ToolbarButton> buttons = new ArrayList<ToolbarButton>();
 		
 		Integer contentId = new Integer(request.getParameter("contentId"));
+		Integer contentVersionId = new Integer(request.getParameter("contentVersionId"));
 		ContentVO contentVO = ContentController.getContentController().getContentVOWithId(contentId);
 
 		buttons.add(new ToolbarButton("",
@@ -718,7 +760,45 @@ public class ToolbarController
 
 		publishButton.getSubButtons().add(submitToPublishButton);
 		buttons.add(publishButton);
-				
+		
+		ToolbarButton unpublishButton = new ToolbarButton("",
+				  getLocalizedString(locale, "tool.contenttool.toolbarV3.unpublishContentsLabel"), 
+				  getLocalizedString(locale, "tool.contenttool.toolbarV3.unpublishContentsTitle"),
+				  "UnpublishContentVersion!inputV3.action?contentId=" + contentId + "&recurseContents=false&returnAddress=ViewInlineOperationMessages.action&originalAddress=refreshParent",
+				  "",
+				  "unpublish");
+
+		ToolbarButton unpublishAllButton = new ToolbarButton("",
+				  getLocalizedString(locale, "tool.contenttool.toolbarV3.unpublishContentsAllLabel"), 
+				  getLocalizedString(locale, "tool.contenttool.toolbarV3.unpublishContentsAllTitle"),
+				  "UnpublishContentVersion!inputChooseContents.action?contentId=" + contentId + "&recurseContents=false&returnAddress=ViewInlineOperationMessages.action&originalAddress=refreshParent",
+				  "",
+				  "unpublish");
+
+		unpublishButton.getSubButtons().add(unpublishAllButton);
+		buttons.add(unpublishButton);
+
+		buttons.add(new ToolbarButton("",
+				  getLocalizedString(locale, "tool.contenttool.toolbarV3.showContentInTreeLabel"), 
+				  getLocalizedString(locale, "tool.contenttool.toolbarV3.showContentInTreeTitle"),
+				  "syncWithTree();",
+				  "",
+				  "syncTree"));
+
+		buttons.add(new ToolbarButton("",
+				  getLocalizedString(locale, "tool.contenttool.toolbarV3.changeLanguageLabel"), 
+				  getLocalizedString(locale, "tool.contenttool.toolbarV3.changeLanguageTitle"),
+				  "ChangeVersionLanguage!input.action?contentId=" + contentId + "&repositoryId=" + contentVO.getRepositoryId() + "&contentVersionId=" + contentVersionId,
+				  "",
+				  "changeLanguage"));
+
+		buttons.add(new ToolbarButton("",
+				  getLocalizedString(locale, "tool.contenttool.toolbarV3.showDataAsXMLLabel"), 
+				  getLocalizedString(locale, "tool.contenttool.toolbarV3.showDataAsXMLTitle"),
+				  "ViewContentVersion!asXML.action?contentId=" + contentId + "&repositoryId=" + contentVO.getRepositoryId() + "&contentVersionId=" + contentVersionId,
+				  "",
+				  "showDataAsXML"));
+
 		return buttons;
 	}
 	
