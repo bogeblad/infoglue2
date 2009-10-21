@@ -181,6 +181,22 @@ public class UserControllerProxy extends BaseController
     	return infoGluePrincipal;
     }
     
+	/**
+	 * This method returns if a user exists
+	 */
+	
+    public boolean userExists(String userName) throws ConstraintException, SystemException, Exception
+    {
+    	Boolean userExists = (Boolean)CacheController.getCachedObjectFromAdvancedCache("principalCache", "exists_" + userName);
+		if(userExists != null)
+			return userExists;
+    	
+		userExists = getAuthorizationModule().userExists(userName);
+	   
+		CacheController.cacheObjectInAdvancedCache("principalCache", "exists_" + userName, userExists, new String[]{}, false);
+			
+    	return userExists;
+    }
     
 	/**
 	 * This method creates a new user

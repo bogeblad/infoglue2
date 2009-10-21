@@ -146,6 +146,15 @@ public class RoleControllerProxy extends BaseController
 	}
 
 	/**
+	 * This method returns if a role exists
+	 */
+	
+    public boolean roleExists(String roleName) throws ConstraintException, SystemException, Exception
+    {
+		return getAuthorizationModule().roleExists(roleName);
+    }
+
+	/**
 	 * This method returns a list of InfoGlue Principals which are part of this role
 	 */
 	

@@ -146,6 +146,15 @@ public class GroupControllerProxy extends BaseController
 	}
 	
 	/**
+	 * This method returns if a role exists
+	 */
+	
+    public boolean groupExists(String groupName) throws ConstraintException, SystemException, Exception
+    {
+		return getAuthorizationModule().groupExists(groupName);
+    }
+
+	/**
 	 * This method returns a list of InfoGlue Principals which are part of this group
 	 */
 	
