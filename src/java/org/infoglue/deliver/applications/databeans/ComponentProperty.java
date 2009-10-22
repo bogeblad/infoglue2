@@ -63,7 +63,7 @@ public class ComponentProperty
 	private String value;
 	private boolean isMultipleBinding 		= false;
 	private boolean isAssetBinding 			= false;
-	private String assetMask 				= ".*";
+	private String assetMask 				= "*";
 	private boolean isPuffContentForPage	= false;
 	private Integer detailSiteNodeId		= null;
 	private boolean WYSIWYGEnabled 			= false;
