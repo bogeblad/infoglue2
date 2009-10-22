@@ -35,6 +35,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Writer;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
@@ -64,12 +65,10 @@ public class DocumentConverterHelper
 	private static Namespace officeNs 	= Namespace.getNamespace("office", "urn:oasis:names:tc:opendocument:xmlns:office:1.0");
 	private static Namespace textNs 	= Namespace.getNamespace("text", "urn:oasis:names:tc:opendocument:xmlns:text:1.0");
 	
-	public ConvertedDocumentBean convert(HttpServletRequest request, File aDocFile, String aTitle, String aMenuTextLength, List aCssList, String rewrite) 
+	public ConvertedDocumentBean convert(HttpServletRequest request, File aDocFile, String aTitle, String aMenuTextLength, List aCssList, String rewrite, String keepMenuExpanded) 
 	{
 		ConvertedDocumentBean convertedDocument = new ConvertedDocumentBean();
 		int menuMaxLength						= 20;
-		
-		logger.info("START");
 		
 		logger.info("-----------------------------------------------");
 		logger.info("Doc file: " + aDocFile.getAbsolutePath());
@@ -144,7 +143,6 @@ public class DocumentConverterHelper
 			//----------------------------------------------
 			
 			File documentDir = new File(digitalAssetPath);
-
 			if (!documentDir.exists() || rewrite.equals("true"))
 			{
 				logger.info("The directory " + digitalAssetPath + " does not exist. Creating it.");
@@ -162,7 +160,15 @@ public class DocumentConverterHelper
 				logger.info("Conversion START");
 					
 				convertDocument(aDocFile, htmlFile, connection);
-				convertDocument(aDocFile, odtFile, connection);
+				if(!aDocFile.getName().substring(aDocFile.getName().indexOf(".") + 1).equalsIgnoreCase("odt"))
+				{
+					convertDocument(aDocFile, odtFile, connection);
+				}
+				else
+				{
+					odtFile = aDocFile;
+				}
+
 				convertDocument(aDocFile, pdfFile, connection);
 				connection.disconnect();
 				
@@ -195,7 +201,6 @@ public class DocumentConverterHelper
 				
 				logger.info("Done updating handbook with extra info");
 			}
-
 			//--------------------------------
 			// Get the URL:s to the resources
 			//--------------------------------
@@ -235,7 +240,7 @@ public class DocumentConverterHelper
 			
 			logger.info("Generating TOC...");
 			
-			String tocString 	= generateHtmlToc(contentXmlFile, htmlFileUrl, aTitle, menuMaxLength);
+			String tocString 	= generateHtmlToc(contentXmlFile, htmlFileUrl, aTitle, menuMaxLength, keepMenuExpanded);
 
 			logger.info("Done generating TOC");
 			
@@ -254,7 +259,7 @@ public class DocumentConverterHelper
 		return convertedDocument;
 	}
 	
-	private static String generateHtmlToc(File aContentXmlFile, String aHtmlFileUrl, String aTitle, int aMenuMaxLength) throws Exception 
+	private static String generateHtmlToc(File aContentXmlFile, String aHtmlFileUrl, String aTitle, int aMenuMaxLength, String keepMenuExpanded) throws Exception 
 	{		
 		logger.info("Start generating HTML TOC: xmlFile: " + aContentXmlFile.getPath() + ", htmlFileUrl: " + aHtmlFileUrl);
 		
@@ -293,7 +298,7 @@ public class DocumentConverterHelper
 		{
 			logger.info("Found TOC elements, generating TOC.");
 			StringBuffer htmlMenuSb = new StringBuffer();			
-			generateHtml(tocElements.toArray(), htmlMenuSb, aHtmlFileUrl, aTitle, aMenuMaxLength);		
+			generateHtml(tocElements.toArray(), htmlMenuSb, aHtmlFileUrl, aTitle, aMenuMaxLength, keepMenuExpanded);		
 			return htmlMenuSb.toString();
 		}
 		else
@@ -302,7 +307,7 @@ public class DocumentConverterHelper
 		}
 	}
 
-	private static StringBuffer generateHtml(Object[] aTocElements, StringBuffer aReturnSb, String aHtmlFileUrl, String aTitle, int aMenuMaxLength) throws Exception 
+	private static StringBuffer generateHtml(Object[] aTocElements, StringBuffer aReturnSb, String aHtmlFileUrl, String aTitle, int aMenuMaxLength, String keepMenuExpanded) throws Exception 
 	{				
 		Element child 					= null;
 		Element grandChild				= null;
@@ -318,6 +323,73 @@ public class DocumentConverterHelper
 		String croppedElementText		= "";
 		int cropCounter					= 0;
 		boolean willCrop				= false;
+		
+		boolean keepMenuExpandedBoolean = "true".equalsIgnoreCase(keepMenuExpanded);
+		
+		String javaScriptToExpandAndCollapse;
+		StringBuilder headingIds = new StringBuilder();
+		
+		if(keepMenuExpandedBoolean)
+		{
+			javaScriptToExpandAndCollapse = "\n<script type='text/javascript'> \n" +
+			"function expandOrCollapse(id, eventHandle){ \n" +
+			"if (!eventHandle) var eventHandle = window.event; \n" +
+			"if (eventHandle) eventHandle.cancelBubble = true; \n" +
+			"if (eventHandle.stopPropagation) eventHandle.stopPropagation();\n" +
+			"var theElement = document.getElementById(id); \n" +
+			"if ( theElement == null ) \n" +
+			"{return;} \n" +
+			"var listElementStyle=theElement.style; \n" +
+			"if (listElementStyle.display!='none') \n" +
+			"{listElementStyle.display='none';} \n" +
+			"else \n" +
+			"{listElementStyle.display='block';} \n" +
+			"} \n" +
+			"</script>\n";
+		}
+		else
+		{		
+			for(Object tmpChild : aTocElements)
+			{
+				if(tmpChild != null && !((Element)tmpChild).getText().equals(""))
+				{
+					String tmp = elementText.substring(0, elementText.indexOf(" ")).replace(".", "");
+					
+					headingIds.append(tmp);
+					headingIds.append(",");
+				}
+				else if (((Element)tmpChild).getText() == null || ((Element)tmpChild).getText().equals(""))
+				{
+					grandChild = ((Element)tmpChild).getChild("a", textNs);
+					
+					if (grandChild != null)
+					{
+						String tmp = grandChild.getText().substring(0, grandChild.getText().indexOf(" ")).replace(".", "");
+						headingIds.append(tmp);
+						headingIds.append(",");
+					}
+				}
+			}
+			
+			javaScriptToExpandAndCollapse =
+			"\n<script type='text/javascript'> \n" +
+			"String.prototype.startsWith = function(prefix) {return this.indexOf(prefix) === 0;}\n" +
+			"function expandOrCollapse(id, eventHandle){ \n" +
+			"if (!eventHandle) var eventHandle = window.event; \n" +
+			"if (eventHandle) eventHandle.cancelBubble = true; \n" +
+			"if (eventHandle.stopPropagation) eventHandle.stopPropagation();\n" +
+			"var ids = '" + headingIds.toString() + "';\n" +
+			"var myArray = ids.split(','); \n" +
+			"for(var i=0;i<myArray.length; i++){ \n" +
+			"	if(document.getElementById(myArray[i]) != null){\n" +
+			"		if(id.startsWith(myArray[i])){\n" +
+			"			document.getElementById(myArray[i]).style.display='block';}\n" +
+			"		else{document.getElementById(myArray[i]).style.display='none';}\n" +
+			"}\n}\n}\n" +
+			"</script>\n";
+		}
+		
+		aReturnSb.append(javaScriptToExpandAndCollapse);
 		
 		aReturnSb.append("<div id=\"submenu\">");
 		aReturnSb.append("<div class=\"menuheader\">" + aTitle + "</div>");
@@ -367,17 +439,23 @@ public class DocumentConverterHelper
 				logger.info("Heading number: " + headingNumber + ", level: " + level + ", text: " + elementText);
 				
 				if (level > previousLevel)
-				{						
-					aReturnSb.append("<ul>");					
+				{
+					String attributes = previousHeadingNumber.equals("") ? "" : " id='" + previousHeadingNumber.replace(".", "") + "' style=\"display:none\"";
+					aReturnSb.append("<ul" + attributes + ">");
 				}
 				else if(level < previousLevel)
-				{							
+				{
+					aReturnSb.append("</li>");
 					numberOfEndUls = previousLevel - level;
 
 					for (int i = 0; i < numberOfEndUls; i ++)
 					{
-						aReturnSb.append("</ul>");					
+						aReturnSb.append("</ul></li>");					
 					}
+				}
+				else
+				{
+					aReturnSb.append("</li>");
 				}
 				
 				//-----------------------------------------------------------------
@@ -424,9 +502,11 @@ public class DocumentConverterHelper
 				}
 				
 				logger.info("Adding TOC <li> element on level " + level + ": " + croppedElementText + ", linkCounter: " + linkCounter);				
-								
-				aReturnSb.append("<li><p><a target=\"handbookFrame\" href=\"" + aHtmlFileUrl + "#link" + linkCounter + "\" title=\"" + elementText + "\">" + croppedElementText + "</a></p></li>");
-				previousHeadingNumber 	= headingNumber;				
+				String onClickExpandOrCollapse = (startPosition + 1) <= aTocElements.length ?  " onclick=\"expandOrCollapse('" + headingNumber.replace(".", "") + "',event);\"" : "";
+				String onClickScroll = " onclick=\"window.frames['handbookFrame'].scrollToAnchor('link" + linkCounter + "'); return false;\"";
+				
+				aReturnSb.append("\n<li" + onClickExpandOrCollapse + "><p><a target=\"handbookFrame\" href=\"" + aHtmlFileUrl + "#link" + linkCounter + "\" title=\"" + elementText + "\"" + onClickScroll + ">" + croppedElementText + "</a></p>");
+				previousHeadingNumber 	= headingNumber;
 				previousLevel 			= level;
 				linkCounter ++;
 			}
@@ -436,10 +516,11 @@ public class DocumentConverterHelper
 			}
 			startPosition = startPosition + 1;
 		}
-
+		
+		aReturnSb.append("\n</li></ul>");
 		logger.info("TOC generation end.");
 		
-		aReturnSb.append("</div>");
+		aReturnSb.append("\n</div>");
 
 		return aReturnSb;		
 	}
@@ -448,7 +529,7 @@ public class DocumentConverterHelper
 	{
 		String originalHtmlContent 		= readFileIntoString(aHandbookHtmlFile);
 		String htmlContentWithoutToc	= removeTocFromHtml(originalHtmlContent);
-		String htmlContentWithAnchors 	= insertAnchors(htmlContentWithoutToc);
+		String htmlContentWithAnchors 	= insertAnchorsAndJavaScript(htmlContentWithoutToc);
 		String htmlWithProperCss		= fixCss(htmlContentWithAnchors, aCssList);
 		writeStringToFile(aHandbookHtmlFile, htmlWithProperCss);
 	}
@@ -532,35 +613,49 @@ public class DocumentConverterHelper
 		return sb.toString();
 	}
 
-	private static String insertAnchors(String aOriginalHtmlContent) 
+	private static String insertAnchorsAndJavaScript(String aOriginalHtmlContent) 
 	{		
 		StringBuffer modifiedHtmlContent 	= new StringBuffer();
 		StringTokenizer st 					= new StringTokenizer(aOriginalHtmlContent, System.getProperty("line.separator"));
 		String lineString					= "";
 		int linkCounter						= 0;
 		
+		
+		
 		while (st.hasMoreTokens())
 		{
 			lineString = st.nextToken();
 			
+			if(lineString.indexOf("<HEAD>") > -1)
+			{
+				String str = "\n<script type='text/javascript'> \n" +
+				"function scrollToAnchor(anchorID){ \n" +
+				"if(anchorID!=null){ \n" +
+				"anchorPos = document.getElementById(anchorID).offsetTop;\n" +
+				"document.body.scrollTop = anchorPos;}}\n" +
+				"</script>";
+				
+				lineString = lineString.concat(str);
+			}
+			
 			if (lineString.indexOf("<H1") > -1)
 			{			
-				lineString = lineString.replaceAll("<H1", "<A NAME=\"link" + linkCounter + "\"></A><H1");				
+				lineString = lineString.replaceAll("<H1", "<A NAME=\"link" + linkCounter + "\" ID=\"link" + linkCounter + "\"></A><H1");				
 				linkCounter ++;	
 			}
 			else if (lineString.indexOf("<H2") > -1)
 			{
-				lineString = lineString.replaceAll("<H2", "<A NAME=\"link" + linkCounter + "\"></A><H2");				
+				lineString = lineString.replaceAll("<H2", "<A NAME=\"link" + linkCounter + "\" ID=\"link" + linkCounter + "\"></A><H2");				
 				linkCounter ++;	
 			}
 			else if (lineString.indexOf("<H3") > -1)
 			{
-				lineString = lineString.replaceAll("<H3", "<A NAME=\"link" + linkCounter + "\"></A><H3");				
+				lineString = lineString.replaceAll("<H3", "<A NAME=\"link" + linkCounter + "\" ID=\"link" + linkCounter + "\"></A><H3");				
 				linkCounter ++;	
 			}
 			else if (lineString.indexOf("<H4") > -1)
 			{
-				lineString = lineString.replaceAll("<H4", "<A NAME=\"link" + linkCounter + "\"></A><H4");				
+				lineString = lineString.replaceAll("<H4", "<A NAME=\"link" + linkCounter + "\" ID=\"link" + linkCounter + "\"></A><H4");				
 				linkCounter ++;	
 			}
 			
