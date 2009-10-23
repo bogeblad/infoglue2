@@ -201,6 +201,15 @@ public class GroupControllerProxy extends BaseController
 	}
 
 	/**
+	 * This method removes a user from group
+	 */
+	
+	public void removeUser(String groupName, String userName) throws ConstraintException, SystemException, Exception
+	{
+		getAuthorizationModule().removeUserFromGroup(groupName, userName);
+	}
+
+	/**
 	 * This method deletes an existing user
 	 */
 	

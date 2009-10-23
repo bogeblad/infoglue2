@@ -202,6 +202,15 @@ public class RoleControllerProxy extends BaseController
 	}
 
 	/**
+	 * This method removes a user from group
+	 */
+	
+	public void removeUser(String roleName, String userName) throws ConstraintException, SystemException, Exception
+	{
+		getAuthorizationModule().removeUserFromRole(roleName, userName);
+	}
+
+	/**
 	 * This method deletes an existing user
 	 */
 	

@@ -775,6 +775,16 @@ public class InfoGlueJDBCAuthorizationModule extends BaseController implements A
 		throw new SystemException("The JDBC BASIC Authorization module does not support adding of users to roles yet...");
 	}
 
+	public void removeUserFromGroup(String groupName, String userName) throws Exception 
+	{
+		throw new SystemException("The JDBC BASIC Authorization module does not support removing of users from groups yet...");
+	}
+
+	public void removeUserFromRole(String roleName, String userName) throws Exception 
+	{
+		throw new SystemException("The JDBC BASIC Authorization module does not support removing of users from roles yet...");
+	}
+
 	/**
 	 * This method is used find out if a user exists. Much quicker than getAuthorizedPrincipal 
 	 */

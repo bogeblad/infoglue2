@@ -2468,6 +2468,16 @@ public class LenientFallbackJNDIBasicAuthorizationModule extends Thread implemen
 		throw new SystemException("The JNDI BASIC Authorization module does not support adding of users to roles yet...");
 	}
 
+	public void removeUserFromGroup(String groupName, String userName) throws Exception 
+	{
+		throw new SystemException("The JNDI BASIC Authorization module does not support removing users from groups yet...");
+	}
+
+	public void removeUserFromRole(String roleName, String userName) throws Exception 
+	{
+		throw new SystemException("The JNDI BASIC Authorization module does not support removing users from roles yet...");
+	}
+
 	/**
 	 * This method is used find out if a user exists. Much quicker than getAuthorizedPrincipal 
 	 */

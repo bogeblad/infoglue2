@@ -218,6 +218,16 @@ public interface AuthorizationModule
     public void addUserToGroup(String groupName, String userName) throws Exception;
 
 	/**
+	 * This method is used to remove user from a role.  
+	 */
+    public void removeUserFromRole(String roleName, String userName) throws Exception;
+
+	/**
+	 * This method is used to remove user from a group.  
+	 */
+    public void removeUserFromGroup(String groupName, String userName) throws Exception;
+
+	/**
 	 * This method is used find out if a user exists. Much quicker than getAuthorizedPrincipal 
 	 */
     public boolean userExists(String userName) throws Exception;

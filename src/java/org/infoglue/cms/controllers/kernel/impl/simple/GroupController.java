@@ -401,7 +401,60 @@ public class GroupController extends BaseController
 			systemUser.getGroups().add(group);
 		}
     }
-    
+
+    public void removeUser(String groupName, String userName) throws ConstraintException, SystemException
+    {
+        Database db = CastorDatabaseService.getDatabase();
+        ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
+
+        beginTransaction(db);
+
+        try
+        {
+            addUser(groupName, userName, db);
+
+            //If any of the validations or setMethods reported an error, we throw them up now before create.
+            ceb.throwIfNotEmpty();
+            
+            commitTransaction(db);
+        }
+        catch(ConstraintException ce)
+        {
+            logger.warn("An error occurred so we should not complete the transaction:" + ce, ce);
+            rollbackTransaction(db);
+            throw ce;
+        }
+        catch(Exception e)
+        {
+            logger.error("An error occurred so we should not complete the transaction:" + e, e);
+            rollbackTransaction(db);
+            throw new SystemException(e.getMessage());
+        }
+    }        
+
+    public void removeUser(String groupName, String userName, Database db) throws ConstraintException, SystemException
+    {
+		Group group = getGroupWithName(groupName, db);
+		
+		if(userName != null)
+		{
+			SystemUser systemUser = null;
+			Iterator systemUsersIterator = group.getSystemUsers().iterator();
+			while(systemUsersIterator.hasNext())
+			{
+				systemUser = (SystemUser)systemUsersIterator.next();
+	        	if(systemUser.getUserName().equals(userName))
+	        		break;
+			}
+			
+			if(systemUser != null)
+			{
+				group.getSystemUsers().remove(systemUser);
+				systemUser.getGroups().remove(group);
+			}
+		}
+    }
+
 	/**
 	 * 	Get if the Group with the groupName exists
 	 */
