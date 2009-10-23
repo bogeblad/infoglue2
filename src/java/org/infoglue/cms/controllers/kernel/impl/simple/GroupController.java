@@ -411,7 +411,7 @@ public class GroupController extends BaseController
 
         try
         {
-            addUser(groupName, userName, db);
+        	removeUser(groupName, userName, db);
 
             //If any of the validations or setMethods reported an error, we throw them up now before create.
             ceb.throwIfNotEmpty();

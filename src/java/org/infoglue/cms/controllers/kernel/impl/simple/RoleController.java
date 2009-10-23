@@ -427,7 +427,7 @@ public class RoleController extends BaseController
 
         try
         {
-            addUser(roleName, userName, db);
+        	removeUser(roleName, userName, db);
 
             //If any of the validations or setMethods reported an error, we throw them up now before create.
             ceb.throwIfNotEmpty();
