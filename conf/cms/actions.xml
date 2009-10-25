@@ -1,4 +1,4 @@
-<!-- $Id: actions.xml,v 1.87 2009/10/20 21:55:47 mattias Exp $ -->
+<!-- $Id: actions.xml,v 1.88 2009/10/25 21:53:37 mattias Exp $ -->
 <actions>
 
 	<!-- MySettings -->
@@ -249,6 +249,10 @@
         <view name="error">/cms/contenttool/error.vm</view>
     </action>
 	<action name="org.infoglue.cms.applications.contenttool.actions.SimpleContentXmlAction" alias="SimpleContentXml">
+		<view name="error">/cms/contenttool/error.vm</view>
+	</action>
+	<action name="org.infoglue.cms.applications.contenttool.actions.ViewContentToolAjaxServicesAction" alias="ViewContentToolAjaxServices">
+		<view name="success">/cms/contenttool/v3/viewContentToolContextMenu.vm</view>
 		<view name="error">/cms/contenttool/error.vm</view>
 	</action>
 	<action name="org.infoglue.cms.applications.contenttool.actions.SimpleContentXmlServiceAction" alias="SimpleContentXmlService">

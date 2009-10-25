@@ -107,8 +107,8 @@
 		    	$(this).val("").css("color", "black");
 		    }).blur(function () {
 		    	if($(this).val() == "")
-		    		$(this).val("System search").css("color", "#ccc");
-		    	else if($(this).val() == "System search")
+		    		$(this).val("$ui.getString("tool.common.searchDialog.searchFieldDefaultText")").css("color", "#ccc");
+		    	else if($(this).val() == "$ui.getString("tool.common.searchDialog.searchFieldDefaultText")")
 		     		$(this).css("color", "#ccc");
 			});
 		
@@ -127,8 +127,8 @@
 #end
 
 #define( $rightMenuMarkup )
-	<form name="searchForm" method="post" action="#" onsubmit="return search($repositoryId);" style="float: left; clear:none; margin-top: 5px;">
-		<input type="text" name="searchField" id="searchField" style="float:left; display:block; border: 1px solid #ccc; font-family: Tahoma; font-size:10pt; color: #ccc;" value="System search"/> <img src="images/v3/searchButtonIcon.png" onclick="search($repositoryId);" style="margin-top: 2px; margin-left: 2px; float:left; display:block;" alt="Search"/>
+	<form name="searchForm" id="searchForm" method="post" action="#" onsubmit="return search($repositoryId);">
+		<input type="text" name="searchField" id="searchField" value="$ui.getString("tool.common.searchDialog.searchFieldDefaultText")"/> <img id="searchButton" src="images/v3/searchButtonIcon.png" onclick="search($repositoryId);" alt="Search"/>
 	</form>
 #end
 

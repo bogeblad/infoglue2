@@ -281,3 +281,25 @@ img.divider
 {
 	border: 1px solid #6593cf
 }
+#searchForm
+{
+	float: left; 
+	clear: none; 
+	margin-top: 5px;
+}
+#searchField
+{
+	float: left; 
+	display: block; 
+	border: 1px solid #ccc; 
+	font-family: Tahoma; 
+	font-size: 10pt; 
+	color: #ccc;
+}
+#searchButton
+{
+	margin-top: 2px; 
+	margin-left: 2px; 
+	float: left; 
+	display: block;
+}

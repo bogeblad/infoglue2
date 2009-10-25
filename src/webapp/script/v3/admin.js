@@ -254,7 +254,7 @@ function resize()
 	$("#managementWorkIframe").attr("height", windowHeight - 115);
 	$("#publishingWorkIframe").attr("height", windowHeight - 115);
 	$("#mydesktopWorkIframe").attr("height", windowHeight - 115);
-	$("#searchWorkIframe").attr("height", windowHeight - 115);
+	$("#searchWorkIframe").attr("height", windowHeight - 50);
 
 	var availableToolsHeight = $("#availableTools").height();
 	var activeToolHeaderHeight = $("#activeToolHeader").height();
@@ -345,22 +345,22 @@ function closeContextMenu()
 	$("#contextMenuDiv").hide();
 }
 
-function showContextMenu(id, e)
+function showContextMenu(ajaxUrl, e)
 {
 	//alert("e:" + e);
-	//alert("id:" + id);
+	//alert("ajaxUrl:" + ajaxUrl);
 	//alert("Offset:" + document.getElementById("activeTool").offsetTop);
 		
-		if(!e)
-	        e = window.event;
+	if(!e)
+		e = window.event;
  
-		var clientX = getEventPositionX(e) + 16;
-		var clientY = getEventPositionY(e) + 80;
+	var clientX = getEventPositionX(e) + 16;
+	var clientY = getEventPositionY(e) + 80;
 		
-		var rightedge = document.body.clientWidth - clientX;
-		var bottomedge = getWindowHeight() - clientY;
+	var rightedge = document.body.clientWidth - clientX;
+	var bottomedge = getWindowHeight() - clientY;
 
-		var menuDiv = document.getElementById("contextMenuDiv");
+	var menuDiv = document.getElementById("contextMenuDiv");
 	
 	if (rightedge < menuDiv.offsetWidth)
 		clientX = (clientX - menuDiv.offsetWidth);
@@ -371,16 +371,10 @@ function showContextMenu(id, e)
 	menuDiv.style.left 	= clientX + "px";
 	menuDiv.style.top 	= clientY + "px";
 	
-	jQuery.get("ViewStructureToolAjaxServices!contextMenu.action", { siteNodeId: id },
-      	function(data){
-        	//alert("Data Loaded: " + data);
+	jQuery.get(ajaxUrl,
+	  	function(data){
 			$("#contextMenuDiv").html(data);
     	});
-	/*
-	$("#contextMenuDiv #create").click(function () { 
-    	openInlineDiv("CreateSiteNode!inputV3.action?isBranch=true&repositoryId=2&parentSiteNodeId=" + id + "&languageId=1&returnAddress=%2FinfoglueCMS%2FViewInlineOperationMessages.action&originalAddress=%2FinfoglueDeliverWorking%2FViewPage%21renderDecoratedPage.action%3FsiteNodeId%3D1%26amp%3BlanguageId%3D1%26amp%3BcontentId%3D-1", 600, 800, true, true, "New page"); 
-		});
-	*/
 	$("#contextMenuDiv").show();
 
 	return false;
