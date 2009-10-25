@@ -39,6 +39,7 @@ public class DocumentConverterTag extends TemplateControllerTag
 	private String docFilePath;
 	private String title;
 	private String menuTextLength;
+	private String keepMenuExpanded;
 	private List cssList;
 	private String rewrite;
 	
@@ -53,7 +54,7 @@ public class DocumentConverterTag extends TemplateControllerTag
         {			
 			File docFile = createFileObject();
 			
-            setResultAttribute(this.getController().getDocumentTransformerHelper().convert(this.getController().getHttpServletRequest(), docFile, title, menuTextLength, cssList, rewrite));
+            setResultAttribute(this.getController().getDocumentTransformerHelper().convert(this.getController().getHttpServletRequest(), docFile, title, menuTextLength, cssList, rewrite, keepMenuExpanded));
         } 
 		catch (Exception e)
         {
@@ -104,6 +105,11 @@ public class DocumentConverterTag extends TemplateControllerTag
     public void setTitle(String title) throws JspException
     {
         this.title = evaluateString("DocumentConverterTag", "title", title);
+    }
+    
+    public void setKeepMenuExpanded(String keepMenuExpanded) throws JspException
+    {
+        this.keepMenuExpanded = evaluateString("DocumentConverterTag", "keepMenuExpanded", keepMenuExpanded);
     }
     
     public void setMenuTextLength(String menuTextLength) throws JspException
