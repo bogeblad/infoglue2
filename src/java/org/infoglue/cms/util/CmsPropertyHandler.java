@@ -1288,6 +1288,11 @@ public class CmsPropertyHandler
 	    return getServerNodeProperty("warningEmailReceiver", true);
 	}
 
+	public static String getEmailRecipientLimit()
+	{
+	    return getServerNodeProperty("emailRecipientLimit", true, "-1");
+	}
+
 	public static String getExportFormat()
 	{
 	    return getServerNodeProperty("exportFormat", true, "2");
