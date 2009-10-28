@@ -127,7 +127,7 @@ public class WorkingPublicationThread extends Thread
 				    CacheController.clearCaches(className, objectId, null);
 		
 				    logger.info("Updating className with id:" + className + ":" + objectId);
-					if(className != null && !typeId.equalsIgnoreCase("" + NotificationMessage.SYSTEM))
+				    if(className != null && !typeId.equalsIgnoreCase("" + NotificationMessage.SYSTEM))
 					{
 					    Class type = Class.forName(className);
 		

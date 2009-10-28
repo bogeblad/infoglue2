@@ -662,6 +662,10 @@ public class CacheController extends Thread
 					{	
 						clear = true;
 					}
+					if(cacheName.equalsIgnoreCase("repositoryCache") && entity.indexOf("Repository") > 0)
+					{	
+						clear = true;
+					}
 					if(cacheName.equalsIgnoreCase("languageCache") && entity.indexOf("Language") > 0)
 					{	
 						clear = true;
@@ -779,6 +783,10 @@ public class CacheController extends Thread
 						clear = true;
 					}
 					if(cacheName.equalsIgnoreCase("sortedChildContentsCache") && (entity.indexOf("Content") > 0 || entity.indexOf("ContentVersion") > 0 || entity.indexOf("AccessRight") > 0 || entity.indexOf("SystemUser") > 0 || entity.indexOf("Role") > 0  || entity.indexOf("Group") > 0))
+					{
+						clear = true;
+					}
+					if(cacheName.equalsIgnoreCase("childContentCache") && (entity.indexOf("Content") > 0 || entity.indexOf("ContentVersion") > 0 || entity.indexOf("AccessRight") > 0 || entity.indexOf("SystemUser") > 0 || entity.indexOf("Role") > 0  || entity.indexOf("Group") > 0))
 					{
 						clear = true;
 					}
@@ -1216,7 +1224,7 @@ public class CacheController extends Thread
 		}
 		catch(Exception e)
 		{
-			logger.error("Error clearing cache:" + e.getMessage() + " for type:" + type, e);
+			logger.error("Error clearing cache:" + e.getMessage() + " for type:" + type + ":" + ids + ":" + forceClear);
 		}
 		finally
 		{
