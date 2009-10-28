@@ -1228,7 +1228,14 @@ public class CacheController extends Thread
 		}
 		finally
 		{
-		    db.close();			
+			try
+			{
+				db.close();
+			}
+			catch (Exception e) 
+			{
+				logger.error("Error closing database: " + e.getMessage());
+			}
 		}
 	}
 
