@@ -33,7 +33,7 @@
 														activateTool('mydesktopMarkup', '$ui.getString('tool.common.myDesktopTool.name')', '$ui.getString("tool.common.adminTool.header")', false); 
 												},
 												panelTemplate: '<div id="newTabDiv" class="inlineTabDiv newTabDiv">Loading...</div>',
-												tabTemplate: '<li><a id="newTabLabel" href="#{href}"><span>#{label}</span></a> <a href="#" id="newTabLabelClose"><span style="display: inline; width: 14px; float: left; background: url(images/v3/closeTabIcon.gif); cursor: pointer;">&nbsp;</span></a></li>',
+												tabTemplate: '<li><a id="newTabLabel" href="#{href}"><span>#{label}</span></a> <a href="#" id="newTabLabelMaximize" style="padding-right: 2px;"><span style="display: inline; width: 16px; float: left; background: url(images/v3/maximizeTabIcon.png); cursor: pointer;">&nbsp;</span></a> <a href="#" id="newTabLabelClose" style="padding-left: 4px;"><span style="display: inline; width: 14px; float: left; background: url(images/v3/closeTabIcon.gif); cursor: pointer;">&nbsp;</span></a></li>',
 												add: function(event, ui) { $("#tabsContainer").tabs("select", "\#" + ui.panel.id); }
 											});
 
@@ -161,7 +161,8 @@
 			<div id="activeTool">
 				<div id="structureMarkup" style="display: none;">
 					<div class="onlyExpanded" id="structureRepositoryChoiceDiv" style="float: left;">
-                    	<a id="structureRepositoriesDivHandle" href="#" onclick="$('#structureRepositoriesDiv').toggle(); return false;" style="display: block; float: left; width: 95%; margin-top: 6px; margin-bottom: 6px; font-weight: bold; text-indent: 8px; text-decoration: none;">$repositoryName</a>
+                    	<a id="structureRepositoriesDivHandle" href="#" onclick="$('#structureRepositoriesDiv').toggle(); return false;" style="display: block; float: left; width: 90%; overflow: hidden; margin-top: 6px; margin-bottom: 6px; font-weight: bold; text-indent: 8px; text-decoration: none;">$repositoryName</a>
+                    	<img src="images/v3/reload.png" onclick="$('#structureTreeIframe').get(0).contentWindow.reload(); return false;" style="display: block; float: left; width: 16px; overflow: hidden; margin-left: 4px; margin-top: 6px; margin-bottom: 6px; font-weight: bold;"/>
                     	<div id="structureRepositoriesDiv" style="position: absolute; margin-top: 25px; z-index: 10; display: none;">
                     		<ul>
                     			#foreach($repository in $authorizedRepositoryVOList)
@@ -183,7 +184,8 @@
 				</div>
 				<div id="contentMarkup" style="display: none;">
 					<div class="onlyExpanded" id="contentRepositoryChoiceDiv" style="float: left;">
-                    	<a id="contentRepositoriesDivHandle" href="#" onclick="$('#contentRepositoriesDiv').toggle(); return false;" style="display: block; float: left; width: 95%; margin-top: 6px; margin-bottom: 6px; font-weight: bold; text-indent: 8px; text-decoration: none;">$repositoryName</a>
+                    	<a id="contentRepositoriesDivHandle" href="#" onclick="$('#contentRepositoriesDiv').toggle(); return false;" style="display: block; float: left; width: 90%; overflow: hidden; margin-top: 6px; margin-bottom: 6px; font-weight: bold; text-indent: 8px; text-decoration: none;">$repositoryName</a>
+                    	<img src="images/v3/reload.png" onclick="$('#contentTreeIframe').get(0).contentWindow.reload(); return false;" style="display: block; float: left; width: 16px; overflow: hidden; margin-left: 4px; margin-top: 6px; margin-bottom: 6px; font-weight: bold;"/>
                     	<div id="contentRepositoriesDiv" style="position: absolute; margin-top: 25px; z-index: 10; display: none;">
                     		<ul>
                     			#foreach($repository in $authorizedRepositoryVOList)
@@ -279,6 +281,15 @@
 				<!--
 					$("#logoutButton").click(function(){
 						document.location.href = "Login!logout.action";
+		        	});
+        		-->
+        		</script>
+
+				<a class='igToolbarButton igToolbarHeaderButton' href="#" id="trashcanButton" name="trashcanButton" title="$ui.getString("header.link.trashcan")"><span class='igToolbarButtonOuterSpan igToolbarHeaderButton'><span class='trashcan' title="$ui.getString("header.link.trashcan")">$ui.getString("header.link.trashcan")</span></span></a>
+				<script type="text/javascript">
+				<!--
+					$("#trashcanButton").click(function(){
+						openInlineDiv("Trashcan.action", 600, 800, true, true, "Trashcan");
 		        	});
         		-->
         		</script>

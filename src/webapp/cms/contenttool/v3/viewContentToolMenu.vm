@@ -12,8 +12,7 @@
 	<script type="text/javascript" src="script/jquery/jquery-1.3.2.min.js"></script>
 
 	<script type="text/javascript">
-	<!-- 
-		
+	<!-- 		
 		var exp;
 		var treeIsLoaded = false;
 		var currentRepositoryId = "$!repositoryId";
@@ -37,6 +36,12 @@
 				alert("Error syncWithTree:" + er);
 			} 
 		}
+		
+		function reload()
+		{
+			removeCookies()
+			window.location.reload(false);
+		}	
 		
 		function treeView()
 		{

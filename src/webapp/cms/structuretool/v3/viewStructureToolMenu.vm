@@ -18,6 +18,12 @@
 		var exp;
 		var currentRepositoryId = "$!repositoryId";
 
+		function reload()
+		{
+			removeCookies()
+			window.location.reload(false);
+		}	
+		
 		function openUrlInWorkArea(url)
 		{
 			//alert("htmlTreeItemClick:" + url);

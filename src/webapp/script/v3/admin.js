@@ -117,6 +117,7 @@ function openUrlInWorkArea(url, tabLabel, targetTab)
 		$("#tabsContainer").tabs("add", "#" + targetTab + "TabDiv", "Loading...");
 		//$("#tabsContainer a[href='#" + targetTab + "TabDiv']").attr("id", targetTab + "TabLabel");
 		$("#newTabLabel").attr("id", targetTab + "TabLabel");
+		$("#newTabLabelMaximize").attr("id", targetTab + "TabLabelMaximize");
 		$("#newTabLabelClose").attr("id", targetTab + "TabLabelClose");
 		$("#" + targetTab + "TabLabelClose").click(function () { 
                                       					$("#tabsContainer ul li").each(function (i) {
@@ -128,6 +129,13 @@ function openUrlInWorkArea(url, tabLabel, targetTab)
 															}
                                                         });
                                     				});
+
+		$("#" + targetTab + "TabLabelMaximize").click(function () { 
+			if($("#work").css("position") == "absolute")
+				$("#work").css("position", "inherit").css("top", "").css("left", "").css("margin", "4px 4px 4px 0px").css("border-width", "1px").css("zIndex","");
+			else
+				$("#work").css("position", "absolute").css("top", "0px").css("left", "0px").css("margin", "0px 0px 0px 0px").css("border-width", "0px").css("zIndex","2000");
+		});
 
 		//alert("Size:" + $("#newTabDiv").size());
 		//alert("Size:" + $(".newTabDiv").size());
@@ -240,8 +248,17 @@ function resize()
 	$("#tools").height(windowHeight - 88);
 	var toolsWidth = $("#tools").width();
 	//alert("toolsWidth:" + toolsWidth);
-	$("#work").height(windowHeight - 88);
-	$("#work").width(windowWidth - (toolsWidth + 16));
+	if($("#work").css("position") != "absolute")
+	{
+		$("#work").height(windowHeight - 88);
+		$("#work").width(windowWidth - (toolsWidth + 16));
+	}
+	else
+	{
+		$("#work").height(windowHeight);
+		$("#work").width(windowWidth);
+	}
+	
 	$("#singleTabDiv").height(windowHeight - 115);
 	$("#contentTabDiv").height(windowHeight - 115);
 	$("#structureTabDiv").height(windowHeight - 115);
