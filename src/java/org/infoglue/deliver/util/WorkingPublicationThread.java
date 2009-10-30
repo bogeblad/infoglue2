@@ -120,121 +120,128 @@ public class WorkingPublicationThread extends Thread
 					logger.info("objectName:" + objectName);
 					logger.info("typeId:" + typeId);
 	
-			        boolean isDependsClass = false;
-				    if(className != null && className.equalsIgnoreCase(PublicationDetailImpl.class.getName()))
-				        isDependsClass = true;
-			
-				    CacheController.clearCaches(className, objectId, null);
-		
-				    logger.info("Updating className with id:" + className + ":" + objectId);
-					if(className != null && !typeId.equalsIgnoreCase("" + NotificationMessage.SYSTEM))
+					try
 					{
-					    Class type = Class.forName(className);
-		
-					    if(!isDependsClass && 
-					    		className.equalsIgnoreCase(SystemUserImpl.class.getName()) || 
-					    		className.equalsIgnoreCase(RoleImpl.class.getName()) || 
-					    		className.equalsIgnoreCase(GroupImpl.class.getName()) || 
-					    		className.equalsIgnoreCase(SmallSystemUserImpl.class.getName()) || 
-					    		className.equalsIgnoreCase(SmallRoleImpl.class.getName()) || 
-					    		className.equalsIgnoreCase(SmallGroupImpl.class.getName()))
-					    {
-					        Object[] ids = {objectId};
-					        CacheController.clearCache(type, ids);
-						}
-					    else if(!isDependsClass)
-					    {
-					        Object[] ids = {new Integer(objectId)};
-						    CacheController.clearCache(type, ids);
-					    }
-		
-						//If it's an contentVersion we should delete all images it might have generated from attributes.
-						if(Class.forName(className).getName().equals(ContentImpl.class.getName()))
+				        boolean isDependsClass = false;
+					    if(className != null && className.equalsIgnoreCase(PublicationDetailImpl.class.getName()))
+					        isDependsClass = true;
+				
+					    CacheController.clearCaches(className, objectId, null);
+			
+					    logger.info("Updating className with id:" + className + ":" + objectId);
+						if(className != null && !typeId.equalsIgnoreCase("" + NotificationMessage.SYSTEM))
 						{
-						    logger.info("We clear all small contents as well " + objectId);
-							Class typesExtra = SmallContentImpl.class;
-							Object[] idsExtra = {new Integer(objectId)};
-							CacheController.clearCache(typesExtra, idsExtra);
-
-						    logger.info("We clear all smallish contents as well " + objectId);
-							Class typesExtraSmallish = SmallishContentImpl.class;
-							Object[] idsExtraSmallish = {new Integer(objectId)};
-							CacheController.clearCache(typesExtraSmallish, idsExtraSmallish);
-
-							logger.info("We clear all medium contents as well " + objectId);
-							Class typesExtraMedium = MediumContentImpl.class;
-							Object[] idsExtraMedium = {new Integer(objectId)};
-							CacheController.clearCache(typesExtraMedium, idsExtraMedium);
-						}
-						if(Class.forName(className).getName().equals(ContentVersionImpl.class.getName()))
-						{
-						    logger.info("We clear all small contents as well " + objectId);
-							Class typesExtra = SmallContentVersionImpl.class;
-							Object[] idsExtra = {new Integer(objectId)};
-							CacheController.clearCache(typesExtra, idsExtra);
-
-							logger.info("We clear all small contents as well " + objectId);
-							Class typesExtraSmallest = SmallestContentVersionImpl.class;
-							Object[] idsExtraSmallest = {new Integer(objectId)};
-							CacheController.clearCache(typesExtraSmallest, idsExtraSmallest);
-						}
-						else if(Class.forName(className).getName().equals(AvailableServiceBindingImpl.class.getName()))
-						{
-						    Class typesExtra = SmallAvailableServiceBindingImpl.class;
-							Object[] idsExtra = {new Integer(objectId)};
-							CacheController.clearCache(typesExtra, idsExtra);
-						}
-						else if(Class.forName(className).getName().equals(SiteNodeImpl.class.getName()))
-						{
-						    Class typesExtra = SmallSiteNodeImpl.class;
-							Object[] idsExtra = {new Integer(objectId)};
-							CacheController.clearCache(typesExtra, idsExtra);
-						}
-						else if(Class.forName(className).getName().equals(SiteNodeVersionImpl.class.getName()))
-						{
-						    Class typesExtra = SmallSiteNodeVersionImpl.class;
-							Object[] idsExtra = {new Integer(objectId)};
-							CacheController.clearCache(typesExtra, idsExtra);
-						}
-						else if(Class.forName(className).getName().equals(DigitalAssetImpl.class.getName()))
-						{
-							CacheController.clearCache("digitalAssetCache");
-							Class typesExtra = SmallDigitalAssetImpl.class;
-							Object[] idsExtra = {new Integer(objectId)};
-							CacheController.clearCache(typesExtra, idsExtra);
-
-							Class typesExtraMedium = MediumDigitalAssetImpl.class;
-							Object[] idsExtraMedium = {new Integer(objectId)};
-							CacheController.clearCache(typesExtraMedium, idsExtraMedium);
-
-							String disableAssetDeletionInWorkThread = CmsPropertyHandler.getDisableAssetDeletionInWorkThread();
-							if(disableAssetDeletionInWorkThread != null && !disableAssetDeletionInWorkThread.equals("true"))
-							{
-								logger.info("We should delete all images with digitalAssetId " + objectId);
-								DigitalAssetDeliveryController.getDigitalAssetDeliveryController().deleteDigitalAssets(new Integer(objectId));
+						    Class type = Class.forName(className);
+			
+						    if(!isDependsClass && 
+						    		className.equalsIgnoreCase(SystemUserImpl.class.getName()) || 
+						    		className.equalsIgnoreCase(RoleImpl.class.getName()) || 
+						    		className.equalsIgnoreCase(GroupImpl.class.getName()) || 
+						    		className.equalsIgnoreCase(SmallSystemUserImpl.class.getName()) || 
+						    		className.equalsIgnoreCase(SmallRoleImpl.class.getName()) || 
+						    		className.equalsIgnoreCase(SmallGroupImpl.class.getName()))
+						    {
+						        Object[] ids = {objectId};
+						        CacheController.clearCache(type, ids);
 							}
+						    else if(!isDependsClass)
+						    {
+						        Object[] ids = {new Integer(objectId)};
+							    CacheController.clearCache(type, ids);
+						    }
+			
+							//If it's an contentVersion we should delete all images it might have generated from attributes.
+							if(Class.forName(className).getName().equals(ContentImpl.class.getName()))
+							{
+							    logger.info("We clear all small contents as well " + objectId);
+								Class typesExtra = SmallContentImpl.class;
+								Object[] idsExtra = {new Integer(objectId)};
+								CacheController.clearCache(typesExtra, idsExtra);
+	
+							    logger.info("We clear all smallish contents as well " + objectId);
+								Class typesExtraSmallish = SmallishContentImpl.class;
+								Object[] idsExtraSmallish = {new Integer(objectId)};
+								CacheController.clearCache(typesExtraSmallish, idsExtraSmallish);
+	
+								logger.info("We clear all medium contents as well " + objectId);
+								Class typesExtraMedium = MediumContentImpl.class;
+								Object[] idsExtraMedium = {new Integer(objectId)};
+								CacheController.clearCache(typesExtraMedium, idsExtraMedium);
+							}
+							if(Class.forName(className).getName().equals(ContentVersionImpl.class.getName()))
+							{
+							    logger.info("We clear all small contents as well " + objectId);
+								Class typesExtra = SmallContentVersionImpl.class;
+								Object[] idsExtra = {new Integer(objectId)};
+								CacheController.clearCache(typesExtra, idsExtra);
+	
+								logger.info("We clear all small contents as well " + objectId);
+								Class typesExtraSmallest = SmallestContentVersionImpl.class;
+								Object[] idsExtraSmallest = {new Integer(objectId)};
+								CacheController.clearCache(typesExtraSmallest, idsExtraSmallest);
+							}
+							else if(Class.forName(className).getName().equals(AvailableServiceBindingImpl.class.getName()))
+							{
+							    Class typesExtra = SmallAvailableServiceBindingImpl.class;
+								Object[] idsExtra = {new Integer(objectId)};
+								CacheController.clearCache(typesExtra, idsExtra);
+							}
+							else if(Class.forName(className).getName().equals(SiteNodeImpl.class.getName()))
+							{
+							    Class typesExtra = SmallSiteNodeImpl.class;
+								Object[] idsExtra = {new Integer(objectId)};
+								CacheController.clearCache(typesExtra, idsExtra);
+							}
+							else if(Class.forName(className).getName().equals(SiteNodeVersionImpl.class.getName()))
+							{
+							    Class typesExtra = SmallSiteNodeVersionImpl.class;
+								Object[] idsExtra = {new Integer(objectId)};
+								CacheController.clearCache(typesExtra, idsExtra);
+							}
+							else if(Class.forName(className).getName().equals(DigitalAssetImpl.class.getName()))
+							{
+								CacheController.clearCache("digitalAssetCache");
+								Class typesExtra = SmallDigitalAssetImpl.class;
+								Object[] idsExtra = {new Integer(objectId)};
+								CacheController.clearCache(typesExtra, idsExtra);
+	
+								Class typesExtraMedium = MediumDigitalAssetImpl.class;
+								Object[] idsExtraMedium = {new Integer(objectId)};
+								CacheController.clearCache(typesExtraMedium, idsExtraMedium);
+	
+								String disableAssetDeletionInWorkThread = CmsPropertyHandler.getDisableAssetDeletionInWorkThread();
+								if(disableAssetDeletionInWorkThread != null && !disableAssetDeletionInWorkThread.equals("true"))
+								{
+									logger.info("We should delete all images with digitalAssetId " + objectId);
+									DigitalAssetDeliveryController.getDigitalAssetDeliveryController().deleteDigitalAssets(new Integer(objectId));
+								}
+							}
+							else if(Class.forName(className).getName().equals(SystemUserImpl.class.getName()))
+							{
+							    Class typesExtra = SmallSystemUserImpl.class;
+								Object[] idsExtra = {objectId};
+								CacheController.clearCache(typesExtra, idsExtra);
+							}
+							else if(Class.forName(className).getName().equals(RoleImpl.class.getName()))
+							{
+							    Class typesExtra = SmallRoleImpl.class;
+								Object[] idsExtra = {objectId};
+								CacheController.clearCache(typesExtra, idsExtra);
+							}
+							else if(Class.forName(className).getName().equals(GroupImpl.class.getName()))
+							{
+							    Class typesExtra = SmallGroupImpl.class;
+								Object[] idsExtra = {objectId};
+								CacheController.clearCache(typesExtra, idsExtra);
+							}
+	
+						    logger.info("4");
 						}
-						else if(Class.forName(className).getName().equals(SystemUserImpl.class.getName()))
-						{
-						    Class typesExtra = SmallSystemUserImpl.class;
-							Object[] idsExtra = {objectId};
-							CacheController.clearCache(typesExtra, idsExtra);
-						}
-						else if(Class.forName(className).getName().equals(RoleImpl.class.getName()))
-						{
-						    Class typesExtra = SmallRoleImpl.class;
-							Object[] idsExtra = {objectId};
-							CacheController.clearCache(typesExtra, idsExtra);
-						}
-						else if(Class.forName(className).getName().equals(GroupImpl.class.getName()))
-						{
-						    Class typesExtra = SmallGroupImpl.class;
-							Object[] idsExtra = {objectId};
-							CacheController.clearCache(typesExtra, idsExtra);
-						}
-
-					    logger.info("4");
-					}	
+					}
+					catch (Exception e) 
+					{
+						logger.error("Error handling cache update message:" + className + ":" + objectId);
+					}
 				}
 			} 
 			catch (Exception e)
