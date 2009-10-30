@@ -251,6 +251,28 @@ public class MailService
 		    	to = from;
 		    }
 		    
+		    String limitString = CmsPropertyHandler.getEmailRecipientLimit();
+		    if(limitString != null && !limitString.equals("-1"))
+		    {
+		    	try
+		    	{
+		    		Integer limit = new Integer(limitString);
+		    		int count = 0;
+		    		if(cc != null)
+		    			count = count + cc.split(";").length;
+		    		if(bcc != null)
+		    			count = count + bcc.split(";").length;
+		    		
+		    		logger.info("limit: " + limit + ", count: " + count);
+		    		if(count > limit)
+		    			throw new Exception("You are not allowed to send mail to more than " + limit + " recipients at a time. This is specified in app settings.");
+		    	}
+		    	catch (NumberFormatException e) 
+		    	{
+		    		logger.error("Exception validating number of recipients in mailservice:" + e.getMessage(), e);
+				}
+		    }
+		    
 		    email.addTo(to, to);
 		    email.setFrom(from, from);
 		    if(cc != null)
@@ -324,6 +346,28 @@ public class MailService
 		    {
 		    	cc = to;
 		    	to = from;
+		    }
+
+		    String limitString = CmsPropertyHandler.getEmailRecipientLimit();
+		    if(limitString != null && !limitString.equals("-1"))
+		    {
+		    	try
+		    	{
+		    		Integer limit = new Integer(limitString);
+		    		int count = 0;
+		    		if(cc != null)
+		    			count = count + cc.split(";").length;
+		    		if(bcc != null)
+		    			count = count + bcc.split(";").length;
+		    		
+		    		logger.info("limit: " + limit + ", count: " + count);
+		    		if(count > limit)
+		    			throw new Exception("You are not allowed to send mail to more than " + limit + " recipients at a time. This is specified in app settings.");
+		    	}
+		    	catch (NumberFormatException e) 
+		    	{
+		    		logger.error("Exception validating number of recipients in mailservice:" + e.getMessage(), e);
+				}
 		    }
 
 		    email.addTo(to, to);
