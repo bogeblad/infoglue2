@@ -261,6 +261,12 @@ body.generaltooledit
 	background-position: center right;
 	background-repeat: no-repeat;
 }
+#structureRepositoryChoiceRefreshDiv > a, #contentRepositoryChoiceRefreshDiv > a
+{
+	background-image: url(images/reload.png);
+	background-position: center right;
+	background-repeat: no-repeat;
+}
 #componentPaletteHeader
 {
 	background-color: #ddebff;
