@@ -946,7 +946,31 @@ public class InfoGlueBasicAuthorizationModule extends BaseController implements 
 	    	RoleController.getController().addUser(roleName, userName, transactionObject);
 	    }
 	}
+
+	public void removeUserFromGroup(String groupName, String userName) throws Exception
+	{
+	    if(transactionObject == null)
+		{
+		    GroupController.getController().removeUser(groupName, userName);
+		}
+	    else
+	    {
+		    GroupController.getController().removeUser(groupName, userName, transactionObject);
+	    }
+	}
 	
+	public void removeUserFromRole(String roleName, String userName) throws Exception
+	{
+	    if(transactionObject == null)
+		{
+		    RoleController.getController().removeUser(roleName, userName);
+		}
+	    else
+	    {
+	    	RoleController.getController().removeUser(roleName, userName, transactionObject);
+	    }
+	}
+
 	/**
 	 * This method is used find out if a user exists. Much quicker than getAuthorizedPrincipal 
 	 */
