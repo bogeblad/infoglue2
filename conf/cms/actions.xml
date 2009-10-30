@@ -1,4 +1,4 @@
-<!-- $Id: actions.xml,v 1.88 2009/10/25 21:53:37 mattias Exp $ -->
+<!-- $Id: actions.xml,v 1.89 2009/10/30 14:02:13 mattias Exp $ -->
 <actions>
 
 	<!-- MySettings -->
@@ -1791,6 +1791,12 @@
 	<action name="org.infoglue.cms.applications.common.actions.ViewInlineOperationMessagesAction" alias="ViewInlineOperationMessages">
 		<view name="success">/cms/common/inlineOperationDone.vm</view>
 		<view name="error">/cms/structuretool/error.vm</view>
+	</action>
+
+	<!--  InfoGlue Trashcan -->
+	<action name="org.infoglue.cms.applications.common.actions.TrashcanAction" alias="Trashcan">
+		<view name="success">/cms/common/viewTrashcan.vm</view>
+		<view name="error">/cms/common/error.vm</view>
 	</action>
 
 </actions>

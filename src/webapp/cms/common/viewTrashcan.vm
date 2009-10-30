@@ -1,0 +1,67 @@
+#beginLightCommonToolV3("tool.common.subscriptions.header" "" "" false true $!disableCloseButton)
+
+<link rel="stylesheet" type="text/css" media="all" href="css/cms.css" title="cms" />
+
+<script type="text/javascript">
+<!--
+	function submitForm()
+	{
+		document.editForm.submit();
+	}
+	
+	$(document).ready(function(){
+		$("#tabsContainer").tabs({ show:function() { resizeInlineTabDivs();} });
+	});
+	
+//-->
+</script>
+
+#lightMenuToolbar("" $buttons $rightButtons)
+
+<div style="clear: both;"></div>
+
+<h3 style="text-indent: 16px;">
+	$ui.getString("tool.common.trashcan.title")
+	#if($errorMessage && $!errorMessage != "")<span style="color:red">$errorMessage</span>#end
+</h3>
+
+<div onfocus="this.blur();">
+    
+	<form method="POST" name="editForm" action="Trashcan!delete.action">
+		<input type="hidden" name="returnAddress" value="$returnAddress"/>
+		<input type="hidden" name="userSessionKey" value="$userSessionKey"/>
+		
+		<div id="tabsContainer" class="flora">      
+		
+			<ul>
+		        <li><a href="#repositoriesTab"><span>$ui.getString("tool.common.trashcanDialog.repositoriesTabLabel")</span></a></li>	        
+		        <li><a href="#contentsTab"><span>$ui.getString("tool.common.trashcanDialog.contentsTabLabel")</span></a></li>	        
+		        <li><a href="#siteNodesTab"><span>$ui.getString("tool.common.trashcanDialog.pagesTabLabel")</span></a></li>	        
+		    </ul>
+		
+			<div id="repositoriesTab" class="inlineTabDiv">
+				<p>Repositories</p>
+				#foreach($repositoryVO in $repositoriesMarkedForDeletion)
+					<input type="checkbox" name="repositoryId" value="$repositoryVO.id"/> $repositoryVO.name<br/>
+				#end
+			</div>
+			<div id="contentsTab" class="inlineTabDiv">
+				<p>Contents</p>
+				#foreach($contentVO in $contentsMarkedForDeletion)
+					<input type="checkbox" name="contentId" value="$contentVO.id"/> $contentVO.name<br/>
+				#end
+			</div>
+			<div id="siteNodesTab" class="inlineTabDiv">
+				<p>Pages</p>
+				#foreach($siteNodeVO in $siteNodesMarkedForDeletion)
+					<input type="checkbox" name="siteNodeId" value="$siteNodeVO.id"/> $siteNodeVO.name<br/>
+				#end
+			</div>
+
+	</form>
+		
+</div>
+
+#lightFooterToolbar($footerButtons)
+
+#endCommonToolV3()
