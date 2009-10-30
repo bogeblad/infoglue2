@@ -74,6 +74,72 @@ public class RepositoryController extends BaseController
 	 * This method removes a Repository from the system and also cleans out all depending repositoryLanguages.
 	 */
 	
+    public void markForDelete(RepositoryVO repositoryVO, String userName, InfoGluePrincipal infoGluePrincipal) throws ConstraintException, SystemException
+    {
+    	markForDelete(repositoryVO, userName, false, infoGluePrincipal);
+    }
+    
+	/**
+	 * This method sets a Repository in markedForDelete mode.
+	 */
+	
+    public void markForDelete(RepositoryVO repositoryVO, String userName, boolean forceDelete, InfoGluePrincipal infoGluePrincipal) throws ConstraintException, SystemException
+    {
+		Database db = CastorDatabaseService.getDatabase();
+		ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
+
+		Repository repository = null;
+	
+		beginTransaction(db);
+
+		try
+		{
+			repository = getRepositoryWithId(repositoryVO.getRepositoryId(), db);
+			repository.setIsDeleted(true);
+			
+			/*
+			ContentVO contentVO = ContentControllerProxy.getController().getRootContentVO(repositoryVO.getRepositoryId(), userName, false);
+			if(contentVO != null)
+			{
+				if(forceDelete)
+					ContentController.getContentController().markForDelete(contentVO, db, true, true, true, infoGluePrincipal);
+				else
+					ContentController.getContentController().markForDelete(contentVO, infoGluePrincipal, db);
+			}
+			
+			SiteNodeVO siteNodeVO = SiteNodeController.getController().getRootSiteNodeVO(repositoryVO.getRepositoryId());
+			if(siteNodeVO != null)
+			{
+				if(forceDelete)
+					SiteNodeController.getController().markForDelete(siteNodeVO, db, true, infoGluePrincipal);
+				else
+					SiteNodeController.getController().markForDelete(siteNodeVO, db, infoGluePrincipal);
+			}
+			*/
+			
+			//If any of the validations or setMethods reported an error, we throw them up now before create.
+			ceb.throwIfNotEmpty();
+    
+			commitTransaction(db);
+		}
+		catch(ConstraintException ce)
+		{
+			logger.warn("An error occurred so we should not completes the transaction:" + ce, ce);
+			rollbackTransaction(db);
+			throw ce;
+		}
+		catch(Exception e)
+		{
+			logger.error("An error occurred so we should not completes the transaction:" + e, e);
+			rollbackTransaction(db);
+			throw new SystemException(e.getMessage());
+		}
+    } 
+
+	/**
+	 * This method removes a Repository from the system and also cleans out all depending repositoryLanguages.
+	 */
+	
     public void delete(RepositoryVO repositoryVO, String userName, InfoGluePrincipal infoGluePrincipal) throws ConstraintException, SystemException
     {
     	delete(repositoryVO, userName, false, infoGluePrincipal);
@@ -334,6 +400,42 @@ public class RepositoryController extends BaseController
 	}
 
 
+	/**
+	 * Returns a repository list marked for deletion.
+	 */
+	
+	public List<RepositoryVO> getRepositoryVOListMarkedForDeletion() throws SystemException, Bug
+	{
+		Database db = CastorDatabaseService.getDatabase();
+		
+		List<RepositoryVO> repositoryVOListMarkedForDeletion = new ArrayList<RepositoryVO>();
+		
+		try 
+		{
+			beginTransaction(db);
+		
+			OQLQuery oql = db.getOQLQuery("SELECT r FROM org.infoglue.cms.entities.management.impl.simple.RepositoryImpl r WHERE r.isDeleted = $1 ORDER BY r.repositoryId");
+			oql.bind(true);
+			
+			QueryResults results = oql.execute();
+			if (results.hasMore()) 
+            {
+                Repository repository = (Repository)results.next();
+                repositoryVOListMarkedForDeletion.add(repository.getValueObject());
+            }
+            
+			results.close();
+			oql.close();
+
+			commitTransaction(db);
+		}
+		catch ( Exception e)		
+		{
+			throw new SystemException("An error occurred when we tried to fetch a list of deleted repositories. Reason:" + e.getMessage(), e);			
+		}
+		
+		return repositoryVOListMarkedForDeletion;		
+	}
 
 	
 	/**

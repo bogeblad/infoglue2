@@ -44,15 +44,16 @@ public class ContentVO implements BaseEntityVO
 	public static final Integer YES 		= new Integer(1);
 	public static final Integer INHERITED 	= new Integer(2);
 	
-    private java.lang.Integer contentId;
-    private java.lang.String name			= "";
-    private java.util.Date publishDateTime  = new Date();
-    private java.util.Date expireDateTime   = new Date();
-    private java.lang.Boolean isBranch		= new Boolean(false);              
-	private java.lang.Integer isProtected	= INHERITED;
-	private java.lang.Integer repositoryId  = null;
-	private java.lang.Integer contentTypeDefinitionId  	= null;
-	private java.lang.Integer parentContentId  			= null;
+    private Integer contentId;
+    private String name					= "";
+    private Date publishDateTime  		= new Date();
+    private Date expireDateTime   		= new Date();
+    private Boolean isBranch			= new Boolean(false);   
+    private Boolean isDeleted 			= new Boolean(false);
+	private Integer isProtected			= INHERITED;
+	private Integer repositoryId  		= null;
+	private Integer contentTypeDefinitionId	= null;
+	private Integer parentContentId  		= null;
 	
 	private Integer childCount;
   	private String creatorName;
@@ -153,6 +154,15 @@ public class ContentVO implements BaseEntityVO
 		this.isBranch = isBranch;
 	}
 	
+    public Boolean getIsDeleted()
+    {
+    	return this.isDeleted;
+	}
+    
+    public void setIsDeleted(Boolean isDeleted)
+	{
+		this.isDeleted = isDeleted;
+	}
 	
 	/**
 	 * @see org.infoglue.cms.entities.kernel.BaseEntityVO#validate()

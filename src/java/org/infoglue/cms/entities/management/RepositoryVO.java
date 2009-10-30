@@ -30,10 +30,11 @@ import org.infoglue.cms.util.validators.ValidatorFactory;
 
 public class RepositoryVO implements BaseEntityVO
 {
-    private java.lang.Integer repositoryId;
-    private java.lang.String name;
-    private java.lang.String description;
-    private java.lang.String dnsName;
+    private Integer repositoryId;
+    private String name;
+    private String description;
+    private String dnsName;
+    private Boolean isDeleted = new Boolean(false);
         
 	/**
 	 * @see org.infoglue.cms.entities.kernel.BaseEntityVO#getId()
@@ -92,6 +93,16 @@ public class RepositoryVO implements BaseEntityVO
     		this.dnsName = dnsName;
     }
 
+    public Boolean getIsDeleted()
+    {
+    	return this.isDeleted;
+	}
+    
+    public void setIsDeleted(Boolean isDeleted)
+	{
+		this.isDeleted = isDeleted;
+	}
+
 	/**
 	 * @see org.infoglue.cms.entities.kernel.BaseEntityVO#validate()
 	 */
@@ -99,7 +110,7 @@ public class RepositoryVO implements BaseEntityVO
 	{
     	ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
     	
-    	ValidatorFactory.createStringValidator("Repository.name", true, 6, 20, true, RepositoryImpl.class, this.getId(), null).validate(this.name, ceb);
+    	ValidatorFactory.createStringValidator("Repository.name", true, 2, 50, true, RepositoryImpl.class, this.getId(), null).validate(this.name, ceb);
         ValidatorFactory.createStringValidator("Repository.description", true, 1, 100).validate(description, ceb); 
    	    ValidatorFactory.createStringValidator("Repository.dnsName", false, 0, 2048).validate(dnsName, ceb); 
     	

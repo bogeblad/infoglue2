@@ -293,6 +293,15 @@ public class ContentImpl implements Content
 		return this.valueObject.getIsProtected();
 	}
 	
+    public Boolean getIsDeleted()
+    {
+    	return this.valueObject.getIsDeleted();
+	}
+    
+    public void setIsDeleted(Boolean isDeleted)
+	{
+    	this.valueObject.setIsDeleted(isDeleted);
+	}
 	
 	/*
 	public String toString()

@@ -306,7 +306,21 @@ public class ContentControllerProxy extends ContentController
 
 	    delete(contentVO, infogluePrincipal);
 	}   
-	
+
+	/**
+	 * This method deletes a content after first checking that the user has rights to edit it.
+	 */
+
+	public void acMarkForDelete(InfoGluePrincipal infogluePrincipal, ContentVO contentVO) throws ConstraintException, SystemException, Bug, Exception
+	{
+		Map hashMap = new HashMap();
+		hashMap.put("contentId", contentVO.getId());
+    	
+		intercept(hashMap, "Content.Delete", infogluePrincipal);
+
+		markForDeletion(contentVO, infogluePrincipal);
+	}   
+
 	
 	/**
 	 * This method moves a content after first checking that the user has rights to edit it.

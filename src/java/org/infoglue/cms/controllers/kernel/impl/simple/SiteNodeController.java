@@ -45,6 +45,7 @@ import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.entities.management.Language;
 import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.entities.management.Repository;
+import org.infoglue.cms.entities.management.RepositoryVO;
 import org.infoglue.cms.entities.management.ServiceDefinition;
 import org.infoglue.cms.entities.management.ServiceDefinitionVO;
 import org.infoglue.cms.entities.management.SiteNodeTypeDefinition;
@@ -155,6 +156,42 @@ public class SiteNodeController extends BaseController
         return siteNode;
     }
     
+	/**
+	 * Returns a repository list marked for deletion.
+	 */
+	
+	public List<SiteNodeVO> getSiteNodeVOListMarkedForDeletion() throws SystemException, Bug
+	{
+		Database db = CastorDatabaseService.getDatabase();
+		
+		List<SiteNodeVO> siteNodeVOListMarkedForDeletion = new ArrayList<SiteNodeVO>();
+		
+		try 
+		{
+			beginTransaction(db);
+		
+			OQLQuery oql = db.getOQLQuery("SELECT sn FROM org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl sn WHERE sn.isDeleted = $1 ORDER BY sn.siteNodeId");
+			oql.bind(true);
+			
+			QueryResults results = oql.execute();
+			if (results.hasMore()) 
+            {
+				SiteNode siteNode = (SiteNode)results.next();
+                siteNodeVOListMarkedForDeletion.add(siteNode.getValueObject());
+            }
+            
+			results.close();
+			oql.close();
+
+			commitTransaction(db);
+		}
+		catch ( Exception e)		
+		{
+			throw new SystemException("An error occurred when we tried to fetch a list of deleted pages. Reason:" + e.getMessage(), e);			
+		}
+		
+		return siteNodeVOListMarkedForDeletion;		
+	}
 
 	/**
 	 * This method deletes a siteNode and also erases all the children and all versions.
@@ -249,6 +286,107 @@ public class SiteNodeController extends BaseController
 			    parentIterator.remove();
 			
 			db.remove(siteNode);
+	    }
+	    else
+    	{
+    		throw new ConstraintException("SiteNodeVersion.stateId", "3400");
+    	}			
+    }        
+
+    
+	/**
+	 * This method deletes a siteNode and also erases all the children and all versions.
+	 */
+	    
+    public void markForDeletion(SiteNodeVO siteNodeVO, InfoGluePrincipal infogluePrincipal) throws ConstraintException, SystemException
+    {
+    	Database db = CastorDatabaseService.getDatabase();
+        beginTransaction(db);
+		try
+        {	
+			markForDeletion(siteNodeVO, db, infogluePrincipal);	
+			
+	    	commitTransaction(db);
+        }
+        catch(ConstraintException ce)
+        {
+        	logger.warn("An error occurred so we should not complete the transaction:" + ce, ce);
+            rollbackTransaction(db);
+            throw ce;
+        }
+        catch(Exception e)
+        {
+            logger.error("An error occurred so we should not complete the transaction:" + e, e);
+            rollbackTransaction(db);
+            throw new SystemException(e.getMessage());
+        }        
+    }        
+
+	/**
+	 * This method deletes a siteNode and also erases all the children and all versions.
+	 */
+	    
+	public void markForDeletion(SiteNodeVO siteNodeVO, Database db, InfoGluePrincipal infogluePrincipal) throws ConstraintException, SystemException, Exception
+	{
+		markForDeletion(siteNodeVO, db, false, infogluePrincipal);
+	}
+	
+	/**
+	 * This method deletes a siteNode and also erases all the children and all versions.
+	 */
+	    
+	public void markForDeletion(SiteNodeVO siteNodeVO, Database db, boolean forceDelete, InfoGluePrincipal infogluePrincipal) throws ConstraintException, SystemException, Exception
+	{
+		SiteNode siteNode = getSiteNodeWithId(siteNodeVO.getSiteNodeId(), db);
+		SiteNode parent = siteNode.getParentSiteNode();
+		if(parent != null)
+		{
+			Iterator childSiteNodeIterator = parent.getChildSiteNodes().iterator();
+			while(childSiteNodeIterator.hasNext())
+			{
+			    SiteNode candidate = (SiteNode)childSiteNodeIterator.next();
+			    if(candidate.getId().equals(siteNodeVO.getSiteNodeId()))
+			    	markForDeletionRecursive(siteNode, childSiteNodeIterator, db, forceDelete, infogluePrincipal);
+			}
+		}
+		else
+		{
+			markForDeletionRecursive(siteNode, null, db, forceDelete, infogluePrincipal);
+		}
+	}        
+
+
+	/**
+	 * Recursively deletes all siteNodes and their versions.
+	 * This method is a mess as we had a problem with the lazy-loading and transactions. 
+	 * We have to begin and commit all the time...
+	 */
+	
+    private static void markForDeletionRecursive(SiteNode siteNode, Iterator parentIterator, Database db, boolean forceDelete, InfoGluePrincipal infoGluePrincipal) throws ConstraintException, SystemException, Exception
+    {
+        List referenceBeanList = RegistryController.getController().getReferencingObjectsForSiteNode(siteNode.getId(), -1, db);
+		if(referenceBeanList != null && referenceBeanList.size() > 0 && !forceDelete)
+			throw new ConstraintException("SiteNode.stateId", "3405");
+
+        Collection children = siteNode.getChildSiteNodes();
+		Iterator i = children.iterator();
+		while(i.hasNext())
+		{
+			SiteNode childSiteNode = (SiteNode)i.next();
+			markForDeletionRecursive(childSiteNode, i, db, forceDelete, infoGluePrincipal);
+   		}
+		
+		if(forceDelete || getIsDeletable(siteNode, infoGluePrincipal, db))
+	    {		 
+			//SiteNodeVersionController.deleteVersionsForSiteNode(siteNode, db, infoGluePrincipal);
+			
+			//ServiceBindingController.deleteServiceBindingsReferencingSiteNode(siteNode, db);
+
+			//if(parentIterator != null) 
+			//    parentIterator.remove();
+			
+			//db.remove(siteNode);
+			siteNode.setIsDeleted(true);
 	    }
 	    else
     	{

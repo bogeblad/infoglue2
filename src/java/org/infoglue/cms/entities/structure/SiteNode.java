@@ -47,6 +47,10 @@ public interface SiteNode extends IBaseEntity
     
     public void setIsBranch(java.lang.Boolean isBranch);
 
+    public Boolean getIsDeleted();
+    
+    public void setIsDeleted(Boolean isDeleted);
+
     public void setPublishDateTime(java.util.Date publishDateTime);
     
     public java.util.Date getExpireDateTime();

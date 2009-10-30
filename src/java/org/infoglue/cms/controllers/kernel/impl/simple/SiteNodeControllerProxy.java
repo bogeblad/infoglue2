@@ -176,7 +176,21 @@ public class SiteNodeControllerProxy extends SiteNodeController
 
 		delete(siteNodeVO, infogluePrincipal);
 	}   
+
+	/**
+	 * This method deletes a sitenode after first checking that the user has rights to delete it.
+	 */
 	
+	public void acMarkForDelete(InfoGluePrincipal infogluePrincipal, SiteNodeVO siteNodeVO) throws ConstraintException, SystemException, Bug, Exception
+	{
+		Map hashMap = new HashMap();
+		hashMap.put("siteNodeId", siteNodeVO.getId());
+    	
+		intercept(hashMap, "SiteNodeVersion.DeleteSiteNode", infogluePrincipal);
+
+		markForDeletion(siteNodeVO, infogluePrincipal);
+	}   
+
 	
 	/**
 	 * This method moves a content after first checking that the user has rights to edit it.

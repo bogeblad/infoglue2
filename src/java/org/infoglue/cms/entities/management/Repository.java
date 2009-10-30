@@ -51,21 +51,16 @@ public interface Repository  extends IBaseEntity
     
     public void setDnsName(java.lang.String dnsName) throws ConstraintException;
 
+    public Boolean getIsDeleted();
+    
+    public void setIsDeleted(Boolean isDeleted);
+
     public java.util.Collection getAvailableContenTypeDefinition();
     
     public void setAvailableContenTypeDefinition(java.util.Collection availableContenTypeDefinition);
-    /*
-    public java.util.Collection getContents();
-    
-    public void setContents(java.util.Collection contents);
-    */
-    public java.util.Collection getRepositoryLanguages();
-    
-    /*
-    public java.util.Collection getRepositoryRoles();
 
-    public void setRepositoryRoles(java.util.Collection repositoryRoles);
-	*/
+    public java.util.Collection getRepositoryLanguages();
+
     public void setRepositoryLanguages(java.util.Collection repositoryLanguages);
         
 }

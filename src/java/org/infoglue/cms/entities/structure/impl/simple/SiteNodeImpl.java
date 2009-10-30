@@ -160,6 +160,16 @@ public class SiteNodeImpl implements SiteNode
         this.valueObject.setIsHidden(isHidden);
     }
     
+    public Boolean getIsDeleted()
+    {
+    	return this.valueObject.getIsDeleted();
+	}
+    
+    public void setIsDeleted(Boolean isDeleted)
+	{
+    	this.valueObject.setIsDeleted(isDeleted);
+	}
+
     public org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl getParentSiteNode()
     {
         return this.parentSiteNode;

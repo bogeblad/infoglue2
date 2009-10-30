@@ -51,10 +51,14 @@ public interface Content extends IBaseEntity
 
     public java.lang.Boolean getIsBranch();
     
-    public void setIsProtected(java.lang.Integer isProtected);
+    public void setIsProtected(Integer isProtected);
     
-	public java.lang.Integer getIsProtected();
+	public Integer getIsProtected();
     
+    public Boolean getIsDeleted();
+    
+    public void setIsDeleted(Boolean isDeleted);
+
 	public void setIsBranch(java.lang.Boolean isBranch);
     
     public org.infoglue.cms.entities.management.impl.simple.ContentTypeDefinitionImpl getContentTypeDefinition();

@@ -25,6 +25,7 @@ package org.infoglue.cms.entities.management.impl.simple;
 
 
 import java.util.ArrayList;
+import java.util.Collection;
 
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.entities.management.Repository;
@@ -36,9 +37,9 @@ import org.infoglue.cms.exception.SystemException;
 public class RepositoryImpl implements Repository
 {
     private RepositoryVO valueObject = new RepositoryVO();
-    private java.util.Collection availableContenTypeDefinition;
-    private java.util.Collection contents;
-    private java.util.Collection repositoryLanguages = new ArrayList();
+    private Collection availableContenTypeDefinition;
+    private Collection contents;
+    private Collection repositoryLanguages = new ArrayList();
 
 	public String toString()
 	{
@@ -118,6 +119,16 @@ public class RepositoryImpl implements Repository
 	{
         this.valueObject.setDnsName(dnsName);
     }
+
+    public Boolean getIsDeleted()
+    {
+    	return this.valueObject.getIsDeleted();
+	}
+    
+    public void setIsDeleted(Boolean isDeleted)
+	{
+    	this.valueObject.setIsDeleted(isDeleted);
+	}
 
     public java.util.Collection getAvailableContenTypeDefinition()
     {

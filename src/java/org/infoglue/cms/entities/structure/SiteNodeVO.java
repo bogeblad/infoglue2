@@ -39,13 +39,14 @@ import org.infoglue.cms.util.validators.ValidatorFactory;
 public class SiteNodeVO implements BaseEntityVO
 {
 
-    private java.lang.Integer siteNodeId 	= null;
-    private java.lang.String name			= "";
-    private java.util.Date publishDateTime 	= new Date();
-    private java.util.Date expireDateTime  	= new Date();
-    private java.lang.Boolean isBranch		= new Boolean(false);             
-  	private java.lang.Integer repositoryId 	= null;    
-  	private java.lang.Integer siteNodeTypeDefinitionId = null;  
+    private Integer siteNodeId 	= null;
+    private String name			= "";
+    private Date publishDateTime 	= new Date();
+    private Date expireDateTime  	= new Date();
+    private Boolean isBranch		= new Boolean(false);             
+    private Boolean isDeleted 		= new Boolean(false);
+    private Integer repositoryId 	= null;    
+  	private Integer siteNodeTypeDefinitionId = null;  
   	private Integer childCount;
   	
   	private String creatorName;
@@ -198,6 +199,15 @@ public class SiteNodeVO implements BaseEntityVO
     	this.isHidden = isHidden;
     }
 
+    public Boolean getIsDeleted()
+    {
+    	return this.isDeleted;
+	}
+    
+    public void setIsDeleted(Boolean isDeleted)
+	{
+		this.isDeleted = isDeleted;
+	}
 
 	/**
 	 * @see org.infoglue.cms.entities.kernel.BaseEntityVO#getId()

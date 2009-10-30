@@ -136,6 +136,40 @@ public class ContentController extends BaseController
         return getAllVOObjects(ContentImpl.class, "contentId");
     }
 	
+    
+	public List<ContentVO> getContentVOListMarkedForDeletion() throws SystemException, Bug
+	{
+		Database db = CastorDatabaseService.getDatabase();
+		
+		List<ContentVO> contentVOListMarkedForDeletion = new ArrayList<ContentVO>();
+		
+		try 
+		{
+			beginTransaction(db);
+		
+			OQLQuery oql = db.getOQLQuery("SELECT c FROM org.infoglue.cms.entities.content.impl.simple.ContentImpl c WHERE c.isDeleted = $1 ORDER BY c.contentId");
+			oql.bind(true);
+			
+			QueryResults results = oql.execute();
+			if (results.hasMore()) 
+            {
+				Content content = (Content)results.next();
+				contentVOListMarkedForDeletion.add(content.getValueObject());
+            }
+            
+			results.close();
+			oql.close();
+
+			commitTransaction(db);
+		}
+		catch ( Exception e)		
+		{
+			throw new SystemException("An error occurred when we tried to fetch a list of deleted pages. Reason:" + e.getMessage(), e);			
+		}
+		
+		return contentVOListMarkedForDeletion;		
+	}
+
 	/**
 	 * This method finishes what the create content wizard initiated and resulted in.
 	 */
@@ -334,7 +368,7 @@ public class ContentController extends BaseController
 	 * This method deletes a content and also erases all the children and all versions.
 	 */
 	    
-	public /*synchronized*/ void delete(ContentVO contentVO, Database db, boolean skipRelationCheck, boolean skipServiceBindings, boolean forceDelete, InfoGluePrincipal infogluePrincipal) throws ConstraintException, SystemException, Exception
+	public void delete(ContentVO contentVO, Database db, boolean skipRelationCheck, boolean skipServiceBindings, boolean forceDelete, InfoGluePrincipal infogluePrincipal) throws ConstraintException, SystemException, Exception
 	{
 		Content content = null;
 		try
@@ -457,6 +491,132 @@ public class ContentController extends BaseController
 	}
 
 	
+	/**
+	 * This method deletes a content and also erases all the children and all versions.
+	 */
+	    
+    public void markForDeletion(ContentVO contentVO, InfoGluePrincipal infogluePrincipal) throws ConstraintException, SystemException
+    {
+    	markForDeletion(contentVO, infogluePrincipal, false);
+    }
+    
+	/**
+	 * This method deletes a content and also erases all the children and all versions.
+	 */
+	    
+    public void markForDeletion(ContentVO contentVO, InfoGluePrincipal infogluePrincipal, boolean forceDelete) throws ConstraintException, SystemException
+    {
+	    Database db = CastorDatabaseService.getDatabase();
+        beginTransaction(db);
+		try
+        {		
+			markForDeletion(contentVO, db, false, false, forceDelete, infogluePrincipal);
+	    	
+	    	commitTransaction(db);
+            
+        }
+        catch(ConstraintException ce)
+        {
+        	logger.warn("An error occurred so we should not complete the transaction:" + ce, ce);
+            rollbackTransaction(db);
+            throw ce;
+        }
+        catch(Exception e)
+        {
+            logger.error("An error occurred so we should not complete the transaction:" + e, e);
+            rollbackTransaction(db);
+            throw new SystemException(e.getMessage());
+        }
+
+    }  
+    
+
+	/**
+	 * This method deletes a content and also erases all the children and all versions.
+	 */
+	    
+	public void markForDeletion(ContentVO contentVO, InfoGluePrincipal infogluePrincipal, Database db) throws ConstraintException, SystemException, Exception
+	{
+		markForDeletion(contentVO, db, false, false, false, infogluePrincipal);
+	}
+	
+	/**
+	 * This method deletes a content and also erases all the children and all versions.
+	 */
+	    
+	public void markForDeletion(ContentVO contentVO, Database db, boolean skipRelationCheck, boolean skipServiceBindings, boolean forceDelete, InfoGluePrincipal infogluePrincipal) throws ConstraintException, SystemException, Exception
+	{
+		Content content = null;
+		try
+		{
+			content = getContentWithId(contentVO.getContentId(), db);
+		}
+		catch(SystemException e)
+		{
+			return;
+		}
+		
+		Content parent = content.getParentContent();
+		if(parent != null)
+		{
+			Iterator childContentIterator = parent.getChildren().iterator();
+			while(childContentIterator.hasNext())
+			{
+			    Content candidate = (Content)childContentIterator.next();
+			    if(candidate.getId().equals(contentVO.getContentId()))
+			    {
+			    	markForDeletionRecursive(content, childContentIterator, db, skipRelationCheck, skipServiceBindings, forceDelete, infogluePrincipal);
+			    }
+			}
+		}
+		else
+		{
+			markForDeletionRecursive(content, null, db, skipRelationCheck, skipServiceBindings, forceDelete, infogluePrincipal);
+		}
+	}        
+
+	/**
+	 * Recursively deletes all contents and their versions. Also updates related entities about the change.
+	 */
+	
+    private static void markForDeletionRecursive(Content content, Iterator parentIterator, Database db, boolean skipRelationCheck, boolean skipServiceBindings, boolean forceDelete, InfoGluePrincipal infogluePrincipal) throws ConstraintException, SystemException, Exception
+    {
+        if(!skipRelationCheck)
+        {
+	        List referenceBeanList = RegistryController.getController().getReferencingObjectsForContent(content.getId(), -1, db);
+			if(referenceBeanList != null && referenceBeanList.size() > 0)
+				throw new ConstraintException("ContentVersion.stateId", "3305");
+        }
+        
+        Collection children = content.getChildren();
+		Iterator childrenIterator = children.iterator();
+		while(childrenIterator.hasNext())
+		{
+			Content childContent = (Content)childrenIterator.next();
+			markForDeletionRecursive(childContent, childrenIterator, db, skipRelationCheck, skipServiceBindings, forceDelete, infogluePrincipal);   			
+   		}
+		content.setChildren(new ArrayList());
+		
+		boolean isDeletable = getIsDeletable(content, infogluePrincipal, db);
+   		if(forceDelete || isDeletable)
+	    {
+			//ContentVersionController.getContentVersionController().deleteVersionsForContent(content, db, forceDelete, infogluePrincipal);    	
+			
+			//if(!skipServiceBindings)
+   			//    ServiceBindingController.deleteServiceBindingsReferencingContent(content, db);
+			
+   			//if(parentIterator != null) 
+			//    parentIterator.remove();
+	    	
+	    	content.setIsDeleted(true);
+	    }
+	    else
+    	{
+    		throw new ConstraintException("ContentVersion.stateId", "3300", content.getName());
+    	}			
+    }        
+
+    
     public ContentVO update(ContentVO contentVO) throws ConstraintException, SystemException
     {
         return update(contentVO, null);
