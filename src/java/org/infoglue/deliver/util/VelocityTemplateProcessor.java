@@ -42,6 +42,7 @@ import javax.servlet.ServletException;
 import org.apache.log4j.Logger;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.Velocity;
+import org.infoglue.cms.applications.tasktool.actions.ScriptController;
 import org.infoglue.cms.io.FileHelper;
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.deliver.applications.actions.InfoGlueComponent;
@@ -144,12 +145,16 @@ public class VelocityTemplateProcessor
 		}
 		catch(Exception e)
 		{
+			logger.error("Error rendering template:" + e.getMessage(), e);
 			logger.warn("templateAsString: \n" + (templateAsString.length() > 500 ? templateAsString.substring(0, 500) + "... (template truncated)." : templateAsString));
 		    
 			//If error we don't want the error cached - right?
 			TemplateController templateController = (TemplateController)params.get("templateLogic");
-			DeliveryContext deliveryContext = templateController.getDeliveryContext();
-			deliveryContext.setDisablePageCache(true);
+			if(templateController != null)
+			{
+				DeliveryContext deliveryContext = templateController.getDeliveryContext();
+				deliveryContext.setDisablePageCache(true);
+			}
 			
 		    if(CmsPropertyHandler.getOperatingMode().equalsIgnoreCase("0") && (CmsPropertyHandler.getDisableTemplateDebug() == null || !CmsPropertyHandler.getDisableTemplateDebug().equalsIgnoreCase("true")))
 		        pw.println("Error rendering template:" + e.getMessage());
@@ -226,16 +231,31 @@ public class VelocityTemplateProcessor
 		    }
 		}
 
+	    final ScriptController scriptController = (ScriptController)params.get("scriptLogic");
 	    final TemplateController templateController = (TemplateController)params.get("templateLogic");
 	    final PortalController portletController = (PortalController)params.get("portalLogic");
-	    final DeliveryContext deliveryContext = templateController.getDeliveryContext();
+	    if(templateController != null)
+	    {
+	    	final DeliveryContext deliveryContext = templateController.getDeliveryContext();
+	    
+		    templateController.getHttpServletRequest().setAttribute("org.infoglue.cms.deliver.templateLogic", templateController);
+		    templateController.getHttpServletRequest().setAttribute("org.infoglue.cms.deliver.portalLogic", portletController);
+		    final CharResponseWrapper wrapper = new CharResponseWrapper(deliveryContext.getHttpServletResponse());
+		    final RequestDispatcher dispatch = templateController.getHttpServletRequest().getRequestDispatcher("/jsp/" + fileName);
+		    dispatch.include(templateController.getHttpServletRequest(), wrapper);
 
-	    templateController.getHttpServletRequest().setAttribute("org.infoglue.cms.deliver.templateLogic", templateController);
-	    templateController.getHttpServletRequest().setAttribute("org.infoglue.cms.deliver.portalLogic", portletController);
-	    final CharResponseWrapper wrapper = new CharResponseWrapper(deliveryContext.getHttpServletResponse());
-	    final RequestDispatcher dispatch = templateController.getHttpServletRequest().getRequestDispatcher("/jsp/" + fileName);
-	    dispatch.include(templateController.getHttpServletRequest(), wrapper);
-	    pw.println(wrapper.toCharArray());
+		    pw.println(wrapper.toCharArray());
+	    }
+	    else if(scriptController != null)
+	    {
+	    	scriptController.getRequest().setAttribute("org.infoglue.cms.deliver.scriptLogic", scriptController);
+	    	scriptController.getRequest().setAttribute("org.infoglue.cms.deliver.portalLogic", portletController);
+		    final CharResponseWrapper wrapper = new CharResponseWrapper(scriptController.getResponse());
+		    final RequestDispatcher dispatch = scriptController.getRequest().getRequestDispatcher("/jsp/" + fileName);
+		    dispatch.include(scriptController.getRequest(), wrapper);
+
+		    pw.println(wrapper.toCharArray());	    	
+	    }
 	}
 
 	

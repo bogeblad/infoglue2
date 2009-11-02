@@ -24,6 +24,7 @@
 package org.infoglue.cms.applications.tasktool.actions;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.infoglue.cms.exception.SystemException;
 
@@ -53,5 +54,15 @@ public interface ScriptController
 	 */
 
 	public void setRequest(HttpServletRequest request);
+
+	/**
+	 * A method to get the request for this script
+	 */
+
+	public HttpServletRequest getRequest();
+
+	public void setResponse(HttpServletResponse response);
+
+	public HttpServletResponse getResponse();
 
 }

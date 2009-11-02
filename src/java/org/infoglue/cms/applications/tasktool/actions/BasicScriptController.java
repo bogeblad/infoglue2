@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
@@ -53,6 +54,7 @@ public class BasicScriptController implements ScriptController
 
 	private Database db = null;
 	private HttpServletRequest request = null;
+	private HttpServletResponse response = null;
 	private Map outputParameters = new HashMap();
 	private final InfoGluePrincipal infoGluePrincipal;
 	
@@ -85,7 +87,25 @@ public class BasicScriptController implements ScriptController
 	{
 		this.request = request;
 	}
+
+	/**
+	 * A method to set the request for this script
+	 */
 	
+	public HttpServletResponse getResponse()
+	{
+		return this.response;
+	}
+
+	/**
+	 * A method to get the request for this script
+	 */
+	
+	public void setResponse(HttpServletResponse response)
+	{
+		this.response = response;
+	}
+
 	
 	/**
 	 * This is a method to get hold of the SiteNodeController.
