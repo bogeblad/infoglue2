@@ -1425,13 +1425,13 @@ public class ComponentLogic
 			    while(contentVersionIdListIterator.hasNext())
 			    {
 					Integer contentVersionId = (Integer)contentVersionIdListIterator.next();
-					//if(contentVersionId != null)
-					//{
-						ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getContentVersionVOWithId(contentVersionId, this.templateController.getDatabase());
-					    groups.add("contentVersion_" + contentVersionId);
-					    groups.add("content_" + contentVersionVO.getContentId());
-					//}
-			    }
+					ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getContentVersionVOWithId(contentVersionId, this.templateController.getDatabase());
+				    groups.add("contentVersion_" + contentVersionId);
+				    groups.add("content_" + contentVersionVO.getContentId());
+				}
+
+			    //System.out.println("Adding group: " + "siteNode_" + templateController.getSiteNodeId());
+			    groups.add("siteNode_" + templateController.getSiteNodeId());
 
 			    if(templateController.getDeliveryContext().getUsedContents().contains("selectiveCacheUpdateNonApplicable"))
 			    	groups.add("selectiveCacheUpdateNonApplicable");
@@ -1693,6 +1693,9 @@ public class ComponentLogic
 							//}
 					    }
 					    
+					    //System.out.println("Adding group: " + "siteNode_" + templateController.getSiteNodeId());
+					    groups.add("siteNode_" + templateController.getSiteNodeId());
+
 					    if(templateController.getDeliveryContext().getUsedContents().contains("selectiveCacheUpdateNonApplicable"))
 					    	groups.add("selectiveCacheUpdateNonApplicable");
 
@@ -2554,6 +2557,9 @@ public class ComponentLogic
 				    groups.add("content_" + contentVersionVO.getContentId());
 				}
 				
+			    //System.out.println("Adding group: " + "siteNode_" + templateController.getSiteNodeId());
+			    groups.add("siteNode_" + templateController.getSiteNodeId());
+
 			    if(templateController.getDeliveryContext().getUsedContents().contains("selectiveCacheUpdateNonApplicable"))
 			    	groups.add("selectiveCacheUpdateNonApplicable");
 

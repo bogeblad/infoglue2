@@ -119,7 +119,7 @@ public class WorkingPublicationThread extends Thread
 					logger.info("objectId:" + objectId);
 					logger.info("objectName:" + objectName);
 					logger.info("typeId:" + typeId);
-	
+
 					try
 					{
 				        boolean isDependsClass = false;
@@ -129,7 +129,7 @@ public class WorkingPublicationThread extends Thread
 					    CacheController.clearCaches(className, objectId, null);
 			
 					    logger.info("Updating className with id:" + className + ":" + objectId);
-						if(className != null && !typeId.equalsIgnoreCase("" + NotificationMessage.SYSTEM))
+					    if(className != null && !typeId.equalsIgnoreCase("" + NotificationMessage.SYSTEM))
 						{
 						    Class type = Class.forName(className);
 			
@@ -236,7 +236,7 @@ public class WorkingPublicationThread extends Thread
 							}
 	
 						    logger.info("4");
-						}
+						}	
 					}
 					catch (Exception e) 
 					{
