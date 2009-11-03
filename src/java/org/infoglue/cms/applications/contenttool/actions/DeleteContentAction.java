@@ -90,7 +90,8 @@ public class DeleteContentAction extends InfoGlueAbstractAction
 				logger.info("The content must have been a root-content because we could not find a parent.");
 			}
 
-	    	ContentControllerProxy.getController().acDelete(this.getInfoGluePrincipal(), this.contentVO);	    
+	    	//ContentControllerProxy.getController().acDelete(this.getInfoGluePrincipal(), this.contentVO);	    
+	    	ContentControllerProxy.getController().acMarkForDelete(this.getInfoGluePrincipal(), this.contentVO);	    
 			
 	    	return "success";
 	    }
@@ -166,7 +167,8 @@ public class DeleteContentAction extends InfoGlueAbstractAction
 			    logger.info("The content must have been a root-content because we could not find a parent.");
 			}
 
-	    	ContentControllerProxy.getController().acDelete(this.getInfoGluePrincipal(), this.contentVO);	    
+	    	//ContentControllerProxy.getController().acDelete(this.getInfoGluePrincipal(), this.contentVO);	    
+	    	ContentControllerProxy.getController().acMarkForDelete(this.getInfoGluePrincipal(), this.contentVO);	    
 			
 	    	return "successStandalone";
 	    }

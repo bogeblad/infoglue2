@@ -85,7 +85,6 @@ public class DeleteSiteNodeAction extends InfoGlueAbstractAction
 	    {
 			try
 			{
-				System.out.println("SiteNode:" + this.siteNodeVO);
 				this.parentSiteNodeVO = SiteNodeController.getParentSiteNode(this.siteNodeVO.getSiteNodeId());
 				this.parentSiteNodeId = this.parentSiteNodeVO.getSiteNodeId();
 			}
@@ -94,7 +93,8 @@ public class DeleteSiteNodeAction extends InfoGlueAbstractAction
 				logger.info("The siteNode must have been a root-siteNode because we could not find a parent.");
 			}
 
-			SiteNodeControllerProxy.getSiteNodeControllerProxy().acDelete(this.getInfoGluePrincipal(), this.siteNodeVO);
+			//SiteNodeControllerProxy.getSiteNodeControllerProxy().acDelete(this.getInfoGluePrincipal(), this.siteNodeVO);
+			SiteNodeControllerProxy.getSiteNodeControllerProxy().acMarkForDelete(this.getInfoGluePrincipal(), this.siteNodeVO);
 	    	
 			return "success";
 	    }
@@ -106,9 +106,13 @@ public class DeleteSiteNodeAction extends InfoGlueAbstractAction
 
         try
         {
+    		SiteNodeVO siteNodeVO = SiteNodeControllerProxy.getController().getSiteNodeVOWithId(this.siteNodeVO.getSiteNodeId());
+    		String siteNodeName = siteNodeVO.getName();
+    		System.out.println("siteNodeName:" + siteNodeName + " for " + this.siteNodeVO.getSiteNodeId());
+    		
         	doExecute();
         	
-    		String deleteSiteNodeInlineOperationDoneHeader = getLocalizedString(getLocale(), "tool.structuretool.deleteSiteNodeInlineOperationDoneHeader", this.siteNodeVO.getName());
+    		String deleteSiteNodeInlineOperationDoneHeader = getLocalizedString(getLocale(), "tool.structuretool.deleteSiteNodeInlineOperationDoneHeader", new String[]{siteNodeVO.getName()});
     		String deleteSiteNodeInlineOperationViewDeletedPageParentLinkText = getLocalizedString(getLocale(), "tool.structuretool.deleteSiteNodeInlineOperationViewDeletedPageParentLinkText");
     		String deleteSiteNodeInlineOperationViewCreatedPageParentTitleText = getLocalizedString(getLocale(), "tool.structuretool.deleteSiteNodeInlineOperationViewDeletedPageParentTitleText");
     	
@@ -117,7 +121,8 @@ public class DeleteSiteNodeAction extends InfoGlueAbstractAction
     	    addActionLink(userSessionKey, new LinkBean("parentPageUrl", deleteSiteNodeInlineOperationViewDeletedPageParentLinkText, deleteSiteNodeInlineOperationViewCreatedPageParentTitleText, deleteSiteNodeInlineOperationViewCreatedPageParentTitleText, this.originalAddress, false, "", "", "structure"));
             setActionExtraData(userSessionKey, "refreshToolbarAndMenu", "" + true);
             setActionExtraData(userSessionKey, "repositoryId", "" + this.siteNodeVO.getRepositoryId());
-            setActionExtraData(userSessionKey, "siteNodeId", "" + this.siteNodeVO.getSiteNodeId());
+            setActionExtraData(userSessionKey, "siteNodeId", "" + this.siteNodeVO.getId());
+            setActionExtraData(userSessionKey, "siteNodeName", "" + siteNodeName);
             setActionExtraData(userSessionKey, "unrefreshedSiteNodeId", "" + parentSiteNodeId);
             setActionExtraData(userSessionKey, "unrefreshedNodeId", "" + parentSiteNodeId);
             setActionExtraData(userSessionKey, "changeTypeId", "" + this.changeTypeId);

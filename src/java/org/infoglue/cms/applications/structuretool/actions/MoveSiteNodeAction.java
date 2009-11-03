@@ -169,11 +169,17 @@ public class MoveSiteNodeAction extends InfoGlueAbstractAction
         {
             ceb.throwIfNotEmpty();
         	
-    		SiteNodeControllerProxy.getSiteNodeControllerProxy().acMoveSiteNode(this.getInfoGluePrincipal(), this.siteNodeVO, this.newParentSiteNodeId);
+    		SiteNodeVO siteNodeVO = SiteNodeControllerProxy.getController().getSiteNodeVOWithId(getSiteNodeId());
+
+    		this.parentSiteNodeId = siteNodeVO.getParentSiteNodeId();
+            System.out.println("parentSiteNodeId:" + parentSiteNodeId);
+            
+    		SiteNodeControllerProxy.getSiteNodeControllerProxy().acMoveSiteNode(this.getInfoGluePrincipal(), siteNodeVO, this.newParentSiteNodeId);
 
             setActionExtraData(userSessionKey, "refreshToolbarAndMenu", "" + true);
             setActionExtraData(userSessionKey, "repositoryId", "" + this.repositoryId);
             setActionExtraData(userSessionKey, "siteNodeId", "" + newParentSiteNodeId);
+            setActionExtraData(userSessionKey, "siteNodeName", "" + siteNodeVO.getName());
             setActionExtraData(userSessionKey, "unrefreshedSiteNodeId", "" + parentSiteNodeId);
             setActionExtraData(userSessionKey, "unrefreshedNodeId", "" + parentSiteNodeId);
             setActionExtraData(userSessionKey, "changeTypeId", "" + this.changeTypeId);

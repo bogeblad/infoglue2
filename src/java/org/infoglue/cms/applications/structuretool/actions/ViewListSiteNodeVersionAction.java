@@ -134,6 +134,14 @@ public class ViewListSiteNodeVersionAction extends InfoGlueAbstractAction
         userSessionKey = "" + System.currentTimeMillis();
         
         addActionLink(userSessionKey, new LinkBean("currentPageUrl", getLocalizedString(getLocale(), "tool.common.publishing.publishingInlineOperationBackToCurrentPageLinkText"), getLocalizedString(getLocale(), "tool.common.publishing.publishingInlineOperationBackToCurrentPageTitleText"), getLocalizedString(getLocale(), "tool.common.publishing.publishingInlineOperationBackToCurrentPageTitleText"), this.originalAddress, false, ""));
+        
+        setActionExtraData(userSessionKey, "repositoryId", "" + this.repositoryId);
+        setActionExtraData(userSessionKey, "siteNodeId", "" + this.siteNodeId);
+        //setActionExtraData(userSessionKey, "siteNodeName", "" + siteNodeVersionVO);
+        setActionExtraData(userSessionKey, "unrefreshedSiteNodeId", "" + this.siteNodeId);
+        setActionExtraData(userSessionKey, "unrefreshedNodeId", "" + this.siteNodeId);
+        setActionExtraData(userSessionKey, "changeTypeId", "1");
+
         setActionExtraData(userSessionKey, "disableCloseLink", "true");
         
 	    return "successV3";

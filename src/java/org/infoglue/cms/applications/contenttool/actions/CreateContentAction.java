@@ -360,7 +360,7 @@ public class CreateContentAction extends InfoGlueAbstractAction
     		String createContentInlineOperationViewCreatedContentLinkText = getLocalizedString(getLocale(), "tool.contenttool.createContentInlineOperationViewCreatedContentLinkText");
     		String createContentInlineOperationViewCreatedContentTitleText = getLocalizedString(getLocale(), "tool.contenttool.createContentInlineOperationViewCreatedContentTitleText");
 
-    		addActionLink(userSessionKey, new LinkBean("newPageUrl", createContentInlineOperationViewCreatedContentLinkText, createContentInlineOperationViewCreatedContentTitleText, createContentInlineOperationViewCreatedContentTitleText, "ViewContent!V3.action?contentId=" + newContentVO.getId(), false, "", "content"));
+    		addActionLink(userSessionKey, new LinkBean("newPageUrl", createContentInlineOperationViewCreatedContentLinkText, createContentInlineOperationViewCreatedContentTitleText, createContentInlineOperationViewCreatedContentTitleText, "ViewContent!V3.action?contentId=" + newContentVO.getId(), false, "", "content", newContentVO.getName()));
             setActionExtraData(userSessionKey, "refreshToolbarAndMenu", "" + true);
             setActionExtraData(userSessionKey, "repositoryId", "" + newContentVO.getRepositoryId());
             setActionExtraData(userSessionKey, "contentId", "" + newContentVO.getId());

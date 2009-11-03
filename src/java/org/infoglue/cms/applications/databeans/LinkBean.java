@@ -42,18 +42,24 @@ public class LinkBean implements Serializable
 	private String actionURL  	    		= "";	
 	private boolean isJavascript  	    	= false;
 	private String target  	    			= null;
+	private String targetTitle  	    	= "";
 
 	public LinkBean(String id, String text, String title, String description, String actionURL, boolean isJavascript, String backgroundImageURL)
 	{
-		this(id, text, title, description, actionURL, isJavascript, backgroundImageURL, "left", null);
+		this(id, text, title, description, actionURL, isJavascript, backgroundImageURL, "left", null, "");
 	}
 
 	public LinkBean(String id, String text, String title, String description, String actionURL, boolean isJavascript, String backgroundImageURL, String target)
 	{
-		this(id, text, title, description, actionURL, isJavascript, backgroundImageURL, "left", target);
+		this(id, text, title, description, actionURL, isJavascript, backgroundImageURL, "left", target, "");
 	}
 
-	public LinkBean(String id, String text, String title, String description, String actionURL, boolean isJavascript, String backgroundImageURL, String backgroundImageAlignment, String target)
+	public LinkBean(String id, String text, String title, String description, String actionURL, boolean isJavascript, String backgroundImageURL, String target, String targetTitle)
+	{
+		this(id, text, title, description, actionURL, isJavascript, backgroundImageURL, "left", target, targetTitle);
+	}
+
+	public LinkBean(String id, String text, String title, String description, String actionURL, boolean isJavascript, String backgroundImageURL, String backgroundImageAlignment, String target, String targetTitle)
 	{
 		this.id 						= id;
 		this.text 						= text;
@@ -64,6 +70,7 @@ public class LinkBean implements Serializable
 		this.actionURL 					= actionURL;
 		this.isJavascript 				= isJavascript;
 		this.target 					= target;
+		this.targetTitle 				= targetTitle;
 	}
 
 	public String getId()
@@ -109,6 +116,11 @@ public class LinkBean implements Serializable
 	public String getTarget()
 	{
 		return target;
+	}
+
+	public String getTargetTitle()
+	{
+		return targetTitle;
 	}
 
 }

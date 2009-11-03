@@ -33,6 +33,7 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
 import org.infoglue.cms.applications.common.Session;
+import org.infoglue.cms.controllers.kernel.impl.simple.LabelController;
 import org.infoglue.cms.exception.AccessConstraintException;
 import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.ConfigurationError;
@@ -276,9 +277,12 @@ public abstract class WebworkAbstractAction implements Action, ServletRequestAwa
 
   	public String getLocalizedString(Locale locale, String key, Object arg1) 
   	{
-    	StringManager stringManager = StringManagerFactory.getPresentationStringManager("org.infoglue.cms.applications", locale);
+  		return LabelController.getController(locale).getLocalizedString(locale, key, arg1);
+   	}
 
-    	return stringManager.getString(key, arg1);
+  	public String getLocalizedString(Locale locale, String key, Object[] parameters) 
+  	{
+  		return LabelController.getController(locale).getLocalizedString(locale, key, parameters);
   	}
 
    /**
