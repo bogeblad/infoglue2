@@ -714,9 +714,22 @@ public class ToolbarController
 		List<ToolbarButton> buttons = new ArrayList<ToolbarButton>();
 		
 		Integer contentId = new Integer(request.getParameter("contentId"));
-		Integer contentVersionId = new Integer(request.getParameter("contentVersionId"));
 		ContentVO contentVO = ContentController.getContentController().getContentVOWithId(contentId);
-
+		
+		String contentVersionIdString = request.getParameter("contentVersionId");
+		Integer contentVersionId = null;
+		if(contentVersionIdString == null)
+		{
+			LanguageVO masterLanguageVO = LanguageController.getController().getMasterLanguage(contentVO.getRepositoryId());
+			ContentVersionVO contentVersionVO = ContentVersionController.getContentVersionController().getLatestActiveContentVersionVO(contentId, masterLanguageVO.getId());
+			if(contentVersionVO != null)
+				contentVersionId = contentVersionVO.getId();
+		}
+		else
+		{
+			contentVersionId = new Integer(contentVersionIdString);
+		}
+		
 		buttons.add(new ToolbarButton("",
 				  getLocalizedString(locale, "tool.contenttool.toolbarV3.createContentLabel"), 
 				  getLocalizedString(locale, "tool.contenttool.toolbarV3.createContentTitle"),
@@ -785,20 +798,23 @@ public class ToolbarController
 				  "",
 				  "syncTree"));
 
-		buttons.add(new ToolbarButton("",
-				  getLocalizedString(locale, "tool.contenttool.toolbarV3.changeLanguageLabel"), 
-				  getLocalizedString(locale, "tool.contenttool.toolbarV3.changeLanguageTitle"),
-				  "ChangeVersionLanguage!input.action?contentId=" + contentId + "&repositoryId=" + contentVO.getRepositoryId() + "&contentVersionId=" + contentVersionId,
-				  "",
-				  "changeLanguage"));
-
-		buttons.add(new ToolbarButton("",
-				  getLocalizedString(locale, "tool.contenttool.toolbarV3.showDataAsXMLLabel"), 
-				  getLocalizedString(locale, "tool.contenttool.toolbarV3.showDataAsXMLTitle"),
-				  "ViewContentVersion!asXML.action?contentId=" + contentId + "&repositoryId=" + contentVO.getRepositoryId() + "&contentVersionId=" + contentVersionId,
-				  "",
-				  "showDataAsXML"));
-
+		if(contentVersionId != null)
+		{
+			buttons.add(new ToolbarButton("",
+					  getLocalizedString(locale, "tool.contenttool.toolbarV3.changeLanguageLabel"), 
+					  getLocalizedString(locale, "tool.contenttool.toolbarV3.changeLanguageTitle"),
+					  "ChangeVersionLanguage!input.action?contentId=" + contentId + "&repositoryId=" + contentVO.getRepositoryId() + "&contentVersionId=" + contentVersionId,
+					  "",
+					  "changeLanguage"));
+	
+			buttons.add(new ToolbarButton("",
+					  getLocalizedString(locale, "tool.contenttool.toolbarV3.showDataAsXMLLabel"), 
+					  getLocalizedString(locale, "tool.contenttool.toolbarV3.showDataAsXMLTitle"),
+					  "ViewContentVersion!asXML.action?contentId=" + contentId + "&repositoryId=" + contentVO.getRepositoryId() + "&contentVersionId=" + contentVersionId,
+					  "",
+					  "showDataAsXML"));
+		}
+		
 		return buttons;
 	}
 	
@@ -870,19 +886,20 @@ public class ToolbarController
 
 		String siteNodeId = request.getParameter("siteNodeId");
 		String repositoryId = request.getParameter("repositoryId");
+		SiteNodeVO siteNodeVO = SiteNodeController.getController().getSiteNodeVOWithId(new Integer(siteNodeId));
 		SiteNodeVersionVO siteNodeVersionVO = SiteNodeVersionController.getController().getLatestActiveSiteNodeVersionVO(new Integer(siteNodeId));
 
 		buttons.add(new ToolbarButton("",
 				  getLocalizedString(locale, "tool.structuretool.toolbarV3.createPageLabel"), 
 				  getLocalizedString(locale, "tool.structuretool.toolbarV3.createPageTitle"),
-				  "CreateSiteNode!inputV3.action?isBranch=true&repositoryId=" + request.getParameter("repositoryId") + "&parentSiteNodeId=" + request.getParameter("siteNodeId") + "&returnAddress=ViewInlineOperationMessages.action&originalAddress=refreshParent",
+				  "CreateSiteNode!inputV3.action?isBranch=true&repositoryId=" + repositoryId + "&parentSiteNodeId=" + siteNodeId + "&returnAddress=ViewInlineOperationMessages.action&originalAddress=refreshParent",
 				  "",
 				  "create"));
 
 		buttons.add(new ToolbarButton("",
 				  getLocalizedString(locale, "tool.structuretool.toolbarV3.movePageLabel"), 
 				  getLocalizedString(locale, "tool.structuretool.toolbarV3.movePageTitle"),
-				  "MoveSiteNode!inputV3.action?repositoryId=" + request.getParameter("repositoryId") + "&siteNodeId=" + request.getParameter("siteNodeId") + "&hideLeafs=true&returnAddress=ViewInlineOperationMessages.action&originalAddress=refreshParent",
+				  "MoveSiteNode!inputV3.action?repositoryId=" + repositoryId + "&siteNodeId=" + siteNodeId + "&hideLeafs=true&returnAddress=ViewInlineOperationMessages.action&originalAddress=refreshParent",
 				  "",
 				  "movePage"));
 
@@ -891,14 +908,14 @@ public class ToolbarController
 			buttons.add(new ToolbarButton("",
 					  getLocalizedString(locale, "tool.structuretool.toolbarV3.deletePageLabel"), 
 					  getLocalizedString(locale, "tool.structuretool.toolbarV3.deletePageTitle"),
-					  "DeleteSiteNode!V3.action?siteNodeId=" + request.getParameter("siteNodeId") + "&repositoryId=" + request.getParameter("repositoryId") + "&changeTypeId=4&returnAddress=ViewInlineOperationMessages.action&originalAddress=refreshParent",
+					  "DeleteSiteNode!V3.action?siteNodeId=" + siteNodeId + "&repositoryId=" + repositoryId + "&changeTypeId=4&returnAddress=ViewInlineOperationMessages.action&originalAddress=refreshParent",
 					  "",
 					  "",
 					  "delete",
 					  true,
 					  true,
 					  getLocalizedString(locale, "tool.structuretool.toolbarV3.deletePageLabel"), 
-					  getLocalizedString(locale, "tool.structuretool.toolbarV3.deletePageConfirmationLabel"),
+					  getLocalizedString(locale, "tool.structuretool.toolbarV3.deletePageConfirmationLabel", new String[]{siteNodeVO.getName()}),
 					  "inlineDiv"));
 			
 		    //buttons.add(new ImageButton(this.getCMSBaseUrl() + "/Confirm.action?header=tool.structuretool.deleteSiteNode.header&yesDestination=" + URLEncoder.encode(URLEncoder.encode("DeleteSiteNode.action?siteNodeId=" + this.siteNodeId + "&repositoryId=" + this.repositoryId + "&changeTypeId=4", "UTF-8"), "UTF-8") + "&noDestination=" + URLEncoder.encode(URLEncoder.encode("ViewSiteNode.action?title=SiteNode&siteNodeId=" + this.siteNodeId + "&repositoryId=" + this.repositoryId, "UTF-8"), "UTF-8") + "&message=tool.structuretool.deleteSiteNode.message", getLocalizedString(getSession().getLocale(), "images.structuretool.buttons.deleteSiteNode"), "Delete SiteNode"));
@@ -906,7 +923,7 @@ public class ToolbarController
 		buttons.add(new ToolbarButton("",
 				getLocalizedString(locale, "tool.structuretool.toolbarV3.editPageMetaInfoLabel"), 
 				getLocalizedString(locale, "tool.structuretool.toolbarV3.editPageMetaInfoTitle"),
-				"ViewAndCreateContentForServiceBinding.action?siteNodeId=" + request.getParameter("siteNodeId") + "&repositoryId=" + request.getParameter("repositoryId") + "&siteNodeVersionId=" + siteNodeVersionVO.getId() + "&hideLeafs=true&returnAddress=ViewInlineOperationMessages.action&originalAddress=refreshParent",
+				"ViewAndCreateContentForServiceBinding.action?siteNodeId=" + siteNodeId + "&repositoryId=" + repositoryId + "&siteNodeVersionId=" + siteNodeVersionVO.getId() + "&hideLeafs=true&returnAddress=ViewInlineOperationMessages.action&originalAddress=refreshParent",
 				"",
 				"properties"));
 
@@ -1283,7 +1300,7 @@ public class ToolbarController
 		buttons.add(new ToolbarButton("",
 				  getLocalizedString(locale, "tool.managementtool.deleteRepository.header"), 
 				  getLocalizedString(locale, "tool.managementtool.deleteRepository.header"),
-				  "DeleteRepository.action?repositoryId=" + request.getParameter("repositoryId"),
+				  "DeleteRepository!markForDelete.action?repositoryId=" + request.getParameter("repositoryId"),
 				  "images/v3/createBackgroundPenPaper.gif",
 				  "left",
 				  "create",
@@ -2623,8 +2640,16 @@ public class ToolbarController
 	
 	public String getLocalizedString(Locale locale, String key) 
   	{
-    	StringManager stringManager = StringManagerFactory.getPresentationStringManager("org.infoglue.cms.applications", locale);
+		return LabelController.getController(locale).getLocalizedString(locale, key);
+    	/*
+		StringManager stringManager = StringManagerFactory.getPresentationStringManager("org.infoglue.cms.applications", locale);
 
     	return stringManager.getString(key);
+    	*/
   	}
+
+	public String getLocalizedString(Locale locale, String key, Object[] args) 
+  	{
+		return LabelController.getController(locale).getLocalizedString(locale, key, args);
+   	}
 }

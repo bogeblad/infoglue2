@@ -32,6 +32,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -247,33 +248,69 @@ public class LabelController extends BaseController implements StringManager
 		
 		return value;
 	}
-/*
+
 	public String getLocalizedString(Locale locale, String key, Object[] args)
 	{
+		Timer t = new Timer();
+		
 		String value = null;
-		
-		try
+
+		String cacheKey = "" + locale;
+		Object cachedBundle = cachedBundles.get(cacheKey);
+
+		ResourceBundle resourceBundle = null;
+
+		t.printElapsedTime("1");
+
+		if(!(cachedBundle instanceof NullObject))
 		{
-			ResourceBundle resourceBundle = getResourceBundle(locale);
-			if(resourceBundle == null)
+			//System.out.println("Not a NullObject.." + cachedBundle);
+			if(cachedBundle != null)
 			{
-				checkForResourceBundleAsset(locale);
+				//System.out.println("Not null:" + cachedBundle.getClass().getName());
+				resourceBundle = (ResourceBundle)cachedBundle;
 			}
-			
-			if(resourceBundle != null)
-				value = resourceBundle.getString(key);
-		}
-		catch (Exception e) 
+			else
+			{
+				//System.out.println("A null:" + cachedBundle);
+				try
+				{
+					//t.printElapsedTime("1.1");
+					resourceBundle = getResourceBundle(locale);
+					//t.printElapsedTime("1.2");
+					if(resourceBundle == null)
+					{
+						resourceBundle = checkForResourceBundleAsset(locale);
+						//t.printElapsedTime("1.3");
+					}
+					if(resourceBundle == null)
+						cachedBundles.put(cacheKey, new NullObject());
+					else
+						cachedBundles.put(cacheKey, resourceBundle);
+				}
+				catch (Exception e) 
+				{
+					logger.error("Could not get value from bundle:" + e.getMessage(), e);
+				}
+			}
+		}			
+		//t.printElapsedTime("2");
+		System.out.println("\n\n:args:" + args[0]);
+		if(resourceBundle != null)
 		{
-			logger.error("Could not get value from bundle:" + e.getMessage(), e);
+			value = MessageFormat.format(resourceBundle.getString(key), args);
 		}
 		
+		//t.printElapsedTime("3");
+
 		if(value == null || value.equals(""))
-			value = getLocalizedSystemString(locale, key);
+			value = getLocalizedSystemString(locale, key, args);
 			
+		//t.printElapsedTime("Getting getLocalizedString...");
+		
 		return value;
 	}
-*/
+
 	private String getLocalizedSystemString(Locale locale, String key) 
   	{
     	StringManager stringManager = StringManagerFactory.getPresentationStringManager("org.infoglue.cms.applications", locale);
@@ -294,7 +331,13 @@ public class LabelController extends BaseController implements StringManager
 
     	return stringManager.getString(key, arg1, arg2);
   	}
+	
+	private String getLocalizedSystemString(Locale locale, String key, Object[] args) 
+  	{
+    	StringManager stringManager = StringManagerFactory.getPresentationStringManager("org.infoglue.cms.applications", locale);
 
+    	return stringManager.getString(key, args);
+  	}
 	
 	public ResourceBundle getResourceBundle(Locale locale)
 	{
