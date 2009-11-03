@@ -638,6 +638,8 @@ public interface TemplateController
 	 
 	public String getAssetUrlForAssetWithId(Integer digitalAssetId);
 
+	public String getAssetFilePathForAssetWithId(Integer digitalAssetId);
+
     /**
      * This method deliveres a String with the URL to the digital asset asked for.
      */

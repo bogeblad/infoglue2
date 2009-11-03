@@ -23,9 +23,14 @@
 
 package org.infoglue.deliver.taglib.content;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspTagException;
 
+import org.infoglue.cms.entities.content.DigitalAssetVO;
 import org.infoglue.deliver.taglib.component.ComponentLogicTag;
 
 /**
@@ -45,6 +50,7 @@ public class AssetsTag extends ComponentLogicTag
 
 	private Integer contentId;
 	private String propertyName;
+	private String assetKey;
     private boolean useInheritance = true;
     private boolean useRepositoryInheritance = true;
     private boolean useStructureInheritance = true;
@@ -58,18 +64,33 @@ public class AssetsTag extends ComponentLogicTag
     {
         try
         {
+        	List assets = new ArrayList();
+        	
 			if(contentId != null)
             {
-	            produceResult(getController().getAssets(contentId));    
+				assets = getController().getAssets(contentId);    
             }
             else if(propertyName != null)
             {
-            	produceResult(getComponentLogic().getAssets(propertyName, useInheritance, useRepositoryInheritance, useStructureInheritance));                    
+            	assets = getComponentLogic().getAssets(propertyName, useInheritance, useRepositoryInheritance, useStructureInheritance);                    
             }
             else
             {
-	            produceResult(getController().getAssets(getController().getComponentContentId()));    
+            	assets = getController().getAssets(getController().getComponentContentId());    
             }
+			
+			if(assets != null && assetKey != null)
+			{
+				Iterator assetsIterator = assets.iterator();
+				while(assetsIterator.hasNext())
+				{
+					DigitalAssetVO assetVO = (DigitalAssetVO)assetsIterator.next();
+					if(!assetVO.getAssetKey().equals(assetKey))
+						assetsIterator.remove();
+				}
+			}
+			
+			produceResult(assets);
         }
         catch(Exception e)
         {
@@ -78,6 +99,7 @@ public class AssetsTag extends ComponentLogicTag
         
         this.contentId = null;
         this.propertyName = null;
+        this.assetKey = null;
         this.useInheritance = true;
         this.useRepositoryInheritance = true;
         this.useStructureInheritance = true;
@@ -94,7 +116,12 @@ public class AssetsTag extends ComponentLogicTag
     {
         this.propertyName = evaluateString("assets", "propertyName", propertyName);
     }
-    
+
+    public void setAssetKey(String assetKey) throws JspException
+    {
+        this.assetKey = evaluateString("assets", "assetKey", assetKey);
+    }
+
     public void setUseInheritance(boolean useInheritance)
     {
         this.useInheritance = useInheritance;

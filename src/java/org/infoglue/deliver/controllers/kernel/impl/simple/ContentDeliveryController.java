@@ -1885,6 +1885,57 @@ public class ContentDeliveryController extends BaseDeliveryController
         return assetUrl;
 	}
 	
+	/**
+	 * This is the basic way of getting an asset-url for a content. 
+	 * It selects the correct contentVersion depending on the language and then gets the digitalAsset associated.
+	 * If the asset is cached on disk it returns that path imediately it's ok - otherwise it dumps it fresh.
+	 */
+
+	public String getAssetFilePath(Database db, Integer digitalAssetId, DeliveryContext deliveryContext, InfoGluePrincipal infoGluePrincipal) throws SystemException, Exception
+	{
+		String assetFilePath = "";
+		
+		Integer contentId = DigitalAssetController.getController().getContentId(digitalAssetId, db);
+		boolean hasAccess = getHasUserContentAccess(db, infoGluePrincipal, contentId);
+		
+		if(hasAccess)
+		{
+	    	DigitalAssetVO digitalAsset = DigitalAssetController.getSmallDigitalAssetVOWithId(digitalAssetId, db);
+			if(digitalAsset != null)
+			{
+				String fileName = digitalAsset.getDigitalAssetId() + "_" + digitalAsset.getAssetFileName();
+	
+				int i = 0;
+				File masterFile = null;
+				String folderName = "" + (digitalAsset.getDigitalAssetId().intValue() / 1000);
+				logger.info("folderName:" + folderName);
+				String filePath = CmsPropertyHandler.getDigitalAssetPath0() + File.separator + folderName;
+				while(filePath != null)
+				{
+					try
+					{
+					    if(masterFile == null)
+					        masterFile = DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpDigitalAsset(digitalAsset, fileName, filePath, db);
+					    else
+					        DigitalAssetDeliveryController.getDigitalAssetDeliveryController().dumpDigitalAsset(masterFile, fileName, filePath);
+					}
+					catch(Exception e)
+					{
+						logger.warn("An file could not be written:" + e.getMessage(), e);
+					}
+					
+				    i++;
+					filePath = CmsPropertyHandler.getProperty("digitalAssetPath." + i);
+				    if(filePath != null)
+				    	filePath += File.separator + folderName;
+				}
+	
+				assetFilePath = CmsPropertyHandler.getDigitalAssetPath() + File.separator + folderName + File.separator + fileName;
+			}
+		}
+		
+		return assetFilePath;
+	}
 		
 	
 	/**

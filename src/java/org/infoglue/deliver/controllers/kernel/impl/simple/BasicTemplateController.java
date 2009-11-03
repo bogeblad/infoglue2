@@ -2713,6 +2713,26 @@ public class BasicTemplateController implements TemplateController
 	}
 
 	/**
+	 * This method deliveres a String with the assetFilePath to the digital asset asked for.
+	 */
+	 
+	public String getAssetFilePathForAssetWithId(Integer digitalAssetId) 
+	{
+		String assetFilePath = "";
+		
+		try
+		{
+			assetFilePath = ContentDeliveryController.getContentDeliveryController().getAssetFilePath(getDatabase(), digitalAssetId, this.deliveryContext, this.infoGluePrincipal);
+		}
+		catch(Exception e)
+		{
+			logger.error("An error occurred trying to get assetFilePath on content with digitalAssetId:" + digitalAssetId + " : " + e.getMessage(), e);
+		}
+				
+		return assetFilePath;
+	}
+
+	/**
 	 * This method deliveres a String with the URL to the digital asset asked for.
 	 * As the siteNode can have multiple bindings as well as a content as a parameter this
 	 * parameter requires a bindingName which refers to the AvailableServiceBinding.name-attribute. 

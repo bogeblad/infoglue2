@@ -196,7 +196,9 @@ tr.hilightbrown {
 	background-color : #FFF5CC;
 	height 			 : 14pt;
 }
-
+tr.darksilver {
+	background-color : #e6e8e6;
+}
 td.highlightedAttribute {
 	background: url("../images/v3/markedAttributeBackground.gif") 0px 0px no-repeat;
 }

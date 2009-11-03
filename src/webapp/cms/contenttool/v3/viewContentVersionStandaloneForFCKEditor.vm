@@ -9,6 +9,14 @@
 			{
 				refreshCallerWindow();
 			}
+			else if(top.getIsIGStandardTools && top.getIsIGStandardTools() == true)
+			{
+				if(window.name.indexOf("TB_iframe") > -1)
+				{
+					top.refreshWorkArea("structure");
+				}
+				if(parent && parent.closeInlineDiv) parent.closeInlineDiv(); else if(parent && parent.closeDialog) parent.closeDialog(); else window.close();
+			}
 			else
 			{
 				parent.closeDialog();

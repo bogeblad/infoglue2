@@ -2068,8 +2068,9 @@ $ui.getString("entity.${fieldNameKey}.label")<br/>
     				//Event listener for delete option
                 	$("#button$velocityCount").click(function () {
                 		//alert("aaa:" + $("#genericDialog"));
+                		$("#genericDialog").dialog('destroy');
                 		$("#genericDialog").attr("title", "$button.confirmationTitle");
-                		$("#genericDialog p").text("$button.confirmationText");
+                		$("#genericDialog p").html("$formatter.escapeForAdvancedJavascripts($button.confirmationText)");
                 		$("#genericDialog").dialog({
                 			resizable: false,
                 			height:140,
@@ -2153,6 +2154,7 @@ $ui.getString("entity.${fieldNameKey}.label")<br/>
 	    				//Event listener for delete option
 	                	$("#button$velocityCount").click(function () {
 	                		//alert("aaa:" + $("#genericDialog"));
+	                		$("#genericDialog").dialog('destroy');
 	                		$("#genericDialog").attr("title", "$button.confirmationTitle");
 	                		$("#genericDialog p").text("$button.confirmationText");
 	                		$("#genericDialog").dialog({

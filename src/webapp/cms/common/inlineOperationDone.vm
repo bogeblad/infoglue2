@@ -24,18 +24,20 @@
 				parent.closeDialog();
 		}
 		
-		function refreshParent(actionUrl, target)
+		function refreshParent(actionUrl, target, targetTitle)
 		{
+			//alert("actionUrl: " + actionUrl);
+			//alert("target: " + target);
+			//alert("getActiveToolId: " + top.getActiveToolId());
+			//alert("targetTitle: " + targetTitle);
 			if(top.getIsIGStandardTools && top.getIsIGStandardTools() == true)
 			{
-				alert("actionUrl: " + actionUrl);
-				alert("target: " + target);
-				alert("getActiveToolId: " + top.getActiveToolId());
-				
 				if(top.getActiveToolId() == "contentMarkup")
 				{
 					top.frames["contentTreeIframe"].refreshContent($unrefreshedNodeId, $changeTypeId, $newContentId);
 					
+					//if($changeTypeId == "4")
+						
 					/*
 					var currentMenutoolbarLeftUrl = top.getCurrentMenutoolbarLeftUrl();
 					//alert("currentMenutoolbarLeftUrl:" + currentMenutoolbarLeftUrl);
@@ -53,28 +55,32 @@
 				}
 				else
 				{
-					top.frames["structureTreeIframe"].refreshNode($unrefreshedNodeId, $changeTypeId, $newSiteNodeId);
+					top.frames["structureTreeIframe"].refreshNode($this.getActionExtraData("unrefreshedNodeId"), $changeTypeId, $newSiteNodeId);
 					
 					var currentMenutoolbarLeftUrl = top.getCurrentMenutoolbarLeftUrl();
 					//alert("currentMenutoolbarLeftUrl:" + currentMenutoolbarLeftUrl);
 	   	   	  		var position = currentMenutoolbarLeftUrl.indexOf("siteNodeId=${newSiteNodeId}&");
-					if(position == -1) 
+	   	   	  		//alert("position:" + position + ": changeType: $changeTypeId");
+					if("$changeTypeId" == "3")
+					{
+						top.openUrlInWorkArea("ViewSiteNode.action?siteNodeId=$newSiteNodeId&repositoryId=$repositoryId", "$!this.getActionExtraData('siteNodeName')", "structure");
+					}
+					else if(position == -1) 
 					{
 						if(window.name.indexOf("TB_iframe") == -1)
 						{
 	    					top.refreshTopToolBar('tool.structuretool.siteNodeComponentsHeader', 'tool.structuretool.siteNodeComponentsHeader', 'siteNodeId=$newSiteNodeId&repositoryId=$repositoryId&isBranch=true', $unrefreshedNodeId, $changeTypeId, -1);
-	    					top.openUrlInWorkArea("ViewSiteNode.action?siteNodeId=$newSiteNodeId&repositoryId=$repositoryId", "sssssssssssss");
+	    					top.openUrlInWorkArea("ViewSiteNode.action?siteNodeId=$newSiteNodeId&repositoryId=$repositoryId", "$!this.getActionExtraData('siteNodeName')", "structure");
 						}
 					}
 				}
 				
-				if(actionUrl && target)
-					top.openUrlInWorkArea(actionUrl, 'sdddddddddd', target);
+				if(actionUrl && target && targetTitle)
+					top.openUrlInWorkArea(actionUrl, targetTitle, target);
 			}
 			
 			closeDialog();
 		}
-
     -->
 	</script>
 
@@ -98,11 +104,11 @@
 				#end
 
 				#if($link.actionURL == "refreshParent")
-					#set($actionUrl = "javascript:refreshParent(null, null);")
+					#set($actionUrl = "javascript:refreshParent(null,null,null);")
 				#else 
 					#set($actionUrl = $link.actionURL)
 					#if($parentCall)
-						#set($actionUrl = "javascript:refreshParent('$actionUrl', '$link.target');")
+						#set($actionUrl = "javascript:refreshParent('$actionUrl','$link.target','$link.targetTitle');")
 					#end
 				#end
 				

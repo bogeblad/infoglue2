@@ -169,6 +169,11 @@ function openUrlInWorkArea(url, tabLabel, targetTab)
 		$("#" + targetTab + "TabLabel span").text(tabLabelPrefix + tabLabel);
 }
 
+function refreshWorkArea(targetTab)
+{
+	$("#" + targetTab + "WorkIframe").get(0).contentDocument.location.reload();
+}
+
 var currentMenutoolbarLeftUrl = "";
 function getCurrentMenutoolbarLeftUrl() { return currentMenutoolbarLeftUrl; }
 

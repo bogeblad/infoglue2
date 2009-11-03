@@ -49,11 +49,11 @@
 		
 		function refreshTreeNode(nodeId, changeTypeId, addedNodeId)
 		{
+			//alert("nodeId:" + nodeId);
+			//alert("changeTypeId:" + changeTypeId);
+			//alert("addedNodeId:" + addedNodeId);
 			if (changeTypeId == 4)
 			{
-				#if("$treeMode" == "classic")
-				document.location.reload();
-				#else
 				if(nodeId == tree.myId) 
 				{
 					document.location.reload();
@@ -62,21 +62,21 @@
 				var node = tree.getNodeWithMyId(nodeId);
 				node.reload();
 				selectWhenLoaded(node, nodeId);
-				#end
 				
 				return;
 			}
-			#if("$treeMode" != "classic")
 			if (changeTypeId == 3)
 			{
 				var node = tree.getNodeWithMyId(addedNodeId);
-				node.parentNode.reload();				
+				try
+				{
+					node.parentNode.reload();
+				}
+				catch(e)
+				{
+					//alert("Error:" + e);
+				}
 			}			
-			#end 
-			
-			#if("$treeMode" == "classic")
-			document.location.href="ViewStructureHtmlTree.action?exp=${exp}&repositoryId=${repositoryId}" + "&akey=/" + nodeId + "/&select=" + addedNodeId;
-			#else
 			
 			var parentNode = tree.getNodeWithMyId(nodeId);
 			if (changeTypeId == 1) 
@@ -90,10 +90,10 @@
 				document.location.reload();
 				return;
 			}
+
 			parentNode.expand();
 			parentNode.reload();
 			selectWhenLoaded(parentNode, addedNodeId);
-			#end
 		}
 		
 		function selectWhenLoaded(parentNode, contentId)

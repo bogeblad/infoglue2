@@ -138,7 +138,7 @@
 
 	<div style="clear: both;"></div>
 
-	<h3 style="text-indent: 16px;">$ui.getString("tool.common.publishing.publishHeader")</h3>
+	<h3>$ui.getString("tool.common.publishing.publishHeader")</h3>
 		
 	<div class="inlineTabDiv">	
 	

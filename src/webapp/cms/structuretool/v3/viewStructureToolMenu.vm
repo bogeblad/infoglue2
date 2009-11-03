@@ -95,11 +95,7 @@
 	    
 	    function refreshNode(nodeId, changeTypeId, addedNodeId)
 		{
-			#if($tree == "applet")			
-				treeView().refreshTreeNode(nodeId, changeTypeId, addedNodeId);
-			#else
-				frames['itreeFrame'].refreshTreeNode(parseInt(nodeId), parseInt(changeTypeId), parseInt(addedNodeId));
-			#end
+			frames['itreeFrame'].refreshTreeNode(parseInt(nodeId), parseInt(changeTypeId), parseInt(addedNodeId));
 		}
 	    
 	   	function notifyIsLoaded()
