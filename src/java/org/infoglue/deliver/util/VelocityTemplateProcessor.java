@@ -145,8 +145,8 @@ public class VelocityTemplateProcessor
 		}
 		catch(Exception e)
 		{
-			logger.error("Error rendering template:" + e.getMessage(), e);
-			logger.warn("templateAsString: \n" + (templateAsString.length() > 500 ? templateAsString.substring(0, 500) + "... (template truncated)." : templateAsString));
+			logger.warn("Error rendering template:" + e.getMessage(), e);
+			logger.info("templateAsString: \n" + (templateAsString.length() > 500 ? templateAsString.substring(0, 500) + "... (template truncated)." : templateAsString));
 		    
 			//If error we don't want the error cached - right?
 			TemplateController templateController = (TemplateController)params.get("templateLogic");
