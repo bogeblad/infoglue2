@@ -1645,6 +1645,21 @@ public class DigitalAssetController extends BaseController
 		return contentId;
 	}
 
+	public Integer getContentId(Integer digitalAssetId, Database db) throws Exception
+	{
+    	Integer contentId = null;
+
+    	DigitalAsset mediumDigitalAsset = getMediumDigitalAssetWithIdReadOnly(digitalAssetId, db);
+		if(mediumDigitalAsset.getContentVersions() != null && mediumDigitalAsset.getContentVersions().size() > 0)
+		{
+			ContentVersion cv = (ContentVersion)mediumDigitalAsset.getContentVersions().iterator().next();
+			if(cv != null)
+				contentId = cv.getValueObject().getContentId();
+		}
+		
+		return contentId;
+	}
+
 	/**
 	 * Returns the latest digital asset for a contentversion.
 	 */
