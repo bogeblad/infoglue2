@@ -128,7 +128,8 @@ public class CmsSessionContextListener implements HttpSessionListener
 			}
 			catch (ConcurrentModificationException e) 
 			{
-				logger.warn("Concurrency problem looking at session list:" + e.getMessage());
+				if(logger.isInfoEnabled())
+					logger.info("Concurrency problem looking at session list:" + e.getMessage(), e);
 			}
 			numberOfIterations++;
 		}
