@@ -364,9 +364,12 @@ public class DocumentConverterHelper
 					
 					if (grandChild != null)
 					{
-						String tmp = grandChild.getText().substring(0, grandChild.getText().indexOf(" ")).replace(".", "");
-						headingIds.append(tmp);
-						headingIds.append(",");
+						if(grandChild.getText().indexOf(" ") != -1)
+						{
+							String tmp = grandChild.getText().substring(0, grandChild.getText().indexOf(" ")).replace(".", "");
+							headingIds.append(tmp);
+							headingIds.append(",");
+						}
 					}
 				}
 			}
