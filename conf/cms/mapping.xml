@@ -392,6 +392,12 @@
 	<field name="versionModifier" type="java.lang.String">
       <sql name="versionModifier" type="varchar" dirty="check" />
     </field>
+    <field name="sortOrder" type="java.lang.Integer">
+      <sql name="sortOrder" type="integer" dirty="check" />
+    </field>
+    <field name="isHidden" type="java.lang.Boolean">
+      <sql name="isHidden" type="integer" dirty="check" />
+    </field>
     <field name="serviceBindings" type="org.infoglue.cms.entities.structure.impl.simple.ServiceBindingImpl" lazy="false" collection="collection">
       <sql many-key="siteNodeVersionId"/>
     </field>
@@ -447,22 +453,18 @@
     <field name="disableForceIdentityCheck" type="java.lang.Integer">
       <sql name="disableForceIDCheck" type="integer" dirty="check" />
     </field>
+    <field name="sortOrder" type="java.lang.Integer">
+      <sql name="sortOrder" type="integer" dirty="check" />
+    </field>
+    <field name="isHidden" type="java.lang.Boolean">
+      <sql name="isHidden" type="integer" dirty="check" />
+    </field>
     <field name="siteNodeId" type="java.lang.Integer">
       <sql name="siteNodeId"/>
     </field>
-    <!-- 
-    <field name="owningSiteNode" type="org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl">
-      <sql name="siteNodeId"/>
-    </field>
-    -->
    	<field name="versionModifier" type="java.lang.String">
       <sql name="versionModifier" type="varchar" dirty="check" />
     </field>
-    <!-- 
-    <field name="serviceBindings" type="org.infoglue.cms.entities.structure.impl.simple.ServiceBindingImpl" lazy="false" collection="collection">
-      <sql many-key="siteNodeVersionId"/>
-    </field>
-    -->
   </class>
 
 <!--  Mapping for SiteNodeTypeDefinition  -->
@@ -507,6 +509,9 @@
     <field name="isBranch" type="java.lang.Boolean">
       <sql name="isBranch" type="integer" dirty="check" />
     </field>
+    <field name="isDeleted" type="java.lang.Boolean">
+      <sql name="isDeleted" type="integer" dirty="check" />
+    </field>
     <field name="parentSiteNode" type="org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl">
       <sql name="parentSiteNodeId"/>
     </field>
@@ -521,12 +526,6 @@
     </field>
     <field name="metaInfoContentId" type="java.lang.Integer">
       <sql name="metaInfoContentId" type="integer" dirty="check" />
-    </field>
-    <field name="sortOrder" type="java.lang.Integer">
-      <sql name="sortOrder" type="integer" dirty="check" />
-    </field>
-    <field name="isHidden" type="java.lang.Boolean">
-      <sql name="isHidden" type="integer" dirty="check" />
     </field>
     <field name="repository" type="org.infoglue.cms.entities.management.impl.simple.RepositoryImpl">
       <sql name="repositoryId"/>
@@ -556,17 +555,14 @@
     <field name="isBranch" type="java.lang.Boolean">
       <sql name="isBranch" type="integer" dirty="check" />
     </field>
+    <field name="isDeleted" type="java.lang.Boolean">
+      <sql name="isDeleted" type="integer" dirty="check" />
+    </field>
     <field name="parentSiteNode" type="org.infoglue.cms.entities.structure.impl.simple.SmallSiteNodeImpl">
       <sql name="parentSiteNodeId"/>
     </field>
     <field name="metaInfoContentId" type="java.lang.Integer">
       <sql name="metaInfoContentId" type="integer" dirty="check" />
-    </field>
-    <field name="sortOrder" type="java.lang.Integer">
-      <sql name="sortOrder" type="integer" dirty="check" />
-    </field>
-    <field name="isHidden" type="java.lang.Boolean">
-      <sql name="isHidden" type="integer" dirty="check" />
     </field>
     <field name="repositoryId" type="java.lang.Integer">
       <sql name="repositoryId" type="integer" dirty="check" />
@@ -668,14 +664,9 @@
     <field name="dnsName" type="java.lang.String">
     	<sql name="dnsName" type="varchar" dirty="check" />
     </field>
-    <!--
-    <field name="availableContenTypeDefinition" type="org.infoglue.cms.entities.management.impl.simple.ContentTypeDefinitionImpl" lazy="true" collection="collection">
-      	<sql many-key="repositoryId" many-table="cmRepositoryContentTypeDefinition"/>
+    <field name="isDeleted" type="java.lang.Boolean">
+      <sql name="isDeleted" type="integer" dirty="check" />
     </field>
-    <field name="contents" type="org.infoglue.cms.entities.content.impl.simple.ContentImpl" lazy="true" collection="collection">
-      	<sql many-key="repositoryId"/>
-    </field>
-    -->
     <field name="repositoryLanguages" type="org.infoglue.cms.entities.management.impl.simple.RepositoryLanguageImpl" lazy="true" collection="collection">
       <sql many-key="repositoryId"/>
     </field>
@@ -896,6 +887,9 @@
     <field name="isProtected" type="java.lang.Integer">
       <sql name="isProtected" type="integer" dirty="check" />
     </field>
+    <field name="isDeleted" type="java.lang.Boolean">
+      <sql name="isDeleted" type="integer" dirty="check" />
+    </field>
     <field name="contentTypeDefinition" type="org.infoglue.cms.entities.management.impl.simple.ContentTypeDefinitionImpl">
       <sql name="contentTypeDefinitionId"/>
     </field>
@@ -947,6 +941,9 @@
 	<field name="isProtected" type="java.lang.Integer">
 	  <sql name="isProtected" type="integer" dirty="check" />
 	</field>
+    <field name="isDeleted" type="java.lang.Boolean">
+      <sql name="isDeleted" type="integer" dirty="check" />
+    </field>
     <field name="creator" type="java.lang.String">
       <sql name="creator" type="varchar" dirty="check" />
     </field>
@@ -992,6 +989,9 @@
 	<field name="isProtected" type="java.lang.Integer">
 	  <sql name="isProtected" type="integer" dirty="check" />
 	</field>
+    <field name="isDeleted" type="java.lang.Boolean">
+      <sql name="isDeleted" type="integer" dirty="check" />
+    </field>
     <field name="creator" type="java.lang.String">
       <sql name="creator" type="varchar" dirty="check" />
     </field>
@@ -1040,6 +1040,9 @@
 	<field name="isProtected" type="java.lang.Integer">
 	  <sql name="isProtected" type="integer" dirty="check" />
 	</field>
+    <field name="isDeleted" type="java.lang.Boolean">
+      <sql name="isDeleted" type="integer" dirty="check" />
+    </field>
     <field name="creator" type="java.lang.String">
       <sql name="creator" type="varchar" dirty="check" />
     </field>

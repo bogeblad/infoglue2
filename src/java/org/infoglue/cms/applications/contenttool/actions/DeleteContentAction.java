@@ -103,15 +103,18 @@ public class DeleteContentAction extends InfoGlueAbstractAction
 
         try
         {
+        	ContentVO contentVO = ContentController.getContentController().getContentVOWithId(this.contentVO.getContentId());
+        	String contentName = contentVO.getName();
+        	
         	doExecute();
         	
-    		String deleteSiteNodeInlineOperationDoneHeader = getLocalizedString(getLocale(), "tool.structuretool.deleteSiteNodeInlineOperationDoneHeader", this.contentVO.getName());
-    		String deleteSiteNodeInlineOperationViewDeletedPageParentLinkText = getLocalizedString(getLocale(), "tool.structuretool.deleteSiteNodeInlineOperationViewDeletedPageParentLinkText");
-    		String deleteSiteNodeInlineOperationViewCreatedPageParentTitleText = getLocalizedString(getLocale(), "tool.structuretool.deleteSiteNodeInlineOperationViewDeletedPageParentTitleText");
+    		String deleteContentInlineOperationDoneHeader = getLocalizedString(getLocale(), "tool.contenttool.deleteContentInlineOperationDoneHeader", contentName);
+    		String deleteContentInlineOperationViewDeletedContentParentLinkText = getLocalizedString(getLocale(), "tool.contenttool.deleteContentInlineOperationViewDeletedContentParentLinkText");
+    		String deleteContentInlineOperationViewDeletedContentParentTitleText = getLocalizedString(getLocale(), "tool.contenttool.deleteContentInlineOperationViewDeletedContentParentTitleText");
     	
-    	    setActionMessage(userSessionKey, deleteSiteNodeInlineOperationDoneHeader);
+    	    setActionMessage(userSessionKey, deleteContentInlineOperationDoneHeader);
     										  																	
-    	    addActionLink(userSessionKey, new LinkBean("parentPageUrl", deleteSiteNodeInlineOperationViewDeletedPageParentLinkText, deleteSiteNodeInlineOperationViewCreatedPageParentTitleText, deleteSiteNodeInlineOperationViewCreatedPageParentTitleText, this.originalAddress, false, "", "", "structure"));
+    	    addActionLink(userSessionKey, new LinkBean("parentPageUrl", deleteContentInlineOperationViewDeletedContentParentLinkText, deleteContentInlineOperationViewDeletedContentParentTitleText, deleteContentInlineOperationViewDeletedContentParentTitleText, this.originalAddress, false, "", "", "structure"));
             setActionExtraData(userSessionKey, "refreshToolbarAndMenu", "" + true);
             setActionExtraData(userSessionKey, "repositoryId", "" + this.contentVO.getRepositoryId());
             setActionExtraData(userSessionKey, "contentId", "" + this.contentVO.getId());

@@ -502,7 +502,6 @@ public class ToolbarController
 		ToolbarButton createButton = new ToolbarButton("",
 				  getLocalizedString(locale, "tool.contenttool.toolbarV3.createContentLabel"), 
 				  getLocalizedString(locale, "tool.contenttool.toolbarV3.createContentTitle"),
-				  //"CreateContent!inputV3.action?isBranch=false&parentContentId=" + contentId + "&repositoryId=" + contentVO.getRepositoryId(),
 				  "CreateContent!inputV3.action?isBranch=false&repositoryId=" + contentVO.getRepositoryId() + "&parentContentId=" + contentId + "&returnAddress=ViewInlineOperationMessages.action&originalAddress=refreshParent",
 				  "",
 				  "create",
@@ -511,7 +510,6 @@ public class ToolbarController
 		ToolbarButton createFolderButton = new ToolbarButton("",
 				  getLocalizedString(locale, "tool.contenttool.toolbarV3.createContentFolderLabel"), 
 				  getLocalizedString(locale, "tool.contenttool.toolbarV3.createContentFolderTitle"),
-				  //"CreateContent!inputV3.action?isBranch=true&parentContentId=" + contentId + "&repositoryId=" + contentVO.getRepositoryId(),
 				  "CreateContent!inputV3.action?isBranch=true&repositoryId=" + contentVO.getRepositoryId() + "&parentContentId=" + contentId + "&returnAddress=ViewInlineOperationMessages.action&originalAddress=refreshParent",
 				  "",
 				  "create",
@@ -547,7 +545,7 @@ public class ToolbarController
 				  true,
 				  true,
 				  getLocalizedString(locale, "tool.contenttool.toolbarV3.deleteContentLabel"), 
-				  getLocalizedString(locale, "tool.contenttool.toolbarV3.deleteContentConfirmationLabel"),
+				  getLocalizedString(locale, "tool.contenttool.toolbarV3.deleteContentConfirmationLabel", new String[]{contentVO.getName()}),
 				  "inlineDiv");
 		
 		ToolbarButton deleteChildrenButton = new ToolbarButton("",
@@ -560,7 +558,7 @@ public class ToolbarController
 				  true,
 				  true,
 				  getLocalizedString(locale, "tool.contenttool.toolbarV3.deleteContentChildrenLabel"), 
-				  getLocalizedString(locale, "tool.contenttool.toolbarV3.deleteContentChildrenConfirmationLabel"),
+				  getLocalizedString(locale, "tool.contenttool.toolbarV3.deleteContentChildrenConfirmationLabel", new String[]{contentVO.getName()}),
 				  "inlineDiv");
 		
 		deleteButton.getSubButtons().add(deleteChildrenButton);
@@ -731,13 +729,6 @@ public class ToolbarController
 		}
 		
 		buttons.add(new ToolbarButton("",
-				  getLocalizedString(locale, "tool.contenttool.toolbarV3.createContentLabel"), 
-				  getLocalizedString(locale, "tool.contenttool.toolbarV3.createContentTitle"),
-				  "" + "&returnAddress=ViewInlineOperationMessages.action&originalAddress=refreshParent",
-				  "",
-				  "create"));
-
-		buttons.add(new ToolbarButton("",
 				  getLocalizedString(locale, "tool.contenttool.toolbarV3.moveContentLabel"), 
 				  getLocalizedString(locale, "tool.contenttool.toolbarV3.moveContentTitle"),
 				  "MoveContent!inputV3.action?contentId=" + contentId + "&repositoryId=" + contentVO.getRepositoryId() + "&hideLeafs=true&returnAddress=ViewInlineOperationMessages.action&originalAddress=refreshParent",
@@ -754,7 +745,7 @@ public class ToolbarController
 				  true,
 				  true,
 				  getLocalizedString(locale, "tool.contenttool.toolbarV3.deleteContentLabel"), 
-				  getLocalizedString(locale, "tool.contenttool.toolbarV3.deleteContentConfirmationLabel"),
+				  getLocalizedString(locale, "tool.contenttool.toolbarV3.deleteContentConfirmationLabel", new String[]{contentVO.getName()}),
 				  "inlineDiv"));
 
 		ToolbarButton publishButton = new ToolbarButton("",

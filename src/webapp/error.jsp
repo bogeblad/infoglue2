@@ -95,11 +95,7 @@ pageContext.setAttribute("stacktrace", sb.toString());
 
 		function toggleStacktrace()
 		{
-			var stacktrace = document.getElementById("stacktrace");
-			if(stacktrace.style.display == "block")
-				stacktrace.style.display = "none";
-			else
-				stacktrace.style.display = "block";
+			$("#stacktrace").show("slow");
 		}
 
 		function closeDialog()
@@ -157,7 +153,8 @@ pageContext.setAttribute("stacktrace", sb.toString());
 		.ui-dialog .ui-state-highlight, .ui-dialog .ui-state-error { padding: .3em;  }
 		
 		.bug { display: block; float: left; line-height: 24px; width: 100%; background: url(images/v3/bug.png) no-repeat 0px 2px; text-indent: 24px; }
-		.close { display: block; float: left; line-height: 24px; width: 100%; background:url(images/v3/closeWindowIcon.gif) no-repeat 3px 4px; text-indent: 24px; }
+		.stack { display: block; float: left; line-height: 24px; width: 100%; background: url(images/v3/stack.png) no-repeat 0px 2px; text-indent: 24px; }
+		.close { display: block; float: left; line-height: 24px; width: 100%; background:url(images/v3/closeWindowIcon.gif) no-repeat 3px 4px; text-indent: 24px; margin-top: 20px; }
 		
 	</style>
 	
@@ -208,12 +205,8 @@ pageContext.setAttribute("stacktrace", sb.toString());
 				
 				<p>
 					Please help us make Infoglue better by filing a bug report<br/>
-					<a href="#" onclick="openReportDialog('reportBugDialog');" class="bug">Report bug</a>
-				</p>
-				<br/><br/>
-				<p>
-					<a href="javascript:closeDialog();" class="close">Back / Close</a><br/>
-					<%--Close this error screen and return to the previous dialog --%>
+					<a href="#" onclick="openReportDialog('reportBugDialog');" class="bug">Report bug</a> 
+					<a href="javascript:closeDialog();" class="close">Back / Close</a>
 				</p>
 								
 			</td>

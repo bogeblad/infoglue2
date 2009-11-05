@@ -9,7 +9,7 @@
 		<script type="text/javascript" src="script/jqueryplugins/ui/jquery-ui-dragDropTabs-1.6rc2.min.js"></script>
 	
 		<script type="text/javascript" src="script/jqueryplugins/thickbox/thickbox-compressed.js"></script>
-		<link rel="stylesheet" type="text/css" href="script/jqueryplugins/thickbox/thickbox-ig.css" media="all" />
+		<link rel="stylesheet" type="text/css" href="script/jqueryplugins/thickbox/thickbox-ig.css" />
 		
 		<script type="text/javascript" src="script/v3/infoglue.js"></script>
 	

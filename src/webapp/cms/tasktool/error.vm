@@ -60,24 +60,114 @@
 
 	</style> 
 	
-	<script type="text/javascript" language="Javascript">
+	<link type="text/css" href="script/jqueryplugins/ui/jquery-ui-1.7.2.full.redmond/css/redmond/jquery-ui-1.7.2.custom.css" rel="stylesheet" />	
+	<script type="text/javascript" src="script/jquery/jquery-1.3.2.min.js"></script>
+	<script type="text/javascript" src="script/jqueryplugins/ui/jquery-ui-1.7.2.full.redmond/js/jquery-ui-1.7.2.custom.min.js"></script>
+
+	<script type="text/javascript">
 	<!--
 
 		function toggleStacktrace()
 		{
-			var stacktrace = document.getElementById("stacktrace");
-			if(stacktrace.style.display == "block")
-				stacktrace.style.display = "none";
-			else
-				stacktrace.style.display = "block";
+			$("#stacktrace").show("slow");
 		}
+
+		function closeDialog()
+		{
+			if(parent && parent.closeInlineDiv) 
+				parent.closeInlineDiv(); 
+			else if(parent && parent.closeDialog) 
+				parent.closeDialog(); 
+			else if (window.opener)
+				window.close();
+			else
+				history.back();
+		}
+
+		function openReportDialog(dialogId)
+		{
+			$("#" + dialogId).dialog('open');
+		}
+
+		$(function() {
+
+			$("#reportBugDialog").dialog({
+				bgiframe: true,
+				autoOpen: false,
+				height: 500,
+				width: 600,
+				modal: true,
+				buttons: {
+					'Submit bug': function() {
+						$("#bugForm").submit();
+						$(this).dialog('close');
+					},
+					Cancel: function() {
+						$(this).dialog('close');
+					}
+				},
+				close: function() {
+				}
+			});
+		});	
 		-->
 	</script>
+	
+	<style type="text/css">
+		body { font-size: 62.5%; }
+		label, input { display:block; }
+		input.text { margin-bottom:12px; width:95%; padding: .4em; }
+		textarea { margin-bottom:12px; width:95%; height: 120px; padding: .4em; }
+		fieldset { padding:0; border:0; margin-top:10px; }
+		h1 { font-size: 1.2em; margin: .6em 0; }
+		div#users-contain {  width: 350px; margin: 20px 0; }
+		div#users-contain table { margin: 1em 0; border-collapse: collapse; width: 100%; }
+		div#users-contain table td, div#users-contain table th { border: 1px solid #eee; padding: .6em 10px; text-align: left; }
+		.ui-button { outline: 0; margin:0; padding: .4em 1em .5em; text-decoration:none;  !important; cursor:pointer; position: relative; text-align: center; }
+		.ui-dialog .ui-state-highlight, .ui-dialog .ui-state-error { padding: .3em;  }
+		
+		.bug { display: block; float: left; line-height: 24px; width: 100%; background: url(images/v3/bug.png) no-repeat 0px 2px; text-indent: 24px; }
+		.stack { display: block; float: left; line-height: 24px; width: 100%; background: url(images/v3/stack.png) no-repeat 0px 2px; text-indent: 24px; }
+		.close { display: block; float: left; line-height: 24px; width: 100%; background:url(images/v3/closeWindowIcon.gif) no-repeat 3px 4px; text-indent: 24px; margin-top: 20px; }
+		
+	</style>
 	
 
 </head>
 
 <body>
+
+<div id="reportBugDialog" title="Report bug">
+	<form id="bugForm" method="post" action="http://www.infoglue.org/bugs/bugreport" target="_blank">
+		<input type="hidden" name="currentUrl" id="currentUrl" value="$getCurrentURL"/>
+		<input type="hidden" name="referer" id="referer" value="$request.getHeader("Referer")"/>
+		<input type="hidden" name="principal" id="principal" value="$infoGluePrincipal"/>
+		<input type="hidden" name="userAgent" id="userAgent" value="$request.getHeader("User-Agent")" />
+		<input type="hidden" name="stacktrace" id="stacktrace" value="$error.getCauseStackTrace()"/>
+		<input type="hidden" name="infoglueVersion" id="$infoGlueVersion - $infoGlueVersionReleaseDate" />
+		<input type="hidden" name="database" id="$databaseEngine" />
+		<fieldset>
+			<p>We in the Infoglue community are very interested in getting good bug reports. Please use the form below. The information collected is held to a minimum. No information will be shared with other organisations.</p>
+			<label for="name">Name (Optional)</label>
+			<input type="text" name="name" id="name" class="text ui-widget-content ui-corner-all" />
+			<label for="email">Email (Optional)</label>
+			<input type="text" name="email" id="email" value="" class="text ui-widget-content ui-corner-all" />
+			<label for="text">Bug description (Optional but please write a meaningful description)</label>
+			<textarea name="text" id="text" class="text ui-widget-content ui-corner-all"></textarea>
+		</fieldset>
+	</form>
+</div>
+
+<div id="stacktrace" style="position: absolute; top: 10px; left: 10px; right: 10px; bottom: 10px; background-color: white; display: none; border: 1px solid #ccc; overflow: auto; padding: 6px;">
+	<h1>Stacktrace <a href="#" onclick="$('#stacktrace').hide('slow');">Close</a></h1>
+	<p>$error.getStackTrace()</p>
+    #if($error.hasCause())
+    <h2>Nested message</h2>
+    <p>$error.getCauseMessage()</p>
+    <h3>Nested stack trace</h3>
+    <p>$error.getCauseStackTrace()</p>
+    #end
+</div>
 
 <div class="fullymarginalized">
 
@@ -101,28 +191,16 @@
 		</tr>
 		<tr>
 			<td><img src="images/trans.gif" width="20" height="1" /></td>
-			<td>Click <a href="javascript:toggleStacktrace();">here</a> to toggle stacktrace</td>
+			<td>
+				<p>
+					Please help us make Infoglue better by filing a bug report<br/>
+					<a href="#" onclick="openReportDialog('reportBugDialog');" class="bug">Report bug</a> 
+					<a href="#" onclick="toggleStacktrace();" class="stack">View stacktrace</a>
+					<a href="javascript:closeDialog();" class="close">Back / Close</a>
+				</p>
+				
+			</td>
 		</tr>
-		<tr>
-			<td colspan="2">
-				<table id="stacktrace" style="display:none;">
-				<tr>
-			    	<td class="data-head-left">Stack trace</td>
-			        <td class="data-cell-left" style="font-size:8pt;">$error.getStackTrace()</td>
-			    </tr>
-			    #if($error.hasCause())
-		        <tr>
-		          	<td class="data-head-left">Nested message</td>
-		          	<td class="data-cell-left">$error.getCauseMessage()</td>
-		        </tr>
-		        <tr>
-		          	<td class="data-head-left">Nested stack trace</td>
-		          	<td class="data-cell-left" style="font-size:8pt;">$error.getCauseStackTrace()</td>
-		        </tr>
-		        #end
-	        	</table>
-	        </td>
-        </tr>
 		</table>
 	</td>
 </tr>	
@@ -132,52 +210,3 @@
  
 </body>
 </html>
-
-<!--
-
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "DTD/xhtml1-strict.dtd">
-
-<html>
-  <head>
-    <link rel="stylesheet" type="text/css" href="css/cms.css"/>
-    <title>$error.getName()</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  </head>
-  <body>
-    <table class="outer">
-      <tr>
-        <td style="width:91"><img src="images/tomcat.gif" alt="Holigrow" width="91" height="91"/></td>
-        <td><p class="application-title">$error.getName()</p></td>
-      </tr><tr>
-        <td colspan="2"><hr/></td>
-      </tr>
-    </table>
-    <table class="outer">
-      <tr>
-        <td>
-          <table class="data-vertical">
-            <tr>
-              <td class="data-head-left">Message</td>
-              <td class="data-cell-left">$error.getMessage()</td>
-            </tr><tr>
-              <td class="data-head-left">Stack trace</td>
-              <td class="data-cell-left" style="font-size:8pt;">$error.getStackTrace()</td>
-            </tr>
-            #if($error.hasCause())
-            <tr>
-              <td class="data-head-left">Nested message</td>
-              <td class="data-cell-left">$error.getCauseMessage()</td>
-            </tr><tr>
-              <td class="data-head-left">Nested stack trace</td>
-              <td class="data-cell-left" style="font-size:8pt;">$error.getCauseStackTrace()</td>
-            </tr>
-            #end
-          </table>
-        </td>
-      </tr>
-    </table>
-  </body>
-</table>
-
--->

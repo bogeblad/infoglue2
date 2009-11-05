@@ -139,26 +139,6 @@ public class SiteNodeImpl implements SiteNode
     {
         this.valueObject.setMetaInfoContentId(metaInfoContentId);
     }
-
-    public Integer getSortOrder()
-    {
-        return this.valueObject.getSortOrder();
-    }
-    
-    public void setSortOrder(Integer sortOrder)
-    {
-        this.valueObject.setSortOrder(sortOrder);
-    }
-
-    public Boolean getIsHidden()
-    {
-        return this.valueObject.getIsHidden();
-    }
-    
-    public void setIsHidden(Boolean isHidden)
-    {
-        this.valueObject.setIsHidden(isHidden);
-    }
     
     public Boolean getIsDeleted()
     {

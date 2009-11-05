@@ -287,7 +287,7 @@
 
 	<link rel="stylesheet" type="text/css" href="css/cms.css" /> 
 	<link rel="stylesheet" type="text/css" href="css/v3/infoglue.css" />
-	<link rel="stylesheet" type="text/css" href="css/skins/${theme}/menu.css" media="all" />
+	<link rel="stylesheet" type="text/css" href="css/skins/${theme}/menu.css" />
 
 </head>
 <body class="generaltooledit" onload="parent.notifyIsLoaded();parent.notifyExp('${exp}');loaded();" style="margin:0px">

@@ -75,6 +75,14 @@ public interface SiteNodeVersion extends IBaseEntity
 
 	public Integer getDisableEditOnSight();
 
+    public Integer getSortOrder();
+    
+    public void setSortOrder(Integer sortOrder);
+
+    public Boolean getIsHidden();
+    
+    public void setIsHidden(Boolean isHidden);
+
 	public void setDisableEditOnSight(Integer disableEditOnSight);
 
 	public Integer getDisableLanguages();

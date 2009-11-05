@@ -15,7 +15,7 @@
 	<script type="text/javascript" src="script/v3/infoglue.js"></script>
 
 	<link rel="stylesheet" type="text/css" href="css/v3/infoglue.css" />
-	<link rel="stylesheet" type="text/css" href="css/v3/tabs.css" media="screen">
+	<link rel="stylesheet" type="text/css" href="css/v3/tabs.css">
 
 	<meta http-equiv="Expires" content="Tue, 01 Jan 1980 1:00:00 GMT" />
 	<meta http-equiv="Cache-Control" content="no-cache" />
@@ -28,7 +28,7 @@
 	
 #end
 
-<link rel="stylesheet" type="text/css" media="all" href="css/cms.css" title="cms" />
+<link rel="stylesheet" type="text/css" href="css/cms.css" title="cms" />
 
 <script type="text/javascript">
 <!--

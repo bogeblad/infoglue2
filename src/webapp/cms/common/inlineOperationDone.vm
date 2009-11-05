@@ -84,7 +84,7 @@
     -->
 	</script>
 
-	<link rel="stylesheet" type="text/css" media="all" href="css/cms.css" title="cms" />
+	<link rel="stylesheet" type="text/css" href="css/cms.css"/>
 		
 	<div onfocus="this.blur();">
 	    

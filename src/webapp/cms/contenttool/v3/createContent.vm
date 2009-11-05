@@ -1,5 +1,10 @@
 #define( $headerMarkup )
-	<link rel="stylesheet" type="text/css" media="all" href="css/cms.css" title="cms" />
+
+	<link rel="stylesheet" type="text/css" href="css/cms.css"/>
+	<link rel="stylesheet" type="text/css" href="applications/jscalendar/skins/aqua/theme.css"/>
+	<script type="text/javascript" src="applications/jscalendar/calendar.js"></script>
+	<script type="text/javascript" src="applications/jscalendar/lang/calendar-en.js"></script>
+	<script type="text/javascript" src="applications/jscalendar/calendar-setup.js"></script>
 	
 	<script type="text/javascript">
 	<!--
@@ -20,6 +25,7 @@
 		});
 	-->
 	</script>
+	
 #end
 
 ################################
@@ -49,35 +55,37 @@
 	
 		<div id="igEditArea" class="igScrollArea" onfocus="this.blur();">
 		
-		<h3>$ui.getString($title)</h3>
-
-		<p>#editTextField("Content.name" "name" $!name "30" "normaltextfield" "")</p>
-
-		#if($enableDateTimeDirectEditing == "true")
-			#set($dateReadonly = "")
-		#else
-			#set($dateReadonly = "readonly")
-		#end
-		<p>#editDateField("Content.publishDateTime" "publishDateTime" $!publishDateTime "30" "date" "ViewCalendar.action?date=$!publishDateTimeAsLong&formPath=document.editForm.publishDateTime" "$dateReadonly")</p>
-		<p>#editDateField("Content.expireDateTime" "expireDateTime" $!expireDateTime "30" "date" "ViewCalendar.action?date=$!expireDateTimeAsLong&formPath=document.editForm.expireDateTime" "$dateReadonly")</p>
-		<p>
-			$ui.getString("tool.contenttool.newContent.contentType")<br/>
-			<select class="contenttypes" name="contentTypeDefinitionId">
-			#foreach ($contentTypeDefinitionVO in $contentTypeDefinitions)
-				#if($isBranch && $defaultFolderContentTypeName == $contentTypeDefinitionVO.getName())
-					<option value="$contentTypeDefinitionVO.getContentTypeDefinitionId()" selected="1">$contentTypeDefinitionVO.getName()</option>
-				#else
-					#if($defaultContentTypeName == $contentTypeDefinitionVO.getName())
+			<h3>$ui.getString($title)</h3>
+	
+			<p>#editTextField("Content.name" "name" $!name "30" "normaltextfield" "")</p>
+	
+			#if($enableDateTimeDirectEditing == "true")
+				#set($dateReadonly = "")
+			#else
+				#set($dateReadonly = "readonly='readonly'")
+			#end
+			<p>#editDateField("Content.publishDateTime" "publishDateTime" $!publishDateTime "30" "date" "ViewCalendar.action?date=$!publishDateTimeAsLong&formPath=document.editForm.publishDateTime" "$dateReadonly")</p>
+			<p>#editDateField("Content.expireDateTime" "expireDateTime" $!expireDateTime "30" "date" "ViewCalendar.action?date=$!expireDateTimeAsLong&formPath=document.editForm.expireDateTime" "$dateReadonly")</p>
+			<p>
+				$ui.getString("tool.contenttool.newContent.contentType")<br/>
+				<select class="contenttypes" name="contentTypeDefinitionId">
+				#foreach ($contentTypeDefinitionVO in $contentTypeDefinitions)
+					#if($isBranch && $defaultFolderContentTypeName == $contentTypeDefinitionVO.getName())
 						<option value="$contentTypeDefinitionVO.getContentTypeDefinitionId()" selected="1">$contentTypeDefinitionVO.getName()</option>
-					#elseif(!$allowedContentTypeNames || $allowedContentTypeNames.indexOf("$contentTypeDefinitionVO.getName(),") > -1)
-						<option value="$contentTypeDefinitionVO.getContentTypeDefinitionId()">$contentTypeDefinitionVO.getName()</option>
+					#else
+						#if($defaultContentTypeName == $contentTypeDefinitionVO.getName())
+							<option value="$contentTypeDefinitionVO.getContentTypeDefinitionId()" selected="1">$contentTypeDefinitionVO.getName()</option>
+						#elseif(!$allowedContentTypeNames || $allowedContentTypeNames.indexOf("$contentTypeDefinitionVO.getName(),") > -1)
+							<option value="$contentTypeDefinitionVO.getContentTypeDefinitionId()">$contentTypeDefinitionVO.getName()</option>
+						#end
 					#end
 				#end
-			#end
-			</select>
-		</p>
+				</select>
+			</p>
+			
+			#lightFooterToolbar($footerButtons)
 		
-		#lightFooterToolbar($footerButtons)
+		</div>
 		
 	</form>
 

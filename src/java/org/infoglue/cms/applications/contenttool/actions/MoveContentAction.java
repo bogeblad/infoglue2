@@ -143,12 +143,12 @@ public class MoveContentAction extends InfoGlueAbstractAction
 		System.out.println("contentVO:" + contentVO);
 		System.out.println("repositoryId:" + contentVO.getRepositoryId());
 
-        String createSiteNodeInlineOperationDoneHeader = getLocalizedString(getLocale(), "tool.structuretool.moveSiteNodeInlineOperationDoneHeader", contentVO.getName());
-		String createSiteNodeInlineOperationBackToCurrentPageLinkText = getLocalizedString(getLocale(), "tool.structuretool.moveSiteNodeInlineOperationBackToCurrentPageLinkText");
-		String createSiteNodeInlineOperationBackToCurrentPageTitleText = getLocalizedString(getLocale(), "tool.structuretool.moveSiteNodeInlineOperationBackToCurrentPageTitleText");
+        String moveContentInlineOperationDoneHeader = getLocalizedString(getLocale(), "tool.contenttool.moveContentInlineOperationDoneHeader", contentVO.getName());
+		String moveContentInlineOperationBackToCurrentPageLinkText = getLocalizedString(getLocale(), "tool.contenttool.moveContentInlineOperationBackToCurrentContentLinkText");
+		String moveContentInlineOperationBackToCurrentPageTitleText = getLocalizedString(getLocale(), "tool.contenttool.moveContentInlineOperationBackToCurrentContentTitleText");
 
-	    setActionMessage(userSessionKey, createSiteNodeInlineOperationDoneHeader);
-	    addActionLink(userSessionKey, new LinkBean("currentPageUrl", createSiteNodeInlineOperationBackToCurrentPageLinkText, createSiteNodeInlineOperationBackToCurrentPageTitleText, createSiteNodeInlineOperationBackToCurrentPageTitleText, this.originalAddress, false, ""));
+	    setActionMessage(userSessionKey, moveContentInlineOperationDoneHeader);
+	    addActionLink(userSessionKey, new LinkBean("currentPageUrl", moveContentInlineOperationBackToCurrentPageLinkText, moveContentInlineOperationBackToCurrentPageTitleText, moveContentInlineOperationBackToCurrentPageTitleText, this.originalAddress, false, ""));
 
 		return "inputV3";
     }
@@ -172,6 +172,8 @@ public class MoveContentAction extends InfoGlueAbstractAction
         	
     		ContentControllerProxy.getController().acMoveContent(this.getInfoGluePrincipal(), this.contentVO, this.newParentContentId);
 
+    		System.out.println("parentContentId:" + parentContentId);
+    		System.out.println("parentContentId2:" + this.contentVO.getParentContentId());
             setActionExtraData(userSessionKey, "refreshToolbarAndMenu", "" + true);
             setActionExtraData(userSessionKey, "repositoryId", "" + this.repositoryId);
             setActionExtraData(userSessionKey, "contentId", "" + newParentContentId);

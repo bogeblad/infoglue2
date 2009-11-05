@@ -51,6 +51,30 @@ public class DeleteRepositoryAction extends InfoGlueAbstractAction
 	{
 		this.repositoryVO = repositoryVO;
 	}
+
+	public String doMarkForDelete() throws ConstraintException, Exception 
+	{
+		boolean hasAccessToManagementTool = hasAccessTo("ManagementTool.Read");
+		if(!hasAccessToManagementTool)
+			throw new AccessConstraintException("Repository.delete", "1003");
+
+		this.repositoryVO.setRepositoryId(this.getRepositoryId());
+		try
+		{
+			RepositoryController.getController().markForDelete(this.repositoryVO, this.getInfoGluePrincipal().getName(), this.getInfoGluePrincipal());
+			return "success";
+		}
+		catch(ConstraintException ce)
+		{
+			returnAddress = "ViewRepository.action?repositoryId=" + this.repositoryVO.getId();
+			if(ce.getErrorCode().equals("3300") && ce.getFieldName().equals("ContentVersion.stateId"))	
+				throw new ConstraintException("ContentVersion.stateId", "3307", ce.getExtraInformation());
+			else if(ce.getErrorCode().equals("3400") && ce.getFieldName().equals("SiteNodeVersion.stateId"))	
+				throw new ConstraintException("ContentVersion.stateId", "3406", ce.getExtraInformation());
+			else
+				throw ce;
+		}
+	}
 	
 	protected String doExecute() throws ConstraintException, Exception 
 	{

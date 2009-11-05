@@ -1,12 +1,12 @@
 #define( $headerMarkup )
 	<script type="text/javascript" src="script/jqueryplugins/thickbox/thickbox-compressed.js"></script>
-	<link rel="stylesheet" type="text/css" href="script/jqueryplugins/thickbox/thickbox-ig.css" media="all" />
+	<link rel="stylesheet" type="text/css" href="script/jqueryplugins/thickbox/thickbox-ig.css" />
 
 	<link type="text/css" href="script/jqueryplugins/ui/jquery-ui-1.7.2.full.redmond/css/redmond/jquery-ui-1.7.2.custom.css" rel="stylesheet" />	
 	<script type="text/javascript" src="script/jqueryplugins/ui/jquery-ui-1.7.2.full.redmond/js/jquery-ui-1.7.2.custom.min.js"></script>
 	
-	<link rel="stylesheet" type="text/css" href="css/skins/admin.css" media="all" />
-	<link rel="stylesheet" type="text/css" href="css/skins/${theme}/main.css" media="all" />
+	<link rel="stylesheet" type="text/css" href="css/skins/admin.css" />
+	<link rel="stylesheet" type="text/css" href="css/skins/${theme}/main.css" />
 	
 	<script type="text/javascript">
 	<!--

@@ -116,7 +116,7 @@
 	#end
 	
 	<link rel="stylesheet" type="text/css" href="css/cms.css" /> 
-	<link rel="stylesheet" type="text/css" href="css/skins/${theme}/menu.css" media="all" />
+	<link rel="stylesheet" type="text/css" href="css/skins/${theme}/menu.css" />
 	
 </head>
 <body class="structuretooledit" style="background-color: white; padding: 0px; margin: 0px;" onload="parent.notifyExp('${exp}');loaded();" onMouseUp="clearDrag(event);">

@@ -60,7 +60,9 @@ public class SiteNodeVersionVO implements BaseEntityVO
 	private String contentType 			= "text/html";
   	private String pageCacheKey			= "default";
   	private String pageCacheTimeout		= null;
-  	
+	private Integer sortOrder 			= new Integer(-1);
+	private Boolean isHidden			= new Boolean(false);
+
     private Integer siteNodeId			= null;
 	private String siteNodeName			= "";
   
@@ -249,6 +251,26 @@ public class SiteNodeVersionVO implements BaseEntityVO
 		this.versionModifier = versionModifier;
 	}
 
+    public Integer getSortOrder()
+    {
+        return this.sortOrder;
+    }
+    
+    public void setSortOrder(Integer sortOrder)
+    {
+        this.sortOrder = sortOrder;
+    }
+
+    public Boolean getIsHidden()
+    {
+        return this.isHidden;
+    }
+    
+    public void setIsHidden(Boolean isHidden)
+    {
+    	this.isHidden = isHidden;
+    }
+
 	public String getSiteNodeName()
 	{
 		return siteNodeName;
@@ -279,6 +301,8 @@ public class SiteNodeVersionVO implements BaseEntityVO
 	    sb.append("contentType:" + contentType + '\n');
 	    sb.append("pageCacheKey:" + pageCacheKey + '\n');
 	    sb.append("pageCacheTimeout:" + pageCacheTimeout + '\n');
+	    sb.append("sortOrder:" + sortOrder + '\n');
+	    sb.append("isHidden:" + isHidden + '\n');
 	    sb.append("siteNodeId:" + siteNodeId + '\n');
 	    sb.append("siteNodeName:" + siteNodeName + '\n');
 	    

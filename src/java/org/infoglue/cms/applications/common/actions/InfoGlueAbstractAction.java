@@ -492,6 +492,11 @@ public abstract class InfoGlueAbstractAction extends WebworkAbstractAction
 		return CmsPropertyHandler.getInfoGlueVersionReleaseDate();
 	}
 
+	public String getDatabaseEngine()
+	{
+		return CmsPropertyHandler.getDatabaseEngine();
+	}
+
 	/**
 	 * Get a single parameter from the ActionContext (hides Servlet implementation)
 	 */
