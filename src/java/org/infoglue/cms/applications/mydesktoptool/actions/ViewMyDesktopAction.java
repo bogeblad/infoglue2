@@ -30,15 +30,20 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.infoglue.cms.applications.common.VisualFormatter;
 import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
+import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ShortcutController;
+import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeController;
 import org.infoglue.cms.controllers.kernel.impl.simple.WorkflowController;
+import org.infoglue.cms.entities.content.ContentVO;
 import org.infoglue.cms.entities.mydesktop.WorkflowActionVO;
 import org.infoglue.cms.entities.mydesktop.WorkflowStepVO;
 import org.infoglue.cms.entities.mydesktop.WorkflowVO;
+import org.infoglue.cms.entities.structure.SiteNodeVO;
 import org.infoglue.cms.exception.SystemException;
 import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.sorters.ReflectionComparator;
@@ -70,21 +75,41 @@ public class ViewMyDesktopAction extends InfoGlueAbstractAction
 	private List availableWorkflowVOList;
 	private List workflowVOList;
 	private List availableShortcutVOList;
+	private Set<SiteNodeVO> siteNodeVOListLastModifiedByPincipal = null;
+	private Set<ContentVO> contentVOListLastModifiedByPincipal = null;
 	
 	public String doExecute()
 	{
 		try
 		{
 			populateActiveWorkflowVOList();
+			availableWorkflowVOList = controller.getAvailableWorkflowVOList(getInfoGluePrincipal());
+			availableShortcutVOList = shortcutController.getAvailableShortcutVOList(getInfoGluePrincipal());
+			this.siteNodeVOListLastModifiedByPincipal = SiteNodeController.getController().getSiteNodeVOListLastModifiedByPincipal(getInfoGluePrincipal());
+			this.contentVOListLastModifiedByPincipal = ContentController.getContentController().getContentVOListLastModifiedByPincipal(getInfoGluePrincipal());
 		}
 		catch (Exception e) 
 		{
-			logger.info("An error occurred getting ongoing workflows: " + e.getMessage(), e);
+			logger.warn("An error occurred getting ongoing workflows: " + e.getMessage(), e);
 		}
 		
 		return "success";
 	}
 	
+	public String doAvailable()
+	{
+		try
+		{
+			availableWorkflowVOList = controller.getAvailableWorkflowVOList(getInfoGluePrincipal());
+		}
+		catch (Exception e) 
+		{
+			logger.warn("An error occurred getting available workflows: " + e.getMessage(), e);
+		}
+		
+		return "available";
+	}
+
 	public String doOngoing()
 	{
 		try
@@ -93,12 +118,54 @@ public class ViewMyDesktopAction extends InfoGlueAbstractAction
 		}
 		catch (Exception e) 
 		{
-			logger.info("An error occurred getting ongoing workflows: " + e.getMessage(), e);
+			logger.warn("An error occurred getting ongoing workflows: " + e.getMessage(), e);
 		}
 		
 		return "ongoing";
 	}
-	
+
+	public String doShortcuts()
+	{
+		try
+		{
+			availableShortcutVOList = shortcutController.getAvailableShortcutVOList(getInfoGluePrincipal());
+		}
+		catch (Exception e) 
+		{
+			logger.warn("An error occurred getting shortcuts: " + e.getMessage(), e);
+		}
+		
+		return "shortcuts";
+	}
+
+	public String doLatestPages()
+	{
+		try
+		{
+			this.siteNodeVOListLastModifiedByPincipal = SiteNodeController.getController().getSiteNodeVOListLastModifiedByPincipal(getInfoGluePrincipal());
+		}
+		catch (Exception e) 
+		{
+			logger.error("An error occurred getting my latest pages: " + e.getMessage(), e);
+		}
+		
+		return "latestPages";
+	}
+
+	public String doLatestContents()
+	{
+		try
+		{
+			this.contentVOListLastModifiedByPincipal = ContentController.getContentController().getContentVOListLastModifiedByPincipal(getInfoGluePrincipal());
+		}
+		catch (Exception e) 
+		{
+			logger.error("An error occurred getting my latest contents: " + e.getMessage(), e);
+		}
+		
+		return "latestContents";
+	}
+
 	private void populateActiveWorkflowVOList() throws SystemException
 	{
 		final String showAllWorkflows = CmsPropertyHandler.getShowAllWorkflows();
@@ -125,6 +192,24 @@ public class ViewMyDesktopAction extends InfoGlueAbstractAction
 	public List getAvailableShortcutVOList()
 	{
 		return availableShortcutVOList;
+	}
+
+	public List<SiteNodeVO> getSiteNodeVOListLastModifiedByPincipal()
+	{
+		List<SiteNodeVO> siteNodeVOList = new ArrayList<SiteNodeVO>();
+		siteNodeVOList.addAll(siteNodeVOListLastModifiedByPincipal);
+		Collections.sort(siteNodeVOList, new ReflectionComparator("id"));
+
+		return siteNodeVOList;
+	}
+
+	public List<ContentVO> getContentVOListLastModifiedByPincipal()
+	{
+		List<ContentVO> contentVOList = new ArrayList<ContentVO>();
+		contentVOList.addAll(contentVOListLastModifiedByPincipal);
+		Collections.sort(contentVOList, new ReflectionComparator("id"));
+
+		return contentVOList;
 	}
 
 

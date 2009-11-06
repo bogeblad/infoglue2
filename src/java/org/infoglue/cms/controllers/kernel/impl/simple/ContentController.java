@@ -28,9 +28,11 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
@@ -45,6 +47,7 @@ import org.infoglue.cms.entities.content.ContentVersionVO;
 import org.infoglue.cms.entities.content.impl.simple.ContentImpl;
 import org.infoglue.cms.entities.content.impl.simple.MediumContentImpl;
 import org.infoglue.cms.entities.content.impl.simple.SmallContentImpl;
+import org.infoglue.cms.entities.content.impl.simple.SmallestContentVersionImpl;
 import org.infoglue.cms.entities.kernel.BaseEntityVO;
 import org.infoglue.cms.entities.management.ContentTypeDefinition;
 import org.infoglue.cms.entities.management.ContentTypeDefinitionVO;
@@ -60,6 +63,7 @@ import org.infoglue.cms.entities.structure.Qualifyer;
 import org.infoglue.cms.entities.structure.ServiceBinding;
 import org.infoglue.cms.entities.structure.SiteNode;
 import org.infoglue.cms.entities.structure.SiteNodeVO;
+import org.infoglue.cms.entities.structure.SiteNodeVersion;
 import org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl;
 import org.infoglue.cms.exception.Bug;
 import org.infoglue.cms.exception.ConstraintException;
@@ -151,7 +155,7 @@ public class ContentController extends BaseController
 			oql.bind(true);
 			
 			QueryResults results = oql.execute();
-			if (results.hasMore()) 
+			while(results.hasMore()) 
             {
 				Content content = (Content)results.next();
 				contentVOListMarkedForDeletion.add(content.getValueObject());
@@ -168,6 +172,47 @@ public class ContentController extends BaseController
 		}
 		
 		return contentVOListMarkedForDeletion;		
+	}
+	
+
+	/**
+	 * Returns a repository list marked for deletion.
+	 */
+	
+	public Set<ContentVO> getContentVOListLastModifiedByPincipal(InfoGluePrincipal principal) throws SystemException, Bug
+	{
+		Database db = CastorDatabaseService.getDatabase();
+		
+		Set<ContentVO> contentVOList = new HashSet<ContentVO>();
+		
+		try 
+		{
+			beginTransaction(db);
+		
+			OQLQuery oql = db.getOQLQuery("SELECT cv FROM org.infoglue.cms.entities.content.impl.simple.SmallestContentVersionImpl cv WHERE cv.versionModifier = $1 ORDER BY cv.modifiedDateTime DESC LIMIT $2");
+			oql.bind(principal.getName());
+			oql.bind(30);
+
+			QueryResults results = oql.execute();
+			while(results.hasMore()) 
+            {
+				SmallestContentVersionImpl contentVersion = (SmallestContentVersionImpl)results.next();
+				ContentVO contentVO = getContentVOWithId(contentVersion.getValueObject().getContentId(), db);
+				contentVOList.add(contentVO);
+            }
+            
+			results.close();
+			oql.close();
+
+			commitTransaction(db);
+		}
+		catch ( Exception e)		
+		{
+			e.printStackTrace();
+			throw new SystemException("An error occurred when we tried to fetch a list contents last modified by the user. Reason:" + e.getMessage(), e);			
+		}
+		
+		return contentVOList;		
 	}
 
 	/**

@@ -141,7 +141,7 @@ public class ViewInlineOperationMessagesAction extends InfoGlueAbstractAction
     	{
     		message = getActionMessage(userSessionKey);
     		if(message == null || message.equals(""))
-    			message = "Operationen genomförd.";
+    			message = getLocalizedString(getLocale(), "tool.common.inlineOperationDoneHeader");
     	}
     	
 		return message;

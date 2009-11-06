@@ -211,6 +211,9 @@ public class ToolbarController
 			if(toolbarKey.equalsIgnoreCase("tool.contenttool.contentVersionWizardHeader"))
 				return getContentVersionWizardFooterButtons(toolbarKey, principal, locale, request, disableCloseButton);
 			
+			if(toolbarKey.equalsIgnoreCase("tool.contenttool.contentPropertiesHeader"))
+				return getCommonFooterSaveOrSaveAndExitOrCloseButton(toolbarKey, principal, locale, request, disableCloseButton, "ViewContentProperties!saveAndExitV3.action");
+
 			if(toolbarKey.equalsIgnoreCase("tool.structuretool.createSiteNodeHeader"))
 				return getCreateSiteNodeFooterButtons(toolbarKey, principal, locale, request, disableCloseButton);
 			
@@ -567,21 +570,21 @@ public class ToolbarController
 		buttons.add(new ToolbarButton("",
 				  getLocalizedString(locale, "tool.contenttool.toolbarV3.editContentMetaInfoLabel"), 
 				  getLocalizedString(locale, "tool.contenttool.toolbarV3.editContentMetaInfoTitle"),
-				  "" + "&returnAddress=ViewInlineOperationMessages.action&originalAddress=refreshParent",
+				  "ViewContentProperties!V3.action?contentId=" + contentId + "&returnAddress=ViewInlineOperationMessages.action&originalAddress=refreshParent",
 				  "",
 				  "properties"));
 
 		ToolbarButton publishButton = new ToolbarButton("",
 				  getLocalizedString(locale, "tool.contenttool.toolbarV3.publishContentLabel"), 
 				  getLocalizedString(locale, "tool.contenttool.toolbarV3.publishContentTitle"),
-				  "ViewListContentVersion!v3.action?contentId=" + contentId + "&recurseContents=false&returnAddress=ViewInlineOperationMessages.action&originalAddress=refreshParent",
+				  "ViewListContentVersion!V3.action?contentId=" + contentId + "&recurseContents=false&returnAddress=ViewInlineOperationMessages.action&originalAddress=refreshParent",
 				  "",
 				  "publish");
 
 		ToolbarButton submitToPublishButton = new ToolbarButton("",
 				  getLocalizedString(locale, "tool.contenttool.toolbarV3.publishContentsLabel"), 
 				  getLocalizedString(locale, "tool.contenttool.toolbarV3.publishContentsTitle"),
-				  "ViewListContentVersion!v3.action?contentId=" + contentId + "&recurseContents=false&returnAddress=ViewInlineOperationMessages.action&originalAddress=refreshParent",
+				  "ViewListContentVersion!V3.action?contentId=" + contentId + "&recurseContents=false&returnAddress=ViewInlineOperationMessages.action&originalAddress=refreshParent",
 				  "",
 				  "submitToPublish");
 
@@ -2540,6 +2543,17 @@ public class ToolbarController
 		return buttons;		
 	}
 
+	private List<ToolbarButton> getCommonFooterSaveOrSaveAndExitOrCloseButton(String toolbarKey, InfoGluePrincipal principal, Locale locale, HttpServletRequest request, boolean disableCloseButton, String exitUrl)
+	{
+		List<ToolbarButton> buttons = new ArrayList<ToolbarButton>();
+
+		buttons.add(getCommonFooterSaveButton(toolbarKey, principal, locale, request, disableCloseButton));
+		buttons.add(getCommonFooterSaveAndExitButton(toolbarKey, principal, locale, request, disableCloseButton, exitUrl));
+		buttons.add(getDialogCloseButton(toolbarKey, principal, locale, request, disableCloseButton));
+				
+		return buttons;		
+	}
+
 	private List<ToolbarButton> asButtons(ToolbarButton button)
 	{
 		List<ToolbarButton> buttons = new ArrayList<ToolbarButton>();
@@ -2566,7 +2580,7 @@ public class ToolbarController
 		return new ToolbarButton("",
 				  getLocalizedString(locale, "tool.contenttool.saveAndExit.label"), 
 				  getLocalizedString(locale, "tool.contenttool.saveAndExit.label"),
-				  "saveAndExit(document.inputForm, \"" + exitUrl + "\");",
+				  "saveAndExit(\"" + exitUrl + "\");",
 				  "images/v3/saveAndExitInlineIcon.gif",
 				  "left",
 				  "saveAndExit",

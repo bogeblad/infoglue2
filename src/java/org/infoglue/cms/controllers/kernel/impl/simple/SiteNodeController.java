@@ -28,9 +28,11 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
@@ -174,7 +176,7 @@ public class SiteNodeController extends BaseController
 			oql.bind(true);
 			
 			QueryResults results = oql.execute();
-			if (results.hasMore()) 
+			while(results.hasMore()) 
             {
 				SiteNode siteNode = (SiteNode)results.next();
                 siteNodeVOListMarkedForDeletion.add(siteNode.getValueObject());
@@ -191,6 +193,45 @@ public class SiteNodeController extends BaseController
 		}
 		
 		return siteNodeVOListMarkedForDeletion;		
+	}
+
+	/**
+	 * Returns a repository list marked for deletion.
+	 */
+	
+	public Set<SiteNodeVO> getSiteNodeVOListLastModifiedByPincipal(InfoGluePrincipal principal) throws SystemException, Bug
+	{
+		Database db = CastorDatabaseService.getDatabase();
+		
+		Set<SiteNodeVO> siteNodeVOList = new HashSet<SiteNodeVO>();
+		
+		try 
+		{
+			beginTransaction(db);
+		
+			OQLQuery oql = db.getOQLQuery("SELECT snv FROM org.infoglue.cms.entities.structure.impl.simple.SmallSiteNodeVersionImpl snv WHERE snv.versionModifier = $1 ORDER BY snv.modifiedDateTime DESC LIMIT $2");
+			oql.bind(principal.getName());
+			oql.bind(30);
+			
+			QueryResults results = oql.execute();
+			while(results.hasMore()) 
+            {
+				SiteNodeVersion siteNodeVersion = (SiteNodeVersion)results.next();
+				SiteNodeVO siteNodeVO = getSiteNodeVOWithId(siteNodeVersion.getValueObject().getSiteNodeId(), db);
+				siteNodeVOList.add(siteNodeVO);
+            }
+            
+			results.close();
+			oql.close();
+
+			commitTransaction(db);
+		}
+		catch ( Exception e)		
+		{
+			throw new SystemException("An error occurred when we tried to fetch a list pages last modified by the user. Reason:" + e.getMessage(), e);			
+		}
+		
+		return siteNodeVOList;		
 	}
 
 	/**

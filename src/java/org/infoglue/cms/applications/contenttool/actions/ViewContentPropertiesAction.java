@@ -60,10 +60,10 @@ public class ViewContentPropertiesAction extends InfoGluePropertiesAbstractActio
 	private String defaultContentTypeName 		= null;	
 	private String initialLanguageId			= null;
 	
-    public ViewContentPropertiesAction()
-    {
-    }
-        
+	private String userSessionKey = null;
+	private String returnAddress = null;
+	private String originalAddress = null;
+
     protected void initialize(Integer contentId) throws Exception
     {
         this.contentVO = ContentController.getContentController().getContentVOWithId(contentId);
@@ -95,7 +95,24 @@ public class ViewContentPropertiesAction extends InfoGluePropertiesAbstractActio
 
         return "success";
     }
+
+    /**
+     * The main method that fetches the Value-objects for this use-case
+     */
     
+    public String doV3() throws Exception
+    {
+		String userSessionKey = "" + System.currentTimeMillis();
+
+        this.initialize(getContentId());
+
+		String updateContentPropertiesInlineOperationDoneHeader = getLocalizedString(getLocale(), "tool.contenttool.updateContentPropertiesInlineOperationDoneHeader");
+		
+	    setActionMessage(userSessionKey, updateContentPropertiesInlineOperationDoneHeader);
+
+        return "successV3";
+    }
+
     /**
      * The main method that fetches the Value-objects for this use-case
      */
@@ -132,6 +149,17 @@ public class ViewContentPropertiesAction extends InfoGluePropertiesAbstractActio
      * The main method that fetches the Value-objects for this use-case
      */
     
+    public String doSaveV3() throws Exception
+    {
+    	doSave();
+    	
+    	return "saveV3";
+    }
+    
+    /**
+     * The main method that fetches the Value-objects for this use-case
+     */
+    
     public String doSaveAndExit() throws Exception
     {
     	doSave();
@@ -139,6 +167,28 @@ public class ViewContentPropertiesAction extends InfoGluePropertiesAbstractActio
         return "saveAndExit";
     }
 
+    /**
+     * The main method that fetches the Value-objects for this use-case
+     */
+    public String doSaveAndExitV3() throws Exception
+    {
+    	doSave();
+
+    	System.out.println("returnAddress:" + returnAddress);
+    	if(this.returnAddress != null && !this.returnAddress.equals(""))
+        {
+	        String arguments 	= "userSessionKey=" + userSessionKey + "&isAutomaticRedirect=false";
+	        String messageUrl 	= returnAddress + (returnAddress.indexOf("?") > -1 ? "&" : "?") + arguments;
+	        
+	        this.getResponse().sendRedirect(messageUrl);
+	        return NONE;
+        }
+        else
+        {
+        	return "saveAndExitV3";
+        }
+    }
+    
     public java.lang.Integer getContentId()
     {
         return this.contentVO.getContentId();
@@ -188,4 +238,34 @@ public class ViewContentPropertiesAction extends InfoGluePropertiesAbstractActio
     {
         this.initialLanguageId = initialLanguageId;
     }
+    
+    public String getUserSessionKey()
+	{
+		return userSessionKey;
+	}
+
+	public void setUserSessionKey(String userSessionKey)
+	{
+		this.userSessionKey = userSessionKey;
+	}
+	
+	public String getReturnAddress()
+	{
+		return this.returnAddress;
+	}    
+	
+    public String getOriginalAddress()
+	{
+		return originalAddress;
+	}
+
+	public void setOriginalAddress(String originalAddress)
+	{
+		this.originalAddress = originalAddress;
+	}
+
+	public void setReturnAddress(String returnAddress)
+	{
+		this.returnAddress = returnAddress;
+	}
 }

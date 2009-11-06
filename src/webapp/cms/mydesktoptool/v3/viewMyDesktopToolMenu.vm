@@ -63,7 +63,7 @@
 	<!-- 
 		function reloadMain()
 		{
-			openUrlInWorkArea("ViewMyDesktopToolStartPage!V3.action");
+			openUrlInWorkArea("ViewMyDesktop.action");
 		}
 		
 		function openUrlInWorkArea(url, title, targetTab)

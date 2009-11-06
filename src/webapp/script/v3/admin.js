@@ -346,7 +346,7 @@ function activateTool(toolMarkupDivId, toolName, suffix, checkWorkArea)
 			if(toolName == "publishing")
 				openUrlInWorkArea("ViewPublishingToolStartPage!V3.action", toolName, "publishing");
 			if(toolName == "mydesktop")
-				openUrlInWorkArea("ViewMyDesktopToolStartPage!V3.action", toolName, "mydesktop");	
+				openUrlInWorkArea("ViewMyDesktop.action", toolName, "mydesktop");	
 			if(toolName == "formeditor")
 				openUrlInWorkArea("ViewFormEditorStartPage!V3.action", toolName, "formeditor");	
 		}

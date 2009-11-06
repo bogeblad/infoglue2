@@ -63,7 +63,7 @@
 				openUrlInWorkArea("ViewPublishingToolStartPage!V3.action", "$ui.getString('tool.common.publishingTool.name')", "publishing");
 			#elseif($initialToolId == 4)
 				activateTool("mydesktopMarkup", "$ui.getString('tool.common.myDesktopTool.name')", "$ui.getString("tool.common.adminTool.header")", false);
-				openUrlInWorkArea("ViewMyDesktopToolStartPage!V3.action", "$ui.getString('tool.common.myDesktopTool.name')", "mydesktop");
+				openUrlInWorkArea("ViewMyDesktop.action", "$ui.getString('tool.common.myDesktopTool.name')", "mydesktop");
 			#end
 			
 			var i = 0;

@@ -1,4 +1,4 @@
-<!-- $Id: actions.xml,v 1.89 2009/10/30 14:02:13 mattias Exp $ -->
+<!-- $Id: actions.xml,v 1.90 2009/11/06 23:08:04 mattias Exp $ -->
 <actions>
 
 	<!-- MySettings -->
@@ -134,6 +134,10 @@
 	<action name="org.infoglue.cms.applications.mydesktoptool.actions.ViewMyDesktopAction" alias="ViewMyDesktop">
 		<view name="success">/cms/mydesktoptool/v3/viewMyDesktop.vm</view>
 		<view name="ongoing">/cms/mydesktoptool/v3/viewOngoingWorkflows.vm</view>
+		<view name="available">/cms/mydesktoptool/v3/viewAvailableWorkflows.vm</view>
+		<view name="shortcuts">/cms/mydesktoptool/v3/viewShortcuts.vm</view>
+		<view name="latestPages">/cms/mydesktoptool/v3/viewLatestPages.vm</view>
+		<view name="latestContents">/cms/mydesktoptool/v3/viewLatestContents.vm</view>
 		<view name="error">/cms/mydesktoptool/error.vm</view>
 	</action>
 	<action name="org.infoglue.cms.applications.mydesktoptool.actions.ViewMyDesktopToolAction" alias="ViewMyDesktopTool">
@@ -833,8 +837,11 @@
 	<action name="org.infoglue.cms.applications.contenttool.actions.ViewContentPropertiesAction" alias="ViewContentProperties">
 		<view name="input">/cms/contenttool/viewContentProperties.vm</view>
 		<view name="success">/cms/contenttool/viewContentProperties.vm</view>
+		<view name="successV3">/cms/contenttool/v3/viewContentProperties.vm</view>
 		<view name="save">ViewContentProperties.action</view>
+		<view name="saveV3">ViewContentProperties!V3.action</view>
 		<view name="saveAndExit">ViewContent.action?stay=true</view>
+		<view name="saveAndExitV3">ViewInlineOperationMessages</view>
 		<view name="error">/cms/contenttool/error.vm</view>
 	</action>
 

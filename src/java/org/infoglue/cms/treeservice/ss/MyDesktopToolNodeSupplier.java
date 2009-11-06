@@ -60,7 +60,7 @@ public class MyDesktopToolNodeSupplier extends BaseNodeSupplier
 		this.infogluePrincipal = infogluePrincipal;
 		this.locale = locale;
 		
-		setRootNode(new MyDesktopNodeImpl(0, "root", "ViewMyDesktopToolStartPage!V3.action", Collections.EMPTY_MAP));
+		setRootNode(new MyDesktopNodeImpl(0, "root", "ViewMyDesktop.action", Collections.EMPTY_MAP));
 	}
 	
 	/**
