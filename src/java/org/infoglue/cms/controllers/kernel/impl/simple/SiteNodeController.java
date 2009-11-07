@@ -1399,6 +1399,52 @@ public class SiteNodeController extends BaseController
         return siteNodeVOList;
 	}
 
+	public List<SiteNodeVO> getUpcomingExpiringSiteNodes(int numberOfDays, InfoGluePrincipal principal) throws Exception
+	{
+		List<SiteNodeVO> siteNodeVOList = new ArrayList<SiteNodeVO>();
+
+		Database db = CastorDatabaseService.getDatabase();
+        ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
+
+        beginTransaction(db);
+
+        try
+        {
+    		OQLQuery oql = db.getOQLQuery("SELECT sn FROM org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl sn WHERE " +
+    				"sn.expireDateTime > $1 AND sn.expireDateTime < $2 AND sn.publishDateTime < $3 AND sn.siteNodeVersions.versionModifier = $4");
+    		
+        	Calendar now = Calendar.getInstance();
+        	Date currentDate = now.getTime();
+        	oql.bind(currentDate);
+        	now.add(Calendar.DAY_OF_YEAR, numberOfDays);
+        	Date futureDate = now.getTime();
+           	oql.bind(futureDate);
+           	oql.bind(currentDate);
+           	oql.bind(principal.getName());
+
+        	QueryResults results = oql.execute(Database.ReadOnly);
+    		while(results.hasMore()) 
+            {
+    			SiteNode siteNode = (SiteNodeImpl)results.next();
+    			siteNodeVOList.add(siteNode.getValueObject());
+            }
+
+    		results.close();
+    		oql.close();
+        	
+            commitTransaction(db);
+        }
+        catch(Exception e)
+        {
+            logger.error("An error occurred so we should not complete the transaction:" + e, e);
+            rollbackTransaction(db);
+            throw new SystemException(e.getMessage());
+        }
+        
+        System.out.println("siteNodeVOList:" + siteNodeVOList.size());
+        return siteNodeVOList;
+	}
+
 	/**
 	 * This method are here to return all content versions that are x number of versions behind the current active version. This is for cleanup purposes.
 	 * 

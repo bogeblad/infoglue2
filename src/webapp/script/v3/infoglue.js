@@ -194,7 +194,8 @@ function resizeScrollArea()
   	//alert("dimensionsHeight:" + (dimensionsHeight - 78));
   	if(dimensionsWidth != 0)
   	{
-		$(".igScrollArea").css("height", dimensionsHeight - 78);
+  		var toolbarHeight = 0 + $("#footertoolbar").height() + $("#menutoolbar").height();
+  		$(".igScrollArea").css("height", dimensionsHeight - toolbarHeight);
 		//$(".igScrollArea").css("width", dimensionsWidth);
 	}
 	else

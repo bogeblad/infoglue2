@@ -77,16 +77,21 @@ public class ViewMyDesktopAction extends InfoGlueAbstractAction
 	private List availableShortcutVOList;
 	private Set<SiteNodeVO> siteNodeVOListLastModifiedByPincipal = null;
 	private Set<ContentVO> contentVOListLastModifiedByPincipal = null;
+	private List<SiteNodeVO> expiringPagesForPrincipal = null;
+	private List<ContentVO> expiringContentsForPrincipal = null;
 	
 	public String doExecute()
 	{
 		try
 		{
 			populateActiveWorkflowVOList();
-			availableWorkflowVOList = controller.getAvailableWorkflowVOList(getInfoGluePrincipal());
-			availableShortcutVOList = shortcutController.getAvailableShortcutVOList(getInfoGluePrincipal());
+			this.availableWorkflowVOList = controller.getAvailableWorkflowVOList(getInfoGluePrincipal());
+			this.availableShortcutVOList = shortcutController.getAvailableShortcutVOList(getInfoGluePrincipal());
 			this.siteNodeVOListLastModifiedByPincipal = SiteNodeController.getController().getSiteNodeVOListLastModifiedByPincipal(getInfoGluePrincipal());
 			this.contentVOListLastModifiedByPincipal = ContentController.getContentController().getContentVOListLastModifiedByPincipal(getInfoGluePrincipal());
+
+			this.expiringPagesForPrincipal = SiteNodeController.getController().getUpcomingExpiringSiteNodes(30, getInfoGluePrincipal());
+			this.expiringContentsForPrincipal = ContentController.getContentController().getUpcomingExpiringContents(30, getInfoGluePrincipal());
 		}
 		catch (Exception e) 
 		{
@@ -210,6 +215,16 @@ public class ViewMyDesktopAction extends InfoGlueAbstractAction
 		Collections.sort(contentVOList, new ReflectionComparator("id"));
 
 		return contentVOList;
+	}
+
+	public List<SiteNodeVO> getExpiringPagesForPrincipal()
+	{
+		return expiringPagesForPrincipal;
+	}
+
+	public List<ContentVO> getExpiringContentsForPrincipal()
+	{
+		return expiringContentsForPrincipal;
 	}
 
 

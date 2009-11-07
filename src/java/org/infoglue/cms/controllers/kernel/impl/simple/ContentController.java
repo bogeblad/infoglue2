@@ -2136,4 +2136,49 @@ public class ContentController extends BaseController
         return contentVOList;
 	}
 
+	public List<ContentVO> getUpcomingExpiringContents(int numberOfDays, InfoGluePrincipal principal) throws Exception
+	{
+		List<ContentVO> contentVOList = new ArrayList<ContentVO>();
+
+		Database db = CastorDatabaseService.getDatabase();
+        ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
+
+        beginTransaction(db);
+
+        try
+        {
+    		OQLQuery oql = db.getOQLQuery("SELECT c FROM org.infoglue.cms.entities.content.impl.simple.MediumContentImpl c WHERE " +
+        			"c.expireDateTime > $1 AND c.expireDateTime < $2 AND c.publishDateTime < $3 AND c.contentVersions.versionModifier = $4");
+    		
+        	Calendar now = Calendar.getInstance();
+        	Date currentDate = now.getTime();
+        	oql.bind(currentDate);
+        	now.add(Calendar.DAY_OF_YEAR, numberOfDays);
+        	Date futureDate = now.getTime();
+        	oql.bind(futureDate);
+           	oql.bind(currentDate);
+           	oql.bind(principal.getName());
+
+        	QueryResults results = oql.execute(Database.ReadOnly);
+    		while(results.hasMore()) 
+            {
+    			Content content = (ContentImpl)results.next();
+    			contentVOList.add(content.getValueObject());
+            }
+
+    		results.close();
+    		oql.close();
+        	
+            commitTransaction(db);
+        }
+        catch(Exception e)
+        {
+            logger.error("An error occurred so we should not complete the transaction:" + e, e);
+            rollbackTransaction(db);
+            throw new SystemException(e.getMessage());
+        }
+        System.out.println("contentVOList:" + contentVOList.size());
+        return contentVOList;
+	}
+
 }
