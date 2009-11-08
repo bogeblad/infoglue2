@@ -78,6 +78,19 @@
 			margin: 2px 4px 2px 4px;
 			font-size: 10pt;
 		}		
+		
+		.content {
+			background-image: url(images/v3/contentIcon.gif);
+			background-position: 0px 0px;
+			background-repeat: no-repeat;
+			text-indent: 16px;
+		}
+		.page {
+			background-image: url(images/v3/pageIcon.gif);
+			background-position: 0px 0px;
+			background-repeat: no-repeat;
+			text-indent: 16px;
+		}
 	-->
 	</style>
 #end
@@ -106,7 +119,9 @@
 				#set($size = 0)
 				#foreach($contentVO in $expiringContentsForPrincipal)
 					#if($velocityCount < 5)
-					<a href="#"	onclick="top.openUrlInWorkArea('ViewContent!V3.action?contentId=$contentVO.id', '$contentVO.name', 'content');">$contentVO.name</a>
+					<p>
+						<a href="#" class="content" onclick="top.openUrlInWorkArea('ViewContent!V3.action?contentId=$contentVO.id', '$contentVO.name', 'content');">$contentVO.name</a>
+					</p>
 					#end
 					#set($size = $size + 1)
 				#end
@@ -120,7 +135,9 @@
 				#set($size = 0)
 				#foreach($siteNodeVO in $expiringPagesForPrincipal)
 					#if($velocityCount < 5)
-					<a href="#"	onclick="top.openUrlInWorkArea('ViewSiteNode.action?siteNodeId=$siteNodeVO.id', '$siteNodeVO.name', 'structure');">$siteNodeVO.name</a>
+					<p>
+						<a href="#" class="page" onclick="top.openUrlInWorkArea('ViewSiteNode.action?siteNodeId=$siteNodeVO.id', '$siteNodeVO.name', 'structure');">$siteNodeVO.name</a><br/>
+					</p>
 					#end
 					#set($size = $size + 1)
 				#end
@@ -134,7 +151,9 @@
 				#set($size = 0)
 				#foreach($contentVO in $contentVOListLastModifiedByPincipal)
 					#if($velocityCount < 5)
-					<a href="#"	onclick="top.openUrlInWorkArea('ViewContent!V3.action?contentId=$contentVO.id', '$contentVO.name', 'content');">$contentVO.name</a>
+					<p>
+						<a href="#" class="content" onclick="top.openUrlInWorkArea('ViewContent!V3.action?contentId=$contentVO.id', '$contentVO.name', 'content');">$contentVO.name</a><br/>
+					</p>
 					#end
 					#set($size = $size + 1)
 				#end
@@ -148,7 +167,9 @@
 				#set($size = 0)
 				#foreach($siteNodeVO in $siteNodeVOListLastModifiedByPincipal)
 					#if($velocityCount < 5)
-					<a href="#"	onclick="top.openUrlInWorkArea('ViewSiteNode.action?siteNodeId=$siteNodeVO.id', '$siteNodeVO.name', 'structure');">$siteNodeVO.name</a>
+					<p>
+						<a href="#" class="page" onclick="top.openUrlInWorkArea('ViewSiteNode.action?siteNodeId=$siteNodeVO.id', '$siteNodeVO.name', 'structure');">$siteNodeVO.name</a><br/>
+					</p>
 					#end
 					#set($size = $size + 1)
 				#end

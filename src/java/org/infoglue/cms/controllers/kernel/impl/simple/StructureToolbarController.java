@@ -195,8 +195,8 @@ public class StructureToolbarController
 	public static ToolbarButton getPublishButtons(Integer repositoryId, Integer siteNodeId, Locale locale)
 	{
 		return new ToolbarButton("",
-				getLocalizedString(locale, "tool.structuretool.toolbarV3.publishPageLabel"), 
-				getLocalizedString(locale, "tool.structuretool.toolbarV3.publishPageTitle"),
+				getLocalizedString(locale, "tool.structuretool.toolbarV3.publishPagesLabel"), 
+				getLocalizedString(locale, "tool.structuretool.toolbarV3.publishPagesTitle"),
 				"ViewListSiteNodeVersion!v3.action?siteNodeId=" + siteNodeId + "&repositoryId=" + repositoryId + "&recurseSiteNodes=true&returnAddress=ViewInlineOperationMessages.action&originalAddress=refreshParent",
 				"",
 				"publishPages");
@@ -205,8 +205,8 @@ public class StructureToolbarController
 	public static ToolbarButton getPublishCurrentNodeButton(Integer repositoryId, Integer siteNodeId, Locale locale)
 	{
 		return new ToolbarButton("",
-				getLocalizedString(locale, "tool.structuretool.toolbarV3.publishPagesLabel"), 
-				getLocalizedString(locale, "tool.structuretool.toolbarV3.publishPagesTitle"),
+				getLocalizedString(locale, "tool.structuretool.toolbarV3.publishPageLabel"), 
+				getLocalizedString(locale, "tool.structuretool.toolbarV3.publishPageTitle"),
 				"ViewListSiteNodeVersion!v3.action?siteNodeId=" + siteNodeId + "&repositoryId=" + repositoryId + "&recurseSiteNodes=false&returnAddress=ViewInlineOperationMessages.action&originalAddress=refreshParent",
 				"",
 				"publishPage");

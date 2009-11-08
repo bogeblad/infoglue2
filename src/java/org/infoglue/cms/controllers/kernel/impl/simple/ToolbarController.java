@@ -584,7 +584,7 @@ public class ToolbarController
 		ToolbarButton submitToPublishButton = new ToolbarButton("",
 				  getLocalizedString(locale, "tool.contenttool.toolbarV3.publishContentsLabel"), 
 				  getLocalizedString(locale, "tool.contenttool.toolbarV3.publishContentsTitle"),
-				  "ViewListContentVersion!V3.action?contentId=" + contentId + "&recurseContents=false&returnAddress=ViewInlineOperationMessages.action&originalAddress=refreshParent",
+				  "ViewListContentVersion!V3.action?contentId=" + contentId + "&recurseContents=true&returnAddress=ViewInlineOperationMessages.action&originalAddress=refreshParent",
 				  "",
 				  "submitToPublish");
 
@@ -925,9 +925,13 @@ public class ToolbarController
 
 		buttons.add(StructureToolbarController.getCoverButtons(new Integer(repositoryId), new Integer(siteNodeId), locale, principal));
 
-		buttons.add(StructureToolbarController.getPublishButtons(new Integer(repositoryId), new Integer(siteNodeId), locale));
-
-		buttons.add(StructureToolbarController.getPublishCurrentNodeButton(new Integer(repositoryId), new Integer(siteNodeId), locale));
+		ToolbarButton publishButton = StructureToolbarController.getPublishCurrentNodeButton(new Integer(repositoryId), new Integer(siteNodeId), locale);
+		
+		ToolbarButton publishStructureButton = StructureToolbarController.getPublishButtons(new Integer(repositoryId), new Integer(siteNodeId), locale);
+		
+		publishButton.getSubButtons().add(publishStructureButton);
+		
+		buttons.add(publishButton);
 
 		//buttons.add(StructureToolbarController.getTasksButtons(new Integer(repositoryId), new Integer(siteNodeId), locale));
 
