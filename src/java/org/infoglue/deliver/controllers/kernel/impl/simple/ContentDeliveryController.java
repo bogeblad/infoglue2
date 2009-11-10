@@ -891,10 +891,10 @@ public class ContentDeliveryController extends BaseDeliveryController
 			}
 		}
 		
-		StringBuilder attributeKey = new StringBuilder();
+		StringBuilder attributeKeySB = new StringBuilder();
 		
 		if(!isMetaInfoQuery && !isTemplateQuery)
-			attributeKey.append("")
+			attributeKeySB.append("")
 			.append(contentId).append("_")
 			.append(languageId).append("_")
 			.append(attributeName).append("_")
@@ -903,7 +903,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 			.append(escapeHTML);
 
 		else
-			attributeKey.append("")
+			attributeKeySB.append("")
 			.append(contentId).append("_")
 			.append(languageId).append("_")
 			.append(attributeName).append("_")
@@ -916,10 +916,12 @@ public class ContentDeliveryController extends BaseDeliveryController
 			attributeKey = "" + contentId + "_" + languageId + "_" + attributeName + "_" + useLanguageFallback + "_" + escapeHTML;
 	    */
 		
-		String versionKey = attributeKey + "_contentVersionId";
-		//logger.info("attributeKey:" + attributeKey);
+		String attributeKey = "" + attributeKeySB.toString().hashCode();
+		//String versionKey = attributeKey + "_contentVersionId".hashCode();
+		String versionKey = "" + attributeKey + "_contentVersionId".hashCode();
 		
-		String attribute = (String)CacheController.getCachedObjectFromAdvancedCache("contentAttributeCache_" + attributeName, attributeKey.toString());
+		//String attribute = (String)CacheController.getCachedObjectFromAdvancedCache("contentAttributeCache_" + attributeName, attributeKey.toString());
+		String attribute = (String)CacheController.getCachedObjectFromAdvancedCache("contentAttributeCache_" + attributeName, attributeKey);
 		Integer contentVersionId = null;
 		
 	    try
@@ -946,6 +948,13 @@ public class ContentDeliveryController extends BaseDeliveryController
 	        	StringBuilder groupKey1 = new StringBuilder("contentVersion_").append(contentVersionId);
 	        	StringBuilder groupKey2 = new StringBuilder("content_").append(contentId);
 	        	
+	        	/*
+	        	CacheController.cacheObjectInAdvancedCache("contentAttributeCache_" + attributeName, attributeKey.toString(), attribute, new String[]{groupKey1.toString(), groupKey2.toString()}, true);
+				if(contentVersionId != null)
+				{
+				    CacheController.cacheObjectInAdvancedCache("contentVersionCache", versionKey, contentVersionId, new String[]{groupKey1.toString(), groupKey2.toString()}, true);
+				}
+	        	*/
 	        	CacheController.cacheObjectInAdvancedCache("contentAttributeCache_" + attributeName, attributeKey, attribute, new String[]{groupKey1.toString(), groupKey2.toString()}, true);
 				if(contentVersionId != null)
 				{
