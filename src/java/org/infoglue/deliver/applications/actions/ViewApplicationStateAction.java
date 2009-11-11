@@ -81,6 +81,7 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
 
     private List states 					= new ArrayList();
     private Map applicationMap 				= new HashMap();
+    private Object cache					= null;
     
 	private boolean databaseConnectionOk 	= false;
 	private boolean applicationSettingsOk 	= false;
@@ -657,6 +658,41 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
 
         return "successPageStatistics";
     }
+    
+    public String doCacheStatistics() throws Exception
+    {
+        if(!ServerNodeController.getController().getIsIPAllowed(this.getRequest()))
+        {
+        	logger.error("A user from an IP(" + this.getRequest().getRemoteAddr() + ") which is not allowed tried to call doReCache.");
+
+            this.getResponse().setContentType("text/plain");
+            this.getResponse().setStatus(HttpServletResponse.SC_FORBIDDEN);
+            this.getResponse().getWriter().println("You have no access to this view - talk to your administrator if you should.");
+            
+            return NONE;
+        }
+        
+        return "successCacheStatistics";
+    }
+
+    public String doCacheDetailsStatistics() throws Exception
+    {
+        if(!ServerNodeController.getController().getIsIPAllowed(this.getRequest()))
+        {
+        	logger.error("A user from an IP(" + this.getRequest().getRemoteAddr() + ") which is not allowed tried to call doReCache.");
+
+            this.getResponse().setContentType("text/plain");
+            this.getResponse().setStatus(HttpServletResponse.SC_FORBIDDEN);
+            this.getResponse().getWriter().println("You have no access to this view - talk to your administrator if you should.");
+            
+            return NONE;
+        }
+        
+        if(this.cacheName != null && !this.cacheName.equals(""))
+        	this.cache = CacheController.getCaches().get(this.cacheName);
+        
+        return "successCacheDetailsStatistics";
+    }
 
     /**
      * This method is the application entry-point. The method does a lot of checks to see if infoglue
@@ -820,6 +856,11 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
     public Map getApplicationMap()
     {
     	return this.applicationMap;
+    }
+
+    public Object getCache()
+    {
+    	return this.cache;
     }
 
 	public void setAttributeName(String attributeName)
