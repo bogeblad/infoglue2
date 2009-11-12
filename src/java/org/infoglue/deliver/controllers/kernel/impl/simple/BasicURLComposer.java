@@ -382,7 +382,7 @@ public class BasicURLComposer extends URLComposer
 		}
 		catch (Exception e) 
 		{
-			logger.error("Error checking up if we should switch protocol:" + e.getMessage(), e);
+			logger.warn("Error checking up if we should switch protocol:" + e.getMessage());
 		}
         
         if(enableNiceURI.equalsIgnoreCase("true") && deliveryContext.getHttpServletRequest().getRequestURI().indexOf("!renderDecoratedPage") == -1 && !deliveryContext.getDisableNiceUri())
