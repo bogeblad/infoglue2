@@ -2266,7 +2266,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 	{ 
 		String cacheName 	= "componentEditorCache";
 		String cacheKey		= "componentPropertiesDocument_" + siteNodeId + "_" + templateController.getLanguageId() + "_" + contentId;
-		Document cachedComponentPropertiesDocument = (Document)CacheController.getCachedObject(cacheName, cacheKey);
+		Document cachedComponentPropertiesDocument = (Document)CacheController.getCachedObjectFromAdvancedCache(cacheName, cacheKey);
 		if(cachedComponentPropertiesDocument != null)
 			return cachedComponentPropertiesDocument;
 		
@@ -2280,7 +2280,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 			{
 				componentPropertiesDocument = domBuilder.getDocument(xml);
 				
-				CacheController.cacheObject(cacheName, cacheKey, componentPropertiesDocument);
+				CacheController.cacheObjectInAdvancedCache(cacheName, cacheKey, componentPropertiesDocument);
 			}
 		}
 		catch(Exception e)
@@ -2300,7 +2300,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 	{
 		String cacheName 	= "componentEditorCache";
 		String cacheKey		= "componentPropertiesString_" + siteNodeId + "_" + templateController.getLanguageId() + "_" + contentId;
-		String cachedComponentPropertiesString = (String)CacheController.getCachedObject(cacheName, cacheKey);
+		String cachedComponentPropertiesString = (String)CacheController.getCachedObjectFromAdvancedCache(cacheName, cacheKey);
 		if(cachedComponentPropertiesString != null)
 			return cachedComponentPropertiesString;
 			
@@ -2315,7 +2315,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 			if(componentPropertiesString == null)
 				throw new SystemException("There was no properties assigned to this content.");
 		
-			CacheController.cacheObject(cacheName, cacheKey, componentPropertiesString);
+			CacheController.cacheObjectInAdvancedCache(cacheName, cacheKey, componentPropertiesString);
 		}
 		catch(Exception e)
 		{
@@ -2326,46 +2326,11 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 		return componentPropertiesString;
 	}
 	
-	
-	/**
-	 * This method fetches the tasks as a document.
-	 */
-/*	    
-	protected org.w3c.dom.Document getComponentTasksDocument(TemplateController templateController, Integer siteNodeId, Integer languageId, Integer contentId) throws SystemException, Exception
-	{ 	    
-		String cacheName 	= "componentEditorCache";
-		String cacheKey		= "componentTasksDocument_" + siteNodeId + "_" + templateController.getLanguageId() + "_" + contentId;
-		org.w3c.dom.Document cachedComponentTasksDocument = (org.w3c.dom.Document)CacheController.getCachedObject(cacheName, cacheKey);
-		if(cachedComponentTasksDocument != null)
-			return cachedComponentTasksDocument;
-		
-		org.w3c.dom.Document componentTasksDocument = null;
-   	
-		try
-		{
-			String xml = this.getComponentTasksString(templateController, siteNodeId, languageId, contentId);
-			if(xml != null && xml.length() > 0)
-			{
-			    componentTasksDocument = XMLHelper.readDocumentFromByteArray(xml.getBytes("UTF-8"));
-				
-				CacheController.cacheObject(cacheName, cacheKey, componentTasksDocument);
-			}
-		}
-		catch(Exception e)
-		{
-			logger.error(e.getMessage(), e);
-			throw e;
-		}
-		
-		return componentTasksDocument;
-	}
-*/
-	
 	protected Document getComponentTasksDOM4JDocument(TemplateController templateController, Integer siteNodeId, Integer languageId, Integer contentId) throws SystemException, Exception
 	{ 	    
 		String cacheName 	= "componentEditorCache";
 		String cacheKey		= "componentTasksDocument_" + siteNodeId + "_" + templateController.getLanguageId() + "_" + contentId;
-		Document cachedComponentTasksDocument = (Document)CacheController.getCachedObject(cacheName, cacheKey);
+		Document cachedComponentTasksDocument = (Document)CacheController.getCachedObjectFromAdvancedCache(cacheName, cacheKey);
 		if(cachedComponentTasksDocument != null)
 			return cachedComponentTasksDocument;
 		
@@ -2378,7 +2343,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 			{
 			    componentTasksDocument = domBuilder.getDocument(xml);
 				
-				CacheController.cacheObject(cacheName, cacheKey, componentTasksDocument);
+				CacheController.cacheObjectInAdvancedCache(cacheName, cacheKey, componentTasksDocument);
 			}
 		}
 		catch(Exception e)
@@ -2398,7 +2363,8 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 	{
 		String cacheName 	= "componentEditorCache";
 		String cacheKey		= "componentTasksString_" + siteNodeId + "_" + templateController.getLanguageId() + "_" + contentId;
-		String cachedComponentTasksString = (String)CacheController.getCachedObject(cacheName, cacheKey);
+		String cachedComponentTasksString = (String)CacheController.getCachedObjectFromAdvancedCache(cacheName, cacheKey);
+			
 		if(cachedComponentTasksString != null)
 			return cachedComponentTasksString;
 			
@@ -2412,7 +2378,7 @@ public class DecoratedComponentBasedHTMLPageInvoker extends ComponentBasedHTMLPa
 			if(componentTasksString == null)
 				throw new SystemException("There was no tasks assigned to this content.");
 		
-			CacheController.cacheObject(cacheName, cacheKey, componentTasksString);
+			CacheController.cacheObjectInAdvancedCache(cacheName, cacheKey, componentTasksString);
 		}
 		catch(Exception e)
 		{

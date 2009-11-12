@@ -84,7 +84,9 @@ public class ExtendedCacheEntryEventListenerImpl extends CacheEntryEventListener
             	{
             		oldSize = (content.toString().length() * 2) + 38;
             	}
-            }            
+            }         
+            
+        	oldSize = oldSize + (event.getEntry().getKey().length() * 2) + 38; 
         }
         catch (NeedsRefreshException e)
         {
@@ -101,6 +103,9 @@ public class ExtendedCacheEntryEventListenerImpl extends CacheEntryEventListener
     public void cacheEntryAdded(CacheEntryEvent event) 
     {
         super.cacheEntryAdded(event);
+
+        totalSize = totalSize + (event.getEntry().getKey().length() * 2) + 38; 
+        
         Object content = event.getEntry().getContent();
         if(content != null && content instanceof byte[])
         {
@@ -126,7 +131,7 @@ public class ExtendedCacheEntryEventListenerImpl extends CacheEntryEventListener
         		while(mapIterator.hasNext())
         		{
         			Object o = mapIterator.next();
-                	size += (o.toString().length()  * 2) + 38;
+                	size += (o.toString().length() * 2) + 38;
          		}
         		totalSize = totalSize + size;        	
         	}

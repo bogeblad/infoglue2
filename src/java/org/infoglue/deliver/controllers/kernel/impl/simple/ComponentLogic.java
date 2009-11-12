@@ -2870,14 +2870,14 @@ public class ComponentLogic
 		String cacheName 	= "componentEditorCache";
 		String cacheKey		= "pageComponentString_" + siteNodeId + "_" + languageId + "_" + contentId;
 		String versionKey 	= cacheKey + "_contentVersionId";
-		String cachedPageComponentsString = (String)CacheController.getCachedObject(cacheName, cacheKey);
-		Set contentVersionIds = (Set)CacheController.getCachedObjectFromAdvancedCache("contentVersionCache", versionKey);
-																			
+		
+		String cachedPageComponentsString = (String)CacheController.getCachedObjectFromAdvancedCache(cacheName, cacheKey);
+		Set contentVersionIds = (Set)CacheController.getCachedObjectFromAdvancedCache("contentVersionIdCache", versionKey);
 		if(cachedPageComponentsString != null)
 		{
 		    if(usedContentVersionId != null && contentVersionIds != null)
 		        usedContentVersionId.addAll(contentVersionIds);
-	        
+
 			return cachedPageComponentsString;
 		}
 		
@@ -2898,7 +2898,7 @@ public class ComponentLogic
 		if(pageComponentsString == null)
 			throw new SystemException("There was no Meta Information bound to this page [" + siteNodeId + "] which makes it impossible to render.");	
 	
-		CacheController.cacheObject(cacheName, cacheKey, pageComponentsString);
+		CacheController.cacheObjectInAdvancedCache(cacheName, cacheKey, pageComponentsString, null, false);
 		
 		if(usedContentVersionId != null && usedContentVersionId.size() > 0)
 		{
@@ -2912,7 +2912,7 @@ public class ComponentLogic
 			    groups.add("content_" + contentVersionVO.getContentId());
 			}
 
-		    CacheController.cacheObjectInAdvancedCacheWithGroupsAsSet("contentVersionCache", versionKey, usedContentVersionId, groups, true);
+		    CacheController.cacheObjectInAdvancedCacheWithGroupsAsSet("contentVersionIdCache", versionKey, usedContentVersionId, groups, true);
 		}
 		
 		return pageComponentsString;

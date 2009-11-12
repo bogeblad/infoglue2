@@ -255,13 +255,11 @@ public class ContentDeliveryController extends BaseDeliveryController
 	public ContentVersionVO getContentVersionVO(Database db, Integer siteNodeId, Integer contentId, Integer languageId, boolean useLanguageFallback, DeliveryContext deliveryContext, InfoGluePrincipal infoGluePrincipal) throws SystemException, Exception
 	{
 		ContentVersionVO contentVersionVO = null;
-		
-		//SiteNodeVO siteNodeVO = (SiteNodeVO)getVOWithId(SiteNodeImpl.class, siteNodeId, db);
 		SiteNodeVO siteNodeVO = (SiteNodeVO)getVOWithId(SmallSiteNodeImpl.class, siteNodeId, db);
 		String contentVersionKey = "contentVersionVO_" + siteNodeVO.getRepositoryId() + "_" + contentId + "_" + languageId + "_" + useLanguageFallback;
-		logger.info("contentVersionKey:" + contentVersionKey);
-		contentVersionVO = (ContentVersionVO)CacheController.getCachedObjectFromAdvancedCache("contentVersionCache", contentVersionKey);
 		
+		contentVersionVO = (ContentVersionVO)CacheController.getCachedObjectFromAdvancedCache("contentVersionCache", contentVersionKey);
+			
 		if(contentVersionVO != null)
 		{
 			//logger.info("There was an cached contentVersionVO:" + contentVersionVO.getContentVersionId());
@@ -271,8 +269,6 @@ public class ContentDeliveryController extends BaseDeliveryController
 			contentVersionVO = this.getContentVersionVO(siteNodeId, contentId, languageId, db, useLanguageFallback, deliveryContext, infoGluePrincipal);
         	if(contentVersionVO != null)
 			{
-				//contentVersionVO = contentVersion.getValueObject();
-				
 				CacheController.cacheObjectInAdvancedCache("contentVersionCache", contentVersionKey, contentVersionVO, new String[]{"contentVersion_" + contentVersionVO.getId(), "content_" + contentVersionVO.getContentId()}, true);
 			}
     	
@@ -294,10 +290,13 @@ public class ContentDeliveryController extends BaseDeliveryController
 	{
 		SmallestContentVersionVO contentVersionVO = null;
 		
-		//SiteNodeVO siteNodeVO = (SiteNodeVO)getVOWithId(SiteNodeImpl.class, siteNodeId, db);
+		//System.out.println("2");
+		
 		SiteNodeVO siteNodeVO = (SiteNodeVO)getVOWithId(SmallSiteNodeImpl.class, siteNodeId, db);
 		String contentVersionKey = "smallestContentVersionVO_" + siteNodeVO.getRepositoryId() + "_" + contentId + "_" + languageId + "_" + useLanguageFallback;
-		logger.info("contentVersionKey:" + contentVersionKey);
+		if(logger.isInfoEnabled())
+			logger.info("contentVersionKey:" + contentVersionKey);
+		
 		contentVersionVO = (SmallestContentVersionVO)CacheController.getCachedObjectFromAdvancedCache("contentVersionCache", contentVersionKey);
 		
 		if(contentVersionVO != null)
@@ -313,7 +312,6 @@ public class ContentDeliveryController extends BaseDeliveryController
 				
 				CacheController.cacheObjectInAdvancedCache("contentVersionCache", contentVersionKey, contentVersionVO, new String[]{"contentVersion_" + contentVersionVO.getId(), "content_" + contentVersionVO.getContentId()}, true);
 			}
-    	
         }
 		
 		if(contentVersionVO != null && deliveryContext != null)
@@ -508,15 +506,10 @@ public class ContentDeliveryController extends BaseDeliveryController
     {
 	    ContentVersion contentVersion = null;
 		
-	    logger.info("content:" + content.getId());
-	    logger.info("operatingMode:" + operatingMode);
-	    logger.info("languageId:" + languageId);
-
 	    String versionKey = "" + content.getId() + "_" + languageId + "_" + operatingMode + "_contentVersionId";
-		//logger.info("versionKey:" + versionKey);
+	    //logger.info("versionKey:" + versionKey);
 		
-		Object object = CacheController.getCachedObjectFromAdvancedCache("contentVersionCache", versionKey);
-		//Integer contentVersionId = (Integer)CacheController.getCachedObjectFromAdvancedCache("contentVersionCache", versionKey);
+		Object object = CacheController.getCachedObjectFromAdvancedCache("contentVersionIdCache", versionKey);
 		if(object instanceof NullObject)
 		{
 			logger.info("There was an cached parentSiteNodeVO but it was null:" + object);
@@ -524,11 +517,8 @@ public class ContentDeliveryController extends BaseDeliveryController
 		else if(object != null)
 		{
 			Integer contentVersionId = (Integer)object;
-			logger.info("There was a cached content version id:" + contentVersionId);
-		    //logger.info("There was a cached content version id:" + contentVersionId);
-		    contentVersion = (ContentVersion)getObjectWithId(ContentVersionImpl.class, contentVersionId, db);
+			contentVersion = (ContentVersion)getObjectWithId(ContentVersionImpl.class, contentVersionId, db);
 		    //logger.info("Loaded the version from cache instead of querying it:" + contentVersionId);
-		    logger.info("contentVersion read");
 		}
 		else
 		{
@@ -545,14 +535,11 @@ public class ContentDeliveryController extends BaseDeliveryController
 			if (results.hasMore()) 
 	        {
 	        	contentVersion = (ContentVersion)results.next();
-	        	logger.info("found one:" + contentVersion.getId());
-
-	        	//logger.info("Caching content version for key:" + versionKey);
-				CacheController.cacheObjectInAdvancedCache("contentVersionCache", versionKey, contentVersion.getId(), new String[]{"contentVersion_" + contentVersion.getId(), "content_" + contentVersion.getValueObject().getContentId()}, true);
+				CacheController.cacheObjectInAdvancedCache("contentVersionIdCache", versionKey, contentVersion.getId(), new String[]{"contentVersion_" + contentVersion.getId(), "content_" + contentVersion.getValueObject().getContentId()}, true);
 	        }
 			else
 			{
-				CacheController.cacheObjectInAdvancedCache("contentVersionCache", versionKey, new NullObject(), new String[]{"content_" + content.getId()}, true);
+				CacheController.cacheObjectInAdvancedCache("contentVersionIdCache", versionKey, new NullObject(), new String[]{"content_" + content.getId()}, true);
 			}
 
 			results.close();
@@ -562,8 +549,6 @@ public class ContentDeliveryController extends BaseDeliveryController
 		if(contentVersion != null)
 		    deliveryContext.addUsedContentVersion("contentVersion_" + contentVersion.getId());
 
-		logger.info("end getContentVersion");
-		
 		return contentVersion;
     }
 
@@ -575,17 +560,9 @@ public class ContentDeliveryController extends BaseDeliveryController
     {
 		ContentVersionVO contentVersionVO = null;
 		
-	    logger.info("contentId:" + contentId);
-	    logger.info("operatingMode:" + operatingMode);
-	    logger.info("languageId:" + languageId);
-
 	    String versionKey = "" + contentId + "_" + languageId + "_" + operatingMode + "_contentVersionVO";
-	    //String versionKey = "" + contentId + "_" + languageId + "_" + operatingMode + "_contentVersionId";
-
-		//logger.info("versionKey:" + versionKey);
 		
 		Object object = CacheController.getCachedObjectFromAdvancedCache("contentVersionCache", versionKey);
-		//Integer contentVersionId = (Integer)CacheController.getCachedObjectFromAdvancedCache("contentVersionCache", versionKey);
 		if(object instanceof NullObject)
 		{
 			logger.info("There was an cached contentVersionVO but it was null:" + object);
@@ -593,13 +570,6 @@ public class ContentDeliveryController extends BaseDeliveryController
 		else if(object != null)
 		{
 			contentVersionVO = (ContentVersionVO)object;
-			/*
-			Integer contentVersionId = (Integer)object;
-			ContentVersion contentVersion = (ContentVersion)getObjectWithId(SmallContentVersionImpl.class, contentVersionId, db);
-			if(contentVersion != null)
-				contentVersionVO = contentVersion.getValueObject();
-			logger.info("There was a cached content version id:" + contentVersionVO.getId());
-			*/
 		}
 		else
 		{
@@ -613,8 +583,6 @@ public class ContentDeliveryController extends BaseDeliveryController
 			{
 				contentVersionVO = (ContentVersionVO)getVOWithId(SmallContentVersionImpl.class, ((SmallestContentVersionVO)smallestContentVersionVOCandidate).getId(), db);
 	        	
-	        	//logger.info("Caching content version for key:" + versionKey);
-				//CacheController.cacheObjectInAdvancedCache("contentVersionCache", versionKey, contentVersionVO.getId(), new String[]{"contentVersion_" + contentVersionVO.getId(), "content_" + contentVersionVO.getContentId()}, true);
 				CacheController.cacheObjectInAdvancedCache("contentVersionCache", versionKey, contentVersionVO, new String[]{"contentVersion_" + contentVersionVO.getId(), "content_" + contentVersionVO.getContentId()}, true);
 			}
 			else
@@ -631,11 +599,8 @@ public class ContentDeliveryController extends BaseDeliveryController
 				if (results.hasMore()) 
 		        {
 					ContentVersion contentVersion = (ContentVersion)results.next();
-		        	//logger.info("found one:" + contentVersion.getId());
 		        	contentVersionVO = contentVersion.getValueObject();
 	
-		        	//logger.info("Caching content version for key:" + versionKey);
-					//CacheController.cacheObjectInAdvancedCache("contentVersionCache", versionKey, contentVersionVO.getId(), new String[]{"contentVersion_" + contentVersionVO.getId(), "content_" + contentVersionVO.getContentId()}, true);
 					CacheController.cacheObjectInAdvancedCache("contentVersionCache", versionKey, contentVersionVO, new String[]{"contentVersion_" + contentVersionVO.getId(), "content_" + contentVersionVO.getContentId()}, true);
 		        }
 				else
@@ -650,8 +615,6 @@ public class ContentDeliveryController extends BaseDeliveryController
 		
 		if(contentVersionVO != null)
 		    deliveryContext.addUsedContentVersion("contentVersion_" + contentVersionVO.getId());
-
-		logger.info("end getContentVersion");
 		
 		return contentVersionVO;
     }
@@ -667,16 +630,10 @@ public class ContentDeliveryController extends BaseDeliveryController
 		SmallestContentVersionVO contentVersionVO = null;
 		
 	    String versionKey = "" + contentId + "_" + languageId + "_" + operatingMode + "_smallestContentVersionVO";
-	    String versionVOKey = "" + contentId + "_" + languageId + "_" + operatingMode + "_contentVersionVO";
+	    //String versionVOKey = "" + contentId + "_" + languageId + "_" + operatingMode + "_contentVersionVO";
 	    //String versionKey = "" + contentId + "_" + languageId + "_" + operatingMode + "_contentVersionId";
-
-	    //RequestAnalyser.getRequestAnalyser().registerComponentStatistics("getSmallestContentVersionVO key", t.getElapsedTimeNanos() / 1000);
-
-		//logger.info("versionKey:" + versionKey);
-		
+	    
 		Object object = CacheController.getCachedObjectFromAdvancedCache("contentVersionCache", versionKey);
-		//Integer contentVersionId = (Integer)CacheController.getCachedObjectFromAdvancedCache("contentVersionCache", versionKey);
-		//RequestAnalyser.getRequestAnalyser().registerComponentStatistics("getSmallestContentVersionVO 1", t.getElapsedTimeNanos() / 1000);
 		if(object instanceof NullObject)
 		{
 			logger.info("There was an cached SmallestContentVersionVO but it was null:" + object);
@@ -687,13 +644,6 @@ public class ContentDeliveryController extends BaseDeliveryController
 		}
 		else
 		{
-			ContentVersionVO cachedContentVersionVO = (ContentVersionVO)CacheController.getCachedObjectFromAdvancedCache("contentVersionCache", versionVOKey);
-			if(cachedContentVersionVO != null)
-			{
-				System.out.print(".");
-				//RequestAnalyser.getRequestAnalyser().registerComponentStatistics("getSmallestContentVersionVO contentVersionVO found", 1);
-			}
-			
 			//logger.info("Querying for verson: " + versionKey); 
 		    OQLQuery oql = db.getOQLQuery( "SELECT cv FROM org.infoglue.cms.entities.content.impl.simple.SmallestContentVersionImpl cv WHERE cv.contentId = $1 AND cv.languageId = $2 AND cv.stateId >= $3 AND cv.isActive = $4 ORDER BY cv.contentVersionId desc");
 	    	oql.bind(contentId);
@@ -706,12 +656,9 @@ public class ContentDeliveryController extends BaseDeliveryController
 			if (results.hasMore()) 
 	        {
 				SmallestContentVersion contentVersion = (SmallestContentVersion)results.next();
-	        	//logger.info("found one:" + contentVersion.getId());
 	        	contentVersionVO = contentVersion.getValueObject();
 
-	        	//logger.info("Caching content version for key:" + versionKey);
-				//CacheController.cacheObjectInAdvancedCache("contentVersionCache", versionKey, contentVersionVO.getId(), new String[]{"contentVersion_" + contentVersionVO.getId(), "content_" + contentVersionVO.getContentId()}, true);
-				CacheController.cacheObjectInAdvancedCache("contentVersionCache", versionKey, contentVersionVO, new String[]{"contentVersion_" + contentVersionVO.getId(), "content_" + contentVersionVO.getContentId()}, true);
+	        	CacheController.cacheObjectInAdvancedCache("contentVersionCache", versionKey, contentVersionVO, new String[]{"contentVersion_" + contentVersionVO.getId(), "content_" + contentVersionVO.getContentId()}, true);
 	        }
 			else
 			{
@@ -720,15 +667,11 @@ public class ContentDeliveryController extends BaseDeliveryController
 
 			results.close();
 			oql.close();
-
-			//RequestAnalyser.getRequestAnalyser().registerComponentStatistics("getSmallestContentVersionVO query", t.getElapsedTimeNanos() / 1000);
 		}
 
 		if(contentVersionVO != null)
 		    deliveryContext.addUsedContentVersion("contentVersion_" + contentVersionVO.getId());
 
-		logger.info("end getContentVersion");
-		
 		return contentVersionVO;
     }
 
@@ -910,17 +853,9 @@ public class ContentDeliveryController extends BaseDeliveryController
 			.append(useLanguageFallback).append("_")
 			.append(escapeHTML);
 
-		/*
-		String attributeKey = "" + contentId + "_" + languageId + "_" + attributeName + "_" + siteNodeId + "_" + useLanguageFallback + "_" + escapeHTML;
-		if(isMetaInfoQuery)
-			attributeKey = "" + contentId + "_" + languageId + "_" + attributeName + "_" + useLanguageFallback + "_" + escapeHTML;
-	    */
+		String attributeKey = attributeKeySB.toString();
+		String versionKey = attributeKeySB.append("_contentVersionId").toString();
 		
-		String attributeKey = "" + attributeKeySB.toString().hashCode();
-		//String versionKey = attributeKey + "_contentVersionId".hashCode();
-		String versionKey = "" + attributeKey + "_contentVersionId".hashCode();
-		
-		//String attribute = (String)CacheController.getCachedObjectFromAdvancedCache("contentAttributeCache_" + attributeName, attributeKey.toString());
 		String attribute = (String)CacheController.getCachedObjectFromAdvancedCache("contentAttributeCache_" + attributeName, attributeKey);
 		Integer contentVersionId = null;
 		
@@ -928,7 +863,7 @@ public class ContentDeliveryController extends BaseDeliveryController
 	    {
 			if(attribute != null)
 			{
-				contentVersionId = (Integer)CacheController.getCachedObjectFromAdvancedCache("contentVersionCache", versionKey);
+				contentVersionId = (Integer)CacheController.getCachedObjectFromAdvancedCache("contentVersionIdCache", versionKey);
 				//logger.info("There was an cached content attribute:" + attribute);
 			}
 			else
@@ -948,17 +883,10 @@ public class ContentDeliveryController extends BaseDeliveryController
 	        	StringBuilder groupKey1 = new StringBuilder("contentVersion_").append(contentVersionId);
 	        	StringBuilder groupKey2 = new StringBuilder("content_").append(contentId);
 	        	
-	        	/*
-	        	CacheController.cacheObjectInAdvancedCache("contentAttributeCache_" + attributeName, attributeKey.toString(), attribute, new String[]{groupKey1.toString(), groupKey2.toString()}, true);
-				if(contentVersionId != null)
-				{
-				    CacheController.cacheObjectInAdvancedCache("contentVersionCache", versionKey, contentVersionId, new String[]{groupKey1.toString(), groupKey2.toString()}, true);
-				}
-	        	*/
 	        	CacheController.cacheObjectInAdvancedCache("contentAttributeCache_" + attributeName, attributeKey, attribute, new String[]{groupKey1.toString(), groupKey2.toString()}, true);
 				if(contentVersionId != null)
 				{
-				    CacheController.cacheObjectInAdvancedCache("contentVersionCache", versionKey, contentVersionId, new String[]{groupKey1.toString(), groupKey2.toString()}, true);
+				    CacheController.cacheObjectInAdvancedCache("contentVersionIdCache", versionKey, contentVersionId, new String[]{groupKey1.toString(), groupKey2.toString()}, true);
 				}
 			}
 			
