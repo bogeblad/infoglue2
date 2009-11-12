@@ -728,7 +728,8 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
         states.add(getList("Total number of requests handled", "" + RequestAnalyser.getRequestAnalyser().getTotalNumberOfRequests()));
         states.add(getList("Average processing time per request (ms)", "" + RequestAnalyser.getRequestAnalyser().getAverageElapsedTime()));
         states.add(getList("Slowest request (ms)", "" + RequestAnalyser.getRequestAnalyser().getMaxElapsedTime()));
-		
+        states.add(getList("Number of pages in the statistics", RequestAnalyser.getAllPageUrls().size()));
+
         states.add(getList("<br/><strong>Latest publications</strong>", "&nbsp;"));
         List publications = RequestAnalyser.getRequestAnalyser().getLatestPublications();
         Iterator publicationsIterator = publications.iterator();
@@ -737,8 +738,7 @@ public class ViewApplicationStateAction extends InfoGlueAbstractAction
         	Date publicationDate = (Date)publicationsIterator.next();
         	states.add(getList("Date:", "" + formatter.formatDate(publicationDate, "yyyy-MM-dd HH:mm:ss")));
         }
-		
-        
+		        
     	getApplicationAttributes();
     	
 		//this.getHttpSession().invalidate();
