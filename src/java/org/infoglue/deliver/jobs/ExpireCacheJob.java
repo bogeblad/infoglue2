@@ -50,7 +50,7 @@ public class ExpireCacheJob implements Job
     public synchronized void execute(JobExecutionContext context) throws JobExecutionException
     {
     	long diffLastCacheCheck = ((System.currentTimeMillis() - lastCacheCheck) / 1000);
-		logger.warn("diffLastCacheCheck " + diffLastCacheCheck + " in " + CmsPropertyHandler.getApplicationName() + " - " + Thread.currentThread().getId());
+		logger.info("diffLastCacheCheck " + diffLastCacheCheck + " in " + CmsPropertyHandler.getApplicationName() + " - " + Thread.currentThread().getId());
 	    if(diffLastCacheCheck > 600)
 		{
 	        synchronized(RequestAnalyser.getRequestAnalyser()) 
@@ -66,7 +66,7 @@ public class ExpireCacheJob implements Job
 	
 			try
 	        {
-				logger.warn("Validating caches in " + CmsPropertyHandler.getApplicationName() + " - " + Thread.currentThread().getId());
+				logger.info("Validating caches in " + CmsPropertyHandler.getApplicationName() + " - " + Thread.currentThread().getId());
 		    	CacheController.validateCaches();
 		    	lastCacheCheck = System.currentTimeMillis();
 	        }
@@ -82,7 +82,7 @@ public class ExpireCacheJob implements Job
     	long diff = ((System.currentTimeMillis() - lastCacheCleanup) / 1000);
     	if(diff > 3600)
     	{
-    		System.out.println("Cleaning heavy caches so memory footprint is kept low:" + diff);
+    		logger.info("Cleaning heavy caches so memory footprint is kept low:" + diff);
             synchronized(RequestAnalyser.getRequestAnalyser()) 
     	    {
     	       	if(RequestAnalyser.getRequestAnalyser().getBlockRequests())
