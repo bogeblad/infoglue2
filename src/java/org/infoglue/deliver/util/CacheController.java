@@ -292,16 +292,20 @@ public class CacheController extends Thread
 		    		cacheCapacity = "30000";
 		    	
 		    	if(cacheName != null && cacheName.equalsIgnoreCase("pageCache"))
-		    		cacheCapacity = "8000";
+		    		cacheCapacity = "5000";
 		    	if(cacheName != null && cacheName.equalsIgnoreCase("pageCacheExtra"))
-		    		cacheCapacity = "16000";
+		    		cacheCapacity = "10000";
 				if(cacheName != null && cacheName.equalsIgnoreCase("encodedStringsCache"))
 					cacheCapacity = "2000";
 				if(cacheName != null && cacheName.equalsIgnoreCase("componentPropertyCache"))
 					cacheCapacity = "1500";
 				if(cacheName != null && cacheName.equalsIgnoreCase("componentEditorCache"))
 		    		cacheCapacity = "5000";
-
+				if(cacheName != null && cacheName.equalsIgnoreCase("contentVersionIdCache"))
+		    		cacheCapacity = "40000";
+				if(cacheName != null && cacheName.equalsIgnoreCase("contentVersionCache"))
+		    		cacheCapacity = "30000";
+				
 				if(cacheCapacity != null && !cacheCapacity.equals(""))
 		    	{
 					Properties p = new Properties();
