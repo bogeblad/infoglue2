@@ -23,9 +23,15 @@
 
 package org.infoglue.deliver.controllers.kernel.impl.simple;
 
+import java.security.Principal;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.log4j.Logger;
 import org.exolab.castor.jdo.Database;
 import org.infoglue.cms.applications.common.VisualFormatter;
+import org.infoglue.cms.applications.common.actions.InfoGlueAbstractAction;
+import org.infoglue.cms.controllers.kernel.impl.simple.AccessRightController;
 import org.infoglue.cms.controllers.kernel.impl.simple.ContentController;
 import org.infoglue.cms.controllers.kernel.impl.simple.RepositoryController;
 import org.infoglue.cms.controllers.kernel.impl.simple.SiteNodeController;
@@ -40,6 +46,7 @@ import org.infoglue.deliver.applications.databeans.DeliveryContext;
 import org.infoglue.deliver.applications.filters.FilterConstants;
 import org.infoglue.deliver.controllers.kernel.URLComposer;
 import org.infoglue.deliver.invokers.PageInvoker;
+import org.infoglue.deliver.util.CacheController;
 
 import webwork.action.ActionContext;
 
@@ -358,8 +365,18 @@ public class BasicURLComposer extends URLComposer
 		    	Integer protectedSiteNodeVersionId = nodeDeliveryController.getProtectedSiteNodeVersionId(db, siteNodeId);
 		    	String originalFullURL = deliveryContext.getOriginalFullURL();
 		    	
+		    	//System.out.println("protectedSiteNodeVersionId:" + protectedSiteNodeVersionId);
+		    	boolean isAnonymousAccepted = true;
 		    	if(protectedSiteNodeVersionId != null)
+		    	{
+					Principal anonymousPrincipal = getAnonymousPrincipal();
+					isAnonymousAccepted = AccessRightController.getController().getIsPrincipalAuthorized(db, (InfoGluePrincipal)anonymousPrincipal, "SiteNodeVersion.Read", protectedSiteNodeVersionId.toString());
+					//System.out.println("anonymousPrincipal has access:" + isAnonymousAccepted);
+		    	}
+		    	
+		    	if(protectedSiteNodeVersionId != null && !isAnonymousAccepted)
 				{
+		    		//System.out.println("anonymousPrincipal has no access - switching to secure line");
 					if(originalFullURL.indexOf(unprotectedProtocolName + "://") > -1)
 					{	
 						useDNSNameInUrls = "true";
@@ -810,5 +827,31 @@ public class BasicURLComposer extends URLComposer
         return "/" + CmsPropertyHandler.getApplicationBaseAction();
     }
 
+	public Principal getAnonymousPrincipal() throws SystemException
+	{
+	    Principal principal = null;
+		try
+		{
+			principal = (Principal)CacheController.getCachedObject("userCache", "anonymous");
+			if(principal == null)
+			{
+			    Map arguments = new HashMap();
+			    arguments.put("j_username", CmsPropertyHandler.getAnonymousUser());
+			    arguments.put("j_password", CmsPropertyHandler.getAnonymousPassword());
+
+			    principal = ExtranetController.getController().getAuthenticatedPrincipal(arguments);
+				
+				if(principal != null)
+					CacheController.cacheObject("userCache", "anonymous", principal);
+			}			
+		}
+		catch(Exception e) 
+		{
+		    logger.warn("There was no anonymous user found in the system. There must be - add the user anonymous/anonymous and try again.", e);
+		    throw new SystemException("There was no anonymous user found in the system. There must be - add the user anonymous/anonymous and try again.", e);
+		}
+
+		return principal;
+	}
 
 } 
