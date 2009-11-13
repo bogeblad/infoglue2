@@ -23,8 +23,13 @@
 
 package org.infoglue.cms.applications.managementtool.actions;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.ServletOutputStream;
 
@@ -58,6 +63,8 @@ public class ViewListSystemUserAction extends InfoGlueAbstractAction
 	private String[] filterRoleNames	= null;
 	private int slotId					= 0;
 	private int numberOfSlots			= 0;
+	
+	private String filterChar = null;
 	
 	protected String doExecute() throws Exception 
 	{
@@ -109,6 +116,57 @@ public class ViewListSystemUserAction extends InfoGlueAbstractAction
 		Collections.sort(this.infogluePrincipals, new ReflectionComparator("firstName"));
 		
 	    return "successPopup";
+	}
+
+	public String doUserListForPopupV3() throws Exception 
+	{
+		this.infogluePrincipals = UserControllerProxy.getController().getAllUsers();
+		Collections.sort(this.infogluePrincipals, new ReflectionComparator("firstName"));
+		
+	    return "successPopupV3";
+	}
+
+	public List getUsersFirstNameChars()
+	{
+		List usersFirstNameChars = new ArrayList();
+		Iterator principalIterator = this.infogluePrincipals.iterator();
+		while(principalIterator.hasNext())
+		{
+			InfoGluePrincipal infogluePrincipal = (InfoGluePrincipal)principalIterator.next();
+			if(!usersFirstNameChars.contains(infogluePrincipal.getName().charAt(0)))
+				usersFirstNameChars.add(infogluePrincipal.getName().charAt(0));
+			//else
+			//	System.out.println("Exists:" + infogluePrincipal.getName().charAt(0));
+		}
+		
+		Collections.sort(usersFirstNameChars);
+		
+		return usersFirstNameChars;
+	}
+	
+	public List getFilteredInfogluePrincipals()
+	{
+		List subList = new ArrayList();
+		
+		char filterChar = ((InfoGluePrincipal)this.infogluePrincipals.get(0)).getFirstName().charAt(0);
+		if(this.filterChar != null && this.filterChar.length() == 1)
+			filterChar = this.filterChar.charAt(0);
+			
+		Iterator infogluePrincipalsIterator = this.infogluePrincipals.iterator();
+		boolean foundSection = false;
+		while(infogluePrincipalsIterator.hasNext())
+		{
+			InfoGluePrincipal infogluePrincipal = (InfoGluePrincipal)infogluePrincipalsIterator.next();
+			if(infogluePrincipal.getName().charAt(0) == filterChar)
+			{
+				subList.add(infogluePrincipal);
+				foundSection = true;
+			}
+			else if(foundSection)
+				break;
+		}
+		
+		return subList;
 	}
 	
 	public String doUserListSearch() throws Exception
@@ -183,6 +241,12 @@ public class ViewListSystemUserAction extends InfoGlueAbstractAction
 	{
 		if(userName != null && !userName.equals(""))
 			this.filterUserName = userName;
+	}
+
+	public void setFilterChar(String filterChar)
+	{
+		if(filterChar != null && !filterChar.equals(""))
+			this.filterChar = filterChar;
 	}
 
 	public String getMode()

@@ -216,6 +216,11 @@ public class UpdateAccessRightsAction extends InfoGlueAbstractAction
 			return "success";
 	}
 
+	public String doAddUserV3() throws Exception
+    {   
+		return doAddUser();
+    }
+	
 	public String doDeleteUser() throws Exception
     {   
 		AccessConstraintExceptionBuffer ceb = new AccessConstraintExceptionBuffer();
@@ -270,6 +275,21 @@ public class UpdateAccessRightsAction extends InfoGlueAbstractAction
 			return "success";
 	}
 
+	public String doDeleteUserV3() throws Exception
+    {   
+		doDeleteUser();
+		
+		this.url = getResponse().encodeRedirectURL(this.returnAddress);
+		
+		if(this.returnAddress.indexOf("http") == 0)
+		{
+			getResponse().sendRedirect(url);
+			return Action.NONE;
+		}
+		else
+			return "success";
+    }
+	
 	public String doSaveAndExit() throws Exception
     {
 		doExecute();
@@ -277,6 +297,19 @@ public class UpdateAccessRightsAction extends InfoGlueAbstractAction
 		return "saveAndExit";
 	}
 
+	public String doV3() throws Exception
+    {
+		doExecute();
+						
+		return "successV3";
+	}
+
+	public String doSaveAndExitV3() throws Exception
+    {
+		doExecute();
+						
+		return "saveAndExitV3";
+	}
 
 	public String getReturnAddress()
 	{

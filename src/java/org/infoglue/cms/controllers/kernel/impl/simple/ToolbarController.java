@@ -196,6 +196,9 @@ public class ToolbarController
 				
 		try
 		{
+			if(toolbarKey.equalsIgnoreCase("tool.contenttool.accessRights.header"))
+				return getCommonFooterSaveOrSaveAndExitOrCloseButton(toolbarKey, principal, locale, request, disableCloseButton, "UpdateAccessRights!saveAndExitV3.action");
+
 			if(toolbarKey.equalsIgnoreCase("tool.contenttool.contentHeader"))
 				return asButtons(getCommonFooterSaveButton(toolbarKey, principal, locale, request, disableCloseButton));
 
@@ -1841,7 +1844,7 @@ public class ToolbarController
 		buttons.add(new ToolbarButton("",
 				  getLocalizedString(locale, "tool.contenttool.accessRights.header"), 
 				  getLocalizedString(locale, "tool.contenttool.accessRights.header"),
-				  "ViewAccessRights.action?interceptionPointCategory=" + interceptionPointVO.getCategory() + "&interceptionPointId=" + interceptionPointVO.getId() + "&returnAddress=ViewInterceptionPoint.action?interceptionPointId=" + interceptionPointVO.getId(),
+				  "ViewAccessRights!V3.action?interceptionPointCategory=" + interceptionPointVO.getCategory() + "&interceptionPointId=" + interceptionPointVO.getId() + "&returnAddress=ViewInlineOperationMessages.action&originalAddress=refreshParent",
 				  "images/v3/accessRightsIcon.gif",
 				  "accessRights"));
 

@@ -137,6 +137,63 @@ public class RepositoryController extends BaseController
     } 
 
 	/**
+	 * This method sets a Repository in markedForDelete mode.
+	 */
+	
+    public void restoreRepository(Integer repositoryId, InfoGluePrincipal infoGluePrincipal) throws ConstraintException, SystemException
+    {
+		Database db = CastorDatabaseService.getDatabase();
+		ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
+
+		Repository repository = null;
+	
+		beginTransaction(db);
+
+		try
+		{
+			repository = getRepositoryWithId(repositoryId, db);
+			repository.setIsDeleted(false);
+			
+			/*
+			ContentVO contentVO = ContentControllerProxy.getController().getRootContentVO(repositoryVO.getRepositoryId(), userName, false);
+			if(contentVO != null)
+			{
+				if(forceDelete)
+					ContentController.getContentController().markForDelete(contentVO, db, true, true, true, infoGluePrincipal);
+				else
+					ContentController.getContentController().markForDelete(contentVO, infoGluePrincipal, db);
+			}
+			
+			SiteNodeVO siteNodeVO = SiteNodeController.getController().getRootSiteNodeVO(repositoryVO.getRepositoryId());
+			if(siteNodeVO != null)
+			{
+				if(forceDelete)
+					SiteNodeController.getController().markForDelete(siteNodeVO, db, true, infoGluePrincipal);
+				else
+					SiteNodeController.getController().markForDelete(siteNodeVO, db, infoGluePrincipal);
+			}
+			*/
+			
+			//If any of the validations or setMethods reported an error, we throw them up now before create.
+			ceb.throwIfNotEmpty();
+    
+			commitTransaction(db);
+		}
+		catch(ConstraintException ce)
+		{
+			logger.warn("An error occurred so we should not completes the transaction:" + ce, ce);
+			rollbackTransaction(db);
+			throw ce;
+		}
+		catch(Exception e)
+		{
+			logger.error("An error occurred so we should not completes the transaction:" + e, e);
+			rollbackTransaction(db);
+			throw new SystemException(e.getMessage());
+		}
+    } 
+
+	/**
 	 * This method removes a Repository from the system and also cleans out all depending repositoryLanguages.
 	 */
 	

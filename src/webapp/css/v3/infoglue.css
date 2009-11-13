@@ -441,6 +441,8 @@ img.scaledbordered {
 .changeLanguage {background:url(../../images/v3/accessRightIcon.gif) no-repeat left center; background-position: 0px 2px;}
 .showDataAsXML {background:url(../../images/v3/accessRightIcon.gif) no-repeat left center; background-position: 0px 2px;}
 
+li.content {background:url(../../images/v3/contentIcon.gif) no-repeat left center; background-position: 0px 0px; height: 20px; text-indent: 18px; }
+li.page {background:url(../../images/v3/pageIcon.gif) no-repeat left center; background-position: 0px 0px; height: 20px; text-indent: 18px; }
 
 
 .save, .saveAndExit, .cancelIcon, .close, .help {

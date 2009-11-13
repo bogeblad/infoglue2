@@ -71,6 +71,9 @@ public class TrashcanAction extends InfoGlueAbstractAction
 	private List<ContentVO> contentsMarkedForDeletion = new ArrayList<ContentVO>();
 	private List<SiteNodeVO> siteNodesMarkedForDeletion = new ArrayList<SiteNodeVO>();
 	
+	private String entity = "";
+	private Integer entityId = -1;
+	
 	protected String doExecute() throws Exception
     {
 		this.repositoriesMarkedForDeletion = RepositoryController.getController().getRepositoryVOListMarkedForDeletion();
@@ -78,6 +81,21 @@ public class TrashcanAction extends InfoGlueAbstractAction
 		this.siteNodesMarkedForDeletion = SiteNodeController.getController().getSiteNodeVOListMarkedForDeletion();
 		
 		return Action.SUCCESS;
+    }
+
+	public String doRestore() throws Exception
+    {
+		if(entity != null && !entity.equals("") && entityId != null && !entityId.equals(""))
+		{
+			if(entity.equalsIgnoreCase("Repository"))
+				RepositoryController.getController().restoreRepository(new Integer(entityId), getInfoGluePrincipal());
+			else if(entity.equalsIgnoreCase("Content"))
+				ContentController.getContentController().restoreContent(new Integer(entityId), getInfoGluePrincipal());
+			else if(entity.equalsIgnoreCase("SiteNode"))
+				SiteNodeController.getController().restoreSiteNode(new Integer(entityId), getInfoGluePrincipal());
+		}
+		
+		return doExecute();
     }
 
 	public List<RepositoryVO> getRepositoriesMarkedForDeletion()
@@ -93,6 +111,26 @@ public class TrashcanAction extends InfoGlueAbstractAction
 	public List<SiteNodeVO> getSiteNodesMarkedForDeletion()
 	{
 		return siteNodesMarkedForDeletion;
+	}
+
+	public String getEntity()
+	{
+		return entity;
+	}
+
+	public Integer getEntityId()
+	{
+		return entityId;
+	}
+
+	public void setEntity(String entity)
+	{
+		this.entity = entity;
+	}
+
+	public void setEntityId(Integer entityId)
+	{
+		this.entityId = entityId;
 	}
     
 	

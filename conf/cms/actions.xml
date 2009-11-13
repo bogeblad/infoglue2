@@ -1,4 +1,4 @@
-<!-- $Id: actions.xml,v 1.90 2009/11/06 23:08:04 mattias Exp $ -->
+<!-- $Id: actions.xml,v 1.91 2009/11/13 07:53:22 mattias Exp $ -->
 <actions>
 
 	<!-- MySettings -->
@@ -567,6 +567,7 @@
 		<view name="success">/cms/managementtool/viewListSystemUser.vm</view>
 		<view name="successV3">/cms/managementtool/v3/viewListSystemUser.vm</view>
 		<view name="successPopup">/cms/managementtool/viewListSystemUserForPopup.vm</view>
+		<view name="successPopupV3">/cms/managementtool/v3/viewListSystemUserForPopup.vm</view>
 		<view name="userSearch">/cms/managementtool/viewListSystemUserSearch.vm</view>
 		<view name="error">/cms/managementtool/error.vm</view>
 	</action>
@@ -933,6 +934,8 @@
 		<view name="input">/cms/contenttool/viewContentAccessRights.vm</view>
 		<view name="success">${url}</view>
 		<view name="saveAndExit">ViewListExtranetRole.action</view>
+		<view name="successV3">${url}</view>
+		<view name="saveAndExitV3">ViewInlineOperationMessages.action</view>
 		<view name="error">/cms/contenttool/error.vm</view>
 		<view name="accessDenied">/cms/contenttool/viewConstraintException.vm</view>
 	</action>

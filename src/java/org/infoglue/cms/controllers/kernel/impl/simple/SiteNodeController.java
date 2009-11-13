@@ -435,6 +435,30 @@ public class SiteNodeController extends BaseController
     	}			
     }        
 
+    /**
+	 * This method restores a siteNode.
+	 */
+	    
+    public void restoreSiteNode(Integer siteNodeId, InfoGluePrincipal infogluePrincipal) throws ConstraintException, SystemException
+    {
+	    Database db = CastorDatabaseService.getDatabase();
+        
+	    beginTransaction(db);
+		
+        try
+        {
+        	SiteNode siteNode = getSiteNodeWithId(siteNodeId, db);
+        	siteNode.setIsDeleted(false);
+	    	
+	    	commitTransaction(db);
+        }
+        catch(Exception e)
+        {
+            rollbackTransaction(db);
+            throw new SystemException(e.getMessage());
+        }
+    }  
+    
 	/**
 	 * This method returns true if the sitenode does not have any published siteNodeversions or 
 	 * are restricted in any other way.

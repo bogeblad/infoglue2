@@ -126,7 +126,8 @@ public class ContentNodeSupplier extends BaseNodeSupplier
 		List children = null;
 		try
 		{
-			children = ContentController.getContentController().getContentChildrenVOList(parentNode);
+			//children = ContentController.getContentController().getContentChildrenVOList(parentNode);
+			children = ContentController.getContentController().getContentChildrenVOList(parentNode, allowedContentTypeIds, false);
 		}
 		catch (ConstraintException e)
 		{

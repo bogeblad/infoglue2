@@ -661,6 +661,30 @@ public class ContentController extends BaseController
     	}			
     }        
 
+    /**
+	 * This method restored a content.
+	 */
+	    
+    public void restoreContent(Integer contentId, InfoGluePrincipal infogluePrincipal) throws ConstraintException, SystemException
+    {
+	    Database db = CastorDatabaseService.getDatabase();
+        
+	    beginTransaction(db);
+		
+        try
+        {
+			Content content = getContentWithId(contentId, db);
+			content.setIsDeleted(false);
+	    	
+	    	commitTransaction(db);
+        }
+        catch(Exception e)
+        {
+            rollbackTransaction(db);
+            throw new SystemException(e.getMessage());
+        }
+    }  
+    
     
     public ContentVO update(ContentVO contentVO) throws ConstraintException, SystemException
     {
@@ -1389,11 +1413,14 @@ public class ContentController extends BaseController
 
         List childrenVOList = null;
 
+   		Timer t = new Timer();
+
         beginTransaction(db);
 
         try
         {
             Content content = getReadOnlyContentWithId(parentContentId, db);
+            System.out.println("ChildContents...");
             Collection children = content.getChildren();
         	childrenVOList = ContentController.toVOList(children);
         	
@@ -1414,7 +1441,9 @@ public class ContentController extends BaseController
             rollbackTransaction(db);
             throw new SystemException(e.getMessage());
         }
-        
+
+        t.printElapsedTime("Getting with graph...");
+
 		CacheController.cacheObject("childContentCache", key, childrenVOList);
         
         return childrenVOList;
@@ -1423,15 +1452,25 @@ public class ContentController extends BaseController
    	/**
    	 * This method returns a list of the children a content has.
    	 */
-   	/*
-   	public List getContentChildrenVOList(Integer parentContentId) throws ConstraintException, SystemException
+   	
+   	public List<ContentVO> getContentChildrenVOList(Integer parentContentId, String[] allowedContentTypeIds, Boolean showDeletedItems) throws ConstraintException, SystemException
     {
-   		String key = "" + parentContentId;
-		logger.info("key:" + key);
-		List cachedChildContentVOList = (List)CacheController.getCachedObject("childContentCache", key);
+   		String allowedContentTypeIdsString = "";
+   		if(allowedContentTypeIds != null)
+   		{
+	   		for(int i=0; i < allowedContentTypeIds.length; i++)
+	   			allowedContentTypeIdsString += "_" + allowedContentTypeIds[i];
+   		}
+   		
+   		String key = "" + parentContentId + allowedContentTypeIdsString + "_" + showDeletedItems;
+		if(logger.isInfoEnabled())
+			logger.info("key:" + key);
+		
+		List<ContentVO> cachedChildContentVOList = (List<ContentVO>)CacheController.getCachedObject("childContentCache", key);
 		if(cachedChildContentVOList != null)
 		{
-			logger.info("There was an cached childContentVOList:" + cachedChildContentVOList.size());
+			if(logger.isInfoEnabled())
+				logger.info("There was an cached childContentVOList:" + cachedChildContentVOList.size());
 			return cachedChildContentVOList;
 		}
 		
@@ -1442,11 +1481,36 @@ public class ContentController extends BaseController
 
         beginTransaction(db);
 
+   		Timer t = new Timer();
+
         try
         {
-    		OQLQuery oql = db.getOQLQuery( "SELECT content FROM org.infoglue.cms.entities.content.impl.simple.SmallishContentImpl content WHERE content.parentContentId = $1 ORDER BY content.contentId");
-    		oql.bind(parentContentId);
+        	String contentTypeINClause = "";
+        	if(allowedContentTypeIds != null && allowedContentTypeIds.length > 0)
+        	{
+	        	contentTypeINClause = " AND content.contentTypeDefinitionId IN LIST ";
+	        	for(int i=0; i < allowedContentTypeIds.length; i++)
+	        	{
+	        		if(i > 0)
+	        			contentTypeINClause += ",";
+	        		contentTypeINClause += "$" + i+3;
+	        	}
+        	}
         	
+        	String showDeletedItemsClause = " AND content.isDeleted = $2";
+        	
+        	String SQL = "SELECT content FROM org.infoglue.cms.entities.content.impl.simple.SmallishContentImpl content WHERE content.parentContentId = $1 " + showDeletedItemsClause + contentTypeINClause + " ORDER BY content.contentId";
+        	System.out.println("SQL:" + SQL);
+        	OQLQuery oql = db.getOQLQuery(SQL);
+    		//OQLQuery oql = db.getOQLQuery( "SELECT content FROM org.infoglue.cms.entities.content.impl.simple.SmallishContentImpl content WHERE content.parentContentId = $1 ORDER BY content.contentId");
+    		oql.bind(parentContentId);
+    		oql.bind(showDeletedItems);
+    		if(allowedContentTypeIds != null)
+    		{
+	        	for(int i=0; i < allowedContentTypeIds.length; i++)
+	        		oql.bind(allowedContentTypeIds[i]);
+    		}
+    		
     		QueryResults results = oql.execute(Database.ReadOnly);
     		while (results.hasMore()) 
     		{
@@ -1475,11 +1539,12 @@ public class ContentController extends BaseController
             throw new SystemException(e.getMessage());
         }
         
+        t.printElapsedTime("Getting with query...");
+        
 		CacheController.cacheObject("childContentCache", key, childrenVOList);
         
         return childrenVOList;
     } 
-   	*/
 	
 	/**
 	 * This method returns the contentTypeDefinitionVO which is associated with this content.
