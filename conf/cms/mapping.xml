@@ -591,6 +591,43 @@
 	-->
   </class>
 
+<!--  Mapping for SmallestSiteNode  -->
+  <class name="org.infoglue.cms.entities.structure.impl.simple.SmallestSiteNodeImpl" identity="siteNodeId" key-generator="IDENTITY">
+    <description>SmallestSiteNode</description>
+    <cache-type type="none"/>
+    <map-to table="cmSiteNode"/>
+    <field name="siteNodeId" type="java.lang.Integer">
+      <sql name="siteNodeId" type="integer" dirty="check" />
+    </field>
+    <field name="name" type="java.lang.String">
+      <sql name="name" type="varchar" dirty="check" />
+    </field>
+    <field name="publishDateTime" type="java.util.Date">
+      <sql name="publishDateTime" type="timestamp" dirty="ignore" />
+    </field>
+    <field name="expireDateTime" type="java.util.Date">
+      <sql name="expireDateTime" type="timestamp" dirty="ignore" />
+    </field>
+    <field name="isBranch" type="java.lang.Boolean">
+      <sql name="isBranch" type="integer" dirty="check" />
+    </field>
+    <field name="isDeleted" type="java.lang.Boolean">
+      <sql name="isDeleted" type="integer" dirty="check" />
+    </field>
+    <field name="metaInfoContentId" type="java.lang.Integer">
+      <sql name="metaInfoContentId" type="integer" dirty="check" />
+    </field>
+    <field name="creator" type="java.lang.String">
+      <sql name="creator" type="varchar" dirty="check" />
+    </field>
+    <field name="childCount" type="java.lang.Integer">
+      <sql name="childCount" type="integer" dirty="check" />
+    </field>
+    <field name="sortOrder" type="java.lang.Integer">
+      <sql name="sortOrder" type="integer" dirty="check" />
+    </field>
+  </class>
+
 
 <!--  Mapping for ServiceBinding  -->
   <class name="org.infoglue.cms.entities.structure.impl.simple.ServiceBindingImpl" identity="serviceBindingId" key-generator="IDENTITY">
