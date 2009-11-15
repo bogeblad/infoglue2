@@ -2,6 +2,8 @@
     <li><a id="create" href="javascript:void(0);" class="create">Create new page</a></li>
     <li><a id="delete" href="javascript:void(0);" class="delete">Delete page</a></li>
     <li><a id="move" href="javascript:void(0);" class="movePage">Move page</a></li>
+    <li><a id="moveUp" href="javascript:void(0);" class="movePage">Move up</a></li>
+    <li><a id="moveDown" href="javascript:void(0);" class="movePage">Move down</a></li>
     <li><a id="properties" href="javascript:void(0);" class="properties">Edit page metadata</a></li>
     <li><a id="publish" href="javascript:void(0);" class="publish">Publish page</a></li>
     <li><a id="publishTree" href="javascript:void(0);" class="publish">Publish structure</a></li>
@@ -86,6 +88,24 @@
 					$(this).dialog('close');
 				}
 			}
+		});
+	});
+
+	//Event listener for moveUp option
+	$("#contextMenuDiv #moveUp").click(function () {
+		jQuery.get("ChangeSiteNodeSortOrder.action", { siteNodeId:"$siteNodeId", direction:"up"}, function(data){
+		  	//alert("Moved: " + data);
+		  	//$('#structureTreeIframe').get(0).contentWindow.reload();
+		  	$('#structureTreeIframe').get(0).contentWindow.refreshNode($siteNodeVO.parentSiteNodeId, 4, null);
+		});
+	});
+
+	//Event listener for moveDown option
+	$("#contextMenuDiv #moveDown").click(function () {
+		jQuery.get("ChangeSiteNodeSortOrder.action", { siteNodeId:"$siteNodeId", direction:"down"}, function(data){
+		  	//alert("Moved: " + data);
+		  	//$('#structureTreeIframe').get(0).contentWindow.reload();
+		  	$('#structureTreeIframe').get(0).contentWindow.refreshNode($siteNodeVO.parentSiteNodeId, 4, null);
 		});
 	});
 

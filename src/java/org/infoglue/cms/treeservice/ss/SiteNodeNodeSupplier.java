@@ -47,6 +47,7 @@ import org.infoglue.cms.entities.management.Language;
 import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.entities.structure.SiteNode;
 import org.infoglue.cms.entities.structure.SiteNodeVO;
+import org.infoglue.cms.entities.structure.SiteNodeVersion;
 import org.infoglue.cms.entities.structure.SiteNodeVersionVO;
 import org.infoglue.cms.exception.ConstraintException;
 import org.infoglue.cms.exception.SystemException;
@@ -189,10 +190,14 @@ public class SiteNodeNodeSupplier extends BaseNodeSupplier
 
         try
         {
+        	/*
             SiteNode parentSiteNode = SiteNodeController.getSiteNodeWithId(parentNode, db, true);
 	        Collection children = parentSiteNode.getChildSiteNodes();
 	    	List childrenVOList = SiteNodeController.toVOList(children);
-
+			*/
+        	List<SiteNodeVO> childrenVOList = SiteNodeController.getController().getChildSiteNodeVOList(parentNode, false, db);
+        	
+        	/*
 			Iterator childrenVOListIterator = childrenVOList.iterator();
 			while(childrenVOListIterator.hasNext())
 			{
@@ -242,9 +247,11 @@ public class SiteNodeNodeSupplier extends BaseNodeSupplier
 					}
 				}
 			}
-
+			*/
+        	
 			//Sort the tree nodes if setup to do so
-			if(sortProperty != null)
+			/*
+        	if(sortProperty != null)
 			{
 				String[] sortOrders = sortProperty.split(",");
 				for(int i=sortOrders.length - 1; i > -1; i--)
@@ -262,11 +269,14 @@ public class SiteNodeNodeSupplier extends BaseNodeSupplier
 					}
 				}
 			}
-			
-			Iterator i = childrenVOList.iterator();
+			*/
+
+        	Integer expectedSortOrder = 0;
+        	
+			Iterator<SiteNodeVO> i = childrenVOList.iterator();
 			while(i.hasNext())
 			{
-				SiteNodeVO vo = (SiteNodeVO) i.next();
+				SiteNodeVO vo = i.next();
 				
 				boolean hasUserPageAccess = true;
 				String useAccessRightsOnStructureTreeString = CmsPropertyHandler.getUseAccessRightsOnStructureTree();
@@ -301,7 +311,21 @@ public class SiteNodeNodeSupplier extends BaseNodeSupplier
 						node.setContainer(false);
 						cacheLeafs.add(node);				
 					}
-				}				
+				}	
+				
+				//Checks if the current node has the correct sortOrder
+				System.out.println("vo.getSortOrder():" + vo.getSortOrder() + "=" + expectedSortOrder);
+				if(!vo.getSortOrder().equals(expectedSortOrder))
+				{
+					System.out.println("Changing sortOrder from:" + vo.getSortOrder() + " to " + expectedSortOrder);
+					SiteNodeVersion latestSiteNodeVersion = SiteNodeVersionController.getController().getLatestActiveSiteNodeVersion(db, vo.getId());
+					if(latestSiteNodeVersion != null)
+					{
+						latestSiteNodeVersion.setSortOrder(expectedSortOrder);
+					}
+				}
+				
+				expectedSortOrder++;
 			}
 			
             commitTransaction(db);

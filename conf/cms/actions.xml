@@ -1,4 +1,4 @@
-<!-- $Id: actions.xml,v 1.91 2009/11/13 07:53:22 mattias Exp $ -->
+<!-- $Id: actions.xml,v 1.92 2009/11/15 22:51:06 mattias Exp $ -->
 <actions>
 
 	<!-- MySettings -->
@@ -1222,6 +1222,11 @@
 		<view name="inputV3">/cms/structuretool/v3/viewSiteNodeTreeForMove.vm</view>
 		<view name="success">ViewSiteNode.action</view>
 		<view name="successV3">ViewInlineOperationMessages</view>
+		<view name="error">/cms/structuretool/error.vm</view>
+		<view name="accessDenied">/cms/structuretool/viewConstraintException.vm</view>
+	</action>
+		<action name="org.infoglue.cms.applications.structuretool.actions.ChangeSiteNodeSortOrderAction" alias="ChangeSiteNodeSortOrder">
+		<view name="success">/cms/structuretool/error.vm</view>
 		<view name="error">/cms/structuretool/error.vm</view>
 		<view name="accessDenied">/cms/structuretool/viewConstraintException.vm</view>
 	</action>

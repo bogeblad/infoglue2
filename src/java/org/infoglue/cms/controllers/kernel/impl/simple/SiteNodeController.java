@@ -70,6 +70,8 @@ import org.infoglue.cms.util.CmsPropertyHandler;
 import org.infoglue.cms.util.ConstraintExceptionBuffer;
 import org.infoglue.cms.util.DateHelper;
 import org.infoglue.cms.util.XMLHelper;
+import org.infoglue.deliver.util.CacheController;
+import org.infoglue.deliver.util.Timer;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -730,6 +732,68 @@ public class SiteNodeController extends BaseController
 	} 
 	
     
+	/**
+	 * This method returns a list of the children a siteNode has.
+	 */
+   	
+	public List<SiteNodeVO> getChildSiteNodeVOList(Integer parentSiteNodeId, boolean showDeletedItems, Database db) throws Exception
+	{
+   		String key = "" + parentSiteNodeId + "_" + showDeletedItems;
+		if(logger.isInfoEnabled())
+			logger.info("key:" + key);
+		
+		List<SiteNodeVO> childrenVOList = (List<SiteNodeVO>)CacheController.getCachedObject("childSiteNodesCache", key);
+		if(childrenVOList != null)
+		{
+			if(logger.isInfoEnabled())
+				logger.info("There was an cached cachedChildSiteNodeVOList:" + childrenVOList.size());
+			return childrenVOList;
+		}
+		
+		childrenVOList = new ArrayList<SiteNodeVO>();
+		
+   		Timer t = new Timer();
+
+   		StringBuffer SQL = new StringBuffer();
+   		SQL.append("CALL SQL select sn.siteNodeId, sn.name, sn.publishDateTime, sn.expireDateTime, sn.isBranch, sn.isDeleted, sn.metaInfoContentId, sn.creator, (select count(*) from cmSiteNode sn2 where sn2.parentSiteNodeId = sn.siteNodeId) AS childCount, snv.sortOrder from cmSiteNode sn, cmSiteNodeVersion snv ");
+   		SQL.append("where ");
+   		SQL.append("sn.parentSiteNodeId = $1 ");
+   		SQL.append("AND sn.isDeleted = $2 ");
+   		SQL.append("AND snv.siteNodeId = sn.siteNodeId ");
+   		SQL.append("AND snv.siteNodeVersionId = ( ");
+   		SQL.append("	select max(siteNodeVersionId) from cmSiteNodeVersion snv2 ");
+   		SQL.append("	WHERE ");
+   		SQL.append("	snv2.siteNodeId = snv.siteNodeId AND ");
+   		SQL.append("	snv2.isActive = $3 AND snv2.stateId >= $4 ");
+   		SQL.append("	) ");
+   		SQL.append("order by snv.sortOrder ASC, sn.name ASC, sn.siteNodeId DESC AS org.infoglue.cms.entities.structure.impl.simple.SmallestSiteNodeImpl");
+   		
+   		//String SQL = "SELECT siteNode FROM org.infoglue.cms.entities.structure.impl.simple.SiteNodeImpl siteNode WHERE siteNode.parentSiteNode.siteNodeId = $1 AND siteNode.isDeleted = $2 ORDER BY siteNode.siteNodeId";
+    	
+   		System.out.println("SQL:" + SQL);
+    	System.out.println("parentSiteNodeId:" + parentSiteNodeId);
+    	System.out.println("showDeletedItems:" + showDeletedItems);
+    	OQLQuery oql = db.getOQLQuery(SQL.toString());
+		oql.bind(parentSiteNodeId);
+		oql.bind(showDeletedItems);
+		oql.bind(true);
+		oql.bind(0);
+
+		QueryResults results = oql.execute(Database.ReadOnly);
+		while (results.hasMore()) 
+		{
+			SiteNode siteNode = (SiteNode)results.next();
+			childrenVOList.add(siteNode.getValueObject());
+		}
+		
+		results.close();
+		oql.close();
+        
+		CacheController.cacheObject("childSiteNodesCache", key, childrenVOList);
+        
+		return childrenVOList;
+	} 
+	
     /**
 	 * This method is sort of a sql-query-like method where you can send in arguments in form of a list
 	 * of things that should match. The input is a Hashmap with a method and a List of HashMaps.
@@ -958,6 +1022,77 @@ public class SiteNodeController extends BaseController
             throw new SystemException(e.getMessage());
         }
 
+    }       
+    
+	/**
+	 * This method moves a siteNode after first making a couple of controls that the move is valid.
+	 */
+	
+    public void changeSiteNodeSortOrder(Integer siteNodeId, Integer beforeSiteNodeId, String direction, InfoGluePrincipal infoGluePrincipal) throws ConstraintException, SystemException
+    {
+        Database db = CastorDatabaseService.getDatabase();
+
+        ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
+
+        beginTransaction(db);
+
+        try
+        {
+            if(beforeSiteNodeId == null && direction == null)
+            {
+            	logger.warn("You must specify the either new location with beforeSiteNodeId or sortDirection");
+            	throw new ConstraintException("SiteNode.parentSiteNodeId", "3403"); //TODO
+            }
+            
+           // SiteNode siteNode = getSiteNodeWithId(siteNodeId, db);
+            System.out.println("siteNodeId:" + siteNodeId);
+            System.out.println("beforeSiteNodeId:" + beforeSiteNodeId);
+            System.out.println("direction:" + direction);
+            if(beforeSiteNodeId != null)
+            {
+                SiteNode beforeSiteNode = getSiteNodeWithId(beforeSiteNodeId, db);
+            	
+            }
+            else if(direction.equalsIgnoreCase("up") || direction.equalsIgnoreCase("down"))
+            {
+            	Integer oldSortOrder = 0;
+            	Integer newSortOrder = 0;
+            	SiteNodeVO siteNodeVO = getSiteNodeVOWithId(siteNodeId, db);
+				SiteNodeVersion latestSiteNodeVersion = SiteNodeVersionController.getController().getLatestActiveSiteNodeVersion(db, siteNodeId);
+				if(latestSiteNodeVersion != null)
+				{
+					oldSortOrder = latestSiteNodeVersion.getSortOrder();
+					if(direction.equalsIgnoreCase("up"))
+						newSortOrder = oldSortOrder - 1;
+					else if(direction.equalsIgnoreCase("down"))
+						newSortOrder = oldSortOrder + 1;
+				}
+				
+				List<SiteNodeVO> childrenVOList = SiteNodeController.getController().getChildSiteNodeVOList(siteNodeVO.getParentSiteNodeId(), false, db);
+				Iterator<SiteNodeVO> childrenVOListIterator = childrenVOList.iterator();
+				while(childrenVOListIterator.hasNext())
+				{
+					SiteNodeVO childSiteNodeVO = childrenVOListIterator.next();
+					SiteNodeVersion latestChildSiteNodeVersion = SiteNodeVersionController.getController().getLatestActiveSiteNodeVersion(db, childSiteNodeVO.getId());
+					Integer currentSortOrder = latestChildSiteNodeVersion.getSortOrder();
+					if(currentSortOrder.equals(oldSortOrder))
+						latestChildSiteNodeVersion.setSortOrder(newSortOrder);
+					else if(currentSortOrder.equals(newSortOrder))
+						latestChildSiteNodeVersion.setSortOrder(oldSortOrder);
+				}
+            }
+
+            //If any of the validations or setMethods reported an error, we throw them up now before create.
+            ceb.throwIfNotEmpty();
+            
+            commitTransaction(db);
+        }
+        catch(Exception e)
+        {
+            logger.error("An error occurred so we should not complete the transaction:" + e, e);
+            rollbackTransaction(db);
+            throw new SystemException(e.getMessage());
+        }
     }       
     
 	/**

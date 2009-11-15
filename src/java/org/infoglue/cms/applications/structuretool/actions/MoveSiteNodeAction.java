@@ -211,6 +211,38 @@ public class MoveSiteNodeAction extends InfoGlueAbstractAction
         }
     }
 
+    public String doAjax() throws Exception
+    {
+        try
+        {
+            ceb.throwIfNotEmpty();
+        	
+    		SiteNodeVO siteNodeVO = SiteNodeControllerProxy.getController().getSiteNodeVOWithId(getSiteNodeId());
+
+    		this.parentSiteNodeId = siteNodeVO.getParentSiteNodeId();
+            System.out.println("parentSiteNodeId:" + parentSiteNodeId);
+            
+    		SiteNodeControllerProxy.getSiteNodeControllerProxy().acMoveSiteNode(this.getInfoGluePrincipal(), siteNodeVO, this.newParentSiteNodeId);
+        }
+        catch(ConstraintException ce)
+        {
+        	logger.warn("An error occurred so we should not complete the transaction:" + ce);
+
+            this.getResponse().setContentType("text/html");
+            this.getResponse().getWriter().print("nok:" + ce.getMessage());
+        }
+        catch(Exception e)
+        {
+            logger.error("An error occurred so we should not complete the transaction:" + e, e);
+            throw new SystemException(e.getMessage());
+        }
+
+        this.getResponse().setContentType("text/html");
+        this.getResponse().getWriter().print("ok");
+
+        return NONE;
+    }
+
     public String getErrorKey()
 	{
 		return "SiteNode.parentSiteNodeId";

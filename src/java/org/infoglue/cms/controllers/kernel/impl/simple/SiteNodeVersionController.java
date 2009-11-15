@@ -363,7 +363,7 @@ public class SiteNodeVersionController extends BaseController
 		oql.bind(siteNodeId);
 		oql.bind(new Boolean(true));
 		
-		QueryResults results = oql.execute(Database.ReadOnly);
+		QueryResults results = oql.execute();
 		
 		if (results.hasMore()) 
 	    {

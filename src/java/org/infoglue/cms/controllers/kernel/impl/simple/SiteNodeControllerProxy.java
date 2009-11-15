@@ -209,6 +209,16 @@ public class SiteNodeControllerProxy extends SiteNodeController
 		intercept(hashMap, "SiteNodeVersion.CreateSiteNode", infogluePrincipal);
 
 		moveSiteNode(siteNodeVO, newParentSiteNodeId, infogluePrincipal);
+	}
+
+	public void acChangeSiteNodeSortOrder(InfoGluePrincipal infoGluePrincipal, Integer siteNodeId, Integer beforeSiteNodeId, String direction) throws Exception
+	{
+		Map hashMap = new HashMap();
+		hashMap.put("siteNodeId", siteNodeId);
+    	
+		intercept(hashMap, "SiteNodeVersion.MoveSiteNode", infoGluePrincipal);
+		
+		changeSiteNodeSortOrder(siteNodeId, beforeSiteNodeId, direction, infoGluePrincipal);
 	}   
 	
 

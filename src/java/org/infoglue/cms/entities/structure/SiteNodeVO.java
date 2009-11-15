@@ -48,6 +48,7 @@ public class SiteNodeVO implements BaseEntityVO
     private Integer repositoryId 	= null;    
   	private Integer siteNodeTypeDefinitionId = null;  
   	private Integer childCount;
+  	private Integer sortOrder;
   	
   	private String creatorName;
 	private Integer metaInfoContentId 	= new Integer(-1);
@@ -240,6 +241,16 @@ public class SiteNodeVO implements BaseEntityVO
 	public void setParentSiteNodeId(Integer parentSiteNodeId)
 	{
 		this.parentSiteNodeId = parentSiteNodeId;
+	}
+
+	public Integer getSortOrder()
+	{
+		return sortOrder;
+	}
+
+	public void setSortOrder(Integer sortOrder)
+	{
+		this.sortOrder = sortOrder;
 	}
 
 }
