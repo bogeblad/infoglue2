@@ -277,7 +277,16 @@
     			return false;
 			}
 		}
-				
+		
+		function moveNode(contentId, newParentContentId, oldParentContentId)
+		{
+			jQuery.get("MoveContent!ajax.action", { contentId:"" + contentId, newParentContentId:"" + newParentContentId }, function(data){
+			  	//alert("Moved: " + data + ":" + oldParentContentId + " - " + newParentContentId);
+			  	top.frames["contentTreeIframe"].refreshContent(oldParentContentId, 4, null);
+			  	top.frames["contentTreeIframe"].refreshContent(newParentContentId, 4, null);
+			});
+		}
+					
 		// -->
 	</script>
 

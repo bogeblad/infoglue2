@@ -269,30 +269,6 @@
 			}
 		}
 
-		/*				
-		//Drag & drop features
-		var isTreeDragStarted = false;
-		var draggedElementId;
-		function startTreeDrag(id)
-		{
-			//alert("Start dragging:" + id);
-			isTreeDragStarted = true;
-			draggedElementId = id;
-			
-			var draggedHTML = $("#" + draggedElementId + "").html();
-			$("body").append("<div id=\"tempTreeItemDraggable\" style=\"position: absolute; top: 0px; left: 0px; border: 1px solid red;\">" + draggedHTML + "</div>");
-		}
-
-		$(document).mousemove(function(e) {
-			if(isTreeDragStarted)
-			{
-				var pageCoords = "( " + e.pageX + ", " + e.pageY + " )";
-			    var clientCoords = "( " + e.clientX + ", " + e.clientY + " )";
-			    $("#tempTreeItemDraggable").css("top", e.pageY + 8 + "px").css("left", e.pageX + 8 + "px");
-			}
-		});
-		*/
-		
 		// -->
 	</script>
 
@@ -315,8 +291,6 @@
 
 </head>
 <body class="generaltooledit" onload="parent.notifyIsLoaded();parent.notifyExp('${exp}');loaded();" style="margin:0px">
-
-	<div id="tempDraggable" style="position: absolute;">AAAAAAAAAA</div>
 
 	<!-- NEW DYNAMIC VERSION -->
 	<link type="text/css" rel="stylesheet" href="script/xloadtree/xtree.css" />

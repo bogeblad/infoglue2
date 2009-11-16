@@ -228,19 +228,22 @@ WebFXTreeAbstractNode.prototype.add = function (node, bNoIdent) {
 		webFXTreeHandler.insertHTMLBeforeEnd(document.getElementById(this.id + '-cont'), node.toString());
 		//alert("Regging draggable on:" + node.id);
 		$("#" + node.id + " a").draggable({ helper: 'clone' });
-		$("#" + node.id + " a").droppable({
-			hoverClass: 'ui-state-active',
-			tolerance: 'touch',
-		    drop: function(event, ui) { 
-				var dragEl = $(ui.draggable); 
-				var movedNodeId = dragEl.attr("entityId");
-				var parentNodeId = dragEl.attr("parentEntityId");
-				var newParentNodeId = $("#" + node.id + " a").attr("entityId");
-				//alert('dropped:' + movedNodeId + " on " + newParentNodeId);
-				moveNode(movedNodeId, newParentNodeId, parentNodeId);
-			}
-		});
-
+		if(node.folder)
+		{
+			$("#" + node.id + " a").droppable({
+				hoverClass: 'ui-state-active',
+				tolerance: 'pointer',
+			    drop: function(event, ui) { 
+					var dragEl = $(ui.draggable); 
+					var movedNodeId = dragEl.attr("entityId");
+					var parentNodeId = dragEl.attr("parentEntityId");
+					var newParentNodeId = $("#" + node.id + " a").attr("entityId");
+					//alert('dropped:' + movedNodeId + " on " + newParentNodeId);
+					moveNode(movedNodeId, newParentNodeId, parentNodeId);
+				}
+			});
+		}
+		
 		if ((!this.folder) && (!this.openIcon)) {
 			this.icon = webFXTreeConfig.folderIcon;
 			this.openIcon = webFXTreeConfig.openFolderIcon;

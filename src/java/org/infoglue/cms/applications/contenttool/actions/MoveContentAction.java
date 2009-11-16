@@ -208,6 +208,38 @@ public class MoveContentAction extends InfoGlueAbstractAction
         }
     }
 
+    public String doAjax() throws Exception
+    {
+        try
+        {
+            ceb.throwIfNotEmpty();
+        	
+            ContentVO contentVO = ContentControllerProxy.getContentController().getContentVOWithId(getContentId());
+            
+    		this.parentContentId = contentVO.getParentContentId();
+            System.out.println("parentContentId:" + parentContentId);
+            
+    		ContentControllerProxy.getController().acMoveContent(this.getInfoGluePrincipal(), this.contentVO, this.newParentContentId);
+        }
+        catch(ConstraintException ce)
+        {
+        	logger.warn("An error occurred so we should not complete the transaction:" + ce);
+
+            this.getResponse().setContentType("text/html");
+            this.getResponse().getWriter().print("nok:" + ce.getMessage());
+        }
+        catch(Exception e)
+        {
+            logger.error("An error occurred so we should not complete the transaction:" + e, e);
+            throw new SystemException(e.getMessage());
+        }
+
+        this.getResponse().setContentType("text/html");
+        this.getResponse().getWriter().print("ok");
+
+        return NONE;
+    }
+    
     public String getErrorKey()
 	{
 		return "Content.parentContentId";
