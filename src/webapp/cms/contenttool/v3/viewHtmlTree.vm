@@ -351,6 +351,20 @@
 	var tree = new WebFXLoadTree("$rootNode.Title", "SimpleContentXml.action?showLeafs=${showLeafs}&action=SimpleContentXml.action&createAction=true&repositoryId=$!{repositoryId}$par", "javascript:htmlTreeItemClick('$rootNode.Id','${repositoryId}','$formatter.escapeExtendedHTML($rootNode.Title)');");
 	tree.myId = "$rootNode.Id";
 	document.write(tree);
+	
+	$("#" + tree.id + " a").droppable({
+		hoverClass: 'ui-state-active',
+		tolerance: 'pointer',
+	    drop: function(event, ui) { 
+			var dragEl = $(ui.draggable); 
+			var movedNodeId = dragEl.attr("entityId");
+			var parentNodeId = dragEl.attr("parentEntityId");
+			var newParentNodeId = $("#" + tree.id + " a").attr("entityId");
+			//alert('dropped:' + movedNodeId + " on " + newParentNodeId);
+			moveNode(movedNodeId, newParentNodeId, parentNodeId);
+		}
+	});
+	
 	var oldSelected = null;
 	
 	function onTreeItemClick(elem, itemId, repoId, path)
