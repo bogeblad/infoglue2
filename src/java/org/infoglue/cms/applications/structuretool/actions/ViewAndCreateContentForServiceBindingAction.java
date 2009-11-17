@@ -44,6 +44,7 @@ import org.infoglue.cms.entities.management.ContentTypeDefinition;
 import org.infoglue.cms.entities.management.Language;
 import org.infoglue.cms.entities.management.LanguageVO;
 import org.infoglue.cms.entities.management.ServiceDefinitionVO;
+import org.infoglue.cms.entities.management.impl.simple.ContentTypeDefinitionImpl;
 import org.infoglue.cms.entities.structure.SiteNode;
 import org.infoglue.cms.entities.structure.SiteNodeVersion;
 import org.infoglue.cms.entities.structure.SiteNodeVersionVO;
@@ -206,8 +207,8 @@ public class ViewAndCreateContentForServiceBindingAction extends InfoGlueAbstrac
             Language masterLanguage = LanguageController.getController().getMasterLanguage(db, this.repositoryId);
     		this.languageId = masterLanguage.getLanguageId();
 
-    		ContentTypeDefinition contentTypeDefinition = ContentTypeDefinitionController.getController().getContentTypeDefinitionWithName("Meta info", db);
-    		this.metaInfoContentTypeDefinitionId = contentTypeDefinition.getId();
+    		ContentTypeDefinition metaInfoContentTypeDefinition = ContentTypeDefinitionController.getController().getContentTypeDefinitionWithName("Meta info", db);
+    		this.metaInfoContentTypeDefinitionId = metaInfoContentTypeDefinition.getId();
     		
     		SiteNode siteNode = SiteNodeController.getController().getSiteNodeWithId(this.siteNodeId, db);
 
@@ -234,60 +235,10 @@ public class ViewAndCreateContentForServiceBindingAction extends InfoGlueAbstrac
             } 
             else
             {
+                if(!metaInfoContent.getValueObject().getContentTypeDefinitionId().equals(metaInfoContentTypeDefinition.getId()))
+                	metaInfoContent.setContentTypeDefinition((ContentTypeDefinitionImpl)metaInfoContentTypeDefinition);
                 this.contentVO = metaInfoContent.getValueObject();
             }
-
-	    		/*
-                boolean hadMetaInfo = false;
-	    		if(this.serviceBindingVO.getId() == null)
-	    		{
-	    			AvailableServiceBinding availableServiceBinding = AvailableServiceBindingController.getController().getAvailableServiceBindingWithName("Meta information", db, false);
-	    			
-	    			Collection serviceBindings = SiteNodeVersionController.getServiceBindningList(this.siteNodeVersionId, db);
-	    			Iterator serviceBindingIterator = serviceBindings.iterator();
-	    			while(serviceBindingIterator.hasNext())
-	    			{
-	    				ServiceBinding serviceBinding = (ServiceBinding)serviceBindingIterator.next();
-	    				if(serviceBinding.getValueObject().getAvailableServiceBindingId().intValue() == availableServiceBinding.getAvailableServiceBindingId().intValue())
-	    				{
-	    					List boundContents = ContentController.getBoundContents(db, serviceBinding.getServiceBindingId()); 			
-	    					if(boundContents.size() > 0)
-	    					{
-	    						this.contentVO = (ContentVO)boundContents.get(0);		
-	    						hadMetaInfo = true;
-	    						if(siteNode.getMetaInfoContentId() == null || siteNode.getMetaInfoContentId().intValue() == -1)
-	    						    siteNode.setMetaInfoContentId(this.contentVO.getId());
-	    						
-	    						break;
-	    					}						
-	    				}
-	    			}
-	
-	        		if(!hadMetaInfo)
-	        		    this.contentVO = SiteNodeController.getController().createSiteNodeMetaInfoContent(db, siteNode, this.repositoryId, this.getInfoGluePrincipal(), null).getValueObject();
-	        	}
-	    		else
-	    		{
-	    			List boundContents = ContentController.getBoundContents(this.serviceBindingVO.getId()); 			
-	    			
-	    			if(boundContents.size() > 0)
-	    			{
-	    				this.contentVO = (ContentVO)boundContents.get(0);		 	
-	    				if(siteNode.getMetaInfoContentId() == null || siteNode.getMetaInfoContentId().intValue() == -1)
-						    siteNode.setMetaInfoContentId(this.contentVO.getId());
-	    			}
-	    			else
-	    			{
-	    			    //Something is broken.... lets try to patch it up by assigning what it should be.
-	    			    this.contentVO = SiteNodeController.getController().createSiteNodeMetaInfoContent(db, siteNode, this.repositoryId, this.getInfoGluePrincipal(), null).getValueObject();
-	    			}
-	    		}
-            }
-            else
-            {
-                this.contentVO = metaInfoContent.getValueObject();
-            }
-            */
             
             this.languageId = getInitialLanguageVO(this.contentVO.getId(), db).getId();
             

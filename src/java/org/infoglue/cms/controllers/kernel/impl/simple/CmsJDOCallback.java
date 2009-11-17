@@ -229,6 +229,7 @@ public class CmsJDOCallback implements CallbackInterceptor
 			else if(object.getClass().getName().equals(SiteNodeVersionImpl.class.getName()))
 			{
 				clearCache(SmallSiteNodeVersionImpl.class);
+				CacheController.clearCache("childSiteNodesCache");
 			}
 			else if(object.getClass().getName().equals(WorkflowDefinitionImpl.class.getName()))
 			{
@@ -380,6 +381,10 @@ public class CmsJDOCallback implements CallbackInterceptor
 				CacheController.clearCache("componentContentsCache");
 				clearCache(SmallContentVersionImpl.class);
 				clearCache(SmallestContentVersionImpl.class);
+			}
+			else if(object.getClass().getName().equals(SiteNodeVersionImpl.class.getName()))
+			{
+				CacheController.clearCache("childSiteNodesCache");
 			}
 			else if(object.getClass().getName().equals(RepositoryLanguageImpl.class.getName()))
 			{
@@ -540,6 +545,7 @@ public class CmsJDOCallback implements CallbackInterceptor
 			else if(object.getClass().getName().equals(SiteNodeVersionImpl.class.getName()))
 			{
 				clearCache(SmallSiteNodeVersionImpl.class);
+				CacheController.clearCache("childSiteNodesCache");
 				RegistryController.getController().clearRegistryForReferencingEntityName(SiteNodeVersion.class.getName(), getObjectIdentity(object).toString());
 			}
 			else if(object.getClass().getName().equals(WorkflowDefinitionImpl.class.getName()))

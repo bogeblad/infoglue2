@@ -1030,6 +1030,7 @@ public class SiteNodeController extends BaseController
 	
     public void changeSiteNodeSortOrder(Integer siteNodeId, Integer beforeSiteNodeId, String direction, InfoGluePrincipal infoGluePrincipal) throws ConstraintException, SystemException
     {
+    	/*
         Database db = CastorDatabaseService.getDatabase();
 
         ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
@@ -1044,22 +1045,68 @@ public class SiteNodeController extends BaseController
             	throw new ConstraintException("SiteNode.parentSiteNodeId", "3403"); //TODO
             }
             
-           // SiteNode siteNode = getSiteNodeWithId(siteNodeId, db);
             System.out.println("siteNodeId:" + siteNodeId);
             System.out.println("beforeSiteNodeId:" + beforeSiteNodeId);
             System.out.println("direction:" + direction);
+
+            SiteNodeVersion latestSiteNodeVersion = SiteNodeVersionController.getController().getLatestActiveSiteNodeVersion(db, siteNodeId);
+			if(latestSiteNodeVersion.getStateId().intValue() > SiteNodeVersionVO.WORKING_STATE.intValue())
+			{
+				System.out.println("Setting node to working as we modify it...");
+				SiteNodeVersionController.getController().updateStateId(latestSiteNodeVersion.getId(), SiteNodeVersionVO.WORKING_STATE, "Changed sortOrder", infoGluePrincipal, siteNodeId);
+			}
+	
+	        //If any of the validations or setMethods reported an error, we throw them up now before create.
+	        ceb.throwIfNotEmpty();
+	        
+	        commitTransaction(db);
+	    }
+	    catch(Exception e)
+	    {
+	        logger.error("An error occurred so we should not complete the transaction:" + e, e);
+	        rollbackTransaction(db);
+	        throw new SystemException(e.getMessage());
+	    }
+		*/
+    
+	    Database db = CastorDatabaseService.getDatabase();
+
+        ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
+
+        beginTransaction(db);
+
+        try
+        {
+            if(beforeSiteNodeId == null && direction == null)
+            {
+            	logger.warn("You must specify the either new location with beforeSiteNodeId or sortDirection");
+            	throw new ConstraintException("SiteNode.parentSiteNodeId", "3403"); //TODO
+            }
+            
+            System.out.println("siteNodeId:" + siteNodeId);
+            System.out.println("beforeSiteNodeId:" + beforeSiteNodeId);
+            System.out.println("direction:" + direction);
+            /*
+            SiteNodeVersion latestSiteNodeVersion = SiteNodeVersionController.getController().getLatestActiveSiteNodeVersion(db, siteNodeId);
+			if(latestSiteNodeVersion.getStateId().intValue() > SiteNodeVersionVO.WORKING_STATE.intValue())
+			{
+				System.out.println("Setting node to working as we modify it...");
+				SiteNodeVersionController.getController().updateStateId(latestSiteNodeVersion.getId(), SiteNodeVersionVO.WORKING_STATE, "Changed sortOrder", infoGluePrincipal, siteNodeId);
+			}
+			*/
+            
             if(beforeSiteNodeId != null)
             {
                 SiteNode beforeSiteNode = getSiteNodeWithId(beforeSiteNodeId, db);
-            	
             }
             else if(direction.equalsIgnoreCase("up") || direction.equalsIgnoreCase("down"))
             {
             	Integer oldSortOrder = 0;
             	Integer newSortOrder = 0;
             	SiteNodeVO siteNodeVO = getSiteNodeVOWithId(siteNodeId, db);
-				SiteNodeVersion latestSiteNodeVersion = SiteNodeVersionController.getController().getLatestActiveSiteNodeVersion(db, siteNodeId);
-				if(latestSiteNodeVersion != null)
+
+                SiteNodeVersion latestSiteNodeVersion = SiteNodeVersionController.getController().getLatestActiveSiteNodeVersion(db, siteNodeId);
+            	if(latestSiteNodeVersion != null)
 				{
 					oldSortOrder = latestSiteNodeVersion.getSortOrder();
 					if(direction.equalsIgnoreCase("up"))
@@ -1074,11 +1121,20 @@ public class SiteNodeController extends BaseController
 				{
 					SiteNodeVO childSiteNodeVO = childrenVOListIterator.next();
 					SiteNodeVersion latestChildSiteNodeVersion = SiteNodeVersionController.getController().getLatestActiveSiteNodeVersion(db, childSiteNodeVO.getId());
+					System.out.println("latestChildSiteNodeVersion:" + latestChildSiteNodeVersion.getId());
 					Integer currentSortOrder = latestChildSiteNodeVersion.getSortOrder();
 					if(currentSortOrder.equals(oldSortOrder))
+					{
+						latestChildSiteNodeVersion = SiteNodeVersionController.getController().updateStateId(latestChildSiteNodeVersion, SiteNodeVersionVO.WORKING_STATE, "Changed sortOrder", infoGluePrincipal, siteNodeId, db);
 						latestChildSiteNodeVersion.setSortOrder(newSortOrder);
+						System.out.println("Changed sort order on:" + latestChildSiteNodeVersion.getId() + " into " + newSortOrder);
+					}
 					else if(currentSortOrder.equals(newSortOrder))
+					{
+						latestChildSiteNodeVersion = SiteNodeVersionController.getController().updateStateId(latestChildSiteNodeVersion, SiteNodeVersionVO.WORKING_STATE, "Changed sortOrder", infoGluePrincipal, siteNodeId, db);
 						latestChildSiteNodeVersion.setSortOrder(oldSortOrder);
+						System.out.println("Changed sort order on:" + latestChildSiteNodeVersion.getId() + " into " + oldSortOrder);
+					}
 				}
             }
 
