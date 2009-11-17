@@ -49,6 +49,7 @@ public class SiteNodeVO implements BaseEntityVO
   	private Integer siteNodeTypeDefinitionId = null;  
   	private Integer childCount;
   	private Integer sortOrder;
+  	private Boolean isHidden 		= new Boolean(false);
   	
   	private String creatorName;
 	private Integer metaInfoContentId 	= new Integer(-1);
@@ -186,6 +187,16 @@ public class SiteNodeVO implements BaseEntityVO
     public void setIsDeleted(Boolean isDeleted)
 	{
 		this.isDeleted = isDeleted;
+	}
+
+    public Boolean getIsHidden()
+    {
+    	return this.isHidden;
+	}
+    
+    public void setIsHidden(Boolean isHidden)
+	{
+		this.isHidden = isHidden;
 	}
 
 	/**

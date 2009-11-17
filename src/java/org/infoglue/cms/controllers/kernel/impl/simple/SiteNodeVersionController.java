@@ -560,7 +560,7 @@ public class SiteNodeVersionController extends BaseController
     	return returnVO;
     }        
     
-    public SiteNodeVersion updateStateId(SiteNodeVersion siteNodeVersion, Integer stateId, String versionComment, InfoGluePrincipal infoGluePrincipal, Integer siteNodeId, Database db) throws ConstraintException, SystemException, Exception
+    public SiteNodeVersion updateStateId(SiteNodeVersion siteNodeVersion, Integer stateId, String versionComment, InfoGluePrincipal infoGluePrincipal, Database db) throws ConstraintException, SystemException, Exception
     {
     	if(siteNodeVersion.getStateId().equals(stateId))
     	{
@@ -598,7 +598,7 @@ public class SiteNodeVersionController extends BaseController
     		siteNodeVersionVO.setStateId(stateId);
 			siteNodeVersionVO.setVersionComment(versionComment);
 			
-			siteNodeVersion = create(siteNodeId, infoGluePrincipal, siteNodeVersionVO, db);
+			siteNodeVersion = create(siteNodeVersion.getValueObject().getSiteNodeId(), infoGluePrincipal, siteNodeVersionVO, db);
     	}
     	
     	return siteNodeVersion;

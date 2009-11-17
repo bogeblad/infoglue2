@@ -58,6 +58,21 @@ public class ChangeSiteNodeSortOrderAction extends InfoGlueAbstractAction
 		return "success";
     }
 
+    public String doToggleHidden() throws Exception
+    {		
+    	try
+    	{
+    		System.out.println("doToggleHidden");
+    		SiteNodeControllerProxy.getSiteNodeControllerProxy().acToggleHidden(this.getInfoGluePrincipal(), siteNodeId);
+    	}
+    	catch (Exception e) 
+    	{
+    		e.printStackTrace();
+		}
+    	
+		return "success";
+    }
+
 	public void setSiteNodeId(Integer siteNodeId)
 	{
 		this.siteNodeId = siteNodeId;

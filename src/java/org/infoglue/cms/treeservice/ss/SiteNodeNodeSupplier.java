@@ -283,13 +283,23 @@ public class SiteNodeNodeSupplier extends BaseNodeSupplier
 				if(useAccessRightsOnStructureTreeString != null && useAccessRightsOnStructureTreeString.equalsIgnoreCase("true"))
 					hasUserPageAccess = getHasUserPageAccess(this.infogluePrincipal, vo.getId());
 				
+				Object isHiddenObject = vo.getExtraProperties().get("isHidden");
+				//System.out.println("isHiddenObject: " + isHiddenObject);
+					
 				if(hasUserPageAccess)
 				{
 					BaseNode node =  new SiteNodeNodeImpl();
 					node.setId(vo.getId());
 					node.setTitle(vo.getName());
-					node.getParameters().put("isHidden", vo.getExtraProperties().get("isHidden"));
-					
+					if(isHiddenObject == null)
+						node.getParameters().put("isHidden", "false");
+					else
+						node.getParameters().put("isHidden", "" + isHiddenObject);
+
+					//System.out.println("latestSiteNodeVO.getIsHidden(): " + vo.getIsHidden() + " on " + vo.getId());
+					if(vo.getIsHidden() != null)
+						node.getParameters().put("isHidden", "" + vo.getIsHidden());
+
 					SiteNodeVersionVO latestSiteNodeVO = SiteNodeVersionController.getController().getLatestActiveSiteNodeVersionVO(db, vo.getId());
 					if(latestSiteNodeVO != null)
 					{
@@ -314,14 +324,28 @@ public class SiteNodeNodeSupplier extends BaseNodeSupplier
 				}	
 				
 				//Checks if the current node has the correct sortOrder
-				System.out.println("vo.getSortOrder():" + vo.getSortOrder() + "=" + expectedSortOrder);
+				//System.out.println("vo.getSortOrder():" + vo.getSortOrder() + "=" + expectedSortOrder);
 				if(!vo.getSortOrder().equals(expectedSortOrder))
 				{
-					System.out.println("Changing sortOrder from:" + vo.getSortOrder() + " to " + expectedSortOrder);
+					//System.out.println("Changing sortOrder from:" + vo.getSortOrder() + " to " + expectedSortOrder);
 					SiteNodeVersion latestSiteNodeVersion = SiteNodeVersionController.getController().getLatestActiveSiteNodeVersion(db, vo.getId());
 					if(latestSiteNodeVersion != null)
 					{
 						latestSiteNodeVersion.setSortOrder(expectedSortOrder);
+						if(isHiddenObject != null)
+						{
+							//System.out.println("Setting hidden:" + isHiddenObject + " on " + latestSiteNodeVersion.getId());
+							latestSiteNodeVersion.setIsHidden(new Boolean("" + isHiddenObject));
+						}
+					}
+				}
+				else if(vo.getIsHidden() == null && isHiddenObject != null)
+				{
+					SiteNodeVersion latestSiteNodeVersion = SiteNodeVersionController.getController().getLatestActiveSiteNodeVersion(db, vo.getId());
+					if(latestSiteNodeVersion != null)
+					{
+						//System.out.println("Setting hidden:" + isHiddenObject + " on " + latestSiteNodeVersion.getId());
+						latestSiteNodeVersion.setIsHidden(new Boolean("" + isHiddenObject));
 					}
 				}
 				

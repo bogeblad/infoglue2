@@ -755,7 +755,7 @@ public class SiteNodeController extends BaseController
    		Timer t = new Timer();
 
    		StringBuffer SQL = new StringBuffer();
-   		SQL.append("CALL SQL select sn.siteNodeId, sn.name, sn.publishDateTime, sn.expireDateTime, sn.isBranch, sn.isDeleted, sn.metaInfoContentId, sn.creator, (select count(*) from cmSiteNode sn2 where sn2.parentSiteNodeId = sn.siteNodeId) AS childCount, snv.sortOrder from cmSiteNode sn, cmSiteNodeVersion snv ");
+   		SQL.append("CALL SQL select sn.siteNodeId, sn.name, sn.publishDateTime, sn.expireDateTime, sn.isBranch, sn.isDeleted, sn.metaInfoContentId, sn.creator, (select count(*) from cmSiteNode sn2 where sn2.parentSiteNodeId = sn.siteNodeId) AS childCount, snv.sortOrder, snv.isHidden from cmSiteNode sn, cmSiteNodeVersion snv ");
    		SQL.append("where ");
    		SQL.append("sn.parentSiteNodeId = $1 ");
    		SQL.append("AND sn.isDeleted = $2 ");
@@ -1030,45 +1030,6 @@ public class SiteNodeController extends BaseController
 	
     public void changeSiteNodeSortOrder(Integer siteNodeId, Integer beforeSiteNodeId, String direction, InfoGluePrincipal infoGluePrincipal) throws ConstraintException, SystemException
     {
-    	/*
-        Database db = CastorDatabaseService.getDatabase();
-
-        ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
-
-        beginTransaction(db);
-
-        try
-        {
-            if(beforeSiteNodeId == null && direction == null)
-            {
-            	logger.warn("You must specify the either new location with beforeSiteNodeId or sortDirection");
-            	throw new ConstraintException("SiteNode.parentSiteNodeId", "3403"); //TODO
-            }
-            
-            System.out.println("siteNodeId:" + siteNodeId);
-            System.out.println("beforeSiteNodeId:" + beforeSiteNodeId);
-            System.out.println("direction:" + direction);
-
-            SiteNodeVersion latestSiteNodeVersion = SiteNodeVersionController.getController().getLatestActiveSiteNodeVersion(db, siteNodeId);
-			if(latestSiteNodeVersion.getStateId().intValue() > SiteNodeVersionVO.WORKING_STATE.intValue())
-			{
-				System.out.println("Setting node to working as we modify it...");
-				SiteNodeVersionController.getController().updateStateId(latestSiteNodeVersion.getId(), SiteNodeVersionVO.WORKING_STATE, "Changed sortOrder", infoGluePrincipal, siteNodeId);
-			}
-	
-	        //If any of the validations or setMethods reported an error, we throw them up now before create.
-	        ceb.throwIfNotEmpty();
-	        
-	        commitTransaction(db);
-	    }
-	    catch(Exception e)
-	    {
-	        logger.error("An error occurred so we should not complete the transaction:" + e, e);
-	        rollbackTransaction(db);
-	        throw new SystemException(e.getMessage());
-	    }
-		*/
-    
 	    Database db = CastorDatabaseService.getDatabase();
 
         ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
@@ -1086,14 +1047,6 @@ public class SiteNodeController extends BaseController
             System.out.println("siteNodeId:" + siteNodeId);
             System.out.println("beforeSiteNodeId:" + beforeSiteNodeId);
             System.out.println("direction:" + direction);
-            /*
-            SiteNodeVersion latestSiteNodeVersion = SiteNodeVersionController.getController().getLatestActiveSiteNodeVersion(db, siteNodeId);
-			if(latestSiteNodeVersion.getStateId().intValue() > SiteNodeVersionVO.WORKING_STATE.intValue())
-			{
-				System.out.println("Setting node to working as we modify it...");
-				SiteNodeVersionController.getController().updateStateId(latestSiteNodeVersion.getId(), SiteNodeVersionVO.WORKING_STATE, "Changed sortOrder", infoGluePrincipal, siteNodeId);
-			}
-			*/
             
             if(beforeSiteNodeId != null)
             {
@@ -1125,13 +1078,13 @@ public class SiteNodeController extends BaseController
 					Integer currentSortOrder = latestChildSiteNodeVersion.getSortOrder();
 					if(currentSortOrder.equals(oldSortOrder))
 					{
-						latestChildSiteNodeVersion = SiteNodeVersionController.getController().updateStateId(latestChildSiteNodeVersion, SiteNodeVersionVO.WORKING_STATE, "Changed sortOrder", infoGluePrincipal, siteNodeId, db);
+						latestChildSiteNodeVersion = SiteNodeVersionController.getController().updateStateId(latestChildSiteNodeVersion, SiteNodeVersionVO.WORKING_STATE, "Changed sortOrder", infoGluePrincipal, db);
 						latestChildSiteNodeVersion.setSortOrder(newSortOrder);
 						System.out.println("Changed sort order on:" + latestChildSiteNodeVersion.getId() + " into " + newSortOrder);
 					}
 					else if(currentSortOrder.equals(newSortOrder))
 					{
-						latestChildSiteNodeVersion = SiteNodeVersionController.getController().updateStateId(latestChildSiteNodeVersion, SiteNodeVersionVO.WORKING_STATE, "Changed sortOrder", infoGluePrincipal, siteNodeId, db);
+						latestChildSiteNodeVersion = SiteNodeVersionController.getController().updateStateId(latestChildSiteNodeVersion, SiteNodeVersionVO.WORKING_STATE, "Changed sortOrder", infoGluePrincipal, db);
 						latestChildSiteNodeVersion.setSortOrder(oldSortOrder);
 						System.out.println("Changed sort order on:" + latestChildSiteNodeVersion.getId() + " into " + oldSortOrder);
 					}
@@ -1150,7 +1103,47 @@ public class SiteNodeController extends BaseController
             throw new SystemException(e.getMessage());
         }
     }       
+
     
+	/**
+	 * This method moves a siteNode after first making a couple of controls that the move is valid.
+	 */
+	
+    public void toggleSiteNodeHidden(Integer siteNodeId, InfoGluePrincipal infoGluePrincipal) throws ConstraintException, SystemException
+    {
+	    Database db = CastorDatabaseService.getDatabase();
+
+        ConstraintExceptionBuffer ceb = new ConstraintExceptionBuffer();
+
+        beginTransaction(db);
+
+        try
+        {
+            System.out.println("siteNodeId:" + siteNodeId);
+            
+            SiteNodeVersion latestSiteNodeVersion = SiteNodeVersionController.getController().getLatestActiveSiteNodeVersion(db, siteNodeId);
+            System.out.println("latestSiteNodeVersion:" + latestSiteNodeVersion);
+            if(latestSiteNodeVersion != null)
+			{
+        		latestSiteNodeVersion = SiteNodeVersionController.getController().updateStateId(latestSiteNodeVersion, SiteNodeVersionVO.WORKING_STATE, "Changed hidden", infoGluePrincipal, db);
+        		if(latestSiteNodeVersion.getIsHidden())
+        			latestSiteNodeVersion.setIsHidden(false);
+        		else
+        			latestSiteNodeVersion.setIsHidden(true);
+			}
+			
+            ceb.throwIfNotEmpty();
+            
+            commitTransaction(db);
+        }
+        catch(Exception e)
+        {
+            logger.error("An error occurred so we should not complete the transaction:" + e, e);
+            rollbackTransaction(db);
+            throw new SystemException(e.getMessage());
+        }
+    }       
+
 	/**
 	 * Recursively sets the sitenodes repositoryId.
 	 * @param sitenode

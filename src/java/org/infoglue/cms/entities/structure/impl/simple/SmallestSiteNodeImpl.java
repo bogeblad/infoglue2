@@ -169,6 +169,16 @@ public class SmallestSiteNodeImpl extends SiteNodeImpl
         this.valueObject.setSortOrder(sortOrder);
     }
 
+    public Boolean getIsHidden()
+    {
+        return this.valueObject.getIsHidden();
+    }
+            
+    public void setIsHidden(Boolean isHidden)
+    {
+        this.valueObject.setIsHidden(isHidden);
+    }
+
 	public void setParentContentId(Integer parentSiteNodeId)
 	{
 		this.valueObject.setParentSiteNodeId(parentSiteNodeId);

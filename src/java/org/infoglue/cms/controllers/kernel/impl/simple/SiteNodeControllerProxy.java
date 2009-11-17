@@ -221,5 +221,14 @@ public class SiteNodeControllerProxy extends SiteNodeController
 		changeSiteNodeSortOrder(siteNodeId, beforeSiteNodeId, direction, infoGluePrincipal);
 	}   
 	
+	public void acToggleHidden(InfoGluePrincipal infoGluePrincipal, Integer siteNodeId) throws Exception
+	{
+		Map hashMap = new HashMap();
+		hashMap.put("siteNodeId", siteNodeId);
+    	
+		intercept(hashMap, "SiteNodeVersion.MoveSiteNode", infoGluePrincipal);
+		
+		toggleSiteNodeHidden(siteNodeId, infoGluePrincipal);
+	}   
 
 }

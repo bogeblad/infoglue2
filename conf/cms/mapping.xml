@@ -626,6 +626,9 @@
     <field name="sortOrder" type="java.lang.Integer">
       <sql name="sortOrder" type="integer" dirty="check" />
     </field>
+    <field name="isHidden" type="java.lang.Boolean">
+      <sql name="isHidden" type="integer" dirty="check" />
+    </field>
   </class>
 
 

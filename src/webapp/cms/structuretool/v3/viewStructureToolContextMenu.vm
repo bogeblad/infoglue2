@@ -4,9 +4,12 @@
     <li><a id="move" href="javascript:void(0);" class="movePage">Move page</a></li>
     <li><a id="moveUp" href="javascript:void(0);" class="movePage">Move up</a></li>
     <li><a id="moveDown" href="javascript:void(0);" class="movePage">Move down</a></li>
+    <li><a id="hidePage" href="javascript:void(0);" class="hidePage">Mark as hidden</a></li>
     <li><a id="properties" href="javascript:void(0);" class="properties">Edit page metadata</a></li>
     <li><a id="publish" href="javascript:void(0);" class="publish">Publish page</a></li>
+    #if($siteNodeVO.childCount > 0)
     <li><a id="publishTree" href="javascript:void(0);" class="publish">Publish structure</a></li>
+    #end
 </ul>
 
 <div id="deleteDialog" title="Delete page?" style="display: none">
@@ -69,33 +72,14 @@
 
 	//Event listener for move option
 	$("#contextMenuDiv #move").click(function () {
-		
-		$("#moveDialog").dialog({
-			bgiframe: true,
-			resizable: false,
-			height:140,
-			modal: true,
-			overlay: {
-				backgroundColor: '#000',
-				opacity: 0.5
-			},
-			buttons: {
-				'Move page': function() {
-					$(this).dialog('close');
-					openInlineDiv("MoveSiteNode!input.action?siteNodeId=$siteNodeId&repositoryId=$repositoryId&changeTypeId=4", 600, 800, true, true, "New page"); 
-				},
-				Cancel: function() {
-					$(this).dialog('close');
-				}
-			}
-		});
+    	openInlineDiv("MoveSiteNode!inputV3.action?repositoryId=$repositoryId&siteNodeId=$siteNodeId&hideLeafs=true&returnAddress=ViewInlineOperationMessages.action&originalAddress=refreshParent", 600, 800, true, true, "Move page"); 
 	});
+		
 
 	//Event listener for moveUp option
 	$("#contextMenuDiv #moveUp").click(function () {
 		jQuery.get("ChangeSiteNodeSortOrder.action", { siteNodeId:"$siteNodeId", direction:"up"}, function(data){
 		  	//alert("Moved: " + data);
-		  	//$('#structureTreeIframe').get(0).contentWindow.reload();
 		  	$('#structureTreeIframe').get(0).contentWindow.refreshNode($siteNodeVO.parentSiteNodeId, 4, null);
 		});
 	});
@@ -104,8 +88,15 @@
 	$("#contextMenuDiv #moveDown").click(function () {
 		jQuery.get("ChangeSiteNodeSortOrder.action", { siteNodeId:"$siteNodeId", direction:"down"}, function(data){
 		  	//alert("Moved: " + data);
-		  	//$('#structureTreeIframe').get(0).contentWindow.reload();
 		  	$('#structureTreeIframe').get(0).contentWindow.refreshNode($siteNodeVO.parentSiteNodeId, 4, null);
+		});
+	});
+
+	//Event listener for moveDown option
+	$("#contextMenuDiv #hidePage").click(function () {
+		jQuery.get("ChangeSiteNodeSortOrder!toggleHidden.action", { siteNodeId:"$siteNodeId"}, function(data){
+		  	//alert("Hidden: " + data);
+		  	$('#structureTreeIframe').get(0).contentWindow.refreshNode($siteNodeVO.parentSiteNodeId, 2, null);
 		});
 	});
 
