@@ -318,6 +318,7 @@ public class ContentFactory
 	private void deleteCategories(final ContentVersion contentVersion) throws Exception 
 	{
 		ContentCategoryController.getController().deleteByContentVersion(contentVersion.getId(), db);
+		contentVersion.getContentCategories().clear();
 	}
 
 	/**

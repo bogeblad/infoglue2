@@ -962,14 +962,14 @@ public class ContentDeliveryController extends BaseDeliveryController
 		
 		ContentVersion contentVersion = getContentVersion(siteNodeId, contentId, languageId, db, useLanguageFallback, deliveryContext, infoGluePrincipal);
 		
-		List assignedContentCategories = ContentCategoryController.getController().findByContentVersionAttribute(categoryKey, contentVersion, db, true);
+		List assignedContentCategories = ContentCategoryController.getController().findByContentVersionAttribute(categoryKey, contentVersion, db);
 		//List assignedContentCategories = findContentCategoriesForContentVersionId(db, contentVersionVO.getId(), categoryKey, deliveryContext);
 		if((assignedCategoryVOList == null || assignedCategoryVOList.size() == 0) && useLanguageFallback)
 		{
 			LanguageVO masterLanguageVO = LanguageDeliveryController.getLanguageDeliveryController().getMasterLanguageForSiteNode(db, siteNodeId);
 			contentVersion = getContentVersion(siteNodeId, contentId, masterLanguageVO.getLanguageId(), db, useLanguageFallback, deliveryContext, infoGluePrincipal);
 			//assignedContentCategories = findContentCategoriesForContentVersionId(db, contentVersionVO.getId(), categoryKey, deliveryContext);
-			assignedContentCategories = ContentCategoryController.getController().findByContentVersionAttribute(categoryKey, contentVersion, db, true);
+			assignedContentCategories = ContentCategoryController.getController().findByContentVersionAttribute(categoryKey, contentVersion, db);
 		}
 		
 		Iterator assignedContentCategoriesIterator = assignedContentCategories.iterator();

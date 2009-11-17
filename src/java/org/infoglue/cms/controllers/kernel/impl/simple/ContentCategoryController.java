@@ -20,7 +20,7 @@
  *
  * ===============================================================================
  *
- * $Id: ContentCategoryController.java,v 1.22 2009/06/17 13:55:47 mattias Exp $
+ * $Id: ContentCategoryController.java,v 1.22.2.1 2009/11/17 14:28:16 mattias Exp $
  */
 package org.infoglue.cms.controllers.kernel.impl.simple;
 
@@ -177,7 +177,7 @@ public class ContentCategoryController extends BaseController
 	 * @return	A list of ContentCategoryVO that have the provided content version and attribute
 	 * @throws	SystemException If an error happens
 	 */
-	public List findByContentVersionAttribute(String attribute, ContentVersion contentVersion, Database db, boolean readOnly) throws SystemException
+	public List findByContentVersionAttribute(String attribute, ContentVersion contentVersion, Database db) throws SystemException
 	{
 	    List contentCategoryList = new ArrayList();
 	    
@@ -385,6 +385,7 @@ public class ContentCategoryController extends BaseController
 	
 	public List create(List categoryList, ContentVersion contentVersion, String attributeName, Database db) throws SystemException, Exception
 	{
+		logger.info("Creating categories on " + contentVersion.getId() + " for attributeName:" + attributeName);
 		List contentCategoryList = new ArrayList();
 
 		Iterator categoryListIterator = categoryList.iterator();
@@ -392,7 +393,8 @@ public class ContentCategoryController extends BaseController
 		{
 		    Category category = (Category)categoryListIterator.next();
 		    
-			List existingContentCategories = ContentCategoryController.getController().findByContentVersionAttribute(attributeName, contentVersion.getContentVersionId(), db, true);
+			List existingContentCategories = ContentCategoryController.getController().findByContentVersionAttribute(attributeName, contentVersion, db);
+			//List existingContentCategories = ContentCategoryController.getController().findByContentVersionAttribute(attributeName, contentVersion.getContentVersionId(), db, true);
 			boolean exists = false;
 			Iterator existingContentCategoriesIterator = existingContentCategories.iterator();
 			while(existingContentCategoriesIterator.hasNext())

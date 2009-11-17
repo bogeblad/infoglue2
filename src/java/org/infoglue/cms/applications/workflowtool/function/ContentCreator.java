@@ -101,11 +101,13 @@ public class ContentCreator extends ContentFunction
 			ContentVO newContentVO = null;
 			if(getContentVO() == null)
 			{
+				logger.info("Creating content:" + categories);
 				parentContentVO = (ContentVO) getParameter(FOLDER_PARAMETER);
 				newContentVO = factory.create(parentContentVO, categories, getDatabase());
 			}
 			else
 			{
+				logger.info("Updating content:" + categories);
 				newContentVO = factory.update(getContentVO(), categories, getDatabase());
 			}
 			if(newContentVO != null)
