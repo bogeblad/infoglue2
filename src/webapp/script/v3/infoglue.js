@@ -145,6 +145,21 @@ function resizeResizableDiv(heightMinus, widthMinus)
 	}
 }
 
+function resizeInlineTabDivsWithoutSubDivs(yMinus, xMinus)
+{
+	var dimensionsWidth = $(window).width();
+	var dimensionsHeight = $(window).height();
+  	//alert("dimensionsWidth:" + dimensionsWidth);
+  	if(dimensionsWidth != 0)
+  	{
+		$(".inlineTabDiv").height(dimensionsHeight - yMinus).width(dimensionsWidth - xMinus);
+	}
+	else
+	{
+		setTimeout("resizeInlineTabDivsWithoutSubDivs(" + yMinus + "," + xMinus + ")", 500);
+	}
+}
+
 function resizeInlineTabDivsWithMinus(yMinus, xMinus)
 {
 	var dimensionsWidth = $(window).width();

@@ -291,29 +291,30 @@
 			
 			#if($anchor)
 		    	#if($!anchor == "contentVersionBlock")
-			    	$("#tabsContainer").tabs({ selected: 0, cache: false, show:function() { resizeInlineTabDivsWithAmount(138, 16);}, select: function(e, ui) { if (ui.index == 2) { $("#contentVersionAssetsFrame").attr("src", assetSrcUrl); }}  });
+			    	$("#tabsContainer").tabs({ selected: 0, cache: false, show:function() { resizeInlineTabDivsWithoutSubDivs(138, 16);}, select: function(e, ui) { if (ui.index == 2) { $("#contentVersionAssetsFrame").attr("src", assetSrcUrl); }}  });
 			    #elseif($!anchor == "categoriesBlock")
-			    	$("#tabsContainer").tabs({ selected: 1, cache: false, show:function() { resizeInlineTabDivsWithAmount(138, 16);}, select: function(e, ui) { if (ui.index == 2) { $("#contentVersionAssetsFrame").attr("src", assetSrcUrl); }}  });
+			    	$("#tabsContainer").tabs({ selected: 1, cache: false, show:function() { resizeInlineTabDivsWithoutSubDivs(138, 16);}, select: function(e, ui) { if (ui.index == 2) { $("#contentVersionAssetsFrame").attr("src", assetSrcUrl); }}  });
 			    #elseif($!anchor == "digitalAssetsBlock")
-			    	$("#tabsContainer").tabs({ selected: 2, cache: false, show:function() { resizeInlineTabDivsWithAmount(138, 16);}, select: function(e, ui) { if (ui.index == 2) { $("#contentVersionAssetsFrame").attr("src", assetSrcUrl); }}  });
+			    	$("#tabsContainer").tabs({ selected: 2, cache: false, show:function() { resizeInlineTabDivsWithoutSubDivs(138, 16);}, select: function(e, ui) { if (ui.index == 2) { $("#contentVersionAssetsFrame").attr("src", assetSrcUrl); }}  });
 			    	$("#contentVersionAssetsFrame").attr("src", assetSrcUrl);
 			    #else 
-		  			$("#tabsContainer").tabs({ cache: false, show:function() { resizeInlineTabDivsWithAmount(138, 16);}, select: function(e, ui) { if (ui.index == 2) { $("#contentVersionAssetsFrame").attr("src", assetSrcUrl); }}  });
+		  			$("#tabsContainer").tabs({ cache: false, show:function() { resizeInlineTabDivsWithoutSubDivs(138, 16);}, select: function(e, ui) { if (ui.index == 2) { $("#contentVersionAssetsFrame").attr("src", assetSrcUrl); }}  });
 			    	alert("Anchor: $anchor");
 		  		#end
 		  	#else
-		  		$("#tabsContainer").tabs({ cache: false, show:function() { resizeInlineTabDivsWithAmount(138, 16);}, select: function(e, ui) { if (ui.index == 2) { $("#contentVersionAssetsFrame").attr("src", assetSrcUrl); }} });
+		  		$("#tabsContainer").tabs({ cache: false, show:function() { resizeInlineTabDivsWithoutSubDivs(138, 16);}, select: function(e, ui) { if (ui.index == 2) { $("#contentVersionAssetsFrame").attr("src", assetSrcUrl); }} });
 			#end	
 			
 			#if($translate)
-			  	$("#otherLanguageTabsContainer").tabs({ cache: false, show:function() { resizeInlineTabDivsWithAmount(138, 16);}, select: function(e, ui) { if (ui.index == 2) { $("#contentVersionAssetsFrame").attr("src", assetSrcUrl); }}  });
+			  	$("#otherLanguageTabsContainer").tabs({ cache: false, show:function() { resizeInlineTabDivsWithoutSubDivs(138, 16);}, select: function(e, ui) { if (ui.index == 2) { $("#contentVersionAssetsFrame").attr("src", assetSrcUrl); }}  });
 			#end
 
 			$(window).resize( function() {
-	     		resizeInlineTabDivsWithAmount(138, 16);
+	     		resizeInlineTabDivsWithoutSubDivs(138, 16);
 	 		});
 	 			
-			setTimeout("resizeInlineTabDivsWithAmount(138, 16)", 100);
+			
+			setTimeout("resizeInlineTabDivsWithoutSubDivs(138, 16)", 100);
 			
 			generateWYSIWYGS();
 	
@@ -612,6 +613,12 @@
     						#set($enableStructureRelationEditor = "false")
     					#end
     					
+    					#set($enableComponentPropertiesEditor = "")
+						#set($enableComponentPropertiesEditor = $!attribute.getContentTypeAttribute("enableComponentPropertiesEditor").getContentTypeAttributeParameterValue().getLocalizedValue("label", $session.locale))
+						#if($enableComponentPropertiesEditor == "")
+							#set($enableComponentPropertiesEditor = "false")
+						#end
+    					
     					#set($activateExtendedEditorOnLoad = "")
     					#set($activateExtendedEditorOnLoad = $!attribute.getContentTypeAttribute("activateExtendedEditorOnLoad").getContentTypeAttributeParameterValue().getLocalizedValue("label", $session.locale))
     					#if(!$activateExtendedEditorOnLoad || $activateExtendedEditorOnLoad == "")
@@ -870,6 +877,86 @@
     									</script>
     								#end
     								
+    								#if($enableComponentPropertiesEditor == "true" && $readonly == "")
+									<!-- Here comes the Component Properties editor layer -->
+									<input type="hidden" id="${attribute.name}EditorType6IsActive" name="${attribute.name}EditorType6IsActive" value="false">
+									<div id="${attribute.name}EditorType6" name="${attribute.name}EditorType6" style="display:none; width:${width}px; height:${height}px; z-index:1; border: 1px solid #C2D0E2; overflow: auto;">
+									    <table cellpadding="0" cellspacing="0" border="0" width="100%" height="100%">
+									    <tr>
+									    	<td colspan="2" bgcolor="white" valign="top">
+												<p style="margin-top:5px; margin-left:5px;">
+												#if($contentVersionId > -1)
+												Component Properties (<a href="javascript:openRelationEditor('ViewComponentPropertiesEditor.action?contentVersionId=$!contentVersionId&attributeName=$!attribute.name');"><strong>Edit properties</strong></a>)
+												<hr noshade size="1">
+												#set($componentProperties = $this.getComponentPropertyDefinitions($this.getUnescapedAttributeValue($attribute.name)))
+												<table border="0" width="100%">
+													<tr style="background-color: #CCCCCC;">
+														<td valign="middle">
+														Property name 
+														</td>
+														<td valign="middle">
+														Type 
+														</td>
+														<td valign="middle">
+														Entity (if binding)
+														</td>
+														<td valign="middle">
+														Allow multiple items
+														</td>
+														<td valign="middle">
+														Asset binding
+														</td>
+														<td valign="middle">
+														Allowed content types
+														</td>
+														<td valign="middle">
+														Description
+														</td>
+													</tr>
+												#foreach($propertyDefinition in $componentProperties)
+													<tr>
+														<td valign="middle">
+														$propertyDefinition.name 
+														<td valign="middle">
+														$propertyDefinition.type 
+														</td>
+														<td valign="middle">
+														$propertyDefinition.entity 
+														</td>
+														<td valign="middle">
+														$propertyDefinition.multiple
+														</td>
+														<td valign="middle">
+														$propertyDefinition.assetBinding
+														</td>
+														<td valign="middle">
+														$propertyDefinition.allowedContentTypeNames
+														</td>
+														<td valign="middle">
+														$propertyDefinition.description
+														</td>
+													</tr>
+												#end
+												</table>
+												#else
+												You cannot use the editor until you have saved the first version of this content. Fill
+												in the rest of the form values and save without entering anything in this field. After that you
+												will be able to use the editor.
+												#end
+												</p>
+											</td>
+									    </tr>
+									    </table>
+									</div>	
+									<input type="hidden" id="${attribute.name}Hidden" name="${attribute.name}Hidden" value="$this.getAttributeValue($attribute.name)">
+									
+									<script type="text/javascript">
+										document.getElementById('${attribute.name}').style.display = "none";
+										document.getElementById('${attribute.name}EditorType6').style.display = "block";							
+										currentEditorIdHash["${attribute.name}CurrentEditorId"] = 6;
+									</script>
+								#end
+								
     					    		#if($enableFormEditor == "true" && $readonly == "" && $contentVersionId > -1)
     					    		<script type="text/javascript">
     					    			document.getElementById('${attribute.name}').style.display = "none";

@@ -132,9 +132,13 @@ function openUrlInWorkArea(url, tabLabel, targetTab)
 
 		$("#" + targetTab + "TabLabelMaximize").click(function () { 
 			if($("#work").css("position") == "absolute")
+			{
 				$("#work").css("position", "inherit").css("top", "").css("left", "").css("margin", "4px 4px 4px 0px").css("border-width", "1px").css("zIndex","");
+			}
 			else
+			{
 				$("#work").css("position", "absolute").css("top", "0px").css("left", "0px").css("margin", "0px 0px 0px 0px").css("border-width", "0px").css("zIndex","2000");
+			}
 		});
 
 		//alert("Size:" + $("#newTabDiv").size());
@@ -257,27 +261,43 @@ function resize()
 	{
 		$("#work").height(windowHeight - 88);
 		$("#work").width(windowWidth - (toolsWidth + 16));
+
+		$("#singleTabDiv").height(windowHeight - 115);
+		$("#contentTabDiv").height(windowHeight - 115);
+		$("#structureTabDiv").height(windowHeight - 115);
+		$("#managementTabDiv").height(windowHeight - 115);
+		$("#publishingTabDiv").height(windowHeight - 115);
+		$("#mydesktopTabDiv").height(windowHeight - 115);
+		$("#workIframe").attr("height", windowHeight - 115);
+		$("#contentWorkIframe").attr("height", windowHeight - 115);
+		$("#structureWorkIframe").attr("height", windowHeight - 115);
+		$("#managementWorkIframe").attr("height", windowHeight - 115);
+		$("#publishingWorkIframe").attr("height", windowHeight - 115);
+		$("#mydesktopWorkIframe").attr("height", windowHeight - 115);
+		$("#searchWorkIframe").attr("height", windowHeight - 50);
 	}
 	else
 	{
 		$("#work").height(windowHeight);
 		$("#work").width(windowWidth);
+		$("#tabsContainer").height(windowHeight - 28);
+		$("#tabsContainer > div").height(windowHeight - 28);
+
+		$("#singleTabDiv").height(windowHeight - 28);
+		$("#contentTabDiv").height(windowHeight - 28);
+		$("#structureTabDiv").height(windowHeight - 28);
+		$("#managementTabDiv").height(windowHeight - 28);
+		$("#publishingTabDiv").height(windowHeight - 28);
+		$("#mydesktopTabDiv").height(windowHeight - 28);
+		$("#workIframe").attr("height", windowHeight - 28);
+		$("#contentWorkIframe").attr("height", windowHeight - 28);
+		$("#structureWorkIframe").attr("height", windowHeight - 28);
+		$("#managementWorkIframe").attr("height", windowHeight - 28);
+		$("#publishingWorkIframe").attr("height", windowHeight - 28);
+		$("#mydesktopWorkIframe").attr("height", windowHeight - 28);
+		$("#searchWorkIframe").attr("height", windowHeight - 28);
 	}
 	
-	$("#singleTabDiv").height(windowHeight - 115);
-	$("#contentTabDiv").height(windowHeight - 115);
-	$("#structureTabDiv").height(windowHeight - 115);
-	$("#managementTabDiv").height(windowHeight - 115);
-	$("#publishingTabDiv").height(windowHeight - 115);
-	$("#mydesktopTabDiv").height(windowHeight - 115);
-	$("#workIframe").attr("height", windowHeight - 115);
-	$("#contentWorkIframe").attr("height", windowHeight - 115);
-	$("#structureWorkIframe").attr("height", windowHeight - 115);
-	$("#managementWorkIframe").attr("height", windowHeight - 115);
-	$("#publishingWorkIframe").attr("height", windowHeight - 115);
-	$("#mydesktopWorkIframe").attr("height", windowHeight - 115);
-	$("#searchWorkIframe").attr("height", windowHeight - 50);
-
 	var availableToolsHeight = $("#availableTools").height();
 	var activeToolHeaderHeight = $("#activeToolHeader").height();
 	//alert("availableToolsHeight:" + availableToolsHeight);

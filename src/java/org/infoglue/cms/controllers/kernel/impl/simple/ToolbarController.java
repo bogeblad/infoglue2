@@ -505,6 +505,7 @@ public class ToolbarController
 		Integer contentId = new Integer(request.getParameter("contentId"));
 		ContentVO contentVO = ContentController.getContentController().getContentVOWithId(contentId);
 		
+		
 		ToolbarButton createButton = new ToolbarButton("",
 				  getLocalizedString(locale, "tool.contenttool.toolbarV3.createContentLabel"), 
 				  getLocalizedString(locale, "tool.contenttool.toolbarV3.createContentTitle"),
@@ -611,6 +612,16 @@ public class ToolbarController
 		unpublishButton.getSubButtons().add(unpublishAllButton);
 		buttons.add(unpublishButton);
 
+		if(contentVO.getIsProtected().intValue() == ContentVO.YES.intValue())
+		{
+			buttons.add(new ToolbarButton("",
+				  getLocalizedString(locale, "tool.common.accessRights.accessRightsButtonLabel"), 
+				  getLocalizedString(locale, "tool.common.accessRights.accessRightsButtonTitle"),
+				  "ViewAccessRights!V3.action?interceptionPointCategory=Content&extraParameters=" + contentVO.getId() + "&returnAddress=ViewInlineOperationMessages.action&originalAddress=refreshParent",
+				  "images/v3/accessRightIcon.gif",
+				  "accessRights"));
+		}
+		
 		ToolbarButton syncTreeButton = new ToolbarButton("",
 				  getLocalizedString(locale, "tool.contenttool.toolbarV3.showContentInTreeLabel"), 
 				  getLocalizedString(locale, "tool.contenttool.toolbarV3.showContentInTreeTitle"),
@@ -788,6 +799,16 @@ public class ToolbarController
 		unpublishButton.getSubButtons().add(unpublishAllButton);
 		buttons.add(unpublishButton);
 
+		if(contentVO.getIsProtected().intValue() == ContentVO.YES.intValue())
+		{
+			buttons.add(new ToolbarButton("",
+				  getLocalizedString(locale, "tool.common.accessRights.accessRightsButtonLabel"), 
+				  getLocalizedString(locale, "tool.common.accessRights.accessRightsButtonTitle"),
+				  "ViewAccessRights!V3.action?interceptionPointCategory=Content&extraParameters=" + contentId + "&returnAddress=ViewInlineOperationMessages.action&originalAddress=refreshParent",
+				  "images/v3/accessRightIcon.gif",
+				  "accessRights"));
+		}
+
 		buttons.add(new ToolbarButton("",
 				  getLocalizedString(locale, "tool.contenttool.toolbarV3.showContentInTreeLabel"), 
 				  getLocalizedString(locale, "tool.contenttool.toolbarV3.showContentInTreeTitle"),
@@ -935,6 +956,16 @@ public class ToolbarController
 		publishButton.getSubButtons().add(publishStructureButton);
 		
 		buttons.add(publishButton);
+
+		if(siteNodeVersionVO.getIsProtected().intValue() == SiteNodeVersionVO.YES.intValue())
+		{
+			buttons.add(new ToolbarButton("",
+				  getLocalizedString(locale, "tool.common.accessRights.accessRightsButtonLabel"), 
+				  getLocalizedString(locale, "tool.common.accessRights.accessRightsButtonTitle"),
+				  "ViewAccessRights!V3.action?interceptionPointCategory=SiteNodeVersion&extraParameters=" + siteNodeVersionVO.getId() + "&returnAddress=ViewInlineOperationMessages.action&originalAddress=refreshParent",
+				  "images/v3/accessRightIcon.gif",
+				  "accessRights"));
+		}
 
 		//buttons.add(StructureToolbarController.getTasksButtons(new Integer(repositoryId), new Integer(siteNodeId), locale));
 

@@ -2085,7 +2085,7 @@ $ui.getString("entity.${fieldNameKey}.label")<br/>
                 				'$button.confirmationTitle': function() {
                 					$(this).dialog('close');
                 					#if($button.target == "inlineDiv")
-                						openInlineDiv("$button.actionURL", 600, 800, true, true, "$button.confirmationTitle"); 
+                						openInlineDiv("$button.actionURL", 700, 900, true, true, "$button.confirmationTitle"); 
 			    		           	#else
 			    		           		window.frames["$button.target"].$button.actionURL;
 			    		           	#end
@@ -2103,7 +2103,7 @@ $ui.getString("entity.${fieldNameKey}.label")<br/>
 						//alert("Click on link");
     	            	#if($button.actionURL.indexOf("javascript") == -1 && $button.isJavascript == false && $button.actionURL != '')
     		           		#if($button.target == "inlineDiv")
-	    		           		openInlineDiv("$button.actionURL", 600, 800, true, true, "");
+	    		           		openInlineDiv("$button.actionURL", 700, 900, true, true, "");
 	    		           	#else
 	    		           		$("#$button.target").attr("src", "$button.actionURL");
 	    		           	#end
@@ -2169,7 +2169,7 @@ $ui.getString("entity.${fieldNameKey}.label")<br/>
 	                				'$button.confirmationTitle': function() {
 	                					$(this).dialog('close');
 	                					#if($button.target == "inlineDiv")
-	                						openInlineDiv("$button.actionURL", 600, 800, true, true, "$button.confirmationTitle"); 
+	                						openInlineDiv("$button.actionURL", 700, 900, true, true, "$button.confirmationTitle"); 
 				    		           	#else
 				    		           		window.frames["$button.target"].$button.actionURL;
 				    		           	#end
@@ -2187,7 +2187,7 @@ $ui.getString("entity.${fieldNameKey}.label")<br/>
 							//alert("Click on link");
 	    	            	#if($button.actionURL.indexOf("javascript") == -1 && $button.isJavascript == false && $button.actionURL != '')
 	    		           		#if($button.target == "inlineDiv")
-		    		           		openInlineDiv("$button.actionURL", 600, 800, true, true, "");
+		    		           		openInlineDiv("$button.actionURL", 700, 900, true, true, "");
 		    		           	#else
 		    		           		$("#$button.target").attr("src", "$button.actionURL");
 		    		           	#end
@@ -2219,7 +2219,7 @@ $ui.getString("entity.${fieldNameKey}.label")<br/>
 		                				'$subButton.confirmationTitle': function() {
 		                					$(this).dialog('close');
 		                					#if($subButton.target == "inlineDiv")
-		                						openInlineDiv("$subButton.actionURL", 600, 800, true, true, "$subButton.confirmationTitle"); 
+		                						openInlineDiv("$subButton.actionURL", 700, 900, true, true, "$subButton.confirmationTitle"); 
 					    		           	#else
 					    		           		window.frames["$subButton.target"].$subButton.actionURL;
 					    		           	#end
@@ -2236,7 +2236,7 @@ $ui.getString("entity.${fieldNameKey}.label")<br/>
 							$("#subButton${parentCount}_$velocityCount").click(function(){
 				            	#if($subButton.actionURL.indexOf("javascript") == -1 && $subButton.isJavascript == false && $subButton.actionURL != '')
 		    		           		#if($subButton.target == "inlineDiv")
-			    		           		openInlineDiv("$subButton.actionURL", 600, 800, true, true, "");
+			    		           		openInlineDiv("$subButton.actionURL", 700, 900, true, true, "");
 			    		           	#else
 			    		           		$("#$subButton.target").attr("src", "$subButton.actionURL");
 			    		           	#end
