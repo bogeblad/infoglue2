@@ -353,7 +353,7 @@ public class DocumentConverterHelper
 			{
 				if(tmpChild != null && !((Element)tmpChild).getText().equals(""))
 				{
-					String tmp = elementText.substring(0, elementText.indexOf(" ")).replace(".", "");
+					String tmp = ((Element)tmpChild).getText().substring(0, ((Element)tmpChild).getText().indexOf(" ")).replace(".", "");
 					
 					headingIds.append(tmp);
 					headingIds.append(",");
@@ -362,14 +362,11 @@ public class DocumentConverterHelper
 				{
 					grandChild = ((Element)tmpChild).getChild("a", textNs);
 					
-					if (grandChild != null)
+					if (grandChild != null && grandChild.getText().indexOf(" ") != -1)
 					{
-						if(grandChild.getText().indexOf(" ") != -1)
-						{
-							String tmp = grandChild.getText().substring(0, grandChild.getText().indexOf(" ")).replace(".", "");
-							headingIds.append(tmp);
-							headingIds.append(",");
-						}
+						String tmp = grandChild.getText().substring(0, grandChild.getText().indexOf(" ")).replace(".", "");
+						headingIds.append(tmp);
+						headingIds.append(",");
 					}
 				}
 			}
