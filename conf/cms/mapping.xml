@@ -667,7 +667,7 @@
 <!--  Mapping for Qualifyer  -->
   <class name="org.infoglue.cms.entities.structure.impl.simple.QualifyerImpl" depends="org.infoglue.cms.entities.structure.impl.simple.ServiceBindingImpl" identity="qualifyerId" key-generator="IDENTITY">
     <description>Qualifyer</description>
-    <cache-type type="unlimited" capacity="10000"/>
+	<cache-type type="unlimited"/>
     <map-to table="cmQualifyer"/>
     <field name="qualifyerId" type="java.lang.Integer">
       <sql name="qualifyerId" type="integer" dirty="check" />
@@ -1389,7 +1389,7 @@
 <!--  Mapping for Event  -->
   <class name="org.infoglue.cms.entities.workflow.impl.simple.EventImpl" identity="eventId" key-generator="IDENTITY">
     <description>Event</description>
-    <cache-type type="unlimited" capacity="1000"/>
+    <cache-type type="unlimited"/>
     <map-to table="cmEvent"/>
     <field name="eventId" type="java.lang.Integer">
       <sql name="eventId" type="integer" dirty="check" />
