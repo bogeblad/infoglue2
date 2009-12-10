@@ -175,7 +175,7 @@ public class Counter
     	return pageStatistics;
     }
 
-    synchronized static void registerComponentStatistics(String componentName, long elapsedTime)
+    /*synchronized*/ static void registerComponentStatistics(String componentName, long elapsedTime)
     {
     	Map componentStatistics = getComponentStatistics(componentName);   
     	synchronized (componentStatistics) 
@@ -190,7 +190,7 @@ public class Counter
     	}    	
     }
 
-    synchronized static void registerPageStatistics(String pageUrl, long elapsedTime)
+    /*synchronized*/ static void registerPageStatistics(String pageUrl, long elapsedTime)
     {
     	Map pageStatistics = getPageStatistics(pageUrl);   
     	synchronized (pageStatistics) 
@@ -296,8 +296,8 @@ public class Counter
 	
 	            Collections.sort(unsortedPageUrls, new AverageInvokingTimeComparator());
 	            
-	            if(unsortedPageUrls.size() > 5)
-	            	unsortedPageUrls = unsortedPageUrls.subList(0, 5);
+	            if(unsortedPageUrls.size() > 50)
+	            	unsortedPageUrls = unsortedPageUrls.subList(0, 50);
 	            
 	            Iterator unsortedPageUrlsIterator = unsortedPageUrls.iterator();
 	            while(unsortedPageUrlsIterator.hasNext())

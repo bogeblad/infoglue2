@@ -242,8 +242,9 @@ public class VelocityTemplateProcessor
 		    templateController.getHttpServletRequest().setAttribute("org.infoglue.cms.deliver.portalLogic", portletController);
 		    final CharResponseWrapper wrapper = new CharResponseWrapper(deliveryContext.getHttpServletResponse());
 		    final RequestDispatcher dispatch = templateController.getHttpServletRequest().getRequestDispatcher("/jsp/" + fileName);
+		    
 		    dispatch.include(templateController.getHttpServletRequest(), wrapper);
-
+		    
 		    pw.println(wrapper.toCharArray());
 	    }
 	    else if(scriptController != null)

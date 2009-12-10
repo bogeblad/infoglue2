@@ -1411,7 +1411,7 @@ public class ComponentLogic
 		    String key = "" + templateController.getSiteNodeId() + "_" + templateController.getLanguageId() + "_" + component.getName() + "_" + component.getSlotName() + "_" + component.getContentId() + "_" + component.getId() + "_" + component.getIsInherited() + "_" + propertyName + "_" + useInheritance + "_" + useRepositoryInheritance + "_" + useStructureInheritance + "_" + useComponentInheritance; 
 		    String versionKey = key + "_contentVersionIds";
 			Object propertyCandidate = CacheController.getCachedObjectFromAdvancedCache("componentPropertyCache", key);
-			Set propertyCandidateVersions = (Set)CacheController.getCachedObjectFromAdvancedCache("componentPropertyCache", versionKey);
+			Set propertyCandidateVersions = (Set)CacheController.getCachedObjectFromAdvancedCache("componentPropertyVersionIdCache", versionKey);
 
 			if(propertyCandidate != null)
 			{
@@ -1455,7 +1455,7 @@ public class ComponentLogic
 			    	groups.add("selectiveCacheUpdateNonApplicable");
 			    
 			    CacheController.cacheObjectInAdvancedCacheWithGroupsAsSet("componentPropertyCache", key, property, groups, true);
-			    CacheController.cacheObjectInAdvancedCacheWithGroupsAsSet("componentPropertyCache", versionKey, contentVersionIdList, groups, true);
+			    CacheController.cacheObjectInAdvancedCacheWithGroupsAsSet("componentPropertyVersionIdCache", versionKey, contentVersionIdList, groups, true);
 			}
 		}
 		catch(Exception e)
@@ -1601,7 +1601,7 @@ public class ComponentLogic
 		    String key = "" + siteNodeId + "_" + languageId + "_" + propertyName;
 		    String versionKey = key + "_contentVersionIds";
 			Object propertyCandidate = CacheController.getCachedObjectFromAdvancedCache("componentPropertyCache", key);
-			Set propertyCandidateVersions = (Set)CacheController.getCachedObjectFromAdvancedCache("componentPropertyCache", versionKey);
+			Set propertyCandidateVersions = (Set)CacheController.getCachedObjectFromAdvancedCache("componentPropertyVersionIdCache", versionKey);
 
 			if(propertyCandidate != null)
 			{
@@ -1711,14 +1711,13 @@ public class ComponentLogic
 							//}
 					    }
 					    
-					    //System.out.println("Adding group: " + "siteNode_" + templateController.getSiteNodeId());
 					    groups.add("siteNode_" + templateController.getSiteNodeId());
-
+					    
 					    if(templateController.getDeliveryContext().getUsedContents().contains("selectiveCacheUpdateNonApplicable"))
 					    	groups.add("selectiveCacheUpdateNonApplicable");
 
 					    CacheController.cacheObjectInAdvancedCacheWithGroupsAsSet("componentPropertyCache", key, property, groups, true);
-					    CacheController.cacheObjectInAdvancedCacheWithGroupsAsSet("componentPropertyCache", versionKey, contentVersionIdList, groups, true);
+					    CacheController.cacheObjectInAdvancedCacheWithGroupsAsSet("componentPropertyVersionIdCache", versionKey, contentVersionIdList, groups, true);
 			        }
 					//TODO - TEST
 					/*
@@ -1744,7 +1743,7 @@ public class ComponentLogic
 
 //						  	TODO - TEST - NOT SAFE							
 						    CacheController.cacheObjectInAdvancedCacheWithGroupsAsSet("componentPropertyCache", key, new NullObject(), groups, true);
-						    CacheController.cacheObjectInAdvancedCacheWithGroupsAsSet("componentPropertyCache", versionKey, contentVersionIdList, groups, true);
+						    CacheController.cacheObjectInAdvancedCacheWithGroupsAsSet("componentPropertyVersionIdCache", versionKey, contentVersionIdList, groups, true);
 						}
 						else
 						{
@@ -1917,7 +1916,7 @@ public class ComponentLogic
 	    String key = "inherited_" + templateController.getSiteNodeId() + "_" + siteNodeId + "_" + languageId + "_" + componentId + "_" + propertyName;
 	    String versionKey = key + "_contentVersionIds";
 		Object propertyCandidate = CacheController.getCachedObjectFromAdvancedCache("componentPropertyCache", key);
-		Set propertyCandidateVersions = (Set)CacheController.getCachedObjectFromAdvancedCache("componentPropertyCache", versionKey);
+		Set propertyCandidateVersions = (Set)CacheController.getCachedObjectFromAdvancedCache("componentPropertyVersionIdCache", versionKey);
 		Map property = null;
 			
 		if(propertyCandidate != null)
@@ -1970,7 +1969,7 @@ public class ComponentLogic
 			    
 			    //TODO
 		    	//CacheController.cacheObjectInAdvancedCacheWithGroupsAsSet("componentPropertyCache", key, property, groups, true);
-			    //CacheController.cacheObjectInAdvancedCacheWithGroupsAsSet("componentPropertyCache", versionKey, contentVersionIdList, groups, true);
+			    //CacheController.cacheObjectInAdvancedCacheWithGroupsAsSet("componentPropertyVersionIdCache", versionKey, contentVersionIdList, groups, true);
 		    }
 			else
 			{
@@ -1994,7 +1993,7 @@ public class ComponentLogic
 
 //				  	TODO - TEST - NOT SAFE
 				    //CacheController.cacheObjectInAdvancedCacheWithGroupsAsSet("componentPropertyCache", key, new NullObject(), groups, true);
-				    //CacheController.cacheObjectInAdvancedCacheWithGroupsAsSet("componentPropertyCache", versionKey, contentVersionIdList, groups, true);
+				    //CacheController.cacheObjectInAdvancedCacheWithGroupsAsSet("componentPropertyVersionIdCache", versionKey, contentVersionIdList, groups, true);
 				}
 				else
 				{
@@ -2458,7 +2457,7 @@ public class ComponentLogic
 	    String key = "all_" + siteNodeId + "_" + languageId + "_" + propertyName;
 	    String versionKey = key + "_contentVersionIds";
 		List properties = (List)CacheController.getCachedObjectFromAdvancedCache("componentPropertyCache", key);
-		Set propertyCandidateVersions = (Set)CacheController.getCachedObjectFromAdvancedCache("componentPropertyCache", versionKey);
+		Set propertyCandidateVersions = (Set)CacheController.getCachedObjectFromAdvancedCache("componentPropertyVersionIdCache", versionKey);
 		
 		if(properties != null)
 		{
@@ -2575,14 +2574,13 @@ public class ComponentLogic
 				    groups.add("content_" + contentVersionVO.getContentId());
 				}
 				
-			    //System.out.println("Adding group: " + "siteNode_" + templateController.getSiteNodeId());
 			    groups.add("siteNode_" + templateController.getSiteNodeId());
 
 			    if(templateController.getDeliveryContext().getUsedContents().contains("selectiveCacheUpdateNonApplicable"))
 			    	groups.add("selectiveCacheUpdateNonApplicable");
 
 			    CacheController.cacheObjectInAdvancedCacheWithGroupsAsSet("componentPropertyCache", key, properties, groups, true);
-			    CacheController.cacheObjectInAdvancedCacheWithGroupsAsSet("componentPropertyCache", versionKey, contentVersionIdList, groups, true);
+			    CacheController.cacheObjectInAdvancedCacheWithGroupsAsSet("componentPropertyVersionIdCache", versionKey, contentVersionIdList, groups, true);
 	        }
 		}
 		
@@ -2890,14 +2888,14 @@ public class ComponentLogic
 		String cacheName 	= "componentEditorCache";
 		String cacheKey		= "pageComponentString_" + siteNodeId + "_" + languageId + "_" + contentId;
 		String versionKey 	= cacheKey + "_contentVersionId";
-		String cachedPageComponentsString = (String)CacheController.getCachedObject(cacheName, cacheKey);
-		Set contentVersionIds = (Set)CacheController.getCachedObjectFromAdvancedCache("contentVersionCache", versionKey);
-																			
+		
+		String cachedPageComponentsString = (String)CacheController.getCachedObjectFromAdvancedCache(cacheName, cacheKey);
+		Set contentVersionIds = (Set)CacheController.getCachedObjectFromAdvancedCache("componentEditorVersionIdCache", versionKey);
 		if(cachedPageComponentsString != null)
 		{
 		    if(usedContentVersionId != null && contentVersionIds != null)
 		        usedContentVersionId.addAll(contentVersionIds);
-	        
+
 			return cachedPageComponentsString;
 		}
 		
@@ -2918,7 +2916,7 @@ public class ComponentLogic
 		if(pageComponentsString == null)
 			throw new SystemException("There was no Meta Information bound to this page [" + siteNodeId + "] which makes it impossible to render.");	
 	
-		CacheController.cacheObject(cacheName, cacheKey, pageComponentsString);
+		CacheController.cacheObjectInAdvancedCache(cacheName, cacheKey, pageComponentsString, null, false);
 		
 		if(usedContentVersionId != null && usedContentVersionId.size() > 0)
 		{
@@ -2932,7 +2930,7 @@ public class ComponentLogic
 			    groups.add("content_" + contentVersionVO.getContentId());
 			}
 
-		    CacheController.cacheObjectInAdvancedCacheWithGroupsAsSet("contentVersionCache", versionKey, usedContentVersionId, groups, true);
+		    CacheController.cacheObjectInAdvancedCacheWithGroupsAsSet("contentVersionIdCache", versionKey, usedContentVersionId, groups, true);
 		}
 		
 		return pageComponentsString;
@@ -3291,7 +3289,7 @@ public class ComponentLogic
 				SiteNodeVO siteNode = templateController.getSiteNode(siteNodeId);
 				if(siteNode != null)
 				{
-					WebPage webPage = new WebPage();						
+					WebPage webPage = new WebPage();					
 					webPage.setSiteNodeId(siteNodeId);
 					webPage.setLanguageId(templateController.getLanguageId());
 					webPage.setContentId(null);

@@ -737,8 +737,6 @@ public class BasicURLComposer extends URLComposer
         	enableNiceURI = "false";
         
 	    String enableNiceURIForLanguage = CmsPropertyHandler.getEnableNiceURIForLanguage();
-    	System.out.println("enableNiceURIForLanguage:" + enableNiceURIForLanguage);
-
         if(enableNiceURI.equalsIgnoreCase("true") && !deliveryContext.getDisableNiceUri() && !enableNiceURIForLanguage.equalsIgnoreCase("true"))
         {
             if (pageUrl.indexOf("?") == -1) 

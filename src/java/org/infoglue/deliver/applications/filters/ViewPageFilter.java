@@ -220,18 +220,6 @@ public class ViewPageFilter implements Filter
 			            	{
 			            		nodeNameList.add(nodeName);
 			            	}
-			            	/*
-			            	else if(i < 2) //Could be a language code
-			            	{
-			            		System.out.println("nodeName:" + nodeName);
-			            		LanguageVO languageVO = LanguageDeliveryController.getLanguageDeliveryController().getLanguageWithCode(db, nodeName);
-			            		System.out.println("languageVO:" + languageVO);
-			            		if(languageVO != null)
-			            		{
-			            			System.out.println("LanguageVO:" + languageVO.getName() + " had the code of the page");
-			            		}
-			            	}
-			            	*/
 			            }
 
 	            		nodeNames = new String[nodeNameList.size()];
@@ -273,11 +261,7 @@ public class ViewPageFilter implements Filter
 		                    logger.info("Getting node from:" + repositoryVO.getName());
 		                    //TODO
 		                    DeliveryContext deliveryContext = DeliveryContext.getDeliveryContext();
-		                    System.out.println("languageId before:" + languageId);
-		                    System.out.println("languageId before2:" + deliveryContext.getLanguageId());
 		                    siteNodeId = NodeDeliveryController.getSiteNodeIdFromPath(infoGluePrincipal, repositoryVO, nodeNames, attributeName, deliveryContext, httpSession, languageId);
-		                    System.out.println("languageId after:" + languageId);
-		                    System.out.println("languageId after2:" + deliveryContext.getLanguageId());
 		                    if(deliveryContext.getLanguageId() != null && !deliveryContext.getLanguageId().equals(languageId))
 		                    {
 		                    	languageId = deliveryContext.getLanguageId();
@@ -513,7 +497,7 @@ public class ViewPageFilter implements Filter
         					}
         				}
         				
-        				startIndex = dnsName.indexOf(serverName, startIndex);
+        				startIndex = dnsName.indexOf(serverName, startIndex + 1);
         			}
         		}
         	}

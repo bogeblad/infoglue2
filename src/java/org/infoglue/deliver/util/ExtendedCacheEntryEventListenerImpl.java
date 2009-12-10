@@ -84,7 +84,9 @@ public class ExtendedCacheEntryEventListenerImpl extends CacheEntryEventListener
             	{
             		oldSize = (content.toString().length() * 2) + 38;
             	}
-            }            
+            }         
+            
+        	oldSize = oldSize + (event.getEntry().getKey().length() * 2) + 38; 
         }
         catch (NeedsRefreshException e)
         {

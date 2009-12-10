@@ -63,7 +63,7 @@ public class ComponentProperty
 	private String value;
 	private boolean isMultipleBinding 		= false;
 	private boolean isAssetBinding 			= false;
-	private String assetMask 				= ".*";
+	private String assetMask 				= "*";
 	private boolean isPuffContentForPage	= false;
 	private Integer detailSiteNodeId		= null;
 	private boolean WYSIWYGEnabled 			= false;
@@ -300,7 +300,7 @@ public class ComponentProperty
         {
             if (i > 0)
             {
-                sb.append("&amp;");
+                sb.append("&");
             }
 
             sb.append("allowedContentTypeNames=" + URLEncoder.encode(allowedContentTypeNamesArray[i], "UTF-8"));
@@ -317,7 +317,7 @@ public class ComponentProperty
         {
             if (i > 0)
             {
-                sb.append("&amp;");
+                sb.append("&");
             }
 
             allowedContentTypeName = allowedContentTypeNamesArray[i];

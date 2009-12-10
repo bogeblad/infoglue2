@@ -44,8 +44,75 @@ public class ExpireCacheJob implements Job
     private final static Logger logger = Logger.getLogger(ExpireCacheJob.class.getName());
     private static Integer intervalCount = 0;
     
+    private static long lastCacheCheck = System.currentTimeMillis();
+    private static long lastCacheCleanup = System.currentTimeMillis();
+    
     public synchronized void execute(JobExecutionContext context) throws JobExecutionException
     {
+    	long diffLastCacheCheck = ((System.currentTimeMillis() - lastCacheCheck) / 1000);
+		logger.info("diffLastCacheCheck " + diffLastCacheCheck + " in " + CmsPropertyHandler.getApplicationName() + " - " + Thread.currentThread().getId());
+	    if(diffLastCacheCheck > 600)
+		{
+	        synchronized(RequestAnalyser.getRequestAnalyser()) 
+		    {
+		       	if(RequestAnalyser.getRequestAnalyser().getBlockRequests())
+			    {
+				    logger.warn("evictWaitingCache allready in progress - returning to avoid conflict");
+			        return;
+			    }
+	
+		       	RequestAnalyser.getRequestAnalyser().setBlockRequests(true);
+			}
+	
+			try
+	        {
+				logger.info("Validating caches in " + CmsPropertyHandler.getApplicationName() + " - " + Thread.currentThread().getId());
+		    	CacheController.validateCaches();
+				RequestAnalyser.shortenPageStatistics();
+		    	lastCacheCheck = System.currentTimeMillis();
+	        }
+	        catch(Exception e)
+	        {
+	            logger.error("An error occurred when we tried to clear caches:" + e.getMessage(), e);
+	        }
+		    
+		    logger.info("releasing block");
+		    RequestAnalyser.getRequestAnalyser().setBlockRequests(false);
+    	}
+    	
+    	long diff = ((System.currentTimeMillis() - lastCacheCleanup) / 1000);
+    	if(diff > 3600)
+    	{
+    		logger.info("Cleaning heavy caches so memory footprint is kept low:" + diff);
+            synchronized(RequestAnalyser.getRequestAnalyser()) 
+    	    {
+    	       	if(RequestAnalyser.getRequestAnalyser().getBlockRequests())
+    		    {
+    			    logger.warn("evictWaitingCache allready in progress - returning to avoid conflict");
+    		        return;
+    		    }
+
+    	       	RequestAnalyser.getRequestAnalyser().setBlockRequests(true);
+    		}
+
+			try
+            {
+    			logger.info("Finally clearing page cache as this was a publishing-update");
+    			CacheController.clearCache("componentEditorCache");
+    			CacheController.clearCache("componentEditorVersionIdCache");
+    		    CacheController.clearCache("pageCache");
+    		    CacheController.clearCache("pageCacheExtra");
+    		    lastCacheCleanup = System.currentTimeMillis();
+            }
+            catch(Exception e)
+            {
+                logger.error("An error occurred when we tried to clear caches:" + e.getMessage(), e);
+            }
+		    
+		    logger.info("releasing block");
+		    RequestAnalyser.getRequestAnalyser().setBlockRequests(false);
+    	}
+
         try
         {
             CacheController.evictWaitingCache();
@@ -53,7 +120,7 @@ public class ExpireCacheJob implements Job
         catch (Exception e)
         {
             e.printStackTrace();
-        }
+        }    	
 
         logger.info("---" + context.getJobDetail().getFullName() + " executing.[" + new Date() + "]");
 
@@ -171,7 +238,7 @@ public class ExpireCacheJob implements Job
                 intervalCount++;
 	            if(intervalCount > 50)
 	            {
-	                logger.warn("Cleaning cache directory as intervalCount:" + intervalCount);
+	                logger.info("Cleaning cache directory as intervalCount:" + intervalCount);
 	                String dir = CmsPropertyHandler.getDigitalAssetPath() + File.separator + "caches";
 	                File dirFile = new File(dir);
 	                if(dirFile.exists())

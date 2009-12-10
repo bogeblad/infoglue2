@@ -403,15 +403,11 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 		//String attributeKey = "" + contentVO.getId() + "_" + languageId + "_" + attributeName + "_" + true + "_" + false;
 		//String versionKey 	= attributeKey + "_contentVersionId";
 
-	    String cachedPageComponentsString = (String)CacheController.getCachedObject(cacheName, cacheKey);
-	    Set contentVersionId = (Set)CacheController.getCachedObjectFromAdvancedCache("contentVersionCache", versionKey);
-	    //logger.info("Getting with versionKey-------------------------->:" + versionKey);
-
+	    String cachedPageComponentsString = (String)CacheController.getCachedObjectFromAdvancedCache(cacheName, cacheKey);
+	    Set contentVersionId = (Set)CacheController.getCachedObjectFromAdvancedCache("componentEditorVersionIdCache", versionKey);
 
 		if(cachedPageComponentsString != null)
 		{
-		    //logger.info("Returning cached...");
-		    //logger.info("First added..." + versionKey + ":" + "contentVersion:" + contentVersionId);
 			if(contentVersionId != null)
 			{    
 				Iterator contentVersionIdIterator = contentVersionId.iterator();
@@ -435,11 +431,8 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 		
 		if(pageComponentsString == null)
 			throw new SystemException("There was no Meta Information bound to this page which makes it impossible to render.");	
-				    
-		logger.info("pageComponentsString: " + pageComponentsString);
 	
-		CacheController.cacheObject(cacheName, cacheKey, pageComponentsString);
-	    //logger.info("Caching usedContentVersionId for cacheKey: " + cacheKey + ":" + templateController.getDeliveryContext().getPageMetaInfoContentVersionId());
+		CacheController.cacheObjectInAdvancedCache(cacheName, cacheKey, pageComponentsString);
 		
 	    Set contentVersionIds = new InfoGlueHashSet();
 	    //TODO - måste fixa så att inte nulls slängs in i getUsedPageMetaInfoContentVersionIdSet... hur det kan hända
@@ -454,48 +447,18 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 		}
 		
 		if(groups.size() > 0)
-			CacheController.cacheObjectInAdvancedCacheWithGroupsAsSet("contentVersionCache", versionKey, contentVersionIds, groups, true);
+		{
+			CacheController.cacheObjectInAdvancedCacheWithGroupsAsSet("componentEditorVersionIdCache", versionKey, contentVersionIds, groups, true);
+		}
 		
 		return pageComponentsString;
 	}
-
-
-	/**
-	 * This method fetches the pageComponent structure as a document.
-	 */
-	/*
-	protected org.w3c.dom.Document getPageComponentsDocument(Database db, TemplateController templateController, Integer siteNodeId, Integer languageId, Integer contentId) throws SystemException, Exception
-	{ 
-		String cacheName 	= "componentEditorCache";
-		String cacheKey		= "pageComponentDocument_" + siteNodeId + "_" + languageId + "_" + contentId;
-		org.w3c.dom.Document cachedPageComponentsDocument = (org.w3c.dom.Document)CacheController.getCachedObject(cacheName, cacheKey);
-		if(cachedPageComponentsDocument != null)
-			return cachedPageComponentsDocument;
-		
-		org.w3c.dom.Document pageComponentsDocument = null;
-   	
-		try
-		{
-			String xml = this.getPageComponentsString(db, templateController, siteNodeId, languageId, contentId);
-			pageComponentsDocument = XMLHelper.readDocumentFromByteArray(xml.getBytes("UTF-8"));
-			
-			CacheController.cacheObject(cacheName, cacheKey, pageComponentsDocument);
-		}
-		catch(Exception e)
-		{
-			logger.error(e.getMessage(), e);
-			throw e;
-		}
-		
-		return pageComponentsDocument;
-	}
-	*/
 
 	protected org.dom4j.Document getPageComponentsDOM4JDocument(Database db, TemplateController templateController, Integer siteNodeId, Integer languageId, Integer contentId) throws SystemException, Exception
 	{ 
 		String cacheName 	= "componentEditorCache";
 		String cacheKey		= "pageComponentDocument_" + siteNodeId + "_" + languageId + "_" + contentId;
-		org.dom4j.Document cachedPageComponentsDocument = (org.dom4j.Document)CacheController.getCachedObject(cacheName, cacheKey);
+		org.dom4j.Document cachedPageComponentsDocument = (org.dom4j.Document)CacheController.getCachedObjectFromAdvancedCache(cacheName, cacheKey);
 		if(cachedPageComponentsDocument != null)
 			return cachedPageComponentsDocument;
 		
@@ -506,7 +469,7 @@ public class ComponentBasedHTMLPageInvoker extends PageInvoker
 			String xml = this.getPageComponentsString(db, templateController, siteNodeId, languageId, contentId);
 			pageComponentsDocument = domBuilder.getDocument(xml);
 			
-			CacheController.cacheObject(cacheName, cacheKey, pageComponentsDocument);
+			CacheController.cacheObjectInAdvancedCache(cacheName, cacheKey, pageComponentsDocument);
 		}
 		catch(Exception e)
 		{

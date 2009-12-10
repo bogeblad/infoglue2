@@ -162,12 +162,12 @@ public class RequestAnalyser
         return threads;
     }
 
-    public synchronized void registerComponentStatistics(String componentName, long elapsedTime)
+    public /*synchronized*/ void registerComponentStatistics(String componentName, long elapsedTime)
     {
         Counter.registerComponentStatistics(componentName, elapsedTime);
     }
 
-    public synchronized void registerPageStatistics(String pageUrl, long elapsedTime)
+    public /*synchronized*/ void registerPageStatistics(String pageUrl, long elapsedTime)
     {
         Counter.registerPageStatistics(pageUrl, elapsedTime);
     }
