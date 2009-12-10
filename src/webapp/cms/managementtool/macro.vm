@@ -1502,17 +1502,21 @@
     #end
   #end
   <br/>
-  <textarea class="$className" wrap="virtual" id="$fieldName" name="$fieldName" rows="$rows" cols="$cols">$!fieldValue</textarea><a href="ViewServerNodeProperties!deleteProperty.action?serverNodeId=$!serverNodeId&key=$fieldName"><img src="images/delete.gif" border="0"/></a>
+  <textarea class="$className" wrap="virtual" id="$fieldName" name="$fieldName" rows="$rows" cols="$cols">$!fieldValue</textarea>
+  <a href="javascript:deleteProperty($!serverNodeId, '$fieldName');"><img src="images/delete.gif" border="0"/></a>
 #end
 
-#macro(editPropertyTextAreaCSS $fieldNameKey $fieldName $fieldValue $cols $rows $className $serverNodeId)
-  #editPropertyTextAreaCSS3($ui.getString("entity.${fieldNameKey}.label") $fieldNameKey $fieldName $fieldValue $cols $rows $className $serverNodeId)
+#macro(editPropertyTextAreaCSS $fieldNameKey $fieldName $fieldValue $cols $rows $className $serverNodeId $actualCurrentValue)
+  #editPropertyTextAreaCSS3($ui.getString("entity.${fieldNameKey}.label") $fieldNameKey $fieldName $fieldValue $actualCurrentValue $cols $rows $className $serverNodeId)
 #end
 
-#macro(editPropertyTextAreaCSS3 $fieldNameLabel $errorKey $fieldName $fieldValue $cols $rows $className $serverNodeId)
+#macro(editPropertyTextAreaCSS3 $fieldNameLabel $errorKey $fieldName $fieldValue $actualCurrentValue $cols $rows $className $serverNodeId)
   	<div class="row">
 		<label for="$fieldName">$fieldNameLabel</label>
-	  	<textarea class="$className" wrap="virtual" id="$fieldName" name="$fieldName" rows="$rows" cols="$cols">$!fieldValue</textarea><a href="ViewServerNodeProperties!deleteProperty.action?serverNodeId=$!serverNodeId&key=$fieldName"><img src="images/delete.gif" border="0"/></a>
+	  	<textarea class="$className" wrap="virtual" id="$fieldName" name="$fieldName" rows="$rows" cols="$cols">$!fieldValue</textarea>
+	  	<a href="javascript:deleteProperty($!serverNodeId, '$fieldName');"><img src="images/delete.gif" border="0"/></a>
+	  	<a href="#" onclick="$('#actualCurrentValue p').html($('#currentActualValue$fieldName').html()); $('#actualCurrentValue').show('slow');">Show current value</a>
+	  	<p id="currentActualValue$fieldName" style="display:none;"><textarea>$actualCurrentValue</textarea></p>
 	</div>
 #end
 
@@ -1688,11 +1692,11 @@ $ui.getString("entity.${fieldNameKey}.label")<br/>
 </table>
 #end
 
-#macro(yesNoDropDownWithInheritCSS $fieldNameKey $fieldName $value)
-	#yesNoDropDownWithInheritCSSImpl($fieldNameKey $fieldName $value '')
+#macro(yesNoDropDownWithInheritCSS $fieldNameKey $fieldName $value $currentActualValue)
+	#yesNoDropDownWithInheritCSSImpl($fieldNameKey $fieldName $value $currentActualValue '')
 #end
 
-#macro(yesNoDropDownWithInheritCSSImpl $fieldNameKey $fieldName $value $onChangeJS)
+#macro(yesNoDropDownWithInheritCSSImpl $fieldNameKey $fieldName $value $currentActualValue $onChangeJS)
 	<div class="row">
 		<label for="$fieldName">$ui.getString("entity.${fieldNameKey}.label")</label>
 		<select name="$fieldName" class="yesNoDropBox" #if($onChangeJS != '') onchange="$onChangeJS" #end>
@@ -1710,6 +1714,13 @@ $ui.getString("entity.${fieldNameKey}.label")<br/>
 				<option value="false" selected="1">$ui.getString("tool.common.no")</option>
 			#end
 		</select>
+		
+		#if($currentActualValue == true || $currentActualValue == "true")
+			($ui.getString("tool.common.yes"))
+		#else
+			($ui.getString("tool.common.no"))
+		#end
+		
 	</div>
 #end
 
@@ -2439,7 +2450,8 @@ $ui.getString("entity.${fieldNameKey}.label")<br/>
     #end
   #end
   <br/>
-  <input type="text" class="text" name="$fieldName" value="$!fieldValue" size="$length"/><a href="ViewServerNodeProperties!deleteProperty.action?serverNodeId=$!serverNodeId&key=$fieldName"><img src="images/delete.gif" border="0"/></a>
+  <input type="text" class="text" name="$fieldName" value="$!fieldValue" size="$length"/>
+  <a href="javascript:deleteProperty($!serverNodeId, '$fieldName');"><img src="images/delete.gif" border="0"/></a>
 #end
 
 #macro(editPropertyField $fieldNameKey $fieldName $fieldValue $length $serverNodeId)
@@ -2451,14 +2463,15 @@ $ui.getString("entity.${fieldNameKey}.label")<br/>
 #end
 
 
-#macro(editPropertyFieldCSS $fieldNameKey $fieldName $fieldValue $length $serverNodeId)
-  #editPropertyFieldCSS3($ui.getString("entity.${fieldNameKey}.label") $fieldNameKey $fieldName $fieldValue $length $serverNodeId)
+#macro(editPropertyFieldCSS $fieldNameKey $fieldName $fieldValue $length $serverNodeId $currentActualValue)
+  #editPropertyFieldCSS3($ui.getString("entity.${fieldNameKey}.label") $fieldNameKey $fieldName $fieldValue $currentActualValue $length $serverNodeId)
 #end
 
-#macro(editPropertyFieldCSS3 $fieldNameLabel $errorKey $fieldName $fieldValue $length $serverNodeId)
+#macro(editPropertyFieldCSS3 $fieldNameLabel $errorKey $fieldName $fieldValue $currentActualValue $length $serverNodeId)
 	<div class="row">
 		<label for="$fieldName">$fieldNameLabel</label>
-  	  	<input type="text" class="text" id="$fieldName" name="$fieldName" value="$!fieldValue" size="$length"/><a href="ViewServerNodeProperties!deleteProperty.action?serverNodeId=$!serverNodeId&key=$fieldName"><img src="images/delete.gif" border="0"/></a>
+  	  	<input type="text" class="text" id="$fieldName" name="$fieldName" value="$!fieldValue" size="$length"/>
+  	  	<a href="javascript:deleteProperty($!serverNodeId, '$fieldName');"><img src="images/delete.gif" border="0"/></a> ($currentActualValue)
 	</div>
 #end
 
