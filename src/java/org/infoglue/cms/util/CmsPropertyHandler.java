@@ -1011,7 +1011,7 @@ public class CmsPropertyHandler
 
 	public static String getSiteNodesToRecacheOnPublishing()
 	{
-	    return getServerNodeProperty("siteNodesToRecacheOnPublishing", true);
+		return getServerNodeProperty("siteNodesToRecacheOnPublishing", true);
 	}
 
 	public static String getRecachePublishingMethod()
@@ -1136,6 +1136,11 @@ public class CmsPropertyHandler
 	public static String getNiceURIDisableNiceURIForContent()
 	{
 		return getServerNodeProperty("niceURIDisableNiceURIForContent", true, "false");
+	}
+
+	public static String getEnableNiceURIForLanguage()
+	{
+		return getServerNodeProperty("enableNiceURIForLanguage", true, "false");
 	}
 
 	public static String getNiceURIEncoding()
@@ -1890,6 +1895,11 @@ public class CmsPropertyHandler
 	public static String getUseAccessBasedProtocolRedirects()
 	{
 		return getServerNodeProperty("useAccessBasedProtocolRedirects", true, "false");
+	}
+	
+	public static String getDeriveProtocolWhenUsingProtocolRedirects()
+	{
+		return getServerNodeProperty("deriveProtocolWhenUsingProtocolRedirects", true, "true");
 	}
 
 	public static String getUnprotectedProtocolName()

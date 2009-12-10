@@ -153,6 +153,7 @@ public class ViewServerNodePropertiesAction extends InfoGluePropertiesAbstractAc
 	    populate(ps, "urlFormatting");
 	    populate(ps, "enableNiceURI");
 	    populate(ps, "enableNiceURIInWorking");
+	    populate(ps, "enableNiceURIForLanguage");
 	    populate(ps, "enableDiskAssets");
 	    populate(ps, "disableAssetDeletionInWorkThread");
 	    populate(ps, "disableAssetDeletionInLiveThread");
@@ -322,6 +323,7 @@ public class ViewServerNodePropertiesAction extends InfoGluePropertiesAbstractAc
 	    populate(ps, "maxNumberOfVersionsForDerivedLastModifiedInLive");
 	    populate(ps, "allowInternalCallsBasedOnIP");
 
+	    populate(ps, "deriveProtocolWhenUsingProtocolRedirects");
 	    populate(ps, "useAccessBasedProtocolRedirects");
 	    populate(ps, "unprotectedProtocolName");
 	    populate(ps, "protectedProtocolName");
@@ -441,6 +443,11 @@ public class ViewServerNodePropertiesAction extends InfoGluePropertiesAbstractAc
 		byte[] valueBytes = propertySet.getData("serverNode_" + this.getServerNodeId() + "_" + prefix + "_" + key);
 	    
 		return (valueBytes != null ? new String(valueBytes, "utf-8") : "");
+	}
+
+	public CmsPropertyHandler getCmsPropertyHandler() 
+	{
+		return new CmsPropertyHandler();
 	}
 
     public List getServerNodeVOList()
