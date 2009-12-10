@@ -263,7 +263,7 @@ body.generaltooledit
 }
 #structureRepositoryChoiceRefreshDiv > a, #contentRepositoryChoiceRefreshDiv > a
 {
-	background-image: url(images/reload.png);
+	background-image: url(images/refresh.png);
 	background-position: center right;
 	background-repeat: no-repeat;
 }
